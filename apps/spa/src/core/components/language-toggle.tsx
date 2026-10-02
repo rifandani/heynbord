@@ -1,0 +1,49 @@
+import { HiGlobeAlt } from "react-icons/hi2";
+import type { Selection } from "react-stately";
+import { match } from "ts-pattern";
+
+import { Button } from "@/core/components/ui/button";
+import {
+  Menu,
+  MenuContent,
+  MenuHeader,
+  MenuItem,
+  MenuSection,
+} from "@/core/components/ui/menu";
+import type { LocaleDictLanguage } from "@/core/libs/i18n/init";
+import { useTranslation } from "@/core/providers/i18n/context";
+
+export const LanguageToggle = () => {
+  const { t, setLocale, locale } = useTranslation();
+  return (
+    <Menu>
+      <Button intent="plain">
+        <HiGlobeAlt className="size-6" />
+        {match(locale)
+          .with("en-us", () => "English")
+          .with("id-id", () => "Indonesia")
+          .otherwise(() => "Indonesia")}
+      </Button>
+
+      <MenuContent
+        selectionMode="single"
+        selectedKeys={new Set([locale])}
+        onSelectionChange={(_selection) => {
+          // SAFETY: `selectionMode="single"` rules out the "all" sentinel, and every
+          // menu item below is keyed by one of the values named here.
+          const selection = _selection as Exclude<Selection, "all"> & {
+            currentKey: LocaleDictLanguage;
+          };
+          setLocale(selection.currentKey);
+        }}
+      >
+        <MenuSection>
+          <MenuHeader separator>{t("language")}</MenuHeader>
+
+          <MenuItem id="en-us">English</MenuItem>
+          <MenuItem id="id-id">Indonesia</MenuItem>
+        </MenuSection>
+      </MenuContent>
+    </Menu>
+  );
+};
