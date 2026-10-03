@@ -2,8 +2,8 @@ import type { ErrorComponentProps } from "@tanstack/react-router";
 
 import { Button } from "@/core/components/ui/button";
 import { Link } from "@/core/components/ui/link";
-import { useTranslation } from "@/core/providers/i18n/context";
-import { logger } from "@/core/utils/logger";
+import { reportError } from "@/core/observability/logger";
+import { useTranslation } from "@/features/i18n/use-translation";
 
 export const PendingRoute = () => (
   <div className="flex items-center justify-center">
@@ -47,7 +47,7 @@ export const PendingRoute = () => (
   </div>
 );
 export const ErrorRoute = ({ reset, error, info }: ErrorComponentProps) => {
-  logger.error("[ErrorRoute]: Error", { error, info });
+  reportError("[ErrorRoute]: Error", { error, errorInfo: info });
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="max-w-md space-y-8 text-center">

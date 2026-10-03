@@ -1,42 +1,53 @@
+import { RegistryContext, scheduleTask } from "@effect/atom-react";
 import { createRouter } from "@tanstack/react-router";
-import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import { AtomRegistry } from "effect/reactivity";
 
-import { createQueryClient } from "@/core/providers/query/client";
+import { reportError } from "@/core/observability/logger";
 import {
   ErrorRoute,
   NotFoundRoute,
   PendingRoute,
 } from "@/core/providers/router/fallbacks";
-import { logger } from "@/core/utils/logger";
+import { dehydrateAtoms, hydrateAtoms } from "@/core/runtime/atom-hydration";
 
 import { routeTree } from "./routeTree.gen";
 
 /**
  * TanStack Start calls this once per server request and once in the browser,
- * so the router and its QueryClient are never shared between requests.
+ * so the router and its atom registry are never shared between requests.
  */
 export const getRouter = () => {
-  const queryClient = createQueryClient();
+  const registry = AtomRegistry.make({ defaultIdleTTL: 400, scheduleTask });
   const router = createRouter({
     routeTree,
     defaultOnCatch: (error, errorInfo) => {
-      logger.error("[router.onError]", { error, errorInfo });
+      reportError("[router.onError]", { error, errorInfo });
     },
     defaultNotFoundComponent: NotFoundRoute,
     defaultPendingComponent: PendingRoute,
     defaultErrorComponent: ErrorRoute,
     context: {
-      queryClient,
+      registry,
     },
     defaultPreload: "intent",
-    // Since we're using React Query, we don't want loader calls to ever be stale
-    // This will ensure that the loader is always called when the route is preloaded or visited
-    defaultPreloadStaleTime: 0,
     scrollRestoration: true,
+    Wrap: ({ children }) => (
+      <RegistryContext value={registry}>{children}</RegistryContext>
+    ),
+    // `Atom.serializable` atoms that SSR resolved travel with the streamed
+    // HTML, so the browser does not load them again.
+    dehydrate: () => ({ atoms: dehydrateAtoms(registry) }),
+    hydrate: ({ atoms }) => hydrateAtoms(registry, atoms),
   });
-  // Dehydrates queries fetched during SSR into the streamed HTML, hydrates
-  // them in the browser, and wraps the app in `QueryClientProvider`.
-  setupRouterSsrQueryIntegration({ queryClient, router });
+  // On the server the registry lives for one request: free its atoms and
+  // fibers when the response is done.
+  router.serverSsrLifecycle = {
+    ...router.serverSsrLifecycle,
+    onServerSsrAttach: [
+      ...(router.serverSsrLifecycle?.onServerSsrAttach ?? []),
+      (serverSsr) => serverSsr.onCleanup(() => registry.dispose()),
+    ],
+  };
   return router;
 };
 

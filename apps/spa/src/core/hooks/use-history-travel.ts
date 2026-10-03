@@ -1,4 +1,4 @@
-import { isNumber } from "radashi";
+import { Predicate } from "effect";
 import { useRef, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -62,7 +62,9 @@ const pushValue = <T>(
   // SAFETY: `present` is only absent before the first value is set, and every
   // caller of this helper has already committed one.
   const _past = [...history.past, history.present as T];
-  const maxLengthNum = isNumber(maxLength) ? maxLength : Number(maxLength);
+  const maxLengthNum = Predicate.isNumber(maxLength)
+    ? maxLength
+    : Number(maxLength);
   // maximum number of records exceeded
   if (maxLengthNum > 0 && _past.length > maxLengthNum) {
     // delete first

@@ -1,4 +1,4 @@
-import { isFunction } from "radashi";
+import { Predicate } from "effect";
 import { useState } from "react";
 
 import { useMemoizedFn } from "@/core/hooks/use-memoized-fn";
@@ -44,7 +44,7 @@ const deserialize = <T>(value: string, options: Options<T>): T => {
 
 /** Resolves `defaultValue`, calling it when it is a factory */
 const resolveDefaultValue = <T>(options: Options<T>) => {
-  if (isFunction(options.defaultValue)) {
+  if (Predicate.isFunction(options.defaultValue)) {
     return options.defaultValue();
   }
   return options.defaultValue;
@@ -108,7 +108,7 @@ export const createUseStorageState = (
      * @param value New value or function to update current value
      */
     const updateState = (value?: SetState<T>) => {
-      const currentState = isFunction(value) ? value(state) : value;
+      const currentState = Predicate.isFunction(value) ? value(state) : value;
       setState(currentState);
       if (currentState === undefined) {
         storage?.removeItem(key);

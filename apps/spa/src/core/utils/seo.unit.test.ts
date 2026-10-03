@@ -8,9 +8,9 @@ import {
   resolveOgImage,
 } from "./seo";
 
-vi.mock("@/core/constants/env", () => ({
-  ENV: {
-    VITE_APP_URL: "https://spa.test",
+vi.mock("@/core/config/env", () => ({
+  APP_CONFIG: {
+    url: "https://spa.test",
   },
 }));
 

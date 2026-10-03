@@ -1,5 +1,4 @@
 /* oxlint-disable typescript/ban-types */
-import type { QueryClient } from "@tanstack/react-query";
 import type {
   NavigateOptions,
   RegisteredRouter,
@@ -13,20 +12,22 @@ import {
   Scripts,
   useRouter,
 } from "@tanstack/react-router";
+import { Effect } from "effect";
+import type { AtomRegistry } from "effect/reactivity";
 import type { ReactNode } from "react";
 import { lazy, Suspense } from "react";
 import { RouterProvider as RACRouterProvider } from "react-aria-components";
 
-import { ColorModeScript, ColorModeSync } from "@/core/providers/color-mode";
-import { DEFAULT_LOCALE } from "@/core/providers/i18n/locale";
-import { getRequestLocale } from "@/core/providers/i18n/locale.functions";
-import {
-  AppI18nProvider,
-  AppTranslationProvider,
-} from "@/core/providers/i18n/provider";
 import { ReloadPromptSw } from "@/core/providers/reload-prompt-sw";
-import { AppToastProvider } from "@/core/providers/toast/provider";
 import { buildSeoMeta } from "@/core/utils/seo";
+import {
+  ColorModeScript,
+  ColorModeSync,
+} from "@/features/color-mode/components/color-mode";
+import { AppI18nProvider } from "@/features/i18n/components/i18n-provider";
+import { DEFAULT_LOCALE } from "@/features/i18n/locale";
+import { requestLocale } from "@/features/i18n/locale.functions";
+import { AppToaster } from "@/features/toast/components/app-toaster";
 
 // Side-effect import: Start links it from the client build manifest. A `?url`
 // import would take its hash from the SSR build, whose Tailwind output differs.
@@ -87,49 +88,46 @@ const RootRoute = () => {
   const { locale } = Route.useLoaderData();
   const router = useRouter();
   return (
-    <AppTranslationProvider locale={locale}>
-      <AppI18nProvider>
-        <AppToastProvider>
-          <ColorModeSync />
-          {/*
-           * RAC such as Link, Menu, Tabs, Table, and many others support rendering elements as links that perform navigation when the user interacts with them.
-           * It needs to be wrapped by RAC RouterProvider component.
-           */}
-          <RACRouterProvider
-            navigate={(to, options) =>
-              router.navigate({
-                ...options,
-                // SAFETY: react-aria hands back an href built from this app's own
-                // links; TanStack cannot verify that through the generic `navigate` hook.
-                to: to as ToPathOption<RegisteredRouter, "/", "/">,
-              })
-            }
-            useHref={(to) => router.buildLocation({ to }).href}
-          >
-            <Outlet />
-          </RACRouterProvider>
+    <AppI18nProvider locale={locale}>
+      <ColorModeSync />
+      <AppToaster />
+      {/*
+       * RAC such as Link, Menu, Tabs, Table, and many others support rendering elements as links that perform navigation when the user interacts with them.
+       * It needs to be wrapped by RAC RouterProvider component.
+       */}
+      <RACRouterProvider
+        navigate={(to, options) =>
+          router.navigate({
+            ...options,
+            // SAFETY: react-aria hands back an href built from this app's own
+            // links; TanStack cannot verify that through the generic `navigate` hook.
+            to: to as ToPathOption<RegisteredRouter, "/", "/">,
+          })
+        }
+        useHref={(to) => router.buildLocation({ to }).href}
+      >
+        <Outlet />
+      </RACRouterProvider>
 
-          {/* Browser-only: service workers and devtools have no server side. */}
-          <ClientOnly>
-            <ReloadPromptSw />
-            {Devtools ? (
-              <Suspense fallback={null}>
-                <Devtools />
-              </Suspense>
-            ) : null}
-          </ClientOnly>
-        </AppToastProvider>
-      </AppI18nProvider>
-    </AppTranslationProvider>
+      {/* Browser-only: service workers and devtools have no server side. */}
+      <ClientOnly>
+        <ReloadPromptSw />
+        {Devtools ? (
+          <Suspense fallback={null}>
+            <Devtools />
+          </Suspense>
+        ) : null}
+      </ClientOnly>
+    </AppI18nProvider>
   );
 };
 
 export const Route = createRootRouteWithContext<{
-  queryClient: QueryClient;
+  registry: AtomRegistry.AtomRegistry;
 }>()({
   // Runs on the server for the first request: the cookie and `Accept-Language`
   // header pick the Locale, so the SSR HTML and hydration agree.
-  loader: async () => ({ locale: await getRequestLocale() }),
+  loader: async () => ({ locale: await Effect.runPromise(requestLocale) }),
   // Client navigation never needs it again; `LanguageToggle` owns changes.
   shouldReload: false,
   head: ({ loaderData }) => ({

@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { LanguageToggle } from "@/core/components/language-toggle";
-import { ThemeToggle } from "@/core/components/theme-toggle";
-import { useTranslation } from "@/core/providers/i18n/context";
 import { buildSeoHead } from "@/core/utils/seo";
+import { ThemeToggle } from "@/features/color-mode/components/theme-toggle";
+import { LanguageToggle } from "@/features/i18n/components/language-toggle";
+import { useTranslation } from "@/features/i18n/use-translation";
 
 const HomeRoute = () => {
   const { t } = useTranslation();

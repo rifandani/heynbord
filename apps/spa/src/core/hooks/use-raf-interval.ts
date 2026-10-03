@@ -1,4 +1,4 @@
-import { isNumber } from "radashi";
+import { Predicate } from "effect";
 import { useEffect, useRef } from "react";
 
 /* oxlint-disable promise/prefer-await-to-callbacks node/callback-return */
@@ -63,7 +63,7 @@ export const useRafInterval = (
   const fnRef = useLatest(fn);
   const timerRef = useRef<Handle>(null);
   useEffect(() => {
-    if (!isNumber(delay) || delay < 0) {
+    if (!Predicate.isNumber(delay) || Number.isNaN(delay) || delay < 0) {
       return;
     }
     if (immediate) {

@@ -1,4 +1,4 @@
-import { isFunction } from "radashi";
+import { Predicate } from "effect";
 import type { SetStateAction } from "react";
 import { useMemo, useRef } from "react";
 
@@ -88,7 +88,7 @@ export function useControllableValue<T = any>(
   const update = useUpdate();
   // oxlint-disable-next-line typescript/no-explicit-any
   const setState = (v: SetStateAction<T>, ...args: any[]) => {
-    const r = isFunction(v)
+    const r = Predicate.isFunction(v)
       ? // SAFETY: `stateRef` is seeded from the controlled value or the default, so
         // it holds `undefined` only when the caller's own `T` includes it.
         v(stateRef.current as T)
@@ -98,7 +98,7 @@ export function useControllableValue<T = any>(
       update();
     }
     const onChange = bag[trigger];
-    if (isFunction(onChange)) {
+    if (Predicate.isFunction(onChange)) {
       onChange(r, ...args);
     }
   };
