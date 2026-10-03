@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/spa",
+  "name": "@workspace/web",
   "version": "0.0.0",
   "private": true,
   "description": "A browser-based MMO collectible/trading-card strategy game",
@@ -17,9 +17,9 @@
     "test": "dotenvx run --env-file=.env.local -- playwright test",
     "test:ui": "dotenvx run --env-file=.env.local -- playwright test --ui --headed",
     "test:ci": "dotenvx run --env-file=.env.local -- playwright test --forbid-only",
-    "test:unit": "vitest run --project spa",
+    "test:unit": "vitest run --project web",
     "check-site-meta": "bunx check-site-meta 3001 -p 3051",
-    "dev": "portless run --name spa.heynbord vite dev",
+    "dev": "portless run --name web.heynbord vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "start": "node .output/server/index.mjs",

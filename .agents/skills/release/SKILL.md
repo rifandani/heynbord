@@ -15,7 +15,7 @@ Ask which branch if unclear: **add** (changeset for a PR) or **cut** (version + 
 1. Read `.changeset/config.json`.
 2. Confirm `fixed` is a non-empty group containing every workspace package below.
 
-**Packages (both):** `@workspace/spa`, `@workspace/typescript-config`
+**Packages (both):** `@workspace/web`, `@workspace/typescript-config`
 
 **Done when:** those two names are present in `fixed[0]`. If not, stop — repo setup is wrong; do not patch config from this skill.
 

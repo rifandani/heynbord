@@ -1,23 +1,23 @@
-# OWASP ZAP Automation Framework plan — passive baseline for `apps/spa`.
+# OWASP ZAP Automation Framework plan — passive baseline for `apps/web`.
 #
 # This one file is the whole scan. `.github/workflows/dast.yml` runs it through
-# `zaproxy/action-af`, and `bun zap:spa` runs it through `scripts/security/zap.ts`;
+# `zaproxy/action-af`, and `bun zap:web` runs it through `scripts/security/zap.ts`;
 # both issue the same `docker run` with the repository root mounted at
 # `/zap/wrk`, so a plan that passes on a laptop behaves the same in CI.
 #
 # Three things here are deliberate and look like omissions. The reasoning lives
 # once in docs/adr/0005-dast-scans-the-deployed-spa.md; read it before undoing
 # any of them:
-#   1. Passive only, and no `spa-active.yaml`. The API lives in another repo.
+#   1. Passive only, and no `web-active.yaml`. The API lives in another repo.
 #   2. No `ajaxSpider`. Not executing the app's JavaScript is a containment
 #      control — it is what keeps the scan off the proxied backend.
-#   3. Seeds are paths on ${ZAP_TARGET}, not `apps/spa/public/sitemap.xml`.
+#   3. Seeds are paths on ${ZAP_TARGET}, not `apps/web/public/sitemap.xml`.
 #
 # Adding a route to the app means adding it below.
 
 env:
   contexts:
-    - name: spa
+    - name: web
       urls:
         - ${ZAP_TARGET}/
         - ${ZAP_TARGET}/master-design
@@ -54,7 +54,7 @@ jobs:
 
   - type: spider
     parameters:
-      context: spa
+      context: web
       maxDuration: 5
       # Read-only. Both default to `true`, so both are stated: a form submit
       # against a deployed environment would post real data through whatever
@@ -70,15 +70,15 @@ jobs:
     parameters:
       template: sarif-json
       reportDir: /zap/wrk/.zap-reports
-      reportFile: spa-baseline.sarif
-      reportTitle: "spa — DAST baseline"
+      reportFile: web-baseline.sarif
+      reportTitle: "web — DAST baseline"
 
   - type: report
     parameters:
       template: traditional-html
       reportDir: /zap/wrk/.zap-reports
-      reportFile: spa-baseline.html
-      reportTitle: "spa — DAST baseline"
+      reportFile: web-baseline.html
+      reportTitle: "web — DAST baseline"
 
   # Medium, not High. A static SPA served by a CDN has no server-side logic, so
   # it will essentially never produce a High — copying that threshold would give

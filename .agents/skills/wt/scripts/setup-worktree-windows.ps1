@@ -1,4 +1,4 @@
-# Worktree bootstrap for SPA + expo + portless (`/wt` skill).
+# Worktree bootstrap for web + expo + portless (`/wt` skill).
 # Runs inside the new worktree. ROOT_WORKTREE_PATH = main checkout.
 $ErrorActionPreference = 'Stop'
 
@@ -7,8 +7,8 @@ if (-not $env:ROOT_WORKTREE_PATH) {
 }
 
 $Root = $env:ROOT_WORKTREE_PATH
-# Matches portless.json / `bun spa` (`portless run --name *.heynbord`).
-$SpaPortlessName = 'spa.heynbord'
+# Matches portless.json / `bun web` (`portless run --name *.heynbord`).
+$WebPortlessName = 'web.heynbord'
 
 Write-Host '==> Installing workspace dependencies'
 bun install --frozen-lockfile
@@ -50,10 +50,10 @@ function Sync-AppEnvs {
 }
 
 Write-Host '==> Syncing app env files from main checkout'
-Sync-AppEnvs -AppDir 'apps/spa' -Files @('.env.local', '.env.prod')
+Sync-AppEnvs -AppDir 'apps/web' -Files @('.env.local', '.env.prod')
 Sync-AppEnvs -AppDir 'apps/expo' -Files @('.env.local')
 
-Write-Host '==> Checking portless (required for bun spa)'
+Write-Host '==> Checking portless (required for bun web)'
 if (-not (Get-Command portless -ErrorAction SilentlyContinue)) {
   Write-Host 'error: portless not on PATH. Install once on the machine:'
   Write-Host '  npm install -g portless'
@@ -61,12 +61,12 @@ if (-not (Get-Command portless -ErrorAction SilentlyContinue)) {
   throw 'portless missing'
 }
 
-$spaUrl = $null
-try { $spaUrl = (portless get $SpaPortlessName 2>$null | Select-Object -First 1).Trim() } catch {}
-if (-not $spaUrl) { $spaUrl = "https://$SpaPortlessName.localhost" }
+$webUrl = $null
+try { $webUrl = (portless get $WebPortlessName 2>$null | Select-Object -First 1).Trim() } catch {}
+if (-not $webUrl) { $webUrl = "https://$WebPortlessName.localhost" }
 
 Write-Host ''
 Write-Host 'Worktree setup complete.'
-Write-Host "  SPA URL:  $spaUrl"
-Write-Host '  Start:    bun spa   # or: bun expo'
+Write-Host "  Web URL:  $webUrl"
+Write-Host '  Start:    bun web   # or: bun expo'
 Write-Host ''

@@ -134,10 +134,10 @@ Then present all candidates at once for approval, each as target file plus the e
 ```
 3 lessons from 7 threads
 
-1. `apps/spa/docs/styling.md` — "Arbitrary Tailwind values need a token."
+1. `apps/web/docs/styling.md` — "Arbitrary Tailwind values need a token."
 2. root `CLAUDE.md`, ### React hooks — sharpens "Do not add useMemo by default"
    to "Derive state at render time."
-3. `apps/spa/docs/architecture.md` — CONTRADICTS "Barrels are a smell". Which stands?
+3. `apps/web/docs/architecture.md` — CONTRADICTS "Barrels are a smell". Which stands?
 ```
 
 Write only what the user approves.

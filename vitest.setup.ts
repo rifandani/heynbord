@@ -35,7 +35,7 @@ vi.stubGlobal("sessionStorage", sessionStorageMock);
 if (globalThis.window === undefined) {
   vi.stubGlobal("window", {
     localStorage: localStorageMock,
-    location: { origin: "https://spa.test" },
+    location: { origin: "https://web.test" },
     sessionStorage: sessionStorageMock,
   });
 }

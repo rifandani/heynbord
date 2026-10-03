@@ -5,7 +5,7 @@ import { defineProject } from "vitest/config";
 const root = import.meta.dirname;
 
 export default defineProject({
-  // spa tsconfig uses jsx: "preserve". oxc must transform JSX if a test imports a .tsx module.
+  // web tsconfig uses jsx: "preserve". oxc must transform JSX if a test imports a .tsx module.
   oxc: {
     jsx: { runtime: "automatic" },
   },
@@ -16,7 +16,7 @@ export default defineProject({
     },
   },
   test: {
-    name: "spa",
+    name: "web",
     include: ["src/**/*.unit.test.ts"],
     environment: "node",
     setupFiles: [

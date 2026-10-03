@@ -52,19 +52,19 @@ Three were drafted before the first run, on the theory that "constants" and "con
 
 | Drafted subtraction | Assumed | Measured |
 | --- | --- | --- |
-| `!**/constants/**` | literal tables | `apps/spa/src/core/constants/core.ts` scores **100%** (a `reduce` and `* 1024` arithmetic) |
-| `!apps/spa/src/core/constants/http.ts` | "106 lines of literal table" | **0 mutants.** It is numeric status codes and type aliases; Stryker has no numeric-literal mutator. The glob was dead config, and the `"application/json"` example justifying it does not appear in the file |
+| `!**/constants/**` | literal tables | `apps/web/src/core/constants/core.ts` scores **100%** (a `reduce` and `* 1024` arithmetic) |
+| `!apps/web/src/core/constants/http.ts` | "106 lines of literal table" | **0 mutants.** It is numeric status codes and type aliases; Stryker has no numeric-literal mutator. The glob was dead config, and the `"application/json"` example justifying it does not appear in the file |
 | `!apps/web/src/app/{robots,sitemap}.ts` | literal-table shape | `robots.ts` **100%**, `sitemap.ts` **93.18%** — among the best-scoring files in the repo |
 
 The lesson is the rule: **a directory name is not evidence, and neither is a plausible-sounding example.** Subtract a file only after reading a report for it.
 
-What that leaves is genuine, accepted noise rather than hidden noise: roughly 18 of the surviving mutants are `StringLiteral` replacements on exported name constants (`apps/{spa,web}/src/core/constants/global.ts`, `apps/spa/src/core/constants/date.ts` — telemetry meter and tracer names). Killing those requires a test that restates the constant, which is the padding ADR-0001's coverage amendment exists to prevent. They stay visible and unkilled. Treat a `StringLiteral` survivor on a bare name constant as known noise; treat any *other* mutator surviving in those files as a real finding, which is exactly the distinction a blanket exclusion would have destroyed.
+What that leaves is genuine, accepted noise rather than hidden noise: roughly 18 of the surviving mutants are `StringLiteral` replacements on exported name constants (`apps/web/src/core/constants/global.ts`, `apps/web/src/core/constants/date.ts` — telemetry meter and tracer names). Killing those requires a test that restates the constant, which is the padding ADR-0001's coverage amendment exists to prevent. They stay visible and unkilled. Treat a `StringLiteral` survivor on a bare name constant as known noise; treat any *other* mutator surviving in those files as a real finding, which is exactly the distinction a blanket exclusion would have destroyed.
 
 `mutator.excludedMutations` is set to `[]` explicitly rather than omitted, so the choice is visible where a reader would look for it. It is the right escape hatch for "this whole mutator class is noise here", but that is an empirical claim, and making it before reading a report blinds the tool to its own best findings — the same mistake the blanket `constants` glob made.
 
 ### Scope overrides replace, they do not intersect
 
-Stryker's `-m` / `--mutate` **replaces** the config's `mutate` array outright. A convenience script like `stryker run -m 'apps/spa/src/core/**/*.ts'` therefore does not mean "the derived scope, narrowed to core" — it means "every `.ts` under core", including the `*.unit.test.ts` files and everything ADR-0001 leaves off the allowlist. That is a second definition of scope wearing a helpful disguise, so no such scripts exist; `bun test:mutate` is the only scoped entry point, and at under three minutes there is nothing to save by narrowing it.
+Stryker's `-m` / `--mutate` **replaces** the config's `mutate` array outright. A convenience script like `stryker run -m 'apps/web/src/core/**/*.ts'` therefore does not mean "the derived scope, narrowed to core" — it means "every `.ts` under core", including the `*.unit.test.ts` files and everything ADR-0001 leaves off the allowlist. That is a second definition of scope wearing a helpful disguise, so no such scripts exist; `bun test:mutate` is the only scoped entry point, and at under three minutes there is nothing to save by narrowing it.
 
 The `mutate` input on the `workflow_dispatch` job is the one exception, kept for ad-hoc investigation and labelled in its own description as replacing the derived scope. Results from a run that used it are not comparable to the baseline table below.
 
@@ -125,8 +125,8 @@ The report's own filters are **status-only** (`Killed`, `Survived`, `Timeout`, `
 | Site | Mutant | Why it is behaviour, not noise |
 | --- | --- | --- |
 | `rate-limit/core.ts:23` | `standardHeaders = "draft-6"` → `""` | Selects which RFC draft header format the limiter emits |
-| `apps/spa/src/core/utils/core.ts:268` | `createObjectToFormData("index")` → `""` | That argument is the array-index key format for generated FormData keys |
-| `apps/spa/src/core/utils/dom.ts:27` | `link.target = "_blank"` → `""` | Changes whether the download opens in a new tab |
+| `apps/web/src/core/utils/core.ts:268` | `createObjectToFormData("index")` → `""` | That argument is the array-index key format for generated FormData keys |
+| `apps/web/src/core/utils/dom.ts:27` | `link.target = "_blank"` → `""` | Changes whether the download opens in a new tab |
 
 That is the same error as the blanket `!**/constants/**` glob above — a proxy standing in for reading the report — except in code, where it fails silently on every run instead of loudly once. The accepted-noise classes named in this ADR are specific sites argued individually; they are not a mutator whitelist.
 
@@ -136,12 +136,12 @@ It is also why `mutator.excludedMutations` stays empty rather than dropping `Str
 
 | Module | Mutation score | Mutants | Class |
 | --- | --- | --- | --- |
-| `apps/spa/src/core/constants/global.ts` | 0.00% | 12 | accepted noise (name constants) |
+| `apps/web/src/core/constants/global.ts` | 0.00% | 12 | accepted noise (name constants) |
 | `apps/web/src/core/constants/global.ts` | 0.00% | 4 | accepted noise (name constants) |
-| `apps/spa/src/core/constants/date.ts` | 33.33% | 3 | accepted noise (format strings) |
-| `apps/spa/src/core/apis/auth.ts` | 50.00% | 12 | accepted noise (Zod half of a mixed module) |
+| `apps/web/src/core/constants/date.ts` | 33.33% | 3 | accepted noise (format strings) |
+| `apps/web/src/core/apis/auth.ts` | 50.00% | 12 | accepted noise (Zod half of a mixed module) |
 | `apps/web/src/core/utils/seo.tsx` | 54.69% | 64 | **Candidate Survivors** |
-| `apps/spa/src/core/utils/logger.ts` | 62.96% | 27 | mostly accepted noise |
+| `apps/web/src/core/utils/logger.ts` | 62.96% | 27 | mostly accepted noise |
 
 The point of the fourth column: a low score is not automatically a finding. Four of the seven worst-scoring modules are noise this ADR has already argued is not worth killing — they are listed rather than excluded precisely so the distinction stays visible and re-checkable. `seo.tsx` is the real work.
 
@@ -162,7 +162,7 @@ The `primitive.ts` case is the argument for mutation testing in one line: the br
 
 `store.ts` also lost a redundant guard. `if (result.length === 0) return;` sat directly above `if (!record) return;`, and destructuring an empty array already yields `undefined`, so every mutant of the length check survived: no input can reach one guard without the other producing the same result. The right response to provably redundant code is deletion, not a `// Stryker disable`.
 
-Findings left open deliberately: `apps/spa/src/core/utils/core.ts` (17 logic survivors, 13 of them `Regex` — each pattern is exercised by one happy input), `apps/spa/src/core/libs/i18n/init.ts` (11, all `OptionalChaining` on plural/date/list fallbacks), and `apps/spa/src/core/utils/cookie.ts` (9, including the same dropped-`.trim()` shape already fixed in `net.ts`). Working through survivors is the tool's ongoing job, not part of adopting it.
+Findings left open deliberately: `apps/web/src/core/utils/core.ts` (17 logic survivors, 13 of them `Regex` — each pattern is exercised by one happy input), `apps/web/src/core/libs/i18n/init.ts` (11, all `OptionalChaining` on plural/date/list fallbacks), and `apps/web/src/core/utils/cookie.ts` (9, including the same dropped-`.trim()` shape already fixed in `net.ts`). Working through survivors is the tool's ongoing job, not part of adopting it.
 
 Stryker also warns that 251 mutants (16%) are *static* — evaluated at module load — and estimates them at 95% of run time. `ignoreStatic` would skip them, but they are skipped as **Ignored**, not killed, so it buys speed by discarding signal. At a 3-minute run there is nothing to buy. Left off.
 
@@ -178,7 +178,7 @@ Three environment fixes were needed before the first successful run. Each is a w
 
 ## Sandbox and the workspace aliases
 
-Stryker copies the repo into `.stryker-tmp` and symlinks `node_modules`. Shared code now lives in `apps/spa/src/core` and imports use the spa `@/*` alias. `apps/spa/vitest.config.ts` maps `@` to `src` with `import.meta.dirname`, so the alias re-resolves inside the sandbox and mutants in that tree reach the tests.
+Stryker copies the repo into `.stryker-tmp` and symlinks `node_modules`. Shared code now lives in `apps/web/src/core` and imports use the web `@/*` alias. `apps/web/vitest.config.ts` maps `@` to `src` with `import.meta.dirname`, so the alias re-resolves inside the sandbox and mutants in that tree reach the tests.
 
 > [ADR-0004](./0004-module-resolution-has-a-single-source-of-truth.md) records why a second resolution route is dangerous. The old `@workspace/core` Vitest alias existed only so this sandbox could see package mutants. That package is gone. Do not add the alias back.
 

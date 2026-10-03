@@ -54,10 +54,10 @@ Run [scripts/setup-worktree-unix.sh](scripts/setup-worktree-unix.sh) (Windows: [
 )
 ```
 
-**Done when:** setup exits 0 (deps installed, SPA env files synced).
+**Done when:** setup exits 0 (deps installed, web env files synced).
 
 ## 5. Hand off
 
-Print absolute worktree path, branch name, and SPA URL / start command from setup output. Tell the user to tear down later with `/delete-wt <name>`.
+Print absolute worktree path, branch name, and web app URL / start command from setup output. Tell the user to tear down later with `/delete-wt <name>`.
 
 **Done when:** the user has path, branch, next dev step, and the delete-wt hint.

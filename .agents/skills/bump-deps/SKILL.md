@@ -38,7 +38,7 @@ Loop until all green, in parallel/subagent:
 
 1. `bun lint-typecheck`
 2. `bun test:unit:cov`
-3. `bun spa build`
+3. `bun web build`
 4. `bun audit:sca`
 5. `bun check:all`
 

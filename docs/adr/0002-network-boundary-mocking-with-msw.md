@@ -1,6 +1,6 @@
 # Network-boundary mocking with MSW
 
-The unit tests covering the API layer faked HTTP by replacing imports (`vi.mock("ky")`, `vi.mock("@/core/services/http")`, hand-rolled `{ instance: { post } }` objects), so real ky never ran and a wrong prefix, dropped header, or bad path template could not fail a test. They now fake at the network boundary with `msw@2` (`setupServer`, Node only), which runs real ky, real URL construction, and real Zod parsing. This does **not** widen ADR-0001's scope: unit tests remain pure module logic under `environment: "node"` — no jsdom, no RTL, no browser mode, no `msw/browser`. Playwright mocking is unchanged (`apps/spa` keeps hitting the real API).
+The unit tests covering the API layer faked HTTP by replacing imports (`vi.mock("ky")`, `vi.mock("@/core/services/http")`, hand-rolled `{ instance: { post } }` objects), so real ky never ran and a wrong prefix, dropped header, or bad path template could not fail a test. They now fake at the network boundary with `msw@2` (`setupServer`, Node only), which runs real ky, real URL construction, and real Zod parsing. This does **not** widen ADR-0001's scope: unit tests remain pure module logic under `environment: "node"` — no jsdom, no RTL, no browser mode, no `msw/browser`. Playwright mocking is unchanged (`apps/web` keeps hitting the real API).
 
 ## Vocabulary
 
@@ -12,7 +12,7 @@ The unit tests covering the API layer faked HTTP by replacing imports (`vi.mock(
 
 ## Scope
 
-MSW applies to exactly one file — `apps/spa/src/core/apis/cdn.unit.test.ts`. That is the complete set: no other test in the suite touches the network.
+MSW applies to exactly one file — `apps/web/src/core/apis/cdn.unit.test.ts`. That is the complete set: no other test in the suite touches the network.
 
 > Changed on 2026-10-03 by [ADR-0007](./0007-effect-is-the-application-runtime.md): ky is replaced by Effect `HttpClient` (`FetchHttpClient`). See [Amendments](#amendments).
 
@@ -22,13 +22,13 @@ MSW applies to exactly one file — `apps/spa/src/core/apis/cdn.unit.test.ts`. T
 - **Fixtures from faker, shared with the `e2e/_helper.ts` builders** — rejected; unit failures must reproduce identically, and faker belongs where the point is "any valid user works". Fixtures stay as fixed literals.
 - **Fixtures derived from the Zod schemas** — rejected, and actively harmful: these modules exist to run `schema.parse(response)`, so a fixture generated from that schema can never fail it and the most valuable assertion becomes vacuous. Instead each file now has a *schema-violating 200* case alongside 401/404/500.
 - **`expect()` inside a resolver** — rejected as the documented anti-pattern. A throwing resolver becomes a failed response, so ky raises an `HTTPError` and the report shows a confusing 500 instead of the assertion. It also passes silently if the resolver never runs. **Use capture-then-assert**: stash the request/body in the resolver, assert in the test body after the `await`. Where the URL is the method's only input, the handler matching *is* the assertion — no request assertion needed.
-- **A shared handler catalog, or handlers inside `apps/spa/src/core/mocks/`** — rejected; test-only code does not belong next to production modules. Root-level `vitest.msw.ts` matches the existing `vitest.{config,setup,env-mock}.ts` convention and sits beside the setup file that owns its lifecycle.
+- **A shared handler catalog, or handlers inside `apps/web/src/core/mocks/`** — rejected; test-only code does not belong next to production modules. Root-level `vitest.msw.ts` matches the existing `vitest.{config,setup,env-mock}.ts` convention and sits beside the setup file that owns its lifecycle.
 - **Re-exporting `http`/`HttpResponse` through `vitest.msw.ts`** — rejected; handlers should look like textbook MSW so every upstream example applies. Test files import `msw` directly (root-hoisted devDependency, exactly as `vitest` already is).
 - **A global server in `vitest.setup.ts`** — rejected on measurement, see below.
 
 ## Lifecycle: scoped, not global
 
-`server.listen()` lives in `vitest.msw-setup.ts`, added to `setupFiles` for the spa project. The old `core` project is gone; these three files now live in the app. A single `setupServer` instance is shared process-wide, which matters because the root config runs `pool: "threads"` with `isolate: false`: files in a worker share globals, and two interceptor instances would contend for the same patched `fetch`/`http`/`XHR`.
+`server.listen()` lives in `vitest.msw-setup.ts`, added to `setupFiles` for the web project. The old `core` project is gone; these three files now live in the app. A single `setupServer` instance is shared process-wide, which matters because the root config runs `pool: "threads"` with `isolate: false`: files in a worker share globals, and two interceptor instances would contend for the same patched `fetch`/`http`/`XHR`.
 
 The global alternative was preferred on design grounds — it would make "no unit test ever reaches the network" an invariant for all 55 files — but it was measured first and the cost decided it. Warm runs, 55 files:
 
@@ -42,18 +42,18 @@ Interceptor install costs ~140ms per *file*, so the bill scales with files touch
 
 `onUnhandledRequest: "error"` (not `"warn"`) — verified by probe: an undeclared request hard-fails with `[MSW] Error: intercepted a request without a matching request handler`. Nothing in the suite trips it, because every OTLP exporter is already `vi.mock`ed.
 
-**Consequence:** the guardrail covers `core`, not `spa`. Extending it is one line in that project's `setupFiles`, and any spa test that needs the network must add it.
+**Consequence:** the guardrail covers `core`, not `web`. Extending it is one line in that project's `setupFiles`, and any web test that needs the network must add it.
 
 ## Consequences
 
 - **`auth.ts`'s `afterResponse` hook was deleted.** It set `Authorization` on `request.headers` *after* the response returned, only on status 200 — and ky (verified in `2.0.2`, `distribution/core/Ky.js:623`) passes `response.clone()` and never retries a 200, so nothing read the mutated request. It was a no-op. The old test could only "pass" by pulling the hook out of `post.mock.calls[0]` and invoking it by hand; two of four tests existed to do that, asserting the body *ran* rather than that it *did* anything. Under MSW the effect is unobservable, which is how the dead code surfaced. Coverage branches went 99.51% → **100%** as a result; the whole suite is now 100/100/100/100 against the `perFile: 90` floor.
-- **`@test/msw` is aliased twice** — in `apps/spa/vitest.config.ts` (`resolve.alias`) and `apps/spa/tsconfig.json` (`paths`).
+- **`@test/msw` is aliased twice** — in `apps/web/vitest.config.ts` (`resolve.alias`) and `apps/web/tsconfig.json` (`paths`).
 - **ky retries GET twice by default** on 408/413/429/500/502/503/504, so the cdn 500 case passes `retry: 0` to avoid ~0.9s of backoff. POST is not retried by default, so the auth 500 cases need nothing.
 - **fallow:** `vitest.msw-setup.ts` needs `unused-files: "off"` in `.fallowrc.json`, since `setupFiles` loads it by path and no import edge reaches it. Separately, `fallow dead-code` reports `msw` under "dev dependencies used in production" because it counts `*.unit.test.ts` under `src/` as production; every `msw` import site is a test file or `vitest.msw.ts`, it must stay a devDependency, and the finding is not suppressible via rule severity (the same limitation already noted for `fallow security`). Both `check:dead-code` and `check:audit` exit 0, so it is informational.
 
 ## Amendments
 
-**2026-09-11 — the set is the three core files.** `apps/spa/src/core/services/http.unit.test.ts` now fakes at the Network Boundary, and the test of the second auth module was deleted with the module it covered (see below). The list under [Scope](#scope) shows the current set.
+**2026-09-11 — the set is the three core files.** `apps/web/src/core/services/http.unit.test.ts` now fakes at the Network Boundary, and the test of the second auth module was deleted with the module it covered (see below). The list under [Scope](#scope) shows the current set.
 
 The scope rule is unchanged; the file moved across it. `Http` used to be a constructor call that built no request of its own — it handed a configured ky instance to the `apis/` modules and they did the building, which is why its test asserted object identity (`expect(http.instance).not.toBe(before)`) and sent nothing. It now attaches the Access Token in a `beforeRequest` hook and ends the Session on a 401 in `afterResponse`, so it builds and inspects requests, and **the rule of thumb selects it**: fake at the Network Boundary, because everything the module does to the request really executes.
 

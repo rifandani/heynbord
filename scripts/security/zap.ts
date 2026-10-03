@@ -8,7 +8,7 @@
  * here behaves identically in `.github/workflows/dast.yml`.
  *
  * Usage:
- *   ZAP_TARGET=http://spa.heynbord.localhost:4100 bun zap:spa
+ *   ZAP_TARGET=http://web.heynbord.localhost:4100 bun zap:web
  *
  * `ZAP_TARGET` has no default on purpose. The scan reaches whatever it is
  * pointed at, so the target is always an explicit act.
@@ -25,7 +25,7 @@ const PLAN_DIR = path.join(REPO_ROOT, ".github", "security", "zap");
 const REPORT_DIR = path.join(REPO_ROOT, ".zap-reports");
 const DEFAULT_IMAGE = "ghcr.io/zaproxy/zaproxy:stable";
 
-const LOCAL_TARGET_HINT = "http://spa.heynbord.localhost:4100";
+const LOCAL_TARGET_HINT = "http://web.heynbord.localhost:4100";
 
 const fail: (message: string) => never = (message) => {
   console.error(`zap: ${message}`);
@@ -49,7 +49,7 @@ if (!existsSync(path.join(PLAN_DIR, `${plan}.yaml`))) {
 const target = process.env.ZAP_TARGET;
 if (!target) {
   fail(
-    `ZAP_TARGET is not set. Start the app with \`bun zap:spa:serve\`, then:\n` +
+    `ZAP_TARGET is not set. Start the app with \`bun zap:web:serve\`, then:\n` +
       `  ZAP_TARGET=${LOCAL_TARGET_HINT} bun zap:${plan.replace(/-baseline$/u, "")}`
   );
 }

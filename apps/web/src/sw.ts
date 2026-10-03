@@ -10,13 +10,16 @@ import { NetworkFirst } from "workbox-strategies";
 declare let self: ServiceWorkerGlobalScope;
 
 /** Server-rendered pages the user has visited, for offline revisits. */
-const PAGES_CACHE = "spa-pages-v1";
+const PAGES_CACHE = "web-pages-v1";
 /** Static page (in `public/`) for an offline visit to an uncached page. */
 const OFFLINE_FALLBACK = "/offline.html";
 
+/** Prefixes of our runtime caches. The `spa-` ones are from before the app was renamed to `web`. */
+const APP_CACHE_PREFIXES = ["web-pages-", "spa-offline-", "spa-pages-"];
+
 /** Our own runtime caches from older workers - never Workbox precaches. */
 const isStaleAppCache = (key: string) =>
-  (key.startsWith("spa-offline-") || key.startsWith("spa-pages-")) &&
+  APP_CACHE_PREFIXES.some((prefix) => key.startsWith(prefix)) &&
   key !== PAGES_CACHE;
 
 self.addEventListener("message", (event) => {

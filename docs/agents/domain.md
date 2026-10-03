@@ -18,7 +18,7 @@ Multi-context monorepo:
 ├── CONTEXT-MAP.md
 ├── docs/adr/                          ← system-wide decisions
 ├── apps/
-│   └── spa/
+│   └── web/
 │       ├── CONTEXT.md
 │       └── docs/adr/
 └── packages/
@@ -29,7 +29,7 @@ Multi-context monorepo:
 
 | Context | `CONTEXT.md` | Context-scoped ADRs |
 | ------- | ------------ | ------------------- |
-| `spa`   | `apps/spa/CONTEXT.md` | `apps/spa/docs/adr/` |
+| `web`   | `apps/web/CONTEXT.md` | `apps/web/docs/adr/` |
 | `rules` | `packages/rules/CONTEXT.md` | `packages/rules/docs/adr/` |
 
 Game design documents (vision, pillars, GDD, PRD, economy, roadmap) are in `docs/game/`.

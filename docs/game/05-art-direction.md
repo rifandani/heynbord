@@ -116,7 +116,7 @@ For each asset, record: the file name, the tool and version, the date, the promp
 
 ## 6. User interface style
 
-- The UI uses the existing React Aria component library in `apps/spa`, with a Heynbord theme.
+- The UI uses the existing React Aria component library in `apps/web`, with a Heynbord theme.
 - Panels look like parchment and wood, but text sits on flat, high-contrast areas.
 - Fonts: one display font for titles (fantasy style, used only in large sizes) and one clear sans-serif font for all other text. Both fonts must support Indonesian characters.
 - Countdown numbers on cards are large and bold. A Ready card has a gold glow.

@@ -1,4 +1,4 @@
-# spa
+# web
 
 React app on TanStack Start. The server renders and streams each page.
 
@@ -8,7 +8,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Locale**: A lowercase BCP-47 language tag that selects which Message Catalog to use (`en-us`, `id-id`). The server picks it for each request: the `app-locale` cookie, then `Accept-Language`. _Avoid_: language, languageCode, lng, resolvedLanguage
 
-**Message Catalog**: The set of Translation Keys and strings for one Locale, owned in `apps/spa/src/core/libs/i18n`. _Avoid_: resources, locale JSON, dictionary, i18n file
+**Message Catalog**: The set of Translation Keys and strings for one Locale, owned in `apps/web/src/core/libs/i18n`. _Avoid_: resources, locale JSON, dictionary, i18n file
 
 **Translation Key**: A flat identifier into a Message Catalog (e.g. `welcome`, `title`). _Avoid_: nested namespaces, i18next paths
 

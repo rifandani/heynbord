@@ -1,6 +1,6 @@
 # Unit tests are pure module logic only
 
-We run Vitest projects (`core`, `spa`) for Unit tests: utils, libs, registries, plain classes, non-React factories, and Zustand stores via `.getState()`. React components/hooks (RTL, hook harnesses), plain Zod shapes, Vitest UI, and browser mode are out of scope — UI behavior belongs in Playwright E2E. Files are `*.unit.test.ts` under `environment: 'node'` with shared polyfills; both projects run in a single CI job, `unit`.
+We run Vitest projects (`core`, `web`) for Unit tests: utils, libs, registries, plain classes, non-React factories, and Zustand stores via `.getState()`. React components/hooks (RTL, hook harnesses), plain Zod shapes, Vitest UI, and browser mode are out of scope — UI behavior belongs in Playwright E2E. Files are `*.unit.test.ts` under `environment: 'node'` with shared polyfills; both projects run in a single CI job, `unit`.
 
 > Coverage was originally out of scope too. That clause was reversed on 2026-07-28 — see [Amendments](#amendments).
 > The four per-project CI jobs were collapsed into one on 2026-07-29 — same section.
@@ -30,7 +30,7 @@ The floor is **90 on all four**, deliberately below that measurement, which revi
 
 To skip unreachable defensive code instead of testing it, use `/* v8 ignore next -- @preserve */` — `@preserve` is required or the oxc transform strips the comment.
 
-**2026-08-03 — pure Zod schema modules leave the `include` allowlist.** The scope rule above already puts "plain Zod shapes" out of test scope, but they were still being *measured*, and that combination is worse than either choice alone: importing a file of `z.object({…})` executes every line, so it scores 100% statements/branches/lines while nothing asserts anything about it. `apps/spa/src/core/apis/core.ts` had no test file at all and still reported 100%.
+**2026-08-03 — pure Zod schema modules leave the `include` allowlist.** The scope rule above already puts "plain Zod shapes" out of test scope, but they were still being *measured*, and that combination is worse than either choice alone: importing a file of `z.object({…})` executes every line, so it scores 100% statements/branches/lines while nothing asserts anything about it. `apps/web/src/core/apis/core.ts` had no test file at all and still reported 100%.
 
 Mutation testing is what surfaced it — that file scored 9.09%, the worst in the repo, with survivors like `z.number().min(1)` → `.min(100)` ([ADR-0003](./0003-mutation-testing-is-advisory.md)). The fix is to stop measuring what we deliberately do not test, not to start testing it: measuring it inflates the very number the 90% floor is meant to defend.
 

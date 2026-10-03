@@ -8,8 +8,8 @@ Any path or behavior in:
 
 | Surface | Where it usually lives |
 | --- | --- |
-| Auth / Session / credentials | `**/auth/**`, `apps/spa/src/core/apis/auth.ts`, session storage |
-| Public API / HTTP contracts | `apps/spa/src/core/apis/**`, `apps/spa/src/core/services/http-client.ts` |
+| Auth / Session / credentials | `**/auth/**`, `apps/web/src/core/apis/auth.ts`, session storage |
+| Public API / HTTP contracts | `apps/web/src/core/apis/**`, `apps/web/src/core/services/http-client.ts` |
 | MCP | `.mcp.json`, MCP server configs |
 | Design system | `**/components/ui/**`, design tokens, `globals.css` that define the system |
 | DB schema | `**/*.prisma`, migrations |

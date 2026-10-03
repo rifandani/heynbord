@@ -4,7 +4,7 @@
 
 | Milestone | Weeks | Result |
 | --- | --- | --- |
-| M0 — Foundation | 1–2 | Documents, rules package, empty 3D scene in `apps/spa` |
+| M0 — Foundation | 1–2 | Documents, rules package, empty 3D scene in `apps/web` |
 | M1 — Battle slice | 3–6 | One complete Battle with 20 cards and 3D presentation |
 | M2 — Meta loop (**Playable alpha**) | 7–12 | Collection, Deck builder, Packs, Workshop, save, first Region |
 | M3 — Content | 13–19 | 100 cards, 30 Stages, 3 bosses, both languages |
@@ -18,7 +18,7 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 
 - [ ] Approve these documents and the draft names.
 - [ ] Create `packages/rules` with Vitest, the seeded random generator and the basic types.
-- [ ] Add `three`, `@react-three/fiber` and `@react-three/drei` to `apps/spa`. Show an empty Board on a lazy route.
+- [ ] Add `three`, `@react-three/fiber` and `@react-three/drei` to `apps/web`. Show an empty Board on a lazy route.
 - [ ] Select the AI image tool. Make the first 10 golden reference images.
 - [ ] Test the empty scene on a real phone in landscape.
 

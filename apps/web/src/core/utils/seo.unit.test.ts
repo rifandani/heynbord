@@ -10,7 +10,7 @@ import {
 
 vi.mock("@/core/config/env", () => ({
   APP_CONFIG: {
-    url: "https://spa.test",
+    url: "https://web.test",
   },
 }));
 
@@ -24,11 +24,11 @@ const contentOf = (meta: ReturnType<typeof buildSeoMeta>, key: string) =>
 
 describe("resolveOgImage", () => {
   it("defaults to the packaged og image", () => {
-    expect(resolveOgImage()).toBe("https://spa.test/og.png");
+    expect(resolveOgImage()).toBe("https://web.test/og.png");
   });
 
   it("absolutizes a relative path against the app origin", () => {
-    expect(resolveOgImage("/custom.png")).toBe("https://spa.test/custom.png");
+    expect(resolveOgImage("/custom.png")).toBe("https://web.test/custom.png");
   });
 
   it("leaves an already absolute url alone", () => {
@@ -41,10 +41,10 @@ describe("resolveOgImage", () => {
 describe("ldParams", () => {
   it("carries the app identity used by both schema.org nodes", () => {
     expect(ldParams).toEqual({
-      author: { name: "Tri Rizeki Rifandani", url: "https://spa.test" },
+      author: { name: "Tri Rizeki Rifandani", url: "https://web.test" },
       inLanguage: ["en-US", "id-ID"],
       name: "Test App",
-      url: "https://spa.test",
+      url: "https://web.test",
     });
   });
 });
@@ -64,10 +64,10 @@ describe("buildSeoMeta", () => {
     );
     expect(contentOf(meta, "og:title")).toBe("Home | Test App");
     expect(contentOf(meta, "og:description")).toBe("Welcome");
-    expect(contentOf(meta, "og:url")).toBe("https://spa.test/cards");
-    expect(contentOf(meta, "og:image")).toBe("https://spa.test/og.png");
+    expect(contentOf(meta, "og:url")).toBe("https://web.test/cards");
+    expect(contentOf(meta, "og:image")).toBe("https://web.test/og.png");
     expect(contentOf(meta, "twitter:title")).toBe("Home | Test App");
-    expect(contentOf(meta, "twitter:image")).toBe("https://spa.test/og.png");
+    expect(contentOf(meta, "twitter:image")).toBe("https://web.test/og.png");
   });
 
   it("falls back to the app name, template description, and origin", () => {
@@ -77,14 +77,14 @@ describe("buildSeoMeta", () => {
     expect(contentOf(meta, "description")).toBe(
       "a browser-based MMO collectible/trading-card strategy game"
     );
-    expect(contentOf(meta, "og:url")).toBe("https://spa.test/");
+    expect(contentOf(meta, "og:url")).toBe("https://web.test/");
   });
 
   it("absolutizes a caller-supplied image path", () => {
     const meta = buildSeoMeta({ image: "/post.png", title: "Post" });
 
-    expect(contentOf(meta, "og:image")).toBe("https://spa.test/post.png");
-    expect(contentOf(meta, "twitter:image")).toBe("https://spa.test/post.png");
+    expect(contentOf(meta, "og:image")).toBe("https://web.test/post.png");
+    expect(contentOf(meta, "twitter:image")).toBe("https://web.test/post.png");
   });
 
   it("emits each name/property once, so a child route can override it", () => {
@@ -113,7 +113,7 @@ describe("buildStructuredData", () => {
           "@type": "WebPage",
           description: "Welcome",
           name: "Home | Test App",
-          url: "https://spa.test/",
+          url: "https://web.test/",
         },
       ],
     });

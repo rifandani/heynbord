@@ -29,12 +29,12 @@ describe("loadAppConfig", () => {
   it.effect("prefers the portless URL over the configured one", () =>
     Effect.gen(function* () {
       const config = yield* load({
-        PORTLESS_URL: "https://spa.heynbord.localhost",
+        PORTLESS_URL: "https://web.heynbord.localhost",
         VITE_APP_TITLE: "Heynbord",
         VITE_APP_URL: "https://heynbord.com",
       });
 
-      expect(config.url).toBe("https://spa.heynbord.localhost");
+      expect(config.url).toBe("https://web.heynbord.localhost");
     })
   );
 

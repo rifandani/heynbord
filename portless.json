@@ -1,6 +1,6 @@
 {
   "name": "heynbord",
   "apps": {
-    "apps/spa": { "name": "spa.heynbord" }
+    "apps/web": { "name": "web.heynbord" }
   }
 }

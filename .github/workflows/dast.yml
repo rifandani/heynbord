@@ -1,14 +1,14 @@
-# Dynamic application security testing for `apps/spa`.
+# Dynamic application security testing for `apps/web`.
 #
-# The plan lives in `.github/security/zap/spa-baseline.yaml` and is the same file
-# `bun zap:spa` runs locally. `zaproxy/action-af` issues the same `docker run`
+# The plan lives in `.github/security/zap/web-baseline.yaml` and is the same file
+# `bun zap:web` runs locally. `zaproxy/action-af` issues the same `docker run`
 # that `scripts/security/zap.ts` does — repository root at `/zap/wrk`, host
 # network — so a plan that passes on a laptop behaves the same here.
 #
-# Scope: `apps/spa` only.
+# Scope: `apps/web` only.
 #
 # What is scanned, and why it is not built here:
-#   The target is the deployed SPA, taken from the `SPA_TARGET_URL` repository
+#   The target is the deployed web app, taken from the `WEB_TARGET_URL` repository
 #   variable. Building and serving `vite preview` in the runner would be cheaper
 #   and hermetic, and would also be a lie: `vite preview` does not replay the
 #   deployment's response headers, so it emits none of the headers we actually
@@ -37,7 +37,7 @@ on:
   workflow_dispatch:
     inputs:
       target_url:
-        description: "Override the scan target (defaults to the SPA_TARGET_URL variable)"
+        description: "Override the scan target (defaults to the WEB_TARGET_URL variable)"
         required: false
         type: string
 
@@ -54,7 +54,7 @@ concurrency:
 
 jobs:
   baseline:
-    name: Baseline (spa)
+    name: Baseline (web)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -63,10 +63,10 @@ jobs:
       - name: Resolve the target
         id: target
         env:
-          TARGET: ${{ inputs.target_url || vars.SPA_TARGET_URL }}
+          TARGET: ${{ inputs.target_url || vars.WEB_TARGET_URL }}
         run: |
           if [ -z "$TARGET" ]; then
-            echo "No SPA_TARGET_URL variable set and no target_url input given; nothing to scan." \
+            echo "No WEB_TARGET_URL variable set and no target_url input given; nothing to scan." \
               >> "$GITHUB_STEP_SUMMARY"
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
@@ -85,7 +85,7 @@ jobs:
         env:
           ZAP_TARGET: ${{ steps.target.outputs.url }}
         with:
-          plan: .github/security/zap/spa-baseline.yaml
+          plan: .github/security/zap/web-baseline.yaml
           # A list of variable NAMES, not assignments. The action turns each into
           # a `-e NAME` and Docker copies the value from the step env above.
           docker_env_vars: |
@@ -95,7 +95,7 @@ jobs:
         id: sarif
         if: always() && steps.target.outputs.skip == 'false'
         run: |
-          FILE=$(find .zap-reports -name 'spa-baseline.sarif*' 2>/dev/null | head -1)
+          FILE=$(find .zap-reports -name 'web-baseline.sarif*' 2>/dev/null | head -1)
           echo "file=${FILE}" >> "$GITHUB_OUTPUT"
 
       # Best-effort, exactly as security.yml treats its CodeQL upload: code
@@ -109,12 +109,12 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: ${{ steps.sarif.outputs.file }}
-          category: "/dast:spa-baseline"
+          category: "/dast:web-baseline"
 
       - name: Save reports as artifact
         if: always() && steps.target.outputs.skip == 'false'
         uses: actions/upload-artifact@v7
         with:
-          name: dast-spa-baseline
+          name: dast-web-baseline
           path: .zap-reports
           retention-days: 7

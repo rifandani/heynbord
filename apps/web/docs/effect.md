@@ -17,7 +17,7 @@ Keep `src/routes/` thin. `src/core/` holds shared infrastructure. A feature live
 | `components/` | UI |
 | `*.unit.test.ts` | Tests |
 
-A service id has this form: `@heynbord/spa/CdnClient`.
+A service id has this form: `@heynbord/web/CdnClient`.
 
 ## Atoms
 

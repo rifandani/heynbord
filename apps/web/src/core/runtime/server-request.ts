@@ -31,7 +31,7 @@ export class ServerRequest extends Context.Service<
       options: CookieOptions
     ) => Effect.Effect<void>;
   }
->()("@heynbord/spa/ServerRequest") {}
+>()("@heynbord/web/ServerRequest") {}
 
 /**
  * A `ServerRequest` over a snapshot that the handler reads synchronously, while

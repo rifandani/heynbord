@@ -1,6 +1,6 @@
 # Server rendering with TanStack Start; Nitro picks the runtime
 
-Spa runs on TanStack Start. The server renders the full document and streams it. Each route sets its own `ssr` mode. Server-only code is in `*.server.ts` files, and the client reaches it only through `createServerFn` in `*.functions.ts` files. Nitro builds the server for the deployment target (Vercel with no configuration, `NITRO_PRESET` for other targets).
+The web app runs on TanStack Start. The server renders the full document and streams it. Each route sets its own `ssr` mode. Server-only code is in `*.server.ts` files, and the client reaches it only through `createServerFn` in `*.functions.ts` files. Nitro builds the server for the deployment target (Vercel with no configuration, `NITRO_PRESET` for other targets).
 
 The router and its `QueryClient` are made for each request in `getRouter()`. There are no module-level instances.
 

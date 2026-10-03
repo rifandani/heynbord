@@ -1,11 +1,11 @@
 # DAST scans the deployed SPA, not a preview server
 
 The OWASP ZAP baseline scan in `.github/workflows/dast.yml` points at a deployed
-URL held in the `SPA_TARGET_URL` repository variable. It does not build
-`apps/spa` and serve it in the runner, the way `e2e.yml` does. It fails on
+URL held in the `WEB_TARGET_URL` repository variable. It does not build
+`apps/web` and serve it in the runner, the way `e2e.yml` does. It fails on
 **Medium** rather than High, and there is no active-scan plan in this repository
 at all. Each of those three reads as a deviation from the obvious path, and each
-follows from the same fact: `apps/spa` is a static bundle whose security surface
+follows from the same fact: `apps/web` is a static bundle whose security surface
 lives in its hosting configuration and in an API that belongs to another repo.
 
 ## Vocabulary
@@ -53,7 +53,7 @@ as assurance.
 
 ## Why there is no active scan
 
-`apps/spa` is a static bundle. A request that leaves the page goes to an
+`apps/web` is a static bundle. A request that leaves the page goes to an
 API served from another repository behind the deployed origin's `/api` proxy.
 Attacking it from here would be attacking a host this project does not own.
 
@@ -64,21 +64,21 @@ belongs in the repository that owns the API, where it already exists.
 
 ## Consequences
 
-- **The workflow is inert until `SPA_TARGET_URL` is set.** The job carries an
+- **The workflow is inert until `WEB_TARGET_URL` is set.** The job carries an
   empty-variable skip guard so it can land green. An unset variable means no
   scanning is happening, and nothing in CI will say so more loudly than a
   skipped job.
-- **Local runs cannot verify a header fix.** `bun zap:spa:serve` uses
+- **Local runs cannot verify a header fix.** `bun zap:web:serve` uses
   `vite preview`, so it reproduces the app but not its hosting. Local runs are
   for exercising the plan; the deployed scan is for the answer.
 - **Routes are enumerated by hand.** The app is client-rendered, so the spider
   discovers nothing and the plan carries explicit seed paths. A new route is
   invisible to the scan until someone adds it to
-  `.github/security/zap/spa-baseline.yaml`.
+  `.github/security/zap/web-baseline.yaml`.
 
 ## Considered Options
 
-**Seed the crawl from `apps/spa/public/sitemap.xml`.** Rejected on inspection:
+**Seed the crawl from `apps/web/public/sitemap.xml`.** Rejected on inspection:
 `scripts/gen-sitemap.ts` bakes the domain in at generation time and the
 committed file contains `http://localhost:3001/`. Seeding from it puts every URL
 outside the context, so the scan finds zero alerts and reports green — the exact

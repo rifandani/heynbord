@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "spa in node for vite & playwright",
+  "display": "web in node for vite & playwright",
   "compilerOptions": {
     "composite": true,
     "module": "esnext",

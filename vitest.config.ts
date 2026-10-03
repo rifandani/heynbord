@@ -10,7 +10,7 @@ export default defineConfig({
     fileParallelism: true,
     css: false,
     passWithNoTests: false,
-    projects: ["apps/spa"],
+    projects: ["apps/web"],
     // `coverage` is root-only (it sits in Vitest's `NonProjectOptions`), so it cannot be split across the `defineProject` configs.
     // Consequence: `--project <name> --coverage` measures this global `include` list against a partial run and reports every other project at 0%. Always run the whole suite (`bun test:unit:cov`).
     //
@@ -39,11 +39,11 @@ export default defineConfig({
       // This allowlist is the definition of business logic: layers whose modules are pure enough to unit test.
       // Untested files only appear in the report when matched here, so a new logic-bearing folder must be added.
       include: [
-        "apps/spa/src/**/{actions,apis,config,constants,http,libs,middlewares,observability,runtime,services,utils}/**/*.{ts,tsx}",
-        "apps/spa/src/**/*-store.{ts,tsx}",
+        "apps/web/src/**/{actions,apis,config,constants,http,libs,middlewares,observability,runtime,services,utils}/**/*.{ts,tsx}",
+        "apps/web/src/**/*-store.{ts,tsx}",
         // Feature modules: pure domain functions, Effect services and atoms.
         // Components (`.tsx`) are E2E territory.
-        "apps/spa/src/features/**/*.ts",
+        "apps/web/src/features/**/*.ts",
       ],
       exclude: [
         "**/*.unit.test.ts",
@@ -59,7 +59,7 @@ export default defineConfig({
         // Mutation testing is what exposed it (9.09%, ADR-0003). Excluded so the
         // coverage figure means something. Modules that mix schemas with functions
         // (`api-error.ts`, `locale.ts`, `color-mode.ts`) stay in — their functions are tested.
-        "apps/spa/src/core/libs/i18n/locales/**",
+        "apps/web/src/core/libs/i18n/locales/**",
         // Framework seams (the Logic Seam convention, ADR-0001): `createServerFn`
         // transports, the server runtime that reads TanStack's request, the
         // startup binding of `import.meta.env`, the atom runtimes (layer wiring
@@ -68,9 +68,9 @@ export default defineConfig({
         // `app-config.ts`, `*.service.ts`, `*.atoms.ts`).
         "**/*.functions.ts",
         "**/*.server.ts",
-        "apps/spa/src/core/config/env.ts",
-        "apps/spa/src/core/runtime/client.ts",
-        "apps/spa/src/features/**/use-*.ts",
+        "apps/web/src/core/config/env.ts",
+        "apps/web/src/core/runtime/client.ts",
+        "apps/web/src/features/**/use-*.ts",
       ],
     },
   },

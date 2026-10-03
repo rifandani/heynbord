@@ -167,7 +167,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 
 - One developer works on the game part-time or full-time for about 6 months.
 - AI tools can make art in a consistent style with a good workflow.
-- The existing `apps/spa` stack (React, TanStack, Vite, PWA) is the base.
+- The existing `apps/web` stack (React, TanStack, Vite, PWA) is the base.
 - Players accept a local save if export and import are available.
 
 ## 9. Risks

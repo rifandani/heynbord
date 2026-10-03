@@ -1,4 +1,4 @@
-# `spa` app
+# `web` app
 
 - [Effect](docs/effect.md) — folder structure, runtimes, atoms, server functions, tests
 - [Observability](docs/observability.md)

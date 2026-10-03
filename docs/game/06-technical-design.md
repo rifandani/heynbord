@@ -5,14 +5,14 @@
 Heynbord runs in the existing Bun monorepo. There are two main parts:
 
 - **`packages/rules`** (`@workspace/rules`): a pure TypeScript package with all game rules. It does not use React, Three.js or the DOM. It is deterministic.
-- **`apps/spa`**: the existing React app. It shows the menus, the Collection and the Workshop with React components. It shows the Battle in a Three.js scene with React Three Fiber.
+- **`apps/web`**: the existing React app. It shows the menus, the Collection and the Workshop with React components. It shows the Battle in a Three.js scene with React Three Fiber.
 
-[ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md) records why the rules are a separate package. [ADR-0007](../adr/0007-effect-is-the-application-runtime.md) records why `apps/spa` runs its logic as Effect programs and keeps its shared state in Effect Atoms.
+[ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md) records why the rules are a separate package. [ADR-0007](../adr/0007-effect-is-the-application-runtime.md) records why `apps/web` runs its logic as Effect programs and keeps its shared state in Effect Atoms.
 
 ## 2. Architecture
 
 ```text
-┌──────────────────────────── apps/spa ────────────────────────────┐
+┌──────────────────────────── apps/web ────────────────────────────┐
 │                                                                  │
 │  React UI (React Aria, TanStack Router)                          │
 │  Title · Camp · Deck builder · Collection · Workshop · Settings  │
@@ -48,7 +48,7 @@ In v2, a server also imports `packages/rules` and checks asynchronous PvP result
 2. **Deterministic.** All random results come from a seeded random number generator inside the state. The package never calls `Math.random()`, `Date.now()` or other sources that change.
 3. **Integer math.** All game values are integers. Percentages are stored as basis points (1% = 100). This gives the same result on all browsers and on the server.
 4. **Data-driven content.** Cards, Stages, Floors and rewards are data. Effect `Schema` schemas check the data when tests run and when the app loads it.
-5. **No text.** The package returns IDs and values, not text. `apps/spa` changes IDs into text with the Message Catalogs.
+5. **No text.** The package returns IDs and values, not text. `apps/web` changes IDs into text with the Message Catalogs.
 
 ### 3.2 Main types (draft)
 
@@ -103,7 +103,7 @@ The AI is a function `chooseCommands(state, side) → Command[]` in the rules pa
 
 ### 4.1 Libraries
 
-- `three`, `@react-three/fiber`, `@react-three/drei`. Add them to `apps/spa`.
+- `three`, `@react-three/fiber`, `@react-three/drei`. Add them to `apps/web`.
 - Optional: `@react-three/postprocessing` for bloom. Turn it off on low-end devices.
 
 ### 4.2 Scene structure
@@ -154,7 +154,7 @@ The AI is a function `chooseCommands(state, side) → Command[]` in the rules pa
 
 ## 7. Languages
 
-- The game uses the existing Message Catalogs in `apps/spa` (`en-us`, `id-id`).
+- The game uses the existing Message Catalogs in `apps/web` (`en-us`, `id-id`).
 - Card names, flavor text and template text use Translation Keys. Example keys: `card.hearthkin.shieldbearer.name`, `effect.damage.area`.
 - A unit test checks that each Translation Key exists in both catalogs.
 

@@ -55,15 +55,15 @@ export default defineConfig({
       // definitionally unparsed: a caught failure. It runs a schema against
       // every shape before trusting it, and a narrower parameter would only
       // move the cast to each caller.
-      files: ["apps/spa/src/core/utils/error.ts"],
+      files: ["apps/web/src/core/utils/error.ts"],
       rules: {
         "anti-slop/no-unknown-parameters": "off",
       },
     },
     {
       files: [
-        "apps/spa/src/core/libs/i18n/locales/en-US.ts",
-        "apps/spa/src/core/libs/i18n/locales/id-ID.ts",
+        "apps/web/src/core/libs/i18n/locales/en-US.ts",
+        "apps/web/src/core/libs/i18n/locales/id-ID.ts",
       ],
       rules: {
         "unicorn/filename-case": "off",
@@ -72,7 +72,7 @@ export default defineConfig({
   ],
   ignorePatterns: [
     ...(core.ignorePatterns ?? []),
-    "**/apps/spa/src/routeTree.gen.ts",
+    "**/apps/web/src/routeTree.gen.ts",
     "**/apps/*/src/core/components/ui/**",
     "**/.agents",
     "**/.claude",

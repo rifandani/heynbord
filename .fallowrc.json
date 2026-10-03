@@ -5,20 +5,20 @@
     "patterns": ["apps/*", "packages/*"]
   },
   "ignoreExports": [
-    { "file": "apps/spa/**/components/ui/**", "exports": ["*"] },
+    { "file": "apps/web/**/components/ui/**", "exports": ["*"] },
     {
       "file": "vitest.msw.ts",
       "exports": ["*"]
     },
     {
-      "file": "apps/spa/src/master-design/**",
+      "file": "apps/web/src/master-design/**",
       "exports": ["*"]
     }
   ],
   "ignorePatterns": ["repos/**"],
   "overrides": [
     {
-      "files": ["apps/spa/**/components/ui/**"],
+      "files": ["apps/web/**/components/ui/**"],
       "rules": {
         "unused-files": "off",
         "unused-types": "off"
@@ -26,9 +26,9 @@
     },
     {
       "files": [
-        "apps/spa/pwa-assets.config.ts",
-        "apps/spa/src/sw.ts",
-        "apps/spa/src/core/hooks/**",
+        "apps/web/pwa-assets.config.ts",
+        "apps/web/src/sw.ts",
+        "apps/web/src/core/hooks/**",
         "oxfmt.config.ts",
         "oxlint.config.ts",
         "stryker.config.mjs",
@@ -41,8 +41,8 @@
     }
   ],
   "ignoreFindings": [
-    "apps/spa/src/routeTree.gen.ts",
-    "apps/spa/src/routes/__root.tsx"
+    "apps/web/src/routeTree.gen.ts",
+    "apps/web/src/routes/__root.tsx"
   ],
   "duplicates": {
     "minOccurrences": 3,
@@ -55,7 +55,7 @@
       "**/routeTree.gen.ts",
       "**/*.gen.ts",
       "**/components/ui/**",
-      "apps/spa/src/master-design/**",
+      "apps/web/src/master-design/**",
       "**/*.{test,spec}.{ts,tsx}",
       "**/e2e/**",
       "scripts/security/**"

@@ -30,7 +30,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dev-spa-e2e:
+  dev-web-e2e:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     environment: dev
@@ -55,12 +55,12 @@ jobs:
 
       - name: Prepare env file
         env:
-          SPA_ENV_FILE: ${{ secrets.SPA_ENV_FILE }}
+          WEB_ENV_FILE: ${{ secrets.WEB_ENV_FILE }}
         run: |
-          if [ -n "$SPA_ENV_FILE" ]; then
-            echo "$SPA_ENV_FILE" > apps/spa/.env.local
+          if [ -n "$WEB_ENV_FILE" ]; then
+            echo "$WEB_ENV_FILE" > apps/web/.env.local
           else
-            cp apps/spa/.env.example apps/spa/.env.local
+            cp apps/web/.env.example apps/web/.env.local
           fi
 
       # Keyed on the resolved Playwright version rather than the lockfile hash:
@@ -69,7 +69,7 @@ jobs:
       - name: Resolve playwright version
         id: pw
         run: |
-          echo "version=$(node -p "require('./apps/spa/node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+          echo "version=$(node -p "require('./apps/web/node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
 
       - name: Restore playwright browsers
         uses: actions/cache@v4
@@ -80,15 +80,15 @@ jobs:
       # Still run on a cache hit: the binaries are cached, the `--with-deps` OS
       # packages are not, and Playwright skips a download it already has.
       - name: Install playwright browsers
-        run: bun spa test:install
+        run: bun web test:install
 
       - name: Run playwright tests
-        run: bun spa test:ci
+        run: bun web test:ci
 
       - name: Save playwright report as artifact
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: spa-playwright-report
-          path: apps/spa/playwright-report
+          name: web-playwright-report
+          path: apps/web/playwright-report
           retention-days: 7

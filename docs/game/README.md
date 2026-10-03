@@ -41,7 +41,7 @@ These decisions come from a design review on 2026-10-03:
 | Team | One developer. AI tools make the art. |
 | Schedule | Playable alpha in about 3 months. v1.0 in about 6 months. |
 | Platform | Desktop browser first. The layout also works on mobile in landscape. |
-| App structure | The game is in `apps/spa` with React Three Fiber. The rules are in `packages/rules`. |
+| App structure | The game is in `apps/web` with React Three Fiber. The rules are in `packages/rules`. |
 | World and tone | Heynbord is the name of the world. Bright high fantasy with some humor. |
 | Resource system | Countdown hand, as in the original. |
 | Board | Lanes, 12 squares long. v1 stages use 1 to 3 lanes. Co-op later uses 4. |

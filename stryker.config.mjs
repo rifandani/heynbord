@@ -44,7 +44,7 @@ export default {
   // runner never loads and `vitest` below is reported as an unknown option.
   plugins: ["@stryker-mutator/vitest-runner"],
 
-  // Points at the *root* config so the spa project loads with the root options
+  // Points at the *root* config so the web project loads with the root options
   // (`pool`, `isolate`, `fileParallelism`). The per-project config uses
   // `defineProject`, so it carries none of those.
   vitest: { configFile: "vitest.config.ts" },
