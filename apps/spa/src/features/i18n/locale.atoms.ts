@@ -21,7 +21,7 @@ export const localeAtom = Atom.make<Locale>(DEFAULT_LOCALE).pipe(
  * logged.
  */
 export const selectLocaleAtom = appRuntime.fn(
-  Effect.fn("selectLocale")(function* (locale: Locale, get: Atom.FnContext) {
+  Effect.fn("Locale.select")(function* (locale: Locale, get: Atom.FnContext) {
     get.set(localeAtom, locale);
     yield* persistLocale(locale).pipe(
       Effect.catch((error) =>

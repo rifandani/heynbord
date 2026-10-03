@@ -18,7 +18,7 @@ export const ColorModeScript = () => (
 );
 
 /**
- * Sole owner of the color-mode class on `<html>` after hydration. It subscribes
+ * The only code that sets the color-mode class on `<html>` after hydration. It subscribes
  * to the registry directly, not through a hook: a hook reads the server value
  * (`auto`) while it hydrates and would flash the wrong class for one commit.
  */

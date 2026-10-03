@@ -16,8 +16,8 @@ const viteEnvProvider = ConfigProvider.fromUnknown(
 /**
  * The validated app config, read once when the module loads. A missing or
  * malformed value throws here, so both the build and the server fail at startup.
- * Synchronous code that cannot yield a service (route `head()`, SEO helpers)
- * reads this; Effect code yields `AppConfig`.
+ * Synchronous code (route `head()`, SEO helpers) reads this. When Effect code
+ * needs the config, provide `loadAppConfig` as a service layer.
  */
 export const APP_CONFIG = Effect.runSync(
   loadAppConfig.pipe(

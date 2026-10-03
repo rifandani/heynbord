@@ -18,7 +18,7 @@ export const readRequestLocale = Effect.gen(function* () {
 });
 
 /** Persists the picked Locale, so the next server render uses it. */
-export const persistLocaleCookie = Effect.fn("persistLocaleCookie")(function* (
+export const persistLocaleCookie = Effect.fn("LocaleCookie.persist")(function* (
   locale: Locale
 ) {
   const request = yield* ServerRequest;

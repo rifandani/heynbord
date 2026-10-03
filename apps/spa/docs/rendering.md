@@ -14,7 +14,7 @@ The app runs on [TanStack Start](https://tanstack.com/start). The server renders
   | `false` | `beforeLoad` or `loader` reads browser-only state, for example `localStorage`. |
 
 - Put server-only code in `*.server.ts`. The build fails if client code imports a `*.server.ts` file.
-- Export server functions from `*.functions.ts`. Give each one a `.validator(Schema.toStandardSchemaV1(...))`. Its handler runs an Effect with `runServerFn(contract, effect)`, and the client calls it with `contract.call(...)`. See [Effect](effect.md#server-functions) and `src/features/i18n/locale.functions.ts`.
+- Export server functions from `*.functions.ts`. Give each one that takes input a `.validator(Schema.toStandardSchemaV1(...))`. Its handler runs an Effect with `runServerFn(contract, effect)`, and the client calls it with `contract.call(...)`. See [Effect](effect.md#server-functions) and `src/features/i18n/locale.functions.ts`.
 - Validate search params with `Schema.toStandardSchemaV1(...)` in `validateSearch`. See `src/routes/master-design.tsx`.
 - An atom that a server render reads must not need the browser. Give it a server value with `Atom.withServerValue(...)`. See `src/features/color-mode/color-mode.atoms.ts`.
 - In a loader, use `await` only for data that the first paint must have. Return other promises without `await`, so they stream.

@@ -35,7 +35,7 @@ export class ServerRequest extends Context.Service<
 
 /**
  * A `ServerRequest` over a snapshot that the handler reads synchronously, while
- * TanStack's request context is certainly current. Cookie writes are collected
+ * TanStack's request context is current. Cookie writes are collected
  * in `cookieWrites`; the handler applies them when the Effect is done.
  */
 export const makeRequestSnapshot = (request: {

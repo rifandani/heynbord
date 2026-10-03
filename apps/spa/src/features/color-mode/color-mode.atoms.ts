@@ -30,7 +30,7 @@ const prefersDarkAtom = Atom.make((get) => {
   return media.matches;
 });
 
-/** `auto` borrows whichever mode the system prefers. */
+/** In `auto` mode, the applied mode is the mode that the system prefers. */
 export const resolveColorMode = (
   mode: ColorMode,
   prefersDark: boolean

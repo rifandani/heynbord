@@ -24,8 +24,8 @@ const redactDefects = <A, E>(exit: Exit.Exit<A, E>): Exit.Exit<A, E> =>
  * Effect to JSON; the client decodes it back into an Effect, so a typed failure
  * on the server is the same typed failure in the browser.
  *
- * The transport stays TanStack Start's `createServerFn`: its handler returns
- * `encodeExit(...)`, and the client wraps the call in `call(...)`.
+ * The transport stays TanStack Start's `createServerFn`: its handler calls
+ * `runServerFn(contract, effect)`, and the client wraps the call in `call(...)`.
  */
 export const makeServerFnContract = <
   Success extends Schema.Codec<unknown, unknown>,
