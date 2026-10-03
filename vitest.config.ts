@@ -39,7 +39,7 @@ export default defineConfig({
       // This allowlist is the definition of business logic: layers whose modules are pure enough to unit test.
       // Untested files only appear in the report when matched here, so a new logic-bearing folder must be added.
       include: [
-        "apps/spa/src/**/{actions,apis,config,constants,http,libs,middlewares,runtime,services,utils}/**/*.{ts,tsx}",
+        "apps/spa/src/**/{actions,apis,config,constants,http,libs,middlewares,observability,runtime,services,utils}/**/*.{ts,tsx}",
         "apps/spa/src/**/*-store.{ts,tsx}",
         // Feature modules: pure domain functions, Effect services and atoms.
         // Components (`.tsx`) are E2E territory.
@@ -58,17 +58,18 @@ export default defineConfig({
         // scored 100% statements/branches/lines with no test file in existence.
         // Mutation testing is what exposed it (9.09%, ADR-0003). Excluded so the
         // coverage figure means something. Modules that mix schemas with functions
-        // (`api-error.ts`, `locale.ts`) stay in — their functions are tested.
-        "apps/spa/src/features/color-mode/color-mode.ts",
+        // (`api-error.ts`, `locale.ts`, `color-mode.ts`) stay in — their functions are tested.
         "apps/spa/src/core/libs/i18n/locales/**",
         // Framework seams (the Logic Seam convention, ADR-0001): `createServerFn`
         // transports, the server runtime that reads TanStack's request, the
-        // startup binding of `import.meta.env`, and React hooks. Their logic lives
-        // in tested siblings (`server-fn.ts`, `server-request.ts`, `app-config.ts`,
-        // `*.atoms.ts`).
+        // startup binding of `import.meta.env`, the atom runtimes (layer wiring
+        // only: a test that imports an atom runs every line), and React hooks.
+        // Their logic lives in tested siblings (`server-fn.ts`, `server-request.ts`,
+        // `app-config.ts`, `*.service.ts`, `*.atoms.ts`).
         "**/*.functions.ts",
         "**/*.server.ts",
         "apps/spa/src/core/config/env.ts",
+        "apps/spa/src/core/runtime/client.ts",
         "apps/spa/src/features/**/use-*.ts",
       ],
     },

@@ -2,7 +2,10 @@ import { RegistryContext } from "@effect/atom-react";
 import { ScriptOnce } from "@tanstack/react-router";
 import { use, useEffect } from "react";
 
-import { COLOR_MODE_STORAGE_KEY } from "@/features/color-mode/color-mode";
+import {
+  COLOR_MODE_STORAGE_KEY,
+  PREFERS_DARK,
+} from "@/features/color-mode/color-mode";
 import { appliedColorModeAtom } from "@/features/color-mode/color-mode.atoms";
 
 /**
@@ -13,7 +16,7 @@ import { appliedColorModeAtom } from "@/features/color-mode/color-mode.atoms";
  */
 export const ColorModeScript = () => (
   <ScriptOnce>
-    {`try{var m;try{m=JSON.parse(localStorage.getItem(${JSON.stringify(COLOR_MODE_STORAGE_KEY)}))}catch(e){}var d=m==="dark"||(m!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.add(d?"dark":"light")}catch(e){}`}
+    {`try{var m;try{m=JSON.parse(localStorage.getItem(${JSON.stringify(COLOR_MODE_STORAGE_KEY)}))}catch(e){}var d=m==="dark"||(m!=="light"&&matchMedia(${JSON.stringify(PREFERS_DARK)}).matches);document.documentElement.classList.add(d?"dark":"light")}catch(e){}`}
   </ScriptOnce>
 );
 

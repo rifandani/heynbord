@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useMemoizedFn } from "@/core/hooks/use-memoized-fn";
 import { useUpdateEffect } from "@/core/hooks/use-update-effect";
 
-export type SetState<S> = S | ((prevState?: S) => S);
-export interface Options<T> {
+type SetState<S> = S | ((prevState?: S) => S);
+interface Options<T> {
   defaultValue?: T | (() => T);
   serializer?: (value: T) => string;
   deserializer?: (value: string) => T;

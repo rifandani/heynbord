@@ -3,9 +3,11 @@ import {
   getRequestHeaders,
   setCookie,
 } from "@tanstack/react-start/server";
-import { Cause, Effect, ManagedRuntime } from "effect";
+import { Cause, Effect, Layer, ManagedRuntime } from "effect";
 import type { Exit } from "effect";
 
+import type { AppConfig } from "@/core/config/app-config";
+import { AppConfigLayer } from "@/core/config/env";
 import { LoggerLayer } from "@/core/observability/logger";
 import {
   makeRequestSnapshot,
@@ -16,7 +18,9 @@ import {
 // `*.server.*` file. Reach this through the server functions in `*.functions.ts`.
 
 /** Services for server-function Effects. One runtime for the server process. */
-const serverRuntime = ManagedRuntime.make(LoggerLayer);
+const serverRuntime = ManagedRuntime.make(
+  Layer.mergeAll(AppConfigLayer, LoggerLayer)
+);
 
 /**
  * Runs the Effect of one server function and returns its encoded `Exit`.
@@ -29,7 +33,7 @@ const serverRuntime = ManagedRuntime.make(LoggerLayer);
  */
 export const runServerFn = async <A, E, Wire>(
   contract: { readonly encodeExit: (exit: Exit.Exit<A, E>) => Wire },
-  effect: Effect.Effect<A, E, ServerRequest>
+  effect: Effect.Effect<A, E, AppConfig | ServerRequest>
 ) => {
   const request = makeRequestSnapshot({
     cookies: getCookies(),

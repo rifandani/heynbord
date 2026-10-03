@@ -1,6 +1,6 @@
-import { ConfigProvider, Effect } from "effect";
+import { ConfigProvider, Effect, Layer } from "effect";
 
-import { loadAppConfig } from "@/core/config/app-config";
+import { AppConfig, loadAppConfig } from "@/core/config/app-config";
 
 /**
  * `import.meta.env` as a `ConfigProvider`. Vite exposes only `VITE_*` and
@@ -16,11 +16,14 @@ const viteEnvProvider = ConfigProvider.fromUnknown(
 /**
  * The validated app config, read once when the module loads. A missing or
  * malformed value throws here, so both the build and the server fail at startup.
- * Synchronous code (route `head()`, SEO helpers) reads this. When Effect code
- * needs the config, provide `loadAppConfig` as a service layer.
+ * Synchronous code (route `head()`, SEO helpers) reads this. Effect code reads
+ * the `AppConfig` service.
  */
 export const APP_CONFIG = Effect.runSync(
   loadAppConfig.pipe(
     Effect.provideService(ConfigProvider.ConfigProvider, viteEnvProvider)
   )
 );
+
+/** `APP_CONFIG` as the `AppConfig` service. */
+export const AppConfigLayer = Layer.succeed(AppConfig, APP_CONFIG);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@effect/vitest";
 import { Effect } from "effect";
 
+import { AppConfig } from "@/core/config/app-config";
 import {
   makeRequestSnapshot,
   ServerRequest,
@@ -50,14 +51,19 @@ describe("readRequestLocale", () => {
   );
 });
 
+const persist = (url: string) => {
+  const { cookieWrites, service } = request({});
+  return persistLocaleCookie("id-id").pipe(
+    Effect.provideService(ServerRequest, service),
+    Effect.provideService(AppConfig, AppConfig.of({ title: "Heynbord", url })),
+    Effect.as(cookieWrites)
+  );
+};
+
 describe("persistLocaleCookie", () => {
   it.effect("sets a long-lived cookie that scripts cannot read", () =>
     Effect.gen(function* () {
-      const { cookieWrites, service } = request({});
-
-      yield* persistLocaleCookie("id-id").pipe(
-        Effect.provideService(ServerRequest, service)
-      );
+      const cookieWrites = yield* persist("http://localhost:3000");
 
       expect(cookieWrites).toEqual([
         {
@@ -72,6 +78,14 @@ describe("persistLocaleCookie", () => {
           value: "id-id",
         },
       ]);
+    })
+  );
+
+  it.effect("makes the cookie Secure when the app is served over HTTPS", () =>
+    Effect.gen(function* () {
+      const [cookie] = yield* persist("https://heynbord.com");
+
+      expect(cookie?.options.secure).toBe(true);
     })
   );
 });

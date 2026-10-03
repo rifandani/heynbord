@@ -1,4 +1,4 @@
-import { Config, Effect, Option, Schema } from "effect";
+import { Config, Context, Effect, Option, Schema } from "effect";
 
 /** An absolute URL, kept as the string it was configured with. */
 const AbsoluteUrl = Schema.String.check(
@@ -29,3 +29,11 @@ export const loadAppConfig = Effect.gen(function* () {
     : yield* Config.schema(AbsoluteUrl, "VITE_APP_URL");
   return { title, url } satisfies AppSettings;
 });
+
+/**
+ * The validated app config, for Effect code. `core/config/env.ts` gives its
+ * layer; a test gives a fake with `Effect.provideService`.
+ */
+export class AppConfig extends Context.Service<AppConfig, AppSettings>()(
+  "@heynbord/spa/AppConfig"
+) {}

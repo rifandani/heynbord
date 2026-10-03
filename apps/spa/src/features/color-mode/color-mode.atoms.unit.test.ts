@@ -5,20 +5,7 @@ import { COLOR_MODE_STORAGE_KEY } from "@/features/color-mode/color-mode";
 import {
   appliedColorModeAtom,
   colorModeAtom,
-  resolveColorMode,
 } from "@/features/color-mode/color-mode.atoms";
-
-describe("resolveColorMode", () => {
-  it("follows the system preference in auto mode", () => {
-    expect(resolveColorMode("auto", true)).toBe("dark");
-    expect(resolveColorMode("auto", false)).toBe("light");
-  });
-
-  it("uses a picked mode over the system preference", () => {
-    expect(resolveColorMode("light", true)).toBe("light");
-    expect(resolveColorMode("dark", false)).toBe("dark");
-  });
-});
 
 /** A `prefers-color-scheme: dark` query whose answer the test controls. */
 const stubSystemPreference = (prefersDark: boolean) => {

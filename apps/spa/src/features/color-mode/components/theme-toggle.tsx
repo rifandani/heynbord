@@ -1,7 +1,6 @@
 import { useAtom } from "@effect/atom-react";
-import { Match } from "effect";
+import { Match, Schema } from "effect";
 import { HiComputerDesktop, HiMoon, HiSun } from "react-icons/hi2";
-import type { Selection } from "react-stately";
 
 import { Button } from "@/core/components/ui/button";
 import {
@@ -11,7 +10,7 @@ import {
   MenuItem,
   MenuSection,
 } from "@/core/components/ui/menu";
-import type { ColorMode } from "@/features/color-mode/color-mode";
+import { ColorMode } from "@/features/color-mode/color-mode";
 import { colorModeAtom } from "@/features/color-mode/color-mode.atoms";
 import { useTranslation } from "@/features/i18n/use-translation";
 
@@ -22,24 +21,27 @@ const colorModeIcon = Match.type<ColorMode>().pipe(
   Match.exhaustive
 );
 
+const isColorMode = Schema.is(ColorMode);
+
 export const ThemeToggle = () => {
   const { t } = useTranslation();
   // `ColorModeSync` applies the mode to `<html>`; this only reads and writes the pick
   const [colorMode, setColorMode] = useAtom(colorModeAtom);
   return (
     <Menu>
-      <Button intent="outline">{colorModeIcon(colorMode)}</Button>
+      <Button intent="outline" aria-label={t("theme")}>
+        {colorModeIcon(colorMode)}
+      </Button>
 
       <MenuContent
         selectionMode="single"
         selectedKeys={new Set([colorMode])}
-        onSelectionChange={(_selection) => {
-          // SAFETY: `selectionMode="single"` rules out the "all" sentinel, and every
-          // menu item below is keyed by one of the values named here.
-          const selection = _selection as Exclude<Selection, "all"> & {
-            currentKey: ColorMode;
-          };
-          setColorMode(selection.currentKey);
+        onSelectionChange={(selection) => {
+          // `selectionMode="single"`: the set holds the picked key, or nothing.
+          const [key] = selection === "all" ? [] : selection;
+          if (isColorMode(key)) {
+            setColorMode(key);
+          }
         }}
       >
         <MenuSection>

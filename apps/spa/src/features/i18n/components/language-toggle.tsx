@@ -1,6 +1,5 @@
-import { Match } from "effect";
+import { Schema } from "effect";
 import { HiGlobeAlt } from "react-icons/hi2";
-import type { Selection } from "react-stately";
 
 import { Button } from "@/core/components/ui/button";
 import {
@@ -10,14 +9,16 @@ import {
   MenuItem,
   MenuSection,
 } from "@/core/components/ui/menu";
-import type { Locale } from "@/features/i18n/locale";
+import { Locale } from "@/features/i18n/locale";
 import { useTranslation } from "@/features/i18n/use-translation";
 
-const localeLabel = Match.type<Locale>().pipe(
-  Match.when("en-us", () => "English"),
-  Match.when("id-id", () => "Indonesia"),
-  Match.exhaustive
-);
+/** The name of each Locale, in its own language. */
+const LOCALE_LABELS = {
+  "en-us": "English",
+  "id-id": "Indonesia",
+} as const satisfies Record<Locale, string>;
+
+const isLocale = Schema.is(Locale);
 
 export const LanguageToggle = () => {
   const { t, setLocale, locale } = useTranslation();
@@ -25,28 +26,30 @@ export const LanguageToggle = () => {
     <Menu>
       <Button intent="plain">
         <HiGlobeAlt className="size-6" />
-        {localeLabel(locale)}
+        {LOCALE_LABELS[locale]}
       </Button>
 
       <MenuContent
         selectionMode="single"
         selectedKeys={new Set([locale])}
-        onSelectionChange={(_selection) => {
-          // SAFETY: `selectionMode="single"` rules out the "all" sentinel, and every
-          // menu item below is keyed by one of the values named here.
-          const selection = _selection as Exclude<Selection, "all"> & {
-            currentKey: Locale;
-          };
-          // Switches the UI at once; persisting for the next server render
-          // happens in the background.
-          setLocale(selection.currentKey);
+        onSelectionChange={(selection) => {
+          // `selectionMode="single"`: the set holds the picked key, or nothing.
+          const [key] = selection === "all" ? [] : selection;
+          if (isLocale(key)) {
+            // Switches the UI at once; persisting for the next server render
+            // happens in the background.
+            setLocale(key);
+          }
         }}
       >
         <MenuSection>
           <MenuHeader separator>{t("language")}</MenuHeader>
 
-          <MenuItem id="en-us">English</MenuItem>
-          <MenuItem id="id-id">Indonesia</MenuItem>
+          {Object.entries(LOCALE_LABELS).map(([id, label]) => (
+            <MenuItem key={id} id={id}>
+              {label}
+            </MenuItem>
+          ))}
         </MenuSection>
       </MenuContent>
     </Menu>

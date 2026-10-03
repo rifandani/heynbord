@@ -5,6 +5,8 @@ import type { AppliedColorMode } from "@/features/color-mode/color-mode";
 import {
   COLOR_MODE_STORAGE_KEY,
   ColorMode,
+  PREFERS_DARK,
+  resolveColorMode,
 } from "@/features/color-mode/color-mode";
 
 /**
@@ -19,8 +21,6 @@ export const colorModeAtom = Atom.kvs({
   schema: ColorMode,
 }).pipe(Atom.withServerValue(() => "auto" as const));
 
-const PREFERS_DARK = "(prefers-color-scheme: dark)";
-
 /** Whether the system prefers dark. It follows changes while it is read. */
 const prefersDarkAtom = Atom.make((get) => {
   const media = matchMedia(PREFERS_DARK);
@@ -29,17 +29,6 @@ const prefersDarkAtom = Atom.make((get) => {
   get.addFinalizer(() => media.removeEventListener("change", onChange));
   return media.matches;
 });
-
-/** In `auto` mode, the applied mode is the mode that the system prefers. */
-export const resolveColorMode = (
-  mode: ColorMode,
-  prefersDark: boolean
-): AppliedColorMode => {
-  if (mode !== "auto") {
-    return mode;
-  }
-  return prefersDark ? "dark" : "light";
-};
 
 /**
  * The class `<html>` carries: the picked mode, with `auto` resolved. The server

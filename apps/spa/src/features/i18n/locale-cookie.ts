@@ -1,5 +1,6 @@
 import { Effect, Option } from "effect";
 
+import { AppConfig } from "@/core/config/app-config";
 import { ServerRequest } from "@/core/runtime/server-request";
 import type { Locale } from "@/features/i18n/locale";
 import { LOCALE_COOKIE, resolveLocale } from "@/features/i18n/locale";
@@ -21,13 +22,16 @@ export const readRequestLocale = Effect.gen(function* () {
 export const persistLocaleCookie = Effect.fn("LocaleCookie.persist")(function* (
   locale: Locale
 ) {
+  const config = yield* AppConfig;
   const request = yield* ServerRequest;
   yield* request.setCookie(LOCALE_COOKIE, locale, {
     httpOnly: true,
     maxAge: ONE_YEAR_IN_SECONDS,
     path: "/",
     sameSite: "lax",
-    secure: import.meta.env.PROD,
+    // A browser keeps a Secure cookie only over HTTPS. The deployed app is
+    // HTTPS; the local e2e server is plain HTTP.
+    secure: new URL(config.url).protocol === "https:",
   });
   return locale;
 });

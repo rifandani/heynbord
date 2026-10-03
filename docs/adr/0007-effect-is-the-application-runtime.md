@@ -15,3 +15,11 @@ All logic in `apps/spa` that is not rendering runs as Effect v4 programs: I/O, v
 - `zod`, `ky`, `@t3-oss/env-core`, `ts-pattern` and `radashi` are replaced by `Schema`, `HttpClient`, `Config`, `Match` and the Effect data modules. `core/utils/logger` is replaced by the Effect `Logger`.
 - Components do not call `Effect.runPromise`. Effectful atoms come from one `Atom.runtime(ClientLayer)`.
 - Unit tests test atoms with `AtomRegistry.make()` and services with `@effect/vitest` and test layers. MSW stays the network boundary ([ADR-0001](./0001-unit-tests-are-pure-module-logic.md), [ADR-0002](./0002-network-boundary-mocking-with-msw.md)).
+
+## Amendments
+
+**2026-10-03 — what the first implementation changed.**
+
+- There are two atom runtimes, not one. `appRuntime` holds services that also build during a server render. `storageRuntime` holds `BrowserKeyValueStore.layerLocalStorage` for `Atom.kvs` atoms. A server render must never build it, because the server has no `localStorage`.
+- A loader reads atoms with `AtomRegistry.getResult` when the value is shared state. A loader can run an Effect with `Effect.runPromise` when the value is only data for its route. The root loader gets the request Locale in this way, and the root component seeds `localeAtom` from it. The `Hydration` path in the router has unit tests, but no `Atom.serializable` atom uses it yet.
+- `@effect/language-service` is not installed. The repo uses TypeScript 7 (native), which does not load TS plugins. `@effect/tsgo` replaces the compiler, and we did not take that risk for editor diagnostics.
