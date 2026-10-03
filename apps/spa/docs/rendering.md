@@ -4,7 +4,7 @@ The app runs on [TanStack Start](https://tanstack.com/start). The server renders
 
 ## Rules
 
-- Do not make a module-level router, `QueryClient`, or other per-user store. `getRouter()` in `src/router.tsx` makes new ones for each request. Get them with `useRouter()`, `useQueryClient()`, or the route `context`.
+- Do not make a module-level router, `AtomRegistry`, or other per-user store. `getRouter()` in `src/router.tsx` makes new ones for each request. Get them with `useRouter()`, the atom hooks of `@effect/atom-react`, or the route `context` (`context.registry`).
 - Set `ssr` on each route:
 
   | Mode | Use it when |
@@ -13,8 +13,10 @@ The app runs on [TanStack Start](https://tanstack.com/start). The server renders
   | `"data-only"` | The server can load the data, but the component needs the browser (for example, WebGL). |
   | `false` | `beforeLoad` or `loader` reads browser-only state, for example `localStorage`. |
 
-- Put server-only code in `*.server.ts`. Export server functions from `*.functions.ts`, and give each one a zod `.validator()`. The build fails if client code imports a `*.server.ts` file. See `src/core/providers/i18n/locale.*.ts`.
-- Validate search params with a zod schema in `validateSearch`. See `src/routes/master-design.tsx`.
+- Put server-only code in `*.server.ts`. The build fails if client code imports a `*.server.ts` file.
+- Export server functions from `*.functions.ts`. Give each one a `.validator(Schema.toStandardSchemaV1(...))`. Its handler runs an Effect with `runServerFn(contract, effect)`, and the client calls it with `contract.call(...)`. See [Effect](effect.md#server-functions) and `src/features/i18n/locale.functions.ts`.
+- Validate search params with `Schema.toStandardSchemaV1(...)` in `validateSearch`. See `src/routes/master-design.tsx`.
+- An atom that a server render reads must not need the browser. Give it a server value with `Atom.withServerValue(...)`. See `src/features/color-mode/color-mode.atoms.ts`.
 - In a loader, use `await` only for data that the first paint must have. Return other promises without `await`, so they stream.
 - Use the route `head()` for meta tags. See [SEO](seo.md).
 - Keep the CSRF middleware in `src/start.ts` if you add more request middleware.

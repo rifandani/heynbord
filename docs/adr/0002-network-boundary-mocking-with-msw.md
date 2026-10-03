@@ -14,6 +14,8 @@ The unit tests covering the API layer faked HTTP by replacing imports (`vi.mock(
 
 MSW applies to exactly one file — `apps/spa/src/core/apis/cdn.unit.test.ts`. That is the complete set: no other test in the suite touches the network.
 
+> Changed on 2026-10-03 by [ADR-0007](./0007-effect-is-the-application-runtime.md): ky is replaced by Effect `HttpClient` (`FetchHttpClient`). See [Amendments](#amendments).
+
 ## Considered Options
 
 - **Keep module-boundary mocks** — rejected; they cannot observe the request, which is most of what these modules do.
@@ -62,3 +64,11 @@ That is not a stylistic preference here. The [Consequences](#consequences) secti
 **2026-09-11 — the second auth module in `apis/` deleted.** A second auth scheme — cookie/session, its own `authKeys`/`authRepositories` — with zero importers since `@workspace/web` was removed. It was allowlisted for coverage and carried an MSW test, so it contributed measured, tested, unreachable surface: every future reader of `apis/` had to work out which of two schemes the apps actually use. Recoverable from git if that migration happens, at which point it would be rewritten against whatever the backend then exposes.
 
 **2026-10-02 — authentication removed.** The auth module, `apis/auth.ts`, the login route, and the Access Token hooks on `Http` are gone. `auth.unit.test.ts` is gone with them. `Http` is a ky constructor again, so `http.unit.test.ts` no longer builds a request and no longer uses MSW. The list under [Scope](#scope) is the current set.
+
+## Amendments
+
+**2026-10-03 — Effect `HttpClient` replaces ky.** `FetchHttpClient` calls `fetch`, so MSW intercepts it with no change to the lifecycle above. The rule of thumb stays. The Network Boundary files are now `core/http/api-error.unit.test.ts`, `features/cdn/cdn.service.unit.test.ts` and `features/cdn/cdn.atoms.unit.test.ts`.
+
+One case in `api-error.unit.test.ts` is at the Module Boundary on purpose: an error body that breaks while it is read. MSW buffers bodies, so that failure never reaches the client through it. The test builds the response with `HttpClientResponse.fromWeb(...)` instead. It builds no request, so the rule of thumb agrees.
+
+A server function is not an HTTP request that a unit test can see: TanStack Start compiles it into an RPC. `features/i18n/locale.atoms.unit.test.ts` replaces the `*.functions.ts` module at the Module Boundary. The wire format itself is tested without a network in `core/runtime/server-fn.unit.test.ts`.

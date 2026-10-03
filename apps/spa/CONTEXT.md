@@ -12,7 +12,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Translation Key**: A flat identifier into a Message Catalog (e.g. `welcome`, `title`). _Avoid_: nested namespaces, i18next paths
 
-**Translation Provider**: React glue that holds Locale state and exposes `t` / `setLocale`. _Avoid_: I18nextProvider, react-i18next
+**Translation Provider**: React glue that reads the current Locale and exposes `t` / `setLocale`. _Avoid_: I18nextProvider, react-i18next
 
 ### Errors
 

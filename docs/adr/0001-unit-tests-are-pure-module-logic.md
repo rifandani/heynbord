@@ -43,3 +43,11 @@ Scope is narrow and structural: **modules that contain only schema declarations*
 Two clauses above now rest on something weaker than they did. The scope rule — "React components/hooks (RTL, hook harnesses) … are out of scope — UI behavior belongs in Playwright E2E" — still names the right home for UI behavior, but that home is no longer visited before code lands. And the rejected option "React Testing Library for components/hooks — rejected; duplicates E2E cost and slows the suite" was an argument about *duplication*: RTL was redundant because E2E already covered that ground on every PR. It no longer does, so the redundancy argument is spent. The rejection stands on its remaining leg only — wall-clock cost, and the preference for `environment: 'node'` over a DOM shim — which is a thinner leg than the one it was written on.
 
 Neither clause is reversed here. **Pre-merge UI coverage is accepted as zero**, deliberately and with the alternatives enumerated in ADR-0004. This note exists so that a future reader who finds a UI regression on `main` does not conclude the scope rule failed: the scope rule assumed a gate that was removed on purpose.
+
+**2026-10-03 — Effect replaces Zod and Zustand-style stores ([ADR-0007](./0007-effect-is-the-application-runtime.md)).** The scope rule does not change. Only the names of the things in scope change:
+
+- "Zustand stores via `.getState()`" are now atoms, tested through `AtomRegistry.make()` (`get`, `set`, `mount`, `getResult`). Atoms are module logic: they run in Node with no React.
+- "plain Zod shapes" are now pure `Schema` modules. They stay out of the `include` allowlist by the 2026-08-03 rule (`features/color-mode/color-mode.ts` is the first one).
+- Effects and services are tested with `@effect/vitest` (`it.effect`, `it.live`) and test layers or `Effect.provideService` fakes.
+
+The allowlist adds the new logic folders (`config`, `http`, `runtime`, and `features/**/*.ts`). It excludes the new framework seams by the Logic Seam convention: `*.functions.ts` (`createServerFn` transports), `*.server.ts` (the runtime that reads TanStack's request), `core/config/env.ts` (the startup binding of `import.meta.env`) and `use-*.ts` hooks. Each one delegates to a tested sibling.
