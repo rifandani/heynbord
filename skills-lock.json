@@ -43,6 +43,18 @@
       "skillPath": "fallow/skills/fallow/SKILL.md",
       "computedHash": "0a784e20f1cdf6ff8c8a03cbaf382601a50bed563f2b8d3ac300a84870a0c9d4"
     },
+    "game-builder": {
+      "source": "ericzakariasson/skills",
+      "sourceType": "github",
+      "skillPath": "skills/game-builder/SKILL.md",
+      "computedHash": "97de58a68687cf1395c79f6957a80dfa9961c69a6c6b72774cc65497f6898c75"
+    },
+    "game-builder-blender-assets": {
+      "source": "ericzakariasson/skills",
+      "sourceType": "github",
+      "skillPath": "skills/game-builder-blender-assets/SKILL.md",
+      "computedHash": "bd55fc30686cce7a589bdeb12b2f215c1ae236ee68ee4c85b6e2dd71ded41e8a"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
