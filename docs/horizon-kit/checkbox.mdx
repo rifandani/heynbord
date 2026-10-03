@@ -1,0 +1,57 @@
+---
+title: Checkbox
+description: How to use the Checkbox component from the Horizon kit.
+nav: 44
+---
+
+<Sandpack
+  template="react-ts"
+  customSetup={{
+    dependencies: {
+      'three': 'latest',
+      '@react-three/fiber': '<9',
+      '@react-three/uikit': '^1.0.44',
+      '@react-three/uikit-horizon': '^1.0.44',
+      '@react-three/uikit-lucide': '^1.0.44',
+      '@react-three/drei': '<10',
+    },
+  }}
+  files={{
+    '/App.tsx': `import { Canvas } from "@react-three/fiber";
+import { Fullscreen } from "@react-three/uikit";
+import { Panel } from "@react-three/uikit-horizon";
+import { Container, Text } from '@react-three/uikit'
+import { Checkbox } from '@react-three/uikit-horizon'
+
+function CheckboxDemo() {
+  return (
+    <Container flexDirection="row" gap={8} alignItems="center">
+      <Checkbox />
+      <Text>Accept terms and conditions</Text>
+    </Container>
+  )
+}
+
+export default function App() {
+  return (
+    <Canvas style={{ position: "absolute", inset: "0", touchAction: "none" }} gl={{ localClippingEnabled: true }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight intensity={1} position={[-5, 5, 10]} />
+      <Fullscreen
+        overflow="scroll"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Panel color="black" dark={{ color: "white" }} padding={32}>
+          <CheckboxDemo />
+        </Panel>
+      </Fullscreen>
+    </Canvas>
+  )
+}`}}
+/>
+
+```bash
+import { Checkbox } from "@react-three/uikit-horizon";
+```

@@ -1,0 +1,46 @@
+{
+  "name": "@pmndrs/uikit-default",
+  "description": "Default (shadcn) kit for @pmndrs/uikit",
+  "version": "0.0.0",
+  "sideEffects": false,
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/pmndrs/uikit",
+  "author": "Bela Bohlender",
+  "keywords": [
+    "uikit",
+    "three.js",
+    "userinterface",
+    "flexbox",
+    "yoga",
+    "typescript",
+    "shadcn"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pmndrs/uikit"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js"
+  },
+  "scripts": {
+    "test": "mocha ./tests/*.spec.ts",
+    "build": "tsc",
+    "check:prettier": "prettier --check .",
+    "check:eslint": "eslint 'src/**/*.{tsx,ts}'",
+    "fix:prettier": "prettier --write .",
+    "fix:eslint": "eslint 'src/**/*.{tsx,ts}' --fix"
+  },
+  "devDependencies": {
+    "@preact/signals-core": "^1.5.1"
+  },
+  "type": "module",
+  "dependencies": {
+    "@pmndrs/uikit": "workspace:^",
+    "@pmndrs/uikit-lucide": "workspace:^",
+    "zod": "^4.4.3"
+  }
+}

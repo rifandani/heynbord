@@ -1,0 +1,62 @@
+---
+title: Tooltip
+description: How to use the Tooltip component from the Default kit.
+nav: 39
+---
+
+<Sandpack
+  template="react-ts"
+  customSetup={{
+    dependencies: {
+      'three': 'latest',
+      '@react-three/fiber': '<9',
+      '@react-three/uikit': '^1.0.44',
+      '@react-three/uikit-default': '^1.0.44',
+      '@react-three/uikit-lucide': '^1.0.44',
+      '@react-three/drei': '<10',
+    },
+  }}
+  files={{
+    '/App.tsx': `import { Canvas } from "@react-three/fiber";
+import { Fullscreen } from "@react-three/uikit";
+import { colors } from "@react-three/uikit-default";
+import { Text } from '@react-three/uikit'
+import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@react-three/uikit-default'
+
+function TooltipDemo() {
+  return (
+    <Tooltip>
+      <TooltipTrigger>
+        <Button variant="outline">
+          <Text>Hover</Text>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <Text>Add to library</Text>
+      </TooltipContent>
+    </Tooltip>
+  )
+}
+
+export default function App() {
+  return (
+    <Canvas style={{ position: "absolute", inset: "0", touchAction: "none" }} gl={{ localClippingEnabled: true }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight intensity={1} position={[-5, 5, 10]} />
+      <Fullscreen
+        overflow="scroll"
+        flexDirection="column"
+        alignItems="center"
+        padding={32}
+        backgroundColor={colors.background}
+      >
+        <TooltipDemo />
+      </Fullscreen>
+    </Canvas>
+  )
+}`}}
+/>
+
+```bash
+import { Tooltip } from "@react-three/uikit-default";
+```

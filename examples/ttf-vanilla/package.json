@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@pmndrs/pointer-events": "^6.6.29",
+    "@pmndrs/uikit": "workspace:^"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  }
+}

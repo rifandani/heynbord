@@ -1,0 +1,76 @@
+---
+title: Separator
+description: How to use the Separator component from the Default kit.
+nav: 31
+---
+
+<Sandpack
+  template="react-ts"
+  customSetup={{
+    dependencies: {
+      'three': 'latest',
+      '@react-three/fiber': '<9',
+      '@react-three/uikit': '^1.0.44',
+      '@react-three/uikit-default': '^1.0.44',
+      '@react-three/uikit-lucide': '^1.0.44',
+      '@react-three/drei': '<10',
+    },
+  }}
+  files={{
+    '/App.tsx': `import { Canvas } from "@react-three/fiber";
+import { Fullscreen } from "@react-three/uikit";
+import { colors } from "@react-three/uikit-default";
+import { Text, Container } from '@react-three/uikit'
+import { colors, Separator } from '@react-three/uikit-default'
+
+function SeparatorDemo() {
+  return (
+    <Container width={300} flexDirection="column">
+      <Container flexDirection="column" gap={4}>
+        <Text fontSize={14} lineHeight="100%">
+          Radix Primitives
+        </Text>
+        <Text fontSize={14} lineHeight="20px" color={colors.mutedForeground}>
+          An open-source UI component library.
+        </Text>
+      </Container>
+      <Separator marginY={16} />
+      <Container
+        flexDirection="row"
+        height={20}
+        alignItems="center"
+        gap={16}
+        {...{ '*': { fontSize: 14, lineHeight: '20px' } }}
+      >
+        <Text>Blog</Text>
+        <Separator orientation="vertical" />
+        <Text>Docs</Text>
+        <Separator orientation="vertical" />
+        <Text>Source</Text>
+      </Container>
+    </Container>
+  )
+}
+
+export default function App() {
+  return (
+    <Canvas style={{ position: "absolute", inset: "0", touchAction: "none" }} gl={{ localClippingEnabled: true }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight intensity={1} position={[-5, 5, 10]} />
+      <Fullscreen
+        overflow="scroll"
+        flexDirection="column"
+        alignItems="center"
+        padding={32}
+        backgroundColor={colors.background}
+      >
+        <SeparatorDemo />
+      </Fullscreen>
+    </Canvas>
+  )
+}`}}
+/>
+
+```bash
+import { Separator } from "@react-three/uikit-default";
+```

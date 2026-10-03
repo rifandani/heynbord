@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "convert": "node --loader ts-node/esm ./convert.ts"
+  },
+  "devDependencies": {
+    "oslllo-svg-fixer": "^5.0.0",
+    "lucide-static": "^0.511.0"
+  },
+  "type": "module"
+}

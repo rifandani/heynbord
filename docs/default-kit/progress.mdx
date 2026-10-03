@@ -1,0 +1,58 @@
+---
+title: Progress
+description: How to use the Progress component from the Default kit.
+nav: 29
+---
+
+<Sandpack
+  template="react-ts"
+  customSetup={{
+    dependencies: {
+      'three': 'latest',
+      '@react-three/fiber': '<9',
+      '@react-three/uikit': '^1.0.44',
+      '@react-three/uikit-default': '^1.0.44',
+      '@react-three/uikit-lucide': '^1.0.44',
+      '@react-three/drei': '<10',
+    },
+  }}
+  files={{
+    '/App.tsx': `import { Canvas } from "@react-three/fiber";
+import { Fullscreen } from "@react-three/uikit";
+import { colors } from "@react-three/uikit-default";
+import { useEffect, useState } from 'react'
+import { Progress } from '@react-three/uikit-default'
+
+function ProgressDemo() {
+  const [progress, setProgress] = useState(13)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setProgress(66), 1000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  return <Progress value={progress} width={200} />
+}
+
+export default function App() {
+  return (
+    <Canvas style={{ position: "absolute", inset: "0", touchAction: "none" }} gl={{ localClippingEnabled: true }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight intensity={1} position={[-5, 5, 10]} />
+      <Fullscreen
+        overflow="scroll"
+        flexDirection="column"
+        alignItems="center"
+        padding={32}
+        backgroundColor={colors.background}
+      >
+        <ProgressDemo />
+      </Fullscreen>
+    </Canvas>
+  )
+}`}}
+/>
+
+```bash
+import { Progress } from "@react-three/uikit-default";
+```
