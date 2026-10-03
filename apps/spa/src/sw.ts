@@ -1,14 +1,23 @@
 /// <reference lib="webworker" />
 import {
   cleanupOutdatedCaches,
-  createHandlerBoundToURL,
+  matchPrecache,
   precacheAndRoute,
 } from "workbox-precaching";
 import { NavigationRoute, registerRoute } from "workbox-routing";
+import { NetworkFirst } from "workbox-strategies";
 
 declare let self: ServiceWorkerGlobalScope;
 
-const OFFLINE_CACHE = "spa-offline-v1";
+/** Server-rendered pages the user has visited, for offline revisits. */
+const PAGES_CACHE = "spa-pages-v1";
+/** Static page (in `public/`) for an offline visit to an uncached page. */
+const OFFLINE_FALLBACK = "/offline.html";
+
+/** Our own runtime caches from older workers - never Workbox precaches. */
+const isStaleAppCache = (key: string) =>
+  (key.startsWith("spa-offline-") || key.startsWith("spa-pages-")) &&
+  key !== PAGES_CACHE;
 
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
@@ -16,11 +25,13 @@ self.addEventListener("message", (event) => {
   }
 });
 
+// Keep the home page for an offline start, even when the first visit was a
+// deep link. Other pages are kept as the user visits them (see below).
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
-      const cache = await caches.open(OFFLINE_CACHE);
-      await cache.addAll(["/"]);
+      const cache = await caches.open(PAGES_CACHE);
+      await cache.add("/");
     })()
   );
 });
@@ -28,11 +39,9 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      // Only prune our offline cache versions — never Workbox precaches.
-      const keys = await caches.keys();
       const deletions: Promise<boolean>[] = [];
-      for (const key of keys) {
-        if (key.startsWith("spa-offline-") && key !== OFFLINE_CACHE) {
+      for (const key of await caches.keys()) {
+        if (isStaleAppCache(key)) {
           deletions.push(caches.delete(key));
         }
       }
@@ -45,14 +54,21 @@ self.addEventListener("activate", (event) => {
 precacheAndRoute(self.__WB_MANIFEST);
 // clean old assets
 cleanupOutdatedCaches();
-let allowlist: RegExp[] | undefined;
-// in dev mode, we disable precaching to avoid caching issues
-if (import.meta.env.DEV) {
-  allowlist = [/^\/$/u];
-}
-// to allow work offline
+
+// Every page is rendered on the server per request (there is no app-shell
+// `index.html`), so prefer the network and fall back to the last copy seen.
+const pages = new NetworkFirst({
+  cacheName: PAGES_CACHE,
+  networkTimeoutSeconds: 3,
+});
 registerRoute(
-  new NavigationRoute(createHandlerBoundToURL("index.html"), { allowlist })
+  new NavigationRoute(async (options) => {
+    try {
+      return await pages.handle(options);
+    } catch {
+      return (await matchPrecache(OFFLINE_FALLBACK)) ?? Response.error();
+    }
+  })
 );
 
 self.addEventListener("push", (event) => {

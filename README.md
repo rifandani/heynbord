@@ -4,12 +4,6 @@
 
 [![Mintlify Docs](https://img.shields.io/badge/mintlify-docs-green?logo=mintlify)](https://rifandani-heynbord.mintlify.app)
 
-## 🏁 Getting Started
-
-### 3. GitHub and CI
-
-- [ ] Create the `dev` and `prod` environments and the `SPA_ENV_FILE` secret. See [Environment Variables](#-environment-variables).
-
 ## 📝 Environment Variables
 
 For first timer, you need to create the 2 environments in your github repo. First is `dev` environment, and second is `prod` environment (that's why in `.github/workflows/ci.yml` we stated `environment: dev`). In both environments, name it `SPA_ENV_FILE` (that's why in `.github/workflows/ci.yml` we stated `secrets.SPA_ENV_FILE`).

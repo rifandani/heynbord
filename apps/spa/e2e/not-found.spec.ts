@@ -1,8 +1,12 @@
 import { expect, test } from "./_base";
 
+// The server answers an unknown route with a real 404 document.
+test.use({ expectedHttpErrors: [/\/hahahahaha$/u] });
+
 test.beforeEach(async ({ page }) => {
   // not exists route
-  await page.goto("/hahahahaha");
+  const response = await page.goto("/hahahahaha");
+  expect(response?.status()).toBe(404);
 });
 test("should have heading, text description, and back to home link", async ({
   page,

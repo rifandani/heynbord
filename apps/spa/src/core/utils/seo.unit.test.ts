@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { buildSeoMetadata, ldParams, resolveOgImage } from "./seo";
+import {
+  buildSeoHead,
+  buildSeoMeta,
+  buildStructuredData,
+  ldParams,
+  resolveOgImage,
+} from "./seo";
 
 vi.mock("@/core/constants/env", () => ({
   ENV: {
@@ -9,8 +15,12 @@ vi.mock("@/core/constants/env", () => ({
 }));
 
 vi.mock("@/core/constants/global", () => ({
-  SERVICE_NAME: "Test App",
+  APP_NAME: "Test App",
 }));
+
+/** `content` of the tag with this `name` or `property`. */
+const contentOf = (meta: ReturnType<typeof buildSeoMeta>, key: string) =>
+  meta.find((tag) => tag?.name === key || tag?.property === key)?.content;
 
 describe("resolveOgImage", () => {
   it("defaults to the packaged og image", () => {
@@ -39,63 +49,96 @@ describe("ldParams", () => {
   });
 });
 
-describe("buildSeoMetadata", () => {
-  it("brands the title and mirrors it across og tags", () => {
-    const { metadata, title, description } = buildSeoMetadata({
-      title: "Home",
+describe("buildSeoMeta", () => {
+  it("brands the title and mirrors it across og and twitter tags", () => {
+    const meta = buildSeoMeta({
       description: "Welcome",
+      path: "/cards",
+      title: "Home",
     });
 
-    expect(title).toBe("Home | Test App");
-    expect(description).toBe("Welcome");
-    // `<title>` keeps the caller's raw value because the merge lets `params`
-    // win, while every derived title tag carries the branded suffix.
-    expect(metadata).toMatchObject({
-      title: "Home",
-      description: "Welcome",
-      appleMobileWebAppTitle: "Home | Test App",
-      ogTitle: "Home | Test App",
-      ogDescription: "Welcome",
-      ogUrl: "https://spa.test",
-      ogImage: "https://spa.test/og.png",
-      ogImageHeight: 441,
-      ogImageWidth: 843,
-    });
+    expect(meta).toContainEqual({ title: "Home | Test App" });
+    expect(contentOf(meta, "description")).toBe("Welcome");
+    expect(contentOf(meta, "apple-mobile-web-app-title")).toBe(
+      "Home | Test App"
+    );
+    expect(contentOf(meta, "og:title")).toBe("Home | Test App");
+    expect(contentOf(meta, "og:description")).toBe("Welcome");
+    expect(contentOf(meta, "og:url")).toBe("https://spa.test/cards");
+    expect(contentOf(meta, "og:image")).toBe("https://spa.test/og.png");
+    expect(contentOf(meta, "twitter:title")).toBe("Home | Test App");
+    expect(contentOf(meta, "twitter:image")).toBe("https://spa.test/og.png");
   });
 
-  it("falls back to the layout title and template description", () => {
-    const { metadata, title } = buildSeoMetadata({});
+  it("falls back to the app name, template description, and origin", () => {
+    const meta = buildSeoMeta();
 
-    expect(title).toBe("Layout | Test App");
-    expect(metadata.description).toBe(
+    expect(meta).toContainEqual({ title: "Test App" });
+    expect(contentOf(meta, "description")).toBe(
       "a browser-based MMO collectible/trading-card strategy game"
     );
+    expect(contentOf(meta, "og:url")).toBe("https://spa.test/");
   });
 
-  it("handles a missing params object", () => {
-    // SAFETY: the cast exists to exercise the runtime guard for callers that
-    // reach this from untyped JS - the signature itself requires the params.
-    expect(buildSeoMetadata(undefined as never).title).toBe(
-      "Layout | Test App"
+  it("absolutizes a caller-supplied image path", () => {
+    const meta = buildSeoMeta({ image: "/post.png", title: "Post" });
+
+    expect(contentOf(meta, "og:image")).toBe("https://spa.test/post.png");
+    expect(contentOf(meta, "twitter:image")).toBe("https://spa.test/post.png");
+  });
+
+  it("emits each name/property once, so a child route can override it", () => {
+    const keys = buildSeoMeta({ title: "Home" })
+      .map((tag) => tag?.name ?? tag?.property)
+      .filter(Boolean);
+
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+describe("buildStructuredData", () => {
+  it("describes the site and the page in one JSON-LD graph", () => {
+    expect(
+      buildStructuredData({
+        description: "Welcome",
+        path: "/",
+        title: "Home",
+      })
+    ).toEqual({
+      "@context": "https://schema.org",
+      "@graph": [
+        { ...ldParams, "@type": "WebSite", description: "Welcome" },
+        {
+          ...ldParams,
+          "@type": "WebPage",
+          description: "Welcome",
+          name: "Home | Test App",
+          url: "https://spa.test/",
+        },
+      ],
+    });
+  });
+});
+
+describe("buildSeoHead", () => {
+  it("pairs the page meta with one JSON-LD script of the same page", () => {
+    const input = { description: "Welcome", title: "Home" };
+    const head = buildSeoHead(input);
+
+    expect(head.meta).toEqual(buildSeoMeta(input));
+    expect(head.scripts).toHaveLength(1);
+    expect(head.scripts[0]?.type).toBe("application/ld+json");
+    expect(JSON.parse(head.scripts[0]?.children ?? "")).toEqual(
+      buildStructuredData(input)
     );
   });
 
-  it("absolutizes caller-supplied image paths", () => {
-    const { metadata } = buildSeoMetadata({
-      title: "Post",
-      ogImage: "/post.png",
-    });
+  it("escapes `<` so data cannot close the script element", () => {
+    const { scripts } = buildSeoHead({ title: "</script><b>x" });
 
-    expect(metadata.ogImage).toBe("https://spa.test/post.png");
-  });
-
-  it("leaves the structured image form untouched", () => {
-    const ogImage = [{ url: "https://cdn.test/a.png", width: 1, height: 2 }];
-    const { metadata } = buildSeoMetadata({
-      title: "Post",
-      ogImage,
-    });
-
-    expect(metadata.ogImage).toBe(ogImage);
+    expect(scripts[0]?.children).not.toContain("<");
+    expect(JSON.parse(scripts[0]?.children ?? "")["@graph"][1].name).toBe(
+      "</script><b>x | Test App"
+    );
   });
 });

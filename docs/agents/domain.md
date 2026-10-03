@@ -30,6 +30,9 @@ Multi-context monorepo:
 | Context | `CONTEXT.md` | Context-scoped ADRs |
 | ------- | ------------ | ------------------- |
 | `spa`   | `apps/spa/CONTEXT.md` | `apps/spa/docs/adr/` |
+| `rules` | `packages/rules/CONTEXT.md` | `packages/rules/docs/adr/` |
+
+Game design documents (vision, pillars, GDD, PRD, economy, roadmap) are in `docs/game/`.
 
 When work spans multiple contexts, read each relevant `CONTEXT.md` and check both `docs/adr/` and the context-scoped ADR directories.
 

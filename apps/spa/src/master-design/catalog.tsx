@@ -1,5 +1,5 @@
 import { useMount } from "@reactuses/core";
-import { useState } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { ThemeToggle } from "@/core/components/theme-toggle";
 import { SearchField, SearchInput } from "@/core/components/ui/search-field";
@@ -9,7 +9,22 @@ import { categories, entryIds } from "./registry";
 import { useScrollSpy } from "./use-scroll-spy";
 
 export const MasterDesignCatalog = () => {
-  const [filter, setFilter] = useState("");
+  // The filter lives in the validated `?q=` search param, so it survives
+  // reloads and can be shared as a link.
+  const filter = useSearch({
+    from: "/master-design",
+    select: (search) => search.q ?? "",
+  });
+  const navigate = useNavigate({ from: "/master-design" });
+  const setFilter = (value: string) => {
+    void navigate({
+      hash: true,
+      replace: true,
+      // Typing must not jump the page back to the top.
+      resetScroll: false,
+      search: { q: value || undefined },
+    });
+  };
   const { activeId, scrollTo } = useScrollSpy(entryIds);
 
   // Honor deep links like /master-design#combo-box once sections have painted.

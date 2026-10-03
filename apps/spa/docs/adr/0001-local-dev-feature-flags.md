@@ -1,3 +1,9 @@
+---
+status: deprecated
+---
+
 # Local DEV Feature Flags via TanStack Devtools
 
-Spa gates developer-only surfaces (starting with the Component Catalog) behind local Feature Flags — not remote config. Flags default ON in development and OFF otherwise; overrides persist in the browser and are toggled from a custom TanStack Devtools panel. Production builds never mount Devtools and never honor an ON override, so gated routes stay unreachable outside DEV.
+Spa gated developer-only surfaces behind local Feature Flags. Flags defaulted ON in development and OFF otherwise. Overrides lived in the browser and were toggled from a TanStack Devtools panel. Production builds never mounted Devtools and never honored an ON override.
+
+This decision is reversed. Spa has no client-side Feature Flags. The Component Catalog is available in development. A production build answers 404 for `/master-design`.

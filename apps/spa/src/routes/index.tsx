@@ -2,15 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { LanguageToggle } from "@/core/components/language-toggle";
 import { ThemeToggle } from "@/core/components/theme-toggle";
-import { useSeo } from "@/core/hooks/use-seo";
 import { useTranslation } from "@/core/providers/i18n/context";
+import { buildSeoHead } from "@/core/utils/seo";
 
 const HomeRoute = () => {
-  useSeo({
-    description:
-      "Welcome to our React.js application. Explore our modern, feature-rich web platform with theme customization and multi-language support.",
-    title: "Home",
-  });
   const { t } = useTranslation();
   return (
     <div className="container mx-auto flex flex-col items-center gap-y-2 py-24">
@@ -25,5 +20,14 @@ const HomeRoute = () => {
   );
 };
 export const Route = createFileRoute("/")({
+  // Public, crawlable page: full SSR, so the HTML carries content and meta.
+  ssr: true,
+  head: () =>
+    buildSeoHead({
+      description:
+        "Welcome to our React.js application. Explore our modern, feature-rich web platform with theme customization and multi-language support.",
+      path: "/",
+      title: "Home",
+    }),
   component: HomeRoute,
 });

@@ -6,8 +6,12 @@ interface NetworkError {
   method: string;
   status: number;
 }
-export const test = base.extend({
-  page: async ({ page }, use, testInfo) => {
+export const test = base.extend<{
+  /** Responses expected to fail, e.g. the document of a 404 page. */
+  expectedHttpErrors: RegExp[];
+}>({
+  expectedHttpErrors: [[], { option: true }],
+  page: async ({ page, expectedHttpErrors }, use, testInfo) => {
     const errors: Error[] = [];
     const networkErrors: NetworkError[] = [];
     // listen to exceptions during the test sessions
@@ -15,7 +19,10 @@ export const test = base.extend({
       errors.push(error);
     });
     page.on("response", (response) => {
-      if (response.status() >= 400) {
+      const isExpected = expectedHttpErrors.some((pattern) =>
+        pattern.test(response.url())
+      );
+      if (response.status() >= 400 && !isExpected) {
         networkErrors.push({
           method: response.request().method(),
           status: response.status(),

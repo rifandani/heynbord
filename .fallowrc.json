@@ -40,11 +40,8 @@
     }
   ],
   "ignoreFindings": [
-    "apps/spa/src/core/feature-flags/panel.tsx",
-    "apps/spa/src/core/providers/router/client.tsx",
     "apps/spa/src/routeTree.gen.ts",
-    "apps/spa/src/routes/__root.tsx",
-    "apps/spa/src/core/providers/devtools.tsx"
+    "apps/spa/src/routes/__root.tsx"
   ],
   "duplicates": {
     "minOccurrences": 3,

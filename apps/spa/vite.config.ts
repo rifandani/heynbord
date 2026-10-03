@@ -4,9 +4,9 @@ import process from "node:process";
 import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import { devtools as tanstackDevtools } from "@tanstack/devtools-vite";
-import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import { Unhead } from "@unhead/react/vite";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import { nitro } from "nitro/vite";
 import { visualizer } from "rollup-plugin-visualizer";
 import type { Plugin, PluginOption } from "vite";
 import { defineConfig } from "vite";
@@ -14,7 +14,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 /**
  * Dev-only: alias /sw.js → VitePWA's /dev-sw.js?dev-sw for static checkers.
- * Production build emits dist/sw.js and registers it via virtual:pwa-register.
+ * Production build emits sw.js into the client output and registers it via virtual:pwa-register.
  */
 const serveDevServiceWorker = (): Plugin => ({
   configureServer(server) {
@@ -35,11 +35,28 @@ export default defineConfig({
   plugins: [
     tanstackDevtools(),
     tailwindcss(),
-    tanstackRouter({
-      autoCodeSplitting: true,
+    tanstackStart(),
+    nitro({
+      routeRules: {
+        "/assets/**": {
+          headers: { "cache-control": "public, max-age=31536000, immutable" },
+        },
+        "/manifest.webmanifest": {
+          headers: {
+            "cache-control": "public, max-age=0, must-revalidate",
+            "content-type": "application/manifest+json",
+          },
+        },
+        "/sw.js": {
+          headers: {
+            "cache-control": "public, max-age=0, must-revalidate",
+            "service-worker-allowed": "/",
+          },
+        },
+      },
     }),
+    // Must come after `tanstackStart()`.
     react(),
-    Unhead(),
     babel({
       presets: [reactCompilerPreset()],
     }),
@@ -53,6 +70,14 @@ export default defineConfig({
       filename: "sw.ts",
       registerType: "prompt",
       injectRegister: false,
+      integration: {
+        // Start builds the client into the Nitro preset's public dir
+        // (`.output/public`, `.vercel/output/static`, ...), not `build.outDir`.
+        // Emit the service worker there and precache what is really served.
+        configureOptions: (viteConfig, options) => {
+          options.outDir = viteConfig.environments.client?.build.outDir;
+        },
+      },
       pwaAssets: {
         config: true,
         disabled: false,
@@ -62,7 +87,7 @@ export default defineConfig({
       manifest: {
         background_color: "#ffffff",
         description:
-          "a browser-based MMO collectible/trading-card strategy game",
+          "A browser-based MMO collectible/trading-card strategy game",
         display: "standalone",
         display_override: ["window-controls-overlay"],
         file_handlers: [
@@ -168,7 +193,6 @@ export default defineConfig({
       },
       devOptions: {
         enabled: process.env.NODE_ENV === "development",
-        navigateFallback: "index.html",
         suppressWarnings: true,
         type: "module",
       },
@@ -178,6 +202,21 @@ export default defineConfig({
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),
     },
+  },
+  optimizeDeps: {
+    // Reached only via virtual modules (PWA register, dev service worker), so
+    // the dep scanner misses them and Vite reloads the page on first visit.
+    include: [
+      "workbox-window",
+      "workbox-precaching",
+      "workbox-routing",
+      "workbox-strategies",
+    ],
+  },
+  ssr: {
+    // env-core's `vite()` preset reads `import.meta.env`, which only exists in
+    // code Vite transforms. The dev SSR runner leaves deps external otherwise.
+    noExternal: ["@t3-oss/env-core"],
   },
   server: {
     port: 3001,

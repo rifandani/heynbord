@@ -1,3 +1,4 @@
+import { useServerFn } from "@tanstack/react-start";
 import { HiGlobeAlt } from "react-icons/hi2";
 import type { Selection } from "react-stately";
 import { match } from "ts-pattern";
@@ -12,9 +13,20 @@ import {
 } from "@/core/components/ui/menu";
 import type { LocaleDictLanguage } from "@/core/libs/i18n/init";
 import { useTranslation } from "@/core/providers/i18n/context";
+import { persistLocale } from "@/core/providers/i18n/locale.functions";
+import { logger } from "@/core/utils/logger";
 
 export const LanguageToggle = () => {
   const { t, setLocale, locale } = useTranslation();
+  const persistLocaleFn = useServerFn(persistLocale);
+  // Only makes the next server render agree; the UI has already switched.
+  const savePreferredLocale = async (next: LocaleDictLanguage) => {
+    try {
+      await persistLocaleFn({ data: { locale: next } });
+    } catch (error) {
+      logger.error("[LanguageToggle.persistLocale]", { error });
+    }
+  };
   return (
     <Menu>
       <Button intent="plain">
@@ -35,6 +47,7 @@ export const LanguageToggle = () => {
             currentKey: LocaleDictLanguage;
           };
           setLocale(selection.currentKey);
+          void savePreferredLocale(selection.currentKey);
         }}
       >
         <MenuSection>

@@ -8,7 +8,6 @@ const TranslationContext = createContext<
   | (ReturnType<typeof initI18n> & {
       setLocale: (locale: string) => void;
       locale: string;
-      userLocale: string;
     })
   | null
 >(null);
@@ -18,17 +17,13 @@ export const TranslationProvider = ({
   fallbackLocale,
   children,
 }: {
-  defaultLocale?: string;
+  /** Resolved per request on the server, so SSR and hydration agree. */
+  defaultLocale: string;
   translations: Record<Lowercase<string>, LanguageMessages>;
   fallbackLocale: string | string[];
   children: ReactNode;
 }) => {
-  const [locale, setLocale] = useState(() => {
-    if (!defaultLocale) {
-      return navigator.language.toLowerCase();
-    }
-    return defaultLocale;
-  });
+  const [locale, setLocale] = useState(defaultLocale);
   const initValue = initI18n({
     fallbackLocale,
     locale,
@@ -38,14 +33,12 @@ export const TranslationProvider = ({
     ...initValue,
     locale,
     setLocale,
-    userLocale: navigator.language.toLowerCase(),
   } as const;
   return <TranslationContext value={value}>{children}</TranslationContext>;
 };
 export const useTranslation = (): ReturnType<typeof initI18n> & {
   setLocale: (locale: string) => void;
   locale: string;
-  userLocale: string;
 } => {
   const context = use(TranslationContext);
   if (!context) {

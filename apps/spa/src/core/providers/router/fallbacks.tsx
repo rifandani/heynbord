@@ -1,22 +1,11 @@
-/* oxlint-disable import/no-cycle */
 import type { ErrorComponentProps } from "@tanstack/react-router";
-import { createRouter } from "@tanstack/react-router";
 
 import { Button } from "@/core/components/ui/button";
 import { Link } from "@/core/components/ui/link";
 import { useTranslation } from "@/core/providers/i18n/context";
-import { queryClient } from "@/core/providers/query/client";
 import { logger } from "@/core/utils/logger";
 
-import { routeTree } from "../../../routeTree.gen";
-
-// Register the router instance for type safety
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
-const PendingRoute = () => (
+export const PendingRoute = () => (
   <div className="flex items-center justify-center">
     <svg
       aria-hidden="true"
@@ -24,11 +13,40 @@ const PendingRoute = () => (
       height="5em"
       className="text-primary"
     >
-      <use href="#svg-spinners--3-dots-fade" />
+      {/* svg-spinners: 3-dots-fade */}
+      <circle cx="4" cy="12" r="3" fill="currentColor">
+        <animate
+          id="pending-dot-1"
+          fill="freeze"
+          attributeName="opacity"
+          begin="0;pending-dot-3.end-0.25s"
+          dur="0.75s"
+          values="1;0.2"
+        />
+      </circle>
+      <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.4">
+        <animate
+          fill="freeze"
+          attributeName="opacity"
+          begin="pending-dot-1.begin+0.15s"
+          dur="0.75s"
+          values="1;0.2"
+        />
+      </circle>
+      <circle cx="20" cy="12" r="3" fill="currentColor" opacity="0.3">
+        <animate
+          id="pending-dot-3"
+          fill="freeze"
+          attributeName="opacity"
+          begin="pending-dot-1.begin+0.3s"
+          dur="0.75s"
+          values="1;0.2"
+        />
+      </circle>
     </svg>
   </div>
 );
-const ErrorRoute = ({ reset, error, info }: ErrorComponentProps) => {
+export const ErrorRoute = ({ reset, error, info }: ErrorComponentProps) => {
   logger.error("[ErrorRoute]: Error", { error, info });
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
@@ -57,7 +75,7 @@ const ErrorRoute = ({ reset, error, info }: ErrorComponentProps) => {
     </div>
   );
 };
-const NotFoundRoute = () => {
+export const NotFoundRoute = () => {
   const { t } = useTranslation();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
@@ -81,20 +99,3 @@ const NotFoundRoute = () => {
     </div>
   );
 };
-// Create a new router instance
-export const router = createRouter({
-  routeTree,
-  defaultOnCatch: (error, errorInfo) => {
-    logger.error("[router.onError]", { error, errorInfo });
-  },
-  defaultNotFoundComponent: NotFoundRoute,
-  defaultPendingComponent: PendingRoute,
-  defaultErrorComponent: ErrorRoute,
-  context: {
-    queryClient,
-  },
-  defaultPreload: "intent",
-  // Since we're using React Query, we don't want loader calls to ever be stale
-  // This will ensure that the loader is always called when the route is preloaded or visited
-  defaultPreloadStaleTime: 0,
-});

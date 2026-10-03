@@ -34,6 +34,9 @@ dev-dist
 build
 dist
 dist-ssr
+# TanStack Start / Nitro build output
+.output
+.nitro
 *.local
 *.pem
 .npm-cache
