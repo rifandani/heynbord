@@ -1,0 +1,21 @@
+---
+title: MeshDistortMaterial
+sourcecode: src/core/MeshDistortMaterial.tsx
+---
+
+<Badge href="https://drei.vercel.app/?path=/story/shaders-meshdistortmaterial--mesh-distort-material-st" color="storybook" logo="storybook">storybook</Badge>
+
+<Grid cols={4}>
+  <li>
+    <Codesandbox id="l03yb" img="../assets/csb-thumbs/l03yb.webp" />
+  </li>
+</Grid>
+
+This material makes your geometry distort following simplex noise.
+
+```jsx
+<mesh>
+  <boxGeometry />
+  <MeshDistortMaterial distort={1} speed={10} />
+</mesh>
+```

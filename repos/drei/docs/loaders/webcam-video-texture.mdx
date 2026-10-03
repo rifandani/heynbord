@@ -1,0 +1,27 @@
+---
+title: WebcamVideoTexture
+sourcecode: src/web/WebcamVideoTexture.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/misc-webcamvideotexture" color="storybook" logo="storybook">storybook</Badge>
+<Badge href="https://r3f.docs.pmnd.rs/api/hooks#useloader" color="tip">suspense</Badge>
+
+<Intro>Create a video texture from [`getUserMedia`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia)</Intro>
+
+```tsx
+export type WebcamVideoTextureProps = Omit<VideoTextureProps, 'src'> & {
+  constraints?: MediaStreamConstraints
+}
+```
+
+```jsx
+<WebcamVideoTexture>
+  {(texture) => <meshBasicMaterial map={texture} />}
+```
+
+or exposed via `ref`:
+
+```jsx
+const textureRef = useRef()
+<WebcamVideoTexture ref={textureRef} />
+```

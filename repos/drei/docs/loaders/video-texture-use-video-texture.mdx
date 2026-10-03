@@ -1,0 +1,152 @@
+---
+title: VideoTexture / useVideoTexture
+sourcecode: src/core/VideoTexture.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/misc-videotexture" color="storybook" logo="storybook">storybook</Badge>
+<Badge href="https://r3f.docs.pmnd.rs/api/hooks#useloader" color="tip">suspense</Badge>
+
+<Grid cols={4}>
+  <li>
+    <Codesandbox id="39hg8" img="../assets/csb-thumbs/39hg8.webp" />
+  </li>
+  <li>
+    <Codesandbox id="2cemck" img="../assets/csb-thumbs/2cemck.webp" />
+  </li>
+</Grid>
+
+<Intro>A convenience hook that returns a `THREE.VideoTexture` and integrates loading into suspense.</Intro>
+
+By default it falls back until the `loadedmetadata` event. Then it starts playing the video, which, if the video is muted, is allowed in the browser without user interaction.
+
+```tsx
+export function useVideoTexture(
+  srcOrSrcObject: HTMLVideoElement['src' | 'srcObject'],
+  {
+    unsuspend = 'loadedmetadata',
+    start = true,
+    hls = {},
+    crossOrigin = 'anonymous',
+    muted = true,
+    loop = true,
+    playsInline = true,
+    onVideoFrame,
+    ...videoProps
+  }: {
+    unsuspend?: keyof HTMLVideoElementEventMap
+    start?: boolean
+    hls?: Parameters<typeof getHls>[0]
+    onVideoFrame: VideoFrameRequestCallback
+  } & Partial<Omit<HTMLVideoElement, 'children' | 'src' | 'srcObject'>> = {}
+)
+```
+
+```jsx
+const texture = useVideoTexture("/video.mp4")
+return (
+  <mesh>
+    <meshBasicMaterial map={texture} toneMapped={false} />
+```
+
+## `MediaStream`
+
+It also accepts a [`MediaStream`](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) from eg. [`.getDisplayMedia()`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia) or [`.getUserMedia()`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia):
+
+```jsx
+const [stream, setStream] = useState<MediaStream | null>(null)
+
+return (
+  <mesh onClick={async () => setStream(await navigator.mediaDevices.getDisplayMedia({ video: true }))}>
+    <React.Suspense fallback={<meshBasicMaterial wireframe />}>
+      <VideoMaterial src={stream} />
+    </React.Suspense>
+```
+
+```jsx
+function VideoMaterial({ src }) {
+  const texture = useVideoTexture(src)
+
+  return <meshBasicMaterial map={texture} toneMapped={false} />
+}
+```
+
+NB: It's important to wrap `VideoMaterial` into `React.Suspense` since, `useVideoTexture(src)` here will be suspended until the user shares its screen.
+
+## HLS
+
+`useVideoTexture` supports `.m3u8` HLS manifest via [hls.js](https://github.com/video-dev/hls.js):
+
+```jsx
+const texture = useVideoTexture('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')
+```
+
+You can pass [`hls` config](https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning):
+
+```jsx
+const texture = useVideoTexture('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', {
+  hls: { abrEwmaFastLive: 1.0, abrEwmaSlowLive: 3.0, enableWorker: true },
+})
+```
+
+## `requestVideoFrameCallback` (rVFC)
+
+`useVideoTexture` supports [`requestVideoFrameCallback`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback):
+
+```jsx
+useVideoTexture(src, {
+  onVideoFrame: (now, metadata) => {}
+})
+```
+
+## `<VideoTexture>` Component
+
+```tsx
+export type VideoTextureProps = {
+  children?: (texture: THREE.VideoTexture) => React.ReactNode
+  src: UseVideoTextureParams[0]
+} & UseVideoTextureParams[1]
+```
+
+You can access the texture via children's render prop:
+
+```jsx
+<VideoTexture src="/video.mp4">
+  {(texture) => <meshBasicMaterial map={texture} />}
+```
+
+or exposed via `ref`:
+
+```jsx
+const textureRef = useRef()
+<VideoTexture ref={textureRef} src="/video.mp4" />
+```
+
+## Recipes
+
+<details>
+
+<summary>Black video texture on iOS/Safari</summary>
+
+As of 2025-05-24 (iOS 18.5), if you `start: false` the texture will be full black. To workaround this you could:
+
+```tsx
+const texture = useVideoTexture(src, { start: false });
+
+async function warmup(texture: THREE.VideoTexture) {
+  const video = texture.image as HTMLVideoElement;
+
+  await video.play();
+  setTimeout(() => {
+    video.pause();
+    video.currentTime = 0;
+  }, 0);
+}
+
+useEffect(() => {
+  warmup(texture).catch((err) => console.log("warmup failed", err));
+}, [texture]);
+```
+
+This will force WebKit to send pixels to the GPU texture.
+
+</details>
