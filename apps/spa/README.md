@@ -6,6 +6,7 @@
 - add better auth + skills
 - add server side feature flag
 - add production ready error monitoring, logs with evlog + skills
+- add alchemy + cloudflare binding
 - Asynchronous online: an account, a server, PvP against other players' _saved defense decks_ (the AI controls them), leaderboards and guilds
 - Real-time PvP and a persistent shared world
 - Card packs gacha with premium currency
@@ -23,11 +24,6 @@
 ## 🏁 Getting Started
 
 When you start a new project from this template, change the placeholder values below. Paths are relative to `apps/spa`, unless they start with "repo root". Do the repo-level steps in the [root README](../../README.md#-getting-started) too.
-
-### Assets
-
-- [ ] `public/favicon.svg`: replace it, then generate the PWA icons again (`pwa-assets.config.ts` uses it as the source).
-- [ ] `public/og.png`, `public/screenshot-wide.png`, `public/screenshot-narrow.png`.
 
 ### Product and design
 

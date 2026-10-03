@@ -85,7 +85,7 @@ export default defineConfig({
         overrideManifestIcons: true,
       },
       manifest: {
-        background_color: "#ffffff",
+        background_color: "#020203",
         description:
           "A browser-based MMO collectible/trading-card strategy game",
         display: "standalone",
@@ -190,6 +190,8 @@ export default defineConfig({
         globPatterns: [
           "**/*.{html,css,js,json,txt,ico,svg,jpg,png,webp,woff,woff2,ttf,eot,otf,wasm}",
         ],
+        // Source image for `pwa-assets.config.ts`; the page never loads it.
+        globIgnores: ["logo.png"],
       },
       devOptions: {
         enabled: process.env.NODE_ENV === "development",
