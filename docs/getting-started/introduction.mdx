@@ -1,0 +1,52 @@
+---
+title: Introduction
+description: Useful helpers for @react-three/fiber
+nav: -1
+---
+
+<Intro>
+  A growing collection of useful helpers and fully functional, ready-made abstractions for
+  [@react-three/fiber](https://github.com/pmndrs/react-three-fiber).
+</Intro>
+
+<div>
+  <iframe
+    src="https://pmndrs.github.io/examples/ground-reflections-and-video-textures"
+    className="w-full aspect-video rounded-lg"
+  />
+  <p className="mt-1 text-xs text-on-surface-variant">This is an embed iframe of the [Ground Reflections And Video Textures](https://pmndrs.github.io/examples/examples/ground-reflections-and-video-textures) example.</p>
+</div>
+
+<Badge href="https://drei.pmnd.rs/" color="storybook" logo="storybook">Storybook</Badge>
+<Badge href="https://www.chromatic.com/library?appId=64a019f36ecd3751d0ada612&amp;branch=master" logo="chromatic">chromatic</Badge>
+<Badge href="https://www.npmjs.com/package/@react-three/drei" logo="npm">npm</Badge>
+<Badge href="https://www.npmjs.com/package/@react-three/drei">downloads</Badge>
+<Badge href="https://discord.com/channels/740090768164651008/741751532592038022" logo="discord">discord</Badge>
+<Badge href="https://github.com/codespaces/new?template_repository=pmndrs%2Fdrei" logo="github" label="GitHub">Open in Codespaces</Badge>
+
+<Entries />
+
+## INSTALL
+
+If you make a component that is generic enough to be useful to others, think about [CONTRIBUTING](CONTRIBUTING.md)!
+
+```bash
+npm install @react-three/drei
+```
+
+> [!IMPORTANT]
+> this package is using the stand-alone [`three-stdlib`](https://github.com/pmndrs/three-stdlib) instead of [`three/examples/jsm`](https://github.com/mrdoob/three.js/tree/master/examples/jsm).
+
+## Basic usage
+
+```jsx
+import { PerspectiveCamera, PositionalAudio, ... } from '@react-three/drei'
+```
+
+## React-native
+
+```jsx
+import { PerspectiveCamera, PositionalAudio, ... } from '@react-three/drei/native'
+```
+
+The `native` route of the library **does not** export `Html` or `Loader`. The default export of the library is `web` which **does** export `Html` and `Loader`.

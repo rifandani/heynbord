@@ -1,0 +1,13 @@
+---
+title: CubeTexture / useCubeTexture
+sourcecode: src/core/CubeTexture.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/abstractions-cubetexture" color="storybook" logo="storybook">storybook</Badge>
+<Badge href="https://r3f.docs.pmnd.rs/api/hooks#useloader" color="tip">suspense</Badge>
+
+A convenience hook that uses `useLoader` and `CubeTextureLoader`
+
+```jsx
+const envMap = useCubeTexture(['px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png'], { path: 'cube/' })
+```

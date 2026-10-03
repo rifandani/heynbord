@@ -1,0 +1,19 @@
+---
+title: Billboard
+sourcecode: src/core/Billboard.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/abstractions-billboard--billboard-st" color="storybook" logo="storybook">storybook</Badge>
+
+Adds a `<group />` that always faces the camera.
+
+```jsx
+<Billboard
+  follow={true}
+  lockX={false}
+  lockY={false}
+  lockZ={false} // Lock the rotation on the z axis (default=false)
+>
+  <Text fontSize={1}>I'm a billboard</Text>
+</Billboard>
+```

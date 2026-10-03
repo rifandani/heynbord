@@ -1,0 +1,24 @@
+---
+title: Texture / useTexture
+sourcecode: src/core/Texture.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/loaders-texture" color="storybook" logo="storybook">storybook</Badge>
+<Badge href="https://r3f.docs.pmnd.rs/api/hooks#useloader" color="tip">suspense</Badge>
+
+A convenience hook that uses `useLoader` and `TextureLoader`
+
+```jsx
+const texture = useTexture(url)
+const [texture1, texture2] = useTexture([texture1, texture2])
+```
+
+You can also use key: url objects:
+
+```jsx
+const props = useTexture({
+  metalnessMap: url1,
+  map: url2,
+})
+return <meshStandardMaterial {...props} />
+```

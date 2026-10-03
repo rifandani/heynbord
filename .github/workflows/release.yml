@@ -1,0 +1,78 @@
+name: release
+on:
+  push:
+    branches:
+      - 'master'
+      - 'beta'
+      - 'alpha'
+      - 'canary-*'
+      - 'rc'
+  pull_request: {}
+
+# Cancel any previous run (see: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/pmndrs/playwright:drei
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    # 0.159.0 is mandatory; others are informational
+    strategy:
+      fail-fast: false
+      matrix:
+        three-version: ['0.159.0', '0.180.0', 'latest']
+    continue-on-error: ${{ matrix.three-version != '0.159.0' }}
+    name: test (w/ three@${{ matrix['three-version'] }})
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn build
+      - run: yarn eslint:ci
+      - run: yarn typecheck
+      - run: yarn prettier
+      - run: (cd test/e2e; ./e2e.sh ${{ matrix.three-version }})
+      - name: Upload Playwright screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-screenshots-${{ matrix.three-version }}
+          path: |
+            test-results/**
+          if-no-files-found: ignore
+          retention-days: 7
+
+  build-and-release:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn build
+      - run: yarn build-storybook
+      # semantic-release skips not configured branches(see: release.config.js) or pull-requests
+      - run: yarn release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

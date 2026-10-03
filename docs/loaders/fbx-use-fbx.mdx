@@ -1,0 +1,18 @@
+---
+title: Fbx / useFBX
+sourcecode: src/core/Fbx.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/loaders-fbx" color="storybook" logo="storybook">storybook</Badge>
+<Badge href="https://r3f.docs.pmnd.rs/api/hooks#useloader" color="tip">suspense</Badge>
+
+A convenience hook that uses `useLoader` and `FBXLoader`:
+
+```jsx
+useFBX(url)
+
+function SuzanneFBX() {
+  let fbx = useFBX('suzanne/suzanne.fbx')
+  return <primitive object={fbx} />
+}
+```

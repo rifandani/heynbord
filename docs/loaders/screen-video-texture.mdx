@@ -1,0 +1,27 @@
+---
+title: ScreenVideoTexture
+sourcecode: src/web/ScreenVideoTexture.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/misc-screenvideotexture" color="storybook" logo="storybook">storybook</Badge>
+<Badge href="https://r3f.docs.pmnd.rs/api/hooks#useloader" color="tip">suspense</Badge>
+
+<Intro>Create a video texture from [`getDisplayMedia`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia)</Intro>
+
+```tsx
+export type ScreenVideoTextureProps = Omit<VideoTextureProps, 'src'> & {
+  options?: DisplayMediaStreamOptions
+}
+```
+
+```jsx
+<ScreenVideoTexture>
+  {(texture) => <meshBasicMaterial map={texture} />}
+```
+
+or exposed via `ref`:
+
+```jsx
+const textureRef = useRef()
+<ScreenVideoTexture ref={textureRef} />
+```

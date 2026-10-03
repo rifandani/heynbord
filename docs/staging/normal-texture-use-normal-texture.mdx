@@ -1,0 +1,29 @@
+---
+title: NormalTexture / useNormalTexture
+sourcecode: src/core/NormalTexture.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/staging-normaltexture" color="storybook" logo="storybook">storybook</Badge>
+<Badge href="https://r3f.docs.pmnd.rs/api/hooks#useloader" color="tip">suspense</Badge>
+
+Loads normal textures from this repository: https://github.com/emmelleppi/normal-maps
+
+👉 Note: `useNormalTexture` hook is not meant to be used in production environments as it relies on third-party CDN.
+
+```jsx
+const [normalMap, url] = useNormalTexture(
+  1, // index of the normal texture - https://github.com/emmelleppi/normal-maps/blob/master/normals.json
+  // second argument is texture attributes
+  {
+    offset: [0, 0],
+    repeat: [normRepeat, normRepeat],
+    anisotropy: 8
+  }
+)
+
+return (
+  ...
+  <meshStandardMaterial normalMap={normalMap} />
+  ...
+)
+```

@@ -1,0 +1,18 @@
+---
+title: ScreenSizer
+sourcecode: src/core/ScreenSizer.tsx
+---
+
+<Badge href="https://drei.pmnd.rs/?path=/story/abstractions-screensizer--screen-sizer-story" color="storybook" logo="storybook">storybook</Badge>
+
+Adds a `<object3D />` that scales objects to screen space.
+
+```jsx
+<ScreenSizer
+  scale={1} // scale factor
+>
+  <Box
+    args={[100, 100, 100]} // will render roughly as a 100px box
+  />
+</ScreenSizer>
+```
