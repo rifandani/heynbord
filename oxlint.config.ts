@@ -30,6 +30,17 @@ export default defineConfig({
     "react-doctor/only-export-components": "off",
     // Existing `oxlint-disable` on hooks/effects; compiler still runs.
     "react/rule-suppression": "off",
+    // Effect defines errors with `class X extends Schema.TaggedError<X>()(...)`.
+    // The rule reads that factory call as an unthrown error, and its autofix
+    // inserts `new`, which breaks the class. Effect code yields errors instead.
+    "unicorn/throw-new-error": "off",
+    // Effect pairs a schema value with a same-name interface
+    // (`const User = Schema.Struct(...)` + `interface User`). TypeScript merges
+    // the two and reports a real redeclaration itself.
+    "no-redeclare": "off",
+    // Effect code passes anonymous generators to `Effect.gen` and `Effect.fn`;
+    // `Effect.fn("Domain.operation")` names the span and the stack frame.
+    "func-names": ["error", "always", { generators: "never" }],
   },
   overrides: [
     {
