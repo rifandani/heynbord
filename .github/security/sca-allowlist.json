@@ -85,6 +85,13 @@
       "severity": "high",
       "expires": "2026-11-12",
       "reason": "Transitive via postcss; bump with framework releases"
+    },
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "severity": "high",
+      "expires": "2026-11-06",
+      "reason": "Transitive via ultracite/fast-glob/micromatch; no patched release (vulnerable <= 3.0.3)"
     }
   ]
 }
