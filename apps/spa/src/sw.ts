@@ -20,6 +20,10 @@ const isStaleAppCache = (key: string) =>
   key !== PAGES_CACHE;
 
 self.addEventListener("message", (event) => {
+  // Only the pages of this origin may ask the worker to take control.
+  if (event.origin !== self.location.origin) {
+    return;
+  }
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
