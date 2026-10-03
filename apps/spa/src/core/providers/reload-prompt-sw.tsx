@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { useRegisterSW } from "virtual:pwa-register/react";
 
-import { useTranslation } from "@/core/providers/i18n/context";
 import { isOffline, resolveSwPrompt } from "@/core/utils/sw";
+import { useTranslation } from "@/features/i18n/use-translation";
 
 /** How often to poll the server for a new service worker. */
 const UPDATE_CHECK_PERIOD_MS = 60 * 60 * 1000;

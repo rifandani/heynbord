@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import { Schema, SchemaGetter } from "effect";
 import { lazy } from "react";
-import { z } from "zod";
 
 import { buildSeoMeta } from "@/core/utils/seo";
 
@@ -11,13 +11,20 @@ const MasterDesignPage = lazy(async () => {
   return { default: m.MasterDesignPage };
 });
 
-const searchSchema = z.object({
+const searchSchema = Schema.Struct({
   /** Component Catalog filter. Coerced: `?q=123` filters by the text "123". */
-  q: z.coerce.string().optional(),
+  q: Schema.optionalKey(
+    Schema.Unknown.pipe(
+      Schema.decodeTo(Schema.String, {
+        decode: SchemaGetter.String(),
+        encode: SchemaGetter.passthrough(),
+      })
+    )
+  ),
 });
 
 export const Route = createFileRoute("/master-design")({
-  validateSearch: searchSchema,
+  validateSearch: Schema.toStandardSchemaV1(searchSchema),
   beforeLoad: () => {
     if (!import.meta.env.DEV) {
       throw notFound();

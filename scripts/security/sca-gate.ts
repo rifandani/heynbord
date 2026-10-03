@@ -18,6 +18,7 @@ import {
   constants as fsConstants,
   existsSync,
   mkdirSync,
+  mkdtempSync,
   readFileSync,
   writeFileSync,
 } from "node:fs";
@@ -253,11 +254,11 @@ const writeConfig = (activeEntries: AllowEntry[]): string => {
     }
     lines.push("");
   }
-  const configPath = path.resolve(
-    tmpdir(),
-    `osv-scanner-config-${process.pid}.toml`
-  );
-  writeFileSync(configPath, `${lines.join("\n")}`);
+  // mkdtempSync creates a 0700 directory with an unpredictable name.
+  // A predictable file in the shared temp directory is world-readable.
+  const dir = mkdtempSync(path.join(tmpdir(), "osv-scanner-"));
+  const configPath = path.join(dir, "config.toml");
+  writeFileSync(configPath, `${lines.join("\n")}`, { mode: 0o600 });
   return configPath;
 };
 

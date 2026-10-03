@@ -1,4 +1,4 @@
-import { isNumber } from "radashi";
+import { Predicate } from "effect";
 import { useEffect, useRef } from "react";
 
 /* oxlint-disable promise/prefer-await-to-callbacks node/callback-return */
@@ -42,6 +42,9 @@ const clearRafInterval = (handle: Handle) => {
   cancelAnimationFrame(handle.id);
 };
 
+const isRunnableDelay = (delay: number | undefined): delay is number =>
+  Predicate.isNumber(delay) && !Number.isNaN(delay) && delay >= 0;
+
 /**
  * A hook implements with `requestAnimationFrame` for better performance. The API is consistent with `useInterval`,
  * the advantage is that the execution of the timer can be stopped when the page is not rendering,
@@ -63,7 +66,7 @@ export const useRafInterval = (
   const fnRef = useLatest(fn);
   const timerRef = useRef<Handle>(null);
   useEffect(() => {
-    if (!isNumber(delay) || delay < 0) {
+    if (!isRunnableDelay(delay)) {
       return;
     }
     if (immediate) {

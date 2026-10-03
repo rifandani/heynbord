@@ -1,6 +1,6 @@
 import type { AnyRouteMatch } from "@tanstack/react-router";
 
-import { ENV } from "@/core/constants/env";
+import { APP_CONFIG } from "@/core/config/env";
 import { APP_NAME } from "@/core/constants/global";
 
 /** What a route's `head()` returns in `meta`. */
@@ -19,7 +19,7 @@ export interface SeoInput {
 const appName = APP_NAME;
 const appDescription =
   "a browser-based MMO collectible/trading-card strategy game";
-const appBaseUrl = ENV.VITE_APP_URL;
+const appBaseUrl = APP_CONFIG.url;
 const appPublisher = "Tri Rizeki Rifandani";
 
 /**

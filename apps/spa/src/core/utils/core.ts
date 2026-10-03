@@ -1,4 +1,4 @@
-import { camel, snake } from "radashi";
+import { String as EffectString } from "effect";
 import type { RequireAtLeastOne } from "type-fest";
 
 /** A decoded JSON value: what an HTTP payload or `JSON.parse` result can hold. */
@@ -96,14 +96,14 @@ export const toCamelCase = <T>(object: JsonValue): T =>
   // SAFETY: only keys are rewritten - the leaves keep their runtime values, so
   // `T` is the caller's snake_case-to-camelCase restatement of its own payload
   // type, which the traversal cannot express generically.
-  mapKeysDeep(object, camel) as T;
+  mapKeysDeep(object, EffectString.snakeToCamel) as T;
 
 /**
  * convert deep nested object keys to snake_case.
  */
 export const toSnakeCase = <T>(object: JsonValue): T =>
   // SAFETY: only keys are rewritten - see `toCamelCase`.
-  mapKeysDeep(object, snake) as T;
+  mapKeysDeep(object, EffectString.camelToSnake) as T;
 
 const removeLeadingZerosRegex = /^0+[1-9]+/u;
 const removeLeadingZeroRegex = /^(?<group>0)/u;

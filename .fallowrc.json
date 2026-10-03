@@ -15,6 +15,7 @@
       "exports": ["*"]
     }
   ],
+  "ignorePatterns": ["repos/**"],
   "overrides": [
     {
       "files": ["apps/spa/**/components/ui/**"],
@@ -45,7 +46,7 @@
   ],
   "duplicates": {
     "minOccurrences": 3,
-    "ignore": ["apps/spa/src/core/providers/i18n/context.tsx"]
+    "ignore": []
   },
   "health": {
     "ignore": [

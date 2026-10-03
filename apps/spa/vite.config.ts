@@ -30,7 +30,7 @@ const serveDevServiceWorker = (): Plugin => ({
 });
 
 export default defineConfig({
-  // Expose portless's worktree-aware URL to import.meta.env (see env.ts).
+  // Expose portless's worktree-aware URL to import.meta.env (see core/config/env.ts).
   envPrefix: ["VITE_", "PORTLESS_"],
   plugins: [
     tanstackDevtools(),
@@ -212,11 +212,6 @@ export default defineConfig({
       "workbox-routing",
       "workbox-strategies",
     ],
-  },
-  ssr: {
-    // env-core's `vite()` preset reads `import.meta.env`, which only exists in
-    // code Vite transforms. The dev SSR runner leaves deps external otherwise.
-    noExternal: ["@t3-oss/env-core"],
   },
   server: {
     port: 3001,

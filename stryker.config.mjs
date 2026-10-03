@@ -127,5 +127,6 @@ export default {
     "**/.tanstack/**",
     "**/.vercel/**",
     "**/.repos/**",
+    "**/repos/**",
   ],
 };

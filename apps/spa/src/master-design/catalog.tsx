@@ -1,8 +1,8 @@
 import { useMount } from "@reactuses/core";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
-import { ThemeToggle } from "@/core/components/theme-toggle";
 import { SearchField, SearchInput } from "@/core/components/ui/search-field";
+import { ThemeToggle } from "@/features/color-mode/components/theme-toggle";
 
 import { CatalogNav } from "./catalog-nav";
 import { categories, entryIds } from "./registry";

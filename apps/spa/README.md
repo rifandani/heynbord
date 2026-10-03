@@ -2,10 +2,10 @@
 
 ## Todo
 
-- install effect for both FE and BE side
 - dynamic og image generation
+- add better auth + skills
 - add server side feature flag
-- add production ready error monitoring
+- add production ready error monitoring, logs with evlog + skills
 - Asynchronous online: an account, a server, PvP against other players' _saved defense decks_ (the AI controls them), leaderboards and guilds
 - Real-time PvP and a persistent shared world
 - Card packs gacha with premium currency

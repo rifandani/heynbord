@@ -7,7 +7,7 @@ Heynbord runs in the existing Bun monorepo. There are two main parts:
 - **`packages/rules`** (`@workspace/rules`): a pure TypeScript package with all game rules. It does not use React, Three.js or the DOM. It is deterministic.
 - **`apps/spa`**: the existing React app. It shows the menus, the Collection and the Workshop with React components. It shows the Battle in a Three.js scene with React Three Fiber.
 
-[ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md) records why the rules are a separate package.
+[ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md) records why the rules are a separate package. [ADR-0007](../adr/0007-effect-is-the-application-runtime.md) records why `apps/spa` runs its logic as Effect programs and keeps its shared state in Effect Atoms.
 
 ## 2. Architecture
 
@@ -44,10 +44,10 @@ In v2, a server also imports `packages/rules` and checks asynchronous PvP result
 
 ### 3.1 Principles
 
-1. **Pure functions.** The main function is `step(state, command) → { state, events }`. It does not change the input state.
+1. **Pure functions.** The main function is `step(state, command) → Result<{ state, events }, RuleViolation>`. It does not change the input state. It uses Effect data modules (`Schema`, `Data`, `Match`, `Array`, `Result`), but not the Effect runtime ([ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md#amendments)).
 2. **Deterministic.** All random results come from a seeded random number generator inside the state. The package never calls `Math.random()`, `Date.now()` or other sources that change.
 3. **Integer math.** All game values are integers. Percentages are stored as basis points (1% = 100). This gives the same result on all browsers and on the server.
-4. **Data-driven content.** Cards, Stages, Floors and rewards are data. Zod schemas check the data when tests run and when the app loads it.
+4. **Data-driven content.** Cards, Stages, Floors and rewards are data. Effect `Schema` schemas check the data when tests run and when the app loads it.
 5. **No text.** The package returns IDs and values, not text. `apps/spa` changes IDs into text with the Message Catalogs.
 
 ### 3.2 Main types (draft)
@@ -164,7 +164,7 @@ The AI is a function `chooseCommands(state, side) → Command[]` in the rules pa
 | --- | --- | --- |
 | Rules unit tests | Vitest (Node) | Each rule in GDD section 4, each Keyword, each Workshop action, migrations. Follows [ADR-0001](../adr/0001-unit-tests-are-pure-module-logic.md). |
 | Determinism tests | Vitest | Run the same replay many times and compare the results. Property tests with random Decks and seeds. |
-| Content tests | Vitest | All card and Stage data pass the Zod schemas. All Translation Keys exist. |
+| Content tests | Vitest | All card and Stage data pass the Effect `Schema` schemas. All Translation Keys exist. |
 | Balance simulations | Bun script | Headless AI-against-AI Battles. Reports win rates (GDD section 13). |
 | Economy simulation | Bun script | Reports the pacing targets (Economy section 4). |
 | End-to-end | Playwright | Start the game, finish Stage 1-1, open a Pack, Combine, export and import the save. |

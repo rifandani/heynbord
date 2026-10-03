@@ -21,6 +21,7 @@ stats.html
 .react-router
 .tanstack
 .vitest
+repos
 
 # misc
 .DS_Store

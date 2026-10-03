@@ -75,6 +75,9 @@ jobs:
           languages: javascript-typescript
           build-mode: none
           queries: security-extended
+          # Loads paths-ignore for vendored repos/. Without this input the
+          # action does not read .github/codeql/codeql-config.yml.
+          config-file: ./.github/codeql/codeql-config.yml
 
       - name: Analyze
         id: analyze
