@@ -15,6 +15,7 @@
       "exports": ["*"]
     }
   ],
+  "ignorePatterns": ["repos/**"],
   "overrides": [
     {
       "files": ["apps/spa/**/components/ui/**"],

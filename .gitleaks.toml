@@ -19,4 +19,4 @@ paths = ['''(?i).*e2e/\.auth/.*''', '''(?i).*playwright/\.auth/.*''']
 # quoting a flagged line here must not itself become a finding in history.
 [[allowlists]]
 description = "gitleaks ignore file"
-paths = ['''^\.gitleaksignore$''']
+paths = ['''^\.gitleaksignore$''', '''^repos/''']
