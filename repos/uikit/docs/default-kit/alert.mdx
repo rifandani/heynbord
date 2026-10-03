@@ -1,0 +1,64 @@
+---
+title: Alert
+description: How to use the Alert component from the Default kit.
+nav: 19
+---
+
+<Sandpack
+  template="react-ts"
+  customSetup={{
+    dependencies: {
+      'three': 'latest',
+      '@react-three/fiber': '<9',
+      '@react-three/uikit': '^1.0.44',
+      '@react-three/uikit-default': '^1.0.44',
+      '@react-three/uikit-lucide': '^1.0.44',
+      '@react-three/drei': '<10',
+    },
+  }}
+  files={{
+    '/App.tsx': `import { Canvas } from "@react-three/fiber";
+import { Fullscreen } from "@react-three/uikit";
+import { colors } from "@react-three/uikit-default";
+import { Text } from '@react-three/uikit'
+import { Terminal } from '@react-three/uikit-lucide'
+import { Alert, AlertDescription, AlertIcon, AlertTitle } from '@react-three/uikit-default'
+
+function AlertDemo() {
+  return (
+    <Alert maxWidth={500}>
+      <AlertIcon>
+        <Terminal width={16} height={16} />
+      </AlertIcon>
+      <AlertTitle>
+        <Text>Error</Text>
+      </AlertTitle>
+      <AlertDescription>
+        <Text>You can add components to your app using the cli.</Text>
+      </AlertDescription>
+    </Alert>
+  )
+}
+
+export default function App() {
+  return (
+    <Canvas style={{ position: "absolute", inset: "0", touchAction: "none" }} gl={{ localClippingEnabled: true }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight intensity={1} position={[-5, 5, 10]} />
+      <Fullscreen
+        overflow="scroll"
+        flexDirection="column"
+        alignItems="center"
+        padding={32}
+        backgroundColor={colors.background}
+      >
+        <AlertDemo />
+      </Fullscreen>
+    </Canvas>
+  )
+}`}}
+/>
+
+```bash
+import { Alert } from "@react-three/uikit-default";
+```

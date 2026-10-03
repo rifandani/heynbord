@@ -1,0 +1,60 @@
+---
+title: Avatar
+description: How to use the Avatar component from the Horizon kit.
+nav: 41
+---
+
+<Sandpack
+  template="react-ts"
+  customSetup={{
+    dependencies: {
+      'three': 'latest',
+      '@react-three/fiber': '<9',
+      '@react-three/uikit': '^1.0.44',
+      '@react-three/uikit-horizon': '^1.0.44',
+      '@react-three/uikit-lucide': '^1.0.44',
+      '@react-three/drei': '<10',
+    },
+  }}
+  files={{
+    '/App.tsx': `import { Canvas } from "@react-three/fiber";
+import { Fullscreen } from "@react-three/uikit";
+import { Panel } from "@react-three/uikit-horizon";
+import { Container } from '@react-three/uikit'
+import { Avatar } from '@react-three/uikit-horizon'
+
+function AvatarDemo() {
+  return (
+    <Container alignItems="center">
+      <Avatar
+        src="https://raw.githubusercontent.com/pmndrs/uikit/refs/heads/main/examples/horizon/public/avatar.png"
+        size="lg"
+        attributionActive
+      />
+    </Container>
+  )
+}
+
+export default function App() {
+  return (
+    <Canvas style={{ position: "absolute", inset: "0", touchAction: "none" }} gl={{ localClippingEnabled: true }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight intensity={1} position={[-5, 5, 10]} />
+      <Fullscreen
+        overflow="scroll"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Panel color="black" dark={{ color: "white" }} padding={32}>
+          <AvatarDemo />
+        </Panel>
+      </Fullscreen>
+    </Canvas>
+  )
+}`}}
+/>
+
+```bash
+import { Avatar } from "@react-three/uikit-horizon";
+```

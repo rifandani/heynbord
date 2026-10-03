@@ -1,0 +1,34 @@
+{
+  "name": "@pmndrs/uikit-lucide",
+  "version": "0.0.0",
+  "description": "lucide icons for vanilla uikit",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "lucide",
+    "uikit",
+    "icons",
+    "threejs",
+    "r3f"
+  ],
+  "author": "Bela Bohlender",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/pmndrs/uikit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pmndrs/uikit"
+  },
+  "scripts": {
+    "generate": "node --loader ts-node/esm ./generate.ts",
+    "build": "tsc -p ./tsconfig.build.json"
+  },
+  "type": "module",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js"
+  },
+  "dependencies": {
+    "@pmndrs/uikit": "workspace:^"
+  }
+}

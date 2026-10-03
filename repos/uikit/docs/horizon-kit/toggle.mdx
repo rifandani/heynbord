@@ -1,0 +1,53 @@
+---
+title: Toggle
+description: How to use the Toggle component from the Horizon kit.
+nav: 54
+---
+
+<Sandpack
+  template="react-ts"
+  customSetup={{
+    dependencies: {
+      'three': 'latest',
+      '@react-three/fiber': '<9',
+      '@react-three/uikit': '^1.0.44',
+      '@react-three/uikit-horizon': '^1.0.44',
+      '@react-three/uikit-lucide': '^1.0.44',
+      '@react-three/drei': '<10',
+    },
+  }}
+  files={{
+    '/App.tsx': `import { Canvas } from "@react-three/fiber";
+import { Fullscreen } from "@react-three/uikit";
+import { Panel } from "@react-three/uikit-horizon";
+import { Toggle } from '@react-three/uikit-horizon'
+
+function ToggleDemo() {
+  return <Toggle defaultChecked />
+}
+
+
+
+export default function App() {
+  return (
+    <Canvas style={{ position: "absolute", inset: "0", touchAction: "none" }} gl={{ localClippingEnabled: true }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight intensity={1} position={[-5, 5, 10]} />
+      <Fullscreen
+        overflow="scroll"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Panel color="black" dark={{ color: "white" }} padding={32}>
+          <ToggleDemo />
+        </Panel>
+      </Fullscreen>
+    </Canvas>
+  )
+}`}}
+/>
+
+```bash
+import { Toggle } from "@react-three/uikit-horizon";
+```

@@ -1,0 +1,58 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "@mdx-js/mdx": "^3.1.0",
+    "@react-three/drei": "^10.4.2",
+    "@react-three/eslint-plugin": "^0.1.1",
+    "@react-three/fiber": "rc",
+    "@react-three/xr": "^6.6.29",
+    "@types/chai": "^4.3.10",
+    "@types/chai-as-promised": "^7.1.8",
+    "@types/mocha": "^10.0.4",
+    "@types/node": "^20.14.8",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/three": "0.175.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "chai": "^4.3.10",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jest": "^27.9.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "json": "^11.0.0",
+    "mocha": "^10.2.0",
+    "playwright": "^1.59.1",
+    "prettier": "^3.2.5",
+    "react": "^19",
+    "react-dom": "^19",
+    "three": "^0.183.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
+    "typescript-json-schema": "^0.65.1",
+    "vercel": "^34.1.8",
+    "vite": "^5.4.14",
+    "vitexec": "^0.1.8"
+  },
+  "pnpm": {
+    "overrides": {
+      "three-stdlib": "^2.36.1"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "protobufjs",
+      "core-js",
+      "sharp"
+    ]
+  },
+  "scripts": {
+    "build:all": "pnpm -r build",
+    "test:docs": "node scripts/check-docs-mdx.mjs"
+  }
+}
