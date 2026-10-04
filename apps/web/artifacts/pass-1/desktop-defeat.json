@@ -1,0 +1,235 @@
+{
+  "url": "http://127.0.0.1:4173/battle?qa&state=active-play",
+  "mode": "desktop",
+  "state": "defeat",
+  "requestedState": "defeat",
+  "appliedState": "defeat",
+  "runId": "pass-1",
+  "seed": 42,
+  "screenshotPath": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/desktop-defeat.png",
+  "gpu": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "vendor": "Google Inc. (Apple)",
+    "softwareRendered": false
+  },
+  "result": {
+    "ok": true,
+    "reason": "nonblank",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "drawingBuffer": {
+      "width": 1280,
+      "height": 720
+    },
+    "alphaPixels": 4096,
+    "variance": 253,
+    "colorBuckets": 117,
+    "metrics": {
+      "colorBuckets": 138,
+      "colorEntropyBits": 4.07,
+      "edgeDensity": 0.256,
+      "luminance": {
+        "mean": 68.3,
+        "p5": 28.4,
+        "p95": 90.3,
+        "contrast": 61.9
+      },
+      "dominantColorShare": 0.392,
+      "nonBackgroundShare": 0.608
+    },
+    "renderBudget": {
+      "tier": "desktop",
+      "note": "starting-point budget; adjust per game and document overrides",
+      "rows": [
+        {
+          "metric": "calls",
+          "actual": null,
+          "limit": 300,
+          "ok": null
+        },
+        {
+          "metric": "triangles",
+          "actual": null,
+          "limit": 750000,
+          "ok": null
+        },
+        {
+          "metric": "geometries",
+          "actual": null,
+          "limit": 300,
+          "ok": null
+        },
+        {
+          "metric": "textures",
+          "actual": null,
+          "limit": 60,
+          "ok": null
+        }
+      ],
+      "withinBudget": true
+    },
+    "diagnostics": {
+      "renderer": {
+        "memory": {
+          "geometries": 24,
+          "textures": 30
+        },
+        "render": {
+          "frame": 25,
+          "calls": 60,
+          "triangles": 8230,
+          "points": 0,
+          "lines": 0
+        },
+        "programs": [
+          {
+            "type": "MeshBasicMaterial",
+            "name": "",
+            "id": 0,
+            "cacheKey": "basic,highp,srgb,false,,uv,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,0,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388608,8523777,srgb,onBeforeCompile(){}",
+            "usedTimes": 1,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshStandardMaterial",
+            "name": "",
+            "id": 1,
+            "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388608,8519683,srgb,onBeforeCompile(){}",
+            "usedTimes": 6,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshStandardMaterial",
+            "name": "",
+            "id": 2,
+            "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388609,8519687,srgb,onBeforeCompile(){}",
+            "usedTimes": 3,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshStandardMaterial",
+            "name": "",
+            "id": 3,
+            "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388611,8519687,srgb,onBeforeCompile(){}",
+            "usedTimes": 2,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshStandardMaterial",
+            "name": "",
+            "id": 4,
+            "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388611,8519683,srgb,onBeforeCompile(){}",
+            "usedTimes": 1,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshStandardMaterial",
+            "name": "",
+            "id": 5,
+            "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388609,8519683,srgb,onBeforeCompile(){}",
+            "usedTimes": 1,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshStandardMaterial",
+            "name": "",
+            "id": 6,
+            "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388608,8519687,srgb,onBeforeCompile(){}",
+            "usedTimes": 2,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshStandardMaterial",
+            "name": "",
+            "id": 7,
+            "cacheKey": "physical,STANDARD,,highp,srgb,false,,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388608,8388611,srgb,onBeforeCompile(){}",
+            "usedTimes": 10,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshBasicMaterial",
+            "name": "",
+            "id": 8,
+            "cacheKey": "basic,highp,srgb,false,,uv,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,0,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,0,0,0,0,8389120,8388611,srgb,onBeforeCompile(){}",
+            "usedTimes": 12,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "MeshBasicMaterial",
+            "name": "",
+            "id": 9,
+            "cacheKey": "basic,highp,srgb,false,,uv,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,0,,false,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,4,0,0,0,8388608,8388611,srgb,onBeforeCompile(){}",
+            "usedTimes": 12,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          },
+          {
+            "type": "SpriteMaterial",
+            "name": "",
+            "id": 10,
+            "cacheKey": "sprite,highp,srgb,false,,uv,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,,,true,0,,0,2,0,0,0,1,0,0,0,0,0,0,0,2,0,0,0,0,0,8388611,srgb,onBeforeCompile(){}",
+            "usedTimes": 10,
+            "program": {},
+            "vertexShader": {},
+            "fragmentShader": {}
+          }
+        ],
+        "autoReset": true
+      },
+      "frames": {
+        "count": 25,
+        "last": 1119.8999999985099,
+        "fps": 0,
+        "frameMs": 0
+      },
+      "state": {
+        "mode": "finished",
+        "stageId": "1-10",
+        "seed": 42,
+        "turnNumber": 16,
+        "activeSide": "enemy",
+        "playerHp": 0,
+        "enemyHp": 40,
+        "units": 10,
+        "hand": [
+          0,
+          0
+        ],
+        "queued": 0,
+        "current": null,
+        "result": {
+          "winner": "enemy",
+          "reason": "heroDefeated"
+        },
+        "eventsPlayed": 403
+      }
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "consoleErrorCount": 0,
+  "pageErrorCount": 0
+}

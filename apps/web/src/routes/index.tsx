@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { buttonStyles } from "@/core/components/ui/button";
+import { Link } from "@/core/components/ui/link";
 import { buildSeoHead } from "@/core/utils/seo";
 import { ThemeToggle } from "@/features/color-mode/components/theme-toggle";
 import { LanguageToggle } from "@/features/i18n/components/language-toggle";
@@ -11,6 +13,14 @@ const HomeRoute = () => {
     <div className="container mx-auto flex flex-col items-center gap-y-2 py-24">
       <h1 className="text-3xl sm:text-4xl">{t("title")}</h1>
       <h2 className="font-mono text-xl sm:text-2xl">{t("welcome")}</h2>
+      <p className="text-muted-fg">{t("game.tagline")}</p>
+      <Link
+        href="/play"
+        className={buttonStyles({ intent: "primary", size: "lg" })}
+        data-testid="play-link"
+      >
+        {t("game.play")}
+      </Link>
 
       <div className="flex items-center gap-x-2">
         <ThemeToggle />

@@ -1,5 +1,6 @@
 'use client'
 
+import type { IconType } from "react-icons"
 import { HiCheckCircle, HiExclamationCircle, HiInformationCircle } from "react-icons/hi2"
 import { twJoin, cn } from "cn"
 
@@ -8,16 +9,16 @@ export interface NoteProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   indicator?: boolean
 }
 
-export function Note({ indicator = true, intent = "default", className, ...props }: NoteProps) {
-  const iconMap: Record<string, React.ElementType | null> = {
-    info: HiInformationCircle,
-    warning: HiExclamationCircle,
-    danger: HiExclamationCircle,
-    success: HiCheckCircle,
-    default: null,
-  }
+const iconMap: Record<NonNullable<NoteProps["intent"]>, IconType | null> = {
+  info: HiInformationCircle,
+  warning: HiExclamationCircle,
+  danger: HiExclamationCircle,
+  success: HiCheckCircle,
+  default: null,
+}
 
-  const IconComponent = iconMap[intent] || null
+export function Note({ indicator = true, intent = "default", className, ...props }: NoteProps) {
+  const IconComponent = iconMap[intent]
 
   return (
     <div

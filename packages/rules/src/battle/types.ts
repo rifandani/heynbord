@@ -1,0 +1,257 @@
+import { Data } from "effect";
+
+import type {
+  ClassId,
+  ClosedLane,
+  DamageType,
+  RankId,
+  StageDefinition,
+} from "../content/schema";
+
+export type Side = "player" | "enemy";
+
+export const otherSide = (side: Side): Side =>
+  side === "player" ? "enemy" : "player";
+
+/** The number of Squares in each Lane (GDD 4.1). */
+export const LANE_LENGTH = 12;
+
+/**
+ * The number of Columns in a Summon Zone (GDD 4.1, ADR-0011). It is the same
+ * for all Sides and Heroes: content data cannot change it.
+ */
+export const SUMMON_ZONE_DEPTH = 3;
+
+/**
+ * The number of Lanes in a Stage (GDD 4.1, ADR-0010). The type of Battle sets
+ * it: content data cannot. A Stage makes the Board smaller only with Closed Lanes.
+ */
+export const STAGE_LANES = 3;
+
+/** The maximum number of cards in a Hand. A side does not draw when its Hand is full. */
+export const HAND_LIMIT = 8;
+
+/** Sudden Death starts at this Turn number (GDD 4.10). */
+export const SUDDEN_DEATH_TURN = 20;
+
+/** Sudden Death damage goes to 2 at this Turn number. */
+export const SUDDEN_DEATH_DOUBLE_TURN = 40;
+
+/** The defender wins when no Hero has 0 HP at the end of this Turn number. */
+export const TURN_LIMIT = 60;
+
+/** One Card copy in a Deck or a Graveyard. `instanceId` is unique in the Battle. */
+export interface CardInstance {
+  readonly instanceId: number;
+  readonly cardId: string;
+  readonly rank: RankId;
+}
+
+/** One Card copy in a Hand, with its current Countdown. */
+export interface HandCard extends CardInstance {
+  countdown: number;
+}
+
+export interface HeroState {
+  hp: number;
+  maxHp: number;
+  readonly classId: ClassId;
+  /** Unit Crit chance from the Weapon, in basis points. */
+  readonly unitCrit: number;
+  /** Skill Card Crit chance from the Trinket, in basis points. */
+  readonly skillCrit: number;
+  /** Unit Block chance from the Banner, in basis points. */
+  readonly unitBlock: number;
+}
+
+export interface SideState {
+  hero: HeroState;
+  hand: HandCard[];
+  deck: CardInstance[];
+  graveyard: CardInstance[];
+}
+
+/**
+ * A Unit on the Board. `position` is the Square index from the player's Hero:
+ * 0 is the player's Column 1 and 11 is the enemy's Column 1.
+ */
+export interface UnitState {
+  readonly id: number;
+  readonly owner: Side;
+  readonly card: CardInstance;
+  lane: number;
+  position: number;
+  attack: number;
+  hp: number;
+  maxHp: number;
+  readonly speed: number;
+  /** 0 is melee. */
+  readonly range: number;
+  readonly damageType: DamageType;
+  readonly armor: number;
+  readonly charge: boolean;
+  readonly flying: boolean;
+  readonly heroic: number;
+  readonly pivot: boolean;
+  readonly regeneration: number;
+  readonly retaliation: boolean;
+  /** The Turn number of the summon. Charge uses it. */
+  readonly summonedTurn: number;
+  /** End Steps of Burn that are left. */
+  burn: number;
+  frozen: boolean;
+  bonusArmor: number;
+  bonusArmorTurns: number;
+}
+
+export interface BattleResult {
+  readonly winner: Side;
+  readonly reason: "heroDefeated" | "turnLimit";
+}
+
+/**
+ * The full state of one Battle. It is plain data: it can be saved, sent to a
+ * server and compared. `random` is the seeded random state (ADR-0006).
+ */
+export interface BattleState {
+  readonly stageId: string;
+  readonly seed: number;
+  random: number;
+  readonly lanes: number;
+  /** Lanes where no Side can summon and no Skill Card can target (GDD 4.1). */
+  closedLanes: ClosedLane[];
+  turnNumber: number;
+  activeSide: Side;
+  phase: "play" | "finished";
+  sides: Record<Side, SideState>;
+  units: UnitState[];
+  nextId: number;
+  result: BattleResult | null;
+}
+
+/** What a Card targets when it is played. */
+export type Target = Data.TaggedEnum<{
+  Lane: { readonly lane: number };
+  Square: { readonly lane: number; readonly position: number };
+  NoTarget: Record<never, never>;
+}>;
+export const Target = Data.taggedEnum<Target>();
+
+export type Command = Data.TaggedEnum<{
+  PlayCard: { readonly handIndex: number; readonly target: Target };
+  EndTurn: Record<never, never>;
+}>;
+export const Command = Data.taggedEnum<Command>();
+
+export type TargetRef =
+  | { readonly _tag: "Unit"; readonly unitId: number }
+  | { readonly _tag: "Hero"; readonly side: Side };
+
+export type DamageSource =
+  | "attack"
+  | "retaliation"
+  | "skill"
+  | "burn"
+  | "suddenDeath";
+
+/** A snapshot of a Unit for the renderer. */
+export type UnitSnapshot = Readonly<UnitState>;
+
+/**
+ * Everything that happens in a Battle, in order. `apps/web` plays these as
+ * animations. The rules never wait for an animation.
+ */
+export type BattleEvent = Data.TaggedEnum<{
+  TurnStarted: { readonly side: Side; readonly turnNumber: number };
+  LaneOpened: { readonly lane: number };
+  UnitHealed: {
+    readonly unitId: number;
+    readonly amount: number;
+    readonly hp: number;
+  };
+  CountdownsTicked: {
+    readonly side: Side;
+    readonly countdowns: readonly number[];
+  };
+  CardDrawn: { readonly side: Side; readonly card: HandCard };
+  CardPlayed: {
+    readonly side: Side;
+    readonly handIndex: number;
+    readonly card: CardInstance;
+    readonly target: Target;
+  };
+  UnitSummoned: { readonly unit: UnitSnapshot };
+  RecallRolled: {
+    readonly side: Side;
+    readonly card: CardInstance;
+    readonly success: boolean;
+  };
+  CountdownChanged: {
+    readonly side: Side;
+    readonly instanceId: number;
+    readonly countdown: number;
+  };
+  ArmorGained: {
+    readonly unitId: number;
+    readonly armor: number;
+    readonly turns: number;
+  };
+  ArmorFaded: { readonly unitId: number };
+  UnitMoved: {
+    readonly unitId: number;
+    readonly lane: number;
+    readonly from: number;
+    readonly to: number;
+  };
+  UnitSkipped: { readonly unitId: number };
+  UnitAttacked: {
+    readonly unitId: number;
+    readonly target: TargetRef;
+    readonly ranged: boolean;
+  };
+  DamageDealt: {
+    readonly target: TargetRef;
+    readonly amount: number;
+    readonly damageType: DamageType;
+    readonly source: DamageSource;
+    readonly crit: boolean;
+    readonly blocked: boolean;
+    /** The HP of the target after the damage. */
+    readonly hp: number;
+  };
+  StatusApplied: {
+    readonly unitId: number;
+    readonly status: "burn" | "freeze";
+  };
+  UnitDied: { readonly unitId: number };
+  TurnEnded: { readonly side: Side };
+  BattleEnded: { readonly result: BattleResult };
+}>;
+export const BattleEvent = Data.taggedEnum<BattleEvent>();
+
+export type RuleViolation = Data.TaggedEnum<{
+  BattleFinished: Record<never, never>;
+  InvalidHandIndex: { readonly handIndex: number };
+  CardNotReady: { readonly handIndex: number };
+  IllegalTarget: { readonly handIndex: number; readonly target: Target };
+}>;
+export const RuleViolation = Data.taggedEnum<RuleViolation>();
+
+/** The Player's side of a Battle setup. */
+export interface PlayerSetup {
+  readonly classId: ClassId;
+  readonly deck: readonly { readonly cardId: string; readonly rank: RankId }[];
+  readonly level: number;
+  readonly gear: {
+    readonly weapon: number;
+    readonly armor: number;
+    readonly trinket: number;
+    readonly banner: number;
+  };
+}
+
+export interface BattleSetup {
+  readonly seed: number;
+  readonly stage: StageDefinition;
+  readonly player: PlayerSetup;
+}

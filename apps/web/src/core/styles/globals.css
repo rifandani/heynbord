@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap");
+/* Heynbord display font: titles in large sizes only (art direction 6). It supports Indonesian. */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap");
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -11,6 +13,7 @@
   --font-sans:
     "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-display: "Cinzel", ui-serif, Georgia, serif;
   --font-mono:
     "Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco",
     "Consolas", '"Liberation Mono"', '"Courier New"', "monospace";
@@ -81,6 +84,75 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+}
+
+/* The Hand Bar motion: a drawn card flies from the Deck Pile to its Hand Slot. */
+@keyframes hand-draw {
+  from {
+    transform: translateX(var(--draw-from, -100%)) scale(0.82);
+    opacity: 0.3;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* The Hand Bar motion: a card drops onto the Graveyard Pile. */
+@keyframes graveyard-drop {
+  0% {
+    transform: translateY(-40%) scale(1.12) rotate(-5deg);
+    opacity: 0;
+    filter: brightness(1.7);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* The Town ambient motion (GDD 11.4): a puff of chimney smoke rises and fades. */
+@keyframes town-smoke {
+  0% {
+    transform: translateY(0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate(18px, -70px) scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* The Town ambient motion: light moves on the water. */
+@keyframes town-shimmer {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 0.55;
+    transform: translateX(12px);
+  }
+}
+
+/* The soft pulse of light on the Town Gate until the end of the Tutorial. */
+@keyframes town-gate-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 }
 
 :root {
@@ -335,4 +407,22 @@
 }
 [data-chart] .recharts-surface g:focus {
   outline: none;
+}
+
+/*
+ * The Battle screen keeps the Board, the Hand Bar and End Turn free: toasts
+ * show in a narrow column at the bottom left, above the Hand Bar.
+ */
+body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
+  --width: 210px !important;
+  left: max(0.5rem, env(safe-area-inset-left)) !important;
+  right: auto !important;
+  bottom: 168px !important;
+  transform: none !important;
+}
+
+@media (max-height: 500px) {
+  body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
+    bottom: 116px !important;
+  }
 }

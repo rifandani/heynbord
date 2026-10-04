@@ -1,0 +1,23 @@
+{
+  "name": "@workspace/rules",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Heynbord game rules: a deterministic battle engine, card content and the enemy AI",
+  "license": "MIT",
+  "author": "Tri Rizeki Rifandani",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --project rules",
+    "sim": "bun scripts/simulate.ts"
+  },
+  "dependencies": {
+    "effect": "4.0.0"
+  },
+  "devDependencies": {
+    "@workspace/typescript-config": "workspace:*"
+  }
+}

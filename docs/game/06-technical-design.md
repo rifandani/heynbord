@@ -15,7 +15,7 @@ Heynbord runs in the existing Bun monorepo. There are two main parts:
 ┌──────────────────────────── apps/web ────────────────────────────┐
 │                                                                  │
 │  React UI (React Aria, TanStack Router)                          │
-│  Title · Camp · Deck builder · Collection · Workshop · Settings  │
+│  Title · Town · Deck builder · Collection · Workshop · Settings  │
 │                                                                  │
 │  Battle view                                                     │
 │  ┌──────────────┐  Commands   ┌────────────────────────────────┐ │
@@ -50,36 +50,20 @@ In v2, a server also imports `packages/rules` and checks asynchronous PvP result
 4. **Data-driven content.** Cards, Stages, Floors and rewards are data. Effect `Schema` schemas check the data when tests run and when the app loads it.
 5. **No text.** The package returns IDs and values, not text. `apps/web` changes IDs into text with the Message Catalogs.
 
-### 3.2 Main types (draft)
+### 3.2 Main types
 
-```ts
-type BattleState = {
-  seed: RandomState;
-  turnNumber: number;
-  activeSide: Side;
-  phase: "start" | "play" | "resolution" | "end" | "finished";
-  board: Board; // lanes × 12 squares
-  sides: Record<Side, SideState>; // hero, hand, deck, graveyard
-  fieldEffects: FieldEffect[];
-  result?: BattleResult;
-};
+The types are in [`packages/rules/src/battle/types.ts`](../../packages/rules/src/battle/types.ts). The code is the source of truth. This list only tells what each main type is for.
 
-type Command =
-  | { type: "playCard"; handIndex: number; target: Target }
-  | { type: "endTurn" };
+| Type | Purpose |
+| --- | --- |
+| `BattleSetup` | The input of a new Battle: the Battle seed, the Stage, and the Player's Class, Deck, player level and Gear. |
+| `BattleState` | The full state of one Battle. It is plain data, so you can save it, send it to a server and compare it. It holds the seeded random state. |
+| `Command` | A Player action: `PlayCard` (a Hand index and a `Target`) or `EndTurn`. |
+| `BattleEvent` | One thing that happened in the Battle, in order. `apps/web` plays each event as an animation. |
+| `RuleViolation` | The reason that `step()` refuses a Command, for example a card that is not Ready. |
+| `BattleResult` | The winner and the reason: all Heroes Defeated, or the Turn limit. |
 
-type BattleEvent =
-  | { type: "countdownTicked"; side: Side }
-  | { type: "cardDrawn"; side: Side; cardId?: CardId } // hidden for the enemy
-  | { type: "unitSummoned"; unitId: UnitId; at: SquareRef }
-  | { type: "unitMoved"; unitId: UnitId; from: SquareRef; to: SquareRef }
-  | { type: "unitAttacked"; unitId: UnitId; target: TargetRef }
-  | { type: "damageDealt"; target: TargetRef; amount: number; damageType: DamageType; crit: boolean; blocked: boolean }
-  | { type: "unitDied"; unitId: UnitId }
-  | { type: "battleEnded"; result: BattleResult };
-```
-
-The Resolution Phase runs completely inside `step()` when the rules get the `endTurn` Command. The app gets the list of Battle Events and plays them as animations. The rules never wait for an animation.
+The Resolution Phase runs completely inside `step()` when the rules get the `EndTurn` Command. The app gets the list of Battle Events and plays them as animations. The rules never wait for an animation.
 
 ### 3.3 Replay
 
@@ -91,7 +75,9 @@ A Battle replay is: the Battle seed, the two Decks, the Stage ID, and the list o
 
 ### 3.4 Enemy AI
 
-The AI is a function `chooseCommands(state, side) → Command[]` in the rules package. It uses only information that the side can see. It uses the score method in GDD section 9. The same function runs Auto-play.
+The AI is a function `chooseCommand(state) → Command` in [`packages/rules/src/ai/choose-command.ts`](../../packages/rules/src/ai/choose-command.ts). It plays for the active side. It returns one Command: the `PlayCard` with the best score, or `EndTurn` when no play has a score above 0. The caller applies the Command with `step()` and calls `chooseCommand` again, because each play changes the scores.
+
+It uses only information that the active side can see (`visibleTo`): the Hand of the other side shows only Countdowns, and no Deck order or random state is visible. It uses the score method in GDD section 9. The same function runs Auto-play.
 
 ### 3.5 Content data
 
@@ -108,9 +94,10 @@ The AI is a function `chooseCommands(state, side) → Command[]` in the rules pa
 
 ### 4.2 Scene structure
 
-- One `<Canvas>` only on the Battle screen (and a small one on the Camp screen). Load the Battle scene with a lazy route, so the Three.js code is not in the first bundle.
+- One `<Canvas>` only, on the Battle screen. The Town is a 2D painting with no Canvas. Load the Battle scene as a lazy chunk, so the Three.js code is not in the first bundle.
 - The Board is one glTF model for each Region skin.
-- Units are planes with an alpha texture. Use one shared geometry and one material for each texture atlas.
+- By default, a Unit is a plane with an alpha texture (the cut-out). Use one shared geometry and one material for each texture atlas.
+- A card can also have a rigged 3D model ([Art Direction 2.2](./05-art-direction.md#22-rigged-unit-models)). The model is an option for each card, not a rule for all cards. A skinned model cannot use the shared plane, so each model must stay in the model budget (section 6).
 - Damage numbers and Unit stats use drei `Text` or HTML overlays. Select the option with better performance during Milestone 1.
 
 ### 4.3 Event player
@@ -125,14 +112,14 @@ The AI is a function `chooseCommands(state, side) → Command[]` in the rules pa
 - Desktop: drag and drop from the Hand to a Square, or click and click.
 - Touch: tap the card, then tap the Square. Drag is also possible.
 - Keyboard: arrow keys select the card and the Square, Enter plays, E ends the Turn.
-- Use raycasting on the Squares of the Summon Column only. Highlight legal Squares.
+- For a Creature Card, use raycasting on the Squares of the Summon Zone only. Highlight legal Squares. The player selects a Square, not a Lane.
 
 ## 5. Save data
 
 - Storage: IndexedDB, through a small wrapper.
-- The **Profile** model is in the rules package. It has: player level and XP, Marks, Essence, owned card copies, Decks, Gear levels, Stage results, Heynspire progress, Achievements, Cosmetics and settings.
+- The **Profile** model is in the rules package. It has: player level and XP, Coin (as a number of Copper), Heynstones, Essence, owned card copies, Decks, unlocked Deck slots, Gear levels, Stage results, Heynspire progress, Achievements, Cosmetics, seen Hints and settings.
 - Each save has a `schemaVersion`. Migrations are pure functions in the rules package: `migrate(v1) → v2 → v3`.
-- The app saves after each Battle and after each Workshop, Pack or Gear action.
+- The app saves after each Battle and after each Workshop, Pack, Gear or Bazaar action.
 - **Export:** a JSON file with the Profile and a checksum. **Import:** check the schema and the checksum, run migrations, then replace the save only if all checks pass.
 - In v2, the server keeps the Profile and does all reward and Workshop actions. The local save becomes a cache. The shape of the Profile stays the same.
 
@@ -147,6 +134,8 @@ The AI is a function `chooseCommands(state, side) → Command[]` in the rules pa
 | Texture size | Unit cut-outs 512 px tall. Card art 768 × 1024. Use KTX2 (Basis) or WebP. |
 | Frame time | 16.7 ms on desktop. 33 ms on a mid-range phone. |
 | Device pixel ratio | Maximum 2. Lower it when the frame rate drops. |
+| Rigged Unit model | 10,000 triangles or fewer. 1.5 MB or less for each GLB (Draco or Meshopt, KTX2 textures). 1 material. Start values: tune them with the first pilot model on a mid-range phone. |
+| Rigged models in one Battle | Not more than 6 different models. A card with no place in this budget shows its cut-out. |
 
 - Use texture atlases for Units of the same Region.
 - Preload the assets of the next Stage when the player opens the Stage screen.
@@ -155,7 +144,7 @@ The AI is a function `chooseCommands(state, side) → Command[]` in the rules pa
 ## 7. Languages
 
 - The game uses the existing Message Catalogs in `apps/web` (`en-us`, `id-id`).
-- Card names, flavor text and template text use Translation Keys. Example keys: `card.hearthkin.shieldbearer.name`, `effect.damage.area`.
+- Card names, flavor text and template text use Translation Keys. Example keys: `card.human.shieldbearer.name`, `effect.damage.area`.
 - A unit test checks that each Translation Key exists in both catalogs.
 
 ## 8. Tests

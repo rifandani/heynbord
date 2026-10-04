@@ -14,5 +14,7 @@ export default defineConfig({
     "**/repos",
     "**/.impeccable",
     "**/docs",
+    // QA output (reports and captures) that the Battle bot playtest writes.
+    "**/apps/web/artifacts",
   ],
 });

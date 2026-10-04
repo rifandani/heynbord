@@ -10,7 +10,7 @@ export default defineConfig({
     fileParallelism: true,
     css: false,
     passWithNoTests: false,
-    projects: ["apps/web"],
+    projects: ["apps/web", "packages/rules"],
     // `coverage` is root-only (it sits in Vitest's `NonProjectOptions`), so it cannot be split across the `defineProject` configs.
     // Consequence: `--project <name> --coverage` measures this global `include` list against a partial run and reports every other project at 0%. Always run the whole suite (`bun test:unit:cov`).
     //
@@ -44,11 +44,15 @@ export default defineConfig({
         // Feature modules: pure domain functions, Effect services and atoms.
         // Components (`.tsx`) are E2E territory.
         "apps/web/src/features/**/*.ts",
+        // The game rules are pure module logic (ADR-0006).
+        "packages/rules/src/**/*.ts",
       ],
       exclude: [
         "**/*.unit.test.ts",
         "**/*.d.ts",
         "**/types.ts",
+        // Test setup helpers for the rules package.
+        "packages/rules/src/testing/**",
         // all constants
         "apps/*/src/**/constants/**",
         "packages/*/src/**/constants/**",
@@ -71,6 +75,9 @@ export default defineConfig({
         "apps/web/src/core/config/env.ts",
         "apps/web/src/core/runtime/client.ts",
         "apps/web/src/features/**/use-*.ts",
+        // Rendering seam: draws the procedural art on a 2D canvas. The canvas
+        // inspector captures and the E2E bot playtest cover it (ADR-0001).
+        "apps/web/src/features/battle/scene/textures.ts",
       ],
     },
   },

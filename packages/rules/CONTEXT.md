@@ -6,23 +6,35 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 ### Board
 
-**Board**: The battlefield of one Battle. It is made of Lanes. _Avoid_: field, map, grid, arena
+**Board**: The battlefield of one Battle. It is made of 3 or 4 Lanes. _Avoid_: field, map, grid, arena
 
-**Lane**: One row of 12 Squares between the two Heroes. Units move only along their Lane. _Avoid_: row, path, track
+**Lane**: One row of 12 Squares between one Hero of each Side. Units move only along their Lane. _Avoid_: row, path, track
+
+**Closed Lane**: A Lane where no Side can summon a Unit and no Skill Card can target a Square. It opens at a set Turn number, or it stays closed for the full Battle. It is still part of the Board and of a Front. _Avoid_: blocked lane, locked lane
 
 **Square**: One position in a Lane. It holds 0 or 1 Unit. _Avoid_: tile, cell, slot
 
 **Column**: The set of Squares at the same distance from a Hero, across all Lanes. Each side counts Columns from its own Hero. _Avoid_: rank, line
 
-**Summon Column**: A side's Column 1. The only place where that side can summon Units. _Avoid_: spawn zone, deploy row
+**Front**: The Lanes that one Hero stands behind. An enemy Unit that gets to the end of a Lane hits the Hero of that Front. _Avoid_: wing, flank, sector, zone
+
+**Summon Zone**: A Side's Columns 1 to 3, in all Lanes. The only place where the Heroes of that Side can summon Units. _Avoid_: Summon Column, spawn zone, deploy row
 
 **Field Effect**: An effect from a Skill Card that stays on a Square area for a number of Turns. _Avoid_: tile effect, battlefield skill, aura
 
 ### Battle
 
-**Battle**: One match between two sides, from the first Turn to a win or a loss. _Avoid_: match, game, fight, duel
+**Battle**: One match between two Sides, from the first Turn to a win or a loss. _Avoid_: match, game, fight, duel
 
-**Hero**: The commander of a side. The Hero stands behind the Lanes, has HP and a Class, and loses the Battle at 0 HP. _Avoid_: commander, avatar, general, player
+**Solo Battle**: A Battle with 1 Player. The other Side is AI. Stages, Dungeons and Heynspire Floors are Solo Battles. _Avoid_: single-player battle, PvE
+
+**Side**: One of the two teams in a Battle. A Side has 1 or more Heroes. It loses when all its Heroes are Defeated or when it is Routed. _Avoid_: team, party
+
+**Hero**: A commander on a Side. A Hero stands behind its Front and has HP, a Class and a Deck. _Avoid_: commander, avatar, general, player
+
+**Defeated**: The state of a Hero at 0 HP. A Defeated Hero is out of the Battle, but its Side continues while it has other Heroes. _Avoid_: dead, killed, knocked out
+
+**Routed**: The state of a Side with no Units on the Board and no Cards in the Hands and Decks of its Heroes that are not Defeated. A Routed Side cannot act again, so it loses. _Avoid_: exhausted, out of cards, surrender, forfeit
 
 **Player**: The person who plays Heynbord. The Player controls a Hero. _Avoid_: user, account, Hero
 
@@ -34,11 +46,13 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Resolution Phase**: The part of a Turn in which the active side's Units move and attack automatically. _Avoid_: combat phase, battle phase, auto phase
 
-**Sudden Death**: Damage to the active Hero in each Start Step from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
+**Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Step from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
 
 **Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
 
 **Battle seed**: The start value of the random numbers in one Battle. The same seed and the same Commands give the same Battle. _Avoid_: random seed, RNG
+
+**Abandon**: The end of a Battle when the Player leaves it before a win or a loss. An Abandoned Battle records no result. _Avoid_: quit, forfeit, surrender, retreat
 
 ### Cards and Units
 
@@ -56,21 +70,25 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Ready**: The state of a Card with a Countdown of 0. Only Ready Cards can be played. _Avoid_: active, available, playable
 
-**Mastery**: The chance that a Skill Card goes back to the Hand after its effect. _Avoid_: recycle, return chance
+**Recall**: The chance that a Skill Card goes back to the Hand after its effect. The Rank of the Card sets the chance. A Card that goes back is Recalled. _Avoid_: Mastery, return chance, recycle, echo, rebound
 
-**Hand**: The Cards that a side holds during a Battle. _Avoid_: queue
+**Hand**: The Cards that a Hero holds during a Battle. _Avoid_: queue
 
-**Deck**: The Cards that a side brings into a Battle. _Avoid_: army, loadout
+**Deck**: The Cards that a Hero brings into a Battle. During a Battle, the Deck holds only the Cards that the Hero has not drawn. _Avoid_: army, loadout, draw pile
 
-**Graveyard**: The place for a side's Cards that are used or dead. _Avoid_: discard pile, cemetery, crypt
+**Starter Deck**: A fixed Deck that the game gives to the Player before the Player builds a Deck. The Hero Class comes from the Starter Deck. _Avoid_: preset deck, default deck, sample deck
+
+**Graveyard**: The place for a Hero's Cards that are used or dead. _Avoid_: discard pile, cemetery, crypt
 
 **Keyword**: A named rule on a Card, for example Flying or Armor. _Avoid_: trait, perk, tag, ability
 
-**Race**: The people that a Creature Card belongs to: Hearthkin, Thornwild, Hollowborn or Wildmaw. _Avoid_: faction, tribe, kingdom
+**Race**: The people that a Creature Card belongs to: Human, Elf, Undead or Orc. A Race also includes the beasts and spirits that fight with that people, so a wolf that fights for the orcs is an Orc card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
+
+**Role**: The job of a Creature Card in a Battle: Frontliner, Striker, Runner, Shooter, Support or Wall. It helps Players read a Card. No rule uses it. _Avoid_: class, type, archetype
 
 **Class**: The type of a Hero, and of the Skill Cards that the Hero can use: Warrior, Ranger, Mage or Priest. _Avoid_: job, profession, role
 
-**Rank**: The power grade of one copy of a Card: Stone, Jade, Sapphire, Amethyst or Sunstone. _Avoid_: rarity, tier, star, level, quality
+**Rank**: The power grade of one copy of a Card: Common, Uncommon, Rare, Epic or Legendary. The Rank names use usual rarity words, so that players know the order immediately. But the concept is a Rank, not a rarity: Combine can make the Rank of a copy higher. _Avoid_: rarity, tier, star, level, quality
 
 **Base Rank**: The lowest Rank in which a Card exists. _Avoid_: rarity, starting tier
 
@@ -88,9 +106,17 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Essence**: The resource from Extract that pays for Craft. _Avoid_: dust, material, shards
 
-**Marks**: The currency that the Player earns in the game. _Avoid_: gold, silver, coins, money
+**Coin**: The currency that the Player earns in Battles and other play. It pays for Packs, Combine and Gear upgrades. _Avoid_: Marks, money, gold (as a name for all of the currency)
 
-**Pack**: A set of random Cards that the Player buys with Marks. _Avoid_: booster, loot box, chest
+**Copper**, **Silver**, **Gold**: The three denominations of Coin. 100 Copper is 1 Silver, and 100 Silver is 1 Gold. They are one currency with one balance, not three currencies. _Avoid_: bronze
+
+**Heynstones**: The rare currency. The Player earns it slowly through play, or buys it with real money. It buys only Cosmetics and Conveniences, never power. _Avoid_: gems, diamonds, crystals, premium currency (in player-facing text)
+
+**Convenience**: An item that changes comfort or organization, for example an extra Deck slot. It never changes the result of a Battle, the speed of progress or the content of the Collection. _Avoid_: boost, perk, premium feature
+
+**Bazaar**: The place where the Player spends Heynstones on Cosmetics and Conveniences. _Avoid_: shop, store, market
+
+**Pack**: A set of random Cards that the Player buys with Coin. _Avoid_: booster, loot box, chest
 
 **Drop Rate**: The chance of each Rank for each Card in a Pack. _Avoid_: odds, luck
 
@@ -108,7 +134,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Stage**: One Battle in the Campaign, with a fixed enemy and rewards. _Avoid_: level, mission
 
-**Boss Stage**: The last Stage of a Region, with special rules. _Avoid_: boss level, raid
+**Boss Stage**: The last Stage of a Region, with special rules. Its enemy Hero is a Boss. _Avoid_: boss level, raid
+
+**Boss**: An enemy Hero with a name and special rules. One Boss is one Hero. _Avoid_: Dungeon Boss, boss Unit, elite, champion
+
+**Dungeon**: A named place outside the Campaign where the Player fights one Battle against all its Bosses, with no Battles before them. The Player can play a Dungeon again. _Avoid_: raid, boss rush, instance, level
 
 **Region**: A group of 10 Stages. _Avoid_: chapter, world, area
 
@@ -122,20 +152,46 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Auto-play**: A mode in which the enemy AI logic plays the Player's Cards. _Avoid_: bot, auto battle
 
+**Tutorial**: The one guided session that teaches a new Player the core of a Battle. It is each play of Stage 1-1 until the first win of Stage 1-1, and it never shows after that win. _Avoid_: onboarding, tutorial Stages, training
+
+**Tutorial Step**: One of the 4 guided parts of the Tutorial: a short text with an arrow or a highlight. It shows when its subject first appears in the Battle, at most one time in each play of the Tutorial. _Avoid_: lesson, coachmark, tooltip, Hint
+
+**Hint**: A one-line tip that shows one time, when the Player first meets something that the Tutorial does not teach. It is not part of the Tutorial. _Avoid_: tutorial step, tooltip, popup
+
 ## Relationships
 
 - A **Player** controls one **Hero**. The Hero has one **Class**.
+- A **Battle** has two **Sides**. Each Side has 1 or more **Heroes**. In v1, the Player's Side has exactly 1 Hero.
+- Each **Hero** has its own **Deck**, **Hand**, **Graveyard**, **Class** and **Gear**. All the Heroes of a Side play in the same **Turn**.
+- Each **Hero** has one **Front**. A Hero can summon into the **Summon Zone** of any Front of its Side. Its **Skill Cards** can target any **Square**.
+- A **Stage** has 3 **Lanes**. A **Dungeon**, a **Floor** and a Battle with 2 or more **Players** have 4 Lanes. The type of Battle sets the number of Lanes. A Stage or a Dungeon can make the Board smaller only with **Closed Lanes**.
+- A **Unit** belongs to the Hero that summoned it, and uses that Hero's **Gear**.
+- When a Hero is **Defeated**, its Units and **Field Effects** are removed, and its **Front** goes to the nearest Hero of its Side that is not Defeated.
+- A **Side** that is **Routed** loses, also when its Heroes still have HP. The rule is the same for the Player's Side and the enemy Side. A Side is not Routed while one of its Heroes has a rule that can still put a Unit on the Board.
 - A **Deck** holds **Creature Cards** of any **Race** and **Skill Cards** of the Hero's Class only.
 - A **Creature Card** becomes a **Unit** when the side summons it.
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
 - A **Region** has 10 **Stages**, and the last one is a **Boss Stage**.
+- The **Tutorial** ends with the first win of Stage 1-1. A loss or an **Abandon** does not end it. A later play of Stage 1-1 is a normal **Stage**. The Tutorial has 4 **Tutorial Steps**. Auto-play is not available in the Tutorial. A **Hint** shows one time for each subject, at any time after the Tutorial.
+- A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**.
+- The Player has one balance of **Coin**, shown in **Gold**, **Silver** and **Copper**, and a separate balance of **Heynstones**.
+- **Coin** and **Heynstones** never change into each other or into **Essence**.
 
 ## Example dialogue
 
-> **Dev:** "When the Countdown of a Creature Card reaches 0, the card is Ready. In the Play Phase I put it into the Summon Column, and it becomes a Unit." **Designer:** "Yes. That Unit also acts in the Resolution Phase of the same Turn. If it dies, the Card goes to the Graveyard, but a Token just disappears."
+> **Dev:** "When the Countdown of a Creature Card reaches 0, the card is Ready. In the Play Phase I put it into an empty Square of the Summon Zone, and it becomes a Unit." **Designer:** "Yes. That Unit also acts in the Resolution Phase of the same Turn. If it dies, the Card goes to the Graveyard, but a Token just disappears."
 
 ## Flagged ambiguities
 
 - The original games used "stars" for card grades. Heynbord uses **Rank** for card grades and **Stars** only for Stage results.
 - "Fuse" in the original games was a random recipe system. Heynbord does not have it. **Combine** and **Craft** replace it.
+- **Recall** was named "Mastery" before. "Mastery" told the Rank, not the effect, so Players did not know what it did.
 - **Hero** and **Player** are different. A Player is a person. A Hero is the commander on the Board.
+- The GDD used "a Unique boss Unit" for a Unit that starts on the Board in a Boss Stage. That Unit is not a **Boss**. A Boss is always a Hero, in a Boss Stage and in a Dungeon.
+- A **Hero** used to lose the Battle at 0 HP. Now a Hero is **Defeated** at 0 HP, and only a **Side** with no Heroes left loses ([ADR-0009](../../docs/adr/0009-a-side-has-one-or-more-heroes.md)). A Side that is **Routed** also loses ([ADR-0012](../../docs/adr/0012-a-routed-side-loses.md)).
+- The **Board** used to have 1 to 3 Lanes in v1, and each Stage set its number of Lanes. Now the type of Battle sets it: 3 Lanes in a **Stage**, 4 Lanes in a **Dungeon**, in **Heynspire** and in a Battle with 2 or more **Players**.
+- The tutorial was 6 steps before: Stages 1-1 to 1-3, the Deck builder, the first Pack and Combine. Now the **Tutorial** is one session in Stage 1-1, and the other lessons are **Hints**.
+- GDD 8.3 says "a quit". The term is **Abandon**: it records no result, and it is not a loss.
+- **Coin** was named "Marks" before. Gold, Silver and Copper are its denominations, not separate currencies.
+- The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)).
+- The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.

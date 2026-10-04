@@ -1,0 +1,1059 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T15:08:24.743Z",
+  "title": "Design System: Heynbord",
+  "extensions": {
+    "colorMeta": {
+      "gold": {
+        "role": "primary",
+        "displayName": "Guild Gold",
+        "canonical": "oklch(77.0% 0.139 80.0)",
+        "tonalRamp": [
+          "oklch(15% 0.071 80.0)",
+          "oklch(26% 0.085 80.0)",
+          "oklch(37% 0.099 80.0)",
+          "oklch(48% 0.113 80.0)",
+          "oklch(60% 0.127 80.0)",
+          "oklch(72% 0.139 80.0)",
+          "oklch(84% 0.139 80.0)",
+          "oklch(95% 0.126 80.0)"
+        ]
+      },
+      "gold-light": {
+        "role": "primary",
+        "displayName": "Guild Gold Light",
+        "canonical": "oklch(91.4% 0.111 90.3)",
+        "tonalRamp": [
+          "oklch(15% 0.045 90.3)",
+          "oklch(26% 0.056 90.3)",
+          "oklch(37% 0.067 90.3)",
+          "oklch(48% 0.078 90.3)",
+          "oklch(60% 0.090 90.3)",
+          "oklch(72% 0.102 90.3)",
+          "oklch(84% 0.111 90.3)",
+          "oklch(95% 0.111 90.3)"
+        ]
+      },
+      "gold-deep": {
+        "role": "primary",
+        "displayName": "Guild Gold Edge",
+        "canonical": "oklch(47.4% 0.093 74.9)",
+        "tonalRamp": [
+          "oklch(15% 0.076 74.9)",
+          "oklch(26% 0.085 74.9)",
+          "oklch(37% 0.093 74.9)",
+          "oklch(48% 0.093 74.9)",
+          "oklch(60% 0.093 74.9)",
+          "oklch(72% 0.082 74.9)",
+          "oklch(84% 0.072 74.9)",
+          "oklch(95% 0.063 74.9)"
+        ]
+      },
+      "ready-gold": {
+        "role": "primary",
+        "displayName": "Ready Gold",
+        "canonical": "oklch(89.1% 0.147 91.3)",
+        "tonalRamp": [
+          "oklch(15% 0.059 91.3)",
+          "oklch(26% 0.074 91.3)",
+          "oklch(37% 0.088 91.3)",
+          "oklch(48% 0.103 91.3)",
+          "oklch(60% 0.119 91.3)",
+          "oklch(72% 0.135 91.3)",
+          "oklch(84% 0.147 91.3)",
+          "oklch(95% 0.147 91.3)"
+        ]
+      },
+      "focus-cream": {
+        "role": "primary",
+        "displayName": "Focus Cream",
+        "canonical": "oklch(95.5% 0.094 99.4)",
+        "tonalRamp": [
+          "oklch(15% 0.036 99.4)",
+          "oklch(26% 0.045 99.4)",
+          "oklch(37% 0.054 99.4)",
+          "oklch(48% 0.064 99.4)",
+          "oklch(60% 0.074 99.4)",
+          "oklch(72% 0.084 99.4)",
+          "oklch(84% 0.094 99.4)",
+          "oklch(95% 0.094 99.4)"
+        ]
+      },
+      "gold-trim": {
+        "role": "primary",
+        "displayName": "Gilded Trim",
+        "canonical": "oklch(83.4% 0.117 87.4)",
+        "tonalRamp": [
+          "oklch(15% 0.055 87.4)",
+          "oklch(26% 0.067 87.4)",
+          "oklch(37% 0.078 87.4)",
+          "oklch(48% 0.090 87.4)",
+          "oklch(60% 0.102 87.4)",
+          "oklch(72% 0.115 87.4)",
+          "oklch(84% 0.117 87.4)",
+          "oklch(95% 0.115 87.4)"
+        ]
+      },
+      "bronze-rim": {
+        "role": "secondary",
+        "displayName": "Bronze Rim",
+        "canonical": "oklch(81.5% 0.112 81.4)",
+        "tonalRamp": [
+          "oklch(15% 0.055 81.4)",
+          "oklch(26% 0.066 81.4)",
+          "oklch(37% 0.077 81.4)",
+          "oklch(48% 0.088 81.4)",
+          "oklch(60% 0.100 81.4)",
+          "oklch(72% 0.112 81.4)",
+          "oklch(84% 0.112 81.4)",
+          "oklch(95% 0.108 81.4)"
+        ]
+      },
+      "bronze": {
+        "role": "secondary",
+        "displayName": "Warm Bronze",
+        "canonical": "oklch(63.6% 0.110 71.9)",
+        "tonalRamp": [
+          "oklch(15% 0.072 71.9)",
+          "oklch(26% 0.083 71.9)",
+          "oklch(37% 0.094 71.9)",
+          "oklch(48% 0.105 71.9)",
+          "oklch(60% 0.110 71.9)",
+          "oklch(72% 0.110 71.9)",
+          "oklch(84% 0.100 71.9)",
+          "oklch(95% 0.089 71.9)"
+        ]
+      },
+      "wood-light": {
+        "role": "secondary",
+        "displayName": "Tavern Wood Light",
+        "canonical": "oklch(47.5% 0.070 57.8)",
+        "tonalRamp": [
+          "oklch(15% 0.060 57.8)",
+          "oklch(26% 0.066 57.8)",
+          "oklch(37% 0.070 57.8)",
+          "oklch(48% 0.070 57.8)",
+          "oklch(60% 0.070 57.8)",
+          "oklch(72% 0.065 57.8)",
+          "oklch(84% 0.057 57.8)",
+          "oklch(95% 0.050 57.8)"
+        ]
+      },
+      "wood": {
+        "role": "secondary",
+        "displayName": "Tavern Wood",
+        "canonical": "oklch(36.8% 0.057 56.4)",
+        "tonalRamp": [
+          "oklch(15% 0.056 56.4)",
+          "oklch(26% 0.057 56.4)",
+          "oklch(37% 0.057 56.4)",
+          "oklch(48% 0.057 56.4)",
+          "oklch(60% 0.055 56.4)",
+          "oklch(72% 0.049 56.4)",
+          "oklch(84% 0.043 56.4)",
+          "oklch(95% 0.037 56.4)"
+        ]
+      },
+      "wood-edge": {
+        "role": "secondary",
+        "displayName": "Wood Edge",
+        "canonical": "oklch(23.5% 0.035 61.0)",
+        "tonalRamp": [
+          "oklch(15% 0.035 61.0)",
+          "oklch(26% 0.035 61.0)",
+          "oklch(37% 0.035 61.0)",
+          "oklch(48% 0.035 61.0)",
+          "oklch(60% 0.033 61.0)",
+          "oklch(72% 0.030 61.0)",
+          "oklch(84% 0.026 61.0)",
+          "oklch(95% 0.022 61.0)"
+        ]
+      },
+      "frame-wood": {
+        "role": "secondary",
+        "displayName": "Frame Wood",
+        "canonical": "oklch(38.1% 0.063 59.6)",
+        "tonalRamp": [
+          "oklch(15% 0.060 59.6)",
+          "oklch(26% 0.063 59.6)",
+          "oklch(37% 0.063 59.6)",
+          "oklch(48% 0.063 59.6)",
+          "oklch(60% 0.060 59.6)",
+          "oklch(72% 0.053 59.6)",
+          "oklch(84% 0.047 59.6)",
+          "oklch(95% 0.041 59.6)"
+        ]
+      },
+      "parchment": {
+        "role": "neutral",
+        "displayName": "Parchment",
+        "canonical": "oklch(94.0% 0.037 86.2)",
+        "tonalRamp": [
+          "oklch(15% 0.021 86.2)",
+          "oklch(26% 0.024 86.2)",
+          "oklch(37% 0.028 86.2)",
+          "oklch(48% 0.031 86.2)",
+          "oklch(60% 0.035 86.2)",
+          "oklch(72% 0.037 86.2)",
+          "oklch(84% 0.037 86.2)",
+          "oklch(95% 0.037 86.2)"
+        ]
+      },
+      "parchment-deep": {
+        "role": "neutral",
+        "displayName": "Deep Parchment",
+        "canonical": "oklch(89.0% 0.052 86.2)",
+        "tonalRamp": [
+          "oklch(15% 0.027 86.2)",
+          "oklch(26% 0.033 86.2)",
+          "oklch(37% 0.038 86.2)",
+          "oklch(48% 0.043 86.2)",
+          "oklch(60% 0.049 86.2)",
+          "oklch(72% 0.052 86.2)",
+          "oklch(84% 0.052 86.2)",
+          "oklch(95% 0.052 86.2)"
+        ]
+      },
+      "parchment-lit": {
+        "role": "neutral",
+        "displayName": "Lit Parchment",
+        "canonical": "oklch(96.5% 0.046 90.9)",
+        "tonalRamp": [
+          "oklch(15% 0.022 90.9)",
+          "oklch(26% 0.027 90.9)",
+          "oklch(37% 0.031 90.9)",
+          "oklch(48% 0.036 90.9)",
+          "oklch(60% 0.041 90.9)",
+          "oklch(72% 0.046 90.9)",
+          "oklch(84% 0.046 90.9)",
+          "oklch(95% 0.046 90.9)"
+        ]
+      },
+      "parchment-rule": {
+        "role": "neutral",
+        "displayName": "Parchment Rule",
+        "canonical": "oklch(77.8% 0.059 83.4)",
+        "tonalRamp": [
+          "oklch(15% 0.036 83.4)",
+          "oklch(26% 0.041 83.4)",
+          "oklch(37% 0.047 83.4)",
+          "oklch(48% 0.053 83.4)",
+          "oklch(60% 0.059 83.4)",
+          "oklch(72% 0.059 83.4)",
+          "oklch(84% 0.059 83.4)",
+          "oklch(95% 0.059 83.4)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(24.4% 0.028 61.2)",
+        "tonalRamp": [
+          "oklch(15% 0.028 61.2)",
+          "oklch(26% 0.028 61.2)",
+          "oklch(37% 0.028 61.2)",
+          "oklch(48% 0.028 61.2)",
+          "oklch(60% 0.028 61.2)",
+          "oklch(72% 0.026 61.2)",
+          "oklch(84% 0.023 61.2)",
+          "oklch(95% 0.020 61.2)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "oklch(41.1% 0.042 64.8)",
+        "tonalRamp": [
+          "oklch(15% 0.042 64.8)",
+          "oklch(26% 0.042 64.8)",
+          "oklch(37% 0.042 64.8)",
+          "oklch(48% 0.042 64.8)",
+          "oklch(60% 0.042 64.8)",
+          "oklch(72% 0.041 64.8)",
+          "oklch(84% 0.036 64.8)",
+          "oklch(95% 0.032 64.8)"
+        ]
+      },
+      "ink-faded": {
+        "role": "neutral",
+        "displayName": "Faded Ink",
+        "canonical": "oklch(45.8% 0.051 67.1)",
+        "tonalRamp": [
+          "oklch(15% 0.047 67.1)",
+          "oklch(26% 0.051 67.1)",
+          "oklch(37% 0.051 67.1)",
+          "oklch(48% 0.051 67.1)",
+          "oklch(60% 0.051 67.1)",
+          "oklch(72% 0.049 67.1)",
+          "oklch(84% 0.044 67.1)",
+          "oklch(95% 0.039 67.1)"
+        ]
+      },
+      "ink-on-gold": {
+        "role": "neutral",
+        "displayName": "Ink on Gold",
+        "canonical": "oklch(23.4% 0.042 71.3)",
+        "tonalRamp": [
+          "oklch(15% 0.042 71.3)",
+          "oklch(26% 0.042 71.3)",
+          "oklch(37% 0.042 71.3)",
+          "oklch(48% 0.042 71.3)",
+          "oklch(60% 0.038 71.3)",
+          "oklch(72% 0.034 71.3)",
+          "oklch(84% 0.029 71.3)",
+          "oklch(95% 0.025 71.3)"
+        ]
+      },
+      "night-plate": {
+        "role": "neutral",
+        "displayName": "Night Plate",
+        "canonical": "oklch(19.9% 0.017 58.4)",
+        "tonalRamp": [
+          "oklch(15% 0.017 58.4)",
+          "oklch(26% 0.017 58.4)",
+          "oklch(37% 0.017 58.4)",
+          "oklch(48% 0.017 58.4)",
+          "oklch(60% 0.017 58.4)",
+          "oklch(72% 0.017 58.4)",
+          "oklch(84% 0.017 58.4)",
+          "oklch(95% 0.016 58.4)"
+        ]
+      },
+      "plate-ember": {
+        "role": "neutral",
+        "displayName": "Plate Ember",
+        "canonical": "oklch(34.8% 0.041 59.9)",
+        "tonalRamp": [
+          "oklch(15% 0.041 59.9)",
+          "oklch(26% 0.041 59.9)",
+          "oklch(37% 0.041 59.9)",
+          "oklch(48% 0.041 59.9)",
+          "oklch(60% 0.041 59.9)",
+          "oklch(72% 0.037 59.9)",
+          "oklch(84% 0.033 59.9)",
+          "oklch(95% 0.029 59.9)"
+        ]
+      },
+      "plate-socket": {
+        "role": "neutral",
+        "displayName": "Plate Socket",
+        "canonical": "oklch(30.0% 0.034 62.2)",
+        "tonalRamp": [
+          "oklch(15% 0.034 62.2)",
+          "oklch(26% 0.034 62.2)",
+          "oklch(37% 0.034 62.2)",
+          "oklch(48% 0.034 62.2)",
+          "oklch(60% 0.034 62.2)",
+          "oklch(72% 0.031 62.2)",
+          "oklch(84% 0.027 62.2)",
+          "oklch(95% 0.024 62.2)"
+        ]
+      },
+      "cream": {
+        "role": "neutral",
+        "displayName": "Cream",
+        "canonical": "oklch(97.4% 0.032 89.1)",
+        "tonalRamp": [
+          "oklch(15% 0.018 89.1)",
+          "oklch(26% 0.021 89.1)",
+          "oklch(37% 0.024 89.1)",
+          "oklch(48% 0.028 89.1)",
+          "oklch(60% 0.031 89.1)",
+          "oklch(72% 0.032 89.1)",
+          "oklch(84% 0.032 89.1)",
+          "oklch(95% 0.032 89.1)"
+        ]
+      },
+      "cream-dim": {
+        "role": "neutral",
+        "displayName": "Dim Cream",
+        "canonical": "oklch(89.0% 0.043 84.6)",
+        "tonalRamp": [
+          "oklch(15% 0.024 84.6)",
+          "oklch(26% 0.029 84.6)",
+          "oklch(37% 0.033 84.6)",
+          "oklch(48% 0.037 84.6)",
+          "oklch(60% 0.042 84.6)",
+          "oklch(72% 0.043 84.6)",
+          "oklch(84% 0.043 84.6)",
+          "oklch(95% 0.043 84.6)"
+        ]
+      },
+      "enemy-red": {
+        "role": "tertiary",
+        "displayName": "Banner Red",
+        "canonical": "oklch(60.1% 0.185 28.2)",
+        "tonalRamp": [
+          "oklch(15% 0.120 28.2)",
+          "oklch(26% 0.138 28.2)",
+          "oklch(37% 0.157 28.2)",
+          "oklch(48% 0.175 28.2)",
+          "oklch(60% 0.185 28.2)",
+          "oklch(72% 0.176 28.2)",
+          "oklch(84% 0.155 28.2)",
+          "oklch(95% 0.137 28.2)"
+        ]
+      },
+      "enemy-deep": {
+        "role": "tertiary",
+        "displayName": "Banner Red Edge",
+        "canonical": "oklch(34.8% 0.120 28.9)",
+        "tonalRamp": [
+          "oklch(15% 0.108 28.9)",
+          "oklch(26% 0.120 28.9)",
+          "oklch(37% 0.120 28.9)",
+          "oklch(48% 0.115 28.9)",
+          "oklch(60% 0.102 28.9)",
+          "oklch(72% 0.090 28.9)",
+          "oklch(84% 0.077 28.9)",
+          "oklch(95% 0.065 28.9)"
+        ]
+      },
+      "blood-banner": {
+        "role": "tertiary",
+        "displayName": "Blood Banner",
+        "canonical": "oklch(42.6% 0.147 26.1)",
+        "tonalRamp": [
+          "oklch(15% 0.120 26.1)",
+          "oklch(26% 0.135 26.1)",
+          "oklch(37% 0.147 26.1)",
+          "oklch(48% 0.147 26.1)",
+          "oklch(60% 0.134 26.1)",
+          "oklch(72% 0.118 26.1)",
+          "oklch(84% 0.102 26.1)",
+          "oklch(95% 0.088 26.1)"
+        ]
+      },
+      "keyword-rust": {
+        "role": "tertiary",
+        "displayName": "Keyword Rust",
+        "canonical": "oklch(55.5% 0.143 45.8)",
+        "tonalRamp": [
+          "oklch(15% 0.101 45.8)",
+          "oklch(26% 0.115 45.8)",
+          "oklch(37% 0.129 45.8)",
+          "oklch(48% 0.143 45.8)",
+          "oklch(60% 0.143 45.8)",
+          "oklch(72% 0.132 45.8)",
+          "oklch(84% 0.116 45.8)",
+          "oklch(95% 0.102 45.8)"
+        ]
+      },
+      "victory-amber": {
+        "role": "tertiary",
+        "displayName": "Victory Amber",
+        "canonical": "oklch(50.9% 0.103 70.8)",
+        "tonalRamp": [
+          "oklch(15% 0.079 70.8)",
+          "oklch(26% 0.090 70.8)",
+          "oklch(37% 0.100 70.8)",
+          "oklch(48% 0.103 70.8)",
+          "oklch(60% 0.103 70.8)",
+          "oklch(72% 0.093 70.8)",
+          "oklch(84% 0.082 70.8)",
+          "oklch(95% 0.072 70.8)"
+        ]
+      },
+      "tutorial-teal": {
+        "role": "tertiary",
+        "displayName": "Tutorial Teal",
+        "canonical": "oklch(50.2% 0.088 219.6)",
+        "tonalRamp": [
+          "oklch(15% 0.070 219.6)",
+          "oklch(26% 0.079 219.6)",
+          "oklch(37% 0.087 219.6)",
+          "oklch(48% 0.088 219.6)",
+          "oklch(60% 0.088 219.6)",
+          "oklch(72% 0.080 219.6)",
+          "oklch(84% 0.071 219.6)",
+          "oklch(95% 0.062 219.6)"
+        ]
+      },
+      "tutorial-glow": {
+        "role": "tertiary",
+        "displayName": "Tutorial Glow",
+        "canonical": "oklch(86.5% 0.101 218.1)",
+        "tonalRamp": [
+          "oklch(15% 0.046 218.1)",
+          "oklch(26% 0.056 218.1)",
+          "oklch(37% 0.066 218.1)",
+          "oklch(48% 0.076 218.1)",
+          "oklch(60% 0.087 218.1)",
+          "oklch(72% 0.098 218.1)",
+          "oklch(84% 0.101 218.1)",
+          "oklch(95% 0.101 218.1)"
+        ]
+      },
+      "hp-full": {
+        "role": "tertiary",
+        "displayName": "Hero HP Full",
+        "canonical": "oklch(80.0% 0.182 151.7)",
+        "tonalRamp": [
+          "oklch(15% 0.085 151.7)",
+          "oklch(26% 0.104 151.7)",
+          "oklch(37% 0.122 151.7)",
+          "oklch(48% 0.140 151.7)",
+          "oklch(60% 0.159 151.7)",
+          "oklch(72% 0.179 151.7)",
+          "oklch(84% 0.182 151.7)",
+          "oklch(95% 0.168 151.7)"
+        ]
+      },
+      "hp-low": {
+        "role": "tertiary",
+        "displayName": "Hero HP Low",
+        "canonical": "oklch(63.7% 0.208 25.3)",
+        "tonalRamp": [
+          "oklch(15% 0.127 25.3)",
+          "oklch(26% 0.147 25.3)",
+          "oklch(37% 0.168 25.3)",
+          "oklch(48% 0.189 25.3)",
+          "oklch(60% 0.208 25.3)",
+          "oklch(72% 0.202 25.3)",
+          "oklch(84% 0.180 25.3)",
+          "oklch(95% 0.159 25.3)"
+        ]
+      },
+      "heart-red": {
+        "role": "tertiary",
+        "displayName": "Heart Red",
+        "canonical": "oklch(71.2% 0.181 22.8)",
+        "tonalRamp": [
+          "oklch(15% 0.100 22.8)",
+          "oklch(26% 0.118 22.8)",
+          "oklch(37% 0.136 22.8)",
+          "oklch(48% 0.153 22.8)",
+          "oklch(60% 0.173 22.8)",
+          "oklch(72% 0.181 22.8)",
+          "oklch(84% 0.170 22.8)",
+          "oklch(95% 0.152 22.8)"
+        ]
+      },
+      "town-sky": {
+        "role": "neutral",
+        "displayName": "Town Sky",
+        "canonical": "oklch(82.7% 0.084 234.1)",
+        "tonalRamp": [
+          "oklch(15% 0.043 234.1)",
+          "oklch(26% 0.051 234.1)",
+          "oklch(37% 0.059 234.1)",
+          "oklch(48% 0.068 234.1)",
+          "oklch(60% 0.077 234.1)",
+          "oklch(72% 0.084 234.1)",
+          "oklch(84% 0.084 234.1)",
+          "oklch(95% 0.084 234.1)"
+        ]
+      },
+      "battle-sky": {
+        "role": "neutral",
+        "displayName": "Battle Sky",
+        "canonical": "oklch(83.3% 0.060 246.3)",
+        "tonalRamp": [
+          "oklch(15% 0.033 246.3)",
+          "oklch(26% 0.039 246.3)",
+          "oklch(37% 0.045 246.3)",
+          "oklch(48% 0.051 246.3)",
+          "oklch(60% 0.058 246.3)",
+          "oklch(72% 0.060 246.3)",
+          "oklch(84% 0.060 246.3)",
+          "oklch(95% 0.060 246.3)"
+        ]
+      },
+      "human-blue": {
+        "role": "game",
+        "displayName": "Human Royal Blue",
+        "canonical": "oklch(51.4% 0.192 265.0)",
+        "tonalRamp": [
+          "oklch(15% 0.139 265.0)",
+          "oklch(26% 0.158 265.0)",
+          "oklch(37% 0.177 265.0)",
+          "oklch(48% 0.192 265.0)",
+          "oklch(60% 0.187 265.0)",
+          "oklch(72% 0.166 265.0)",
+          "oklch(84% 0.145 265.0)",
+          "oklch(95% 0.126 265.0)"
+        ]
+      },
+      "elf-green": {
+        "role": "game",
+        "displayName": "Elf Leaf Green",
+        "canonical": "oklch(61.5% 0.152 140.2)",
+        "tonalRamp": [
+          "oklch(15% 0.098 140.2)",
+          "oklch(26% 0.114 140.2)",
+          "oklch(37% 0.129 140.2)",
+          "oklch(48% 0.144 140.2)",
+          "oklch(60% 0.152 140.2)",
+          "oklch(72% 0.148 140.2)",
+          "oklch(84% 0.131 140.2)",
+          "oklch(95% 0.116 140.2)"
+        ]
+      },
+      "undead-teal": {
+        "role": "game",
+        "displayName": "Undead Pale Teal",
+        "canonical": "oklch(71.1% 0.084 184.5)",
+        "tonalRamp": [
+          "oklch(15% 0.052 184.5)",
+          "oklch(26% 0.060 184.5)",
+          "oklch(37% 0.068 184.5)",
+          "oklch(48% 0.076 184.5)",
+          "oklch(60% 0.084 184.5)",
+          "oklch(72% 0.084 184.5)",
+          "oklch(84% 0.084 184.5)",
+          "oklch(95% 0.076 184.5)"
+        ]
+      },
+      "orc-orange": {
+        "role": "game",
+        "displayName": "Orc Burnt Orange",
+        "canonical": "oklch(64.0% 0.164 47.0)",
+        "tonalRamp": [
+          "oklch(15% 0.102 47.0)",
+          "oklch(26% 0.118 47.0)",
+          "oklch(37% 0.134 47.0)",
+          "oklch(48% 0.150 47.0)",
+          "oklch(60% 0.164 47.0)",
+          "oklch(72% 0.162 47.0)",
+          "oklch(84% 0.144 47.0)",
+          "oklch(95% 0.128 47.0)"
+        ]
+      },
+      "rank-common": {
+        "role": "game",
+        "displayName": "Common Grey",
+        "canonical": "oklch(72.9% 0.010 252.8)",
+        "tonalRamp": [
+          "oklch(15% 0.010 252.8)",
+          "oklch(26% 0.010 252.8)",
+          "oklch(37% 0.010 252.8)",
+          "oklch(48% 0.010 252.8)",
+          "oklch(60% 0.010 252.8)",
+          "oklch(72% 0.010 252.8)",
+          "oklch(84% 0.010 252.8)",
+          "oklch(95% 0.010 252.8)"
+        ]
+      },
+      "rank-uncommon": {
+        "role": "game",
+        "displayName": "Uncommon Green",
+        "canonical": "oklch(72.3% 0.159 156.0)",
+        "tonalRamp": [
+          "oklch(15% 0.087 156.0)",
+          "oklch(26% 0.103 156.0)",
+          "oklch(37% 0.118 156.0)",
+          "oklch(48% 0.134 156.0)",
+          "oklch(60% 0.151 156.0)",
+          "oklch(72% 0.159 156.0)",
+          "oklch(84% 0.152 156.0)",
+          "oklch(95% 0.136 156.0)"
+        ]
+      },
+      "rank-rare": {
+        "role": "game",
+        "displayName": "Rare Blue",
+        "canonical": "oklch(60.9% 0.185 261.0)",
+        "tonalRamp": [
+          "oklch(15% 0.119 261.0)",
+          "oklch(26% 0.137 261.0)",
+          "oklch(37% 0.155 261.0)",
+          "oklch(48% 0.174 261.0)",
+          "oklch(60% 0.185 261.0)",
+          "oklch(72% 0.177 261.0)",
+          "oklch(84% 0.157 261.0)",
+          "oklch(95% 0.139 261.0)"
+        ]
+      },
+      "rank-epic": {
+        "role": "game",
+        "displayName": "Epic Purple",
+        "canonical": "oklch(62.2% 0.200 305.2)",
+        "tonalRamp": [
+          "oklch(15% 0.125 305.2)",
+          "oklch(26% 0.145 305.2)",
+          "oklch(37% 0.165 305.2)",
+          "oklch(48% 0.185 305.2)",
+          "oklch(60% 0.200 305.2)",
+          "oklch(72% 0.193 305.2)",
+          "oklch(84% 0.171 305.2)",
+          "oklch(95% 0.151 305.2)"
+        ]
+      },
+      "rank-legendary": {
+        "role": "game",
+        "displayName": "Legendary Orange",
+        "canonical": "oklch(75.1% 0.158 60.3)",
+        "tonalRamp": [
+          "oklch(15% 0.082 60.3)",
+          "oklch(26% 0.098 60.3)",
+          "oklch(37% 0.114 60.3)",
+          "oklch(48% 0.129 60.3)",
+          "oklch(60% 0.146 60.3)",
+          "oklch(72% 0.158 60.3)",
+          "oklch(84% 0.155 60.3)",
+          "oklch(95% 0.140 60.3)"
+        ]
+      },
+      "damage-physical": {
+        "role": "game",
+        "displayName": "Physical White",
+        "canonical": "oklch(100.0% 0.000 0)",
+        "tonalRamp": [
+          "oklch(15% 0.000 0)",
+          "oklch(26% 0.000 0)",
+          "oklch(37% 0.000 0)",
+          "oklch(48% 0.000 0)",
+          "oklch(60% 0.000 0)",
+          "oklch(72% 0.000 0)",
+          "oklch(84% 0.000 0)",
+          "oklch(95% 0.000 0)"
+        ]
+      },
+      "damage-fire": {
+        "role": "game",
+        "displayName": "Fire Orange-Red",
+        "canonical": "oklch(70.3% 0.194 39.3)",
+        "tonalRamp": [
+          "oklch(15% 0.107 39.3)",
+          "oklch(26% 0.127 39.3)",
+          "oklch(37% 0.146 39.3)",
+          "oklch(48% 0.165 39.3)",
+          "oklch(60% 0.186 39.3)",
+          "oklch(72% 0.194 39.3)",
+          "oklch(84% 0.180 39.3)",
+          "oklch(95% 0.161 39.3)"
+        ]
+      },
+      "damage-frost": {
+        "role": "game",
+        "displayName": "Frost Light Blue",
+        "canonical": "oklch(84.8% 0.091 232.7)",
+        "tonalRamp": [
+          "oklch(15% 0.044 232.7)",
+          "oklch(26% 0.053 232.7)",
+          "oklch(37% 0.062 232.7)",
+          "oklch(48% 0.071 232.7)",
+          "oklch(60% 0.081 232.7)",
+          "oklch(72% 0.090 232.7)",
+          "oklch(84% 0.091 232.7)",
+          "oklch(95% 0.091 232.7)"
+        ]
+      },
+      "damage-holy": {
+        "role": "game",
+        "displayName": "Holy Gold",
+        "canonical": "oklch(89.1% 0.147 91.3)",
+        "tonalRamp": [
+          "oklch(15% 0.059 91.3)",
+          "oklch(26% 0.074 91.3)",
+          "oklch(37% 0.088 91.3)",
+          "oklch(48% 0.103 91.3)",
+          "oklch(60% 0.119 91.3)",
+          "oklch(72% 0.135 91.3)",
+          "oklch(84% 0.147 91.3)",
+          "oklch(95% 0.147 91.3)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The result title: Victory or Defeat."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Screen titles, with a hard 3px drop shadow."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel labels, step titles, Stage and Deck names, large gold actions, Building labels."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Details Panel, Tutorial and dialog text."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Reminder text, descriptions, the Key Guide list; flavor text in italic."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Small uppercase section labels such as Tutorial."
+      },
+      "number": {
+        "displayName": "Number",
+        "purpose": "Countdowns, Attack, HP and counts, in em of the card font size."
+      }
+    },
+    "shadows": [
+      {
+        "name": "piece-drop",
+        "value": "0 3px 0 rgba(0,0,0,0.45)",
+        "purpose": "Every button, shortcut and HUD tooltip. Pressed: 0 1px 0 rgba(0,0,0,0.45)."
+      },
+      {
+        "name": "card-bevel",
+        "value": "inset 0 0.1em 0 rgba(255,243,210,0.85), inset 0 -0.12em 0 rgba(60,30,5,0.75), 0 0.3em 0.7em rgba(0,0,0,0.55)",
+        "purpose": "The Card Frame and the Card Back."
+      },
+      {
+        "name": "tray",
+        "value": "inset 0 0.15em 0 rgba(255,214,150,0.3), inset 0 -0.3em 0.6em rgba(0,0,0,0.45), 0 0.6em 1.6em rgba(0,0,0,0.55)",
+        "purpose": "The Hand Bar."
+      },
+      {
+        "name": "well",
+        "value": "inset 0 0.35em 0.8em rgba(0,0,0,0.7), 0 0.08em 0 rgba(255,226,170,0.18)",
+        "purpose": "An empty Hand Slot or pile."
+      },
+      {
+        "name": "badge-drop",
+        "value": "0 0.12em 0.25em rgba(0,0,0,0.6)",
+        "purpose": "Round card badges and stat plates."
+      },
+      {
+        "name": "lift",
+        "value": "drop-shadow(0 10px 24px rgba(0,0,0,0.55))",
+        "purpose": "The Card Details over the Board (a filter)."
+      },
+      {
+        "name": "ready-glow",
+        "value": "0 0 18px 4px rgba(255,210,90,0.75)",
+        "purpose": "A Ready Hand Card."
+      },
+      {
+        "name": "active-glow",
+        "value": "0 0 14px 2px rgba(255,215,90,0.6)",
+        "purpose": "The Hero panel of the active side."
+      },
+      {
+        "name": "selected-halo",
+        "value": "0 0 0 3px rgba(226,169,59,0.45)",
+        "purpose": "A selected option card."
+      },
+      {
+        "name": "building-glow",
+        "value": "drop-shadow(0 0 14px rgba(255,224,138,0.95))",
+        "purpose": "A Town Building under the pointer or the focus (a filter)."
+      },
+      {
+        "name": "tutorial-glow",
+        "value": "0 0 24px rgba(127,227,255,0.75)",
+        "purpose": "The target of a Tutorial step, with a 4px #7fe3ff ring."
+      },
+      {
+        "name": "bar-lift",
+        "value": "0 -4px 12px rgba(0,0,0,0.35)",
+        "purpose": "The Town Bar."
+      },
+      {
+        "name": "focus-ring",
+        "value": "0 0 0 4px #fff2a8",
+        "purpose": "The focus ring on every interactive piece, and the ring on a selected Hand Card."
+      }
+    ],
+    "motion": [
+      {
+        "name": "press",
+        "value": "100ms",
+        "purpose": "Button hover brightness and the 1px press."
+      },
+      {
+        "name": "ease-deal",
+        "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "The hand-draw flight and the graveyard-drop; both take the time of their Battle event."
+      },
+      {
+        "name": "graveyard-drop",
+        "value": "360ms",
+        "purpose": "A card drops onto the Graveyard Pile at speed ×1 (divided by the speed)."
+      },
+      {
+        "name": "banner-in",
+        "value": "200ms",
+        "purpose": "Turn banner and Tutorial panel: fade, zoom from 95% or slide in."
+      },
+      {
+        "name": "dialog-in",
+        "value": "300ms",
+        "purpose": "Result dialog: fade and zoom from 95%."
+      },
+      {
+        "name": "town-leave",
+        "value": "450ms ease-in",
+        "purpose": "Zoom 12% toward a selected Building, then fade."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "All animation and the camera stop when the Player asks for reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "short-screen",
+        "value": "(max-height: 500px)"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "portrait-guard",
+        "value": "(orientation: portrait) and (pointer: coarse)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Gold Button",
+      "kind": "button",
+      "refersTo": "button-gold-large",
+      "description": "The one main action of a panel, such as End Turn or Start Battle.",
+      "html": "<button class=\"ds-btn-gold\"><svg class=\"ds-icon\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M-34 -28 L-4 0 L-34 28 M2 -28 L32 0 L2 28\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg><span>End Turn</span></button>",
+      "css": ".ds-btn-gold{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border:2px solid;border-radius:8px;font:600 16px/1 Inter,ui-sans-serif,system-ui,sans-serif;box-shadow:0 3px 0 rgba(0,0,0,0.45);transition:transform 100ms,filter 100ms,box-shadow 100ms;cursor:pointer;outline:none;min-height:48px;padding:0 24px;font:700 18px/1 Cinzel,ui-serif,Georgia,serif;border-color:#7a5310;background:linear-gradient(180deg,#ffe08a,#e2a93b);color:#2a1a05} .ds-icon{width:16px;height:16px} .ds-btn-gold:hover{filter:brightness(1.1)} .ds-btn-gold:focus-visible{box-shadow:0 3px 0 rgba(0,0,0,0.45),0 0 0 4px #fff2a8} .ds-btn-gold:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.45)} .ds-btn-gold:disabled{opacity:0.45;filter:grayscale(1);cursor:not-allowed}"
+    },
+    {
+      "name": "Wood Button",
+      "kind": "button",
+      "refersTo": "button-wood",
+      "description": "The default button, for the second action of a panel.",
+      "html": "<button class=\"ds-btn-wood\">Back to Campaign</button>",
+      "css": ".ds-btn-wood{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border:2px solid;border-radius:8px;font:600 16px/1 Inter,ui-sans-serif,system-ui,sans-serif;box-shadow:0 3px 0 rgba(0,0,0,0.45);transition:transform 100ms,filter 100ms,box-shadow 100ms;cursor:pointer;outline:none;border-color:#2a1a0c;background:linear-gradient(180deg,#7a5233,#563720);color:#fff6df} .ds-btn-wood:hover{filter:brightness(1.1)} .ds-btn-wood:focus-visible{box-shadow:0 3px 0 rgba(0,0,0,0.45),0 0 0 4px #fff2a8} .ds-btn-wood:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.45)} .ds-btn-wood:disabled{opacity:0.45;filter:grayscale(1);cursor:not-allowed}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Small HUD controls over the Board: speed, Skip, sound, Key Guide.",
+      "html": "<div class=\"ds-ghost-row\"><button class=\"ds-btn-ghost\">×1</button><button class=\"ds-btn-ghost\">Skip</button></div>",
+      "css": ".ds-ghost-row{display:flex;gap:4px;padding:12px;background:#a9cdee} .ds-btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border:2px solid;border-radius:8px;font:600 16px/1 Inter,ui-sans-serif,system-ui,sans-serif;box-shadow:0 3px 0 rgba(0,0,0,0.45);transition:transform 100ms,filter 100ms,box-shadow 100ms;cursor:pointer;outline:none;min-height:36px;padding:0 12px;font-size:14px;border-color:rgba(255,246,223,0.3);background:rgba(28,20,14,0.7);color:#fff6df} .ds-btn-ghost:hover{filter:brightness(1.1)} .ds-btn-ghost:focus-visible{box-shadow:0 3px 0 rgba(0,0,0,0.45),0 0 0 4px #fff2a8} .ds-btn-ghost:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.45)} .ds-btn-ghost:disabled{opacity:0.45;filter:grayscale(1);cursor:not-allowed}"
+    },
+    {
+      "name": "Turn Badge",
+      "kind": "chip",
+      "refersTo": "hud-plate",
+      "description": "A Night Plate HUD piece with the Turn number and the Your Turn chip.",
+      "html": "<div class=\"ds-turn\"><span class=\"ds-turn-n\">Turn 5</span><span class=\"ds-chip-you\">Your Turn</span><span class=\"ds-chip-enemy\">Enemy Turn</span></div>",
+      "css": ".ds-turn{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border:2px solid rgba(233,196,106,0.7);border-radius:12px;background:rgba(28,20,14,0.85);color:#fff6df} .ds-turn-n{font:700 14px/1 Cinzel,ui-serif,Georgia,serif;font-variant-numeric:tabular-nums} .ds-chip-you,.ds-chip-enemy{border-radius:4px;padding:2px 6px;font:600 12px/1.2 Inter,ui-sans-serif,system-ui,sans-serif} .ds-chip-you{background:#ffd75a;color:#2a1a05} .ds-chip-enemy{background:#d9463b;color:#fff}"
+    },
+    {
+      "name": "Option Card",
+      "kind": "card",
+      "refersTo": "option-card",
+      "description": "A radio choice on parchment, such as a Stage or a Starter Deck.",
+      "html": "<div class=\"ds-panel\"><p class=\"ds-panel-label\">Choose a Stage</p><div class=\"ds-opts\"><button class=\"ds-opt\" aria-pressed=\"true\"><span class=\"ds-opt-id\">Stage 1-1</span><span class=\"ds-opt-name\">Mossy Road</span><span class=\"ds-opt-sub\">Bandit Twins · Hero HP 32</span></button><button class=\"ds-opt\" aria-pressed=\"false\"><span class=\"ds-opt-id\">Stage 1-2 <span class=\"ds-boss\">Boss</span></span><span class=\"ds-opt-name\">Old Mill</span><span class=\"ds-opt-sub\">Miller Brute · Hero HP 40</span></button></div></div>",
+      "css": ".ds-panel{display:flex;flex-direction:column;gap:8px;padding:12px;border:4px solid #5b3a1e;border-radius:16px;background:#ead9b4;color:#2a1d12} .ds-panel-label{margin:0;font:700 18px/1.25 Cinzel,ui-serif,Georgia,serif} .ds-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px} .ds-opt{display:flex;flex-direction:column;gap:4px;padding:12px;text-align:left;border:2px solid #c9b48c;border-radius:12px;background:#f6ead0;color:#2a1d12;cursor:pointer;outline:none;transition:transform 150ms,box-shadow 150ms} .ds-opt:hover{transform:translateY(-2px)} .ds-opt:focus-visible{box-shadow:0 0 0 4px #fff2a8} .ds-opt[aria-pressed=true]{border-color:#e2a93b;background:#fff3d1;box-shadow:0 0 0 3px rgba(226,169,59,0.45)} .ds-opt-id{display:flex;justify-content:space-between;font:900 14px/1.2 Inter,ui-sans-serif,system-ui,sans-serif;color:#5b3a1e} .ds-boss{border-radius:4px;padding:2px 6px;background:#8e1f1f;color:#fff;font:700 10px/1.2 Inter,sans-serif;text-transform:uppercase} .ds-opt-name{font:700 16px/1.2 Cinzel,ui-serif,Georgia,serif} .ds-opt-sub{font:400 12px/1.375 Inter,ui-sans-serif,system-ui,sans-serif;color:#5b4632}"
+    },
+    {
+      "name": "Parchment Dialog",
+      "kind": "custom",
+      "refersTo": "parchment-dialog",
+      "description": "A result or confirm dialog: parchment, a thick frame-wood border, one gold and one wood action.",
+      "html": "<div class=\"ds-scrim\"><section class=\"ds-dialog\" role=\"dialog\" aria-label=\"Victory\"><h2 class=\"ds-dialog-title\">Victory</h2><p class=\"ds-dialog-sub\">Mossy Road</p><p class=\"ds-stars\"><span class=\"on\">★</span><span class=\"on\">★</span><span>★</span></p><div class=\"ds-dialog-actions\"><button class=\"ds-d-gold\">Retry</button><button class=\"ds-d-wood\">Back to Campaign</button></div></section></div>",
+      "css": ".ds-scrim{display:flex;justify-content:center;padding:24px;background:rgba(0,0,0,0.55)} .ds-dialog{width:min(420px,94vw);padding:20px;text-align:center;border:4px solid #5b3a1e;border-radius:16px;background:#f6ead0;color:#2a1d12;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)} .ds-dialog-title{margin:0;font:900 36px/1.1 Cinzel,ui-serif,Georgia,serif;color:#8a5a12} .ds-dialog-sub{margin:4px 0 0;font:400 14px/1.375 Inter,ui-sans-serif,system-ui,sans-serif;color:#5b4632} .ds-stars{margin:12px 0 0;font-size:36px;letter-spacing:0.1em;color:#cbbfa5} .ds-stars .on{color:#e2a93b;filter:drop-shadow(0 2px 0 #7a5310)} .ds-dialog-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px} .ds-d-gold,.ds-d-wood{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border:2px solid;border-radius:8px;font:600 16px/1 Inter,ui-sans-serif,system-ui,sans-serif;box-shadow:0 3px 0 rgba(0,0,0,0.45);transition:transform 100ms,filter 100ms,box-shadow 100ms;cursor:pointer;outline:none;} .ds-d-gold{border-color:#7a5310;background:linear-gradient(180deg,#ffe08a,#e2a93b);color:#2a1a05} .ds-d-wood{border-color:#2a1a0c;background:linear-gradient(180deg,#7a5233,#563720);color:#fff6df} .ds-d-gold:hover{filter:brightness(1.1)} .ds-d-gold:focus-visible{box-shadow:0 3px 0 rgba(0,0,0,0.45),0 0 0 4px #fff2a8} .ds-d-gold:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.45)} .ds-d-gold:disabled{opacity:0.45;filter:grayscale(1);cursor:not-allowed} .ds-d-wood:hover{filter:brightness(1.1)} .ds-d-wood:focus-visible{box-shadow:0 3px 0 rgba(0,0,0,0.45),0 0 0 4px #fff2a8} .ds-d-wood:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.45)} .ds-d-wood:disabled{opacity:0.45;filter:grayscale(1);cursor:not-allowed}"
+    },
+    {
+      "name": "Town Bar",
+      "kind": "nav",
+      "refersTo": "town-shortcut",
+      "description": "The dark wood bar at the bottom of each screen except the Battle, with one shortcut for each screen.",
+      "html": "<nav class=\"ds-townbar\" aria-label=\"Town Bar\"><a class=\"ds-sc ds-sc-home\" href=\"#\"><svg class=\"ds-sc-icon\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M-40 -2 L0 -40 L40 -2 Z M-30 -2 H30 V42 H-30 Z M-8 42 V16 H8 V42 Z\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg><span>Town</span></a><a class=\"ds-sc ds-sc-current\" href=\"#\" aria-current=\"page\"><svg class=\"ds-sc-icon\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M-44 -20 H44 V44 H-44 Z M-44 -36 H-28 V-20 H-44 Z M-8 -36 H8 V-20 H-8 Z M28 -36 H44 V-20 H28 Z M-18 44 V6 Q-18 -14 0 -14 Q18 -14 18 6 V44 Z\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg><span>Campaign</span></a><a class=\"ds-sc ds-sc-locked\" href=\"#\" aria-label=\"Collection, opens later\"><span class=\"ds-sc-wrap\"><svg class=\"ds-sc-icon\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M-30 -40 H22 V40 H-30 Z M-20 -48 H36 V30 H28 V-40 H-20 Z\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg><svg class=\"ds-sc-lock\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M-28 -4 H28 V44 H-28 Z M-18 -4 V-22 Q-18 -42 0 -42 Q18 -42 18 -22 V-4 H8 V-22 Q8 -32 0 -32 Q-8 -32 -8 -22 V-4 Z M7 16 A7 7 0 1 1 -7 16 A7 7 0 1 1 7 16 Z\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg></span><span>Collection</span></a></nav>",
+      "css": ".ds-townbar{display:flex;align-items:center;gap:4px;padding:6px 8px;border-top:4px solid #2a1a0c;background:linear-gradient(180deg,#4a2f1b,#2e1d10);box-shadow:0 -4px 12px rgba(0,0,0,0.35)} .ds-sc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:64px;min-height:56px;padding:4px;border:2px solid #2a1a0c;border-radius:8px;background:linear-gradient(180deg,#7a5233,#563720);color:#fff6df;font:700 11px/1 Inter,ui-sans-serif,system-ui,sans-serif;text-decoration:none;box-shadow:0 3px 0 rgba(0,0,0,0.45);outline:none;transition:transform 100ms,filter 100ms} .ds-sc:hover{filter:brightness(1.1)} .ds-sc:active{transform:translateY(1px)} .ds-sc:focus-visible{box-shadow:0 3px 0 rgba(0,0,0,0.45),0 0 0 4px #fff2a8} .ds-sc-home{margin-right:4px} .ds-sc-current{border-color:#7a5310;background:linear-gradient(180deg,#ffe08a,#e2a93b);color:#2a1a05} .ds-sc-locked{border-color:transparent;background:none;box-shadow:none;color:rgba(217,199,163,0.6);cursor:default} .ds-sc-wrap{position:relative;display:block} .ds-sc-icon{width:24px;height:24px} .ds-sc-lock{position:absolute;right:-8px;bottom:-4px;width:14px;height:14px;color:#e9c46a}"
+    },
+    {
+      "name": "Card Frame",
+      "kind": "custom",
+      "refersTo": "card-frame",
+      "description": "The signature piece: card art in a bronze frame with the Countdown, name ribbon, Rank Gems, emblem, and Attack and HP plates. Sized in em.",
+      "html": "<div class=\"ds-card-stage\"><span class=\"ds-card\"><span class=\"ds-art\"></span><span class=\"ds-title\"><span class=\"ds-banner\">Badland Pup</span><span class=\"ds-gems\"><i></i><i></i></span></span><span class=\"ds-badge ds-cd ds-ready\"><svg class=\"ds-cd-glass\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M-32 -46 H32 V-36 H-32 Z M-32 36 H32 V46 H-32 Z M-24 -36 H24 Q24 -14 6 0 Q24 14 24 36 H-24 Q-24 14 -6 0 Q-24 -14 -24 -36 Z\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg><b>0</b></span><span class=\"ds-badge ds-emblem\"><svg class=\"ds-em-icon\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M0 -50 L9 -38 L9 22 L-9 22 L-9 -38 Z M-26 22 H26 V30 H-26 Z M-5 30 H5 V48 H-5 Z\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg></span><span class=\"ds-badge ds-stat ds-atk\"><svg class=\"ds-st-icon\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M0 -50 L9 -38 L9 22 L-9 22 L-9 -38 Z M-26 22 H26 V30 H-26 Z M-5 30 H5 V48 H-5 Z\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg><b>3</b></span><span class=\"ds-badge ds-stat ds-hp\"><svg class=\"ds-st-icon\" viewBox=\"-54 -54 108 108\" aria-hidden=\"true\"><path d=\"M0 -14 C0 -40 -40 -40 -40 -12 C-40 10 0 26 0 42 C0 26 40 10 40 -12 C40 -40 0 -40 0 -14 Z\" fill=\"currentColor\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-width=\"6\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg><b>2</b></span></span></div>",
+      "css": ".ds-card-stage{display:flex;justify-content:center;padding:24px;background:linear-gradient(180deg,#6b4423,#2f1c0d)} .ds-card{position:relative;display:block;width:9em;height:12.6em;padding:0.36em;font-size:20px;border-radius:0.85em;background:linear-gradient(155deg,#f7dc9c 0%,#c99442 22%,#8a5a20 55%,#b47f36 80%,#e9c27a 100%);box-shadow:inset 0 0.1em 0 rgba(255,243,210,0.85),inset 0 -0.12em 0 rgba(60,30,5,0.75),0 0.3em 0.7em rgba(0,0,0,0.55),0 0 18px 4px rgba(255,210,90,0.75)} .ds-art{display:block;width:100%;height:100%;border:0.14em solid #34c27a;border-radius:0.55em;background:radial-gradient(ellipse at 40% 35%,#f3b46a,#b4521a 55%,#4a2310)} .ds-title{position:absolute;left:1.55em;right:1.55em;top:0.15em;display:flex;flex-direction:column;align-items:center;gap:0.3em;z-index:5} .ds-banner{width:100%;padding:0.2em 0.6em;text-align:center;font:700 0.9em/1.05 Inter,ui-sans-serif,system-ui,sans-serif;letter-spacing:-0.025em;color:#fff6df;text-shadow:0 0.08em 0 rgba(0,0,0,0.7);background:#d9661f;box-shadow:inset 0 -0.12em 0 #7d3209;clip-path:polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%)} .ds-gems{display:inline-flex;gap:0.18em} .ds-gems i{width:0.62em;height:0.62em;transform:rotate(45deg);border:0.08em solid #2a1a08;background:#34c27a;box-shadow:inset 0.08em 0.08em 0 rgba(255,255,255,0.6)} .ds-badge{position:absolute;z-index:10;display:flex;align-items:center;justify-content:center;border:0.16em solid #e7bb6a;border-radius:9999px;box-shadow:0 0.12em 0.25em rgba(0,0,0,0.6);background:radial-gradient(circle at 35% 30%,#4a3524,#1c140e 70%);color:#fff6df} .ds-cd{top:-0.3em;left:-0.3em;width:2.1em;height:2.1em} .ds-ready{background:radial-gradient(circle at 35% 30%,#fff1a8,#ffcf4a 55%,#d99a1c);color:#2a1a05} .ds-cd-glass{position:absolute;width:1.45em;height:1.45em;opacity:0.3} .ds-cd b,.ds-stat b{position:relative;font:900 1.3em/1 Inter,ui-sans-serif,system-ui,sans-serif;font-variant-numeric:tabular-nums} .ds-emblem{top:-0.3em;right:-0.3em;width:2.1em;height:2.1em;background:#d9661f} .ds-em-icon{width:1.15em;height:1.15em} .ds-stat{bottom:-0.35em;height:2.05em;min-width:2.05em;gap:0.1em;padding:0 0.3em} .ds-stat b{font-size:1.2em;color:#fff6df} .ds-atk{left:-0.35em;color:#ffffff} .ds-hp{right:-0.35em;color:#ff6b6b} .ds-st-icon{width:1.05em;height:1.05em}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Tabletop Diorama",
+    "overview": "Heynbord is a painted fantasy card game in a small 3D diorama. The Board is a game table, the Units are figures on it, and every 2D control is a real game piece on the edge of that table: a wooden tray for the Hand, bronze frames for the cards, a leather Card Back, gold tokens for the actions, and parchment sheets for the rules. The world is bright, warm, clear, handmade and a little funny, like a classic adventure story. The UI never tries to be a web app around a game. It is part of the game box.\n\nThe material is a frame, not a surface for text. Wood, bronze and leather carry gradients, bevels and grain, but all text sits on a flat area with high contrast: cream on a dark plate, or dark ink on parchment. Pieces are chunky and tactile. They have thick borders, a hard drop under each button, and a small physical press. The density is that of a board game: a few large pieces, each easy to read on a phone in landscape.\n\nThe system is light and readable first (product pillar 5). The HUD sits at the edges of the screen and lets pointer events through to the Board. Effects and panels never hide the Board or the stats. Motion is short and physical, and reduced motion stops all of it.\n\nThe base component library theme in `apps/web/src/core/styles/globals.css` (a blue primary, zinc greys, light and dark modes) is not part of this system. It is the un-themed default that only the development Component Catalog at `/master-design` uses. The game world that this file describes is normative.",
+    "keyCharacteristics": [
+      "Real materials as frames: dark wood, warm bronze, gold, tooled leather, parchment.",
+      "Text on flat, high-contrast areas only: cream on a night plate, or ink on parchment.",
+      "Chunky pieces: 2px to 4px borders, a hard 3px drop with no blur, a 1px press.",
+      "Gold means \"act now\" or \"this is yours\": the main action, a Ready card, Your Turn, the current screen.",
+      "Game meaning is never shown by color alone: Rank uses gems and a count, Damage Type uses a color and an icon.",
+      "One gold focus ring (`focus-cream`, 4px) on every interactive piece.",
+      "A compact layout for short screens (`max-height: 500px`) on every component."
+    ],
+    "rules": [
+      {
+        "name": "The Gold Means Act Rule",
+        "body": "Gold marks the main action of a panel, a Ready card, Your Turn, and the current place. Each panel has one gold action. Wood is the default for all other buttons.",
+        "section": "colors"
+      },
+      {
+        "name": "The Flat Text Rule",
+        "body": "Text never sits on a gradient, a grain or the 3D scene. It sits on a flat Night Plate, on parchment, or on a solid button face, with WCAG 2.2 AA contrast.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never Color Alone Rule",
+        "body": "A Rank always has its gems (1 for Common to 5 for Legendary). A Damage Type always has its icon. A side always has its position (player left, enemy right) as well as its color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Base Theme Stays Out Rule",
+        "body": "The blue primary and zinc greys of the base component theme never appear on a game screen. A base component that goes into the game gets the Heynbord colors first.",
+        "section": "colors"
+      },
+      {
+        "name": "The Large Display Rule",
+        "body": "Cinzel is for titles and names at 14px or larger. Never use it for rules text, Keywords, numbers or paragraphs.",
+        "section": "typography"
+      },
+      {
+        "name": "The Big Number Rule",
+        "body": "A number that the Player plans with (a Countdown, Attack, HP) is Inter 900 with tabular figures, on its own badge or plate. It is the largest text on its piece.",
+        "section": "typography"
+      },
+      {
+        "name": "The Short Screen Rule",
+        "body": "`@media (max-height: 500px)` is the phone-in-landscape layout. Every component has a compact form for it: smaller padding, one size smaller text, icon-only Town Bar shortcuts, and a 2-line End Turn label. A phone in portrait shows only a request to turn the phone.",
+        "section": "layout"
+      },
+      {
+        "name": "The Clear Board Rule",
+        "body": "No HUD piece, panel or effect may cover a Square or a Unit stat for longer than an action needs. Card Details and the Tutorial panel open at the sides of the Board, not on it.",
+        "section": "layout"
+      },
+      {
+        "name": "The Hard Drop Rule",
+        "body": "A piece that the Player can press casts a hard drop with no blur, and pressing it moves it down 1px. Soft, blurred shadows are only for things that float over the Board.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Glow Is State Rule",
+        "body": "A gold glow means Ready, active or selected. Never add a glow to a piece only to decorate it.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** put all text on a flat area: `cream` on a `night-plate`, or `ink` on `parchment`, at WCAG 2.2 AA contrast.",
+      "**Do** give each panel one gold action. Use wood for the second action and ghost for small controls over the Board.",
+      "**Do** give every interactive piece the 4px `focus-cream` ring, the Piece Drop and the 1px press.",
+      "**Do** show a Rank with its gems and a Damage Type with its icon, every time.",
+      "**Do** size card parts in `em`, and set the card size with the font size of the parent.",
+      "**Do** give every new component a compact form for `@media (max-height: 500px)`, and respect the safe-area insets.",
+      "**Do** stop all motion when the Player asks for reduced motion.",
+      "**Do** keep the art bright, warm and lit from the upper left, as art direction 5 asks."
+    ],
+    "donts": [
+      "**Don't** make the game dark, realistic, gory, noisy or neon.",
+      "**Don't** use the blue primary, the zinc greys or the light/dark switch of the base component theme on a game screen.",
+      "**Don't** put text directly on wood grain, a bronze gradient, a painting or the 3D scene.",
+      "**Don't** use Cinzel for rules text, Keywords, numbers, or any text under 14px.",
+      "**Don't** show a Rank, a Damage Type or a side by color alone.",
+      "**Don't** add a glow to a piece that is not Ready, active or selected.",
+      "**Don't** use soft, blurred shadows on buttons. They have a hard drop.",
+      "**Don't** cover a Square or a Unit stat with a HUD piece, a panel or an effect.",
+      "**Don't** use the Tutorial teal for anything except the Tutorial."
+    ]
+  }
+}

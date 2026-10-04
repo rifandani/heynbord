@@ -33,7 +33,14 @@ export default defineConfig({
   // Expose portless's worktree-aware URL to import.meta.env (see core/config/env.ts).
   envPrefix: ["VITE_", "PORTLESS_"],
   plugins: [
-    tanstackDevtools(),
+    tanstackDevtools({
+      injectSource: {
+        enabled: true,
+        // React Three Fiber reads `data-tsd-source` on 3D elements as a nested
+        // property path and throws. The 3D scene has no DOM to inspect anyway.
+        ignore: { files: [/\/features\/battle\/scene\//u] },
+      },
+    }),
     tailwindcss(),
     tanstackStart(),
     nitro({
@@ -218,5 +225,13 @@ export default defineConfig({
   server: {
     port: 3001,
     forwardConsole: true,
+    // QA writes reports and captures here during a run. A change must not reload the page.
+    watch: {
+      ignored: [
+        "**/artifacts/**",
+        "**/playwright-report/**",
+        "**/playwright-test-results/**",
+      ],
+    },
   },
 });

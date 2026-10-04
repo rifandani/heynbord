@@ -33,7 +33,8 @@
     "check:all": "fallow --quiet",
     "check:viz": "fallow viz --out .fallow/map.html",
     "check:fix": "fallow fix --yes --no-create-config",
-    "typecheck": "bun web typecheck",
+    "typecheck": "bun run --parallel web:typecheck rules:typecheck",
+    "rules:typecheck": "bun rules typecheck",
     "typerange": "bun web typerange",
     "lint-typecheck": "bun run --parallel lint web:typecheck",
     "web": "bun --elide-lines=0 --filter @workspace/web",
@@ -44,7 +45,10 @@
     "test:unit:cov": "vitest run --coverage",
     "test:mutate": "stryker run",
     "test:mutate:inc": "stryker run --incremental",
-    "web:test:unit": "vitest run --project web"
+    "web:test:unit": "vitest run --project web",
+    "rules": "bun --elide-lines=0 --filter @workspace/rules",
+    "rules:test:unit": "vitest run --project rules",
+    "rules:sim": "bun --filter @workspace/rules sim"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3",

@@ -1,0 +1,50 @@
+{
+  "seed": 7,
+  "stage": "1-1",
+  "deck": "raiders",
+  "turns": 15,
+  "cardsPlayed": 15,
+  "firstPlayTurn": 3,
+  "fps": [
+    23,
+    13,
+    18,
+    23,
+    24,
+    24,
+    24,
+    23,
+    21,
+    24,
+    17,
+    24,
+    23,
+    12,
+    14
+  ],
+  "drawCalls": [
+    20,
+    32,
+    49,
+    53,
+    61,
+    57,
+    60,
+    61,
+    70,
+    61,
+    57,
+    56,
+    60,
+    64,
+    64
+  ],
+  "result": {
+    "winner": "player",
+    "reason": "heroDefeated"
+  },
+  "finalTurnNumber": 15,
+  "playerHp": 46,
+  "enemyHp": 0,
+  "consoleErrors": []
+}

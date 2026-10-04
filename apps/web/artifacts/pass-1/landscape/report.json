@@ -1,0 +1,94 @@
+[
+  {
+    "state": {
+      "mode": "battle",
+      "stageId": "1-2",
+      "seed": 42,
+      "turnNumber": 5,
+      "activeSide": "player",
+      "playerHp": 46,
+      "enemyHp": 32,
+      "units": 7,
+      "hand": [
+        1,
+        2,
+        0,
+        4
+      ],
+      "queued": 0,
+      "current": null,
+      "result": null,
+      "eventsPlayed": 85
+    },
+    "viewport": "844x390 touch",
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "calls": 48,
+    "triangles": 7918,
+    "geometries": 24,
+    "textures": 16,
+    "fps": 60,
+    "frameMs": 16.67,
+    "consoleErrors": []
+  },
+  {
+    "state": {
+      "mode": "battle",
+      "stageId": "1-2",
+      "seed": 42,
+      "turnNumber": 5,
+      "activeSide": "player",
+      "playerHp": 46,
+      "enemyHp": 32,
+      "units": 7,
+      "hand": [
+        1,
+        2,
+        0,
+        4
+      ],
+      "queued": 0,
+      "current": null,
+      "result": null,
+      "eventsPlayed": 85
+    },
+    "viewport": "844x390 touch",
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "calls": 50,
+    "triangles": 7922,
+    "geometries": 26,
+    "textures": 16,
+    "fps": 60,
+    "frameMs": 16.67,
+    "consoleErrors": []
+  },
+  {
+    "state": {
+      "mode": "battle",
+      "stageId": "1-2",
+      "seed": 42,
+      "turnNumber": 5,
+      "activeSide": "enemy",
+      "playerHp": 46,
+      "enemyHp": 32,
+      "units": 8,
+      "hand": [
+        1,
+        2,
+        4
+      ],
+      "queued": 5,
+      "current": "UnitMoved",
+      "result": null,
+      "eventsPlayed": 103
+    },
+    "viewport": "844x390 touch",
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "calls": 52,
+    "triangles": 8022,
+    "geometries": 26,
+    "textures": 20,
+    "fps": 60,
+    "frameMs": 16.67,
+    "consoleErrors": []
+  }
+]

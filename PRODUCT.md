@@ -41,8 +41,10 @@ _A collectible card game crossed with lane tower defense, where timing replaces 
 
 - Desktop browser first, with mouse and keyboard. The game also works on a phone in landscape with touch. On a phone in portrait, the game asks the Player to turn the phone.
 - Session loop: 3 to 6 Battles in 10 to 30 minutes, then Workshop and Deck changes. A Battle takes 3 to 6 minutes at speed ×1.
-- Screens: Title, Camp (hub), Campaign map, Heynspire, Battle, Deck builder, Collection, Workshop, Hero, Packs, Achievements, Settings. See [GDD 11.1](docs/game/03-game-design.md#111-screens).
+- Screens: Title, Town (hub), Campaign map, Heynspire, Battle, Deck builder, Collection, Workshop, Hero, Packs, Achievements, Settings. See [GDD 11.1](docs/game/03-game-design.md#111-screens).
+- The full game is one route, `/play`. The Town, the Campaign and the Battle are states of that route, not separate URLs. Each screen has its own in-game control to go back. See [web ADR-0006](apps/web/docs/adr/0006-the-game-is-one-route.md).
 - The Battle is a 3D scene (React Three Fiber). The Hand, HUD and all menus are 2D React UI on React Aria components, so text stays sharp.
+- The Town is a layered 2D painting, not a 3D scene: a painted plate with one cut-out image for each selectable Building. Each Building is a React Aria button. See [web ADR-0005](apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md) and [10 — Town Concepts](docs/game/10-town-concepts.md).
 
 ## Capabilities and Constraints
 
@@ -73,7 +75,10 @@ Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-require
 
 - Logo files in `apps/web/brand/` and PWA icons in `apps/web/public/`.
 - Complete design documents in `docs/game/` (pillars, vision, GDD, PRD, art direction, technical design, economy, roadmap).
-- No card art, Board models, music or sound effects exist yet. The golden reference images are a Milestone 0 task.
+- Card art: 22 final, AI-made card illustrations in `apps/web/public/illustrations/` (one 3:4 portrait for each card, with its background).
+- Town art: the first master painting (`apps/web/public/town/town.jpg`, 1672 × 941) and the Town Gate layer cut out of it (`town-gate.webp`). A 3200 × 1800 export is still to make. The brief is [10 — Town Concepts](docs/game/10-town-concepts.md).
+- Sound: the Battle sounds are made with Web Audio in code (`apps/web/src/features/battle/battle-audio.ts`). No audio files and no music exist yet.
+- No Board models exist yet. The golden reference images are a Milestone 0 task.
 - No playtests, players, reviews, testimonials or press exist yet. Do not invent them.
 
 ## Product Principles

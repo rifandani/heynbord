@@ -12,7 +12,7 @@ Not: dark, realistic, gory, noisy, neon.
 
 | Element | How it looks |
 | --- | --- |
-| **Units** | Card art cut out (transparent background) on a flat plane, standing on a small round base. The plane always faces the camera on the vertical axis (billboard). |
+| **Units** | A rigged 3D model on a small round base, when the card has one (see 2.2). Other cards show the card art cut out (transparent background) on a flat plane on the base. The plane always faces the camera on the vertical axis (billboard). Until a card has its cut-out, the plane shows the card art with its background, in an arched shape, with no frame and no Rank Gems. |
 | **Board** | A real 3D model: a table-land with Lanes of stone or wood tiles. Each Region has its own Board skin. |
 | **Heroes** | A larger cut-out figure at the end of the Lanes, with a 3D frame and an HP bar. |
 | **Cards in the Hand** | 2D UI (React), not in the 3D scene. This keeps text sharp. |
@@ -21,7 +21,7 @@ Not: dark, realistic, gory, noisy, neon.
 
 ### 2.1 Unit feedback without animation rigs
 
-Units are flat images, so the game shows actions with movement of the plane:
+A cut-out Unit is a flat image, so the game shows actions with movement of the plane:
 
 | Action | Feedback |
 | --- | --- |
@@ -34,6 +34,14 @@ Units are flat images, so the game shows actions with movement of the plane:
 | Block | A shield icon and a "clang" sound |
 | Death | The figure falls back flat and fades out with dust or spirit particles |
 | Summon | The figure rises from the Square with a light ring in the Race color |
+
+### 2.2 Rigged Unit models
+
+A card can have a rigged 3D model instead of the cut-out. The model plays a clip for each action: idle, walk (Move), attack (melee and ranged), hurt (Hit) and death. The clip follows the event progress, so it keeps time with the Battle speed. The movement, tint and fade of 2.1 still apply to the model, and the Summon rise and the projectiles stay the same.
+
+- Source: Tripo text-to-3D in a T-pose, with the subject, props and Race colors of the card concept ([09 — Card Concepts](./09-card-concepts.md)). Then auto-rig, and retarget the preset clips.
+- Each model is one GLB in `apps/web/public/models/units/`, with the clips named `idle`, `walk`, `attack`, `hurt` and `death`. The list of cards with a model is in `apps/web/src/features/battle/scene/unit-models.ts`.
+- Write the licence record (5.5) for each model, with the Tripo task IDs.
 
 ## 3. Camera
 
@@ -49,14 +57,14 @@ Units are flat images, so the game shows actions with movement of the plane:
 
 | Race | Main color | Second color | Materials |
 | --- | --- | --- | --- |
-| Hearthkin | Royal blue | Gold | Steel, cloth banners, wood |
-| Thornwild | Leaf green | Warm brown | Bark, leaves, flowers |
-| Hollowborn | Pale teal | Bone white | Old bronze, bone, spirit fire |
-| Wildmaw | Burnt orange | Dark red | Leather, fur, rough iron |
+| Human | Royal blue | Gold | Steel, cloth banners, wood |
+| Elf | Leaf green | Warm brown | Bark, leaves, flowers |
+| Undead | Pale teal | Bone white | Old bronze, bone, spirit fire |
+| Orc | Burnt orange | Dark red | Leather, fur, rough iron |
 
 ### 4.2 Rank colors
 
-Stone (grey), Jade (green), Sapphire (blue), Amethyst (purple), Sunstone (orange). The card frame shows the Rank color and pips (see GDD 5.3).
+Common (grey), Uncommon (green), Rare (blue), Epic (purple), Legendary (orange). The card frame shows the Rank color and pips (see GDD 5.3).
 
 ### 4.3 Damage Type colors and icons
 
@@ -86,12 +94,26 @@ Before production, make a **style bible** with:
 [subject], [Race] of Heynbord, [pose], full body, centered,
 painterly fantasy card illustration, bright warm light, clean silhouette,
 soft brush texture, [Race main color] and [Race second color] palette,
-plain background, no text, no frame
+light from the upper left, [setting], simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+The setting is simple and has low contrast, so that the figure separates cleanly when you remove the background (step 5.3.5).
+
+### 5.2.1 Prompt template for Skill Cards
+
+A Skill Card has a Class, not a Race. Its image must not show a Race, because a Hero of any Race can use it. Show the effect, with only a partial figure (hands, a back view or a silhouette). The Damage Type color is the main color. For Physical, use a neutral steel and leather palette. A Skill Card has no Unit cut-out.
+
+```text
+[effect subject], [partial figure], [action],
+Heynbord [Class] skill, painterly fantasy card illustration, bright warm light,
+light from the upper left, soft brush texture, [Damage Type color] accents,
+[setting], portrait 3:4 composition, no text, no frame
 ```
 
 ### 5.3 Steps for each card
 
-1. Write the card concept: name, Race, role, one sentence of description.
+1. Write the card concept in [09 — Card Concepts](./09-card-concepts.md): name, Race or Class, Role, subject, pose, props, setting and prompt.
 2. Make 4 to 8 images with the prompt template and the style references.
 3. Select one image with the review checklist (5.4).
 4. Fix problems by hand or with inpainting (hands, weapons, extra parts).
@@ -127,7 +149,7 @@ For each asset, record: the file name, the tool and version, the date, the promp
 ### 7.1 Music
 
 - Style: light orchestral folk. Flutes, strings, small drums. Each Region has its own theme.
-- Tracks for v1: Title, Camp, 3 Region Battle themes, 1 Boss theme, Victory sting, Defeat sting.
+- Tracks for v1: Title, Town, 3 Region Battle themes, 1 Boss theme, Victory sting, Defeat sting.
 - Source: AI music tools, with the same licence record as the art. Music has low priority. The game must be complete without music.
 
 ### 7.2 Sound effects
@@ -135,7 +157,7 @@ For each asset, record: the file name, the tool and version, the date, the promp
 - Source: sound effect packs with a free licence that permits commercial use (for example CC0).
 - Each Battle action has a sound: summon, move, each attack type, each Damage Type, Crit, Block, death, Countdown "tick" when a card becomes Ready, End Turn.
 - Each UI action has a short, soft sound.
-- Races have small sound differences (for example metal for Hearthkin, wood for Thornwild).
+- Races have small sound differences (for example metal for Human, wood for Elf).
 
 ### 7.3 Mix
 
