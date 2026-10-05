@@ -24,6 +24,15 @@ const PARCHMENT = { main: "#f3e6c4", ink: "#3a2612" } as const;
 
 const CREAM = "#fff6df";
 const HEART_RED = "#ff6b6b";
+/** The HP number of a damaged Unit: the color of a low Hero HP bar. */
+const HP_LOW = "#ff7a6b";
+
+/** The stats of a Unit on the Board, when they differ from its card. */
+export interface LiveStats {
+  readonly attack: number;
+  readonly hp: number;
+  readonly maxHp: number;
+}
 
 export const DAMAGE_GLYPH = {
   physical: "sword",
@@ -55,12 +64,18 @@ const RankGems = ({ rank }: { readonly rank: RankId }) => (
  * The Countdown at the top left, on a faint hourglass. It has the same size as
  * the emblem, and it is gold when the card is Ready.
  */
-const CountdownBadge = ({ countdown }: { readonly countdown: number }) => (
+const CountdownBadge = ({
+  countdown,
+  ready,
+}: {
+  readonly countdown: number;
+  readonly ready: boolean;
+}) => (
   <span
     className={cn(
       badgeClassName,
       "-top-[0.3em] -left-[0.3em] size-[2.1em]",
-      countdown === 0
+      ready
         ? "bg-[radial-gradient(circle_at_35%_30%,#fff1a8,#ffcf4a_55%,#d99a1c)] text-[#2a1a05]"
         : cn(darkPlate, "text-[#fff6df]")
     )}
@@ -135,11 +150,13 @@ const StatPlate = ({
   glyph,
   color,
   value,
+  valueColor = CREAM,
   className,
 }: {
   readonly glyph: Glyph;
   readonly color: string;
   readonly value: number;
+  readonly valueColor?: string;
   readonly className: string;
 }) => (
   <span
@@ -154,34 +171,42 @@ const StatPlate = ({
     <GlyphIcon glyph={glyph} className="size-[1.05em]" />
     <span
       className="text-[1.2em] leading-none font-black tabular-nums"
-      style={{ color: CREAM }}
+      style={{ color: valueColor }}
     >
       {value}
     </span>
   </span>
 );
 
-/** Attack (with its Damage Type icon) and HP, or the effect icon of a Skill Card. */
+/**
+ * Attack (with its Damage Type icon) and HP, or the effect icon of a Skill
+ * Card. `live` gives the current stats of a Unit. The HP of a damaged Unit has
+ * the low HP color, and the Details Panel says "HP 3 of 5" in words.
+ */
 const BottomPlates = ({
   card,
   rank,
+  live,
 }: {
   readonly card: CardDefinition;
   readonly rank: RankId;
+  readonly live?: LiveStats;
 }): ReactNode => {
   if (card.kind === "creature") {
+    const hp = live?.hp ?? scaleForRank(card.hp, rank);
     return (
       <>
         <StatPlate
           glyph={DAMAGE_GLYPH[card.damageType]}
           color={DAMAGE_COLORS[card.damageType]}
-          value={scaleForRank(card.attack, rank)}
+          value={live?.attack ?? scaleForRank(card.attack, rank)}
           className="-left-[0.35em]"
         />
         <StatPlate
           glyph="heart"
           color={HEART_RED}
-          value={scaleForRank(card.hp, rank)}
+          value={hp}
+          valueColor={live && hp < live.maxHp ? HP_LOW : CREAM}
           className="-right-[0.35em]"
         />
       </>
@@ -217,16 +242,22 @@ const artWindowStyle = (card: CardDefinition, rank: RankId): CSSProperties => ({
  * banner, the Rank Gems, the emblem, and Attack and HP. All sizes are in `em`,
  * so the font size of the parent sets the size of the card (9em × 12.6em).
  * The frame is decorative: the caller gives the accessible text.
+ *
+ * With `live`, the card is a Unit on the Board: the plates show its current
+ * Attack and HP, and the Countdown is never Ready gold, because the card is
+ * not in a Hand.
  */
 export const CardFrame = ({
   cardId,
   rank,
   countdown,
+  live,
   className,
 }: {
   readonly cardId: string;
   readonly rank: RankId;
   readonly countdown: number;
+  readonly live?: LiveStats;
   readonly className?: string;
 }) => {
   const { text } = useGameText();
@@ -255,9 +286,9 @@ export const CardFrame = ({
         />
       </span>
       <TitleBlock card={card} rank={rank} name={name} />
-      <CountdownBadge countdown={countdown} />
+      <CountdownBadge countdown={countdown} ready={!live && countdown === 0} />
       <Emblem card={card} />
-      <BottomPlates card={card} rank={rank} />
+      <BottomPlates card={card} rank={rank} live={live} />
     </span>
   );
 };

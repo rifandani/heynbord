@@ -2,7 +2,7 @@ import { BattleEvent } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { heroPose } from "@/features/battle/scene/hero-pose";
-import { heroX } from "@/features/battle/scene/layout";
+import { HERO_FIGURE_Y, heroX } from "@/features/battle/scene/layout";
 
 const damage = (
   target: Extract<BattleEvent, { readonly _tag: "DamageDealt" }>["target"]
@@ -21,11 +21,11 @@ describe("heroPose", () => {
   it("bobs in place when nothing hits it", () => {
     expect(heroPose("player", null, 0.5, 1)).toEqual({
       x: heroX("player"),
-      y: 1.55 + Math.sin(1.4) * 0.03,
+      y: HERO_FIGURE_Y + Math.sin(1.4) * 0.03,
       hitTint: null,
     });
     expect(heroPose("enemy", null, 0.5, 1).y).toBe(
-      1.55 + Math.sin(1.4 + 2) * 0.03
+      HERO_FIGURE_Y + Math.sin(1.4 + 2) * 0.03
     );
   });
 

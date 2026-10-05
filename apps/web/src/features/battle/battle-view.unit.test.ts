@@ -113,6 +113,7 @@ describe("the Graveyard view", () => {
           maxHp: 2,
           armor: 0,
           bonusArmor: 0,
+          bonusArmorTurns: 0,
           range: 1,
           flying: false,
           damageType: "physical" as const,
@@ -133,5 +134,61 @@ describe("the Graveyard view", () => {
       { cardId: "orc.badlandPup", rank: "common" },
       { cardId: "mage.fireball", rank: "rare" },
     ]);
+  });
+});
+
+describe("the bonus Armor view", () => {
+  it("counts down the Turns in each End Step of the owner, then the Armor fades", () => {
+    const deck = getStarterDeck("vanguard");
+    const { state } = createBattle({
+      seed: 3,
+      stage: getStage("1-1"),
+      player: {
+        classId: deck.classId,
+        deck: deck.deck,
+        level: 1,
+        gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+      },
+    });
+    const unit = {
+      id: 7,
+      owner: "player" as const,
+      cardId: "orc.badlandPup",
+      rank: "common" as const,
+      lane: 0,
+      position: 2,
+      attack: 3,
+      hp: 2,
+      maxHp: 2,
+      armor: 0,
+      bonusArmor: 0,
+      bonusArmorTurns: 0,
+      range: 1,
+      flying: false,
+      damageType: "physical" as const,
+      burn: 0,
+      frozen: false,
+    };
+    const view = { ...viewFromState(state), units: [unit] };
+    const armorOf = (events: readonly BattleEvent[]) => {
+      const [after] = events.reduce(applyEvent, view).units;
+      return [after?.bonusArmor, after?.bonusArmorTurns];
+    };
+    const gained = BattleEvent.ArmorGained({ unitId: 7, armor: 1, turns: 2 });
+    expect(armorOf([gained])).toEqual([1, 2]);
+    expect(armorOf([gained, BattleEvent.TurnEnded({ side: "enemy" })])).toEqual(
+      [1, 2]
+    );
+    expect(
+      armorOf([gained, BattleEvent.TurnEnded({ side: "player" })])
+    ).toEqual([1, 1]);
+    expect(
+      armorOf([
+        gained,
+        BattleEvent.TurnEnded({ side: "player" }),
+        BattleEvent.ArmorFaded({ unitId: 7 }),
+        BattleEvent.TurnEnded({ side: "player" }),
+      ])
+    ).toEqual([0, 0]);
   });
 });

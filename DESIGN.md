@@ -38,7 +38,7 @@ colors:
   hp-low: "#ef4444"
   heart-red: "#ff6b6b"
   town-sky: "#8fd0f5"
-  battle-sky: "#a9cdee"
+  battle-meadow: "#44772c"
   human-blue: "#2f5bd3"
   elf-green: "#4c9a3b"
   undead-teal: "#5fb3a8"
@@ -204,9 +204,9 @@ components:
 
 ## Overview
 
-**Creative North Star: "The Tabletop Diorama"**
+**Creative North Star: "The Painted Tabletop"**
 
-Heynbord is a painted fantasy card game in a small 3D diorama. The Board is a game table, the Units are figures on it, and every 2D control is a real game piece on the edge of that table: a wooden tray for the Hand, bronze frames for the cards, a leather Card Back, gold tokens for the actions, and parchment sheets for the rules. The world is bright, warm, clear, handmade and a little funny, like a classic adventure story. The UI never tries to be a web app around a game. It is part of the game box.
+Heynbord is a painted fantasy card game. The Battle is a painted battlefield (web ADR-0007), the Units are figures on it, and every 2D control is a real game piece at the edge of that painting: a wooden tray for the Hand, bronze frames for the cards, a leather Card Back, gold tokens for the actions, and parchment sheets for the rules. The world is bright, warm, clear, handmade and a little funny, like a classic adventure story. The UI never tries to be a web app around a game. It is part of the game box.
 
 The material is a frame, not a surface for text. Wood, bronze and leather carry gradients, bevels and grain, but all text sits on a flat area with high contrast: cream on a dark plate, or dark ink on parchment. Pieces are chunky and tactile. They have thick borders, a hard drop under each button, and a small physical press. The density is that of a board game: a few large pieces, each easy to read on a phone in landscape.
 
@@ -226,7 +226,7 @@ The base component library theme in `apps/web/src/core/styles/globals.css` (a bl
 
 ## Colors
 
-The palette is warm workshop material (gold, bronze, wood, parchment, ink) on a bright painted sky, with fixed game colors for Races, Ranks and Damage Types.
+The palette is warm workshop material (gold, bronze, wood, parchment, ink) on bright painted scenes, with fixed game colors for Races, Ranks and Damage Types.
 
 ### Primary
 
@@ -266,7 +266,7 @@ These come from art direction 4. `apps/web/src/features/battle/palette.ts` holds
 - **Ink** (`ink`): all text on parchment. `ink-soft` is secondary text (a Stage subtitle, a Deck description), `ink-faded` is reminder and flavor text, and `ink-on-gold` is the text on a gold button or chip.
 - **Night Plate** (`night-plate`): the dark HUD surface, at 70% to 95% opacity: the Turn badge, the Hero panels, tooltips, ghost buttons, the portrait guard. `plate-ember` is the bright center of a round badge, and `plate-socket` is a key cap or an enemy Countdown.
 - **Cream** (`cream`): all text on a dark plate or on wood. `cream-dim` is secondary text on a dark plate.
-- **Sky** (`town-sky`, `battle-sky`): the back color of the Town and the Battle while their paintings load.
+- **Sky and meadow** (`town-sky`, `battle-meadow`): the back color of the Town and the Battle while their paintings load. In the Battle, `battle-meadow` is the base of a gradient forest clearing, which also shows while a Region has no Battle Painting.
 
 ### Named Rules
 
@@ -403,6 +403,8 @@ A wooden tray with a faint vertical grain and the Tray shadow, with a `bronze` t
 ### Card Details
 
 The Card Frame at 20px font size, with the Details Panel on its right: `parchment`, a 3px `bronze` border with no left side, a 12px corner on the right only, and the Lift. It shows the Race or Class line, a stat row with icons, Keywords, and the flavor text in italic at the bottom, with `#c9a46a` rules between the groups.
+
+**Unit on the Board.** Hover (after 150ms), a long press (450ms, until the finger goes up), or the I key shows the Card Details of a Unit of either Side. They open at the side of the screen away from the Unit, between the Top Bar and the Hand Bar. The card is at the screen edge and the panel faces the Board, so at the right edge the layout is mirrored. The stat plates show the current Attack and HP of the Unit. A damaged HP number is `#ff7a6b`, and the panel says "HP 3 of 5" in words. The Countdown badge is never Ready gold. The Race line ends with a Side chip in the style of the Turn chip: "Yours" on the player gold with `ink-on-gold`, or "Enemy" on `enemy-deep` with a `enemy-red` border and `cream` text. Under it, a status group shows the HP, the bonus Armor and its Turns left, Burn and Frozen, each with its icon and a name in `keyword-rust`. On a short screen, the flavor text of a Unit goes away. The inspected Unit has a `focus-cream` ring with a dark edge on its base. Only one Card Details shows at a time: those of a Unit hide those of a Hand Card.
 
 ### Motion
 

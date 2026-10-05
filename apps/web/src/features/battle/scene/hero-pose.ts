@@ -1,6 +1,6 @@
 import type { BattleEvent, Side } from "@workspace/rules";
 
-import { heroX } from "@/features/battle/scene/layout";
+import { HERO_FIGURE_Y, heroX } from "@/features/battle/scene/layout";
 
 export interface HeroPose {
   readonly x: number;
@@ -26,7 +26,8 @@ export const heroPose = (
   return {
     x:
       heroX(side) + (hit ? Math.sin(progress * 40) * 0.08 * (1 - progress) : 0),
-    y: 1.55 + Math.sin(time * 1.4 + (side === "player" ? 0 : 2)) * 0.03,
+    y:
+      HERO_FIGURE_Y + Math.sin(time * 1.4 + (side === "player" ? 0 : 2)) * 0.03,
     hitTint: hit ? 0.7 * (1 - progress) : null,
   };
 };

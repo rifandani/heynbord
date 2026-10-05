@@ -18,6 +18,7 @@ All documents use ASD-STE100 Simplified Technical English.
 | 08 | [Roadmap](./08-roadmap.md) | Milestones for v1 and the plan after v1. | Product owner |
 | 09 | [Card Concepts](./09-card-concepts.md) | The art brief and the image prompt for each card. | Art director |
 | 10 | [Town Concepts](./10-town-concepts.md) | The art brief, the positions and the image prompts for the Town. | Art director |
+| 11 | [Battlefield Concepts](./11-battlefield-concepts.md) | The art brief, the positions and the image prompt for each Battle Painting. | Art director |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.
 

@@ -6,6 +6,7 @@ import type { RefObject } from "react";
 import { qaEnabled } from "@/features/battle/qa";
 import { playback } from "@/features/battle/scene/playback";
 import { scenePicker } from "@/features/battle/scene/scene-picker";
+import { unitPicker } from "@/features/battle/scene/unit-picker";
 
 interface FrameCounter {
   count: number;
@@ -21,6 +22,8 @@ const createDiagnostics = (
   renderer: gl.info,
   /** Screen points of the legal target markers, so a bot can click them with a real mouse. */
   targetPoints: () => scenePicker.points(),
+  /** Screen points of the Units on the Board, so a bot can hover or long-press them. */
+  unitPoints: () => unitPicker.points(),
   get frames() {
     return { ...frames.current };
   },

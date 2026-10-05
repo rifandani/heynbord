@@ -27,6 +27,8 @@ export interface UnitView {
   readonly maxHp: number;
   readonly armor: number;
   readonly bonusArmor: number;
+  /** The End Steps of its owner until the bonus Armor goes away. */
+  readonly bonusArmorTurns: number;
   readonly range: number;
   readonly flying: boolean;
   readonly damageType: DamageType;
@@ -85,6 +87,7 @@ const unitView = (unit: Readonly<UnitState>): UnitView => ({
   maxHp: unit.maxHp,
   armor: unit.armor,
   bonusArmor: unit.bonusArmor,
+  bonusArmorTurns: unit.bonusArmorTurns,
   range: unit.range,
   flying: unit.flying,
   damageType: unit.damageType,
@@ -292,13 +295,26 @@ export const applyEvent = (
       return updateUnit(view, event.unitId, (unit) => ({
         ...unit,
         bonusArmor: event.armor,
+        bonusArmorTurns: event.turns,
       }));
     }
     case "ArmorFaded": {
       return updateUnit(view, event.unitId, (unit) => ({
         ...unit,
         bonusArmor: 0,
+        bonusArmorTurns: 0,
       }));
+    }
+    case "TurnEnded": {
+      // The End Step lowers the bonus Armor Turns of the active side's Units.
+      return {
+        ...view,
+        units: view.units.map((unit) =>
+          unit.owner === event.side && unit.bonusArmorTurns > 0
+            ? { ...unit, bonusArmorTurns: unit.bonusArmorTurns - 1 }
+            : unit
+        ),
+      };
     }
     case "UnitDied": {
       const unit = view.units.find(

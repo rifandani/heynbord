@@ -1,3 +1,5 @@
+import type { InspectDirection } from "@/features/battle/unit-inspect";
+
 /** What a key does in a Battle (UI-02: a full Battle with only a keyboard). */
 export type BattleKeyAction =
   | "moveSelection"
@@ -5,6 +7,7 @@ export type BattleKeyAction =
   | "play"
   | "endTurn"
   | "skip"
+  | "inspect"
   | "cancel";
 
 export interface BattleKeyCommand {
@@ -23,6 +26,8 @@ const COMMANDS: ReadonlyMap<string, BattleKeyCommand> = new Map([
   ["E", { action: "endTurn", step: 1 }],
   ["s", { action: "skip", step: 1 }],
   ["S", { action: "skip", step: 1 }],
+  ["i", { action: "inspect", step: 1 }],
+  ["I", { action: "inspect", step: 1 }],
   ["Escape", { action: "cancel", step: 1 }],
 ]);
 
@@ -36,6 +41,7 @@ export const KEY_GUIDE: readonly {
   { keys: ["Enter"], action: "play" },
   { keys: ["E"], action: "endTurn" },
   { keys: ["S"], action: "skip" },
+  { keys: ["I"], action: "inspect" },
   { keys: ["Esc"], action: "cancel" },
 ];
 
@@ -50,6 +56,22 @@ export const keyCommand = (key: {
     return null;
   }
   return COMMANDS.get(key.key) ?? null;
+};
+
+/**
+ * In the keyboard Inspect mode, the arrow keys go from Unit to Unit: the
+ * direction of an arrow key command, or `null` for other commands.
+ */
+export const inspectDirection = (
+  command: BattleKeyCommand
+): InspectDirection | null => {
+  if (command.action === "moveSelection") {
+    return command.step === 1 ? "right" : "left";
+  }
+  if (command.action === "focusTarget") {
+    return command.step === 1 ? "down" : "up";
+  }
+  return null;
 };
 
 /**

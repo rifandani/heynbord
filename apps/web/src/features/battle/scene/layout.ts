@@ -5,7 +5,7 @@ import { LANE_LENGTH } from "@workspace/rules";
 const SQUARE_SIZE = 1;
 
 /** The distance between the centers of two Lanes. */
-export const LANE_SPACING = 1.45;
+const LANE_SPACING = 1.45;
 
 /** The Lanes go from left (player) to right (enemy) along x (art direction 3). */
 export const squareX = (position: number): number =>
@@ -18,6 +18,9 @@ export const laneZ = (lane: number, lanes: number): number =>
 /** Each Hero stands 1 Square past the last Column of the other side. */
 export const heroX = (side: Side): number =>
   side === "player" ? squareX(-1) - 0.35 : squareX(LANE_LENGTH) + 0.35;
+
+/** The height of the center of a Hero figure. The Hero stands on the ground, with no pedestal (web ADR-0007). */
+export const HERO_FIGURE_Y = 1.2;
 
 /** The half width of what the camera must always show: both Heroes and a margin. */
 const HALF_WIDTH = heroX("enemy") + 0.9;

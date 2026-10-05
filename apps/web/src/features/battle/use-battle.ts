@@ -26,14 +26,19 @@ import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import {
   battleSessionAtom,
   battleSpeedAtom,
+  detailsUnitAtom,
   focusedTargetAtom,
+  inspectedUnitAtom,
   legalTargetsAtom,
   selectedCardAtom,
+  targetFocusByKeyAtom,
   tutorialStageWonAtom,
 } from "@/features/battle/battle.atoms";
 import { playback } from "@/features/battle/scene/playback";
 import type { Tutorial } from "@/features/battle/tutorial";
 import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
+import type { InspectDirection } from "@/features/battle/unit-inspect";
+import { nextInspectedUnit } from "@/features/battle/unit-inspect";
 
 /** A new Battle seed. The seed is input to the rules, so this is not a rule. */
 export const randomSeed = (): number =>
@@ -46,6 +51,8 @@ export const useBattle = () => {
   const selected = useAtomValue(selectedCardAtom);
   const targets = useAtomValue(legalTargetsAtom);
   const focused = useAtomValue(focusedTargetAtom);
+  const inspected = useAtomValue(inspectedUnitAtom);
+  const detailsUnit = useAtomValue(detailsUnitAtom);
   const speed = useAtomValue(battleSpeedAtom);
   const setStoredSpeed = useAtomSet(battleSpeedAtom);
 
@@ -60,6 +67,18 @@ export const useBattle = () => {
   const select = (handIndex: number | null) => {
     registry.set(selectedCardAtom, handIndex);
     registry.set(focusedTargetAtom, 0);
+    registry.set(targetFocusByKeyAtom, false);
+  };
+
+  /** Keyboard Inspect: the next Unit in `direction`, from the inspected Unit. */
+  const inspectNext = (direction: InspectDirection) => {
+    const units = live()?.view.units ?? [];
+    const current = registry.get(inspectedUnitAtom);
+    const unitId = nextInspectedUnit(units, current?.unitId ?? null, direction);
+    registry.set(
+      inspectedUnitAtom,
+      unitId === null ? null : { unitId, by: "keyboard" }
+    );
   };
 
   const updateTutorial = (change: (tutorial: Tutorial) => Tutorial) => {
@@ -99,6 +118,20 @@ export const useBattle = () => {
     focused,
     speed,
     canAct: session ? canAct(session) : false,
+    /** True in the keyboard Inspect mode, while its Unit is on the Board. */
+    inspecting: inspected?.by === "keyboard" && detailsUnit !== null,
+    /** The I key: starts the keyboard Inspect mode at the first Unit, or stops it. */
+    toggleInspect: () => {
+      const inKeyboardMode =
+        registry.get(inspectedUnitAtom)?.by === "keyboard" &&
+        registry.get(detailsUnitAtom) !== null;
+      registry.set(inspectedUnitAtom, null);
+      if (!inKeyboardMode) {
+        inspectNext("right");
+      }
+    },
+    inspectNext,
+    stopInspect: () => registry.set(inspectedUnitAtom, null),
     /** Tutorial Step 3 holds the playback until its text closes. */
     held: session ? isHeld(session) : false,
     start: (options: BattleOptions) => {
@@ -106,6 +139,7 @@ export const useBattle = () => {
       playSound("select");
       recordResult();
       select(null);
+      registry.set(inspectedUnitAtom, null);
       playback.session = null;
       const tutorial = isTutorial(
         options.stageId,
@@ -117,6 +151,7 @@ export const useBattle = () => {
     leave: () => {
       recordResult();
       select(null);
+      registry.set(inspectedUnitAtom, null);
       playback.session = null;
       commit(null);
     },
@@ -139,6 +174,7 @@ export const useBattle = () => {
     focusTarget: (step: number) => {
       const count = registry.get(legalTargetsAtom).length;
       if (count > 0) {
+        registry.set(targetFocusByKeyAtom, true);
         registry.set(
           focusedTargetAtom,
           (registry.get(focusedTargetAtom) + step + count) % count

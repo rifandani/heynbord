@@ -24,7 +24,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Hand Card**: The small card in the Hand. It shows the art, the Countdown, the name, the Rank gems, the emblem, and Attack and HP for a Creature Card. _Avoid_: card face, mini card, card thumbnail
 
-**Card Details**: A larger copy of the Hand Card with a Details Panel next to it, on hover, long press and in the Collection. _Avoid_: tooltip, card popup, card info, inspect view
+**Card Details**: A larger copy of a card with a Details Panel next to it. It shows on hover, long press and keyboard focus for a Hand Card and for a Unit on the Board of either Side, and in the Collection. For a Unit, the card shows the current Attack and HP of the Unit, and the Details Panel shows how the Unit is different from its card. _Avoid_: tooltip, card popup, card info, inspect view
 
 **Details Panel**: The text panel next to the card in the Card Details. It shows the fields that the card itself does not show, for example Keywords and flavor text. _Avoid_: side panel, info box, ability box
 
@@ -43,6 +43,8 @@ React app on TanStack Start. The server renders and streams each page.
 ### Battle screen
 
 **Top Bar**: The panel at the top of the Battle screen. It holds the two Heroes, the Turn number, the Battle controls and the Key Guide button. _Avoid_: header, HUD top, status bar
+
+**Battle Painting**: The painted ground and background behind the Board, one for each Region. It is a flat 2D image, not a 3D scene. The Squares are not drawn on it. _Avoid_: stage background, backdrop, arena, battlefield map, Board skin
 
 **Key Guide**: The list of the keys that play a full Battle and what each key does. It opens from the info button in the Top Bar, on hover, on keyboard focus and on press. _Avoid_: keyboard help, hotkeys, shortcuts, accessibility info, controls hint
 

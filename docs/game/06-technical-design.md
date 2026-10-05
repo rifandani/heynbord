@@ -112,6 +112,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 - Desktop: drag and drop from the Hand to a Square, or click and click.
 - Touch: tap the card, then tap the Square. Drag is also possible.
 - Keyboard: arrow keys select the card and the Square, Enter plays, E ends the Turn.
+- Card Details of a Unit (UI-05): each Unit has a hidden hit box. A ray from the camera hits the hit boxes in each frame, so a Unit that walks away from a still mouse closes its Card Details. The hit boxes have no pointer handlers, so a click on a target marker under a Unit still plays the card. The tap that ends a long press never plays a card. The I key starts the keyboard Inspect mode: the arrow keys go from Unit to Unit, and Esc or I stops it.
 - For a Creature Card, use raycasting on the Squares of the Summon Zone only. Highlight legal Squares. The player selects a Square, not a Lane.
 
 ## 5. Save data

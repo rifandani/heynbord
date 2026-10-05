@@ -14,6 +14,7 @@ import { Heroes } from "@/features/battle/scene/heroes";
 import { PlaybackDriver } from "@/features/battle/scene/playback-driver";
 import { TargetMarkers } from "@/features/battle/scene/target-markers";
 import { TutorialMarks } from "@/features/battle/scene/tutorial-marks";
+import { UnitInspector } from "@/features/battle/scene/unit-inspector";
 import { Units } from "@/features/battle/scene/units";
 
 const NO_LANES: readonly number[] = [];
@@ -38,10 +39,17 @@ const BattleCanvas = ({
     Math.min(MAX_DPR, window.devicePixelRatio || 1)
   );
   return (
-    <div data-battle-canvas className="absolute inset-0">
+    // No browser gestures, text selection or callout on the Board: a long
+    // press inspects a Unit (UI-05).
+    <div
+      data-battle-canvas
+      className="absolute inset-0 touch-none select-none [-webkit-touch-callout:none]"
+    >
       <Canvas
         dpr={dpr}
+        // Transparent: the Battle Painting shows behind the scene (web ADR-0007).
         gl={{
+          alpha: true,
           antialias: true,
           powerPreference: "high-performance",
           stencil: false,
@@ -64,6 +72,7 @@ const BattleCanvas = ({
         <EffectsLayer />
         <TutorialMarks />
         <TargetMarkers onPick={onPick} />
+        <UnitInspector />
         <Diagnostics />
       </Canvas>
     </div>

@@ -91,6 +91,7 @@ export default {
       play: "Mainkan kartu",
       endTurn: "Akhiri Giliran",
       skip: "Lewati animasi",
+      inspect: "Lihat Detail Kartu dari Unit",
       cancel: "Batal",
     },
     attack: "Serangan",
@@ -103,6 +104,19 @@ export default {
       "Setelah efeknya, kartu ini punya peluang {value}% untuk kembali ke Tanganmu. Jika tidak, kartu masuk ke Kuburan.",
     player: "Kamu",
     enemy: "Musuh",
+    yours: "Milikmu",
+    yourUnit: "Unit-mu",
+    enemyUnit: "Unit Musuh",
+    unitHp: "HP {hp} dari {maxHp}",
+    status: {
+      bonusArmor: "Zirah +{value}",
+      bonusArmorRule: "Dari Kartu Keahlian. Sisa Giliran: {turns}.",
+      burn: "Terbakar",
+      burnRule:
+        "1 damage pada tiap Langkah Akhir pemiliknya. Sisa Langkah Akhir: {value}.",
+      frozen: "Beku",
+      frozenRule: "Ia melewatkan aksi berikutnya.",
+    },
   },
   town: {
     label: "Kota",

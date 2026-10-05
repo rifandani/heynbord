@@ -48,6 +48,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Step from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
 
+**Burn**: The effect of Fire damage on a Unit: 1 damage in each End Step of the Unit's owner, for the next 2 End Steps. A new Burn replaces the old Burn. _Avoid_: poison, bleed, damage over time
+
+**Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. _Avoid_: stun, chill, slow
+
 **Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
 
 **Battle seed**: The start value of the random numbers in one Battle. The same seed and the same Commands give the same Battle. _Avoid_: random seed, RNG

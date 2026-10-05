@@ -11,6 +11,7 @@ import {
 import {
   battleSessionAtom,
   focusedTargetAtom,
+  inspectedUnitAtom,
   legalTargetsAtom,
   selectedCardAtom,
 } from "@/features/battle/battle.atoms";
@@ -150,6 +151,7 @@ export const installTestHooks = (
       const session = buildQaState(known, seed);
       playback.session = null;
       registry.set(selectedCardAtom, null);
+      registry.set(inspectedUnitAtom, null);
       registry.set(battleSessionAtom, session);
       // A Battle and its result go back to the Campaign (GDD 11.4).
       registry.set(gameScreenAtom, known === "town" ? "town" : "campaign");

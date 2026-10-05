@@ -91,6 +91,7 @@ export default {
       play: "Play the card",
       endTurn: "End the Turn",
       skip: "Skip the animation",
+      inspect: "See the Card Details of the Units",
       cancel: "Cancel",
     },
     attack: "Attack",
@@ -103,6 +104,19 @@ export default {
       "After its effect, this card has a {value}% chance to go back to your Hand. Else it goes to the Graveyard.",
     player: "You",
     enemy: "Enemy",
+    yours: "Yours",
+    yourUnit: "Your Unit",
+    enemyUnit: "Enemy Unit",
+    unitHp: "HP {hp} of {maxHp}",
+    status: {
+      bonusArmor: "Armor +{value}",
+      bonusArmorRule: "From a Skill Card. Turns left: {turns}.",
+      burn: "Burn",
+      burnRule:
+        "1 damage in each End Step of its owner. End Steps left: {value}.",
+      frozen: "Frozen",
+      frozenRule: "It skips its next action.",
+    },
   },
   town: {
     label: "Town",

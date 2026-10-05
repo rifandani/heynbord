@@ -2,12 +2,18 @@ import { RegistryContext, useAtom, useAtomValue } from "@effect/atom-react";
 import { lazy, Suspense, useContext, useEffect, useMemo } from "react";
 
 import { setSoundEnabled } from "@/features/battle/battle-audio";
+import { stagePainting } from "@/features/battle/battle-painting";
 import { soundOnAtom } from "@/features/battle/battle.atoms";
-import type { BattleKeyAction } from "@/features/battle/components/battle-keys";
+import type {
+  BattleKeyAction,
+  BattleKeyCommand,
+} from "@/features/battle/components/battle-keys";
 import {
+  inspectDirection,
   keyCommand,
   nextReadyCard,
 } from "@/features/battle/components/battle-keys";
+import { BattlePainting } from "@/features/battle/components/battle-painting";
 import { HandBar } from "@/features/battle/components/hand-bar";
 import {
   PortraitGuard,
@@ -17,6 +23,7 @@ import {
 import { StageSelect } from "@/features/battle/components/stage-select";
 import { TopBar } from "@/features/battle/components/top-bar";
 import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
+import { UnitDetails } from "@/features/battle/components/unit-details";
 import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
 import { installTestHooks } from "@/features/battle/test-hooks";
 import { useBattle } from "@/features/battle/use-battle";
@@ -87,7 +94,37 @@ const KEY_HANDLERS: Readonly<
   play: playFocusedTarget,
   endTurn: (battle) => battle.endTurn(),
   skip: (battle) => battle.skip(),
+  inspect: (battle, event) => {
+    event.preventDefault();
+    battle.toggleInspect();
+  },
   cancel: (battle) => battle.select(null),
+};
+
+/**
+ * The keyboard Inspect mode takes the arrow keys and Esc. Returns true when it
+ * used the key.
+ */
+const inspectKey = (
+  battle: Battle,
+  event: KeyboardEvent,
+  command: BattleKeyCommand
+): boolean => {
+  if (!battle.inspecting) {
+    return false;
+  }
+  const direction = inspectDirection(command);
+  if (direction) {
+    event.preventDefault();
+    battle.inspectNext(direction);
+    return true;
+  }
+  if (command.action === "cancel") {
+    event.preventDefault();
+    battle.stopInspect();
+    return true;
+  }
+  return false;
 };
 
 /** UI-02: a full Battle with only a keyboard. */
@@ -98,7 +135,7 @@ const useBattleKeys = (battle: Battle) => {
         isTyping(event.target) || inDialog(event.target)
           ? null
           : keyCommand(event);
-      if (command) {
+      if (command && !inspectKey(battle, event, command)) {
         KEY_HANDLERS[command.action](battle, event, command.step);
       }
     };
@@ -110,17 +147,26 @@ const useBattleKeys = (battle: Battle) => {
 const BattleStage = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
   const webgl2 = useMemo(() => hasWebgl2(), []);
+  const stageId = battle.session?.options.stageId;
+  const painting = useMemo(
+    () => (stageId ? stagePainting(stageId) : null),
+    [stageId]
+  );
   useBattleKeys(battle);
   return (
     <div
-      className="fixed inset-0 overflow-hidden overscroll-none bg-[#a9cdee] text-[#fff6df]"
+      className="fixed inset-0 overflow-hidden overscroll-none text-[#fff6df]"
       data-testid="battle-stage"
     >
+      {/* The painting loads before the 3D chunk, so it shows at once (web ADR-0007). */}
+      <BattlePainting src={painting} />
       {webgl2 ? (
         <Suspense
           fallback={
-            <div className="font-display absolute inset-0 flex items-center justify-center bg-[#1c140e] text-xl">
-              {tr("battle.loading")}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="font-display rounded-xl bg-[#1c140e]/85 px-6 py-3 text-xl">
+                {tr("battle.loading")}
+              </p>
             </div>
           }
         >
@@ -135,6 +181,7 @@ const BattleStage = ({ battle }: { readonly battle: Battle }) => {
         </div>
       )}
       <TutorialPanel battle={battle} />
+      <UnitDetails battle={battle} />
       <TopBar battle={battle} />
       <TurnBanner />
       <HandBar battle={battle} />

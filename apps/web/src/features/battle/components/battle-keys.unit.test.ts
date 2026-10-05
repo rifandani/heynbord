@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  inspectDirection,
   KEY_GUIDE,
   keyCommand,
   nextReadyCard,
@@ -43,7 +44,7 @@ describe("keyCommand", () => {
 
 describe("KEY_GUIDE", () => {
   it("shows each Battle key action one time", () => {
-    const keys = ["ArrowLeft", "ArrowUp", "Enter", "e", "s", "Escape"];
+    const keys = ["ArrowLeft", "ArrowUp", "Enter", "e", "s", "i", "Escape"];
     const actions = keys.map((key) => press(key)?.action);
     expect(KEY_GUIDE.map((row) => row.action)).toEqual(actions);
   });
@@ -67,5 +68,22 @@ describe("nextReadyCard", () => {
   it("finds nothing when no card is Ready", () => {
     expect(nextReadyCard([{ countdown: 1 }], null, 1)).toBeNull();
     expect(nextReadyCard([], 0, -1)).toBeNull();
+  });
+});
+
+describe("inspectDirection", () => {
+  it("maps the I key and the arrow keys of the Inspect mode", () => {
+    expect(press("i")?.action).toBe("inspect");
+    expect(press("I")?.action).toBe("inspect");
+    const direction = (key: string) => {
+      const command = press(key);
+      return command ? inspectDirection(command) : undefined;
+    };
+    expect(direction("ArrowLeft")).toBe("left");
+    expect(direction("ArrowRight")).toBe("right");
+    expect(direction("ArrowUp")).toBe("up");
+    expect(direction("ArrowDown")).toBe("down");
+    expect(direction("Enter")).toBeNull();
+    expect(direction("Escape")).toBeNull();
   });
 });

@@ -9,7 +9,7 @@ import { battleSessionAtom } from "@/features/battle/battle.atoms";
 import { SIDE_COLORS } from "@/features/battle/palette";
 import type { HeroPose } from "@/features/battle/scene/hero-pose";
 import { heroPose } from "@/features/battle/scene/hero-pose";
-import { heroX } from "@/features/battle/scene/layout";
+import { HERO_FIGURE_Y, heroX } from "@/features/battle/scene/layout";
 import { playback } from "@/features/battle/scene/playback";
 import {
   blobShadowTexture,
@@ -70,23 +70,22 @@ const HeroFigure = ({ side }: { readonly side: Side }) => {
 
   return (
     <group name={`hero-${side}`}>
-      <mesh rotation-x={-Math.PI / 2} position={[x, 0.36, 0]} renderOrder={1}>
+      {/* The Hero stands on the Battle Painting: a shadow and a ring in its Side color (web ADR-0007). */}
+      <mesh rotation-x={-Math.PI / 2} position={[x, 0.01, 0]} renderOrder={1}>
         <circleGeometry args={[1.05, 24]} />
         <meshBasicMaterial map={shadow} transparent depthWrite={false} />
       </mesh>
-      <mesh position={[x, 0, 0]}>
-        <cylinderGeometry args={[1.05, 1.25, 0.7, 24]} />
-        <meshStandardMaterial color="#9a8d7a" roughness={0.9} flatShading />
-      </mesh>
-      <mesh position={[x, 0.37, 0]}>
-        <cylinderGeometry args={[0.95, 0.95, 0.04, 24]} />
-        <meshStandardMaterial
+      <mesh rotation-x={-Math.PI / 2} position={[x, 0.02, 0]} renderOrder={2}>
+        <ringGeometry args={[0.8, 0.94, 48]} />
+        <meshBasicMaterial
           color={SIDE_COLORS[side].main}
-          roughness={0.5}
-          metalness={0.3}
+          transparent
+          opacity={0.85}
+          depthWrite={false}
+          toneMapped={false}
         />
       </mesh>
-      <mesh ref={figure} position={[x, 1.55, 0]}>
+      <mesh ref={figure} position={[x, HERO_FIGURE_Y, 0]}>
         <planeGeometry args={[1.45, 2.03]} />
         <meshBasicMaterial
           ref={material}

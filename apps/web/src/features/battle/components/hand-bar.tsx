@@ -9,7 +9,10 @@ import type {
   GraveyardCardView,
   HandCardView,
 } from "@/features/battle/battle-view";
-import { tutorialMarksAtom } from "@/features/battle/battle.atoms";
+import {
+  detailsUnitAtom,
+  tutorialMarksAtom,
+} from "@/features/battle/battle.atoms";
 import { cardText } from "@/features/battle/card-text";
 import {
   CardBack,
@@ -30,11 +33,9 @@ import {
   startDrag,
 } from "@/features/battle/components/hand-input";
 import { scenePicker } from "@/features/battle/scene/scene-picker";
+import { LONG_PRESS_MS } from "@/features/battle/unit-inspect";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
-
-/** Touch: hold this long to see the card details (UI-05). */
-const LONG_PRESS_MS = 450;
 
 type Battle = ReturnType<typeof useBattle>;
 type SetInspected = Dispatch<SetStateAction<number | null>>;
@@ -389,8 +390,8 @@ const HandSlot = ({
 };
 
 /**
- * End Turn, at the right of the Hand Bar. On a short screen, the label goes on
- * 2 lines under the icon, so the button is narrow.
+ * End Turn, at the bottom right of the screen. On a short screen, the label
+ * goes on 2 lines under the icon, so the button is narrow.
  */
 const EndTurnPanel = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
@@ -461,6 +462,8 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
   const [inspected, setInspected] = useState<number | null>(null);
   const { drag, setDrag, holdToInspect, cancelHold } = useCardDrag(battle);
   const marks = useAtomValue(tutorialMarksAtom);
+  // Only one Card Details shows at a time: those of a Unit come first.
+  const unitInspected = useAtomValue(detailsUnitAtom) !== null;
   const { session, selected, targets } = battle;
   if (!session) {
     return null;
@@ -495,78 +498,87 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
   };
 
   return (
-    <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center p-2 pr-[max(0.5rem,env(safe-area-inset-right))] pb-[max(0.5rem,env(safe-area-inset-bottom))] pl-[max(0.5rem,env(safe-area-inset-left))]">
-      <div className="relative flex items-end gap-3">
-        <div
-          className={cn(
-            "pointer-events-auto flex items-stretch rounded-[1.3em] border-[0.2em] border-[#2a170a] border-t-[#b47f36] p-[0.7em] text-[length:var(--hand-card-size)] shadow-[inset_0_0.15em_0_rgba(255,214,150,0.3),inset_0_-0.3em_0.6em_rgba(0,0,0,0.45),0_0.6em_1.6em_rgba(0,0,0,0.55)] [@media(max-height:500px)]:p-[0.5em]",
-            // The card size: 10px (7px on a short screen), or less so that the
-            // bar (about 101em), the gap, End Turn and the padding fit the screen width.
-            "[--hand-card-size:min(10px,calc((100vw_-_206px)/101))] [@media(max-height:500px)]:[--hand-card-size:min(7px,calc((100vw_-_146px)/101))]"
-          )}
-          style={{
-            // Dark wood that matches the Board rim, with a faint grain.
-            background: [
-              "repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 0.15em, transparent 0.15em 1.1em)",
-              "linear-gradient(180deg, #6b4423 0%, #4a2d16 45%, #2f1c0d 100%)",
-            ].join(", "),
-          }}
-          data-testid="hand-bar"
-        >
-          <DeckPile count={player.deck} />
-          <PileDivider />
+    <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end p-2 pr-[max(0.5rem,env(safe-area-inset-right))] pb-[max(0.5rem,env(safe-area-inset-bottom))] pl-[max(0.5rem,env(safe-area-inset-left))]">
+      {/*
+       * 2 spacers of equal growth keep the bar at the middle of the screen.
+       * The right spacer holds End Turn at the bottom right and does not
+       * shrink below it, so on a narrow screen the bar moves left.
+       */}
+      <div className="min-w-0 flex-1" aria-hidden />
+      <div
+        className={cn(
+          "pointer-events-auto flex shrink-0 items-stretch rounded-[1.3em] border-[0.2em] border-[#2a170a] border-t-[#b47f36] p-[0.7em] text-[length:var(--hand-card-size)] shadow-[inset_0_0.15em_0_rgba(255,214,150,0.3),inset_0_-0.3em_0.6em_rgba(0,0,0,0.45),0_0.6em_1.6em_rgba(0,0,0,0.55)] [@media(max-height:500px)]:p-[0.5em]",
+          // The card size: 10px (7px on a short screen), or less so that the
+          // bar (about 101em), the gap, End Turn and the padding fit the screen width.
+          "[--hand-card-size:min(10px,calc((100vw_-_206px)/101))] [@media(max-height:500px)]:[--hand-card-size:min(7px,calc((100vw_-_146px)/101))]"
+        )}
+        style={{
+          // Dark wood that matches the Board rim, with a faint grain.
+          background: [
+            "repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 0.15em, transparent 0.15em 1.1em)",
+            "linear-gradient(180deg, #6b4423 0%, #4a2d16 45%, #2f1c0d 100%)",
+          ].join(", "),
+        }}
+        data-testid="hand-bar"
+      >
+        <DeckPile count={player.deck} />
+        <PileDivider />
 
-          <div className="relative flex flex-col items-center">
-            <div className="pointer-events-none absolute bottom-full left-1/2 mb-[2em] flex -translate-x-1/2 flex-col items-center gap-3">
-              <InspectedCard
-                card={inspected === null ? undefined : hand[inspected]}
-              />
-              <HandHint
-                card={selected === null ? undefined : hand[selected]}
-                targetCount={targets.length}
-              />
-            </div>
-            <ol
-              aria-label={tr("battle.hand")}
-              className={cn(
-                "flex items-end gap-[0.6em] rounded-[0.9em]",
-                // Tutorial Step 1: a highlight on the Hand (GDD 8.3).
-                marks.hand &&
-                  "shadow-[0_0_24px_rgba(127,227,255,0.75)] ring-4 ring-[#7fe3ff]"
-              )}
-              data-testid="hand"
-              data-tutorial-highlight={marks.hand || undefined}
-            >
-              {hand.map((card, index) => (
-                <HandSlot
-                  key={card.instanceId}
-                  card={card}
-                  index={index}
-                  drawMs={
-                    playing && card.instanceId === drawingId
-                      ? playing.duration
-                      : null
-                  }
-                  selected={selected === index}
-                  dimmed={dragIndex === index}
-                  battle={battle}
-                  onPress={press}
-                  setInspected={setInspected}
-                  holdToInspect={holdToInspect}
-                  cancelHold={cancelHold}
-                  onDragStart={setDrag}
-                />
-              ))}
-              {emptySlots(hand.length).map((slot) => (
-                <EmptySlot key={slot} />
-              ))}
-            </ol>
+        <div className="relative flex flex-col items-center">
+          <div className="pointer-events-none absolute bottom-full left-1/2 mb-[2em] flex -translate-x-1/2 flex-col items-center gap-3">
+            <InspectedCard
+              card={
+                inspected === null || unitInspected
+                  ? undefined
+                  : hand[inspected]
+              }
+            />
+            <HandHint
+              card={selected === null ? undefined : hand[selected]}
+              targetCount={targets.length}
+            />
           </div>
-
-          <PileDivider />
-          <GraveyardPile cards={player.graveyard} speed={battle.speed} />
+          <ol
+            aria-label={tr("battle.hand")}
+            className={cn(
+              "flex items-end gap-[0.6em] rounded-[0.9em]",
+              // Tutorial Step 1: a highlight on the Hand (GDD 8.3).
+              marks.hand &&
+                "shadow-[0_0_24px_rgba(127,227,255,0.75)] ring-4 ring-[#7fe3ff]"
+            )}
+            data-testid="hand"
+            data-tutorial-highlight={marks.hand || undefined}
+          >
+            {hand.map((card, index) => (
+              <HandSlot
+                key={card.instanceId}
+                card={card}
+                index={index}
+                drawMs={
+                  playing && card.instanceId === drawingId
+                    ? playing.duration
+                    : null
+                }
+                selected={selected === index}
+                dimmed={dragIndex === index}
+                battle={battle}
+                onPress={press}
+                setInspected={setInspected}
+                holdToInspect={holdToInspect}
+                cancelHold={cancelHold}
+                onDragStart={setDrag}
+              />
+            ))}
+            {emptySlots(hand.length).map((slot) => (
+              <EmptySlot key={slot} />
+            ))}
+          </ol>
         </div>
 
+        <PileDivider />
+        <GraveyardPile cards={player.graveyard} speed={battle.speed} />
+      </div>
+      <div className="flex flex-1 justify-end pl-3">
         <EndTurnPanel battle={battle} />
       </div>
 

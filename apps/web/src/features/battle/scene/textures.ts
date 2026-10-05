@@ -343,27 +343,25 @@ export const blobShadowTexture = (): CanvasTexture =>
     context.fillRect(0, 0, 128, 128);
   });
 
-/** Painted sky: a vertical gradient with soft clouds (art direction 2: panorama). */
-export const skyTexture = (): CanvasTexture =>
-  cached("sky", 512, 256, (context) => {
-    const gradient = context.createLinearGradient(0, 0, 0, 256);
-    gradient.addColorStop(0, "#5b8fd6");
-    gradient.addColorStop(0.55, "#a9cdee");
-    gradient.addColorStop(0.8, "#f6dcb0");
-    gradient.addColorStop(1, "#f2c89a");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, 512, 256);
-    context.fillStyle = "rgba(255, 255, 255, 0.55)";
-    for (const [x, y, size] of [
-      [80, 70, 34],
-      [130, 64, 26],
-      [300, 50, 30],
-      [350, 58, 22],
-      [440, 92, 26],
-      [210, 110, 20],
-    ] as const) {
-      context.beginPath();
-      context.ellipse(x, y, size * 2.2, size * 0.7, 0, 0, Math.PI * 2);
-      context.fill();
-    }
+/**
+ * A Closed Lane: a band of night plate at 38%, with soft ends and soft edges,
+ * so it looks like shade on the Battle Painting.
+ */
+export const closedLaneTexture = (): CanvasTexture =>
+  cached("closed-lane", 256, 64, (context) => {
+    const along = context.createLinearGradient(0, 0, 256, 0);
+    along.addColorStop(0, "rgba(28, 20, 14, 0)");
+    along.addColorStop(0.08, "rgba(28, 20, 14, 0.38)");
+    along.addColorStop(0.92, "rgba(28, 20, 14, 0.38)");
+    along.addColorStop(1, "rgba(28, 20, 14, 0)");
+    context.fillStyle = along;
+    context.fillRect(0, 0, 256, 64);
+    const across = context.createLinearGradient(0, 0, 0, 64);
+    across.addColorStop(0, "rgba(0, 0, 0, 0)");
+    across.addColorStop(0.25, "rgba(0, 0, 0, 1)");
+    across.addColorStop(0.75, "rgba(0, 0, 0, 1)");
+    across.addColorStop(1, "rgba(0, 0, 0, 0)");
+    context.globalCompositeOperation = "destination-in";
+    context.fillStyle = across;
+    context.fillRect(0, 0, 256, 64);
   });

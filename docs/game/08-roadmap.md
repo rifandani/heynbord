@@ -22,7 +22,7 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 
 ### M1 — Battle slice (weeks 3–6)
 
-- [ ] Hover or long press on a Unit on the Board shows its full card details. This includes enemy Units.
+- [x] Hover or long press on a Unit on the Board shows its full card details. This includes enemy Units.
 
 **Exit:** A person can play a full Battle against the AI from start to end. Ask 3 people to play it. They must understand why they won or lost.
 

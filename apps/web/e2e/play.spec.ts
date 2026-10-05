@@ -39,6 +39,14 @@ interface Diagnostics {
     readonly x: number;
     readonly y: number;
   }[];
+  readonly unitPoints: () => readonly UnitPoint[];
+}
+
+interface UnitPoint {
+  readonly id: number;
+  readonly owner: "player" | "enemy";
+  readonly x: number;
+  readonly y: number;
 }
 
 declare global {
@@ -88,6 +96,33 @@ const closeTutorialText = async (page: Page) => {
 
 const targetPoints = (page: Page) =>
   page.evaluate(() => window.__THREE_GAME_DIAGNOSTICS__?.targetPoints() ?? []);
+
+const unitPoints = (page: Page) =>
+  page.evaluate(() => window.__THREE_GAME_DIAGNOSTICS__?.unitPoints() ?? []);
+
+/** Opens a Battle in the middle of play (QA state), with Units of both Sides on the Board. */
+const openBoardWithUnits = async (page: Page) => {
+  await page.goto("/play?state=active-play&seed=7");
+  await expect(page.locator("[data-battle-canvas] canvas")).toBeVisible({
+    timeout: 30_000,
+  });
+  await expect.poll(() => battleMode(page), { timeout: 30_000 }).toBe("battle");
+  await expect
+    .poll(async () => {
+      const units = await unitPoints(page);
+      return new Set(units.map((unit) => unit.owner)).size;
+    })
+    .toBe(2);
+  return unitPoints(page);
+};
+
+const unitOf = (units: readonly UnitPoint[], owner: UnitPoint["owner"]) => {
+  const unit = units.find((candidate) => candidate.owner === owner);
+  if (!unit) {
+    throw new Error(`No ${owner} Unit on the Board`);
+  }
+  return unit;
+};
 
 const startBattle = async (
   page: Page,
@@ -381,6 +416,54 @@ test.describe("Battle bot playtest", () => {
   });
 });
 
+test.describe("Card Details of a Unit (UI-05)", () => {
+  test("hover shows the Card Details of a Unit of each Side, away from the Unit", async ({
+    page,
+  }) => {
+    const units = await openBoardWithUnits(page);
+    const details = page.getByTestId("unit-details");
+    const width = page.viewportSize()?.width ?? 0;
+    for (const owner of ["enemy", "player"] as const) {
+      const unit = unitOf(units, owner);
+      await page.mouse.move(unit.x, unit.y);
+      await expect(details).toHaveAttribute("data-unit-id", String(unit.id));
+      await expect(page.getByTestId("unit-details-side")).toHaveText(
+        owner === "enemy" ? "Enemy" : "Yours"
+      );
+      await expect(page.getByTestId("unit-details-status")).toContainText(
+        /HP \d+ of \d+/u
+      );
+      await expect(details).toHaveAttribute(
+        "data-side",
+        unit.x < width / 2 ? "right" : "left"
+      );
+    }
+    // Off the Units, the Card Details close.
+    await page.mouse.move(width / 2, 4);
+    await expect(details).toBeHidden();
+  });
+
+  test("the I key inspects the Units, the arrow keys go from Unit to Unit, and Esc stops", async ({
+    page,
+  }) => {
+    await openBoardWithUnits(page);
+    const details = page.getByTestId("unit-details");
+    await expect(details).toBeHidden();
+    await page.keyboard.press("i");
+    await expect(details).toBeVisible();
+    const first = await details.getAttribute("data-unit-id");
+    const ids = new Set([first]);
+    for (const key of ["ArrowRight", "ArrowDown", "ArrowUp", "ArrowLeft"]) {
+      await page.keyboard.press(key);
+      ids.add(await details.getAttribute("data-unit-id"));
+    }
+    expect(ids.size).toBeGreaterThanOrEqual(2);
+    await page.keyboard.press("Escape");
+    await expect(details).toBeHidden();
+    await expect(page.getByTestId("battle-stage")).toBeVisible();
+  });
+});
+
 test.describe("Town", () => {
   test("opens first, and the Town Gate opens the Campaign", async ({
     page,
@@ -482,6 +565,45 @@ test.describe("Battle on a phone", () => {
     expect(point).toBeDefined();
     await page.touchscreen.tap(point?.x ?? 0, point?.y ?? 0);
     await expect.poll(() => unitCount(page)).toBeGreaterThan(unitsBefore);
+  });
+});
+
+test.describe("Card Details of a Unit on a phone (UI-05)", () => {
+  test.use({
+    viewport: { width: 844, height: 390 },
+    hasTouch: true,
+    isMobile: true,
+  });
+
+  test("a long press shows the Card Details until the finger goes up; a tap does not", async ({
+    page,
+  }) => {
+    const units = await openBoardWithUnits(page);
+    const unit = unitOf(units, "enemy");
+    const details = page.getByTestId("unit-details");
+    await page.touchscreen.tap(unit.x, unit.y);
+    await expect(details).toBeHidden();
+
+    // Playwright has no touch hold, so send the touch events through CDP.
+    const cdp = await page.context().newCDPSession(page);
+    const touchPoints = [{ x: unit.x, y: unit.y }];
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints,
+    });
+    await expect(details).toHaveAttribute("data-unit-id", String(unit.id));
+    await expect(page.getByTestId("unit-details-side")).toHaveText("Enemy");
+    // The Card Details fit between the Top Bar and the Hand Bar.
+    const box = await details.boundingBox();
+    const hand = await page.getByTestId("hand-bar").boundingBox();
+    expect(box && hand && box.y >= 0 && box.y + box.height <= hand.y).toBe(
+      true
+    );
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await expect(details).toBeHidden();
   });
 });
 

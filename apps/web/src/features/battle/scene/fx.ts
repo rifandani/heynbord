@@ -3,7 +3,12 @@ import type { BattleEvent, DamageType, Side } from "@workspace/rules";
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleView } from "@/features/battle/battle-view";
 import { DAMAGE_COLORS } from "@/features/battle/palette";
-import { heroX, laneZ, squareX } from "@/features/battle/scene/layout";
+import {
+  HERO_FIGURE_Y,
+  heroX,
+  laneZ,
+  squareX,
+} from "@/features/battle/scene/layout";
 
 /** A short visual effect. `start` is in scene seconds. */
 export type Fx =
@@ -50,7 +55,7 @@ export const worldOf = (
   readonly height: number;
 } | null => {
   if (target._tag === "Hero") {
-    return { x: heroX(target.side), z: 0, height: 2.4 };
+    return { x: heroX(target.side), z: 0, height: HERO_FIGURE_Y + 0.85 };
   }
   const unit = view.units.find((candidate) => candidate.id === target.unitId);
   return unit

@@ -17,10 +17,20 @@ import type {
   MeshStandardMaterial,
   Sprite,
 } from "three";
-import { CircleGeometry, Color, CylinderGeometry, PlaneGeometry } from "three";
+import {
+  BoxGeometry,
+  CircleGeometry,
+  Color,
+  CylinderGeometry,
+  PlaneGeometry,
+  RingGeometry,
+} from "three";
 
 import type { UnitView } from "@/features/battle/battle-view";
-import { battleSessionAtom } from "@/features/battle/battle.atoms";
+import {
+  battleSessionAtom,
+  detailsUnitAtom,
+} from "@/features/battle/battle.atoms";
 import { battleCreatureCards } from "@/features/battle/card-art";
 import { SIDE_COLORS } from "@/features/battle/palette";
 import { laneZ } from "@/features/battle/scene/layout";
@@ -38,6 +48,7 @@ import {
   unitClipFor,
   unitModelOf,
 } from "@/features/battle/scene/unit-models";
+import { unitPicker } from "@/features/battle/scene/unit-picker";
 import type { Pose } from "@/features/battle/scene/unit-pose";
 import {
   currentEvent,
@@ -56,6 +67,12 @@ const FIGURE = new PlaneGeometry(0.82, 1.03);
 FIGURE.translate(0, 0.515, 0);
 const BASE = new CylinderGeometry(0.36, 0.4, 0.1, 20);
 const SHADOW = new CircleGeometry(0.5, 20);
+// The hidden hit box for hover and long press: the base, the figure and the stat badge.
+const HIT = new BoxGeometry(0.8, 1.55, 0.8);
+HIT.translate(0, 0.775, 0);
+// The focus ring of an inspected Unit: a cream ring with a dark edge, so it shows on any Square.
+const FOCUS_RING = new RingGeometry(0.43, 0.52, 40);
+const FOCUS_EDGE = new RingGeometry(0.52, 0.57, 40);
 
 const WHITE = new Color("#ffffff");
 
@@ -197,12 +214,52 @@ const ModelBody = ({
   return <primitive object={rig.root} />;
 };
 
+/** The 4px `focus-cream` ring of the HUD, as a ring on the base of the inspected Unit. */
+const FocusRing = () => (
+  <group rotation-x={-Math.PI / 2} position-y={0.185}>
+    <mesh geometry={FOCUS_EDGE} renderOrder={2}>
+      <meshBasicMaterial
+        color="#2a1a0c"
+        transparent
+        opacity={0.6}
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </mesh>
+    <mesh geometry={FOCUS_RING} renderOrder={3}>
+      <meshBasicMaterial
+        color="#fff2a8"
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </mesh>
+  </group>
+);
+
+/** Registers the hit box of a Unit for the Unit picker while it is on the Board. */
+const registerHitArea = (unitId: number) => (mesh: Mesh | null) => {
+  if (!mesh) {
+    return;
+  }
+  unitPicker.hitAreas.set(unitId, mesh);
+  return () => {
+    if (unitPicker.hitAreas.get(unitId) === mesh) {
+      unitPicker.hitAreas.delete(unitId);
+    }
+  };
+};
+
 const UnitFigure = ({
   unit,
   lanes,
+  dying,
+  inspected,
 }: {
   readonly unit: UnitView;
   readonly lanes: number;
+  /** A dying Unit plays its death, and cannot be inspected. */
+  readonly dying: boolean;
+  readonly inspected: boolean;
 }) => {
   const group = useRef<Group>(null);
   const body = useRef<BodyHandle>(null);
@@ -248,6 +305,7 @@ const UnitFigure = ({
     fadeParts(badge.current, baseMaterial.current, pose);
   });
 
+  const hitRef = useMemo(() => registerHitArea(unit.id), [unit.id]);
   const cutOut = <CutOutBody unit={unit} facing={facing} ref={body} />;
   return (
     <group ref={group} name={`unit-${unit.id}`}>
@@ -268,6 +326,15 @@ const UnitFigure = ({
           transparent
         />
       </mesh>
+      {inspected ? <FocusRing /> : null}
+      {dying ? null : (
+        <mesh
+          ref={hitRef}
+          geometry={HIT}
+          visible={false}
+          userData={{ unitId: unit.id, owner: unit.owner }}
+        />
+      )}
       {model ? (
         <Suspense fallback={cutOut}>
           <ModelBody unit={unit} facing={facing} ref={body} spec={model} />
@@ -290,6 +357,7 @@ const UnitFigure = ({
 /** All Units on the Board, and a Unit that is dying in the current event. */
 export const Units = () => {
   const session = useAtomValue(battleSessionAtom);
+  const detailsId = useAtomValue(detailsUnitAtom)?.id ?? null;
   const options = session?.options;
   // Load the card art of both Sides at the Battle start, before the first summon.
   useEffect(() => {
@@ -317,7 +385,13 @@ export const Units = () => {
   return (
     <>
       {units.map((unit) => (
-        <UnitFigure key={unit.id} unit={unit} lanes={view.lanes} />
+        <UnitFigure
+          key={unit.id}
+          unit={unit}
+          lanes={view.lanes}
+          dying={unit === dying}
+          inspected={unit.id === detailsId}
+        />
       ))}
     </>
   );

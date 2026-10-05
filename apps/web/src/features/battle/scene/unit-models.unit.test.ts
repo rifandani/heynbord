@@ -16,6 +16,7 @@ const unit: UnitView = {
   maxHp: 4,
   armor: 0,
   bonusArmor: 0,
+  bonusArmorTurns: 0,
   range: 0,
   flying: false,
   damageType: "physical",

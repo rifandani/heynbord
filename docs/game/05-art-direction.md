@@ -2,7 +2,7 @@
 
 ## 1. Visual goal
 
-Heynbord looks like a **painted fantasy card game in a small 3D diorama**. Card art stands on a 3D Board like cardboard figures on a game table. Light, shadows, camera movement and spell effects make the scene feel alive.
+Heynbord looks like a **painted fantasy card game on a painted battlefield**, like the Flash card games that it continues. The Units stand directly on a painted Region, like figures on a painted map. Light, shadows, camera movement and spell effects make the scene feel alive.
 
 Key words: **bright, warm, clear, handmade, a little funny.**
 
@@ -13,11 +13,11 @@ Not: dark, realistic, gory, noisy, neon.
 | Element | How it looks |
 | --- | --- |
 | **Units** | A rigged 3D model on a small round base, when the card has one (see 2.2). Other cards show the card art cut out (transparent background) on a flat plane on the base. The plane always faces the camera on the vertical axis (billboard). Until a card has its cut-out, the plane shows the card art with its background, in an arched shape, with no frame and no Rank Gems. |
-| **Board** | A real 3D model: a table-land with Lanes of stone or wood tiles. Each Region has its own Board skin. |
-| **Heroes** | A larger cut-out figure at the end of the Lanes, with a 3D frame and an HP bar. |
+| **Board** | Not drawn. The ground is the Battle Painting, and the Squares are invisible. The legal Squares glow only when the Player selects a card. A Closed Lane shows as a dark band. See [web ADR-0007](../../apps/web/docs/adr/0007-the-battlefield-is-a-2d-painting.md). |
+| **Heroes** | A larger cut-out figure at the end of the Lanes, with a 3D frame and an HP bar. It stands on the ground with a ring in its Side color. |
 | **Cards in the Hand** | 2D UI (React), not in the 3D scene. This keeps text sharp. |
 | **Effects** | 3D particles, simple shaders and light flashes. |
-| **Background** | A painted panorama behind the Board, with slow parallax. |
+| **Background** | One Battle Painting for each Region: a flat 2D painting of the ground and its edges, seen from the Battle camera, with no sky. See [11 — Battlefield Concepts](./11-battlefield-concepts.md). |
 
 ### 2.1 Unit feedback without animation rigs
 
