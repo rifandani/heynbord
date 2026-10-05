@@ -58,6 +58,16 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, and a shortcut back to the Town. _Avoid_: menu bar, nav bar, footer, dock
 
+### Campaign screen
+
+**Region Map**: The painted map of one Region, with its Trail and its Stage Markers. The Campaign screen shows one Region Map at a time. It is a flat 2D image. _Avoid_: Campaign map, world map, level map, stage map, battlefield map
+
+**Trail**: The road on a Region Map from the first Stage to the Boss Stage, with one stop for each Stage. _Avoid_: path, route, track
+
+**Stage Marker**: The mark on the Trail for one Stage. It shows the state of the Stage, and the Player selects it to play that Stage. _Avoid_: checkpoint, node, pin, level button
+
+**Stage Panel**: The dialog that opens when the Player selects a Stage Marker. It shows the Stage, its enemy Hero, its rewards, the best Stars and the Deck, and it starts the Battle. _Avoid_: stage popup, stage details, pre-battle screen, lobby
+
 ### Component Catalog
 
 **Component Catalog**: The single page at `/master-design` that displays every core UI component for visual inspection by developers and designers. It is available in development. A production build answers 404. _Avoid_: master design, styleguide, storybook, docs site

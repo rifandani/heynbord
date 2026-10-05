@@ -82,6 +82,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Starter Deck**: A fixed Deck that the game gives to the Player before the Player builds a Deck. The Hero Class comes from the Starter Deck. _Avoid_: preset deck, default deck, sample deck
 
+**Archetype**: A named reference Deck for one style of play, for example a Human Wall Warrior Deck. The team uses Archetypes to measure balance. A Player never sees an Archetype. _Avoid_: deck type, meta deck, benchmark deck
+
+**Matchup**: Many Battles between two Archetypes, with the AI on both Sides, to measure if one Archetype is stronger than the other. _Avoid_: versus, pairing, mirror test
+
 **Graveyard**: The place for a Hero's Cards that are used or dead. _Avoid_: discard pile, cemetery, crypt
 
 **Keyword**: A named rule on a Card, for example Flying or Armor. _Avoid_: trait, perk, tag, ability
@@ -138,7 +142,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Stage**: One Battle in the Campaign, with a fixed enemy and rewards. _Avoid_: level, mission
 
+**Recommended level**: The Player level at which a new Player with no Gear is expected to win a Stage on the first try. The Player can see it. _Avoid_: expected level, suggested level, required level
+
 **Boss Stage**: The last Stage of a Region, with special rules. Its enemy Hero is a Boss. _Avoid_: boss level, raid
+
+**Start Unit**: A Unit that a Stage puts on the enemy Side of the Board before the first Turn, for example the Boss's bodyguard. It is a copy of a Card, so its Rank is at least the Card's Base Rank. _Avoid_: pre-placed Unit, spawn, Unique boss Unit
 
 **Boss**: An enemy Hero with a name and special rules. One Boss is one Hero. _Avoid_: Dungeon Boss, boss Unit, elite, champion
 
@@ -174,7 +182,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Side** that is **Routed** loses, also when its Heroes still have HP. The rule is the same for the Player's Side and the enemy Side. A Side is not Routed while one of its Heroes has a rule that can still put a Unit on the Board.
 - A **Deck** holds **Creature Cards** of any **Race** and **Skill Cards** of the Hero's Class only.
 - A **Creature Card** becomes a **Unit** when the side summons it.
+- A **Starter Deck** can also be an **Archetype**. An Archetype does not have to be a Starter Deck. A **Matchup** of an Archetype against itself is a mirror.
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
+- A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
+- Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage.
 - A **Region** has 10 **Stages**, and the last one is a **Boss Stage**.
 - The **Tutorial** ends with the first win of Stage 1-1. A loss or an **Abandon** does not end it. A later play of Stage 1-1 is a normal **Stage**. The Tutorial has 4 **Tutorial Steps**. Auto-play is not available in the Tutorial. A **Hint** shows one time for each subject, at any time after the Tutorial.
 - A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**.
@@ -191,7 +202,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - "Fuse" in the original games was a random recipe system. Heynbord does not have it. **Combine** and **Craft** replace it.
 - **Recall** was named "Mastery" before. "Mastery" told the Rank, not the effect, so Players did not know what it did.
 - **Hero** and **Player** are different. A Player is a person. A Hero is the commander on the Board.
-- The GDD used "a Unique boss Unit" for a Unit that starts on the Board in a Boss Stage. That Unit is not a **Boss**. A Boss is always a Hero, in a Boss Stage and in a Dungeon.
+- The GDD used "a Unique boss Unit" for a Unit that starts on the Board in a Boss Stage. The term is **Start Unit**, and that Unit is not a **Boss**. A Boss is always a Hero, in a Boss Stage and in a Dungeon.
 - A **Hero** used to lose the Battle at 0 HP. Now a Hero is **Defeated** at 0 HP, and only a **Side** with no Heroes left loses ([ADR-0009](../../docs/adr/0009-a-side-has-one-or-more-heroes.md)). A Side that is **Routed** also loses ([ADR-0012](../../docs/adr/0012-a-routed-side-loses.md)).
 - The **Board** used to have 1 to 3 Lanes in v1, and each Stage set its number of Lanes. Now the type of Battle sets it: 3 Lanes in a **Stage**, 4 Lanes in a **Dungeon**, in **Heynspire** and in a Battle with 2 or more **Players**.
 - The tutorial was 6 steps before: Stages 1-1 to 1-3, the Deck builder, the first Pack and Combine. Now the **Tutorial** is one session in Stage 1-1, and the other lessons are **Hints**.
@@ -199,3 +210,5 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - **Coin** was named "Marks" before. Gold, Silver and Copper are its denominations, not separate currencies.
 - The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
+- The GDD says "Deck archetype". The term is **Archetype**, and it is always a Deck. It is not a **Role**: a Role is the job of one Creature Card.
+- The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.

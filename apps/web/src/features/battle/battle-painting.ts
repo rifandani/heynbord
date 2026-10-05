@@ -3,7 +3,7 @@ import { getStage } from "@workspace/rules";
 /**
  * The Battle Painting of each Region (web ADR-0007), or `null` while its art
  * does not exist. To add one, put the WebP file in `public/battle/` and add
- * its path here (docs/game/11-battlefield-concepts.md, step 6).
+ * its path here (docs/game/13-battlefield-concepts.md, step 6).
  */
 type BattlePaintings = Readonly<Record<number, string | null>>;
 

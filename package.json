@@ -48,7 +48,8 @@
     "web:test:unit": "vitest run --project web",
     "rules": "bun --elide-lines=0 --filter @workspace/rules",
     "rules:test:unit": "vitest run --project rules",
-    "rules:sim": "bun --filter @workspace/rules sim"
+    "rules:sim": "bun --filter @workspace/rules sim",
+    "rules:sim:check": "bun rules sim:check"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3",

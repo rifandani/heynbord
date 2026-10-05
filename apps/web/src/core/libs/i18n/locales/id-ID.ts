@@ -178,6 +178,15 @@ export default {
     "1-1": { name: "Penyeberangan Berlumpur", enemy: "Pengintai Bandit" },
     "1-2": { name: "Dua Jembatan", enemy: "Bandit Kembar" },
     "1-3": { name: "Kincir yang Terbakar", enemy: "Penyihir Pagar" },
+    "1-4": { name: "Gerbang Tol", enemy: "Sersan Tol" },
+    "1-5": { name: "Perkemahan Bandit", enemy: "Juru Masak Kemah" },
+    "1-6": { name: "Menara Pengawas Tua", enemy: "Penenung Menara" },
+    "1-7": {
+      name: "Perkemahan Tentara Bayaran",
+      enemy: "Kapten Tentara Bayaran",
+    },
+    "1-8": { name: "Celah Longsoran Batu", enemy: "Penjaga Celah" },
+    "1-9": { name: "Pohon Ek Raksasa", enemy: "Pengintai Sang Baron" },
     "1-10": { name: "Aula Brassbelly", enemy: "Baron Brassbelly" },
   },
   classes: {

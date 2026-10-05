@@ -171,6 +171,18 @@ export const StageDefinition = Schema.Struct({
   region: between(1, 3),
   number: between(1, 10),
   boss: Schema.Boolean,
+  /**
+   * The Recommended level: the Player level at which a new Player with no Gear
+   * is expected to win on the first try (docs/game/14-campaign-stages.md). The
+   * Player sees it. No Battle rule reads it. The maximum player level in v1 is
+   * 30 (GDD 7.1).
+   */
+  recommendedLevel: between(1, 30),
+  /**
+   * The card that the first win gives: a card of the enemy Deck, in its Base
+   * Rank (docs/game/14-campaign-stages.md). A content test checks it.
+   */
+  firstWinCard: DeckEntry,
   closedLanes: Schema.Array(ClosedLane),
   enemy: Schema.Struct({
     heroHp: between(1, 200),
@@ -189,3 +201,10 @@ export const StarterDeck = Schema.Struct({
   deck: Schema.Array(DeckEntry).check(Schema.isMinLength(5)),
 });
 export type StarterDeck = typeof StarterDeck.Type;
+
+/**
+ * An Archetype: a named reference Deck for one style of play. The team uses
+ * Archetypes to measure balance (GDD 13). It has the same data as a starter Deck.
+ */
+export const Archetype = StarterDeck;
+export type Archetype = typeof Archetype.Type;

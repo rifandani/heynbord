@@ -155,7 +155,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 | Rules unit tests | Vitest (Node) | Each rule in GDD section 4, each Keyword, each Workshop action, migrations. Follows [ADR-0001](../adr/0001-unit-tests-are-pure-module-logic.md). |
 | Determinism tests | Vitest | Run the same replay many times and compare the results. Property tests with random Decks and seeds. |
 | Content tests | Vitest | All card and Stage data pass the Effect `Schema` schemas. All Translation Keys exist. |
-| Balance simulations | Bun script | Headless AI-against-AI Battles. Reports win rates (GDD section 13). |
+| Balance simulations | Vitest + Bun script | Headless AI-against-AI Battles. `bun run sim` in `packages/rules` reports the win rates of each Stage and each Matchup (GDD section 13). The logic is in `src/simulation/` and has unit tests. CI fails when a win rate is not on its target (`bun run rules:sim:check`). |
 | Economy simulation | Bun script | Reports the pacing targets (Economy section 4). |
 | End-to-end | Playwright | Start the game, finish Stage 1-1, open a Pack, Combine, export and import the save. |
 

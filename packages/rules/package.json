@@ -12,7 +12,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run --project rules",
-    "sim": "bun scripts/simulate.ts"
+    "sim": "bun scripts/simulate.ts",
+    "sim:check": "bun scripts/simulate.ts 1000 --check"
   },
   "dependencies": {
     "effect": "4.0.0"

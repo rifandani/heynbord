@@ -97,9 +97,17 @@ If you agree with all the current choices, I can write them into the GDD as they
 
 ## Todo
 
-- /grill-with-docs a smart Auto-play button for Stages that the player has already won
+v1:
+
+- update bulwark illust card-concepts
+- /grill-with-docs the rules package has an AI (choose-command.ts), but it has no headless simulation harness (GDD 13 step 4), so we cannot measure win rates. fix it
+- /grill-with-docs a smart auto-play button for Stages that the player has already won (whats the reward for completing already completed stage?)
 - /grill-with-docs a focus trap in the result dialog
-- /grill-with-docs save data
+- /grill-with-docs card packs gacha with premium currency (develop shop first)
+- /grill-with-docs make sure player's progress are saved (locally, no server in v1)
+
+v2:
+
 - standardize UI components at design system level
 - dynamic og image generation
 - add better auth + skills
@@ -108,7 +116,6 @@ If you agree with all the current choices, I can write them into the GDD as they
 - add alchemy + cloudflare binding
 - Asynchronous online: an account, a server, PvP against other players' _saved defense decks_ (the AI controls them), leaderboards and guilds
 - Real-time PvP (for PvP the options should be 1v1, 2v2, 4v4, there's no 3v3 because of the lanes) and a persistent shared world
-- Card packs gacha with premium currency
 - Enemy AI: a search-based AI (for example Monte Carlo) that uses the deterministic engine, can come later for PvP defense decks
 
 ## Re-check / improve later

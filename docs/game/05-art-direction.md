@@ -17,7 +17,7 @@ Not: dark, realistic, gory, noisy, neon.
 | **Heroes** | A larger cut-out figure at the end of the Lanes, with a 3D frame and an HP bar. It stands on the ground with a ring in its Side color. |
 | **Cards in the Hand** | 2D UI (React), not in the 3D scene. This keeps text sharp. |
 | **Effects** | 3D particles, simple shaders and light flashes. |
-| **Background** | One Battle Painting for each Region: a flat 2D painting of the ground and its edges, seen from the Battle camera, with no sky. See [11 — Battlefield Concepts](./11-battlefield-concepts.md). |
+| **Background** | One Battle Painting for each Region: a flat 2D painting of the ground and its edges, seen from the Battle camera, with no sky. See [13 — Battlefield Concepts](./13-battlefield-concepts.md). |
 
 ### 2.1 Unit feedback without animation rigs
 
@@ -39,7 +39,7 @@ A cut-out Unit is a flat image, so the game shows actions with movement of the p
 
 A card can have a rigged 3D model instead of the cut-out. The model plays a clip for each action: idle, walk (Move), attack (melee and ranged), hurt (Hit) and death. The clip follows the event progress, so it keeps time with the Battle speed. The movement, tint and fade of 2.1 still apply to the model, and the Summon rise and the projectiles stay the same.
 
-- Source: Tripo text-to-3D in a T-pose, with the subject, props and Race colors of the card concept ([09 — Card Concepts](./09-card-concepts.md)). Then auto-rig, and retarget the preset clips.
+- Source: Tripo text-to-3D in a T-pose, with the subject, props and Race colors of the card concept ([10 — Card Concepts](./10-card-concepts.md)). Then auto-rig, and retarget the preset clips.
 - Each model is one GLB in `apps/web/public/models/units/`, with the clips named `idle`, `walk`, `attack`, `hurt` and `death`. The list of cards with a model is in `apps/web/src/features/battle/scene/unit-models.ts`.
 - Write the licence record (5.5) for each model, with the Tripo task IDs.
 
@@ -113,7 +113,7 @@ light from the upper left, soft brush texture, [Damage Type color] accents,
 
 ### 5.3 Steps for each card
 
-1. Write the card concept in [09 — Card Concepts](./09-card-concepts.md): name, Race or Class, Role, subject, pose, props, setting and prompt.
+1. Write the card concept in [10 — Card Concepts](./10-card-concepts.md): name, Race or Class, Role, subject, pose, props, setting and prompt.
 2. Make 4 to 8 images with the prompt template and the style references.
 3. Select one image with the review checklist (5.4).
 4. Fix problems by hand or with inpainting (hands, weapons, extra parts).

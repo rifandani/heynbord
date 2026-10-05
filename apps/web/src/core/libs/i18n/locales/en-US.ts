@@ -177,6 +177,12 @@ export default {
     "1-1": { name: "The Muddy Ford", enemy: "Bandit Scout" },
     "1-2": { name: "Two Bridges", enemy: "Bandit Twins" },
     "1-3": { name: "The Burning Mill", enemy: "Hedge Witch" },
+    "1-4": { name: "The Toll Gate", enemy: "Toll Sergeant" },
+    "1-5": { name: "The Outlaw Camp", enemy: "Camp Cook" },
+    "1-6": { name: "The Old Watchtower", enemy: "Watchtower Hexer" },
+    "1-7": { name: "The Sellsword Camp", enemy: "Sellsword Captain" },
+    "1-8": { name: "The Rockfall Pass", enemy: "Pass Warden" },
+    "1-9": { name: "The Great Oak", enemy: "The Baron's Lookout" },
     "1-10": { name: "Brassbelly Hall", enemy: "Baron Brassbelly" },
   },
   classes: {

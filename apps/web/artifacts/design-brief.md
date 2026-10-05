@@ -39,7 +39,7 @@ The source of truth is [`docs/game/`](../../../docs/game/README.md). This file g
 | 1-1 The Muddy Ford | 1 | Bandit Scout, 18 HP, cheap Units | Countdown, summon, watch the Units act | One Lane: every enemy Unit comes at you. |
 | 1-2 Two Bridges | 2 | Bandit Twins, 32 HP, fast Units with Heroic | Lane choice: block the fast Units | Runners in the open Lane hit the Hero. |
 | 1-3 The Burning Mill | 2 | Hedge Witch (Mage), 38 HP, Frost and Fire Skill Cards | Skill Cards, Burn, Freeze, Recall | Area damage punishes Units in a line. |
-| 1-10 Brassbelly Hall (Boss) | 2 | Baron Brassbelly, 40 HP, Jade cards | Plan around a Unit that starts on the Board | The Iron Bulwark guards Lane 1 from Turn 1 (GDD 8.1 boss rule). |
+| 1-10 Brassbelly Hall (Boss) | 2 | Baron Brassbelly, 40 HP, Jade cards | Plan around a Unit that starts on the Board | An Epic Shieldbearer guards Lane 1 from Turn 1 (GDD 8.1 boss rule). |
 
 - Camera: a fixed 3/4 view at 45°. It shows all Squares and both Heroes for any landscape aspect.
 - Escalation: Countdowns bring stronger cards over Turns 3 to 6. Sudden Death from Turn 20 (GDD 4.10).

@@ -1,4 +1,4 @@
-# 09 — Card Concepts
+# 10 — Card Concepts
 
 This document gives the art brief for each card in the Battle slice (`packages/rules/src/content/cards.ts`). Use it for step 1 of the AI art workflow ([05 — Art and Audio Direction, 5.3](./05-art-direction.md#53-steps-for-each-card)). The card names and the flavor text come from the `en-US` Message Catalog. The art must agree with them.
 
@@ -201,7 +201,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.8 Iron Bulwark
 
-`human.ironBulwark` · Frontliner · Rare · Countdown 5 · Attack 4 · HP 13 · Melee · Physical · Armor 2 · Retaliation
+`human.ironBulwark` · Frontliner · Epic · Countdown 6 · Attack 5 · HP 17 · Melee · Physical · Armor 2 · Retaliation
 
 > A wall that complains about the weather.
 
@@ -210,10 +210,12 @@ portrait 3:4 composition, no text, no frame
 | Subject | An old stout-folk man: short, very broad and strong. A grey beard comes out under his helmet. |
 | Pose | He stands firm behind a tower shield and frowns up at a small rain cloud. |
 | Props | Very heavy full plate with gold trim, a tall tower shield with short spikes, a heavy mace. A small rain cloud rains only on him. |
-| Gameplay cues | Armor 2: the heaviest armor in the set. Retaliation: spikes on the shield. Rare: ornate gold trim. |
+| Gameplay cues | Armor 2: the heaviest armor in the set. Retaliation: spikes on the shield. Epic: a heroic scene with dramatic composition, and the most ornate human armor in the set. |
 | Silhouette hook | A wide block shape: the tower shield and the very broad body. |
 | Humor note | He is like a wall, but he complains about a small rain cloud. |
 | Setting | A stone town wall in light rain. |
+
+> **Art to-do:** The card changed from Rare to Epic. The current illustration uses the Rare style (ornate gear with gold trim). Make a new illustration with an Epic scene in the next art pass.
 
 ```text
 old stout-folk man, short and very broad, grey beard under a heavy helmet, very heavy full plate armor with ornate gold trim, tall spiked tower shield, heavy mace, frowning up at a small rain cloud that rains only on him,

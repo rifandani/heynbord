@@ -1,4 +1,4 @@
-# 11 — Battlefield Concepts
+# 13 — Battlefield Concepts
 
 This document gives the art brief for the Battle Painting: the painted ground and background behind the Board, one for each Region. The Battle Painting is a flat 2D image behind the 3D scene ([web ADR-0007](../../apps/web/docs/adr/0007-the-battlefield-is-a-2d-painting.md)). The Units, the Heroes and the effects stand on it. The Squares are not drawn.
 

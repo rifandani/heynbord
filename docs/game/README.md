@@ -15,10 +15,13 @@ All documents use ASD-STE100 Simplified Technical English.
 | 05 | [Art and Audio Direction](./05-art-direction.md) | Visual style, AI art workflow, camera, UI and audio. | Art director |
 | 06 | [Technical Design](./06-technical-design.md) | Architecture, the rules package, rendering, save data and tests. | Lead engineer |
 | 07 | [Economy](./07-economy.md) | Currencies (Coin and Heynstones), sources and sinks, packs, the Bazaar, costs and future monetization rules. | Game designer |
-| 08 | [Roadmap](./08-roadmap.md) | Milestones for v1 and the plan after v1. | Product owner |
-| 09 | [Card Concepts](./09-card-concepts.md) | The art brief and the image prompt for each card. | Art director |
-| 10 | [Town Concepts](./10-town-concepts.md) | The art brief, the positions and the image prompts for the Town. | Art director |
-| 11 | [Battlefield Concepts](./11-battlefield-concepts.md) | The art brief, the positions and the image prompt for each Battle Painting. | Art director |
+| 08 | [Archetypes](./08-archetypes.md) | The Archetypes (reference Decks for balance) and the results of their Matchups. | Game designer |
+| 09 | [Roadmap](./09-roadmap.md) | Milestones for v1 and the plan after v1. | Product owner |
+| 10 | [Card Concepts](./10-card-concepts.md) | The art brief and the image prompt for each card. | Art director |
+| 11 | [Town Concepts](./11-town-concepts.md) | The art brief, the positions and the image prompts for the Town. | Art director |
+| 12 | [Region Concepts](./12-region-concepts.md) | The art brief, the positions and the image prompts for each Region Map of the Campaign. | Art director |
+| 13 | [Battlefield Concepts](./13-battlefield-concepts.md) | The art brief, the positions and the image prompt for each Battle Painting. | Art director |
+| 14 | [Campaign Stages](./14-campaign-stages.md) | The design of each Stage: place, enemy, new thing, enemy Deck, first-win card and win-rate target. | Game designer |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.
 
@@ -32,7 +35,7 @@ One person (the solo developer) has all the roles. The roles show which point of
 
 A name marked **(draft)** is a proposal. You can change it without a new design review. Before release, do a trademark check on the game name, all draft names and all invented proper names (for example Heynstones, and named characters on cards and in Stages). Usual words, for example Bazaar or Militia Recruit, do not need the check.
 
-Documents 01 to 04, 06 and 07 are a baseline. A change to a rule needs a design review or an ADR. Documents 05, 09 and 10 change with the content.
+Documents 01 to 04, 06 and 07 are a baseline. A change to a rule needs a design review or an ADR. Documents 05, 08 and 10 to 14 change with the content.
 
 ## Decision record
 

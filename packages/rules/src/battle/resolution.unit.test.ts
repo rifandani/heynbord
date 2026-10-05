@@ -278,7 +278,7 @@ describe("damage (GDD 4.7)", () => {
       position: 5,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, wall.id)?.hp).toBe(13);
+    expect(unitById(next, wall.id)?.hp).toBe(15);
     expect(eventsOfType(events, "DamageDealt")[0]?.amount).toBe(0);
   });
 
@@ -352,12 +352,12 @@ describe("damage (GDD 4.7)", () => {
       maxHp: 20,
     });
     const first = run(state, endTurn);
-    // 3 Fire - Armor 1.
-    expect(unitById(first.state, target.id)).toMatchObject({ hp: 18, burn: 2 });
+    // 4 Fire - Armor 1.
+    expect(unitById(first.state, target.id)).toMatchObject({ hp: 17, burn: 2 });
     const second = run(first.state, endTurn);
     // The enemy's End Step: Burn ignores Armor.
     expect(unitById(second.state, target.id)).toMatchObject({
-      hp: 17,
+      hp: 16,
       burn: 1,
     });
   });

@@ -20,6 +20,9 @@ export const STARTING_HAND = 4;
 /** Base Hero HP of the Player before the level bonus (GDD 4.10). */
 const PLAYER_BASE_HP = 30;
 
+/** The Hero HP of the Player at a player level, before the Gear bonus (GDD 4.10). */
+export const playerHeroHp = (level: number): number => PLAYER_BASE_HP + level;
+
 /** Gear stats for each level (GDD 7.3): basis points or HP. */
 const GEAR_PER_LEVEL = {
   unitCrit: 100,
@@ -88,11 +91,7 @@ export const createBattle = (setup: BattleSetup): BattleStart => {
     phase: "play",
     sides: {
       player: {
-        hero: makeHero(
-          player.classId,
-          PLAYER_BASE_HP + player.level,
-          player.gear
-        ),
+        hero: makeHero(player.classId, playerHeroHp(player.level), player.gear),
         hand: [],
         deck: playerDeck,
         graveyard: [],

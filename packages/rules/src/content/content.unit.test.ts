@@ -2,17 +2,24 @@ import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
 
 import { STAGE_LANES } from "../battle/types";
+import { ARCHETYPES, MATCHUP_LEVEL } from "./archetypes";
 import { budgetDeviation, creaturePower, powerBudget } from "./balance";
 import { CARDS, getCard } from "./cards";
-import { getStarterDeck, STARTER_DECKS } from "./decks";
+import { deckSizeLimits, getStarterDeck, STARTER_DECKS } from "./decks";
 import { isRankAtLeast, rankPips, scaleForRank } from "./ranks";
-import { CardDefinition, StageDefinition, StarterDeck } from "./schema";
+import {
+  Archetype,
+  CardDefinition,
+  StageDefinition,
+  StarterDeck,
+} from "./schema";
 import type { DeckEntry } from "./schema";
 import { getStage, STAGES } from "./stages";
 
 const decodeCard = Schema.decodeUnknownSync(CardDefinition);
 const decodeStage = Schema.decodeUnknownSync(StageDefinition);
 const decodeDeck = Schema.decodeUnknownSync(StarterDeck);
+const decodeArchetype = Schema.decodeUnknownSync(Archetype);
 
 const checkDeck = (deck: readonly DeckEntry[]) => {
   const counts = new Map<string, number>();
@@ -110,7 +117,12 @@ describe("Decks and Stages", () => {
       expect(closed.length, `${stage.id} open Lanes`).toBeLessThan(STAGE_LANES);
       for (const unit of stage.enemy.startUnits) {
         expect(closed, `${stage.id} start Unit`).not.toContain(unit.lane);
-        expect(getCard(unit.cardId).kind).toBe("creature");
+        const card = getCard(unit.cardId);
+        expect(card.kind).toBe("creature");
+        expect(
+          isRankAtLeast(unit.rank, card.baseRank),
+          `${stage.id} start Unit ${unit.cardId} below Base Rank`
+        ).toBe(true);
       }
     }
   });
@@ -126,6 +138,82 @@ describe("Decks and Stages", () => {
     expect(
       STAGES.filter((stage) => stage.boss).map((stage) => stage.id)
     ).toEqual(["1-10"]);
+  });
+
+  it("gives each Stage a Recommended level that does not go down", () => {
+    const levels = STAGES.map((stage) => stage.recommendedLevel);
+    expect(levels[0]).toBe(1);
+    expect(levels).toEqual(levels.toSorted((a, b) => a - b));
+  });
+
+  it("gives each Stage a first-win card from its enemy Deck, in its Base Rank", () => {
+    for (const stage of STAGES) {
+      const { cardId, rank } = stage.firstWinCard;
+      expect(
+        stage.enemy.deck.map((entry) => entry.cardId),
+        `${stage.id} first-win card`
+      ).toContain(cardId);
+      expect(rank, `${stage.id} first-win Rank`).toBe(getCard(cardId).baseRank);
+    }
+  });
+
+  it("gives each enemy about the Deck size of a new Player, and the Boss the largest Deck and Hero HP", () => {
+    for (const stage of STAGES) {
+      const { max } = deckSizeLimits(stage.recommendedLevel);
+      const size = stage.enemy.deck.length;
+      if (stage.boss) {
+        const others = STAGES.filter(
+          (other) => other.region === stage.region && !other.boss
+        );
+        for (const other of others) {
+          expect(size, `${stage.id} Deck size`).toBeGreaterThan(
+            other.enemy.deck.length
+          );
+          expect(stage.enemy.heroHp, `${stage.id} Hero HP`).toBeGreaterThan(
+            other.enemy.heroHp
+          );
+        }
+      } else {
+        expect(size, `${stage.id} Deck size`).toBeGreaterThanOrEqual(max - 1);
+        expect(size, `${stage.id} Deck size`).toBeLessThanOrEqual(max);
+      }
+    }
+  });
+
+  it("makes each starter Deck valid at player level 1, and each Archetype at the Matchup level (GDD 6)", () => {
+    const starter = deckSizeLimits(1);
+    for (const deck of STARTER_DECKS) {
+      expect(deck.deck.length, deck.id).toBeGreaterThanOrEqual(starter.min);
+      expect(deck.deck.length, deck.id).toBeLessThanOrEqual(starter.max);
+    }
+    const matchup = deckSizeLimits(MATCHUP_LEVEL);
+    for (const archetype of ARCHETYPES) {
+      expect(archetype.deck.length, archetype.id).toBeGreaterThanOrEqual(
+        matchup.min
+      );
+      expect(archetype.deck.length, archetype.id).toBeLessThanOrEqual(
+        matchup.max
+      );
+    }
+    expect(deckSizeLimits(1)).toEqual({ min: 5, max: 10 });
+    expect(deckSizeLimits(11)).toEqual({ min: 15, max: 20 });
+    expect(deckSizeLimits(30)).toEqual({ min: 15, max: 30 });
+  });
+
+  it("has Archetypes with unique IDs that obey the Deck rules (GDD 13)", () => {
+    expect(new Set(ARCHETYPES.map((archetype) => archetype.id)).size).toBe(
+      ARCHETYPES.length
+    );
+    for (const archetype of ARCHETYPES) {
+      expect(decodeArchetype(archetype)).toEqual(archetype);
+      checkDeck(archetype.deck);
+      for (const entry of archetype.deck) {
+        const card = getCard(entry.cardId);
+        if (card.kind === "skill") {
+          expect(card.class, entry.cardId).toBe(archetype.classId);
+        }
+      }
+    }
   });
 
   it("throws for an unknown Stage or Deck", () => {

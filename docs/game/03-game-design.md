@@ -50,7 +50,7 @@ The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, 
 
 | No. | Region | Main enemies | Lanes | Boss (draft) |
 | --- | --- | --- | --- | --- |
-| 1 | **Hearthvale** | Human outlaws | 3 | **Baron Brassbelly**, a bandit lord with a very large hat |
+| 1 | **Hearthvale** | Human outlaws and the Orc sellswords that the Baron pays | 3 | **Baron Brassbelly**, a bandit lord with a very large hat |
 | 2 | **The Thornwood** | Elves and Orcs | 3 | **The Old Bramble**, a forest giant that wakes up angry |
 | 3 | **The Hollow Marches** | Undead and Orcs | 3 | **Queen Marrow**, ruler of the Undead |
 
@@ -403,6 +403,7 @@ The [Economy](./07-economy.md) document gives the costs.
 - 3 Regions. Each Region has 10 Stages. Stage 10 of each Region is a **Boss Stage**.
 - The Stages in a Region unlock in order. A Region unlocks when the player wins the Boss Stage of the previous Region.
 - Each Stage defines: enemy Hero, enemy Deck, enemy Hero HP, Closed Lanes, Units at the start, special rules, and rewards.
+- The design of each Stage is in [14 — Campaign Stages](./14-campaign-stages.md).
 - **First win reward:** a fixed card, Coin and XP.
 - **Repeat win reward:** Coin, XP, and a chance of a card from the Stage card pool.
 - **Star chests:** Each Region gives a chest at 10, 20 and 30 Stars.
@@ -510,7 +511,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | --- | --- |
 | Title | Start, Continue, Settings, Language |
 | **Town** | The first screen of the game. A layered 2D painting of a town. The Player selects a Building to open a screen. In v1, only the Town Gate can be selected ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). |
-| Campaign map | Regions and Stages, Stars, rewards |
+| **Campaign** | The Region Map of one Region, with its Stage Markers, Stars and Star chests (see 11.5) |
 | Heynspire | Floor list, current Floor, rewards |
 | Dungeons | Dungeon list, unlock levels, Bosses, rewards |
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
@@ -555,7 +556,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 
 ### 11.4 Town
 
-The Town is the first screen of the game. It is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). The art brief and the image prompts are in [10 — Town Concepts](./10-town-concepts.md). Each screen of 11.1 except Title and Settings has a Building:
+The Town is the first screen of the game. It is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). The art brief and the image prompts are in [11 — Town Concepts](./11-town-concepts.md). Each screen of 11.1 except Title and Settings has a Building:
 
 | Screen | Building |
 | --- | --- |
@@ -574,6 +575,28 @@ The Town is the first screen of the game. It is a layered 2D painting ([web ADR-
 - Small ambient motion: clouds, chimney smoke, flags and water. The Town Gate has a soft pulse of light until the end of the Tutorial (the first win of Stage 1-1). Before the Profile exists, the pulse always shows. A selection zooms a little toward the Building and fades to its screen. With reduced motion, all motion stops and the change is a plain fade.
 - The **Town Bar** is at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen of the table above, and a Town shortcut at its left end. The Deck shortcut opens the screen of the library Building (Collection and Deck builder). A shortcut to a screen that does not exist yet is disabled, with a lock and the tooltip "Opens later". A disabled shortcut can get keyboard focus, a screen reader reads its name and "opens later", and focus, hover and long press show the tooltip. On desktop, each shortcut has an icon and a label. On a phone, it has an icon only, and long press shows its name. The language and sound buttons are at its right end. A Settings button comes with the Settings screen.
 - The game is one route ([web ADR-0006](../../apps/web/docs/adr/0006-the-game-is-one-route.md)). The Town shortcut goes back to the Town, and Esc does the same. The Battle result has "Play Again" and "Back to Campaign". To leave a Battle is an Abandon, with a confirm dialog. The browser Back button leaves the game. A reload opens the Town.
+
+### 11.5 Campaign
+
+The Campaign screen shows one **Region Map** at a time: a flat 2D painting of one Region, with a **Trail** from the first Stage to the Boss Stage ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The art brief, the positions and the image prompts are in [12 — Region Concepts](./12-region-concepts.md).
+
+- **Which Region opens.** From the Town Gate, the newest unlocked Region. From "Back to Campaign" after a Battle, the Region of that Battle.
+- **Top band.** The Region name, with a back arrow and a next arrow at its two sides. The arrows go to the other Regions. The Player can also open a locked Region. All its Stage Markers are then Locked, and a line under the name says which Boss Stage unlocks it. There is no arrow before Region 1 or after Region 3.
+- **Stage Markers.** The game draws one Stage Marker on each stop of the Trail. Each Stage Marker is a shield, with a small plate under it that shows the Stage ID (for example "1-3").
+
+  | State | Look | Select |
+  | --- | --- | --- |
+  | Done | A shield with a check mark. The plate also shows the best Stars (1 to 3). | Opens the Stage Panel. The Player can play the Stage again. |
+  | Open | A gold shield with a soft pulse of light. This is the next Stage to win. | Opens the Stage Panel. |
+  | Locked | A grey shield with a lock. | Does not open the Stage Panel. The Stage Marker can get keyboard focus. Focus, hover and long press show a tooltip with the Stage that the Player must win first. A screen reader reads the Stage ID and "locked". |
+
+  The Stage Marker of a Boss Stage is larger and has a crown. It also has one of the 3 states.
+- **Progress line.** The game draws a dashed line on the painted road: solid from the start to the last Done Stage, faint after it.
+- **Star chests.** A panel in the top-right corner shows the Stars of the Region (for example "14 / 30") and the 3 chests at 10, 20 and 30 Stars (see 8.1).
+- **Stage Panel.** A modal dialog in the center of the screen. The map is dim behind it. It shows the Stage ID, the enemy Hero, the first-win reward or the repeat-win reward, the best Stars, the Deck and a **Fight** button. Until the Deck builder exists, the Deck is a choice of the Starter Decks. After that, it is the active Deck, with a "Change" button. The panel selects the last Deck that the Player used. Esc and a close button close the panel.
+- **Keyboard.** Focus moves through the Stage Markers in the order of the Trail. Esc closes the Stage Panel. When no panel is open, Esc goes back to the Town (see 11.4).
+- **Motion.** The Open Stage Marker pulses. With reduced motion, the pulse stops.
+- Story scenes (MOD-07) and Stage names are not part of this screen now.
 
 ## 12. Content for v1
 
@@ -607,13 +630,13 @@ Base Rank mix of the 100 cards:
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
 2. Each Countdown has a power budget for the Base Rank. Start formula: `budget = 6 + Countdown × 5`.
 3. A card must be within ±10% of its budget. A card outside this range needs a written reason (for example "weak stats, strong combo").
-4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each Deck archetype.
-5. Check each archetype's win rate. The target is 45% to 55% against the other archetypes.
-6. Check Stage difficulty. The target win rate for a new player Deck on the first try is 60% to 80% for normal Stages and 30% to 50% for Boss Stages and Dungeons. The first Stages of Region 1 make a ramp: Stage 1-1 (the Tutorial) ≥ 95%, Stage 1-2 ≥ 85%, Stage 1-3 ≥ 75%. For a Dungeon, use a Deck that is typical at its unlock level.
+4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).
+5. Check each Archetype's win rate in each **Matchup**. The target is 45% to 55% against the other Archetypes.
+6. Check Stage difficulty with `bun run sim stage`. The results are in [14 — Campaign Stages](./14-campaign-stages.md). The target win rate for a new player Deck on the first try is 60% to 80% for normal Stages and 30% to 50% for Boss Stages and Dungeons. The first Stages of Region 1 make a ramp: Stage 1-1 (the Tutorial) ≥ 95%, Stage 1-2 ≥ 85%, Stage 1-3 ≥ 75%. For a Dungeon, use a Deck that is typical at its unlock level.
 
 ## 14. Items for later versions
 
-These items are not in v1. The [Roadmap](./08-roadmap.md) shows when they can come.
+These items are not in v1. The [Roadmap](./09-roadmap.md) shows when they can come.
 
 - Asynchronous PvP against defense Decks, leaderboards, seasons
 - Guilds, guild bosses, co-op Battles with 4 Lanes
