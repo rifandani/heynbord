@@ -349,6 +349,7 @@ Each Creature Card has a role. Use the role to balance the card and to explain i
 ### 7.1 Player level
 
 - The player gets XP from each Battle. A loss gives 25% of the XP of a win.
+- The XP that each level needs is in the XP table ([Economy 1.2](./07-economy.md#12-player-levels)).
 - The maximum player level in v1 is 30.
 - Each level gives +1 Hero HP and changes the Deck size limits.
 

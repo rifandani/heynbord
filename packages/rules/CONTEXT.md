@@ -142,7 +142,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Stage**: One Battle in the Campaign, with a fixed enemy and rewards. _Avoid_: level, mission
 
-**Recommended level**: The Player level at which a new Player with no Gear is expected to win a Stage on the first try. The Player can see it. _Avoid_: expected level, suggested level, required level
+**Recommended level**: The Player level that the First-try Path gives before a Stage. A new Player with no Gear is expected to win the Stage on the first try at this level. The Player can see it. _Avoid_: expected level, suggested level, required level
+
+**First-try Path**: The first win of each earlier Stage, in Stage order, with no losses and no repeats. It gives the smallest XP that a Player can have at a Stage. _Avoid_: golden path, ideal run, expected path
 
 **Boss Stage**: The last Stage of a Region, with special rules. Its enemy Hero is a Boss. _Avoid_: boss level, raid
 
@@ -185,7 +187,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Starter Deck** can also be an **Archetype**. An Archetype does not have to be a Starter Deck. A **Matchup** of an Archetype against itself is a mirror.
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
 - A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
-- Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage.
+- Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage. A loss or a repeat win gives XP too, so a real Player is at or above the level of the **First-try Path**.
 - A **Region** has 10 **Stages**, and the last one is a **Boss Stage**.
 - The **Tutorial** ends with the first win of Stage 1-1. A loss or an **Abandon** does not end it. A later play of Stage 1-1 is a normal **Stage**. The Tutorial has 4 **Tutorial Steps**. Auto-play is not available in the Tutorial. A **Hint** shows one time for each subject, at any time after the Tutorial.
 - A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**.

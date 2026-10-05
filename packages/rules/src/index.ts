@@ -34,6 +34,12 @@ export type {
 } from "./battle/types";
 export { CARDS, getCard } from "./content/cards";
 export { getStarterDeck, STARTER_DECKS } from "./content/decks";
+export {
+  firstTryPathLevel,
+  firstWinXp,
+  PLAYER_LEVEL_XP,
+  playerLevelForXp,
+} from "./content/player-levels";
 export { rankPips, RANKS, recallChance, scaleForRank } from "./content/ranks";
 export type {
   CardDefinition,

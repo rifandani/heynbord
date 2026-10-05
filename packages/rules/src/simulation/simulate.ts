@@ -19,7 +19,7 @@ import type {
   StageDefinition,
   StarterDeck,
 } from "../content/schema";
-import { STAGES } from "../content/stages";
+import { STAGES, stagesBefore } from "../content/stages";
 
 /** A Battle that is not finished after this many Commands has a bug. */
 const MAX_COMMANDS = 10_000;
@@ -97,13 +97,6 @@ export interface StageReport {
   readonly averageStars: number;
 }
 
-const comesBefore = (
-  earlier: StageDefinition,
-  stage: StageDefinition
-): boolean =>
-  earlier.region < stage.region ||
-  (earlier.region === stage.region && earlier.number < stage.number);
-
 /**
  * The Deck of a new Player at a Stage: the starter Deck, then the first-win
  * cards of all Stages before it, in Stage order. It stops at the maximum Deck
@@ -117,10 +110,9 @@ export const expectedDeck = (
 ): DeckEntry[] => {
   const { max } = deckSizeLimits(stage.recommendedLevel);
   const deck = starter.deck.slice(0, max);
-  const rewards = stages
-    .filter((earlier) => comesBefore(earlier, stage))
-    .toSorted((a, b) => a.region - b.region || a.number - b.number)
-    .map((earlier) => earlier.firstWinCard);
+  const rewards = stagesBefore(stage, stages).map(
+    (earlier) => earlier.firstWinCard
+  );
   for (const reward of rewards) {
     const card = getCard(reward.cardId);
     const copies = deck.filter((entry) => entry.cardId === reward.cardId);

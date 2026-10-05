@@ -172,10 +172,10 @@ export const StageDefinition = Schema.Struct({
   number: between(1, 10),
   boss: Schema.Boolean,
   /**
-   * The Recommended level: the Player level at which a new Player with no Gear
-   * is expected to win on the first try (docs/game/14-campaign-stages.md). The
-   * Player sees it. No Battle rule reads it. The maximum player level in v1 is
-   * 30 (GDD 7.1).
+   * The Recommended level: the Player level on the First-try Path before this
+   * Stage (Economy 1.2, docs/game/14-campaign-stages.md). A content test checks
+   * it. The Player sees it. No Battle rule reads it. The maximum player level in
+   * v1 is 30 (GDD 7.1).
    */
   recommendedLevel: between(1, 30),
   /**

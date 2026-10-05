@@ -291,6 +291,19 @@ export const STAGES: readonly StageDefinition[] = [
   },
 ];
 
+/** The Stages of `stages` that come before `stage`, in Stage order: Region, then number. */
+export const stagesBefore = (
+  stage: StageDefinition,
+  stages: readonly StageDefinition[]
+): StageDefinition[] =>
+  stages
+    .filter(
+      (earlier) =>
+        earlier.region < stage.region ||
+        (earlier.region === stage.region && earlier.number < stage.number)
+    )
+    .toSorted((a, b) => a.region - b.region || a.number - b.number);
+
 export const getStage = (stageId: string): StageDefinition => {
   const stage = STAGES.find((candidate) => candidate.id === stageId);
   if (!stage) {

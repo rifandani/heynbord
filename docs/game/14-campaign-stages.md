@@ -16,13 +16,13 @@ Now only Region 1 has Stages. All names are draft names (README, "Status of name
 
 ### 1.1 Recommended level
 
-Each Stage has a **Recommended level**: the Player level at which a new Player with no Gear is expected to win the Stage on the first try. The Player sees it. It is the `recommendedLevel` field of each Stage in `stages.ts`.
+Each Stage has a **Recommended level**: the Player level that the **First-try Path** gives before the Stage ([Economy 1.2](./07-economy.md#12-player-levels)). The First-try Path is the first win of each earlier Stage, in Stage order, with no losses and no repeats. The Player sees the Recommended level. It is the `recommendedLevel` field of each Stage in `stages.ts`.
 
 The simulation (`bun run sim stage` in `packages/rules`) plays each Stage with the **expected Deck** of each Starter Deck, at the Recommended level of the Stage, with no Gear. Gear unlocks at player level 5 (GDD 7.1), so a new player has no Gear in Region 1.
 
 The expected Deck is the Starter Deck (10 cards), then the first-win cards of the earlier Stages, in Stage order, up to the maximum Deck size at the Recommended level (GDD 6). It skips a fourth copy of a card and a Skill Card of another Class. For example, at Stage 1-5 (level 3, maximum 12 cards) it is the Starter Deck, Militia Recruit and Scrap Raider.
 
-The GDD has no XP table for each level yet. Thus the Recommended levels are an assumption. When the XP table exists, change the `recommendedLevel` values in `stages.ts`, and tune the Stages again.
+A content test checks that each Recommended level is the level of the First-try Path. A Player who loses or plays again has more XP, so the Recommended level is a floor. When the XP table, a first-win XP reward (Economy 2.1) or the Stage order changes, update the `recommendedLevel` values in `stages.ts`. Then run `bun run sim stage` again.
 
 ## 2. Region 1: Hearthvale
 

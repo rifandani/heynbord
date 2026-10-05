@@ -6,6 +6,7 @@ import { ARCHETYPES, MATCHUP_LEVEL } from "./archetypes";
 import { budgetDeviation, creaturePower, powerBudget } from "./balance";
 import { CARDS, getCard } from "./cards";
 import { deckSizeLimits, getStarterDeck, STARTER_DECKS } from "./decks";
+import { firstTryPathLevel } from "./player-levels";
 import { isRankAtLeast, rankPips, scaleForRank } from "./ranks";
 import {
   Archetype,
@@ -144,6 +145,14 @@ describe("Decks and Stages", () => {
     const levels = STAGES.map((stage) => stage.recommendedLevel);
     expect(levels[0]).toBe(1);
     expect(levels).toEqual(levels.toSorted((a, b) => a - b));
+  });
+
+  it("gives each Stage the Recommended level of its First-try Path (Economy 1.2)", () => {
+    for (const stage of STAGES) {
+      expect(stage.recommendedLevel, `${stage.id} Recommended level`).toBe(
+        firstTryPathLevel(stage)
+      );
+    }
   });
 
   it("gives each Stage a first-win card from its enemy Deck, in its Base Rank", () => {

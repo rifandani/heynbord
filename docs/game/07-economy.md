@@ -32,6 +32,73 @@ The game shows only the denominations that are not zero. Each one has an icon an
 - No resource has a time limit or a daily cap.
 - There is no Energy. The player can do as many Battles as they want.
 
+### 1.2 Player levels
+
+XP sets the Player level, from 1 to 30 (GDD 7.1). The table has three bands:
+
+| Levels | XP to the next level | Reason |
+| --- | --- | --- |
+| 1 → 6 | 160 each | Region 1 is fast, so Packs, Workshop and Gear come early. 160 XP is 2 first wins in Region 1. |
+| 6 → 20 | 340, then +20 for each level (340 … 600) | Campaign Regions 2 and 3, and the first half of Heynspire. |
+| 20 → 30 | 1,000, then +150 for each level (1,000 … 2,350) | The long loop: the rest of Heynspire and many Dungeon wins. |
+
+The jump from 160 to 340 XP at level 6 is intentional, because Region 1 is the fast start.
+
+| Level | XP to the next level | Total XP |
+| --- | --- | --- |
+| 1 | 160 | 0 |
+| 2 | 160 | 160 |
+| 3 | 160 | 320 |
+| 4 | 160 | 480 |
+| 5 | 160 | 640 |
+| 6 | 340 | 800 |
+| 7 | 360 | 1,140 |
+| 8 | 380 | 1,500 |
+| 9 | 400 | 1,880 |
+| 10 | 420 | 2,280 |
+| 11 | 440 | 2,700 |
+| 12 | 460 | 3,140 |
+| 13 | 480 | 3,600 |
+| 14 | 500 | 4,080 |
+| 15 | 520 | 4,580 |
+| 16 | 540 | 5,100 |
+| 17 | 560 | 5,640 |
+| 18 | 580 | 6,200 |
+| 19 | 600 | 6,780 |
+| 20 | 1,000 | 7,380 |
+| 21 | 1,150 | 8,380 |
+| 22 | 1,300 | 9,530 |
+| 23 | 1,450 | 10,830 |
+| 24 | 1,600 | 12,280 |
+| 25 | 1,750 | 13,880 |
+| 26 | 1,900 | 15,630 |
+| 27 | 2,050 | 17,530 |
+| 28 | 2,200 | 19,580 |
+| 29 | 2,350 | 21,780 |
+| 30 | — | 24,130 |
+
+- The Player level is the highest level whose total XP is at or below the XP of the Player. 24,130 XP or more is level 30. There is no level 31.
+- The band rules made the table, but the table is a fixed list. You can change one value by hand. The data is `PLAYER_LEVEL_XP` in `packages/rules/src/content/player-levels.ts`. Keep the code and this table the same.
+
+**First-try Path.** The First-try Path is the first win of each earlier Stage, in Stage order (Region, then Stage number), with no losses and no repeats. The **Recommended level** of a Stage is the Player level that the First-try Path gives before that Stage. A content test checks each Stage. When this table, a reward in section 2.1 or a Stage changes, update the Recommended levels. Then run `sim stage` again ([14 — Campaign Stages](./14-campaign-stages.md#11-recommended-level)).
+
+A loss gives 25% of the XP of a win, and a repeat win gives the normal XP (section 2.1). Thus a real Player is at or above the level of the First-try Path. The Recommended level is a floor.
+
+**Anchor check.** The first wins of a Region give 880 XP (Region 1), 1,540 XP (Region 2) and 2,200 XP (Region 3). On the First-try Path:
+
+| After | Total XP | Player level | Target |
+| --- | --- | --- | --- |
+| Region 1 Boss Stage | 880 | 6 | 6: Gear near the Region 1 Boss, Craft right after it |
+| Region 2 Boss Stage | 2,420 | 10 | 10: Dungeon 1 opens when the Player starts Region 3 |
+| Region 3 Boss Stage | 4,620 | 15 | 15: Heynspire opens at the same time |
+| About Heynspire Floor 24 | 7,380 | 20 | 20: Dungeon 2, about halfway up Heynspire |
+| All 50 Heynspire Floors | 13,495 | 24 | — |
+| About 53 more Dungeon 2 wins | 24,130 | 30 | 30: Dungeon 3, the final challenge, after 1 to 2 weeks |
+
+The Heynspire and Dungeon rows use the first-win XP of each Floor (section 2.3) and the XP of a Dungeon 2 win (section 2.4).
+
+On the First-try Path, the Region 1 Stages get the Player levels 1, 1, 2, 2, 3, 3, 4, 4, 5, 5. The Stages of Region 2 will get 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, and the Stages of Region 3 will get 10, 10, 11, 11, 12, 12, 13, 13, 13, 14.
+
 ## 2. Sources (faucets)
 
 ### 2.1 Campaign Stages
@@ -179,13 +246,14 @@ Use these targets to tune the numbers. Check them with an economy simulation and
 
 | Point in the game | Target |
 | --- | --- |
-| End of Region 1 (about 2 hours) | Player level 8 to 10. 3 to 5 Packs opened. First Combine done. |
-| End of Region 2 (about 6 hours) | Player level 15 to 18. 12 to 18 Packs opened. 1 Epic card. |
-| End of Region 3 (8 to 15 hours) | Player level 22 to 26. 25 to 35 Packs opened. 60% to 75% of cards Discovered. |
-| Heynspire Floor 50 (about 30 hours) | Player level 30. All cards Discovered. 3 to 6 Legendary cards. Gear mostly at level 7 or higher. |
+| End of Region 1 (about 2 hours) | Player level 6. 3 to 5 Packs opened. First Combine done. |
+| End of Region 2 (about 6 hours) | Player level 10. 12 to 18 Packs opened. 1 Epic card. |
+| End of Region 3 (8 to 15 hours) | Player level 15. 25 to 35 Packs opened. 60% to 75% of cards Discovered. |
+| Heynspire Floor 50 (about 30 hours) | Player level 24. All cards Discovered. 3 to 6 Legendary cards. Gear mostly at level 7 or higher. |
+| About 53 more Dungeon 2 wins (1 to 2 weeks) | Player level 30. |
 
-- The XP for the next level is 50 + 25 × (current level − 1).
-- Total XP to level 21 (Deck size 30) is 5,750. Total XP to level 30 is 11,600.
+- The Player levels are the First-try Path levels of section 1.2. A Player who loses or plays again is at a higher level.
+- Total XP to level 21 (Deck size 30) is 8,380. Total XP to level 30 is 24,130.
 
 ## 5. Monetization rules after v1
 
