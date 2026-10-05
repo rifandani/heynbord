@@ -27,12 +27,13 @@ export interface UnitView {
   readonly maxHp: number;
   readonly armor: number;
   readonly bonusArmor: number;
-  /** The End Steps of its owner until the bonus Armor goes away. */
+  /** The End Steps of the other side until the bonus Armor goes away. */
   readonly bonusArmorTurns: number;
   readonly range: number;
   readonly flying: boolean;
   readonly damageType: DamageType;
   readonly burn: number;
+  readonly poisoned: number;
   readonly frozen: boolean;
 }
 
@@ -92,6 +93,7 @@ const unitView = (unit: Readonly<UnitState>): UnitView => ({
   flying: unit.flying,
   damageType: unit.damageType,
   burn: unit.burn,
+  poisoned: unit.poisoned,
   frozen: unit.frozen,
 });
 
@@ -180,8 +182,9 @@ const applyDamage = (
   return updateUnit(view, target.unitId, (unit) => ({
     ...unit,
     hp: event.hp,
-    // The rules lower Burn by 1 before each Burn hit.
+    // The rules lower Burn by 1 before each Burn hit, and Poison by 1 before each Poison hit.
     burn: event.source === "burn" ? unit.burn - 1 : unit.burn,
+    poisoned: event.source === "poison" ? unit.poisoned - 1 : unit.poisoned,
   }));
 };
 
@@ -279,11 +282,22 @@ export const applyEvent = (
       return applyDamage(view, event);
     }
     case "StatusApplied": {
-      return updateUnit(view, event.unitId, (unit) =>
-        event.status === "burn"
-          ? { ...unit, burn: 2 }
-          : { ...unit, frozen: true }
-      );
+      return updateUnit(view, event.unitId, (unit) => {
+        switch (event.status) {
+          case "burn": {
+            return { ...unit, burn: 2 };
+          }
+          case "freeze": {
+            return { ...unit, frozen: true };
+          }
+          case "poison": {
+            return { ...unit, poisoned: unit.poisoned + 1 };
+          }
+          default: {
+            return unit;
+          }
+        }
+      });
     }
     case "UnitSkipped": {
       return updateUnit(view, event.unitId, (unit) => ({
@@ -306,11 +320,11 @@ export const applyEvent = (
       }));
     }
     case "TurnEnded": {
-      // The End Step lowers the bonus Armor Turns of the active side's Units.
+      // The End Step lowers the bonus Armor Turns of the other side's Units.
       return {
         ...view,
         units: view.units.map((unit) =>
-          unit.owner === event.side && unit.bonusArmorTurns > 0
+          unit.owner !== event.side && unit.bonusArmorTurns > 0
             ? { ...unit, bonusArmorTurns: unit.bonusArmorTurns - 1 }
             : unit
         ),

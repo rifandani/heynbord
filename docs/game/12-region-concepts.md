@@ -169,7 +169,7 @@ light from the upper left,
 no dashed lines, no markers, no flags on the clearings, no shields, no numbers, no text, no letters, no logo, no frame, no UI
 ```
 
-If you use the Gemini image skill (`threejs-image-generator`), give it the prompt, a 16:9 aspect, and the Town painting (`apps/web/public/town/town.jpg`) as a style reference. For Regions 2 and 3, also give it the finished Hearthvale map, so that the set matches.
+Make the images with GPT Image. Give it the prompt, a 16:9 aspect, and the Town painting (`apps/web/public/town/town.jpg`) as a style reference. For Regions 2 and 3, also give it the finished Hearthvale map, so that the set matches.
 
 ## 4. Steps
 

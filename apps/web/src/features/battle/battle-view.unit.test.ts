@@ -118,6 +118,7 @@ describe("the Graveyard view", () => {
           flying: false,
           damageType: "physical" as const,
           burn: 0,
+          poisoned: 0,
           frozen: false,
         },
       ],
@@ -167,6 +168,7 @@ describe("the bonus Armor view", () => {
       flying: false,
       damageType: "physical" as const,
       burn: 0,
+      poisoned: 0,
       frozen: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
@@ -176,16 +178,16 @@ describe("the bonus Armor view", () => {
     };
     const gained = BattleEvent.ArmorGained({ unitId: 7, armor: 1, turns: 2 });
     expect(armorOf([gained])).toEqual([1, 2]);
-    expect(armorOf([gained, BattleEvent.TurnEnded({ side: "enemy" })])).toEqual(
-      [1, 2]
-    );
     expect(
       armorOf([gained, BattleEvent.TurnEnded({ side: "player" })])
-    ).toEqual([1, 1]);
+    ).toEqual([1, 2]);
+    expect(armorOf([gained, BattleEvent.TurnEnded({ side: "enemy" })])).toEqual(
+      [1, 1]
+    );
     expect(
       armorOf([
         gained,
-        BattleEvent.TurnEnded({ side: "player" }),
+        BattleEvent.TurnEnded({ side: "enemy" }),
         BattleEvent.ArmorFaded({ unitId: 7 }),
         BattleEvent.TurnEnded({ side: "player" }),
       ])

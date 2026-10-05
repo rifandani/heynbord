@@ -21,6 +21,7 @@ const unit: UnitView = {
   flying: false,
   damageType: "physical",
   burn: 0,
+  poisoned: 0,
   frozen: false,
 };
 

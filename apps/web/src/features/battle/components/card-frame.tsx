@@ -1,10 +1,14 @@
 import { getCard, rankPips, scaleForRank } from "@workspace/rules";
-import type { CardDefinition, RankId } from "@workspace/rules";
+import type {
+  CardDefinition,
+  CreatureCardDefinition,
+  RankId,
+  SkillCardDefinition,
+} from "@workspace/rules";
 import { cn } from "cn";
 import type { CSSProperties, ReactNode } from "react";
 
 import { cardIllustration } from "@/features/battle/card-art";
-import { cardText } from "@/features/battle/card-text";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { cardGlyph, classGlyph, raceGlyph } from "@/features/battle/glyphs";
@@ -13,13 +17,12 @@ import {
   RACE_COLORS,
   RANK_COLORS,
 } from "@/features/battle/palette";
-import { useGameText } from "@/features/battle/use-game-text";
 
 /** The frame metal. It is the same for all cards, and for the Card Back. */
 export const BRONZE =
   "linear-gradient(155deg, #f7dc9c 0%, #c99442 22%, #8a5a20 55%, #b47f36 80%, #e9c27a 100%)";
 
-/** The banner and emblem color of a Skill Card: one parchment for all Classes. */
+/** The emblem color of a Skill Card: one parchment for all Classes. */
 const PARCHMENT = { main: "#f3e6c4", ink: "#3a2612" } as const;
 
 const CREAM = "#fff6df";
@@ -111,39 +114,15 @@ const Emblem = ({ card }: { readonly card: CardDefinition }) => {
   );
 };
 
-/** The name banner and the Rank Gems under it. */
-const TitleBlock = ({
-  card,
-  rank,
-  name,
-}: {
-  readonly card: CardDefinition;
-  readonly rank: RankId;
-  readonly name: string;
-}) => {
-  const creature = card.kind === "creature";
-  return (
-    <span className="absolute inset-x-[1.55em] top-[0.15em] z-[5] flex flex-col items-center gap-[0.3em]">
-      <span
-        className={cn(
-          "line-clamp-2 w-full px-[0.6em] py-[0.2em] text-center text-[max(0.9em,7.5px)] leading-[1.05] font-bold tracking-tight break-words hyphens-auto",
-          creature && "[text-shadow:0_0.08em_0_rgba(0,0,0,0.7)]"
-        )}
-        style={{
-          backgroundColor: creature
-            ? RACE_COLORS[card.race].main
-            : PARCHMENT.main,
-          color: creature ? CREAM : PARCHMENT.ink,
-          boxShadow: `inset 0 -0.12em 0 ${creature ? RACE_COLORS[card.race].dark : "#c9b083"}`,
-          clipPath: "polygon(0 0, 100% 0, 94% 50%, 100% 100%, 0 100%, 6% 50%)",
-        }}
-      >
-        {name}
-      </span>
-      <RankGems rank={rank} />
-    </span>
-  );
-};
+/**
+ * The Rank Gems at the top center, in line with the Countdown and the emblem.
+ * The card name is not on the frame. Card Details shows it.
+ */
+const RankRow = ({ rank }: { readonly rank: RankId }) => (
+  <span className="absolute inset-x-[1.7em] top-[0.44em] z-5 flex justify-center">
+    <RankGems rank={rank} />
+  </span>
+);
 
 /** A dark plate at a bottom corner: an icon in its color and a number. */
 const StatPlate = ({
@@ -181,8 +160,71 @@ const StatPlate = ({
 /**
  * Attack (with its Damage Type icon) and HP, or the effect icon of a Skill
  * Card. `live` gives the current stats of a Unit. The HP of a damaged Unit has
- * the low HP color, and the Details Panel says "HP 3 of 5" in words.
+ * the low HP color.
  */
+const shownAttack = (
+  card: CreatureCardDefinition,
+  rank: RankId,
+  live: LiveStats | undefined
+) => live?.attack ?? scaleForRank(card.attack, rank);
+
+const shownHp = (
+  card: CreatureCardDefinition,
+  rank: RankId,
+  live: LiveStats | undefined
+) => live?.hp ?? scaleForRank(card.hp, rank);
+
+const hpColor = (live: LiveStats | undefined, hp: number) =>
+  live && hp < live.maxHp ? HP_LOW : CREAM;
+
+const CreaturePlates = ({
+  card,
+  rank,
+  live,
+}: {
+  readonly card: CreatureCardDefinition;
+  readonly rank: RankId;
+  readonly live?: LiveStats;
+}) => {
+  const hp = shownHp(card, rank, live);
+  return (
+    <>
+      <StatPlate
+        glyph={DAMAGE_GLYPH[card.damageType]}
+        color={DAMAGE_COLORS[card.damageType]}
+        value={shownAttack(card, rank, live)}
+        className="-left-[0.35em]"
+      />
+      <StatPlate
+        glyph="heart"
+        color={HEART_RED}
+        value={hp}
+        valueColor={hpColor(live, hp)}
+        className="-right-[0.35em]"
+      />
+    </>
+  );
+};
+
+const effectColor = (card: SkillCardDefinition) => {
+  const damageType =
+    "damageType" in card.effect ? card.effect.damageType : undefined;
+  return damageType ? DAMAGE_COLORS[damageType] : CREAM;
+};
+
+const SkillPlate = ({ card }: { readonly card: SkillCardDefinition }) => (
+  <span
+    className={cn(
+      badgeClassName,
+      darkPlate,
+      "-bottom-[0.4em] left-1/2 size-[2.3em] -translate-x-1/2"
+    )}
+    style={{ color: effectColor(card) }}
+  >
+    <GlyphIcon glyph={cardGlyph(card)} className="size-[1.25em]" />
+  </span>
+);
+
 const BottomPlates = ({
   card,
   rank,
@@ -193,39 +235,9 @@ const BottomPlates = ({
   readonly live?: LiveStats;
 }): ReactNode => {
   if (card.kind === "creature") {
-    const hp = live?.hp ?? scaleForRank(card.hp, rank);
-    return (
-      <>
-        <StatPlate
-          glyph={DAMAGE_GLYPH[card.damageType]}
-          color={DAMAGE_COLORS[card.damageType]}
-          value={live?.attack ?? scaleForRank(card.attack, rank)}
-          className="-left-[0.35em]"
-        />
-        <StatPlate
-          glyph="heart"
-          color={HEART_RED}
-          value={hp}
-          valueColor={live && hp < live.maxHp ? HP_LOW : CREAM}
-          className="-right-[0.35em]"
-        />
-      </>
-    );
+    return <CreaturePlates card={card} rank={rank} live={live} />;
   }
-  const damageType =
-    "damageType" in card.effect ? card.effect.damageType : undefined;
-  return (
-    <span
-      className={cn(
-        badgeClassName,
-        darkPlate,
-        "-bottom-[0.4em] left-1/2 size-[2.3em] -translate-x-1/2"
-      )}
-      style={{ color: damageType ? DAMAGE_COLORS[damageType] : CREAM }}
-    >
-      <GlyphIcon glyph={cardGlyph(card)} className="size-[1.25em]" />
-    </span>
-  );
+  return <SkillPlate card={card} />;
 };
 
 /** The art window. A Skill Card has an arched top, so its shape differs from a Creature Card. */
@@ -238,10 +250,10 @@ const artWindowStyle = (card: CardDefinition, rank: RankId): CSSProperties => ({
 });
 
 /**
- * The Card Frame: the card art in a bronze frame, with the Countdown, the name
- * banner, the Rank Gems, the emblem, and Attack and HP. All sizes are in `em`,
- * so the font size of the parent sets the size of the card (9em × 12.6em).
- * The frame is decorative: the caller gives the accessible text.
+ * The Card Frame: the card art in a bronze frame, with the Countdown, the Rank
+ * Gems, the emblem, and Attack and HP. The name is not on the frame. All sizes
+ * are in `em`, so the font size of the parent sets the size of the card
+ * (9em × 12.6em). The frame is decorative: the caller gives the accessible text.
  *
  * With `live`, the card is a Unit on the Board: the plates show its current
  * Attack and HP, and the Countdown is never Ready gold, because the card is
@@ -260,9 +272,7 @@ export const CardFrame = ({
   readonly live?: LiveStats;
   readonly className?: string;
 }) => {
-  const { text } = useGameText();
   const card = getCard(cardId);
-  const name = text(cardText(cardId, rank).name);
   return (
     <span
       className={cn(
@@ -285,7 +295,7 @@ export const CardFrame = ({
           className="size-full object-cover"
         />
       </span>
-      <TitleBlock card={card} rank={rank} name={name} />
+      <RankRow rank={rank} />
       <CountdownBadge countdown={countdown} ready={!live && countdown === 0} />
       <Emblem card={card} />
       <BottomPlates card={card} rank={rank} live={live} />

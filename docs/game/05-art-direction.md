@@ -12,7 +12,7 @@ Not: dark, realistic, gory, noisy, neon.
 
 | Element | How it looks |
 | --- | --- |
-| **Units** | A rigged 3D model on a small round base, when the card has one (see 2.2). Other cards show the card art cut out (transparent background) on a flat plane on the base. The plane always faces the camera on the vertical axis (billboard). Until a card has its cut-out, the plane shows the card art with its background, in an arched shape, with no frame and no Rank Gems. |
+| **Units** | A rigged 3D model, when the card has one (see 2.2). Other cards show the card art cut out (transparent background) on a flat plane. The plane always faces the camera on the vertical axis (billboard). The painting advances to the right, and the enemy figure is a mirror image, so each Side meets the other. That mirror is the only difference between the two Sides. See [ADR-0014](../adr/0014-creature-card-paintings-advance-to-the-right.md). At the feet, a line shows the current Attack and the current HP as `2 \| 10`. A number is white when it equals the value at summon, red when it is lower, and green when it is higher. The line has a dark outline. Until a card has its cut-out, the plane shows the card art with its background, in an arched shape, with no frame and no Rank Gems. |
 | **Board** | Not drawn. The ground is the Battle Painting, and the Squares are invisible. The legal Squares glow only when the Player selects a card. A Closed Lane shows as a dark band. See [web ADR-0007](../../apps/web/docs/adr/0007-the-battlefield-is-a-2d-painting.md). |
 | **Heroes** | A larger cut-out figure at the end of the Lanes, with a 3D frame and an HP bar. It stands on the ground with a ring in its Side color. |
 | **Cards in the Hand** | 2D UI (React), not in the 3D scene. This keeps text sharp. |
@@ -81,22 +81,40 @@ Always use the icon with the color, for players with color blindness.
 
 ### 5.1 Style guide
 
-Before production, make a **style bible** with:
+The AI image tool is **GPT Image**. Use it for card art, the Town painting and each Battle Painting.
 
-1. 10 to 15 "golden" reference images that show the target style. Make them with the AI tool, and then fix them by hand.
-2. A fixed prompt template for each Race (see 5.2).
+The style bible has:
+
+1. These 10 golden reference images in `apps/web/public/illustrations/`. New art must match them.
+
+| File | What it shows |
+| --- | --- |
+| `militia-recruit.jpg` | Human starter |
+| `iron-bulwark.jpg` | Human armor |
+| `dawn-cleric.jpg` | Holy palette |
+| `crossbow-guard.jpg` | Ranged Unit |
+| `badland-pup.jpg` | Small Orc |
+| `ember-shaman.jpg` | Orc caster |
+| `howling-charger.jpg` | A Unit in motion |
+| `warchief-grukka.jpg` | Boss scale |
+| `fireball.jpg` | Mage Skill |
+| `shield-wall.jpg` | Warrior Skill |
+
+2. A fixed prompt template for each Race (see 5.2) and for Skill Cards (see 5.2.1).
 3. A character sheet for each Hero, boss and important Unit (front view, colors, key shapes).
 4. A list of words that are not permitted in prompts: the names of living artists, other games, and other companies' characters.
 
 ### 5.2 Prompt template
 
 ```text
-[subject], [Race] of Heynbord, [pose], full body, centered,
+[subject], [Race] of Heynbord, [pose], three-quarter view advancing to the right, full body, centered,
 painterly fantasy card illustration, bright warm light, clean silhouette,
 soft brush texture, [Race main color] and [Race second color] palette,
 light from the upper left, [setting], simple low-contrast background,
 portrait 3:4 composition, no text, no frame
 ```
+
+The figure advances to the right of the image, in a three-quarter view, so the face stays readable. The chest and the lead foot point right. The face and the weapon may turn, so a Pivot figure can look back. A fortification shows its blocking face to the right. The card art and the Unit cut-out share this Facing. Match the golden references for light, brush and palette. Take Facing from this section. Keep the light from the upper left: a horizontal flip of a finished painting would move that light. Existing paintings that advance left stay until their art pass. Militia Recruit is the first repaint.
 
 The setting is simple and has low contrast, so that the figure separates cleanly when you remove the background (step 5.3.5).
 
@@ -127,6 +145,7 @@ light from the upper left, soft brush texture, [Damage Type color] accents,
 - [ ] The silhouette is clear at 128 px tall.
 - [ ] The Race colors are correct.
 - [ ] The light comes from the upper left, as in all other art.
+- [ ] The figure advances to the right. The face may turn. A fortification shows its blocking face to the right.
 - [ ] No extra fingers, broken weapons or strange body parts.
 - [ ] No text, logo or signature in the image.
 - [ ] The image does not look like a known character from another game.

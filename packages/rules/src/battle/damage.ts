@@ -1,7 +1,7 @@
 import type { DamageType } from "../content/schema";
 import { rollBasisPoints } from "../random";
 import type { StepContext } from "./context";
-import { isOver } from "./context";
+import { direction, isInsideLane, isOver, unitAt } from "./context";
 import type {
   BattleResult,
   DamageSource,
@@ -19,9 +19,9 @@ export interface Hit {
   readonly crit: number;
 }
 
-/** Burn and Sudden Death are status damage: no Armor, no Crit, no Block, no new status. */
+/** Burn, Poison and Sudden Death are status damage: no Armor, no Crit, no Block, no new status. */
 const isStatusDamage = (source: DamageSource): boolean =>
-  source === "burn" || source === "suddenDeath";
+  source === "burn" || source === "poison" || source === "suddenDeath";
 
 export const finishBattle = (ctx: StepContext, result: BattleResult): void => {
   ctx.state.phase = "finished";
@@ -35,6 +35,27 @@ const killUnit = (ctx: StepContext, unit: UnitState): void => {
   state.units = state.units.filter((candidate) => candidate.id !== unit.id);
   state.sides[unit.owner].graveyard.push(unit.card);
   ctx.events.push(BattleEvent.UnitDied({ unitId: unit.id }));
+  if (unit.lastBreath <= 0 || isOver(ctx)) {
+    return;
+  }
+  const dir = direction(unit.owner);
+  for (
+    let position = unit.position + dir;
+    isInsideLane(position);
+    position += dir
+  ) {
+    const other = unitAt(state, unit.lane, position);
+    if (other && other.owner !== unit.owner) {
+      // oxlint-disable-next-line eslint/no-use-before-define -- Last Breath deals damage, and that damage can kill
+      damageUnit(ctx, other, {
+        amount: unit.lastBreath,
+        damageType: unit.damageType,
+        source: "lastBreath",
+        crit: 0,
+      });
+      return;
+    }
+  }
 };
 
 const applyStatus = (

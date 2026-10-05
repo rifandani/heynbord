@@ -165,7 +165,7 @@ describe("cardText (CRD-08)", () => {
       "After its effect, this card has a 50% chance to go back to your Hand. Else it goes to the Graveyard."
     );
     expect(resolve(skill("warrior.shieldWall", "common").effect)).toBe(
-      "Friendly Units in a Lane get Armor 1 for 2 Turns."
+      "Friendly Units in a Lane get Armor 1 for the next 2 enemy Turns."
     );
     expect(resolve(skill("warrior.warDrums", "common").effect)).toBe(
       "The Countdown of 2 random cards in your Hand goes down by 1."

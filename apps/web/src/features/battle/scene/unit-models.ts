@@ -39,6 +39,22 @@ const STEPS_PER_SQUARE = 1;
 
 const fraction = (value: number): number => value - Math.floor(value);
 
+/** A walk of more Squares plays more steps. */
+const walkClip = (
+  unit: UnitView,
+  event: Extract<BattleEvent, { readonly _tag: "UnitMoved" }>,
+  progress: number
+): UnitClip | null => {
+  if (event.unitId !== unit.id) {
+    return null;
+  }
+  const squares = Math.max(1, Math.abs(event.to - event.from));
+  return {
+    name: "walk",
+    phase: fraction(progress * squares * STEPS_PER_SQUARE),
+  };
+};
+
 /** The event clip of a Unit, or `null` if the event does not change its clip. */
 const eventClip = (
   unit: UnitView,
@@ -47,15 +63,7 @@ const eventClip = (
 ): UnitClip | null => {
   switch (event._tag) {
     case "UnitMoved": {
-      if (event.unitId !== unit.id) {
-        return null;
-      }
-      // A walk of more Squares plays more steps.
-      const squares = Math.max(1, Math.abs(event.to - event.from));
-      return {
-        name: "walk",
-        phase: fraction(progress * squares * STEPS_PER_SQUARE),
-      };
+      return walkClip(unit, event, progress);
     }
     case "UnitAttacked": {
       return event.unitId === unit.id

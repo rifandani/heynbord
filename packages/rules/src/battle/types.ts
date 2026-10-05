@@ -92,13 +92,18 @@ export interface UnitState {
   readonly charge: boolean;
   readonly flying: boolean;
   readonly heroic: number;
+  /** Damage to the nearest enemy Unit ahead when this Unit leaves. 0 is none. */
+  readonly lastBreath: number;
   readonly pivot: boolean;
+  poison: boolean;
   readonly regeneration: number;
   readonly retaliation: boolean;
   /** The Turn number of the summon. Charge uses it. */
   readonly summonedTurn: number;
   /** End Steps of Burn that are left. */
   burn: number;
+  /** Poison stacks. Each End Step of the owner deals 1 damage per stack, then removes 1. */
+  poisoned: number;
   frozen: boolean;
   bonusArmor: number;
   bonusArmorTurns: number;
@@ -152,6 +157,8 @@ export type DamageSource =
   | "retaliation"
   | "skill"
   | "burn"
+  | "poison"
+  | "lastBreath"
   | "suddenDeath";
 
 /** A snapshot of a Unit for the renderer. */
@@ -221,7 +228,7 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   StatusApplied: {
     readonly unitId: number;
-    readonly status: "burn" | "freeze";
+    readonly status: "burn" | "freeze" | "poison";
   };
   UnitDied: { readonly unitId: number };
   TurnEnded: { readonly side: Side };

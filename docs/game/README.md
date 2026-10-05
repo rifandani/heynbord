@@ -17,7 +17,7 @@ All documents use ASD-STE100 Simplified Technical English.
 | 07 | [Economy](./07-economy.md) | Currencies (Coin and Heynstones), sources and sinks, packs, the Bazaar, costs and future monetization rules. | Game designer |
 | 08 | [Archetypes](./08-archetypes.md) | The Archetypes (reference Decks for balance) and the results of their Matchups. | Game designer |
 | 09 | [Roadmap](./09-roadmap.md) | Milestones for v1 and the plan after v1. | Product owner |
-| 10 | [Card Concepts](./10-card-concepts.md) | The art brief and the image prompt for each card. | Art director |
+| 10 | [Card Concepts](./10-card-concepts.md) | The gameplay draft, art brief and image prompt for each Card and Token. | Game designer and art director |
 | 11 | [Town Concepts](./11-town-concepts.md) | The art brief, the positions and the image prompts for the Town. | Art director |
 | 12 | [Region Concepts](./12-region-concepts.md) | The art brief, the positions and the image prompts for each Region Map of the Campaign. | Art director |
 | 13 | [Battlefield Concepts](./13-battlefield-concepts.md) | The art brief, the positions and the image prompt for each Battle Painting. | Art director |
@@ -30,6 +30,7 @@ One person (the solo developer) has all the roles. The roles show which point of
 - [`packages/rules/CONTEXT.md`](../../packages/rules/CONTEXT.md): the game glossary. All documents use its terms.
 - [ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md): why the game rules are a separate deterministic package.
 - [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md): why Heynstones buy only Cosmetics and Conveniences.
+- [ADR-0013](../adr/0013-v1-has-60-creature-cards.md): why v1 has 15 Creature Cards for each Race.
 
 ## Status of names
 
@@ -55,6 +56,6 @@ These decisions come from a design review on 2026-10-03:
 | Resource system | Countdown hand, as in the original. |
 | Board | Lanes, 12 squares long. Stages use 3 lanes. Dungeons, Heynspire and multiplayer use 4. |
 | Battle control | Automatic and deterministic, with speed control and auto-play. |
-| v1 card set | 4 classes, 4 races, 5 ranks, about 100 cards. |
+| v1 card set | 4 Classes, 4 Races, 5 Ranks, 60 Creature Cards and 28 Skill Cards. |
 | Progression | Combine (no failure), Extract, Craft and hero gear. No Energy and no VIP. |
 | Languages | `en-us` and `id-id` from v1. |

@@ -45,8 +45,11 @@ const Keywords = Schema.Struct({
   charge: Schema.optionalKey(Schema.Literal(true)),
   flying: Schema.optionalKey(Schema.Literal(true)),
   heroic: Schema.optionalKey(KeywordValue),
+  /** Deals this much damage to the nearest enemy Unit ahead when this Unit leaves. */
+  lastBreath: Schema.optionalKey(KeywordValue),
   /** Melee only (GDD 4.6). A content test checks it. */
   pivot: Schema.optionalKey(Schema.Literal(true)),
+  poison: Schema.optionalKey(Schema.Literal(true)),
   regeneration: Schema.optionalKey(KeywordValue),
   retaliation: Schema.optionalKey(Schema.Literal(true)),
 });

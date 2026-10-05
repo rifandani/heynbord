@@ -256,7 +256,7 @@ describe("Skill Cards (GDD 4.8)", () => {
     ]).toEqual([4, 4, 6]);
   });
 
-  it("gives friendly Units in a Lane Armor for a number of Turns", () => {
+  it("gives friendly Units in a Lane Armor for a number of enemy Turns", () => {
     let state = emptyBattle();
     giveHand(state, "player", [["warrior.shieldWall", 0]]);
     const unit = placeUnit(state, {
@@ -270,15 +270,44 @@ describe("Skill Cards (GDD 4.8)", () => {
       bonusArmor: 1,
       bonusArmorTurns: 2,
     });
+    // The own End Step does not count.
+    ({ state } = run(state, Command.EndTurn()));
+    expect(unitById(state, unit.id)?.bonusArmorTurns).toBe(2);
+    // The first enemy Turn.
     ({ state } = run(state, Command.EndTurn()));
     expect(unitById(state, unit.id)?.bonusArmorTurns).toBe(1);
     ({ state } = run(state, Command.EndTurn()));
+    expect(unitById(state, unit.id)).toMatchObject({
+      bonusArmor: 1,
+      bonusArmorTurns: 1,
+    });
+    // The second enemy Turn.
     const { state: last, events } = run(state, Command.EndTurn());
     expect(unitById(last, unit.id)).toMatchObject({
       bonusArmor: 0,
       bonusArmorTurns: 0,
     });
     expect(eventsOfType(events, "ArmorFaded")).toHaveLength(1);
+  });
+
+  it("resets the Lane Armor when the side plays it again", () => {
+    let state = emptyBattle();
+    giveHand(state, "player", [
+      ["warrior.shieldWall", 0],
+      ["warrior.shieldWall", 0],
+    ]);
+    const unit = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 0,
+      attack: 0,
+    });
+    ({ state } = run(state, play(0, Target.Lane({ lane: 0 }))));
+    ({ state } = run(state, play(0, Target.Lane({ lane: 0 }))));
+    expect(unitById(state, unit.id)).toMatchObject({
+      bonusArmor: 1,
+      bonusArmorTurns: 2,
+    });
   });
 
   it("lowers the Countdown of own cards that are not Ready", () => {

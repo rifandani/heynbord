@@ -55,7 +55,17 @@ export const DAMAGE_COLORS: Readonly<Record<DamageType, string>> = {
   holy: "#ffd75a",
 };
 
-/** The owner of a Unit: the color of its base and badge border. */
+/** Attack and HP on a Unit. White when equal to the summon value, red when lower, green when higher. */
+export const STAT_DELTA: Readonly<Record<"same" | "down" | "up", string>> = {
+  same: "#ffffff",
+  down: "#ff7a6b",
+  up: "#4ade80",
+};
+
+/** The bar between Attack and HP on a Unit. */
+export const STAT_PIPE = "#fff6df";
+
+/** The Side color of a Hero: the panel border and the ground ring. */
 export const SIDE_COLORS: Readonly<
   Record<
     Side,

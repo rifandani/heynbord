@@ -65,7 +65,12 @@ export const placeUnit = (
     readonly position: number;
     readonly rank?: RankId;
     readonly summonedTurn?: number;
-  } & Partial<Pick<UnitState, "attack" | "hp" | "maxHp" | "burn" | "frozen">>
+  } & Partial<
+    Pick<UnitState, "attack" | "hp" | "maxHp" | "burn" | "frozen" | "poisoned">
+  > & {
+      /** Test setup: gives the Unit the Poison Keyword. */
+      readonly poison?: boolean;
+    }
 ): UnitState => {
   const definition = getCard(options.cardId);
   if (definition.kind !== "creature") {
@@ -99,6 +104,12 @@ export const placeUnit = (
   }
   if (options.frozen !== undefined) {
     unit.frozen = options.frozen;
+  }
+  if (options.poisoned !== undefined) {
+    unit.poisoned = options.poisoned;
+  }
+  if (options.poison) {
+    unit.poison = true;
   }
   state.nextId += 1;
   state.units.push(unit);

@@ -1,6 +1,6 @@
 import { getCard } from "../content/cards";
 import type { StepContext } from "./context";
-import { actionOrder, isOver } from "./context";
+import { actionOrder, findUnit, isOver } from "./context";
 import { damageHero, damageUnit, finishBattle } from "./damage";
 import { runResolutionPhase } from "./resolution";
 import {
@@ -102,11 +102,14 @@ export const runStartStep = (ctx: StepContext): void => {
   drawCard(ctx);
 };
 
-/** The End Step (GDD 4.3): Burn, then durations go down. */
-const runEndStep = (ctx: StepContext): void => {
+/**
+ * The End Step (GDD 4.3): Burn, then Poison, then durations go down. Skill
+ * Card Armor counts the other side's Turns, so it covers that many enemy Turns.
+ */
+const applyBurn = (ctx: StepContext): void => {
   const { state } = ctx;
   for (const unit of actionOrder(state, state.activeSide)) {
-    if (unit.burn > 0) {
+    if (unit.burn > 0 && findUnit(state, unit.id)) {
       unit.burn -= 1;
       damageUnit(ctx, unit, {
         amount: 1,
@@ -116,8 +119,42 @@ const runEndStep = (ctx: StepContext): void => {
       });
     }
   }
+};
+
+/** Ids first: Poison damage can remove a Unit, so the list must not change mid-loop. */
+const poisonedIds = (ctx: StepContext): number[] => {
+  const ids: number[] = [];
+  for (const unit of ctx.state.units) {
+    if (unit.owner === ctx.state.activeSide && unit.poisoned > 0) {
+      ids.push(unit.id);
+    }
+  }
+  return ids;
+};
+
+const applyPoison = (ctx: StepContext): void => {
+  const { state } = ctx;
+  for (const unitId of poisonedIds(ctx)) {
+    const unit = findUnit(state, unitId);
+    if (!unit || unit.poisoned <= 0) {
+      continue;
+    }
+    const stacks = unit.poisoned;
+    unit.poisoned -= 1;
+    damageUnit(ctx, unit, {
+      amount: stacks,
+      damageType: "physical",
+      source: "poison",
+      crit: 0,
+    });
+  }
+};
+
+/** Skill Card Armor counts the other side's Turns, so it covers that many enemy Turns. */
+const fadeArmor = (ctx: StepContext): void => {
+  const { state } = ctx;
   for (const unit of state.units) {
-    if (unit.owner === state.activeSide && unit.bonusArmorTurns > 0) {
+    if (unit.owner !== state.activeSide && unit.bonusArmorTurns > 0) {
       unit.bonusArmorTurns -= 1;
       if (unit.bonusArmorTurns === 0) {
         unit.bonusArmor = 0;
@@ -125,7 +162,13 @@ const runEndStep = (ctx: StepContext): void => {
       }
     }
   }
-  ctx.events.push(BattleEvent.TurnEnded({ side: state.activeSide }));
+};
+
+const runEndStep = (ctx: StepContext): void => {
+  applyBurn(ctx);
+  applyPoison(ctx);
+  fadeArmor(ctx);
+  ctx.events.push(BattleEvent.TurnEnded({ side: ctx.state.activeSide }));
 };
 
 /**
@@ -139,7 +182,7 @@ export const endTurn = (ctx: StepContext): void => {
     return;
   }
   runEndStep(ctx);
-  // The player takes the first Turn in PvE, so the enemy's Turn ends each Turn number.
+  // The Defender takes the second Turn and wins at the Turn limit. In a Solo Battle it is the enemy.
   if (state.activeSide === "enemy") {
     if (state.turnNumber >= TURN_LIMIT) {
       finishBattle(ctx, { winner: "enemy", reason: "turnLimit" });

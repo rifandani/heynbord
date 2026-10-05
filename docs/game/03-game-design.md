@@ -4,7 +4,7 @@ This document gives the full rules of Heynbord v1. It uses the terms in [`packag
 
 ## 1. Overview
 
-The player is a new **Hero** in the world of Heynbord. The player collects cards, builds a **Deck** and fights **Battles** against computer opponents. In a Battle, the player plays cards from the **Hand** into **Lanes**. Then the **Units** move and attack automatically. The player wins when all enemy Heroes have 0 HP.
+The player is a new **Hero** in the world of Heynbord. The player collects cards, builds a **Deck** and fights **Battles** against computer opponents. In a Battle, the player plays cards from the **Hand** into **Lanes**. Then the **Units** move and attack automatically. The player wins when all enemy Heroes are Defeated.
 
 ## 2. Core loop
 
@@ -40,11 +40,13 @@ The player is a new Hero. The player travels through three Regions, wins the res
 | Race | Concept | Battle identity | Main Keywords |
 | --- | --- | --- | --- |
 | **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Rally, Retaliation, Wall |
-| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing and small summons. | Regeneration, Summon, Flying |
-| **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that come back. | Rebirth, Last Breath, Frost damage |
-| **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. | Charge, Heroic, Fire damage |
+| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | Entangle, Regeneration, Poison, Flying |
+| **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | Swarm, Rebirth, Summon, Frost damage |
+| **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them. | Charge, Heroic, Fire damage, Last Breath |
 
 The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, each Race has 1 Creature Card with Pivot, with Base Rank Uncommon.
+
+A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)).
 
 ### 3.3 Regions (draft names)
 
@@ -69,7 +71,7 @@ The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, 
 - Each Hero stands behind its **Front**: 1 or more Lanes next to each other. The Fronts of a Side cover all the Lanes, and each Lane is in one Front. When a Side has 1 Hero, its Front is all the Lanes.
 - A Square holds 0 or 1 Unit.
 - Your **Summon Zone** is your Columns 1, 2 and 3, in all Lanes. You can summon Units only into empty Squares of your Summon Zone. Each Hero of a Side can summon into any Lane of that Side, not only into its own Front. The rule is the same for both Sides and all Heroes, and content data cannot change it ([ADR-0011](../adr/0011-the-summon-zone-is-3-columns-deep.md)).
-- You can summon into a Square of your Summon Zone also when an enemy Unit is between that Square and your Hero. Your new Unit is then past the enemy Unit. A melee Unit attacks only forward, so the two Units do not fight, unless one of them has **Pivot** (see 4.6).
+- You can summon into a Square of your Summon Zone also when an enemy Unit is between that Square and your Hero. Your new Unit is then past the enemy Unit. A melee Unit attacks only forward, so the two Units do not fight, unless one of them has **Pivot** (see 4.5 and 4.6).
 
 ```text
            Column:  1   2   3   4   5   6   7   8   9  10  11  12
@@ -90,7 +92,7 @@ The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, 
 
 ### 4.3 Turn structure
 
-A **Turn number** counts rounds. In each Turn number, the first player and then the second player take one Turn.
+A **Turn number** counts rounds. In each Turn number, the first player and then the second player take one Turn. The **Defender** is the Side that does not start the Battle, so it always takes the second Turn. In PvE, the enemy is the Defender.
 
 Each Turn of the active side has these phases:
 
@@ -109,8 +111,8 @@ Each Turn of the active side has these phases:
    - The active side's Units act one at a time. Section 4.4 gives the order.
    - The other side's Units do not act. They can only use Retaliation and First Strike.
 4. **End Step**
-   1. Burn damage hits burning Units of the active side.
-   2. Durations go down by 1 (Freeze, Field Effects and other timed effects).
+   1. Burn damage hits burning Units of the active side. Poison damage then hits Poisoned Units of the active side: 1 damage per stack, then the Unit loses 1 stack.
+   2. Durations go down by 1 (Field Effects and other timed effects). Freeze has no duration: it ends when the Unit skips its action (see 4.4).
    3. Units with 0 HP leave the Board.
    4. The Turn goes to the other side.
 
@@ -126,17 +128,19 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
    3. **Retaliation** by the target, if the target has the Retaliation Keyword (see 4.7)
 4. A Unit that you summoned in this Turn also acts in this Turn.
 5. A Unit that another effect creates during the Resolution Phase acts at the end of the Resolution Phase, in the same order.
-6. A Frozen Unit does not move and does not attack. Its Freeze then ends.
+6. A Frozen Unit does not move and does not attack. Its Freeze then ends. Until then, it also does not retaliate and does not use First Strike. An attack on a Frozen Unit does not end its Freeze.
+7. An Entangled Unit has Speed 0 during its next action, but it can attack. Its Entangled Status then ends. If a Unit is Frozen and Entangled, the skipped action ends both Statuses.
 
 ### 4.5 Movement
 
 - Each Unit has a **Speed**. Speed is the maximum number of Squares that the Unit moves forward in one Turn.
 - A ground Unit stops when the next Square holds any Unit. Units never move through other Units.
-- A **Flying** Unit moves over other Units. It must stop in an empty Square.
+- A **Flying** Unit moves over other Units. It stops in the farthest empty Square that its Speed reaches. It can fly past an enemy Unit directly in front of it, also when it then has no target.
 - A Unit never moves past its last Column (Column 12 for the player).
 - A **Ranged** Unit does not move if an enemy target is in its Range at the start of its action (see 4.6).
 - A **Pivot** Unit does not move if an enemy Unit is directly behind it or next to it at the start of its action (see 4.6).
 - A Unit with Speed 0 never moves.
+- An Entangled Unit has Speed 0 during its next action.
 
 ### 4.6 Attack
 
@@ -163,6 +167,8 @@ Each attack and each damage effect has a **Damage Type**.
 | **Frost** | Normal damage. The target also gets **Freeze**: it skips its next action. |
 | **Holy** | Armor does not reduce Holy damage. |
 
+Burn, Freeze, Entangled and Poisoned are **Statuses**. Fire and Frost damage give Burn and Freeze. The Entangle Keyword gives Entangled after attack damage. The Poison Keyword gives Poisoned after attack damage above 0. Fire or Frost gives its Status also when the hit does 0 damage. Entangle and Poison need damage above 0. Burn damage and Poison damage ignore Armor, Crit and Block. Burn damage does not give a new Burn. Poison damage has no Damage Type, and it does not give Burn or Poison.
+
 To calculate damage, do these steps in this order:
 
 1. Start with the Attack value of the attacker (or the value of the effect).
@@ -176,7 +182,12 @@ To calculate damage, do these steps in this order:
 - Heroes cannot Block.
 - All rolls use the Battle seed, so a replay gives the same result.
 - **Retaliation:** When a Unit with Retaliation survives a melee attack, it deals damage equal to its Attack to the attacker. Retaliation does not use Crit, and it does not start another Retaliation.
+  - It uses the Damage Type of the Unit with Retaliation, so it can give a Status.
+  - The Armor of the attacker reduces it, and the attacker's Hero can Block it.
+  - It occurs also when the attack did 0 damage.
+  - It does not occur against a Ranged attack, or when the Unit is Frozen (see 4.4).
 - **First Strike:** When an enemy melee Unit attacks a Unit with First Strike, the Unit with First Strike deals its damage first. If the attacker dies, its attack does not occur.
+- **Entangle:** After a Unit with Entangle deals attack damage above 0 to an enemy Unit, that enemy becomes Entangled. A new Entangle does not stack or extend the Status. Retaliation does not apply Entangle.
 
 ### 4.8 Skill Cards and Recall
 
@@ -186,10 +197,10 @@ To calculate damage, do these steps in this order:
 
 ### 4.9 Death
 
-- When a Unit has 0 HP, it leaves the Board and goes to its owner's Graveyard.
-- Last Breath effects resolve when the Unit leaves the Board.
+- When a Unit from a Creature Card has 0 HP, it leaves the Board and goes to its owner's Graveyard. A Token disappears instead.
+- Last Breath effects resolve when the Unit leaves the Board. A v1 Last Breath either deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that the Unit left.
 - **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth.
-- **Tokens** (Units that effects create) do not go to the Graveyard. They disappear.
+- **Tokens** (Units that effects create) use the Rank of the Card or effect that made them. They do not go to the Graveyard. They disappear.
 
 ### 4.10 Win, loss and Sudden Death
 
@@ -200,8 +211,8 @@ To calculate damage, do these steps in this order:
   - Its cards stay in its Hand, Deck and Graveyard. It plays no more cards.
 - You win when all the enemy Heroes are Defeated.
 - You lose when all the Heroes of your Side are Defeated.
-- **Sudden Death:** From Turn number 20, each Hero of the active Side that is not Defeated takes 1 damage in each Start Step. From Turn number 40, the damage is 2.
-- **Turn limit:** If no Side has lost at the end of Turn number 60, the defender wins. In PvE, the enemy is the defender.
+- **Sudden Death:** From Turn number 20, each Hero of the active Side that is not Defeated takes 1 damage in each Start Step. From Turn number 40, the damage is 2. Sudden Death does not use Crit.
+- **Turn limit:** If no Side has lost at the end of Turn number 60, the Defender wins (see 4.3).
 - **Hero HP:** The player's Hero has 30 + player level HP, plus the Gear bonus. The Stage or Dungeon data defines the HP of each enemy Hero.
 
 ### 4.11 Stars
@@ -286,20 +297,23 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | --- | --- |
 | **Armor N** | Reduces damage to this Unit by N. It does not reduce Holy damage. |
 | **Charge** | +2 Speed in the Turn when you summon this Unit. |
+| **Entangle** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Entangled. An Entangled Unit has Speed 0 during its next action, but it can attack. Entangled then ends. A new Entangle does not stack or extend it. |
 | **First Strike** | See 4.7. |
 | **Flying** | Moves over other Units. See 4.5. |
 | **Heroic N** | +N damage when this Unit attacks a Hero. |
-| **Last Breath: X** | X occurs when this Unit leaves the Board. |
+| **Last Breath: X** | X occurs when this Unit leaves the Board. In v1, X deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that this Unit left. |
 | **Pivot** | Melee only. This Unit can attack an enemy Unit directly behind it or next to it, and it attacks them before the Unit in front. See 4.5 and 4.6. |
+| **Poison** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. In each End Step of the Poisoned Unit's owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. |
 | **Rally N** | In your Start Step, other friendly Units in the same Lane get +N Attack until the end of the Turn. |
 | **Rebirth** | See 4.9. |
 | **Regeneration N** | In your Start Step, this Unit heals N HP. It cannot go above its maximum HP. |
 | **Retaliation** | See 4.7. |
-| **Summon X** | When you summon this Unit, a Token X also appears in an empty Square next to it (behind it, or the same Column in a next Lane). If no Square is empty, no Token appears. |
+| **Summon X** | When you summon this Unit, a Token X of the same Rank also appears in an empty Square next to it (behind it, or the same Column in a next Lane). If no Square is empty, no Token appears. |
+| **Swarm N** | While another friendly Unit or Token is in the same Lane, this Unit has +N Attack. More friendly Units do not increase the bonus. The bonus applies to attacks and Retaliation. |
 | **Unique** | Only one copy of this card can be on your side of the Board. |
 | **Wall** | Speed 0 and Attack 0. It blocks its Lane. |
 
-New Keywords after v1 must go through the balance process in section 13.
+New Keywords must go through the balance process in section 13.
 
 ### 5.5 Classes
 
@@ -307,9 +321,9 @@ The Hero has one Class. The Class decides which Skill Cards the Deck can hold.
 
 | Class | Role | Example Skill Cards |
 | --- | --- | --- |
-| **Warrior** | Buffs and tempo | *War Drums*: the Countdown of 2 random cards in your Hand goes down by 1. *Shield Wall*: friendly Units in one Lane get Armor 1 for 2 Turns. |
+| **Warrior** | Buffs and tempo | *War Drums*: the Countdown of 2 random cards in your Hand goes down by 1. *Shield Wall*: friendly Units in one Lane get Armor 1 for the next 2 enemy Turns. A new Shield Wall resets it. Units that come into the Lane later do not get it. |
 | **Ranger** | Control and Hero damage | *Long Shot* (draft): 4 Physical damage to the enemy Hero. *Distraction* (draft): the Countdown of 1 random card in the enemy Hand goes up by 1. |
-| **Mage** | Area damage and Field Effects | *Fireball*: 3 Fire damage to an enemy Unit and to the Square behind it in the same Lane. *Wildfire* (draft): Field Effect, 2 Fire damage per Turn on 2 × 2 Squares for 2 Turns. |
+| **Mage** | Area damage and Field Effects | *Fireball*: 3 Fire damage to an enemy Unit and to the Square behind it in the same Lane. It does not damage friendly Units. *Wildfire* (draft): Field Effect, 2 Fire damage per Turn on 2 × 2 Squares for 2 Turns. |
 | **Priest** | Healing, protection and return | *Mend* (draft): heal 6 HP to one Unit. *Return from Rest* (draft): summon the last friendly Creature from your Graveyard into an empty Square of your Summon Zone. |
 
 *War Drums*, *Shield Wall* and *Fireball* are real cards. Their source of truth is `packages/rules/src/content/cards.ts`. The other examples are drafts.
@@ -412,7 +426,7 @@ The [Economy](./07-economy.md) document gives the costs.
 The enemy Hero of a **Boss Stage** is a **Boss**: an enemy Hero with a name and special rules. Boss Stages have special rules. For example:
 
 - A large Hero HP and a large Deck.
-- A Unique Unit that starts on the Board, for example the Boss's bodyguard. This Unit is not a Boss.
+- A Start Unit, for example the Boss's bodyguard. This Unit is not a Boss.
 - A rule that changes the Board, for example "Lane 2 is closed until Turn 5".
 
 ### 8.2 Heynspire (draft name)
@@ -603,31 +617,47 @@ The Campaign screen shows one **Region Map** at a time: a flat 2D painting of on
 
 | Content | Count |
 | --- | --- |
-| Creature Cards | 72 (18 for each Race) |
+| Creature Cards | 60 (15 for each Race) |
 | Skill Cards | 28 (7 for each Class) |
-| Total collectible cards | 100 |
-| Tokens | About 8 |
+| Total collectible cards | 88 |
+| Tokens | About 8; the Creature Card draft defines 2 |
 | Campaign Stages | 30 (with 3 Boss Stages) |
 | Heynspire Floors | 50 |
 | Dungeons | 3 (with 4 new Bosses, and the 3 Campaign Bosses again in Dungeon 3) |
 | Achievements | About 40 |
 | Cosmetics | About 30 (8 earn-only, the rest in the Bazaar) |
 
-Base Rank mix of the 100 cards:
+Each Race has this exact Creature Card Base Rank mix:
 
-| Base Rank | Share |
-| --- | --- |
-| Common | 40% |
-| Uncommon | 30% |
-| Rare | 20% |
-| Epic | 10% |
-| Legendary | 0% (only from Combine) |
+| Base Rank | Cards in each Race | Creature Cards |
+| --- | ---: | ---: |
+| Common | 5 | 20 |
+| Uncommon | 5 | 20 |
+| Rare | 3 | 12 |
+| Epic | 2 | 8 |
+| Legendary | 0 | 0 |
+
+Skill Cards use a separate Base Rank mix. Legendary remains available only through Combine.
+
+Each Race has a different Role profile:
+
+| Race | Frontliner | Striker | Runner | Shooter | Support | Wall |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Human | 4 | 2 | 2 | 2 | 3 | 2 |
+| Elf | 1 | 2 | 3 | 5 | 3 | 1 |
+| Undead | 3 | 4 | 2 | 2 | 3 | 1 |
+| Orc | 2 | 5 | 4 | 2 | 2 | 0 |
+
+Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary Damage Type: Holy for Human and Elf, Frost for Undead, and Fire for Orc. Each Race has one Uncommon melee Pivot Card. Its two Epic Cards are one named champion with Unique and one archetypal powerhouse ([ADR-0013](../adr/0013-v1-has-60-creature-cards.md)).
 
 ## 13. Balance process
 
 1. Each Creature Card gets **power points** from its stats and Keywords.
    - Start formula: `power = Attack × 2 + HP + Speed × 2 + Keyword points`.
-   - Keyword points are in the card data table. For example, Flying = 4, Armor N = N × 3, Rebirth = 5, Pivot = 3 (start value).
+   - Add Range and Damage Type points: Range = its value, Fire = 3, Frost = 3 and Holy = 2.
+   - Start Keyword points: Armor N = N × 3, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4 and Swarm N = N × 2.
+   - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
+   - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
 2. Each Countdown has a power budget for the Base Rank. Start formula: `budget = 6 + Countdown × 5`.
 3. A card must be within ±10% of its budget. A card outside this range needs a written reason (for example "weak stats, strong combo").
@@ -642,7 +672,7 @@ These items are not in v1. The [Roadmap](./09-roadmap.md) shows when they can co
 - Asynchronous PvP against defense Decks, leaderboards, seasons
 - Guilds, guild bosses, co-op Battles with 4 Lanes
 - More Races, Hybrid Units, a sixth Rank
-- More Keywords and Damage Types
+- More Keywords and Damage Types. Poison is already in v1.
 - Weekly Heynspire reset and events
 - Heynstones for real money in the Bazaar
 - Trading between players (needs a separate design review for fairness and fraud)

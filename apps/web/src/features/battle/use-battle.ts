@@ -23,6 +23,8 @@ import {
   startSession,
 } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
+import type { UnitView } from "@/features/battle/battle-view";
+import type { InspectedUnit } from "@/features/battle/battle.atoms";
 import {
   battleSessionAtom,
   battleSpeedAtom,
@@ -43,6 +45,43 @@ import { nextInspectedUnit } from "@/features/battle/unit-inspect";
 /** A new Battle seed. The seed is input to the rules, so this is not a rule. */
 export const randomSeed = (): number =>
   Math.floor(Math.random() * 2_147_483_647);
+
+const whenSession = <Value>(
+  session: BattleSession | null,
+  read: (session: BattleSession) => Value,
+  fallback: Value
+): Value => (session ? read(session) : fallback);
+
+const keyboardInspect = (
+  inspected: InspectedUnit | null,
+  details: UnitView | null
+) => inspected?.by === "keyboard" && details !== null;
+
+const unitsOf = (session: BattleSession | null) => session?.view.units ?? [];
+
+const heldUnitId = (inspected: InspectedUnit | null) =>
+  inspected?.unitId ?? null;
+
+const keyboardTarget = (unitId: number | null): InspectedUnit | null =>
+  unitId === null ? null : { unitId, by: "keyboard" };
+
+const playSelectSound = (handIndex: number | null) => {
+  if (handIndex !== null) {
+    playSound("select");
+  }
+};
+
+const noteSelect = (
+  handIndex: number | null,
+  current: BattleSession | null,
+  update: (change: (tutorial: Tutorial) => Tutorial) => void
+) => {
+  if (handIndex !== null && current && canAct(current)) {
+    update((tutorial) =>
+      selectCard(tutorial, current.view.sides.player.hand[handIndex])
+    );
+  }
+};
 
 /** The Battle state and the player's actions, for the HUD. */
 export const useBattle = () => {
@@ -72,13 +111,12 @@ export const useBattle = () => {
 
   /** Keyboard Inspect: the next Unit in `direction`, from the inspected Unit. */
   const inspectNext = (direction: InspectDirection) => {
-    const units = live()?.view.units ?? [];
-    const current = registry.get(inspectedUnitAtom);
-    const unitId = nextInspectedUnit(units, current?.unitId ?? null, direction);
-    registry.set(
-      inspectedUnitAtom,
-      unitId === null ? null : { unitId, by: "keyboard" }
+    const unitId = nextInspectedUnit(
+      unitsOf(live()),
+      heldUnitId(registry.get(inspectedUnitAtom)),
+      direction
     );
+    registry.set(inspectedUnitAtom, keyboardTarget(unitId));
   };
 
   const updateTutorial = (change: (tutorial: Tutorial) => Tutorial) => {
@@ -117,9 +155,9 @@ export const useBattle = () => {
     targets,
     focused,
     speed,
-    canAct: session ? canAct(session) : false,
+    canAct: whenSession(session, canAct, false),
     /** True in the keyboard Inspect mode, while its Unit is on the Board. */
-    inspecting: inspected?.by === "keyboard" && detailsUnit !== null,
+    inspecting: keyboardInspect(inspected, detailsUnit),
     /** The I key: starts the keyboard Inspect mode at the first Unit, or stops it. */
     toggleInspect: () => {
       const inKeyboardMode =
@@ -133,7 +171,7 @@ export const useBattle = () => {
     inspectNext,
     stopInspect: () => registry.set(inspectedUnitAtom, null),
     /** Tutorial Step 3 holds the playback until its text closes. */
-    held: session ? isHeld(session) : false,
+    held: whenSession(session, isHeld, false),
     start: (options: BattleOptions) => {
       unlockAudio();
       playSound("select");
@@ -157,16 +195,9 @@ export const useBattle = () => {
     },
     select: (handIndex: number | null) => {
       unlockAudio();
-      if (handIndex !== null) {
-        playSound("select");
-      }
+      playSelectSound(handIndex);
       select(handIndex);
-      const current = live();
-      if (handIndex !== null && current && canAct(current)) {
-        updateTutorial((tutorial) =>
-          selectCard(tutorial, current.view.sides.player.hand[handIndex])
-        );
-      }
+      noteSelect(handIndex, live(), updateTutorial);
     },
     closeTutorialText: () => updateTutorial(closeText),
     skipTutorialText: () => updateTutorial(skipText),
@@ -181,7 +212,7 @@ export const useBattle = () => {
         );
       }
     },
-    canEndTurn: session ? canEndTurn(session) : false,
+    canEndTurn: whenSession(session, canEndTurn, false),
     endTurn: () => {
       const current = live();
       if (!current || !canEndTurn(current)) {

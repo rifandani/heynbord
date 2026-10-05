@@ -20,19 +20,21 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Card presentation
 
-**Card Frame**: The border, badges and plates around the card art. All cards share one frame metal. The Race or Class shows on the name banner and the emblem, and the Rank shows only on the gems and the inner trim. A Skill Card has a variant shape of the frame. _Avoid_: card template, border, card skin
+**Facing**: The advance direction of a Creature Card painting. The painting advances to the right of the image, and an enemy Unit on the Board is a horizontal mirror of that painting. _Avoid_: flip, orientation
 
-**Hand Card**: The small card in the Hand. It shows the art, the Countdown, the name, the Rank gems, the emblem, and Attack and HP for a Creature Card. _Avoid_: card face, mini card, card thumbnail
+**Card Frame**: The border, badges and plates around the card art. All cards share one frame metal. The Race or Class shows on the emblem, and the Rank shows only on the gems and the inner trim. The card name is not on the frame. A Skill Card has a variant shape of the frame. _Avoid_: card template, border, card skin
+
+**Hand Card**: The small card in the Hand. It shows the art, the Countdown, the Rank gems, the emblem, and Attack and HP for a Creature Card. _Avoid_: card face, mini card, card thumbnail
 
 **Card Details**: A larger copy of a card with a Details Panel next to it. It shows on hover, long press and keyboard focus for a Hand Card and for a Unit on the Board of either Side, and in the Collection. For a Unit, the card shows the current Attack and HP of the Unit, and the Details Panel shows how the Unit is different from its card. _Avoid_: tooltip, card popup, card info, inspect view
 
-**Details Panel**: The text panel next to the card in the Card Details. It shows the fields that the card itself does not show, for example Keywords and flavor text. _Avoid_: side panel, info box, ability box
+**Details Panel**: The text panel next to the card in the Card Details. It starts with the card name, then the fields that the card itself does not show, for example Keywords and flavor text. _Avoid_: side panel, info box, ability box
 
 **Rank Gem**: One pip on the Card Frame, in the Rank color. A card shows 1 Rank Gem for Common and 5 for Legendary. _Avoid_: star, pip socket
 
 **Hand Bar**: The panel at the bottom of the Battle screen. It holds the Deck Pile at the left, the Hand Slots in the middle and the Graveyard Pile at the right. _Avoid_: card tray, footer, hand panel
 
-**Hand Slot**: One of the 8 places for a Hand Card in the Hand Bar, one for each card that the Hand can hold. An empty Hand Slot shows that the Hand has room for one more card. _Avoid_: card socket, placeholder
+**Hand Slot**: One of the places for a Hand Card in the Hand Bar, one for each Card up to the Hand Limit. An empty Hand Slot shows that the Hand has room for one more card. _Avoid_: card socket, placeholder
 
 **Card Back**: The face-down side of a card. All cards share one Card Back. _Avoid_: sleeve, card cover
 
@@ -77,3 +79,8 @@ React app on TanStack Start. The server renders and streams each page.
 **Variant Showcase**: One rendered example within a Component Entry, demonstrating a single combination of a component's props. _Avoid_: demo, example, story
 
 **Category**: A named grouping of Component Entries (Buttons, Overlays, Charts, …) that determines both nav grouping and page order. _Avoid_: group, section, tag
+
+## Relationships
+
+- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign. Later, the Workshop Building opens the Workshop, and the Bazaar Building opens the Bazaar.
+- A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.

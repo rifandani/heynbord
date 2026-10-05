@@ -1,7 +1,7 @@
 import { useAtomValue } from "@effect/atom-react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import type { Ref } from "react";
+import type { ReactNode, Ref } from "react";
 import {
   Suspense,
   useEffect,
@@ -10,22 +10,19 @@ import {
   useRef,
   useState,
 } from "react";
-import type {
-  Group,
-  Mesh,
-  MeshBasicMaterial,
-  MeshStandardMaterial,
-  Sprite,
-} from "three";
+import type { Group, Mesh, MeshBasicMaterial, Sprite } from "three";
 import {
   BoxGeometry,
   CircleGeometry,
   Color,
-  CylinderGeometry,
   PlaneGeometry,
   RingGeometry,
 } from "three";
 
+import type {
+  BattleSession,
+  PlayingEvent,
+} from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
 import {
   battleSessionAtom,
@@ -38,9 +35,9 @@ import { playback } from "@/features/battle/scene/playback";
 import {
   blobShadowTexture,
   loadedUnitArt,
-  statBadgeTexture,
   unitArtTexture,
   unitFigureTexture,
+  unitStatTexture,
 } from "@/features/battle/scene/textures";
 import type { UnitModelSpec } from "@/features/battle/scene/unit-models";
 import {
@@ -56,6 +53,7 @@ import {
   poseFor,
 } from "@/features/battle/scene/unit-pose";
 import { buildRig } from "@/features/battle/scene/unit-rig";
+import { summonAttack } from "@/features/battle/scene/unit-stats";
 
 // Load the 3D models with the scene chunk, before the first summon.
 for (const spec of allUnitModels()) {
@@ -65,14 +63,12 @@ for (const spec of allUnitModels()) {
 // Shared geometry for all Units: fewer GPU uploads.
 const FIGURE = new PlaneGeometry(0.82, 1.03);
 FIGURE.translate(0, 0.515, 0);
-const BASE = new CylinderGeometry(0.36, 0.4, 0.1, 20);
 const SHADOW = new CircleGeometry(0.5, 20);
-// The hidden hit box for hover and long press: the base, the figure and the stat badge.
+// The hidden hit box for hover and long press: the figure and the stat line.
 const HIT = new BoxGeometry(0.8, 1.55, 0.8);
 HIT.translate(0, 0.775, 0);
-// The focus ring of an inspected Unit: a cream ring with a dark edge, so it shows on any Square.
+// The focus ring of an inspected Unit uses its Side color.
 const FOCUS_RING = new RingGeometry(0.43, 0.52, 40);
-const FOCUS_EDGE = new RingGeometry(0.52, 0.57, 40);
 
 const WHITE = new Color("#ffffff");
 
@@ -102,17 +98,13 @@ const tintFigure = (material: MeshBasicMaterial | null, pose: Pose) => {
   }
 };
 
-const fadeParts = (
-  badge: Sprite | null,
-  base: MeshStandardMaterial | null,
-  pose: Pose
-) => {
-  if (badge) {
-    badge.position.y = 1.32 + pose.y;
-    badge.material.opacity = pose.opacity;
-  }
-  if (base) {
-    base.opacity = pose.opacity;
+/** The line sits on the lower edge of the figure. */
+const STAT_Y = 0.22;
+
+const fadeParts = (stat: Sprite | null, pose: Pose) => {
+  if (stat) {
+    stat.position.y = STAT_Y + pose.y;
+    stat.material.opacity = pose.opacity;
   }
 };
 
@@ -214,21 +206,12 @@ const ModelBody = ({
   return <primitive object={rig.root} />;
 };
 
-/** The 4px `focus-cream` ring of the HUD, as a ring on the base of the inspected Unit. */
-const FocusRing = () => (
-  <group rotation-x={-Math.PI / 2} position-y={0.185}>
-    <mesh geometry={FOCUS_EDGE} renderOrder={2}>
-      <meshBasicMaterial
-        color="#2a1a0c"
-        transparent
-        opacity={0.6}
-        depthWrite={false}
-        toneMapped={false}
-      />
-    </mesh>
+/** The Side-colored ring on the ground under the inspected Unit. */
+const FocusRing = ({ owner }: { readonly owner: UnitView["owner"] }) => (
+  <group rotation-x={-Math.PI / 2} position-y={0.12}>
     <mesh geometry={FOCUS_RING} renderOrder={3}>
       <meshBasicMaterial
-        color="#fff2a8"
+        color={SIDE_COLORS[owner].main}
         depthWrite={false}
         toneMapped={false}
       />
@@ -249,6 +232,30 @@ const registerHitArea = (unitId: number) => (mesh: Mesh | null) => {
   };
 };
 
+const facingOf = (owner: UnitView["owner"]): 1 | -1 =>
+  owner === "enemy" ? -1 : 1;
+
+const FigureBody = ({
+  model,
+  unit,
+  facing,
+  body,
+  cutOut,
+}: {
+  readonly model: UnitModelSpec | undefined;
+  readonly unit: UnitView;
+  readonly facing: 1 | -1;
+  readonly body: Ref<BodyHandle>;
+  readonly cutOut: ReactNode;
+}) =>
+  model ? (
+    <Suspense fallback={cutOut}>
+      <ModelBody unit={unit} facing={facing} ref={body} spec={model} />
+    </Suspense>
+  ) : (
+    cutOut
+  );
+
 const UnitFigure = ({
   unit,
   lanes,
@@ -263,27 +270,24 @@ const UnitFigure = ({
 }) => {
   const group = useRef<Group>(null);
   const body = useRef<BodyHandle>(null);
-  const baseMaterial = useRef<MeshStandardMaterial>(null);
-  const badge = useRef<Sprite>(null);
+  const stat = useRef<Sprite>(null);
   const pose = useMemo<Pose>(() => emptyPose(), []);
   const stats = useMemo(
     () =>
-      statBadgeTexture({
+      unitStatTexture({
         attack: unit.attack,
+        startAttack: summonAttack(unit.cardId, unit.rank, unit.attack),
         hp: unit.hp,
         maxHp: unit.maxHp,
-        armor: unit.armor + unit.bonusArmor,
-        owner: unit.owner,
       }),
-    [unit.attack, unit.hp, unit.maxHp, unit.armor, unit.bonusArmor, unit.owner]
+    [unit.attack, unit.cardId, unit.hp, unit.maxHp, unit.rank]
   );
   const shadow = useMemo(() => blobShadowTexture(), []);
   const z = laneZ(unit.lane, lanes);
-  const side = SIDE_COLORS[unit.owner].main;
   const model = unitModelOf(unit.cardId);
 
   // The enemy faces left: its figure is mirrored.
-  const facing = unit.owner === "enemy" ? -1 : 1;
+  const facing = facingOf(unit.owner);
 
   useFrame(({ camera }) => {
     poseFor(
@@ -302,7 +306,7 @@ const UnitFigure = ({
       pose,
       Math.atan2(camera.position.x - pose.x, camera.position.z - z)
     );
-    fadeParts(badge.current, baseMaterial.current, pose);
+    fadeParts(stat.current, pose);
   });
 
   const hitRef = useMemo(() => registerHitArea(unit.id), [unit.id]);
@@ -317,16 +321,7 @@ const UnitFigure = ({
       >
         <meshBasicMaterial map={shadow} transparent depthWrite={false} />
       </mesh>
-      <mesh geometry={BASE} position-y={0.13}>
-        <meshStandardMaterial
-          ref={baseMaterial}
-          color={side}
-          roughness={0.5}
-          metalness={0.2}
-          transparent
-        />
-      </mesh>
-      {inspected ? <FocusRing /> : null}
+      {inspected ? <FocusRing owner={unit.owner} /> : null}
       {dying ? null : (
         <mesh
           ref={hitRef}
@@ -335,14 +330,14 @@ const UnitFigure = ({
           userData={{ unitId: unit.id, owner: unit.owner }}
         />
       )}
-      {model ? (
-        <Suspense fallback={cutOut}>
-          <ModelBody unit={unit} facing={facing} ref={body} spec={model} />
-        </Suspense>
-      ) : (
-        cutOut
-      )}
-      <sprite ref={badge} scale={[0.92, 0.345, 1]} renderOrder={5}>
+      <FigureBody
+        model={model}
+        unit={unit}
+        facing={facing}
+        body={body}
+        cutOut={cutOut}
+      />
+      <sprite ref={stat} scale={[1.05, 0.33, 1]} renderOrder={5}>
         <spriteMaterial
           map={stats}
           transparent
@@ -354,11 +349,26 @@ const UnitFigure = ({
   );
 };
 
+const inspectedUnitId = (unit: UnitView | null) => unit?.id ?? null;
+
+const dyingFrom = (current: PlayingEvent | null): UnitView | undefined => {
+  if (current?.event._tag !== "UnitDied") {
+    return undefined;
+  }
+  const { unitId } = current.event;
+  return current.before.units.find((unit) => unit.id === unitId);
+};
+
+const withDying = (units: readonly UnitView[], dying: UnitView | undefined) =>
+  dying ? [...units, dying] : units;
+
+const battleOptions = (session: BattleSession | null) => session?.options;
+
 /** All Units on the Board, and a Unit that is dying in the current event. */
 export const Units = () => {
   const session = useAtomValue(battleSessionAtom);
-  const detailsId = useAtomValue(detailsUnitAtom)?.id ?? null;
-  const options = session?.options;
+  const detailsId = inspectedUnitId(useAtomValue(detailsUnitAtom));
+  const options = battleOptions(session);
   // Load the card art of both Sides at the Battle start, before the first summon.
   useEffect(() => {
     if (!session) {
@@ -373,15 +383,8 @@ export const Units = () => {
     return null;
   }
   const { view, current } = session;
-  const dying =
-    current?.event._tag === "UnitDied"
-      ? current.before.units.find(
-          (unit) =>
-            current.event._tag === "UnitDied" &&
-            unit.id === current.event.unitId
-        )
-      : undefined;
-  const units = dying ? [...view.units, dying] : view.units;
+  const dying = dyingFrom(current);
+  const units = withDying(view.units, dying);
   return (
     <>
       {units.map((unit) => (

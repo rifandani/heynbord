@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, Dispatch, SetStateAction } from "react";
 
+import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import type {
   GraveyardCardView,
@@ -207,7 +208,7 @@ const GraveyardPile = ({
   return (
     <div className="relative w-[9em] shrink-0">
       {inspected ? (
-        <div className="pointer-events-none absolute right-0 bottom-full mb-[2em]">
+        <div className="pointer-events-none absolute right-0 bottom-full z-40 mb-16">
           <CardDetails
             cardId={top.cardId}
             rank={top.rank}
@@ -307,6 +308,35 @@ const HandHint = ({
  * While its `CardDrawn` event plays, the card flies in from the Deck Pile. The
  * flight takes the time of the event, so it ends before the class goes away.
  */
+const shownCard = (
+  card: HandCardView
+): card is HandCardView & {
+  readonly cardId: string;
+  readonly rank: NonNullable<HandCardView["rank"]>;
+} => Boolean(card.cardId && card.rank);
+
+const DRAW_CLASS =
+  "animate-[hand-draw_var(--draw-ms)_cubic-bezier(0.2,0.8,0.2,1)_both] motion-reduce:animate-none";
+
+const drawMotion = (drawMs: number | null) => drawMs !== null && DRAW_CLASS;
+
+const drawStyle = (
+  index: number,
+  drawMs: number | null
+): CSSProperties | undefined => {
+  if (drawMs === null) {
+    return undefined;
+  }
+  // SAFETY: CSS custom properties for the keyframes. React's
+  // `CSSProperties` does not model custom properties.
+  return {
+    "--draw-from": `${-(index * SLOT_PITCH_EM + 9 + PILE_GAP_EM)}em`,
+    "--draw-ms": `${drawMs}ms`,
+  } as CSSProperties;
+};
+
+const dimmedCard = (dimmed: boolean) => dimmed && "opacity-40";
+
 const HandSlot = ({
   card,
   index,
@@ -333,28 +363,17 @@ const HandSlot = ({
   readonly cancelHold: () => void;
   readonly onDragStart: (drag: Drag) => void;
 }) => {
-  if (!card.cardId || !card.rank) {
+  if (!shownCard(card)) {
     return null;
   }
   const forget = () =>
     setInspected((current) => (current === index ? null : current));
   return (
     <li
-      className={cn(
-        "shrink-0",
-        drawMs !== null &&
-          "animate-[hand-draw_var(--draw-ms)_cubic-bezier(0.2,0.8,0.2,1)_both] motion-reduce:animate-none"
-      )}
+      className={cn("shrink-0", drawMotion(drawMs))}
       // SAFETY: CSS custom properties for the keyframes. React's
       // `CSSProperties` does not model custom properties.
-      style={
-        drawMs === null
-          ? undefined
-          : ({
-              "--draw-from": `${-(index * SLOT_PITCH_EM + 9 + PILE_GAP_EM)}em`,
-              "--draw-ms": `${drawMs}ms`,
-            } as CSSProperties)
-      }
+      style={drawStyle(index, drawMs)}
     >
       <HandCard
         cardId={card.cardId}
@@ -362,7 +381,7 @@ const HandSlot = ({
         countdown={card.countdown}
         selected={selected}
         data-testid={`hand-card-${index}`}
-        className={cn(dimmed && "opacity-40")}
+        className={cn(dimmedCard(dimmed))}
         onClick={(event) => onPress(index, event.detail === 0)}
         onPointerDown={(event) => {
           if (event.pointerType === "touch") {
@@ -390,25 +409,24 @@ const HandSlot = ({
 };
 
 /**
- * End Turn, at the bottom right of the screen. On a short screen, the label
- * goes on 2 lines under the icon, so the button is narrow.
+ * End Turn, a small gold button just above the Graveyard Pile.
+ * Its right edge matches the pile, so a long label grows to the left
+ * and stays on the screen.
  */
 const EndTurnPanel = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
   return (
-    <div className="pointer-events-auto flex shrink-0 flex-col items-end">
+    <div className="pointer-events-auto absolute right-0 bottom-full z-30 mb-3">
       <GameButton
         intent="gold"
-        size="lg"
+        size="sm"
         isDisabled={!battle.canEndTurn}
         onPress={() => battle.endTurn()}
         data-testid="end-turn"
-        className="font-display [@media(max-height:500px)]:flex-col [@media(max-height:500px)]:gap-0.5 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-2 [@media(max-height:500px)]:text-base [@media(max-height:500px)]:leading-tight"
+        className="font-display whitespace-nowrap"
       >
-        <GlyphIcon glyph="speed" className="size-4" />
-        <span className="[@media(max-height:500px)]:max-w-[5.5em] [@media(max-height:500px)]:text-center">
-          {tr("battle.endTurn")}
-        </span>
+        <GlyphIcon glyph="speed" className="size-3.5" />
+        {tr("battle.endTurn")}
       </GameButton>
     </div>
   );
@@ -454,9 +472,38 @@ const PileDivider = () => (
 
 /**
  * The Hand Bar (GDD 11.2): the Deck Pile, the Hand Slots, the Graveyard Pile,
- * and End Turn. A Ready card can be dragged to a target, or tapped and then
- * the target tapped.
+ * and End Turn above the Graveyard. A Ready card can be dragged to a target,
+ * or tapped and then the target tapped.
  */
+const drawnId = (playing: PlayingEvent | null): number | null => {
+  if (playing?.event._tag === "CardDrawn" && playing.event.side === "player") {
+    return playing.event.card.instanceId;
+  }
+  return null;
+};
+
+const cardAt = (
+  hand: readonly HandCardView[],
+  index: number | null,
+  blocked: boolean
+) => (index === null || blocked ? undefined : hand[index]);
+
+const selectedCard = (hand: readonly HandCardView[], index: number | null) =>
+  index === null ? undefined : hand[index];
+
+const HAND_GLOW =
+  "shadow-[0_0_24px_rgba(127,227,255,0.75)] ring-4 ring-[#7fe3ff]";
+
+const handGlow = (on: boolean) => on && HAND_GLOW;
+
+const tutorialFlag = (on: boolean) => on || undefined;
+
+const slotDrawMs = (
+  playing: PlayingEvent | null,
+  card: HandCardView,
+  drawingId: number | null
+) => (playing && card.instanceId === drawingId ? playing.duration : null);
+
 export const HandBar = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
   const [inspected, setInspected] = useState<number | null>(null);
@@ -472,10 +519,7 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
   const { hand } = player;
   const dragIndex = activeDragIndex(drag);
   const playing = session.current;
-  const drawingId =
-    playing?.event._tag === "CardDrawn" && playing.event.side === "player"
-      ? playing.event.card.instanceId
-      : null;
+  const drawingId = drawnId(playing);
 
   const press = (index: number, keyboard: boolean) => {
     const action = pressAction({
@@ -499,18 +543,14 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
 
   return (
     <footer className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end p-2 pr-[max(0.5rem,env(safe-area-inset-right))] pb-[max(0.5rem,env(safe-area-inset-bottom))] pl-[max(0.5rem,env(safe-area-inset-left))]">
-      {/*
-       * 2 spacers of equal growth keep the bar at the middle of the screen.
-       * The right spacer holds End Turn at the bottom right and does not
-       * shrink below it, so on a narrow screen the bar moves left.
-       */}
+      {/* 2 spacers of equal growth keep the bar at the middle of the screen. */}
       <div className="min-w-0 flex-1" aria-hidden />
       <div
         className={cn(
-          "pointer-events-auto flex shrink-0 items-stretch rounded-[1.3em] border-[0.2em] border-[#2a170a] border-t-[#b47f36] p-[0.7em] text-[length:var(--hand-card-size)] shadow-[inset_0_0.15em_0_rgba(255,214,150,0.3),inset_0_-0.3em_0.6em_rgba(0,0,0,0.45),0_0.6em_1.6em_rgba(0,0,0,0.55)] [@media(max-height:500px)]:p-[0.5em]",
+          "pointer-events-auto relative flex shrink-0 items-stretch rounded-[1.3em] border-[0.2em] border-[#2a170a] border-t-[#b47f36] p-[0.7em] text-[length:var(--hand-card-size)] shadow-[inset_0_0.15em_0_rgba(255,214,150,0.3),inset_0_-0.3em_0.6em_rgba(0,0,0,0.45),0_0.6em_1.6em_rgba(0,0,0,0.55)] [@media(max-height:500px)]:p-[0.5em]",
           // The card size: 10px (7px on a short screen), or less so that the
-          // bar (about 101em), the gap, End Turn and the padding fit the screen width.
-          "[--hand-card-size:min(10px,calc((100vw_-_206px)/101))] [@media(max-height:500px)]:[--hand-card-size:min(7px,calc((100vw_-_146px)/101))]"
+          // bar (about 101em) and the screen padding fit the screen width.
+          "[--hand-card-size:min(10px,calc((100vw_-_40px)/101))] [@media(max-height:500px)]:[--hand-card-size:min(7px,calc((100vw_-_40px)/101))]"
         )}
         style={{
           // Dark wood that matches the Board rim, with a faint grain.
@@ -526,15 +566,9 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
 
         <div className="relative flex flex-col items-center">
           <div className="pointer-events-none absolute bottom-full left-1/2 mb-[2em] flex -translate-x-1/2 flex-col items-center gap-3">
-            <InspectedCard
-              card={
-                inspected === null || unitInspected
-                  ? undefined
-                  : hand[inspected]
-              }
-            />
+            <InspectedCard card={cardAt(hand, inspected, unitInspected)} />
             <HandHint
-              card={selected === null ? undefined : hand[selected]}
+              card={selectedCard(hand, selected)}
               targetCount={targets.length}
             />
           </div>
@@ -543,22 +577,17 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
             className={cn(
               "flex items-end gap-[0.6em] rounded-[0.9em]",
               // Tutorial Step 1: a highlight on the Hand (GDD 8.3).
-              marks.hand &&
-                "shadow-[0_0_24px_rgba(127,227,255,0.75)] ring-4 ring-[#7fe3ff]"
+              handGlow(marks.hand)
             )}
             data-testid="hand"
-            data-tutorial-highlight={marks.hand || undefined}
+            data-tutorial-highlight={tutorialFlag(marks.hand)}
           >
             {hand.map((card, index) => (
               <HandSlot
                 key={card.instanceId}
                 card={card}
                 index={index}
-                drawMs={
-                  playing && card.instanceId === drawingId
-                    ? playing.duration
-                    : null
-                }
+                drawMs={slotDrawMs(playing, card, drawingId)}
                 selected={selected === index}
                 dimmed={dragIndex === index}
                 battle={battle}
@@ -576,11 +605,12 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
         </div>
 
         <PileDivider />
-        <GraveyardPile cards={player.graveyard} speed={battle.speed} />
+        <div className="relative w-[9em] shrink-0">
+          <EndTurnPanel battle={battle} />
+          <GraveyardPile cards={player.graveyard} speed={battle.speed} />
+        </div>
       </div>
-      <div className="flex flex-1 justify-end pl-3">
-        <EndTurnPanel battle={battle} />
-      </div>
+      <div className="min-w-0 flex-1" aria-hidden />
 
       <DragGhost drag={drag} hand={hand} />
     </footer>

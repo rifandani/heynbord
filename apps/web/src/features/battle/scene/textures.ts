@@ -10,13 +10,21 @@ import { CanvasTexture, SRGBColorSpace } from "three";
 
 import { cardIllustration } from "@/features/battle/card-art";
 import type { Glyph } from "@/features/battle/glyphs";
-import { cardGlyph, classGlyph, GLYPHS } from "@/features/battle/glyphs";
+import {
+  cardGlyph,
+  classGlyph,
+  FILLED_GLYPHS,
+  GLYPHS,
+} from "@/features/battle/glyphs";
 import {
   DAMAGE_COLORS,
   RACE_COLORS,
   RANK_COLORS,
   SIDE_COLORS,
+  STAT_DELTA,
+  STAT_PIPE,
 } from "@/features/battle/palette";
+import { statTone } from "@/features/battle/scene/unit-stats";
 
 /**
  * Procedural art for the slice (art direction 2): each texture is drawn once
@@ -53,6 +61,12 @@ const FONT = "Inter, ui-sans-serif, system-ui, sans-serif";
 /** Draws a glyph centered on (0, 0) in a 100 px box: a dark outline, then a light fill. */
 const drawGlyph = (context: CanvasRenderingContext2D, glyph: Glyph): void => {
   const path = new Path2D(GLYPHS[glyph]);
+  if (FILLED_GLYPHS.has(glyph)) {
+    context.fillStyle = "#fff6df";
+    // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
+    context.fill(path, "evenodd");
+    return;
+  }
   context.lineJoin = "round";
   context.lineCap = "round";
   context.lineWidth = 14;
@@ -235,72 +249,68 @@ export const heroFigureTexture = (
     context.restore();
   });
 
-const roundRect = (
+const STAT_WIDTH = 512;
+const STAT_HEIGHT = 160;
+
+/** One part of `Attack | HP`, centered on `x`, with a dark outline. */
+const drawStatPart = (
   context: CanvasRenderingContext2D,
+  text: string,
+  color: string,
   x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number
+  width: number
 ) => {
-  context.beginPath();
-  context.roundRect(x, y, width, height, radius);
+  const center = x + width / 2;
+  context.strokeStyle = "rgba(15, 10, 8, 0.92)";
+  context.strokeText(text, center, STAT_HEIGHT / 2);
+  context.fillStyle = color;
+  context.fillText(text, center, STAT_HEIGHT / 2);
 };
 
 /**
- * Attack and HP above a Unit (UI-04: always visible). Damaged HP is red. A
- * shield shows Armor. The owner color is the badge border.
+ * Attack and HP at the feet of a Unit (UI-04: always visible). `2 | 10`.
+ * Each number is white, red, or green against its summon value.
  */
-export const statBadgeTexture = (options: {
+export const unitStatTexture = (options: {
   readonly attack: number;
+  readonly startAttack: number;
   readonly hp: number;
   readonly maxHp: number;
-  readonly armor: number;
-  readonly owner: Side;
 }): CanvasTexture =>
   cached(
-    `stat:${options.attack}:${options.hp}:${options.maxHp}:${options.armor}:${options.owner}`,
-    256,
-    96,
+    `stat:${options.attack}:${options.startAttack}:${options.hp}:${options.maxHp}`,
+    STAT_WIDTH,
+    STAT_HEIGHT,
     (context) => {
-      roundRect(context, 4, 8, 248, 80, 36);
-      context.fillStyle = "rgba(18, 14, 12, 0.88)";
-      context.fill();
-      context.lineWidth = 6;
-      context.strokeStyle = SIDE_COLORS[options.owner].main;
-      context.stroke();
-      context.font = `800 54px ${FONT}`;
+      const attack = String(options.attack);
+      const hp = String(options.hp);
+      const pipe = " | ";
+      context.font = `800 112px ${FONT}`;
       context.textBaseline = "middle";
       context.textAlign = "center";
-      // Attack: a small sword, then the value.
-      context.save();
-      context.translate(42, 48);
-      context.rotate(Math.PI / 4);
-      context.scale(0.5, 0.5);
-      drawGlyph(context, "sword");
-      context.restore();
-      context.fillStyle = "#ffb347";
-      context.fillText(String(options.attack), 92, 51);
-      // HP: a heart, then the value.
-      context.save();
-      context.translate(150, 48);
-      context.scale(0.36, 0.36);
-      context.fillStyle = "#ef4444";
-      // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
-      context.fill(new Path2D(GLYPHS.heart));
-      context.restore();
-      context.fillStyle = options.hp < options.maxHp ? "#ff7b7b" : "#8ef0a4";
-      context.fillText(String(options.hp), 206, 51);
-      if (options.armor > 0) {
-        context.save();
-        context.translate(128, 14);
-        context.scale(0.22, 0.22);
-        drawGlyph(context, "shield");
-        context.restore();
-        context.font = `800 22px ${FONT}`;
-        context.fillStyle = "#14100c";
-        context.fillText(String(options.armor), 128, 16);
-      }
+      context.lineJoin = "round";
+      context.lineWidth = 16;
+      const attackWidth = context.measureText(attack).width;
+      const pipeWidth = context.measureText(pipe).width;
+      const hpWidth = context.measureText(hp).width;
+      let x = (STAT_WIDTH - (attackWidth + pipeWidth + hpWidth)) / 2;
+      drawStatPart(
+        context,
+        attack,
+        STAT_DELTA[statTone(options.attack, options.startAttack)],
+        x,
+        attackWidth
+      );
+      x += attackWidth;
+      drawStatPart(context, pipe, STAT_PIPE, x, pipeWidth);
+      x += pipeWidth;
+      drawStatPart(
+        context,
+        hp,
+        STAT_DELTA[statTone(options.hp, options.maxHp)],
+        x,
+        hpWidth
+      );
     }
   );
 

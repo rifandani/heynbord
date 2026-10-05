@@ -14,6 +14,9 @@ colors:
   wood: "#563720"
   wood-edge: "#2a1a0c"
   frame-wood: "#5b3a1e"
+  tray-light: "#6b4423"
+  tray: "#4a2d16"
+  grain: "rgba(0,0,0,0.06)"
   parchment: "#f6ead0"
   parchment-deep: "#ead9b4"
   parchment-lit: "#fff3d1"
@@ -237,13 +240,13 @@ The palette is warm workshop material (gold, bronze, wood, parchment, ink) on br
 
 ### Secondary
 
-- **Tavern Wood** (`wood-light` to `wood`, with `wood-edge` as its border): the default button, and the open Town Bar shortcuts. The Hand Bar and the Town Bar use deeper wood gradients from the same family, with a faint grain.
+- **Tavern Wood** (`wood-light` to `wood`, with `wood-edge` as its border): the default button, and the open Town Bar shortcuts. The Hand Bar runs from `tray-light` through `tray` to `wood-edge`, with a faint `grain`. The Town Bar uses the same wood family.
 - **Frame Wood** (`frame-wood`): the thick 4px border of parchment dialogs and panels, and the plate behind a Deck class icon.
 - **Warm Bronze** (`bronze`, with `bronze-rim` for badge rims): the shared card metal (a 5-stop gradient from `#f7dc9c` to `#8a5a20`), the rim of every round badge, the top edge of the Hand Bar, and the border of the Details Panel.
 
 ### Tertiary
 
-- **Banner Red** (`enemy-red`, with `enemy-deep` as its border): the enemy side. The enemy Hero border, the "Enemy Turn" chip and banner, and enemy Unit bases.
+- **Banner Red** (`enemy-red`, with `enemy-deep` as its border): the enemy side. The enemy Hero border, the "Enemy Turn" chip and banner, and the enemy Hero ring.
 - **Blood Banner** (`blood-banner`): the "Defeat" title and the Boss chip.
 - **Keyword Rust** (`keyword-rust`): Keyword names in the Details Panel.
 - **Victory Amber** (`victory-amber`): the "Victory" title on parchment.
@@ -255,10 +258,10 @@ The palette is warm workshop material (gold, bronze, wood, parchment, ink) on br
 
 These come from art direction 4. `apps/web/src/features/battle/palette.ts` holds them with their light and dark shades.
 
-- **Race:** `human-blue` (second color gold), `elf-green` (second color warm brown), `undead-teal` (second color bone white), `orc-orange` (second color dark red). A Creature Card shows its Race color on the name banner and the emblem.
+- **Race:** `human-blue` (second color gold), `elf-green` (second color warm brown), `undead-teal` (second color bone white), `orc-orange` (second color dark red). A Creature Card shows its Race color on the emblem.
 - **Rank:** `rank-common` grey, `rank-uncommon` green, `rank-rare` blue, `rank-epic` purple, `rank-legendary` orange. A card shows its Rank color only on the Rank Gems and the art window trim.
 - **Damage Type:** `damage-physical` white with a sword, `damage-fire` orange-red with a flame, `damage-frost` light blue with a snowflake, `damage-holy` gold with a sun.
-- **Side:** the player is gold (`#f2c14e`), the enemy is red (`#d9463b`), on Unit bases and Hero panel borders.
+- **Side:** the player is gold (`#f2c14e`), the enemy is red (`#d9463b`), on Hero panel borders and the Hero ring. A Unit shows its Side by facing only.
 
 ### Neutral
 
@@ -288,7 +291,7 @@ These come from art direction 4. `apps/web/src/features/battle/palette.ts` holds
 
 - **Display** (Cinzel 900, 2.25rem, 1.1): the result title, "Victory" or "Defeat". 1.5rem on a short screen.
 - **Headline** (Cinzel 900, 1.875rem, 1.2, 0.025em): screen titles such as the Campaign header, with a hard 3px drop shadow. The Turn banner uses Cinzel 900 at 1.5rem.
-- **Title** (Cinzel 700, 1.125rem, 1.25): panel labels, the Tutorial step title, Stage and Deck names, the End Turn and Start Battle labels, the Key Guide title, and the Building labels in the Town (at least 14px, scaled with the painting).
+- **Title** (Cinzel 700, 1.125rem, 1.25): panel labels, the Tutorial step title, Stage and Deck names, the Start Battle label, the Key Guide title, and the Building labels in the Town (at least 14px, scaled with the painting).
 - **Body** (Inter 400, 0.875rem, 1.375): the Details Panel, the Tutorial text, the dialog text. Keywords are Inter 700 in `keyword-rust`.
 - **Body Small** (Inter 400, 0.75rem, 1.375): reminder text, Deck descriptions, the Key Guide list. Flavor text is the same size in italic.
 - **Label** (Inter 700, 0.75rem, 0.025em, uppercase): small section labels such as "Tutorial". Town Bar shortcut names use Inter 700 at 11px, not uppercase.
@@ -302,17 +305,17 @@ These come from art direction 4. `apps/web/src/features/battle/palette.ts` holds
 
 ## Layout
 
-The Battle screen is a full-screen 3D Board with the 2D HUD at its edges. The Top Bar holds the player Hero at the top left, the Turn badge and the Battle controls at the top center, and the enemy Hero at the top right. The Hand Bar sits at the bottom center, and End Turn is at its right. The HUD containers let pointer events through (`pointer-events: none`), and only the pieces themselves take input, so the Board stays free. Toasts move to a narrow column at the bottom left, above the Hand Bar. Every edge respects `env(safe-area-inset-*)` with a 0.5rem minimum.
+The Battle screen is a full-screen 3D Board with the 2D HUD at its edges. The Top Bar holds the player Hero at the top left, the Turn badge and the Battle controls at the top center, and the enemy Hero at the top right. The Hand Bar sits at the bottom center. End Turn is a small gold button just above the Graveyard Pile, aligned with the pile's right edge. The HUD containers let pointer events through (`pointer-events: none`), and only the pieces themselves take input, so the Board stays free. Toasts move to a narrow column at the bottom left, above the Hand Bar. Every edge respects `env(safe-area-inset-*)` with a 0.5rem minimum.
 
 The Town is a 16:9 painting that covers the screen and crops its edges. Buildings and their labels have positions in painting coordinates, changed to percentages, so they stay on the painting at all sizes. The Town Bar is fixed to the bottom of every screen except the Battle. Panel screens such as the Campaign use a centered column of at most 1024px, with a 3:2 grid of two parchment panels from 768px.
 
-Cards scale by font size. All Card Frame parts are in `em`: the card is 9em × 12.6em, so a 10px font gives a 90 × 126 px Hand Card, 7px gives 63 × 88 px on a short screen, and 20px gives the 180 × 252 px Card Details. The Hand Bar makes the card smaller still (`--hand-card-size`) so that 8 Hand Slots, both piles and End Turn fit the screen width.
+Cards scale by font size. All Card Frame parts are in `em`: the card is 9em × 12.6em, so a 10px font gives a 90 × 126 px Hand Card, 7px gives 63 × 88 px on a short screen, and 20px gives the 180 × 252 px Card Details. The Hand Bar makes the card smaller still (`--hand-card-size`) so that 8 Hand Slots and both piles fit the screen width.
 
 Spacing follows a 4px step: 4px between small controls, 8px between pieces in a group and inside HUD panels, 12px inside parchment panels, 16px between screen sections, 20px inside dialogs.
 
 ### Named Rules
 
-**The Short Screen Rule.** `@media (max-height: 500px)` is the phone-in-landscape layout. Every component has a compact form for it: smaller padding, one size smaller text, icon-only Town Bar shortcuts, and a 2-line End Turn label. A phone in portrait shows only a request to turn the phone.
+**The Short Screen Rule.** `@media (max-height: 500px)` is the phone-in-landscape layout. Every component has a compact form for it: smaller padding, one size smaller text, and icon-only Town Bar shortcuts. A phone in portrait shows only a request to turn the phone.
 
 **The Clear Board Rule.** No HUD piece, panel or effect may cover a Square or a Unit stat for longer than an action needs. Card Details and the Tutorial panel open at the sides of the Board, not on it.
 
@@ -345,7 +348,7 @@ Depth is physical, as on a real table. Pieces have a hard, short drop shadow wit
 
 Shapes are rounded and friendly, never sharp and never pill-shaped buttons. Buttons, shortcuts and tooltips have gently curved corners (8px). HUD plates, option cards and the Tutorial panel are softer (12px). Dialogs and parchment panels are the softest (16px). Small chips and key caps are nearly square (4px). Badges, the HP bar and pile counts are full circles or capsules.
 
-The card has its own shape language in `em`. The bronze frame has a 0.85em corner and the art window inside it has 0.55em. A Skill Card has an arched top on its art window, so its shape is different from a Creature Card. The name banner is a ribbon: a flat bar with a V-shaped notch cut into each end. Rank Gems are small squares turned 45° into diamonds, with a dark edge and a light top-left facet. The Heynbord emblem (two hexagon halves and a four-point star) is the mark on the Card Back and, faded, in each empty slot.
+The card has its own shape language in `em`. The bronze frame has a 0.85em corner and the art window inside it has 0.55em. A Skill Card has an arched top on its art window, so its shape is different from a Creature Card. The card name is not on the frame. Rank Gems are small squares turned 45° into diamonds, with a dark edge and a light top-left facet. The Heynbord emblem (two hexagon halves and a four-point star) is the mark on the Card Back and, faded, in each empty slot.
 
 Borders are thick and part of the material: 2px on buttons and HUD plates, 3px to 4px on parchment panels and dialogs, and about 0.16em of bronze on card badges.
 
@@ -356,7 +359,7 @@ Borders are thick and part of the material: 2px on buttons and HUD plates, 3px t
 Chunky and tactile, like a wooden or gold game token.
 
 - **Shape:** gently curved (8px), 2px border, Inter 600, minimum height 44px (36px small, 48px large, 40px square icon).
-- **Gold:** a vertical gradient from `gold-light` to `gold`, a `gold-deep` border and `ink-on-gold` text. Only for the main action of a panel and for a selected toggle. A large gold button such as End Turn uses Cinzel.
+- **Gold:** a vertical gradient from `gold-light` to `gold`, a `gold-deep` border and `ink-on-gold` text. Only for the main action of a panel and for a selected toggle. End Turn and a large gold button such as Start Battle use Cinzel.
 - **Wood:** a vertical gradient from `wood-light` to `wood`, a `wood-edge` border and `cream` text. The default, for the second action of a panel.
 - **Ghost:** `night-plate` at 70%, a `cream` border at 30%, and `cream` text. For small HUD controls over the Board: speed, Skip, sound, Key Guide.
 - **Hover / Focus / Press:** hover makes the face 10% brighter. Focus shows a 4px `focus-cream` ring. Press moves the piece down 1px and the Piece Drop becomes 1px. The change takes 100ms.
@@ -392,19 +395,19 @@ The center of the system. A bronze frame (Card Bevel) around the card art, with 
 
 - **Countdown badge** at the top left: a round badge with a bronze rim on a dark radial plate, a faint hourglass, and the number in Inter 900. A Ready card has a gold radial face with dark text.
 - **Emblem** at the top right: the Race color with a cream Race icon, or parchment with an ink Class icon on a Skill Card.
-- **Name banner:** a ribbon in the Race color (or parchment for a Skill Card) with Inter 700 text that clamps to 2 lines, and the Rank Gems under it.
+- **Rank Gems** at the top center, in line with the Countdown and the emblem. The card name is not here.
 - **Stat plates** at the bottom corners: Attack with its Damage Type icon in the Damage Type color, and HP with a heart in `heart-red`. A Skill Card has one round effect badge at the bottom center.
 - **Hand Card states:** a Ready card has the Ready Glow and lifts 8px on hover. A card that is not Ready is 82% bright and 70% saturated. A selected card lifts 12px and has a 4px `focus-cream` ring.
 
 ### Hand Bar (signature)
 
-A wooden tray with a faint vertical grain and the Tray shadow, with a `bronze` top edge. From left to right: the Deck Pile (Card Backs with bronze edges under them), a bronze divider, 8 Hand Slots (empty ones are Wells with a faded emblem), a divider, and the Graveyard Pile. Each pile has a round count badge on the divider. End Turn is a large gold button outside the tray, at its right.
+A wooden tray with a faint vertical grain and the Tray shadow, with a `bronze` top edge. From left to right: the Deck Pile (Card Backs with bronze edges under them), a bronze divider, 8 Hand Slots (empty ones are Wells with a faded emblem), a divider, and the Graveyard Pile. Each pile has a round count badge on the divider. End Turn is the small gold button (Cinzel 14px), just above the Graveyard Pile and aligned with its right edge, outside the tray.
 
 ### Card Details
 
-The Card Frame at 20px font size, with the Details Panel on its right: `parchment`, a 3px `bronze` border with no left side, a 12px corner on the right only, and the Lift. It shows the Race or Class line, a stat row with icons, Keywords, and the flavor text in italic at the bottom, with `#c9a46a` rules between the groups.
+The Card Frame at 20px font size, with the Details Panel on its right: `parchment`, a 3px `bronze` border with no left side, a 12px corner on the right only, and the Lift. The panel starts with the card name in Cinzel (16px, 14px on a short screen). Under the name it shows the Race or Class line, a stat row with icons, Keywords, and the flavor text in italic at the bottom, with `#c9a46a` rules between the groups. The name shows only in this panel, on hover, long press or keyboard focus.
 
-**Unit on the Board.** Hover (after 150ms), a long press (450ms, until the finger goes up), or the I key shows the Card Details of a Unit of either Side. They open at the side of the screen away from the Unit, between the Top Bar and the Hand Bar. The card is at the screen edge and the panel faces the Board, so at the right edge the layout is mirrored. The stat plates show the current Attack and HP of the Unit. A damaged HP number is `#ff7a6b`, and the panel says "HP 3 of 5" in words. The Countdown badge is never Ready gold. The Race line ends with a Side chip in the style of the Turn chip: "Yours" on the player gold with `ink-on-gold`, or "Enemy" on `enemy-deep` with a `enemy-red` border and `cream` text. Under it, a status group shows the HP, the bonus Armor and its Turns left, Burn and Frozen, each with its icon and a name in `keyword-rust`. On a short screen, the flavor text of a Unit goes away. The inspected Unit has a `focus-cream` ring with a dark edge on its base. Only one Card Details shows at a time: those of a Unit hide those of a Hand Card.
+**Unit on the Board.** Hover (after 150ms), a long press (450ms, until the finger goes up), or the I key shows the Card Details of a Unit of either Side. They open at the side of the screen away from the Unit, between the Top Bar and the Hand Bar. The card is at the screen edge and the panel faces the Board, so at the right edge the layout is mirrored. The stat plates show the current Attack and HP of the Unit. A damaged HP number is `#ff7a6b`. The panel does not repeat the HP. The Countdown badge is never Ready gold. The Race line ends with a Side chip in the style of the Turn chip: "Yours" on the player gold with `ink-on-gold`, or "Enemy" on `enemy-deep` with a `enemy-red` border and `cream` text. Under it, a status group shows the bonus Armor and its Turns left, Burn and Frozen, each with its icon and a name in `keyword-rust`. The group is absent when the Unit has none of these. On a short screen, the flavor text of a Unit goes away. On the Board, the feet of the Unit show `Attack | HP`. A number is white when it equals the value at summon, `#ff7a6b` when it is lower, and `hp-full` when it is higher. The bar between them is `cream`. The line has a dark outline. Armor stays in the Card Details. The inspected Unit has a `focus-cream` ring with a dark edge on the ground. Only one Card Details shows at a time: those of a Unit hide those of a Hand Card.
 
 ### Motion
 
@@ -427,7 +430,7 @@ Motion is short, physical and gives information. Buttons react in 100ms. A drawn
 
 - **Don't** make the game dark, realistic, gory, noisy or neon.
 - **Don't** use the blue primary, the zinc greys or the light/dark switch of the base component theme on a game screen.
-- **Don't** put text directly on wood grain, a bronze gradient, a painting or the 3D scene.
+- **Don't** put text directly on wood grain, a bronze gradient, or a painting. On the Board, damage numbers and the Unit line use a dark outline.
 - **Don't** use Cinzel for rules text, Keywords, numbers, or any text under 14px.
 - **Don't** show a Rank, a Damage Type or a side by color alone.
 - **Don't** add a glow to a piece that is not Ready, active or selected.

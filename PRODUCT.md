@@ -19,7 +19,7 @@ Details: [02 — Game Vision](docs/game/02-game-vision.md#target-players), [04 �
 
 Heynbord is a fantasy collectible card game for the web browser. The Player collects cards, builds a Deck, plays Ready cards into Lanes, and then watches the Units move and fight automatically. It is a spiritual successor to _Kings and Legends_ (2013) and _Rise of Mythos_ (2013–2019). Those games shut down, and Flash stopped in 2020. The 2023 revival is pay-to-win. No modern, fair browser game gives this experience.
 
-v1 is single player (PvE) with a local save: a Campaign of 3 Regions (30 Stages, 3 Boss Stages), the Heynspire tower (50 Floors), and about 100 cards.
+v1 is single player (PvE) with a local save: a Campaign of 3 Regions (30 Stages, 3 Boss Stages), the Heynspire tower (50 Floors), and 88 Cards.
 
 Success for v1.0:
 
@@ -55,7 +55,7 @@ _A collectible card game crossed with lane tower defense, where timing replaces 
 - Business model: free-to-play with Cosmetics only. v1 has no shop, payments or ads.
 - Not in v1: online play, accounts, PvP, guilds, chat, trading, native apps, portrait phone layout.
 - Team: one developer. AI tools make the art and music. Each asset needs a licence record.
-- Undecided: final names for Races, Ranks, currency, Regions and Heynspire (marked **(draft)** in the docs); the AI image tool; the domain and hosting.
+- Undecided: final names for currency, Regions and Heynspire (marked **(draft)** in the docs); the audio sources; the domain and hosting.
 
 Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-requirements).
 
@@ -75,10 +75,10 @@ Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-require
 
 - Logo files in `apps/web/brand/` and PWA icons in `apps/web/public/`.
 - Complete design documents in `docs/game/` (pillars, vision, GDD, PRD, art direction, technical design, economy, roadmap).
-- Card art: 22 final, AI-made card illustrations in `apps/web/public/illustrations/` (one 3:4 portrait for each card, with its background).
+- Card art: 22 final card illustrations in `apps/web/public/illustrations/`, made with GPT Image (one 3:4 portrait for each card, with its background). Ten of them are the golden references ([art direction 5.1](docs/game/05-art-direction.md)).
 - Town art: the first master painting (`apps/web/public/town/town.jpg`, 1672 × 941) and the Town Gate layer cut out of it (`town-gate.webp`). A 3200 × 1800 export is still to make. The brief is [11 — Town Concepts](docs/game/11-town-concepts.md).
 - Sound: the Battle sounds are made with Web Audio in code (`apps/web/src/features/battle/battle-audio.ts`). No audio files and no music exist yet.
-- No Battle Painting exists yet. Until the Hearthvale painting exists, the Battle shows a meadow gradient. The brief is [13 — Battlefield Concepts](docs/game/13-battlefield-concepts.md). The golden reference images are a Milestone 0 task.
+- No Battle Painting exists yet. Until the Hearthvale painting exists, the Battle shows a meadow gradient. The brief is [13 — Battlefield Concepts](docs/game/13-battlefield-concepts.md).
 - No playtests, players, reviews, testimonials or press exist yet. Do not invent them.
 
 ## Product Principles

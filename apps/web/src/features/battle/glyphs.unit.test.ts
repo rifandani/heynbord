@@ -12,7 +12,9 @@ describe("cardGlyph", () => {
     expect(cardGlyph(getCard("warrior.spearThrow"))).toBe("sword");
     expect(cardGlyph(getCard("warrior.shieldWall"))).toBe("shield");
     expect(cardGlyph(getCard("warrior.warDrums"))).toBe("speed");
-    expect(classGlyph("mage")).toBe("orb");
+    expect(classGlyph("warrior")).toBe("warhelm");
+    expect(classGlyph("mage")).toBe("hat");
     expect(raceGlyph("elf")).toBe("leaf");
+    expect(raceGlyph("orc")).toBe("orcHead");
   });
 });

@@ -107,7 +107,6 @@ export default {
     yours: "Yours",
     yourUnit: "Your Unit",
     enemyUnit: "Enemy Unit",
-    unitHp: "HP {hp} of {maxHp}",
     status: {
       bonusArmor: "Armor +{value}",
       bonusArmorRule: "From a Skill Card. Turns left: {turns}.",
@@ -116,6 +115,9 @@ export default {
         "1 damage in each End Step of its owner. End Steps left: {value}.",
       frozen: "Frozen",
       frozenRule: "It skips its next action.",
+      poisoned: "Poison {value}",
+      poisonedRule:
+        "1 damage per stack in each End Step of its owner. Then it loses 1 stack.",
     },
   },
   town: {
@@ -223,7 +225,9 @@ export default {
     charge: "Charge",
     flying: "Flying",
     heroic: "Heroic {value}",
+    lastBreath: "Last Breath {value}",
     pivot: "Pivot",
+    poison: "Poison",
     regeneration: "Regeneration {value}",
     retaliation: "Retaliation",
     ranged: "Ranged {value}",
@@ -235,8 +239,12 @@ export default {
     charge: "+2 Speed in the Turn when you summon this Unit.",
     flying: "Moves over other Units. It stops in an empty Square.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
+    lastBreath:
+      "When this Unit leaves the Board, it deals {value} damage to the nearest enemy Unit ahead.",
     pivot:
       "This Unit can attack an enemy Unit directly behind it or next to it, before the Unit in front. Then it does not move.",
+    poison:
+      "After this Unit deals attack damage above 0, that Unit gains 1 Poison stack. In each End Step of its owner, it takes 1 damage per stack, then loses 1 stack.",
     regeneration: "In your Start Step, this Unit heals {value} HP.",
     retaliation:
       "When this Unit survives a melee attack, it deals its Attack to the attacker.",
@@ -250,7 +258,8 @@ export default {
       "Deal {amount} {damageType} damage to an enemy Unit and the next {extra} Square behind it.",
     damageLane:
       "Deal {amount} {damageType} damage to all enemy Units in a Lane.",
-    laneArmor: "Friendly Units in a Lane get Armor {armor} for {turns} Turns.",
+    laneArmor:
+      "Friendly Units in a Lane get Armor {armor} for the next {turns} enemy Turns.",
     lowerCountdown:
       "The Countdown of {cards} random cards in your Hand goes down by {amount}.",
   },

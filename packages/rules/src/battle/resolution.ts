@@ -108,14 +108,15 @@ const targetOf = (state: BattleState, unit: UnitState) =>
  * A ranged Unit with a target in Range, and a Pivot Unit with an enemy Unit
  * behind it or next to it, do not move.
  */
+const staysPut = (state: BattleState, unit: UnitState, speed: number) =>
+  speed <= 0 ||
+  (unit.range > 0 && rangedTarget(state, unit)) ||
+  pivotTarget(state, unit);
+
 const move = (ctx: StepContext, unit: UnitState): void => {
   const { state } = ctx;
   const speed = currentSpeed(state, unit);
-  if (
-    speed <= 0 ||
-    (unit.range > 0 && rangedTarget(state, unit)) ||
-    pivotTarget(state, unit)
-  ) {
+  if (staysPut(state, unit, speed)) {
     return;
   }
   const dir = direction(unit.owner);
@@ -141,7 +142,10 @@ const move = (ctx: StepContext, unit: UnitState): void => {
   }
 };
 
-/** Retaliation (GDD 4.7): no Crit, and it does not start another Retaliation. */
+/**
+ * Retaliation (GDD 4.7): no Crit, and it does not start another Retaliation.
+ * A Frozen defender does not retaliate, and it keeps its Freeze (GDD 4.4).
+ */
 const retaliate = (
   ctx: StepContext,
   defender: UnitState,
@@ -149,6 +153,7 @@ const retaliate = (
 ): void => {
   if (
     !defender.retaliation ||
+    defender.frozen ||
     attacker.range > 0 ||
     defender.attack <= 0 ||
     !findUnit(ctx.state, defender.id) ||
@@ -194,12 +199,19 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
   if (!defender) {
     return;
   }
-  damageUnit(ctx, defender, {
+  const dealt = damageUnit(ctx, defender, {
     amount: unit.attack,
     damageType: unit.damageType,
     source: "attack",
     crit,
   });
+  const struck = findUnit(state, defender.id);
+  if (unit.poison && dealt > 0 && struck) {
+    struck.poisoned += 1;
+    ctx.events.push(
+      BattleEvent.StatusApplied({ unitId: struck.id, status: "poison" })
+    );
+  }
   retaliate(ctx, defender, unit);
 };
 

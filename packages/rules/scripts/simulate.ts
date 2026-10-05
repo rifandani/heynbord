@@ -47,32 +47,54 @@ const integer = (value: string | undefined, name: string, minimum: number) => {
   return number;
 };
 
+const chosenModes = (modes: Mode[]): Mode[] =>
+  modes.length > 0 ? modes : [...MODES];
+
+const readFlag = (
+  arg: string,
+  rest: string[],
+  parsed: { level: number; gear: number; check: boolean }
+): boolean => {
+  if (arg === "--level") {
+    parsed.level = integer(rest.shift(), "--level", 1);
+    return true;
+  }
+  if (arg === "--gear") {
+    parsed.gear = integer(rest.shift(), "--gear", 0);
+    return true;
+  }
+  if (arg === "--check") {
+    parsed.check = true;
+    return true;
+  }
+  return false;
+};
+
 const parseArgs = (args: readonly string[]) => {
   const modes: Mode[] = [];
-  let battles = 200;
-  let level = MATCHUP_LEVEL;
-  let gear = 0;
-  let check = false;
+  const parsed = {
+    battles: 200,
+    level: MATCHUP_LEVEL,
+    gear: 0,
+    check: false,
+  };
   const rest = [...args];
   for (let arg = rest.shift(); arg !== undefined; arg = rest.shift()) {
-    if (arg === "--level") {
-      level = integer(rest.shift(), "--level", 1);
-    } else if (arg === "--gear") {
-      gear = integer(rest.shift(), "--gear", 0);
-    } else if (arg === "--check") {
-      check = true;
-    } else if (isMode(arg)) {
-      modes.push(arg);
-    } else {
-      battles = integer(arg, "battles", 1);
+    if (readFlag(arg, rest, parsed)) {
+      continue;
     }
+    if (isMode(arg)) {
+      modes.push(arg);
+      continue;
+    }
+    parsed.battles = integer(arg, "battles", 1);
   }
   return {
-    modes: modes.length > 0 ? modes : [...MODES],
-    battles,
-    level,
-    gear,
-    check,
+    modes: chosenModes(modes),
+    battles: parsed.battles,
+    level: parsed.level,
+    gear: parsed.gear,
+    check: parsed.check,
   };
 };
 

@@ -308,6 +308,8 @@ describe("damage (GDD 4.7)", () => {
       cardId: "orc.badlandPup",
       owner: "player",
       position: 4,
+      hp: 10,
+      maxHp: 10,
     });
     const b = placeUnit(block, {
       cardId: "human.halberdier",
@@ -401,6 +403,29 @@ describe("Retaliation (GDD 4.7)", () => {
     expect(
       eventsOfType(events, "DamageDealt").map((event) => event.source)
     ).toEqual(["attack", "retaliation"]);
+  });
+
+  it("does not hit back when the Unit is Frozen, and the Freeze stays", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    const defender = placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+      frozen: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, attacker.id)?.hp).toBe(10);
+    expect(unitById(next, defender.id)?.frozen).toBe(true);
+    expect(
+      eventsOfType(events, "DamageDealt").map((event) => event.source)
+    ).toEqual(["attack"]);
   });
 
   it("does not hit back a ranged attacker", () => {
@@ -611,7 +636,124 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     });
     const { state: next } = run(state, endTurn);
     expect(unitById(next, warden.id)?.position).toBe(6);
-    expect(unitById(next, recruit.id)?.position).toBe(6);
+    expect(unitById(next, recruit.id)?.position).toBe(7);
     expect(unitById(next, passed.id)?.hp).toBe(4);
+  });
+});
+
+describe("Last Breath (GDD 4.9)", () => {
+  it("deals its damage to the nearest enemy Unit ahead, and not to the Hero", () => {
+    const state = emptyBattle();
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 4,
+      attack: 0,
+      hp: 1,
+      burn: 1,
+    });
+    const behind = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 2,
+      attack: 0,
+      hp: 4,
+    });
+    const blocker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 5,
+      attack: 0,
+      hp: 4,
+    });
+    const ahead = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+      hp: 4,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, pup.id)).toBeUndefined();
+    expect(unitById(next, behind.id)?.hp).toBe(4);
+    expect(unitById(next, blocker.id)?.hp).toBe(4);
+    expect(unitById(next, ahead.id)?.hp).toBe(3);
+    expect(next.sides.enemy.hero.hp).toBe(30);
+    expect(eventsOfType(events, "DamageDealt").at(-1)).toMatchObject({
+      source: "lastBreath",
+      amount: 1,
+      target: { _tag: "Unit", unitId: ahead.id },
+    });
+  });
+});
+
+describe("Poison (GDD 4.7)", () => {
+  it("adds 1 stack after attack damage above 0, then deals 1 damage per stack", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      attack: 2,
+      poison: true,
+    });
+    const target = placeUnit(state, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+      poisoned: 1,
+    });
+    const first = run(state, endTurn);
+    // Attack 2, Armor 1: 1 damage. The old stack and the new stack add.
+    expect(unitById(first.state, target.id)).toMatchObject({
+      hp: 19,
+      poisoned: 2,
+    });
+    const second = run(first.state, endTurn);
+    // The enemy End Step: 2 damage, and Armor does not reduce it.
+    expect(unitById(second.state, target.id)).toMatchObject({
+      hp: 17,
+      poisoned: 1,
+    });
+  });
+
+  it("does not apply when the attack deals 0 damage, or from Retaliation", () => {
+    const blocked = emptyBattle();
+    placeUnit(blocked, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      attack: 1,
+      poison: true,
+    });
+    const armored = placeUnit(blocked, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+    });
+    expect(unitById(run(blocked, endTurn).state, armored.id)?.poisoned).toBe(0);
+
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+      poison: true,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, attacker.id)?.poisoned).toBe(0);
   });
 });

@@ -107,7 +107,6 @@ export default {
     yours: "Milikmu",
     yourUnit: "Unit-mu",
     enemyUnit: "Unit Musuh",
-    unitHp: "HP {hp} dari {maxHp}",
     status: {
       bonusArmor: "Zirah +{value}",
       bonusArmorRule: "Dari Kartu Keahlian. Sisa Giliran: {turns}.",
@@ -116,6 +115,9 @@ export default {
         "1 damage pada tiap Langkah Akhir pemiliknya. Sisa Langkah Akhir: {value}.",
       frozen: "Beku",
       frozenRule: "Ia melewatkan aksi berikutnya.",
+      poisoned: "Racun {value}",
+      poisonedRule:
+        "1 damage per tumpukan pada tiap Langkah Akhir pemiliknya. Lalu ia kehilangan 1 tumpukan.",
     },
   },
   town: {
@@ -227,7 +229,9 @@ export default {
     charge: "Terjang",
     flying: "Terbang",
     heroic: "Heroik {value}",
+    lastBreath: "Nafas Terakhir {value}",
     pivot: "Berbalik",
+    poison: "Racun",
     regeneration: "Regenerasi {value}",
     retaliation: "Balasan",
     ranged: "Jarak Jauh {value}",
@@ -239,8 +243,12 @@ export default {
     charge: "+2 Kecepatan pada Giliran saat Unit ini dipanggil.",
     flying: "Bergerak melewati Unit lain. Berhenti di Petak kosong.",
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
+    lastBreath:
+      "Saat Unit ini meninggalkan Papan, ia memberi {value} damage ke Unit musuh terdekat di depannya.",
     pivot:
       "Unit ini dapat menyerang Unit musuh tepat di belakangnya atau di sebelahnya, sebelum Unit di depannya. Lalu ia tidak bergerak.",
+    poison:
+      "Setelah Unit ini memberi damage serangan di atas 0, Unit itu mendapat 1 tumpukan Racun. Pada tiap Langkah Akhir pemiliknya, ia menerima 1 damage per tumpukan, lalu kehilangan 1 tumpukan.",
     regeneration: "Pada Langkah Awal-mu, Unit ini memulihkan {value} HP.",
     retaliation:
       "Saat Unit ini selamat dari serangan jarak dekat, ia memberi damage sebesar Serangannya ke penyerang.",
@@ -255,7 +263,7 @@ export default {
     damageLane:
       "Beri {amount} damage {damageType} ke semua Unit musuh dalam satu Jalur.",
     laneArmor:
-      "Unit kawan dalam satu Jalur mendapat Zirah {armor} selama {turns} Giliran.",
+      "Unit kawan dalam satu Jalur mendapat Zirah {armor} selama {turns} Giliran musuh berikutnya.",
     lowerCountdown:
       "Hitung mundur {cards} kartu acak di Tanganmu turun sebesar {amount}.",
   },

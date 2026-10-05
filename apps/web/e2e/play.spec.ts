@@ -430,9 +430,7 @@ test.describe("Card Details of a Unit (UI-05)", () => {
       await expect(page.getByTestId("unit-details-side")).toHaveText(
         owner === "enemy" ? "Enemy" : "Yours"
       );
-      await expect(page.getByTestId("unit-details-status")).toContainText(
-        /HP \d+ of \d+/u
-      );
+      await expect(page.getByText(/HP \d+ of \d+/u)).toHaveCount(0);
       await expect(details).toHaveAttribute(
         "data-side",
         unit.x < width / 2 ? "right" : "left"

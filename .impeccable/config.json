@@ -1,3 +1,51 @@
 {
-  "buildPath": "comp"
+  "buildPath": "comp",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "0.6875rem",
+        "createdAt": "2026-10-05T07:06:45.554Z",
+        "reason": "Side chip is 11px, the small label size in DESIGN.md"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "20px",
+        "createdAt": "2026-10-05T07:06:45.599Z",
+        "reason": "Card Details font size in DESIGN.md"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#f7dc9c",
+        "createdAt": "2026-10-05T07:06:45.665Z",
+        "reason": "Card Frame bronze metal"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#c99442",
+        "createdAt": "2026-10-05T07:06:45.756Z",
+        "reason": "Card Frame bronze metal"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#8a5a20",
+        "createdAt": "2026-10-05T07:06:45.891Z",
+        "reason": "Card Frame bronze metal"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#e9c27a",
+        "createdAt": "2026-10-05T07:06:45.940Z",
+        "reason": "Card Frame bronze metal"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "11px",
+        "createdAt": "2026-10-05T17:10:52.935Z",
+        "reason": "Town Bar shortcut name is 11px, the label size in DESIGN.md"
+      }
+    ]
+  }
 }

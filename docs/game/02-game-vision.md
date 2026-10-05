@@ -84,9 +84,9 @@ When a player plays Heynbord, they must feel:
 Heynbord is the name of the world. It is a bright high-fantasy world with some humor. Four peoples live in it. Each people also has beasts or spirits that fight with it:
 
 - **Human:** Humans and stout folk of the river towns. Shields, horses and banners.
-- **Elf:** Elves of the old forests, and plant spirits. Archers, vines and poison.
-- **Undead:** Old spirits that wear bones and armor. They return after death.
-- **Orc:** Orc tribes of the badlands, and their beasts. Fast, loud and strong.
+- **Elf:** Elves of the old forests, and plant spirits. Ranged Units, healing and poison.
+- **Undead:** Old spirits that wear bones and armor. They come back and bring more.
+- **Orc:** Orc tribes of the badlands, and their beasts. Fast and loud. They still hit the Unit that kills them.
 
 The tone is like a classic adventure story. It is colorful and heroic, and characters sometimes make jokes. There is no gore.
 
@@ -97,7 +97,7 @@ v1 includes:
 - A campaign of 3 regions with about 30 stages and 3 bosses.
 - **Heynspire** (draft name): a tower of 50 floors for the endgame.
 - 3 **Dungeons**: Battles against 2 or 3 bosses at the same time, which unlock at player level 10, 20 and 30.
-- About 100 cards: 4 races, 4 classes, 5 ranks.
+- 88 Cards: 60 Creature Cards across 4 Races, 28 Skill Cards across 4 Classes, and 5 Ranks.
 - Collection, deck builder, packs, Combine, Extract, Craft and hero gear.
 - Achievements that unlock cosmetics, and Heynstones that the player earns and spends on cosmetics in the Bazaar.
 - A local save with export and import.

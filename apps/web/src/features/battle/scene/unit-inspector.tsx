@@ -66,6 +66,21 @@ const unitUnder = (
 const releasePointer = (current: InspectedUnit | null) =>
   current?.by === "pointer" ? null : current;
 
+/** A pressed button is a card drag from the Hand, not a hover. */
+const hoverTarget = (
+  spot: PointerSpot,
+  canvas: HTMLCanvasElement,
+  camera: Camera
+) => {
+  const hovering = spot.inside && spot.mouse && spot.buttons === 0;
+  return hovering ? unitUnder(canvas, camera, spot.x, spot.y) : null;
+};
+
+const pointerInspect = (shown: number | null, current: InspectedUnit | null) =>
+  shown === null
+    ? releasePointer(current)
+    : { unitId: shown, by: "pointer" as const };
+
 /**
  * Hover and long press on the Units of both Sides (UI-05). The mouse hovers a
  * Unit for `HOVER_INTENT_MS` to inspect it. A touch holds a Unit for
@@ -195,17 +210,15 @@ export const UnitInspector = () => {
 
   // The mouse hover, in each frame: Units move under a still pointer.
   useFrame(() => {
-    const spot = pointer.current;
-    // A pressed button is a card drag from the Hand, not a hover.
-    const hovering = spot.inside && spot.mouse && spot.buttons === 0;
-    const hit = hovering ? unitUnder(canvas, camera, spot.x, spot.y) : null;
-    const next = hoverStep(hover.current, hit, performance.now());
+    const next = hoverStep(
+      hover.current,
+      hoverTarget(pointer.current, canvas, camera),
+      performance.now()
+    );
     if (next.shown !== hover.current.shown) {
       registry.set(
         inspectedUnitAtom,
-        next.shown === null
-          ? releasePointer(registry.get(inspectedUnitAtom))
-          : { unitId: next.shown, by: "pointer" }
+        pointerInspect(next.shown, registry.get(inspectedUnitAtom))
       );
     }
     hover.current = next;

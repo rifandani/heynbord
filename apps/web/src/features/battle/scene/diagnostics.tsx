@@ -3,6 +3,7 @@ import type { RootState } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 
+import type { BattleSession } from "@/features/battle/battle-session";
 import { qaEnabled } from "@/features/battle/qa";
 import { playback } from "@/features/battle/scene/playback";
 import { scenePicker } from "@/features/battle/scene/scene-picker";
@@ -14,6 +15,35 @@ interface FrameCounter {
   fps: number;
   frameMs: number;
 }
+
+const phaseMode = (phase: BattleSession["rules"]["phase"]) =>
+  phase === "finished" ? "finished" : "battle";
+
+const eventTag = (current: BattleSession["current"]) =>
+  current?.event._tag ?? null;
+
+const tutorialState = (tutorial: BattleSession["tutorial"]) =>
+  tutorial ? { shown: tutorial.shown, done: tutorial.done } : null;
+
+const battleState = (session: BattleSession) => {
+  const { view, rules } = session;
+  return {
+    mode: phaseMode(rules.phase),
+    stageId: session.options.stageId,
+    seed: session.options.seed,
+    turnNumber: view.turnNumber,
+    activeSide: view.activeSide,
+    playerHp: view.sides.player.hero.hp,
+    enemyHp: view.sides.enemy.hero.hp,
+    units: view.units.length,
+    hand: view.sides.player.hand.map((card) => card.countdown),
+    queued: session.queue.length,
+    current: eventTag(session.current),
+    result: view.result,
+    eventsPlayed: session.log.length,
+    tutorial: tutorialState(session.tutorial),
+  };
+};
 
 const createDiagnostics = (
   gl: RootState["gl"],
@@ -32,25 +62,7 @@ const createDiagnostics = (
     if (!session) {
       return { mode: "stage-select" };
     }
-    const { view, rules } = session;
-    return {
-      mode: rules.phase === "finished" ? "finished" : "battle",
-      stageId: session.options.stageId,
-      seed: session.options.seed,
-      turnNumber: view.turnNumber,
-      activeSide: view.activeSide,
-      playerHp: view.sides.player.hero.hp,
-      enemyHp: view.sides.enemy.hero.hp,
-      units: view.units.length,
-      hand: view.sides.player.hand.map((card) => card.countdown),
-      queued: session.queue.length,
-      current: session.current?.event._tag ?? null,
-      result: view.result,
-      eventsPlayed: session.log.length,
-      tutorial: session.tutorial
-        ? { shown: session.tutorial.shown, done: session.tutorial.done }
-        : null,
-    };
+    return battleState(session);
   },
 });
 

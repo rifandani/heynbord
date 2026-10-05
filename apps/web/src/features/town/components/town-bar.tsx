@@ -19,6 +19,49 @@ import { TOWN_SHORTCUTS } from "@/features/town/town";
 
 const LONG_PRESS_MS = 450;
 
+const shortcutName = (locked: boolean, name: string, lockedName: string) =>
+  locked ? lockedName : name;
+
+const pageCurrent = (current: boolean) => (current ? "page" : undefined);
+
+const shortcutClass = (locked: boolean, current: boolean) =>
+  cn(
+    "relative flex min-h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-lg border-2 px-1 py-1 text-[11px] leading-none font-bold outline-none select-none",
+    "transition-[transform,filter] duration-100 data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+    // On a phone in landscape, a shortcut shows its icon only (GDD 11.4).
+    "[@media(max-height:500px)]:min-h-11 [@media(max-height:500px)]:w-11",
+    locked
+      ? "cursor-default border-transparent text-[#d9c7a3]/60"
+      : "border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] data-[hovered]:brightness-110 data-[pressed]:translate-y-px",
+    current && "border-[#7a5310] from-[#ffe08a] to-[#e2a93b] text-[#2a1a05]"
+  );
+
+const lockedAttr = (locked: boolean) => locked || undefined;
+
+const LockMark = ({ locked }: { readonly locked: boolean }) => {
+  if (!locked) {
+    return null;
+  }
+  return (
+    <GlyphIcon
+      glyph="lock"
+      className="absolute -right-2 -bottom-1 size-3.5 text-[#e9c46a]"
+    />
+  );
+};
+
+const OpensLater = ({ locked }: { readonly locked: boolean }) => {
+  const { tr } = useGameText();
+  if (!locked) {
+    return null;
+  }
+  return (
+    <span className="block font-normal text-[#e9c46a]">
+      {tr("town.opensLater")}
+    </span>
+  );
+};
+
 /**
  * One Town Bar shortcut. A shortcut to a screen that does not exist yet keeps
  * keyboard focus, and its accessible name says "opens later". Hover and focus
@@ -82,33 +125,18 @@ const Shortcut = ({
         shouldCloseOnPress={false}
       >
         <Button
-          aria-label={locked ? tr("town.locked", { name }) : name}
-          aria-current={current ? "page" : undefined}
+          aria-label={shortcutName(locked, name, tr("town.locked", { name }))}
+          aria-current={pageCurrent(current)}
           onPressStart={onPressStart}
           onPressEnd={onPressEnd}
           onPress={onPress}
-          className={cn(
-            "relative flex min-h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-lg border-2 px-1 py-1 text-[11px] leading-none font-bold outline-none select-none",
-            "transition-[transform,filter] duration-100 data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
-            // On a phone in landscape, a shortcut shows its icon only (GDD 11.4).
-            "[@media(max-height:500px)]:min-h-11 [@media(max-height:500px)]:w-11",
-            locked
-              ? "cursor-default border-transparent text-[#d9c7a3]/60"
-              : "border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] data-[hovered]:brightness-110 data-[pressed]:translate-y-px",
-            current &&
-              "border-[#7a5310] from-[#ffe08a] to-[#e2a93b] text-[#2a1a05]"
-          )}
+          className={shortcutClass(locked, current)}
           data-testid={`town-shortcut-${shortcut.id}`}
-          data-locked={locked || undefined}
+          data-locked={lockedAttr(locked)}
         >
           <span className="relative">
             <GlyphIcon glyph={shortcut.glyph} className="size-6" />
-            {locked ? (
-              <GlyphIcon
-                glyph="lock"
-                className="absolute -right-2 -bottom-1 size-3.5 text-[#e9c46a]"
-              />
-            ) : null}
+            <LockMark locked={locked} />
           </span>
           <span
             className="max-w-full truncate [@media(max-height:500px)]:sr-only"
@@ -124,11 +152,7 @@ const Shortcut = ({
           data-testid={`town-tooltip-${shortcut.id}`}
         >
           {name}
-          {locked ? (
-            <span className="block font-normal text-[#e9c46a]">
-              {tr("town.opensLater")}
-            </span>
-          ) : null}
+          <OpensLater locked={locked} />
         </Tooltip>
       </TooltipTrigger>
     </li>

@@ -1,14 +1,22 @@
 import type { CreatureCardDefinition, DamageType, Keywords } from "./schema";
 
+const stackPoints = (value: number | undefined, each: number): number =>
+  (value ?? 0) * each;
+
+const flagPoints = (on: true | undefined, points: number): number =>
+  on ? points : 0;
+
 /** Keyword points for the power formula (GDD 13). */
 const keywordPoints = (keywords: Keywords): number =>
-  (keywords.armor ?? 0) * 3 +
-  (keywords.charge ? 3 : 0) +
-  (keywords.flying ? 4 : 0) +
-  (keywords.heroic ?? 0) * 2 +
-  (keywords.pivot ? 3 : 0) +
-  (keywords.regeneration ?? 0) * 2 +
-  (keywords.retaliation ? 4 : 0);
+  stackPoints(keywords.armor, 3) +
+  flagPoints(keywords.charge, 3) +
+  flagPoints(keywords.flying, 4) +
+  stackPoints(keywords.heroic, 2) +
+  stackPoints(keywords.lastBreath, 1) +
+  flagPoints(keywords.pivot, 3) +
+  flagPoints(keywords.poison, 3) +
+  stackPoints(keywords.regeneration, 2) +
+  flagPoints(keywords.retaliation, 4);
 
 const DAMAGE_TYPE_POINTS: Record<DamageType, number> = {
   physical: 0,

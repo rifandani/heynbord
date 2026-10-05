@@ -121,7 +121,7 @@ export const STAGES: readonly StageDefinition[] = [
       deck: [
         ...copies(2, "human.militiaRecruit", "common"),
         ...copies(1, "orc.scrapRaider", "rare"),
-        ...copies(1, "orc.badlandPup", "rare"),
+        ...copies(1, "orc.badlandPup", "uncommon"),
         ...copies(2, "human.crossbowGuard", "common"),
         ...copies(2, "human.halberdier", "common"),
         ...copies(1, "orc.tuskBrute", "common"),
@@ -136,8 +136,14 @@ export const STAGES: readonly StageDefinition[] = [
           position: 9,
         },
         {
-          cardId: "human.crossbowGuard",
+          cardId: "human.shieldbearer",
           rank: "uncommon",
+          lane: 1,
+          position: 9,
+        },
+        {
+          cardId: "human.crossbowGuard",
+          rank: "common",
           lane: 2,
           position: 10,
         },

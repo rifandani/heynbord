@@ -3,6 +3,8 @@ import { getCard } from "@workspace/rules";
 import { cn } from "cn";
 import { useState } from "react";
 
+import type { BattleSession } from "@/features/battle/battle-session";
+import type { UnitView } from "@/features/battle/battle-view";
 import { detailsUnitAtom } from "@/features/battle/battle.atoms";
 import { CardDetails } from "@/features/battle/components/card-details";
 import { openText } from "@/features/battle/tutorial";
@@ -40,10 +42,28 @@ const useDockSide = (
  * and the Hand Bar, so they never cover the Unit (DESIGN.md, the Clear Board
  * Rule). The card is at the edge of the screen and the panel faces the Board.
  */
+const tutorialIsOpen = (session: BattleSession | null) =>
+  openText(session?.tutorial ?? null) !== null;
+
+const unitIdOf = (unit: UnitView | null) => unit?.id ?? null;
+
+const unitPositionOf = (unit: UnitView | null) => unit?.position ?? 0;
+
+const edgeClass = (side: ScreenSide) =>
+  side === "left"
+    ? "left-[max(0.5rem,env(safe-area-inset-left))]"
+    : "right-[max(0.5rem,env(safe-area-inset-right))]";
+
+const facingPanel = (side: ScreenSide): "left" | "right" =>
+  side === "left" ? "right" : "left";
+
 export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
   const unit = useAtomValue(detailsUnitAtom);
-  const tutorialOpen = openText(battle.session?.tutorial ?? null) !== null;
-  const side = useDockSide(unit?.id ?? null, unit?.position ?? 0, tutorialOpen);
+  const side = useDockSide(
+    unitIdOf(unit),
+    unitPositionOf(unit),
+    tutorialIsOpen(battle.session)
+  );
   if (!unit) {
     return null;
   }
@@ -51,9 +71,7 @@ export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
     <div
       className={cn(
         "fade-in zoom-in-95 animate-in pointer-events-none absolute top-1/2 z-30 -translate-y-1/2 duration-150 motion-reduce:animate-none",
-        side === "left"
-          ? "left-[max(0.5rem,env(safe-area-inset-left))]"
-          : "right-[max(0.5rem,env(safe-area-inset-right))]"
+        edgeClass(side)
       )}
       data-testid="unit-details"
       data-unit-id={unit.id}
@@ -64,7 +82,7 @@ export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
         rank={unit.rank}
         countdown={getCard(unit.cardId).countdown}
         unit={unit}
-        panelSide={side === "left" ? "right" : "left"}
+        panelSide={facingPanel(side)}
       />
     </div>
   );

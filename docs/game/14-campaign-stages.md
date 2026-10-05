@@ -36,7 +36,7 @@ The band of **Baron Brassbelly**: Human outlaws and the Orc sellswords that he p
 | 1-2 | Two Bridges | Bandit Twins (Warrior) | Two small wooden bridges side by side over a stream | **Fast enemies:** Runners, Charge and a ranged Unit. |
 | 1-3 | The Burning Mill | Hedge Witch (Mage) | A water mill with a burning roof | **Enemy spells:** the first Mage spells that hit Units, and Flying. |
 | 1-4 | The Toll Gate | Toll Sergeant (Warrior) | A wooden toll gate across the road | **Walls:** Armor, Pivot and Retaliation. The Player learns to attack in another Lane, or to use Fire and Frost. |
-| 1-5 | The Outlaw Camp | Camp Cook (Warrior) | Tents, a campfire and a very big pot | **Start Units:** 2 outlaw Units are on the Board at the start. This prepares the Player for the Boss bodyguard. |
+| 1-5 | The Outlaw Camp | Camp Cook (Warrior) | Tents, a campfire and a very big pot | **Start Units:** 3 outlaw Units are on the Board at the start. A Shieldbearer holds the middle Lane. This prepares the Player for the Boss bodyguard. |
 | 1-6 | The Old Watchtower | Watchtower Hexer (Mage) | A ruined stone watchtower | **Ranged enemies:** Crossbow Guards and Ember Shamans behind a front line, with Mage spells. |
 | 1-7 | The Sellsword Camp | Sellsword Captain (Warrior) | An Orc camp with war drums | **Rush:** Charge, Flying and fast Runners. A race to the enemy Hero. |
 | 1-8 | The Rockfall Pass | Pass Warden (Warrior) | A narrow rocky pass with fallen rocks | **The first Closed Lane:** Lane 1 is closed until Turn 5, while the outlaws clear the rocks. |
@@ -50,15 +50,15 @@ Lane numbers are from the top, 1 to 3. A Start Unit position is its Column for t
 | Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1-1 | 12 | 0 / 0 / 0 / 0 | 10 | — | — | Militia Recruit (Common) | 1 | 99% / 100% |
-| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 89% / 93% |
-| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 76% / 83% |
-| 1-4 | 34 | 3 / 0 / 2 / 3 | 10 | — | — | Shieldbearer (Common) | 2 | 62% / 76% |
-| 1-5 | 38 | 3 / 0 / 3 / 3 | 11 | — | Militia Recruit (Uncommon), Lane 1, Column 10 · Crossbow Guard (Uncommon), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 61% / 73% |
-| 1-6 | 38 | 3 / 0 / 3 / 3 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 62% / 72% |
+| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 87% / 93% |
+| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 78% / 87% |
+| 1-4 | 34 | 3 / 0 / 2 / 3 | 10 | — | — | Shieldbearer (Common) | 2 | 66% / 76% |
+| 1-5 | 38 | 3 / 0 / 3 / 3 | 11 | — | Militia Recruit (Uncommon), Lane 1, Column 10 · Shieldbearer (Uncommon), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 63% / 79% |
+| 1-6 | 38 | 3 / 0 / 3 / 3 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 63% / 78% |
 | 1-7 | 34 | 3 / 0 / 2 / 3 | 12 | — | — | Howling Charger (Uncommon) | 4 | 70% / 76% |
-| 1-8 | 40 | 3 / 0 / 3 / 3 | 12 | Lane 1, opens on Turn 5 | — | Gate Warden (Uncommon) | 4 | 67% / 76% |
-| 1-9 | 34 | 3 / 0 / 3 / 3 | 13 | — | — | River Knight (Uncommon) | 5 | 70% / 77% |
-| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 40% / 36% |
+| 1-8 | 40 | 3 / 0 / 3 / 3 | 12 | Lane 1, opens on Turn 5 | — | Gate Warden (Uncommon) | 4 | 66% / 79% |
+| 1-9 | 34 | 3 / 0 / 3 / 3 | 13 | — | — | River Knight (Uncommon) | 5 | 71% / 79% |
+| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 39% / 36% |
 
 The win rates come from `bun run sim stage 1000` on 2026-10-05.
 
@@ -72,7 +72,7 @@ C, U, R and E are the Ranks Common, Uncommon, Rare and Epic.
 | 1-2 | 2× Badland Pup (C), 2× Scrap Raider (C), 1× Militia Recruit (C), 1× Crossbow Guard (R), 2× Howling Charger (U), 1× War Drums (C) |
 | 1-3 | 1× Badland Pup (C), 1× Ember Shaman (C), 1× Ember Shaman (U), 1× Shieldbearer (U), 2× Skyreaver (U), 2× Frost Bolt (C), 1× Fireball (C), 1× Flame Wave (U) |
 | 1-4 | 3× Shieldbearer (U), 1× Gate Warden (R), 1× Gate Warden (E), 1× Halberdier (C), 1× Halberdier (U), 1× Tusk Brute (C), 2× Crossbow Guard (U) |
-| 1-5 | 2× Militia Recruit (C), 1× Scrap Raider (R), 1× Badland Pup (R), 2× Crossbow Guard (C), 2× Halberdier (C), 1× Tusk Brute (C), 1× Shieldbearer (C), 1× Spear Throw (R) |
+| 1-5 | 2× Militia Recruit (C), 1× Scrap Raider (R), 1× Badland Pup (U), 2× Crossbow Guard (C), 2× Halberdier (C), 1× Tusk Brute (C), 1× Shieldbearer (C), 1× Spear Throw (R) |
 | 1-6 | 2× Crossbow Guard (U), 2× Ember Shaman (U), 2× Shieldbearer (R), 1× Dawn Cleric (U), 1× Militia Recruit (U), 2× Frost Bolt (C), 1× Fireball (C) |
 | 1-7 | 1× Badland Pup (C), 1× Badland Pup (U), 2× Scrap Raider (U), 1× Pack Stalker (R), 2× Howling Charger (U), 3× Skyreaver (U), 1× Tusk Brute (U), 1× Spear Throw (U) |
 | 1-8 | 1× Shieldbearer (C), 1× Shieldbearer (R), 1× Halberdier (C), 1× Halberdier (R), 2× Crossbow Guard (U), 1× Gate Warden (U), 1× Scrap Raider (C), 2× Howling Charger (U), 1× Tusk Brute (C), 1× Shield Wall (C) |

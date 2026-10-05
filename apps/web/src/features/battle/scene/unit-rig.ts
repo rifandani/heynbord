@@ -8,8 +8,8 @@ import type {
 } from "@/features/battle/scene/unit-models";
 import type { Pose } from "@/features/battle/scene/unit-pose";
 
-/** The top of the round base of a Unit (`BASE` in `units.tsx`). */
-const BASE_TOP = 0.18;
+/** The feet of a Unit sit just above the ground. */
+const FOOT_Y = 0.02;
 
 /**
  * The Y turn of a model that faces +Z, so that it faces the enemy side and a
@@ -33,11 +33,33 @@ const isClipName = (name: string): name is UnitClipName => CLIP_NAMES.has(name);
 /** The play position stays before the end, so a clip that ends does not loop to frame 0. */
 const LAST_PHASE = 0.999;
 
+const colorChannel = (tint: Pose["tint"], channel: "r" | "g" | "b") =>
+  tint?.[channel] ?? 0;
+
+const applyFade = (material: Material, pose: Pose) => {
+  const fading = pose.opacity < 1;
+  material.transparent = fading;
+  material.opacity = pose.opacity;
+  material.depthWrite = !fading;
+};
+
 const tintable = (
   material: Material
 ): material is Material & {
   emissive: { setRGB: (r: number, g: number, b: number) => void };
 } => "emissive" in material;
+
+const applyTint = (material: Material, pose: Pose) => {
+  if (!tintable(material)) {
+    return;
+  }
+  const amount = pose.tint ? pose.tintAmount * 0.8 : 0;
+  material.emissive.setRGB(
+    colorChannel(pose.tint, "r") * amount,
+    colorChannel(pose.tint, "g") * amount,
+    colorChannel(pose.tint, "b") * amount
+  );
+};
 
 /** A copy of the materials of `model`, so a tint or a fade changes only one Unit. */
 const ownMaterials = (model: Object3D): Material[] => {
@@ -68,7 +90,7 @@ export interface UnitRig {
 
 /**
  * Makes one Unit's copy of a packed model: it scales the model to `height`,
- * puts its feet on the base and turns it to face the enemy. `facing` is 1 for
+ * puts its feet on the ground and turns it to face the enemy. `facing` is 1 for
  * the player and -1 for the enemy.
  */
 export const buildRig = (
@@ -111,46 +133,60 @@ export const buildRig = (
   let previous: AnimationAction | undefined;
   let switchedAt = Number.NEGATIVE_INFINITY;
 
-  const update = (pose: Pose, clip: UnitClip, time: number) => {
-    root.position.y = pose.y + BASE_TOP;
-    root.scale.setScalar(pose.scale);
+  // A clip that the model does not have shows the idle clip with the cut-out pose.
+  const clipAction = (clip: UnitClip) =>
+    actions.get(clip.name) ?? actions.get("idle");
 
-    // A clip that the model does not have shows the idle clip with the cut-out pose.
-    const action = actions.get(clip.name) ?? actions.get("idle");
-    root.rotation.x = actions.has(clip.name) ? 0 : pose.tilt;
+  const clipTilt = (clip: UnitClip, pose: Pose) =>
+    actions.has(clip.name) ? 0 : pose.tilt;
+
+  const rememberClip = (action: AnimationAction | undefined, time: number) => {
     if (action !== current) {
       previous = current;
       current = action;
       switchedAt = time;
     }
-    const blend = Math.min(1, (time - switchedAt) / BLEND_SECONDS);
+  };
+
+  const clearWeights = () => {
     for (const each of actions.values()) {
       each.setEffectiveWeight(0);
     }
-    if (current) {
-      const phase = actions.has(clip.name) ? clip.phase : 0;
-      current.time = Math.min(phase, LAST_PHASE) * current.getClip().duration;
-      current.setEffectiveWeight(previous ? blend : 1);
+  };
+
+  const playCurrent = (clip: UnitClip, blend: number) => {
+    if (!current) {
+      return;
     }
+    const phase = actions.has(clip.name) ? clip.phase : 0;
+    current.time = Math.min(phase, LAST_PHASE) * current.getClip().duration;
+    current.setEffectiveWeight(previous ? blend : 1);
+  };
+
+  const playPrevious = (blend: number) => {
     if (previous && blend < 1) {
       previous.setEffectiveWeight(1 - blend);
     }
-    mixer.update(0);
+  };
 
-    const fading = pose.opacity < 1;
+  const paintMaterials = (pose: Pose) => {
     for (const material of materials) {
-      material.transparent = fading;
-      material.opacity = pose.opacity;
-      material.depthWrite = !fading;
-      if (tintable(material)) {
-        const amount = pose.tint ? pose.tintAmount * 0.8 : 0;
-        material.emissive.setRGB(
-          (pose.tint?.r ?? 0) * amount,
-          (pose.tint?.g ?? 0) * amount,
-          (pose.tint?.b ?? 0) * amount
-        );
-      }
+      applyFade(material, pose);
+      applyTint(material, pose);
     }
+  };
+
+  const update = (pose: Pose, clip: UnitClip, time: number) => {
+    root.position.y = pose.y + FOOT_Y;
+    root.scale.setScalar(pose.scale);
+    root.rotation.x = clipTilt(clip, pose);
+    rememberClip(clipAction(clip), time);
+    const blend = Math.min(1, (time - switchedAt) / BLEND_SECONDS);
+    clearWeights();
+    playCurrent(clip, blend);
+    playPrevious(blend);
+    mixer.update(0);
+    paintMaterials(pose);
   };
 
   const dispose = () => {

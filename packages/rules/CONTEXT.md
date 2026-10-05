@@ -30,6 +30,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Side**: One of the two teams in a Battle. A Side has 1 or more Heroes. It loses when all its Heroes are Defeated or when it is Routed. _Avoid_: team, party
 
+**Defender**: The Side that does not start the Battle. It takes the second Turn in each Turn number, and it wins at the Turn limit. In a Solo Battle, the enemy is the Defender. _Avoid_: second player, defense side
+
 **Hero**: A commander on a Side. A Hero stands behind its Front and has HP, a Class and a Deck. _Avoid_: commander, avatar, general, player
 
 **Defeated**: The state of a Hero at 0 HP. A Defeated Hero is out of the Battle, but its Side continues while it has other Heroes. _Avoid_: dead, killed, knocked out
@@ -48,9 +50,17 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Step from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
 
-**Burn**: The effect of Fire damage on a Unit: 1 damage in each End Step of the Unit's owner, for the next 2 End Steps. A new Burn replaces the old Burn. _Avoid_: poison, bleed, damage over time
+**Burn**: The effect of Fire damage on a Unit: 1 damage in each End Step of the Unit's owner, for the next 2 End Steps. A new Burn replaces the old Burn. _Avoid_: bleed, damage over time
 
 **Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. _Avoid_: stun, chill, slow
+
+**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled or Poisoned. A Damage Type or a Keyword can put a Status on a Unit. It belongs to the target Unit. _Avoid_: debuff, condition, ailment
+
+**Entangled**: The Status from the Entangle Keyword. An Entangled Unit has Speed 0 during its next action, but it can still attack. Entangled then ends. _Avoid_: rooted, snared, slowed
+
+**Poison**: A Keyword. After a Unit with Poison deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. _Avoid_: venom, toxin
+
+**Poisoned**: A Status from the Poison Keyword. The Unit has a stack count. In each End Step of its owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. _Avoid_: venom, toxin, damage over time
 
 **Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
 
@@ -68,7 +78,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Unit**: A thing on the Board that a Creature Card or an effect puts there. _Avoid_: creature, minion, troop, character
 
-**Token**: A Unit that an effect makes, with no Card. It disappears when it dies. _Avoid_: summon, spawn
+**Token**: A Unit that an effect makes, with no Card. It uses the Rank of the Card or effect that made it, and it disappears when it dies. _Avoid_: summon, spawn
 
 **Countdown**: The number of Turns until a Card is Ready. It goes down by 1 in each Start Step of its owner. _Avoid_: mana, cost, cooldown, timer, wait
 
@@ -77,6 +87,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Recall**: The chance that a Skill Card goes back to the Hand after its effect. The Rank of the Card sets the chance. A Card that goes back is Recalled. _Avoid_: Mastery, return chance, recycle, echo, rebound
 
 **Hand**: The Cards that a Hero holds during a Battle. _Avoid_: queue
+
+**Hand Limit**: The maximum number of Cards in a Hand: 8. A Hero does not draw when its Hand is full, and the Card stays in the Deck. _Avoid_: hand size, max hand
 
 **Deck**: The Cards that a Hero brings into a Battle. During a Battle, the Deck holds only the Cards that the Hero has not drawn. _Avoid_: army, loadout, draw pile
 
@@ -89,6 +101,14 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Graveyard**: The place for a Hero's Cards that are used or dead. _Avoid_: discard pile, cemetery, crypt
 
 **Keyword**: A named rule on a Card, for example Flying or Armor. _Avoid_: trait, perk, tag, ability
+
+**Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. _Avoid_: Root, Snare
+
+**Swarm N**: A Keyword. A Unit with Swarm gets +N Attack while another friendly Unit or Token is in the same Lane. More friendly Units do not increase the bonus. _Avoid_: Horde, Pack
+
+**Last Breath: X**: A Keyword. X occurs when the Unit leaves the Board. In v1, X deals damage to the nearest enemy Unit ahead in the same Lane, or summons a Token in the Square that the Unit left. _Avoid_: death effect, deathrattle
+
+**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. _Avoid_: revive, resurrect
 
 **Race**: The people that a Creature Card belongs to: Human, Elf, Undead or Orc. A Race also includes the beasts and spirits that fight with that people, so a wolf that fights for the orcs is an Orc card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
 
@@ -122,7 +142,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Convenience**: An item that changes comfort or organization, for example an extra Deck slot. It never changes the result of a Battle, the speed of progress or the content of the Collection. _Avoid_: boost, perk, premium feature
 
-**Bazaar**: The place where the Player spends Heynstones on Cosmetics and Conveniences. _Avoid_: shop, store, market
+**Bazaar**: The offers that the Player can buy with Heynstones: only Cosmetics and Conveniences. _Avoid_: shop, store, market
 
 **Pack**: A set of random Cards that the Player buys with Coin. _Avoid_: booster, loot box, chest
 
@@ -132,7 +152,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Player level**: The level of the Player from XP. It sets the Hero HP and the Deck size limits. _Avoid_: account level, Hero level
 
-**Workshop**: The place where the Player does Combine, Extract and Craft. _Avoid_: alchemy lab, forge
+**Workshop**: The set of actions that change Card copies and Essence: Combine, Extract and Craft. _Avoid_: alchemy lab, forge
 
 **Cosmetic**: An item that changes how something looks and never changes gameplay. _Avoid_: skin (as a general word), vanity item
 
@@ -213,4 +233,5 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
 - The GDD says "Deck archetype". The term is **Archetype**, and it is always a Deck. It is not a **Role**: a Role is the job of one Creature Card.
+- The **Workshop** and the **Bazaar** were "places" before. Now they are the actions and the offers. The Town Building that opens each one is a web term.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.

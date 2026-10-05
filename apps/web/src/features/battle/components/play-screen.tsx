@@ -127,16 +127,26 @@ const inspectKey = (
   return false;
 };
 
+const commandFromKey = (event: KeyboardEvent) =>
+  isTyping(event.target) || inDialog(event.target) ? null : keyCommand(event);
+
+const runKey = (
+  battle: Battle,
+  event: KeyboardEvent,
+  command: BattleKeyCommand
+) => {
+  if (!inspectKey(battle, event, command)) {
+    KEY_HANDLERS[command.action](battle, event, command.step);
+  }
+};
+
 /** UI-02: a full Battle with only a keyboard. */
 const useBattleKeys = (battle: Battle) => {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      const command =
-        isTyping(event.target) || inDialog(event.target)
-          ? null
-          : keyCommand(event);
-      if (command && !inspectKey(battle, event, command)) {
-        KEY_HANDLERS[command.action](battle, event, command.step);
+      const command = commandFromKey(event);
+      if (command) {
+        runKey(battle, event, command);
       }
     };
     window.addEventListener("keydown", onKey);

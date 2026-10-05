@@ -24,8 +24,19 @@ export interface KeywordText {
   readonly rule: TextRef;
 }
 
-const VALUE_KEYWORDS = ["armor", "heroic", "regeneration"] as const;
-const FLAG_KEYWORDS = ["charge", "flying", "pivot", "retaliation"] as const;
+const VALUE_KEYWORDS = [
+  "armor",
+  "heroic",
+  "lastBreath",
+  "regeneration",
+] as const;
+const FLAG_KEYWORDS = [
+  "charge",
+  "flying",
+  "pivot",
+  "poison",
+  "retaliation",
+] as const;
 
 /** Each Keyword on a Creature Card, with its rule (GDD 5.4). */
 const creatureKeywords = (card: CreatureCardDefinition): KeywordText[] => {

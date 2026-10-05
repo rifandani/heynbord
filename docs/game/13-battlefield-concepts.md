@@ -12,7 +12,7 @@ Now no Battle Painting exists. The Battle shows a meadow gradient in its place (
 - **Size.** Landscape 16:9. Make the master at 3200 × 1800. The game uses a WebP export at 2560 × 1440, less than about 400 KB. The positions in 1.2 use a 1600 × 900 box, so 1 code unit is 2 pixels of the master.
 - **No text, no people, no animals** in the open ground. The image has no labels, letters, logo or UI.
 - **No Lanes and no Squares.** The open ground has no lines, paths, rows, fences or tiles. The Player must never think that the painting shows a Lane or a Square.
-- **Units first.** The open ground is soft and has low contrast, so that each Unit and its stat badge are easy to read on it (Pillar 5). The detail, the dark colors and the humor go to the edges.
+- **Units first.** The open ground is soft and has low contrast, so that each Unit and its Attack and HP line are easy to read on it (Pillar 5). The detail, the dark colors and the humor go to the edges.
 
 ### 1.1 Hearthvale
 
@@ -69,17 +69,17 @@ light from the upper left through the leaves, leaf greens, warm yellow light and
 no paths, no lines, no tiles, no grid, no people, no animals, no text, no letters, no logo, no frame, no UI
 ```
 
-If you use the Gemini image skill (`threejs-image-generator`), give it this prompt, a 16:9 aspect, and 2 or 3 card illustrations from `apps/web/public/illustrations/` as style references.
+Make the images with GPT Image. Give it this prompt, a 16:9 aspect, and 2 or 3 golden references from art direction 5.1.
 
 ## 3. Steps
 
-1. Make 4 to 8 images with the prompt in 2.1. Use the golden references or card illustrations as style references.
+1. Make 4 to 8 images with the prompt in 2.1. Use the golden references in art direction 5.1 as style references.
 2. Select one image with the checklist in 4.
 3. Fix problems by hand or with inpainting: paths or lines on the meadow, strange trees, text-like marks.
 4. Crop to 16:9 and export the master at 3200 × 1800.
 5. Export a WebP at 2560 × 1440, less than about 400 KB (Technical Design, section 6). Name it after the Region, for example `hearthvale.webp`.
 6. Put it in `apps/web/public/battle/`, and set its path for the Region in `BATTLE_PAINTINGS` in `apps/web/src/features/battle/battle-painting.ts`.
-7. Open a Battle at 4:3, 16:9 and a phone in landscape. Check that the Board and the Heroes stand on the open meadow, and that each Unit and its stat badge are easy to read.
+7. Open a Battle at 4:3, 16:9 and a phone in landscape. Check that the Board and the Heroes stand on the open meadow, and that each Unit and its Attack and HP line are easy to read.
 8. Write the licence record (art direction 5.5).
 
 ## 4. Review checklist
