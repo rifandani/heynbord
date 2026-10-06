@@ -5,7 +5,7 @@ import type {
 } from "./schema";
 
 /**
- * The 22 placeholder cards of the Battle slice (roadmap M1): 2 Races
+ * The 23 cards of the Battle slice (roadmap M1): 2 Races
  * (Human, Orc) and 2 Classes (Warrior, Mage). Each Race has 1 Pivot
  * card (GDD 3.2). The values are printed
  * for Common. GDD section 13 gives the power budget that `balance.ts` checks.
@@ -123,6 +123,20 @@ const creatures: readonly CreatureCardDefinition[] = [
     range: 0,
     damageType: "physical",
     keywords: { armor: 2, retaliation: true },
+  },
+  {
+    kind: "creature",
+    id: "human.paviseArbalist",
+    race: "human",
+    role: "shooter",
+    baseRank: "rare",
+    countdown: 4,
+    attack: 5,
+    hp: 6,
+    speed: 1,
+    range: 4,
+    damageType: "physical",
+    keywords: { armor: 1, hobble: { rare: 1, epic: 2, legendary: 3 } },
   },
   // Orc: rush the enemy Hero.
   {

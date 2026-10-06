@@ -109,7 +109,11 @@ const StatusLine = ({
 );
 
 const quietUnit = (unit: UnitView) =>
-  unit.bonusArmor <= 0 && unit.burn <= 0 && unit.poisoned <= 0 && !unit.frozen;
+  unit.bonusArmor <= 0 &&
+  unit.burn <= 0 &&
+  unit.poisoned <= 0 &&
+  unit.hobbled <= 0 &&
+  !unit.frozen;
 
 const BonusArmorStatus = ({ unit }: { readonly unit: UnitView }) => {
   const { tr } = useGameText();
@@ -150,6 +154,21 @@ const FrozenStatus = ({ unit }: { readonly unit: UnitView }) => {
   );
 };
 
+const HobbledStatus = ({ unit }: { readonly unit: UnitView }) => {
+  const { tr } = useGameText();
+  if (unit.hobbled <= 0) {
+    return null;
+  }
+  return (
+    <StatusLine
+      glyph="speed"
+      name={tr("battle.status.hobbled", { value: unit.hobbled })}
+    >
+      {tr("battle.status.hobbledRule")}
+    </StatusLine>
+  );
+};
+
 const PoisonStatus = ({ unit }: { readonly unit: UnitView }) => {
   const { tr } = useGameText();
   if (unit.poisoned <= 0) {
@@ -166,8 +185,8 @@ const PoisonStatus = ({ unit }: { readonly unit: UnitView }) => {
 };
 
 /**
- * How a Unit is different from its card now: the bonus Armor from a Skill
- * Card, Burn and Freeze. The current HP stays on the card.
+ * How a Unit is different from its card now: bonus Armor, Burn, Freeze,
+ * Hobbled and Poison. The current HP stays on the card.
  */
 const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
   if (quietUnit(unit)) {
@@ -180,6 +199,7 @@ const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
         <BonusArmorStatus unit={unit} />
         <BurnStatus unit={unit} />
         <FrozenStatus unit={unit} />
+        <HobbledStatus unit={unit} />
         <PoisonStatus unit={unit} />
       </ul>
     </>

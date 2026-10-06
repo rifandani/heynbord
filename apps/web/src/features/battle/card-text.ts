@@ -4,7 +4,12 @@ import type {
   RankId,
   SkillCardDefinition,
 } from "@workspace/rules";
-import { getCard, recallChance, scaleForRank } from "@workspace/rules";
+import {
+  getCard,
+  keywordValue,
+  recallChance,
+  scaleForRank,
+} from "@workspace/rules";
 import { absurd, Predicate } from "effect";
 
 /** A piece of text as a Translation Key and its values (CRD-08). */
@@ -27,6 +32,7 @@ export interface KeywordText {
 const VALUE_KEYWORDS = [
   "armor",
   "heroic",
+  "hobble",
   "lastBreath",
   "regeneration",
 ] as const;
@@ -39,11 +45,14 @@ const FLAG_KEYWORDS = [
 ] as const;
 
 /** Each Keyword on a Creature Card, with its rule (GDD 5.4). */
-const creatureKeywords = (card: CreatureCardDefinition): KeywordText[] => {
+const creatureKeywords = (
+  card: CreatureCardDefinition,
+  rank: RankId
+): KeywordText[] => {
   const { keywords } = card;
   const refs: KeywordText[] = [];
   for (const name of VALUE_KEYWORDS) {
-    const value = keywords[name];
+    const value = keywordValue(keywords[name], rank);
     if (value) {
       refs.push({
         name: { key: `keywords.${name}`, args: { value } },
@@ -142,7 +151,7 @@ export const cardText = (cardId: string, rank: RankId): CardText => {
         card.range > 0
           ? { key: "keywords.ranged", args: { value: card.range } }
           : { key: "keywords.melee" },
-      keywords: creatureKeywords(card),
+      keywords: creatureKeywords(card, rank),
       damageRule:
         card.damageType === "physical"
           ? undefined

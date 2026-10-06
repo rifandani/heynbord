@@ -102,10 +102,6 @@ export const runStartStep = (ctx: StepContext): void => {
   drawCard(ctx);
 };
 
-/**
- * The End Step (GDD 4.3): Burn, then Poison, then durations go down. Skill
- * Card Armor counts the other side's Turns, so it covers that many enemy Turns.
- */
 const applyBurn = (ctx: StepContext): void => {
   const { state } = ctx;
   for (const unit of actionOrder(state, state.activeSide)) {
@@ -150,6 +146,15 @@ const applyPoison = (ctx: StepContext): void => {
   }
 };
 
+/** The Hobbled count of each Unit of the active Side goes down by 1 (GDD 4.7). */
+const lowerHobble = (ctx: StepContext): void => {
+  for (const unit of ctx.state.units) {
+    if (unit.owner === ctx.state.activeSide && unit.hobbled > 0) {
+      unit.hobbled -= 1;
+    }
+  }
+};
+
 /** Skill Card Armor counts the other side's Turns, so it covers that many enemy Turns. */
 const fadeArmor = (ctx: StepContext): void => {
   const { state } = ctx;
@@ -164,9 +169,15 @@ const fadeArmor = (ctx: StepContext): void => {
   }
 };
 
+/**
+ * The End Step (GDD 4.3): Burn, then Poison, then durations go down. Skill
+ * Card Armor counts the other side's Turns, so it covers that many enemy Turns.
+ * A Hobbled count goes down in this step, after Burn and Poison.
+ */
 const runEndStep = (ctx: StepContext): void => {
   applyBurn(ctx);
   applyPoison(ctx);
+  lowerHobble(ctx);
   fadeArmor(ctx);
   ctx.events.push(BattleEvent.TurnEnded({ side: ctx.state.activeSide }));
 };

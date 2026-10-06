@@ -1,22 +1,33 @@
-import type { CreatureCardDefinition, DamageType, Keywords } from "./schema";
+import { keywordValue } from "./keywords";
+import type {
+  CreatureCardDefinition,
+  DamageType,
+  KeywordAmount,
+} from "./schema";
 
-const stackPoints = (value: number | undefined, each: number): number =>
-  (value ?? 0) * each;
+const stackPoints = (value: number, each: number): number => value * each;
 
 const flagPoints = (on: true | undefined, points: number): number =>
   on ? points : 0;
 
-/** Keyword points for the power formula (GDD 13). */
-const keywordPoints = (keywords: Keywords): number =>
-  stackPoints(keywords.armor, 3) +
-  flagPoints(keywords.charge, 3) +
-  flagPoints(keywords.flying, 4) +
-  stackPoints(keywords.heroic, 2) +
-  stackPoints(keywords.lastBreath, 1) +
-  flagPoints(keywords.pivot, 3) +
-  flagPoints(keywords.poison, 3) +
-  stackPoints(keywords.regeneration, 2) +
-  flagPoints(keywords.retaliation, 4);
+/** Keyword points at the Base Rank (GDD 13). Hobble N = N × 1. */
+const keywordPoints = (card: CreatureCardDefinition): number => {
+  const valueAtBaseRank = (amount: KeywordAmount | undefined) =>
+    keywordValue(amount, card.baseRank);
+  const { keywords } = card;
+  return (
+    stackPoints(valueAtBaseRank(keywords.armor), 3) +
+    flagPoints(keywords.charge, 3) +
+    flagPoints(keywords.flying, 4) +
+    stackPoints(valueAtBaseRank(keywords.heroic), 2) +
+    stackPoints(valueAtBaseRank(keywords.lastBreath), 1) +
+    stackPoints(valueAtBaseRank(keywords.hobble), 1) +
+    flagPoints(keywords.pivot, 3) +
+    flagPoints(keywords.poison, 3) +
+    stackPoints(valueAtBaseRank(keywords.regeneration), 2) +
+    flagPoints(keywords.retaliation, 4)
+  );
+};
 
 const DAMAGE_TYPE_POINTS: Record<DamageType, number> = {
   physical: 0,
@@ -30,7 +41,7 @@ export const creaturePower = (card: CreatureCardDefinition): number =>
   card.attack * 2 +
   card.hp +
   card.speed * 2 +
-  keywordPoints(card.keywords) +
+  keywordPoints(card) +
   card.range +
   DAMAGE_TYPE_POINTS[card.damageType];
 

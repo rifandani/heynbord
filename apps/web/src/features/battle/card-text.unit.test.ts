@@ -133,6 +133,12 @@ describe("cardText (CRD-08)", () => {
   const translate = (key: string, args?: Record<string, string | number>) =>
     t(key as never, args as never);
   const resolve = (ref: TextRef) => resolveText(translate, ref);
+  const hobbleName = (rank: RankId) => {
+    const keyword = creature("human.paviseArbalist", rank).keywords.find(
+      (item) => item.name.key === "keywords.hobble"
+    );
+    return keyword && resolve(keyword.name);
+  };
   it("pairs each Creature Card Keyword with its rule", () => {
     const text = creature("orc.skyreaver", "uncommon");
     expect(resolve(text.attackType)).toBe("Melee");
@@ -173,5 +179,11 @@ describe("cardText (CRD-08)", () => {
     expect(resolve(skill("mage.flameWave", "uncommon").effect)).toBe(
       "Deal 2 Fire damage to all enemy Units in a Lane."
     );
+  });
+
+  it("shows the Hobble value of a Pavise Arbalist copy for its Rank", () => {
+    expect(hobbleName("rare")).toBe("Hobble 1");
+    expect(hobbleName("epic")).toBe("Hobble 2");
+    expect(hobbleName("legendary")).toBe("Hobble 3");
   });
 });

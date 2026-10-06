@@ -39,18 +39,38 @@ const between = (minimum: number, maximum: number) =>
 
 const KeywordValue = between(1, 10);
 
+/** A value for each Rank. A missing Rank uses the nearest lower Rank. */
+const RankValues = Schema.Struct({
+  common: Schema.optionalKey(KeywordValue),
+  uncommon: Schema.optionalKey(KeywordValue),
+  rare: Schema.optionalKey(KeywordValue),
+  epic: Schema.optionalKey(KeywordValue),
+  legendary: Schema.optionalKey(KeywordValue),
+});
+
+/**
+ * A value Keyword (GDD 5.3): one number for every Rank, or a value for each Rank.
+ */
+const KeywordAmount = Schema.Union([KeywordValue, RankValues]);
+export type KeywordAmount = typeof KeywordAmount.Type;
+
 /** The v1 Keywords of the Battle slice (GDD 5.4, roadmap M1). */
 const Keywords = Schema.Struct({
-  armor: Schema.optionalKey(KeywordValue),
+  armor: Schema.optionalKey(KeywordAmount),
   charge: Schema.optionalKey(Schema.Literal(true)),
   flying: Schema.optionalKey(Schema.Literal(true)),
-  heroic: Schema.optionalKey(KeywordValue),
+  heroic: Schema.optionalKey(KeywordAmount),
   /** Deals this much damage to the nearest enemy Unit ahead when this Unit leaves. */
-  lastBreath: Schema.optionalKey(KeywordValue),
+  lastBreath: Schema.optionalKey(KeywordAmount),
   /** Melee only (GDD 4.6). A content test checks it. */
   pivot: Schema.optionalKey(Schema.Literal(true)),
   poison: Schema.optionalKey(Schema.Literal(true)),
-  regeneration: Schema.optionalKey(KeywordValue),
+  regeneration: Schema.optionalKey(KeywordAmount),
+  /**
+   * After attack damage above 0, the enemy Unit becomes Hobbled with this
+   * count (GDD 4.7). Hobble is the first Keyword that uses a value for each Rank.
+   */
+  hobble: Schema.optionalKey(KeywordAmount),
   retaliation: Schema.optionalKey(Schema.Literal(true)),
 });
 export type Keywords = typeof Keywords.Type;

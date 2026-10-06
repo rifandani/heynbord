@@ -1,4 +1,4 @@
-import { Schema } from "effect";
+import { Predicate, Schema } from "effect";
 import { describe, expect, it } from "vitest";
 
 import { STAGE_LANES } from "../battle/types";
@@ -6,8 +6,9 @@ import { ARCHETYPES, MATCHUP_LEVEL } from "./archetypes";
 import { budgetDeviation, creaturePower, powerBudget } from "./balance";
 import { CARDS, getCard } from "./cards";
 import { deckSizeLimits, getStarterDeck, STARTER_DECKS } from "./decks";
+import { keywordValue } from "./keywords";
 import { firstTryPathLevel } from "./player-levels";
-import { isRankAtLeast, rankPips, scaleForRank } from "./ranks";
+import { isRankAtLeast, RANKS, rankPips, scaleForRank } from "./ranks";
 import {
   Archetype,
   CardDefinition,
@@ -45,8 +46,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 22 cards: 2 Races and 2 Classes", () => {
-    expect(CARDS).toHaveLength(22);
+  it("has 23 cards: 2 Races and 2 Classes", () => {
+    expect(CARDS).toHaveLength(23);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
@@ -68,6 +69,42 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(powerBudget(3)).toBe(21);
     const pup = getCard("orc.badlandPup");
     expect(pup.kind === "creature" && creaturePower(pup)).toBe(12);
+    const arbalist = getCard("human.paviseArbalist");
+    expect(arbalist.kind === "creature" && creaturePower(arbalist)).toBe(26);
+    expect(arbalist.kind === "creature" && budgetDeviation(arbalist)).toBe(0);
+  });
+
+  it("starts each Keyword value table at the Base Rank, and a higher Rank never goes down", () => {
+    for (const card of CARDS) {
+      if (card.kind !== "creature") {
+        continue;
+      }
+      const amounts = [
+        card.keywords.armor,
+        card.keywords.heroic,
+        card.keywords.hobble,
+        card.keywords.lastBreath,
+        card.keywords.regeneration,
+      ];
+      for (const amount of amounts) {
+        if (amount === undefined || Predicate.isNumber(amount)) {
+          continue;
+        }
+        const listed = RANKS.find((rank) => amount[rank] !== undefined);
+        expect(listed, card.id).toBe(card.baseRank);
+        let previous = keywordValue(amount, card.baseRank);
+        for (const rank of RANKS.slice(RANKS.indexOf(card.baseRank) + 1)) {
+          const value = keywordValue(amount, rank);
+          expect(value, `${card.id} ${rank}`).toBeGreaterThanOrEqual(previous);
+          previous = value;
+        }
+      }
+    }
+  });
+
+  it("uses the nearest lower Rank when a Keyword table has no value for that Rank", () => {
+    expect(keywordValue({ rare: 1, legendary: 3 }, "epic")).toBe(1);
+    expect(keywordValue(2, "legendary")).toBe(2);
   });
 
   it("puts Pivot only on melee Units, with 1 Pivot card for each Race (GDD 3.2, 4.6)", () => {

@@ -1,3 +1,4 @@
+import { keywordValue } from "../content/keywords";
 import { scaleForRank } from "../content/ranks";
 import type { CreatureCardDefinition } from "../content/schema";
 import type { CardInstance, Side, UnitState } from "./types";
@@ -26,18 +27,20 @@ export const createUnit = (options: {
     speed: definition.speed,
     range: definition.range,
     damageType: definition.damageType,
-    armor: definition.keywords.armor ?? 0,
+    armor: keywordValue(definition.keywords.armor, card.rank),
     charge: definition.keywords.charge ?? false,
     flying: definition.keywords.flying ?? false,
-    heroic: definition.keywords.heroic ?? 0,
-    lastBreath: definition.keywords.lastBreath ?? 0,
+    heroic: keywordValue(definition.keywords.heroic, card.rank),
+    lastBreath: keywordValue(definition.keywords.lastBreath, card.rank),
     pivot: definition.keywords.pivot ?? false,
     poison: definition.keywords.poison ?? false,
-    regeneration: definition.keywords.regeneration ?? 0,
+    hobble: keywordValue(definition.keywords.hobble, card.rank),
+    regeneration: keywordValue(definition.keywords.regeneration, card.rank),
     retaliation: definition.keywords.retaliation ?? false,
     summonedTurn: options.turnNumber,
     burn: 0,
     poisoned: 0,
+    hobbled: 0,
     frozen: false,
     bonusArmor: 0,
     bonusArmorTurns: 0,

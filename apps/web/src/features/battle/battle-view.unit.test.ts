@@ -119,6 +119,7 @@ describe("the Graveyard view", () => {
           damageType: "physical" as const,
           burn: 0,
           poisoned: 0,
+          hobbled: 0,
           frozen: false,
         },
       ],
@@ -169,6 +170,7 @@ describe("the bonus Armor view", () => {
       damageType: "physical" as const,
       burn: 0,
       poisoned: 0,
+      hobbled: 0,
       frozen: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
@@ -192,5 +194,56 @@ describe("the bonus Armor view", () => {
         BattleEvent.TurnEnded({ side: "player" }),
       ])
     ).toEqual([0, 0]);
+  });
+});
+
+describe("the Hobbled view", () => {
+  it("sets the count from a Hobble event, and lowers it only for that Side when the Turn ends", () => {
+    const deck = getStarterDeck("vanguard");
+    const { state } = createBattle({
+      seed: 3,
+      stage: getStage("1-1"),
+      player: {
+        classId: deck.classId,
+        deck: deck.deck,
+        level: 1,
+        gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+      },
+    });
+    const unit = {
+      id: 7,
+      owner: "player" as const,
+      cardId: "orc.badlandPup",
+      rank: "common" as const,
+      lane: 0,
+      position: 2,
+      attack: 3,
+      hp: 2,
+      maxHp: 2,
+      armor: 0,
+      bonusArmor: 0,
+      bonusArmorTurns: 0,
+      range: 0,
+      flying: false,
+      damageType: "physical" as const,
+      burn: 0,
+      poisoned: 0,
+      hobbled: 0,
+      frozen: false,
+    };
+    const view = {
+      ...viewFromState(state),
+      units: [unit, { ...unit, id: 8, owner: "enemy" as const, hobbled: 2 }],
+    };
+    const applied = applyEvent(
+      view,
+      BattleEvent.StatusApplied({ unitId: 7, status: "hobble", count: 3 })
+    );
+    expect(applied.units.map((candidate) => candidate.hobbled)).toEqual([3, 2]);
+    const ended = applyEvent(
+      applied,
+      BattleEvent.TurnEnded({ side: "player" })
+    );
+    expect(ended.units.map((candidate) => candidate.hobbled)).toEqual([2, 2]);
   });
 });

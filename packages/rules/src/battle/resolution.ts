@@ -16,9 +16,13 @@ import { BattleEvent, otherSide } from "./types";
 /** Charge gives +2 Speed in the Turn of the summon (GDD 5.4). */
 const CHARGE_BONUS = 2;
 
-const currentSpeed = (state: BattleState, unit: UnitState): number =>
-  unit.speed +
-  (unit.charge && unit.summonedTurn === state.turnNumber ? CHARGE_BONUS : 0);
+/** Speed after Charge. A Hobbled Unit then has a maximum Speed of 1 (GDD 4.5). */
+const currentSpeed = (state: BattleState, unit: UnitState): number => {
+  const speed =
+    unit.speed +
+    (unit.charge && unit.summonedTurn === state.turnNumber ? CHARGE_BONUS : 0);
+  return unit.hobbled > 0 ? Math.min(speed, 1) : speed;
+};
 
 /**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of
@@ -206,11 +210,23 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
     crit,
   });
   const struck = findUnit(state, defender.id);
-  if (unit.poison && dealt > 0 && struck) {
-    struck.poisoned += 1;
-    ctx.events.push(
-      BattleEvent.StatusApplied({ unitId: struck.id, status: "poison" })
-    );
+  if (dealt > 0 && struck) {
+    if (unit.poison) {
+      struck.poisoned += 1;
+      ctx.events.push(
+        BattleEvent.StatusApplied({ unitId: struck.id, status: "poison" })
+      );
+    }
+    if (unit.hobble > 0) {
+      struck.hobbled = Math.max(struck.hobbled, unit.hobble);
+      ctx.events.push(
+        BattleEvent.StatusApplied({
+          unitId: struck.id,
+          status: "hobble",
+          count: struck.hobbled,
+        })
+      );
+    }
   }
   retaliate(ctx, defender, unit);
 };

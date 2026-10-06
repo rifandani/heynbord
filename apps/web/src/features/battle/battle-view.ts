@@ -34,6 +34,8 @@ export interface UnitView {
   readonly damageType: DamageType;
   readonly burn: number;
   readonly poisoned: number;
+  /** Hobbled count. 0 is not Hobbled. */
+  readonly hobbled: number;
   readonly frozen: boolean;
 }
 
@@ -94,6 +96,7 @@ const unitView = (unit: Readonly<UnitState>): UnitView => ({
   damageType: unit.damageType,
   burn: unit.burn,
   poisoned: unit.poisoned,
+  hobbled: unit.hobbled,
   frozen: unit.frozen,
 });
 
@@ -293,6 +296,9 @@ export const applyEvent = (
           case "poison": {
             return { ...unit, poisoned: unit.poisoned + 1 };
           }
+          case "hobble": {
+            return { ...unit, hobbled: event.count ?? unit.hobbled };
+          }
           default: {
             return unit;
           }
@@ -320,14 +326,24 @@ export const applyEvent = (
       }));
     }
     case "TurnEnded": {
-      // The End Step lowers the bonus Armor Turns of the other side's Units.
+      // The End Step lowers the Hobbled count of this Side, and the bonus Armor
+      // Turns of the other side's Units.
       return {
         ...view,
-        units: view.units.map((unit) =>
-          unit.owner !== event.side && unit.bonusArmorTurns > 0
-            ? { ...unit, bonusArmorTurns: unit.bonusArmorTurns - 1 }
-            : unit
-        ),
+        units: view.units.map((unit) => {
+          const hobbled =
+            unit.owner === event.side && unit.hobbled > 0
+              ? unit.hobbled - 1
+              : unit.hobbled;
+          const bonusArmorTurns =
+            unit.owner !== event.side && unit.bonusArmorTurns > 0
+              ? unit.bonusArmorTurns - 1
+              : unit.bonusArmorTurns;
+          return hobbled === unit.hobbled &&
+            bonusArmorTurns === unit.bonusArmorTurns
+            ? unit
+            : { ...unit, hobbled, bonusArmorTurns };
+        }),
       };
     }
     case "UnitDied": {

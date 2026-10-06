@@ -118,6 +118,9 @@ export default {
       poisoned: "Poison {value}",
       poisonedRule:
         "1 damage per stack in each End Step of its owner. Then it loses 1 stack.",
+      hobbled: "Hobbled {value}",
+      hobbledRule:
+        "This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner.",
     },
   },
   town: {
@@ -225,6 +228,7 @@ export default {
     charge: "Charge",
     flying: "Flying",
     heroic: "Heroic {value}",
+    hobble: "Hobble {value}",
     lastBreath: "Last Breath {value}",
     pivot: "Pivot",
     poison: "Poison",
@@ -239,6 +243,8 @@ export default {
     charge: "+2 Speed in the Turn when you summon this Unit.",
     flying: "Moves over other Units. It stops in an empty Square.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
+    hobble:
+      "After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled {value}. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner. A new Hobble keeps the higher count. Retaliation does not apply Hobble.",
     lastBreath:
       "When this Unit leaves the Board, it deals {value} damage to the nearest enemy Unit ahead.",
     pivot:
@@ -296,6 +302,10 @@ export default {
       ironBulwark: {
         name: "Iron Bulwark",
         flavor: "A wall that complains about the weather.",
+      },
+      paviseArbalist: {
+        name: "Pavise Arbalist",
+        flavor: "He brings his own wall and calls it a firing position.",
       },
     },
     orc: {

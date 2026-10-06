@@ -40,6 +40,7 @@ export {
   PLAYER_LEVEL_XP,
   playerLevelForXp,
 } from "./content/player-levels";
+export { keywordValue } from "./content/keywords";
 export { rankPips, RANKS, recallChance, scaleForRank } from "./content/ranks";
 export type {
   CardDefinition,
@@ -49,6 +50,7 @@ export type {
   DamageType,
   DeckEntry,
   GearLevels,
+  KeywordAmount,
   Keywords,
   RaceId,
   RankId,

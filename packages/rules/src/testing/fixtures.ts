@@ -66,10 +66,22 @@ export const placeUnit = (
     readonly rank?: RankId;
     readonly summonedTurn?: number;
   } & Partial<
-    Pick<UnitState, "attack" | "hp" | "maxHp" | "burn" | "frozen" | "poisoned">
+    Pick<
+      UnitState,
+      | "attack"
+      | "hp"
+      | "maxHp"
+      | "burn"
+      | "frozen"
+      | "poisoned"
+      | "hobble"
+      | "hobbled"
+    >
   > & {
       /** Test setup: gives the Unit the Poison Keyword. */
       readonly poison?: boolean;
+      /** Test setup: replaces the printed Speed. */
+      readonly speed?: number;
     }
 ): UnitState => {
   const definition = getCard(options.cardId);
@@ -111,9 +123,17 @@ export const placeUnit = (
   if (options.poison) {
     unit.poison = true;
   }
+  if (options.hobble !== undefined) {
+    unit.hobble = options.hobble;
+  }
+  if (options.hobbled !== undefined) {
+    unit.hobbled = options.hobbled;
+  }
+  const placed =
+    options.speed === undefined ? unit : { ...unit, speed: options.speed };
   state.nextId += 1;
-  state.units.push(unit);
-  return unit;
+  state.units.push(placed);
+  return placed;
 };
 
 /** Puts cards into a Hand. Changes `state` (test setup only). */

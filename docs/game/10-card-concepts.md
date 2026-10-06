@@ -338,24 +338,24 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.13 Pavise Arbalist
 
-`human.paviseArbalist` · Shooter · Rare · Countdown 4 · Attack 5 · HP 6 · Speed 1 · Range 4 · Physical · Armor 1 · **provisional**
+`human.paviseArbalist` · Shooter · Rare · Countdown 4 · Attack 5 · HP 6 · Speed 1 · Range 4 · Physical · Armor 1 · Hobble 1 at Rare, 2 at Epic, 3 at Legendary
 
 > He brings his own wall and calls it a firing position.
 
-Purpose: a durable long-range Shooter. Power 25, budget 26, deviation -3.8%.
+Purpose: a durable long-range Shooter. Power 26, budget 26, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A patient older man arbalist. |
 | Pose | He kneels behind a tall pavise and aims a heavy crossbow. |
-| Props | Windlass crossbow, ornate pavise, mail sleeves and bolt case. |
-| Gameplay cues | The long aim shows Range 4; the shield shows Armor 1. |
+| Props | Windlass crossbow, barbed bolts, ornate pavise, mail sleeves and bolt case. |
+| Gameplay cues | The long aim shows Range 4; the shield shows Armor 1; the barbed bolts show Hobble. |
 | Silhouette hook | Tall shield and horizontal crossbow. |
 | Humor note | A stool and tea cup wait behind the shield. |
 | Setting | A river-town wall. |
 
 ```text
-patient older man arbalist with mail sleeves, kneeling behind a tall ornate blue and gold pavise, aiming a heavy windlass crossbow, bolt case nearby, small stool and tea cup behind the shield,
+patient older man arbalist with mail sleeves, kneeling behind a tall ornate blue and gold pavise, aiming a heavy windlass crossbow loaded with barbed bolts, bolt case nearby, small stool and tea cup behind the shield,
 Human of Heynbord, steady protected firing pose, three-quarter view advancing to the right, full body, centered,
 painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, royal blue and gold palette,
 light from the upper left, top of a river-town wall, simple low-contrast background,

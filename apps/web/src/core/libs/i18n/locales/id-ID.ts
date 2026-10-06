@@ -118,6 +118,9 @@ export default {
       poisoned: "Racun {value}",
       poisonedRule:
         "1 damage per tumpukan pada tiap Langkah Akhir pemiliknya. Lalu ia kehilangan 1 tumpukan.",
+      hobbled: "Terpincang {value}",
+      hobbledRule:
+        "Unit ini punya Kecepatan maksimum 1, setelah semua bonus. Hitungan turun 1 pada tiap Langkah Akhir pemiliknya.",
     },
   },
   town: {
@@ -229,6 +232,7 @@ export default {
     charge: "Terjang",
     flying: "Terbang",
     heroic: "Heroik {value}",
+    hobble: "Pincang {value}",
     lastBreath: "Nafas Terakhir {value}",
     pivot: "Berbalik",
     poison: "Racun",
@@ -243,6 +247,8 @@ export default {
     charge: "+2 Kecepatan pada Giliran saat Unit ini dipanggil.",
     flying: "Bergerak melewati Unit lain. Berhenti di Petak kosong.",
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
+    hobble:
+      "Setelah Unit ini memberi damage serangan di atas 0 ke Unit musuh, Unit itu menjadi Terpincang {value}. Unit yang Terpincang punya Kecepatan maksimum 1, setelah semua bonus. Hitungan turun 1 pada tiap Langkah Akhir pemiliknya. Pincang yang baru mempertahankan hitungan yang lebih tinggi. Balasan tidak menerapkan Pincang.",
     lastBreath:
       "Saat Unit ini meninggalkan Papan, ia memberi {value} damage ke Unit musuh terdekat di depannya.",
     pivot:
@@ -300,6 +306,10 @@ export default {
       ironBulwark: {
         name: "Benteng Besi",
         flavor: "Tembok yang suka mengeluh soal cuaca.",
+      },
+      paviseArbalist: {
+        name: "Arbalester Pavise",
+        flavor: "Ia membawa temboknya sendiri dan menyebutnya posisi tembak.",
       },
     },
     orc: {

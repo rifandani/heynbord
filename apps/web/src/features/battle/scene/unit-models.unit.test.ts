@@ -22,6 +22,7 @@ const unit: UnitView = {
   damageType: "physical",
   burn: 0,
   poisoned: 0,
+  hobbled: 0,
   frozen: false,
 };
 

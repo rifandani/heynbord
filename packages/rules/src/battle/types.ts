@@ -96,6 +96,8 @@ export interface UnitState {
   readonly lastBreath: number;
   readonly pivot: boolean;
   poison: boolean;
+  /** Hobble for the Rank of this card copy. 0 is none. */
+  hobble: number;
   readonly regeneration: number;
   readonly retaliation: boolean;
   /** The Turn number of the summon. Charge uses it. */
@@ -104,6 +106,8 @@ export interface UnitState {
   burn: number;
   /** Poison stacks. Each End Step of the owner deals 1 damage per stack, then removes 1. */
   poisoned: number;
+  /** Hobbled count. 0 is not Hobbled. Above 0, Speed is at most 1. */
+  hobbled: number;
   frozen: boolean;
   bonusArmor: number;
   bonusArmorTurns: number;
@@ -228,7 +232,9 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   StatusApplied: {
     readonly unitId: number;
-    readonly status: "burn" | "freeze" | "poison";
+    readonly status: "burn" | "freeze" | "poison" | "hobble";
+    /** The Hobbled count after the hit. The other statuses do not use it. */
+    readonly count?: number;
   };
   UnitDied: { readonly unitId: number };
   TurnEnded: { readonly side: Side };

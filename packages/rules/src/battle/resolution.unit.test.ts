@@ -11,6 +11,53 @@ import { Command } from "./types";
 
 const endTurn = Command.EndTurn();
 
+const hobbleHit = (hobble: number, hobbled: number) => {
+  const state = emptyBattle();
+  placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    position: 4,
+    attack: 2,
+    hobble,
+  });
+  const target = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "enemy",
+    position: 5,
+    attack: 0,
+    hp: 20,
+    maxHp: 20,
+    hobbled,
+  });
+  const result = run(state, endTurn);
+  const status = eventsOfType(result.events, "StatusApplied").find(
+    (event) => event.status === "hobble"
+  );
+  return {
+    count: unitById(result.state, target.id)?.hobbled,
+    event: status?.count,
+  };
+};
+
+const hobbledByPavise = (rank: "rare" | "epic" | "legendary") => {
+  const state = emptyBattle();
+  placeUnit(state, {
+    cardId: "human.paviseArbalist",
+    owner: "player",
+    position: 0,
+    rank,
+  });
+  const target = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "enemy",
+    position: 4,
+    attack: 0,
+    hp: 30,
+    maxHp: 30,
+  });
+  return unitById(run(state, endTurn).state, target.id)?.hobbled;
+};
+
 describe("movement (GDD 4.5)", () => {
   it("moves a ground Unit forward by its Speed", () => {
     const state = emptyBattle();
@@ -755,5 +802,222 @@ describe("Poison (GDD 4.7)", () => {
     });
     const { state: next } = run(state, endTurn);
     expect(unitById(next, attacker.id)?.poisoned).toBe(0);
+  });
+});
+
+describe("Hobble (GDD 4.5, 4.7)", () => {
+  it("moves a Hobbled Unit with Speed 2 only 1 Square", () => {
+    const state = emptyBattle();
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      hobbled: 1,
+    });
+    expect(unitById(run(state, endTurn).state, pup.id)?.position).toBe(1);
+  });
+
+  it("moves a Hobbled Unit with Speed 1 by 1 Square, and a Hobbled Unit with Speed 0 does not move", () => {
+    const slow = emptyBattle();
+    const bearer = placeUnit(slow, {
+      cardId: "human.shieldbearer",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      hobbled: 1,
+    });
+    expect(unitById(run(slow, endTurn).state, bearer.id)?.position).toBe(1);
+
+    const stuck = emptyBattle();
+    const wall = placeUnit(stuck, {
+      cardId: "human.shieldbearer",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      speed: 0,
+      hobbled: 1,
+    });
+    expect(unitById(run(stuck, endTurn).state, wall.id)?.position).toBe(0);
+  });
+
+  it("limits a Charge Unit to 1 Square in the Turn of its summon", () => {
+    const state = emptyBattle({ turnNumber: 3 });
+    const charger = placeUnit(state, {
+      cardId: "orc.howlingCharger",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      summonedTurn: 3,
+      hobbled: 1,
+    });
+    expect(unitById(run(state, endTurn).state, charger.id)?.position).toBe(1);
+  });
+
+  it("moves a Hobbled Flying Unit only to the next empty Square, and not when that Square holds a Unit", () => {
+    const open = emptyBattle();
+    const bird = placeUnit(open, {
+      cardId: "orc.skyreaver",
+      owner: "player",
+      position: 3,
+      attack: 0,
+      hobbled: 1,
+    });
+    expect(unitById(run(open, endTurn).state, bird.id)?.position).toBe(4);
+
+    const blocked = emptyBattle();
+    const flyer = placeUnit(blocked, {
+      cardId: "orc.skyreaver",
+      owner: "player",
+      position: 3,
+      attack: 0,
+      hobbled: 1,
+    });
+    placeUnit(blocked, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 4,
+      attack: 0,
+    });
+    expect(unitById(run(blocked, endTurn).state, flyer.id)?.position).toBe(3);
+  });
+
+  it("applies Hobble after attack damage above 0, and not when Armor reduces the damage to 0", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      attack: 2,
+      hobble: 2,
+    });
+    const target = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+    });
+    const hit = run(state, endTurn);
+    expect(unitById(hit.state, target.id)?.hobbled).toBe(2);
+    expect(eventsOfType(hit.events, "StatusApplied")).toContainEqual(
+      expect.objectContaining({
+        unitId: target.id,
+        status: "hobble",
+        count: 2,
+      })
+    );
+
+    const blocked = emptyBattle();
+    placeUnit(blocked, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      attack: 1,
+      hobble: 2,
+    });
+    const armored = placeUnit(blocked, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+    });
+    const miss = run(blocked, endTurn);
+    expect(unitById(miss.state, armored.id)?.hobbled).toBe(0);
+    expect(eventsOfType(miss.events, "StatusApplied")).toEqual([]);
+  });
+
+  it("does not apply Hobble from Retaliation or from an attack on a Hero", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+      hobble: 2,
+    });
+    expect(unitById(run(state, endTurn).state, attacker.id)?.hobbled).toBe(0);
+
+    const hero = emptyBattle();
+    placeUnit(hero, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 11,
+      hobble: 2,
+    });
+    const shot = run(hero, endTurn);
+    expect(shot.state.sides.enemy.hero.hp).toBeLessThan(30);
+    expect(eventsOfType(shot.events, "StatusApplied")).toEqual([]);
+  });
+
+  it("lowers the count only in the End Step of the owner, so Hobble 1 slows the next action and the action after has full Speed", () => {
+    let state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.crossbowGuard",
+      owner: "player",
+      position: 0,
+      attack: 3,
+      hp: 1,
+      maxHp: 1,
+      burn: 1,
+      hobble: 1,
+    });
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      position: 3,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+    });
+    ({ state } = run(state, endTurn));
+    expect(unitById(state, pup.id)?.hobbled).toBe(1);
+
+    ({ state } = run(state, endTurn));
+    expect(unitById(state, pup.id)).toMatchObject({ position: 2, hobbled: 0 });
+
+    ({ state } = run(state, endTurn));
+    ({ state } = run(state, endTurn));
+    expect(unitById(state, pup.id)?.position).toBe(0);
+  });
+
+  it("keeps the higher Hobble count, and does not add the counts", () => {
+    expect(hobbleHit(1, 3)).toEqual({ count: 3, event: 3 });
+    expect(hobbleHit(3, 1)).toEqual({ count: 3, event: 3 });
+    expect(hobbleHit(2, 2)).toEqual({ count: 2, event: 2 });
+  });
+
+  it("lowers the count of a Frozen Unit that skips its action", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      position: 11,
+      attack: 0,
+      frozen: true,
+      hobbled: 2,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(eventsOfType(events, "UnitSkipped")).toEqual([
+      expect.objectContaining({ unitId: pup.id }),
+    ]);
+    expect(unitById(next, pup.id)).toMatchObject({ position: 11, hobbled: 1 });
+  });
+
+  it("applies Hobble 1, 2 and 3 from the Pavise Arbalist at Rare, Epic and Legendary", () => {
+    expect([
+      hobbledByPavise("rare"),
+      hobbledByPavise("epic"),
+      hobbledByPavise("legendary"),
+    ]).toEqual([1, 2, 3]);
   });
 });
