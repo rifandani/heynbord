@@ -354,6 +354,35 @@ export const blobShadowTexture = (): CanvasTexture =>
   });
 
 /**
+ * One target Square of a Skill Card cast: a rounded square with a bright rim
+ * and a soft inner light. It is white, so the material color gives the
+ * color of the effect.
+ */
+export const castTileTexture = (): CanvasTexture =>
+  cached("cast-tile", 128, 128, (context) => {
+    // The Unit on the Square hides the middle, so the light is at the edges.
+    const inner = context.createRadialGradient(64, 64, 10, 64, 64, 70);
+    inner.addColorStop(0, "rgba(255, 255, 255, 0.35)");
+    inner.addColorStop(1, "rgba(255, 255, 255, 0.75)");
+    context.fillStyle = inner;
+    context.beginPath();
+    context.roundRect(10, 10, 108, 108, 18);
+    context.fill();
+    context.shadowColor = "rgba(255, 255, 255, 1)";
+    context.shadowBlur = 10;
+    context.lineWidth = 7;
+    context.strokeStyle = "rgba(255, 255, 255, 1)";
+    context.stroke();
+    // A fine inner line, as a rune border.
+    context.shadowBlur = 0;
+    context.lineWidth = 2;
+    context.strokeStyle = "rgba(255, 255, 255, 0.8)";
+    context.beginPath();
+    context.roundRect(24, 24, 80, 80, 10);
+    context.stroke();
+  });
+
+/**
  * A Closed Lane: a band of night plate at 38%, with soft ends and soft edges,
  * so it looks like shade on the Battle Painting.
  */

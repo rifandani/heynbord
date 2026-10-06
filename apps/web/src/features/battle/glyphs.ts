@@ -14,12 +14,14 @@ import { absurd } from "effect";
 const circle = (x: number, y: number, rx: number, ry = rx): string =>
   `M${x + rx} ${y} A${rx} ${ry} 0 1 1 ${x - rx} ${y} A${rx} ${ry} 0 1 1 ${x + rx} ${y} Z`;
 
-const sunRays = Array.from({ length: 8 }, (_, ray) => {
-  const angle = (ray * Math.PI) / 4;
-  const point = (radius: number) =>
-    `${(Math.cos(angle) * radius).toFixed(1)} ${(Math.sin(angle) * radius).toFixed(1)}`;
-  return `M${point(28)} L${point(44)}`;
-}).join(" ");
+/** 8 lines out from the center, from `inner` to `outer`: sun rays or gear teeth. */
+const spokes = (inner: number, outer: number): string =>
+  Array.from({ length: 8 }, (_, spoke) => {
+    const angle = (spoke * Math.PI) / 4;
+    const point = (radius: number) =>
+      `${(Math.cos(angle) * radius).toFixed(1)} ${(Math.sin(angle) * radius).toFixed(1)}`;
+    return `M${point(inner)} L${point(outer)}`;
+  }).join(" ");
 
 export const GLYPHS = {
   shield: "M0 -46 L38 -32 Q38 20 0 48 Q-38 20 -38 -32 Z",
@@ -28,7 +30,7 @@ export const GLYPHS = {
   bow: "M-14 -46 Q46 0 -14 46 Z M-40 0 L30 0 M30 0 L18 -9 M30 0 L18 9",
   wings:
     "M0 10 Q-30 -50 -50 -20 Q-36 -14 -42 6 Q-24 0 -22 22 Q-10 14 0 10 Q30 -50 50 -20 Q36 -14 42 6 Q24 0 22 22 Q10 14 0 10 Z",
-  sun: `${circle(0, 0, 20)} ${sunRays}`,
+  sun: `${circle(0, 0, 20)} ${spokes(28, 44)}`,
   paw: [
     circle(0, 18, 22, 18),
     circle(-30, -10, 9, 12),
@@ -53,6 +55,8 @@ export const GLYPHS = {
   crown:
     "M-40 26 L-44 -26 L-20 0 L0 -38 L20 0 L44 -26 L40 26 Z M-40 34 H40 V44 H-40 Z",
   leaf: "M-34 34 Q-46 -34 42 -42 Q34 38 -34 34 Z M-34 34 L-46 46",
+  gear: `${circle(0, 0, 26)} ${circle(0, 0, 10)} ${spokes(26, 42)}`,
+  claw: "M-34 -40 Q-12 0 -30 44 M-4 -46 Q18 0 0 46 M26 -40 Q48 0 30 44",
   wisp: `M0 -46 C24 -22 34 4 30 22 C26 40 12 46 0 46 C-12 46 -26 40 -30 22 C-34 4 -24 -22 0 -46 Z ${circle(-11, 16, 6)} ${circle(11, 16, 6)}`,
   // The supplied orc head, in the glyph box. Fill only: a stroke closes the cutouts.
   orcHead:
@@ -76,6 +80,8 @@ export const GLYPHS = {
     "M-46.14 -47.18C-34.51 -25.25 -18.31 -7.66 -0.78 9.99L-0.07 10.72L-0.05 10.71C4.21 14.99 8.55 19.29 12.91 23.65C9.23 26.54 5.3 29.16 1.21 31.52L6.78 37.1L20.2 23.68C28.47 29.07 35.1 36.11 40.53 44.34L46.01 38.86C37.72 33.49 30.44 27.1 25.31 18.57L38.77 5.11L33.2 -0.46C31.03 3.8 28.43 7.74 25.49 11.37C16.92 2.82 8.6 -5.4 0.07 -13.14C0.03 -13.17 -0.01 -13.22 -0.06 -13.26C-14.14 -26.03 -28.81 -37.52 -46.14 -47.18ZM46.02 -47.18C29.8 -38.14 15.92 -27.5 2.67 -15.7L7.12 -11.49L18.22 -22.59L20.8 -20.01L9.78 -8.99L14.58 -4.46C26.65 -17.53 37.55 -31.2 46.02 -47.18ZM-18.34 -22.59L20.83 16.58A78.71 78.71 0 0 1 18.21 19.12L-20.92 -20.01ZM-33.32 -0.46L-38.89 5.11L-25.43 18.57C-30.56 27.1 -37.84 33.49 -46.13 38.86L-40.65 44.34C-35.22 36.11 -28.59 29.07 -20.32 23.68L-6.9 37.1L-1.32 31.52C-5.42 29.16 -9.35 26.54 -13.03 23.65C-9.54 20.17 -6.08 16.73 -2.65 13.31L-7.5 8.29L-18.34 19.13C-19.23 18.3 -20.1 17.44 -20.95 16.58L-10.04 5.67L-14.83 0.71C-18.4 4.2 -21.98 7.76 -25.6 11.38C-28.55 7.75 -31.15 3.81 -33.32 -0.46Z",
   banner: `M-30 -46 H30 V40 L0 22 L-30 40 Z ${circle(0, -10, 10)}`,
   tent: "M-46 40 L0 -40 L46 40 Z M-12 40 L0 6 L12 40 Z",
+  // A done mark: the active Deck.
+  check: "M-44 0 L-29 -15 L-12 2 L29 -39 L44 -24 L-12 32 Z",
   lock: `M-28 -4 H28 V44 H-28 Z M-18 -4 V-22 Q-18 -42 0 -42 Q18 -42 18 -22 V-4 H8 V-22 Q8 -32 0 -32 Q-8 -32 -8 -22 V-4 Z ${circle(0, 16, 7)}`,
 } as const;
 
@@ -109,6 +115,8 @@ const RACE_GLYPH: Readonly<Record<RaceId, Glyph>> = {
   elf: "leaf",
   undead: "wisp",
   orc: "orcHead",
+  goblin: "gear",
+  feral: "claw",
 };
 
 export const raceGlyph = (race: RaceId): Glyph => RACE_GLYPH[race];

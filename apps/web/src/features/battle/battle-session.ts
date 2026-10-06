@@ -1,6 +1,8 @@
 import type {
   BattleEvent,
   BattleState,
+  ClassId,
+  DeckEntry,
   RuleViolation,
   Target,
 } from "@workspace/rules";
@@ -9,7 +11,6 @@ import {
   Command,
   createBattle,
   getStage,
-  getStarterDeck,
   step,
   TUTORIAL_STAGE_ID,
 } from "@workspace/rules";
@@ -34,9 +35,15 @@ const SLICE_PLAYER = {
   gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
 } as const;
 
+/** The Deck that the Player takes into a Battle, with its Hero Class. */
+export interface BattleDeck {
+  readonly classId: ClassId;
+  readonly deck: readonly DeckEntry[];
+}
+
 export interface BattleOptions {
   readonly stageId: string;
-  readonly deckId: string;
+  readonly deck: BattleDeck;
   readonly seed: number;
 }
 
@@ -86,7 +93,7 @@ export const startSession = (
   speed: BattleSpeed = 1,
   tutorial = false
 ): BattleSession => {
-  const deck = getStarterDeck(options.deckId);
+  const { deck } = options;
   const { state } = createBattle({
     seed: options.seed,
     stage: getStage(options.stageId),

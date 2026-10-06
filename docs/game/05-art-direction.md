@@ -87,20 +87,20 @@ The AI image tool is **GPT Image**. Use it for card art, the Town painting and e
 
 The style bible has:
 
-1. These 10 golden reference images in `apps/web/public/illustrations/`. New art must match them.
+1. These 10 golden reference images in `apps/web/public/creature/` and `apps/web/public/skills/`. New art must match them.
 
 | File | What it shows |
 | --- | --- |
-| `militia-recruit.jpg` | Human starter |
-| `iron-bulwark.jpg` | Human armor |
-| `dawn-cleric.jpg` | Holy palette |
-| `crossbow-guard.jpg` | Ranged Unit |
-| `badland-pup.jpg` | Small Orc |
-| `ember-shaman.jpg` | Orc caster |
-| `howling-charger.jpg` | A Unit in motion |
-| `warchief-grukka.jpg` | Boss scale |
-| `fireball.jpg` | Mage Skill |
-| `shield-wall.jpg` | Warrior Skill |
+| `creature/human/militia-recruit.webp` | Human starter |
+| `creature/human/iron-bulwark.webp` | Human armor |
+| `creature/human/dawn-cleric.webp` | Holy palette |
+| `creature/human/crossbow-guard.webp` | Ranged Unit |
+| `creature/orc/badland-pup.webp` | Small Orc |
+| `creature/orc/ember-shaman.webp` | Orc caster |
+| `creature/orc/howling-charger.webp` | A Unit in motion |
+| `creature/orc/warchief-grukka.webp` | Boss scale |
+| `skills/mage/fireball.webp` | Mage Skill |
+| `skills/warrior/shield-wall.webp` | Warrior Skill |
 
 2. A fixed prompt template for each Race (see 5.2) and for Skill Cards (see 5.2.1).
 3. A character sheet for each Hero, boss and important Unit (front view, colors, key shapes).

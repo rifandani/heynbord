@@ -1,9 +1,12 @@
 import { RegistryContext, useAtom, useAtomValue } from "@effect/atom-react";
 import { lazy, Suspense, useContext, useEffect, useMemo } from "react";
 
-import { setSoundEnabled } from "@/features/battle/battle-audio";
+import {
+  setSoundEnabled,
+  setSoundVolume,
+} from "@/features/battle/battle-audio";
 import { stagePainting } from "@/features/battle/battle-painting";
-import { soundOnAtom } from "@/features/battle/battle.atoms";
+import { soundOnAtom, soundVolumeAtom } from "@/features/battle/battle.atoms";
 import type {
   BattleKeyAction,
   BattleKeyCommand,
@@ -14,13 +17,13 @@ import {
   nextReadyCard,
 } from "@/features/battle/components/battle-keys";
 import { BattlePainting } from "@/features/battle/components/battle-painting";
+import { CastCard } from "@/features/battle/components/cast-card";
 import { HandBar } from "@/features/battle/components/hand-bar";
 import {
   PortraitGuard,
   ResultOverlay,
   TurnBanner,
 } from "@/features/battle/components/overlays";
-import { StageSelect } from "@/features/battle/components/stage-select";
 import { TopBar } from "@/features/battle/components/top-bar";
 import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
 import { UnitDetails } from "@/features/battle/components/unit-details";
@@ -28,8 +31,12 @@ import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
 import { installTestHooks } from "@/features/battle/test-hooks";
 import { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import { CampaignScreen } from "@/features/campaign/components/campaign-screen";
 import { TownBar } from "@/features/town/components/town-bar";
-import { TownScreen } from "@/features/town/components/town-screen";
+import {
+  TownScreen,
+  useTownLeave,
+} from "@/features/town/components/town-screen";
 import { gameScreenAtom } from "@/features/town/town.atoms";
 
 const BattleCanvas = lazy(
@@ -190,6 +197,7 @@ const BattleStage = ({ battle }: { readonly battle: Battle }) => {
           {tr("battle.noWebgl")}
         </div>
       )}
+      <CastCard />
       <TutorialPanel battle={battle} />
       <UnitDetails battle={battle} />
       <TopBar battle={battle} />
@@ -221,18 +229,21 @@ const useEscToTown = (active: boolean, toTown: () => void) => {
 };
 
 /**
- * The game in one route (web ADR-0006): the Town, the Campaign (now the Stage
- * select), then the Battle. The Town Bar shows on each screen except the Battle.
+ * The game in one route (web ADR-0006): the Town, the Campaign (the Region
+ * Map), then the Battle. The Town Bar shows on each screen except the Battle.
  */
 export const PlayScreen = () => {
   const battle = useBattle();
   const registry = useContext(RegistryContext);
   const soundOn = useAtomValue(soundOnAtom);
+  const soundVolume = useAtomValue(soundVolumeAtom);
   const [screen, setScreen] = useAtom(gameScreenAtom);
+  const { leaving, open: handleOpen } = useTownLeave(screen, setScreen);
 
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
 
   useEffect(() => setSoundEnabled(soundOn), [soundOn]);
+  useEffect(() => setSoundVolume(soundVolume), [soundVolume]);
   useEffect(
     () =>
       qaEnabled()
@@ -248,11 +259,11 @@ export const PlayScreen = () => {
       ) : (
         <>
           {screen === "town" ? (
-            <TownScreen onOpen={setScreen} />
+            <TownScreen leaving={leaving} onOpen={handleOpen} />
           ) : (
-            <StageSelect onStart={(options) => battle.start(options)} />
+            <CampaignScreen onStart={(options) => battle.start(options)} />
           )}
-          <TownBar screen={screen} onOpen={setScreen} />
+          <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}
       <PortraitGuard />

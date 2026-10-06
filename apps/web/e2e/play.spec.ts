@@ -56,6 +56,9 @@ declare global {
 }
 
 // WebGL suites run one test at a time: parallel contexts share the GPU and slow the timed phases.
+/** The Stages of Region 1, in Trail order. */
+const STAGE_IDS = Array.from({ length: 10 }, (_, index) => `1-${index + 1}`);
+
 test.describe.configure({ mode: "serial" });
 
 const state = (page: Page) =>
@@ -116,8 +119,15 @@ const openBoardWithUnits = async (page: Page) => {
   return unitPoints(page);
 };
 
+/**
+ * The Unit of `owner` nearest to the camera (lowest on the screen). The hit box
+ * of a Unit in front can cover the middle of a Unit behind it, but no Unit
+ * stands in front of this one.
+ */
 const unitOf = (units: readonly UnitPoint[], owner: UnitPoint["owner"]) => {
-  const unit = units.find((candidate) => candidate.owner === owner);
+  const [unit] = units
+    .filter((candidate) => candidate.owner === owner)
+    .toSorted((a, b) => b.y - a.y);
   if (!unit) {
     throw new Error(`No ${owner} Unit on the Board`);
   }
@@ -130,8 +140,13 @@ const startBattle = async (
   deckId: string,
   seed: number
 ) => {
-  await page.goto(`/play?seed=${seed}`);
-  await page.getByTestId("building-townGate").click();
+  // Stage 1-1 is Open for a new Player. The QA state opens the other Stages.
+  if (stageId === "1-1") {
+    await page.goto(`/play?seed=${seed}`);
+    await page.getByTestId("building-townGate").click();
+  } else {
+    await page.goto(`/play?seed=${seed}&state=campaign-progress`);
+  }
   await page.getByTestId(`stage-${stageId}`).click();
   await page.getByTestId(`deck-${deckId}`).click();
   await page.getByTestId("start-battle").click();
@@ -320,7 +335,13 @@ test.describe("Battle bot playtest", () => {
     if (!box) {
       return;
     }
-    const unitsBefore = await unitCount(page);
+    // A Creature Card summons a Unit; a Skill Card goes to the Graveyard.
+    const played = async () =>
+      (await unitCount(page)) +
+      Number(
+        await page.getByTestId("graveyard-pile").getAttribute("data-count")
+      );
+    const playedBefore = await played();
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.down();
     await page.mouse.move(box.x + box.width / 2, box.y - 60, { steps: 5 });
@@ -328,7 +349,7 @@ test.describe("Battle bot playtest", () => {
     expect(point).toBeDefined();
     await page.mouse.move(point?.x ?? 0, point?.y ?? 0, { steps: 8 });
     await page.mouse.up();
-    await expect.poll(() => unitCount(page)).toBeGreaterThan(unitsBefore);
+    await expect.poll(played).toBeGreaterThan(playedBefore);
   });
 
   test("plays with the keyboard only", async ({ page }) => {
@@ -336,7 +357,10 @@ test.describe("Battle bot playtest", () => {
     await page.goto("/play?seed=5");
     await page.getByTestId("building-townGate").focus();
     await page.keyboard.press("Enter");
-    await page.getByTestId("start-battle").focus();
+    // The Stage Marker of Stage 1-1 opens the Stage Panel, and Fight takes the focus.
+    await page.getByTestId("stage-1-1").focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("start-battle")).toBeFocused();
     await page.keyboard.press("Enter");
     await expect
       .poll(() => battleMode(page), { timeout: 30_000 })
@@ -382,6 +406,7 @@ test.describe("Battle bot playtest", () => {
     await page.getByTestId("abandon-confirm").click();
     // An Abandon goes back to the Campaign.
     await expect(page.getByTestId("campaign")).toBeVisible();
+    await page.getByTestId("stage-1-1").click();
     await page.getByTestId("start-battle").click();
     await expect(page.getByTestId("tutorial-text")).toHaveAttribute(
       "data-step",
@@ -406,18 +431,24 @@ test.describe("Battle bot playtest", () => {
     await page.goto("/play");
     // The keyboard, because the "ready to use offline" toast can cover the
     // right end of the Town Bar.
-    await page.getByRole("button", { name: "English" }).press("Enter");
-    await page.getByRole("menuitemradio", { name: "Indonesia" }).press("Enter");
+    await page.getByTestId("town-settings").press("Enter");
+    // The current language takes the focus; an arrow key selects the next one.
+    await expect(page.getByRole("radio", { name: "English" })).toBeFocused();
+    await page.keyboard.press("ArrowRight");
+    await expect(
+      page.getByRole("heading", { name: "Pengaturan" })
+    ).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("settings-dialog")).toBeHidden();
     await expect(page.getByTestId("building-townGate")).toHaveText("Kampanye");
     await page.getByTestId("building-townGate").click();
-    await expect(page.getByTestId("start-battle")).toHaveText(
-      "Mulai Pertempuran"
-    );
+    await page.getByTestId("stage-1-1").click();
+    await expect(page.getByTestId("start-battle")).toHaveText("Bertarung");
   });
 });
 
 test.describe("Card Details of a Unit (UI-05)", () => {
-  test("hover shows the Card Details of a Unit of each Side, away from the Unit", async ({
+  test("hover shows the Card Details of a Unit of each Side, on the side of its owner", async ({
     page,
   }) => {
     const units = await openBoardWithUnits(page);
@@ -433,7 +464,7 @@ test.describe("Card Details of a Unit (UI-05)", () => {
       await expect(page.getByText(/HP \d+ of \d+/u)).toHaveCount(0);
       await expect(details).toHaveAttribute(
         "data-side",
-        unit.x < width / 2 ? "right" : "left"
+        owner === "enemy" ? "right" : "left"
       );
     }
     // Off the Units, the Card Details close.
@@ -492,6 +523,7 @@ test.describe("Town", () => {
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("town")).toBeVisible();
     await page.getByTestId("town-shortcut-campaign").click();
+    await expect(page.getByTestId("campaign")).toBeVisible();
     await page.getByTestId("town-shortcut-town").click();
     await expect(page.getByTestId("town")).toBeVisible();
   });
@@ -527,13 +559,42 @@ test.describe("Town", () => {
       "Buys Cosmetics and Conveniences in the Bazaar."
     );
 
-    await page.getByRole("button", { name: "English" }).press("Enter");
-    await page.getByRole("menuitemradio", { name: "Indonesia" }).press("Enter");
+    await page.getByTestId("town-settings").press("Enter");
+    await page.getByRole("radio", { name: "Indonesia" }).press("Space");
+    await page.keyboard.press("Escape");
     await expect(
       page
         .getByRole("group", { name: "Saldomu" })
         .getByRole("button", { name: "Koin: 0 Tembaga" })
     ).toHaveText("0t");
+  });
+
+  test("the Settings button opens the Settings dialog, and the volume stays after a reload", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    const settings = page.getByTestId("town-settings");
+    // The keyboard, because the "ready to use offline" toast can cover the
+    // right end of the Town Bar.
+    await settings.press("Enter");
+    const volume = page.getByRole("slider", { name: "Sound" });
+    await expect(volume).toHaveValue("100");
+    await volume.focus();
+    await page.keyboard.press("Home");
+    await expect(page.getByTestId("settings-volume-value")).toHaveText("0");
+    await expect(page.getByTestId("settings-sound-switch")).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
+    // The sound switch gives a volume back from 0.
+    await page.getByTestId("settings-sound-switch").press("Enter");
+    await expect(volume).toHaveValue("50");
+    await page.getByTestId("settings-close").press("Enter");
+    await expect(page.getByTestId("settings-dialog")).toBeHidden();
+    await expect(settings).toBeFocused();
+    await page.reload();
+    await page.getByTestId("town-settings").press("Enter");
+    await expect(page.getByRole("slider", { name: "Sound" })).toHaveValue("50");
   });
 
   test("a reload opens the Town", async ({ page }) => {
@@ -542,6 +603,121 @@ test.describe("Town", () => {
     await expect(page.getByTestId("campaign")).toBeVisible();
     await page.reload();
     await expect(page.getByTestId("town")).toBeVisible();
+  });
+});
+
+test.describe("Campaign", () => {
+  test("a new Player has Stage 1-1 Open; a Locked Stage says which Stage to win first", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("region-banner")).toContainText("Hearthvale");
+    await expect(page.getByTestId("region-stars")).toHaveAttribute(
+      "data-stars",
+      "0"
+    );
+    await expect(page.getByTestId("stage-1-1")).toHaveAttribute(
+      "data-state",
+      "open"
+    );
+    const locked = page.getByTestId("stage-1-4");
+    await expect(locked).toHaveAttribute("data-state", "locked");
+    await expect(locked).toHaveAccessibleName("Stage 1-4, locked");
+    await expect(page.getByTestId("stage-1-10")).toHaveAccessibleName(
+      "Boss Stage 1-10, locked"
+    );
+    // A Locked Stage opens no Stage Panel. Focus shows the tooltip.
+    await locked.click();
+    await expect(page.getByTestId("stage-panel")).toBeHidden();
+    await locked.focus();
+    await expect(page.getByTestId("stage-tip-1-4")).toHaveText(
+      "Win Stage 1-3 first."
+    );
+  });
+
+  test("the Stage Panel shows the Stage; Esc closes it, then Esc goes to the Town", async ({
+    page,
+  }) => {
+    await page.goto("/play?state=campaign-progress");
+    await expect(page.getByTestId("stage-1-3")).toHaveAccessibleName(
+      "Stage 1-3, done, 2 of 3 Stars"
+    );
+    await page.getByTestId("stage-1-10").click();
+    const panel = page.getByTestId("stage-panel");
+    await expect(panel).toContainText("Stage 1-10");
+    await expect(panel).toContainText("Baron Brassbelly");
+    await expect(page.getByTestId("stage-reward-card")).toHaveText(
+      "Iron Bulwark"
+    );
+    await expect(page.getByTestId("start-battle")).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(panel).toBeHidden();
+    await expect(page.getByTestId("campaign")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("town")).toBeVisible();
+  });
+
+  test("a win marks the Stage Done with its Stars and opens the next Stage", async ({
+    page,
+  }) => {
+    await page.goto("/play?state=victory&seed=3");
+    await expect(page.getByTestId("battle-result")).toBeVisible({
+      timeout: 30_000,
+    });
+    const stars = await page
+      .getByTestId("battle-stars")
+      .getAttribute("data-stars");
+    await page.getByTestId("back-to-campaign").click();
+    const won = page.getByTestId("stage-1-1");
+    await expect(won).toHaveAttribute("data-state", "done");
+    await expect(won).toHaveAccessibleName(
+      `Stage 1-1, done, ${stars} of 3 Stars`
+    );
+    await expect(page.getByTestId("stage-1-2")).toHaveAttribute(
+      "data-state",
+      "open"
+    );
+    await expect(page.getByTestId("region-stars")).toHaveAttribute(
+      "data-stars",
+      `${stars}`
+    );
+  });
+});
+
+test.describe("Campaign on a phone", () => {
+  test.use({
+    viewport: { width: 844, height: 390 },
+    hasTouch: true,
+    isMobile: true,
+  });
+
+  test("shows all Stage Markers above the Town Bar and clear of the top HUD", async ({
+    page,
+  }) => {
+    await page.goto("/play?state=campaign-progress");
+    const bar = await page.getByTestId("town-bar").boundingBox();
+    const hud = [
+      await page.getByTestId("region-banner").boundingBox(),
+      await page.getByTestId("star-chests").boundingBox(),
+    ];
+    for (const id of STAGE_IDS) {
+      const marker = page.getByTestId(`stage-${id}`);
+      await expect(marker).toBeInViewport({ ratio: 1 });
+      const box = await marker.boundingBox();
+      expect(box && bar && box.y + box.height <= bar.y).toBe(true);
+      for (const piece of hud) {
+        const clear =
+          box &&
+          piece &&
+          (box.x >= piece.x + piece.width ||
+            box.x + box.width <= piece.x ||
+            box.y >= piece.y + piece.height);
+        expect(clear).toBe(true);
+      }
+    }
+    await page.getByTestId("stage-1-5").tap();
+    await expect(page.getByTestId("start-battle")).toBeInViewport({ ratio: 1 });
   });
 });
 

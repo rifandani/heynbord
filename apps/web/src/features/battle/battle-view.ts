@@ -232,7 +232,8 @@ const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
             }
       );
     }
-    case "CountdownChanged": {
+    case "CountdownChanged":
+    case "CardSabotaged": {
       return updateSide(view, event.side, (side) => ({
         ...side,
         hand: side.hand.map((card) =>

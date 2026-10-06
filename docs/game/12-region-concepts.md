@@ -2,17 +2,26 @@
 
 This document gives the art brief for the Region Maps: the painted map of each Region that the Campaign screen shows ([GDD 11.5](./03-game-design.md#115-campaign)). A Region Map is a flat 2D painting ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The painting shows the land and the Trail. The game draws the Stage Markers, the progress line and all text on top of it.
 
-Now no Region Map exists. The Campaign screen is a Stage list (`apps/web/src/features/battle/components/stage-select.tsx`). The first painting to make is Hearthvale (Region 1).
+Each Region has 2 paintings, and no more:
+
+| Painting | Where the game shows it | Brief |
+| --- | --- | --- |
+| **Region Map** | The Campaign screen of the Region | This document |
+| **Battle Painting** | Each Battle of the Region, the Boss Stage too | [13 — Battlefield Concepts](./13-battlefield-concepts.md) |
+
+A Stage has no painting of its own. Its landmark is a small part of the Region Map, and its Battle uses the Battle Painting of its Region.
+
+The Hearthvale Region Map exists (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen shows it (`apps/web/src/features/campaign/`). Its clearings are not at the positions of 1.1: they are measured on the painting (see 1.3). The Thornwood and The Hollow Marches have no Region Map yet.
 
 ## 1. Rules for the Region art
 
-- **One painting for each Region.** The 3 Region Maps are one set. Make them with the same view, scale, light and style.
+- **One Region Map for each Region.** The 3 Region Maps are one set. Make them with the same view, scale, light and style.
 - **View.** A high bird's-eye view, about 45° down, like a painted map. The same view as the Town. Landmarks show their front and their roof.
 - **Light.** From the upper left, warm, as in all other art.
 - **Size.** Landscape 16:9. Make the master at 3200 × 1800. The game uses a WebP export at 2560 × 1440, less than about 400 KB. The positions in 1.1 use a 1600 × 900 box, so 1 code unit is 2 pixels of the master.
 - **The Trail.** A natural road (dirt, stone, boardwalk, bridges, steps) goes from the bottom-left edge to the Boss landmark. It has 10 clearings, one for each Stage, in order. The road does not cross itself.
 - **Clearings are calm.** Each clearing is a flat open place, about 120 × 80 code units, with soft light and low contrast. The game puts a Stage Marker on it. A clearing has no objects, people or animals.
-- **Landmarks.** Each clearing has one small landmark next to it, not on it. The Boss clearing has one large landmark. The landmark shows the place of its Stage ([14 — Campaign Stages](./14-campaign-stages.md)). A Region with no Stages defined yet has only proposed landmarks.
+- **Landmarks.** Each clearing has one small landmark next to it, not on it. The Boss clearing has one large landmark. The landmark shows the place of its Stage ([14 — Campaign Stages](./14-campaign-stages.md)). The landmarks are parts of the one Region Map, not separate images. A Region with no Stages defined yet has only proposed landmarks.
 - **No markers and no lines.** The painting has no shields, flags on the clearings, dashed lines, arrows or numbers. The game draws them, because they change with the progress of the Player.
 - **No text.** The image has no labels, letters, logo or UI. Signs have no letters.
 - **Edges.** Soft white clouds frame the edges and the corners, as in a map. The clouds must not cover the road where it comes in at the bottom left.
@@ -62,7 +71,7 @@ Two clearings are at least 150 units apart. On a phone in landscape, each Stage 
 
 ### 1.2 What the game draws on the painting
 
-The painting must give a calm place for each of these layers. The positions will be in `apps/web/src/features/campaign/` (planned).
+The painting must give a calm place for each of these layers. The positions are in `apps/web/src/features/campaign/region-map.ts`.
 
 | Layer | Position | Need in the painting |
 | --- | --- | --- |
@@ -70,6 +79,22 @@ The painting must give a calm place for each of these layers. The positions will
 | Progress line | A dashed line on the center of the painted road, from the Trail entry to clearing 10. Solid for the done part, faint for the locked part. | A clear road with no trees or roofs over it. |
 | Region name and arrows | Top band | Calm far land. |
 | Star chest panel | Star chest corner | Calm clouds, water or land. |
+
+### 1.3 Measured positions
+
+The positions in 1.1 are the target for a new painting. A generated painting does not put its clearings at exactly these positions, so the game uses the positions measured on each final painting. They are in `REGION_MAPS` in `apps/web/src/features/campaign/region-map.ts`: the clearing centers (`stops`) and the center line of the road to each clearing (`legs`), in the 1600 × 900 box.
+
+Hearthvale, measured on its painting:
+
+| Clearing | Center (x, y) | Clearing | Center (x, y) |
+| --- | --- | --- | --- |
+| 1 | 357, 720 | 6 | 865, 575 |
+| 2 | 470, 630 | 7 | 1130, 718 |
+| 3 | 418, 438 | 8 | 1305, 685 |
+| 4 | 575, 360 | 9 | 1375, 447 |
+| 5 | 800, 428 | 10 (Boss) | 1115, 250 |
+
+The Boss clearing is in the top band, in front of Brassbelly Hall. Clearings 1 and 2 are 144 units apart. The screen does not use the safe area of 1.1: it places the painting so that each Stage Marker stays on the screen, above the Town Bar and clear of the Region banner and the Star chest plate (web ADR-0008). Unit tests in `region-map.unit.test.ts` check this for each screen shape, and check that no two Stage Markers touch.
 
 ## 2. Regions
 
@@ -88,6 +113,7 @@ The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
 | Palette | Leaf greens, warm yellow fields, brown wood, blue streams. No single Race color is the main color. |
 | Humor note | A scarecrow in a copy of the Baron's large hat. Outlaws run away with a cart of pies. |
 | Time and weather | A clear late morning. Soft white clouds. |
+| Battle Painting | A forest clearing where the outlaws wait for travelers. Brief in [13 — Battlefield Concepts, 1.1](./13-battlefield-concepts.md#11-hearthvale). |
 
 ### 2.2 The Thornwood
 
@@ -102,6 +128,7 @@ The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
 | Palette | Deep emerald, moss green, teal shade, gold light that falls through the leaves, some autumn red. |
 | Humor note | A cave bear is stuck in a thorn bush. A squirrel steals arrows from an elf archer. |
 | Time and weather | A bright afternoon. Light falls through the leaves in long beams. |
+| Battle Painting | Proposed: a soft, mossy glade between giant trees, with roots, thorn hedges and a cave mouth at the edges. No brief in 13 yet. Until it has its painting, the Region uses the Hearthvale Battle Painting. |
 
 ### 2.3 The Hollow Marches
 
@@ -116,71 +143,109 @@ The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
 | Palette | Misty teal, violet, moss green, bone white, soft green glow. The light is still warm from the upper left. |
 | Humor note | A skeleton sits and fishes on a boardwalk. A frog with a small crown sits on a lily pad. |
 | Time and weather | A bright late afternoon with low mist on the water. |
+| Battle Painting | Proposed: a dry, grassy island in the marsh, with reeds, still water, dead trees and low mist at the edges. No brief in 13 yet. Until it has its painting, the Region uses the Hearthvale Battle Painting. |
 
 ## 3. Prompts
 
-All prompts use the same ending, so that the 3 maps look like one set.
+### 3.1 How to use the prompts
 
-### 3.1 Hearthvale
+The prompts are short. A long list of rules, counts and "no" words gives bad results, because the model adds the items that the "no" words name. Do not try to get the Stage positions from the words. Get them from a layout sketch:
 
-```text
-bird's-eye view of a bright fantasy valley seen from high above at about 45 degrees, painted adventure map, wide 16:9 landscape,
-a sandy road comes in from the left edge near the bottom, crosses a river and a stream, and winds up and across the valley to a hill at the top right,
-along the road ten small flat open clearings with short grass, each clearing empty and calm,
-next to the clearings, in order: a shallow muddy river ford with stepping stones, two small wooden bridges side by side over a stream, a water mill with a burning roof and a little smoke, a wooden toll gate across the road, an outlaw camp with tents, a campfire and a very big pot, a ruined stone watchtower, an orc camp with war drums and hide tents, a narrow rocky pass with fallen rocks, a very large oak with a lookout platform,
-at the end of the road on a hill a fortified timber and stone hall with a palisade, its roof shaped like a very large feathered hat,
-green fields, patches of old forest, a scarecrow wearing a huge hat, small outlaws running away with a cart of pies,
-leaf greens, warm yellow fields, brown wood, clear late morning,
-soft white clouds frame the edges and corners of the map, calm clouds in the top right corner,
-Heynbord, painterly fantasy game map illustration, bright warm light, soft brush texture, clean readable landmark silhouettes,
-light from the upper left,
-no dashed lines, no markers, no flags on the clearings, no shields, no numbers, no text, no letters, no logo, no frame, no UI
-```
+- `apps/web/art/campaign/region-map-layout-16x9.png` — the layout in the 1600 × 900 box of 1.1: the road, the 10 clearings (pale ovals), the Boss hill (brown house), the far land (dark green) and the clouds (white).
+- `apps/web/art/campaign/region-map-layout-3x2.png` — the same layout in a 1536 × 1024 image, with the 16:9 area in the middle. Use it if the tool cannot make 16:9. Then crop the top and the bottom to 16:9.
 
-### 3.2 The Thornwood
+Give GPT Image these images, in this order:
+
+1. The layout sketch (it sets the composition).
+2. The Town painting `apps/web/public/town/town.webp` (it sets the style).
+3. For Regions 2 and 3 only: the finished Hearthvale map (it makes the set match).
+
+Make the base painting first. Then add the small landmarks and the jokes of section 2 one by one with inpainting. One small edit at a time is much easier for the model than 10 items in one prompt.
+
+### 3.2 Hearthvale
 
 ```text
-bird's-eye view of a bright fantasy deep forest seen from high above at about 45 degrees, painted adventure map, wide 16:9 landscape,
-a mossy forest road of roots comes in from the left edge near the bottom and winds up and across the forest to a hill at the top right,
-along the road ten small flat open clearings with moss and short grass, each clearing empty and calm,
-next to the clearings: two leaning trees that make a gate, an elf tree with lanterns, a ring of large mushrooms, a rope bridge over a ravine, a dark cave mouth under giant roots with a big web across it, a ring of mossy standing stones, elf tree houses high in giant trees, a waterfall with a pool, a thorn hedge wall with a hole broken in it,
-at the end of the road a huge old tree giant asleep on a hill of brambles, a face in the bark, one eye half open,
-a cave bear stuck in a thorn bush, a squirrel stealing arrows from an elf archer,
-deep emerald, moss green, teal shade, some autumn red, gold beams of light through the leaves, bright afternoon,
-soft white clouds frame the edges and corners of the map, calm clouds in the top right corner,
-Heynbord, painterly fantasy game map illustration, bright warm light, soft brush texture, clean readable landmark silhouettes,
-light from the upper left,
-no dashed lines, no markers, no flags on the clearings, no shields, no numbers, no text, no letters, no logo, no frame, no UI
+Image 1 is a rough layout sketch. Keep its composition: the road path, the 10 pale ovals, the brown house on the hill, the dark green far land and the white clouds. Do not copy its flat colors.
+Image 2 shows the art style. Paint in this style.
+
+Paint a fantasy campaign map for a mobile strategy game, wide landscape.
+High bird's-eye view, tilted about 45 degrees, so that houses show their roof and their front.
+
+A green farm valley with yellow fields, small woods, a blue stream and soft hills.
+One sandy dirt road follows the path of the sketch: it comes in at the bottom-left edge, winds up and right, and ends at the hill.
+The 10 pale ovals of the sketch are 10 small empty patches of short grass on the road. Nothing stands on them.
+On the hill: a big fortified wooden hall with a palisade. Its roof has the shape of a giant hat with a feather.
+Soft white clouds frame the edges. The top-right corner is only clouds.
+
+Bright and warm, a little funny, painterly, soft brush texture. Clear late morning, light from the upper left.
+The image is only the painting, without text, labels, icons or a frame.
 ```
 
-### 3.3 The Hollow Marches
+Inpaint the landmarks next to their clearings, in order: a muddy ford with stepping stones, two small wooden bridges, a water mill with a burning roof, a wooden toll gate, an outlaw camp with a very big pot, a ruined stone watchtower, an orc camp with war drums, a rocky pass with fallen rocks, a giant oak with a lookout platform. Then the jokes: a scarecrow in a big hat, outlaws with a cart of pies.
+
+### 3.3 The Thornwood
 
 ```text
-bird's-eye view of bright fantasy marshlands seen from high above at about 45 degrees, painted adventure map, wide 16:9 landscape,
-an old stone road comes in from the left edge near the bottom, becomes long wooden boardwalks over the water, and ends on a stone causeway to an island at the top right,
-along the road ten small flat open clearings of dry grass, each clearing empty and calm,
-next to the clearings: a crooked sign post with a lantern, a sunken chapel, a goblin raft workshop with reed roofs and a smoking chimney, a long boardwalk over a bog, a small graveyard with leaning stones, a broken windmill on a mound, a ferry with a skeleton ferryman, a goblin mine entrance in a dry hill with rail tracks and smoke, an old stone bridge with green fire bowls,
-on the island a castle of pale bone-white stone with thin towers, violet banners and soft green light in the windows,
-reeds, old dead trees, low mist on the water, a skeleton fishing on a boardwalk, a frog with a tiny crown on a lily pad,
-misty teal, violet, moss green, bone white, soft green glow, bright late afternoon, cute and strange, not scary,
-soft white clouds frame the edges and corners of the map, calm clouds in the top right corner,
-Heynbord, painterly fantasy game map illustration, bright warm light, soft brush texture, clean readable landmark silhouettes,
-light from the upper left,
-no dashed lines, no markers, no flags on the clearings, no shields, no numbers, no text, no letters, no logo, no frame, no UI
+Image 1 is a rough layout sketch. Keep its composition: the road path, the 10 pale ovals, the brown house on the hill, the dark green far land and the white clouds. Do not copy its flat colors.
+Image 2 shows the art style. Image 3 is the first map of the same set. Paint in the same style, view and scale.
+
+Paint a fantasy campaign map for a mobile strategy game, wide landscape.
+High bird's-eye view, tilted about 45 degrees, so that trees and houses show their top and their front.
+
+A deep old forest of giant trees, moss and thorn hedges, seen from above, with small open glades.
+One mossy forest road of roots follows the path of the sketch: it comes in at the bottom-left edge, winds up and right, and ends at the hill.
+The 10 pale ovals of the sketch are 10 small empty patches of moss on the road. Nothing stands on them.
+On the hill, in place of the house: a huge old tree giant asleep on a mound of brambles, with a sleepy face in the bark.
+Soft white clouds frame the edges. The top-right corner is only clouds.
+
+Bright and warm, a little funny, painterly, soft brush texture. Emerald and moss green, some autumn red, gold sunbeams through the leaves. Bright afternoon, light from the upper left.
+The image is only the painting, without text, labels, icons or a frame.
 ```
 
-Make the images with GPT Image. Give it the prompt, a 16:9 aspect, and the Town painting (`apps/web/public/town/town.jpg`) as a style reference. For Regions 2 and 3, also give it the finished Hearthvale map, so that the set matches.
+Inpaint next: two leaning trees as a gate, an elf tree with lanterns, a ring of big mushrooms, a rope bridge over a ravine, a cave mouth under roots with a big web, mossy standing stones, elf tree houses, a waterfall and pool, a broken thorn wall. Then the jokes: a cave bear stuck in a thorn bush, a squirrel that steals arrows.
+
+### 3.4 The Hollow Marches
+
+```text
+Image 1 is a rough layout sketch. Keep its composition: the road path, the 10 pale ovals, the brown house on the hill, the dark green far land and the white clouds. Do not copy its flat colors.
+Image 2 shows the art style. Image 3 is the first map of the same set. Paint in the same style, view and scale.
+
+Paint a fantasy campaign map for a mobile strategy game, wide landscape.
+High bird's-eye view, tilted about 45 degrees, so that houses show their roof and their front.
+
+Wide misty marshes with reeds, pools, old dead trees and a few dry hills.
+One road follows the path of the sketch: old stones at the bottom left, then wooden boardwalks over the water, then a stone causeway to the island. It ends at the island.
+The 10 pale ovals of the sketch are 10 small empty patches of dry grass on the road. Nothing stands on them.
+On the island, in place of the house: a castle of pale bone-white stone with thin towers, violet banners and soft green light in the windows.
+Soft white clouds frame the edges. The top-right corner is only clouds.
+
+Bright and a little funny, strange but not scary, painterly, soft brush texture. Misty teal, violet, moss green, bone white. Bright late afternoon with low mist on the water, light from the upper left.
+The image is only the painting, without text, labels, icons or a frame.
+```
+
+Inpaint next: a crooked sign post with a lantern, a sunken chapel, a goblin raft workshop, a long boardwalk over a bog, a small graveyard, a broken windmill, a ferry with a skeleton ferryman, a goblin mine with rail tracks, a stone bridge with green fire bowls. Then the jokes: a skeleton that fishes, a frog with a small crown.
+
+### 3.5 If the result is still wrong
+
+| Problem | Fix |
+| --- | --- |
+| A flat parchment map, or a top-down view with no fronts | Put the Town painting first and say "same camera as image 2". |
+| A small diorama on a table or a floating island | Add "the land fills the full image to all edges". |
+| The road goes another way | Use the 3:2 sketch at the size of the output, so that the model does not stretch it. Or inpaint only the road. |
+| Objects on the clearings | Inpaint each clearing with "empty short grass". |
+| Text-like marks or a dashed line | Inpaint that area with the material around it ("grass", "dirt road"). |
 
 ## 4. Steps
 
-1. Make 4 to 8 images with the prompt of the Region. Use the Town painting, and for Regions 2 and 3 the Hearthvale map, as style references.
+1. Make 4 to 8 base images with the prompt of the Region and the reference images of 3.1.
 2. Select one image with the checklist in 5.
-3. Fix problems by hand or with inpainting: dashed lines or marks on the road, objects on a clearing, text-like marks, strange buildings.
-4. Move the clearings and the Boss landmark to the positions in 1.1, by hand or with inpainting. Crop to 16:9 and export the master at 3200 × 1800.
+3. Add the landmarks and the jokes of the Region with inpainting (3.2 to 3.4). Fix problems by hand or with inpainting: dashed lines or marks on the road, objects on a clearing, text-like marks, strange buildings.
+4. Move the clearings and the Boss landmark near the positions in 1.1, by hand or with inpainting. Crop to 16:9 and export the master at 3200 × 1800.
 5. Export a WebP at 2560 × 1440, less than about 400 KB (Technical Design, section 6). Name it after the Region, for example `hearthvale.webp`. Put it in `apps/web/public/campaign/`.
-6. Trace the center line of the painted road from the Trail entry to clearing 10, as a list of points in the 1600 × 900 box. The game draws the progress line on these points. Put the path and the file name in the Region Map data in `apps/web/src/features/campaign/` (planned).
+6. Measure the center of each clearing, and trace the center line of the painted road from the Trail entry to clearing 10, as lists of points in the 1600 × 900 box (1.3). The game draws the Stage Markers and the progress line on these points. Put them and the file name in `REGION_MAPS` in `apps/web/src/features/campaign/region-map.ts`, and run its unit tests.
 7. Open the Campaign screen at 4:3, 16:9, 21:9 and a phone in landscape. Check that all 10 Stage Markers are on their clearings, and that the Region name, the arrows and the Star chest panel do not cover a Stage Marker or the Boss landmark.
 8. Write the licence record (art direction 5.5).
+9. If the Region has no Battle Painting, make it with [13 — Battlefield Concepts](./13-battlefield-concepts.md). Do not make a painting for each Stage.
 
 ## 5. Review checklist
 

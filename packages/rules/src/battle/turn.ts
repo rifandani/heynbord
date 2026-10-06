@@ -39,6 +39,38 @@ const regenerate = (ctx: StepContext): void => {
   }
 };
 
+/**
+ * Rally N (GDD 5.4): the other friendly Units in the Lane of a Rally Unit get
+ * +N Attack until the end of the Turn. The bonuses of two Rally Units add.
+ * A Unit with Base Attack 0 gets no bonus, so it never attacks (GDD 4.6).
+ */
+const rally = (ctx: StepContext): void => {
+  const units = actionOrder(ctx.state, ctx.state.activeSide);
+  for (const leader of units) {
+    if (leader.rally <= 0) {
+      continue;
+    }
+    for (const unit of units) {
+      if (
+        unit.id !== leader.id &&
+        unit.lane === leader.lane &&
+        unit.attack > 0
+      ) {
+        unit.rallied += leader.rally;
+      }
+    }
+  }
+};
+
+/** The Rally bonus of the active Side ends with its Turn. */
+const endRally = (ctx: StepContext): void => {
+  for (const unit of ctx.state.units) {
+    if (unit.owner === ctx.state.activeSide) {
+      unit.rallied = 0;
+    }
+  }
+};
+
 const suddenDeath = (ctx: StepContext): void => {
   const { turnNumber, activeSide } = ctx.state;
   if (turnNumber < SUDDEN_DEATH_TURN) {
@@ -84,7 +116,10 @@ export const drawCard = (ctx: StepContext, sideId = ctx.state.activeSide) => {
   );
 };
 
-/** The Start Step (GDD 4.3). The Play Phase follows. Closed Lanes open first. */
+/**
+ * The Start Step (GDD 4.3). The Play Phase follows. Closed Lanes open first,
+ * then Regeneration and Rally.
+ */
 export const runStartStep = (ctx: StepContext): void => {
   ctx.events.push(
     BattleEvent.TurnStarted({
@@ -94,6 +129,7 @@ export const runStartStep = (ctx: StepContext): void => {
   );
   openClosedLanes(ctx);
   regenerate(ctx);
+  rally(ctx);
   suddenDeath(ctx);
   if (isOver(ctx)) {
     return;
@@ -172,12 +208,14 @@ const fadeArmor = (ctx: StepContext): void => {
 /**
  * The End Step (GDD 4.3): Burn, then Poison, then durations go down. Skill
  * Card Armor counts the other side's Turns, so it covers that many enemy Turns.
- * A Hobbled count goes down in this step, after Burn and Poison.
+ * A Hobbled count goes down in this step, after Burn and Poison. The Rally
+ * bonus ends.
  */
 const runEndStep = (ctx: StepContext): void => {
   applyBurn(ctx);
   applyPoison(ctx);
   lowerHobble(ctx);
+  endRally(ctx);
   fadeArmor(ctx);
   ctx.events.push(BattleEvent.TurnEnded({ side: ctx.state.activeSide }));
 };

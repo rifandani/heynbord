@@ -16,13 +16,22 @@ import { BattleEvent, otherSide } from "./types";
 /** Charge gives +2 Speed in the Turn of the summon (GDD 5.4). */
 const CHARGE_BONUS = 2;
 
-/** Speed after Charge. A Hobbled Unit then has a maximum Speed of 1 (GDD 4.5). */
+/**
+ * Speed after Charge. A Hobbled Unit then has a maximum Speed of 1, and an
+ * Entangled Unit has Speed 0 (GDD 4.5).
+ */
 const currentSpeed = (state: BattleState, unit: UnitState): number => {
+  if (unit.entangled) {
+    return 0;
+  }
   const speed =
     unit.speed +
     (unit.charge && unit.summonedTurn === state.turnNumber ? CHARGE_BONUS : 0);
   return unit.hobbled > 0 ? Math.min(speed, 1) : speed;
 };
+
+/** Attack with the Rally bonus of this Turn (GDD 4.7, step 2). */
+const attackOf = (unit: UnitState): number => unit.attack + unit.rallied;
 
 /**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of
@@ -185,23 +194,91 @@ const retaliate = (
     !defender.retaliation ||
     defender.frozen ||
     attacker.range > 0 ||
-    defender.attack <= 0 ||
+    attackOf(defender) <= 0 ||
     !findUnit(ctx.state, defender.id) ||
     !findUnit(ctx.state, attacker.id)
   ) {
     return;
   }
   damageUnit(ctx, attacker, {
-    amount: defender.attack,
+    amount: attackOf(defender),
     damageType: defender.damageType,
     source: "retaliation",
     crit: 0,
   });
 };
 
+/**
+ * Trample (GDD 4.7): after a melee kill, the damage that is left hits the
+ * enemy Unit in the next Square behind the killed Unit. An empty Square or a
+ * friendly Unit loses it, and it never hits a Hero. The hit is not an attack:
+ * no Crit, no Retaliation, no on-hit Keywords and no new Trample. The Last
+ * Breath of the killed Unit occurs first, and the hit occurs also when that
+ * Last Breath killed the Trample Unit.
+ */
+const trample = (
+  ctx: StepContext,
+  unit: UnitState,
+  killed: UnitState,
+  left: number
+): void => {
+  if (!unit.trample || unit.range > 0 || left <= 0 || isOver(ctx)) {
+    return;
+  }
+  const next = unitAt(
+    ctx.state,
+    killed.lane,
+    killed.position + direction(unit.owner)
+  );
+  if (!next || next.owner === unit.owner) {
+    return;
+  }
+  damageUnit(ctx, next, {
+    amount: left,
+    damageType: unit.damageType,
+    source: "trample",
+    crit: 0,
+  });
+};
+
+/** Poison, then Hobble, then Entangle, then Knockback (GDD 4.4). */
+const applyOnHit = (
+  ctx: StepContext,
+  unit: UnitState,
+  struck: UnitState
+): void => {
+  if (unit.poison) {
+    struck.poisoned += 1;
+    ctx.events.push(
+      BattleEvent.StatusApplied({ unitId: struck.id, status: "poison" })
+    );
+  }
+  if (unit.hobble > 0) {
+    struck.hobbled = Math.max(struck.hobbled, unit.hobble);
+    ctx.events.push(
+      BattleEvent.StatusApplied({
+        unitId: struck.id,
+        status: "hobble",
+        count: struck.hobbled,
+      })
+    );
+  }
+  // A new Entangle does not stack or extend the Status.
+  if (unit.entangle && !struck.entangled) {
+    struck.entangled = true;
+    ctx.events.push(
+      BattleEvent.StatusApplied({ unitId: struck.id, status: "entangle" })
+    );
+  }
+  if (unit.range === 0 && unit.knockback > 0 && !struck.wall) {
+    pushUnit(ctx, struck, unit.knockback);
+  }
+};
+
 const attack = (ctx: StepContext, unit: UnitState): void => {
   const { state } = ctx;
-  if (unit.attack <= 0) {
+  const power = attackOf(unit);
+  if (power <= 0) {
     return;
   }
   const target = targetOf(state, unit);
@@ -218,7 +295,7 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
   const crit = state.sides[unit.owner].hero.unitCrit;
   if (target._tag === "Hero") {
     damageHero(ctx, target.side, {
-      amount: unit.attack + unit.heroic,
+      amount: power + unit.heroic,
       damageType: unit.damageType,
       source: "attack",
       crit,
@@ -229,40 +306,26 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
   if (!defender) {
     return;
   }
+  const hpBefore = defender.hp;
   const dealt = damageUnit(ctx, defender, {
-    amount: unit.attack,
+    amount: power,
     damageType: unit.damageType,
     source: "attack",
     crit,
   });
   const struck = findUnit(state, defender.id);
-  if (dealt > 0 && struck) {
-    if (unit.poison) {
-      struck.poisoned += 1;
-      ctx.events.push(
-        BattleEvent.StatusApplied({ unitId: struck.id, status: "poison" })
-      );
-    }
-    if (unit.hobble > 0) {
-      struck.hobbled = Math.max(struck.hobbled, unit.hobble);
-      ctx.events.push(
-        BattleEvent.StatusApplied({
-          unitId: struck.id,
-          status: "hobble",
-          count: struck.hobbled,
-        })
-      );
-    }
-    if (unit.range === 0 && unit.knockback > 0 && !struck.wall) {
-      pushUnit(ctx, struck, unit.knockback);
-    }
+  if (!struck) {
+    trample(ctx, unit, defender, dealt - hpBefore);
+  } else if (dealt > 0) {
+    applyOnHit(ctx, unit, struck);
   }
   retaliate(ctx, defender, unit);
 };
 
 /**
  * The Resolution Phase (GDD 4.3, 4.4): the active side's Units act one at a
- * time. A Frozen Unit skips this action, and then its Freeze ends.
+ * time. A Frozen Unit skips this action, and then its Freeze ends. The action
+ * (also a skipped one) ends Entangled.
  */
 export const runResolutionPhase = (ctx: StepContext): void => {
   const { state } = ctx;
@@ -274,11 +337,13 @@ export const runResolutionPhase = (ctx: StepContext): void => {
     }
     if (unit.frozen) {
       unit.frozen = false;
+      unit.entangled = false;
       ctx.events.push(BattleEvent.UnitSkipped({ unitId }));
       continue;
     }
     move(ctx, unit);
     attack(ctx, unit);
+    unit.entangled = false;
     if (isOver(ctx)) {
       return;
     }

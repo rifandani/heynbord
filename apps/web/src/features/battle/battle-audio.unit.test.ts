@@ -1,7 +1,17 @@
+import { getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { eventSound } from "@/features/battle/battle-audio";
 import { startSession } from "@/features/battle/battle-session";
+
+const played = (cardId: string) =>
+  ({
+    _tag: "CardPlayed",
+    side: "enemy",
+    handIndex: 0,
+    card: { instanceId: 1, cardId, rank: "common" },
+    target: { _tag: "NoTarget" },
+  }) as const;
 
 describe("eventSound", () => {
   it("gives each Battle action a sound (ART-03)", () => {
@@ -52,9 +62,11 @@ describe("eventSound", () => {
       })
     ).toBe("defeat");
     expect(eventSound({ _tag: "TurnEnded", side: "player" })).toBeNull();
+    expect(eventSound(played("mage.fireball"))).toBe("cast");
+    expect(eventSound(played("human.militiaRecruit"))).toBeNull();
     const [unit] = startSession({
       stageId: "1-10",
-      deckId: "vanguard",
+      deck: getStarterDeck("vanguard"),
       seed: 1,
     }).view.units;
     // SAFETY: Stage 1-10 starts with one Unit on the Board, so `unit` is defined.

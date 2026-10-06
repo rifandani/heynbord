@@ -1,8 +1,8 @@
 # 11 — Town Concepts
 
-This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`.
+This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons.
 
-Now the Town uses the first master painting, `apps/web/public/town/town.jpg` (1672 × 941). The Town Gate layer `town-gate.webp` is cut out of it by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 3200 × 1800 can replace it with no code change if it keeps the same composition.
+Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1672 × 941). The Town Gate layer `town-gate.webp` is cut out of it by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 3200 × 1800 can replace it with no code change if it keeps the same composition.
 
 ## 1. Rules for the Town art
 
@@ -222,3 +222,80 @@ each building separated by open space, calm sky above the gate, no text, no lett
 - When a screen comes (for example the Workshop), cut its Building out of the same master painting into a new layer, and add the Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its box must be in the safe area.
 - When you add a screen with no Building in section 2, add its brief here first. Then paint it into the master painting with inpainting, in the same style.
 - When you change the painting, check the ambient layers (1.3) again.
+
+## 7. Town Bar icons
+
+The Town Bar (GDD 11.4) has one shortcut for each entry of `TOWN_SHORTCUTS` in `town.ts`. Each shortcut shows its painted icon, so that the bar looks like a part of the painted world. Each icon shows the same object as its Building in section 2, so the bar and the Town agree.
+
+The Settings button at the right end of the bar also has a painted icon. It replaces the language and sound buttons. It opens the Settings dialog in the center of the screen (GDD 11.4), where the Player sets the audio, the language and the other options. Settings has no Building, so its icon shows a different object (7.3).
+
+The painted icons show at 66 px (48 px on a phone), and they stand out of the top edge of the bar. `DESIGN.md` (Navigation) gives the Shortcut size and states.
+
+### 7.1 Rules for the icons
+
+- **One object for each icon.** No scene, no ground, no frame and no badge circle. The background is transparent.
+- **View.** A slight three-quarter view from above, about 30° down. The bottom edge of the object is flat, so that it sits on the bar.
+- **Light.** From the upper left, as in all other art.
+- **Outline.** A thick dark brown outline (`#2e1d10`, the dark end of the Town Bar wood) around each object. All icons have the same outline thickness.
+- **Size.** Square 1:1. Make at 1024 × 1024. The object fills about 85% of the canvas.
+- **No text.** No letters, numbers, runes or logo. The game shows the shortcut names from the Message Catalogs, in each language.
+- **States.** Make one image for each icon. The code makes the current, hover, focus and locked states (DESIGN.md Navigation).
+
+### 7.2 Icon template
+
+Put the subject from 7.3 in `[SUBJECT]`.
+
+```text
+A single hand-painted fantasy game menu icon: [SUBJECT].
+Chunky, toy-like proportions with a bold, simple silhouette that stays readable at 48 pixels.
+Seen from a slight three-quarter top-down view, about 30 degrees down.
+Thick dark brown outline (#2e1d10) around the whole object, painterly soft brush shading inside,
+glossy highlights on metal and gems, a warm rim light on the edges.
+Light from the upper left. Bright, warm and a little funny. Not dark, not realistic, no gore, no neon.
+Palette of warm stone, polished gold and bronze, warm tavern wood, royal blue, terracotta and parchment cream.
+The object is centered and fills about 85% of the square canvas. Its bottom edge is flat and level,
+so it can sit on a dark carved wood menu bar and stand out of the top edge of the bar.
+Small contact shadow under the object only.
+Transparent background, isolated object, no scene, no ground, no frame, no border, no badge circle,
+no text, no letters, no numbers, no runes, no logo, no watermark.
+Square 1:1.
+```
+
+### 7.3 Icon subjects
+
+In the order of `TOWN_SHORTCUTS`, then the Settings button.
+
+| Shortcut | Building | `[SUBJECT]` |
+| --- | --- | --- |
+| `town` | None | a cozy little town house of warm stone and timber with a royal blue roof, a small gold flag on top, a round wooden door, a glowing window and a tiny flower box |
+| `campaign` | Town Gate (2.1) | a small stone gatehouse with two round towers, blue conical roofs and tiny gold flags, the wooden doors open, and a sandy road that comes out of the arch toward the viewer |
+| `heynspire` | Heynspire tower (2.2) | a very tall, thin white stone tower with blue roofs and a spiral stair around it, small glowing windows, and three small floating stones around its top, with a soft white cloud around the peak |
+| `dungeons` | Dungeons cave (2.3) | a dark cave arch in grey rocks with two broken old pillars, a lit torch on one side, a cute (not scary) wooden warning barrier with a small skull, and two small glowing yellow eyes in the dark |
+| `deck` | Library (2.4) | an open thick leather book with gold corners, with a fan of three fantasy playing cards that comes out of its pages; the card backs are royal blue with a gold pattern and no symbols |
+| `workshop` | Workshop (2.5) | a heavy iron anvil on a wooden stump, with a smith hammer that leans on it and a glowing orange-hot card on top that throws small sparks |
+| `packs` | Card shop (2.7) | a sealed fantasy card pack wrapped in purple foil with gold trim, a red wax seal in the middle, and a small sparkle on the shiny wrapper; the top edge is crimped |
+| `hero` | Barracks (2.8) | a polished steel knight helmet with a gold crest band and a tall royal blue plume, set on a small round wooden shield |
+| `achievements` | Hall of banners (2.9) | a gold trophy cup with two handles, in front of a long hanging banner in royal blue and gold with a swallow-tail end; small sparkles on the cup |
+| `bazaar` | Market (2.6) | a small market tent with orange, yellow and blue stripes and a pointed top with a little pennant, and a fat coin purse in front with gold coins that spill out |
+| `settings` | None | a chunky polished bronze cogwheel with eight rounded teeth and a round royal blue gem in its center hub, that stands upright in a small slot of a short wooden block; no tools and no other objects |
+
+### 7.4 Steps
+
+1. Make 4 to 8 images of the `town` icon with the template in 7.2. Use the golden references as style references. Select one with the checklist in 7.5.
+2. Make each of the other icons with the `town` icon as a reference image. Add this line at the start of the prompt: "Match the attached icon exactly in style, outline thickness, light, view angle and scale."
+3. Use GPT Image with a transparent background and high quality, at 1024 × 1024.
+4. Fix problems by hand or with inpainting (text-like marks, extra parts, a broken outline).
+5. Export each icon as WebP with transparency at 128 × 128 (2× the largest shortcut size). Compress the files (Technical Design, section 6). Put them in `apps/web/public/town/bar/`, with the shortcut ID as the file name (for example `campaign.webp`, and `settings.webp` for the Settings button). Keep the full-size sources in `apps/web/art/town/bar/`, not in `public/`: the server sends each file in `public/` to the browser.
+6. Write the licence record (art direction 5.5) for each icon.
+
+### 7.5 Review checklist
+
+- [ ] Each icon is clear at 48 px and at 32 px.
+- [ ] The 11 icons have the same outline thickness, view angle, light and scale.
+- [ ] Each shortcut icon shows the same object as its Building in section 2.
+- [ ] The Settings cogwheel does not look like the Workshop anvil.
+- [ ] The light comes from the upper left.
+- [ ] The background is transparent, and the bottom edge of the object is flat.
+- [ ] No text, letters, runes, logo or signature in the image.
+- [ ] The icons do not look like the icons of another game.
+- [ ] The style matches the golden references.

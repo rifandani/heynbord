@@ -106,10 +106,8 @@ describe("unitAtTarget", () => {
 });
 
 describe("detailsSide", () => {
-  it("puts the Card Details on the side away from the Unit", () => {
-    expect(detailsSide(0)).toBe("right");
-    expect(detailsSide(5)).toBe("right");
-    expect(detailsSide(6)).toBe("left");
-    expect(detailsSide(11)).toBe("left");
+  it("puts the Card Details on the side of the Unit owner", () => {
+    expect(detailsSide("player")).toBe("left");
+    expect(detailsSide("enemy")).toBe("right");
   });
 });

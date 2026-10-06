@@ -35,6 +35,7 @@ const VALUE_KEYWORDS = [
   "hobble",
   "knockback",
   "lastBreath",
+  "rally",
   "regeneration",
 ] as const;
 const FLAG_KEYWORDS = [
@@ -43,6 +44,8 @@ const FLAG_KEYWORDS = [
   "pivot",
   "poison",
   "retaliation",
+  "unique",
+  "wall",
 ] as const;
 
 /** Each Keyword on a Creature Card, with its rule (GDD 5.4). */

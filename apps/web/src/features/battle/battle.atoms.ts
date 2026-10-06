@@ -11,7 +11,7 @@ import type { TutorialMarks } from "@/features/battle/tutorial";
 import { tutorialMarks } from "@/features/battle/tutorial";
 import { unitAtTarget } from "@/features/battle/unit-inspect";
 
-/** The Battle on the screen, or `null` on the Stage select. App state, so kept alive. */
+/** The Battle on the screen, or `null` on the Town or the Campaign. App state, so kept alive. */
 export const battleSessionAtom = Atom.make<BattleSession | null>(null).pipe(
   Atom.keepAlive
 );
@@ -109,3 +109,11 @@ export const soundOnAtom = Atom.kvs({
   runtime: storageRuntime,
   schema: Schema.Boolean,
 }).pipe(Atom.withServerValue(() => true));
+
+/** The sound volume, 0 to 100, from the Settings dialog. The sound switch stays apart from it. */
+export const soundVolumeAtom = Atom.kvs({
+  defaultValue: () => 100,
+  key: "heynbord.sound-volume",
+  runtime: storageRuntime,
+  schema: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
+}).pipe(Atom.withServerValue(() => 100));

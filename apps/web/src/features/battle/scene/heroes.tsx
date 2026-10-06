@@ -11,6 +11,7 @@ import type { HeroPose } from "@/features/battle/scene/hero-pose";
 import { heroPose } from "@/features/battle/scene/hero-pose";
 import { HERO_FIGURE_Y, heroX } from "@/features/battle/scene/layout";
 import { playback } from "@/features/battle/scene/playback";
+import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import {
   blobShadowTexture,
   heroFigureTexture,
@@ -19,6 +20,7 @@ import { currentEvent } from "@/features/battle/scene/unit-pose";
 
 const WHITE = new Color("#ffffff");
 const HIT = new Color("#ff5a4a");
+const CAST = new Color();
 
 const placeHero = (figure: Mesh | null, pose: HeroPose, turn: number) => {
   if (figure) {
@@ -28,16 +30,16 @@ const placeHero = (figure: Mesh | null, pose: HeroPose, turn: number) => {
   }
 };
 
-const tintHero = (
-  material: MeshBasicMaterial | null,
-  hitTint: number | null
-) => {
+const tintHero = (material: MeshBasicMaterial | null, pose: HeroPose) => {
   if (!material) {
     return;
   }
   material.color.copy(WHITE);
-  if (hitTint !== null) {
-    material.color.lerp(HIT, hitTint);
+  if (pose.cast) {
+    material.color.lerp(CAST.set(pose.cast.color), pose.cast.amount);
+  }
+  if (pose.hitTint !== null) {
+    material.color.lerp(HIT, pose.hitTint);
   }
 };
 
@@ -51,6 +53,7 @@ const HeroFigure = ({ side }: { readonly side: Side }) => {
   const shadow = useMemo(() => blobShadowTexture(), []);
   const figure = useRef<Mesh>(null);
   const material = useRef<MeshBasicMaterial>(null);
+  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const x = heroX(side);
 
   useFrame(({ camera }) => {
@@ -58,14 +61,15 @@ const HeroFigure = ({ side }: { readonly side: Side }) => {
       side,
       currentEvent(playback.session?.current),
       playback.progress,
-      playback.time
+      playback.time,
+      reducedMotion
     );
     placeHero(
       figure.current,
       pose,
       Math.atan2(camera.position.x - x, camera.position.z)
     );
-    tintHero(material.current, pose.hitTint);
+    tintHero(material.current, pose);
   });
 
   return (

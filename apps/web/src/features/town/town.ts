@@ -1,8 +1,6 @@
 import type { CoinDenomination } from "@workspace/rules";
 import { coinDenominations } from "@workspace/rules";
 
-import type { Glyph } from "@/features/battle/glyphs";
-
 /** The game screens in the `/play` route before a Battle (web ADR-0006). */
 export type GameScreen = "town" | "campaign";
 
@@ -18,7 +16,7 @@ export interface Rect {
 export const PAINTING = { width: 1600, height: 900 } as const;
 
 /** The master painting. Each selectable Building is a cut-out layer of it. */
-export const PAINTING_IMAGE = "/town/town.jpg";
+export const PAINTING_IMAGE = "/town/town.webp";
 
 /** The landscape aspects that the Town supports: 4:3 laptops to 19.5:9 phones. */
 const NARROWEST_ASPECT = 4 / 3;
@@ -100,7 +98,10 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
   },
 ];
 
-/** One shortcut in the Town Bar. `screen` is `null` for a screen that does not exist yet. */
+/**
+ * One shortcut in the Town Bar. `screen` is `null` for a screen that does not
+ * exist yet, or for a shortcut that opens a dialog over the current screen.
+ */
 export interface TownShortcut {
   readonly id:
     | "town"
@@ -113,22 +114,35 @@ export interface TownShortcut {
     | "hero"
     | "achievements"
     | "bazaar";
-  readonly glyph: Glyph;
   readonly screen: GameScreen | null;
+  /** The dialog that the shortcut opens over the current screen. */
+  readonly dialog?: "deck";
 }
+
+/** True for a shortcut to a screen that does not exist yet. */
+export const isLocked = (shortcut: TownShortcut): boolean =>
+  shortcut.screen === null && shortcut.dialog === undefined;
+
+/**
+ * The painted icon of a shortcut or of the Settings button (11 — Town Concepts
+ * 7): 128 × 128 WebP with transparency.
+ */
+export const shortcutImage = (id: TownShortcut["id"] | "settings") =>
+  `/town/bar/${id}.webp`;
 
 /** The Town shortcut, then one shortcut for each Building, in GDD 11.4 order. */
 export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
-  { id: "town", glyph: "house", screen: "town" },
-  { id: "campaign", glyph: "gate", screen: "campaign" },
-  { id: "heynspire", glyph: "tower", screen: null },
-  { id: "dungeons", glyph: "cave", screen: null },
-  { id: "deck", glyph: "cards", screen: null },
-  { id: "workshop", glyph: "anvil", screen: null },
-  { id: "packs", glyph: "pack", screen: null },
-  { id: "hero", glyph: "helmet", screen: null },
-  { id: "achievements", glyph: "banner", screen: null },
-  { id: "bazaar", glyph: "tent", screen: null },
+  { id: "town", screen: "town" },
+  { id: "campaign", screen: "campaign" },
+  { id: "heynspire", screen: null },
+  { id: "dungeons", screen: null },
+  // The Deck builder is a dialog over the current screen, not a screen.
+  { id: "deck", screen: null, dialog: "deck" },
+  { id: "workshop", screen: null },
+  { id: "packs", screen: null },
+  { id: "hero", screen: null },
+  { id: "achievements", screen: null },
+  { id: "bazaar", screen: null },
 ];
 
 /** A box in painting coordinates as CSS percentages of the painting. */

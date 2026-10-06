@@ -1,4 +1,5 @@
 import type { BattleEvent } from "@workspace/rules";
+import { getCard } from "@workspace/rules";
 
 export type BattleSpeed = 1 | 2;
 
@@ -11,8 +12,10 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   CardDrawn: 200,
   CardPlayed: 180,
   UnitSummoned: 420,
-  RecallRolled: 380,
+  // The cast card holds, so its Recall chip can be read, then it goes.
+  RecallRolled: 600,
   CountdownChanged: 160,
+  CardSabotaged: 260,
   ArmorGained: 260,
   ArmorFaded: 80,
   UnitMoved: 0,
@@ -32,6 +35,12 @@ const MOVE_PER_SQUARE = 190;
 /** Each Square of a push takes this long at speed ×1. A push is faster than a walk. */
 const PUSH_PER_SQUARE = 80;
 
+/**
+ * A Skill Card cast shows the card, the target and a spell bolt before its
+ * effect. The enemy's cast is longer: the Player has not seen that card yet.
+ */
+const CAST_DURATION = { player: 700, enemy: 1050 } as const;
+
 /** A ranged attack needs time for the projectile. */
 const RANGED_EXTRA = 120;
 
@@ -48,6 +57,11 @@ export const eventDuration = (
     base = Math.abs(event.to - event.from) * MOVE_PER_SQUARE;
   } else if (event._tag === "UnitPushed") {
     base = Math.abs(event.to - event.from) * PUSH_PER_SQUARE;
+  } else if (
+    event._tag === "CardPlayed" &&
+    getCard(event.card.cardId).kind === "skill"
+  ) {
+    base = CAST_DURATION[event.side];
   } else if (event._tag === "UnitAttacked" && event.ranged) {
     base += RANGED_EXTRA;
   } else if (event._tag === "DamageDealt" && event.crit) {

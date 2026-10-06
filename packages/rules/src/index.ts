@@ -32,10 +32,35 @@ export type {
   UnitSnapshot,
   UnitState,
 } from "./battle/types";
+export {
+  addCopy,
+  autoFill,
+  canAddCopy,
+  cardCopiesInDeck,
+  copiesInDeck,
+  copiesLeft,
+  DeckProblem,
+  deckProblems,
+  fitsClass,
+  isDeckValid,
+  ownedCopies,
+  removeCopy,
+  starterCollection,
+} from "./collection/deck-building";
+export type {
+  Collection,
+  CollectionEntry,
+  DeckInput,
+} from "./collection/deck-building";
 export { CARDS, getCard } from "./content/cards";
 export { coinDenominations } from "./content/coin";
 export type { CoinDenomination, CoinPart } from "./content/coin";
-export { getStarterDeck, STARTER_DECKS } from "./content/decks";
+export {
+  deckSizeLimits,
+  getStarterDeck,
+  MAX_COPIES,
+  STARTER_DECKS,
+} from "./content/decks";
 export {
   firstTryPathLevel,
   firstWinXp,
@@ -44,13 +69,12 @@ export {
 } from "./content/player-levels";
 export { keywordValue } from "./content/keywords";
 export { rankPips, RANKS, recallChance, scaleForRank } from "./content/ranks";
+export { ClassId, DeckEntry } from "./content/schema";
 export type {
   CardDefinition,
-  ClassId,
   ClosedLane,
   CreatureCardDefinition,
   DamageType,
-  DeckEntry,
   GearLevels,
   KeywordAmount,
   Keywords,

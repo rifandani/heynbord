@@ -13,6 +13,15 @@ const hit = {
   hp: 10,
 } as const;
 
+const played = (cardId: string, side: "player" | "enemy") =>
+  ({
+    _tag: "CardPlayed",
+    side,
+    handIndex: 0,
+    card: { instanceId: 1, cardId, rank: "common" },
+    target: { _tag: "NoTarget" },
+  }) as const;
+
 describe("eventDuration (technical design 4.3)", () => {
   it("gives a ranged attack and a Crit more time", () => {
     const melee = {
@@ -48,6 +57,15 @@ describe("eventDuration (technical design 4.3)", () => {
     expect(push).toBeGreaterThan(0);
     expect(push).toBeLessThan(
       eventDuration({ _tag: "UnitMoved", ...squares }, 1)
+    );
+  });
+
+  it("gives a Skill Card cast time to show, and the enemy's cast more", () => {
+    const creature = eventDuration(played("human.militiaRecruit", "player"), 1);
+    const skill = eventDuration(played("mage.fireball", "player"), 1);
+    expect(skill).toBeGreaterThan(3 * creature);
+    expect(eventDuration(played("mage.fireball", "enemy"), 1)).toBeGreaterThan(
+      skill
     );
   });
 

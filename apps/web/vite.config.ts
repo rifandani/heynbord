@@ -193,12 +193,20 @@ export default defineConfig({
         ],
         theme_color: "#ffffff",
       },
+      // The browser downloads the manifest icons when the user installs the
+      // app. The pages do not show them, so do not precache them.
+      includeManifestIcons: false,
       injectManifest: {
+        // Precache only the app shell. Game art in `public/` goes into a
+        // runtime cache when a screen shows it (see `src/sw.ts`). Icons,
+        // screenshots, `og.png`, `robots.txt` and `sitemap.xml` are for
+        // browsers and crawlers, not for the pages.
         globPatterns: [
-          "**/*.{html,css,js,json,txt,ico,svg,jpg,png,webp,woff,woff2,ttf,eot,otf,wasm}",
+          "assets/**/*.{js,css,svg,png,jpg,webp,woff,woff2,wasm}",
+          "offline.html",
+          "favicon.{ico,svg}",
+          "apple-touch-icon-180x180.png",
         ],
-        // Source image for `pwa-assets.config.ts`; the page never loads it.
-        globIgnores: ["logo.png"],
       },
       devOptions: {
         enabled: process.env.NODE_ENV === "development",
@@ -217,6 +225,7 @@ export default defineConfig({
     // the dep scanner misses them and Vite reloads the page on first visit.
     include: [
       "workbox-window",
+      "workbox-expiration",
       "workbox-precaching",
       "workbox-routing",
       "workbox-strategies",

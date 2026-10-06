@@ -1,17 +1,24 @@
+import { getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
+import { currentCast } from "@/features/battle/cast";
 import { DAMAGE_COLORS } from "@/features/battle/palette";
 import type { Fx } from "@/features/battle/scene/fx";
 import {
   fxByKind,
   fxForEvent,
   projectileAt,
+  spellBoltAt,
   worldOf,
 } from "@/features/battle/scene/fx";
-import { heroX } from "@/features/battle/scene/layout";
+import { heroX, laneZ, squareX } from "@/features/battle/scene/layout";
 
-const { view } = startSession({ stageId: "1-10", deckId: "vanguard", seed: 1 });
+const { view } = startSession({
+  stageId: "1-10",
+  deck: getStarterDeck("vanguard"),
+  seed: 1,
+});
 
 describe("fxForEvent", () => {
   it("shows a damage number and a burst on the target", () => {
@@ -212,6 +219,7 @@ describe("projectileAt", () => {
       y: 0.8,
       z: from?.z,
       color: DAMAGE_COLORS[attacker?.damageType ?? "physical"],
+      size: 1,
     });
     expect(shot(1)?.x).toBeCloseTo(heroX("player"));
   });
@@ -232,5 +240,43 @@ describe("projectileAt", () => {
     expect(shot(0.5, { ranged: false })).toBeNull();
     expect(shot(0.1)).toBeNull();
     expect(shot(0.5, { unitId: 999 })).toBeNull();
+  });
+});
+
+const cast = (cardId: string) =>
+  currentCast(
+    [
+      {
+        _tag: "CardPlayed",
+        side: "enemy",
+        handIndex: 0,
+        card: { instanceId: 1, cardId, rank: "common" },
+        target:
+          cardId === "warrior.warDrums"
+            ? { _tag: "NoTarget" }
+            : { _tag: "Square", lane: 0, position: 4 },
+      },
+    ],
+    true
+  );
+
+describe("spellBoltAt", () => {
+  it("flies from the caster Hero to the target Squares in the second half of the reveal", () => {
+    const fireball = cast("mage.fireball");
+    expect(spellBoltAt(fireball, view.lanes, 0.3)).toBeNull();
+    const start = spellBoltAt(fireball, view.lanes, 0.5);
+    expect(start?.x).toBeCloseTo(heroX("enemy"));
+    expect(start?.color).toBe(DAMAGE_COLORS.fire);
+    expect(start?.size).toBeGreaterThan(1);
+    // The area of an enemy Fireball goes from Square 4 toward the player Hero.
+    const end = spellBoltAt(fireball, view.lanes, 0.92);
+    expect(end?.x).toBeCloseTo((squareX(4) + squareX(3)) / 2);
+    expect(end?.z).toBeCloseTo(laneZ(0, view.lanes));
+    expect(spellBoltAt(fireball, view.lanes, 0.95)).toBeNull();
+  });
+
+  it("does not fly for a cast with no target, or outside the reveal", () => {
+    expect(spellBoltAt(cast("warrior.warDrums"), view.lanes, 0.7)).toBeNull();
+    expect(spellBoltAt(null, view.lanes, 0.7)).toBeNull();
   });
 });

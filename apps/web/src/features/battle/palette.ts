@@ -36,6 +36,18 @@ export const RACE_COLORS: Readonly<
     light: "#f39a55",
     dark: "#7d3209",
   },
+  goblin: {
+    main: "#b8893a",
+    second: "#8fc93a",
+    light: "#dbb46e",
+    dark: "#4a4a48",
+  },
+  feral: {
+    main: "#6b5e93",
+    second: "#eaf2f8",
+    light: "#9d92c4",
+    dark: "#372f54",
+  },
 };
 
 /** Rank gem colors (art direction 4.2). The UI also shows pips, never only the color. */

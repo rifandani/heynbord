@@ -326,3 +326,110 @@ describe("purity", () => {
     expect(state).toEqual(before);
   });
 });
+
+/**
+ * The enemy ends its Turn, so the player's Start Step runs. The player has a
+ * Unit with Rally 1 at Square 0 of Lane 0.
+ */
+const rallyBoard = (extraRally = false) => {
+  const state = emptyBattle({ activeSide: "enemy", lanes: 2 });
+  const elk = placeUnit(state, {
+    cardId: "feral.frostElkMatriarch",
+    owner: "player",
+    position: 0,
+  });
+  const second = extraRally
+    ? placeUnit(state, {
+        cardId: "feral.frostElkMatriarch",
+        owner: "player",
+        position: 1,
+      })
+    : undefined;
+  const ally = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    position: 2,
+  });
+  const otherLane = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    lane: 1,
+    position: 2,
+  });
+  const enemy = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "enemy",
+    position: 3,
+    attack: 0,
+    hp: 20,
+    maxHp: 20,
+    speed: 0,
+  });
+  return { elk, second, ally, otherLane, enemy, ...run(state, endTurn) };
+};
+
+describe("Rally (GDD 4.3, 5.4)", () => {
+  it("gives the other friendly Units in the Lane +N Attack in the owner's Start Step", () => {
+    const { state, elk, ally, otherLane, enemy } = rallyBoard();
+    expect(state.activeSide).toBe("player");
+    expect(unitById(state, ally.id)?.rallied).toBe(1);
+    expect(unitById(state, elk.id)?.rallied).toBe(0);
+    expect(unitById(state, otherLane.id)?.rallied).toBe(0);
+    expect(unitById(state, enemy.id)?.rallied).toBe(0);
+  });
+
+  it("adds the bonus to attacks, and the bonus ends at the end of the Turn", () => {
+    const { state, ally, enemy } = rallyBoard();
+    const { state: next, events } = run(state, endTurn);
+    expect(
+      eventsOfType(events, "DamageDealt").find(
+        (event) =>
+          event.target._tag === "Unit" && event.target.unitId === enemy.id
+      )?.amount
+    ).toBe(3);
+    expect(unitById(next, enemy.id)?.hp).toBe(17);
+    expect(unitById(next, ally.id)?.rallied).toBe(0);
+  });
+
+  it("adds the bonuses of two Rally Units", () => {
+    const { state, elk, second, ally } = rallyBoard(true);
+    expect(unitById(state, ally.id)?.rallied).toBe(2);
+    expect(unitById(state, elk.id)?.rallied).toBe(1);
+    expect(unitById(state, second?.id ?? 0)?.rallied).toBe(1);
+  });
+
+  it("gives no bonus to a Unit with Base Attack 0, so it does not attack", () => {
+    const state = emptyBattle({ activeSide: "enemy", lanes: 1 });
+    placeUnit(state, {
+      cardId: "feral.frostElkMatriarch",
+      owner: "player",
+      position: 0,
+    });
+    const tortoise = placeUnit(state, {
+      cardId: "feral.boulderTortoise",
+      owner: "player",
+      position: 2,
+    });
+    const enemy = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 3,
+      attack: 0,
+      speed: 0,
+    });
+    const { state: rallied } = run(state, endTurn);
+    expect(unitById(rallied, tortoise.id)?.rallied).toBe(0);
+    const { events } = run(rallied, endTurn);
+    expect(
+      eventsOfType(events, "UnitAttacked").filter(
+        (event) => event.unitId === tortoise.id
+      )
+    ).toHaveLength(0);
+    expect(
+      eventsOfType(events, "DamageDealt").filter(
+        (event) =>
+          event.target._tag === "Unit" && event.target.unitId === enemy.id
+      )
+    ).toHaveLength(0);
+  });
+});

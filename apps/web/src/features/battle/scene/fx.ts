@@ -1,7 +1,10 @@
 import type { BattleEvent, DamageType, Side } from "@workspace/rules";
+import { getCard } from "@workspace/rules";
 
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleView } from "@/features/battle/battle-view";
+import type { Cast } from "@/features/battle/cast";
+import { castSquares, effectColor } from "@/features/battle/cast";
 import { DAMAGE_COLORS } from "@/features/battle/palette";
 import {
   HERO_FIGURE_Y,
@@ -132,6 +135,21 @@ export const fxForEvent = (
         },
       ];
     }
+    case "CardPlayed": {
+      // A Skill Card cast starts with a ring at the feet of the caster.
+      const definition = getCard(event.card.cardId);
+      return definition.kind === "skill"
+        ? [
+            {
+              kind: "ring",
+              color: effectColor(definition.effect),
+              x: heroX(event.side),
+              z: 0,
+              start: time,
+            },
+          ]
+        : [];
+    }
     case "ArmorGained": {
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
       return at
@@ -163,6 +181,66 @@ export const fxByKind = (fxs: readonly Fx[], size: number) => ({
   burst: ofKind(fxs, "burst", size),
 });
 
+interface Projectile {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+  readonly color: string;
+  /** 1 for an arrow or a bolt of a Unit. A spell is larger. */
+  readonly size: number;
+}
+
+/** The middle of the Squares that a cast hits, or `null` for a cast with no target. */
+const castCenter = (
+  cast: Cast,
+  lanes: number
+): { readonly x: number; readonly z: number } | null => {
+  const squares = castSquares(cast);
+  const [first] = squares;
+  const last = squares.at(-1);
+  if (!first || !last) {
+    return null;
+  }
+  return {
+    x: (squareX(first.position) + squareX(last.position)) / 2,
+    z: laneZ(first.lane, lanes),
+  };
+};
+
+/** The spell bolt flies in the second half of the cast reveal. */
+const BOLT_START = 0.5;
+const BOLT_END = 0.92;
+
+/**
+ * Where the spell bolt of a Skill Card cast is now: from the caster Hero to
+ * the middle of the target Squares. `null` before and after its flight.
+ */
+export const spellBoltAt = (
+  cast: Cast | null,
+  lanes: number,
+  progress: number
+): Projectile | null => {
+  if (cast?.phase !== "reveal") {
+    return null;
+  }
+  const to = castCenter(cast, lanes);
+  const flight = (progress - BOLT_START) / (BOLT_END - BOLT_START);
+  if (!to || flight < 0 || flight > 1) {
+    return null;
+  }
+  // Fast at the end, as a thrown spell.
+  const eased = flight * flight;
+  const fromX = heroX(cast.side);
+  const fromY = HERO_FIGURE_Y + 0.6;
+  return {
+    x: fromX + (to.x - fromX) * eased,
+    y: fromY + (0.5 - fromY) * eased + Math.sin(eased * Math.PI) * 1.2,
+    z: to.z * eased,
+    color: effectColor(cast.skill.effect),
+    size: 2.2 - eased * 0.6,
+  };
+};
+
 /**
  * Where the projectile of a ranged attack is now, and its color, or `null`
  * when no projectile flies (art direction 2.1). It starts at 20% progress.
@@ -170,12 +248,7 @@ export const fxByKind = (fxs: readonly Fx[], size: number) => ({
 export const projectileAt = (
   current: PlayingEvent | null | undefined,
   progress: number
-): {
-  readonly x: number;
-  readonly y: number;
-  readonly z: number;
-  readonly color: string;
-} | null => {
+): Projectile | null => {
   if (current?.event._tag !== "UnitAttacked" || !current.event.ranged) {
     return null;
   }
@@ -192,5 +265,6 @@ export const projectileAt = (
     y: 0.8 + Math.sin(flight * Math.PI) * 0.9,
     z: from.z + (to.z - from.z) * flight,
     color: DAMAGE_COLORS[attacker.damageType],
+    size: 1,
   };
 };

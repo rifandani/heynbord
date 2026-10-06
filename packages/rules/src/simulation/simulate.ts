@@ -9,7 +9,7 @@ import { chooseCommand } from "../ai/choose-command";
 import { createBattle, playerHeroHp } from "../battle/create-battle";
 import { starsFor } from "../battle/stars";
 import { step } from "../battle/step";
-import type { BattleState, PlayerSetup } from "../battle/types";
+import type { BattleState, PlayerSetup, Side } from "../battle/types";
 import { getCard } from "../content/cards";
 import { deckSizeLimits, MAX_COPIES } from "../content/decks";
 import type {
@@ -33,24 +33,31 @@ export const NO_GEAR: GearLevels = {
 
 /**
  * The AI plays both Sides until the Battle ends. It throws when the AI chooses
- * an illegal Command, or when the Battle passes `maxCommands`.
+ * an illegal Command, or when the Battle passes `maxCommands`. `onTurn` sees
+ * the state at the start of each Play Phase.
  */
 export const playOut = (
   start: BattleState,
-  maxCommands = MAX_COMMANDS
+  maxCommands = MAX_COMMANDS,
+  onTurn?: (state: BattleState) => void
 ): BattleState => {
   let state = start;
+  onTurn?.(state);
   for (let commands = 0; state.phase !== "finished"; commands += 1) {
     if (commands >= maxCommands) {
       throw new Error(
         `Battle ${state.stageId} seed ${state.seed} is not finished after ${maxCommands} Commands`
       );
     }
-    const result = step(state, chooseCommand(state));
+    const command = chooseCommand(state);
+    const result = step(state, command);
     if (Result.isFailure(result)) {
       throw new Error(`AI chose an illegal Command: ${result.failure._tag}`);
     }
     ({ state } = result.success);
+    if (command._tag === "EndTurn" && state.phase !== "finished") {
+      onTurn?.(state);
+    }
   }
   return state;
 };
@@ -86,6 +93,13 @@ export const stageTarget = (stage: StageDefinition): WinRateTarget => {
 
 /** Each Archetype against each other Archetype (GDD 13, step 5). */
 export const MATCHUP_TARGET: WinRateTarget = { min: 0.45, max: 0.55 };
+
+/**
+ * True when the Matchup target gates release: only for two main Archetypes.
+ * A pair with a diagnostic Deck is for review (Archetypes 2.1).
+ */
+export const gatesRelease = (archetype: Archetype, opponent: Archetype) =>
+  archetype.kind === "main" && opponent.kind === "main";
 
 export interface StageReport {
   readonly stageId: string;
@@ -180,14 +194,35 @@ export interface MatchupReport {
   /** The win rate of the Side that takes the first Turn, from 0 to 1. */
   readonly firstSideWinRate: number;
   readonly averageTurn: number;
+  /**
+   * The average number of Turns of `archetypeId` with no Ready card in the
+   * Hand at the start of its Play Phase. It shows the Sabotage lock risk
+   * (Archetypes 2.2). It is for review only.
+   */
+  readonly noReadyTurns: number;
 }
+
+/**
+ * Plays one Matchup Battle. Returns the end state and the number of Turns of
+ * each Side with no Ready card in the Hand.
+ */
+const playMatchupBattle = (start: BattleState) => {
+  const noReady: Record<Side, number> = { player: 0, enemy: 0 };
+  const end = playOut(start, MAX_COMMANDS, (state) => {
+    const { activeSide } = state;
+    if (!state.sides[activeSide].hand.some((card) => card.countdown === 0)) {
+      noReady[activeSide] += 1;
+    }
+  });
+  return { end, noReady };
+};
 
 /**
  * The enemy Side of a Matchup as a Stage: the same Hero HP and Gear as the
  * player Side, 3 Lanes (ADR-0010), no Closed Lanes and no Start Units.
  */
 const matchupStage = (
-  opponent: Archetype,
+  opponent: StarterDeck,
   options: MatchupOptions
 ): StageDefinition => ({
   id: `matchup:${opponent.id}`,
@@ -210,8 +245,8 @@ const matchupStage = (
 /** Starts one Matchup Battle. `first` is the player Side, and it takes the first Turn. */
 export const createMatchupBattle = (
   seed: number,
-  first: Archetype,
-  second: Archetype,
+  first: StarterDeck,
+  second: StarterDeck,
   options: MatchupOptions
 ): BattleState =>
   createBattle({
@@ -227,20 +262,22 @@ export const createMatchupBattle = (
  * rate. A mirror Matchup thus always gives a win rate of exactly 50%.
  */
 export const simulateMatchup = (
-  archetype: Archetype,
-  opponent: Archetype,
+  archetype: StarterDeck,
+  opponent: StarterDeck,
   options: MatchupOptions
 ): MatchupReport => {
   let wins = 0;
   let firstSideWins = 0;
   let turns = 0;
+  let noReadyTurns = 0;
   for (let seed = 1; seed <= options.seeds; seed += 1) {
-    const ahead = playOut(
+    const { end: ahead, noReady: aheadNoReady } = playMatchupBattle(
       createMatchupBattle(seed, archetype, opponent, options)
     );
-    const behind = playOut(
+    const { end: behind, noReady: behindNoReady } = playMatchupBattle(
       createMatchupBattle(seed, opponent, archetype, options)
     );
+    noReadyTurns += aheadNoReady.player + behindNoReady.enemy;
     wins += ahead.result?.winner === "player" ? 1 : 0;
     wins += behind.result?.winner === "enemy" ? 1 : 0;
     for (const end of [ahead, behind]) {
@@ -256,5 +293,6 @@ export const simulateMatchup = (
     winRate: wins / battles,
     firstSideWinRate: firstSideWins / battles,
     averageTurn: turns / battles,
+    noReadyTurns: noReadyTurns / battles,
   };
 };

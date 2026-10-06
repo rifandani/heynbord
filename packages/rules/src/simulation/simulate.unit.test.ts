@@ -8,6 +8,7 @@ import { getStage, STAGES } from "../content/stages";
 import {
   createMatchupBattle,
   expectedDeck,
+  gatesRelease,
   isOnTarget,
   MATCHUP_TARGET,
   NO_GEAR,
@@ -127,6 +128,108 @@ describe("simulateMatchup (GDD 13, steps 4 and 5)", () => {
     expect(state.lanes).toBe(STAGE_LANES);
     expect(state.closedLanes).toEqual([]);
     expect(state.units).toEqual([]);
+  });
+});
+
+const archetype = (id: string) => {
+  const found = ARCHETYPES.find((candidate) => candidate.id === id);
+  if (!found) {
+    throw new Error(`Unknown Archetype: ${id}`);
+  }
+  return found;
+};
+
+describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
+  it("plays each diagnostic Archetype against each main Archetype with no illegal Command", () => {
+    for (const diagnostic of [
+      "tunnelRats",
+      "wildHunt",
+      "vanguardFull",
+      "raidersFull",
+    ]) {
+      for (const main of ["vanguard", "raiders"]) {
+        const report = simulateMatchup(
+          archetype(diagnostic),
+          archetype(main),
+          options
+        );
+        expect(report.battles).toBe(8);
+        expect(report.winRate).toBeGreaterThanOrEqual(0);
+        expect(report.winRate).toBeLessThanOrEqual(1);
+      }
+    }
+    const goblinAgainstFeral = simulateMatchup(
+      archetype("tunnelRats"),
+      archetype("wildHunt"),
+      options
+    );
+    expect(goblinAgainstFeral.battles).toBe(8);
+  });
+
+  it("gates release only with a pair of two main Archetypes", () => {
+    expect(gatesRelease(archetype("vanguard"), archetype("raiders"))).toBe(
+      true
+    );
+    expect(gatesRelease(archetype("vanguard"), archetype("tunnelRats"))).toBe(
+      false
+    );
+    expect(gatesRelease(archetype("wildHunt"), archetype("raiders"))).toBe(
+      false
+    );
+    expect(gatesRelease(archetype("tunnelRats"), archetype("wildHunt"))).toBe(
+      false
+    );
+    expect(
+      gatesRelease(archetype("vanguardFull"), archetype("raidersFull"))
+    ).toBe(false);
+    expect(gatesRelease(archetype("raidersFull"), archetype("vanguard"))).toBe(
+      false
+    );
+  });
+
+  it("reports the average number of the Archetype's Turns with no Ready card in the Hand", () => {
+    const report = simulateMatchup(
+      archetype("vanguard"),
+      archetype("tunnelRats"),
+      options
+    );
+    expect(report.noReadyTurns).toBeGreaterThan(0);
+    expect(report.noReadyTurns).toBeLessThanOrEqual(report.averageTurn);
+    const reverse = simulateMatchup(
+      archetype("tunnelRats"),
+      archetype("vanguard"),
+      options
+    );
+    expect(reverse.averageTurn).toBe(report.averageTurn);
+    expect(reverse.noReadyTurns).not.toBe(report.noReadyTurns);
+  });
+
+  it("keeps the old Vanguard against Raiders results for the same seeds", () => {
+    const vanguardArchetype = archetype("vanguard");
+    const raidersArchetype = archetype("raiders");
+    expect(
+      simulateMatchup(vanguardArchetype, raidersArchetype, {
+        seeds: 20,
+        level: 5,
+        gear: NO_GEAR,
+      })
+    ).toMatchObject({
+      winRate: 0.4,
+      firstSideWinRate: 0.6,
+      averageTurn: 18.05,
+    });
+    // Gear 3 rolls Crit and Block.
+    expect(
+      simulateMatchup(vanguardArchetype, raidersArchetype, {
+        seeds: 20,
+        level: 5,
+        gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
+      })
+    ).toMatchObject({
+      winRate: 0.425,
+      firstSideWinRate: 0.475,
+      averageTurn: 18.9,
+    });
   });
 });
 

@@ -1,4 +1,4 @@
-import { Target } from "@workspace/rules";
+import { Target, getStarterDeck } from "@workspace/rules";
 import { Atom, AtomRegistry } from "effect/reactivity";
 import { describe, expect, it } from "vitest";
 
@@ -16,7 +16,11 @@ import { NO_MARKS, selectCard } from "@/features/battle/tutorial";
 
 const sessionWithReadyCard = () => {
   for (let seed = 1; seed < 50; seed += 1) {
-    const session = startSession({ stageId: "1-2", deckId: "vanguard", seed });
+    const session = startSession({
+      stageId: "1-2",
+      deck: getStarterDeck("vanguard"),
+      seed,
+    });
     const index = session.view.sides.player.hand.findIndex(
       (card) => card.countdown === 0 && card.cardId?.startsWith("human")
     );
@@ -33,7 +37,11 @@ describe("legalTargetsAtom", () => {
     expect(registry.get(legalTargetsAtom)).toEqual([]);
     registry.set(
       battleSessionAtom,
-      startSession({ stageId: "1-1", deckId: "vanguard", seed: 1 })
+      startSession({
+        stageId: "1-1",
+        deck: getStarterDeck("vanguard"),
+        seed: 1,
+      })
     );
     expect(registry.get(legalTargetsAtom)).toEqual([]);
   });

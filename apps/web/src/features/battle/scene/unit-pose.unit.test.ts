@@ -1,5 +1,5 @@
 import type { UnitSnapshot } from "@workspace/rules";
-import { BattleEvent } from "@workspace/rules";
+import { BattleEvent, getStarterDeck } from "@workspace/rules";
 import type { Color } from "three";
 import { describe, expect, it } from "vitest";
 
@@ -47,7 +47,7 @@ const pose = (
 
 const { view, rules } = startSession({
   stageId: "1-10",
-  deckId: "vanguard",
+  deck: getStarterDeck("vanguard"),
   seed: 1,
 });
 

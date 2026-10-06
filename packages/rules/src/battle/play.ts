@@ -11,10 +11,14 @@ import { randomInt, rollBasisPoints } from "../random";
 import type { StepContext } from "./context";
 import { damageUnit } from "./damage";
 import { unitsInArea } from "./targets";
-import type { CardInstance, HandCard, Side, Target } from "./types";
+import type { CardInstance, HandCard, Side, Target, UnitState } from "./types";
 import { BattleEvent, otherSide } from "./types";
 import { createUnit } from "./units";
 
+/**
+ * Puts a Unit on the Board. Only `playCard` applies the effects of a Unit that
+ * comes from its Creature Card, such as Sabotage: a Start Unit does not.
+ */
 export const summon = (
   ctx: StepContext,
   owner: Side,
@@ -22,7 +26,7 @@ export const summon = (
   definition: CreatureCardDefinition,
   lane: number,
   position: number
-): void => {
+): UnitState => {
   const { state } = ctx;
   const unit = createUnit({
     id: state.nextId,
@@ -36,6 +40,44 @@ export const summon = (
   state.nextId += 1;
   state.units.push(unit);
   ctx.events.push(BattleEvent.UnitSummoned({ unit: { ...unit } }));
+  return unit;
+};
+
+/**
+ * The Hand of the enemy Hero of the Front that holds `lane`. In v1 each Side
+ * has 1 Hero, so it is the Hand of the other Side for each Lane.
+ */
+const enemyHandOfLane = (ctx: StepContext, side: Side, _lane: number) => {
+  const enemy = otherSide(side);
+  return { side: enemy, hand: ctx.state.sides[enemy].hand };
+};
+
+/**
+ * Sabotage N (GDD 5.4, ADR-0017): the card with the lowest Countdown in the
+ * enemy Hand gets +N Countdown. A Ready card is the lowest. For the same
+ * Countdown, the oldest card (the first in the Hand) gets it. There is no
+ * maximum Countdown.
+ */
+const sabotage = (ctx: StepContext, unit: UnitState, amount: number): void => {
+  const { side, hand } = enemyHandOfLane(ctx, unit.owner, unit.lane);
+  let target: HandCard | undefined;
+  for (const card of hand) {
+    if (!target || card.countdown < target.countdown) {
+      target = card;
+    }
+  }
+  if (!target) {
+    return;
+  }
+  target.countdown += amount;
+  ctx.events.push(
+    BattleEvent.CardSabotaged({
+      unitId: unit.id,
+      side,
+      instanceId: target.instanceId,
+      countdown: target.countdown,
+    })
+  );
 };
 
 const lowerCountdowns = (
@@ -161,7 +203,11 @@ export const playCard = (
       Target,
       { readonly _tag: "Square" }
     >;
-    summon(ctx, side, card, definition, lane, position);
+    const unit = summon(ctx, side, card, definition, lane, position);
+    const amount = definition.keywords.sabotage ?? 0;
+    if (amount > 0) {
+      sabotage(ctx, unit, amount);
+    }
     return;
   }
   castSkill(ctx, side, card, definition, target);

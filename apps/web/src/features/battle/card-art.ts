@@ -2,17 +2,22 @@ import type { BattleState } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 
 /**
- * The path of the card art for a card ID: `human.crossbowGuard` uses
- * `/illustrations/crossbow-guard.jpg`. Each card has one 3:4 portrait image
- * with its background (art direction 5.3).
+ * The path of the card art for a card ID. A Creature Card is in the folder of
+ * its Race and a Skill Card is in the folder of its Class:
+ * `human.crossbowGuard` uses `/creature/human/crossbow-guard.webp` and
+ * `mage.fireball` uses `/skills/mage/fireball.webp`. Each card has one 3:4
+ * portrait image with its background (art direction 5.3).
  */
 export const cardIllustration = (cardId: string): string => {
+  const card = getCard(cardId);
   const name = cardId.slice(cardId.indexOf(".") + 1);
   const file = name.replaceAll(
     /[A-Z]/gu,
     (letter) => `-${letter.toLowerCase()}`
   );
-  return `/illustrations/${file}.jpg`;
+  const folder =
+    card.kind === "creature" ? `creature/${card.race}` : `skills/${card.class}`;
+  return `/${folder}/${file}.webp`;
 };
 
 /**

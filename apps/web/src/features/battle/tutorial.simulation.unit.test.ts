@@ -1,3 +1,4 @@
+import type { StarterDeck } from "@workspace/rules";
 import {
   legalTargets,
   STARTER_DECKS,
@@ -47,9 +48,9 @@ const firstPlay = (session: BattleSession) => {
  * target, then end the Turn. It selects each card before it plays it, as the
  * HUD does.
  */
-const playTutorial = (deckId: string, seed: number) => {
+const playTutorial = (deck: StarterDeck, seed: number) => {
   let session = settle(
-    startSession({ stageId: TUTORIAL_STAGE_ID, deckId, seed }, 1, true)
+    startSession({ stageId: TUTORIAL_STAGE_ID, deck, seed }, 1, true)
   );
   while (session.rules.phase !== "finished") {
     for (let play = firstPlay(session); play; play = firstPlay(session)) {
@@ -71,9 +72,7 @@ const playTutorial = (deckId: string, seed: number) => {
 
 describe("Tutorial simulation (headless, no rendering)", () => {
   const plays = STARTER_DECKS.flatMap((deck) =>
-    Array.from({ length: SEEDS }, (_, index) =>
-      playTutorial(deck.id, index + 1)
-    )
+    Array.from({ length: SEEDS }, (_, index) => playTutorial(deck, index + 1))
   );
   const rate = (match: (play: (typeof plays)[number]) => boolean) =>
     plays.filter(match).length / plays.length;

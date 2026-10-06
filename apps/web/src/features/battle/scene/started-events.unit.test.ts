@@ -1,3 +1,4 @@
+import { getStarterDeck } from "@workspace/rules";
 import type { BattleEvent } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
@@ -7,7 +8,11 @@ import {
   startedEvents,
 } from "@/features/battle/scene/started-events";
 
-const session = startSession({ stageId: "1-10", deckId: "vanguard", seed: 1 });
+const session = startSession({
+  stageId: "1-10",
+  deck: getStarterDeck("vanguard"),
+  seed: 1,
+});
 
 const damage = (crit: boolean): BattleEvent => ({
   _tag: "DamageDealt",
@@ -70,7 +75,7 @@ describe("shouldPublish", () => {
 
   it("publishes when the Tutorial changes", () => {
     const { tutorial } = startSession(
-      { stageId: "1-1", deckId: "vanguard", seed: 1 },
+      { stageId: "1-1", deck: getStarterDeck("vanguard"), seed: 1 },
       1,
       true
     );

@@ -1,4 +1,4 @@
-import { Target } from "@workspace/rules";
+import { Target, getStarterDeck } from "@workspace/rules";
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
@@ -26,11 +26,17 @@ const readyIndex = (session: ReturnType<typeof startSession>) =>
 /** The first seed whose opening Hand has a Ready card. */
 const SEED = Array.from({ length: 50 }, (_, index) => index + 1).find(
   (seed) =>
-    readyIndex(startSession({ stageId: "1-1", deckId: "raiders", seed })) >= 0
+    readyIndex(
+      startSession({ stageId: "1-1", deck: getStarterDeck("raiders"), seed })
+    ) >= 0
 );
 
 const start = () =>
-  startSession({ stageId: "1-1", deckId: "raiders", seed: SEED ?? 1 });
+  startSession({
+    stageId: "1-1",
+    deck: getStarterDeck("raiders"),
+    seed: SEED ?? 1,
+  });
 
 describe("startSession", () => {
   it("starts in the player's Play Phase with nothing to animate", () => {

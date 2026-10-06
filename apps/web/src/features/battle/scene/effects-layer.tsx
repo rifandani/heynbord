@@ -1,16 +1,19 @@
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import type { Mesh, Sprite } from "three";
 import { MeshBasicMaterial } from "three";
 
+import { currentCast } from "@/features/battle/cast";
 import type { Fx } from "@/features/battle/scene/fx";
 import {
   FX_LIFETIME,
   fxByKind,
   fxList,
   projectileAt,
+  spellBoltAt,
 } from "@/features/battle/scene/fx";
 import { playback } from "@/features/battle/scene/playback";
+import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { numberTexture } from "@/features/battle/scene/textures";
 
 /** The most effects of one kind on the screen at the same time. Older effects wait. */
@@ -99,26 +102,65 @@ const showPool = <Item extends { visible: boolean }, Shown extends Fx>(
   hideFrom(objects, effects.length);
 };
 
-/** A projectile flies to the target of a ranged attack (art direction 2.1). */
-const updateProjectile = (bolt: Mesh) => {
-  const shot = projectileAt(playback.session?.current, playback.progress);
+/** The spell bolt of a Skill Card cast, or the projectile of a ranged attack. */
+const currentShot = (reducedMotion: boolean) => {
+  const { session } = playback;
+  if (!session) {
+    return null;
+  }
+  const cast = currentCast(session.log, session.current !== null);
+  // With reduced motion, the cast shows only its card and its target Squares.
+  const spell = reducedMotion
+    ? null
+    : spellBoltAt(cast, session.view.lanes, playback.progress);
+  return spell ?? projectileAt(session.current, playback.progress);
+};
+
+const paint = (mesh: Mesh, color: string, opacity: number) => {
+  const { material } = mesh;
+  if (material instanceof MeshBasicMaterial) {
+    material.color.set(color);
+    material.opacity = opacity;
+  }
+};
+
+/**
+ * A projectile flies to the target of a ranged attack (art direction 2.1). A
+ * spell bolt is larger, with a soft halo of its color around it.
+ */
+const updateProjectile = (
+  bolt: Mesh,
+  halo: Mesh | null,
+  reducedMotion: boolean
+) => {
+  const shot = currentShot(reducedMotion);
   bolt.visible = shot !== null;
+  if (halo) {
+    halo.visible = shot !== null && shot.size > 1;
+  }
   if (!shot) {
     return;
   }
   bolt.position.set(shot.x, shot.y, shot.z);
-  const { material } = bolt;
-  if (material instanceof MeshBasicMaterial) {
-    material.color.set(shot.color);
+  bolt.scale.setScalar(shot.size);
+  paint(bolt, shot.color, 1);
+  if (halo?.visible) {
+    halo.position.copy(bolt.position);
+    halo.scale.setScalar(
+      shot.size * (2.2 + Math.sin(playback.time * 30) * 0.2)
+    );
+    paint(halo, shot.color, 0.35);
   }
 };
 
-/** Floating damage numbers, summon rings, hit bursts and projectiles, from fixed object pools. */
+/** Floating damage numbers, summon rings, hit bursts, projectiles and spell bolts, from fixed object pools. */
 export const EffectsLayer = () => {
   const numbers = useRef<(Sprite | null)[]>([]);
   const rings = useRef<(Mesh | null)[]>([]);
   const bursts = useRef<(Mesh | null)[]>([]);
   const projectile = useRef<Mesh>(null);
+  const halo = useRef<Mesh>(null);
+  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
 
   useFrame(() => {
     removeEndedFx();
@@ -128,7 +170,7 @@ export const EffectsLayer = () => {
     showPool(bursts.current, pools.burst, showBurst);
     const bolt = projectile.current;
     if (bolt) {
-      updateProjectile(bolt);
+      updateProjectile(bolt, halo.current, reducedMotion);
     }
   });
 
@@ -184,7 +226,11 @@ export const EffectsLayer = () => {
       ))}
       <mesh ref={projectile} visible={false} renderOrder={4}>
         <sphereGeometry args={[0.13, 12, 8]} />
-        <meshBasicMaterial toneMapped={false} />
+        <meshBasicMaterial transparent toneMapped={false} />
+      </mesh>
+      <mesh ref={halo} visible={false} renderOrder={3}>
+        <sphereGeometry args={[0.13, 12, 8]} />
+        <meshBasicMaterial transparent depthWrite={false} toneMapped={false} />
       </mesh>
     </group>
   );

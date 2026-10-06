@@ -41,7 +41,9 @@ export default {
   battle: {
     title: "Battle",
     chooseStage: "Choose a Stage",
-    chooseDeck: "Choose a Starter Deck",
+    chooseDeck: "Choose a Deck",
+    editDecks: "Edit Decks",
+    deckLine: "{className} · {count} cards",
     start: "Start Battle",
     stageLabel: "Stage {id}",
     boss: "Boss",
@@ -100,6 +102,11 @@ export default {
     range: "Range",
     recall: "Recall {value}%",
     skill: "Skill",
+    cast: {
+      player: "You cast {name}",
+      enemy: "The enemy casts {name}",
+      recalled: "Back to the Hand",
+    },
     recallReminder:
       "After its effect, this card has a {value}% chance to go back to your Hand. Else it goes to the Graveyard.",
     player: "You",
@@ -165,6 +172,60 @@ export default {
       },
     },
   },
+  campaign: {
+    label: "Campaign",
+    regionOf: "Region {number} of {count}",
+    regions: {
+      "1": "Hearthvale",
+      "2": "The Thornwood",
+      "3": "The Hollow Marches",
+    },
+    previousRegion: "Previous Region: {name}",
+    nextRegion: "Next Region: {name}",
+    regionLater: "{name} opens later.",
+    trail: "Stages",
+    marker: {
+      done: "Stage {id}, done, {stars} of 3 Stars",
+      open: "Stage {id}, open",
+      locked: "Stage {id}, locked",
+      bossDone: "Boss Stage {id}, done, {stars} of 3 Stars",
+      bossOpen: "Boss Stage {id}, open",
+      bossLocked: "Boss Stage {id}, locked",
+    },
+    winFirst: "Win Stage {id} first.",
+    stars: {
+      label: "Stars in {name}",
+      value: "{count} of {total} Stars",
+    },
+    chest: {
+      label: "Chest at {stars} Stars",
+      earned:
+        "You have the Stars for this chest. Chest rewards are not in the game yet.",
+      needed: "{count} more Stars open this chest.",
+    },
+    panel: {
+      close: "Close",
+      enemy: "Enemy",
+      enemyLine: "{name} · {className}",
+      heroHp: "Hero HP {hp}",
+      level: "Recommended level {level}",
+      bestStars: "Best",
+      notWon: "Not won yet",
+      reward: "Reward",
+      firstWin: "First win: this card, Coin and XP.",
+      repeatWin: "Repeat win: Coin, XP and a chance of a card from this Stage.",
+      deck: "Deck",
+      fight: "Fight",
+    },
+  },
+  settings: {
+    title: "Settings",
+    close: "Close Settings",
+    language: "Language",
+    sound: "Sound",
+    volume: "Sound volume",
+    soundOn: "Sound on",
+  },
   tutorial: {
     label: "Tutorial",
     gotIt: "Got it",
@@ -186,6 +247,49 @@ export default {
         title: "Block the enemy",
         text: "An enemy Unit is in a Lane that has none of your Units. The red highlight shows that Lane. Summon a Unit into it to block the enemy Unit.",
       },
+    },
+  },
+  deckBuilder: {
+    title: "Decks",
+    close: "Close Decks",
+    slots: "Deck slots",
+    slotName: "Deck {number}",
+    nameLabel: "Deck name",
+    yourCards: "Your Cards",
+    owned: "{count} cards",
+    show: "Show",
+    filters: { all: "All", creature: "Creatures", skill: "Skills" },
+    heroClass: "Hero Class",
+    curve: "Countdown curve",
+    curveColumn:
+      "Countdown {countdown}: {creatures} Creature Cards, {skills} Skill Cards",
+    creature: "Creature",
+    skill: "Skill",
+    thisDeck: "Cards in this Deck",
+    empty:
+      "This Deck has no cards. Select a card on the left page to add it, or use Auto-fill.",
+    size: "{count} / {max} cards",
+    sizeMin: "At least {min}",
+    add: "Add {name}, {rank}, Countdown {countdown}. Copies left: {left}.",
+    remove: "Remove one {name}, {rank}. In this Deck: {count}.",
+    left: "×{count}",
+    blocked: {
+      none: "All in Deck",
+      full: "Deck is full",
+      copies: "3 copies",
+      class: "{className} only",
+    },
+    autoFill: "Auto-fill",
+    clear: "Remove All",
+    use: "Use This Deck",
+    active: "Active Deck",
+    problems: {
+      tooFew: "The Deck needs at least {min} cards. It has {count}.",
+      tooMany: "The Deck can have {max} cards at most. It has {count}.",
+      tooManyCopies: "{name}: a Deck can have {max} copies at most.",
+      wrongClass:
+        "{name} is a {className} card. Remove it, or change the Hero Class.",
+      notOwned: "You do not have enough copies of {name} ({rank}).",
     },
   },
   decks: {
@@ -254,8 +358,11 @@ export default {
     lastBreath: "Last Breath {value}",
     pivot: "Pivot",
     poison: "Poison",
+    rally: "Rally {value}",
     regeneration: "Regeneration {value}",
     retaliation: "Retaliation",
+    unique: "Unique",
+    wall: "Wall",
     ranged: "Ranged {value}",
     melee: "Melee",
   },
@@ -266,18 +373,22 @@ export default {
     flying: "Moves over other Units. It stops in an empty Square.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
     hobble:
-      "After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled {value}. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner. A new Hobble keeps the higher count. Retaliation does not apply Hobble.",
+      "The enemy Unit it hits has a maximum Speed of 1 for {value} Turns. Retaliation does not apply Hobble.",
     knockback:
-      "After this Unit deals attack damage above 0 to an enemy Unit, that Unit is Pushed {value} Squares toward its own Hero, in its own Lane. The push stops before another Unit and at that Unit's Column 1. A Unit with Wall is never Pushed. Retaliation does not apply Knockback.",
+      "Pushes the enemy Unit it hits {value} Squares back. Retaliation does not apply Knockback.",
     lastBreath:
       "When this Unit leaves the Board, it deals {value} damage to the nearest enemy Unit ahead.",
     pivot:
       "This Unit can attack an enemy Unit directly behind it or next to it, before the Unit in front. Then it does not move.",
     poison:
       "After this Unit deals attack damage above 0, that Unit gains 1 Poison stack. In each End Step of its owner, it takes 1 damage per stack, then loses 1 stack.",
+    rally:
+      "In your Start Step, other friendly Units in the same Lane get +{value} Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus.",
     regeneration: "In your Start Step, this Unit heals {value} HP.",
     retaliation:
       "When this Unit survives a melee attack, it deals its Attack to the attacker.",
+    unique: "Only one copy of this card can be on your side of the Board.",
+    wall: "This Unit has Speed 0 and Attack 0. It blocks its Lane, and a push never moves it.",
     fire: "Fire: the target burns for 1 damage in its next 2 End Steps.",
     frost: "Frost: the target skips its next action.",
     holy: "Holy: Armor does not reduce this damage.",
@@ -327,9 +438,33 @@ export default {
         name: "Iron Bulwark",
         flavor: "A wall that complains about the weather.",
       },
+      townBarricade: {
+        name: "Town Barricade",
+        flavor: "The passage permit is under the sandbags.",
+      },
+      bridgePikeman: {
+        name: "Bridge Pikeman",
+        flavor: "Please enter the queue. The back of the queue.",
+      },
+      bannerChaplain: {
+        name: "Banner Chaplain",
+        flavor: "The sermon ends when morale improves.",
+      },
+      kingsCourier: {
+        name: "King's Courier",
+        flavor: "The message says urgent. She was already running.",
+      },
       paviseArbalist: {
         name: "Pavise Arbalist",
         flavor: "He brings his own wall and calls it a firing position.",
+      },
+      dawnReliquary: {
+        name: "Dawn Reliquary",
+        flavor: "Even broken, it gets the last word.",
+      },
+      marshalElianVoss: {
+        name: "Marshal Elian Voss",
+        flavor: "Hold the line. I have six more reasons.",
       },
     },
     orc: {
@@ -361,6 +496,34 @@ export default {
       warchiefGrukka: {
         name: "Warchief Grukka",
         flavor: '"Lunch first. Then glory."',
+      },
+      dusthideBrawler: {
+        name: "Dusthide Brawler",
+        flavor: "He mistakes every warning for applause.",
+      },
+      cinderhornRam: {
+        name: "Cinderhorn Ram",
+        flavor: "It never waits for the gate to open.",
+      },
+      warhowlerDrummer: {
+        name: "Warhowler Drummer",
+        flavor: "She only knows one rhythm: faster.",
+      },
+      ashspitHunter: {
+        name: "Ashspit Hunter",
+        flavor: "He measures range by how far the eyebrows burn.",
+      },
+      mesaPitFighter: {
+        name: "Mesa Pit-Fighter",
+        flavor: "Hit her once. That is how counting lessons start.",
+      },
+      pyreaxeRavager: {
+        name: "Pyreaxe Ravager",
+        flavor: "The axe is hot. Her temper is hotter.",
+      },
+      warbandStandardBearer: {
+        name: "Warband Standard-Bearer",
+        flavor: "Follow the banner. Ignore where it is going.",
       },
     },
     warrior: {

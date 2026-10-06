@@ -1,4 +1,5 @@
-import { legalTargets } from "@workspace/rules";
+import type { BattleEvent } from "@workspace/rules";
+import { getCard, legalTargets, getStarterDeck } from "@workspace/rules";
 import { absurd } from "effect";
 import type { AtomRegistry } from "effect/reactivity";
 
@@ -8,6 +9,7 @@ import {
   skip,
   startSession,
 } from "@/features/battle/battle-session";
+import { applyEvent } from "@/features/battle/battle-view";
 import {
   battleSessionAtom,
   focusedTargetAtom,
@@ -16,15 +18,19 @@ import {
   selectedCardAtom,
 } from "@/features/battle/battle.atoms";
 import { playback } from "@/features/battle/scene/playback";
+import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
+import type { StageResults } from "@/features/campaign/region-map";
 import { gameScreenAtom } from "@/features/town/town.atoms";
 
 /** The states that QA tools can ask for (director evidence manifest). */
 export const QA_STATES = [
   "town",
   "stage-select",
+  "campaign-progress",
   "active-play",
   "targeting",
   "resolution",
+  "enemy-cast",
   "victory",
   "defeat",
 ] as const;
@@ -59,9 +65,60 @@ const playUntilTargeting = (session: BattleSession): BattleSession => {
 };
 
 const playOut = (stageId: string, seed: number): BattleSession => {
-  let session = startSession({ stageId, deckId: "vanguard", seed });
+  let session = startSession({
+    stageId,
+    deck: getStarterDeck("vanguard"),
+    seed,
+  });
   while (session.rules.phase !== "finished") {
     session = skip(autoPlayTurn(session));
+  }
+  return session;
+};
+
+const isEnemyCast = (event: BattleEvent): boolean =>
+  event._tag === "CardPlayed" &&
+  event.side === "enemy" &&
+  getCard(event.card.cardId).kind === "skill";
+
+/** Applies the queued events before the first enemy Skill Card cast, or `null` when no cast is queued. */
+const toEnemyCast = (session: BattleSession): BattleSession | null => {
+  const index = session.queue.findIndex(isEnemyCast);
+  if (index === -1) {
+    return null;
+  }
+  const played = session.queue.slice(0, index);
+  return {
+    ...session,
+    view: played.reduce(applyEvent, session.view),
+    log: [...session.log, ...played],
+    queue: session.queue.slice(index),
+    current: null,
+    elapsed: 0,
+  };
+};
+
+/**
+ * The Hedge Witch of Stage 1-3 casts Skill Cards. Plays Turns until the
+ * enemy's Turn holds a cast, and stops just before it, for 12 Turns at most.
+ */
+const enemyCastBattle = (seed: number): BattleSession => {
+  let session = startSession({
+    stageId: "1-3",
+    deck: getStarterDeck("vanguard"),
+    seed,
+  });
+  for (
+    let turn = 0;
+    turn < 12 && session.rules.phase !== "finished";
+    turn += 1
+  ) {
+    const played = autoPlayTurn(session);
+    const cast = toEnemyCast(played);
+    if (cast) {
+      return cast;
+    }
+    session = skip(played);
   }
   return session;
 };
@@ -88,6 +145,22 @@ const finishedBattle = (
 };
 
 /**
+ * QA: Stages 1-1 to 1-9 won with mixed Stars, so the Boss Stage is Open and
+ * each Stage of Region 1 can be played.
+ */
+const QA_STAGE_RESULTS: StageResults = {
+  "1-1": 3,
+  "1-2": 3,
+  "1-3": 2,
+  "1-4": 3,
+  "1-5": 1,
+  "1-6": 2,
+  "1-7": 3,
+  "1-8": 2,
+  "1-9": 1,
+};
+
+/**
  * Builds a real game state with the real game functions. The bot playtest
  * also plays with real input, so these hooks cannot hide broken controls.
  */
@@ -97,14 +170,15 @@ export const buildQaState = (
 ): BattleSession | null => {
   switch (state) {
     case "town":
-    case "stage-select": {
+    case "stage-select":
+    case "campaign-progress": {
       return null;
     }
     case "active-play":
     case "targeting":
     case "resolution": {
       const session = playTurns(
-        startSession({ stageId: "1-2", deckId: "raiders", seed }),
+        startSession({ stageId: "1-2", deck: getStarterDeck("raiders"), seed }),
         4
       );
       if (state === "targeting") {
@@ -112,6 +186,9 @@ export const buildQaState = (
       }
       // A Resolution Phase in the middle of its animation.
       return state === "resolution" ? autoPlayTurn(session) : session;
+    }
+    case "enemy-cast": {
+      return enemyCastBattle(seed);
     }
     case "victory": {
       return finishedBattle(seed, "player");
@@ -149,13 +226,16 @@ export const installTestHooks = (
         throw new Error(`Unknown QA state: ${name}`);
       }
       const session = buildQaState(known, seed);
+      if (known === "campaign-progress") {
+        registry.set(stageResultsAtom, QA_STAGE_RESULTS);
+      }
       playback.session = null;
       registry.set(selectedCardAtom, null);
       registry.set(inspectedUnitAtom, null);
       registry.set(battleSessionAtom, session);
       // A Battle and its result go back to the Campaign (GDD 11.4).
       registry.set(gameScreenAtom, known === "town" ? "town" : "campaign");
-      if (known === "resolution" && session) {
+      if ((known === "resolution" || known === "enemy-cast") && session) {
         // Start the first queued events, so the capture shows Units in action.
         playback.session = session;
       }

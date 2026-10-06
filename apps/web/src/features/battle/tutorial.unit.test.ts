@@ -1,5 +1,5 @@
 import type { BattleEvent, BattleState, UnitSnapshot } from "@workspace/rules";
-import { getCard, Target } from "@workspace/rules";
+import { getCard, Target, getStarterDeck } from "@workspace/rules";
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
@@ -34,7 +34,11 @@ import {
 } from "@/features/battle/tutorial";
 
 const tutorialSession = (seed = 1) =>
-  startSession({ stageId: "1-1", deckId: "vanguard", seed }, 1, true);
+  startSession(
+    { stageId: "1-1", deck: getStarterDeck("vanguard"), seed },
+    1,
+    true
+  );
 
 const READY_CREATURE: HandCardView = {
   instanceId: 1,
@@ -63,6 +67,7 @@ const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   damageType: "physical",
   armor: 0,
   charge: false,
+  entangle: false,
   flying: false,
   heroic: 0,
   lastBreath: 0,
@@ -70,14 +75,18 @@ const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   poison: false,
   hobble: 0,
   knockback: 0,
+  rally: 0,
   regeneration: 0,
   retaliation: false,
+  trample: false,
   wall: false,
   summonedTurn: 1,
   burn: 0,
   poisoned: 0,
   hobbled: 0,
   frozen: false,
+  entangled: false,
+  rallied: 0,
   bonusArmor: 0,
   bonusArmorTurns: 0,
 });
@@ -343,7 +352,11 @@ const toFirstResolution = (start: BattleSession): BattleSession => {
 describe("the Tutorial in a Battle session", () => {
   it("is only in a Tutorial play", () => {
     expect(
-      startSession({ stageId: "1-1", deckId: "vanguard", seed: 1 }).tutorial
+      startSession({
+        stageId: "1-1",
+        deck: getStarterDeck("vanguard"),
+        seed: 1,
+      }).tutorial
     ).toBeNull();
     expect(tutorialSession().tutorial?.shown).toEqual(["ready"]);
   });
@@ -382,7 +395,11 @@ describe("the Tutorial in a Battle session", () => {
 });
 
 const finished = (stageId: string, winner: "player" | "enemy") => {
-  const session = startSession({ stageId, deckId: "vanguard", seed: 1 });
+  const session = startSession({
+    stageId,
+    deck: getStarterDeck("vanguard"),
+    seed: 1,
+  });
   return {
     ...session,
     rules: {

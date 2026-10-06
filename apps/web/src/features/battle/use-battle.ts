@@ -1,6 +1,6 @@
 import { RegistryContext, useAtomSet, useAtomValue } from "@effect/atom-react";
 import type { Target } from "@workspace/rules";
-import { isTutorial } from "@workspace/rules";
+import { isTutorial, starsFor } from "@workspace/rules";
 import { Result } from "effect";
 import { useContext } from "react";
 
@@ -41,6 +41,8 @@ import type { Tutorial } from "@/features/battle/tutorial";
 import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 import { nextInspectedUnit } from "@/features/battle/unit-inspect";
+import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
+import { recordWin } from "@/features/campaign/region-map";
 
 /** A new Battle seed. The seed is input to the rules, so this is not a rule. */
 export const randomSeed = (): number =>
@@ -127,10 +129,21 @@ export const useBattle = () => {
     }
   };
 
-  /** The Stage results before a new Battle or the Stage select (in memory until the Profile). */
+  /** The Stage results before a new Battle or the Campaign (in memory until the Profile). */
   const recordResult = () => {
-    if (isTutorialStageWin(live())) {
+    const finished = live();
+    if (isTutorialStageWin(finished)) {
       registry.set(tutorialStageWonAtom, true);
+    }
+    if (finished?.rules.result?.winner === "player") {
+      registry.set(
+        stageResultsAtom,
+        recordWin(
+          registry.get(stageResultsAtom),
+          finished.options.stageId,
+          starsFor(finished.rules)
+        )
+      );
     }
   };
 
@@ -185,7 +198,7 @@ export const useBattle = () => {
       );
       commit(startSession(options, speed, tutorial));
     },
-    /** The Stage select. Before a result, this is an Abandon: it records nothing. */
+    /** Back to the Campaign. Before a result, this is an Abandon: it records nothing. */
     leave: () => {
       recordResult();
       select(null);

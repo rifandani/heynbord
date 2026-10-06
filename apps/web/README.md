@@ -4,9 +4,16 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 ## Todo
 
+Design decisions for you:
+
+- Rally and Retaliation conflict. The bonus ends at the end of the owner's Turn, and Retaliation happens only in the enemy's Turn. So the issue's "bonus applies to Retaliation" can never happen.
+- Unique is card data only. No Battle rule reads it yet. Tokens do not exist, so the "Token does not apply Sabotage" test uses a Stage Start Unit.
+- Catalog test. The web catalog test skips Goblin and Feral cards until they get Message Catalog text.
+
 v1:
 
-- update town illustrations as we now have 6 races
+- if a 0 Base Attack unit have poison, or burn, etc skills, can they inflict those posion or burn, etc to the enemy unit?
+- /grill-with-docs Wild Hunt is too strong and Tunnel Rats is too weak, balance it
 - /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
 - /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think
 - we need to also have economy simulation script, not only battle simulation
@@ -18,11 +25,11 @@ v1:
 - /grill-with-docs a focus trap in the result dialog
 - /grill-with-docs card packs gacha with premium currency (develop shop first)
 - /grill-with-docs make sure player's progress are saved (locally, no server in v1)
-- blender mcp
 - check if we already finish all "v1" related features from docs, and if yes remove it
 
 v2:
 
+- blender mcp + all 3D unit, hero, hero equipments
 - standardize UI components at design system level
 - dynamic og image generation
 - add better auth + skills
@@ -38,6 +45,7 @@ v2:
 - Battle rules: Turn structure, Countdown, summon, movement, attack, damage, death, win and loss (GDD section 4)
 - 6 Keywords: Armor, Flying, Charge, Retaliation, Regeneration, Heroic
 - More animations in Battle Events
+- The JS is now most of the precache. catalog-page-_.js is 1.4 MiB, which is large for a catalog page. It possibly includes three.js. battle-canvas-_.js is 1.0 MiB. You can find the cause in html/visualizer-stats.html.
 
 ## Original Gameplay Ideas
 

@@ -9,7 +9,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **One image for each card.** Rank belongs to one card copy, and the card frame shows it. The image does not change with Rank.
 - **Base Rank sets the detail.** Common: plain, worn gear and a simple scene. Uncommon: some trim and one extra detail. Rare: ornate gear with gold or metal trim. Epic: a heroic scene with dramatic composition and more detail. The style and the light do not change.
 - **Light.** From the upper left in all images.
-- **Facing.** A Creature Card and a Token advance to the right of the image, in a three-quarter view. The chest and the lead foot point right. The face and the weapon may turn. A fortification shows its blocking face to the right. Forward in a pose means this direction. The card art and the Unit cut-out share it. See [ADR-0014](../adr/0014-creature-card-paintings-advance-to-the-right.md).
+- **Facing.** A Creature Card and a Token advance to the right of the image, in a three-quarter view. The chest and the lead foot point right. The face and the weapon may turn. A fortification shows its blocking face to the right. Forward in a pose means this direction. The card art and the Unit cut-out share it. See [ADR-0014](../adr/0014-creature-card-paintings-advance-to-the-right.md). A Skill Card has no Unit. When it shows travel, a throw, or a back view, that travel still goes to the right.
 - **Size.** Portrait 3:4 (card art is 768 × 1024).
 - **Gender.** The flavor text sets the gender of some figures. For the other figures, this document selects a gender, so that the set has a balanced mix.
 - **Creature Cards** use the template in 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
@@ -191,7 +191,7 @@ portrait 3:4 composition, no text, no frame
 | Field | Brief |
 | --- | --- |
 | Subject | A tall, sharp-eyed woman guard. |
-| Pose | She looks back over her shoulder while her glaive sweeps out to the side. |
+| Pose | Her chest and lead foot advance to the right. She looks back over her shoulder, and her glaive sweeps out to the side. |
 | Props | A glaive, a large iron ring of keys at her belt, a long blue coat over mail, a gold gate badge. |
 | Gameplay cues | Pivot: she watches behind and to the side, and the weapon sweeps sideways. |
 | Silhouette hook | The sideways glaive and the ring of keys. |
@@ -199,8 +199,8 @@ portrait 3:4 composition, no text, no frame
 | Setting | A large town gate with a portcullis. |
 
 ```text
-tall sharp-eyed woman gate guard, long blue coat over mail, gold gate badge, large iron ring of keys at her belt, glaive sweeping out to the side,
-Human of Heynbord, looking back over her shoulder while sweeping the glaive sideways, three-quarter view advancing to the right, full body, centered,
+tall sharp-eyed woman gate guard, long blue coat over mail, gold gate badge, large iron ring of keys at her belt, chest and lead foot advancing to the right, glaive sweeping out to the side,
+Human of Heynbord, looking back over her shoulder, three-quarter view advancing to the right, full body, centered,
 painterly fantasy card illustration, bright warm light, clean silhouette,
 soft brush texture, royal blue and gold palette,
 light from the upper left, large river town gate with a portcullis, simple low-contrast background,
@@ -236,7 +236,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.9 Town Barricade
 
-`human.townBarricade` · Wall · Common · Countdown 1 · Attack 0 · HP 11 · Speed 0 · Melee · Physical · Wall · **provisional**
+`human.townBarricade` · Wall · Common · Countdown 1 · Attack 0 · HP 11 · Speed 0 · Melee · Physical · Wall
 
 > The passage permit is under the sandbags.
 
@@ -262,7 +262,7 @@ portrait 3:4 composition, no readable text, no frame
 
 ### 2.10 Bridge Pikeman
 
-`human.bridgePikeman` · Striker · Uncommon · Countdown 3 · Attack 5 · HP 6 · Speed 1 · Melee · Physical · Knockback 1, 2 at Epic, 3 at Legendary · **provisional**
+`human.bridgePikeman` · Striker · Uncommon · Countdown 3 · Attack 5 · HP 6 · Speed 1 · Melee · Physical · Knockback 1, 2 at Epic, 3 at Legendary
 
 > Please enter the queue. The back of the queue.
 
@@ -288,7 +288,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.11 Banner Chaplain
 
-`human.bannerChaplain` · Support · Uncommon · Countdown 3 · Attack 2 · HP 7 · Speed 1 · Range 2 · Holy · Rally 1 · **provisional**
+`human.bannerChaplain` · Support · Uncommon · Countdown 3 · Attack 2 · HP 7 · Speed 1 · Range 2 · Holy · Rally 1
 
 > The sermon ends when morale improves.
 
@@ -314,7 +314,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.12 King's Courier
 
-`human.kingsCourier` · Runner · Rare · Countdown 4 · Attack 4 · HP 8 · Speed 4 · Melee · Physical · Charge · **provisional**
+`human.kingsCourier` · Runner · Rare · Countdown 4 · Attack 4 · HP 8 · Speed 4 · Melee · Physical · Charge
 
 > The message says urgent. She was already running.
 
@@ -366,7 +366,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.14 Dawn Reliquary
 
-`human.dawnReliquary` · Wall · Rare · Countdown 4 · Attack 0 · HP 16 · Speed 0 · Melee · Holy · Armor 2 · Wall · Last Breath: deal 2 Holy damage · **provisional**
+`human.dawnReliquary` · Wall · Rare · Countdown 4 · Attack 0 · HP 16 · Speed 0 · Melee · Holy · Armor 2 · Wall · Last Breath: deal 2 Holy damage
 
 > Even broken, it gets the last word.
 
@@ -392,7 +392,7 @@ portrait 3:4 composition, no readable text, no frame
 
 ### 2.15 Marshal Elian Voss (draft)
 
-`human.marshalElianVoss` · Support · Epic · Countdown 6 · Attack 4 · HP 12 · Speed 1 · Range 2 · Holy · Armor 1 · Rally 2 · Unique · **provisional**
+`human.marshalElianVoss` · Support · Epic · Countdown 6 · Attack 4 · HP 12 · Speed 1 · Range 2 · Holy · Armor 1 · Rally 2 · Unique
 
 > Hold the line. I have six more reasons.
 
@@ -460,7 +460,7 @@ Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 16, 
 | Subject | A thin, fast orc man with a big grin. |
 | Pose | He runs forward with a cleaver and carries a full sack over his shoulder. |
 | Props | A cleaver, a sack full of shiny things (spoons, pans, a small bell), many stolen rings and necklaces, scrap-metal armor. |
-| Gameplay cues | Speed 2: a running pose. Heroic 1: he looks past the viewer, at a bigger prize. A hidden blade in the sack shows Last Breath. |
+| Gameplay cues | Speed 2: a running pose. Heroic 1: he looks ahead to the right, at a bigger prize. A hidden blade in the sack shows Last Breath. |
 | Silhouette hook | The large sack on his back. |
 | Humor note | He wears many stolen shiny things, also a spoon as an earring. |
 | Setting | A badland trail. |
@@ -560,15 +560,15 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 16, d
 | Field | Brief |
 | --- | --- |
 | Subject | A lean striped hyena with a sloped back. |
-| Pose | It crouches low and turns its head to look back over its shoulder, with a sly grin. |
+| Pose | Its chest points right in a low crouch. Its head turns back over its shoulder, with a sly grin. |
 | Props | A leather harness with small bone charms, orange paint marks. |
-| Gameplay cues | Pivot: it turns to the side and back, ready to attack there. A loose fang on the harness shows Last Breath. |
+| Gameplay cues | Pivot: the head turns back. The chest still points right. A loose fang on the harness shows Last Breath. |
 | Silhouette hook | The sloped back and the head turned back. |
 | Humor note | It grins as if it knows a secret about you. |
 | Setting | Tall dry grass in the badlands. |
 
 ```text
-lean striped hyena with a sloped back, leather harness with small bone charms, orange paint marks, sly grin, head turned to look back over its shoulder,
+lean striped hyena with a sloped back, leather harness with small bone charms, orange paint marks, sly grin, chest pointing right, head turned back over its shoulder,
 Orc of Heynbord, low stalking crouch, three-quarter view advancing to the right, full body, centered,
 painterly fantasy card illustration, bright warm light, clean silhouette,
 soft brush texture, burnt orange and dark red palette,
@@ -641,7 +641,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.9 Dusthide Brawler
 
-`orc.dusthideBrawler` · Frontliner · Common · Countdown 2 · Attack 3 · HP 8 · Speed 1 · Melee · Physical · **provisional**
+`orc.dusthideBrawler` · Frontliner · Common · Countdown 2 · Attack 3 · HP 8 · Speed 1 · Melee · Physical
 
 > He mistakes every warning for applause.
 
@@ -667,7 +667,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.10 Cinderhorn Ram
 
-`orc.cinderhornRam` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 5 · Speed 2 · Melee · Fire · Charge · **provisional**
+`orc.cinderhornRam` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 5 · Speed 2 · Melee · Fire · Charge
 
 > It never waits for the gate to open.
 
@@ -693,7 +693,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.11 Warhowler Drummer
 
-`orc.warhowlerDrummer` · Support · Uncommon · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Melee · Physical · Rally 1 · **provisional**
+`orc.warhowlerDrummer` · Support · Uncommon · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Melee · Physical · Rally 1
 
 > She only knows one rhythm: faster.
 
@@ -719,7 +719,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.12 Ashspit Hunter
 
-`orc.ashspitHunter` · Shooter · Rare · Countdown 4 · Attack 5 · HP 7 · Speed 1 · Range 4 · Fire · **provisional**
+`orc.ashspitHunter` · Shooter · Rare · Countdown 4 · Attack 5 · HP 7 · Speed 1 · Range 4 · Fire
 
 > He measures range by how far the eyebrows burn.
 
@@ -745,7 +745,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.13 Mesa Pit-Fighter
 
-`orc.mesaPitFighter` · Frontliner · Rare · Countdown 4 · Attack 4 · HP 12 · Speed 1 · Melee · Physical · Retaliation · **provisional**
+`orc.mesaPitFighter` · Frontliner · Rare · Countdown 4 · Attack 4 · HP 12 · Speed 1 · Melee · Physical · Retaliation
 
 > Hit her once. That is how counting lessons start.
 
@@ -754,7 +754,7 @@ Purpose: an aggressive Frontliner that protects through threat. Power 26, budget
 | Field | Brief |
 | --- | --- |
 | Subject | A tall orc woman with a broken-tusk grin. |
-| Pose | She absorbs a hit and swings a hooked gauntlet back. |
+| Pose | She advances to the right, absorbs a hit, and the counter-punch goes to the right. |
 | Props | Iron gauntlets, red pit sash and trophy bells. |
 | Gameplay cues | The counter-swing shows Retaliation. |
 | Silhouette hook | Large hooked fists. |
@@ -762,7 +762,7 @@ Purpose: an aggressive Frontliner that protects through threat. Power 26, budget
 | Setting | A red-stone fighting pit. |
 
 ```text
-tall heavily muscled orc woman with a broken-tusk grin, red pit sash, ornate rough-iron hooked gauntlets with tally marks, absorbing a strike on one arm while swinging an immediate counter-punch,
+tall heavily muscled orc woman with a broken-tusk grin, red pit sash, ornate rough-iron hooked gauntlets with tally marks, advancing to the right, absorbing a strike on one arm while the counter-punch goes to the right,
 Orc of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, burnt orange and dark red palette,
 light from the upper left, circular fighting pit cut into red stone, simple low-contrast background,
@@ -771,7 +771,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.14 Pyreaxe Ravager
 
-`orc.pyreaxeRavager` · Striker · Rare · Countdown 5 · Attack 7 · HP 8 · Speed 1 · Melee · Fire · Heroic 2 · **provisional**
+`orc.pyreaxeRavager` · Striker · Rare · Countdown 5 · Attack 7 · HP 8 · Speed 1 · Melee · Fire · Heroic 2
 
 > The axe is hot. Her temper is hotter.
 
@@ -797,7 +797,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.15 Warband Standard-Bearer
 
-`orc.warbandStandardBearer` · Support · Epic · Countdown 6 · Attack 5 · HP 11 · Speed 1 · Melee · Physical · Charge · Heroic 2 · Rally 2 · **provisional**
+`orc.warbandStandardBearer` · Support · Epic · Countdown 6 · Attack 5 · HP 11 · Speed 1 · Melee · Physical · Charge · Heroic 2 · Rally 2
 
 > Follow the banner. Ignore where it is going.
 
@@ -814,7 +814,7 @@ Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero p
 | Setting | An Epic badland ridge assault. |
 
 ```text
-huge confident orc man with braided black hair, ornate rough-iron armor and dark-red fur cloak, carrying a monumental hide war standard with horned crossbar and trophy shields, charging downhill while a warband follows, banner points left while confused warriors turn right,
+huge confident orc man with braided black hair, ornate rough-iron armor and dark-red fur cloak, carrying a monumental hide war standard with horned crossbar and trophy shields, charging downhill to the right while the warband follows to the right, the banner cloth points back the other way,
 Orc of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly fantasy card illustration, bright warm light, dramatic Epic composition, clean silhouette, burnt orange and dark red palette,
 light from the upper left, badland ridge assault with drums and banners, simple low-contrast background,
@@ -966,7 +966,7 @@ Purpose: the Elf Pivot Unit. Power 20, budget 21, deviation -4.8%.
 | Field | Brief |
 | --- | --- |
 | Subject | An elf man guard. |
-| Pose | He twists backward in a sweeping cut. |
+| Pose | His chest and lead foot advance to the right. He looks back, and the glaive sweeps behind him. |
 | Props | Crescent glaive and green coat with amber trim. |
 | Gameplay cues | Front and rear sight lines show Pivot. |
 | Silhouette hook | Circular blade path. |
@@ -974,7 +974,7 @@ Purpose: the Elf Pivot Unit. Power 20, budget 21, deviation -4.8%.
 | Setting | A forked forest path. |
 
 ```text
-elegant elf man guard twisting backward in a precise sweeping cut, crescent glaive crossing both sides, green coat with amber trim, alert eyes checking front and rear, two practice dummies on opposite sides,
+elegant elf man guard, chest and lead foot advancing to the right, looking back in a precise cut, crescent glaive sweeping behind him, green coat with amber trim, alert eyes checking front and rear, two practice dummies on opposite sides,
 Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly storybook fantasy card illustration, ancient forest forked path, amber light from the upper left, circular action silhouette,
 soft brush texture, leaf green and amber palette, simple low-contrast background,
@@ -1282,7 +1282,7 @@ Purpose: fragile early Hero pressure. Power 10, budget 11, deviation -9.1%.
 | Field | Brief |
 | --- | --- |
 | Subject | A small skeleton on a coffin lid. |
-| Pose | He slides downhill into a turn. |
+| Pose | He slides to the right down the hill. |
 | Props | Coffin lid, bent-spoon rudder and long scarf. |
 | Gameplay cues | Mud spray and the steep angle show Charge. |
 | Silhouette hook | Long lid and scarf. |
@@ -1290,7 +1290,7 @@ Purpose: fragile early Hero pressure. Power 10, budget 11, deviation -9.1%.
 | Setting | A wet Marches causeway. |
 
 ```text
-small skeleton riding a loose wooden coffin lid down a wet causeway, leaning into a fast turn, bent spoon used as a rudder, long torn scarf streaming, stray cart wheel chasing, friendly macabre humor,
+small skeleton riding a loose wooden coffin lid to the right down a wet causeway, leaning into the slide, bent spoon used as a rudder, long torn scarf streaming behind him, stray cart wheel chasing, friendly macabre humor,
 Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly storybook fantasy card illustration, misty Hollow Marches, pale teal moonlight from the upper left, strong diagonal silhouette,
 soft brush texture, mud and old wood, simple low-contrast background,
@@ -1360,7 +1360,7 @@ Purpose: the Undead Pivot Unit. Power 15, budget 16, deviation -6.3%.
 | Field | Brief |
 | --- | --- |
 | Subject | A tall skeletal road bailiff. |
-| Pose | Its feet face forward while its skull and polearm turn back. |
+| Pose | Its chest and feet advance to the right. Its skull and polearm turn back. |
 | Props | Hooked polearm, key ring and teal-trimmed coat. |
 | Gameplay cues | The twisted pose shows Pivot. |
 | Silhouette hook | Wide horizontal polearm. |
@@ -1368,7 +1368,7 @@ Purpose: the Undead Pivot Unit. Power 15, budget 16, deviation -6.3%.
 | Setting | A broken marsh checkpoint. |
 
 ```text
-tall skeletal road bailiff, feet forward while skull and torso turn backward, hooked polearm sweeping sideways, iron key ring and rusted coat with pale teal trim, offering a blank permit to a confused crow,
+tall skeletal road bailiff, chest and feet advancing to the right, skull turned back, hooked polearm sweeping behind, iron key ring and rusted coat with pale teal trim, offering a blank permit to a confused crow,
 Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly storybook fantasy card illustration, misty Hollow Marches checkpoint, pale teal moonlight from the upper left, wide silhouette,
 soft brush texture, rusted iron and old cloth, simple low-contrast background,
@@ -1386,15 +1386,15 @@ Purpose: the main cheap Swarm attacker. Power 15, budget 16, deviation -6.3%.
 | Field | Brief |
 | --- | --- |
 | Subject | Three eager skeleton soldiers around one sword. |
-| Pose | They all lean forward. |
+| Pose | They all lean and advance to the right. |
 | Props | Oversized sword, mismatched helmets and teal cloth. |
 | Gameplay cues | The group composition shows Swarm. |
 | Silhouette hook | Three skulls and one long blade. |
-| Humor note | They point in different directions. |
+| Humor note | Their free hands point different ways. |
 | Setting | A narrow causeway. |
 
 ```text
-three eager skeleton soldiers crowded around one oversized rusted sword, mismatched helmets and pale teal cloth knots, all pointing in different directions while leaning forward, friendly macabre humor,
+three eager skeleton soldiers crowded around one oversized rusted sword, mismatched helmets and pale teal cloth knots, all advancing to the right and leaning forward, free hands pointing different ways, friendly macabre humor,
 Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly storybook fantasy card illustration, narrow misty causeway, pale teal moonlight from the upper left, clear three-skull silhouette,
 soft brush texture, rusted iron and old cloth, simple low-contrast background,
@@ -1754,15 +1754,15 @@ Purpose: the Goblin Pivot Unit. Power 16, budget 16, deviation 0%.
 | Field | Brief |
 | --- | --- |
 | Subject | A thin goblin man with two small knives. |
-| Pose | He steps to the side and looks back over his shoulder, with one knife ready behind him. |
+| Pose | His chest and lead foot point right. He looks back over his shoulder, with one knife ready behind him. |
 | Props | Two small knives, a dark hood, a belt with many pockets and one brass buckle. |
-| Gameplay cues | Pivot: the body turns to the side and back. |
+| Gameplay cues | Pivot: the face looks back. The chest still points right. |
 | Silhouette hook | The long nose and the knives out to the sides. |
 | Humor note | One pocket is full of other people's spoons. |
 | Setting | Between mine carts in a tunnel. |
 
 ```text
-thin goblin man sidestepping and looking back over his shoulder, small knife ready behind him and another out to the side, dark hood, belt with many pockets and one brass buckle, a pocket full of stolen spoons, long nose, sly grin,
+thin goblin man, chest and lead foot pointing right, looking back over his shoulder, small knife ready behind him and another out to the side, dark hood, belt with many pockets and one brass buckle, a pocket full of stolen spoons, long nose, sly grin,
 Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly storybook fantasy card illustration, between mine carts in a hill mine tunnel, warm lantern light from the upper left, sharp angular silhouette, Uncommon detail,
 soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
@@ -2176,7 +2176,7 @@ Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Pow
 | Field | Brief |
 | --- | --- |
 | Subject | A long, low basilisk with a heavy club tail. |
-| Pose | It turns its body and swings its tail back. |
+| Pose | Its body advances to the right. Its tail swings back. |
 | Props | None. Rocks fly from the tail swing. |
 | Gameplay cues | Pivot: the tail swing goes behind and to the side. |
 | Silhouette hook | The long S-shaped body and the club tail. |
@@ -2184,7 +2184,7 @@ Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Pow
 | Setting | A cave floor with crystals. |
 
 ```text
-long low basilisk lizard turning its body and swinging a heavy club tail backward, rocks flying from the swing, bored half-lidded eyes, S-shaped body,
+long low basilisk lizard advancing to the right, heavy club tail swinging backward, rocks flying from the swing, bored half-lidded eyes, S-shaped body,
 Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly storybook fantasy card illustration, cave floor with crystals, cool light from the upper left, S-shaped silhouette with club tail, Uncommon detail,
 soft brush texture, slate violet and ice white palette, simple low-contrast background,
@@ -2418,7 +2418,7 @@ Tokens are not collectible Cards. They use the Rank of the Card or effect that m
 Purpose: cheap Lane mass that is weak alone.
 
 ```text
-small eager Skeleton soldier with a bucket helmet covering one eye socket, chipped sword held too high, round wooden lid shield and pale teal neck cloth, looking toward an ally for courage, friendly macabre humor,
+small eager Skeleton soldier with a bucket helmet covering one eye socket, chipped sword held too high, round wooden lid shield and pale teal neck cloth, chest advancing to the right, glancing back toward an ally for courage, friendly macabre humor,
 Undead Token of Heynbord, three-quarter view advancing to the right, full body, centered,
 painterly storybook fantasy card illustration, misty grave path, pale teal moonlight from the upper left, simple clear silhouette,
 soft brush texture, rusted metal and old wood, simple low-contrast background,
@@ -2462,7 +2462,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 | Effect subject | A large war drum. Rings of sound go out from it. |
 | Partial figure | Two strong arms in leather bracers hit the drum with sticks. |
 | Action | The sticks hit the drum. Two sound rings go out. Two cards in the air near the drum glow and move faster. |
-| Setting | A neutral battlefield. Small blurred soldier shapes march quickly in the background. |
+| Setting | A neutral battlefield. Small blurred soldier shapes march quickly to the right in the background. |
 | Palette | Neutral steel and leather, warm wood. |
 
 ```text
@@ -2470,7 +2470,7 @@ large wooden war drum with sound rings rippling out, two glowing playing cards n
 two strong arms in leather bracers striking the drum with sticks, mid-strike,
 Heynbord Warrior skill, painterly fantasy card illustration, bright warm light,
 light from the upper left, soft brush texture, neutral steel and leather accents,
-neutral battlefield with green grass and a lane of grey stone tiles, blurred marching shapes in the background, portrait 3:4 composition, no text, no frame
+neutral battlefield with green grass and a lane of grey stone tiles, blurred shapes marching to the right in the background, portrait 3:4 composition, no text, no frame
 ```
 
 ### 9.2 Shield Wall
@@ -2482,14 +2482,14 @@ neutral battlefield with green grass and a lane of grey stone tiles, blurred mar
 | Field | Brief |
 | --- | --- |
 | Effect subject | A line of plain round shields that lock together along a Lane. |
-| Partial figure | A back view of arms and shoulders behind the shields. Plain shields with no emblem. |
+| Partial figure | A back view of arms and shoulders. The shields face to the right. Plain shields with no emblem. |
 | Action | The shields lock together. A soft steel shine runs along the line. |
 | Setting | A neutral battlefield. The line goes along a Lane of grey stone tiles. |
 | Palette | Neutral steel and leather. |
 
 ```text
-a long line of plain round steel shields locking together edge to edge along a lane, a soft steel shine running along the line,
-back view of arms and shoulders holding the shields, no emblems,
+a long line of plain round steel shields locking together edge to edge, shield faces toward the right, a soft steel shine running along the line,
+back view of arms and shoulders holding the shields and facing to the right, no emblems,
 Heynbord Warrior skill, painterly fantasy card illustration, bright warm light,
 light from the upper left, soft brush texture, neutral steel and leather accents,
 neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
@@ -2504,14 +2504,14 @@ neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:
 | Field | Brief |
 | --- | --- |
 | Effect subject | A spear in flight, with a motion trail. |
-| Partial figure | A back view of a thrower. The arm is at the end of the throw. |
-| Action | The spear flies to a far, dark silhouette that shouts with its mouth wide open. |
+| Partial figure | A back view of a thrower who faces to the right. The arm is at the end of the throw. |
+| Action | The spear flies to the right, to a far, dark silhouette that shouts with its mouth wide open. |
 | Setting | A neutral battlefield. |
 | Palette | Neutral steel and leather. Uncommon: a small brass trim on the spear. |
 
 ```text
-a spear with a brass trim flying straight with a motion trail toward a distant dark silhouette shouting with its mouth wide open,
-back view of a thrower with the arm fully extended at the end of the throw,
+a spear with a brass trim flying to the right with a motion trail toward a distant dark silhouette shouting with its mouth wide open,
+back view of a thrower facing to the right, arm fully extended at the end of the throw,
 Heynbord Warrior skill, painterly fantasy card illustration, bright warm light,
 light from the upper left, soft brush texture, neutral steel and leather accents,
 neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
@@ -2530,14 +2530,14 @@ Identity: area damage. The palette is the Damage Type color.
 | Field | Brief |
 | --- | --- |
 | Effect subject | A large fireball, with a long tail of flame. |
-| Partial figure | Two open hands in robe sleeves push the fireball forward. |
-| Action | The fireball flies forward. Its tail covers two stone tiles of the Lane. |
+| Partial figure | Two open hands in robe sleeves push the fireball to the right. |
+| Action | The fireball flies to the right. Its tail covers two stone tiles of the Lane. |
 | Setting | A neutral battlefield. |
 | Palette | Orange-red fire, with warm light on the hands. |
 
 ```text
-large fireball with a long tail of flame flying forward over two grey stone tiles,
-two open hands in robe sleeves pushing the fireball forward, warm light on the hands,
+large fireball with a long tail of flame flying to the right over two grey stone tiles,
+two open hands in robe sleeves pushing the fireball to the right, warm light on the hands,
 Heynbord Mage skill, painterly fantasy card illustration, bright warm light,
 light from the upper left, soft brush texture, orange-red fire accents,
 neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
@@ -2552,14 +2552,14 @@ neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:
 | Field | Brief |
 | --- | --- |
 | Effect subject | A sharp bolt of ice with frost crystals around it. |
-| Partial figure | One hand points two fingers forward. The bolt comes from the fingers. |
-| Action | The bolt hits the feet of a far, dark silhouette. Ice holds the feet to the ground. |
+| Partial figure | One hand points two fingers to the right. The bolt comes from the fingers. |
+| Action | The bolt flies to the right and hits the feet of a far, dark silhouette. Ice holds the feet to the ground. |
 | Setting | A neutral battlefield with frost on the grass. |
 | Palette | Light blue frost. |
 
 ```text
-sharp bolt of ice with frost crystals flying forward, a distant dark silhouette with its feet frozen to the ground,
-one hand pointing two fingers forward with the bolt leaving the fingertips,
+sharp bolt of ice with frost crystals flying to the right, a distant dark silhouette with its feet frozen to the ground,
+one hand pointing two fingers to the right with the bolt leaving the fingertips,
 Heynbord Mage skill, painterly fantasy card illustration, bright warm light,
 light from the upper left, soft brush texture, light blue frost accents,
 neutral battlefield with green grass touched by frost and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
@@ -2574,14 +2574,14 @@ neutral battlefield with green grass touched by frost and a lane of grey stone t
 | Field | Brief |
 | --- | --- |
 | Effect subject | A long, low wave of fire that rolls down a full Lane. |
-| Partial figure | A back view of a robed silhouette that sweeps a staff from side to side. |
-| Action | The wave starts at the staff and goes along all the stone tiles of the Lane to the far end. |
+| Partial figure | A back view of a robed silhouette that faces to the right and sweeps a staff. |
+| Action | The wave starts at the staff and rolls to the right along all the stone tiles of the Lane. |
 | Setting | A neutral battlefield. The Lane is long and goes into the distance. |
 | Palette | Orange-red fire. Uncommon: a small gold trim on the staff. |
 
 ```text
-a long low wave of fire rolling down a full lane of grey stone tiles into the distance,
-back view of a robed silhouette sweeping a staff with a small gold trim from side to side,
+a long low wave of fire rolling to the right down a full lane of grey stone tiles,
+back view of a robed silhouette facing to the right and sweeping a staff with a small gold trim,
 Heynbord Mage skill, painterly fantasy card illustration, bright warm light,
 light from the upper left, soft brush texture, orange-red fire accents,
 neutral battlefield with green grass and a long lane of grey stone tiles, portrait 3:4 composition, no text, no frame

@@ -158,7 +158,7 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
   4. The enemy Hero, if the Unit is in its last Column.
 - A Pivot attack is a melee attack. Retaliation and First Strike apply to it.
 - **Ranged Unit:** It has a **Range** (number of Squares). It attacks the nearest enemy Unit in front of it, in the same Lane and in its Range. If no enemy Unit is in Range, and the enemy Hero is in Range, it attacks the enemy Hero. The enemy Hero is 1 Square past the last Column.
-- A Unit with Attack 0 does not attack.
+- A Unit with **Base Attack** 0 does not attack. Base Attack is the Attack of the Unit for its Rank, without bonuses. Bonuses such as Rally do not change this.
 - A Unit attacks one time in each Turn, unless a Keyword says something different.
 
 ### 4.7 Damage
@@ -186,7 +186,7 @@ To calculate damage, do these steps in this order:
 - The Gear of each Hero gives the Crit and Block chances (see 7.3). A Unit uses the Gear of the Hero that summoned it.
 - Heroes cannot Block.
 - All rolls use the Battle seed, so a replay gives the same result.
-- **Retaliation:** When a Unit with Retaliation survives a melee attack, it deals damage equal to its Attack to the attacker. Retaliation does not use Crit, and it does not start another Retaliation.
+- **Retaliation:** When a Unit with Retaliation survives a melee attack, it deals damage equal to its Attack to the attacker. Retaliation does not use Crit, and it does not start another Retaliation. A Unit with Base Attack 0 does not retaliate.
   - It uses the Damage Type of the Unit with Retaliation, so it can give a Status.
   - The Armor of the attacker reduces it, and the attacker's Hero can Block it.
   - It occurs also when the attack did 0 damage.
@@ -314,7 +314,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | **Last Breath: X** | X occurs when this Unit leaves the Board. In v1, X deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that this Unit left. |
 | **Pivot** | Melee only. This Unit can attack an enemy Unit directly behind it or next to it, and it attacks them before the Unit in front. See 4.5 and 4.6. |
 | **Poison** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. In each End Step of the Poisoned Unit's owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. |
-| **Rally N** | In your Start Step, other friendly Units in the same Lane get +N Attack until the end of the Turn. |
+| **Rally N** | In your Start Step, other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus. |
 | **Rebirth** | See 4.9. |
 | **Regeneration N** | In your Start Step, this Unit heals N HP. It cannot go above its maximum HP. |
 | **Retaliation** | See 4.7. |
@@ -542,14 +542,14 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Heynspire | Floor list, current Floor, rewards |
 | Dungeons | Dungeon list, unlock levels, Bosses, rewards |
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
-| Deck builder | Deck slots, cards, Countdown curve, validation |
+| Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons, the cards that the player owns, the Countdown curve, validation, Auto-fill |
 | Collection | All cards, filters, card details |
 | Workshop | Combine, Extract, Craft |
 | Hero | Class, Gear, portrait |
 | Packs | Pack types, drop rates, open animation |
 | Achievements | List, progress, rewards |
 | Bazaar | Cosmetics and Conveniences, prices in Heynstones, the Heynstone balance |
-| Settings | Audio, language, speed, reduced motion, text size, save export and import |
+| Settings | A modal dialog in the center of the screen, not a separate screen (see 11.4). Audio, language, speed, reduced motion, text size, save export and import |
 
 ### 11.2 Battle screen layout (landscape)
 
@@ -600,7 +600,7 @@ The Town is the first screen of the game. It is a layered 2D painting ([web ADR-
 - All Buildings are in the painting from v1. A Building with no screen yet is only decoration: no label, no hover, and the Player cannot select it. In v1, only the Town Gate can be selected.
 - The painting fills the screen and crops its edges. All selectable Buildings stay in a center safe area that every landscape aspect shows. Decoration Buildings can be near the edges.
 - Small ambient motion: clouds, chimney smoke, flags and water. The Town Gate has a soft pulse of light until the end of the Tutorial (the first win of Stage 1-1). Before the Profile exists, the pulse always shows. A selection zooms a little toward the Building and fades to its screen. With reduced motion, all motion stops and the change is a plain fade.
-- The **Town Bar** is at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen of the table above, and a Town shortcut at its left end. The Deck shortcut opens the screen of the library Building (Collection and Deck builder). A shortcut to a screen that does not exist yet is disabled, with a lock and the tooltip "Opens later". A disabled shortcut can get keyboard focus, a screen reader reads its name and "opens later", and focus, hover and long press show the tooltip. On desktop, each shortcut has an icon and a label. On a phone, it has an icon only, and long press shows its name. The language and sound buttons are at its right end. A Settings button comes with the Settings screen.
+- The **Town Bar** is at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen of the table above, and a Town shortcut at its left end. The Deck shortcut opens the Deck builder dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. A change applies at once, so the dialog has no Save button. Esc, the close button and a click outside the dialog close it. The Collection screen of the library Building comes later. A shortcut to a screen that does not exist yet is disabled, with a lock and the tooltip "Opens later". A disabled shortcut can get keyboard focus, a screen reader reads its name and "opens later", and focus, hover and long press show the tooltip. On desktop, each shortcut has an icon and a label. On a phone, it has an icon only, and long press shows its name. The Settings button is at its right end, apart from the shortcuts. It opens the Settings dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. The Settings dialog has the language and the sound, and later the other options of 11.1. A change applies at once. Esc, the close button and a click outside the dialog close it, and the Player stays on the same screen. The Town Bar has no separate language and sound buttons.
 - The game is one route ([web ADR-0006](../../apps/web/docs/adr/0006-the-game-is-one-route.md)). The Town shortcut goes back to the Town, and Esc does the same. The Battle result has "Play Again" and "Back to Campaign". To leave a Battle is an Abandon, with a confirm dialog. The browser Back button leaves the game. A reload opens the Town.
 
 ### 11.5 Campaign
@@ -615,14 +615,15 @@ The Campaign screen shows one **Region Map** at a time: a flat 2D painting of on
   | --- | --- | --- |
   | Done | A shield with a check mark. The plate also shows the best Stars (1 to 3). | Opens the Stage Panel. The Player can play the Stage again. |
   | Open | A gold shield with a soft pulse of light. This is the next Stage to win. | Opens the Stage Panel. |
-  | Locked | A grey shield with a lock. | Does not open the Stage Panel. The Stage Marker can get keyboard focus. Focus, hover and long press show a tooltip with the Stage that the Player must win first. A screen reader reads the Stage ID and "locked". |
+  | Locked | A grey shield with a lock. | Does not open the Stage Panel. The Stage Marker can get keyboard focus. Focus, hover and a tap or long press show a tooltip with the Stage that the Player must win first. A screen reader reads the Stage ID and "locked". |
 
   The Stage Marker of a Boss Stage is larger and has a crown. It also has one of the 3 states.
 - **Progress line.** The game draws a dashed line on the painted road: solid from the start to the last Done Stage, faint after it.
-- **Star chests.** A panel in the top-right corner shows the Stars of the Region (for example "14 / 30") and the 3 chests at 10, 20 and 30 Stars (see 8.1).
-- **Stage Panel.** A modal dialog in the center of the screen. The map is dim behind it. It shows the Stage ID, the enemy Hero, the first-win reward or the repeat-win reward, the best Stars, the Deck and a **Fight** button. Until the Deck builder exists, the Deck is a choice of the Starter Decks. After that, it is the active Deck, with a "Change" button. The panel selects the last Deck that the Player used. Esc and a close button close the panel.
+- **Star chests.** A panel in the top-right corner shows the Stars of the Region (for example "14 / 30") on a track, and the 3 chests at 10, 20 and 30 Stars on it (see 8.1). A chest opens when the Player has its Stars. Its tooltip says how many Stars it still needs. Chest rewards are not in the game yet.
+- **Stage Panel.** A modal dialog in the center of the screen. The map is dim behind it. It shows the Stage ID, the enemy Hero, the first-win reward or the repeat-win reward, the best Stars, the Deck and a **Fight** button. The Deck is a choice of the Deck slots that have cards, with the active Deck selected: the last Deck that the Player used. "Edit Decks" opens the Deck builder. A Deck that is not valid cannot start a Battle, and the panel shows the first reason. Fight takes the focus when the panel opens. Esc, a close button and a click outside close the panel.
 - **Keyboard.** Focus moves through the Stage Markers in the order of the Trail. Esc closes the Stage Panel. When no panel is open, Esc goes back to the Town (see 11.4).
-- **Motion.** The Open Stage Marker pulses. With reduced motion, the pulse stops.
+- **Motion.** The Stage Markers rise onto their clearings in Trail order, and the solid part of the progress line draws in from the Trail entry. The Open Stage Marker pulses. After a win opens a Stage, its marker wakes up once. With reduced motion, all of this stops.
+- **Progress now.** The Stage results are in memory until the Profile keeps them (M2): a page load starts the Campaign again at Stage 1-1.
 - Story scenes (MOD-07) and Stage names are not part of this screen now.
 
 ## 12. Content for v1

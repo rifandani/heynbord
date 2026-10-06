@@ -8,6 +8,7 @@ import {
   unitById,
 } from "../testing/fixtures";
 import { Command } from "./types";
+import type { BattleEvent } from "./types";
 
 const endTurn = Command.EndTurn();
 
@@ -730,6 +731,35 @@ describe("Last Breath (GDD 4.9)", () => {
       source: "lastBreath",
       amount: 1,
       target: { _tag: "Unit", unitId: ahead.id },
+    });
+  });
+
+  it("deals the Damage Type of the Unit, so a Dawn Reliquary deals Holy damage that Armor does not reduce", () => {
+    const state = emptyBattle();
+    const reliquary = placeUnit(state, {
+      cardId: "human.dawnReliquary",
+      rank: "rare",
+      owner: "player",
+      position: 4,
+      hp: 1,
+      burn: 1,
+    });
+    const bulwark = placeUnit(state, {
+      cardId: "human.ironBulwark",
+      rank: "epic",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, reliquary.id)).toBeUndefined();
+    expect(unitById(next, bulwark.id)?.hp).toBe(bulwark.hp - 2);
+    expect(eventsOfType(events, "DamageDealt").at(-1)).toMatchObject({
+      source: "lastBreath",
+      amount: 2,
+      damageType: "holy",
+      blocked: false,
+      target: { _tag: "Unit", unitId: bulwark.id },
     });
   });
 });
@@ -1479,5 +1509,494 @@ describe("Knockback (GDD 4.7)", () => {
     const { state: next, events } = run(state, endTurn);
     expect(unitById(next, target.id)?.position).toBe(5);
     expect(eventsOfType(events, "UnitPushed")).toEqual([]);
+  });
+});
+
+/** The damage events in order, as `source:amount`. */
+const damageLog = (events: readonly BattleEvent[]) =>
+  eventsOfType(events, "DamageDealt").map(
+    (event) => `${event.source}:${event.amount}`
+  );
+
+/**
+ * A melee Unit with Trample at Square 4 attacks the enemy Unit at Square 5.
+ * Another enemy Unit stands at Square 6.
+ */
+const trampleBoard = (
+  options: {
+    readonly attack?: number;
+    readonly defender?: Partial<Parameters<typeof placeUnit>[1]>;
+    readonly behind?: Partial<Parameters<typeof placeUnit>[1]> | null;
+  } = {}
+) => {
+  const state = emptyBattle();
+  const attacker = placeUnit(state, {
+    cardId: "feral.cragRhino",
+    owner: "player",
+    position: 4,
+    attack: options.attack ?? 9,
+  });
+  const defender = placeUnit(state, {
+    cardId: "goblin.scrapPlateGuard",
+    owner: "enemy",
+    position: 5,
+    attack: 0,
+    hp: 4,
+    ...options.defender,
+  });
+  const behind =
+    options.behind === null
+      ? undefined
+      : placeUnit(state, {
+          cardId: "human.militiaRecruit",
+          owner: "enemy",
+          position: 6,
+          attack: 0,
+          hp: 20,
+          maxHp: 20,
+          ...options.behind,
+        });
+  return { attacker, defender, behind, ...run(state, endTurn) };
+};
+
+describe("Trample (GDD 4.7, ADR-0017)", () => {
+  it("hits the next enemy Unit behind with the damage that is left (the glossary example)", () => {
+    // Attack 9 against Armor 1 deals 8. The killed Unit had 4 HP, so 4 is left.
+    const { state, defender, behind, events } = trampleBoard();
+    expect(unitById(state, defender.id)).toBeUndefined();
+    expect(unitById(state, behind?.id ?? 0)?.hp).toBe(16);
+    expect(damageLog(events)).toEqual(["attack:8", "trample:4"]);
+    expect(eventsOfType(events, "DamageDealt")[1]).toMatchObject({
+      target: { _tag: "Unit", unitId: behind?.id },
+      damageType: "physical",
+      crit: false,
+      hp: 16,
+    });
+  });
+
+  it("lets the Armor of the second Unit reduce the hit", () => {
+    const { events } = trampleBoard({
+      behind: { cardId: "feral.cragLizard" },
+    });
+    expect(damageLog(events)).toEqual(["attack:8", "trample:3"]);
+  });
+
+  it("loses the damage when the next Square is empty, and never jumps over it", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "feral.cragRhino",
+      owner: "player",
+      position: 4,
+      attack: 9,
+    });
+    placeUnit(state, {
+      cardId: "goblin.scrapPlateGuard",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      hp: 4,
+    });
+    const far = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 7,
+      attack: 0,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, far.id)?.hp).toBe(4);
+    expect(damageLog(events)).toEqual(["attack:8"]);
+  });
+
+  it("does not hit a friendly Unit behind the killed Unit", () => {
+    const { events } = trampleBoard({
+      behind: { owner: "player", speed: 0 },
+    });
+    expect(damageLog(events)).toEqual(["attack:8"]);
+  });
+
+  it("never hits a Hero", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "feral.cragRhino",
+      owner: "player",
+      position: 10,
+      attack: 9,
+    });
+    placeUnit(state, {
+      cardId: "goblin.scrapPlateGuard",
+      owner: "enemy",
+      position: 11,
+      attack: 0,
+      hp: 4,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(next.sides.enemy.hero.hp).toBe(30);
+    expect(damageLog(events)).toEqual(["attack:8"]);
+  });
+
+  it("does not occur when the defender survives", () => {
+    const { behind, state, events } = trampleBoard({
+      defender: { hp: 20, maxHp: 20 },
+    });
+    expect(unitById(state, behind?.id ?? 0)?.hp).toBe(20);
+    expect(damageLog(events)).toEqual(["attack:8"]);
+  });
+
+  it("keeps the Damage Type of the Trample Unit, so Frost Freezes the second Unit", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "feral.oldFrostmaw",
+      owner: "player",
+      position: 4,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+    });
+    const behind = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, behind.id)).toMatchObject({ hp: 16, frozen: true });
+    expect(eventsOfType(events, "DamageDealt")[1]).toMatchObject({
+      source: "trample",
+      damageType: "frost",
+    });
+  });
+
+  it("uses the final damage after a Crit, does not roll Crit for the second hit, and lets the Hero Block it", () => {
+    const rolls = Array.from({ length: 40 }, (_, seed) => {
+      const state = emptyBattle({
+        random: seed + 1,
+        player: { unitCrit: 5000 },
+        enemy: { unitBlock: 5000 },
+      });
+      placeUnit(state, {
+        cardId: "feral.cragRhino",
+        owner: "player",
+        position: 4,
+        attack: 6,
+      });
+      placeUnit(state, {
+        cardId: "human.militiaRecruit",
+        owner: "enemy",
+        position: 5,
+        attack: 0,
+        hp: 4,
+      });
+      placeUnit(state, {
+        cardId: "human.militiaRecruit",
+        owner: "enemy",
+        position: 6,
+        attack: 0,
+        hp: 20,
+        maxHp: 20,
+      });
+      return eventsOfType(run(state, endTurn).events, "DamageDealt");
+    });
+    for (const [first, second] of rolls) {
+      if (second) {
+        expect(second.crit).toBe(false);
+        const left = (first?.amount ?? 0) - 4;
+        expect(second.amount).toBe(second.blocked ? Math.ceil(left / 2) : left);
+      }
+    }
+    // A Crit hit: 12 damage, 8 left.
+    expect(
+      rolls.some(([first, second]) => first?.crit && second?.amount === 8)
+    ).toBe(true);
+    expect(rolls.some(([, second]) => second?.blocked)).toBe(true);
+  });
+
+  it("is not an attack: no Retaliation, Poison, Hobble, Entangle or Knockback from the second hit", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "feral.cragRhino",
+      owner: "player",
+      position: 4,
+      attack: 9,
+      poison: true,
+      hobble: 2,
+      knockback: 1,
+      entangle: true,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      hp: 4,
+    });
+    const behind = placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 6,
+      hp: 20,
+      maxHp: 20,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, behind.id)).toMatchObject({
+      hp: 15,
+      position: 6,
+      poisoned: 0,
+      hobbled: 0,
+      entangled: false,
+    });
+    expect(unitById(next, attacker.id)?.hp).toBe(10);
+    expect(eventsOfType(events, "StatusApplied")).toEqual([]);
+    expect(eventsOfType(events, "UnitPushed")).toEqual([]);
+  });
+
+  it("occurs one time for each attack: a kill by the second hit does not Trample again", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "feral.cragRhino",
+      owner: "player",
+      position: 4,
+      attack: 12,
+    });
+    for (const position of [5, 6]) {
+      placeUnit(state, {
+        cardId: "human.militiaRecruit",
+        owner: "enemy",
+        position,
+        attack: 0,
+        hp: 2,
+      });
+    }
+    const last = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 7,
+      attack: 0,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, last.id)?.hp).toBe(4);
+    expect(damageLog(events)).toEqual(["attack:12", "trample:10"]);
+  });
+
+  it("lets the killed Unit's Last Breath occur first, and still hits when that Last Breath kills the Trample Unit", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "feral.bristlebackBoar",
+      owner: "player",
+      position: 4,
+      attack: 5,
+      hp: 1,
+    });
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+    });
+    const behind = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, attacker.id)).toBeUndefined();
+    expect(unitById(next, behind.id)?.hp).toBe(16);
+    expect(
+      events.flatMap((event) => {
+        if (event._tag === "DamageDealt") {
+          return [event.source];
+        }
+        return event._tag === "UnitDied" ? [`died:${event.unitId}`] : [];
+      })
+    ).toEqual([
+      "attack",
+      `died:${pup.id}`,
+      "lastBreath",
+      `died:${attacker.id}`,
+      "trample",
+    ]);
+  });
+
+  it("does not occur from a ranged attack", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.crossbowGuard",
+      owner: "player",
+      position: 2,
+      attack: 9,
+      trample: true,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+    });
+    const behind = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, behind.id)?.hp).toBe(4);
+  });
+});
+
+describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
+  it("Entangles the enemy Unit after attack damage above 0, and not when Armor makes it 0", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "feral.webSpitter",
+      owner: "player",
+      position: 2,
+    });
+    const target = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      position: 4,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, target.id)?.entangled).toBe(true);
+    expect(eventsOfType(events, "StatusApplied")).toEqual([
+      expect.objectContaining({ unitId: target.id, status: "entangle" }),
+    ]);
+
+    const armored = emptyBattle();
+    placeUnit(armored, {
+      cardId: "feral.webSpitter",
+      owner: "player",
+      position: 2,
+      attack: 1,
+    });
+    const plated = placeUnit(armored, {
+      cardId: "goblin.scrapPlateGuard",
+      owner: "enemy",
+      position: 4,
+      attack: 0,
+    });
+    expect(unitById(run(armored, endTurn).state, plated.id)?.entangled).toBe(
+      false
+    );
+  });
+
+  it("gives Speed 0 in the next action, lets the Unit attack, and then ends", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      position: 11,
+      entangled: true,
+    });
+    const stuck = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      lane: 0,
+      position: 6,
+      entangled: true,
+    });
+    const target = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 5,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, pup.id)).toMatchObject({
+      position: 11,
+      entangled: false,
+    });
+    expect(unitById(next, stuck.id)?.entangled).toBe(false);
+    expect(eventsOfType(events, "UnitAttacked")).toEqual([
+      expect.objectContaining({
+        unitId: stuck.id,
+        target: { _tag: "Unit", unitId: target.id },
+      }),
+    ]);
+    expect(eventsOfType(events, "UnitMoved")).toEqual([]);
+
+    // The action after has full Speed.
+    const moved = run(run(next, endTurn).state, endTurn).state;
+    expect(unitById(moved, pup.id)?.position).toBe(9);
+  });
+
+  it("does not stack or extend: a second Entangle before the action still ends after one action", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "feral.webSpitter",
+      owner: "player",
+      position: 2,
+    });
+    const target = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      position: 4,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+      entangled: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, target.id)?.entangled).toBe(true);
+    expect(eventsOfType(events, "StatusApplied")).toEqual([]);
+    const after = run(next, endTurn).state;
+    expect(unitById(after, target.id)).toMatchObject({
+      entangled: false,
+      position: 4,
+    });
+  });
+
+  it("is not applied by Retaliation", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 20,
+      maxHp: 20,
+    });
+    placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+      entangle: true,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, attacker.id)).toMatchObject({
+      hp: 16,
+      entangled: false,
+    });
+  });
+
+  it("ends with a Freeze when the Frozen Unit skips its action", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      position: 11,
+      frozen: true,
+      entangled: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(eventsOfType(events, "UnitSkipped")).toHaveLength(1);
+    expect(unitById(next, pup.id)).toMatchObject({
+      position: 11,
+      frozen: false,
+      entangled: false,
+    });
   });
 });

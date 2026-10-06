@@ -96,7 +96,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Deck**: The Cards that a Hero brings into a Battle. During a Battle, the Deck holds only the Cards that the Hero has not drawn. _Avoid_: army, loadout, draw pile
 
-**Starter Deck**: A fixed Deck that the game gives to the Player before the Player builds a Deck. The Hero Class comes from the Starter Deck. _Avoid_: preset deck, default deck, sample deck
+**Starter Deck**: A fixed Deck that the game gives to the Player before the Player builds a Deck. The Hero Class comes from the Starter Deck. Each copy in it has the Rank Common or Uncommon. _Avoid_: preset deck, default deck, sample deck
 
 **Archetype**: A named reference Deck for one style of play, for example a Human Wall Warrior Deck. The team uses Archetypes to measure balance. A Player never sees an Archetype. _Avoid_: deck type, meta deck, benchmark deck
 
@@ -107,6 +107,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Keyword**: A named rule on a Card, for example Flying or Armor. _Avoid_: trait, perk, tag, ability
 
 **Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. _Avoid_: Root, Snare
+
+**Base Attack**: The Attack of a Unit for its Rank, without bonuses such as Rally or Swarm. A Unit with Base Attack 0 never attacks and never deals Retaliation damage. _Avoid_: printed Attack, raw Attack
+
+**Rally N**: A Keyword. In its owner's Start Step, the other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no Rally bonus. _Avoid_: Inspire, Rouse, Battle Cry
 
 **Swarm N**: A Keyword. A Unit with Swarm gets +N Attack while another friendly Unit or Token is in the same Lane. More friendly Units do not increase the bonus. _Avoid_: Horde, Pack
 
@@ -218,6 +222,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Side** that is **Routed** loses, also when its Heroes still have HP. The rule is the same for the Player's Side and the enemy Side. A Side is not Routed while one of its Heroes has a rule that can still put a Unit on the Board.
 - A **Deck** holds **Creature Cards** of any **Race** and **Skill Cards** of the Hero's Class only.
 - A **Creature Card** becomes a **Unit** when the side summons it.
+- A **Starter Deck** holds only copies in the **Rank** Common or Uncommon. The Player gets a Rare, Epic or Legendary copy only from play, for example from the first win of a **Boss Stage**.
 - A **Starter Deck** can also be an **Archetype**. An Archetype does not have to be a Starter Deck. A **Matchup** of an Archetype against itself is a mirror.
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
 - A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
@@ -251,4 +256,6 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The **Workshop** and the **Bazaar** were "places" before. Now they are the actions and the offers. The Town Building that opens each one is a web term.
 - The first name for **Hobble** was "Fatigue". "Fatigue" usually means damage from an empty Deck in card games, and it is on the _Avoid_ list of **Sudden Death**.
 - The first text for **Knockback** said that the attacked Unit "moves" back. A Unit moves only in its own Movement, with its Speed. The term is **Pushed**, so Speed 0, Entangled and Hobbled do not stop Knockback.
+- GDD 4.6 says "a Unit with Attack 0 does not attack", but a bonus could make the Attack 1. The rule uses **Base Attack**, so Rally and Swarm never make a Wall attack.
+- Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.

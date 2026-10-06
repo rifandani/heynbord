@@ -1,10 +1,9 @@
 import { useAtomValue } from "@effect/atom-react";
+import type { Side } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 import { cn } from "cn";
-import { useState } from "react";
 
 import type { BattleSession } from "@/features/battle/battle-session";
-import type { UnitView } from "@/features/battle/battle-view";
 import { detailsUnitAtom } from "@/features/battle/battle.atoms";
 import { CardDetails } from "@/features/battle/components/card-details";
 import { openText } from "@/features/battle/tutorial";
@@ -15,39 +14,17 @@ import type { useBattle } from "@/features/battle/use-battle";
 type Battle = ReturnType<typeof useBattle>;
 
 /**
- * The screen side for the Card Details of a Unit. It is set when the Unit
- * opens, so the Card Details do not jump across the screen while the Unit
- * walks. The open Tutorial text has the right side, so then they go left.
- */
-const useDockSide = (
-  unitId: number | null,
-  position: number,
-  tutorialOpen: boolean
-): ScreenSide => {
-  const [dock, setDock] = useState<{
-    readonly unitId: number | null;
-    readonly side: ScreenSide;
-  }>({ unitId: null, side: "left" });
-  if (dock.unitId !== unitId) {
-    const next = { unitId, side: detailsSide(position) };
-    setDock(next);
-    return tutorialOpen ? "left" : next.side;
-  }
-  return tutorialOpen ? "left" : dock.side;
-};
-
-/**
  * The Card Details of the inspected Unit on the Board, of either Side (UI-05).
- * They open at the side of the screen away from the Unit, between the Top Bar
- * and the Hand Bar, so they never cover the Unit (DESIGN.md, the Clear Board
- * Rule). The card is at the edge of the screen and the panel faces the Board.
+ * They open at the side of the screen of the Unit owner, between the Top Bar
+ * and the Hand Bar: the player side at the left, the enemy side at the right.
+ * The card is at the edge of the screen and the panel faces the Board. The
+ * open Tutorial text has the right side, so then they go left.
  */
 const tutorialIsOpen = (session: BattleSession | null) =>
   openText(session?.tutorial ?? null) !== null;
 
-const unitIdOf = (unit: UnitView | null) => unit?.id ?? null;
-
-const unitPositionOf = (unit: UnitView | null) => unit?.position ?? 0;
+const dockSide = (owner: Side, tutorialOpen: boolean): ScreenSide =>
+  tutorialOpen ? "left" : detailsSide(owner);
 
 const edgeClass = (side: ScreenSide) =>
   side === "left"
@@ -59,14 +36,10 @@ const facingPanel = (side: ScreenSide): "left" | "right" =>
 
 export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
   const unit = useAtomValue(detailsUnitAtom);
-  const side = useDockSide(
-    unitIdOf(unit),
-    unitPositionOf(unit),
-    tutorialIsOpen(battle.session)
-  );
   if (!unit) {
     return null;
   }
+  const side = dockSide(unit.owner, tutorialIsOpen(battle.session));
   return (
     <div
       className={cn(

@@ -44,7 +44,7 @@ const SHIMMER = [
 
 /** The Town Bar height. The ground line of the painting stays on its top edge. */
 const TOWN_BAR =
-  "[--town-bar:72px] [@media(max-height:500px)]:[--town-bar:56px]";
+  "[--town-bar:80px] [@media(max-height:500px)]:[--town-bar:56px]";
 
 /**
  * The painting covers the screen with its ground line on the Town Bar. Its
@@ -160,40 +160,75 @@ const preloadBattleCanvas = () =>
   import("@/features/battle/scene/battle-canvas");
 
 /**
- * The Town (GDD 11.4, web ADR-0005): the master painting with one cut-out
- * layer for each Building that the Player can select. The painting covers the
- * screen and crops its edges.
+ * The way out of the Town to a game screen. A screen that a selectable
+ * Building opens plays the zoom toward that Building, then the fade (GDD
+ * 11.4), from the Building and from the Town Bar alike. Other screens open at
+ * once. A second request during the zoom does nothing.
  */
-export const TownScreen = ({
-  onOpen,
-}: {
-  readonly onOpen: (screen: GameScreen) => void;
-}) => {
-  const { tr } = useGameText();
-  const tutorialWon = useAtomValue(tutorialStageWonAtom);
-  const balances = useAtomValue(balancesAtom);
+export const useTownLeave = (
+  screen: GameScreen,
+  onOpen: (screen: GameScreen) => void
+) => {
   const [leaving, setLeaving] = useState<SelectableBuilding | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    // The Town has no Three.js, so the Battle chunk loads in the background.
-    void preloadBattleCanvas();
-    return () => {
+  useEffect(
+    () => () => {
       if (timer.current) {
         clearTimeout(timer.current);
       }
-    };
-  }, []);
+    },
+    []
+  );
 
-  const select = (building: SelectableBuilding) => {
+  const open = (target: GameScreen) => {
     if (leaving) {
+      return;
+    }
+    const building =
+      screen === "town"
+        ? SELECTABLE_BUILDINGS.find((item) => item.screen === target)
+        : undefined;
+    if (!building) {
+      onOpen(target);
       return;
     }
     unlockAudio();
     playSound("select");
     setLeaving(building);
-    timer.current = setTimeout(() => onOpen(building.screen), LEAVE_MS);
+    timer.current = setTimeout(() => {
+      timer.current = null;
+      setLeaving(null);
+      onOpen(building.screen);
+    }, LEAVE_MS);
   };
+
+  return { leaving, open };
+};
+
+/**
+ * The Town (GDD 11.4, web ADR-0005): the master painting with one cut-out
+ * layer for each Building that the Player can select. The painting covers the
+ * screen and crops its edges. `leaving` is the Building that the Town zooms
+ * toward on its way out (`useTownLeave`).
+ */
+export const TownScreen = ({
+  leaving,
+  onOpen,
+}: {
+  readonly leaving: SelectableBuilding | null;
+  readonly onOpen: (screen: GameScreen) => void;
+}) => {
+  const { tr } = useGameText();
+  const tutorialWon = useAtomValue(tutorialStageWonAtom);
+  const balances = useAtomValue(balancesAtom);
+
+  useEffect(() => {
+    // The Town has no Three.js, so the Battle chunk loads in the background.
+    void preloadBattleCanvas();
+  }, []);
+
+  const select = (building: SelectableBuilding) => onOpen(building.screen);
 
   const origin = leaving
     ? `${percentX(leaving.rect.x + leaving.rect.width / 2)} ${percentY(leaving.rect.y + leaving.rect.height / 2)}`

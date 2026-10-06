@@ -33,15 +33,21 @@ The 90-Creature-Card set adds four main Archetypes and two diagnostic Decks. The
 | Wild Hunt | Main | Priest | Feral few-and-huge reference: Trample and Regeneration, kept alive with Priest healing |
 | Accord Line | Diagnostic | Warrior | Mixed Human and Elf control; tests Armor, Rally, Entangle and ranged Units |
 | Breakneck Company | Diagnostic | Mage | Mixed Undead and Orc tempo; tests cheap Units, Swarm, Charge, Fire and Frost |
+| Vanguard Full | Diagnostic | Warrior | The full Human set; tests Wall, Rally, Unique, Knockback and a Holy Last Breath |
+| Raiders Full | Diagnostic | Mage | The full Orc set; tests Rally, Retaliation, Fire, Charge and the Orc Epic pair |
 
 The six main Archetypes form the release-gated Matchup matrix: 15 different pairs, and each pair must be in 45% to 55%. Ranger and Priest each lead two main Archetypes. Accord Line and Breakneck Company run with the same seeds and report their results, but a diagnostic result outside 45% to 55% is evidence for review, not an automatic failure.
 
 **Provisional Tunnel Rats and Wild Hunt.** The rules package has the Goblin and Feral cards, but not the Ranger and Priest Skill Cards. Until those Skill Cards exist, Tunnel Rats and Wild Hunt are **diagnostic** Decks in `archetypes.ts`, with 14 Creature Cards and no Skill Cards. Each card is at its Base Rank, and each Deck has 1 Epic, as in Vanguard and Raiders. They become main Archetypes when they get their Skill Cards.
 
+**Vanguard Full and Raiders Full.** These diagnostic Decks use the full 15-card Human and Orc sets, so that the Matchups test each Human and Orc card. Each card is at its Base Rank. Each Deck has 11 Creature Cards, 3 Skill Cards of its Class and 1 Epic. Vanguard and Raiders do not change, so the release-gated results do not change. When Vanguard and Raiders change to the full sets, remove Vanguard Full and Raiders Full.
+
 | Deck | Class | Style | Deck |
 | --- | --- | --- | --- |
 | Tunnel Rats (diagnostic) | Ranger | Goblin: make the enemy plan slower. 6 copies with Sabotage, 5 with Hobble and 4 with Last Breath. | 1× Ankle Snatcher (C), 2× Fuse Runner (C), 2× Junk Slinger (C), 2× Tunnel Saboteur (C), 1× Scrap-Plate Guard (C), 1× Junk Barricade (U), 2× Grease Trapper (U), 1× Rocket Barrel Rider (U), 1× Mine Sapper (R), 1× Grand Gearjammer (E) |
 | Wild Hunt (diagnostic) | Priest | Feral: few and huge. 7 copies with Trample and 4 with Regeneration, with Web Spitter (Entangle) and Frost Elk Matriarch (Rally). | 2× Bristleback Boar (C), 1× Crag Lizard (C), 1× Frostfang Lynx (C), 2× Cave Bear (C), 1× Web Spitter (C), 1× Cave Troll (U), 2× Crag Rhino (U), 1× Frost Elk Matriarch (U), 1× Avalanche Yeti (R), 1× Woolly Mammoth (R), 1× Mountain Colossus (E) |
+| Vanguard Full (diagnostic) | Warrior | Human: hold the line, with the full Human set. 2 Walls, 2 copies with Rally and 2 with Knockback. | 1× Town Barricade (C), 1× Militia Recruit (C), 1× Shieldbearer (C), 2× Crossbow Guard (C), 1× Halberdier (C), 1× Bridge Pikeman (U), 1× Banner Chaplain (U), 1× King's Courier (R), 1× Dawn Reliquary (R), 1× Marshal Elian Voss (E), 1× War Drums (C), 1× Shield Wall (C), 1× Spear Throw (U) |
+| Raiders Full (diagnostic) | Mage | Orc: rush the enemy Hero, with the full Orc set. 2 copies with Rally, 2 with Charge and 3 Fire Units. | 1× Badland Pup (C), 2× Scrap Raider (C), 1× Dusthide Brawler (C), 1× Cinderhorn Ram (U), 1× Warhowler Drummer (U), 1× Skyreaver (U), 1× Ashspit Hunter (R), 1× Mesa Pit-Fighter (R), 1× Pyreaxe Ravager (R), 1× Warband Standard-Bearer (E), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U) |
 
 ### 2.2 Risks to test for Goblin and Feral
 
@@ -64,14 +70,25 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 | Vanguard | Raiders | 50.6% | 51.0% | 19.7 | 9.9 | 45%–55% |
 | Vanguard | Tunnel Rats | 86.8% | 50.4% | 21.2 | 12.5 | Review |
 | Vanguard | Wild Hunt | 5.4% | 50.6% | 21.8 | 11.6 | Review |
+| Vanguard | Vanguard Full | 75.8% | 48.9% | 22.4 | 12.5 | Review |
+| Vanguard | Raiders Full | 20.2% | 50.6% | 20.1 | 10.1 | Review |
 | Raiders | Raiders | 50.0% | 51.4% | 19.1 | 9.2 | Mirror |
 | Raiders | Tunnel Rats | 92.5% | 50.7% | 18.5 | 9.8 | Review |
 | Raiders | Wild Hunt | 15.8% | 53.6% | 20.4 | 10.5 | Review |
+| Raiders | Vanguard Full | 87.5% | 49.3% | 18.1 | 8.6 | Review |
+| Raiders | Raiders Full | 29.8% | 51.7% | 19.4 | 9.5 | Review |
 | Tunnel Rats | Tunnel Rats | 50.0% | 47.8% | 23.4 | 14.7 | Mirror |
 | Tunnel Rats | Wild Hunt | 1.9% | 51.1% | 20.6 | 10.9 | Review |
+| Tunnel Rats | Vanguard Full | 31.7% | 51.9% | 23.2 | 13.7 | Review |
+| Tunnel Rats | Raiders Full | 4.4% | 51.4% | 18.5 | 8.9 | Review |
 | Wild Hunt | Wild Hunt | 50.0% | 49.1% | 27.1 | 17.5 | Mirror |
+| Wild Hunt | Vanguard Full | 97.9% | 50.5% | 21.1 | 11.9 | Review |
+| Wild Hunt | Raiders Full | 70.9% | 52.5% | 22.1 | 12.7 | Review |
+| Vanguard Full | Vanguard Full | 50.0% | 47.5% | 23.3 | 13.2 | Mirror |
+| Vanguard Full | Raiders Full | 5.9% | 50.6% | 18.8 | 8.8 | Review |
+| Raiders Full | Raiders Full | 50.0% | 51.1% | 20.5 | 10.7 | Mirror |
 
-The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The results come from `bun run sim matchup 1000` on 2026-10-06. The Vanguard and Raiders results did not change when the Goblin and Feral cards and Keywords came into the rules package.
+The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-06. The Vanguard and Raiders results did not change when the Goblin and Feral cards and Keywords came into the rules package. They also did not change when the 13 new Human and Orc cards came into the rules package.
 
 **Goblin and Feral risks (2.2).** The diagnostic Decks have no Skill Cards, and the AI ignores Sabotage, Trample, Entangle and Rally when it selects a play. Thus these results are evidence for review, not a balance approval.
 
@@ -82,9 +99,11 @@ The table shows each pair one time. The reverse row has the other win rate (100%
 | Trample against cheap Units | Deathless Host is not in the rules package. Wild Hunt wins 98.1% against Tunnel Rats, a Deck of cheap Units. | Not tested. Test it when Deathless Host exists. |
 | Hobble and Sabotage against slow Units | Tunnel Rats wins 1.9% against Wild Hunt. | The risk occurs in the other direction: Hobble and Sabotage do not stop Feral. |
 
-**Wild Hunt is too strong, and Tunnel Rats is too weak.** Wild Hunt wins 84% to 98% against each Deck. Tunnel Rats wins 2% to 13%. A test with Trample removed from all cards gives Wild Hunt 93.5% against Vanguard, and a test with no Feral Regeneration gives 95.0% (200 Battles each). Thus the Feral strength does not come mainly from Trample or Regeneration. Each Feral card is in its ±10% budget. A possible cause: the power points give too few points for high HP and Attack on one Unit. Review the Feral HP values and the Goblin Attack and HP values with the Ranger and Priest Skill Cards. Do this before Tunnel Rats and Wild Hunt become main Archetypes. This issue did not change card values.
+**Wild Hunt is too strong, and Tunnel Rats is too weak.** Wild Hunt wins 84% to 98% against Vanguard, Raiders and Tunnel Rats. Tunnel Rats wins 2% to 13% against Vanguard, Raiders and Wild Hunt. A test with Trample removed from all cards gives Wild Hunt 93.5% against Vanguard, and a test with no Feral Regeneration gives 95.0% (200 Battles each). Thus the Feral strength does not come mainly from Trample or Regeneration. Each Feral card is in its ±10% budget. A possible cause: the power points give too few points for high HP and Attack on one Unit. Review the Feral HP values and the Goblin Attack and HP values with the Ranger and Priest Skill Cards. Do this before Tunnel Rats and Wild Hunt become main Archetypes. This issue did not change card values.
 
 **Knockback 2 and 3.** The Matchup above uses the Common Shieldbearer (Knockback 1). The same Vanguard Deck with that one copy at Epic (Knockback 2) wins 54.3% against Raiders. At Legendary (Knockback 3) it wins 58.0%. 58% is above the 55% band. Knockback 2 and 3 can lock a melee Unit whose Speed is lower than N: the Unit never reaches the Shieldbearer to attack it. Only Combine makes these copies. The power points use the Base Rank value, so the budget check does not see this lock.
+
+**Vanguard Full is weak, and Raiders Full is strong (for review).** Vanguard Full wins 24.1% against Vanguard, 12.4% against Raiders and 5.9% against Raiders Full. Raiders Full wins 79.8% against Vanguard and 70.2% against Raiders. Each new card is in its ±10% budget, and the values are the card concepts values. The AI ignores Rally when it selects a play, and no Battle rule reads Unique. Thus these results are evidence for review, not a balance approval. Possible causes, not tested: Vanguard Full has 2 Walls with Attack 0 in place of attacking Units, and Raiders Full has more Charge and Fire. Review the Human and Orc values in a separate issue. This issue did not change card values.
 
 ### 3.1 Balance changes
 

@@ -1,26 +1,37 @@
 /// <reference lib="webworker" />
+import { ExpirationPlugin } from "workbox-expiration";
 import {
   cleanupOutdatedCaches,
   matchPrecache,
   precacheAndRoute,
 } from "workbox-precaching";
 import { NavigationRoute, registerRoute } from "workbox-routing";
-import { NetworkFirst } from "workbox-strategies";
+import { NetworkFirst, StaleWhileRevalidate } from "workbox-strategies";
 
 declare let self: ServiceWorkerGlobalScope;
 
 /** Server-rendered pages the user has visited, for offline revisits. */
 const PAGES_CACHE = "web-pages-v1";
+/** Game art (in `public/`) the user has seen, for offline revisits. */
+const ART_CACHE = "web-art-v1";
+/** Folders in `public/` with game art. The precache leaves them out (see `vite.config.ts`). */
+const ART_FOLDERS = ["/creature/", "/skills/", "/town/", "/battle/", "/glb/"];
 /** Static page (in `public/`) for an offline visit to an uncached page. */
 const OFFLINE_FALLBACK = "/offline.html";
 
 /** Prefixes of our runtime caches. The `spa-` ones are from before the app was renamed to `web`. */
-const APP_CACHE_PREFIXES = ["web-pages-", "spa-offline-", "spa-pages-"];
+const APP_CACHE_PREFIXES = [
+  "web-pages-",
+  "web-art-",
+  "spa-offline-",
+  "spa-pages-",
+];
 
 /** Our own runtime caches from older workers - never Workbox precaches. */
 const isStaleAppCache = (key: string) =>
   APP_CACHE_PREFIXES.some((prefix) => key.startsWith(prefix)) &&
-  key !== PAGES_CACHE;
+  key !== PAGES_CACHE &&
+  key !== ART_CACHE;
 
 self.addEventListener("message", (event) => {
   // Only the pages of this origin may ask the worker to take control.
@@ -75,6 +86,24 @@ registerRoute(
     } catch {
       return (await matchPrecache(OFFLINE_FALLBACK)) ?? Response.error();
     }
+  })
+);
+
+// Game art loads only when a screen needs it, so a first visit does not
+// download every card. The file names have no hash: revalidate in the
+// background, so that new art comes on the next view.
+registerRoute(
+  ({ sameOrigin, url }) =>
+    sameOrigin && ART_FOLDERS.some((folder) => url.pathname.startsWith(folder)),
+  new StaleWhileRevalidate({
+    cacheName: ART_CACHE,
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 300,
+        maxAgeSeconds: 60 * 60 * 24 * 30,
+        purgeOnQuotaError: true,
+      }),
+    ],
   })
 );
 

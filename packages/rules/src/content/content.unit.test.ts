@@ -15,7 +15,12 @@ import {
   StageDefinition,
   StarterDeck,
 } from "./schema";
-import type { DeckEntry } from "./schema";
+import type {
+  CreatureCardDefinition,
+  DeckEntry,
+  RaceId,
+  RankId,
+} from "./schema";
 import { getStage, STAGES } from "./stages";
 
 const decodeCard = Schema.decodeUnknownSync(CardDefinition);
@@ -38,6 +43,30 @@ const checkDeck = (deck: readonly DeckEntry[]) => {
   }
 };
 
+const creatures = CARDS.flatMap((card) =>
+  card.kind === "creature" ? [card] : []
+);
+
+/** Tunnel Saboteur with another Sabotage value, to test the schema. */
+const withSabotage = (sabotage: number | Partial<Record<RankId, number>>) => ({
+  ...getCard("goblin.tunnelSaboteur"),
+  keywords: { sabotage },
+});
+
+const power = (cardId: string) => {
+  const card = getCard(cardId);
+  return card.kind === "creature" ? creaturePower(card) : 0;
+};
+
+/** The Races and Classes of the cards in an Archetype. */
+const archetypeGroups = (id: string) =>
+  new Set(
+    ARCHETYPES.find((archetype) => archetype.id === id)?.deck.map((entry) => {
+      const card = getCard(entry.cardId);
+      return card.kind === "creature" ? card.race : card.class;
+    })
+  );
+
 describe("card content (CRD-01, technical design 3.5)", () => {
   it("passes the card schema and has unique IDs", () => {
     for (const card of CARDS) {
@@ -46,15 +75,15 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 23 cards: 2 Races and 2 Classes", () => {
-    expect(CARDS).toHaveLength(23);
+  it("has 66 cards: 4 Races and 2 Classes", () => {
+    expect(CARDS).toHaveLength(66);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
     const classes = new Set(
       CARDS.flatMap((card) => (card.kind === "skill" ? [card.class] : []))
     );
-    expect(races).toEqual(new Set(["human", "orc"]));
+    expect(races).toEqual(new Set(["human", "orc", "goblin", "feral"]));
     expect(classes).toEqual(new Set(["warrior", "mage"]));
   });
 
@@ -85,6 +114,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         card.keywords.hobble,
         card.keywords.knockback,
         card.keywords.lastBreath,
+        card.keywords.rally,
         card.keywords.regeneration,
       ];
       for (const amount of amounts) {
@@ -115,7 +145,10 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         : []
     );
     expect(cards.every((card) => card.range === 0)).toBe(true);
-    expect(cards.map((card) => card.id)).toEqual(["human.shieldbearer"]);
+    expect(cards.map((card) => card.id)).toEqual([
+      "human.shieldbearer",
+      "human.bridgePikeman",
+    ]);
   });
 
   it("keeps Shieldbearer within ±10% of its power budget (GDD 13)", () => {
@@ -127,19 +160,157 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     ).toBeLessThanOrEqual(1000);
   });
 
-  it("puts Pivot only on melee Units, with 1 Pivot card for each Race (GDD 3.2, 4.6)", () => {
-    const pivots = CARDS.flatMap((card) =>
-      card.kind === "creature" && card.keywords.pivot ? [card] : []
-    );
+  it("puts Pivot only on melee Units, with 1 Uncommon Pivot card for each Race (GDD 3.2, 4.6)", () => {
+    const pivots = creatures.filter((card) => card.keywords.pivot);
     expect(pivots.every((card) => card.range === 0)).toBe(true);
+    expect(pivots.every((card) => card.baseRank === "uncommon")).toBe(true);
     expect(pivots.map((card) => card.race).toSorted()).toEqual([
+      "feral",
+      "goblin",
       "human",
       "orc",
     ]);
   });
 
+  it("puts Trample only on melee Units (GDD 4.7, ADR-0017)", () => {
+    const tramplers = creatures.filter((card) => card.keywords.trample);
+    expect(tramplers.length).toBeGreaterThan(0);
+    for (const card of tramplers) {
+      expect(card.range, card.id).toBe(0);
+    }
+  });
+
+  it("puts no attack Keyword on a Unit with Base Attack 0 (GDD 4.6)", () => {
+    const attackKeywords = [
+      "entangle",
+      "heroic",
+      "hobble",
+      "knockback",
+      "pivot",
+      "poison",
+      "retaliation",
+      "trample",
+    ] as const;
+    const zeros = creatures.filter((card) => card.attack === 0);
+    expect(zeros.length).toBeGreaterThan(0);
+    for (const card of zeros) {
+      for (const keyword of attackKeywords) {
+        expect(card.keywords[keyword], `${card.id} ${keyword}`).toBeUndefined();
+      }
+    }
+  });
+
+  it("keeps Sabotage N at most 2 and the same at each Rank (ADR-0017)", () => {
+    const saboteurs = creatures.filter(
+      (card) => card.keywords.sabotage !== undefined
+    );
+    expect(saboteurs.length).toBeGreaterThan(0);
+    for (const card of saboteurs) {
+      expect(Predicate.isNumber(card.keywords.sabotage), card.id).toBe(true);
+      expect(card.keywords.sabotage, card.id).toBeLessThanOrEqual(2);
+    }
+    expect(() => decodeCard(withSabotage(3))).toThrow();
+    expect(() => decodeCard(withSabotage({ common: 1, epic: 2 }))).toThrow();
+    expect(decodeCard(withSabotage(2))).toEqual(withSabotage(2));
+  });
+
+  it("gives Sabotage N × 4, Trample 3, Entangle 2 and Rally N × 3 power points (GDD 13)", () => {
+    expect(power("goblin.tunnelSaboteur")).toBe(15);
+    expect(power("goblin.grandGearjammer")).toBe(27);
+    expect(power("feral.bristlebackBoar")).toBe(16);
+    expect(power("feral.webSpitter")).toBe(20);
+    expect(power("feral.frostElkMatriarch")).toBe(25);
+    // Unique and Wall use 0 points.
+    expect(power("feral.oldFrostmaw")).toBe(38);
+    expect(power("goblin.junkBarricade")).toBe(16);
+  });
+
   it("throws for an unknown card", () => {
     expect(() => getCard("nope")).toThrow("Unknown card");
+  });
+});
+
+/** The Races that have their full 15 Creature Cards in the rules package. */
+const FULL_RACES = [
+  "human",
+  "orc",
+  "goblin",
+  "feral",
+] as const satisfies readonly RaceId[];
+
+const raceCards = (race: RaceId) =>
+  creatures.filter((card) => card.race === race);
+
+const countBy = <K extends string>(
+  cards: readonly CreatureCardDefinition[],
+  key: (card: CreatureCardDefinition) => K
+): Partial<Record<K, number>> => {
+  const counts: Partial<Record<K, number>> = {};
+  for (const card of cards) {
+    const value = key(card);
+    counts[value] = (counts[value] ?? 0) + 1;
+  }
+  return counts;
+};
+
+describe("Race shape (GDD 12, ADR-0013)", () => {
+  it.each(FULL_RACES)(
+    "gives %s 5 Common, 5 Uncommon, 3 Rare and 2 Epic Creature Cards",
+    (race) => {
+      expect(countBy(raceCards(race), (card) => card.baseRank)).toEqual({
+        common: 5,
+        uncommon: 5,
+        rare: 3,
+        epic: 2,
+      });
+    }
+  );
+
+  it("gives Goblin and Feral the Role profiles of GDD 12", () => {
+    expect(countBy(raceCards("goblin"), (card) => card.role)).toEqual({
+      frontliner: 2,
+      striker: 3,
+      runner: 3,
+      shooter: 3,
+      support: 3,
+      wall: 1,
+    });
+    expect(countBy(raceCards("feral"), (card) => card.role)).toEqual({
+      frontliner: 5,
+      striker: 5,
+      runner: 1,
+      shooter: 2,
+      support: 1,
+      wall: 1,
+    });
+  });
+
+  it("gives Goblin 11 Physical and 4 Fire cards, and Feral 11 Physical and 4 Frost cards", () => {
+    expect(countBy(raceCards("goblin"), (card) => card.damageType)).toEqual({
+      physical: 11,
+      fire: 4,
+    });
+    expect(countBy(raceCards("feral"), (card) => card.damageType)).toEqual({
+      physical: 11,
+      frost: 4,
+    });
+  });
+
+  it("gives Feral no card with Countdown 1", () => {
+    expect(raceCards("feral").filter((card) => card.countdown === 1)).toEqual(
+      []
+    );
+  });
+
+  it.each(FULL_RACES)("gives %s one Unique card in its Epic pair", (race) => {
+    const epics = raceCards(race).filter((card) => card.baseRank === "epic");
+    expect(epics).toHaveLength(2);
+    expect(epics.filter((card) => card.keywords.unique)).toHaveLength(1);
+    expect(
+      creatures.filter(
+        (card) => card.keywords.unique && card.baseRank !== "epic"
+      )
+    ).toEqual([]);
   });
 });
 
@@ -264,6 +435,27 @@ describe("Decks and Stages", () => {
     expect(deckSizeLimits(1)).toEqual({ min: 5, max: 10 });
     expect(deckSizeLimits(11)).toEqual({ min: 15, max: 20 });
     expect(deckSizeLimits(30)).toEqual({ min: 15, max: 30 });
+  });
+
+  it("marks Vanguard and Raiders main, and the other Archetypes diagnostic (Archetypes 2.1)", () => {
+    expect(
+      ARCHETYPES.map((archetype) => [archetype.id, archetype.kind])
+    ).toEqual([
+      ["vanguard", "main"],
+      ["raiders", "main"],
+      ["tunnelRats", "diagnostic"],
+      ["wildHunt", "diagnostic"],
+      ["vanguardFull", "diagnostic"],
+      ["raidersFull", "diagnostic"],
+    ]);
+    // Creature Cards only: one Race, and no Skill Card.
+    expect(archetypeGroups("tunnelRats")).toEqual(new Set(["goblin"]));
+    expect(archetypeGroups("wildHunt")).toEqual(new Set(["feral"]));
+    // The full Human and Orc sets, with the Skill Cards of the main Archetype.
+    expect(archetypeGroups("vanguardFull")).toEqual(
+      new Set(["human", "warrior"])
+    );
+    expect(archetypeGroups("raidersFull")).toEqual(new Set(["orc", "mage"]));
   });
 
   it("has Archetypes with unique IDs that obey the Deck rules (GDD 13)", () => {

@@ -75,9 +75,10 @@ Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-require
 
 - Logo files in `apps/web/brand/` and PWA icons in `apps/web/public/`.
 - Complete design documents in `docs/game/` (pillars, vision, GDD, PRD, art direction, technical design, economy, roadmap).
-- Card art: 22 final card illustrations in `apps/web/public/illustrations/`, made with GPT Image (one 3:4 portrait for each card, with its background). Ten of them are the golden references ([art direction 5.1](docs/game/05-art-direction.md)).
-- Town art: the first master painting (`apps/web/public/town/town.jpg`, 1672 × 941) and the Town Gate layer cut out of it (`town-gate.webp`). A 3200 × 1800 export is still to make. The brief is [11 — Town Concepts](docs/game/11-town-concepts.md).
+- Card art: 22 final card illustrations in `apps/web/public/creature/{race}/` (Creature Cards) and `apps/web/public/skills/{class}/` (Skill Cards), made with GPT Image (one 3:4 portrait for each card, with its background). Ten of them are the golden references ([art direction 5.1](docs/game/05-art-direction.md)).
+- Town art: the first master painting (`apps/web/public/town/town.webp`, 1672 × 941) and the Town Gate layer cut out of it (`town-gate.webp`). A 3200 × 1800 export is still to make. The 11 Town Bar icons (10 shortcuts and Settings): the 1254 × 1254 JPG sources on black in `apps/web/art/town/bar/`, and the 128 × 128 WebP cut-outs that the game uses in `apps/web/public/town/bar/`. The brief is [11 — Town Concepts](docs/game/11-town-concepts.md).
 - Sound: the Battle sounds are made with Web Audio in code (`apps/web/src/features/battle/battle-audio.ts`). No audio files and no music exist yet.
+- Campaign art: the Hearthvale Region Map (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen measures its clearings and road in `apps/web/src/features/campaign/region-map.ts`. The brief is [12 — Region Concepts](docs/game/12-region-concepts.md).
 - No Battle Painting exists yet. Until the Hearthvale painting exists, the Battle shows a meadow gradient. The brief is [13 — Battlefield Concepts](docs/game/13-battlefield-concepts.md).
 - No playtests, players, reviews, testimonials or press exist yet. Do not invent them.
 

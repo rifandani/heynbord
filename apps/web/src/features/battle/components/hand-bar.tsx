@@ -409,14 +409,14 @@ const HandSlot = ({
 };
 
 /**
- * End Turn, a small gold button just above the Graveyard Pile.
- * Its right edge matches the pile, so a long label grows to the left
- * and stays on the screen.
+ * End Turn, a small gold button just above the Hand Bar.
+ * Its right edge matches the outer edge of the bar (past the 0.2em border),
+ * so a long label grows to the left and stays on the screen.
  */
 const EndTurnPanel = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
   return (
-    <div className="pointer-events-auto absolute right-0 bottom-full z-30 mb-3">
+    <div className="pointer-events-auto absolute right-[-0.2em] bottom-full z-30 mb-3">
       <GameButton
         intent="gold"
         size="sm"
@@ -472,8 +472,8 @@ const PileDivider = () => (
 
 /**
  * The Hand Bar (GDD 11.2): the Deck Pile, the Hand Slots, the Graveyard Pile,
- * and End Turn above the Graveyard. A Ready card can be dragged to a target,
- * or tapped and then the target tapped.
+ * and End Turn above the right end of the bar. A Ready card can be dragged
+ * to a target, or tapped and then the target tapped.
  */
 const drawnId = (playing: PlayingEvent | null): number | null => {
   if (playing?.event._tag === "CardDrawn" && playing.event.side === "player") {
@@ -605,10 +605,8 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
         </div>
 
         <PileDivider />
-        <div className="relative w-[9em] shrink-0">
-          <EndTurnPanel battle={battle} />
-          <GraveyardPile cards={player.graveyard} speed={battle.speed} />
-        </div>
+        <GraveyardPile cards={player.graveyard} speed={battle.speed} />
+        <EndTurnPanel battle={battle} />
       </div>
       <div className="min-w-0 flex-1" aria-hidden />
 

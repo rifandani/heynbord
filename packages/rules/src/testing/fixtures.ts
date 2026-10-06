@@ -73,6 +73,7 @@ export const placeUnit = (
       | "maxHp"
       | "burn"
       | "frozen"
+      | "entangled"
       | "poisoned"
       | "hobble"
       | "hobbled"
@@ -84,6 +85,10 @@ export const placeUnit = (
       readonly poison?: boolean;
       /** Test setup: replaces the printed Speed. */
       readonly speed?: number;
+      /** Test setup: gives the Unit the Entangle Keyword. */
+      readonly entangle?: boolean;
+      /** Test setup: gives the Unit the Trample Keyword. */
+      readonly trample?: boolean;
     }
 ): UnitState => {
   const definition = getCard(options.cardId);
@@ -119,6 +124,9 @@ export const placeUnit = (
   if (options.frozen !== undefined) {
     unit.frozen = options.frozen;
   }
+  if (options.entangled !== undefined) {
+    unit.entangled = options.entangled;
+  }
   if (options.poisoned !== undefined) {
     unit.poisoned = options.poisoned;
   }
@@ -137,8 +145,12 @@ export const placeUnit = (
   if (options.wall !== undefined) {
     unit.wall = options.wall;
   }
-  const placed =
-    options.speed === undefined ? unit : { ...unit, speed: options.speed };
+  const placed: UnitState = {
+    ...unit,
+    speed: options.speed ?? unit.speed,
+    entangle: options.entangle ?? unit.entangle,
+    trample: options.trample ?? unit.trample,
+  };
   state.nextId += 1;
   state.units.push(placed);
   return placed;

@@ -1,4 +1,4 @@
-import type { BattleState } from "@workspace/rules";
+import type { BattleState, StageDefinition } from "@workspace/rules";
 import {
   BattleEvent,
   chooseCommand,
@@ -13,11 +13,16 @@ import { describe, expect, it } from "vitest";
 import { applyEvent, viewFromState } from "@/features/battle/battle-view";
 
 /** Runs a Battle with the AI on both sides and returns each step. */
-const steps = (seed: number, stageId: string, deckId: string) => {
+const steps = (
+  seed: number,
+  stageId: string,
+  deckId: string,
+  stage: StageDefinition = getStage(stageId)
+) => {
   const deck = getStarterDeck(deckId);
   let { state } = createBattle({
     seed,
-    stage: getStage(stageId),
+    stage,
     player: {
       classId: deck.classId,
       deck: deck.deck,
@@ -52,6 +57,48 @@ describe("applyEvent", () => {
           viewFromState(after)
         );
       }
+    }
+  );
+});
+
+/** Stage 1-4 with an enemy Deck of Goblin and Feral cards. */
+const goblinAndFeralStage = (): StageDefinition => {
+  const stage = getStage("1-4");
+  const cardIds = [
+    "goblin.tunnelSaboteur",
+    "goblin.grandGearjammer",
+    "goblin.junkBarricade",
+    "feral.bristlebackBoar",
+    "feral.webSpitter",
+    "feral.frostElkMatriarch",
+    "feral.cragRhino",
+  ];
+  return {
+    ...stage,
+    enemy: {
+      ...stage.enemy,
+      deck: cardIds.flatMap((cardId) =>
+        Array.from({ length: 2 }, () => ({ cardId, rank: "epic" as const }))
+      ),
+    },
+  };
+};
+
+describe("applyEvent with Sabotage, Trample, Entangle and Rally", () => {
+  it.each([1, 2, 3])(
+    "rebuilds the view of the next state from the events (seed %i)",
+    (seed) => {
+      const all = steps(seed, "1-4", "vanguard", goblinAndFeralStage());
+      for (const { before, after, events } of all) {
+        expect(events.reduce(applyEvent, viewFromState(before))).toEqual(
+          viewFromState(after)
+        );
+      }
+      expect(
+        all.some(({ events }) =>
+          events.some((event) => event._tag === "CardSabotaged")
+        )
+      ).toBe(true);
     }
   );
 });

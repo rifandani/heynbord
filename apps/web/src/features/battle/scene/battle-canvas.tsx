@@ -7,6 +7,7 @@ import { useState } from "react";
 import { battleSessionAtom } from "@/features/battle/battle.atoms";
 import { Board } from "@/features/battle/scene/board";
 import { CameraRig } from "@/features/battle/scene/camera-rig";
+import { CastMarks } from "@/features/battle/scene/cast-marks";
 import { Diagnostics } from "@/features/battle/scene/diagnostics";
 import { EffectsLayer } from "@/features/battle/scene/effects-layer";
 import { Environment } from "@/features/battle/scene/environment";
@@ -69,6 +70,7 @@ const BattleCanvas = ({
         <Board lanes={lanes} closedLanes={closedLanes} />
         <Heroes />
         <Units />
+        <CastMarks />
         <EffectsLayer />
         <TutorialMarks />
         <TargetMarkers onPick={onPick} />

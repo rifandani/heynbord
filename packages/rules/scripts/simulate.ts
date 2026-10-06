@@ -11,12 +11,16 @@
  * - `matchup`: each Archetype against each Archetype (docs/game/08-archetypes.md).
  *   `battles` is the number of seeds: each seed plays 2 Battles, one with each
  *   Side first. `--level` (5 by default) and `--gear` (0 by default, for all 4
- *   slots) set both Heroes.
+ *   slots) set both Heroes. Only a pair of two main Archetypes can fail. A pair
+ *   with a diagnostic Deck shows "review" when it is not on target.
+ *   `noReadyTurns` is the average number of the Archetype's Turns with no Ready
+ *   card in the Hand (the Sabotage lock risk, Archetypes 2.2).
  */
 import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
 import { STARTER_DECKS } from "../src/content/decks";
 import { STAGES } from "../src/content/stages";
 import {
+  gatesRelease,
   isOnTarget,
   MATCHUP_TARGET,
   simulateMatchup,
@@ -106,11 +110,22 @@ const { modes, battles, level, gear, check } = parseArgs(process.argv.slice(2));
 /** The win rates that are not on target. */
 const misses: string[] = [];
 
-/** Records a miss, and returns the text for the `target` column. */
-const judge = (name: string, rate: number, target: WinRateTarget): string => {
+/**
+ * Returns the text for the `target` column. A miss of a gated target fails the
+ * check. A miss of a target that does not gate release is for review.
+ */
+const judge = (
+  name: string,
+  rate: number,
+  target: WinRateTarget,
+  gated = true
+): string => {
   const range = `${percent(target.min)}–${percent(target.max)}`;
   if (isOnTarget(rate, target)) {
     return range;
+  }
+  if (!gated) {
+    return `${range} review`;
   }
   misses.push(`${name}: ${percent(rate, 1)}, target ${range}`);
   return `${range} MISS`;
@@ -159,6 +174,7 @@ if (modes.includes("matchup")) {
           winRate: percent(report.winRate, 1),
           firstSideWinRate: percent(report.firstSideWinRate, 1),
           avgTurn: report.averageTurn.toFixed(1),
+          noReadyTurns: report.noReadyTurns.toFixed(1),
           // A mirror Matchup is always 50%: it has no target.
           target:
             archetype.id === opponent.id
@@ -166,7 +182,8 @@ if (modes.includes("matchup")) {
               : judge(
                   `Matchup ${report.archetypeId} against ${report.opponentId}`,
                   report.winRate,
-                  MATCHUP_TARGET
+                  MATCHUP_TARGET,
+                  gatesRelease(archetype, opponent)
                 ),
         };
       })

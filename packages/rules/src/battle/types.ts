@@ -90,6 +90,8 @@ export interface UnitState {
   readonly damageType: DamageType;
   readonly armor: number;
   readonly charge: boolean;
+  /** After attack damage above 0, the enemy Unit becomes Entangled. */
+  readonly entangle: boolean;
   readonly flying: boolean;
   readonly heroic: number;
   /** Damage to the nearest enemy Unit ahead when this Unit leaves. 0 is none. */
@@ -100,8 +102,12 @@ export interface UnitState {
   hobble: number;
   /** Knockback for the Rank of this card copy. 0 is none. */
   knockback: number;
+  /** Rally for the Rank of this card copy. 0 is none. */
+  readonly rally: number;
   readonly regeneration: number;
   readonly retaliation: boolean;
+  /** Melee only: a kill lets the damage that is left hit the next enemy Unit. */
+  readonly trample: boolean;
   /** A Unit with Wall is never Pushed. */
   wall: boolean;
   /** The Turn number of the summon. Charge uses it. */
@@ -113,6 +119,10 @@ export interface UnitState {
   /** Hobbled count. 0 is not Hobbled. Above 0, Speed is at most 1. */
   hobbled: number;
   frozen: boolean;
+  /** Speed 0 in the next action. The action then ends it (GDD 4.4). */
+  entangled: boolean;
+  /** Attack from Rally until the end of the Turn of the owner. */
+  rallied: number;
   bonusArmor: number;
   bonusArmorTurns: number;
 }
@@ -167,7 +177,9 @@ export type DamageSource =
   | "burn"
   | "poison"
   | "lastBreath"
-  | "suddenDeath";
+  | "suddenDeath"
+  /** The damage that is left after a Trample kill. It is not an attack. */
+  | "trample";
 
 /** A snapshot of a Unit for the renderer. */
 export type UnitSnapshot = Readonly<UnitState>;
@@ -202,6 +214,16 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly success: boolean;
   };
   CountdownChanged: {
+    readonly side: Side;
+    readonly instanceId: number;
+    readonly countdown: number;
+  };
+  /**
+   * Sabotage (GDD 5.4): the summon of `unitId` made a card in the Hand of the
+   * Hero of `side` later. `countdown` is the new Countdown of that card.
+   */
+  CardSabotaged: {
+    readonly unitId: number;
     readonly side: Side;
     readonly instanceId: number;
     readonly countdown: number;
@@ -243,7 +265,7 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   StatusApplied: {
     readonly unitId: number;
-    readonly status: "burn" | "freeze" | "poison" | "hobble";
+    readonly status: "burn" | "freeze" | "poison" | "hobble" | "entangle";
     /** The Hobbled count after the hit. The other statuses do not use it. */
     readonly count?: number;
   };

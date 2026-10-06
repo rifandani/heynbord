@@ -1,4 +1,4 @@
-import { getCard } from "@workspace/rules";
+import { getCard, getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
@@ -8,15 +8,15 @@ import {
 } from "@/features/battle/card-art";
 
 describe("cardIllustration", () => {
-  it("changes the card name in the card ID to a kebab-case file name", () => {
+  it("puts the kebab-case card name in the folder of its Race or Class", () => {
     expect(cardIllustration("human.crossbowGuard")).toBe(
-      "/illustrations/crossbow-guard.jpg"
+      "/creature/human/crossbow-guard.webp"
     );
     expect(cardIllustration("orc.warchiefGrukka")).toBe(
-      "/illustrations/warchief-grukka.jpg"
+      "/creature/orc/warchief-grukka.webp"
     );
     expect(cardIllustration("mage.fireball")).toBe(
-      "/illustrations/fireball.jpg"
+      "/skills/mage/fireball.webp"
     );
   });
 });
@@ -25,7 +25,7 @@ describe("battleCreatureCards", () => {
   it("lists each Creature Card of both Sides one time, and no Skill Card", () => {
     const { rules } = startSession({
       stageId: "1-1",
-      deckId: "vanguard",
+      deck: getStarterDeck("vanguard"),
       seed: 7,
     });
     const cards = battleCreatureCards(rules);

@@ -41,7 +41,9 @@ export default {
   battle: {
     title: "Pertempuran",
     chooseStage: "Pilih Tahap",
-    chooseDeck: "Pilih Dek Awal",
+    chooseDeck: "Pilih Dek",
+    editDecks: "Ubah Dek",
+    deckLine: "{className} · {count} kartu",
     start: "Mulai Pertempuran",
     stageLabel: "Tahap {id}",
     boss: "Bos",
@@ -100,6 +102,11 @@ export default {
     range: "Jangkauan",
     recall: "Kembali {value}%",
     skill: "Keahlian",
+    cast: {
+      player: "Kamu memakai {name}",
+      enemy: "Musuh memakai {name}",
+      recalled: "Kembali ke Tangan",
+    },
     recallReminder:
       "Setelah efeknya, kartu ini punya peluang {value}% untuk kembali ke Tanganmu. Jika tidak, kartu masuk ke Kuburan.",
     player: "Kamu",
@@ -165,6 +172,61 @@ export default {
       },
     },
   },
+  campaign: {
+    label: "Kampanye",
+    regionOf: "Wilayah {number} dari {count}",
+    regions: {
+      "1": "Hearthvale",
+      "2": "Hutan Duri",
+      "3": "Rawa Hampa",
+    },
+    previousRegion: "Wilayah sebelumnya: {name}",
+    nextRegion: "Wilayah berikutnya: {name}",
+    regionLater: "{name} dibuka nanti.",
+    trail: "Tahap",
+    marker: {
+      done: "Tahap {id}, selesai, {stars} dari 3 Bintang",
+      open: "Tahap {id}, terbuka",
+      locked: "Tahap {id}, terkunci",
+      bossDone: "Tahap Bos {id}, selesai, {stars} dari 3 Bintang",
+      bossOpen: "Tahap Bos {id}, terbuka",
+      bossLocked: "Tahap Bos {id}, terkunci",
+    },
+    winFirst: "Menangkan Tahap {id} dulu.",
+    stars: {
+      label: "Bintang di {name}",
+      value: "{count} dari {total} Bintang",
+    },
+    chest: {
+      label: "Peti pada {stars} Bintang",
+      earned:
+        "Bintangmu cukup untuk peti ini. Hadiah peti belum ada di permainan.",
+      needed: "{count} Bintang lagi membuka peti ini.",
+    },
+    panel: {
+      close: "Tutup",
+      enemy: "Musuh",
+      enemyLine: "{name} · {className}",
+      heroHp: "HP Pahlawan {hp}",
+      level: "Level yang disarankan {level}",
+      bestStars: "Terbaik",
+      notWon: "Belum menang",
+      reward: "Hadiah",
+      firstWin: "Kemenangan pertama: kartu ini, Koin, dan XP.",
+      repeatWin:
+        "Kemenangan ulang: Koin, XP, dan peluang kartu dari Tahap ini.",
+      deck: "Dek",
+      fight: "Bertarung",
+    },
+  },
+  settings: {
+    title: "Pengaturan",
+    close: "Tutup Pengaturan",
+    language: "Bahasa",
+    sound: "Suara",
+    volume: "Volume suara",
+    soundOn: "Suara aktif",
+  },
   tutorial: {
     label: "Tutorial",
     gotIt: "Mengerti",
@@ -186,6 +248,49 @@ export default {
         title: "Hadang musuh",
         text: "Ada Unit musuh di Jalur yang tidak berisi Unit-mu. Sorotan merah menunjukkan Jalur itu. Panggil Unit ke Jalur itu untuk menghadang Unit musuh.",
       },
+    },
+  },
+  deckBuilder: {
+    title: "Dek",
+    close: "Tutup Dek",
+    slots: "Slot Dek",
+    slotName: "Dek {number}",
+    nameLabel: "Nama Dek",
+    yourCards: "Kartumu",
+    owned: "{count} kartu",
+    show: "Tampilkan",
+    filters: { all: "Semua", creature: "Makhluk", skill: "Keahlian" },
+    heroClass: "Kelas Pahlawan",
+    curve: "Kurva Hitung mundur",
+    curveColumn:
+      "Hitung mundur {countdown}: {creatures} Kartu Makhluk, {skills} Kartu Keahlian",
+    creature: "Makhluk",
+    skill: "Keahlian",
+    thisDeck: "Kartu di Dek ini",
+    empty:
+      "Dek ini tidak berisi kartu. Pilih kartu di halaman kiri untuk menambahkannya, atau pakai Isi Otomatis.",
+    size: "{count} / {max} kartu",
+    sizeMin: "Minimal {min}",
+    add: "Tambah {name}, {rank}, Hitung mundur {countdown}. Sisa salinan: {left}.",
+    remove: "Buang satu {name}, {rank}. Di Dek ini: {count}.",
+    left: "×{count}",
+    blocked: {
+      none: "Semua di Dek",
+      full: "Dek penuh",
+      copies: "3 salinan",
+      class: "Hanya {className}",
+    },
+    autoFill: "Isi Otomatis",
+    clear: "Buang Semua",
+    use: "Pakai Dek Ini",
+    active: "Dek Aktif",
+    problems: {
+      tooFew: "Dek perlu minimal {min} kartu. Dek ini berisi {count}.",
+      tooMany: "Dek boleh berisi maksimal {max} kartu. Dek ini berisi {count}.",
+      tooManyCopies: "{name}: Dek boleh berisi maksimal {max} salinan.",
+      wrongClass:
+        "{name} adalah kartu {className}. Buang kartu itu, atau ganti Kelas Pahlawan.",
+      notOwned: "Salinan {name} ({rank}) milikmu tidak cukup.",
     },
   },
   decks: {
@@ -258,8 +363,11 @@ export default {
     lastBreath: "Nafas Terakhir {value}",
     pivot: "Berbalik",
     poison: "Racun",
+    rally: "Semangat {value}",
     regeneration: "Regenerasi {value}",
     retaliation: "Balasan",
+    unique: "Unik",
+    wall: "Tembok",
     ranged: "Jarak Jauh {value}",
     melee: "Jarak Dekat",
   },
@@ -270,18 +378,22 @@ export default {
     flying: "Bergerak melewati Unit lain. Berhenti di Petak kosong.",
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
     hobble:
-      "Setelah Unit ini memberi damage serangan di atas 0 ke Unit musuh, Unit itu menjadi Terpincang {value}. Unit yang Terpincang punya Kecepatan maksimum 1, setelah semua bonus. Hitungan turun 1 pada tiap Langkah Akhir pemiliknya. Pincang yang baru mempertahankan hitungan yang lebih tinggi. Balasan tidak menerapkan Pincang.",
+      "Unit musuh yang diserangnya punya Kecepatan maksimum 1 selama {value} Giliran. Balasan tidak menerapkan Pincang.",
     knockback:
-      "Setelah Unit ini memberi damage serangan di atas 0 ke Unit musuh, Unit itu terdorong {value} Petak ke arah Pahlawannya sendiri, di Jalurnya sendiri. Dorongan berhenti sebelum Unit lain dan di Kolom 1 Unit itu. Unit dengan Tembok tidak pernah terdorong. Balasan tidak menerapkan Hentakan.",
+      "Mendorong Unit musuh yang diserangnya {value} Petak ke belakang. Balasan tidak menerapkan Hentakan.",
     lastBreath:
       "Saat Unit ini meninggalkan Papan, ia memberi {value} damage ke Unit musuh terdekat di depannya.",
     pivot:
       "Unit ini dapat menyerang Unit musuh tepat di belakangnya atau di sebelahnya, sebelum Unit di depannya. Lalu ia tidak bergerak.",
     poison:
       "Setelah Unit ini memberi damage serangan di atas 0, Unit itu mendapat 1 tumpukan Racun. Pada tiap Langkah Akhir pemiliknya, ia menerima 1 damage per tumpukan, lalu kehilangan 1 tumpukan.",
+    rally:
+      "Pada Langkah Awal-mu, Unit kawan lain dalam Jalur yang sama mendapat +{value} Serangan sampai akhir Giliran. Unit dengan Serangan Dasar 0 tidak mendapat bonus.",
     regeneration: "Pada Langkah Awal-mu, Unit ini memulihkan {value} HP.",
     retaliation:
       "Saat Unit ini selamat dari serangan jarak dekat, ia memberi damage sebesar Serangannya ke penyerang.",
+    unique: "Hanya satu salinan kartu ini yang boleh ada di sisi Papan-mu.",
+    wall: "Unit ini punya Kecepatan 0 dan Serangan 0. Ia menghalangi Jalurnya, dan dorongan tidak pernah memindahkannya.",
     fire: "Api: target terbakar 1 damage pada 2 Langkah Akhir berikutnya.",
     frost: "Es: target melewatkan aksi berikutnya.",
     holy: "Suci: Zirah tidak mengurangi damage ini.",
@@ -331,9 +443,33 @@ export default {
         name: "Benteng Besi",
         flavor: "Tembok yang suka mengeluh soal cuaca.",
       },
+      townBarricade: {
+        name: "Barikade Kota",
+        flavor: "Izin lewatnya ada di bawah karung pasir.",
+      },
+      bridgePikeman: {
+        name: "Prajurit Tombak Jembatan",
+        flavor: "Silakan masuk antrean. Antrean paling belakang.",
+      },
+      bannerChaplain: {
+        name: "Rohaniwan Panji",
+        flavor: "Khotbahnya selesai saat moral pasukan membaik.",
+      },
+      kingsCourier: {
+        name: "Kurir Raja",
+        flavor: "Pesannya bertulis mendesak. Ia sudah berlari duluan.",
+      },
       paviseArbalist: {
         name: "Arbalester Pavise",
         flavor: "Ia membawa temboknya sendiri dan menyebutnya posisi tembak.",
+      },
+      dawnReliquary: {
+        name: "Relikui Fajar",
+        flavor: "Meski hancur, ia tetap punya kata terakhir.",
+      },
+      marshalElianVoss: {
+        name: "Marsekal Elian Voss",
+        flavor: "Tahan barisan. Aku masih punya enam alasan lagi.",
       },
     },
     orc: {
@@ -368,6 +504,34 @@ export default {
       warchiefGrukka: {
         name: "Kepala Perang Grukka",
         flavor: '"Makan siang dulu. Lalu kejayaan."',
+      },
+      dusthideBrawler: {
+        name: "Petarung Kulit Debu",
+        flavor: "Ia mengira setiap peringatan adalah tepuk tangan.",
+      },
+      cinderhornRam: {
+        name: "Domba Jantan Tanduk Bara",
+        flavor: "Ia tak pernah menunggu gerbang dibuka.",
+      },
+      warhowlerDrummer: {
+        name: "Penabuh Lolongan Perang",
+        flavor: "Ia hanya tahu satu irama: lebih cepat.",
+      },
+      ashspitHunter: {
+        name: "Pemburu Ludah Abu",
+        flavor: "Ia mengukur jarak dari seberapa jauh alis terbakar.",
+      },
+      mesaPitFighter: {
+        name: "Petarung Arena Mesa",
+        flavor: "Pukul dia sekali. Begitulah pelajaran berhitung dimulai.",
+      },
+      pyreaxeRavager: {
+        name: "Perusak Kapak Api",
+        flavor: "Kapaknya panas. Amarahnya lebih panas.",
+      },
+      warbandStandardBearer: {
+        name: "Pembawa Panji Pasukan Perang",
+        flavor: "Ikuti panjinya. Abaikan ke mana arahnya.",
       },
     },
     warrior: {

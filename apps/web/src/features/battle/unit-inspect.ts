@@ -1,5 +1,4 @@
-import type { Target } from "@workspace/rules";
-import { LANE_LENGTH } from "@workspace/rules";
+import type { Side, Target } from "@workspace/rules";
 
 /** Touch: hold this long to see the Card Details (UI-05). */
 export const LONG_PRESS_MS = 450;
@@ -114,9 +113,10 @@ export const unitAtTarget = (
 export type ScreenSide = "left" | "right";
 
 /**
- * The side of the screen for the Card Details of a Unit: the side away from
- * the Unit, so they never cover it (DESIGN.md, the Clear Board Rule). Square 0
- * is at the left of the screen.
+ * The side of the screen for the Card Details of a Unit: the side of its
+ * owner. The player side is at the left of the screen and the enemy side is at
+ * the right. The Card Details are at the screen edge, at the sides of the
+ * Board (DESIGN.md, the Clear Board Rule).
  */
-export const detailsSide = (position: number): ScreenSide =>
-  position < LANE_LENGTH / 2 ? "right" : "left";
+export const detailsSide = (owner: Side): ScreenSide =>
+  owner === "player" ? "left" : "right";

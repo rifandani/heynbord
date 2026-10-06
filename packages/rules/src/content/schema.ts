@@ -15,10 +15,18 @@ const RankId = Schema.Literals([
 ]);
 export type RankId = typeof RankId.Type;
 
-const RaceId = Schema.Literals(["human", "elf", "undead", "orc"]);
+/** Feral is the one Race with no people (ADR-0013). No Battle rule reads the Race. */
+const RaceId = Schema.Literals([
+  "human",
+  "elf",
+  "undead",
+  "orc",
+  "goblin",
+  "feral",
+]);
 export type RaceId = typeof RaceId.Type;
 
-const ClassId = Schema.Literals(["warrior", "ranger", "mage", "priest"]);
+export const ClassId = Schema.Literals(["warrior", "ranger", "mage", "priest"]);
 export type ClassId = typeof ClassId.Type;
 
 const DamageType = Schema.Literals(["physical", "fire", "frost", "holy"]);
@@ -58,6 +66,11 @@ export type KeywordAmount = typeof KeywordAmount.Type;
 const Keywords = Schema.Struct({
   armor: Schema.optionalKey(KeywordAmount),
   charge: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * After attack damage above 0, the enemy Unit becomes Entangled: Speed 0 in
+   * its next action (GDD 4.4, 4.7).
+   */
+  entangle: Schema.optionalKey(Schema.Literal(true)),
   flying: Schema.optionalKey(Schema.Literal(true)),
   heroic: Schema.optionalKey(KeywordAmount),
   /** Deals this much damage to the nearest enemy Unit ahead when this Unit leaves. */
@@ -65,6 +78,11 @@ const Keywords = Schema.Struct({
   /** Melee only (GDD 4.6). A content test checks it. */
   pivot: Schema.optionalKey(Schema.Literal(true)),
   poison: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * In the owner's Start Step, the other friendly Units in the same Lane get
+   * this much Attack until the end of the Turn (GDD 5.4).
+   */
+  rally: Schema.optionalKey(KeywordAmount),
   regeneration: Schema.optionalKey(KeywordAmount),
   /**
    * After attack damage above 0, the enemy Unit becomes Hobbled with this
@@ -77,6 +95,22 @@ const Keywords = Schema.Struct({
    */
   knockback: Schema.optionalKey(KeywordAmount),
   retaliation: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * When this Unit comes from its Creature Card, the enemy card with the
+   * lowest Countdown gets this much Countdown (GDD 5.4). One number for all
+   * Ranks, at most 2 (ADR-0017): a Rank table is not valid.
+   */
+  sabotage: Schema.optionalKey(between(1, 2)),
+  /**
+   * Melee only (GDD 4.7). A kill lets the damage that is left hit the enemy
+   * Unit in the next Square behind. A content test checks it.
+   */
+  trample: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * Only one copy on a Side of the Board (GDD 5.4). It is card data for the
+   * named Epic of a Race. No Battle rule reads it yet.
+   */
+  unique: Schema.optionalKey(Schema.Literal(true)),
   /** A push never moves this Unit (GDD 4.7, 5.4). */
   wall: Schema.optionalKey(Schema.Literal(true)),
 });
@@ -160,7 +194,7 @@ export const CardDefinition = Schema.Union([
 export type CardDefinition = typeof CardDefinition.Type;
 
 /** One Card copy in a Deck. */
-const DeckEntry = Schema.Struct({
+export const DeckEntry = Schema.Struct({
   cardId: Schema.NonEmptyString,
   rank: RankId,
 });
@@ -234,7 +268,12 @@ export type StarterDeck = typeof StarterDeck.Type;
 
 /**
  * An Archetype: a named reference Deck for one style of play. The team uses
- * Archetypes to measure balance (GDD 13). It has the same data as a starter Deck.
+ * Archetypes to measure balance (GDD 13). It has the data of a starter Deck
+ * and a kind. Only a Matchup of two `main` Archetypes gates release. A
+ * `diagnostic` Deck reports its results for review (Archetypes 2.1).
  */
-export const Archetype = StarterDeck;
+export const Archetype = Schema.Struct({
+  ...StarterDeck.fields,
+  kind: Schema.Literals(["main", "diagnostic"]),
+});
 export type Archetype = typeof Archetype.Type;

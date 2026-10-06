@@ -13,6 +13,8 @@ describe("buildQaState", () => {
     expect(active?.view.units.length).toBeGreaterThan(0);
     const resolution = buildQaState("resolution", 42);
     expect(resolution?.queue.length).toBeGreaterThan(0);
+    const cast = buildQaState("enemy-cast", 42)?.queue[0];
+    expect(cast?._tag === "CardPlayed" && cast.side).toBe("enemy");
     expect(buildQaState("victory", 42)?.rules.result?.winner).toBe("player");
     expect(buildQaState("defeat", 42)?.rules.result?.winner).toBe("enemy");
   });

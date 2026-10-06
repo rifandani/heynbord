@@ -1,4 +1,5 @@
 import type { BattleEvent } from "@workspace/rules";
+import { getCard } from "@workspace/rules";
 
 /**
  * Battle sounds made with Web Audio (art direction 7.2): short tones and
@@ -8,6 +9,7 @@ import type { BattleEvent } from "@workspace/rules";
 export type SoundName =
   | "select"
   | "summon"
+  | "cast"
   | "step"
   | "melee"
   | "ranged"
@@ -27,7 +29,15 @@ export type SoundName =
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
 let enabled = true;
+/** The volume as a part of 1. */
+let volume = 1;
 const lastPlayed = new Map<SoundName, number>();
+
+/** The master gain at volume 100. */
+const FULL_GAIN = 0.35;
+
+/** The ear hears loudness on a curve, so the gain follows the square of the volume. */
+const masterGain = () => FULL_GAIN * volume ** 2;
 
 /** Creates or resumes the audio context. Call it from a user gesture. */
 export const unlockAudio = (): void => {
@@ -37,7 +47,7 @@ export const unlockAudio = (): void => {
   if (!context) {
     context = new AudioContext();
     master = context.createGain();
-    master.gain.value = 0.35;
+    master.gain.value = masterGain();
     master.connect(context.destination);
   }
   if (context.state === "suspended") {
@@ -47,6 +57,14 @@ export const unlockAudio = (): void => {
 
 export const setSoundEnabled = (on: boolean): void => {
   enabled = on;
+};
+
+/** Sets the volume, 0 to 100. A change applies to the sounds that play now too. */
+export const setSoundVolume = (percent: number): void => {
+  volume = Math.min(Math.max(percent, 0), 100) / 100;
+  if (context && master) {
+    master.gain.setTargetAtTime(masterGain(), context.currentTime, 0.02);
+  }
 };
 
 const tone = (
@@ -108,6 +126,17 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
     tone(392, 0.18, { slideTo: 784, gain: 0.25 });
     tone(587, 0.2, { delay: 0.06, gain: 0.15 });
   },
+  // A rising shimmer while the Hero gathers a spell.
+  cast: () => {
+    tone(440, 0.42, { type: "sine", slideTo: 1320, gain: 0.12 });
+    tone(660, 0.36, {
+      type: "triangle",
+      delay: 0.1,
+      slideTo: 1760,
+      gain: 0.07,
+    });
+    noise(0.3, 2600, 0.06);
+  },
   step: () => noise(0.05, 500, 0.12),
   melee: () => noise(0.12, 1800, 0.3),
   ranged: () => tone(900, 0.16, { type: "sawtooth", slideTo: 300, gain: 0.08 }),
@@ -147,7 +176,7 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
 
 /** Plays a sound. The same sound plays at most once in `minGap` ms, so speed ×2 stays clear (art direction 7.3). */
 export const playSound = (name: SoundName, minGap = 50): void => {
-  if (!enabled || !context || context.state !== "running") {
+  if (!enabled || volume === 0 || !context || context.state !== "running") {
     return;
   }
   const now = context.currentTime * 1000;
@@ -163,6 +192,9 @@ export const eventSound = (event: BattleEvent): SoundName | null => {
   switch (event._tag) {
     case "UnitSummoned": {
       return "summon";
+    }
+    case "CardPlayed": {
+      return getCard(event.card.cardId).kind === "skill" ? "cast" : null;
     }
     case "UnitMoved": {
       return "step";

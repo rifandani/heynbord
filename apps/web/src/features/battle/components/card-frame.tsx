@@ -51,7 +51,7 @@ const badgeClassName =
 const darkPlate = "bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)]";
 
 /** The Rank as a row of Rank Gems: color and a count, never only the color. */
-const RankGems = ({ rank }: { readonly rank: RankId }) => (
+export const RankGems = ({ rank }: { readonly rank: RankId }) => (
   <span className="inline-flex items-center gap-[0.18em]">
     {Array.from({ length: rankPips(rank) }, (_, index) => (
       <span
@@ -96,6 +96,7 @@ const CountdownBadge = ({
 /** The Race emblem of a Creature Card, or the Class emblem of a Skill Card. */
 const Emblem = ({ card }: { readonly card: CardDefinition }) => {
   const creature = card.kind === "creature";
+  const glyph = creature ? raceGlyph(card.race) : classGlyph(card.class);
   return (
     <span
       className={cn(badgeClassName, "-top-[0.3em] -right-[0.3em] size-[2.1em]")}
@@ -107,8 +108,8 @@ const Emblem = ({ card }: { readonly card: CardDefinition }) => {
       }}
     >
       <GlyphIcon
-        glyph={creature ? raceGlyph(card.race) : classGlyph(card.class)}
-        className="size-[1.15em]"
+        glyph={glyph}
+        className={glyph === "orcHead" ? "size-[1.38em]" : "size-[1.15em]"}
       />
     </span>
   );

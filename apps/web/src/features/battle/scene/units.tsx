@@ -65,8 +65,8 @@ const FIGURE = new PlaneGeometry(0.82, 1.03);
 FIGURE.translate(0, 0.515, 0);
 const SHADOW = new CircleGeometry(0.5, 20);
 // The hidden hit box for hover and long press: the figure and the stat line.
-const HIT = new BoxGeometry(0.8, 1.55, 0.8);
-HIT.translate(0, 0.775, 0);
+const HIT = new BoxGeometry(0.8, 1.75, 0.8);
+HIT.translate(0, 0.675, 0);
 // The focus ring of an inspected Unit uses its Side color.
 const FOCUS_RING = new RingGeometry(0.43, 0.52, 40);
 
@@ -98,8 +98,8 @@ const tintFigure = (material: MeshBasicMaterial | null, pose: Pose) => {
   }
 };
 
-/** The line sits on the lower edge of the figure. */
-const STAT_Y = 0.22;
+/** The line sits below the lower edge of the figure, not on the art. */
+const STAT_Y = -0.08;
 
 const fadeParts = (stat: Sprite | null, pose: Pose) => {
   if (stat) {

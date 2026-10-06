@@ -25,6 +25,8 @@ The app runs on [TanStack Start](https://tanstack.com/start). The server renders
 
 Pages are network-first. The service worker keeps each page that the user opens. Offline, a page that the user did not open shows `public/offline.html`. A route that calls a server function in its `loader` does not work offline.
 
+The precache keeps only the app shell: the files in `assets/`, `offline.html` and the favicons. Do not add the game art to the precache. The service worker keeps each image from `public/creature/`, `public/skills/`, `public/town/`, `public/battle/` and `public/glb/` when a screen shows it, and gets the new file in the background. Keep a file in `public/` only if it must have a fixed URL. See `injectManifest` in `vite.config.ts` and `src/sw.ts`.
+
 ## Deployment
 
 Nitro builds the server. It finds Vercel with no configuration. For a different runtime, set `NITRO_PRESET` (for example `bun` or `netlify`) for the build. For Node.js, use `bun run build`, then `bun run start`.

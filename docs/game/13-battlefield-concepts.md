@@ -6,7 +6,7 @@ Now no Battle Painting exists. The Battle shows a meadow gradient in its place (
 
 ## 1. Rules for the Battle art
 
-- **One painting for each Region.** A Region with no painting uses the Hearthvale painting. Dungeons and Heynspire use it too, until they have their own.
+- **One painting for each Region.** All Stages of the Region use it, the Boss Stage too. A Stage has no Battle Painting of its own. A Region with no painting uses the Hearthvale painting. Dungeons and Heynspire use it too, until they have their own.
 - **View.** From the Battle camera: about 45° down, from the player side. The horizon is far above the top of the screen, so the painting shows only ground. **No sky.**
 - **Light.** From the upper left, warm, as in all other art.
 - **Size.** Landscape 16:9. Make the master at 3200 × 1800. The game uses a WebP export at 2560 × 1440, less than about 400 KB. The positions in 1.2 use a 1600 × 900 box, so 1 code unit is 2 pixels of the master.

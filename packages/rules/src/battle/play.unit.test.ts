@@ -1,6 +1,9 @@
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
+import type { RankId } from "../content/schema";
+import { getStage } from "../content/stages";
+import { NO_GEAR } from "../simulation/simulate";
 import {
   emptyBattle,
   eventsOfType,
@@ -9,9 +12,11 @@ import {
   run,
   unitById,
 } from "../testing/fixtures";
+import { createBattle } from "./create-battle";
 import { step } from "./step";
 import { legalTargets, unitsInArea } from "./targets";
 import { Command, Target } from "./types";
+import type { Side } from "./types";
 
 const play = (handIndex: number, target: Target) =>
   Command.PlayCard({ handIndex, target });
@@ -377,5 +382,131 @@ describe("Skill Cards (GDD 4.8)", () => {
       }
     }
     expect(outcomes).toEqual(new Set([true, false]));
+  });
+});
+
+const countdowns = (state: ReturnType<typeof emptyBattle>, side: Side) =>
+  state.sides[side].hand.map((card) => card.countdown);
+
+/** The player plays the card in Hand index 0 against an enemy Hand with these Countdowns. */
+const sabotageInto = (
+  cardId: string,
+  enemyHand: readonly number[],
+  rank: RankId = "common"
+) => {
+  const state = emptyBattle();
+  giveHand(state, "player", [[cardId, 0, rank]]);
+  giveHand(
+    state,
+    "enemy",
+    enemyHand.map((countdown) => ["orc.badlandPup", countdown] as const)
+  );
+  return { before: state, ...run(state, play(0, square(0, 0))) };
+};
+
+describe("Sabotage (GDD 5.4, ADR-0017)", () => {
+  it("adds N to the lowest Countdown in the enemy Hand, with a Battle Event", () => {
+    const { before, state, events } = sabotageInto(
+      "goblin.tunnelSaboteur",
+      [3, 2, 4]
+    );
+    expect(countdowns(state, "enemy")).toEqual([3, 3, 4]);
+    const [unit] = state.units;
+    expect(eventsOfType(events, "CardSabotaged")).toEqual([
+      expect.objectContaining({
+        unitId: unit?.id,
+        side: "enemy",
+        instanceId: before.sides.enemy.hand[1]?.instanceId,
+        countdown: 3,
+      }),
+    ]);
+  });
+
+  it("Sabotages a Ready card first", () => {
+    const { state } = sabotageInto("goblin.tunnelSaboteur", [2, 0, 1]);
+    expect(countdowns(state, "enemy")).toEqual([2, 1, 1]);
+  });
+
+  it("Sabotages the oldest card when two cards have the same Countdown", () => {
+    const { state } = sabotageInto("goblin.tunnelSaboteur", [3, 1, 1]);
+    expect(countdowns(state, "enemy")).toEqual([3, 2, 1]);
+  });
+
+  it("does nothing when the enemy Hand is empty", () => {
+    const { state, events } = sabotageInto("goblin.tunnelSaboteur", []);
+    expect(state.units).toHaveLength(1);
+    expect(eventsOfType(events, "CardSabotaged")).toEqual([]);
+  });
+
+  it("uses the same N at each Rank, with no maximum Countdown", () => {
+    expect(
+      countdowns(
+        sabotageInto("goblin.grandGearjammer", [6], "legendary").state,
+        "enemy"
+      )
+    ).toEqual([8]);
+    expect(
+      countdowns(
+        sabotageInto("goblin.tunnelSaboteur", [1], "legendary").state,
+        "enemy"
+      )
+    ).toEqual([2]);
+  });
+
+  it("makes a Ready card Ready again after exactly 1 enemy Start Step", () => {
+    const { state } = sabotageInto("goblin.tunnelSaboteur", [0]);
+    expect(countdowns(state, "enemy")).toEqual([1]);
+    const next = run(state, Command.EndTurn()).state;
+    expect(next.activeSide).toBe("enemy");
+    expect(countdowns(next, "enemy")).toEqual([0]);
+  });
+
+  it("Sabotages a card in the player's Hand when the enemy summons the Unit", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    giveHand(state, "enemy", [["goblin.tunnelSaboteur", 0]]);
+    giveHand(state, "player", [
+      ["human.militiaRecruit", 2],
+      ["human.militiaRecruit", 1],
+    ]);
+    const { state: next, events } = run(state, play(0, square(0, 11)));
+    expect(countdowns(next, "player")).toEqual([2, 2]);
+    expect(eventsOfType(events, "CardSabotaged")).toEqual([
+      expect.objectContaining({ side: "player", countdown: 2 }),
+    ]);
+  });
+
+  it("does not apply from a Unit that does not come from its Creature Card", () => {
+    const stage = getStage("1-1");
+    const { events } = createBattle({
+      seed: 1,
+      stage: {
+        ...stage,
+        enemy: {
+          ...stage.enemy,
+          startUnits: [
+            {
+              cardId: "goblin.grandGearjammer",
+              rank: "epic",
+              lane: 0,
+              position: 9,
+            },
+          ],
+        },
+      },
+      player: {
+        classId: "warrior",
+        deck: stage.enemy.deck,
+        level: 1,
+        gear: NO_GEAR,
+      },
+    });
+    expect(eventsOfType(events, "UnitSummoned")).toHaveLength(1);
+    expect(eventsOfType(events, "CardSabotaged")).toEqual([]);
+  });
+
+  it("does not apply from a Unit without Sabotage", () => {
+    const { state, events } = sabotageInto("goblin.scrapPlateGuard", [0]);
+    expect(countdowns(state, "enemy")).toEqual([0]);
+    expect(eventsOfType(events, "CardSabotaged")).toEqual([]);
   });
 });

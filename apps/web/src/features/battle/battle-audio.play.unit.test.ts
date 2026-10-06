@@ -4,12 +4,14 @@ import type { SoundName } from "@/features/battle/battle-audio";
 import {
   playSound,
   setSoundEnabled,
+  setSoundVolume,
   unlockAudio,
 } from "@/features/battle/battle-audio";
 
 /** The smallest Web Audio fake that the sound code needs. */
 const fakeParam = () => ({
   exponentialRampToValueAtTime: vi.fn(),
+  setTargetAtTime: vi.fn(),
   setValueAtTime: vi.fn(),
   value: 0,
 });
@@ -55,6 +57,7 @@ class FakeAudioContext {
 const SOUNDS: readonly SoundName[] = [
   "select",
   "summon",
+  "cast",
   "step",
   "melee",
   "ranged",
@@ -102,5 +105,16 @@ describe("playSound", () => {
     playSound("victory", 0);
     expect(counter.oscillators).toBe(played);
     setSoundEnabled(true);
+  });
+
+  it("is quiet at volume 0, and plays again above it", () => {
+    const played = counter.oscillators;
+    setSoundVolume(0);
+    playSound("victory", 0);
+    expect(counter.oscillators).toBe(played);
+    setSoundVolume(40);
+    playSound("victory", 0);
+    expect(counter.oscillators).toBeGreaterThan(played);
+    setSoundVolume(100);
   });
 });
