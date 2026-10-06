@@ -509,6 +509,33 @@ test.describe("Town", () => {
     await expect(page.getByTestId("town")).toBeVisible();
   });
 
+  test("shows the Coin, Essence and Heynstone balances, and says what each one pays for", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+    const balances = page.getByRole("group", { name: "Your balances" });
+    // A new Player has nothing yet, and an empty Coin balance shows 0 Copper.
+    await expect(balances).toHaveText("0c00");
+    const coin = balances.getByRole("button", { name: "Coin: 0 Copper" });
+    await coin.focus();
+    await expect(page.getByTestId("balance-tooltip-coin")).toContainText(
+      "Pays for Packs, Combine and Gear upgrades."
+    );
+    await balances.getByRole("button", { name: "Heynstones: 0" }).focus();
+    await expect(page.getByTestId("balance-tooltip-heynstones")).toContainText(
+      "Buys Cosmetics and Conveniences in the Bazaar."
+    );
+
+    await page.getByRole("button", { name: "English" }).press("Enter");
+    await page.getByRole("menuitemradio", { name: "Indonesia" }).press("Enter");
+    await expect(
+      page
+        .getByRole("group", { name: "Saldomu" })
+        .getByRole("button", { name: "Koin: 0 Tembaga" })
+    ).toHaveText("0t");
+  });
+
   test("a reload opens the Town", async ({ page }) => {
     await page.goto("/play");
     await page.getByTestId("building-townGate").click();
@@ -537,6 +564,13 @@ test.describe("Town on a phone", () => {
     await expect(page.getByTestId("town-shortcut-bazaar")).toBeInViewport({
       ratio: 1,
     });
+    // The balances sit in the top-right corner, clear of the Town Gate label.
+    const balances = page.getByTestId("town-balances");
+    await expect(balances).toBeInViewport({ ratio: 1 });
+    const balancesBox = await balances.boundingBox();
+    expect(
+      balancesBox && gateBox && balancesBox.y + balancesBox.height < gateBox.y
+    ).toBe(true);
     await gate.tap();
     await expect(page.getByTestId("campaign")).toBeVisible();
   });

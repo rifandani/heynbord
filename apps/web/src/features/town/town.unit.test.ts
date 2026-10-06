@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  BALANCE_PLATE_CORNER,
+  coinWords,
   contains,
+  overlaps,
   GROUND_LINE,
   percentBox,
   safeArea,
@@ -25,6 +28,42 @@ describe("SELECTABLE_BUILDINGS", () => {
       expect(contains(safeArea(), building.rect)).toBe(true);
       expect(contains(safeArea(), building.label)).toBe(true);
     }
+  });
+});
+
+describe("coinWords", () => {
+  const names = { gold: "Gold", silver: "Silver", copper: "Copper" } as const;
+
+  it("says each denomination that the plate shows, in full words", () => {
+    const { format } = new Intl.NumberFormat("en-us");
+    expect(coinWords(15_400, format, (d) => names[d])).toBe(
+      "1 Gold, 54 Silver"
+    );
+    expect(coinWords(520, format, (d) => names[d])).toBe("5 Silver, 20 Copper");
+    expect(coinWords(0, format, (d) => names[d])).toBe("0 Copper");
+  });
+
+  it("groups large amounts as the language does", () => {
+    const { format } = new Intl.NumberFormat("id-id");
+    expect(coinWords(12_340_000, format, (d) => names[d])).toBe("1.234 Gold");
+  });
+});
+
+describe("BALANCE_PLATE_CORNER", () => {
+  it("keeps each selectable Building and its label clear of the Balance Plate", () => {
+    for (const building of SELECTABLE_BUILDINGS) {
+      expect(overlaps(BALANCE_PLATE_CORNER, building.rect)).toBe(false);
+      expect(overlaps(BALANCE_PLATE_CORNER, building.label)).toBe(false);
+    }
+  });
+});
+
+describe("overlaps", () => {
+  it("is true only when two boxes share an area", () => {
+    const box = { x: 0, y: 0, width: 10, height: 10 };
+    expect(overlaps(box, { x: 9, y: 9, width: 5, height: 5 })).toBe(true);
+    expect(overlaps(box, { x: 10, y: 0, width: 5, height: 5 })).toBe(false);
+    expect(overlaps(box, { x: 0, y: 10, width: 5, height: 5 })).toBe(false);
   });
 });
 

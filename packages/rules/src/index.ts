@@ -33,6 +33,8 @@ export type {
   UnitState,
 } from "./battle/types";
 export { CARDS, getCard } from "./content/cards";
+export { coinDenominations } from "./content/coin";
+export type { CoinDenomination, CoinPart } from "./content/coin";
 export { getStarterDeck, STARTER_DECKS } from "./content/decks";
 export {
   firstTryPathLevel,

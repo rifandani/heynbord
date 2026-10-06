@@ -1,3 +1,6 @@
+import type { CoinDenomination } from "@workspace/rules";
+import { coinDenominations } from "@workspace/rules";
+
 import type { Glyph } from "@/features/battle/glyphs";
 
 /** The game screens in the `/play` route before a Battle (web ADR-0006). */
@@ -54,6 +57,23 @@ export const contains = (outer: Rect, inner: Rect): boolean =>
   inner.y >= outer.y &&
   inner.x + inner.width <= outer.x + outer.width &&
   inner.y + inner.height <= outer.y + outer.height;
+
+export const overlaps = (a: Rect, b: Rect): boolean =>
+  a.x < b.x + b.width &&
+  b.x < a.x + a.width &&
+  a.y < b.y + b.height &&
+  b.y < a.y + a.height;
+
+/**
+ * The part of the painting that the Balance Plate covers at the top right of a
+ * 19.5:9 phone (11 — Town Concepts 1.2). No selectable Building goes here.
+ */
+export const BALANCE_PLATE_CORNER: Rect = {
+  x: 1130,
+  y: 0,
+  width: 470,
+  height: 320,
+};
 
 /** A Building that the Player can select, with its cut-out layer and its label. */
 export interface SelectableBuilding {
@@ -118,3 +138,26 @@ export const percentBox = (rect: Rect) => ({
   width: `${(rect.width / PAINTING.width) * 100}%`,
   height: `${(rect.height / PAINTING.height) * 100}%`,
 });
+
+/** The balances of the Player. Coin is a number of Copper (Economy 1.1). */
+export interface Balances {
+  readonly coin: number;
+  readonly essence: number;
+  readonly heynstones: number;
+}
+
+/** One balance on the Balance Plate. */
+export type BalanceKind = keyof Balances;
+
+/**
+ * A Coin balance in full words for a screen reader, for example "1 Gold, 54
+ * Silver": the same denominations that the Balance Plate shows.
+ */
+export const coinWords = (
+  copper: number,
+  format: (amount: number) => string,
+  name: (denomination: CoinDenomination) => string
+): string =>
+  coinDenominations(copper)
+    .map((part) => `${format(part.amount)} ${name(part.denomination)}`)
+    .join(", ");

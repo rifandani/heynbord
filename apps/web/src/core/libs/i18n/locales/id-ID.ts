@@ -143,6 +143,27 @@ export default {
       achievements: "Pencapaian",
       bazaar: "Bazar",
     },
+    balances: {
+      label: "Saldomu",
+      balance: "{name}: {amount}",
+      coin: {
+        name: "Koin",
+        use: "Untuk membeli Paket, Gabung, dan peningkatan Perlengkapan.",
+      },
+      essence: {
+        name: "Esensi",
+        use: "Untuk Membuat kartu di Bengkel.",
+      },
+      heynstones: {
+        name: "Heynstone",
+        use: "Untuk membeli Kosmetik dan Kemudahan di Bazar.",
+      },
+      denominations: {
+        gold: { name: "Emas", short: "e" },
+        silver: { name: "Perak", short: "p" },
+        copper: { name: "Tembaga", short: "t" },
+      },
+    },
   },
   tutorial: {
     label: "Tutorial",

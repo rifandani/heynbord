@@ -143,6 +143,27 @@ export default {
       achievements: "Achievements",
       bazaar: "Bazaar",
     },
+    balances: {
+      label: "Your balances",
+      balance: "{name}: {amount}",
+      coin: {
+        name: "Coin",
+        use: "Pays for Packs, Combine and Gear upgrades.",
+      },
+      essence: {
+        name: "Essence",
+        use: "Pays for Craft in the Workshop.",
+      },
+      heynstones: {
+        name: "Heynstones",
+        use: "Buys Cosmetics and Conveniences in the Bazaar.",
+      },
+      denominations: {
+        gold: { name: "Gold", short: "g" },
+        silver: { name: "Silver", short: "s" },
+        copper: { name: "Copper", short: "c" },
+      },
+    },
   },
   tutorial: {
     label: "Tutorial",

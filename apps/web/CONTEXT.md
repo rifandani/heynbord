@@ -60,6 +60,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, and a shortcut back to the Town. _Avoid_: menu bar, nav bar, footer, dock
 
+**Balance Plate**: The plate in the top-right corner of the Town that shows the Coin, Essence and Heynstone balances of the Player. Each balance tells what it pays for on hover, focus and tap. It shows information only. _Avoid_: wallet, purse, currency bar, resource bar
+
 ### Campaign screen
 
 **Region Map**: The painted map of one Region, with its Trail and its Stage Markers. The Campaign screen shows one Region Map at a time. It is a flat 2D image. _Avoid_: Campaign map, world map, level map, stage map, battlefield map

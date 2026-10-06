@@ -1,6 +1,7 @@
 import { AreaChartShowcase } from "./showcases/area-chart";
 import { AvatarShowcase } from "./showcases/avatar";
 import { BadgeShowcase } from "./showcases/badge";
+import { BalancePlateShowcase } from "./showcases/balance-plate";
 import { BarChartShowcase } from "./showcases/bar-chart";
 import { BarListShowcase } from "./showcases/bar-list";
 import { BreadcrumbsShowcase } from "./showcases/breadcrumbs";
@@ -323,6 +324,17 @@ export const categories: Category[] = [
       { id: "bar-chart", name: "Bar Chart", Showcase: BarChartShowcase },
       { id: "line-chart", name: "Line Chart", Showcase: LineChartShowcase },
       { id: "pie-chart", name: "Pie Chart", Showcase: PieChartShowcase },
+    ],
+  },
+  {
+    id: "game",
+    name: "Game",
+    entries: [
+      {
+        id: "balance-plate",
+        name: "Balance Plate",
+        Showcase: BalancePlateShowcase,
+      },
     ],
   },
 ];

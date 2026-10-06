@@ -33,6 +33,7 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Safe area | x 224 to 1376, y 251 to 864 | Each screen shape from 4:3 to 19.5:9 shows this area above the Town Bar. All selectable Buildings must be in it. |
 | Town Gate | x 570 to 914, y 520 to 864 | The cut-out layer of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the layer. |
 | Town Gate label | x 570 to 914, y 474 to 520 | The game writes "Campaign" here, on the tips of the two tower roofs. |
+| Balance Plate corner | x 1130 to 1600, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
 | Sky | Above the safe area | A wide screen crops it first. On a 19.5:9 phone, the top of the castle hill is also cropped. |
 | Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here, for example the Dungeons cave. |
 

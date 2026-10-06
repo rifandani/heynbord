@@ -7,6 +7,7 @@ import { Button } from "react-aria-components";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { tutorialStageWonAtom } from "@/features/battle/battle.atoms";
 import { useGameText } from "@/features/battle/use-game-text";
+import { BalancePlate } from "@/features/town/components/balance-plate";
 import type {
   GameScreen,
   Rect,
@@ -19,6 +20,7 @@ import {
   percentBox,
   SELECTABLE_BUILDINGS,
 } from "@/features/town/town";
+import { balancesAtom } from "@/features/town/town.atoms";
 
 /** The zoom toward a selected Building, then the fade to its screen (GDD 11.4). */
 const LEAVE_MS = 450;
@@ -169,6 +171,7 @@ export const TownScreen = ({
 }) => {
   const { tr } = useGameText();
   const tutorialWon = useAtomValue(tutorialStageWonAtom);
+  const balances = useAtomValue(balancesAtom);
   const [leaving, setLeaving] = useState<SelectableBuilding | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -229,6 +232,13 @@ export const TownScreen = ({
           />
         ))}
       </div>
+      <BalancePlate
+        balances={balances}
+        className={cn(
+          "transition-opacity duration-[450ms] ease-in",
+          leaving && "opacity-0"
+        )}
+      />
     </main>
   );
 };
