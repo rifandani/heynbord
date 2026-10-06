@@ -253,6 +253,7 @@ Use these targets to tune the numbers. Check them with an economy simulation and
 | About 53 more Dungeon 2 wins (1 to 2 weeks) | Player level 30. |
 
 - The Player levels are the First-try Path levels of section 1.2. A Player who loses or plays again is at a higher level.
+- **Re-tune needed.** The Pack counts above were set for 88 cards. v1 now has 118 cards ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)). The "Discovered" targets stay the same. Tune the Coin rewards again with the economy simulation in M3, so that the Player can reach these targets with 118 cards.
 - Total XP to level 21 (Deck size 30) is 8,380. Total XP to level 30 is 24,130.
 
 ## 5. Monetization rules after v1

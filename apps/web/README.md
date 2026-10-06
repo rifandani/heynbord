@@ -6,13 +6,14 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 v1:
 
+- update town illustrations as we now have 6 races
+- /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
 - /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think
-- /grill-with-docs i want to add another Keyword called "Retreat N" — After this Unit attacks, it moves up to N Squares backward (could be fit for Human and Elf).
-- /grill-with-docs i want to add another Keyword called "Knockback N" — After this Unit deals attack damage above 0 to an enemy Unit, that Unit moves N Squares backward (fit for Orc or Human)
-- /grill-with-docs current Heroic is too hard to triggered because the unit needs to attack the enemy Hero first, can we adjust it so it only need to attack enemy Unit?
-- /grill-with-docs add bleed status, unit that got bleed gets healing reduced by 50%
+- we need to also have economy simulation script, not only battle simulation
+- /grill-with-docs i want to add another Keyword called "Devour": +1 Attack and +1 HP for each kill, suitable for Feral
+- /grill-with-docs add Bleed status, unit that got bleed gets healing reduced by 50%, suitable for Feral
+- /grill-with-docs i want to add another Keyword called "Retreat N" — After this Unit attacks, it moves up to N Squares backward.
 - /grill-with-docs re-balance speed for all units (normal move should be 2)
-- /grill-with-docs lets create more cards collection, lets create Elf and Undead race, and i want for each race to have 5 common + 5 uncommon + 3 rare + 2 epic, lets draft it, and make sure the game balance is still good
 - /grill-with-docs a smart auto-play button for Stages that the player has already won (whats the reward for completing already completed stage?)
 - /grill-with-docs a focus trap in the result dialog
 - /grill-with-docs card packs gacha with premium currency (develop shop first)

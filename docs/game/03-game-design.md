@@ -39,22 +39,24 @@ The player is a new Hero. The player travels through three Regions, wins the res
 
 | Race | Concept | Battle identity | Main Keywords |
 | --- | --- | --- | --- |
-| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Hobble, Knockback, Rally, Retaliation, Wall |
+| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Knockback, Rally, Retaliation, Wall |
 | **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | Entangle, Regeneration, Poison, Flying |
 | **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | Swarm, Rebirth, Summon, Frost damage |
 | **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them. | Charge, Heroic, Fire damage, Last Breath |
+| **Goblin** | Goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. | Make the enemy plan slower. Cheap, fragile Units that delay enemy cards, set traps and explode. | Sabotage, Hobble, Last Breath, Fire damage |
+| **Feral** | Wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. | Few, huge and slow. High Countdown, high Attack and HP. They run through the enemy front, heal and bring the cold. | Trample, Regeneration, Flying, Frost damage |
 
 The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, each Race has 1 Creature Card with Pivot, with Base Rank Uncommon.
 
-A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). In v1, one Human card has Hobble. Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback.
+A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). Hobble is a Goblin Main Keyword, and one Human card borrows it. Sabotage is the Goblin signature, and Trample is the Feral signature ([ADR-0017](../adr/0017-sabotage-and-hobble-are-goblin-and-trample-is-feral.md)). Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback.
 
 ### 3.3 Regions (draft names)
 
 | No. | Region | Main enemies | Lanes | Boss (draft) |
 | --- | --- | --- | --- | --- |
 | 1 | **Hearthvale** | Human outlaws and the Orc sellswords that the Baron pays | 3 | **Baron Brassbelly**, a bandit lord with a very large hat |
-| 2 | **The Thornwood** | Elves and Orcs | 3 | **The Old Bramble**, a forest giant that wakes up angry |
-| 3 | **The Hollow Marches** | Undead and Orcs | 3 | **Queen Marrow**, ruler of the Undead |
+| 2 | **The Thornwood** | Elves and the Feral creatures of the deep forest | 3 | **The Old Bramble**, a forest giant that wakes up angry |
+| 3 | **The Hollow Marches** | Undead and the Goblins that dig under the marsh hills | 3 | **Queen Marrow**, ruler of the Undead |
 
 ## 4. Battle
 
@@ -193,6 +195,7 @@ To calculate damage, do these steps in this order:
 - **Entangle:** After a Unit with Entangle deals attack damage above 0 to an enemy Unit, that enemy becomes Entangled. A new Entangle does not stack or extend the Status. Retaliation does not apply Entangle.
 - **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliation does not apply Hobble. An attack on a Hero does not apply Hobble.
 - **Knockback N:** After a melee Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. A push is not Movement and not a Status. The push stops before the first Square that holds any Unit, and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. The push ignores Speed, Charge, Frozen, Entangled, Hobbled and Flying. The pushed Unit keeps its Statuses. Retaliation and First Strike do not apply Knockback. An attack on a Hero does not apply Knockback. A Unit that dies from the hit is not Pushed. If the Unit does not change Square, there is no push.
+- **Trample:** When a melee Unit with Trample kills an enemy Unit with attack damage, the damage that is left goes to the enemy Unit in the next Square behind the killed Unit, in the same Lane. The damage that is left is the final damage of the hit (after Armor, Crit and Block) minus the HP that the killed Unit had. If that Square is empty, the damage is lost. It never hits a Hero. The second hit has the Damage Type of the Trample Unit, so Fire and Frost still give their Status. The Armor of the second Unit reduces it, and its Hero can Block it. It does not roll Crit. The second hit is not an attack: the second Unit does not Retaliate, and Poison, Hobble and Knockback do not apply. It does not Trample again. The Last Breath of the killed Unit still occurs by the normal rules.
 
 ### 4.8 Skill Cards and Recall
 
@@ -257,7 +260,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | Field | Description | Typical values |
 | --- | --- | --- |
 | Name | Unique name of the card | — |
-| Race | Human, Elf, Undead or Orc | — |
+| Race | Human, Elf, Undead, Orc, Goblin or Feral | — |
 | Rank | Common to Legendary | — |
 | Countdown | Turns until Ready | 1 to 6 |
 | Attack | Damage of one attack | 0 to 12 |
@@ -315,8 +318,10 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | **Rebirth** | See 4.9. |
 | **Regeneration N** | In your Start Step, this Unit heals N HP. It cannot go above its maximum HP. |
 | **Retaliation** | See 4.7. |
+| **Sabotage N** | When this Unit comes onto the Board from its Creature Card, the card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready card (Countdown 0) is the lowest. If two cards have the same Countdown, the oldest card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. If the Hand is empty, nothing occurs. N is the same at each Rank, and it is at most 2. |
 | **Summon X** | When you summon this Unit, a Token X of the same Rank also appears in an empty Square next to it (behind it, or the same Column in a next Lane). If no Square is empty, no Token appears. |
 | **Swarm N** | While another friendly Unit or Token is in the same Lane, this Unit has +N Attack. More friendly Units do not increase the bonus. The bonus applies to attacks and Retaliation. |
+| **Trample** | Melee only. When this Unit kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it. See 4.7. |
 | **Unique** | Only one copy of this card can be on your side of the Board. |
 | **Wall** | Speed 0 and Attack 0. It blocks its Lane. |
 
@@ -624,9 +629,9 @@ The Campaign screen shows one **Region Map** at a time: a flat 2D painting of on
 
 | Content | Count |
 | --- | --- |
-| Creature Cards | 60 (15 for each Race) |
+| Creature Cards | 90 (15 for each of the 6 Races) |
 | Skill Cards | 28 (7 for each Class) |
-| Total collectible cards | 88 |
+| Total collectible cards | 118 |
 | Tokens | About 8; the Creature Card draft defines 2 |
 | Campaign Stages | 30 (with 3 Boss Stages) |
 | Heynspire Floors | 50 |
@@ -638,10 +643,10 @@ Each Race has this exact Creature Card Base Rank mix:
 
 | Base Rank | Cards in each Race | Creature Cards |
 | --- | ---: | ---: |
-| Common | 5 | 20 |
-| Uncommon | 5 | 20 |
-| Rare | 3 | 12 |
-| Epic | 2 | 8 |
+| Common | 5 | 30 |
+| Uncommon | 5 | 30 |
+| Rare | 3 | 18 |
+| Epic | 2 | 12 |
 | Legendary | 0 | 0 |
 
 Skill Cards use a separate Base Rank mix. Legendary remains available only through Combine.
@@ -654,15 +659,17 @@ Each Race has a different Role profile:
 | Elf | 1 | 2 | 3 | 5 | 3 | 1 |
 | Undead | 3 | 4 | 2 | 2 | 3 | 1 |
 | Orc | 2 | 5 | 4 | 2 | 2 | 0 |
+| Goblin | 2 | 3 | 3 | 3 | 3 | 1 |
+| Feral | 5 | 5 | 1 | 2 | 1 | 1 |
 
-Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary Damage Type: Holy for Human and Elf, Frost for Undead, and Fire for Orc. Each Race has one Uncommon melee Pivot Card. Its two Epic Cards are one named champion with Unique and one archetypal powerhouse ([ADR-0013](../adr/0013-v1-has-60-creature-cards.md)).
+Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary Damage Type: Holy for Human and Elf, Frost for Undead and Feral, and Fire for Orc and Goblin. Feral has no card with Countdown 1. Each Race has one Uncommon melee Pivot Card. Its two Epic Cards are one named champion with Unique and one archetypal powerhouse ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)).
 
 ## 13. Balance process
 
 1. Each Creature Card gets **power points** from its stats and Keywords.
    - Start formula: `power = Attack × 2 + HP + Speed × 2 + Keyword points`.
    - Add Range and Damage Type points: Range = its value, Fire = 3, Frost = 3 and Holy = 2.
-   - Start Keyword points: Armor N = N × 3, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4 and Swarm N = N × 2.
+   - Start Keyword points: Armor N = N × 3, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 2 and Trample = 3.
    - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.

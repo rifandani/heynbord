@@ -97,7 +97,7 @@ v1 includes:
 - A campaign of 3 regions with about 30 stages and 3 bosses.
 - **Heynspire** (draft name): a tower of 50 floors for the endgame.
 - 3 **Dungeons**: Battles against 2 or 3 bosses at the same time, which unlock at player level 10, 20 and 30.
-- 88 Cards: 60 Creature Cards across 4 Races, 28 Skill Cards across 4 Classes, and 5 Ranks.
+- 118 Cards: 90 Creature Cards across 6 Races, 28 Skill Cards across 4 Classes, and 5 Ranks.
 - Collection, deck builder, packs, Combine, Extract, Craft and hero gear.
 - Achievements that unlock cosmetics, and Heynstones that the player earns and spends on cosmetics in the Bazaar.
 - A local save with export and import.

@@ -19,7 +19,7 @@ Details: [02 — Game Vision](docs/game/02-game-vision.md#target-players), [04 �
 
 Heynbord is a fantasy collectible card game for the web browser. The Player collects cards, builds a Deck, plays Ready cards into Lanes, and then watches the Units move and fight automatically. It is a spiritual successor to _Kings and Legends_ (2013) and _Rise of Mythos_ (2013–2019). Those games shut down, and Flash stopped in 2020. The 2023 revival is pay-to-win. No modern, fair browser game gives this experience.
 
-v1 is single player (PvE) with a local save: a Campaign of 3 Regions (30 Stages, 3 Boss Stages), the Heynspire tower (50 Floors), and 88 Cards.
+v1 is single player (PvE) with a local save: a Campaign of 3 Regions (30 Stages, 3 Boss Stages), the Heynspire tower (50 Floors), and 118 Cards.
 
 Success for v1.0:
 

@@ -24,6 +24,8 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 | Elf | An ancient green forest: immense roots, canopy bridges, amber sun shafts, moss and quiet pools | Leaf green, amber and pale gold. Living wood, leaves, silver |
 | Undead | The Hollow Marches: flooded grave roads, dead willows, ruined courts, barrows and cold mist | Pale teal and moonlit blue. Rusted iron, old cloth, bone |
 | Orc | Red badlands: dusty mesas, dry ground, bone and hide totems | Burnt orange and dark red. Leather, fur, rough iron |
+| Goblin | The hill mines: tunnels, rail tracks, junk-heap workshops and lantern light | Soot grey, brass and acid green. Patched iron, canvas, junk |
+| Feral | The wild peaks and deep caves: cliffs, glaciers, cave mouths and old bones | Slate violet and ice white. Fur, horn, stone and ice |
 | Skill Cards | A neutral battlefield: green grass and a Lane of grey stone tiles, with no banners | The Damage Type color (Fire: orange-red, Frost: light blue). Physical: neutral steel and leather |
 
 ## 2. Human Creature Cards
@@ -1607,11 +1609,801 @@ soft brush texture, rusted iron and old wood, simple low-contrast background,
 portrait 3:4 composition, no gore, no text, no frame
 ```
 
-## 6. Tokens
+## 6. Goblin Creature Cards
+
+Identity: goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. They make the enemy plan slower with Sabotage, traps (Hobble) and bombs (Last Breath and Fire). All values in this section are **provisional**.
+
+### 6.1 Ankle Snatcher
+
+`goblin.ankleSnatcher` · Runner · Common · Countdown 1 · Attack 2 · HP 2 · Speed 2 · Melee · Physical · Hobble 1
+
+> Ankles are the easiest part of a knight to reach.
+
+Purpose: a cheap fast trap that slows the first enemy Runner. Power 11, budget 11, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A small goblin girl with a long hook. |
+| Pose | She runs low and hooks forward at ankle height. |
+| Props | A hook made from a bent pipe, a coil of rope, patched goggles on her forehead. |
+| Gameplay cues | The hook at ankle height shows Hobble. The long stride shows Speed 2. |
+| Silhouette hook | The long hook and the big ears. |
+| Humor note | One boot already hangs from the hook. |
+| Setting | A narrow mine tunnel mouth with lanterns. |
+
+```text
+small eager goblin girl running low and hooking forward at ankle height with a long bent-pipe hook, a single caught boot hanging from the hook, coil of rope, patched goggles on her forehead, big ears,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, narrow hill mine tunnel mouth with lanterns, warm lantern light from the upper left, long clear silhouette, plain Common detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.2 Fuse Runner
+
+`goblin.fuseRunner` · Runner · Common · Countdown 1 · Attack 1 · HP 2 · Speed 2 · Melee · Physical · Last Breath 3
+
+> The fuse is long. The plan is short.
+
+Purpose: a one-Countdown bomb. Last Breath 3 hits the nearest enemy Unit ahead when it leaves. Power 11, budget 11, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A skinny goblin man with a round bomb that is bigger than his head. |
+| Pose | He runs forward on his toes, with the bomb in both arms. |
+| Props | A round black bomb with a short lit fuse, soot on his face, a long scarf. |
+| Gameplay cues | The lit fuse shows Last Breath. |
+| Silhouette hook | The round bomb and the thin legs. |
+| Humor note | He looks at the fuse, not where he runs. |
+| Setting | A dusty mine rail track. |
+
+```text
+skinny goblin man running forward on his toes, hugging a round black bomb bigger than his head with a short lit fuse, soot on his face, long scarf streaming, eyes fixed on the fuse instead of the road,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, dusty hill mine rail track, warm lantern light from the upper left, round clear silhouette, plain Common detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.3 Junk Slinger
+
+`goblin.junkSlinger` · Shooter · Common · Countdown 2 · Attack 3 · HP 3 · Speed 1 · Range 3 · Physical · Hobble 1
+
+> One goblin's junk is another knight's limp.
+
+Purpose: a cheap Shooter that slows the Unit it hits. Power 15, budget 16, deviation -6.3%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | An old goblin woman with a big sling. |
+| Pose | She swings the sling above her head. |
+| Props | A sling, a bag of bent nails, bolts and spoons, a patched apron. |
+| Gameplay cues | A small trap spring in the bag shows Hobble. The sling shows Range. |
+| Silhouette hook | The circle of the sling. |
+| Humor note | One of her "stones" is her own false tooth. |
+| Setting | A junk heap outside a mine. |
+
+```text
+old goblin woman swinging a sling above her head, bag of bent nails, bolts and spoons with a small trap spring on top, patched apron, a false tooth flying out with the junk, determined grin,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, junk heap outside a hill mine, warm lantern light from the upper left, clear circular sling silhouette, plain Common detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.4 Tunnel Saboteur
+
+`goblin.tunnelSaboteur` · Support · Common · Countdown 2 · Attack 2 · HP 5 · Speed 1 · Melee · Physical · Sabotage 1
+
+> He does not fight your army. He fights your schedule.
+
+Purpose: the first Sabotage card. When it comes from its Card, the enemy card with the lowest Countdown gets +1 Countdown. Power 15, budget 16, deviation -6.3%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A round goblin man in a miner's helmet that is too big. |
+| Pose | He climbs up out of a hole in the road. |
+| Props | Big pliers, a cut rope, an hourglass that he turns upside down. |
+| Gameplay cues | The hourglass shows Sabotage: the enemy card comes later. |
+| Silhouette hook | The helmet lamp and the pliers. |
+| Humor note | He winks while he turns the hourglass. |
+| Setting | A fresh hole in a battlefield road. |
+
+```text
+round goblin man in a miner's helmet too big for him, climbing up out of a fresh hole in a road, big pliers in one hand, turning an hourglass upside down with the other, cut rope over his shoulder, sly wink,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, road near a hill mine, warm lantern light from the upper left, clear silhouette with helmet lamp, plain Common detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.5 Scrap-Plate Guard
+
+`goblin.scrapPlateGuard` · Frontliner · Common · Countdown 2 · Attack 2 · HP 6 · Speed 1 · Melee · Physical · Armor 1
+
+> Armor is armor. Even if it was a stove.
+
+Purpose: a cheap Goblin Lane anchor. Power 15, budget 16, deviation -6.3%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A stocky goblin woman in armor made from stove plates. |
+| Pose | She braces behind a shield made from a cart wheel. |
+| Props | A cart-wheel shield, a stove door on her chest, a short pick. |
+| Gameplay cues | The stove plates show Armor. |
+| Silhouette hook | The round wheel shield and a stove pipe on her helmet. |
+| Humor note | A small kettle still steams on her shoulder plate. |
+| Setting | A mine yard. |
+
+```text
+stocky goblin woman bracing behind a shield made from a wooden cart wheel, armor made from iron stove plates with a stove door on her chest, stove pipe on her helmet, short pick, small kettle steaming on her shoulder plate,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, hill mine yard, warm lantern light from the upper left, round sturdy silhouette, plain Common detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.6 Sidestep Shiv
+
+`goblin.sidestepShiv` · Striker · Uncommon · Countdown 2 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Pivot
+
+> Front door? Never heard of it.
+
+Purpose: the Goblin Pivot Unit. Power 16, budget 16, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A thin goblin man with two small knives. |
+| Pose | He steps to the side and looks back over his shoulder, with one knife ready behind him. |
+| Props | Two small knives, a dark hood, a belt with many pockets and one brass buckle. |
+| Gameplay cues | Pivot: the body turns to the side and back. |
+| Silhouette hook | The long nose and the knives out to the sides. |
+| Humor note | One pocket is full of other people's spoons. |
+| Setting | Between mine carts in a tunnel. |
+
+```text
+thin goblin man sidestepping and looking back over his shoulder, small knife ready behind him and another out to the side, dark hood, belt with many pockets and one brass buckle, a pocket full of stolen spoons, long nose, sly grin,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, between mine carts in a hill mine tunnel, warm lantern light from the upper left, sharp angular silhouette, Uncommon detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.7 Junk Barricade
+
+`goblin.junkBarricade` · Wall · Uncommon · Countdown 2 · Attack 0 · HP 12 · Speed 0 · Melee · Physical · Wall · Sabotage 1
+
+> Built in one night. Paid for by nobody.
+
+Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 16, budget 16, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A tall barricade of junk: carts, barrels, pots and an old door. |
+| Pose | It fills a mine road. A goblin on top pulls a long rope. |
+| Props | Barrels, a broken mine cart, ropes, a pointing-hand sign with no letters. |
+| Gameplay cues | The rope runs off the image to the enemy side and pulls something away: Sabotage. |
+| Silhouette hook | A heap with a pointed top. |
+| Humor note | The sign shows a hand that says "stop", and the hand is upside down. |
+| Setting | A mine road. |
+
+```text
+tall goblin barricade made from barrels, a broken mine cart, pots and an old door, a small goblin on top pulling a long rope that runs off to the right, upside-down pointing-hand sign with no letters,
+Goblin fortification of Heynbord, blocking face to the right, centered,
+painterly storybook fantasy card illustration, hill mine road, warm lantern light from the upper left, pointed heap silhouette, Uncommon detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.8 Bomb Lobber
+
+`goblin.bombLobber` · Shooter · Uncommon · Countdown 3 · Attack 4 · HP 4 · Speed 1 · Range 3 · Fire
+
+> Catch!
+
+Purpose: a ranged Fire Shooter that Burns its target. Power 20, budget 21, deviation -4.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A broad goblin woman with a big wooden ladle. |
+| Pose | She throws a lit bomb forward with the ladle. |
+| Props | The ladle, a basket of small round bombs, smoked goggles. |
+| Gameplay cues | The lit bombs show Fire. The high arc shows Range. |
+| Silhouette hook | The long ladle. |
+| Humor note | She covers one ear with her free hand. |
+| Setting | A rocky slope above a mine. |
+
+```text
+broad goblin woman throwing a small lit bomb forward with a big wooden ladle, basket of round bombs at her hip, smoked goggles, covering one ear with her free hand, bomb flying in a high arc with a spark trail,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, rocky slope above a hill mine, warm lantern light from the upper left, long ladle silhouette, Uncommon detail,
+soft brush texture, soot grey, brass and acid green palette with orange-red fire accents, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.9 Grease Trapper
+
+`goblin.greaseTrapper` · Support · Uncommon · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Hobble 2 · Sabotage 1
+
+> Mind the floor.
+
+Purpose: slows a Unit for 2 End Steps, and delays an enemy card when it comes in. Power 20, budget 21, deviation -4.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A short goblin man with a grease bucket and a big spring trap. |
+| Pose | He spreads grease on the ground with a mop. |
+| Props | A bucket of black grease, a mop, a big spring trap with no teeth on his back, a small hourglass on his belt. |
+| Gameplay cues | The trap and the grease show Hobble. The hourglass shows Sabotage. |
+| Silhouette hook | The mop and the round trap on his back. |
+| Humor note | He slips a little on his own grease. |
+| Setting | A mine tunnel floor. |
+
+```text
+short goblin man spreading black grease on the ground with a mop, bucket of grease, big round toothless spring trap on his back, small hourglass on his belt, slipping a little on his own grease with a surprised face,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, hill mine tunnel floor, warm lantern light from the upper left, clear silhouette with mop and round trap, Uncommon detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.10 Rocket Barrel Rider
+
+`goblin.rocketBarrelRider` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 4 · Speed 3 · Melee · Fire · Last Breath 2
+
+> Steering is a later invention.
+
+Purpose: the fastest Goblin Runner. Its Fire hits Burn, and Last Breath 2 hits when it falls. Power 21, budget 21, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A young goblin woman who rides a barrel with a rocket on the back. |
+| Pose | She flies low and forward on the barrel and holds on with both hands. |
+| Props | A powder barrel, a flame out of the back, a leather cap with goggles, a scarf. |
+| Gameplay cues | The flame trail shows Speed 3 and Fire. The powder barrel shows Last Breath. |
+| Silhouette hook | The barrel and the long flame trail. |
+| Humor note | Her eyes are shut tight. |
+| Setting | A mine rail track that goes down a slope. |
+
+```text
+young goblin woman riding a powder barrel with a rocket flame out of the back, flying low and forward, holding on with both hands, leather cap with goggles, scarf streaming, eyes shut tight,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, hill mine rail track going down a slope, warm lantern light from the upper left, long horizontal silhouette with flame trail, Uncommon detail,
+soft brush texture, soot grey, brass and acid green palette with orange-red fire accents, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.11 Mine Sapper
+
+`goblin.mineSapper` · Striker · Rare · Countdown 4 · Attack 5 · HP 6 · Speed 2 · Melee · Fire · Last Breath 3
+
+> Every wall has a weak spot. I bring my own.
+
+Purpose: a Fire Striker that hits hard and explodes when it falls. Power 26, budget 26, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A strong goblin man with a big pick and powder kegs on his back. |
+| Pose | He swings the pick forward. |
+| Props | A long pick with brass trim, a back frame of small powder kegs, a lit pipe. |
+| Gameplay cues | The kegs show Last Breath. The glowing pick head shows Fire. |
+| Silhouette hook | The pick and the stack of kegs. |
+| Humor note | He lights his pipe with one of the fuses. |
+| Setting | A deep mine face with brass lanterns. |
+
+```text
+strong goblin man swinging a long pick with brass trim and a glowing hot head, back frame stacked with small powder kegs, lighting his pipe with one of the fuses, ornate leather and brass gear,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, deep hill mine face with brass lanterns, warm lantern light from the upper left, strong silhouette with pick and kegs, ornate Rare detail,
+soft brush texture, soot grey, brass and acid green palette with orange-red fire accents, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.12 Spyglass Sniper
+
+`goblin.spyglassSniper` · Shooter · Rare · Countdown 4 · Attack 4 · HP 7 · Speed 1 · Range 4 · Physical · Sabotage 1
+
+> I see your plans. I do not like them.
+
+Purpose: a long-range Shooter that delays an enemy card. Power 25, budget 26, deviation -3.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | An old goblin woman with a long crossbow. |
+| Pose | She aims, with one eye at a brass spyglass on the crossbow. |
+| Props | A long crossbow with a brass spyglass, a notebook full of drawings with no letters, goggles with many lenses. |
+| Gameplay cues | The spyglass shows Range 4. The notebook of stolen plans shows Sabotage. |
+| Silhouette hook | The long crossbow and the spyglass. |
+| Humor note | A small bird sits on the end of the crossbow. |
+| Setting | A high rock above the mine entrance. |
+
+```text
+old goblin woman aiming a long crossbow with a brass spyglass mounted on top, goggles with many lenses, notebook of drawings with no letters at her belt, small bird perched on the end of the crossbow, ornate brass fittings,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, high rock above a hill mine entrance, warm lantern light from the upper left, long horizontal silhouette, ornate Rare detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.13 Junk Walker
+
+`goblin.junkWalker` · Frontliner · Rare · Countdown 4 · Attack 4 · HP 10 · Speed 1 · Melee · Physical · Armor 2
+
+> It walks. Mostly forward.
+
+Purpose: the Goblin Lane anchor with Armor 2. Power 26, budget 26, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A goblin woman who drives a walking machine made from boiler plates. |
+| Pose | The machine takes a heavy step forward with a big claw arm. |
+| Props | A round boiler body, pipe legs, a claw arm, an open seat with levers, brass gauges and rivets. |
+| Gameplay cues | The thick plates show Armor 2. |
+| Silhouette hook | The round boiler and the two pipe legs. |
+| Humor note | A second goblin runs behind with an oil can. |
+| Setting | A mine yard with a crane. |
+
+```text
+goblin woman driving a walking machine made from riveted boiler plates, round boiler body on two pipe legs, big claw arm, open seat with levers, brass gauges, a second small goblin running behind with an oil can,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, hill mine yard with a wooden crane, warm lantern light from the upper left, round heavy silhouette, ornate Rare detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.14 Grand Gearjammer
+
+`goblin.grandGearjammer` · Support · Epic · Countdown 4 · Attack 3 · HP 8 · Speed 1 · Range 3 · Physical · Sabotage 2
+
+> Every plan has gears. We have more.
+
+Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 27, budget 26, deviation +3.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A big goblin war cart with a gear cannon and a crew of three goblins. |
+| Pose | The cart rolls forward, and the cannon shoots gears and springs. |
+| Props | A cart with large brass gears, a gear cannon, levers, three goblins at work. |
+| Gameplay cues | Flying gears and broken clocks show Sabotage. The cannon shows Range. |
+| Silhouette hook | The big gear on top of the cart. |
+| Humor note | One goblin loads the cannon with an alarm clock. |
+| Setting | The main mine hall with chains and lanterns. |
+
+```text
+big goblin war cart rolling forward, gear cannon firing brass gears, springs and broken clocks, three goblin crew pulling levers, one loading the cannon with an alarm clock, large brass gear on top, heroic dramatic composition,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, main hill mine hall with chains and lanterns, warm lantern light from the upper left, bold silhouette with big gear, rich Epic detail,
+soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+### 6.15 Boss Snikkit, the Mine King (draft)
+
+`goblin.bossSnikkit` · Striker · Epic · Countdown 5 · Attack 5 · HP 8 · Speed 2 · Melee · Fire · Unique · Sabotage 1 · Last Breath 3
+
+> "Everything down here is mine. That is the joke. Laugh."
+
+Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns what he hits, and explodes when he falls. Power 32, budget 31, deviation +3.2%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | Boss Snikkit, the mine king: a small old goblin man with a large crown made from a bucket. |
+| Pose | He rides a mine cart full of bombs down the rails and points forward with his scepter. |
+| Props | A mine-cart throne, a bucket crown with glass gems, a scepter that is a lit torch, a pile of bombs, a stolen hourglass on a chain. |
+| Gameplay cues | The torch shows Fire. The bombs show Last Breath. The hourglass shows Sabotage. Epic: a heroic scene with cheering goblins. |
+| Silhouette hook | The tall bucket crown and the cart. |
+| Humor note | The crown is too big and falls over one eye. |
+| Setting | A mine rail in the main hall, with cheering goblins. |
+
+```text
+Boss Snikkit the goblin mine king, small old goblin man with a large bucket crown set with glass gems slipping over one eye, riding a mine cart throne full of bombs down the rails, pointing forward with a lit torch scepter, stolen hourglass on a chain, cheering goblins behind, heroic dramatic composition,
+Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, rail in the main hill mine hall, warm lantern light from the upper left, heroic silhouette with tall crown, rich Epic detail,
+soft brush texture, soot grey, brass and acid green palette with orange-red fire accents, simple low-contrast background,
+portrait 3:4 composition, no text, no frame
+```
+
+## 7. Feral Creature Cards
+
+Identity: wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. They are few, huge and slow: high Countdown, high Attack and HP. They Trample, regenerate and bring the cold. All values in this section are **provisional**.
+
+Feral cards have no Countdown 1. Commons are Countdown 2 to 3, Uncommons 3 to 4, Rares 4 to 5 and Epics 6. A Feral figure wears no armor and carries no tools of a people. The art can show the lure that called it: bait, a horn or a torch.
+
+### 7.1 Bristleback Boar
+
+`feral.bristlebackBoar` · Runner · Common · Countdown 2 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Trample
+
+> It does not go around things.
+
+Purpose: the only Feral Runner. Trample lets a kill also hit the Unit behind. Power 16, budget 16, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A wild mountain boar with a ridge of stiff bristles. |
+| Pose | It charges forward with its head down. |
+| Props | Boards of a broken fence fly around it. |
+| Gameplay cues | The broken fence shows Trample. The dust shows Speed 2. |
+| Silhouette hook | The bristle ridge and the low head. |
+| Humor note | An apple, the bait that called it, is stuck on one tusk. |
+| Setting | A rocky mountain path. |
+
+```text
+wild mountain boar with a ridge of stiff bristles charging forward head down, boards of a broken fence flying around it, an apple stuck on one tusk, dust behind it,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, rocky mountain path, cool light from the upper left, low clear silhouette, plain Common detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.2 Crag Lizard
+
+`feral.cragLizard` · Frontliner · Common · Countdown 2 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Armor 1
+
+> It sat on this rock for a hundred years. Now it is your rock.
+
+Purpose: a cheap Feral blocker with Armor. Power 16, budget 16, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A large grey lizard with plates like rock. |
+| Pose | It walks forward low, with its mouth open in a hiss. |
+| Props | None. Snow on its back plates. |
+| Gameplay cues | The rock plates show Armor. |
+| Silhouette hook | The low wide body and the plated back. |
+| Humor note | A small bird sits on its back, and the lizard does not know. |
+| Setting | Grey cliffs with patches of snow. |
+
+```text
+large stone-grey lizard with rock-like back plates walking forward low, mouth open in a hiss, snow on its plates, small bird sitting on its back unnoticed,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, grey cliffs with patches of snow, cool light from the upper left, low wide silhouette, plain Common detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.3 Frostfang Lynx
+
+`feral.frostfangLynx` · Striker · Common · Countdown 2 · Attack 4 · HP 3 · Speed 1 · Melee · Frost
+
+> You will not hear it. You will feel the cold first.
+
+Purpose: a cheap Frost Striker that Freezes its target. Power 16, budget 16, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A white mountain lynx with long ear tufts and ice-blue fangs. |
+| Pose | It jumps forward with its claws out. |
+| Props | None. Frost breath and frosty claws. |
+| Gameplay cues | The frost on its claws and breath shows Frost. |
+| Silhouette hook | The ear tufts and the long jump. |
+| Humor note | A lump of snow sits on its head after a jump through a snowbank. |
+| Setting | A snowy ledge. |
+
+```text
+white mountain lynx with long ear tufts and ice-blue fangs leaping forward with claws out, frosty breath and frost on its claws, a lump of snow on its head,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, snowy mountain ledge, cool light from the upper left, long leaping silhouette, plain Common detail,
+soft brush texture, slate violet and ice white palette with light blue frost accents, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.4 Cave Bear
+
+`feral.caveBear` · Frontliner · Common · Countdown 3 · Attack 3 · HP 10 · Speed 1 · Melee · Physical · Regeneration 1
+
+> It woke up hungry. It is still waking up.
+
+Purpose: a durable Feral front that heals 1 HP in each Start Step. Power 20, budget 21, deviation -4.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A huge brown cave bear with sleepy eyes. |
+| Pose | It walks forward on all fours out of a cave, half in a yawn. |
+| Props | A honeycomb in its mouth: the bait. |
+| Gameplay cues | Moss and old healed scars show Regeneration. |
+| Silhouette hook | The big shoulder hump and the round head. |
+| Humor note | It still has not opened both eyes. |
+| Setting | A cave mouth with frost. |
+
+```text
+huge brown cave bear with sleepy half-open eyes walking forward on all fours out of a cave, half yawning around a honeycomb in its mouth, moss and old healed scars on its fur,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, frosty cave mouth, cool light from the upper left, big humped silhouette, plain Common detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.5 Web Spitter
+
+`feral.webSpitter` · Shooter · Common · Countdown 3 · Attack 3 · HP 8 · Speed 1 · Range 2 · Physical · Entangle
+
+> Stay for dinner.
+
+Purpose: a short-range Shooter that Entangles. Power 20, budget 21, deviation -4.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A giant cave spider, round and furry, with many shiny eyes. Friendly cartoon shapes, not scary. |
+| Pose | It spits a sticky web line forward. |
+| Props | Web lines. A helmet that it caught hangs in a web. |
+| Gameplay cues | The web shows Entangle. The spit line shows Range. |
+| Silhouette hook | The round body and the long arched legs. |
+| Humor note | It looks proud of the caught helmet. |
+| Setting | A dark cave with blue crystals. |
+
+```text
+giant round furry cave spider with many shiny friendly eyes spitting a sticky web line forward, a caught helmet hanging in a web behind it, looking proud, friendly cartoon shapes, not scary,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, dark cave with blue crystals, cool light from the upper left, round body with arched legs silhouette, plain Common detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.6 Boulder Tortoise
+
+`feral.boulderTortoise` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 14 · Speed 0 · Melee · Physical · Wall · Armor 1 · Regeneration 2
+
+> It moves for nobody. It hardly moves for itself.
+
+Purpose: the Feral Wall. It heals 2 HP in each Start Step. Power 21, budget 21, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A giant mountain tortoise with a shell like a boulder. |
+| Pose | It sleeps across a mountain pass. |
+| Props | Moss and small trees on the shell. |
+| Gameplay cues | The stone shell shows Armor. New moss that grows over cracks shows Regeneration. |
+| Silhouette hook | A dome. |
+| Humor note | A mountain goat stands on top of it. |
+| Setting | A narrow mountain pass. |
+
+```text
+giant mountain tortoise asleep across a narrow pass, boulder-like stone shell covered with moss and small trees, fresh moss growing over cracks, a mountain goat standing on top,
+Feral fortification of Heynbord, blocking face to the right, centered,
+painterly storybook fantasy card illustration, narrow mountain pass, cool light from the upper left, massive dome silhouette, Uncommon detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.7 Tailsweep Basilisk
+
+`feral.tailsweepBasilisk` · Striker · Uncommon · Countdown 3 · Attack 4 · HP 7 · Speed 1 · Melee · Physical · Pivot
+
+> Look it in the eye? It looks at your ankles.
+
+Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Power 20, budget 21, deviation -4.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A long, low basilisk with a heavy club tail. |
+| Pose | It turns its body and swings its tail back. |
+| Props | None. Rocks fly from the tail swing. |
+| Gameplay cues | Pivot: the tail swing goes behind and to the side. |
+| Silhouette hook | The long S-shaped body and the club tail. |
+| Humor note | It looks bored while the rocks fly. |
+| Setting | A cave floor with crystals. |
+
+```text
+long low basilisk lizard turning its body and swinging a heavy club tail backward, rocks flying from the swing, bored half-lidded eyes, S-shaped body,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, cave floor with crystals, cool light from the upper left, S-shaped silhouette with club tail, Uncommon detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.8 Cave Troll
+
+`feral.caveTroll` · Frontliner · Uncommon · Countdown 4 · Attack 4 · HP 12 · Speed 1 · Melee · Physical · Regeneration 2
+
+> Cut it. Wait. Cut it again.
+
+Purpose: a durable Feral front that heals 2 HP in each Start Step. Power 26, budget 26, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A large grey cave troll with long arms and a small head. It is wild: no armor and no tribe marks. |
+| Pose | It walks forward on its knuckles, with a stalactite as a club. |
+| Props | A broken stalactite. |
+| Gameplay cues | A cut on its arm that closes shows Regeneration. |
+| Silhouette hook | The long arms and the bent back. |
+| Humor note | It chews on a lost shield. |
+| Setting | A damp cave. |
+
+```text
+large grey wild cave troll with long arms and a small head walking forward on its knuckles, a broken stalactite used as a club, a cut on its arm closing up, chewing on a lost shield, no armor and no tribe marks,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, damp cave, cool light from the upper left, hunched long-armed silhouette, Uncommon detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.9 Crag Rhino
+
+`feral.cragRhino` · Striker · Uncommon · Countdown 4 · Attack 5 · HP 10 · Speed 1 · Melee · Physical · Trample
+
+> The road ends where it stops.
+
+Purpose: a heavy Trample Striker. Power 25, budget 26, deviation -3.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A woolly mountain rhino with a stone-grey horn. |
+| Pose | It charges forward with its head low. |
+| Props | One broken shield on its horn, and a second shield that flies behind it. |
+| Gameplay cues | The two shields show Trample. |
+| Silhouette hook | The big horn. |
+| Humor note | An empty helmet spins in the air. |
+| Setting | A high stony plain. |
+
+```text
+woolly mountain rhino with a stone-grey horn charging forward head low, one broken shield stuck on its horn and a second shield flying behind it, empty helmet spinning in the air,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, high stony plain, cool light from the upper left, heavy horned silhouette, Uncommon detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.10 Frost Elk Matriarch
+
+`feral.frostElkMatriarch` · Support · Uncommon · Countdown 4 · Attack 3 · HP 11 · Speed 1 · Melee · Frost · Rally 1
+
+> Where she walks, the herd follows.
+
+Purpose: the Feral Support. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 25, budget 26, deviation -3.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A tall old elk cow with antlers of ice. |
+| Pose | She walks forward with her head high and calls. |
+| Props | None. Breath mist from the call. |
+| Gameplay cues | The call shows Rally. The ice antlers show Frost. |
+| Silhouette hook | The wide ice antlers. |
+| Humor note | Two young elk copy her pose behind her. |
+| Setting | A frozen meadow. |
+
+```text
+tall old elk cow with wide antlers of ice walking forward with her head high, calling with a cloud of breath mist, two young elk copying her pose behind her,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, frozen mountain meadow, cool light from the upper left, wide antler silhouette, Uncommon detail,
+soft brush texture, slate violet and ice white palette with light blue frost accents, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.11 Avalanche Yeti
+
+`feral.avalancheYeti` · Striker · Rare · Countdown 4 · Attack 6 · HP 9 · Speed 1 · Melee · Physical · Trample
+
+> It came down with the snow. The snow was the smaller problem.
+
+Purpose: a Rare Trample Striker with high Attack. Power 26, budget 26, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A big white yeti with long fur. |
+| Pose | It charges forward through a wall of snow, with its arms wide. |
+| Props | Ice crystals in its fur, a stolen scarf. |
+| Gameplay cues | Snow and shields thrown to the sides show Trample. |
+| Silhouette hook | The huge shoulders and the wide arms. |
+| Humor note | The stolen scarf is much too small for it. |
+| Setting | A snowy slope with an avalanche behind it. |
+
+```text
+big white yeti with long fur charging forward through a wall of snow with arms wide, shields thrown to the sides, ice crystals glittering in its fur, a stolen scarf much too small for it,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, snowy slope with an avalanche behind, cool light from the upper left, huge broad-shouldered silhouette, ornate Rare detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.12 Woolly Mammoth
+
+`feral.woollyMammoth` · Frontliner · Rare · Countdown 5 · Attack 5 · HP 14 · Speed 1 · Melee · Physical · Armor 1 · Trample
+
+> It does not stop. Plan around it.
+
+Purpose: a Rare front that also Tramples. Power 32, budget 31, deviation +3.2%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A woolly mammoth with long curved tusks. |
+| Pose | It walks forward with heavy steps, with its tusks low. |
+| Props | A fence that broke over its tusks. |
+| Gameplay cues | Thick matted fur with ice shows Armor. The broken fence shows Trample. |
+| Silhouette hook | The high dome head and the long tusks. |
+| Humor note | A bird's nest sits in its fur. |
+| Setting | A glacier valley. |
+
+```text
+woolly mammoth with long curved tusks walking forward with heavy steps, tusks low, a broken wooden fence draped over the tusks, thick matted fur with ice, a bird's nest in its fur,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, glacier valley, cool light from the upper left, high domed silhouette with long tusks, ornate Rare detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.13 Rimebreath Drake
+
+`feral.rimebreathDrake` · Shooter · Rare · Countdown 5 · Attack 5 · HP 9 · Speed 1 · Range 3 · Frost · Flying
+
+> Its breath is the weather.
+
+Purpose: a Flying Frost Shooter. Power 31, budget 31, deviation 0%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A slim young ice drake with wide wings. |
+| Pose | It flies forward and breathes a cone of frost. |
+| Props | None. Icicles on its nose. |
+| Gameplay cues | The wings show Flying. The frost breath shows Frost and Range. |
+| Silhouette hook | The wide wings and the long neck. |
+| Humor note | Its own breath froze an icicle onto its nose. |
+| Setting | High cliffs above the clouds. |
+
+```text
+slim young ice drake with wide wings flying forward and breathing a cone of frost, an icicle frozen onto its own nose, long neck, frost crystals in the air,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, high cliffs above the clouds, cool light from the upper left, wide-winged silhouette, ornate Rare detail,
+soft brush texture, slate violet and ice white palette with light blue frost accents, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.14 Mountain Colossus
+
+`feral.mountainColossus` · Frontliner · Epic · Countdown 6 · Attack 6 · HP 16 · Speed 1 · Melee · Physical · Regeneration 2 · Trample
+
+> The mountain stood up. Then it walked.
+
+Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 37, budget 36, deviation +2.8%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | A wild, old giant of living rock and moss. No clothes and no tools. |
+| Pose | It takes a huge step forward, with one fist down. |
+| Props | Rubble that flies from its step. |
+| Gameplay cues | New stone that grows over cracks shows Regeneration. The rubble shows Trample. Epic: a heroic scene under storm clouds. |
+| Silhouette hook | The huge shoulders and the small head. |
+| Humor note | A small village of birds lives on its shoulder. |
+| Setting | A mountain pass under storm clouds. |
+
+```text
+wild old giant of living rock and moss taking a huge step forward with one fist down, rubble flying, new stone growing over cracks, a small village of bird nests on its shoulder, heroic dramatic composition,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, mountain pass under storm clouds, cool light from the upper left, massive silhouette with huge shoulders and small head, rich Epic detail,
+soft brush texture, slate violet and ice white palette, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+### 7.15 Old Frostmaw (draft)
+
+`feral.oldFrostmaw` · Striker · Epic · Countdown 6 · Attack 8 · HP 14 · Speed 1 · Melee · Frost · Unique · Trample
+
+> Every village has a story about it. Every story is too small.
+
+Purpose: the named Feral Epic: a huge Frost Striker that Tramples. Power 38, budget 36, deviation +5.6%.
+
+| Field | Brief |
+| --- | --- |
+| Subject | Old Frostmaw: a huge, old, white cave wyrm with no wings and a crown of icicles. |
+| Pose | It comes out of an ice cave with its jaws open. |
+| Props | Broken ice pillars. A very small hunting horn hangs from one tooth. |
+| Gameplay cues | The ice breath shows Frost. The broken ice pillars show Trample. Epic: a heroic scene. |
+| Silhouette hook | The long neck and the icicle crown. |
+| Humor note | The horn is the lure that called it. The hunter who blew it is gone. |
+| Setting | A great ice cave. |
+
+```text
+Old Frostmaw, huge old white cave wyrm with no wings and a crown of icicles, coming out of a great ice cave with jaws open and icy breath, broken ice pillars around it, a very small hunting horn hanging from one tooth, heroic dramatic composition,
+Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
+painterly storybook fantasy card illustration, great ice cave, cool light from the upper left, long-necked silhouette with icicle crown, rich Epic detail,
+soft brush texture, slate violet and ice white palette with light blue frost accents, simple low-contrast background,
+portrait 3:4 composition, no gore, no text, no frame
+```
+
+## 8. Tokens
 
 Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**.
 
-### 6.1 Skeleton
+### 8.1 Skeleton
 
 `token.skeleton` · Melee · Physical · Swarm 1
 
@@ -1633,7 +2425,7 @@ soft brush texture, rusted metal and old wood, simple low-contrast background,
 portrait 3:4 composition, no gore, no text, no frame
 ```
 
-### 6.2 Restless Wisp
+### 8.2 Restless Wisp
 
 `token.restlessWisp` · Melee · Frost · Flying
 
@@ -1655,11 +2447,11 @@ soft brush texture, frost and rusted metal, simple low-contrast background,
 portrait 3:4 composition, no gore, no text, no frame
 ```
 
-## 7. Warrior Skill Cards
+## 9. Warrior Skill Cards
 
 Identity: buffs and tempo. Physical, so the palette is neutral steel and leather.
 
-### 7.1 War Drums
+### 9.1 War Drums
 
 `warrior.warDrums` · Warrior · Common · Countdown 2 · No target · The Countdown of 2 random cards in your Hand goes down by 1.
 
@@ -1681,7 +2473,7 @@ light from the upper left, soft brush texture, neutral steel and leather accents
 neutral battlefield with green grass and a lane of grey stone tiles, blurred marching shapes in the background, portrait 3:4 composition, no text, no frame
 ```
 
-### 7.2 Shield Wall
+### 9.2 Shield Wall
 
 `warrior.shieldWall` · Warrior · Common · Countdown 2 · A friendly Lane · Friendly Units in a Lane get Armor 1 for the next 2 enemy Turns.
 
@@ -1703,7 +2495,7 @@ light from the upper left, soft brush texture, neutral steel and leather accents
 neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
 ```
 
-### 7.3 Spear Throw
+### 9.3 Spear Throw
 
 `warrior.spearThrow` · Warrior · Uncommon · Countdown 3 · An enemy Unit · Deal 4 Physical damage to an enemy Unit.
 
@@ -1725,11 +2517,11 @@ light from the upper left, soft brush texture, neutral steel and leather accents
 neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
 ```
 
-## 8. Mage Skill Cards
+## 10. Mage Skill Cards
 
 Identity: area damage. The palette is the Damage Type color.
 
-### 8.1 Fireball
+### 10.1 Fireball
 
 `mage.fireball` · Mage · Common · Countdown 3 · An enemy Unit · Deal 3 Fire damage to an enemy Unit and the next Square behind it.
 
@@ -1751,7 +2543,7 @@ light from the upper left, soft brush texture, orange-red fire accents,
 neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
 ```
 
-### 8.2 Frost Bolt
+### 10.2 Frost Bolt
 
 `mage.frostBolt` · Mage · Common · Countdown 2 · An enemy Unit · Deal 2 Frost damage to an enemy Unit.
 
@@ -1773,7 +2565,7 @@ light from the upper left, soft brush texture, light blue frost accents,
 neutral battlefield with green grass touched by frost and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
 ```
 
-### 8.3 Flame Wave
+### 10.3 Flame Wave
 
 `mage.flameWave` · Mage · Uncommon · Countdown 4 · An enemy Lane · Deal 2 Fire damage to all enemy Units in a Lane.
 
@@ -1795,7 +2587,7 @@ light from the upper left, soft brush texture, orange-red fire accents,
 neutral battlefield with green grass and a long lane of grey stone tiles, portrait 3:4 composition, no text, no frame
 ```
 
-## 9. When cards change
+## 11. When cards change
 
 - When you add a card to `cards.ts`, add its entry here before you make the art.
 - When you change a name or flavor text in the Message Catalog, look at the entry here again. The image must still agree with the text.

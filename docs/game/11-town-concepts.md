@@ -19,7 +19,7 @@ Now the Town uses the first master painting, `apps/web/public/town/town.jpg` (16
 | Item | Brief |
 | --- | --- |
 | Place | A free town on a green hillside next to the sea. All peoples of Heynbord come here to trade and to start their adventures. |
-| Architecture | Mainly warm stone and timber, with terracotta and blue roofs. Small signs of each Race: an orc food stall in the market, elf trees with lanterns, a quiet undead bell keeper on the hall. |
+| Architecture | Mainly warm stone and timber, with terracotta and blue roofs. Small signs of each of the 6 Races: a human guard at the gate, an orc food stall in the market, elf trees with lanterns, a quiet undead bell keeper on the hall, a goblin tinker's junk cart at the Workshop, and a wild boulder tortoise (Feral) asleep on the road between the Workshop and the Market. |
 | Palette | Warm stone, terracotta, royal blue roofs, gold banners, green hills, blue sea. No single Race color is the main color. |
 | Time and weather | A clear morning. Soft white clouds. |
 
@@ -122,7 +122,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. In v1, only th
 | Field | Brief |
 | --- | --- |
 | Shape | A timber workshop with a brown roof and a tall stone chimney. |
-| Props | An anvil and a work bench outside, glowing sparks at the door, barrels and crates. |
+| Props | An anvil and a work bench outside, glowing sparks at the door, barrels and crates, a goblin tinker's junk cart full of gears and pots. |
 | Silhouette hook | The tall chimney. |
 | Humor note | A small dwarf-like smith hits a glowing card on the anvil. |
 | Position | Right of the Town Gate, inside the wall (about x 980 to 1100). |
@@ -136,7 +136,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. In v1, only th
 | Shape | A market square with tents in orange, yellow and blue. |
 | Props | Fruit, cloth, a fortune teller tent, an orc food stall with a big pot. |
 | Silhouette hook | The group of pointed tent tops. |
-| Humor note | A goat eats the cloth on one stall. |
+| Humor note | A goat eats the cloth on one stall. A wild boulder tortoise sleeps on the road to the Market, and the townsfolk walk around it. |
 | Position | The right side, near the sea (about x 1120 to 1320). |
 
 ### 2.7 Card shop
@@ -184,7 +184,7 @@ bird's-eye view of a bright fantasy hub town on a green hillside next to the sea
 in the center foreground a large stone town gate with two round towers, blue conical roofs and small gold flags, open wooden doors, a sleepy guard on a stool with a cat on his lap,
 a sandy road leaves the gate and winds down to the bottom left toward far green meadows,
 a curved stone town wall with small towers runs from left to right behind the gate,
-inside the wall: a long stone barracks with a fenced training yard and straw dummies at the far left, a stone library with a blue roof and tall arched windows left of the gate, a wide hall with long blue and gold banners and a low red roof behind the gate, a small narrow card shop with a purple roof and a round window right of the gate, a timber workshop with a tall stone chimney and an anvil outside on the right, a market square with orange, yellow and blue tents near the sea on the right,
+inside the wall: a long stone barracks with a fenced training yard and straw dummies at the far left, a stone library with a blue roof and tall arched windows left of the gate, a wide hall with long blue and gold banners and a low red roof behind the gate, a small narrow card shop with a purple roof and a round window right of the gate, a timber workshop with a tall stone chimney, an anvil outside and a small goblin tinker's junk cart on the right, a market square with orange, yellow and blue tents near the sea on the right, a giant mossy boulder tortoise asleep on the road to the market with townsfolk walking around it,
 a very tall thin white stone tower with blue roofs on a hill at the back left, its top lost in the clouds,
 a dark cave with old ruined pillars in grey rocks at the right edge,
 a calm blue sea with a far island and small sail boats at the back right, soft white clouds in a clear morning sky,

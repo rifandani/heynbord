@@ -91,27 +91,27 @@ The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
 
 ### 2.2 The Thornwood
 
-`Region 2` · Elves and Orcs · Boss: the Old Bramble
+`Region 2` · Elves and Feral creatures · Boss: the Old Bramble
 
 | Item | Brief |
 | --- | --- |
-| Place | A deep, old forest with giant trees and thorn hedges. Elf villages are high in the trees. Orc hunters make camps on the forest floor. |
+| Place | A deep, old forest with giant trees and thorn hedges. Elf villages are high in the trees. Feral creatures live in the caves and hollows under the roots: giant spiders, cave bears and old trolls. |
 | Trail | A forest road of roots and moss, with rope bridges and wooden steps. It goes deeper into the forest to the Boss. |
-| Landmarks | 1 a forest gate of two leaning trees · 2 an elf tree with lanterns · 3 a ring of large mushrooms · 4 a rope bridge over a ravine · 5 an orc hunting camp with drums · 6 a ring of mossy standing stones · 7 an elf village of tree houses · 8 a waterfall and a pool · 9 a thorn hedge wall with a hole broken in it |
+| Landmarks | 1 a forest gate of two leaning trees · 2 an elf tree with lanterns · 3 a ring of large mushrooms · 4 a rope bridge over a ravine · 5 a dark cave mouth under giant roots, with a big web across it · 6 a ring of mossy standing stones · 7 an elf village of tree houses · 8 a waterfall and a pool · 9 a thorn hedge wall with a hole broken in it |
 | Boss landmark | The Old Bramble: a forest giant that sleeps on a hill of brambles. It looks like a huge old tree with a face in the bark. One eye is half open. |
 | Palette | Deep emerald, moss green, teal shade, gold light that falls through the leaves, some autumn red. |
-| Humor note | An orc is stuck in a thorn bush. A squirrel steals arrows from an elf archer. |
+| Humor note | A cave bear is stuck in a thorn bush. A squirrel steals arrows from an elf archer. |
 | Time and weather | A bright afternoon. Light falls through the leaves in long beams. |
 
 ### 2.3 The Hollow Marches
 
-`Region 3` · Undead and Orcs · Boss: Queen Marrow
+`Region 3` · Undead and Goblins · Boss: Queen Marrow
 
 | Item | Brief |
 | --- | --- |
-| Place | Wide marshes with mist, reeds and old dead trees. The Undead of Queen Marrow rule here. Orc war bands camp on the dry hills. Strange, but not scary: the art stays bright (art direction 1). |
+| Place | Wide marshes with mist, reeds and old dead trees. The Undead of Queen Marrow rule here. Goblins dig mines under the dry hills and sell junk to anyone who pays. Strange, but not scary: the art stays bright (art direction 1). |
 | Trail | Old stone roads, then long wooden boardwalks over the water, then a stone causeway to the castle island. |
-| Landmarks | 1 a crooked sign post with a lantern (no letters) · 2 a sunken chapel · 3 an orc raft camp with reed roofs · 4 a long boardwalk over a bog · 5 a small graveyard with leaning stones · 6 a broken windmill on a mound · 7 a ferry with a skeleton ferryman · 8 an orc war camp with smoke · 9 an old stone bridge with green fire bowls |
+| Landmarks | 1 a crooked sign post with a lantern (no letters) · 2 a sunken chapel · 3 a goblin raft workshop with reed roofs and a smoking chimney · 4 a long boardwalk over a bog · 5 a small graveyard with leaning stones · 6 a broken windmill on a mound · 7 a ferry with a skeleton ferryman · 8 a goblin mine entrance in a dry hill, with rail tracks and smoke · 9 an old stone bridge with green fire bowls |
 | Boss landmark | The castle of Queen Marrow on an island: pale bone-white stone, thin towers, violet banners, soft green light in the windows. |
 | Palette | Misty teal, violet, moss green, bone white, soft green glow. The light is still warm from the upper left. |
 | Humor note | A skeleton sits and fishes on a boardwalk. A frog with a small crown sits on a lily pad. |
@@ -143,9 +143,9 @@ no dashed lines, no markers, no flags on the clearings, no shields, no numbers, 
 bird's-eye view of a bright fantasy deep forest seen from high above at about 45 degrees, painted adventure map, wide 16:9 landscape,
 a mossy forest road of roots comes in from the left edge near the bottom and winds up and across the forest to a hill at the top right,
 along the road ten small flat open clearings with moss and short grass, each clearing empty and calm,
-next to the clearings: two leaning trees that make a gate, an elf tree with lanterns, a ring of large mushrooms, a rope bridge over a ravine, an orc hunting camp with drums, a ring of mossy standing stones, elf tree houses high in giant trees, a waterfall with a pool, a thorn hedge wall with a hole broken in it,
+next to the clearings: two leaning trees that make a gate, an elf tree with lanterns, a ring of large mushrooms, a rope bridge over a ravine, a dark cave mouth under giant roots with a big web across it, a ring of mossy standing stones, elf tree houses high in giant trees, a waterfall with a pool, a thorn hedge wall with a hole broken in it,
 at the end of the road a huge old tree giant asleep on a hill of brambles, a face in the bark, one eye half open,
-an orc stuck in a thorn bush, a squirrel stealing arrows from an elf archer,
+a cave bear stuck in a thorn bush, a squirrel stealing arrows from an elf archer,
 deep emerald, moss green, teal shade, some autumn red, gold beams of light through the leaves, bright afternoon,
 soft white clouds frame the edges and corners of the map, calm clouds in the top right corner,
 Heynbord, painterly fantasy game map illustration, bright warm light, soft brush texture, clean readable landmark silhouettes,
@@ -159,7 +159,7 @@ no dashed lines, no markers, no flags on the clearings, no shields, no numbers, 
 bird's-eye view of bright fantasy marshlands seen from high above at about 45 degrees, painted adventure map, wide 16:9 landscape,
 an old stone road comes in from the left edge near the bottom, becomes long wooden boardwalks over the water, and ends on a stone causeway to an island at the top right,
 along the road ten small flat open clearings of dry grass, each clearing empty and calm,
-next to the clearings: a crooked sign post with a lantern, a sunken chapel, an orc raft camp with reed roofs, a long boardwalk over a bog, a small graveyard with leaning stones, a broken windmill on a mound, a ferry with a skeleton ferryman, an orc war camp with smoke, an old stone bridge with green fire bowls,
+next to the clearings: a crooked sign post with a lantern, a sunken chapel, a goblin raft workshop with reed roofs and a smoking chimney, a long boardwalk over a bog, a small graveyard with leaning stones, a broken windmill on a mound, a ferry with a skeleton ferryman, a goblin mine entrance in a dry hill with rail tracks and smoke, an old stone bridge with green fire bowls,
 on the island a castle of pale bone-white stone with thin towers, violet banners and soft green light in the windows,
 reeds, old dead trees, low mist on the water, a skeleton fishing on a boardwalk, a frog with a tiny crown on a lily pad,
 misty teal, violet, moss green, bone white, soft green glow, bright late afternoon, cute and strange, not scary,

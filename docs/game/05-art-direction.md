@@ -61,6 +61,8 @@ A card can have a rigged 3D model instead of the cut-out. The model plays a clip
 | Elf | Leaf green | Warm brown | Bark, leaves, flowers |
 | Undead | Pale teal | Bone white | Old bronze, bone, spirit fire |
 | Orc | Burnt orange | Dark red | Leather, fur, rough iron |
+| Goblin | Brass | Acid green, on soot grey | Patched iron, canvas, junk |
+| Feral | Slate violet | Ice white | Fur, horn, stone, ice |
 
 ### 4.2 Rank colors
 

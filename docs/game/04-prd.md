@@ -2,7 +2,7 @@
 
 ## 1. Summary
 
-Heynbord v1 is a single-player web game. It is a fantasy collectible card game with automatic lane battles and a countdown hand. The player plays a Campaign of 30 Stages and a tower of 50 Floors. The player collects 88 cards and makes them stronger without real money. The game saves in the browser.
+Heynbord v1 is a single-player web game. It is a fantasy collectible card game with automatic lane battles and a countdown hand. The player plays a Campaign of 30 Stages and a tower of 50 Floors. The player collects 118 cards and makes them stronger without real money. The game saves in the browser.
 
 - Vision: [02 — Game Vision](./02-game-vision.md)
 - Rules: [03 — Game Design](./03-game-design.md)
@@ -31,7 +31,7 @@ Heynbord v1 is a single-player web game. It is a fantasy collectible card game w
 - Trading between players
 - Native mobile apps
 - Portrait layout on phones
-- Hybrids, awakening, more than 4 Races, more than 5 Ranks
+- Hybrids, awakening, more than 6 Races, more than 5 Ranks
 
 ## 5. Users
 
@@ -68,7 +68,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| CRD-01 | The game must have 88 collectible Cards: 60 Creature Cards (15 for each Race) and 28 Skill Cards (7 for each Class). | M |
+| CRD-01 | The game must have 118 collectible Cards: 90 Creature Cards (15 for each of the 6 Races) and 28 Skill Cards (7 for each Class). | M |
 | CRD-02 | Each card must exist in all Ranks from its Base Rank to Legendary. | M |
 | CRD-03 | The UI must show Rank with a color and a number of pips. | M |
 | CRD-04 | The Deck builder must check all Deck rules in GDD section 6 and show the reason when a Deck is not valid. | M |
@@ -182,7 +182,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | --- | --- | --- |
 | AI art is not consistent | The game looks cheap | Use a strict style guide, reference sheets and a review checklist (see Art Direction). |
 | The scope is too large for one person | Late release | Keep v1 small. Cut **C** and then **S** requirements first. Use the milestones in the Roadmap. |
-| Balance is hard with 88 Cards | Some Decks are too strong | Use headless simulations from the start. |
+| Balance is hard with 118 Cards | Some Decks are too strong | Use headless simulations from the start. |
 | 3D performance on phones | Low frame rate | Use performance budgets (see Technical Design). Test on a real phone from Milestone 1. |
 | Legal claims about similarity to the original games | Forced changes | Use new names, art, text and numbers. Do not copy assets or card text. |
 | AI tool licence changes | Art cannot be used | Keep the licence record. Use tools whose terms permit commercial use. |

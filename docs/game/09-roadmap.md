@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | M0 — Foundation | 1–2 | Documents, rules package, empty 3D scene in `apps/web` |
 | M2 — Meta loop (**Playable alpha**) | 7–12 | Collection, Deck builder, Packs, Workshop, save, first Region |
-| M3 — Content | 13–19 | 88 cards, 30 Stages, 3 bosses, 3 Dungeons, both languages |
+| M3 — Content | 13–19 | 118 cards, 30 Stages, 3 bosses, 3 Dungeons, both languages |
 | M4 — Polish and release (**v1.0**) | 20–26 | Heynspire, Achievements, mobile landscape, audio, performance, playtests |
 
 The schedule is for one developer. If a Milestone is late, cut **C** requirements, then **S** requirements (see the PRD). Do not move the end date of a Milestone more than 2 weeks before you cut scope.
@@ -29,7 +29,7 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 
 ### M3 — Content (weeks 13–19)
 
-- [ ] All 88 cards with final art: 60 Creature Cards and 28 Skill Cards.
+- [ ] All 118 cards with final art: 90 Creature Cards and 28 Skill Cards.
 - [ ] Regions 2 and 3, with bosses and story scenes.
 - [ ] Battles with 1 to 4 Heroes on a Side ([ADR-0009](../adr/0009-a-side-has-one-or-more-heroes.md)).
 - [ ] 3 Dungeons with their Bosses (GDD section 8.4). Dungeons use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)).

@@ -118,7 +118,13 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Pushed**: Moved to another Square by an effect such as Knockback, not by the Unit's own Movement. Speed, Flying, Frozen, Entangled and Hobbled do not change a push. Pushed is not a Status. _Avoid_: knocked back, moved, displaced
 
-**Race**: The people that a Creature Card belongs to: Human, Elf, Undead or Orc. A Race also includes the beasts and spirits that fight with that people, so a wolf that fights for the orcs is an Orc card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
+**Sabotage N**: A Keyword. When a Unit with Sabotage comes onto the Board from its Creature Card, the Card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready Card is the lowest. If two Cards have the same Countdown, the oldest Card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. N is the same at each Rank. _Avoid_: Delay, Stall, Disrupt
+
+**Trample**: A Keyword for melee Units. When a Unit with Trample kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it, in the same Lane. It never hits a Hero. This second hit is not an attack: it has no Crit and no Retaliation, and it does not apply Keywords such as Poison, Hobble or Knockback. It does not Trample again. _Avoid_: Cleave, Overrun, Pierce
+
+**Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a wolf that fights for the orcs is an Orc card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
+
+**Feral**: The one Race with no people. A Feral card is a wild creature that serves no people, for example a wyrm or a giant spider. A creature that fights for a people is a card of that people's Race, not a Feral card. _Avoid_: beast, creature, wild (as a Race name)
 
 **Role**: The job of a Creature Card in a Battle: Frontliner, Striker, Runner, Shooter, Support or Wall. It helps Players read a Card. No rule uses it. _Avoid_: class, type, archetype
 
@@ -240,6 +246,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - **Coin** was named "Marks" before. Gold, Silver and Copper are its denominations, not separate currencies.
 - The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
+- A **Race** was always a people before. **Feral** is the one Race with no people ([ADR-0013](../../docs/adr/0013-v1-has-90-creature-cards.md)). "Feral" is not a word for every wild creature: a troll that fights for the orcs is an Orc card.
 - The GDD says "Deck archetype". The term is **Archetype**, and it is always a Deck. It is not a **Role**: a Role is the job of one Creature Card.
 - The **Workshop** and the **Bazaar** were "places" before. Now they are the actions and the offers. The Town Building that opens each one is a web term.
 - The first name for **Hobble** was "Fatigue". "Fatigue" usually means damage from an empty Deck in card games, and it is on the _Avoid_ list of **Sudden Death**.
