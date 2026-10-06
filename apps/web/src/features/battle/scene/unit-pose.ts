@@ -86,6 +86,14 @@ const moved: EventPose = (unit, event, progress, pose) => {
     (unit.flying ? 0.5 : 0.2);
 };
 
+/** A fast slide. It has no walk hop, so a push does not look like Movement. */
+const pushed: EventPose = (unit, event, progress, pose) => {
+  if (event._tag !== "UnitPushed" || event.unitId !== unit.id) {
+    return;
+  }
+  pose.x = squareX(event.from + (event.to - event.from) * easeOut(progress));
+};
+
 const attacked: EventPose = (unit, event, progress, pose) => {
   if (event._tag !== "UnitAttacked" || event.unitId !== unit.id) {
     return;
@@ -148,6 +156,7 @@ const healed: EventPose = (unit, event, progress, pose) => {
 
 const EVENT_POSES: Readonly<Partial<Record<BattleEvent["_tag"], EventPose>>> = {
   UnitMoved: moved,
+  UnitPushed: pushed,
   UnitAttacked: attacked,
   DamageDealt: damaged,
   UnitSummoned: summoned,

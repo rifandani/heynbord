@@ -57,7 +57,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.2 Shieldbearer
 
-`human.shieldbearer` · Frontliner · Common · Countdown 2 · Attack 1 · HP 8 · Melee · Physical · Armor 1
+`human.shieldbearer` · Frontliner · Common · Countdown 2 · Attack 1 · HP 7 · Melee · Physical · Armor 1 · Knockback 1 at Common, 2 at Epic, 3 at Legendary
 
 > Her shield has more dents than a tin pot.
 
@@ -66,7 +66,7 @@ portrait 3:4 composition, no text, no frame
 | Subject | A strong, calm woman soldier with a wide stance. |
 | Pose | She crouches a little behind a large round shield, with a short sword low at her side. |
 | Props | A large round shield with many dents and a faded blue and gold paint, a short sword, a simple steel cap, a mail shirt. |
-| Gameplay cues | Armor 1: the shield is the main shape. Low Attack: the sword is small and low. |
+| Gameplay cues | The large shield is ready to bash and push. Armor 1: the shield is the main shape. Low Attack: the sword is small and low. |
 | Silhouette hook | The large round shield that covers most of her body. |
 | Humor note | The shield has many visible dents, but she is not worried. |
 | Setting | A stone bridge over the river. |
@@ -260,25 +260,25 @@ portrait 3:4 composition, no readable text, no frame
 
 ### 2.10 Bridge Pikeman
 
-`human.bridgePikeman` · Striker · Uncommon · Countdown 3 · Attack 5 · HP 5 · Speed 1 · Melee · Physical · First Strike · **provisional**
+`human.bridgePikeman` · Striker · Uncommon · Countdown 3 · Attack 5 · HP 6 · Speed 1 · Melee · Physical · Knockback 1, 2 at Epic, 3 at Legendary · **provisional**
 
-> Please enter the queue. The spear goes first.
+> Please enter the queue. The back of the queue.
 
-Purpose: a defensive Striker that punishes melee attacks. Power 21, budget 21, deviation 0%.
+Purpose: a Striker that pushes the enemy off the bridge. Power 21, budget 21, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A focused woman soldier. |
-| Pose | She braces a long pike toward an approaching foe. |
+| Pose | A forward thrust. |
 | Props | Long pike, mail coat, blue sash and brass shoulder guards. |
-| Gameplay cues | The pike point reaches the enemy first. |
+| Gameplay cues | The pike pushes the foe back. |
 | Silhouette hook | The long low pike line. |
 | Humor note | The queue markers behind her are perfectly straight. |
 | Setting | A river-town bridge checkpoint. |
 
 ```text
-focused woman bridge soldier in a mail coat with a blue sash and small brass shoulder guards, bracing a very long pike toward an approaching foe, neat queue markers behind her,
-Human of Heynbord, firm intercepting stance, three-quarter view advancing to the right, full body, centered,
+focused woman bridge soldier in a mail coat with a blue sash and small brass shoulder guards, a forward thrust with a very long pike, neat queue markers behind her,
+Human of Heynbord, forward thrust, three-quarter view advancing to the right, full body, centered,
 painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, royal blue and gold palette,
 light from the upper left, river-town bridge checkpoint, simple low-contrast background,
 portrait 3:4 composition, no text, no frame

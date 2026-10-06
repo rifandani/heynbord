@@ -233,6 +233,7 @@ export default {
     flying: "Terbang",
     heroic: "Heroik {value}",
     hobble: "Pincang {value}",
+    knockback: "Hentakan {value}",
     lastBreath: "Nafas Terakhir {value}",
     pivot: "Berbalik",
     poison: "Racun",
@@ -249,6 +250,8 @@ export default {
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
     hobble:
       "Setelah Unit ini memberi damage serangan di atas 0 ke Unit musuh, Unit itu menjadi Terpincang {value}. Unit yang Terpincang punya Kecepatan maksimum 1, setelah semua bonus. Hitungan turun 1 pada tiap Langkah Akhir pemiliknya. Pincang yang baru mempertahankan hitungan yang lebih tinggi. Balasan tidak menerapkan Pincang.",
+    knockback:
+      "Setelah Unit ini memberi damage serangan di atas 0 ke Unit musuh, Unit itu terdorong {value} Petak ke arah Pahlawannya sendiri, di Jalurnya sendiri. Dorongan berhenti sebelum Unit lain dan di Kolom 1 Unit itu. Unit dengan Tembok tidak pernah terdorong. Balasan tidak menerapkan Hentakan.",
     lastBreath:
       "Saat Unit ini meninggalkan Papan, ia memberi {value} damage ke Unit musuh terdekat di depannya.",
     pivot:

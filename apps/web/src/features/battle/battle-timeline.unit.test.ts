@@ -42,6 +42,15 @@ describe("eventDuration (technical design 4.3)", () => {
     );
   });
 
+  it("gives a push its own time, shorter than movement over the same Squares", () => {
+    const squares = { unitId: 1, lane: 0, from: 5, to: 7 } as const;
+    const push = eventDuration({ _tag: "UnitPushed", ...squares }, 1);
+    expect(push).toBeGreaterThan(0);
+    expect(push).toBeLessThan(
+      eventDuration({ _tag: "UnitMoved", ...squares }, 1)
+    );
+  });
+
   it("halves each time at speed ×2", () => {
     expect(eventDuration(hit, 2)).toBe(Math.round(eventDuration(hit, 1) / 2));
     expect(

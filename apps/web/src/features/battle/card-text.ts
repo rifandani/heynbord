@@ -33,6 +33,7 @@ const VALUE_KEYWORDS = [
   "armor",
   "heroic",
   "hobble",
+  "knockback",
   "lastBreath",
   "regeneration",
 ] as const;

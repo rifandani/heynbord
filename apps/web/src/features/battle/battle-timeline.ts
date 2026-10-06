@@ -16,6 +16,7 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   ArmorGained: 260,
   ArmorFaded: 80,
   UnitMoved: 0,
+  UnitPushed: 0,
   UnitSkipped: 360,
   UnitAttacked: 360,
   DamageDealt: 280,
@@ -27,6 +28,9 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
 
 /** Each Square of movement takes this long at speed ×1. */
 const MOVE_PER_SQUARE = 190;
+
+/** Each Square of a push takes this long at speed ×1. A push is faster than a walk. */
+const PUSH_PER_SQUARE = 80;
 
 /** A ranged attack needs time for the projectile. */
 const RANGED_EXTRA = 120;
@@ -42,6 +46,8 @@ export const eventDuration = (
   let base = BASE_DURATION[event._tag];
   if (event._tag === "UnitMoved") {
     base = Math.abs(event.to - event.from) * MOVE_PER_SQUARE;
+  } else if (event._tag === "UnitPushed") {
+    base = Math.abs(event.to - event.from) * PUSH_PER_SQUARE;
   } else if (event._tag === "UnitAttacked" && event.ranged) {
     base += RANGED_EXTRA;
   } else if (event._tag === "DamageDealt" && event.crit) {

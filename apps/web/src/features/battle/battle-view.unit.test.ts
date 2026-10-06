@@ -247,3 +247,46 @@ describe("the Hobbled view", () => {
     expect(ended.units.map((candidate) => candidate.hobbled)).toEqual([2, 2]);
   });
 });
+
+describe("a push", () => {
+  it("sets the Unit Square to the end of UnitPushed", () => {
+    const deck = getStarterDeck("vanguard");
+    const { state } = createBattle({
+      seed: 3,
+      stage: getStage("1-1"),
+      player: {
+        classId: deck.classId,
+        deck: deck.deck,
+        level: 1,
+        gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+      },
+    });
+    const unit = {
+      id: 7,
+      owner: "enemy" as const,
+      cardId: "human.militiaRecruit",
+      rank: "common" as const,
+      lane: 0,
+      position: 5,
+      attack: 2,
+      hp: 4,
+      maxHp: 4,
+      armor: 0,
+      bonusArmor: 0,
+      bonusArmorTurns: 0,
+      range: 0,
+      flying: false,
+      damageType: "physical" as const,
+      burn: 0,
+      poisoned: 0,
+      hobbled: 0,
+      frozen: false,
+    };
+    const view = { ...viewFromState(state), units: [unit] };
+    const next = applyEvent(
+      view,
+      BattleEvent.UnitPushed({ unitId: 7, lane: 0, from: 5, to: 7 })
+    );
+    expect(next.units[0]?.position).toBe(7);
+  });
+});

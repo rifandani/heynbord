@@ -34,11 +34,14 @@ const creatures: readonly CreatureCardDefinition[] = [
     baseRank: "common",
     countdown: 2,
     attack: 1,
-    hp: 8,
+    hp: 7,
     speed: 1,
     range: 0,
     damageType: "physical",
-    keywords: { armor: 1 },
+    keywords: {
+      armor: 1,
+      knockback: { common: 1, epic: 2, legendary: 3 },
+    },
   },
   {
     kind: "creature",

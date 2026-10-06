@@ -39,14 +39,14 @@ The player is a new Hero. The player travels through three Regions, wins the res
 
 | Race | Concept | Battle identity | Main Keywords |
 | --- | --- | --- | --- |
-| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Hobble, Rally, Retaliation, Wall |
+| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Hobble, Knockback, Rally, Retaliation, Wall |
 | **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | Entangle, Regeneration, Poison, Flying |
 | **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | Swarm, Rebirth, Summon, Frost damage |
 | **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them. | Charge, Heroic, Fire damage, Last Breath |
 
 The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, each Race has 1 Creature Card with Pivot, with Base Rank Uncommon.
 
-A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). In v1, one Human card has Hobble.
+A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). In v1, one Human card has Hobble. Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback.
 
 ### 3.3 Regions (draft names)
 
@@ -124,8 +124,8 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 2. In each Lane, the front Unit acts first. The front Unit is the Unit nearest to the enemy Hero.
 3. Each Unit does these steps:
    1. **Movement** (see 4.5)
-   2. **Attack** (see 4.6)
-   3. **Retaliation** by the target, if the target has the Retaliation Keyword (see 4.7)
+   2. **Attack** (see 4.6). After a hit on an enemy Unit, the on-hit effects occur in this order: damage, then Poison, then Hobble, then Knockback.
+   3. **Retaliation** by the target, if the target has the Retaliation Keyword (see 4.7). Retaliation occurs after Knockback.
 4. A Unit that you summoned in this Turn also acts in this Turn.
 5. A Unit that another effect creates during the Resolution Phase acts at the end of the Resolution Phase, in the same order.
 6. A Frozen Unit does not move and does not attack. Its Freeze then ends. Until then, it also does not retaliate and does not use First Strike. An attack on a Frozen Unit does not end its Freeze.
@@ -143,6 +143,7 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 - A Unit with Speed 0 never moves.
 - An Entangled Unit has Speed 0 during its next action.
 - A Hobbled Unit moves at most 1 Square. The limit applies after all bonuses.
+- A **Pushed** Unit changes Square toward its own Hero. A push is not Movement. It does not use Speed. Frozen, Entangled, Hobbled and Flying do not stop it. See Knockback in 4.7.
 
 ### 4.6 Attack
 
@@ -191,6 +192,7 @@ To calculate damage, do these steps in this order:
 - **First Strike:** When an enemy melee Unit attacks a Unit with First Strike, the Unit with First Strike deals its damage first. If the attacker dies, its attack does not occur.
 - **Entangle:** After a Unit with Entangle deals attack damage above 0 to an enemy Unit, that enemy becomes Entangled. A new Entangle does not stack or extend the Status. Retaliation does not apply Entangle.
 - **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliation does not apply Hobble. An attack on a Hero does not apply Hobble.
+- **Knockback N:** After a melee Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. A push is not Movement and not a Status. The push stops before the first Square that holds any Unit, and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. The push ignores Speed, Charge, Frozen, Entangled, Hobbled and Flying. The pushed Unit keeps its Statuses. Retaliation and First Strike do not apply Knockback. An attack on a Hero does not apply Knockback. A Unit that dies from the hit is not Pushed. If the Unit does not change Square, there is no push.
 
 ### 4.8 Skill Cards and Recall
 
@@ -305,6 +307,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | **Flying** | Moves over other Units. See 4.5. |
 | **Heroic N** | +N damage when this Unit attacks a Hero. |
 | **Hobble N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Hobble keeps the higher count. Retaliation does not apply Hobble. |
+| **Knockback N** | Melee only. After this Unit deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. The push is not Movement. It stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliation does not apply Knockback. See 4.5 and 4.7. |
 | **Last Breath: X** | X occurs when this Unit leaves the Board. In v1, X deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that this Unit left. |
 | **Pivot** | Melee only. This Unit can attack an enemy Unit directly behind it or next to it, and it attacks them before the Unit in front. See 4.5 and 4.6. |
 | **Poison** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. In each End Step of the Poisoned Unit's owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. |
@@ -659,7 +662,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
 1. Each Creature Card gets **power points** from its stats and Keywords.
    - Start formula: `power = Attack × 2 + HP + Speed × 2 + Keyword points`.
    - Add Range and Damage Type points: Range = its value, Fire = 3, Frost = 3 and Holy = 2.
-   - Start Keyword points: Armor N = N × 3, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4 and Swarm N = N × 2.
+   - Start Keyword points: Armor N = N × 3, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4 and Swarm N = N × 2.
    - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.

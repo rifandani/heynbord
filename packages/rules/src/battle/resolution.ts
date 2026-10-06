@@ -147,8 +147,34 @@ const move = (ctx: StepContext, unit: UnitState): void => {
 };
 
 /**
+ * Knockback (GDD 4.7). A push is not Movement. The Unit goes toward its own
+ * Hero, in its own Lane. It stops before any Unit and at its Column 1.
+ * Column 1 is the last Square of the Lane on that side.
+ */
+const pushUnit = (ctx: StepContext, unit: UnitState, squares: number): void => {
+  const dir = -direction(unit.owner);
+  const from = unit.position;
+  let to = from;
+  for (let step = 1; step <= squares; step += 1) {
+    const position = from + dir * step;
+    if (!isInsideLane(position) || unitAt(ctx.state, unit.lane, position)) {
+      break;
+    }
+    to = position;
+  }
+  if (to === from) {
+    return;
+  }
+  unit.position = to;
+  ctx.events.push(
+    BattleEvent.UnitPushed({ unitId: unit.id, lane: unit.lane, from, to })
+  );
+};
+
+/**
  * Retaliation (GDD 4.7): no Crit, and it does not start another Retaliation.
  * A Frozen defender does not retaliate, and it keeps its Freeze (GDD 4.4).
+ * Retaliation does not apply Knockback.
  */
 const retaliate = (
   ctx: StepContext,
@@ -226,6 +252,9 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
           count: struck.hobbled,
         })
       );
+    }
+    if (unit.range === 0 && unit.knockback > 0 && !struck.wall) {
+      pushUnit(ctx, struck, unit.knockback);
     }
   }
   retaliate(ctx, defender, unit);

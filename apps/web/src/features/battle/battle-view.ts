@@ -269,7 +269,8 @@ export const applyEvent = (
     case "UnitSummoned": {
       return { ...view, units: [...view.units, unitView(event.unit)] };
     }
-    case "UnitMoved": {
+    case "UnitMoved":
+    case "UnitPushed": {
       return updateUnit(view, event.unitId, (unit) => ({
         ...unit,
         position: event.to,

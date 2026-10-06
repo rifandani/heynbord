@@ -155,6 +155,24 @@ describe("poseFor in an event", () => {
     expect(fly.y).toBeCloseTo(0.025 + Math.sin(7) * 0.025 + 0.5);
   });
 
+  it("slides a push without the walk hop", () => {
+    const event = BattleEvent.UnitPushed({
+      unitId: unit.id,
+      lane: 0,
+      from: 4,
+      to: 2,
+    });
+    const slide = pose(event, 0.5);
+    const rest = pose(null, 0.5);
+    expect(slide.y).toBeCloseTo(rest.y);
+    expect(slide.x).toBeCloseTo(squareX(4 + (2 - 4) * (1 - 0.5 ** 3)));
+    const walk = pose(
+      BattleEvent.UnitMoved({ unitId: unit.id, lane: 0, from: 4, to: 2 }),
+      0.5
+    );
+    expect(walk.y).toBeGreaterThan(slide.y);
+  });
+
   it("lunges in a melee attack, toward the other side", () => {
     const event = BattleEvent.UnitAttacked({
       unitId: unit.id,

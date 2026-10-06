@@ -19,7 +19,7 @@ export const STAGES: readonly StageDefinition[] = [
     firstWinCard: { cardId: "human.militiaRecruit", rank: "common" },
     closedLanes: [],
     enemy: {
-      heroHp: 12,
+      heroHp: 6,
       classId: "warrior",
       gear: NO_GEAR,
       deck: [
@@ -90,7 +90,7 @@ export const STAGES: readonly StageDefinition[] = [
     firstWinCard: { cardId: "human.shieldbearer", rank: "common" },
     closedLanes: [],
     enemy: {
-      heroHp: 34,
+      heroHp: 38,
       classId: "warrior",
       gear: { weapon: 3, armor: 0, trinket: 2, banner: 3 },
       deck: [
@@ -115,7 +115,7 @@ export const STAGES: readonly StageDefinition[] = [
     firstWinCard: { cardId: "human.crossbowGuard", rank: "common" },
     closedLanes: [],
     enemy: {
-      heroHp: 38,
+      heroHp: 42,
       classId: "warrior",
       gear: { weapon: 3, armor: 0, trinket: 3, banner: 3 },
       deck: [
@@ -160,7 +160,7 @@ export const STAGES: readonly StageDefinition[] = [
     firstWinCard: { cardId: "human.dawnCleric", rank: "uncommon" },
     closedLanes: [],
     enemy: {
-      heroHp: 38,
+      heroHp: 42,
       classId: "mage",
       gear: { weapon: 3, armor: 0, trinket: 3, banner: 3 },
       deck: [
@@ -226,7 +226,14 @@ export const STAGES: readonly StageDefinition[] = [
         ...copies(1, "orc.tuskBrute", "common"),
         ...copies(1, "warrior.shieldWall", "common"),
       ],
-      startUnits: [],
+      startUnits: [
+        {
+          cardId: "human.militiaRecruit",
+          rank: "common",
+          lane: 1,
+          position: 11,
+        },
+      ],
     },
   },
   {
@@ -239,7 +246,7 @@ export const STAGES: readonly StageDefinition[] = [
     firstWinCard: { cardId: "human.riverKnight", rank: "uncommon" },
     closedLanes: [],
     enemy: {
-      heroHp: 34,
+      heroHp: 38,
       classId: "mage",
       gear: { weapon: 3, armor: 0, trinket: 3, banner: 3 },
       deck: [

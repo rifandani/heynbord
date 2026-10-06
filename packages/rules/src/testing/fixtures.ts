@@ -76,6 +76,8 @@ export const placeUnit = (
       | "poisoned"
       | "hobble"
       | "hobbled"
+      | "knockback"
+      | "wall"
     >
   > & {
       /** Test setup: gives the Unit the Poison Keyword. */
@@ -128,6 +130,12 @@ export const placeUnit = (
   }
   if (options.hobbled !== undefined) {
     unit.hobbled = options.hobbled;
+  }
+  if (options.knockback !== undefined) {
+    unit.knockback = options.knockback;
+  }
+  if (options.wall !== undefined) {
+    unit.wall = options.wall;
   }
   const placed =
     options.speed === undefined ? unit : { ...unit, speed: options.speed };

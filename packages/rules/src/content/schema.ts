@@ -71,7 +71,14 @@ const Keywords = Schema.Struct({
    * count (GDD 4.7). Hobble is the first Keyword that uses a value for each Rank.
    */
   hobble: Schema.optionalKey(KeywordAmount),
+  /**
+   * After attack damage above 0, a melee Unit Pushes the enemy Unit this many
+   * Squares toward its own Hero (GDD 4.7). A Unit with Wall is never Pushed.
+   */
+  knockback: Schema.optionalKey(KeywordAmount),
   retaliation: Schema.optionalKey(Schema.Literal(true)),
+  /** A push never moves this Unit (GDD 4.7, 5.4). */
+  wall: Schema.optionalKey(Schema.Literal(true)),
 });
 export type Keywords = typeof Keywords.Type;
 

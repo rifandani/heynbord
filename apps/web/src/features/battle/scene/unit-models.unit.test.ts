@@ -75,6 +75,16 @@ describe("unitClipFor", () => {
     expect(unitClipFor(unit, move(4), 0.75, 0, 2).phase).toBeCloseTo(0.5);
   });
 
+  it("keeps the idle clip when a Unit is Pushed", () => {
+    const push = BattleEvent.UnitPushed({
+      unitId: unit.id,
+      lane: 0,
+      from: 4,
+      to: 2,
+    });
+    expect(unitClipFor(unit, push, 0.5, 0, 2)).toEqual(idleAt(0));
+  });
+
   it("idles in an event about another Unit or a Hero", () => {
     const idle = unitClipFor(unit, null, 0.5, 3, 2);
     for (const event of [

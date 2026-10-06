@@ -139,6 +139,12 @@ describe("cardText (CRD-08)", () => {
     );
     return keyword && resolve(keyword.name);
   };
+  const knockbackName = (rank: RankId) => {
+    const keyword = creature("human.shieldbearer", rank).keywords.find(
+      (item) => item.name.key === "keywords.knockback"
+    );
+    return keyword && resolve(keyword.name);
+  };
   it("pairs each Creature Card Keyword with its rule", () => {
     const text = creature("orc.skyreaver", "uncommon");
     expect(resolve(text.attackType)).toBe("Melee");
@@ -185,5 +191,11 @@ describe("cardText (CRD-08)", () => {
     expect(hobbleName("rare")).toBe("Hobble 1");
     expect(hobbleName("epic")).toBe("Hobble 2");
     expect(hobbleName("legendary")).toBe("Hobble 3");
+  });
+
+  it("shows the Knockback value of a Shieldbearer copy for its Rank", () => {
+    expect(knockbackName("common")).toBe("Knockback 1");
+    expect(knockbackName("epic")).toBe("Knockback 2");
+    expect(knockbackName("legendary")).toBe("Knockback 3");
   });
 });

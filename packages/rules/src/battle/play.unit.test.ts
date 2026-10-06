@@ -77,7 +77,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["human.shieldbearer", 0, "legendary"]]);
     const { state: next } = run(state, play(0, square(0, 0)));
-    expect(next.units[0]).toMatchObject({ attack: 2, hp: 17 });
+    expect(next.units[0]).toMatchObject({ attack: 2, hp: 15 });
   });
 
   it("refuses a card that is not Ready", () => {

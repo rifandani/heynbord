@@ -98,8 +98,12 @@ export interface UnitState {
   poison: boolean;
   /** Hobble for the Rank of this card copy. 0 is none. */
   hobble: number;
+  /** Knockback for the Rank of this card copy. 0 is none. */
+  knockback: number;
   readonly regeneration: number;
   readonly retaliation: boolean;
+  /** A Unit with Wall is never Pushed. */
+  wall: boolean;
   /** The Turn number of the summon. Charge uses it. */
   readonly summonedTurn: number;
   /** End Steps of Burn that are left. */
@@ -209,6 +213,13 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   ArmorFaded: { readonly unitId: number };
   UnitMoved: {
+    readonly unitId: number;
+    readonly lane: number;
+    readonly from: number;
+    readonly to: number;
+  };
+  /** A push, which is not Movement (GDD 4.5, 4.7). */
+  UnitPushed: {
     readonly unitId: number;
     readonly lane: number;
     readonly from: number;

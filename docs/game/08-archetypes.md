@@ -40,11 +40,13 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 
 | Archetype | Opponent | Win rate | First-Side win rate | Average Turn |
 | --- | --- | --- | --- | --- |
-| Vanguard | Vanguard | 50.0% | 47.5% | 22.0 |
-| Vanguard | Raiders | 50.5% | 49.1% | 19.5 |
-| Raiders | Raiders | 50.0% | 49.3% | 18.6 |
+| Vanguard | Vanguard | 50.0% | 49.3% | 22.0 |
+| Vanguard | Raiders | 50.6% | 51.0% | 19.7 |
+| Raiders | Raiders | 50.0% | 51.4% | 19.1 |
 
-The results come from `bun run sim matchup 1000` on 2026-10-05.
+The results come from `bun run sim matchup 1000` on 2026-10-06.
+
+**Knockback 2 and 3.** The Matchup above uses the Common Shieldbearer (Knockback 1). The same Vanguard Deck with that one copy at Epic (Knockback 2) wins 54.3% against Raiders. At Legendary (Knockback 3) it wins 58.0%. 58% is above the 55% band. Knockback 2 and 3 can lock a melee Unit whose Speed is lower than N: the Unit never reaches the Shieldbearer to attack it. Only Combine makes these copies. The power points use the Base Rank value, so the budget check does not see this lock.
 
 ### 3.1 Balance changes
 

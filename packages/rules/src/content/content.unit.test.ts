@@ -83,6 +83,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         card.keywords.armor,
         card.keywords.heroic,
         card.keywords.hobble,
+        card.keywords.knockback,
         card.keywords.lastBreath,
         card.keywords.regeneration,
       ];
@@ -105,6 +106,25 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   it("uses the nearest lower Rank when a Keyword table has no value for that Rank", () => {
     expect(keywordValue({ rare: 1, legendary: 3 }, "epic")).toBe(1);
     expect(keywordValue(2, "legendary")).toBe(2);
+  });
+
+  it("puts Knockback only on melee Units (GDD 4.7)", () => {
+    const cards = CARDS.flatMap((card) =>
+      card.kind === "creature" && card.keywords.knockback !== undefined
+        ? [card]
+        : []
+    );
+    expect(cards.every((card) => card.range === 0)).toBe(true);
+    expect(cards.map((card) => card.id)).toEqual(["human.shieldbearer"]);
+  });
+
+  it("keeps Shieldbearer within ±10% of its power budget (GDD 13)", () => {
+    const card = getCard("human.shieldbearer");
+    expect(card.kind === "creature" && creaturePower(card)).toBe(17);
+    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(16);
+    expect(
+      card.kind === "creature" && Math.abs(budgetDeviation(card))
+    ).toBeLessThanOrEqual(1000);
   });
 
   it("puts Pivot only on melee Units, with 1 Pivot card for each Race (GDD 3.2, 4.6)", () => {

@@ -49,18 +49,22 @@ Lane numbers are from the top, 1 to 3. A Start Unit position is its Column for t
 
 | Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-1 | 12 | 0 / 0 / 0 / 0 | 10 | — | — | Militia Recruit (Common) | 1 | 99% / 100% |
-| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 87% / 93% |
-| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 78% / 87% |
-| 1-4 | 34 | 3 / 0 / 2 / 3 | 10 | — | — | Shieldbearer (Common) | 2 | 66% / 76% |
-| 1-5 | 38 | 3 / 0 / 3 / 3 | 11 | — | Militia Recruit (Uncommon), Lane 1, Column 10 · Shieldbearer (Uncommon), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 63% / 79% |
-| 1-6 | 38 | 3 / 0 / 3 / 3 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 63% / 78% |
-| 1-7 | 34 | 3 / 0 / 2 / 3 | 12 | — | — | Howling Charger (Uncommon) | 4 | 70% / 76% |
-| 1-8 | 40 | 3 / 0 / 3 / 3 | 12 | Lane 1, opens on Turn 5 | — | Gate Warden (Uncommon) | 4 | 66% / 79% |
-| 1-9 | 34 | 3 / 0 / 3 / 3 | 13 | — | — | River Knight (Uncommon) | 5 | 71% / 79% |
-| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 39% / 36% |
+| 1-1 | 6 | 0 / 0 / 0 / 0 | 10 | — | — | Militia Recruit (Common) | 1 | 99% / 100% |
+| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 86% / 93% |
+| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 81% / 88% |
+| 1-4 | 38 | 3 / 0 / 2 / 3 | 10 | — | — | Shieldbearer (Common) | 2 | 66% / 80% |
+| 1-5 | 42 | 3 / 0 / 3 / 3 | 11 | — | Militia Recruit (Uncommon), Lane 1, Column 10 · Shieldbearer (Uncommon), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 62% / 80% |
+| 1-6 | 42 | 3 / 0 / 3 / 3 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 66% / 79% |
+| 1-7 | 34 | 3 / 0 / 2 / 3 | 12 | — | — | Howling Charger (Uncommon) | 4 | 71% / 76% |
+| 1-8 | 40 | 3 / 0 / 3 / 3 | 12 | Lane 1, opens on Turn 5 | Militia Recruit (Common), Lane 2, Column 12 | Gate Warden (Uncommon) | 4 | 67% / 77% |
+| 1-9 | 38 | 3 / 0 / 3 / 3 | 13 | — | — | River Knight (Uncommon) | 5 | 71% / 79% |
+| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 40% / 37% |
 
-The win rates come from `bun run sim stage 1000` on 2026-10-05.
+The win rates come from `bun run sim stage 1000` on 2026-10-06.
+
+Stage 1-1 has Hero HP 6. Knockback on the enemy Shieldbearers put the Tutorial under 95%. More Militia Recruits are not a legal replacement: the Deck already has 3 copies, and that swap wins less often in the Tutorial. Hero HP 6 puts the Tutorial back on the target. The Shieldbearers stay, so the Player still meets Knockback.
+
+Knockback and the Shieldbearer HP change put Raiders above 80% on some Stages. Hero HP is higher on Stages 1-4, 1-5, 1-6 and 1-9. Stage 1-8 starts with a Militia Recruit in Lane 2, Column 12. After these changes, every Stage is inside its target.
 
 ### 2.3 Enemy Decks
 

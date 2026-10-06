@@ -54,7 +54,7 @@ describe("createBattle (GDD 4.2)", () => {
       skillCrit: 450,
       unitBlock: 300,
     });
-    expect(state.sides.enemy.hero.hp).toBe(12);
+    expect(state.sides.enemy.hero.hp).toBe(6);
   });
 
   it("puts the Stage's start Units on the Board", () => {
@@ -65,7 +65,7 @@ describe("createBattle (GDD 4.2)", () => {
         lane: 1,
         position: 10,
         attack: 2,
-        hp: 14,
+        hp: 12,
       }),
     ]);
   });

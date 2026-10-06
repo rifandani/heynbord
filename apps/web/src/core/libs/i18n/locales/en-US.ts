@@ -229,6 +229,7 @@ export default {
     flying: "Flying",
     heroic: "Heroic {value}",
     hobble: "Hobble {value}",
+    knockback: "Knockback {value}",
     lastBreath: "Last Breath {value}",
     pivot: "Pivot",
     poison: "Poison",
@@ -245,6 +246,8 @@ export default {
     heroic: "+{value} damage when this Unit attacks a Hero.",
     hobble:
       "After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled {value}. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner. A new Hobble keeps the higher count. Retaliation does not apply Hobble.",
+    knockback:
+      "After this Unit deals attack damage above 0 to an enemy Unit, that Unit is Pushed {value} Squares toward its own Hero, in its own Lane. The push stops before another Unit and at that Unit's Column 1. A Unit with Wall is never Pushed. Retaliation does not apply Knockback.",
     lastBreath:
       "When this Unit leaves the Board, it deals {value} damage to the nearest enemy Unit ahead.",
     pivot:
