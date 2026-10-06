@@ -66,10 +66,6 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Hobbled**: A Status from the Hobble Keyword. A Hobbled Unit has a maximum Speed of 1, after all bonuses. It has a count that goes down by 1 in each End Step of its owner, and it ends at 0. A new Hobble keeps the higher count. _Avoid_: fatigued, slowed, crippled
 
-**Knockback N**: A Keyword. After a melee Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. A Unit with Wall is never Pushed. Retaliation does not apply Knockback. _Avoid_: push back, shove, moves back
-
-**Pushed**: The result of Knockback. The Unit changes Square toward its own Hero. A push is not Movement and not a Status. _Avoid_: push back, shove, moves back
-
 **Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
 
 **Battle seed**: The start value of the random numbers in one Battle. The same seed and the same Commands give the same Battle. _Avoid_: random seed, RNG
