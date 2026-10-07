@@ -37,13 +37,16 @@ const VALUE_KEYWORDS = [
   "lastBreath",
   "rally",
   "regeneration",
+  "sabotage",
 ] as const;
 const FLAG_KEYWORDS = [
   "charge",
+  "entangle",
   "flying",
   "pivot",
   "poison",
   "retaliation",
+  "trample",
   "unique",
   "wall",
 ] as const;

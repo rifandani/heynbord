@@ -331,6 +331,8 @@ export default {
     elf: "Elf",
     undead: "Undead",
     orc: "Orc",
+    goblin: "Goblin",
+    feral: "Buas",
   },
   ranks: {
     common: "Biasa",
@@ -356,6 +358,7 @@ export default {
   keywords: {
     armor: "Zirah {value}",
     charge: "Terjang",
+    entangle: "Jerat",
     flying: "Terbang",
     heroic: "Heroik {value}",
     hobble: "Pincang {value}",
@@ -366,6 +369,8 @@ export default {
     rally: "Semangat {value}",
     regeneration: "Regenerasi {value}",
     retaliation: "Balasan",
+    sabotage: "Sabotase {value}",
+    trample: "Gilas",
     unique: "Unik",
     wall: "Tembok",
     ranged: "Jarak Jauh {value}",
@@ -376,6 +381,8 @@ export default {
       "Mengurangi damage ke Unit ini sebesar {value}. Tidak mengurangi damage Suci.",
     charge: "+2 Kecepatan pada Giliran saat Unit ini dipanggil.",
     flying: "Bergerak melewati Unit lain. Berhenti di Petak kosong.",
+    entangle:
+      "Unit musuh yang diserangnya punya Kecepatan 0 pada aksi berikutnya. Unit itu masih dapat menyerang.",
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
     hobble:
       "Unit musuh yang diserangnya punya Kecepatan maksimum 1 selama {value} Giliran. Balasan tidak menerapkan Pincang.",
@@ -392,6 +399,10 @@ export default {
     regeneration: "Pada Langkah Awal-mu, Unit ini memulihkan {value} HP.",
     retaliation:
       "Saat Unit ini selamat dari serangan jarak dekat, ia memberi damage sebesar Serangannya ke penyerang.",
+    sabotage:
+      "Saat Unit ini datang dari kartunya, kartu dengan Hitung mundur terendah di Tangan musuh mendapat +{value} Hitung mundur. Kartu Siap adalah yang terendah.",
+    trample:
+      "Saat Unit ini membunuh Unit musuh dengan serangan, sisa damage mengenai Unit musuh di Petak berikutnya di belakangnya. Tidak pernah mengenai Pahlawan.",
     unique: "Hanya satu salinan kartu ini yang boleh ada di sisi Papan-mu.",
     wall: "Unit ini punya Kecepatan 0 dan Serangan 0. Ia menghalangi Jalurnya, dan dorongan tidak pernah memindahkannya.",
     fire: "Api: target terbakar 1 damage pada 2 Langkah Akhir berikutnya.",
@@ -532,6 +543,132 @@ export default {
       warbandStandardBearer: {
         name: "Pembawa Panji Pasukan Perang",
         flavor: "Ikuti panjinya. Abaikan ke mana arahnya.",
+      },
+    },
+    goblin: {
+      ankleSnatcher: {
+        name: "Penyambar Mata Kaki",
+        flavor: "Mata kaki adalah bagian ksatria yang paling mudah dijangkau.",
+      },
+      fuseRunner: {
+        name: "Pelari Sumbu",
+        flavor: "Sumbunya panjang. Rencananya pendek.",
+      },
+      junkSlinger: {
+        name: "Pelempar Rongsokan",
+        flavor: "Rongsokan satu goblin adalah pincangnya satu ksatria.",
+      },
+      tunnelSaboteur: {
+        name: "Penyabot Terowongan",
+        flavor: "Ia tidak melawan pasukanmu. Ia melawan jadwalmu.",
+      },
+      scrapPlateGuard: {
+        name: "Penjaga Pelat Bekas",
+        flavor: "Zirah tetaplah zirah. Walau dulunya kompor.",
+      },
+      sidestepShiv: {
+        name: "Belati Menyamping",
+        flavor: "Pintu depan? Belum pernah dengar.",
+      },
+      junkBarricade: {
+        name: "Barikade Rongsokan",
+        flavor: "Dibangun dalam satu malam. Tak seorang pun membayarnya.",
+      },
+      bombLobber: {
+        name: "Pelontar Bom",
+        flavor: "Tangkap!",
+      },
+      greaseTrapper: {
+        name: "Penjebak Oli",
+        flavor: "Awas lantainya.",
+      },
+      rocketBarrelRider: {
+        name: "Penunggang Tong Roket",
+        flavor: "Setir baru ditemukan belakangan.",
+      },
+      mineSapper: {
+        name: "Penggali Ranjau",
+        flavor: "Setiap tembok punya titik lemah. Aku bawa sendiri.",
+      },
+      spyglassSniper: {
+        name: "Penembak Teropong",
+        flavor: "Aku melihat rencanamu. Aku tidak menyukainya.",
+      },
+      junkWalker: {
+        name: "Pejalan Rongsokan",
+        flavor: "Ia berjalan. Biasanya ke depan.",
+      },
+      grandGearjammer: {
+        name: "Pengganjal Roda Gigi Agung",
+        flavor: "Setiap rencana punya roda gigi. Kami punya lebih banyak.",
+      },
+      bossSnikkit: {
+        name: "Bos Snikkit, Raja Tambang",
+        flavor: '"Semua di bawah sini milikku. Itu leluconnya. Tertawalah."',
+      },
+    },
+    feral: {
+      bristlebackBoar: {
+        name: "Babi Hutan Punggung Duri",
+        flavor: "Ia tidak pernah memutar.",
+      },
+      cragLizard: {
+        name: "Kadal Tebing",
+        flavor: "Ia duduk di batu ini seratus tahun. Sekarang ini batumu.",
+      },
+      frostfangLynx: {
+        name: "Kucing Hutan Taring Es",
+        flavor: "Kau tak akan mendengarnya. Kau akan merasakan dinginnya dulu.",
+      },
+      caveBear: {
+        name: "Beruang Gua",
+        flavor: "Ia bangun dalam keadaan lapar. Ia masih belum selesai bangun.",
+      },
+      webSpitter: {
+        name: "Peludah Jaring",
+        flavor: "Mampirlah untuk makan malam.",
+      },
+      boulderTortoise: {
+        name: "Kura-Kura Batu Besar",
+        flavor:
+          "Ia tidak bergeser untuk siapa pun. Untuk dirinya sendiri pun jarang.",
+      },
+      tailsweepBasilisk: {
+        name: "Basilisk Sapu Ekor",
+        flavor: "Menatap matanya? Ia menatap mata kakimu.",
+      },
+      caveTroll: {
+        name: "Troll Gua",
+        flavor: "Potong. Tunggu. Potong lagi.",
+      },
+      cragRhino: {
+        name: "Badak Tebing",
+        flavor: "Jalan berakhir di tempat ia berhenti.",
+      },
+      frostElkMatriarch: {
+        name: "Induk Rusa Es",
+        flavor: "Ke mana ia berjalan, kawanan mengikuti.",
+      },
+      avalancheYeti: {
+        name: "Yeti Longsor",
+        flavor: "Ia turun bersama salju. Saljunya masalah yang lebih kecil.",
+      },
+      woollyMammoth: {
+        name: "Mamut Berbulu",
+        flavor: "Ia tidak berhenti. Susun rencanamu di sekitarnya.",
+      },
+      rimebreathDrake: {
+        name: "Naga Napas Embun Beku",
+        flavor: "Napasnya adalah cuaca.",
+      },
+      mountainColossus: {
+        name: "Raksasa Gunung",
+        flavor: "Gunung itu berdiri. Lalu ia berjalan.",
+      },
+      oldFrostmaw: {
+        name: "Si Tua Rahang Beku",
+        flavor:
+          "Setiap desa punya cerita tentangnya. Setiap cerita terlalu kecil.",
       },
     },
     warrior: {

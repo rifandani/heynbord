@@ -57,20 +57,10 @@ const allRefs = (ref: TextRef): TextRef[] => [
   ),
 ];
 
-/**
- * Goblin and Feral cards have no Message Catalog text yet: no Starter Deck or
- * Stage holds them, so the Battle screen cannot show them (rules issue #9).
- */
-const NO_TEXT_YET: ReadonlySet<string> = new Set(["goblin", "feral"]);
-
-const cardsWithText = CARDS.filter(
-  (card) => card.kind === "skill" || !NO_TEXT_YET.has(card.race)
-);
-
 /** Every Translation Key that the Battle screen builds from game data. */
 const dataKeys = (): string[] => {
   const keys = new Set<string>();
-  for (const card of cardsWithText) {
+  for (const card of CARDS) {
     for (const rank of RANKS) {
       for (const ref of cardTextRefs(cardText(card.id, rank)).flatMap(
         allRefs

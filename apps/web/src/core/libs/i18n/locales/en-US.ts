@@ -326,6 +326,8 @@ export default {
     elf: "Elf",
     undead: "Undead",
     orc: "Orc",
+    goblin: "Goblin",
+    feral: "Feral",
   },
   ranks: {
     common: "Common",
@@ -351,6 +353,7 @@ export default {
   keywords: {
     armor: "Armor {value}",
     charge: "Charge",
+    entangle: "Entangle",
     flying: "Flying",
     heroic: "Heroic {value}",
     hobble: "Hobble {value}",
@@ -361,6 +364,8 @@ export default {
     rally: "Rally {value}",
     regeneration: "Regeneration {value}",
     retaliation: "Retaliation",
+    sabotage: "Sabotage {value}",
+    trample: "Trample",
     unique: "Unique",
     wall: "Wall",
     ranged: "Ranged {value}",
@@ -371,6 +376,8 @@ export default {
       "Reduces damage to this Unit by {value}. It does not reduce Holy damage.",
     charge: "+2 Speed in the Turn when you summon this Unit.",
     flying: "Moves over other Units. It stops in an empty Square.",
+    entangle:
+      "The enemy Unit it hits has Speed 0 in its next action. That Unit can still attack.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
     hobble:
       "The enemy Unit it hits has a maximum Speed of 1 for {value} Turns. Retaliation does not apply Hobble.",
@@ -387,6 +394,10 @@ export default {
     regeneration: "In your Start Step, this Unit heals {value} HP.",
     retaliation:
       "When this Unit survives a melee attack, it deals its Attack to the attacker.",
+    sabotage:
+      "When this Unit comes from its card, the card with the lowest Countdown in the enemy Hand gets +{value} Countdown. A Ready card is the lowest.",
+    trample:
+      "When this Unit kills an enemy Unit with an attack, the damage that is left hits the enemy Unit in the next Square behind it. It never hits a Hero.",
     unique: "Only one copy of this card can be on your side of the Board.",
     wall: "This Unit has Speed 0 and Attack 0. It blocks its Lane, and a push never moves it.",
     fire: "Fire: the target burns for 1 damage in its next 2 End Steps.",
@@ -524,6 +535,130 @@ export default {
       warbandStandardBearer: {
         name: "Warband Standard-Bearer",
         flavor: "Follow the banner. Ignore where it is going.",
+      },
+    },
+    goblin: {
+      ankleSnatcher: {
+        name: "Ankle Snatcher",
+        flavor: "Ankles are the easiest part of a knight to reach.",
+      },
+      fuseRunner: {
+        name: "Fuse Runner",
+        flavor: "The fuse is long. The plan is short.",
+      },
+      junkSlinger: {
+        name: "Junk Slinger",
+        flavor: "One goblin's junk is another knight's limp.",
+      },
+      tunnelSaboteur: {
+        name: "Tunnel Saboteur",
+        flavor: "He does not fight your army. He fights your schedule.",
+      },
+      scrapPlateGuard: {
+        name: "Scrap-Plate Guard",
+        flavor: "Armor is armor. Even if it was a stove.",
+      },
+      sidestepShiv: {
+        name: "Sidestep Shiv",
+        flavor: "Front door? Never heard of it.",
+      },
+      junkBarricade: {
+        name: "Junk Barricade",
+        flavor: "Built in one night. Paid for by nobody.",
+      },
+      bombLobber: {
+        name: "Bomb Lobber",
+        flavor: "Catch!",
+      },
+      greaseTrapper: {
+        name: "Grease Trapper",
+        flavor: "Mind the floor.",
+      },
+      rocketBarrelRider: {
+        name: "Rocket Barrel Rider",
+        flavor: "Steering is a later invention.",
+      },
+      mineSapper: {
+        name: "Mine Sapper",
+        flavor: "Every wall has a weak spot. I bring my own.",
+      },
+      spyglassSniper: {
+        name: "Spyglass Sniper",
+        flavor: "I see your plans. I do not like them.",
+      },
+      junkWalker: {
+        name: "Junk Walker",
+        flavor: "It walks. Mostly forward.",
+      },
+      grandGearjammer: {
+        name: "Grand Gearjammer",
+        flavor: "Every plan has gears. We have more.",
+      },
+      bossSnikkit: {
+        name: "Boss Snikkit, the Mine King",
+        flavor: '"Everything down here is mine. That is the joke. Laugh."',
+      },
+    },
+    feral: {
+      bristlebackBoar: {
+        name: "Bristleback Boar",
+        flavor: "It does not go around things.",
+      },
+      cragLizard: {
+        name: "Crag Lizard",
+        flavor: "It sat on this rock for a hundred years. Now it is your rock.",
+      },
+      frostfangLynx: {
+        name: "Frostfang Lynx",
+        flavor: "You will not hear it. You will feel the cold first.",
+      },
+      caveBear: {
+        name: "Cave Bear",
+        flavor: "It woke up hungry. It is still waking up.",
+      },
+      webSpitter: {
+        name: "Web Spitter",
+        flavor: "Stay for dinner.",
+      },
+      boulderTortoise: {
+        name: "Boulder Tortoise",
+        flavor: "It moves for nobody. It hardly moves for itself.",
+      },
+      tailsweepBasilisk: {
+        name: "Tailsweep Basilisk",
+        flavor: "Look it in the eye? It looks at your ankles.",
+      },
+      caveTroll: {
+        name: "Cave Troll",
+        flavor: "Cut it. Wait. Cut it again.",
+      },
+      cragRhino: {
+        name: "Crag Rhino",
+        flavor: "The road ends where it stops.",
+      },
+      frostElkMatriarch: {
+        name: "Frost Elk Matriarch",
+        flavor: "Where she walks, the herd follows.",
+      },
+      avalancheYeti: {
+        name: "Avalanche Yeti",
+        flavor: "It came down with the snow. The snow was the smaller problem.",
+      },
+      woollyMammoth: {
+        name: "Woolly Mammoth",
+        flavor: "It does not stop. Plan around it.",
+      },
+      rimebreathDrake: {
+        name: "Rimebreath Drake",
+        flavor: "Its breath is the weather.",
+      },
+      mountainColossus: {
+        name: "Mountain Colossus",
+        flavor: "The mountain stood up. Then it walked.",
+      },
+      oldFrostmaw: {
+        name: "Old Frostmaw",
+        flavor: "Every village has a story about it. Every story is too small.",
       },
     },
     warrior: {
