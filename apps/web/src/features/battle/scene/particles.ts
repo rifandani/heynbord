@@ -5,7 +5,9 @@ import type {
   DustPresetKey,
   FxPreset,
   HitPresetKey,
+  ImpactPresetKey,
   SprayMotion,
+  WindupPresetKey,
 } from "@/features/battle/scene/fx-presets";
 import { DUST_PRESETS, FX_PRESETS } from "@/features/battle/scene/fx-presets";
 import type { Status } from "@/features/battle/scene/status-visuals";
@@ -18,14 +20,17 @@ export const BURST_DURATION = 0.7;
 
 /**
  * A burst when a Status starts, when Burn or Poison deals damage, when an
- * attack hits, or when a Unit moves or is Pushed onto a Square.
+ * attack hits, when a Unit moves or is Pushed onto a Square, when a Unit is
+ * healed or gets Armor, or when a Hero casts a Skill Card.
  */
 export type BurstName =
   | Status
   | "burn-tick"
   | "poison-tick"
   | HitPresetKey
-  | DustPresetKey;
+  | DustPresetKey
+  | WindupPresetKey
+  | ImpactPresetKey;
 
 /**
  * Where particles come from. `x`, `y` and `z` are the feet of a Unit for a
@@ -74,6 +79,11 @@ export interface Particle {
   readonly opacity: number;
   /** True for a burst particle. A full pool keeps these. */
   readonly burst: boolean;
+  /**
+   * True for an image that lies flat on the ground, as a rune ring. It does
+   * not face the camera, and `rotation` turns it around the vertical axis.
+   */
+  readonly ground: boolean;
 }
 
 /** A particle in the emitter space, before the emitter position. */
@@ -98,6 +108,8 @@ interface Emission {
   readonly count: number;
   /** The color for a `code` slot. A `fixed` slot keeps its painted color. */
   readonly color?: string;
+  /** True for an image that lies flat on the ground. */
+  readonly ground?: boolean;
   readonly place: Placement;
 }
 
@@ -251,6 +263,73 @@ const growVine: Placement = (random, age) => ({
   opacity: fadeOutAfter(age, 0.7),
 });
 
+/**
+ * A rune ring on the ground: it grows in, turns, and fades at the end. The
+ * burst point is at the feet.
+ */
+const runeRing =
+  (size: number): Placement =>
+  (_random, age) => ({
+    x: 0,
+    y: 0,
+    z: 0,
+    size: size * lerp(0.6, 1, 1 - (1 - Math.min(age * 2.5, 1)) ** 3),
+    rotation: age * 1.6,
+    opacity: Math.min(age * 6, 1) * fadeOutAfter(age, 0.75),
+  });
+
+/**
+ * Particles that start on the edge of a ring on the ground, of diameter
+ * `ring`, and go up around its middle: `speed` takes them out, `up` up, and
+ * `spin` turns them around the middle.
+ */
+const rise =
+  (ring: number, options: SprayMotion): Placement =>
+  (random, age) => {
+    const travel = 1 - (1 - age) ** 2;
+    const angle =
+      random(0) * Math.PI * 2 + (options.spin ?? 0) * (random(1) - 0.2) * age;
+    const radius =
+      ring * 0.4 + lerp(options.speed[0], options.speed[1], random(2)) * travel;
+    return {
+      x: Math.cos(angle) * radius,
+      y:
+        0.05 +
+        options.up * travel * lerp(0.6, 1, random(3)) -
+        (options.gravity ?? 0) * age * age,
+      z: Math.sin(angle) * radius,
+      size: lerp(options.size[0], options.size[1], random(4)) * (1 - age * 0.3),
+      rotation: 0,
+      opacity: Math.min(age * 5, 1) * (1 - age * age),
+    };
+  };
+
+/**
+ * A wind-up: the rune ring is the key image, and the particles of the Class
+ * go up from its edge.
+ */
+const windupBurst = (preset: FxPreset): Emission[] => {
+  const color = preset.color ?? undefined;
+  const ring: Emission = {
+    slot: preset.main,
+    count: 1,
+    color,
+    ground: true,
+    place: runeRing(preset.size),
+  };
+  return preset.spray
+    ? [
+        ring,
+        {
+          slot: preset.spray.slot,
+          count: preset.spray.count,
+          color,
+          place: rise(preset.size, preset.spray),
+        },
+      ]
+    : [ring];
+};
+
 /** A hit or a dust puff: its main image grows and fades, and its spray flies out. */
 const presetBurst = (preset: FxPreset): Emission[] => {
   const color = preset.color ?? undefined;
@@ -390,6 +469,12 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
   "hit:blocked": presetBurst(FX_PRESETS["hit:blocked"]),
   move: dustBurst(FX_PRESETS.move),
   push: dustBurst(FX_PRESETS.push),
+  "windup:warrior": windupBurst(FX_PRESETS["windup:warrior"]),
+  "windup:ranger": windupBurst(FX_PRESETS["windup:ranger"]),
+  "windup:mage": windupBurst(FX_PRESETS["windup:mage"]),
+  "windup:priest": windupBurst(FX_PRESETS["windup:priest"]),
+  heal: presetBurst(FX_PRESETS.heal),
+  armor: presetBurst(FX_PRESETS.armor),
 };
 
 export const loopParticleCount = (status: Status): number =>
@@ -412,8 +497,9 @@ const WHITE = "#ffffff";
 /** One quad with the image of `slot`. A `fixed` slot keeps its painted color. */
 export const slotParticle = (
   slot: FxSlotName,
-  place: Omit<Particle, "slot" | "blend" | "color"> & {
+  place: Omit<Particle, "slot" | "blend" | "color" | "ground"> & {
     readonly color?: string;
+    readonly ground?: boolean;
   }
 ): Particle => {
   const { blend, tint } = FX_SLOTS[slot];
@@ -423,6 +509,7 @@ export const slotParticle = (
     blend,
     color: tint === "code" ? (place.color ?? WHITE) : WHITE,
     opacity: Math.max(place.opacity, 0),
+    ground: place.ground ?? false,
   };
 };
 
@@ -443,6 +530,7 @@ const particleOf = (
     color: part.color,
     opacity: local.opacity,
     burst: emitter.kind === "burst",
+    ground: part.ground,
   });
 };
 

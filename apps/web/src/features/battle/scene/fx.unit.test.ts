@@ -1,8 +1,10 @@
+import type { ClassId, Side } from "@workspace/rules";
 import { getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
 import { eventDuration } from "@/features/battle/battle-timeline";
+import type { BattleView } from "@/features/battle/battle-view";
 import { currentCast } from "@/features/battle/cast";
 import { DAMAGE_COLORS } from "@/features/battle/palette";
 import type { Fx } from "@/features/battle/scene/fx";
@@ -12,8 +14,9 @@ import {
   projectileAt,
   projectileParticles,
   spellBoltAt,
+  spellBoltParticles,
 } from "@/features/battle/scene/fx";
-import { CRIT_SCALE } from "@/features/battle/scene/fx-presets";
+import { CRIT_SCALE, FX_PRESETS } from "@/features/battle/scene/fx-presets";
 import { heroX, laneZ, squareX, worldOf } from "@/features/battle/scene/layout";
 import { BURST_DURATION } from "@/features/battle/scene/particles";
 
@@ -92,7 +95,7 @@ describe("fxForEvent", () => {
     ).toEqual([]);
   });
 
-  it("shows a ring for a summon and for Armor", () => {
+  it("shows a ring for a summon", () => {
     const [unit] = view.units;
     // SAFETY: `fxForEvent` reads only `owner`, `position` and `lane` of a
     // summoned Unit, and a UnitView has them; the other UnitState fields are
@@ -106,26 +109,6 @@ describe("fxForEvent", () => {
       1
     );
     expect(summon[0]).toMatchObject({ kind: "ring", color: "#ffd56b" });
-    const armor = fxForEvent(
-      { _tag: "ArmorGained", unitId: unit?.id ?? 0, armor: 1, turns: 2 },
-      view,
-      view,
-      0,
-      1
-    );
-    expect(armor[0]).toMatchObject({ kind: "ring" });
-    const heal = fxForEvent(
-      { _tag: "UnitHealed", unitId: unit?.id ?? 0, amount: 2, hp: 9 },
-      view,
-      view,
-      0,
-      1
-    );
-    expect(heal[0]).toMatchObject({
-      kind: "number",
-      text: "+2",
-      damageType: "heal",
-    });
   });
 });
 
@@ -355,6 +338,176 @@ describe("fxForEvent for attacks and hits (web ADR-0009)", () => {
     const [, slowHit] = fxForEvent(damage("holy"), view, view, 0, 1);
     const [, fastHit] = fxForEvent(damage("holy"), view, view, 0, 2);
     expect(durationOf(fastHit)).toBeCloseTo(durationOf(slowHit) / 2, 2);
+  });
+});
+
+/** The view, with the enemy Hero of another Class. */
+const withEnemyClass = (classId: ClassId): BattleView => ({
+  ...view,
+  sides: {
+    ...view.sides,
+    enemy: {
+      ...view.sides.enemy,
+      hero: { ...view.sides.enemy.hero, classId },
+    },
+  },
+});
+
+const played = (cardId: string, side: Side = "enemy") =>
+  ({
+    _tag: "CardPlayed",
+    side,
+    handIndex: 0,
+    card: { instanceId: 1, cardId, rank: "common" },
+    target: { _tag: "Square", lane: 0, position: 4 },
+  }) as const;
+
+describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
+  it.each(["warrior", "ranger", "mage", "priest"] as const)(
+    "starts a %s cast with the wind-up of its Class at the feet of the caster",
+    (classId) => {
+      const before = withEnemyClass(classId);
+      expect(fxForEvent(played("mage.fireball"), before, before, 3, 1)).toEqual(
+        [
+          expect.objectContaining({
+            kind: "particles",
+            burst: `windup:${classId}`,
+            x: heroX("enemy"),
+            z: 0,
+            start: 3,
+          }),
+        ]
+      );
+    }
+  );
+
+  it("fits the wind-up inside the cast, and plays it twice as fast at speed ×2", () => {
+    const event = played("warrior.spearThrow", "player");
+    for (const speed of [1, 2] as const) {
+      const [windup] = fxForEvent(event, view, view, 0, speed);
+      const cast = eventDuration(event, speed, view) / 1000;
+      expect(durationOf(windup)).toBeLessThan(cast);
+      expect(durationOf(windup) * 1000 * speed).toBeGreaterThanOrEqual(
+        FX_PRESETS["windup:warrior"].time
+      );
+    }
+  });
+
+  it("shows the hit of the Damage Type of the cast on each target", () => {
+    const [unit] = view.units;
+    const targets = [
+      { _tag: "Unit", unitId: unit?.id ?? 0 },
+      { _tag: "Hero", side: "player" },
+    ] as const;
+    const hits = targets.map((target) =>
+      fxForEvent(
+        {
+          _tag: "DamageDealt",
+          target,
+          amount: 3,
+          damageType: "fire",
+          source: "skill",
+          crit: false,
+          blocked: false,
+          hp: 5,
+        },
+        view,
+        view,
+        0,
+        1
+      ).find((fx) => fx.kind === "particles")
+    );
+    expect(hits).toEqual(
+      targets.map((target) =>
+        expect.objectContaining({
+          burst: "hit:fire",
+          x: worldOf(view, target)?.x,
+        })
+      )
+    );
+  });
+
+  it("shows a heal number and the heal impact on the healed Unit", () => {
+    const [unit] = view.units;
+    const at = worldOf(view, { _tag: "Unit", unitId: unit?.id ?? 0 });
+    const heal = fxForEvent(
+      { _tag: "UnitHealed", unitId: unit?.id ?? 0, amount: 2, hp: 9 },
+      view,
+      view,
+      4,
+      2
+    );
+    expect(heal).toEqual([
+      expect.objectContaining({
+        kind: "number",
+        text: "+2",
+        damageType: "heal",
+      }),
+      expect.objectContaining({
+        kind: "particles",
+        burst: "heal",
+        x: at?.x,
+        z: at?.z,
+        start: 4,
+        duration: FX_PRESETS.heal.time / 1000 / 2,
+      }),
+    ]);
+  });
+
+  it("shows the Armor impact on each Unit that gets Armor", () => {
+    const [unit] = view.units;
+    const at = worldOf(view, { _tag: "Unit", unitId: unit?.id ?? 0 });
+    expect(
+      fxForEvent(
+        { _tag: "ArmorGained", unitId: unit?.id ?? 0, armor: 1, turns: 2 },
+        view,
+        view,
+        1,
+        1
+      )
+    ).toEqual([
+      expect.objectContaining({
+        kind: "particles",
+        burst: "armor",
+        x: at?.x,
+        z: at?.z,
+        start: 1,
+        duration: FX_PRESETS.armor.time / 1000,
+      }),
+    ]);
+  });
+
+  it("shows no heal impact for a heal of 0", () => {
+    const [unit] = view.units;
+    expect(
+      fxForEvent(
+        { _tag: "UnitHealed", unitId: unit?.id ?? 0, amount: 0, hp: 9 },
+        view,
+        view,
+        0,
+        1
+      )
+    ).toEqual([]);
+  });
+
+  it("gives a Creature Card no wind-up", () => {
+    const [creature] = view.sides.player.hand;
+    expect(
+      fxForEvent(
+        {
+          ...played("", "player"),
+          card: {
+            instanceId: 2,
+            cardId: creature?.cardId ?? "",
+            rank: "common",
+          },
+        },
+        view,
+        view,
+        0,
+        1
+      )
+    ).toEqual([]);
   });
 });
 
@@ -596,5 +749,29 @@ describe("spellBoltAt", () => {
   it("does not fly for a cast with no target, or outside the reveal", () => {
     expect(spellBoltAt(cast("warrior.warDrums"), view.lanes, 0.7)).toBeNull();
     expect(spellBoltAt(null, view.lanes, 0.7)).toBeNull();
+  });
+});
+
+describe("spellBoltParticles", () => {
+  it("draws a trail and a glow head at the bolt, in the color of the effect", () => {
+    const fireball = cast("mage.fireball");
+    const head = spellBoltAt(fireball, view.lanes, 0.75);
+    const [trail, glow] = spellBoltParticles(fireball, view.lanes, 0.75);
+    expect(glow).toMatchObject({
+      slot: "glow",
+      x: head?.x,
+      y: head?.y,
+      color: DAMAGE_COLORS.fire,
+    });
+    expect(trail).toMatchObject({ slot: "trail", color: DAMAGE_COLORS.fire });
+    // The enemy casts toward the left, so the trail is to the right of the head.
+    expect(trail?.x).toBeGreaterThan(head?.x ?? 0);
+  });
+
+  it("is hidden with reduced motion, and before and after the flight", () => {
+    const fireball = cast("mage.fireball");
+    expect(spellBoltParticles(fireball, view.lanes, 0.75, true)).toEqual([]);
+    expect(spellBoltParticles(fireball, view.lanes, 0.3)).toEqual([]);
+    expect(spellBoltParticles(fireball, view.lanes, 0.95)).toEqual([]);
   });
 });

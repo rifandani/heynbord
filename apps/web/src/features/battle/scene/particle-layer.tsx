@@ -13,7 +13,12 @@ import {
   ShaderMaterial,
 } from "three";
 
-import { fxList, projectileParticles } from "@/features/battle/scene/fx";
+import { currentCast } from "@/features/battle/cast";
+import {
+  fxList,
+  projectileParticles,
+  spellBoltParticles,
+} from "@/features/battle/scene/fx";
 import type { FxSlot } from "@/features/battle/scene/fx-atlas";
 import { fxAtlas, fxSlotUv } from "@/features/battle/scene/fx-atlas";
 import type { Emitter, Particle } from "@/features/battle/scene/particles";
@@ -29,20 +34,30 @@ import { unitAnchors } from "@/features/battle/scene/unit-anchors";
 
 /**
  * A camera-facing quad: the center, the size, the spin and the stretch come
- * from each instance. The stretch makes the quad wider, for the trail.
+ * from each instance. The stretch makes the quad wider, for the trail. A
+ * ground quad lies flat on the ground, and the spin turns it around the
+ * vertical axis, for a rune ring.
  */
 const VERTEX = /* glsl */ `
 attribute vec3 aCenter;
 attribute vec3 aSizeSpinStretch;
 attribute vec4 aColor;
 attribute vec4 aUv;
+attribute float aGround;
 varying vec2 vUv;
 varying vec4 vColor;
 void main() {
-  vec4 view = modelViewMatrix * vec4(aCenter, 1.0);
   float c = cos(aSizeSpinStretch.y);
   float s = sin(aSizeSpinStretch.y);
-  view.xy += mat2(c, s, -s, c) * (position.xy * vec2(aSizeSpinStretch.z, 1.0)) * aSizeSpinStretch.x;
+  vec2 corner = mat2(c, s, -s, c) * (position.xy * vec2(aSizeSpinStretch.z, 1.0)) * aSizeSpinStretch.x;
+  vec4 view;
+  if (aGround > 0.5) {
+    // The top of the image is far from the camera.
+    view = modelViewMatrix * vec4(aCenter + vec3(corner.x, 0.0, -corner.y), 1.0);
+  } else {
+    view = modelViewMatrix * vec4(aCenter, 1.0);
+    view.xy += corner;
+  }
   gl_Position = projectionMatrix * view;
   vUv = aUv.xy + uv * aUv.zw;
   vColor = aColor;
@@ -70,6 +85,7 @@ interface Batch {
   readonly sizeSpinStretch: InstancedBufferAttribute;
   readonly color: InstancedBufferAttribute;
   readonly uv: InstancedBufferAttribute;
+  readonly ground: InstancedBufferAttribute;
 }
 
 const dynamic = (size: number) =>
@@ -91,10 +107,12 @@ const makeBatch = (blending: Blending): Batch => {
   const sizeSpinStretch = dynamic(3);
   const color = dynamic(4);
   const uv = dynamic(4);
+  const ground = dynamic(1);
   geometry.setAttribute("aCenter", center);
   geometry.setAttribute("aSizeSpinStretch", sizeSpinStretch);
   geometry.setAttribute("aColor", color);
   geometry.setAttribute("aUv", uv);
+  geometry.setAttribute("aGround", ground);
   const material = new ShaderMaterial({
     uniforms: { map: { value: null } },
     vertexShader: VERTEX,
@@ -110,7 +128,7 @@ const makeBatch = (blending: Blending): Batch => {
   mesh.frustumCulled = false;
   // After the Units, so that the depth of their figures is in the buffer.
   mesh.renderOrder = 4;
-  return { mesh, center, sizeSpinStretch, color, uv };
+  return { mesh, center, sizeSpinStretch, color, uv, ground };
 };
 
 const colors = new Map<string, Color>();
@@ -147,6 +165,7 @@ const writeBatch = (
     );
     batch.color.setXYZW(count, color.r, color.g, color.b, particle.opacity);
     batch.uv.setXYZW(count, uv.u, uv.v, uv.width, uv.height);
+    batch.ground.setX(count, particle.ground ? 1 : 0);
     count += 1;
   }
   batch.mesh.count = count;
@@ -155,6 +174,7 @@ const writeBatch = (
     batch.sizeSpinStretch,
     batch.color,
     batch.uv,
+    batch.ground,
   ]) {
     attribute.clearUpdateRanges();
     attribute.addUpdateRange(0, count * attribute.itemSize);
@@ -211,14 +231,21 @@ const emittersNow = (reducedMotion: boolean): Emitter[] => {
 
 /**
  * The quads that are not from an emitter: the billboards of the effects
- * list, and the projectile of a ranged attack.
+ * list, the projectile of a ranged attack, and the spell bolt of a cast.
  */
 const singlesNow = (reducedMotion: boolean): Particle[] => {
-  const singles = projectileParticles(
-    playback.session?.current,
-    playback.progress,
-    reducedMotion
-  );
+  const { session } = playback;
+  const singles = [
+    ...projectileParticles(session?.current, playback.progress, reducedMotion),
+    ...(session
+      ? spellBoltParticles(
+          currentCast(session.log, session.current !== null),
+          session.view.lanes,
+          playback.progress,
+          reducedMotion
+        )
+      : []),
+  ];
   for (const fx of fxList) {
     const quad =
       fx.kind === "billboard"
@@ -232,9 +259,10 @@ const singlesNow = (reducedMotion: boolean): Particle[] => {
 };
 
 /**
- * The Status loops on the Units, the Status, hit and dust bursts, the melee
- * slashes and the ranged projectiles, from one particle pool with the effects atlas
- * (web ADR-0009). All motion uses `playback.time`.
+ * The Status loops on the Units, the Status, hit, dust, heal and Armor
+ * bursts, the cast wind-ups, the melee slashes, the ranged projectiles and the
+ * spell bolts, from one particle pool with the effects atlas (web ADR-0009).
+ * All motion uses `playback.time`.
  */
 export const ParticleLayer = () => {
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);

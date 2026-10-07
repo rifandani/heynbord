@@ -1,4 +1,10 @@
-import type { DamageType, RaceId, RankId, Side } from "@workspace/rules";
+import type {
+  ClassId,
+  DamageType,
+  RaceId,
+  RankId,
+  Side,
+} from "@workspace/rules";
 
 /** Race colors (art direction 4.1). `light` and `dark` are shades of `main`. */
 export const RACE_COLORS: Readonly<
@@ -66,6 +72,21 @@ export const DAMAGE_COLORS: Readonly<Record<DamageType, string>> = {
   frost: "#8fd8ff",
   holy: "#ffd75a",
 };
+
+/**
+ * The color of the wind-up of a Skill Card cast: the Class of the caster
+ * (web ADR-0009). Each Class has a different color, so the Player can see who
+ * casts the card.
+ */
+export const CLASS_COLORS: Readonly<Record<ClassId, string>> = {
+  warrior: "#e0893a",
+  ranger: "#7fd36a",
+  mage: "#a98bff",
+  priest: "#fff1b8",
+};
+
+/** A heal: its number and its effect. */
+export const HEAL_COLOR = "#7ef29a";
 
 /** The sparks of a Blocked hit: grey, because the Block took the damage. */
 export const BLOCKED_HIT = "#a3a8ae";

@@ -1,6 +1,12 @@
-import type { BattleEvent, DamageType } from "@workspace/rules";
+import type { BattleEvent, ClassId, DamageType } from "@workspace/rules";
 
-import { BLOCKED_HIT, DAMAGE_COLORS } from "@/features/battle/palette";
+import {
+  BLOCKED_HIT,
+  CLASS_COLORS,
+  DAMAGE_COLORS,
+  FX_ANCHORS,
+  HEAL_COLOR,
+} from "@/features/battle/palette";
 import type { FxSlotName } from "@/features/battle/scene/fx-atlas";
 
 /**
@@ -28,11 +34,26 @@ export const DUST_PRESETS = ["move", "push"] as const;
 
 export type DustPresetKey = (typeof DUST_PRESETS)[number];
 
-/** The attack, hit and movement effects, with keys from the rules data (web ADR-0009). */
-export type FxPresetKey = "melee" | "ranged" | HitPresetKey | DustPresetKey;
+/** The wind-up at the caster Hero of a Skill Card cast, for each Class. */
+export type WindupPresetKey = `windup:${ClassId}`;
+
+/** The impact of a heal or an Armor gain. A hit and a Status have their own bursts. */
+export type ImpactPresetKey = "heal" | "armor";
 
 /**
- * One attack, hit or movement effect. This module has no Three.js code, so the Battle
+ * The attack, hit, movement and cast effects, with keys from the rules data
+ * (web ADR-0009).
+ */
+export type FxPresetKey =
+  | "melee"
+  | "ranged"
+  | HitPresetKey
+  | DustPresetKey
+  | WindupPresetKey
+  | ImpactPresetKey;
+
+/**
+ * One attack, hit, movement or cast effect. This module has no Three.js code, so the Battle
  * timeline can read the times in the first bundle.
  */
 export interface FxPreset {
@@ -51,11 +72,28 @@ export interface FxPreset {
   /**
    * The time that the effect needs at speed ×1, in ms. Its event is at least
    * this long, up to the limit of the event. A ranged attack also gets the
-   * flight time of its projectile. A dust puff does not change the time of
-   * its event: this is only the life of the puff.
+   * flight time of its projectile. A dust puff, a heal and an Armor gain do
+   * not change the time of their event: this is only the life of the effect.
+   * A wind-up fills its cast up to the spell bolt, and this is the shortest
+   * time that it needs.
    */
   readonly time: number;
 }
+
+/**
+ * A wind-up: a rune ring on the ground at the feet of the caster, and
+ * particles of the Class color that go up from its edge. `speed` takes the
+ * particles out from the edge (a negative speed takes them in), and `spin`
+ * turns them around the Hero.
+ */
+const windup = (classId: ClassId, spray: Spray): FxPreset => ({
+  main: "rune-ring",
+  size: 2.1,
+  trail: null,
+  spray,
+  color: CLASS_COLORS[classId],
+  time: 340,
+});
 
 const hit = (
   main: FxSlotName,
@@ -183,6 +221,71 @@ export const FX_PRESETS: Readonly<Record<FxPresetKey, FxPreset>> = {
     },
     color: null,
     time: 550,
+  },
+  // Warrior: sparks jump up from the ring and fall, as from an anvil.
+  "windup:warrior": windup("warrior", {
+    slot: "spark",
+    count: 20,
+    speed: [0, 0.3],
+    up: 1.4,
+    size: [0.45, 0.7],
+    gravity: 0.8,
+  }),
+  // Ranger: sparks turn fast around the Hero, as a wind.
+  "windup:ranger": windup("ranger", {
+    slot: "spark",
+    count: 18,
+    speed: [-0.2, 0.15],
+    up: 1.2,
+    size: [0.42, 0.64],
+    spin: 6,
+  }),
+  // Mage: soft motes go up and turn slowly around the Hero.
+  "windup:mage": windup("mage", {
+    slot: "glow",
+    count: 16,
+    speed: [-0.3, 0.05],
+    up: 1.7,
+    size: [0.36, 0.56],
+    spin: 2,
+  }),
+  // Priest: large soft lights go straight up, as a prayer.
+  "windup:priest": windup("priest", {
+    slot: "glow",
+    count: 14,
+    speed: [-0.1, 0.1],
+    up: 2.1,
+    size: [0.44, 0.66],
+  }),
+  // A green cross that grows on the Unit, and sparks that go up.
+  heal: {
+    main: "heal",
+    size: 0.8,
+    trail: null,
+    spray: {
+      slot: "spark",
+      count: 8,
+      speed: [0.15, 0.35],
+      up: 0.6,
+      size: [0.18, 0.3],
+    },
+    color: HEAL_COLOR,
+    time: 650,
+  },
+  // A shield on the Unit, and blue sparks around it.
+  armor: {
+    main: "shield",
+    size: 0.75,
+    trail: null,
+    spray: {
+      slot: "spark",
+      count: 7,
+      speed: [0.35, 0.6],
+      up: 0.1,
+      size: [0.18, 0.3],
+    },
+    color: FX_ANCHORS.shield,
+    time: 600,
   },
 };
 

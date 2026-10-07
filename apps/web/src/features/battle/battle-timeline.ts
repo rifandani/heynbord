@@ -54,8 +54,10 @@ export const pushArrival = (distance: number): number =>
   1 - (1 - distance) ** (1 / 3);
 
 /**
- * A Skill Card cast shows the card, the target and a spell bolt before its
- * effect. The enemy's cast is longer: the Player has not seen that card yet.
+ * A Skill Card cast shows the card, the target, the wind-up of the Class and
+ * a spell bolt before its effect. This is also the limit of the cast (web
+ * ADR-0009): the wind-up and the bolt fit inside it, and do not make it
+ * longer. The enemy's cast is longer: the Player has not seen that card yet.
  */
 const CAST_DURATION = { player: 700, enemy: 1050 } as const;
 

@@ -19,6 +19,7 @@ import {
 import {
   DAMAGE_COLORS,
   FX_ANCHORS,
+  HEAL_COLOR,
   RACE_COLORS,
   RANK_COLORS,
   SIDE_COLORS,
@@ -330,7 +331,7 @@ export const numberTexture = (options: {
     (context) => {
       const color =
         options.damageType === "heal"
-          ? "#7ef29a"
+          ? HEAL_COLOR
           : options.damageType === "block"
             ? "#d7dde5"
             : DAMAGE_COLORS[options.damageType];

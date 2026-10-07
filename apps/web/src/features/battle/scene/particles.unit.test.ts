@@ -1,3 +1,4 @@
+import type { ClassId } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import type { BurstName, Emitter } from "@/features/battle/scene/particles";
@@ -192,6 +193,68 @@ describe("dust bursts", () => {
       spawnParticles([dust("move"), dust("push")], 1.2, 200, true)
     ).toEqual([]);
   });
+});
+
+/** A wind-up at the feet of a Hero at x = 2, from 1 s to 1.5 s. */
+const windup = (classId: ClassId = "mage"): Emitter => ({
+  ...burst(1, `windup:${classId}`),
+  y: 0.04,
+  duration: 0.5,
+});
+
+describe("wind-up bursts (web ADR-0009)", () => {
+  it("lays the rune ring flat on the ground, and turns it", () => {
+    const [ring] = spawnParticles([windup()], 1.2, 200);
+    const [later] = spawnParticles([windup()], 1.3, 200);
+    expect(ring).toMatchObject({ slot: "rune-ring", ground: true, y: 0.04 });
+    expect(later?.rotation).not.toBeCloseTo(ring?.rotation ?? 0);
+  });
+
+  it.each(["warrior", "ranger", "mage", "priest"] as const)(
+    "sends the %s particles up from the ground, in the Class color",
+    (classId) => {
+      for (const time of [1.1, 1.3, 1.48]) {
+        const [ring, ...rest] = spawnParticles([windup(classId)], time, 200);
+        expect(rest.length).toBeGreaterThan(0);
+        for (const particle of rest) {
+          expect(particle.ground ?? false).toBe(false);
+          expect(particle.y, `${time}`).toBeGreaterThan(0.04);
+          expect(particle.color).toBe(ring?.color);
+        }
+      }
+    }
+  );
+
+  it("shows only a still rune ring that fades with reduced motion", () => {
+    const early = spawnParticles([windup()], 1.1, 200, true);
+    const late = spawnParticles([windup()], 1.4, 200, true);
+    expect(early.map((particle) => particle.slot)).toEqual(["rune-ring"]);
+    const [first] = early;
+    const [second] = late;
+    expect(second).toMatchObject({
+      slot: "rune-ring",
+      ground: true,
+      size: first?.size,
+      rotation: first?.rotation,
+    });
+    expect(second?.opacity).toBeLessThan(first?.opacity ?? 0);
+  });
+});
+
+describe("heal and Armor bursts", () => {
+  it.each([
+    ["heal", "heal"],
+    ["armor", "shield"],
+  ] as const)(
+    "shows %s as a fade of its main image with reduced motion",
+    (preset, slot) => {
+      expect(
+        spawnParticles([hit(preset)], 1.1, 200, true).map(
+          (particle) => particle.slot
+        )
+      ).toEqual([slot]);
+    }
+  );
 });
 
 describe("billboardParticle", () => {

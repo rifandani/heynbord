@@ -8,6 +8,10 @@ import type { BattleView } from "@/features/battle/battle-view";
 import type { Cast } from "@/features/battle/cast";
 import { castSquares, effectColor } from "@/features/battle/cast";
 import { DAMAGE_COLORS } from "@/features/battle/palette";
+import type {
+  FxPresetKey,
+  ImpactPresetKey,
+} from "@/features/battle/scene/fx-presets";
 import {
   CRIT_SCALE,
   FX_PRESETS,
@@ -54,7 +58,8 @@ export type Fx =
   | {
       /**
        * A particle burst when a Status starts or deals damage, when an
-       * attack hits, or when a Unit moves or is Pushed (web ADR-0009).
+       * attack hits, when a Unit moves or is Pushed, is healed or gets
+       * Armor, or when a Hero casts a Skill Card (web ADR-0009).
        */
       readonly kind: "particles";
       readonly burst: BurstName;
@@ -100,6 +105,18 @@ const burstFx = (
   start,
   duration,
 });
+
+/** The life of a preset effect that does not change the time of its event, in scene seconds. */
+const presetSeconds = (preset: FxPresetKey, speed: BattleSpeed): number =>
+  FX_PRESETS[preset].time / 1000 / speed;
+
+/** The heal or Armor impact on a Unit. */
+const impactFx = (
+  preset: ImpactPresetKey,
+  at: Spot,
+  start: number,
+  speed: BattleSpeed
+): Fx => burstFx(preset, at, start, presetSeconds(preset, speed));
 
 /** The time of an event, in scene seconds. */
 const eventSeconds = (
@@ -226,9 +243,39 @@ const dustPuffs = (
     z: laneZ(event.lane, before.lanes),
     height: FEET,
     start: time + seconds * arrival(event, (index + 1) / squares),
-    duration: FX_PRESETS[preset].time / 1000 / speed,
+    duration: presetSeconds(preset, speed),
   }));
 };
+
+/** The height of a rune ring on the ground. */
+const RUNE_RING_HEIGHT = 0.04;
+
+/**
+ * The wind-up lasts to this progress of its cast. It fades while the spell
+ * bolt leaves at `BOLT_START`.
+ */
+const WINDUP_END = 0.6;
+
+/**
+ * The wind-up of a Skill Card cast: a rune ring at the feet of the caster
+ * Hero, and particles of the Class of the Hero. It fills the first part of
+ * the cast, so a longer enemy cast has a longer wind-up.
+ */
+const windup = (
+  event: Extract<BattleEvent, { readonly _tag: "CardPlayed" }>,
+  before: BattleView,
+  time: number,
+  speed: BattleSpeed
+): Fx => ({
+  kind: "particles",
+  burst: `windup:${before.sides[event.side].hero.classId}`,
+  scale: 1,
+  x: heroX(event.side),
+  z: 0,
+  height: RUNE_RING_HEIGHT,
+  start: time,
+  duration: eventSeconds(event, speed, before) * WINDUP_END,
+});
 
 /**
  * The effects that start with an event. `before` is the view before it,
@@ -270,6 +317,7 @@ export const fxForEvent = (
               ...at,
               start: time,
             },
+            impactFx("heal", at, time, speed),
           ]
         : [];
     }
@@ -285,25 +333,13 @@ export const fxForEvent = (
       ];
     }
     case "CardPlayed": {
-      // A Skill Card cast starts with a ring at the feet of the caster.
-      const definition = getCard(event.card.cardId);
-      return definition.kind === "skill"
-        ? [
-            {
-              kind: "ring",
-              color: effectColor(definition.effect),
-              x: heroX(event.side),
-              z: 0,
-              start: time,
-            },
-          ]
+      return getCard(event.card.cardId).kind === "skill"
+        ? [windup(event, before, time, speed)]
         : [];
     }
     case "ArmorGained": {
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
-      return at
-        ? [{ kind: "ring", color: "#9cc8ff", x: at.x, z: at.z, start: time }]
-        : [];
+      return at ? [impactFx("armor", at, time, speed)] : [];
     }
     default: {
       return [];
@@ -428,43 +464,32 @@ const TRAIL_SPAN = 0.12;
 const PITCH = (CAMERA_PITCH * Math.PI) / 180;
 
 /**
- * The atlas quads of a ranged projectile now (web ADR-0009): a glow head, and
- * a trail streak from its last positions to the head. With reduced motion,
- * only the head flies.
+ * The atlas quads of a projectile (web ADR-0009): a glow head at `head`, and a
+ * trail streak from `tail` to the head. With no `tail`, only the head flies.
+ * The `size` of the projectile scales the images of the ranged preset.
  */
-export const projectileParticles = (
-  current: PlayingEvent | null | undefined,
-  progress: number,
-  reducedMotion = false
-): Particle[] => {
-  const head = projectileAt(current, progress);
-  if (!head) {
-    return [];
-  }
+const flightQuads = (head: Projectile, tail: Projectile | null): Particle[] => {
   const preset = FX_PRESETS.ranged;
+  const size = preset.size * head.size;
   const glow = slotParticle(preset.main, {
     x: head.x,
     y: head.y,
     z: head.z,
-    size: preset.size,
+    size,
     stretch: 1,
     rotation: 0,
     color: head.color,
     opacity: 1,
     burst: true,
   });
-  const tail = projectileAt(
-    current,
-    Math.max(progress - TRAIL_SPAN, FLIGHT_START)
-  );
-  if (reducedMotion || !preset.trail || !tail) {
+  if (!preset.trail || !tail) {
     return [glow];
   }
   // The direction of the flight on the screen. The camera has no yaw.
   const across = head.x - tail.x;
   const up =
     (head.y - tail.y) * Math.cos(PITCH) - (head.z - tail.z) * Math.sin(PITCH);
-  const width = preset.size * 0.45;
+  const width = size * 0.45;
   const length = Math.hypot(across, up) + width;
   return [
     slotParticle(preset.trail, {
@@ -480,4 +505,44 @@ export const projectileParticles = (
     }),
     glow,
   ];
+};
+
+/**
+ * The atlas quads of a ranged projectile now. With reduced motion, only the
+ * head flies.
+ */
+export const projectileParticles = (
+  current: PlayingEvent | null | undefined,
+  progress: number,
+  reducedMotion = false
+): Particle[] => {
+  const head = projectileAt(current, progress);
+  if (!head) {
+    return [];
+  }
+  const tail = reducedMotion
+    ? null
+    : projectileAt(current, Math.max(progress - TRAIL_SPAN, FLIGHT_START));
+  return flightQuads(head, tail);
+};
+
+/**
+ * The atlas quads of the spell bolt of a Skill Card cast now, in the color
+ * of its effect. With reduced motion, the bolt is hidden: the cast shows only
+ * its card and its target Squares.
+ */
+export const spellBoltParticles = (
+  cast: Cast | null,
+  lanes: number,
+  progress: number,
+  reducedMotion = false
+): Particle[] => {
+  const head = reducedMotion ? null : spellBoltAt(cast, lanes, progress);
+  if (!head) {
+    return [];
+  }
+  return flightQuads(
+    head,
+    spellBoltAt(cast, lanes, Math.max(progress - TRAIL_SPAN, BOLT_START))
+  );
 };
