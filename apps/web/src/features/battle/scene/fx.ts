@@ -1,4 +1,9 @@
-import type { BattleEvent, DamageType, Side } from "@workspace/rules";
+import type {
+  BattleEvent,
+  DamageSource,
+  DamageType,
+  Side,
+} from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 
 import type { PlayingEvent } from "@/features/battle/battle-session";
@@ -12,6 +17,8 @@ import {
   laneZ,
   squareX,
 } from "@/features/battle/scene/layout";
+import type { BurstName } from "@/features/battle/scene/particles";
+import { BURST_DURATION } from "@/features/battle/scene/particles";
 
 /** A short visual effect. `start` is in scene seconds. */
 export type Fx =
@@ -39,12 +46,26 @@ export type Fx =
       readonly z: number;
       readonly height: number;
       readonly start: number;
+    }
+  | {
+      /** A particle burst when a Status starts or deals damage (web ADR-0009). */
+      readonly kind: "status";
+      readonly burst: BurstName;
+      readonly x: number;
+      readonly z: number;
+      readonly height: number;
+      readonly start: number;
     };
 
 /** Active effects. The playback driver adds them. The effects layer removes them when they end. */
 export const fxList: Fx[] = [];
 
-export const FX_LIFETIME = { number: 1.1, ring: 0.7, burst: 0.45 } as const;
+export const FX_LIFETIME = {
+  number: 1.1,
+  ring: 0.7,
+  burst: 0.45,
+  status: BURST_DURATION,
+} as const;
 
 /** The world position of a Unit or a Hero in a view, or `null` if it is not on the Board. */
 export const worldOf = (
@@ -77,6 +98,12 @@ const DAMAGE_RING: Readonly<Record<DamageType, string>> = {
   holy: "#ffe37a",
 };
 
+/** The burst when Burn or Poison deals damage in the End Step. */
+const TICK_BURST: Readonly<Partial<Record<DamageSource, BurstName>>> = {
+  burn: "burn-tick",
+  poison: "poison-tick",
+};
+
 /** The effects that start with an event. `before` is the view before it, `after` the view after it. */
 export const fxForEvent = (
   event: BattleEvent,
@@ -98,16 +125,40 @@ export const fxForEvent = (
         ...at,
         start: time,
       };
+      const tick = TICK_BURST[event.source];
+      // A Burn or a Poison hit shows its own burst, so the damage has a cause.
       return [
         number,
-        {
-          kind: "burst",
-          color: DAMAGE_RING[event.damageType],
-          ...at,
-          height: at.height * 0.5,
-          start: time,
-        },
+        tick
+          ? {
+              kind: "status",
+              burst: tick,
+              ...at,
+              height: at.height * 0.5,
+              start: time,
+            }
+          : {
+              kind: "burst",
+              color: DAMAGE_RING[event.damageType],
+              ...at,
+              height: at.height * 0.5,
+              start: time,
+            },
       ];
+    }
+    case "StatusApplied": {
+      const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
+      return at
+        ? [
+            {
+              kind: "status",
+              burst: event.status,
+              ...at,
+              height: at.height * 0.5,
+              start: time,
+            },
+          ]
+        : [];
     }
     case "UnitHealed": {
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });

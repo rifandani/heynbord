@@ -48,6 +48,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Battle Painting**: The painted ground and background behind the Board, one for each Region. It is a flat 2D image, not a 3D scene. The Squares are not drawn on it. _Avoid_: stage background, backdrop, arena, battlefield map, Board skin
 
+**Status Badge**: The row of Status icons above a Unit on the Board, each with its count when the Status has one. It shows at most 3 Statuses, then "+N". The Details Panel shows the full list and the rules text. _Avoid_: debuff bar, buff icons, status bar, status icons
+
 **Key Guide**: The list of the keys that play a full Battle and what each key does. It opens from the info button in the Top Bar, on hover, on keyboard focus and on press. _Avoid_: keyboard help, hotkeys, shortcuts, accessibility info, controls hint
 
 ### Town

@@ -5,6 +5,7 @@ import { startSession } from "@/features/battle/battle-session";
 import {
   battleCreatureCards,
   cardIllustration,
+  hasCardArt,
 } from "@/features/battle/card-art";
 
 describe("cardIllustration", () => {
@@ -18,6 +19,15 @@ describe("cardIllustration", () => {
     expect(cardIllustration("mage.fireball")).toBe(
       "/skills/mage/fireball.webp"
     );
+  });
+});
+
+describe("hasCardArt", () => {
+  it("has art for the Human and Orc cards and the Skill Cards only", () => {
+    expect(hasCardArt("human.crossbowGuard")).toBe(true);
+    expect(hasCardArt("mage.fireball")).toBe(true);
+    expect(hasCardArt("goblin.ankleSnatcher")).toBe(false);
+    expect(hasCardArt("feral.caveBear")).toBe(false);
   });
 });
 

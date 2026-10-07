@@ -74,7 +74,112 @@ describe("movement (GDD 4.5)", () => {
     ]);
   });
 
-  it("stops a ground Unit before any other Unit", () => {
+  it("moves a ground Unit through a friendly Wall", () => {
+    const state = emptyBattle();
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 0,
+    });
+    placeUnit(state, {
+      cardId: "human.townBarricade",
+      owner: "player",
+      position: 1,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, pup.id)?.position).toBe(2);
+    expect(eventsOfType(events, "UnitMoved")).toEqual([
+      expect.objectContaining({ unitId: pup.id, from: 0, to: 2 }),
+    ]);
+  });
+
+  it("stops a ground Unit in the farthest empty Square when a friendly Unit holds the last Square of its Speed", () => {
+    const state = emptyBattle();
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 0,
+    });
+    placeUnit(state, {
+      cardId: "human.townBarricade",
+      owner: "player",
+      position: 2,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, pup.id)?.position).toBe(1);
+  });
+
+  it("moves a ground Unit through a friendly Unit that does not move", () => {
+    const state = emptyBattle();
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 0,
+    });
+    placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 1,
+      frozen: true,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, pup.id)?.position).toBe(2);
+  });
+
+  it("moves an enemy ground Unit through a friendly Unit toward the player's Hero", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    const pup = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "enemy",
+      position: 11,
+    });
+    placeUnit(state, {
+      cardId: "human.townBarricade",
+      owner: "enemy",
+      position: 10,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, pup.id)?.position).toBe(9);
+  });
+
+  it("keeps a faster ground Unit behind a slower friendly Unit that acts first", () => {
+    const state = emptyBattle();
+    const fast = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 0,
+    });
+    const slow = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 1,
+      speed: 1,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, slow.id)?.position).toBe(2);
+    expect(unitById(next, fast.id)?.position).toBe(1);
+  });
+
+  it("moves a ground Unit past a much slower friendly Unit", () => {
+    const state = emptyBattle();
+    const fast = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 0,
+      speed: 3,
+    });
+    const slow = placeUnit(state, {
+      cardId: "orc.badlandPup",
+      owner: "player",
+      position: 1,
+      speed: 1,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, slow.id)?.position).toBe(2);
+    expect(unitById(next, fast.id)?.position).toBe(3);
+  });
+
+  it("stops a ground Unit before an enemy Unit", () => {
     const state = emptyBattle();
     const pup = placeUnit(state, {
       cardId: "orc.badlandPup",
@@ -1998,5 +2103,158 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
       frozen: false,
       entangled: false,
     });
+  });
+});
+
+/**
+ * A melee Unit with Bleed at Square 4 attacks an enemy Unit at Square 5 that
+ * is already Bleeding with the given count.
+ */
+const bleedHit = (bleed: number, bleeding: number) => {
+  const state = emptyBattle();
+  placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    position: 4,
+    attack: 2,
+    bleed,
+  });
+  const target = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "enemy",
+    position: 5,
+    attack: 0,
+    hp: 20,
+    maxHp: 20,
+    bleeding,
+  });
+  const result = run(state, endTurn);
+  const status = eventsOfType(result.events, "StatusApplied").find(
+    (event) => event.status === "bleed"
+  );
+  return {
+    count: unitById(result.state, target.id)?.bleeding,
+    event: status?.count,
+  };
+};
+
+/** The Bleeding count that a Frostfang Lynx of this Rank gives in one hit. */
+const bleedingByLynx = (rank: "common" | "rare" | "epic" | "legendary") => {
+  const state = emptyBattle();
+  placeUnit(state, {
+    cardId: "feral.frostfangLynx",
+    owner: "player",
+    position: 4,
+    rank,
+  });
+  const target = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "enemy",
+    position: 5,
+    attack: 0,
+    hp: 40,
+    maxHp: 40,
+  });
+  return unitById(run(state, endTurn).state, target.id)?.bleeding;
+};
+
+describe("Bleed (GDD 4.7, ADR-0019)", () => {
+  it("makes the enemy Unit Bleeding after attack damage above 0, and not when Armor reduces the damage to 0", () => {
+    const { count, event } = bleedHit(2, 0);
+    expect(count).toBe(2);
+    expect(event).toBe(2);
+
+    const blocked = emptyBattle();
+    placeUnit(blocked, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      attack: 1,
+      bleed: 2,
+    });
+    const armored = placeUnit(blocked, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+    });
+    const miss = run(blocked, endTurn);
+    expect(unitById(miss.state, armored.id)?.bleeding).toBe(0);
+    expect(eventsOfType(miss.events, "StatusApplied")).toEqual([]);
+  });
+
+  it("keeps the higher Bleeding count, and does not add the counts", () => {
+    expect(bleedHit(1, 3)).toEqual({ count: 3, event: 3 });
+    expect(bleedHit(3, 1)).toEqual({ count: 3, event: 3 });
+    expect(bleedHit(2, 2)).toEqual({ count: 2, event: 2 });
+  });
+
+  it("does not apply Bleed from Retaliation or from an attack on a Hero", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+      bleed: 2,
+    });
+    expect(unitById(run(state, endTurn).state, attacker.id)?.bleeding).toBe(0);
+
+    const hero = emptyBattle();
+    placeUnit(hero, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 11,
+      bleed: 2,
+    });
+    const shot = run(hero, endTurn);
+    expect(shot.state.sides.enemy.hero.hp).toBeLessThan(30);
+    expect(eventsOfType(shot.events, "StatusApplied")).toEqual([]);
+  });
+
+  it("does not apply Bleed with the second hit of Trample", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "feral.cragRhino",
+      owner: "player",
+      position: 4,
+      attack: 9,
+      bleed: 2,
+    });
+    placeUnit(state, {
+      cardId: "goblin.scrapPlateGuard",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      hp: 4,
+    });
+    const behind = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+    });
+    const result = run(state, endTurn);
+    expect(unitById(result.state, behind.id)).toMatchObject({
+      hp: 16,
+      bleeding: 0,
+    });
+  });
+
+  it("gives Bleed 1 up to Rare, 2 at Epic and 3 at Legendary (Frostfang Lynx)", () => {
+    expect(bleedingByLynx("common")).toBe(1);
+    expect(bleedingByLynx("rare")).toBe(1);
+    expect(bleedingByLynx("epic")).toBe(2);
+    expect(bleedingByLynx("legendary")).toBe(3);
   });
 });

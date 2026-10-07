@@ -113,7 +113,9 @@ const quietUnit = (unit: UnitView) =>
   unit.burn <= 0 &&
   unit.poisoned <= 0 &&
   unit.hobbled <= 0 &&
-  !unit.frozen;
+  unit.bleeding <= 0 &&
+  !unit.frozen &&
+  !unit.entangled;
 
 const BonusArmorStatus = ({ unit }: { readonly unit: UnitView }) => {
   const { tr } = useGameText();
@@ -154,6 +156,18 @@ const FrozenStatus = ({ unit }: { readonly unit: UnitView }) => {
   );
 };
 
+const EntangledStatus = ({ unit }: { readonly unit: UnitView }) => {
+  const { tr } = useGameText();
+  if (!unit.entangled) {
+    return null;
+  }
+  return (
+    <StatusLine glyph="vine" name={tr("battle.status.entangled")}>
+      {tr("battle.status.entangledRule")}
+    </StatusLine>
+  );
+};
+
 const HobbledStatus = ({ unit }: { readonly unit: UnitView }) => {
   const { tr } = useGameText();
   if (unit.hobbled <= 0) {
@@ -165,6 +179,21 @@ const HobbledStatus = ({ unit }: { readonly unit: UnitView }) => {
       name={tr("battle.status.hobbled", { value: unit.hobbled })}
     >
       {tr("battle.status.hobbledRule")}
+    </StatusLine>
+  );
+};
+
+const BleedingStatus = ({ unit }: { readonly unit: UnitView }) => {
+  const { tr } = useGameText();
+  if (unit.bleeding <= 0) {
+    return null;
+  }
+  return (
+    <StatusLine
+      glyph="heart"
+      name={tr("battle.status.bleeding", { value: unit.bleeding })}
+    >
+      {tr("battle.status.bleedingRule")}
     </StatusLine>
   );
 };
@@ -186,7 +215,7 @@ const PoisonStatus = ({ unit }: { readonly unit: UnitView }) => {
 
 /**
  * How a Unit is different from its card now: bonus Armor, Burn, Freeze,
- * Hobbled and Poison. The current HP stays on the card.
+ * Entangled, Hobbled, Bleeding and Poison. The current HP stays on the card.
  */
 const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
   if (quietUnit(unit)) {
@@ -199,7 +228,9 @@ const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
         <BonusArmorStatus unit={unit} />
         <BurnStatus unit={unit} />
         <FrozenStatus unit={unit} />
+        <EntangledStatus unit={unit} />
         <HobbledStatus unit={unit} />
+        <BleedingStatus unit={unit} />
         <PoisonStatus unit={unit} />
       </ul>
     </>
@@ -318,7 +349,7 @@ const SkillBody = ({
             {tr(`damageTypes.${damageType}`)}
           </Stat>
         ) : null}
-        <Stat>{text(content.recall)}</Stat>
+        <Stat glyph="recall">{text(content.recall)}</Stat>
       </ul>
       <Divider />
       <p>{text(content.effect)}</p>
@@ -398,7 +429,7 @@ const rowClass = (left: boolean) =>
 
 const panelClass = (left: boolean) =>
   cn(
-    "flex w-[min(250px,44vw)] flex-col border-[3px] border-[#b47f36] bg-[#f6ead0] py-3 text-sm leading-snug text-[#2a1d12] [@media(max-height:500px)]:w-[min(230px,40vw)] [@media(max-height:500px)]:py-1.5 [@media(max-height:500px)]:text-xs [@media(max-height:500px)]:leading-tight",
+    "flex w-[min(300px,53vw)] flex-col border-[3px] border-[#b47f36] bg-[#f6ead0] py-3 text-sm leading-snug text-[#2a1d12] [@media(max-height:500px)]:w-[min(276px,48vw)] [@media(max-height:500px)]:py-1.5 [@media(max-height:500px)]:text-xs [@media(max-height:500px)]:leading-tight",
     left
       ? "-mr-2 rounded-l-xl border-r-0 pr-5 pl-3"
       : "-ml-2 rounded-r-xl border-l-0 pr-3 pl-5"
@@ -430,17 +461,39 @@ const NameSr = ({
   );
 };
 
+/** Unique (GDD 5.4): why a Ready card in the Hand cannot be played now. */
+const BlockedLine = ({
+  blocked,
+  name,
+}: {
+  readonly blocked: boolean;
+  readonly name: string;
+}) => {
+  const { tr } = useGameText();
+  return blocked ? (
+    <p
+      className="mb-1.5 text-xs font-semibold text-[#5b4632]"
+      data-testid="card-details-blocked"
+    >
+      {tr("battle.uniqueBlocked", { name })}
+    </p>
+  ) : null;
+};
+
 export const CardDetails = ({
   cardId,
   rank,
   countdown,
   unit,
+  blocked = false,
   panelSide = "right",
 }: {
   readonly cardId: string;
   readonly rank: RankId;
   readonly countdown: number;
   readonly unit?: UnitView;
+  /** Unique (GDD 5.4): a Hand card that cannot be played now. */
+  readonly blocked?: boolean;
   readonly panelSide?: "left" | "right";
 }) => {
   const { text } = useGameText();
@@ -465,6 +518,7 @@ export const CardDetails = ({
           {text(content.name)}
           <NameSr unit={unit} rank={rank} countdown={countdown} />
         </h3>
+        <BlockedLine blocked={blocked} name={text(content.name)} />
         <PanelBody card={card} rank={rank} content={content} unit={unit} />
         <div className={flavorClass(unit)}>
           <Divider />

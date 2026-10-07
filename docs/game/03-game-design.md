@@ -48,7 +48,7 @@ The player is a new Hero. The player travels through three Regions, wins the res
 
 The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, each Race has 1 Creature Card with Pivot, with Base Rank Uncommon.
 
-A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). Hobble is a Goblin Main Keyword, and one Human card borrows it. Sabotage is the Goblin signature, and Trample is the Feral signature ([ADR-0017](../adr/0017-sabotage-and-hobble-are-goblin-and-trample-is-feral.md)). Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback.
+A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). Hobble is a Goblin Main Keyword, and one Human card borrows it. Sabotage is the Goblin signature, and Trample is the Feral signature ([ADR-0017](../adr/0017-sabotage-and-hobble-are-goblin-and-trample-is-feral.md)). Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback. Bleed is a Feral Keyword on the Frostfang Lynx and Old Frostmaw only. It is not a Main Keyword ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
 
 ### 3.3 Regions (draft names)
 
@@ -126,18 +126,19 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 2. In each Lane, the front Unit acts first. The front Unit is the Unit nearest to the enemy Hero.
 3. Each Unit does these steps:
    1. **Movement** (see 4.5)
-   2. **Attack** (see 4.6). After a hit on an enemy Unit, the on-hit effects occur in this order: damage, then Poison, then Hobble, then Knockback.
+   2. **Attack** (see 4.6). After a hit on an enemy Unit, the on-hit effects occur in this order: damage, then Poison, then Hobble, then Bleed, then Knockback.
    3. **Retaliation** by the target, if the target has the Retaliation Keyword (see 4.7). Retaliation occurs after Knockback.
 4. A Unit that you summoned in this Turn also acts in this Turn.
 5. A Unit that another effect creates during the Resolution Phase acts at the end of the Resolution Phase, in the same order.
 6. A Frozen Unit does not move and does not attack. Its Freeze then ends. Until then, it also does not retaliate and does not use First Strike. An attack on a Frozen Unit does not end its Freeze.
 7. An Entangled Unit has Speed 0 during its next action, but it can attack. Its Entangled Status then ends. If a Unit is Frozen and Entangled, the skipped action ends both Statuses.
 8. A Hobbled Unit has a maximum Speed of 1 during its action, after all bonuses. The count does not go down when the Unit acts. It goes down in the End Step of its owner.
+9. A Bleeding Unit gets half of each heal, rounded down. For example, Regeneration 1 heals 0 and Regeneration 2 heals 1. The count goes down in the End Step of its owner, not when the Unit acts.
 
 ### 4.5 Movement
 
 - Each Unit has a **Speed**. Speed is the maximum number of Squares that the Unit moves forward in one Turn.
-- A ground Unit stops when the next Square holds any Unit. Units never move through other Units.
+- A ground Unit moves through friendly Units, also a friendly Wall. Each friendly Square uses 1 Square of Speed. It stops before an enemy Unit. It stops in the farthest empty Square that its Speed reaches. See [ADR-0018](../adr/0018-a-unit-moves-through-friendly-units.md).
 - A **Flying** Unit moves over other Units. It stops in the farthest empty Square that its Speed reaches. It can fly past an enemy Unit directly in front of it, also when it then has no target.
 - A Unit never moves past its last Column (Column 12 for the player).
 - A **Ranged** Unit does not move if an enemy target is in its Range at the start of its action (see 4.6).
@@ -172,7 +173,7 @@ Each attack and each damage effect has a **Damage Type**.
 | **Frost** | Normal damage. The target also gets **Freeze**: it skips its next action. |
 | **Holy** | Armor does not reduce Holy damage. |
 
-Burn, Freeze, Entangled, Poisoned and Hobbled are **Statuses**. Fire and Frost damage give Burn and Freeze. The Entangle Keyword gives Entangled after attack damage. The Poison Keyword gives Poisoned after attack damage above 0. The Hobble Keyword gives Hobbled after attack damage above 0. Fire or Frost gives its Status also when the hit does 0 damage. Entangle, Poison and Hobble need damage above 0. Burn damage and Poison damage ignore Armor, Crit and Block. Burn damage does not give a new Burn. Poison damage has no Damage Type, and it does not give Burn or Poison.
+Burn, Freeze, Entangled, Poisoned, Hobbled and Bleeding are **Statuses**. Fire and Frost damage give Burn and Freeze. The Entangle Keyword gives Entangled after attack damage. The Poison Keyword gives Poisoned after attack damage above 0. The Hobble Keyword gives Hobbled after attack damage above 0. The Bleed Keyword gives Bleeding after attack damage above 0. Fire or Frost gives its Status also when the hit does 0 damage. Entangle, Poison, Hobble and Bleed need damage above 0. Bleeding does no damage. Burn damage and Poison damage ignore Armor, Crit and Block. Burn damage does not give a new Burn. Poison damage has no Damage Type, and it does not give Burn or Poison.
 
 To calculate damage, do these steps in this order:
 
@@ -194,8 +195,9 @@ To calculate damage, do these steps in this order:
 - **First Strike:** When an enemy melee Unit attacks a Unit with First Strike, the Unit with First Strike deals its damage first. If the attacker dies, its attack does not occur.
 - **Entangle:** After a Unit with Entangle deals attack damage above 0 to an enemy Unit, that enemy becomes Entangled. A new Entangle does not stack or extend the Status. Retaliation does not apply Entangle.
 - **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliation does not apply Hobble. An attack on a Hero does not apply Hobble.
+- **Bleed N:** After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down: Regeneration, a Skill Card heal and each other heal. Bleeding does no damage. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Bleed keeps the higher count. It does not add to the old count. Retaliation does not apply Bleed. First Strike damage above 0 applies Bleed. An attack on a Hero does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary.
 - **Knockback N:** After a melee Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. A push is not Movement and not a Status. The push stops before the first Square that holds any Unit, and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. The push ignores Speed, Charge, Frozen, Entangled, Hobbled and Flying. The pushed Unit keeps its Statuses. Retaliation and First Strike do not apply Knockback. An attack on a Hero does not apply Knockback. A Unit that dies from the hit is not Pushed. If the Unit does not change Square, there is no push.
-- **Trample:** When a melee Unit with Trample kills an enemy Unit with attack damage, the damage that is left goes to the enemy Unit in the next Square behind the killed Unit, in the same Lane. The damage that is left is the final damage of the hit (after Armor, Crit and Block) minus the HP that the killed Unit had. If that Square is empty, the damage is lost. It never hits a Hero. The second hit has the Damage Type of the Trample Unit, so Fire and Frost still give their Status. The Armor of the second Unit reduces it, and its Hero can Block it. It does not roll Crit. The second hit is not an attack: the second Unit does not Retaliate, and Poison, Hobble and Knockback do not apply. It does not Trample again. The Last Breath of the killed Unit still occurs by the normal rules.
+- **Trample:** When a melee Unit with Trample kills an enemy Unit with attack damage, the damage that is left goes to the enemy Unit in the next Square behind the killed Unit, in the same Lane. The damage that is left is the final damage of the hit (after Armor, Crit and Block) minus the HP that the killed Unit had. If that Square is empty, the damage is lost. It never hits a Hero. The second hit has the Damage Type of the Trample Unit, so Fire and Frost still give their Status. The Armor of the second Unit reduces it, and its Hero can Block it. It does not roll Crit. The second hit is not an attack: the second Unit does not Retaliate, and Poison, Hobble, Bleed and Knockback do not apply. It does not Trample again. The Last Breath of the killed Unit still occurs by the normal rules.
 
 ### 4.8 Skill Cards and Recall
 
@@ -304,6 +306,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | Keyword | Rule |
 | --- | --- |
 | **Armor N** | Reduces damage to this Unit by N. It does not reduce Holy damage. |
+| **Bleed N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Bleed keeps the higher count. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. See 4.7. |
 | **Charge** | +2 Speed in the Turn when you summon this Unit. |
 | **Entangle** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Entangled. An Entangled Unit has Speed 0 during its next action, but it can attack. Entangled then ends. A new Entangle does not stack or extend it. |
 | **First Strike** | See 4.7. |
@@ -314,7 +317,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | **Last Breath: X** | X occurs when this Unit leaves the Board. In v1, X deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that this Unit left. |
 | **Pivot** | Melee only. This Unit can attack an enemy Unit directly behind it or next to it, and it attacks them before the Unit in front. See 4.5 and 4.6. |
 | **Poison** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. In each End Step of the Poisoned Unit's owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. |
-| **Rally N** | In your Start Step, other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus. |
+| **Rally N** | In your Start Step, other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus. The bonus does not apply to Retaliation or First Strike, because they occur in the enemy's Turn. |
 | **Rebirth** | See 4.9. |
 | **Regeneration N** | In your Start Step, this Unit heals N HP. It cannot go above its maximum HP. |
 | **Retaliation** | See 4.7. |
@@ -322,8 +325,8 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | **Summon X** | When you summon this Unit, a Token X of the same Rank also appears in an empty Square next to it (behind it, or the same Column in a next Lane). If no Square is empty, no Token appears. |
 | **Swarm N** | While another friendly Unit or Token is in the same Lane, this Unit has +N Attack. More friendly Units do not increase the bonus. The bonus applies to attacks and Retaliation. |
 | **Trample** | Melee only. When this Unit kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it. See 4.7. |
-| **Unique** | Only one copy of this card can be on your side of the Board. |
-| **Wall** | Speed 0 and Attack 0. It blocks its Lane. |
+| **Unique** | Only one copy of this card can be on your side of the Board. While a Unit from this card is on your Side of the Board, no Hero of your Side can play a copy of this card, at any Rank. The card stays in the Hand. A Unit that the Stage puts on the Board also counts, and enemy Units do not count. A Deck can still hold more than 1 copy. |
+| **Wall** | Speed 0 and Attack 0. It blocks its Lane for enemy Units. Friendly Units move through it. |
 
 New Keywords must go through the balance process in section 13.
 
@@ -353,7 +356,7 @@ Each Creature Card has a role. Use the role to balance the card and to explain i
 | Runner | High Speed or Flying. Damages the Hero. |
 | Shooter | Ranged. Stays back and attacks. |
 | Support | Rally, Regeneration or Summon. Makes other Units better. |
-| Wall | Blocks a Lane. |
+| Wall | Blocks a Lane for enemy Units. |
 
 ## 6. Deck building
 
@@ -364,11 +367,31 @@ Each Creature Card has a role. Use the role to balance the card and to explain i
 | Copies of one card | Maximum 3, of any Rank. |
 | Skill Cards | Only Skill Cards of the Hero's Class. |
 | Races | The Deck can mix all Races. |
-| Saved Decks | 5 Deck slots. The player can unlock more in the Bazaar, up to 10. |
+| Saved Decks | 3 Deck slots for a new player: one for each Starter Deck and one empty. The player buys more with Coin in the Deck builder, up to 10 ([Economy 3.6](./07-economy.md#36-deck-slots)). A slot that the player buys is permanent. |
 
 - The Deck builder has an **Auto-fill** button. It fills the Deck with the strongest valid cards.
 - The Deck builder shows the Countdown curve (how many cards have each Countdown).
+- The Deck builder shows all cards of the game. An owned card has one tile for each Rank that the player owns. A card that the player does not own has one tile in its Base Rank: grey, with a "Not owned" plate. The player cannot add it, but can see its card details. The owned cards come first, then the cards that are not owned. Each group is in Countdown order. The header shows the number of different cards that the player owns, for example "14 / 66 owned".
+- Deck builder filters: All, owned or not owned; All, Creature Cards or Skill Cards; then the Race for Creature Cards, or the Class for Skill Cards. The filters apply together. The Class filter starts on the Class of the Deck. The filters reset when the dialog closes.
 - The game does not let the player start a Battle with a Deck that is not valid. It shows the reason.
+
+### 6.1 Starter Decks
+
+A new player gets the Starter Decks and picks one. The Hero Class comes from the Starter Deck. The cards of the Starter Decks are the Collection of a new player.
+
+- **Rule:** each copy in a Starter Deck has the Rank Common or Uncommon. A Common card at Rare Rank is also not permitted. The first Epic of a player comes from play: the first win of the Boss Stage 1-10 gives Iron Bulwark (Epic). A content test checks this rule for each Starter Deck.
+- **Guides** (not tested):
+  - A Starter Deck has 10 cards, the maximum Deck size at player level 1.
+  - Each copy is at its Base Rank, so a card that the player wins from a Stage is as strong as a card of the Starter Deck.
+  - Common Creature Cards come in pairs or triples. This makes the Hand consistent, and it gives a first Combine target at player level 3. An Uncommon card or a Skill Card can have 1 copy.
+  - Each Starter Deck has at least 1 Skill Card of its Class.
+
+| Starter Deck | Class | Deck |
+| --- | --- | --- |
+| Vanguard | Warrior | 2× Militia Recruit (C), 2× Crossbow Guard (C), 2× Halberdier (C), 3× River Knight (U), 1× Spear Throw (U) |
+| Raiders | Mage | 2× Scrap Raider (C), 2× Ember Shaman (C), 2× Tusk Brute (C), 2× Skyreaver (U), 1× Howling Charger (U), 1× Fireball (C) |
+
+The Campaign is tuned for these Decks ([14 — Campaign Stages](./14-campaign-stages.md)). When a Starter Deck changes, run the Stage simulation again.
 
 ## 7. Hero and progression
 
@@ -395,8 +418,8 @@ Each unlock shows a Hint (see 8.3).
 
 ### 7.2 Collection
 
-- The Collection shows all cards. A card that the player has not owned is a dark outline with its name hidden.
-- A card is **Discovered** after the player owns it one time. The player can see Discovered cards in all Ranks, and can Craft them.
+- The Collection shows all cards in full, also the cards that the player does not own. A card that the player does not own is grey, with a "Not owned" plate.
+- A card is **Discovered** after the player owns it one time. The player can Craft only Discovered cards.
 - The Collection shows the number of copies of each card in each Rank.
 - Filters: Race, Class, Rank, Countdown, Keyword, owned or not owned.
 
@@ -527,7 +550,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
   - **Gear looks**
 - Cosmetics never change gameplay.
 - **Earn-only Cosmetics** come only from play: one for each 10th Heynspire Floor, and one for each of 3 hard Achievements. They are never in the Bazaar.
-- The **Bazaar** sells all other Cosmetics and the Conveniences for Heynstones. A Convenience changes comfort or organization. It never changes the result of a Battle, the speed of progress or the content of the Collection. The v1 Convenience is an extra Deck slot.
+- The **Bazaar** sells all other Cosmetics and the Conveniences for Heynstones. A Convenience changes comfort or organization. It never changes the result of a Battle, the speed of progress or the content of the Collection. In v1 the Bazaar has no Convenience. A Deck slot is a Convenience, but it costs Coin, not Heynstones (section 6).
 - In v1, the player can only earn Heynstones, and only from one-time rewards. The total is less than the cost of the full Bazaar, so the player must choose. [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md) gives the reasons.
 
 ## 11. User interface
@@ -542,7 +565,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Heynspire | Floor list, current Floor, rewards |
 | Dungeons | Dungeon list, unlock levels, Bosses, rewards |
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
-| Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons, the cards that the player owns, the Countdown curve, validation, Auto-fill |
+| Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons and a locked ribbon that buys the next Deck slot, all cards with filters (see 6), the Countdown curve, validation, Auto-fill |
 | Collection | All cards, filters, card details |
 | Workshop | Combine, Extract, Craft |
 | Hero | Class, Gear, portrait |
@@ -670,7 +693,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
 1. Each Creature Card gets **power points** from its stats and Keywords.
    - Start formula: `power = Attack × 2 + HP + Speed × 2 + Keyword points`.
    - Add Range and Damage Type points: Range = its value, Fire = 3, Frost = 3 and Holy = 2.
-   - Start Keyword points: Armor N = N × 3, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 2 and Trample = 3.
+   - Start Keyword points: Armor N = N × 3, Bleed N = N × 1, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 2 and Trample = 3.
    - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.

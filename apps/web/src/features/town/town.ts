@@ -12,8 +12,11 @@ export interface Rect {
   readonly height: number;
 }
 
-/** The Town painting coordinates: a 16:9 box (web ADR-0005). */
-export const PAINTING = { width: 1600, height: 900 } as const;
+/**
+ * The Town painting coordinates (web ADR-0005). The box is wider than 16:9, so
+ * a wide screen shows the full Heynspire and the full Town Gate.
+ */
+export const PAINTING = { width: 1900, height: 900 } as const;
 
 /** The master painting. Each selectable Building is a cut-out layer of it. */
 export const PAINTING_IMAGE = "/town/town.webp";
@@ -67,9 +70,9 @@ export const overlaps = (a: Rect, b: Rect): boolean =>
  * 19.5:9 phone (11 — Town Concepts 1.2). No selectable Building goes here.
  */
 export const BALANCE_PLATE_CORNER: Rect = {
-  x: 1130,
+  x: 1280,
   y: 0,
-  width: 470,
+  width: 620,
   height: 320,
 };
 
@@ -92,8 +95,8 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
   {
     id: "townGate",
     screen: "campaign",
-    rect: { x: 570, y: 520, width: 344, height: 344 },
-    label: { x: 570, y: 474, width: 344, height: 46 },
+    rect: { x: 720, y: 520, width: 344, height: 344 },
+    label: { x: 720, y: 474, width: 344, height: 46 },
     image: "/town/town-gate.webp",
   },
 ];

@@ -24,19 +24,21 @@ export const deckSizeLimits = (level: number) => ({
  * The two starter Decks of the Battle slice. The Hero Class comes from the
  * Deck. The game gives them at player level 1, so each one has 10 cards, the
  * maximum Deck size at level 1 (GDD 6).
+ *
+ * Each copy in a Starter Deck has the Rank Common or Uncommon, so that the
+ * first Epic of a Player is a reward from play (the first win of the Boss
+ * Stage 1-10). Each copy is at its Base Rank, Common Creature Cards come in
+ * pairs or triples, and each Deck has at least 1 Skill Card of its Class.
  */
 export const STARTER_DECKS: readonly StarterDeck[] = [
   {
     id: "vanguard",
     classId: "warrior",
     deck: [
-      ...copies(1, "human.militiaRecruit", "common"),
-      ...copies(1, "human.shieldbearer", "common"),
+      ...copies(2, "human.militiaRecruit", "common"),
       ...copies(2, "human.crossbowGuard", "common"),
       ...copies(2, "human.halberdier", "common"),
-      ...copies(1, "human.riverKnight", "uncommon"),
-      ...copies(1, "human.ironBulwark", "epic"),
-      ...copies(1, "warrior.shieldWall", "common"),
+      ...copies(3, "human.riverKnight", "uncommon"),
       ...copies(1, "warrior.spearThrow", "uncommon"),
     ],
   },
@@ -44,15 +46,12 @@ export const STARTER_DECKS: readonly StarterDeck[] = [
     id: "raiders",
     classId: "mage",
     deck: [
-      ...copies(1, "orc.badlandPup", "common"),
       ...copies(2, "orc.scrapRaider", "common"),
-      ...copies(1, "orc.emberShaman", "common"),
+      ...copies(2, "orc.emberShaman", "common"),
+      ...copies(2, "orc.tuskBrute", "common"),
+      ...copies(2, "orc.skyreaver", "uncommon"),
       ...copies(1, "orc.howlingCharger", "uncommon"),
-      ...copies(1, "orc.skyreaver", "uncommon"),
-      ...copies(1, "orc.tuskBrute", "common"),
-      ...copies(1, "orc.warchiefGrukka", "epic"),
       ...copies(1, "mage.fireball", "common"),
-      ...copies(1, "mage.frostBolt", "common"),
     ],
   },
 ];

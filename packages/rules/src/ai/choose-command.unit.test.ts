@@ -162,3 +162,16 @@ describe("determinism (BAT-06) and Battle length", () => {
     }
   });
 });
+
+describe("chooseCommand with Unique (GDD 5.4)", () => {
+  it("does not play a Unique card while a friendly Unit from it is on the Board", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.marshalElianVoss",
+      owner: "player",
+      position: 4,
+    });
+    giveHand(state, "player", [["human.marshalElianVoss", 0]]);
+    expect(chooseCommand(state)).toEqual(Command.EndTurn());
+  });
+});

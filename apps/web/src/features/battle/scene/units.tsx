@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import type { Group, Mesh, MeshBasicMaterial, Sprite } from "three";
 import {
@@ -30,15 +31,27 @@ import {
 } from "@/features/battle/battle.atoms";
 import { battleCreatureCards } from "@/features/battle/card-art";
 import { SIDE_COLORS } from "@/features/battle/palette";
+import {
+  fxAtlas,
+  fxSlotIcon,
+  subscribeFxAtlas,
+} from "@/features/battle/scene/fx-atlas";
 import { laneZ } from "@/features/battle/scene/layout";
 import { playback } from "@/features/battle/scene/playback";
+import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
+import {
+  badgeStatuses,
+  STATUS_ICON,
+} from "@/features/battle/scene/status-visuals";
 import {
   blobShadowTexture,
   loadedUnitArt,
+  statusBadgeTexture,
   unitArtTexture,
   unitFigureTexture,
   unitStatTexture,
 } from "@/features/battle/scene/textures";
+import { unitAnchors } from "@/features/battle/scene/unit-anchors";
 import type { UnitModelSpec } from "@/features/battle/scene/unit-models";
 import {
   allUnitModels,
@@ -50,6 +63,7 @@ import type { Pose } from "@/features/battle/scene/unit-pose";
 import {
   currentEvent,
   emptyPose,
+  passesFriendlyUnit,
   poseFor,
 } from "@/features/battle/scene/unit-pose";
 import { buildRig } from "@/features/battle/scene/unit-rig";
@@ -101,11 +115,46 @@ const tintFigure = (material: MeshBasicMaterial | null, pose: Pose) => {
 /** The line sits below the lower edge of the figure, not on the art. */
 const STAT_Y = -0.08;
 
-const fadeParts = (stat: Sprite | null, pose: Pose) => {
+/** The height of a cut-out figure. A 3D model has its own height. */
+const FIGURE_HEIGHT = 1.03;
+
+/** The Status Badge sits above the head of the figure. */
+const BADGE_GAP = 0.3;
+
+const fadeParts = (
+  stat: Sprite | null,
+  badge: Sprite | null,
+  badgeY: number,
+  pose: Pose
+) => {
   if (stat) {
     stat.position.y = STAT_Y + pose.y;
     stat.material.opacity = pose.opacity;
   }
+  if (badge) {
+    badge.position.y = badgeY + pose.y;
+    badge.material.opacity = pose.opacity;
+  }
+};
+
+/**
+ * The Status Badge texture of a Unit, or `null` with no Status. It draws
+ * again only when the badge list or the atlas changes.
+ */
+const useStatusBadge = (unit: UnitView) => {
+  const atlas = useSyncExternalStore(subscribeFxAtlas, fxAtlas);
+  const { badges, more } = badgeStatuses(unit);
+  // `statusBadgeTexture` caches each badge list, so this draws only once.
+  return badges.length === 0
+    ? null
+    : statusBadgeTexture({
+        badges: badges.map((badge) => ({
+          ...badge,
+          icon: fxSlotIcon(atlas, STATUS_ICON[badge.status]),
+        })),
+        more,
+        version: atlas.version,
+      });
 };
 
 /** The figure of a Unit. The Unit writes its pose to it in each frame. */
@@ -219,6 +268,19 @@ const FocusRing = ({ owner }: { readonly owner: UnitView["owner"] }) => (
   </group>
 );
 
+/** Registers the group of a Unit for the Status loops while it is on the Board. */
+const registerAnchor = (unitId: number) => (group: Group | null) => {
+  if (!group) {
+    return;
+  }
+  unitAnchors.set(unitId, group);
+  return () => {
+    if (unitAnchors.get(unitId) === group) {
+      unitAnchors.delete(unitId);
+    }
+  };
+};
+
 /** Registers the hit box of a Unit for the Unit picker while it is on the Board. */
 const registerHitArea = (unitId: number) => (mesh: Mesh | null) => {
   if (!mesh) {
@@ -261,16 +323,20 @@ const UnitFigure = ({
   lanes,
   dying,
   inspected,
+  reducedMotion,
 }: {
   readonly unit: UnitView;
   readonly lanes: number;
   /** A dying Unit plays its death, and cannot be inspected. */
   readonly dying: boolean;
   readonly inspected: boolean;
+  readonly reducedMotion: boolean;
 }) => {
   const group = useRef<Group>(null);
   const body = useRef<BodyHandle>(null);
   const stat = useRef<Sprite>(null);
+  const badge = useRef<Sprite>(null);
+  const badgeTexture = useStatusBadge(unit);
   const pose = useMemo<Pose>(() => emptyPose(), []);
   const stats = useMemo(
     () =>
@@ -285,34 +351,45 @@ const UnitFigure = ({
   const shadow = useMemo(() => blobShadowTexture(), []);
   const z = laneZ(unit.lane, lanes);
   const model = unitModelOf(unit.cardId);
+  const badgeY = (model?.height ?? FIGURE_HEIGHT) + BADGE_GAP;
 
   // The enemy faces left: its figure is mirrored.
   const facing = facingOf(unit.owner);
 
   useFrame(({ camera }) => {
+    const current = playback.session?.current;
     poseFor(
       unit,
-      currentEvent(playback.session?.current),
+      currentEvent(current),
       playback.progress,
       playback.time,
-      pose
+      pose,
+      { passing: passesFriendlyUnit(current), reducedMotion }
     );
     const node = group.current;
     if (!node) {
       return;
     }
-    node.position.set(pose.x, 0, z);
+    node.position.set(pose.x, 0, z + pose.z);
     body.current?.update(
       pose,
-      Math.atan2(camera.position.x - pose.x, camera.position.z - z)
+      Math.atan2(camera.position.x - pose.x, camera.position.z - z - pose.z)
     );
-    fadeParts(stat.current, pose);
+    fadeParts(stat.current, badge.current, badgeY, pose);
   });
 
   const hitRef = useMemo(() => registerHitArea(unit.id), [unit.id]);
+  // A dying Unit shows no Status loops.
+  const groupRef = useMemo(() => {
+    const anchor = dying ? undefined : registerAnchor(unit.id);
+    return (node: Group | null) => {
+      group.current = node;
+      return anchor?.(node);
+    };
+  }, [dying, unit.id]);
   const cutOut = <CutOutBody unit={unit} facing={facing} ref={body} />;
   return (
-    <group ref={group} name={`unit-${unit.id}`}>
+    <group ref={groupRef} name={`unit-${unit.id}`}>
       <mesh
         geometry={SHADOW}
         rotation-x={-Math.PI / 2}
@@ -345,6 +422,16 @@ const UnitFigure = ({
           toneMapped={false}
         />
       </sprite>
+      {badgeTexture ? (
+        <sprite ref={badge} scale={[1.2, 0.3, 1]} renderOrder={5}>
+          <spriteMaterial
+            map={badgeTexture}
+            transparent
+            depthTest={false}
+            toneMapped={false}
+          />
+        </sprite>
+      ) : null}
     </group>
   );
 };
@@ -369,6 +456,7 @@ export const Units = () => {
   const session = useAtomValue(battleSessionAtom);
   const detailsId = inspectedUnitId(useAtomValue(detailsUnitAtom));
   const options = battleOptions(session);
+  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   // Load the card art of both Sides at the Battle start, before the first summon.
   useEffect(() => {
     if (!session) {
@@ -394,6 +482,7 @@ export const Units = () => {
           lanes={view.lanes}
           dying={unit === dying}
           inspected={unit.id === detailsId}
+          reducedMotion={reducedMotion}
         />
       ))}
     </>

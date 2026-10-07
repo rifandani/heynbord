@@ -14,7 +14,7 @@ import {
 } from "../testing/fixtures";
 import { createBattle } from "./create-battle";
 import { step } from "./step";
-import { legalTargets, unitsInArea } from "./targets";
+import { isBlockedByUnique, legalTargets, unitsInArea } from "./targets";
 import { Command, Target } from "./types";
 import type { Side } from "./types";
 
@@ -508,5 +508,87 @@ describe("Sabotage (GDD 5.4, ADR-0017)", () => {
     const { state, events } = sabotageInto("goblin.scrapPlateGuard", [0]);
     expect(countdowns(state, "enemy")).toEqual([0]);
     expect(eventsOfType(events, "CardSabotaged")).toEqual([]);
+  });
+});
+
+describe("Unique (GDD 5.4)", () => {
+  const VOSS = "human.marshalElianVoss";
+
+  it("has no target while a friendly Unit from the same card is on the Board", () => {
+    const state = emptyBattle();
+    placeUnit(state, { cardId: VOSS, owner: "player", position: 4 });
+    giveHand(state, "player", [[VOSS, 0]]);
+    expect(isBlockedByUnique(VOSS, [VOSS])).toBe(true);
+    expect(isBlockedByUnique(VOSS, [])).toBe(false);
+    expect(legalTargets(state, 0)).toEqual([]);
+    expect(violation(step(state, play(0, square(0, 0))))).toBe("IllegalTarget");
+  });
+
+  it("counts a Unit of any Rank", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: VOSS,
+      owner: "player",
+      position: 4,
+      rank: "epic",
+    });
+    giveHand(state, "player", [[VOSS, 0, "legendary"]]);
+    expect(legalTargets(state, 0)).toEqual([]);
+  });
+
+  it("does not count an enemy Unit from the same card", () => {
+    const state = emptyBattle();
+    placeUnit(state, { cardId: VOSS, owner: "enemy", position: 8 });
+    giveHand(state, "player", [[VOSS, 0]]);
+    expect(legalTargets(state, 0)).toHaveLength(3);
+  });
+
+  it("does not block a card without Unique", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+    });
+    giveHand(state, "player", [["human.militiaRecruit", 0]]);
+    expect(legalTargets(state, 0)).toHaveLength(3);
+    expect(
+      isBlockedByUnique("human.militiaRecruit", ["human.militiaRecruit"])
+    ).toBe(false);
+  });
+
+  it("lets the card be played again when the Unit is not on the Board", () => {
+    const state = emptyBattle();
+    giveHand(state, "player", [
+      [VOSS, 0],
+      [VOSS, 0],
+    ]);
+    const { state: next } = run(state, play(0, square(0, 0)));
+    expect(legalTargets(next, 0)).toEqual([]);
+    next.units = [];
+    expect(legalTargets(next, 0)).toHaveLength(3);
+  });
+
+  it("counts a Start Unit of the Stage", () => {
+    const stage = getStage("1-1");
+    const { state } = createBattle({
+      seed: 1,
+      stage: {
+        ...stage,
+        enemy: {
+          ...stage.enemy,
+          startUnits: [{ cardId: VOSS, rank: "epic", lane: 0, position: 9 }],
+        },
+      },
+      player: {
+        classId: "warrior",
+        deck: stage.enemy.deck,
+        level: 1,
+        gear: NO_GEAR,
+      },
+    });
+    state.activeSide = "enemy";
+    giveHand(state, "enemy", [[VOSS, 0]]);
+    expect(legalTargets(state, state.sides.enemy.hand.length - 1)).toEqual([]);
   });
 });

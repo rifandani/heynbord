@@ -52,10 +52,30 @@ const skillTargets = (
 };
 
 /**
+ * Unique (GDD 5.4): true when `cardId` is a Unique Creature Card, and a Unit
+ * from the same card is in `friendlyUnitCardIds` (the card IDs of the Units of
+ * that Side on the Board). The Rank of the Unit does not matter, and a Start
+ * Unit also counts. The web gives the Units of its view, so that a card does
+ * not change before the Battle Events play.
+ */
+export const isBlockedByUnique = (
+  cardId: string,
+  friendlyUnitCardIds: readonly string[]
+): boolean => {
+  const definition = getCard(cardId);
+  return (
+    definition.kind === "creature" &&
+    definition.keywords.unique === true &&
+    friendlyUnitCardIds.includes(cardId)
+  );
+};
+
+/**
  * All legal targets of the card at `handIndex` for the active side. A Creature
  * Card goes to an empty Square of the Summon Zone (GDD 4.1, ADR-0011), also
- * past an enemy Unit. No card can target a Closed Lane. An empty list means
- * that the card cannot be played now.
+ * past an enemy Unit. No card can target a Closed Lane, and a Unique card has
+ * no target while it is blocked. An empty list means that the card cannot be
+ * played now.
  */
 export const legalTargets = (
   state: BattleState,
@@ -68,6 +88,12 @@ export const legalTargets = (
   }
   const definition = getCard(card.cardId);
   if (definition.kind === "creature") {
+    const friendlyUnitCardIds = state.units.flatMap((unit) =>
+      unit.owner === side ? [unit.card.cardId] : []
+    );
+    if (isBlockedByUnique(card.cardId, friendlyUnitCardIds)) {
+      return [];
+    }
     return openLanes(state).flatMap((lane) =>
       summonPositions(side).flatMap((position) =>
         unitAt(state, lane, position) ? [] : [Target.Square({ lane, position })]

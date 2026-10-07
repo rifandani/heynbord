@@ -128,7 +128,10 @@ export const TopBar = ({ battle }: { readonly battle: Battle }) => {
   const { view } = session;
   const yourTurn = view.activeSide === "player";
   return (
-    <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-2 p-2 pt-[max(0.5rem,env(safe-area-inset-top))] pr-[max(0.5rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))]">
+    <header
+      data-battle-hud="top"
+      className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-2 p-2 pt-[max(0.5rem,env(safe-area-inset-top))] pr-[max(0.5rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))]"
+    >
       <div className="pointer-events-auto flex min-w-0 items-start gap-2">
         <LeaveBattle battle={battle} finished={view.result !== null} />
         <HeroPanel

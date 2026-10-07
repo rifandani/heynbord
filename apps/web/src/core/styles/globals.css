@@ -430,12 +430,12 @@
 /* A ring of light on the ground around the Open Stage Marker. */
 @keyframes campaign-ripple {
   0% {
-    transform: translateX(-50%) scale(0.55);
+    transform: scale(0.55);
     opacity: 0.85;
   }
   70%,
   100% {
-    transform: translateX(-50%) scale(1.25);
+    transform: scale(1.25);
     opacity: 0;
   }
 }
@@ -458,11 +458,11 @@
 
 @keyframes campaign-awaken-ring {
   0% {
-    transform: translate(-50%, -50%) scale(0.3);
+    transform: scale(0.3);
     opacity: 0.95;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
     opacity: 0;
   }
 }

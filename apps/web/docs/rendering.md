@@ -1,7 +1,5 @@
 # Rendering
 
-The app runs on [TanStack Start](https://tanstack.com/start). The server renders and streams the full HTML document for each request. Then React hydrates it.
-
 ## Rules
 
 - Do not make a module-level router, `AtomRegistry`, or other per-user store. `getRouter()` in `src/router.tsx` makes new ones for each request. Get them with `useRouter()`, the atom hooks of `@effect/atom-react`, or the route `context` (`context.registry`).
@@ -18,7 +16,6 @@ The app runs on [TanStack Start](https://tanstack.com/start). The server renders
 - Validate search params with `Schema.toStandardSchemaV1(...)` in `validateSearch`. See `src/routes/master-design.tsx`.
 - An atom that a server render reads must not need the browser. Give it a server value with `Atom.withServerValue(...)`. See `src/features/color-mode/color-mode.atoms.ts`.
 - In a loader, use `await` only for data that the first paint must have. Return other promises without `await`, so they stream.
-- Use the route `head()` for meta tags. See [SEO](seo.md).
 - Keep the CSRF middleware in `src/start.ts` if you add more request middleware.
 
 ## Offline (PWA)
@@ -26,9 +23,3 @@ The app runs on [TanStack Start](https://tanstack.com/start). The server renders
 Pages are network-first. The service worker keeps each page that the user opens. Offline, a page that the user did not open shows `public/offline.html`. A route that calls a server function in its `loader` does not work offline.
 
 The precache keeps only the app shell: the files in `assets/`, `offline.html` and the favicons. Do not add the game art to the precache. The service worker keeps each image from `public/creature/`, `public/skills/`, `public/town/`, `public/battle/` and `public/glb/` when a screen shows it, and gets the new file in the background. Keep a file in `public/` only if it must have a fixed URL. See `injectManifest` in `vite.config.ts` and `src/sw.ts`.
-
-## Deployment
-
-Nitro builds the server. It finds Vercel with no configuration. For a different runtime, set `NITRO_PRESET` (for example `bun` or `netlify`) for the build. For Node.js, use `bun run build`, then `bun run start`.
-
-Response headers are Nitro `routeRules` in `vite.config.ts`.

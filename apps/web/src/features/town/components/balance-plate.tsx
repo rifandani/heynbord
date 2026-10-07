@@ -82,7 +82,7 @@ const Balance = ({
 };
 
 /** A Coin balance: each denomination that is not zero, with its coin and letter. */
-const CoinAmount = ({
+export const CoinAmount = ({
   parts,
   format,
 }: {

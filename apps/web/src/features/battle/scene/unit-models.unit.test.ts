@@ -23,7 +23,9 @@ const unit: UnitView = {
   burn: 0,
   poisoned: 0,
   hobbled: 0,
+  bleeding: 0,
   frozen: false,
+  entangled: false,
 };
 
 const hit = (unitId: number) =>

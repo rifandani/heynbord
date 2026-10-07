@@ -90,6 +90,11 @@ const Keywords = Schema.Struct({
    */
   hobble: Schema.optionalKey(KeywordAmount),
   /**
+   * After attack damage above 0, the enemy Unit becomes Bleeding with this
+   * count: it gets half of each heal, rounded down (GDD 4.7, ADR-0019).
+   */
+  bleed: Schema.optionalKey(KeywordAmount),
+  /**
    * After attack damage above 0, a melee Unit Pushes the enemy Unit this many
    * Squares toward its own Hero (GDD 4.7). A Unit with Wall is never Pushed.
    */
@@ -107,8 +112,8 @@ const Keywords = Schema.Struct({
    */
   trample: Schema.optionalKey(Schema.Literal(true)),
   /**
-   * Only one copy on a Side of the Board (GDD 5.4). It is card data for the
-   * named Epic of a Race. No Battle rule reads it yet.
+   * While a Unit from this card is on a Side of the Board, that Side cannot
+   * play a copy of it, at any Rank (GDD 5.4). The named Epic of each Race has it.
    */
   unique: Schema.optionalKey(Schema.Literal(true)),
   /** A push never moves this Unit (GDD 4.7, 5.4). */

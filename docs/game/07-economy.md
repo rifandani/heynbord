@@ -8,7 +8,7 @@ Pillar 1 ("Fair to the player") controls all decisions in this document.
 
 | Resource | Type | How the player gets it | What it is for |
 | --- | --- | --- | --- |
-| **Coin** | Soft currency | Battles, Star chests, Heynspire, Achievements | Packs, Combine, Gear upgrades |
+| **Coin** | Soft currency | Battles, Star chests, Heynspire, Achievements | Packs, Combine, Gear upgrades, Deck slots |
 | **Heynstones** | Rare currency | 30-Star chests, 10th Heynspire Floors, Achievements (one time each) | Cosmetics and Conveniences in the Bazaar |
 | **Essence** | Craft resource | Extract, Heynspire milestones, Achievements | Craft |
 | **XP** | Progress | Battles | Player level |
@@ -158,7 +158,7 @@ All Heynstone sources are one-time rewards. The player cannot farm Heynstones.
 | 10th Heynspire Floors (5) | 250 |
 | **Total** | **About 1,700** |
 
-The total is about 65% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock.
+The total is about 71% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock.
 
 ## 3. Sinks
 
@@ -226,7 +226,7 @@ One item from level 0 to 10 costs 15,400 Coin (1g 54s). All 4 items cost 61,600 
 
 ### 3.5 Bazaar
 
-The Bazaar sells Cosmetics and Conveniences for Heynstones. Earn-only Cosmetics are never in the Bazaar.
+The Bazaar sells Cosmetics and Conveniences for Heynstones. Earn-only Cosmetics are never in the Bazaar. In v1 the Bazaar has no Convenience: a Deck slot costs Coin (section 3.6).
 
 | Item | Price (Heynstones) |
 | --- | --- |
@@ -234,11 +234,24 @@ The Bazaar sells Cosmetics and Conveniences for Heynstones. Earn-only Cosmetics 
 | Hero portrait | 100 |
 | Gear look | 100 |
 | Board skin | 200 |
-| Extra Deck slot (+1, up to 10 slots) | 50 |
 
-- v1 has about 22 Bazaar Cosmetics and 5 extra Deck slots. The full catalog costs about 2,650 Heynstones.
+- v1 has about 22 Bazaar Cosmetics. The full catalog costs about 2,400 Heynstones.
 - A **Convenience** changes comfort or organization. It never changes the result of a Battle, the speed of progress or the content of the Collection. XP or Coin boosts, Battle skips, Packs, cards, Essence and Gear levels are never Conveniences.
 - Each new Convenience must pass the Pillar 1 test before it goes into the Bazaar.
+
+### 3.6 Deck slots
+
+A new player has 3 Deck slots: one for each Starter Deck and one empty. The player buys more with Coin in the Deck builder, up to 10. Each slot costs more than the one before.
+
+| Deck slot | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Coin | 500 | 1,000 | 1,500 | 2,000 | 3,000 | 4,000 | 5,000 |
+
+- All 7 slots cost 17,000 Coin (1g 70s), a bit more than one Gear item from level 0 to 10.
+- The 4th slot costs the same as a Standard Pack, so the player can buy it in Region 1. The last slots are a small Coin sink for the endgame.
+- A Deck slot is a Convenience: it gives no power. It costs Coin and not Heynstones, so in v2 nobody pays real money for it.
+- A purchase is permanent. The player cannot sell or remove a Deck slot.
+- The data is `DECK_SLOT_PRICES` in `packages/rules/src/content/deck-slots.ts`. Keep the code and this table the same.
 
 ## 4. Pacing targets
 

@@ -11,7 +11,8 @@ const flagPoints = (on: true | undefined, points: number): number =>
   on ? points : 0;
 
 /**
- * Keyword points at the Base Rank (GDD 13). Hobble N = N × 1. Knockback N = N × 3.
+ * Keyword points at the Base Rank (GDD 13). Bleed N = N × 1. Hobble N = N × 1.
+ * Knockback N = N × 3.
  * Sabotage N = N × 4. Unique and Wall use 0 points.
  */
 const keywordPoints = (card: CreatureCardDefinition): number => {
@@ -20,6 +21,7 @@ const keywordPoints = (card: CreatureCardDefinition): number => {
   const { keywords } = card;
   return (
     stackPoints(valueAtBaseRank(keywords.armor), 3) +
+    stackPoints(valueAtBaseRank(keywords.bleed), 1) +
     flagPoints(keywords.charge, 3) +
     flagPoints(keywords.entangle, 2) +
     flagPoints(keywords.flying, 4) +

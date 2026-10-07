@@ -45,6 +45,7 @@ const READY_CREATURE: HandCardView = {
   cardId: "human.militiaRecruit",
   rank: "common",
   countdown: 0,
+  blocked: false,
 };
 const READY_SKILL: HandCardView = {
   ...READY_CREATURE,
@@ -74,6 +75,7 @@ const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   pivot: false,
   poison: false,
   hobble: 0,
+  bleed: 0,
   knockback: 0,
   rally: 0,
   regeneration: 0,
@@ -84,6 +86,7 @@ const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   burn: 0,
   poisoned: 0,
   hobbled: 0,
+  bleeding: 0,
   frozen: false,
   entangled: false,
   rallied: 0,

@@ -2063,18 +2063,18 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.3 Frostfang Lynx
 
-`feral.frostfangLynx` · Striker · Common · Countdown 2 · Attack 4 · HP 3 · Speed 1 · Melee · Frost
+`feral.frostfangLynx` · Striker · Common · Countdown 2 · Attack 4 · HP 3 · Speed 1 · Melee · Frost · Bleed 1
 
 > You will not hear it. You will feel the cold first.
 
-Purpose: a cheap Frost Striker that Freezes its target. Power 16, budget 16, deviation 0%.
+Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so that a healer or a Regeneration Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 17, budget 16, deviation +6.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A white mountain lynx with long ear tufts and ice-blue fangs. |
 | Pose | It jumps forward with its claws out. |
 | Props | None. Frost breath and frosty claws. |
-| Gameplay cues | The frost on its claws and breath shows Frost. |
+| Gameplay cues | The frost on its claws and breath shows Frost. The long claws show Bleed. |
 | Silhouette hook | The ear tufts and the long jump. |
 | Humor note | A lump of snow sits on its head after a jump through a snowbank. |
 | Setting | A snowy ledge. |
@@ -2375,18 +2375,18 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.15 Old Frostmaw (draft)
 
-`feral.oldFrostmaw` · Striker · Epic · Countdown 6 · Attack 8 · HP 14 · Speed 1 · Melee · Frost · Unique · Trample
+`feral.oldFrostmaw` · Striker · Epic · Countdown 6 · Attack 8 · HP 13 · Speed 1 · Melee · Frost · Unique · Trample · Bleed 2
 
 > Every village has a story about it. Every story is too small.
 
-Purpose: the named Feral Epic: a huge Frost Striker that Tramples. Power 38, budget 36, deviation +5.6%.
+Purpose: the named Feral Epic: a huge Frost Striker that Tramples, and its bite makes the target Bleeding. Bleed is 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Its HP went from 14 to 13 to pay for Bleed. Power 39, budget 36, deviation +8.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | Old Frostmaw: a huge, old, white cave wyrm with no wings and a crown of icicles. |
 | Pose | It comes out of an ice cave with its jaws open. |
 | Props | Broken ice pillars. A very small hunting horn hangs from one tooth. |
-| Gameplay cues | The ice breath shows Frost. The broken ice pillars show Trample. Epic: a heroic scene. |
+| Gameplay cues | The ice breath shows Frost. The broken ice pillars show Trample. The open jaws and the long fangs show Bleed. Epic: a heroic scene. |
 | Silhouette hook | The long neck and the icicle crown. |
 | Humor note | The horn is the lure that called it. The hunter who blew it is gone. |
 | Setting | A great ice cave. |

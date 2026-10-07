@@ -9,6 +9,7 @@ import { squareX } from "@/features/battle/scene/layout";
 import {
   currentEvent,
   emptyPose,
+  passesFriendlyUnit,
   poseFor,
 } from "@/features/battle/scene/unit-pose";
 
@@ -31,17 +32,20 @@ const unit: UnitView = {
   burn: 0,
   poisoned: 0,
   hobbled: 0,
+  bleeding: 0,
   frozen: false,
+  entangled: false,
 };
 
 const pose = (
   event: BattleEvent | null,
   progress: number,
   target: UnitView = unit,
-  time = 0
+  time = 0,
+  passing = false
 ) => {
   const result = emptyPose();
-  poseFor(target, event, progress, time, result);
+  poseFor(target, event, progress, time, result, { passing });
   return result;
 };
 
@@ -67,6 +71,7 @@ describe("emptyPose and currentEvent", () => {
     expect(emptyPose()).toEqual({
       x: 0,
       y: 0,
+      z: 0,
       lean: 0,
       tilt: 0,
       opacity: 1,
@@ -81,6 +86,38 @@ describe("emptyPose and currentEvent", () => {
     expect(currentEvent(null)).toBeNull();
     expect(currentEvent()).toBeNull();
     expect(currentEvent({ event, duration: 1, before: view })).toBe(event);
+  });
+});
+
+const still = (target: UnitView, time: number) => {
+  const result = emptyPose();
+  poseFor(target, null, 0, time, result, { reducedMotion: true });
+  return result;
+};
+
+describe("poseFor with reduced motion", () => {
+  it("gives a static tint for the Status of each loop", () => {
+    const entangled = still({ ...unit, entangled: true }, 0);
+    expect(color(entangled.tint)).toBe("7fcf6a");
+    expect(entangled.tintAmount).toBe(0.35);
+    const later = still({ ...unit, entangled: true }, 3.7);
+    expect(color(later.tint)).toBe("7fcf6a");
+    expect(later.tintAmount).toBe(0.35);
+    expect(color(still({ ...unit, burn: 2 }, 1.3).tint)).toBe("ffb070");
+  });
+
+  it("mixes the tints of the 2 loop Statuses, and ignores the other Statuses", () => {
+    const both = still({ ...unit, frozen: true, burn: 2, hobbled: 2 }, 0);
+    expect(color(both.tint)).toBe("d4c6b8");
+    expect(color(still({ ...unit, frozen: true, burn: 2 }, 0).tint)).toBe(
+      "d4c6b8"
+    );
+  });
+
+  it("gives no tint to a Unit with no Status", () => {
+    const quiet = still(unit, 0);
+    expect(quiet.tint).toBeNull();
+    expect(quiet.tintAmount).toBe(0);
   });
 });
 
@@ -153,6 +190,22 @@ describe("poseFor in an event", () => {
     expect(walk.y).toBeCloseTo(0.025 + Math.sin(7) * 0.025 + 0.2);
     const fly = pose(event, 0.25, { ...unit, flying: true });
     expect(fly.y).toBeCloseTo(0.025 + Math.sin(7) * 0.025 + 0.5);
+  });
+
+  it("steps toward the camera when it walks through a friendly Unit", () => {
+    const event = BattleEvent.UnitMoved({
+      unitId: unit.id,
+      lane: 0,
+      from: 2,
+      to: 4,
+    });
+    expect(pose(event, 0.5).z).toBe(0);
+    const pass = pose(event, 0.5, unit, 0, true);
+    expect(pass.z).toBeGreaterThan(0);
+    expect(pose(event, 0, unit, 0, true).z).toBeCloseTo(0);
+    expect(pose(event, 1, unit, 0, true).z).toBeCloseTo(0);
+    expect(pose(event, 0.5, { ...unit, flying: true }, 0, true).z).toBe(0);
+    expect(pose(null, 0.5, unit, 0, true).z).toBe(0);
   });
 
   it("slides a push without the walk hop", () => {
@@ -233,5 +286,52 @@ describe("poseFor in an event", () => {
     );
     expect(color(healed.tint)).toBe("9dffb4");
     expect(healed.tintAmount).toBeCloseTo(0.3);
+  });
+});
+
+/** The view before an event, with only `units` on the Board. */
+const before = (units: readonly UnitView[]) => ({ ...view, units });
+
+describe("passesFriendlyUnit", () => {
+  const moved = BattleEvent.UnitMoved({
+    unitId: unit.id,
+    lane: 0,
+    from: 2,
+    to: 4,
+  });
+
+  it("is true when a friendly Unit is between the two Squares of a walk", () => {
+    const friend = { ...unit, id: 8, position: 3 };
+    expect(
+      passesFriendlyUnit({
+        event: moved,
+        duration: 1,
+        before: before([unit, friend]),
+      })
+    ).toBe(true);
+  });
+
+  it("is false for an enemy Unit, another Lane, a Square outside the walk, or no walk", () => {
+    for (const other of [
+      { ...unit, id: 8, position: 3, owner: "enemy" as const },
+      { ...unit, id: 8, position: 3, lane: 1 },
+      { ...unit, id: 8, position: 5 },
+    ]) {
+      expect(
+        passesFriendlyUnit({
+          event: moved,
+          duration: 1,
+          before: before([unit, other]),
+        })
+      ).toBe(false);
+    }
+    expect(passesFriendlyUnit(null)).toBe(false);
+    expect(
+      passesFriendlyUnit({
+        event: BattleEvent.UnitDied({ unitId: unit.id }),
+        duration: 1,
+        before: before([unit]),
+      })
+    ).toBe(false);
   });
 });

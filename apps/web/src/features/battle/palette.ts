@@ -87,3 +87,26 @@ export const SIDE_COLORS: Readonly<
   player: { main: "#f2c14e", light: "#ffe29a", dark: "#8a5a12" },
   enemy: { main: "#d9463b", light: "#f08a80", dark: "#6b1610" },
 };
+
+/**
+ * The color anchors of the effects atlas (web ADR-0009). A `fixed` atlas
+ * image has its middle tone on its anchor. The icon anchors are lighter than
+ * the slot colors of the same Status, because the icons are on a dark plate.
+ */
+export const FX_ANCHORS = {
+  holy: "#ffd75a",
+  fire: "#ff6a33",
+  vine: "#4c9a3b",
+  chain: "#4a4a48",
+  shield: "#9cc8ff",
+  frost: "#8fd8ff",
+  poison: "#9ccf3a",
+  blood: "#8e1f1f",
+  dust: "#b39a76",
+  iconBurn: "#ff6a33",
+  iconFreeze: "#8fd8ff",
+  iconPoison: "#9ccf3a",
+  iconEntangle: "#6fbf55",
+  iconHobble: "#a3a8ae",
+  iconBleed: "#d0453a",
+} as const;

@@ -1,6 +1,6 @@
 export { chooseCommand, visibleTo } from "./ai/choose-command";
 export { createBattle, STARTING_HAND } from "./battle/create-battle";
-export { legalTargets, sameTarget } from "./battle/targets";
+export { isBlockedByUnique, legalTargets, sameTarget } from "./battle/targets";
 export { starsFor } from "./battle/stars";
 export { step } from "./battle/step";
 export type { StepOutput } from "./battle/step";
@@ -55,6 +55,12 @@ export type {
 export { CARDS, getCard } from "./content/cards";
 export { coinDenominations } from "./content/coin";
 export type { CoinDenomination, CoinPart } from "./content/coin";
+export {
+  DECK_SLOT_PRICES,
+  MAX_DECK_SLOTS,
+  nextDeckSlotPrice,
+  STARTING_DECK_SLOTS,
+} from "./content/deck-slots";
 export {
   deckSizeLimits,
   getStarterDeck,

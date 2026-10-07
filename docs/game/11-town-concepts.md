@@ -2,14 +2,14 @@
 
 This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons.
 
-Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1672 × 941). The Town Gate layer `town-gate.webp` is cut out of it by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 3200 × 1800 can replace it with no code change if it keeps the same composition.
+Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1986 × 941). It is the 1672 × 941 original, stretched to the side: the center 400 code units keep their shape, and the stretch increases to 1.67× at the left and right edges. This lets a wide desktop screen show the full Heynspire and the full Town Gate. The Town Gate layer `town-gate.webp` is cut out of the original by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 4000 × 1800 can replace it with no code change if it keeps the same composition.
 
 ## 1. Rules for the Town art
 
 - **One master painting.** Make the full Town in one image, so that all Buildings have the same light, scale and style. Do not make each Building in a separate image.
 - **View.** A high bird's-eye view, about 45° down, like a painted map of a town. All Buildings show their front and their roof.
 - **Light.** From the upper left, as in all other art.
-- **Size.** Landscape 16:9. Export at 3200 × 1800. The code uses a 1600 × 900 coordinate box, so 1 code unit is 2 pixels.
+- **Size.** Landscape, about 2.1:1, so that a wide desktop screen shows the full painting from the top of the Heynspire to the ground line. Export at 3800 × 1800. The code uses a 1900 × 900 coordinate box, so 1 code unit is 2 pixels.
 - **No text.** The image has no labels, signs with letters, logo or UI. The game shows the Building labels as text from the Message Catalogs, in each language.
 - **Each Building is clear.** Each Building has its own silhouette and some open space around it, so that a Player can find it at a small size (a phone in landscape).
 - **Detail and humor.** Bright, warm and a little funny (art direction 1). Small people, animals and jokes are good. They must not hide the Buildings.
@@ -25,20 +25,20 @@ Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1
 
 ### 1.2 Positions on the painting
 
-The painting covers the screen and crops its edges (GDD 11.4). The positions are in the 1600 × 900 code box, for the current painting.
+The painting covers the screen and crops its edges (GDD 11.4). The positions are in the 1900 × 900 code box, for the current painting.
 
 | Area | Box (x, y) | Rule |
 | --- | --- | --- |
 | Ground line | y 864 | The base of the Town Gate. The game keeps this line on the top edge of the Town Bar, on all screens. The painting below it goes under the Town Bar. Put only road and trees there. |
-| Safe area | x 224 to 1376, y 251 to 864 | Each screen shape from 4:3 to 19.5:9 shows this area above the Town Bar. All selectable Buildings must be in it. |
-| Town Gate | x 570 to 914, y 520 to 864 | The cut-out layer of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the layer. |
-| Town Gate label | x 570 to 914, y 474 to 520 | The game writes "Campaign" here, on the tips of the two tower roofs. |
-| Balance Plate corner | x 1130 to 1600, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
-| Sky | Above the safe area | A wide screen crops it first. On a 19.5:9 phone, the top of the castle hill is also cropped. |
+| Safe area | x 374 to 1526, y 136 to 864 | Each screen shape from 4:3 to 19.5:9 shows this area above the Town Bar. All selectable Buildings must be in it. |
+| Town Gate | x 720 to 1064, y 520 to 864 | The cut-out layer of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the layer. |
+| Town Gate label | x 720 to 1064, y 474 to 520 | The game writes "Campaign" here, on the tips of the two tower roofs. |
+| Balance Plate corner | x 1280 to 1900, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
+| Sky | Above the safe area | A screen wider than about 2.2:1 above the Town Bar crops it first. On a 19.5:9 phone, the top of the Heynspire is also cropped. |
 | Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here, for example the Dungeons cave. |
 
 ```text
- 0                  400                 800                1200               1600
+ 0                  475                 950                1425               1900
  ┌───────────────────────────────────────────────────────────────────────────────┐ 0
  │ sky, clouds      [Heynspire castle on the hill]                               │
  │                                                          sea, ships, piers    │
@@ -46,7 +46,7 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
  │                 [Library]          [Card shop]        [Market, fountain]      │
  │                          "Campaign"                 [Workshop, forge smoke]   │ 474
  │  ═══════ town wall ════════╗ [ TOWN GATE ] ╔══════════ town wall ═══ [Cave] ◄─│ 520
- │     trees                  ║  x 570-914    ║                          (edge)   │
+ │     trees                  ║  x 720-1064   ║                          (edge)   │
  │  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ground line y 864: top of the Town Bar ─ ─ ─ ─ ─ ─ │ 864
  └───────────────────────────────────────────────────────────────────────────────┘ 900
 ```
@@ -57,8 +57,8 @@ The game adds motion on separate layers over the painting. The painting must giv
 
 | Layer | Position in the code box | Need in the painting |
 | --- | --- | --- |
-| Chimney smoke | Workshop forge chimney (1414, 472) | A chimney top. The puffs continue the smoke in the painting. |
-| Light on the sea | x 1340 to 1589, y 218 to 251 | Open sea with no buildings or ships in front of it. A phone crops it. |
+| Chimney smoke | Workshop forge chimney (1612, 472) | A chimney top. The puffs continue the smoke in the painting. |
+| Light on the sea | x 1515 to 1882, y 218 to 251 | Open sea with no buildings or ships in front of it. A phone crops it. |
 | Clouds | None | The clouds are in the painting. The game does not move them. |
 | Flags | None | The flags are in the painting. |
 
@@ -102,7 +102,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. In v1, only th
 | Props | A wooden barrier with a warning skull (cute, not scary), torches, a pick and a lantern on the ground. |
 | Silhouette hook | The black arch of the cave. |
 | Humor note | Two small glowing eyes look out from the dark. |
-| Position | The right edge (about x 1420 to 1600, y 550 to 720). A screen can crop it. |
+| Position | The right edge (about x 1620 to 1900, y 550 to 720). A screen can crop it. |
 
 ### 2.4 Library
 
@@ -181,7 +181,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. In v1, only th
 ### 3.1 Master painting
 
 ```text
-bird's-eye view of a bright fantasy hub town on a green hillside next to the sea, seen from high above at about 45 degrees, wide 16:9 landscape,
+bird's-eye view of a bright fantasy hub town on a green hillside next to the sea, seen from high above at about 45 degrees, wide 2.1:1 landscape,
 in the center foreground a large stone town gate with two round towers, blue conical roofs and small gold flags, open wooden doors, a sleepy guard on a stool with a cat on his lap,
 a sandy road leaves the gate and winds down to the bottom left toward far green meadows,
 a curved stone town wall with small towers runs from left to right behind the gate,
@@ -200,7 +200,7 @@ each building separated by open space, calm sky above the gate, no text, no lett
 1. Make 4 to 8 images with the prompt in 3.1. Use the golden references as style references.
 2. Select one image with the checklist in 5.
 3. Fix problems by hand or with inpainting (text-like marks, strange buildings, broken roofs).
-4. Scale the image so that the Town Gate fills its box in 1.2. Crop to 16:9 and export at 3200 × 1800.
+4. Scale the image so that the Town Gate fills its box in 1.2. Crop to 2.1:1 and export at 3800 × 1800.
 5. Cut the Town Gate layer out of the master painting with an outline, at the box in 1.2, and export it as WebP with transparency. The layer is the same art as the painting, so it aligns exactly. On hover it grows from its base, so no hole shows in the painting below it.
 6. Compress the files (Technical Design, section 6). Put them in `apps/web/public/town/`, and change the file names in `town.ts` (`PAINTING_IMAGE` and `SELECTABLE_BUILDINGS`).
 7. Check the chimney points and the sea area (1.3). Change the ambient constants if necessary.

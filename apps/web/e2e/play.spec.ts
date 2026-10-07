@@ -552,7 +552,7 @@ test.describe("Town", () => {
     const coin = balances.getByRole("button", { name: "Coin: 0 Copper" });
     await coin.focus();
     await expect(page.getByTestId("balance-tooltip-coin")).toContainText(
-      "Pays for Packs, Combine and Gear upgrades."
+      "Pays for Packs, Combine, Gear upgrades and Deck Slots."
     );
     await balances.getByRole("button", { name: "Heynstones: 0" }).focus();
     await expect(page.getByTestId("balance-tooltip-heynstones")).toContainText(

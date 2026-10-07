@@ -1,5 +1,4 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
-import type { CollectionEntry } from "@workspace/rules";
 import {
   addCopy,
   autoFill,
@@ -28,12 +27,24 @@ import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
+import { BuyDeckSlot } from "@/features/deck/components/buy-deck-slot";
 import { CardPool } from "@/features/deck/components/card-pool";
 import { DeckPage } from "@/features/deck/components/deck-page";
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import { useCardPeek } from "@/features/deck/components/use-card-peek";
-import type { DeckSlot } from "@/features/deck/deck";
-import { defaultSlotName, slotInput, updateSlot } from "@/features/deck/deck";
+import type {
+  ClassPick,
+  DeckSlot,
+  PoolFilter,
+  PoolTile,
+} from "@/features/deck/deck";
+import {
+  DEFAULT_POOL_FILTER,
+  defaultSlotName,
+  poolClass,
+  slotInput,
+  updateSlot,
+} from "@/features/deck/deck";
 import {
   activeDeckIdAtom,
   collectionAtom,
@@ -71,7 +82,7 @@ const Ribbon = ({
     <Tab
       id={slot.id}
       aria-label={active ? `${name}, ${tr("deckBuilder.active")}` : name}
-      className="group relative flex h-full max-w-44 min-w-0 flex-1 cursor-pointer items-end rounded-t-md outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+      className="group relative flex h-full w-44 min-w-0 shrink cursor-pointer items-end rounded-t-md outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
       data-testid={`deck-slot-${slot.id}`}
     >
       <span
@@ -141,13 +152,26 @@ const PeekDetails = ({ peek }: { readonly peek: Peek | null }) => {
   );
 };
 
+/**
+ * The filters of the card pool, for all the Deck slots of the open book. The
+ * Class filter is for one slot and Hero Class (see `poolClass`).
+ */
+interface PoolFilterState {
+  readonly filter: PoolFilter;
+  readonly setFilter: (filter: PoolFilter) => void;
+  readonly classPick: ClassPick | null;
+  readonly setClassPick: (pick: ClassPick) => void;
+}
+
 /** The open book: the two pages of one Deck slot. */
 const DeckSpread = ({
   slot,
   index,
+  poolFilter,
 }: {
   readonly slot: DeckSlot;
   readonly index: number;
+  readonly poolFilter: PoolFilterState;
 }) => {
   const { text } = useGameText();
   const [slots, setSlots] = useAtom(deckSlotsAtom);
@@ -163,8 +187,23 @@ const DeckSpread = ({
   const setDeck = (deck: DeckSlot["deck"]) =>
     change((current) => ({ ...current, deck }));
 
-  const onAdd = (entry: CollectionEntry) => {
-    setDeck(addCopy(slot.deck, entry.cardId, entry.rank));
+  const filter: PoolFilter = {
+    ...poolFilter.filter,
+    classId: poolClass(poolFilter.classPick, slot),
+  };
+  const onFilter = (next: PoolFilter) => {
+    poolFilter.setFilter(next);
+    if (next.classId !== filter.classId) {
+      poolFilter.setClassPick({
+        classId: next.classId,
+        slotId: slot.id,
+        heroClass: slot.classId,
+      });
+    }
+  };
+
+  const onAdd = (tile: PoolTile) => {
+    setDeck(addCopy(slot.deck, tile.cardId, tile.rank));
     unlockAudio();
     playSound("select", 0);
   };
@@ -181,7 +220,8 @@ const DeckSpread = ({
     <>
       <CardPool
         input={input}
-        pool={collection}
+        filter={filter}
+        onFilter={onFilter}
         onAdd={onAdd}
         bind={bind}
         wasLongPress={wasLongPress}
@@ -217,6 +257,10 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
   const [openId, setOpenId] = useState(() =>
     slots.some((slot) => slot.id === activeId) ? activeId : slots[0]?.id
   );
+  // The filters stay while the book is open, and reset when it closes.
+  const [filter, setFilter] = useState(DEFAULT_POOL_FILTER);
+  const [classPick, setClassPick] = useState<ClassPick | null>(null);
+  const poolFilter = { filter, setFilter, classPick, setClassPick };
   const nameOf = (slot: DeckSlot, index: number) =>
     slot.name || text(defaultSlotName(slot, index));
 
@@ -243,19 +287,23 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
             {tr("deckBuilder.title")}
           </Heading>
         </div>
-        <TabList
-          aria-label={tr("deckBuilder.slots")}
-          className="flex h-full min-w-0 flex-1 items-end gap-1.5 [@media(max-height:500px)]:gap-1"
-        >
-          {slots.map((slot, index) => (
-            <Ribbon
-              key={slot.id}
-              slot={slot}
-              name={nameOf(slot, index)}
-              active={slot.id === activeId}
-            />
-          ))}
-        </TabList>
+        {/* The ribbons, then the locked ribbon of the next Deck Slot right after the last one. */}
+        <div className="flex h-full min-w-0 flex-1 items-end gap-1.5 [@media(max-height:500px)]:gap-1">
+          <TabList
+            aria-label={tr("deckBuilder.slots")}
+            className="flex h-full min-w-0 flex-initial items-end gap-1.5 [@media(max-height:500px)]:gap-1"
+          >
+            {slots.map((slot, index) => (
+              <Ribbon
+                key={slot.id}
+                slot={slot}
+                name={nameOf(slot, index)}
+                active={slot.id === activeId}
+              />
+            ))}
+          </TabList>
+          <BuyDeckSlot onBought={setOpenId} />
+        </div>
         <GameButton
           intent="wood"
           size="icon"
@@ -282,7 +330,7 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
             className="pointer-events-none absolute inset-y-0 left-1/2 w-20 -translate-x-1/2 bg-[linear-gradient(90deg,rgba(91,58,30,0)_0%,rgba(91,58,30,0.1)_35%,rgba(91,58,30,0.34)_50%,rgba(91,58,30,0.1)_65%,rgba(91,58,30,0)_100%)] [@media(max-height:500px)]:w-12"
             aria-hidden
           />
-          <DeckSpread slot={slot} index={index} />
+          <DeckSpread slot={slot} index={index} poolFilter={poolFilter} />
         </TabPanel>
       ))}
     </Tabs>
@@ -335,7 +383,7 @@ const Cover = () => {
 /**
  * The Deck dialog (GDD 6, CRD-04 to CRD-07): a big book at the center of the
  * screen, over the current screen. The ribbons are the Deck slots. The left
- * page holds the cards that the Player owns, the right page the open Deck. A
+ * page holds all the cards of the game, the right page the open Deck. A
  * change applies at once, so it has no Save button. Esc, the close button and
  * a click outside close it. The book opens and closes on its spine; with
  * reduced motion it shows and goes at once.

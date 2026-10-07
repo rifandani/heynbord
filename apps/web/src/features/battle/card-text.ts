@@ -31,6 +31,7 @@ export interface KeywordText {
 
 const VALUE_KEYWORDS = [
   "armor",
+  "bleed",
   "heroic",
   "hobble",
   "knockback",

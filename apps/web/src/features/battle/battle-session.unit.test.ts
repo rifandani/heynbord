@@ -27,14 +27,14 @@ const readyIndex = (session: ReturnType<typeof startSession>) =>
 const SEED = Array.from({ length: 50 }, (_, index) => index + 1).find(
   (seed) =>
     readyIndex(
-      startSession({ stageId: "1-1", deck: getStarterDeck("raiders"), seed })
+      startSession({ stageId: "1-1", deck: getStarterDeck("vanguard"), seed })
     ) >= 0
 );
 
 const start = () =>
   startSession({
     stageId: "1-1",
-    deck: getStarterDeck("raiders"),
+    deck: getStarterDeck("vanguard"),
     seed: SEED ?? 1,
   });
 

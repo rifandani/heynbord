@@ -1,8 +1,9 @@
-import { LANE_LENGTH } from "@workspace/rules";
+import { LANE_LENGTH, SUMMON_ZONE_DEPTH } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { laneZ, squareX } from "@/features/battle/scene/layout";
 import {
+  tutorialArea,
   tutorialMotion,
   tutorialSpots,
 } from "@/features/battle/scene/tutorial-spots";
@@ -39,5 +40,51 @@ describe("tutorialMotion", () => {
 
   it("stays still with reduced motion", () => {
     expect(tutorialMotion(0.3, true)).toEqual(tutorialMotion(9, true));
+  });
+});
+
+const xs = (points: readonly { readonly x: number }[]) =>
+  points.map((point) => point.x);
+const zs = (points: readonly { readonly z: number }[]) =>
+  points.map((point) => point.z);
+
+describe("tutorialArea", () => {
+  const input = { lanes: 3, blockLane: null, playerUnits: [] };
+
+  it("has no Board area for Step 1, which tells about the Hand", () => {
+    expect(tutorialArea("ready", input)).toEqual([]);
+  });
+
+  it("covers the Summon Zone in each Lane", () => {
+    const area = tutorialArea("summonZone", input);
+    expect(Math.min(...xs(area))).toBeCloseTo(squareX(0) - 0.5);
+    expect(Math.max(...xs(area))).toBeCloseTo(
+      squareX(SUMMON_ZONE_DEPTH - 1) + 0.5
+    );
+    expect(Math.min(...zs(area))).toBeLessThan(laneZ(0, 3));
+    expect(Math.max(...zs(area))).toBeGreaterThan(laneZ(2, 3));
+  });
+
+  it("covers the Player's Units", () => {
+    const area = tutorialArea("resolution", {
+      ...input,
+      playerUnits: [{ x: squareX(2), z: laneZ(0, 3) }],
+    });
+    expect(Math.min(...xs(area))).toBeCloseTo(squareX(2) - 0.5);
+    expect(Math.max(...xs(area))).toBeCloseTo(squareX(2) + 0.5);
+    expect(Math.max(...area.map((point) => point.y))).toBeGreaterThan(1);
+  });
+
+  it("covers the whole Board before the Player has a Unit", () => {
+    const area = tutorialArea("resolution", input);
+    expect(Math.max(...xs(area))).toBeCloseTo(squareX(LANE_LENGTH - 1) + 0.5);
+  });
+
+  it("covers only the Lane to block", () => {
+    const area = tutorialArea("laneChoice", { ...input, blockLane: 2 });
+    for (const z of zs(area)) {
+      expect(Math.abs(z - laneZ(2, 3))).toBeLessThan(0.6);
+    }
+    expect(tutorialArea("laneChoice", input)).toEqual([]);
   });
 });

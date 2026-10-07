@@ -17,3 +17,8 @@ We did this because the game director wants a rare currency that players can als
 - Some Cosmetics are earn-only and never in the Bazaar. Players can get them only through play.
 - Earned and bought Heynstones share one balance. Bundles for real money match the Bazaar price points.
 - Each new Convenience must pass the Pillar 1 test before it goes into the Bazaar. After players pay for an item, it is very difficult to remove it.
+- A Convenience can also cost Coin, because it gives no power.
+
+## Update: a Deck slot costs Coin
+
+An extra Deck slot was the v1 Convenience in the Bazaar, for 50 Heynstones. Now a new Player has 3 Deck slots and buys more with Coin, up to 10 ([Economy 3.6](../game/07-economy.md#36-deck-slots)). All players can get the slots through play. In v2, nobody pays real money to save more Decks. Thus in v1 the Bazaar sells only Cosmetics. The decision above does not change: Heynstones still buy only Cosmetics and Conveniences, and a later Convenience can still go into the Bazaar.

@@ -4,21 +4,15 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 ## Todo
 
-Design decisions for you:
-
-- Rally and Retaliation conflict. The bonus ends at the end of the owner's Turn, and Retaliation happens only in the enemy's Turn. So the issue's "bonus applies to Retaliation" can never happen.
-- Unique is card data only. No Battle rule reads it yet. Tokens do not exist, so the "Token does not apply Sabotage" test uses a Stage Start Unit.
-- Catalog test. The web catalog test skips Goblin and Feral cards until they get Message Catalog text.
-
 v1:
 
+- /grill-with-docs Wild Hunt is too strong and Tunnel Rats is too weak right? can we balance it
+- /grill-with-docs we need to also have economy simulation script, not only battle simulation
+- maybe we could have something called "Power" to show the current deck power and we can also use it to show recommended power in campaign stages
 - if a 0 Base Attack unit have poison, or burn, etc skills, can they inflict those posion or burn, etc to the enemy unit?
-- /grill-with-docs Wild Hunt is too strong and Tunnel Rats is too weak, balance it
 - /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
 - /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think
-- we need to also have economy simulation script, not only battle simulation
 - /grill-with-docs i want to add another Keyword called "Devour": +1 Attack and +1 HP for each kill, suitable for Feral
-- /grill-with-docs add Bleed status, unit that got bleed gets healing reduced by 50%, suitable for Feral
 - /grill-with-docs i want to add another Keyword called "Retreat N" — After this Unit attacks, it moves up to N Squares backward.
 - /grill-with-docs re-balance speed for all units (normal move should be 2)
 - /grill-with-docs a smart auto-play button for Stages that the player has already won (whats the reward for completing already completed stage?)

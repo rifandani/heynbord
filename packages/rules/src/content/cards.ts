@@ -689,7 +689,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 0,
     damageType: "frost",
-    keywords: {},
+    keywords: { bleed: { common: 1, epic: 2, legendary: 3 } },
   },
   {
     kind: "creature",
@@ -853,11 +853,15 @@ const creatures: readonly CreatureCardDefinition[] = [
     baseRank: "epic",
     countdown: 6,
     attack: 8,
-    hp: 14,
+    hp: 13,
     speed: 1,
     range: 0,
     damageType: "frost",
-    keywords: { unique: true, trample: true },
+    keywords: {
+      unique: true,
+      trample: true,
+      bleed: { epic: 2, legendary: 3 },
+    },
   },
 ];
 

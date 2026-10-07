@@ -116,8 +116,9 @@ const targetOf = (state: BattleState, unit: UnitState) =>
     : (pivotTarget(state, unit) ?? meleeTarget(state, unit));
 
 /**
- * Movement (GDD 4.5). A ground Unit stops before any Unit. A Flying Unit moves
- * over Units and stops in the farthest empty Square that its Speed reaches.
+ * Movement (GDD 4.5, ADR-0018). A ground Unit moves through friendly Units and
+ * stops before an enemy Unit. A Flying Unit moves over all Units. Each Unit
+ * stops in the farthest empty Square that its Speed reaches.
  * A ranged Unit with a target in Range, and a Pivot Unit with an enemy Unit
  * behind it or next to it, do not move.
  */
@@ -140,10 +141,10 @@ const move = (ctx: StepContext, unit: UnitState): void => {
     if (!isInsideLane(position)) {
       break;
     }
-    const occupied = unitAt(state, unit.lane, position) !== undefined;
-    if (!occupied) {
+    const other = unitAt(state, unit.lane, position);
+    if (!other) {
       to = position;
-    } else if (!unit.flying) {
+    } else if (other.owner !== unit.owner && !unit.flying) {
       break;
     }
   }
@@ -241,7 +242,7 @@ const trample = (
   });
 };
 
-/** Poison, then Hobble, then Entangle, then Knockback (GDD 4.4). */
+/** Poison, then Hobble, then Bleed, then Entangle, then Knockback (GDD 4.4). */
 const applyOnHit = (
   ctx: StepContext,
   unit: UnitState,
@@ -260,6 +261,16 @@ const applyOnHit = (
         unitId: struck.id,
         status: "hobble",
         count: struck.hobbled,
+      })
+    );
+  }
+  if (unit.bleed > 0) {
+    struck.bleeding = Math.max(struck.bleeding, unit.bleed);
+    ctx.events.push(
+      BattleEvent.StatusApplied({
+        unitId: struck.id,
+        status: "bleed",
+        count: struck.bleeding,
       })
     );
   }

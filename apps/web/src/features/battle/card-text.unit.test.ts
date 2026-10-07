@@ -139,6 +139,12 @@ describe("cardText (CRD-08)", () => {
     );
     return keyword && resolve(keyword.name);
   };
+  const bleedName = (rank: RankId) => {
+    const keyword = creature("feral.frostfangLynx", rank).keywords.find(
+      (item) => item.name.key === "keywords.bleed"
+    );
+    return keyword && resolve(keyword.name);
+  };
   const knockbackName = (rank: RankId) => {
     const keyword = creature("human.shieldbearer", rank).keywords.find(
       (item) => item.name.key === "keywords.knockback"
@@ -155,7 +161,10 @@ describe("cardText (CRD-08)", () => {
       ])
     ).toEqual([
       ["Heroic 1", "+1 damage when this Unit attacks a Hero."],
-      ["Flying", "Moves over other Units. It stops in an empty Square."],
+      [
+        "Flying",
+        "Moves over all Units, also enemy Units. It stops in an empty Square.",
+      ],
     ]);
     expect(text.damageRule).toBeUndefined();
     expect(resolve(creature("human.dawnCleric", "uncommon").attackType)).toBe(
@@ -191,6 +200,13 @@ describe("cardText (CRD-08)", () => {
     expect(hobbleName("rare")).toBe("Hobble 1");
     expect(hobbleName("epic")).toBe("Hobble 2");
     expect(hobbleName("legendary")).toBe("Hobble 3");
+  });
+
+  it("shows the Bleed value of a Frostfang Lynx copy for its Rank", () => {
+    expect(bleedName("common")).toBe("Bleed 1");
+    expect(bleedName("rare")).toBe("Bleed 1");
+    expect(bleedName("epic")).toBe("Bleed 2");
+    expect(bleedName("legendary")).toBe("Bleed 3");
   });
 
   it("shows the Knockback value of a Shieldbearer copy for its Rank", () => {

@@ -2,6 +2,7 @@ import { getCard } from "../content/cards";
 import type { StepContext } from "./context";
 import { actionOrder, findUnit, isOver } from "./context";
 import { damageHero, damageUnit, finishBattle } from "./damage";
+import { healUnit } from "./heal";
 import { runResolutionPhase } from "./resolution";
 import {
   BattleEvent,
@@ -29,12 +30,8 @@ const openClosedLanes = (ctx: StepContext): void => {
 
 const regenerate = (ctx: StepContext): void => {
   for (const unit of actionOrder(ctx.state, ctx.state.activeSide)) {
-    const amount = Math.min(unit.regeneration, unit.maxHp - unit.hp);
-    if (amount > 0) {
-      unit.hp += amount;
-      ctx.events.push(
-        BattleEvent.UnitHealed({ unitId: unit.id, amount, hp: unit.hp })
-      );
+    if (unit.regeneration > 0) {
+      healUnit(ctx, unit, unit.regeneration);
     }
   }
 };
@@ -191,6 +188,15 @@ const lowerHobble = (ctx: StepContext): void => {
   }
 };
 
+/** The Bleeding count of each Unit of the active Side goes down by 1 (ADR-0019). */
+const lowerBleeding = (ctx: StepContext): void => {
+  for (const unit of ctx.state.units) {
+    if (unit.owner === ctx.state.activeSide && unit.bleeding > 0) {
+      unit.bleeding -= 1;
+    }
+  }
+};
+
 /** Skill Card Armor counts the other side's Turns, so it covers that many enemy Turns. */
 const fadeArmor = (ctx: StepContext): void => {
   const { state } = ctx;
@@ -208,13 +214,14 @@ const fadeArmor = (ctx: StepContext): void => {
 /**
  * The End Step (GDD 4.3): Burn, then Poison, then durations go down. Skill
  * Card Armor counts the other side's Turns, so it covers that many enemy Turns.
- * A Hobbled count goes down in this step, after Burn and Poison. The Rally
- * bonus ends.
+ * A Hobbled and a Bleeding count go down in this step, after Burn and Poison.
+ * The Rally bonus ends.
  */
 const runEndStep = (ctx: StepContext): void => {
   applyBurn(ctx);
   applyPoison(ctx);
   lowerHobble(ctx);
+  lowerBleeding(ctx);
   endRally(ctx);
   fadeArmor(ctx);
   ctx.events.push(BattleEvent.TurnEnded({ side: ctx.state.activeSide }));

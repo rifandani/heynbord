@@ -1,4 +1,11 @@
-import type { ClassId, Collection, DeckInput, RankId } from "@workspace/rules";
+import type {
+  CardDefinition,
+  ClassId,
+  Collection,
+  DeckInput,
+  RaceId,
+  RankId,
+} from "@workspace/rules";
 import {
   CARDS,
   cardCopiesInDeck,
@@ -10,8 +17,10 @@ import {
   fitsClass,
   getCard,
   MAX_COPIES,
+  nextDeckSlotPrice,
   RANKS,
   STARTER_DECKS,
+  STARTING_DECK_SLOTS,
 } from "@workspace/rules";
 import { Schema } from "effect";
 
@@ -22,9 +31,6 @@ import type { TextRef } from "@/features/battle/card-text";
  * level of a new Player, 5 to 10 cards. The Starter Decks have 10 cards for it.
  */
 const DECK_PLAYER_LEVEL = 1;
-
-/** The number of Deck slots (GDD 6, CRD-05). */
-export const DECK_SLOT_COUNT = 5;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -47,9 +53,17 @@ export type DeckSlot = typeof DeckSlot.Type;
 
 export const DeckSlots = Schema.Array(DeckSlot);
 
+/** An empty Deck slot with its number from 1. */
+const emptySlot = (number: number): DeckSlot => ({
+  id: `slot-${number}`,
+  name: "",
+  classId: "warrior",
+  deck: [],
+});
+
 /**
- * The Deck slots of a new Player: the Starter Decks first, so that the
- * Stage Panel keeps them, then empty slots.
+ * The Deck slots of a new Player (GDD 6, CRD-05): the Starter Decks first, so
+ * that the Stage Panel keeps them, then an empty slot.
  */
 export const INITIAL_DECK_SLOTS: readonly DeckSlot[] = [
   ...STARTER_DECKS.map((starter) => ({
@@ -59,15 +73,31 @@ export const INITIAL_DECK_SLOTS: readonly DeckSlot[] = [
     deck: starter.deck,
   })),
   ...Array.from(
-    { length: DECK_SLOT_COUNT - STARTER_DECKS.length },
-    (_, index) => ({
-      id: `slot-${STARTER_DECKS.length + index + 1}`,
-      name: "",
-      classId: "warrior" as const,
-      deck: [],
-    })
+    { length: STARTING_DECK_SLOTS - STARTER_DECKS.length },
+    (_, index) => emptySlot(STARTER_DECKS.length + index + 1)
   ),
 ];
+
+/**
+ * The slots and the Coin after the Player buys the next Deck Slot (Economy
+ * 3.5), or `null` when the Player has the maximum or not enough Coin. A slot is
+ * never removed, so the number of the new slot is free.
+ */
+export const buyDeckSlot = (
+  slots: readonly DeckSlot[],
+  coin: number
+): {
+  readonly slots: readonly DeckSlot[];
+  readonly coin: number;
+  readonly slot: DeckSlot;
+} | null => {
+  const price = nextDeckSlotPrice(slots.length);
+  if (price === null || coin < price) {
+    return null;
+  }
+  const slot = emptySlot(slots.length + 1);
+  return { slots: [...slots, slot], coin: coin - price, slot };
+};
 
 const isStarterSlot = (slot: DeckSlot) =>
   STARTER_DECKS.some((starter) => starter.id === slot.id);
@@ -147,19 +177,150 @@ export const deckRows = (deck: readonly DeckEntry[]): readonly DeckRow[] => {
   return [...rows.values()].toSorted(byCountdown);
 };
 
-/** A filter of the card pool. */
-export type PoolFilter = "all" | "creature" | "skill";
-
-/** The owned copies that the pool shows, in Countdown order. */
-export const poolEntries = (collection: Collection, filter: PoolFilter) =>
-  collection
-    .filter(
-      (entry) => filter === "all" || getCard(entry.cardId).kind === filter
-    )
-    .toSorted(byCountdown);
-
 export const classText = (classId: ClassId): TextRef => ({
   key: `classes.${classId}`,
+});
+
+/** The Ownership filter of the card pool. */
+export type OwnershipFilter = "all" | "owned" | "notOwned";
+
+/** The card kind filter of the card pool. */
+export type KindFilter = "all" | CardDefinition["kind"];
+
+/**
+ * The filters of the card pool (GDD 6). They apply together. The Race applies
+ * only to Creature Cards and the Class only to Skill Cards.
+ */
+export interface PoolFilter {
+  readonly ownership: OwnershipFilter;
+  readonly kind: KindFilter;
+  readonly race: RaceId | "all";
+  readonly classId: ClassId | "all";
+}
+
+/** The filters when the Deck dialog opens. */
+export const DEFAULT_POOL_FILTER: PoolFilter = {
+  ownership: "all",
+  kind: "all",
+  race: "all",
+  classId: "all",
+};
+
+/**
+ * The Class that the Player selected in the card pool, and the Deck slot and
+ * Hero Class that it was for. `null`: the Player has selected no Class.
+ */
+export interface ClassPick {
+  readonly classId: ClassId | "all";
+  readonly slotId: string;
+  readonly heroClass: ClassId;
+}
+
+/**
+ * The Class filter for a Deck slot. It starts on the Hero Class of the Deck,
+ * and goes back to it when the Player changes the slot or the Hero Class.
+ */
+export const poolClass = (
+  pick: ClassPick | null,
+  slot: DeckSlot
+): ClassId | "all" =>
+  pick?.slotId === slot.id && pick.heroClass === slot.classId
+    ? pick.classId
+    : slot.classId;
+
+/** One card in the pool: an owned copy in one Rank, or a card that the Player does not own in its Base Rank. */
+export interface PoolTile {
+  readonly cardId: string;
+  readonly rank: RankId;
+}
+
+/** The cards of the pool after the filters, and the number of different cards that the Player owns. */
+export interface Pool {
+  readonly owned: readonly PoolTile[];
+  readonly notOwned: readonly PoolTile[];
+  /** The different cards that the Player owns, with the Ownership filter not applied. */
+  readonly ownedCards: number;
+  /** All the cards, with the Ownership filter not applied. */
+  readonly totalCards: number;
+}
+
+const matchesGroup = (card: CardDefinition, filter: PoolFilter): boolean => {
+  if (filter.kind !== "all" && card.kind !== filter.kind) {
+    return false;
+  }
+  if (filter.kind === "creature" && card.kind === "creature") {
+    return filter.race === "all" || card.race === filter.race;
+  }
+  if (filter.kind === "skill" && card.kind === "skill") {
+    return filter.classId === "all" || card.class === filter.classId;
+  }
+  return true;
+};
+
+/**
+ * The card pool (GDD 6): all the cards of the game. An owned card has one
+ * tile for each Rank that the Player owns, and a card that the Player does
+ * not own has one tile in its Base Rank. Each group is in Countdown order.
+ */
+export const poolEntries = (
+  collection: Collection,
+  filter: PoolFilter
+): Pool => {
+  const ownedIds = new Set(
+    collection.flatMap((entry) => (entry.copies > 0 ? [entry.cardId] : []))
+  );
+  const cards = CARDS.filter((card) => matchesGroup(card, filter));
+  const owned = collection
+    .flatMap(({ cardId, rank, copies }) =>
+      copies > 0 && matchesGroup(getCard(cardId), filter)
+        ? [{ cardId, rank }]
+        : []
+    )
+    .toSorted(byCountdown);
+  const notOwned = cards
+    .flatMap((card) =>
+      ownedIds.has(card.id) ? [] : [{ cardId: card.id, rank: card.baseRank }]
+    )
+    .toSorted(byCountdown);
+  return {
+    owned: filter.ownership === "notOwned" ? [] : owned,
+    notOwned: filter.ownership === "owned" ? [] : notOwned,
+    ownedCards: cards.length - notOwned.length,
+    totalCards: cards.length,
+  };
+};
+
+/** The cards that the pool filters show, as text: "Orc Creature Cards". */
+const poolGroupText = (filter: PoolFilter): TextRef => {
+  if (filter.kind === "creature") {
+    return filter.race === "all"
+      ? { key: "deckBuilder.groups.creature" }
+      : {
+          key: "deckBuilder.groups.race",
+          args: { race: { key: `races.${filter.race}` } },
+        };
+  }
+  if (filter.kind === "skill") {
+    return filter.classId === "all"
+      ? { key: "deckBuilder.groups.skill" }
+      : {
+          key: "deckBuilder.groups.class",
+          args: { className: classText(filter.classId) },
+        };
+  }
+  return { key: "deckBuilder.groups.all" };
+};
+
+/**
+ * The text of a pool with no cards: the Player owns all the cards of the
+ * filters, or none of them.
+ */
+export const emptyPoolText = (filter: PoolFilter): TextRef => ({
+  key:
+    filter.ownership === "notOwned"
+      ? "deckBuilder.emptyPool.ownAll"
+      : "deckBuilder.emptyPool.ownNone",
+  args: { group: poolGroupText(filter) },
 });
 
 const cardName = (cardId: string): TextRef => ({ key: `cards.${cardId}.name` });
@@ -199,14 +360,31 @@ export const CLASSES_WITH_CARDS: readonly ClassId[] = [
   ),
 ];
 
-/** Why a card in the pool cannot go into the Deck now, or `null` when it can. */
-export type PoolBlock = "class" | "none" | "copies" | "full";
+/** The Races that have Creature Cards: the Race filter shows only these. */
+export const RACES_WITH_CARDS: readonly RaceId[] = [
+  ...new Set(
+    CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
+  ),
+];
+
+/**
+ * Why a card in the pool cannot go into the Deck now, or `null` when it can.
+ * `notOwned`: the Player has no copy of the card in any Rank.
+ */
+export type PoolBlock = "notOwned" | "class" | "none" | "copies" | "full";
 
 export const poolBlock = (
   input: DeckInput,
   cardId: string,
   rank: RankId
 ): PoolBlock | null => {
+  if (
+    !input.collection.some(
+      (entry) => entry.cardId === cardId && entry.copies > 0
+    )
+  ) {
+    return "notOwned";
+  }
   if (!fitsClass(getCard(cardId), input.classId)) {
     return "class";
   }

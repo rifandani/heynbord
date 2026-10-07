@@ -16,10 +16,16 @@ export const collectionAtom = Atom.make<Collection>(starterCollection()).pipe(
   Atom.keepAlive
 );
 
-/** The 5 Deck slots (CRD-05). A change applies at once. */
+/**
+ * The Deck slots (CRD-05): 3 for a new Player, up to 10. A change applies at
+ * once. A change to the Starter Decks or to the slots of a new Player changes
+ * the key, so that each browser gets the new slots. The browser loses the
+ * custom Decks of the old key. This is acceptable, because there is no Player
+ * data before the Profile (M2).
+ */
 export const deckSlotsAtom = Atom.kvs({
   defaultValue: () => INITIAL_DECK_SLOTS,
-  key: "heynbord.deck-slots",
+  key: "heynbord.deck-slots.v3",
   runtime: storageRuntime,
   schema: DeckSlots,
 }).pipe(Atom.withServerValue(() => INITIAL_DECK_SLOTS));

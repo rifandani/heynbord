@@ -48,13 +48,17 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Resolution Phase**: The part of a Turn in which the active side's Units move and attack automatically. _Avoid_: combat phase, battle phase, auto phase
 
+**Speed**: The maximum number of Squares that a Unit goes forward in its Movement in one Turn. _Avoid_: move, pace, Movement points
+
+**Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
+
 **Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Step from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
 
-**Burn**: The effect of Fire damage on a Unit: 1 damage in each End Step of the Unit's owner, for the next 2 End Steps. A new Burn replaces the old Burn. _Avoid_: bleed, damage over time
+**Burn**: The effect of Fire damage on a Unit: 1 damage in each End Step of the Unit's owner, for the next 2 End Steps. A new Burn replaces the old Burn. _Avoid_: damage over time
 
 **Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. _Avoid_: stun, chill, slow
 
-**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned or Hobbled. A Damage Type or a Keyword can put a Status on a Unit. It belongs to the target Unit. _Avoid_: debuff, condition, ailment
+**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned, Hobbled or Bleeding. A Damage Type or a Keyword can put a Status on a Unit. It belongs to the target Unit. _Avoid_: debuff, condition, ailment
 
 **Entangled**: The Status from the Entangle Keyword. An Entangled Unit has Speed 0 during its next action, but it can still attack. Entangled then ends. _Avoid_: rooted, snared, slowed
 
@@ -65,6 +69,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Hobble N**: A Keyword. After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled for N End Steps. Retaliation does not apply Hobble. _Avoid_: Fatigue, Cripple, Slow
 
 **Hobbled**: A Status from the Hobble Keyword. A Hobbled Unit has a maximum Speed of 1, after all bonuses. It has a count that goes down by 1 in each End Step of its owner, and it ends at 0. A new Hobble keeps the higher count. _Avoid_: fatigued, slowed, crippled
+
+**Bleed N**: A Keyword. After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding for N End Steps. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Wound, Rend, Maim, anti-heal
+
+**Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Step of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
 
 **Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
 
@@ -98,6 +106,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Starter Deck**: A fixed Deck that the game gives to the Player before the Player builds a Deck. The Hero Class comes from the Starter Deck. Each copy in it has the Rank Common or Uncommon. _Avoid_: preset deck, default deck, sample deck
 
+**Deck Slot**: A place where the Player saves one Deck. A new Player has 3 Deck Slots. The Player buys more with Coin, up to 10. _Avoid_: deck (for the place), loadout, preset
+
 **Archetype**: A named reference Deck for one style of play, for example a Human Wall Warrior Deck. The team uses Archetypes to measure balance. A Player never sees an Archetype. _Avoid_: deck type, meta deck, benchmark deck
 
 **Matchup**: Many Battles between two Archetypes, with the AI on both Sides, to measure if one Archetype is stronger than the other. _Avoid_: versus, pairing, mirror test
@@ -124,7 +134,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Sabotage N**: A Keyword. When a Unit with Sabotage comes onto the Board from its Creature Card, the Card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready Card is the lowest. If two Cards have the same Countdown, the oldest Card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. N is the same at each Rank. _Avoid_: Delay, Stall, Disrupt
 
-**Trample**: A Keyword for melee Units. When a Unit with Trample kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it, in the same Lane. It never hits a Hero. This second hit is not an attack: it has no Crit and no Retaliation, and it does not apply Keywords such as Poison, Hobble or Knockback. It does not Trample again. _Avoid_: Cleave, Overrun, Pierce
+**Trample**: A Keyword for melee Units. When a Unit with Trample kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it, in the same Lane. It never hits a Hero. This second hit is not an attack: it has no Crit and no Retaliation, and it does not apply Keywords such as Poison, Hobble, Bleed or Knockback. It does not Trample again. _Avoid_: Cleave, Overrun, Pierce
+
+**Unique**: A Keyword. While a Unit from a Unique Card is on a Side of the Board, no Hero of that Side can play a copy of that Card, at any Rank. Each Unit from that Card counts, also a Unit that the Stage puts on the Board. Enemy Units do not count. A Deck can still hold more than 1 copy. _Avoid_: Singleton, One-of, Legend rule
 
 **Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a wolf that fights for the orcs is an Orc card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
 
@@ -152,13 +164,13 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Essence**: The resource from Extract that pays for Craft. _Avoid_: dust, material, shards
 
-**Coin**: The currency that the Player earns in Battles and other play. It pays for Packs, Combine and Gear upgrades. _Avoid_: Marks, money, gold (as a name for all of the currency)
+**Coin**: The currency that the Player earns in Battles and other play. It pays for Packs, Combine, Gear upgrades and Deck Slots. _Avoid_: Marks, money, gold (as a name for all of the currency)
 
 **Copper**, **Silver**, **Gold**: The three denominations of Coin. 100 Copper is 1 Silver, and 100 Silver is 1 Gold. They are one currency with one balance, not three currencies. _Avoid_: bronze
 
 **Heynstones**: The rare currency. The Player earns it slowly through play, or buys it with real money. It buys only Cosmetics and Conveniences, never power. _Avoid_: gems, diamonds, crystals, premium currency (in player-facing text)
 
-**Convenience**: An item that changes comfort or organization, for example an extra Deck slot. It never changes the result of a Battle, the speed of progress or the content of the Collection. _Avoid_: boost, perk, premium feature
+**Convenience**: An item that changes comfort or organization, for example a Deck Slot. It never changes the result of a Battle, the speed of progress or the content of the Collection. _Avoid_: boost, perk, premium feature
 
 **Bazaar**: The offers that the Player can buy with Heynstones: only Cosmetics and Conveniences. _Avoid_: shop, store, market
 
@@ -220,6 +232,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Unit** belongs to the Hero that summoned it, and uses that Hero's **Gear**.
 - When a Hero is **Defeated**, its Units and **Field Effects** are removed, and its **Front** goes to the nearest Hero of its Side that is not Defeated.
 - A **Side** that is **Routed** loses, also when its Heroes still have HP. The rule is the same for the Player's Side and the enemy Side. A Side is not Routed while one of its Heroes has a rule that can still put a Unit on the Board.
+- A **Deck Slot** belongs to the **Player**, not to a **Hero**. Each Deck Slot keeps one **Deck** and its Hero **Class**. The **Starter Decks** are in the first Deck Slots of a new Player.
 - A **Deck** holds **Creature Cards** of any **Race** and **Skill Cards** of the Hero's Class only.
 - A **Creature Card** becomes a **Unit** when the side summons it.
 - A **Starter Deck** holds only copies in the **Rank** Common or Uncommon. The Player gets a Rare, Epic or Legendary copy only from play, for example from the first win of a **Boss Stage**.
@@ -248,6 +261,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The **Board** used to have 1 to 3 Lanes in v1, and each Stage set its number of Lanes. Now the type of Battle sets it: 3 Lanes in a **Stage**, 4 Lanes in a **Dungeon**, in **Heynspire** and in a Battle with 2 or more **Players**.
 - The tutorial was 6 steps before: Stages 1-1 to 1-3, the Deck builder, the first Pack and Combine. Now the **Tutorial** is one session in Stage 1-1, and the other lessons are **Hints**.
 - GDD 8.3 says "a quit". The term is **Abandon**: it records no result, and it is not a loss.
+- A **Deck Slot** cost Heynstones in the **Bazaar** before, and a new Player had 5. Now a new Player has 3, and the Player buys more with **Coin**. A Deck Slot is still a **Convenience**, because it gives no power.
 - **Coin** was named "Marks" before. Gold, Silver and Copper are its denominations, not separate currencies.
 - The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
@@ -256,6 +270,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The **Workshop** and the **Bazaar** were "places" before. Now they are the actions and the offers. The Town Building that opens each one is a web term.
 - The first name for **Hobble** was "Fatigue". "Fatigue" usually means damage from an empty Deck in card games, and it is on the _Avoid_ list of **Sudden Death**.
 - The first text for **Knockback** said that the attacked Unit "moves" back. A Unit moves only in its own Movement, with its Speed. The term is **Pushed**, so Speed 0, Entangled and Hobbled do not stop Knockback.
+- GDD 4.5 said "Units never move through other Units", and a friendly Unit blocked a Lane. Now a Unit moves through friendly Units, also a friendly Wall, and only an enemy Unit stops its **Movement** ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)). A push still stops before any Unit, because a push is not Movement.
+- In many games, "bleed" is damage over time. In Heynbord, **Bleeding** does no damage: it only makes heals smaller. Damage over time is **Burn** or **Poisoned** ([ADR-0019](../../docs/adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
 - GDD 4.6 says "a Unit with Attack 0 does not attack", but a bonus could make the Attack 1. The rule uses **Base Attack**, so Rally and Swarm never make a Wall attack.
+- An early plan said that the **Rally N** bonus "applies to attacks and to Retaliation", as for **Swarm N**. But the Rally bonus ends at the end of its owner's **Turn**, and Retaliation and First Strike occur only in the enemy's Turn. Thus Rally never adds to Retaliation or First Strike. Swarm does, because the Swarm bonus has no duration.
 - Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
+- The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.

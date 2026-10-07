@@ -73,7 +73,10 @@ describe("expectedDeck", () => {
     );
     const starter = {
       ...vanguard,
-      deck: [...vanguard.deck.slice(1), recruit],
+      deck: [
+        ...vanguard.deck.filter((entry) => entry.cardId !== recruit.cardId),
+        recruit,
+      ],
     };
     expect(expectedDeck(stage, starter, earlier)).toEqual([
       ...starter.deck,
@@ -214,9 +217,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: NO_GEAR,
       })
     ).toMatchObject({
-      winRate: 0.4,
-      firstSideWinRate: 0.6,
-      averageTurn: 18.05,
+      winRate: 0.45,
+      firstSideWinRate: 0.45,
+      averageTurn: 17.925,
     });
     // Gear 3 rolls Crit and Block.
     expect(
@@ -226,9 +229,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
       })
     ).toMatchObject({
-      winRate: 0.425,
-      firstSideWinRate: 0.475,
-      averageTurn: 18.9,
+      winRate: 0.45,
+      firstSideWinRate: 0.5,
+      averageTurn: 18.25,
     });
   });
 });

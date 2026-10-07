@@ -12,12 +12,12 @@ This document gives the **Archetypes** and the results of their **Matchups** (GD
 
 ## 2. Archetypes
 
-C, U, R and E are the Ranks Common, Uncommon, Rare and Epic. Each Archetype has 14 cards: the maximum Deck size at player level 5, the level of a Matchup (GDD 6). An Archetype is not a Starter Deck. It is a full Deck of the same style as a Starter Deck.
+C, U, R and E are the Ranks Common, Uncommon, Rare and Epic. Each Archetype has 14 cards: the maximum Deck size at player level 5, the level of a Matchup (GDD 6). An Archetype is not a Starter Deck. It is a full, built Deck of the same style as a Starter Deck, with an Epic card. A Starter Deck has only Common and Uncommon copies ([GDD 6.1](./03-game-design.md#61-starter-decks)).
 
 | Archetype | Class | Style | Deck |
 | --- | --- | --- | --- |
-| Vanguard | Warrior | Human: hold the line. Walls and Armor in front, Shooters behind, with Warrior buffs. The full Deck of the Vanguard Starter Deck. | 1× Militia Recruit (C), 1× Gate Warden (U), 1× Shieldbearer (C), 2× Crossbow Guard (C), 2× Halberdier (C), 1× Dawn Cleric (U), 2× River Knight (U), 1× Iron Bulwark (E), 1× War Drums (C), 1× Shield Wall (C), 1× Spear Throw (U) |
-| Raiders | Mage | Orc: rush the enemy Hero. Charge, Flying and high attack, with Mage Fire and Frost spells. The full Deck of the Raiders Starter Deck. | 1× Badland Pup (C), 1× Pack Stalker (U), 2× Scrap Raider (C), 2× Ember Shaman (C), 1× Howling Charger (U), 2× Skyreaver (U), 1× Tusk Brute (C), 1× Warchief Grukka (E), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U) |
+| Vanguard | Warrior | Human: hold the line. Walls and Armor in front, Shooters behind, with Warrior buffs. The style of the Vanguard Starter Deck. | 1× Militia Recruit (C), 1× Gate Warden (U), 1× Shieldbearer (C), 2× Crossbow Guard (C), 2× Halberdier (C), 1× Dawn Cleric (U), 2× River Knight (U), 1× Iron Bulwark (E), 1× War Drums (C), 1× Shield Wall (C), 1× Spear Throw (U) |
+| Raiders | Mage | Orc: rush the enemy Hero. Charge, Flying and high attack, with Mage Fire and Frost spells. The style of the Raiders Starter Deck. | 1× Badland Pup (C), 1× Pack Stalker (U), 2× Scrap Raider (C), 2× Ember Shaman (C), 1× Howling Charger (U), 2× Skyreaver (U), 1× Tusk Brute (C), 1× Warchief Grukka (E), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U) |
 
 ### 2.1 Full-set plan
 
@@ -45,7 +45,7 @@ The six main Archetypes form the release-gated Matchup matrix: 15 different pair
 | Deck | Class | Style | Deck |
 | --- | --- | --- | --- |
 | Tunnel Rats (diagnostic) | Ranger | Goblin: make the enemy plan slower. 6 copies with Sabotage, 5 with Hobble and 4 with Last Breath. | 1× Ankle Snatcher (C), 2× Fuse Runner (C), 2× Junk Slinger (C), 2× Tunnel Saboteur (C), 1× Scrap-Plate Guard (C), 1× Junk Barricade (U), 2× Grease Trapper (U), 1× Rocket Barrel Rider (U), 1× Mine Sapper (R), 1× Grand Gearjammer (E) |
-| Wild Hunt (diagnostic) | Priest | Feral: few and huge. 7 copies with Trample and 4 with Regeneration, with Web Spitter (Entangle) and Frost Elk Matriarch (Rally). | 2× Bristleback Boar (C), 1× Crag Lizard (C), 1× Frostfang Lynx (C), 2× Cave Bear (C), 1× Web Spitter (C), 1× Cave Troll (U), 2× Crag Rhino (U), 1× Frost Elk Matriarch (U), 1× Avalanche Yeti (R), 1× Woolly Mammoth (R), 1× Mountain Colossus (E) |
+| Wild Hunt (diagnostic) | Priest | Feral: few and huge. 7 copies with Trample and 4 with Regeneration, with Web Spitter (Entangle), Frost Elk Matriarch (Rally) and Frostfang Lynx (Bleed 1). | 2× Bristleback Boar (C), 1× Crag Lizard (C), 1× Frostfang Lynx (C), 2× Cave Bear (C), 1× Web Spitter (C), 1× Cave Troll (U), 2× Crag Rhino (U), 1× Frost Elk Matriarch (U), 1× Avalanche Yeti (R), 1× Woolly Mammoth (R), 1× Mountain Colossus (E) |
 | Vanguard Full (diagnostic) | Warrior | Human: hold the line, with the full Human set. 2 Walls, 2 copies with Rally and 2 with Knockback. | 1× Town Barricade (C), 1× Militia Recruit (C), 1× Shieldbearer (C), 2× Crossbow Guard (C), 1× Halberdier (C), 1× Bridge Pikeman (U), 1× Banner Chaplain (U), 1× King's Courier (R), 1× Dawn Reliquary (R), 1× Marshal Elian Voss (E), 1× War Drums (C), 1× Shield Wall (C), 1× Spear Throw (U) |
 | Raiders Full (diagnostic) | Mage | Orc: rush the enemy Hero, with the full Orc set. 2 copies with Rally, 2 with Charge and 3 Fire Units. | 1× Badland Pup (C), 2× Scrap Raider (C), 1× Dusthide Brawler (C), 1× Cinderhorn Ram (U), 1× Warhowler Drummer (U), 1× Skyreaver (U), 1× Ashspit Hunter (R), 1× Mesa Pit-Fighter (R), 1× Pyreaxe Ravager (R), 1× Warband Standard-Bearer (E), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U) |
 
@@ -103,13 +103,16 @@ The table shows each pair one time. The reverse row has the other win rate (100%
 
 **Knockback 2 and 3.** The Matchup above uses the Common Shieldbearer (Knockback 1). The same Vanguard Deck with that one copy at Epic (Knockback 2) wins 54.3% against Raiders. At Legendary (Knockback 3) it wins 58.0%. 58% is above the 55% band. Knockback 2 and 3 can lock a melee Unit whose Speed is lower than N: the Unit never reaches the Shieldbearer to attack it. Only Combine makes these copies. The power points use the Base Rank value, so the budget check does not see this lock.
 
-**Vanguard Full is weak, and Raiders Full is strong (for review).** Vanguard Full wins 24.1% against Vanguard, 12.4% against Raiders and 5.9% against Raiders Full. Raiders Full wins 79.8% against Vanguard and 70.2% against Raiders. Each new card is in its ±10% budget, and the values are the card concepts values. The AI ignores Rally when it selects a play, and no Battle rule reads Unique. Thus these results are evidence for review, not a balance approval. Possible causes, not tested: Vanguard Full has 2 Walls with Attack 0 in place of attacking Units, and Raiders Full has more Charge and Fire. Review the Human and Orc values in a separate issue. This issue did not change card values.
+**Bleed (ADR-0019).** Bleed changes no Wild Hunt win rate by more than 0.2 percentage points. This was measured on 2026-10-07 with `bun run sim matchup 1000`, against the same rules with no Bleed. Wild Hunt has 1 Frostfang Lynx (Bleed 1), and no Archetype has Old Frostmaw. The other Archetypes heal little: only Vanguard has a heal, 1 Dawn Cleric (Regeneration 1). Wild Hunt has 4 Regeneration copies, so Bleed matters most in the Wild Hunt mirror. Thus Bleed does not make Wild Hunt stronger. Test Bleed again when an Elf Archetype with healers exists. The other results on this branch changed for other reasons, so the table above has not changed.
+
+**Vanguard Full is weak, and Raiders Full is strong (for review).** Vanguard Full wins 24.1% against Vanguard, 12.4% against Raiders and 5.9% against Raiders Full. Raiders Full wins 79.8% against Vanguard and 70.2% against Raiders. Each new card is in its ±10% budget, and the values are the card concepts values. The AI ignores Rally when it selects a play. Thus these results are evidence for review, not a balance approval. Possible causes, not tested: Vanguard Full has 2 Walls with Attack 0 in place of attacking Units, and Raiders Full has more Charge and Fire. Review the Human and Orc values in a separate issue. This issue did not change card values.
 
 ### 3.1 Balance changes
 
 | Date | Change | Reason |
 | --- | --- | --- |
 | 2026-10-05 | Scrap Raider HP 3 → 4. Ember Shaman Attack 3 → 4 and HP 5 → 6. Skyreaver HP 4 → 5. Howling Charger HP 5 → 6. Iron Bulwark HP 17 → 15. | Vanguard won 66.8% against Raiders. Most Orc cards were below their power budget, and Iron Bulwark was 8% above it. After the change, all 5 cards are within ±10% of their budget, and Vanguard wins 50.5%. |
+| 2026-10-07 | Old Frostmaw HP 14 → 13, and it gets Bleed 2. Frostfang Lynx gets Bleed 1 with no other change. | Bleed N costs N × 1 power points ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). With Bleed 2 and HP 14, Old Frostmaw was 11.1% above its budget. With HP 13 it is 8.3% above. The Frostfang Lynx is 6.3% above its budget. |
 
 ## 4. When an Archetype or a card changes
 

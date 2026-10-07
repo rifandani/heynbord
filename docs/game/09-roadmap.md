@@ -44,7 +44,7 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 
 - [ ] Heynspire (50 Floors). All Floors use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)).
 - [ ] Achievements and Cosmetics.
-- [ ] Heynstones and the Bazaar (Cosmetics and extra Deck slots).
+- [ ] Heynstones and the Bazaar (Cosmetics).
 - [ ] Auto-play, Battle log.
 - [ ] Mobile landscape layout and touch input. Portrait warning.
 - [ ] Sound effects and music.

@@ -1,10 +1,12 @@
 import type { BattleState, StageDefinition } from "@workspace/rules";
 import {
   BattleEvent,
+  Command,
   chooseCommand,
   createBattle,
   getStage,
   getStarterDeck,
+  legalTargets,
   step,
 } from "@workspace/rules";
 import { Result } from "effect";
@@ -167,7 +169,9 @@ describe("the Graveyard view", () => {
           burn: 0,
           poisoned: 0,
           hobbled: 0,
+          bleeding: 0,
           frozen: false,
+          entangled: false,
         },
       ],
     };
@@ -218,7 +222,9 @@ describe("the bonus Armor view", () => {
       burn: 0,
       poisoned: 0,
       hobbled: 0,
+      bleeding: 0,
       frozen: false,
+      entangled: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
     const armorOf = (events: readonly BattleEvent[]) => {
@@ -244,8 +250,8 @@ describe("the bonus Armor view", () => {
   });
 });
 
-describe("the Hobbled view", () => {
-  it("sets the count from a Hobble event, and lowers it only for that Side when the Turn ends", () => {
+describe("the Hobbled and Bleeding view", () => {
+  it("sets each count from its Hobble or Bleed event, and lowers it only for that Side when the Turn ends", () => {
     const deck = getStarterDeck("vanguard");
     const { state } = createBattle({
       seed: 3,
@@ -276,7 +282,9 @@ describe("the Hobbled view", () => {
       burn: 0,
       poisoned: 0,
       hobbled: 0,
+      bleeding: 0,
       frozen: false,
+      entangled: false,
     };
     const view = {
       ...viewFromState(state),
@@ -292,6 +300,22 @@ describe("the Hobbled view", () => {
       BattleEvent.TurnEnded({ side: "player" })
     );
     expect(ended.units.map((candidate) => candidate.hobbled)).toEqual([2, 2]);
+
+    const bled = applyEvent(
+      {
+        ...view,
+        units: [unit, { ...unit, id: 8, owner: "enemy" as const, bleeding: 2 }],
+      },
+      BattleEvent.StatusApplied({ unitId: 7, status: "bleed", count: 3 })
+    );
+    expect(bled.units.map((candidate) => candidate.bleeding)).toEqual([3, 2]);
+    const bledEnded = applyEvent(
+      bled,
+      BattleEvent.TurnEnded({ side: "player" })
+    );
+    expect(bledEnded.units.map((candidate) => candidate.bleeding)).toEqual([
+      2, 2,
+    ]);
   });
 });
 
@@ -327,7 +351,9 @@ describe("a push", () => {
       burn: 0,
       poisoned: 0,
       hobbled: 0,
+      bleeding: 0,
       frozen: false,
+      entangled: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
     const next = applyEvent(
@@ -335,5 +361,139 @@ describe("a push", () => {
       BattleEvent.UnitPushed({ unitId: 7, lane: 0, from: 5, to: 7 })
     );
     expect(next.units[0]?.position).toBe(7);
+  });
+});
+
+describe("a card that Unique blocks (GDD 5.4)", () => {
+  it("is blocked when its Unit is summoned, and free again when the Unit dies", () => {
+    const deck = getStarterDeck("vanguard");
+    const { state } = createBattle({
+      seed: 3,
+      stage: getStage("1-2"),
+      player: {
+        classId: deck.classId,
+        deck: deck.deck,
+        level: 1,
+        gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+      },
+    });
+    const voss = "human.marshalElianVoss";
+    state.sides.player.hand = [
+      { instanceId: 901, cardId: voss, rank: "epic", countdown: 0 },
+      { instanceId: 902, cardId: voss, rank: "legendary", countdown: 0 },
+    ];
+    const before = viewFromState(state);
+    expect(before.sides.player.hand.map((card) => card.blocked)).toEqual([
+      false,
+      false,
+    ]);
+    const [target] = legalTargets(state, 0);
+    if (!target) {
+      throw new Error("Expected a legal target");
+    }
+    const { state: after, events } = Result.getOrThrow(
+      step(state, Command.PlayCard({ handIndex: 0, target }))
+    );
+    const played = events.reduce(applyEvent, before);
+    expect(played).toEqual(viewFromState(after));
+    expect(played.sides.player.hand).toEqual([
+      expect.objectContaining({ instanceId: 902, blocked: true }),
+    ]);
+    const unitId = played.units.find((unit) => unit.cardId === voss)?.id ?? -1;
+    const died = applyEvent(played, BattleEvent.UnitDied({ unitId }));
+    expect(died.sides.player.hand[0]?.blocked).toBe(false);
+  });
+
+  it("is never set on a card that the player cannot see", () => {
+    const deck = getStarterDeck("vanguard");
+    const { state } = createBattle({
+      seed: 3,
+      stage: getStage("1-2"),
+      player: {
+        classId: deck.classId,
+        deck: deck.deck,
+        level: 1,
+        gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+      },
+    });
+    expect(
+      viewFromState(state).sides.enemy.hand.every((card) => !card.blocked)
+    ).toBe(true);
+  });
+});
+
+describe("the Entangled view", () => {
+  const deck = getStarterDeck("vanguard");
+  const { state } = createBattle({
+    seed: 3,
+    stage: getStage("1-1"),
+    player: {
+      classId: deck.classId,
+      deck: deck.deck,
+      level: 1,
+      gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+    },
+  });
+  const unit = {
+    id: 7,
+    owner: "enemy" as const,
+    cardId: "human.militiaRecruit",
+    rank: "common" as const,
+    lane: 0,
+    position: 5,
+    attack: 2,
+    hp: 4,
+    maxHp: 4,
+    armor: 0,
+    bonusArmor: 0,
+    bonusArmorTurns: 0,
+    range: 0,
+    flying: false,
+    damageType: "physical" as const,
+    burn: 0,
+    poisoned: 0,
+    hobbled: 0,
+    bleeding: 0,
+    frozen: false,
+    entangled: false,
+  };
+  const view = { ...viewFromState(state), units: [unit] };
+  const entangled = applyEvent(
+    view,
+    BattleEvent.StatusApplied({ unitId: 7, status: "entangle" })
+  );
+
+  it("sets Entangled from its Entangle event", () => {
+    expect(entangled.units[0]?.entangled).toBe(true);
+  });
+
+  it("ends Entangled with the next action of the Unit: an attack or a skip", () => {
+    const attacked = applyEvent(
+      entangled,
+      BattleEvent.UnitAttacked({
+        unitId: 7,
+        target: { _tag: "Hero", side: "player" },
+        ranged: false,
+      })
+    );
+    expect(attacked.units[0]?.entangled).toBe(false);
+    const skipped = applyEvent(
+      entangled,
+      BattleEvent.UnitSkipped({ unitId: 7 })
+    );
+    expect(skipped.units[0]?.entangled).toBe(false);
+  });
+
+  it("ends Entangled at the end of the owner's Turn, also for a Unit with no action", () => {
+    const otherSide = applyEvent(
+      entangled,
+      BattleEvent.TurnEnded({ side: "player" })
+    );
+    expect(otherSide.units[0]?.entangled).toBe(true);
+    const ownSide = applyEvent(
+      entangled,
+      BattleEvent.TurnEnded({ side: "enemy" })
+    );
+    expect(ownSide.units[0]?.entangled).toBe(false);
   });
 });

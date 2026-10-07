@@ -18,12 +18,15 @@ import {
 } from "@/features/battle/glyphs";
 import {
   DAMAGE_COLORS,
+  FX_ANCHORS,
   RACE_COLORS,
   RANK_COLORS,
   SIDE_COLORS,
   STAT_DELTA,
   STAT_PIPE,
 } from "@/features/battle/palette";
+import type { FxCell, FxSlotName } from "@/features/battle/scene/fx-atlas";
+import type { StatusBadge } from "@/features/battle/scene/status-visuals";
 import { statTone } from "@/features/battle/scene/unit-stats";
 
 /**
@@ -404,3 +407,493 @@ export const closedLaneTexture = (): CanvasTexture =>
     context.fillStyle = across;
     context.fillRect(0, 0, 256, 64);
   });
+
+/** Draws one placeholder key image in a `width` × `height` box at (0, 0). */
+type FxDraw = (
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number
+) => void;
+
+/** An outline for the `alpha` images. The `additive` images are light only. */
+const OUTLINE = "rgba(20, 14, 10, 0.85)";
+
+const softDot =
+  (color: string, core = 0.15): FxDraw =>
+  (context, width, height) => {
+    const radius = Math.min(width, height) * (7 / 16);
+    const gradient = context.createRadialGradient(
+      width / 2,
+      height / 2,
+      radius * core,
+      width / 2,
+      height / 2,
+      radius
+    );
+    gradient.addColorStop(0, color);
+    gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+  };
+
+/** A star with `points` rays, from `inner` to `outer` × the half size. */
+const starPath = (
+  size: number,
+  points: number,
+  inner: number,
+  outer: number
+): Path2D => {
+  const path = new Path2D();
+  const half = size / 2;
+  for (let index = 0; index < points * 2; index += 1) {
+    const angle = (index * Math.PI) / points - Math.PI / 2;
+    const radius = half * (index % 2 === 0 ? outer : inner);
+    const x = half + Math.cos(angle) * radius;
+    const y = half + Math.sin(angle) * radius;
+    if (index === 0) {
+      path.moveTo(x, y);
+    } else {
+      path.lineTo(x, y);
+    }
+  }
+  path.closePath();
+  return path;
+};
+
+const glowStar =
+  (color: string, points: number, inner: number): FxDraw =>
+  (context, width) => {
+    context.shadowColor = color;
+    context.shadowBlur = width / 12;
+    context.fillStyle = color;
+    context.fill(starPath(width, points, inner, 0.8));
+  };
+
+/** A drop shape that points up, with its round end at the bottom. */
+const dropPath = (width: number, height: number): Path2D => {
+  const path = new Path2D();
+  const radius = width * 0.26;
+  const bottom = height * 0.66;
+  path.moveTo(width / 2, height * 0.12);
+  path.bezierCurveTo(
+    width / 2 + radius * 0.4,
+    height * 0.35,
+    width / 2 + radius,
+    bottom - radius * 0.6,
+    width / 2 + radius,
+    bottom
+  );
+  path.arc(width / 2, bottom, radius, 0, Math.PI);
+  path.bezierCurveTo(
+    width / 2 - radius,
+    bottom - radius * 0.6,
+    width / 2 - radius * 0.4,
+    height * 0.35,
+    width / 2,
+    height * 0.12
+  );
+  path.closePath();
+  return path;
+};
+
+const outlined = (
+  context: CanvasRenderingContext2D,
+  path: Path2D,
+  color: string,
+  line: number
+) => {
+  context.lineJoin = "round";
+  context.lineWidth = line;
+  context.strokeStyle = OUTLINE;
+  context.stroke(path);
+  context.fillStyle = color;
+  // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
+  context.fill(path, "evenodd");
+};
+
+/** A glyph in a Status color, with a dark outline, for a badge icon. */
+const glyphIcon =
+  (glyph: Glyph, color: string): FxDraw =>
+  (context, width) => {
+    context.translate(width / 2, width / 2);
+    context.scale(width / 128, width / 128);
+    const path = new Path2D(GLYPHS[glyph]);
+    context.lineJoin = "round";
+    context.lineCap = "round";
+    context.lineWidth = 22;
+    context.strokeStyle = OUTLINE;
+    context.stroke(path);
+    context.fillStyle = color;
+    // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
+    context.fill(path, "evenodd");
+    context.lineWidth = 10;
+    context.strokeStyle = color;
+    context.stroke(path);
+  };
+
+const drawSlash: FxDraw = (context, width) => {
+  context.lineCap = "round";
+  for (const [line, alpha] of [
+    [width / 9, 0.35],
+    [width / 18, 1],
+  ] as const) {
+    context.lineWidth = line;
+    context.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+    context.beginPath();
+    context.arc(width / 2, width / 2, width * 0.34, -2.4, 0.4);
+    context.stroke();
+  }
+};
+
+const drawRuneRing: FxDraw = (context, width) => {
+  const center = width / 2;
+  context.strokeStyle = "#ffffff";
+  context.shadowColor = "#ffffff";
+  context.shadowBlur = width / 32;
+  for (const radius of [0.4, 0.3]) {
+    context.lineWidth = width / 64;
+    context.beginPath();
+    context.arc(center, center, width * radius, 0, Math.PI * 2);
+    context.stroke();
+  }
+  // Rune ticks between the two circles.
+  context.lineWidth = width / 48;
+  for (let index = 0; index < 16; index += 1) {
+    const angle = (index * Math.PI) / 8;
+    const tilt = index % 2 === 0 ? 0.08 : -0.08;
+    context.beginPath();
+    context.moveTo(
+      center + Math.cos(angle) * width * 0.32,
+      center + Math.sin(angle) * width * 0.32
+    );
+    context.lineTo(
+      center + Math.cos(angle + tilt) * width * 0.38,
+      center + Math.sin(angle + tilt) * width * 0.38
+    );
+    context.stroke();
+  }
+};
+
+const drawFlame: FxDraw = (context, width, height) => {
+  const path = dropPath(width, height);
+  const gradient = context.createLinearGradient(0, height, 0, 0);
+  gradient.addColorStop(0, "#fff1b0");
+  gradient.addColorStop(0.45, FX_ANCHORS.fire);
+  gradient.addColorStop(1, "rgba(255, 70, 20, 0)");
+  context.shadowColor = FX_ANCHORS.fire;
+  context.shadowBlur = width / 16;
+  context.fillStyle = gradient;
+  context.fill(path);
+};
+
+const drawVine: FxDraw = (context, width) => {
+  const path = new Path2D();
+  path.moveTo(width * 0.12, width * 0.82);
+  path.bezierCurveTo(
+    width * 0.3,
+    width * 0.4,
+    width * 0.8,
+    width * 0.9,
+    width * 0.78,
+    width * 0.45
+  );
+  path.bezierCurveTo(
+    width * 0.76,
+    width * 0.2,
+    width * 0.45,
+    width * 0.22,
+    width * 0.5,
+    width * 0.42
+  );
+  context.lineCap = "round";
+  context.lineWidth = width / 14;
+  context.strokeStyle = OUTLINE;
+  context.stroke(path);
+  context.lineWidth = width / 22;
+  context.strokeStyle = FX_ANCHORS.vine;
+  context.stroke(path);
+  for (const [x, y, angle] of [
+    [0.3, 0.6, -0.6],
+    [0.62, 0.72, 0.8],
+    [0.86, 0.3, -1.2],
+  ] as const) {
+    const leaf = new Path2D();
+    leaf.ellipse(
+      x * width,
+      y * width,
+      width / 12,
+      width / 24,
+      angle,
+      0,
+      Math.PI * 2
+    );
+    outlined(context, leaf, FX_ANCHORS.iconEntangle, width / 64);
+  }
+};
+
+const drawChain: FxDraw = (context, width) => {
+  for (let index = 0; index < 3; index += 1) {
+    const link = new Path2D();
+    link.ellipse(
+      width * (0.28 + index * 0.22),
+      width / 2,
+      width * 0.15,
+      width * 0.09,
+      index % 2 === 0 ? 0 : 0.3,
+      0,
+      Math.PI * 2
+    );
+    context.strokeStyle = OUTLINE;
+    context.lineWidth = width / 14;
+    context.stroke(link);
+    context.strokeStyle = FX_ANCHORS.chain;
+    context.lineWidth = width / 22;
+    context.stroke(link);
+  }
+};
+
+const drawShield: FxDraw = (context, width) => {
+  context.translate(width / 2, width / 2);
+  context.scale(width / 120, width / 120);
+  outlined(context, new Path2D(GLYPHS.shield), FX_ANCHORS.shield, 6);
+};
+
+const drawShard: FxDraw = (context, width) => {
+  const path = new Path2D();
+  path.moveTo(width / 2, width * 0.1);
+  path.lineTo(width * 0.68, width / 2);
+  path.lineTo(width / 2, width * 0.9);
+  path.lineTo(width * 0.32, width / 2);
+  path.closePath();
+  outlined(context, path, FX_ANCHORS.frost, width / 24);
+};
+
+const drawMote: FxDraw = (context, width) => {
+  const path = new Path2D();
+  path.arc(width / 2, width / 2, width * 0.2, 0, Math.PI * 2);
+  context.globalAlpha = 0.9;
+  outlined(context, path, FX_ANCHORS.frost, width / 32);
+};
+
+const drawBubble: FxDraw = (context, width) => {
+  const path = new Path2D();
+  path.arc(width / 2, width / 2, width * 0.3, 0, Math.PI * 2);
+  outlined(context, path, FX_ANCHORS.poison, width / 24);
+  context.fillStyle = "rgba(255, 255, 240, 0.8)";
+  context.beginPath();
+  context.arc(width * 0.42, width * 0.4, width * 0.07, 0, Math.PI * 2);
+  context.fill();
+};
+
+const drawDrip: FxDraw = (context, width, height) => {
+  outlined(context, dropPath(width, height), FX_ANCHORS.blood, width / 24);
+};
+
+const drawHeal: FxDraw = (context, width) => {
+  context.shadowColor = "#ffffff";
+  context.shadowBlur = width / 10;
+  context.fillStyle = "#ffffff";
+  const arm = width * 0.12;
+  context.fillRect(width / 2 - arm, width * 0.2, arm * 2, width * 0.6);
+  context.fillRect(width * 0.2, width / 2 - arm, width * 0.6, arm * 2);
+};
+
+const drawTrail: FxDraw = (context, width, height) => {
+  const along = context.createLinearGradient(
+    width / 16,
+    0,
+    width * (15 / 16),
+    0
+  );
+  along.addColorStop(0, "rgba(255, 255, 255, 0)");
+  along.addColorStop(1, "rgba(255, 255, 255, 1)");
+  context.fillStyle = along;
+  context.beginPath();
+  context.ellipse(
+    width / 2,
+    height / 2,
+    width * (7 / 16),
+    height * (6 / 16),
+    0,
+    0,
+    Math.PI * 2
+  );
+  context.fill();
+};
+
+/** A drop on a broken heal cross: Bleeding makes heals smaller. */
+const drawBleedIcon: FxDraw = (context, width) => {
+  context.lineCap = "round";
+  context.lineWidth = width / 10;
+  context.strokeStyle = OUTLINE;
+  context.beginPath();
+  context.moveTo(width * 0.22, width * 0.5);
+  context.lineTo(width * 0.4, width * 0.5);
+  context.moveTo(width * 0.6, width * 0.5);
+  context.lineTo(width * 0.78, width * 0.5);
+  context.stroke();
+  context.lineWidth = width / 18;
+  context.strokeStyle = "#e9eef2";
+  context.stroke();
+  context.translate(width * 0.2, width * 0.12);
+  outlined(
+    context,
+    dropPath(width * 0.6, width * 0.8),
+    FX_ANCHORS.iconBleed,
+    width / 20
+  );
+};
+
+const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
+  glow: softDot("rgba(255, 255, 255, 1)", 0),
+  burst: glowStar("#ffffff", 10, 0.35),
+  slash: drawSlash,
+  flare: glowStar(FX_ANCHORS.holy, 8, 0.2),
+  "rune-ring": drawRuneRing,
+  flame: drawFlame,
+  vine: drawVine,
+  chain: drawChain,
+  shield: drawShield,
+  spark: glowStar("#ffffff", 4, 0.25),
+  ember: softDot(FX_ANCHORS.fire, 0.2),
+  "frost-shard": drawShard,
+  "frost-mote": drawMote,
+  bubble: drawBubble,
+  drip: drawDrip,
+  dust: softDot(FX_ANCHORS.dust, 0.3),
+  heal: drawHeal,
+  trail: drawTrail,
+  "icon-burn": glyphIcon("flame", FX_ANCHORS.iconBurn),
+  "icon-freeze": glyphIcon("snow", FX_ANCHORS.iconFreeze),
+  "icon-poison": glyphIcon("leaf", FX_ANCHORS.iconPoison),
+  "icon-entangle": glyphIcon("vine", FX_ANCHORS.iconEntangle),
+  "icon-hobble": glyphIcon("speed", FX_ANCHORS.iconHobble),
+  "icon-bleed": drawBleedIcon,
+};
+
+/** The placeholder atlas is half size: the UV rectangles do not change. */
+const PLACEHOLDER_SCALE = 0.5;
+
+/**
+ * The canvas placeholders of the effects atlas (until #12): one key image for
+ * each slot, in its cell, with an empty band of 1/16 of the cell on each side.
+ */
+export const fxPlaceholderAtlas = (
+  slots: readonly { readonly name: FxSlotName; readonly cell: FxCell }[],
+  size: number
+): CanvasTexture =>
+  cached(
+    "fx-atlas",
+    size * PLACEHOLDER_SCALE,
+    size * PLACEHOLDER_SCALE,
+    (context) => {
+      for (const { name, cell } of slots) {
+        context.save();
+        context.scale(PLACEHOLDER_SCALE, PLACEHOLDER_SCALE);
+        context.translate(cell.x, cell.y);
+        context.beginPath();
+        context.rect(0, 0, cell.w, cell.h);
+        context.clip();
+        FX_PLACEHOLDERS[name](context, cell.w, cell.h);
+        context.restore();
+      }
+    }
+  );
+
+const BADGE_WIDTH = 512;
+const BADGE_HEIGHT = 128;
+/** The dark round plate behind each icon. */
+const PLATE_RADIUS = 46;
+const BADGE_GAP = 12;
+
+/** An icon of the effects atlas: its source image and its cell, in px of that image. */
+export interface BadgeIcon {
+  readonly image: CanvasImageSource;
+  readonly x: number;
+  readonly y: number;
+  readonly size: number;
+}
+
+const drawBadgeText = (
+  context: CanvasRenderingContext2D,
+  text: string,
+  x: number
+) => {
+  context.strokeStyle = "rgba(15, 10, 8, 0.92)";
+  context.strokeText(text, x, BADGE_HEIGHT / 2 + 4);
+  context.fillStyle = STAT_PIPE;
+  context.fillText(text, x, BADGE_HEIGHT / 2 + 4);
+};
+
+/**
+ * The Status Badge above a Unit: a dark round plate with the icon of each
+ * Status and its count next to it, then "+N". The icon art has no numbers.
+ * `version` changes when the atlas changes, so the badge draws again.
+ */
+export const statusBadgeTexture = (options: {
+  readonly badges: readonly (StatusBadge & { readonly icon: BadgeIcon })[];
+  readonly more: number;
+  readonly version: number;
+}): CanvasTexture =>
+  cached(
+    `badge:${options.version}:${options.badges
+      .map((badge) => `${badge.status}${badge.count ?? ""}`)
+      .join(",")}:${options.more}`,
+    BADGE_WIDTH,
+    BADGE_HEIGHT,
+    (context) => {
+      context.font = `900 64px ${FONT}`;
+      context.textBaseline = "middle";
+      context.textAlign = "left";
+      context.lineJoin = "round";
+      context.lineWidth = 12;
+      const counts = options.badges.map((badge) =>
+        badge.count === null ? "" : String(badge.count)
+      );
+      const more = options.more > 0 ? `+${options.more}` : "";
+      const textWidth = (text: string) =>
+        text ? context.measureText(text).width + 4 : 0;
+      const total =
+        counts.reduce(
+          (sum, count) => sum + PLATE_RADIUS * 2 + textWidth(count),
+          0
+        ) +
+        BADGE_GAP * Math.max(options.badges.length - 1, 0) +
+        (more ? BADGE_GAP + textWidth(more) : 0);
+      let x = (BADGE_WIDTH - total) / 2;
+      for (const [index, badge] of options.badges.entries()) {
+        const center = x + PLATE_RADIUS;
+        context.fillStyle = "rgba(20, 14, 10, 0.82)";
+        context.beginPath();
+        context.arc(center, BADGE_HEIGHT / 2, PLATE_RADIUS, 0, Math.PI * 2);
+        context.fill();
+        context.lineWidth = 4;
+        context.strokeStyle = "rgba(255, 246, 223, 0.35)";
+        context.stroke();
+        context.lineWidth = 12;
+        const { icon } = badge;
+        const size = PLATE_RADIUS * 1.7;
+        context.drawImage(
+          icon.image,
+          icon.x,
+          icon.y,
+          icon.size,
+          icon.size,
+          center - size / 2,
+          BADGE_HEIGHT / 2 - size / 2,
+          size,
+          size
+        );
+        x += PLATE_RADIUS * 2;
+        const count = counts[index] ?? "";
+        if (count) {
+          drawBadgeText(context, count, x + 2);
+          x += textWidth(count);
+        }
+        x += BADGE_GAP;
+      }
+      if (more) {
+        drawBadgeText(context, more, x);
+      }
+    }
+  );

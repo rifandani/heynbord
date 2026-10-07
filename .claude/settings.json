@@ -113,10 +113,16 @@
           {
             "command": "bun lint:fix",
             "type": "command"
-          },
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
           {
-            "command": "bun check:fix",
-            "type": "command"
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/fallow-fix-on-stop.sh\""
           }
         ]
       }

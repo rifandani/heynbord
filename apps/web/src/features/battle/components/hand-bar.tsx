@@ -281,6 +281,7 @@ const InspectedCard = ({
       cardId={card.cardId}
       rank={card.rank}
       countdown={card.countdown}
+      blocked={card.blocked}
     />
   ) : null;
 
@@ -380,6 +381,7 @@ const HandSlot = ({
         rank={card.rank}
         countdown={card.countdown}
         selected={selected}
+        blocked={card.blocked}
         data-testid={`hand-card-${index}`}
         className={cn(dimmedCard(dimmed))}
         onClick={(event) => onPress(index, event.detail === 0)}
@@ -387,7 +389,7 @@ const HandSlot = ({
           if (event.pointerType === "touch") {
             holdToInspect(() => setInspected(index));
           }
-          if (card.countdown === 0 && battle.canAct) {
+          if (card.countdown === 0 && !card.blocked && battle.canAct) {
             onDragStart(startDrag(index, event.clientX, event.clientY));
           }
         }}

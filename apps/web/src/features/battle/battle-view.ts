@@ -8,7 +8,7 @@ import type {
   Side,
   UnitState,
 } from "@workspace/rules";
-import { getCard } from "@workspace/rules";
+import { getCard, isBlockedByUnique } from "@workspace/rules";
 
 /**
  * What the Battle screen shows. The scene and the HUD read only this view.
@@ -36,7 +36,15 @@ export interface UnitView {
   readonly poisoned: number;
   /** Hobbled count. 0 is not Hobbled. */
   readonly hobbled: number;
+  /** Bleeding count. 0 is not Bleeding. */
+  readonly bleeding: number;
   readonly frozen: boolean;
+  /**
+   * Speed 0 in the next action, and the action ends it. The rules show no
+   * event for this, so the view ends it on the attack or the skip of the Unit,
+   * and for a Unit with no attack at the End Step of its owner.
+   */
+  readonly entangled: boolean;
 }
 
 /** A card in a Hand. `cardId` is `null` for a card that the player cannot see. */
@@ -45,6 +53,11 @@ export interface HandCardView {
   readonly cardId: string | null;
   readonly rank: RankId | null;
   readonly countdown: number;
+  /**
+   * Unique (GDD 5.4): a Unit from this card is on the player's side of the
+   * Board, so the card cannot be played. Always false for a hidden card.
+   */
+  readonly blocked: boolean;
 }
 
 /** A card in a Graveyard. The Graveyard is open information for both Sides. */
@@ -97,7 +110,9 @@ const unitView = (unit: Readonly<UnitState>): UnitView => ({
   burn: unit.burn,
   poisoned: unit.poisoned,
   hobbled: unit.hobbled,
+  bleeding: unit.bleeding,
   frozen: unit.frozen,
+  entangled: unit.entangled,
 });
 
 const visibleCard = (
@@ -115,12 +130,14 @@ const visibleCard = (
         cardId: card.cardId,
         rank: card.rank,
         countdown: card.countdown,
+        blocked: false,
       }
     : {
         instanceId: card.instanceId,
         cardId: null,
         rank: null,
         countdown: card.countdown,
+        blocked: false,
       };
 
 const graveyardCard = (card: {
@@ -142,17 +159,6 @@ const sideView = (state: BattleState, side: Side): SideView => {
   };
 };
 
-/** The view of a rules state, with the enemy's Hand hidden. */
-export const viewFromState = (state: BattleState): BattleView => ({
-  lanes: state.lanes,
-  closedLanes: state.closedLanes.map((closed) => closed.lane),
-  turnNumber: state.turnNumber,
-  activeSide: state.activeSide,
-  sides: { player: sideView(state, "player"), enemy: sideView(state, "enemy") },
-  units: state.units.map(unitView),
-  result: state.result,
-});
-
 const updateSide = (
   view: BattleView,
   side: Side,
@@ -161,6 +167,48 @@ const updateSide = (
   ...view,
   sides: { ...view.sides, [side]: change(view.sides[side]) },
 });
+
+/**
+ * Sets `blocked` on each card in the player's Hand from the Units of the view,
+ * so that a card changes when the event of its Unit plays. It keeps the view
+ * when no card changes.
+ */
+const markBlockedCards = (view: BattleView): BattleView => {
+  const friendlyUnitCardIds = view.units.flatMap((unit) =>
+    unit.owner === "player" ? [unit.cardId] : []
+  );
+  const { hand } = view.sides.player;
+  const blocked = hand.map((card) =>
+    card.cardId === null
+      ? false
+      : isBlockedByUnique(card.cardId, friendlyUnitCardIds)
+  );
+  if (hand.every((card, index) => card.blocked === blocked[index])) {
+    return view;
+  }
+  return updateSide(view, "player", (side) => ({
+    ...side,
+    hand: side.hand.map((card, index) => ({
+      ...card,
+      blocked: blocked[index] ?? false,
+    })),
+  }));
+};
+
+/** The view of a rules state, with the enemy's Hand hidden. */
+export const viewFromState = (state: BattleState): BattleView =>
+  markBlockedCards({
+    lanes: state.lanes,
+    closedLanes: state.closedLanes.map((closed) => closed.lane),
+    turnNumber: state.turnNumber,
+    activeSide: state.activeSide,
+    sides: {
+      player: sideView(state, "player"),
+      enemy: sideView(state, "enemy"),
+    },
+    units: state.units.map(unitView),
+    result: state.result,
+  });
 
 const updateUnit = (
   view: BattleView,
@@ -249,14 +297,7 @@ const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
   }
 };
 
-/**
- * Applies one Battle Event to the view. Applying all events of a `step` to
- * `viewFromState(before)` gives `viewFromState(after)`. A unit test checks this.
- */
-export const applyEvent = (
-  view: BattleView,
-  event: BattleEvent
-): BattleView => {
+const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
   switch (event._tag) {
     case "TurnStarted": {
       return { ...view, activeSide: event.side, turnNumber: event.turnNumber };
@@ -301,6 +342,12 @@ export const applyEvent = (
           case "hobble": {
             return { ...unit, hobbled: event.count ?? unit.hobbled };
           }
+          case "bleed": {
+            return { ...unit, bleeding: event.count ?? unit.bleeding };
+          }
+          case "entangle": {
+            return { ...unit, entangled: true };
+          }
           default: {
             return unit;
           }
@@ -308,10 +355,18 @@ export const applyEvent = (
       });
     }
     case "UnitSkipped": {
+      // A skipped action ends Freeze and Entangled.
       return updateUnit(view, event.unitId, (unit) => ({
         ...unit,
         frozen: false,
+        entangled: false,
       }));
+    }
+    case "UnitAttacked": {
+      // The action ends Entangled.
+      return updateUnit(view, event.unitId, (unit) =>
+        unit.entangled ? { ...unit, entangled: false } : unit
+      );
     }
     case "ArmorGained": {
       return updateUnit(view, event.unitId, (unit) => ({
@@ -328,23 +383,27 @@ export const applyEvent = (
       }));
     }
     case "TurnEnded": {
-      // The End Step lowers the Hobbled count of this Side, and the bonus Armor
-      // Turns of the other side's Units.
+      // The End Step lowers the Hobbled and Bleeding counts of this Side, and
+      // the bonus Armor Turns of the other side's Units. Each Unit of this Side
+      // had its action, so none of them is Entangled now: a Unit with no move
+      // and no attack has no event of its own that ends Entangled.
       return {
         ...view,
         units: view.units.map((unit) => {
-          const hobbled =
-            unit.owner === event.side && unit.hobbled > 0
-              ? unit.hobbled - 1
-              : unit.hobbled;
+          const own = unit.owner === event.side;
+          const hobbled = own ? Math.max(unit.hobbled - 1, 0) : unit.hobbled;
+          const bleeding = own ? Math.max(unit.bleeding - 1, 0) : unit.bleeding;
+          const entangled = own ? false : unit.entangled;
           const bonusArmorTurns =
-            unit.owner !== event.side && unit.bonusArmorTurns > 0
+            !own && unit.bonusArmorTurns > 0
               ? unit.bonusArmorTurns - 1
               : unit.bonusArmorTurns;
           return hobbled === unit.hobbled &&
+            bleeding === unit.bleeding &&
+            entangled === unit.entangled &&
             bonusArmorTurns === unit.bonusArmorTurns
             ? unit
-            : { ...unit, hobbled, bonusArmorTurns };
+            : { ...unit, hobbled, bleeding, entangled, bonusArmorTurns };
         }),
       };
     }
@@ -371,3 +430,10 @@ export const applyEvent = (
     }
   }
 };
+
+/**
+ * Applies one Battle Event to the view. Applying all events of a `step` to
+ * `viewFromState(before)` gives `viewFromState(after)`. A unit test checks this.
+ */
+export const applyEvent = (view: BattleView, event: BattleEvent): BattleView =>
+  markBlockedCards(applyBoardEvent(view, event));

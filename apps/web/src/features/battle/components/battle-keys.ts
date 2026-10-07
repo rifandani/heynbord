@@ -76,15 +76,16 @@ export const inspectDirection = (
 
 /**
  * The next Ready card from the selected card in the direction `step`, or
- * `null` when no card is Ready. The selection wraps at the ends.
+ * `null` when no card is Ready. It skips a card that Unique blocks. The
+ * selection wraps at the ends.
  */
 export const nextReadyCard = (
-  hand: readonly { readonly countdown: number }[],
+  hand: readonly { readonly countdown: number; readonly blocked?: boolean }[],
   selected: number | null,
   step: 1 | -1
 ): number | null => {
   const ready = hand.flatMap((card, index) =>
-    card.countdown === 0 ? [index] : []
+    card.countdown === 0 && !card.blocked ? [index] : []
   );
   const position = selected === null ? -1 : ready.indexOf(selected);
   return ready[(position + step + ready.length) % ready.length] ?? null;

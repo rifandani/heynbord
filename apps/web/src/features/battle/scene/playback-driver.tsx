@@ -61,7 +61,8 @@ export const PlaybackDriver = () => {
   };
 
   useFrame((_, delta) => {
-    const step = Math.min(delta, MAX_DELTA);
+    // QA: a paused clock stops all motion for a screenshot.
+    const step = playback.paused ? 0 : Math.min(delta, MAX_DELTA);
     playback.time += step;
     playback.shake = Math.max(0, playback.shake - step * 3);
     adoptStored();

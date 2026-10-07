@@ -391,6 +391,39 @@ describe("Rally (GDD 4.3, 5.4)", () => {
     expect(unitById(next, ally.id)?.rallied).toBe(0);
   });
 
+  it("adds no bonus to Retaliation, because it occurs in the enemy's Turn", () => {
+    const state = emptyBattle({ activeSide: "enemy", lanes: 1 });
+    placeUnit(state, {
+      cardId: "feral.frostElkMatriarch",
+      owner: "player",
+      position: 0,
+    });
+    const halberdier = placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "player",
+      position: 2,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 3,
+      attack: 1,
+      hp: 30,
+      maxHp: 30,
+      speed: 0,
+    });
+    const { state: rallied } = run(state, endTurn);
+    expect(unitById(rallied, halberdier.id)?.rallied).toBe(1);
+    const { state: enemyTurn } = run(rallied, endTurn);
+    expect(unitById(enemyTurn, halberdier.id)?.rallied).toBe(0);
+    const { events } = run(enemyTurn, endTurn);
+    expect(
+      eventsOfType(events, "DamageDealt")
+        .filter((event) => event.source === "retaliation")
+        .map((event) => event.amount)
+    ).toEqual([4]);
+  });
+
   it("adds the bonuses of two Rally Units", () => {
     const { state, elk, second, ally } = rallyBoard(true);
     expect(unitById(state, ally.id)?.rallied).toBe(2);
@@ -431,5 +464,50 @@ describe("Rally (GDD 4.3, 5.4)", () => {
           event.target._tag === "Unit" && event.target.unitId === enemy.id
       )
     ).toHaveLength(0);
+  });
+});
+
+describe("Bleeding (GDD 4.7, ADR-0019)", () => {
+  it("halves each heal and rounds down, so Regeneration 2 heals 1 and Regeneration 1 heals 0", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    const troll = placeUnit(state, {
+      cardId: "feral.caveTroll",
+      owner: "player",
+      position: 0,
+      hp: 5,
+      bleeding: 2,
+    });
+    const cleric = placeUnit(state, {
+      cardId: "human.dawnCleric",
+      owner: "player",
+      lane: 1,
+      position: 0,
+      hp: 5,
+      bleeding: 2,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, troll.id)?.hp).toBe(6);
+    expect(unitById(next, cleric.id)?.hp).toBe(5);
+    expect(eventsOfType(events, "UnitHealed")).toEqual([
+      expect.objectContaining({ unitId: troll.id, amount: 1, hp: 6 }),
+    ]);
+  });
+
+  it("lowers the count by 1 only in the End Step of the owner", () => {
+    let state = emptyBattle();
+    const troll = placeUnit(state, {
+      cardId: "feral.caveTroll",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      speed: 0,
+      bleeding: 2,
+    });
+    ({ state } = run(state, endTurn));
+    expect(unitById(state, troll.id)?.bleeding).toBe(1);
+    ({ state } = run(state, endTurn));
+    expect(unitById(state, troll.id)?.bleeding).toBe(1);
+    ({ state } = run(state, endTurn));
+    expect(unitById(state, troll.id)?.bleeding).toBe(0);
   });
 });

@@ -161,6 +161,79 @@ describe("fxForEvent edge cases", () => {
   });
 });
 
+describe("fxForEvent for Statuses", () => {
+  const [unit] = view.units;
+  const unitId = unit?.id ?? 0;
+  const at = worldOf(view, { _tag: "Unit", unitId });
+
+  it.each([
+    ["burn", "burn"],
+    ["freeze", "freeze"],
+    ["poison", "poison"],
+    ["entangle", "entangle"],
+    ["hobble", "hobble"],
+    ["bleed", "bleed"],
+  ] as const)("starts a burst on the Unit when %s starts", (status, burst) => {
+    expect(unit).toBeDefined();
+    expect(
+      fxForEvent(
+        { _tag: "StatusApplied", unitId, status, count: 2 },
+        view,
+        view,
+        4
+      )
+    ).toEqual([
+      {
+        kind: "status",
+        burst,
+        x: at?.x,
+        z: at?.z,
+        height: (at?.height ?? 0) * 0.5,
+        start: 4,
+      },
+    ]);
+  });
+
+  it.each([
+    ["burn", "burn-tick"],
+    ["poison", "poison-tick"],
+  ] as const)(
+    "shows the damage number and a %s burst when the Status deals damage",
+    (source, burst) => {
+      const fx = fxForEvent(
+        {
+          _tag: "DamageDealt",
+          target: { _tag: "Unit", unitId },
+          amount: 1,
+          damageType: "physical",
+          source,
+          crit: false,
+          blocked: false,
+          hp: 3,
+        },
+        view,
+        view,
+        2
+      );
+      expect(fx).toEqual([
+        expect.objectContaining({ kind: "number", text: "-1" }),
+        expect.objectContaining({ kind: "status", burst, start: 2 }),
+      ]);
+    }
+  );
+
+  it("gives no Status burst for a Unit that is not on the Board", () => {
+    expect(
+      fxForEvent(
+        { _tag: "StatusApplied", unitId: 999, status: "burn" },
+        view,
+        view,
+        0
+      )
+    ).toEqual([]);
+  });
+});
+
 const ring = (start: number): Fx => ({
   kind: "ring",
   color: "#fff",

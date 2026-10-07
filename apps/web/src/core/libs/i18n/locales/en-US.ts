@@ -68,6 +68,7 @@ export default {
     countdown: "Countdown {value}",
     selectTarget: "Select a target",
     noTarget: "No legal target now",
+    uniqueBlocked: "{name} is already on your side of the Board.",
     cancel: "Cancel",
     victory: "Victory",
     defeat: "Defeat",
@@ -128,6 +129,11 @@ export default {
       hobbled: "Hobbled {value}",
       hobbledRule:
         "This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner.",
+      bleeding: "Bleeding {value}",
+      bleedingRule:
+        "This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Step of its owner.",
+      entangled: "Entangled",
+      entangledRule: "Speed 0 in its next action. It can still attack.",
     },
   },
   town: {
@@ -155,7 +161,7 @@ export default {
       balance: "{name}: {amount}",
       coin: {
         name: "Coin",
-        use: "Pays for Packs, Combine and Gear upgrades.",
+        use: "Pays for Packs, Combine, Gear upgrades and Deck Slots.",
       },
       essence: {
         name: "Essence",
@@ -255,10 +261,37 @@ export default {
     slots: "Deck slots",
     slotName: "Deck {number}",
     nameLabel: "Deck name",
-    yourCards: "Your Cards",
-    owned: "{count} cards",
-    show: "Show",
-    filters: { all: "All", creature: "Creatures", skill: "Skills" },
+    cards: "Cards",
+    ownedOf: "{owned} / {total} owned",
+    filters: {
+      ownership: "Ownership",
+      kind: "Card type",
+      race: "Race",
+      class: "Class",
+      all: "All",
+      owned: "Owned",
+      notOwned: "Not owned",
+      creature: "Creatures",
+      skill: "Skills",
+      allRaces: "All Races",
+      allClasses: "All Classes",
+    },
+    notOwned: "Not owned",
+    notOwnedCard:
+      "{name}, {rank}, Countdown {countdown}. You do not own this card.",
+    notOwnedGroup: "Not owned · {count}",
+    groups: {
+      all: "cards",
+      creature: "Creature Cards",
+      race: "{race} Creature Cards",
+      skill: "Skill Cards",
+      class: "{className} Skill Cards",
+    },
+    emptyPool: {
+      ownAll: "You own all {group}.",
+      ownNone: "You own no {group} yet.",
+    },
+    showAll: "Show all",
     heroClass: "Hero Class",
     curve: "Countdown curve",
     curveColumn:
@@ -283,6 +316,17 @@ export default {
     clear: "Remove All",
     use: "Use This Deck",
     active: "Active Deck",
+    buySlot: {
+      ribbon: "Buy Deck Slot {number} for {price}",
+      title: "Buy Deck Slot {number}?",
+      text: "You get one more place to save a Deck. You keep it for all time.",
+      price: "Price",
+      balance: "Your Coin",
+      after: "After you buy",
+      short: "You need {amount} more.",
+      buy: "Buy",
+      cancel: "Cancel",
+    },
     problems: {
       tooFew: "The Deck needs at least {min} cards. It has {count}.",
       tooMany: "The Deck can have {max} cards at most. It has {count}.",
@@ -352,6 +396,7 @@ export default {
   },
   keywords: {
     armor: "Armor {value}",
+    bleed: "Bleed {value}",
     charge: "Charge",
     entangle: "Entangle",
     flying: "Flying",
@@ -374,10 +419,13 @@ export default {
   keywordRules: {
     armor:
       "Reduces damage to this Unit by {value}. It does not reduce Holy damage.",
+    bleed:
+      "The enemy Unit it hits gets half of each heal, rounded down, for {value} Turns. Retaliation does not apply Bleed.",
     charge: "+2 Speed in the Turn when you summon this Unit.",
-    flying: "Moves over other Units. It stops in an empty Square.",
     entangle:
       "The enemy Unit it hits has Speed 0 in its next action. That Unit can still attack.",
+    flying:
+      "Moves over all Units, also enemy Units. It stops in an empty Square.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
     hobble:
       "The enemy Unit it hits has a maximum Speed of 1 for {value} Turns. Retaliation does not apply Hobble.",
@@ -399,7 +447,7 @@ export default {
     trample:
       "When this Unit kills an enemy Unit with an attack, the damage that is left hits the enemy Unit in the next Square behind it. It never hits a Hero.",
     unique: "Only one copy of this card can be on your side of the Board.",
-    wall: "This Unit has Speed 0 and Attack 0. It blocks its Lane, and a push never moves it.",
+    wall: "This Unit has Speed 0 and Attack 0. It blocks enemy Units in its Lane, and a push never moves it.",
     fire: "Fire: the target burns for 1 damage in its next 2 End Steps.",
     frost: "Frost: the target skips its next action.",
     holy: "Holy: Armor does not reduce this damage.",

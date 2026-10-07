@@ -65,6 +65,18 @@ describe("nextReadyCard", () => {
     expect(nextReadyCard(hand, 1, 1)).toBe(0);
   });
 
+  it("skips a Ready card that Unique blocks", () => {
+    const blocked = [
+      { countdown: 0 },
+      { countdown: 0, blocked: true },
+      { countdown: 0 },
+    ];
+    expect(nextReadyCard(blocked, 0, 1)).toBe(2);
+    expect(
+      nextReadyCard([{ countdown: 0, blocked: true }], null, 1)
+    ).toBeNull();
+  });
+
   it("finds nothing when no card is Ready", () => {
     expect(nextReadyCard([{ countdown: 1 }], null, 1)).toBeNull();
     expect(nextReadyCard([], 0, -1)).toBeNull();

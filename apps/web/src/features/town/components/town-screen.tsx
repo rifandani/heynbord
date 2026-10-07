@@ -30,16 +30,16 @@ const LEAVE_MS = 450;
  * painting coordinates. It continues the plume in the painting.
  */
 const SMOKE = [
-  { x: 1414, y: 472, delay: 0 },
-  { x: 1414, y: 472, delay: 1.1 },
-  { x: 1414, y: 472, delay: 2.2 },
+  { x: 1612, y: 472, delay: 0 },
+  { x: 1612, y: 472, delay: 1.1 },
+  { x: 1612, y: 472, delay: 2.2 },
 ];
 
 /** Light on the open sea, clear of the ships and piers, in painting coordinates. */
 const SHIMMER = [
-  { x: 1340, y: 226, width: 67 },
-  { x: 1455, y: 247, width: 53 },
-  { x: 1541, y: 218, width: 48 },
+  { x: 1515, y: 226, width: 87 },
+  { x: 1670, y: 247, width: 80 },
+  { x: 1803, y: 218, width: 79 },
 ];
 
 /** The Town Bar height. The ground line of the painting stays on its top edge. */
@@ -54,6 +54,7 @@ const TOWN_BAR =
 const paintingFrame: CSSProperties & Record<"--town-width", string> = {
   "--town-width": `max(100vw, calc((100dvh - var(--town-bar)) * ${PAINTING.width / GROUND_LINE}))`,
   width: "var(--town-width)",
+  aspectRatio: `${PAINTING.width} / ${PAINTING.height}`,
   bottom: `calc(var(--town-bar) - var(--town-width) * ${(PAINTING.height - GROUND_LINE) / PAINTING.width})`,
 };
 
@@ -78,7 +79,7 @@ const TownAmbient = () => (
     {SMOKE.map((puff) => (
       <div
         key={`${puff.x}-${puff.delay}`}
-        className="absolute aspect-square w-[1.6%] rounded-full bg-[#f1ece4]/80 opacity-0 blur-[1px] motion-safe:animate-[town-smoke_3.2s_ease-out_infinite]"
+        className="absolute aspect-square w-[1.35%] rounded-full bg-[#f1ece4]/80 opacity-0 blur-[1px] motion-safe:animate-[town-smoke_3.2s_ease-out_infinite]"
         style={{
           left: percentX(puff.x),
           top: percentY(puff.y),
@@ -245,7 +246,7 @@ export const TownScreen = ({
     >
       <div
         className={cn(
-          "@container absolute left-1/2 aspect-video -translate-x-1/2",
+          "@container absolute left-1/2 -translate-x-1/2",
           "transition-[scale,opacity] duration-[450ms] ease-in",
           leaving && "scale-[1.12] opacity-0 motion-reduce:scale-100"
         )}

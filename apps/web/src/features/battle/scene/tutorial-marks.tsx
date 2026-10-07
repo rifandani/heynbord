@@ -1,17 +1,23 @@
 import { useAtomValue } from "@effect/atom-react";
-import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
 import type { Group, MeshBasicMaterial } from "three";
+import { Vector3 } from "three";
 
 import {
   battleSessionAtom,
   tutorialMarksAtom,
 } from "@/features/battle/battle.atoms";
+import { toScreen } from "@/features/battle/scene/markers";
 import { playback } from "@/features/battle/scene/playback";
+import { tutorialAnchor } from "@/features/battle/scene/tutorial-anchor";
 import {
+  tutorialArea,
   tutorialMotion,
   tutorialSpots,
 } from "@/features/battle/scene/tutorial-spots";
+import { unitPicker } from "@/features/battle/scene/unit-picker";
+import { boxAround } from "@/features/battle/tutorial-placement";
 
 /** The Tutorial color: it is not a side color, and not the gold of the target markers. */
 const TUTORIAL_COLOR = "#7fe3ff";
@@ -32,7 +38,34 @@ export const TutorialMarks = () => {
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const arrow = useRef<Group>(null);
   const materials = useRef<(MeshBasicMaterial | null)[]>([]);
-  const spots = tutorialSpots(marks, session?.view.lanes ?? 1);
+  const lanes = session?.view.lanes ?? 1;
+  const blockLane = session?.tutorial?.blockLane ?? null;
+  const spots = tutorialSpots(marks, lanes);
+  const get = useThree((state) => state.get);
+
+  // The Step text shows next to the Board area that it tells about.
+  useEffect(() => {
+    tutorialAnchor.box = (step) => {
+      const { camera, size } = get();
+      const point = new Vector3();
+      const playerUnits = [...unitPicker.hitAreas.values()].flatMap((area) =>
+        area.userData.owner === "player"
+          ? [area.getWorldPosition(point).clone()]
+          : []
+      );
+      return boxAround(
+        tutorialArea(step, { lanes, blockLane, playerUnits }).map((corner) =>
+          toScreen(
+            point.set(corner.x, corner.y, corner.z).project(camera),
+            size
+          )
+        )
+      );
+    };
+    return () => {
+      tutorialAnchor.box = () => null;
+    };
+  }, [get, lanes, blockLane]);
 
   useFrame(() => {
     const motion = tutorialMotion(playback.time, reducedMotion);

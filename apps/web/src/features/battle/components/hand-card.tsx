@@ -27,11 +27,16 @@ const handCardClassName = (
  * A Hand Card (GDD 11.2): the Card Frame with a large Countdown, a gold glow
  * when Ready, the Rank Gems, and Attack and HP for a Creature Card.
  */
+/** The reason that a Ready card cannot be played, for its accessible name. */
+const blockedLabel = (blocked: boolean, reason: string) =>
+  blocked ? `. ${reason}` : "";
+
 export const HandCard = ({
   cardId,
   rank,
   countdown,
   selected,
+  blocked = false,
   className,
   ...props
 }: {
@@ -39,19 +44,23 @@ export const HandCard = ({
   readonly rank: RankId;
   readonly countdown: number;
   readonly selected: boolean;
+  /** Unique (GDD 5.4): the card is Ready, but it cannot be played now. */
+  readonly blocked?: boolean;
 } & ComponentProps<"button">) => {
   const { tr, text } = useGameText();
-  const ready = countdown === 0;
+  // A blocked card shows its Ready badge, but it looks and acts like a card that is not Ready.
+  const playable = countdown === 0 && !blocked;
   const name = text(cardText(cardId, rank).name);
   return (
     <button
       type="button"
       {...props}
       aria-pressed={selected}
-      aria-label={`${name}, ${tr(`ranks.${rank}`)}, ${ready ? tr("battle.ready") : tr("battle.countdown", { value: countdown })}`}
-      data-ready={ready || undefined}
+      aria-label={`${name}, ${tr(`ranks.${rank}`)}, ${countdown === 0 ? tr("battle.ready") : tr("battle.countdown", { value: countdown })}${blockedLabel(blocked, tr("battle.uniqueBlocked", { name }))}`}
+      data-ready={playable || undefined}
+      data-blocked={blocked || undefined}
       data-selected={selected || undefined}
-      className={handCardClassName(ready, selected, className)}
+      className={handCardClassName(playable, selected, className)}
     >
       <CardFrame cardId={cardId} rank={rank} countdown={countdown} />
     </button>

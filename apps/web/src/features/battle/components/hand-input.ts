@@ -99,12 +99,12 @@ const pressSelected = (
     : { _tag: "select", index: null };
 
 /**
- * A card that is not Ready shows its details. A Ready card is selected, or
- * plays at once when it has no target.
+ * A card that is not Ready, or that Unique blocks, shows its details. A Ready
+ * card is selected, or plays at once when it has no target.
  */
 export const pressAction = (input: PressInput): PressAction => {
   const { card, index } = input;
-  if (!card || card.countdown > 0 || !input.canAct) {
+  if (!card || card.countdown > 0 || card.blocked || !input.canAct) {
     return { _tag: "inspect" };
   }
   if (input.selected === index) {

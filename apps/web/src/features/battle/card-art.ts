@@ -21,6 +21,26 @@ export const cardIllustration = (cardId: string): string => {
 };
 
 /**
+ * The Races and Classes that have their card art. The other cards show their
+ * emblem in the art window, so the game does not ask for an image that does
+ * not exist. Add a Race or Class here when its art is in `public/`.
+ */
+const RACES_AND_CLASSES_WITH_ART: ReadonlySet<string> = new Set([
+  "human",
+  "orc",
+  "warrior",
+  "mage",
+]);
+
+/** Whether the art of a card exists (see `cardIllustration`). */
+export const hasCardArt = (cardId: string): boolean => {
+  const card = getCard(cardId);
+  return RACES_AND_CLASSES_WITH_ART.has(
+    card.kind === "creature" ? card.race : card.class
+  );
+};
+
+/**
  * The Creature Cards of both Sides in a Battle, each one time: the cards that
  * can put a Unit on the Board, to load their art before the first summon.
  */

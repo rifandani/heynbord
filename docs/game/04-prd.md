@@ -72,7 +72,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | CRD-02 | Each card must exist in all Ranks from its Base Rank to Legendary. | M |
 | CRD-03 | The UI must show Rank with a color and a number of pips. | M |
 | CRD-04 | The Deck builder must check all Deck rules in GDD section 6 and show the reason when a Deck is not valid. | M |
-| CRD-05 | The player must have 5 Deck slots. | M |
+| CRD-05 | A new player must have 3 Deck slots. The player must be able to buy more with Coin, up to 10, with the prices in the Economy document. | M |
 | CRD-06 | The Deck builder must have Auto-fill. | S |
 | CRD-07 | The Deck builder must show the Countdown curve. | S |
 | CRD-08 | Card text must come from Keyword and effect templates with values, not from free text. | M |
@@ -82,7 +82,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | ID | Requirement | Priority |
 | --- | --- | --- |
 | PRG-01 | The player must get XP and levels up to level 30, with the unlocks in GDD section 7.1. | M |
-| PRG-02 | The Collection must show all cards with filters, and hide cards that are not Discovered. | M |
+| PRG-02 | The Collection and the Deck builder must show all cards with filters, also the cards that the player does not own. | M |
 | PRG-03 | The Workshop must support Combine, Extract and Craft with the costs in the Economy document. | M |
 | PRG-04 | Combine and Gear upgrades must never fail and never cause a downgrade. | M |
 | PRG-05 | The Hero must have 4 Gear slots with levels 0 to 10. | M |
@@ -101,7 +101,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | MOD-04 | Heynspire must have 50 Floors and unlock after the Region 3 Boss Stage. | S |
 | MOD-05 | The enemy AI must use the score method in GDD section 9 and must not see the player's Hand. | M |
 | MOD-06 | The game must have about 40 Achievements and about 30 Cosmetics. | S |
-| MOD-08 | The Bazaar must sell Cosmetics and extra Deck slots for Heynstones, with the prices in the Economy document. Earn-only Cosmetics must not be in the Bazaar. | S |
+| MOD-08 | The Bazaar must sell Cosmetics for Heynstones, with the prices in the Economy document. Earn-only Cosmetics must not be in the Bazaar. | S |
 | MOD-09 | Heynstones must come only from the one-time sources in the Economy document. | S |
 | MOD-07 | The story must have short scenes at the start and end of each Region. | S |
 | MOD-10 | The game must have 3 Dungeons that unlock at player level 10, 20 and 30. Each Dungeon must be one Battle against 2 or 3 Bosses, with the rules in GDD section 8.4. | S |

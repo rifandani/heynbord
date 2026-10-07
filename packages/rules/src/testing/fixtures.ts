@@ -55,6 +55,25 @@ export const emptyBattle = (
 
 let nextInstance = 1000;
 
+/** Test setup: replaces the Hobble and Bleed values and counts of a Unit. */
+const setCounts = (
+  unit: UnitState,
+  options: Partial<Pick<UnitState, "hobble" | "hobbled" | "bleed" | "bleeding">>
+): void => {
+  if (options.hobble !== undefined) {
+    unit.hobble = options.hobble;
+  }
+  if (options.hobbled !== undefined) {
+    unit.hobbled = options.hobbled;
+  }
+  if (options.bleed !== undefined) {
+    unit.bleed = options.bleed;
+  }
+  if (options.bleeding !== undefined) {
+    unit.bleeding = options.bleeding;
+  }
+};
+
 /** Puts a Unit on the Board. Changes `state` (test setup only). */
 export const placeUnit = (
   state: BattleState,
@@ -77,6 +96,8 @@ export const placeUnit = (
       | "poisoned"
       | "hobble"
       | "hobbled"
+      | "bleed"
+      | "bleeding"
       | "knockback"
       | "wall"
     >
@@ -133,12 +154,7 @@ export const placeUnit = (
   if (options.poison) {
     unit.poison = true;
   }
-  if (options.hobble !== undefined) {
-    unit.hobble = options.hobble;
-  }
-  if (options.hobbled !== undefined) {
-    unit.hobbled = options.hobbled;
-  }
+  setCounts(unit, options);
   if (options.knockback !== undefined) {
     unit.knockback = options.knockback;
   }

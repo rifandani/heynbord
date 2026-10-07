@@ -15,7 +15,7 @@ const card = (
   cardId: string | null,
   countdown = 0,
   rank: HandCardView["rank"] = "uncommon"
-): HandCardView => ({ instanceId: 1, cardId, rank, countdown });
+): HandCardView => ({ instanceId: 1, cardId, rank, countdown, blocked: false });
 
 const press = (overrides: Partial<Parameters<typeof pressAction>[0]>) =>
   pressAction({
@@ -98,6 +98,9 @@ describe("pressAction", () => {
       _tag: "inspect",
     });
     expect(press({ canAct: false })).toEqual({ _tag: "inspect" });
+    expect(
+      press({ card: { ...card("human.marshalElianVoss"), blocked: true } })
+    ).toEqual({ _tag: "inspect" });
   });
 
   it("selects a Ready card that needs a target", () => {

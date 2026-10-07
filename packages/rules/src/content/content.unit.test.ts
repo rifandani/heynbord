@@ -110,6 +110,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       }
       const amounts = [
         card.keywords.armor,
+        card.keywords.bleed,
         card.keywords.heroic,
         card.keywords.hobble,
         card.keywords.knockback,
@@ -182,6 +183,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("puts no attack Keyword on a Unit with Base Attack 0 (GDD 4.6)", () => {
     const attackKeywords = [
+      "bleed",
       "entangle",
       "heroic",
       "hobble",
@@ -221,8 +223,32 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(power("feral.webSpitter")).toBe(20);
     expect(power("feral.frostElkMatriarch")).toBe(25);
     // Unique and Wall use 0 points.
-    expect(power("feral.oldFrostmaw")).toBe(38);
+    expect(power("feral.oldFrostmaw")).toBe(39);
     expect(power("goblin.junkBarricade")).toBe(16);
+  });
+
+  it("puts Bleed only on the Frostfang Lynx and Old Frostmaw, with 1 up to Rare, 2 at Epic and 3 at Legendary (ADR-0019)", () => {
+    const bleeders = creatures.filter(
+      (card) => card.keywords.bleed !== undefined
+    );
+    expect(bleeders.map((card) => card.id)).toEqual([
+      "feral.frostfangLynx",
+      "feral.oldFrostmaw",
+    ]);
+    for (const card of bleeders) {
+      expect(card.race, card.id).toBe("feral");
+      for (const rank of RANKS.slice(RANKS.indexOf(card.baseRank))) {
+        const expected = rank === "legendary" ? 3 : rank === "epic" ? 2 : 1;
+        expect(
+          keywordValue(card.keywords.bleed, rank),
+          `${card.id} ${rank}`
+        ).toBe(expected);
+      }
+    }
+  });
+
+  it("gives Bleed N × 1 power points (GDD 13)", () => {
+    expect(power("feral.frostfangLynx")).toBe(17);
   });
 
   it("throws for an unknown card", () => {
@@ -352,6 +378,24 @@ describe("Decks and Stages", () => {
           isRankAtLeast(unit.rank, card.baseRank),
           `${stage.id} start Unit ${unit.cardId} below Base Rank`
         ).toBe(true);
+      }
+      const uniqueStartUnits = stage.enemy.startUnits
+        .map((unit) => getCard(unit.cardId))
+        .filter((card) => card.kind === "creature" && card.keywords.unique)
+        .map((card) => card.id);
+      expect(
+        new Set(uniqueStartUnits).size,
+        `${stage.id} has 2 start Units from one Unique card (GDD 5.4)`
+      ).toBe(uniqueStartUnits.length);
+    }
+  });
+
+  it("gives each copy in each Starter Deck the Rank Common or Uncommon", () => {
+    for (const deck of STARTER_DECKS) {
+      for (const entry of deck.deck) {
+        expect(["common", "uncommon"], `${deck.id} ${entry.cardId}`).toContain(
+          entry.rank
+        );
       }
     }
   });

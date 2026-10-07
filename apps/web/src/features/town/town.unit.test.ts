@@ -15,9 +15,9 @@ import {
 describe("safeArea", () => {
   it("is the part of the painting that 4:3 and 19.5:9 screens show above the Town Bar", () => {
     const area = safeArea();
-    expect(area.x).toBe(224);
+    expect(area.x).toBe(374);
     expect(area.width).toBe(1152);
-    expect(area.y).toBeCloseTo(251.1, 1);
+    expect(area.y).toBeCloseTo(136.2, 1);
     expect(area.y + area.height).toBe(GROUND_LINE);
   });
 });
@@ -83,7 +83,7 @@ describe("TOWN_SHORTCUTS", () => {
 
 describe("percentBox", () => {
   it("gives a box as percentages of the painting", () => {
-    expect(percentBox({ x: 400, y: 450, width: 160, height: 90 })).toEqual({
+    expect(percentBox({ x: 475, y: 450, width: 190, height: 90 })).toEqual({
       left: "25%",
       top: "50%",
       width: "10%",

@@ -68,6 +68,7 @@ export default {
     countdown: "Hitung mundur {value}",
     selectTarget: "Pilih target",
     noTarget: "Tidak ada target yang sah sekarang",
+    uniqueBlocked: "{name} sudah ada di sisi Papan-mu.",
     cancel: "Batal",
     victory: "Menang",
     defeat: "Kalah",
@@ -128,6 +129,12 @@ export default {
       hobbled: "Terpincang {value}",
       hobbledRule:
         "Unit ini punya Kecepatan maksimum 1, setelah semua bonus. Hitungan turun 1 pada tiap Langkah Akhir pemiliknya.",
+      bleeding: "Berdarah {value}",
+      bleedingRule:
+        "Unit ini mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah. Hitungan turun 1 pada tiap Langkah Akhir pemiliknya.",
+      entangled: "Terjerat",
+      entangledRule:
+        "Kecepatan 0 pada aksi berikutnya. Ia tetap bisa menyerang.",
     },
   },
   town: {
@@ -155,7 +162,7 @@ export default {
       balance: "{name}: {amount}",
       coin: {
         name: "Koin",
-        use: "Untuk membeli Paket, Gabung, dan peningkatan Perlengkapan.",
+        use: "Untuk membeli Paket, Gabung, peningkatan Perlengkapan, dan Slot Dek.",
       },
       essence: {
         name: "Esensi",
@@ -256,10 +263,37 @@ export default {
     slots: "Slot Dek",
     slotName: "Dek {number}",
     nameLabel: "Nama Dek",
-    yourCards: "Kartumu",
-    owned: "{count} kartu",
-    show: "Tampilkan",
-    filters: { all: "Semua", creature: "Makhluk", skill: "Keahlian" },
+    cards: "Kartu",
+    ownedOf: "{owned} / {total} dimiliki",
+    filters: {
+      ownership: "Kepemilikan",
+      kind: "Jenis kartu",
+      race: "Ras",
+      class: "Kelas",
+      all: "Semua",
+      owned: "Dimiliki",
+      notOwned: "Belum dimiliki",
+      creature: "Makhluk",
+      skill: "Keahlian",
+      allRaces: "Semua Ras",
+      allClasses: "Semua Kelas",
+    },
+    notOwned: "Belum dimiliki",
+    notOwnedCard:
+      "{name}, {rank}, Hitung mundur {countdown}. Kamu belum memiliki kartu ini.",
+    notOwnedGroup: "Belum dimiliki · {count}",
+    groups: {
+      all: "kartu",
+      creature: "Kartu Makhluk",
+      race: "Kartu Makhluk {race}",
+      skill: "Kartu Keahlian",
+      class: "Kartu Keahlian {className}",
+    },
+    emptyPool: {
+      ownAll: "Kamu sudah memiliki semua {group}.",
+      ownNone: "Kamu belum memiliki {group}.",
+    },
+    showAll: "Tampilkan semua",
     heroClass: "Kelas Pahlawan",
     curve: "Kurva Hitung mundur",
     curveColumn:
@@ -284,6 +318,17 @@ export default {
     clear: "Buang Semua",
     use: "Pakai Dek Ini",
     active: "Dek Aktif",
+    buySlot: {
+      ribbon: "Beli Slot Dek {number} seharga {price}",
+      title: "Beli Slot Dek {number}?",
+      text: "Kamu mendapat satu tempat lagi untuk menyimpan Dek. Slot ini milikmu selamanya.",
+      price: "Harga",
+      balance: "Koinmu",
+      after: "Setelah membeli",
+      short: "Kamu butuh {amount} lagi.",
+      buy: "Beli",
+      cancel: "Batal",
+    },
     problems: {
       tooFew: "Dek perlu minimal {min} kartu. Dek ini berisi {count}.",
       tooMany: "Dek boleh berisi maksimal {max} kartu. Dek ini berisi {count}.",
@@ -357,6 +402,7 @@ export default {
   },
   keywords: {
     armor: "Zirah {value}",
+    bleed: "Pendarahan {value}",
     charge: "Terjang",
     entangle: "Jerat",
     flying: "Terbang",
@@ -379,10 +425,13 @@ export default {
   keywordRules: {
     armor:
       "Mengurangi damage ke Unit ini sebesar {value}. Tidak mengurangi damage Suci.",
+    bleed:
+      "Unit musuh yang diserangnya mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah, selama {value} Giliran. Balasan tidak menerapkan Pendarahan.",
     charge: "+2 Kecepatan pada Giliran saat Unit ini dipanggil.",
-    flying: "Bergerak melewati Unit lain. Berhenti di Petak kosong.",
     entangle:
       "Unit musuh yang diserangnya punya Kecepatan 0 pada aksi berikutnya. Unit itu masih dapat menyerang.",
+    flying:
+      "Bergerak melewati semua Unit, juga Unit musuh. Berhenti di Petak kosong.",
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
     hobble:
       "Unit musuh yang diserangnya punya Kecepatan maksimum 1 selama {value} Giliran. Balasan tidak menerapkan Pincang.",
@@ -404,7 +453,7 @@ export default {
     trample:
       "Saat Unit ini membunuh Unit musuh dengan serangan, sisa damage mengenai Unit musuh di Petak berikutnya di belakangnya. Tidak pernah mengenai Pahlawan.",
     unique: "Hanya satu salinan kartu ini yang boleh ada di sisi Papan-mu.",
-    wall: "Unit ini punya Kecepatan 0 dan Serangan 0. Ia menghalangi Jalurnya, dan dorongan tidak pernah memindahkannya.",
+    wall: "Unit ini punya Kecepatan 0 dan Serangan 0. Ia menghalangi Unit musuh di Jalurnya, dan dorongan tidak pernah memindahkannya.",
     fire: "Api: target terbakar 1 damage pada 2 Langkah Akhir berikutnya.",
     frost: "Es: target melewatkan aksi berikutnya.",
     holy: "Suci: Zirah tidak mengurangi damage ini.",

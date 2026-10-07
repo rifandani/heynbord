@@ -6,9 +6,10 @@ import type {
   SkillCardDefinition,
 } from "@workspace/rules";
 import { cn } from "cn";
+import { useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
-import { cardIllustration } from "@/features/battle/card-art";
+import { cardIllustration, hasCardArt } from "@/features/battle/card-art";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { cardGlyph, classGlyph, raceGlyph } from "@/features/battle/glyphs";
@@ -251,6 +252,46 @@ const artWindowStyle = (card: CardDefinition, rank: RankId): CSSProperties => ({
 });
 
 /**
+ * The art of a card. A card with no art yet shows its Race or Class emblem
+ * on the color of the Race.
+ */
+const CardArt = ({ card }: { readonly card: CardDefinition }) => {
+  const [missing, setMissing] = useState(() => !hasCardArt(card.id));
+  const creature = card.kind === "creature";
+  const glyph = creature ? raceGlyph(card.race) : classGlyph(card.class);
+  const colors = creature
+    ? RACE_COLORS[card.race]
+    : { light: "#7a5a3a", dark: "#2a1d12", second: PARCHMENT.main };
+  if (missing) {
+    return (
+      <span
+        className="absolute inset-0 grid place-items-center"
+        style={{
+          background: `radial-gradient(circle at 50% 42%, ${colors.light} 0%, ${colors.dark} 78%)`,
+          color: creature ? CREAM : colors.second,
+        }}
+      >
+        <GlyphIcon
+          glyph={glyph}
+          className="size-[4.4em] opacity-70 drop-shadow-[0_0.12em_0.2em_rgba(0,0,0,0.45)]"
+        />
+      </span>
+    );
+  }
+  return (
+    <img
+      src={cardIllustration(card.id)}
+      alt=""
+      draggable={false}
+      loading="lazy"
+      decoding="async"
+      onError={() => setMissing(true)}
+      className="size-full object-cover"
+    />
+  );
+};
+
+/**
  * The Card Frame: the card art in a bronze frame, with the Countdown, the Rank
  * Gems, the emblem, and Attack and HP. The name is not on the frame. All sizes
  * are in `em`, so the font size of the parent sets the size of the card
@@ -287,14 +328,7 @@ export const CardFrame = ({
         className="relative block size-full overflow-hidden bg-[#2a1d12]"
         style={artWindowStyle(card, rank)}
       >
-        <img
-          src={cardIllustration(cardId)}
-          alt=""
-          draggable={false}
-          loading="lazy"
-          decoding="async"
-          className="size-full object-cover"
-        />
+        <CardArt key={cardId} card={card} />
       </span>
       <RankRow rank={rank} />
       <CountdownBadge countdown={countdown} ready={!live && countdown === 0} />

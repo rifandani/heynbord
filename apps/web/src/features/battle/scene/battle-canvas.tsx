@@ -13,6 +13,7 @@ import { EffectsLayer } from "@/features/battle/scene/effects-layer";
 import { Environment } from "@/features/battle/scene/environment";
 import { Heroes } from "@/features/battle/scene/heroes";
 import { PlaybackDriver } from "@/features/battle/scene/playback-driver";
+import { StatusLayer } from "@/features/battle/scene/status-layer";
 import { TargetMarkers } from "@/features/battle/scene/target-markers";
 import { TutorialMarks } from "@/features/battle/scene/tutorial-marks";
 import { UnitInspector } from "@/features/battle/scene/unit-inspector";
@@ -72,6 +73,7 @@ const BattleCanvas = ({
         <Units />
         <CastMarks />
         <EffectsLayer />
+        <StatusLayer />
         <TutorialMarks />
         <TargetMarkers onPick={onPick} />
         <UnitInspector />

@@ -100,6 +100,8 @@ export interface UnitState {
   poison: boolean;
   /** Hobble for the Rank of this card copy. 0 is none. */
   hobble: number;
+  /** Bleed for the Rank of this card copy. 0 is none. */
+  bleed: number;
   /** Knockback for the Rank of this card copy. 0 is none. */
   knockback: number;
   /** Rally for the Rank of this card copy. 0 is none. */
@@ -118,6 +120,8 @@ export interface UnitState {
   poisoned: number;
   /** Hobbled count. 0 is not Hobbled. Above 0, Speed is at most 1. */
   hobbled: number;
+  /** Bleeding count. 0 is not Bleeding. Above 0, each heal is half, rounded down. */
+  bleeding: number;
   frozen: boolean;
   /** Speed 0 in the next action. The action then ends it (GDD 4.4). */
   entangled: boolean;
@@ -265,8 +269,14 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   StatusApplied: {
     readonly unitId: number;
-    readonly status: "burn" | "freeze" | "poison" | "hobble" | "entangle";
-    /** The Hobbled count after the hit. The other statuses do not use it. */
+    readonly status:
+      | "burn"
+      | "freeze"
+      | "poison"
+      | "hobble"
+      | "bleed"
+      | "entangle";
+    /** The Hobbled or Bleeding count after the hit. The other statuses do not use it. */
     readonly count?: number;
   };
   UnitDied: { readonly unitId: number };
