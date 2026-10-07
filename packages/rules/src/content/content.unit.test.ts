@@ -5,7 +5,13 @@ import { STAGE_LANES } from "../battle/types";
 import { ARCHETYPES, MATCHUP_LEVEL } from "./archetypes";
 import { budgetDeviation, creaturePower, powerBudget } from "./balance";
 import { CARDS, getCard } from "./cards";
-import { deckSizeLimits, getStarterDeck, STARTER_DECKS } from "./decks";
+import {
+  countdownLimit,
+  deckCountdown,
+  deckSizeLimits,
+  getStarterDeck,
+  STARTER_DECKS,
+} from "./decks";
 import { keywordValue } from "./keywords";
 import { firstTryPathLevel } from "./player-levels";
 import { isRankAtLeast, RANKS, rankPips, ranksOf, scaleForRank } from "./ranks";
@@ -108,14 +114,16 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         );
       }
     }
+    // `12 + 3 × Countdown` (ADR-0021): 21 at Countdown 3, and Countdown 6 is
+    // 1.67 × Countdown 2.
     expect(powerBudget(3)).toBe(21);
+    expect(powerBudget(2)).toBe(18);
+    expect(powerBudget(6)).toBe(30);
     const pup = getCard("orc.badlandPup");
-    expect(pup.kind === "creature" && creaturePower(pup)).toBe(12);
-    const arbalist = getCard("human.paviseArbalist");
-    expect(arbalist.kind === "creature" && creaturePower(arbalist)).toBe(24);
-    expect(arbalist.kind === "creature" && budgetDeviation(arbalist)).toBe(
-      -769
-    );
+    expect(pup.kind === "creature" && creaturePower(pup)).toBe(14);
+    const recruit = getCard("human.militiaRecruit");
+    expect(recruit.kind === "creature" && creaturePower(recruit)).toBe(16);
+    expect(recruit.kind === "creature" && budgetDeviation(recruit)).toBe(666);
   });
 
   it("measures Attack and HP at the Base Rank (ADR-0020)", () => {
@@ -123,9 +131,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     if (recruit.kind !== "creature") {
       throw new Error("Militia Recruit is a Creature Card");
     }
-    // 2/4 is 4/7 at Epic: 4 × 2 + 7 + Speed 2 × 2.
-    expect(creaturePower(recruit)).toBe(12);
-    expect(creaturePower({ ...recruit, baseRank: "epic" })).toBe(19);
+    // 3/6 is 5/11 at Epic: 5 × 2 + 11 + Speed 2 × 2.
+    expect(creaturePower(recruit)).toBe(16);
+    expect(creaturePower({ ...recruit, baseRank: "epic" })).toBe(25);
   });
 
   it("starts each Keyword value table at the Base Rank, and a higher Rank never goes down", () => {
@@ -193,7 +201,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   it("keeps Shieldbearer within ±10% of its power budget (GDD 13)", () => {
     const card = getCard("human.shieldbearer");
     expect(card.kind === "creature" && creaturePower(card)).toBe(17);
-    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(16);
+    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(18);
     expect(
       card.kind === "creature" && Math.abs(budgetDeviation(card))
     ).toBeLessThanOrEqual(1000);
@@ -255,14 +263,14 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives Sabotage N × 4, Trample 3, Entangle 2 and Rally N × 3 power points (GDD 13)", () => {
-    expect(power("goblin.tunnelSaboteur")).toBe(15);
-    expect(power("goblin.grandGearjammer")).toBe(27);
-    expect(power("feral.bristlebackBoar")).toBe(16);
+    expect(power("goblin.tunnelSaboteur")).toBe(19);
+    expect(power("goblin.grandGearjammer")).toBe(25);
+    expect(power("feral.bristlebackBoar")).toBe(19);
     expect(power("feral.webSpitter")).toBe(21);
-    expect(power("feral.frostElkMatriarch")).toBe(27);
+    expect(power("feral.frostElkMatriarch")).toBe(24);
     // Unique and Wall use 0 points.
-    expect(power("feral.oldFrostmaw")).toBe(38);
-    expect(power("goblin.junkBarricade")).toBe(16);
+    expect(power("feral.oldFrostmaw")).toBe(31);
+    expect(power("goblin.junkBarricade")).toBe(18);
   });
 
   it("puts Bleed only on the Frostfang Lynx and Old Frostmaw, with 1 up to Rare, 2 at Epic and 3 at Legendary (ADR-0019)", () => {
@@ -529,6 +537,19 @@ describe("Decks and Stages", () => {
     expect(deckSizeLimits(30)).toEqual({ min: 15, max: 30 });
   });
 
+  it("keeps each Starter Deck within the Countdown Limit of level 1, and each Archetype within the limit of the Matchup level (ADR-0021)", () => {
+    for (const deck of STARTER_DECKS) {
+      expect(deckCountdown(deck.deck), deck.id).toBeLessThanOrEqual(
+        countdownLimit(1)
+      );
+    }
+    for (const archetype of ARCHETYPES) {
+      expect(deckCountdown(archetype.deck), archetype.id).toBeLessThanOrEqual(
+        countdownLimit(MATCHUP_LEVEL)
+      );
+    }
+  });
+
   it("marks Vanguard and Raiders main, and the other Archetypes diagnostic (Archetypes 2.1)", () => {
     expect(
       ARCHETYPES.map((archetype) => [archetype.id, archetype.kind])
@@ -552,9 +573,10 @@ describe("Decks and Stages", () => {
     expect(archetypeGroups("raidersFull")).toEqual(new Set(["orc", "mage"]));
   });
 
-  it("gives Human Heavy Countdown 3 to 6 and Human Light Countdown 1 to 3, both Warrior (ADR-0020)", () => {
+  it("gives Human Heavy Countdown 3 to 4 and Human Light Countdown 1 to 3, both Warrior (ADR-0020, ADR-0021)", () => {
+    // The Countdown Limit (35) leaves no place for the Countdown 6 cards of Human Heavy.
     for (const [id, min, max] of [
-      ["humanHeavy", 3, 6],
+      ["humanHeavy", 3, 4],
       ["humanLight", 1, 3],
     ] as const) {
       expect(archetypeGroups(id)).toEqual(new Set(["human"]));

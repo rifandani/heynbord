@@ -1,7 +1,13 @@
 import { Data } from "effect";
 
 import { CARDS, getCard } from "../content/cards";
-import { deckSizeLimits, MAX_COPIES, STARTER_DECKS } from "../content/decks";
+import {
+  countdownLimit,
+  deckCountdown,
+  deckSizeLimits,
+  MAX_COPIES,
+  STARTER_DECKS,
+} from "../content/decks";
 import { RANKS } from "../content/ranks";
 import type {
   CardDefinition,
@@ -26,7 +32,7 @@ export interface DeckInput {
   readonly deck: readonly DeckEntry[];
   /** The Hero Class. A Deck holds Skill Cards of this Class only. */
   readonly classId: ClassId;
-  /** The Player level. It sets the Deck size limits. */
+  /** The Player level. It sets the Deck size limits and the Countdown Limit. */
   readonly level: number;
   readonly collection: Collection;
 }
@@ -36,6 +42,7 @@ export type DeckProblem = Data.TaggedEnum<{
   TooFewCards: { readonly min: number; readonly count: number };
   TooManyCards: { readonly max: number; readonly count: number };
   TooManyCopies: { readonly cardId: string; readonly max: number };
+  OverCountdownLimit: { readonly limit: number; readonly countdown: number };
   WrongClass: { readonly cardId: string; readonly classId: ClassId };
   NotOwned: { readonly cardId: string; readonly rank: RankId };
 }>;
@@ -82,7 +89,7 @@ export const fitsClass = (card: CardDefinition, classId: ClassId): boolean =>
 /**
  * True when one more copy of the card in the Rank keeps the Deck within its
  * rules: the Player owns a free copy, the Deck is not full, the copy limit is
- * not reached and the card fits the Class.
+ * not reached, the Countdown Limit is not passed and the card fits the Class.
  */
 export const canAddCopy = (
   input: DeckInput,
@@ -92,6 +99,8 @@ export const canAddCopy = (
   copiesLeft(input, cardId, rank) > 0 &&
   input.deck.length < deckSizeLimits(input.level).max &&
   cardCopiesInDeck(input.deck, cardId) < MAX_COPIES &&
+  deckCountdown(input.deck) + getCard(cardId).countdown <=
+    countdownLimit(input.level) &&
   fitsClass(getCard(cardId), input.classId);
 
 /** The Deck with one more copy of the card in the Rank, at the end. */
@@ -135,13 +144,22 @@ const sizeProblems = (input: DeckInput): readonly DeckProblem[] => {
   return [];
 };
 
+const countdownProblems = (input: DeckInput): readonly DeckProblem[] => {
+  const limit = countdownLimit(input.level);
+  const countdown = deckCountdown(input.deck);
+  return countdown > limit
+    ? [DeckProblem.OverCountdownLimit({ limit, countdown })]
+    : [];
+};
+
 /**
  * All the Deck rules that a Deck breaks (GDD 6, CRD-04), or none for a valid
- * Deck: the size limits of the Player level, the copy limit, the Hero Class,
- * and the copies that the Player owns.
+ * Deck: the size limits and the Countdown Limit of the Player level, the copy
+ * limit, the Hero Class, and the copies that the Player owns.
  */
 export const deckProblems = (input: DeckInput): readonly DeckProblem[] => [
   ...sizeProblems(input),
+  ...countdownProblems(input),
   ...distinctCards(input.deck).flatMap((cardId) =>
     cardCopiesInDeck(input.deck, cardId) > MAX_COPIES
       ? [DeckProblem.TooManyCopies({ cardId, max: MAX_COPIES })]

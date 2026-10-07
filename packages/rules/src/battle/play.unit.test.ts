@@ -37,7 +37,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     const { state: next, events } = run(state, play(0, square(1, 2)));
     expect(next.sides.player.hand).toHaveLength(0);
     expect(next.units).toEqual([
-      expect.objectContaining({ owner: "player", lane: 1, position: 2, hp: 4 }),
+      expect.objectContaining({ owner: "player", lane: 1, position: 2, hp: 6 }),
     ]);
     expect(eventsOfType(events, "UnitSummoned")).toHaveLength(1);
   });

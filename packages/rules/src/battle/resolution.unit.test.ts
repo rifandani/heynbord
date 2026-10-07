@@ -369,7 +369,7 @@ describe("attack (GDD 4.6)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(eventsOfType(events, "UnitMoved")).toHaveLength(0);
-    expect(next.sides.enemy.hero.hp).toBe(27);
+    expect(next.sides.enemy.hero.hp).toBe(26);
   });
 
   it("does not attack with Attack 0", () => {
@@ -399,7 +399,7 @@ describe("damage (GDD 4.7)", () => {
       position: 5,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, shield.id)?.hp).toBe(6);
+    expect(unitById(next, shield.id)?.hp).toBe(5);
   });
 
   it("ignores Armor for Holy damage", () => {
@@ -431,7 +431,7 @@ describe("damage (GDD 4.7)", () => {
       position: 5,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, wall.id)?.hp).toBe(9);
+    expect(unitById(next, wall.id)?.hp).toBe(6);
     expect(eventsOfType(events, "DamageDealt")[0]?.amount).toBe(0);
   });
 
@@ -450,7 +450,7 @@ describe("damage (GDD 4.7)", () => {
       maxHp: 30,
     });
     const critRun = run(crit, endTurn);
-    expect(unitById(critRun.state, a.id)?.hp).toBe(26);
+    expect(unitById(critRun.state, a.id)?.hp).toBe(24);
     expect(eventsOfType(critRun.events, "DamageDealt")[0]).toMatchObject({
       crit: true,
       blocked: false,
@@ -472,7 +472,7 @@ describe("damage (GDD 4.7)", () => {
       maxHp: 30,
     });
     const blockRun = run(block, endTurn);
-    // 3 damage, Block: ceil(3 / 2) = 2.
+    // 4 damage, Block: ceil(4 / 2) = 2.
     expect(unitById(blockRun.state, b.id)?.hp).toBe(28);
     expect(eventsOfType(blockRun.events, "DamageDealt")[0]).toMatchObject({
       amount: 2,
@@ -488,7 +488,7 @@ describe("damage (GDD 4.7)", () => {
       position: 11,
     });
     const { state: next } = run(state, endTurn);
-    expect(next.sides.enemy.hero.hp).toBe(27);
+    expect(next.sides.enemy.hero.hp).toBe(26);
   });
 
   it("gives Burn with Fire: 1 damage in each End Step of the owner, 2 times", () => {
@@ -610,6 +610,8 @@ describe("Retaliation (GDD 4.7)", () => {
       cardId: "human.halberdier",
       owner: "enemy",
       position: 5,
+      hp: 5,
+      maxHp: 5,
     });
     const { state: next, events } = run(state, endTurn);
     expect(unitById(next, halberdier.id)).toBeUndefined();
@@ -629,6 +631,8 @@ describe("death and action order (GDD 4.4, 4.9)", () => {
       cardId: "human.militiaRecruit",
       owner: "enemy",
       position: 5,
+      hp: 5,
+      maxHp: 5,
     });
     const { state: next, events } = run(state, endTurn);
     expect(next.sides.enemy.graveyard).toEqual([victim.card]);
@@ -701,7 +705,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(unitById(next, warden.id)?.position).toBe(5);
-    expect(unitById(next, passed.id)?.hp).toBe(1);
+    expect(unitById(next, passed.id)?.hp).toBe(3);
     expect(eventsOfType(events, "UnitAttacked")).toEqual([
       expect.objectContaining({
         unitId: warden.id,
@@ -729,7 +733,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     const targets = [enemyAt(0, 5), enemyAt(2, 5), enemyAt(1, 6)];
     const { state: next } = run(state, endTurn);
     expect(targets.map((unit) => unitById(next, unit.id)?.hp)).toEqual([
-      1, 4, 4,
+      3, 6, 6,
     ]);
   });
 
@@ -747,7 +751,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
       attack: 0,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, passed.id)?.hp).toBe(1);
+    expect(unitById(next, passed.id)?.hp).toBe(3);
     expect(next.sides.enemy.hero.hp).toBe(30);
   });
 
@@ -790,7 +794,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     const { state: next } = run(state, endTurn);
     expect(unitById(next, warden.id)?.position).toBe(6);
     expect(unitById(next, recruit.id)?.position).toBe(7);
-    expect(unitById(next, passed.id)?.hp).toBe(4);
+    expect(unitById(next, passed.id)?.hp).toBe(6);
   });
 });
 
@@ -1708,7 +1712,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       attack: 0,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, far.id)?.hp).toBe(4);
+    expect(unitById(next, far.id)?.hp).toBe(6);
     expect(damageLog(events)).toEqual(["attack:8"]);
   });
 
@@ -1761,6 +1765,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       owner: "enemy",
       position: 5,
       attack: 0,
+      hp: 4,
     });
     const behind = placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -1885,7 +1890,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       attack: 0,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, last.id)?.hp).toBe(4);
+    expect(unitById(next, last.id)?.hp).toBe(6);
     expect(damageLog(events)).toEqual(["attack:12", "trample:10"]);
   });
 
@@ -1953,7 +1958,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       attack: 0,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, behind.id)?.hp).toBe(4);
+    expect(unitById(next, behind.id)?.hp).toBe(6);
   });
 });
 

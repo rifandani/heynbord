@@ -11,12 +11,14 @@ export const MATCHUP_LEVEL = 5;
  * The Archetypes (GDD 13): one reference Deck for each style of play. A
  * Matchup plays each Archetype against each Archetype.
  * docs/game/08-archetypes.md gives the style of each one. An Archetype is not
- * a starter Deck: it is a full Deck of the same style, with 14 cards.
+ * a starter Deck: it is a full Deck of the same style, with at most 14 cards
+ * and within the Countdown Limit of level 5 (35, ADR-0021). A Deck of slow
+ * cards thus has fewer cards.
  *
  * Tunnel Rats and Wild Hunt are provisional diagnostic Decks (Archetypes 2.1):
  * Creature Cards only, until the Ranger and Priest Skill Cards exist. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
- * so that a Matchup tests each card. Human Heavy (Countdown 3 to 6) and Human
+ * so that a Matchup tests most cards. Human Heavy (Countdown 3 to 4) and Human
  * Light (Countdown 1 to 3) are diagnostic Decks of one Race, so that a Matchup
  * tests the Power Budget for each Countdown (ADR-0020). The results of a
  * diagnostic Deck are for review, and they do not gate release.
@@ -27,6 +29,7 @@ export const ARCHETYPES: readonly Archetype[] = [
     kind: "main",
     classId: "warrior",
     deck: [
+      ...copies(1, "human.townBarricade", "common"),
       ...copies(1, "human.militiaRecruit", "common"),
       ...copies(1, "human.gateWarden", "uncommon"),
       ...copies(1, "human.shieldbearer", "common"),
@@ -34,7 +37,6 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(2, "human.halberdier", "common"),
       ...copies(1, "human.dawnCleric", "uncommon"),
       ...copies(2, "human.riverKnight", "uncommon"),
-      ...copies(1, "human.ironBulwark", "epic"),
       ...copies(1, "warrior.warDrums", "common"),
       ...copies(1, "warrior.shieldWall", "common"),
       ...copies(1, "warrior.spearThrow", "uncommon"),
@@ -52,7 +54,6 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "orc.howlingCharger", "uncommon"),
       ...copies(2, "orc.skyreaver", "uncommon"),
       ...copies(1, "orc.tuskBrute", "common"),
-      ...copies(1, "orc.warchiefGrukka", "epic"),
       ...copies(1, "mage.fireball", "common"),
       ...copies(1, "mage.frostBolt", "common"),
       ...copies(1, "mage.flameWave", "uncommon"),
@@ -88,9 +89,6 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "feral.caveTroll", "uncommon"),
       ...copies(2, "feral.cragRhino", "uncommon"),
       ...copies(1, "feral.frostElkMatriarch", "uncommon"),
-      ...copies(1, "feral.avalancheYeti", "rare"),
-      ...copies(1, "feral.woollyMammoth", "rare"),
-      ...copies(1, "feral.mountainColossus", "epic"),
     ],
   },
   {
@@ -107,7 +105,6 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "human.bannerChaplain", "uncommon"),
       ...copies(1, "human.kingsCourier", "rare"),
       ...copies(1, "human.dawnReliquary", "rare"),
-      ...copies(1, "human.marshalElianVoss", "epic"),
       ...copies(1, "warrior.warDrums", "common"),
       ...copies(1, "warrior.shieldWall", "common"),
       ...copies(1, "warrior.spearThrow", "uncommon"),
@@ -126,8 +123,6 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "orc.skyreaver", "uncommon"),
       ...copies(1, "orc.ashspitHunter", "rare"),
       ...copies(1, "orc.mesaPitFighter", "rare"),
-      ...copies(1, "orc.pyreaxeRavager", "rare"),
-      ...copies(1, "orc.warbandStandardBearer", "epic"),
       ...copies(1, "mage.fireball", "common"),
       ...copies(1, "mage.frostBolt", "common"),
       ...copies(1, "mage.flameWave", "uncommon"),
@@ -144,10 +139,7 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "human.dawnCleric", "uncommon"),
       ...copies(2, "human.riverKnight", "uncommon"),
       ...copies(2, "human.kingsCourier", "rare"),
-      ...copies(2, "human.paviseArbalist", "rare"),
-      ...copies(1, "human.dawnReliquary", "rare"),
-      ...copies(1, "human.ironBulwark", "epic"),
-      ...copies(1, "human.marshalElianVoss", "epic"),
+      ...copies(1, "human.paviseArbalist", "rare"),
     ],
   },
   {

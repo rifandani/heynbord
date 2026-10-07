@@ -115,12 +115,12 @@ describe("deckRows", () => {
     expect(rows).toContainEqual({
       cardId: "human.crossbowGuard",
       rank: "common",
-      count: 2,
+      count: 3,
     });
     expect(rows.at(-1)).toEqual({
       cardId: "human.riverKnight",
       rank: "uncommon",
-      count: 3,
+      count: 2,
     });
   });
 });

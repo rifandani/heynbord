@@ -80,6 +80,8 @@ const lethalChoice = (turnNumber: number) => {
     owner: "player",
     lane: 0,
     position: 9,
+    attack: 2,
+    hp: 4,
   });
   placeUnit(state, {
     cardId: "orc.warchiefGrukka",
@@ -292,6 +294,7 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
         owner: "player",
         lane: 0,
         position: 9,
+        hp: 4,
       })
     ).toEqual(spearThrowAt(0, 9));
   });

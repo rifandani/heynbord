@@ -11,7 +11,12 @@ import { starsFor } from "../battle/stars";
 import { step } from "../battle/step";
 import type { BattleState, PlayerSetup, Side } from "../battle/types";
 import { getCard } from "../content/cards";
-import { deckSizeLimits, MAX_COPIES } from "../content/decks";
+import {
+  countdownLimit,
+  deckCountdown,
+  deckSizeLimits,
+  MAX_COPIES,
+} from "../content/decks";
 import type {
   Archetype,
   DeckEntry,
@@ -115,7 +120,8 @@ export interface StageReport {
  * The Deck of a new Player at a Stage: the starter Deck, then the first-win
  * cards of all Stages before it, in Stage order. It stops at the maximum Deck
  * size of the Recommended level (GDD 6). It skips a card that the Deck cannot
- * hold: a fourth copy, or a Skill Card of another Class.
+ * hold: a fourth copy, a Skill Card of another Class, or a card over the
+ * Countdown Limit of the Recommended level (ADR-0021).
  */
 export const expectedDeck = (
   stage: StageDefinition,
@@ -123,6 +129,7 @@ export const expectedDeck = (
   stages: readonly StageDefinition[] = STAGES
 ): DeckEntry[] => {
   const { max } = deckSizeLimits(stage.recommendedLevel);
+  const limit = countdownLimit(stage.recommendedLevel);
   const deck = starter.deck.slice(0, max);
   const rewards = stagesBefore(stage, stages).map(
     (earlier) => earlier.firstWinCard
@@ -133,6 +140,7 @@ export const expectedDeck = (
     if (
       deck.length < max &&
       copies.length < MAX_COPIES &&
+      deckCountdown(deck) + card.countdown <= limit &&
       (card.kind === "creature" || card.class === starter.classId)
     ) {
       deck.push(reward);

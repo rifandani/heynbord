@@ -332,6 +332,8 @@ export default {
     problems: {
       tooFew: "Dek perlu minimal {min} kartu. Dek ini berisi {count}.",
       tooMany: "Dek boleh berisi maksimal {max} kartu. Dek ini berisi {count}.",
+      overCountdownLimit:
+        "Jumlah Hitung mundur kartu boleh maksimal {limit}. Jumlahnya {countdown}.",
       tooManyCopies: "{name}: Dek boleh berisi maksimal {max} salinan.",
       wrongClass:
         "{name} adalah kartu {className}. Buang kartu itu, atau ganti Kelas Pahlawan.",

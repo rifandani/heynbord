@@ -60,8 +60,8 @@ export const creaturePower = (card: CreatureCardDefinition): number =>
   card.range +
   DAMAGE_TYPE_POINTS[card.damageType];
 
-/** `budget = 6 + Countdown × 5` (GDD 13). */
-export const powerBudget = (countdown: number): number => 6 + countdown * 5;
+/** `budget = 12 + Countdown × 3` (GDD 13, ADR-0021). */
+export const powerBudget = (countdown: number): number => 12 + countdown * 3;
 
 /** The difference from the budget in basis points. A card must stay within ±1000 (±10%). */
 export const budgetDeviation = (card: CreatureCardDefinition): number => {

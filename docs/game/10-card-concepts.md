@@ -15,6 +15,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Creature Cards** use the template in 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the template in 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
 - **Provisional power.** A Summon or a Last Breath that summons uses 80% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
+- **Power Budget `12 + 3 × Countdown`.** The Human, Orc, Goblin and Feral values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Elf, Undead and Token values are not in `cards.ts` yet, and they still use the old budget `6 + 5 × Countdown`. Fit them to the new budget when they come into the rules package.
 - **Common values and Power Points.** The Attack and HP on each line are Common values. The Power on each line measures Attack and HP at the Base Rank of the card, with the Rank scale of GDD 5.3 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Thus an Uncommon, Rare or Epic card has lower Common Attack and HP than a Common card of the same power.
 
 ### 1.1 Settings
@@ -35,7 +36,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.1 Militia Recruit
 
-`human.militiaRecruit` · Frontliner · Common · Countdown 1 · Attack 2 · HP 4 · Speed 2 · Melee · Physical
+`human.militiaRecruit` · Frontliner · Common · Countdown 1 · Attack 3 · HP 6 · Speed 2 · Melee · Physical
 
 > "I brought my own pitchfork!"
 
@@ -85,7 +86,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.3 Crossbow Guard
 
-`human.crossbowGuard` · Shooter · Common · Countdown 2 · Attack 3 · HP 4 · Range 3 · Physical
+`human.crossbowGuard` · Shooter · Common · Countdown 2 · Attack 4 · HP 5 · Range 3 · Physical
 
 > Never late. Never misses. Sometimes asleep.
 
@@ -160,7 +161,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.6 River Knight
 
-`human.riverKnight` · Runner · Uncommon · Countdown 4 · Attack 5 · HP 7 · Speed 2 · Melee · Physical · Charge
+`human.riverKnight` · Runner · Uncommon · Countdown 4 · Attack 4 · HP 6 · Speed 2 · Melee · Physical · Charge
 
 > His horse is braver than he is.
 
@@ -210,7 +211,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.8 Iron Bulwark
 
-`human.ironBulwark` · Frontliner · Epic · Countdown 6 · Attack 3 · HP 9 · Melee · Physical · Armor 2 · Retaliation
+`human.ironBulwark` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 6 · Melee · Physical · Armor 2 · Retaliation
 
 > A wall that complains about the weather.
 
@@ -237,11 +238,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.9 Town Barricade
 
-`human.townBarricade` · Wall · Common · Countdown 1 · Attack 0 · HP 11 · Speed 0 · Melee · Physical · Wall
+`human.townBarricade` · Wall · Common · Countdown 1 · Attack 0 · HP 15 · Speed 0 · Melee · Physical · Wall
 
 > The passage permit is under the sandbags.
 
-Purpose: a cheap Lane block. Power 11, budget 11, deviation 0%.
+Purpose: a cheap Lane block. Power 15, budget 15, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -315,11 +316,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.12 King's Courier
 
-`human.kingsCourier` · Runner · Rare · Countdown 4 · Attack 3 · HP 6 · Speed 4 · Melee · Physical · Charge
+`human.kingsCourier` · Runner · Rare · Countdown 4 · Attack 2 · HP 5 · Speed 4 · Melee · Physical · Charge
 
 > The message says urgent. She was already running.
 
-Purpose: maximum Human Speed with less Attack than River Knight. Power 28, budget 26, deviation +7.7%.
+Purpose: maximum Human Speed with less Attack than River Knight. Power 24, budget 24, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -345,7 +346,7 @@ portrait 3:4 composition, no text, no frame
 
 > He brings his own wall and calls it a firing position.
 
-Purpose: a durable long-range Shooter. Power 24, budget 26, deviation -7.7%.
+Purpose: a durable long-range Shooter. Power 24, budget 24, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -367,11 +368,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 2.14 Dawn Reliquary
 
-`human.dawnReliquary` · Wall · Rare · Countdown 4 · Attack 0 · HP 11 · Speed 0 · Melee · Holy · Armor 2 · Wall · Last Breath: deal 2 Holy damage
+`human.dawnReliquary` · Wall · Rare · Countdown 4 · Attack 0 · HP 9 · Speed 0 · Melee · Holy · Armor 2 · Wall · Last Breath: deal 2 Holy damage
 
 > Even broken, it gets the last word.
 
-Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves. Power 26, budget 26, deviation 0%.
+Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves. Power 23, budget 24, deviation -4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -393,11 +394,11 @@ portrait 3:4 composition, no readable text, no frame
 
 ### 2.15 Marshal Elian Voss (draft)
 
-`human.marshalElianVoss` · Support · Epic · Countdown 6 · Attack 2 · HP 7 · Speed 1 · Range 2 · Holy · Armor 1 · Rally 2 · Unique
+`human.marshalElianVoss` · Support · Epic · Countdown 6 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Armor 1 · Rally 2 · Unique
 
 > Hold the line. I have six more reasons.
 
-Purpose: the named Human Epic and Rally capstone. Power 35, budget 36, deviation -2.8%.
+Purpose: the named Human Epic and Rally capstone. Power 30, budget 30, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -423,11 +424,11 @@ Identity: orc tribes of the badlands, and the beasts that fight with them. Fast,
 
 ### 3.1 Badland Pup
 
-`orc.badlandPup` · Runner · Common · Countdown 1 · Attack 3 · HP 1 · Speed 2 · Melee · Physical · Last Breath 1
+`orc.badlandPup` · Runner · Common · Countdown 1 · Attack 4 · HP 1 · Speed 2 · Melee · Physical · Last Breath 1
 
 > Small, loud and already biting.
 
-Purpose: a one-HP trade. Last Breath 1 hits the nearest enemy Unit ahead when it leaves. Power 12, budget 11, deviation +9.1%.
+Purpose: a one-HP trade. Last Breath 1 hits the nearest enemy Unit ahead when it leaves. Power 14, budget 15, deviation -6.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -454,7 +455,7 @@ portrait 3:4 composition, no text, no frame
 
 > Everything shiny is his now.
 
-Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 16, deviation +6.3%.
+Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -527,7 +528,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.5 Skyreaver
 
-`orc.skyreaver` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 4 · Speed 2 · Melee · Physical · Flying · Heroic 1
+`orc.skyreaver` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Flying · Heroic 1
 
 > It steals hats from very high up.
 
@@ -552,11 +553,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.6 Pack Stalker
 
-`orc.packStalker` · Striker · Uncommon · Countdown 2 · Attack 2 · HP 3 · Speed 2 · Melee · Physical · Pivot · Last Breath 1
+`orc.packStalker` · Striker · Uncommon · Countdown 2 · Attack 2 · HP 4 · Speed 2 · Melee · Physical · Pivot · Last Breath 1
 
 > It always knows where you are. Mostly behind you.
 
-Purpose: the Orc Pivot Unit, and a trade that still hits. Power 16, budget 16, deviation 0%.
+Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -579,7 +580,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.7 Tusk Brute
 
-`orc.tuskBrute` · Striker · Common · Countdown 4 · Attack 6 · HP 8 · Melee · Physical · Heroic 2
+`orc.tuskBrute` · Striker · Common · Countdown 4 · Attack 5 · HP 7 · Melee · Physical · Heroic 2
 
 > Doors are only a suggestion.
 
@@ -604,7 +605,7 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.8 Warchief Grukka
 
-`orc.warchiefGrukka` · Striker · Epic · Countdown 6 · Attack 4 · HP 7 · Speed 2 · Melee · Physical · Charge · Heroic 2 · Unique
+`orc.warchiefGrukka` · Striker · Epic · Countdown 6 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge · Heroic 2 · Unique
 
 > "Lunch first. Then glory."
 
@@ -642,11 +643,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.9 Dusthide Brawler
 
-`orc.dusthideBrawler` · Frontliner · Common · Countdown 2 · Attack 3 · HP 8 · Speed 1 · Melee · Physical
+`orc.dusthideBrawler` · Frontliner · Common · Countdown 2 · Attack 3 · HP 9 · Speed 1 · Melee · Physical
 
 > He mistakes every warning for applause.
 
-Purpose: limited Orc Lane protection without Armor. Power 16, budget 16, deviation 0%.
+Purpose: limited Orc Lane protection without Armor. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -668,11 +669,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.10 Cinderhorn Ram
 
-`orc.cinderhornRam` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 4 · Speed 2 · Melee · Fire · Charge
+`orc.cinderhornRam` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Fire · Charge
 
 > It never waits for the gate to open.
 
-Purpose: a fast Fire attacker. Power 23, budget 21, deviation +9.5%.
+Purpose: a fast Fire attacker. Power 22, budget 21, deviation +4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -694,11 +695,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.11 Warhowler Drummer
 
-`orc.warhowlerDrummer` · Support · Uncommon · Countdown 2 · Attack 2 · HP 5 · Speed 1 · Melee · Physical · Rally 1
+`orc.warhowlerDrummer` · Support · Uncommon · Countdown 2 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Rally 1
 
 > She only knows one rhythm: faster.
 
-Purpose: a low-Countdown rush enabler. Power 15, budget 16, deviation -6.3%.
+Purpose: a low-Countdown rush enabler. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -720,11 +721,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.12 Ashspit Hunter
 
-`orc.ashspitHunter` · Shooter · Rare · Countdown 4 · Attack 4 · HP 5 · Speed 1 · Range 4 · Fire
+`orc.ashspitHunter` · Shooter · Rare · Countdown 4 · Attack 3 · HP 4 · Speed 1 · Range 4 · Fire
 
 > He measures range by how far the eyebrows burn.
 
-Purpose: a long-range Fire threat. Power 28, budget 26, deviation +7.7%.
+Purpose: a long-range Fire threat. Power 23, budget 24, deviation -4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -746,11 +747,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.13 Mesa Pit-Fighter
 
-`orc.mesaPitFighter` · Frontliner · Rare · Countdown 4 · Attack 3 · HP 8 · Speed 1 · Melee · Physical · Retaliation
+`orc.mesaPitFighter` · Frontliner · Rare · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Retaliation
 
 > Hit her once. That is how counting lessons start.
 
-Purpose: an aggressive Frontliner that protects through threat. Power 26, budget 26, deviation 0%.
+Purpose: an aggressive Frontliner that protects through threat. Power 24, budget 24, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -772,11 +773,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.14 Pyreaxe Ravager
 
-`orc.pyreaxeRavager` · Striker · Rare · Countdown 5 · Attack 5 · HP 6 · Speed 1 · Melee · Fire · Heroic 2
+`orc.pyreaxeRavager` · Striker · Rare · Countdown 5 · Attack 4 · HP 5 · Speed 1 · Melee · Fire · Heroic 2
 
 > The axe is hot. Her temper is hotter.
 
-Purpose: a heavy Fire finisher. Power 32, budget 31, deviation +3.2%.
+Purpose: a heavy Fire finisher. Power 28, budget 27, deviation +3.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -798,11 +799,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 3.15 Warband Standard-Bearer
 
-`orc.warbandStandardBearer` · Support · Epic · Countdown 6 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Charge · Heroic 2 · Rally 2
+`orc.warbandStandardBearer` · Support · Epic · Countdown 6 · Attack 2 · HP 4 · Speed 1 · Melee · Physical · Charge · Heroic 2 · Rally 2
 
 > Follow the banner. Ignore where it is going.
 
-Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero pressure. Power 36, budget 36, deviation 0%.
+Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero pressure. Power 30, budget 30, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1616,11 +1617,11 @@ Identity: goblins of the hill mines. Tinkers, thieves and bomb makers. Small, cl
 
 ### 6.1 Ankle Snatcher
 
-`goblin.ankleSnatcher` · Runner · Common · Countdown 1 · Attack 2 · HP 2 · Speed 2 · Melee · Physical · Hobble 1
+`goblin.ankleSnatcher` · Runner · Common · Countdown 1 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Hobble 1
 
 > Ankles are the easiest part of a knight to reach.
 
-Purpose: a cheap fast trap that slows the first enemy Runner. Power 11, budget 11, deviation 0%.
+Purpose: a cheap fast trap that slows the first enemy Runner. Power 14, budget 15, deviation -6.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -1642,11 +1643,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.2 Fuse Runner
 
-`goblin.fuseRunner` · Runner · Common · Countdown 1 · Attack 1 · HP 2 · Speed 2 · Melee · Physical · Last Breath 3
+`goblin.fuseRunner` · Runner · Common · Countdown 1 · Attack 2 · HP 4 · Speed 2 · Melee · Physical · Last Breath 3
 
 > The fuse is long. The plan is short.
 
-Purpose: a one-Countdown bomb. Last Breath 3 hits the nearest enemy Unit ahead when it leaves. Power 11, budget 11, deviation 0%.
+Purpose: a one-Countdown bomb. Last Breath 3 hits the nearest enemy Unit ahead when it leaves. Power 15, budget 15, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1668,11 +1669,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.3 Junk Slinger
 
-`goblin.junkSlinger` · Shooter · Common · Countdown 2 · Attack 3 · HP 3 · Speed 1 · Range 3 · Physical · Hobble 1
+`goblin.junkSlinger` · Shooter · Common · Countdown 2 · Attack 4 · HP 4 · Speed 1 · Range 3 · Physical · Hobble 1
 
 > One goblin's junk is another knight's limp.
 
-Purpose: a cheap Shooter that slows the Unit it hits. Power 15, budget 16, deviation -6.3%.
+Purpose: a cheap Shooter that slows the Unit it hits. Power 18, budget 18, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1694,11 +1695,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.4 Tunnel Saboteur
 
-`goblin.tunnelSaboteur` · Support · Common · Countdown 2 · Attack 2 · HP 5 · Speed 1 · Melee · Physical · Sabotage 1
+`goblin.tunnelSaboteur` · Support · Common · Countdown 2 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Sabotage 1
 
 > He does not fight your army. He fights your schedule.
 
-Purpose: the first Sabotage card. When it comes from its Card, the enemy card with the lowest Countdown gets +1 Countdown. Power 15, budget 16, deviation -6.3%.
+Purpose: the first Sabotage card. When it comes from its Card, the enemy card with the lowest Countdown gets +1 Countdown. Power 19, budget 18, deviation +5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -1720,11 +1721,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.5 Scrap-Plate Guard
 
-`goblin.scrapPlateGuard` · Frontliner · Common · Countdown 2 · Attack 2 · HP 6 · Speed 1 · Melee · Physical · Armor 1
+`goblin.scrapPlateGuard` · Frontliner · Common · Countdown 2 · Attack 3 · HP 8 · Speed 1 · Melee · Physical · Armor 1
 
 > Armor is armor. Even if it was a stove.
 
-Purpose: a cheap Goblin Lane anchor. Power 15, budget 16, deviation -6.3%.
+Purpose: a cheap Goblin Lane anchor. Power 19, budget 18, deviation +5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -1746,11 +1747,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.6 Sidestep Shiv
 
-`goblin.sidestepShiv` · Striker · Uncommon · Countdown 2 · Attack 2 · HP 3 · Speed 2 · Melee · Physical · Pivot
+`goblin.sidestepShiv` · Striker · Uncommon · Countdown 2 · Attack 2 · HP 5 · Speed 2 · Melee · Physical · Pivot
 
 > Front door? Never heard of it.
 
-Purpose: the Goblin Pivot Unit. Power 15, budget 16, deviation -6.3%.
+Purpose: the Goblin Pivot Unit. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -1772,11 +1773,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.7 Junk Barricade
 
-`goblin.junkBarricade` · Wall · Uncommon · Countdown 2 · Attack 0 · HP 10 · Speed 0 · Melee · Physical · Wall · Sabotage 1
+`goblin.junkBarricade` · Wall · Uncommon · Countdown 2 · Attack 0 · HP 12 · Speed 0 · Melee · Physical · Wall · Sabotage 1
 
 > Built in one night. Paid for by nobody.
 
-Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 16, budget 16, deviation 0%.
+Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 18, budget 18, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1850,11 +1851,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.10 Rocket Barrel Rider
 
-`goblin.rocketBarrelRider` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 3 · Melee · Fire · Last Breath 2
+`goblin.rocketBarrelRider` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 2 · Speed 3 · Melee · Fire · Last Breath 2
 
 > Steering is a later invention.
 
-Purpose: the fastest Goblin Runner. Its Fire hits Burn, and Last Breath 2 hits when it falls. Power 23, budget 21, deviation +9.5%.
+Purpose: the fastest Goblin Runner. Its Fire hits Burn, and Last Breath 2 hits when it falls. Power 21, budget 21, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1880,7 +1881,7 @@ portrait 3:4 composition, no text, no frame
 
 > Every wall has a weak spot. I bring my own.
 
-Purpose: a Fire Striker that hits hard and explodes when it falls. Power 24, budget 26, deviation -7.7%.
+Purpose: a Fire Striker that hits hard and explodes when it falls. Power 24, budget 24, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1906,7 +1907,7 @@ portrait 3:4 composition, no text, no frame
 
 > I see your plans. I do not like them.
 
-Purpose: a long-range Shooter that delays an enemy card. Power 25, budget 26, deviation -3.8%.
+Purpose: a long-range Shooter that delays an enemy card. Power 25, budget 24, deviation +4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1928,11 +1929,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.13 Junk Walker
 
-`goblin.junkWalker` · Frontliner · Rare · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 2
+`goblin.junkWalker` · Frontliner · Rare · Countdown 4 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Armor 2
 
 > It walks. Mostly forward.
 
-Purpose: the Goblin Lane anchor with Armor 2. Power 26, budget 26, deviation 0%.
+Purpose: the Goblin Lane anchor with Armor 2. Power 25, budget 24, deviation +4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1954,11 +1955,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.14 Grand Gearjammer
 
-`goblin.grandGearjammer` · Support · Epic · Countdown 4 · Attack 2 · HP 4 · Speed 1 · Range 2 · Physical · Sabotage 2
+`goblin.grandGearjammer` · Support · Epic · Countdown 4 · Attack 2 · HP 3 · Speed 1 · Range 2 · Physical · Sabotage 2
 
 > Every plan has gears. We have more.
 
-Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 27, budget 26, deviation +3.8%.
+Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 25, budget 24, deviation +4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1980,11 +1981,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.15 Boss Snikkit, the Mine King (draft)
 
-`goblin.bossSnikkit` · Striker · Epic · Countdown 5 · Attack 3 · HP 5 · Speed 2 · Melee · Fire · Unique · Sabotage 1 · Last Breath 3
+`goblin.bossSnikkit` · Striker · Epic · Countdown 5 · Attack 2 · HP 3 · Speed 2 · Melee · Fire · Unique · Sabotage 1 · Last Breath 3
 
 > "Everything down here is mine. That is the joke. Laugh."
 
-Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns what he hits, and explodes when he falls. Power 33, budget 31, deviation +6.5%.
+Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns what he hits, and explodes when he falls. Power 27, budget 27, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -2012,11 +2013,11 @@ Feral cards have no Countdown 1. Commons are Countdown 2 to 3, Uncommons 3 to 4,
 
 ### 7.1 Bristleback Boar
 
-`feral.bristlebackBoar` · Runner · Common · Countdown 2 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Trample
+`feral.bristlebackBoar` · Runner · Common · Countdown 2 · Attack 4 · HP 4 · Speed 2 · Melee · Physical · Trample
 
 > It does not go around things.
 
-Purpose: the only Feral Runner. Trample lets a kill also hit the Unit behind. Power 16, budget 16, deviation 0%.
+Purpose: the only Feral Runner. Trample lets a kill also hit the Unit behind. Power 19, budget 18, deviation +5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -2038,11 +2039,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.2 Crag Lizard
 
-`feral.cragLizard` · Frontliner · Common · Countdown 2 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Armor 1
+`feral.cragLizard` · Frontliner · Common · Countdown 2 · Attack 2 · HP 8 · Speed 1 · Melee · Physical · Armor 1
 
 > It sat on this rock for a hundred years. Now it is your rock.
 
-Purpose: a cheap Feral blocker with Armor. Power 16, budget 16, deviation 0%.
+Purpose: a cheap Feral blocker with Armor. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -2068,7 +2069,7 @@ portrait 3:4 composition, no gore, no text, no frame
 
 > You will not hear it. You will feel the cold first.
 
-Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so that a healer or a Regeneration Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 17, budget 16, deviation +6.3%.
+Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so that a healer or a Regeneration Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -2194,11 +2195,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.8 Cave Troll
 
-`feral.caveTroll` · Frontliner · Uncommon · Countdown 4 · Attack 3 · HP 10 · Speed 1 · Melee · Physical · Regeneration 2
+`feral.caveTroll` · Frontliner · Uncommon · Countdown 4 · Attack 3 · HP 9 · Speed 1 · Melee · Physical · Regeneration 2
 
 > Cut it. Wait. Cut it again.
 
-Purpose: a durable Feral front that heals 2 HP in each Start Step. Power 26, budget 26, deviation 0%.
+Purpose: a durable Feral front that heals 2 HP in each Start Step. Power 25, budget 24, deviation +4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -2224,7 +2225,7 @@ portrait 3:4 composition, no gore, no text, no frame
 
 > The road ends where it stops.
 
-Purpose: a heavy Trample Striker. Power 25, budget 26, deviation -3.8%.
+Purpose: a heavy Trample Striker. Power 25, budget 24, deviation +4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -2246,11 +2247,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.10 Frost Elk Matriarch
 
-`feral.frostElkMatriarch` · Support · Uncommon · Countdown 4 · Attack 3 · HP 9 · Speed 1 · Melee · Frost · Rally 1
+`feral.frostElkMatriarch` · Support · Uncommon · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Melee · Frost · Rally 1
 
 > Where she walks, the herd follows.
 
-Purpose: the Feral Support. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 27, budget 26, deviation +3.8%.
+Purpose: the Feral Support. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 24, budget 24, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -2272,11 +2273,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.11 Avalanche Yeti
 
-`feral.avalancheYeti` · Striker · Rare · Countdown 4 · Attack 4 · HP 6 · Speed 1 · Melee · Physical · Trample
+`feral.avalancheYeti` · Striker · Rare · Countdown 4 · Attack 4 · HP 5 · Speed 1 · Melee · Physical · Trample
 
 > It came down with the snow. The snow was the smaller problem.
 
-Purpose: a Rare Trample Striker with high Attack. Power 26, budget 26, deviation 0%.
+Purpose: a Rare Trample Striker with high Attack. Power 24, budget 24, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -2298,11 +2299,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.12 Woolly Mammoth
 
-`feral.woollyMammoth` · Frontliner · Rare · Countdown 5 · Attack 4 · HP 9 · Speed 1 · Melee · Physical · Armor 1 · Trample
+`feral.woollyMammoth` · Frontliner · Rare · Countdown 5 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 1 · Trample
 
 > It does not stop. Plan around it.
 
-Purpose: a Rare front that also Tramples. Power 33, budget 31, deviation +6.5%.
+Purpose: a Rare front that also Tramples. Power 26, budget 27, deviation -3.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -2324,11 +2325,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.13 Rimebreath Drake
 
-`feral.rimebreathDrake` · Shooter · Rare · Countdown 5 · Attack 3 · HP 6 · Speed 1 · Range 3 · Frost · Flying
+`feral.rimebreathDrake` · Shooter · Rare · Countdown 5 · Attack 2 · HP 6 · Speed 1 · Range 3 · Frost · Flying
 
 > Its breath is the weather.
 
-Purpose: a Flying Frost Shooter. Power 29, budget 31, deviation -6.5%.
+Purpose: a Flying Frost Shooter. Power 27, budget 27, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -2350,11 +2351,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.14 Mountain Colossus
 
-`feral.mountainColossus` · Frontliner · Epic · Countdown 6 · Attack 3 · HP 9 · Speed 1 · Melee · Physical · Regeneration 2 · Trample
+`feral.mountainColossus` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Regeneration 2 · Trample
 
 > The mountain stood up. Then it walked.
 
-Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 35, budget 36, deviation -2.8%.
+Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 29, budget 30, deviation -3.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -2376,11 +2377,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.15 Old Frostmaw (draft)
 
-`feral.oldFrostmaw` · Striker · Epic · Countdown 6 · Attack 4 · HP 8 · Speed 1 · Melee · Frost · Unique · Trample · Bleed 2
+`feral.oldFrostmaw` · Striker · Epic · Countdown 6 · Attack 3 · HP 6 · Speed 1 · Melee · Frost · Unique · Trample · Bleed 2
 
 > Every village has a story about it. Every story is too small.
 
-Purpose: the named Feral Epic: a huge Frost Striker that Tramples, and its bite makes the target Bleeding. Bleed is 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Its Common HP went from 14 to 13 to pay for Bleed. Then ADR-0020 lowered its Common Attack and HP. Power 38, budget 36, deviation +5.6%.
+Purpose: the named Feral Epic: a huge Frost Striker that Tramples, and its bite makes the target Bleeding. Bleed is 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Its Common HP went from 14 to 13 to pay for Bleed. Then ADR-0020 lowered its Common Attack and HP. Power 31, budget 30, deviation +3.3%.
 
 | Field | Brief |
 | --- | --- |

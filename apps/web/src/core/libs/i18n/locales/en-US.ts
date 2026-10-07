@@ -330,6 +330,8 @@ export default {
     problems: {
       tooFew: "The Deck needs at least {min} cards. It has {count}.",
       tooMany: "The Deck can have {max} cards at most. It has {count}.",
+      overCountdownLimit:
+        "The Countdowns of the cards can add up to {limit} at most. They add up to {countdown}.",
       tooManyCopies: "{name}: a Deck can have {max} copies at most.",
       wrongClass:
         "{name} is a {className} card. Remove it, or change the Hero Class.",

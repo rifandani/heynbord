@@ -15,9 +15,14 @@ import {
 import { createBattle } from "./create-battle";
 import { starsFor } from "./stars";
 import { step } from "./step";
-import { Command, Target } from "./types";
+import { tickingCards } from "./turn";
+import { Command, LANE_LENGTH, Target } from "./types";
+import type { BattleState } from "./types";
 
 const endTurn = Command.EndTurn();
+
+const countdownsOf = (state: BattleState) =>
+  state.sides.player.hand.map((card) => card.countdown);
 
 const setup = (seed: number, stageId = "1-1") => {
   const deck = getStarterDeck("vanguard");
@@ -139,7 +144,7 @@ describe("createBattle (GDD 4.2)", () => {
 });
 
 describe("Start Step (GDD 4.3)", () => {
-  it("lowers each Countdown by 1 to a minimum of 0, then draws 1 card", () => {
+  it("lowers the Countdown of each card that is not Ready by 1, then draws 1 card", () => {
     const state = emptyBattle({ activeSide: "enemy" });
     giveHand(state, "player", [
       ["human.militiaRecruit", 0],
@@ -155,6 +160,104 @@ describe("Start Step (GDD 4.3)", () => {
     expect(eventsOfType(events, "CardDrawn")).toEqual([
       expect.objectContaining({ side: "player" }),
     ]);
+  });
+
+  it("lowers only the Countdowns of the 3 oldest cards that are not Ready (ADR-0021)", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    giveHand(state, "player", [
+      ["human.halberdier", 4],
+      ["human.halberdier", 3],
+      ["human.halberdier", 2],
+      ["human.halberdier", 1],
+      ["human.halberdier", 5],
+    ]);
+    const { state: next, events } = run(state, endTurn);
+    expect(countdownsOf(next)).toEqual([3, 2, 1, 1, 5]);
+    expect(eventsOfType(events, "CountdownsTicked")).toEqual([
+      expect.objectContaining({
+        side: "player",
+        countdowns: [3, 2, 1, 1, 5],
+      }),
+    ]);
+  });
+
+  it("does not count a Ready card as one of the 3 Ticking Cards", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    giveHand(state, "player", [
+      ["human.halberdier", 0],
+      ["human.halberdier", 2],
+      ["human.halberdier", 0],
+      ["human.halberdier", 3],
+      ["human.halberdier", 4],
+      ["human.halberdier", 5],
+    ]);
+    const { state: next } = run(state, endTurn);
+    expect(countdownsOf(next)).toEqual([0, 1, 0, 2, 3, 5]);
+  });
+
+  it("gives tickingCards the 3 oldest cards that are not Ready, in Hand order", () => {
+    const hand = [0, 6, 0, 2, 1, 3].map((countdown, index) => ({
+      index,
+      countdown,
+    }));
+    expect(tickingCards(hand).map((card) => card.index)).toEqual([1, 3, 4]);
+    expect(tickingCards([])).toEqual([]);
+  });
+
+  it("puts a Recalled Skill Card at the end of the Hand, so it waits behind 3 older cards", () => {
+    let recalled = false;
+    for (let random = 0; random < 60 && !recalled; random += 1) {
+      const state = emptyBattle({ random });
+      giveHand(state, "player", [
+        ["warrior.warDrums", 0, "legendary"],
+        ["human.halberdier", 6],
+        ["human.halberdier", 6],
+        ["human.halberdier", 6],
+      ]);
+      const played = run(
+        state,
+        Command.PlayCard({ handIndex: 0, target: Target.NoTarget() })
+      );
+      const [roll] = eventsOfType(played.events, "RecallRolled");
+      if (!roll?.success) {
+        continue;
+      }
+      recalled = true;
+      expect(played.state.sides.player.hand.at(-1)).toMatchObject({
+        cardId: "warrior.warDrums",
+        countdown: 2,
+      });
+      // War Drums lowered 2 of the 3 Halberdiers to 5. The enemy Turn, then the player Start Step.
+      const enemyTurn = run(played.state, endTurn).state;
+      const { state: next } = run(enemyTurn, endTurn);
+      expect(countdownsOf(next).toSorted()).toEqual([2, 4, 4, 5]);
+      expect(next.sides.player.hand.at(-1)).toMatchObject({
+        cardId: "warrior.warDrums",
+        countdown: 2,
+      });
+    }
+    expect(recalled).toBe(true);
+  });
+
+  it("keeps a Sabotaged card in its place in the Hand, so an old Ready card that is Sabotaged ticks again", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    giveHand(state, "enemy", [["goblin.tunnelSaboteur", 0]]);
+    giveHand(state, "player", [
+      ["human.halberdier", 0],
+      ["human.halberdier", 5],
+      ["human.halberdier", 5],
+      ["human.halberdier", 5],
+    ]);
+    const sabotaged = run(
+      state,
+      Command.PlayCard({
+        handIndex: 0,
+        target: Target.Square({ lane: 0, position: LANE_LENGTH - 1 }),
+      })
+    ).state;
+    expect(countdownsOf(sabotaged)).toEqual([1, 5, 5, 5]);
+    const { state: next } = run(sabotaged, endTurn);
+    expect(countdownsOf(next)).toEqual([0, 4, 4, 5]);
   });
 
   it("does not draw with 8 cards in the Hand", () => {
@@ -386,8 +489,8 @@ describe("Rally (GDD 4.3, 5.4)", () => {
         (event) =>
           event.target._tag === "Unit" && event.target.unitId === enemy.id
       )?.amount
-    ).toBe(3);
-    expect(unitById(next, enemy.id)?.hp).toBe(17);
+    ).toBe(4);
+    expect(unitById(next, enemy.id)?.hp).toBe(16);
     expect(unitById(next, ally.id)?.rallied).toBe(0);
   });
 

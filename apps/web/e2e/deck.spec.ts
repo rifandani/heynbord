@@ -28,7 +28,7 @@ test.describe("Deck dialog", () => {
     await expect(dialog.getByTestId("deck-active")).toBeVisible();
     await expect(dialog.getByTestId("curve-2")).toHaveAttribute(
       "data-count",
-      "2"
+      "3"
     );
 
     await page.keyboard.press("Escape");
@@ -47,10 +47,11 @@ test.describe("Deck dialog", () => {
 
     await dialog.getByTestId("pool-human.crossbowGuard-common").click();
     await dialog.getByTestId("pool-human.crossbowGuard-common").click();
+    await dialog.getByTestId("pool-human.crossbowGuard-common").click();
     await expect(
       dialog.getByTestId("deck-row-human.crossbowGuard-common")
-    ).toContainText("×2");
-    // The two owned copies are in the Deck now.
+    ).toContainText("×3");
+    // The three owned copies are in the Deck now.
     await expect(
       dialog.getByTestId("pool-human.crossbowGuard-common")
     ).toHaveAttribute("data-blocked", "none");
@@ -61,7 +62,7 @@ test.describe("Deck dialog", () => {
     await dialog.getByTestId("deck-row-human.crossbowGuard-common").click();
     await expect(
       dialog.getByTestId("deck-row-human.crossbowGuard-common")
-    ).toContainText("×1");
+    ).toContainText("×2");
 
     await dialog.getByTestId("deck-autofill").click();
     await expect(dialog.getByTestId("deck-size")).toHaveText("10 / 10 cards");

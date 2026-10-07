@@ -15,8 +15,10 @@ export {
   RuleViolation,
   SUDDEN_DEATH_TURN,
   Target,
+  TICKING_CARDS,
   TURN_LIMIT,
 } from "./battle/types";
+export { tickingCards } from "./battle/turn";
 export type {
   BattleResult,
   BattleSetup,
@@ -62,6 +64,8 @@ export {
   STARTING_DECK_SLOTS,
 } from "./content/deck-slots";
 export {
+  countdownLimit,
+  deckCountdown,
   deckSizeLimits,
   getStarterDeck,
   MAX_COPIES,

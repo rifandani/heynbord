@@ -101,7 +101,7 @@ Each Turn of the active side has these phases:
 1. **Start Step**
    1. Start-of-turn effects resolve (for example Regeneration and Rally).
    2. If the Turn number is 20 or more, Sudden Death damage hits each Hero of the active Side that is not Defeated (see 4.10).
-   3. The Countdown of each card in each Hand of the active Side goes down by 1. The minimum is 0.
+   3. The Countdowns of the **Ticking Cards** in each Hand of the active Side go down by 1. The Ticking Cards are the 3 oldest cards in the Hand that are not Ready. The oldest card is the card that came into the Hand first. A Ready card does not use one of the 3, and the other cards wait ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). The Hand keeps the order in which the cards came into it: a drawn card and a Recalled Skill Card go to the end. A card keeps its place when its Countdown changes, for example by Sabotage.
    4. Each Hero of the active Side that is not Defeated draws 1 card, if its Hand has fewer than 8 cards and its Deck is not empty.
 2. **Play Phase**
    - The active side can play **all** Ready cards (Countdown 0) of all its Heroes, in any order.
@@ -364,12 +364,13 @@ Each Creature Card has a role. Use the role to balance the card and to explain i
 | --- | --- |
 | Maximum Deck size | 10 at player level 1. +1 per level. 30 at level 21 and higher. |
 | Minimum Deck size | 5 at player level 1. +1 per level. 15 at level 11 and higher. |
+| Countdown Limit | The sum of the printed Countdowns of the cards in the Deck is at most 2.5 × the maximum Deck size, rounded down: 25 at player level 1, 35 at level 5 and 75 at level 21 and higher. Each card counts, also a Skill Card. The Rank does not change the Countdown. A Stage enemy Deck does not have the limit ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). |
 | Copies of one card | Maximum 3, of any Rank. |
 | Skill Cards | Only Skill Cards of the Hero's Class. |
 | Races | The Deck can mix all Races. |
 | Saved Decks | 3 Deck slots for a new player: one for each Starter Deck and one empty. The player buys more with Coin in the Deck builder, up to 10 ([Economy 3.6](./07-economy.md#36-deck-slots)). A slot that the player buys is permanent. |
 
-- The Deck builder has an **Auto-fill** button. It fills the Deck with the strongest valid cards.
+- The Deck builder has an **Auto-fill** button. It fills the Deck with the strongest valid cards. It does not add a card that puts the Deck over the Countdown Limit.
 - The Deck builder shows the Countdown curve (how many cards have each Countdown).
 - The Deck builder shows all cards of the game. An owned card has one tile for each Rank that the player owns. A card that the player does not own has one tile in its Base Rank: grey, with a "Not owned" plate. The player cannot add it, but can see its card details. The owned cards come first, then the cards that are not owned. Each group is in Countdown order. The header shows the number of different cards that the player owns, for example "14 / 66 owned".
 - Deck builder filters: All, owned or not owned; All, Creature Cards or Skill Cards; then the Race for Creature Cards, or the Class for Skill Cards. The filters apply together. The Class filter starts on the Class of the Deck. The filters reset when the dialog closes.
@@ -381,15 +382,15 @@ A new player gets the Starter Decks and picks one. The Hero Class comes from the
 
 - **Rule:** each copy in a Starter Deck has the Rank Common or Uncommon. A Common card at Rare Rank is also not permitted. The first Epic of a player comes from play: the first win of the Boss Stage 1-10 gives Iron Bulwark (Epic). A content test checks this rule for each Starter Deck.
 - **Guides** (not tested):
-  - A Starter Deck has 10 cards, the maximum Deck size at player level 1.
+  - A Starter Deck has 10 cards, the maximum Deck size at player level 1. Its Countdowns are within the Countdown Limit of level 1 (25). A content test checks the limit.
   - Each copy is at its Base Rank, so a card that the player wins from a Stage is as strong as a card of the Starter Deck.
   - Common Creature Cards come in pairs or triples. This makes the Hand consistent, and it gives a first Combine target at player level 3. An Uncommon card or a Skill Card can have 1 copy.
   - Each Starter Deck has at least 1 Skill Card of its Class.
 
 | Starter Deck | Class | Deck |
 | --- | --- | --- |
-| Vanguard | Warrior | 2× Militia Recruit (C), 2× Crossbow Guard (C), 2× Halberdier (C), 3× River Knight (U), 1× Spear Throw (U) |
-| Raiders | Mage | 2× Scrap Raider (C), 2× Ember Shaman (C), 2× Tusk Brute (C), 2× Skyreaver (U), 1× Howling Charger (U), 1× Fireball (C) |
+| Vanguard | Warrior | 2× Militia Recruit (C), 3× Crossbow Guard (C), 2× Halberdier (C), 2× River Knight (U), 1× Spear Throw (U). Countdown 25. |
+| Raiders | Mage | 3× Scrap Raider (C), 3× Ember Shaman (C), 2× Badland Pup (C), 1× Howling Charger (U), 1× Fireball (C). Countdown 23. |
 
 The Campaign is tuned for these Decks ([14 — Campaign Stages](./14-campaign-stages.md)). When a Starter Deck changes, run the Stage simulation again.
 
@@ -698,7 +699,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
-2. Each Countdown has a power budget for the Base Rank: `budget = 12 + Countdown × 3` ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). This budget is correct only with the Countdown Limit and the 3 Ticking Cards of the same ADR. Without them, a Deck of long-Countdown cards wins against a Deck of short-Countdown cards of the same Race ([08 — Archetypes, section 3.2](./08-archetypes.md#32-countdown-slope-search)). Until those rules and the new card values are in the rules package, the cards and `balance.ts` use the old budget, `6 + Countdown × 5`.
+2. Each Countdown has a power budget for the Base Rank: `budget = 12 + Countdown × 3` ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). This budget is correct only with the Countdown Limit and the 3 Ticking Cards of the same ADR. Without them, a Deck of long-Countdown cards wins against a Deck of short-Countdown cards of the same Race ([08 — Archetypes, section 3.2](./08-archetypes.md#32-countdown-slope-search)).
 3. A card must be within ±10% of its budget. A card outside this range needs a written reason (for example "weak stats, strong combo").
 4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).
 5. Check each Archetype's win rate in each **Matchup**. The target is 45% to 55% against the other Archetypes.

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createBattle } from "../battle/create-battle";
 import { STAGE_LANES } from "../battle/types";
 import { ARCHETYPES } from "../content/archetypes";
-import { getStarterDeck } from "../content/decks";
+import { deckCountdown, getStarterDeck } from "../content/decks";
 import { getStage, STAGES } from "../content/stages";
 import {
   createMatchupBattle,
@@ -52,10 +52,12 @@ describe("expectedDeck", () => {
       ...raiders.deck,
       getStage("1-1").firstWinCard,
     ]);
+    // Raiders has 3 Scrap Raiders and 3 Ember Shamans, so it skips the
+    // first-win cards of Stages 1-2 and 1-3.
     const boss = expectedDeck(getStage("1-10"), raiders);
     expect(boss).toHaveLength(14);
     expect(boss.slice(10)).toEqual(
-      STAGES.slice(0, 4).map((stage) => stage.firstWinCard)
+      ["1-1", "1-4", "1-5", "1-6"].map((id) => getStage(id).firstWinCard)
     );
   });
 
@@ -83,6 +85,30 @@ describe("expectedDeck", () => {
       recruit,
       recruit,
     ]);
+  });
+
+  it("skips a card over the Countdown Limit of the Recommended level (ADR-0021)", () => {
+    // Stage 1-10 is level 5: the Countdown Limit is 35.
+    const stage = getStage("1-10");
+    const heavy = [
+      "human.ironBulwark",
+      "human.marshalElianVoss",
+      "orc.warchiefGrukka",
+      "feral.mountainColossus",
+      "feral.oldFrostmaw",
+      "orc.warbandStandardBearer",
+      "human.militiaRecruit",
+    ].map((cardId) => ({ cardId, rank: "common" }) as const);
+    const earlier = heavy.map((firstWinCard, index) => ({
+      ...stage,
+      id: `0-${index}`,
+      region: 0,
+      firstWinCard,
+    }));
+    const deck = expectedDeck(stage, { ...vanguard, deck: [] }, earlier);
+    // 5 × 6 = 30. A sixth Countdown 6 card makes 36, so it is skipped.
+    expect(deck).toEqual([...heavy.slice(0, 5), heavy[6]]);
+    expect(deckCountdown(deck)).toBe(31);
   });
 });
 
@@ -219,9 +245,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: NO_GEAR,
       })
     ).toMatchObject({
-      winRate: 0.425,
-      firstSideWinRate: 0.575,
-      averageTurn: 21.325,
+      winRate: 0.65,
+      firstSideWinRate: 0.55,
+      averageTurn: 23.55,
     });
     // Gear 3 rolls Crit and Block.
     expect(
@@ -231,9 +257,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
       })
     ).toMatchObject({
-      winRate: 0.55,
-      firstSideWinRate: 0.55,
-      averageTurn: 21.8,
+      winRate: 0.65,
+      firstSideWinRate: 0.65,
+      averageTurn: 23.85,
     });
   });
 });

@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { copies, deckSizeLimits, getStarterDeck } from "../content/decks";
+import {
+  copies,
+  countdownLimit,
+  deckCountdown,
+  deckSizeLimits,
+  getStarterDeck,
+} from "../content/decks";
 import type { DeckEntry } from "../content/schema";
 import type { Collection, DeckInput } from "./deck-building";
 import {
@@ -29,6 +35,16 @@ const input = (deck: readonly DeckEntry[], level = 1): DeckInput => ({
   classId: "warrior",
   level,
   collection: COLLECTION,
+});
+
+/** A Collection with more Countdown 6 cards, for the Countdown Limit. */
+const heavyInput = (deck: readonly DeckEntry[], level = 1): DeckInput => ({
+  ...input(deck, level),
+  collection: [
+    ...COLLECTION,
+    { cardId: "human.marshalElianVoss", rank: "epic", copies: 2 },
+    { cardId: "orc.warchiefGrukka", rank: "epic", copies: 2 },
+  ],
 });
 
 describe("deckProblems", () => {
@@ -61,6 +77,41 @@ describe("deckProblems", () => {
       DeckProblem.TooManyCards({ max: 10, count: 11 })
     );
     expect(deckSizeLimits(1)).toEqual({ min: 5, max: 10 });
+  });
+
+  it("gives the Countdown Limit of the Player level: 2.5 × the maximum Deck size (ADR-0021)", () => {
+    expect(countdownLimit(1)).toBe(25);
+    expect(countdownLimit(2)).toBe(27);
+    expect(countdownLimit(5)).toBe(35);
+    expect(countdownLimit(21)).toBe(75);
+    expect(countdownLimit(40)).toBe(75);
+  });
+
+  it("counts the printed Countdown of each card, also a Skill Card, at each Rank", () => {
+    expect(
+      deckCountdown([
+        { cardId: "human.ironBulwark", rank: "epic" },
+        { cardId: "human.ironBulwark", rank: "legendary" },
+        { cardId: "warrior.shieldWall", rank: "common" },
+      ])
+    ).toBe(14);
+    expect(deckCountdown([])).toBe(0);
+  });
+
+  it("finds a Deck over the Countdown Limit", () => {
+    // 6 + 6 + 6 + 6 + 2 = 26 at level 1: the limit is 25.
+    const deck = [
+      ...copies(1, "human.ironBulwark", "epic"),
+      ...copies(2, "human.marshalElianVoss", "epic"),
+      ...copies(1, "orc.warchiefGrukka", "epic"),
+      ...copies(1, "warrior.shieldWall", "common"),
+    ];
+    expect(deckProblems(heavyInput(deck))).toEqual([
+      DeckProblem.OverCountdownLimit({ limit: 25, countdown: 26 }),
+    ]);
+    // 26 + 1 = 27 at level 2: the limit is 27.
+    const six = addCopy(deck, "human.militiaRecruit", "common");
+    expect(deckProblems(heavyInput(six, 2))).toEqual([]);
   });
 
   it("counts the copy limit over all Ranks of a card", () => {
@@ -119,6 +170,24 @@ describe("canAddCopy", () => {
       )
     ).toBe(false);
   });
+
+  it("stops at the Countdown Limit", () => {
+    // 6 + 6 + 6 + 6 = 24 at level 1: the limit is 25.
+    const heavy = [
+      ...copies(1, "human.ironBulwark", "epic"),
+      ...copies(2, "human.marshalElianVoss", "epic"),
+      ...copies(1, "orc.warchiefGrukka", "epic"),
+    ];
+    expect(
+      canAddCopy(heavyInput(heavy), "human.militiaRecruit", "common")
+    ).toBe(true);
+    expect(canAddCopy(heavyInput(heavy), "human.crossbowGuard", "common")).toBe(
+      false
+    );
+    expect(
+      canAddCopy(heavyInput(heavy, 2), "human.crossbowGuard", "common")
+    ).toBe(true);
+  });
 });
 
 describe("removeCopy", () => {
@@ -158,6 +227,21 @@ describe("autoFill", () => {
     expect(autoFill(big)).toHaveLength(deckSizeLimits(1).max);
     expect(isDeckValid({ ...big, deck: autoFill(big) })).toBe(true);
   });
+
+  it("stops at the Countdown Limit", () => {
+    const start = copies(2, "human.marshalElianVoss", "epic");
+    const filled = autoFill(heavyInput(start));
+    // 6 + 6, then Iron Bulwark 6 and Warchief Grukka 6 (24). The second
+    // Grukka does not fit, so the Militia Recruits (1) fill the Deck.
+    expect(filled).toEqual([
+      ...start,
+      { cardId: "human.ironBulwark", rank: "epic" },
+      { cardId: "orc.warchiefGrukka", rank: "epic" },
+      { cardId: "human.militiaRecruit", rank: "uncommon" },
+    ]);
+    expect(deckCountdown(filled)).toBe(25);
+    expect(deckProblems(heavyInput(filled))).toEqual([]);
+  });
 });
 
 describe("starterCollection", () => {
@@ -171,7 +255,7 @@ describe("starterCollection", () => {
     expect(collection).toContainEqual({
       cardId: "human.crossbowGuard",
       rank: "common",
-      copies: 2,
+      copies: 3,
     });
   });
 });

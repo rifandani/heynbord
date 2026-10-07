@@ -336,6 +336,10 @@ export const problemText = (problem: DeckProblem): TextRef =>
       key: "deckBuilder.problems.tooMany",
       args: { max, count },
     }),
+    OverCountdownLimit: ({ limit, countdown }) => ({
+      key: "deckBuilder.problems.overCountdownLimit",
+      args: { limit, countdown },
+    }),
     TooManyCopies: ({ cardId, max }) => ({
       key: "deckBuilder.problems.tooManyCopies",
       args: { name: cardName(cardId), max },

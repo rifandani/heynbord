@@ -1,3 +1,4 @@
+import { getCard } from "./cards";
 import type { DeckEntry, RankId, StarterDeck } from "./schema";
 
 /** Repeats one Deck entry. */
@@ -21,6 +22,22 @@ export const deckSizeLimits = (level: number) => ({
 });
 
 /**
+ * The Countdown Limit at a player level (GDD 6, ADR-0021): the sum of the
+ * printed Countdowns of the cards in a Deck is at most 2.5 × the maximum Deck
+ * size, rounded down. It is 25 at level 1 and 35 at level 5. A Stage enemy
+ * Deck does not have the limit.
+ */
+export const countdownLimit = (level: number): number =>
+  Math.floor((deckSizeLimits(level).max * 5) / 2);
+
+/**
+ * The sum of the printed Countdowns of the cards in a Deck. Skill Cards count,
+ * and the Rank of a copy does not change its Countdown.
+ */
+export const deckCountdown = (deck: readonly DeckEntry[]): number =>
+  deck.reduce((sum, entry) => sum + getCard(entry.cardId).countdown, 0);
+
+/**
  * The two starter Decks of the Battle slice. The Hero Class comes from the
  * Deck. The game gives them at player level 1, so each one has 10 cards, the
  * maximum Deck size at level 1 (GDD 6).
@@ -29,6 +46,7 @@ export const deckSizeLimits = (level: number) => ({
  * first Epic of a Player is a reward from play (the first win of the Boss
  * Stage 1-10). Each copy is at its Base Rank, Common Creature Cards come in
  * pairs or triples, and each Deck has at least 1 Skill Card of its Class.
+ * Each Deck is within the Countdown Limit of level 1 (25, ADR-0021).
  */
 export const STARTER_DECKS: readonly StarterDeck[] = [
   {
@@ -36,9 +54,9 @@ export const STARTER_DECKS: readonly StarterDeck[] = [
     classId: "warrior",
     deck: [
       ...copies(2, "human.militiaRecruit", "common"),
-      ...copies(2, "human.crossbowGuard", "common"),
+      ...copies(3, "human.crossbowGuard", "common"),
       ...copies(2, "human.halberdier", "common"),
-      ...copies(3, "human.riverKnight", "uncommon"),
+      ...copies(2, "human.riverKnight", "uncommon"),
       ...copies(1, "warrior.spearThrow", "uncommon"),
     ],
   },
@@ -46,10 +64,9 @@ export const STARTER_DECKS: readonly StarterDeck[] = [
     id: "raiders",
     classId: "mage",
     deck: [
-      ...copies(2, "orc.scrapRaider", "common"),
-      ...copies(2, "orc.emberShaman", "common"),
-      ...copies(2, "orc.tuskBrute", "common"),
-      ...copies(2, "orc.skyreaver", "uncommon"),
+      ...copies(3, "orc.scrapRaider", "common"),
+      ...copies(3, "orc.emberShaman", "common"),
+      ...copies(2, "orc.badlandPup", "common"),
       ...copies(1, "orc.howlingCharger", "uncommon"),
       ...copies(1, "mage.fireball", "common"),
     ],

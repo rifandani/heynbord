@@ -31,6 +31,9 @@ export const STAGE_LANES = 3;
 /** The maximum number of cards in a Hand. A side does not draw when its Hand is full. */
 export const HAND_LIMIT = 8;
 
+/** The number of Ticking Cards: the oldest cards in the Hand that are not Ready (ADR-0021). */
+export const TICKING_CARDS = 3;
+
 /** Sudden Death starts at this Turn number (GDD 4.10). */
 export const SUDDEN_DEATH_TURN = 20;
 
