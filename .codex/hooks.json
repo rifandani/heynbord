@@ -9,18 +9,12 @@
             "command": "bun lint:fix",
             "timeout": 600,
             "statusMessage": "Linting the workspace"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
+          },
           {
             "type": "command",
-            "command": "bash \"$(git rev-parse --show-toplevel)/.codex/hooks/fallow-fix-on-stop.sh\"",
+            "command": "bun check:dupes",
             "timeout": 600,
-            "statusMessage": "Removing unused exports"
+            "statusMessage": "Finding duplicate code"
           }
         ]
       }

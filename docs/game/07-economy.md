@@ -208,7 +208,7 @@ The total is about 71% of the Bazaar catalog cost (section 3.5). The player must
 | Uncommon | 15 | 120 |
 | Rare | 50 | 400 |
 | Epic | 175 | 1,400 |
-| Legendary | 600 | — (no card has Base Rank Legendary) |
+| Legendary | 600 | — (no v1 card has Base Rank Legendary) |
 
 - Craft gives one copy in the card's Base Rank.
 - The player can Craft only Discovered cards.

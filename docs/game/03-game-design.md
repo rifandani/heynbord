@@ -268,7 +268,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | Attack | Damage of one attack | 0 to 12 |
 | HP | Health | 1 to 30 |
 | Speed | Squares per Turn | 0 to 4 |
-| Attack type | Melee, or Ranged with Range | Range 2 to 5 |
+| Attack type | Melee, or Ranged with Range | Range 2 to 5. Range 2 only for a Support (5.6) |
 | Damage Type | Physical, Fire, Frost or Holy | — |
 | Keywords | 0 to 3 Keywords | — |
 | Flavor text | A short line of lore or a joke | — |
@@ -354,8 +354,8 @@ Each Creature Card has a role. Use the role to balance the card and to explain i
 | Frontliner | High HP, low Speed. Protects the Lane. A Frontliner with Pivot also stops enemy Units that go past it. |
 | Striker | High Attack, low HP. Kills Units. |
 | Runner | High Speed or Flying. Damages the Hero. |
-| Shooter | Ranged. Stays back and attacks. |
-| Support | Rally, Regeneration or Summon. Makes other Units better. |
+| Shooter | Ranged with Range 3 to 5. Stays back and attacks. |
+| Support | Rally, Regeneration or Summon. Makes other Units better. Melee, or Ranged with Range 2. |
 | Wall | Blocks a Lane for enemy Units. |
 
 ## 6. Deck building
@@ -673,7 +673,7 @@ Each Race has this exact Creature Card Base Rank mix:
 | Epic | 2 | 12 |
 | Legendary | 0 | 0 |
 
-Skill Cards use a separate Base Rank mix. Legendary remains available only through Combine.
+Skill Cards use a separate Base Rank mix. In v1, no card has Base Rank Legendary. A Legendary copy comes from Combine or from a Pack. Later cards can have Base Rank Legendary.
 
 Each Race has a different Role profile:
 

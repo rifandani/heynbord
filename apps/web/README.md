@@ -6,6 +6,8 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 v1:
 
+- follow pattern web/art/fx/raw how to setup prompts and style reference to create more creature unit card
+- the Stop hooks in claude code / cursor / codex settings hinder's our parallel agent executions, lets just use "check:dupes" in PostToolUse / afterFileEdit
 - /grill-with-docs Wild Hunt is too strong and Tunnel Rats is too weak right? can we balance it
 - /grill-with-docs we need to also have economy simulation script, not only battle simulation
 - maybe we could have something called "Power" to show the current deck power and we can also use it to show recommended power in campaign stages

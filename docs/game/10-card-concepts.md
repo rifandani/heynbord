@@ -931,11 +931,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 4.5 Acorn Tender
 
-`elf.acornTender` · Shooter · Common · Countdown 3 · Attack 3 · HP 4 · Speed 1 · Range 2 · Holy · Poison
+`elf.acornTender` · Shooter · Common · Countdown 3 · Attack 3 · HP 4 · Speed 1 · Range 3 · Holy · Poison
 
 > Growth takes patience. Wilt takes less.
 
-Purpose: a Holy shooter that applies Poison. Power 19, budget 21, deviation -9.5%.
+Purpose: a Holy shooter that applies Poison. Power 20, budget 21, deviation -4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1035,11 +1035,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 4.9 Dewkeeper
 
-`elf.dewkeeper` · Support · Uncommon · Countdown 3 · Attack 2 · HP 8 · Speed 1 · Range 3 · Holy · Regeneration 1
+`elf.dewkeeper` · Support · Uncommon · Countdown 3 · Attack 2 · HP 8 · Speed 1 · Range 2 · Holy · Regeneration 1
 
 > She collects morning dew. Afternoon dew is paperwork.
 
-Purpose: a durable Holy support. Power 21, budget 21, deviation 0%.
+Purpose: a durable Holy support. Power 20, budget 21, deviation -4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1139,11 +1139,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 4.13 Seedwind Shepherd
 
-`elf.seedwindShepherd` · Support · Rare · Countdown 4 · Attack 1 · HP 11 · Speed 1 · Range 3 · Holy · Flying · Regeneration 1
+`elf.seedwindShepherd` · Support · Rare · Countdown 4 · Attack 1 · HP 11 · Speed 1 · Range 2 · Holy · Flying · Regeneration 1
 
 > Every seed has a destination. He stays to water them.
 
-Purpose: a durable Flying healer. Power 26, budget 26, deviation 0%.
+Purpose: a durable Flying healer. Power 25, budget 26, deviation -3.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1299,11 +1299,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 5.4 Hushbow
 
-`undead.hushbow` · Shooter · Common · Countdown 2 · Attack 2 · HP 2 · Speed 1 · Range 2 · Physical · Summon Skeleton
+`undead.hushbow` · Shooter · Common · Countdown 2 · Attack 2 · HP 2 · Speed 1 · Range 3 · Physical · Summon Skeleton
 
 > Quiet in life. Considerably noisier afterward.
 
-Purpose: a short-range Shooter that summons a Skeleton beside it. Power 15.6, budget 16, deviation -2.5%.
+Purpose: a cheap Shooter that summons a Skeleton beside it. Power 16.6, budget 16, deviation +3.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1953,11 +1953,11 @@ portrait 3:4 composition, no text, no frame
 
 ### 6.14 Grand Gearjammer
 
-`goblin.grandGearjammer` · Support · Epic · Countdown 4 · Attack 3 · HP 8 · Speed 1 · Range 3 · Physical · Sabotage 2
+`goblin.grandGearjammer` · Support · Epic · Countdown 4 · Attack 3 · HP 8 · Speed 1 · Range 2 · Physical · Sabotage 2
 
 > Every plan has gears. We have more.
 
-Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 27, budget 26, deviation +3.8%.
+Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 26, budget 26, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -2115,11 +2115,11 @@ portrait 3:4 composition, no gore, no text, no frame
 
 ### 7.5 Web Spitter
 
-`feral.webSpitter` · Shooter · Common · Countdown 3 · Attack 3 · HP 8 · Speed 1 · Range 2 · Physical · Entangle
+`feral.webSpitter` · Shooter · Common · Countdown 3 · Attack 3 · HP 8 · Speed 1 · Range 3 · Physical · Entangle
 
 > Stay for dinner.
 
-Purpose: a short-range Shooter that Entangles. Power 20, budget 21, deviation -4.8%.
+Purpose: a Shooter that Entangles. Power 21, budget 21, deviation 0%.
 
 | Field | Brief |
 | --- | --- |

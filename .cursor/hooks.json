@@ -4,11 +4,9 @@
     "afterFileEdit": [
       {
         "command": "bun lint:fix"
-      }
-    ],
-    "stop": [
+      },
       {
-        "command": "bash .cursor/hooks/fallow-fix-on-stop.sh"
+        "command": "bun check:dupes"
       }
     ],
     "preToolUse": [

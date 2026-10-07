@@ -74,7 +74,13 @@ export {
   playerLevelForXp,
 } from "./content/player-levels";
 export { keywordValue } from "./content/keywords";
-export { rankPips, RANKS, recallChance, scaleForRank } from "./content/ranks";
+export {
+  rankPips,
+  RANKS,
+  ranksOf,
+  recallChance,
+  scaleForRank,
+} from "./content/ranks";
 export { ClassId, DeckEntry } from "./content/schema";
 export type {
   CardDefinition,

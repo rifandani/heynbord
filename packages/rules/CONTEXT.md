@@ -142,7 +142,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Feral**: The one Race with no people. A Feral card is a wild creature that serves no people, for example a wyrm or a giant spider. A creature that fights for a people is a card of that people's Race, not a Feral card. _Avoid_: beast, creature, wild (as a Race name)
 
-**Role**: The job of a Creature Card in a Battle: Frontliner, Striker, Runner, Shooter, Support or Wall. It helps Players read a Card. No rule uses it. _Avoid_: class, type, archetype
+**Role**: The job of a Creature Card in a Battle: Frontliner, Striker, Runner, Shooter, Support or Wall. It helps Players read a Card. No Battle rule uses it, but it sets the Range of a Ranged Unit. _Avoid_: class, type, archetype
+
+**Range**: The maximum number of Squares in front of a Ranged Unit at which it attacks the nearest enemy Unit. A Melee Unit has no Range. A Ranged Support always has Range 2. A Shooter always has Range 3 to 5. _Avoid_: reach, attack distance
 
 **Class**: The type of a Hero, and of the Skill Cards that the Hero can use: Warrior, Ranger, Mage or Priest. _Avoid_: job, profession, role
 

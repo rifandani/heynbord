@@ -8,7 +8,7 @@ import { CARDS, getCard } from "./cards";
 import { deckSizeLimits, getStarterDeck, STARTER_DECKS } from "./decks";
 import { keywordValue } from "./keywords";
 import { firstTryPathLevel } from "./player-levels";
-import { isRankAtLeast, RANKS, rankPips, scaleForRank } from "./ranks";
+import { isRankAtLeast, RANKS, rankPips, ranksOf, scaleForRank } from "./ranks";
 import {
   Archetype,
   CardDefinition,
@@ -152,6 +152,19 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     ]);
   });
 
+  it("gives a ranged Support Range 2 and a Shooter Range 3 to 5 (GDD 5.6)", () => {
+    for (const card of creatures) {
+      if (card.role === "shooter") {
+        expect(card.range, card.id).toBeGreaterThanOrEqual(3);
+        expect(card.range, card.id).toBeLessThanOrEqual(5);
+      } else if (card.role === "support" && card.range > 0) {
+        expect(card.range, card.id).toBe(2);
+      } else {
+        expect(card.range, card.id).not.toBe(2);
+      }
+    }
+  });
+
   it("keeps Shieldbearer within ±10% of its power budget (GDD 13)", () => {
     const card = getCard("human.shieldbearer");
     expect(card.kind === "creature" && creaturePower(card)).toBe(17);
@@ -218,9 +231,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("gives Sabotage N × 4, Trample 3, Entangle 2 and Rally N × 3 power points (GDD 13)", () => {
     expect(power("goblin.tunnelSaboteur")).toBe(15);
-    expect(power("goblin.grandGearjammer")).toBe(27);
+    expect(power("goblin.grandGearjammer")).toBe(26);
     expect(power("feral.bristlebackBoar")).toBe(16);
-    expect(power("feral.webSpitter")).toBe(20);
+    expect(power("feral.webSpitter")).toBe(21);
     expect(power("feral.frostElkMatriarch")).toBe(25);
     // Unique and Wall use 0 points.
     expect(power("feral.oldFrostmaw")).toBe(39);
@@ -347,6 +360,16 @@ describe("Ranks (GDD 5.3)", () => {
     expect(scaleForRank(13, "rare")).toBe(19);
     expect(scaleForRank(8, "legendary")).toBe(17);
     expect(rankPips("epic")).toBe(4);
+  });
+
+  it("gives the Ranks of a Card from its Base Rank up to Legendary", () => {
+    expect(ranksOf(getCard("human.marshalElianVoss"))).toEqual([
+      "epic",
+      "legendary",
+    ]);
+    expect(ranksOf(getCard("human.militiaRecruit"))).toEqual(RANKS);
+    // No v1 card has Base Rank Legendary, but a later card can.
+    expect(ranksOf({ baseRank: "legendary" })).toEqual(["legendary"]);
   });
 });
 

@@ -39,3 +39,11 @@ export const recallChance = (rank: RankId): number => RECALL[rank];
 /** True when `rank` is the same as `base` or higher. */
 export const isRankAtLeast = (rank: RankId, base: RankId): boolean =>
   RANKS.indexOf(rank) >= RANKS.indexOf(base);
+
+/**
+ * The Ranks in which a Card exists: from its Base Rank up to Legendary. A copy
+ * is never below its Base Rank.
+ */
+export const ranksOf = (card: {
+  readonly baseRank: RankId;
+}): readonly RankId[] => RANKS.slice(RANKS.indexOf(card.baseRank));

@@ -113,16 +113,10 @@
           {
             "command": "bun lint:fix",
             "type": "command"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
+          },
           {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/fallow-fix-on-stop.sh\""
+            "command": "bun check:dupes",
+            "type": "command"
           }
         ]
       }
