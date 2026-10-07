@@ -102,19 +102,18 @@ The style bible has:
 | `skills/mage/fireball.webp` | Mage Skill |
 | `skills/warrior/shield-wall.webp` | Warrior Skill |
 
-2. A fixed prompt template for each Race (see 5.2) and for Skill Cards (see 5.2.1).
+2. The prompt script for Creature Cards (see 5.2), a fixed prompt template for Skill Cards (see 5.2.1), and the prompt script for the Region Maps and the Battle Paintings (`bun campaign:prompts`, see [12 — Region Concepts, 3](./12-region-concepts.md#3-prompts)).
 3. A character sheet for each Hero, boss and important Unit (front view, colors, key shapes).
 4. A list of words that are not permitted in prompts: the names of living artists, other games, and other companies' characters.
 
-### 5.2 Prompt template
+### 5.2 Prompts for Creature Cards
 
-```text
-[subject], [Race] of Heynbord, [pose], three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, [Race main color] and [Race second color] palette,
-light from the upper left, [setting], simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
+The game docs do not keep the prompts of Creature Cards. Run `bun creature:prompts` to write them to `apps/web/art/creature/raw/`. Git ignores this folder.
+
+- `style-reference.png`: the 8 golden Creature Card references of 5.1 in one image.
+- `<race>/prompts.md`: the setup message of the Race, then one prompt for each Creature Card of the Race.
+
+The setup message gives the style rules of this section, and the setting and the palette of the Race ([10 — Card Concepts, 1.1](./10-card-concepts.md#11-settings)). Each card prompt has the subject line of the card in `scripts/creature-art/subjects.ts`, the art brief of the card in 10 — Card Concepts, the detail of its Base Rank and the accent of its Damage Type. Use one ChatGPT conversation for each Race: attach the style reference to the setup message, then send each card prompt in its own message. To change an image, change the brief or the subject line, then run the script again.
 
 The figure advances to the right of the image, in a three-quarter view, so the face stays readable. The chest and the lead foot point right. The face and the weapon may turn, so a Pivot figure can look back. A fortification shows its blocking face to the right. The card art and the Unit cut-out share this Facing. Match the golden references for light, brush and palette. Take Facing from this section. Keep the light from the upper left: a horizontal flip of a finished painting would move that light. Existing paintings that advance left stay until their art pass. Militia Recruit is the first repaint.
 
@@ -133,8 +132,8 @@ light from the upper left, soft brush texture, [Damage Type color] accents,
 
 ### 5.3 Steps for each card
 
-1. Write the card concept in [10 — Card Concepts](./10-card-concepts.md): name, Race or Class, Role, subject, pose, props, setting and prompt.
-2. Make 4 to 8 images with the prompt template and the style references.
+1. Write the card concept in [10 — Card Concepts](./10-card-concepts.md): name, Race or Class, Role, subject, pose, props and setting. For a Creature Card, add its subject line to `scripts/creature-art/subjects.ts`. For a Skill Card, write its prompt with the template in 5.2.1.
+2. Make 4 to 8 images with the prompts (5.2 or 5.2.1) and the style references.
 3. Select one image with the review checklist (5.4).
 4. Fix problems by hand or with inpainting (hands, weapons, extra parts).
 5. Remove the background, for the Unit cut-out.

@@ -2,7 +2,7 @@
 
 This document gives the art brief for the Battle Painting: the painted ground and background behind the Board, one for each Region. The Battle Painting is a flat 2D image behind the 3D scene ([web ADR-0007](../../apps/web/docs/adr/0007-the-battlefield-is-a-2d-painting.md)). The Units, the Heroes and the effects stand on it. The Squares are not drawn.
 
-Now no Battle Painting exists. The Battle shows a meadow gradient in its place (`apps/web/src/features/battle/components/battle-painting.tsx`). The first painting to make is Hearthvale (Region 1).
+Now only the Hearthvale Battle Painting exists (`apps/web/public/battle/hearthvale.webp`). `BATTLE_PAINTINGS` in `apps/web/src/features/battle/battle-painting.ts` gives it to all Regions. If no painting loads, the Battle shows a meadow gradient (`apps/web/src/features/battle/components/battle-painting.tsx`).
 
 ## 1. Rules for the Battle art
 
@@ -54,26 +54,19 @@ A 21:9 screen crops the top and the bottom: it shows only y 108 to 792. The open
  +--------------------------------------------------------------------+ 900
 ```
 
-## 2. Prompt
+## 2. Prompts
 
-### 2.1 Hearthvale
+The game docs do not keep the image prompts of the Battle Paintings. Run `bun campaign:prompts` to write them to `apps/web/art/campaign/raw/` ([12 — Region Concepts, 3](./12-region-concepts.md#3-prompts)). Git ignores this folder.
 
-```text
-top-down view of a bright fantasy forest clearing seen from high above at about 45 degrees, wide 16:9 landscape, no sky, no horizon,
-a large open meadow of short even grass fills the center, soft warm light patches, a few tiny flowers, low contrast, nothing on the meadow,
-tall old trees with thick roots and ferns frame the top edge, the left edge and the right edge, cool shade under the trees,
-darker foreground grass, ferns and roots along the bottom edge,
-at the right edge under the trees a small messy outlaw camp: a torn tent, wooden crates, a cold campfire with a pot,
-Heynbord, painterly fantasy game battlefield illustration, bright warm light, soft brush texture,
-light from the upper left through the leaves, leaf greens, warm yellow light and brown bark,
-no paths, no lines, no tiles, no grid, no people, no animals, no text, no letters, no logo, no frame, no UI
-```
+- `battle-style-reference.png`: 3 golden references of art direction 5.1 in one image.
+- `battle-set-reference.png`: the Hearthvale Battle Painting. The other Regions attach it, so that the set matches.
+- `<region>/prompts.md`, section "Battle Painting": the setup message, with the rules of section 1, then the painting message, with the brief of the Region.
 
-Make the images with GPT Image. Give it this prompt, a 16:9 aspect, and 2 or 3 golden references from art direction 5.1.
+The script makes a Battle Painting prompt for each Region that has a brief in section 1. To add a Region, write its brief as a `### 1.N <Region name>` table with the fields Place, Ground, Edges, Palette, Humor note, and Time and weather. Then run the script again.
 
 ## 3. Steps
 
-1. Make 4 to 8 images with the prompt in 2.1. Use the golden references in art direction 5.1 as style references.
+1. Make 4 to 8 images with the prompts of the Region (section 2).
 2. Select one image with the checklist in 4.
 3. Fix problems by hand or with inpainting: paths or lines on the meadow, strange trees, text-like marks.
 4. Crop to 16:9 and export the master at 3200 × 1800.

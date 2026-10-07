@@ -1,6 +1,6 @@
 # 10 — Card Concepts
 
-This document gives the gameplay draft and art brief for each Creature Card in the v1 set, and for each implemented Skill Card. Use it for step 1 of the AI art workflow ([05 — Art and Audio Direction, 5.3](./05-art-direction.md#53-steps-for-each-card)). Implemented values come from `packages/rules/src/content/cards.ts`. Values marked **provisional** are design inputs until the rules package implements and simulates them. When a card exists in `cards.ts` and its line here is **provisional**, `cards.ts` keeps the previous values until that line is implemented. The card names and flavor text move to the `en-US` Message Catalog with implementation. The art must agree with them.
+This document gives the gameplay draft and art brief for each Creature Card in the v1 set, and for each implemented Skill Card. Use it for step 1 of the AI art workflow ([05 — Art and Audio Direction, 5.3](./05-art-direction.md#53-steps-for-each-card)). This document does not keep the image prompts of Creature Cards: `bun creature:prompts` makes them from the briefs ([05, 5.2](./05-art-direction.md#52-prompts-for-creature-cards)). Implemented values come from `packages/rules/src/content/cards.ts`. Values marked **provisional** are design inputs until the rules package implements and simulates them. When a card exists in `cards.ts` and its line here is **provisional**, `cards.ts` keeps the previous values until that line is implemented. The card names and flavor text move to the `en-US` Message Catalog with implementation. The art must agree with them.
 
 The provisional set is budget-valid and simulation-ready. It is not balance-approved. Balance approval needs the main Matchups and Stage simulations in GDD 13 after implementation.
 
@@ -12,7 +12,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Facing.** A Creature Card and a Token advance to the right of the image, in a three-quarter view. The chest and the lead foot point right. The face and the weapon may turn. A fortification shows its blocking face to the right. Forward in a pose means this direction. The card art and the Unit cut-out share it. See [ADR-0014](../adr/0014-creature-card-paintings-advance-to-the-right.md). A Skill Card has no Unit. When it shows travel, a throw, or a back view, that travel still goes to the right.
 - **Size.** Portrait 3:4 (card art is 768 × 1024).
 - **Gender.** The flavor text sets the gender of some figures. For the other figures, this document selects a gender, so that the set has a balanced mix.
-- **Creature Cards** use the template in 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
+- **Creature Cards** use the prompts of 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the template in 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
 - **Provisional power.** A Summon or a Last Breath that summons uses 80% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
 - **Power Budget `12 + 3 × Countdown`.** The Human, Orc, Goblin and Feral values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Elf, Undead and Token values are not in `cards.ts` yet, and they still use the old budget `6 + 5 × Countdown`. Fit them to the new budget when they come into the rules package.
@@ -50,15 +50,6 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 | Humor note | He is very proud of a farm tool. |
 | Setting | A muddy village road at the edge of the river town. |
 
-```text
-young eager farm man with a big proud smile, padded jacket too large for him, cooking pot as a helmet, holding a pitchfork forward like a spear and pointing at it,
-Human of Heynbord, standing tall and proud, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, royal blue and gold palette,
-light from the upper left, muddy village road at the edge of a river town, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 2.2 Shieldbearer
 
 `human.shieldbearer` · Frontliner · Common · Countdown 2 · Attack 1 · HP 7 · Melee · Physical · Armor 1 · Knockback 1 at Common, 2 at Epic, 3 at Legendary
@@ -74,15 +65,6 @@ portrait 3:4 composition, no text, no frame
 | Silhouette hook | The large round shield that covers most of her body. |
 | Humor note | The shield has many visible dents, but she is not worried. |
 | Setting | A stone bridge over the river. |
-
-```text
-strong calm woman soldier, mail shirt and simple steel cap, large round shield covered in many dents with faded paint, short sword held low,
-Human of Heynbord, slight crouch behind the shield, wide stance, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, royal blue and gold palette,
-light from the upper left, stone bridge over a river town, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 2.3 Crossbow Guard
 
@@ -100,15 +82,6 @@ portrait 3:4 composition, no text, no frame
 | Humor note | Her body is perfect for the shot, but her face is half asleep. |
 | Setting | The top of a town wall, with a banner behind her. |
 
-```text
-sleepy woman town guard, blue tabard with gold trim, crooked kettle hat, quiver of bolts at the hip, aiming a crossbow steady and true with one eye half closed and a small yawn,
-Human of Heynbord, aiming pose, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, royal blue and gold palette,
-light from the upper left, top of a river town wall with a banner, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 2.4 Halberdier
 
 `human.halberdier` · Striker · Common · Countdown 3 · Attack 4 · HP 6 · Melee · Physical · Retaliation
@@ -124,15 +97,6 @@ portrait 3:4 composition, no text, no frame
 | Silhouette hook | The tall halberd blade with the banner. |
 | Humor note | He protects the banner as if it is his child. |
 | Setting | A town square with banners. |
-
-```text
-veteran man soldier with a grey mustache and stern face, breastplate over a padded coat, halberd with a small blue and gold banner tied below the blade,
-Human of Heynbord, ready guard pose about to strike back, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, royal blue and gold palette,
-light from the upper left, river town square with banners, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 2.5 Dawn Cleric
 
@@ -150,15 +114,6 @@ portrait 3:4 composition, no text, no frame
 | Humor note | She sings very loudly. A small bird near her covers its head with a wing. |
 | Setting | A riverbank at sunrise. |
 
-```text
-cheerful round-faced woman priest singing loudly with her mouth wide open and one arm raised, white and blue robes with gold trim, staff topped with a glowing sun disc, small gold sparks around her, a small bird nearby covering its head with a wing,
-Human of Heynbord, singing pose, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, royal blue and gold palette, gold-yellow holy glow,
-light from the upper left, riverbank at sunrise, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 2.6 River Knight
 
 `human.riverKnight` · Runner · Uncommon · Countdown 4 · Attack 4 · HP 6 · Speed 2 · Melee · Physical · Charge
@@ -175,15 +130,6 @@ portrait 3:4 composition, no text, no frame
 | Humor note | The horse is brave and happy. The knight is nervous. |
 | Setting | A shallow river ford, with water splashing. |
 
-```text
-young nervous man knight in light plate armor with visor up, wide eyes, leaning back and gripping the reins, lance pointing forward, riding a big bold joyful warhorse with a blue and gold horse cloth,
-Human of Heynbord, galloping charge through splashing water, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, royal blue and gold palette,
-light from the upper left, shallow river ford, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 2.7 Gate Warden
 
 `human.gateWarden` · Frontliner · Uncommon · Countdown 3 · Attack 3 · HP 7 · Melee · Physical · Pivot
@@ -199,15 +145,6 @@ portrait 3:4 composition, no text, no frame
 | Silhouette hook | The sideways glaive and the ring of keys. |
 | Humor note | She sees everything, also behind her. |
 | Setting | A large town gate with a portcullis. |
-
-```text
-tall sharp-eyed woman gate guard, long blue coat over mail, gold gate badge, large iron ring of keys at her belt, chest and lead foot advancing to the right, glaive sweeping out to the side,
-Human of Heynbord, looking back over her shoulder, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, royal blue and gold palette,
-light from the upper left, large river town gate with a portcullis, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 2.8 Iron Bulwark
 
@@ -227,15 +164,6 @@ Purpose: the archetypal Human Epic and strongest defensive Creature Card.
 | Humor note | He is like a wall, but he complains about a small rain cloud. |
 | Setting | A stone town wall in light rain. |
 
-```text
-old stout-folk man, short and very broad, grey beard under a heavy helmet, very heavy full plate armor with ornate gold trim, tall spiked tower shield, heavy mace, frowning up at a small rain cloud that rains only on him,
-Human of Heynbord, standing firm behind the shield, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, royal blue and gold palette,
-light from the upper left, stone river town wall in light rain, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 2.9 Town Barricade
 
 `human.townBarricade` · Wall · Common · Countdown 1 · Attack 0 · HP 15 · Speed 0 · Melee · Physical · Wall
@@ -253,14 +181,6 @@ Purpose: a cheap Lane block. Power 15, budget 15, deviation 0%.
 | Silhouette hook | Crossed beams and the pot helmet. |
 | Humor note | Permit papers wait behind the barricade. |
 | Setting | A stone bridge in the river town. |
-
-```text
-rough timber town barricade filling a narrow stone lane, crossed beams, sandbags, one dented round shield, blue cloth strips, cooking-pot helmet on top, permit papers behind it,
-Human fortification of Heynbord, broad clear blocking shape, blocking face to the right, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, royal blue and gold palette,
-light from the upper left, stone bridge over a calm river, simple low-contrast background,
-portrait 3:4 composition, no readable text, no frame
-```
 
 ### 2.10 Bridge Pikeman
 
@@ -280,14 +200,6 @@ Purpose: a Striker that pushes the enemy off the bridge. Power 21, budget 21, de
 | Humor note | The queue markers behind her are perfectly straight. |
 | Setting | A river-town bridge checkpoint. |
 
-```text
-focused woman bridge soldier in a mail coat with a blue sash and small brass shoulder guards, a forward thrust with a very long pike, neat queue markers behind her,
-Human of Heynbord, forward thrust, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, royal blue and gold palette,
-light from the upper left, river-town bridge checkpoint, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 2.11 Banner Chaplain
 
 `human.bannerChaplain` · Support · Uncommon · Countdown 3 · Attack 2 · HP 6 · Speed 1 · Range 2 · Holy · Rally 1
@@ -305,14 +217,6 @@ Purpose: a low-cost Rally source and Holy attacker. Power 20, budget 21, deviati
 | Silhouette hook | Tall banner and round sun disc. |
 | Humor note | His speech scroll crosses the ground. |
 | Setting | A river-town square. |
-
-```text
-stout enthusiastic man chaplain in white and blue robes with gold trim, raising a tall banner-staff topped with a glowing sun disc, long speech scroll unrolling across the ground, nearby guards standing taller,
-Human of Heynbord, commanding pose, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, royal blue and gold palette, soft gold-yellow holy glow,
-light from the upper left, river-town square with banners, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 2.12 King's Courier
 
@@ -332,14 +236,6 @@ Purpose: maximum Human Speed with less Attack than River Knight. Power 24, budge
 | Humor note | A tired horse watches her pass. |
 | Setting | A bridge and riverside road. |
 
-```text
-lean woman royal courier in a blue riding coat with ornate gold clasps, sealed scroll case at her hip, sprinting at extreme speed with a short spear forward, loose papers and water spray behind her, tired horse watching,
-Human of Heynbord, fast forward-running pose, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, royal blue and gold palette,
-light from the upper left, river-town bridge and riverside road, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 2.13 Pavise Arbalist
 
 `human.paviseArbalist` · Shooter · Rare · Countdown 4 · Attack 3 · HP 4 · Speed 1 · Range 4 · Physical · Armor 1 · Hobble 1 at Rare, 2 at Epic, 3 at Legendary
@@ -357,14 +253,6 @@ Purpose: a durable long-range Shooter. Power 24, budget 24, deviation 0%.
 | Silhouette hook | Tall shield and horizontal crossbow. |
 | Humor note | A stool and tea cup wait behind the shield. |
 | Setting | A river-town wall. |
-
-```text
-patient older man arbalist with mail sleeves, kneeling behind a tall ornate blue and gold pavise, aiming a heavy windlass crossbow loaded with barbed bolts, bolt case nearby, small stool and tea cup behind the shield,
-Human of Heynbord, steady protected firing pose, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, royal blue and gold palette,
-light from the upper left, top of a river-town wall, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 2.14 Dawn Reliquary
 
@@ -384,14 +272,6 @@ Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves
 | Humor note | One candle stays upright despite the damage. |
 | Setting | A stone approach to a river-town temple. |
 
-```text
-large armored roadside reliquary standing across a stone lane like a sealed gate, thick oak doors with ornate steel bands, round gold sun emblem, blue prayer cloths and candles, cracks releasing holy light, one candle perfectly upright,
-Human sacred fortification of Heynbord, tall broad blocking shape, blocking face to the right, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, royal blue and gold palette, strong gold-yellow holy glow,
-light from the upper left, stone approach to a river-town temple, simple low-contrast background,
-portrait 3:4 composition, no readable text, no frame
-```
-
 ### 2.15 Marshal Elian Voss (draft)
 
 `human.marshalElianVoss` · Support · Epic · Countdown 6 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Armor 1 · Rally 2 · Unique
@@ -409,14 +289,6 @@ Purpose: the named Human Epic and Rally capstone. Power 30, budget 30, deviation
 | Silhouette hook | Raised sword, square shoulders and tall banner. |
 | Humor note | Six prepared speeches hang from his belt. |
 | Setting | A bridge under attack. |
-
-```text
-Marshal Elian Voss, tall older human officer with a close grey beard, blue officer coat over fitted plate with ornate gold trim, raising a command sword that sends a holy arc forward, planting a forked sun-banner, six rolled speeches at his belt, soldiers reforming behind him,
-Human of Heynbord, heroic commanding stance on broken bridge stones, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, dramatic Epic composition, clean silhouette, royal blue and gold palette,
-light from the upper left, river-town bridge under attack with banners and river spray, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ## 3. Orc Creature Cards
 
@@ -440,15 +312,6 @@ Purpose: a one-HP trade. Last Breath 1 hits the nearest enemy Unit ahead when it
 | Humor note | It is very small, but it acts very fierce. |
 | Setting | Dusty red ground in the badlands. |
 
-```text
-young badland wolf pup with very big ears and big paws, spiked leather collar too big for it, orange war paint stripes, mouth open ready to bite,
-Orc of Heynbord, leaping forward with dust behind it, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, burnt orange and dark red palette,
-light from the upper left, dusty red badlands ground, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.2 Scrap Raider
 
 `orc.scrapRaider` · Runner · Common · Countdown 2 · Attack 3 · HP 4 · Speed 2 · Melee · Physical · Heroic 1 · Last Breath 1
@@ -467,15 +330,6 @@ Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, 
 | Humor note | He wears many stolen shiny things, also a spoon as an earring. |
 | Setting | A badland trail. |
 
-```text
-thin fast orc man with a big grin, scrap-metal armor, many stolen rings and necklaces, a spoon as an earring, cleaver in one hand, large sack full of shiny spoons and pans over his shoulder,
-Orc of Heynbord, running forward, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, burnt orange and dark red palette,
-light from the upper left, red badlands trail, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.3 Ember Shaman
 
 `orc.emberShaman` · Shooter · Common · Countdown 3 · Attack 4 · HP 6 · Range 3 · Fire
@@ -491,15 +345,6 @@ portrait 3:4 composition, no text, no frame
 | Silhouette hook | The ladle and the round pot. |
 | Humor note | She uses the same ladle for soup and for fire. |
 | Setting | A badland camp at dusk, with a campfire. |
-
-```text
-big kind-faced orc woman, apron over fur robes, bone beads, flinging a ball of fire from a large wooden ladle, cooking pot over a fire beside her, orange-red embers,
-Orc of Heynbord, throwing pose, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, burnt orange and dark red palette,
-light from the upper left, badland camp at dusk with a campfire, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 3.4 Howling Charger
 
@@ -517,15 +362,6 @@ portrait 3:4 composition, no text, no frame
 | Humor note | Lines in the air show the scream. Small rocks shake. |
 | Setting | Open badlands with a dust cloud. |
 
-```text
-war boar with big iron-capped tusks, no rider, orc war banner tied to its back with leather straps, head low, mouth open in a loud scream, big dust cloud,
-Orc of Heynbord, charging forward at full speed, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, burnt orange and dark red palette,
-light from the upper left, open red badlands, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.5 Skyreaver
 
 `orc.skyreaver` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Flying · Heroic 1
@@ -541,15 +377,6 @@ portrait 3:4 composition, no text, no frame
 | Silhouette hook | The wide wing span and the hat. |
 | Humor note | It is very proud of its stolen hats. |
 | Setting | A badland sky above mesas. |
-
-```text
-large vulture-like bird with a bald head and wide wings, orange and red tribal paint on the wings, wearing a fancy stolen feathered hat, holding another stolen hat in its talons,
-Orc of Heynbord, flying with wings fully spread, diving forward, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, burnt orange and dark red palette,
-light from the upper left, badland sky above red mesas, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 3.6 Pack Stalker
 
@@ -569,15 +396,6 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, d
 | Humor note | It grins as if it knows a secret about you. |
 | Setting | Tall dry grass in the badlands. |
 
-```text
-lean striped hyena with a sloped back, leather harness with small bone charms, orange paint marks, sly grin, chest pointing right, head turned back over its shoulder,
-Orc of Heynbord, low stalking crouch, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, burnt orange and dark red palette,
-light from the upper left, tall dry grass in the red badlands, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.7 Tusk Brute
 
 `orc.tuskBrute` · Striker · Common · Countdown 4 · Attack 5 · HP 7 · Melee · Physical · Heroic 2
@@ -594,15 +412,6 @@ portrait 3:4 composition, no text, no frame
 | Humor note | The door is still on its hinges, but she is through it. |
 | Setting | A broken door of a fort. |
 
-```text
-very big strong orc woman with large tusks, rough iron shoulder plates, fur belt, big wooden club, smashing through a wooden door with splinters flying around her,
-Orc of Heynbord, stepping forward through the broken door, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, burnt orange and dark red palette,
-light from the upper left, broken fort door in the badlands, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.8 Warchief Grukka
 
 `orc.warchiefGrukka` · Striker · Epic · Countdown 6 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge · Heroic 2 · Unique
@@ -611,35 +420,28 @@ portrait 3:4 composition, no text, no frame
 
 | Field | Brief |
 | --- | --- |
-| Subject | Grukka, the warchief: a huge, old, happy orc man. See the character sheet in 3.8.1. |
-| Pose | He jumps down from a rock to charge, with his axe high. He bites a roast leg in his other hand. |
-| Props | A big double axe, a roast leg, a skull-and-horn helmet, a war cloak. |
-| Gameplay cues | Charge: a jump into battle. Heroic 2: he looks far ahead, at the enemy Hero. Epic: a heroic scene with war banners and drums behind him. |
-| Silhouette hook | The horned helmet, the high axe and the roast leg. |
-| Humor note | He is in the middle of a heroic charge, and he still eats his lunch. |
-| Setting | A badland cliff with tribe banners and war drums behind him. |
+| Subject | Grukka, the warchief: a huge, old, happy orc woman. She is the leader of all the tribes. See the character sheet in 3.8.1. |
+| Pose | She jumps down from a high rock ledge to charge, in the air above the battle. Her lead foot points right. Her axe is high above her head. She bites a roast leg in her other hand. Her long cloak opens behind her like a banner. |
+| Props | A big double axe with gold inlay, a roast leg, a beast-skull helmet with two curved horns, a long dark red war cloak with a fur mantle, a necklace of gold-ringed trophy tusks. |
+| Gameplay cues | Charge: she jumps into battle, and dust and small rocks fall from the ledge. Heroic 2: she looks far ahead to the right, at the enemy Hero. Unique: she is the only orc with a horned skull helmet and a trophy-tusk necklace. Epic: a heroic scene. Her warband cheers on the cliff behind her, with tall tribe banners and big war drums. |
+| Silhouette hook | The two horns, the high axe, the roast leg and the open cloak, in the air against the sky. |
+| Humor note | She is in the middle of a heroic charge, and she still eats her lunch. Her warriors below hold out more food for her. |
+| Setting | The top of a badland cliff at sunset, with a big orange sky. |
 
 #### 3.8.1 Character sheet: Warchief Grukka
 
 | Item | Description |
 | --- | --- |
-| Body | Very large and wide, with a big belly and very strong arms. He is older: some grey in his braided beard. |
-| Face | A big happy grin, large tusks with gold rings, small kind eyes, a scar across his nose. |
-| Head | A helmet made from a big beast skull with two curved horns. |
-| Clothes | A dark red war cloak with a fur collar, leather and rough iron armor, a wide belt with a big iron buckle. |
-| Colors | Burnt orange skin paint and dark red cloth. Gold only on the tusk rings, the buckle and the axe. |
-| Signature props | A big double axe in his right hand. A roast leg in his left hand. He always has food. |
-| Key shapes | The two horns, the round belly, the double axe. |
-| Personality | Loud, warm and hungry. His warriors love him. He never hurries lunch. |
-
-```text
-Warchief Grukka, huge old happy orc man with a big belly, braided beard with some grey, large tusks with gold rings, scar across his nose, beast-skull helmet with two curved horns, dark red war cloak with fur collar, raising a big double axe in his right hand and biting a roast leg in his left hand,
-Orc of Heynbord, leaping down from a rock into a heroic charge, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette,
-soft brush texture, burnt orange and dark red palette,
-light from the upper left, badland cliff with tribe banners and war drums behind him, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
+| Body | Very large and wide, round and heavy, with a big belly and very strong arms. She is old, much older than the other orcs. |
+| Face | A big happy grin with large tusks that have gold rings. Small kind eyes with deep laugh lines. A scar across her nose. Three burnt-orange paint stripes on each cheek. |
+| Hair | Long grey-white hair in thick braids, with bone beads and gold beads. The braids come out below the helmet. |
+| Head | A helmet made from a big beast skull with two large curved horns. The horns are the tallest shape in the image. |
+| Clothes | Heavy rough-iron and leather armor that covers her chest and belly. A long dark red war cloak with a thick fur mantle on the shoulders. A wide belt with a big gold buckle. |
+| Colors | Dark red cloth and gold are the main colors. Burnt orange skin paint. Grey-white hair. Gold on the tusk rings, the beads, the buckle, the trophy tusks and the axe. |
+| Signature props | A big double axe in her right hand. A roast leg in her left hand. She always has food. |
+| Key shapes | The two horns, the round belly, the double axe, the open cloak. |
+| Personality | Loud, warm and hungry. Her warriors love her. She never hurries lunch. |
+| Not Tusk Brute | Grukka must not look like the Tusk Brute. No door, no club, no bare stomach, no young muscular body, no brown leather top, no low camera angle. Show her at eye level, in the air, in a three-quarter view. |
 
 ### 3.9 Dusthide Brawler
 
@@ -659,14 +461,6 @@ Purpose: limited Orc Lane protection without Armor. Power 17, budget 18, deviati
 | Humor note | He thinks enemy threats are cheers. |
 | Setting | An Orc camp between red rocks. |
 
-```text
-broad sturdy orc man with a pleased grin, worn hide vest and rough belt, holding a short wooden cudgel, feet planted wide in a camp entrance,
-Orc of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, burnt orange and dark red palette,
-light from the upper left, red badland camp entrance, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.10 Cinderhorn Ram
 
 `orc.cinderhornRam` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Fire · Charge
@@ -684,14 +478,6 @@ Purpose: a fast Fire attacker. Power 22, budget 21, deviation +4.8%.
 | Silhouette hook | Large curled horns and low head. |
 | Humor note | An open gate stands beside the broken fence. |
 | Setting | A badland livestock enclosure. |
-
-```text
-muscular badland ram with black wool, large curled horns with glowing ember-red tips, charred leather harness and iron horn rings, charging through a wooden fence beside an open gate, broken boards and embers flying,
-Orc of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, burnt orange and dark red palette, orange-red fire accents,
-light from the upper left, badland livestock enclosure, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 3.11 Warhowler Drummer
 
@@ -711,14 +497,6 @@ Purpose: a low-Countdown rush enabler. Power 17, budget 18, deviation -5.6%.
 | Humor note | One warrior covers his ears while charging. |
 | Setting | A trail between mesas. |
 
-```text
-compact fierce orc woman with a joyful howl, worn leather gear with red feather trim, hide drum at her hip, two bone drumsticks raised, blurred warriors rushing behind her and one covering his ears,
-Orc of Heynbord, marching forward, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, burnt orange and dark red palette,
-light from the upper left, red badland trail between mesas, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.12 Ashspit Hunter
 
 `orc.ashspitHunter` · Shooter · Rare · Countdown 4 · Attack 3 · HP 4 · Speed 1 · Range 4 · Fire
@@ -736,14 +514,6 @@ Purpose: a long-range Fire threat. Power 23, budget 24, deviation -4.2%.
 | Silhouette hook | Horizontal tube and ember basket. |
 | Humor note | His remaining eyebrow shows concern. |
 | Setting | A ledge above a canyon. |
-
-```text
-lean orc man with one singed eyebrow, decorated leather coat, bracing a long rough-iron fire tube connected to an ember basket, narrow jet of flame toward a distant target,
-Orc of Heynbord, steady ranged pose, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, burnt orange and dark red palette, orange-red fire accents,
-light from the upper left, high ledge above a red badland canyon, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 3.13 Mesa Pit-Fighter
 
@@ -763,14 +533,6 @@ Purpose: an aggressive Frontliner that protects through threat. Power 24, budget
 | Humor note | Tally marks count her attackers. |
 | Setting | A red-stone fighting pit. |
 
-```text
-tall heavily muscled orc woman with a broken-tusk grin, red pit sash, ornate rough-iron hooked gauntlets with tally marks, advancing to the right, absorbing a strike on one arm while the counter-punch goes to the right,
-Orc of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, soft brush texture, burnt orange and dark red palette,
-light from the upper left, circular fighting pit cut into red stone, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.14 Pyreaxe Ravager
 
 `orc.pyreaxeRavager` · Striker · Rare · Countdown 5 · Attack 4 · HP 5 · Speed 1 · Melee · Fire · Heroic 2
@@ -789,14 +551,6 @@ Purpose: a heavy Fire finisher. Power 28, budget 27, deviation +3.7%.
 | Humor note | The axe also roasts one mushroom. |
 | Setting | A burning fort barricade. |
 
-```text
-fierce orc woman with a high dark-red hair crest, ornate rough-iron gear and scorched cloak, raising a large two-handed axe with ember-filled grooves and a burning blade, one roasted mushroom on a small attached skewer,
-Orc of Heynbord, advancing toward a distant enemy, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, clean silhouette, burnt orange and dark red palette, orange-red fire accents,
-light from the upper left, burning barricade before a badland fort, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 3.15 Warband Standard-Bearer
 
 `orc.warbandStandardBearer` · Support · Epic · Countdown 6 · Attack 2 · HP 4 · Speed 1 · Melee · Physical · Charge · Heroic 2 · Rally 2
@@ -814,14 +568,6 @@ Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero p
 | Silhouette hook | Very tall forked banner. |
 | Humor note | The banner and warband point in different directions. |
 | Setting | An Epic badland ridge assault. |
-
-```text
-huge confident orc man with braided black hair, ornate rough-iron armor and dark-red fur cloak, carrying a monumental hide war standard with horned crossbar and trophy shields, charging downhill to the right while the warband follows to the right, the banner cloth points back the other way,
-Orc of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly fantasy card illustration, bright warm light, dramatic Epic composition, clean silhouette, burnt orange and dark red palette,
-light from the upper left, badland ridge assault with drums and banners, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ## 4. Elf Creature Cards
 
@@ -845,14 +591,6 @@ Purpose: an Elf Lane anchor. Power 20, budget 21, deviation -4.8%.
 | Humor note | A snail uses it as a milestone. |
 | Setting | An ancient forest path. |
 
-```text
-broad old plant guardian rooted across a forest path, bark cuirass, large leaf shield and short branch spear, roots around a boot-shaped training post, snail on one shoulder,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient green forest, amber light from the upper left, clean square silhouette, plain Common detail,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 4.2 Bramble Duelist
 
 `elf.brambleDuelist` · Striker · Common · Countdown 2 · Attack 4 · HP 4 · Speed 2 · Melee · Physical
@@ -870,14 +608,6 @@ Purpose: a simple fast Elf attacker. Power 16, budget 16, deviation 0%.
 | Silhouette hook | Narrow rapier line. |
 | Humor note | She duels a hedge that holds a wooden spoon. |
 | Setting | A forest clearing. |
-
-```text
-young elegant elf woman making a quick fencing lunge, worn green coat and slender thorn rapier, loose leaves trailing, dueling a bramble hedge that holds a wooden spoon, calm deadpan expression,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient green forest clearing, amber light from the upper left, clean narrow silhouette,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 4.3 Fernwing Courier
 
@@ -897,17 +627,9 @@ Purpose: cheap Flying Hero pressure. Power 17, budget 16, deviation +6.3%.
 | Humor note | A sandwich shows from the parcel. |
 | Setting | The high forest canopy. |
 
-```text
-small elegant leaf spirit courier diving between branches, broad fern wings spread in a V, tiny worn satchel and sealed parcel with a sandwich corner visible, serious official expression,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient green forest canopy, amber light from the upper left, clean flying silhouette, plain Common detail,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
+### 4.4 Mosspitcher Lookout
 
-### 4.4 Mossbow Lookout
-
-`elf.mossbowLookout` · Shooter · Common · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 4 · Physical · Entangle
+`elf.mosspitcherLookout` · Shooter · Common · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 4 · Physical · Entangle
 
 > He can hear a boot step. He cannot hear advice.
 
@@ -915,21 +637,13 @@ Purpose: long-range movement control. Power 20, budget 21, deviation -4.8%.
 
 | Field | Brief |
 | --- | --- |
-| Subject | An elf man scout. |
-| Pose | He kneels for a long bow shot. |
-| Props | Moss-covered longbow, leaf cloak and vine arrow. |
-| Gameplay cues | The vine arrow shows Entangle. |
-| Silhouette hook | Long horizontal bow. |
-| Humor note | A bird gives advice beside his ear. |
+| Subject | A squat pitcher-plant spirit with a mossy body. No bow. |
+| Pose | He leans forward and spits a sticky moss ball in a high arc to the right. His root toes spread flat on the planks to feel for boot steps. |
+| Props | Pitcher-shaped body with a leaf lid like a hat, moss coat, root toes and a small cluster of moss balls. |
+| Gameplay cues | The moss ball bursts into grabbing vines at the target: Entangle. The high arc shows range. |
+| Silhouette hook | A tall pitcher body with a tilted lid. |
+| Humor note | A small bird sits on his lid and gives advice. He holds the lid shut on that side. |
 | Setting | A high root platform. |
-
-```text
-elegant elf man lookout kneeling on a high root platform, plain leaf cloak and moss-covered longbow, drawing a vine-wrapped arrow, small bird loudly advising beside his ear,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient green forest, amber light from the upper left, clean longbow silhouette,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 4.5 Acorn Tender
 
@@ -949,14 +663,6 @@ Purpose: a Holy shooter that applies Poison. Power 20, budget 21, deviation -4.8
 | Humor note | She glares at an acorn as if it is late. |
 | Setting | A nursery grove. |
 
-```text
-elder elegant elf woman gardener raising one softly glowing acorn, plain green robe, crooked watering can and small pruning knife coated in green sap, a leaf wilting where the knife passed, stern look at another unopened acorn,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient forest nursery, amber and gentle holy light from the upper left, clean silhouette,
-soft brush texture, leaf green and pale gold palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 4.6 Glade Turnblade
 
 `elf.gladeTurnblade` · Striker · Uncommon · Countdown 3 · Attack 5 · HP 5 · Speed 1 · Melee · Physical · Pivot
@@ -974,14 +680,6 @@ Purpose: the Elf Pivot Unit. Power 20, budget 21, deviation -4.8%.
 | Silhouette hook | Circular blade path. |
 | Humor note | Two practice dummies both think they are first. |
 | Setting | A forked forest path. |
-
-```text
-elegant elf man guard, chest and lead foot advancing to the right, looking back in a precise cut, crescent glaive sweeping behind him, green coat with amber trim, alert eyes checking front and rear, two practice dummies on opposite sides,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient forest forked path, amber light from the upper left, circular action silhouette,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 4.7 Canopy Skirmisher
 
@@ -1001,14 +699,6 @@ Purpose: mobile pressure with fragile stats. Power 20, budget 21, deviation -4.8
 | Humor note | An unused rope ladder hangs behind her. |
 | Setting | A canopy bridge. |
 
-```text
-elegant elf woman skirmisher diving from the canopy, leaf-glider wings spread wide, short spear forward, green harness with amber trim, unused rope ladder behind her, calm practical expression,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient green forest canopy bridge, amber light from the upper left, clean triangular silhouette,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 4.8 Thornline Archer
 
 `elf.thornlineArcher` · Shooter · Uncommon · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 4 · Physical · Poison
@@ -1026,14 +716,6 @@ Purpose: reliable ranged Poison. Power 21, budget 21, deviation 0%.
 | Silhouette hook | Hooked bow shape. |
 | Humor note | A flower on his training post has wilted. |
 | Setting | A woodland firing line. |
-
-```text
-elegant elf man archer making a composed standing shot, recurved thorn bow with amber trim, arrow leaving a green sap trail toward a distant training post, perfectly formal posture,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient woodland firing line, amber light from the upper left, clean hooked-bow silhouette,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 4.9 Dewkeeper
 
@@ -1053,14 +735,6 @@ Purpose: a durable Holy support. Power 20, budget 21, deviation -4.8%.
 | Humor note | One bottle in her orderly set is ignored. |
 | Setting | A misty grove. |
 
-```text
-elegant elf woman dewkeeper lifting a crystal bowl of luminous morning dew, reed staff and green robe with amber trim, holy droplets closing a small wound, ordered bottles with one ignored,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient misty forest, amber light from the upper left, clear bowl-and-staff silhouette,
-soft brush texture, leaf green and pale gold palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 4.10 Bramble Nest
 
 `elf.brambleNest` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 19 · Speed 0 · Melee · Physical · Wall · Regeneration 1
@@ -1078,14 +752,6 @@ Purpose: a Wall that grows back. Power 21, budget 21, deviation 0%.
 | Silhouette hook | Wide fixed arch. |
 | Humor note | A direction sign points into the hedge. |
 | Setting | An old forest road. |
-
-```text
-dense living bramble nest rooted across an old forest road, broad thorn arch with seed pods and amber ribbons, fresh green shoots closing a cut in the arch, blank direction sign pointing into the hedge,
-Elf fortification of Heynbord, blocking face to the right, centered,
-painterly storybook fantasy card illustration, ancient green forest, amber light from the upper left, wide immovable silhouette,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 4.11 Amberwing Dart
 
@@ -1105,17 +771,9 @@ Purpose: fast Flying control with very low HP. Power 21, budget 21, deviation 0%
 | Humor note | One wing has a window-shaped repair. |
 | Setting | A canopy gap. |
 
-```text
-elegant dragonfly plant spirit in a steep attack dive, four ornate leaf wings with amber veins, thorn lance at its head, fine vines trailing toward a target, one wing with a window-shaped repair,
-Elf spirit of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient forest canopy gap, amber light from the upper left, crisp crossed-wing silhouette, Rare ornate detail,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
+### 4.12 Elderreed Dartmaster
 
-### 4.12 Elderbranch Bowmaster
-
-`elf.elderbranchBowmaster` · Shooter · Rare · Countdown 4 · Attack 5 · HP 5 · Speed 1 · Range 5 · Physical · Poison
+`elf.elderreedDartmaster` · Shooter · Rare · Countdown 4 · Attack 5 · HP 5 · Speed 1 · Range 5 · Physical · Poison
 
 > She waits for the perfect shot. Lunch waits too.
 
@@ -1123,21 +781,13 @@ Purpose: maximum-range Poison. Power 25, budget 26, deviation -3.8%.
 
 | Field | Brief |
 | --- | --- |
-| Subject | An older elf woman master archer. |
-| Pose | She draws from a high branch. |
-| Props | Ornate branch bow, metal fittings and a long poisoned arrow. |
-| Gameplay cues | The long sight line shows Range 5. Green sap on the arrow shows Poison. |
-| Silhouette hook | Tall bow. |
+| Subject | An older elf woman, a master of the blowpipe. No bow. |
+| Pose | She crouches along a high branch and aims a very long reed blowpipe to the right, with calm cheeks and one eye closed. |
+| Props | Reed blowpipe longer than she is tall with gold-metal bands, a belt case of thorn darts and a layered green cloak. |
+| Gameplay cues | The long straight blowpipe shows Range 5. Green sap on the thorn darts shows Poison. |
+| Silhouette hook | One very long, thin horizontal line. |
 | Humor note | Squirrels inspect her untouched picnic. |
 | Setting | The crown canopy. |
-
-```text
-older elegant elf woman bowmaster drawing an ornate living-branch longbow from a high perch, gold-metal fittings and layered green cloak, long arrow with a green sap drip aimed through distant trees, untouched picnic inspected by squirrels,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient crown canopy, amber light from the upper left, strong tall-bow silhouette, Rare ornate detail,
-soft brush texture, leaf green and amber palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 4.13 Seedwind Shepherd
 
@@ -1157,39 +807,23 @@ Purpose: a durable Flying healer. Power 25, budget 26, deviation -3.8%.
 | Humor note | He directs seeds like road traffic. |
 | Setting | A canopy wind corridor. |
 
-```text
-elegant elf man seedwind shepherd floating beneath a translucent seed sail, ornate seed staff and green cloak with gold trim, holy dew closing a cut on his arm, guiding other seeds with a tiny baton, broad sturdy frame,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ancient forest wind corridor, amber holy light from the upper left, clean sail-and-staff silhouette, Rare detail,
-soft brush texture, leaf green and pale gold palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
+### 4.14 Canopy Vinewarden
 
-### 4.14 Canopy Longbow Guard
+`elf.canopyVinewarden` · Shooter · Epic · Countdown 5 · Attack 6 · HP 7 · Speed 1 · Range 5 · Physical · First Strike · Entangle
 
-`elf.canopyLongbowGuard` · Shooter · Epic · Countdown 5 · Attack 6 · HP 7 · Speed 1 · Range 5 · Physical · First Strike · Entangle
-
-> The warning shot was yesterday.
+> The warning was yesterday.
 
 Purpose: the archetypal Elf Epic: maximum range and approach denial. Power 32, budget 31, deviation +3.2%.
 
 | Field | Brief |
 | --- | --- |
-| Subject | An elf woman canopy sentinel. |
-| Pose | She draws at an attacker below. |
-| Props | Monumental living longbow and layered leaf armor. |
-| Gameplay cues | The ready shot shows First Strike; the vine arrow shows Entangle. |
-| Silhouette hook | A dramatic bow arc. |
-| Humor note | A second warning arrow is already beside a broken bell. |
+| Subject | An elf woman canopy sentinel who commands the living gate. No bow. |
+| Pose | She stands on the gate arch and thrusts one open hand forward. A huge braid of thorned vines grows from the gate and lashes down to the right at an attacker below. |
+| Props | Layered leaf armor with silver trim, a living vine braid as thick as a tree trunk and a silver bracer on the lead arm. |
+| Gameplay cues | The vines hit before the attacker can lift his axe: First Strike. The vines coil around him: Entangle. The long reach of the vine shows Range 5. |
+| Silhouette hook | A huge S-curve of vine from her hand. |
+| Humor note | Yesterday's warning bell hangs broken in a knot of vine. |
 | Setting | A colossal canopy gate. |
-
-```text
-heroic elegant elf woman canopy sentinel drawing a monumental living longbow at an attacker below, ornate layered leaf armor, powerful vine-wrapped arrow ready, second arrow beside a broken warning bell,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, colossal ancient forest gate, dramatic amber light from the upper left, bold bow-arc silhouette, rich Epic detail,
-soft brush texture, leaf green and gold palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 4.15 Lethiel, First Gardener (draft)
 
@@ -1208,14 +842,6 @@ Purpose: the named Elf Epic and a durable healer. Power 26, budget 26, deviation
 | Silhouette hook | Seed crown and tall staff. |
 | Humor note | Lethiel measures a colossal tree and approves. |
 | Setting | A primeval garden. |
-
-```text
-Lethiel the First Gardener, ancient elegant elf, luminous living staff, ceremonial leaf mantle, seed crown and silver pruning hook, holy light closing a split in the bark beside him, measuring a colossal tree with a tiny ruler and showing restrained approval,
-Elf of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, primeval green forest garden, dramatic amber light from the upper left, bold crown-and-staff silhouette, rich Epic detail,
-soft brush texture, leaf green and pale gold palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ## 5. Undead Creature Cards
 
@@ -1239,14 +865,6 @@ Purpose: a cheap blocker that rewards a crowded Lane. Power 11, budget 11, devia
 | Humor note | He checks that his helper still works. |
 | Setting | A muddy grave path. |
 
-```text
-broad skeleton graveyard laborer in a patched burial coat, bracing behind a blunt shovel, smaller skeleton helper behind him, rusted shoulder plate and rope belt, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, misty Hollow Marches, pale teal moonlight from the upper left, clear broad silhouette,
-soft brush texture, rusted iron and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 5.2 Rattleknife
 
 `undead.rattleknife` · Striker · Common · Countdown 1 · Attack 3 · HP 2 · Speed 1 · Melee · Physical · Swarm 1
@@ -1264,14 +882,6 @@ Purpose: a cheap Swarm attacker. Power 12, budget 11, deviation +9.1%.
 | Silhouette hook | Long arm and forward knife. |
 | Humor note | The empty purse has a painted Coin symbol. |
 | Setting | A crooked marsh toll road. |
-
-```text
-thin skeleton cutpurse lunging with a chipped dinner knife, a smaller skeleton crowding his elbow, worn hood and empty purse with a painted coin symbol, eager bony grin, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, misty Hollow Marches toll road, pale teal moonlight from the upper left, sharp forward silhouette,
-soft brush texture, rusted iron and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no readable text, no frame
-```
 
 ### 5.3 Coffin-Lid Skater
 
@@ -1291,14 +901,6 @@ Purpose: fragile early Hero pressure. Power 10, budget 11, deviation -9.1%.
 | Humor note | A loose cart wheel chases him. |
 | Setting | A wet Marches causeway. |
 
-```text
-small skeleton riding a loose wooden coffin lid to the right down a wet causeway, leaning into the slide, bent spoon used as a rudder, long torn scarf streaming behind him, stray cart wheel chasing, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, misty Hollow Marches, pale teal moonlight from the upper left, strong diagonal silhouette,
-soft brush texture, mud and old wood, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 5.4 Hushbow
 
 `undead.hushbow` · Shooter · Common · Countdown 2 · Attack 2 · HP 2 · Speed 1 · Range 3 · Physical · Summon Skeleton
@@ -1316,14 +918,6 @@ Purpose: a cheap Shooter that summons a Skeleton beside it. Power 16.6, budget 1
 | Silhouette hook | Bow arc and tall quiver. |
 | Humor note | It asks for silence without lips. |
 | Setting | Reed-filled burial ground. |
-
-```text
-skeleton archer wrapped in faded grave cloth, drawing a short bow, bells wrapped to keep them quiet, second skull peering from a bone-filled quiver, finger raised for silence, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, misty burial reeds, pale teal moonlight from the upper left, clear bow silhouette,
-soft brush texture, rusted bracers and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 5.5 Grave Bell Tender
 
@@ -1343,14 +937,6 @@ Purpose: efficient two-body Lane setup. Power 14.6, budget 16, deviation -8.8%.
 | Humor note | The new Skeleton carries a dinner bowl. |
 | Setting | A flooded cemetery. |
 
-```text
-stooped skeleton sexton ringing a large handbell, another small skeleton climbing from soft earth with a dinner bowl, patched cloak and iron key chain, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, flooded Hollow Marches cemetery, pale teal moonlight from the upper left, raised-bell silhouette,
-soft brush texture, rusted metal and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 5.6 Backwatch Bailiff
 
 `undead.backwatchBailiff` · Frontliner · Uncommon · Countdown 2 · Attack 2 · HP 6 · Speed 1 · Melee · Physical · Pivot
@@ -1368,14 +954,6 @@ Purpose: the Undead Pivot Unit. Power 15, budget 16, deviation -6.3%.
 | Silhouette hook | Wide horizontal polearm. |
 | Humor note | It presents a blank permit to a crow. |
 | Setting | A broken marsh checkpoint. |
-
-```text
-tall skeletal road bailiff, chest and feet advancing to the right, skull turned back, hooked polearm sweeping behind, iron key ring and rusted coat with pale teal trim, offering a blank permit to a confused crow,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, misty Hollow Marches checkpoint, pale teal moonlight from the upper left, wide silhouette,
-soft brush texture, rusted iron and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 5.7 Chattering Cohort
 
@@ -1395,14 +973,6 @@ Purpose: the main cheap Swarm attacker. Power 15, budget 16, deviation -6.3%.
 | Humor note | Their free hands point different ways. |
 | Setting | A narrow causeway. |
 
-```text
-three eager skeleton soldiers crowded around one oversized rusted sword, mismatched helmets and pale teal cloth knots, all advancing to the right and leaning forward, free hands pointing different ways, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, narrow misty causeway, pale teal moonlight from the upper left, clear three-skull silhouette,
-soft brush texture, rusted iron and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 5.8 Pale Galloper
 
 `undead.paleGalloper` · Runner · Uncommon · Countdown 2 · Attack 2 · HP 2 · Speed 2 · Melee · Frost · Charge
@@ -1420,14 +990,6 @@ Purpose: fast Frost tempo and Hero pressure. Power 16, budget 16, deviation 0%.
 | Silhouette hook | Small rider over long pony legs. |
 | Humor note | The pony is braver than the rider. |
 | Setting | A frozen marsh ford. |
-
-```text
-nervous skeleton courier leaning backward on a joyful spectral marsh pony charging through shallow ice, frosted saddle, empty scroll tube and rusted cap, pale blue frost spray, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, frozen Hollow Marches ford, pale teal moonlight from the upper left, strong horse-and-rider silhouette,
-soft brush texture, frost and rusted metal, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 5.9 Rime-Eye Archer
 
@@ -1447,14 +1009,6 @@ Purpose: cheap ranged Frost control. Power 15, budget 16, deviation -6.3%.
 | Humor note | A frozen moth rests on her open eye. |
 | Setting | A dead willow bank. |
 
-```text
-skeletal woman archer at full draw, one eye glowing with frost and a frozen moth resting over it, longbow and icy arrow, rusted scale vest with a silver-teal clasp, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, dead willow bank in the Hollow Marches, pale teal moonlight from the upper left, clear ranged silhouette,
-soft brush texture, frost and rusted iron, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 5.10 Ossuary Piper
 
 `undead.ossuaryPiper` · Support · Uncommon · Countdown 2 · Attack 2 · HP 6 · Speed 1 · Melee · Physical · Rally 1
@@ -1472,14 +1026,6 @@ Purpose: a Swarm payoff and Lane support. Power 15, budget 16, deviation -6.3%.
 | Silhouette hook | Fan-shaped pipes. |
 | Humor note | A frog tries to match the tune. |
 | Setting | A marsh funeral road. |
-
-```text
-cheerful broad skeleton musician marching while playing crooked bone pipes, small drum at the hip, pale teal sash and rusted breastplate, nearby skeletons marching with confidence, frog trying to sing, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, misty funeral road, pale teal moonlight from the upper left, fan-shaped pipe silhouette,
-soft brush texture, rusted iron and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 5.11 Coffin Lancer
 
@@ -1499,14 +1045,6 @@ Purpose: a compact persistent blocker. Power 16, budget 16, deviation 0%.
 | Humor note | A pillow remains inside the shield. |
 | Setting | A ruined noble crypt. |
 
-```text
-armored skeleton knight kneeling behind an upright coffin used as a shield, long ornate rusted lance held level, tarnished silver trim, faint pale double-image rising behind, pillow still tied inside the coffin, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, ruined Hollow Marches crypt, pale teal moonlight from the upper left, coffin-and-lance silhouette, Rare detail,
-soft brush texture, rusted iron and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 5.12 Winter Maw
 
 `undead.winterMaw` · Striker · Rare · Countdown 3 · Attack 4 · HP 2 · Speed 1 · Melee · Frost · First Strike · Swarm 1
@@ -1524,14 +1062,6 @@ Purpose: a fragile anti-melee finisher and Swarm payoff. Power 21, budget 21, de
 | Silhouette hook | Open jaws and icy mane. |
 | Humor note | The second hound carries a frozen stick. |
 | Setting | A frost-covered barrow field. |
-
-```text
-large spectral grave hound springing ahead with pale frost around its jaws, second hound behind carrying a frozen stick, ornate broken collar and short rusted chain, dynamic first leap, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, frost-covered barrow field, pale teal moonlight from the upper left, clear hound silhouette, Rare detail,
-soft brush texture, frost and mist, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 5.13 Lantern Widow
 
@@ -1551,14 +1081,6 @@ Purpose: Frost support that creates a mobile second threat. Power 21, budget 21,
 | Humor note | She offers the Wisp tea. |
 | Setting | A sunken manor garden. |
 
-```text
-elegant skeletal widow in a faded mourning dress opening an ornate lantern, pale teal Restless Wisp floating out through frost vapor, rusted silver veil pins, offering an empty teacup, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, sunken Hollow Marches garden, pale teal moonlight from the upper left, tall veil-and-lantern silhouette, Rare detail,
-soft brush texture, old cloth and rusted silver, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 5.14 Sir Odo, the Last Taxman (draft)
 
 `undead.sirOdoLastTaxman` · Striker · Epic · Countdown 4 · Attack 6 · HP 5 · Speed 2 · Melee · Physical · Unique · Rebirth
@@ -1577,14 +1099,6 @@ Purpose: the named Undead Epic and persistent finisher. Rebirth brings him back 
 | Humor note | He offers a receipt during the charge. |
 | Setting | A collapsed toll court. |
 
-```text
-Sir Odo the skeletal tax knight charging down ruined courthouse steps, severe false mustache fixed to his helmet, quill-shaped lance, square ledger shield with blank pages, ornate rusted plate and coin chain, spectral second form rising, offering a blank receipt, friendly macabre humor,
-Undead of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, dramatic Hollow Marches fog, pale teal moonlight from the upper left, heroic silhouette, rich Epic detail,
-soft brush texture, rusted iron and old cloth, simple low-contrast background,
-portrait 3:4 composition, no gore, no readable text, no frame
-```
-
 ### 5.15 Bone Rampart
 
 `undead.boneRampart` · Wall · Epic · Countdown 3 · Attack 0 · HP 10 · Speed 0 · Melee · Physical · Wall · Armor 2 · Rebirth
@@ -1602,14 +1116,6 @@ Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 21, budge
 | Silhouette hook | Massive stepped wall. |
 | Humor note | A blank arrow sign points around it. |
 | Setting | A narrow flooded causeway. |
-
-```text
-towering undead rampart made from interlocked rusted shields, coffin planks and chains, orderly skeleton workers repairing the top, pale teal pennants, spectral rebuilt outline behind it, blank arrow sign pointing around the wall, friendly macabre humor,
-Undead fortification of Heynbord, blocking face to the right, centered,
-painterly storybook fantasy card illustration, flooded Hollow Marches causeway, pale teal moonlight from the upper left, massive stepped silhouette, rich Epic detail,
-soft brush texture, rusted iron and old wood, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ## 6. Goblin Creature Cards
 
@@ -1633,14 +1139,6 @@ Purpose: a cheap fast trap that slows the first enemy Runner. Power 14, budget 1
 | Humor note | One boot already hangs from the hook. |
 | Setting | A narrow mine tunnel mouth with lanterns. |
 
-```text
-small eager goblin girl running low and hooking forward at ankle height with a long bent-pipe hook, a single caught boot hanging from the hook, coil of rope, patched goggles on her forehead, big ears,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, narrow hill mine tunnel mouth with lanterns, warm lantern light from the upper left, long clear silhouette, plain Common detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 6.2 Fuse Runner
 
 `goblin.fuseRunner` · Runner · Common · Countdown 1 · Attack 2 · HP 4 · Speed 2 · Melee · Physical · Last Breath 3
@@ -1658,14 +1156,6 @@ Purpose: a one-Countdown bomb. Last Breath 3 hits the nearest enemy Unit ahead w
 | Silhouette hook | The round bomb and the thin legs. |
 | Humor note | He looks at the fuse, not where he runs. |
 | Setting | A dusty mine rail track. |
-
-```text
-skinny goblin man running forward on his toes, hugging a round black bomb bigger than his head with a short lit fuse, soot on his face, long scarf streaming, eyes fixed on the fuse instead of the road,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, dusty hill mine rail track, warm lantern light from the upper left, round clear silhouette, plain Common detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 6.3 Junk Slinger
 
@@ -1685,14 +1175,6 @@ Purpose: a cheap Shooter that slows the Unit it hits. Power 18, budget 18, devia
 | Humor note | One of her "stones" is her own false tooth. |
 | Setting | A junk heap outside a mine. |
 
-```text
-old goblin woman swinging a sling above her head, bag of bent nails, bolts and spoons with a small trap spring on top, patched apron, a false tooth flying out with the junk, determined grin,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, junk heap outside a hill mine, warm lantern light from the upper left, clear circular sling silhouette, plain Common detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 6.4 Tunnel Saboteur
 
 `goblin.tunnelSaboteur` · Support · Common · Countdown 2 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Sabotage 1
@@ -1710,14 +1192,6 @@ Purpose: the first Sabotage card. When it comes from its Card, the enemy card wi
 | Silhouette hook | The helmet lamp and the pliers. |
 | Humor note | He winks while he turns the hourglass. |
 | Setting | A fresh hole in a battlefield road. |
-
-```text
-round goblin man in a miner's helmet too big for him, climbing up out of a fresh hole in a road, big pliers in one hand, turning an hourglass upside down with the other, cut rope over his shoulder, sly wink,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, road near a hill mine, warm lantern light from the upper left, clear silhouette with helmet lamp, plain Common detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 6.5 Scrap-Plate Guard
 
@@ -1737,14 +1211,6 @@ Purpose: a cheap Goblin Lane anchor. Power 19, budget 18, deviation +5.6%.
 | Humor note | A small kettle still steams on her shoulder plate. |
 | Setting | A mine yard. |
 
-```text
-stocky goblin woman bracing behind a shield made from a wooden cart wheel, armor made from iron stove plates with a stove door on her chest, stove pipe on her helmet, short pick, small kettle steaming on her shoulder plate,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, hill mine yard, warm lantern light from the upper left, round sturdy silhouette, plain Common detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 6.6 Sidestep Shiv
 
 `goblin.sidestepShiv` · Striker · Uncommon · Countdown 2 · Attack 2 · HP 5 · Speed 2 · Melee · Physical · Pivot
@@ -1762,14 +1228,6 @@ Purpose: the Goblin Pivot Unit. Power 17, budget 18, deviation -5.6%.
 | Silhouette hook | The long nose and the knives out to the sides. |
 | Humor note | One pocket is full of other people's spoons. |
 | Setting | Between mine carts in a tunnel. |
-
-```text
-thin goblin man, chest and lead foot pointing right, looking back over his shoulder, small knife ready behind him and another out to the side, dark hood, belt with many pockets and one brass buckle, a pocket full of stolen spoons, long nose, sly grin,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, between mine carts in a hill mine tunnel, warm lantern light from the upper left, sharp angular silhouette, Uncommon detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 6.7 Junk Barricade
 
@@ -1789,14 +1247,6 @@ Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 1
 | Humor note | The sign shows a hand that says "stop", and the hand is upside down. |
 | Setting | A mine road. |
 
-```text
-tall goblin barricade made from barrels, a broken mine cart, pots and an old door, a small goblin on top pulling a long rope that runs off to the right, upside-down pointing-hand sign with no letters,
-Goblin fortification of Heynbord, blocking face to the right, centered,
-painterly storybook fantasy card illustration, hill mine road, warm lantern light from the upper left, pointed heap silhouette, Uncommon detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 6.8 Bomb Lobber
 
 `goblin.bombLobber` · Shooter · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 1 · Range 3 · Fire
@@ -1814,14 +1264,6 @@ Purpose: a ranged Fire Shooter that Burns its target. Power 20, budget 21, devia
 | Silhouette hook | The long ladle. |
 | Humor note | She covers one ear with her free hand. |
 | Setting | A rocky slope above a mine. |
-
-```text
-broad goblin woman throwing a small lit bomb forward with a big wooden ladle, basket of round bombs at her hip, smoked goggles, covering one ear with her free hand, bomb flying in a high arc with a spark trail,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, rocky slope above a hill mine, warm lantern light from the upper left, long ladle silhouette, Uncommon detail,
-soft brush texture, soot grey, brass and acid green palette with orange-red fire accents, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 6.9 Grease Trapper
 
@@ -1841,14 +1283,6 @@ Purpose: slows a Unit for 2 End Steps, and delays an enemy card when it comes in
 | Humor note | He slips a little on his own grease. |
 | Setting | A mine tunnel floor. |
 
-```text
-short goblin man spreading black grease on the ground with a mop, bucket of grease, big round toothless spring trap on his back, small hourglass on his belt, slipping a little on his own grease with a surprised face,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, hill mine tunnel floor, warm lantern light from the upper left, clear silhouette with mop and round trap, Uncommon detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 6.10 Rocket Barrel Rider
 
 `goblin.rocketBarrelRider` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 2 · Speed 3 · Melee · Fire · Last Breath 2
@@ -1866,14 +1300,6 @@ Purpose: the fastest Goblin Runner. Its Fire hits Burn, and Last Breath 2 hits w
 | Silhouette hook | The barrel and the long flame trail. |
 | Humor note | Her eyes are shut tight. |
 | Setting | A mine rail track that goes down a slope. |
-
-```text
-young goblin woman riding a powder barrel with a rocket flame out of the back, flying low and forward, holding on with both hands, leather cap with goggles, scarf streaming, eyes shut tight,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, hill mine rail track going down a slope, warm lantern light from the upper left, long horizontal silhouette with flame trail, Uncommon detail,
-soft brush texture, soot grey, brass and acid green palette with orange-red fire accents, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 6.11 Mine Sapper
 
@@ -1893,14 +1319,6 @@ Purpose: a Fire Striker that hits hard and explodes when it falls. Power 24, bud
 | Humor note | He lights his pipe with one of the fuses. |
 | Setting | A deep mine face with brass lanterns. |
 
-```text
-strong goblin man swinging a long pick with brass trim and a glowing hot head, back frame stacked with small powder kegs, lighting his pipe with one of the fuses, ornate leather and brass gear,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, deep hill mine face with brass lanterns, warm lantern light from the upper left, strong silhouette with pick and kegs, ornate Rare detail,
-soft brush texture, soot grey, brass and acid green palette with orange-red fire accents, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 6.12 Spyglass Sniper
 
 `goblin.spyglassSniper` · Shooter · Rare · Countdown 4 · Attack 3 · HP 5 · Speed 1 · Range 4 · Physical · Sabotage 1
@@ -1918,14 +1336,6 @@ Purpose: a long-range Shooter that delays an enemy card. Power 25, budget 24, de
 | Silhouette hook | The long crossbow and the spyglass. |
 | Humor note | A small bird sits on the end of the crossbow. |
 | Setting | A high rock above the mine entrance. |
-
-```text
-old goblin woman aiming a long crossbow with a brass spyglass mounted on top, goggles with many lenses, notebook of drawings with no letters at her belt, small bird perched on the end of the crossbow, ornate brass fittings,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, high rock above a hill mine entrance, warm lantern light from the upper left, long horizontal silhouette, ornate Rare detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ### 6.13 Junk Walker
 
@@ -1945,14 +1355,6 @@ Purpose: the Goblin Lane anchor with Armor 2. Power 25, budget 24, deviation +4.
 | Humor note | A second goblin runs behind with an oil can. |
 | Setting | A mine yard with a crane. |
 
-```text
-goblin woman driving a walking machine made from riveted boiler plates, round boiler body on two pipe legs, big claw arm, open seat with levers, brass gauges, a second small goblin running behind with an oil can,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, hill mine yard with a wooden crane, warm lantern light from the upper left, round heavy silhouette, ornate Rare detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 6.14 Grand Gearjammer
 
 `goblin.grandGearjammer` · Support · Epic · Countdown 4 · Attack 2 · HP 3 · Speed 1 · Range 2 · Physical · Sabotage 2
@@ -1971,14 +1373,6 @@ Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Tu
 | Humor note | One goblin loads the cannon with an alarm clock. |
 | Setting | The main mine hall with chains and lanterns. |
 
-```text
-big goblin war cart rolling forward, gear cannon firing brass gears, springs and broken clocks, three goblin crew pulling levers, one loading the cannon with an alarm clock, large brass gear on top, heroic dramatic composition,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, main hill mine hall with chains and lanterns, warm lantern light from the upper left, bold silhouette with big gear, rich Epic detail,
-soft brush texture, soot grey, brass and acid green palette, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
-
 ### 6.15 Boss Snikkit, the Mine King (draft)
 
 `goblin.bossSnikkit` · Striker · Epic · Countdown 5 · Attack 2 · HP 3 · Speed 2 · Melee · Fire · Unique · Sabotage 1 · Last Breath 3
@@ -1996,14 +1390,6 @@ Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns 
 | Silhouette hook | The tall bucket crown and the cart. |
 | Humor note | The crown is too big and falls over one eye. |
 | Setting | A mine rail in the main hall, with cheering goblins. |
-
-```text
-Boss Snikkit the goblin mine king, small old goblin man with a large bucket crown set with glass gems slipping over one eye, riding a mine cart throne full of bombs down the rails, pointing forward with a lit torch scepter, stolen hourglass on a chain, cheering goblins behind, heroic dramatic composition,
-Goblin of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, rail in the main hill mine hall, warm lantern light from the upper left, heroic silhouette with tall crown, rich Epic detail,
-soft brush texture, soot grey, brass and acid green palette with orange-red fire accents, simple low-contrast background,
-portrait 3:4 composition, no text, no frame
-```
 
 ## 7. Feral Creature Cards
 
@@ -2029,14 +1415,6 @@ Purpose: the only Feral Runner. Trample lets a kill also hit the Unit behind. Po
 | Humor note | An apple, the bait that called it, is stuck on one tusk. |
 | Setting | A rocky mountain path. |
 
-```text
-wild mountain boar with a ridge of stiff bristles charging forward head down, boards of a broken fence flying around it, an apple stuck on one tusk, dust behind it,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, rocky mountain path, cool light from the upper left, low clear silhouette, plain Common detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 7.2 Crag Lizard
 
 `feral.cragLizard` · Frontliner · Common · Countdown 2 · Attack 2 · HP 8 · Speed 1 · Melee · Physical · Armor 1
@@ -2054,14 +1432,6 @@ Purpose: a cheap Feral blocker with Armor. Power 17, budget 18, deviation -5.6%.
 | Silhouette hook | The low wide body and the plated back. |
 | Humor note | A small bird sits on its back, and the lizard does not know. |
 | Setting | Grey cliffs with patches of snow. |
-
-```text
-large stone-grey lizard with rock-like back plates walking forward low, mouth open in a hiss, snow on its plates, small bird sitting on its back unnoticed,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, grey cliffs with patches of snow, cool light from the upper left, low wide silhouette, plain Common detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 7.3 Frostfang Lynx
 
@@ -2081,14 +1451,6 @@ Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so
 | Humor note | A lump of snow sits on its head after a jump through a snowbank. |
 | Setting | A snowy ledge. |
 
-```text
-white mountain lynx with long ear tufts and ice-blue fangs leaping forward with claws out, frosty breath and frost on its claws, a lump of snow on its head,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, snowy mountain ledge, cool light from the upper left, long leaping silhouette, plain Common detail,
-soft brush texture, slate violet and ice white palette with light blue frost accents, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 7.4 Cave Bear
 
 `feral.caveBear` · Frontliner · Common · Countdown 3 · Attack 3 · HP 10 · Speed 1 · Melee · Physical · Regeneration 1
@@ -2106,14 +1468,6 @@ Purpose: a durable Feral front that heals 1 HP in each Start Step. Power 20, bud
 | Silhouette hook | The big shoulder hump and the round head. |
 | Humor note | It still has not opened both eyes. |
 | Setting | A cave mouth with frost. |
-
-```text
-huge brown cave bear with sleepy half-open eyes walking forward on all fours out of a cave, half yawning around a honeycomb in its mouth, moss and old healed scars on its fur,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, frosty cave mouth, cool light from the upper left, big humped silhouette, plain Common detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 7.5 Web Spitter
 
@@ -2133,14 +1487,6 @@ Purpose: a Shooter that Entangles. Power 21, budget 21, deviation 0%.
 | Humor note | It looks proud of the caught helmet. |
 | Setting | A dark cave with blue crystals. |
 
-```text
-giant round furry cave spider with many shiny friendly eyes spitting a sticky web line forward, a caught helmet hanging in a web behind it, looking proud, friendly cartoon shapes, not scary,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, dark cave with blue crystals, cool light from the upper left, round body with arched legs silhouette, plain Common detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 7.6 Boulder Tortoise
 
 `feral.boulderTortoise` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 12 · Speed 0 · Melee · Physical · Wall · Armor 1 · Regeneration 2
@@ -2158,14 +1504,6 @@ Purpose: the Feral Wall. It heals 2 HP in each Start Step. Power 21, budget 21, 
 | Silhouette hook | A dome. |
 | Humor note | A mountain goat stands on top of it. |
 | Setting | A narrow mountain pass. |
-
-```text
-giant mountain tortoise asleep across a narrow pass, boulder-like stone shell covered with moss and small trees, fresh moss growing over cracks, a mountain goat standing on top,
-Feral fortification of Heynbord, blocking face to the right, centered,
-painterly storybook fantasy card illustration, narrow mountain pass, cool light from the upper left, massive dome silhouette, Uncommon detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 7.7 Tailsweep Basilisk
 
@@ -2185,14 +1523,6 @@ Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Pow
 | Humor note | It looks bored while the rocks fly. |
 | Setting | A cave floor with crystals. |
 
-```text
-long low basilisk lizard advancing to the right, heavy club tail swinging backward, rocks flying from the swing, bored half-lidded eyes, S-shaped body,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, cave floor with crystals, cool light from the upper left, S-shaped silhouette with club tail, Uncommon detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 7.8 Cave Troll
 
 `feral.caveTroll` · Frontliner · Uncommon · Countdown 4 · Attack 3 · HP 9 · Speed 1 · Melee · Physical · Regeneration 2
@@ -2210,14 +1540,6 @@ Purpose: a durable Feral front that heals 2 HP in each Start Step. Power 25, bud
 | Silhouette hook | The long arms and the bent back. |
 | Humor note | It chews on a lost shield. |
 | Setting | A damp cave. |
-
-```text
-large grey wild cave troll with long arms and a small head walking forward on its knuckles, a broken stalactite used as a club, a cut on its arm closing up, chewing on a lost shield, no armor and no tribe marks,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, damp cave, cool light from the upper left, hunched long-armed silhouette, Uncommon detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 7.9 Crag Rhino
 
@@ -2237,14 +1559,6 @@ Purpose: a heavy Trample Striker. Power 25, budget 24, deviation +4.2%.
 | Humor note | An empty helmet spins in the air. |
 | Setting | A high stony plain. |
 
-```text
-woolly mountain rhino with a stone-grey horn charging forward head low, one broken shield stuck on its horn and a second shield flying behind it, empty helmet spinning in the air,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, high stony plain, cool light from the upper left, heavy horned silhouette, Uncommon detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 7.10 Frost Elk Matriarch
 
 `feral.frostElkMatriarch` · Support · Uncommon · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Melee · Frost · Rally 1
@@ -2262,14 +1576,6 @@ Purpose: the Feral Support. Rally 1 gives the other friendly Units in her Lane +
 | Silhouette hook | The wide ice antlers. |
 | Humor note | Two young elk copy her pose behind her. |
 | Setting | A frozen meadow. |
-
-```text
-tall old elk cow with wide antlers of ice walking forward with her head high, calling with a cloud of breath mist, two young elk copying her pose behind her,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, frozen mountain meadow, cool light from the upper left, wide antler silhouette, Uncommon detail,
-soft brush texture, slate violet and ice white palette with light blue frost accents, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 7.11 Avalanche Yeti
 
@@ -2289,14 +1595,6 @@ Purpose: a Rare Trample Striker with high Attack. Power 24, budget 24, deviation
 | Humor note | The stolen scarf is much too small for it. |
 | Setting | A snowy slope with an avalanche behind it. |
 
-```text
-big white yeti with long fur charging forward through a wall of snow with arms wide, shields thrown to the sides, ice crystals glittering in its fur, a stolen scarf much too small for it,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, snowy slope with an avalanche behind, cool light from the upper left, huge broad-shouldered silhouette, ornate Rare detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 7.12 Woolly Mammoth
 
 `feral.woollyMammoth` · Frontliner · Rare · Countdown 5 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 1 · Trample
@@ -2314,14 +1612,6 @@ Purpose: a Rare front that also Tramples. Power 26, budget 27, deviation -3.7%.
 | Silhouette hook | The high dome head and the long tusks. |
 | Humor note | A bird's nest sits in its fur. |
 | Setting | A glacier valley. |
-
-```text
-woolly mammoth with long curved tusks walking forward with heavy steps, tusks low, a broken wooden fence draped over the tusks, thick matted fur with ice, a bird's nest in its fur,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, glacier valley, cool light from the upper left, high domed silhouette with long tusks, ornate Rare detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ### 7.13 Rimebreath Drake
 
@@ -2341,14 +1631,6 @@ Purpose: a Flying Frost Shooter. Power 27, budget 27, deviation 0%.
 | Humor note | Its own breath froze an icicle onto its nose. |
 | Setting | High cliffs above the clouds. |
 
-```text
-slim young ice drake with wide wings flying forward and breathing a cone of frost, an icicle frozen onto its own nose, long neck, frost crystals in the air,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, high cliffs above the clouds, cool light from the upper left, wide-winged silhouette, ornate Rare detail,
-soft brush texture, slate violet and ice white palette with light blue frost accents, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 7.14 Mountain Colossus
 
 `feral.mountainColossus` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Regeneration 2 · Trample
@@ -2367,14 +1649,6 @@ Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 
 | Humor note | A small village of birds lives on its shoulder. |
 | Setting | A mountain pass under storm clouds. |
 
-```text
-wild old giant of living rock and moss taking a huge step forward with one fist down, rubble flying, new stone growing over cracks, a small village of bird nests on its shoulder, heroic dramatic composition,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, mountain pass under storm clouds, cool light from the upper left, massive silhouette with huge shoulders and small head, rich Epic detail,
-soft brush texture, slate violet and ice white palette, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
-
 ### 7.15 Old Frostmaw (draft)
 
 `feral.oldFrostmaw` · Striker · Epic · Countdown 6 · Attack 3 · HP 6 · Speed 1 · Melee · Frost · Unique · Trample · Bleed 2
@@ -2392,14 +1666,6 @@ Purpose: the named Feral Epic: a huge Frost Striker that Tramples, and its bite 
 | Silhouette hook | The long neck and the icicle crown. |
 | Humor note | The horn is the lure that called it. The hunter who blew it is gone. |
 | Setting | A great ice cave. |
-
-```text
-Old Frostmaw, huge old white cave wyrm with no wings and a crown of icicles, coming out of a great ice cave with jaws open and icy breath, broken ice pillars around it, a very small hunting horn hanging from one tooth, heroic dramatic composition,
-Feral of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, great ice cave, cool light from the upper left, long-necked silhouette with icicle crown, rich Epic detail,
-soft brush texture, slate violet and ice white palette with light blue frost accents, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
 
 ## 8. Tokens
 
@@ -2591,6 +1857,6 @@ neutral battlefield with green grass and a long lane of grey stone tiles, portra
 
 ## 11. When cards change
 
-- When you add a card to `cards.ts`, add its entry here before you make the art.
+- When you add a card to `cards.ts`, add its entry here before you make the art. For a Creature Card, also add its subject line to `scripts/creature-art/subjects.ts`.
 - When you change a name or flavor text in the Message Catalog, look at the entry here again. The image must still agree with the text.
-- When a Keyword or a Damage Type of a card changes, update the gameplay cues and the prompt.
+- When a Keyword or a Damage Type of a card changes, update the gameplay cues. For a Creature Card, look at its subject line in `scripts/creature-art/subjects.ts` again. For a Token or a Skill Card, update its prompt here.

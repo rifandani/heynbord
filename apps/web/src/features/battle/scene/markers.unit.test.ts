@@ -44,6 +44,11 @@ describe("markerOpacity", () => {
     expect(markerOpacity(0, 1, 0)).toBe(0.45);
     expect(markerOpacity(0, 1, Math.PI / 12)).toBeCloseTo(0.65);
   });
+
+  it("clears the focused marker when a focus ring marks it", () => {
+    expect(markerOpacity(1, 1, 3, true)).toBe(0);
+    expect(markerOpacity(0, 1, 0, true)).toBe(0.45);
+  });
 });
 
 describe("toDevice and toScreen", () => {

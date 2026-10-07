@@ -42,12 +42,22 @@ export const targetAt = (
   return Predicate.isNumber(index) ? (targets[index] ?? null) : null;
 };
 
-/** The focused marker shines. The other markers pulse. `time` is in scene seconds. */
+/**
+ * The focused marker shines. The other markers pulse. `time` is in scene
+ * seconds. When the focus ring of a Unit marks the focused target, the
+ * focused marker is clear, because the ring already shows the focus.
+ */
 export const markerOpacity = (
   index: number,
   focused: number,
-  time: number
-): number => (index === focused ? 0.95 : 0.45 + Math.sin(time * 6) * 0.2);
+  time: number,
+  ringed = false
+): number => {
+  if (index === focused) {
+    return ringed ? 0 : 0.95;
+  }
+  return 0.45 + Math.sin(time * 6) * 0.2;
+};
 
 interface Point {
   readonly x: number;

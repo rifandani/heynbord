@@ -81,12 +81,14 @@ When a player plays Heynbord, they must feel:
 
 ## World and tone
 
-Heynbord is the name of the world. It is a bright high-fantasy world with some humor. Four peoples live in it. Each people also has beasts or spirits that fight with it:
+Heynbord is the name of the world. It is a bright high-fantasy world with some humor. Six Races live in it. Five Races are peoples, and each people also has beasts or spirits that fight with it. The sixth Race, Feral, is the wild creatures that serve no people:
 
 - **Human:** Humans and stout folk of the river towns. Shields, horses and banners.
 - **Elf:** Elves of the old forests, and plant spirits. Ranged Units, healing and poison.
 - **Undead:** Old spirits that wear bones and armor. They come back and bring more.
 - **Orc:** Orc tribes of the badlands, and their beasts. Fast and loud. They still hit the Unit that kills them.
+- **Goblin:** Goblins of the hill mines. Tinkers, thieves and bomb makers. They make the enemy plan slower with traps and bombs.
+- **Feral:** Wild creatures of the peaks and the deep caves. Few, huge and slow. They run through the enemy front and bring the cold.
 
 The tone is like a classic adventure story. It is colorful and heroic, and characters sometimes make jokes. There is no gore.
 
@@ -108,7 +110,7 @@ v1 does not include:
 - Online play, accounts, PvP, guilds or chat.
 - Real-money payments or ads.
 - Trading between players.
-- Hybrids, awakening, or more than 4 races.
+- Hybrids, or awakening.
 
 ## What Heynbord is not
 

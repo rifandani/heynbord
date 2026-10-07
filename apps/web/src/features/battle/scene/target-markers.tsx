@@ -7,6 +7,7 @@ import { Mesh, MeshBasicMaterial, Raycaster, Vector2, Vector3 } from "three";
 
 import {
   battleSessionAtom,
+  detailsUnitAtom,
   focusedTargetAtom,
   legalTargetsAtom,
 } from "@/features/battle/battle.atoms";
@@ -19,6 +20,7 @@ import {
 } from "@/features/battle/scene/markers";
 import { playback } from "@/features/battle/scene/playback";
 import { scenePicker } from "@/features/battle/scene/scene-picker";
+import { unitAtTarget } from "@/features/battle/unit-inspect";
 
 /** The screen rectangle of the Battle canvas, or `null` before it mounts. */
 const canvasRect = (): DOMRect | null =>
@@ -74,6 +76,11 @@ export const TargetMarkers = ({
   const session = useAtomValue(battleSessionAtom);
   const targets = useAtomValue(legalTargetsAtom);
   const focused = useAtomValue(focusedTargetAtom);
+  const details = useAtomValue(detailsUnitAtom);
+  // The Unit on the focused target shows its focus ring.
+  const ringed =
+    details !== null &&
+    unitAtTarget(session?.view.units ?? [], targets[focused]) === details.id;
   const group = useRef<Group>(null);
   const { camera } = useThree();
   const lanes = session?.view.lanes ?? 1;
@@ -95,7 +102,7 @@ export const TargetMarkers = ({
   useFrame(() => {
     const children = group.current?.children ?? [];
     for (const [index, child] of children.entries()) {
-      setOpacity(child, markerOpacity(index, focused, playback.time));
+      setOpacity(child, markerOpacity(index, focused, playback.time, ringed));
     }
   });
 

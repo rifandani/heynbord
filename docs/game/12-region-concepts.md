@@ -147,99 +147,23 @@ The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
 
 ## 3. Prompts
 
-### 3.1 How to use the prompts
+The game docs do not keep the image prompts of the Region Maps. Run `bun campaign:prompts` to write them to `apps/web/art/campaign/raw/`. Git ignores this folder.
 
-The prompts are short. A long list of rules, counts and "no" words gives bad results, because the model adds the items that the "no" words name. Do not try to get the Stage positions from the words. Get them from a layout sketch:
+- `map-style-reference.png`: the Town painting. It sets the style and the camera.
+- `map-set-reference.png`: the Hearthvale Region Map. Regions 2 and 3 attach it, so that the set matches.
+- `<region>/prompts.md`: the Region Map conversation, then the Battle Painting conversation ([13 — Battlefield Concepts](./13-battlefield-concepts.md)).
 
-- `apps/web/art/campaign/region-map-layout-16x9.png` — the layout in the 1600 × 900 box of 1.1: the road, the 10 clearings (pale ovals), the Boss hill (brown house), the far land (dark green) and the clouds (white).
-- `apps/web/art/campaign/region-map-layout-3x2.png` — the same layout in a 1536 × 1024 image, with the 16:9 area in the middle. Use it if the tool cannot make 16:9. Then crop the top and the bottom to 16:9.
+The Region Map prompts come from the brief of the Region in section 2, the clearing centers in 1.1, and the scene line of the Region in `scripts/campaign-art/scenes.ts`: the land, the road, the ground of the clearings and the Boss landmark, in a few words. Add a scene line when you add a Region. To change an image, change the brief or the scene line, then run the script again.
 
-Give GPT Image these images, in this order:
+Use one ChatGPT conversation for each Region Map. Attach the layout sketch `apps/web/art/campaign/region-map-layout-3x2.png`, the style reference and (for Regions 2 and 3) the set reference to the setup message. The sketch sets the composition: the road, the 10 clearings (pale ovals), the Boss hill (brown house), the far land (dark green) and the clouds (white). ChatGPT cannot make 16:9, so the sketch is 1536 × 1024, with the 1600 × 900 box of 1.1 in the middle. Crop the top and the bottom to 16:9. The sketch in the same box at 16:9 is `region-map-layout-16x9.png`.
 
-1. The layout sketch (it sets the composition).
-2. The Town painting `apps/web/public/town/town.webp` (it sets the style).
-3. For Regions 2 and 3 only: the finished Hearthvale map (it makes the set match).
-
-Make the base painting first. Then add the small landmarks and the jokes of section 2 one by one with inpainting. One small edit at a time is much easier for the model than 10 items in one prompt.
-
-### 3.2 Hearthvale
-
-```text
-Image 1 is a rough layout sketch. Keep its composition: the road path, the 10 pale ovals, the brown house on the hill, the dark green far land and the white clouds. Do not copy its flat colors.
-Image 2 shows the art style. Paint in this style.
-
-Paint a fantasy campaign map for a mobile strategy game, wide landscape.
-High bird's-eye view, tilted about 45 degrees, so that houses show their roof and their front.
-
-A green farm valley with yellow fields, small woods, a blue stream and soft hills.
-One sandy dirt road follows the path of the sketch: it comes in at the bottom-left edge, winds up and right, and ends at the hill.
-The 10 pale ovals of the sketch are 10 small empty patches of short grass on the road. Nothing stands on them.
-On the hill: a big fortified wooden hall with a palisade. Its roof has the shape of a giant hat with a feather.
-Soft white clouds frame the edges. The top-right corner is only clouds.
-
-Bright and warm, a little funny, painterly, soft brush texture. Clear late morning, light from the upper left.
-The image is only the painting, without text, labels, icons or a frame.
-```
-
-Inpaint the landmarks next to their clearings, in order: a muddy ford with stepping stones, two small wooden bridges, a water mill with a burning roof, a wooden toll gate, an outlaw camp with a very big pot, a ruined stone watchtower, an orc camp with war drums, a rocky pass with fallen rocks, a giant oak with a lookout platform. Then the jokes: a scarecrow in a big hat, outlaws with a cart of pies.
-
-### 3.3 The Thornwood
-
-```text
-Image 1 is a rough layout sketch. Keep its composition: the road path, the 10 pale ovals, the brown house on the hill, the dark green far land and the white clouds. Do not copy its flat colors.
-Image 2 shows the art style. Image 3 is the first map of the same set. Paint in the same style, view and scale.
-
-Paint a fantasy campaign map for a mobile strategy game, wide landscape.
-High bird's-eye view, tilted about 45 degrees, so that trees and houses show their top and their front.
-
-A deep old forest of giant trees, moss and thorn hedges, seen from above, with small open glades.
-One mossy forest road of roots follows the path of the sketch: it comes in at the bottom-left edge, winds up and right, and ends at the hill.
-The 10 pale ovals of the sketch are 10 small empty patches of moss on the road. Nothing stands on them.
-On the hill, in place of the house: a huge old tree giant asleep on a mound of brambles, with a sleepy face in the bark.
-Soft white clouds frame the edges. The top-right corner is only clouds.
-
-Bright and warm, a little funny, painterly, soft brush texture. Emerald and moss green, some autumn red, gold sunbeams through the leaves. Bright afternoon, light from the upper left.
-The image is only the painting, without text, labels, icons or a frame.
-```
-
-Inpaint next: two leaning trees as a gate, an elf tree with lanterns, a ring of big mushrooms, a rope bridge over a ravine, a cave mouth under roots with a big web, mossy standing stones, elf tree houses, a waterfall and pool, a broken thorn wall. Then the jokes: a cave bear stuck in a thorn bush, a squirrel that steals arrows.
-
-### 3.4 The Hollow Marches
-
-```text
-Image 1 is a rough layout sketch. Keep its composition: the road path, the 10 pale ovals, the brown house on the hill, the dark green far land and the white clouds. Do not copy its flat colors.
-Image 2 shows the art style. Image 3 is the first map of the same set. Paint in the same style, view and scale.
-
-Paint a fantasy campaign map for a mobile strategy game, wide landscape.
-High bird's-eye view, tilted about 45 degrees, so that houses show their roof and their front.
-
-Wide misty marshes with reeds, pools, old dead trees and a few dry hills.
-One road follows the path of the sketch: old stones at the bottom left, then wooden boardwalks over the water, then a stone causeway to the island. It ends at the island.
-The 10 pale ovals of the sketch are 10 small empty patches of dry grass on the road. Nothing stands on them.
-On the island, in place of the house: a castle of pale bone-white stone with thin towers, violet banners and soft green light in the windows.
-Soft white clouds frame the edges. The top-right corner is only clouds.
-
-Bright and a little funny, strange but not scary, painterly, soft brush texture. Misty teal, violet, moss green, bone white. Bright late afternoon with low mist on the water, light from the upper left.
-The image is only the painting, without text, labels, icons or a frame.
-```
-
-Inpaint next: a crooked sign post with a lantern, a sunken chapel, a goblin raft workshop, a long boardwalk over a bog, a small graveyard, a broken windmill, a ferry with a skeleton ferryman, a goblin mine with rail tracks, a stone bridge with green fire bowls. Then the jokes: a skeleton that fishes, a frog with a small crown.
-
-### 3.5 If the result is still wrong
-
-| Problem | Fix |
-| --- | --- |
-| A flat parchment map, or a top-down view with no fronts | Put the Town painting first and say "same camera as image 2". |
-| A small diorama on a table or a floating island | Add "the land fills the full image to all edges". |
-| The road goes another way | Use the 3:2 sketch at the size of the output, so that the model does not stretch it. Or inpaint only the road. |
-| Objects on the clearings | Inpaint each clearing with "empty short grass". |
-| Text-like marks or a dashed line | Inpaint that area with the material around it ("grass", "dirt road"). |
+The prompts are short. A long list of rules, counts and "no" words gives bad results, because the model adds the items that the "no" words name. Do not try to get the Stage positions from the words: get them from the sketch. Make the base painting first. Then add each landmark of section 2 and each joke with one edit message. One small edit at a time is much easier for the model than 10 items in one prompt.
 
 ## 4. Steps
 
-1. Make 4 to 8 base images with the prompt of the Region and the reference images of 3.1.
+1. Make 4 to 8 base images with the prompts of the Region and the reference images (section 3).
 2. Select one image with the checklist in 5.
-3. Add the landmarks and the jokes of the Region with inpainting (3.2 to 3.4). Fix problems by hand or with inpainting: dashed lines or marks on the road, objects on a clearing, text-like marks, strange buildings.
+3. Add the landmarks and the jokes of the Region with the edit messages (section 3). Fix problems by hand or with inpainting: dashed lines or marks on the road, objects on a clearing, text-like marks, strange buildings.
 4. Move the clearings and the Boss landmark near the positions in 1.1, by hand or with inpainting. Crop to 16:9 and export the master at 3200 × 1800.
 5. Export a WebP at 2560 × 1440, less than about 400 KB (Technical Design, section 6). Name it after the Region, for example `hearthvale.webp`. Put it in `apps/web/public/campaign/`.
 6. Measure the center of each clearing, and trace the center line of the painted road from the Trail entry to clearing 10, as lists of points in the 1600 × 900 box (1.3). The game draws the Stage Markers and the progress line on these points. Put them and the file name in `REGION_MAPS` in `apps/web/src/features/campaign/region-map.ts`, and run its unit tests.

@@ -17,10 +17,10 @@ All documents use ASD-STE100 Simplified Technical English.
 | 07 | [Economy](./07-economy.md) | Currencies (Coin and Heynstones), sources and sinks, packs, the Bazaar, costs and future monetization rules. | Game designer |
 | 08 | [Archetypes](./08-archetypes.md) | The Archetypes (reference Decks for balance) and the results of their Matchups. | Game designer |
 | 09 | [Roadmap](./09-roadmap.md) | Milestones for v1 and the plan after v1. | Product owner |
-| 10 | [Card Concepts](./10-card-concepts.md) | The gameplay draft, art brief and image prompt for each Card and Token. | Game designer and art director |
+| 10 | [Card Concepts](./10-card-concepts.md) | The gameplay draft and art brief for each Card and Token, and the image prompt for each Skill Card and Token. | Game designer and art director |
 | 11 | [Town Concepts](./11-town-concepts.md) | The art brief, the positions and the image prompts for the Town. | Art director |
-| 12 | [Region Concepts](./12-region-concepts.md) | The art brief, the positions and the image prompts for each Region Map of the Campaign. | Art director |
-| 13 | [Battlefield Concepts](./13-battlefield-concepts.md) | The art brief, the positions and the image prompt for each Battle Painting. | Art director |
+| 12 | [Region Concepts](./12-region-concepts.md) | The art brief and the positions for each Region Map of the Campaign. `bun campaign:prompts` makes the image prompts. | Art director |
+| 13 | [Battlefield Concepts](./13-battlefield-concepts.md) | The art brief and the positions for each Battle Painting. `bun campaign:prompts` makes the image prompts. | Art director |
 | 14 | [Campaign Stages](./14-campaign-stages.md) | The design of each Stage: place, enemy, new thing, enemy Deck, first-win card and win-rate target. | Game designer |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.

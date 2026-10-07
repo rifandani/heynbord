@@ -53,7 +53,9 @@
     "fx:prompts": "bun scripts/fx-atlas/write-prompts.ts",
     "fx:master": "bun scripts/fx-atlas/master.ts",
     "fx:sheet": "bun scripts/fx-atlas/contact-sheet.ts",
-    "fx:pack": "bun scripts/pack-fx-atlas.ts"
+    "fx:pack": "bun scripts/pack-fx-atlas.ts",
+    "creature:prompts": "bun scripts/creature-art/write-prompts.ts",
+    "campaign:prompts": "bun scripts/campaign-art/write-prompts.ts"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.3",

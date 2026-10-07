@@ -93,3 +93,9 @@ prisma/_sqlite/migrations
 
 # effects atlas: images from ChatGPT, prompts and the contact sheet (#12)
 apps/web/art/fx/raw/
+
+# Creature Card art: images from ChatGPT, the style reference and the prompts
+apps/web/art/creature/raw/
+
+# Region Map and Battle Painting art: images from ChatGPT, the references and the prompts
+apps/web/art/campaign/raw/
