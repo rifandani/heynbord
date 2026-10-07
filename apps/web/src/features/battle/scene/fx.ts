@@ -258,8 +258,8 @@ const WINDUP_END = 0.6;
 
 /**
  * The wind-up of a Skill Card cast: a rune ring at the feet of the caster
- * Hero, and particles of the Class of the Hero. It fills the first part of
- * the cast, so a longer enemy cast has a longer wind-up.
+ * Hero, and particles. It is the same for all Classes. It fills the first
+ * part of the cast, so a longer enemy cast has a longer wind-up.
  */
 const windup = (
   event: Extract<BattleEvent, { readonly _tag: "CardPlayed" }>,
@@ -268,7 +268,7 @@ const windup = (
   speed: BattleSpeed
 ): Fx => ({
   kind: "particles",
-  burst: `windup:${before.sides[event.side].hero.classId}`,
+  burst: "windup",
   scale: 1,
   x: heroX(event.side),
   z: 0,

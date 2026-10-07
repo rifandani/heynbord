@@ -1,4 +1,3 @@
-import type { ClassId } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import type { BurstName, Emitter } from "@/features/battle/scene/particles";
@@ -196,8 +195,8 @@ describe("dust bursts", () => {
 });
 
 /** A wind-up at the feet of a Hero at x = 2, from 1 s to 1.5 s. */
-const windup = (classId: ClassId = "mage"): Emitter => ({
-  ...burst(1, `windup:${classId}`),
+const windup = (): Emitter => ({
+  ...burst(1, "windup"),
   y: 0.04,
   duration: 0.5,
 });
@@ -210,20 +209,17 @@ describe("wind-up bursts (web ADR-0009)", () => {
     expect(later?.rotation).not.toBeCloseTo(ring?.rotation ?? 0);
   });
 
-  it.each(["warrior", "ranger", "mage", "priest"] as const)(
-    "sends the %s particles up from the ground, in the Class color",
-    (classId) => {
-      for (const time of [1.1, 1.3, 1.48]) {
-        const [ring, ...rest] = spawnParticles([windup(classId)], time, 200);
-        expect(rest.length).toBeGreaterThan(0);
-        for (const particle of rest) {
-          expect(particle.ground ?? false).toBe(false);
-          expect(particle.y, `${time}`).toBeGreaterThan(0.04);
-          expect(particle.color).toBe(ring?.color);
-        }
+  it("sends the particles up from the ground, in the color of the ring", () => {
+    for (const time of [1.1, 1.3, 1.48]) {
+      const [ring, ...rest] = spawnParticles([windup()], time, 200);
+      expect(rest.length).toBeGreaterThan(0);
+      for (const particle of rest) {
+        expect(particle.ground ?? false).toBe(false);
+        expect(particle.y, `${time}`).toBeGreaterThan(0.04);
+        expect(particle.color).toBe(ring?.color);
       }
     }
-  );
+  });
 
   it("shows only a still rune ring that fades with reduced motion", () => {
     const early = spawnParticles([windup()], 1.1, 200, true);

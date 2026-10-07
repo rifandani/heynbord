@@ -50,6 +50,10 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Status Badge**: The row of Status icons above a Unit on the Board, each with its count when the Status has one. It shows at most 3 Statuses, then "+N". The Details Panel shows the full list and the rules text. _Avoid_: debuff bar, buff icons, status bar, status icons
 
+**Wind-up**: The rune ring and the particles at the caster Hero at the start of a Skill Card cast. It looks the same for all Classes: the position of the Hero shows who casts. _Avoid_: charge-up, cast circle, Class aura
+
+**Spell Bolt**: The glow that flies from the caster Hero to the target Squares of a Skill Card, in the color of its effect. _Avoid_: projectile, missile
+
 **Key Guide**: The list of the keys that play a full Battle and what each key does. It opens from the info button in the Top Bar, on hover, on keyboard focus and on press. _Avoid_: keyboard help, hotkeys, shortcuts, accessibility info, controls hint
 
 ### Town

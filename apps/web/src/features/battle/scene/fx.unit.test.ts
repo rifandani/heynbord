@@ -364,14 +364,14 @@ const played = (cardId: string, side: Side = "enemy") =>
 
 describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
   it.each(["warrior", "ranger", "mage", "priest"] as const)(
-    "starts a %s cast with the wind-up of its Class at the feet of the caster",
+    "starts a %s cast with the same wind-up at the feet of the caster",
     (classId) => {
       const before = withEnemyClass(classId);
       expect(fxForEvent(played("mage.fireball"), before, before, 3, 1)).toEqual(
         [
           expect.objectContaining({
             kind: "particles",
-            burst: `windup:${classId}`,
+            burst: "windup",
             x: heroX("enemy"),
             z: 0,
             start: 3,
@@ -388,7 +388,7 @@ describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
       const cast = eventDuration(event, speed, view) / 1000;
       expect(durationOf(windup)).toBeLessThan(cast);
       expect(durationOf(windup) * 1000 * speed).toBeGreaterThanOrEqual(
-        FX_PRESETS["windup:warrior"].time
+        FX_PRESETS.windup.time
       );
     }
   });

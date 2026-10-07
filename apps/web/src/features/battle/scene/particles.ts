@@ -7,7 +7,6 @@ import type {
   HitPresetKey,
   ImpactPresetKey,
   SprayMotion,
-  WindupPresetKey,
 } from "@/features/battle/scene/fx-presets";
 import { DUST_PRESETS, FX_PRESETS } from "@/features/battle/scene/fx-presets";
 import type { Status } from "@/features/battle/scene/status-visuals";
@@ -29,7 +28,7 @@ export type BurstName =
   | "poison-tick"
   | HitPresetKey
   | DustPresetKey
-  | WindupPresetKey
+  | "windup"
   | ImpactPresetKey;
 
 /**
@@ -305,8 +304,8 @@ const rise =
   };
 
 /**
- * A wind-up: the rune ring is the key image, and the particles of the Class
- * go up from its edge.
+ * A wind-up: the rune ring is the key image, and the particles go up from
+ * its edge.
  */
 const windupBurst = (preset: FxPreset): Emission[] => {
   const color = preset.color ?? undefined;
@@ -469,10 +468,7 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
   "hit:blocked": presetBurst(FX_PRESETS["hit:blocked"]),
   move: dustBurst(FX_PRESETS.move),
   push: dustBurst(FX_PRESETS.push),
-  "windup:warrior": windupBurst(FX_PRESETS["windup:warrior"]),
-  "windup:ranger": windupBurst(FX_PRESETS["windup:ranger"]),
-  "windup:mage": windupBurst(FX_PRESETS["windup:mage"]),
-  "windup:priest": windupBurst(FX_PRESETS["windup:priest"]),
+  windup: windupBurst(FX_PRESETS.windup),
   heal: presetBurst(FX_PRESETS.heal),
   armor: presetBurst(FX_PRESETS.armor),
 };

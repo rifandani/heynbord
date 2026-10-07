@@ -3,8 +3,6 @@ import { describe, expect, it } from "vitest";
 import { FX_SLOTS } from "@/features/battle/scene/fx-atlas";
 import { FX_PRESETS, presetSlots } from "@/features/battle/scene/fx-presets";
 
-const CLASSES = ["warrior", "ranger", "mage", "priest"] as const;
-
 describe("the attack and hit presets (web ADR-0009)", () => {
   it("has a hit preset for each Damage Type and for a Blocked hit, and the cast presets", () => {
     expect(Object.keys(FX_PRESETS).toSorted()).toEqual([
@@ -19,10 +17,7 @@ describe("the attack and hit presets (web ADR-0009)", () => {
       "move",
       "push",
       "ranged",
-      "windup:mage",
-      "windup:priest",
-      "windup:ranger",
-      "windup:warrior",
+      "windup",
     ]);
   });
 
@@ -63,21 +58,10 @@ describe("the attack and hit presets (web ADR-0009)", () => {
     expect(presetSlots(blocked)).not.toContain("burst");
   });
 
-  it.each(CLASSES)(
-    "gives the %s wind-up a rune ring and particles of its Class color",
-    (classId) => {
-      const windup = FX_PRESETS[`windup:${classId}`];
-      expect(windup.main).toBe("rune-ring");
-      expect(windup.spray?.count).toBeGreaterThan(0);
-      expect(windup.color).not.toBeNull();
-    }
-  );
-
-  it("gives each Class a different wind-up color", () => {
-    const colors = CLASSES.map(
-      (classId) => FX_PRESETS[`windup:${classId}`].color
-    );
-    expect(new Set(colors).size).toBe(CLASSES.length);
+  it("gives the wind-up a rune ring and particles in the neutral cast color", () => {
+    expect(FX_PRESETS.windup.main).toBe("rune-ring");
+    expect(FX_PRESETS.windup.spray?.count).toBeGreaterThan(0);
+    expect(FX_PRESETS.windup.color).toBe("#fff6df");
   });
 
   it("tints a heal green", () => {

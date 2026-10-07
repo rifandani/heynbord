@@ -7,8 +7,9 @@ import type {
   Target,
 } from "@workspace/rules";
 import { getCard, LANE_LENGTH } from "@workspace/rules";
+import { absurd } from "effect";
 
-import { DAMAGE_COLORS } from "@/features/battle/palette";
+import { CAST_COLOR, DAMAGE_COLORS } from "@/features/battle/palette";
 
 /**
  * The 3 beats of a Skill Card cast on the screen. `reveal` is its CardPlayed
@@ -106,7 +107,11 @@ export const currentCast = (
   return castAt(log, playedIndex(log, last - 1), "resolve", null);
 };
 
-/** The color of a Skill Card effect: its Damage Type, Armor blue, or Countdown gold. */
+/**
+ * The color of a Skill Card effect: its Damage Type, Armor blue, or the
+ * neutral cast color. Each effect type has its own case, so a new type (for
+ * example a heal) does not compile until it gets a color.
+ */
 export const effectColor = (effect: SkillEffect): string => {
   switch (effect.type) {
     case "damageUnit":
@@ -117,8 +122,11 @@ export const effectColor = (effect: SkillEffect): string => {
     case "laneArmor": {
       return "#9cc8ff";
     }
+    case "lowerCountdown": {
+      return CAST_COLOR;
+    }
     default: {
-      return "#ffd75a";
+      return absurd(effect);
     }
   }
 };

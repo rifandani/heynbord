@@ -114,7 +114,7 @@ describe("castSquares", () => {
 });
 
 describe("effectColor", () => {
-  it("uses the Damage Type color, Armor blue, or Countdown gold", () => {
+  it("uses the Damage Type color, Armor blue, or the neutral cast color", () => {
     expect(
       effectColor({ type: "damageUnit", amount: 2, damageType: "frost" })
     ).toBe("#8fd8ff");
@@ -122,7 +122,7 @@ describe("effectColor", () => {
       "#9cc8ff"
     );
     expect(effectColor({ type: "lowerCountdown", cards: 2, amount: 1 })).toBe(
-      "#ffd75a"
+      "#fff6df"
     );
   });
 });

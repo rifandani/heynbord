@@ -1,10 +1,4 @@
-import type {
-  ClassId,
-  DamageType,
-  RaceId,
-  RankId,
-  Side,
-} from "@workspace/rules";
+import type { DamageType, RaceId, RankId, Side } from "@workspace/rules";
 
 /** Race colors (art direction 4.1). `light` and `dark` are shades of `main`. */
 export const RACE_COLORS: Readonly<
@@ -74,16 +68,10 @@ export const DAMAGE_COLORS: Readonly<Record<DamageType, string>> = {
 };
 
 /**
- * The color of the wind-up of a Skill Card cast: the Class of the caster
- * (web ADR-0009). Each Class has a different color, so the Player can see who
- * casts the card.
+ * The neutral color of a Skill Card cast: the Wind-up of all Classes, and an
+ * effect that has no color of its own. Gold is only for Holy damage.
  */
-export const CLASS_COLORS: Readonly<Record<ClassId, string>> = {
-  warrior: "#e0893a",
-  ranger: "#7fd36a",
-  mage: "#a98bff",
-  priest: "#fff1b8",
-};
+export const CAST_COLOR = "#fff6df";
 
 /** A heal: its number and its effect. */
 export const HEAL_COLOR = "#7ef29a";
