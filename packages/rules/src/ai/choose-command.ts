@@ -1,7 +1,8 @@
 import { absurd } from "effect";
 
-import { direction } from "../battle/context";
+import { direction, enemyHeroPosition } from "../battle/context";
 import { legalTargets, unitsInArea } from "../battle/targets";
+import { suddenDeathDamage } from "../battle/turn";
 import { LANE_LENGTH, otherSide, Command } from "../battle/types";
 import type {
   BattleState,
@@ -15,7 +16,9 @@ import { getCard } from "../content/cards";
 import { scaleForRank } from "../content/ranks";
 import type {
   CreatureCardDefinition,
+  DamageType,
   SkillCardDefinition,
+  SkillEffect,
 } from "../content/schema";
 
 /**
@@ -82,6 +85,96 @@ const blocksLane = (
   );
 };
 
+/** The weight of each point of Hero damage that a play removes. */
+const HERO_DAMAGE_WEIGHT = 3;
+
+/** The bonus of a play that makes the estimated damage not lethal. */
+const LETHAL_BONUS = 100;
+
+/** A Unit, or a new Unit from a play, that can block an enemy Unit. */
+type Blocker = Pick<UnitState, "owner" | "lane" | "position" | "flying">;
+
+/** Speed in the next action. The Unit was not summoned in that Turn, so Charge does not apply. */
+const nextSpeed = (unit: UnitState): number => {
+  if (unit.entangled) {
+    return 0;
+  }
+  return unit.hobbled > 0 ? Math.min(unit.speed, 1) : unit.speed;
+};
+
+/**
+ * True when a ground Unit of the other side is between `unit` and the Hero
+ * that it attacks. A Flying `unit` ignores all blockers. A Flying Unit does
+ * not block: in the Resolution Phase before the enemy Turn, it moves over the
+ * enemy Units and leaves the Square in front of them.
+ */
+const isBlocked = (unit: UnitState, blockers: readonly Blocker[]): boolean => {
+  const dir = direction(unit.owner);
+  return (
+    !unit.flying &&
+    blockers.some(
+      (blocker) =>
+        blocker.owner !== unit.owner &&
+        !blocker.flying &&
+        blocker.lane === unit.lane &&
+        (blocker.position - unit.position) * dir > 0
+    )
+  );
+};
+
+/**
+ * True when the next action of `unit` gets the enemy Hero in its Range. A
+ * melee Unit must get to its last Column: Range 1 from the Hero.
+ */
+const reachesHero = (unit: UnitState): boolean => {
+  const distance =
+    (enemyHeroPosition(unit.owner) - unit.position) * direction(unit.owner);
+  const moved = Math.min(nextSpeed(unit), distance - 1);
+  return distance - moved <= Math.max(unit.range, 1);
+};
+
+/**
+ * The damage that the Units of the other side deal to `side`'s Hero in their
+ * next action (GDD 9). It is an estimate, not a simulation: it does not
+ * predict fights, Crit or Rally. It uses only the Units on the Board, not the
+ * hidden Hand. `summoned` is the new Unit of a Creature Card play.
+ */
+const heroDamage = (
+  units: readonly UnitState[],
+  side: Side,
+  summoned?: Blocker
+): number => {
+  const blockers: readonly Blocker[] = summoned ? [...units, summoned] : units;
+  return units.reduce(
+    (sum, unit) =>
+      unit.owner !== side &&
+      unit.attack > 0 &&
+      !unit.frozen &&
+      !isBlocked(unit, blockers) &&
+      reachesHero(unit)
+        ? sum + unit.attack + unit.heroic
+        : sum,
+    0
+  );
+};
+
+/**
+ * The score for the Hero damage that a play removes. A play that makes the
+ * damage not lethal gets a bonus. Lethal also counts the Sudden Death damage
+ * at the next Start Step of `side` (the next Turn number for both Sides).
+ */
+const defenseScore = (
+  state: BattleState,
+  side: Side,
+  before: number,
+  after: number
+): number => {
+  const hp =
+    state.sides[side].hero.hp - suddenDeathDamage(state.turnNumber + 1);
+  const saved = hp - before <= 0 && hp - after > 0;
+  return (before - after) * HERO_DAMAGE_WEIGHT + (saved ? LETHAL_BONUS : 0);
+};
+
 /** The Column of a Square from `side`'s Hero, from 0. */
 const columnFrom = (side: Side, position: number): number =>
   side === "player" ? position : LANE_LENGTH - 1 - position;
@@ -115,14 +208,39 @@ const scoreCreature = (
   );
 };
 
+type DamageEffect = Extract<
+  SkillEffect,
+  { readonly type: "damageUnit" | "damageArea" | "damageLane" }
+>;
+
+interface SkillHit {
+  readonly unit: UnitState;
+  /** The damage after Armor, before Crit and Block. */
+  readonly damage: number;
+}
+
+/** The enemy Units that a damage Skill Card hits, with the damage to each. */
+const skillHits = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  effect: DamageEffect,
+  target: Target
+): SkillHit[] => {
+  const length = effect.type === "damageArea" ? effect.length : 1;
+  const amount = scaleForRank(effect.amount, card.rank);
+  return unitsInArea(state, otherSide(side), target, length).map((unit) => {
+    const armor =
+      effect.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
+    return { unit, damage: Math.max(0, amount - armor) };
+  });
+};
+
 const scoreDamage = (
-  units: readonly UnitState[],
-  amount: number,
-  damageType: string
+  hits: readonly SkillHit[],
+  damageType: DamageType
 ): number =>
-  units.reduce((sum, unit) => {
-    const armor = damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
-    const damage = Math.max(0, amount - armor);
+  hits.reduce((sum, { unit, damage }) => {
     if (damage >= unit.hp) {
       return sum + unitValue(unit) + 10;
     }
@@ -142,11 +260,8 @@ const scoreSkill = (
     case "damageUnit":
     case "damageArea":
     case "damageLane": {
-      const length = effect.type === "damageArea" ? effect.length : 1;
-      const units = unitsInArea(state, otherSide(side), target, length);
       return scoreDamage(
-        units,
-        scaleForRank(effect.amount, card.rank),
+        skillHits(state, side, card, effect, target),
         effect.damageType
       );
     }
@@ -171,16 +286,84 @@ const scoreSkill = (
   }
 };
 
+/**
+ * The Units after a Skill Card. A damage card removes the Units that it kills,
+ * and a Frost hit Freezes the others (GDD 4.7). Other Skill Cards do not
+ * change the Hero damage.
+ */
+const unitsAfterSkill = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  definition: SkillCardDefinition,
+  target: Target
+): UnitState[] => {
+  const { effect } = definition;
+  switch (effect.type) {
+    case "damageUnit":
+    case "damageArea":
+    case "damageLane": {
+      const hits = new Map(
+        skillHits(state, side, card, effect, target).map(
+          ({ unit, damage }) => [unit, damage] as const
+        )
+      );
+      return state.units.flatMap((unit) => {
+        const damage = hits.get(unit);
+        if (damage === undefined) {
+          return [unit];
+        }
+        if (damage >= unit.hp) {
+          return [];
+        }
+        return effect.damageType === "frost"
+          ? [{ ...unit, frozen: true }]
+          : [unit];
+      });
+    }
+    case "laneArmor":
+    case "lowerCountdown": {
+      return state.units;
+    }
+    default: {
+      return absurd(effect);
+    }
+  }
+};
+
+/** The score of a play: its value, plus the Hero damage that it removes. */
 const scorePlay = (
   state: BattleState,
   side: Side,
   card: HandCard,
-  target: Target
+  target: Target,
+  before: number
 ): number => {
   const definition = getCard(card.cardId);
-  return definition.kind === "creature"
-    ? scoreCreature(state, side, card, definition, target)
-    : scoreSkill(state, side, card, definition, target);
+  if (definition.kind === "skill") {
+    const after = heroDamage(
+      unitsAfterSkill(state, side, card, definition, target),
+      side
+    );
+    return (
+      scoreSkill(state, side, card, definition, target) +
+      defenseScore(state, side, before, after)
+    );
+  }
+  const summoned: Blocker | undefined =
+    target._tag === "Square"
+      ? {
+          owner: side,
+          lane: target.lane,
+          position: target.position,
+          flying: definition.keywords.flying ?? false,
+        }
+      : undefined;
+  const after = heroDamage(state.units, side, summoned);
+  return (
+    scoreCreature(state, side, card, definition, target) +
+    defenseScore(state, side, before, after)
+  );
 };
 
 /**
@@ -192,10 +375,11 @@ const scorePlay = (
 export const chooseCommand = (state: BattleState): Command => {
   const side = state.activeSide;
   const view = visibleTo(state, side);
+  const before = heroDamage(view.units, side);
   let best: { readonly score: number; readonly command: Command } | undefined;
   for (const [handIndex, card] of view.sides[side].hand.entries()) {
     for (const target of legalTargets(view, handIndex)) {
-      const score = scorePlay(view, side, card, target);
+      const score = scorePlay(view, side, card, target, before);
       if (score > 0 && (!best || score > best.score)) {
         best = { score, command: Command.PlayCard({ handIndex, target }) };
       }

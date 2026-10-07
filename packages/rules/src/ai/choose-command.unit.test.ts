@@ -41,6 +41,56 @@ const autoBattle = (seed: number, stageId: string, deckId: string) => {
 const stateOf = (seed: number, stageId: string, deckId: string): BattleState =>
   autoBattle(seed, stageId, deckId).state;
 
+/** A Spear Throw kills either Unit. The Tusk Brute in the other Lane is far away, and it has more value. */
+const spearThrowChoice = (
+  threat: Parameters<typeof placeUnit>[1],
+  setup: (state: BattleState) => void = () => {}
+) => {
+  const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
+  giveHand(state, "enemy", [["warrior.spearThrow", 0]]);
+  placeUnit(state, threat);
+  placeUnit(state, {
+    cardId: "orc.tuskBrute",
+    owner: "player",
+    lane: 1,
+    position: 3,
+    hp: 4,
+  });
+  setup(state);
+  return chooseCommand(state);
+};
+
+const spearThrowAt = (lane: number, position: number) =>
+  Command.PlayCard({
+    handIndex: 0,
+    target: Target.Square({ lane, position }),
+  });
+
+/** The enemy Hero has 3 HP. A Spear Throw kills a near Militia Recruit or a far Grukka of more value. */
+const lethalChoice = (turnNumber: number) => {
+  const state = emptyBattle({
+    lanes: 2,
+    activeSide: "enemy",
+    turnNumber,
+    enemy: { hp: 3 },
+  });
+  giveHand(state, "enemy", [["warrior.spearThrow", 0]]);
+  placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    lane: 0,
+    position: 9,
+  });
+  placeUnit(state, {
+    cardId: "orc.warchiefGrukka",
+    owner: "player",
+    lane: 1,
+    position: 3,
+    hp: 4,
+  });
+  return chooseCommand(state);
+};
+
 describe("visibleTo (GDD 9)", () => {
   it("hides the other side's Hand and both Decks", () => {
     const state = emptyBattle();
@@ -98,17 +148,18 @@ describe("chooseCommand (GDD 9)", () => {
         target: Target.Square({ lane: 0, position: 11 }),
       })
     );
+    // In the last Column, no Square blocks the Tusk Brute, so the Hero damage is the same for all plays.
     const pivot = emptyBattle({ activeSide: "enemy" });
     giveHand(pivot, "enemy", [["human.gateWarden", 0, "uncommon"]]);
     placeUnit(pivot, {
       cardId: "orc.tuskBrute",
       owner: "player",
-      position: 10,
+      position: 11,
     });
     expect(chooseCommand(pivot)).toEqual(
       Command.PlayCard({
         handIndex: 0,
-        target: Target.Square({ lane: 0, position: 9 }),
+        target: Target.Square({ lane: 0, position: 10 }),
       })
     );
   });
@@ -140,6 +191,98 @@ describe("chooseCommand (GDD 9)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["warrior.shieldWall", 0]]);
     expect(chooseCommand(state)).toEqual(Command.EndTurn());
+  });
+});
+
+describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
+  it("blocks an enemy Unit that its next action takes to the last Column", () => {
+    const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
+    giveHand(state, "enemy", [["human.militiaRecruit", 0]]);
+    placeUnit(state, {
+      cardId: "orc.scrapRaider",
+      owner: "player",
+      lane: 0,
+      position: 9,
+    });
+    placeUnit(state, {
+      cardId: "orc.tuskBrute",
+      owner: "player",
+      lane: 1,
+      position: 5,
+    });
+    expect(chooseCommand(state)).toEqual(
+      Command.PlayCard({
+        handIndex: 0,
+        target: Target.Square({ lane: 0, position: 10 }),
+      })
+    );
+  });
+
+  it("kills a Unit that will hit its Hero before a Unit of more value", () => {
+    expect(
+      spearThrowChoice({
+        cardId: "orc.scrapRaider",
+        owner: "player",
+        lane: 0,
+        position: 9,
+      })
+    ).toEqual(spearThrowAt(0, 9));
+  });
+
+  it("does not count an enemy Unit that a friendly ground Unit blocks", () => {
+    expect(
+      spearThrowChoice(
+        { cardId: "orc.scrapRaider", owner: "player", lane: 0, position: 9 },
+        (state) => {
+          placeUnit(state, {
+            cardId: "human.townBarricade",
+            owner: "enemy",
+            lane: 0,
+            position: 10,
+          });
+        }
+      )
+    ).toEqual(spearThrowAt(1, 3));
+  });
+
+  it("counts an enemy Flying Unit that is past a friendly blocker", () => {
+    expect(
+      spearThrowChoice(
+        {
+          cardId: "orc.skyreaver",
+          owner: "player",
+          lane: 0,
+          position: 9,
+          hp: 4,
+        },
+        (state) => {
+          placeUnit(state, {
+            cardId: "human.townBarricade",
+            owner: "enemy",
+            lane: 0,
+            position: 10,
+          });
+        }
+      )
+    ).toEqual(spearThrowAt(0, 9));
+  });
+
+  it("counts an enemy Ranged Unit that has the Hero in its Range", () => {
+    expect(
+      spearThrowChoice({
+        cardId: "human.crossbowGuard",
+        owner: "player",
+        lane: 0,
+        position: 9,
+      })
+    ).toEqual(spearThrowAt(0, 9));
+  });
+
+  it("removes lethal damage first, with the Sudden Death of its next Start Step", () => {
+    // 3 HP − 2 damage is not lethal before Sudden Death, so the Unit of more value dies.
+    expect(lethalChoice(1)).toEqual(spearThrowAt(1, 3));
+    // At the next Start Step (Turn 21), Sudden Death deals 1: 3 − 1 − 2 = 0.
+    expect(lethalChoice(20)).toEqual(spearThrowAt(0, 9));
   });
 });
 

@@ -68,13 +68,22 @@ const endRally = (ctx: StepContext): void => {
   }
 };
 
+/** The Sudden Death damage to the Hero of the active Side at the Start Step of a Turn (GDD 4.10). */
+export const suddenDeathDamage = (turnNumber: number): number => {
+  if (turnNumber < SUDDEN_DEATH_TURN) {
+    return 0;
+  }
+  return turnNumber >= SUDDEN_DEATH_DOUBLE_TURN ? 2 : 1;
+};
+
 const suddenDeath = (ctx: StepContext): void => {
   const { turnNumber, activeSide } = ctx.state;
-  if (turnNumber < SUDDEN_DEATH_TURN) {
+  const amount = suddenDeathDamage(turnNumber);
+  if (amount === 0) {
     return;
   }
   damageHero(ctx, activeSide, {
-    amount: turnNumber >= SUDDEN_DEATH_DOUBLE_TURN ? 2 : 1,
+    amount,
     damageType: "physical",
     source: "suddenDeath",
     crit: 0,
