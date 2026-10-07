@@ -16,8 +16,10 @@ export const MATCHUP_LEVEL = 5;
  * Tunnel Rats and Wild Hunt are provisional diagnostic Decks (Archetypes 2.1):
  * Creature Cards only, until the Ranger and Priest Skill Cards exist. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
- * so that a Matchup tests each card. The results of a diagnostic Deck are for
- * review, and they do not gate release.
+ * so that a Matchup tests each card. Human Heavy (Countdown 3 to 6) and Human
+ * Light (Countdown 1 to 3) are diagnostic Decks of one Race, so that a Matchup
+ * tests the Power Budget for each Countdown (ADR-0020). The results of a
+ * diagnostic Deck are for review, and they do not gate release.
  */
 export const ARCHETYPES: readonly Archetype[] = [
   {
@@ -129,6 +131,37 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "mage.fireball", "common"),
       ...copies(1, "mage.frostBolt", "common"),
       ...copies(1, "mage.flameWave", "uncommon"),
+    ],
+  },
+  {
+    id: "humanHeavy",
+    kind: "diagnostic",
+    classId: "warrior",
+    deck: [
+      ...copies(2, "human.halberdier", "common"),
+      ...copies(1, "human.gateWarden", "uncommon"),
+      ...copies(1, "human.bridgePikeman", "uncommon"),
+      ...copies(1, "human.dawnCleric", "uncommon"),
+      ...copies(2, "human.riverKnight", "uncommon"),
+      ...copies(2, "human.kingsCourier", "rare"),
+      ...copies(2, "human.paviseArbalist", "rare"),
+      ...copies(1, "human.dawnReliquary", "rare"),
+      ...copies(1, "human.ironBulwark", "epic"),
+      ...copies(1, "human.marshalElianVoss", "epic"),
+    ],
+  },
+  {
+    id: "humanLight",
+    kind: "diagnostic",
+    classId: "warrior",
+    deck: [
+      ...copies(3, "human.militiaRecruit", "common"),
+      ...copies(1, "human.townBarricade", "common"),
+      ...copies(3, "human.shieldbearer", "common"),
+      ...copies(3, "human.crossbowGuard", "common"),
+      ...copies(2, "human.halberdier", "common"),
+      ...copies(1, "human.bannerChaplain", "uncommon"),
+      ...copies(1, "human.dawnCleric", "uncommon"),
     ],
   },
 ];

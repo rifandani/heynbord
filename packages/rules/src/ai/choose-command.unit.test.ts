@@ -86,6 +86,8 @@ const lethalChoice = (turnNumber: number) => {
     owner: "player",
     lane: 1,
     position: 3,
+    // High Attack gives Grukka more value than the Militia Recruit.
+    attack: 8,
     hp: 4,
   });
   return chooseCommand(state);

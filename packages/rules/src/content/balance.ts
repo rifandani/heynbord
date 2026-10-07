@@ -1,4 +1,5 @@
 import { keywordValue } from "./keywords";
+import { scaleForRank } from "./ranks";
 import type {
   CreatureCardDefinition,
   DamageType,
@@ -46,10 +47,14 @@ const DAMAGE_TYPE_POINTS: Record<DamageType, number> = {
   holy: 2,
 };
 
-/** `power = Attack × 2 + HP + Speed × 2 + Keyword points`, plus Range and Damage Type points. */
+/**
+ * `power = Attack × 2 + HP + Speed × 2 + Keyword points`, plus Range and Damage
+ * Type points. Attack and HP are at the Base Rank, as the Keyword points are
+ * (ADR-0020).
+ */
 export const creaturePower = (card: CreatureCardDefinition): number =>
-  card.attack * 2 +
-  card.hp +
+  scaleForRank(card.attack, card.baseRank) * 2 +
+  scaleForRank(card.hp, card.baseRank) +
   card.speed * 2 +
   keywordPoints(card) +
   card.range +

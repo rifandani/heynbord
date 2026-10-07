@@ -112,6 +112,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Matchup**: Many Battles between two Archetypes, with the AI on both Sides, to measure if one Archetype is stronger than the other. _Avoid_: versus, pairing, mirror test
 
+**Power Points**: The strength of one Creature Card at its Base Rank, from its Attack, HP, Speed, Range, Damage Type and Keywords. _Avoid_: power level, rating, score, value
+
+**Power Budget**: The Power Points that a Creature Card can have for its Countdown. A Card must stay near its Power Budget. _Avoid_: cost, mana curve, stat budget
+
 **Graveyard**: The place for a Hero's Cards that are used or dead. _Avoid_: discard pile, cemetery, crypt
 
 **Keyword**: A named rule on a Card, for example Flying or Armor. _Avoid_: trait, perk, tag, ability

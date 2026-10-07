@@ -431,7 +431,7 @@ describe("damage (GDD 4.7)", () => {
       position: 5,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, wall.id)?.hp).toBe(15);
+    expect(unitById(next, wall.id)?.hp).toBe(9);
     expect(eventsOfType(events, "DamageDealt")[0]?.amount).toBe(0);
   });
 
@@ -764,7 +764,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
       position: 4,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, warden.id)?.hp).toBe(5);
+    expect(unitById(next, warden.id)?.hp).toBe(3);
   });
 
   it("moves when no enemy Unit is behind it or next to it, and a Unit without Pivot ignores the Unit behind it", () => {
@@ -1753,6 +1753,8 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       cardId: "feral.oldFrostmaw",
       owner: "player",
       position: 4,
+      // More Attack than the 4 HP of the first Unit, so Trample hits the second.
+      attack: 8,
     });
     placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -1854,7 +1856,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       hobbled: 0,
       entangled: false,
     });
-    expect(unitById(next, attacker.id)?.hp).toBe(10);
+    expect(unitById(next, attacker.id)?.hp).toBe(8);
     expect(eventsOfType(events, "StatusApplied")).toEqual([]);
     expect(eventsOfType(events, "UnitPushed")).toEqual([]);
   });

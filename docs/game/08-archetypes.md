@@ -42,12 +42,16 @@ The six main Archetypes form the release-gated Matchup matrix: 15 different pair
 
 **Vanguard Full and Raiders Full.** These diagnostic Decks use the full 15-card Human and Orc sets, so that the Matchups test each Human and Orc card. Each card is at its Base Rank. Each Deck has 11 Creature Cards, 3 Skill Cards of its Class and 1 Epic. Vanguard and Raiders do not change, so the release-gated results do not change. When Vanguard and Raiders change to the full sets, remove Vanguard Full and Raiders Full.
 
+**Human Heavy and Human Light.** These diagnostic Decks test the Power Budget for each Countdown ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Both Decks are Human and Warrior, with 14 Creature Cards and no Skill Cards. Each card is at its Base Rank. Thus the Countdown is the main difference. When the budget is correct, each Deck wins 40% to 60% against the other.
+
 | Deck | Class | Style | Deck |
 | --- | --- | --- | --- |
 | Tunnel Rats (diagnostic) | Ranger | Goblin: make the enemy plan slower. 6 copies with Sabotage, 5 with Hobble and 4 with Last Breath. | 1× Ankle Snatcher (C), 2× Fuse Runner (C), 2× Junk Slinger (C), 2× Tunnel Saboteur (C), 1× Scrap-Plate Guard (C), 1× Junk Barricade (U), 2× Grease Trapper (U), 1× Rocket Barrel Rider (U), 1× Mine Sapper (R), 1× Grand Gearjammer (E) |
 | Wild Hunt (diagnostic) | Priest | Feral: few and huge. 7 copies with Trample and 4 with Regeneration, with Web Spitter (Entangle), Frost Elk Matriarch (Rally) and Frostfang Lynx (Bleed 1). | 2× Bristleback Boar (C), 1× Crag Lizard (C), 1× Frostfang Lynx (C), 2× Cave Bear (C), 1× Web Spitter (C), 1× Cave Troll (U), 2× Crag Rhino (U), 1× Frost Elk Matriarch (U), 1× Avalanche Yeti (R), 1× Woolly Mammoth (R), 1× Mountain Colossus (E) |
 | Vanguard Full (diagnostic) | Warrior | Human: hold the line, with the full Human set. 2 Walls, 2 copies with Rally and 2 with Knockback. | 1× Town Barricade (C), 1× Militia Recruit (C), 1× Shieldbearer (C), 2× Crossbow Guard (C), 1× Halberdier (C), 1× Bridge Pikeman (U), 1× Banner Chaplain (U), 1× King's Courier (R), 1× Dawn Reliquary (R), 1× Marshal Elian Voss (E), 1× War Drums (C), 1× Shield Wall (C), 1× Spear Throw (U) |
 | Raiders Full (diagnostic) | Mage | Orc: rush the enemy Hero, with the full Orc set. 2 copies with Rally, 2 with Charge and 3 Fire Units. | 1× Badland Pup (C), 2× Scrap Raider (C), 1× Dusthide Brawler (C), 1× Cinderhorn Ram (U), 1× Warhowler Drummer (U), 1× Skyreaver (U), 1× Ashspit Hunter (R), 1× Mesa Pit-Fighter (R), 1× Pyreaxe Ravager (R), 1× Warband Standard-Bearer (E), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U) |
+| Human Heavy (diagnostic) | Warrior | Human, Countdown 3 to 6. The average Countdown is 3.9. | 2× Halberdier (C), 1× Gate Warden (U), 1× Bridge Pikeman (U), 1× Dawn Cleric (U), 2× River Knight (U), 2× King's Courier (R), 2× Pavise Arbalist (R), 1× Dawn Reliquary (R), 1× Iron Bulwark (E), 1× Marshal Elian Voss (E) |
+| Human Light (diagnostic) | Warrior | Human, Countdown 1 to 3. The average Countdown is 2.0. | 3× Militia Recruit (C), 1× Town Barricade (C), 3× Shieldbearer (C), 3× Crossbow Guard (C), 2× Halberdier (C), 1× Banner Chaplain (U), 1× Dawn Cleric (U) |
 
 ### 2.2 Risks to test for Goblin and Feral
 
@@ -66,46 +70,78 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 
 | Archetype | Opponent | Win rate | First-Side win rate | Average Turn | No Ready | Target |
 | --- | --- | --- | --- | --- | --- | --- |
-| Vanguard | Vanguard | 50.0% | 49.3% | 22.0 | 12.0 | Mirror |
-| Vanguard | Raiders | 50.6% | 51.0% | 19.7 | 9.9 | 45%–55% |
-| Vanguard | Tunnel Rats | 86.8% | 50.4% | 21.2 | 12.5 | Review |
-| Vanguard | Wild Hunt | 5.4% | 50.6% | 21.8 | 11.6 | Review |
-| Vanguard | Vanguard Full | 75.8% | 48.9% | 22.4 | 12.5 | Review |
-| Vanguard | Raiders Full | 20.2% | 50.6% | 20.1 | 10.1 | Review |
-| Raiders | Raiders | 50.0% | 51.4% | 19.1 | 9.2 | Mirror |
-| Raiders | Tunnel Rats | 92.5% | 50.7% | 18.5 | 9.8 | Review |
-| Raiders | Wild Hunt | 15.8% | 53.6% | 20.4 | 10.5 | Review |
-| Raiders | Vanguard Full | 87.5% | 49.3% | 18.1 | 8.6 | Review |
-| Raiders | Raiders Full | 29.8% | 51.7% | 19.4 | 9.5 | Review |
-| Tunnel Rats | Tunnel Rats | 50.0% | 47.8% | 23.4 | 14.7 | Mirror |
-| Tunnel Rats | Wild Hunt | 1.9% | 51.1% | 20.6 | 10.9 | Review |
-| Tunnel Rats | Vanguard Full | 31.7% | 51.9% | 23.2 | 13.7 | Review |
-| Tunnel Rats | Raiders Full | 4.4% | 51.4% | 18.5 | 8.9 | Review |
-| Wild Hunt | Wild Hunt | 50.0% | 49.1% | 27.1 | 17.5 | Mirror |
-| Wild Hunt | Vanguard Full | 97.9% | 50.5% | 21.1 | 11.9 | Review |
-| Wild Hunt | Raiders Full | 70.9% | 52.5% | 22.1 | 12.7 | Review |
-| Vanguard Full | Vanguard Full | 50.0% | 47.5% | 23.3 | 13.2 | Mirror |
-| Vanguard Full | Raiders Full | 5.9% | 50.6% | 18.8 | 8.8 | Review |
-| Raiders Full | Raiders Full | 50.0% | 51.1% | 20.5 | 10.7 | Mirror |
+| Vanguard | Vanguard | 50.0% | 46.7% | 23.4 | 13.3 | Mirror |
+| Vanguard | Raiders | 48.4% | 44.9% | 21.2 | 11.3 | 45%–55% |
+| Vanguard | Tunnel Rats | 96.3% | 50.9% | 21.3 | 12.6 | Review |
+| Vanguard | Wild Hunt | 6.9% | 50.7% | 23.0 | 12.8 | Review |
+| Vanguard | Vanguard Full | 85.0% | 49.1% | 23.0 | 13.1 | Review |
+| Vanguard | Raiders Full | 25.6% | 49.3% | 21.5 | 11.4 | Review |
+| Vanguard | Human Heavy | 0.3% | 50.0% | 18.3 | 8.3 | Review |
+| Vanguard | Human Light | 97.7% | 49.5% | 20.8 | 11.2 | Review |
+| Raiders | Raiders | 50.0% | 46.7% | 20.8 | 10.8 | Mirror |
+| Raiders | Tunnel Rats | 97.4% | 50.1% | 18.5 | 9.8 | Review |
+| Raiders | Wild Hunt | 16.6% | 50.3% | 21.9 | 11.9 | Review |
+| Raiders | Vanguard Full | 92.8% | 51.2% | 19.1 | 9.5 | Review |
+| Raiders | Raiders Full | 37.0% | 46.0% | 20.9 | 11.0 | Review |
+| Raiders | Human Heavy | 2.7% | 51.3% | 17.5 | 7.6 | Review |
+| Raiders | Human Light | 99.6% | 50.3% | 17.1 | 7.7 | Review |
+| Tunnel Rats | Tunnel Rats | 50.0% | 46.7% | 24.8 | 16.1 | Mirror |
+| Tunnel Rats | Wild Hunt | 1.6% | 51.0% | 20.7 | 11.1 | Review |
+| Tunnel Rats | Vanguard Full | 25.9% | 49.9% | 24.7 | 15.1 | Review |
+| Tunnel Rats | Raiders Full | 2.5% | 50.7% | 19.0 | 9.4 | Review |
+| Tunnel Rats | Human Heavy | 0.2% | 50.2% | 17.0 | 7.4 | Review |
+| Tunnel Rats | Human Light | 50.7% | 48.6% | 24.9 | 15.4 | 45%–55% |
+| Wild Hunt | Wild Hunt | 50.0% | 50.3% | 27.3 | 17.8 | Mirror |
+| Wild Hunt | Vanguard Full | 98.0% | 50.5% | 22.2 | 12.9 | Review |
+| Wild Hunt | Raiders Full | 67.0% | 51.1% | 22.8 | 13.3 | Review |
+| Wild Hunt | Human Heavy | 13.4% | 49.9% | 23.2 | 13.5 | Review |
+| Wild Hunt | Human Light | 98.6% | 51.1% | 20.9 | 11.6 | Review |
+| Vanguard Full | Vanguard Full | 50.0% | 49.1% | 25.0 | 14.7 | Mirror |
+| Vanguard Full | Raiders Full | 6.5% | 51.6% | 19.7 | 9.6 | Review |
+| Vanguard Full | Human Heavy | 0.4% | 50.2% | 17.1 | 7.3 | Review |
+| Vanguard Full | Human Light | 80.2% | 50.1% | 24.7 | 14.7 | Review |
+| Raiders Full | Raiders Full | 50.0% | 47.6% | 21.7 | 11.8 | Mirror |
+| Raiders Full | Human Heavy | 5.4% | 50.7% | 19.0 | 9.1 | Review |
+| Raiders Full | Human Light | 99.2% | 50.6% | 17.9 | 8.5 | Review |
+| Human Heavy | Human Heavy | 50.0% | 41.7% | 23.5 | 14.1 | Mirror |
+| Human Heavy | Human Light | 100.0% | 50.0% | 16.0 | 7.0 | Review |
+| Human Light | Human Light | 50.0% | 48.7% | 26.0 | 16.6 | Mirror |
 
-The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-06. The Vanguard and Raiders results did not change when the Goblin and Feral cards and Keywords came into the rules package. They also did not change when the 13 new Human and Orc cards came into the rules package.
+The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-07, after ADR-0020 (3.1).
 
 **Goblin and Feral risks (2.2).** The diagnostic Decks have no Skill Cards, and the AI ignores Sabotage, Trample, Entangle and Rally when it selects a play. Thus these results are evidence for review, not a balance approval.
 
 | Risk | Result | Finding |
 | --- | --- | --- |
-| Sabotage lock | The share of Turns with no Ready card (No Ready ÷ Average Turn). Vanguard: 59% against Tunnel Rats, 50% to 55% against the other Decks. Raiders: 53%, against 48% to 52%. Wild Hunt: 59%, against 55% to 65%. | No lock. Sabotage adds at most about 5 percentage points. Do not add an anti-lock rule now. |
-| Feral slow start | Raiders wins 15.8% against Wild Hunt. | The slow start does not occur. Raiders does not win above 55%. |
-| Trample against cheap Units | Deathless Host is not in the rules package. Wild Hunt wins 98.1% against Tunnel Rats, a Deck of cheap Units. | Not tested. Test it when Deathless Host exists. |
-| Hobble and Sabotage against slow Units | Tunnel Rats wins 1.9% against Wild Hunt. | The risk occurs in the other direction: Hobble and Sabotage do not stop Feral. |
+| Sabotage lock | The share of Turns with no Ready card (No Ready ÷ Average Turn). Vanguard: 59% against Tunnel Rats, 45% to 57% against the other Decks. Raiders: 53%, against 43% to 54%. Wild Hunt: 60%, against 56% to 65%. | No lock. Sabotage adds at most about 5 percentage points. Do not add an anti-lock rule now. |
+| Feral slow start | Raiders wins 16.6% against Wild Hunt. | The slow start does not occur. Raiders does not win above 55%. |
+| Trample against cheap Units | Deathless Host is not in the rules package. Wild Hunt wins 98.5% against Tunnel Rats, a Deck of cheap Units. | Not tested. Test it when Deathless Host exists. |
+| Hobble and Sabotage against slow Units | Tunnel Rats wins 1.6% against Wild Hunt. | The risk occurs in the other direction: Hobble and Sabotage do not stop Feral. |
 
-**Wild Hunt is too strong, and Tunnel Rats is too weak.** Wild Hunt wins 84% to 98% against Vanguard, Raiders and Tunnel Rats. Tunnel Rats wins 2% to 13% against Vanguard, Raiders and Wild Hunt. A test with Trample removed from all cards gives Wild Hunt 93.5% against Vanguard, and a test with no Feral Regeneration gives 95.0% (200 Battles each). Thus the Feral strength does not come mainly from Trample or Regeneration. Each Feral card is in its ±10% budget. A possible cause: the power points give too few points for high HP and Attack on one Unit. Review the Feral HP values and the Goblin Attack and HP values with the Ranger and Priest Skill Cards. Do this before Tunnel Rats and Wild Hunt become main Archetypes. This issue did not change card values.
+**Wild Hunt is too strong, and Tunnel Rats is too weak.** Before ADR-0020, Wild Hunt won 84% to 98% against Vanguard, Raiders and Tunnel Rats, and Tunnel Rats won 2% to 13% against Vanguard, Raiders and Wild Hunt. A test with Trample removed from all cards gave Wild Hunt 93.5% against Vanguard, and a test with no Feral Regeneration gave 95.0% (200 Battles each). Thus the Feral strength does not come mainly from Trample or Regeneration.
 
-**Knockback 2 and 3.** The Matchup above uses the Common Shieldbearer (Knockback 1). The same Vanguard Deck with that one copy at Epic (Knockback 2) wins 54.3% against Raiders. At Legendary (Knockback 3) it wins 58.0%. 58% is above the 55% band. Knockback 2 and 3 can lock a melee Unit whose Speed is lower than N: the Unit never reaches the Shieldbearer to attack it. Only Combine makes these copies. The power points use the Base Rank value, so the budget check does not see this lock.
+The cause is not the Race. It is the Power Budget (tests on 2026-10-07, 200 seeds each). A Goblin Deck of Countdown 3 to 6 cards won 99.5% against Wild Hunt. A Human Deck of Countdown 3 to 6 cards won 100% against a Human Deck of Countdown 1 to 3 cards. Wild Hunt has the highest average Countdown (3.4) and Tunnel Rats the lowest (2.3). There are two causes:
 
-**Bleed (ADR-0019).** Bleed changes no Wild Hunt win rate by more than 0.2 percentage points. This was measured on 2026-10-07 with `bun run sim matchup 1000`, against the same rules with no Bleed. Wild Hunt has 1 Frostfang Lynx (Bleed 1), and no Archetype has Old Frostmaw. The other Archetypes heal little: only Vanguard has a heal, 1 Dawn Cleric (Regeneration 1). Wild Hunt has 4 Regeneration copies, so Bleed matters most in the Wild Hunt mirror. Thus Bleed does not make Wild Hunt stronger. Test Bleed again when an Elf Archetype with healers exists. The other results on this branch changed for other reasons, so the table above has not changed.
+1. The Power Points used the Common Attack and HP, but a copy plays at its Base Rank: Rare ×1.45 and Epic ×1.75. The heavy Decks have the Rare and Epic cards. [ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md) fixes this (3.1).
+2. Each Countdown point gets 5 Power Points. All cards in the Hand count down at the same time, and a Hero draws 1 card each Turn, so a long Countdown is mostly a delay. With the Rank fix, a slope of about 1 Power Point for each Countdown point brought the heavy and light Decks near 50%. These tests used a rough stat fit.
 
-**Vanguard Full is weak, and Raiders Full is strong (for review).** Vanguard Full wins 24.1% against Vanguard, 12.4% against Raiders and 5.9% against Raiders Full. Raiders Full wins 79.8% against Vanguard and 70.2% against Raiders. Each new card is in its ±10% budget, and the values are the card concepts values. The AI ignores Rally when it selects a play. Thus these results are evidence for review, not a balance approval. Possible causes, not tested: Vanguard Full has 2 Walls with Attack 0 in place of attacking Units, and Raiders Full has more Charge and Fire. Review the Human and Orc values in a separate issue. This issue did not change card values.
+**After ADR-0020, the Rank fix alone does not fix it.** The table above has these results. Each one is outside its target:
+
+| Matchup | Win rate | Target |
+| --- | --- | --- |
+| Human Heavy against Human Light | 100.0% | 40% to 60% |
+| Wild Hunt against Vanguard | 93.1% | 35% to 65% |
+| Wild Hunt against Raiders | 83.5% | 35% to 65% |
+| Tunnel Rats against Vanguard | 3.8% | 35% to 65% |
+| Tunnel Rats against Raiders | 2.6% | 35% to 65% |
+
+Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, Wild Hunt won 93.8% against Vanguard and 85.0% against Raiders (200 seeds). Human Heavy wins 94.6% to 100% against each Deck except Wild Hunt (86.6%). Human Light wins 49.3% against Tunnel Rats and 19.9% or less against each other Deck. Thus the Countdown slope is the remaining cause. The slope search starts from these results. Do not change only the Feral and Goblin values.
+
+**Knockback 2 and 3.** This was measured before ADR-0020. The Matchup uses the Common Shieldbearer (Knockback 1). The same Vanguard Deck with that one copy at Epic (Knockback 2) wins 54.3% against Raiders. At Legendary (Knockback 3) it wins 58.0%. 58% is above the 55% band. Knockback 2 and 3 can lock a melee Unit whose Speed is lower than N: the Unit never reaches the Shieldbearer to attack it. Only Combine makes these copies. The power points use the Base Rank value, so the budget check does not see this lock.
+
+**Bleed (ADR-0019).** Bleed changes no Wild Hunt win rate by more than 0.2 percentage points. This was measured on 2026-10-07 with `bun run sim matchup 1000`, against the same rules with no Bleed. Wild Hunt has 1 Frostfang Lynx (Bleed 1), and no Archetype has Old Frostmaw. The other Archetypes heal little: only Vanguard has a heal, 1 Dawn Cleric (Regeneration 1). Wild Hunt has 4 Regeneration copies, so Bleed matters most in the Wild Hunt mirror. Thus Bleed does not make Wild Hunt stronger. Test Bleed again when an Elf Archetype with healers exists. The other results on that branch changed for other reasons, so the table did not change at that time.
+
+**Vanguard Full is weak, and Raiders Full is strong (for review).** Vanguard Full wins 14.9% against Vanguard, 7.2% against Raiders and 6.5% against Raiders Full. Raiders Full wins 74.5% against Vanguard and 63.0% against Raiders. Each new card is in its ±10% budget, and the values are the card concepts values. The AI ignores Rally when it selects a play. Thus these results are evidence for review, not a balance approval. Possible causes, not tested: Vanguard Full has 2 Walls with Attack 0 in place of attacking Units, and Raiders Full has more Charge and Fire. Review the Human and Orc values in a separate issue.
 
 ### 3.1 Balance changes
 
@@ -113,6 +149,7 @@ The table shows each pair one time. The reverse row has the other win rate (100%
 | --- | --- | --- |
 | 2026-10-05 | Scrap Raider HP 3 → 4. Ember Shaman Attack 3 → 4 and HP 5 → 6. Skyreaver HP 4 → 5. Howling Charger HP 5 → 6. Iron Bulwark HP 17 → 15. | Vanguard won 66.8% against Raiders. Most Orc cards were below their power budget, and Iron Bulwark was 8% above it. After the change, all 5 cards are within ±10% of their budget, and Vanguard wins 50.5%. |
 | 2026-10-07 | Old Frostmaw HP 14 → 13, and it gets Bleed 2. Frostfang Lynx gets Bleed 1 with no other change. | Bleed N costs N × 1 power points ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). With Bleed 2 and HP 14, Old Frostmaw was 11.1% above its budget. With HP 13 it is 8.3% above. The Frostfang Lynx is 6.3% above its budget. |
+| 2026-10-07 | The Power Points measure Attack and HP at the Base Rank ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). The Common Attack and HP of the 40 Uncommon, Rare and Epic Creature Cards go down, so that each card is within ±10% of its Power Budget again. The new values are in `cards.ts` and [10 — Card Concepts](./10-card-concepts.md). Countdown, Speed, Range, Damage Type and Keywords do not change. A Wall changes only its HP. Each card fits, so no card needs a written reason. | A Rare copy played ×1.45 and an Epic copy ×1.75 above its budget. Most fits keep the old power of the card. Each fit keeps the Attack-to-HP shape as near as the whole numbers let it. Pack Stalker, Sidestep Shiv and Warhowler Drummer have no fit with a nearer shape. Three fits are for the Matchup and the Stages. River Knight is 5/7 (+3.8%): the first fit had River Knight 4/7 and Skyreaver 2/5, and Vanguard won only 36.5% against Raiders and 39% of Stage 1-4 (200 seeds). Skyreaver is 3/4 (+9.5%): with 2/5, Raiders won only 54% of Stages 1-5 and 1-6. Warchief Grukka is 4/7 (+2.8%): with 4/8, Vanguard won 44.5% against Raiders. Now Vanguard wins 48.4%. Some Stage enemy Decks changed too ([14 — Campaign Stages](./14-campaign-stages.md)). |
 
 ## 4. When an Archetype or a card changes
 

@@ -58,13 +58,26 @@ const power = (cardId: string) => {
   return card.kind === "creature" ? creaturePower(card) : 0;
 };
 
+/** The Archetype with this ID. */
+const archetypeById = (id: string) =>
+  ARCHETYPES.find((archetype) => archetype.id === id);
+
+/** The cards in an Archetype, one for each copy. */
+const archetypeCards = (id: string) =>
+  archetypeById(id)?.deck.map((entry) => getCard(entry.cardId)) ?? [];
+
 /** The Races and Classes of the cards in an Archetype. */
 const archetypeGroups = (id: string) =>
   new Set(
-    ARCHETYPES.find((archetype) => archetype.id === id)?.deck.map((entry) => {
-      const card = getCard(entry.cardId);
-      return card.kind === "creature" ? card.race : card.class;
-    })
+    archetypeCards(id).map((card) =>
+      card.kind === "creature" ? card.race : card.class
+    )
+  );
+
+/** The Countdown of each Creature Card in an Archetype. */
+const archetypeCountdowns = (id: string) =>
+  archetypeCards(id).flatMap((card) =>
+    card.kind === "creature" ? [card.countdown] : []
   );
 
 describe("card content (CRD-01, technical design 3.5)", () => {
@@ -99,8 +112,20 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     const pup = getCard("orc.badlandPup");
     expect(pup.kind === "creature" && creaturePower(pup)).toBe(12);
     const arbalist = getCard("human.paviseArbalist");
-    expect(arbalist.kind === "creature" && creaturePower(arbalist)).toBe(26);
-    expect(arbalist.kind === "creature" && budgetDeviation(arbalist)).toBe(0);
+    expect(arbalist.kind === "creature" && creaturePower(arbalist)).toBe(24);
+    expect(arbalist.kind === "creature" && budgetDeviation(arbalist)).toBe(
+      -769
+    );
+  });
+
+  it("measures Attack and HP at the Base Rank (ADR-0020)", () => {
+    const recruit = getCard("human.militiaRecruit");
+    if (recruit.kind !== "creature") {
+      throw new Error("Militia Recruit is a Creature Card");
+    }
+    // 2/4 is 4/7 at Epic: 4 × 2 + 7 + Speed 2 × 2.
+    expect(creaturePower(recruit)).toBe(12);
+    expect(creaturePower({ ...recruit, baseRank: "epic" })).toBe(19);
   });
 
   it("starts each Keyword value table at the Base Rank, and a higher Rank never goes down", () => {
@@ -231,12 +256,12 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("gives Sabotage N × 4, Trample 3, Entangle 2 and Rally N × 3 power points (GDD 13)", () => {
     expect(power("goblin.tunnelSaboteur")).toBe(15);
-    expect(power("goblin.grandGearjammer")).toBe(26);
+    expect(power("goblin.grandGearjammer")).toBe(27);
     expect(power("feral.bristlebackBoar")).toBe(16);
     expect(power("feral.webSpitter")).toBe(21);
-    expect(power("feral.frostElkMatriarch")).toBe(25);
+    expect(power("feral.frostElkMatriarch")).toBe(27);
     // Unique and Wall use 0 points.
-    expect(power("feral.oldFrostmaw")).toBe(39);
+    expect(power("feral.oldFrostmaw")).toBe(38);
     expect(power("goblin.junkBarricade")).toBe(16);
   });
 
@@ -514,6 +539,8 @@ describe("Decks and Stages", () => {
       ["wildHunt", "diagnostic"],
       ["vanguardFull", "diagnostic"],
       ["raidersFull", "diagnostic"],
+      ["humanHeavy", "diagnostic"],
+      ["humanLight", "diagnostic"],
     ]);
     // Creature Cards only: one Race, and no Skill Card.
     expect(archetypeGroups("tunnelRats")).toEqual(new Set(["goblin"]));
@@ -523,6 +550,18 @@ describe("Decks and Stages", () => {
       new Set(["human", "warrior"])
     );
     expect(archetypeGroups("raidersFull")).toEqual(new Set(["orc", "mage"]));
+  });
+
+  it("gives Human Heavy Countdown 3 to 6 and Human Light Countdown 1 to 3, both Warrior (ADR-0020)", () => {
+    for (const [id, min, max] of [
+      ["humanHeavy", 3, 6],
+      ["humanLight", 1, 3],
+    ] as const) {
+      expect(archetypeGroups(id)).toEqual(new Set(["human"]));
+      expect(archetypeById(id)?.classId).toBe("warrior");
+      expect(Math.min(...archetypeCountdowns(id)), id).toBe(min);
+      expect(Math.max(...archetypeCountdowns(id)), id).toBe(max);
+    }
   });
 
   it("has Archetypes with unique IDs that obey the Deck rules (GDD 13)", () => {

@@ -692,12 +692,13 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
 
 1. Each Creature Card gets **power points** from its stats and Keywords.
    - Start formula: `power = Attack × 2 + HP + Speed × 2 + Keyword points`.
+   - Attack, HP and the Keyword values count at the Base Rank of the Card. The card data gives the Common Attack and HP. Use them with the Rank scale of the Base Rank (5.3). For example, an Epic card with Common Attack 4 counts Attack 7 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)).
    - Add Range and Damage Type points: Range = its value, Fire = 3, Frost = 3 and Holy = 2.
    - Start Keyword points: Armor N = N × 3, Bleed N = N × 1, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 2 and Trample = 3.
    - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
-2. Each Countdown has a power budget for the Base Rank. Start formula: `budget = 6 + Countdown × 5`.
+2. Each Countdown has a power budget for the Base Rank. Start formula: `budget = 6 + Countdown × 5`. The slope of 5 Power Points for each Countdown point is under review. In the Matchups, a Deck of long-Countdown cards wins against a Deck of short-Countdown cards of the same Race ([08 — Archetypes, section 3](./08-archetypes.md#3-matchup-results)).
 3. A card must be within ±10% of its budget. A card outside this range needs a written reason (for example "weak stats, strong combo").
 4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).
 5. Check each Archetype's win rate in each **Matchup**. The target is 45% to 55% against the other Archetypes.
