@@ -92,7 +92,7 @@ const HERO_DAMAGE_WEIGHT = 3;
 const LETHAL_BONUS = 100;
 
 /** A Unit, or a new Unit from a play, that can block an enemy Unit. */
-type Blocker = Pick<UnitState, "owner" | "lane" | "position" | "flying">;
+type Blocker = Pick<UnitState, "owner" | "lane" | "position">;
 
 /** Speed in the next action. The Unit was not summoned in that Turn, so Charge does not apply. */
 const nextSpeed = (unit: UnitState): number => {
@@ -103,10 +103,9 @@ const nextSpeed = (unit: UnitState): number => {
 };
 
 /**
- * True when a ground Unit of the other side is between `unit` and the Hero
- * that it attacks. A Flying `unit` ignores all blockers. A Flying Unit does
- * not block: in the Resolution Phase before the enemy Turn, it moves over the
- * enemy Units and leaves the Square in front of them.
+ * True when a Unit of the other side is between `unit` and the Hero that it
+ * attacks. As in Movement (GDD 4.5), a Flying `unit` moves over all Units,
+ * but a ground `unit` stops before all enemy Units, also Flying Units.
  */
 const isBlocked = (unit: UnitState, blockers: readonly Blocker[]): boolean => {
   const dir = direction(unit.owner);
@@ -115,7 +114,6 @@ const isBlocked = (unit: UnitState, blockers: readonly Blocker[]): boolean => {
     blockers.some(
       (blocker) =>
         blocker.owner !== unit.owner &&
-        !blocker.flying &&
         blocker.lane === unit.lane &&
         (blocker.position - unit.position) * dir > 0
     )
@@ -356,7 +354,6 @@ const scorePlay = (
           owner: side,
           lane: target.lane,
           position: target.position,
-          flying: definition.keywords.flying ?? false,
         }
       : undefined;
   const after = heroDamage(state.units, side, summoned);

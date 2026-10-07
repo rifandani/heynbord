@@ -245,6 +245,22 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
     ).toEqual(spearThrowAt(1, 3));
   });
 
+  it("does not count an enemy ground Unit that a friendly Flying Unit blocks", () => {
+    expect(
+      spearThrowChoice(
+        { cardId: "orc.scrapRaider", owner: "player", lane: 0, position: 9 },
+        (state) => {
+          placeUnit(state, {
+            cardId: "orc.skyreaver",
+            owner: "enemy",
+            lane: 0,
+            position: 10,
+          });
+        }
+      )
+    ).toEqual(spearThrowAt(1, 3));
+  });
+
   it("counts an enemy Flying Unit that is past a friendly blocker", () => {
     expect(
       spearThrowChoice(
