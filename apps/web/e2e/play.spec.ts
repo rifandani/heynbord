@@ -569,6 +569,27 @@ test.describe("Town", () => {
     ).toHaveText("0t");
   });
 
+  test("a closed balance tooltip does not stay in the corner after clicks on the other balances", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+    // Hover opens a tooltip only after a first pointer press.
+    await page.getByTestId("balance-coin").click();
+    await page.mouse.move(0, 0);
+    // Each click focuses a balance, and the click on the next one blurs it
+    // after hover already closed its tooltip.
+    for (const kind of ["essence", "heynstones", "coin"]) {
+      await page.getByTestId(`balance-${kind}`).hover();
+      await expect(page.getByTestId(`balance-tooltip-${kind}`)).toBeVisible();
+      await page.getByTestId(`balance-${kind}`).click();
+    }
+    await page.getByTestId("balance-coin").click();
+    await expect(page.getByTestId("balance-tooltip-coin")).toBeVisible();
+    await expect(page.getByTestId("balance-tooltip-essence")).toHaveCount(0);
+    await expect(page.getByTestId("balance-tooltip-heynstones")).toHaveCount(0);
+  });
+
   test("the Settings button opens the Settings dialog, and the volume stays after a reload", async ({
     page,
   }) => {
@@ -634,6 +655,28 @@ test.describe("Campaign", () => {
     await expect(page.getByTestId("stage-tip-1-4")).toHaveText(
       "Win Stage 1-3 first."
     );
+  });
+
+  test("a closed Star Chest tooltip does not stay in the corner after clicks on the other chests", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await page.getByTestId("building-townGate").click();
+    const chests = page.locator('[data-testid^="star-chest-"]');
+    await expect(chests).toHaveCount(3);
+    // Hover opens a tooltip only after a first pointer press.
+    await chests.first().click();
+    await page.mouse.move(0, 0);
+    // Each click focuses a chest, and the click on the next one blurs it
+    // after hover already closed its tooltip.
+    const tooltips = page.getByRole("tooltip");
+    for (const chest of await chests.all()) {
+      await chest.hover();
+      await expect(tooltips).toHaveCount(1);
+      await chest.click();
+    }
+    await chests.last().click();
+    await expect(tooltips).toHaveCount(1);
   });
 
   test("the Stage Panel shows the Stage; Esc closes it, then Esc goes to the Town", async ({

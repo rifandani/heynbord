@@ -20,8 +20,11 @@ import {
   DAMAGE_GLYPH,
 } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { StatusIcon } from "@/features/battle/components/status-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
+import type { Status } from "@/features/battle/scene/status-visuals";
+import { STATUS_ORDER } from "@/features/battle/scene/status-visuals";
 import { useGameText } from "@/features/battle/use-game-text";
 
 const INK_MUTED = "text-[#6b5238]";
@@ -86,21 +89,31 @@ const KindLine = ({
   </div>
 );
 
-/** One line of the Unit status: an icon, a name in Keyword rust, and its rule. */
+const isStatus = (icon: Status | Glyph): icon is Status =>
+  STATUS_ORDER.some((status) => status === icon);
+
+/**
+ * One line of the Unit status: an icon, a name in Keyword rust, and its rule.
+ * A Status uses its badge icon from the effects atlas, the same as above the
+ * Unit; bonus Armor has no badge, so it uses a glyph.
+ */
 const StatusLine = ({
-  glyph,
+  icon,
   name,
   children,
 }: {
-  readonly glyph: Glyph;
+  readonly icon: Status | Glyph;
   readonly name: string;
   readonly children?: ReactNode;
 }) => (
   <li className="flex gap-1.5">
-    <GlyphIcon
-      glyph={glyph}
-      className="mt-0.5 size-3.5 shrink-0 text-[#7a4c1a]"
-    />
+    <span className="mt-px flex size-4 shrink-0 items-center justify-center">
+      {isStatus(icon) ? (
+        <StatusIcon status={icon} className="size-4" />
+      ) : (
+        <GlyphIcon glyph={icon} className="size-3.5 text-[#7a4c1a]" />
+      )}
+    </span>
     <span>
       <span className="font-bold text-[#b4521a]">{name}</span>
       {children ? <> {children}</> : null}
@@ -124,7 +137,7 @@ const BonusArmorStatus = ({ unit }: { readonly unit: UnitView }) => {
   }
   return (
     <StatusLine
-      glyph="shield"
+      icon="shield"
       name={tr("battle.status.bonusArmor", { value: unit.bonusArmor })}
     >
       {tr("battle.status.bonusArmorRule", { turns: unit.bonusArmorTurns })}
@@ -138,7 +151,7 @@ const BurnStatus = ({ unit }: { readonly unit: UnitView }) => {
     return null;
   }
   return (
-    <StatusLine glyph="flame" name={tr("battle.status.burn")}>
+    <StatusLine icon="burn" name={tr("battle.status.burn")}>
       {tr("battle.status.burnRule", { value: unit.burn })}
     </StatusLine>
   );
@@ -150,7 +163,7 @@ const FrozenStatus = ({ unit }: { readonly unit: UnitView }) => {
     return null;
   }
   return (
-    <StatusLine glyph="snow" name={tr("battle.status.frozen")}>
+    <StatusLine icon="freeze" name={tr("battle.status.frozen")}>
       {tr("battle.status.frozenRule")}
     </StatusLine>
   );
@@ -162,7 +175,7 @@ const EntangledStatus = ({ unit }: { readonly unit: UnitView }) => {
     return null;
   }
   return (
-    <StatusLine glyph="vine" name={tr("battle.status.entangled")}>
+    <StatusLine icon="entangle" name={tr("battle.status.entangled")}>
       {tr("battle.status.entangledRule")}
     </StatusLine>
   );
@@ -175,7 +188,7 @@ const HobbledStatus = ({ unit }: { readonly unit: UnitView }) => {
   }
   return (
     <StatusLine
-      glyph="speed"
+      icon="hobble"
       name={tr("battle.status.hobbled", { value: unit.hobbled })}
     >
       {tr("battle.status.hobbledRule")}
@@ -190,7 +203,7 @@ const BleedingStatus = ({ unit }: { readonly unit: UnitView }) => {
   }
   return (
     <StatusLine
-      glyph="heart"
+      icon="bleed"
       name={tr("battle.status.bleeding", { value: unit.bleeding })}
     >
       {tr("battle.status.bleedingRule")}
@@ -205,7 +218,7 @@ const PoisonStatus = ({ unit }: { readonly unit: UnitView }) => {
   }
   return (
     <StatusLine
-      glyph="leaf"
+      icon="poison"
       name={tr("battle.status.poisoned", { value: unit.poisoned })}
     >
       {tr("battle.status.poisonedRule")}
@@ -305,7 +318,6 @@ const CreatureBody = ({
       <KindLine glyph={raceGlyph(card.race)} owner={unitOwner(unit)}>
         {tr(`races.${card.race}`)} · {tr(`roles.${card.role}`)}
       </KindLine>
-      {unit ? <UnitStatus unit={unit} /> : null}
       <Divider />
       <ul className="flex flex-wrap gap-x-3 gap-y-1">
         <Stat glyph={DAMAGE_GLYPH[card.damageType]}>
@@ -317,6 +329,7 @@ const CreatureBody = ({
         </Stat>
       </ul>
       <KeywordRules content={content} />
+      {unit ? <UnitStatus unit={unit} /> : null}
       <p className="sr-only">
         {tr("battle.attack")} {shownAttack(unit, card, rank)}
         <HpSr unit={unit} card={card} rank={rank} />
@@ -390,7 +403,7 @@ const SkillPanel = ({
   return <SkillBody card={card} content={content} />;
 };
 
-/** The kind line, the Unit status, the stat row and the rules of the card. */
+/** The kind line, the stat row, the rules of the card and the Unit status. */
 const PanelBody = ({
   card,
   rank,
@@ -436,7 +449,7 @@ const panelClass = (left: boolean) =>
   );
 
 const flavorClass = (unit: UnitView | undefined) =>
-  cn("mt-auto pt-2", unit && "[@media(max-height:500px)]:hidden");
+  cn("mt-auto pt-1", unit && "[@media(max-height:500px)]:hidden");
 
 const placeLabel = (unit: UnitView | undefined) =>
   unit?.owner === "enemy" ? "battle.enemyUnit" : "battle.yourUnit";

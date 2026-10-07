@@ -2,8 +2,9 @@ import { cn } from "cn";
 import type { CSSProperties } from "react";
 import { useState } from "react";
 import type { PressEvent } from "react-aria-components";
-import { Button, Tooltip, TooltipTrigger } from "react-aria-components";
+import { Button, TooltipTrigger } from "react-aria-components";
 
+import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
   BossCrown,
@@ -182,14 +183,14 @@ export const StageMarker = ({
       shouldCloseOnPress={false}
     >
       {marker}
-      <Tooltip
+      <GameTooltip
         placement="top"
         offset={6}
         className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1.5 text-xs font-semibold text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
         data-testid={`stage-tip-${stage.id}`}
       >
         {tr("campaign.winFirst", { id: stop.after.id })}
-      </Tooltip>
+      </GameTooltip>
     </TooltipTrigger>
   );
 };

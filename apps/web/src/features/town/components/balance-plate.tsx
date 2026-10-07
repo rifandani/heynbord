@@ -4,8 +4,9 @@ import { cn } from "cn";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { PressEvent } from "react-aria-components";
-import { Button, Tooltip, TooltipTrigger } from "react-aria-components";
+import { Button, TooltipTrigger } from "react-aria-components";
 
+import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
   BalanceIcon,
@@ -66,7 +67,7 @@ const Balance = ({
       >
         {children}
       </Button>
-      <Tooltip
+      <GameTooltip
         placement="bottom end"
         offset={8}
         className="max-w-56 rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1.5 text-xs text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
@@ -76,7 +77,7 @@ const Balance = ({
         <span className="block text-[#fff6df]/85">
           {tr(`town.balances.${kind}.use`)}
         </span>
-      </Tooltip>
+      </GameTooltip>
     </TooltipTrigger>
   );
 };

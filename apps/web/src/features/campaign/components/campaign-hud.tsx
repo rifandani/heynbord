@@ -2,9 +2,10 @@ import { cn } from "cn";
 import type { ReactElement } from "react";
 import { useMemo, useState } from "react";
 import type { PressEvent } from "react-aria-components";
-import { Button, Tooltip, TooltipTrigger } from "react-aria-components";
+import { Button, TooltipTrigger } from "react-aria-components";
 import { HiChevronRight } from "react-icons/hi2";
 
+import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
@@ -49,9 +50,9 @@ const TipPiece = ({
       shouldCloseOnPress={false}
     >
       {children(onPress)}
-      <Tooltip placement="bottom" offset={8} className={TOOLTIP}>
+      <GameTooltip placement="bottom" offset={8} className={TOOLTIP}>
         {tip}
-      </Tooltip>
+      </GameTooltip>
     </TooltipTrigger>
   );
 };

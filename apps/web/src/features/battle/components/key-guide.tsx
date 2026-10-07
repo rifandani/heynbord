@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Tooltip, TooltipTrigger } from "react-aria-components";
+import { TooltipTrigger } from "react-aria-components";
 
 import { KEY_GUIDE } from "@/features/battle/components/battle-keys";
 import { GameButton } from "@/features/battle/components/game-button";
+import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 
@@ -53,7 +54,7 @@ export const KeyGuide = () => {
       >
         <GlyphIcon glyph="info" className="size-4" />
       </GameButton>
-      <Tooltip
+      <GameTooltip
         placement="bottom"
         offset={8}
         className="rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-3 py-2 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
@@ -79,7 +80,7 @@ export const KeyGuide = () => {
             </div>
           ))}
         </dl>
-      </Tooltip>
+      </GameTooltip>
     </TooltipTrigger>
   );
 };

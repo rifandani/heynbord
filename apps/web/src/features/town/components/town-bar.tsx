@@ -1,13 +1,9 @@
 import { cn } from "cn";
 import { useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
-import {
-  Button,
-  DialogTrigger,
-  Tooltip,
-  TooltipTrigger,
-} from "react-aria-components";
+import { Button, DialogTrigger, TooltipTrigger } from "react-aria-components";
 
+import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
@@ -255,7 +251,7 @@ const Shortcut = ({
             lifted={dialogOpen}
           />
         </Button>
-        <Tooltip
+        <GameTooltip
           placement="top"
           offset={14}
           className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1 text-center text-xs font-semibold text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
@@ -263,7 +259,7 @@ const Shortcut = ({
         >
           {name}
           <OpensLater locked={locked} />
-        </Tooltip>
+        </GameTooltip>
       </TooltipTrigger>
       {dialog === "deck" ? (
         <DeckDialog isOpen={dialogOpen} onOpenChange={setDialogOpen} />

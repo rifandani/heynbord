@@ -6,10 +6,11 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 v1:
 
+- /grill-with-docs adjust Keyword "Charge" to be "Charge N"
+- /grill-with-docs for Wall units, i think we should increase the deployable starting squares to 4, what do u think? its kinda weird that Wall that cant move is deployable in normal 3 squares
 - follow pattern web/art/fx/raw how to setup prompts and style reference to create more creature unit card
-- the Stop hooks in claude code / cursor / codex settings hinder's our parallel agent executions, lets just use "check:dupes" in PostToolUse / afterFileEdit
 - /grill-with-docs Wild Hunt is too strong and Tunnel Rats is too weak right? can we balance it
-- /grill-with-docs we need to also have economy simulation script, not only battle simulation
+- /grill-with-docs dont u think we need to also have economy simulation script, not only battle simulation
 - maybe we could have something called "Power" to show the current deck power and we can also use it to show recommended power in campaign stages
 - if a 0 Base Attack unit have poison, or burn, etc skills, can they inflict those posion or burn, etc to the enemy unit?
 - /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
@@ -35,13 +36,6 @@ v2:
 - Asynchronous online: an account, a server, PvP against other players' _saved defense decks_ (the AI controls them), leaderboards and guilds
 - Real-time PvP (for PvP the options should be 1v1, 2v2, 4v4, there's no 3v3 because of the lanes) and a persistent shared world
 - Enemy AI: a search-based AI (for example Monte Carlo) that uses the deterministic engine, can come later for PvP defense decks
-
-## Re-check / improve later
-
-- Battle rules: Turn structure, Countdown, summon, movement, attack, damage, death, win and loss (GDD section 4)
-- 6 Keywords: Armor, Flying, Charge, Retaliation, Regeneration, Heroic
-- More animations in Battle Events
-- The JS is now most of the precache. catalog-page-_.js is 1.4 MiB, which is large for a catalog page. It possibly includes three.js. battle-canvas-_.js is 1.0 MiB. You can find the cause in html/visualizer-stats.html.
 
 ## Original Gameplay Ideas
 
