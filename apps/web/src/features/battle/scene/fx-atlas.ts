@@ -15,7 +15,7 @@ const FX_ATLAS_URL = "/battle/fx-atlas.webp";
  * True when `FX_ATLAS_URL` is in `public/`. Until then the effects use the
  * canvas placeholders, with no request for the missing file.
  */
-const FX_ATLAS_PAINTED = false;
+const FX_ATLAS_PAINTED = true;
 
 /** A rectangle in the atlas, in px from the top left corner. */
 export interface FxCell {

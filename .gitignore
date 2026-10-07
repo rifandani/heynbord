@@ -90,3 +90,6 @@ prisma/_sqlite/migrations
 
 # OWASP ZAP writes DAST reports here. They are rebuilt on demand.
 .zap-reports/
+
+# effects atlas: images from ChatGPT, prompts and the contact sheet (#12)
+apps/web/art/fx/raw/
