@@ -358,6 +358,93 @@ describe("fxForEvent for attacks and hits (web ADR-0009)", () => {
   });
 });
 
+/** The burst, the Square and the start of each dust puff. */
+const puffs = (fxs: readonly Fx[]) =>
+  fxs.map((fx) =>
+    fx.kind === "particles"
+      ? { burst: fx.burst, x: fx.x, z: fx.z, start: fx.start }
+      : null
+  );
+
+describe("fxForEvent for movement (dust)", () => {
+  const [mover] = view.units;
+  const unitId = mover?.id ?? 0;
+  const lane = mover?.lane ?? 0;
+  const withFlying = (flying: boolean) => ({
+    ...view,
+    units: view.units.map((unit) =>
+      unit.id === unitId ? { ...unit, flying } : unit
+    ),
+  });
+  const ground = withFlying(false);
+  const move = { _tag: "UnitMoved", unitId, lane, from: 5, to: 3 } as const;
+  const push = { _tag: "UnitPushed", unitId, lane, from: 5, to: 7 } as const;
+
+  it("puts a puff at the feet of a moving Unit on each Square, when it gets there", () => {
+    expect(mover).toBeDefined();
+    const fx = fxForEvent(move, ground, ground, 10, 1);
+    const z = laneZ(lane, view.lanes);
+    expect(puffs(fx)).toEqual([
+      { burst: "move", x: squareX(4), z, start: expect.closeTo(10.19) },
+      { burst: "move", x: squareX(3), z, start: expect.closeTo(10.38) },
+    ]);
+    for (const puff of fx) {
+      expect(puff).toMatchObject({ kind: "particles", scale: 1 });
+      // At the feet, not at the middle of the figure.
+      expect(puff.kind === "particles" && puff.height).toBeLessThan(0.3);
+    }
+  });
+
+  it("puts a larger push puff on each Square of a push, when the Unit gets there", () => {
+    const fx = fxForEvent(push, ground, ground, 2, 1);
+    expect(puffs(fx)).toEqual([
+      {
+        burst: "push",
+        x: squareX(6),
+        z: expect.any(Number),
+        start: expect.closeTo(2 + 0.16 * (1 - 0.5 ** (1 / 3))),
+      },
+      {
+        burst: "push",
+        x: squareX(7),
+        z: expect.any(Number),
+        start: expect.closeTo(2.16),
+      },
+    ]);
+  });
+
+  it("mirrors the dust of a Unit that goes to the left", () => {
+    expect(fxForEvent(move, ground, ground, 0, 1)[0]).toMatchObject({
+      mirror: true,
+    });
+    expect(fxForEvent(push, ground, ground, 0, 1)[0]).toMatchObject({
+      mirror: false,
+    });
+  });
+
+  it("starts the puffs twice as fast at speed ×2, and does not change the event times", () => {
+    const fast = fxForEvent(move, ground, ground, 0, 2);
+    expect(puffs(fast).map((puff) => puff?.start)).toEqual([
+      expect.closeTo(0.095),
+      expect.closeTo(0.19),
+    ]);
+    expect(durationOf(fast[0])).toBeCloseTo(
+      durationOf(fxForEvent(move, ground, ground, 0, 1)[0]) / 2
+    );
+    expect(eventDuration(move, 1, ground)).toBe(380);
+    expect(eventDuration(push, 1, ground)).toBe(160);
+  });
+
+  it("makes no dust for a Flying Unit, or for a Unit that is not on the Board", () => {
+    const flying = withFlying(true);
+    expect(fxForEvent(move, flying, flying, 0, 1)).toEqual([]);
+    expect(fxForEvent(push, flying, flying, 0, 1)).toEqual([]);
+    expect(fxForEvent({ ...move, unitId: 999 }, ground, ground, 0, 1)).toEqual(
+      []
+    );
+  });
+});
+
 const ring = (start: number): Fx => ({
   kind: "ring",
   color: "#fff",

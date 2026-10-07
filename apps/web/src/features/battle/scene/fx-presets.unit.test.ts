@@ -12,6 +12,8 @@ describe("the attack and hit presets (web ADR-0009)", () => {
       "hit:holy",
       "hit:physical",
       "melee",
+      "move",
+      "push",
       "ranged",
     ]);
   });
@@ -32,8 +34,17 @@ describe("the attack and hit presets (web ADR-0009)", () => {
     ["hit:frost", ["frost-shard", "frost-shard"]],
     ["hit:holy", ["flare", "glow"]],
     ["hit:blocked", ["spark", "spark"]],
+    ["move", ["dust", "dust"]],
+    ["push", ["dust", "dust", "dust"]],
   ] as const)("gives %s the atlas images of the issue", (key, slots) => {
     expect(presetSlots(FX_PRESETS[key])).toEqual(slots);
+  });
+
+  it("makes a push puff larger than a Movement puff", () => {
+    expect(FX_PRESETS.push.size).toBeGreaterThan(FX_PRESETS.move.size);
+    expect(FX_PRESETS.push.spray?.count).toBeGreaterThan(
+      FX_PRESETS.move.spray?.count ?? 0
+    );
   });
 
   it("shows a Blocked hit in grey, with no burst", () => {

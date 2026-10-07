@@ -158,6 +158,42 @@ describe("hit bursts (web ADR-0009)", () => {
   );
 });
 
+const dust = (preset: "move" | "push", mirror = false): Emitter => ({
+  ...burst(1, preset),
+  mirror,
+});
+
+describe("dust bursts", () => {
+  it("shows a push as more dust than a Movement", () => {
+    expect(burstParticleCount("push")).toBeGreaterThan(
+      burstParticleCount("move")
+    );
+    const [movePuff] = spawnParticles([dust("move")], 1.2, 200);
+    const [pushPuff] = spawnParticles([dust("push")], 1.2, 200);
+    expect(movePuff?.slot).toBe("dust");
+    expect(pushPuff?.size).toBeGreaterThan(movePuff?.size ?? 0);
+  });
+
+  it("leaves a streak of dust behind a Pushed Unit, on the side it came from", () => {
+    // The emitter is at x = 2. The Unit goes to the right, so the streak is to the left.
+    const right = spawnParticles([dust("push")], 1.2, 200);
+    const behind = right.filter((particle) => particle.x < 2 - 0.3);
+    const ahead = right.filter((particle) => particle.x > 2 + 0.3);
+    expect(behind.length).toBeGreaterThan(ahead.length + 2);
+    // A Unit that goes to the left gets the same dust, mirrored.
+    const left = spawnParticles([dust("push", true)], 1.2, 200);
+    expect(left.map((particle) => particle.x - 2)).toEqual(
+      right.map((particle) => expect.closeTo(2 - particle.x))
+    );
+  });
+
+  it("shows no dust with reduced motion", () => {
+    expect(
+      spawnParticles([dust("move"), dust("push")], 1.2, 200, true)
+    ).toEqual([]);
+  });
+});
+
 describe("billboardParticle", () => {
   const slash = {
     slot: "slash",

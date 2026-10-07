@@ -2,11 +2,12 @@ import { FX_ANCHORS } from "@/features/battle/palette";
 import type { FxSlot, FxSlotName } from "@/features/battle/scene/fx-atlas";
 import { FX_SLOTS } from "@/features/battle/scene/fx-atlas";
 import type {
+  DustPresetKey,
   FxPreset,
   HitPresetKey,
   SprayMotion,
 } from "@/features/battle/scene/fx-presets";
-import { FX_PRESETS } from "@/features/battle/scene/fx-presets";
+import { DUST_PRESETS, FX_PRESETS } from "@/features/battle/scene/fx-presets";
 import type { Status } from "@/features/battle/scene/status-visuals";
 
 /** The particles in the pool. When it is full, the loops get fewer particles. */
@@ -16,10 +17,15 @@ export const PARTICLE_POOL = 200;
 export const BURST_DURATION = 0.7;
 
 /**
- * A burst when a Status starts, when Burn or Poison deals damage, or when an
- * attack hits.
+ * A burst when a Status starts, when Burn or Poison deals damage, when an
+ * attack hits, or when a Unit moves or is Pushed onto a Square.
  */
-export type BurstName = Status | "burn-tick" | "poison-tick" | HitPresetKey;
+export type BurstName =
+  | Status
+  | "burn-tick"
+  | "poison-tick"
+  | HitPresetKey
+  | DustPresetKey;
 
 /**
  * Where particles come from. `x`, `y` and `z` are the feet of a Unit for a
@@ -47,6 +53,8 @@ export type Emitter =
       readonly duration: number;
       /** 1, or larger for a Crit. It multiplies the sizes and the distances. */
       readonly scale: number;
+      /** True for a Unit that goes to the left: the x of the particles is mirrored. */
+      readonly mirror?: boolean;
       readonly seed: number;
     };
 
@@ -243,8 +251,8 @@ const growVine: Placement = (random, age) => ({
   opacity: fadeOutAfter(age, 0.7),
 });
 
-/** A hit: its main image grows and fades, and its spray flies out. */
-const hitBurst = (preset: FxPreset): Emission[] => {
+/** A hit or a dust puff: its main image grows and fades, and its spray flies out. */
+const presetBurst = (preset: FxPreset): Emission[] => {
   const color = preset.color ?? undefined;
   const main: Emission = {
     slot: preset.main,
@@ -265,9 +273,40 @@ const hitBurst = (preset: FxPreset): Emission[] => {
     : [main];
 };
 
+/** The dust particles of the streak behind a Pushed Unit. */
+const STREAK_COUNT = 6;
+
+/**
+ * Dust on the Square behind a Unit that goes to the right. It stays low,
+ * grows a little, and the back of the streak is fainter.
+ */
+const streak: Placement = (random, age) => {
+  const back = random(0);
+  return {
+    x: -back * 0.9,
+    y: lerp(-0.04, 0.06, random(1)) + age * 0.08,
+    z: lerp(0.05, 0.25, random(2)),
+    size: lerp(0.14, 0.24, random(3)) * (1 + age * 0.4),
+    rotation: (random(4) - 0.5) * age,
+    opacity: (1 - age) * (1 - back * 0.6),
+  };
+};
+
+/** A dust puff at the feet. A push also leaves a streak behind the Unit. */
+const dustBurst = (preset: FxPreset): Emission[] => [
+  ...presetBurst(preset),
+  ...(preset.trail
+    ? [{ slot: preset.trail, count: STREAK_COUNT, place: streak }]
+    : []),
+];
+
+/** Bursts that are only motion. With reduced motion, they show nothing. */
+const MOTION_ONLY: ReadonlySet<BurstName> = new Set<BurstName>(DUST_PRESETS);
+
 /**
  * The bursts. The first spray is the key image: with reduced motion, a burst
- * is only that image, which fades in its place.
+ * is only that image, which fades in its place. A `MOTION_ONLY` burst shows
+ * nothing.
  */
 const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
   burn: [
@@ -344,11 +383,13 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       place: spray({ speed: [0.2, 0.4], up: 0.2, size: [0.08, 0.14] }),
     },
   ],
-  "hit:physical": hitBurst(FX_PRESETS["hit:physical"]),
-  "hit:fire": hitBurst(FX_PRESETS["hit:fire"]),
-  "hit:frost": hitBurst(FX_PRESETS["hit:frost"]),
-  "hit:holy": hitBurst(FX_PRESETS["hit:holy"]),
-  "hit:blocked": hitBurst(FX_PRESETS["hit:blocked"]),
+  "hit:physical": presetBurst(FX_PRESETS["hit:physical"]),
+  "hit:fire": presetBurst(FX_PRESETS["hit:fire"]),
+  "hit:frost": presetBurst(FX_PRESETS["hit:frost"]),
+  "hit:holy": presetBurst(FX_PRESETS["hit:holy"]),
+  "hit:blocked": presetBurst(FX_PRESETS["hit:blocked"]),
+  move: dustBurst(FX_PRESETS.move),
+  push: dustBurst(FX_PRESETS.push),
 };
 
 export const loopParticleCount = (status: Status): number =>
@@ -391,8 +432,9 @@ const particleOf = (
   local: LocalParticle
 ): Particle => {
   const scale = emitter.kind === "burst" ? emitter.scale : 1;
+  const side = emitter.kind === "burst" && emitter.mirror ? -1 : 1;
   return slotParticle(part.slot, {
-    x: emitter.x + local.x * scale,
+    x: emitter.x + local.x * scale * side,
     y: emitter.y + local.y * scale,
     z: emitter.z + local.z,
     size: local.size * scale,
@@ -414,6 +456,9 @@ const burstParticles = (
     return [];
   }
   const parts = BURSTS[emitter.preset];
+  if (reducedMotion && MOTION_ONLY.has(emitter.preset)) {
+    return [];
+  }
   if (reducedMotion) {
     const [key] = parts;
     if (!key) {
@@ -481,8 +526,8 @@ const shareLoops = (wanted: readonly number[], free: number): number[] => {
 /**
  * All particles at `time`, in scene seconds. The bursts always get their
  * particles. The loops share the rest of the pool: when it is full, each loop
- * gets fewer particles. With reduced motion, the loops show no particles, and
- * a burst is one image that fades in its place.
+ * gets fewer particles. With reduced motion, the loops and the dust show no
+ * particles, and another burst is one image that fades in its place.
  */
 export const spawnParticles = (
   emitters: readonly Emitter[],

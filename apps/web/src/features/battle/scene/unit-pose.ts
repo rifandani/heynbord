@@ -2,6 +2,7 @@ import type { BattleEvent } from "@workspace/rules";
 import { Color } from "three";
 
 import type { PlayingEvent } from "@/features/battle/battle-session";
+import { pushEase } from "@/features/battle/battle-timeline";
 import type { UnitView } from "@/features/battle/battle-view";
 import { squareX } from "@/features/battle/scene/layout";
 import type { Status } from "@/features/battle/scene/status-visuals";
@@ -193,7 +194,7 @@ const pushed: EventPose = (unit, event, progress, pose) => {
   if (event._tag !== "UnitPushed" || event.unitId !== unit.id) {
     return;
   }
-  pose.x = squareX(event.from + (event.to - event.from) * easeOut(progress));
+  pose.x = squareX(event.from + (event.to - event.from) * pushEase(progress));
 };
 
 const attacked: EventPose = (unit, event, progress, pose) => {

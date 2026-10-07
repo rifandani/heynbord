@@ -201,6 +201,7 @@ const emittersNow = (reducedMotion: boolean): Emitter[] => {
         start: fx.start,
         duration: fx.duration,
         scale: fx.scale,
+        mirror: fx.mirror,
         seed: burstSeed(fx.start, fx.x, fx.z),
       });
     }
@@ -231,8 +232,8 @@ const singlesNow = (reducedMotion: boolean): Particle[] => {
 };
 
 /**
- * The Status loops on the Units, the Status and hit bursts, the melee slashes
- * and the ranged projectiles, from one particle pool with the effects atlas
+ * The Status loops on the Units, the Status, hit and dust bursts, the melee
+ * slashes and the ranged projectiles, from one particle pool with the effects atlas
  * (web ADR-0009). All motion uses `playback.time`.
  */
 export const ParticleLayer = () => {

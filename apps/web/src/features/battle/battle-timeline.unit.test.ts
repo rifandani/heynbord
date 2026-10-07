@@ -2,7 +2,12 @@ import { getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
-import { EFFECT_LIMIT, eventDuration } from "@/features/battle/battle-timeline";
+import {
+  EFFECT_LIMIT,
+  eventDuration,
+  pushArrival,
+  pushEase,
+} from "@/features/battle/battle-timeline";
 import type { BattleView } from "@/features/battle/battle-view";
 import { FX_PRESETS } from "@/features/battle/scene/fx-presets";
 
@@ -122,5 +127,19 @@ describe("eventDuration (technical design 4.3)", () => {
     expect(eventDuration(shot, 2, archerAt(9))).toBe(
       Math.round(eventDuration(shot, 1, archerAt(9)) / 2)
     );
+  });
+});
+
+describe("pushEase", () => {
+  it("goes fast at the start of a push and slow at the end", () => {
+    expect(pushEase(0)).toBe(0);
+    expect(pushEase(1)).toBe(1);
+    expect(pushEase(0.5)).toBeGreaterThan(0.5);
+  });
+
+  it("gives the progress when the Unit gets to a point of the push", () => {
+    for (const distance of [0, 0.25, 0.5, 2 / 3, 1]) {
+      expect(pushEase(pushArrival(distance))).toBeCloseTo(distance);
+    }
   });
 });

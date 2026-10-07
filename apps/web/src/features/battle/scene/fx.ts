@@ -3,7 +3,7 @@ import { getCard } from "@workspace/rules";
 
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
-import { eventDuration } from "@/features/battle/battle-timeline";
+import { eventDuration, pushArrival } from "@/features/battle/battle-timeline";
 import type { BattleView } from "@/features/battle/battle-view";
 import type { Cast } from "@/features/battle/cast";
 import { castSquares, effectColor } from "@/features/battle/cast";
@@ -53,13 +53,15 @@ export type Fx =
     }
   | {
       /**
-       * A particle burst when a Status starts or deals damage, or when an
-       * attack hits (web ADR-0009).
+       * A particle burst when a Status starts or deals damage, when an
+       * attack hits, or when a Unit moves or is Pushed (web ADR-0009).
        */
       readonly kind: "particles";
       readonly burst: BurstName;
       /** 1, or larger for a Crit. */
       readonly scale: number;
+      /** True for a Unit that goes to the left: the dust is mirrored. */
+      readonly mirror?: boolean;
       readonly x: number;
       readonly z: number;
       readonly height: number;
@@ -143,6 +145,92 @@ const meleeSlash = (
 };
 
 /**
+ * The damage number and the hit on the target. A Burn or a Poison hit shows
+ * the burst of its Status.
+ */
+const damageFx = (
+  event: Extract<BattleEvent, { readonly _tag: "DamageDealt" }>,
+  before: BattleView,
+  time: number,
+  speed: BattleSpeed
+): Fx[] => {
+  const at = worldOf(before, event.target);
+  if (!at) {
+    return [];
+  }
+  const number: Fx = {
+    kind: "number",
+    text: event.amount === 0 ? "0" : `-${event.amount}`,
+    damageType: event.blocked ? "block" : event.damageType,
+    crit: event.crit,
+    ...at,
+    start: time,
+  };
+  const tick = tickBurst(event);
+  return [
+    number,
+    tick
+      ? burstFx(tick, at, time, BURST_DURATION / speed)
+      : burstFx(
+          hitPreset(event),
+          at,
+          time,
+          eventSeconds(event, speed, before),
+          event.crit ? CRIT_SCALE : 1
+        ),
+  ];
+};
+
+/** The progress of a Movement or a push when the Unit has gone `distance` (0 to 1) of the way. */
+const arrival = (
+  event: Extract<
+    BattleEvent,
+    { readonly _tag: "UnitMoved" } | { readonly _tag: "UnitPushed" }
+  >,
+  distance: number
+): number => (event._tag === "UnitMoved" ? distance : pushArrival(distance));
+
+/** The height of the dust at the feet of a Unit. */
+const FEET = 0.12;
+
+/**
+ * A dust puff at the feet of a Unit that moves or is Pushed, at each Square
+ * that it goes to. Each puff starts when the Unit gets to its Square: a
+ * Movement goes at a steady speed, and a push slows down at the end
+ * (`battle-timeline.ts`). A Flying Unit makes no dust. The dust does not
+ * change the time of the event.
+ */
+const dustPuffs = (
+  event: Extract<
+    BattleEvent,
+    { readonly _tag: "UnitMoved" } | { readonly _tag: "UnitPushed" }
+  >,
+  before: BattleView,
+  time: number,
+  speed: BattleSpeed
+): Fx[] => {
+  const unit = before.units.find((candidate) => candidate.id === event.unitId);
+  const squares = Math.abs(event.to - event.from);
+  if (!unit || unit.flying || squares === 0) {
+    return [];
+  }
+  const preset = event._tag === "UnitMoved" ? "move" : "push";
+  const step = Math.sign(event.to - event.from);
+  const seconds = eventSeconds(event, speed, before);
+  return Array.from({ length: squares }, (_, index) => ({
+    kind: "particles",
+    burst: preset,
+    scale: 1,
+    mirror: step < 0,
+    x: squareX(event.from + step * (index + 1)),
+    z: laneZ(event.lane, before.lanes),
+    height: FEET,
+    start: time + seconds * arrival(event, (index + 1) / squares),
+    duration: FX_PRESETS[preset].time / 1000 / speed,
+  }));
+};
+
+/**
  * The effects that start with an event. `before` is the view before it,
  * `after` the view after it. Speed ×2 halves the effect times.
  */
@@ -157,32 +245,12 @@ export const fxForEvent = (
     case "UnitAttacked": {
       return meleeSlash(event, before, time, speed);
     }
+    case "UnitMoved":
+    case "UnitPushed": {
+      return dustPuffs(event, before, time, speed);
+    }
     case "DamageDealt": {
-      const at = worldOf(before, event.target);
-      if (!at) {
-        return [];
-      }
-      const number: Fx = {
-        kind: "number",
-        text: event.amount === 0 ? "0" : `-${event.amount}`,
-        damageType: event.blocked ? "block" : event.damageType,
-        crit: event.crit,
-        ...at,
-        start: time,
-      };
-      const tick = tickBurst(event);
-      return [
-        number,
-        tick
-          ? burstFx(tick, at, time, BURST_DURATION / speed)
-          : burstFx(
-              hitPreset(event),
-              at,
-              time,
-              eventSeconds(event, speed, before),
-              event.crit ? CRIT_SCALE : 1
-            ),
-      ];
+      return damageFx(event, before, time, speed);
     }
     case "StatusApplied": {
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });

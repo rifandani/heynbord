@@ -44,6 +44,16 @@ const MOVE_PER_SQUARE = 190;
 const PUSH_PER_SQUARE = 80;
 
 /**
+ * How far a Pushed Unit has gone, 0 to 1, at `progress` of the push. A push
+ * is fast at the start and slow at the end.
+ */
+export const pushEase = (progress: number): number => 1 - (1 - progress) ** 3;
+
+/** The progress of a push when the Unit has gone `distance` (0 to 1) of the way: the inverse of `pushEase`. */
+export const pushArrival = (distance: number): number =>
+  1 - (1 - distance) ** (1 / 3);
+
+/**
  * A Skill Card cast shows the card, the target and a spell bolt before its
  * effect. The enemy's cast is longer: the Player has not seen that card yet.
  */

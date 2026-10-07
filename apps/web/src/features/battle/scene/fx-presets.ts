@@ -23,11 +23,16 @@ export interface Spray extends SprayMotion {
 
 export type HitPresetKey = `hit:${DamageType}` | "hit:blocked";
 
-/** The attack and hit effects, with keys from the rules data (web ADR-0009). */
-export type FxPresetKey = "melee" | "ranged" | HitPresetKey;
+/** The dust puffs at the feet of a Unit that moves or is Pushed. */
+export const DUST_PRESETS = ["move", "push"] as const;
+
+export type DustPresetKey = (typeof DUST_PRESETS)[number];
+
+/** The attack, hit and movement effects, with keys from the rules data (web ADR-0009). */
+export type FxPresetKey = "melee" | "ranged" | HitPresetKey | DustPresetKey;
 
 /**
- * One attack or hit effect. This module has no Three.js code, so the Battle
+ * One attack, hit or movement effect. This module has no Three.js code, so the Battle
  * timeline can read the times in the first bundle.
  */
 export interface FxPreset {
@@ -35,15 +40,19 @@ export interface FxPreset {
   readonly main: FxSlotName;
   /** The size of the main image, in world units. */
   readonly size: number;
-  /** The streak behind a projectile. */
+  /** The streak behind a projectile, or behind a Pushed Unit. */
   readonly trail: FxSlotName | null;
   readonly spray: Spray | null;
-  /** The color of the `code` images. `null` is the Damage Type color of the attacker. */
+  /**
+   * The color of the `code` images. `null` is the Damage Type color of the
+   * attacker, or no color for an effect with only `fixed` images.
+   */
   readonly color: string | null;
   /**
    * The time that the effect needs at speed ×1, in ms. Its event is at least
    * this long, up to the limit of the event. A ranged attack also gets the
-   * flight time of its projectile.
+   * flight time of its projectile. A dust puff does not change the time of
+   * its event: this is only the life of the puff.
    */
   readonly time: number;
 }
@@ -145,6 +154,36 @@ export const FX_PRESETS: Readonly<Record<FxPresetKey, FxPreset>> = {
     BLOCKED_HIT,
     260
   ),
+  // A small puff at each Square of a Movement.
+  move: {
+    main: "dust",
+    size: 0.4,
+    trail: null,
+    spray: {
+      slot: "dust",
+      count: 4,
+      speed: [0.15, 0.3],
+      up: 0.1,
+      size: [0.1, 0.18],
+    },
+    color: null,
+    time: 450,
+  },
+  // A push is fast and forced: a larger puff, and a streak of dust behind the Unit.
+  push: {
+    main: "dust",
+    size: 0.6,
+    trail: "dust",
+    spray: {
+      slot: "dust",
+      count: 7,
+      speed: [0.25, 0.5],
+      up: 0.15,
+      size: [0.14, 0.24],
+    },
+    color: null,
+    time: 550,
+  },
 };
 
 /** The atlas images of a preset, the main image first. */
