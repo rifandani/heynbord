@@ -92,7 +92,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Token**: A Unit that an effect makes, with no Card. It uses the Rank of the Card or effect that made it, and it disappears when it dies. _Avoid_: summon, spawn
 
-**Countdown**: The number of Turns until a Card is Ready. It goes down by 1 in each Start Step of its owner. _Avoid_: mana, cost, cooldown, timer, wait
+**Countdown**: The number of Turns that a Card must be a Ticking Card before it is Ready. It goes down by 1 in each Start Step of its owner while the Card is a Ticking Card. _Avoid_: mana, cost, cooldown, timer, wait
+
+**Ticking Card**: One of the 3 oldest Cards in a Hand that are not Ready. Only Ticking Cards count down. The oldest Card is the Card that came into the Hand first. _Avoid_: queue, active card, slot
 
 **Ready**: The state of a Card with a Countdown of 0. Only Ready Cards can be played. _Avoid_: active, available, playable
 
@@ -103,6 +105,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Hand Limit**: The maximum number of Cards in a Hand: 8. A Hero does not draw when its Hand is full, and the Card stays in the Deck. _Avoid_: hand size, max hand
 
 **Deck**: The Cards that a Hero brings into a Battle. During a Battle, the Deck holds only the Cards that the Hero has not drawn. _Avoid_: army, loadout, draw pile
+
+**Countdown Limit**: The maximum sum of the printed Countdowns of the Cards in a Deck, for each player level. A Stage enemy Deck does not have it. _Avoid_: Deck Cost, Leadership, mana cap
 
 **Starter Deck**: A fixed Deck that the game gives to the Player before the Player builds a Deck. The Hero Class comes from the Starter Deck. Each copy in it has the Rank Common or Uncommon. _Avoid_: preset deck, default deck, sample deck
 
@@ -240,6 +244,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Side** that is **Routed** loses, also when its Heroes still have HP. The rule is the same for the Player's Side and the enemy Side. A Side is not Routed while one of its Heroes has a rule that can still put a Unit on the Board.
 - A **Deck Slot** belongs to the **Player**, not to a **Hero**. Each Deck Slot keeps one **Deck** and its Hero **Class**. The **Starter Decks** are in the first Deck Slots of a new Player.
 - A **Deck** holds **Creature Cards** of any **Race** and **Skill Cards** of the Hero's Class only.
+- A **Deck** of the Player, a **Starter Deck** and an **Archetype** stay within the Deck size limits and the **Countdown Limit** of the player level. The **Rank** of a copy does not change its count in the Countdown Limit.
 - A **Creature Card** becomes a **Unit** when the side summons it.
 - A **Starter Deck** holds only copies in the **Rank** Common or Uncommon. The Player gets a Rare, Epic or Legendary copy only from play, for example from the first win of a **Boss Stage**.
 - A **Starter Deck** can also be an **Archetype**. An Archetype does not have to be a Starter Deck. A **Matchup** of an Archetype against itself is a mirror.
@@ -282,4 +287,5 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - An early plan said that the **Rally N** bonus "applies to attacks and to Retaliation", as for **Swarm N**. But the Rally bonus ends at the end of its owner's **Turn**, and Retaliation and First Strike occur only in the enemy's Turn. Thus Rally never adds to Retaliation or First Strike. Swarm does, because the Swarm bonus has no duration.
 - Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
 - The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
+- All Cards in a Hand counted down at the same time before. Then the Deck size, not the Countdown, limited the cards that a Hero played. Now only the **Ticking Cards** count down, and a Deck has a **Countdown Limit** ([ADR-0021](../../docs/adr/0021-countdown-is-a-real-cost.md)). The Countdown Limit is not a cost: "cost" stays on the _Avoid_ list of **Countdown**, because a Card is never paid for in a Battle.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.

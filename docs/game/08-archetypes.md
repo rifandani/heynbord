@@ -135,7 +135,7 @@ The cause is not the Race. It is the Power Budget (tests on 2026-10-07, 200 seed
 | Tunnel Rats against Vanguard | 3.8% | 35% to 65% |
 | Tunnel Rats against Raiders | 2.6% | 35% to 65% |
 
-Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, Wild Hunt won 93.8% against Vanguard and 85.0% against Raiders (200 seeds). Human Heavy wins 94.6% to 100% against each Deck except Wild Hunt (86.6%). Human Light wins 49.3% against Tunnel Rats and 19.9% or less against each other Deck. Thus the Countdown slope is the remaining cause. The slope search starts from these results. Do not change only the Feral and Goblin values.
+Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, Wild Hunt won 93.8% against Vanguard and 85.0% against Raiders (200 seeds). Human Heavy wins 94.6% to 100% against each Deck except Wild Hunt (86.6%). Human Light wins 49.3% against Tunnel Rats and 19.9% or less against each other Deck. Thus the Countdown slope is the remaining cause. The slope search is in 3.2. Do not change only the Feral and Goblin values.
 
 **Knockback 2 and 3.** This was measured before ADR-0020. The Matchup uses the Common Shieldbearer (Knockback 1). The same Vanguard Deck with that one copy at Epic (Knockback 2) wins 54.3% against Raiders. At Legendary (Knockback 3) it wins 58.0%. 58% is above the 55% band. Knockback 2 and 3 can lock a melee Unit whose Speed is lower than N: the Unit never reaches the Shieldbearer to attack it. Only Combine makes these copies. The power points use the Base Rank value, so the budget check does not see this lock.
 
@@ -150,6 +150,34 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-05 | Scrap Raider HP 3 → 4. Ember Shaman Attack 3 → 4 and HP 5 → 6. Skyreaver HP 4 → 5. Howling Charger HP 5 → 6. Iron Bulwark HP 17 → 15. | Vanguard won 66.8% against Raiders. Most Orc cards were below their power budget, and Iron Bulwark was 8% above it. After the change, all 5 cards are within ±10% of their budget, and Vanguard wins 50.5%. |
 | 2026-10-07 | Old Frostmaw HP 14 → 13, and it gets Bleed 2. Frostfang Lynx gets Bleed 1 with no other change. | Bleed N costs N × 1 power points ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). With Bleed 2 and HP 14, Old Frostmaw was 11.1% above its budget. With HP 13 it is 8.3% above. The Frostfang Lynx is 6.3% above its budget. |
 | 2026-10-07 | The Power Points measure Attack and HP at the Base Rank ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). The Common Attack and HP of the 40 Uncommon, Rare and Epic Creature Cards go down, so that each card is within ±10% of its Power Budget again. The new values are in `cards.ts` and [10 — Card Concepts](./10-card-concepts.md). Countdown, Speed, Range, Damage Type and Keywords do not change. A Wall changes only its HP. Each card fits, so no card needs a written reason. | A Rare copy played ×1.45 and an Epic copy ×1.75 above its budget. Most fits keep the old power of the card. Each fit keeps the Attack-to-HP shape as near as the whole numbers let it. Pack Stalker, Sidestep Shiv and Warhowler Drummer have no fit with a nearer shape. Three fits are for the Matchup and the Stages. River Knight is 5/7 (+3.8%): the first fit had River Knight 4/7 and Skyreaver 2/5, and Vanguard won only 36.5% against Raiders and 39% of Stage 1-4 (200 seeds). Skyreaver is 3/4 (+9.5%): with 2/5, Raiders won only 54% of Stages 1-5 and 1-6. Warchief Grukka is 4/7 (+2.8%): with 4/8, Vanguard won 44.5% against Raiders. Now Vanguard wins 48.4%. Some Stage enemy Decks changed too ([14 — Campaign Stages](./14-campaign-stages.md)). |
+
+### 3.2 Countdown slope search
+
+Issue #20, 2026-10-07. The result is [ADR-0021](../adr/0021-countdown-is-a-real-cost.md): a Countdown Limit of 2.5 × the maximum Deck size, 3 Ticking Cards and the budget `12 + 3 × Countdown`. The rules package does not have these rules or the new card values yet.
+
+**Why the slope was flat.** A Hero draws 4 cards, then 1 card each Turn, so it draws a 14-card Deck fully by about Turn 11. A Battle lasts 16 to 27 Turns. All cards in the Hand counted down at the same time, so a Hero played almost every card in the Deck at any Countdown. The Deck size limited the cards, and a long Countdown was only a delay.
+
+**Method.** `bun scripts/fit-budget.ts <intercept> <slope>` in `packages/rules` fits each Creature Card to a linear budget. It changes only Attack and HP, at the Base Rank, and it keeps the Attack-to-HP shape nearest to the current card. A power within 5% of the budget (at least 1 point) is a hit. The budget at Countdown 3 stays 21, so the intercept is `21 − 3 × slope`. Countdown is a real cost when `budget(6) ≥ 1.6 × budget(2)`, so the slope must be 2.75 or more. Scratch code added the two rules in memory. For a Countdown Limit, the cards with the highest Countdown leave an Archetype until it fits. The Matchup level is 5, so the maximum Deck size is 14. A 200-seed grid tested slopes 0 to 5, then 1000 seeds tested the best points.
+
+**Criteria.** Human Heavy against Human Light 40% to 60%. Wild Hunt against Tunnel Rats, Vanguard and Raiders 35% to 65%. Vanguard against Raiders 45% to 55%.
+
+| Rules | Slope | Seeds | HH–HL | WH–TR | WH–V | WH–R | V–R | TR–V | TR–R | Ratio |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| No rule change | 1 | 200 | 61.3% | 55.3% | 46.8% | 58.0% | 50.7% | 37.3% | 58.0% | 1.20 |
+| No rule change | 2.75 | 200 | 98.0% | 87.3% | 81.0% | 74.3% | 41.8% | 11.8% | 19.0% | 1.60 |
+| Countdown Limit 3 × | 2.75 | 200 | 93.5% | 86.8% | 60.8% | 57.0% | 41.8% | 11.8% | 19.0% | 1.60 |
+| Countdown Limit 2.5 × | 2.75 | 200 | 66.0% | 61.3% | 51.0% | 45.3% | 34.3% | 27.8% | 37.0% | 1.60 |
+| 2 Ticking Cards | 2.75 | 1000 | 50.7% | 31.3% | 57.6% | 61.4% | 55.3% | 43.0% | 69.0% | 1.60 |
+| 3 Ticking Cards | 2.75 | 200 | 83.8% | 44.8% | 71.8% | 65.3% | 43.8% | 23.3% | 38.0% | 1.60 |
+| Limit 3 × and 2 Ticking Cards | 2.75 | 1000 | 59.9% | 33.5% | 46.8% | 51.0% | 55.3% | 43.0% | 69.0% | 1.60 |
+| **Limit 2.5 × and 3 Ticking Cards** | **3** | **1000** | **51.8%** | **41.3%** | **55.4%** | **48.5%** | **44.5%** | **45.0%** | **60.1%** | **1.67** |
+
+HH is Human Heavy, HL Human Light, WH Wild Hunt, TR Tunnel Rats, V Vanguard and R Raiders. The ratio is `budget(6) ÷ budget(2)`.
+
+- With a Countdown Limit of 2.5 ×, Human Heavy has 10 cards, Wild Hunt 11, Vanguard 13 and Raiders 13. Vanguard and Raiders each lose their Epic card. With 3 ×, Human Heavy has 11 and Wild Hunt 13.
+- Only Ticking Cards makes cheap cards and Sabotage strong: with 2, Tunnel Rats wins against Wild Hunt.
+- The selected rules miss only Vanguard against Raiders, by 0.5 points. The rules do not change between slopes, but Vanguard against Raiders changes by up to 15 points: 41.5%, 41.8%, 54.3% and 42.8% at slopes 2, 2.75, 3.5 and 4.25 with no rule change. The cause is the fit of a few Human and Orc cards. Thus the card changes tune it.
+- The Starter Decks are over the Countdown Limit of player level 1 (25): Vanguard has 27 and Raiders 30.
 
 ## 4. When an Archetype or a card changes
 

@@ -628,7 +628,7 @@ The Town is the first screen of the game. It is a layered 2D painting ([web ADR-
 
 ### 11.5 Campaign
 
-The Campaign screen shows one **Region Map** at a time: a flat 2D painting of one Region, with a **Trail** from the first Stage to the Boss Stage ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The art brief, the positions and the image prompts are in [12 — Region Concepts](./12-region-concepts.md).
+The Campaign screen shows one **Region Map** at a time: a flat 2D painting of one Region, with a **Trail** from the first Stage to the Boss Stage ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The art brief and the positions are in [12 — Region Concepts](./12-region-concepts.md).
 
 - **Which Region opens.** From the Town Gate, the newest unlocked Region. From "Back to Campaign" after a Battle, the Region of that Battle.
 - **Top band.** The Region name, with a back arrow and a next arrow at its two sides. The arrows go to the other Regions. The Player can also open a locked Region. All its Stage Markers are then Locked, and a line under the name says which Boss Stage unlocks it. There is no arrow before Region 1 or after Region 3.
@@ -698,7 +698,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
-2. Each Countdown has a power budget for the Base Rank. Start formula: `budget = 6 + Countdown × 5`. The slope of 5 Power Points for each Countdown point is under review. In the Matchups, a Deck of long-Countdown cards wins against a Deck of short-Countdown cards of the same Race ([08 — Archetypes, section 3](./08-archetypes.md#3-matchup-results)).
+2. Each Countdown has a power budget for the Base Rank: `budget = 12 + Countdown × 3` ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). This budget is correct only with the Countdown Limit and the 3 Ticking Cards of the same ADR. Without them, a Deck of long-Countdown cards wins against a Deck of short-Countdown cards of the same Race ([08 — Archetypes, section 3.2](./08-archetypes.md#32-countdown-slope-search)). Until those rules and the new card values are in the rules package, the cards and `balance.ts` use the old budget, `6 + Countdown × 5`.
 3. A card must be within ±10% of its budget. A card outside this range needs a written reason (for example "weak stats, strong combo").
 4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).
 5. Check each Archetype's win rate in each **Matchup**. The target is 45% to 55% against the other Archetypes.
