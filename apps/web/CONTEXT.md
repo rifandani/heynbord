@@ -10,7 +10,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Message Catalog**: The set of Translation Keys and strings for one Locale, owned in `apps/web/src/core/libs/i18n`. _Avoid_: resources, locale JSON, dictionary, i18n file
 
-**Translation Key**: A flat identifier into a Message Catalog (e.g. `welcome`, `title`). _Avoid_: nested namespaces, i18next paths
+**Translation Key**: A dot path to one string in a Message Catalog (e.g. `welcome`, `keywords.trample`, `cards.goblin.ankleSnatcher.name`). Game data builds some Translation Keys from IDs. _Avoid_: message ID, i18next paths
 
 **Translation Provider**: React glue that reads the current Locale and exposes `t` / `setLocale`. _Avoid_: I18nextProvider, react-i18next
 
