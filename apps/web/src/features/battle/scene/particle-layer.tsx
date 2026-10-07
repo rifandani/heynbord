@@ -13,11 +13,12 @@ import {
   ShaderMaterial,
 } from "three";
 
-import { fxList } from "@/features/battle/scene/fx";
+import { fxList, projectileParticles } from "@/features/battle/scene/fx";
 import type { FxSlot } from "@/features/battle/scene/fx-atlas";
 import { fxAtlas, fxSlotUv } from "@/features/battle/scene/fx-atlas";
 import type { Emitter, Particle } from "@/features/battle/scene/particles";
 import {
+  billboardParticle,
   PARTICLE_POOL,
   spawnParticles,
 } from "@/features/battle/scene/particles";
@@ -26,19 +27,22 @@ import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { loopStatuses } from "@/features/battle/scene/status-visuals";
 import { unitAnchors } from "@/features/battle/scene/unit-anchors";
 
-/** A camera-facing quad: the center, the size and the spin come from each instance. */
+/**
+ * A camera-facing quad: the center, the size, the spin and the stretch come
+ * from each instance. The stretch makes the quad wider, for the trail.
+ */
 const VERTEX = /* glsl */ `
 attribute vec3 aCenter;
-attribute vec2 aSizeSpin;
+attribute vec3 aSizeSpinStretch;
 attribute vec4 aColor;
 attribute vec4 aUv;
 varying vec2 vUv;
 varying vec4 vColor;
 void main() {
   vec4 view = modelViewMatrix * vec4(aCenter, 1.0);
-  float c = cos(aSizeSpin.y);
-  float s = sin(aSizeSpin.y);
-  view.xy += mat2(c, s, -s, c) * position.xy * aSizeSpin.x;
+  float c = cos(aSizeSpinStretch.y);
+  float s = sin(aSizeSpinStretch.y);
+  view.xy += mat2(c, s, -s, c) * (position.xy * vec2(aSizeSpinStretch.z, 1.0)) * aSizeSpinStretch.x;
   gl_Position = projectionMatrix * view;
   vUv = aUv.xy + uv * aUv.zw;
   vColor = aColor;
@@ -63,7 +67,7 @@ const QUAD = new PlaneGeometry(1, 1);
 interface Batch {
   readonly mesh: InstancedMesh<BufferGeometry, ShaderMaterial>;
   readonly center: InstancedBufferAttribute;
-  readonly sizeSpin: InstancedBufferAttribute;
+  readonly sizeSpinStretch: InstancedBufferAttribute;
   readonly color: InstancedBufferAttribute;
   readonly uv: InstancedBufferAttribute;
 }
@@ -84,11 +88,11 @@ const makeBatch = (blending: Blending): Batch => {
   geometry.setAttribute("position", QUAD.getAttribute("position"));
   geometry.setAttribute("uv", QUAD.getAttribute("uv"));
   const center = dynamic(3);
-  const sizeSpin = dynamic(2);
+  const sizeSpinStretch = dynamic(3);
   const color = dynamic(4);
   const uv = dynamic(4);
   geometry.setAttribute("aCenter", center);
-  geometry.setAttribute("aSizeSpin", sizeSpin);
+  geometry.setAttribute("aSizeSpinStretch", sizeSpinStretch);
   geometry.setAttribute("aColor", color);
   geometry.setAttribute("aUv", uv);
   const material = new ShaderMaterial({
@@ -106,7 +110,7 @@ const makeBatch = (blending: Blending): Batch => {
   mesh.frustumCulled = false;
   // After the Units, so that the depth of their figures is in the buffer.
   mesh.renderOrder = 4;
-  return { mesh, center, sizeSpin, color, uv };
+  return { mesh, center, sizeSpinStretch, color, uv };
 };
 
 const colors = new Map<string, Color>();
@@ -135,7 +139,12 @@ const writeBatch = (
     const color = colorOf(particle.color);
     const uv = fxSlotUv(particle.slot);
     batch.center.setXYZ(count, particle.x, particle.y, particle.z);
-    batch.sizeSpin.setXY(count, particle.size, particle.rotation);
+    batch.sizeSpinStretch.setXYZ(
+      count,
+      particle.size,
+      particle.rotation,
+      particle.stretch
+    );
     batch.color.setXYZW(count, color.r, color.g, color.b, particle.opacity);
     batch.uv.setXYZW(count, uv.u, uv.v, uv.width, uv.height);
     count += 1;
@@ -143,7 +152,7 @@ const writeBatch = (
   batch.mesh.count = count;
   for (const attribute of [
     batch.center,
-    batch.sizeSpin,
+    batch.sizeSpinStretch,
     batch.color,
     batch.uv,
   ]) {
@@ -182,7 +191,7 @@ const emittersNow = (reducedMotion: boolean): Emitter[] => {
   }
   // The effects layer removes a burst from the list when it ends.
   for (const fx of fxList) {
-    if (fx.kind === "status") {
+    if (fx.kind === "particles") {
       emitters.push({
         kind: "burst",
         preset: fx.burst,
@@ -190,6 +199,8 @@ const emittersNow = (reducedMotion: boolean): Emitter[] => {
         y: fx.height,
         z: fx.z,
         start: fx.start,
+        duration: fx.duration,
+        scale: fx.scale,
         seed: burstSeed(fx.start, fx.x, fx.z),
       });
     }
@@ -198,10 +209,33 @@ const emittersNow = (reducedMotion: boolean): Emitter[] => {
 };
 
 /**
- * The Status loops on the Units and the Status bursts, from one particle pool
- * with the effects atlas (web ADR-0009). All motion uses `playback.time`.
+ * The quads that are not from an emitter: the billboards of the effects
+ * list, and the projectile of a ranged attack.
  */
-export const StatusLayer = () => {
+const singlesNow = (reducedMotion: boolean): Particle[] => {
+  const singles = projectileParticles(
+    playback.session?.current,
+    playback.progress,
+    reducedMotion
+  );
+  for (const fx of fxList) {
+    const quad =
+      fx.kind === "billboard"
+        ? billboardParticle(fx, playback.time, reducedMotion)
+        : null;
+    if (quad) {
+      singles.push(quad);
+    }
+  }
+  return singles;
+};
+
+/**
+ * The Status loops on the Units, the Status and hit bursts, the melee slashes
+ * and the ranged projectiles, from one particle pool with the effects atlas
+ * (web ADR-0009). All motion uses `playback.time`.
+ */
+export const ParticleLayer = () => {
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   const additive = useMemo(() => makeBatch(AdditiveBlending), []);
   const alpha = useMemo(() => makeBatch(NormalBlending), []);
@@ -225,18 +259,22 @@ export const StatusLayer = () => {
         uniforms.map.value = texture;
       }
     }
-    const particles = spawnParticles(
-      emittersNow(reducedMotion),
-      playback.time,
-      PARTICLE_POOL,
-      reducedMotion
-    );
+    const singles = singlesNow(reducedMotion);
+    const particles = [
+      ...singles,
+      ...spawnParticles(
+        emittersNow(reducedMotion),
+        playback.time,
+        Math.max(PARTICLE_POOL - singles.length, 0),
+        reducedMotion
+      ),
+    ];
     writeBatch(additive, particles, "additive");
     writeBatch(alpha, particles, "alpha");
   });
 
   return (
-    <group name="status-effects">
+    <group name="atlas-effects">
       <primitive object={alpha.mesh} />
       <primitive object={additive.mesh} />
     </group>

@@ -31,7 +31,7 @@ export const startedEvents = (
   let { view } = before;
   for (const event of next.log.slice(before.log.length)) {
     const after = applyEvent(view, event);
-    fx.push(...fxForEvent(event, view, after, time));
+    fx.push(...fxForEvent(event, view, after, time, next.speed));
     const sound = eventSound(event);
     if (sound) {
       sounds.push(sound);

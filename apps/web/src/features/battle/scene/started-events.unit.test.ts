@@ -31,7 +31,7 @@ describe("startedEvents", () => {
     const next = { ...session, log: [damage(true), damage(false)] };
     const started = startedEvents(before, next, 4);
     expect(started.sounds).toEqual(["hit"]);
-    expect(started.fx.map((fx) => fx.kind)).toEqual(["number", "burst"]);
+    expect(started.fx.map((fx) => fx.kind)).toEqual(["number", "particles"]);
     expect(started.fx[0]?.start).toBe(4);
     expect(started.shake).toBe(false);
     expect(started.soundGap).toBe(50);

@@ -129,18 +129,20 @@ describe("speed (BAT-11)", () => {
     expect(event).toBeDefined();
     if (event) {
       expect(setSpeed(session, 2).current?.duration).toBe(
-        eventDuration(event, 2)
+        eventDuration(event, 2, session.view)
       );
       expect(
         eventDuration(
           { _tag: "UnitMoved", unitId: 1, lane: 0, from: 0, to: 2 },
-          1
+          1,
+          session.view
         )
       ).toBe(380);
       expect(
         eventDuration(
           { _tag: "UnitMoved", unitId: 1, lane: 0, from: 0, to: 2 },
-          2
+          2,
+          session.view
         )
       ).toBe(190);
     }

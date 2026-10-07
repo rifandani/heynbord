@@ -1,16 +1,25 @@
 import { FX_ANCHORS } from "@/features/battle/palette";
 import type { FxSlot, FxSlotName } from "@/features/battle/scene/fx-atlas";
 import { FX_SLOTS } from "@/features/battle/scene/fx-atlas";
+import type {
+  FxPreset,
+  HitPresetKey,
+  SprayMotion,
+} from "@/features/battle/scene/fx-presets";
+import { FX_PRESETS } from "@/features/battle/scene/fx-presets";
 import type { Status } from "@/features/battle/scene/status-visuals";
 
 /** The particles in the pool. When it is full, the loops get fewer particles. */
 export const PARTICLE_POOL = 200;
 
-/** How long a burst plays, in scene seconds. */
+/** How long a Status burst plays at speed ×1, in scene seconds. */
 export const BURST_DURATION = 0.7;
 
-/** A burst when a Status starts, or when Burn or Poison deals damage. */
-export type BurstName = Status | "burn-tick" | "poison-tick";
+/**
+ * A burst when a Status starts, when Burn or Poison deals damage, or when an
+ * attack hits.
+ */
+export type BurstName = Status | "burn-tick" | "poison-tick" | HitPresetKey;
 
 /**
  * Where particles come from. `x`, `y` and `z` are the feet of a Unit for a
@@ -34,6 +43,10 @@ export type Emitter =
       readonly z: number;
       /** In scene seconds. */
       readonly start: number;
+      /** In scene seconds. */
+      readonly duration: number;
+      /** 1, or larger for a Crit. It multiplies the sizes and the distances. */
+      readonly scale: number;
       readonly seed: number;
     };
 
@@ -45,6 +58,8 @@ export interface Particle {
   readonly y: number;
   readonly z: number;
   readonly size: number;
+  /** The width divided by the height. A negative value mirrors the image. */
+  readonly stretch: number;
   /** In radians, around the view axis. */
   readonly rotation: number;
   readonly color: string;
@@ -188,13 +203,7 @@ const LOOPS: Readonly<Record<Status, LoopPreset>> = {
 
 /** Particles that fly out from the middle, slow down and fade. */
 const spray =
-  (options: {
-    readonly speed: readonly [number, number];
-    readonly up: number;
-    readonly size: readonly [number, number];
-    readonly gravity?: number;
-    readonly spin?: number;
-  }): Placement =>
+  (options: SprayMotion): Placement =>
   (random, age) => {
     const angle = random(0) * Math.PI * 2;
     const speed = lerp(options.speed[0], options.speed[1], random(1));
@@ -233,6 +242,28 @@ const growVine: Placement = (random, age) => ({
   rotation: (random(2) - 0.5) * 0.6,
   opacity: fadeOutAfter(age, 0.7),
 });
+
+/** A hit: its main image grows and fades, and its spray flies out. */
+const hitBurst = (preset: FxPreset): Emission[] => {
+  const color = preset.color ?? undefined;
+  const main: Emission = {
+    slot: preset.main,
+    count: 1,
+    color,
+    place: pulse(preset.size * 0.55, preset.size),
+  };
+  return preset.spray
+    ? [
+        main,
+        {
+          slot: preset.spray.slot,
+          count: preset.spray.count,
+          color,
+          place: spray(preset.spray),
+        },
+      ]
+    : [main];
+};
 
 /**
  * The bursts. The first spray is the key image: with reduced motion, a burst
@@ -313,6 +344,11 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       place: spray({ speed: [0.2, 0.4], up: 0.2, size: [0.08, 0.14] }),
     },
   ],
+  "hit:physical": hitBurst(FX_PRESETS["hit:physical"]),
+  "hit:fire": hitBurst(FX_PRESETS["hit:fire"]),
+  "hit:frost": hitBurst(FX_PRESETS["hit:frost"]),
+  "hit:holy": hitBurst(FX_PRESETS["hit:holy"]),
+  "hit:blocked": hitBurst(FX_PRESETS["hit:blocked"]),
 };
 
 export const loopParticleCount = (status: Status): number =>
@@ -332,24 +368,40 @@ const hash = (a: number, b: number, c: number): number => {
 
 const WHITE = "#ffffff";
 
+/** One quad with the image of `slot`. A `fixed` slot keeps its painted color. */
+export const slotParticle = (
+  slot: FxSlotName,
+  place: Omit<Particle, "slot" | "blend" | "color"> & {
+    readonly color?: string;
+  }
+): Particle => {
+  const { blend, tint } = FX_SLOTS[slot];
+  return {
+    ...place,
+    slot,
+    blend,
+    color: tint === "code" ? (place.color ?? WHITE) : WHITE,
+    opacity: Math.max(place.opacity, 0),
+  };
+};
+
 const particleOf = (
   part: Emission,
   emitter: Emitter,
   local: LocalParticle
 ): Particle => {
-  const slot = FX_SLOTS[part.slot];
-  return {
-    slot: part.slot,
-    blend: slot.blend,
-    x: emitter.x + local.x,
-    y: emitter.y + local.y,
+  const scale = emitter.kind === "burst" ? emitter.scale : 1;
+  return slotParticle(part.slot, {
+    x: emitter.x + local.x * scale,
+    y: emitter.y + local.y * scale,
     z: emitter.z + local.z,
-    size: local.size,
+    size: local.size * scale,
+    stretch: 1,
     rotation: local.rotation,
-    color: slot.tint === "code" ? (part.color ?? WHITE) : WHITE,
-    opacity: Math.max(local.opacity, 0),
+    color: part.color,
+    opacity: local.opacity,
     burst: emitter.kind === "burst",
-  };
+  });
 };
 
 const burstParticles = (
@@ -357,7 +409,7 @@ const burstParticles = (
   time: number,
   reducedMotion: boolean
 ): Particle[] => {
-  const age = (time - emitter.start) / BURST_DURATION;
+  const age = (time - emitter.start) / emitter.duration;
   if (age < 0 || age >= 1) {
     return [];
   }
@@ -457,4 +509,51 @@ export const spawnParticles = (
       loopParticles(emitter, time, counts[index] ?? 0)
     ),
   ];
+};
+
+/** One atlas image that plays in its place, as the slash of a melee attack. */
+export interface Billboard {
+  readonly slot: FxSlotName;
+  /** The color of a `code` slot. */
+  readonly color: string;
+  /** In world units. */
+  readonly size: number;
+  /** True when the attacker faces left: the image and its sweep are mirrored. */
+  readonly mirror: boolean;
+  readonly x: number;
+  readonly z: number;
+  readonly height: number;
+  /** In scene seconds. */
+  readonly start: number;
+  /** In scene seconds. */
+  readonly duration: number;
+}
+
+/**
+ * The quad of a billboard at `time`, or `null` outside its life. It sweeps,
+ * grows and fades. With reduced motion, it only fades in its place.
+ */
+export const billboardParticle = (
+  billboard: Billboard,
+  time: number,
+  reducedMotion = false
+): Particle | null => {
+  const age = (time - billboard.start) / billboard.duration;
+  if (age < 0 || age >= 1) {
+    return null;
+  }
+  const side = billboard.mirror ? -1 : 1;
+  const sweep = reducedMotion ? 0.5 : 1 - (1 - age) ** 2;
+  return slotParticle(billboard.slot, {
+    x: billboard.x,
+    y: billboard.height,
+    // In front of the target, so that its figure does not hide the image.
+    z: billboard.z + 0.3,
+    size: billboard.size * lerp(0.75, 1.05, sweep),
+    stretch: side,
+    rotation: lerp(0.7, -0.35, sweep) * side,
+    color: billboard.color,
+    opacity: reducedMotion ? 1 - age : Math.min(age * 8, 1) * (1 - age * age),
+    burst: true,
+  });
 };

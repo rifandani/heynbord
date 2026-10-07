@@ -1,6 +1,14 @@
 import type { BattleEvent } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 
+import type { BattleView } from "@/features/battle/battle-view";
+import {
+  FX_PRESETS,
+  hitPreset,
+  tickBurst,
+} from "@/features/battle/scene/fx-presets";
+import { worldOf } from "@/features/battle/scene/layout";
+
 export type BattleSpeed = 1 | 2;
 
 /** Base animation time of each Battle Event at speed ×1, in milliseconds. */
@@ -41,16 +49,48 @@ const PUSH_PER_SQUARE = 80;
  */
 const CAST_DURATION = { player: 700, enemy: 1050 } as const;
 
-/** A ranged attack needs time for the projectile. */
-const RANGED_EXTRA = 120;
+/**
+ * The longest time that an effect can give an event at speed ×1, in
+ * milliseconds (web ADR-0009). A far shot or a large hit stops here.
+ */
+export const EFFECT_LIMIT = { UnitAttacked: 900, DamageDealt: 520 } as const;
+
+/** The projectile of a ranged attack flies one world unit (one Square) in this time. */
+const FLIGHT_PER_UNIT = 55;
+
+/** The world distance from the attacker to its target in `view`. */
+const flightDistance = (
+  event: Extract<BattleEvent, { readonly _tag: "UnitAttacked" }>,
+  view: BattleView
+): number => {
+  const from = worldOf(view, { _tag: "Unit", unitId: event.unitId });
+  const to = worldOf(view, event.target);
+  return from && to ? Math.hypot(to.x - from.x, to.z - from.z) : 0;
+};
+
+/** The time that the attack or hit effect of an event needs at speed ×1, or 0. */
+const effectNeed = (event: BattleEvent, view: BattleView): number => {
+  if (event._tag === "UnitAttacked") {
+    return event.ranged
+      ? FX_PRESETS.ranged.time + flightDistance(event, view) * FLIGHT_PER_UNIT
+      : FX_PRESETS.melee.time;
+  }
+  if (event._tag === "DamageDealt") {
+    return tickBurst(event) ? 0 : FX_PRESETS[hitPreset(event)].time;
+  }
+  return 0;
+};
 
 /**
- * The animation time of an event (technical design 4.3). Speed ×2 halves all
- * times. Skip does not use this: it applies the events at once.
+ * The animation time of an event (technical design 4.3). `view` is the view
+ * before the event. An attack or a hit is as long as its effect needs, up to
+ * the limit of the event. Speed ×2 halves all times. Skip does not use this:
+ * it applies the events at once.
  */
 export const eventDuration = (
   event: BattleEvent,
-  speed: BattleSpeed
+  speed: BattleSpeed,
+  view: BattleView
 ): number => {
   let base = BASE_DURATION[event._tag];
   if (event._tag === "UnitMoved") {
@@ -62,10 +102,14 @@ export const eventDuration = (
     getCard(event.card.cardId).kind === "skill"
   ) {
     base = CAST_DURATION[event.side];
-  } else if (event._tag === "UnitAttacked" && event.ranged) {
-    base += RANGED_EXTRA;
   } else if (event._tag === "DamageDealt" && event.crit) {
     base += 140;
+  }
+  if (event._tag === "UnitAttacked" || event._tag === "DamageDealt") {
+    base = Math.min(
+      Math.max(base, effectNeed(event, view)),
+      EFFECT_LIMIT[event._tag]
+    );
   }
   return Math.round(base / speed);
 };

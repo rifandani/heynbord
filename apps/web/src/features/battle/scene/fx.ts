@@ -1,24 +1,36 @@
-import type {
-  BattleEvent,
-  DamageSource,
-  DamageType,
-  Side,
-} from "@workspace/rules";
+import type { BattleEvent, DamageType } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 
 import type { PlayingEvent } from "@/features/battle/battle-session";
+import type { BattleSpeed } from "@/features/battle/battle-timeline";
+import { eventDuration } from "@/features/battle/battle-timeline";
 import type { BattleView } from "@/features/battle/battle-view";
 import type { Cast } from "@/features/battle/cast";
 import { castSquares, effectColor } from "@/features/battle/cast";
 import { DAMAGE_COLORS } from "@/features/battle/palette";
 import {
+  CRIT_SCALE,
+  FX_PRESETS,
+  hitPreset,
+  tickBurst,
+} from "@/features/battle/scene/fx-presets";
+import {
+  CAMERA_PITCH,
   HERO_FIGURE_Y,
   heroX,
   laneZ,
   squareX,
+  worldOf,
 } from "@/features/battle/scene/layout";
-import type { BurstName } from "@/features/battle/scene/particles";
-import { BURST_DURATION } from "@/features/battle/scene/particles";
+import type {
+  Billboard,
+  BurstName,
+  Particle,
+} from "@/features/battle/scene/particles";
+import {
+  BURST_DURATION,
+  slotParticle,
+} from "@/features/battle/scene/particles";
 
 /** A short visual effect. `start` is in scene seconds. */
 export type Fx =
@@ -40,78 +52,111 @@ export type Fx =
       readonly start: number;
     }
   | {
-      readonly kind: "burst";
-      readonly color: string;
-      readonly x: number;
-      readonly z: number;
-      readonly height: number;
-      readonly start: number;
-    }
-  | {
-      /** A particle burst when a Status starts or deals damage (web ADR-0009). */
-      readonly kind: "status";
+      /**
+       * A particle burst when a Status starts or deals damage, or when an
+       * attack hits (web ADR-0009).
+       */
+      readonly kind: "particles";
       readonly burst: BurstName;
+      /** 1, or larger for a Crit. */
+      readonly scale: number;
       readonly x: number;
       readonly z: number;
       readonly height: number;
       readonly start: number;
-    };
+      /** In scene seconds. Speed ×2 halves it. */
+      readonly duration: number;
+    }
+  | ({ readonly kind: "billboard" } & Billboard);
 
 /** Active effects. The playback driver adds them. The effects layer removes them when they end. */
 export const fxList: Fx[] = [];
 
-export const FX_LIFETIME = {
-  number: 1.1,
-  ring: 0.7,
-  burst: 0.45,
-  status: BURST_DURATION,
-} as const;
+const FX_LIFETIME = { number: 1.1, ring: 0.7 } as const;
 
-/** The world position of a Unit or a Hero in a view, or `null` if it is not on the Board. */
-export const worldOf = (
-  view: BattleView,
-  target:
-    | { readonly _tag: "Unit"; readonly unitId: number }
-    | { readonly _tag: "Hero"; readonly side: Side }
-): {
-  readonly x: number;
-  readonly z: number;
-  readonly height: number;
-} | null => {
-  if (target._tag === "Hero") {
-    return { x: heroX(target.side), z: 0, height: HERO_FIGURE_Y + 0.85 };
+/** How long an effect plays, in scene seconds. */
+export const fxLifetime = (fx: Fx): number =>
+  fx.kind === "number" || fx.kind === "ring"
+    ? FX_LIFETIME[fx.kind]
+    : fx.duration;
+
+type Spot = NonNullable<ReturnType<typeof worldOf>>;
+
+/** A particle burst at the middle of a figure. `start` and `duration` are in scene seconds. */
+const burstFx = (
+  burst: BurstName,
+  at: Spot,
+  start: number,
+  duration: number,
+  scale = 1
+): Fx => ({
+  kind: "particles",
+  burst,
+  scale,
+  ...at,
+  height: at.height * 0.5,
+  start,
+  duration,
+});
+
+/** The time of an event, in scene seconds. */
+const eventSeconds = (
+  event: BattleEvent,
+  speed: BattleSpeed,
+  before: BattleView
+): number => eventDuration(event, speed, before) / 1000;
+
+/**
+ * The slash of a melee attack starts at this progress, when the lunge
+ * reaches the target. The lunge is fully forward at 0.55 (`unit-pose.ts`).
+ */
+const MELEE_IMPACT = 0.5;
+
+/** The slash at the target of a melee attack, from the impact to the end of the attack. */
+const meleeSlash = (
+  event: Extract<BattleEvent, { readonly _tag: "UnitAttacked" }>,
+  before: BattleView,
+  time: number,
+  speed: BattleSpeed
+): Fx[] => {
+  const attacker = before.units.find((unit) => unit.id === event.unitId);
+  const at = worldOf(before, event.target);
+  if (event.ranged || !attacker || !at) {
+    return [];
   }
-  const unit = view.units.find((candidate) => candidate.id === target.unitId);
-  return unit
-    ? {
-        x: squareX(unit.position),
-        z: laneZ(unit.lane, view.lanes),
-        height: 1.45,
-      }
-    : null;
+  const duration = eventSeconds(event, speed, before);
+  const preset = FX_PRESETS.melee;
+  return [
+    {
+      kind: "billboard",
+      slot: preset.main,
+      color: preset.color ?? DAMAGE_COLORS[attacker.damageType],
+      size: preset.size,
+      mirror: attacker.owner === "enemy",
+      x: at.x,
+      z: at.z,
+      height: at.height * 0.55,
+      start: time + duration * MELEE_IMPACT,
+      duration: duration * (1 - MELEE_IMPACT),
+    },
+  ];
 };
 
-const DAMAGE_RING: Readonly<Record<DamageType, string>> = {
-  physical: "#fff4dc",
-  fire: "#ff7a3d",
-  frost: "#a8e6ff",
-  holy: "#ffe37a",
-};
-
-/** The burst when Burn or Poison deals damage in the End Step. */
-const TICK_BURST: Readonly<Partial<Record<DamageSource, BurstName>>> = {
-  burn: "burn-tick",
-  poison: "poison-tick",
-};
-
-/** The effects that start with an event. `before` is the view before it, `after` the view after it. */
+/**
+ * The effects that start with an event. `before` is the view before it,
+ * `after` the view after it. Speed ×2 halves the effect times.
+ */
 export const fxForEvent = (
   event: BattleEvent,
   before: BattleView,
   after: BattleView,
-  time: number
+  time: number,
+  speed: BattleSpeed
 ): Fx[] => {
   switch (event._tag) {
+    case "UnitAttacked": {
+      return meleeSlash(event, before, time, speed);
+    }
     case "DamageDealt": {
       const at = worldOf(before, event.target);
       if (!at) {
@@ -125,39 +170,24 @@ export const fxForEvent = (
         ...at,
         start: time,
       };
-      const tick = TICK_BURST[event.source];
-      // A Burn or a Poison hit shows its own burst, so the damage has a cause.
+      const tick = tickBurst(event);
       return [
         number,
         tick
-          ? {
-              kind: "status",
-              burst: tick,
-              ...at,
-              height: at.height * 0.5,
-              start: time,
-            }
-          : {
-              kind: "burst",
-              color: DAMAGE_RING[event.damageType],
-              ...at,
-              height: at.height * 0.5,
-              start: time,
-            },
+          ? burstFx(tick, at, time, BURST_DURATION / speed)
+          : burstFx(
+              hitPreset(event),
+              at,
+              time,
+              eventSeconds(event, speed, before),
+              event.crit ? CRIT_SCALE : 1
+            ),
       ];
     }
     case "StatusApplied": {
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
       return at
-        ? [
-            {
-              kind: "status",
-              burst: event.status,
-              ...at,
-              height: at.height * 0.5,
-              start: time,
-            },
-          ]
+        ? [burstFx(event.status, at, time, BURST_DURATION / speed)]
         : [];
     }
     case "UnitHealed": {
@@ -229,7 +259,6 @@ const ofKind = <Kind extends Fx["kind"]>(
 export const fxByKind = (fxs: readonly Fx[], size: number) => ({
   number: ofKind(fxs, "number", size),
   ring: ofKind(fxs, "ring", size),
-  burst: ofKind(fxs, "burst", size),
 });
 
 interface Projectile {
@@ -292,9 +321,13 @@ export const spellBoltAt = (
   };
 };
 
+/** The projectile of a ranged attack leaves at this progress. */
+const FLIGHT_START = 0.2;
+
 /**
  * Where the projectile of a ranged attack is now, and its color, or `null`
- * when no projectile flies (art direction 2.1). It starts at 20% progress.
+ * when no projectile flies (art direction 2.1). It arrives at the end of the
+ * attack, so the hit waits for it.
  */
 export const projectileAt = (
   current: PlayingEvent | null | undefined,
@@ -307,7 +340,7 @@ export const projectileAt = (
   const from = worldOf(before, { _tag: "Unit", unitId: event.unitId });
   const to = worldOf(before, event.target);
   const attacker = before.units.find((unit) => unit.id === event.unitId);
-  const flight = (progress - 0.2) / 0.8;
+  const flight = (progress - FLIGHT_START) / (1 - FLIGHT_START);
   if (!from || !to || !attacker || flight < 0) {
     return null;
   }
@@ -318,4 +351,65 @@ export const projectileAt = (
     color: DAMAGE_COLORS[attacker.damageType],
     size: 1,
   };
+};
+
+/** The trail shows where the projectile was in this part of the attack. */
+const TRAIL_SPAN = 0.12;
+
+/** The camera looks down at this angle, so a world height is shorter on the screen. */
+const PITCH = (CAMERA_PITCH * Math.PI) / 180;
+
+/**
+ * The atlas quads of a ranged projectile now (web ADR-0009): a glow head, and
+ * a trail streak from its last positions to the head. With reduced motion,
+ * only the head flies.
+ */
+export const projectileParticles = (
+  current: PlayingEvent | null | undefined,
+  progress: number,
+  reducedMotion = false
+): Particle[] => {
+  const head = projectileAt(current, progress);
+  if (!head) {
+    return [];
+  }
+  const preset = FX_PRESETS.ranged;
+  const glow = slotParticle(preset.main, {
+    x: head.x,
+    y: head.y,
+    z: head.z,
+    size: preset.size,
+    stretch: 1,
+    rotation: 0,
+    color: head.color,
+    opacity: 1,
+    burst: true,
+  });
+  const tail = projectileAt(
+    current,
+    Math.max(progress - TRAIL_SPAN, FLIGHT_START)
+  );
+  if (reducedMotion || !preset.trail || !tail) {
+    return [glow];
+  }
+  // The direction of the flight on the screen. The camera has no yaw.
+  const across = head.x - tail.x;
+  const up =
+    (head.y - tail.y) * Math.cos(PITCH) - (head.z - tail.z) * Math.sin(PITCH);
+  const width = preset.size * 0.45;
+  const length = Math.hypot(across, up) + width;
+  return [
+    slotParticle(preset.trail, {
+      x: (head.x + tail.x) / 2,
+      y: (head.y + tail.y) / 2,
+      z: (head.z + tail.z) / 2,
+      size: width,
+      stretch: length / width,
+      rotation: Math.atan2(up, across),
+      color: head.color,
+      opacity: 0.85,
+      burst: true,
+    }),
+    glow,
+  ];
 };

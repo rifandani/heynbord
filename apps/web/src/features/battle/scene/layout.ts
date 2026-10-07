@@ -1,6 +1,8 @@
 import type { Side } from "@workspace/rules";
 import { LANE_LENGTH } from "@workspace/rules";
 
+import type { BattleView } from "@/features/battle/battle-view";
+
 /** The size of one Square in world units. */
 const SQUARE_SIZE = 1;
 
@@ -21,6 +23,30 @@ export const heroX = (side: Side): number =>
 
 /** The height of the center of a Hero figure. The Hero stands on the ground, with no pedestal (web ADR-0007). */
 export const HERO_FIGURE_Y = 1.2;
+
+/** The world position of a Unit or a Hero in a view, or `null` if it is not on the Board. */
+export const worldOf = (
+  view: BattleView,
+  target:
+    | { readonly _tag: "Unit"; readonly unitId: number }
+    | { readonly _tag: "Hero"; readonly side: Side }
+): {
+  readonly x: number;
+  readonly z: number;
+  readonly height: number;
+} | null => {
+  if (target._tag === "Hero") {
+    return { x: heroX(target.side), z: 0, height: HERO_FIGURE_Y + 0.85 };
+  }
+  const unit = view.units.find((candidate) => candidate.id === target.unitId);
+  return unit
+    ? {
+        x: squareX(unit.position),
+        z: laneZ(unit.lane, view.lanes),
+        height: 1.45,
+      }
+    : null;
+};
 
 /** The half width of what the camera must always show: both Heroes and a margin. */
 const HALF_WIDTH = heroX("enemy") + 0.9;

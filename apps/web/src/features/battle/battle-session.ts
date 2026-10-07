@@ -280,7 +280,7 @@ const startNext = (session: BattleSession): BattleSession => {
     queue: rest,
     current: {
       event,
-      duration: eventDuration(event, session.speed),
+      duration: eventDuration(event, session.speed, session.view),
       before: session.view,
     },
     elapsed: 0,
@@ -345,7 +345,11 @@ export const setSpeed = (
   current: session.current
     ? {
         ...session.current,
-        duration: eventDuration(session.current.event, speed),
+        duration: eventDuration(
+          session.current.event,
+          speed,
+          session.current.before
+        ),
       }
     : null,
 });

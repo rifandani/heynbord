@@ -1,6 +1,6 @@
 # Battle effects stay in Three.js, not PixiJS
 
-All Battle effects are in the Three.js scene: skill casts, attacks, hits, movement and Statuses. The effects are flipbook billboards and particles in the `fx.ts` → `effects-layer.tsx` pipeline, and they use the `playback` clock. Only screen-level effects, for example a full-screen flash or a vignette, are DOM and CSS with `motion`. We do not add PixiJS.
+All Battle effects are in the Three.js scene: skill casts, attacks, hits, movement and Statuses. The effects are flipbook billboards and particles in the `fx.ts` → `particle-layer.tsx` pipeline, and they use the `playback` clock. `effects-layer.tsx` draws only the damage numbers, the rings and the spell bolt. Only screen-level effects, for example a full-screen flash or a vignette, are DOM and CSS with `motion`. We do not add PixiJS.
 
 We did this because the Units and the Heroes are 3D (web ADR-0007), and an effect on a Unit or on the ground must have correct depth. For example, a flame on a back-Lane Unit must go behind a front-Lane Unit. PixiJS v8 can use the WebGL context of Three.js, but the two renderers draw separate layers and do not depth-sort with each other. A Pixi effect is always on top of the Units, or always under them.
 

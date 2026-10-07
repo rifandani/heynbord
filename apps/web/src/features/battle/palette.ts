@@ -67,6 +67,9 @@ export const DAMAGE_COLORS: Readonly<Record<DamageType, string>> = {
   holy: "#ffd75a",
 };
 
+/** The sparks of a Blocked hit: grey, because the Block took the damage. */
+export const BLOCKED_HIT = "#a3a8ae";
+
 /** Attack and HP on a Unit. White when equal to the summon value, red when lower, green when higher. */
 export const STAT_DELTA: Readonly<Record<"same" | "down" | "up", string>> = {
   same: "#ffffff",

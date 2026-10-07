@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { BurstName, Emitter } from "@/features/battle/scene/particles";
 import {
+  billboardParticle,
   BURST_DURATION,
   burstParticleCount,
   loopParticleCount,
@@ -19,13 +20,18 @@ const loop = (seed: number, status: Status = "burn"): Emitter => ({
   seed,
 });
 
-const burst = (start: number, preset: BurstName = "freeze"): Emitter => ({
+const burst = (
+  start: number,
+  preset: BurstName = "freeze"
+): Extract<Emitter, { readonly kind: "burst" }> => ({
   kind: "burst",
   preset,
   x: 2,
   y: 0.7,
   z: 1,
   start,
+  duration: BURST_DURATION,
+  scale: 1,
   seed: 9,
 });
 
@@ -117,5 +123,78 @@ describe("spawnParticles with reduced motion", () => {
       rotation: first?.rotation,
     });
     expect(second?.opacity).toBeLessThan(first?.opacity ?? 0);
+  });
+});
+
+const hit = (preset: BurstName, scale = 1): Emitter => ({
+  ...burst(1, preset),
+  scale,
+});
+
+/** The sum of the particle sizes of a Fire hit. */
+const fireSize = (scale: number) =>
+  spawnParticles([hit("hit:fire", scale)], 1.2, 200)
+    .map((particle) => particle.size)
+    .reduce((total, value) => total + value, 0);
+
+describe("hit bursts (web ADR-0009)", () => {
+  it("makes a Crit hit larger", () => {
+    expect(fireSize(1.4)).toBeCloseTo(fireSize(1) * 1.4);
+  });
+
+  it.each([
+    ["hit:physical", "burst"],
+    ["hit:fire", "flame"],
+    ["hit:frost", "frost-shard"],
+    ["hit:holy", "flare"],
+    ["hit:blocked", "spark"],
+  ] as const)(
+    "shows %s as a fade of its main image with reduced motion",
+    (preset, slot) => {
+      const [first, ...rest] = spawnParticles([hit(preset)], 1.1, 200, true);
+      expect(rest).toEqual([]);
+      expect(first?.slot).toBe(slot);
+    }
+  );
+});
+
+describe("billboardParticle", () => {
+  const slash = {
+    slot: "slash",
+    color: "#ff6a33",
+    size: 1,
+    mirror: false,
+    x: 3,
+    z: 1,
+    height: 0.8,
+    start: 2,
+    duration: 0.5,
+  } as const;
+
+  it("shows the image only from its start until it ends", () => {
+    expect(billboardParticle(slash, 1.9)).toBeNull();
+    expect(billboardParticle(slash, 2.1)).toMatchObject({
+      slot: "slash",
+      color: "#ff6a33",
+      x: 3,
+    });
+    expect(billboardParticle(slash, 2.5)).toBeNull();
+  });
+
+  it("sweeps the other way for an attacker that faces left", () => {
+    const right = billboardParticle(slash, 2.2);
+    const left = billboardParticle({ ...slash, mirror: true }, 2.2);
+    expect(left?.rotation).toBeCloseTo(-(right?.rotation ?? 0));
+    expect(left?.stretch).toBe(-1);
+  });
+
+  it("only fades in its place with reduced motion", () => {
+    const early = billboardParticle(slash, 2.1, true);
+    const late = billboardParticle(slash, 2.4, true);
+    expect(late).toMatchObject({
+      size: early?.size,
+      rotation: early?.rotation,
+    });
+    expect(late?.opacity).toBeLessThan(early?.opacity ?? 0);
   });
 });
