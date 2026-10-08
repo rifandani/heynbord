@@ -6,16 +6,9 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 v1:
 
-- seems like goblin generated images looks very similar to orc, change all goblin prompts and things, make it more creative and looks different than orc
-- i dont want any animals like boar/howling charger/cinderhorn/hyena/pup/skyreaver in the orc illustrations as player will get confused by the Feral creature, change it's prompts and things and i will regenerate the illustrations
-- /grill-with-docs issue #22
-- /grill-with-docs issue #17 #18
 - /grill-with-docs adjust Keyword "Charge" to be "Charge N", with max Charge 4
-- /grill-with-docs for Wall units, i think we should increase the deployable starting squares to 4, what do u think? its kinda weird that Wall that cant move is deployable in normal 3 squares
-- follow pattern web/art/fx/raw how to setup prompts and style reference to create more creature unit card
-- /grill-with-docs Wild Hunt is too strong and Tunnel Rats is too weak right? can we balance it
+- /grill-with-docs for Wall units, i think we should increase the deployable starting squares to 4 or 5, what do u think? its kinda weird that Wall that cant move is deployable in normal 3 squares
 - /grill-with-docs dont u think we need to also have economy simulation script, not only battle simulation
-- maybe we could have something called "Power" to show the current deck power and we can also use it to show recommended power in campaign stages
 - if a 0 Base Attack unit have poison, or burn, etc skills, can they inflict those posion or burn, etc to the enemy unit?
 - /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
 - /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think

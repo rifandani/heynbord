@@ -1,6 +1,6 @@
 # 10 — Card Concepts
 
-This document gives the gameplay draft and art brief for each Creature Card in the v1 set, and for each implemented Skill Card. Use it for step 1 of the AI art workflow ([05 — Art and Audio Direction, 5.3](./05-art-direction.md#53-steps-for-each-card)). This document does not keep the image prompts of Creature Cards: `bun creature:prompts` makes them from the briefs ([05, 5.2](./05-art-direction.md#52-prompts-for-creature-cards)). Implemented values come from `packages/rules/src/content/cards.ts`. Values marked **provisional** are design inputs until the rules package implements and simulates them. When a card exists in `cards.ts` and its line here is **provisional**, `cards.ts` keeps the previous values until that line is implemented. The card names and flavor text move to the `en-US` Message Catalog with implementation. The art must agree with them.
+This document gives the gameplay draft and art brief for each Creature Card and Token in the v1 set, and for each implemented Skill Card. Use it for step 1 of the AI art workflow ([05 — Art and Audio Direction, 5.3](./05-art-direction.md#53-steps-for-each-card)). This document does not keep image prompts. `bun creature:prompts` makes the prompts of Creature Cards and Tokens from the briefs ([05, 5.2](./05-art-direction.md#52-prompts-for-creature-cards)), and `bun skill:prompts` makes the prompts of Skill Cards ([05, 5.2.1](./05-art-direction.md#521-prompts-for-skill-cards)). Implemented values come from `packages/rules/src/content/cards.ts`. Values marked **provisional** are design inputs until the rules package implements and simulates them. When a card exists in `cards.ts` and its line here is **provisional**, `cards.ts` keeps the previous values until that line is implemented. The card names and flavor text move to the `en-US` Message Catalog with implementation. The art must agree with them.
 
 The provisional set is budget-valid and simulation-ready. It is not balance-approved. Balance approval needs the main Matchups and Stage simulations in GDD 13 after implementation.
 
@@ -12,8 +12,8 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Facing.** A Creature Card and a Token advance to the right of the image, in a three-quarter view. The chest and the lead foot point right. The face and the weapon may turn. A fortification shows its blocking face to the right. Forward in a pose means this direction. The card art and the Unit cut-out share it. See [ADR-0014](../adr/0014-creature-card-paintings-advance-to-the-right.md). A Skill Card has no Unit. When it shows travel, a throw, or a back view, that travel still goes to the right.
 - **Size.** Portrait 3:4 (card art is 768 × 1024).
 - **Gender.** The flavor text sets the gender of some figures. For the other figures, this document selects a gender, so that the set has a balanced mix.
-- **Creature Cards** use the prompts of 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
-- **Skill Cards** use the template in 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
+- **Creature Cards and Tokens** use the prompts of 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
+- **Skill Cards** use the prompts of 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
 - **Provisional power.** A Summon or a Last Breath that summons uses 80% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
 - **Power Budget `12 + 3 × Countdown`.** The Human, Orc, Goblin and Feral values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Elf, Undead and Token values are not in `cards.ts` yet, and they still use the old budget `6 + 5 × Countdown`. Fit them to the new budget when they come into the rules package.
 - **Common values and Power Points.** The Attack and HP on each line are Common values. The Power on each line measures Attack and HP at the Base Rank of the card, with the Rank scale of GDD 5.3 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Thus an Uncommon, Rare or Epic card has lower Common Attack and HP than a Common card of the same power.
@@ -26,7 +26,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 | Elf | An ancient green forest: immense roots, canopy bridges, amber sun shafts, moss and quiet pools | Leaf green, amber and pale gold. Living wood, leaves, silver |
 | Undead | The Hollow Marches: flooded grave roads, dead willows, ruined courts, barrows and cold mist | Pale teal and moonlit blue. Rusted iron, old cloth, bone |
 | Orc | Red badlands: dusty mesas, dry ground, bone and hide totems | Burnt orange and dark red. Leather, fur, rough iron |
-| Goblin | The hill mines: tunnels, rail tracks, junk-heap workshops and lantern light | Soot grey, brass and acid green. Patched iron, canvas, junk |
+| Goblin | The hill mines: cool grey-blue tunnels, rail tracks, junk-heap workshops, brass lanterns and jars of acid-green lamp oil. No red earth and no desert | Soot grey and slate blue, brass and acid green. Patched iron, canvas, brass, junk |
 | Feral | The wild peaks and deep caves: cliffs, glaciers, cave mouths and old bones | Slate violet and ice white. Fur, horn, stone and ice |
 | Skill Cards | A neutral battlefield: green grass and a Lane of grey stone tiles, with no banners | The Damage Type color (Fire: orange-red, Frost: light blue). Physical: neutral steel and leather |
 
@@ -1123,6 +1123,8 @@ Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 21, budge
 
 Identity: goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. They make the enemy plan slower with Sabotage, traps (Hobble) and bombs (Last Breath and Fire). All values in this section are **provisional**.
 
+Goblin art must not look like Orc art. Each Goblin figure is very small: about half the height of a human, with a large round head, thin arms and legs, long fingers and big feet that are often bare. Each Goblin figure has ash-grey skin with a cool blue tint, never green or olive skin. Each Goblin figure has very large round amber eyes that shine a little, like the eyes of a cat in a dark tunnel, a long pointed nose, small crooked front teeth and no tusks. Each Goblin figure has long soft ears that hang down to the shoulders, and white tufts of hair. The art shows no war paint, no fur, no bones, no tribal charms and no big muscles, because these are the look of the Orc cards. A Goblin figure wears canvas work clothes with many pockets, brass goggles and tool belts, with armor and tools made from found objects that are too big for it. In the art, acid green comes from lamp oil, glass jars and fuse sparks, never from skin. A Goblin figure looks clever, nervous and proud of its inventions, not fierce.
+
 ### 6.1 Ankle Snatcher
 
 `goblin.ankleSnatcher` · Runner · Common · Countdown 1 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Hobble 1
@@ -1137,7 +1139,7 @@ Purpose: a cheap fast trap that slows the first enemy Runner. Power 14, budget 1
 | Pose | She runs low and hooks forward at ankle height. |
 | Props | A hook made from a bent pipe, a coil of rope, patched goggles on her forehead. |
 | Gameplay cues | The hook at ankle height shows Hobble. The long stride shows Speed 2. |
-| Silhouette hook | The long hook and the big ears. |
+| Silhouette hook | The long hook and the long ears that stream back. |
 | Humor note | One boot already hangs from the hook. |
 | Setting | A narrow mine tunnel mouth with lanterns. |
 
@@ -1171,7 +1173,7 @@ Purpose: a cheap Shooter that slows the Unit it hits. Power 18, budget 18, devia
 | --- | --- |
 | Subject | An old goblin woman with a big sling. |
 | Pose | She swings the sling above her head. |
-| Props | A sling, a bag of bent nails, bolts and spoons, a patched apron. |
+| Props | A sling, a bag of bent nails, bolts and small gears, a patched apron. |
 | Gameplay cues | A small trap spring in the bag shows Hobble. The sling shows Range. |
 | Silhouette hook | The circle of the sling. |
 | Humor note | One of her "stones" is her own false tooth. |
@@ -1205,7 +1207,7 @@ Purpose: a cheap Goblin Lane anchor. Power 19, budget 18, deviation +5.6%.
 
 | Field | Brief |
 | --- | --- |
-| Subject | A stocky goblin woman in armor made from stove plates. |
+| Subject | A small, round goblin woman in armor made from stove plates that is much too big for her. |
 | Pose | She braces behind a shield made from a cart wheel. |
 | Props | A cart-wheel shield, a stove door on her chest, a short pick. |
 | Gameplay cues | The stove plates show Armor. |
@@ -1228,7 +1230,7 @@ Purpose: the Goblin Pivot Unit. Power 17, budget 18, deviation -5.6%.
 | Props | Two small knives, a dark hood, a belt with many pockets and one brass buckle. |
 | Gameplay cues | Pivot: the face looks back. The chest still points right. |
 | Silhouette hook | The long nose and the knives out to the sides. |
-| Humor note | One pocket is full of other people's spoons. |
+| Humor note | One pocket is full of other people's keys. |
 | Setting | Between mine carts in a tunnel. |
 
 ### 6.7 Junk Barricade
@@ -1259,11 +1261,11 @@ Purpose: a ranged Fire Shooter that Burns its target. Power 20, budget 21, devia
 
 | Field | Brief |
 | --- | --- |
-| Subject | A broad goblin woman with a big wooden ladle. |
-| Pose | She throws a lit bomb forward with the ladle. |
-| Props | The ladle, a basket of small round bombs, smoked goggles. |
+| Subject | A plump goblin woman with a big racket made from a barrel hoop and wire. |
+| Pose | She hits a lit bomb forward with the racket, like a ball. |
+| Props | The racket, a basket of small round bombs, smoked goggles. |
 | Gameplay cues | The lit bombs show Fire. The high arc shows Range. |
-| Silhouette hook | The long ladle. |
+| Silhouette hook | The round racket. |
 | Humor note | She covers one ear with her free hand. |
 | Setting | A rocky slope above a mine. |
 
@@ -1313,7 +1315,7 @@ Purpose: a Fire Striker that hits hard and explodes when it falls. Power 24, bud
 
 | Field | Brief |
 | --- | --- |
-| Subject | A strong goblin man with a big pick and powder kegs on his back. |
+| Subject | A wiry goblin man with a big pick and a stack of powder kegs on his back that is taller than he is. |
 | Pose | He swings the pick forward. |
 | Props | A long pick with brass trim, a back frame of small powder kegs, a lit pipe. |
 | Gameplay cues | The kegs show Last Breath. The glowing pick head shows Fire. |
@@ -1671,11 +1673,11 @@ Purpose: the named Feral Epic: a huge Frost Striker that Tramples, and its bite 
 
 ## 8. Tokens
 
-Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**.
+Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**. The ID line of a Token gives its Race, so that its art uses the setting and the palette of that Race (1.1). A Token has no Base Rank: its art uses the Common detail, because it is cheap Lane mass.
 
 ### 8.1 Skeleton
 
-`token.skeleton` · Melee · Physical · Swarm 1
+`token.skeleton` · Undead · Melee · Physical · Swarm 1
 
 | Rank | Attack | HP | Speed | Power |
 | --- | ---: | ---: | ---: | ---: |
@@ -1687,17 +1689,19 @@ Tokens are not collectible Cards. They use the Rank of the Card or effect that m
 
 Purpose: cheap Lane mass that is weak alone.
 
-```text
-small eager Skeleton soldier with a bucket helmet covering one eye socket, chipped sword held too high, round wooden lid shield and pale teal neck cloth, chest advancing to the right, glancing back toward an ally for courage, friendly macabre humor,
-Undead Token of Heynbord, three-quarter view advancing to the right, full body, centered,
-painterly storybook fantasy card illustration, misty grave path, pale teal moonlight from the upper left, simple clear silhouette,
-soft brush texture, rusted metal and old wood, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
+| Field | Brief |
+| --- | --- |
+| Subject | A small, eager skeleton soldier. |
+| Pose | He advances with his sword held too high, and looks back at an ally for courage. |
+| Props | A bucket helmet that covers one eye socket, a chipped sword, a round wooden lid as a shield and a pale teal neck cloth. |
+| Gameplay cues | The small, thin body shows low HP. The look back to an ally shows Swarm. |
+| Silhouette hook | The bucket helmet and the raised sword. |
+| Humor note | He is brave only while his friends follow him. |
+| Setting | A misty grave path. |
 
 ### 8.2 Restless Wisp
 
-`token.restlessWisp` · Melee · Frost · Flying
+`token.restlessWisp` · Undead · Melee · Frost · Flying
 
 | Rank | Attack | HP | Speed | Power |
 | --- | ---: | ---: | ---: | ---: |
@@ -1709,13 +1713,15 @@ portrait 3:4 composition, no gore, no text, no frame
 
 Purpose: a mobile Frost Token.
 
-```text
-small teardrop-shaped pale teal Restless Wisp with a friendly skull-like face, floating above marsh water while dragging a tiny rusted helmet on a short chain, icy trail and frost motes, friendly macabre humor,
-Undead Token of Heynbord, three-quarter view advancing to the right, centered,
-painterly storybook fantasy card illustration, misty Hollow Marches, pale teal moonlight from the upper left, clear luminous silhouette,
-soft brush texture, frost and rusted metal, simple low-contrast background,
-portrait 3:4 composition, no gore, no text, no frame
-```
+| Field | Brief |
+| --- | --- |
+| Subject | A small, teardrop-shaped spirit of pale teal light with a friendly face like a skull. |
+| Pose | It floats forward above marsh water. |
+| Props | A tiny rusted helmet on a short chain, a trail of ice and frost motes. |
+| Gameplay cues | The float above the water shows Flying. The icy trail shows Frost. |
+| Silhouette hook | The teardrop shape and the helmet on the chain. |
+| Humor note | The helmet is all that stays of its old body, and it pulls it everywhere. |
+| Setting | Misty marsh water in the Hollow Marches. |
 
 ## 9. Warrior Skill Cards
 
@@ -1735,14 +1741,6 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 | Setting | A neutral battlefield. Small blurred soldier shapes march quickly to the right in the background. |
 | Palette | Neutral steel and leather, warm wood. |
 
-```text
-large wooden war drum with sound rings rippling out, two glowing playing cards nearby,
-two strong arms in leather bracers striking the drum with sticks, mid-strike,
-Heynbord Warrior skill, painterly fantasy card illustration, bright warm light,
-light from the upper left, soft brush texture, neutral steel and leather accents,
-neutral battlefield with green grass and a lane of grey stone tiles, blurred shapes marching to the right in the background, portrait 3:4 composition, no text, no frame
-```
-
 ### 9.2 Shield Wall
 
 `warrior.shieldWall` · Warrior · Common · Countdown 2 · A friendly Lane · Friendly Units in a Lane get Armor 1 for the next 2 enemy Turns.
@@ -1757,14 +1755,6 @@ neutral battlefield with green grass and a lane of grey stone tiles, blurred sha
 | Setting | A neutral battlefield. The line goes along a Lane of grey stone tiles. |
 | Palette | Neutral steel and leather. |
 
-```text
-a long line of plain round steel shields locking together edge to edge, shield faces toward the right, a soft steel shine running along the line,
-back view of arms and shoulders holding the shields and facing to the right, no emblems,
-Heynbord Warrior skill, painterly fantasy card illustration, bright warm light,
-light from the upper left, soft brush texture, neutral steel and leather accents,
-neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
-```
-
 ### 9.3 Spear Throw
 
 `warrior.spearThrow` · Warrior · Uncommon · Countdown 3 · An enemy Unit · Deal 4 Physical damage to an enemy Unit.
@@ -1778,14 +1768,6 @@ neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:
 | Action | The spear flies to the right, to a far, dark silhouette that shouts with its mouth wide open. |
 | Setting | A neutral battlefield. |
 | Palette | Neutral steel and leather. Uncommon: a small brass trim on the spear. |
-
-```text
-a spear with a brass trim flying to the right with a motion trail toward a distant dark silhouette shouting with its mouth wide open,
-back view of a thrower facing to the right, arm fully extended at the end of the throw,
-Heynbord Warrior skill, painterly fantasy card illustration, bright warm light,
-light from the upper left, soft brush texture, neutral steel and leather accents,
-neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
-```
 
 ## 10. Mage Skill Cards
 
@@ -1805,14 +1787,6 @@ Identity: area damage. The palette is the Damage Type color.
 | Setting | A neutral battlefield. |
 | Palette | Orange-red fire, with warm light on the hands. |
 
-```text
-large fireball with a long tail of flame flying to the right over two grey stone tiles,
-two open hands in robe sleeves pushing the fireball to the right, warm light on the hands,
-Heynbord Mage skill, painterly fantasy card illustration, bright warm light,
-light from the upper left, soft brush texture, orange-red fire accents,
-neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
-```
-
 ### 10.2 Frost Bolt
 
 `mage.frostBolt` · Mage · Common · Countdown 2 · An enemy Unit · Deal 2 Frost damage to an enemy Unit.
@@ -1826,14 +1800,6 @@ neutral battlefield with green grass and a lane of grey stone tiles, portrait 3:
 | Action | The bolt flies to the right and hits the feet of a far, dark silhouette. Ice holds the feet to the ground. |
 | Setting | A neutral battlefield with frost on the grass. |
 | Palette | Light blue frost. |
-
-```text
-sharp bolt of ice with frost crystals flying to the right, a distant dark silhouette with its feet frozen to the ground,
-one hand pointing two fingers to the right with the bolt leaving the fingertips,
-Heynbord Mage skill, painterly fantasy card illustration, bright warm light,
-light from the upper left, soft brush texture, light blue frost accents,
-neutral battlefield with green grass touched by frost and a lane of grey stone tiles, portrait 3:4 composition, no text, no frame
-```
 
 ### 10.3 Flame Wave
 
@@ -1849,16 +1815,8 @@ neutral battlefield with green grass touched by frost and a lane of grey stone t
 | Setting | A neutral battlefield. The Lane is long and goes into the distance. |
 | Palette | Orange-red fire. Uncommon: a small gold trim on the staff. |
 
-```text
-a long low wave of fire rolling to the right down a full lane of grey stone tiles,
-back view of a robed silhouette facing to the right and sweeping a staff with a small gold trim,
-Heynbord Mage skill, painterly fantasy card illustration, bright warm light,
-light from the upper left, soft brush texture, orange-red fire accents,
-neutral battlefield with green grass and a long lane of grey stone tiles, portrait 3:4 composition, no text, no frame
-```
-
 ## 11. When cards change
 
-- When you add a card to `cards.ts`, add its entry here before you make the art. For a Creature Card, also add its subject line to `scripts/creature-art/subjects.ts`.
+- When you add a card or a Token to `cards.ts`, add its entry here before you make the art. For a Creature Card or a Token, also add its subject line to `scripts/creature-art/subjects.ts`. For a Skill Card, the brief must have the fields Effect subject, Partial figure, Action, Setting and Palette: `bun skill:prompts` fails without them.
 - When you change a name or flavor text in the Message Catalog, look at the entry here again. The image must still agree with the text.
-- When a Keyword or a Damage Type of a card changes, update the gameplay cues. For a Creature Card, look at its subject line in `scripts/creature-art/subjects.ts` again. For a Token or a Skill Card, update its prompt here.
+- When a Keyword or a Damage Type of a card changes, update the gameplay cues. For a Creature Card or a Token, look at its subject line in `scripts/creature-art/subjects.ts` again. For a Skill Card, look at its brief again.

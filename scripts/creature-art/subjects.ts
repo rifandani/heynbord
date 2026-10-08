@@ -1,8 +1,9 @@
 /**
- * The look of each Creature Card: the subject, the face, the clothes and the
- * small jokes, in a few words. The prompt puts it before the brief of the
- * card in `docs/game/10-card-concepts.md`. Add a line here when you add a
- * Creature Card there: `bun creature:prompts` fails without it.
+ * The look of each Creature Card and Token: the subject, the face, the
+ * clothes and the small jokes, in a few words. The prompt puts it before the
+ * brief of the card in `docs/game/10-card-concepts.md`. Add a line here when
+ * you add a Creature Card or a Token there: `bun creature:prompts` fails
+ * without it.
  */
 export const SUBJECT = new Map(
   Object.entries({
@@ -127,35 +128,35 @@ export const SUBJECT = new Map(
     "undead.boneRampart":
       "towering undead rampart made from interlocked rusted shields, coffin planks and chains, orderly skeleton workers repairing the top, pale teal pennants, spectral rebuilt outline behind it, blank arrow sign pointing around the wall, friendly macabre humor",
     "goblin.ankleSnatcher":
-      "small eager goblin girl running low and hooking forward at ankle height with a long bent-pipe hook, a single caught boot hanging from the hook, coil of rope, patched goggles on her forehead, big ears",
+      "tiny eager goblin girl with ash-grey blue-tinted skin, huge shining amber eyes and long soft ears streaming back as she runs low, hooking forward at ankle height with a long bent-pipe hook, a single caught boot hanging from the hook, coil of rope, patched brass goggles on her forehead, bare feet, no tusks",
     "goblin.fuseRunner":
-      "skinny goblin man running forward on his toes, hugging a round black bomb bigger than his head with a short lit fuse, soot on his face, long scarf streaming, eyes fixed on the fuse instead of the road",
+      "skinny tiny goblin man with ash-grey skin and long droopy ears flapping, running forward on his toes, hugging a round black bomb bigger than his whole head with a short lit fuse throwing acid-green sparks, soot on his long nose, long striped scarf streaming, huge amber eyes fixed on the fuse instead of the road, no tusks",
     "goblin.junkSlinger":
-      "old goblin woman swinging a sling above her head, bag of bent nails, bolts and spoons with a small trap spring on top, patched apron, a false tooth flying out with the junk, determined grin",
+      "old tiny goblin woman with ash-grey wrinkled skin, wild white hair tufts and long ears that hang to her shoulders, swinging a sling above her head, bag of bent nails, bolts and small gears with a small trap spring on top, patched canvas apron with many pockets, a false tooth flying out with the junk, determined crooked grin, no tusks",
     "goblin.tunnelSaboteur":
-      "round goblin man in a miner's helmet too big for him, climbing up out of a fresh hole in a road, big pliers in one hand, turning an hourglass upside down with the other, cut rope over his shoulder, sly wink",
+      "round little goblin man with ash-grey skin and long ears folded under a miner's helmet much too big for him, helmet lamp with an acid-green glow, climbing up out of a fresh hole in a road, big pliers in one hand, turning an hourglass upside down with the other, cut rope over his shoulder, sly wink of one huge amber eye, no tusks",
     "goblin.scrapPlateGuard":
-      "stocky goblin woman bracing behind a shield made from a wooden cart wheel, armor made from iron stove plates with a stove door on her chest, stove pipe on her helmet, short pick, small kettle steaming on her shoulder plate",
+      "small round goblin woman with ash-grey skin and big amber eyes peeking out of iron stove-plate armor much too big for her, a stove door on her chest, stove pipe on her helmet, long ears hanging out under it, bracing behind a shield made from a wooden cart wheel, short pick, small kettle steaming on her shoulder plate, no tusks",
     "goblin.sidestepShiv":
-      "thin goblin man, chest and lead foot pointing right, looking back over his shoulder, small knife ready behind him and another out to the side, dark hood, belt with many pockets and one brass buckle, a pocket full of stolen spoons, long nose, sly grin",
+      "thin tiny goblin man with ash-grey skin, very long pointed nose and long ears under a dark canvas hood, chest and lead foot pointing right, looking back over his shoulder with huge shining amber eyes, small knife ready behind him and another out to the side, belt with many pockets and one brass buckle, a pocket bursting with stolen keys, sly grin with crooked front teeth, no tusks",
     "goblin.junkBarricade":
-      "tall goblin barricade made from barrels, a broken mine cart, pots and an old door, a small goblin on top pulling a long rope that runs off to the right, upside-down pointing-hand sign with no letters",
+      "tall goblin barricade made from barrels, a broken mine cart, pots, an old door and jars of acid-green lamp oil, a tiny ash-grey goblin with long ears on top pulling a long rope that runs off to the right, upside-down pointing-hand sign with no letters",
     "goblin.bombLobber":
-      "broad goblin woman throwing a small lit bomb forward with a big wooden ladle, basket of round bombs at her hip, smoked goggles, covering one ear with her free hand, bomb flying in a high arc with a spark trail",
+      "plump little goblin woman with ash-grey skin, white hair in two tufts and long ears tied back with string, hitting a small lit bomb forward like a ball with a big round racket made from a barrel hoop and wire, basket of round bombs at her hip, smoked brass goggles, covering one ear with her free hand, bomb flying in a high arc with a spark trail, no tusks",
     "goblin.greaseTrapper":
-      "short goblin man spreading black grease on the ground with a mop, bucket of grease, big round toothless spring trap on his back, small hourglass on his belt, slipping a little on his own grease with a surprised face",
+      "short goblin man with ash-grey skin and long droopy ears, spreading black grease on the ground with a mop, bucket of grease, big round toothless spring trap on his back, small hourglass on his belt, slipping a little on his own grease with huge surprised amber eyes, no tusks",
     "goblin.rocketBarrelRider":
-      "young goblin woman riding a powder barrel with a rocket flame out of the back, flying low and forward, holding on with both hands, leather cap with goggles, scarf streaming, eyes shut tight",
+      "young goblin woman with ash-grey skin riding a powder barrel with a rocket flame out of the back, flying low and forward, holding on with both hands, leather cap with brass goggles, long ears and scarf streaming far behind her, eyes shut tight, no tusks",
     "goblin.mineSapper":
-      "strong goblin man swinging a long pick with brass trim and a glowing hot head, back frame stacked with small powder kegs, lighting his pipe with one of the fuses, ornate leather and brass gear",
+      "wiry goblin man with ash-grey skin, bushy white eyebrows and long ears, swinging a long pick with brass trim and a glowing hot head, back frame stacked with small powder kegs taller than he is, lighting his pipe with one of the fuses, ornate leather and brass gear with many pockets, no tusks",
     "goblin.spyglassSniper":
-      "old goblin woman aiming a long crossbow with a brass spyglass mounted on top, goggles with many lenses, notebook of drawings with no letters at her belt, small bird perched on the end of the crossbow, ornate brass fittings",
+      "old tiny goblin woman with ash-grey skin, white hair tufts and long ears, aiming a long crossbow with a brass spyglass mounted on top, goggles with many brass lenses over one huge amber eye, notebook of drawings with no letters at her belt, small bird perched on the end of the crossbow, ornate brass fittings, no tusks",
     "goblin.junkWalker":
-      "goblin woman driving a walking machine made from riveted boiler plates, round boiler body on two pipe legs, big claw arm, open seat with levers, brass gauges, a second small goblin running behind with an oil can",
+      "tiny goblin woman with ash-grey skin and long ears driving a walking machine made from riveted boiler plates, round boiler body on two pipe legs, big claw arm, open seat with levers, brass gauges, acid-green glow from its lamp-oil tank, a second tiny goblin running behind with an oil can",
     "goblin.grandGearjammer":
-      "big goblin war cart rolling forward, gear cannon firing brass gears, springs and broken clocks, three goblin crew pulling levers, one loading the cannon with an alarm clock, large brass gear on top, heroic dramatic composition",
+      "big goblin war cart rolling forward, gear cannon firing brass gears, springs and broken clocks, three tiny ash-grey goblin crew with long ears and brass goggles pulling levers, one loading the cannon with an alarm clock, large brass gear on top, acid-green lamp jars, heroic dramatic composition",
     "goblin.bossSnikkit":
-      "Boss Snikkit the goblin mine king, small old goblin man with a large bucket crown set with glass gems slipping over one eye, riding a mine cart throne full of bombs down the rails, pointing forward with a lit torch scepter, stolen hourglass on a chain, cheering goblins behind, heroic dramatic composition",
+      "Boss Snikkit the goblin mine king, small old goblin man with ash-grey wrinkled skin, a long white beard tucked into his belt, very long ears hanging past his shoulders and huge amber eyes, a large bucket crown set with glass gems slipping over one eye, riding a mine cart throne full of bombs down the rails, pointing forward with a lit torch scepter, stolen hourglass on a chain, cheering tiny goblins behind, heroic dramatic composition, no tusks",
     "feral.bristlebackBoar":
       "wild mountain boar with a ridge of stiff bristles charging forward head down, boards of a broken fence flying around it, an apple stuck on one tusk, dust behind it",
     "feral.cragLizard":
@@ -186,5 +187,9 @@ export const SUBJECT = new Map(
       "wild old giant of living rock and moss taking a huge step forward with one fist down, rubble flying, new stone growing over cracks, a small village of bird nests on its shoulder, heroic dramatic composition",
     "feral.oldFrostmaw":
       "Old Frostmaw, huge old white cave wyrm with no wings and a crown of icicles, coming out of a great ice cave with jaws open and icy breath, broken ice pillars around it, a very small hunting horn hanging from one tooth, heroic dramatic composition",
+    "token.skeleton":
+      "small eager skeleton soldier with a bucket helmet over one eye socket, chipped sword held too high, round wooden lid as a shield and a pale teal neck cloth, looking back toward an ally for courage, friendly macabre humor",
+    "token.restlessWisp":
+      "small teardrop-shaped pale teal Restless Wisp with a friendly skull-like face, floating above marsh water and dragging a tiny rusted helmet on a short chain, icy trail and frost motes, friendly macabre humor",
   })
 );

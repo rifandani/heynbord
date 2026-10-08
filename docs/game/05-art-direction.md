@@ -102,37 +102,38 @@ The style bible has:
 | `skills/mage/fireball.webp` | Mage Skill |
 | `skills/warrior/shield-wall.webp` | Warrior Skill |
 
-2. The prompt script for Creature Cards (see 5.2), a fixed prompt template for Skill Cards (see 5.2.1), and the prompt script for the Region Maps and the Battle Paintings (`bun campaign:prompts`, see [12 — Region Concepts, 3](./12-region-concepts.md#3-prompts)).
+2. The prompt scripts for Creature Cards (see 5.2) and Skill Cards (see 5.2.1), and the prompt script for the Region Maps and the Battle Paintings (`bun campaign:prompts`, see [12 — Region Concepts, 3](./12-region-concepts.md#3-prompts)).
 3. A character sheet for each Hero, boss and important Unit (front view, colors, key shapes).
 4. A list of words that are not permitted in prompts: the names of living artists, other games, and other companies' characters.
 
 ### 5.2 Prompts for Creature Cards
 
-The game docs do not keep the prompts of Creature Cards. Run `bun creature:prompts` to write them to `apps/web/art/creature/raw/`. Git ignores this folder.
+The game docs do not keep the prompts of Creature Cards and Tokens. Run `bun creature:prompts` to write them to `apps/web/art/creature/raw/`. Git ignores this folder.
 
-- `style-reference.png`: the 8 golden Creature Card references of 5.1 in one image.
+- `<race>/style-reference.png`: the golden Creature Card references of 5.1 in one image. The Goblin image has no Orc references, because goblins painted next to orcs look like small orcs.
 - `<race>/prompts.md`: the setup message of the Race, then one prompt for each Creature Card of the Race.
+- `token/style-reference.png` and `token/prompts.md`: the same for the Tokens ([10 — Card Concepts, 8](./10-card-concepts.md#8-tokens)), in one conversation. The setup message gives the setting and the palette of each Race that has Tokens. A Token has no Base Rank, so it uses the Common detail.
 
-The setup message gives the style rules of this section, and the setting and the palette of the Race ([10 — Card Concepts, 1.1](./10-card-concepts.md#11-settings)). Each card prompt has the subject line of the card in `scripts/creature-art/subjects.ts`, the art brief of the card in 10 — Card Concepts, the detail of its Base Rank and the accent of its Damage Type. Use one ChatGPT conversation for each Race: attach the style reference to the setup message, then send each card prompt in its own message. To change an image, change the brief or the subject line, then run the script again.
+The setup message gives the style rules of this section, and the setting and the palette of the Race ([10 — Card Concepts, 1.1](./10-card-concepts.md#11-settings)). Each card prompt has the subject line of the card in `scripts/creature-art/subjects.ts`, the art brief of the card in 10 — Card Concepts, the detail of its Base Rank and the accent of its Damage Type. Use one ChatGPT conversation for each Race: attach the style reference of the Race to the setup message, then send each card prompt in its own message. To change an image, change the brief or the subject line, then run the script again.
 
 The figure advances to the right of the image, in a three-quarter view, so the face stays readable. The chest and the lead foot point right. The face and the weapon may turn, so a Pivot figure can look back. A fortification shows its blocking face to the right. The card art and the Unit cut-out share this Facing. Match the golden references for light, brush and palette. Take Facing from this section. Keep the light from the upper left: a horizontal flip of a finished painting would move that light. Existing paintings that advance left stay until their art pass. Militia Recruit is the first repaint.
 
 The setting is simple and has low contrast, so that the figure separates cleanly when you remove the background (step 5.3.5).
 
-### 5.2.1 Prompt template for Skill Cards
+### 5.2.1 Prompts for Skill Cards
 
-A Skill Card has a Class, not a Race. Its image must not show a Race, because a Hero of any Race can use it. Show the effect, with only a partial figure (hands, a back view or a silhouette). The Damage Type color is the main color. For Physical, use a neutral steel and leather palette. A Skill Card has no Unit cut-out.
+The game docs do not keep the prompts of Skill Cards. Run `bun skill:prompts` to write them to `apps/web/art/skills/raw/`. Git ignores this folder.
 
-```text
-[effect subject], [partial figure], [action],
-Heynbord [Class] skill, painterly fantasy card illustration, bright warm light,
-light from the upper left, soft brush texture, [Damage Type color] accents,
-[setting], portrait 3:4 composition, no text, no frame
-```
+- `<class>/style-reference.png`: the golden Skill Card references of 5.1, then Dawn Cleric and Ember Shaman for the look of glow and fire, in one image.
+- `<class>/prompts.md`: the setup message of the Class, then one prompt for each Skill Card of the Class.
+
+The setup message gives the rules of this section, the Identity of the Class, and the Skill Card setting and palette ([10 — Card Concepts, 1.1](./10-card-concepts.md#11-settings)). Each card prompt has the effect and the flavor text of the card, its art brief in 10 — Card Concepts (effect subject, partial figure, action, setting and palette) and the detail of its Base Rank. Use one ChatGPT conversation for each Class: attach the style reference to the setup message, then send each card prompt in its own message. To change an image, change the brief, then run the script again.
+
+A Skill Card has a Class, not a Race. Its image must not show a Race, because a Hero of any Race can use it. Show the effect, with only a partial figure (hands, a back view or a silhouette). The Damage Type color is the main color. For Physical, use a neutral steel and leather palette. Travel, a throw or a back view goes to the right. A Skill Card has no Unit cut-out.
 
 ### 5.3 Steps for each card
 
-1. Write the card concept in [10 — Card Concepts](./10-card-concepts.md): name, Race or Class, Role, subject, pose, props and setting. For a Creature Card, add its subject line to `scripts/creature-art/subjects.ts`. For a Skill Card, write its prompt with the template in 5.2.1.
+1. Write the card concept in [10 — Card Concepts](./10-card-concepts.md): name, Race or Class, Role, subject, pose, props and setting. For a Creature Card or a Token, add its subject line to `scripts/creature-art/subjects.ts`. For a Skill Card, write its brief: effect subject, partial figure, action, setting and palette.
 2. Make 4 to 8 images with the prompts (5.2 or 5.2.1) and the style references.
 3. Select one image with the review checklist (5.4).
 4. Fix problems by hand or with inpainting (hands, weapons, extra parts).

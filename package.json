@@ -55,6 +55,7 @@
     "fx:sheet": "bun scripts/fx-atlas/contact-sheet.ts",
     "fx:pack": "bun scripts/pack-fx-atlas.ts",
     "creature:prompts": "bun scripts/creature-art/write-prompts.ts",
+    "skill:prompts": "bun scripts/skill-art/write-prompts.ts",
     "campaign:prompts": "bun scripts/campaign-art/write-prompts.ts"
   },
   "devDependencies": {

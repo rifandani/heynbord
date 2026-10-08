@@ -97,5 +97,8 @@ apps/web/art/fx/raw/
 # Creature Card art: images from ChatGPT, the style reference and the prompts
 apps/web/art/creature/raw/
 
+# Skill Card art: images from ChatGPT, the style reference and the prompts
+apps/web/art/skills/raw/
+
 # Region Map and Battle Painting art: images from ChatGPT, the references and the prompts
 apps/web/art/campaign/raw/
