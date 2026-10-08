@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { createBattle } from "../battle/create-battle";
 import { step } from "../battle/step";
 import type { BattleState } from "../battle/types";
-import { Command, Target, TURN_LIMIT } from "../battle/types";
+import { Command, HAND_LIMIT, Target, TURN_LIMIT } from "../battle/types";
 import { getStarterDeck, STARTER_DECKS } from "../content/decks";
 import { getStage, STAGES } from "../content/stages";
 import { emptyBattle, giveHand, placeUnit } from "../testing/fixtures";
@@ -195,6 +195,121 @@ describe("chooseCommand (GDD 9)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["warrior.shieldWall", 0]]);
     expect(chooseCommand(state)).toEqual(Command.EndTurn());
+  });
+});
+
+/** The enemy AI with one Ready Skill Card, and player Units at these Squares of Lane 0. */
+const skillChoice = (
+  cardId: string,
+  units: readonly (readonly [position: number, hp: number])[]
+) => {
+  const state = emptyBattle({ activeSide: "enemy" });
+  giveHand(state, "enemy", [[cardId, 0]]);
+  for (const [position, hp] of units) {
+    placeUnit(state, {
+      cardId: "orc.scrapRaider",
+      owner: "player",
+      position,
+      hp,
+    });
+  }
+  return chooseCommand(state);
+};
+
+/** The player's AI with a Ready Shield Wall, a friendly Unit in Lane 0 and `setup`. */
+const shieldWallChoice = (setup: (state: BattleState) => void = () => {}) => {
+  const state = emptyBattle();
+  giveHand(state, "player", [["warrior.shieldWall", 0]]);
+  placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    position: 1,
+  });
+  setup(state);
+  return chooseCommand(state);
+};
+
+/** A play of the first Hand card at a Square of Lane 0. */
+const playAt = (position: number) =>
+  Command.PlayCard({
+    handIndex: 0,
+    target: Target.Square({ lane: 0, position }),
+  });
+
+/** Fills the player's Hand to the Hand Limit with cards that are not Ready. */
+const fullHand = (state: BattleState) => {
+  giveHand(
+    state,
+    "player",
+    Array.from(
+      { length: HAND_LIMIT - state.sides.player.hand.length },
+      () => ["human.militiaRecruit", 5] as const
+    )
+  );
+};
+
+const shieldWallAt = (lane: number) =>
+  Command.PlayCard({ handIndex: 0, target: Target.Lane({ lane }) });
+
+describe("chooseCommand: Hold Rules (GDD 9)", () => {
+  it("keeps Shield Wall until an enemy Unit is in the Lane", () => {
+    expect(shieldWallChoice()).toEqual(Command.EndTurn());
+    expect(
+      shieldWallChoice((state) => {
+        placeUnit(state, {
+          cardId: "orc.badlandRunt",
+          owner: "enemy",
+          position: 8,
+        });
+      })
+    ).toEqual(shieldWallAt(0));
+  });
+
+  it("keeps War Drums until 2 other cards are not Ready", () => {
+    const state = emptyBattle();
+    giveHand(state, "player", [
+      ["warrior.warDrums", 0],
+      ["human.militiaRecruit", 3],
+    ]);
+    expect(chooseCommand(state)).toEqual(Command.EndTurn());
+    giveHand(state, "player", [["human.shieldbearer", 4]]);
+    expect(chooseCommand(state)).toEqual(
+      Command.PlayCard({ handIndex: 0, target: Target.NoTarget() })
+    );
+  });
+
+  it("keeps Spear Throw until it kills the target Unit", () => {
+    expect(skillChoice("warrior.spearThrow", [[5, 5]])).toEqual(
+      Command.EndTurn()
+    );
+    expect(skillChoice("warrior.spearThrow", [[5, 4]])).toEqual(playAt(5));
+  });
+
+  it("keeps Fireball until it kills a Unit or hits 2 Units", () => {
+    expect(skillChoice("mage.fireball", [[5, 4]])).toEqual(Command.EndTurn());
+    expect(skillChoice("mage.fireball", [[5, 3]])).toEqual(playAt(5));
+    expect(
+      skillChoice("mage.fireball", [
+        [5, 4],
+        [6, 4],
+      ])
+    ).toEqual(playAt(6));
+  });
+
+  it("plays Frost Bolt at a Unit that it cannot kill", () => {
+    expect(skillChoice("mage.frostBolt", [[5, 20]])).toEqual(playAt(5));
+  });
+
+  it("plays a held card when the Hand is full and the Deck has cards", () => {
+    expect(shieldWallChoice(fullHand)).toEqual(Command.EndTurn());
+    expect(
+      shieldWallChoice((state) => {
+        fullHand(state);
+        state.sides.player.deck = [
+          { instanceId: 1, cardId: "orc.tuskBrute", rank: "common" },
+        ];
+      })
+    ).toEqual(shieldWallAt(0));
   });
 });
 

@@ -228,6 +228,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Auto-play**: A mode in which the enemy AI logic plays the Player's Cards. _Avoid_: bot, auto battle
 
+**Hold Rule**: A condition of the AI for one type of Skill Card effect. While the condition is false, the AI keeps a Ready Card with that effect in the Hand and does not play it. It is not a game rule: a Player can play the same Card at any time. _Avoid_: reserve, save, hold threshold
+
 **Tutorial**: The one guided session that teaches a new Player the core of a Battle. It is each play of Stage 1-1 until the first win of Stage 1-1, and it never shows after that win. _Avoid_: onboarding, tutorial Stages, training
 
 **Tutorial Step**: One of the 4 guided parts of the Tutorial: a short text with an arrow or a highlight. It shows when its subject first appears in the Battle, at most one time in each play of the Tutorial. _Avoid_: lesson, coachmark, tooltip, Hint

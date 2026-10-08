@@ -3,7 +3,7 @@ import { absurd } from "effect";
 import { direction, enemyHeroPosition } from "../battle/context";
 import { legalTargets, unitsInArea } from "../battle/targets";
 import { suddenDeathDamage } from "../battle/turn";
-import { LANE_LENGTH, otherSide, Command } from "../battle/types";
+import { HAND_LIMIT, LANE_LENGTH, otherSide, Command } from "../battle/types";
 import type {
   BattleState,
   HandCard,
@@ -157,21 +157,33 @@ const heroDamage = (
 };
 
 /**
+ * True when a play makes the estimated Hero damage not lethal. Lethal also
+ * counts the Sudden Death damage at the next Start Step of `side` (the next
+ * Turn number for both Sides).
+ */
+const savesHero = (
+  state: BattleState,
+  side: Side,
+  before: number,
+  after: number
+): boolean => {
+  const hp =
+    state.sides[side].hero.hp - suddenDeathDamage(state.turnNumber + 1);
+  return hp - before <= 0 && hp - after > 0;
+};
+
+/**
  * The score for the Hero damage that a play removes. A play that makes the
- * damage not lethal gets a bonus. Lethal also counts the Sudden Death damage
- * at the next Start Step of `side` (the next Turn number for both Sides).
+ * damage not lethal gets a bonus.
  */
 const defenseScore = (
   state: BattleState,
   side: Side,
   before: number,
   after: number
-): number => {
-  const hp =
-    state.sides[side].hero.hp - suddenDeathDamage(state.turnNumber + 1);
-  const saved = hp - before <= 0 && hp - after > 0;
-  return (before - after) * HERO_DAMAGE_WEIGHT + (saved ? LETHAL_BONUS : 0);
-};
+): number =>
+  (before - after) * HERO_DAMAGE_WEIGHT +
+  (savesHero(state, side, before, after) ? LETHAL_BONUS : 0);
 
 /** The Column of a Square from `side`'s Hero, from 0. */
 const columnFrom = (side: Side, position: number): number =>
@@ -246,6 +258,63 @@ const scoreDamage = (
     return sum + damage * 2 + (damage > 0 ? status : 0);
   }, 0);
 
+const kills = ({ unit, damage }: SkillHit): boolean => damage >= unit.hp;
+
+/** The other cards in `side`'s Hand that are not Ready (Ticking Cards and Waiting Cards). */
+const notReadyCards = (
+  state: BattleState,
+  side: Side,
+  card: HandCard
+): HandCard[] =>
+  state.sides[side].hand.filter(
+    (other) => other.instanceId !== card.instanceId && other.countdown > 0
+  );
+
+/**
+ * The Hold Rule of each Skill Card effect type (GDD 9). It is true when the
+ * play at `target` meets the condition. While it is false, the AI keeps the
+ * card in the Hand.
+ */
+const meetsHoldRule = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  definition: SkillCardDefinition,
+  target: Target
+): boolean => {
+  const { effect } = definition;
+  switch (effect.type) {
+    case "damageUnit": {
+      // A Frost hit Freezes, so each hit has value: no Hold Rule.
+      return (
+        effect.damageType === "frost" ||
+        skillHits(state, side, card, effect, target).some(kills)
+      );
+    }
+    case "damageArea":
+    case "damageLane": {
+      const hits = skillHits(state, side, card, effect, target).filter(
+        ({ damage }) => damage > 0
+      );
+      return hits.length >= 2 || hits.some(kills);
+    }
+    case "laneArmor": {
+      return (
+        target._tag === "Lane" &&
+        state.units.some(
+          (unit) => unit.owner !== side && unit.lane === target.lane
+        )
+      );
+    }
+    case "lowerCountdown": {
+      return notReadyCards(state, side, card).length >= effect.cards;
+    }
+    default: {
+      return absurd(effect);
+    }
+  }
+};
+
 const scoreSkill = (
   state: BattleState,
   side: Side,
@@ -273,10 +342,8 @@ const scoreSkill = (
       return friends * (laneThreat(state, side, target.lane) > 0 ? 6 : 1);
     }
     case "lowerCountdown": {
-      const waiting = state.sides[side].hand.filter(
-        (other) => other.instanceId !== card.instanceId && other.countdown > 0
-      );
-      return Math.min(effect.cards, waiting.length) * 5;
+      const notReady = notReadyCards(state, side, card);
+      return Math.min(effect.cards, notReady.length) * 5;
     }
     default: {
       return absurd(effect);
@@ -329,13 +396,18 @@ const unitsAfterSkill = (
   }
 };
 
-/** The score of a play: its value, plus the Hero damage that it removes. */
+/**
+ * The score of a play: its value, plus the Hero damage that it removes. A
+ * Skill Card play that does not meet its Hold Rule scores 0, unless it makes
+ * the Hero damage not lethal or `handFull` is true.
+ */
 const scorePlay = (
   state: BattleState,
   side: Side,
   card: HandCard,
   target: Target,
-  before: number
+  before: number,
+  handFull: boolean
 ): number => {
   const definition = getCard(card.cardId);
   if (definition.kind === "skill") {
@@ -343,6 +415,15 @@ const scorePlay = (
       unitsAfterSkill(state, side, card, definition, target),
       side
     );
+    if (
+      !(
+        handFull ||
+        savesHero(state, side, before, after) ||
+        meetsHoldRule(state, side, card, definition, target)
+      )
+    ) {
+      return 0;
+    }
     return (
       scoreSkill(state, side, card, definition, target) +
       defenseScore(state, side, before, after)
@@ -366,17 +447,23 @@ const scorePlay = (
 /**
  * The enemy AI (GDD 9). It scores each legal play (each Ready card in each
  * legal place) and returns the best one. It returns `EndTurn` when no play
- * scores above 0. Call it again after each play: the scores change. Auto-play
- * uses the same function for the player's side.
+ * scores above 0. A play that has no effect scores 0. Call it again after each
+ * play: the scores change. Auto-play uses the same function for the player's
+ * side.
  */
 export const chooseCommand = (state: BattleState): Command => {
   const side = state.activeSide;
   const view = visibleTo(state, side);
   const before = heroDamage(view.units, side);
+  // A full Hand gets no draw. The view hides the Deck order, but a player
+  // sees how many cards the Deck has, so this reads the real state.
+  const handFull =
+    state.sides[side].hand.length >= HAND_LIMIT &&
+    state.sides[side].deck.length > 0;
   let best: { readonly score: number; readonly command: Command } | undefined;
   for (const [handIndex, card] of view.sides[side].hand.entries()) {
     for (const target of legalTargets(view, handIndex)) {
-      const score = scorePlay(view, side, card, target, before);
+      const score = scorePlay(view, side, card, target, before, handFull);
       if (score > 0 && (!best || score > best.score)) {
         best = { score, command: Command.PlayCard({ handIndex, target }) };
       }

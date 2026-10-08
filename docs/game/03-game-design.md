@@ -532,10 +532,10 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 ## 9. Enemy AI
 
 - The AI uses the same rules and the same information as a player. It does not see the player's Hand.
-- In each Play Phase, the AI gives a score to each legal play (each Ready card in each legal place). It plays the best play, and then scores again. It stops when no play has a score above its threshold.
+- In each Play Phase, the AI gives a score to each legal play (each Ready card in each legal place). It plays the best play, and then scores again. It stops when no play has a score above 0. A play that has no effect scores 0.
 - The score uses: threat in each Lane, damage that the AI's Hero will take, Units that the play can kill, and the value of the card.
 - For a Creature Card, the AI selects a Lane and a Column of its Summon Zone. It prefers the deepest empty Square that is nearer its Hero than the nearest enemy Unit in that Lane, so that its Unit blocks the enemy. It summons past an enemy Unit only with a Pivot Unit, or when the Lane has no enemy threat.
-- Some cards have a hold rule. For example, the AI keeps a healing card until a Unit has lost 50% of its HP.
+- Some Skill Card effects have a Hold Rule: the AI keeps a Ready card until a condition is true, for example Shield Wall until an enemy Unit is in the Lane. A Hold Rule never stops a play that prevents lethal Hero damage, or a play that empties a full Hand while the Deck has cards. When heal cards come, the AI keeps a heal card until a Unit has lost 50% of its HP.
 - Difficulty comes from the enemy Deck, card Ranks and Hero HP. The AI logic is the same in all Stages.
 - When a Side has more than one Hero, the AI plays the Ready cards of each Hero in the same Play Phase. It scores the plays of all the Heroes together.
 - Auto-play uses the same AI for the player's side.
