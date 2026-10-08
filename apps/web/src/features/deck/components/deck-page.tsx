@@ -1,6 +1,12 @@
 import type { ClassId, DeckInput, DeckProblem } from "@workspace/rules";
-import { deckSizeLimits, getCard } from "@workspace/rules";
+import {
+  countdownLimit,
+  deckCountdown,
+  deckSizeLimits,
+  getCard,
+} from "@workspace/rules";
 import { cn } from "cn";
+import type { ReactNode } from "react";
 import {
   Button,
   Input,
@@ -208,6 +214,62 @@ const DeckLine = ({
   );
 };
 
+const meterValue =
+  "text-base font-black whitespace-nowrap text-[#2a1d12] tabular-nums [@media(max-height:500px)]:text-xs";
+
+const GOLD_FILL =
+  "bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]";
+
+/** The groove of a meter, filled to `share` (0 to 1). */
+const MeterGroove = ({
+  share,
+  fill,
+  children,
+}: {
+  readonly share: number;
+  readonly fill: string;
+  readonly children?: ReactNode;
+}) => (
+  <span
+    className="relative h-2.5 min-w-0 flex-1 rounded-full bg-[#5b3a1e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.7)] [@media(max-height:500px)]:h-2"
+    aria-hidden
+  >
+    <span
+      className={cn(
+        "absolute inset-y-0 left-0 rounded-full transition-[width] duration-200 ease-out motion-reduce:transition-none",
+        fill
+      )}
+      style={{ width: `${Math.min(share, 1) * 100}%` }}
+    />
+    {children}
+  </span>
+);
+
+/**
+ * The sum of the Countdowns against the Countdown Limit (ADR-0021). A Deck
+ * over the limit is red, at the full width.
+ */
+const CountdownMeter = ({ input }: { readonly input: DeckInput }) => {
+  const { tr } = useGameText();
+  const limit = countdownLimit(input.level);
+  const sum = deckCountdown(input.deck);
+  const over = sum > limit;
+  return (
+    <div
+      className="flex items-center gap-3 [@media(max-height:500px)]:gap-2"
+      data-over={over || undefined}
+    >
+      <span className={meterValue} data-testid="deck-countdown">
+        {tr("deckBuilder.countdownSum", { sum, limit })}
+      </span>
+      <MeterGroove
+        share={sum / limit}
+        fill={over ? "bg-[#c0392b]" : GOLD_FILL}
+      />
+    </div>
+  );
+};
+
 /** The number of cards against the size limits: a groove with a notch at the minimum. */
 const SizeMeter = ({ input }: { readonly input: DeckInput }) => {
   const { tr } = useGameText();
@@ -216,30 +278,18 @@ const SizeMeter = ({ input }: { readonly input: DeckInput }) => {
   const enough = count >= min && count <= max;
   return (
     <div className="flex items-center gap-3 [@media(max-height:500px)]:gap-2">
-      <span
-        className="text-base font-black whitespace-nowrap text-[#2a1d12] tabular-nums [@media(max-height:500px)]:text-xs"
-        data-testid="deck-size"
-      >
+      <span className={meterValue} data-testid="deck-size">
         {tr("deckBuilder.size", { count, max })}
       </span>
-      <span
-        className="relative h-2.5 min-w-0 flex-1 rounded-full bg-[#5b3a1e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.7)] [@media(max-height:500px)]:h-2"
-        aria-hidden
+      <MeterGroove
+        share={count / max}
+        fill={enough ? GOLD_FILL : "bg-[#c9a46a]"}
       >
-        <span
-          className={cn(
-            "absolute inset-y-0 left-0 rounded-full transition-[width] duration-200 ease-out motion-reduce:transition-none",
-            enough
-              ? "bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]"
-              : "bg-[#c9a46a]"
-          )}
-          style={{ width: `${(Math.min(count, max) / max) * 100}%` }}
-        />
         <span
           className="absolute -inset-y-1 w-0.5 -translate-x-1/2 rounded-full bg-[#2a1d12]"
           style={{ left: `${(min / max) * 100}%` }}
         />
-      </span>
+      </MeterGroove>
       <span className="text-xs whitespace-nowrap text-[#5b4632]">
         {tr("deckBuilder.sizeMin", { min })}
       </span>
@@ -328,6 +378,7 @@ export const DeckPage = ({
       </header>
 
       <CountdownCurve deck={slot.deck} />
+      <CountdownMeter input={input} />
 
       <div className="flex min-h-0 flex-1 flex-col">
         <h4 className="font-display mb-1 text-base font-bold [@media(max-height:500px)]:sr-only">

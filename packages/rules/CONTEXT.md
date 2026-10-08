@@ -96,6 +96,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Ticking Card**: One of the 3 oldest Cards in a Hand that are not Ready. Only Ticking Cards count down. The oldest Card is the Card that came into the Hand first. _Avoid_: queue, active card, slot
 
+**Waiting Card**: A Card in a Hand that is not Ready and is not a Ticking Card. Its Countdown does not go down. It becomes a Ticking Card when an older Card becomes Ready or leaves the Hand. _Avoid_: paused card, frozen card, queued card
+
 **Ready**: The state of a Card with a Countdown of 0. Only Ready Cards can be played. _Avoid_: active, available, playable
 
 **Recall**: The chance that a Skill Card goes back to the Hand after its effect. The Rank of the Card sets the chance. A Card that goes back is Recalled. _Avoid_: Mastery, return chance, recycle, echo, rebound

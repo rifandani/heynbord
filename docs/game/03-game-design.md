@@ -480,7 +480,7 @@ The **Tutorial** is one guided session in Stage 1-1. It teaches only the core of
 
 | Step | When | Lesson |
 | --- | --- | --- |
-| 1 | Turn 1, Play Phase | Countdown and Ready cards. A highlight on the Hand. |
+| 1 | Turn 1, Play Phase | Countdown, Ticking Cards and Ready cards. A highlight on the Hand. |
 | 2 | The first summon | An arrow and a highlight point to the Summon Zone of Lane 2. They do not force the player to use Lane 2, and the enemy plays in all 3 Lanes. |
 | 3 | The first Resolution Phase | Units move and attack by themselves. |
 | 4 | The first enemy Unit in a Lane with no player Unit | Lane choice: a highlight on that Lane tells the player to block the enemy Unit. |

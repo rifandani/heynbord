@@ -24,7 +24,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Card Frame**: The border, badges and plates around the card art. All cards share one frame metal. The Race or Class shows on the emblem, and the Rank shows only on the gems and the inner trim. The card name is not on the frame. A Skill Card has a variant shape of the frame. _Avoid_: card template, border, card skin
 
-**Hand Card**: The small card in the Hand. It shows the art, the Countdown, the Rank gems, the emblem, and Attack and HP for a Creature Card. _Avoid_: card face, mini card, card thumbnail
+**Hand Card**: The small card in the Hand. It shows the art, the Countdown, the Rank gems, the emblem, and Attack and HP for a Creature Card. Its hourglass shows if the card is a Ticking Card or a Waiting Card. _Avoid_: card face, mini card, card thumbnail
 
 **Card Details**: A larger copy of a card with a Details Panel next to it. It shows on hover, long press and keyboard focus for a Hand Card and for a Unit on the Board of either Side, and in the Collection. For a Unit, the card shows the current Attack and HP of the Unit, and the Details Panel shows how the Unit is different from its card. _Avoid_: tooltip, card popup, card info, inspect view
 

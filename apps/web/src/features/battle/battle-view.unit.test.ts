@@ -12,7 +12,12 @@ import {
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
-import { applyEvent, viewFromState } from "@/features/battle/battle-view";
+import type { HandCardView } from "@/features/battle/battle-view";
+import {
+  applyEvent,
+  countdownStates,
+  viewFromState,
+} from "@/features/battle/battle-view";
 
 /** Runs a Battle with the AI on both sides and returns each step. */
 const steps = (
@@ -495,5 +500,54 @@ describe("the Entangled view", () => {
       BattleEvent.TurnEnded({ side: "enemy" })
     );
     expect(ownSide.units[0]?.entangled).toBe(false);
+  });
+});
+
+/** A Hand of hidden cards with these Countdowns, oldest first. */
+const hand = (...countdowns: number[]): HandCardView[] =>
+  countdowns.map((countdown, instanceId) => ({
+    instanceId,
+    cardId: null,
+    rank: null,
+    countdown,
+    blocked: false,
+  }));
+
+describe("countdownStates (ADR-0021)", () => {
+  it("marks the 3 oldest cards that are not Ready as Ticking Cards, also with Ready cards between them", () => {
+    expect(countdownStates(hand(0, 2, 0, 3, 1, 4, 2))).toEqual([
+      "ready",
+      "ticking",
+      "ready",
+      "ticking",
+      "ticking",
+      "waiting",
+      "waiting",
+    ]);
+  });
+
+  it("moves the mark when Sabotage makes an older Ready card wait again", () => {
+    expect(countdownStates(hand(0, 2, 3, 4))).toEqual([
+      "ready",
+      "ticking",
+      "ticking",
+      "ticking",
+    ]);
+    // Sabotage gives the Ready card +1. It keeps its place, so it is a
+    // Ticking Card again, and the youngest Ticking Card waits.
+    expect(countdownStates(hand(1, 2, 3, 4))).toEqual([
+      "ticking",
+      "ticking",
+      "ticking",
+      "waiting",
+    ]);
+  });
+
+  it("has no Waiting Card with 3 or fewer cards that are not Ready", () => {
+    expect(countdownStates(hand(2, 0, 5))).toEqual([
+      "ticking",
+      "ready",
+      "ticking",
+    ]);
   });
 });

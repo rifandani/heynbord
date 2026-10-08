@@ -98,6 +98,17 @@
   }
 }
 
+/* The hourglass pip of a Ticking Card (ADR-0021): it waits, then turns over. */
+@keyframes hourglass-turn {
+  0%,
+  70% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
 /* The Hand Bar motion: a card drops onto the Graveyard Pile. */
 @keyframes graveyard-drop {
   0% {

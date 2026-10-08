@@ -7,9 +7,11 @@ import type { CSSProperties, Dispatch, SetStateAction } from "react";
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import type {
+  CountdownState,
   GraveyardCardView,
   HandCardView,
 } from "@/features/battle/battle-view";
+import { countdownStates } from "@/features/battle/battle-view";
 import {
   detailsUnitAtom,
   tutorialMarksAtom,
@@ -273,14 +275,17 @@ const EmptySlot = () => (
 /** The details of the card under the pointer or the focus. */
 const InspectedCard = ({
   card,
+  countdownState,
 }: {
   readonly card: HandCardView | undefined;
+  readonly countdownState: CountdownState | undefined;
 }) =>
   card?.cardId && card.rank ? (
     <CardDetails
       cardId={card.cardId}
       rank={card.rank}
       countdown={card.countdown}
+      countdownState={countdownState}
       blocked={card.blocked}
     />
   ) : null;
@@ -340,6 +345,7 @@ const dimmedCard = (dimmed: boolean) => dimmed && "opacity-40";
 
 const HandSlot = ({
   card,
+  countdownState,
   index,
   drawMs,
   selected,
@@ -352,6 +358,7 @@ const HandSlot = ({
   onDragStart,
 }: {
   readonly card: HandCardView;
+  readonly countdownState: CountdownState;
   readonly index: number;
   /** The time of the `CardDrawn` event of this card, while it plays. */
   readonly drawMs: number | null;
@@ -380,6 +387,7 @@ const HandSlot = ({
         cardId={card.cardId}
         rank={card.rank}
         countdown={card.countdown}
+        countdownState={countdownState}
         selected={selected}
         blocked={card.blocked}
         data-testid={`hand-card-${index}`}
@@ -519,6 +527,7 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
   }
   const { player } = session.view.sides;
   const { hand } = player;
+  const states = countdownStates(hand);
   const dragIndex = activeDragIndex(drag);
   const playing = session.current;
   const drawingId = drawnId(playing);
@@ -568,7 +577,12 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
 
         <div className="relative flex flex-col items-center">
           <div className="pointer-events-none absolute bottom-full left-1/2 mb-[2em] flex -translate-x-1/2 flex-col items-center gap-3">
-            <InspectedCard card={cardAt(hand, inspected, unitInspected)} />
+            <InspectedCard
+              card={cardAt(hand, inspected, unitInspected)}
+              countdownState={
+                inspected === null ? undefined : states[inspected]
+              }
+            />
             <HandHint
               card={selectedCard(hand, selected)}
               targetCount={targets.length}
@@ -588,6 +602,7 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
               <HandSlot
                 key={card.instanceId}
                 card={card}
+                countdownState={states[index] ?? "ready"}
                 index={index}
                 drawMs={slotDrawMs(playing, card, drawingId)}
                 selected={selected === index}

@@ -8,7 +8,7 @@ import type {
   Side,
   UnitState,
 } from "@workspace/rules";
-import { getCard, isBlockedByUnique } from "@workspace/rules";
+import { getCard, isBlockedByUnique, tickingCards } from "@workspace/rules";
 
 /**
  * What the Battle screen shows. The scene and the HUD read only this view.
@@ -59,6 +59,26 @@ export interface HandCardView {
    */
   readonly blocked: boolean;
 }
+
+/**
+ * The Countdown state of a card in a Hand (ADR-0021): Ready, a Ticking Card
+ * (its Countdown goes down in the next Start Step of its owner), or a Waiting
+ * Card (its Countdown does not go down).
+ */
+export type CountdownState = "ready" | "ticking" | "waiting";
+
+/** The Countdown state of each card in a Hand, in Hand order. */
+export const countdownStates = (
+  hand: readonly HandCardView[]
+): readonly CountdownState[] => {
+  const ticking = new Set(tickingCards(hand));
+  return hand.map((card) => {
+    if (card.countdown === 0) {
+      return "ready";
+    }
+    return ticking.has(card) ? "ticking" : "waiting";
+  });
+};
 
 /** A card in a Graveyard. The Graveyard is open information for both Sides. */
 export interface GraveyardCardView {

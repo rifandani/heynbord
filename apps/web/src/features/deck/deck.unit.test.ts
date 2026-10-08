@@ -205,6 +205,20 @@ describe("poolBlock", () => {
     const smaller = slotInput({ ...vanguard, deck: [] }, collection);
     expect(poolBlock(smaller, "orc.scrapRaider", "common")).toBeNull();
   });
+
+  it("blocks a card that puts the Deck over the Countdown Limit (ADR-0021)", () => {
+    if (!vanguard) {
+      throw new Error("Missing slot");
+    }
+    // The Vanguard is at the limit of level 1 (25). Without one Militia
+    // Recruit (Countdown 1), it has 9 cards and a sum of 24.
+    const input = slotInput(
+      { ...vanguard, deck: vanguard.deck.slice(1) },
+      collection
+    );
+    expect(poolBlock(input, "orc.scrapRaider", "common")).toBe("countdown");
+    expect(poolBlock(input, "orc.badlandRunt", "common")).toBeNull();
+  });
 });
 
 describe("poolClass", () => {

@@ -414,6 +414,42 @@ test.describe("Battle bot playtest", () => {
     );
   });
 
+  test("marks 3 Ticking Cards when more than 3 cards in the Hand are not Ready (ADR-0021)", async ({
+    page,
+  }) => {
+    await startBattle(page, "1-2", "vanguard", 9);
+    // The states of the Hand cards that are not Ready, in Hand order.
+    const notReady = () =>
+      page
+        .locator(
+          "[data-testid^='hand-card-']:not([data-countdown-state='ready'])"
+        )
+        .evaluateAll((cards: HTMLElement[]) =>
+          cards.map((card) => card.dataset.countdownState)
+        );
+    // End Turns until the Hand has more than 3 cards that are not Ready.
+    let hand = await notReady();
+    for (let turn = 0; turn < 8 && hand.length <= 3; turn += 1) {
+      await waitForPlayer(page);
+      await page.getByTestId("end-turn").click();
+      await waitForPlayer(page);
+      hand = await notReady();
+    }
+    expect(hand.length).toBeGreaterThan(3);
+    // The oldest 3 that are not Ready tick, in Hand order. The others wait.
+    expect(hand).toEqual([
+      "ticking",
+      "ticking",
+      "ticking",
+      ...hand.slice(3).map(() => "waiting"),
+    ]);
+    await expect(
+      page
+        .locator("[data-testid^='hand-card-'][data-countdown-state='waiting']")
+        .first()
+    ).toHaveAccessibleName(/waiting/u);
+  });
+
   test("shows no Tutorial in other Stages", async ({ page }) => {
     await startBattle(page, "1-2", "vanguard", 9);
     await expect.poll(() => tutorialShown(page)).toBeNull();

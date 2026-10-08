@@ -4,13 +4,18 @@ import { ToggleButton } from "react-aria-components";
 
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
-import type { HandCardView } from "@/features/battle/battle-view";
+import type {
+  CountdownState,
+  HandCardView,
+} from "@/features/battle/battle-view";
+import { countdownStates } from "@/features/battle/battle-view";
 import { battleSessionAtom, soundOnAtom } from "@/features/battle/battle.atoms";
 import {
   GameButton,
   gameButtonStyles,
 } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { countdownLabel } from "@/features/battle/components/hand-card";
 import { HeroPanel } from "@/features/battle/components/hero-panel";
 import { KeyGuide } from "@/features/battle/components/key-guide";
 import { LeaveBattle } from "@/features/battle/components/leave-battle";
@@ -91,25 +96,32 @@ const BattleControls = ({
   );
 };
 
-/** The enemy's Hand: only the Countdowns show. */
+const enemyChipClassName = (state: CountdownState | undefined) =>
+  cn(
+    "flex h-7 w-5 items-center justify-center rounded border text-[11px] font-bold transition-opacity duration-200",
+    state === "ready"
+      ? "border-[#ffd75a] bg-[#5b1f1a] text-[#ffd75a]"
+      : "border-[#e8d9bb]/40 bg-[#3a2a1c] text-[#fff6df]",
+    // A Waiting Card (ADR-0021) is dimmer than a Ticking Card.
+    state === "waiting" && "opacity-45"
+  );
+
+/** The enemy's Hand: only the Countdowns show, and which cards wait. */
 const EnemyHand = ({ hand }: { readonly hand: readonly HandCardView[] }) => {
   const { tr } = useGameText();
+  const states = countdownStates(hand);
   return (
     <ol
       aria-label={tr("battle.enemyHand")}
       className="flex gap-1"
       data-testid="enemy-hand"
     >
-      {hand.map((card) => (
+      {hand.map((card, index) => (
         <li
           key={card.instanceId}
-          className={cn(
-            "flex h-7 w-5 items-center justify-center rounded border text-[11px] font-bold",
-            card.countdown === 0
-              ? "border-[#ffd75a] bg-[#5b1f1a] text-[#ffd75a]"
-              : "border-[#e8d9bb]/40 bg-[#3a2a1c] text-[#fff6df]"
-          )}
-          aria-label={tr("battle.countdown", { value: card.countdown })}
+          className={enemyChipClassName(states[index])}
+          aria-label={countdownLabel(tr, card.countdown, states[index])}
+          data-countdown-state={states[index]}
         >
           {card.countdown}
         </li>

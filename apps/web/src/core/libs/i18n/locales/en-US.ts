@@ -66,6 +66,11 @@ export default {
     enemyHand: "Enemy Hand",
     ready: "Ready",
     countdown: "Countdown {value}",
+    ticking: "ticking",
+    waiting: "waiting",
+    tickingLine: "Goes down by 1 at the start of your next Turn.",
+    waitingLine:
+      "Waits. It goes down when one of the 3 cards before it is Ready.",
     selectTarget: "Select a target",
     noTarget: "No legal target now",
     uniqueBlocked: "{name} is already on your side of the Board.",
@@ -239,7 +244,7 @@ export default {
     steps: {
       ready: {
         title: "Countdown and Ready",
-        text: "The number on each card in your Hand is its Countdown. It goes down by 1 at the start of each of your Turns. At 0, the card is Ready, and you can play it. Play a Ready card, or end your Turn.",
+        text: "The number on each card in your Hand is its Countdown. At the start of each of your Turns, the first 3 cards from the left that are not Ready go down by 1. Their hourglass runs. The other cards wait. At 0, a card is Ready, and you can play it. Play a Ready card, or end your Turn.",
       },
       summonZone: {
         title: "Your Summon Zone",
@@ -302,6 +307,7 @@ export default {
     empty:
       "This Deck has no cards. Select a card on the left page to add it, or use Auto-fill.",
     size: "{count} / {max} cards",
+    countdownSum: "Countdown {sum} / {limit}",
     sizeMin: "At least {min}",
     add: "Add {name}, {rank}, Countdown {countdown}. Copies left: {left}.",
     remove: "Remove one {name}, {rank}. In this Deck: {count}.",
@@ -309,6 +315,7 @@ export default {
     blocked: {
       none: "All in Deck",
       full: "Deck is full",
+      countdown: "Countdown Limit",
       copies: "3 copies",
       class: "{className} only",
     },

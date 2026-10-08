@@ -37,6 +37,36 @@ test.describe("Deck dialog", () => {
     await expect(page.getByTestId("town-bar")).toBeVisible();
   });
 
+  test("shows the Countdown sum and blocks a card over the Countdown Limit (ADR-0021)", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    // The Vanguard is at the limit of level 1.
+    await expect(dialog.getByTestId("deck-countdown")).toHaveText(
+      "Countdown 25 / 25"
+    );
+    // Without one Militia Recruit (Countdown 1), the Deck has room for 1 card.
+    await dialog.getByTestId("deck-row-human.militiaRecruit-common").click();
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(dialog.getByTestId("deck-countdown")).toHaveText(
+      "Countdown 24 / 25"
+    );
+
+    // A Scrap Raider (Countdown 2) puts the Deck over the limit.
+    const raider = dialog.getByTestId("pool-orc.scrapRaider-common");
+    await expect(raider).toHaveAttribute("data-blocked", "countdown");
+    await expect(raider).toContainText("Countdown Limit");
+    await raider.click({ force: true });
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+
+    // A Badland Runt (Countdown 1) fits.
+    await dialog.getByTestId("pool-orc.badlandRunt-common").click();
+    await expect(dialog.getByTestId("deck-countdown")).toHaveText(
+      "Countdown 25 / 25"
+    );
+    await expect(dialog.getByTestId("deck-problems")).toHaveCount(0);
+  });
+
   test("builds a Deck in an empty slot and makes it the active Deck", async ({
     page,
   }) => {

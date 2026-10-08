@@ -11,7 +11,9 @@ import {
   cardCopiesInDeck,
   ClassId as ClassIdSchema,
   copiesLeft,
+  countdownLimit,
   DeckEntry,
+  deckCountdown,
   DeckProblem,
   deckSizeLimits,
   fitsClass,
@@ -373,9 +375,16 @@ export const RACES_WITH_CARDS: readonly RaceId[] = [
 
 /**
  * Why a card in the pool cannot go into the Deck now, or `null` when it can.
- * `notOwned`: the Player has no copy of the card in any Rank.
+ * `notOwned`: the Player has no copy of the card in any Rank. `countdown`: the
+ * card puts the Deck over the Countdown Limit (ADR-0021).
  */
-export type PoolBlock = "notOwned" | "class" | "none" | "copies" | "full";
+export type PoolBlock =
+  | "notOwned"
+  | "class"
+  | "none"
+  | "copies"
+  | "full"
+  | "countdown";
 
 export const poolBlock = (
   input: DeckInput,
@@ -400,6 +409,12 @@ export const poolBlock = (
   }
   if (input.deck.length >= deckSizeLimits(input.level).max) {
     return "full";
+  }
+  if (
+    deckCountdown(input.deck) + getCard(cardId).countdown >
+    countdownLimit(input.level)
+  ) {
+    return "countdown";
   }
   return null;
 };

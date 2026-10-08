@@ -66,6 +66,11 @@ export default {
     enemyHand: "Tangan Musuh",
     ready: "Siap",
     countdown: "Hitung mundur {value}",
+    ticking: "berjalan",
+    waiting: "menunggu",
+    tickingLine: "Turun 1 di awal Giliranmu berikutnya.",
+    waitingLine:
+      "Menunggu. Angkanya turun saat salah satu dari 3 kartu sebelumnya Siap.",
     selectTarget: "Pilih target",
     noTarget: "Tidak ada target yang sah sekarang",
     uniqueBlocked: "{name} sudah ada di sisi Papan-mu.",
@@ -241,7 +246,7 @@ export default {
     steps: {
       ready: {
         title: "Hitung Mundur dan Siap",
-        text: "Angka di setiap kartu di Tanganmu adalah Hitung mundurnya. Angka itu turun 1 di awal setiap Giliranmu. Saat 0, kartu itu Siap dan bisa kamu mainkan. Mainkan kartu yang Siap, atau akhiri Giliranmu.",
+        text: "Angka di setiap kartu di Tanganmu adalah Hitung mundurnya. Di awal setiap Giliranmu, 3 kartu pertama dari kiri yang belum Siap turun 1. Jam pasirnya berjalan. Kartu lain menunggu. Saat 0, kartu itu Siap dan bisa kamu mainkan. Mainkan kartu yang Siap, atau akhiri Giliranmu.",
       },
       summonZone: {
         title: "Zona Panggilmu",
@@ -304,6 +309,7 @@ export default {
     empty:
       "Dek ini tidak berisi kartu. Pilih kartu di halaman kiri untuk menambahkannya, atau pakai Isi Otomatis.",
     size: "{count} / {max} kartu",
+    countdownSum: "Hitung mundur {sum} / {limit}",
     sizeMin: "Minimal {min}",
     add: "Tambah {name}, {rank}, Hitung mundur {countdown}. Sisa salinan: {left}.",
     remove: "Buang satu {name}, {rank}. Di Dek ini: {count}.",
@@ -311,6 +317,7 @@ export default {
     blocked: {
       none: "Semua di Dek",
       full: "Dek penuh",
+      countdown: "Batas Hitung mundur",
       copies: "3 salinan",
       class: "Hanya {className}",
     },
