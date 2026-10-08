@@ -5,7 +5,8 @@
  * Type and Keywords do not change. A card with Attack 0 keeps Attack 0.
  *
  * Usage: `bun scripts/fit-budget.ts <intercept> <slope>`. It prints the fit of
- * each card. It does not change `cards.ts`.
+ * each card. It does not change `cards.ts`. For the ADR-0021 budget
+ * `21 + s × (Countdown − 3)`, the intercept is `21 − 3s` and the slope is `s`.
  *
  * The fit selects the Attack and HP with the power nearest to the budget. All
  * powers within the tolerance are equally near, and of these it selects the

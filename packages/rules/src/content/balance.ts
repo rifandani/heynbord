@@ -61,8 +61,16 @@ export const creaturePower = (card: CreatureCardDefinition): number =>
   card.range +
   DAMAGE_TYPE_POINTS[card.damageType];
 
-/** `budget = 12 + Countdown × 3` (GDD 13, ADR-0021). */
-export const powerBudget = (countdown: number): number => 12 + countdown * 3;
+/**
+ * The slope `s` of the Power Budget (ADR-0021): the steepest slope that passes
+ * the Matchup criteria of the ADR. The floor is `budget(6) ≥ 1.3 × budget(2)`,
+ * thus `s ≥ 1.47`.
+ */
+export const POWER_BUDGET_SLOPE = 3;
+
+/** `budget = 21 + s × (Countdown − 3)` (GDD 13, ADR-0021). */
+export const powerBudget = (countdown: number): number =>
+  21 + POWER_BUDGET_SLOPE * (countdown - 3);
 
 /** The difference from the budget in basis points. A card must stay within ±1000 (±10%). */
 export const budgetDeviation = (card: CreatureCardDefinition): number => {

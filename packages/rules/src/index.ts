@@ -16,11 +16,9 @@ export {
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
   Target,
-  TICKING_CARDS,
   TURN_LIMIT,
   WALL_SUMMON_DEPTH,
 } from "./battle/types";
-export { tickingCards } from "./battle/turn";
 export type {
   BattleResult,
   BattleSetup,

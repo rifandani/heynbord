@@ -3,7 +3,12 @@ import { describe, expect, it } from "vitest";
 
 import { STAGE_LANES } from "../battle/types";
 import { ARCHETYPES, MATCHUP_LEVEL } from "./archetypes";
-import { budgetDeviation, creaturePower, powerBudget } from "./balance";
+import {
+  budgetDeviation,
+  creaturePower,
+  POWER_BUDGET_SLOPE,
+  powerBudget,
+} from "./balance";
 import { CARDS, getCard } from "./cards";
 import {
   countdownLimit,
@@ -120,8 +125,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         );
       }
     }
-    // `12 + 3 × Countdown` (ADR-0021): 21 at Countdown 3, and Countdown 6 is
-    // 1.67 × Countdown 2.
+    // `21 + s × (Countdown − 3)` with s = 3 (ADR-0021): 21 at Countdown 3, and
+    // Countdown 6 is 1.67 × Countdown 2.
     expect(powerBudget(3)).toBe(21);
     expect(powerBudget(2)).toBe(18);
     expect(powerBudget(6)).toBe(30);
@@ -130,6 +135,11 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     const recruit = getCard("human.militiaRecruit");
     expect(recruit.kind === "creature" && creaturePower(recruit)).toBe(16);
     expect(recruit.kind === "creature" && budgetDeviation(recruit)).toBe(666);
+  });
+
+  it("keeps the Power Budget slope at or above its floor (ADR-0021)", () => {
+    expect(POWER_BUDGET_SLOPE).toBeGreaterThanOrEqual(1.47);
+    expect(powerBudget(6)).toBeGreaterThanOrEqual(1.3 * powerBudget(2));
   });
 
   it("measures Attack and HP at the Base Rank (ADR-0020)", () => {

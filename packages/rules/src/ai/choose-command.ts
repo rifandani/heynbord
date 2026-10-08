@@ -261,7 +261,7 @@ const scoreDamage = (
 
 const kills = ({ unit, damage }: SkillHit): boolean => damage >= unit.hp;
 
-/** The other cards in `side`'s Hand that are not Ready (Ticking Cards and Waiting Cards). */
+/** The other cards in `side`'s Hand that are not Ready. */
 const notReadyCards = (
   state: BattleState,
   side: Side,

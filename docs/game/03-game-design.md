@@ -102,7 +102,7 @@ Each Turn of the active side has these phases:
 1. **Start Step**
    1. Start-of-turn effects resolve (for example Regeneration and Rally).
    2. If the Turn number is 20 or more, Sudden Death damage hits each Hero of the active Side that is not Defeated (see 4.10).
-   3. The Countdowns of the **Ticking Cards** in each Hand of the active Side go down by 1. The Ticking Cards are the 3 oldest cards in the Hand that are not Ready. The oldest card is the card that came into the Hand first. A Ready card does not use one of the 3, and the other cards wait ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). The Hand keeps the order in which the cards came into it: a drawn card and a Recalled Skill Card go to the end. A card keeps its place when its Countdown changes, for example by Sabotage.
+   3. The Countdown of each card in each Hand of the active Side goes down by 1. A Ready card stays at 0 ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). The Hand keeps the order in which the cards came into it: a drawn card and a Recalled Skill Card go to the end. A card keeps its place when its Countdown changes, for example by Sabotage. If two cards have the same Countdown, Sabotage uses this order (5.4).
    4. Each Hero of the active Side that is not Defeated draws 1 card, if its Hand has fewer than 8 cards and its Deck is not empty.
 2. **Play Phase**
    - The active side can play **all** Ready cards (Countdown 0) of all its Heroes, in any order.
@@ -495,7 +495,7 @@ The **Tutorial** is one guided session in Stage 1-1. It teaches only the core of
 
 | Step | When | Lesson |
 | --- | --- | --- |
-| 1 | Turn 1, Play Phase | Countdown, Ticking Cards and Ready cards. A highlight on the Hand. |
+| 1 | Turn 1, Play Phase | Countdown and Ready cards. A highlight on the Hand. |
 | 2 | The first summon | An arrow and a highlight point to the Summon Zone of Lane 2. They do not force the player to use Lane 2, and the enemy plays in all 3 Lanes. |
 | 3 | The first Resolution Phase | Units move and attack by themselves. |
 | 4 | The first enemy Unit in a Lane with no player Unit | Lane choice: a highlight on that Lane tells the player to block the enemy Unit. |
@@ -719,7 +719,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
    - **Charge N** uses N × 1 points, not N × 2 as Speed does. Speed applies in each Turn, but Charge applies only in the Turn of the summon, and the Column 3 start makes it less valuable. Thus each additional Square costs 1 point.
    - Charge N increases with the Rank, but Speed does not. The budget counts only N at the Base Rank, so a Charge card at a higher Rank has more power than its budget shows. We accept this: the additional Speed applies only in 1 Turn, and N is never more than 3. A Legendary Unit with Speed 4 and Charge 3, summoned into Column 3, goes to Column 10 in that Turn.
-2. Each Countdown has a power budget for the Base Rank: `budget = 12 + Countdown × 3` ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). This budget is correct only with the Countdown Limit and the 3 Ticking Cards of the same ADR. Without them, a Deck of long-Countdown cards wins against a Deck of short-Countdown cards of the same Race ([08 — Archetypes, section 3.2](./08-archetypes.md#32-countdown-slope-search)).
+2. Each Countdown has a power budget for the Base Rank: `budget = 21 + s × (Countdown − 3)`, with the slope `s = 3` ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). Thus a Countdown 2 card has 18 points and a Countdown 6 card 30 (1.67 ×). The slope is the steepest one that passes the Matchup criteria of the ADR, and it must stay at 1.47 or more (`budget(6) ≥ 1.3 × budget(2)`). This budget is correct only with the Countdown Limit of the same ADR. Without it, a Deck of long-Countdown cards wins against a Deck of short-Countdown cards of the same Race ([08 — Archetypes, section 3.2](./08-archetypes.md#32-countdown-slope-search)).
 3. A card must be within ±10% of its budget. A card outside this range needs a written reason (for example "weak stats, strong combo").
 4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).
 5. Check each Archetype's win rate in each **Matchup**. The target is 45% to 55% against the other Archetypes.

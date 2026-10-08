@@ -10,7 +10,6 @@ import {
   otherSide,
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
-  TICKING_CARDS,
   TURN_LIMIT,
 } from "./types";
 
@@ -92,19 +91,15 @@ const suddenDeath = (ctx: StepContext): void => {
 };
 
 /**
- * The Ticking Cards of a Hand (ADR-0021): the 3 oldest cards that are not
- * Ready. The Hand keeps the order in which the cards came into it, so the
- * oldest card is the first one. A Ready card does not use one of the 3.
+ * Each card in the Hand that is not Ready counts down by 1 (GDD 4.3, ADR-0021).
+ * A Ready card stays at 0.
  */
-export const tickingCards = <Card extends { readonly countdown: number }>(
-  hand: readonly Card[]
-): Card[] => hand.filter((card) => card.countdown > 0).slice(0, TICKING_CARDS);
-
-/** Only the Ticking Cards count down (GDD 4.3, ADR-0021). */
 const tickCountdowns = (ctx: StepContext): void => {
   const side = ctx.state.sides[ctx.state.activeSide];
-  for (const card of tickingCards(side.hand)) {
-    card.countdown -= 1;
+  for (const card of side.hand) {
+    if (card.countdown > 0) {
+      card.countdown -= 1;
+    }
   }
   ctx.events.push(
     BattleEvent.CountdownsTicked({
