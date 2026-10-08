@@ -99,7 +99,7 @@ describe("visibleTo (GDD 9)", () => {
   it("hides the other side's Hand and both Decks", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["human.militiaRecruit", 2]]);
-    giveHand(state, "enemy", [["orc.badlandPup", 1]]);
+    giveHand(state, "enemy", [["orc.badlandRunt", 1]]);
     state.sides.enemy.deck = [
       { instanceId: 1, cardId: "orc.tuskBrute", rank: "common" },
     ];
@@ -107,7 +107,7 @@ describe("visibleTo (GDD 9)", () => {
     expect(view.sides.player.hand).toEqual([
       expect.objectContaining({ cardId: "hidden", countdown: 2 }),
     ]);
-    expect(view.sides.enemy.hand[0]?.cardId).toBe("orc.badlandPup");
+    expect(view.sides.enemy.hand[0]?.cardId).toBe("orc.badlandRunt");
     expect(view.sides.enemy.deck).toEqual([]);
     expect(view.random).toBe(0);
     expect(view.seed).toBe(0);
@@ -179,7 +179,7 @@ describe("chooseCommand (GDD 9)", () => {
       maxHp: 20,
     });
     placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 6,
     });

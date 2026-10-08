@@ -62,22 +62,22 @@ const hobbledByPavise = (rank: "rare" | "epic" | "legendary") => {
 describe("movement (GDD 4.5)", () => {
   it("moves a ground Unit forward by its Speed", () => {
     const state = emptyBattle();
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, pup.id)?.position).toBe(2);
+    expect(unitById(next, runt.id)?.position).toBe(2);
     expect(eventsOfType(events, "UnitMoved")).toEqual([
-      expect.objectContaining({ unitId: pup.id, from: 0, to: 2 }),
+      expect.objectContaining({ unitId: runt.id, from: 0, to: 2 }),
     ]);
   });
 
   it("moves a ground Unit through a friendly Wall", () => {
     const state = emptyBattle();
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
     });
@@ -87,16 +87,16 @@ describe("movement (GDD 4.5)", () => {
       position: 1,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, pup.id)?.position).toBe(2);
+    expect(unitById(next, runt.id)?.position).toBe(2);
     expect(eventsOfType(events, "UnitMoved")).toEqual([
-      expect.objectContaining({ unitId: pup.id, from: 0, to: 2 }),
+      expect.objectContaining({ unitId: runt.id, from: 0, to: 2 }),
     ]);
   });
 
   it("stops a ground Unit in the farthest empty Square when a friendly Unit holds the last Square of its Speed", () => {
     const state = emptyBattle();
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
     });
@@ -106,30 +106,30 @@ describe("movement (GDD 4.5)", () => {
       position: 2,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, pup.id)?.position).toBe(1);
+    expect(unitById(next, runt.id)?.position).toBe(1);
   });
 
   it("moves a ground Unit through a friendly Unit that does not move", () => {
     const state = emptyBattle();
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
     });
     placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 1,
       frozen: true,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, pup.id)?.position).toBe(2);
+    expect(unitById(next, runt.id)?.position).toBe(2);
   });
 
   it("moves an enemy ground Unit through a friendly Unit toward the player's Hero", () => {
     const state = emptyBattle({ activeSide: "enemy" });
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 11,
     });
@@ -139,18 +139,18 @@ describe("movement (GDD 4.5)", () => {
       position: 10,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, pup.id)?.position).toBe(9);
+    expect(unitById(next, runt.id)?.position).toBe(9);
   });
 
   it("keeps a faster ground Unit behind a slower friendly Unit that acts first", () => {
     const state = emptyBattle();
     const fast = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
     });
     const slow = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 1,
       speed: 1,
@@ -163,13 +163,13 @@ describe("movement (GDD 4.5)", () => {
   it("moves a ground Unit past a much slower friendly Unit", () => {
     const state = emptyBattle();
     const fast = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
       speed: 3,
     });
     const slow = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 1,
       speed: 1,
@@ -181,8 +181,8 @@ describe("movement (GDD 4.5)", () => {
 
   it("stops a ground Unit before an enemy Unit", () => {
     const state = emptyBattle();
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
     });
@@ -193,7 +193,7 @@ describe("movement (GDD 4.5)", () => {
       attack: 0,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, pup.id)?.position).toBe(0);
+    expect(unitById(next, runt.id)?.position).toBe(0);
   });
 
   it("moves a Flying Unit over other Units into the farthest empty Square", () => {
@@ -215,24 +215,24 @@ describe("movement (GDD 4.5)", () => {
 
   it("never moves a Unit past its last Column", () => {
     const state = emptyBattle();
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 10,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, pup.id)?.position).toBe(11);
+    expect(unitById(next, runt.id)?.position).toBe(11);
   });
 
   it("moves enemy Units toward the player's Hero", () => {
     const state = emptyBattle({ activeSide: "enemy" });
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 11,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, pup.id)?.position).toBe(9);
+    expect(unitById(next, runt.id)?.position).toBe(9);
   });
 
   it("keeps a ranged Unit in place when an enemy is in its Range", () => {
@@ -283,7 +283,7 @@ describe("attack (GDD 4.6)", () => {
   it("attacks the enemy Unit in the next Square", () => {
     const state = emptyBattle();
     placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 4,
     });
@@ -458,7 +458,7 @@ describe("damage (GDD 4.7)", () => {
 
     const block = emptyBattle({ enemy: { unitBlock: 10_000 } });
     placeUnit(block, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 4,
       hp: 10,
@@ -483,7 +483,7 @@ describe("damage (GDD 4.7)", () => {
   it("does not let a Hero Block", () => {
     const state = emptyBattle({ enemy: { unitBlock: 10_000 } });
     placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 11,
     });
@@ -520,7 +520,7 @@ describe("damage (GDD 4.7)", () => {
   it("gives Freeze with Frost: the Unit skips its next action", () => {
     const state = emptyBattle({ activeSide: "enemy" });
     const frozen = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 11,
       frozen: true,
@@ -675,7 +675,7 @@ describe("death and action order (GDD 4.4, 4.9)", () => {
       position: 5,
     });
     const follower = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 3,
     });
@@ -801,8 +801,8 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
 describe("Last Breath (GDD 4.9)", () => {
   it("deals its damage to the nearest enemy Unit ahead, and not to the Hero", () => {
     const state = emptyBattle();
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 4,
       attack: 0,
@@ -831,7 +831,7 @@ describe("Last Breath (GDD 4.9)", () => {
       hp: 4,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, pup.id)).toBeUndefined();
+    expect(unitById(next, runt.id)).toBeUndefined();
     expect(unitById(next, behind.id)?.hp).toBe(4);
     expect(unitById(next, blocker.id)?.hp).toBe(4);
     expect(unitById(next, ahead.id)?.hp).toBe(3);
@@ -947,14 +947,14 @@ describe("Poison (GDD 4.7)", () => {
 describe("Hobble (GDD 4.5, 4.7)", () => {
   it("moves a Hobbled Unit with Speed 2 only 1 Square", () => {
     const state = emptyBattle();
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
       attack: 0,
       hobbled: 1,
     });
-    expect(unitById(run(state, endTurn).state, pup.id)?.position).toBe(1);
+    expect(unitById(run(state, endTurn).state, runt.id)?.position).toBe(1);
   });
 
   it("moves a Hobbled Unit with Speed 1 by 1 Square, and a Hobbled Unit with Speed 0 does not move", () => {
@@ -1110,8 +1110,8 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
       burn: 1,
       hobble: 1,
     });
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 3,
       attack: 0,
@@ -1119,14 +1119,14 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
       maxHp: 20,
     });
     ({ state } = run(state, endTurn));
-    expect(unitById(state, pup.id)?.hobbled).toBe(1);
+    expect(unitById(state, runt.id)?.hobbled).toBe(1);
 
     ({ state } = run(state, endTurn));
-    expect(unitById(state, pup.id)).toMatchObject({ position: 2, hobbled: 0 });
+    expect(unitById(state, runt.id)).toMatchObject({ position: 2, hobbled: 0 });
 
     ({ state } = run(state, endTurn));
     ({ state } = run(state, endTurn));
-    expect(unitById(state, pup.id)?.position).toBe(0);
+    expect(unitById(state, runt.id)?.position).toBe(0);
   });
 
   it("keeps the higher Hobble count, and does not add the counts", () => {
@@ -1137,8 +1137,8 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
 
   it("lowers the count of a Frozen Unit that skips its action", () => {
     const state = emptyBattle({ activeSide: "enemy" });
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 11,
       attack: 0,
@@ -1147,9 +1147,9 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(eventsOfType(events, "UnitSkipped")).toEqual([
-      expect.objectContaining({ unitId: pup.id }),
+      expect.objectContaining({ unitId: runt.id }),
     ]);
-    expect(unitById(next, pup.id)).toMatchObject({ position: 11, hobbled: 1 });
+    expect(unitById(next, runt.id)).toMatchObject({ position: 11, hobbled: 1 });
   });
 
   it("applies Hobble 1, 2 and 3 from the Pavise Arbalist at Rare, Epic and Legendary", () => {
@@ -1903,8 +1903,8 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       attack: 5,
       hp: 1,
     });
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 5,
       attack: 0,
@@ -1929,7 +1929,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       })
     ).toEqual([
       "attack",
-      `died:${pup.id}`,
+      `died:${runt.id}`,
       "lastBreath",
       `died:${attacker.id}`,
       "trample",
@@ -1971,7 +1971,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
       position: 2,
     });
     const target = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 4,
       attack: 0,
@@ -2004,14 +2004,14 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
 
   it("gives Speed 0 in the next action, lets the Unit attack, and then ends", () => {
     const state = emptyBattle({ activeSide: "enemy" });
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 11,
       entangled: true,
     });
     const stuck = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       lane: 0,
       position: 6,
@@ -2026,7 +2026,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
       maxHp: 20,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, pup.id)).toMatchObject({
+    expect(unitById(next, runt.id)).toMatchObject({
       position: 11,
       entangled: false,
     });
@@ -2041,7 +2041,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
 
     // The action after has full Speed.
     const moved = run(run(next, endTurn).state, endTurn).state;
-    expect(unitById(moved, pup.id)?.position).toBe(9);
+    expect(unitById(moved, runt.id)?.position).toBe(9);
   });
 
   it("does not stack or extend: a second Entangle before the action still ends after one action", () => {
@@ -2052,7 +2052,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
       position: 2,
     });
     const target = placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 4,
       attack: 0,
@@ -2096,8 +2096,8 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
 
   it("ends with a Freeze when the Frozen Unit skips its action", () => {
     const state = emptyBattle({ activeSide: "enemy" });
-    const pup = placeUnit(state, {
-      cardId: "orc.badlandPup",
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 11,
       frozen: true,
@@ -2105,7 +2105,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(eventsOfType(events, "UnitSkipped")).toHaveLength(1);
-    expect(unitById(next, pup.id)).toMatchObject({
+    expect(unitById(next, runt.id)).toMatchObject({
       position: 11,
       frozen: false,
       entangled: false,

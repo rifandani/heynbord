@@ -535,8 +535,8 @@ export default {
       },
     },
     orc: {
-      badlandPup: {
-        name: "Anak Anjing Tandus",
+      badlandRunt: {
+        name: "Si Kerdil Tandus",
         flavor: "Kecil, berisik, dan sudah menggigit.",
       },
       scrapRaider: {
@@ -571,8 +571,8 @@ export default {
         name: "Petarung Kulit Debu",
         flavor: "Ia mengira setiap peringatan adalah tepuk tangan.",
       },
-      cinderhornRam: {
-        name: "Domba Jantan Tanduk Bara",
+      cinderhornBreaker: {
+        name: "Pendobrak Tanduk Bara",
         flavor: "Ia tak pernah menunggu gerbang dibuka.",
       },
       warhowlerDrummer: {

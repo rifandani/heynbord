@@ -370,12 +370,12 @@ describe("win and loss", () => {
   it("ends the Battle at once when a Hero has 0 HP, and refuses more Commands", () => {
     const state = emptyBattle({ enemy: { hp: 3 } });
     placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 11,
     });
     placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "player",
       position: 10,
     });

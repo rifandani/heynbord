@@ -16,7 +16,7 @@ import {
 const unit: UnitView = {
   id: 7,
   owner: "player",
-  cardId: "orc.badlandPup",
+  cardId: "orc.badlandRunt",
   rank: "common",
   lane: 0,
   position: 2,

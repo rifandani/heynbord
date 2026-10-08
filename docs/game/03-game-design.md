@@ -390,7 +390,7 @@ A new player gets the Starter Decks and picks one. The Hero Class comes from the
 | Starter Deck | Class | Deck |
 | --- | --- | --- |
 | Vanguard | Warrior | 2× Militia Recruit (C), 3× Crossbow Guard (C), 2× Halberdier (C), 2× River Knight (U), 1× Spear Throw (U). Countdown 25. |
-| Raiders | Mage | 3× Scrap Raider (C), 3× Ember Shaman (C), 2× Badland Pup (C), 1× Howling Charger (U), 1× Fireball (C). Countdown 23. |
+| Raiders | Mage | 3× Scrap Raider (C), 3× Ember Shaman (C), 2× Badland Runt (C), 1× Howling Charger (U), 1× Fireball (C). Countdown 23. |
 
 The Campaign is tuned for these Decks ([14 — Campaign Stages](./14-campaign-stages.md)). When a Starter Deck changes, run the Stage simulation again.
 

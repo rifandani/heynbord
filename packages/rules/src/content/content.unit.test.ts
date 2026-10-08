@@ -119,8 +119,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(powerBudget(3)).toBe(21);
     expect(powerBudget(2)).toBe(18);
     expect(powerBudget(6)).toBe(30);
-    const pup = getCard("orc.badlandPup");
-    expect(pup.kind === "creature" && creaturePower(pup)).toBe(14);
+    const runt = getCard("orc.badlandRunt");
+    expect(runt.kind === "creature" && creaturePower(runt)).toBe(14);
     const recruit = getCard("human.militiaRecruit");
     expect(recruit.kind === "creature" && creaturePower(recruit)).toBe(16);
     expect(recruit.kind === "creature" && budgetDeviation(recruit)).toBe(666);

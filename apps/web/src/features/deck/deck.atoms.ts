@@ -25,7 +25,7 @@ export const collectionAtom = Atom.make<Collection>(starterCollection()).pipe(
  */
 export const deckSlotsAtom = Atom.kvs({
   defaultValue: () => INITIAL_DECK_SLOTS,
-  key: "heynbord.deck-slots.v3",
+  key: "heynbord.deck-slots.v4",
   runtime: storageRuntime,
   schema: DeckSlots,
 }).pipe(Atom.withServerValue(() => INITIAL_DECK_SLOTS));

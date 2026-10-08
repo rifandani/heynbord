@@ -153,7 +153,7 @@ describe("the Graveyard view", () => {
         {
           id: 7,
           owner: "player" as const,
-          cardId: "orc.badlandPup",
+          cardId: "orc.badlandRunt",
           rank: "common" as const,
           lane: 0,
           position: 2,
@@ -184,7 +184,7 @@ describe("the Graveyard view", () => {
       }),
     ];
     expect(events.reduce(applyEvent, view).sides.player.graveyard).toEqual([
-      { cardId: "orc.badlandPup", rank: "common" },
+      { cardId: "orc.badlandRunt", rank: "common" },
       { cardId: "mage.fireball", rank: "rare" },
     ]);
   });
@@ -206,7 +206,7 @@ describe("the bonus Armor view", () => {
     const unit = {
       id: 7,
       owner: "player" as const,
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       rank: "common" as const,
       lane: 0,
       position: 2,
@@ -266,7 +266,7 @@ describe("the Hobbled and Bleeding view", () => {
     const unit = {
       id: 7,
       owner: "player" as const,
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       rank: "common" as const,
       lane: 0,
       position: 2,

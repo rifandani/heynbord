@@ -95,7 +95,7 @@ The style bible has:
 | `creature/human/iron-bulwark.webp` | Human armor |
 | `creature/human/dawn-cleric.webp` | Holy palette |
 | `creature/human/crossbow-guard.webp` | Ranged Unit |
-| `creature/orc/badland-pup.webp` | Small Orc |
+| `creature/orc/badland-runt.webp` | Small Orc |
 | `creature/orc/ember-shaman.webp` | Orc caster |
 | `creature/orc/howling-charger.webp` | A Unit in motion |
 | `creature/orc/warchief-grukka.webp` | Boss scale |

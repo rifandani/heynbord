@@ -47,7 +47,7 @@ export const ARCHETYPES: readonly Archetype[] = [
     kind: "main",
     classId: "mage",
     deck: [
-      ...copies(1, "orc.badlandPup", "common"),
+      ...copies(1, "orc.badlandRunt", "common"),
       ...copies(1, "orc.packStalker", "uncommon"),
       ...copies(2, "orc.scrapRaider", "common"),
       ...copies(2, "orc.emberShaman", "common"),
@@ -115,10 +115,10 @@ export const ARCHETYPES: readonly Archetype[] = [
     kind: "diagnostic",
     classId: "mage",
     deck: [
-      ...copies(1, "orc.badlandPup", "common"),
+      ...copies(1, "orc.badlandRunt", "common"),
       ...copies(2, "orc.scrapRaider", "common"),
       ...copies(1, "orc.dusthideBrawler", "common"),
-      ...copies(1, "orc.cinderhornRam", "uncommon"),
+      ...copies(1, "orc.cinderhornBreaker", "uncommon"),
       ...copies(1, "orc.warhowlerDrummer", "uncommon"),
       ...copies(1, "orc.skyreaver", "uncommon"),
       ...copies(1, "orc.ashspitHunter", "rare"),

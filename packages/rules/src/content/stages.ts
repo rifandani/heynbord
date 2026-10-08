@@ -24,7 +24,7 @@ export const STAGES: readonly StageDefinition[] = [
       gear: NO_GEAR,
       deck: [
         ...copies(3, "human.militiaRecruit", "common"),
-        ...copies(2, "orc.badlandPup", "common"),
+        ...copies(2, "orc.badlandRunt", "common"),
         ...copies(2, "human.shieldbearer", "common"),
         ...copies(2, "orc.scrapRaider", "common"),
         ...copies(1, "human.halberdier", "common"),
@@ -45,7 +45,7 @@ export const STAGES: readonly StageDefinition[] = [
       classId: "warrior",
       gear: { weapon: 2, armor: 0, trinket: 0, banner: 2 },
       deck: [
-        ...copies(2, "orc.badlandPup", "common"),
+        ...copies(2, "orc.badlandRunt", "common"),
         ...copies(2, "orc.scrapRaider", "common"),
         ...copies(1, "human.militiaRecruit", "common"),
         ...copies(1, "human.crossbowGuard", "uncommon"),
@@ -68,7 +68,7 @@ export const STAGES: readonly StageDefinition[] = [
       classId: "mage",
       gear: { weapon: 3, armor: 0, trinket: 3, banner: 3 },
       deck: [
-        ...copies(1, "orc.badlandPup", "common"),
+        ...copies(1, "orc.badlandRunt", "common"),
         ...copies(2, "orc.emberShaman", "common"),
         ...copies(1, "human.shieldbearer", "common"),
         ...copies(2, "orc.skyreaver", "uncommon"),
@@ -118,7 +118,7 @@ export const STAGES: readonly StageDefinition[] = [
       deck: [
         ...copies(2, "human.militiaRecruit", "common"),
         ...copies(1, "orc.scrapRaider", "common"),
-        ...copies(1, "orc.badlandPup", "uncommon"),
+        ...copies(1, "orc.badlandRunt", "uncommon"),
         ...copies(1, "human.crossbowGuard", "common"),
         ...copies(2, "human.halberdier", "common"),
         ...copies(3, "human.shieldbearer", "common"),

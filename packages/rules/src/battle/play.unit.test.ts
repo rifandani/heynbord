@@ -55,7 +55,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     ]);
     expect(violation(step(state, play(0, square(0, 3))))).toBe("IllegalTarget");
     const enemy = emptyBattle({ activeSide: "enemy" });
-    giveHand(enemy, "enemy", [["orc.badlandPup", 0]]);
+    giveHand(enemy, "enemy", [["orc.badlandRunt", 0]]);
     expect(legalTargets(enemy, 0)).toEqual([
       square(0, 11),
       square(0, 10),
@@ -69,7 +69,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["human.militiaRecruit", 0]]);
     placeUnit(state, {
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       owner: "enemy",
       position: 1,
     });
@@ -128,7 +128,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     let state = emptyBattle({ lanes: 3 });
     giveHand(state, "player", [
       ["human.militiaRecruit", 0],
-      ["orc.badlandPup", 0],
+      ["orc.badlandRunt", 0],
       ["human.shieldbearer", 0],
     ]);
     for (const lane of [0, 1, 2]) {
@@ -139,7 +139,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
 
   it("lets a Unit act in the Turn of its summon, also from Column 3", () => {
     const state = emptyBattle();
-    giveHand(state, "player", [["orc.badlandPup", 0]]);
+    giveHand(state, "player", [["orc.badlandRunt", 0]]);
     const summoned = run(state, play(0, square(0, 2))).state;
     const { state: next } = run(summoned, Command.EndTurn());
     expect(next.units[0]?.position).toBe(4);
@@ -399,7 +399,7 @@ const sabotageInto = (
   giveHand(
     state,
     "enemy",
-    enemyHand.map((countdown) => ["orc.badlandPup", countdown] as const)
+    enemyHand.map((countdown) => ["orc.badlandRunt", countdown] as const)
   );
   return { before: state, ...run(state, play(0, square(0, 0))) };
 };

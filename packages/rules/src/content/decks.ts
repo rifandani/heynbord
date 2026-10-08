@@ -66,7 +66,7 @@ export const STARTER_DECKS: readonly StarterDeck[] = [
     deck: [
       ...copies(3, "orc.scrapRaider", "common"),
       ...copies(3, "orc.emberShaman", "common"),
-      ...copies(2, "orc.badlandPup", "common"),
+      ...copies(2, "orc.badlandRunt", "common"),
       ...copies(1, "orc.howlingCharger", "uncommon"),
       ...copies(1, "mage.fireball", "common"),
     ],

@@ -529,8 +529,8 @@ export default {
       },
     },
     orc: {
-      badlandPup: {
-        name: "Badland Pup",
+      badlandRunt: {
+        name: "Badland Runt",
         flavor: "Small, loud and already biting.",
       },
       scrapRaider: {
@@ -543,15 +543,15 @@ export default {
       },
       howlingCharger: {
         name: "Howling Charger",
-        flavor: "You hear it long before you see it.",
+        flavor: "You hear him long before you see him.",
       },
       skyreaver: {
         name: "Skyreaver",
-        flavor: "It steals hats from very high up.",
+        flavor: "She steals hats from very high up.",
       },
       packStalker: {
         name: "Pack Stalker",
-        flavor: "It always knows where you are. Mostly behind you.",
+        flavor: "He always knows where you are. Mostly behind you.",
       },
       tuskBrute: { name: "Tusk Brute", flavor: "Doors are only a suggestion." },
       warchiefGrukka: {
@@ -562,9 +562,9 @@ export default {
         name: "Dusthide Brawler",
         flavor: "He mistakes every warning for applause.",
       },
-      cinderhornRam: {
-        name: "Cinderhorn Ram",
-        flavor: "It never waits for the gate to open.",
+      cinderhornBreaker: {
+        name: "Cinderhorn Breaker",
+        flavor: "She never waits for the gate to open.",
       },
       warhowlerDrummer: {
         name: "Warhowler Drummer",

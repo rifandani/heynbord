@@ -292,11 +292,13 @@ Purpose: the named Human Epic and Rally capstone. Power 30, budget 30, deviation
 
 ## 3. Orc Creature Cards
 
-Identity: orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. They rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them.
+Identity: orc tribes of the badlands. Fast, loud and always hungry. They rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them.
 
-### 3.1 Badland Pup
+Each Orc figure is an orc. The art shows no animals, mounts or beasts, because animals are the look of the Feral cards.
 
-`orc.badlandPup` · Runner · Common · Countdown 1 · Attack 4 · HP 1 · Speed 2 · Melee · Physical · Last Breath 1
+### 3.1 Badland Runt
+
+`orc.badlandRunt` · Runner · Common · Countdown 1 · Attack 4 · HP 1 · Speed 2 · Melee · Physical · Last Breath 1
 
 > Small, loud and already biting.
 
@@ -304,12 +306,12 @@ Purpose: a one-HP trade. Last Breath 1 hits the nearest enemy Unit ahead when it
 
 | Field | Brief |
 | --- | --- |
-| Subject | A young badland wolf pup with very big ears and big paws. |
-| Pose | It jumps forward with its mouth open, ready to bite. |
-| Props | A spiked leather collar that is too big for it, orange war paint stripes. |
-| Gameplay cues | High Attack and HP 1: small body, big teeth. Speed 2: a jump with dust behind it. A spare fang on the collar shows Last Breath. |
-| Silhouette hook | The big ears and the open mouth. |
-| Humor note | It is very small, but it acts very fierce. |
+| Subject | A young orc boy, the smallest of the warband, with big ears and small new tusks. |
+| Pose | He jumps forward with his mouth open in a war cry, ready to bite. |
+| Props | An adult iron helmet that is too big for him, a short bone knife, orange war paint stripes. |
+| Gameplay cues | High Attack and HP 1: small body, big war cry. Speed 2: a jump with dust behind him. A spare knife in his boot shows Last Breath. |
+| Silhouette hook | The big helmet and the open mouth. |
+| Humor note | He is very small, but he acts very fierce. The helmet falls over one eye. |
 | Setting | Dusty red ground in the badlands. |
 
 ### 3.2 Scrap Raider
@@ -350,15 +352,15 @@ Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, 
 
 `orc.howlingCharger` · Striker · Uncommon · Countdown 3 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge
 
-> You hear it long before you see it.
+> You hear him long before you see him.
 
 | Field | Brief |
 | --- | --- |
-| Subject | A war boar with big tusks. It has no rider. |
-| Pose | It charges forward with its head low and its mouth open in a loud scream. |
-| Props | An orc war banner tied to its back, leather straps, iron caps on its tusks. |
+| Subject | A big, heavy orc man with large tusks. |
+| Pose | He charges forward with his head low and his mouth open in a loud howl. |
+| Props | An orc war banner tied to his back, leather straps, iron caps on his tusks, a spiked round shield held in front like a ram. |
 | Gameplay cues | Charge: a fast run and a big dust cloud. Uncommon: the war banner. |
-| Silhouette hook | The low head with tusks and the banner on the back. |
+| Silhouette hook | The low head with tusks, the round shield and the banner on the back. |
 | Humor note | Lines in the air show the scream. Small rocks shake. |
 | Setting | Open badlands with a dust cloud. |
 
@@ -366,34 +368,34 @@ Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, 
 
 `orc.skyreaver` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Flying · Heroic 1
 
-> It steals hats from very high up.
+> She steals hats from very high up.
 
 | Field | Brief |
 | --- | --- |
-| Subject | A large vulture-like bird with a bald head and wide wings. |
-| Pose | It flies with its wings wide open. It holds a stolen hat in its talons and wears a second stolen hat on its head. |
-| Props | Orange and red tribal paint on the wings, a fancy stolen hat with a feather. |
-| Gameplay cues | Flying: wings fully open, and no ground under it. Heroic 1: it dives toward a far target. |
-| Silhouette hook | The wide wing span and the hat. |
-| Humor note | It is very proud of its stolen hats. |
+| Subject | A lean orc woman who flies a glider. |
+| Pose | She glides under wide glider wings of stretched hide on a bone frame, like a big kite. She holds a stolen hat on a long hook and wears a second stolen hat on her head. |
+| Props | Orange and red tribal paint on the glider wings, a long snatching hook, a fancy stolen hat with a feather, flying goggles. |
+| Gameplay cues | Flying: glider wings fully open, and no ground under her. Heroic 1: she dives toward a far target. |
+| Silhouette hook | The wide glider wing span and the hat. |
+| Humor note | She is very proud of her stolen hats. |
 | Setting | A badland sky above mesas. |
 
 ### 3.6 Pack Stalker
 
 `orc.packStalker` · Striker · Uncommon · Countdown 2 · Attack 2 · HP 4 · Speed 2 · Melee · Physical · Pivot · Last Breath 1
 
-> It always knows where you are. Mostly behind you.
+> He always knows where you are. Mostly behind you.
 
 Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
-| Subject | A lean striped hyena with a sloped back. |
-| Pose | Its chest points right in a low crouch. Its head turns back over its shoulder, with a sly grin. |
-| Props | A leather harness with small bone charms, orange paint marks. |
-| Gameplay cues | Pivot: the head turns back. The chest still points right. A loose fang on the harness shows Last Breath. |
-| Silhouette hook | The sloped back and the head turned back. |
-| Humor note | It grins as if it knows a secret about you. |
+| Subject | A lean orc tracker man with a hunched back. |
+| Pose | His chest points right in a low crouch. His head turns back over his shoulder, with a sly grin. One hooked hand axe is ready in front, and one behind him. |
+| Props | Two hooked hand axes, a hood of hide with orange paint stripes, a leather harness with small bone charms. |
+| Gameplay cues | Pivot: the head turns back and one axe guards the rear. The chest still points right. A spare blade on the harness shows Last Breath. |
+| Silhouette hook | The hunched back, the hood and the head turned back. |
+| Humor note | He grins as if he knows a secret about you. |
 | Setting | Tall dry grass in the badlands. |
 
 ### 3.7 Tusk Brute
@@ -461,23 +463,23 @@ Purpose: limited Orc Lane protection without Armor. Power 17, budget 18, deviati
 | Humor note | He thinks enemy threats are cheers. |
 | Setting | An Orc camp between red rocks. |
 
-### 3.10 Cinderhorn Ram
+### 3.10 Cinderhorn Breaker
 
-`orc.cinderhornRam` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Fire · Charge
+`orc.cinderhornBreaker` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Fire · Charge
 
-> It never waits for the gate to open.
+> She never waits for the gate to open.
 
 Purpose: a fast Fire attacker. Power 22, budget 21, deviation +4.8%.
 
 | Field | Brief |
 | --- | --- |
-| Subject | A muscular black-wool badland ram. |
-| Pose | It charges through a wooden fence. |
-| Props | Charred harness, iron horn rings and glowing horn tips. |
+| Subject | A muscular orc woman with a short battering ram. |
+| Pose | She charges through a wooden fence, with the battering ram held low in front of her. |
+| Props | A battering ram of black wood with an iron cap of two curled horns, glowing ember-red horn tips, charred leather harness and iron rings. |
 | Gameplay cues | Dust and boards show Charge; embers show Fire. |
-| Silhouette hook | Large curled horns and low head. |
+| Silhouette hook | The curled horn cap of the ram, held low in front. |
 | Humor note | An open gate stands beside the broken fence. |
-| Setting | A badland livestock enclosure. |
+| Setting | A wooden stockade of a badland camp. |
 
 ### 3.11 Warhowler Drummer
 

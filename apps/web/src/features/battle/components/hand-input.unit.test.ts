@@ -19,7 +19,7 @@ const card = (
 
 const press = (overrides: Partial<Parameters<typeof pressAction>[0]>) =>
   pressAction({
-    card: card("orc.badlandPup"),
+    card: card("orc.badlandRunt"),
     index: 0,
     selected: null,
     canAct: true,
@@ -60,7 +60,7 @@ describe("dragMove", () => {
 });
 
 describe("activeDragIndex and draggedCard", () => {
-  const hand = [card("orc.badlandPup"), card(null), card("x", 0, null)];
+  const hand = [card("orc.badlandRunt"), card(null), card("x", 0, null)];
 
   it("ignores a drag that is not active", () => {
     const drag = startDrag(0, 10, 20);
@@ -74,7 +74,7 @@ describe("activeDragIndex and draggedCard", () => {
     const { drag } = dragMove(startDrag(0, 0, 0), 40, 30);
     expect(activeDragIndex(drag)).toBe(0);
     expect(draggedCard(drag, hand)).toEqual({
-      cardId: "orc.badlandPup",
+      cardId: "orc.badlandRunt",
       rank: "uncommon",
       x: 40,
       y: 30,
@@ -94,7 +94,7 @@ describe("activeDragIndex and draggedCard", () => {
 describe("pressAction", () => {
   it("shows the details of a card that cannot play now", () => {
     expect(press({ card: undefined })).toEqual({ _tag: "inspect" });
-    expect(press({ card: card("orc.badlandPup", 2) })).toEqual({
+    expect(press({ card: card("orc.badlandRunt", 2) })).toEqual({
       _tag: "inspect",
     });
     expect(press({ canAct: false })).toEqual({ _tag: "inspect" });

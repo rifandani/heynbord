@@ -146,7 +146,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Unique**: A Keyword. While a Unit from a Unique Card is on a Side of the Board, no Hero of that Side can play a copy of that Card, at any Rank. Each Unit from that Card counts, also a Unit that the Stage puts on the Board. Enemy Units do not count. A Deck can still hold more than 1 copy. _Avoid_: Singleton, One-of, Legend rule
 
-**Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a wolf that fights for the orcs is an Orc card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
+**Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a grave hound that fights for the Undead is an Undead card. Orc cards show only orcs, so that no Orc card looks like a Feral card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
 
 **Feral**: The one Race with no people. A Feral card is a wild creature that serves no people, for example a wyrm or a giant spider. A creature that fights for a people is a card of that people's Race, not a Feral card. _Avoid_: beast, creature, wild (as a Race name)
 

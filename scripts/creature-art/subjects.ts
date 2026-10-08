@@ -36,26 +36,26 @@ export const SUBJECT = new Map(
       "large armored roadside reliquary standing across a stone lane like a sealed gate, thick oak doors with ornate steel bands, round gold sun emblem, blue prayer cloths and candles, cracks releasing holy light, one candle perfectly upright",
     "human.marshalElianVoss":
       "Marshal Elian Voss, tall older human officer with a close grey beard, blue officer coat over fitted plate with ornate gold trim, raising a command sword that sends a holy arc forward, planting a forked sun-banner, six rolled speeches at his belt, soldiers reforming behind him",
-    "orc.badlandPup":
-      "young badland wolf pup with very big ears and big paws, spiked leather collar too big for it, orange war paint stripes, mouth open ready to bite",
+    "orc.badlandRunt":
+      "small young orc boy with big ears and small new tusks, adult iron helmet too big for him falling over one eye, orange war paint stripes, short bone knife, jumping forward with his mouth open in a war cry, no animals",
     "orc.scrapRaider":
       "thin fast orc man with a big grin, scrap-metal armor, many stolen rings and necklaces, a spoon as an earring, cleaver in one hand, large sack full of shiny spoons and pans over his shoulder",
     "orc.emberShaman":
       "big kind-faced orc woman, apron over fur robes, bone beads, flinging a ball of fire from a large wooden ladle, cooking pot over a fire beside her, orange-red embers",
     "orc.howlingCharger":
-      "war boar with big iron-capped tusks, no rider, orc war banner tied to its back with leather straps, head low, mouth open in a loud scream, big dust cloud",
+      "big heavy orc man with large iron-capped tusks, orc war banner tied to his back with leather straps, spiked round shield held in front like a ram, head low, mouth open in a loud howl, big dust cloud, no animals",
     "orc.skyreaver":
-      "large vulture-like bird with a bald head and wide wings, orange and red tribal paint on the wings, wearing a fancy stolen feathered hat, holding another stolen hat in its talons",
+      "lean orc woman flying a glider of stretched hide on a bone frame like a big kite, orange and red tribal paint on the glider wings, flying goggles, wearing a fancy stolen feathered hat, holding another stolen hat on a long snatching hook, no animals",
     "orc.packStalker":
-      "lean striped hyena with a sloped back, leather harness with small bone charms, orange paint marks, sly grin, chest pointing right, head turned back over its shoulder",
+      "lean hunched orc tracker man, hide hood with orange paint stripes, leather harness with small bone charms, two hooked hand axes with one held behind him, sly grin, chest pointing right, head turned back over his shoulder, no animals",
     "orc.tuskBrute":
       "very big strong orc woman with large tusks, rough iron shoulder plates, fur belt, big wooden club, smashing through a wooden door with splinters flying around her",
     "orc.warchiefGrukka":
       "Warchief Grukka, huge old happy orc woman, round and heavy with a big belly, long grey-white braids with bone and gold beads, large tusks with gold rings, laugh lines and a scar across her nose, beast-skull helmet with two large curved horns, heavy armor that covers her belly, long dark red war cloak with a thick fur mantle opening behind her like a banner, necklace of gold-ringed trophy tusks, leaping down from a high rock ledge in mid-air, raising a gold-inlaid double axe in her right hand and biting a roast leg in her left hand, her cheering warband with banners and war drums on the cliff behind her at sunset",
     "orc.dusthideBrawler":
       "broad sturdy orc man with a pleased grin, worn hide vest and rough belt, holding a short wooden cudgel, feet planted wide in a camp entrance",
-    "orc.cinderhornRam":
-      "muscular badland ram with black wool, large curled horns with glowing ember-red tips, charred leather harness and iron horn rings, charging through a wooden fence beside an open gate, broken boards and embers flying",
+    "orc.cinderhornBreaker":
+      "muscular orc woman charging through a wooden fence beside an open gate, short battering ram of black wood held low in front of her, iron ram cap of two curled horns with glowing ember-red tips, charred leather harness and iron rings, broken boards and embers flying, no animals",
     "orc.warhowlerDrummer":
       "compact fierce orc woman with a joyful howl, worn leather gear with red feather trim, hide drum at her hip, two bone drumsticks raised, blurred warriors rushing behind her and one covering his ears",
     "orc.ashspitHunter":

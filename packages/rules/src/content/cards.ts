@@ -229,7 +229,7 @@ const creatures: readonly CreatureCardDefinition[] = [
   // Orc: rush the enemy Hero.
   {
     kind: "creature",
-    id: "orc.badlandPup",
+    id: "orc.badlandRunt",
     race: "orc",
     role: "runner",
     baseRank: "common",
@@ -355,7 +355,7 @@ const creatures: readonly CreatureCardDefinition[] = [
   },
   {
     kind: "creature",
-    id: "orc.cinderhornRam",
+    id: "orc.cinderhornBreaker",
     race: "orc",
     role: "runner",
     baseRank: "uncommon",

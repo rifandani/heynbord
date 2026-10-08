@@ -24,16 +24,18 @@ const STYLE_REFERENCE = path.join(RAW_DIR, "style-reference.png");
 /**
  * The golden references of art direction 5.1 that show a Creature Card.
  * Tusk Brute replaces Warchief Grukka: `warchief-grukka.webp` does not show
- * Grukka yet.
+ * Grukka yet. Scrap Raider and Warhowler Drummer replace Badland Runt and
+ * Howling Charger: their images still show the old wolf pup and war boar, and
+ * Orc art shows no animals.
  */
 const GOLDEN_REFERENCES = [
   "human/militia-recruit",
   "human/iron-bulwark",
   "human/dawn-cleric",
   "human/crossbow-guard",
-  "orc/badland-pup",
+  "orc/scrap-raider",
   "orc/ember-shaman",
-  "orc/howling-charger",
+  "orc/warhowler-drummer",
   "orc/tusk-brute",
 ] as const;
 
