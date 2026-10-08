@@ -18,7 +18,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Front**: The Lanes that one Hero stands behind. An enemy Unit that gets to the end of a Lane hits the Hero of that Front. _Avoid_: wing, flank, sector, zone
 
-**Summon Zone**: A Side's Columns 1 to 3, in all Lanes. The only place where the Heroes of that Side can summon Units. _Avoid_: Summon Column, spawn zone, deploy row
+**Summon Zone**: A Side's Columns 1 to 3, in all Lanes. The Heroes of that Side summon Units only into it. The one exception is a Unit with Wall, which can also go into Columns 4 and 5. _Avoid_: Summon Column, spawn zone, deploy row
 
 **Field Effect**: An effect from a Skill Card that stays on a Square area for a number of Turns. _Avoid_: tile effect, battlefield skill, aura
 
@@ -126,7 +126,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Keyword**: A named rule on a Card, for example Flying or Armor. _Avoid_: trait, perk, tag, ability
 
-**Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. _Avoid_: Root, Snare
+**Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. Only a Ranged Unit has Entangle, because a Melee Unit attacks an enemy that cannot move closer. Its Base Rank is Epic or higher, because it can Entangle the same enemy in each Turn. _Avoid_: Root, Snare
+
+**Charge N**: A Keyword. A Unit with Charge gets +N Speed in the Turn when it is summoned. N is 1 up to Rare, 2 at Epic and 3 at Legendary. N is never more than 3. _Avoid_: Haste, Rush, Dash, Sprint
 
 **Base Attack**: The Attack of a Unit for its Rank, without bonuses such as Rally or Swarm. A Unit with Base Attack 0 never attacks and never deals Retaliation damage. _Avoid_: printed Attack, raw Attack
 
@@ -148,13 +150,15 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Unique**: A Keyword. While a Unit from a Unique Card is on a Side of the Board, no Hero of that Side can play a copy of that Card, at any Rank. Each Unit from that Card counts, also a Unit that the Stage puts on the Board. Enemy Units do not count. A Deck can still hold more than 1 copy. _Avoid_: Singleton, One-of, Legend rule
 
+**Wall**: A Keyword. A Unit with Wall has Speed 0 and Base Attack 0. It blocks enemy Units in its Lane, and it is never Pushed. Its Hero can summon it into the Summon Zone and also into Columns 4 and 5 of an open Lane, also past an enemy Unit. Each Card with the Wall Role has Wall, and each Card with Wall has the Wall Role. _Avoid_: Barricade, Blocker, Taunt
+
 **Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a grave hound that fights for the Undead is an Undead card. Orc cards show only orcs, so that no Orc card looks like a Feral card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
 
 **Feral**: The one Race with no people. A Feral card is a wild creature that serves no people, for example a wyrm or a giant spider. A creature that fights for a people is a card of that people's Race, not a Feral card. _Avoid_: beast, creature, wild (as a Race name)
 
 **Role**: The job of a Creature Card in a Battle: Frontliner, Striker, Runner, Shooter, Support or Wall. It helps Players read a Card. No Battle rule uses it, but it sets the Range of a Ranged Unit. _Avoid_: class, type, archetype
 
-**Range**: The maximum number of Squares in front of a Ranged Unit at which it attacks the nearest enemy Unit. A Melee Unit has no Range. A Ranged Support always has Range 2. A Shooter always has Range 3 to 5. _Avoid_: reach, attack distance
+**Range**: The maximum number of Squares in front of a Ranged Unit at which it attacks the nearest enemy Unit. A Melee Unit has no Range. A Ranged Support always has Range 2. A Shooter always has Range 3. No Unit has a Range of more than 3. _Avoid_: reach, attack distance
 
 **Class**: The type of a Hero, and of the Skill Cards that the Hero can use: Warrior, Ranger, Mage or Priest. _Avoid_: job, profession, role
 
@@ -278,13 +282,14 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - GDD 8.3 says "a quit". The term is **Abandon**: it records no result, and it is not a loss.
 - A **Deck Slot** cost Heynstones in the **Bazaar** before, and a new Player had 5. Now a new Player has 3, and the Player buys more with **Coin**. A Deck Slot is still a **Convenience**, because it gives no power.
 - **Coin** was named "Marks" before. Gold, Silver and Copper are its denominations, not separate currencies.
-- The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)).
+- The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)). A Unit with **Wall** can also be summoned into Columns 4 and 5. Those Squares are not part of the Summon Zone ([ADR-0022](../../docs/adr/0022-a-wall-can-be-summoned-up-to-column-5.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
 - A **Race** was always a people before. **Feral** is the one Race with no people ([ADR-0013](../../docs/adr/0013-v1-has-90-creature-cards.md)). "Feral" is not a word for every wild creature: a troll that fights for the orcs is an Orc card.
 - The GDD says "Deck archetype". The term is **Archetype**, and it is always a Deck. It is not a **Role**: a Role is the job of one Creature Card.
 - The **Workshop** and the **Bazaar** were "places" before. Now they are the actions and the offers. The Town Building that opens each one is a web term.
 - The first name for **Hobble** was "Fatigue". "Fatigue" usually means damage from an empty Deck in card games, and it is on the _Avoid_ list of **Sudden Death**.
 - The first text for **Knockback** said that the attacked Unit "moves" back. A Unit moves only in its own Movement, with its Speed. The term is **Pushed**, so Speed 0, Entangled and Hobbled do not stop Knockback.
+- **Charge** gave +2 Speed at each Rank before. Now it is **Charge N**, and N increases with the Rank from 1 to a maximum of 3. Speed does not increase with the Rank, but Charge does. Thus a higher Rank makes a Charge Unit faster only in the Turn when it is summoned.
 - GDD 4.5 said "Units never move through other Units", and a friendly Unit blocked a Lane. Now a Unit moves through friendly Units, also a friendly Wall, and only an enemy Unit stops its **Movement** ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)). A push still stops before any Unit, because a push is not Movement.
 - In many games, "bleed" is damage over time. In Heynbord, **Bleeding** does no damage: it only makes heals smaller. Damage over time is **Burn** or **Poisoned** ([ADR-0019](../../docs/adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
 - GDD 4.6 says "a Unit with Attack 0 does not attack", but a bonus could make the Attack 1. The rule uses **Base Attack**, so Rally and Swarm never make a Wall attack.
@@ -292,4 +297,6 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
 - The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
 - All Cards in a Hand counted down at the same time before. Then the Deck size, not the Countdown, limited the cards that a Hero played. Now only the **Ticking Cards** count down, and a Deck has a **Countdown Limit** ([ADR-0021](../../docs/adr/0021-countdown-is-a-real-cost.md)). The Countdown Limit is not a cost: "cost" stays on the _Avoid_ list of **Countdown**, because a Card is never paid for in a Battle.
+- Melee and Common Units had **Entangle** before. On a Melee Unit it did almost nothing, and on a Ranged Unit it kept one enemy at Speed 0 in each Turn (issue #23). Now only a Ranged Unit with Base Rank Epic or higher has Entangle.
+- A Shooter had Range 3 to 5 before. The Range 4 Elf Shooters made Thornwatch win about 87% of its Matchups (issue #23). Now each Shooter has **Range** 3.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.

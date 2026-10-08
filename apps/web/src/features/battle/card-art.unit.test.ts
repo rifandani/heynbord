@@ -1,4 +1,6 @@
-import { getCard, getStarterDeck } from "@workspace/rules";
+import { existsSync } from "node:fs";
+
+import { CARDS, getCard, getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
@@ -16,6 +18,9 @@ describe("cardIllustration", () => {
     expect(cardIllustration("orc.warchiefGrukka")).toBe(
       "/creature/orc/warchief-grukka.webp"
     );
+    expect(cardIllustration("elf.lethielFirstGardener")).toBe(
+      "/creature/elf/lethiel-first-gardener.webp"
+    );
     expect(cardIllustration("mage.fireball")).toBe(
       "/skills/mage/fireball.webp"
     );
@@ -23,11 +28,22 @@ describe("cardIllustration", () => {
 });
 
 describe("hasCardArt", () => {
-  it("has art for the Human and Orc cards and the Skill Cards only", () => {
+  it("has art for the Human, Orc, Goblin and Elf cards and the Skill Cards only", () => {
     expect(hasCardArt("human.crossbowGuard")).toBe(true);
+    expect(hasCardArt("goblin.ankleSnatcher")).toBe(true);
+    expect(hasCardArt("elf.lethielFirstGardener")).toBe(true);
     expect(hasCardArt("mage.fireball")).toBe(true);
-    expect(hasCardArt("goblin.ankleSnatcher")).toBe(false);
     expect(hasCardArt("feral.caveBear")).toBe(false);
+  });
+
+  it("has a file in public/ for each card with art", () => {
+    const missing = CARDS.filter((card) => hasCardArt(card.id))
+      .map((card) => cardIllustration(card.id))
+      .filter(
+        (file) =>
+          !existsSync(new URL(`../../../public${file}`, import.meta.url))
+      );
+    expect(missing).toEqual([]);
   });
 });
 

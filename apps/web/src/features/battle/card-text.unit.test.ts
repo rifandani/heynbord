@@ -151,6 +151,12 @@ describe("cardText (CRD-08)", () => {
     );
     return keyword && resolve(keyword.name);
   };
+  const chargeText = (rank: RankId) => {
+    const keyword = creature("orc.howlingCharger", rank).keywords.find(
+      (item) => item.name.key === "keywords.charge"
+    );
+    return keyword && [resolve(keyword.name), resolve(keyword.rule)];
+  };
   it("pairs each Creature Card Keyword with its rule", () => {
     const text = creature("orc.skyreaver", "uncommon");
     expect(resolve(text.attackType)).toBe("Melee");
@@ -215,6 +221,18 @@ describe("cardText (CRD-08)", () => {
     expect(knockbackName("legendary")).toBe("Knockback 3");
   });
 
+  it("shows the Charge value and rule of a Howling Charger copy for its Rank", () => {
+    expect(chargeText("uncommon")).toEqual([
+      "Charge 1",
+      "+1 Speed in the Turn when you summon this Unit.",
+    ]);
+    expect(chargeText("epic")?.[0]).toBe("Charge 2");
+    expect(chargeText("legendary")).toEqual([
+      "Charge 3",
+      "+3 Speed in the Turn when you summon this Unit.",
+    ]);
+  });
+
   it("shows Wall, Rally and Unique from the card data (GDD 5.4)", () => {
     const names = (cardId: string, rank: RankId) =>
       creature(cardId, rank).keywords.map((keyword) => resolve(keyword.name));
@@ -231,8 +249,8 @@ describe("cardText (CRD-08)", () => {
       "Unique",
     ]);
     expect(names("orc.warchiefGrukka", "epic")).toEqual([
+      "Charge 2",
       "Heroic 2",
-      "Charge",
       "Unique",
     ]);
     const [rally] = creature("orc.warhowlerDrummer", "uncommon").keywords;

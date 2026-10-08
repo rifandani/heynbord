@@ -40,7 +40,7 @@ The player is a new Hero. The player travels through three Regions, wins the res
 | Race | Concept | Battle identity | Main Keywords |
 | --- | --- | --- | --- |
 | **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Knockback, Rally, Retaliation, Wall |
-| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | Entangle, Regeneration, Poison, Flying |
+| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | Regeneration, Poison, Flying |
 | **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | Swarm, Rebirth, Summon, Frost damage |
 | **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them. | Charge, Heroic, Fire damage, Last Breath |
 | **Goblin** | Goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. | Make the enemy plan slower. Cheap, fragile Units that delay enemy cards, set traps and explode. | Sabotage, Hobble, Last Breath, Fire damage |
@@ -48,7 +48,7 @@ The player is a new Hero. The player travels through three Regions, wins the res
 
 The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, each Race has 1 Creature Card with Pivot, with Base Rank Uncommon.
 
-A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). Hobble is a Goblin Main Keyword, and one Human card borrows it. Sabotage is the Goblin signature, and Trample is the Feral signature ([ADR-0017](../adr/0017-sabotage-and-hobble-are-goblin-and-trample-is-feral.md)). Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback. Bleed is a Feral Keyword on the Frostfang Lynx and Old Frostmaw only. It is not a Main Keyword ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
+A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). Hobble is a Goblin Main Keyword, and one Human card borrows it. Sabotage is the Goblin signature, and Trample is the Feral signature ([ADR-0017](../adr/0017-sabotage-and-hobble-are-goblin-and-trample-is-feral.md)). Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback. Bleed is a Feral Keyword on the Frostfang Lynx and Old Frostmaw only. It is not a Main Keyword ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Entangle is an Elf Keyword, but not a Main Keyword. Only a Ranged Unit with Base Rank Epic or higher has it ([ADR-0022](../adr/0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md)).
 
 ### 3.3 Regions (draft names)
 
@@ -193,6 +193,9 @@ To calculate damage, do these steps in this order:
   - It occurs also when the attack did 0 damage.
   - It does not occur against a Ranged attack, or when the Unit is Frozen (see 4.4).
 - **First Strike:** When an enemy melee Unit attacks a Unit with First Strike, the Unit with First Strike deals its damage first. If the attacker dies, its attack does not occur.
+  - It uses the Damage Type of the Unit with First Strike. It does not use Crit. The Armor of the attacker reduces it, and the attacker's Hero can Block it.
+  - It does not occur against a Ranged attack, or when the Unit with First Strike is Frozen (see 4.4). A Unit with Base Attack 0 does not use it.
+  - Damage above 0 applies Poison, Hobble, Bleed and Entangle, but not Knockback. An attacker that First Strike Entangles has Speed 0 in its next action, not in the action that it does now.
 - **Entangle:** After a Unit with Entangle deals attack damage above 0 to an enemy Unit, that enemy becomes Entangled. A new Entangle does not stack or extend the Status. Retaliation does not apply Entangle.
 - **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliation does not apply Hobble. An attack on a Hero does not apply Hobble.
 - **Bleed N:** After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down: Regeneration, a Skill Card heal and each other heal. Bleeding does no damage. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Bleed keeps the higher count. It does not add to the old count. Retaliation does not apply Bleed. First Strike damage above 0 applies Bleed. An attack on a Hero does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary.
@@ -268,7 +271,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | Attack | Damage of one attack | 0 to 12 |
 | HP | Health | 1 to 30 |
 | Speed | Squares per Turn | 0 to 4 |
-| Attack type | Melee, or Ranged with Range | Range 2 to 5. Range 2 only for a Support (5.6) |
+| Attack type | Melee, or Ranged with Range | Range 2 or 3. Range 2 only for a Support, and Range 3 for a Shooter (5.6, ADR-0022) |
 | Damage Type | Physical, Fire, Frost or Holy | — |
 | Keywords | 0 to 3 Keywords | — |
 | Flavor text | A short line of lore or a joke | — |
@@ -307,8 +310,8 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | --- | --- |
 | **Armor N** | Reduces damage to this Unit by N. It does not reduce Holy damage. |
 | **Bleed N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Bleed keeps the higher count. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. See 4.7. |
-| **Charge** | +2 Speed in the Turn when you summon this Unit. |
-| **Entangle** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Entangled. An Entangled Unit has Speed 0 during its next action, but it can attack. Entangled then ends. A new Entangle does not stack or extend it. |
+| **Charge N** | +N Speed in the Turn when you summon this Unit. N is 1 up to Rare, 2 at Epic and 3 at Legendary. N is never more than 3. |
+| **Entangle** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Entangled. An Entangled Unit has Speed 0 during its next action, but it can attack. Entangled then ends. A new Entangle does not stack or extend it. Only a Ranged Unit with Base Rank Epic or higher has Entangle (ADR-0022). |
 | **First Strike** | See 4.7. |
 | **Flying** | Moves over other Units. See 4.5. |
 | **Heroic N** | +N damage when this Unit attacks a Hero. |
@@ -354,7 +357,7 @@ Each Creature Card has a role. Use the role to balance the card and to explain i
 | Frontliner | High HP, low Speed. Protects the Lane. A Frontliner with Pivot also stops enemy Units that go past it. |
 | Striker | High Attack, low HP. Kills Units. |
 | Runner | High Speed or Flying. Damages the Hero. |
-| Shooter | Ranged with Range 3 to 5. Stays back and attacks. |
+| Shooter | Ranged with Range 3. Stays back and attacks. |
 | Support | Rally, Regeneration or Summon. Makes other Units better. Melee, or Ranged with Range 2. |
 | Wall | Blocks a Lane for enemy Units. |
 
@@ -695,10 +698,12 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - Start formula: `power = Attack × 2 + HP + Speed × 2 + Keyword points`.
    - Attack, HP and the Keyword values count at the Base Rank of the Card. The card data gives the Common Attack and HP. Use them with the Rank scale of the Base Rank (5.3). For example, an Epic card with Common Attack 4 counts Attack 7 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)).
    - Add Range and Damage Type points: Range = its value, Fire = 3, Frost = 3 and Holy = 2.
-   - Start Keyword points: Armor N = N × 3, Bleed N = N × 1, Charge = 3, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 2 and Trample = 3.
+   - Start Keyword points: Armor N = N × 3, Bleed N = N × 1, Charge N = N × 1, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 2 and Trample = 3.
    - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
+   - **Charge N** uses N × 1 points, not N × 2 as Speed does. Speed applies in each Turn, but Charge applies only in the Turn of the summon, and the Column 3 start makes it less valuable. Thus each additional Square costs 1 point.
+   - Charge N increases with the Rank, but Speed does not. The budget counts only N at the Base Rank, so a Charge card at a higher Rank has more power than its budget shows. We accept this: the additional Speed applies only in 1 Turn, and N is never more than 3. A Legendary Unit with Speed 4 and Charge 3, summoned into Column 3, goes to Column 10 in that Turn.
 2. Each Countdown has a power budget for the Base Rank: `budget = 12 + Countdown × 3` ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). This budget is correct only with the Countdown Limit and the 3 Ticking Cards of the same ADR. Without them, a Deck of long-Countdown cards wins against a Deck of short-Countdown cards of the same Race ([08 — Archetypes, section 3.2](./08-archetypes.md#32-countdown-slope-search)).
 3. A card must be within ±10% of its budget. A card outside this range needs a written reason (for example "weak stats, strong combo").
 4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).

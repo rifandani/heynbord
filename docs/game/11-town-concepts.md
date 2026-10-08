@@ -178,26 +178,17 @@ Each screen of GDD 11.1 except Title and Settings has a Building. In v1, only th
 
 ## 3. Prompts
 
-### 3.1 Master painting
+The game docs do not keep the image prompts of the Town. Run `bun town:prompts` to write them to `apps/web/art/town/raw/`. Git ignores this folder.
 
-```text
-bird's-eye view of a bright fantasy hub town on a green hillside next to the sea, seen from high above at about 45 degrees, wide 2.1:1 landscape,
-in the center foreground a large stone town gate with two round towers, blue conical roofs and small gold flags, open wooden doors, a sleepy guard on a stool with a cat on his lap,
-a sandy road leaves the gate and winds down to the bottom left toward far green meadows,
-a curved stone town wall with small towers runs from left to right behind the gate,
-inside the wall: a long stone barracks with a fenced training yard and straw dummies at the far left, a stone library with a blue roof and tall arched windows left of the gate, a wide hall with long blue and gold banners and a low red roof behind the gate, a small narrow card shop with a purple roof and a round window right of the gate, a timber workshop with a tall stone chimney, an anvil outside and a small goblin tinker's junk cart on the right, a market square with orange, yellow and blue tents near the sea on the right, a giant mossy boulder tortoise asleep on the road to the market with townsfolk walking around it,
-a very tall thin white stone tower with blue roofs on a hill at the back left, its top lost in the clouds,
-a dark cave with old ruined pillars in grey rocks at the right edge,
-a calm blue sea with a far island and small sail boats at the back right, soft white clouds in a clear morning sky,
-round trees and flower bushes, small happy townsfolk and animals on the roads,
-Heynbord, painterly fantasy town map illustration, bright warm light, soft brush texture, clean readable building silhouettes,
-light from the upper left, warm stone, terracotta and royal blue roofs, gold accents, green hills,
-each building separated by open space, calm sky above the gate, no text, no letters, no labels, no logo, no frame, no UI
-```
+- `style-reference.png`: 4 golden references of art direction 5.1 in one image. They set the brush, the light and the palette.
+- `painting/prompts.md`: the setup message, then the painting message.
+- `bar/`: the prompts of the Town Bar icons (7.2).
+
+The painting message is a short form of the briefs in sections 1 and 2. It is in `scripts/town-art/prompts.ts`. When you change a brief, change the painting message too, then run the script again.
 
 ## 4. Steps
 
-1. Make 4 to 8 images with the prompt in 3.1. Use the golden references as style references.
+1. Run `bun town:prompts`. Make 4 to 8 images with `painting/prompts.md` and the style reference (section 3).
 2. Select one image with the checklist in 5.
 3. Fix problems by hand or with inpainting (text-like marks, strange buildings, broken roofs).
 4. Scale the image so that the Town Gate fills its box in 1.2. Crop to 2.1:1 and export at 3800 × 1800.
@@ -241,52 +232,41 @@ The painted icons show at 66 px (48 px on a phone), and they stand out of the to
 - **No text.** No letters, numbers, runes or logo. The game shows the shortcut names from the Message Catalogs, in each language.
 - **States.** Make one image for each icon. The code makes the current, hover, focus and locked states (DESIGN.md Navigation).
 
-### 7.2 Icon template
+### 7.2 Prompts
 
-Put the subject from 7.3 in `[SUBJECT]`.
+The game docs do not keep the prompts of the Town Bar icons. Run `bun town:prompts` to write them to `apps/web/art/town/raw/bar/` (section 3). Git ignores this folder.
 
-```text
-A single hand-painted fantasy game menu icon: [SUBJECT].
-Chunky, toy-like proportions with a bold, simple silhouette that stays readable at 48 pixels.
-Seen from a slight three-quarter top-down view, about 30 degrees down.
-Thick dark brown outline (#2e1d10) around the whole object, painterly soft brush shading inside,
-glossy highlights on metal and gems, a warm rim light on the edges.
-Light from the upper left. Bright, warm and a little funny. Not dark, not realistic, no gore, no neon.
-Palette of warm stone, polished gold and bronze, warm tavern wood, royal blue, terracotta and parchment cream.
-The object is centered and fills about 85% of the square canvas. Its bottom edge is flat and level,
-so it can sit on a dark carved wood menu bar and stand out of the top edge of the bar.
-Small contact shadow under the object only.
-Transparent background, isolated object, no scene, no ground, no frame, no border, no badge circle,
-no text, no letters, no numbers, no runes, no logo, no watermark.
-Square 1:1.
-```
+- `../style-reference.png`: the style reference of section 3.
+- `set-reference.png`: the `town` icon, from `apps/web/art/town/bar/`. The other icons match its outline, view angle and scale.
+- `prompts.md`: the setup message, then one prompt for each icon of 7.3.
+
+Each icon prompt has the rules of 7.1 and the subject line of the icon in `scripts/town-art/subjects.ts`. Use one ChatGPT conversation for all icons: attach the references to the setup message, then send each icon prompt in its own message. To change an icon, change its subject line, then run the script again. When you add a row to 7.3, add a subject line too.
 
 ### 7.3 Icon subjects
 
 In the order of `TOWN_SHORTCUTS`, then the Settings button.
 
-| Shortcut | Building | `[SUBJECT]` |
+| Shortcut | Building | Object |
 | --- | --- | --- |
-| `town` | None | a cozy little town house of warm stone and timber with a royal blue roof, a small gold flag on top, a round wooden door, a glowing window and a tiny flower box |
-| `campaign` | Town Gate (2.1) | a small stone gatehouse with two round towers, blue conical roofs and tiny gold flags, the wooden doors open, and a sandy road that comes out of the arch toward the viewer |
-| `heynspire` | Heynspire tower (2.2) | a very tall, thin white stone tower with blue roofs and a spiral stair around it, small glowing windows, and three small floating stones around its top, with a soft white cloud around the peak |
-| `dungeons` | Dungeons cave (2.3) | a dark cave arch in grey rocks with two broken old pillars, a lit torch on one side, a cute (not scary) wooden warning barrier with a small skull, and two small glowing yellow eyes in the dark |
-| `deck` | Library (2.4) | an open thick leather book with gold corners, with a fan of three fantasy playing cards that comes out of its pages; the card backs are royal blue with a gold pattern and no symbols |
-| `workshop` | Workshop (2.5) | a heavy iron anvil on a wooden stump, with a smith hammer that leans on it and a glowing orange-hot card on top that throws small sparks |
-| `packs` | Card shop (2.7) | a sealed fantasy card pack wrapped in purple foil with gold trim, a red wax seal in the middle, and a small sparkle on the shiny wrapper; the top edge is crimped |
-| `hero` | Barracks (2.8) | a polished steel knight helmet with a gold crest band and a tall royal blue plume, set on a small round wooden shield |
-| `achievements` | Hall of banners (2.9) | a gold trophy cup with two handles, in front of a long hanging banner in royal blue and gold with a swallow-tail end; small sparkles on the cup |
-| `bazaar` | Market (2.6) | a small market tent with orange, yellow and blue stripes and a pointed top with a little pennant, and a fat coin purse in front with gold coins that spill out |
-| `settings` | None | a chunky polished bronze cogwheel with eight rounded teeth and a round royal blue gem in its center hub, that stands upright in a small slot of a short wooden block; no tools and no other objects |
+| `town` | None | A small town house with a royal blue roof and a gold flag |
+| `campaign` | Town Gate (2.1) | The gatehouse with two round towers and open doors |
+| `heynspire` | Heynspire tower (2.2) | The tall white tower with a stair and floating stones |
+| `dungeons` | Dungeons cave (2.3) | The cave arch with a torch, a warning barrier and glowing eyes |
+| `deck` | Library (2.4) | An open book with a fan of three cards |
+| `workshop` | Workshop (2.5) | An anvil with a hammer and a glowing hot card |
+| `packs` | Card shop (2.7) | A sealed card pack in purple foil |
+| `hero` | Barracks (2.8) | A knight helmet with a blue plume, on a round shield |
+| `achievements` | Hall of banners (2.9) | A gold trophy cup in front of a blue and gold banner |
+| `bazaar` | Market (2.6) | A striped market tent and a coin purse |
+| `settings` | None | A bronze cogwheel with a blue gem, upright in a wooden block |
 
 ### 7.4 Steps
 
-1. Make 4 to 8 images of the `town` icon with the template in 7.2. Use the golden references as style references. Select one with the checklist in 7.5.
-2. Make each of the other icons with the `town` icon as a reference image. Add this line at the start of the prompt: "Match the attached icon exactly in style, outline thickness, light, view angle and scale."
-3. Use GPT Image with a transparent background and high quality, at 1024 × 1024.
-4. Fix problems by hand or with inpainting (text-like marks, extra parts, a broken outline).
-5. Export each icon as WebP with transparency at 128 × 128 (2× the largest shortcut size). Compress the files (Technical Design, section 6). Put them in `apps/web/public/town/bar/`, with the shortcut ID as the file name (for example `campaign.webp`, and `settings.webp` for the Settings button). Keep the full-size sources in `apps/web/art/town/bar/`, not in `public/`: the server sends each file in `public/` to the browser.
-6. Write the licence record (art direction 5.5) for each icon.
+1. Run `bun town:prompts`. Make the icons with the prompts and the references of 7.2, with GPT Image, a transparent background and high quality, at 1024 × 1024. Make the `town` icon first: the other icons use it as the set reference.
+2. Select each icon with the checklist in 7.5.
+3. Fix problems by hand or with inpainting (text-like marks, extra parts, a broken outline).
+4. Export each icon as WebP with transparency at 128 × 128 (2× the largest shortcut size). Compress the files (Technical Design, section 6). Put them in `apps/web/public/town/bar/`, with the shortcut ID as the file name (for example `campaign.webp`, and `settings.webp` for the Settings button). Keep the full-size sources in `apps/web/art/town/bar/`, not in `public/`: the server sends each file in `public/` to the browser.
+5. Write the licence record (art direction 5.5) for each icon.
 
 ### 7.5 Review checklist
 

@@ -144,5 +144,7 @@
   "statusLine": {
     "type": "command",
     "command": "bun x ccusage statusline"
-  }
+  },
+  "syncClaudeAiSkills": false,
+  "disableBundledSkills": true
 }

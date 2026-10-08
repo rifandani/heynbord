@@ -16,3 +16,4 @@ We did this because a Unit in Column 1 blocked the Lane. Then the Player had no 
 - A Unit summoned into Column 3 still acts in the same Turn, so it gets a 2-Square start. **Charge** has less relative value, and the balance process must check its Keyword points.
 - A Creature Card targets a Square, not a Lane. The AI and Auto-play select a Column too.
 - The 3D Board gives the side color to all 3 Columns of each Summon Zone.
+- A Unit with Wall can also be summoned into Columns 4 and 5, outside the Summon Zone ([ADR-0022](./0022-a-wall-can-be-summoned-up-to-column-5.md)).

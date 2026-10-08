@@ -32,6 +32,7 @@ export interface KeywordText {
 const VALUE_KEYWORDS = [
   "armor",
   "bleed",
+  "charge",
   "heroic",
   "hobble",
   "knockback",
@@ -41,8 +42,8 @@ const VALUE_KEYWORDS = [
   "sabotage",
 ] as const;
 const FLAG_KEYWORDS = [
-  "charge",
   "entangle",
+  "firstStrike",
   "flying",
   "pivot",
   "poison",

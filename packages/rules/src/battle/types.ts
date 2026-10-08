@@ -92,9 +92,12 @@ export interface UnitState {
   readonly range: number;
   readonly damageType: DamageType;
   readonly armor: number;
-  readonly charge: boolean;
+  /** Charge for the Rank of this card copy: +N Speed in the Turn of the summon. 0 is none. */
+  readonly charge: number;
   /** After attack damage above 0, the enemy Unit becomes Entangled. */
   readonly entangle: boolean;
+  /** Deals its damage first when an enemy melee Unit attacks it (GDD 4.7). */
+  readonly firstStrike: boolean;
   readonly flying: boolean;
   readonly heroic: number;
   /** Damage to the nearest enemy Unit ahead when this Unit leaves. 0 is none. */
@@ -180,6 +183,8 @@ export type TargetRef =
 export type DamageSource =
   | "attack"
   | "retaliation"
+  /** The damage of a defender with First Strike, before the melee attack. */
+  | "firstStrike"
   | "skill"
   | "burn"
   | "poison"

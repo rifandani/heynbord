@@ -406,8 +406,9 @@ export default {
   keywords: {
     armor: "Armor {value}",
     bleed: "Bleed {value}",
-    charge: "Charge",
+    charge: "Charge {value}",
     entangle: "Entangle",
+    firstStrike: "First Strike",
     flying: "Flying",
     heroic: "Heroic {value}",
     hobble: "Hobble {value}",
@@ -430,9 +431,11 @@ export default {
       "Reduces damage to this Unit by {value}. It does not reduce Holy damage.",
     bleed:
       "The enemy Unit it hits gets half of each heal, rounded down, for {value} Turns. Retaliation does not apply Bleed.",
-    charge: "+2 Speed in the Turn when you summon this Unit.",
+    charge: "+{value} Speed in the Turn when you summon this Unit.",
     entangle:
       "The enemy Unit it hits has Speed 0 in its next action. That Unit can still attack.",
+    firstStrike:
+      "When an enemy melee Unit attacks this Unit, this Unit deals its damage first. If the attacker dies, its attack does not occur.",
     flying:
       "Moves over all Units, also enemy Units. It stops in an empty Square.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
@@ -652,7 +655,7 @@ export default {
         flavor: "Every plan has gears. We have more.",
       },
       bossSnikkit: {
-        name: "Boss Snikkit, the Mine King",
+        name: "Boss Snikkit",
         flavor: '"Everything down here is mine. That is the joke. Laugh."',
       },
     },
@@ -716,6 +719,68 @@ export default {
       oldFrostmaw: {
         name: "Old Frostmaw",
         flavor: "Every village has a story about it. Every story is too small.",
+      },
+    },
+    elf: {
+      rootboundGuard: {
+        name: "Rootbound Guard",
+        flavor: "He has held this path since it was somewhere else.",
+      },
+      brambleDuelist: {
+        name: "Bramble Duelist",
+        flavor: "One cut for honor. Two because the hedge was rude.",
+      },
+      fernwingCourier: {
+        name: "Fernwing Courier",
+        flavor: "The message says urgent. The parcel is a sandwich.",
+      },
+      mosspitcherLookout: {
+        name: "Mosspitcher Lookout",
+        flavor: "He can hear a boot step. He cannot hear advice.",
+      },
+      acornTender: {
+        name: "Acorn Tender",
+        flavor: "Growth takes patience. Wilt takes less.",
+      },
+      gladeTurnblade: {
+        name: "Glade Turnblade",
+        flavor: "Behind him is only another front.",
+      },
+      canopySkirmisher: {
+        name: "Canopy Skirmisher",
+        flavor: "The stairs were deemed inefficient.",
+      },
+      thornlineArcher: {
+        name: "Thornline Archer",
+        flavor: "The arrow leaves. The ache stays.",
+      },
+      dewkeeper: {
+        name: "Dewkeeper",
+        flavor: "She collects morning dew. Afternoon dew is paperwork.",
+      },
+      brambleNest: {
+        name: "Bramble Nest",
+        flavor: "It is not blocking the path. It is the path now.",
+      },
+      amberwingDart: {
+        name: "Amberwing Dart",
+        flavor: "It stops armies and loses arguments with windows.",
+      },
+      elderreedDartmaster: {
+        name: "Elderreed Dartmaster",
+        flavor: "She waits for the perfect shot. Lunch waits too.",
+      },
+      seedwindShepherd: {
+        name: "Seedwind Shepherd",
+        flavor: "Every seed has a destination. He stays to water them.",
+      },
+      canopyVinewarden: {
+        name: "Canopy Vinewarden",
+        flavor: "The warning was yesterday.",
+      },
+      lethielFirstGardener: {
+        name: "Lethiel, First Gardener",
+        flavor: "The forest grew wild. Lethiel called it adequate.",
       },
     },
     warrior: {

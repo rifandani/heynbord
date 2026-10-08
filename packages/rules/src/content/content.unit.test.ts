@@ -59,6 +59,12 @@ const withSabotage = (sabotage: number | Partial<Record<RankId, number>>) => ({
   keywords: { sabotage },
 });
 
+/** Howling Charger with another Charge value, to test the schema. */
+const withCharge = (charge: number | Partial<Record<RankId, number>>) => ({
+  ...getCard("orc.howlingCharger"),
+  keywords: { charge },
+});
+
 const power = (cardId: string) => {
   const card = getCard(cardId);
   return card.kind === "creature" ? creaturePower(card) : 0;
@@ -94,15 +100,15 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 66 cards: 4 Races and 2 Classes", () => {
-    expect(CARDS).toHaveLength(66);
+  it("has 81 cards: 5 Races and 2 Classes", () => {
+    expect(CARDS).toHaveLength(81);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
     const classes = new Set(
       CARDS.flatMap((card) => (card.kind === "skill" ? [card.class] : []))
     );
-    expect(races).toEqual(new Set(["human", "orc", "goblin", "feral"]));
+    expect(races).toEqual(new Set(["human", "orc", "goblin", "feral", "elf"]));
     expect(classes).toEqual(new Set(["warrior", "mage"]));
   });
 
@@ -144,6 +150,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       const amounts = [
         card.keywords.armor,
         card.keywords.bleed,
+        card.keywords.charge,
         card.keywords.heroic,
         card.keywords.hobble,
         card.keywords.knockback,
@@ -185,16 +192,30 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     ]);
   });
 
-  it("gives a ranged Support Range 2 and a Shooter Range 3 to 5 (GDD 5.6)", () => {
+  it("gives a ranged Support Range 2 and a Shooter Range 3 (GDD 5.6, ADR-0022)", () => {
     for (const card of creatures) {
       if (card.role === "shooter") {
-        expect(card.range, card.id).toBeGreaterThanOrEqual(3);
-        expect(card.range, card.id).toBeLessThanOrEqual(5);
+        expect(card.range, card.id).toBe(3);
       } else if (card.role === "support" && card.range > 0) {
         expect(card.range, card.id).toBe(2);
       } else {
         expect(card.range, card.id).not.toBe(2);
       }
+    }
+  });
+
+  it("permits no Range above 3 (ADR-0022)", () => {
+    const shooter = getCard("human.crossbowGuard");
+    expect(() => decodeCard({ ...shooter, range: 4 })).toThrow();
+    expect(decodeCard(shooter)).toEqual(shooter);
+  });
+
+  it("puts Entangle only on a Ranged Unit with Base Rank Epic or higher (ADR-0022)", () => {
+    const entanglers = creatures.filter((card) => card.keywords.entangle);
+    expect(entanglers.length).toBeGreaterThan(0);
+    for (const card of entanglers) {
+      expect(card.range, card.id).toBeGreaterThan(0);
+      expect(isRankAtLeast(card.baseRank, "epic"), card.id).toBe(true);
     }
   });
 
@@ -212,6 +233,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(pivots.every((card) => card.range === 0)).toBe(true);
     expect(pivots.every((card) => card.baseRank === "uncommon")).toBe(true);
     expect(pivots.map((card) => card.race).toSorted()).toEqual([
+      "elf",
       "feral",
       "goblin",
       "human",
@@ -231,6 +253,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     const attackKeywords = [
       "bleed",
       "entangle",
+      "firstStrike",
       "heroic",
       "hobble",
       "knockback",
@@ -262,7 +285,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(decodeCard(withSabotage(2))).toEqual(withSabotage(2));
   });
 
-  it("gives Sabotage N × 4, Trample 3, Entangle 2 and Rally N × 3 power points (GDD 13)", () => {
+  it("gives Sabotage N × 4, Trample 3 and Rally N × 3 power points (GDD 13)", () => {
     expect(power("goblin.tunnelSaboteur")).toBe(19);
     expect(power("goblin.grandGearjammer")).toBe(25);
     expect(power("feral.bristlebackBoar")).toBe(19);
@@ -293,8 +316,49 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
+  it("gives Charge N with 1 up to Rare, 2 at Epic and 3 at Legendary (GDD 5.4)", () => {
+    const chargers = creatures.filter(
+      (card) => card.keywords.charge !== undefined
+    );
+    expect(chargers.length).toBeGreaterThan(0);
+    for (const card of chargers) {
+      for (const rank of RANKS.slice(RANKS.indexOf(card.baseRank))) {
+        const expected = rank === "legendary" ? 3 : rank === "epic" ? 2 : 1;
+        expect(
+          keywordValue(card.keywords.charge, rank),
+          `${card.id} ${rank}`
+        ).toBe(expected);
+      }
+    }
+  });
+
+  it("keeps Charge N at most 3 (GDD 5.4)", () => {
+    expect(() => decodeCard(withCharge(4))).toThrow();
+    expect(() =>
+      decodeCard(withCharge({ uncommon: 1, legendary: 4 }))
+    ).toThrow();
+    expect(decodeCard(withCharge(3))).toEqual(withCharge(3));
+    expect(decodeCard(withCharge({ uncommon: 1, legendary: 3 }))).toEqual(
+      withCharge({ uncommon: 1, legendary: 3 })
+    );
+  });
+
+  it("gives Charge N × 1 power points at the Base Rank (GDD 13)", () => {
+    // Charge 1: 3/5 is 4/6 at Uncommon. 4 × 2 + 6 + Speed 2 × 2 + 1.
+    expect(power("orc.howlingCharger")).toBe(19);
+    // Charge 2 at Epic.
+    expect(power("orc.warchiefGrukka")).toBe(29);
+    expect(power("orc.warbandStandardBearer")).toBe(29);
+  });
+
   it("gives Bleed N × 1 power points (GDD 13)", () => {
     expect(power("feral.frostfangLynx")).toBe(17);
+  });
+
+  it("gives First Strike 4 and Entangle 2 power points (GDD 13)", () => {
+    // 3/3 is 5/5 at Epic: 5 × 2 + 5 + Speed 1 × 2 + Range 3, with First
+    // Strike 4 and Entangle 2.
+    expect(power("elf.canopyVinewarden")).toBe(26);
   });
 
   it("throws for an unknown card", () => {
@@ -308,6 +372,7 @@ const FULL_RACES = [
   "orc",
   "goblin",
   "feral",
+  "elf",
 ] as const satisfies readonly RaceId[];
 
 const raceCards = (race: RaceId) =>
@@ -338,7 +403,15 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
     }
   );
 
-  it("gives Goblin and Feral the Role profiles of GDD 12", () => {
+  it("gives Elf, Goblin and Feral the Role profiles of GDD 12", () => {
+    expect(countBy(raceCards("elf"), (card) => card.role)).toEqual({
+      frontliner: 1,
+      striker: 2,
+      runner: 3,
+      shooter: 5,
+      support: 3,
+      wall: 1,
+    });
     expect(countBy(raceCards("goblin"), (card) => card.role)).toEqual({
       frontliner: 2,
       striker: 3,
@@ -357,7 +430,11 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
     });
   });
 
-  it("gives Goblin 11 Physical and 4 Fire cards, and Feral 11 Physical and 4 Frost cards", () => {
+  it("gives Elf 11 Physical and 4 Holy cards, Goblin 11 Physical and 4 Fire cards, and Feral 11 Physical and 4 Frost cards", () => {
+    expect(countBy(raceCards("elf"), (card) => card.damageType)).toEqual({
+      physical: 11,
+      holy: 4,
+    });
     expect(countBy(raceCards("goblin"), (card) => card.damageType)).toEqual({
       physical: 11,
       fire: 4,
@@ -558,6 +635,7 @@ describe("Decks and Stages", () => {
       ["raiders", "main"],
       ["tunnelRats", "diagnostic"],
       ["wildHunt", "diagnostic"],
+      ["thornwatch", "diagnostic"],
       ["vanguardFull", "diagnostic"],
       ["raidersFull", "diagnostic"],
       ["humanHeavy", "diagnostic"],
@@ -566,6 +644,7 @@ describe("Decks and Stages", () => {
     // Creature Cards only: one Race, and no Skill Card.
     expect(archetypeGroups("tunnelRats")).toEqual(new Set(["goblin"]));
     expect(archetypeGroups("wildHunt")).toEqual(new Set(["feral"]));
+    expect(archetypeGroups("thornwatch")).toEqual(new Set(["elf"]));
     // The full Human and Orc sets, with the Skill Cards of the main Archetype.
     expect(archetypeGroups("vanguardFull")).toEqual(
       new Set(["human", "warrior"])

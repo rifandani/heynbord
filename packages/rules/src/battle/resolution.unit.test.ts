@@ -59,6 +59,18 @@ const hobbledByPavise = (rank: "rare" | "epic" | "legendary") => {
   return unitById(run(state, endTurn).state, target.id)?.hobbled;
 };
 
+/** The position of a River Knight after the Turn of its summon, from Square 0. */
+const chargeByRank = (rank: "uncommon" | "epic" | "legendary") => {
+  const state = emptyBattle({ turnNumber: 3 });
+  const knight = placeUnit(state, {
+    cardId: "human.riverKnight",
+    owner: "player",
+    position: 0,
+    summonedTurn: 3,
+    rank,
+  });
+  return unitById(run(state, endTurn).state, knight.id)?.position;
+};
 describe("movement (GDD 4.5)", () => {
   it("moves a ground Unit forward by its Speed", () => {
     const state = emptyBattle();
@@ -258,15 +270,24 @@ describe("movement (GDD 4.5)", () => {
     });
   });
 
-  it("gives Charge +2 Speed only in the Turn of the summon", () => {
+  it("gives Charge N +N Speed, with Charge 1, 2 and 3 at Uncommon, Epic and Legendary", () => {
+    expect([
+      chargeByRank("uncommon"),
+      chargeByRank("epic"),
+      chargeByRank("legendary"),
+    ]).toEqual([3, 4, 5]);
+  });
+
+  it("gives Charge +1 Speed only in the Turn of the summon", () => {
     const fresh = emptyBattle({ turnNumber: 3 });
     const knight = placeUnit(fresh, {
       cardId: "human.riverKnight",
       owner: "player",
       position: 0,
       summonedTurn: 3,
+      rank: "uncommon",
     });
-    expect(unitById(run(fresh, endTurn).state, knight.id)?.position).toBe(4);
+    expect(unitById(run(fresh, endTurn).state, knight.id)?.position).toBe(3);
 
     const old = emptyBattle({ turnNumber: 4 });
     const veteran = placeUnit(old, {
@@ -274,6 +295,7 @@ describe("movement (GDD 4.5)", () => {
       owner: "player",
       position: 0,
       summonedTurn: 3,
+      rank: "uncommon",
     });
     expect(unitById(run(old, endTurn).state, veteran.id)?.position).toBe(2);
   });
@@ -616,6 +638,150 @@ describe("Retaliation (GDD 4.7)", () => {
     const { state: next, events } = run(state, endTurn);
     expect(unitById(next, halberdier.id)).toBeUndefined();
     expect(eventsOfType(events, "DamageDealt")).toHaveLength(1);
+  });
+});
+
+describe("First Strike (GDD 4.7)", () => {
+  it("hits a melee attacker first, then the attack occurs", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    const defender = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 2,
+      hp: 10,
+      maxHp: 10,
+      firstStrike: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, attacker.id)?.hp).toBe(8);
+    expect(unitById(next, defender.id)?.hp).toBe(7);
+    expect(
+      eventsOfType(events, "DamageDealt").map((event) => event.source)
+    ).toEqual(["firstStrike", "attack"]);
+  });
+
+  it("stops the attack when the attacker dies", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 2,
+      maxHp: 2,
+    });
+    const defender = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 2,
+      firstStrike: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, attacker.id)).toBeUndefined();
+    expect(unitById(next, defender.id)?.hp).toBe(defender.maxHp);
+    expect(eventsOfType(events, "UnitAttacked")).toEqual([]);
+    expect(
+      eventsOfType(events, "DamageDealt").map((event) => event.source)
+    ).toEqual(["firstStrike"]);
+  });
+
+  it("does not hit a ranged attacker, and a Frozen Unit does not use it", () => {
+    const ranged = emptyBattle();
+    placeUnit(ranged, {
+      cardId: "human.crossbowGuard",
+      owner: "player",
+      position: 3,
+    });
+    placeUnit(ranged, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+      firstStrike: true,
+    });
+    expect(
+      eventsOfType(run(ranged, endTurn).events, "DamageDealt").map(
+        (event) => event.source
+      )
+    ).toEqual(["attack"]);
+
+    const frozen = emptyBattle();
+    placeUnit(frozen, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+    });
+    placeUnit(frozen, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+      frozen: true,
+      firstStrike: true,
+    });
+    expect(
+      eventsOfType(run(frozen, endTurn).events, "DamageDealt").map(
+        (event) => event.source
+      )
+    ).toEqual(["attack"]);
+  });
+
+  it("applies Poison and Entangle, and the Entangle stays for the next action of the attacker", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    placeUnit(state, {
+      cardId: "elf.canopyVinewarden",
+      owner: "enemy",
+      rank: "epic",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+      poison: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(eventsOfType(events, "StatusApplied")).toEqual([
+      expect.objectContaining({ unitId: attacker.id, status: "poison" }),
+      expect.objectContaining({ unitId: attacker.id, status: "entangle" }),
+    ]);
+    expect(unitById(next, attacker.id)?.entangled).toBe(true);
+  });
+
+  it("does not apply Knockback", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    placeUnit(state, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+      firstStrike: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, attacker.id)?.position).toBe(4);
+    expect(eventsOfType(events, "UnitPushed")).toEqual([]);
   });
 });
 
@@ -989,6 +1155,7 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
       attack: 0,
       summonedTurn: 3,
       hobbled: 1,
+      rank: "uncommon",
     });
     expect(unitById(run(state, endTurn).state, charger.id)?.position).toBe(1);
   });
@@ -1966,7 +2133,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
   it("Entangles the enemy Unit after attack damage above 0, and not when Armor makes it 0", () => {
     const state = emptyBattle();
     placeUnit(state, {
-      cardId: "feral.webSpitter",
+      cardId: "elf.canopyVinewarden",
       owner: "player",
       position: 2,
     });
@@ -1986,7 +2153,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
 
     const armored = emptyBattle();
     placeUnit(armored, {
-      cardId: "feral.webSpitter",
+      cardId: "elf.canopyVinewarden",
       owner: "player",
       position: 2,
       attack: 1,
@@ -2047,7 +2214,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
   it("does not stack or extend: a second Entangle before the action still ends after one action", () => {
     const state = emptyBattle();
     placeUnit(state, {
-      cardId: "feral.webSpitter",
+      cardId: "elf.canopyVinewarden",
       owner: "player",
       position: 2,
     });

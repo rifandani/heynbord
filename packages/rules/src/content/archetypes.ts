@@ -15,8 +15,9 @@ export const MATCHUP_LEVEL = 5;
  * and within the Countdown Limit of level 5 (35, ADR-0021). A Deck of slow
  * cards thus has fewer cards.
  *
- * Tunnel Rats and Wild Hunt are provisional diagnostic Decks (Archetypes 2.1):
- * Creature Cards only, until the Ranger and Priest Skill Cards exist. Vanguard
+ * Tunnel Rats, Wild Hunt and Thornwatch are provisional diagnostic Decks
+ * (Archetypes 2.1): Creature Cards only, until the Ranger and Priest Skill
+ * Cards exist. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
  * so that a Matchup tests most cards. Human Heavy (Countdown 3 to 4) and Human
  * Light (Countdown 1 to 3) are diagnostic Decks of one Race, so that a Matchup
@@ -53,7 +54,7 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(2, "orc.emberShaman", "common"),
       ...copies(1, "orc.howlingCharger", "uncommon"),
       ...copies(2, "orc.skyreaver", "uncommon"),
-      ...copies(1, "orc.tuskBrute", "common"),
+      ...copies(1, "orc.cinderhornBreaker", "uncommon"),
       ...copies(1, "mage.fireball", "common"),
       ...copies(1, "mage.frostBolt", "common"),
       ...copies(1, "mage.flameWave", "uncommon"),
@@ -89,6 +90,21 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "feral.caveTroll", "uncommon"),
       ...copies(2, "feral.cragRhino", "uncommon"),
       ...copies(1, "feral.frostElkMatriarch", "uncommon"),
+    ],
+  },
+  {
+    id: "thornwatch",
+    kind: "diagnostic",
+    classId: "ranger",
+    deck: [
+      ...copies(2, "elf.rootboundGuard", "common"),
+      ...copies(2, "elf.brambleDuelist", "common"),
+      ...copies(2, "elf.fernwingCourier", "common"),
+      ...copies(2, "elf.mosspitcherLookout", "common"),
+      ...copies(2, "elf.acornTender", "common"),
+      ...copies(1, "elf.thornlineArcher", "uncommon"),
+      ...copies(1, "elf.dewkeeper", "uncommon"),
+      ...copies(1, "elf.brambleNest", "uncommon"),
     ],
   },
   {

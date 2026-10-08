@@ -28,6 +28,8 @@ export const cardIllustration = (cardId: string): string => {
 const RACES_AND_CLASSES_WITH_ART: ReadonlySet<string> = new Set([
   "human",
   "orc",
+  "elf",
+  "goblin",
   "warrior",
   "mage",
 ]);

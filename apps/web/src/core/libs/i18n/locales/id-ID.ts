@@ -412,8 +412,9 @@ export default {
   keywords: {
     armor: "Zirah {value}",
     bleed: "Pendarahan {value}",
-    charge: "Terjang",
+    charge: "Terjang {value}",
     entangle: "Jerat",
+    firstStrike: "Serang Duluan",
     flying: "Terbang",
     heroic: "Heroik {value}",
     hobble: "Pincang {value}",
@@ -436,9 +437,11 @@ export default {
       "Mengurangi damage ke Unit ini sebesar {value}. Tidak mengurangi damage Suci.",
     bleed:
       "Unit musuh yang diserangnya mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah, selama {value} Giliran. Balasan tidak menerapkan Pendarahan.",
-    charge: "+2 Kecepatan pada Giliran saat Unit ini dipanggil.",
+    charge: "+{value} Kecepatan pada Giliran saat Unit ini dipanggil.",
     entangle:
       "Unit musuh yang diserangnya punya Kecepatan 0 pada aksi berikutnya. Unit itu masih dapat menyerang.",
+    firstStrike:
+      "Saat Unit musuh jarak dekat menyerang Unit ini, Unit ini memberi damage lebih dulu. Jika penyerang mati, serangannya tidak terjadi.",
     flying:
       "Bergerak melewati semua Unit, juga Unit musuh. Berhenti di Petak kosong.",
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
@@ -661,7 +664,7 @@ export default {
         flavor: "Setiap rencana punya roda gigi. Kami punya lebih banyak.",
       },
       bossSnikkit: {
-        name: "Bos Snikkit, Raja Tambang",
+        name: "Bos Snikkit",
         flavor: '"Semua di bawah sini milikku. Itu leluconnya. Tertawalah."',
       },
     },
@@ -727,6 +730,73 @@ export default {
         name: "Si Tua Rahang Beku",
         flavor:
           "Setiap desa punya cerita tentangnya. Setiap cerita terlalu kecil.",
+      },
+    },
+    elf: {
+      rootboundGuard: {
+        name: "Penjaga Berakar",
+        flavor: "Ia menjaga jalan ini sejak jalan ini masih di tempat lain.",
+      },
+      brambleDuelist: {
+        name: "Duelis Semak Duri",
+        flavor:
+          "Satu tebasan demi kehormatan. Dua karena pagar semak itu kurang ajar.",
+      },
+      fernwingCourier: {
+        name: "Kurir Sayap Pakis",
+        flavor: "Pesannya bilang mendesak. Paketnya roti lapis.",
+      },
+      mosspitcherLookout: {
+        name: "Pengintai Kantong Lumut",
+        flavor:
+          "Ia bisa mendengar langkah sepatu. Ia tidak bisa mendengar nasihat.",
+      },
+      acornTender: {
+        name: "Perawat Biji Ek",
+        flavor: "Tumbuh butuh kesabaran. Layu butuh lebih sedikit.",
+      },
+      gladeTurnblade: {
+        name: "Bilah Putar Rimba",
+        flavor: "Di belakangnya hanya ada garis depan lain.",
+      },
+      canopySkirmisher: {
+        name: "Pengacau Kanopi",
+        flavor: "Tangga dinilai tidak efisien.",
+      },
+      thornlineArcher: {
+        name: "Pemanah Garis Duri",
+        flavor: "Anak panahnya pergi. Rasa sakitnya tinggal.",
+      },
+      dewkeeper: {
+        name: "Penjaga Embun",
+        flavor:
+          "Ia mengumpulkan embun pagi. Embun sore itu urusan administrasi.",
+      },
+      brambleNest: {
+        name: "Sarang Semak Duri",
+        flavor: "Ia tidak menghalangi jalan. Sekarang ia adalah jalannya.",
+      },
+      amberwingDart: {
+        name: "Anak Panah Sayap Amber",
+        flavor:
+          "Ia menghentikan pasukan, tetapi kalah berdebat dengan jendela.",
+      },
+      elderreedDartmaster: {
+        name: "Ahli Sumpit Buluh Tua",
+        flavor:
+          "Ia menunggu tembakan yang sempurna. Makan siangnya juga menunggu.",
+      },
+      seedwindShepherd: {
+        name: "Gembala Angin Benih",
+        flavor: "Setiap benih punya tujuan. Ia tinggal untuk menyiraminya.",
+      },
+      canopyVinewarden: {
+        name: "Penjaga Sulur Kanopi",
+        flavor: "Peringatannya sudah kemarin.",
+      },
+      lethielFirstGardener: {
+        name: "Lethiel, Tukang Kebun Pertama",
+        flavor: "Hutan tumbuh liar. Lethiel bilang itu cukup.",
       },
     },
     warrior: {

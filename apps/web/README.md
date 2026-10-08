@@ -6,19 +6,22 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 v1:
 
-- /grill-with-docs adjust Keyword "Charge" to be "Charge N", with max Charge 4
-- /grill-with-docs for Wall units, i think we should increase the deployable starting squares to 4 or 5, what do u think? its kinda weird that Wall that cant move is deployable in normal 3 squares
-- /grill-with-docs dont u think we need to also have economy simulation script, not only battle simulation
-- if a 0 Base Attack unit have poison, or burn, etc skills, can they inflict those posion or burn, etc to the enemy unit?
-- /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
+- look at human race cards 1 by 1, see they're role & speed (should normal units have 2 Speed? if the normal units have 1 Speed, then what criteria does the unit have to have 2 Speed?), ability and skills, check if there's any imbalance
 - /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think
 - /grill-with-docs i want to add another Keyword called "Devour": +1 Attack and +1 HP for each kill, suitable for Feral
 - /grill-with-docs i want to add another Keyword called "Retreat N" — After this Unit attacks, it moves up to N Squares backward.
-- /grill-with-docs re-balance speed for all units (normal move should be 2)
+- if a 0 Base Attack unit have poison, or burn, etc skills, can they inflict those posion or burn, etc to the enemy unit?
+- /grill-with-docs dont u think we need to also have economy simulation script before adding "Bazaar" or "Packs" features, not only battle simulation
+- /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
+- /grill-with-docs rewards for winning campaigns, for winning stage 1-10 i think we can give them elf, we also should have a prediction record / simulation like if the user complete stage 1-1 how many coins and cards they have
 - /grill-with-docs a smart auto-play button for Stages that the player has already won (whats the reward for completing already completed stage?)
-- /grill-with-docs a focus trap in the result dialog
 - /grill-with-docs card packs gacha with premium currency (develop shop first)
-- /grill-with-docs make sure player's progress are saved (locally, no server in v1)
+- /grill-with-docs how do we save player's progress so far? for now i want to save it locally, but later i want it to be saved in DB of course
+- /grill-with-docs add campaign region 2 which is all about Goblin territory
+- /grill-with-docs add campaign region 3 which is all about Elf territory
+- /grill-with-docs add campaign region 4 which is all about Undead territory
+- /grill-with-docs add campaign region 5 which is all about Feral territory
+- cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 - check if we already finish all "v1" related features from docs, and if yes remove it
 
 v2:

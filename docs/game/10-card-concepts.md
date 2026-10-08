@@ -15,7 +15,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Creature Cards and Tokens** use the prompts of 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the prompts of 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
 - **Provisional power.** A Summon or a Last Breath that summons uses 80% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
-- **Power Budget `12 + 3 × Countdown`.** The Human, Orc, Goblin and Feral values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Elf, Undead and Token values are not in `cards.ts` yet, and they still use the old budget `6 + 5 × Countdown`. Fit them to the new budget when they come into the rules package.
+- **Power Budget `12 + 3 × Countdown`.** The Human, Orc, Goblin, Feral and Elf values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead and Token values are not in `cards.ts` yet, and they still use the old budget `6 + 5 × Countdown`. Fit them to the new budget when they come into the rules package.
 - **Common values and Power Points.** The Attack and HP on each line are Common values. The Power on each line measures Attack and HP at the Base Rank of the card, with the Rank scale of GDD 5.3 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Thus an Uncommon, Rare or Epic card has lower Common Attack and HP than a Common card of the same power.
 
 ### 1.1 Settings
@@ -116,7 +116,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.6 River Knight
 
-`human.riverKnight` · Runner · Uncommon · Countdown 4 · Attack 4 · HP 6 · Speed 2 · Melee · Physical · Charge
+`human.riverKnight` · Runner · Uncommon · Countdown 4 · Attack 4 · HP 6 · Speed 2 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > His horse is braver than he is.
 
@@ -220,7 +220,7 @@ Purpose: a low-cost Rally source and Holy attacker. Power 20, budget 21, deviati
 
 ### 2.12 King's Courier
 
-`human.kingsCourier` · Runner · Rare · Countdown 4 · Attack 2 · HP 5 · Speed 4 · Melee · Physical · Charge
+`human.kingsCourier` · Runner · Rare · Countdown 4 · Attack 2 · HP 5 · Speed 4 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > The message says urgent. She was already running.
 
@@ -238,18 +238,18 @@ Purpose: maximum Human Speed with less Attack than River Knight. Power 24, budge
 
 ### 2.13 Pavise Arbalist
 
-`human.paviseArbalist` · Shooter · Rare · Countdown 4 · Attack 3 · HP 4 · Speed 1 · Range 4 · Physical · Armor 1 · Hobble 1 at Rare, 2 at Epic, 3 at Legendary
+`human.paviseArbalist` · Shooter · Rare · Countdown 4 · Attack 3 · HP 6 · Speed 1 · Range 3 · Physical · Armor 1 · Hobble 1 at Rare, 2 at Epic, 3 at Legendary
 
 > He brings his own wall and calls it a firing position.
 
-Purpose: a durable long-range Shooter. Power 24, budget 24, deviation 0%.
+Purpose: a durable Shooter. Power 26, budget 24, deviation +8.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A patient older man arbalist. |
 | Pose | He kneels behind a tall pavise and aims a heavy crossbow. |
 | Props | Windlass crossbow, barbed bolts, ornate pavise, mail sleeves and bolt case. |
-| Gameplay cues | The long aim shows Range 4; the shield shows Armor 1; the barbed bolts show Hobble. |
+| Gameplay cues | The long aim shows Range 3; the shield shows Armor 1; the barbed bolts show Hobble. |
 | Silhouette hook | Tall shield and horizontal crossbow. |
 | Humor note | A stool and tea cup wait behind the shield. |
 | Setting | A river-town wall. |
@@ -350,7 +350,7 @@ Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, 
 
 ### 3.4 Howling Charger
 
-`orc.howlingCharger` · Striker · Uncommon · Countdown 3 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge
+`orc.howlingCharger` · Striker · Uncommon · Countdown 3 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > You hear him long before you see him.
 
@@ -416,7 +416,7 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, d
 
 ### 3.8 Warchief Grukka
 
-`orc.warchiefGrukka` · Striker · Epic · Countdown 6 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge · Heroic 2 · Unique
+`orc.warchiefGrukka` · Striker · Epic · Countdown 6 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge 2 at Epic, 3 at Legendary · Heroic 2 · Unique
 
 > "Lunch first. Then glory."
 
@@ -465,7 +465,7 @@ Purpose: limited Orc Lane protection without Armor. Power 17, budget 18, deviati
 
 ### 3.10 Cinderhorn Breaker
 
-`orc.cinderhornBreaker` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Fire · Charge
+`orc.cinderhornBreaker` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Fire · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > She never waits for the gate to open.
 
@@ -501,18 +501,18 @@ Purpose: a low-Countdown rush enabler. Power 17, budget 18, deviation -5.6%.
 
 ### 3.12 Ashspit Hunter
 
-`orc.ashspitHunter` · Shooter · Rare · Countdown 4 · Attack 3 · HP 4 · Speed 1 · Range 4 · Fire
+`orc.ashspitHunter` · Shooter · Rare · Countdown 4 · Attack 4 · HP 4 · Speed 1 · Range 3 · Fire
 
 > He measures range by how far the eyebrows burn.
 
-Purpose: a long-range Fire threat. Power 23, budget 24, deviation -4.2%.
+Purpose: a ranged Fire threat. Power 26, budget 24, deviation +8.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A lean orc man with one singed eyebrow. |
 | Pose | He braces a long fire tube. |
 | Props | Iron fire tube, brass trim, ember basket and leather coat. |
-| Gameplay cues | The long weapon shows Range 4; its trail shows Fire. |
+| Gameplay cues | The long weapon shows Range 3; its trail shows Fire. |
 | Silhouette hook | Horizontal tube and ember basket. |
 | Humor note | His remaining eyebrow shows concern. |
 | Setting | A ledge above a canyon. |
@@ -555,7 +555,7 @@ Purpose: a heavy Fire finisher. Power 28, budget 27, deviation +3.7%.
 
 ### 3.15 Warband Standard-Bearer
 
-`orc.warbandStandardBearer` · Support · Epic · Countdown 6 · Attack 2 · HP 4 · Speed 1 · Melee · Physical · Charge · Heroic 2 · Rally 2
+`orc.warbandStandardBearer` · Support · Epic · Countdown 6 · Attack 2 · HP 4 · Speed 1 · Melee · Physical · Charge 2 at Epic, 3 at Legendary · Heroic 2 · Rally 2
 
 > Follow the banner. Ignore where it is going.
 
@@ -577,7 +577,7 @@ Identity: patient forest people and plant spirits. They control movement from ra
 
 ### 4.1 Rootbound Guard
 
-`elf.rootboundGuard` · Frontliner · Common · Countdown 3 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 1 · Entangle
+`elf.rootboundGuard` · Frontliner · Common · Countdown 3 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 1 · Regeneration 1
 
 > He has held this path since it was somewhere else.
 
@@ -588,18 +588,18 @@ Purpose: an Elf Lane anchor. Power 20, budget 21, deviation -4.8%.
 | Subject | A broad old plant guardian in bark armor. |
 | Pose | It stands rooted behind a leaf shield. |
 | Props | Leaf shield, branch spear and boot-shaped training post. |
-| Gameplay cues | Roots show Entangle; bark cuirass shows Armor. |
+| Gameplay cues | Roots in the ground show Regeneration; bark cuirass shows Armor. |
 | Silhouette hook | Square trunk and broad shield. |
 | Humor note | A snail uses it as a milestone. |
 | Setting | An ancient forest path. |
 
 ### 4.2 Bramble Duelist
 
-`elf.brambleDuelist` · Striker · Common · Countdown 2 · Attack 4 · HP 4 · Speed 2 · Melee · Physical
+`elf.brambleDuelist` · Striker · Common · Countdown 2 · Attack 5 · HP 5 · Speed 1 · Melee · Physical
 
 > One cut for honor. Two because the hedge was rude.
 
-Purpose: a simple fast Elf attacker. Power 16, budget 16, deviation 0%.
+Purpose: a simple Elf attacker. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -617,7 +617,7 @@ Purpose: a simple fast Elf attacker. Power 16, budget 16, deviation 0%.
 
 > The message says urgent. The parcel is a sandwich.
 
-Purpose: cheap Flying Hero pressure. Power 17, budget 16, deviation +6.3%.
+Purpose: cheap Flying Hero pressure. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -631,29 +631,29 @@ Purpose: cheap Flying Hero pressure. Power 17, budget 16, deviation +6.3%.
 
 ### 4.4 Mosspitcher Lookout
 
-`elf.mosspitcherLookout` · Shooter · Common · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 4 · Physical · Entangle
+`elf.mosspitcherLookout` · Shooter · Common · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 3 · Physical · Regeneration 1
 
 > He can hear a boot step. He cannot hear advice.
 
-Purpose: long-range movement control. Power 20, budget 21, deviation -4.8%.
+Purpose: a durable Elf Shooter that heals. Power 19, budget 21, deviation -9.5%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A squat pitcher-plant spirit with a mossy body. No bow. |
 | Pose | He leans forward and spits a sticky moss ball in a high arc to the right. His root toes spread flat on the planks to feel for boot steps. |
 | Props | Pitcher-shaped body with a leaf lid like a hat, moss coat, root toes and a small cluster of moss balls. |
-| Gameplay cues | The moss ball bursts into grabbing vines at the target: Entangle. The high arc shows range. |
+| Gameplay cues | The moss coat grows back: Regeneration. The high arc of the moss ball shows Range. |
 | Silhouette hook | A tall pitcher body with a tilted lid. |
 | Humor note | A small bird sits on his lid and gives advice. He holds the lid shut on that side. |
 | Setting | A high root platform. |
 
 ### 4.5 Acorn Tender
 
-`elf.acornTender` · Shooter · Common · Countdown 3 · Attack 3 · HP 4 · Speed 1 · Range 3 · Holy · Poison
+`elf.acornTender` · Shooter · Common · Countdown 3 · Attack 3 · HP 3 · Speed 1 · Range 3 · Holy · Poison
 
 > Growth takes patience. Wilt takes less.
 
-Purpose: a Holy shooter that applies Poison. Power 20, budget 21, deviation -4.8%.
+Purpose: a Holy shooter that applies Poison. Power 19, budget 21, deviation -9.5%.
 
 | Field | Brief |
 | --- | --- |
@@ -667,7 +667,7 @@ Purpose: a Holy shooter that applies Poison. Power 20, budget 21, deviation -4.8
 
 ### 4.6 Glade Turnblade
 
-`elf.gladeTurnblade` · Striker · Uncommon · Countdown 3 · Attack 5 · HP 5 · Speed 1 · Melee · Physical · Pivot
+`elf.gladeTurnblade` · Striker · Uncommon · Countdown 3 · Attack 4 · HP 4 · Speed 1 · Melee · Physical · Pivot
 
 > Behind him is only another front.
 
@@ -685,7 +685,7 @@ Purpose: the Elf Pivot Unit. Power 20, budget 21, deviation -4.8%.
 
 ### 4.7 Canopy Skirmisher
 
-`elf.canopySkirmisher` · Runner · Uncommon · Countdown 3 · Attack 4 · HP 4 · Speed 2 · Melee · Physical · Flying
+`elf.canopySkirmisher` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Flying
 
 > The stairs were deemed inefficient.
 
@@ -703,11 +703,11 @@ Purpose: mobile pressure with fragile stats. Power 20, budget 21, deviation -4.8
 
 ### 4.8 Thornline Archer
 
-`elf.thornlineArcher` · Shooter · Uncommon · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 4 · Physical · Poison
+`elf.thornlineArcher` · Shooter · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 1 · Range 3 · Physical · Poison
 
 > The arrow leaves. The ache stays.
 
-Purpose: reliable ranged Poison. Power 21, budget 21, deviation 0%.
+Purpose: reliable ranged Poison. Power 20, budget 21, deviation -4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -725,7 +725,7 @@ Purpose: reliable ranged Poison. Power 21, budget 21, deviation 0%.
 
 > She collects morning dew. Afternoon dew is paperwork.
 
-Purpose: a durable Holy support. Power 20, budget 21, deviation -4.8%.
+Purpose: a durable Holy support. Power 22, budget 21, deviation +4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -739,7 +739,7 @@ Purpose: a durable Holy support. Power 20, budget 21, deviation -4.8%.
 
 ### 4.10 Bramble Nest
 
-`elf.brambleNest` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 19 · Speed 0 · Melee · Physical · Wall · Regeneration 1
+`elf.brambleNest` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 16 · Speed 0 · Melee · Physical · Wall · Regeneration 1
 
 > It is not blocking the path. It is the path now.
 
@@ -757,47 +757,47 @@ Purpose: a Wall that grows back. Power 21, budget 21, deviation 0%.
 
 ### 4.11 Amberwing Dart
 
-`elf.amberwingDart` · Runner · Rare · Countdown 3 · Attack 4 · HP 3 · Speed 2 · Melee · Physical · Flying · Entangle
+`elf.amberwingDart` · Runner · Rare · Countdown 3 · Attack 2 · HP 3 · Speed 2 · Melee · Physical · Flying · Poison
 
 > It stops armies and loses arguments with windows.
 
-Purpose: fast Flying control with very low HP. Power 21, budget 21, deviation 0%.
+Purpose: a fast Flying Poison attacker with low HP. Power 21, budget 21, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A dragonfly-like plant spirit. |
 | Pose | It makes a steep attack dive. |
 | Props | Amber-veined wings, thorn lance and trailing vines. |
-| Gameplay cues | Vines show Entangle; four wings show Flying. |
+| Gameplay cues | The amber on the thorn lance shows Poison; four wings show Flying. |
 | Silhouette hook | Crossed wing span. |
 | Humor note | One wing has a window-shaped repair. |
 | Setting | A canopy gap. |
 
 ### 4.12 Elderreed Dartmaster
 
-`elf.elderreedDartmaster` · Shooter · Rare · Countdown 4 · Attack 5 · HP 5 · Speed 1 · Range 5 · Physical · Poison
+`elf.elderreedDartmaster` · Shooter · Rare · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Range 3 · Physical · Poison
 
 > She waits for the perfect shot. Lunch waits too.
 
-Purpose: maximum-range Poison. Power 25, budget 26, deviation -3.8%.
+Purpose: durable ranged Poison. Power 26, budget 24, deviation +8.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | An older elf woman, a master of the blowpipe. No bow. |
 | Pose | She crouches along a high branch and aims a very long reed blowpipe to the right, with calm cheeks and one eye closed. |
 | Props | Reed blowpipe longer than she is tall with gold-metal bands, a belt case of thorn darts and a layered green cloak. |
-| Gameplay cues | The long straight blowpipe shows Range 5. Green sap on the thorn darts shows Poison. |
+| Gameplay cues | The long straight blowpipe shows Range 3. Green sap on the thorn darts shows Poison. |
 | Silhouette hook | One very long, thin horizontal line. |
 | Humor note | Squirrels inspect her untouched picnic. |
 | Setting | The crown canopy. |
 
 ### 4.13 Seedwind Shepherd
 
-`elf.seedwindShepherd` · Support · Rare · Countdown 4 · Attack 1 · HP 11 · Speed 1 · Range 2 · Holy · Flying · Regeneration 1
+`elf.seedwindShepherd` · Support · Rare · Countdown 4 · Attack 1 · HP 7 · Speed 1 · Range 2 · Holy · Flying · Regeneration 1
 
 > Every seed has a destination. He stays to water them.
 
-Purpose: a durable Flying healer. Power 25, budget 26, deviation -3.8%.
+Purpose: a durable Flying healer. Power 24, budget 24, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -811,29 +811,29 @@ Purpose: a durable Flying healer. Power 25, budget 26, deviation -3.8%.
 
 ### 4.14 Canopy Vinewarden
 
-`elf.canopyVinewarden` · Shooter · Epic · Countdown 5 · Attack 6 · HP 7 · Speed 1 · Range 5 · Physical · First Strike · Entangle
+`elf.canopyVinewarden` · Shooter · Epic · Countdown 5 · Attack 3 · HP 3 · Speed 1 · Range 3 · Physical · First Strike · Entangle
 
 > The warning was yesterday.
 
-Purpose: the archetypal Elf Epic: maximum range and approach denial. Power 32, budget 31, deviation +3.2%.
+Purpose: the archetypal Elf Epic: approach denial, and the one Elf card with Entangle (ADR-0022). Power 26, budget 27, deviation -3.7%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | An elf woman canopy sentinel who commands the living gate. No bow. |
 | Pose | She stands on the gate arch and thrusts one open hand forward. A huge braid of thorned vines grows from the gate and lashes down to the right at an attacker below. |
 | Props | Layered leaf armor with silver trim, a living vine braid as thick as a tree trunk and a silver bracer on the lead arm. |
-| Gameplay cues | The vines hit before the attacker can lift his axe: First Strike. The vines coil around him: Entangle. The long reach of the vine shows Range 5. |
+| Gameplay cues | The vines hit before the attacker can lift his axe: First Strike. The vines coil around him: Entangle. The long reach of the vine shows Range 3. |
 | Silhouette hook | A huge S-curve of vine from her hand. |
 | Humor note | Yesterday's warning bell hangs broken in a knot of vine. |
 | Setting | A colossal canopy gate. |
 
 ### 4.15 Lethiel, First Gardener (draft)
 
-`elf.lethielFirstGardener` · Support · Epic · Countdown 4 · Attack 1 · HP 14 · Speed 1 · Range 2 · Holy · Unique · Regeneration 2
+`elf.lethielFirstGardener` · Support · Epic · Countdown 4 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Unique · Regeneration 2
 
 > The forest grew wild. Lethiel called it adequate.
 
-Purpose: the named Elf Epic and a durable healer. Power 26, budget 26, deviation 0%.
+Purpose: the named Elf Epic and a durable healer. Power 25, budget 24, deviation +4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -887,7 +887,7 @@ Purpose: a cheap Swarm attacker. Power 12, budget 11, deviation +9.1%.
 
 ### 5.3 Coffin-Lid Skater
 
-`undead.coffinLidSkater` · Runner · Common · Countdown 1 · Attack 2 · HP 1 · Speed 1 · Melee · Physical · Charge
+`undead.coffinLidSkater` · Runner · Common · Countdown 1 · Attack 2 · HP 1 · Speed 1 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > The hill was steeper when he was alive.
 
@@ -977,7 +977,7 @@ Purpose: the main cheap Swarm attacker. Power 15, budget 16, deviation -6.3%.
 
 ### 5.8 Pale Galloper
 
-`undead.paleGalloper` · Runner · Uncommon · Countdown 2 · Attack 2 · HP 2 · Speed 2 · Melee · Frost · Charge
+`undead.paleGalloper` · Runner · Uncommon · Countdown 2 · Attack 2 · HP 2 · Speed 2 · Melee · Frost · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > The rider asked for a slower horse.
 
@@ -1325,18 +1325,18 @@ Purpose: a Fire Striker that hits hard and explodes when it falls. Power 24, bud
 
 ### 6.12 Spyglass Sniper
 
-`goblin.spyglassSniper` · Shooter · Rare · Countdown 4 · Attack 3 · HP 5 · Speed 1 · Range 4 · Physical · Sabotage 1
+`goblin.spyglassSniper` · Shooter · Rare · Countdown 4 · Attack 3 · HP 6 · Speed 1 · Range 3 · Physical · Sabotage 1
 
 > I see your plans. I do not like them.
 
-Purpose: a long-range Shooter that delays an enemy card. Power 25, budget 24, deviation +4.2%.
+Purpose: a Shooter that delays an enemy card. Power 26, budget 24, deviation +8.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | An old goblin woman with a long crossbow. |
 | Pose | She aims, with one eye at a brass spyglass on the crossbow. |
 | Props | A long crossbow with a brass spyglass, a notebook full of drawings with no letters, goggles with many lenses. |
-| Gameplay cues | The spyglass shows Range 4. The notebook of stolen plans shows Sabotage. |
+| Gameplay cues | The spyglass shows Range 3. The notebook of stolen plans shows Sabotage. |
 | Silhouette hook | The long crossbow and the spyglass. |
 | Humor note | A small bird sits on the end of the crossbow. |
 | Setting | A high rock above the mine entrance. |
@@ -1475,18 +1475,18 @@ Purpose: a durable Feral front that heals 1 HP in each Start Step. Power 20, bud
 
 ### 7.5 Web Spitter
 
-`feral.webSpitter` · Shooter · Common · Countdown 3 · Attack 3 · HP 8 · Speed 1 · Range 3 · Physical · Entangle
+`feral.webSpitter` · Shooter · Common · Countdown 3 · Attack 3 · HP 8 · Speed 1 · Range 3 · Physical · Regeneration 1
 
 > Stay for dinner.
 
-Purpose: a Shooter that Entangles. Power 21, budget 21, deviation 0%.
+Purpose: a durable Feral Shooter that heals. Power 21, budget 21, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A giant cave spider, round and furry, with many shiny eyes. Friendly cartoon shapes, not scary. |
 | Pose | It spits a sticky web line forward. |
 | Props | Web lines. A helmet that it caught hangs in a web. |
-| Gameplay cues | The web shows Entangle. The spit line shows Range. |
+| Gameplay cues | The round, thick body shows high HP and Regeneration. The spit line shows Range. |
 | Silhouette hook | The round body and the long arched legs. |
 | Humor note | It looks proud of the caught helmet. |
 | Setting | A dark cave with blue crystals. |

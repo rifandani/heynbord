@@ -102,3 +102,6 @@ apps/web/art/skills/raw/
 
 # Region Map and Battle Painting art: images from ChatGPT, the references and the prompts
 apps/web/art/campaign/raw/
+
+# Town painting and Town Bar icon art: images from ChatGPT, the references and the prompts
+apps/web/art/town/raw/

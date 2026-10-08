@@ -102,7 +102,7 @@ The style bible has:
 | `skills/mage/fireball.webp` | Mage Skill |
 | `skills/warrior/shield-wall.webp` | Warrior Skill |
 
-2. The prompt scripts for Creature Cards (see 5.2) and Skill Cards (see 5.2.1), and the prompt script for the Region Maps and the Battle Paintings (`bun campaign:prompts`, see [12 — Region Concepts, 3](./12-region-concepts.md#3-prompts)).
+2. The prompt scripts for Creature Cards (see 5.2) and Skill Cards (see 5.2.1), the prompt script for the Region Maps and the Battle Paintings (`bun campaign:prompts`, see [12 — Region Concepts, 3](./12-region-concepts.md#3-prompts)), and the prompt script for the Town painting and the Town Bar icons (`bun town:prompts`, see [11 — Town Concepts, 3](./11-town-concepts.md#3-prompts)).
 3. A character sheet for each Hero, boss and important Unit (front view, colors, key shapes).
 4. A list of words that are not permitted in prompts: the names of living artists, other games, and other companies' characters.
 

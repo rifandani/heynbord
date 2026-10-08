@@ -76,7 +76,7 @@ const goblinAndFeralStage = (): StageDefinition => {
     "goblin.grandGearjammer",
     "goblin.junkBarricade",
     "feral.bristlebackBoar",
-    "feral.webSpitter",
+    "elf.canopyVinewarden",
     "feral.frostElkMatriarch",
     "feral.cragRhino",
   ];

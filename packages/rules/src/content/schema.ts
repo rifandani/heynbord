@@ -48,29 +48,41 @@ const between = (minimum: number, maximum: number) =>
 const KeywordValue = between(1, 10);
 
 /** A value for each Rank. A missing Rank uses the nearest lower Rank. */
-const RankValues = Schema.Struct({
-  common: Schema.optionalKey(KeywordValue),
-  uncommon: Schema.optionalKey(KeywordValue),
-  rare: Schema.optionalKey(KeywordValue),
-  epic: Schema.optionalKey(KeywordValue),
-  legendary: Schema.optionalKey(KeywordValue),
-});
+const rankValues = (value: typeof KeywordValue) =>
+  Schema.Struct({
+    common: Schema.optionalKey(value),
+    uncommon: Schema.optionalKey(value),
+    rare: Schema.optionalKey(value),
+    epic: Schema.optionalKey(value),
+    legendary: Schema.optionalKey(value),
+  });
 
 /**
  * A value Keyword (GDD 5.3): one number for every Rank, or a value for each Rank.
  */
-const KeywordAmount = Schema.Union([KeywordValue, RankValues]);
+const KeywordAmount = Schema.Union([KeywordValue, rankValues(KeywordValue)]);
 export type KeywordAmount = typeof KeywordAmount.Type;
 
 /** The v1 Keywords of the Battle slice (GDD 5.4, roadmap M1). */
 const Keywords = Schema.Struct({
   armor: Schema.optionalKey(KeywordAmount),
-  charge: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * +N Speed in the Turn of the summon (GDD 5.4). N is at most 3. A content
+   * test checks the Rank table.
+   */
+  charge: Schema.optionalKey(
+    Schema.Union([between(1, 3), rankValues(between(1, 3))])
+  ),
   /**
    * After attack damage above 0, the enemy Unit becomes Entangled: Speed 0 in
    * its next action (GDD 4.4, 4.7).
    */
   entangle: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * When an enemy melee Unit attacks this Unit, this Unit deals its damage
+   * first. If the attacker dies, its attack does not occur (GDD 4.7).
+   */
+  firstStrike: Schema.optionalKey(Schema.Literal(true)),
   flying: Schema.optionalKey(Schema.Literal(true)),
   heroic: Schema.optionalKey(KeywordAmount),
   /** Deals this much damage to the nearest enemy Unit ahead when this Unit leaves. */
@@ -131,8 +143,8 @@ const CreatureCardDefinition = Schema.Struct({
   attack: between(0, 12),
   hp: between(1, 30),
   speed: between(0, 4),
-  /** 0 is a melee Unit. 2 to 5 is a ranged Unit with that Range. */
-  range: between(0, 5),
+  /** 0 is a melee Unit. 2 or 3 is a ranged Unit with that Range (ADR-0022). */
+  range: between(0, 3),
   damageType: DamageType,
   keywords: Keywords,
 });

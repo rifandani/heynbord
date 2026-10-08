@@ -13,11 +13,9 @@ import { damageHero, damageUnit } from "./damage";
 import type { BattleState, TargetRef, UnitState } from "./types";
 import { BattleEvent, otherSide } from "./types";
 
-/** Charge gives +2 Speed in the Turn of the summon (GDD 5.4). */
-const CHARGE_BONUS = 2;
-
 /**
- * Speed after Charge. A Hobbled Unit then has a maximum Speed of 1, and an
+ * Speed after Charge N, which gives +N Speed in the Turn of the summon
+ * (GDD 5.4). A Hobbled Unit then has a maximum Speed of 1, and an
  * Entangled Unit has Speed 0 (GDD 4.5).
  */
 const currentSpeed = (state: BattleState, unit: UnitState): number => {
@@ -25,8 +23,7 @@ const currentSpeed = (state: BattleState, unit: UnitState): number => {
     return 0;
   }
   const speed =
-    unit.speed +
-    (unit.charge && unit.summonedTurn === state.turnNumber ? CHARGE_BONUS : 0);
+    unit.speed + (unit.summonedTurn === state.turnNumber ? unit.charge : 0);
   return unit.hobbled > 0 ? Math.min(speed, 1) : speed;
 };
 
@@ -242,11 +239,15 @@ const trample = (
   });
 };
 
-/** Poison, then Hobble, then Bleed, then Entangle, then Knockback (GDD 4.4). */
+/**
+ * Poison, then Hobble, then Bleed, then Entangle, then Knockback (GDD 4.4).
+ * First Strike does not apply Knockback (GDD 4.7).
+ */
 const applyOnHit = (
   ctx: StepContext,
   unit: UnitState,
-  struck: UnitState
+  struck: UnitState,
+  { knockback }: { readonly knockback: boolean }
 ): void => {
   if (unit.poison) {
     struck.poisoned += 1;
@@ -281,9 +282,41 @@ const applyOnHit = (
       BattleEvent.StatusApplied({ unitId: struck.id, status: "entangle" })
     );
   }
-  if (unit.range === 0 && unit.knockback > 0 && !struck.wall) {
+  if (knockback && unit.range === 0 && unit.knockback > 0 && !struck.wall) {
     pushUnit(ctx, struck, unit.knockback);
   }
+};
+
+/**
+ * First Strike (GDD 4.7): when an enemy melee Unit attacks a Unit with First
+ * Strike, that Unit deals its damage first. Like Retaliation, it has no Crit,
+ * and a Frozen Unit or a Unit with Base Attack 0 does not use it. Damage above
+ * 0 applies Poison, Hobble, Bleed and Entangle, but not Knockback. Returns
+ * whether the attacker is still on the Board, so that its attack occurs.
+ */
+const firstStrike = (
+  ctx: StepContext,
+  attacker: UnitState,
+  target: TargetRef
+): boolean => {
+  if (target._tag !== "Unit" || attacker.range > 0) {
+    return true;
+  }
+  const defender = findUnit(ctx.state, target.unitId);
+  if (!defender?.firstStrike || defender.frozen || attackOf(defender) <= 0) {
+    return true;
+  }
+  const dealt = damageUnit(ctx, attacker, {
+    amount: attackOf(defender),
+    damageType: defender.damageType,
+    source: "firstStrike",
+    crit: 0,
+  });
+  const struck = findUnit(ctx.state, attacker.id);
+  if (struck && dealt > 0) {
+    applyOnHit(ctx, defender, struck, { knockback: false });
+  }
+  return struck !== undefined && !isOver(ctx);
 };
 
 const attack = (ctx: StepContext, unit: UnitState): void => {
@@ -293,7 +326,7 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
     return;
   }
   const target = targetOf(state, unit);
-  if (!target) {
+  if (!target || !firstStrike(ctx, unit, target)) {
     return;
   }
   ctx.events.push(
@@ -328,7 +361,7 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
   if (!struck) {
     trample(ctx, unit, defender, dealt - hpBefore);
   } else if (dealt > 0) {
-    applyOnHit(ctx, unit, struck);
+    applyOnHit(ctx, unit, struck, { knockback: true });
   }
   retaliate(ctx, defender, unit);
 };
@@ -336,7 +369,8 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
 /**
  * The Resolution Phase (GDD 4.3, 4.4): the active side's Units act one at a
  * time. A Frozen Unit skips this action, and then its Freeze ends. The action
- * (also a skipped one) ends Entangled.
+ * (also a skipped one) ends Entangled. An Entangle from First Strike during
+ * the action stays for the next action.
  */
 export const runResolutionPhase = (ctx: StepContext): void => {
   const { state } = ctx;
@@ -352,9 +386,12 @@ export const runResolutionPhase = (ctx: StepContext): void => {
       ctx.events.push(BattleEvent.UnitSkipped({ unitId }));
       continue;
     }
+    const { entangled } = unit;
     move(ctx, unit);
     attack(ctx, unit);
-    unit.entangled = false;
+    if (entangled) {
+      unit.entangled = false;
+    }
     if (isOver(ctx)) {
       return;
     }

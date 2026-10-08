@@ -296,6 +296,7 @@ describe("CLASSES_WITH_CARDS, RACES_WITH_CARDS and updateSlot", () => {
   it("offers the Classes and Races with cards, and changes one slot only", () => {
     expect(CLASSES_WITH_CARDS).toEqual(["warrior", "mage"]);
     expect(RACES_WITH_CARDS.toSorted()).toEqual([
+      "elf",
       "feral",
       "goblin",
       "human",

@@ -110,6 +110,8 @@ export const placeUnit = (
       readonly entangle?: boolean;
       /** Test setup: gives the Unit the Trample Keyword. */
       readonly trample?: boolean;
+      /** Test setup: gives the Unit the First Strike Keyword. */
+      readonly firstStrike?: boolean;
     }
 ): UnitState => {
   const definition = getCard(options.cardId);
@@ -166,6 +168,7 @@ export const placeUnit = (
     speed: options.speed ?? unit.speed,
     entangle: options.entangle ?? unit.entangle,
     trample: options.trample ?? unit.trample,
+    firstStrike: options.firstStrike ?? unit.firstStrike,
   };
   state.nextId += 1;
   state.units.push(placed);
