@@ -1377,7 +1377,7 @@ Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Tu
 | Humor note | One goblin loads the cannon with an alarm clock. |
 | Setting | The main mine hall with chains and lanterns. |
 
-### 6.15 Boss Snikkit, the Mine King (draft)
+### 6.15 Boss Snikkit
 
 `goblin.bossSnikkit` · Striker · Epic · Countdown 5 · Attack 2 · HP 3 · Speed 2 · Melee · Fire · Unique · Sabotage 1 · Last Breath 3
 
@@ -1387,7 +1387,7 @@ Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns 
 
 | Field | Brief |
 | --- | --- |
-| Subject | Boss Snikkit, the mine king: a small old goblin man with a large crown made from a bucket. |
+| Subject | Boss Snikkit: the goblin mine king, a small old goblin man with a large crown made from a bucket. |
 | Pose | He rides a mine cart full of bombs down the rails and points forward with his scepter. |
 | Props | A mine-cart throne, a bucket crown with glass gems, a scepter that is a lit torch, a pile of bombs, a stolen hourglass on a chain. |
 | Gameplay cues | The torch shows Fire. The bombs show Last Breath. The hourglass shows Sabotage. Epic: a heroic scene with cheering goblins. |
