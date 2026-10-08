@@ -264,6 +264,17 @@ export default {
       },
     },
   },
+  hints: {
+    label: "Petunjuk",
+    readMore: "Baca selengkapnya",
+    close: "Tutup Petunjuk",
+    skillCard:
+      "Kartu Keahlianmu Siap. Mainkan ke target untuk efek sekali pakainya.",
+    recall:
+      "Kembali mengirim Kartu Keahlianmu ke Tanganmu. Hitung mundurnya mulai lagi.",
+    deckBuilder:
+      "Kamu punya kartu yang tidak ada di Dek mana pun. Buka Dek untuk menambahkannya.",
+  },
   handbook: {
     title: "Buku Panduan",
     close: "Tutup Buku Panduan",

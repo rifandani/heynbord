@@ -262,6 +262,16 @@ export default {
       },
     },
   },
+  hints: {
+    label: "Hint",
+    readMore: "Read more",
+    close: "Close the Hint",
+    skillCard:
+      "Your Skill Card is Ready. Play it on a target for its one-time effect.",
+    recall:
+      "Recall sent your Skill Card back to your Hand. Its Countdown starts again.",
+    deckBuilder: "You have a card that is in no Deck. Open the Deck to add it.",
+  },
   handbook: {
     title: "Handbook",
     close: "Close Handbook",

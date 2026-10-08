@@ -34,6 +34,8 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { CampaignScreen } from "@/features/campaign/components/campaign-screen";
 import { HandbookDialog } from "@/features/handbook/components/handbook-dialog";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { HintBanner } from "@/features/hint/components/hint-banner";
+import { useBattleHints, useTownHints } from "@/features/hint/use-hints";
 import { TownBar } from "@/features/town/components/town-bar";
 import {
   TownScreen,
@@ -212,6 +214,7 @@ const BattleStage = ({ battle }: { readonly battle: Battle }) => {
   );
   const handbook = useHandbook();
   useBattleKeys(battle, handbook.open);
+  useBattleHints(battle.session);
   return (
     <div
       className="fixed inset-0 overflow-hidden overscroll-none text-[#fff6df]"
@@ -283,6 +286,7 @@ export const PlayScreen = () => {
   const { leaving, open: handleOpen } = useTownLeave(screen, setScreen);
 
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
+  useTownHints(!battle.session);
 
   useEffect(() => setSoundEnabled(soundOn), [soundOn]);
   useEffect(() => setSoundVolume(soundVolume), [soundVolume]);
@@ -308,6 +312,7 @@ export const PlayScreen = () => {
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}
+      <HintBanner />
       <HandbookDialog inBattle={battle.session !== null} />
       <PortraitGuard />
     </>

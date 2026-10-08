@@ -7,6 +7,7 @@ import {
   removeCopy,
 } from "@workspace/rules";
 import { cn } from "cn";
+import type { FocusEvent } from "react";
 import { useState } from "react";
 import {
   Dialog,
@@ -30,8 +31,11 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { BuyDeckSlot } from "@/features/deck/components/buy-deck-slot";
 import { CardPool } from "@/features/deck/components/card-pool";
 import { DeckPage } from "@/features/deck/components/deck-page";
-import type { Peek } from "@/features/deck/components/use-card-peek";
-import { useCardPeek } from "@/features/deck/components/use-card-peek";
+import type { Peek, ShownPeek } from "@/features/deck/components/use-card-peek";
+import {
+  isSamePeek,
+  useCardPeek,
+} from "@/features/deck/components/use-card-peek";
 import type {
   ClassPick,
   DeckSlot,
@@ -50,6 +54,7 @@ import {
   collectionAtom,
   deckSlotsAtom,
 } from "@/features/deck/deck.atoms";
+import { useHandbook } from "@/features/handbook/use-handbook";
 import { shortcutImage } from "@/features/town/town";
 
 /** A gold corner of the cover, as on the painted book of the Deck icon. */
@@ -127,12 +132,18 @@ const Ribbon = ({
 /**
  * The Card Details over the other page, so it never covers the card under
  * the pointer. A card of the pool shows them on the right page, a line of
- * the Deck on the left page. The card stands at the spine of the book.
+ * the Deck on the left page. The card stands at the spine of the book. They
+ * are next to their card in the DOM, so that Tab goes from the card into
+ * their links; their place on the screen comes from the page of the book.
  */
-const PeekDetails = ({ peek }: { readonly peek: Peek | null }) => {
-  if (!peek) {
-    return null;
-  }
+const PeekDetails = ({
+  peek,
+  onBlur,
+}: {
+  readonly peek: ShownPeek;
+  readonly onBlur: (event: FocusEvent<Element>) => void;
+}) => {
+  const handbook = useHandbook();
   const fromPool = peek.from === "pool";
   return (
     <div
@@ -140,6 +151,7 @@ const PeekDetails = ({ peek }: { readonly peek: Peek | null }) => {
         "fade-in animate-in pointer-events-none absolute top-4 z-20 duration-150 motion-reduce:animate-none [@media(max-height:500px)]:top-2",
         fromPool ? "left-1/2 ml-6" : "right-1/2 mr-6"
       )}
+      onBlur={onBlur}
       data-testid="deck-peek"
     >
       <CardDetails
@@ -147,6 +159,7 @@ const PeekDetails = ({ peek }: { readonly peek: Peek | null }) => {
         rank={peek.rank}
         countdown={getCard(peek.cardId).countdown}
         panelSide={fromPool ? "right" : "left"}
+        onEntry={peek.byKeyboard ? handbook.openAt : undefined}
       />
     </div>
   );
@@ -177,7 +190,7 @@ const DeckSpread = ({
   const [slots, setSlots] = useAtom(deckSlotsAtom);
   const [activeId, setActiveId] = useAtom(activeDeckIdAtom);
   const collection = useAtomValue(collectionAtom);
-  const { peek, bind, hide, wasLongPress } = useCardPeek();
+  const { peek, bind, hide, wasLongPress, onPanelBlur } = useCardPeek();
 
   const input = slotInput(slot, collection);
   const problems = deckProblems(input);
@@ -208,13 +221,10 @@ const DeckSpread = ({
     playSound("select", 0);
   };
   // A line that goes away takes its Card Details with it.
-  const shownPeek =
-    peek?.from === "deck" &&
-    !slot.deck.some(
-      (entry) => entry.cardId === peek.cardId && entry.rank === peek.rank
-    )
-      ? null
-      : peek;
+  const peekAt = (target: Peek) =>
+    peek && isSamePeek(peek, target) ? (
+      <PeekDetails peek={peek} onBlur={onPanelBlur} />
+    ) : null;
 
   return (
     <>
@@ -225,6 +235,7 @@ const DeckSpread = ({
         onAdd={onAdd}
         bind={bind}
         wasLongPress={wasLongPress}
+        peekAt={peekAt}
       />
       <DeckPage
         slot={slot}
@@ -244,8 +255,8 @@ const DeckSpread = ({
         onUse={() => setActiveId(slot.id)}
         bind={bind}
         wasLongPress={wasLongPress}
+        peekAt={peekAt}
       />
-      <PeekDetails peek={shownPeek} />
     </>
   );
 };

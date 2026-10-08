@@ -10,16 +10,44 @@ export interface Peek {
   readonly from: "pool" | "deck";
 }
 
+/**
+ * The Card Details that show. Only the Card Details of keyboard focus can
+ * take focus, so only they have links to the Handbook (issue #25).
+ */
+export interface ShownPeek extends Peek {
+  readonly byKeyboard: boolean;
+}
+
+export const isSamePeek = (shown: ShownPeek | null, target: Peek): boolean =>
+  shown !== null &&
+  shown.cardId === target.cardId &&
+  shown.rank === target.rank &&
+  shown.from === target.from;
+
+/** The element that holds the Card Details. */
+export const PEEK_PANEL = "[data-testid='deck-peek']";
+
+/** The Handbook that a link in the Card Details opens. */
+const HANDBOOK = "[data-testid='handbook-dialog']";
+
+const isIn = (node: EventTarget | null, selector: string): boolean =>
+  node instanceof Element && node.closest(selector) !== null;
+
+/** True while the focus is on a link in the Card Details: then they stay. */
+const focusInPanel = () => isIn(document.activeElement, PEEK_PANEL);
+
 const HOVER_MS = 250;
 const LONG_PRESS_MS = 450;
 
 /**
  * The Card Details of the Deck dialog (GDD 11.2): hover after a short delay,
  * keyboard focus, or a long press until the finger goes up. A long press does
- * not also press the card.
+ * not also press the card. The Card Details of keyboard focus come next in the
+ * Tab order, and they stay while the focus is in them or in the Handbook that
+ * a link opened.
  */
 export const useCardPeek = () => {
-  const [peek, setPeek] = useState<Peek | null>(null);
+  const [peek, setPeek] = useState<ShownPeek | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
 
@@ -33,7 +61,7 @@ export const useCardPeek = () => {
     stop();
     timer.current = setTimeout(() => {
       onShow?.();
-      setPeek(target);
+      setPeek({ ...target, byKeyboard: false });
     }, ms);
   };
   const hide = () => {
@@ -42,14 +70,27 @@ export const useCardPeek = () => {
   };
 
   const bind = (target: Peek) => ({
-    onHoverStart: () => later(target, HOVER_MS),
-    onHoverEnd: hide,
-    onFocus: (event: FocusEvent<Element>) => {
-      if (event.target.matches(":focus-visible")) {
-        setPeek(target);
+    onHoverStart: () => {
+      if (!focusInPanel()) {
+        later(target, HOVER_MS);
       }
     },
-    onBlur: hide,
+    onHoverEnd: () => {
+      if (!focusInPanel()) {
+        hide();
+      }
+    },
+    onFocus: (event: FocusEvent<Element>) => {
+      if (event.target.matches(":focus-visible")) {
+        stop();
+        setPeek({ ...target, byKeyboard: true });
+      }
+    },
+    onBlur: (event: FocusEvent<Element>) => {
+      if (!isIn(event.relatedTarget, PEEK_PANEL)) {
+        hide();
+      }
+    },
     onPressStart: (event: PressEvent) => {
       longPressed.current = false;
       if (event.pointerType === "touch") {
@@ -75,5 +116,15 @@ export const useCardPeek = () => {
     return was;
   };
 
-  return { peek, bind, hide, wasLongPress };
+  /** The Card Details close when the focus leaves them, but not for the Handbook over them. */
+  const onPanelBlur = (event: FocusEvent<Element>) => {
+    if (
+      !event.currentTarget.contains(event.relatedTarget) &&
+      !isIn(event.relatedTarget, HANDBOOK)
+    ) {
+      hide();
+    }
+  };
+
+  return { peek, bind, hide, wasLongPress, onPanelBlur };
 };

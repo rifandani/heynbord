@@ -38,6 +38,9 @@ const KINDS: readonly KindFilter[] = ["all", "creature", "skill"];
 
 type PeekBind = (target: Peek) => object;
 
+/** The Card Details of a card, when they show; they come right after the card. */
+type PeekAt = (target: Peek) => ReactNode;
+
 const segment = ({ isSelected }: { readonly isSelected: boolean }) =>
   cn(
     "relative isolate flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-xs font-bold whitespace-nowrap transition-colors duration-200 outline-none select-none",
@@ -161,12 +164,14 @@ const PoolCard = ({
   onAdd,
   bind,
   wasLongPress,
+  peekAt,
 }: {
   readonly tile: PoolTile;
   readonly input: DeckInput;
   readonly onAdd: (tile: PoolTile) => void;
   readonly bind: PeekBind;
   readonly wasLongPress: () => boolean;
+  readonly peekAt: PeekAt;
 }) => {
   const { tr, text } = useGameText();
   const card = getCard(tile.cardId);
@@ -217,6 +222,7 @@ const PoolCard = ({
         />
         <CopiesPlate left={left} block={block} classLabel={classLabel} />
       </Button>
+      {peekAt({ cardId: tile.cardId, rank: tile.rank, from: "pool" })}
     </li>
   );
 };
@@ -279,6 +285,7 @@ export const CardPool = ({
   onAdd,
   bind,
   wasLongPress,
+  peekAt,
 }: {
   readonly input: DeckInput;
   readonly filter: PoolFilter;
@@ -286,6 +293,7 @@ export const CardPool = ({
   readonly onAdd: (tile: PoolTile) => void;
   readonly bind: PeekBind;
   readonly wasLongPress: () => boolean;
+  readonly peekAt: PeekAt;
 }) => {
   const { tr, text } = useGameText();
   const pool = poolEntries(input.collection, filter);
@@ -298,6 +306,7 @@ export const CardPool = ({
       onAdd={onAdd}
       bind={bind}
       wasLongPress={wasLongPress}
+      peekAt={peekAt}
     />
   );
   const change = (next: Partial<PoolFilter>) =>

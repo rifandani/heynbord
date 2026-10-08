@@ -37,6 +37,9 @@ import {
 
 type PeekBind = (target: Peek) => object;
 
+/** The Card Details of a card, when they show; they come right after the card. */
+type PeekAt = (target: Peek) => ReactNode;
+
 const classOption = ({ isSelected }: { readonly isSelected: boolean }) =>
   cn(
     "flex h-9 cursor-pointer items-center gap-2 rounded-lg border-2 pr-3 pl-1 text-sm font-bold text-[#2a1d12] transition-[transform,box-shadow] duration-100 outline-none select-none",
@@ -136,11 +139,13 @@ const DeckLine = ({
   onRemove,
   bind,
   wasLongPress,
+  peekAt,
 }: {
   readonly row: DeckRow;
   readonly onRemove: (row: DeckRow) => void;
   readonly bind: PeekBind;
   readonly wasLongPress: () => boolean;
+  readonly peekAt: PeekAt;
 }) => {
   const { tr } = useGameText();
   const card = getCard(row.cardId);
@@ -210,6 +215,7 @@ const DeckLine = ({
           </span>
         </span>
       </Button>
+      {peekAt({ cardId: row.cardId, rank: row.rank, from: "deck" })}
     </li>
   );
 };
@@ -349,6 +355,7 @@ export const DeckPage = ({
   onUse,
   bind,
   wasLongPress,
+  peekAt,
 }: {
   readonly slot: DeckSlot;
   readonly input: DeckInput;
@@ -364,6 +371,7 @@ export const DeckPage = ({
   readonly onUse: () => void;
   readonly bind: PeekBind;
   readonly wasLongPress: () => boolean;
+  readonly peekAt: PeekAt;
 }) => {
   const { tr } = useGameText();
   const rows = deckRows(slot.deck);
@@ -400,6 +408,7 @@ export const DeckPage = ({
                 onRemove={onRemove}
                 bind={bind}
                 wasLongPress={wasLongPress}
+                peekAt={peekAt}
               />
             ))}
           </ul>
