@@ -32,6 +32,8 @@ import { installTestHooks } from "@/features/battle/test-hooks";
 import { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CampaignScreen } from "@/features/campaign/components/campaign-screen";
+import { HandbookDialog } from "@/features/handbook/components/handbook-dialog";
+import { useHandbook } from "@/features/handbook/use-handbook";
 import { TownBar } from "@/features/town/components/town-bar";
 import {
   TownScreen,
@@ -63,6 +65,12 @@ const inDialog = (target: EventTarget | null): boolean =>
 
 type Battle = ReturnType<typeof useBattle>;
 
+/** What a Battle key can act on: the Battle, and the Handbook over it. */
+interface KeyContext {
+  readonly battle: Battle;
+  readonly openHandbook: () => void;
+}
+
 /** ArrowLeft and ArrowRight move the selection over the Ready cards. */
 const moveSelection = (battle: Battle, event: KeyboardEvent, step: 1 | -1) => {
   const hand = battle.session?.view.sides.player.hand ?? [];
@@ -90,22 +98,28 @@ const playFocusedTarget = (battle: Battle, event: KeyboardEvent) => {
 const KEY_HANDLERS: Readonly<
   Record<
     BattleKeyAction,
-    (battle: Battle, event: KeyboardEvent, step: 1 | -1) => void
+    (keys: KeyContext, event: KeyboardEvent, step: 1 | -1) => void
   >
 > = {
-  moveSelection,
-  focusTarget: (battle, event, step) => {
+  moveSelection: ({ battle }, event, step) =>
+    moveSelection(battle, event, step),
+  focusTarget: ({ battle }, event, step) => {
     event.preventDefault();
     battle.focusTarget(step);
   },
-  play: playFocusedTarget,
-  endTurn: (battle) => battle.endTurn(),
-  skip: (battle) => battle.skip(),
-  inspect: (battle, event) => {
+  play: ({ battle }, event) => playFocusedTarget(battle, event),
+  endTurn: ({ battle }) => battle.endTurn(),
+  skip: ({ battle }) => battle.skip(),
+  inspect: ({ battle }, event) => {
     event.preventDefault();
     battle.toggleInspect();
   },
-  cancel: (battle) => battle.select(null),
+  // The Battle does not pause: the Handbook opens at one side of the Board.
+  handbook: ({ openHandbook }, event) => {
+    event.preventDefault();
+    openHandbook();
+  },
+  cancel: ({ battle }) => battle.select(null),
 };
 
 /**
@@ -138,27 +152,54 @@ const commandFromKey = (event: KeyboardEvent) =>
   isTyping(event.target) || inDialog(event.target) ? null : keyCommand(event);
 
 const runKey = (
-  battle: Battle,
+  keys: KeyContext,
   event: KeyboardEvent,
   command: BattleKeyCommand
 ) => {
-  if (!inspectKey(battle, event, command)) {
-    KEY_HANDLERS[command.action](battle, event, command.step);
+  if (!inspectKey(keys.battle, event, command)) {
+    KEY_HANDLERS[command.action](keys, event, command.step);
   }
 };
 
+const DETAILS = '[data-testid="unit-details"]';
+
+/**
+ * In the keyboard Inspect mode, Tab goes into the Card Details, to the links
+ * of the Keyword, Status and Damage Type names (issue #25). Returns true when
+ * it used the key.
+ */
+const tabIntoDetails = (battle: Battle, event: KeyboardEvent): boolean => {
+  if (!battle.inspecting || event.key !== "Tab" || event.shiftKey) {
+    return false;
+  }
+  const panel = document.querySelector(DETAILS);
+  const inPanel = event.target instanceof Node && panel?.contains(event.target);
+  const link = panel?.querySelector<HTMLElement>(
+    '[data-testid="details-entry-link"]'
+  );
+  if (inPanel || inDialog(event.target) || !link) {
+    return false;
+  }
+  event.preventDefault();
+  link.focus();
+  return true;
+};
+
 /** UI-02: a full Battle with only a keyboard. */
-const useBattleKeys = (battle: Battle) => {
+const useBattleKeys = (battle: Battle, openHandbook: () => void) => {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (tabIntoDetails(battle, event)) {
+        return;
+      }
       const command = commandFromKey(event);
       if (command) {
-        runKey(battle, event, command);
+        runKey({ battle, openHandbook }, event, command);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [battle]);
+  }, [battle, openHandbook]);
 };
 
 const BattleStage = ({ battle }: { readonly battle: Battle }) => {
@@ -169,7 +210,8 @@ const BattleStage = ({ battle }: { readonly battle: Battle }) => {
     () => (stageId ? stagePainting(stageId) : null),
     [stageId]
   );
-  useBattleKeys(battle);
+  const handbook = useHandbook();
+  useBattleKeys(battle, handbook.open);
   return (
     <div
       className="fixed inset-0 overflow-hidden overscroll-none text-[#fff6df]"
@@ -266,6 +308,7 @@ export const PlayScreen = () => {
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}
+      <HandbookDialog inBattle={battle.session !== null} />
       <PortraitGuard />
     </>
   );

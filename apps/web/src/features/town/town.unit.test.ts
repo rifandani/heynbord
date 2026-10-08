@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -6,10 +9,14 @@ import {
   contains,
   overlaps,
   GROUND_LINE,
+  isLocked,
+  paintedIcon,
   percentBox,
   safeArea,
   SELECTABLE_BUILDINGS,
+  shortcutImage,
   TOWN_SHORTCUTS,
+  UNPAINTED_ICONS,
 } from "@/features/town/town";
 
 describe("safeArea", () => {
@@ -78,6 +85,40 @@ describe("TOWN_SHORTCUTS", () => {
     expect(new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.id)).size).toBe(
       TOWN_SHORTCUTS.length
     );
+  });
+});
+
+describe("the Handbook shortcut", () => {
+  it("is the last shortcut, before Settings, and opens a dialog with no lock", () => {
+    const handbook = TOWN_SHORTCUTS.at(-1);
+    expect(handbook).toEqual({
+      id: "handbook",
+      screen: null,
+      dialog: "handbook",
+    });
+    expect(TOWN_SHORTCUTS.at(-2)?.id).toBe("bazaar");
+  });
+
+  it("locks only the shortcuts to screens that do not exist yet", () => {
+    expect(
+      TOWN_SHORTCUTS.filter((shortcut) => !isLocked(shortcut)).map(
+        (shortcut) => shortcut.id
+      )
+    ).toEqual(["town", "campaign", "deck", "handbook"]);
+  });
+});
+
+const publicFile = (path: string) =>
+  existsSync(fileURLToPath(new URL(`../../../public${path}`, import.meta.url)));
+
+describe("paintedIcon", () => {
+  it("uses the painted icon of each shortcut whose WebP file exists, and a temporary icon for the others", () => {
+    for (const { id } of TOWN_SHORTCUTS) {
+      const icon = paintedIcon(id);
+      expect(icon === null, id).toBe(UNPAINTED_ICONS.has(id));
+      expect(publicFile(shortcutImage(id)), id).toBe(icon !== null);
+    }
+    expect(publicFile(shortcutImage("settings"))).toBe(true);
   });
 });
 

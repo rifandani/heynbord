@@ -100,6 +100,7 @@ export default {
       endTurn: "End the Turn",
       skip: "Skip the animation",
       inspect: "See the Card Details of the Units",
+      handbook: "Open the Handbook",
       cancel: "Cancel",
     },
     attack: "Attack",
@@ -124,8 +125,8 @@ export default {
       bonusArmor: "Armor +{value}",
       bonusArmorRule: "From a Skill Card. Turns left: {turns}.",
       burn: "Burn",
-      burnRule:
-        "1 damage in each End Step of its owner. End Steps left: {value}.",
+      burnRule: "1 damage in each End Step of its owner.",
+      burnLeft: "End Steps left: {value}.",
       frozen: "Frozen",
       frozenRule: "It skips its next action.",
       poisoned: "Poison {value}",
@@ -160,6 +161,7 @@ export default {
       hero: "Hero",
       achievements: "Achievements",
       bazaar: "Bazaar",
+      handbook: "Handbook",
     },
     balances: {
       label: "Your balances",
@@ -258,6 +260,240 @@ export default {
         title: "Block the enemy",
         text: "An enemy Unit is in a Lane that has none of your Units. The red highlight shows that Lane. Summon a Unit into it to block the enemy Unit.",
       },
+    },
+  },
+  handbook: {
+    title: "Handbook",
+    close: "Close Handbook",
+    search: "Search the Handbook",
+    searchPlaceholder: "Search",
+    clearSearch: "Clear the search",
+    chapters: "Chapters",
+    chapter: {
+      battle: { name: "Battle", short: "Battle" },
+      cards: { name: "Cards", short: "Cards" },
+      units: { name: "Units", short: "Units" },
+      keywords: { name: "Keywords", short: "Keywords" },
+      statuses: { name: "Statuses and Damage Types", short: "Statuses" },
+      kinds: { name: "Races, Classes and Roles", short: "Races" },
+      ranks: { name: "Ranks", short: "Ranks" },
+      progress: { name: "Progress", short: "Progress" },
+    },
+    entryList: "Entries in {chapter}",
+    results: "Search results",
+    resultCount: "Entries found: {count}",
+    alias: "{alias} → {name}",
+    noResult: "No Entry matches “{query}”.",
+    toBattle: "Go to the Battle Chapter",
+    back: "Back to the list",
+    seeAlso: "See also",
+    n: "N",
+    seeCard: "N is on each card. See the card.",
+    rankTable: "N at each Rank",
+    rankColumn: "Rank",
+    valueColumn: "N",
+    rankLine:
+      "{gems} Rank Gems. Attack and HP ×{scale:number}. Recall of a Skill Card: {recall}%.",
+    names: {
+      board: "Board",
+      lane: "Lane",
+      square: "Square",
+      column: "Column",
+      front: "Front",
+      summonZone: "Summon Zone",
+      closedLane: "Closed Lane",
+      side: "Side",
+      hero: "Hero",
+      turn: "Turn",
+      startStep: "Start Step",
+      playPhase: "Play Phase",
+      resolutionPhase: "Resolution Phase",
+      endStep: "End Step",
+      suddenDeath: "Sudden Death",
+      routed: "Routed",
+      defeated: "Defeated",
+      creatureCard: "Creature Card",
+      skillCard: "Skill Card",
+      handLimit: "Hand Limit",
+      countdown: "Countdown",
+      tickingCard: "Ticking Card",
+      waitingCard: "Waiting Card",
+      recall: "Recall",
+      countdownLimit: "Countdown Limit",
+      unit: "Unit",
+      ranged: "Ranged",
+      movement: "Movement",
+      status: "Status",
+      damageType: "Damage Type",
+      race: "Race",
+      class: "Class",
+      role: "Role",
+      rank: "Rank",
+      rankGems: "Rank Gems",
+      stars: "Stars",
+      playerLevel: "Player level",
+    },
+    entries: {
+      board:
+        "The Board is the battlefield of one Battle. In a Stage, it has {lanes} Lanes.\n\nYour Hero is at the left end of the Lanes, and the enemy Hero is at the right end. Your Units go from left to right, and the enemy Units go from right to left.",
+      lane: "A Lane is one row of {squares} Squares from your Hero to the enemy Hero.\n\nA Unit always stays in its Lane. It moves only along its Lane.",
+      square:
+        "A Square is one place in a Lane. It holds 0 or 1 Unit. You summon a Unit into an empty Square.",
+      column:
+        "A Column is all the Squares at the same distance from a Hero, in all Lanes.\n\nEach Side counts the Columns from its own Hero. Your Column 1 is next to your Hero, and your Column {squares} is next to the enemy Hero.",
+      front:
+        "The Front of a Hero is the Lanes that the Hero stands behind. In a Stage, each Hero has a Front of all the Lanes.\n\nA Unit at the end of its Lane attacks the enemy Hero of that Front.",
+      summonZone:
+        "Your Summon Zone is your Columns 1 to {columns}, in all Lanes. You can summon a Unit only into an empty Square of your Summon Zone.\n\nYou can also summon into a Square that is past an enemy Unit. A melee Unit attacks only forward, so these two Units do not fight.\n\nA Unit with Wall can also go into your Columns {next} and {wall}.",
+      closedLane:
+        "In a Closed Lane, no Side can summon a Unit, and no Skill Card can target a Square.\n\nSome Stages have a Closed Lane. It opens at a set Turn number, or it stays closed for the full Battle.",
+      side: "A Side is one of the two teams in a Battle: your Side and the enemy Side. Each Side has a Hero.\n\nYour Side is at the left of the Board, and the enemy Side is at the right.",
+      hero: "A Hero is the commander of a Side. It stands behind its Front, outside the Board.\n\nA Hero has HP, a Class and a Deck. When its HP goes to 0, the Hero is Defeated.",
+      turn: "In a Turn, one Side plays its cards, and its Units act. A Turn has 4 parts: the Start Step, the Play Phase, the Resolution Phase and the End Step.\n\nYou take the first Turn. Then the enemy takes a Turn. The Turn number goes up by 1 when both Sides took a Turn.",
+      startStep:
+        "The Start Step is the first part of your Turn. These things occur in this order:\n\n1. Effects such as Regeneration and Rally occur.\n\n2. From Turn {turn}, Sudden Death damage hits your Hero.\n\n3. The Countdown of each of your Ticking Cards goes down by 1.\n\n4. Your Hero draws 1 card, if the Hand has fewer than {limit} cards.",
+      playPhase:
+        "In the Play Phase, you play your Ready cards. You can play all of them, in any order, or you can play no cards.\n\nA Creature Card goes into an empty Square of your Summon Zone. A Skill Card goes to its target.\n\nSelect End Turn to end the Play Phase. There is no timer.",
+      resolutionPhase:
+        "In the Resolution Phase, your Units act by themselves. You do not control them.\n\nThey act Lane by Lane, from Lane 1 to the last Lane. In each Lane, the Unit nearest to the enemy Hero acts first. Each Unit moves, then it attacks. A Unit that you summoned in this Turn also acts.\n\nThe enemy Units do not act. They can only use Retaliation and First Strike.",
+      endStep:
+        "The End Step is the last part of your Turn. Burn and Poison damage hit your Units. Then the timed effects go down by 1, and Units with 0 HP leave the Board.\n\nThen the enemy takes its Turn.",
+      suddenDeath:
+        "Sudden Death makes each Battle end. From Turn {turn}, the Hero of the active Side takes 1 damage in each Start Step. From Turn {double}, the damage is 2.\n\nIf no Side has won at the end of Turn {limit}, the enemy wins.",
+      routed:
+        "A Side is Routed when it has no Units on the Board and no cards in its Hand and its Deck. A Routed Side cannot act again, so it loses the Battle.\n\nThis rule is the same for you and for the enemy.",
+      defeated:
+        "A Hero with 0 HP is Defeated. When all the Heroes of a Side are Defeated, that Side loses the Battle.\n\nIn a Stage, each Side has 1 Hero, so a Hero at 0 HP ends the Battle.",
+      creatureCard:
+        "A Creature Card summons a Unit onto the Board. It has a Race, a Role, Attack, HP and Speed. Some Creature Cards have Keywords.\n\nWhen the Unit dies, the card goes to your Graveyard.",
+      skillCard:
+        "A Skill Card has a one-time effect, for example damage to an enemy Unit. It has a Class. Only a Hero of the same Class can use it.\n\nAfter the effect, Recall can send the card back to your Hand.",
+      hand: "Your Hand is the cards that your Hero holds in a Battle. They show at the bottom of the screen.\n\nAt the start of a Battle, your Hero draws {start} cards. Each card in the Hand shows its Countdown. The Hand keeps the order in which the cards came into it.",
+      handLimit:
+        "Your Hand can hold {limit} cards at most. When your Hand is full, your Hero does not draw, and the card stays in the Deck.",
+      deck: "Your Deck is the cards that your Hero brings into a Battle. You build it in the Deck builder.\n\nA Deck can have {copies} copies of one card at most. It can have only the Skill Cards of the Class of your Hero.\n\nIn a Battle, the Deck holds only the cards that your Hero did not draw yet.",
+      graveyard:
+        "The Graveyard holds your cards that are used or dead. A Creature Card goes there when its Unit dies. A Skill Card goes there when Recall does not send it back.",
+      countdown:
+        "The Countdown is the number of Turns that a card must tick before it is Ready. It shows in the top-left corner of the card.\n\nIn your Start Step, the Countdown of each Ticking Card goes down by 1. The Rank of a card does not change its Countdown.",
+      tickingCard:
+        "The Ticking Cards are the {count} oldest cards in your Hand that are not Ready. Only Ticking Cards count down, and their hourglass turns.\n\nThe oldest card is the card that came into the Hand first.",
+      waitingCard:
+        "A Waiting Card is a card in your Hand that is not Ready and is not a Ticking Card. Its Countdown does not go down.\n\nIt becomes a Ticking Card when an older card becomes Ready or leaves the Hand.",
+      ready:
+        "A card with a Countdown of 0 is Ready. Only Ready cards can be played. A Ready card glows in your Hand.",
+      recall:
+        "Recall is the chance that a Skill Card goes back to your Hand after its effect. The Rank of the card sets the chance: from {low}% at Common to {high}% at Legendary.\n\nA card that goes back has its full Countdown again. Else it goes to the Graveyard.",
+      countdownLimit:
+        "The Countdown Limit is the maximum sum of the Countdowns of the cards in your Deck. Each card counts, also a Skill Card.\n\nAt Player level 1, the limit is {first}. It goes up with your Player level. An enemy Deck in a Stage does not have the limit.",
+      unit: "A Unit is a figure on the Board. A Creature Card puts it there.\n\nA Unit shows its Attack and HP at its feet. Your Units face the enemy Hero, and the enemy Units face your Hero.",
+      attack:
+        "Attack is the damage that a Unit deals with one attack. The Armor of the target can make the damage smaller.\n\nA Unit with Attack 0 on its card never attacks, also with a bonus. A higher Rank gives more Attack.",
+      hp: "HP is the health of a Unit or a Hero. Damage makes it lower, and a heal gives it back up to its maximum.\n\nAt 0 HP, a Unit leaves the Board, and a Hero is Defeated. A higher Rank gives more HP.",
+      speed:
+        "Speed is the maximum number of Squares that a Unit moves forward in one Turn. A Unit with Speed 0 never moves.",
+      range:
+        "Range is the maximum number of Squares in front of a Ranged Unit at which it attacks.\n\nA Ranged Support has Range 2, and a Shooter has Range 3.",
+      melee:
+        "A Melee Unit attacks the enemy Unit in the next Square in front of it.\n\nWhen it is in its last Column and no enemy Unit is in front of it, it attacks the enemy Hero.",
+      ranged:
+        "A Ranged Unit attacks the nearest enemy Unit in front of it, in its Lane and in its Range. It does not move when an enemy Unit is in its Range.\n\nWhen no enemy Unit is in its Range and the enemy Hero is, it attacks the enemy Hero. The enemy Hero is 1 Square past the last Column.",
+      movement:
+        "In its action, a Unit first moves forward along its Lane, up to its Speed.\n\nIt moves through friendly Units, but it stops before an enemy Unit. It always stops in an empty Square. A Flying Unit moves over all Units.",
+      status:
+        "A Status is an effect that stays on a Unit. Fire and Frost damage and some Keywords give Statuses.\n\nA Unit shows its Statuses as icons above it. The Card Details of the Unit show each Status with its rule.",
+      damageType:
+        "Each attack and each damage effect has a Damage Type: Physical, Fire, Frost or Holy.\n\nOn a card, the Damage Type shows as the icon and the color of the Attack.",
+      damagePhysical: "Physical: normal damage. Armor reduces it.",
+      race: "The Race is the people that a Creature Card fights for. It shows on the emblem in the top-right corner of the card.\n\nA Deck can mix all Races. Each Race has its own style of play.",
+      raceHuman:
+        "Humans and stout folk of the river towns. They hold the line with strong Armor, Walls and support for their friends.",
+      raceElf:
+        "Elves of the old forests, and the plant spirits that fight with them. They control the Lanes from range, with healing and Poison.",
+      raceUndead:
+        "Old spirits that wear bones and armor. Many small Units that get stronger together and come back.",
+      raceOrc:
+        "Orc tribes of the badlands, and their beasts. Fast and loud, with high Attack and low HP. They rush the enemy Hero.",
+      raceGoblin:
+        "Goblins of the hill mines: tinkers, thieves and bomb makers. Small Units that make the plan of the enemy slower.",
+      raceFeral:
+        "Wild creatures of the peaks and the deep caves. They serve no people. They are few, huge and slow, with high Attack and HP.",
+      class:
+        "The Class of a Hero sets which Skill Cards its Deck can hold. You select the Class of each Deck in the Deck builder.\n\nA Skill Card shows its Class on its emblem.",
+      classWarrior:
+        "Bonuses and speed. Warrior Skill Cards make your cards Ready sooner and give Armor to your Units.",
+      classRanger: "Control, and damage to the enemy Hero.",
+      classMage:
+        "Area damage. Mage Skill Cards hit enemy Units with Fire and Frost.",
+      classPriest: "Healing, protection and Units that come back.",
+      role: "The Role is the job of a Creature Card in a Battle. It helps you read a card. No rule uses it, but it sets the Range of a Ranged Unit.",
+      roleFrontliner:
+        "High HP and low Speed. A Frontliner holds its Lane against enemy Units.",
+      roleStriker: "High Attack and low HP. A Striker kills enemy Units.",
+      roleRunner:
+        "High Speed, or Flying. A Runner gets to the enemy Hero quickly.",
+      roleShooter:
+        "A Ranged Unit with Range 3. A Shooter stays back and attacks.",
+      roleSupport:
+        "A Support makes other Units better, for example with Rally or Regeneration. It is Melee, or Ranged with Range 2.",
+      roleWall:
+        "A Wall blocks its Lane for enemy Units. Each Wall has the Wall Keyword.",
+      rank: "The Rank is the power grade of one copy of a card: Common, Uncommon, Rare, Epic or Legendary.\n\nA higher Rank gives more Attack and HP, more Recall, and sometimes a higher Keyword value. The Countdown does not change with the Rank.\n\nEach card has a lowest Rank. A copy is never below it.",
+      rankGems:
+        "The Rank Gems at the top of a card show its Rank: 1 grey gem for Common, up to 5 orange gems for Legendary.\n\nThe number of gems always shows the Rank, so you do not need the color.",
+      stars:
+        "A Stage win gives 1 to 3 Stars. 1 Star: win the Battle. 2 Stars: win with half of your Hero HP or more. 3 Stars: win with half of your Hero HP or more, before Turn 15.\n\nThe Campaign keeps your best Stars for each Stage. The Stars of a Region open its chests.",
+      playerLevel:
+        "Your Player level goes up with XP. You get XP from each Battle, also from a loss.\n\nA higher level gives your Hero more HP, a larger Deck and a higher Countdown Limit. Each Stage shows a Recommended level.",
+      coin: "Coin is the currency that you earn in Battles. It pays for Deck Slots. Later, it also pays for Packs, Combine and Gear.\n\nCoin shows as Gold, Silver and Copper: 100 Copper is 1 Silver, and 100 Silver is 1 Gold. They are one currency with one balance.",
+    },
+    aliases: {
+      board: "battlefield, field, map, grid, arena",
+      lane: "row, path, track",
+      square: "tile, cell, slot",
+      side: "team, party",
+      hero: "commander, avatar, general, player",
+      turn: "round, move",
+      resolutionPhase: "combat phase, battle phase, auto phase",
+      suddenDeath: "fatigue, overtime",
+      routed: "out of cards, surrender, forfeit",
+      defeated: "dead, killed, knocked out",
+      creatureCard: "minion card, unit card, troop card",
+      skillCard: "spell, ability card",
+      handLimit: "hand size, max hand",
+      deck: "library, draw pile, loadout",
+      graveyard: "discard pile, cemetery, crypt",
+      countdown: "mana, cost, cooldown, timer",
+      ready: "playable, available",
+      recall: "mastery, return chance, recycle",
+      countdownLimit: "deck cost, leadership, mana cap",
+      unit: "minion, creature, troop, character",
+      hp: "health, life, hit points",
+      range: "reach, attack distance",
+      movement: "walk, advance, march",
+      keywordCharge: "haste, rush, dash, sprint",
+      keywordKnockback: "push, shove, repel",
+      keywordLastBreath: "deathrattle, death effect",
+      keywordTrample: "cleave, overrun, pierce",
+      keywordWall: "taunt, blocker, barricade",
+      keywordEntangle: "root, snare",
+      keywordPoison: "venom, toxin",
+      keywordSabotage: "delay, stall, disrupt",
+      keywordUnique: "legend rule, singleton",
+      keywordRetaliation: "thorns, counterattack",
+      status: "debuff, condition, ailment",
+      statusFreeze: "stun, chill",
+      statusBleed: "wound, anti-heal, healing reduction",
+      statusHobble: "slow, cripple, fatigue",
+      damageType: "element",
+      race: "faction, tribe, kingdom",
+      class: "job, profession",
+      role: "unit type, archetype",
+      rank: "rarity, tier, quality",
+      rankGems: "pips",
+      stars: "score, rating",
+      playerLevel: "account level, xp",
+      coin: "gold, silver, copper, money",
     },
   },
   deckBuilder: {
@@ -459,7 +695,7 @@ export default {
     trample:
       "When this Unit kills an enemy Unit with an attack, the damage that is left hits the enemy Unit in the next Square behind it. It never hits a Hero.",
     unique: "Only one copy of this card can be on your side of the Board.",
-    wall: "This Unit has Speed 0 and Attack 0. It blocks enemy Units in its Lane, and a push never moves it.",
+    wall: "This Unit can't move and can't attack. You can summon it into the 5 Squares nearest to your Hero. It blocks enemy Units in its Lane, and a push never moves it.",
     fire: "Fire: the target burns for 1 damage in its next 2 End Steps.",
     frost: "Frost: the target skips its next action.",
     holy: "Holy: Armor does not reduce this damage.",

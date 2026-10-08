@@ -273,10 +273,11 @@ const drawStatPart = (
 
 /**
  * Attack and HP at the feet of a Unit (UI-04: always visible). `2 | 10`.
- * Each number is white, red, or green against its summon value.
+ * Each number is white, red, or green against its summon value. A Wall has
+ * no Attack, so it shows only its HP.
  */
 export const unitStatTexture = (options: {
-  readonly attack: number;
+  readonly attack: number | undefined;
   readonly startAttack: number;
   readonly hp: number;
   readonly maxHp: number;
@@ -286,9 +287,9 @@ export const unitStatTexture = (options: {
     STAT_WIDTH,
     STAT_HEIGHT,
     (context) => {
-      const attack = String(options.attack);
+      const attack = options.attack === undefined ? "" : String(options.attack);
       const hp = String(options.hp);
-      const pipe = " | ";
+      const pipe = options.attack === undefined ? "" : " | ";
       context.font = `800 112px ${FONT}`;
       context.textBaseline = "middle";
       context.textAlign = "center";
@@ -301,7 +302,7 @@ export const unitStatTexture = (options: {
       drawStatPart(
         context,
         attack,
-        STAT_DELTA[statTone(options.attack, options.startAttack)],
+        STAT_DELTA[statTone(options.attack ?? 0, options.startAttack)],
         x,
         attackWidth
       );

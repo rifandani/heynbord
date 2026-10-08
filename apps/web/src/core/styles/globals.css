@@ -301,7 +301,8 @@
 /*
  * The Deck dialog opens like a book. The closed book comes in at the center,
  * the front cover turns over on the spine, and the open book slides to the
- * center. The close plays the same keyframes in reverse, faster.
+ * center. The close plays the same keyframes in reverse, faster. The Handbook
+ * uses the same keyframes out of the Battle.
  */
 @keyframes deck-book {
   0% {
@@ -324,12 +325,13 @@
 /* The left half of the open book shows only when the cover lies on it. */
 @keyframes deck-book-body {
   0% {
-    clip-path: inset(-80px -80px -80px 50%);
+    clip-path: inset(-80px -160px -80px 50%);
     animation-timing-function: step-end;
   }
   82%,
   100% {
-    clip-path: inset(-80px);
+    /* Room at the right for the thumb-index tabs of the Handbook. */
+    clip-path: inset(-80px -160px -80px -80px);
   }
 }
 
@@ -387,6 +389,52 @@
     animation-timing-function: ease-out;
   }
   82%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/*
+ * In the Battle, the Handbook comes in at the right edge of the screen as a
+ * closed book, then its cover swings open on the spine toward the Board. The
+ * cover goes edge-on and is gone, so it never lies on the Board. The close
+ * plays the same keyframes in reverse, faster: the cover shuts, then the book
+ * slides away.
+ */
+@keyframes handbook-side {
+  0% {
+    transform: translate3d(calc(100% + 3rem), 0, 0);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  50%,
+  100% {
+    transform: none;
+  }
+}
+
+/* The cover swings open on the spine at its left edge. */
+@keyframes handbook-side-cover {
+  0%,
+  30% {
+    visibility: visible;
+    transform: rotateY(0deg);
+    filter: brightness(1);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.8, 0.4);
+  }
+  100% {
+    visibility: visible;
+    transform: rotateY(-96deg);
+    filter: brightness(0.5);
+  }
+}
+
+/* The shadow of the cover on the page goes as the cover stands up. */
+@keyframes handbook-side-shadow {
+  0%,
+  30% {
+    opacity: 1;
+    animation-timing-function: ease-in;
+  }
   100% {
     opacity: 0;
   }

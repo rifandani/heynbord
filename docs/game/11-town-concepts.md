@@ -220,6 +220,8 @@ The Town Bar (GDD 11.4) has one shortcut for each entry of `TOWN_SHORTCUTS` in `
 
 The Settings button at the right end of the bar also has a painted icon. It replaces the language and sound buttons. It opens the Settings dialog in the center of the screen (GDD 11.4), where the Player sets the audio, the language and the other options. Settings has no Building, so its icon shows a different object (7.3).
 
+The Handbook shortcut, the last shortcut before the Settings button, opens the Handbook dialog (GDD 11.1). The Handbook has no Building either, so its icon also shows a different object (7.3). A shortcut without a painted icon shows a temporary icon in the same slot. Its ID stays in `UNPAINTED_ICONS` in `town.ts` until its WebP file is in `apps/web/public/town/bar/`: a unit test checks that the list and the files agree.
+
 The painted icons show at 66 px (48 px on a phone), and they stand out of the top edge of the bar. `DESIGN.md` (Navigation) gives the Shortcut size and states.
 
 ### 7.1 Rules for the icons
@@ -258,6 +260,7 @@ In the order of `TOWN_SHORTCUTS`, then the Settings button.
 | `hero` | Barracks (2.8) | A knight helmet with a blue plume, on a round shield |
 | `achievements` | Hall of banners (2.9) | A gold trophy cup in front of a blue and gold banner |
 | `bazaar` | Market (2.6) | A striped market tent and a coin purse |
+| `handbook` | None | An open book with a quill and a ribbon |
 | `settings` | None | A bronze cogwheel with a blue gem, upright in a wooden block |
 
 ### 7.4 Steps
@@ -271,9 +274,10 @@ In the order of `TOWN_SHORTCUTS`, then the Settings button.
 ### 7.5 Review checklist
 
 - [ ] Each icon is clear at 48 px and at 32 px.
-- [ ] The 11 icons have the same outline thickness, view angle, light and scale.
+- [ ] The 12 icons have the same outline thickness, view angle, light and scale.
 - [ ] Each shortcut icon shows the same object as its Building in section 2.
 - [ ] The Settings cogwheel does not look like the Workshop anvil.
+- [ ] The Handbook book does not look like the Deck book: it is a cloth-bound field manual with a quill and a ribbon, and it has no cards.
 - [ ] The light comes from the upper left.
 - [ ] The background is transparent, and the bottom edge of the object is flat.
 - [ ] No text, letters, runes, logo or signature in the image.

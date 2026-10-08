@@ -529,6 +529,174 @@ test.describe("Card Details of a Unit (UI-05)", () => {
   });
 });
 
+/** Opens a Battle in the middle of play (QA state), with at least one Unit on the Board. */
+const openBoardWithAUnit = async (page: Page) => {
+  await page.goto("/play?state=active-play&seed=7");
+  await expect(page.locator("[data-battle-canvas] canvas")).toBeVisible({
+    timeout: 30_000,
+  });
+  await expect.poll(() => battleMode(page), { timeout: 30_000 }).toBe("battle");
+  await expect
+    .poll(
+      async () => {
+        const units = await unitPoints(page);
+        return units.length;
+      },
+      { timeout: 30_000 }
+    )
+    .toBeGreaterThan(0);
+  return unitPoints(page);
+};
+
+test.describe("Handbook (issue #25)", () => {
+  test("the Town Bar opens it at the Board; it opens again at the last Entry, and the focus goes back", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    const shortcut = page.getByTestId("town-shortcut-handbook");
+    await expect(shortcut).toHaveAccessibleName("Handbook");
+    await shortcut.press("Enter");
+    const dialog = page.getByTestId("handbook-dialog");
+    await expect(dialog).toHaveAttribute("data-form", "book");
+    const entry = page.getByTestId("handbook-entry");
+    await expect(entry).toHaveAttribute("data-entry", "board");
+    // A value Keyword of the shared Rank table, then one with a value on each card.
+    await page.getByRole("tab", { name: "Keywords" }).click();
+    await page.getByRole("option", { name: "Charge N" }).click();
+    await expect(page.getByTestId("handbook-rank-table")).toBeVisible();
+    await page.getByRole("option", { name: "Armor N" }).click();
+    await expect(page.getByTestId("handbook-see-card")).toBeVisible();
+    await expect(page.getByTestId("handbook-rank-table")).toBeHidden();
+    // "See also" opens a related Entry in another Chapter.
+    await page
+      .getByTestId("handbook-see-also")
+      .getByRole("link", { name: "Holy" })
+      .click();
+    await expect(entry).toHaveAttribute("data-entry", "damageHoly");
+    await expect(
+      page.getByRole("tab", { name: "Statuses and Damage Types" })
+    ).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(shortcut).toBeFocused();
+    await shortcut.press("Enter");
+    await expect(entry).toHaveAttribute("data-entry", "damageHoly");
+  });
+
+  test("the search finds an Entry by its name and by a word from other games", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await page.getByTestId("town-shortcut-handbook").press("Enter");
+    const search = page.getByRole("searchbox", {
+      name: "Search the Handbook",
+    });
+    await search.fill("mana");
+    const first = page
+      .getByTestId("handbook-results")
+      .getByRole("option")
+      .first();
+    await expect(first).toContainText("mana → Countdown");
+    await expect(first).toContainText("Cards");
+    await first.click();
+    await expect(page.getByTestId("handbook-entry-name")).toHaveText(
+      "Countdown"
+    );
+    await search.fill("Trample");
+    await expect(
+      page.getByTestId("handbook-results").getByRole("option").first()
+    ).toContainText("Trample");
+    await search.fill("zzz");
+    await expect(page.getByTestId("handbook-no-result")).toBeVisible();
+    await page.getByRole("link", { name: "Go to the Battle Chapter" }).click();
+    await expect(page.getByTestId("handbook-index")).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Battle" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
+
+  test("in the Battle, H and the Top Bar button open it at one side, and the Key Guide lists H", async ({
+    page,
+  }) => {
+    await openBoardWithAUnit(page);
+    // A real pointer move first, so that the hover opens the Key Guide.
+    await page.mouse.move(10, 300);
+    await page.getByRole("button", { name: "Key Guide" }).hover();
+    await expect(page.getByTestId("key-guide")).toContainText(
+      "Open the Handbook"
+    );
+    // The tooltip takes Esc while it is open, so the test waits until it closes.
+    await page.mouse.move(10, 300);
+    await expect(page.getByTestId("key-guide")).toBeHidden();
+    await page.keyboard.press("h");
+    const dialog = page.getByTestId("handbook-dialog");
+    await expect(dialog).toHaveAttribute("data-form", "side");
+    await expect(dialog).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await page.getByTestId("handbook-button").click();
+    await expect(dialog).toBeVisible();
+    await page.getByTestId("handbook-close").click();
+    await expect(dialog).toBeHidden();
+    await expect(page.getByTestId("handbook-button")).toBeFocused();
+  });
+
+  test("in the keyboard Inspect mode, Tab goes to the rules terms, and a term opens its Entry", async ({
+    page,
+  }) => {
+    const [unit] = await openBoardWithAUnit(page);
+    if (!unit) {
+      throw new Error("No Unit on the Board");
+    }
+    // The Card Details of a hover have no links.
+    await page.mouse.move(unit.x, unit.y);
+    await expect(page.getByTestId("unit-details")).toBeVisible();
+    await expect(page.getByTestId("details-entry-link")).toHaveCount(0);
+    await page.mouse.move(4, 4);
+    await expect(page.getByTestId("unit-details")).toBeHidden();
+    await page.keyboard.press("i");
+    await expect(page.getByTestId("unit-details")).toBeVisible();
+    await page.keyboard.press("Tab");
+    const link = page.getByTestId("details-entry-link").first();
+    await expect(link).toBeFocused();
+    const entry = await link.getAttribute("data-entry");
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("handbook-entry")).toHaveAttribute(
+      "data-entry",
+      entry ?? ""
+    );
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("handbook-dialog")).toBeHidden();
+    await expect(link).toBeFocused();
+  });
+});
+
+test.describe("Handbook on a phone", () => {
+  test.use({
+    viewport: { width: 844, height: 390 },
+    hasTouch: true,
+    isMobile: true,
+  });
+
+  test("shows one page at a time: the list, then the Entry with a back arrow", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await page.getByTestId("town-shortcut-handbook").tap();
+    const dialog = page.getByTestId("handbook-dialog");
+    await expect(dialog).toHaveAttribute("data-form", "page");
+    await expect(page.getByTestId("handbook-index")).toBeVisible();
+    await page.getByRole("option", { name: "Front" }).tap();
+    await expect(page.getByTestId("handbook-index")).toBeHidden();
+    await expect(page.getByTestId("handbook-entry-name")).toHaveText("Front");
+    await expect(page.getByTestId("handbook-diagram")).toBeVisible();
+    await page.getByTestId("handbook-back").tap();
+    await expect(page.getByTestId("handbook-index")).toBeVisible();
+    await expect(page.getByRole("option", { name: "Front" })).toBeFocused();
+  });
+});
+
 test.describe("Town", () => {
   test("opens first, and the Town Gate opens the Campaign", async ({
     page,
@@ -817,6 +985,9 @@ test.describe("Town on a phone", () => {
     const gateBox = await gate.boundingBox();
     expect(bar && gateBox && gateBox.y + gateBox.height <= bar.y).toBe(true);
     await expect(page.getByTestId("town-shortcut-bazaar")).toBeInViewport({
+      ratio: 1,
+    });
+    await expect(page.getByTestId("town-shortcut-handbook")).toBeInViewport({
       ratio: 1,
     });
     // The balances sit in the top-right corner, clear of the Town Gate label.

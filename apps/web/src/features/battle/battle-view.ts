@@ -45,6 +45,8 @@ export interface UnitView {
    * and for a Unit with no attack at the End Step of its owner.
    */
   readonly entangled: boolean;
+  /** A Wall does not move or attack, so its Attack is not shown. */
+  readonly wall: boolean;
 }
 
 /** A card in a Hand. `cardId` is `null` for a card that the player cannot see. */
@@ -133,6 +135,7 @@ const unitView = (unit: Readonly<UnitState>): UnitView => ({
   bleeding: unit.bleeding,
   frozen: unit.frozen,
   entangled: unit.entangled,
+  wall: unit.wall,
 });
 
 const visibleCard = (

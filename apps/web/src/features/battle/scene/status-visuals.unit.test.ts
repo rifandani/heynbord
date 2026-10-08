@@ -30,6 +30,7 @@ const quiet: UnitView = {
   bleeding: 0,
   frozen: false,
   entangled: false,
+  wall: false,
 };
 
 const allStatuses: UnitView = {

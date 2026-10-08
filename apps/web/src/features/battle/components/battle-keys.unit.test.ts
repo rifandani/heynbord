@@ -44,7 +44,16 @@ describe("keyCommand", () => {
 
 describe("KEY_GUIDE", () => {
   it("shows each Battle key action one time", () => {
-    const keys = ["ArrowLeft", "ArrowUp", "Enter", "e", "s", "i", "Escape"];
+    const keys = [
+      "ArrowLeft",
+      "ArrowUp",
+      "Enter",
+      "e",
+      "s",
+      "i",
+      "h",
+      "Escape",
+    ];
     const actions = keys.map((key) => press(key)?.action);
     expect(KEY_GUIDE.map((row) => row.action)).toEqual(actions);
   });

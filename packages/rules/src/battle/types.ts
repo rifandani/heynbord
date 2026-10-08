@@ -23,6 +23,12 @@ export const LANE_LENGTH = 12;
 export const SUMMON_ZONE_DEPTH = 3;
 
 /**
+ * The number of Columns from its Hero where a Unit with Wall can be summoned
+ * (ADR-0023). Columns past the Summon Zone are not part of it.
+ */
+export const WALL_SUMMON_DEPTH = 5;
+
+/**
  * The number of Lanes in a Stage (GDD 4.1, ADR-0010). The type of Battle sets
  * it: content data cannot. A Stage makes the Board smaller only with Closed Lanes.
  */
@@ -116,7 +122,9 @@ export interface UnitState {
   readonly retaliation: boolean;
   /** Melee only: a kill lets the damage that is left hit the next enemy Unit. */
   readonly trample: boolean;
-  /** A Unit with Wall is never Pushed. */
+  /**
+   * A Unit with Wall has no Movement, does not attack and is never Pushed.
+   */
   wall: boolean;
   /** The Turn number of the summon. Charge uses it. */
   readonly summonedTurn: number;

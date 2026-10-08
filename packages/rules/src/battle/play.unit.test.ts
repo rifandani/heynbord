@@ -37,7 +37,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     const { state: next, events } = run(state, play(0, square(1, 2)));
     expect(next.sides.player.hand).toHaveLength(0);
     expect(next.units).toEqual([
-      expect.objectContaining({ owner: "player", lane: 1, position: 2, hp: 6 }),
+      expect.objectContaining({ owner: "player", lane: 1, position: 2, hp: 8 }),
     ]);
     expect(eventsOfType(events, "UnitSummoned")).toHaveLength(1);
   });
@@ -76,6 +76,42 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     expect(legalTargets(state, 0)).toEqual([square(0, 0), square(0, 2)]);
     const { state: next } = run(state, play(0, square(0, 2)));
     expect(next.units.at(-1)).toMatchObject({ owner: "player", position: 2 });
+  });
+
+  it("gives a Wall Columns 1 to 5, for each Side (ADR-0023)", () => {
+    const state = emptyBattle();
+    giveHand(state, "player", [["human.townBarricade", 0]]);
+    expect(legalTargets(state, 0)).toEqual([
+      square(0, 0),
+      square(0, 1),
+      square(0, 2),
+      square(0, 3),
+      square(0, 4),
+    ]);
+    expect(violation(step(state, play(0, square(0, 5))))).toBe("IllegalTarget");
+    const enemy = emptyBattle({ activeSide: "enemy" });
+    giveHand(enemy, "enemy", [["feral.boulderTortoise", 0]]);
+    expect(legalTargets(enemy, 0)).toEqual([
+      square(0, 11),
+      square(0, 10),
+      square(0, 9),
+      square(0, 8),
+      square(0, 7),
+    ]);
+    const { state: next } = run(enemy, play(0, square(0, 7)));
+    expect(next.units[0]).toMatchObject({ owner: "enemy", position: 7 });
+  });
+
+  it("lets a side summon a Wall past an enemy Unit", () => {
+    const state = emptyBattle();
+    giveHand(state, "player", [["human.townBarricade", 0]]);
+    placeUnit(state, {
+      cardId: "orc.badlandRunt",
+      owner: "enemy",
+      position: 3,
+    });
+    const { state: next } = run(state, play(0, square(0, 4)));
+    expect(next.units.at(-1)).toMatchObject({ owner: "player", position: 4 });
   });
 
   it("scales Attack and HP with the Rank", () => {

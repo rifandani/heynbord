@@ -4,6 +4,19 @@ import { RANKS } from "./ranks";
 import type { KeywordAmount, RankId } from "./schema";
 
 /**
+ * The one Rank table that some value Keywords share (GDD 5.4): 1 up to Rare,
+ * 2 at Epic and 3 at Legendary. Charge, Knockback and Bleed use it now. The
+ * other value Keywords have a value for each card.
+ */
+export const SHARED_RANK_VALUES: Readonly<Record<RankId, number>> = {
+  common: 1,
+  uncommon: 1,
+  rare: 1,
+  epic: 2,
+  legendary: 3,
+};
+
+/**
  * The value of a Keyword at a Rank (GDD 5.3). A number is the same at every
  * Rank. A table uses the value of that Rank, or the nearest lower Rank.
  */

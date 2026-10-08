@@ -116,10 +116,11 @@ export interface TownShortcut {
     | "packs"
     | "hero"
     | "achievements"
-    | "bazaar";
+    | "bazaar"
+    | "handbook";
   readonly screen: GameScreen | null;
   /** The dialog that the shortcut opens over the current screen. */
-  readonly dialog?: "deck";
+  readonly dialog?: "deck" | "handbook";
 }
 
 /** True for a shortcut to a screen that does not exist yet. */
@@ -133,7 +134,21 @@ export const isLocked = (shortcut: TownShortcut): boolean =>
 export const shortcutImage = (id: TownShortcut["id"] | "settings") =>
   `/town/bar/${id}.webp`;
 
-/** The Town shortcut, then one shortcut for each Building, in GDD 11.4 order. */
+/**
+ * The shortcuts whose painted icon does not exist yet. Each one shows a
+ * temporary icon in the same slot. Remove an ID when its WebP file is in
+ * `public/town/bar/`: a unit test checks the files.
+ */
+export const UNPAINTED_ICONS: ReadonlySet<TownShortcut["id"]> = new Set();
+
+/** The painted icon of a shortcut, or `null` while it shows a temporary icon. */
+export const paintedIcon = (id: TownShortcut["id"]): string | null =>
+  UNPAINTED_ICONS.has(id) ? null : shortcutImage(id);
+
+/**
+ * The Town shortcut, then one shortcut for each Building, in GDD 11.4 order,
+ * then the Handbook.
+ */
 export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "town", screen: "town" },
   { id: "campaign", screen: "campaign" },
@@ -146,6 +161,8 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "hero", screen: null },
   { id: "achievements", screen: null },
   { id: "bazaar", screen: null },
+  // The Handbook has no Building (GDD 11.4): it is a dialog, like the Deck builder.
+  { id: "handbook", screen: null, dialog: "handbook" },
 ];
 
 /** A box in painting coordinates as CSS percentages of the painting. */

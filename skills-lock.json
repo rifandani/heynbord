@@ -199,12 +199,6 @@
       "skillPath": "skills/threejs-gameplay-systems/SKILL.md",
       "computedHash": "2cb076146a8e006254d769dd978fb484e6231e2918cb85bdf285c65bc6b412b1"
     },
-    "threejs-image-generator": {
-      "source": "majidmanzarpour/threejs-game-skills",
-      "sourceType": "github",
-      "skillPath": "skills/threejs-image-generator/SKILL.md",
-      "computedHash": "6e65acb7d552f1b1fb8a550fbfc38b3e11b0a187a759241bf20f6511e7eac405"
-    },
     "threejs-qa-release": {
       "source": "majidmanzarpour/threejs-game-skills",
       "sourceType": "github",

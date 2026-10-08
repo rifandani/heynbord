@@ -116,6 +116,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | UI-04 | The Battle screen must show the Attack and HP of each Unit at all times. | M |
 | UI-05 | Hover or long press must show the full card details. | M |
 | UI-06 | Settings must include text size, reduced motion, high-contrast Board, audio volume and language. | S |
+| UI-07 | The game must have a Handbook that explains each rule, term and icon that the Player meets, with search, in each language. It opens from the Town Bar and from the Battle, and its rule text is the same as the text on the cards (GDD section 11.1). | S |
 
 ### 6.6 Save data (SAV)
 

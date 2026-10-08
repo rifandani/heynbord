@@ -7,9 +7,16 @@ import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
+import { HandbookIcon } from "@/features/handbook/components/handbook-icon";
+import { useHandbook } from "@/features/handbook/use-handbook";
 import { SettingsDialog } from "@/features/town/components/settings-dialog";
 import type { GameScreen, TownShortcut } from "@/features/town/town";
-import { isLocked, TOWN_SHORTCUTS, shortcutImage } from "@/features/town/town";
+import {
+  isLocked,
+  paintedIcon,
+  TOWN_SHORTCUTS,
+  shortcutImage,
+} from "@/features/town/town";
 
 const LONG_PRESS_MS = 450;
 
@@ -88,6 +95,31 @@ const LockSeal = ({ locked }: { readonly locked: boolean }) => {
 };
 
 /**
+ * The icon of a shortcut: its painted icon, or a temporary icon in the same
+ * slot until a person paints it (11 — Town Concepts 7).
+ */
+const ShortcutIcon = ({
+  image,
+  className,
+}: {
+  readonly image: string | null;
+  readonly className: string;
+}) =>
+  image ? (
+    <img
+      src={image}
+      alt=""
+      width={128}
+      height={128}
+      draggable={false}
+      decoding="async"
+      className={className}
+    />
+  ) : (
+    <HandbookIcon className={cn(className, "p-2")} />
+  );
+
+/**
  * The face of a shortcut: its light, its contact shadow, its painted icon and
  * its name on the lip of the shelf.
  */
@@ -98,7 +130,7 @@ const ShortcutFace = ({
   current,
   lifted = false,
 }: {
-  readonly image: string;
+  readonly image: string | null;
   readonly name: string;
   readonly locked: boolean;
   readonly current: boolean;
@@ -122,13 +154,8 @@ const ShortcutFace = ({
       aria-hidden
     />
     <span className={iconStandClass(locked, current, lifted)} aria-hidden>
-      <img
-        src={image}
-        alt=""
-        width={128}
-        height={128}
-        draggable={false}
-        decoding="async"
+      <ShortcutIcon
+        image={image}
         className={iconClass(locked, current, lifted)}
       />
       <LockSeal locked={locked} />
@@ -164,8 +191,8 @@ const OpensLater = ({ locked }: { readonly locked: boolean }) => {
  * keyboard focus, and its accessible name says "opens later". Hover and focus
  * show its tooltip; on touch, a tap shows it. A long press shows the name of
  * any shortcut, because a phone shows the icons only. The Deck shortcut opens
- * the Deck dialog over the current screen, and its icon stays lifted while
- * the dialog is open.
+ * the Deck dialog over the current screen, and the Handbook shortcut opens
+ * the Handbook. Their icons stay lifted while their dialogs are open.
  */
 const Shortcut = ({
   shortcut,
@@ -181,6 +208,7 @@ const Shortcut = ({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const handbook = useHandbook();
   const name = tr(`town.shortcuts.${shortcut.id}`);
   const { screen, dialog } = shortcut;
   const locked = isLocked(shortcut);
@@ -207,6 +235,9 @@ const Shortcut = ({
     if (screen) {
       setOpen(false);
       onOpen(screen);
+    } else if (dialog === "handbook") {
+      setOpen(false);
+      handbook.open();
     } else if (dialog) {
       setOpen(false);
       setDialogOpen(true);
@@ -244,11 +275,11 @@ const Shortcut = ({
           data-locked={lockedAttr(locked)}
         >
           <ShortcutFace
-            image={shortcutImage(shortcut.id)}
+            image={paintedIcon(shortcut.id)}
             name={name}
             locked={locked}
             current={current}
-            lifted={dialogOpen}
+            lifted={dialog === "handbook" ? handbook.isOpen : dialogOpen}
           />
         </Button>
         <GameTooltip

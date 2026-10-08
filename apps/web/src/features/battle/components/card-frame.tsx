@@ -13,7 +13,12 @@ import type { CountdownState } from "@/features/battle/battle-view";
 import { cardIllustration, hasCardArt } from "@/features/battle/card-art";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
-import { cardGlyph, classGlyph, raceGlyph } from "@/features/battle/glyphs";
+import {
+  cardGlyph,
+  classGlyph,
+  DAMAGE_GLYPH,
+  raceGlyph,
+} from "@/features/battle/glyphs";
 import {
   DAMAGE_COLORS,
   RACE_COLORS,
@@ -38,13 +43,6 @@ export interface LiveStats {
   readonly hp: number;
   readonly maxHp: number;
 }
-
-export const DAMAGE_GLYPH = {
-  physical: "sword",
-  fire: "flame",
-  frost: "snow",
-  holy: "sun",
-} as const satisfies Record<keyof typeof DAMAGE_COLORS, Glyph>;
 
 /** A badge with a thick bronze rim. */
 const badgeClassName =
@@ -133,10 +131,7 @@ const Emblem = ({ card }: { readonly card: CardDefinition }) => {
         color: creature ? CREAM : PARCHMENT.ink,
       }}
     >
-      <GlyphIcon
-        glyph={glyph}
-        className={glyph === "orcHead" ? "size-[1.38em]" : "size-[1.15em]"}
-      />
+      <GlyphIcon glyph={glyph} className="size-[1.15em]" />
     </span>
   );
 };
@@ -187,7 +182,7 @@ const StatPlate = ({
 /**
  * Attack (with its Damage Type icon) and HP, or the effect icon of a Skill
  * Card. `live` gives the current stats of a Unit. The HP of a damaged Unit has
- * the low HP color.
+ * the low HP color. A Wall does not attack, so it shows no Attack.
  */
 const shownAttack = (
   card: CreatureCardDefinition,
@@ -216,12 +211,14 @@ const CreaturePlates = ({
   const hp = shownHp(card, rank, live);
   return (
     <>
-      <StatPlate
-        glyph={DAMAGE_GLYPH[card.damageType]}
-        color={DAMAGE_COLORS[card.damageType]}
-        value={shownAttack(card, rank, live)}
-        className="-left-[0.35em]"
-      />
+      {card.keywords.wall ? null : (
+        <StatPlate
+          glyph={DAMAGE_GLYPH[card.damageType]}
+          color={DAMAGE_COLORS[card.damageType]}
+          value={shownAttack(card, rank, live)}
+          className="-left-[0.35em]"
+        />
+      )}
       <StatPlate
         glyph="heart"
         color={HEART_RED}

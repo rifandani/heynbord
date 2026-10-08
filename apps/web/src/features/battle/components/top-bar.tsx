@@ -21,6 +21,7 @@ import { KeyGuide } from "@/features/battle/components/key-guide";
 import { LeaveBattle } from "@/features/battle/components/leave-battle";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import { useHandbook } from "@/features/handbook/use-handbook";
 
 type Battle = ReturnType<typeof useBattle>;
 
@@ -52,7 +53,27 @@ const TurnBadge = ({
   );
 };
 
-/** Speed, Skip, sound (BAT-11) and the Key Guide (UI-02). */
+/**
+ * The Handbook button (issue #25), next to the Key Guide. The H key does the
+ * same. The Battle does not pause while the Handbook is open.
+ */
+const HandbookButton = () => {
+  const { tr } = useGameText();
+  const handbook = useHandbook();
+  return (
+    <GameButton
+      intent="ghost"
+      size="sm"
+      aria-label={tr("handbook.title")}
+      onPress={() => handbook.open()}
+      data-testid="handbook-button"
+    >
+      <GlyphIcon glyph="book" className="size-4" />
+    </GameButton>
+  );
+};
+
+/** Speed, Skip, sound (BAT-11), the Handbook and the Key Guide (UI-02). */
 const BattleControls = ({
   battle,
   session,
@@ -91,6 +112,7 @@ const BattleControls = ({
       >
         <GlyphIcon glyph={soundOn ? "sound" : "mute"} className="size-4" />
       </ToggleButton>
+      <HandbookButton />
       <KeyGuide />
     </div>
   );

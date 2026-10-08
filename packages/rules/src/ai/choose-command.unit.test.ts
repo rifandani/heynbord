@@ -79,7 +79,7 @@ const lethalChoice = (turnNumber: number) => {
     cardId: "human.militiaRecruit",
     owner: "player",
     lane: 0,
-    position: 9,
+    position: 10,
     attack: 2,
     hp: 4,
   });
@@ -418,7 +418,7 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
     // 3 HP − 2 damage is not lethal before Sudden Death, so the Unit of more value dies.
     expect(lethalChoice(1)).toEqual(spearThrowAt(1, 3));
     // At the next Start Step (Turn 21), Sudden Death deals 1: 3 − 1 − 2 = 0.
-    expect(lethalChoice(20)).toEqual(spearThrowAt(0, 9));
+    expect(lethalChoice(20)).toEqual(spearThrowAt(0, 10));
   });
 });
 

@@ -100,6 +100,7 @@ export default {
       endTurn: "Akhiri Giliran",
       skip: "Lewati animasi",
       inspect: "Lihat Detail Kartu dari Unit",
+      handbook: "Buka Buku Panduan",
       cancel: "Batal",
     },
     attack: "Serangan",
@@ -124,8 +125,8 @@ export default {
       bonusArmor: "Zirah +{value}",
       bonusArmorRule: "Dari Kartu Keahlian. Sisa Giliran: {turns}.",
       burn: "Terbakar",
-      burnRule:
-        "1 damage pada tiap Langkah Akhir pemiliknya. Sisa Langkah Akhir: {value}.",
+      burnRule: "1 damage pada tiap Langkah Akhir pemiliknya.",
+      burnLeft: "Sisa Langkah Akhir: {value}.",
       frozen: "Beku",
       frozenRule: "Ia melewatkan aksi berikutnya.",
       poisoned: "Racun {value}",
@@ -161,6 +162,7 @@ export default {
       hero: "Pahlawan",
       achievements: "Pencapaian",
       bazaar: "Bazar",
+      handbook: "Buku Panduan",
     },
     balances: {
       label: "Saldomu",
@@ -260,6 +262,241 @@ export default {
         title: "Hadang musuh",
         text: "Ada Unit musuh di Jalur yang tidak berisi Unit-mu. Sorotan merah menunjukkan Jalur itu. Panggil Unit ke Jalur itu untuk menghadang Unit musuh.",
       },
+    },
+  },
+  handbook: {
+    title: "Buku Panduan",
+    close: "Tutup Buku Panduan",
+    search: "Cari di Buku Panduan",
+    searchPlaceholder: "Cari",
+    clearSearch: "Hapus pencarian",
+    chapters: "Bab",
+    chapter: {
+      battle: { name: "Pertempuran", short: "Tempur" },
+      cards: { name: "Kartu", short: "Kartu" },
+      units: { name: "Unit", short: "Unit" },
+      keywords: { name: "Kata Kunci", short: "Kata Kunci" },
+      statuses: { name: "Status dan Jenis Damage", short: "Status" },
+      kinds: { name: "Ras, Kelas, dan Peran", short: "Ras" },
+      ranks: { name: "Peringkat", short: "Peringkat" },
+      progress: { name: "Kemajuan", short: "Kemajuan" },
+    },
+    entryList: "Entri di {chapter}",
+    results: "Hasil pencarian",
+    resultCount: "Entri yang ditemukan: {count}",
+    alias: "{alias} → {name}",
+    noResult: "Tidak ada Entri yang cocok dengan “{query}”.",
+    toBattle: "Buka Bab Pertempuran",
+    back: "Kembali ke daftar",
+    seeAlso: "Lihat juga",
+    n: "N",
+    seeCard: "N ada di tiap kartu. Lihat kartunya.",
+    rankTable: "N pada tiap Peringkat",
+    rankColumn: "Peringkat",
+    valueColumn: "N",
+    rankLine:
+      "{gems} Permata Peringkat. Serangan dan HP ×{scale:number}. Peluang Kembali Kartu Keahlian: {recall}%.",
+    names: {
+      board: "Papan",
+      lane: "Jalur",
+      square: "Petak",
+      column: "Kolom",
+      front: "Lini",
+      summonZone: "Zona Panggil",
+      closedLane: "Jalur Tertutup",
+      side: "Pihak",
+      hero: "Pahlawan",
+      turn: "Giliran",
+      startStep: "Langkah Awal",
+      playPhase: "Fase Main",
+      resolutionPhase: "Fase Resolusi",
+      endStep: "Langkah Akhir",
+      suddenDeath: "Mati Mendadak",
+      routed: "Tercerai-berai",
+      defeated: "Tumbang",
+      creatureCard: "Kartu Makhluk",
+      skillCard: "Kartu Keahlian",
+      handLimit: "Batas Tangan",
+      countdown: "Hitung mundur",
+      tickingCard: "Kartu Berjalan",
+      waitingCard: "Kartu Menunggu",
+      recall: "Kembali",
+      countdownLimit: "Batas Hitung mundur",
+      unit: "Unit",
+      ranged: "Jarak Jauh",
+      movement: "Gerakan",
+      status: "Status",
+      damageType: "Jenis Damage",
+      race: "Ras",
+      class: "Kelas",
+      role: "Peran",
+      rank: "Peringkat",
+      rankGems: "Permata Peringkat",
+      stars: "Bintang",
+      playerLevel: "Level pemain",
+    },
+    entries: {
+      board:
+        "Papan adalah medan dari satu Pertempuran. Dalam satu Tahap, Papan punya {lanes} Jalur.\n\nPahlawanmu ada di ujung kiri Jalur, dan Pahlawan musuh ada di ujung kanan. Unit-mu bergerak dari kiri ke kanan, dan Unit musuh bergerak dari kanan ke kiri.",
+      lane: "Jalur adalah satu baris berisi {squares} Petak dari Pahlawanmu ke Pahlawan musuh.\n\nUnit selalu tetap di Jalurnya. Ia hanya bergerak di sepanjang Jalurnya.",
+      square:
+        "Petak adalah satu tempat di Jalur. Petak berisi 0 atau 1 Unit. Kamu memanggil Unit ke Petak yang kosong.",
+      column:
+        "Kolom adalah semua Petak dengan jarak yang sama dari satu Pahlawan, di semua Jalur.\n\nTiap Pihak menghitung Kolom dari Pahlawannya sendiri. Kolom 1-mu ada di sebelah Pahlawanmu, dan Kolom {squares}-mu ada di sebelah Pahlawan musuh.",
+      front:
+        "Lini dari seorang Pahlawan adalah Jalur yang ada di depan Pahlawan itu. Dalam satu Tahap, tiap Pahlawan punya Lini berupa semua Jalur.\n\nUnit di ujung Jalurnya menyerang Pahlawan musuh dari Lini itu.",
+      summonZone:
+        "Zona Panggilmu adalah Kolom 1 sampai {columns}-mu, di semua Jalur. Kamu hanya bisa memanggil Unit ke Petak kosong di Zona Panggilmu.\n\nKamu juga bisa memanggil ke Petak yang ada di belakang Unit musuh. Unit jarak dekat hanya menyerang ke depan, jadi kedua Unit ini tidak bertarung.\n\nUnit dengan Tembok juga bisa masuk ke Kolom {next} dan {wall}-mu.",
+      closedLane:
+        "Di Jalur Tertutup, tidak ada Pihak yang bisa memanggil Unit, dan tidak ada Kartu Keahlian yang bisa menargetkan Petak.\n\nBeberapa Tahap punya Jalur Tertutup. Jalur itu terbuka pada nomor Giliran tertentu, atau tetap tertutup selama Pertempuran.",
+      side: "Pihak adalah salah satu dari dua tim dalam Pertempuran: Pihakmu dan Pihak musuh. Tiap Pihak punya Pahlawan.\n\nPihakmu ada di kiri Papan, dan Pihak musuh ada di kanan.",
+      hero: "Pahlawan adalah pemimpin dari satu Pihak. Ia berdiri di belakang Lini-nya, di luar Papan.\n\nPahlawan punya HP, Kelas, dan Dek. Saat HP-nya menjadi 0, Pahlawan itu Tumbang.",
+      turn: "Dalam satu Giliran, satu Pihak memainkan kartunya, dan Unit-nya bertindak. Giliran punya 4 bagian: Langkah Awal, Fase Main, Fase Resolusi, dan Langkah Akhir.\n\nKamu mengambil Giliran pertama. Lalu musuh mengambil Giliran. Nomor Giliran naik 1 setelah kedua Pihak mengambil Giliran.",
+      startStep:
+        "Langkah Awal adalah bagian pertama Giliranmu. Hal-hal ini terjadi dengan urutan ini:\n\n1. Efek seperti Regenerasi dan Semangat terjadi.\n\n2. Mulai Giliran {turn}, damage Mati Mendadak mengenai Pahlawanmu.\n\n3. Hitung mundur dari tiap Kartu Berjalan-mu turun 1.\n\n4. Pahlawanmu mengambil 1 kartu, jika Tangan berisi kurang dari {limit} kartu.",
+      playPhase:
+        "Di Fase Main, kamu memainkan kartu yang Siap. Kamu bisa memainkan semuanya, dengan urutan apa pun, atau tidak memainkan kartu.\n\nKartu Makhluk masuk ke Petak kosong di Zona Panggilmu. Kartu Keahlian menuju targetnya.\n\nPilih Akhiri Giliran untuk mengakhiri Fase Main. Tidak ada batas waktu.",
+      resolutionPhase:
+        "Di Fase Resolusi, Unit-mu bertindak sendiri. Kamu tidak mengendalikannya.\n\nMereka bertindak Jalur demi Jalur, dari Jalur 1 sampai Jalur terakhir. Di tiap Jalur, Unit yang paling dekat dengan Pahlawan musuh bertindak lebih dulu. Tiap Unit bergerak, lalu menyerang. Unit yang kamu panggil di Giliran ini juga bertindak.\n\nUnit musuh tidak bertindak. Mereka hanya bisa memakai Balasan dan Serang Duluan.",
+      endStep:
+        "Langkah Akhir adalah bagian terakhir Giliranmu. Damage Terbakar dan Racun mengenai Unit-mu. Lalu efek berwaktu turun 1, dan Unit dengan 0 HP meninggalkan Papan.\n\nLalu musuh mengambil Gilirannya.",
+      suddenDeath:
+        "Mati Mendadak membuat tiap Pertempuran berakhir. Mulai Giliran {turn}, Pahlawan dari Pihak yang aktif menerima 1 damage di tiap Langkah Awal. Mulai Giliran {double}, damage-nya 2.\n\nJika belum ada Pihak yang menang di akhir Giliran {limit}, musuh menang.",
+      routed:
+        "Pihak Tercerai-berai saat tidak punya Unit di Papan dan tidak punya kartu di Tangan dan Dek. Pihak yang Tercerai-berai tidak bisa bertindak lagi, jadi ia kalah.\n\nAturan ini sama untukmu dan untuk musuh.",
+      defeated:
+        "Pahlawan dengan 0 HP Tumbang. Saat semua Pahlawan dari satu Pihak Tumbang, Pihak itu kalah.\n\nDalam satu Tahap, tiap Pihak punya 1 Pahlawan, jadi Pahlawan dengan 0 HP mengakhiri Pertempuran.",
+      creatureCard:
+        "Kartu Makhluk memanggil Unit ke Papan. Kartu ini punya Ras, Peran, Serangan, HP, dan Kecepatan. Beberapa Kartu Makhluk punya Kata Kunci.\n\nSaat Unit-nya mati, kartu itu masuk ke Kuburanmu.",
+      skillCard:
+        "Kartu Keahlian punya efek sekali pakai, misalnya damage ke Unit musuh. Kartu ini punya Kelas. Hanya Pahlawan dengan Kelas yang sama yang bisa memakainya.\n\nSetelah efeknya, Kembali bisa mengirim kartu itu kembali ke Tanganmu.",
+      hand: "Tanganmu adalah kartu yang dipegang Pahlawanmu dalam Pertempuran. Kartu itu tampil di bagian bawah layar.\n\nDi awal Pertempuran, Pahlawanmu mengambil {start} kartu. Tiap kartu di Tangan menunjukkan Hitung mundurnya. Tangan menyimpan urutan masuknya kartu.",
+      handLimit:
+        "Tanganmu bisa berisi paling banyak {limit} kartu. Saat Tanganmu penuh, Pahlawanmu tidak mengambil kartu, dan kartu itu tetap di Dek.",
+      deck: "Dek-mu adalah kartu yang dibawa Pahlawanmu ke Pertempuran. Kamu menyusunnya di penyusun Dek.\n\nDek boleh berisi paling banyak {copies} salinan dari satu kartu. Dek hanya boleh berisi Kartu Keahlian dari Kelas Pahlawanmu.\n\nDalam Pertempuran, Dek hanya berisi kartu yang belum diambil Pahlawanmu.",
+      graveyard:
+        "Kuburan berisi kartumu yang sudah dipakai atau mati. Kartu Makhluk masuk ke sana saat Unit-nya mati. Kartu Keahlian masuk ke sana saat Kembali tidak mengirimnya kembali.",
+      countdown:
+        "Hitung mundur adalah jumlah Giliran yang harus dijalani kartu sebelum Siap. Angkanya tampil di sudut kiri atas kartu.\n\nDi Langkah Awal-mu, Hitung mundur dari tiap Kartu Berjalan turun 1. Peringkat kartu tidak mengubah Hitung mundurnya.",
+      tickingCard:
+        "Kartu Berjalan adalah {count} kartu tertua di Tanganmu yang belum Siap. Hanya Kartu Berjalan yang menghitung mundur, dan jam pasirnya berputar.\n\nKartu tertua adalah kartu yang pertama masuk ke Tangan.",
+      waitingCard:
+        "Kartu Menunggu adalah kartu di Tanganmu yang belum Siap dan bukan Kartu Berjalan. Hitung mundurnya tidak turun.\n\nKartu ini menjadi Kartu Berjalan saat kartu yang lebih tua menjadi Siap atau meninggalkan Tangan.",
+      ready:
+        "Kartu dengan Hitung mundur 0 adalah kartu yang Siap. Hanya kartu Siap yang bisa dimainkan. Kartu Siap bercahaya di Tanganmu.",
+      recall:
+        "Kembali adalah peluang Kartu Keahlian kembali ke Tanganmu setelah efeknya. Peringkat kartu menentukan peluangnya: dari {low}% pada Biasa sampai {high}% pada Legendaris.\n\nKartu yang kembali punya Hitung mundur penuh lagi. Jika tidak, kartu masuk ke Kuburan.",
+      countdownLimit:
+        "Batas Hitung mundur adalah jumlah maksimum Hitung mundur dari kartu di Dek-mu. Tiap kartu dihitung, juga Kartu Keahlian.\n\nPada Level pemain 1, batasnya {first}. Batas ini naik dengan Level pemainmu. Dek musuh dalam Tahap tidak punya batas ini.",
+      unit: "Unit adalah figur di Papan. Kartu Makhluk menaruhnya di sana.\n\nUnit menunjukkan Serangan dan HP-nya di kakinya. Unit-mu menghadap Pahlawan musuh, dan Unit musuh menghadap Pahlawanmu.",
+      attack:
+        "Serangan adalah damage yang diberikan Unit dengan satu serangan. Zirah dari target bisa memperkecil damage itu.\n\nUnit dengan Serangan 0 di kartunya tidak pernah menyerang, juga dengan bonus. Peringkat yang lebih tinggi memberi Serangan lebih besar.",
+      hp: "HP adalah nyawa dari Unit atau Pahlawan. Damage menurunkannya, dan penyembuhan mengembalikannya sampai maksimumnya.\n\nPada 0 HP, Unit meninggalkan Papan, dan Pahlawan Tumbang. Peringkat yang lebih tinggi memberi HP lebih banyak.",
+      speed:
+        "Kecepatan adalah jumlah Petak maksimum yang ditempuh Unit ke depan dalam satu Giliran. Unit dengan Kecepatan 0 tidak pernah bergerak.",
+      range:
+        "Jangkauan adalah jumlah Petak maksimum di depan Unit jarak jauh tempat ia bisa menyerang.\n\nPendukung jarak jauh punya Jangkauan 2, dan Penembak punya Jangkauan 3.",
+      melee:
+        "Unit jarak dekat menyerang Unit musuh di Petak berikutnya di depannya.\n\nSaat ia ada di Kolom terakhirnya dan tidak ada Unit musuh di depannya, ia menyerang Pahlawan musuh.",
+      ranged:
+        "Unit jarak jauh menyerang Unit musuh terdekat di depannya, di Jalurnya dan dalam Jangkauannya. Ia tidak bergerak saat ada Unit musuh dalam Jangkauannya.\n\nSaat tidak ada Unit musuh dalam Jangkauannya dan Pahlawan musuh ada di dalamnya, ia menyerang Pahlawan musuh. Pahlawan musuh berjarak 1 Petak setelah Kolom terakhir.",
+      movement:
+        "Dalam aksinya, Unit lebih dulu bergerak maju di sepanjang Jalurnya, sampai sejauh Kecepatannya.\n\nIa bergerak melewati Unit kawan, tetapi berhenti sebelum Unit musuh. Ia selalu berhenti di Petak kosong. Unit Terbang bergerak melewati semua Unit.",
+      status:
+        "Status adalah efek yang tetap ada pada Unit. Damage Api dan Es serta beberapa Kata Kunci memberi Status.\n\nUnit menunjukkan Status-nya sebagai ikon di atasnya. Detail Kartu dari Unit itu menunjukkan tiap Status dengan aturannya.",
+      damageType:
+        "Tiap serangan dan tiap efek damage punya Jenis Damage: Fisik, Api, Es, atau Suci.\n\nDi kartu, Jenis Damage tampil sebagai ikon dan warna dari Serangan.",
+      damagePhysical: "Fisik: damage biasa. Zirah menguranginya.",
+      race: "Ras adalah bangsa yang dibela Kartu Makhluk. Ras tampil di lambang di sudut kanan atas kartu.\n\nDek boleh mencampur semua Ras. Tiap Ras punya gaya bermainnya sendiri.",
+      raceHuman:
+        "Manusia dan orang-orang tangguh dari kota sungai. Mereka menahan barisan dengan Zirah kuat, Tembok, dan dukungan untuk kawan.",
+      raceElf:
+        "Elf dari hutan tua, dan roh tanaman yang bertarung bersama mereka. Mereka mengendalikan Jalur dari jauh, dengan penyembuhan dan Racun.",
+      raceUndead:
+        "Roh tua yang memakai tulang dan zirah. Banyak Unit kecil yang menjadi lebih kuat bersama-sama dan bangkit kembali.",
+      raceOrc:
+        "Suku Orc dari tanah tandus, dan binatang mereka. Cepat dan berisik, dengan Serangan tinggi dan HP rendah. Mereka menyerbu Pahlawan musuh.",
+      raceGoblin:
+        "Goblin dari tambang bukit: tukang, pencuri, dan pembuat bom. Unit kecil yang memperlambat rencana musuh.",
+      raceFeral:
+        "Makhluk liar dari puncak gunung dan gua dalam. Mereka tidak melayani bangsa mana pun. Jumlahnya sedikit, tubuhnya besar dan lambat, dengan Serangan dan HP tinggi.",
+      class:
+        "Kelas dari Pahlawan menentukan Kartu Keahlian yang boleh ada di Dek-nya. Kamu memilih Kelas dari tiap Dek di penyusun Dek.\n\nKartu Keahlian menunjukkan Kelas-nya di lambangnya.",
+      classWarrior:
+        "Bonus dan kecepatan. Kartu Keahlian Prajurit membuat kartumu lebih cepat Siap dan memberi Zirah ke Unit-mu.",
+      classRanger: "Kendali, dan damage ke Pahlawan musuh.",
+      classMage:
+        "Damage area. Kartu Keahlian Penyihir mengenai Unit musuh dengan Api dan Es.",
+      classPriest: "Penyembuhan, perlindungan, dan Unit yang bangkit kembali.",
+      role: "Peran adalah tugas Kartu Makhluk dalam Pertempuran. Peran membantumu membaca kartu. Tidak ada aturan yang memakainya, tetapi Peran menentukan Jangkauan dari Unit jarak jauh.",
+      roleFrontliner:
+        "HP tinggi dan Kecepatan rendah. Garis Depan menahan Jalurnya dari Unit musuh.",
+      roleStriker:
+        "Serangan tinggi dan HP rendah. Penyerang membunuh Unit musuh.",
+      roleRunner:
+        "Kecepatan tinggi, atau Terbang. Pelari cepat sampai ke Pahlawan musuh.",
+      roleShooter:
+        "Unit jarak jauh dengan Jangkauan 3. Penembak tetap di belakang dan menyerang.",
+      roleSupport:
+        "Pendukung membuat Unit lain lebih baik, misalnya dengan Semangat atau Regenerasi. Ia jarak dekat, atau jarak jauh dengan Jangkauan 2.",
+      roleWall:
+        "Tembok menghalangi Jalurnya dari Unit musuh. Tiap Tembok punya Kata Kunci Tembok.",
+      rank: "Peringkat adalah tingkat kekuatan dari satu salinan kartu: Biasa, Tak Biasa, Langka, Epik, atau Legendaris.\n\nPeringkat yang lebih tinggi memberi Serangan dan HP lebih besar, peluang Kembali lebih tinggi, dan kadang nilai Kata Kunci lebih tinggi. Hitung mundur tidak berubah dengan Peringkat.\n\nTiap kartu punya Peringkat terendah. Salinannya tidak pernah di bawahnya.",
+      rankGems:
+        "Permata Peringkat di bagian atas kartu menunjukkan Peringkatnya: 1 permata abu-abu untuk Biasa, sampai 5 permata oranye untuk Legendaris.\n\nJumlah permata selalu menunjukkan Peringkat, jadi kamu tidak perlu warnanya.",
+      stars:
+        "Kemenangan di Tahap memberi 1 sampai 3 Bintang. 1 Bintang: menangkan Pertempuran. 2 Bintang: menang dengan setengah HP Pahlawanmu atau lebih. 3 Bintang: menang dengan setengah HP Pahlawanmu atau lebih, sebelum Giliran 15.\n\nKampanye menyimpan Bintang terbaikmu untuk tiap Tahap. Bintang dari satu Wilayah membuka petinya.",
+      playerLevel:
+        "Level pemainmu naik dengan XP. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.\n\nLevel yang lebih tinggi memberi Pahlawanmu lebih banyak HP, Dek yang lebih besar, dan Batas Hitung mundur yang lebih tinggi. Tiap Tahap menunjukkan Level yang disarankan.",
+      coin: "Koin adalah mata uang yang kamu dapat dari Pertempuran. Koin membayar Slot Dek. Nanti, Koin juga membayar Paket, Gabung, dan Perlengkapan.\n\nKoin tampil sebagai Emas, Perak, dan Tembaga: 100 Tembaga adalah 1 Perak, dan 100 Perak adalah 1 Emas. Semuanya satu mata uang dengan satu saldo.",
+    },
+    aliases: {
+      board: "medan, arena, peta, battlefield, map",
+      lane: "baris, lorong, row, path",
+      square: "kotak, sel, tile, cell",
+      side: "tim, regu, team",
+      hero: "komandan, jenderal, avatar, commander",
+      turn: "ronde, babak, round",
+      resolutionPhase: "fase tempur, fase otomatis, combat phase",
+      suddenDeath: "kelelahan, perpanjangan waktu, fatigue, overtime",
+      routed: "kehabisan kartu, menyerah, surrender",
+      defeated: "mati, terbunuh, kalah, dead",
+      creatureCard: "kartu minion, kartu pasukan, minion card",
+      skillCard: "mantra, sihir, spell",
+      handLimit: "ukuran tangan, hand size",
+      deck: "pustaka, tumpukan ambil, library, loadout",
+      graveyard: "tumpukan buang, pemakaman, discard pile",
+      countdown: "mana, biaya, cost, cooldown, waktu tunggu, timer",
+      ready: "bisa dimainkan, tersedia, playable",
+      recall: "mastery, peluang kembali",
+      countdownLimit: "biaya dek, batas mana, deck cost, mana cap",
+      unit: "minion, makhluk, pasukan, karakter, creature",
+      hp: "nyawa, darah, kesehatan, health, life",
+      range: "jarak serang, reach",
+      movement: "jalan, maju, gerak, walk",
+      keywordCharge: "haste, rush, serbu, terjang",
+      keywordKnockback: "dorong, push, pukul mundur",
+      keywordLastBreath: "deathrattle, efek kematian",
+      keywordTrample: "tembus, cleave, pierce",
+      keywordWall: "taunt, penghalang, blocker",
+      keywordEntangle: "root, snare, akar",
+      keywordPoison: "bisa, venom, toxin",
+      keywordSabotage: "tunda, delay, ganggu",
+      keywordUnique: "legend rule, satu-satunya",
+      keywordRetaliation: "serangan balik, thorns, counterattack",
+      status: "debuff, kondisi, efek buruk",
+      statusFreeze: "stun, membeku, pingsan",
+      statusBleed: "luka, anti-heal, kurangi penyembuhan",
+      statusHobble: "lambat, slow, lumpuh",
+      damageType: "elemen, element",
+      race: "faksi, suku, kerajaan, faction",
+      class: "pekerjaan, profesi, job",
+      role: "tipe unit, unit type",
+      rank: "kelangkaan, rarity, tier, kualitas",
+      rankGems: "pip, titik",
+      stars: "skor, nilai, score",
+      playerLevel: "level akun, xp",
+      coin: "emas, perak, tembaga, uang, gold",
     },
   },
   deckBuilder: {
@@ -465,7 +702,7 @@ export default {
     trample:
       "Saat Unit ini membunuh Unit musuh dengan serangan, sisa damage mengenai Unit musuh di Petak berikutnya di belakangnya. Tidak pernah mengenai Pahlawan.",
     unique: "Hanya satu salinan kartu ini yang boleh ada di sisi Papan-mu.",
-    wall: "Unit ini punya Kecepatan 0 dan Serangan 0. Ia menghalangi Unit musuh di Jalurnya, dan dorongan tidak pernah memindahkannya.",
+    wall: "Unit ini tidak bisa bergerak dan tidak bisa menyerang. Kamu bisa memanggilnya ke 5 Petak terdekat dengan Pahlawanmu. Ia menghalangi Unit musuh di Jalurnya, dan dorongan tidak pernah memindahkannya.",
     fire: "Api: target terbakar 1 damage pada 2 Langkah Akhir berikutnya.",
     frost: "Es: target melewatkan aksi berikutnya.",
     holy: "Suci: Zirah tidak mengurangi damage ini.",

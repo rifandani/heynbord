@@ -16,10 +16,11 @@ import { BattleEvent, otherSide } from "./types";
 /**
  * Speed after Charge N, which gives +N Speed in the Turn of the summon
  * (GDD 5.4). A Hobbled Unit then has a maximum Speed of 1, and an
- * Entangled Unit has Speed 0 (GDD 4.5).
+ * Entangled Unit has Speed 0 (GDD 4.5). A Wall has no Movement, also with
+ * Speed or Charge (GDD 5.4).
  */
 const currentSpeed = (state: BattleState, unit: UnitState): number => {
-  if (unit.entangled) {
+  if (unit.entangled || unit.wall) {
     return 0;
   }
   const speed =
@@ -27,8 +28,12 @@ const currentSpeed = (state: BattleState, unit: UnitState): number => {
   return unit.hobbled > 0 ? Math.min(speed, 1) : speed;
 };
 
-/** Attack with the Rally bonus of this Turn (GDD 4.7, step 2). */
-const attackOf = (unit: UnitState): number => unit.attack + unit.rallied;
+/**
+ * Attack with the Rally bonus of this Turn (GDD 4.7, step 2). A Wall never
+ * uses its Attack: no attack, no Retaliation and no First Strike (GDD 5.4).
+ */
+const attackOf = (unit: UnitState): number =>
+  unit.wall ? 0 : unit.attack + unit.rallied;
 
 /**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of

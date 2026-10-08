@@ -137,9 +137,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     if (recruit.kind !== "creature") {
       throw new Error("Militia Recruit is a Creature Card");
     }
-    // 3/6 is 5/11 at Epic: 5 × 2 + 11 + Speed 2 × 2.
+    // 3/8 is 5/14 at Epic: 5 × 2 + 14 + Speed 1 × 2.
     expect(creaturePower(recruit)).toBe(16);
-    expect(creaturePower({ ...recruit, baseRank: "epic" })).toBe(25);
+    expect(creaturePower({ ...recruit, baseRank: "epic" })).toBe(26);
   });
 
   it("starts each Keyword value table at the Base Rank, and a higher Rank never goes down", () => {
@@ -192,6 +192,16 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     ]);
   });
 
+  it("gives Wall to each Wall Role card and only to them, with Speed 0 and Attack 0 (ADR-0023)", () => {
+    for (const card of creatures) {
+      expect(card.keywords.wall ?? false, card.id).toBe(card.role === "wall");
+    }
+    const walls = creatures.filter((card) => card.keywords.wall);
+    expect(walls.every((card) => card.speed === 0 && card.attack === 0)).toBe(
+      true
+    );
+  });
+
   it("gives a ranged Support Range 2 and a Shooter Range 3 (GDD 5.6, ADR-0022)", () => {
     for (const card of creatures) {
       if (card.role === "shooter") {
@@ -208,6 +218,20 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     const shooter = getCard("human.crossbowGuard");
     expect(() => decodeCard({ ...shooter, range: 4 })).toThrow();
     expect(decodeCard(shooter)).toEqual(shooter);
+  });
+
+  it("gives a Ranged Unit Speed 1 or less (ADR-0024)", () => {
+    for (const card of creatures) {
+      if (card.range > 0) {
+        expect(card.speed, card.id).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it("permits no Speed above 4 (ADR-0024)", () => {
+    const runner = getCard("human.kingsCourier");
+    expect(() => decodeCard({ ...runner, speed: 5 })).toThrow();
+    expect(decodeCard(runner)).toEqual(runner);
   });
 
   it("puts Entangle only on a Ranged Unit with Base Rank Epic or higher (ADR-0022)", () => {

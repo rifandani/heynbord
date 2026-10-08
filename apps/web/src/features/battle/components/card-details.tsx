@@ -7,27 +7,73 @@ import type {
 import { getCard, scaleForRank } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
+import { createContext, use } from "react";
+import { Button } from "react-aria-components";
 
 import type { CountdownState, UnitView } from "@/features/battle/battle-view";
-import { cardText } from "@/features/battle/card-text";
+import { cardText, unitStatusText } from "@/features/battle/card-text";
 import type {
   CardText,
   CreatureCardText,
   SkillCardText,
+  StatusText,
 } from "@/features/battle/card-text";
-import {
-  CardFrame,
-  DAMAGE_GLYPH,
-} from "@/features/battle/components/card-frame";
+import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { StatusIcon } from "@/features/battle/components/status-icon";
 import type { Glyph } from "@/features/battle/glyphs";
-import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
+import { classGlyph, DAMAGE_GLYPH, raceGlyph } from "@/features/battle/glyphs";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { STATUS_ORDER } from "@/features/battle/scene/status-visuals";
 import { useGameText } from "@/features/battle/use-game-text";
+import type { EntryId } from "@/features/handbook/handbook";
+import {
+  damageEntryId,
+  keywordEntryId,
+  statusEntryId,
+} from "@/features/handbook/handbook";
+
+/**
+ * Opens the Handbook at an Entry. Only a Details Panel that can take focus
+ * gets it (issue #25): then the Keyword, Status and Damage Type names are
+ * links. A hover-only panel has no link.
+ */
+type OnEntry = ((entry: EntryId) => void) | undefined;
+
+const EntryLinks = createContext<OnEntry>(undefined);
 
 const INK_MUTED = "text-[#6b5238]";
+
+/**
+ * A rules term in the Details Panel: plain text, or a link to its Handbook
+ * Entry. The link is a button, so that Enter in the Battle never plays a card.
+ */
+const TermName = ({
+  entry,
+  className,
+  children,
+}: {
+  readonly entry: EntryId;
+  readonly className?: string;
+  readonly children: ReactNode;
+}) => {
+  const onEntry = use(EntryLinks);
+  return onEntry ? (
+    <Button
+      onPress={() => onEntry(entry)}
+      className={cn(
+        "pointer-events-auto cursor-pointer rounded-sm text-left underline decoration-[#b4521a]/50 decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid",
+        className
+      )}
+      data-entry={entry}
+      data-testid="details-entry-link"
+    >
+      {children}
+    </Button>
+  ) : (
+    <span className={className}>{children}</span>
+  );
+};
 
 /** One item in the stat row, with an icon when one exists. */
 const Stat = ({
@@ -100,10 +146,12 @@ const isStatus = (icon: Status | Glyph): icon is Status =>
 const StatusLine = ({
   icon,
   name,
+  entry,
   children,
 }: {
   readonly icon: Status | Glyph;
   readonly name: string;
+  readonly entry: EntryId;
   readonly children?: ReactNode;
 }) => (
   <li className="flex gap-1.5">
@@ -115,136 +163,48 @@ const StatusLine = ({
       )}
     </span>
     <span>
-      <span className="font-bold text-[#b4521a]">{name}</span>
+      <TermName entry={entry} className="font-bold text-[#b4521a]">
+        {name}
+      </TermName>
       {children ? <> {children}</> : null}
     </span>
   </li>
 );
 
-const quietUnit = (unit: UnitView) =>
-  unit.bonusArmor <= 0 &&
-  unit.burn <= 0 &&
-  unit.poisoned <= 0 &&
-  unit.hobbled <= 0 &&
-  unit.bleeding <= 0 &&
-  !unit.frozen &&
-  !unit.entangled;
+/** Bonus Armor has no Status icon and no Entry of its own: it links to Armor. */
+const statusIcon = (line: StatusText): Status | Glyph =>
+  line.status === "bonusArmor" ? "shield" : line.status;
 
-const BonusArmorStatus = ({ unit }: { readonly unit: UnitView }) => {
-  const { tr } = useGameText();
-  if (unit.bonusArmor <= 0) {
-    return null;
-  }
-  return (
-    <StatusLine
-      icon="shield"
-      name={tr("battle.status.bonusArmor", { value: unit.bonusArmor })}
-    >
-      {tr("battle.status.bonusArmorRule", { turns: unit.bonusArmorTurns })}
-    </StatusLine>
-  );
-};
-
-const BurnStatus = ({ unit }: { readonly unit: UnitView }) => {
-  const { tr } = useGameText();
-  if (unit.burn <= 0) {
-    return null;
-  }
-  return (
-    <StatusLine icon="burn" name={tr("battle.status.burn")}>
-      {tr("battle.status.burnRule", { value: unit.burn })}
-    </StatusLine>
-  );
-};
-
-const FrozenStatus = ({ unit }: { readonly unit: UnitView }) => {
-  const { tr } = useGameText();
-  if (!unit.frozen) {
-    return null;
-  }
-  return (
-    <StatusLine icon="freeze" name={tr("battle.status.frozen")}>
-      {tr("battle.status.frozenRule")}
-    </StatusLine>
-  );
-};
-
-const EntangledStatus = ({ unit }: { readonly unit: UnitView }) => {
-  const { tr } = useGameText();
-  if (!unit.entangled) {
-    return null;
-  }
-  return (
-    <StatusLine icon="entangle" name={tr("battle.status.entangled")}>
-      {tr("battle.status.entangledRule")}
-    </StatusLine>
-  );
-};
-
-const HobbledStatus = ({ unit }: { readonly unit: UnitView }) => {
-  const { tr } = useGameText();
-  if (unit.hobbled <= 0) {
-    return null;
-  }
-  return (
-    <StatusLine
-      icon="hobble"
-      name={tr("battle.status.hobbled", { value: unit.hobbled })}
-    >
-      {tr("battle.status.hobbledRule")}
-    </StatusLine>
-  );
-};
-
-const BleedingStatus = ({ unit }: { readonly unit: UnitView }) => {
-  const { tr } = useGameText();
-  if (unit.bleeding <= 0) {
-    return null;
-  }
-  return (
-    <StatusLine
-      icon="bleed"
-      name={tr("battle.status.bleeding", { value: unit.bleeding })}
-    >
-      {tr("battle.status.bleedingRule")}
-    </StatusLine>
-  );
-};
-
-const PoisonStatus = ({ unit }: { readonly unit: UnitView }) => {
-  const { tr } = useGameText();
-  if (unit.poisoned <= 0) {
-    return null;
-  }
-  return (
-    <StatusLine
-      icon="poison"
-      name={tr("battle.status.poisoned", { value: unit.poisoned })}
-    >
-      {tr("battle.status.poisonedRule")}
-    </StatusLine>
-  );
-};
+const statusEntry = (line: StatusText): EntryId =>
+  line.status === "bonusArmor"
+    ? keywordEntryId("armor")
+    : statusEntryId(line.status);
 
 /**
  * How a Unit is different from its card now: bonus Armor, Burn, Freeze,
  * Entangled, Hobbled, Bleeding and Poison. The current HP stays on the card.
  */
 const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
-  if (quietUnit(unit)) {
+  const { text } = useGameText();
+  const lines = unitStatusText(unit);
+  if (lines.length === 0) {
     return null;
   }
   return (
     <>
       <Divider />
       <ul className="space-y-1" data-testid="unit-details-status">
-        <BonusArmorStatus unit={unit} />
-        <BurnStatus unit={unit} />
-        <FrozenStatus unit={unit} />
-        <EntangledStatus unit={unit} />
-        <HobbledStatus unit={unit} />
-        <BleedingStatus unit={unit} />
-        <PoisonStatus unit={unit} />
+        {lines.map((line) => (
+          <StatusLine
+            key={line.status}
+            icon={statusIcon(line)}
+            name={text(line.name)}
+            entry={statusEntry(line)}
+          >
+            {text(line.rule)}
+            {line.left ? <> {text(line.left)}</> : null}
+          </StatusLine>
+        ))}
       </ul>
     </>
   );
@@ -269,9 +229,12 @@ const KeywordRules = ({ content }: { readonly content: CreatureCardText }) => {
       <ul className="space-y-1.5">
         {content.keywords.map((keyword) => (
           <li key={keyword.name.key}>
-            <span className="font-bold text-[#b4521a]">
+            <TermName
+              entry={keywordEntryId(keyword.keyword)}
+              className="font-bold text-[#b4521a]"
+            >
               {text(keyword.name)}
-            </span>{" "}
+            </TermName>{" "}
             {text(keyword.rule)}
           </li>
         ))}
@@ -318,20 +281,31 @@ const CreatureBody = ({
       <KindLine glyph={raceGlyph(card.race)} owner={unitOwner(unit)}>
         {tr(`races.${card.race}`)} · {tr(`roles.${card.role}`)}
       </KindLine>
-      <Divider />
-      <ul className="flex flex-wrap gap-x-3 gap-y-1">
-        <Stat glyph={DAMAGE_GLYPH[card.damageType]}>
-          {tr(`damageTypes.${card.damageType}`)}
-        </Stat>
-        <Stat glyph="range">{text(content.attackType)}</Stat>
-        <Stat glyph="speed">
-          {tr("battle.speedStat")} {card.speed}
-        </Stat>
-      </ul>
+      {/* A Wall does not move or attack, so it shows no attack stats. */}
+      {card.keywords.wall ? null : (
+        <>
+          <Divider />
+          <ul className="flex flex-wrap gap-x-3 gap-y-1">
+            <Stat glyph={DAMAGE_GLYPH[card.damageType]}>
+              <TermName entry={damageEntryId(card.damageType)}>
+                {tr(`damageTypes.${card.damageType}`)}
+              </TermName>
+            </Stat>
+            <Stat glyph="range">{text(content.attackType)}</Stat>
+            <Stat glyph="speed">
+              {tr("battle.speedStat")} {card.speed}
+            </Stat>
+          </ul>
+        </>
+      )}
       <KeywordRules content={content} />
       {unit ? <UnitStatus unit={unit} /> : null}
       <p className="sr-only">
-        {tr("battle.attack")} {shownAttack(unit, card, rank)}
+        {card.keywords.wall ? null : (
+          <>
+            {tr("battle.attack")} {shownAttack(unit, card, rank)}
+          </>
+        )}
         <HpSr unit={unit} card={card} rank={rank} />
       </p>
     </>
@@ -359,7 +333,9 @@ const SkillBody = ({
       <ul className="flex flex-wrap gap-x-3 gap-y-1">
         {damageType ? (
           <Stat glyph={DAMAGE_GLYPH[damageType]}>
-            {tr(`damageTypes.${damageType}`)}
+            <TermName entry={damageEntryId(damageType)}>
+              {tr(`damageTypes.${damageType}`)}
+            </TermName>
           </Stat>
         ) : null}
         <Stat glyph="recall">{text(content.recall)}</Stat>
@@ -518,6 +494,7 @@ export const CardDetails = ({
   unit,
   blocked = false,
   panelSide = "right",
+  onEntry,
 }: {
   readonly cardId: string;
   readonly rank: RankId;
@@ -528,6 +505,8 @@ export const CardDetails = ({
   /** Unique (GDD 5.4): a Hand card that cannot be played now. */
   readonly blocked?: boolean;
   readonly panelSide?: "left" | "right";
+  /** Makes the rules terms links to their Handbook Entries (issue #25). */
+  readonly onEntry?: (entry: EntryId) => void;
 }) => {
   const { text } = useGameText();
   const card = getCard(cardId);
@@ -554,7 +533,9 @@ export const CardDetails = ({
         </h3>
         <BlockedLine blocked={blocked} name={text(content.name)} />
         <CountdownLine state={countdownState} />
-        <PanelBody card={card} rank={rank} content={content} unit={unit} />
+        <EntryLinks value={onEntry}>
+          <PanelBody card={card} rank={rank} content={content} unit={unit} />
+        </EntryLinks>
         <div className={flavorClass(unit)}>
           <Divider />
           <p className={`text-xs italic ${INK_MUTED}`}>

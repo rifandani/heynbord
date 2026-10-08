@@ -177,6 +177,7 @@ describe("the Graveyard view", () => {
           bleeding: 0,
           frozen: false,
           entangled: false,
+          wall: false,
         },
       ],
     };
@@ -230,6 +231,7 @@ describe("the bonus Armor view", () => {
       bleeding: 0,
       frozen: false,
       entangled: false,
+      wall: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
     const armorOf = (events: readonly BattleEvent[]) => {
@@ -290,6 +292,7 @@ describe("the Hobbled and Bleeding view", () => {
       bleeding: 0,
       frozen: false,
       entangled: false,
+      wall: false,
     };
     const view = {
       ...viewFromState(state),
@@ -359,6 +362,7 @@ describe("a push", () => {
       bleeding: 0,
       frozen: false,
       entangled: false,
+      wall: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
     const next = applyEvent(
@@ -461,6 +465,7 @@ describe("the Entangled view", () => {
     bleeding: 0,
     frozen: false,
     entangled: false,
+    wall: false,
   };
   const view = { ...viewFromState(state), units: [unit] };
   const entangled = applyEvent(

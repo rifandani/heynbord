@@ -10,7 +10,7 @@ import {
   unitAt,
 } from "./context";
 import type { BattleState, Side, UnitState } from "./types";
-import { Target } from "./types";
+import { SUMMON_ZONE_DEPTH, Target, WALL_SUMMON_DEPTH } from "./types";
 
 const unitSquares = (state: BattleState, owner: Side): Target[] =>
   state.units.flatMap((unit) =>
@@ -94,8 +94,11 @@ export const legalTargets = (
     if (isBlockedByUnique(card.cardId, friendlyUnitCardIds)) {
       return [];
     }
+    const depth = definition.keywords.wall
+      ? WALL_SUMMON_DEPTH
+      : SUMMON_ZONE_DEPTH;
     return openLanes(state).flatMap((lane) =>
-      summonPositions(side).flatMap((position) =>
+      summonPositions(side, depth).flatMap((position) =>
         unitAt(state, lane, position) ? [] : [Target.Square({ lane, position })]
       )
     );

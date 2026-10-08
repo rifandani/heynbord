@@ -28,12 +28,12 @@ describe("cardIllustration", () => {
 });
 
 describe("hasCardArt", () => {
-  it("has art for the Human, Orc, Goblin and Elf cards and the Skill Cards only", () => {
+  it("has art for the Human, Orc, Goblin, Elf and Feral cards and the Skill Cards", () => {
     expect(hasCardArt("human.crossbowGuard")).toBe(true);
     expect(hasCardArt("goblin.ankleSnatcher")).toBe(true);
     expect(hasCardArt("elf.lethielFirstGardener")).toBe(true);
     expect(hasCardArt("mage.fireball")).toBe(true);
-    expect(hasCardArt("feral.caveBear")).toBe(false);
+    expect(hasCardArt("feral.caveBear")).toBe(true);
   });
 
   it("has a file in public/ for each card with art", () => {

@@ -13,10 +13,12 @@ export {
   STAGE_LANES,
   SUMMON_ZONE_DEPTH,
   RuleViolation,
+  SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
   Target,
   TICKING_CARDS,
   TURN_LIMIT,
+  WALL_SUMMON_DEPTH,
 } from "./battle/types";
 export { tickingCards } from "./battle/turn";
 export type {
@@ -77,7 +79,7 @@ export {
   PLAYER_LEVEL_XP,
   playerLevelForXp,
 } from "./content/player-levels";
-export { keywordValue } from "./content/keywords";
+export { keywordValue, SHARED_RANK_VALUES } from "./content/keywords";
 export {
   rankPips,
   RANKS,

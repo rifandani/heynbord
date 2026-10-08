@@ -871,7 +871,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(unitById(next, warden.id)?.position).toBe(5);
-    expect(unitById(next, passed.id)?.hp).toBe(3);
+    expect(unitById(next, passed.id)?.hp).toBe(5);
     expect(eventsOfType(events, "UnitAttacked")).toEqual([
       expect.objectContaining({
         unitId: warden.id,
@@ -899,7 +899,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     const targets = [enemyAt(0, 5), enemyAt(2, 5), enemyAt(1, 6)];
     const { state: next } = run(state, endTurn);
     expect(targets.map((unit) => unitById(next, unit.id)?.hp)).toEqual([
-      3, 6, 6,
+      5, 8, 8,
     ]);
   });
 
@@ -917,7 +917,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
       attack: 0,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, passed.id)?.hp).toBe(3);
+    expect(unitById(next, passed.id)?.hp).toBe(5);
     expect(next.sides.enemy.hero.hp).toBe(30);
   });
 
@@ -959,8 +959,8 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     });
     const { state: next } = run(state, endTurn);
     expect(unitById(next, warden.id)?.position).toBe(6);
-    expect(unitById(next, recruit.id)?.position).toBe(7);
-    expect(unitById(next, passed.id)?.hp).toBe(6);
+    expect(unitById(next, recruit.id)?.position).toBe(6);
+    expect(unitById(next, passed.id)?.hp).toBe(8);
   });
 });
 
@@ -1879,7 +1879,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       attack: 0,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, far.id)?.hp).toBe(6);
+    expect(unitById(next, far.id)?.hp).toBe(8);
     expect(damageLog(events)).toEqual(["attack:8"]);
   });
 
@@ -2057,7 +2057,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       attack: 0,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, last.id)?.hp).toBe(6);
+    expect(unitById(next, last.id)?.hp).toBe(8);
     expect(damageLog(events)).toEqual(["attack:12", "trample:10"]);
   });
 
@@ -2125,7 +2125,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       attack: 0,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, behind.id)?.hp).toBe(6);
+    expect(unitById(next, behind.id)?.hp).toBe(8);
   });
 });
 
@@ -2430,5 +2430,83 @@ describe("Bleed (GDD 4.7, ADR-0019)", () => {
     expect(bleedingByLynx("rare")).toBe(1);
     expect(bleedingByLynx("epic")).toBe(2);
     expect(bleedingByLynx("legendary")).toBe(3);
+  });
+});
+
+describe("Wall (GDD 5.4)", () => {
+  it("has no Movement, also with Speed or Charge", () => {
+    const state = emptyBattle({ turnNumber: 3 });
+    const fast = placeUnit(state, {
+      cardId: "human.townBarricade",
+      owner: "player",
+      position: 0,
+      speed: 2,
+    });
+    const charger = placeUnit(state, {
+      cardId: "human.riverKnight",
+      owner: "player",
+      lane: 1,
+      position: 0,
+      summonedTurn: 3,
+      speed: 0,
+      wall: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, fast.id)?.position).toBe(0);
+    expect(unitById(next, charger.id)?.position).toBe(0);
+    expect(eventsOfType(events, "UnitMoved")).toEqual([]);
+  });
+
+  it("does not attack, also with Attack above 0", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.townBarricade",
+      owner: "player",
+      position: 11,
+      attack: 3,
+    });
+    placeUnit(state, {
+      cardId: "human.townBarricade",
+      owner: "player",
+      lane: 1,
+      position: 4,
+      attack: 3,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      lane: 1,
+      position: 5,
+      attack: 0,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(eventsOfType(events, "UnitAttacked")).toEqual([]);
+    expect(next.sides.enemy.hero.hp).toBe(30);
+  });
+
+  it("does not deal Retaliation or First Strike damage, also with Attack above 0", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+      attack: 3,
+      hp: 20,
+      maxHp: 20,
+      firstStrike: true,
+      wall: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, attacker.id)?.hp).toBe(10);
+    expect(
+      eventsOfType(events, "DamageDealt").map((event) => event.source)
+    ).toEqual(["attack"]);
   });
 });

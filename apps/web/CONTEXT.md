@@ -24,7 +24,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Card Frame**: The border, badges and plates around the card art. All cards share one frame metal. The Race or Class shows on the emblem, and the Rank shows only on the gems and the inner trim. The card name is not on the frame. A Skill Card has a variant shape of the frame. _Avoid_: card template, border, card skin
 
-**Hand Card**: The small card in the Hand. It shows the art, the Countdown, the Rank gems, the emblem, and Attack and HP for a Creature Card. Its hourglass shows if the card is a Ticking Card or a Waiting Card. _Avoid_: card face, mini card, card thumbnail
+**Hand Card**: The small card in the Hand. It shows the art, the Countdown, the Rank gems, the emblem, and Attack and HP for a Creature Card. _Avoid_: card face, mini card, card thumbnail
 
 **Card Details**: A larger copy of a card with a Details Panel next to it. It shows on hover, long press and keyboard focus for a Hand Card and for a Unit on the Board of either Side, and in the Collection. For a Unit, the card shows the current Attack and HP of the Unit, and the Details Panel shows how the Unit is different from its card. _Avoid_: tooltip, card popup, card info, inspect view
 
@@ -44,7 +44,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Battle screen
 
-**Top Bar**: The panel at the top of the Battle screen. It holds the two Heroes, the Turn number, the Battle controls and the Key Guide button. _Avoid_: header, HUD top, status bar
+**Top Bar**: The panel at the top of the Battle screen. It holds the two Heroes, the Turn number, the Battle controls, the Handbook button and the Key Guide button. _Avoid_: header, HUD top, status bar
 
 **Battle Painting**: The painted ground and background behind the Board, one for each Region. It is a flat 2D image, not a 3D scene. The Squares are not drawn on it. _Avoid_: stage background, backdrop, arena, battlefield map, Board skin
 
@@ -64,7 +64,13 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
 
-**Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, and a shortcut back to the Town. _Avoid_: menu bar, nav bar, footer, dock
+**Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and a shortcut to the Handbook. _Avoid_: menu bar, nav bar, footer, dock
+
+**Handbook**: The dialog that tells how the game works: the rules, the terms and the icons that the Player meets. It opens over the current screen, from the Town Bar and from the Top Bar of the Battle. It has no Building. It explains concepts and does not list cards: the Collection lists cards. It has an entry only for a feature that is in the game, and the Player can read all its entries from the start. _Avoid_: Wiki, codex, help, encyclopedia, rulebook, guide
+
+**Chapter**: One group of Entries in the Handbook, for example Battle, Cards, Keywords or Statuses. _Avoid_: category, section, tab
+
+**Entry**: One term in the Handbook, with its icon if it has one, its rule text and links to related Entries. Each Entry belongs to one Chapter. The search also finds an Entry by the words that players use in other games, for example "mana" for Countdown. _Avoid_: article, page, topic, wiki page
 
 **Balance Plate**: The plate in the top-right corner of the Town that shows the Coin, Essence and Heynstone balances of the Player. Each balance tells what it pays for on hover, focus and tap. It shows information only. _Avoid_: wallet, purse, currency bar, resource bar
 
@@ -91,4 +97,5 @@ React app on TanStack Start. The server renders and streams each page.
 ## Relationships
 
 - Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign. Later, the Workshop Building opens the Workshop, and the Bazaar Building opens the Bazaar.
+- The **Handbook** and the **Card Details** show the same rule text for a Keyword, a Status or a Damage Type. The Handbook never has its own copy of a rule.
 - A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.

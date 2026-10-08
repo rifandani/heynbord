@@ -71,44 +71,53 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 
 | Archetype | Opponent | Win rate | First-Side win rate | Average Turn | No Ready | Target |
 | --- | --- | --- | --- | --- | --- | --- |
-| Vanguard | Vanguard | 50.0% | 47.2% | 25.3 | 13.3 | Mirror |
-| Vanguard | Raiders | 49.3% | 46.0% | 23.3 | 11.5 | 45%–55% |
-| Vanguard | Tunnel Rats | 56.5% | 50.0% | 24.7 | 13.3 | Review |
-| Vanguard | Wild Hunt | 40.9% | 49.8% | 25.3 | 13.1 | Review |
-| Vanguard | Vanguard Full | 83.7% | 47.3% | 24.6 | 12.9 | Review |
-| Vanguard | Raiders Full | 56.5% | 46.9% | 23.5 | 11.5 | Review |
-| Vanguard | Human Heavy | 40.8% | 48.4% | 23.9 | 11.8 | Review |
-| Vanguard | Human Light | 52.7% | 49.1% | 24.7 | 12.9 | 45%–55% |
+| Vanguard | Vanguard | 50.0% | 46.2% | 26.0 | 13.8 | Mirror |
+| Vanguard | Raiders | 47.2% | 45.2% | 23.1 | 11.4 | 45%–55% |
+| Vanguard | Tunnel Rats | 62.5% | 49.1% | 25.4 | 13.9 | Review |
+| Vanguard | Wild Hunt | 49.7% | 50.2% | 25.4 | 13.2 | 45%–55% |
+| Vanguard | Thornwatch | 38.5% | 46.6% | 25.5 | 13.7 | Review |
+| Vanguard | Vanguard Full | 80.3% | 46.6% | 26.0 | 13.9 | Review |
+| Vanguard | Raiders Full | 54.3% | 46.8% | 23.2 | 11.5 | 45%–55% |
+| Vanguard | Human Heavy | 51.5% | 48.4% | 24.6 | 12.2 | 45%–55% |
+| Vanguard | Human Light | 60.4% | 47.3% | 25.9 | 13.9 | Review |
 | Raiders | Raiders | 50.0% | 39.5% | 25.7 | 13.5 | Mirror |
-| Raiders | Tunnel Rats | 38.0% | 48.1% | 22.6 | 12.5 | Review |
-| Raiders | Wild Hunt | 48.8% | 49.4% | 22.5 | 12.5 | 45%–55% |
-| Raiders | Vanguard Full | 82.4% | 49.6% | 22.4 | 11.9 | Review |
-| Raiders | Raiders Full | 61.0% | 43.5% | 24.9 | 12.5 | Review |
-| Raiders | Human Heavy | 33.8% | 48.0% | 21.5 | 11.2 | Review |
-| Raiders | Human Light | 46.1% | 49.7% | 22.2 | 12.4 | 45%–55% |
-| Tunnel Rats | Tunnel Rats | 50.0% | 51.4% | 24.7 | 15.0 | Mirror |
-| Tunnel Rats | Wild Hunt | 58.7% | 53.6% | 23.5 | 13.8 | Review |
-| Tunnel Rats | Vanguard Full | 77.5% | 49.4% | 24.3 | 14.7 | Review |
-| Tunnel Rats | Raiders Full | 69.7% | 53.1% | 22.1 | 12.5 | Review |
-| Tunnel Rats | Human Heavy | 62.2% | 51.1% | 22.4 | 12.7 | Review |
-| Tunnel Rats | Human Light | 34.8% | 49.0% | 24.6 | 14.8 | Review |
-| Wild Hunt | Wild Hunt | 50.0% | 47.7% | 26.3 | 17.9 | Mirror |
-| Wild Hunt | Vanguard Full | 81.9% | 48.9% | 25.1 | 16.9 | Review |
-| Wild Hunt | Raiders Full | 62.0% | 49.5% | 22.9 | 14.6 | Review |
-| Wild Hunt | Human Heavy | 52.9% | 52.6% | 23.7 | 15.3 | 45%–55% |
-| Wild Hunt | Human Light | 46.7% | 49.5% | 24.5 | 16.0 | 45%–55% |
-| Vanguard Full | Vanguard Full | 50.0% | 48.6% | 26.3 | 14.4 | Mirror |
-| Vanguard Full | Raiders Full | 24.2% | 47.9% | 23.2 | 11.9 | Review |
-| Vanguard Full | Human Heavy | 13.6% | 51.5% | 22.9 | 11.2 | Review |
-| Vanguard Full | Human Light | 22.4% | 50.4% | 24.4 | 13.0 | Review |
-| Raiders Full | Raiders Full | 50.0% | 44.1% | 24.4 | 12.9 | Mirror |
-| Raiders Full | Human Heavy | 32.0% | 50.7% | 22.1 | 12.1 | Review |
-| Raiders Full | Human Light | 37.7% | 50.9% | 22.4 | 13.1 | Review |
-| Human Heavy | Human Heavy | 50.0% | 42.3% | 22.8 | 15.6 | Mirror |
-| Human Heavy | Human Light | 47.6% | 49.5% | 23.3 | 15.9 | 45%–55% |
-| Human Light | Human Light | 50.0% | 52.5% | 24.7 | 15.1 | Mirror |
+| Raiders | Tunnel Rats | 46.2% | 45.6% | 23.1 | 13.0 | 45%–55% |
+| Raiders | Wild Hunt | 49.4% | 49.4% | 22.4 | 12.3 | 45%–55% |
+| Raiders | Thornwatch | 46.2% | 48.6% | 22.4 | 12.6 | 45%–55% |
+| Raiders | Vanguard Full | 79.5% | 47.8% | 22.7 | 12.5 | Review |
+| Raiders | Raiders Full | 62.9% | 46.4% | 24.0 | 11.7 | Review |
+| Raiders | Human Heavy | 37.9% | 46.9% | 21.9 | 11.5 | Review |
+| Raiders | Human Light | 49.9% | 50.2% | 22.7 | 12.9 | 45%–55% |
+| Tunnel Rats | Tunnel Rats | 50.0% | 50.1% | 25.3 | 15.6 | Mirror |
+| Tunnel Rats | Wild Hunt | 62.5% | 50.8% | 24.1 | 14.4 | Review |
+| Tunnel Rats | Thornwatch | 46.3% | 56.1% | 24.5 | 14.7 | 45%–55% |
+| Tunnel Rats | Vanguard Full | 71.4% | 50.8% | 25.2 | 15.6 | Review |
+| Tunnel Rats | Raiders Full | 65.0% | 49.4% | 22.5 | 12.9 | Review |
+| Tunnel Rats | Human Heavy | 66.9% | 50.9% | 23.3 | 13.6 | Review |
+| Tunnel Rats | Human Light | 25.8% | 49.0% | 25.2 | 15.4 | Review |
+| Wild Hunt | Wild Hunt | 50.0% | 46.3% | 25.3 | 17.0 | Mirror |
+| Wild Hunt | Thornwatch | 26.4% | 46.4% | 24.7 | 16.2 | Review |
+| Wild Hunt | Vanguard Full | 79.7% | 49.1% | 25.8 | 17.6 | Review |
+| Wild Hunt | Raiders Full | 57.5% | 49.0% | 22.6 | 14.2 | Review |
+| Wild Hunt | Human Heavy | 61.3% | 53.0% | 24.1 | 15.7 | Review |
+| Wild Hunt | Human Light | 39.5% | 48.5% | 25.4 | 17.0 | Review |
+| Thornwatch | Thornwatch | 50.0% | 45.1% | 25.4 | 16.6 | Mirror |
+| Thornwatch | Vanguard Full | 85.8% | 50.3% | 24.9 | 16.2 | Review |
+| Thornwatch | Raiders Full | 63.7% | 49.1% | 22.8 | 14.0 | Review |
+| Thornwatch | Human Heavy | 67.0% | 46.6% | 23.9 | 15.1 | Review |
+| Thornwatch | Human Light | 59.2% | 50.0% | 25.7 | 16.9 | Review |
+| Vanguard Full | Vanguard Full | 50.0% | 47.4% | 28.4 | 16.2 | Mirror |
+| Vanguard Full | Raiders Full | 29.3% | 47.1% | 23.3 | 11.9 | Review |
+| Vanguard Full | Human Heavy | 23.1% | 49.3% | 24.4 | 12.4 | Review |
+| Vanguard Full | Human Light | 28.1% | 46.5% | 26.2 | 14.4 | Review |
+| Raiders Full | Raiders Full | 50.0% | 46.8% | 23.2 | 12.2 | Mirror |
+| Raiders Full | Human Heavy | 37.9% | 52.9% | 22.2 | 12.2 | Review |
+| Raiders Full | Human Light | 42.4% | 49.8% | 22.6 | 13.4 | Review |
+| Human Heavy | Human Heavy | 50.0% | 42.3% | 23.6 | 16.4 | Mirror |
+| Human Heavy | Human Light | 36.8% | 47.9% | 24.3 | 16.9 | Review |
+| Human Light | Human Light | 50.0% | 47.6% | 26.2 | 16.6 | Mirror |
 
-The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-08, after ADR-0021 (3.1).
+The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-08, after ADR-0024 (3.1).
 
 **Goblin and Feral risks (2.2).** The diagnostic Decks have no Skill Cards, and the AI ignores Sabotage, Trample, Entangle and Rally when it selects a play. Thus these results are evidence for review, not a balance approval.
 
@@ -156,6 +165,7 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-08 | ADR-0021 in the rules package (issue #21): the 3 Ticking Cards, the Countdown Limit and the budget `12 + 3 × Countdown`. `bun scripts/fit-budget.ts 12 3` gives the Common Attack and HP of each Creature Card, and `cards.ts` uses each fit with no hand change. Each card is within ±6.7% of its budget. The Archetypes lose their cards with the highest Countdown until each one fits the limit of level 5 (35), as in the slope search (3.2). Then 1 hand change: Vanguard gets a Town Barricade (C) as its 14th card (Countdown 35). The Starter Decks change to fit the limit of level 1 (25) ([GDD 6.1](./03-game-design.md#61-starter-decks)), and the Stage enemy Decks change ([14 — Campaign Stages](./14-campaign-stages.md)). | Before ADR-0021, Countdown was only a delay (3.2). With only the cards removed, Vanguard won 44.5% against Raiders, under its target. A second Militia Recruit gave 56.4%, and Tunnel Rats then won only 34.3% against Vanguard. A Shieldbearer in place of Shield Wall gave 48.2%. The Town Barricade gives 48.9%, and each other criterion of 3.2 stays on target. |
 | 2026-10-08 | Charge becomes Charge N: +N Speed in the Turn of the summon, with N 1 up to Rare, 2 at Epic and 3 at Legendary, and N × 1 power points ([GDD 5.4 and 13](./03-game-design.md#54-keywords-v1)). The 4 Uncommon and Rare Charge cards go from +2 to +1 Speed at their Base Rank. Raiders: Tusk Brute (C) → Cinderhorn Breaker (U). | With Charge 1, Vanguard won only 44.7% against Raiders, under its target. With the old Charge 2 on the same rules it won 47.9%: Raiders got stronger, not weaker. A stat increase on the Charge cards would thus make the miss larger. Of the 1-card changes to Raiders, Cinderhorn Breaker keeps the Charge and Fire style and gives 49.3%. The Charge cards are now 3.3% to 9.5% under their budget (Howling Charger 19/21). All Stages stay on target. |
 | 2026-10-08 | No Range above 3, and Entangle only on a Ranged Unit with Base Rank Epic or higher ([ADR-0022](../adr/0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md), issue #23). Mosspitcher Lookout 3/6, Range 3, Regeneration 1. Acorn Tender 3/3. Thornline Archer 3/3, Range 3. Bramble Duelist Speed 1. Rootbound Guard Regeneration 1 in place of Entangle. Amberwing Dart 2/3, Poison in place of Entangle. Web Spitter Regeneration 1 in place of Entangle. Canopy Vinewarden Range 3. Pavise Arbalist 3/6, Ashspit Hunter 4/4, Spyglass Sniper 3/6 and Elderreed Dartmaster 3/7, all Range 3. | Thornwatch won 82% to 97% against each other Archetype. A Range 4 Shooter hits for many Turns before a melee Unit gets near it, and a Ranged Unit with Entangle keeps the nearest enemy at Speed 0. After the change, Thornwatch wins 57.0% against Vanguard, 49.5% against Raiders and 61.1% on average against the 8 other Archetypes (1000 seeds). Vanguard Full, which loses to almost all Decks, causes most of the 61.1%. The Rare Shooters are 8.3% over their budget, because a Range cut is worth more than its 1 Power Point. Human Heavy is still 4 to 8 points weaker than before. Vanguard wins 49.3% against Raiders, and no Stage changes by more than 1 point. |
+| 2026-10-08 | Speed 1 is the default, and the Role sets more Speed ([ADR-0024](../adr/0024-speed-1-is-the-default.md)). Militia Recruit 3/8, Speed 1 (it was 3/6, Speed 2). Sidestep Shiv 3/4, Speed 1 (it was 2/5, Speed 2). Mine Sapper 3/5, Speed 1 (it was 3/4, Speed 2). Boss Snikkit 2/4, Speed 1 (it was 2/3, Speed 2). | No rule gave a Unit Speed 2, and a Frontliner and 3 Goblin Strikers broke the Role text of GDD 5.6. Each card stays within 1 power point of its old power. Vanguard wins 47.2% against Raiders (it was 47.6%). The diagnostic Decks with these cards are weaker: Tunnel Rats wins 37.5% against Vanguard (it was 42.5%) and 53.8% against Raiders (it was 59.9%), and Human Light wins 39.6% against Vanguard (it was 46.7%) and 50.1% against Raiders (it was 56.5%). Militia Recruit has no more room in its budget (16 of 15), so these results stay. Some Stage enemy Decks changed too ([14 — Campaign Stages](./14-campaign-stages.md)). |
 
 ### 3.2 Countdown slope search
 

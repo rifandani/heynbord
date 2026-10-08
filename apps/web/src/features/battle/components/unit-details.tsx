@@ -10,6 +10,7 @@ import { openText } from "@/features/battle/tutorial";
 import type { ScreenSide } from "@/features/battle/unit-inspect";
 import { detailsSide } from "@/features/battle/unit-inspect";
 import type { useBattle } from "@/features/battle/use-battle";
+import { useHandbook } from "@/features/handbook/use-handbook";
 
 type Battle = ReturnType<typeof useBattle>;
 
@@ -34,8 +35,14 @@ const edgeClass = (side: ScreenSide) =>
 const facingPanel = (side: ScreenSide): "left" | "right" =>
   side === "left" ? "right" : "left";
 
+/**
+ * In the keyboard Inspect mode the panel stays while the Player reads it, so
+ * Tab goes into it, and its rules terms are links to the Handbook (issue #25).
+ * The Card Details of a hover or a long press have no links.
+ */
 export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
   const unit = useAtomValue(detailsUnitAtom);
+  const handbook = useHandbook();
   if (!unit) {
     return null;
   }
@@ -56,6 +63,7 @@ export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
         countdown={getCard(unit.cardId).countdown}
         unit={unit}
         panelSide={facingPanel(side)}
+        onEntry={battle.inspecting ? handbook.openAt : undefined}
       />
     </div>
   );

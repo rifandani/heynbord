@@ -5,7 +5,6 @@ import { cn } from "cn";
 import { useState } from "react";
 import {
   HiArrowUturnLeft,
-  HiLockClosed,
   HiMiniStar,
   HiOutlineStar,
   HiXMark,
@@ -17,6 +16,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/core/components/ui/toggle-group";
+import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import type { StageResults } from "@/features/campaign/region-map";
@@ -148,7 +148,7 @@ const StageRow = ({
           <span className="text-primary font-medium">Next</span>
         ) : (
           <span className="inline-flex items-center gap-1">
-            <HiLockClosed aria-hidden className="size-3" />
+            <GlyphIcon glyph="lock" className="size-3" />
             Locked
           </span>
         )}

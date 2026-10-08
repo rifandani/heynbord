@@ -26,6 +26,7 @@ const unit: UnitView = {
   bleeding: 0,
   frozen: false,
   entangled: false,
+  wall: false,
 };
 
 const hit = (unitId: number) =>

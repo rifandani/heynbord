@@ -24,6 +24,8 @@ export const SUBJECT = new Map<string, string>(
       "a gold trophy cup with two handles, in front of a long hanging banner in royal blue and gold with a swallow-tail end; small sparkles on the cup",
     bazaar:
       "a small market tent with orange, yellow and blue stripes and a pointed top with a little pennant, and a fat coin purse in front with gold coins that spill out",
+    handbook:
+      "an open cloth-bound field manual with a deep blue cover, its blank parchment pages, a red ribbon bookmark across the pages and a white quill pen that lies on them; no cards and no gold corners",
     settings:
       "a chunky polished bronze cogwheel with eight rounded teeth and a round royal blue gem in its center hub, that stands upright in a small slot of a short wooden block; no tools and no other objects",
   })

@@ -73,6 +73,7 @@ A Main Keyword is the signature of that Race. The Race that gives a signature up
 - Each Hero stands behind its **Front**: 1 or more Lanes next to each other. The Fronts of a Side cover all the Lanes, and each Lane is in one Front. When a Side has 1 Hero, its Front is all the Lanes.
 - A Square holds 0 or 1 Unit.
 - Your **Summon Zone** is your Columns 1, 2 and 3, in all Lanes. You can summon Units only into empty Squares of your Summon Zone. Each Hero of a Side can summon into any Lane of that Side, not only into its own Front. The rule is the same for both Sides and all Heroes, and content data cannot change it ([ADR-0011](../adr/0011-the-summon-zone-is-3-columns-deep.md)).
+- A Unit with **Wall** can also be summoned into an empty Square of your Columns 4 and 5. Those Squares are not part of your Summon Zone ([ADR-0023](../adr/0023-a-wall-can-be-summoned-up-to-column-5.md)).
 - You can summon into a Square of your Summon Zone also when an enemy Unit is between that Square and your Hero. Your new Unit is then past the enemy Unit. A melee Unit attacks only forward, so the two Units do not fight, unless one of them has **Pivot** (see 4.5 and 4.6).
 
 ```text
@@ -141,6 +142,7 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 - A ground Unit moves through friendly Units, also a friendly Wall. Each friendly Square uses 1 Square of Speed. It stops before an enemy Unit. It stops in the farthest empty Square that its Speed reaches. See [ADR-0018](../adr/0018-a-unit-moves-through-friendly-units.md).
 - A **Flying** Unit moves over other Units. It stops in the farthest empty Square that its Speed reaches. It can fly past an enemy Unit directly in front of it, also when it then has no target.
 - A Unit never moves past its last Column (Column 12 for the player).
+- A Unit with **Wall** never moves, also when an effect gives it Speed or Charge (see 5.4).
 - A **Ranged** Unit does not move if an enemy target is in its Range at the start of its action (see 4.6).
 - A **Pivot** Unit does not move if an enemy Unit is directly behind it or next to it at the start of its action (see 4.6).
 - A Unit with Speed 0 never moves.
@@ -160,6 +162,7 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 - A Pivot attack is a melee attack. Retaliation and First Strike apply to it.
 - **Ranged Unit:** It has a **Range** (number of Squares). It attacks the nearest enemy Unit in front of it, in the same Lane and in its Range. If no enemy Unit is in Range, and the enemy Hero is in Range, it attacks the enemy Hero. The enemy Hero is 1 Square past the last Column.
 - A Unit with **Base Attack** 0 does not attack. Base Attack is the Attack of the Unit for its Rank, without bonuses. Bonuses such as Rally do not change this.
+- A Unit with **Wall** does not attack, also when an effect gives it Attack (see 5.4).
 - A Unit attacks one time in each Turn, unless a Keyword says something different.
 
 ### 4.7 Damage
@@ -329,7 +332,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | **Swarm N** | While another friendly Unit or Token is in the same Lane, this Unit has +N Attack. More friendly Units do not increase the bonus. The bonus applies to attacks and Retaliation. |
 | **Trample** | Melee only. When this Unit kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it. See 4.7. |
 | **Unique** | Only one copy of this card can be on your side of the Board. While a Unit from this card is on your Side of the Board, no Hero of your Side can play a copy of this card, at any Rank. The card stays in the Hand. A Unit that the Stage puts on the Board also counts, and enemy Units do not count. A Deck can still hold more than 1 copy. |
-| **Wall** | Speed 0 and Attack 0. It blocks its Lane for enemy Units. Friendly Units move through it. |
+| **Wall** | It can't move and can't attack, also when an effect gives it Speed or Attack. It never deals Retaliation or First Strike damage. A Wall card has Speed 0 and Attack 0. It blocks its Lane for enemy Units. Friendly Units move through it. It can be summoned into Columns 1 to 5, not only into the Summon Zone (see 4.1). |
 
 New Keywords must go through the balance process in section 13.
 
@@ -352,14 +355,23 @@ The player can change the Class at any time outside a Battle, at no cost. A Deck
 
 Each Creature Card has a role. Use the role to balance the card and to explain it in the UI.
 
-| Role | Description |
-| --- | --- |
-| Frontliner | High HP, low Speed. Protects the Lane. A Frontliner with Pivot also stops enemy Units that go past it. |
-| Striker | High Attack, low HP. Kills Units. |
-| Runner | High Speed or Flying. Damages the Hero. |
-| Shooter | Ranged with Range 3. Stays back and attacks. |
-| Support | Rally, Regeneration or Summon. Makes other Units better. Melee, or Ranged with Range 2. |
-| Wall | Blocks a Lane for enemy Units. |
+| Role | Description | Speed |
+| --- | --- | --- |
+| Frontliner | High HP, low Speed. Protects the Lane. A Frontliner with Pivot also stops enemy Units that go past it. | 1 |
+| Striker | High Attack, low HP. Kills Units. | 1. An Orc melee Striker can have 2 |
+| Runner | High Speed, and sometimes Flying. Damages the Hero. | 2 to 4 |
+| Shooter | Ranged with Range 3. Stays back and attacks. | 1 |
+| Support | Rally, Regeneration or Summon. Makes other Units better. Melee, or Ranged with Range 2. | 1 |
+| Wall | Blocks a Lane for enemy Units. | 0 |
+
+The Role sets the Speed ([ADR-0024](../adr/0024-speed-1-is-the-default.md)):
+
+- The default Speed is 1. Each Square of Speed above 1 costs 2 Power Points (section 13).
+- Only a Runner has Speed 2 or more. A Flying Runner also has Speed 2 or more.
+- An Orc melee Striker can have Speed 2, because Orc is the fast Race (3.2). For speed in one Turn only, use Charge N.
+- Only a ground Runner can have Speed 3 or 4, and each Race has at most 1 such card. No Unit has Speed above 4.
+- A Ranged Unit never has Speed above 1.
+- A card that breaks this rule needs a written reason in [10 — Card Concepts](./10-card-concepts.md).
 
 ## 6. Deck building
 
@@ -495,7 +507,7 @@ The **Tutorial** is one guided session in Stage 1-1. It teaches only the core of
 
 We keep the Tutorial short. The old plan had 6 steps across Stages 1-1 to 1-3 and player levels 2 and 3. A new player forgets most of a long tutorial, and a tutorial that shows again on a replay is annoying.
 
-A **Hint** is a one-line tip. It shows one time, when the player first meets something that the Tutorial does not teach. A Hint is a small banner near its subject. It has no arrow and does not stop the game. It closes on a tap, or by itself after some seconds. There is no setting to turn Hints off. The Profile keeps the list of Hints that the player has seen.
+A **Hint** is a one-line tip. It shows one time, when the player first meets something that the Tutorial does not teach. A Hint is a small banner near its subject. It has no arrow and does not stop the game. It closes on a tap, or by itself after some seconds. There is no setting to turn Hints off. The Profile keeps the list of Hints that the player has seen. Each Hint has a "Read more" link that opens the Handbook at the Entry of its subject.
 
 | Hint | When it shows |
 | --- | --- |
@@ -537,7 +549,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - The AI uses the same rules and the same information as a player. It does not see the player's Hand.
 - In each Play Phase, the AI gives a score to each legal play (each Ready card in each legal place). It plays the best play, and then scores again. It stops when no play has a score above 0. A play that has no effect scores 0.
 - The score uses: threat in each Lane, damage that the AI's Hero will take, Units that the play can kill, and the value of the card.
-- For a Creature Card, the AI selects a Lane and a Column of its Summon Zone. It prefers the deepest empty Square that is nearer its Hero than the nearest enemy Unit in that Lane, so that its Unit blocks the enemy. It summons past an enemy Unit only with a Pivot Unit, or when the Lane has no enemy threat.
+- For a Creature Card, the AI selects a Lane and a Column of its Summon Zone, or Columns 1 to 5 for a Wall. It prefers the deepest empty Square that is nearer its Hero than the nearest enemy Unit in that Lane, so that its Unit blocks the enemy. It summons past an enemy Unit only with a Pivot Unit, or when the Lane has no enemy threat.
 - Some Skill Card effects have a Hold Rule: the AI keeps a Ready card until a condition is true, for example Shield Wall until an enemy Unit is in the Lane. A Hold Rule never stops a play that prevents lethal Hero damage, or a play that empties a full Hand while the Deck has cards. When heal cards come, the AI keeps a heal card until a Unit has lost 50% of its HP.
 - Difficulty comes from the enemy Deck, card Ranks and Hero HP. The AI logic is the same in all Stages.
 - When a Side has more than one Hero, the AI plays the Ready cards of each Hero in the same Play Phase. It scores the plays of all the Heroes together.
@@ -577,6 +589,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Achievements | List, progress, rewards |
 | Bazaar | Cosmetics and Conveniences, prices in Heynstones, the Heynstone balance |
 | Settings | A modal dialog in the center of the screen, not a separate screen (see 11.4). Audio, language, speed, reduced motion, text size, save export and import |
+| **Handbook** | A modal dialog over the current screen, not a separate screen (see 11.4). It tells how the game works: 8 Chapters of Entries for the rules, the terms and the icons that the Player meets, with a search that also knows the words of other games ("mana" finds Countdown). An Entry exists only for a feature that is in the game, and all Entries can be read from the start. It does not list cards: the Collection does. It opens from the Town Bar, from the Top Bar of the Battle and the H key, from a rules term in a Details Panel that has focus, and from "Read more" on a Hint (see 8.3). |
 
 ### 11.2 Battle screen layout (landscape)
 
@@ -598,6 +611,8 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - Hover (desktop) or long press (touch) shows the full card details.
 - The Board shows Unit Attack and HP above each Unit at all times.
 - The enemy Hand shows the number of cards and the Countdown of each card, but not the card faces.
+- The Top Bar has a Handbook button next to the Key Guide button, and the H key does the same. In the Battle, the Handbook is one page at one side of the Board, so that most of the Board stays in view. The Battle does not pause. The Key Guide lists H.
+- In the keyboard Inspect mode (the I key), Tab goes into the Card Details of the Unit. There, the names of the Keywords, Statuses and Damage Types are links to their Handbook Entries. Card Details that show only on hover or long press have no links.
 - When the enemy Side has more than one Hero, each enemy Hero shows at the end of its Front, with its own HP and Hand. A Defeated Hero shows as Defeated, and the Board shows its Front go to the next Hero.
 
 ### 11.3 Accessibility
@@ -610,7 +625,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 
 ### 11.4 Town
 
-The Town is the first screen of the game. It is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). The art brief and the image prompts are in [11 — Town Concepts](./11-town-concepts.md). Each screen of 11.1 except Title and Settings has a Building:
+The Town is the first screen of the game. It is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). The art brief and the image prompts are in [11 — Town Concepts](./11-town-concepts.md). Each screen of 11.1 except Title, Settings and the Handbook has a Building:
 
 | Screen | Building |
 | --- | --- |
@@ -627,7 +642,7 @@ The Town is the first screen of the game. It is a layered 2D painting ([web ADR-
 - All Buildings are in the painting from v1. A Building with no screen yet is only decoration: no label, no hover, and the Player cannot select it. In v1, only the Town Gate can be selected.
 - The painting fills the screen and crops its edges. All selectable Buildings stay in a center safe area that every landscape aspect shows. Decoration Buildings can be near the edges.
 - Small ambient motion: clouds, chimney smoke, flags and water. The Town Gate has a soft pulse of light until the end of the Tutorial (the first win of Stage 1-1). Before the Profile exists, the pulse always shows. A selection zooms a little toward the Building and fades to its screen. With reduced motion, all motion stops and the change is a plain fade.
-- The **Town Bar** is at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen of the table above, and a Town shortcut at its left end. The Deck shortcut opens the Deck builder dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. A change applies at once, so the dialog has no Save button. Esc, the close button and a click outside the dialog close it. The Collection screen of the library Building comes later. A shortcut to a screen that does not exist yet is disabled, with a lock and the tooltip "Opens later". A disabled shortcut can get keyboard focus, a screen reader reads its name and "opens later", and focus, hover and long press show the tooltip. On desktop, each shortcut has an icon and a label. On a phone, it has an icon only, and long press shows its name. The Settings button is at its right end, apart from the shortcuts. It opens the Settings dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. The Settings dialog has the language and the sound, and later the other options of 11.1. A change applies at once. Esc, the close button and a click outside the dialog close it, and the Player stays on the same screen. The Town Bar has no separate language and sound buttons.
+- The **Town Bar** is at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen of the table above, and a Town shortcut at its left end. The Deck shortcut opens the Deck builder dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. A change applies at once, so the dialog has no Save button. Esc, the close button and a click outside the dialog close it. The Collection screen of the library Building comes later. A shortcut to a screen that does not exist yet is disabled, with a lock and the tooltip "Opens later". A disabled shortcut can get keyboard focus, a screen reader reads its name and "opens later", and focus, hover and long press show the tooltip. On desktop, each shortcut has an icon and a label. On a phone, it has an icon only, and long press shows its name. The Handbook shortcut is the last shortcut, between the Bazaar shortcut and the Settings button. The Town, the Handbook and Settings have no Building. Like the Deck shortcut, the Handbook shortcut opens a dialog over the current screen, so it has no current state and no lock, and its icon stays lifted while the dialog is open. The Settings button is at its right end, apart from the shortcuts. It opens the Settings dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. The Settings dialog has the language and the sound, and later the other options of 11.1. A change applies at once. Esc, the close button and a click outside the dialog close it, and the Player stays on the same screen. The Town Bar has no separate language and sound buttons.
 - The game is one route ([web ADR-0006](../../apps/web/docs/adr/0006-the-game-is-one-route.md)). The Town shortcut goes back to the Town, and Esc does the same. The Battle result has "Play Again" and "Back to Campaign". To leave a Battle is an Abandon, with a confirm dialog. The browser Back button leaves the game. A reload opens the Town.
 
 ### 11.5 Campaign

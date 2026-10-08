@@ -8,7 +8,11 @@ import type { LanguageMessages } from "@/core/libs/i18n/init";
 import enUS from "@/core/libs/i18n/locales/en-US";
 import idID from "@/core/libs/i18n/locales/id-ID";
 import type { CardText, TextRef } from "@/features/battle/card-text";
-import { cardText, resolveText } from "@/features/battle/card-text";
+import {
+  cardText,
+  resolveText,
+  unitStatusText,
+} from "@/features/battle/card-text";
 
 const catalogs = {
   "en-us": enUS,
@@ -257,5 +261,67 @@ describe("cardText (CRD-08)", () => {
     expect(rally && resolve(rally.rule)).toBe(
       "In your Start Step, other friendly Units in the same Lane get +1 Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus."
     );
+  });
+});
+
+describe("unitStatusText", () => {
+  const { t } = initI18n({
+    fallbackLocale: ["en-us"],
+    locale: "en-us",
+    translations: catalogs,
+  });
+  // SAFETY: as in the tests of `cardText` above.
+  const resolve = (ref: TextRef) =>
+    resolveText((key, args) => t(key as never, args as never), ref);
+  const quiet = {
+    bonusArmor: 0,
+    bonusArmorTurns: 0,
+    burn: 0,
+    frozen: false,
+    entangled: false,
+    hobbled: 0,
+    bleeding: 0,
+    poisoned: 0,
+  };
+
+  it("is empty for a Unit with no bonus Armor and no Status", () => {
+    expect(unitStatusText(quiet)).toEqual([]);
+  });
+
+  it("lists bonus Armor, then each Status, with its count and the End Steps left of Burn", () => {
+    const lines = unitStatusText({
+      bonusArmor: 1,
+      bonusArmorTurns: 2,
+      burn: 2,
+      frozen: true,
+      entangled: true,
+      hobbled: 1,
+      bleeding: 3,
+      poisoned: 2,
+    });
+    expect(lines.map((line) => line.status)).toEqual([
+      "bonusArmor",
+      "burn",
+      "freeze",
+      "entangle",
+      "hobble",
+      "bleed",
+      "poison",
+    ]);
+    expect(
+      lines.map((line) =>
+        [line.name, line.rule, ...(line.left ? [line.left] : [])]
+          .map(resolve)
+          .join(" ")
+      )
+    ).toEqual([
+      "Armor +1 From a Skill Card. Turns left: 2.",
+      "Burn 1 damage in each End Step of its owner. End Steps left: 2.",
+      "Frozen It skips its next action.",
+      "Entangled Speed 0 in its next action. It can still attack.",
+      "Hobbled 1 This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner.",
+      "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Step of its owner.",
+      "Poison 2 1 damage per stack in each End Step of its owner. Then it loses 1 stack.",
+    ]);
   });
 });

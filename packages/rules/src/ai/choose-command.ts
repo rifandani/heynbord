@@ -190,9 +190,10 @@ const columnFrom = (side: Side, position: number): number =>
   side === "player" ? position : LANE_LENGTH - 1 - position;
 
 /**
- * GDD 9: the AI prefers the deepest Square of its Summon Zone that blocks the
- * enemy. A Square past an enemy Unit gets no Lane pressure, unless it is a
- * Pivot Unit with that enemy directly behind it.
+ * GDD 9: the AI prefers the deepest Square that blocks the enemy: in its
+ * Summon Zone, or in Columns 1 to 5 for a Wall (ADR-0023). A Square past an
+ * enemy Unit gets no Lane pressure, unless it is a Pivot Unit with that enemy
+ * directly behind it.
  */
 const scoreCreature = (
   state: BattleState,

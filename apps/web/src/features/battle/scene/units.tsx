@@ -341,12 +341,12 @@ const UnitFigure = ({
   const stats = useMemo(
     () =>
       unitStatTexture({
-        attack: unit.attack,
+        attack: unit.wall ? undefined : unit.attack,
         startAttack: summonAttack(unit.cardId, unit.rank, unit.attack),
         hp: unit.hp,
         maxHp: unit.maxHp,
       }),
-    [unit.attack, unit.cardId, unit.hp, unit.maxHp, unit.rank]
+    [unit.attack, unit.cardId, unit.hp, unit.maxHp, unit.rank, unit.wall]
   );
   const shadow = useMemo(() => blobShadowTexture(), []);
   const z = laneZ(unit.lane, lanes);

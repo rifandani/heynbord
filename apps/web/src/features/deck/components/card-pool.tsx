@@ -308,22 +308,30 @@ export const CardPool = ({
       className="flex min-h-0 flex-col gap-3 py-4 pr-9 pl-5 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:py-2 [@media(max-height:500px)]:pr-6 [@media(max-height:500px)]:pl-3"
     >
       <header className="flex flex-col gap-2 [@media(max-height:500px)]:gap-1">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 [@media(max-height:500px)]:gap-y-1">
-          <h3
-            id="deck-pool-title"
-            className="font-display flex items-baseline gap-2 text-lg font-bold [@media(max-height:500px)]:text-sm"
+        <h3
+          id="deck-pool-title"
+          className="font-display flex items-baseline gap-2 text-lg font-bold [@media(max-height:500px)]:text-sm"
+        >
+          {tr("deckBuilder.cards")}
+          <span
+            className="font-sans text-xs font-semibold text-[#5b4632] tabular-nums"
+            data-testid="pool-count"
           >
-            {tr("deckBuilder.cards")}
-            <span
-              className="font-sans text-xs font-semibold text-[#5b4632] tabular-nums"
-              data-testid="pool-count"
-            >
-              {tr("deckBuilder.ownedOf", {
-                owned: pool.ownedCards,
-                total: pool.totalCards,
-              })}
-            </span>
-          </h3>
+            {tr("deckBuilder.ownedOf", {
+              owned: pool.ownedCards,
+              total: pool.totalCards,
+            })}
+          </span>
+        </h3>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 [@media(max-height:500px)]:gap-y-1">
+          <Segments
+            label={tr("deckBuilder.filters.kind")}
+            value={filter.kind}
+            options={KINDS}
+            onChange={(kind) => change({ kind })}
+            testId="pool-filter"
+            render={(id) => tr(`deckBuilder.filters.${id}`)}
+          />
           <Segments
             label={tr("deckBuilder.filters.ownership")}
             value={filter.ownership}
@@ -333,15 +341,7 @@ export const CardPool = ({
             render={(id) => tr(`deckBuilder.filters.${id}`)}
           />
         </div>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 [@media(max-height:500px)]:gap-y-1">
-          <Segments
-            label={tr("deckBuilder.filters.kind")}
-            value={filter.kind}
-            options={KINDS}
-            onChange={(kind) => change({ kind })}
-            testId="pool-filter"
-            render={(id) => tr(`deckBuilder.filters.${id}`)}
-          />
+        <div className="flex flex-col items-start gap-1.5 [@media(max-height:500px)]:gap-1">
           {filter.kind === "creature" ? (
             <Segments
               label={tr("deckBuilder.filters.race")}

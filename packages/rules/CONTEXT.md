@@ -48,7 +48,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Resolution Phase**: The part of a Turn in which the active side's Units move and attack automatically. _Avoid_: combat phase, battle phase, auto phase
 
-**Speed**: The maximum number of Squares that a Unit goes forward in its Movement in one Turn. _Avoid_: move, pace, Movement points
+**Speed**: The maximum number of Squares that a Unit goes forward in its Movement in one Turn. The default Speed is 1. Only a Runner has Speed 2 or more, and an Orc melee Striker can have Speed 2. _Avoid_: move, pace, Movement points
 
 **Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
 
@@ -92,11 +92,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Token**: A Unit that an effect makes, with no Card. It uses the Rank of the Card or effect that made it, and it disappears when it dies. _Avoid_: summon, spawn
 
-**Countdown**: The number of Turns that a Card must be a Ticking Card before it is Ready. It goes down by 1 in each Start Step of its owner while the Card is a Ticking Card. _Avoid_: mana, cost, cooldown, timer, wait
-
-**Ticking Card**: One of the 3 oldest Cards in a Hand that are not Ready. Only Ticking Cards count down. The oldest Card is the Card that came into the Hand first. _Avoid_: queue, active card, slot
-
-**Waiting Card**: A Card in a Hand that is not Ready and is not a Ticking Card. Its Countdown does not go down. It becomes a Ticking Card when an older Card becomes Ready or leaves the Hand. _Avoid_: paused card, frozen card, queued card
+**Countdown**: The number of Turns that a Card must be in the Hand before it is Ready. The Countdown of each Card in the Hand goes down by 1 in each Start Step of its owner. _Avoid_: mana, cost, cooldown, timer, wait
 
 **Ready**: The state of a Card with a Countdown of 0. Only Ready Cards can be played. _Avoid_: active, available, playable
 
@@ -150,7 +146,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Unique**: A Keyword. While a Unit from a Unique Card is on a Side of the Board, no Hero of that Side can play a copy of that Card, at any Rank. Each Unit from that Card counts, also a Unit that the Stage puts on the Board. Enemy Units do not count. A Deck can still hold more than 1 copy. _Avoid_: Singleton, One-of, Legend rule
 
-**Wall**: A Keyword. A Unit with Wall has Speed 0 and Base Attack 0. It blocks enemy Units in its Lane, and it is never Pushed. Its Hero can summon it into the Summon Zone and also into Columns 4 and 5 of an open Lane, also past an enemy Unit. Each Card with the Wall Role has Wall, and each Card with Wall has the Wall Role. _Avoid_: Barricade, Blocker, Taunt
+**Wall**: A Keyword. A Unit with Wall has no Movement and does not attack, also when an effect gives it Speed or Attack. It never deals Retaliation or First Strike damage. It blocks enemy Units in its Lane, and it is never Pushed. Its Hero can summon it into the Summon Zone and also into Columns 4 and 5 of an open Lane, also past an enemy Unit. Each Card with the Wall Role has Wall, and each Card with Wall has the Wall Role, Speed 0 and Attack 0. _Avoid_: Barricade, Blocker, Taunt
 
 **Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a grave hound that fights for the Undead is an Undead card. Orc cards show only orcs, so that no Orc card looks like a Feral card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
 
@@ -282,7 +278,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - GDD 8.3 says "a quit". The term is **Abandon**: it records no result, and it is not a loss.
 - A **Deck Slot** cost Heynstones in the **Bazaar** before, and a new Player had 5. Now a new Player has 3, and the Player buys more with **Coin**. A Deck Slot is still a **Convenience**, because it gives no power.
 - **Coin** was named "Marks" before. Gold, Silver and Copper are its denominations, not separate currencies.
-- The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)). A Unit with **Wall** can also be summoned into Columns 4 and 5. Those Squares are not part of the Summon Zone ([ADR-0022](../../docs/adr/0022-a-wall-can-be-summoned-up-to-column-5.md)).
+- The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)). A Unit with **Wall** can also be summoned into Columns 4 and 5. Those Squares are not part of the Summon Zone ([ADR-0023](../../docs/adr/0023-a-wall-can-be-summoned-up-to-column-5.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
 - A **Race** was always a people before. **Feral** is the one Race with no people ([ADR-0013](../../docs/adr/0013-v1-has-90-creature-cards.md)). "Feral" is not a word for every wild creature: a troll that fights for the orcs is an Orc card.
 - The GDD says "Deck archetype". The term is **Archetype**, and it is always a Deck. It is not a **Role**: a Role is the job of one Creature Card.
@@ -293,10 +289,12 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - GDD 4.5 said "Units never move through other Units", and a friendly Unit blocked a Lane. Now a Unit moves through friendly Units, also a friendly Wall, and only an enemy Unit stops its **Movement** ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)). A push still stops before any Unit, because a push is not Movement.
 - In many games, "bleed" is damage over time. In Heynbord, **Bleeding** does no damage: it only makes heals smaller. Damage over time is **Burn** or **Poisoned** ([ADR-0019](../../docs/adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
 - GDD 4.6 says "a Unit with Attack 0 does not attack", but a bonus could make the Attack 1. The rule uses **Base Attack**, so Rally and Swarm never make a Wall attack.
+- A **Wall** did not move or attack only because it had Speed 0 and Base Attack 0. Then a Speed or Attack buff, also Charge, could make a Wall move or attack. Now the Wall Keyword itself stops Movement, attacks, Retaliation and First Strike. The Speed 0 and Attack 0 of a Wall Card are only a rule for the Card, so that the Power Budget does not count a stat that has no effect.
 - An early plan said that the **Rally N** bonus "applies to attacks and to Retaliation", as for **Swarm N**. But the Rally bonus ends at the end of its owner's **Turn**, and Retaliation and First Strike occur only in the enemy's Turn. Thus Rally never adds to Retaliation or First Strike. Swarm does, because the Swarm bonus has no duration.
 - Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
 - The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
-- All Cards in a Hand counted down at the same time before. Then the Deck size, not the Countdown, limited the cards that a Hero played. Now only the **Ticking Cards** count down, and a Deck has a **Countdown Limit** ([ADR-0021](../../docs/adr/0021-countdown-is-a-real-cost.md)). The Countdown Limit is not a cost: "cost" stays on the _Avoid_ list of **Countdown**, because a Card is never paid for in a Battle.
+- All Cards in a Hand counted down at the same time before. Then the Deck size, not the Countdown, limited the cards that a Hero played. For a short time (issue #21), only 3 "Ticking Cards" counted down, and the other Cards were "Waiting Cards". Players found this slow and hard to track, so it was removed: all Cards in the Hand count down again. Now only the **Countdown Limit** of a Deck makes a long Countdown a real cost ([ADR-0021](../../docs/adr/0021-countdown-is-a-real-cost.md)). The Countdown Limit is not a cost: "cost" stays on the _Avoid_ list of **Countdown**, because a Card is never paid for in a Battle.
 - Melee and Common Units had **Entangle** before. On a Melee Unit it did almost nothing, and on a Ranged Unit it kept one enemy at Speed 0 in each Turn (issue #23). Now only a Ranged Unit with Base Rank Epic or higher has Entangle.
 - A Shooter had Range 3 to 5 before. The Range 4 Elf Shooters made Thornwatch win about 87% of its Matchups (issue #23). Now each Shooter has **Range** 3.
+- No rule gave a Unit Speed 2 before, and 19 Creature Cards had it, also a Frontliner (Militia Recruit) and 3 Goblin Strikers. Now the **Role** sets the Speed: 1 by default, 2 or more for a Runner, and 2 for an Orc melee Striker, because Orc is the fast Race. Another card can break this only with a written reason.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.

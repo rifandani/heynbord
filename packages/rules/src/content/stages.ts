@@ -23,9 +23,9 @@ export const STAGES: readonly StageDefinition[] = [
       classId: "warrior",
       gear: NO_GEAR,
       deck: [
-        ...copies(3, "human.militiaRecruit", "common"),
+        ...copies(2, "human.militiaRecruit", "common"),
         ...copies(2, "orc.badlandRunt", "common"),
-        ...copies(2, "human.shieldbearer", "common"),
+        ...copies(3, "human.shieldbearer", "common"),
         ...copies(2, "orc.scrapRaider", "common"),
         ...copies(1, "human.halberdier", "common"),
       ],
@@ -96,7 +96,7 @@ export const STAGES: readonly StageDefinition[] = [
         ...copies(3, "human.shieldbearer", "common"),
         ...copies(2, "human.gateWarden", "uncommon"),
         ...copies(2, "human.halberdier", "common"),
-        ...copies(1, "orc.tuskBrute", "common"),
+        ...copies(1, "orc.scrapRaider", "common"),
         ...copies(2, "human.crossbowGuard", "uncommon"),
       ],
       startUnits: [],
@@ -127,7 +127,7 @@ export const STAGES: readonly StageDefinition[] = [
       startUnits: [
         {
           cardId: "human.militiaRecruit",
-          rank: "uncommon",
+          rank: "common",
           lane: 0,
           position: 9,
         },

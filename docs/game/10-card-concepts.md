@@ -36,7 +36,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.1 Militia Recruit
 
-`human.militiaRecruit` · Frontliner · Common · Countdown 1 · Attack 3 · HP 6 · Speed 2 · Melee · Physical
+`human.militiaRecruit` · Frontliner · Common · Countdown 1 · Attack 3 · HP 8 · Speed 1 · Melee · Physical
 
 > "I brought my own pitchfork!"
 
@@ -1217,11 +1217,11 @@ Purpose: a cheap Goblin Lane anchor. Power 19, budget 18, deviation +5.6%.
 
 ### 6.6 Sidestep Shiv
 
-`goblin.sidestepShiv` · Striker · Uncommon · Countdown 2 · Attack 2 · HP 5 · Speed 2 · Melee · Physical · Pivot
+`goblin.sidestepShiv` · Striker · Uncommon · Countdown 2 · Attack 3 · HP 4 · Speed 1 · Melee · Physical · Pivot
 
 > Front door? Never heard of it.
 
-Purpose: the Goblin Pivot Unit. Power 17, budget 18, deviation -5.6%.
+Purpose: the Goblin Pivot Unit. Power 18, budget 18, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1307,11 +1307,11 @@ Purpose: the fastest Goblin Runner. Its Fire hits Burn, and Last Breath 2 hits w
 
 ### 6.11 Mine Sapper
 
-`goblin.mineSapper` · Striker · Rare · Countdown 4 · Attack 3 · HP 4 · Speed 2 · Melee · Fire · Last Breath 3
+`goblin.mineSapper` · Striker · Rare · Countdown 4 · Attack 3 · HP 5 · Speed 1 · Melee · Fire · Last Breath 3
 
 > Every wall has a weak spot. I bring my own.
 
-Purpose: a Fire Striker that hits hard and explodes when it falls. Power 24, budget 24, deviation 0%.
+Purpose: a Fire Striker that hits hard and explodes when it falls. Power 23, budget 24, deviation -4.2%.
 
 | Field | Brief |
 | --- | --- |
@@ -1379,7 +1379,7 @@ Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Tu
 
 ### 6.15 Boss Snikkit
 
-`goblin.bossSnikkit` · Striker · Epic · Countdown 5 · Attack 2 · HP 3 · Speed 2 · Melee · Fire · Unique · Sabotage 1 · Last Breath 3
+`goblin.bossSnikkit` · Striker · Epic · Countdown 5 · Attack 2 · HP 4 · Speed 1 · Melee · Fire · Unique · Sabotage 1 · Last Breath 3
 
 > "Everything down here is mine. That is the joke. Laugh."
 

@@ -8,6 +8,7 @@ export type BattleKeyAction =
   | "endTurn"
   | "skip"
   | "inspect"
+  | "handbook"
   | "cancel";
 
 export interface BattleKeyCommand {
@@ -28,6 +29,8 @@ const COMMANDS: ReadonlyMap<string, BattleKeyCommand> = new Map([
   ["S", { action: "skip", step: 1 }],
   ["i", { action: "inspect", step: 1 }],
   ["I", { action: "inspect", step: 1 }],
+  ["h", { action: "handbook", step: 1 }],
+  ["H", { action: "handbook", step: 1 }],
   ["Escape", { action: "cancel", step: 1 }],
 ]);
 
@@ -42,6 +45,7 @@ export const KEY_GUIDE: readonly {
   { keys: ["E"], action: "endTurn" },
   { keys: ["S"], action: "skip" },
   { keys: ["I"], action: "inspect" },
+  { keys: ["H"], action: "handbook" },
   { keys: ["Esc"], action: "cancel" },
 ];
 
