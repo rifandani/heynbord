@@ -297,7 +297,7 @@ The Packs screen shows the three Packs side by side ([Economy 3.1](./07-economy.
 - **Light.** From the upper left, as in all other art.
 - **Outline.** The thick dark brown outline (`#2e1d10`) of the Town Bar icons, at the same thickness on the make canvas.
 - **Seal.** The seal of each Pack is at the upper center of the front face.
-- **Race stamp area.** The lower-right quarter of the front face is plain: no seal, no band end and no ornament. On a Race Pack, the game puts a round stamp there with the Race emblem of the Card Frame and a bronze rim. A Race Pack has no art of its own.
+- **Race stamp area.** The lower-right quarter of the front face is plain: no seal, no band end and no ornament. On a Race Pack, the game puts a round stamp at the center of that quarter, with the Race emblem of the Card Frame and a bronze rim. The stamp does not cover the gold corner plate of the Royal Pack. A Race Pack has no art of its own.
 - **No cards.** No card shows out of the Pack, because a card can show a Rank.
 - **Size.** Portrait 2:3. Make at 1024 × 1536. The Pack body fills about 80% of the width and 88% of the height. Export at 512 × 768.
 - **No text.** No letters, numbers, runes or logo. The game shows the Pack names from the Message Catalogs, in each language.
@@ -309,7 +309,7 @@ The Packs screen shows the three Packs side by side ([Economy 3.1](./07-economy.
 The game docs do not keep the prompts of the Pack art. Run `bun town:prompts` to write them to `apps/web/art/town/raw/packs/` (section 3). Git ignores this folder.
 
 - `../style-reference.png`: the style reference of section 3.
-- `set-reference.png`: the Merchant Pack (`apps/web/art/packs/merchant-pack.png`) when it exists, else the `packs` icon (`apps/web/art/town/bar/packs-icon.jpg`). The other Packs match its outline, brush and scale.
+- `set-reference.png`: the Merchant Pack (`apps/web/art/packs/merchant-pack.webp`) when it exists, else the `packs` icon (`apps/web/art/town/bar/packs-icon.jpg`). The other Packs match its outline, brush and scale.
 - `prompts.md`: the setup message, then one prompt for each Pack of 8.3.
 
 Each Pack prompt has the rules of 8.1 and the subject line of the Pack in `scripts/town-art/subjects.ts`. Make the Merchant Pack first. Then run the script again, and make the Peddler Pack and the Royal Pack in one new ChatGPT conversation, with the Merchant Pack as the set reference.
@@ -324,11 +324,11 @@ Each Pack prompt has the rules of 8.1 and the subject line of the Pack in `scrip
 
 ### 8.4 Steps
 
-1. Run `bun town:prompts`. Make the Merchant Pack first, with `packs/prompts.md` and the references of 8.2, with GPT Image, a transparent background and high quality, at 1024 × 1536. Save it as `apps/web/art/packs/merchant-pack.png`, and run `bun town:prompts` again: the other Packs use it as the set reference.
+1. Run `bun town:prompts`. Make the Merchant Pack first, with `packs/prompts.md` and the references of 8.2, with GPT Image, a transparent background and high quality, at 1024 × 1536. Save it as `apps/web/art/packs/merchant-pack.webp`, and run `bun town:prompts` again: the other Packs use it as the set reference.
 2. Make the Peddler Pack and the Royal Pack. Select each image with the checklist in 8.5.
 3. Fix problems by hand or with inpainting (text-like marks, extra parts, a broken outline, an ornament in the Race stamp area).
 4. Put the three Packs on one canvas and check that the bodies have the same size and the same bottom line. Move or scale an image if necessary.
-5. Export each Pack as WebP with transparency at 512 × 768: `cwebp -q 80 -resize 512 768 <id>-pack.png -o <id>.webp`. Put the files in `apps/web/public/packs/` (`peddler.webp`, `merchant.webp`, `royal.webp`). Keep the full-size sources in `apps/web/art/packs/`, not in `public/`.
+5. Export each Pack as WebP with transparency at 512 × 768: `cwebp -q 80 -resize 512 768 <id>-pack.webp -o <id>.webp`. Put the files in `apps/web/public/packs/` (`peddler.webp`, `merchant.webp`, `royal.webp`). Keep the full-size sources in `apps/web/art/packs/`, not in `public/`.
 6. Add a unit test in the same commit as the art. The test reads `apps/web/public/packs/` and checks that it has exactly `peddler.webp`, `merchant.webp` and `royal.webp`, and that each one is a 512 × 768 WebP with alpha (as the card art test of #30).
 
 The licence record (art direction 5.5) of the Pack art is part of the release item in the [roadmap](./09-roadmap.md), not a step of this section.

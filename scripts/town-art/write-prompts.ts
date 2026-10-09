@@ -61,7 +61,7 @@ const PACKS_ICON = path.join(SOURCE_DIR, "packs-icon.jpg");
  * you add the Merchant Pack, run the script again.
  */
 const PACK_SET_REFERENCE = [
-  path.join(PACK_SOURCE_DIR, "merchant-pack.png"),
+  path.join(PACK_SOURCE_DIR, "merchant-pack.webp"),
   PACKS_ICON,
 ].find((file) => existsSync(path.join(ROOT, file)));
 
@@ -204,12 +204,12 @@ const packsFile = (packs: readonly Icon[]): string => {
     "# Pack art prompts",
     "",
     "1. Open a new ChatGPT conversation. Attach, in this order: `../style-reference.png`, `set-reference.png`. Send the setup message.",
-    `2. Send each Pack prompt in its own message. Use a transparent background and high quality, at 1024 × 1536. Save each image in \`${PACK_SOURCE_DIR}/\` as \`<id>-pack.png\`.`,
+    `2. Send each Pack prompt in its own message. Use a transparent background and high quality, at 1024 × 1536. Save each image in \`${PACK_SOURCE_DIR}/\` as \`<id>-pack.webp\`.`,
     "3. Select the images with the review checklist (Town Concepts, 8.5). For a rejected Pack, send its prompt again in the same conversation.",
     "4. Do steps 3 to 6 of Town Concepts, 8.4.",
     "",
     isIcon
-      ? `\`set-reference.png\` is the \`packs\` icon (\`${PACKS_ICON}\`). Make the \`merchant\` Pack first, save it as \`${PACK_SOURCE_DIR}/merchant-pack.png\`, and run \`bun town:prompts\` again. Then make the other Packs in a new conversation.`
+      ? `\`set-reference.png\` is the \`packs\` icon (\`${PACKS_ICON}\`). Make the \`merchant\` Pack first, save it as \`${PACK_SOURCE_DIR}/merchant-pack.webp\`, and run \`bun town:prompts\` again. Then make the other Packs in a new conversation.`
       : `\`set-reference.png\` is \`${PACK_SET_REFERENCE}\`. To change the Merchant Pack, make it first and run \`bun town:prompts\` again.`,
     "",
     "## Setup message",
@@ -217,7 +217,7 @@ const packsFile = (packs: readonly Icon[]): string => {
     block(packSetupPromptOf(isIcon)),
     ...packs.flatMap((pack, index) => [
       "",
-      `## ${index + 1}. \`${pack.id}\` → save as \`${pack.id}-pack.png\``,
+      `## ${index + 1}. \`${pack.id}\` → save as \`${pack.id}-pack.webp\``,
       "",
       block(packPromptOf(packSubjectOf(pack))),
     ]),
