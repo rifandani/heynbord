@@ -1,6 +1,6 @@
 import { RegistryContext, useAtomSet, useAtomValue } from "@effect/atom-react";
 import type { Target } from "@workspace/rules";
-import { isTutorial, starsFor } from "@workspace/rules";
+import { isTutorial, STAGES, starsFor } from "@workspace/rules";
 import { Result } from "effect";
 import { useContext } from "react";
 
@@ -42,7 +42,8 @@ import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 import { nextInspectedUnit } from "@/features/battle/unit-inspect";
 import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
-import { recordWin } from "@/features/campaign/region-map";
+import { recordWin, resultCoin } from "@/features/campaign/region-map";
+import { balancesAtom } from "@/features/town/town.atoms";
 
 /** A new Battle seed. The seed is input to the rules, so this is not a rule. */
 export const randomSeed = (): number =>
@@ -129,20 +130,31 @@ export const useBattle = () => {
     }
   };
 
-  /** The Stage results before a new Battle or the Campaign (in memory until the Profile). */
+  /**
+   * The Stage results before a new Battle or the Campaign (in memory until the
+   * Profile): the Stars of a win, and the Coin of a win or a loss (Economy 2.1).
+   */
   const recordResult = () => {
     const finished = live();
+    const result = finished?.rules.result;
+    if (!finished || !result) {
+      return;
+    }
     if (isTutorialStageWin(finished)) {
       registry.set(tutorialStageWonAtom, true);
     }
-    if (finished?.rules.result?.winner === "player") {
+    const results = registry.get(stageResultsAtom);
+    const { stageId } = finished.options;
+    const won = result.winner === "player";
+    const balances = registry.get(balancesAtom);
+    registry.set(balancesAtom, {
+      ...balances,
+      coin: balances.coin + resultCoin(STAGES, results, stageId, won),
+    });
+    if (won) {
       registry.set(
         stageResultsAtom,
-        recordWin(
-          registry.get(stageResultsAtom),
-          finished.options.stageId,
-          starsFor(finished.rules)
-        )
+        recordWin(results, stageId, starsFor(finished.rules))
       );
     }
   };

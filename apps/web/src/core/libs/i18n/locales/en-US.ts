@@ -76,6 +76,7 @@ export default {
     routedWin: "The enemy is Routed: it has no Units and no cards.",
     routedLoss: "Your Side is Routed: it has no Units and no cards.",
     starsLabel: "{count} of 3 Stars",
+    coinEarned: "Coin earned: {amount}",
     retry: "Play Again",
     backToCampaign: "Back to Campaign",
     abandon: {
@@ -155,6 +156,7 @@ export default {
     locked: "{name}, opens later",
     buildings: {
       townGate: "Campaign",
+      cardShop: "Packs",
     },
     shortcuts: {
       town: "Town",
@@ -277,6 +279,7 @@ export default {
     recall:
       "Recall sent your Skill Card back to your Hand. Its Countdown starts again.",
     deckBuilder: "You have a card that is in no Deck. Open the Deck to add it.",
+    freePack: "Your first Peddler Pack is free. Open it to get 5 cards.",
   },
   handbook: {
     title: "Handbook",
@@ -341,7 +344,8 @@ export default {
     coinUsesColumn: "Use",
     coinUse: {
       deckSlots: "Extra Deck Slots in the Deck builder.",
-      later: "Packs, Combine and Gear upgrades when those Town shortcuts open.",
+      packs: "Packs in the Packs screen.",
+      later: "Combine and Gear upgrades when those Town shortcuts open.",
     },
     playerXpTable: "Campaign XP by result",
     playerXpRegionColumn: "Region",
@@ -435,6 +439,7 @@ export default {
       rankGems: "Rank Gems",
       stars: "Stars",
       playerLevel: "Player level",
+      pack: "Pack",
     },
     entries: {
       board:
@@ -547,6 +552,7 @@ export default {
       playerLevel:
         "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss.",
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
+      pack: "A Pack is {cards} random cards that you buy with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nThere are three Packs: Peddler, Merchant and Royal. Each one has its own price, Drop Rates and Pack Guarantee. A more expensive Pack is not a better deal: it does a different job.\n\nThe Pack Guarantee gives a card of a stated Rank after a stated number of Packs without one. With New Card First, the Merchant Pack and the Royal Pack give a card that you do not have yet, when they can.\n\nA Race Pack has only the Creature Cards of one Race, and it costs more. Your first Peddler Pack is free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
     },
     aliases: {
       board: "battlefield, field, map, grid, arena",
@@ -600,6 +606,97 @@ export default {
       stars: "score, rating",
       playerLevel: "account level, xp",
       coin: "gold, silver, copper, money",
+      pack: "booster, card pack, loot box, chest, drop rate, odds",
+    },
+  },
+  packs: {
+    label: "Packs",
+    title: "Packs",
+    names: {
+      peddler: "Peddler Pack",
+      merchant: "Merchant Pack",
+      royal: "Royal Pack",
+    },
+    jobs: {
+      peddler: "The most cards for each Coin. No Epic or Legendary cards.",
+      merchant: "All Ranks except Legendary. New Card First.",
+      royal: "No Common cards. The only Pack with Legendary cards.",
+    },
+    pool: {
+      label: "Cards in the Packs",
+      all: "All cards",
+    },
+    free: "Free",
+    open: "Open",
+    openTen: "Open ×10",
+    openTenPlus: "Open ×10 (+1)",
+    openLabel: "{action}: {pack}, {price}",
+    openFreeLabel: "Open one {pack}, free",
+    missingLabel: "{action}: {pack}. You need {amount} more.",
+    need: "Need {amount}",
+    rankBar: "Drop Rates: {rates}",
+    guarantee: {
+      inPacks: "{rank} or higher in {count} Packs",
+      next: "{rank} or higher in the next Pack",
+      top: "{rank} in {count} Packs",
+      topNext: "{rank} in the next Pack",
+    },
+    rates: {
+      button: "Drop Rates",
+      title: "Drop Rates and Pack rules",
+      close: "Close Drop Rates",
+      caption: "The Drop Rates and the rules of each Pack",
+      each: "The chance of each Rank, for each card in a Pack.",
+      rank: "Rank",
+      guarantee: "Pack Guarantee",
+      tenBonus: "Open ×10 bonus",
+      ten: {
+        peddler: "At least 1 Rare or higher",
+        merchant: "At least 1 Epic or higher",
+        royal: "11 Packs",
+      },
+      newCardFirst: "New Card First",
+      yes: "Yes",
+      no: "No",
+      price: "Price",
+      racePrice: "Race Pack price",
+      rulesTitle: "Pack rules",
+      rules: {
+        roll: "A Pack has 5 cards. For each card, the Pack rolls a Rank with its Drop Rates.",
+        select:
+          "Then the Pack selects a card whose Base Rank is the same as the rolled Rank or lower. You get the card in the rolled Rank.",
+        uncommon:
+          "A Peddler Pack and a Merchant Pack have at least 1 card of Uncommon or higher.",
+        guarantee:
+          "Pack Guarantee: each Pack has a counter of the Packs in a row without a card of its Guarantee Rank or higher. If the count gets to 1 less than the number of Packs, the next Pack has such a card. Such a card sets the counter back to 0. The Packs screen shows how many Packs are left.",
+        ten: "Open ×10 buys 10 Packs of one kind for 10 × the price. Each Pack counts for the Pack Guarantee.",
+        pool: "All cards: all Creature Cards, and the Skill Cards of the Class of your active Deck.",
+        racePack:
+          "A Race Pack has only the Creature Cards of one Race, and no Skill Cards. It costs 1.4 × the price. A Pack and its Race Pack share one Pack Guarantee counter.",
+      },
+      newCardFirstRule:
+        "A Merchant Pack and a Royal Pack select a card that you do not have yet, if the rolled Rank permits one. If you have all those cards, the Pack selects a card at random. A Peddler Pack always selects at random.",
+    },
+    reveal: {
+      label: "Opened: {pack}",
+      tenTitle: "{pack} × {count}",
+      faceDown: "Face-down card {number} of {count}. Select to flip it.",
+      faceDownOne: "Face-down card. Select to flip it.",
+      new: "NEW",
+      newCard: "new card",
+      copies: "×{count}",
+      revealAll: "Reveal all",
+      skip: "Skip",
+      done: "Done",
+      flip: "Flip",
+      next: "Next card",
+      seeAll: "See all cards",
+      highlightCount: "Epic and Legendary: {number} of {count}",
+      summary: "{cards} cards · {fresh} new cards",
+      byGuarantee:
+        "Pack Guarantee: this Pack gave a card of the Guarantee Rank.",
+      byTenBonus:
+        "Open ×10 bonus: this Pack gave a card of the Guarantee Rank.",
     },
   },
   deckBuilder: {

@@ -7,10 +7,15 @@ import type { EntryId } from "@/features/handbook/handbook";
 
 /**
  * The Hints of the features that are in the game (GDD 8.3, issue #4). The
- * Hints for Packs, Workshop, Gear, Craft, Dungeons and Heynspire come with
- * their screens.
+ * Hints for Workshop, Gear, Craft, Dungeons and Heynspire come with their
+ * screens.
  */
-export const HINTS = ["skillCard", "recall", "deckBuilder"] as const;
+export const HINTS = [
+  "skillCard",
+  "recall",
+  "deckBuilder",
+  "freePack",
+] as const;
 
 export type HintId = (typeof HINTS)[number];
 
@@ -22,15 +27,20 @@ export const HINT_ENTRY: Readonly<Record<HintId, EntryId>> = {
   skillCard: "skillCard",
   recall: "recall",
   deckBuilder: "deck",
+  freePack: "pack",
 };
 
-/** The Battle Hints show near the Hand; the Deck builder Hint near the Deck shortcut. */
-export type HintPlace = "hand" | "deckShortcut";
+/**
+ * The Battle Hints show near the Hand, the Deck builder Hint near the Deck
+ * shortcut, and the free Pack Hint near the Open button of the Peddler Pack.
+ */
+export type HintPlace = "hand" | "deckShortcut" | "freePackButton";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   skillCard: "hand",
   recall: "hand",
   deckBuilder: "deckShortcut",
+  freePack: "freePackButton",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */

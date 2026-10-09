@@ -9,6 +9,7 @@ import {
   markerBoxes,
   recordWin,
   regionMap,
+  resultCoin,
   regionStars,
   smoothPath,
   trailStages,
@@ -92,6 +93,19 @@ describe("recordWin", () => {
     expect(first).toEqual({ "1-1": 2 });
     expect(recordWin(first, "1-1", 1)).toBe(first);
     expect(recordWin(first, "1-1", 3)).toEqual({ "1-1": 3 });
+  });
+});
+
+describe("resultCoin", () => {
+  it("gives the Coin of the first win, a repeat win and a loss (Economy 2.1)", () => {
+    expect(resultCoin(STAGES, {}, "1-1", true)).toBe(180);
+    expect(resultCoin(STAGES, { "1-1": 2 }, "1-1", true)).toBe(60);
+    expect(resultCoin(STAGES, { "1-1": 2 }, "1-1", false)).toBe(6);
+    expect(resultCoin(STAGES, {}, "1-1", false)).toBe(6);
+  });
+
+  it("gives no Coin for a Stage that is not in the Campaign", () => {
+    expect(resultCoin(STAGES, {}, "qa-stage", true)).toBe(0);
   });
 });
 

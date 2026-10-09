@@ -35,7 +35,12 @@ import { CampaignScreen } from "@/features/campaign/components/campaign-screen";
 import { HandbookDialog } from "@/features/handbook/components/handbook-dialog";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import { HintBanner } from "@/features/hint/components/hint-banner";
-import { useBattleHints, useTownHints } from "@/features/hint/use-hints";
+import {
+  useBattleHints,
+  usePacksHints,
+  useTownHints,
+} from "@/features/hint/use-hints";
+import { PacksScreen } from "@/features/packs/components/packs-screen";
 import { TownBar } from "@/features/town/components/town-bar";
 import {
   TownScreen,
@@ -275,7 +280,8 @@ const useEscToTown = (active: boolean, toTown: () => void) => {
 
 /**
  * The game in one route (web ADR-0006): the Town, the Campaign (the Region
- * Map), then the Battle. The Town Bar shows on each screen except the Battle.
+ * Map), then the Battle, and the Packs. The Town Bar shows on each screen
+ * except the Battle.
  */
 export const PlayScreen = () => {
   const battle = useBattle();
@@ -287,6 +293,7 @@ export const PlayScreen = () => {
 
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
   useTownHints(!battle.session);
+  usePacksHints(!battle.session && screen === "packs");
 
   useEffect(() => setSoundEnabled(soundOn), [soundOn]);
   useEffect(() => setSoundVolume(soundVolume), [soundVolume]);
@@ -306,9 +313,11 @@ export const PlayScreen = () => {
         <>
           {screen === "town" ? (
             <TownScreen leaving={leaving} onOpen={handleOpen} />
-          ) : (
+          ) : null}
+          {screen === "campaign" ? (
             <CampaignScreen onStart={(options) => battle.start(options)} />
-          )}
+          ) : null}
+          {screen === "packs" ? <PacksScreen /> : null}
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}

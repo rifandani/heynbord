@@ -887,7 +887,7 @@ test.describe("Campaign", () => {
     await expect(page.getByTestId("town")).toBeVisible();
   });
 
-  test("a win marks the Stage Done with its Stars and opens the next Stage", async ({
+  test("a win marks the Stage Done with its Stars, opens the next Stage and adds its Coin", async ({
     page,
   }) => {
     await page.goto("/play?state=victory&seed=3");
@@ -897,6 +897,11 @@ test.describe("Campaign", () => {
     const stars = await page
       .getByTestId("battle-stars")
       .getAttribute("data-stars");
+    // The first win of Stage 1-1 gives 3 × 60 Copper (Economy 2.1).
+    await expect(page.getByTestId("result-coin")).toHaveAttribute(
+      "data-copper",
+      "180"
+    );
     await page.getByTestId("back-to-campaign").click();
     const won = page.getByTestId("stage-1-1");
     await expect(won).toHaveAttribute("data-state", "done");
@@ -910,6 +915,10 @@ test.describe("Campaign", () => {
     await expect(page.getByTestId("region-stars")).toHaveAttribute(
       "data-stars",
       `${stars}`
+    );
+    await page.getByTestId("town-shortcut-town").click();
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 1 Silver, 80 Copper"
     );
   });
 });

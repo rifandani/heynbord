@@ -60,9 +60,11 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town**: The hub screen of the game, and the first screen that the Player sees. It is a painted view of a town, with one Building for each screen that the Player can open. _Avoid_: Camp, city, hub, home, lobby, main menu
 
-**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. In v1, only the Town Gate can be selected. _Avoid_: hotspot, landmark, location, house
+**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate and the Card shop can be selected. _Avoid_: hotspot, landmark, location, house
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
+
+**Card shop**: The Building that opens the Packs screen: a small house with a purple roof. _Avoid_: Pack shop, store
 
 **Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and a shortcut to the Handbook. _Avoid_: menu bar, nav bar, footer, dock
 
@@ -83,6 +85,16 @@ React app on TanStack Start. The server renders and streams each page.
 **Stage Marker**: The mark on the Trail for one Stage. It shows the state of the Stage, and the Player selects it to play that Stage. _Avoid_: checkpoint, node, pin, level button
 
 **Stage Panel**: The dialog that opens when the Player selects a Stage Marker. It shows the Stage, its enemy Hero, its rewards, the best Stars and the Deck, and it starts the Battle. _Avoid_: stage popup, stage details, pre-battle screen, lobby
+
+### Packs screen
+
+**Pack Stand**: One Pack on the Packs screen: the painted Pack on a wood ledge, then a plate with its name, its Rank bar, its Pack Guarantee line and the Open buttons. _Avoid_: pack card, shop item, offer
+
+**Rank Bar**: The small bar of the Drop Rates of a Pack, with the Rank Gems and the rate of each Rank under it. _Avoid_: odds bar, rarity bar
+
+**Race Stamp**: The round stamp with the Race emblem that the game puts on the Pack art of a Race Pack. A Race Pack has no art of its own. _Avoid_: faction badge, race sticker
+
+**Reveal**: The screen over the Packs screen that shows the cards of the opened Packs. One Pack: 5 face-down cards that flip. Open ×10: a full flip for each Epic and Legendary card, then a grid of all the cards. _Avoid_: pull animation, pack opening
 
 ### Component Catalog
 

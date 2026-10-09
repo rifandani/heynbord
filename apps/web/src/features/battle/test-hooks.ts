@@ -20,7 +20,7 @@ import {
 import { playback } from "@/features/battle/scene/playback";
 import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import type { StageResults } from "@/features/campaign/region-map";
-import { gameScreenAtom } from "@/features/town/town.atoms";
+import { balancesAtom, gameScreenAtom } from "@/features/town/town.atoms";
 
 /** The states that QA tools can ask for (director evidence manifest). */
 export const QA_STATES = [
@@ -219,6 +219,13 @@ export const installTestHooks = (
     },
     setPausedForScreenshot: (paused: boolean) => {
       playback.paused = paused;
+    },
+    /** Sets the Coin balance, in Copper, so that a test can buy Packs. */
+    setCoin: (copper: number) => {
+      registry.set(balancesAtom, {
+        ...registry.get(balancesAtom),
+        coin: copper,
+      });
     },
     setState: (name: string) => {
       const known = QA_STATES.find((candidate) => candidate === name);

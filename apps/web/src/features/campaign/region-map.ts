@@ -1,4 +1,5 @@
-import type { StageDefinition } from "@workspace/rules";
+import type { StageDefinition, StageOutcome } from "@workspace/rules";
+import { stageCoin } from "@workspace/rules";
 
 /** A point in Region Map coordinates: the 1600 × 900 box of the painting. */
 export interface Point {
@@ -197,6 +198,29 @@ export const recordWin = (
   stars: number
 ): StageResults =>
   stars > (results[stageId] ?? 0) ? { ...results, [stageId]: stars } : results;
+
+/**
+ * The Coin of a Stage result, in Copper (Economy 2.1). `results` are the
+ * results before this Battle: a win of a Stage with no result is its first
+ * win. A Stage that is not in the Campaign gives no Coin.
+ */
+export const resultCoin = (
+  stages: readonly StageDefinition[],
+  results: StageResults,
+  stageId: string,
+  won: boolean
+): number => {
+  const stage = stages.find((candidate) => candidate.id === stageId);
+  if (!stage) {
+    return 0;
+  }
+  const outcome: StageOutcome = won
+    ? (results[stageId] ?? 0) > 0
+      ? "win"
+      : "firstWin"
+    : "loss";
+  return stageCoin(stage, outcome);
+};
 
 /** The Stars of a Region and the maximum, for the Star chests (GDD 8.1). */
 export const regionStars = (trail: readonly TrailStage[]) => ({

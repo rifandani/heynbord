@@ -76,6 +76,7 @@ export default {
     routedWin: "Musuh Tercerai-berai: ia tidak punya Unit dan kartu.",
     routedLoss: "Pihakmu Tercerai-berai: kamu tidak punya Unit dan kartu.",
     starsLabel: "{count} dari 3 Bintang",
+    coinEarned: "Koin didapat: {amount}",
     retry: "Main Lagi",
     backToCampaign: "Kembali ke Kampanye",
     abandon: {
@@ -156,6 +157,7 @@ export default {
     locked: "{name}, dibuka nanti",
     buildings: {
       townGate: "Kampanye",
+      cardShop: "Paket",
     },
     shortcuts: {
       town: "Kota",
@@ -280,6 +282,7 @@ export default {
       "Kembali mengirim Kartu Keahlianmu ke Tanganmu. Hitung mundurnya mulai lagi.",
     deckBuilder:
       "Kamu punya kartu yang tidak ada di Dek mana pun. Buka Dek untuk menambahkannya.",
+    freePack: "Paket Penjaja pertamamu gratis. Buka untuk mendapat 5 kartu.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -343,8 +346,9 @@ export default {
     coinUsesColumn: "Pemakaian",
     coinUse: {
       deckSlots: "Slot Dek tambahan di pembuat Dek.",
+      packs: "Paket di layar Paket.",
       later:
-        "Paket, Gabung, dan peningkatan Perlengkapan saat pintasan Town itu dibuka.",
+        "Gabung dan peningkatan Perlengkapan saat pintasan Town itu dibuka.",
     },
     playerXpTable: "XP Kampanye menurut hasil",
     playerXpRegionColumn: "Wilayah",
@@ -440,6 +444,7 @@ export default {
       rankGems: "Permata Peringkat",
       stars: "Bintang",
       playerLevel: "Level pemain",
+      pack: "Paket",
     },
     entries: {
       board:
@@ -553,6 +558,7 @@ export default {
       playerLevel:
         "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.",
       coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
+      pack: "Paket berisi {cards} kartu acak yang kamu beli dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nAda tiga Paket: Penjaja, Saudagar, dan Kerajaan. Tiap Paket punya harga, Peluang Muncul, dan Jaminan Paket sendiri. Paket yang lebih mahal bukan penawaran yang lebih baik: tugasnya berbeda.\n\nJaminan Paket memberi kartu dengan Peringkat tertentu setelah sejumlah Paket tanpa kartu itu. Dengan Kartu Baru Dulu, Paket Saudagar dan Paket Kerajaan memberi kartu yang belum kamu punya, jika bisa.\n\nPaket Ras hanya berisi Kartu Makhluk dari satu Ras, dan harganya lebih mahal. Paket Penjaja pertamamu gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
     },
     aliases: {
       board: "medan, arena, peta, battlefield, map",
@@ -607,6 +613,97 @@ export default {
       stars: "skor, nilai, score",
       playerLevel: "level akun, xp",
       coin: "emas, perak, tembaga, uang, gold",
+      pack: "booster, paket kartu, loot box, peti, chest, peluang, odds",
+    },
+  },
+  packs: {
+    label: "Paket",
+    title: "Paket",
+    names: {
+      peddler: "Paket Penjaja",
+      merchant: "Paket Saudagar",
+      royal: "Paket Kerajaan",
+    },
+    jobs: {
+      peddler:
+        "Kartu terbanyak untuk tiap Koin. Tanpa kartu Epik atau Legendaris.",
+      merchant: "Semua Peringkat kecuali Legendaris. Kartu Baru Dulu.",
+      royal: "Tanpa kartu Biasa. Satu-satunya Paket dengan kartu Legendaris.",
+    },
+    pool: {
+      label: "Kartu di dalam Paket",
+      all: "Semua kartu",
+    },
+    free: "Gratis",
+    open: "Buka",
+    openTen: "Buka ×10",
+    openTenPlus: "Buka ×10 (+1)",
+    openLabel: "{action}: {pack}, {price}",
+    openFreeLabel: "Buka satu {pack}, gratis",
+    missingLabel: "{action}: {pack}. Kamu perlu {amount} lagi.",
+    need: "Perlu {amount}",
+    rankBar: "Peluang Muncul: {rates}",
+    guarantee: {
+      inPacks: "{rank} atau lebih tinggi dalam {count} Paket",
+      next: "{rank} atau lebih tinggi di Paket berikutnya",
+      top: "{rank} dalam {count} Paket",
+      topNext: "{rank} di Paket berikutnya",
+    },
+    rates: {
+      button: "Peluang Muncul",
+      title: "Peluang Muncul dan aturan Paket",
+      close: "Tutup Peluang Muncul",
+      caption: "Peluang Muncul dan aturan tiap Paket",
+      each: "Peluang tiap Peringkat, untuk tiap kartu di dalam Paket.",
+      rank: "Peringkat",
+      guarantee: "Jaminan Paket",
+      tenBonus: "Bonus Buka ×10",
+      ten: {
+        peddler: "Minimal 1 Langka atau lebih tinggi",
+        merchant: "Minimal 1 Epik atau lebih tinggi",
+        royal: "11 Paket",
+      },
+      newCardFirst: "Kartu Baru Dulu",
+      yes: "Ya",
+      no: "Tidak",
+      price: "Harga",
+      racePrice: "Harga Paket Ras",
+      rulesTitle: "Aturan Paket",
+      rules: {
+        roll: "Satu Paket berisi 5 kartu. Untuk tiap kartu, Paket mengundi Peringkat dengan Peluang Muncul-nya.",
+        select:
+          "Lalu Paket memilih kartu yang Peringkat dasarnya sama dengan Peringkat hasil undian atau lebih rendah. Kamu mendapat kartu itu di Peringkat hasil undian.",
+        uncommon:
+          "Paket Penjaja dan Paket Saudagar berisi minimal 1 kartu Tak Biasa atau lebih tinggi.",
+        guarantee:
+          "Jaminan Paket: tiap Paket punya penghitung Paket berturut-turut tanpa kartu Peringkat Jaminan atau lebih tinggi. Jika hitungannya 1 kurang dari jumlah Paket, Paket berikutnya berisi kartu itu. Kartu itu mengembalikan penghitung ke 0. Layar Paket menunjukkan sisa Paketnya.",
+        ten: "Buka ×10 membeli 10 Paket satu jenis seharga 10 × harganya. Tiap Paket dihitung untuk Jaminan Paket.",
+        pool: "Semua kartu: semua Kartu Makhluk, dan Kartu Keahlian dari Kelas Dek aktifmu.",
+        racePack:
+          "Paket Ras hanya berisi Kartu Makhluk dari satu Ras, tanpa Kartu Keahlian. Harganya 1,4 × harga Paket. Satu Paket dan Paket Ras-nya memakai satu penghitung Jaminan Paket.",
+      },
+      newCardFirstRule:
+        "Paket Saudagar dan Paket Kerajaan memilih kartu yang belum kamu punya, jika Peringkat hasil undian memungkinkan. Jika kamu sudah punya semua kartu itu, Paket memilih kartu secara acak. Paket Penjaja selalu memilih secara acak.",
+    },
+    reveal: {
+      label: "Dibuka: {pack}",
+      tenTitle: "{pack} × {count}",
+      faceDown:
+        "Kartu tertutup {number} dari {count}. Pilih untuk membaliknya.",
+      faceDownOne: "Kartu tertutup. Pilih untuk membaliknya.",
+      new: "BARU",
+      newCard: "kartu baru",
+      copies: "×{count}",
+      revealAll: "Buka semua",
+      skip: "Lewati",
+      done: "Selesai",
+      flip: "Balik",
+      next: "Kartu berikutnya",
+      seeAll: "Lihat semua kartu",
+      highlightCount: "Epik dan Legendaris: {number} dari {count}",
+      summary: "{cards} kartu · {fresh} kartu baru",
+      byGuarantee: "Jaminan Paket: Paket ini memberi kartu Peringkat Jaminan.",
+      byTenBonus: "Bonus Buka ×10: Paket ini memberi kartu Peringkat Jaminan.",
     },
   },
   deckBuilder: {

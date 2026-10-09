@@ -115,7 +115,7 @@ const BuildingButton = ({
     <Button
       onPress={() => onSelect(building)}
       className="group absolute flex flex-col items-center outline-none"
-      style={percentBox(box)}
+      style={{ ...percentBox(box), clipPath: building.clip }}
       data-testid={`building-${building.id}`}
     >
       <span

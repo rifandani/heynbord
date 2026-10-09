@@ -19,6 +19,9 @@ import {
   UNPAINTED_ICONS,
 } from "@/features/town/town";
 
+const publicFile = (path: string) =>
+  existsSync(fileURLToPath(new URL(`../../../public${path}`, import.meta.url)));
+
 describe("safeArea", () => {
   it("is the part of the painting that 4:3 and 19.5:9 screens show above the Town Bar", () => {
     const area = safeArea();
@@ -35,6 +38,18 @@ describe("SELECTABLE_BUILDINGS", () => {
       expect(contains(safeArea(), building.rect)).toBe(true);
       expect(contains(safeArea(), building.label)).toBe(true);
     }
+  });
+
+  it("gives each Building a screen of a Town Bar shortcut, and a layer file", () => {
+    const screens = new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.screen));
+    for (const building of SELECTABLE_BUILDINGS) {
+      expect(screens.has(building.screen), building.id).toBe(true);
+      expect(publicFile(building.image), building.id).toBe(true);
+    }
+    expect(SELECTABLE_BUILDINGS.map((building) => building.screen)).toEqual([
+      "campaign",
+      "packs",
+    ]);
   });
 });
 
@@ -75,12 +90,12 @@ describe("overlaps", () => {
 });
 
 describe("TOWN_SHORTCUTS", () => {
-  it("opens only the Town and the Campaign in v1", () => {
+  it("opens the Town, the Campaign and the Packs", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => shortcut.screen !== null).map(
         (shortcut) => shortcut.id
       )
-    ).toEqual(["town", "campaign"]);
+    ).toEqual(["town", "campaign", "packs"]);
     expect(TOWN_SHORTCUTS[0]?.id).toBe("town");
     expect(new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.id)).size).toBe(
       TOWN_SHORTCUTS.length
@@ -104,12 +119,9 @@ describe("the Handbook shortcut", () => {
       TOWN_SHORTCUTS.filter((shortcut) => !isLocked(shortcut)).map(
         (shortcut) => shortcut.id
       )
-    ).toEqual(["town", "campaign", "deck", "handbook"]);
+    ).toEqual(["town", "campaign", "deck", "packs", "handbook"]);
   });
 });
-
-const publicFile = (path: string) =>
-  existsSync(fileURLToPath(new URL(`../../../public${path}`, import.meta.url)));
 
 describe("paintedIcon", () => {
   it("uses the painted icon of each shortcut whose WebP file exists, and a temporary icon for the others", () => {

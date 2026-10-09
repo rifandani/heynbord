@@ -1,7 +1,8 @@
 import { useAtomValue } from "@effect/atom-react";
-import { starsFor } from "@workspace/rules";
+import { coinDenominations, STAGES, starsFor } from "@workspace/rules";
 import type { BattleResult, Side } from "@workspace/rules";
 import { cn } from "cn";
+import { useMemo } from "react";
 import { Button } from "react-aria-components";
 
 import type { BattleSession } from "@/features/battle/battle-session";
@@ -11,7 +12,11 @@ import { GameButton } from "@/features/battle/components/game-button";
 import { randomSeed } from "@/features/battle/use-battle";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
+import { resultCoin } from "@/features/campaign/region-map";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { CoinAmount } from "@/features/town/components/balance-plate";
+import { coinWords } from "@/features/town/town";
 
 /** The side whose Turn starts in the current event, or `null`. */
 const startingSide = (session: BattleSession | null): Side | null => {
@@ -121,6 +126,46 @@ const ResultReason = ({ result }: { readonly result: BattleResult }) => {
   return null;
 };
 
+/**
+ * The Coin of the result (Economy 2.1), on a small Night Plate, as the Balance
+ * Plate shows Coin. The Stage results do not have this Battle yet, so a win of
+ * a Stage with no result is its first win.
+ */
+const ResultCoin = ({
+  stageId,
+  won,
+}: {
+  readonly stageId: string;
+  readonly won: boolean;
+}) => {
+  const { tr, locale } = useGameText();
+  const results = useAtomValue(stageResultsAtom);
+  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  const format = (value: number) => number.format(value);
+  const coin = resultCoin(STAGES, results, stageId, won);
+  if (coin === 0) {
+    return null;
+  }
+  const words = coinWords(coin, format, (denomination) =>
+    tr(`town.balances.denominations.${denomination}.name`)
+  );
+  return (
+    <p
+      className="mx-auto mt-3 flex w-fit items-center gap-2 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-3 py-1.5 text-sm leading-none font-black text-[#fff6df] tabular-nums shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:py-1"
+      data-testid="result-coin"
+      data-copper={coin}
+    >
+      <span className="sr-only">
+        {tr("battle.coinEarned", { amount: words })}
+      </span>
+      <span aria-hidden className="flex items-center gap-2">
+        +
+        <CoinAmount parts={coinDenominations(coin)} format={format} />
+      </span>
+    </p>
+  );
+};
+
 const ResultDialog = ({
   battle,
   session,
@@ -148,6 +193,7 @@ const ResultDialog = ({
           {tr(`stages.${session.options.stageId}.name`)}
         </p>
         {won ? <ResultStars stars={stars} /> : null}
+        <ResultCoin stageId={session.options.stageId} won={won} />
         <ResultReason result={result} />
         <div className="mt-4 flex flex-wrap justify-center gap-2 [@media(max-height:500px)]:mt-2">
           <GameButton

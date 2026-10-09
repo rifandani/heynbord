@@ -650,6 +650,72 @@
   }
 }
 
+/*
+ * A Pack opens (Town Concepts 8.1): the closed image lifts, shakes, then
+ * grows a little and fades. The face-down cards come in after it.
+ */
+@keyframes pack-open {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+    opacity: 1;
+  }
+  25% {
+    translate: 0 -16px;
+  }
+  35% {
+    rotate: -4deg;
+  }
+  45% {
+    rotate: 4deg;
+  }
+  55% {
+    rotate: -3deg;
+  }
+  65% {
+    translate: 0 -16px;
+    rotate: 0deg;
+    scale: 1;
+    opacity: 1;
+  }
+  100% {
+    translate: 0 -24px;
+    scale: 1.12;
+    opacity: 0;
+  }
+}
+
+/* A face-down card comes out of the Pack to its place. */
+@keyframes pack-deal {
+  from {
+    opacity: 0;
+    translate: 0 -40px;
+    scale: 0.6;
+  }
+}
+
+/* The Rank glow on the back of a Rare, Epic or Legendary card before its flip. */
+@keyframes pack-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+    scale: 0.97;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.03;
+  }
+}
+
+/* A revealed card name comes up under its card. */
+@keyframes pack-name {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
 :root {
   --bg: oklch(1 0 0);
   --fg: oklch(0.21 0.006 285.885);

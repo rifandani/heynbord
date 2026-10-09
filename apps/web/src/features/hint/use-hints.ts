@@ -13,6 +13,7 @@ import {
   nextHint,
 } from "@/features/hint/hint";
 import { seenHintsAtom, shownHintAtom } from "@/features/hint/hint.atoms";
+import { packStateAtom } from "@/features/packs/packs.atoms";
 
 type Registry = ContextType<typeof RegistryContext>;
 
@@ -67,39 +68,56 @@ export const useBattleHints = (session: BattleSession | null) => {
 const dialogIsOpen = () => document.querySelector('[role="dialog"]') !== null;
 
 /**
- * The Deck builder Hint (GDD 8.3): the Player owns a card that is in no Deck.
- * It shows near the Deck shortcut of the Town Bar, so it waits until the
- * shortcut is on the screen and no dialog covers it.
+ * Shows `hint` when it is met, its anchor is on the screen and no dialog
+ * covers it. It waits while another Hint shows, and stops when this one was
+ * seen.
  */
-export const useTownHints = (active: boolean) => {
+const useAnchoredHint = (hint: HintId, met: boolean) => {
   const registry = useContext(RegistryContext);
-  const collection = useAtomValue(collectionAtom);
-  const slots = useAtomValue(deckSlotsAtom);
-  const met =
-    active &&
-    hasCardOutOfDecks(
-      collection,
-      slots.map((slot) => slot.deck)
-    );
   useEffect(() => {
     if (!met) {
       return;
     }
     let frame = 0;
-    // It waits while another Hint shows, and stops when this one was seen.
     const wait = () => {
-      if (registry.get(seenHintsAtom).includes("deckBuilder")) {
+      if (registry.get(seenHintsAtom).includes(hint)) {
         return;
       }
       if (
-        document.querySelector(HINT_ANCHOR.deckShortcut) !== null &&
+        document.querySelector(HINT_ANCHOR[HINT_PLACE[hint]]) !== null &&
         !dialogIsOpen()
       ) {
-        showNext(registry, ["deckBuilder"]);
+        showNext(registry, [hint]);
       }
       frame = requestAnimationFrame(wait);
     };
     wait();
     return () => cancelAnimationFrame(frame);
-  }, [registry, met]);
+  }, [registry, hint, met]);
+};
+
+/**
+ * The Deck builder Hint (GDD 8.3): the Player owns a card that is in no Deck.
+ * It shows near the Deck shortcut of the Town Bar.
+ */
+export const useTownHints = (active: boolean) => {
+  const collection = useAtomValue(collectionAtom);
+  const slots = useAtomValue(deckSlotsAtom);
+  useAnchoredHint(
+    "deckBuilder",
+    active &&
+      hasCardOutOfDecks(
+        collection,
+        slots.map((slot) => slot.deck)
+      )
+  );
+};
+
+/**
+ * The free Pack Hint (Economy 3.1): the first Peddler Pack is free. It shows
+ * near the Open button of the Peddler Pack while the Packs screen is open.
+ */
+export const usePacksHints = (active: boolean) => {
+  const packState = useAtomValue(packStateAtom);
+  useAnchoredHint("freePack", active && !packState.freePackUsed);
 };

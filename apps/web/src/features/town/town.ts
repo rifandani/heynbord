@@ -2,7 +2,7 @@ import type { CoinDenomination } from "@workspace/rules";
 import { coinDenominations } from "@workspace/rules";
 
 /** The game screens in the `/play` route before a Battle (web ADR-0006). */
-export type GameScreen = "town" | "campaign";
+export type GameScreen = "town" | "campaign" | "packs";
 
 /** A box in Town painting coordinates. */
 export interface Rect {
@@ -78,13 +78,18 @@ export const BALANCE_PLATE_CORNER: Rect = {
 
 /** A Building that the Player can select, with its cut-out layer and its label. */
 export interface SelectableBuilding {
-  readonly id: "townGate";
+  readonly id: "townGate" | "cardShop";
   readonly screen: GameScreen;
   /** The cut-out layer, in painting coordinates. */
   readonly rect: Rect;
   /** The label box above the Building, in painting coordinates. */
   readonly label: Rect;
   readonly image: string;
+  /**
+   * A CSS `clip-path` of the Building box (label and layer), where the box
+   * covers another Building: the pointer then goes to the other Building.
+   */
+  readonly clip?: string;
 }
 
 /**
@@ -98,6 +103,19 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     rect: { x: 720, y: 520, width: 344, height: 344 },
     label: { x: 720, y: 474, width: 344, height: 46 },
     image: "/town/town-gate.webp",
+  },
+  {
+    // The Card shop (11 — Town Concepts 2.7): the house with the purple roof
+    // to the right of the Town Gate. Its box covers the right tower of the
+    // gate at its lower left, so that corner goes to the Town Gate.
+    id: "cardShop",
+    screen: "packs",
+    rect: { x: 1010, y: 436, width: 199, height: 176 },
+    label: { x: 1010, y: 390, width: 199, height: 46 },
+    image: "/town/card-shop.webp",
+    // The cut goes from (25%, 100%) to (0, 62%). The polygon goes past the
+    // box, so that the hover glow is not cut.
+    clip: "polygon(-10% -20%, 110% -20%, 110% 110%, 31.6% 110%, -10% 46.8%)",
   },
 ];
 
@@ -157,7 +175,7 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   // The Deck builder is a dialog over the current screen, not a screen.
   { id: "deck", screen: null, dialog: "deck" },
   { id: "workshop", screen: null },
-  { id: "packs", screen: null },
+  { id: "packs", screen: "packs" },
   { id: "hero", screen: null },
   { id: "achievements", screen: null },
   { id: "bazaar", screen: null },

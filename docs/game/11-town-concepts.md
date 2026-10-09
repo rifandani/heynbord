@@ -2,7 +2,7 @@
 
 This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons, and section 8 gives the brief for the Pack art.
 
-Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1986 × 941). It is the 1672 × 941 original, stretched to the side: the center 400 code units keep their shape, and the stretch increases to 1.67× at the left and right edges. This lets a wide desktop screen show the full Heynspire and the full Town Gate. The Town Gate layer `town-gate.webp` is cut out of the original by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 4000 × 1800 can replace it with no code change if it keeps the same composition.
+Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1986 × 941). It is the 1672 × 941 original, stretched to the side: the center 400 code units keep their shape, and the stretch increases to 1.67× at the left and right edges. This lets a wide desktop screen show the full Heynspire and the full Town Gate. The Town Gate layer `town-gate.webp` and the Card shop layer `card-shop.webp` are cut out of the painting by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 4000 × 1800 can replace it with no code change if it keeps the same composition.
 
 ## 1. Rules for the Town art
 
@@ -33,6 +33,8 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Safe area | x 374 to 1526, y 136 to 864 | Each screen shape from 4:3 to 19.5:9 shows this area above the Town Bar. All selectable Buildings must be in it. |
 | Town Gate | x 720 to 1064, y 520 to 864 | The cut-out layer of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the layer. |
 | Town Gate label | x 720 to 1064, y 474 to 520 | The game writes "Campaign" here, on the tips of the two tower roofs. |
+| Card shop | x 1010 to 1209, y 436 to 612 | The cut-out layer of the Card shop: the house with the purple roof, its awnings and its stalls. The box covers the right tower of the Town Gate at its lower left, so the game cuts that corner from the selectable area, and the pointer there selects the Town Gate. |
+| Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Packs" here, above the purple roof. |
 | Balance Plate corner | x 1280 to 1900, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
 | Sky | Above the safe area | A screen wider than about 2.2:1 above the Town Bar crops it first. On a 19.5:9 phone, the top of the Heynspire is also cropped. |
 | Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here, for example the Dungeons cave. |
@@ -64,7 +66,7 @@ The game adds motion on separate layers over the painting. The painting must giv
 
 ## 2. Buildings
 
-Each screen of GDD 11.1 except Title and Settings has a Building. In v1, only the Town Gate can be selected. The other Buildings are decoration in the plate until their screens exist.
+Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate and the Card shop can be selected. The other Buildings are decoration in the plate until their screens exist.
 
 ### 2.1 Town Gate
 
@@ -142,7 +144,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. In v1, only th
 
 ### 2.7 Card shop
 
-`Packs` · Decoration in v1
+`Packs` · Selectable · Cut-out layer
 
 | Field | Brief |
 | --- | --- |
@@ -150,7 +152,8 @@ Each screen of GDD 11.1 except Title and Settings has a Building. In v1, only th
 | Props | Card packs in the window (no letters), a bell over the door, a short queue of customers. |
 | Silhouette hook | The purple roof and the round window. |
 | Humor note | A child presses its face on the window. |
-| Position | Near the Town Gate, right side (about x 900 to 970). |
+| Position | Near the Town Gate, right side. In the current painting, it is at x 1010 to 1209 (box in 1.2). |
+| Export | Also a layer cut out of the master painting, on a transparent background (step 5 in section 4). |
 
 ### 2.8 Barracks
 

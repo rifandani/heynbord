@@ -21,7 +21,7 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 - [ ] Collection, Deck builder with validation, Packs, and the Workshop. In the Workshop the player can Combine, Extract, and Craft cards, so a weak card is never useless.
 - [ ] Player level, unlocks, Gear.
 - [ ] Region 1 (10 Stages) with the tutorial and the first boss.
-- [ ] The Town is the first screen of the game. The player selects a Building to open a screen. In v1, only the Town Gate can be selected.
+- [ ] The Town is the first screen of the game. The player selects a Building to open a screen. The Town Gate and the Card shop can be selected.
 - [ ] Message Catalog structure for game text (`en-us` first).
 - [ ] Style bible and first 30 final card art images.
 

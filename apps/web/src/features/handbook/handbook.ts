@@ -17,6 +17,7 @@ import {
   keywordValue,
   LANE_LENGTH,
   MAX_COPIES,
+  PACK_SIZE,
   PLAYER_LEVEL_XP,
   RACE_KEYWORDS,
   RANKS,
@@ -109,7 +110,7 @@ const UNIT_ENTRIES = [
   "token",
 ] as const;
 
-const PROGRESS_ENTRIES = ["stars", "playerLevel", "coin"] as const;
+const PROGRESS_ENTRIES = ["stars", "playerLevel", "coin", "pack"] as const;
 
 const DAMAGE_TYPES: readonly DamageType[] = [
   "physical",
@@ -291,10 +292,11 @@ export const COIN_DENOM_TABLE: readonly {
 
 /** What Coin pays for in the Handbook Coin Entry. */
 export const COIN_USES_TABLE: readonly {
-  readonly id: "deckSlots" | "later";
+  readonly id: "deckSlots" | "packs" | "later";
   readonly rule: TextRef;
 }[] = [
   { id: "deckSlots", rule: { key: "handbook.coinUse.deckSlots" } },
+  { id: "packs", rule: { key: "handbook.coinUse.packs" } },
   { id: "later", rule: { key: "handbook.coinUse.later" } },
 ];
 
@@ -526,6 +528,7 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
   countdownLimit: { first: countdownLimit(1) },
   stars: { fastTurn: STAR_FAST_WIN_TURN },
   playerLevel: { maxLevel: PLAYER_LEVEL_XP.length },
+  pack: { cards: PACK_SIZE },
 };
 
 const term = (id: EntryId, chapter: ChapterId) =>
@@ -563,6 +566,7 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   ranged: glyph("bow"),
   stars: { kind: "star" },
   coin: { kind: "coin" },
+  pack: glyph("pack"),
   rankGems: { kind: "rank", rank: "rare" },
 };
 
@@ -683,7 +687,8 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   rankGems: ["rank"],
   stars: ["hp", "turn"],
   playerLevel: ["countdownLimit", "hero"],
-  coin: ["deck"],
+  coin: ["deck", "pack"],
+  pack: ["coin", "rank"],
 };
 
 const withLinks = (entry: Entry): Entry => ({
@@ -830,6 +835,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "stars",
   "playerLevel",
   "coin",
+  "pack",
 ]);
 
 /**
