@@ -6,6 +6,7 @@ import type {
   DamageType,
   RankId,
   StageDefinition,
+  TokenId,
 } from "../content/schema";
 
 export type Side = "player" | "enemy";
@@ -78,13 +79,31 @@ export interface SideState {
 }
 
 /**
+ * Where a Unit comes from: a Card copy, or a Token with no Card (GDD 4.9).
+ * When a Card Unit dies, its Card goes to the Graveyard. A Token Unit just
+ * disappears. Only Card Units count for Unique.
+ */
+export type UnitSource =
+  | { readonly _tag: "Card"; readonly card: CardInstance }
+  | {
+      readonly _tag: "Token";
+      readonly tokenId: TokenId;
+      /** The Rank of the Card or effect that made the Token. */
+      readonly rank: RankId;
+    };
+
+/** The Rank of a Unit: the Rank of its Card copy, or of its Token. */
+export const unitRank = (source: UnitSource): RankId =>
+  source._tag === "Card" ? source.card.rank : source.rank;
+
+/**
  * A Unit on the Board. `position` is the Square index from the player's Hero:
  * 0 is the player's Column 1 and 11 is the enemy's Column 1.
  */
 export interface UnitState {
   readonly id: number;
   readonly owner: Side;
-  readonly card: CardInstance;
+  readonly source: UnitSource;
   lane: number;
   position: number;
   attack: number;
@@ -95,7 +114,7 @@ export interface UnitState {
   readonly range: number;
   readonly damageType: DamageType;
   readonly armor: number;
-  /** Charge for the Rank of this card copy: +N Speed in the Turn of the summon. 0 is none. */
+  /** Charge for the Rank of this Unit: +N Speed in the Turn of the summon. 0 is none. */
   readonly charge: number;
   /** After attack damage above 0, the enemy Unit becomes Entangled. */
   readonly entangle: boolean;
@@ -107,20 +126,20 @@ export interface UnitState {
   readonly lastBreath: number;
   readonly pivot: boolean;
   poison: boolean;
-  /** Hobble for the Rank of this card copy. 0 is none. */
+  /** Hobble for the Rank of this Unit. 0 is none. */
   hobble: number;
-  /** Bleed for the Rank of this card copy. 0 is none. */
+  /** Bleed for the Rank of this Unit. 0 is none. */
   bleed: number;
-  /** Knockback for the Rank of this card copy. 0 is none. */
+  /** Knockback for the Rank of this Unit. 0 is none. */
   knockback: number;
-  /** Rally for the Rank of this card copy. 0 is none. */
+  /** Rally for the Rank of this Unit. 0 is none. */
   readonly rally: number;
   /** True until the Unit dies the first time, then it comes back (GDD 4.9). */
   rebirth: boolean;
   readonly regeneration: number;
   readonly retaliation: boolean;
   /**
-   * Swarm for the Rank of this card copy. 0 is none. The bonus is not stored:
+   * Swarm for the Rank of this Unit. 0 is none. The bonus is not stored:
    * each hit calculates it (GDD 5.4).
    */
   readonly swarm: number;
@@ -130,7 +149,7 @@ export interface UnitState {
    * A Unit with Wall has no Movement, does not attack and is never Pushed.
    */
   wall: boolean;
-  /** The Turn number of the summon. Charge uses it. */
+  /** The Turn number of the summon, also of a Token. Charge uses it. */
   readonly summonedTurn: number;
   /** End Phases of Burn that are left. */
   burn: number;
@@ -233,6 +252,14 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly target: Target;
   };
   UnitSummoned: { readonly unit: UnitSnapshot };
+  /**
+   * Summon X (GDD 5.4): the summon of `sourceUnitId` made the Token Unit
+   * `unit` in an empty Square next to it.
+   */
+  TokenSummoned: {
+    readonly unit: UnitSnapshot;
+    readonly sourceUnitId: number;
+  };
   RecallRolled: {
     readonly side: Side;
     readonly card: CardInstance;

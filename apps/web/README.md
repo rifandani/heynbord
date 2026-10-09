@@ -17,11 +17,10 @@ for now lets go with this (Add until at least 5 cards):
 
 v1:
 
-- 31, 33, 35, 36
-- Deathless Host can only be a diagnostic Deck for now. It needs Priest Skill Cards, and these do not exist. It is the same as Thornwatch.
-- No card has both Rebirth and Last Breath. I added a content check for this in #32, because ADR-0015 says Rebirth is already the one-time return
-
+- 35, 36
+- /grill-with-docs lets develop Elf Skills cards (for now create 3 with same ranks like the others)
 - /grill-with-docs brainstorm with me, we need more Skills cards, every Class should have 1 Epic, 2 Rare, 3 Uncommon, 4 Common
+
 - /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think
 - /grill-with-docs i want to add another Keyword called "Devour": +1 Attack and +1 HP for each kill, suitable for Feral
 - /grill-with-docs i want to add another Keyword called "Retreat N" — After this Unit attacks, it moves up to N Squares backward.

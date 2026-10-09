@@ -6,18 +6,22 @@ import type {
   CreatureCardDefinition,
   SkillCardDefinition,
   SkillEffect,
+  TokenId,
 } from "../content/schema";
+import { getToken } from "../content/tokens";
 import { randomInt, rollBasisPoints } from "../random";
 import type { StepContext } from "./context";
+import { direction, isInsideLane, isLaneOpen, unitAt } from "./context";
 import { damageUnit } from "./damage";
 import { unitsInArea } from "./targets";
 import type { CardInstance, HandCard, Side, Target, UnitState } from "./types";
-import { BattleEvent, otherSide } from "./types";
-import { createUnit } from "./units";
+import { BattleEvent, otherSide, unitRank } from "./types";
+import { createToken, createUnit } from "./units";
 
 /**
  * Puts a Unit on the Board. Only `playCard` applies the effects of a Unit that
- * comes from its Creature Card, such as Sabotage: a Start Unit does not.
+ * comes from its Creature Card, such as Sabotage and Summon: a Start Unit does
+ * not.
  */
 export const summon = (
   ctx: StepContext,
@@ -77,6 +81,56 @@ const sabotage = (ctx: StepContext, unit: UnitState, amount: number): void => {
       instanceId: target.instanceId,
       countdown: target.countdown,
     })
+  );
+};
+
+/**
+ * The Squares for the Token of `unit`, in order (GDD 5.4): the Square behind
+ * it (1 Column nearer to its own Hero) in the same Lane, then the same Column
+ * in the Lane with the lower number, then in the Lane with the higher number.
+ */
+const tokenSquares = (unit: UnitState) => [
+  { lane: unit.lane, position: unit.position - direction(unit.owner) },
+  { lane: unit.lane - 1, position: unit.position },
+  { lane: unit.lane + 1, position: unit.position },
+];
+
+/**
+ * Summon X (GDD 5.4): a Token X with the Rank of `unit` appears in the first
+ * Square of `tokenSquares` that is on the Board, empty and not in a Closed
+ * Lane. It does not need to be in the Summon Zone. If no Square is valid, no
+ * Token appears. The Token acts in this Turn, as a summoned Unit does.
+ */
+const summonToken = (
+  ctx: StepContext,
+  unit: UnitState,
+  tokenId: TokenId
+): void => {
+  const { state } = ctx;
+  const square = tokenSquares(unit).find(
+    ({ lane, position }) =>
+      lane >= 0 &&
+      lane < state.lanes &&
+      isInsideLane(position) &&
+      isLaneOpen(state, lane) &&
+      !unitAt(state, lane, position)
+  );
+  if (!square) {
+    return;
+  }
+  const token = createToken({
+    id: state.nextId,
+    owner: unit.owner,
+    token: getToken(tokenId),
+    rank: unitRank(unit.source),
+    lane: square.lane,
+    position: square.position,
+    turnNumber: state.turnNumber,
+  });
+  state.nextId += 1;
+  state.units.push(token);
+  ctx.events.push(
+    BattleEvent.TokenSummoned({ unit: { ...token }, sourceUnitId: unit.id })
   );
 };
 
@@ -207,6 +261,9 @@ export const playCard = (
     const amount = definition.keywords.sabotage ?? 0;
     if (amount > 0) {
       sabotage(ctx, unit, amount);
+    }
+    if (definition.keywords.summon !== undefined) {
+      summonToken(ctx, unit, definition.keywords.summon);
     }
     return;
   }

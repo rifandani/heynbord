@@ -63,8 +63,15 @@ const rankValues = (value: typeof KeywordValue) =>
 const KeywordAmount = Schema.Union([KeywordValue, rankValues(KeywordValue)]);
 export type KeywordAmount = typeof KeywordAmount.Type;
 
-/** The v1 Keywords of the Battle slice (GDD 5.4, roadmap M1). */
-const Keywords = Schema.Struct({
+/** The v1 Tokens (Card Concepts 8). A Token is a Unit with no Card. */
+const TokenId = Schema.Literals(["token.skeleton", "token.restlessWisp"]);
+export type TokenId = typeof TokenId.Type;
+
+/**
+ * The Keywords that a Token can have. Summon is not one of them, so a Token
+ * never makes a Token.
+ */
+const tokenKeywordFields = {
   armor: Schema.optionalKey(KeywordAmount),
   /**
    * +N Speed in the Turn of the summon (GDD 5.4). N is at most 3. A content
@@ -141,6 +148,20 @@ const Keywords = Schema.Struct({
   unique: Schema.optionalKey(Schema.Literal(true)),
   /** A push never moves this Unit (GDD 4.7, 5.4). */
   wall: Schema.optionalKey(Schema.Literal(true)),
+};
+
+const TokenKeywords = Schema.Struct(tokenKeywordFields);
+export type TokenKeywords = typeof TokenKeywords.Type;
+
+/** The v1 Keywords of the Battle slice (GDD 5.4, roadmap M1). */
+const Keywords = Schema.Struct({
+  ...tokenKeywordFields,
+  /**
+   * Summon X (GDD 5.4): when this Unit comes from its Creature Card, a Token
+   * X of the same Rank appears in an empty Square next to it. Only a Token ID
+   * is valid.
+   */
+  summon: Schema.optionalKey(TokenId),
 });
 export type Keywords = typeof Keywords.Type;
 
@@ -214,6 +235,35 @@ const SkillCardDefinition = Schema.Struct({
   effect: SkillEffect,
 });
 export type SkillCardDefinition = typeof SkillCardDefinition.Type;
+
+/** The values of a Token at one Rank. */
+const TokenRankValues = Schema.Struct({
+  attack: between(0, 12),
+  hp: between(1, 30),
+  speed: between(0, 4),
+});
+
+/**
+ * A Token (Card Concepts 8). It is not a Card: it is not in the Collection, in
+ * a Deck or in Packs. It does not use `scaleForRank`: its Rank table gives the
+ * values at each Rank.
+ */
+export const TokenDefinition = Schema.Struct({
+  id: TokenId,
+  race: RaceId,
+  /** 0 is a melee Unit. */
+  range: between(0, 3),
+  damageType: DamageType,
+  keywords: TokenKeywords,
+  ranks: Schema.Struct({
+    common: TokenRankValues,
+    uncommon: TokenRankValues,
+    rare: TokenRankValues,
+    epic: TokenRankValues,
+    legendary: TokenRankValues,
+  }),
+});
+export type TokenDefinition = typeof TokenDefinition.Type;
 
 export const CardDefinition = Schema.Union([
   CreatureCardDefinition,

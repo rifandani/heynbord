@@ -2,6 +2,7 @@ import type {
   BattleEvent,
   BattleResult,
   BattleState,
+  CardInstance,
   ClassId,
   DamageType,
   RankId,
@@ -93,11 +94,11 @@ export interface BattleView {
   readonly result: BattleResult | null;
 }
 
-const unitView = (unit: Readonly<UnitState>): UnitView => ({
+const unitView = (unit: Readonly<UnitState>, card: CardInstance): UnitView => ({
   id: unit.id,
   owner: unit.owner,
-  cardId: unit.card.cardId,
-  rank: unit.card.rank,
+  cardId: card.cardId,
+  rank: card.rank,
   lane: unit.lane,
   position: unit.position,
   attack: unit.attack,
@@ -117,6 +118,13 @@ const unitView = (unit: Readonly<UnitState>): UnitView => ({
   entangled: unit.entangled,
   wall: unit.wall,
 });
+
+/**
+ * The view of a Unit from a Card. The view has no Token Unit yet: the Undead
+ * web issue (#36) shows Tokens. No v1 card makes a Token now.
+ */
+const cardUnitView = (unit: Readonly<UnitState>): UnitView[] =>
+  unit.source._tag === "Card" ? [unitView(unit, unit.source.card)] : [];
 
 const visibleCard = (
   side: Side,
@@ -209,7 +217,7 @@ export const viewFromState = (state: BattleState): BattleView =>
       player: sideView(state, "player"),
       enemy: sideView(state, "enemy"),
     },
-    units: state.units.map(unitView),
+    units: state.units.flatMap(cardUnitView),
     result: state.result,
   });
 
@@ -312,7 +320,7 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
       };
     }
     case "UnitSummoned": {
-      return { ...view, units: [...view.units, unitView(event.unit)] };
+      return { ...view, units: [...view.units, ...cardUnitView(event.unit)] };
     }
     case "UnitMoved":
     case "UnitPushed": {

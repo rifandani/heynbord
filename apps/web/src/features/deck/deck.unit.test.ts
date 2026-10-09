@@ -301,6 +301,7 @@ describe("CLASSES_WITH_CARDS, RACES_WITH_CARDS and updateSlot", () => {
       "goblin",
       "human",
       "orc",
+      "undead",
     ]);
     const next = updateSlot(INITIAL_DECK_SLOTS, "raiders", (slot) => ({
       ...slot,

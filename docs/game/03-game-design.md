@@ -713,8 +713,8 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - Start formula: `power = Attack × 2 + HP + Speed × 2 + Keyword points`.
    - Attack, HP and the Keyword values count at the Base Rank of the Card. The card data gives the Common Attack and HP. Use them with the Rank scale of the Base Rank (5.3). For example, an Epic card with Common Attack 4 counts Attack 7 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)).
    - Add Range and Damage Type points: Range = its value, Fire = 3, Frost = 3 and Holy = 2.
-   - Start Keyword points: Armor N = N × 3, Bleed N = N × 1, Charge N = N × 1, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 2 and Trample = 3.
-   - Summon and a Last Breath that summons use 80% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
+   - Start Keyword points: Armor N = N × 3, Bleed N = N × 1, Charge N = N × 1, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 1 and Trample = 3.
+   - Summon and a Last Breath that summons use 50% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
    - **Charge N** uses N × 1 points, not N × 2 as Speed does. Speed applies in each Turn, but Charge applies only in the Turn of the summon, and the Column 3 start makes it less valuable. Thus each additional Square costs 1 point.

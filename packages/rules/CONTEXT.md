@@ -142,6 +142,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. _Avoid_: revive, resurrect
 
+**Summon X**: A Keyword. When a Unit with Summon comes onto the Board from its Creature Card, a Token X with the Rank of that Card copy appears next to it. The Token goes to the first empty Square of an open Lane in this order: the Square behind the Unit, then the same Column in the Lane with the lower number, then the same Column in the Lane with the higher number. The Square does not need to be in the Summon Zone. If no Square is empty, no Token appears. A Rebirth return and a Start Unit give no Token. _Avoid_: Spawn, Call, Raise
+
 **Knockback N**: A Keyword for melee Units. After a Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares back, toward its own Hero, in its own Lane. The push stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliation and First Strike do not apply Knockback. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Push, Shove, Repel, Displace
 
 **Pushed**: Moved to another Square by an effect such as Knockback, not by the Unit's own Movement. Speed, Flying, Frozen, Entangled and Hobbled do not change a push. Pushed is not a Status. _Avoid_: knocked back, moved, displaced

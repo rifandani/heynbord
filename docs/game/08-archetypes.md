@@ -38,9 +38,9 @@ The 90-Creature-Card set adds four main Archetypes and two diagnostic Decks. The
 
 The six main Archetypes form the release-gated Matchup matrix: 15 different pairs, and each pair must be in 45% to 55%. Ranger and Priest each lead two main Archetypes. Accord Line and Breakneck Company run with the same seeds and report their results, but a diagnostic result outside 45% to 55% is evidence for review, not an automatic failure.
 
-**Planned Breakneck Company.** Breakneck Company is not in `archetypes.ts`, because the rules package has no Undead cards yet. Add it when the Undead cards come in. It tests Frost on melee Units only, because no Ranged Unit has Frost damage ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)).
+**Breakneck Company.** Breakneck Company is a diagnostic Deck in `archetypes.ts` (issue #35): 7 Undead copies, 4 Orc copies and the 3 Mage Skill Cards of Raiders. It has 4 copies with Swarm, 4 with Charge, 3 Frost Units and 3 Fire cards. Its Frost Units are melee only, because no Ranged Unit has Frost damage ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)). Each card is at its Base Rank.
 
-**Provisional Tunnel Rats, Wild Hunt and Thornwatch.** The rules package has the Goblin, Feral and Elf cards, but not the Ranger and Priest Skill Cards. Until those Skill Cards exist, Tunnel Rats, Wild Hunt and Thornwatch are **diagnostic** Decks in `archetypes.ts`, with Creature Cards only and no Skill Cards. Thornwatch has 13 cards, all Common and Uncommon, and no Rare or Epic card. Each card is at its Base Rank. Tunnel Rats has 14 cards and 1 Epic. Wild Hunt has 11 cards and no Rare or Epic card: the Countdown Limit removed Mountain Colossus (E), Woolly Mammoth (R) and Avalanche Yeti (R). They become main Archetypes when they get their Skill Cards.
+**Provisional Tunnel Rats, Wild Hunt, Thornwatch and Deathless Host.** The rules package has the Goblin, Feral, Elf and Undead cards, but not the Ranger and Priest Skill Cards. Until those Skill Cards exist, Tunnel Rats, Wild Hunt, Thornwatch and Deathless Host are **diagnostic** Decks in `archetypes.ts`, with Creature Cards only and no Skill Cards. Thornwatch has 13 cards, all Common and Uncommon, and no Rare or Epic card. Each card is at its Base Rank. Tunnel Rats has 14 cards and 1 Epic. Wild Hunt has 11 cards and no Rare or Epic card: the Countdown Limit removed Mountain Colossus (E), Woolly Mammoth (R) and Avalanche Yeti (R). Deathless Host has 14 cards with Countdown 30: Undead cards are cheap, so the 14-card maximum stops it before the Countdown Limit. It has both Undead Epics, and each card is at its Base Rank. They become main Archetypes when they get their Skill Cards.
 
 **Vanguard Full and Raiders Full.** These diagnostic Decks use most of the 15-card Human and Orc sets, so that the Matchups test the Human and Orc cards. Each card is at its Base Rank, with 3 Skill Cards of its Class. The Countdown Limit removed Marshal Elian Voss (E) from Vanguard Full, and Warband Standard-Bearer (E) and Pyreaxe Ravager (R) from Raiders Full. Vanguard and Raiders do not change, so the release-gated results do not change. When Vanguard and Raiders change to the full sets, remove Vanguard Full and Raiders Full.
 
@@ -50,6 +50,8 @@ The six main Archetypes form the release-gated Matchup matrix: 15 different pair
 | --- | --- | --- | --- |
 | Tunnel Rats (diagnostic) | Ranger | Goblin: make the enemy plan slower. 6 copies with Sabotage, 5 with Hobble and 4 with Last Breath. | 1× Ankle Snatcher (C), 2× Fuse Runner (C), 2× Junk Slinger (C), 2× Tunnel Saboteur (C), 1× Scrap-Plate Guard (C), 1× Junk Barricade (U), 2× Grease Trapper (U), 1× Rocket Barrel Rider (U), 1× Mine Sapper (R), 1× Grand Gearjammer (E) |
 | Wild Hunt (diagnostic) | Priest | Feral: few and huge. 4 copies with Trample and 4 with Regeneration, with Frost Elk Matriarch (Rally) and Frostfang Lynx (Bleed 1). | 2× Bristleback Boar (C), 1× Crag Lizard (C), 1× Frostfang Lynx (C), 2× Cave Bear (C), 1× Web Spitter (C), 1× Cave Troll (U), 2× Crag Rhino (U), 1× Frost Elk Matriarch (U). 11 cards, Countdown 33. |
+| Deathless Host (diagnostic) | Priest | Undead: many cheap Units that grow stronger together, come back and bring more. 6 copies with Swarm, 4 with Summon, 3 with Rebirth and 2 Frost Units. | 1× Graveyard Drudge (C), 2× Rattleknife (C), 1× Hushbow (C), 2× Grave Bell Tender (C), 2× Chattering Cohort (U), 1× Ossuary Piper (U), 1× Coffin Lancer (R), 1× Winter Maw (R), 1× Lantern Widow (R), 1× Sir Odo, the Last Taxman (E), 1× Bone Rampart (E). 14 cards, Countdown 30. |
+| Breakneck Company (diagnostic) | Mage | Mixed Undead and Orc tempo. 4 copies with Swarm, 4 with Charge, 3 melee Frost Units, 1 Fire Unit and the Mage Fire and Frost spells. | 1× Coffin-Lid Skater (C), 1× Rattleknife (C), 2× Chattering Cohort (U), 1× Pale Galloper (U), 1× Rime-Eye Reaper (U), 1× Winter Maw (R), 2× Scrap Raider (C), 1× Howling Charger (U), 1× Cinderhorn Breaker (U), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U). 14 cards, Countdown 32. |
 | Thornwatch (diagnostic) | Ranger | Elf: control from range. 6 ranged copies, 6 with Regeneration and 3 with Poison. | 2× Rootbound Guard (C), 2× Bramble Duelist (C), 2× Fernwing Courier (C), 2× Mosspitcher Lookout (C), 2× Acorn Tender (C), 1× Thornline Archer (U), 1× Dewkeeper (U), 1× Bramble Nest (U). 13 cards, Countdown 35. |
 | Vanguard Full (diagnostic) | Warrior | Human: hold the line, with the Human set. 2 Walls, 1 copy with Rally and 2 with Knockback. | 1× Town Barricade (C), 1× Militia Recruit (C), 1× Shieldbearer (C), 2× Crossbow Guard (C), 1× Halberdier (C), 1× Bridge Pikeman (U), 1× Banner Chaplain (U), 1× King's Courier (R), 1× Dawn Reliquary (R), 1× War Drums (C), 1× Shield Wall (C), 1× Spear Throw (U). 13 cards, Countdown 32. |
 | Raiders Full (diagnostic) | Mage | Orc: rush the enemy Hero, with the Orc set. 1 copy with Rally, 1 with Charge and 2 Fire Units. | 1× Badland Runt (C), 2× Scrap Raider (C), 1× Dusthide Brawler (C), 1× Cinderhorn Breaker (U), 1× Warhowler Drummer (U), 1× Skyreaver (U), 1× Ashspit Hunter (R), 1× Mesa Pit-Fighter (R), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U). 12 cards, Countdown 32. |
@@ -73,61 +75,82 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 
 | Archetype | Opponent | Win rate | First-Side win rate | Average Turn | No Ready | Target |
 | --- | --- | --- | --- | --- | --- | --- |
-| Vanguard | Vanguard | 50.0% | 46.1% | 25.6 | 14.0 | Mirror |
-| Vanguard | Raiders | 49.1% | 47.3% | 22.3 | 11.1 | 45%–55% |
-| Vanguard | Tunnel Rats | 66.7% | 47.9% | 24.6 | 14.4 | Review |
-| Vanguard | Wild Hunt | 43.2% | 50.2% | 24.1 | 12.5 | Review |
-| Vanguard | Thornwatch | 40.7% | 45.2% | 24.6 | 13.3 | Review |
-| Vanguard | Vanguard Full | 80.3% | 46.9% | 25.3 | 13.6 | Review |
-| Vanguard | Raiders Full | 54.6% | 47.5% | 22.3 | 11.1 | 45%–55% |
-| Vanguard | Human Heavy | 44.5% | 45.9% | 22.7 | 11.0 | Review |
-| Vanguard | Human Light | 59.4% | 46.1% | 25.5 | 14.1 | Review |
-| Raiders | Raiders | 50.0% | 40.6% | 23.9 | 12.4 | Mirror |
-| Raiders | Tunnel Rats | 48.2% | 46.4% | 22.4 | 13.4 | 45%–55% |
-| Raiders | Wild Hunt | 40.1% | 48.0% | 20.7 | 11.2 | Review |
-| Raiders | Thornwatch | 43.4% | 48.4% | 21.2 | 11.9 | Review |
-| Raiders | Vanguard Full | 80.6% | 47.0% | 21.7 | 12.1 | Review |
-| Raiders | Raiders Full | 62.2% | 45.4% | 22.3 | 11.0 | Review |
-| Raiders | Human Heavy | 30.1% | 43.6% | 19.5 | 9.8 | Review |
-| Raiders | Human Light | 50.0% | 49.1% | 22.5 | 13.2 | 45%–55% |
-| Tunnel Rats | Tunnel Rats | 50.0% | 46.9% | 24.6 | 15.9 | Mirror |
-| Tunnel Rats | Wild Hunt | 41.2% | 48.3% | 23.5 | 14.0 | Review |
-| Tunnel Rats | Thornwatch | 31.2% | 51.3% | 24.1 | 14.6 | Review |
-| Tunnel Rats | Vanguard Full | 67.4% | 49.1% | 25.3 | 16.0 | Review |
-| Tunnel Rats | Raiders Full | 60.9% | 47.5% | 22.1 | 12.7 | Review |
-| Tunnel Rats | Human Heavy | 45.7% | 45.9% | 22.7 | 13.3 | 45%–55% |
-| Tunnel Rats | Human Light | 25.4% | 47.9% | 24.9 | 15.4 | Review |
-| Wild Hunt | Wild Hunt | 50.0% | 52.8% | 23.4 | 16.1 | Mirror |
-| Wild Hunt | Thornwatch | 32.5% | 46.1% | 23.6 | 16.2 | Review |
-| Wild Hunt | Vanguard Full | 82.5% | 48.3% | 23.8 | 16.6 | Review |
-| Wild Hunt | Raiders Full | 63.6% | 47.3% | 20.8 | 13.5 | Review |
-| Wild Hunt | Human Heavy | 53.8% | 53.3% | 21.9 | 14.6 | 45%–55% |
-| Wild Hunt | Human Light | 46.5% | 50.1% | 24.7 | 17.4 | 45%–55% |
-| Thornwatch | Thornwatch | 50.0% | 45.5% | 24.1 | 15.2 | Mirror |
-| Thornwatch | Vanguard Full | 85.1% | 47.3% | 24.2 | 15.4 | Review |
-| Thornwatch | Raiders Full | 62.2% | 46.3% | 21.8 | 12.9 | Review |
-| Thornwatch | Human Heavy | 60.8% | 47.3% | 22.0 | 13.1 | Review |
-| Thornwatch | Human Light | 59.7% | 49.0% | 25.2 | 16.3 | Review |
-| Vanguard Full | Vanguard Full | 50.0% | 46.2% | 28.0 | 16.3 | Mirror |
-| Vanguard Full | Raiders Full | 27.3% | 49.1% | 22.1 | 11.5 | Review |
-| Vanguard Full | Human Heavy | 16.4% | 49.1% | 21.9 | 10.5 | Review |
-| Vanguard Full | Human Light | 26.7% | 49.5% | 25.9 | 14.6 | Review |
-| Raiders Full | Raiders Full | 50.0% | 46.9% | 21.7 | 11.7 | Mirror |
-| Raiders Full | Human Heavy | 30.9% | 50.1% | 19.9 | 10.9 | Review |
-| Raiders Full | Human Light | 41.6% | 48.2% | 22.2 | 13.7 | Review |
-| Human Heavy | Human Heavy | 50.0% | 50.0% | 20.6 | 14.2 | Mirror |
-| Human Heavy | Human Light | 45.3% | 47.4% | 23.1 | 16.6 | 45%–55% |
-| Human Light | Human Light | 50.0% | 45.7% | 26.0 | 16.6 | Mirror |
+| Vanguard | Vanguard | 50.0% | 46.4% | 23.8 | 12.3 | Mirror |
+| Vanguard | Raiders | 49.4% | 47.2% | 18.3 | 7.6 | 45%–55% |
+| Vanguard | Tunnel Rats | 66.7% | 47.9% | 22.4 | 12.5 | Review |
+| Vanguard | Wild Hunt | 43.2% | 50.2% | 22.5 | 11.0 | Review |
+| Vanguard | Thornwatch | 40.7% | 45.2% | 23.0 | 11.8 | Review |
+| Vanguard | Deathless Host | 59.7% | 50.1% | 25.1 | 13.7 | Review |
+| Vanguard | Breakneck Company | 59.5% | 49.6% | 20.5 | 9.7 | Review |
+| Vanguard | Vanguard Full | 80.3% | 46.9% | 24.1 | 12.6 | Review |
+| Vanguard | Raiders Full | 54.8% | 47.7% | 18.5 | 7.8 | 45%–55% |
+| Vanguard | Human Heavy | 44.5% | 45.9% | 20.5 | 9.0 | Review |
+| Vanguard | Human Light | 59.4% | 46.1% | 24.4 | 13.1 | Review |
+| Raiders | Raiders | 50.0% | 42.7% | 15.5 | 5.3 | Mirror |
+| Raiders | Tunnel Rats | 48.1% | 46.6% | 18.7 | 10.0 | 45%–55% |
+| Raiders | Wild Hunt | 40.2% | 47.9% | 18.1 | 8.7 | Review |
+| Raiders | Thornwatch | 43.3% | 48.4% | 18.3 | 9.1 | Review |
+| Raiders | Deathless Host | 54.6% | 49.5% | 21.0 | 11.9 | 45%–55% |
+| Raiders | Breakneck Company | 57.0% | 48.8% | 16.8 | 7.0 | Review |
+| Raiders | Vanguard Full | 80.3% | 47.3% | 19.1 | 9.6 | Review |
+| Raiders | Raiders Full | 61.7% | 46.7% | 15.8 | 5.5 | Review |
+| Raiders | Human Heavy | 30.0% | 43.7% | 16.2 | 6.6 | Review |
+| Raiders | Human Light | 50.0% | 49.1% | 19.6 | 10.3 | 45%–55% |
+| Tunnel Rats | Tunnel Rats | 50.0% | 47.3% | 22.5 | 13.8 | Mirror |
+| Tunnel Rats | Wild Hunt | 41.2% | 48.3% | 21.9 | 12.4 | Review |
+| Tunnel Rats | Thornwatch | 31.2% | 51.3% | 22.0 | 12.5 | Review |
+| Tunnel Rats | Deathless Host | 63.1% | 48.6% | 25.2 | 15.8 | Review |
+| Tunnel Rats | Breakneck Company | 66.3% | 48.6% | 20.3 | 11.0 | Review |
+| Tunnel Rats | Vanguard Full | 67.3% | 49.3% | 24.3 | 15.0 | Review |
+| Tunnel Rats | Raiders Full | 61.2% | 47.8% | 18.9 | 9.6 | Review |
+| Tunnel Rats | Human Heavy | 45.7% | 45.9% | 20.7 | 11.3 | 45%–55% |
+| Tunnel Rats | Human Light | 25.4% | 47.9% | 22.9 | 13.4 | Review |
+| Wild Hunt | Wild Hunt | 50.0% | 52.8% | 22.1 | 14.8 | Mirror |
+| Wild Hunt | Thornwatch | 32.5% | 46.2% | 21.6 | 14.3 | Review |
+| Wild Hunt | Deathless Host | 56.5% | 50.0% | 25.5 | 18.2 | Review |
+| Wild Hunt | Breakneck Company | 62.4% | 51.9% | 21.8 | 14.5 | Review |
+| Wild Hunt | Vanguard Full | 82.5% | 48.3% | 22.9 | 15.7 | Review |
+| Wild Hunt | Raiders Full | 63.6% | 47.3% | 18.5 | 11.3 | Review |
+| Wild Hunt | Human Heavy | 53.8% | 53.3% | 20.3 | 13.0 | 45%–55% |
+| Wild Hunt | Human Light | 46.5% | 50.1% | 23.6 | 16.3 | 45%–55% |
+| Thornwatch | Thornwatch | 50.0% | 45.5% | 23.4 | 14.4 | Mirror |
+| Thornwatch | Deathless Host | 85.4% | 49.5% | 23.2 | 14.5 | Review |
+| Thornwatch | Breakneck Company | 80.6% | 51.2% | 19.1 | 10.3 | Review |
+| Thornwatch | Vanguard Full | 85.1% | 47.3% | 23.0 | 14.2 | Review |
+| Thornwatch | Raiders Full | 62.5% | 46.6% | 18.5 | 9.6 | Review |
+| Thornwatch | Human Heavy | 60.8% | 47.3% | 19.8 | 10.9 | Review |
+| Thornwatch | Human Light | 59.8% | 49.0% | 24.2 | 15.3 | Review |
+| Deathless Host | Deathless Host | 50.0% | 48.2% | 27.8 | 18.3 | Mirror |
+| Deathless Host | Breakneck Company | 61.9% | 49.2% | 23.1 | 13.8 | Review |
+| Deathless Host | Vanguard Full | 68.0% | 46.4% | 25.8 | 16.4 | Review |
+| Deathless Host | Raiders Full | 45.9% | 51.8% | 21.3 | 11.9 | 45%–55% |
+| Deathless Host | Human Heavy | 55.8% | 47.2% | 23.5 | 14.1 | Review |
+| Deathless Host | Human Light | 21.4% | 47.0% | 25.4 | 15.8 | Review |
+| Breakneck Company | Breakneck Company | 50.0% | 53.9% | 18.3 | 8.4 | Mirror |
+| Breakneck Company | Vanguard Full | 68.0% | 49.5% | 22.2 | 12.3 | Review |
+| Breakneck Company | Raiders Full | 53.9% | 50.5% | 17.2 | 6.7 | 45%–55% |
+| Breakneck Company | Human Heavy | 40.4% | 52.5% | 19.2 | 9.0 | Review |
+| Breakneck Company | Human Light | 25.6% | 50.2% | 20.7 | 11.0 | Review |
+| Vanguard Full | Vanguard Full | 50.0% | 46.2% | 27.3 | 15.7 | Mirror |
+| Vanguard Full | Raiders Full | 27.5% | 49.3% | 19.7 | 9.3 | Review |
+| Vanguard Full | Human Heavy | 16.4% | 49.1% | 20.6 | 9.3 | Review |
+| Vanguard Full | Human Light | 26.7% | 49.5% | 25.2 | 13.9 | Review |
+| Raiders Full | Raiders Full | 50.0% | 47.4% | 16.1 | 6.7 | Mirror |
+| Raiders Full | Human Heavy | 30.9% | 50.2% | 16.6 | 7.8 | Review |
+| Raiders Full | Human Light | 41.6% | 48.2% | 19.6 | 11.2 | Review |
+| Human Heavy | Human Heavy | 50.0% | 50.0% | 18.5 | 12.2 | Mirror |
+| Human Heavy | Human Light | 45.3% | 47.4% | 21.4 | 15.0 | 45%–55% |
+| Human Light | Human Light | 50.0% | 45.7% | 25.5 | 16.2 | Mirror |
 
-The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-08, after the Ticking Cards were removed (3.1).
+The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-09, after the Undead cards came in (issue #35, 3.1). The pairs without an Undead Deck have the same results with the first and the final Undead values, so the Undead cards do not change them. Their differences from the table of 2026-10-08 (for example Vanguard against Raiders, 49.1% → 49.4%, and shorter Battles) come from the rules changes after that date (issues #31 to #33).
 
-**Goblin and Feral risks (2.2).** The diagnostic Decks have no Skill Cards, and the AI ignores Sabotage, Trample, Entangle and Rally when it selects a play. Thus these results are evidence for review, not a balance approval.
+**Goblin, Feral and Undead risks (2.2).** The diagnostic Decks have no Skill Cards, and the AI ignores Sabotage, Trample, Entangle, Rally, Swarm, Rebirth and Summon when it selects a play. Thus these results are evidence for review, not a balance approval.
 
 | Risk | Result | Finding |
 | --- | --- | --- |
 | Sabotage lock | The share of Turns with no Ready card (No Ready ÷ Average Turn). Vanguard: 59% against Tunnel Rats, 48% to 55% against the other Decks. Raiders: 60%, against 49% to 59%. Wild Hunt: 71%, against 65% to 70%. | No lock. Sabotage adds at most about 4 percentage points. All Cards in the Hand count down again, so a Sabotaged card is late by N Turns only. Do not add an anti-lock rule now. |
 | Feral slow start | Raiders wins 40.1% against Wild Hunt. | The slow start does not occur. Raiders does not win above 55%. |
-| Trample against cheap Units | Deathless Host is not in the rules package. Wild Hunt wins 58.8% against Tunnel Rats, a Deck of cheap Units. | Not tested. Test it when Deathless Host exists. |
+| Trample against cheap Units | Deathless Host wins 43.5% against Wild Hunt. It wins 40.3% against Vanguard and 45.4% against Raiders, and 43.4% on average against the 10 other Archetypes. | The risk is small. Deathless Host is under 45% against Wild Hunt, but only 0.1 percentage points under its average. Trample does not take much more from it than the other Decks do. Test it again when Deathless Host gets its Priest Skill Cards. |
 | Hobble and Sabotage against slow Units | Tunnel Rats wins 41.2% against Wild Hunt. | The risk does not occur: Wild Hunt wins 58.8%, which is above 55%, but in the 35% to 65% band of the ADR-0021 criteria. With the Ticking Cards, Tunnel Rats won 58.7%, because a Sabotaged card waited longer. |
 
 **After ADR-0021 (3.2).** Each criterion of the slope search is on target with the final card values and with all Cards counting down: Human Heavy wins 45.3% against Human Light, and Wild Hunt wins 58.8%, 56.8% and 59.9% against Tunnel Rats, Vanguard and Raiders. Vanguard wins 49.1% against Raiders. The Matchups last 19.5 to 28.0 Turns on average (16.0 to 27.3 before ADR-0021), and the heavy and light Decks are near each other. With the 3 Ticking Cards (issue #21 to #26), Human Heavy won 51.8% against Human Light, and Wild Hunt won 41.3%, 56.0% and 48.5%. Thornwatch wins 65.0% on average against the 8 other Archetypes. The paragraphs below give the results before ADR-0021, as a record.
@@ -169,6 +192,7 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-08 | No Range above 3, and Entangle only on a Ranged Unit with Base Rank Epic or higher ([ADR-0022](../adr/0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md), issue #23). Mosspitcher Lookout 3/6, Range 3, Regeneration 1. Acorn Tender 3/3. Thornline Archer 3/3, Range 3. Bramble Duelist Speed 1. Rootbound Guard Regeneration 1 in place of Entangle. Amberwing Dart 2/3, Poison in place of Entangle. Web Spitter Regeneration 1 in place of Entangle. Canopy Vinewarden Range 3. Pavise Arbalist 3/6, Ashspit Hunter 4/4, Spyglass Sniper 3/6 and Elderreed Dartmaster 3/7, all Range 3. | Thornwatch won 82% to 97% against each other Archetype. A Range 4 Shooter hits for many Turns before a melee Unit gets near it, and a Ranged Unit with Entangle keeps the nearest enemy at Speed 0. After the change, Thornwatch wins 57.0% against Vanguard, 49.5% against Raiders and 61.1% on average against the 8 other Archetypes (1000 seeds). Vanguard Full, which loses to almost all Decks, causes most of the 61.1%. The Rare Shooters are 8.3% over their budget, because a Range cut is worth more than its 1 Power Point. Human Heavy is still 4 to 8 points weaker than before. Vanguard wins 49.3% against Raiders, and no Stage changes by more than 1 point. |
 | 2026-10-08 | Speed 1 is the default, and the Role sets more Speed ([ADR-0024](../adr/0024-speed-1-is-the-default.md)). Militia Recruit 3/8, Speed 1 (it was 3/6, Speed 2). Sidestep Shiv 3/4, Speed 1 (it was 2/5, Speed 2). Mine Sapper 3/5, Speed 1 (it was 3/4, Speed 2). Boss Snikkit 2/4, Speed 1 (it was 2/3, Speed 2). | No rule gave a Unit Speed 2, and a Frontliner and 3 Goblin Strikers broke the Role text of GDD 5.6. Each card stays within 1 power point of its old power. Vanguard wins 47.2% against Raiders (it was 47.6%). The diagnostic Decks with these cards are weaker: Tunnel Rats wins 37.5% against Vanguard (it was 42.5%) and 53.8% against Raiders (it was 59.9%), and Human Light wins 39.6% against Vanguard (it was 46.7%) and 50.1% against Raiders (it was 56.5%). Militia Recruit has no more room in its budget (16 of 15), so these results stay. Some Stage enemy Decks changed too ([14 — Campaign Stages](./14-campaign-stages.md)). |
 | 2026-10-08 | The Ticking Cards are removed, and all Cards in the Hand count down again ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), issue #26). The Power Budget is written `21 + s × (Countdown − 3)`, and the fit selects `s = 3`, so it does not change (3.2). No card, Archetype or Starter Deck changes. Stage enemy Decks 1-6, 1-7 and 1-8 change ([14 — Campaign Stages](./14-campaign-stages.md)). | The Ticking Cards made Battles slow, and the Player had to track the Hand order and the cards that waited. Each flatter slope fails the criteria (3.2). With the cards of 3.1, each criterion is on target: Human Heavy wins 45.3% against Human Light, Wild Hunt wins 58.8%, 56.8% and 59.9% against Tunnel Rats, Vanguard and Raiders, and Vanguard wins 49.1% against Raiders (1000 seeds). Tunnel Rats wins 33.3% against Vanguard (it was 37.5%). |
+| 2026-10-09 | The Undead cards come in (issue #35). Summon X uses 50% of the Token power (it was 80%), and Swarm N uses N × 1 points (it was N × 2) ([GDD 13](./03-game-design.md#13-balance-process)). The Skeleton Token power goes down by 1 at each Rank, because it has Swarm 1. The Undead Attack and HP are the fit of `bun scripts/fit-budget.ts 12 3 --hp-per-attack 2`: 1 Attack for each 2 HP at the Base Rank, not the shapes of the old lines ([10 — Card Concepts, 5](./10-card-concepts.md#5-undead-creature-cards)). Sir Odo is 2/4 (4/7 at Epic). Each Undead card is within ±5.6% of its budget. New diagnostic Decks: Deathless Host and Breakneck Company (2.1). No other card changes, because no other card has Summon or Swarm. | With the plain fit (the old shapes, Summon 80% and Swarm N × 2), Deathless Host won 1.7% to 21.1% against each Deck without Undead cards, and Breakneck Company 6.5% to 33.2% (1000 seeds). Scratch tests (200 seeds, against Vanguard): with no Summon, Swarm and Rebirth on the cards and the points back in Attack and HP, Deathless Host won 23%. Thus the Keyword points were too high, and the stat shapes were the second cause. The old shapes are extreme (4/3, 5/3, 1/8), and the power `Attack × 2 + HP` gives the largest Attack × HP at HP = 2 × Attack. With shape 2 and the old points, Deathless Host won 14%. With shape 2, Summon 50% and Swarm N × 1, it won 39%. Summon 40% gave the same, and Summon 30% gave 59%, so 50% stays. With no Rebirth and its points back in Attack and HP, Deathless Host won about the same as with Rebirth (4.8% and 5.3%), so Rebirth 5 stays. Now Deathless Host wins 40.3% against Vanguard and 45.4% against Raiders, and Breakneck Company 40.5% and 43.0% (1000 seeds). All Stages stay on target, with no change. |
 
 ### 3.2 Countdown slope search
 

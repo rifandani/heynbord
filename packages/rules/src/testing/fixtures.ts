@@ -5,14 +5,16 @@ import type { StepOutput } from "../battle/step";
 import type {
   BattleEvent,
   BattleState,
+  CardInstance,
   Command,
   HeroState,
   Side,
   UnitState,
 } from "../battle/types";
-import { createUnit } from "../battle/units";
+import { createToken, createUnit } from "../battle/units";
 import { getCard } from "../content/cards";
-import type { RankId } from "../content/schema";
+import type { RankId, TokenId } from "../content/schema";
+import { getToken } from "../content/tokens";
 
 const hero = (overrides: Partial<HeroState> = {}): HeroState => ({
   hp: 30,
@@ -223,6 +225,34 @@ export const placeUnit = (
   return placed;
 };
 
+/** Puts a Token Unit on the Board. Changes `state` (test setup only). */
+export const placeToken = (
+  state: BattleState,
+  options: {
+    readonly tokenId: TokenId;
+    readonly owner: Side;
+    readonly lane?: number;
+    readonly position: number;
+    readonly rank?: RankId;
+  } & Partial<Pick<UnitState, "hp">>
+): UnitState => {
+  const unit = createToken({
+    id: state.nextId,
+    owner: options.owner,
+    token: getToken(options.tokenId),
+    rank: options.rank ?? "common",
+    lane: options.lane ?? 0,
+    position: options.position,
+    turnNumber: 0,
+  });
+  if (options.hp !== undefined) {
+    unit.hp = options.hp;
+  }
+  state.nextId += 1;
+  state.units.push(unit);
+  return unit;
+};
+
 /** Puts cards into a Hand. Changes `state` (test setup only). */
 export const giveHand = (
   state: BattleState,
@@ -264,3 +294,11 @@ export const eventsOfType = <T extends BattleEvent["_tag"]>(
 
 export const unitById = (state: BattleState, unitId: number) =>
   state.units.find((unit) => unit.id === unitId);
+
+/** The Card copy of a Card Unit. Throws for a Token Unit. */
+export const cardOf = (unit: UnitState): CardInstance => {
+  if (unit.source._tag !== "Card") {
+    throw new Error(`Unit ${unit.id} is a Token`);
+  }
+  return unit.source.card;
+};

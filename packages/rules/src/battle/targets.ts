@@ -88,8 +88,11 @@ export const legalTargets = (
   }
   const definition = getCard(card.cardId);
   if (definition.kind === "creature") {
+    // A Token has no Card, so it does not count for Unique.
     const friendlyUnitCardIds = state.units.flatMap((unit) =>
-      unit.owner === side ? [unit.card.cardId] : []
+      unit.owner === side && unit.source._tag === "Card"
+        ? [unit.source.card.cardId]
+        : []
     );
     if (isBlockedByUnique(card.cardId, friendlyUnitCardIds)) {
       return [];

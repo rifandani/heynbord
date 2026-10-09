@@ -55,7 +55,9 @@ export const battleCreatureCards = (state: BattleState): readonly string[] => {
     }
   }
   for (const unit of state.units) {
-    cards.add(unit.card.cardId);
+    if (unit.source._tag === "Card") {
+      cards.add(unit.source.card.cardId);
+    }
   }
   return [...cards].filter((cardId) => getCard(cardId).kind === "creature");
 };

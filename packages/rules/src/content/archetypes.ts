@@ -15,9 +15,10 @@ export const MATCHUP_LEVEL = 5;
  * and within the Countdown Limit of level 5 (35, ADR-0021). A Deck of slow
  * cards thus has fewer cards.
  *
- * Tunnel Rats, Wild Hunt and Thornwatch are provisional diagnostic Decks
- * (Archetypes 2.1): Creature Cards only, until the Ranger and Priest Skill
- * Cards exist. Vanguard
+ * Tunnel Rats, Wild Hunt, Thornwatch and Deathless Host are provisional
+ * diagnostic Decks (Archetypes 2.1): Creature Cards only, until the Ranger and
+ * Priest Skill Cards exist. Breakneck Company is a diagnostic Deck of mixed
+ * Undead and Orc cards with Mage Skill Cards. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
  * so that a Matchup tests most cards. Human Heavy (Countdown 3 to 4) and Human
  * Light (Countdown 1 to 3) are diagnostic Decks of one Race, so that a Matchup
@@ -105,6 +106,43 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "elf.thornlineArcher", "uncommon"),
       ...copies(1, "elf.dewkeeper", "uncommon"),
       ...copies(1, "elf.brambleNest", "uncommon"),
+    ],
+  },
+  {
+    id: "deathlessHost",
+    kind: "diagnostic",
+    classId: "priest",
+    deck: [
+      ...copies(1, "undead.graveyardDrudge", "common"),
+      ...copies(2, "undead.rattleknife", "common"),
+      ...copies(1, "undead.hushbow", "common"),
+      ...copies(2, "undead.graveBellTender", "common"),
+      ...copies(2, "undead.chatteringCohort", "uncommon"),
+      ...copies(1, "undead.ossuaryPiper", "uncommon"),
+      ...copies(1, "undead.coffinLancer", "rare"),
+      ...copies(1, "undead.winterMaw", "rare"),
+      ...copies(1, "undead.lanternWidow", "rare"),
+      ...copies(1, "undead.sirOdoLastTaxman", "epic"),
+      ...copies(1, "undead.boneRampart", "epic"),
+    ],
+  },
+  {
+    id: "breakneckCompany",
+    kind: "diagnostic",
+    classId: "mage",
+    deck: [
+      ...copies(1, "undead.coffinLidSkater", "common"),
+      ...copies(1, "undead.rattleknife", "common"),
+      ...copies(2, "undead.chatteringCohort", "uncommon"),
+      ...copies(1, "undead.paleGalloper", "uncommon"),
+      ...copies(1, "undead.rimeEyeReaper", "uncommon"),
+      ...copies(1, "undead.winterMaw", "rare"),
+      ...copies(2, "orc.scrapRaider", "common"),
+      ...copies(1, "orc.howlingCharger", "uncommon"),
+      ...copies(1, "orc.cinderhornBreaker", "uncommon"),
+      ...copies(1, "mage.fireball", "common"),
+      ...copies(1, "mage.frostBolt", "common"),
+      ...copies(1, "mage.flameWave", "uncommon"),
     ],
   },
   {

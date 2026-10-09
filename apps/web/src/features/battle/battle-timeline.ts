@@ -20,6 +20,8 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   CardDrawn: 200,
   CardPlayed: 180,
   UnitSummoned: 420,
+  // No card has Summon yet. The Undead web issue (#36) shows the Token.
+  TokenSummoned: 0,
   // The cast card holds, so its Recall chip can be read, then it goes.
   RecallRolled: 600,
   CountdownChanged: 160,

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  cardOf,
   emptyBattle,
   eventsOfType,
   giveHand,
@@ -803,7 +804,7 @@ describe("death and action order (GDD 4.4, 4.9)", () => {
       maxHp: 5,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(next.sides.enemy.graveyard).toEqual([victim.card]);
+    expect(next.sides.enemy.graveyard).toEqual([cardOf(victim)]);
     expect(eventsOfType(events, "UnitDied")).toEqual([
       expect.objectContaining({ unitId: victim.id }),
     ]);
@@ -2739,7 +2740,7 @@ describe("Rebirth (GDD 4.9)", () => {
       hp: 1,
       maxHp: 8,
       rebirth: false,
-      card: defender.card,
+      source: defender.source,
       summonedTurn: defender.summonedTurn,
     });
     expect(eventsOfType(first.events, "DamageDealt").at(-1)?.hp).toBe(0);
@@ -2755,7 +2756,7 @@ describe("Rebirth (GDD 4.9)", () => {
       { unitId: defender.id },
     ]);
     expect(eventsOfType(second.events, "UnitReborn")).toEqual([]);
-    expect(second.state.sides.enemy.graveyard).toEqual([defender.card]);
+    expect(second.state.sides.enemy.graveyard).toEqual([cardOf(defender)]);
   });
 
   it("is a kill: no Retaliation, no on-hit Status and no push", () => {

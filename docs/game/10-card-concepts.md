@@ -14,8 +14,8 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Gender.** The flavor text sets the gender of some figures. For the other figures, this document selects a gender, so that the set has a balanced mix.
 - **Creature Cards and Tokens** use the prompts of 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the prompts of 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
-- **Provisional power.** A Summon or a Last Breath that summons uses 80% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
-- **Power Budget `21 + 3 × (Countdown − 3)`** (the same as `12 + 3 × Countdown`). The Human, Orc, Goblin, Feral and Elf values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead and Token values are not in `cards.ts` yet, and they still use the old budget `6 + 5 × Countdown`. Fit them to the new budget when they come into the rules package.
+- **Provisional power.** A Summon or a Last Breath that summons uses 50% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
+- **Power Budget `21 + 3 × (Countdown − 3)`** (the same as `12 + 3 × Countdown`). The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget.
 - **Common values and Power Points.** The Attack and HP on each line are Common values. The Power on each line measures Attack and HP at the Base Rank of the card, with the Rank scale of GDD 5.3 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Thus an Uncommon, Rare or Epic card has lower Common Attack and HP than a Common card of the same power.
 
 ### 1.1 Settings
@@ -851,11 +851,11 @@ Identity: old spirits in bones and armor. They use many cheap Units, Swarm, Rebi
 
 ### 5.1 Graveyard Drudge
 
-`undead.graveyardDrudge` · Frontliner · Common · Countdown 1 · Attack 1 · HP 5 · Speed 1 · Melee · Physical · Swarm 1
+`undead.graveyardDrudge` · Frontliner · Common · Countdown 1 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Swarm 1
 
 > He works better when somebody watches.
 
-Purpose: a cheap blocker that rewards a crowded Lane. Power 11, budget 11, deviation 0%.
+Purpose: a cheap blocker that rewards a crowded Lane. Power 15, budget 15, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -869,11 +869,11 @@ Purpose: a cheap blocker that rewards a crowded Lane. Power 11, budget 11, devia
 
 ### 5.2 Rattleknife
 
-`undead.rattleknife` · Striker · Common · Countdown 1 · Attack 3 · HP 2 · Speed 1 · Melee · Physical · Swarm 1
+`undead.rattleknife` · Striker · Common · Countdown 1 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Swarm 1
 
 > One knife is a hobby. Two is a plan.
 
-Purpose: a cheap Swarm attacker. Power 12, budget 11, deviation +9.1%.
+Purpose: a cheap Swarm attacker. Power 15, budget 15, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -887,11 +887,11 @@ Purpose: a cheap Swarm attacker. Power 12, budget 11, deviation +9.1%.
 
 ### 5.3 Coffin-Lid Skater
 
-`undead.coffinLidSkater` · Runner · Common · Countdown 1 · Attack 2 · HP 1 · Speed 1 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
+`undead.coffinLidSkater` · Runner · Common · Countdown 1 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > The hill was steeper when he was alive.
 
-Purpose: fragile early Hero pressure. Power 10, budget 11, deviation -9.1%.
+Purpose: cheap early Hero pressure. Power 15, budget 15, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -905,11 +905,11 @@ Purpose: fragile early Hero pressure. Power 10, budget 11, deviation -9.1%.
 
 ### 5.4 Hushbow
 
-`undead.hushbow` · Shooter · Common · Countdown 2 · Attack 2 · HP 2 · Speed 1 · Range 3 · Physical · Summon Skeleton
+`undead.hushbow` · Shooter · Common · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Range 3 · Physical · Summon Skeleton
 
 > Quiet in life. Considerably noisier afterward.
 
-Purpose: a cheap Shooter that summons a Skeleton beside it. Power 16.6, budget 16, deviation +3.8%.
+Purpose: a cheap Shooter that summons a Skeleton beside it. Power 19, budget 18, deviation +5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -923,11 +923,11 @@ Purpose: a cheap Shooter that summons a Skeleton beside it. Power 16.6, budget 1
 
 ### 5.5 Grave Bell Tender
 
-`undead.graveBellTender` · Support · Common · Countdown 2 · Attack 1 · HP 5 · Speed 1 · Melee · Physical · Summon Skeleton
+`undead.graveBellTender` · Support · Common · Countdown 2 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Summon Skeleton
 
 > One ring for supper. Two for reinforcements.
 
-Purpose: efficient two-body Lane setup. Power 14.6, budget 16, deviation -8.8%.
+Purpose: efficient two-body Lane setup. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -941,11 +941,11 @@ Purpose: efficient two-body Lane setup. Power 14.6, budget 16, deviation -8.8%.
 
 ### 5.6 Backwatch Bailiff
 
-`undead.backwatchBailiff` · Frontliner · Uncommon · Countdown 2 · Attack 2 · HP 6 · Speed 1 · Melee · Physical · Pivot
+`undead.backwatchBailiff` · Frontliner · Uncommon · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Melee · Physical · Pivot
 
 > Nobody passes without the correct expired permit.
 
-Purpose: the Undead Pivot Unit. Power 15, budget 16, deviation -6.3%.
+Purpose: the Undead Pivot Unit. Power 19, budget 18, deviation +5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -959,11 +959,11 @@ Purpose: the Undead Pivot Unit. Power 15, budget 16, deviation -6.3%.
 
 ### 5.7 Chattering Cohort
 
-`undead.chatteringCohort` · Striker · Uncommon · Countdown 2 · Attack 4 · HP 3 · Speed 1 · Melee · Physical · Swarm 1
+`undead.chatteringCohort` · Striker · Uncommon · Countdown 2 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Swarm 1
 
 > They agree on everything, very loudly.
 
-Purpose: the main cheap Swarm attacker. Power 15, budget 16, deviation -6.3%.
+Purpose: the main cheap Swarm attacker. Power 19, budget 18, deviation +5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -977,11 +977,11 @@ Purpose: the main cheap Swarm attacker. Power 15, budget 16, deviation -6.3%.
 
 ### 5.8 Pale Galloper
 
-`undead.paleGalloper` · Runner · Uncommon · Countdown 2 · Attack 2 · HP 2 · Speed 2 · Melee · Frost · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
+`undead.paleGalloper` · Runner · Uncommon · Countdown 2 · Attack 2 · HP 4 · Speed 2 · Melee · Frost · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > The rider asked for a slower horse.
 
-Purpose: fast Frost tempo and Hero pressure. Power 16, budget 16, deviation 0%.
+Purpose: fast Frost tempo and Hero pressure. Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -995,11 +995,11 @@ Purpose: fast Frost tempo and Hero pressure. Power 16, budget 16, deviation 0%.
 
 ### 5.9 Rime-Eye Reaper
 
-`undead.rimeEyeReaper` · Striker · Uncommon · Countdown 2 · Attack 4 · HP 3 · Speed 1 · Melee · Frost
+`undead.rimeEyeReaper` · Striker · Uncommon · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Melee · Frost
 
 > She closes one eye. The other is already frozen open.
 
-Purpose: cheap melee Frost control. Its high Attack kills a Frozen target fast, so the Freeze lock ends fast. Power 16, budget 16, deviation 0%.
+Purpose: cheap melee Frost control. Its high Attack kills a Frozen target fast, so the Freeze lock ends fast. Power 19, budget 18, deviation +5.6%.
 
 This card was a Ranged Frost Shooter, Rime-Eye Archer. No Ranged Unit has Frost damage ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md), issue #28).
 
@@ -1015,11 +1015,11 @@ This card was a Ranged Frost Shooter, Rime-Eye Archer. No Ranged Unit has Frost 
 
 ### 5.10 Ossuary Piper
 
-`undead.ossuaryPiper` · Support · Uncommon · Countdown 2 · Attack 2 · HP 6 · Speed 1 · Melee · Physical · Rally 1
+`undead.ossuaryPiper` · Support · Uncommon · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Melee · Physical · Rally 1
 
 > Nobody knows the tune. Everybody marches.
 
-Purpose: a Swarm payoff and Lane support. Power 15, budget 16, deviation -6.3%.
+Purpose: a Swarm payoff and Lane support. Power 19, budget 18, deviation +5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -1037,7 +1037,7 @@ Purpose: a Swarm payoff and Lane support. Power 15, budget 16, deviation -6.3%.
 
 > The coffin is defensive equipment.
 
-Purpose: a compact persistent blocker. Power 16, budget 16, deviation 0%.
+Purpose: a compact persistent blocker. Power 18, budget 18, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1051,11 +1051,11 @@ Purpose: a compact persistent blocker. Power 16, budget 16, deviation 0%.
 
 ### 5.12 Winter Maw
 
-`undead.winterMaw` · Striker · Rare · Countdown 3 · Attack 4 · HP 2 · Speed 1 · Melee · Frost · First Strike · Swarm 1
+`undead.winterMaw` · Striker · Rare · Countdown 3 · Attack 2 · HP 4 · Speed 1 · Melee · Frost · First Strike · Swarm 1
 
 > It brings enough cold for the whole pack.
 
-Purpose: a fragile anti-melee finisher and Swarm payoff. Power 21, budget 21, deviation 0%.
+Purpose: an anti-melee finisher and Swarm payoff. Power 22, budget 21, deviation +4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1069,11 +1069,11 @@ Purpose: a fragile anti-melee finisher and Swarm payoff. Power 21, budget 21, de
 
 ### 5.13 Lantern Widow
 
-`undead.lanternWidow` · Support · Rare · Countdown 3 · Attack 1 · HP 2 · Speed 1 · Melee · Frost · Summon Restless Wisp
+`undead.lanternWidow` · Support · Rare · Countdown 3 · Attack 1 · HP 4 · Speed 1 · Melee · Frost · Summon Restless Wisp
 
 > She always leaves a light on for the late.
 
-Purpose: Frost support that creates a mobile second threat. Power 21, budget 21, deviation 0%.
+Purpose: Frost support that creates a mobile second threat. Power 20.5, budget 21, deviation -2.4%.
 
 | Field | Brief |
 | --- | --- |
@@ -1087,29 +1087,31 @@ Purpose: Frost support that creates a mobile second threat. Power 21, budget 21,
 
 ### 5.14 Sir Odo, the Last Taxman
 
-`undead.sirOdoLastTaxman` · Striker · Epic · Countdown 4 · Attack 6 · HP 5 · Speed 2 · Melee · Physical · Unique · Rebirth
+`undead.sirOdoLastTaxman` · Striker · Epic · Countdown 4 · Attack 2 · HP 4 · Speed 1 · Melee · Physical · Unique · Charge 2 at Epic, 3 at Legendary · Rebirth
 
 > Death excuses neither payment nor the late fee.
 
-Purpose: the named Undead Epic and persistent finisher. Rebirth brings him back at 1 HP. Power 26, budget 26, deviation 0%.
+Purpose: the named Undead Epic and a large finisher that comes back slowly. Charge gives him a fast first Turn. Rebirth brings him back at 1 HP, and the reborn Odo does not get Charge again. Power 24, budget 24, deviation 0%.
+
+He had Speed 2. Only an Orc melee Striker can have Speed 2, and another Race uses Charge N for a fast Striker ([ADR-0024](../adr/0024-speed-1-is-the-default.md), issue #35).
 
 | Field | Brief |
 | --- | --- |
 | Subject | A tall skeletal tax knight with a false mustache. |
 | Pose | He charges down ruined court steps. |
 | Props | Quill lance, ledger shield, Coin chain and ornate plate. |
-| Gameplay cues | A spectral second Odo shows Rebirth. |
+| Gameplay cues | The charge down the steps shows Charge. A spectral second Odo shows Rebirth. |
 | Silhouette hook | Quill lance and square shield. |
 | Humor note | He offers a receipt during the charge. |
 | Setting | A collapsed toll court. |
 
 ### 5.15 Bone Rampart
 
-`undead.boneRampart` · Wall · Epic · Countdown 3 · Attack 0 · HP 10 · Speed 0 · Melee · Physical · Wall · Armor 2 · Rebirth
+`undead.boneRampart` · Wall · Epic · Countdown 3 · Attack 0 · HP 5 · Speed 0 · Melee · Physical · Wall · Armor 2 · Rebirth
 
 > Please use the other Lane.
 
-Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 21, budget 21, deviation 0%.
+Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budget 21, deviation -4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1683,11 +1685,11 @@ Tokens are not collectible Cards. They use the Rank of the Card or effect that m
 
 | Rank | Attack | HP | Speed | Power |
 | --- | ---: | ---: | ---: | ---: |
-| Common | 1 | 1 | 1 | 7 |
-| Uncommon | 1 | 2 | 1 | 8 |
-| Rare | 2 | 2 | 1 | 10 |
-| Epic | 2 | 3 | 2 | 13 |
-| Legendary | 3 | 4 | 2 | 16 |
+| Common | 1 | 1 | 1 | 6 |
+| Uncommon | 1 | 2 | 1 | 7 |
+| Rare | 2 | 2 | 1 | 9 |
+| Epic | 2 | 3 | 2 | 12 |
+| Legendary | 3 | 4 | 2 | 15 |
 
 Purpose: cheap Lane mass that is weak alone.
 

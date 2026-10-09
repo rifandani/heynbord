@@ -21,6 +21,7 @@ export {
   SUDDEN_DEATH_TURN,
   Target,
   TURN_LIMIT,
+  unitRank,
   WALL_SUMMON_DEPTH,
 } from "./battle/types";
 export type {
@@ -36,6 +37,7 @@ export type {
   SideState,
   TargetRef,
   UnitSnapshot,
+  UnitSource,
   UnitState,
 } from "./battle/types";
 export {
@@ -107,7 +109,10 @@ export type {
   SkillTarget,
   StageDefinition,
   StarterDeck,
+  TokenDefinition,
+  TokenId,
   UnitRole,
 } from "./content/schema";
 export { getStage, STAGES } from "./content/stages";
+export { getToken, TOKENS } from "./content/tokens";
 export { isTutorial, TUTORIAL_STAGE_ID } from "./modes/tutorial";

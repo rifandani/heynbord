@@ -57,7 +57,10 @@ const { view } = tutorialSession();
 const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   id: owner === "player" ? 1 : 2,
   owner,
-  card: { instanceId: 9, cardId: "human.militiaRecruit", rank: "common" },
+  source: {
+    _tag: "Card",
+    card: { instanceId: 9, cardId: "human.militiaRecruit", rank: "common" },
+  },
   lane,
   position: owner === "player" ? 0 : 11,
   attack: 1,

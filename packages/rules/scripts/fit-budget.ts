@@ -4,13 +4,18 @@
  * measures them at the Base Rank (ADR-0020). Countdown, Speed, Range, Damage
  * Type and Keywords do not change. A card with Attack 0 keeps Attack 0.
  *
- * Usage: `bun scripts/fit-budget.ts <intercept> <slope>`. It prints the fit of
- * each card. It does not change `cards.ts`. For the ADR-0021 budget
- * `21 + s × (Countdown − 3)`, the intercept is `21 − 3s` and the slope is `s`.
+ * Usage: `bun scripts/fit-budget.ts <intercept> <slope> [--hp-per-attack <hp>]`.
+ * It prints the fit of each card. It does not change `cards.ts`. For the
+ * ADR-0021 budget `21 + s × (Countdown − 3)`, the intercept is `21 − 3s` and
+ * the slope is `s`.
  *
  * The fit selects the Attack and HP with the power nearest to the budget. All
  * powers within the tolerance are equally near, and of these it selects the
- * Attack-to-HP shape nearest to the current card.
+ * Attack-to-HP shape nearest to the current card. With `--hp-per-attack <hp>`,
+ * it selects the shape nearest to 1 Attack for each `hp` HP at the Base Rank
+ * in place of the current shape. The Undead cards use `--hp-per-attack 2`
+ * (issue #35): with `power = Attack × 2 + HP`, HP = 2 × Attack gives the
+ * largest Attack × HP.
  */
 import { creaturePower } from "../src/content/balance";
 import { CARDS } from "../src/content/cards";
@@ -51,10 +56,14 @@ const attackRatio = (
 
 export const fitCard = (
   card: CreatureCardDefinition,
-  budget: LinearBudget
+  budget: LinearBudget,
+  hpPerAttack?: number
 ): CardFit => {
   const target = budgetFor(budget, card.countdown);
-  const original = attackRatio(card, card.attack, card.hp);
+  const original =
+    hpPerAttack === undefined || card.attack === 0
+      ? attackRatio(card, card.attack, card.hp)
+      : Math.atan2(1, hpPerAttack);
   const maxAttack = card.attack === 0 ? 0 : MAX_STAT;
   const minAttack = card.attack === 0 ? 0 : 1;
   let best: (CardFit & { miss: number; ratioMiss: number }) | undefined;
@@ -91,31 +100,40 @@ export const fitCard = (
   return fit;
 };
 
-export const fitCards = (budget: LinearBudget): CardFit[] =>
+export const fitCards = (
+  budget: LinearBudget,
+  hpPerAttack?: number
+): CardFit[] =>
   CARDS.flatMap((card) =>
-    card.kind === "creature" ? [fitCard(card, budget)] : []
+    card.kind === "creature" ? [fitCard(card, budget, hpPerAttack)] : []
   );
 
 const percent = (power: number, budget: number): string =>
   `${(((power - budget) / budget) * 100).toFixed(1)}%`;
 
 if (import.meta.main) {
-  const [intercept, slope] = process.argv.slice(2).map(Number);
+  const [intercept, slope, flag, hpPerAttackArg] = process.argv.slice(2);
+  const hpPerAttack =
+    flag === "--hp-per-attack" ? Number(hpPerAttackArg) : undefined;
   if (
     intercept === undefined ||
     slope === undefined ||
-    Number.isNaN(intercept) ||
-    Number.isNaN(slope)
+    Number.isNaN(Number(intercept)) ||
+    Number.isNaN(Number(slope)) ||
+    (flag !== undefined && flag !== "--hp-per-attack") ||
+    (hpPerAttack !== undefined && !(hpPerAttack > 0))
   ) {
-    console.error("Usage: bun scripts/fit-budget.ts <intercept> <slope>");
+    console.error(
+      "Usage: bun scripts/fit-budget.ts <intercept> <slope> [--hp-per-attack <hp>]"
+    );
     process.exit(1);
   }
-  const budget = { intercept, slope };
+  const budget = { intercept: Number(intercept), slope: Number(slope) };
   const rows = CARDS.flatMap((card) => {
     if (card.kind !== "creature") {
       return [];
     }
-    const fit = fitCard(card, budget);
+    const fit = fitCard(card, budget, hpPerAttack);
     return [
       {
         card: card.id,

@@ -29,11 +29,16 @@ export const finishBattle = (ctx: StepContext, result: BattleResult): void => {
   ctx.events.push(BattleEvent.BattleEnded({ result }));
 };
 
-/** The Unit leaves the Board. Its Card goes to the owner's Graveyard (GDD 4.9). */
+/**
+ * The Unit leaves the Board. The Card of a Card Unit goes to the owner's
+ * Graveyard. A Token has no Card: it just disappears (GDD 4.9).
+ */
 const killUnit = (ctx: StepContext, unit: UnitState): void => {
   const { state } = ctx;
   state.units = state.units.filter((candidate) => candidate.id !== unit.id);
-  state.sides[unit.owner].graveyard.push(unit.card);
+  if (unit.source._tag === "Card") {
+    state.sides[unit.owner].graveyard.push(unit.source.card);
+  }
   ctx.events.push(BattleEvent.UnitDied({ unitId: unit.id }));
   if (unit.lastBreath <= 0 || isOver(ctx)) {
     return;
@@ -60,7 +65,7 @@ const killUnit = (ctx: StepContext, unit: UnitState): void => {
 
 /**
  * Rebirth (GDD 4.9): the Unit does not leave the Board. It keeps its ID, its
- * Square and its card, and it comes back with 1 HP, without Rebirth and
+ * Square and its source, and it comes back with 1 HP, without Rebirth and
  * without Statuses. It is not a summon, and its Last Breath does not occur.
  * When the Battle is over, its Hero is Defeated, and Rebirth does not occur
  * (GDD 4.10, ADR-0009).

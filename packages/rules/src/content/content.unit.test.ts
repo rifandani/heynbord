@@ -8,6 +8,7 @@ import {
   creaturePower,
   POWER_BUDGET_SLOPE,
   powerBudget,
+  tokenPower,
 } from "./balance";
 import { CARDS, getCard } from "./cards";
 import {
@@ -25,6 +26,7 @@ import {
   CardDefinition,
   StageDefinition,
   StarterDeck,
+  TokenDefinition,
 } from "./schema";
 import type {
   CreatureCardDefinition,
@@ -32,13 +34,19 @@ import type {
   Keywords,
   RaceId,
   RankId,
+  TokenId,
 } from "./schema";
 import { getStage, STAGES } from "./stages";
+import { getToken, TOKENS } from "./tokens";
 
 const decodeCard = Schema.decodeUnknownSync(CardDefinition);
 const decodeStage = Schema.decodeUnknownSync(StageDefinition);
 const decodeDeck = Schema.decodeUnknownSync(StarterDeck);
 const decodeArchetype = Schema.decodeUnknownSync(Archetype);
+/** Strict: a Keyword that a Token cannot have, such as Summon, fails. */
+const decodeToken = Schema.decodeUnknownSync(TokenDefinition, {
+  onExcessProperty: "error",
+});
 
 const checkDeck = (deck: readonly DeckEntry[]) => {
   const counts = new Map<string, number>();
@@ -115,15 +123,17 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 81 cards: 5 Races and 2 Classes", () => {
-    expect(CARDS).toHaveLength(81);
+  it("has 96 cards: 6 Races and 2 Classes", () => {
+    expect(CARDS).toHaveLength(96);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
     const classes = new Set(
       CARDS.flatMap((card) => (card.kind === "skill" ? [card.class] : []))
     );
-    expect(races).toEqual(new Set(["human", "orc", "goblin", "feral", "elf"]));
+    expect(races).toEqual(
+      new Set(["human", "orc", "goblin", "feral", "elf", "undead"])
+    );
     expect(classes).toEqual(new Set(["warrior", "mage"]));
   });
 
@@ -177,6 +187,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         card.keywords.lastBreath,
         card.keywords.rally,
         card.keywords.regeneration,
+        card.keywords.swarm,
       ];
       for (const amount of amounts) {
         if (amount === undefined || Predicate.isNumber(amount)) {
@@ -290,6 +301,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       "goblin",
       "human",
       "orc",
+      "undead",
     ]);
   });
 
@@ -414,16 +426,65 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(power("elf.canopyVinewarden")).toBe(26);
   });
 
-  it("gives Swarm N × 2 and Rebirth 5 power points at the Base Rank (GDD 13)", () => {
+  it("gives Swarm N × 1 and Rebirth 5 power points at the Base Rank (GDD 13)", () => {
     // 3/8 at Common: 3 × 2 + 8 + Speed 1 × 2 = 16.
     const swarm = decodeCard(recruitWith({ swarm: 2 }));
     const rebirth = decodeCard(recruitWith({ rebirth: true }));
     const both = decodeCard(
       recruitWith({ swarm: { common: 1, epic: 2 }, rebirth: true })
     );
-    expect(swarm.kind === "creature" && creaturePower(swarm)).toBe(20);
+    expect(swarm.kind === "creature" && creaturePower(swarm)).toBe(18);
     expect(rebirth.kind === "creature" && creaturePower(rebirth)).toBe(21);
-    expect(both.kind === "creature" && creaturePower(both)).toBe(23);
+    expect(both.kind === "creature" && creaturePower(both)).toBe(22);
+  });
+
+  it("gives Summon X 50% of the Token power at the Base Rank of the card (GDD 13)", () => {
+    // 16 + 0.5 × 6 for the Skeleton, 16 + 0.5 × 12 for the Restless Wisp.
+    const skeleton = decodeCard(recruitWith({ summon: "token.skeleton" }));
+    const wisp = decodeCard(recruitWith({ summon: "token.restlessWisp" }));
+    expect(skeleton.kind === "creature" && creaturePower(skeleton)).toBe(19);
+    expect(wisp.kind === "creature" && creaturePower(wisp)).toBe(22);
+    // At Base Rank Epic: 3/8 is 5/14, 5 × 2 + 14 + 2 = 26, + 0.5 × 12.
+    const epic = {
+      ...recruitWith({ summon: "token.skeleton" }),
+      baseRank: "epic",
+    } as const;
+    expect(creaturePower(epic)).toBe(32);
+    // A fraction: the Restless Wisp has power 15 at Rare.
+    const rare = {
+      ...recruitWith({ summon: "token.restlessWisp" }),
+      baseRank: "rare",
+    } as const;
+    expect(creaturePower(rare) % 1).toBe(0.5);
+  });
+
+  it("refuses a Summon ID that is not a Token", () => {
+    expect(() =>
+      decodeCard({
+        ...recruitWith({}),
+        keywords: { summon: "human.militiaRecruit" },
+      })
+    ).toThrow();
+    expect(() =>
+      decodeCard({ ...recruitWith({}), keywords: { summon: "token.zombie" } })
+    ).toThrow();
+  });
+
+  it("fits the Undead cards to the ADR-0021 budget (Card Concepts 5)", () => {
+    // Summon Skeleton: 3/5 is 3 × 2 + 5 + Speed 1 × 2 + Range 3 + 0.5 × 6.
+    expect(power("undead.hushbow")).toBe(19);
+    // Summon Restless Wisp: 1/4 is 1/6 at Rare. 1 × 2 + 6 + 2 + Frost 3 + 0.5 × 15.
+    expect(power("undead.lanternWidow")).toBe(20.5);
+    // Rebirth and Charge 2 at Epic: 2/4 is 4/7. 4 × 2 + 7 + 2 + 5 + 2.
+    expect(power("undead.sirOdoLastTaxman")).toBe(24);
+    // Wall: 0/5 is 0/9 at Epic. 9 + Armor 2 × 3 + Rebirth 5.
+    expect(power("undead.boneRampart")).toBe(20);
+    const undead = creatures.filter((creature) => creature.race === "undead");
+    for (const card of undead) {
+      expect(Math.abs(budgetDeviation(card)), card.id).toBeLessThanOrEqual(
+        1000
+      );
+    }
   });
 
   it("puts Rebirth and Last Breath on no card together (ADR-0015)", () => {
@@ -448,6 +509,7 @@ const FULL_RACES = [
   "goblin",
   "feral",
   "elf",
+  "undead",
 ] as const satisfies readonly RaceId[];
 
 const raceCards = (race: RaceId) =>
@@ -478,7 +540,7 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
     }
   );
 
-  it("gives Elf, Goblin and Feral the Role profiles of GDD 12", () => {
+  it("gives Elf, Goblin, Feral and Undead the Role profiles of GDD 12", () => {
     expect(countBy(raceCards("elf"), (card) => card.role)).toEqual({
       frontliner: 1,
       striker: 2,
@@ -503,9 +565,17 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
       support: 1,
       wall: 1,
     });
+    expect(countBy(raceCards("undead"), (card) => card.role)).toEqual({
+      frontliner: 3,
+      striker: 5,
+      runner: 2,
+      shooter: 1,
+      support: 3,
+      wall: 1,
+    });
   });
 
-  it("gives Elf 11 Physical and 4 Holy cards, Goblin 11 Physical and 4 Fire cards, and Feral 11 Physical and 4 Frost cards", () => {
+  it("gives Elf 11 Physical and 4 Holy cards, Goblin 11 Physical and 4 Fire cards, and Feral and Undead 11 Physical and 4 Frost cards", () => {
     expect(countBy(raceCards("elf"), (card) => card.damageType)).toEqual({
       physical: 11,
       holy: 4,
@@ -515,6 +585,10 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
       fire: 4,
     });
     expect(countBy(raceCards("feral"), (card) => card.damageType)).toEqual({
+      physical: 11,
+      frost: 4,
+    });
+    expect(countBy(raceCards("undead"), (card) => card.damageType)).toEqual({
       physical: 11,
       frost: 4,
     });
@@ -711,6 +785,8 @@ describe("Decks and Stages", () => {
       ["tunnelRats", "diagnostic"],
       ["wildHunt", "diagnostic"],
       ["thornwatch", "diagnostic"],
+      ["deathlessHost", "diagnostic"],
+      ["breakneckCompany", "diagnostic"],
       ["vanguardFull", "diagnostic"],
       ["raidersFull", "diagnostic"],
       ["humanHeavy", "diagnostic"],
@@ -720,6 +796,11 @@ describe("Decks and Stages", () => {
     expect(archetypeGroups("tunnelRats")).toEqual(new Set(["goblin"]));
     expect(archetypeGroups("wildHunt")).toEqual(new Set(["feral"]));
     expect(archetypeGroups("thornwatch")).toEqual(new Set(["elf"]));
+    expect(archetypeGroups("deathlessHost")).toEqual(new Set(["undead"]));
+    // Mixed Undead and Orc cards with the Mage Skill Cards.
+    expect(archetypeGroups("breakneckCompany")).toEqual(
+      new Set(["undead", "orc", "mage"])
+    );
     // The full Human and Orc sets, with the Skill Cards of the main Archetype.
     expect(archetypeGroups("vanguardFull")).toEqual(
       new Set(["human", "warrior"])
@@ -759,5 +840,39 @@ describe("Decks and Stages", () => {
   it("throws for an unknown Stage or Deck", () => {
     expect(() => getStage("9-9")).toThrow("Unknown Stage");
     expect(() => getStarterDeck("nope")).toThrow("Unknown starter Deck");
+  });
+});
+
+/** The power of a Token at each Rank, from Common. */
+const powers = (tokenId: TokenId) =>
+  RANKS.map((rank) => tokenPower(getToken(tokenId), rank));
+
+describe("Tokens (Card Concepts 8)", () => {
+  it("decodes each Token, keyed by its ID", () => {
+    for (const [tokenId, token] of Object.entries(TOKENS)) {
+      expect(decodeToken(token), tokenId).toEqual(token);
+      expect(token.id).toBe(tokenId);
+    }
+  });
+
+  it("gives the Token power of Card Concepts 8 at each Rank", () => {
+    // Swarm 1 is 1 point.
+    expect(powers("token.skeleton")).toEqual([6, 7, 9, 12, 15]);
+    expect(powers("token.restlessWisp")).toEqual([12, 13, 15, 18, 21]);
+  });
+
+  it("is not a Card", () => {
+    for (const tokenId of Object.keys(TOKENS)) {
+      expect(() => getCard(tokenId)).toThrow("Unknown card");
+    }
+  });
+
+  it("refuses Summon on a Token, so a Token never makes a Token", () => {
+    expect(() =>
+      decodeToken({
+        ...getToken("token.skeleton"),
+        keywords: { summon: "token.skeleton" },
+      })
+    ).toThrow();
   });
 });

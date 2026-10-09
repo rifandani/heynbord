@@ -173,6 +173,8 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
     for (const diagnostic of [
       "tunnelRats",
       "wildHunt",
+      "deathlessHost",
+      "breakneckCompany",
       "vanguardFull",
       "raidersFull",
       "humanHeavy",
@@ -195,6 +197,13 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
       options
     );
     expect(goblinAgainstFeral.battles).toBe(8);
+    // Trample against cheap Units (Archetypes 2.2).
+    const feralAgainstUndead = simulateMatchup(
+      archetype("wildHunt"),
+      archetype("deathlessHost"),
+      options
+    );
+    expect(feralAgainstUndead.battles).toBe(8);
   });
 
   it("gates release only with a pair of two main Archetypes", () => {
@@ -216,6 +225,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
     expect(gatesRelease(archetype("raidersFull"), archetype("vanguard"))).toBe(
       false
     );
+    expect(
+      gatesRelease(archetype("deathlessHost"), archetype("breakneckCompany"))
+    ).toBe(false);
   });
 
   it("reports the average number of the Archetype's Turns with no Ready card in the Hand", () => {
