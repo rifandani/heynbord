@@ -16,8 +16,8 @@ interface FrameCounter {
   frameMs: number;
 }
 
-const phaseMode = (phase: BattleSession["rules"]["phase"]) =>
-  phase === "finished" ? "finished" : "battle";
+const statusMode = (status: BattleSession["rules"]["status"]) =>
+  status === "finished" ? "finished" : "battle";
 
 const eventTag = (current: BattleSession["current"]) =>
   current?.event._tag ?? null;
@@ -28,7 +28,7 @@ const tutorialState = (tutorial: BattleSession["tutorial"]) =>
 const battleState = (session: BattleSession) => {
   const { view, rules } = session;
   return {
-    mode: phaseMode(rules.phase),
+    mode: statusMode(rules.status),
     stageId: session.options.stageId,
     seed: session.options.seed,
     turnNumber: view.turnNumber,

@@ -52,7 +52,7 @@ const playTutorial = (deck: StarterDeck, seed: number) => {
   let session = settle(
     startSession({ stageId: TUTORIAL_STAGE_ID, deck, seed }, 1, true)
   );
-  while (session.rules.phase !== "finished") {
+  while (session.rules.status !== "finished") {
     for (let play = firstPlay(session); play; play = firstPlay(session)) {
       const card = session.view.sides.player.hand[play.handIndex];
       const selected = canAct(session)

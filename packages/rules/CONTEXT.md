@@ -36,11 +36,17 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Defeated**: The state of a Hero at 0 HP. A Defeated Hero is out of the Battle, but its Side continues while it has other Heroes. _Avoid_: dead, killed, knocked out
 
-**Routed**: The state of a Side with no Units on the Board and no Cards in the Hands and Decks of its Heroes that are not Defeated. A Routed Side cannot act again, so it loses. _Avoid_: exhausted, out of cards, surrender, forfeit
+**Routed**: The state of a Side with no Units on the Board and no Cards in the Hands and Decks of its Heroes that are not Defeated. A Routed Side cannot act again, so it loses at the end of the Turn, after the End Phase. _Avoid_: exhausted, out of cards, surrender, forfeit
 
 **Player**: The person who plays Heynbord. The Player controls a Hero. _Avoid_: user, account, Hero
 
-**Turn**: One side's sequence of Start Step, Play Phase, Resolution Phase and End Step. _Avoid_: round, move
+**Turn**: One side's sequence of 4 Phases: Start Phase, Play Phase, Resolution Phase and End Phase. _Avoid_: round, move
+
+**Phase**: One of the 4 parts of a Turn. Only a part of a Turn is a Phase. A part of the Tutorial is a Tutorial Step. _Avoid_: step
+
+**Start Phase**: The first part of a Turn. Regeneration, Rally, Sudden Death, Countdown and the draw occur in it. _Avoid_: Start Step, upkeep, beginning phase
+
+**End Phase**: The last part of a Turn. Burn and Poison damage occur in it, and timed effects go down by 1. _Avoid_: End Step, cleanup, end of turn
 
 **Turn number**: A count of rounds. Both sides take one Turn in each Turn number. _Avoid_: turn count, round number
 
@@ -52,9 +58,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
 
-**Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Step from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
+**Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Phase from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
 
-**Burn**: The effect of Fire damage on a Unit: 1 damage in each End Step of the Unit's owner, for the next 2 End Steps. A new Burn replaces the old Burn. _Avoid_: damage over time
+**Burn**: The effect of Fire damage on a Unit: 1 damage in each End Phase of the Unit's owner, for the next 2 End Phases. A new Burn replaces the old Burn. _Avoid_: damage over time
 
 **Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. A Ranged Unit never has Frost damage, because it could Freeze the same enemy before each action of that enemy. _Avoid_: stun, chill, slow
 
@@ -64,15 +70,15 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Poison**: A Keyword. After a Unit with Poison deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. _Avoid_: venom, toxin
 
-**Poisoned**: A Status from the Poison Keyword. The Unit has a stack count. In each End Step of its owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. _Avoid_: venom, toxin, damage over time
+**Poisoned**: A Status from the Poison Keyword. The Unit has a stack count. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. _Avoid_: venom, toxin, damage over time
 
-**Hobble N**: A Keyword. After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled for N End Steps. Retaliation does not apply Hobble. _Avoid_: Fatigue, Cripple, Slow
+**Hobble N**: A Keyword. After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled for N End Phases. Retaliation does not apply Hobble. _Avoid_: Fatigue, Cripple, Slow
 
-**Hobbled**: A Status from the Hobble Keyword. A Hobbled Unit has a maximum Speed of 1, after all bonuses. It has a count that goes down by 1 in each End Step of its owner, and it ends at 0. A new Hobble keeps the higher count. _Avoid_: fatigued, slowed, crippled
+**Hobbled**: A Status from the Hobble Keyword. A Hobbled Unit has a maximum Speed of 1, after all bonuses. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Hobble keeps the higher count. _Avoid_: fatigued, slowed, crippled
 
-**Bleed N**: A Keyword. After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding for N End Steps. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Wound, Rend, Maim, anti-heal
+**Bleed N**: A Keyword. After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding for N End Phases. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Wound, Rend, Maim, anti-heal
 
-**Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Step of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
+**Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
 
 **Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
 
@@ -92,7 +98,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Token**: A Unit that an effect makes, with no Card. It uses the Rank of the Card or effect that made it, and it disappears when it dies. _Avoid_: summon, spawn
 
-**Countdown**: The number of Turns that a Card must be in the Hand before it is Ready. The Countdown of each Card in the Hand goes down by 1 in each Start Step of its owner. _Avoid_: mana, cost, cooldown, timer, wait
+**Countdown**: The number of Turns that a Card must be in the Hand before it is Ready. The Countdown of each Card in the Hand goes down by 1 in each Start Phase of its owner. _Avoid_: mana, cost, cooldown, timer, wait
 
 **Ready**: The state of a Card with a Countdown of 0. Only Ready Cards can be played. _Avoid_: active, available, playable
 
@@ -128,7 +134,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Base Attack**: The Attack of a Unit for its Rank, without bonuses such as Rally or Swarm. A Unit with Base Attack 0 never attacks and never deals Retaliation damage. _Avoid_: printed Attack, raw Attack
 
-**Rally N**: A Keyword. In its owner's Start Step, the other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no Rally bonus. _Avoid_: Inspire, Rouse, Battle Cry
+**Rally N**: A Keyword. In its owner's Start Phase, the other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no Rally bonus. _Avoid_: Inspire, Rouse, Battle Cry
 
 **Swarm N**: A Keyword. A Unit with Swarm gets +N Attack while another friendly Unit or Token is in the same Lane. More friendly Units do not increase the bonus. _Avoid_: Horde, Pack
 

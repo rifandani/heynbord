@@ -3,7 +3,7 @@ import type { GearLevels, ClassId } from "../content/schema";
 import { seedState, shuffle } from "../random";
 import type { StepContext } from "./context";
 import { summon } from "./play";
-import { drawCard, runStartStep } from "./turn";
+import { drawCard, runStartPhase } from "./turn";
 import type {
   BattleEvent,
   BattleSetup,
@@ -55,7 +55,7 @@ interface BattleStart {
 /**
  * Starts a Battle (GDD 4.2): both sides shuffle with the Battle seed and draw
  * 4 cards, the Stage puts its start Units on the Board, and the player's
- * first Start Step runs. Returns the state in the player's Play Phase and the
+ * first Start Phase runs. Returns the state in the player's Play Phase and the
  * events so far.
  */
 export const createBattle = (setup: BattleSetup): BattleStart => {
@@ -88,7 +88,7 @@ export const createBattle = (setup: BattleSetup): BattleStart => {
     closedLanes: stage.closedLanes.map((closed) => ({ ...closed })),
     turnNumber: 1,
     activeSide: "player",
-    phase: "play",
+    status: "ongoing",
     sides: {
       player: {
         hero: makeHero(player.classId, playerHeroHp(player.level), player.gear),
@@ -130,7 +130,7 @@ export const createBattle = (setup: BattleSetup): BattleStart => {
     const card = startUnits[index] as CardInstance;
     summon(ctx, "enemy", card, definition, startUnit.lane, startUnit.position);
   }
-  runStartStep(ctx);
+  runStartPhase(ctx);
   state.random = random.state;
   return { state, events };
 };

@@ -32,7 +32,7 @@ const startOf = (seed: number) =>
 describe("playOut (GDD 13)", () => {
   it("plays a Battle to its end, the same way for the same seed", () => {
     const end = playOut(startOf(3));
-    expect(end.phase).toBe("finished");
+    expect(end.status).toBe("finished");
     expect(end.result).not.toBeNull();
     expect(playOut(startOf(3))).toEqual(end);
   });
@@ -247,7 +247,7 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
     ).toMatchObject({
       winRate: 0.55,
       firstSideWinRate: 0.55,
-      averageTurn: 22,
+      averageTurn: 18.1,
     });
     // Gear 3 rolls Crit and Block.
     expect(
@@ -259,7 +259,7 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
     ).toMatchObject({
       winRate: 0.675,
       firstSideWinRate: 0.525,
-      averageTurn: 23.3,
+      averageTurn: 18.25,
     });
   });
 });

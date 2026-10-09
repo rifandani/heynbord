@@ -199,7 +199,7 @@ export const atPlayPhase = (
   state: BattleState
 ): Tutorial => {
   if (
-    state.phase !== "play" ||
+    state.status !== "ongoing" ||
     state.activeSide !== "player" ||
     state.turnNumber === tutorial.checkedTurn ||
     has(tutorial.shown, "laneChoice")

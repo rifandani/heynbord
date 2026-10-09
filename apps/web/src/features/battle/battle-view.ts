@@ -27,7 +27,7 @@ export interface UnitView {
   readonly maxHp: number;
   readonly armor: number;
   readonly bonusArmor: number;
-  /** The End Steps of the other side until the bonus Armor goes away. */
+  /** The End Phases of the other side until the bonus Armor goes away. */
   readonly bonusArmorTurns: number;
   readonly range: number;
   readonly flying: boolean;
@@ -42,7 +42,7 @@ export interface UnitView {
   /**
    * Speed 0 in the next action, and the action ends it. The rules show no
    * event for this, so the view ends it on the attack or the skip of the Unit,
-   * and for a Unit with no attack at the End Step of its owner.
+   * and for a Unit with no attack at the End Phase of its owner.
    */
   readonly entangled: boolean;
   /** A Wall does not move or attack, so its Attack is not shown. */
@@ -386,7 +386,7 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
       }));
     }
     case "TurnEnded": {
-      // The End Step lowers the Hobbled and Bleeding counts of this Side, and
+      // The End Phase lowers the Hobbled and Bleeding counts of this Side, and
       // the bonus Armor Turns of the other side's Units. Each Unit of this Side
       // had its action, so none of them is Entangled now: a Unit with no move
       // and no attack has no event of its own that ends Entangled.

@@ -99,7 +99,7 @@ A **Turn number** counts rounds. In each Turn number, the first player and then 
 
 Each Turn of the active side has these phases:
 
-1. **Start Step**
+1. **Start Phase**
    1. Start-of-turn effects resolve (for example Regeneration and Rally).
    2. If the Turn number is 20 or more, Sudden Death damage hits each Hero of the active Side that is not Defeated (see 4.10).
    3. The Countdown of each card in each Hand of the active Side goes down by 1. A Ready card stays at 0 ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). The Hand keeps the order in which the cards came into it: a drawn card and a Recalled Skill Card go to the end. A card keeps its place when its Countdown changes, for example by Sabotage. If two cards have the same Countdown, Sabotage uses this order (5.4).
@@ -113,7 +113,7 @@ Each Turn of the active side has these phases:
 3. **Resolution Phase**
    - The active side's Units act one at a time. Section 4.4 gives the order.
    - The other side's Units do not act. They can only use Retaliation and First Strike.
-4. **End Step**
+4. **End Phase**
    1. Burn damage hits burning Units of the active side. Poison damage then hits Poisoned Units of the active side: 1 damage per stack, then the Unit loses 1 stack.
    2. Durations go down by 1 (Field Effects and other timed effects). Freeze has no duration: it ends when the Unit skips its action (see 4.4).
    3. Units with 0 HP leave the Board.
@@ -133,8 +133,8 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 5. A Unit that another effect creates during the Resolution Phase acts at the end of the Resolution Phase, in the same order.
 6. A Frozen Unit does not move and does not attack. Its Freeze then ends. Until then, it also does not retaliate and does not use First Strike. An attack on a Frozen Unit does not end its Freeze.
 7. An Entangled Unit has Speed 0 during its next action, but it can attack. Its Entangled Status then ends. If a Unit is Frozen and Entangled, the skipped action ends both Statuses.
-8. A Hobbled Unit has a maximum Speed of 1 during its action, after all bonuses. The count does not go down when the Unit acts. It goes down in the End Step of its owner.
-9. A Bleeding Unit gets half of each heal, rounded down. For example, Regeneration 1 heals 0 and Regeneration 2 heals 1. The count goes down in the End Step of its owner, not when the Unit acts.
+8. A Hobbled Unit has a maximum Speed of 1 during its action, after all bonuses. The count does not go down when the Unit acts. It goes down in the End Phase of its owner.
+9. A Bleeding Unit gets half of each heal, rounded down. For example, Regeneration 1 heals 0 and Regeneration 2 heals 1. The count goes down in the End Phase of its owner, not when the Unit acts.
 
 ### 4.5 Movement
 
@@ -172,7 +172,7 @@ Each attack and each damage effect has a **Damage Type**.
 | Damage Type | Effect |
 | --- | --- |
 | **Physical** | Normal damage. Melee or Ranged. |
-| **Fire** | Normal damage. The target also gets **Burn**: 1 damage in each End Step of its owner, for the next 2 End Steps. A new Burn replaces the old Burn. |
+| **Fire** | Normal damage. The target also gets **Burn**: 1 damage in each End Phase of its owner, for the next 2 End Phases. A new Burn replaces the old Burn. |
 | **Frost** | Normal damage. The target also gets **Freeze**: it skips its next action. No Ranged Unit has Frost damage, at any Rank ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)). |
 | **Holy** | Armor does not reduce Holy damage. |
 
@@ -200,8 +200,8 @@ To calculate damage, do these steps in this order:
   - It does not occur against a Ranged attack, or when the Unit with First Strike is Frozen (see 4.4). A Unit with Base Attack 0 does not use it.
   - Damage above 0 applies Poison, Hobble, Bleed and Entangle, but not Knockback. An attacker that First Strike Entangles has Speed 0 in its next action, not in the action that it does now.
 - **Entangle:** After a Unit with Entangle deals attack damage above 0 to an enemy Unit, that enemy becomes Entangled. A new Entangle does not stack or extend the Status. Retaliation does not apply Entangle.
-- **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliation does not apply Hobble. An attack on a Hero does not apply Hobble.
-- **Bleed N:** After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down: Regeneration, a Skill Card heal and each other heal. Bleeding does no damage. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Bleed keeps the higher count. It does not add to the old count. Retaliation does not apply Bleed. First Strike damage above 0 applies Bleed. An attack on a Hero does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary.
+- **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliation does not apply Hobble. An attack on a Hero does not apply Hobble.
+- **Bleed N:** After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down: Regeneration, a Skill Card heal and each other heal. Bleeding does no damage. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Bleed keeps the higher count. It does not add to the old count. Retaliation does not apply Bleed. First Strike damage above 0 applies Bleed. An attack on a Hero does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary.
 - **Knockback N:** After a melee Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. A push is not Movement and not a Status. The push stops before the first Square that holds any Unit, and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. The push ignores Speed, Charge, Frozen, Entangled, Hobbled and Flying. The pushed Unit keeps its Statuses. Retaliation and First Strike do not apply Knockback. An attack on a Hero does not apply Knockback. A Unit that dies from the hit is not Pushed. If the Unit does not change Square, there is no push.
 - **Trample:** When a melee Unit with Trample kills an enemy Unit with attack damage, the damage that is left goes to the enemy Unit in the next Square behind the killed Unit, in the same Lane. The damage that is left is the final damage of the hit (after Armor, Crit and Block) minus the HP that the killed Unit had. If that Square is empty, the damage is lost. It never hits a Hero. The second hit has the Damage Type of the Trample Unit, so Fire and Frost still give their Status. The Armor of the second Unit reduces it, and its Hero can Block it. It does not roll Crit. The second hit is not an attack: the second Unit does not Retaliate, and Poison, Hobble, Bleed and Knockback do not apply. It does not Trample again. The Last Breath of the killed Unit still occurs by the normal rules.
 
@@ -227,7 +227,7 @@ To calculate damage, do these steps in this order:
   - Its cards stay in its Hand, Deck and Graveyard. It plays no more cards.
 - You win when all the enemy Heroes are Defeated.
 - You lose when all the Heroes of your Side are Defeated.
-- **Sudden Death:** From Turn number 20, each Hero of the active Side that is not Defeated takes 1 damage in each Start Step. From Turn number 40, the damage is 2. Sudden Death does not use Crit.
+- **Sudden Death:** From Turn number 20, each Hero of the active Side that is not Defeated takes 1 damage in each Start Phase. From Turn number 40, the damage is 2. Sudden Death does not use Crit.
 - **Turn limit:** If no Side has lost at the end of Turn number 60, the Defender wins (see 4.3).
 - **Hero HP:** The player's Hero has 30 + player level HP, plus the Gear bonus. The Stage or Dungeon data defines the HP of each enemy Hero.
 
@@ -312,20 +312,20 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | Keyword | Rule |
 | --- | --- |
 | **Armor N** | Reduces damage to this Unit by N. It does not reduce Holy damage. |
-| **Bleed N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Bleed keeps the higher count. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. See 4.7. |
+| **Bleed N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Bleed keeps the higher count. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. See 4.7. |
 | **Charge N** | +N Speed in the Turn when you summon this Unit. N is 1 up to Rare, 2 at Epic and 3 at Legendary. N is never more than 3. |
 | **Entangle** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Entangled. An Entangled Unit has Speed 0 during its next action, but it can attack. Entangled then ends. A new Entangle does not stack or extend it. Only a Ranged Unit with Base Rank Epic or higher has Entangle (ADR-0022). |
 | **First Strike** | See 4.7. |
 | **Flying** | Moves over other Units. See 4.5. |
 | **Heroic N** | +N damage when this Unit attacks a Hero. |
-| **Hobble N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner, and the Status ends at 0. A new Hobble keeps the higher count. Retaliation does not apply Hobble. |
+| **Hobble N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Hobble keeps the higher count. Retaliation does not apply Hobble. |
 | **Knockback N** | Melee only. After this Unit deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. The push is not Movement. It stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliation does not apply Knockback. See 4.5 and 4.7. |
 | **Last Breath: X** | X occurs when this Unit leaves the Board. In v1, X deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that this Unit left. |
 | **Pivot** | Melee only. This Unit can attack an enemy Unit directly behind it or next to it, and it attacks them before the Unit in front. See 4.5 and 4.6. |
-| **Poison** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. In each End Step of the Poisoned Unit's owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. |
-| **Rally N** | In your Start Step, other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus. The bonus does not apply to Retaliation or First Strike, because they occur in the enemy's Turn. |
+| **Poison** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. In each End Phase of the Poisoned Unit's owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. |
+| **Rally N** | In your Start Phase, other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus. The bonus does not apply to Retaliation or First Strike, because they occur in the enemy's Turn. |
 | **Rebirth** | See 4.9. |
-| **Regeneration N** | In your Start Step, this Unit heals N HP. It cannot go above its maximum HP. |
+| **Regeneration N** | In your Start Phase, this Unit heals N HP. It cannot go above its maximum HP. |
 | **Retaliation** | See 4.7. |
 | **Sabotage N** | When this Unit comes onto the Board from its Creature Card, the card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready card (Countdown 0) is the lowest. If two cards have the same Countdown, the oldest card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. If the Hand is empty, nothing occurs. N is the same at each Rank, and it is at most 2. |
 | **Summon X** | When you summon this Unit, a Token X of the same Rank also appears in an empty Square next to it (behind it, or the same Column in a next Lane). If no Square is empty, no Token appears. |

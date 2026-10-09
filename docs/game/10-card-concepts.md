@@ -1277,7 +1277,7 @@ Purpose: a ranged Fire Shooter that Burns its target. Power 20, budget 21, devia
 
 > Mind the floor.
 
-Purpose: slows a Unit for 2 End Steps, and delays an enemy card when it comes in. Power 22, budget 21, deviation +4.8%.
+Purpose: slows a Unit for 2 End Phases, and delays an enemy card when it comes in. Power 22, budget 21, deviation +4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1463,7 +1463,7 @@ Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so
 
 > It woke up hungry. It is still waking up.
 
-Purpose: a durable Feral front that heals 1 HP in each Start Step. Power 20, budget 21, deviation -4.8%.
+Purpose: a durable Feral front that heals 1 HP in each Start Phase. Power 20, budget 21, deviation -4.8%.
 
 | Field | Brief |
 | --- | --- |
@@ -1499,7 +1499,7 @@ Purpose: a durable Feral Shooter that heals. Power 21, budget 21, deviation 0%.
 
 > It moves for nobody. It hardly moves for itself.
 
-Purpose: the Feral Wall. It heals 2 HP in each Start Step. Power 21, budget 21, deviation 0%.
+Purpose: the Feral Wall. It heals 2 HP in each Start Phase. Power 21, budget 21, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1535,7 +1535,7 @@ Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Pow
 
 > Cut it. Wait. Cut it again.
 
-Purpose: a durable Feral front that heals 2 HP in each Start Step. Power 25, budget 24, deviation +4.2%.
+Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 25, budget 24, deviation +4.2%.
 
 | Field | Brief |
 | --- | --- |

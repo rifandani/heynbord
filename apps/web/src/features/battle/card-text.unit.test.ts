@@ -182,7 +182,7 @@ describe("cardText (CRD-08)", () => {
     );
     const shaman = creature("orc.emberShaman", "common").damageRule;
     expect(shaman && resolve(shaman)).toBe(
-      "Fire: the target burns for 1 damage in its next 2 End Steps."
+      "Fire: the target burns for 1 damage in its next 2 End Phases."
     );
   });
 
@@ -259,7 +259,7 @@ describe("cardText (CRD-08)", () => {
     ]);
     const [rally] = creature("orc.warhowlerDrummer", "uncommon").keywords;
     expect(rally && resolve(rally.rule)).toBe(
-      "In your Start Step, other friendly Units in the same Lane get +1 Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus."
+      "In your Start Phase, other friendly Units in the same Lane get +1 Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus."
     );
   });
 });
@@ -288,7 +288,7 @@ describe("unitStatusText", () => {
     expect(unitStatusText(quiet)).toEqual([]);
   });
 
-  it("lists bonus Armor, then each Status, with its count and the End Steps left of Burn", () => {
+  it("lists bonus Armor, then each Status, with its count and the End Phases left of Burn", () => {
     const lines = unitStatusText({
       bonusArmor: 1,
       bonusArmorTurns: 2,
@@ -316,12 +316,12 @@ describe("unitStatusText", () => {
       )
     ).toEqual([
       "Armor +1 From a Skill Card. Turns left: 2.",
-      "Burn 1 damage in each End Step of its owner. End Steps left: 2.",
+      "Burn 1 damage in each End Phase of its owner. End Phases left: 2.",
       "Frozen It skips its next action.",
       "Entangled Speed 0 in its next action. It can still attack.",
-      "Hobbled 1 This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner.",
-      "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Step of its owner.",
-      "Poison 2 1 damage per stack in each End Step of its owner. Then it loses 1 stack.",
+      "Hobbled 1 This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner.",
+      "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
+      "Poison 2 1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
     ]);
   });
 });

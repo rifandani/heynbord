@@ -34,6 +34,13 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { LOCALE_LABELS } from "@/features/i18n/components/language-toggle";
 import { Locale } from "@/features/i18n/locale";
+import {
+  placeSheetOrigin,
+  SHEET_INK_MOTION,
+  SHEET_MOTION,
+  SHEET_PATH_MOTION,
+  SHEET_SCRIM_MOTION,
+} from "@/features/town/sheet-motion";
 import { shortcutImage } from "@/features/town/town";
 
 const isLocale = Schema.is(Locale);
@@ -43,57 +50,6 @@ const VOLUME_AFTER_ZERO = 50;
 
 /** The notches under the groove of the volume slider. */
 const NOTCHES = [0, 25, 50, 75, 100];
-
-/** The size of the sheet when it starts in the Settings button: about the size of the icon. */
-const SHEET_FROM_SCALE = 0.16;
-
-/** The tilt of the sheet when it starts, toward the center of the screen. */
-const SHEET_FROM_TILT_DEG = 6;
-
-/**
- * The sheet comes up out of the Settings button, along a curve: it lifts
- * faster than it moves to the side. The close plays it in reverse, faster.
- * The scale of the sheet would scale a side move in its own transform, so
- * the Modal moves it to the side, and the sheet in it lifts, grows and tilts.
- */
-const SHEET_PATH_MOTION = cn(
-  "motion-safe:data-[entering]:animate-[settings-sheet-x_460ms_cubic-bezier(0.55,0,0.15,1)_both]",
-  "motion-safe:data-[exiting]:animate-[settings-sheet-x_260ms_cubic-bezier(0.55,0,0.15,1)_reverse_both]"
-);
-
-const SHEET_MOTION = cn(
-  "motion-safe:group-data-[entering]/sheet:animate-[settings-sheet-y_460ms_cubic-bezier(0.25,0.9,0.35,1)_both,settings-sheet-grow_460ms_cubic-bezier(0.45,0,0.15,1)_both]",
-  "motion-safe:group-data-[exiting]/sheet:animate-[settings-sheet-y_260ms_cubic-bezier(0.25,0.9,0.35,1)_reverse_both,settings-sheet-grow_260ms_cubic-bezier(0.45,0,0.15,1)_reverse_both]"
-);
-
-const SHEET_INK_MOTION = cn(
-  "motion-safe:group-data-[entering]/sheet:animate-[settings-sheet-ink_460ms_ease-out_both]",
-  "motion-safe:group-data-[exiting]/sheet:animate-[settings-sheet-ink_260ms_ease-out_reverse_both]"
-);
-
-/**
- * Puts the start of the sheet on the button that opens it. The overlay
- * covers the screen and the sheet is at its center, so the start is the
- * distance from the center of the overlay to the center of the button.
- */
-const placeSheetOrigin = (
-  overlay: HTMLElement | null,
-  button: HTMLElement | null
-) => {
-  if (!overlay || !button) {
-    return;
-  }
-  const rect = button.getBoundingClientRect();
-  const x = rect.left + rect.width / 2 - overlay.clientWidth / 2;
-  const y = rect.top + rect.height / 2 - overlay.clientHeight / 2;
-  overlay.style.setProperty("--sheet-from-x", `${x}px`);
-  overlay.style.setProperty("--sheet-from-y", `${y}px`);
-  overlay.style.setProperty("--sheet-from-scale", `${SHEET_FROM_SCALE}`);
-  overlay.style.setProperty(
-    "--sheet-from-rotate",
-    `${-Math.sign(x) * SHEET_FROM_TILT_DEG}deg`
-  );
-};
 
 /** One row of the dialog: the label at the left, the control at the right. */
 const ROW =
@@ -281,7 +237,10 @@ export const SettingsDialog = ({
       isDismissable
       // The ref runs before the first paint, so the sheet starts on the button.
       ref={(overlay) => placeSheetOrigin(overlay, from?.current ?? null)}
-      className="fade-in animate-in fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] duration-200 motion-safe:data-[exiting]:animate-[settings-scrim-out_260ms_ease-in_both] motion-reduce:animate-none"
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]",
+        SHEET_SCRIM_MOTION
+      )}
     >
       <Modal
         className={cn("group/sheet w-[min(480px,94vw)]", SHEET_PATH_MOTION)}

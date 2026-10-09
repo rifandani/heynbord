@@ -4,6 +4,7 @@ import {
   emptyBattle,
   eventsOfType,
   placeUnit,
+  preventRout,
   run,
   unitById,
 } from "../testing/fixtures";
@@ -513,7 +514,7 @@ describe("damage (GDD 4.7)", () => {
     expect(next.sides.enemy.hero.hp).toBe(26);
   });
 
-  it("gives Burn with Fire: 1 damage in each End Step of the owner, 2 times", () => {
+  it("gives Burn with Fire: 1 damage in each End Phase of the owner, 2 times", () => {
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "orc.emberShaman",
@@ -532,7 +533,7 @@ describe("damage (GDD 4.7)", () => {
     // 4 Fire - Armor 1.
     expect(unitById(first.state, target.id)).toMatchObject({ hp: 17, burn: 2 });
     const second = run(first.state, endTurn);
-    // The enemy's End Step: Burn ignores Armor.
+    // The enemy's End Phase: Burn ignores Armor.
     expect(unitById(second.state, target.id)).toMatchObject({
       hp: 16,
       burn: 1,
@@ -833,7 +834,7 @@ describe("death and action order (GDD 4.4, 4.9)", () => {
     ).toEqual([front.id, back.id, second.id]);
   });
 
-  it("lets a Unit move into a Square that a dead Unit left in the same phase", () => {
+  it("lets a Unit move into a Square that a dead Unit left in the same Resolution Phase", () => {
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "orc.tuskBrute",
@@ -1065,7 +1066,7 @@ describe("Poison (GDD 4.7)", () => {
       poisoned: 2,
     });
     const second = run(first.state, endTurn);
-    // The enemy End Step: 2 damage, and Armor does not reduce it.
+    // The enemy End Phase: 2 damage, and Armor does not reduce it.
     expect(unitById(second.state, target.id)).toMatchObject({
       hp: 17,
       poisoned: 1,
@@ -1265,7 +1266,7 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
     expect(eventsOfType(shot.events, "StatusApplied")).toEqual([]);
   });
 
-  it("lowers the count only in the End Step of the owner, so Hobble 1 slows the next action and the action after has full Speed", () => {
+  it("lowers the count only in the End Phase of the owner, so Hobble 1 slows the next action and the action after has full Speed", () => {
     let state = emptyBattle();
     placeUnit(state, {
       cardId: "human.crossbowGuard",
@@ -1285,6 +1286,7 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
       hp: 20,
       maxHp: 20,
     });
+    preventRout(state);
     ({ state } = run(state, endTurn));
     expect(unitById(state, runt.id)?.hobbled).toBe(1);
 

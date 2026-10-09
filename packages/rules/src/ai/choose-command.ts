@@ -158,7 +158,7 @@ const heroDamage = (
 
 /**
  * True when a play makes the estimated Hero damage not lethal. Lethal also
- * counts the Sudden Death damage at the next Start Step of `side` (the next
+ * counts the Sudden Death damage at the next Start Phase of `side` (the next
  * Turn number for both Sides).
  */
 const savesHero = (

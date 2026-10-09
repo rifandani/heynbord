@@ -165,7 +165,7 @@ describe("autoPlayTurn", () => {
 
   it("does nothing when the Battle is finished", () => {
     let session = start();
-    while (session.rules.phase !== "finished") {
+    while (session.rules.status !== "finished") {
       session = skip(autoPlayTurn(session));
     }
     expect(autoPlayTurn(session)).toBe(session);

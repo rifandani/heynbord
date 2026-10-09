@@ -2,6 +2,7 @@ import { useAtomValue } from "@effect/atom-react";
 import { starsFor } from "@workspace/rules";
 import type { BattleResult, Side } from "@workspace/rules";
 import { cn } from "cn";
+import { Button } from "react-aria-components";
 
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
@@ -10,6 +11,7 @@ import { GameButton } from "@/features/battle/components/game-button";
 import { randomSeed } from "@/features/battle/use-battle";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import { useHandbook } from "@/features/handbook/use-handbook";
 
 /** The side whose Turn starts in the current event, or `null`. */
 const startingSide = (session: BattleSession | null): Side | null => {
@@ -94,6 +96,31 @@ const ResultStars = ({ stars }: { readonly stars: number }) => {
   );
 };
 
+/** The line that explains a result that is not a Hero at 0 HP. Routed links to its Handbook Entry (ADR-0012). */
+const ResultReason = ({ result }: { readonly result: BattleResult }) => {
+  const { tr } = useGameText();
+  const handbook = useHandbook();
+  if (result.reason === "turnLimit") {
+    return <p className="mt-2 text-sm">{tr("battle.turnLimit")}</p>;
+  }
+  if (result.reason === "routed") {
+    return (
+      <p className="mt-2 text-sm">
+        <Button
+          onPress={() => handbook.openAt("routed")}
+          className="cursor-pointer rounded-sm underline decoration-[#b4521a]/50 decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#b4521a]/40 data-[hovered]:decoration-solid"
+          data-testid="result-routed"
+        >
+          {result.winner === "player"
+            ? tr("battle.routedWin")
+            : tr("battle.routedLoss")}
+        </Button>
+      </p>
+    );
+  }
+  return null;
+};
+
 const ResultDialog = ({
   battle,
   session,
@@ -121,9 +148,7 @@ const ResultDialog = ({
           {tr(`stages.${session.options.stageId}.name`)}
         </p>
         {won ? <ResultStars stars={stars} /> : null}
-        {result.reason === "turnLimit" ? (
-          <p className="mt-2 text-sm">{tr("battle.turnLimit")}</p>
-        ) : null}
+        <ResultReason result={result} />
         <div className="mt-4 flex flex-wrap justify-center gap-2 [@media(max-height:500px)]:mt-2">
           <GameButton
             intent="gold"

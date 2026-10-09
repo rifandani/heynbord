@@ -495,6 +495,59 @@
   }
 }
 
+/*
+ * A Hint grows out of the tip of its pointer, which touches its subject: it
+ * starts small and near the subject, lifts away from it, and settles. Its
+ * shadow grows as it lifts. The close plays the same keyframes in reverse,
+ * faster, back into the pointer. `--hint-from-y` points toward the subject.
+ */
+@keyframes hint-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--hint-from-y, 8px)) scale(0.5);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * The seal of a Hint stamps onto the parchment: it comes down from a little
+ * above the page, turned, presses in, and settles.
+ */
+@keyframes hint-seal {
+  0% {
+    opacity: 0;
+    transform: scale(1.5) rotate(-14deg);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(0.92) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The time that a Hint has left: its line gets shorter to nothing. */
+@keyframes hint-time {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
 /* The soft pulse of light on the Town Gate until the end of the Tutorial. */
 @keyframes town-gate-pulse {
   0%,
@@ -567,6 +620,33 @@
   100% {
     transform: scale(1);
     opacity: 0;
+  }
+}
+
+/*
+ * The Stage Panel comes up out of its Stage Marker on the `settings-sheet-*`
+ * path. Its parts ink in from the top, one after the other.
+ */
+@keyframes stage-panel-ink {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+/*
+ * The reward card is dealt onto the page: it comes down from above the page,
+ * larger and turned, and lands at its own tilt and opacity.
+ */
+@keyframes stage-panel-deal {
+  0% {
+    opacity: 0;
+    translate: 18px -22px;
+    scale: 1.2;
+    rotate: 12deg;
+  }
+  45% {
+    opacity: 1;
   }
 }
 

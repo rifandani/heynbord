@@ -73,6 +73,8 @@ export default {
     victory: "Menang",
     defeat: "Kalah",
     turnLimit: "Batas giliran tercapai. Pihak bertahan menang.",
+    routedWin: "Musuh Tercerai-berai: ia tidak punya Unit dan kartu.",
+    routedLoss: "Pihakmu Tercerai-berai: kamu tidak punya Unit dan kartu.",
     starsLabel: "{count} dari 3 Bintang",
     retry: "Main Lagi",
     backToCampaign: "Kembali ke Kampanye",
@@ -120,19 +122,19 @@ export default {
       bonusArmor: "Zirah +{value}",
       bonusArmorRule: "Dari Kartu Keahlian. Sisa Giliran: {turns}.",
       burn: "Terbakar",
-      burnRule: "1 damage pada tiap Langkah Akhir pemiliknya.",
-      burnLeft: "Sisa Langkah Akhir: {value}.",
+      burnRule: "1 damage pada tiap Fase Akhir pemiliknya.",
+      burnLeft: "Sisa Fase Akhir: {value}.",
       frozen: "Beku",
       frozenRule: "Ia melewatkan aksi berikutnya.",
       poisoned: "Racun {value}",
       poisonedRule:
-        "1 damage per tumpukan pada tiap Langkah Akhir pemiliknya. Lalu ia kehilangan 1 tumpukan.",
+        "1 damage per tumpukan pada tiap Fase Akhir pemiliknya. Lalu ia kehilangan 1 tumpukan.",
       hobbled: "Terpincang {value}",
       hobbledRule:
-        "Unit ini punya Kecepatan maksimum 1, setelah semua bonus. Hitungan turun 1 pada tiap Langkah Akhir pemiliknya.",
+        "Unit ini punya Kecepatan maksimum 1, setelah semua bonus. Hitungan turun 1 pada tiap Fase Akhir pemiliknya.",
       bleeding: "Berdarah {value}",
       bleedingRule:
-        "Unit ini mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah. Hitungan turun 1 pada tiap Langkah Akhir pemiliknya.",
+        "Unit ini mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah. Hitungan turun 1 pada tiap Fase Akhir pemiliknya.",
       entangled: "Terjerat",
       entangledRule:
         "Kecepatan 0 pada aksi berikutnya. Ia tetap bisa menyerang.",
@@ -393,10 +395,10 @@ export default {
       side: "Pihak",
       hero: "Pahlawan",
       turn: "Giliran",
-      startStep: "Langkah Awal",
+      startPhase: "Fase Awal",
       playPhase: "Fase Main",
       resolutionPhase: "Fase Resolusi",
-      endStep: "Langkah Akhir",
+      endPhase: "Fase Akhir",
       suddenDeath: "Mati Mendadak",
       routed: "Tercerai-berai",
       defeated: "Tumbang",
@@ -435,19 +437,19 @@ export default {
         "Di Jalur Tertutup, tidak ada Pihak yang bisa memanggil Unit, dan tidak ada Kartu Keahlian yang bisa menargetkan Petak.\n\nBeberapa Tahap punya Jalur Tertutup. Jalur itu terbuka pada nomor Giliran tertentu, atau tetap tertutup selama Pertempuran.",
       side: "Pihak adalah salah satu dari dua tim dalam Pertempuran: Pihakmu dan Pihak musuh. Tiap Pihak punya Pahlawan.\n\nPihakmu ada di kiri Papan, dan Pihak musuh ada di kanan.",
       hero: "Pahlawan adalah pemimpin dari satu Pihak. Ia berdiri di belakang Lini-nya, di luar Papan.\n\nPahlawan punya HP, Kelas, dan Dek. Saat HP-nya menjadi 0, Pahlawan itu Tumbang.",
-      turn: "Dalam satu Giliran, satu Pihak memainkan kartunya, dan Unit-nya bertindak. Giliran punya 4 bagian: Langkah Awal, Fase Main, Fase Resolusi, dan Langkah Akhir.\n\nKamu mengambil Giliran pertama. Lalu musuh mengambil Giliran. Nomor Giliran naik 1 setelah kedua Pihak mengambil Giliran.",
-      startStep:
-        "Langkah Awal adalah bagian pertama Giliranmu. Hal-hal ini terjadi dengan urutan ini:\n\n1. Efek seperti Regenerasi dan Semangat terjadi.\n\n2. Mulai Giliran {turn}, damage Mati Mendadak mengenai Pahlawanmu.\n\n3. Hitung mundur dari tiap kartu di Tanganmu yang belum Siap turun 1.\n\n4. Pahlawanmu mengambil 1 kartu, jika Tangan berisi kurang dari {limit} kartu.",
+      turn: "Dalam satu Giliran, satu Pihak memainkan kartunya, dan Unit-nya bertindak. Giliran punya 4 bagian: Fase Awal, Fase Main, Fase Resolusi, dan Fase Akhir.\n\nKamu mengambil Giliran pertama. Lalu musuh mengambil Giliran. Nomor Giliran naik 1 setelah kedua Pihak mengambil Giliran.",
+      startPhase:
+        "Fase Awal adalah bagian pertama Giliranmu. Hal-hal ini terjadi dengan urutan ini:\n\n1. Efek seperti Regenerasi dan Semangat terjadi.\n\n2. Mulai Giliran {turn}, damage Mati Mendadak mengenai Pahlawanmu.\n\n3. Hitung mundur dari tiap kartu di Tanganmu yang belum Siap turun 1.\n\n4. Pahlawanmu mengambil 1 kartu, jika Tangan berisi kurang dari {limit} kartu.",
       playPhase:
         "Di Fase Main, kamu memainkan kartu yang Siap. Kamu bisa memainkan semuanya, dengan urutan apa pun, atau tidak memainkan kartu.\n\nKartu Makhluk masuk ke Petak kosong di Zona Panggilmu. Kartu Keahlian menuju targetnya.\n\nPilih Akhiri Giliran untuk mengakhiri Fase Main. Tidak ada batas waktu.",
       resolutionPhase:
         "Di Fase Resolusi, Unit-mu bertindak sendiri. Kamu tidak mengendalikannya.\n\nMereka bertindak Jalur demi Jalur, dari Jalur 1 sampai Jalur terakhir. Di tiap Jalur, Unit yang paling dekat dengan Pahlawan musuh bertindak lebih dulu. Tiap Unit bergerak, lalu menyerang. Unit yang kamu panggil di Giliran ini juga bertindak.\n\nUnit musuh tidak bertindak. Mereka hanya bisa memakai Balasan dan Serang Duluan.",
-      endStep:
-        "Langkah Akhir adalah bagian terakhir Giliranmu. Damage Terbakar dan Racun mengenai Unit-mu. Lalu efek berwaktu turun 1, dan Unit dengan 0 HP meninggalkan Papan.\n\nLalu musuh mengambil Gilirannya.",
+      endPhase:
+        "Fase Akhir adalah bagian terakhir Giliranmu. Damage Terbakar dan Racun mengenai Unit-mu. Lalu efek berwaktu turun 1, dan Unit dengan 0 HP meninggalkan Papan.\n\nLalu musuh mengambil Gilirannya.",
       suddenDeath:
-        "Mati Mendadak membuat tiap Pertempuran berakhir. Mulai Giliran {turn}, Pahlawan dari Pihak yang aktif menerima 1 damage di tiap Langkah Awal. Mulai Giliran {double}, damage-nya 2.\n\nJika belum ada Pihak yang menang di akhir Giliran {limit}, musuh menang.",
+        "Mati Mendadak membuat tiap Pertempuran berakhir. Mulai Giliran {turn}, Pahlawan dari Pihak yang aktif menerima 1 damage di tiap Fase Awal. Mulai Giliran {double}, damage-nya 2.\n\nJika belum ada Pihak yang menang di akhir Giliran {limit}, musuh menang.",
       routed:
-        "Pihak Tercerai-berai saat tidak punya Unit di Papan dan tidak punya kartu di Tangan dan Dek. Pihak yang Tercerai-berai tidak bisa bertindak lagi, jadi ia kalah.\n\nAturan ini sama untukmu dan untuk musuh.",
+        "Pihak Tercerai-berai saat tidak punya Unit di Papan dan tidak punya kartu di Tangan dan Dek. Pihak yang Tercerai-berai tidak bisa bertindak lagi, jadi ia kalah. Pemeriksaan ini terjadi di akhir setiap Giliran.\n\nAturan ini sama untukmu dan untuk musuh.",
       defeated:
         "Pahlawan dengan 0 HP Tumbang. Saat semua Pahlawan dari satu Pihak Tumbang, Pihak itu kalah.\n\nDalam satu Tahap, tiap Pihak punya 1 Pahlawan, jadi Pahlawan dengan 0 HP mengakhiri Pertempuran.",
       creatureCard:
@@ -461,7 +463,7 @@ export default {
       graveyard:
         "Kuburan berisi kartumu yang sudah dipakai atau mati. Kartu Makhluk masuk ke sana saat Unit-nya mati. Kartu Keahlian masuk ke sana saat Kembali tidak mengirimnya kembali.",
       countdown:
-        "Hitung mundur adalah jumlah Giliranmu sampai kartu Siap. Angkanya tampil di sudut kiri atas kartu.\n\nDi Langkah Awal-mu, Hitung mundur dari tiap kartu di Tanganmu yang belum Siap turun 1. Peringkat kartu tidak mengubah Hitung mundurnya.",
+        "Hitung mundur adalah jumlah Giliranmu sampai kartu Siap. Angkanya tampil di sudut kiri atas kartu.\n\nDi Fase Awal-mu, Hitung mundur dari tiap kartu di Tanganmu yang belum Siap turun 1. Peringkat kartu tidak mengubah Hitung mundurnya.",
       ready:
         "Kartu dengan Hitung mundur 0 adalah kartu yang Siap. Hanya kartu Siap yang bisa dimainkan. Kartu Siap bercahaya di Tanganmu.",
       recall:
@@ -771,10 +773,10 @@ export default {
     pivot:
       "Unit ini dapat menyerang Unit musuh tepat di belakangnya atau di sebelahnya, sebelum Unit di depannya. Lalu ia tidak bergerak.",
     poison:
-      "Setelah Unit ini memberi damage serangan di atas 0, Unit itu mendapat 1 tumpukan Racun. Pada tiap Langkah Akhir pemiliknya, ia menerima 1 damage per tumpukan, lalu kehilangan 1 tumpukan.",
+      "Setelah Unit ini memberi damage serangan di atas 0, Unit itu mendapat 1 tumpukan Racun. Pada tiap Fase Akhir pemiliknya, ia menerima 1 damage per tumpukan, lalu kehilangan 1 tumpukan.",
     rally:
-      "Pada Langkah Awal-mu, Unit kawan lain dalam Jalur yang sama mendapat +{value} Serangan sampai akhir Giliran. Unit dengan Serangan Dasar 0 tidak mendapat bonus.",
-    regeneration: "Pada Langkah Awal-mu, Unit ini memulihkan {value} HP.",
+      "Pada Fase Awal-mu, Unit kawan lain dalam Jalur yang sama mendapat +{value} Serangan sampai akhir Giliran. Unit dengan Serangan Dasar 0 tidak mendapat bonus.",
+    regeneration: "Pada Fase Awal-mu, Unit ini memulihkan {value} HP.",
     retaliation:
       "Saat Unit ini selamat dari serangan jarak dekat, ia memberi damage sebesar Serangannya ke penyerang.",
     sabotage:
@@ -783,7 +785,7 @@ export default {
       "Saat Unit ini membunuh Unit musuh dengan serangan, sisa damage mengenai Unit musuh di Petak berikutnya di belakangnya. Tidak pernah mengenai Pahlawan.",
     unique: "Hanya satu salinan kartu ini yang boleh ada di sisi Papan-mu.",
     wall: "Unit ini tidak bisa bergerak dan tidak bisa menyerang. Kamu bisa memanggilnya ke 5 Petak terdekat dengan Pahlawanmu. Ia menghalangi Unit musuh di Jalurnya, dan dorongan tidak pernah memindahkannya.",
-    fire: "Api: target terbakar 1 damage pada 2 Langkah Akhir berikutnya.",
+    fire: "Api: target terbakar 1 damage pada 2 Fase Akhir berikutnya.",
     frost: "Es: target melewatkan aksi berikutnya.",
     holy: "Suci: Zirah tidak mengurangi damage ini.",
   },

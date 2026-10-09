@@ -17,7 +17,7 @@ const check = (
   state: BattleState,
   command: Command
 ): RuleViolation | undefined => {
-  if (state.phase === "finished") {
+  if (state.status === "finished") {
     return RuleViolation.BattleFinished();
   }
   if (command._tag === "EndTurn") {
@@ -41,7 +41,7 @@ const check = (
  * The only way to change a Battle (technical design 3.1). It is a pure
  * function: it does not change `state`. The same state and the same Command
  * always give the same result. `EndTurn` runs the complete Resolution Phase,
- * the End Step and the next side's Start Step.
+ * the End Phase and the next side's Start Phase.
  */
 export const step = (
   state: BattleState,

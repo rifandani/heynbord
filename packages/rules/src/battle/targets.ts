@@ -83,7 +83,7 @@ export const legalTargets = (
 ): Target[] => {
   const side = state.activeSide;
   const card = state.sides[side].hand[handIndex];
-  if (state.phase !== "play" || !card || card.countdown > 0) {
+  if (state.status !== "ongoing" || !card || card.countdown > 0) {
     return [];
   }
   const definition = getCard(card.cardId);

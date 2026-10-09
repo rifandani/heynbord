@@ -125,7 +125,7 @@ export const isHeld = (session: BattleSession): boolean =>
 /** The player can act: no animation plays and it is the player's Play Phase. */
 export const canAct = (session: BattleSession): boolean =>
   isIdle(session) &&
-  session.rules.phase === "play" &&
+  session.rules.status === "ongoing" &&
   session.rules.activeSide === "player";
 
 /**
@@ -137,7 +137,7 @@ export const canEndTurn = (session: BattleSession): boolean => {
     ? [session.current.event, ...session.queue]
     : session.queue;
   return (
-    session.rules.phase === "play" &&
+    session.rules.status === "ongoing" &&
     session.rules.activeSide === "player" &&
     session.view.activeSide === "player" &&
     !pending.some(
@@ -162,7 +162,7 @@ const enqueue = (
  */
 const runEnemyTurn = (session: BattleSession): BattleSession => {
   let next = session;
-  while (next.rules.phase === "play" && next.rules.activeSide === "enemy") {
+  while (next.rules.status === "ongoing" && next.rules.activeSide === "enemy") {
     const result = step(next.rules, chooseCommand(next.rules));
     // The AI chooses only legal Commands. A violation here is a defect.
     const output = Result.getOrThrow(result);
@@ -245,7 +245,10 @@ export const endTurn = (
  */
 export const autoPlayTurn = (session: BattleSession): BattleSession => {
   let next = session;
-  while (next.rules.phase === "play" && next.rules.activeSide === "player") {
+  while (
+    next.rules.status === "ongoing" &&
+    next.rules.activeSide === "player"
+  ) {
     const command = chooseCommand(next.rules);
     const result =
       command._tag === "EndTurn"

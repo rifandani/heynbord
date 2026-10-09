@@ -171,7 +171,7 @@ const RegionCanvas = ({
   readonly trail: readonly TrailStage[];
   readonly selected: string | null;
   readonly awaken: string | null;
-  readonly onOpen: (stop: TrailStage) => void;
+  readonly onOpen: (stop: TrailStage, from: Element) => void;
   readonly root: RefObject<HTMLElement | null>;
 }) => {
   const { tr } = useGameText();
@@ -254,6 +254,7 @@ export const CampaignScreen = ({
   const awaken = useAwakenedStage(trail);
   const [selected, setSelected] = useState<string | null>(null);
   const root = useRef<HTMLElement>(null);
+  const marker = useRef<Element | null>(null);
   const map = regionMap(region);
   const panelStop = trail.find((stop) => stop.stage.id === selected) ?? null;
 
@@ -262,9 +263,10 @@ export const CampaignScreen = ({
     void preloadBattleCanvas();
   }, []);
 
-  const open = (stop: TrailStage) => {
+  const open = (stop: TrailStage, from: Element) => {
     unlockAudio();
     playSound("select");
+    marker.current = from;
     setSelected(stop.stage.id);
   };
 
@@ -289,6 +291,7 @@ export const CampaignScreen = ({
       <StarChests region={region} count={stars.count} total={stars.total} />
       <StagePanel
         stop={panelStop}
+        from={marker}
         onClose={() => setSelected(null)}
         onStart={onStart}
       />

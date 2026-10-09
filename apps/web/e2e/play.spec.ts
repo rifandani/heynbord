@@ -174,7 +174,7 @@ const waitForPlayer = async (
         if (await page.getByTestId("end-turn").isEnabled()) {
           return "player";
         }
-        // Real input: Skip ends the animations of the current phase.
+        // Real input: Skip ends the animations of the current Resolution Phase.
         const skip = page.getByRole("button", { name: /^Skip$/u });
         if (await skip.isEnabled()) {
           await (input === "keyboard"

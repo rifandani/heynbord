@@ -91,7 +91,7 @@ const Keywords = Schema.Struct({
   pivot: Schema.optionalKey(Schema.Literal(true)),
   poison: Schema.optionalKey(Schema.Literal(true)),
   /**
-   * In the owner's Start Step, the other friendly Units in the same Lane get
+   * In the owner's Start Phase, the other friendly Units in the same Lane get
    * this much Attack until the end of the Turn (GDD 5.4).
    */
   rally: Schema.optionalKey(KeywordAmount),
@@ -238,7 +238,7 @@ const StartUnit = Schema.Struct({
 });
 
 /**
- * A Closed Lane (GDD 4.1). It opens in the Start Step of the first Turn of
+ * A Closed Lane (GDD 4.1). It opens in the Start Phase of the first Turn of
  * `opensOnTurn`. Without `opensOnTurn`, it stays closed for the full Battle.
  */
 const ClosedLane = Schema.Struct({

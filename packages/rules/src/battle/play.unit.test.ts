@@ -9,6 +9,7 @@ import {
   eventsOfType,
   giveHand,
   placeUnit,
+  preventRout,
   run,
   unitById,
 } from "../testing/fixtures";
@@ -306,12 +307,13 @@ describe("Skill Cards (GDD 4.8)", () => {
       position: 0,
       attack: 0,
     });
+    preventRout(state);
     ({ state } = run(state, play(0, Target.Lane({ lane: 0 }))));
     expect(unitById(state, unit.id)).toMatchObject({
       bonusArmor: 1,
       bonusArmorTurns: 2,
     });
-    // The own End Step does not count.
+    // The own End Phase does not count.
     ({ state } = run(state, Command.EndTurn()));
     expect(unitById(state, unit.id)?.bonusArmorTurns).toBe(2);
     // The first enemy Turn.
@@ -489,7 +491,7 @@ describe("Sabotage (GDD 5.4, ADR-0017)", () => {
     ).toEqual([2]);
   });
 
-  it("makes a Ready card Ready again after exactly 1 enemy Start Step", () => {
+  it("makes a Ready card Ready again after exactly 1 enemy Start Phase", () => {
     const { state } = sabotageInto("goblin.tunnelSaboteur", [0]);
     expect(countdowns(state, "enemy")).toEqual([1]);
     const next = run(state, Command.EndTurn()).state;

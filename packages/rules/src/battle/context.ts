@@ -13,7 +13,7 @@ export interface StepContext {
 }
 
 export const isOver = (ctx: StepContext): boolean =>
-  ctx.state.phase === "finished";
+  ctx.state.status === "finished";
 
 /** +1 for the player (toward the enemy Hero), -1 for the enemy. */
 export const direction = (side: Side): number => (side === "player" ? 1 : -1);

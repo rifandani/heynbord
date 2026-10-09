@@ -13,7 +13,7 @@ v1:
 - if a 0 Base Attack unit have poison, or burn, etc skills, can they inflict those posion or burn, etc to the enemy unit?
 - /grill-with-docs dont u think we need to also have economy simulation script before adding "Bazaar" or "Packs" features, not only battle simulation
 - /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
-- /grill-with-docs rewards for winning campaigns, for winning stage 1-10 i think we can give them elf, we also should have a prediction record / simulation like if the user complete stage 1-1 how many coins and cards they have
+- /grill-with-docs rewards for winning campaigns, for winning stage 1-10 i think we can give them elf, we also should have a prediction record / simulation like if the user complete stage 1-1 how many coins and cards they have. Also victory result modal in campaign battle still not showing what the rewards
 - /grill-with-docs a smart auto-play button for Stages that the player has already won (whats the reward for completing already completed stage?)
 - /grill-with-docs brainstorm what to include in "Packs" feature when user click it in town bottom bar, im thinking about adding gacha-like experience, cheapest pack = very high probability for common and low probability for uncommon, middle pack, and so on, u recommend me
 - /grill-with-docs how do we save player's progress so far? for now i want to save it locally, but later i want it to be saved in DB of course

@@ -37,7 +37,7 @@ const steps = (
     after: BattleState;
     events: readonly BattleEvent[];
   }[] = [];
-  while (state.phase !== "finished") {
+  while (state.status !== "finished") {
     const output = Result.getOrThrow(step(state, chooseCommand(state)));
     result.push({ before: state, after: output.state, events: output.events });
     ({ state } = output);
@@ -192,7 +192,7 @@ describe("the Graveyard view", () => {
 });
 
 describe("the bonus Armor view", () => {
-  it("counts down the Turns in each End Step of the owner, then the Armor fades", () => {
+  it("counts down the Turns in each End Phase of the owner, then the Armor fades", () => {
     const deck = getStarterDeck("vanguard");
     const { state } = createBattle({
       seed: 3,

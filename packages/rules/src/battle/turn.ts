@@ -4,6 +4,7 @@ import { actionOrder, findUnit, isOver } from "./context";
 import { damageHero, damageUnit, finishBattle } from "./damage";
 import { healUnit } from "./heal";
 import { runResolutionPhase } from "./resolution";
+import type { BattleState, Side } from "./types";
 import {
   BattleEvent,
   HAND_LIMIT,
@@ -68,7 +69,7 @@ const endRally = (ctx: StepContext): void => {
   }
 };
 
-/** The Sudden Death damage to the Hero of the active Side at the Start Step of a Turn (GDD 4.10). */
+/** The Sudden Death damage to the Hero of the active Side at the Start Phase of a Turn (GDD 4.10). */
 export const suddenDeathDamage = (turnNumber: number): number => {
   if (turnNumber < SUDDEN_DEATH_TURN) {
     return 0;
@@ -129,10 +130,10 @@ export const drawCard = (ctx: StepContext, sideId = ctx.state.activeSide) => {
 };
 
 /**
- * The Start Step (GDD 4.3). The Play Phase follows. Closed Lanes open first,
+ * The Start Phase (GDD 4.3). The Play Phase follows. Closed Lanes open first,
  * then Regeneration and Rally.
  */
-export const runStartStep = (ctx: StepContext): void => {
+export const runStartPhase = (ctx: StepContext): void => {
   ctx.events.push(
     BattleEvent.TurnStarted({
       side: ctx.state.activeSide,
@@ -227,12 +228,12 @@ const fadeArmor = (ctx: StepContext): void => {
 };
 
 /**
- * The End Step (GDD 4.3): Burn, then Poison, then durations go down. Skill
+ * The End Phase (GDD 4.3): Burn, then Poison, then durations go down. Skill
  * Card Armor counts the other side's Turns, so it covers that many enemy Turns.
- * A Hobbled and a Bleeding count go down in this step, after Burn and Poison.
+ * A Hobbled and a Bleeding count go down in this Phase, after Burn and Poison.
  * The Rally bonus ends.
  */
-const runEndStep = (ctx: StepContext): void => {
+const runEndPhase = (ctx: StepContext): void => {
   applyBurn(ctx);
   applyPoison(ctx);
   lowerHobble(ctx);
@@ -243,8 +244,36 @@ const runEndStep = (ctx: StepContext): void => {
 };
 
 /**
- * The `EndTurn` Command: the Resolution Phase and the End Step of the active
- * side, then the Turn goes to the other side and its Start Step runs.
+ * Routed (ADR-0012): no Units on the Board and no Cards in the Hand and the
+ * Deck. A Card that is not Ready or that has no legal target still counts.
+ */
+const isRouted = (state: BattleState, side: Side): boolean =>
+  state.units.every((unit) => unit.owner !== side) &&
+  state.sides[side].hand.length === 0 &&
+  state.sides[side].deck.length === 0;
+
+/**
+ * The Routed check at the end of each Turn, after the End Phase and before
+ * the Turn limit (ADR-0012). When both Sides are Routed, the Defender wins.
+ * In a Solo Battle it is the enemy.
+ */
+const finishIfRouted = (ctx: StepContext): void => {
+  if (isOver(ctx)) {
+    return;
+  }
+  const playerRouted = isRouted(ctx.state, "player");
+  const enemyRouted = isRouted(ctx.state, "enemy");
+  if (!playerRouted && !enemyRouted) {
+    return;
+  }
+  const winner = enemyRouted && !playerRouted ? "player" : "enemy";
+  finishBattle(ctx, { winner, reason: "routed" });
+};
+
+/**
+ * The `EndTurn` Command: the Resolution Phase and the End Phase of the active
+ * side, then the Routed check, then the Turn goes to the other side and its
+ * Start Phase runs.
  */
 export const endTurn = (ctx: StepContext): void => {
   const { state } = ctx;
@@ -252,7 +281,11 @@ export const endTurn = (ctx: StepContext): void => {
   if (isOver(ctx)) {
     return;
   }
-  runEndStep(ctx);
+  runEndPhase(ctx);
+  finishIfRouted(ctx);
+  if (isOver(ctx)) {
+    return;
+  }
   // The Defender takes the second Turn and wins at the Turn limit. In a Solo Battle it is the enemy.
   if (state.activeSide === "enemy") {
     if (state.turnNumber >= TURN_LIMIT) {
@@ -262,5 +295,5 @@ export const endTurn = (ctx: StepContext): void => {
     state.turnNumber += 1;
   }
   state.activeSide = otherSide(state.activeSide);
-  runStartStep(ctx);
+  runStartPhase(ctx);
 };

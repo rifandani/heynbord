@@ -49,7 +49,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | ID | Requirement | Priority |
 | --- | --- | --- |
 | BAT-01 | The Board must have 3 Lanes in a Stage and 4 Lanes in a Dungeon or a Heynspire Floor, with 12 Squares in each Lane. Content must not set the number of Lanes. A Stage or a Dungeon can close Lanes (GDD section 4.1). | M |
-| BAT-02 | Each card in the Hand must show its Countdown. The Countdown must go down by 1 in each Start Step of its owner. | M |
+| BAT-02 | Each card in the Hand must show its Countdown. The Countdown must go down by 1 in each Start Phase of its owner. | M |
 | BAT-03 | The player must be able to play all Ready cards in one Play Phase. | M |
 | BAT-04 | Creature Cards must go only into empty Squares of the Summon Zone (Columns 1 to 3 of each open Lane). | M |
 | BAT-05 | Units must move and attack automatically by the rules in GDD section 4. | M |

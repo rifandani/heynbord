@@ -24,7 +24,7 @@ const isStatusDamage = (source: DamageSource): boolean =>
   source === "burn" || source === "poison" || source === "suddenDeath";
 
 export const finishBattle = (ctx: StepContext, result: BattleResult): void => {
-  ctx.state.phase = "finished";
+  ctx.state.status = "finished";
   ctx.state.result = result;
   ctx.events.push(BattleEvent.BattleEnded({ result }));
 };

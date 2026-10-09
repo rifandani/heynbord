@@ -112,6 +112,12 @@ export const GLYPHS = {
     "M-16 -30 H16 L22 44 H-22 Z M-22 -30 L0 -50 L22 -30 Z M-5 -14 H5 V2 H-5 Z",
   cave: "M-46 44 Q-46 -36 0 -40 Q46 -36 46 44 Z M-22 44 Q-22 0 0 -4 Q22 0 22 44 Z",
   cards: "M-30 -40 H22 V40 H-30 Z M-20 -48 H36 V30 H28 V-40 H-20 Z",
+  /**
+   * A Skill Card: a 3:4 card with the arched art window of a Skill Card and a
+   * spark in it.
+   */
+  skillCard:
+    "M-26 -46 H26 Q34 -46 34 -38 V38 Q34 46 26 46 H-26 Q-34 46 -34 38 V-38 Q-34 -46 -26 -46 Z M-24 34 V-10 Q-24 -36 0 -36 Q24 -36 24 -10 V34 Z M0 -18 L5 -3 L16 2 L5 7 L0 22 L-5 7 L-16 2 L-5 -3 Z",
   anvil:
     "M-44 -24 H30 Q44 -24 44 -12 Q30 -6 22 -6 V10 H12 L22 30 H-22 L-12 10 H-22 V-6 Q-38 -6 -44 -24 Z M-30 30 H30 V42 H-30 Z",
   pack: "M-30 -40 L-20 -46 L-10 -40 L0 -46 L10 -40 L20 -46 L30 -40 V44 H-30 Z M0 -16 L6 -2 L20 -2 L9 7 L13 22 L0 13 L-13 22 L-9 7 L-20 -2 L-6 -2 Z",
@@ -147,6 +153,7 @@ export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
   "hat",
   "warhelm",
   "lock",
+  "skillCard",
 ]);
 
 const ROLE_GLYPH: Readonly<Record<UnitRole, Glyph>> = {

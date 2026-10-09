@@ -48,7 +48,7 @@ export const playOut = (
 ): BattleState => {
   let state = start;
   onTurn?.(state);
-  for (let commands = 0; state.phase !== "finished"; commands += 1) {
+  for (let commands = 0; state.status !== "finished"; commands += 1) {
     if (commands >= maxCommands) {
       throw new Error(
         `Battle ${state.stageId} seed ${state.seed} is not finished after ${maxCommands} Commands`
@@ -60,7 +60,7 @@ export const playOut = (
       throw new Error(`AI chose an illegal Command: ${result.failure._tag}`);
     }
     ({ state } = result.success);
-    if (command._tag === "EndTurn" && state.phase !== "finished") {
+    if (command._tag === "EndTurn" && state.status !== "finished") {
       onTurn?.(state);
     }
   }

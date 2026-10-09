@@ -408,7 +408,7 @@ const finished = (stageId: string, winner: "player" | "enemy") => {
     ...session,
     rules: {
       ...session.rules,
-      phase: "finished" as const,
+      status: "finished" as const,
       result: { winner, reason: "heroDefeated" as const },
     },
   };

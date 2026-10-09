@@ -125,9 +125,9 @@ export interface UnitState {
   wall: boolean;
   /** The Turn number of the summon. Charge uses it. */
   readonly summonedTurn: number;
-  /** End Steps of Burn that are left. */
+  /** End Phases of Burn that are left. */
   burn: number;
-  /** Poison stacks. Each End Step of the owner deals 1 damage per stack, then removes 1. */
+  /** Poison stacks. Each End Phase of the owner deals 1 damage per stack, then removes 1. */
   poisoned: number;
   /** Hobbled count. 0 is not Hobbled. Above 0, Speed is at most 1. */
   hobbled: number;
@@ -144,7 +144,8 @@ export interface UnitState {
 
 export interface BattleResult {
   readonly winner: Side;
-  readonly reason: "heroDefeated" | "turnLimit";
+  /** `routed`: a Side with no Units and no Cards lost at the end of a Turn (ADR-0012). */
+  readonly reason: "heroDefeated" | "turnLimit" | "routed";
 }
 
 /**
@@ -160,7 +161,7 @@ export interface BattleState {
   closedLanes: ClosedLane[];
   turnNumber: number;
   activeSide: Side;
-  phase: "play" | "finished";
+  status: "ongoing" | "finished";
   sides: Record<Side, SideState>;
   units: UnitState[];
   nextId: number;

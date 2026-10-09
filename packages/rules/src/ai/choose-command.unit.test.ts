@@ -25,7 +25,7 @@ const autoBattle = (seed: number, stageId: string, deckId: string) => {
   });
   const log: string[] = [];
   let commands = 0;
-  while (state.phase !== "finished" && commands < 5000) {
+  while (state.status !== "finished" && commands < 5000) {
     const command = chooseCommand(state);
     const result = step(state, command);
     if (Result.isFailure(result)) {
@@ -414,10 +414,10 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
     ).toEqual(spearThrowAt(0, 9));
   });
 
-  it("removes lethal damage first, with the Sudden Death of its next Start Step", () => {
+  it("removes lethal damage first, with the Sudden Death of its next Start Phase", () => {
     // 3 HP − 2 damage is not lethal before Sudden Death, so the Unit of more value dies.
     expect(lethalChoice(1)).toEqual(spearThrowAt(1, 3));
-    // At the next Start Step (Turn 21), Sudden Death deals 1: 3 − 1 − 2 = 0.
+    // At the next Start Phase (Turn 21), Sudden Death deals 1: 3 − 1 − 2 = 0.
     expect(lethalChoice(20)).toEqual(spearThrowAt(0, 10));
   });
 });
@@ -434,7 +434,7 @@ describe("determinism (BAT-06) and Battle length", () => {
       for (const deck of STARTER_DECKS) {
         for (let seed = 1; seed <= 6; seed += 1) {
           const state = stateOf(seed, stage.id, deck.id);
-          expect(state.phase).toBe("finished");
+          expect(state.status).toBe("finished");
           expect(state.turnNumber).toBeLessThanOrEqual(TURN_LIMIT);
         }
       }

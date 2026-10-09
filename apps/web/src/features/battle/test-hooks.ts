@@ -40,7 +40,7 @@ const playTurns = (session: BattleSession, turns: number): BattleSession => {
   let next = session;
   for (
     let turn = 0;
-    turn < turns && next.rules.phase !== "finished";
+    turn < turns && next.rules.status !== "finished";
     turn += 1
   ) {
     next = skip(autoPlayTurn(next));
@@ -70,7 +70,7 @@ const playOut = (stageId: string, seed: number): BattleSession => {
     deck: getStarterDeck("vanguard"),
     seed,
   });
-  while (session.rules.phase !== "finished") {
+  while (session.rules.status !== "finished") {
     session = skip(autoPlayTurn(session));
   }
   return session;
@@ -110,7 +110,7 @@ const enemyCastBattle = (seed: number): BattleSession => {
   });
   for (
     let turn = 0;
-    turn < 12 && session.rules.phase !== "finished";
+    turn < 12 && session.rules.status !== "finished";
     turn += 1
   ) {
     const played = autoPlayTurn(session);

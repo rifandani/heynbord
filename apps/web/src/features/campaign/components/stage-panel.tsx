@@ -1,8 +1,8 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
 import { deckProblems, getCard } from "@workspace/rules";
 import { cn } from "cn";
-import type { ReactNode } from "react";
-import { useState } from "react";
+import type { ReactNode, RefObject } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   Heading,
@@ -39,6 +39,33 @@ import {
   collectionAtom,
   deckSlotsAtom,
 } from "@/features/deck/deck.atoms";
+import {
+  clearSheetOrigin,
+  placeSheetOrigin,
+  SHEET_MOTION,
+  SHEET_PATH_MOTION,
+  SHEET_SCRIM_MOTION,
+} from "@/features/town/sheet-motion";
+
+/**
+ * The parts of the panel ink in from the top while the sheet comes up out of
+ * the Stage Marker: the header, the enemy, the reward, the Deck, then Fight.
+ */
+const INK = [
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_140ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_190ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_240ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_290ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_340ms_both]",
+] as const;
+
+/** The reward card is dealt onto the page after its row inks in. */
+const DEAL =
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-deal_440ms_cubic-bezier(0.2,0.8,0.2,1)_300ms_both]";
+
+/** The text goes before the sheet goes back into the Stage Marker. */
+const INK_OUT =
+  "motion-safe:group-data-[exiting]/sheet:animate-[settings-sheet-ink_260ms_ease-out_reverse_both]";
 
 /** One row of the panel: a Cinzel label at the left, its content at the right (as in Settings). */
 const Row = ({
@@ -78,7 +105,7 @@ const EnemyRow = ({ stop }: { readonly stop: TrailStage }) => {
   const { tr, text } = useGameText();
   const { stage } = stop;
   return (
-    <Row label={tr("campaign.panel.enemy")}>
+    <Row label={tr("campaign.panel.enemy")} className={INK[1]}>
       <p className="flex items-center gap-2 font-bold">
         <span
           className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#6b1610] text-[#fff6df] [@media(max-height:500px)]:size-6"
@@ -111,7 +138,7 @@ const RewardRow = ({ stop }: { readonly stop: TrailStage }) => {
   const card = getCard(cardId);
   const won = stop.state === "done";
   return (
-    <Row label={tr("campaign.panel.reward")}>
+    <Row label={tr("campaign.panel.reward")} className={INK[2]}>
       <div className="flex items-center gap-3">
         <CardFrame
           cardId={cardId}
@@ -119,7 +146,8 @@ const RewardRow = ({ stop }: { readonly stop: TrailStage }) => {
           countdown={card.countdown}
           className={cn(
             "shrink-0 -rotate-2 text-[6px] [@media(max-height:500px)]:text-[4.5px]",
-            won && "opacity-70 saturate-[0.7]"
+            won && "opacity-70 saturate-[0.7]",
+            DEAL
           )}
         />
         <div className="min-w-0">
@@ -171,7 +199,10 @@ const DeckRow = ({
     <RadioGroup
       value={chosen?.id ?? null}
       onChange={setDeckId}
-      className="grid grid-cols-[4.75rem_1fr] items-start gap-x-3 py-3 [@media(max-height:500px)]:py-1.5"
+      className={cn(
+        "grid grid-cols-[4.75rem_1fr] items-start gap-x-3 py-3 [@media(max-height:500px)]:py-1.5",
+        INK[3]
+      )}
     >
       <Label className="font-display pt-0.5 text-sm font-bold text-[#2a1d12]">
         {tr("campaign.panel.deck")}
@@ -234,19 +265,34 @@ const DeckRow = ({
  * over the dim map. It shows the Stage ID, the enemy Hero, the reward, the
  * best Stars and the Deck, and the Fight button. Esc, the close button and a
  * click outside close it. Fight takes the focus, so Enter starts the Battle.
+ *
+ * The panel comes up out of the Stage Marker `from` and goes back into it,
+ * as the Settings dialog does with its button. It keeps the last Stage while
+ * it closes. On the way to the Deck builder and back, it only zooms and
+ * fades at the center, because the Deck book opens over it.
  */
 export const StagePanel = ({
   stop,
+  from,
   onClose,
   onStart,
 }: {
   readonly stop: TrailStage | null;
+  readonly from?: RefObject<Element | null>;
   readonly onClose: () => void;
   readonly onStart: (options: BattleOptions) => void;
 }) => {
   const { tr } = useGameText();
   const choice = useDeckChoice();
   const [editing, setEditing] = useState(false);
+  const [last, setLast] = useState(stop);
+  if (stop !== null && stop !== last) {
+    setLast(stop);
+  }
+  const shown = stop ?? last;
+  const overlay = useRef<HTMLDivElement | null>(null);
+  // True from "Edit Decks" until the panel closes: the panel stays at the center.
+  const atCenter = useRef(false);
   const { chosen, problem } = choice;
   return (
     <>
@@ -254,20 +300,48 @@ export const StagePanel = ({
         isOpen={stop !== null && !editing}
         onOpenChange={(open) => {
           if (!open) {
+            atCenter.current = false;
+            placeSheetOrigin(overlay.current, from?.current ?? null);
             onClose();
           }
         }}
         isDismissable
-        className="fade-in animate-in fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] duration-200 motion-reduce:animate-none [@media(max-height:500px)]:p-2"
+        // The ref runs before the first paint, so the sheet starts on the marker.
+        ref={(element) => {
+          overlay.current = element;
+          if (!atCenter.current) {
+            placeSheetOrigin(element, from?.current ?? null);
+          }
+        }}
+        className={cn(
+          "fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] [@media(max-height:500px)]:p-2",
+          SHEET_SCRIM_MOTION
+        )}
       >
-        <Modal className="fade-in zoom-in-95 animate-in max-h-full w-[min(460px,94vw)] overflow-y-auto overscroll-contain rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-5 text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] duration-200 motion-reduce:animate-none [@media(max-height:500px)]:w-[min(720px,96vw)] [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3">
-          <Dialog className="outline-none" data-testid="stage-panel">
+        <Modal
+          className={cn(
+            "group/sheet flex max-h-full w-[min(460px,94vw)] [@media(max-height:500px)]:w-[min(720px,96vw)]",
+            SHEET_PATH_MOTION
+          )}
+        >
+          <Dialog
+            className={cn(
+              "max-h-full w-full overflow-y-auto overscroll-contain rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-5 text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3",
+              SHEET_MOTION
+            )}
+            data-testid="stage-panel"
+          >
             {({ close }) =>
-              stop ? (
-                <>
-                  <header className="flex items-center gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2">
+              shown ? (
+                <div className={INK_OUT}>
+                  <header
+                    className={cn(
+                      "flex items-center gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2",
+                      INK[0]
+                    )}
+                  >
                     <StageShield
-                      state={stop.state}
+                      state={shown.state}
                       className="-my-1 h-12 w-[42px] shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.3)] [@media(max-height:500px)]:h-9 [@media(max-height:500px)]:w-8"
                     />
                     <div className="min-w-0">
@@ -275,8 +349,8 @@ export const StagePanel = ({
                         slot="title"
                         className="font-display flex items-center gap-2 text-2xl leading-none font-black [@media(max-height:500px)]:text-xl"
                       >
-                        {tr("battle.stageLabel", { id: stop.stage.id })}
-                        {stop.stage.boss ? (
+                        {tr("battle.stageLabel", { id: shown.stage.id })}
+                        {shown.stage.boss ? (
                           <span className="rounded-[4px] bg-[#8e1f1f] px-1.5 py-0.5 font-sans text-[10px] font-bold tracking-[0.04em] text-white uppercase">
                             {tr("battle.boss")}
                           </span>
@@ -285,19 +359,19 @@ export const StagePanel = ({
                       <p
                         className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-[#5b4632]"
                         data-testid="stage-best-stars"
-                        data-stars={stop.stars}
+                        data-stars={shown.stars}
                       >
                         <span>{tr("campaign.panel.bestStars")}</span>
-                        {stop.stars > 0 ? (
+                        {shown.stars > 0 ? (
                           <>
                             <StarRow
-                              stars={stop.stars}
+                              stars={shown.stars}
                               className="gap-0.5"
                               tone="parchment"
                               starClassName="size-4"
                             />
                             <span className="sr-only">
-                              {tr("battle.starsLabel", { count: stop.stars })}
+                              {tr("battle.starsLabel", { count: shown.stars })}
                             </span>
                           </>
                         ) : (
@@ -320,25 +394,32 @@ export const StagePanel = ({
                   </header>
                   <div className="[@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:gap-x-5">
                     <div className="divide-y divide-[#c9b48c]/70">
-                      <EnemyRow stop={stop} />
-                      <RewardRow stop={stop} />
+                      <EnemyRow stop={shown} />
+                      <RewardRow stop={shown} />
                     </div>
                     <div className="flex flex-col border-t border-[#c9b48c]/70 [@media(max-height:500px)]:border-t-0">
                       <DeckRow
                         choice={choice}
-                        onEdit={() => setEditing(true)}
+                        onEdit={() => {
+                          atCenter.current = true;
+                          clearSheetOrigin(overlay.current);
+                          setEditing(true);
+                        }}
                       />
                       <GameButton
                         intent="gold"
                         size="lg"
                         autoFocus
-                        className="font-display mt-1 w-full tracking-[0.04em] [@media(max-height:500px)]:mt-auto [@media(max-height:500px)]:min-h-11"
+                        className={cn(
+                          "font-display mt-1 w-full tracking-[0.04em] [@media(max-height:500px)]:mt-auto [@media(max-height:500px)]:min-h-11",
+                          INK[4]
+                        )}
                         data-testid="start-battle"
                         isDisabled={!chosen || problem !== undefined}
                         onPress={() => {
                           if (chosen) {
                             onStart({
-                              stageId: stop.stage.id,
+                              stageId: shown.stage.id,
                               deck: chosen,
                               seed: qaSeed() ?? randomSeed(),
                             });
@@ -349,7 +430,7 @@ export const StagePanel = ({
                       </GameButton>
                     </div>
                   </div>
-                </>
+                </div>
               ) : null
             }
           </Dialog>

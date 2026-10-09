@@ -9,6 +9,7 @@ import {
   eventsOfType,
   giveHand,
   placeUnit,
+  preventRout,
   run,
   unitById,
 } from "../testing/fixtures";
@@ -22,6 +23,13 @@ const endTurn = Command.EndTurn();
 
 const countdownsOf = (state: BattleState) =>
   state.sides.player.hand.map((card) => card.countdown);
+
+/** An enemy Turn at `turnNumber` that the Routed check does not end. */
+const enemyTurnAt = (turnNumber: number) => {
+  const state = emptyBattle({ activeSide: "enemy", turnNumber });
+  preventRout(state);
+  return state;
+};
 
 const setup = (seed: number, stageId = "1-1") => {
   const deck = getStarterDeck("vanguard");
@@ -38,7 +46,7 @@ const setup = (seed: number, stageId = "1-1") => {
 };
 
 describe("createBattle (GDD 4.2)", () => {
-  it("draws 4 cards for each side and runs the player's first Start Step", () => {
+  it("draws 4 cards for each side and runs the player's first Start Phase", () => {
     const { state, events } = createBattle(setup(7));
     expect(state.sides.player.hand).toHaveLength(5);
     expect(state.sides.enemy.hand).toHaveLength(4);
@@ -142,7 +150,7 @@ describe("createBattle (GDD 4.2)", () => {
   });
 });
 
-describe("Start Step (GDD 4.3)", () => {
+describe("Start Phase (GDD 4.3)", () => {
   it("lowers the Countdown of each card that is not Ready by 1, then draws 1 card", () => {
     const state = emptyBattle({ activeSide: "enemy" });
     giveHand(state, "player", [
@@ -152,6 +160,7 @@ describe("Start Step (GDD 4.3)", () => {
     state.sides.player.deck = [
       { instanceId: 1, cardId: "human.shieldbearer", rank: "common" },
     ];
+    preventRout(state);
     const { state: next, events } = run(state, endTurn);
     expect(next.sides.player.hand.map((card) => card.countdown)).toEqual([
       0, 2, 2,
@@ -173,6 +182,7 @@ describe("Start Step (GDD 4.3)", () => {
       ["human.halberdier", 2],
       ["human.halberdier", 3],
     ]);
+    preventRout(state);
     const { state: next, events } = run(state, endTurn);
     expect(countdownsOf(next)).toEqual([3, 2, 1, 0, 4, 5, 1, 2]);
     expect(eventsOfType(events, "CountdownsTicked")).toEqual([
@@ -193,6 +203,7 @@ describe("Start Step (GDD 4.3)", () => {
       ["human.halberdier", 4],
       ["human.halberdier", 5],
     ]);
+    preventRout(state);
     const { state: next } = run(state, endTurn);
     expect(countdownsOf(next)).toEqual([0, 1, 0, 2, 3, 4]);
   });
@@ -207,6 +218,7 @@ describe("Start Step (GDD 4.3)", () => {
         ["human.halberdier", 6],
         ["human.halberdier", 6],
       ]);
+      preventRout(state);
       const played = run(
         state,
         Command.PlayCard({ handIndex: 0, target: Target.NoTarget() })
@@ -220,7 +232,7 @@ describe("Start Step (GDD 4.3)", () => {
         cardId: "warrior.warDrums",
         countdown: 2,
       });
-      // War Drums lowered 2 of the 3 Halberdiers to 5. The enemy Turn, then the player Start Step.
+      // War Drums lowered 2 of the 3 Halberdiers to 5. The enemy Turn, then the player Start Phase.
       const enemyTurn = run(played.state, endTurn).state;
       const { state: next } = run(enemyTurn, endTurn);
       expect(countdownsOf(next).toSorted()).toEqual([1, 4, 4, 5]);
@@ -306,6 +318,7 @@ describe("Start Step (GDD 4.3)", () => {
       maxHp: 8,
     });
     full.position = 1;
+    preventRout(state);
     const { state: next } = run(state, endTurn);
     expect(unitById(next, cleric.id)?.hp).toBe(6);
     expect(unitById(next, full.id)?.hp).toBe(8);
@@ -313,6 +326,7 @@ describe("Start Step (GDD 4.3)", () => {
 
   it("starts the next Turn number after the enemy's Turn", () => {
     const state = emptyBattle({ activeSide: "enemy", turnNumber: 4 });
+    preventRout(state);
     const { state: next } = run(state, endTurn);
     expect(next).toMatchObject({ activeSide: "player", turnNumber: 5 });
     const after = run(next, endTurn).state;
@@ -321,13 +335,14 @@ describe("Start Step (GDD 4.3)", () => {
 });
 
 describe("Closed Lanes (GDD 4.1)", () => {
-  it("opens a Closed Lane in the first Start Step of its Turn number", () => {
+  it("opens a Closed Lane in the first Start Phase of its Turn number", () => {
     const state = emptyBattle({
       lanes: 3,
       activeSide: "enemy",
       turnNumber: 4,
       closedLanes: [{ lane: 0 }, { lane: 2, opensOnTurn: 5 }],
     });
+    preventRout(state);
     const { state: next, events } = run(state, endTurn);
     expect(next.closedLanes).toEqual([{ lane: 0 }]);
     expect(eventsOfType(events, "LaneOpened")).toEqual([
@@ -341,20 +356,11 @@ describe("Closed Lanes (GDD 4.1)", () => {
 
 describe("Sudden Death and the Turn limit (GDD 4.10)", () => {
   it("hits the active Hero for 1 from Turn number 20 and for 2 from Turn number 40", () => {
-    const twenty = run(
-      emptyBattle({ activeSide: "enemy", turnNumber: 19 }),
-      endTurn
-    ).state;
+    const twenty = run(enemyTurnAt(19), endTurn).state;
     expect(twenty.sides.player.hero.hp).toBe(29);
-    const forty = run(
-      emptyBattle({ activeSide: "enemy", turnNumber: 39 }),
-      endTurn
-    ).state;
+    const forty = run(enemyTurnAt(39), endTurn).state;
     expect(forty.sides.player.hero.hp).toBe(28);
-    const early = run(
-      emptyBattle({ activeSide: "enemy", turnNumber: 18 }),
-      endTurn
-    ).state;
+    const early = run(enemyTurnAt(18), endTurn).state;
     expect(early.sides.player.hero.hp).toBe(30);
   });
 
@@ -364,15 +370,17 @@ describe("Sudden Death and the Turn limit (GDD 4.10)", () => {
       turnNumber: 25,
       player: { hp: 1 },
     });
+    preventRout(state);
     const { state: next } = run(state, endTurn);
     expect(next.result).toEqual({ winner: "enemy", reason: "heroDefeated" });
   });
 
   it("gives the win to the defender at the end of Turn number 60", () => {
     const state = emptyBattle({ activeSide: "enemy", turnNumber: 60 });
+    preventRout(state);
     const { state: next, events } = run(state, endTurn);
     expect(next).toMatchObject({
-      phase: "finished",
+      status: "finished",
       result: { winner: "enemy", reason: "turnLimit" },
     });
     expect(eventsOfType(events, "BattleEnded")).toHaveLength(1);
@@ -395,7 +403,7 @@ describe("win and loss", () => {
     const { state: next, events } = run(state, endTurn);
     expect(next.result).toEqual({ winner: "player", reason: "heroDefeated" });
     expect(next.sides.enemy.hero.hp).toBe(0);
-    // The second Unit does not act, and no End Step runs.
+    // The second Unit does not act, and no End Phase runs.
     expect(eventsOfType(events, "UnitAttacked")).toHaveLength(1);
     expect(eventsOfType(events, "TurnEnded")).toHaveLength(0);
     const again = step(next, endTurn);
@@ -405,13 +413,111 @@ describe("win and loss", () => {
   });
 });
 
+describe("Routed (ADR-0012)", () => {
+  it("gives the win to the player when the enemy has no Units and no Cards at the end of a Turn", () => {
+    const state = emptyBattle();
+    giveHand(state, "player", [["human.halberdier", 3]]);
+    const { state: next, events } = run(state, endTurn);
+    expect(next).toMatchObject({
+      status: "finished",
+      result: { winner: "player", reason: "routed" },
+    });
+    expect(eventsOfType(events, "BattleEnded")).toHaveLength(1);
+    // The check comes after the End Phase, and the enemy Start Phase does not run.
+    expect(eventsOfType(events, "TurnEnded")).toHaveLength(1);
+    expect(eventsOfType(events, "TurnStarted")).toHaveLength(0);
+  });
+
+  it("gives the win to the enemy when the player is Routed", () => {
+    const state = emptyBattle();
+    giveHand(state, "enemy", [["human.halberdier", 3]]);
+    const { state: next } = run(state, endTurn);
+    expect(next.result).toEqual({ winner: "enemy", reason: "routed" });
+  });
+
+  it("gives the win to the defender when both Sides are Routed at the same check", () => {
+    const { state: next } = run(emptyBattle(), endTurn);
+    expect(next.result).toEqual({ winner: "enemy", reason: "routed" });
+  });
+
+  it("counts a Card that is not Ready, a Card in the Deck and a Unit", () => {
+    const hand = emptyBattle();
+    giveHand(hand, "player", [["human.halberdier", 6]]);
+    giveHand(hand, "enemy", [["human.halberdier", 6]]);
+    expect(run(hand, endTurn).state.result).toBeNull();
+
+    const deck = emptyBattle();
+    preventRout(deck);
+    expect(run(deck, endTurn).state.result).toBeNull();
+
+    const units = emptyBattle();
+    placeUnit(units, {
+      cardId: "human.halberdier",
+      owner: "player",
+      position: 0,
+    });
+    placeUnit(units, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: LANE_LENGTH - 1,
+    });
+    expect(run(units, endTurn).state.result).toBeNull();
+  });
+
+  it("checks after the End Phase, so Burn can make a Side Routed", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    giveHand(state, "player", [["human.halberdier", 3]]);
+    placeUnit(state, {
+      cardId: "orc.badlandRunt",
+      owner: "enemy",
+      position: LANE_LENGTH - 1,
+      attack: 0,
+      hp: 1,
+      maxHp: 1,
+      burn: 1,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(next.result).toEqual({ winner: "player", reason: "routed" });
+  });
+
+  it("checks Routed before the Turn limit at the end of Turn number 60", () => {
+    const state = emptyBattle({ activeSide: "enemy", turnNumber: 60 });
+    giveHand(state, "player", [["human.halberdier", 3]]);
+    const { state: next } = run(state, endTurn);
+    expect(next.result).toEqual({ winner: "player", reason: "routed" });
+  });
+
+  it("checks at the end of the Turn, so a Recalled last Card saves the Side", () => {
+    const outcomes = new Set<boolean>();
+    for (let random = 0; random < 60 && outcomes.size < 2; random += 1) {
+      const state = emptyBattle({ random });
+      giveHand(state, "player", [["warrior.warDrums", 0, "legendary"]]);
+      giveHand(state, "enemy", [["human.halberdier", 3]]);
+      const played = run(
+        state,
+        Command.PlayCard({ handIndex: 0, target: Target.NoTarget() })
+      );
+      const [roll] = eventsOfType(played.events, "RecallRolled");
+      const success = roll?.success === true;
+      outcomes.add(success);
+      // The Side is Routed between the play and the Recall roll, but the check waits for the end of the Turn.
+      expect(played.state.result).toBeNull();
+      const { state: next } = run(played.state, endTurn);
+      expect(next.result).toEqual(
+        success ? null : { winner: "enemy", reason: "routed" }
+      );
+    }
+    expect(outcomes).toEqual(new Set([true, false]));
+  });
+});
+
 const finished = (
   hp: number,
   turnNumber: number,
   winner: "player" | "enemy"
 ) => {
   const state = emptyBattle({ turnNumber, player: { hp, maxHp: 40 } });
-  state.phase = "finished";
+  state.status = "finished";
   state.result = { winner, reason: "heroDefeated" };
   return state;
 };
@@ -444,7 +550,7 @@ describe("purity", () => {
 });
 
 /**
- * The enemy ends its Turn, so the player's Start Step runs. The player has a
+ * The enemy ends its Turn, so the player's Start Phase runs. The player has a
  * Unit with Rally 1 at Square 0 of Lane 0.
  */
 const rallyBoard = (extraRally = false) => {
@@ -485,7 +591,7 @@ const rallyBoard = (extraRally = false) => {
 };
 
 describe("Rally (GDD 4.3, 5.4)", () => {
-  it("gives the other friendly Units in the Lane +N Attack in the owner's Start Step", () => {
+  it("gives the other friendly Units in the Lane +N Attack in the owner's Start Phase", () => {
     const { state, elk, ally, otherLane, enemy } = rallyBoard();
     expect(state.activeSide).toBe("player");
     expect(unitById(state, ally.id)?.rallied).toBe(1);
@@ -601,6 +707,7 @@ describe("Bleeding (GDD 4.7, ADR-0019)", () => {
       hp: 5,
       bleeding: 2,
     });
+    preventRout(state);
     const { state: next, events } = run(state, endTurn);
     expect(unitById(next, troll.id)?.hp).toBe(6);
     expect(unitById(next, cleric.id)?.hp).toBe(5);
@@ -609,7 +716,7 @@ describe("Bleeding (GDD 4.7, ADR-0019)", () => {
     ]);
   });
 
-  it("lowers the count by 1 only in the End Step of the owner", () => {
+  it("lowers the count by 1 only in the End Phase of the owner", () => {
     let state = emptyBattle();
     const troll = placeUnit(state, {
       cardId: "feral.caveTroll",
@@ -619,6 +726,7 @@ describe("Bleeding (GDD 4.7, ADR-0019)", () => {
       speed: 0,
       bleeding: 2,
     });
+    preventRout(state);
     ({ state } = run(state, endTurn));
     expect(unitById(state, troll.id)?.bleeding).toBe(1);
     ({ state } = run(state, endTurn));

@@ -194,7 +194,7 @@ export interface StatusText {
   readonly status: Status | "bonusArmor";
   readonly name: TextRef;
   readonly rule: TextRef;
-  /** The End Steps that are left, after the rule. */
+  /** The End Phases that are left, after the rule. */
   readonly left?: TextRef;
 }
 

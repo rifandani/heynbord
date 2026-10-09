@@ -73,6 +73,8 @@ export default {
     victory: "Victory",
     defeat: "Defeat",
     turnLimit: "The Turn limit is reached. The defender wins.",
+    routedWin: "The enemy is Routed: it has no Units and no cards.",
+    routedLoss: "Your Side is Routed: it has no Units and no cards.",
     starsLabel: "{count} of 3 Stars",
     retry: "Play Again",
     backToCampaign: "Back to Campaign",
@@ -120,19 +122,19 @@ export default {
       bonusArmor: "Armor +{value}",
       bonusArmorRule: "From a Skill Card. Turns left: {turns}.",
       burn: "Burn",
-      burnRule: "1 damage in each End Step of its owner.",
-      burnLeft: "End Steps left: {value}.",
+      burnRule: "1 damage in each End Phase of its owner.",
+      burnLeft: "End Phases left: {value}.",
       frozen: "Frozen",
       frozenRule: "It skips its next action.",
       poisoned: "Poison {value}",
       poisonedRule:
-        "1 damage per stack in each End Step of its owner. Then it loses 1 stack.",
+        "1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
       hobbled: "Hobbled {value}",
       hobbledRule:
-        "This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Step of its owner.",
+        "This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner.",
       bleeding: "Bleeding {value}",
       bleedingRule:
-        "This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Step of its owner.",
+        "This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
       entangled: "Entangled",
       entangledRule: "Speed 0 in its next action. It can still attack.",
     },
@@ -389,10 +391,10 @@ export default {
       side: "Side",
       hero: "Hero",
       turn: "Turn",
-      startStep: "Start Step",
+      startPhase: "Start Phase",
       playPhase: "Play Phase",
       resolutionPhase: "Resolution Phase",
-      endStep: "End Step",
+      endPhase: "End Phase",
       suddenDeath: "Sudden Death",
       routed: "Routed",
       defeated: "Defeated",
@@ -431,19 +433,19 @@ export default {
         "In a Closed Lane, no Side can summon a Unit, and no Skill Card can target a Square.\n\nSome Stages have a Closed Lane. It opens at a set Turn number, or it stays closed for the full Battle.",
       side: "A Side is one of the two teams in a Battle: your Side and the enemy Side. Each Side has a Hero.\n\nYour Side is at the left of the Board, and the enemy Side is at the right.",
       hero: "A Hero is the commander of a Side. It stands behind its Front, outside the Board.\n\nA Hero has HP, a Class and a Deck. When its HP goes to 0, the Hero is Defeated.",
-      turn: "In a Turn, one Side plays its cards, and its Units act. A Turn has 4 parts: the Start Step, the Play Phase, the Resolution Phase and the End Step.\n\nYou take the first Turn. Then the enemy takes a Turn. The Turn number goes up by 1 when both Sides took a Turn.",
-      startStep:
-        "The Start Step is the first part of your Turn. These things occur in this order:\n\n1. Effects such as Regeneration and Rally occur.\n\n2. From Turn {turn}, Sudden Death damage hits your Hero.\n\n3. The Countdown of each card in your Hand that is not Ready goes down by 1.\n\n4. Your Hero draws 1 card, if the Hand has fewer than {limit} cards.",
+      turn: "In a Turn, one Side plays its cards, and its Units act. A Turn has 4 parts: the Start Phase, the Play Phase, the Resolution Phase and the End Phase.\n\nYou take the first Turn. Then the enemy takes a Turn. The Turn number goes up by 1 when both Sides took a Turn.",
+      startPhase:
+        "The Start Phase is the first part of your Turn. These things occur in this order:\n\n1. Effects such as Regeneration and Rally occur.\n\n2. From Turn {turn}, Sudden Death damage hits your Hero.\n\n3. The Countdown of each card in your Hand that is not Ready goes down by 1.\n\n4. Your Hero draws 1 card, if the Hand has fewer than {limit} cards.",
       playPhase:
         "In the Play Phase, you play your Ready cards. You can play all of them, in any order, or you can play no cards.\n\nA Creature Card goes into an empty Square of your Summon Zone. A Skill Card goes to its target.\n\nSelect End Turn to end the Play Phase. There is no timer.",
       resolutionPhase:
         "In the Resolution Phase, your Units act by themselves. You do not control them.\n\nThey act Lane by Lane, from Lane 1 to the last Lane. In each Lane, the Unit nearest to the enemy Hero acts first. Each Unit moves, then it attacks. A Unit that you summoned in this Turn also acts.\n\nThe enemy Units do not act. They can only use Retaliation and First Strike.",
-      endStep:
-        "The End Step is the last part of your Turn. Burn and Poison damage hit your Units. Then the timed effects go down by 1, and Units with 0 HP leave the Board.\n\nThen the enemy takes its Turn.",
+      endPhase:
+        "The End Phase is the last part of your Turn. Burn and Poison damage hit your Units. Then the timed effects go down by 1, and Units with 0 HP leave the Board.\n\nThen the enemy takes its Turn.",
       suddenDeath:
-        "Sudden Death makes each Battle end. From Turn {turn}, the Hero of the active Side takes 1 damage in each Start Step. From Turn {double}, the damage is 2.\n\nIf no Side has won at the end of Turn {limit}, the enemy wins.",
+        "Sudden Death makes each Battle end. From Turn {turn}, the Hero of the active Side takes 1 damage in each Start Phase. From Turn {double}, the damage is 2.\n\nIf no Side has won at the end of Turn {limit}, the enemy wins.",
       routed:
-        "A Side is Routed when it has no Units on the Board and no cards in its Hand and its Deck. A Routed Side cannot act again, so it loses the Battle.\n\nThis rule is the same for you and for the enemy.",
+        "A Side is Routed when it has no Units on the Board and no cards in its Hand and its Deck. A Routed Side cannot act again, so it loses the Battle. The check occurs at the end of each Turn.\n\nThis rule is the same for you and for the enemy.",
       defeated:
         "A Hero with 0 HP is Defeated. When all the Heroes of a Side are Defeated, that Side loses the Battle.\n\nIn a Stage, each Side has 1 Hero, so a Hero at 0 HP ends the Battle.",
       creatureCard:
@@ -457,7 +459,7 @@ export default {
       graveyard:
         "The Graveyard holds your cards that are used or dead. A Creature Card goes there when its Unit dies. A Skill Card goes there when Recall does not send it back.",
       countdown:
-        "The Countdown is the number of your Turns until a card is Ready. It shows in the top-left corner of the card.\n\nIn your Start Step, the Countdown of each card in your Hand that is not Ready goes down by 1. The Rank of a card does not change its Countdown.",
+        "The Countdown is the number of your Turns until a card is Ready. It shows in the top-left corner of the card.\n\nIn your Start Phase, the Countdown of each card in your Hand that is not Ready goes down by 1. The Rank of a card does not change its Countdown.",
       ready:
         "A card with a Countdown of 0 is Ready. Only Ready cards can be played. A Ready card glows in your Hand.",
       recall:
@@ -762,10 +764,10 @@ export default {
     pivot:
       "This Unit can attack an enemy Unit directly behind it or next to it, before the Unit in front. Then it does not move.",
     poison:
-      "After this Unit deals attack damage above 0, that Unit gains 1 Poison stack. In each End Step of its owner, it takes 1 damage per stack, then loses 1 stack.",
+      "After this Unit deals attack damage above 0, that Unit gains 1 Poison stack. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack.",
     rally:
-      "In your Start Step, other friendly Units in the same Lane get +{value} Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus.",
-    regeneration: "In your Start Step, this Unit heals {value} HP.",
+      "In your Start Phase, other friendly Units in the same Lane get +{value} Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus.",
+    regeneration: "In your Start Phase, this Unit heals {value} HP.",
     retaliation:
       "When this Unit survives a melee attack, it deals its Attack to the attacker.",
     sabotage:
@@ -774,7 +776,7 @@ export default {
       "When this Unit kills an enemy Unit with an attack, the damage that is left hits the enemy Unit in the next Square behind it. It never hits a Hero.",
     unique: "Only one copy of this card can be on your side of the Board.",
     wall: "This Unit can't move and can't attack. You can summon it into the 5 Squares nearest to your Hero. It blocks enemy Units in its Lane, and a push never moves it.",
-    fire: "Fire: the target burns for 1 damage in its next 2 End Steps.",
+    fire: "Fire: the target burns for 1 damage in its next 2 End Phases.",
     frost: "Frost: the target skips its next action.",
     holy: "Holy: Armor does not reduce this damage.",
   },

@@ -43,7 +43,7 @@ export const emptyBattle = (
   closedLanes: overrides.closedLanes ?? [],
   turnNumber: overrides.turnNumber ?? 1,
   activeSide: overrides.activeSide ?? "player",
-  phase: "play",
+  status: "ongoing",
   sides: {
     player: { hero: hero(overrides.player), hand: [], deck: [], graveyard: [] },
     enemy: { hero: hero(overrides.enemy), hand: [], deck: [], graveyard: [] },
@@ -54,6 +54,25 @@ export const emptyBattle = (
 });
 
 let nextInstance = 1000;
+
+/**
+ * Puts 1 card in the Deck of each Side with no Hand and no Deck, so that the
+ * Routed check (ADR-0012) does not end a test about another rule. Units do not
+ * count, because a Unit can die in the test. Changes `state` (test setup only).
+ */
+export const preventRout = (state: BattleState): void => {
+  for (const side of ["player", "enemy"] as const) {
+    const { hand, deck } = state.sides[side];
+    if (hand.length === 0 && deck.length === 0) {
+      nextInstance += 1;
+      deck.push({
+        instanceId: nextInstance,
+        cardId: "human.militiaRecruit",
+        rank: "common",
+      });
+    }
+  }
+};
 
 /** Test setup: replaces the Hobble and Bleed values and counts of a Unit. */
 const setCounts = (

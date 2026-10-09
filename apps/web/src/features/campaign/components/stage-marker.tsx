@@ -63,7 +63,8 @@ export const StageMarker = ({
   readonly selected: boolean;
   /** True once, when a win opened this Stage. */
   readonly awaken: boolean;
-  readonly onOpen: (stop: TrailStage) => void;
+  /** Opens the Stage Panel; `from` is the marker, where the panel starts. */
+  readonly onOpen: (stop: TrailStage, from: Element) => void;
 }) => {
   const { tr } = useGameText();
   const [tip, setTip] = useState(false);
@@ -74,7 +75,7 @@ export const StageMarker = ({
 
   const onPress = (event: PressEvent) => {
     if (!locked) {
-      onOpen(stop);
+      onOpen(stop, event.target);
     } else if (event.pointerType !== "mouse") {
       setTip((open) => !open);
     }
