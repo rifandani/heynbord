@@ -131,7 +131,7 @@ export const TargetMarkers = ({
               document.body.style.cursor = "";
             }}
           >
-            <planeGeometry args={[spot.width, 0.98]} />
+            <planeGeometry args={[spot.width, spot.depth]} />
             <meshBasicMaterial
               color={index === focused ? "#fff2a8" : "#ffd24a"}
               transparent

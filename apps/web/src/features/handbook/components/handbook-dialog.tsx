@@ -41,6 +41,7 @@ import {
   chapterEntries,
   CHAPTERS,
   ENTRIES,
+  nameAliasKeys,
   openPlace,
   searchEntries,
   showChapter,
@@ -80,9 +81,12 @@ const useSearchItems = () => {
   return ENTRIES.map((entry) => ({
     id: entry.id,
     name: text(entry.name),
-    aliases: ALIASED_ENTRIES.has(entry.id)
-      ? splitAliases(tr(aliasKey(entry.id)))
-      : [],
+    aliases: [
+      ...(ALIASED_ENTRIES.has(entry.id)
+        ? splitAliases(tr(aliasKey(entry.id)))
+        : []),
+      ...nameAliasKeys(entry.id).map((key) => tr(key)),
+    ],
   }));
 };
 

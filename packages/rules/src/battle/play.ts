@@ -11,8 +11,9 @@ import type {
 import { getToken } from "../content/tokens";
 import { randomInt, rollBasisPoints } from "../random";
 import type { StepContext } from "./context";
-import { direction, isInsideLane, isLaneOpen, unitAt } from "./context";
-import { damageUnit } from "./damage";
+import { direction, isInsideLane, isLaneOpen, isOver, unitAt } from "./context";
+import { damageHero, damageUnit } from "./damage";
+import { entangleUnit, pushUnit } from "./resolution";
 import { unitsInArea } from "./targets";
 import type { CardInstance, HandCard, Side, Target, UnitState } from "./types";
 import { BattleEvent, otherSide, unitRank } from "./types";
@@ -185,6 +186,40 @@ const applyEffect = (
       }
       return;
     }
+    case "damageEntangle":
+    case "damagePush": {
+      const amount = scaleForRank(effect.amount, card.rank);
+      for (const unit of unitsInArea(ctx.state, enemy, target, 1)) {
+        const { dealt, killed } = damageUnit(ctx, unit, {
+          amount,
+          damageType: effect.damageType,
+          source: "skill",
+          crit,
+        });
+        // A Unit that comes back with Rebirth did not survive the hit.
+        if (killed) {
+          continue;
+        }
+        if (effect.type === "damagePush") {
+          // The push is the main effect: it occurs also at 0 damage.
+          pushUnit(ctx, unit, effect.squares);
+        } else if (dealt > 0) {
+          entangleUnit(ctx, unit);
+        }
+      }
+      return;
+    }
+    case "damageHero": {
+      if (target._tag === "Hero") {
+        damageHero(ctx, target.side, {
+          amount: scaleForRank(effect.amount, card.rank),
+          damageType: effect.damageType,
+          source: "skill",
+          crit,
+        });
+      }
+      return;
+    }
     case "laneArmor": {
       for (const unit of unitsInArea(ctx.state, side, target, 1)) {
         unit.bonusArmor = effect.armor;
@@ -211,7 +246,10 @@ const applyEffect = (
 
 /**
  * Recall (GDD 4.8): after the effect, a successful roll puts the card back
- * into the Hand with its full Countdown. Else it goes to the Graveyard.
+ * into the Hand with its full Countdown. Else it goes to the Graveyard. When
+ * the effect ended the Battle, no Recall roll occurs and the card stays out of
+ * the Hand and the Graveyard: no event comes after `BattleEnded`, and the
+ * events still give the full state.
  */
 const castSkill = (
   ctx: StepContext,
@@ -221,6 +259,9 @@ const castSkill = (
   target: Target
 ): void => {
   applyEffect(ctx, side, card, definition.effect, target);
+  if (isOver(ctx)) {
+    return;
+  }
   const success = rollBasisPoints(ctx.random, recallChance(card.rank));
   ctx.events.push(BattleEvent.RecallRolled({ side, card, success }));
   const sideState = ctx.state.sides[side];

@@ -306,7 +306,14 @@ export default {
     n: "N",
     x: "X",
     tokenX: "Token X",
+    raceKeyword:
+      "Race Keyword: {keyword}. Only a Unit of this Race can have it.",
     seeCard: "N is on each card. See the card.",
+    tokenGallery: "Tokens in the game",
+    tokenRank: "Rank",
+    summonedBy: "Summoned by",
+    tokenNotAtRank: "No card makes this Token at this Rank.",
+    tokenFirstRank: "See it at {rank}",
     rankTable: "N at each Rank",
     rankColumn: "Rank",
     valueColumn: "N",
@@ -503,7 +510,7 @@ export default {
       raceHuman:
         "Humans and stout folk of the river towns. They hold the line with strong Armor, Walls and support for their friends.",
       raceElf:
-        "Elves of the old forests, and the plant spirits that fight with them. They control the Lanes from range, with healing and Poison.",
+        "Elves of the old forests, and the plant spirits that fight with them. They control the Lanes from range: they Entangle, heal and Poison.",
       raceUndead:
         "Old spirits that wear bones and armor. Many small Units that get stronger together and come back.",
       raceOrc:
@@ -814,6 +821,11 @@ export default {
       "Deal {amount} {damageType} damage to an enemy Unit and the next {extra} Square behind it.",
     damageLane:
       "Deal {amount} {damageType} damage to all enemy Units in a Lane.",
+    damageEntangle:
+      "Deal {amount} {damageType} damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.",
+    damagePush:
+      "Deal {amount} {damageType} damage to an enemy Unit. If it survives, push it {squares} Squares back toward its Hero, also when it takes no damage.",
+    damageHero: "Deal {amount} {damageType} damage to the enemy Hero.",
     laneArmor:
       "Friendly Units in a Lane get Armor {armor} for the next {turns} enemy Turns.",
     lowerCountdown:
@@ -1193,6 +1205,17 @@ export default {
       warDrums: { name: "War Drums", flavor: "Boom. Boom. Move faster." },
       shieldWall: { name: "Shield Wall", flavor: "Lock shields and hold." },
       spearThrow: { name: "Spear Throw", flavor: "Aim for the loud one." },
+    },
+    ranger: {
+      pinningShot: { name: "Pinning Shot", flavor: "Stay right there." },
+      warningShot: {
+        name: "Warning Shot",
+        flavor: "The next one will not miss.",
+      },
+      longShot: {
+        name: "Long Shot",
+        flavor: "Over their heads, into the Hero.",
+      },
     },
     mage: {
       fireball: { name: "Fireball", flavor: "A warm welcome." },

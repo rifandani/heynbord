@@ -423,6 +423,225 @@ describe("Skill Cards (GDD 4.8)", () => {
   });
 });
 
+/** An enemy Halberdier (6 HP, no Armor) in Lane 1. */
+const enemyAt = (
+  state: ReturnType<typeof emptyBattle>,
+  position: number,
+  options: Partial<Parameters<typeof placeUnit>[1]> = {}
+) =>
+  placeUnit(state, {
+    cardId: "human.halberdier",
+    owner: "enemy",
+    position,
+    ...options,
+  });
+
+describe("Ranger Skill Cards (GDD 5.5)", () => {
+  describe("Long Shot", () => {
+    it("targets only the enemy Hero, and damages it with the value of the Rank", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.longShot", 0, "rare"]]);
+      enemyAt(state, 6);
+      expect(legalTargets(state, 0)).toEqual([Target.Hero({ side: "enemy" })]);
+      expect(violation(step(state, play(0, square(0, 6))))).toBe(
+        "IllegalTarget"
+      );
+      expect(
+        violation(step(state, play(0, Target.Hero({ side: "player" }))))
+      ).toBe("IllegalTarget");
+      const { state: next, events } = run(
+        state,
+        play(0, Target.Hero({ side: "enemy" }))
+      );
+      // Rare: 4 × 1.45 = 5.8, rounded to 6. A Hero has no Armor and no Block.
+      expect(next.sides.enemy.hero.hp).toBe(24);
+      expect(eventsOfType(events, "DamageDealt")).toEqual([
+        expect.objectContaining({
+          target: { _tag: "Hero", side: "enemy" },
+          amount: 6,
+          source: "skill",
+          blocked: false,
+        }),
+      ]);
+    });
+
+    it("targets the player Hero when the enemy plays it", () => {
+      const state = emptyBattle({ activeSide: "enemy" });
+      giveHand(state, "enemy", [["ranger.longShot", 0]]);
+      expect(legalTargets(state, 0)).toEqual([Target.Hero({ side: "player" })]);
+      const { state: next } = run(
+        state,
+        play(0, Target.Hero({ side: "player" }))
+      );
+      expect(next.sides.player.hero.hp).toBe(26);
+    });
+
+    it("has no target when the enemy Hero is Defeated", () => {
+      const state = emptyBattle({ enemy: { hp: 0 } });
+      giveHand(state, "player", [["ranger.longShot", 0]]);
+      expect(legalTargets(state, 0)).toEqual([]);
+    });
+
+    it("can Crit with the Skill Crit of the caster", () => {
+      const state = emptyBattle({ player: { skillCrit: 10_000 } });
+      giveHand(state, "player", [["ranger.longShot", 0]]);
+      const { state: next, events } = run(
+        state,
+        play(0, Target.Hero({ side: "enemy" }))
+      );
+      expect(next.sides.enemy.hero.hp).toBe(22);
+      expect(eventsOfType(events, "DamageDealt")[0]?.crit).toBe(true);
+    });
+
+    it("ends the Battle at 0 HP, with no Recall roll after the end", () => {
+      const state = emptyBattle({ enemy: { hp: 3 } });
+      giveHand(state, "player", [["ranger.longShot", 0, "legendary"]]);
+      const { state: next, events } = run(
+        state,
+        play(0, Target.Hero({ side: "enemy" }))
+      );
+      expect(next.status).toBe("finished");
+      expect(next.result).toEqual({
+        winner: "player",
+        reason: "heroDefeated",
+      });
+      expect(events.at(-1)?._tag).toBe("BattleEnded");
+      expect(eventsOfType(events, "RecallRolled")).toEqual([]);
+      expect(next.sides.player.hand).toEqual([]);
+      expect(next.sides.player.graveyard).toEqual([]);
+    });
+  });
+
+  describe("Pinning Shot", () => {
+    it("deals damage, and the Unit that survives becomes Entangled", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.pinningShot", 0, "uncommon"]]);
+      const target = enemyAt(state, 6);
+      const { state: next, events } = run(state, play(0, square(0, 6)));
+      // Uncommon: 3 × 1.2 = 3.6, rounded to 4.
+      expect(unitById(next, target.id)).toMatchObject({
+        hp: 2,
+        entangled: true,
+      });
+      expect(eventsOfType(events, "StatusApplied")).toEqual([
+        expect.objectContaining({ unitId: target.id, status: "entangle" }),
+      ]);
+    });
+
+    it("does not Entangle at 0 damage", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.pinningShot", 0]]);
+      const target = enemyAt(state, 6, { bonusArmor: 3, bonusArmorTurns: 2 });
+      const { state: next, events } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, target.id)).toMatchObject({
+        hp: 6,
+        entangled: false,
+      });
+      expect(eventsOfType(events, "StatusApplied")).toEqual([]);
+    });
+
+    it("does not Entangle a Unit that it kills, or that comes back with Rebirth", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["ranger.pinningShot", 0],
+        ["ranger.pinningShot", 0],
+      ]);
+      const killed = enemyAt(state, 6, { hp: 3 });
+      const reborn = enemyAt(state, 8, { hp: 3, rebirth: true });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, killed.id)).toBeUndefined();
+      const second = run(first.state, play(0, square(0, 8)));
+      expect(unitById(second.state, reborn.id)).toMatchObject({
+        hp: 1,
+        entangled: false,
+      });
+      expect(
+        eventsOfType([...first.events, ...second.events], "StatusApplied")
+      ).toEqual([]);
+    });
+  });
+
+  describe("Warning Shot", () => {
+    it("deals damage, then Pushes the Unit 2 Squares toward its own Hero", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.warningShot", 0, "rare"]]);
+      const target = enemyAt(state, 6);
+      const { state: next, events } = run(state, play(0, square(0, 6)));
+      // Rare: 2 × 1.45 = 2.9, rounded to 3.
+      expect(unitById(next, target.id)).toMatchObject({ hp: 3, position: 8 });
+      expect(eventsOfType(events, "UnitPushed")).toEqual([
+        expect.objectContaining({ unitId: target.id, from: 6, to: 8 }),
+      ]);
+      expect(
+        events.findIndex((event) => event._tag === "DamageDealt")
+      ).toBeLessThan(events.findIndex((event) => event._tag === "UnitPushed"));
+    });
+
+    it("Pushes also at 0 damage", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.warningShot", 0]]);
+      const target = enemyAt(state, 6, { bonusArmor: 3, bonusArmorTurns: 2 });
+      const { state: next } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, target.id)).toMatchObject({ hp: 6, position: 8 });
+    });
+
+    it("stops before a Unit and at the Unit's Column 1, and does not Push a Unit that cannot go back", () => {
+      const state = emptyBattle({ lanes: 3 });
+      giveHand(state, "player", [
+        ["ranger.warningShot", 0],
+        ["ranger.warningShot", 0],
+        ["ranger.warningShot", 0],
+      ]);
+      const blocked = enemyAt(state, 6);
+      enemyAt(state, 8, { attack: 0 });
+      const edge = enemyAt(state, 10, { lane: 1 });
+      const stuck = enemyAt(state, 11, { lane: 2 });
+      let next = run(state, play(0, square(0, 6))).state;
+      next = run(next, play(0, square(1, 10))).state;
+      const last = run(next, play(0, square(2, 11)));
+      expect(unitById(last.state, blocked.id)?.position).toBe(7);
+      expect(unitById(last.state, edge.id)?.position).toBe(11);
+      expect(unitById(last.state, stuck.id)?.position).toBe(11);
+      expect(eventsOfType(last.events, "UnitPushed")).toEqual([]);
+    });
+
+    it("never Pushes a Wall", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.warningShot", 0]]);
+      const wall = placeUnit(state, {
+        cardId: "human.townBarricade",
+        owner: "enemy",
+        position: 7,
+      });
+      const { state: next, events } = run(state, play(0, square(0, 7)));
+      expect(unitById(next, wall.id)).toMatchObject({ hp: 13, position: 7 });
+      expect(eventsOfType(events, "UnitPushed")).toEqual([]);
+    });
+
+    it("does not Push a Unit that it kills, or that comes back with Rebirth", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["ranger.warningShot", 0],
+        ["ranger.warningShot", 0],
+      ]);
+      const killed = enemyAt(state, 6, { hp: 2 });
+      const reborn = enemyAt(state, 4, { hp: 2, rebirth: true });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, killed.id)).toBeUndefined();
+      const second = run(first.state, play(0, square(0, 4)));
+      expect(unitById(second.state, reborn.id)).toMatchObject({
+        hp: 1,
+        position: 4,
+      });
+      expect(
+        eventsOfType([...first.events, ...second.events], "UnitPushed")
+      ).toEqual([]);
+    });
+  });
+});
+
 const countdowns = (state: ReturnType<typeof emptyBattle>, side: Side) =>
   state.sides[side].hand.map((card) => card.countdown);
 

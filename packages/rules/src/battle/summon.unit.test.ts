@@ -190,7 +190,7 @@ describe("Summon X (GDD 5.4)", () => {
         source: { _tag: "Token", tokenId: "token.restlessWisp", rank: "rare" },
         attack: 2,
         hp: 2,
-        speed: 1,
+        speed: 2,
         swarm: 0,
         damageType: "frost",
         flying: true,

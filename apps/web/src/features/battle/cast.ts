@@ -95,7 +95,8 @@ export const currentCast = (
 ): Cast | null => {
   const last = log.length - 1;
   const event = log[last];
-  if (!playing || !event) {
+  // A cast that ends the Battle has no Recall roll: the end closes it.
+  if (!playing || !event || event._tag === "BattleEnded") {
     return null;
   }
   if (event._tag === "CardPlayed") {
@@ -116,7 +117,10 @@ export const effectColor = (effect: SkillEffect): string => {
   switch (effect.type) {
     case "damageUnit":
     case "damageArea":
-    case "damageLane": {
+    case "damageLane":
+    case "damageEntangle":
+    case "damagePush":
+    case "damageHero": {
       return DAMAGE_COLORS[effect.damageType];
     }
     case "laneArmor": {
@@ -139,7 +143,7 @@ export interface CastSquare {
 /**
  * The Squares that a cast hits, in order from the caster's Hero. A Lane target
  * is the whole Lane. An area goes from the target Square toward the enemy
- * Hero. A cast with no target hits no Square.
+ * Hero. A cast with no target or with a Hero target hits no Square.
  */
 export const castSquares = (cast: Cast): readonly CastSquare[] => {
   const { target, side, skill } = cast;
@@ -150,7 +154,7 @@ export const castSquares = (cast: Cast): readonly CastSquare[] => {
       position: step === 1 ? index : LANE_LENGTH - 1 - index,
     }));
   }
-  if (target._tag === "NoTarget") {
+  if (target._tag === "NoTarget" || target._tag === "Hero") {
     return [];
   }
   const length = skill.effect.type === "damageArea" ? skill.effect.length : 1;

@@ -215,7 +215,10 @@ export const cardGlyph = (card: CardDefinition): Glyph => {
   switch (card.effect.type) {
     case "damageUnit":
     case "damageArea":
-    case "damageLane": {
+    case "damageLane":
+    case "damageEntangle":
+    case "damagePush":
+    case "damageHero": {
       return card.effect.damageType === "frost"
         ? "snow"
         : card.effect.damageType === "fire"

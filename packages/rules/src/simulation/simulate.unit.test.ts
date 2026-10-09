@@ -173,6 +173,7 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
     for (const diagnostic of [
       "tunnelRats",
       "wildHunt",
+      "thornwatch",
       "deathlessHost",
       "breakneckCompany",
       "vanguardFull",
@@ -197,6 +198,13 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
       options
     );
     expect(goblinAgainstFeral.battles).toBe(8);
+    // Both Ranger Decks, with the Ranger Skill Cards on each Side.
+    const rangerAgainstRanger = simulateMatchup(
+      archetype("thornwatch"),
+      archetype("tunnelRats"),
+      options
+    );
+    expect(rangerAgainstRanger.battles).toBe(8);
     // Trample against cheap Units (Archetypes 2.2).
     const feralAgainstUndead = simulateMatchup(
       archetype("wildHunt"),

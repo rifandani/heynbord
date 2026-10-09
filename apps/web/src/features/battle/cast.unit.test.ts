@@ -67,6 +67,22 @@ describe("currentCast", () => {
     expect(currentCast([turn, played("mage.fireball")], false)).toBeNull();
     expect(currentCast([], true)).toBeNull();
   });
+
+  it("ends a cast that ends the Battle: it has no Recall roll", () => {
+    const hero: Target = { _tag: "Hero", side: "player" };
+    expect(
+      currentCast(
+        [
+          turn,
+          played("ranger.longShot", "enemy", hero),
+          Event.BattleEnded({
+            result: { winner: "enemy", reason: "heroDefeated" },
+          }),
+        ],
+        true
+      )
+    ).toBeNull();
+  });
 });
 
 const cast = (cardId: string, side: "player" | "enemy", target: Target) => {
@@ -109,6 +125,11 @@ describe("castSquares", () => {
     expect(lane[0]).toEqual({ lane: 0, position: LANE_LENGTH - 1 });
     expect(
       castSquares(cast("warrior.warDrums", "player", { _tag: "NoTarget" }))
+    ).toEqual([]);
+    expect(
+      castSquares(
+        cast("ranger.longShot", "player", { _tag: "Hero", side: "enemy" })
+      )
     ).toEqual([]);
   });
 });

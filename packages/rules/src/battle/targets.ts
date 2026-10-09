@@ -36,6 +36,12 @@ const skillTargets = (
     case "enemyUnit": {
       return unitSquares(state, enemy);
     }
+    case "enemyHero": {
+      // In v1 each Side has exactly 1 Hero.
+      return state.sides[enemy].hero.hp > 0
+        ? [Target.Hero({ side: enemy })]
+        : [];
+    }
     case "enemyLane": {
       return lanesWithUnits(state, enemy);
     }
@@ -111,6 +117,7 @@ export const legalTargets = (
 
 /**
  * The Units of `owner` that an effect hits. A Lane target hits the whole Lane.
+ * A Hero target hits no Unit.
  * A Square target hits `length` Squares from the target Square, away from
  * the Hero of `owner`'s enemy (toward the caster's enemy Hero).
  */
@@ -127,7 +134,7 @@ export const unitsInArea = (
     if (target._tag === "Lane") {
       return unit.lane === target.lane;
     }
-    if (target._tag === "NoTarget") {
+    if (target._tag === "NoTarget" || target._tag === "Hero") {
       return false;
     }
     const offset = (target.position - unit.position) * direction(owner);
@@ -140,6 +147,9 @@ export const sameTarget = (a: Target, b: Target): boolean => {
   }
   if (a._tag === "Square" && b._tag === "Square") {
     return a.lane === b.lane && a.position === b.position;
+  }
+  if (a._tag === "Hero" && b._tag === "Hero") {
+    return a.side === b.side;
   }
   return a._tag === "NoTarget" && b._tag === "NoTarget";
 };

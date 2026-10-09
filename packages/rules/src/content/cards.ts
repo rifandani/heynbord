@@ -1066,13 +1066,13 @@ const creatures: readonly CreatureCardDefinition[] = [
     race: "elf",
     role: "support",
     baseRank: "epic",
-    countdown: 4,
+    countdown: 5,
     attack: 1,
     hp: 6,
     speed: 1,
     range: 2,
     damageType: "holy",
-    keywords: { unique: true, regenerate: 2 },
+    keywords: { unique: true, entangle: true, regenerate: 2 },
   },
   // Undead: many cheap Units that grow stronger together, come back and bring more.
   {
@@ -1319,6 +1319,39 @@ const skills: readonly SkillCardDefinition[] = [
     countdown: 3,
     target: "enemyUnit",
     effect: { type: "damageUnit", amount: 4, damageType: "physical" },
+  },
+  // Ranger: control and Hero damage.
+  {
+    kind: "skill",
+    id: "ranger.pinningShot",
+    class: "ranger",
+    baseRank: "common",
+    countdown: 2,
+    target: "enemyUnit",
+    effect: { type: "damageEntangle", amount: 3, damageType: "physical" },
+  },
+  {
+    kind: "skill",
+    id: "ranger.warningShot",
+    class: "ranger",
+    baseRank: "common",
+    countdown: 3,
+    target: "enemyUnit",
+    effect: {
+      type: "damagePush",
+      amount: 2,
+      damageType: "physical",
+      squares: 2,
+    },
+  },
+  {
+    kind: "skill",
+    id: "ranger.longShot",
+    class: "ranger",
+    baseRank: "uncommon",
+    countdown: 4,
+    target: "enemyHero",
+    effect: { type: "damageHero", amount: 4, damageType: "physical" },
   },
   // Mage: area damage.
   {

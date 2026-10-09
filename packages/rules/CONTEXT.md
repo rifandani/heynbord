@@ -64,9 +64,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. A Ranged Unit never has Frost damage, because it could Freeze the same enemy before each action of that enemy. _Avoid_: stun, chill, slow
 
-**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned, Hobbled or Bleeding. A Damage Type or a Keyword can put a Status on a Unit. It belongs to the target Unit. _Avoid_: debuff, condition, ailment
+**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned, Hobbled or Bleeding. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. _Avoid_: debuff, condition, ailment
 
-**Entangled**: The Status from the Entangle Keyword. An Entangled Unit has Speed 0 during its next action, but it can still attack. Entangled then ends. _Avoid_: rooted, snared, slowed
+**Entangled**: A Status from the Entangle Keyword or from a Skill Card. An Entangled Unit has Speed 0 during its next action, but it can still attack. Entangled then ends. _Avoid_: rooted, snared, slowed
 
 **Poison**: A Keyword. After a Unit with Poison deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliate does not apply Poison. _Avoid_: venom, toxin
 
@@ -128,7 +128,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Keyword**: A named rule on a Card, for example Flying or Armor. _Avoid_: trait, perk, tag, ability
 
-**Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. Only a Ranged Unit has Entangle, because a Melee Unit attacks an enemy that cannot move closer. Its Base Rank is Epic or higher, because it can Entangle the same enemy in each Turn. _Avoid_: Root, Snare
+**Race Keyword**: The one Keyword that only Units of one Race can have, from a Card, a Token or any other effect. Each Race has exactly one: Human Knockback, Elf Entangle, Undead Rebirth, Orc Heroic, Goblin Sabotage and Feral Trample. A Race Keyword is also a Main Keyword of its Race, but most Main Keywords are not Race Keywords: other Races can borrow them. Only the Keyword is locked, not its effect: a Skill Card of any Class can still make a Unit Entangled or Push it. _Avoid_: signature keyword, exclusive keyword, racial ability
+
+**Main Keyword**: A Keyword that is part of the battle identity of a Race. Other Races can borrow it. _Avoid_: core keyword, theme keyword
+
+**Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. Only a Ranged Unit has Entangle, because a Melee Unit attacks an enemy that cannot move closer. Its Base Rank is Epic or higher, because it can Entangle the same enemy in each Turn. It is the Elf Race Keyword. _Avoid_: Root, Snare
 
 **Charge N**: A Keyword. A Unit with Charge gets +N Speed in the Turn when it is summoned. N is 1 up to Rare, 2 at Epic and 3 at Legendary. N is never more than 3. _Avoid_: Haste, Rush, Dash, Sprint
 
@@ -150,7 +154,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Knockback N**: A Keyword for melee Units. After a Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares back, toward its own Hero, in its own Lane. The push stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliate and First Strike do not apply Knockback. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Push, Shove, Repel, Displace
 
-**Pushed**: Moved to another Square by an effect such as Knockback, not by the Unit's own Movement. Speed, Flying, Frozen, Entangled and Hobbled do not change a push. Pushed is not a Status. _Avoid_: knocked back, moved, displaced
+**Pushed**: Moved to another Square by an effect such as Knockback or a Skill Card, not by the Unit's own Movement. Speed, Flying, Frozen, Entangled and Hobbled do not change a push. Pushed is not a Status. _Avoid_: knocked back, moved, displaced
 
 **Sabotage N**: A Keyword. When a Unit with Sabotage comes onto the Board from its Creature Card, the Card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready Card is the lowest. If two Cards have the same Countdown, the oldest Card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. N is the same at each Rank. _Avoid_: Delay, Stall, Disrupt
 
@@ -198,9 +202,21 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Bazaar**: The offers that the Player can buy with Heynstones: only Cosmetics and Conveniences. _Avoid_: shop, store, market
 
-**Pack**: A set of random Cards that the Player buys with Coin. _Avoid_: booster, loot box, chest
+**Pack**: A set of random Cards that the Player buys with Coin. There are three Packs: Peddler, Merchant and Royal. Each one has its own Drop Rates and price. _Avoid_: booster, loot box, chest, gacha, pull
 
-**Drop Rate**: The chance of each Rank for each Card in a Pack. _Avoid_: odds, luck
+**Peddler Pack**: The cheapest Pack. It gives mostly Common Cards, the most Cards for each Coin, and no Epic or Legendary Cards. _Avoid_: basic pack, Common Pack
+
+**Merchant Pack**: The middle Pack. It can give each Rank except Legendary. _Avoid_: Standard Pack, normal pack
+
+**Royal Pack**: The most expensive Pack. It gives no Common Cards, and it is the only Pack that can give a Legendary Card. _Avoid_: premium pack, Legendary Pack
+
+**Race Pack**: A Peddler, Merchant or Royal Pack that has only the Creature Cards of one Race. The Player selects the Race, and it costs more than the same Pack with all Cards. _Avoid_: faction pack
+
+**Pack Guarantee**: The promise that a Pack gives a Card of a stated Rank or higher after a stated number of Packs of the same kind without one. The Packs screen shows how many Packs are left. _Avoid_: pity, mercy, bad-luck protection
+
+**New Card First**: The rule of the Merchant Pack and the Royal Pack: after the Rank roll, the Pack gives a Card that the Player has not Discovered, when the roll permits one. _Avoid_: duplicate protection, Discovery bias
+
+**Drop Rate**: The chance of each Rank for each Card in a Pack. Each of the three Packs has its own Drop Rates. _Avoid_: odds, luck
 
 **Gear**: The items in the Hero's 4 slots that give the Hero and its Units stats. _Avoid_: equipment, items
 
@@ -253,7 +269,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Player** controls one **Hero**. The Hero has one **Class**.
 - A **Battle** has two **Sides**. Each Side has 1 or more **Heroes**. In v1, the Player's Side has exactly 1 Hero.
 - Each **Hero** has its own **Deck**, **Hand**, **Graveyard**, **Class** and **Gear**. All the Heroes of a Side play in the same **Turn**.
-- Each **Hero** has one **Front**. A Hero can summon into the **Summon Zone** of any Front of its Side. Its **Skill Cards** can target any **Square**.
+- Each **Hero** has one **Front**. A Hero can summon into the **Summon Zone** of any Front of its Side. Its **Skill Cards** can target any **Square**, and an enemy **Hero** that is not **Defeated**.
 - A **Stage** has 3 **Lanes**. A **Dungeon**, a **Floor** and a Battle with 2 or more **Players** have 4 Lanes. The type of Battle sets the number of Lanes. A Stage or a Dungeon can make the Board smaller only with **Closed Lanes**.
 - A **Unit** belongs to the Hero that summoned it, and uses that Hero's **Gear**.
 - When a Hero is **Defeated**, its Units and **Field Effects** are removed, and its **Front** goes to the nearest Hero of its Side that is not Defeated.
@@ -307,7 +323,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
 - All Cards in a Hand counted down at the same time before. Then the Deck size, not the Countdown, limited the cards that a Hero played. For a short time (issue #21), only 3 "Ticking Cards" counted down, and the other Cards were "Waiting Cards". Players found this slow and hard to track, so it was removed: all Cards in the Hand count down again. Now only the **Countdown Limit** of a Deck makes a long Countdown a real cost ([ADR-0021](../../docs/adr/0021-countdown-is-a-real-cost.md)). The Countdown Limit is not a cost: "cost" stays on the _Avoid_ list of **Countdown**, because a Card is never paid for in a Battle.
 - Melee and Common Units had **Entangle** before. On a Melee Unit it did almost nothing, and on a Ranged Unit it kept one enemy at Speed 0 in each Turn (issue #23). Now only a Ranged Unit with Base Rank Epic or higher has Entangle.
+- A **Main Keyword** was the only Race signature before, and other Races could borrow each one. Thus "signature Keyword" in ADR-0017 did not mean "only this Race". Now each Race also has one **Race Keyword** that no other Race can have ([ADR-0026](../../docs/adr/0026-each-race-has-one-race-keyword.md)). Entangle was "not an Elf Main Keyword" in ADR-0022. Now it is the Elf Race Keyword.
 - Rimebreath Drake was a Ranged Unit with Frost damage before. It Froze the nearest enemy before each action of that enemy, so that enemy almost never acted (issue #24). Unlike Entangle, a higher Base Rank does not fix this: an Epic Frost Shooter locked its target longer. Now no Ranged Unit has Frost damage, at any Rank ([ADR-0025](../../docs/adr/0025-no-ranged-unit-has-frost-damage.md)). A melee Frost Unit can also Freeze the Unit in front of it again, but only in a few Battles.
 - A Shooter had Range 3 to 5 before. The Range 4 Elf Shooters made Thornwatch win about 87% of its Matchups (issue #23). Now each Shooter has **Range** 3.
 - No rule gave a Unit Speed 2 before, and 19 Creature Cards had it, also a Frontliner (Militia Recruit) and 3 Goblin Strikers. Now the **Role** sets the Speed: 1 by default, 2 or more for a Runner, and 2 for an Orc melee Striker, because Orc is the fast Race. Another card can break this only with a written reason.
+- "Elf Skill Cards" is not a term. A **Skill Card** has a **Class**, not a **Race**. The Skill Cards of the Elf Archetype Thornwatch are **Ranger** Skill Cards, and each other Ranger Deck, for example the Goblin Deck Tunnel Rats, can use them too.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.
+- There were two Packs before: the Standard Pack (all Cards) and the Race Pack, with one Drop Rate table. Now there are three Packs with their own Drop Rates: **Peddler**, **Merchant** and **Royal**. The **Merchant Pack** replaces the Standard Pack. **Race Pack** is not a fourth Pack: it is a version of each of the three. Players say "gacha" and "pity". The terms are **Pack** and **Pack Guarantee**.

@@ -8,6 +8,8 @@ We decided:
 - **Only a Ranged Unit with Base Rank Epic or higher has Entangle.** The Common and Rare cards with Entangle get a different Keyword of their Race.
 - **Entangle is not an Elf Main Keyword.** It stays an Elf Keyword on few cards, as Bleed is for Feral ([ADR-0019](0019-bleed-is-a-feral-keyword-on-two-cards.md)). The Elf Main Keywords are Regeneration, Poison and Flying.
 
+> Changed on 2026-10-09 by [ADR-0026](0026-each-race-has-one-race-keyword.md): Entangle is now the Elf Race Keyword, and thus an Elf Main Keyword. It is still only on Ranged Units with Base Rank Epic or higher.
+
 ## Considered Options
 
 All results are the Thornwatch win rate, with 500 seeds (1000 Battles) for each Matchup. "Average" is the average against the 8 other Archetypes. Before the change: Vanguard 89.5%, Raiders 83.5%, average 87.4%.

@@ -1,7 +1,7 @@
 import { LANE_LENGTH, Target } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
-import { laneZ, squareX } from "@/features/battle/scene/layout";
+import { heroX, laneZ, squareX } from "@/features/battle/scene/layout";
 import {
   markerOpacity,
   markerSpot,
@@ -16,13 +16,24 @@ describe("markerSpot", () => {
       x: squareX(3),
       z: laneZ(1, 2),
       width: 0.96,
+      depth: 0.98,
     });
     expect(markerSpot(Target.Lane({ lane: 0 }), 2)).toEqual({
       x: 0,
       z: laneZ(0, 2),
       width: LANE_LENGTH,
+      depth: 0.98,
     });
     expect(markerSpot(Target.NoTarget(), 2)).toBeNull();
+  });
+
+  it("marks the ground under a Hero, across all Lanes", () => {
+    expect(markerSpot(Target.Hero({ side: "enemy" }), 3)).toEqual({
+      x: heroX("enemy"),
+      z: 0,
+      width: 1.3,
+      depth: laneZ(2, 3) - laneZ(0, 3) + 0.98,
+    });
   });
 });
 

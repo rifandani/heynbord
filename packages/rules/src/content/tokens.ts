@@ -26,9 +26,9 @@ export const TOKENS: Readonly<Record<TokenId, TokenDefinition>> = {
     damageType: "frost",
     keywords: { flying: true },
     ranks: {
-      common: { attack: 1, hp: 1, speed: 1 },
-      uncommon: { attack: 1, hp: 2, speed: 1 },
-      rare: { attack: 2, hp: 2, speed: 1 },
+      common: { attack: 1, hp: 1, speed: 2 },
+      uncommon: { attack: 1, hp: 2, speed: 2 },
+      rare: { attack: 2, hp: 2, speed: 2 },
       epic: { attack: 2, hp: 3, speed: 2 },
       legendary: { attack: 3, hp: 4, speed: 2 },
     },

@@ -85,7 +85,11 @@ export {
   PLAYER_LEVEL_XP,
   playerLevelForXp,
 } from "./content/player-levels";
-export { keywordValue, SHARED_RANK_VALUES } from "./content/keywords";
+export {
+  keywordValue,
+  RACE_KEYWORDS,
+  SHARED_RANK_VALUES,
+} from "./content/keywords";
 export {
   rankPips,
   RANKS,

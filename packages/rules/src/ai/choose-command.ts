@@ -1,6 +1,12 @@
 import { absurd } from "effect";
 
-import { direction, enemyHeroPosition } from "../battle/context";
+import {
+  direction,
+  enemyHeroPosition,
+  isInsideLane,
+  unitAt,
+} from "../battle/context";
+import { pushedPosition } from "../battle/resolution";
 import { legalTargets, unitsInArea } from "../battle/targets";
 import { suddenDeathDamage } from "../battle/turn";
 import { HAND_LIMIT, LANE_LENGTH, otherSide, Command } from "../battle/types";
@@ -221,7 +227,14 @@ const scoreCreature = (
 
 type DamageEffect = Extract<
   SkillEffect,
-  { readonly type: "damageUnit" | "damageArea" | "damageLane" }
+  {
+    readonly type:
+      | "damageUnit"
+      | "damageArea"
+      | "damageLane"
+      | "damageEntangle"
+      | "damagePush";
+  }
 >;
 
 interface SkillHit {
@@ -261,6 +274,57 @@ const scoreDamage = (
 
 const kills = ({ unit, damage }: SkillHit): boolean => damage >= unit.hp;
 
+/**
+ * True when `unit` moves in its next action: it is not a Wall, not Frozen and
+ * not Entangled, its Speed is 1 or more, and the Square in front of it is
+ * empty. An Entangle from a Skill Card then stops that Movement.
+ */
+const wouldMove = (state: BattleState, unit: UnitState): boolean => {
+  const front = unit.position + direction(unit.owner);
+  return (
+    !unit.wall &&
+    !unit.frozen &&
+    nextSpeed(unit) >= 1 &&
+    isInsideLane(front) &&
+    !unitAt(state, unit.lane, front)
+  );
+};
+
+/** The hit Entangles a Unit that would move: it deals damage above 0 and does not kill. */
+const pins = (state: BattleState, hit: SkillHit): boolean =>
+  hit.damage > 0 && !kills(hit) && wouldMove(state, hit.unit);
+
+/** The bonus of an Entangle that stops a Movement. */
+const PIN_SCORE = 4;
+
+/** The base score of a push that moves a Unit. It is above each score of a push that moves no Unit. */
+const PUSH_SCORE = 20;
+
+/**
+ * The target choice of a push (GDD 9): first the enemy Unit nearest to our
+ * Hero that the push moves at least 1 Square, else the enemy Unit that takes
+ * the most damage. Each target scores above 0, so the card is never held.
+ */
+const scorePush = (
+  state: BattleState,
+  hits: readonly SkillHit[],
+  squares: number
+): number =>
+  hits.reduce((sum, hit) => {
+    const moved =
+      !kills(hit) &&
+      pushedPosition(state, hit.unit, squares) !== hit.unit.position;
+    return (
+      sum + (moved ? PUSH_SCORE + closeness(hit.unit) : hit.damage * 2 + 1)
+    );
+  }, 0);
+
+/** The score of Hero damage that defeats the enemy Hero: the AI always takes the win. */
+const HERO_KILL_SCORE = 1000;
+
+/** The weight of each point of damage to the enemy Hero from a Skill Card. */
+const SKILL_HERO_DAMAGE_WEIGHT = 2;
+
 /** The other cards in `side`'s Hand that are not Ready. */
 const notReadyCards = (
   state: BattleState,
@@ -299,6 +363,16 @@ const meetsHoldRule = (
       );
       return hits.length >= 2 || hits.some(kills);
     }
+    case "damageEntangle": {
+      return skillHits(state, side, card, effect, target).some(
+        (hit) => kills(hit) || pins(state, hit)
+      );
+    }
+    // The push and the Hero damage have value at each target: no Hold Rule.
+    case "damagePush":
+    case "damageHero": {
+      return true;
+    }
     case "laneArmor": {
       return (
         target._tag === "Lane" &&
@@ -333,6 +407,29 @@ const scoreSkill = (
         effect.damageType
       );
     }
+    case "damageEntangle": {
+      const hits = skillHits(state, side, card, effect, target);
+      return (
+        scoreDamage(hits, effect.damageType) +
+        hits.filter((hit) => pins(state, hit)).length * PIN_SCORE
+      );
+    }
+    case "damagePush": {
+      return scorePush(
+        state,
+        skillHits(state, side, card, effect, target),
+        effect.squares
+      );
+    }
+    case "damageHero": {
+      if (target._tag !== "Hero") {
+        return 0;
+      }
+      const amount = scaleForRank(effect.amount, card.rank);
+      return amount >= state.sides[target.side].hero.hp
+        ? HERO_KILL_SCORE
+        : amount * SKILL_HERO_DAMAGE_WEIGHT;
+    }
     case "laneArmor": {
       if (target._tag !== "Lane") {
         return 0;
@@ -353,9 +450,28 @@ const scoreSkill = (
 };
 
 /**
- * The Units after a Skill Card. A damage card removes the Units that it kills,
- * and a Frost hit Freezes the others (GDD 4.7). Other Skill Cards do not
- * change the Hero damage.
+ * A Unit that survives a damage Skill Card: a Frost hit Freezes it (GDD 4.7),
+ * an Entangle at damage above 0 stops its next Movement, and a push moves it.
+ */
+const afterHit = (
+  state: BattleState,
+  unit: UnitState,
+  damage: number,
+  effect: DamageEffect
+): UnitState => ({
+  ...unit,
+  frozen: unit.frozen || effect.damageType === "frost",
+  entangled: unit.entangled || (effect.type === "damageEntangle" && damage > 0),
+  position:
+    effect.type === "damagePush"
+      ? pushedPosition(state, unit, effect.squares)
+      : unit.position,
+});
+
+/**
+ * The Units after a Skill Card. A damage card removes the Units that it kills
+ * and changes the others with `afterHit`. Other Skill Cards do not change the
+ * Hero damage.
  */
 const unitsAfterSkill = (
   state: BattleState,
@@ -368,7 +484,9 @@ const unitsAfterSkill = (
   switch (effect.type) {
     case "damageUnit":
     case "damageArea":
-    case "damageLane": {
+    case "damageLane":
+    case "damageEntangle":
+    case "damagePush": {
       const hits = new Map(
         skillHits(state, side, card, effect, target).map(
           ({ unit, damage }) => [unit, damage] as const
@@ -382,11 +500,10 @@ const unitsAfterSkill = (
         if (damage >= unit.hp) {
           return [];
         }
-        return effect.damageType === "frost"
-          ? [{ ...unit, frozen: true }]
-          : [unit];
+        return [afterHit(state, unit, damage, effect)];
       });
     }
+    case "damageHero":
     case "laneArmor":
     case "lowerCountdown": {
       return state.units;

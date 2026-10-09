@@ -725,7 +725,9 @@ const cast = (cardId: string) =>
         target:
           cardId === "warrior.warDrums"
             ? { _tag: "NoTarget" }
-            : { _tag: "Square", lane: 0, position: 4 },
+            : cardId === "ranger.longShot"
+              ? { _tag: "Hero", side: "player" }
+              : { _tag: "Square", lane: 0, position: 4 },
       },
     ],
     true
@@ -744,6 +746,13 @@ describe("spellBoltAt", () => {
     expect(end?.x).toBeCloseTo((squareX(4) + squareX(3)) / 2);
     expect(end?.z).toBeCloseTo(laneZ(0, view.lanes));
     expect(spellBoltAt(fireball, view.lanes, 0.95)).toBeNull();
+  });
+
+  it("flies to the target Hero of a Hero target", () => {
+    const end = spellBoltAt(cast("ranger.longShot"), view.lanes, 0.92);
+    expect(end?.x).toBeCloseTo(heroX("player"));
+    expect(end?.z).toBeCloseTo(0);
+    expect(end?.color).toBe(DAMAGE_COLORS.physical);
   });
 
   it("does not fly for a cast with no target, or outside the reveal", () => {

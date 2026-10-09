@@ -393,11 +393,17 @@ interface Projectile {
   readonly size: number;
 }
 
-/** The middle of the Squares that a cast hits, or `null` for a cast with no target. */
+/**
+ * The middle of the Squares that a cast hits, the Hero of a Hero target, or
+ * `null` for a cast with no target.
+ */
 const castCenter = (
   cast: Cast,
   lanes: number
 ): { readonly x: number; readonly z: number } | null => {
+  if (cast.target._tag === "Hero") {
+    return { x: heroX(cast.target.side), z: 0 };
+  }
   const squares = castSquares(cast);
   const [first] = squares;
   const last = squares.at(-1);

@@ -168,6 +168,106 @@ describe("applyEvent with Swarm, Rebirth and Summon", () => {
   });
 });
 
+/** Stage 1-4 with an enemy Deck of Elf cards and the 3 Ranger Skill Cards. */
+const rangerStage = (): StageDefinition => {
+  const stage = getStage("1-4");
+  const cardIds = [
+    "elf.brambleDuelist",
+    "elf.fernwingCourier",
+    "elf.thornlineArcher",
+    "ranger.pinningShot",
+    "ranger.warningShot",
+    "ranger.longShot",
+  ];
+  return {
+    ...stage,
+    enemy: {
+      ...stage.enemy,
+      deck: cardIds.flatMap((cardId) =>
+        Array.from({ length: 2 }, () => ({ cardId, rank: "rare" as const }))
+      ),
+    },
+  };
+};
+
+/** The tags of the effect events of each cast of `cardId`: from its CardPlayed to its RecallRolled or BattleEnded. */
+const castEffects = (events: readonly BattleEvent[], cardId: string) =>
+  events.flatMap((event, index) => {
+    if (event._tag !== "CardPlayed" || event.card.cardId !== cardId) {
+      return [];
+    }
+    const rest = events.slice(index + 1);
+    const end = rest.findIndex(
+      (next) => next._tag === "RecallRolled" || next._tag === "BattleEnded"
+    );
+    return [rest.slice(0, end === -1 ? rest.length : end)];
+  });
+
+describe("applyEvent with the Ranger Skill Cards", () => {
+  const battles = [1, 2, 3].map((seed) =>
+    steps(seed, "1-4", "vanguard", rangerStage())
+  );
+  const events = battles.flat().flatMap((entry) => entry.events);
+
+  it("rebuilds the view of the next state from the events", () => {
+    for (const all of battles) {
+      for (const { before, after, events: stepEvents } of all) {
+        expect(stepEvents.reduce(applyEvent, viewFromState(before))).toEqual(
+          viewFromState(after)
+        );
+      }
+    }
+  });
+
+  it("plays a Skill push, a Skill Entangle and Skill damage to a Hero", () => {
+    expect(
+      castEffects(events, "ranger.warningShot").some((effects) =>
+        effects.some((event) => event._tag === "UnitPushed")
+      )
+    ).toBe(true);
+    expect(
+      castEffects(events, "ranger.pinningShot").some((effects) =>
+        effects.some(
+          (event) =>
+            event._tag === "StatusApplied" && event.status === "entangle"
+        )
+      )
+    ).toBe(true);
+    const longShots = castEffects(events, "ranger.longShot");
+    expect(longShots.length).toBeGreaterThan(0);
+    expect(
+      longShots.every((effects) =>
+        effects.some(
+          (event) =>
+            event._tag === "DamageDealt" &&
+            event.source === "skill" &&
+            event.target._tag === "Hero" &&
+            event.target.side === "player"
+        )
+      )
+    ).toBe(true);
+  });
+
+  it("moves the Unit of a Skill push and makes the Unit of a Skill Entangle Entangled", () => {
+    for (const { before, events: stepEvents } of battles.flat()) {
+      let view = viewFromState(before);
+      for (const event of stepEvents) {
+        view = applyEvent(view, event);
+        if (event._tag === "UnitPushed") {
+          expect(
+            view.units.find((unit) => unit.id === event.unitId)?.position
+          ).toBe(event.to);
+        }
+        if (event._tag === "StatusApplied" && event.status === "entangle") {
+          expect(
+            view.units.find((unit) => unit.id === event.unitId)?.entangled
+          ).toBe(true);
+        }
+      }
+    }
+  });
+});
+
 describe("viewFromState", () => {
   it("hides the enemy's cards but shows their Countdowns", () => {
     const deck = getStarterDeck("raiders");

@@ -18,7 +18,7 @@ import {
   getStarterDeck,
   STARTER_DECKS,
 } from "./decks";
-import { keywordValue } from "./keywords";
+import { keywordValue, RACE_KEYWORDS } from "./keywords";
 import { firstTryPathLevel } from "./player-levels";
 import { isRankAtLeast, RANKS, rankPips, ranksOf, scaleForRank } from "./ranks";
 import {
@@ -115,6 +115,16 @@ const archetypeCountdowns = (id: string) =>
     card.kind === "creature" ? [card.countdown] : []
   );
 
+/** The damage of a damage Skill Card at each Rank, from Common. */
+const skillAmounts = (cardId: string) => {
+  const card = getCard(cardId);
+  if (card.kind !== "skill" || !("amount" in card.effect)) {
+    throw new Error(`${cardId} is a damage Skill Card`);
+  }
+  const { amount } = card.effect;
+  return RANKS.map((rank) => scaleForRank(amount, rank));
+};
+
 describe("card content (CRD-01, technical design 3.5)", () => {
   it("passes the card schema and has unique IDs", () => {
     for (const card of CARDS) {
@@ -123,8 +133,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 96 cards: 6 Races and 2 Classes", () => {
-    expect(CARDS).toHaveLength(96);
+  it("has 99 cards: 6 Races and 3 Classes", () => {
+    expect(CARDS).toHaveLength(99);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
@@ -134,7 +144,34 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(races).toEqual(
       new Set(["human", "orc", "goblin", "feral", "elf", "undead"])
     );
-    expect(classes).toEqual(new Set(["warrior", "mage"]));
+    expect(classes).toEqual(new Set(["warrior", "ranger", "mage"]));
+  });
+
+  it("gives each Class with Skill Cards 3 of them: 2 Common and 1 Uncommon", () => {
+    for (const classId of ["warrior", "ranger", "mage"]) {
+      const baseRanks = CARDS.flatMap((card) =>
+        card.kind === "skill" && card.class === classId ? [card.baseRank] : []
+      );
+      expect(baseRanks.toSorted(), classId).toEqual([
+        "common",
+        "common",
+        "uncommon",
+      ]);
+    }
+  });
+
+  it("scales the Ranger Skill damage with Rank, but not the push", () => {
+    expect(skillAmounts("ranger.pinningShot")).toEqual([3, 4, 4, 5, 6]);
+    expect(skillAmounts("ranger.warningShot")).toEqual([2, 2, 3, 4, 4]);
+    expect(skillAmounts("ranger.longShot")).toEqual([4, 5, 6, 7, 8]);
+    expect(getCard("ranger.warningShot")).toMatchObject({
+      target: "enemyUnit",
+      effect: { type: "damagePush", squares: 2 },
+    });
+    expect(getCard("ranger.longShot")).toMatchObject({
+      target: "enemyHero",
+      effect: { type: "damageHero" },
+    });
   });
 
   it("keeps each Creature Card within ±10% of its power budget (GDD 13)", () => {
@@ -426,6 +463,16 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(power("elf.canopyVinewarden")).toBe(26);
   });
 
+  it("fits Lethiel with Entangle to the budget of Countdown 5 (ADR-0026)", () => {
+    // 1/6 is 2/11 at Epic: 2 × 2 + 11 + Speed 1 × 2 + Range 2 + Holy 2, with
+    // Regenerate 2 × 2 and Entangle 2.
+    const card = getCard("elf.lethielFirstGardener");
+    expect(card.kind === "creature" && card.keywords.entangle).toBe(true);
+    expect(power("elf.lethielFirstGardener")).toBe(27);
+    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(27);
+    expect(card.kind === "creature" && budgetDeviation(card)).toBe(0);
+  });
+
   it("gives Swarm N × 1 and Rebirth 5 power points at the Base Rank (GDD 13)", () => {
     // 3/8 at Common: 3 × 2 + 8 + Speed 1 × 2 = 16.
     const swarm = decodeCard(recruitWith({ swarm: 2 }));
@@ -439,18 +486,18 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives Summon X 50% of the Token power at the Base Rank of the card (GDD 13)", () => {
-    // 16 + 0.5 × 8 for the Skeleton, 16 + 0.5 × 12 for the Restless Wisp.
+    // 16 + 0.5 × 8 for the Skeleton, 16 + 0.5 × 14 for the Restless Wisp.
     const skeleton = decodeCard(recruitWith({ summon: "token.skeleton" }));
     const wisp = decodeCard(recruitWith({ summon: "token.restlessWisp" }));
     expect(skeleton.kind === "creature" && creaturePower(skeleton)).toBe(20);
-    expect(wisp.kind === "creature" && creaturePower(wisp)).toBe(22);
+    expect(wisp.kind === "creature" && creaturePower(wisp)).toBe(23);
     // At Base Rank Epic: 3/8 is 5/14, 5 × 2 + 14 + 2 = 26, + 0.5 × 12.
     const epic = {
       ...recruitWith({ summon: "token.skeleton" }),
       baseRank: "epic",
     } as const;
     expect(creaturePower(epic)).toBe(32);
-    // A fraction: the Restless Wisp has power 15 at Rare.
+    // A fraction: the Restless Wisp has power 17 at Rare.
     const rare = {
       ...recruitWith({ summon: "token.restlessWisp" }),
       baseRank: "rare",
@@ -473,8 +520,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   it("fits the Undead cards to the ADR-0021 budget (Card Concepts 5)", () => {
     // Summon Skeleton: 3/4 is 3 × 2 + 4 + Speed 1 × 2 + Range 3 + 0.5 × 8.
     expect(power("undead.hushbow")).toBe(19);
-    // Summon Restless Wisp: 1/4 is 1/6 at Rare. 1 × 2 + 6 + 2 + Frost 3 + 0.5 × 15.
-    expect(power("undead.lanternWidow")).toBe(20.5);
+    // Summon Restless Wisp: 1/4 is 1/6 at Rare. 1 × 2 + 6 + 2 + Frost 3 + 0.5 × 17.
+    expect(power("undead.lanternWidow")).toBe(21.5);
     // Rebirth and Charge 2 at Epic: 2/4 is 4/7. 4 × 2 + 7 + 2 + 5 + 2.
     expect(power("undead.sirOdoLastTaxman")).toBe(24);
     // Wall: 0/5 is 0/9 at Epic. 9 + Armor 2 × 3 + Rebirth 5.
@@ -514,6 +561,21 @@ const FULL_RACES = [
 
 const raceCards = (race: RaceId) =>
   creatures.filter((card) => card.race === race);
+
+/**
+ * The Race Keywords of a Unit that are not of its Race (ADR-0026), as
+ * "<id>: <keyword>". An empty list is correct.
+ */
+const foreignRaceKeywords = (
+  units: readonly Pick<CreatureCardDefinition, "id" | "race" | "keywords">[]
+): readonly string[] =>
+  units.flatMap((unit) =>
+    Object.entries(RACE_KEYWORDS).flatMap(([race, keyword]) =>
+      unit.keywords[keyword] !== undefined && unit.race !== race
+        ? [`${unit.id}: ${keyword}`]
+        : []
+    )
+  );
 
 const countBy = <K extends string>(
   cards: readonly CreatureCardDefinition[],
@@ -598,6 +660,23 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
     expect(raceCards("feral").filter((card) => card.countdown === 1)).toEqual(
       []
     );
+  });
+
+  it("gives each Race exactly one Race Keyword, and no two Races the same (ADR-0026)", () => {
+    expect(Object.keys(RACE_KEYWORDS).toSorted()).toEqual(
+      FULL_RACES.toSorted()
+    );
+    const keywords = Object.values(RACE_KEYWORDS);
+    expect(new Set(keywords).size).toBe(keywords.length);
+  });
+
+  it("gives a Race Keyword only to a Card or a Token of its Race (ADR-0026)", () => {
+    expect(foreignRaceKeywords(creatures)).toEqual([]);
+    expect(foreignRaceKeywords(Object.values(TOKENS))).toEqual([]);
+    // A Human card with the Elf Race Keyword fails the check.
+    expect(foreignRaceKeywords([recruitWith({ entangle: true })])).toEqual([
+      "human.militiaRecruit: entangle",
+    ]);
   });
 
   it.each(FULL_RACES)("gives %s one Unique card in its Epic pair", (race) => {
@@ -792,10 +871,13 @@ describe("Decks and Stages", () => {
       ["humanHeavy", "diagnostic"],
       ["humanLight", "diagnostic"],
     ]);
+    // One Race with the Ranger Skill Cards.
+    expect(archetypeGroups("tunnelRats")).toEqual(
+      new Set(["goblin", "ranger"])
+    );
+    expect(archetypeGroups("thornwatch")).toEqual(new Set(["elf", "ranger"]));
     // Creature Cards only: one Race, and no Skill Card.
-    expect(archetypeGroups("tunnelRats")).toEqual(new Set(["goblin"]));
     expect(archetypeGroups("wildHunt")).toEqual(new Set(["feral"]));
-    expect(archetypeGroups("thornwatch")).toEqual(new Set(["elf"]));
     expect(archetypeGroups("deathlessHost")).toEqual(new Set(["undead"]));
     // Mixed Undead and Orc cards with the Mage Skill Cards.
     expect(archetypeGroups("breakneckCompany")).toEqual(
@@ -858,7 +940,7 @@ describe("Tokens (Card Concepts 8)", () => {
   it("gives the Token power of Card Concepts 8 at each Rank", () => {
     // Swarm 1 is 1 point.
     expect(powers("token.skeleton")).toEqual([8, 9, 11, 12, 15]);
-    expect(powers("token.restlessWisp")).toEqual([12, 13, 15, 18, 21]);
+    expect(powers("token.restlessWisp")).toEqual([14, 15, 17, 18, 21]);
   });
 
   it("is not a Card", () => {

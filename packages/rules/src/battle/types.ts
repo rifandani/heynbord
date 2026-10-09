@@ -194,10 +194,11 @@ export interface BattleState {
   result: BattleResult | null;
 }
 
-/** What a Card targets when it is played. */
+/** What a Card targets when it is played. A Hero target names the Side of the Hero. */
 export type Target = Data.TaggedEnum<{
   Lane: { readonly lane: number };
   Square: { readonly lane: number; readonly position: number };
+  Hero: { readonly side: Side };
   NoTarget: Record<never, never>;
 }>;
 export const Target = Data.taggedEnum<Target>();

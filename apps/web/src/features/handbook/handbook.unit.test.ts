@@ -1,5 +1,5 @@
-import type { CardDefinition } from "@workspace/rules";
-import { CARDS, RANKS } from "@workspace/rules";
+import type { CardDefinition, RaceId } from "@workspace/rules";
+import { CARDS, RACE_KEYWORDS, RANKS } from "@workspace/rules";
 import { Predicate } from "effect";
 import { describe, expect, it } from "vitest";
 
@@ -28,8 +28,10 @@ import {
   damageEntryId,
   ENTRIES,
   FIRST_ENTRY,
+  firstTokenRank,
   getEntry,
   keywordEntryId,
+  nameAliasKeys,
   openPlace,
   RANK_TABLE,
   rankTableKeywords,
@@ -38,6 +40,9 @@ import {
   showEntry,
   splitAliases,
   statusEntryId,
+  summonersAt,
+  TOKEN_GALLERY,
+  tokenGallery,
   toEntryId,
 } from "@/features/handbook/handbook";
 import type { DiagramId } from "@/features/handbook/handbook-diagrams";
@@ -107,9 +112,12 @@ const searchItems = (locale: Locale): SearchItem[] => {
   return ENTRIES.map((entry) => ({
     id: entry.id,
     name: text(entry.name),
-    aliases: ALIASED_ENTRIES.has(entry.id)
-      ? splitAliases(translate(aliasKey(entry.id)))
-      : [],
+    aliases: [
+      ...(ALIASED_ENTRIES.has(entry.id)
+        ? splitAliases(translate(aliasKey(entry.id)))
+        : []),
+      ...nameAliasKeys(entry.id).map((key) => translate(key)),
+    ],
   }));
 };
 
@@ -174,6 +182,27 @@ describe("ENTRIES", () => {
       CLASSES_WITH_CARDS.length + 1
     );
     expect(kinds.filter((id) => id.startsWith("role")).length).toBe(7);
+  });
+
+  it("names the Race Keyword of each Race in its Entry and links to it (ADR-0026)", () => {
+    for (const race of RACES_WITH_CARDS) {
+      // SAFETY: the first letter in upper case is the definition of `Capitalize`.
+      const name = (race.charAt(0).toUpperCase() +
+        race.slice(1)) as Capitalize<RaceId>;
+      const entry = getEntry(`race${name}`);
+      const keyword = getEntry(keywordEntryId(RACE_KEYWORDS[race]));
+      expect(entry.seeAlso, race).toContain(keyword.id);
+      for (const locale of LOCALES) {
+        const text = textIn(locale);
+        expect(
+          entry.body.map(text).join("\n\n"),
+          `${race} ${locale}`
+        ).toContain(text(keyword.name));
+      }
+    }
+    expect(textIn("en-us")(getEntry("raceGoblin").body[1] ?? { key: "" })).toBe(
+      "Race Keyword: Sabotage N. Only a Unit of this Race can have it."
+    );
   });
 });
 
@@ -283,6 +312,70 @@ describe("the Entries of Summon X and Token", () => {
     expect(token.seeAlso).toContain("keywordSummon");
     expect(text(getEntry("keywordRebirth").name)).toBe("Rebirth");
     expect(textIn("id-id")(summon.name)).toBe("Panggil X");
+  });
+});
+
+describe("the Token gallery", () => {
+  it("shows the Token gallery in the Token Entry only", () => {
+    expect(getEntry("token").value).toBe("tokenGallery");
+    expect(
+      ENTRIES.filter((entry) => entry.value === "tokenGallery").map(
+        (entry) => entry.id
+      )
+    ).toEqual(["token"]);
+  });
+
+  it("lists each Token that a card summons, with its summoners in card order", () => {
+    expect(
+      TOKEN_GALLERY.map((token) => ({
+        tokenId: token.tokenId,
+        summoners: token.summoners.map((card) => card.id),
+      }))
+    ).toEqual([
+      {
+        tokenId: "token.skeleton",
+        summoners: ["undead.hushbow", "undead.graveBellTender"],
+      },
+      { tokenId: "token.restlessWisp", summoners: ["undead.lanternWidow"] },
+    ]);
+  });
+
+  it("leaves out a Token that no card summons", () => {
+    const noWidow = CARDS.filter((card) => card.id !== "undead.lanternWidow");
+    expect(tokenGallery(noWidow).map((token) => token.tokenId)).toEqual([
+      "token.skeleton",
+    ]);
+  });
+
+  it("gives a Token only the summoners that exist at the Rank", () => {
+    const [skeleton, wisp] = TOKEN_GALLERY;
+    if (!(skeleton && wisp)) {
+      throw new Error("The gallery has 2 Tokens");
+    }
+    expect(firstTokenRank(skeleton)).toBe("common");
+    expect(firstTokenRank(wisp)).toBe("rare");
+    expect(summonersAt(wisp, "uncommon")).toEqual([]);
+    expect(summonersAt(wisp, "rare").map((card) => card.id)).toEqual([
+      "undead.lanternWidow",
+    ]);
+    for (const rank of RANKS) {
+      expect(summonersAt(skeleton, rank)).toHaveLength(2);
+    }
+  });
+
+  it("finds the Token Entry by a Token name in each Locale", () => {
+    expect(searchEntries("skeleton", searchItems("en-us"))[0]).toEqual({
+      id: "token",
+      alias: "Skeleton",
+    });
+    expect(searchEntries("wisp", searchItems("en-us"))[0]).toEqual({
+      id: "token",
+      alias: "Restless Wisp",
+    });
+    expect(searchEntries("kerangka", searchItems("id-id"))[0]).toEqual({
+      id: "token",
+      alias: "Kerangka",
+    });
   });
 });
 

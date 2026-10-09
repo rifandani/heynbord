@@ -3,18 +3,28 @@ import { LANE_LENGTH } from "@workspace/rules";
 import { Predicate } from "effect";
 import type { Object3D } from "three";
 
-import { laneZ, squareX } from "@/features/battle/scene/layout";
+import { heroX, laneZ, squareX } from "@/features/battle/scene/layout";
 
 interface MarkerSpot {
   readonly x: number;
   readonly z: number;
+  /** The size along the Lanes. */
   readonly width: number;
+  /** The size across the Lanes. */
+  readonly depth: number;
 }
 
+/** The size of a Square marker across its Lane. */
+const SQUARE_DEPTH = 0.98;
+
+/** The size of a Hero marker along the Lanes. */
+const HERO_WIDTH = 1.3;
+
 /**
- * Where a target shows on the Board: a Square, or a whole Lane. A Creature
- * Card targets a Square of the Summon Zone. A Lane Skill Card hits the whole
- * Lane.
+ * Where a target shows on the Board: a Square, a whole Lane, or the ground
+ * under a Hero. A Creature Card targets a Square of the Summon Zone. A Lane
+ * Skill Card hits the whole Lane. A Hero marker goes across all Lanes, as the
+ * Hero stands behind all of them.
  */
 export const markerSpot = (
   target: Target,
@@ -25,10 +35,24 @@ export const markerSpot = (
       x: squareX(target.position),
       z: laneZ(target.lane, lanes),
       width: 0.96,
+      depth: SQUARE_DEPTH,
     };
   }
   if (target._tag === "Lane") {
-    return { x: 0, z: laneZ(target.lane, lanes), width: LANE_LENGTH };
+    return {
+      x: 0,
+      z: laneZ(target.lane, lanes),
+      width: LANE_LENGTH,
+      depth: SQUARE_DEPTH,
+    };
+  }
+  if (target._tag === "Hero") {
+    return {
+      x: heroX(target.side),
+      z: 0,
+      width: HERO_WIDTH,
+      depth: laneZ(lanes - 1, lanes) - laneZ(0, lanes) + SQUARE_DEPTH,
+    };
   }
   return null;
 };

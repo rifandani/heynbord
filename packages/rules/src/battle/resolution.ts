@@ -178,21 +178,40 @@ const move = (ctx: StepContext, unit: UnitState): void => {
 };
 
 /**
- * Knockback (GDD 4.7). A push is not Movement. The Unit goes toward its own
- * Hero, in its own Lane. It stops before any Unit and at its Column 1.
- * Column 1 is the last Square of the Lane on that side.
+ * The Square where a push of `squares` puts `unit` (GDD 4.7). A push is not
+ * Movement. The Unit goes toward its own Hero, in its own Lane. It stops
+ * before any Unit and at its Column 1, the last Square of the Lane on that
+ * side. A Wall is never Pushed: it stays in its Square.
  */
-const pushUnit = (ctx: StepContext, unit: UnitState, squares: number): void => {
+export const pushedPosition = (
+  state: BattleState,
+  unit: UnitState,
+  squares: number
+): number => {
   const dir = -direction(unit.owner);
   const from = unit.position;
   let to = from;
-  for (let step = 1; step <= squares; step += 1) {
+  for (let step = 1; step <= squares && !unit.wall; step += 1) {
     const position = from + dir * step;
-    if (!isInsideLane(position) || unitAt(ctx.state, unit.lane, position)) {
+    if (!isInsideLane(position) || unitAt(state, unit.lane, position)) {
       break;
     }
     to = position;
   }
+  return to;
+};
+
+/**
+ * Pushes `unit`, for Knockback and for a Skill Card push. A Unit that does
+ * not change Square is not Pushed, and no event occurs.
+ */
+export const pushUnit = (
+  ctx: StepContext,
+  unit: UnitState,
+  squares: number
+): void => {
+  const from = unit.position;
+  const to = pushedPosition(ctx.state, unit, squares);
   if (to === from) {
     return;
   }
@@ -267,6 +286,20 @@ const trample = (
 };
 
 /**
+ * `unit` becomes Entangled, from the Entangle Keyword or from a Skill Card. A
+ * new Entangle does not stack or extend the Status, and no event occurs.
+ */
+export const entangleUnit = (ctx: StepContext, unit: UnitState): void => {
+  if (unit.entangled) {
+    return;
+  }
+  unit.entangled = true;
+  ctx.events.push(
+    BattleEvent.StatusApplied({ unitId: unit.id, status: "entangle" })
+  );
+};
+
+/**
  * Poison, then Hobble, then Bleed, then Entangle, then Knockback (GDD 4.4).
  * First Strike does not apply Knockback (GDD 4.7).
  */
@@ -302,14 +335,10 @@ const applyOnHit = (
       })
     );
   }
-  // A new Entangle does not stack or extend the Status.
-  if (unit.entangle && !struck.entangled) {
-    struck.entangled = true;
-    ctx.events.push(
-      BattleEvent.StatusApplied({ unitId: struck.id, status: "entangle" })
-    );
+  if (unit.entangle) {
+    entangleUnit(ctx, struck);
   }
-  if (knockback && unit.range === 0 && unit.knockback > 0 && !struck.wall) {
+  if (knockback && unit.range === 0 && unit.knockback > 0) {
     pushUnit(ctx, struck, unit.knockback);
   }
 };

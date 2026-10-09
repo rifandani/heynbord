@@ -1,7 +1,23 @@
 import { Predicate } from "effect";
 
 import { RANKS } from "./ranks";
-import type { KeywordAmount, RankId } from "./schema";
+import type { KeywordAmount, RaceId, RankId, TokenKeywords } from "./schema";
+
+/**
+ * The Race Keyword of each Race (ADR-0026). Only a Unit of that Race can have
+ * it, from a Card, a Token or any other effect. A content test checks the
+ * cards and the Tokens. An effect that gives a Keyword in a Battle must also
+ * check this table. Only the Keyword is locked, not its effect: a Skill Card
+ * of any Class can still make a Unit Entangled or Push it.
+ */
+export const RACE_KEYWORDS = {
+  human: "knockback",
+  elf: "entangle",
+  undead: "rebirth",
+  orc: "heroic",
+  goblin: "sabotage",
+  feral: "trample",
+} as const satisfies Readonly<Record<RaceId, keyof TokenKeywords>>;
 
 /**
  * The one Rank table that some value Keywords share (GDD 5.4): 1 up to Rare,

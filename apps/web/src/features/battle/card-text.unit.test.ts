@@ -221,6 +221,34 @@ describe("cardText (CRD-08)", () => {
     );
   });
 
+  it("builds the Ranger Skill Card text with the values of each Rank", () => {
+    const effects = (cardId: string) =>
+      RANKS.flatMap((rank) => {
+        const text = cardText(cardId, rank);
+        return text.kind === "skill" ? [resolve(text.effect)] : [];
+      });
+    expect(effects("ranger.pinningShot")).toEqual(
+      [3, 4, 4, 5, 6].map(
+        (amount) =>
+          `Deal ${amount} Physical damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.`
+      )
+    );
+    expect(effects("ranger.warningShot")).toEqual(
+      [2, 2, 3, 4, 4].map(
+        (amount) =>
+          `Deal ${amount} Physical damage to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.`
+      )
+    );
+    expect(effects("ranger.longShot")).toEqual(
+      [4, 5, 6, 7, 8].map(
+        (amount) => `Deal ${amount} Physical damage to the enemy Hero.`
+      )
+    );
+    const longShot = skill("ranger.longShot", "uncommon");
+    expect(resolve(longShot.name)).toBe("Long Shot");
+    expect(resolve(longShot.flavor)).toBe("Over their heads, into the Hero.");
+  });
+
   it("shows the Hobble value of a Pavise Arbalist copy for its Rank", () => {
     expect(hobbleName("rare")).toBe("Hobble 1");
     expect(hobbleName("epic")).toBe("Hobble 2");

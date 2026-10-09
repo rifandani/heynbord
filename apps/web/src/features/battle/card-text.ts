@@ -33,7 +33,7 @@ const cardFlavorKey = (cardId: string): string => `cards.${cardId}.flavor`;
  * The Translation Key of a Token name. A Token is not a card, so its text is
  * not in `cards`: `token.restlessWisp` is `tokens.restlessWisp.name`.
  */
-const tokenNameKey = (tokenId: TokenId): string =>
+export const tokenNameKey = (tokenId: TokenId): string =>
   `tokens.${tokenId.slice(tokenId.indexOf(".") + 1)}.name`;
 
 /** A Keyword name and its rule, for the Details Panel. */
@@ -126,7 +126,9 @@ const skillEffect = (card: SkillCardDefinition, rank: RankId): TextRef => {
   const { effect } = card;
   switch (effect.type) {
     case "damageUnit":
-    case "damageLane": {
+    case "damageLane":
+    case "damageEntangle":
+    case "damageHero": {
       return {
         key: `effects.${effect.type}`,
         args: {
@@ -142,6 +144,16 @@ const skillEffect = (card: SkillCardDefinition, rank: RankId): TextRef => {
           amount: scaleForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
           extra: effect.length - 1,
+        },
+      };
+    }
+    case "damagePush": {
+      return {
+        key: "effects.damagePush",
+        args: {
+          amount: scaleForRank(effect.amount, rank),
+          damageType: { key: `damageTypes.${effect.damageType}` },
+          squares: effect.squares,
         },
       };
     }

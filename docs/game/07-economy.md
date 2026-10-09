@@ -119,8 +119,8 @@ Each Region has 3 Star chests.
 
 | Stars in the Region | Reward |
 | --- | --- |
-| 10 | 300 Coin and 1 Standard Pack |
-| 20 | 30 Essence and 1 Race Pack. The player selects the Race, as for a Race Pack bought with Coin. |
+| 10 | 300 Coin and 1 Merchant Pack |
+| 20 | 30 Essence and 1 Merchant Race Pack. The player selects the Race, as for a Race Pack bought with Coin. |
 | 30 | 150 Heynstones and 100 Essence |
 
 ### 2.3 Heynspire
@@ -164,29 +164,56 @@ The total is about 71% of the Bazaar catalog cost (section 3.5). The player must
 
 ### 3.1 Packs
 
-| Pack | Cost | Cards | Content |
-| --- | --- | --- | --- |
-| **Standard Pack** | 500 Coin | 5 | All Creature Cards and Skill Cards |
-| **Race Pack** | 700 Coin | 5 | Creature Cards of one Race. The player selects the Race. |
+There are three Packs. Each Pack has its own Drop Rates, price and Pack Guarantee. Each Pack also has a **Race Pack** version with only the Creature Cards of one Race. The player selects the Race. A Race Pack costs 1.4 × the price of the same Pack with all cards.
+
+| Pack | Cost | Race Pack cost | Cards | Job |
+| --- | ---: | ---: | ---: | --- |
+| **Peddler Pack** | 350 Coin | 490 Coin | 5 | The most cards for each Coin. Fuel for Combine. Discovers Common and Uncommon Base Rank cards. |
+| **Merchant Pack** | 500 Coin | 700 Coin | 5 | The middle Pack. It replaces the Standard Pack. |
+| **Royal Pack** | 1,000 Coin | 1,400 Coin | 5 | Saves Combine Coin. Discovers Rare and Epic Base Rank cards. The only Pack with Legendary. |
 
 **Drop rates for each card in a Pack:**
 
-| Rank | Chance |
-| --- | --- |
-| Common | 62.0% |
-| Uncommon | 27.0% |
-| Rare | 9.0% |
-| Epic | 1.8% |
-| Legendary | 0.2% |
+| Rank | Peddler | Merchant | Royal |
+| --- | ---: | ---: | ---: |
+| Common | 80% | 62% | — |
+| Uncommon | 17% | 27% | 55% |
+| Rare | 3% | 9% | 35% |
+| Epic | — | 2% | 9% |
+| Legendary | — | — | 1% |
+
+**Value for each Coin.** On the Combine scale (Common 1, Uncommon 2, Rare 4, Epic 8, Legendary 16), the three Packs give about the same value for each Coin: 6.3, 8.4 and 16.9 for each Pack. A more expensive Pack is not a better deal, it does a different job. See [ADR-0027](../adr/0027-the-three-packs-give-equal-value-for-each-coin.md).
 
 **Pack rules:**
 
-1. For each card, roll a Rank with the table above.
-2. Select one card at random from the cards in the Pack pool with a Base Rank equal to or lower than the rolled Rank.
-3. The card comes in the rolled Rank.
-4. Each Pack has at least 1 card of Uncommon or higher. If the first 4 cards are all Common, the fifth card is at least Uncommon.
-5. Skill Cards come only for the current Hero Class. This keeps the Pack useful.
-6. The Packs screen shows this table and these rules before the player opens a Pack.
+1. For each card, roll a Rank with the table of the Pack.
+2. Select one card from the cards in the Pack pool with a Base Rank equal to or lower than the rolled Rank. The Peddler Pack selects at random.
+3. **New Card First.** The Merchant Pack and the Royal Pack select a card that the player has not Discovered, when step 2 permits one. If there are more such cards, select one at random. If the player has Discovered all of them, select at random.
+4. The card comes in the rolled Rank.
+5. A Peddler Pack and a Merchant Pack have at least 1 card of Uncommon or higher. If the first 4 cards are all Common, the fifth card is at least Uncommon.
+6. Skill Cards come only for the current Hero Class. This keeps the Pack useful. A Race Pack has no Skill Cards.
+7. A Pack roll uses a random state in the player data that moves forward after each Pack. Thus a reload never gives a new roll.
+8. The Packs screen shows the Drop Rates, the Pack Guarantees and these rules before the player opens a Pack.
+
+**Pack Guarantee.** Each Pack has its own counter. A Pack and its Race Pack version share one counter. The counter counts the Packs in a row without a card of the Guarantee Rank or higher. For a Guarantee "in N Packs", if N − 1 Packs in a row have no such card, Pack N has one. Any card of that Rank or higher sets the counter back to 0. The Packs screen shows how many Packs are left.
+
+| Pack | Pack Guarantee |
+| --- | --- |
+| Peddler | Rare or higher in 8 Packs |
+| Merchant | Epic or higher in 12 Packs |
+| Royal | Legendary in 20 Packs |
+
+**Open ×10.** The player can buy 10 Packs of one kind in one action, for 10 × the price. Each Pack counts for the Pack Guarantee.
+
+| Pack | ×10 bonus |
+| --- | --- |
+| Peddler | The 10 Packs have at least 1 Rare or higher. |
+| Merchant | The 10 Packs have at least 1 Epic or higher. |
+| Royal | The player opens 11 Packs. |
+
+A Royal ×10 does not guarantee a Legendary, because then a single Royal Pack is a bad choice: a single Pack needs up to 20 Packs for its Guarantee.
+
+**First Pack.** The first time that the player opens the Packs screen, one Peddler Pack is free.
 
 ### 3.2 Combine
 
@@ -248,7 +275,7 @@ A new player has 3 Deck slots: one for each Starter Deck and one empty. The play
 | Coin | 500 | 1,000 | 1,500 | 2,000 | 3,000 | 4,000 | 5,000 |
 
 - All 7 slots cost 17,000 Coin (1g 70s), a bit more than one Gear item from level 0 to 10.
-- The 4th slot costs the same as a Standard Pack, so the player can buy it in Region 1. The last slots are a small Coin sink for the endgame.
+- The 4th slot costs the same as a Merchant Pack, so the player can buy it in Region 1. The last slots are a small Coin sink for the endgame.
 - A Deck slot is a Convenience: it gives no power. It costs Coin and not Heynstones, so in v2 nobody pays real money for it.
 - A purchase is permanent. The player cannot sell or remove a Deck slot.
 - The data is `DECK_SLOT_PRICES` in `packages/rules/src/content/deck-slots.ts`. Keep the code and this table the same.

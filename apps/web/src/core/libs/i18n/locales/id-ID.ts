@@ -309,7 +309,15 @@ export default {
     n: "N",
     x: "X",
     tokenX: "Token X",
+    raceKeyword:
+      "Kata Kunci Ras: {keyword}. Hanya Unit dari Ras ini yang bisa memilikinya.",
     seeCard: "N ada di tiap kartu. Lihat kartunya.",
+    tokenGallery: "Token di dalam game",
+    tokenRank: "Peringkat",
+    summonedBy: "Dipanggil oleh",
+    tokenNotAtRank:
+      "Tidak ada kartu yang membuat Token ini pada Peringkat ini.",
+    tokenFirstRank: "Lihat pada {rank}",
     rankTable: "N pada tiap Peringkat",
     starsTable: "Cara mendapat tiap Bintang",
     starsColumn: "Bintang",
@@ -507,7 +515,7 @@ export default {
       raceHuman:
         "Manusia dan orang-orang tangguh dari kota sungai. Mereka menahan barisan dengan Zirah kuat, Tembok, dan dukungan untuk kawan.",
       raceElf:
-        "Elf dari hutan tua, dan roh tanaman yang bertarung bersama mereka. Mereka mengendalikan Jalur dari jauh, dengan penyembuhan dan Racun.",
+        "Elf dari hutan tua, dan roh tanaman yang bertarung bersama mereka. Mereka mengendalikan Jalur dari jauh dengan Jerat, penyembuhan, dan Racun.",
       raceUndead:
         "Roh tua yang memakai tulang dan zirah. Banyak Unit kecil yang menjadi lebih kuat bersama-sama dan bangkit kembali.",
       raceOrc:
@@ -824,6 +832,11 @@ export default {
       "Beri {amount} damage {damageType} ke satu Unit musuh dan {extra} Petak berikutnya di belakangnya.",
     damageLane:
       "Beri {amount} damage {damageType} ke semua Unit musuh dalam satu Jalur.",
+    damageEntangle:
+      "Beri {amount} damage {damageType} ke satu Unit musuh. Jika Unit itu terkena damage dan bertahan hidup, Unit itu menjadi Terjerat.",
+    damagePush:
+      "Beri {amount} damage {damageType} ke satu Unit musuh. Jika Unit itu bertahan hidup, dorong Unit itu {squares} Petak mundur ke arah Pahlawannya, juga saat Unit itu tidak terkena damage.",
+    damageHero: "Beri {amount} damage {damageType} ke Pahlawan musuh.",
     laneArmor:
       "Unit kawan dalam satu Jalur mendapat Zirah {armor} selama {turns} Giliran musuh berikutnya.",
     lowerCountdown:
@@ -1223,6 +1236,17 @@ export default {
       spearThrow: {
         name: "Lempar Tombak",
         flavor: "Bidik yang paling berisik.",
+      },
+    },
+    ranger: {
+      pinningShot: { name: "Tembakan Penjepit", flavor: "Diam di situ." },
+      warningShot: {
+        name: "Tembakan Peringatan",
+        flavor: "Yang berikutnya tidak akan meleset.",
+      },
+      longShot: {
+        name: "Tembakan Jauh",
+        flavor: "Melewati kepala mereka, ke Pahlawan.",
       },
     },
     mage: {

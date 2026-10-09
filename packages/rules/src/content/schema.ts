@@ -204,6 +204,32 @@ const SkillEffect = Schema.Union([
     damageType: DamageType,
   }),
   Schema.Struct({
+    /**
+     * Damage to one enemy Unit. When the damage is above 0 and the Unit
+     * survives, it becomes Entangled, as with the Entangle Keyword.
+     */
+    type: Schema.Literal("damageEntangle"),
+    amount: Amount,
+    damageType: DamageType,
+  }),
+  Schema.Struct({
+    /**
+     * Damage to one enemy Unit. When the Unit survives, it is Pushed this
+     * many Squares, also at 0 damage. Unlike Knockback, the push is the main
+     * effect.
+     */
+    type: Schema.Literal("damagePush"),
+    amount: Amount,
+    damageType: DamageType,
+    squares: between(1, 3),
+  }),
+  Schema.Struct({
+    /** Damage to one enemy Hero. A Hero has no Armor and cannot Block (GDD 4.7). */
+    type: Schema.Literal("damageHero"),
+    amount: Amount,
+    damageType: DamageType,
+  }),
+  Schema.Struct({
     type: Schema.Literal("laneArmor"),
     armor: between(1, 5),
     turns: between(1, 5),
@@ -219,6 +245,7 @@ export type SkillEffect = typeof SkillEffect.Type;
 
 const SkillTarget = Schema.Literals([
   "enemyUnit",
+  "enemyHero",
   "enemyLane",
   "friendlyLane",
   "none",

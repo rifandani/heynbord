@@ -454,3 +454,102 @@ describe("chooseCommand with Unique (GDD 5.4)", () => {
     expect(chooseCommand(state)).toEqual(Command.EndTurn());
   });
 });
+
+/** The enemy AI with a Ready Pinning Shot, one player Scrap Raider at Square 5 and `setup`. */
+const pinningShotChoice = (
+  raider: Partial<Parameters<typeof placeUnit>[1]> = {},
+  setup: (state: BattleState) => void = () => {}
+) => {
+  const state = emptyBattle({ activeSide: "enemy" });
+  giveHand(state, "enemy", [["ranger.pinningShot", 0]]);
+  placeUnit(state, {
+    cardId: "orc.scrapRaider",
+    owner: "player",
+    position: 5,
+    hp: 6,
+    ...raider,
+  });
+  setup(state);
+  return chooseCommand(state);
+};
+
+describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
+  it("plays Pinning Shot when it kills the Unit", () => {
+    expect(
+      pinningShotChoice({ hp: 3 }, (state) => {
+        placeUnit(state, {
+          cardId: "human.halberdier",
+          owner: "enemy",
+          position: 6,
+        });
+      })
+    ).toEqual(playAt(5));
+  });
+
+  it("plays Pinning Shot when the Unit would move in its next action", () => {
+    expect(pinningShotChoice()).toEqual(playAt(5));
+  });
+
+  it("keeps Pinning Shot when the Unit would not move, or the hit deals 0 damage", () => {
+    // An enemy Unit is in the Square in front of it.
+    expect(
+      pinningShotChoice({}, (state) => {
+        placeUnit(state, {
+          cardId: "human.halberdier",
+          owner: "enemy",
+          position: 6,
+        });
+      })
+    ).toEqual(Command.EndTurn());
+    expect(pinningShotChoice({ entangled: true })).toEqual(Command.EndTurn());
+    expect(pinningShotChoice({ speed: 0 })).toEqual(Command.EndTurn());
+    expect(pinningShotChoice({ bonusArmor: 3, bonusArmorTurns: 2 })).toEqual(
+      Command.EndTurn()
+    );
+    expect(
+      pinningShotChoice({ cardId: "human.townBarricade", hp: 15 })
+    ).toEqual(Command.EndTurn());
+  });
+
+  it("plays Long Shot at the enemy Hero when it is Ready", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    giveHand(state, "enemy", [["ranger.longShot", 0]]);
+    expect(chooseCommand(state)).toEqual(
+      Command.PlayCard({
+        handIndex: 0,
+        target: Target.Hero({ side: "player" }),
+      })
+    );
+  });
+
+  it("aims Warning Shot at the Unit nearest to its Hero that the push moves", () => {
+    // The Unit at Square 9 cannot go back: the Unit at Square 8 stops it.
+    expect(
+      skillChoice("ranger.warningShot", [
+        [3, 6],
+        [8, 6],
+        [9, 6],
+      ])
+    ).toEqual(playAt(8));
+  });
+
+  it("aims Warning Shot at the Unit that takes the most damage when the push moves no Unit, and never keeps it", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    giveHand(state, "enemy", [["ranger.warningShot", 0]]);
+    placeUnit(state, {
+      cardId: "orc.scrapRaider",
+      owner: "player",
+      position: 0,
+      hp: 6,
+      bonusArmor: 1,
+      bonusArmorTurns: 2,
+    });
+    placeUnit(state, {
+      cardId: "human.townBarricade",
+      owner: "player",
+      position: 4,
+    });
+    expect(chooseCommand(state)).toEqual(playAt(4));
+    expect(skillChoice("ranger.warningShot", [[0, 6]])).toEqual(playAt(0));
+  });
+});

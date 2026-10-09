@@ -815,7 +815,7 @@ Purpose: a durable Flying healer. Power 24, budget 24, deviation 0%.
 
 > The warning was yesterday.
 
-Purpose: the archetypal Elf Epic: approach denial, and the one Elf card with Entangle (ADR-0022). Power 26, budget 27, deviation -3.7%.
+Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards with Entangle (ADR-0022, ADR-0026). Power 26, budget 27, deviation -3.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -829,18 +829,18 @@ Purpose: the archetypal Elf Epic: approach denial, and the one Elf card with Ent
 
 ### 4.15 Lethiel, First Gardener (draft)
 
-`elf.lethielFirstGardener` · Support · Epic · Countdown 4 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Unique · Regenerate 2
+`elf.lethielFirstGardener` · Support · Epic · Countdown 5 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Unique · Entangle · Regenerate 2
 
 > The forest grew wild. Lethiel called it adequate.
 
-Purpose: the named Elf Epic and a durable healer. Power 25, budget 24, deviation +4.2%.
+Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race Keyword (ADR-0026). Power 27, budget 27, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | An ancient elf gardener. |
 | Pose | Lethiel touches the ground with a luminous staff. |
 | Props | Leaf mantle, seed crown, silver pruning hook and tiny ruler. |
-| Gameplay cues | Holy light closing a split in the bark shows Regenerate. |
+| Gameplay cues | Holy light closing a split in the bark shows Regenerate. For the next art pass: roots rise around her staff to show Entangle. The current art does not change. |
 | Silhouette hook | Seed crown and tall staff. |
 | Humor note | Lethiel measures a colossal tree and approves. |
 | Setting | A primeval garden. |
@@ -1073,7 +1073,7 @@ Purpose: an anti-melee finisher and Swarm payoff. Power 22, budget 21, deviation
 
 > She always leaves a light on for the late.
 
-Purpose: Frost support that creates a mobile second threat. Power 20.5, budget 21, deviation -2.4%.
+Purpose: Frost support that creates a mobile second threat. Power 21.5, budget 21, deviation +2.4%.
 
 | Field | Brief |
 | --- | --- |
@@ -1677,7 +1677,7 @@ Purpose: the named Feral Epic: a huge Frost Striker that Tramples, and its bite 
 
 ## 8. Tokens
 
-Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**. The ID line of a Token gives its Race, so that its art uses the setting and the palette of that Race (1.1). A Token has no Base Rank: its art uses the Common detail, because it is cheap Lane mass.
+Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**. The ID line of a Token gives its Race, so that its art uses the setting and the palette of that Race (1.1). A Token has no Base Rank: its art uses the Common detail, because it is cheap Lane mass. Each Token has Speed 2 at each Rank: it appears behind the Unit that summons it, and it must get to the front.
 
 ### 8.1 Skeleton
 
@@ -1709,13 +1709,13 @@ Purpose: cheap Lane mass that is weak alone. Speed 2 at each Rank: the Skeleton 
 
 | Rank | Attack | HP | Speed | Power |
 | --- | ---: | ---: | ---: | ---: |
-| Common | 1 | 1 | 1 | 12 |
-| Uncommon | 1 | 2 | 1 | 13 |
-| Rare | 2 | 2 | 1 | 15 |
+| Common | 1 | 1 | 2 | 14 |
+| Uncommon | 1 | 2 | 2 | 15 |
+| Rare | 2 | 2 | 2 | 17 |
 | Epic | 2 | 3 | 2 | 18 |
 | Legendary | 3 | 4 | 2 | 21 |
 
-Purpose: a mobile Frost Token.
+Purpose: a mobile Frost Token. Speed 2 at each Rank, the same as each Token (8).
 
 | Field | Brief |
 | --- | --- |
@@ -1819,7 +1819,53 @@ Identity: area damage. The palette is the Damage Type color.
 | Setting | A neutral battlefield. The Lane is long and goes into the distance. |
 | Palette | Orange-red fire. Uncommon: a small gold trim on the staff. |
 
-## 11. When cards change
+## 11. Ranger Skill Cards
+
+Identity: control and Hero damage. Physical, so the palette is neutral steel and leather, with forest-green fletching as the Ranger mark on each card. The partial figure is a hooded archer, seen from behind or as hands only, with no pointed ears, no tusks and no other sign of a Race.
+
+### 11.1 Pinning Shot
+
+`ranger.pinningShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 3 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.
+
+> Stay right there.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | An arrow with green fletching that goes through a plain rope net and pins the net to the ground. |
+| Partial figure | Hands that release a bowstring, seen from behind, at the left edge of the image. |
+| Action | The arrow pins the net over the feet of a far, dark silhouette at the right. The view is close: the net, the arrow shaft and the green fletching fill the bottom half of the image. Plain ropes only, with no vines and no leaves. |
+| Setting | A neutral battlefield. |
+| Palette | Neutral steel and leather, rough brown rope, with green fletching. |
+
+### 11.2 Warning Shot
+
+`ranger.warningShot` · Ranger · Common · Countdown 3 · An enemy Unit · Deal 2 Physical damage to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.
+
+> The next one will not miss.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | An arrow with green fletching that hits the ground in front of a far, dark silhouette. |
+| Partial figure | A back view of a hooded archer at full draw, facing to the right. |
+| Action | The arrow hits the ground. A burst of dirt pushes the silhouette back, and it stumbles to the right. |
+| Setting | A neutral battlefield. A Lane of grey stone tiles shows the distance between the arrow and the silhouette. |
+| Palette | Neutral steel and leather, brown dirt, with green fletching. |
+
+### 11.3 Long Shot
+
+`ranger.longShot` · Ranger · Uncommon · Countdown 4 · The enemy Hero · Deal 4 Physical damage to the enemy Hero.
+
+> Over their heads, into the Hero.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A single arrow with green fletching in a high arc over the battlefield. |
+| Partial figure | A back view of a hooded archer who aims high, facing to the right. |
+| Action | The arrow flies in a long arc to the right, over the small blurred Units of the Lanes, toward a far, dark, caped silhouette. The silhouette stands on a small rise behind the enemy Lanes and is larger than the Units. No banner. |
+| Setting | A neutral battlefield, seen from far, with all the Lanes. |
+| Palette | Neutral steel and leather, with green fletching. Uncommon: a small brass trim on the bow. |
+
+## 12. When cards change
 
 - When you add a card or a Token to `cards.ts`, add its entry here before you make the art. For a Creature Card or a Token, also add its subject line to `scripts/creature-art/subjects.ts`. For a Skill Card, the brief must have the fields Effect subject, Partial figure, Action, Setting and Palette: `bun skill:prompts` fails without them.
 - When you change a name or flavor text in the Message Catalog, look at the entry here again. The image must still agree with the text.

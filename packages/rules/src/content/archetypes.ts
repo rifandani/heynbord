@@ -15,9 +15,10 @@ export const MATCHUP_LEVEL = 5;
  * and within the Countdown Limit of level 5 (35, ADR-0021). A Deck of slow
  * cards thus has fewer cards.
  *
- * Tunnel Rats, Wild Hunt, Thornwatch and Deathless Host are provisional
- * diagnostic Decks (Archetypes 2.1): Creature Cards only, until the Ranger and
- * Priest Skill Cards exist. Breakneck Company is a diagnostic Deck of mixed
+ * Tunnel Rats and Thornwatch are diagnostic Ranger Decks with the 3 Ranger
+ * Skill Cards. Wild Hunt and Deathless Host are provisional diagnostic Decks
+ * (Archetypes 2.1): Creature Cards only, until the Priest Skill Cards exist.
+ * Breakneck Company is a diagnostic Deck of mixed
  * Undead and Orc cards with Mage Skill Cards. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
  * so that a Matchup tests most cards. Human Heavy (Countdown 3 to 4) and Human
@@ -67,15 +68,17 @@ export const ARCHETYPES: readonly Archetype[] = [
     classId: "ranger",
     deck: [
       ...copies(1, "goblin.ankleSnatcher", "common"),
-      ...copies(2, "goblin.fuseRunner", "common"),
+      ...copies(1, "goblin.fuseRunner", "common"),
       ...copies(2, "goblin.junkSlinger", "common"),
-      ...copies(2, "goblin.tunnelSaboteur", "common"),
+      ...copies(1, "goblin.tunnelSaboteur", "common"),
       ...copies(1, "goblin.scrapPlateGuard", "common"),
       ...copies(1, "goblin.junkBarricade", "uncommon"),
       ...copies(2, "goblin.greaseTrapper", "uncommon"),
-      ...copies(1, "goblin.rocketBarrelRider", "uncommon"),
       ...copies(1, "goblin.mineSapper", "rare"),
       ...copies(1, "goblin.grandGearjammer", "epic"),
+      ...copies(1, "ranger.pinningShot", "common"),
+      ...copies(1, "ranger.warningShot", "common"),
+      ...copies(1, "ranger.longShot", "uncommon"),
     ],
   },
   {
@@ -98,14 +101,17 @@ export const ARCHETYPES: readonly Archetype[] = [
     kind: "diagnostic",
     classId: "ranger",
     deck: [
-      ...copies(2, "elf.rootboundGuard", "common"),
+      ...copies(1, "elf.rootboundGuard", "common"),
       ...copies(2, "elf.brambleDuelist", "common"),
       ...copies(2, "elf.fernwingCourier", "common"),
-      ...copies(2, "elf.mosspitcherLookout", "common"),
-      ...copies(2, "elf.acornTender", "common"),
+      ...copies(1, "elf.mosspitcherLookout", "common"),
+      ...copies(1, "elf.acornTender", "common"),
       ...copies(1, "elf.thornlineArcher", "uncommon"),
       ...copies(1, "elf.dewkeeper", "uncommon"),
       ...copies(1, "elf.brambleNest", "uncommon"),
+      ...copies(1, "ranger.pinningShot", "common"),
+      ...copies(1, "ranger.warningShot", "common"),
+      ...copies(1, "ranger.longShot", "uncommon"),
     ],
   },
   {

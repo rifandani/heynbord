@@ -39,16 +39,16 @@ The player is a new Hero. The player travels through three Regions, wins the res
 
 | Race | Concept | Battle identity | Main Keywords |
 | --- | --- | --- | --- |
-| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Knockback, Rally, Retaliate, Wall |
-| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | Regenerate, Poison, Flying |
-| **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | Swarm, Rebirth, Summon, Frost damage |
-| **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them. | Charge, Heroic, Fire damage, Last Breath |
-| **Goblin** | Goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. | Make the enemy plan slower. Cheap, fragile Units that delay enemy cards, set traps and explode. | Sabotage, Hobble, Last Breath, Fire damage |
-| **Feral** | Wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. | Few, huge and slow. High Countdown, high Attack and HP. They run through the enemy front, heal and bring the cold. | Trample, Regenerate, Flying, Frost damage |
+| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | **Knockback**, Armor, Rally, Retaliate, Wall |
+| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | **Entangle**, Regenerate, Poison, Flying |
+| **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | **Rebirth**, Swarm, Summon, Frost damage |
+| **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them. | **Heroic**, Charge, Fire damage, Last Breath |
+| **Goblin** | Goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. | Make the enemy plan slower. Cheap, fragile Units that delay enemy cards, set traps and explode. | **Sabotage**, Hobble, Last Breath, Fire damage |
+| **Feral** | Wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. | Few, huge and slow. High Countdown, high Attack and HP. They run through the enemy front, heal and bring the cold. | **Trample**, Regenerate, Flying, Frost damage |
 
 The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, each Race has 1 Creature Card with Pivot, with Base Rank Uncommon.
 
-A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). Hobble is a Goblin Main Keyword, and one Human card borrows it. Sabotage is the Goblin signature, and Trample is the Feral signature ([ADR-0017](../adr/0017-sabotage-and-hobble-are-goblin-and-trample-is-feral.md)). Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback. Bleed is a Feral Keyword on the Frostfang Lynx and Old Frostmaw only. It is not a Main Keyword ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Entangle is an Elf Keyword, but not a Main Keyword. Only a Ranged Unit with Base Rank Epic or higher has it ([ADR-0022](../adr/0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md)).
+A Main Keyword is the signature of that Race. The Race that gives a signature up changes its cards. Other Races may still use the Keyword. The first Main Keyword in bold is the **Race Keyword**: only a Unit of that Race can have it, from a Card, a Token or any other effect. A Skill Card of any Class can still give its effect, for example Entangled ([ADR-0026](../adr/0026-each-race-has-one-race-keyword.md)). Poison is in v1 ([ADR-0015](../adr/0015-poison-is-elf-summon-is-undead-and-last-breath-is-orc.md)). Hobble is a Goblin Main Keyword, and one Human card borrows it. Sabotage is the Goblin signature, and Trample is the Feral signature ([ADR-0017](../adr/0017-sabotage-and-hobble-are-goblin-and-trample-is-feral.md)). Knockback is in v1 ([ADR-0016](../adr/0016-knockback-is-a-human-melee-keyword.md)). Shieldbearer has Knockback. Bleed is a Feral Keyword on the Frostfang Lynx and Old Frostmaw only. It is not a Main Keyword ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Entangle is the Elf Race Keyword, but only a Ranged Unit with Base Rank Epic or higher has it ([ADR-0022](../adr/0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md)). Thus it is on 2 Elf cards only: Canopy Vinewarden and Lethiel, First Gardener.
 
 ### 3.3 Regions (draft names)
 
@@ -148,7 +148,7 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 - A Unit with Speed 0 never moves.
 - An Entangled Unit has Speed 0 during its next action.
 - A Hobbled Unit moves at most 1 Square. The limit applies after all bonuses.
-- A **Pushed** Unit changes Square toward its own Hero. A push is not Movement. It does not use Speed. Frozen, Entangled, Hobbled and Flying do not stop it. See Knockback in 4.7.
+- A **Pushed** Unit changes Square toward its own Hero. A push is not Movement. It does not use Speed. Frozen, Entangled, Hobbled and Flying do not stop it. Knockback (4.7) and the Skill Card *Warning Shot* (5.5) push a Unit. They use the same push rules.
 
 ### 4.6 Attack
 
@@ -207,8 +207,9 @@ To calculate damage, do these steps in this order:
 
 ### 4.8 Skill Cards and Recall
 
-- A Skill Card has a **Target**. The Target can be a Unit, a Lane, a Square area, a Hero, the Hand, or all Units.
-- After the effect, roll **Recall**. If the roll succeeds, the card goes back to the Hand with its full Countdown. If the roll fails, the card goes to the **Graveyard**.
+- A Skill Card has a **Target**. The Target can be a Unit, a Lane, a Square area, a Hero, the Hand, or all Units. A Hero target is an enemy Hero that is not Defeated. A Hero has no Armor and cannot Block (4.7), so Skill damage to a Hero has no Block roll. It can Crit.
+- A Skill Card damage hit that kills a Unit, also when the Unit comes back with Rebirth, applies no other part of the effect to that Unit: no Status and no push.
+- After the effect, roll **Recall**. When the effect ends the Battle, no Recall roll occurs. If the roll succeeds, the card goes back to the Hand with its full Countdown. If the roll fails, the card goes to the **Graveyard**.
 - A **Field Effect** is a Skill Card effect that stays on a Square area for a number of Turns. For example, *Wildfire* (draft) puts fire on 2 × 2 Squares for 2 Turns.
 
 ### 4.9 Death
@@ -343,11 +344,11 @@ The Hero has one Class. The Class decides which Skill Cards the Deck can hold.
 | Class | Role | Example Skill Cards |
 | --- | --- | --- |
 | **Warrior** | Buffs and tempo | *War Drums*: the Countdown of 2 random cards in your Hand goes down by 1. *Shield Wall*: friendly Units in one Lane get Armor 1 for the next 2 enemy Turns. A new Shield Wall resets it. Units that come into the Lane later do not get it. |
-| **Ranger** | Control and Hero damage | *Long Shot* (draft): 4 Physical damage to the enemy Hero. *Distraction* (draft): the Countdown of 1 random card in the enemy Hand goes up by 1. |
+| **Ranger** | Control and Hero damage | *Pinning Shot*: 3 Physical damage to an enemy Unit. If the damage is above 0 and the Unit survives, it becomes Entangled. *Warning Shot*: 2 Physical damage to an enemy Unit. If the Unit survives, it is Pushed 2 Squares toward its own Hero, also at 0 damage. *Long Shot*: 4 Physical damage to the enemy Hero. No Ranger card delays the enemy Hand: that is the Goblin Keyword Sabotage. |
 | **Mage** | Area damage and Field Effects | *Fireball*: 3 Fire damage to an enemy Unit and to the Square behind it in the same Lane. It does not damage friendly Units. *Wildfire* (draft): Field Effect, 2 Fire damage per Turn on 2 × 2 Squares for 2 Turns. |
 | **Priest** | Healing, protection and return | *Mend* (draft): heal 6 HP to one Unit. *Return from Rest* (draft): summon the last friendly Creature from your Graveyard into an empty Square of your Summon Zone. |
 
-*War Drums*, *Shield Wall* and *Fireball* are real cards. Their source of truth is `packages/rules/src/content/cards.ts`. The other examples are drafts.
+*War Drums*, *Shield Wall*, *Pinning Shot*, *Warning Shot*, *Long Shot* and *Fireball* are real cards. Their source of truth is `packages/rules/src/content/cards.ts`. The other examples are drafts.
 
 The player can change the Class at any time outside a Battle, at no cost. A Deck that has Skill Cards of another Class is not valid until the player removes them.
 
@@ -550,7 +551,10 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - In each Play Phase, the AI gives a score to each legal play (each Ready card in each legal place). It plays the best play, and then scores again. It stops when no play has a score above 0. A play that has no effect scores 0.
 - The score uses: threat in each Lane, damage that the AI's Hero will take, Units that the play can kill, and the value of the card.
 - For a Creature Card, the AI selects a Lane and a Column of its Summon Zone, or Columns 1 to 5 for a Wall. It prefers the deepest empty Square that is nearer its Hero than the nearest enemy Unit in that Lane, so that its Unit blocks the enemy. It summons past an enemy Unit only with a Pivot Unit, or when the Lane has no enemy threat.
-- Some Skill Card effects have a Hold Rule: the AI keeps a Ready card until a condition is true, for example Shield Wall until an enemy Unit is in the Lane. A Hold Rule never stops a play that prevents lethal Hero damage, or a play that empties a full Hand while the Deck has cards. When heal cards come, the AI keeps a heal card until a Unit has lost 50% of its HP.
+- Some Skill Card effects have a Hold Rule: the AI keeps a Ready card until a condition is true, for example Shield Wall until an enemy Unit is in the Lane. A Hold Rule never stops a play that prevents lethal Hero damage, or a play that empties a full Hand while the Deck has cards. The Ranger Hold Rules:
+  - *Pinning Shot*: the AI plays it when the hit kills, or when the target would move in its next action: the hit deals damage above 0, and the target is not a Wall, not Frozen, not already Entangled, has Speed 1 or more, and the Square in front of it is empty.
+  - *Warning Shot* and *Long Shot*: no Hold Rule. For *Warning Shot*, the AI selects the enemy Unit nearest to its Hero that the push moves at least 1 Square. If the push moves no Unit, it selects the enemy Unit that takes the most damage.
+- When heal cards come, the AI keeps a heal card until a Unit has lost 50% of its HP.
 - Difficulty comes from the enemy Deck, card Ranks and Hero HP. The AI logic is the same in all Stages.
 - When a Side has more than one Hero, the AI plays the Ready cards of each Hero in the same Play Phase. It scores the plays of all the Heroes together.
 - Auto-play uses the same AI for the player's side.
@@ -585,7 +589,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Collection | All cards, filters, card details |
 | Workshop | Combine, Extract, Craft |
 | Hero | Class, Gear, portrait |
-| Packs | Pack types, drop rates, open animation |
+| Packs | The Peddler, Merchant and Royal Packs, each with a Race Pack version. The Drop Rates, the Pack Guarantees, Open ×10 and the open animation (Economy 3.1) |
 | Achievements | List, progress, rewards |
 | Bazaar | Cosmetics and Conveniences, prices in Heynstones, the Heynstone balance |
 | Settings | A modal dialog in the center of the screen, not a separate screen (see 11.4). Audio, language, speed, reduced motion, text size, save export and import |

@@ -2,9 +2,11 @@ import type {
   CardDefinition,
   ClassId,
   CoinDenomination,
+  CreatureCardDefinition,
   DamageType,
   RaceId,
   RankId,
+  TokenId,
   UnitRole,
 } from "@workspace/rules";
 import {
@@ -16,6 +18,7 @@ import {
   LANE_LENGTH,
   MAX_COPIES,
   PLAYER_LEVEL_XP,
+  RACE_KEYWORDS,
   RANKS,
   rankPips,
   ranksOf,
@@ -28,6 +31,7 @@ import {
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
   SUMMON_ZONE_DEPTH,
+  TOKENS,
   TURN_LIMIT,
   WALL_SUMMON_DEPTH,
 } from "@workspace/rules";
@@ -37,6 +41,7 @@ import {
   FLAG_KEYWORDS,
   STATUS_TEXT,
   TOKEN_KEYWORDS,
+  tokenNameKey,
   VALUE_KEYWORDS,
 } from "@/features/battle/card-text";
 import type { Glyph } from "@/features/battle/glyphs";
@@ -166,6 +171,7 @@ export type KeywordValueKind =
   | "starsTable"
   | "coinTable"
   | "playerLevelTable"
+  | "tokenGallery"
   | "card";
 
 /** Attack and HP on a sample card face for the Common Rank guide. */
@@ -318,6 +324,46 @@ export const PLAYER_LEVEL_UNLOCK_TABLE: readonly {
   { level: 30, rule: { key: "handbook.playerUnlock.dungeon3" } },
 ];
 
+/** A Token that a card in the game summons, and the cards that summon it. */
+export interface GalleryToken {
+  readonly tokenId: TokenId;
+  readonly summoners: readonly CreatureCardDefinition[];
+}
+
+/**
+ * The Tokens of the Token Entry: each Token that a Creature Card summons, in
+ * the order of the Token data, with its summoners in the order of the cards.
+ * A Token that no card summons is not in the game, so it is not in the list.
+ */
+export const tokenGallery = (
+  cards: readonly CardDefinition[]
+): readonly GalleryToken[] =>
+  Object.values(TOKENS).flatMap((token) => {
+    const summoners = cards.filter(
+      (card): card is CreatureCardDefinition =>
+        card.kind === "creature" && card.keywords.summon === token.id
+    );
+    return summoners.length > 0 ? [{ tokenId: token.id, summoners }] : [];
+  });
+
+export const TOKEN_GALLERY = tokenGallery(CARDS);
+
+/**
+ * The cards that summon the Token at a Rank. A card exists only from its Base
+ * Rank up, and its Token has the Rank of the card.
+ */
+export const summonersAt = (
+  token: GalleryToken,
+  rank: RankId
+): readonly CreatureCardDefinition[] =>
+  token.summoners.filter(
+    (card) => RANKS.indexOf(card.baseRank) <= RANKS.indexOf(rank)
+  );
+
+/** The lowest Rank at which a card summons the Token. */
+export const firstTokenRank = (token: GalleryToken): RankId =>
+  RANKS.find((rank) => summonersAt(token, rank).length > 0) ?? "legendary";
+
 const RANK_TABLE_KEYWORDS = rankTableKeywords(CARDS);
 
 const keywordEntry = (keyword: Keyword): Entry => {
@@ -396,6 +442,34 @@ const namedEntry = (
 });
 
 const glyph = (name: Glyph): EntryIcon => ({ kind: "glyph", glyph: name });
+
+/**
+ * The Entry of a Race: its style, then its Race Keyword (ADR-0026) with a link
+ * to the Keyword Entry. The Keyword comes from the rules table, not the copy.
+ */
+const raceEntry = (race: RaceId): Entry => {
+  const entry = namedEntry(
+    `race${capitalize(race)}`,
+    "kinds",
+    `races.${race}`,
+    {
+      kind: "glyph",
+      glyph: raceGlyph(race),
+    }
+  );
+  const keyword = RACE_KEYWORDS[race];
+  return {
+    ...entry,
+    body: [
+      ...entry.body,
+      {
+        key: "handbook.raceKeyword",
+        args: { keyword: keywordEntry(keyword).name },
+      },
+    ],
+    seeAlso: [keywordEntryId(keyword)],
+  };
+};
 
 const rankEntry = (rank: RankId): Entry => {
   const entry: Entry = {
@@ -507,7 +581,9 @@ const plainEntry = (id: EntryId, chapter: ChapterId): Entry => {
           ? "coinTable"
           : id === "playerLevel"
             ? "playerLevelTable"
-            : undefined,
+            : id === "token"
+              ? "tokenGallery"
+              : undefined,
   };
 };
 
@@ -613,7 +689,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
 const withLinks = (entry: Entry): Entry => ({
   ...entry,
   diagram: DIAGRAMS[entry.id],
-  seeAlso: SEE_ALSO[entry.id] ?? [],
+  seeAlso: [...entry.seeAlso, ...(SEE_ALSO[entry.id] ?? [])],
 });
 
 /**
@@ -631,12 +707,7 @@ export const ENTRIES: readonly Entry[] = [
   term("damageType", "statuses"),
   ...DAMAGE_TYPES.map(damageEntry),
   term("race", "kinds"),
-  ...RACES_WITH_CARDS.map((race) =>
-    namedEntry(`race${capitalize(race)}`, "kinds", `races.${race}`, {
-      kind: "glyph",
-      glyph: raceGlyph(race),
-    })
-  ),
+  ...RACES_WITH_CARDS.map(raceEntry),
   term("class", "kinds"),
   ...CLASSES_WITH_CARDS.map((classId) =>
     namedEntry(`class${capitalize(classId)}`, "kinds", `classes.${classId}`, {
@@ -760,6 +831,15 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "playerLevel",
   "coin",
 ]);
+
+/**
+ * The Translation Keys of the names that also find an Entry in the search: a
+ * Token name finds the Token Entry, for example "Skeleton → Token".
+ */
+export const nameAliasKeys = (id: EntryId): readonly string[] =>
+  id === "token"
+    ? TOKEN_GALLERY.map((token) => tokenNameKey(token.tokenId))
+    : [];
 
 /** The Translation Key of the aliases of an Entry: a list with commas. */
 export const aliasKey = (id: EntryId): string => `handbook.aliases.${id}`;

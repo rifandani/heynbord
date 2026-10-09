@@ -10,6 +10,7 @@ import { LaneStrip } from "@/features/handbook/components/lane-strip";
 import { PlayerLevelGuide } from "@/features/handbook/components/player-level-guide";
 import { RankGuide } from "@/features/handbook/components/rank-guide";
 import { StarsTable } from "@/features/handbook/components/stars-table";
+import { TokenGallery } from "@/features/handbook/components/token-gallery";
 import type { Entry, EntryId } from "@/features/handbook/handbook";
 import { getEntry, RANK_TABLE } from "@/features/handbook/handbook";
 import { DIAGRAMS } from "@/features/handbook/handbook-diagrams";
@@ -72,8 +73,17 @@ const RankTable = () => {
   );
 };
 
-const KeywordValue = ({ entry }: { readonly entry: Entry }) => {
+const KeywordValue = ({
+  entry,
+  onOpen,
+}: {
+  readonly entry: Entry;
+  readonly onOpen: (id: EntryId) => void;
+}) => {
   const { tr } = useGameText();
+  if (entry.value === "tokenGallery") {
+    return <TokenGallery onOpen={onOpen} />;
+  }
   if (entry.value === "starsTable") {
     return <StarsTable />;
   }
@@ -188,7 +198,7 @@ export const EntryPage = ({
         </div>
       </header>
       <Body entry={entry} />
-      <KeywordValue entry={entry} />
+      <KeywordValue entry={entry} onOpen={onOpen} />
       <Diagram entry={entry} />
       <SeeAlso entry={entry} onOpen={onOpen} />
     </article>

@@ -3,11 +3,14 @@ import type { FocusEvent } from "react";
 import { useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 
-/** A card whose Card Details show, and the page that it is on. */
+/**
+ * A card whose Card Details show, and the page that it is on: a page of the
+ * Deck book, or the Token gallery of the Handbook.
+ */
 export interface Peek {
   readonly cardId: string;
   readonly rank: RankId;
-  readonly from: "pool" | "deck";
+  readonly from: "pool" | "deck" | "handbook";
 }
 
 /**
