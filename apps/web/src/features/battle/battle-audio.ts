@@ -24,7 +24,12 @@ export type SoundName =
   | "ready"
   | "turn"
   | "victory"
-  | "defeat";
+  | "defeat"
+  | "packTear"
+  | "cardFlip"
+  | "revealRare"
+  | "revealEpic"
+  | "revealLegendary";
 
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -171,6 +176,29 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
     for (const [index, note] of [392, 349, 311, 262].entries()) {
       tone(note, 0.35, { delay: index * 0.16, gain: 0.18, type: "sine" });
     }
+  },
+  // The Packs screen: the paper of a Pack tears, then a card turns over.
+  packTear: () => {
+    noise(0.28, 3200, 0.22);
+    noise(0.16, 1400, 0.12);
+  },
+  cardFlip: () => noise(0.07, 2400, 0.14),
+  // The chime of a revealed card grows with its Rank.
+  revealRare: () => {
+    tone(784, 0.22, { type: "sine", gain: 0.14 });
+    tone(1175, 0.3, { type: "sine", delay: 0.08, gain: 0.1 });
+  },
+  revealEpic: () => {
+    for (const [index, note] of [659, 831, 988, 1319].entries()) {
+      tone(note, 0.32, { type: "sine", delay: index * 0.07, gain: 0.13 });
+    }
+  },
+  revealLegendary: () => {
+    for (const [index, note] of [523, 659, 784, 1046, 1319, 1568].entries()) {
+      tone(note, 0.5, { type: "sine", delay: index * 0.075, gain: 0.14 });
+    }
+    tone(2093, 0.9, { type: "sine", delay: 0.45, slideTo: 2637, gain: 0.05 });
+    noise(0.6, 5200, 0.05);
   },
 };
 

@@ -396,13 +396,12 @@ const SkillBody = ({
             </TermName>
           </Stat>
         ) : null}
-        <Stat glyph="recall">{text(content.recall)}</Stat>
+        <Stat glyph="recall">
+          <TermName entry="recall">{text(content.recall)}</TermName>
+        </Stat>
       </ul>
       <Divider />
       <p>{text(content.effect)}</p>
-      <p className={`mt-1 text-xs leading-snug ${INK_MUTED}`}>
-        {text(content.reminder)}
-      </p>
     </>
   );
 };

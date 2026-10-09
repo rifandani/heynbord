@@ -12,8 +12,11 @@ import {
   DEV_OVERRIDES_KEY,
   parseOverrides,
   serializeOverrides,
+  setBalance,
   unlockedCollection,
 } from "@/features/dev-panel/dev-overrides";
+import type { BalanceKind } from "@/features/town/town";
+import { balancesAtom } from "@/features/town/town.atoms";
 
 /** True while the Collection is the unlocked Collection of the panel. */
 const unlockAllAtom = Atom.make(false).pipe(Atom.keepAlive);
@@ -36,6 +39,7 @@ const save = (registry: AtomRegistry.AtomRegistry) => {
       serializeOverrides({
         unlockAll: registry.get(unlockAllAtom),
         stageResults: registry.get(stageResultsAtom),
+        balances: registry.get(balancesAtom),
       })
     );
   } catch {
@@ -57,9 +61,11 @@ const applyResults = (
   registry.set(tutorialStageWonAtom, (results[TUTORIAL_STAGE_ID] ?? 0) > 0);
 };
 
+const NEW_PLAYER_BALANCES = { coin: 0, essence: 0, heynstones: 0 };
+
 /**
  * Applies the stored overrides once, then keeps the store up to date, also
- * with the Stage results of real Battles. It does nothing until the panel is
+ * with the Stage results and the balances of real play. It does nothing until the panel is
  * first used, so a plain development session still starts as a new Player.
  * Mount it with the devtools, not with the panel: a panel mounts only while
  * its tab is open.
@@ -76,12 +82,21 @@ export const useDevOverridesSync = () => {
     if (overrides !== null) {
       applyUnlockAll(registry, overrides.unlockAll);
       applyResults(registry, overrides.stageResults);
+      if (overrides.balances !== undefined) {
+        registry.set(balancesAtom, overrides.balances);
+      }
     }
-    return registry.subscribe(stageResultsAtom, () => {
+    const saveIfUsed = () => {
       if (readStored()) {
         save(registry);
       }
-    });
+    };
+    const unsubscribeResults = registry.subscribe(stageResultsAtom, saveIfUsed);
+    const unsubscribeBalances = registry.subscribe(balancesAtom, saveIfUsed);
+    return () => {
+      unsubscribeResults();
+      unsubscribeBalances();
+    };
   }, [registry]);
 };
 
@@ -99,6 +114,13 @@ export const useDevOverrides = () => {
       applyResults(registry, results);
       save(registry);
     },
+    setBalance: (kind: BalanceKind, value: number) => {
+      registry.set(
+        balancesAtom,
+        setBalance(registry.get(balancesAtom), kind, value)
+      );
+      save(registry);
+    },
     /** Removes the stored overrides and starts again as a new Player. */
     clear: () => {
       try {
@@ -108,6 +130,7 @@ export const useDevOverrides = () => {
       }
       applyUnlockAll(registry, false);
       applyResults(registry, {});
+      registry.set(balancesAtom, NEW_PLAYER_BALANCES);
     },
   };
 };

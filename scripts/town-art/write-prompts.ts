@@ -16,6 +16,11 @@
  *   `packs` icon. The other Packs match it in outline, brush and scale.
  * - `raw/packs/prompts.md`: the setup message, then one prompt for each
  *   Pack, in the order of section 8.3.
+ * - `raw/shop/layout.png`: the layout sketch of the Card shop inside, with
+ *   the areas of section 9.2.
+ * - `raw/shop/pack-reference.png`: the three Packs side by side, so the
+ *   Packs on the shelves are the Packs of the game.
+ * - `raw/shop/prompts.md`: the setup message, then the painting message.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -30,6 +35,8 @@ import {
   PAINTING_PROMPT,
   PAINTING_SETUP_PROMPT,
   setupPromptOf,
+  SHOP_PROMPT,
+  SHOP_SETUP_PROMPT,
 } from "./prompts.ts";
 import { PACK_SUBJECT, SUBJECT } from "./subjects.ts";
 
@@ -94,6 +101,96 @@ const writeStyleReference = async (file: string) => {
   })
     .composite(
       tiles.map((input, index) => ({ input, left: index * TILE.width, top: 0 }))
+    )
+    .png()
+    .toFile(file);
+};
+
+/** The Card shop inside: the size of the ChatGPT image (section 9.1). */
+const SHOP = { width: 1536, height: 1024 } as const;
+
+/** A box in percent of the shop image, as in the table of 9.2. */
+const shopBox = (x0: number, x1: number, y0: number, y1: number) =>
+  `x="${(x0 * SHOP.width) / 100}" y="${(y0 * SHOP.height) / 100}" width="${((x1 - x0) * SHOP.width) / 100}" height="${((y1 - y0) * SHOP.height) / 100}"`;
+
+/** Small Pack shapes in a row on a shelf, in the three Pack colors. */
+const packRow = (x0: number, x1: number, y: number): string => {
+  const colors = ["#c79a5b", "#6b3fa0", "#8e1f2c"];
+  const left = (x0 * SHOP.width) / 100;
+  const right = (x1 * SHOP.width) / 100;
+  const top = (y * SHOP.height) / 100;
+  const count = Math.floor((right - left - 6) / 30);
+  return Array.from(
+    { length: count },
+    (_, index) =>
+      `<rect x="${left + 6 + index * 30}" y="${top}" width="22" height="34" fill="${colors[index % 3]}"/>`
+  ).join("");
+};
+
+/**
+ * The layout sketch of the Card shop inside: flat shapes at the areas of the
+ * table in section 9.2. ChatGPT keeps its composition, not its colors.
+ */
+const writeShopLayout = async (file: string) => {
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${SHOP.width}" height="${SHOP.height}">`,
+    // The back wall.
+    `<rect width="100%" height="100%" fill="#7a5638"/>`,
+    // The side shelves.
+    `<rect ${shopBox(0, 22, 54, 80)} fill="#5a3a22"/>`,
+    `<rect ${shopBox(82, 100, 12, 80)} fill="#5a3a22"/>`,
+    ...[20, 32, 44, 56, 68].map((y) => packRow(84, 100, y)),
+    // The calm curtain in the center.
+    `<rect ${shopBox(22, 78, 25, 82)} fill="#3a2238"/>`,
+    // The high shelf with Packs, and the goblin apprentice at its right end.
+    `<rect ${shopBox(22, 78, 13, 25)} fill="#5a3a22"/>`,
+    packRow(23, 77, 17),
+    `<circle cx="${0.7 * SHOP.width}" cy="${0.115 * SHOP.height}" r="26" fill="#6fa055"/>`,
+    // The ceiling beams and the three lanterns.
+    `<rect ${shopBox(0, 100, 0, 9)} fill="#3b2414"/>`,
+    ...[22, 50, 78].map(
+      (x) =>
+        `<circle cx="${(x * SHOP.width) / 100}" cy="${0.15 * SHOP.height}" r="24" fill="#ffd27a"/>`
+    ),
+    // The round window and the kraft parcels with the cat.
+    `<circle cx="${0.11 * SHOP.width}" cy="${0.3 * SHOP.height}" r="${0.16 * SHOP.height}" fill="#f6e7b0"/>`,
+    `<rect ${shopBox(3, 16, 60, 78)} fill="#c79a5b"/>`,
+    `<ellipse cx="${0.095 * SHOP.width}" cy="${0.585 * SHOP.height}" rx="70" ry="26" fill="#e08a3a"/>`,
+    // The shopkeeper.
+    `<circle cx="${0.88 * SHOP.width}" cy="${0.34 * SHOP.height}" r="70" fill="#d9b49a"/>`,
+    `<rect ${shopBox(80, 96, 42, 80)} rx="60" fill="#5b3d86"/>`,
+    // The counter, with the bell and the coin chest.
+    `<rect ${shopBox(0, 100, 80, 100)} fill="#b0763e"/>`,
+    `<rect ${shopBox(0, 100, 84, 100)} fill="#8a5a2c"/>`,
+    `<circle cx="${0.05 * SHOP.width}" cy="${0.775 * SHOP.height}" r="20" fill="#d9a441"/>`,
+    `<rect ${shopBox(84, 93, 73, 80)} fill="#e9c46a"/>`,
+    "</svg>",
+  ].join("");
+  await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/** The three Pack sources side by side, in the order of section 8.3. */
+const writePackReference = async (file: string) => {
+  const ids = ["peddler", "merchant", "royal"] as const;
+  const size = { width: 320, height: 480 } as const;
+  const tiles = await Promise.all(
+    ids.map((id) =>
+      sharp(path.join(ROOT, PACK_SOURCE_DIR, `${id}-pack.webp`))
+        .resize(size.width, size.height, { fit: "contain" })
+        .png()
+        .toBuffer()
+    )
+  );
+  await sharp({
+    create: {
+      width: size.width * ids.length,
+      height: size.height,
+      channels: 3,
+      background: "#3a2238",
+    },
+  })
+    .composite(
+      tiles.map((input, index) => ({ input, left: index * size.width, top: 0 }))
     )
     .png()
     .toFile(file);
@@ -225,6 +322,39 @@ const packsFile = (packs: readonly Icon[]): string => {
   ].join("\n");
 };
 
+const SHOP_FIXES = [
+  "| Problem | Fix |",
+  "| --- | --- |",
+  '| The center is busy or bright | Select the center and send "Edit the image only in the selected area: a plain deep plum velvet curtain with soft folds in dim warm light. Keep all else the same." |',
+  "| The shopkeeper or the window is in the center | Send the painting message again. |",
+  '| A flat wall with no depth, or a view from behind the counter | Add "a cozy room with depth, seen from the customer\'s side of the counter". |',
+  "| A loose card face, or a pack that is not one of the three | Select it and ask for a closed card pack of image 3. |",
+  "| Text-like marks on a sign or a pack | Select the area and ask for the material around it, for example plain wood or plain foil. |",
+].join("\n");
+
+const shopFile = (): string =>
+  [
+    "# Card shop inside prompts",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `pack-reference.png`. Send the setup message.",
+    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
+    "3. Select one image with the review checklist (Town Concepts, 9.6). Fix small problems with the edit tool of ChatGPT (see below).",
+    "4. Do steps 3 to 5 of Town Concepts, 9.5.",
+    "",
+    "## Setup message",
+    "",
+    block(SHOP_SETUP_PROMPT),
+    "",
+    "## Painting",
+    "",
+    block(SHOP_PROMPT),
+    "",
+    "## Fixes",
+    "",
+    SHOP_FIXES,
+    "",
+  ].join("\n");
+
 /** Fails when `subjects` has an ID that the table does not have. */
 const checkExtra = (
   rows: readonly Icon[],
@@ -247,7 +377,9 @@ checkExtra(packs, PACK_SUBJECT, "Packs");
 const paintingDir = path.join(RAW_DIR, "painting");
 const barDir = path.join(RAW_DIR, "bar");
 const packsDir = path.join(RAW_DIR, "packs");
+const shopDir = path.join(RAW_DIR, "shop");
 mkdirSync(paintingDir, { recursive: true });
+mkdirSync(shopDir, { recursive: true });
 mkdirSync(barDir, { recursive: true });
 mkdirSync(packsDir, { recursive: true });
 await writeStyleReference(path.join(RAW_DIR, "style-reference.png"));
@@ -265,6 +397,9 @@ await sharp(path.join(ROOT, PACK_SET_REFERENCE))
   .png()
   .toFile(path.join(packsDir, "set-reference.png"));
 writeFileSync(path.join(packsDir, "prompts.md"), packsFile(packs));
+await writeShopLayout(path.join(shopDir, "layout.png"));
+await writePackReference(path.join(shopDir, "pack-reference.png"));
+writeFileSync(path.join(shopDir, "prompts.md"), shopFile());
 console.log(
   `Town Bar: ${icons.length} icons, set reference ${SET_REFERENCE ?? "none"}`
 );
@@ -272,5 +407,5 @@ console.log(
   `Packs: ${packs.length} Packs, set reference ${PACK_SET_REFERENCE}`
 );
 console.log(
-  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md and ${RAW_DIR}/packs/prompts.md`
+  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md and ${RAW_DIR}/shop/prompts.md`
 );

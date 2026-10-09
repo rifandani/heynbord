@@ -124,7 +124,7 @@ export type { StageOutcome } from "./content/stage-coin";
 export { getStage, STAGES } from "./content/stages";
 export { getToken, TOKENS } from "./content/tokens";
 export { isTutorial, TUTORIAL_STAGE_ID } from "./modes/tutorial";
-export { openPack, openTenPacks } from "./packs/open-pack";
+export { openPack, openTenPacks, packPool } from "./packs/open-pack";
 export type {
   GuaranteeSource,
   OpenedPack,

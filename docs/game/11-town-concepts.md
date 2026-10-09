@@ -1,6 +1,6 @@
 # 11 — Town Concepts
 
-This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons, and section 8 gives the brief for the Pack art.
+This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons, section 8 gives the brief for the Pack art, and section 9 gives the brief for the inside of the Card shop, behind the Packs screen.
 
 Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1986 × 941). It is the 1672 × 941 original, stretched to the side: the center 400 code units keep their shape, and the stretch increases to 1.67× at the left and right edges. This lets a wide desktop screen show the full Heynspire and the full Town Gate. The Town Gate layer `town-gate.webp` and the Card shop layer `card-shop.webp` are cut out of the painting by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 4000 × 1800 can replace it with no code change if it keeps the same composition.
 
@@ -187,6 +187,7 @@ The game docs do not keep the image prompts of the Town. Run `bun town:prompts` 
 - `painting/prompts.md`: the setup message, then the painting message.
 - `bar/`: the prompts of the Town Bar icons (7.2).
 - `packs/`: the prompts of the Pack art (8.2).
+- `shop/`: the prompts of the Card shop inside (9.4).
 
 The painting message is a short form of the briefs in sections 1 and 2. It is in `scripts/town-art/prompts.ts`. When you change a brief, change the painting message too, then run the script again.
 
@@ -348,4 +349,78 @@ The licence record (art direction 5.5) of the Pack art is part of the release it
 - [ ] The background is transparent, with no ground shadow.
 - [ ] No text, letters, runes, logo or signature in the image.
 - [ ] The Packs do not look like the card packs of another game.
+- [ ] The style matches the golden references.
+
+## 9. Card shop inside
+
+The Packs screen shows the inside of the Card shop (2.7) behind the Packs. One painting covers the full screen. It makes the shop warm, full and a little rich, so that the Player wants to open a Pack. The image is `apps/web/public/town/card-shop-inside.webp`.
+
+### 9.1 Rules for the shop art
+
+- **One painting, a full room.** The room fills the image to all edges. There is no frame and no border.
+- **View.** From the customer's side of the counter, at eye level, straight on. The counter goes across the full width at the bottom.
+- **A calm center.** The Packs, their plates and the Pool strip cover the center (9.2). There, the painting is a plain dark plum curtain with soft folds, low contrast and no small details. Thus the Packs and the text stay easy to read. The details, the people and the bright light are at the left, at the right and at the top.
+- **Value.** Mid-dark in total. The brightest areas are the round window and the lantern light. The center is the darkest area, darker than the sides, so that the gold of the Packs and the cream text show clearly.
+- **Light.** From the upper left, through the round window, as in all other art. Warm lanterns add small pools of light.
+- **The three Packs.** All packs on the shelves and in the hands of the people are the three Packs of section 8, at a small size: the kraft parcel, the purple foil and the crimson velvet. They have no Race stamp.
+- **No loose cards.** No card face shows, because a card can show a Rank.
+- **No text.** Signs and labels show only simple shapes: a gold four-point star, a crown or a coin. No letters, numbers, runes or logo.
+- **Detail and humor.** Bright, warm and a little funny (art direction 1). The people and the jokes stay at the sides and at the top.
+- **Size.** Landscape 3:2. Make at 1536 × 1024 and export at the same size. The screen covers its full area with the image, so a wide screen crops the top and the bottom, and a 4:3 screen crops the sides.
+
+### 9.2 Positions on the painting
+
+The boxes are in percent of the 1536 × 1024 image. The layout sketch of 9.3 shows them. On a 1366 × 768 laptop screen, the Packs and their plates cover about x 14 to 86 and y 25 to 83. On a wider screen, more of the sides shows.
+
+| Area | Box (x, y) | Content |
+| --- | --- | --- |
+| Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The shopkeeper's face and the window must be in it. |
+| Calm center | x 22 to 78, y 25 to 82 | A plain deep plum velvet curtain with soft folds, lit softly from above. The Packs stand in front of it. |
+| High shelf | x 22 to 78, y 13 to 25 | Rows of the three Packs. A goblin apprentice on top of the right end. The Pool strip covers its lower edge. |
+| Ceiling | x 0 to 100, y 0 to 12 | Dark wood beams, three brass lanterns, strings of pennants and Pack bundles. The title plate and the Balance Plate cover the top corners. |
+| Round window | x 2 to 22, y 14 to 46 | The round shop window of 2.7, from the inside. Morning light comes in. A child presses its face on the glass. |
+| Left corner | x 0 to 22, y 54 to 80 | A stack of kraft parcels with a sleeping cat on top. |
+| Shopkeeper | x 80 to 96, y 26 to 80 | The shopkeeper behind the counter, with tall shelves of Packs behind. The pack in his hand stays in this box too: next to the Royal Pack, it looks like a fourth Pack. |
+| Counter | x 0 to 100, y 80 to 100 | A honey-brown wood counter with a carved front. A brass bell at the left end, a coin chest and a coin scale at the right end. The Town Bar covers its lower part. |
+
+### 9.3 Subjects
+
+| Subject | Brief |
+| --- | --- |
+| Shopkeeper | A plump, cheerful old human with a big curled grey moustache, round spectacles and a purple waistcoat with gold buttons. He leans toward the Player, holds up a Merchant Pack proudly and winks. |
+| Apprentice | A small goblin on top of the high shelf. He carries too many Packs and almost drops one. |
+| Cat | A fat ginger cat asleep on the kraft parcels. |
+| Child | Outside the round window, a small child presses its face and both hands on the glass, as in the humor note of 2.7. |
+| Riches | Gold coins in an open chest, a brass scale and brass lanterns. They show that the shop is a place of treasure. |
+
+### 9.4 Prompts
+
+The game docs do not keep the prompts of the shop art. Run `bun town:prompts` to write them to `apps/web/art/town/raw/shop/` (section 3). Git ignores this folder.
+
+- `layout.png`: the layout sketch, with flat shapes at the boxes of 9.2.
+- `../style-reference.png`: the style reference of section 3.
+- `pack-reference.png`: the three Packs side by side, from `apps/web/art/packs/`.
+- `prompts.md`: the setup message, the painting message and a list of fixes.
+
+The painting message is a short form of 9.1 to 9.3. It is in `scripts/town-art/prompts.ts`. When you change the brief, change the painting message and the layout sketch too, then run the script again.
+
+### 9.5 Steps
+
+1. Run `bun town:prompts`. Make 4 to 8 images with `shop/prompts.md` and the references of 9.4, with GPT Image and high quality, at 1536 × 1024.
+2. Select one image with the checklist in 9.6.
+3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting (the fixes in `prompts.md`).
+4. Put a screenshot of the Packs screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the Packs.
+5. Export as WebP with no alpha: `cwebp -q 80 card-shop-inside.png -o card-shop-inside.webp`. If the source is already a smaller WebP, use the source. Put the file in `apps/web/public/town/` as `card-shop-inside.webp`, and keep the full-size source in `apps/web/art/town/`. `packs-screen.tsx` shows it (cover, centered), with darker edges over it.
+
+The licence record (art direction 5.5) of the shop art is part of the release item in the [roadmap](./09-roadmap.md), not a step of this section.
+
+### 9.6 Review checklist
+
+- [ ] The center behind the Packs is calm and dark, and the plates and the Pack text stay easy to read.
+- [ ] The shopkeeper, the window, the apprentice and the cat are each easy to find, and they are not in the center.
+- [ ] The packs in the shop are the three Packs of section 8, and no card face shows.
+- [ ] The room looks warm and full, and it makes the Player want to open a Pack.
+- [ ] The light comes from the upper left.
+- [ ] No text, letters, runes, logo or signature in the image.
+- [ ] The shop does not look like a known shop from another game.
 - [ ] The style matches the golden references.

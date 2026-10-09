@@ -650,43 +650,7 @@
   }
 }
 
-/*
- * A Pack opens (Town Concepts 8.1): the closed image lifts, shakes, then
- * grows a little and fades. The face-down cards come in after it.
- */
-@keyframes pack-open {
-  0% {
-    translate: 0 0;
-    rotate: 0deg;
-    scale: 1;
-    opacity: 1;
-  }
-  25% {
-    translate: 0 -16px;
-  }
-  35% {
-    rotate: -4deg;
-  }
-  45% {
-    rotate: 4deg;
-  }
-  55% {
-    rotate: -3deg;
-  }
-  65% {
-    translate: 0 -16px;
-    rotate: 0deg;
-    scale: 1;
-    opacity: 1;
-  }
-  100% {
-    translate: 0 -24px;
-    scale: 1.12;
-    opacity: 0;
-  }
-}
-
-/* A face-down card comes out of the Pack to its place. */
+/* An Open ×10 highlight card comes in. */
 @keyframes pack-deal {
   from {
     opacity: 0;
@@ -713,6 +677,195 @@
   from {
     opacity: 0;
     translate: 0 6px;
+  }
+}
+
+/*
+ * The Pack tears open after its shake: the top strip flies off, the body
+ * drops away, and a light in the color of the best Rank comes out of the tear.
+ */
+@keyframes pack-shake {
+  0% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+  30% {
+    translate: 0 -14px;
+  }
+  45% {
+    rotate: -4deg;
+  }
+  60% {
+    rotate: 4deg;
+  }
+  75% {
+    rotate: -2deg;
+  }
+  100% {
+    translate: 0 -14px;
+    rotate: 0deg;
+  }
+}
+
+@keyframes pack-tear-top {
+  to {
+    translate: -2.5em -9em;
+    rotate: -24deg;
+    opacity: 0;
+  }
+}
+
+@keyframes pack-tear-body {
+  40% {
+    opacity: 1;
+  }
+  to {
+    translate: 0 1.6em;
+    scale: 0.94;
+    opacity: 0;
+  }
+}
+
+/* A light that grows out of a point and fades: the tear, and a Rare+ flip. */
+@keyframes pack-burst {
+  0% {
+    opacity: 0;
+    scale: 0.2;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.6;
+  }
+}
+
+/* The rays behind an Epic or Legendary card turn a little while they fade. */
+@keyframes pack-rays {
+  0% {
+    opacity: 0;
+    scale: 0.4;
+    rotate: 0deg;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.25;
+    rotate: 35deg;
+  }
+}
+
+/* A ring in the Rank color goes out from a flipped Rare+ card. */
+@keyframes pack-ring {
+  from {
+    opacity: 0.95;
+    scale: 0.7;
+  }
+  to {
+    opacity: 0;
+    scale: 1.7;
+  }
+}
+
+/* A Legendary card jumps a little toward the Player when its face shows. */
+@keyframes pack-pop {
+  0%,
+  100% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.1;
+  }
+}
+
+/* The NEW chip stamps onto a card. */
+@keyframes pack-stamp {
+  0% {
+    opacity: 0;
+    scale: 1.9;
+    rotate: -14deg;
+  }
+  60% {
+    opacity: 1;
+    scale: 0.9;
+    rotate: 0deg;
+  }
+}
+
+/* The face-down cards fan out of the Pack, from the center to their places. */
+@keyframes pack-fan {
+  from {
+    opacity: 0;
+    translate: var(--fan-x, 0) -2.5em;
+    rotate: var(--fan-rotate, 0deg);
+    scale: 0.55;
+  }
+}
+
+/* The Collection groove fills from the count before the Pack to the count after it. */
+@keyframes collection-fill {
+  from {
+    scale: var(--fill-from, 0) 1;
+  }
+}
+
+/* The Card shop lights breathe a little, as a flame does. */
+@keyframes shop-lamp {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  40% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0.85;
+  }
+}
+
+/* Dust in the window light drifts up and fades. */
+@keyframes shop-mote {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  20%,
+  70% {
+    opacity: var(--mote-opacity, 0.8);
+  }
+  100% {
+    opacity: 0;
+    translate: var(--mote-x, 24px) -90px;
+  }
+}
+
+/* A line of light goes across the foil of a Pack under the pointer. */
+@keyframes shop-sheen {
+  from {
+    translate: -130% 0;
+  }
+  to {
+    translate: 130% 0;
+  }
+}
+
+/* The shopkeeper's speech bubble grows out of its tail. */
+@keyframes shopkeeper-say {
+  0% {
+    opacity: 0;
+    scale: 0.55;
+    translate: 10px 10px;
+  }
+  70% {
+    opacity: 1;
+    scale: 1.03;
+  }
+  100% {
+    scale: 1;
+    translate: 0 0;
   }
 }
 

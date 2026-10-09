@@ -194,8 +194,6 @@ export interface SkillCardText {
   /** The effect, with the values of the Rank. */
   readonly effect: TextRef;
   readonly recall: TextRef;
-  /** A muted line that explains Recall. */
-  readonly reminder: TextRef;
 }
 
 export type CardText = CreatureCardText | SkillCardText;
@@ -407,7 +405,6 @@ export const cardText = (cardId: string, rank: RankId): CardText => {
     kind: "skill",
     effect: skillEffect(card, rank),
     recall: { key: "battle.recall", args: { value: recall } },
-    reminder: { key: "battle.recallReminder", args: { value: recall } },
   };
 };
 

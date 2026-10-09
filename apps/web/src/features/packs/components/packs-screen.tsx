@@ -24,25 +24,34 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { RACES_WITH_CARDS } from "@/features/deck/deck";
 import { shownHintAtom } from "@/features/hint/hint.atoms";
 import { DropRatesDialog } from "@/features/packs/components/drop-rates-dialog";
+import { FoundMeter } from "@/features/packs/components/found-meter";
 import { CoinPrice, PackArt } from "@/features/packs/components/pack-art";
 import { PackReveal } from "@/features/packs/components/pack-reveal";
+import {
+  ShopkeeperBubble,
+  ShopScene,
+} from "@/features/packs/components/shop-scene";
 import type {
   OpenCount,
   PackOrder,
   PackState,
+  PoolProgress,
   RevealedPack,
 } from "@/features/packs/packs";
 import {
+  bestRank,
   dropRateBar,
   isFreeOrder,
   missingCoin,
+  newCardCount,
   orderPrice,
   packsToGuarantee,
+  poolProgress,
 } from "@/features/packs/packs";
+import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { useGuaranteeText } from "@/features/packs/use-guarantee-text";
 import { usePacks } from "@/features/packs/use-packs";
 import { BalancePlate } from "@/features/town/components/balance-plate";
-import { coinWords } from "@/features/town/town";
 
 /** "All cards", or one Race for the Race Packs. */
 type Pool = "all" | RaceId;
@@ -53,22 +62,60 @@ const POOLS: readonly Pool[] = ["all", ...RACES_WITH_CARDS];
 const PLATE =
   "flex items-center rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
 
-const useFormat = () => {
-  const { tr, locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const format = (value: number) => number.format(value);
-  const words = (copper: number) =>
-    coinWords(copper, format, (denomination) =>
-      tr(`town.balances.denominations.${denomination}.name`)
-    );
-  const short = (copper: number) =>
-    coinDenominations(copper)
-      .map(
-        (part) =>
-          `${format(part.amount)}${tr(`town.balances.denominations.${part.denomination}.short`)}`
-      )
-      .join(" ");
-  return { format, words, short };
+/** The welcome lines of the shopkeeper, one after the other. */
+const WELCOMES = ["a", "b", "c"] as const;
+
+/** Each visit to the shop starts at the next welcome line. */
+let visits = 0;
+
+/** What the shopkeeper says. */
+type ShopLine =
+  | { readonly kind: "firstVisit" }
+  | { readonly kind: "welcome"; readonly index: number }
+  | { readonly kind: "complete" }
+  | { readonly kind: "pool"; readonly pool: Pool }
+  /** After a reveal: the best Rank, and the number of new cards. */
+  | {
+      readonly kind: "reaction";
+      readonly rank: RankId;
+      readonly fresh: number;
+    };
+
+const useShopLineText = () => {
+  const { tr } = useGameText();
+  return (line: ShopLine): string => {
+    switch (line.kind) {
+      case "firstVisit": {
+        return tr("packs.shopkeeper.firstVisit");
+      }
+      case "welcome": {
+        const key = WELCOMES[line.index % WELCOMES.length] ?? "a";
+        return tr(`packs.shopkeeper.welcome.${key}`);
+      }
+      case "complete": {
+        return tr("packs.shopkeeper.complete");
+      }
+      case "pool": {
+        return line.pool === "all"
+          ? tr("packs.shopkeeper.all")
+          : tr(`packs.shopkeeper.races.${line.pool}`);
+      }
+      default: {
+        if (
+          line.rank === "rare" ||
+          line.rank === "epic" ||
+          line.rank === "legendary"
+        ) {
+          return tr(`packs.shopkeeper.reactions.${line.rank}`);
+        }
+        return tr(
+          line.fresh > 0
+            ? "packs.shopkeeper.reactions.fresh"
+            : "packs.shopkeeper.reactions.copies"
+        );
+      }
+    }
+  };
 };
 
 const segment = ({ isSelected }: { readonly isSelected: boolean }) =>
@@ -249,7 +296,7 @@ const OpenButton = ({
   readonly onOpen: (order: PackOrder) => void;
 }) => {
   const { tr } = useGameText();
-  const { format, words, short } = useFormat();
+  const { format, words, short } = useCoinFormat();
   const name = tr(`packs.names.${order.pack}`);
   const free = isFreeOrder(order, packState);
   const price = orderPrice(order, packState);
@@ -341,6 +388,7 @@ const PackStand = ({
         race={race}
         free={free}
         dim={missingCoin(one, packState, coin) > 0}
+        sheen
         className="z-10 -mb-3 h-[min(34dvh,250px)] transition-transform duration-150 ease-out group-hover/stand:-translate-y-1 motion-reduce:transition-none [@media(max-height:500px)]:mb-0 [@media(max-height:500px)]:h-auto [@media(max-height:500px)]:w-[30%] [@media(max-height:500px)]:shrink-0"
       />
       <section
@@ -390,27 +438,67 @@ const PackStand = ({
   );
 };
 
-/** The open reveal: the order and its opened Packs. */
+/** The open reveal: the order, its opened Packs and the pool count before them. */
 interface Opened {
   readonly order: PackOrder;
   readonly packs: readonly RevealedPack[];
+  readonly progress: PoolProgress;
+  /** A new number for each purchase, so Open another starts a new reveal. */
+  readonly serial: number;
 }
 
 /**
- * The Packs screen (Economy 3.1): the three Packs side by side on a shelf of
- * the Card shop, the pool control (all cards or one Race), the Drop Rates
- * dialog and the Balance Plate. An Open button buys the Packs and opens the
- * reveal over the screen.
+ * The Packs screen (Economy 3.1): the inside of the Card shop, where the
+ * three Packs stand side by side on the counter. The pool control (all cards
+ * or one Race) and the "Cards found" count of that pool, the Drop Rates dialog
+ * and the Balance Plate. The lamps breathe and dust drifts in the window
+ * light. The shopkeeper talks: a welcome, a line for the selected pool, and a
+ * reaction to the last reveal; a press on him gives a new welcome. An Open
+ * button buys the Packs and opens the reveal over the screen.
  */
 export const PacksScreen = () => {
   const { tr } = useGameText();
-  const { balances, coin, packState, buy } = usePacks();
+  const lineText = useShopLineText();
+  const { balances, coin, packState, collection, classId, buy } = usePacks();
   const [hint, setHint] = useAtom(shownHintAtom);
   const [pool, setPool] = useState<Pool>("all");
   const [opened, setOpened] = useState<Opened | null>(null);
   const race = pool === "all" ? null : pool;
+  const progress = useMemo(
+    () => poolProgress(race, classId, collection),
+    [race, classId, collection]
+  );
+  const [say, setSay] = useState<{
+    readonly line: ShopLine;
+    readonly serial: number;
+  }>(() => {
+    visits += 1;
+    if (!packState.freePackUsed) {
+      return { line: { kind: "firstVisit" }, serial: 0 };
+    }
+    return progress.found >= progress.total
+      ? { line: { kind: "complete" }, serial: 0 }
+      : { line: { kind: "welcome", index: visits - 1 }, serial: 0 };
+  });
+  const talk = (line: ShopLine) =>
+    setSay((current) => ({ line, serial: current.serial + 1 }));
+
+  const changePool = (next: Pool) => {
+    setPool(next);
+    const nextProgress = poolProgress(
+      next === "all" ? null : next,
+      classId,
+      collection
+    );
+    talk(
+      nextProgress.found >= nextProgress.total
+        ? { kind: "complete" }
+        : { kind: "pool", pool: next }
+    );
+  };
 
   const open = (order: PackOrder) => {
+    const before = poolProgress(order.race, classId, collection);
     const packs = buy(order);
     if (!packs) {
       return;
@@ -420,7 +508,28 @@ export const PacksScreen = () => {
     if (hint === "freePack") {
       setHint(null);
     }
-    setOpened({ order, packs });
+    setOpened((current) => ({
+      order,
+      packs,
+      progress: before,
+      serial: (current?.serial ?? 0) + 1,
+    }));
+  };
+
+  const close = () => {
+    if (opened) {
+      talk({
+        kind: "reaction",
+        rank: bestRank(opened.packs),
+        fresh: newCardCount(opened.packs),
+      });
+    }
+    setOpened(null);
+  };
+
+  const welcomeNext = () => {
+    visits += 1;
+    talk({ kind: "welcome", index: visits - 1 });
   };
 
   return (
@@ -429,18 +538,16 @@ export const PacksScreen = () => {
       className="fade-in animate-in fixed inset-0 overflow-hidden bg-[#2a1824] text-[#fff6df] duration-300 motion-reduce:animate-none"
       data-testid="packs"
     >
-      {/* The Card shop inside: a plum plank wall in the warm light of a lamp. */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: [
-            "radial-gradient(ellipse 70% 55% at 50% 18%, rgba(255,196,120,0.28), transparent 70%)",
-            "repeating-linear-gradient(90deg, rgba(0,0,0,0.16) 0 2px, transparent 2px 120px)",
-            "linear-gradient(180deg, #4a2c45 0%, #34203a 45%, #1f1420 100%)",
-          ].join(", "),
-        }}
-        aria-hidden
-      />
+      {/* The Card shop inside (Town Concepts, section 9). */}
+      <ShopScene>
+        {opened ? null : (
+          <ShopkeeperBubble
+            line={lineText(say.line)}
+            serial={say.serial}
+            onTalk={welcomeNext}
+          />
+        )}
+      </ShopScene>
       <div className="absolute inset-x-0 top-[max(0.5rem,env(safe-area-inset-top))] z-20 flex items-start gap-2 px-[max(0.5rem,env(safe-area-inset-left))]">
         <header
           className={cn(
@@ -459,11 +566,27 @@ export const PacksScreen = () => {
         </header>
       </div>
       <BalancePlate balances={balances} />
-      <div className="absolute inset-x-0 top-[calc(max(0.5rem,env(safe-area-inset-top))+4.5rem)] bottom-[80px] flex flex-col items-center justify-center gap-6 px-2 pb-4 [@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[56px] [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-2">
-        <PoolStrip pool={pool} onChange={setPool} />
+      <div className="pointer-events-none absolute inset-x-0 top-[calc(max(0.5rem,env(safe-area-inset-top))+4.5rem)] bottom-[80px] flex flex-col items-center justify-center gap-6 px-2 pb-4 [@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[56px] [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-2">
+        {/* On a tall screen, "Cards found" is under the pool strip, so the
+            row stays narrow and the shopkeeper has room to talk. */}
+        <div
+          className="pointer-events-auto flex max-w-full items-center gap-2 [@media(min-height:760px)]:flex-col [@media(min-height:760px)]:gap-1.5"
+          data-shop-avoid
+        >
+          <PoolStrip pool={pool} onChange={changePool} />
+          <div
+            className={cn(
+              PLATE,
+              "h-11 shrink-0 px-3 [@media(max-height:500px)]:h-9 [@media(max-height:500px)]:px-2 [@media(min-height:760px)]:h-9"
+            )}
+          >
+            <FoundMeter progress={progress} />
+          </div>
+        </div>
         <ul
-          className="flex items-end justify-center gap-[min(2rem,2.5vw)] [@media(max-height:500px)]:gap-[1.5vw]"
+          className="pointer-events-auto flex items-end justify-center gap-[min(2rem,2.5vw)] [@media(max-height:500px)]:gap-[1.5vw]"
           data-testid="pack-list"
+          data-shop-avoid
         >
           {PACKS.map((pack) => (
             <PackStand
@@ -479,9 +602,17 @@ export const PacksScreen = () => {
       </div>
       {opened ? (
         <PackReveal
+          key={opened.serial}
           order={opened.order}
           packs={opened.packs}
-          onClose={() => setOpened(null)}
+          progress={opened.progress}
+          again={
+            missingCoin(opened.order, packState, coin) === 0
+              ? { price: orderPrice(opened.order, packState) }
+              : null
+          }
+          onAgain={() => open(opened.order)}
+          onClose={close}
         />
       ) : null}
     </main>

@@ -56,7 +56,7 @@ const cardTextRefs = (text: CardText): TextRef[] =>
         ...text.keywords.flatMap((keyword) => [keyword.name, keyword.rule]),
         ...(text.damageRule ? [text.damageRule] : []),
       ]
-    : [text.name, text.flavor, text.effect, text.recall, text.reminder];
+    : [text.name, text.flavor, text.effect, text.recall];
 
 const allRefs = (ref: TextRef): TextRef[] => [
   ref,
@@ -207,9 +207,6 @@ describe("cardText (CRD-08)", () => {
       "Deal 6 Fire damage to an enemy Unit and the next 1 Square behind it."
     );
     expect(resolve(text.recall)).toBe("Recall 50%");
-    expect(resolve(text.reminder)).toBe(
-      "After its effect, this card has a 50% chance to go back to your Hand. Else it goes to the Graveyard."
-    );
     expect(resolve(skill("warrior.shieldWall", "common").effect)).toBe(
       "Friendly Units in a Lane get Armor 1 for the next 2 enemy Turns."
     );

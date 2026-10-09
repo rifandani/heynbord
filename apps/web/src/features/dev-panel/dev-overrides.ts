@@ -3,6 +3,7 @@ import { CARDS, MAX_COPIES, ranksOf } from "@workspace/rules";
 import { Option, Schema } from "effect";
 
 import type { StageResults } from "@/features/campaign/region-map";
+import type { Balances } from "@/features/town/town";
 
 /**
  * The state that the Game Dev Panel keeps in the browser. Development only: the
@@ -11,6 +12,14 @@ import type { StageResults } from "@/features/campaign/region-map";
 const DevOverrides = Schema.Struct({
   unlockAll: Schema.Boolean,
   stageResults: Schema.Record(Schema.String, Schema.Number),
+  // Optional: overrides stored before the panel set balances have none.
+  balances: Schema.optionalKey(
+    Schema.Struct({
+      coin: Schema.Number,
+      essence: Schema.Number,
+      heynstones: Schema.Number,
+    })
+  ),
 });
 export type DevOverrides = typeof DevOverrides.Type;
 
@@ -35,6 +44,20 @@ export const unlockedCollection = (): Collection =>
   CARDS.flatMap((card) =>
     ranksOf(card).map((rank) => ({ cardId: card.id, rank, copies: MAX_COPIES }))
   );
+
+/**
+ * A balance that the panel can set: a whole number, 0 or more. An empty or a
+ * bad value gives 0. Coin is a number of Copper (Economy 1.1).
+ */
+export const wholeBalance = (value: number): number =>
+  Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+
+/** The balances with one balance set to a whole number. */
+export const setBalance = (
+  balances: Balances,
+  kind: keyof Balances,
+  value: number
+): Balances => ({ ...balances, [kind]: wholeBalance(value) });
 
 export const totalCopies = (collection: Collection): number =>
   collection.reduce((sum, entry) => sum + entry.copies, 0);

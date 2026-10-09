@@ -64,7 +64,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. A Ranged Unit never has Frost damage, because it could Freeze the same enemy before each action of that enemy. _Avoid_: stun, chill, slow
 
-**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned, Hobbled or Bleeding. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. _Avoid_: debuff, condition, ailment
+**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned, Hobbled, Bleeding or Ward. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
+
+**Buff**: A Status that helps its Unit. Ward is the only Buff. A bonus to a stat, such as the Rally bonus, the Swarm bonus or bonus Armor, is not a Buff. _Avoid_: blessing, boon, positive status
+
+**Debuff**: A Status that harms its Unit: Burn, Freeze, Entangled, Poisoned, Hobbled or Bleeding. _Avoid_: ailment, curse, negative status
 
 **Entangled**: A Status from the Entangle Keyword or from a Skill Card. An Entangled Unit has Speed 0 during its next action, but it can still attack. Entangled then ends. _Avoid_: rooted, snared, slowed
 
@@ -79,6 +83,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Bleed N**: A Keyword. After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding for N End Phases. Retaliate does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Wound, Rend, Maim, anti-heal
 
 **Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
+
+**Ward N**: A Status from a Skill Card. A Ward absorbs damage to its Unit, after Armor, Crit and Block, up to N. Its value goes down by the damage that it absorbs, and it ends at 0. It absorbs all damage, also Holy, Burn and Poison damage. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. A Ward has no time limit. A new Ward keeps the higher value. _Avoid_: shield, barrier, absorb, aegis
 
 **Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
 
@@ -272,6 +278,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - Each **Hero** has one **Front**. A Hero can summon into the **Summon Zone** of any Front of its Side. Its **Skill Cards** can target any **Square**, and an enemy **Hero** that is not **Defeated**.
 - A **Stage** has 3 **Lanes**. A **Dungeon**, a **Floor** and a Battle with 2 or more **Players** have 4 Lanes. The type of Battle sets the number of Lanes. A Stage or a Dungeon can make the Board smaller only with **Closed Lanes**.
 - A **Unit** belongs to the Hero that summoned it, and uses that Hero's **Gear**.
+- A **Skill Card** or a **Keyword** can heal a **Unit**. Nothing heals a **Hero**: in a Battle, Hero HP only goes down ([ADR-0028](../../docs/adr/0028-nothing-heals-a-hero.md)).
 - When a Hero is **Defeated**, its Units and **Field Effects** are removed, and its **Front** goes to the nearest Hero of its Side that is not Defeated.
 - A **Side** that is **Routed** loses, also when its Heroes still have HP. The rule is the same for the Player's Side and the enemy Side. A Side is not Routed while one of its Heroes has a rule that can still put a Unit on the Board.
 - A **Deck Slot** belongs to the **Player**, not to a **Hero**. Each Deck Slot keeps one **Deck** and its Hero **Class**. The **Starter Decks** are in the first Deck Slots of a new Player.
@@ -327,6 +334,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - Rimebreath Drake was a Ranged Unit with Frost damage before. It Froze the nearest enemy before each action of that enemy, so that enemy almost never acted (issue #24). Unlike Entangle, a higher Base Rank does not fix this: an Epic Frost Shooter locked its target longer. Now no Ranged Unit has Frost damage, at any Rank ([ADR-0025](../../docs/adr/0025-no-ranged-unit-has-frost-damage.md)). A melee Frost Unit can also Freeze the Unit in front of it again, but only in a few Battles.
 - A Shooter had Range 3 to 5 before. The Range 4 Elf Shooters made Thornwatch win about 87% of its Matchups (issue #23). Now each Shooter has **Range** 3.
 - No rule gave a Unit Speed 2 before, and 19 Creature Cards had it, also a Frontliner (Militia Recruit) and 3 Goblin Strikers. Now the **Role** sets the Speed: 1 by default, 2 or more for a Runner, and 2 for an Orc melee Striker, because Orc is the fast Race. Another card can break this only with a written reason.
+- "debuff" was on the _Avoid_ list of **Status** before, because every Status harmed its Unit. **Ward** is the first Status that helps its Unit, so each Status is now a **Buff** or a **Debuff**. Players also say "buff" for a Rally bonus or for bonus Armor. Those are bonuses to a stat, not Buffs.
 - "Elf Skill Cards" is not a term. A **Skill Card** has a **Class**, not a **Race**. The Skill Cards of the Elf Archetype Thornwatch are **Ranger** Skill Cards, and each other Ranger Deck, for example the Goblin Deck Tunnel Rats, can use them too.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.
 - There were two Packs before: the Standard Pack (all Cards) and the Race Pack, with one Drop Rate table. Now there are three Packs with their own Drop Rates: **Peddler**, **Merchant** and **Royal**. The **Merchant Pack** replaces the Standard Pack. **Race Pack** is not a fourth Pack: it is a version of each of the three. Players say "gacha" and "pity". The terms are **Pack** and **Pack Guarantee**.

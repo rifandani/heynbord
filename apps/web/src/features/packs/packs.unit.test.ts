@@ -1,11 +1,12 @@
 import type { Collection, OpenedPack } from "@workspace/rules";
-import { getPack, PACK_SIZE, starterCollection } from "@workspace/rules";
+import { CARDS, getPack, PACK_SIZE, starterCollection } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { INITIAL_DECK_SLOTS } from "@/features/deck/deck";
 import type { PackOrder, PackWallet } from "@/features/packs/packs";
 import {
   addCopies,
+  bestRank,
   buyPacks,
   discoveredCards,
   dropRateBar,
@@ -13,9 +14,11 @@ import {
   isFreeOrder,
   markNew,
   missingCoin,
+  newCardCount,
   newPackState,
   orderPrice,
   packsToGuarantee,
+  poolProgress,
   tenPackGrid,
   tenPackHighlights,
 } from "@/features/packs/packs";
@@ -264,5 +267,64 @@ describe("heroClass", () => {
       raiders?.classId
     );
     expect(heroClass(INITIAL_DECK_SLOTS, "gone")).toBe(vanguard?.classId);
+  });
+});
+
+describe("poolProgress", () => {
+  it("counts each Discovered card of the pool one time, in any Rank", () => {
+    const empty = poolProgress("orc", "warrior", []);
+    expect(empty.found).toBe(0);
+    expect(empty.total).toBeGreaterThan(0);
+    const orc = CARDS.find(
+      (card) => card.kind === "creature" && card.race === "orc"
+    );
+    if (!orc) {
+      throw new Error("No Orc card");
+    }
+    const collection: Collection = [
+      { cardId: orc.id, rank: "common", copies: 2 },
+      { cardId: orc.id, rank: "rare", copies: 1 },
+    ];
+    expect(poolProgress("orc", "warrior", collection)).toEqual({
+      found: 1,
+      total: empty.total,
+    });
+    // An Orc card is in "All cards" too, but not in another Race pool.
+    expect(poolProgress(null, "warrior", collection).found).toBe(1);
+    expect(poolProgress("elf", "warrior", collection).found).toBe(0);
+  });
+
+  it("has the Skill Cards of the Hero Class in All cards only", () => {
+    const all = poolProgress(null, "warrior", []).total;
+    const creatures = CARDS.filter((card) => card.kind === "creature").length;
+    expect(all).toBeGreaterThan(creatures);
+  });
+});
+
+describe("newCardCount and bestRank", () => {
+  const packs = [
+    {
+      cards: [
+        { cardId: "a", rank: "common", isNew: true },
+        { cardId: "b", rank: "epic", isNew: false },
+      ],
+      guaranteedBy: null,
+    },
+    {
+      cards: [
+        { cardId: "a", rank: "rare", isNew: true },
+        { cardId: "c", rank: "uncommon", isNew: true },
+      ],
+      guaranteedBy: null,
+    },
+  ] as const;
+
+  it("counts each new card one time", () => {
+    expect(newCardCount(packs)).toBe(2);
+  });
+
+  it("is the highest Rank of the opening", () => {
+    expect(bestRank(packs)).toBe("epic");
+    expect(bestRank([])).toBe("common");
   });
 });

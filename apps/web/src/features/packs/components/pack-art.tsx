@@ -38,6 +38,7 @@ export const PackArt = ({
   race,
   free = false,
   dim = false,
+  sheen = false,
   className,
 }: {
   readonly pack: PackId;
@@ -45,6 +46,12 @@ export const PackArt = ({
   readonly free?: boolean;
   /** The Player cannot buy this Pack now. */
   readonly dim?: boolean;
+  /**
+   * A line of light goes across the Pack when its stand (`group/stand`) is
+   * under the pointer or has the focus. The Pack image is its mask, so the
+   * light only touches the Pack.
+   */
+  readonly sheen?: boolean;
   readonly className?: string;
 }) => {
   const { tr } = useGameText();
@@ -65,6 +72,19 @@ export const PackArt = ({
           dim && "brightness-[0.7] grayscale-[0.35]"
         )}
       />
+      {sheen ? (
+        <span
+          className="pointer-events-none absolute inset-0 overflow-hidden"
+          style={{
+            maskImage: `url(${packImage(pack)})`,
+            maskSize: "contain",
+            maskRepeat: "no-repeat",
+            maskPosition: "center",
+          }}
+        >
+          <span className="absolute inset-y-0 left-0 w-1/2 translate-x-[-130%] bg-[linear-gradient(105deg,transparent_15%,rgba(255,246,220,0.5)_50%,transparent_85%)] motion-safe:group-hover/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-has-[[data-focus-visible]]/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)]" />
+        </span>
+      ) : null}
       {race ? <RaceStamp race={race} /> : null}
       {free ? (
         <span

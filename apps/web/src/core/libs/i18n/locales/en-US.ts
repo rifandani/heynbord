@@ -112,8 +112,6 @@ export default {
       enemy: "The enemy casts {name}",
       recalled: "Back to the Hand",
     },
-    recallReminder:
-      "After its effect, this card has a {value}% chance to go back to your Hand. Else it goes to the Graveyard.",
     player: "You",
     enemy: "Enemy",
     yours: "Yours",
@@ -635,6 +633,41 @@ export default {
     missingLabel: "{action}: {pack}. You need {amount} more.",
     need: "Need {amount}",
     rankBar: "Drop Rates: {rates}",
+    progress: {
+      label: "Cards found",
+      value: "{found} / {total}",
+      aria: "Cards found in this pool: {found} of {total}",
+    },
+    again: "Open another",
+    againLabel: "Open another {pack}, {price}",
+    shopkeeper: {
+      label: "The shopkeeper",
+      talk: "Talk to the shopkeeper",
+      firstVisit:
+        "Welcome, new friend! That paper Pack there is my gift to you.",
+      welcome: {
+        a: "Fresh Packs, just in from the printer!",
+        b: "Welcome back! Mind the cat. She sleeps on the Rares.",
+        c: "Good to see you again! What will it be today?",
+      },
+      all: "All the cards on one shelf. Pick a Race to look closer.",
+      races: {
+        human: "Human cards. Steady folk, good with shields.",
+        orc: "Orc cards. Hold them with both hands.",
+        goblin: "Goblin cards. Count your fingers after.",
+        feral: "Feral cards. They only bite a little.",
+        elf: "Elf cards. Mind the thorns.",
+        undead: "Undead cards. They always come back.",
+      },
+      complete: "You found every card on this shelf! I am impressed.",
+      reactions: {
+        legendary: "A Legendary! I knew that Pack had a glow to it!",
+        epic: "An Epic card! Now that is a good pull.",
+        rare: "A Rare one! Not bad at all.",
+        fresh: "New faces for your Collection. Welcome them in!",
+        copies: "Spare copies? Every card has a use. Truly!",
+      },
+    },
     guarantee: {
       inPacks: "{rank} or higher in {count} Packs",
       next: "{rank} or higher in the next Pack",
@@ -693,6 +726,8 @@ export default {
       seeAll: "See all cards",
       highlightCount: "Epic and Legendary: {number} of {count}",
       summary: "{cards} cards · {fresh} new cards",
+      gain: "New cards: {count}",
+      noneNew: "No new cards this time. Every card still has a use.",
       byGuarantee:
         "Pack Guarantee: this Pack gave a card of the Guarantee Rank.",
       byTenBonus:

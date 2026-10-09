@@ -8,11 +8,13 @@ import {
   nextStage,
   parseOverrides,
   serializeOverrides,
+  setBalance,
   setStageStars,
   stageOrder,
   totalCopies,
   undoLast,
   unlockedCollection,
+  wholeBalance,
   winNext,
 } from "@/features/dev-panel/dev-overrides";
 
@@ -51,10 +53,37 @@ describe("overrides storage", () => {
     expect(parseOverrides(serializeOverrides(overrides))).toEqual(overrides);
   });
 
+  it("reads back the balances", () => {
+    const overrides = {
+      unlockAll: false,
+      stageResults: {},
+      balances: { coin: 15_400, essence: 30, heynstones: 150 },
+    };
+    expect(parseOverrides(serializeOverrides(overrides))).toEqual(overrides);
+  });
+
   it("gives null for a missing or a bad value", () => {
     expect(parseOverrides(null)).toBeNull();
     expect(parseOverrides("not json")).toBeNull();
     expect(parseOverrides('{"unlockAll":"yes"}')).toBeNull();
+  });
+});
+
+describe("balances", () => {
+  it("keeps a balance whole and not below 0", () => {
+    expect(wholeBalance(250)).toBe(250);
+    expect(wholeBalance(12.6)).toBe(13);
+    expect(wholeBalance(-5)).toBe(0);
+    expect(wholeBalance(Number.NaN)).toBe(0);
+  });
+
+  it("sets one balance and keeps the others", () => {
+    const balances = { coin: 100, essence: 5, heynstones: 7 };
+    expect(setBalance(balances, "essence", 40)).toEqual({
+      coin: 100,
+      essence: 40,
+      heynstones: 7,
+    });
   });
 });
 

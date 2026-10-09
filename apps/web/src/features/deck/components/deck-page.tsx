@@ -178,7 +178,7 @@ const DeckLine = ({
           {card.countdown}
         </span>
         <span
-          className="h-7 overflow-hidden rounded-md border-2 [@media(max-height:500px)]:h-5"
+          className="h-7 overflow-hidden rounded-md border-2 bg-[#1f140b] [@media(max-height:500px)]:h-5"
           style={{ borderColor: RANK_COLORS[row.rank] }}
           aria-hidden
         >

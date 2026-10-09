@@ -112,3 +112,39 @@ export const packPromptOf = (subject: string): string =>
     "no text, no letters, no numbers, no runes, no logo, no watermark.",
     "Tall 2:3 portrait.",
   ].join("\n");
+
+/**
+ * The first message of the ChatGPT conversation for the Card shop inside,
+ * with the layout sketch, the style reference and the Pack reference
+ * attached. The rules come from section 9.1 of the Town Concepts.
+ */
+export const SHOP_SETUP_PROMPT = [
+  "In this conversation, you will paint the inside of the card shop of a fantasy card battle game: the background of the shop screen, where the player buys card packs.",
+  [
+    "Image 1 is a rough layout sketch. Keep its composition: the round window at the upper left, the shopkeeper at the right, the long counter along the bottom, the ceiling beams, lanterns and high shelf at the top, and the calm dark curtain in the center. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the three card packs that the shop sells: a kraft paper parcel with twine, a purple foil pack with a blue band, and a crimson velvet pack with gold corners. All packs in the shop are these three packs, at a small size. Match their materials and seals.",
+  ].join("\n"),
+  "The game shows its buttons and three large packs over the center of the painting. Thus the center stays calm, soft and dark, and the details and the bright light are at the left, at the right and at the top.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for the Card shop inside, after its setup message. It is a
+ * short form of the brief in section 9 of the Town Concepts. When you change
+ * the brief there, change this message too.
+ */
+export const SHOP_PROMPT = [
+  "the cozy inside of a small fantasy card shop, seen from the customer's side of the counter at eye level, straight on, wide 3:2 landscape, the room fills the full image to all edges,",
+  "at the upper left a large round shop window with small panes, bright morning light streams in through it and falls across the room, outside the glass a small child presses its face and both hands on the window,",
+  "under the window a tall stack of kraft paper card parcels tied with twine, a fat ginger cat asleep on top of the stack,",
+  "at the far right edge a plump, cheerful old shopkeeper with a big curled grey moustache, round spectacles and a purple waistcoat with gold buttons stands behind the counter, he winks and holds one purple foil card pack up next to his cheek, his face, his hands and the pack stay inside the right fifth of the image,",
+  "behind him tall wooden shelves packed full of card packs,",
+  "in the center a deep plum velvet curtain hangs behind the counter like a small stage, softly lit from above by a brass lamp, plain and calm, with only soft folds,",
+  "above the curtain a long high shelf with rows of card packs: brown kraft parcels, purple foil packs and crimson velvet packs with gold corners, on top of the shelf at the right a small goblin apprentice carries too many packs and almost drops one,",
+  "dark wooden ceiling beams across the top, three hanging brass lanterns with warm candle light, small strings of colored pennants, bundles of packs that hang on strings,",
+  "a long polished honey-brown wooden counter runs across the full width at the bottom, with a carved front panel, a brass bell on its left end, a small open chest full of gold coins and a brass coin scale on its right end,",
+  "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a welcoming, rich and a little funny mood,",
+  "light from the upper left, warm wood, plum and purple, gold and brass accents, cream highlights,",
+  "the center is darker and softer than the sides, signs show only a gold star or a crown, no text, no letters, no labels, no logo, no frame, no UI",
+].join("\n");

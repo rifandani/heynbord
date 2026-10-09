@@ -13,6 +13,7 @@ import {
   getPack,
   openPack,
   openTenPacks,
+  packPool,
   PACKS,
   RANKS,
   TEN_PACKS,
@@ -213,6 +214,44 @@ export const buyPacks = (
 };
 
 const rankIndex = (rank: RankId) => RANKS.indexOf(rank);
+
+/** How much of a Pack pool the Player has Discovered: one count for each card, not each Rank. */
+export interface PoolProgress {
+  readonly found: number;
+  readonly total: number;
+}
+
+/** The Collection progress in the pool of a Pack (`race` `null`: all cards). */
+export const poolProgress = (
+  race: RaceId | null,
+  classId: ClassId,
+  collection: Collection
+): PoolProgress => {
+  const discovered = discoveredCards(collection);
+  const pool = packPool(race, classId);
+  return {
+    found: pool.filter((card) => discovered.has(card.id)).length,
+    total: pool.length,
+  };
+};
+
+/** The number of different cards that an opening Discovered. */
+export const newCardCount = (packs: readonly RevealedPack[]): number =>
+  new Set(
+    packs.flatMap((pack) =>
+      pack.cards.flatMap((card) => (card.isNew ? [card.cardId] : []))
+    )
+  ).size;
+
+/** The highest Rank in an opening: the shop light and the shopkeeper react to it. */
+export const bestRank = (packs: readonly RevealedPack[]): RankId =>
+  packs
+    .flatMap((pack) => pack.cards)
+    .reduce<RankId>(
+      (best, card) =>
+        rankIndex(card.rank) > rankIndex(best) ? card.rank : best,
+      "common"
+    );
 
 /** The cards of Open ×10 that get a full flip before the grid: Epic and Legendary. */
 export const tenPackHighlights = (

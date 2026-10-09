@@ -5,12 +5,14 @@ import type { PressEvent } from "react-aria-components";
 
 /**
  * A card whose Card Details show, and the page that it is on: a page of the
- * Deck book, or the Token gallery of the Handbook.
+ * Deck book, the Token gallery of the Handbook, or the cards of opened Packs.
  */
 export interface Peek {
   readonly cardId: string;
   readonly rank: RankId;
-  readonly from: "pool" | "deck" | "handbook";
+  readonly from: "pool" | "deck" | "handbook" | "packs";
+  /** The place of the card, when the page can show two copies of it. */
+  readonly place?: string;
 }
 
 /**
@@ -25,7 +27,8 @@ export const isSamePeek = (shown: ShownPeek | null, target: Peek): boolean =>
   shown !== null &&
   shown.cardId === target.cardId &&
   shown.rank === target.rank &&
-  shown.from === target.from;
+  shown.from === target.from &&
+  shown.place === target.place;
 
 /** The element that holds the Card Details. */
 export const PEEK_PANEL = "[data-testid='deck-peek']";

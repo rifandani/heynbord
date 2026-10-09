@@ -99,5 +99,17 @@ test.describe("Packs with reduced motion", () => {
     ).toHaveCount(5);
     await expect(page.getByTestId("reveal-all")).toHaveCount(0);
     await expect(page.getByTestId("pack-glow")).toHaveCount(0);
+
+    // Hover on a revealed card shows its Card Details; the pointer away hides them.
+    const card = page.getByTestId("reveal-card-0");
+    const [name = ""] = ((await card.getAttribute("aria-label")) ?? "").split(
+      ", "
+    );
+    await card.hover();
+    const peek = page.getByTestId("reveal-peek");
+    await expect(peek).toBeVisible();
+    await expect(peek.getByTestId("card-details-name")).toContainText(name);
+    await page.getByTestId("reveal-done").hover();
+    await expect(peek).toBeHidden();
   });
 });

@@ -49,13 +49,11 @@ export const CountdownCurve = ({
   const { tr } = useGameText();
   const columns = countdownCurve(deck);
   return (
-    <figure className="flex flex-col gap-1.5 [@media(max-height:500px)]:gap-1">
-      <figcaption className="flex items-baseline justify-between gap-3">
-        <span className="font-display text-base font-bold [@media(max-height:500px)]:text-sm">
-          {tr("deckBuilder.curve")}
-        </span>
+    <figure>
+      {/* A well cut into the page, as the groove of the volume slider. */}
+      <div className="relative grid grid-cols-[auto_repeat(6,minmax(0,1fr))] items-end gap-x-2 rounded-xl border-2 border-[#c9b48c] bg-[#ead9b4] px-3 pt-2 pb-1.5 shadow-[inset_0_2px_4px_rgba(91,58,30,0.25)] [@media(max-height:500px)]:gap-x-1.5 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:pb-1">
         <span
-          className="flex items-center gap-3 text-xs text-[#5b4632] [@media(max-height:500px)]:hidden"
+          className="absolute top-1.5 right-2.5 z-10 flex items-center gap-3 text-xs text-[#5b4632] [@media(max-height:500px)]:top-1 [@media(max-height:500px)]:right-2 [@media(max-height:500px)]:gap-2"
           aria-hidden
         >
           <span className="flex items-center gap-1.5">
@@ -67,9 +65,6 @@ export const CountdownCurve = ({
             {tr("deckBuilder.skill")}
           </span>
         </span>
-      </figcaption>
-      {/* A well cut into the page, as the groove of the volume slider. */}
-      <div className="grid grid-cols-[auto_repeat(6,minmax(0,1fr))] items-end gap-x-2 rounded-xl border-2 border-[#c9b48c] bg-[#ead9b4] px-3 pt-2 pb-1.5 shadow-[inset_0_2px_4px_rgba(91,58,30,0.25)] [@media(max-height:500px)]:gap-x-1.5 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:pb-1">
         <span aria-hidden />
         {columns.map((column) => {
           const total = column.creatures + column.skills;
@@ -89,7 +84,7 @@ export const CountdownCurve = ({
               ))}
               <span
                 className={cn(
-                  "pb-0.5 text-center text-xs leading-none font-black text-[#2a1d12] tabular-nums [@media(max-height:500px)]:text-[10px]",
+                  "pb-0.5 text-center text-xs leading-none font-black text-[#2a1d12] tabular-nums",
                   total === 0 && "invisible"
                 )}
                 aria-hidden

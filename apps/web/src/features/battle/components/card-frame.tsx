@@ -20,6 +20,7 @@ import {
   tokenIllustration,
 } from "@/features/battle/card-art";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { HeynbordEmblem } from "@/features/battle/components/heynbord-emblem";
 import type { Glyph } from "@/features/battle/glyphs";
 import {
   cardGlyph,
@@ -206,13 +207,31 @@ const artWindowStyle = (face: FrameFace, rank: RankId): CSSProperties => ({
       : "0.55em",
 });
 
+/** The art that loaded in this page session. A new frame shows it at once, with no placeholder. */
+const loadedArt = new Set<string>();
+
+/**
+ * The placeholder while the art loads for the first time: the dark Well of an
+ * empty Hand Slot with the faded Heynbord emblem, which pulses slowly.
+ */
+const ArtPlaceholder = () => (
+  <span className="absolute inset-0 grid place-items-center bg-[#1f140b] shadow-[inset_0_0.35em_0.8em_rgba(0,0,0,0.7)]">
+    <HeynbordEmblem className="w-[3.6em] opacity-[0.16] grayscale motion-safe:animate-pulse" />
+  </span>
+);
+
 /**
  * The art of a card or a Token. One with no art yet shows its Race or Class
  * emblem on the color of the Race.
  */
 const CardArt = ({ face }: { readonly face: FrameFace }) => {
   const [missing, setMissing] = useState(() => !face.hasArt);
+  const [loaded, setLoaded] = useState(() => loadedArt.has(face.art));
   const { backdrop } = face;
+  const markLoaded = () => {
+    loadedArt.add(face.art);
+    setLoaded(true);
+  };
   if (missing) {
     return (
       <span
@@ -230,15 +249,28 @@ const CardArt = ({ face }: { readonly face: FrameFace }) => {
     );
   }
   return (
-    <img
-      src={face.art}
-      alt=""
-      draggable={false}
-      loading="lazy"
-      decoding="async"
-      onError={() => setMissing(true)}
-      className="size-full object-cover"
-    />
+    <>
+      {loaded ? null : <ArtPlaceholder />}
+      <img
+        // The image can load before hydration, and then `onLoad` does not fire.
+        ref={(img) => {
+          if (!loaded && img?.complete && img.naturalWidth > 0) {
+            markLoaded();
+          }
+        }}
+        src={face.art}
+        alt=""
+        draggable={false}
+        loading="lazy"
+        decoding="async"
+        onLoad={markLoaded}
+        onError={() => setMissing(true)}
+        className={cn(
+          "relative size-full object-cover transition-opacity duration-200 motion-reduce:transition-none",
+          loaded ? "opacity-100" : "opacity-0"
+        )}
+      />
+    </>
   );
 };
 

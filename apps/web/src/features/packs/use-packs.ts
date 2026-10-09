@@ -21,6 +21,7 @@ export const usePacks = () => {
   const registry = useContext(RegistryContext);
   const balances = useAtomValue(balancesAtom);
   const packState = useAtomValue(packStateAtom);
+  const collection = useAtomValue(collectionAtom);
   const slots = useAtomValue(deckSlotsAtom);
   const activeDeckId = useAtomValue(activeDeckIdAtom);
   const classId = heroClass(slots, activeDeckId);
@@ -46,5 +47,12 @@ export const usePacks = () => {
     return purchase.opened;
   };
 
-  return { coin: balances.coin, balances, packState, classId, buy };
+  return {
+    coin: balances.coin,
+    balances,
+    packState,
+    collection,
+    classId,
+    buy,
+  };
 };

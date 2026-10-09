@@ -6,9 +6,8 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 v1:
 
-- 43, 41, 42
+- 46, 47
 - introduce terms Buff and Debuff, Damage over Time (Dot)
-- why sometimes i see damage twice as the base attack of a units? is this some kind of critical attack? tell me more about it?
 - /grill-with-docs brainstorm with me, we need more Skills cards, every Class should have 1 Epic, 2 Rare, 3 Uncommon, 4 Common
 - /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think
 - /grill-with-docs i want to update the Keyword "Heroic N" into "+N Attack after this Unit attacks enemy Unit", with max N = 4, only Rare can have N=2, only Epic can have N=3, only Legendary can have N=4

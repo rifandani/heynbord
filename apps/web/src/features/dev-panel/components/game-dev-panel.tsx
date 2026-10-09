@@ -1,5 +1,5 @@
 import { useAtomValue } from "@effect/atom-react";
-import { CARDS, STAGES } from "@workspace/rules";
+import { CARDS, coinDenominations, STAGES } from "@workspace/rules";
 import type { StageDefinition } from "@workspace/rules";
 import { cn } from "cn";
 import { useState } from "react";
@@ -11,6 +11,8 @@ import {
 } from "react-icons/hi2";
 
 import { Button } from "@/core/components/ui/button";
+import { Description, Label } from "@/core/components/ui/field";
+import { NumberField, NumberInput } from "@/core/components/ui/number-field";
 import { Switch, SwitchField } from "@/core/components/ui/switch";
 import {
   ToggleGroup,
@@ -32,6 +34,8 @@ import {
   winNext,
 } from "@/features/dev-panel/dev-overrides";
 import { useDevOverrides } from "@/features/dev-panel/use-dev-overrides";
+import type { BalanceKind } from "@/features/town/town";
+import { balancesAtom } from "@/features/town/town.atoms";
 
 // Developer tool: its text is not player text, so it is not in the Message
 // Catalogs. Stage names still come from the game text.
@@ -67,6 +71,56 @@ const CollectionBlock = () => {
         {" · "}
         {count.format(totalCopies(collection))} copies
       </p>
+    </section>
+  );
+};
+
+const BALANCE_FIELDS: readonly {
+  readonly kind: BalanceKind;
+  readonly label: string;
+}[] = [
+  { kind: "coin", label: "Coin (Copper)" },
+  { kind: "essence", label: "Essence" },
+  { kind: "heynstones", label: "Heynstones" },
+];
+
+const DENOMINATION = { gold: "Gold", silver: "Silver", copper: "Copper" };
+
+const coinParts = (copper: number) =>
+  coinDenominations(copper)
+    .map(
+      (part) =>
+        `${count.format(part.amount)} ${DENOMINATION[part.denomination]}`
+    )
+    .join(" · ");
+
+const BalancesBlock = () => {
+  const { setBalance } = useDevOverrides();
+  const balances = useAtomValue(balancesAtom);
+  return (
+    <section
+      aria-labelledby="dev-balances"
+      className="grid content-start gap-3"
+    >
+      <Heading id="dev-balances">Balances</Heading>
+      {BALANCE_FIELDS.map(({ kind, label }) => (
+        <NumberField
+          key={kind}
+          value={balances[kind]}
+          minValue={0}
+          step={1}
+          formatOptions={{ maximumFractionDigits: 0 }}
+          onChange={(value) => setBalance(kind, value)}
+        >
+          <Label>{label}</Label>
+          <NumberInput />
+          {kind === "coin" ? (
+            <Description className="tabular-nums">
+              {coinParts(balances.coin)}
+            </Description>
+          ) : null}
+        </NumberField>
+      ))}
     </section>
   );
 };
@@ -284,8 +338,8 @@ const CampaignBlock = () => {
 };
 
 /**
- * The Game Dev Panel: a TanStack Devtools tab that unlocks all cards and wins
- * Campaign Stages one by one. Development only.
+ * The Game Dev Panel: a TanStack Devtools tab that unlocks all cards, sets the
+ * balances and wins Campaign Stages one by one. Development only.
  */
 export const GameDevPanel = ({
   theme,
@@ -305,7 +359,10 @@ export const GameDevPanel = ({
       )}
     >
       <div className="grid gap-x-10 gap-y-6 p-4 lg:grid-cols-[minmax(14rem,18rem)_minmax(0,40rem)]">
-        <CollectionBlock />
+        <div className="grid content-start gap-6">
+          <CollectionBlock />
+          <BalancesBlock />
+        </div>
         <CampaignBlock />
         <footer className="border-border flex flex-wrap items-center gap-3 border-t pt-3 lg:col-span-full">
           <p className="text-muted-fg me-auto text-xs">
