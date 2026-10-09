@@ -1,15 +1,24 @@
-import { getCard, rankPips, scaleForRank } from "@workspace/rules";
+import { getCard, getToken, rankPips, scaleForRank } from "@workspace/rules";
 import type {
   CardDefinition,
   CreatureCardDefinition,
+  DamageType,
+  RaceId,
   RankId,
   SkillCardDefinition,
+  TokenDefinition,
+  TokenId,
 } from "@workspace/rules";
 import { cn } from "cn";
 import { useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
-import { cardIllustration, hasCardArt } from "@/features/battle/card-art";
+import {
+  cardIllustration,
+  hasCardArt,
+  hasTokenArt,
+  tokenIllustration,
+} from "@/features/battle/card-art";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import {
@@ -92,24 +101,15 @@ const CountdownBadge = ({
   </span>
 );
 
-/** The Race emblem of a Creature Card, or the Class emblem of a Skill Card. */
-const Emblem = ({ card }: { readonly card: CardDefinition }) => {
-  const creature = card.kind === "creature";
-  const glyph = creature ? raceGlyph(card.race) : classGlyph(card.class);
-  return (
-    <span
-      className={cn(badgeClassName, "-top-[0.3em] -right-[0.3em] size-[2.1em]")}
-      style={{
-        backgroundColor: creature
-          ? RACE_COLORS[card.race].main
-          : PARCHMENT.main,
-        color: creature ? CREAM : PARCHMENT.ink,
-      }}
-    >
-      <GlyphIcon glyph={glyph} className="size-[1.15em]" />
-    </span>
-  );
-};
+/** The Race emblem of a Creature Card or a Token, or the Class emblem of a Skill Card. */
+const Emblem = ({ face }: { readonly face: FrameFace }) => (
+  <span
+    className={cn(badgeClassName, "-top-[0.3em] -right-[0.3em] size-[2.1em]")}
+    style={{ backgroundColor: face.emblem.background, color: face.emblem.ink }}
+  >
+    <GlyphIcon glyph={face.emblem.glyph} className="size-[1.15em]" />
+  </span>
+);
 
 /**
  * The Rank Gems at the top center, in line with the Countdown and the emblem.
@@ -159,38 +159,24 @@ const StatPlate = ({
  * Card. `live` gives the current stats of a Unit. The HP of a damaged Unit has
  * the low HP color. A Wall does not attack, so it shows no Attack.
  */
-const shownAttack = (
-  card: CreatureCardDefinition,
-  rank: RankId,
-  live: LiveStats | undefined
-) => live?.attack ?? scaleForRank(card.attack, rank);
-
-const shownHp = (
-  card: CreatureCardDefinition,
-  rank: RankId,
-  live: LiveStats | undefined
-) => live?.hp ?? scaleForRank(card.hp, rank);
-
 const hpColor = (live: LiveStats | undefined, hp: number) =>
   live && hp < live.maxHp ? HP_LOW : CREAM;
 
 const CreaturePlates = ({
-  card,
-  rank,
+  plates,
   live,
 }: {
-  readonly card: CreatureCardDefinition;
-  readonly rank: RankId;
+  readonly plates: CreaturePlateValues;
   readonly live?: LiveStats;
 }) => {
-  const hp = shownHp(card, rank, live);
+  const hp = live?.hp ?? plates.hp;
   return (
     <>
-      {card.keywords.wall ? null : (
+      {plates.wall ? null : (
         <StatPlate
-          glyph={DAMAGE_GLYPH[card.damageType]}
-          color={DAMAGE_COLORS[card.damageType]}
-          value={shownAttack(card, rank, live)}
+          glyph={DAMAGE_GLYPH[plates.damageType]}
+          color={DAMAGE_COLORS[plates.damageType]}
+          value={live?.attack ?? plates.attack}
           className="-left-[0.35em]"
         />
       )}
@@ -225,51 +211,45 @@ const SkillPlate = ({ card }: { readonly card: SkillCardDefinition }) => (
 );
 
 const BottomPlates = ({
-  card,
-  rank,
+  face,
   live,
 }: {
-  readonly card: CardDefinition;
-  readonly rank: RankId;
+  readonly face: FrameFace;
   readonly live?: LiveStats;
-}): ReactNode => {
-  if (card.kind === "creature") {
-    return <CreaturePlates card={card} rank={rank} live={live} />;
-  }
-  return <SkillPlate card={card} />;
-};
+}): ReactNode =>
+  face.plates.kind === "creature" ? (
+    <CreaturePlates plates={face.plates} live={live} />
+  ) : (
+    <SkillPlate card={face.plates.card} />
+  );
 
 /** The art window. A Skill Card has an arched top, so its shape differs from a Creature Card. */
-const artWindowStyle = (card: CardDefinition, rank: RankId): CSSProperties => ({
+const artWindowStyle = (face: FrameFace, rank: RankId): CSSProperties => ({
   border: `0.14em solid ${RANK_COLORS[rank]}`,
   borderRadius:
-    card.kind === "skill"
+    face.plates.kind === "skill"
       ? "50% 50% 0.55em 0.55em / 4.6em 4.6em 0.55em 0.55em"
       : "0.55em",
 });
 
 /**
- * The art of a card. A card with no art yet shows its Race or Class emblem
- * on the color of the Race.
+ * The art of a card or a Token. One with no art yet shows its Race or Class
+ * emblem on the color of the Race.
  */
-const CardArt = ({ card }: { readonly card: CardDefinition }) => {
-  const [missing, setMissing] = useState(() => !hasCardArt(card.id));
-  const creature = card.kind === "creature";
-  const glyph = creature ? raceGlyph(card.race) : classGlyph(card.class);
-  const colors = creature
-    ? RACE_COLORS[card.race]
-    : { light: "#7a5a3a", dark: "#2a1d12", second: PARCHMENT.main };
+const CardArt = ({ face }: { readonly face: FrameFace }) => {
+  const [missing, setMissing] = useState(() => !face.hasArt);
+  const { backdrop } = face;
   if (missing) {
     return (
       <span
         className="absolute inset-0 grid place-items-center"
         style={{
-          background: `radial-gradient(circle at 50% 42%, ${colors.light} 0%, ${colors.dark} 78%)`,
-          color: creature ? CREAM : colors.second,
+          background: `radial-gradient(circle at 50% 42%, ${backdrop.light} 0%, ${backdrop.dark} 78%)`,
+          color: backdrop.ink,
         }}
       >
         <GlyphIcon
-          glyph={glyph}
+          glyph={face.emblem.glyph}
           className="size-[4.4em] opacity-70 drop-shadow-[0_0.12em_0.2em_rgba(0,0,0,0.45)]"
         />
       </span>
@@ -277,7 +257,7 @@ const CardArt = ({ card }: { readonly card: CardDefinition }) => {
   }
   return (
     <img
-      src={cardIllustration(card.id)}
+      src={face.art}
       alt=""
       draggable={false}
       loading="lazy"
@@ -287,6 +267,137 @@ const CardArt = ({ card }: { readonly card: CardDefinition }) => {
     />
   );
 };
+
+/** Attack and HP at a Rank, as the stat plates show them. */
+interface CreaturePlateValues {
+  readonly kind: "creature";
+  readonly damageType: DamageType;
+  readonly wall: boolean;
+  readonly attack: number;
+  readonly hp: number;
+}
+
+/**
+ * What the frame shows of a card or a Token: its art, its emblem and its
+ * stat plates. A Token is not a card, but its Unit shows in the same frame.
+ */
+interface FrameFace {
+  /** The card ID or the Token ID: a new ID loads new art. */
+  readonly id: string;
+  readonly art: string;
+  readonly hasArt: boolean;
+  readonly emblem: {
+    readonly glyph: Glyph;
+    readonly background: string;
+    readonly ink: string;
+  };
+  /** The colors behind the emblem when there is no art. */
+  readonly backdrop: {
+    readonly light: string;
+    readonly dark: string;
+    readonly ink: string;
+  };
+  readonly plates:
+    | CreaturePlateValues
+    | { readonly kind: "skill"; readonly card: SkillCardDefinition };
+}
+
+/** The face of a Race: its emblem and its backdrop. */
+const raceFace = (race: RaceId, glyph: Glyph) => ({
+  emblem: { glyph, background: RACE_COLORS[race].main, ink: CREAM },
+  backdrop: {
+    light: RACE_COLORS[race].light,
+    dark: RACE_COLORS[race].dark,
+    ink: CREAM,
+  },
+});
+
+const creaturePlates = (
+  card: CreatureCardDefinition,
+  rank: RankId
+): CreaturePlateValues => ({
+  kind: "creature",
+  damageType: card.damageType,
+  wall: card.keywords.wall ?? false,
+  attack: scaleForRank(card.attack, rank),
+  hp: scaleForRank(card.hp, rank),
+});
+
+const cardFace = (card: CardDefinition, rank: RankId): FrameFace => {
+  const base = {
+    id: card.id,
+    art: cardIllustration(card.id),
+    hasArt: hasCardArt(card.id),
+  };
+  if (card.kind === "skill") {
+    return {
+      ...base,
+      emblem: {
+        glyph: classGlyph(card.class),
+        background: PARCHMENT.main,
+        ink: PARCHMENT.ink,
+      },
+      backdrop: { light: "#7a5a3a", dark: "#2a1d12", ink: PARCHMENT.main },
+      plates: { kind: "skill", card },
+    };
+  }
+  return {
+    ...base,
+    ...raceFace(card.race, raceGlyph(card.race)),
+    plates: creaturePlates(card, rank),
+  };
+};
+
+/** A Token has no Rank scale: its Rank table gives Attack and HP (Card Concepts 8). */
+const tokenFace = (token: TokenDefinition, rank: RankId): FrameFace => ({
+  id: token.id,
+  art: tokenIllustration(token.id),
+  hasArt: hasTokenArt(token.id),
+  ...raceFace(token.race, raceGlyph(token.race)),
+  plates: {
+    kind: "creature",
+    damageType: token.damageType,
+    wall: token.keywords.wall ?? false,
+    attack: token.ranks[rank].attack,
+    hp: token.ranks[rank].hp,
+  },
+});
+
+/** The bronze frame around a face, with the Rank Gems and the emblem. */
+const FrameShell = ({
+  face,
+  rank,
+  live,
+  className,
+  children,
+}: {
+  readonly face: FrameFace;
+  readonly rank: RankId;
+  readonly live?: LiveStats;
+  readonly className?: string;
+  /** The Countdown badge of a card. A Token has none. */
+  readonly children?: ReactNode;
+}) => (
+  <span
+    className={cn(
+      "relative block h-[12.6em] w-[9em] rounded-[0.85em] p-[0.36em] shadow-[inset_0_0.1em_0_rgba(255,243,210,0.85),inset_0_-0.12em_0_rgba(60,30,5,0.75),0_0.3em_0.7em_rgba(0,0,0,0.55)]",
+      className
+    )}
+    style={{ background: BRONZE }}
+    aria-hidden
+  >
+    <span
+      className="relative block size-full overflow-hidden bg-[#2a1d12]"
+      style={artWindowStyle(face, rank)}
+    >
+      <CardArt key={face.id} face={face} />
+    </span>
+    <RankRow rank={rank} />
+    {children}
+    <Emblem face={face} />
+    <BottomPlates face={face} live={live} />
+  </span>
+);
 
 /**
  * The Card Frame: the card art in a bronze frame, with the Countdown, the Rank
@@ -310,27 +421,36 @@ export const CardFrame = ({
   readonly countdown: number;
   readonly live?: LiveStats;
   readonly className?: string;
-}) => {
-  const card = getCard(cardId);
-  return (
-    <span
-      className={cn(
-        "relative block h-[12.6em] w-[9em] rounded-[0.85em] p-[0.36em] shadow-[inset_0_0.1em_0_rgba(255,243,210,0.85),inset_0_-0.12em_0_rgba(60,30,5,0.75),0_0.3em_0.7em_rgba(0,0,0,0.55)]",
-        className
-      )}
-      style={{ background: BRONZE }}
-      aria-hidden
-    >
-      <span
-        className="relative block size-full overflow-hidden bg-[#2a1d12]"
-        style={artWindowStyle(card, rank)}
-      >
-        <CardArt key={cardId} card={card} />
-      </span>
-      <RankRow rank={rank} />
-      <CountdownBadge countdown={countdown} ready={!live && countdown === 0} />
-      <Emblem card={card} />
-      <BottomPlates card={card} rank={rank} live={live} />
-    </span>
-  );
-};
+}) => (
+  <FrameShell
+    face={cardFace(getCard(cardId), rank)}
+    rank={rank}
+    live={live}
+    className={className}
+  >
+    <CountdownBadge countdown={countdown} ready={!live && countdown === 0} />
+  </FrameShell>
+);
+
+/**
+ * The frame of a Token Unit (GDD 4.9): the Card Frame with the Token art and
+ * its values at the Rank, and no Countdown, because a Token is not a card.
+ */
+export const TokenFrame = ({
+  tokenId,
+  rank,
+  live,
+  className,
+}: {
+  readonly tokenId: TokenId;
+  readonly rank: RankId;
+  readonly live?: LiveStats;
+  readonly className?: string;
+}) => (
+  <FrameShell
+    face={tokenFace(getToken(tokenId), rank)}
+    rank={rank}
+    live={live}
+    className={className}
+  />
+);

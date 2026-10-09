@@ -1,5 +1,5 @@
-import { CARDS, RANKS, STAGES, STARTER_DECKS } from "@workspace/rules";
-import type { RankId } from "@workspace/rules";
+import { CARDS, RANKS, STAGES, STARTER_DECKS, TOKENS } from "@workspace/rules";
+import type { RankId, TokenId } from "@workspace/rules";
 import { Predicate } from "effect";
 import { describe, expect, it } from "vitest";
 
@@ -11,8 +11,12 @@ import type { CardText, TextRef } from "@/features/battle/card-text";
 import {
   cardText,
   resolveText,
+  tokenText,
   unitStatusText,
 } from "@/features/battle/card-text";
+
+// SAFETY: `TOKENS` is a record with a key for each Token ID, and no other key.
+const TOKEN_IDS = Object.keys(TOKENS) as TokenId[];
 
 const catalogs = {
   "en-us": enUS,
@@ -79,6 +83,17 @@ const dataKeys = (): string[] => {
       keys.add(`roles.${card.role}`);
       keys.add(`damageTypes.${card.damageType}`);
     }
+  }
+  for (const tokenId of TOKEN_IDS) {
+    for (const rank of RANKS) {
+      for (const ref of cardTextRefs(tokenText(tokenId, rank)).flatMap(
+        allRefs
+      )) {
+        keys.add(ref.key);
+      }
+    }
+    keys.add(`races.${TOKENS[tokenId].race}`);
+    keys.add(`damageTypes.${TOKENS[tokenId].damageType}`);
   }
   for (const rank of RANKS) {
     keys.add(`ranks.${rank}`);
@@ -262,6 +277,64 @@ describe("cardText (CRD-08)", () => {
       "In your Start Phase, other friendly Units in the same Lane get +1 Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus."
     );
   });
+
+  const lines = (cardId: string, rank: RankId) =>
+    creature(cardId, rank).keywords.map(
+      (keyword) => `${resolve(keyword.name)}: ${resolve(keyword.rule)}`
+    );
+
+  it("shows Swarm, Rebirth and Summon from the Undead card data (GDD 5.4)", () => {
+    expect(lines("undead.chatteringCohort", "uncommon")).toEqual([
+      "Swarm 1: While another friendly Unit is in the same Lane, this Unit has +1 Attack, also for Retaliation. More friendly Units do not increase the bonus.",
+    ]);
+    expect(lines("undead.coffinLancer", "rare")).toEqual([
+      "Armor 1: Reduces damage to this Unit by 1. It does not reduce Holy damage.",
+      "Rebirth: The first time this Unit dies, it comes back in the same Square with 1 HP. Its Statuses end, and it loses Rebirth.",
+    ]);
+  });
+
+  it("names the Token in the text of a Summon card", () => {
+    const [skeleton] = creature("undead.hushbow", "common").keywords;
+    expect(skeleton?.keyword).toBe("summon");
+    expect(skeleton && resolve(skeleton.name)).toBe("Summon Skeleton");
+    expect(skeleton && resolve(skeleton.rule)).toBe(
+      "When you summon this Unit, a Skeleton of the same Rank also appears in an empty Square next to it: behind it, or in the same Column of a next Lane. If no Square is empty, the Token does not appear."
+    );
+    const [wisp] = creature("undead.lanternWidow", "rare").keywords;
+    expect(wisp && resolve(wisp.name)).toBe("Summon Restless Wisp");
+  });
+});
+
+describe("tokenText", () => {
+  const { t } = initI18n({
+    fallbackLocale: ["en-us"],
+    locale: "en-us",
+    translations: catalogs,
+  });
+  // SAFETY: as in the tests of `cardText` above.
+  const resolve = (ref: TextRef) =>
+    resolveText((key, args) => t(key as never, args as never), ref);
+
+  it("gives a Token its name, its Keywords and a line that tells what a Token is", () => {
+    const skeleton = tokenText("token.skeleton", "epic");
+    expect(resolve(skeleton.name)).toBe("Skeleton");
+    expect(resolve(skeleton.attackType)).toBe("Melee");
+    expect(skeleton.keywords.map((keyword) => resolve(keyword.name))).toEqual([
+      "Swarm 1",
+    ]);
+    expect(skeleton.damageRule).toBeUndefined();
+    expect(resolve(skeleton.flavor)).toBe(
+      "A Token is not a card. When it dies, it disappears. It does not go to the Graveyard."
+    );
+    const wisp = tokenText("token.restlessWisp", "common");
+    expect(resolve(wisp.name)).toBe("Restless Wisp");
+    expect(wisp.keywords.map((keyword) => resolve(keyword.name))).toEqual([
+      "Flying",
+    ]);
+    expect(wisp.damageRule && resolve(wisp.damageRule)).toBe(
+      "Frost: the target skips its next action."
+    );
+  });
 });
 
 describe("unitStatusText", () => {
@@ -282,13 +355,15 @@ describe("unitStatusText", () => {
     hobbled: 0,
     bleeding: 0,
     poisoned: 0,
+    swarmBonus: 0,
+    reborn: false,
   };
 
   it("is empty for a Unit with no bonus Armor and no Status", () => {
     expect(unitStatusText(quiet)).toEqual([]);
   });
 
-  it("lists bonus Armor, then each Status, with its count and the End Phases left of Burn", () => {
+  it("lists bonus Armor, the Swarm bonus, each Status, then a used Rebirth", () => {
     const lines = unitStatusText({
       bonusArmor: 1,
       bonusArmorTurns: 2,
@@ -298,15 +373,19 @@ describe("unitStatusText", () => {
       hobbled: 1,
       bleeding: 3,
       poisoned: 2,
+      swarmBonus: 1,
+      reborn: true,
     });
     expect(lines.map((line) => line.status)).toEqual([
       "bonusArmor",
+      "swarmBonus",
       "burn",
       "freeze",
       "entangle",
       "hobble",
       "bleed",
       "poison",
+      "reborn",
     ]);
     expect(
       lines.map((line) =>
@@ -316,12 +395,14 @@ describe("unitStatusText", () => {
       )
     ).toEqual([
       "Armor +1 From a Skill Card. Turns left: 2.",
+      "Attack +1 From Swarm: another friendly Unit is in this Lane.",
       "Burn 1 damage in each End Phase of its owner. End Phases left: 2.",
       "Frozen It skips its next action.",
       "Entangled Speed 0 in its next action. It can still attack.",
       "Hobbled 1 This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner.",
       "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
       "Poison 2 1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
+      "Reborn This Unit died and came back with Rebirth. It does not come back again.",
     ]);
   });
 });

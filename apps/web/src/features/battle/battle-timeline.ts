@@ -20,8 +20,8 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   CardDrawn: 200,
   CardPlayed: 180,
   UnitSummoned: 420,
-  // No card has Summon yet. The Undead web issue (#36) shows the Token.
-  TokenSummoned: 0,
+  // The Token hops from its summoner to its Square.
+  TokenSummoned: 420,
   // The cast card holds, so its Recall chip can be read, then it goes.
   RecallRolled: 600,
   CountdownChanged: 160,
@@ -35,8 +35,8 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   DamageDealt: 280,
   StatusApplied: 160,
   UnitDied: 460,
-  // No card has Rebirth yet. The Undead web issue (#36) gives it its motion.
-  UnitReborn: 0,
+  // The Unit falls as in a death, then gets up again.
+  UnitReborn: 640,
   TurnEnded: 80,
   BattleEnded: 900,
 };

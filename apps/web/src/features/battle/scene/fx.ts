@@ -76,6 +76,9 @@ export type Fx =
     }
   | ({ readonly kind: "billboard" } & Billboard);
 
+/** The ring of a Rebirth: the pale Undead spirit light. */
+const REBORN_RING = "#c4fbef";
+
 /** Active effects. The playback driver adds them. The effects layer removes them when they end. */
 export const fxList: Fx[] = [];
 
@@ -321,7 +324,8 @@ export const fxForEvent = (
           ]
         : [];
     }
-    case "UnitSummoned": {
+    case "UnitSummoned":
+    case "TokenSummoned": {
       return [
         {
           kind: "ring",
@@ -331,6 +335,21 @@ export const fxForEvent = (
           start: time,
         },
       ];
+    }
+    case "UnitReborn": {
+      // A pale ring and the heal light when the Unit gets up again.
+      const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
+      return at
+        ? [
+            { kind: "ring", color: REBORN_RING, x: at.x, z: at.z, start: time },
+            impactFx(
+              "heal",
+              at,
+              time + eventSeconds(event, speed, before) / 2,
+              speed
+            ),
+          ]
+        : [];
     }
     case "CardPlayed": {
       return getCard(event.card.cardId).kind === "skill"

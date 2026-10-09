@@ -5,16 +5,18 @@ import type {
   RankId,
   Side,
 } from "@workspace/rules";
-import { getCard, rankPips } from "@workspace/rules";
+import { getCard, getToken, rankPips } from "@workspace/rules";
 import { CanvasTexture, SRGBColorSpace } from "three";
 
-import { cardIllustration } from "@/features/battle/card-art";
+import type { UnitSourceView } from "@/features/battle/battle-view";
+import { sourceId, unitIllustration } from "@/features/battle/card-art";
 import type { Glyph } from "@/features/battle/glyphs";
 import {
   cardGlyph,
   classGlyph,
   FILLED_GLYPHS,
   GLYPHS,
+  tokenGlyph,
 } from "@/features/battle/glyphs";
 import {
   DAMAGE_COLORS,
@@ -129,22 +131,36 @@ const drawPips = (
   }
 };
 
-const raceOf = (cardId: string): RaceId => {
-  const card = getCard(cardId);
-  return card.kind === "creature" ? card.race : "human";
+/** The Race of a Unit and the icon of its standee: the role of its card, or its Token icon. */
+interface Standee {
+  readonly race: RaceId;
+  readonly glyph: Glyph;
+}
+
+const standeeOf = (source: UnitSourceView): Standee => {
+  if (source._tag === "Token") {
+    const token = getToken(source.tokenId);
+    return { race: token.race, glyph: tokenGlyph(token) };
+  }
+  const card = getCard(source.cardId);
+  return {
+    race: card.kind === "creature" ? card.race : "human",
+    glyph: cardGlyph(card),
+  };
 };
 
 /**
  * The painted standee of a Unit: Race colors, a role icon and the Rank pips.
- * The Unit shows it until its card art loads (`unitArtTexture`).
+ * The Unit shows it until its card art or its Token art loads
+ * (`unitArtTexture`).
  */
 export const unitFigureTexture = (
-  cardId: string,
+  source: UnitSourceView,
   rank: RankId
 ): CanvasTexture =>
-  cached(`unit:${cardId}:${rank}`, 256, 320, (context) => {
-    const card = getCard(cardId);
-    const colors = RACE_COLORS[raceOf(cardId)];
+  cached(`unit:${sourceId(source)}:${rank}`, 256, 320, (context) => {
+    const { race, glyph } = standeeOf(source);
+    const colors = RACE_COLORS[race];
     const standee = standeePath(256, 320, 10);
     const gradient = context.createLinearGradient(0, 0, 0, 320);
     gradient.addColorStop(0, colors.light);
@@ -164,7 +180,6 @@ export const unitFigureTexture = (
     context.lineWidth = 4;
     context.strokeStyle = "rgba(20, 14, 10, 0.7)";
     context.stroke(standeePath(256, 320, 3));
-    const glyph = cardGlyph(card);
     context.save();
     context.translate(128, 132);
     context.scale(1.35, 1.35);
@@ -177,24 +192,25 @@ export const unitFigureTexture = (
 const ART_WIDTH = 320;
 const ART_HEIGHT = 400;
 
-const unitArtKey = (cardId: string): string => `unit-art:${cardId}`;
+const unitArtKey = (source: UnitSourceView): string =>
+  `unit-art:${sourceId(source)}`;
 
 const loadingArt = new Map<string, Promise<CanvasTexture | undefined>>();
 
 const loadUnitArt = async (
-  cardId: string
+  source: UnitSourceView
 ): Promise<CanvasTexture | undefined> => {
   const image = new Image();
   image.decoding = "async";
-  image.src = cardIllustration(cardId);
+  image.src = unitIllustration(source);
   try {
     await image.decode();
   } catch {
     // A failed load can try again on the next summon.
-    loadingArt.delete(cardId);
+    loadingArt.delete(sourceId(source));
     return undefined;
   }
-  return cached(unitArtKey(cardId), ART_WIDTH, ART_HEIGHT, (context) => {
+  return cached(unitArtKey(source), ART_WIDTH, ART_HEIGHT, (context) => {
     const scale = Math.max(
       ART_WIDTH / image.naturalWidth,
       ART_HEIGHT / image.naturalHeight
@@ -213,22 +229,25 @@ const loadUnitArt = async (
 };
 
 /**
- * The card art of a Unit, with its background, in the standee shape (art
- * direction 2: until the card has a cut-out). The 3:4 art fills the plane and
- * the extra height is cut equally at the top and the bottom. It is `undefined`
- * if the image does not load: then the Unit keeps its painted standee.
+ * The card art or the Token art of a Unit, with its background, in the
+ * standee shape (art direction 2: until the card has a cut-out). The 3:4 art
+ * fills the plane and the extra height is cut equally at the top and the
+ * bottom. It is `undefined` if the image does not load: then the Unit keeps
+ * its painted standee.
  */
 export const unitArtTexture = (
-  cardId: string
+  source: UnitSourceView
 ): Promise<CanvasTexture | undefined> => {
-  const loading = loadingArt.get(cardId) ?? loadUnitArt(cardId);
-  loadingArt.set(cardId, loading);
+  const key = sourceId(source);
+  const loading = loadingArt.get(key) ?? loadUnitArt(source);
+  loadingArt.set(key, loading);
   return loading;
 };
 
-/** The Unit art of a card if it is loaded, else `undefined`. */
-export const loadedUnitArt = (cardId: string): CanvasTexture | undefined =>
-  cache.get(unitArtKey(cardId));
+/** The Unit art of a card or a Token if it is loaded, else `undefined`. */
+export const loadedUnitArt = (
+  source: UnitSourceView
+): CanvasTexture | undefined => cache.get(unitArtKey(source));
 
 /** The banner standee of a Hero, with the Class icon and the side color. */
 export const heroFigureTexture = (

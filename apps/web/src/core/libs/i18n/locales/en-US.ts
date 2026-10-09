@@ -118,6 +118,8 @@ export default {
     yours: "Yours",
     yourUnit: "Your Unit",
     enemyUnit: "Enemy Unit",
+    tokenReminder:
+      "A Token is not a card. When it dies, it disappears. It does not go to the Graveyard.",
     status: {
       bonusArmor: "Armor +{value}",
       bonusArmorRule: "From a Skill Card. Turns left: {turns}.",
@@ -137,6 +139,11 @@ export default {
         "This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
       entangled: "Entangled",
       entangledRule: "Speed 0 in its next action. It can still attack.",
+      swarmBonus: "Attack +{value}",
+      swarmBonusRule: "From Swarm: another friendly Unit is in this Lane.",
+      reborn: "Reborn",
+      rebornRule:
+        "This Unit died and came back with Rebirth. It does not come back again.",
     },
   },
   town: {
@@ -295,6 +302,8 @@ export default {
     back: "Back to the list",
     seeAlso: "See also",
     n: "N",
+    x: "X",
+    tokenX: "Token X",
     seeCard: "N is on each card. See the card.",
     rankTable: "N at each Rank",
     rankColumn: "Rank",
@@ -407,6 +416,7 @@ export default {
       unit: "Unit",
       ranged: "Ranged",
       movement: "Movement",
+      token: "Token",
       status: "Status",
       damageType: "Damage Type",
       race: "Race",
@@ -480,6 +490,8 @@ export default {
         "A Ranged Unit attacks the nearest enemy Unit in front of it, in its Lane and in its Range. It does not move when an enemy Unit is in its Range.\n\nWhen no enemy Unit is in its Range and the enemy Hero is, it attacks the enemy Hero. The enemy Hero is 1 Square past the last Column.",
       movement:
         "In its action, a Unit first moves forward along its Lane, up to its Speed.\n\nIt moves through friendly Units, but it stops before an enemy Unit. It always stops in an empty Square. A Flying Unit moves over all Units.",
+      token:
+        "A Token is a Unit that an effect makes, for example Summon X. It is not a card, so it is never in your Hand or your Deck.\n\nA Token has the Rank of the card that made it. When it dies, it disappears. It does not go to the Graveyard.\n\nA Token is a friendly Unit for the Units of its Side, for example for Swarm.",
       status:
         "A Status is an effect that stays on a Unit. Fire and Frost damage and some Keywords give Statuses.\n\nA Unit shows its Statuses as icons above it. The Card Details of the Unit show each Status with its rule.",
       damageType:
@@ -559,6 +571,10 @@ export default {
       keywordEntangle: "root, snare",
       keywordPoison: "venom, toxin",
       keywordSabotage: "delay, stall, disrupt",
+      keywordRebirth: "reborn, resurrect, revive, undying",
+      keywordSummon: "spawn, create, call",
+      keywordSwarm: "pack, gang up, synergy",
+      token: "spawn, summoned unit, minion token",
       keywordUnique: "legend rule, singleton",
       keywordRetaliation: "thorns, counterattack",
       status: "debuff, condition, ailment",
@@ -732,10 +748,13 @@ export default {
     lastBreath: "Last Breath {value}",
     pivot: "Pivot",
     poison: "Poison",
+    rebirth: "Rebirth",
     rally: "Rally {value}",
     regeneration: "Regeneration {value}",
     retaliation: "Retaliation",
     sabotage: "Sabotage {value}",
+    summon: "Summon {token}",
+    swarm: "Swarm {value}",
     trample: "Trample",
     unique: "Unique",
     wall: "Wall",
@@ -776,6 +795,12 @@ export default {
       "When this Unit kills an enemy Unit with an attack, the damage that is left hits the enemy Unit in the next Square behind it. It never hits a Hero.",
     unique: "Only one copy of this card can be on your side of the Board.",
     wall: "This Unit can't move and can't attack. You can summon it into the 5 Squares nearest to your Hero. It blocks enemy Units in its Lane, and a push never moves it.",
+    rebirth:
+      "The first time this Unit dies, it comes back in the same Square with 1 HP. Its Statuses end, and it loses Rebirth.",
+    summon:
+      "When you summon this Unit, a {token} of the same Rank also appears in an empty Square next to it: behind it, or in the same Column of a next Lane. If no Square is empty, the Token does not appear.",
+    swarm:
+      "While another friendly Unit is in the same Lane, this Unit has +{value} Attack, also for Retaliation. More friendly Units do not increase the bonus.",
     fire: "Fire: the target burns for 1 damage in its next 2 End Phases.",
     frost: "Frost: the target skips its next action.",
     holy: "Holy: Armor does not reduce this damage.",
@@ -1099,6 +1124,68 @@ export default {
         flavor: "The forest grew wild. Lethiel called it adequate.",
       },
     },
+    undead: {
+      graveyardDrudge: {
+        name: "Graveyard Drudge",
+        flavor: "He works better when somebody watches.",
+      },
+      rattleknife: {
+        name: "Rattleknife",
+        flavor: "One knife is a hobby. Two is a plan.",
+      },
+      coffinLidSkater: {
+        name: "Coffin-Lid Skater",
+        flavor: "The hill was steeper when he was alive.",
+      },
+      hushbow: {
+        name: "Hushbow",
+        flavor: "Quiet in life. Considerably noisier afterward.",
+      },
+      graveBellTender: {
+        name: "Grave Bell Tender",
+        flavor: "One ring for supper. Two for reinforcements.",
+      },
+      backwatchBailiff: {
+        name: "Backwatch Bailiff",
+        flavor: "Nobody passes without the correct expired permit.",
+      },
+      chatteringCohort: {
+        name: "Chattering Cohort",
+        flavor: "They agree on everything, very loudly.",
+      },
+      paleGalloper: {
+        name: "Pale Galloper",
+        flavor: "The rider asked for a slower horse.",
+      },
+      rimeEyeReaper: {
+        name: "Rime-Eye Reaper",
+        flavor: "She closes one eye. The other is already frozen open.",
+      },
+      ossuaryPiper: {
+        name: "Ossuary Piper",
+        flavor: "Nobody knows the tune. Everybody marches.",
+      },
+      coffinLancer: {
+        name: "Coffin Lancer",
+        flavor: "The coffin is defensive equipment.",
+      },
+      winterMaw: {
+        name: "Winter Maw",
+        flavor: "It brings enough cold for the whole pack.",
+      },
+      lanternWidow: {
+        name: "Lantern Widow",
+        flavor: "She always leaves a light on for the late.",
+      },
+      sirOdoLastTaxman: {
+        name: "Sir Odo, the Last Taxman",
+        flavor: "Death excuses neither payment nor the late fee.",
+      },
+      boneRampart: {
+        name: "Bone Rampart",
+        flavor: "Please use the other Lane.",
+      },
+    },
     warrior: {
       warDrums: { name: "War Drums", flavor: "Boom. Boom. Move faster." },
       shieldWall: { name: "Shield Wall", flavor: "Lock shields and hold." },
@@ -1109,6 +1196,10 @@ export default {
       frostBolt: { name: "Frost Bolt", flavor: "Stay a while." },
       flameWave: { name: "Flame Wave", flavor: "The whole lane gets a turn." },
     },
+  },
+  tokens: {
+    skeleton: { name: "Skeleton" },
+    restlessWisp: { name: "Restless Wisp" },
   },
   // #endregion GAME
 } as const satisfies LanguageMessages;

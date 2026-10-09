@@ -4,7 +4,7 @@ import { Color } from "three";
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import { pushEase } from "@/features/battle/battle-timeline";
 import type { UnitView } from "@/features/battle/battle-view";
-import { squareX } from "@/features/battle/scene/layout";
+import { laneZ, squareX } from "@/features/battle/scene/layout";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { loopStatuses } from "@/features/battle/scene/status-visuals";
 
@@ -26,6 +26,8 @@ const HIT = new Color("#ff5a4a");
 const FROZEN = new Color(STATUS_TINT.freeze);
 const BURNING = new Color(STATUS_TINT.burn);
 const HEALED = new Color("#9dffb4");
+/** The pale spirit light of a Rebirth: the Undead teal, near white. */
+const REBORN = new Color("#c4fbef");
 
 /** The tint amount of a Status with reduced motion. It does not pulse. */
 const STILL_TINT_AMOUNT = 0.35;
@@ -100,6 +102,42 @@ export const currentEvent = (
 ): BattleEvent | null => current?.event ?? null;
 
 const easeOut = (t: number): number => 1 - (1 - t) ** 3;
+
+/** The part of a Rebirth in which the Unit falls. Then it gets up. */
+const REBORN_FALL = 0.45;
+
+/**
+ * Where a summoned Token starts: the Square of the Unit that summoned it, as
+ * the X of that Square and the Z from the Lane of the Token to its Lane.
+ */
+export interface SummonOrigin {
+  readonly x: number;
+  readonly z: number;
+}
+
+/**
+ * The origin of the Token that the current event summons, or `null` when the
+ * event does not summon `unit`. `lanes` is the number of Lanes of the Board.
+ */
+export const summonOrigin = (
+  unit: UnitView,
+  current: PlayingEvent | null | undefined,
+  lanes: number
+): SummonOrigin | null => {
+  const event = current?.event;
+  if (event?._tag !== "TokenSummoned" || event.unit.id !== unit.id) {
+    return null;
+  }
+  const source = current?.before.units.find(
+    (candidate) => candidate.id === event.sourceUnitId
+  );
+  return source
+    ? {
+        x: squareX(source.position),
+        z: laneZ(source.lane, lanes) - laneZ(unit.lane, lanes),
+      }
+    : null;
+};
 
 /** How far a walking Unit steps toward the camera to go past a friendly Unit. */
 const PASS_STEP = 0.32;
@@ -232,6 +270,48 @@ const summoned: EventPose = (unit, event, progress, pose) => {
   pose.scale = 0.6 + 0.4 * rise;
 };
 
+/**
+ * A Token comes out of the Unit that summoned it. `origin` is where that Unit
+ * stands: the Token hops from there to its own Square and grows.
+ */
+const tokenSummoned = (
+  unit: UnitView,
+  event: BattleEvent,
+  progress: number,
+  pose: Pose,
+  origin: SummonOrigin | null
+): void => {
+  if (event._tag !== "TokenSummoned" || event.unit.id !== unit.id) {
+    return;
+  }
+  const travel = easeOut(progress);
+  const home = squareX(unit.position);
+  const from = origin ?? { x: home, z: 0 };
+  pose.x = from.x + (home - from.x) * travel;
+  pose.z = from.z * (1 - travel);
+  pose.y += Math.sin(progress * Math.PI) * 0.45;
+  pose.scale = 0.35 + 0.65 * travel;
+  pose.opacity = Math.min(1, progress * 4);
+};
+
+/**
+ * Rebirth: the Unit falls as in a death, then gets up again in its Square
+ * with a pale light. It does not leave the Board.
+ */
+const reborn: EventPose = (unit, event, progress, pose) => {
+  if (event._tag !== "UnitReborn" || event.unitId !== unit.id) {
+    return;
+  }
+  const down =
+    progress < REBORN_FALL
+      ? easeOut(progress / REBORN_FALL)
+      : 1 - easeOut((progress - REBORN_FALL) / (1 - REBORN_FALL));
+  pose.tilt = -down * (Math.PI / 2) * 0.85;
+  pose.opacity = 1 - 0.65 * down;
+  pose.tint = REBORN;
+  pose.tintAmount = 0.75 * Math.sin(progress * Math.PI);
+};
+
 const died: EventPose = (unit, event, progress, pose) => {
   if (event._tag !== "UnitDied" || event.unitId !== unit.id) {
     return;
@@ -264,6 +344,7 @@ const EVENT_POSES: Readonly<Partial<Record<BattleEvent["_tag"], EventPose>>> = {
   DamageDealt: damaged,
   UnitSummoned: summoned,
   UnitDied: died,
+  UnitReborn: reborn,
   UnitSkipped: skipped,
   UnitHealed: healed,
 };
@@ -273,7 +354,8 @@ const EVENT_POSES: Readonly<Partial<Record<BattleEvent["_tag"], EventPose>>> = {
  * without rigs). `time` is in scene seconds, for the idle motion. `passing`
  * is true when the event walks the Unit through a friendly Unit: a ground
  * Unit then steps toward the camera, so that it shows in front.
- * `reducedMotion` gives the Statuses a static tint (web ADR-0009).
+ * `reducedMotion` gives the Statuses a static tint (web ADR-0009). `origin`
+ * is where a summoned Token starts.
  */
 export const poseFor = (
   unit: UnitView,
@@ -284,13 +366,20 @@ export const poseFor = (
   {
     passing = false,
     reducedMotion = false,
-  }: { readonly passing?: boolean; readonly reducedMotion?: boolean } = {}
+    origin = null,
+  }: {
+    readonly passing?: boolean;
+    readonly reducedMotion?: boolean;
+    /** Where a summoned Token starts (`summonOrigin`). */
+    readonly origin?: SummonOrigin | null;
+  } = {}
 ): void => {
   restPose(unit, time, pose, reducedMotion);
   if (!event) {
     return;
   }
   EVENT_POSES[event._tag]?.(unit, event, progress, pose);
+  tokenSummoned(unit, event, progress, pose, origin);
   if (
     passing &&
     !unit.flying &&

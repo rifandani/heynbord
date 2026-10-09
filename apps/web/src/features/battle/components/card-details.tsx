@@ -1,24 +1,32 @@
 import type {
   CardDefinition,
   CreatureCardDefinition,
+  DamageType,
+  RaceId,
   RankId,
   SkillCardDefinition,
+  TokenId,
 } from "@workspace/rules";
-import { getCard, scaleForRank } from "@workspace/rules";
+import { getCard, getToken, scaleForRank } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
 import { createContext, use } from "react";
 import { Button } from "react-aria-components";
 
 import type { UnitView } from "@/features/battle/battle-view";
-import { cardText, unitStatusText } from "@/features/battle/card-text";
+import {
+  cardText,
+  tokenText,
+  unitStatusText,
+} from "@/features/battle/card-text";
 import type {
   CardText,
   CreatureCardText,
+  Keyword,
   SkillCardText,
   StatusText,
 } from "@/features/battle/card-text";
-import { CardFrame } from "@/features/battle/components/card-frame";
+import { CardFrame, TokenFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { StatusIcon } from "@/features/battle/components/status-icon";
 import type { Glyph } from "@/features/battle/glyphs";
@@ -171,18 +179,36 @@ const StatusLine = ({
   </li>
 );
 
-/** Bonus Armor has no Status icon and no Entry of its own: it links to Armor. */
-const statusIcon = (line: StatusText): Status | Glyph =>
-  line.status === "bonusArmor" ? "shield" : line.status;
+/**
+ * Bonus Armor, the Swarm bonus and a used Rebirth are not Statuses: they have
+ * a glyph, and they link to the Entry of their Keyword.
+ */
+const NOT_STATUS = {
+  bonusArmor: { icon: "shield", keyword: "armor" },
+  swarmBonus: { icon: "sword", keyword: "swarm" },
+  reborn: { icon: "recall", keyword: "rebirth" },
+} as const satisfies Readonly<
+  Record<
+    Exclude<StatusText["status"], Status>,
+    { readonly icon: Glyph; readonly keyword: Keyword }
+  >
+>;
 
-const statusEntry = (line: StatusText): EntryId =>
-  line.status === "bonusArmor"
-    ? keywordEntryId("armor")
-    : statusEntryId(line.status);
+const isStatusLine = (status: StatusText["status"]): status is Status =>
+  STATUS_ORDER.some((name) => name === status);
+
+const statusIcon = ({ status }: StatusText): Status | Glyph =>
+  isStatusLine(status) ? status : NOT_STATUS[status].icon;
+
+const statusEntry = ({ status }: StatusText): EntryId =>
+  isStatusLine(status)
+    ? statusEntryId(status)
+    : keywordEntryId(NOT_STATUS[status].keyword);
 
 /**
- * How a Unit is different from its card now: bonus Armor, Burn, Freeze,
- * Entangled, Hobbled, Bleeding and Poison. The current HP stays on the card.
+ * How a Unit is different from its card now: bonus Armor, the Swarm bonus,
+ * Burn, Freeze, Entangled, Hobbled, Bleeding, Poison and a used Rebirth. The
+ * current HP stays on the card.
  */
 const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
   const { text } = useGameText();
@@ -212,12 +238,6 @@ const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
 
 const unitOwner = (unit: UnitView | undefined) => unit?.owner;
 
-const shownAttack = (
-  unit: UnitView | undefined,
-  card: CreatureCardDefinition,
-  rank: RankId
-) => unit?.attack ?? scaleForRank(card.attack, rank);
-
 const hasKeywordRules = (content: CreatureCardText) =>
   content.keywords.length > 0 || content.damageRule;
 
@@ -244,70 +264,116 @@ const KeywordRules = ({ content }: { readonly content: CreatureCardText }) => {
   );
 };
 
-const HpSr = ({
+/**
+ * The values of a Creature Card or a Token at a Rank that the Details Panel
+ * shows. A Token has no Role: its kind line says "Token".
+ */
+interface CreatureInfo {
+  readonly race: RaceId;
+  readonly role: CreatureCardDefinition["role"] | null;
+  readonly wall: boolean;
+  readonly damageType: DamageType;
+  readonly speed: number;
+  readonly attack: number;
+  readonly hp: number;
+}
+
+const cardInfo = (
+  card: CreatureCardDefinition,
+  rank: RankId
+): CreatureInfo => ({
+  race: card.race,
+  role: card.role,
+  wall: card.keywords.wall ?? false,
+  damageType: card.damageType,
+  speed: card.speed,
+  attack: scaleForRank(card.attack, rank),
+  hp: scaleForRank(card.hp, rank),
+});
+
+const tokenInfo = (tokenId: TokenId, rank: RankId): CreatureInfo => {
+  const token = getToken(tokenId);
+  return {
+    race: token.race,
+    role: null,
+    wall: token.keywords.wall ?? false,
+    damageType: token.damageType,
+    ...token.ranks[rank],
+  };
+};
+
+/** The Role of a card, or "Token" with a link to its Entry. */
+const KindName = ({ info }: { readonly info: CreatureInfo }) => {
+  const { tr } = useGameText();
+  return info.role ? (
+    tr(`roles.${info.role}`)
+  ) : (
+    <TermName entry="token">{tr("handbook.names.token")}</TermName>
+  );
+};
+
+/** The Attack and, for a card out of the Board, the HP, for screen readers. */
+const StatsSr = ({
+  info,
   unit,
-  card,
-  rank,
 }: {
+  readonly info: CreatureInfo;
   readonly unit: UnitView | undefined;
-  readonly card: CreatureCardDefinition;
-  readonly rank: RankId;
 }) => {
   const { tr } = useGameText();
-  if (unit) {
-    return null;
-  }
   return (
-    <>
-      , {tr("battle.hp")} {scaleForRank(card.hp, rank)}
-    </>
+    <p className="sr-only">
+      {info.wall ? null : (
+        <>
+          {tr("battle.attack")} {unit?.attack ?? info.attack}
+        </>
+      )}
+      {unit ? null : (
+        <>
+          , {tr("battle.hp")} {info.hp}
+        </>
+      )}
+    </p>
   );
 };
 
 const CreatureBody = ({
-  card,
-  rank,
+  info,
   content,
   unit,
 }: {
-  readonly card: CreatureCardDefinition;
-  readonly rank: RankId;
+  readonly info: CreatureInfo;
   readonly content: CreatureCardText;
   readonly unit?: UnitView;
 }) => {
   const { tr, text } = useGameText();
   return (
     <>
-      <KindLine glyph={raceGlyph(card.race)} owner={unitOwner(unit)}>
-        {tr(`races.${card.race}`)} · {tr(`roles.${card.role}`)}
+      <KindLine glyph={raceGlyph(info.race)} owner={unitOwner(unit)}>
+        <span>
+          {tr(`races.${info.race}`)} · <KindName info={info} />
+        </span>
       </KindLine>
       {/* A Wall does not move or attack, so it shows no attack stats. */}
-      {card.keywords.wall ? null : (
+      {info.wall ? null : (
         <>
           <Divider />
           <ul className="flex flex-wrap gap-x-3 gap-y-1">
-            <Stat glyph={DAMAGE_GLYPH[card.damageType]}>
-              <TermName entry={damageEntryId(card.damageType)}>
-                {tr(`damageTypes.${card.damageType}`)}
+            <Stat glyph={DAMAGE_GLYPH[info.damageType]}>
+              <TermName entry={damageEntryId(info.damageType)}>
+                {tr(`damageTypes.${info.damageType}`)}
               </TermName>
             </Stat>
             <Stat glyph="range">{text(content.attackType)}</Stat>
             <Stat glyph="speed">
-              {tr("battle.speedStat")} {card.speed}
+              {tr("battle.speedStat")} {info.speed}
             </Stat>
           </ul>
         </>
       )}
       <KeywordRules content={content} />
       {unit ? <UnitStatus unit={unit} /> : null}
-      <p className="sr-only">
-        {card.keywords.wall ? null : (
-          <>
-            {tr("battle.attack")} {shownAttack(unit, card, rank)}
-          </>
-        )}
-        <HpSr unit={unit} card={card} rank={rank} />
-      </p>
+      <StatsSr info={info} unit={unit} />
     </>
   );
 };
@@ -363,7 +429,9 @@ const CreaturePanel = ({
   if (content.kind !== "creature") {
     return null;
   }
-  return <CreatureBody card={card} rank={rank} content={content} unit={unit} />;
+  return (
+    <CreatureBody info={cardInfo(card, rank)} content={content} unit={unit} />
+  );
 };
 
 const SkillPanel = ({
@@ -430,19 +498,15 @@ const flavorClass = (unit: UnitView | undefined) =>
 const placeLabel = (unit: UnitView | undefined) =>
   unit?.owner === "enemy" ? "battle.enemyUnit" : "battle.yourUnit";
 
+/** The Rank and the place of the card, after its name, for screen readers. */
 const NameSr = ({
-  unit,
   rank,
-  countdown,
+  place,
 }: {
-  readonly unit: UnitView | undefined;
   readonly rank: RankId;
-  readonly countdown: number;
+  readonly place: string;
 }) => {
   const { tr } = useGameText();
-  const place = unit
-    ? tr(placeLabel(unit))
-    : tr("battle.countdown", { value: countdown });
   return (
     <span className="sr-only">
       , {tr(`ranks.${rank}`)}, {place}
@@ -469,6 +533,56 @@ const BlockedLine = ({
   ) : null;
 };
 
+/** The frame of the card at the size of the Card Details, and the panel next to it. */
+const FRAME_CLASS =
+  "z-10 shrink-0 text-[20px] [@media(max-height:500px)]:text-[12px]";
+
+const DetailsRow = ({
+  frame,
+  name,
+  sr,
+  panelSide,
+  unit,
+  onEntry,
+  blocked = false,
+  body,
+  footer,
+}: {
+  readonly frame: ReactNode;
+  readonly name: string;
+  readonly sr: ReactNode;
+  readonly panelSide: "left" | "right";
+  readonly unit: UnitView | undefined;
+  readonly onEntry: OnEntry;
+  readonly blocked?: boolean;
+  readonly body: ReactNode;
+  /** The flavor text, or a muted line that explains a Token. */
+  readonly footer: ReactNode;
+}) => {
+  const left = panelSide === "left";
+  return (
+    <section aria-live="polite" className={rowClass(left)}>
+      {/* The font size sets the size of the card: 180 × 252 px, and 108 × 151 px on a short screen. */}
+      {frame}
+      <div className={panelClass(left)}>
+        <h3
+          className="font-display mb-1.5 text-base leading-tight font-bold text-balance [@media(max-height:500px)]:mb-1 [@media(max-height:500px)]:text-sm"
+          data-testid="card-details-name"
+        >
+          {name}
+          {sr}
+        </h3>
+        <BlockedLine blocked={blocked} name={name} />
+        <EntryLinks value={onEntry}>{body}</EntryLinks>
+        <div className={flavorClass(unit)}>
+          <Divider />
+          {footer}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 export const CardDetails = ({
   cardId,
   rank,
@@ -488,39 +602,86 @@ export const CardDetails = ({
   /** Makes the rules terms links to their Handbook Entries (issue #25). */
   readonly onEntry?: (entry: EntryId) => void;
 }) => {
-  const { text } = useGameText();
+  const { tr, text } = useGameText();
   const card = getCard(cardId);
   const content = cardText(cardId, rank);
-  const left = panelSide === "left";
+  const place = unit
+    ? tr(placeLabel(unit))
+    : tr("battle.countdown", { value: countdown });
   return (
-    <section aria-live="polite" className={rowClass(left)}>
-      {/* The font size sets the size of the card: 180 × 252 px, and 108 × 151 px on a short screen. */}
-      <CardFrame
-        cardId={cardId}
-        rank={rank}
-        countdown={countdown}
-        live={unit}
-        className="z-10 shrink-0 text-[20px] [@media(max-height:500px)]:text-[12px]"
-      />
-      <div className={panelClass(left)}>
-        <h3
-          className="font-display mb-1.5 text-base leading-tight font-bold text-balance [@media(max-height:500px)]:mb-1 [@media(max-height:500px)]:text-sm"
-          data-testid="card-details-name"
+    <DetailsRow
+      frame={
+        <CardFrame
+          cardId={cardId}
+          rank={rank}
+          countdown={countdown}
+          live={unit}
+          className={FRAME_CLASS}
+        />
+      }
+      name={text(content.name)}
+      sr={<NameSr rank={rank} place={place} />}
+      panelSide={panelSide}
+      unit={unit}
+      onEntry={onEntry}
+      blocked={blocked}
+      body={<PanelBody card={card} rank={rank} content={content} unit={unit} />}
+      footer={
+        <p className={`text-xs italic ${INK_MUTED}`}>{text(content.flavor)}</p>
+      }
+    />
+  );
+};
+
+/**
+ * The Card Details of a Token Unit (GDD 4.9). A Token is not a card: its frame
+ * has no Countdown, its kind line says "Token" in place of a Role, and a muted
+ * line at the bottom tells what a Token is.
+ */
+export const TokenDetails = ({
+  tokenId,
+  unit,
+  panelSide = "right",
+  onEntry,
+}: {
+  readonly tokenId: TokenId;
+  readonly unit: UnitView;
+  readonly panelSide?: "left" | "right";
+  readonly onEntry?: (entry: EntryId) => void;
+}) => {
+  const { tr, text } = useGameText();
+  const { rank } = unit;
+  const content = tokenText(tokenId, rank);
+  return (
+    <DetailsRow
+      frame={
+        <TokenFrame
+          tokenId={tokenId}
+          rank={rank}
+          live={unit}
+          className={FRAME_CLASS}
+        />
+      }
+      name={text(content.name)}
+      sr={<NameSr rank={rank} place={tr(placeLabel(unit))} />}
+      panelSide={panelSide}
+      unit={unit}
+      onEntry={onEntry}
+      body={
+        <CreatureBody
+          info={tokenInfo(tokenId, rank)}
+          content={content}
+          unit={unit}
+        />
+      }
+      footer={
+        <p
+          className={`text-xs leading-snug ${INK_MUTED}`}
+          data-testid="token-reminder"
         >
-          {text(content.name)}
-          <NameSr unit={unit} rank={rank} countdown={countdown} />
-        </h3>
-        <BlockedLine blocked={blocked} name={text(content.name)} />
-        <EntryLinks value={onEntry}>
-          <PanelBody card={card} rank={rank} content={content} unit={unit} />
-        </EntryLinks>
-        <div className={flavorClass(unit)}>
-          <Divider />
-          <p className={`text-xs italic ${INK_MUTED}`}>
-            {text(content.flavor)}
-          </p>
-        </div>
-      </div>
-    </section>
+          {text(content.flavor)}
+        </p>
+      }
+    />
   );
 };

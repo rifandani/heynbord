@@ -17,7 +17,7 @@ for now lets go with this (Add until at least 5 cards):
 
 v1:
 
-- 35, 36
+- Keyword glyphs: the other Keywords have no glyphs, so I added none.
 - /grill-with-docs lets develop Elf Skills cards (for now create 3 with same ranks like the others)
 - /grill-with-docs brainstorm with me, we need more Skills cards, every Class should have 1 Epic, 2 Rare, 3 Uncommon, 4 Common
 

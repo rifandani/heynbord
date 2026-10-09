@@ -1,5 +1,4 @@
-import type { RankId } from "@workspace/rules";
-import { getCard, scaleForRank } from "@workspace/rules";
+import type { UnitView } from "@/features/battle/battle-view";
 
 /** How a current Attack or HP compares with the value at summon. */
 export type StatTone = "same" | "down" | "up";
@@ -16,14 +15,10 @@ export const statTone = (current: number, start: number): StatTone => {
 };
 
 /**
- * The Attack a Unit had when it was summoned: the card Attack after the Rank
- * scale. A Unit with no Creature Card keeps its current Attack.
+ * The Attack a Unit had when it was summoned: its Attack with no Swarm bonus.
+ * The rules never change the Attack of a Unit after its summon, so a Swarm
+ * bonus shows as a higher Attack.
  */
 export const summonAttack = (
-  cardId: string,
-  rank: RankId,
-  attack: number
-): number => {
-  const card = getCard(cardId);
-  return card.kind === "creature" ? scaleForRank(card.attack, rank) : attack;
-};
+  unit: Pick<UnitView, "attack" | "swarmBonus">
+): number => unit.attack - unit.swarmBonus;

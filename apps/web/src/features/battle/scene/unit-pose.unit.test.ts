@@ -5,22 +5,26 @@ import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
-import { squareX } from "@/features/battle/scene/layout";
+import { laneZ, squareX } from "@/features/battle/scene/layout";
 import {
   currentEvent,
   emptyPose,
   passesFriendlyUnit,
   poseFor,
+  summonOrigin,
 } from "@/features/battle/scene/unit-pose";
 
 const unit: UnitView = {
   id: 7,
   owner: "player",
-  cardId: "orc.badlandRunt",
+  source: { _tag: "Card", cardId: "orc.badlandRunt" },
   rank: "common",
   lane: 0,
   position: 2,
   attack: 3,
+  swarm: 0,
+  swarmBonus: 0,
+  reborn: false,
   hp: 5,
   maxHp: 5,
   armor: 0,
@@ -178,6 +182,9 @@ describe("poseFor at rest", () => {
   });
 });
 
+/** The view before an event, with only `units` on the Board. */
+const before = (units: readonly UnitView[]) => ({ ...view, units });
+
 describe("poseFor in an event", () => {
   it("moves along the Lane and hops higher when flying", () => {
     const event = BattleEvent.UnitMoved({
@@ -277,6 +284,44 @@ describe("poseFor in an event", () => {
     expect(fall.opacity).toBe(0);
   });
 
+  it("falls and gets up again with a pale light in a Rebirth", () => {
+    const rebirth = BattleEvent.UnitReborn({ unitId: unit.id, hp: 1 });
+    const down = pose(rebirth, 0.45);
+    expect(down.tilt).toBeLessThan(-1);
+    expect(down.opacity).toBeLessThan(0.5);
+    expect(color(down.tint)).toBe("c4fbef");
+    const up = pose(rebirth, 1);
+    expect(up.tilt).toBeCloseTo(0);
+    expect(up.opacity).toBeCloseTo(1);
+  });
+
+  it("hops a Token from the Square of its summoner to its own Square", () => {
+    const token = { ...unit, id: 9, lane: 1, position: 1 };
+    const summoner = { ...unit, lane: 0, position: 2 };
+    const current = {
+      event: BattleEvent.TokenSummoned({
+        unit: snapshot(token.id),
+        sourceUnitId: summoner.id,
+      }),
+      duration: 1,
+      before: before([summoner]),
+    };
+    const origin = summonOrigin(token, current, 3);
+    const laneStep = laneZ(0, 3) - laneZ(1, 3);
+    expect(origin).toEqual({ x: squareX(2), z: laneStep });
+    const start = emptyPose();
+    poseFor(token, current.event, 0, 0, start, { origin });
+    expect(start.x).toBeCloseTo(squareX(2));
+    expect(start.z).toBeCloseTo(laneStep);
+    expect(start.opacity).toBe(0);
+    const end = emptyPose();
+    poseFor(token, current.event, 1, 0, end, { origin });
+    expect(end.x).toBeCloseTo(squareX(1));
+    expect(end.z).toBeCloseTo(0);
+    expect(end.scale).toBeCloseTo(1);
+    expect(summonOrigin(summoner, current, 3)).toBeNull();
+  });
+
   it("shows a skipped Unit frozen and a healed Unit green", () => {
     const skipped = pose(BattleEvent.UnitSkipped({ unitId: unit.id }), 0.5);
     expect(color(skipped.tint)).toBe("a9dcff");
@@ -289,9 +334,6 @@ describe("poseFor in an event", () => {
     expect(healed.tintAmount).toBeCloseTo(0.3);
   });
 });
-
-/** The view before an event, with only `units` on the Board. */
-const before = (units: readonly UnitView[]) => ({ ...view, units });
 
 describe("passesFriendlyUnit", () => {
   const moved = BattleEvent.UnitMoved({

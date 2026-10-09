@@ -3,6 +3,7 @@ import type {
   ClassId,
   DamageType,
   RaceId,
+  TokenDefinition,
   UnitRole,
 } from "@workspace/rules";
 import { absurd } from "effect";
@@ -221,3 +222,10 @@ export const cardGlyph = (card: CardDefinition): Glyph => {
     }
   }
 };
+
+/**
+ * The icon of a Token: wings for Flying, else its Race. A Token has no role
+ * (Card Concepts 8).
+ */
+export const tokenGlyph = (token: TokenDefinition): Glyph =>
+  token.keywords.flying ? "wings" : RACE_GLYPH[token.race];

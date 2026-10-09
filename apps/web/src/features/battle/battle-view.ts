@@ -2,14 +2,27 @@ import type {
   BattleEvent,
   BattleResult,
   BattleState,
-  CardInstance,
   ClassId,
   DamageType,
   RankId,
   Side,
+  TokenId,
   UnitState,
 } from "@workspace/rules";
-import { getCard, isBlockedByUnique } from "@workspace/rules";
+import {
+  getCard,
+  getToken,
+  isBlockedByUnique,
+  unitRank,
+} from "@workspace/rules";
+
+/**
+ * What a Unit shows: its Creature Card, or its Token, which has no Card
+ * (GDD 4.9). Only a Card Unit goes to the Graveyard and counts for Unique.
+ */
+export type UnitSourceView =
+  | { readonly _tag: "Card"; readonly cardId: string }
+  | { readonly _tag: "Token"; readonly tokenId: TokenId };
 
 /**
  * What the Battle screen shows. The scene and the HUD read only this view.
@@ -19,11 +32,22 @@ import { getCard, isBlockedByUnique } from "@workspace/rules";
 export interface UnitView {
   readonly id: number;
   readonly owner: Side;
-  readonly cardId: string;
+  readonly source: UnitSourceView;
   readonly rank: RankId;
   readonly lane: number;
   readonly position: number;
+  /**
+   * The Attack that the Unit hits with now: its Attack and the Swarm bonus.
+   * The rules do not store the Swarm bonus (GDD 5.4), so the view calculates
+   * it after each event.
+   */
   readonly attack: number;
+  /** Swarm for the Rank of this Unit. 0 is none. */
+  readonly swarm: number;
+  /** The part of `attack` that comes from Swarm now: 0 or `swarm`. */
+  readonly swarmBonus: number;
+  /** The Unit died one time and came back with Rebirth (GDD 4.9). */
+  readonly reborn: boolean;
   readonly hp: number;
   readonly maxHp: number;
   readonly armor: number;
@@ -94,37 +118,54 @@ export interface BattleView {
   readonly result: BattleResult | null;
 }
 
-const unitView = (unit: Readonly<UnitState>, card: CardInstance): UnitView => ({
-  id: unit.id,
-  owner: unit.owner,
-  cardId: card.cardId,
-  rank: card.rank,
-  lane: unit.lane,
-  position: unit.position,
-  attack: unit.attack,
-  hp: unit.hp,
-  maxHp: unit.maxHp,
-  armor: unit.armor,
-  bonusArmor: unit.bonusArmor,
-  bonusArmorTurns: unit.bonusArmorTurns,
-  range: unit.range,
-  flying: unit.flying,
-  damageType: unit.damageType,
-  burn: unit.burn,
-  poisoned: unit.poisoned,
-  hobbled: unit.hobbled,
-  bleeding: unit.bleeding,
-  frozen: unit.frozen,
-  entangled: unit.entangled,
-  wall: unit.wall,
-});
+const sourceView = (unit: Readonly<UnitState>): UnitSourceView =>
+  unit.source._tag === "Card"
+    ? { _tag: "Card", cardId: unit.source.card.cardId }
+    : { _tag: "Token", tokenId: unit.source.tokenId };
+
+/** Whether the card or the Token of a Unit has Rebirth. */
+const hasRebirth = (source: UnitSourceView): boolean => {
+  if (source._tag === "Token") {
+    return getToken(source.tokenId).keywords.rebirth ?? false;
+  }
+  const card = getCard(source.cardId);
+  return card.kind === "creature" && (card.keywords.rebirth ?? false);
+};
 
 /**
- * The view of a Unit from a Card. The view has no Token Unit yet: the Undead
- * web issue (#36) shows Tokens. No v1 card makes a Token now.
+ * The view of a Unit. `attack` has no Swarm bonus here: `markSwarm` adds it
+ * when the view has all its Units.
  */
-const cardUnitView = (unit: Readonly<UnitState>): UnitView[] =>
-  unit.source._tag === "Card" ? [unitView(unit, unit.source.card)] : [];
+const unitView = (unit: Readonly<UnitState>): UnitView => {
+  const source = sourceView(unit);
+  return {
+    id: unit.id,
+    owner: unit.owner,
+    source,
+    rank: unitRank(unit.source),
+    lane: unit.lane,
+    position: unit.position,
+    attack: unit.attack,
+    swarm: unit.swarm,
+    swarmBonus: 0,
+    reborn: !unit.rebirth && hasRebirth(source),
+    hp: unit.hp,
+    maxHp: unit.maxHp,
+    armor: unit.armor,
+    bonusArmor: unit.bonusArmor,
+    bonusArmorTurns: unit.bonusArmorTurns,
+    range: unit.range,
+    flying: unit.flying,
+    damageType: unit.damageType,
+    burn: unit.burn,
+    poisoned: unit.poisoned,
+    hobbled: unit.hobbled,
+    bleeding: unit.bleeding,
+    frozen: unit.frozen,
+    entangled: unit.entangled,
+    wall: unit.wall,
+  };
+};
 
 const visibleCard = (
   side: Side,
@@ -186,7 +227,9 @@ const updateSide = (
  */
 const markBlockedCards = (view: BattleView): BattleView => {
   const friendlyUnitCardIds = view.units.flatMap((unit) =>
-    unit.owner === "player" ? [unit.cardId] : []
+    unit.owner === "player" && unit.source._tag === "Card"
+      ? [unit.source.cardId]
+      : []
   );
   const { hand } = view.sides.player;
   const blocked = hand.map((card) =>
@@ -206,9 +249,58 @@ const markBlockedCards = (view: BattleView): BattleView => {
   }));
 };
 
+/**
+ * The Swarm bonus of a Unit (GDD 5.4), as the rules calculate it for a hit:
+ * +Swarm while another Unit of the same Side, with HP above 0, is in the same
+ * Lane. A Unit with Attack 0 gets no bonus.
+ */
+const swarmBonusOf = (units: readonly UnitView[], unit: UnitView): number => {
+  const attack = unit.attack - unit.swarmBonus;
+  return unit.swarm > 0 &&
+    attack > 0 &&
+    units.some(
+      (other) =>
+        other.id !== unit.id &&
+        other.owner === unit.owner &&
+        other.lane === unit.lane &&
+        other.hp > 0
+    )
+    ? unit.swarm
+    : 0;
+};
+
+/**
+ * Sets the Swarm bonus of each Unit from the Units of the view, so that the
+ * Attack changes when a friendly Unit comes into or leaves the Lane. It keeps
+ * the view when no Unit changes.
+ */
+const markSwarm = (view: BattleView): BattleView => {
+  const bonuses = view.units.map((unit) => swarmBonusOf(view.units, unit));
+  if (view.units.every((unit, index) => unit.swarmBonus === bonuses[index])) {
+    return view;
+  }
+  return {
+    ...view,
+    units: view.units.map((unit, index) => {
+      const swarmBonus = bonuses[index] ?? 0;
+      return swarmBonus === unit.swarmBonus
+        ? unit
+        : {
+            ...unit,
+            attack: unit.attack - unit.swarmBonus + swarmBonus,
+            swarmBonus,
+          };
+    }),
+  };
+};
+
+/** The passes that read all the Units of the view. */
+const markAll = (view: BattleView): BattleView =>
+  markBlockedCards(markSwarm(view));
+
 /** The view of a rules state, with the enemy's Hand hidden. */
 export const viewFromState = (state: BattleState): BattleView =>
-  markBlockedCards({
+  markAll({
     lanes: state.lanes,
     closedLanes: state.closedLanes.map((closed) => closed.lane),
     turnNumber: state.turnNumber,
@@ -217,7 +309,7 @@ export const viewFromState = (state: BattleState): BattleView =>
       player: sideView(state, "player"),
       enemy: sideView(state, "enemy"),
     },
-    units: state.units.flatMap(cardUnitView),
+    units: state.units.map(unitView),
     result: state.result,
   });
 
@@ -308,6 +400,56 @@ const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
   }
 };
 
+/** The events that put a Unit on the Board, bring it back, or take it off. */
+const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
+  switch (event._tag) {
+    case "UnitSummoned":
+    case "TokenSummoned": {
+      return { ...view, units: [...view.units, unitView(event.unit)] };
+    }
+    case "UnitReborn": {
+      // Rebirth (GDD 4.9): the Unit stays in its Square with its new HP, and
+      // all its Statuses and its bonus Armor end.
+      return updateUnit(view, event.unitId, (unit) => ({
+        ...unit,
+        hp: event.hp,
+        reborn: true,
+        burn: 0,
+        poisoned: 0,
+        hobbled: 0,
+        bleeding: 0,
+        frozen: false,
+        entangled: false,
+        bonusArmor: 0,
+        bonusArmorTurns: 0,
+      }));
+    }
+    case "UnitDied": {
+      const unit = view.units.find(
+        (candidate) => candidate.id === event.unitId
+      );
+      const without = {
+        ...view,
+        units: view.units.filter((candidate) => candidate.id !== event.unitId),
+      };
+      // The Card of a Card Unit goes to the Graveyard. A Token disappears.
+      const { source } = unit ?? {};
+      return unit && source?._tag === "Card"
+        ? updateSide(without, unit.owner, (side) => ({
+            ...side,
+            graveyard: [
+              ...side.graveyard,
+              graveyardCard({ cardId: source.cardId, rank: unit.rank }),
+            ],
+          }))
+        : without;
+    }
+    default: {
+      return applyCardEvent(view, event);
+    }
+  }
+};
+
 const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
   switch (event._tag) {
     case "TurnStarted": {
@@ -318,9 +460,6 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         ...view,
         closedLanes: view.closedLanes.filter((lane) => lane !== event.lane),
       };
-    }
-    case "UnitSummoned": {
-      return { ...view, units: [...view.units, ...cardUnitView(event.unit)] };
     }
     case "UnitMoved":
     case "UnitPushed": {
@@ -418,26 +557,11 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         }),
       };
     }
-    case "UnitDied": {
-      const unit = view.units.find(
-        (candidate) => candidate.id === event.unitId
-      );
-      const without = {
-        ...view,
-        units: view.units.filter((candidate) => candidate.id !== event.unitId),
-      };
-      return unit
-        ? updateSide(without, unit.owner, (side) => ({
-            ...side,
-            graveyard: [...side.graveyard, graveyardCard(unit)],
-          }))
-        : without;
-    }
     case "BattleEnded": {
       return { ...view, result: event.result };
     }
     default: {
-      return applyCardEvent(view, event);
+      return applyLifeEvent(view, event);
     }
   }
 };
@@ -447,4 +571,4 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
  * `viewFromState(before)` gives `viewFromState(after)`. A unit test checks this.
  */
 export const applyEvent = (view: BattleView, event: BattleEvent): BattleView =>
-  markBlockedCards(applyBoardEvent(view, event));
+  markAll(applyBoardEvent(view, event));

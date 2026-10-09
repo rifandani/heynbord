@@ -1,11 +1,14 @@
 import type {
   CardDefinition,
-  CreatureCardDefinition,
+  DamageType,
+  Keywords,
   RankId,
   SkillCardDefinition,
+  TokenId,
 } from "@workspace/rules";
 import {
   getCard,
+  getToken,
   keywordValue,
   recallChance,
   scaleForRank,
@@ -26,6 +29,13 @@ const cardNameKey = (cardId: string): string => `cards.${cardId}.name`;
 
 const cardFlavorKey = (cardId: string): string => `cards.${cardId}.flavor`;
 
+/**
+ * The Translation Key of a Token name. A Token is not a card, so its text is
+ * not in `cards`: `token.restlessWisp` is `tokens.restlessWisp.name`.
+ */
+const tokenNameKey = (tokenId: TokenId): string =>
+  `tokens.${tokenId.slice(tokenId.indexOf(".") + 1)}.name`;
+
 /** A Keyword name and its rule, for the Details Panel. */
 export interface KeywordText {
   readonly keyword: Keyword;
@@ -45,6 +55,7 @@ export const VALUE_KEYWORDS = [
   "rally",
   "regeneration",
   "sabotage",
+  "swarm",
 ] as const;
 /** The Keywords with no value (GDD 5.4). */
 export const FLAG_KEYWORDS = [
@@ -53,29 +64,33 @@ export const FLAG_KEYWORDS = [
   "flying",
   "pivot",
   "poison",
+  "rebirth",
   "retaliation",
   "trample",
   "unique",
   "wall",
 ] as const;
+/** The Keywords with a Token X as their value: Summon X (GDD 5.4). */
+export const TOKEN_KEYWORDS = ["summon"] as const;
 
-/** One Keyword of a Creature Card (GDD 5.4). */
+/** One Keyword of a Creature Card or a Token (GDD 5.4). */
 export type Keyword =
   | (typeof VALUE_KEYWORDS)[number]
-  | (typeof FLAG_KEYWORDS)[number];
+  | (typeof FLAG_KEYWORDS)[number]
+  | (typeof TOKEN_KEYWORDS)[number];
 
-/** All Keywords: the value Keywords, then the others. */
+/** All Keywords: the value Keywords, the Token Keywords, then the others. */
 export const KEYWORDS: readonly Keyword[] = [
   ...VALUE_KEYWORDS,
+  ...TOKEN_KEYWORDS,
   ...FLAG_KEYWORDS,
 ];
 
-/** Each Keyword on a Creature Card, with its rule (GDD 5.4). */
-const creatureKeywords = (
-  card: CreatureCardDefinition,
-  rank: RankId
-): KeywordText[] => {
-  const { keywords } = card;
+/**
+ * Each Keyword of a Creature Card or a Token, with its rule (GDD 5.4). The
+ * text of Summon names its Token.
+ */
+const unitKeywords = (keywords: Keywords, rank: RankId): KeywordText[] => {
   const refs: KeywordText[] = [];
   for (const name of VALUE_KEYWORDS) {
     const value = keywordValue(keywords[name], rank);
@@ -86,6 +101,14 @@ const creatureKeywords = (
         rule: { key: `keywordRules.${name}`, args: { value } },
       });
     }
+  }
+  if (keywords.summon) {
+    const token = { key: tokenNameKey(keywords.summon) };
+    refs.push({
+      keyword: "summon",
+      name: { key: "keywords.summon", args: { token } },
+      rule: { key: "keywordRules.summon", args: { token } },
+    });
   }
   for (const name of FLAG_KEYWORDS) {
     if (keywords[name]) {
@@ -143,6 +166,7 @@ const skillEffect = (card: SkillCardDefinition, rank: RankId): TextRef => {
 export interface CreatureCardText {
   readonly kind: "creature";
   readonly name: TextRef;
+  /** The flavor text of a card, or a muted line that explains a Token. */
   readonly flavor: TextRef;
   /** Melee, or Ranged with the Range. */
   readonly attackType: TextRef;
@@ -190,8 +214,11 @@ export const STATUS_TEXT = {
 
 /** One line of the Unit status in the Details Panel. */
 export interface StatusText {
-  /** A Status, or bonus Armor from a Skill Card, which is not a Status. */
-  readonly status: Status | "bonusArmor";
+  /**
+   * A Status, or a change that is not a Status: bonus Armor from a Skill
+   * Card, the Swarm bonus, or a Rebirth that the Unit used.
+   */
+  readonly status: Status | "bonusArmor" | "swarmBonus" | "reborn";
   readonly name: TextRef;
   readonly rule: TextRef;
   /** The End Phases that are left, after the rule. */
@@ -208,6 +235,8 @@ type StatusCounts = Pick<
   | "hobbled"
   | "bleeding"
   | "poisoned"
+  | "swarmBonus"
+  | "reborn"
 >;
 
 /** A Status with a count in its name, for example "Poison 2". */
@@ -240,8 +269,9 @@ const flagStatus = (
     : [];
 
 /**
- * How a Unit is different from its card now (UI-05): bonus Armor, then each
- * Status that it has. Empty for a Unit with none of these.
+ * How a Unit is different from its card now (UI-05): bonus Armor, the Swarm
+ * bonus, each Status that it has, then a used Rebirth. Empty for a Unit with
+ * none of these.
  */
 export const unitStatusText = (unit: StatusCounts): StatusText[] => [
   ...(unit.bonusArmor > 0
@@ -256,6 +286,18 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
             key: "battle.status.bonusArmorRule",
             args: { turns: unit.bonusArmorTurns },
           },
+        },
+      ]
+    : []),
+  ...(unit.swarmBonus > 0
+    ? [
+        {
+          status: "swarmBonus" as const,
+          name: {
+            key: "battle.status.swarmBonus",
+            args: { value: unit.swarmBonus },
+          },
+          rule: { key: "battle.status.swarmBonusRule" },
         },
       ]
     : []),
@@ -274,7 +316,50 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
   ...countedStatus("hobble", unit.hobbled),
   ...countedStatus("bleed", unit.bleeding),
   ...countedStatus("poison", unit.poisoned),
+  ...(unit.reborn
+    ? [
+        {
+          status: "reborn" as const,
+          name: { key: "battle.status.reborn" },
+          rule: { key: "battle.status.rebornRule" },
+        },
+      ]
+    : []),
 ];
+
+/** The rules text of a Creature Card or a Token: attack type, Keywords and Damage Type. */
+const creatureBody = (
+  body: {
+    readonly range: number;
+    readonly damageType: DamageType;
+    readonly keywords: Keywords;
+  },
+  rank: RankId
+): Omit<CreatureCardText, "name" | "flavor"> => ({
+  kind: "creature",
+  attackType:
+    body.range > 0
+      ? { key: "keywords.ranged", args: { value: body.range } }
+      : { key: "keywords.melee" },
+  keywords: unitKeywords(body.keywords, rank),
+  damageRule:
+    body.damageType === "physical"
+      ? undefined
+      : { key: `keywordRules.${body.damageType}` },
+});
+
+/**
+ * All text of a Token Unit, as Translation Keys and values. A Token has no
+ * flavor text: the muted line at the bottom says what a Token is.
+ */
+export const tokenText = (tokenId: TokenId, rank: RankId): CreatureCardText => {
+  const token = getToken(tokenId);
+  return {
+    name: { key: tokenNameKey(tokenId) },
+    flavor: { key: "battle.tokenReminder" },
+    ...creatureBody(token, rank),
+  };
+};
 
 /** All text of a card copy, as Translation Keys and values. */
 export const cardText = (cardId: string, rank: RankId): CardText => {
@@ -284,19 +369,7 @@ export const cardText = (cardId: string, rank: RankId): CardText => {
     flavor: { key: cardFlavorKey(cardId) },
   };
   if (card.kind === "creature") {
-    return {
-      ...base,
-      kind: "creature",
-      attackType:
-        card.range > 0
-          ? { key: "keywords.ranged", args: { value: card.range } }
-          : { key: "keywords.melee" },
-      keywords: creatureKeywords(card, rank),
-      damageRule:
-        card.damageType === "physical"
-          ? undefined
-          : { key: `keywordRules.${card.damageType}` },
-    };
+    return { ...base, ...creatureBody(card, rank) };
   }
   const recall = recallChance(rank) / 100;
   return {

@@ -1,4 +1,8 @@
-import type { BattleState, StageDefinition } from "@workspace/rules";
+import type {
+  BattleState,
+  StageDefinition,
+  UnitSnapshot,
+} from "@workspace/rules";
 import {
   BattleEvent,
   Command,
@@ -105,6 +109,59 @@ describe("applyEvent with Sabotage, Trample, Entangle and Rally", () => {
   );
 });
 
+/** Stage 1-4 with an enemy Deck of Undead cards: Swarm, Rebirth and Summon. */
+const undeadStage = (): StageDefinition => {
+  const stage = getStage("1-4");
+  const cardIds = [
+    "undead.graveyardDrudge",
+    "undead.hushbow",
+    "undead.graveBellTender",
+    "undead.chatteringCohort",
+    "undead.coffinLancer",
+    "undead.lanternWidow",
+    "undead.boneRampart",
+  ];
+  return {
+    ...stage,
+    enemy: {
+      ...stage.enemy,
+      deck: cardIds.flatMap((cardId) =>
+        Array.from({ length: 2 }, () => ({ cardId, rank: "epic" as const }))
+      ),
+    },
+  };
+};
+
+describe("applyEvent with Swarm, Rebirth and Summon", () => {
+  const battles = [1, 2, 3].map((seed) =>
+    steps(seed, "1-4", "vanguard", undeadStage())
+  );
+
+  it("rebuilds the view of the next state from the events", () => {
+    for (const all of battles) {
+      for (const { before, after, events } of all) {
+        expect(events.reduce(applyEvent, viewFromState(before))).toEqual(
+          viewFromState(after)
+        );
+      }
+    }
+  });
+
+  it("has Tokens, Rebirths and a Swarm bonus in these Battles", () => {
+    const all = battles.flat();
+    const tags = new Set(
+      all.flatMap(({ events }) => events.map((event) => event._tag))
+    );
+    expect(tags.has("TokenSummoned")).toBe(true);
+    expect(tags.has("UnitReborn")).toBe(true);
+    expect(
+      all.some(({ after }) =>
+        viewFromState(after).units.some((unit) => unit.swarmBonus > 0)
+      )
+    ).toBe(true);
+  });
+});
+
 describe("viewFromState", () => {
   it("hides the enemy's cards but shows their Countdowns", () => {
     const deck = getStarterDeck("raiders");
@@ -153,11 +210,14 @@ describe("the Graveyard view", () => {
         {
           id: 7,
           owner: "player" as const,
-          cardId: "orc.badlandRunt",
+          source: { _tag: "Card" as const, cardId: "orc.badlandRunt" },
           rank: "common" as const,
           lane: 0,
           position: 2,
           attack: 3,
+          swarm: 0,
+          swarmBonus: 0,
+          reborn: false,
           hp: 1,
           maxHp: 2,
           armor: 0,
@@ -207,11 +267,14 @@ describe("the bonus Armor view", () => {
     const unit = {
       id: 7,
       owner: "player" as const,
-      cardId: "orc.badlandRunt",
+      source: { _tag: "Card" as const, cardId: "orc.badlandRunt" },
       rank: "common" as const,
       lane: 0,
       position: 2,
       attack: 3,
+      swarm: 0,
+      swarmBonus: 0,
+      reborn: false,
       hp: 2,
       maxHp: 2,
       armor: 0,
@@ -268,11 +331,14 @@ describe("the Hobbled and Bleeding view", () => {
     const unit = {
       id: 7,
       owner: "player" as const,
-      cardId: "orc.badlandRunt",
+      source: { _tag: "Card" as const, cardId: "orc.badlandRunt" },
       rank: "common" as const,
       lane: 0,
       position: 2,
       attack: 3,
+      swarm: 0,
+      swarmBonus: 0,
+      reborn: false,
       hp: 2,
       maxHp: 2,
       armor: 0,
@@ -338,11 +404,14 @@ describe("a push", () => {
     const unit = {
       id: 7,
       owner: "enemy" as const,
-      cardId: "human.militiaRecruit",
+      source: { _tag: "Card" as const, cardId: "human.militiaRecruit" },
       rank: "common" as const,
       lane: 0,
       position: 5,
       attack: 2,
+      swarm: 0,
+      swarmBonus: 0,
+      reborn: false,
       hp: 4,
       maxHp: 4,
       armor: 0,
@@ -403,7 +472,10 @@ describe("a card that Unique blocks (GDD 5.4)", () => {
     expect(played.sides.player.hand).toEqual([
       expect.objectContaining({ instanceId: 902, blocked: true }),
     ]);
-    const unitId = played.units.find((unit) => unit.cardId === voss)?.id ?? -1;
+    const unitId =
+      played.units.find(
+        (unit) => unit.source._tag === "Card" && unit.source.cardId === voss
+      )?.id ?? -1;
     const died = applyEvent(played, BattleEvent.UnitDied({ unitId }));
     expect(died.sides.player.hand[0]?.blocked).toBe(false);
   });
@@ -441,11 +513,14 @@ describe("the Entangled view", () => {
   const unit = {
     id: 7,
     owner: "enemy" as const,
-    cardId: "human.militiaRecruit",
+    source: { _tag: "Card" as const, cardId: "human.militiaRecruit" },
     rank: "common" as const,
     lane: 0,
     position: 5,
     attack: 2,
+    swarm: 0,
+    swarmBonus: 0,
+    reborn: false,
     hp: 4,
     maxHp: 4,
     armor: 0,
@@ -500,5 +575,149 @@ describe("the Entangled view", () => {
       BattleEvent.TurnEnded({ side: "enemy" })
     );
     expect(ownSide.units[0]?.entangled).toBe(false);
+  });
+});
+
+/** An enemy Unit snapshot as the rules make it: Melee, with no Keyword and no Status. */
+const snapshot = (
+  id: number,
+  lane: number,
+  position: number,
+  source: UnitSnapshot["source"],
+  extra: Partial<UnitSnapshot> = {}
+): UnitSnapshot => ({
+  id,
+  owner: "enemy",
+  source,
+  lane,
+  position,
+  attack: 3,
+  hp: 5,
+  maxHp: 5,
+  speed: 1,
+  range: 0,
+  damageType: "physical",
+  armor: 0,
+  charge: 0,
+  entangle: false,
+  firstStrike: false,
+  flying: false,
+  heroic: 0,
+  lastBreath: 0,
+  pivot: false,
+  poison: false,
+  hobble: 0,
+  bleed: 0,
+  knockback: 0,
+  rally: 0,
+  rebirth: false,
+  regeneration: 0,
+  retaliation: false,
+  swarm: 0,
+  trample: false,
+  wall: false,
+  summonedTurn: 1,
+  burn: 0,
+  poisoned: 0,
+  hobbled: 0,
+  bleeding: 0,
+  frozen: false,
+  entangled: false,
+  rallied: 0,
+  bonusArmor: 0,
+  bonusArmorTurns: 0,
+  ...extra,
+});
+
+describe("the Token, Rebirth and Swarm view", () => {
+  const deck = getStarterDeck("vanguard");
+  const { state } = createBattle({
+    seed: 3,
+    stage: getStage("1-1"),
+    player: {
+      classId: deck.classId,
+      deck: deck.deck,
+      level: 1,
+      gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+    },
+  });
+  const start = { ...viewFromState(state), units: [] };
+  const hushbow = snapshot(20, 0, 9, {
+    _tag: "Card",
+    card: { instanceId: 70, cardId: "undead.hushbow", rank: "common" },
+  });
+  const skeleton = snapshot(
+    21,
+    0,
+    10,
+    { _tag: "Token", tokenId: "token.skeleton", rank: "common" },
+    { attack: 1, hp: 1, maxHp: 1, swarm: 1 }
+  );
+
+  it("adds the Token Unit of TokenSummoned, and gives Swarm its bonus while a friendly Unit is in the Lane", () => {
+    const alone = applyEvent(
+      start,
+      BattleEvent.UnitSummoned({ unit: skeleton })
+    );
+    expect(alone.units[0]?.attack).toBe(1);
+    expect(alone.units[0]?.swarmBonus).toBe(0);
+    const view = applyEvent(
+      alone,
+      BattleEvent.TokenSummoned({ unit: hushbow, sourceUnitId: 99 })
+    );
+    const token = view.units.find((unit) => unit.id === skeleton.id);
+    expect(token?.source).toEqual({ _tag: "Token", tokenId: "token.skeleton" });
+    expect(token?.rank).toBe("common");
+    expect(token?.attack).toBe(2);
+    expect(token?.swarmBonus).toBe(1);
+    const moved = applyEvent(
+      view,
+      BattleEvent.UnitDied({ unitId: hushbow.id })
+    );
+    expect(moved.units.find((unit) => unit.id === skeleton.id)?.attack).toBe(1);
+  });
+
+  it("puts no card in the Graveyard when a Token dies", () => {
+    const view = applyEvent(
+      start,
+      BattleEvent.UnitSummoned({ unit: skeleton })
+    );
+    const after = applyEvent(
+      view,
+      BattleEvent.UnitDied({ unitId: skeleton.id })
+    );
+    expect(after.units).toEqual([]);
+    expect(after.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);
+  });
+
+  it("keeps a reborn Unit in its Square with its new HP, no Status and no bonus Armor", () => {
+    const lancer = snapshot(
+      22,
+      1,
+      8,
+      {
+        _tag: "Card",
+        card: { instanceId: 71, cardId: "undead.coffinLancer", rank: "rare" },
+      },
+      { rebirth: true }
+    );
+    let view = applyEvent(start, BattleEvent.UnitSummoned({ unit: lancer }));
+    expect(view.units[0]?.reborn).toBe(false);
+    view = [
+      BattleEvent.StatusApplied({ unitId: lancer.id, status: "freeze" }),
+      BattleEvent.StatusApplied({ unitId: lancer.id, status: "burn" }),
+      BattleEvent.ArmorGained({ unitId: lancer.id, armor: 1, turns: 2 }),
+      BattleEvent.UnitReborn({ unitId: lancer.id, hp: 1 }),
+    ].reduce(applyEvent, view);
+    expect(view.units).toHaveLength(1);
+    expect(view.units[0]).toMatchObject({
+      position: 8,
+      hp: 1,
+      reborn: true,
+      frozen: false,
+      burn: 0,
+      bonusArmor: 0,
+    });
+    expect(view.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);
   });
 });

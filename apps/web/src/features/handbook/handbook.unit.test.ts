@@ -179,7 +179,7 @@ describe("ENTRIES", () => {
 
 describe("Entries of Keywords, Statuses and Damage Types", () => {
   it("has an Entry for each Keyword, with the rule key of the Details Panel", () => {
-    expect(KEYWORDS).toHaveLength(19);
+    expect(KEYWORDS).toHaveLength(22);
     for (const card of CARDS) {
       const text = cardText(card.id, card.baseRank);
       if (text.kind !== "creature") {
@@ -207,12 +207,18 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       hobbled: 1,
       bleeding: 1,
       poisoned: 3,
+      swarmBonus: 0,
+      reborn: false,
     });
     expect(lines.map((line) => line.status).toSorted()).toEqual(
       [...STATUS_ORDER].toSorted()
     );
     for (const line of lines) {
-      if (line.status === "bonusArmor") {
+      if (
+        line.status === "bonusArmor" ||
+        line.status === "swarmBonus" ||
+        line.status === "reborn"
+      ) {
         continue;
       }
       const entry = getEntry(statusEntryId(line.status));
@@ -254,8 +260,27 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       "+N Speed in the Turn when you summon this Unit."
     );
     expect(text(getEntry("keywordFlying").name)).toBe("Flying");
+    expect(text(getEntry("keywordSwarm").name)).toBe("Swarm N");
     expect(text(getEntry("statusPoison").name)).toBe("Poison N");
     expect(text(getEntry("statusFreeze").name)).toBe("Frozen");
+  });
+});
+
+describe("the Entries of Summon X and Token", () => {
+  it("shows X for the Token of Summon, and links Summon and Token", () => {
+    const text = textIn("en-us");
+    const summon = getEntry("keywordSummon");
+    expect(text(summon.name)).toBe("Summon X");
+    expect(text(summon.body[0] ?? summon.name)).toContain(
+      "a Token X of the same Rank also appears"
+    );
+    expect(summon.seeAlso).toContain("token");
+    const token = getEntry("token");
+    expect(token.chapter).toBe("units");
+    expect(text(token.name)).toBe("Token");
+    expect(token.seeAlso).toContain("keywordSummon");
+    expect(text(getEntry("keywordRebirth").name)).toBe("Rebirth");
+    expect(textIn("id-id")(summon.name)).toBe("Panggil X");
   });
 });
 
@@ -411,7 +436,7 @@ describe("chapterEntries", () => {
       const names = chapterEntries("keywords", nameIn(locale), locale).map(
         nameIn(locale)
       );
-      expect(names).toHaveLength(19);
+      expect(names).toHaveLength(22);
       expect(names).toEqual(
         names.toSorted((a, b) => a.localeCompare(b, locale))
       );

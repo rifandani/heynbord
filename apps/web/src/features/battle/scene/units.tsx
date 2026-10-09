@@ -29,7 +29,7 @@ import {
   battleSessionAtom,
   detailsUnitAtom,
 } from "@/features/battle/battle.atoms";
-import { battleCreatureCards } from "@/features/battle/card-art";
+import { battleUnitSources, sourceId } from "@/features/battle/card-art";
 import { SIDE_COLORS } from "@/features/battle/palette";
 import {
   fxAtlas,
@@ -65,6 +65,7 @@ import {
   emptyPose,
   passesFriendlyUnit,
   poseFor,
+  summonOrigin,
 } from "@/features/battle/scene/unit-pose";
 import { buildRig } from "@/features/battle/scene/unit-rig";
 import { summonAttack } from "@/features/battle/scene/unit-stats";
@@ -176,10 +177,13 @@ interface BodyProps {
 const CutOutBody = ({ unit, facing, ref }: BodyProps) => {
   const figure = useRef<Mesh>(null);
   const figureMaterial = useRef<MeshBasicMaterial>(null);
-  const [art, setArt] = useState(() => loadedUnitArt(unit.cardId));
+  const { source } = unit;
+  const id = sourceId(source);
+  const [art, setArt] = useState(() => loadedUnitArt(source));
   const standee = useMemo(
-    () => unitFigureTexture(unit.cardId, unit.rank),
-    [unit.cardId, unit.rank]
+    () => unitFigureTexture(source, unit.rank),
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- the ID names the source
+    [id, unit.rank]
   );
   useEffect(() => {
     if (art) {
@@ -187,7 +191,7 @@ const CutOutBody = ({ unit, facing, ref }: BodyProps) => {
     }
     let mounted = true;
     const load = async () => {
-      const texture = await unitArtTexture(unit.cardId);
+      const texture = await unitArtTexture(source);
       if (mounted && texture) {
         setArt(texture);
       }
@@ -196,7 +200,8 @@ const CutOutBody = ({ unit, facing, ref }: BodyProps) => {
     return () => {
       mounted = false;
     };
-  }, [art, unit.cardId]);
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- the ID names the source
+  }, [art, id]);
   useImperativeHandle(
     ref,
     () => ({
@@ -342,15 +347,15 @@ const UnitFigure = ({
     () =>
       unitStatTexture({
         attack: unit.wall ? undefined : unit.attack,
-        startAttack: summonAttack(unit.cardId, unit.rank, unit.attack),
+        startAttack: summonAttack(unit),
         hp: unit.hp,
         maxHp: unit.maxHp,
       }),
-    [unit.attack, unit.cardId, unit.hp, unit.maxHp, unit.rank, unit.wall]
+    [unit]
   );
   const shadow = useMemo(() => blobShadowTexture(), []);
   const z = laneZ(unit.lane, lanes);
-  const model = unitModelOf(unit.cardId);
+  const model = unitModelOf(sourceId(unit.source));
   const badgeY = (model?.height ?? FIGURE_HEIGHT) + BADGE_GAP;
 
   // The enemy faces left: its figure is mirrored.
@@ -364,7 +369,11 @@ const UnitFigure = ({
       playback.progress,
       playback.time,
       pose,
-      { passing: passesFriendlyUnit(current), reducedMotion }
+      {
+        passing: passesFriendlyUnit(current),
+        reducedMotion,
+        origin: summonOrigin(unit, current, lanes),
+      }
     );
     const node = group.current;
     if (!node) {
@@ -462,8 +471,8 @@ export const Units = () => {
     if (!session) {
       return;
     }
-    for (const cardId of battleCreatureCards(session.rules)) {
-      void unitArtTexture(cardId);
+    for (const source of battleUnitSources(session.rules)) {
+      void unitArtTexture(source);
     }
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- once for each Battle, not for each event
   }, [options]);

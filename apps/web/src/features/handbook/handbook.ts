@@ -36,6 +36,7 @@ import type { Keyword, TextRef } from "@/features/battle/card-text";
 import {
   FLAG_KEYWORDS,
   STATUS_TEXT,
+  TOKEN_KEYWORDS,
   VALUE_KEYWORDS,
 } from "@/features/battle/card-text";
 import type { Glyph } from "@/features/battle/glyphs";
@@ -100,6 +101,7 @@ const UNIT_ENTRIES = [
   "melee",
   "ranged",
   "movement",
+  "token",
 ] as const;
 
 const PROGRESS_ENTRIES = ["stars", "playerLevel", "coin"] as const;
@@ -202,6 +204,12 @@ export const damageEntryId = (damageType: DamageType): EntryId =>
 
 /** The letter for the value of a value Keyword in its Entry, for example "Charge N". */
 const N = { key: "handbook.n" } as const;
+
+/**
+ * The Token of a Token Keyword in its Entry: "Summon X" in the name, and
+ * "Token X" in the rule, where a card names its Token.
+ */
+const X = { name: { key: "handbook.x" }, rule: { key: "handbook.tokenX" } };
 
 /** The value Keywords whose value on each card follows the shared Rank table. */
 export const rankTableKeywords = (
@@ -313,6 +321,15 @@ export const PLAYER_LEVEL_UNLOCK_TABLE: readonly {
 const RANK_TABLE_KEYWORDS = rankTableKeywords(CARDS);
 
 const keywordEntry = (keyword: Keyword): Entry => {
+  if (TOKEN_KEYWORDS.some((name) => name === keyword)) {
+    return {
+      id: keywordEntryId(keyword),
+      chapter: "keywords",
+      name: { key: `keywords.${keyword}`, args: { token: X.name } },
+      body: [{ key: `keywordRules.${keyword}`, args: { token: X.rule } }],
+      seeAlso: [],
+    };
+  }
   const valued = VALUE_KEYWORDS.some((name) => name === keyword);
   const args = valued ? { value: N } : undefined;
   return {
@@ -537,7 +554,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   ready: ["countdown", "playPhase"],
   recall: ["skillCard", "rank", "graveyard"],
   countdownLimit: ["countdown", "deck", "playerLevel"],
-  unit: ["creatureCard", "attack", "hp", "movement"],
+  unit: ["creatureCard", "token", "attack", "hp", "movement"],
   attack: ["damageType", "keywordArmor", "melee", "ranged"],
   hp: ["attack", "defeated"],
   speed: ["movement", "keywordCharge", "statusHobble"],
@@ -545,6 +562,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   melee: ["ranged", "attack"],
   ranged: ["range", "melee"],
   movement: ["speed", "keywordFlying", "statusEntangle"],
+  token: ["unit", "keywordSummon", "graveyard"],
   keywordArmor: ["damageHoly"],
   keywordBleed: ["statusBleed", "keywordRegeneration"],
   keywordCharge: ["speed"],
@@ -557,10 +575,13 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   keywordLastBreath: ["defeated"],
   keywordPivot: ["melee"],
   keywordPoison: ["statusPoison", "endPhase"],
+  keywordRebirth: ["hp", "status", "keywordLastBreath"],
   keywordRally: ["startPhase", "attack"],
   keywordRegeneration: ["startPhase", "statusBleed"],
   keywordRetaliation: ["keywordFirstStrike", "melee"],
   keywordSabotage: ["countdown"],
+  keywordSummon: ["token", "square"],
+  keywordSwarm: ["lane", "attack", "token"],
   keywordTrample: ["melee"],
   keywordUnique: ["creatureCard"],
   keywordWall: ["roleWall", "summonZone"],
@@ -604,7 +625,7 @@ export const ENTRIES: readonly Entry[] = [
   ...BATTLE_ENTRIES.map((id) => plainEntry(id, "battle")),
   ...CARD_ENTRIES.map((id) => plainEntry(id, "cards")),
   ...UNIT_ENTRIES.map((id) => plainEntry(id, "units")),
-  ...[...VALUE_KEYWORDS, ...FLAG_KEYWORDS].map(keywordEntry),
+  ...[...VALUE_KEYWORDS, ...TOKEN_KEYWORDS, ...FLAG_KEYWORDS].map(keywordEntry),
   term("status", "statuses"),
   ...STATUS_ORDER.map(statusEntry),
   term("damageType", "statuses"),
@@ -710,6 +731,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "hp",
   "range",
   "movement",
+  "token",
   "keywordCharge",
   "keywordKnockback",
   "keywordLastBreath",
@@ -718,6 +740,9 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "keywordEntangle",
   "keywordPoison",
   "keywordSabotage",
+  "keywordRebirth",
+  "keywordSummon",
+  "keywordSwarm",
   "keywordUnique",
   "keywordRetaliation",
   "status",

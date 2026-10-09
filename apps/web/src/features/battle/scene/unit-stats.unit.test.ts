@@ -1,4 +1,3 @@
-import { scaleForRank } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { statTone, summonAttack } from "@/features/battle/scene/unit-stats";
@@ -18,14 +17,8 @@ describe("statTone", () => {
 });
 
 describe("summonAttack", () => {
-  it("uses the card Attack after the Rank scale", () => {
-    expect(summonAttack("human.shieldbearer", "common", 9)).toBe(1);
-    expect(summonAttack("human.shieldbearer", "legendary", 0)).toBe(
-      scaleForRank(1, "legendary")
-    );
-  });
-
-  it("keeps the current Attack when the card is not a Creature Card", () => {
-    expect(summonAttack("mage.fireball", "common", 3)).toBe(3);
+  it("is the Attack with no Swarm bonus", () => {
+    expect(summonAttack({ attack: 4, swarmBonus: 1 })).toBe(3);
+    expect(summonAttack({ attack: 3, swarmBonus: 0 })).toBe(3);
   });
 });

@@ -80,6 +80,12 @@ const eventClip = (
         ? { name: "death", phase: progress }
         : null;
     }
+    case "UnitReborn": {
+      // The death clip, then the same clip back: the Unit gets up again.
+      return event.unitId === unit.id
+        ? { name: "death", phase: 1 - Math.abs(1 - progress * 2) }
+        : null;
+    }
     default: {
       return null;
     }

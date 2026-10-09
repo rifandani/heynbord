@@ -5,7 +5,10 @@ import { cn } from "cn";
 
 import type { BattleSession } from "@/features/battle/battle-session";
 import { detailsUnitAtom } from "@/features/battle/battle.atoms";
-import { CardDetails } from "@/features/battle/components/card-details";
+import {
+  CardDetails,
+  TokenDetails,
+} from "@/features/battle/components/card-details";
 import { openText } from "@/features/battle/tutorial";
 import type { ScreenSide } from "@/features/battle/unit-inspect";
 import { detailsSide } from "@/features/battle/unit-inspect";
@@ -47,6 +50,7 @@ export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
     return null;
   }
   const side = dockSide(unit.owner, tutorialIsOpen(battle.session));
+  const onEntry = battle.inspecting ? handbook.openAt : undefined;
   return (
     <div
       className={cn(
@@ -57,14 +61,23 @@ export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
       data-unit-id={unit.id}
       data-side={side}
     >
-      <CardDetails
-        cardId={unit.cardId}
-        rank={unit.rank}
-        countdown={getCard(unit.cardId).countdown}
-        unit={unit}
-        panelSide={facingPanel(side)}
-        onEntry={battle.inspecting ? handbook.openAt : undefined}
-      />
+      {unit.source._tag === "Card" ? (
+        <CardDetails
+          cardId={unit.source.cardId}
+          rank={unit.rank}
+          countdown={getCard(unit.source.cardId).countdown}
+          unit={unit}
+          panelSide={facingPanel(side)}
+          onEntry={onEntry}
+        />
+      ) : (
+        <TokenDetails
+          tokenId={unit.source.tokenId}
+          unit={unit}
+          panelSide={facingPanel(side)}
+          onEntry={onEntry}
+        />
+      )}
     </div>
   );
 };

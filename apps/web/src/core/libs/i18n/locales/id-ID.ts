@@ -118,6 +118,8 @@ export default {
     yours: "Milikmu",
     yourUnit: "Unit-mu",
     enemyUnit: "Unit Musuh",
+    tokenReminder:
+      "Token bukan kartu. Saat mati, ia menghilang. Ia tidak masuk ke Kuburan.",
     status: {
       bonusArmor: "Zirah +{value}",
       bonusArmorRule: "Dari Kartu Keahlian. Sisa Giliran: {turns}.",
@@ -138,6 +140,11 @@ export default {
       entangled: "Terjerat",
       entangledRule:
         "Kecepatan 0 pada aksi berikutnya. Ia tetap bisa menyerang.",
+      swarmBonus: "Serangan +{value}",
+      swarmBonusRule: "Dari Gerombolan: ada Unit kawan lain dalam Jalur ini.",
+      reborn: "Bangkit Kembali",
+      rebornRule:
+        "Unit ini sudah mati dan kembali dengan Bangkit. Ia tidak kembali lagi.",
     },
   },
   town: {
@@ -298,6 +305,8 @@ export default {
     back: "Kembali ke daftar",
     seeAlso: "Lihat juga",
     n: "N",
+    x: "X",
+    tokenX: "Token X",
     seeCard: "N ada di tiap kartu. Lihat kartunya.",
     rankTable: "N pada tiap Peringkat",
     starsTable: "Cara mendapat tiap Bintang",
@@ -411,6 +420,7 @@ export default {
       unit: "Unit",
       ranged: "Jarak Jauh",
       movement: "Gerakan",
+      token: "Token",
       status: "Status",
       damageType: "Jenis Damage",
       race: "Ras",
@@ -484,6 +494,8 @@ export default {
         "Unit jarak jauh menyerang Unit musuh terdekat di depannya, di Jalurnya dan dalam Jangkauannya. Ia tidak bergerak saat ada Unit musuh dalam Jangkauannya.\n\nSaat tidak ada Unit musuh dalam Jangkauannya dan Pahlawan musuh ada di dalamnya, ia menyerang Pahlawan musuh. Pahlawan musuh berjarak 1 Petak setelah Kolom terakhir.",
       movement:
         "Dalam aksinya, Unit lebih dulu bergerak maju di sepanjang Jalurnya, sampai sejauh Kecepatannya.\n\nIa bergerak melewati Unit kawan, tetapi berhenti sebelum Unit musuh. Ia selalu berhenti di Petak kosong. Unit Terbang bergerak melewati semua Unit.",
+      token:
+        "Token adalah Unit yang dibuat oleh sebuah efek, misalnya Panggil X. Token bukan kartu, jadi ia tidak pernah ada di Tangan atau Dek-mu.\n\nToken punya Peringkat dari kartu yang membuatnya. Saat mati, ia menghilang. Ia tidak masuk ke Kuburan.\n\nToken adalah Unit kawan bagi Unit di Pihaknya, misalnya untuk Gerombolan.",
       status:
         "Status adalah efek yang tetap ada pada Unit. Damage Api dan Es serta beberapa Kata Kunci memberi Status.\n\nUnit menunjukkan Status-nya sebagai ikon di atasnya. Detail Kartu dari Unit itu menunjukkan tiap Status dengan aturannya.",
       damageType:
@@ -564,6 +576,10 @@ export default {
       keywordEntangle: "root, snare, akar",
       keywordPoison: "bisa, venom, toxin",
       keywordSabotage: "tunda, delay, ganggu",
+      keywordRebirth: "hidup lagi, lahir kembali, reborn, revive",
+      keywordSummon: "munculkan, ciptakan, spawn",
+      keywordSwarm: "kawanan, keroyok, pack",
+      token: "bidak, spawn, unit panggilan",
       keywordUnique: "legend rule, satu-satunya",
       keywordRetaliation: "serangan balik, thorns, counterattack",
       status: "debuff, kondisi, efek buruk",
@@ -741,10 +757,13 @@ export default {
     lastBreath: "Nafas Terakhir {value}",
     pivot: "Berbalik",
     poison: "Racun",
+    rebirth: "Bangkit",
     rally: "Semangat {value}",
     regeneration: "Regenerasi {value}",
     retaliation: "Balasan",
     sabotage: "Sabotase {value}",
+    summon: "Panggil {token}",
+    swarm: "Gerombolan {value}",
     trample: "Gilas",
     unique: "Unik",
     wall: "Tembok",
@@ -785,6 +804,12 @@ export default {
       "Saat Unit ini membunuh Unit musuh dengan serangan, sisa damage mengenai Unit musuh di Petak berikutnya di belakangnya. Tidak pernah mengenai Pahlawan.",
     unique: "Hanya satu salinan kartu ini yang boleh ada di sisi Papan-mu.",
     wall: "Unit ini tidak bisa bergerak dan tidak bisa menyerang. Kamu bisa memanggilnya ke 5 Petak terdekat dengan Pahlawanmu. Ia menghalangi Unit musuh di Jalurnya, dan dorongan tidak pernah memindahkannya.",
+    rebirth:
+      "Saat Unit ini mati untuk pertama kali, ia kembali di Petak yang sama dengan 1 HP. Status-nya berakhir, dan ia kehilangan Bangkit.",
+    summon:
+      "Saat kamu memanggil Unit ini, sebuah {token} dengan Peringkat yang sama juga muncul di Petak kosong di sebelahnya: di belakangnya, atau di Kolom yang sama pada Jalur sebelah. Jika tidak ada Petak kosong, Token itu tidak muncul.",
+    swarm:
+      "Selama ada Unit kawan lain dalam Jalur yang sama, Unit ini mendapat +{value} Serangan, juga untuk Balasan. Unit kawan yang lebih banyak tidak menambah bonus.",
     fire: "Api: target terbakar 1 damage pada 2 Fase Akhir berikutnya.",
     frost: "Es: target melewatkan aksi berikutnya.",
     holy: "Suci: Zirah tidak mengurangi damage ini.",
@@ -1118,6 +1143,70 @@ export default {
         flavor: "Hutan tumbuh liar. Lethiel bilang itu cukup.",
       },
     },
+    undead: {
+      graveyardDrudge: {
+        name: "Kuli Kuburan",
+        flavor: "Kerjanya lebih baik kalau ada yang menonton.",
+      },
+      rattleknife: {
+        name: "Pisau Gemeretak",
+        flavor: "Satu pisau itu hobi. Dua pisau itu rencana.",
+      },
+      coffinLidSkater: {
+        name: "Peluncur Tutup Peti",
+        flavor: "Bukit itu lebih curam waktu ia masih hidup.",
+      },
+      hushbow: {
+        name: "Busur Senyap",
+        flavor: "Pendiam semasa hidup. Jauh lebih berisik sesudahnya.",
+      },
+      graveBellTender: {
+        name: "Penjaga Lonceng Makam",
+        flavor: "Satu dentang untuk makan malam. Dua untuk bala bantuan.",
+      },
+      backwatchBailiff: {
+        name: "Juru Sita Jaga Belakang",
+        flavor: "Tidak ada yang lewat tanpa izin kedaluwarsa yang benar.",
+      },
+      chatteringCohort: {
+        name: "Pasukan Gemeletuk",
+        flavor: "Mereka setuju soal semuanya, dengan sangat keras.",
+      },
+      paleGalloper: {
+        name: "Penunggang Pucat",
+        flavor: "Penunggangnya minta kuda yang lebih lambat.",
+      },
+      rimeEyeReaper: {
+        name: "Penuai Mata Beku",
+        flavor:
+          "Ia memejamkan satu mata. Mata yang lain sudah membeku terbuka.",
+      },
+      ossuaryPiper: {
+        name: "Peniup Seruling Osuarium",
+        flavor: "Tidak ada yang tahu lagunya. Semua ikut berbaris.",
+      },
+      coffinLancer: {
+        name: "Penombak Peti Mati",
+        flavor: "Peti mati itu perlengkapan bertahan.",
+      },
+      winterMaw: {
+        name: "Rahang Musim Dingin",
+        flavor: "Ia membawa cukup dingin untuk seluruh kawanan.",
+      },
+      lanternWidow: {
+        name: "Janda Lentera",
+        flavor:
+          "Ia selalu menyalakan lampu untuk mendiang yang pulang terlambat.",
+      },
+      sirOdoLastTaxman: {
+        name: "Sir Odo, Pemungut Pajak Terakhir",
+        flavor: "Kematian tidak menghapus utang, apalagi dendanya.",
+      },
+      boneRampart: {
+        name: "Benteng Tulang",
+        flavor: "Silakan pakai Jalur yang lain.",
+      },
+    },
     warrior: {
       warDrums: {
         name: "Genderang Perang",
@@ -1137,6 +1226,10 @@ export default {
       frostBolt: { name: "Panah Es", flavor: "Tinggallah sebentar." },
       flameWave: { name: "Gelombang Api", flavor: "Seluruh jalur kebagian." },
     },
+  },
+  tokens: {
+    skeleton: { name: "Kerangka" },
+    restlessWisp: { name: "Arwah Gelisah" },
   },
   // #endregion GAME
 } as const satisfies LanguageMessages;
