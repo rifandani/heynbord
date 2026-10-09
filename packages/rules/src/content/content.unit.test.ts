@@ -29,6 +29,7 @@ import {
 import type {
   CreatureCardDefinition,
   DeckEntry,
+  Keywords,
   RaceId,
   RankId,
 } from "./schema";
@@ -69,6 +70,15 @@ const withCharge = (charge: number | Partial<Record<RankId, number>>) => ({
   ...getCard("orc.howlingCharger"),
   keywords: { charge },
 });
+
+/** Militia Recruit with other Keywords: a fixture for the Keywords that no card has yet. */
+const recruitWith = (keywords: Keywords): CreatureCardDefinition => {
+  const recruit = getCard("human.militiaRecruit");
+  if (recruit.kind !== "creature") {
+    throw new Error("Militia Recruit is a Creature Card");
+  }
+  return { ...recruit, keywords };
+};
 
 const power = (cardId: string) => {
   const card = getCard(cardId);
@@ -302,6 +312,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       "pivot",
       "poison",
       "retaliation",
+      "swarm",
       "trample",
     ] as const;
     const zeros = creatures.filter((card) => card.attack === 0);
@@ -401,6 +412,28 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     // 3/3 is 5/5 at Epic: 5 × 2 + 5 + Speed 1 × 2 + Range 3, with First
     // Strike 4 and Entangle 2.
     expect(power("elf.canopyVinewarden")).toBe(26);
+  });
+
+  it("gives Swarm N × 2 and Rebirth 5 power points at the Base Rank (GDD 13)", () => {
+    // 3/8 at Common: 3 × 2 + 8 + Speed 1 × 2 = 16.
+    const swarm = decodeCard(recruitWith({ swarm: 2 }));
+    const rebirth = decodeCard(recruitWith({ rebirth: true }));
+    const both = decodeCard(
+      recruitWith({ swarm: { common: 1, epic: 2 }, rebirth: true })
+    );
+    expect(swarm.kind === "creature" && creaturePower(swarm)).toBe(20);
+    expect(rebirth.kind === "creature" && creaturePower(rebirth)).toBe(21);
+    expect(both.kind === "creature" && creaturePower(both)).toBe(23);
+  });
+
+  it("puts Rebirth and Last Breath on no card together (ADR-0015)", () => {
+    for (const card of creatures) {
+      expect(
+        card.keywords.rebirth !== undefined &&
+          card.keywords.lastBreath !== undefined,
+        card.id
+      ).toBe(false);
+    }
   });
 
   it("throws for an unknown card", () => {

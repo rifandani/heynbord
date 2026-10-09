@@ -4,9 +4,24 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 ## Todo
 
+/grill-with-docs i want to record that every Race has 1 unique Keywords for them that's applicable as Units and Skills
+
+for now lets go with this (Add until at least 5 cards):
+
+- Human (Knockback ‼️):
+- Orc (Heroic ‼️):
+- Goblin (Sabotage):
+- Feral (Trample):
+- Elf (Entangle):
+- Undead (?):
+
 v1:
 
-- look at human race cards 1 by 1, see they're role & speed (should normal units have 2 Speed? if the normal units have 1 Speed, then what criteria does the unit have to have 2 Speed?), ability and skills, check if there's any imbalance
+- 31, 33, 35, 36
+- Deathless Host can only be a diagnostic Deck for now. It needs Priest Skill Cards, and these do not exist. It is the same as Thornwatch.
+- No card has both Rebirth and Last Breath. I added a content check for this in #32, because ADR-0015 says Rebirth is already the one-time return
+
+- /grill-with-docs brainstorm with me, we need more Skills cards, every Class should have 1 Epic, 2 Rare, 3 Uncommon, 4 Common
 - /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think
 - /grill-with-docs i want to add another Keyword called "Devour": +1 Attack and +1 HP for each kill, suitable for Feral
 - /grill-with-docs i want to add another Keyword called "Retreat N" — After this Unit attacks, it moves up to N Squares backward.

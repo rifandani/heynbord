@@ -33,6 +33,8 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   DamageDealt: 280,
   StatusApplied: 160,
   UnitDied: 460,
+  // No card has Rebirth yet. The Undead web issue (#36) gives it its motion.
+  UnitReborn: 0,
   TurnEnded: 80,
   BattleEnded: 900,
 };

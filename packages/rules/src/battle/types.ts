@@ -115,8 +115,15 @@ export interface UnitState {
   knockback: number;
   /** Rally for the Rank of this card copy. 0 is none. */
   readonly rally: number;
+  /** True until the Unit dies the first time, then it comes back (GDD 4.9). */
+  rebirth: boolean;
   readonly regeneration: number;
   readonly retaliation: boolean;
+  /**
+   * Swarm for the Rank of this card copy. 0 is none. The bonus is not stored:
+   * each hit calculates it (GDD 5.4).
+   */
+  readonly swarm: number;
   /** Melee only: a kill lets the damage that is left hit the next enemy Unit. */
   readonly trample: boolean;
   /**
@@ -294,6 +301,11 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly count?: number;
   };
   UnitDied: { readonly unitId: number };
+  /**
+   * Rebirth (GDD 4.9): the Unit died and came back in the same Square. It
+   * replaces `UnitDied` for that death. `hp` is the new HP.
+   */
+  UnitReborn: { readonly unitId: number; readonly hp: number };
   TurnEnded: { readonly side: Side };
   BattleEnded: { readonly result: BattleResult };
 }>;

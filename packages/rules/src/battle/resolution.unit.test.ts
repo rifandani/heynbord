@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   emptyBattle,
   eventsOfType,
+  giveHand,
   placeUnit,
   preventRout,
   run,
@@ -2510,5 +2511,425 @@ describe("Wall (GDD 5.4)", () => {
     expect(
       eventsOfType(events, "DamageDealt").map((event) => event.source)
     ).toEqual(["attack"]);
+  });
+});
+
+type UnitOptions = Partial<Parameters<typeof placeUnit>[1]>;
+
+/**
+ * A player Militia Recruit (Attack 3) with Swarm 2 at Square 4 attacks an
+ * enemy Unit at Square 5. Each of `others` is one more Unit, by default a
+ * player Militia Recruit with Attack 0 at Square 0. Returns the damage log.
+ */
+const swarmHit = (
+  others: readonly UnitOptions[],
+  swarmer: UnitOptions = {}
+) => {
+  const state = emptyBattle({ lanes: 2 });
+  placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    position: 4,
+    swarm: 2,
+    ...swarmer,
+  });
+  placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "enemy",
+    position: 5,
+    attack: 0,
+    hp: 20,
+    maxHp: 20,
+  });
+  for (const other of others) {
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      ...other,
+    });
+  }
+  return damageLog(run(state, endTurn).events);
+};
+
+describe("Swarm N (GDD 5.4)", () => {
+  it("gives +N Attack with 1 other friendly Unit in the Lane, and still +N with 2", () => {
+    expect(swarmHit([])).toEqual(["attack:3"]);
+    expect(swarmHit([{}])).toEqual(["attack:5"]);
+    expect(swarmHit([{}, { position: 1 }])).toEqual(["attack:5"]);
+  });
+
+  it("gives no bonus from an enemy Unit or from a friendly Unit in another Lane", () => {
+    expect(swarmHit([{ owner: "enemy", position: 9 }])).toEqual(["attack:3"]);
+    expect(swarmHit([{ lane: 1 }])).toEqual(["attack:3"]);
+  });
+
+  it("counts a friendly Wall", () => {
+    expect(swarmHit([{ cardId: "human.townBarricade", position: 2 }])).toEqual([
+      "attack:5",
+    ]);
+  });
+
+  it("gives no bonus to a Unit with Base Attack 0, so it does not attack", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      attack: 0,
+      swarm: 2,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 0,
+      attack: 0,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+    });
+    const { events } = run(state, endTurn);
+    expect(eventsOfType(events, "UnitAttacked")).toEqual([]);
+    expect(damageLog(events)).toEqual([]);
+  });
+
+  it("adds the bonus to Retaliation and First Strike", () => {
+    const retaliation = emptyBattle();
+    placeUnit(retaliation, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    placeUnit(retaliation, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+      swarm: 1,
+    });
+    placeUnit(retaliation, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 9,
+      attack: 0,
+    });
+    expect(damageLog(run(retaliation, endTurn).events)).toEqual([
+      "attack:3",
+      "retaliation:5",
+    ]);
+
+    const first = emptyBattle();
+    placeUnit(first, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 10,
+      maxHp: 10,
+    });
+    placeUnit(first, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 2,
+      hp: 10,
+      maxHp: 10,
+      firstStrike: true,
+      swarm: 1,
+    });
+    placeUnit(first, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 9,
+      attack: 0,
+    });
+    expect(damageLog(run(first, endTurn).events)).toEqual([
+      "firstStrike:3",
+      "attack:3",
+    ]);
+  });
+
+  it("adds the bonus to an attack on the Hero and to the damage that Trample has left", () => {
+    expect(
+      swarmHit([{}], { position: 11 }).filter((entry) =>
+        entry.startsWith("attack")
+      )
+    ).toEqual(["attack:5"]);
+
+    // Attack 7 + Swarm 2 against Armor 1 deals 8. The killed Unit had 4 HP.
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "feral.cragRhino",
+      owner: "player",
+      position: 4,
+      attack: 7,
+      swarm: 2,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 0,
+      attack: 0,
+    });
+    placeUnit(state, {
+      cardId: "goblin.scrapPlateGuard",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      hp: 4,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+      hp: 20,
+      maxHp: 20,
+    });
+    expect(damageLog(run(state, endTurn).events)).toEqual([
+      "attack:8",
+      "trample:4",
+    ]);
+  });
+});
+
+/**
+ * A player Militia Recruit (Attack 3) at Square 4 attacks an enemy Unit with
+ * Rebirth and 3 HP at Square 5.
+ */
+const rebirthBoard = (
+  options: {
+    readonly attacker?: UnitOptions;
+    readonly defender?: UnitOptions;
+  } = {}
+) => {
+  const state = emptyBattle();
+  const attacker = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    position: 4,
+    hp: 20,
+    maxHp: 20,
+    ...options.attacker,
+  });
+  const defender = placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "enemy",
+    position: 5,
+    attack: 0,
+    hp: 3,
+    rebirth: true,
+    ...options.defender,
+  });
+  return { state, attacker, defender };
+};
+
+describe("Rebirth (GDD 4.9)", () => {
+  it("brings the Unit back in the same Square with 1 HP and without Rebirth the first time it dies, and the second death is a normal death", () => {
+    const { state, defender } = rebirthBoard();
+    preventRout(state);
+    const first = run(state, endTurn);
+    expect(unitById(first.state, defender.id)).toMatchObject({
+      lane: 0,
+      position: 5,
+      hp: 1,
+      maxHp: 8,
+      rebirth: false,
+      card: defender.card,
+      summonedTurn: defender.summonedTurn,
+    });
+    expect(eventsOfType(first.events, "DamageDealt").at(-1)?.hp).toBe(0);
+    expect(eventsOfType(first.events, "UnitReborn")).toMatchObject([
+      { unitId: defender.id, hp: 1 },
+    ]);
+    expect(eventsOfType(first.events, "UnitDied")).toEqual([]);
+    expect(first.state.sides.enemy.graveyard).toEqual([]);
+
+    const second = run(run(first.state, endTurn).state, endTurn);
+    expect(unitById(second.state, defender.id)).toBeUndefined();
+    expect(eventsOfType(second.events, "UnitDied")).toMatchObject([
+      { unitId: defender.id },
+    ]);
+    expect(eventsOfType(second.events, "UnitReborn")).toEqual([]);
+    expect(second.state.sides.enemy.graveyard).toEqual([defender.card]);
+  });
+
+  it("is a kill: no Retaliation, no on-hit Status and no push", () => {
+    const { state, defender } = rebirthBoard({
+      attacker: { poison: true, hobble: 1, knockback: 1 },
+      defender: { cardId: "human.halberdier", attack: undefined },
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, defender.id)).toMatchObject({
+      position: 5,
+      hp: 1,
+      poisoned: 0,
+      hobbled: 0,
+    });
+    expect(damageLog(events)).toEqual(["attack:3"]);
+    expect(eventsOfType(events, "StatusApplied")).toEqual([]);
+    expect(eventsOfType(events, "UnitPushed")).toEqual([]);
+  });
+
+  it("removes all Statuses, the Rally bonus and the bonus Armor", () => {
+    const { state, defender } = rebirthBoard({
+      defender: {
+        hp: 1,
+        burn: 2,
+        poisoned: 2,
+        frozen: true,
+        entangled: true,
+        hobbled: 2,
+        bleeding: 2,
+        rallied: 1,
+        bonusArmor: 2,
+        bonusArmorTurns: 2,
+      },
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(damageLog(events)).toEqual(["attack:1"]);
+    expect(unitById(next, defender.id)).toMatchObject({
+      hp: 1,
+      burn: 0,
+      poisoned: 0,
+      frozen: false,
+      entangled: false,
+      hobbled: 0,
+      bleeding: 0,
+      rallied: 0,
+      bonusArmor: 0,
+      bonusArmorTurns: 0,
+    });
+  });
+
+  it("gives no Last Breath at the first death, and a Burn tick can trigger it", () => {
+    const state = emptyBattle();
+    const runt = placeUnit(state, {
+      cardId: "orc.badlandRunt",
+      owner: "player",
+      position: 4,
+      attack: 0,
+      hp: 1,
+      burn: 1,
+      rebirth: true,
+    });
+    const ahead = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+      hp: 4,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, runt.id)).toMatchObject({ hp: 1, burn: 0 });
+    expect(unitById(next, ahead.id)?.hp).toBe(4);
+    expect(damageLog(events)).toEqual(["burn:1"]);
+    expect(eventsOfType(events, "UnitReborn")).toMatchObject([
+      { unitId: runt.id, hp: 1 },
+    ]);
+  });
+
+  it("can come from a Poison tick", () => {
+    const state = emptyBattle();
+    const unit = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      hp: 2,
+      poisoned: 2,
+      rebirth: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, unit.id)).toMatchObject({ hp: 1, poisoned: 0 });
+    expect(damageLog(events)).toEqual(["poison:2"]);
+  });
+
+  it("is not a summon: no summon event, no Sabotage, and the Unit keeps the Turn of its summon", () => {
+    const { state, defender } = rebirthBoard({
+      defender: { cardId: "goblin.tunnelSaboteur", summonedTurn: 1 },
+    });
+    giveHand(state, "player", [["human.militiaRecruit", 2]]);
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, defender.id)).toMatchObject({
+      hp: 1,
+      summonedTurn: 1,
+    });
+    expect(eventsOfType(events, "UnitSummoned")).toEqual([]);
+    expect(eventsOfType(events, "CardSabotaged")).toEqual([]);
+    expect(next.sides.player.hand.map((card) => card.countdown)).toEqual([2]);
+  });
+
+  it("lets a Trample hit after a Rebirth kill go to the next Square behind, and does not hit the reborn Unit again", () => {
+    const { state, defender, behind, events } = trampleBoard({
+      defender: { rebirth: true },
+    });
+    expect(unitById(state, defender.id)?.hp).toBe(1);
+    expect(unitById(state, behind?.id ?? 0)?.hp).toBe(16);
+    expect(damageLog(events)).toEqual(["attack:8", "trample:4"]);
+  });
+
+  it("stops the attack of an attacker that First Strike kills, also when it comes back", () => {
+    const state = emptyBattle();
+    const attacker = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      hp: 2,
+      maxHp: 2,
+      rebirth: true,
+    });
+    const defender = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 2,
+      firstStrike: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, attacker.id)?.hp).toBe(1);
+    expect(unitById(next, defender.id)?.hp).toBe(defender.maxHp);
+    expect(eventsOfType(events, "UnitAttacked")).toEqual([]);
+    expect(damageLog(events)).toEqual(["firstStrike:2"]);
+  });
+
+  it("counts the reborn Unit in the Routed check (ADR-0012)", () => {
+    const reborn = rebirthBoard();
+    giveHand(reborn.state, "player", [["human.militiaRecruit", 3]]);
+    const next = run(reborn.state, endTurn).state;
+    expect(next.status).toBe("ongoing");
+    expect(unitById(next, reborn.defender.id)?.hp).toBe(1);
+
+    const plain = rebirthBoard({ defender: { rebirth: false } });
+    giveHand(plain.state, "player", [["human.militiaRecruit", 3]]);
+    expect(run(plain.state, endTurn).state.result).toEqual({
+      winner: "player",
+      reason: "routed",
+    });
+  });
+
+  it("does not occur when the Hero is Defeated: in v1 the Battle ends, and the Units of that Side do not leave (GDD 4.10, ADR-0009)", () => {
+    const state = emptyBattle({ enemy: { hp: 3 } });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 11,
+    });
+    const unit = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 0,
+      attack: 0,
+      rebirth: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(next.result).toEqual({ winner: "player", reason: "heroDefeated" });
+    expect(unitById(next, unit.id)?.rebirth).toBe(true);
+    expect(eventsOfType(events, "UnitReborn")).toEqual([]);
+    expect(eventsOfType(events, "UnitDied")).toEqual([]);
   });
 });

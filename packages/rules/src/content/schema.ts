@@ -91,6 +91,12 @@ const Keywords = Schema.Struct({
   pivot: Schema.optionalKey(Schema.Literal(true)),
   poison: Schema.optionalKey(Schema.Literal(true)),
   /**
+   * The first time this Unit dies, it comes back in the same Square with 1 HP
+   * and without Rebirth (GDD 4.9). A content test checks that no card also
+   * has Last Breath (ADR-0015).
+   */
+  rebirth: Schema.optionalKey(Schema.Literal(true)),
+  /**
    * In the owner's Start Phase, the other friendly Units in the same Lane get
    * this much Attack until the end of the Turn (GDD 5.4).
    */
@@ -118,6 +124,11 @@ const Keywords = Schema.Struct({
    * Ranks, at most 2 (ADR-0017): a Rank table is not valid.
    */
   sabotage: Schema.optionalKey(between(1, 2)),
+  /**
+   * +N Attack while another friendly Unit is in the same Lane (GDD 5.4). More
+   * friendly Units do not increase the bonus.
+   */
+  swarm: Schema.optionalKey(KeywordAmount),
   /**
    * Melee only (GDD 4.7). A kill lets the damage that is left hit the enemy
    * Unit in the next Square behind. A content test checks it.

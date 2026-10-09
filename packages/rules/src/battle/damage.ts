@@ -58,6 +58,32 @@ const killUnit = (ctx: StepContext, unit: UnitState): void => {
   }
 };
 
+/**
+ * Rebirth (GDD 4.9): the Unit does not leave the Board. It keeps its ID, its
+ * Square and its card, and it comes back with 1 HP, without Rebirth and
+ * without Statuses. It is not a summon, and its Last Breath does not occur.
+ * When the Battle is over, its Hero is Defeated, and Rebirth does not occur
+ * (GDD 4.10, ADR-0009).
+ */
+const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
+  if (!unit.rebirth || isOver(ctx)) {
+    return false;
+  }
+  unit.rebirth = false;
+  unit.hp = 1;
+  unit.burn = 0;
+  unit.poisoned = 0;
+  unit.frozen = false;
+  unit.entangled = false;
+  unit.hobbled = 0;
+  unit.bleeding = 0;
+  unit.rallied = 0;
+  unit.bonusArmor = 0;
+  unit.bonusArmorTurns = 0;
+  ctx.events.push(BattleEvent.UnitReborn({ unitId: unit.id, hp: unit.hp }));
+  return true;
+};
+
 const applyStatus = (
   ctx: StepContext,
   unit: UnitState,
@@ -76,16 +102,25 @@ const applyStatus = (
   }
 };
 
+interface HitResult {
+  /** The damage that the Unit took. */
+  readonly dealt: number;
+  /**
+   * The hit took the Unit to 0 HP. It left the Board, or it came back with
+   * Rebirth. Either way, it did not survive the hit.
+   */
+  readonly killed: boolean;
+}
+
 /**
  * Damage calculation (GDD 4.7): the value, minus Armor (not for Holy), Crit
  * ×2, Block ÷2 rounded up, minimum 0. Fire gives Burn and Frost gives Freeze.
- * Returns the damage that the Unit took.
  */
 export const damageUnit = (
   ctx: StepContext,
   unit: UnitState,
   hit: Hit
-): number => {
+): HitResult => {
   const status = isStatusDamage(hit.source);
   const armor =
     status || hit.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
@@ -113,13 +148,15 @@ export const damageUnit = (
     })
   );
   if (unit.hp <= 0) {
-    killUnit(ctx, unit);
-    return amount;
+    if (!rebirth(ctx, unit)) {
+      killUnit(ctx, unit);
+    }
+    return { dealt: amount, killed: true };
   }
   if (!status) {
     applyStatus(ctx, unit, hit.damageType);
   }
-  return amount;
+  return { dealt: amount, killed: false };
 };
 
 /** Heroes have no Armor and cannot Block (GDD 4.7). The Battle ends at 0 HP. */

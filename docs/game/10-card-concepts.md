@@ -1085,7 +1085,7 @@ Purpose: Frost support that creates a mobile second threat. Power 21, budget 21,
 | Humor note | She offers the Wisp tea. |
 | Setting | A sunken manor garden. |
 
-### 5.14 Sir Odo, the Last Taxman (draft)
+### 5.14 Sir Odo, the Last Taxman
 
 `undead.sirOdoLastTaxman` · Striker · Epic · Countdown 4 · Attack 6 · HP 5 · Speed 2 · Melee · Physical · Unique · Rebirth
 

@@ -93,6 +93,27 @@ const setCounts = (
   }
 };
 
+/** Test setup: replaces Rebirth, the Rally bonus and the bonus Armor of a Unit. */
+const setRebirthAndBonuses = (
+  unit: UnitState,
+  options: Partial<
+    Pick<UnitState, "rebirth" | "rallied" | "bonusArmor" | "bonusArmorTurns">
+  >
+): void => {
+  if (options.rebirth !== undefined) {
+    unit.rebirth = options.rebirth;
+  }
+  if (options.rallied !== undefined) {
+    unit.rallied = options.rallied;
+  }
+  if (options.bonusArmor !== undefined) {
+    unit.bonusArmor = options.bonusArmor;
+  }
+  if (options.bonusArmorTurns !== undefined) {
+    unit.bonusArmorTurns = options.bonusArmorTurns;
+  }
+};
+
 /** Puts a Unit on the Board. Changes `state` (test setup only). */
 export const placeUnit = (
   state: BattleState,
@@ -119,6 +140,10 @@ export const placeUnit = (
       | "bleeding"
       | "knockback"
       | "wall"
+      | "rebirth"
+      | "rallied"
+      | "bonusArmor"
+      | "bonusArmorTurns"
     >
   > & {
       /** Test setup: gives the Unit the Poison Keyword. */
@@ -131,6 +156,8 @@ export const placeUnit = (
       readonly trample?: boolean;
       /** Test setup: gives the Unit the First Strike Keyword. */
       readonly firstStrike?: boolean;
+      /** Test setup: gives the Unit the Swarm Keyword with this value. */
+      readonly swarm?: number;
     }
 ): UnitState => {
   const definition = getCard(options.cardId);
@@ -182,12 +209,14 @@ export const placeUnit = (
   if (options.wall !== undefined) {
     unit.wall = options.wall;
   }
+  setRebirthAndBonuses(unit, options);
   const placed: UnitState = {
     ...unit,
     speed: options.speed ?? unit.speed,
     entangle: options.entangle ?? unit.entangle,
     trample: options.trample ?? unit.trample,
     firstStrike: options.firstStrike ?? unit.firstStrike,
+    swarm: options.swarm ?? unit.swarm,
   };
   state.nextId += 1;
   state.units.push(placed);

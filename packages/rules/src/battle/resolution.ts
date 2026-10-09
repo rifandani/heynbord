@@ -29,11 +29,30 @@ const currentSpeed = (state: BattleState, unit: UnitState): number => {
 };
 
 /**
- * Attack with the Rally bonus of this Turn (GDD 4.7, step 2). A Wall never
- * uses its Attack: no attack, no Retaliation and no First Strike (GDD 5.4).
+ * Swarm N (GDD 5.4): +N Attack while another Unit of the same Side, with HP
+ * above 0, is in the same Lane. More Units do not increase it. The bonus is
+ * not stored: each hit calculates it. A Unit with Base Attack 0 gets no bonus.
  */
-const attackOf = (unit: UnitState): number =>
-  unit.wall ? 0 : unit.attack + unit.rallied;
+const swarmBonus = (state: BattleState, unit: UnitState): number =>
+  unit.swarm > 0 &&
+  unit.attack > 0 &&
+  state.units.some(
+    (other) =>
+      other.id !== unit.id &&
+      other.owner === unit.owner &&
+      other.lane === unit.lane &&
+      other.hp > 0
+  )
+    ? unit.swarm
+    : 0;
+
+/**
+ * Attack with the Rally bonus of this Turn and the Swarm bonus (GDD 4.7,
+ * step 2). A Wall never uses its Attack: no attack, no Retaliation and no
+ * First Strike (GDD 5.4).
+ */
+const attackOf = (state: BattleState, unit: UnitState): number =>
+  unit.wall ? 0 : unit.attack + unit.rallied + swarmBonus(state, unit);
 
 /**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of
@@ -186,7 +205,9 @@ const pushUnit = (ctx: StepContext, unit: UnitState, squares: number): void => {
 /**
  * Retaliation (GDD 4.7): no Crit, and it does not start another Retaliation.
  * A Frozen defender does not retaliate, and it keeps its Freeze (GDD 4.4).
- * Retaliation does not apply Knockback.
+ * Retaliation does not apply Knockback. Only a defender that survives the
+ * attack retaliates: the caller does not call it after a kill, also when
+ * Rebirth brings the defender back.
  */
 const retaliate = (
   ctx: StepContext,
@@ -197,14 +218,14 @@ const retaliate = (
     !defender.retaliation ||
     defender.frozen ||
     attacker.range > 0 ||
-    attackOf(defender) <= 0 ||
+    attackOf(ctx.state, defender) <= 0 ||
     !findUnit(ctx.state, defender.id) ||
     !findUnit(ctx.state, attacker.id)
   ) {
     return;
   }
   damageUnit(ctx, attacker, {
-    amount: attackOf(defender),
+    amount: attackOf(ctx.state, defender),
     damageType: defender.damageType,
     source: "retaliation",
     crit: 0,
@@ -217,7 +238,8 @@ const retaliate = (
  * friendly Unit loses it, and it never hits a Hero. The hit is not an attack:
  * no Crit, no Retaliation, no on-hit Keywords and no new Trample. The Last
  * Breath of the killed Unit occurs first, and the hit occurs also when that
- * Last Breath killed the Trample Unit.
+ * Last Breath killed the Trample Unit. After a Rebirth kill, the hit still
+ * goes to the Square behind, and the reborn Unit is not hit again.
  */
 const trample = (
   ctx: StepContext,
@@ -297,7 +319,8 @@ const applyOnHit = (
  * Strike, that Unit deals its damage first. Like Retaliation, it has no Crit,
  * and a Frozen Unit or a Unit with Base Attack 0 does not use it. Damage above
  * 0 applies Poison, Hobble, Bleed and Entangle, but not Knockback. Returns
- * whether the attacker is still on the Board, so that its attack occurs.
+ * whether the attacker survived, so that its attack occurs. An attacker that
+ * dies and comes back with Rebirth does not attack.
  */
 const firstStrike = (
   ctx: StepContext,
@@ -308,25 +331,31 @@ const firstStrike = (
     return true;
   }
   const defender = findUnit(ctx.state, target.unitId);
-  if (!defender?.firstStrike || defender.frozen || attackOf(defender) <= 0) {
+  if (
+    !defender?.firstStrike ||
+    defender.frozen ||
+    attackOf(ctx.state, defender) <= 0
+  ) {
     return true;
   }
-  const dealt = damageUnit(ctx, attacker, {
-    amount: attackOf(defender),
+  const { dealt, killed } = damageUnit(ctx, attacker, {
+    amount: attackOf(ctx.state, defender),
     damageType: defender.damageType,
     source: "firstStrike",
     crit: 0,
   });
-  const struck = findUnit(ctx.state, attacker.id);
-  if (struck && dealt > 0) {
-    applyOnHit(ctx, defender, struck, { knockback: false });
+  if (killed) {
+    return false;
   }
-  return struck !== undefined && !isOver(ctx);
+  if (dealt > 0) {
+    applyOnHit(ctx, defender, attacker, { knockback: false });
+  }
+  return !isOver(ctx);
 };
 
 const attack = (ctx: StepContext, unit: UnitState): void => {
   const { state } = ctx;
-  const power = attackOf(unit);
+  const power = attackOf(state, unit);
   if (power <= 0) {
     return;
   }
@@ -356,17 +385,18 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
     return;
   }
   const hpBefore = defender.hp;
-  const dealt = damageUnit(ctx, defender, {
+  const { dealt, killed } = damageUnit(ctx, defender, {
     amount: power,
     damageType: unit.damageType,
     source: "attack",
     crit,
   });
-  const struck = findUnit(state, defender.id);
-  if (!struck) {
+  if (killed) {
     trample(ctx, unit, defender, dealt - hpBefore);
-  } else if (dealt > 0) {
-    applyOnHit(ctx, unit, struck, { knockback: true });
+    return;
+  }
+  if (dealt > 0) {
+    applyOnHit(ctx, unit, defender, { knockback: true });
   }
   retaliate(ctx, defender, unit);
 };
