@@ -1,7 +1,7 @@
 /**
  * Headless Battle simulation (GDD 13). The AI plays both Sides.
  *
- * Usage: `bun run sim [stage | matchup] [battles] [--level N] [--gear N] [--check]`.
+ * Usage: `bun run sim [stage | matchup | packs] [battles] [--level N] [--gear N] [--packs N] [--check]`.
  * With no mode, it runs both modes. `battles` is 200 by default. With
  * `--check`, it exits with code 1 when a win rate is not on its GDD 13 target
  * (CI uses it). The seeds are fixed, so the same content gives the same result.
@@ -15,10 +15,19 @@
  *   with a diagnostic Deck shows "review" when it is not on target.
  *   `noReadyTurns` is the average number of the Archetype's Turns with no Ready
  *   card in the Hand (the Sabotage lock risk, Archetypes 2.2).
+ * - `packs`: each Pack, with all cards (Warrior) and as a Human Race Pack
+ *   (Economy 3.1, ADR-0027). `--packs` (10,000 by default) is the number of
+ *   single Packs for the Rank rates and the value for each Coin. 100 Players
+ *   open Packs until they Discover all cards of each Base Rank. `--check` does
+ *   not check the Packs.
  */
 import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
 import { STARTER_DECKS } from "../src/content/decks";
+import { PACKS } from "../src/content/packs";
+import { RANKS } from "../src/content/ranks";
+import type { RaceId } from "../src/content/schema";
 import { STAGES } from "../src/content/stages";
+import { simulatePack } from "../src/simulation/packs";
 import {
   gatesRelease,
   isOnTarget,
@@ -30,9 +39,9 @@ import {
 import type { WinRateTarget } from "../src/simulation/simulate";
 
 const USAGE =
-  "Usage: bun run sim [stage | matchup] [battles] [--level N] [--gear N] [--check]";
+  "Usage: bun run sim [stage | matchup | packs] [battles] [--level N] [--gear N] [--packs N] [--check]";
 
-const MODES = ["stage", "matchup"] as const;
+const MODES = ["stage", "matchup", "packs"] as const;
 type Mode = (typeof MODES)[number];
 
 const isMode = (value: string): value is Mode =>
@@ -57,7 +66,7 @@ const chosenModes = (modes: Mode[]): Mode[] =>
 const readFlag = (
   arg: string,
   rest: string[],
-  parsed: { level: number; gear: number; check: boolean }
+  parsed: { level: number; gear: number; packs: number; check: boolean }
 ): boolean => {
   if (arg === "--level") {
     parsed.level = integer(rest.shift(), "--level", 1);
@@ -65,6 +74,10 @@ const readFlag = (
   }
   if (arg === "--gear") {
     parsed.gear = integer(rest.shift(), "--gear", 0);
+    return true;
+  }
+  if (arg === "--packs") {
+    parsed.packs = integer(rest.shift(), "--packs", 1);
     return true;
   }
   if (arg === "--check") {
@@ -80,6 +93,7 @@ const parseArgs = (args: readonly string[]) => {
     battles: 200,
     level: MATCHUP_LEVEL,
     gear: 0,
+    packs: 10_000,
     check: false,
   };
   const rest = [...args];
@@ -98,6 +112,7 @@ const parseArgs = (args: readonly string[]) => {
     battles: parsed.battles,
     level: parsed.level,
     gear: parsed.gear,
+    packs: parsed.packs,
     check: parsed.check,
   };
 };
@@ -105,7 +120,9 @@ const parseArgs = (args: readonly string[]) => {
 const percent = (rate: number, digits = 0) =>
   `${(rate * 100).toFixed(digits)}%`;
 
-const { modes, battles, level, gear, check } = parseArgs(process.argv.slice(2));
+const { modes, battles, level, gear, packs, check } = parseArgs(
+  process.argv.slice(2)
+);
 
 /** The win rates that are not on target. */
 const misses: string[] = [];
@@ -188,6 +205,46 @@ if (modes.includes("matchup")) {
         };
       })
     )
+  );
+}
+
+const poolName = (race: RaceId | null) => race ?? "all (warrior)";
+
+if (modes.includes("packs")) {
+  const pools: readonly (RaceId | null)[] = [null, "human"];
+  const reports = PACKS.flatMap((pack) =>
+    pools.map((race) =>
+      simulatePack(pack.id, { packs, players: 100, race, classId: "warrior" })
+    )
+  );
+  console.log(`Packs: ${packs} single Packs each`);
+  console.table(
+    reports.map((report) => ({
+      pack: report.packId,
+      pool: poolName(report.race),
+      ...Object.fromEntries(
+        RANKS.map((rank) => [rank, percent(report.rankRates[rank], 2)])
+      ),
+      guarantee: percent(report.guaranteeRate, 2),
+      valuePerPack: report.valuePerPack.toFixed(2),
+      valuePer100Coin: report.valuePer100Coin.toFixed(2),
+      tenPackValuePer100Coin: report.tenPackValuePer100Coin.toFixed(2),
+    }))
+  );
+  console.log(
+    "Packs to Discover all cards of each Base Rank: mean of 100 Players"
+  );
+  console.table(
+    reports.map((report) => ({
+      pack: report.packId,
+      pool: poolName(report.race),
+      ...Object.fromEntries(
+        RANKS.map((rank) => [
+          rank,
+          report.packsToDiscover[rank]?.toFixed(1) ?? "—",
+        ])
+      ),
+    }))
   );
 }
 

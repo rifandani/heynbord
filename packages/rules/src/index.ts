@@ -77,6 +77,8 @@ export {
   MAX_COPIES,
   STARTER_DECKS,
 } from "./content/decks";
+export { getPack, PACK_SIZE, PACKS, TEN_PACKS } from "./content/packs";
+export type { PackDefinition, PackId, TenPackBonus } from "./content/packs";
 export {
   CAMPAIGN_LOSS_XP_FRACTION,
   CAMPAIGN_WIN_XP,
@@ -117,6 +119,16 @@ export type {
   TokenId,
   UnitRole,
 } from "./content/schema";
+export { CAMPAIGN_WIN_COIN, stageCoin } from "./content/stage-coin";
+export type { StageOutcome } from "./content/stage-coin";
 export { getStage, STAGES } from "./content/stages";
 export { getToken, TOKENS } from "./content/tokens";
 export { isTutorial, TUTORIAL_STAGE_ID } from "./modes/tutorial";
+export { openPack, openTenPacks } from "./packs/open-pack";
+export type {
+  GuaranteeSource,
+  OpenedPack,
+  OpenPackInput,
+  OpenPackOutput,
+  OpenTenPacksOutput,
+} from "./packs/open-pack";

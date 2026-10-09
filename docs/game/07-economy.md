@@ -195,6 +195,8 @@ There are three Packs. Each Pack has its own Drop Rates, price and Pack Guarante
 7. A Pack roll uses a random state in the player data that moves forward after each Pack. Thus a reload never gives a new roll.
 8. The Packs screen shows the Drop Rates, the Pack Guarantees and these rules before the player opens a Pack.
 
+**Rank changes.** A Pack rolls its 5 Ranks first. When a rule gives a Rank (rule 5, the Pack Guarantee or the ×10 bonus), the lowest Rank of the Pack changes to that Rank. If two or more Ranks are the lowest, the last one changes. Then the Pack selects a card for each Rank (rules 2 to 4). The reveal shows the 5 cards from the lowest Rank to the highest.
+
 **Pack Guarantee.** Each Pack has its own counter. A Pack and its Race Pack version share one counter. The counter counts the Packs in a row without a card of the Guarantee Rank or higher. For a Guarantee "in N Packs", if N − 1 Packs in a row have no such card, Pack N has one. Any card of that Rank or higher sets the counter back to 0. The Packs screen shows how many Packs are left.
 
 | Pack | Pack Guarantee |
@@ -214,6 +216,8 @@ There are three Packs. Each Pack has its own Drop Rates, price and Pack Guarante
 A Royal ×10 does not guarantee a Legendary, because then a single Royal Pack is a bad choice: a single Pack needs up to 20 Packs for its Guarantee.
 
 **First Pack.** The first time that the player opens the Packs screen, one Peddler Pack is free.
+
+The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and the tables of this section the same. `bun run sim packs` reports the real rate of each Rank, how often each Pack Guarantee gives a card, the value for each Coin and the number of Packs to Discover all cards of each Base Rank.
 
 ### 3.2 Combine
 
