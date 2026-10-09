@@ -4,8 +4,12 @@ import { Link } from "react-aria-components";
 
 import { RankGems } from "@/features/battle/components/card-frame";
 import { useGameText } from "@/features/battle/use-game-text";
+import { CoinGuide } from "@/features/handbook/components/coin-guide";
 import { LargeIcon } from "@/features/handbook/components/entry-icon";
 import { LaneStrip } from "@/features/handbook/components/lane-strip";
+import { PlayerLevelGuide } from "@/features/handbook/components/player-level-guide";
+import { RankGuide } from "@/features/handbook/components/rank-guide";
+import { StarsTable } from "@/features/handbook/components/stars-table";
 import type { Entry, EntryId } from "@/features/handbook/handbook";
 import { getEntry, RANK_TABLE } from "@/features/handbook/handbook";
 import { DIAGRAMS } from "@/features/handbook/handbook-diagrams";
@@ -70,8 +74,20 @@ const RankTable = () => {
 
 const KeywordValue = ({ entry }: { readonly entry: Entry }) => {
   const { tr } = useGameText();
+  if (entry.value === "starsTable") {
+    return <StarsTable />;
+  }
+  if (entry.value === "coinTable") {
+    return <CoinGuide />;
+  }
+  if (entry.value === "playerLevelTable") {
+    return <PlayerLevelGuide />;
+  }
   if (entry.value === "rankTable") {
     return <RankTable />;
+  }
+  if (entry.value === "rankGuideTable") {
+    return <RankGuide />;
   }
   if (entry.value === "card") {
     return (

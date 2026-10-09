@@ -98,17 +98,6 @@
   }
 }
 
-/* The hourglass pip of a Ticking Card (ADR-0021): it waits, then turns over. */
-@keyframes hourglass-turn {
-  0%,
-  70% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(180deg);
-  }
-}
-
 /* The Hand Bar motion: a card drops onto the Graveyard Pile. */
 @keyframes graveyard-drop {
   0% {
@@ -447,6 +436,61 @@
     opacity: 1;
   }
   100% {
+    opacity: 0;
+  }
+}
+
+/*
+ * The Settings dialog comes up out of the Settings button. The sheet lifts
+ * off the shelf faster than it moves to the center, so its path curves. It
+ * grows from the size of the icon and tilts back to level, and its shadow
+ * grows as it lifts. The close plays the same keyframes in reverse, faster,
+ * back into the button. With no button, it zooms in from 95% at the center.
+ */
+@keyframes settings-sheet-x {
+  from {
+    transform: translateX(var(--sheet-from-x, 0px));
+  }
+}
+
+@keyframes settings-sheet-y {
+  from {
+    translate: 0 var(--sheet-from-y, 0px);
+  }
+}
+
+@keyframes settings-sheet-grow {
+  0% {
+    opacity: 0;
+    scale: var(--sheet-from-scale, 0.95);
+    rotate: var(--sheet-from-rotate, 0deg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+  }
+}
+
+/* The text of the sheet shows when the sheet is large enough to read. */
+@keyframes settings-sheet-ink {
+  0%,
+  35% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* The scrim of the Settings dialog fades as the sheet goes back into the button. */
+@keyframes settings-scrim-out {
+  to {
     opacity: 0;
   }
 }

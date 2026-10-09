@@ -113,8 +113,8 @@ export const SUBJECT = new Map(
       "three eager skeleton soldiers crowded around one oversized rusted sword, mismatched helmets and pale teal cloth knots, all advancing to the right and leaning forward, free hands pointing different ways, friendly macabre humor",
     "undead.paleGalloper":
       "nervous skeleton courier leaning backward on a joyful spectral marsh pony charging through shallow ice, frosted saddle, empty scroll tube and rusted cap, pale blue frost spray, friendly macabre humor",
-    "undead.rimeEyeArcher":
-      "skeletal woman archer at full draw, one eye glowing with frost and a frozen moth resting over it, longbow and icy arrow, rusted scale vest with a silver-teal clasp, friendly macabre humor",
+    "undead.rimeEyeReaper":
+      "skeletal woman reaper stepping forward into a low sweep with a frosted grave scythe, one eye glowing with frost and a frozen moth resting over it, rusted scale vest with a silver-teal clasp, friendly macabre humor",
     "undead.ossuaryPiper":
       "cheerful broad skeleton musician marching while playing crooked bone pipes, small drum at the hip, pale teal sash and rusted breastplate, nearby skeletons marching with confidence, frog trying to sing, friendly macabre humor",
     "undead.coffinLancer":

@@ -66,11 +66,6 @@ export default {
     enemyHand: "Tangan Musuh",
     ready: "Siap",
     countdown: "Hitung mundur {value}",
-    ticking: "berjalan",
-    waiting: "menunggu",
-    tickingLine: "Turun 1 di awal Giliranmu berikutnya.",
-    waitingLine:
-      "Menunggu. Angkanya turun saat salah satu dari 3 kartu sebelumnya Siap.",
     selectTarget: "Pilih target",
     noTarget: "Tidak ada target yang sah sekarang",
     uniqueBlocked: "{name} sudah ada di sisi Papan-mu.",
@@ -248,7 +243,7 @@ export default {
     steps: {
       ready: {
         title: "Hitung Mundur dan Siap",
-        text: "Angka di setiap kartu di Tanganmu adalah Hitung mundurnya. Di awal setiap Giliranmu, 3 kartu pertama dari kiri yang belum Siap turun 1. Jam pasirnya berjalan. Kartu lain menunggu. Saat 0, kartu itu Siap dan bisa kamu mainkan. Mainkan kartu yang Siap, atau akhiri Giliranmu.",
+        text: "Angka di setiap kartu di Tanganmu adalah Hitung mundurnya. Angka itu turun 1 di awal setiap Giliranmu. Saat 0, kartu itu Siap dan bisa kamu mainkan. Mainkan kartu yang Siap, atau akhiri Giliranmu.",
       },
       summonZone: {
         title: "Zona Panggilmu",
@@ -303,10 +298,90 @@ export default {
     n: "N",
     seeCard: "N ada di tiap kartu. Lihat kartunya.",
     rankTable: "N pada tiap Peringkat",
+    starsTable: "Cara mendapat tiap Bintang",
+    starsColumn: "Bintang",
+    starsConditionColumn: "Syarat",
+    starsRow: {
+      1: "Menangkan Pertempuran.",
+      2: "Juga pertahankan setengah HP Pahlawanmu atau lebih di akhir.",
+      3: "Juga selesaikan sebelum Giliran {fastTurn}.",
+    },
+    coinDenomTable: "Satu saldo, tiga koin",
+    coinDenomColumn: "Koin",
+    coinWorthColumn: "Nilai",
+    coinRow: {
+      gold: "100 Perak. Koin terbesar.",
+      silver: "100 Tembaga.",
+      copper:
+        "Satuan terkecil. Game menyimpan saldo sebagai Tembaga lalu mengubahnya untuk tampilan.",
+    },
+    coinExampleCaption: "Saldo yang sama di piring Town",
+    coinExampleNote:
+      "Totalnya {copper} Tembaga. Emas dan Perak hanya cara game menampilkannya.",
+    coinUsesTable: "Koin dipakai untuk",
+    coinUsesColumn: "Pemakaian",
+    coinUse: {
+      deckSlots: "Slot Dek tambahan di pembuat Dek.",
+      later:
+        "Paket, Gabung, dan peningkatan Perlengkapan saat pintasan Town itu dibuka.",
+    },
+    playerXpTable: "XP Kampanye menurut hasil",
+    playerXpRegionColumn: "Wilayah",
+    playerXpWinColumn: "Menang ulang",
+    playerXpFirstColumn: "Menang pertama (×2)",
+    playerXpLossColumn: "Kalah (25%)",
+    playerXpNote:
+      "Menang pertama adalah kali pertama kamu menyelesaikan Tahap. Tahap Bos menggandakan semua nilai di tabel ini lagi.",
+    playerGrowthLevelColumn: "Level",
+    playerGrowthHeroColumn: "HP Pahlawan",
+    playerGrowthDeckColumn: "Dek maks",
+    playerGrowthCountdownColumn: "Batas Hitung mundur",
+    playerGrowthNote:
+      "Tiap level menambah +1 HP Pahlawan. Ukuran Dek maks naik +1 tiap level, sampai 30. Batas Hitung mundur mengikuti aturan ukuran Dek.",
+    playerUnlockTable: "Yang terbuka di tiap level",
+    playerUnlockLevelColumn: "Level",
+    playerUnlockWhatColumn: "Pembukaan",
+    playerUnlock: {
+      packs: "Paket di Town.",
+      workshop: "Bengkel: Gabung dan Ekstrak.",
+      gear: "Perlengkapan di Pahlawanmu.",
+      craft: "Bengkel: Buat.",
+      dungeon1: "Dungeon 1.",
+      dungeon2: "Dungeon 2.",
+      dungeon3: "Dungeon 3.",
+    },
     rankColumn: "Peringkat",
     valueColumn: "N",
-    rankLine:
-      "{gems} Permata Peringkat. Serangan dan HP ×{scale:number}. Peluang Kembali Kartu Keahlian: {recall}%.",
+    rankGuideRankColumn: "Peringkat",
+    rankGuideScaleColumn: "Serangan dan HP",
+    rankGuideRecallColumn: "Kembali",
+    rankGuideKeywordColumn: "Charge, Knockback, Bleed",
+    rankGuideScaleNote:
+      "Serangan dan HP memakai angka di wajah kartu sebagai nilai Biasa, lalu dikali faktor di tabel ini.",
+    rankGuideKeywordNote:
+      "N adalah angka pada beberapa Kata Kunci. Charge, Knockback dan Bleed memakai nilai di tabel ini. Kata Kunci lain bisa berbeda di tiap kartu.",
+    commonRankFaceCaption: "Angka di wajah kartu",
+    commonRankAttackLabel: "Serangan",
+    commonRankHpLabel: "HP",
+    commonRankFaceNote:
+      "Salinan Biasa memakai Serangan {attack} dan HP {hp} di pertempuran — sama seperti tercetak. Peringkat lebih tinggi mengalikan nilai ini.",
+    commonRankFactsCaption: "Pada Peringkat Biasa",
+    commonRankFactsColumn: "Aturan",
+    commonRankFactGems: "1 Permata Peringkat abu-abu di bingkai.",
+    commonRankFactStats:
+      "Serangan dan HP ×1,0 — pakai nilai di wajah kartu apa adanya.",
+    commonRankFactCountdown: "Hitung Mundur tidak berubah dengan Peringkat.",
+    rankTierStats:
+      "{gems} Permata Peringkat di bingkai. Serangan dan HP ×{scale:number}. Peluang Kembali Kartu Keahlian: {recall}%.",
+    rankTierIntro: {
+      common:
+        "Biasa adalah Peringkat terendah. Ini acuan Serangan dan HP di wajah setiap kartu.",
+      uncommon: "Tak Biasa satu langkah di atas Biasa.",
+      rare: "Langka ada di tengah dari lima Peringkat. Banyak kartu memakai Langka sebagai Peringkat dasarnya.",
+      epic: "Epik adalah salinan kuat. Charge, Knockback dan Bleed bisa memakai N = 2.",
+      legendary:
+        "Legendaris adalah Peringkat tertinggi. Charge, Knockback dan Bleed bisa memakai N = 3.",
+    },
     names: {
       board: "Papan",
       lane: "Jalur",
@@ -329,8 +404,6 @@ export default {
       skillCard: "Kartu Keahlian",
       handLimit: "Batas Tangan",
       countdown: "Hitung mundur",
-      tickingCard: "Kartu Berjalan",
-      waitingCard: "Kartu Menunggu",
       recall: "Kembali",
       countdownLimit: "Batas Hitung mundur",
       unit: "Unit",
@@ -364,7 +437,7 @@ export default {
       hero: "Pahlawan adalah pemimpin dari satu Pihak. Ia berdiri di belakang Lini-nya, di luar Papan.\n\nPahlawan punya HP, Kelas, dan Dek. Saat HP-nya menjadi 0, Pahlawan itu Tumbang.",
       turn: "Dalam satu Giliran, satu Pihak memainkan kartunya, dan Unit-nya bertindak. Giliran punya 4 bagian: Langkah Awal, Fase Main, Fase Resolusi, dan Langkah Akhir.\n\nKamu mengambil Giliran pertama. Lalu musuh mengambil Giliran. Nomor Giliran naik 1 setelah kedua Pihak mengambil Giliran.",
       startStep:
-        "Langkah Awal adalah bagian pertama Giliranmu. Hal-hal ini terjadi dengan urutan ini:\n\n1. Efek seperti Regenerasi dan Semangat terjadi.\n\n2. Mulai Giliran {turn}, damage Mati Mendadak mengenai Pahlawanmu.\n\n3. Hitung mundur dari tiap Kartu Berjalan-mu turun 1.\n\n4. Pahlawanmu mengambil 1 kartu, jika Tangan berisi kurang dari {limit} kartu.",
+        "Langkah Awal adalah bagian pertama Giliranmu. Hal-hal ini terjadi dengan urutan ini:\n\n1. Efek seperti Regenerasi dan Semangat terjadi.\n\n2. Mulai Giliran {turn}, damage Mati Mendadak mengenai Pahlawanmu.\n\n3. Hitung mundur dari tiap kartu di Tanganmu yang belum Siap turun 1.\n\n4. Pahlawanmu mengambil 1 kartu, jika Tangan berisi kurang dari {limit} kartu.",
       playPhase:
         "Di Fase Main, kamu memainkan kartu yang Siap. Kamu bisa memainkan semuanya, dengan urutan apa pun, atau tidak memainkan kartu.\n\nKartu Makhluk masuk ke Petak kosong di Zona Panggilmu. Kartu Keahlian menuju targetnya.\n\nPilih Akhiri Giliran untuk mengakhiri Fase Main. Tidak ada batas waktu.",
       resolutionPhase:
@@ -381,18 +454,14 @@ export default {
         "Kartu Makhluk memanggil Unit ke Papan. Kartu ini punya Ras, Peran, Serangan, HP, dan Kecepatan. Beberapa Kartu Makhluk punya Kata Kunci.\n\nSaat Unit-nya mati, kartu itu masuk ke Kuburanmu.",
       skillCard:
         "Kartu Keahlian punya efek sekali pakai, misalnya damage ke Unit musuh. Kartu ini punya Kelas. Hanya Pahlawan dengan Kelas yang sama yang bisa memakainya.\n\nSetelah efeknya, Kembali bisa mengirim kartu itu kembali ke Tanganmu.",
-      hand: "Tanganmu adalah kartu yang dipegang Pahlawanmu dalam Pertempuran. Kartu itu tampil di bagian bawah layar.\n\nDi awal Pertempuran, Pahlawanmu mengambil {start} kartu. Tiap kartu di Tangan menunjukkan Hitung mundurnya. Tangan menyimpan urutan masuknya kartu.",
+      hand: "Tanganmu adalah kartu yang dipegang Pahlawanmu dalam Pertempuran. Kartu itu tampil di bagian bawah layar.\n\nDi awal Pertempuran, Pahlawanmu mengambil {start} kartu. Tiap kartu di Tangan menunjukkan Hitung mundurnya.",
       handLimit:
         "Tanganmu bisa berisi paling banyak {limit} kartu. Saat Tanganmu penuh, Pahlawanmu tidak mengambil kartu, dan kartu itu tetap di Dek.",
       deck: "Dek-mu adalah kartu yang dibawa Pahlawanmu ke Pertempuran. Kamu menyusunnya di penyusun Dek.\n\nDek boleh berisi paling banyak {copies} salinan dari satu kartu. Dek hanya boleh berisi Kartu Keahlian dari Kelas Pahlawanmu.\n\nDalam Pertempuran, Dek hanya berisi kartu yang belum diambil Pahlawanmu.",
       graveyard:
         "Kuburan berisi kartumu yang sudah dipakai atau mati. Kartu Makhluk masuk ke sana saat Unit-nya mati. Kartu Keahlian masuk ke sana saat Kembali tidak mengirimnya kembali.",
       countdown:
-        "Hitung mundur adalah jumlah Giliran yang harus dijalani kartu sebelum Siap. Angkanya tampil di sudut kiri atas kartu.\n\nDi Langkah Awal-mu, Hitung mundur dari tiap Kartu Berjalan turun 1. Peringkat kartu tidak mengubah Hitung mundurnya.",
-      tickingCard:
-        "Kartu Berjalan adalah {count} kartu tertua di Tanganmu yang belum Siap. Hanya Kartu Berjalan yang menghitung mundur, dan jam pasirnya berputar.\n\nKartu tertua adalah kartu yang pertama masuk ke Tangan.",
-      waitingCard:
-        "Kartu Menunggu adalah kartu di Tanganmu yang belum Siap dan bukan Kartu Berjalan. Hitung mundurnya tidak turun.\n\nKartu ini menjadi Kartu Berjalan saat kartu yang lebih tua menjadi Siap atau meninggalkan Tangan.",
+        "Hitung mundur adalah jumlah Giliranmu sampai kartu Siap. Angkanya tampil di sudut kiri atas kartu.\n\nDi Langkah Awal-mu, Hitung mundur dari tiap kartu di Tanganmu yang belum Siap turun 1. Peringkat kartu tidak mengubah Hitung mundurnya.",
       ready:
         "Kartu dengan Hitung mundur 0 adalah kartu yang Siap. Hanya kartu Siap yang bisa dimainkan. Kartu Siap bercahaya di Tanganmu.",
       recall:
@@ -452,14 +521,14 @@ export default {
         "Pendukung membuat Unit lain lebih baik, misalnya dengan Semangat atau Regenerasi. Ia jarak dekat, atau jarak jauh dengan Jangkauan 2.",
       roleWall:
         "Tembok menghalangi Jalurnya dari Unit musuh. Tiap Tembok punya Kata Kunci Tembok.",
-      rank: "Peringkat adalah tingkat kekuatan dari satu salinan kartu: Biasa, Tak Biasa, Langka, Epik, atau Legendaris.\n\nPeringkat yang lebih tinggi memberi Serangan dan HP lebih besar, peluang Kembali lebih tinggi, dan kadang nilai Kata Kunci lebih tinggi. Hitung mundur tidak berubah dengan Peringkat.\n\nTiap kartu punya Peringkat terendah. Salinannya tidak pernah di bawahnya.",
+      rank: "Peringkat adalah seberapa kuat satu salinan kartu. Ada lima Peringkat, dari Biasa sampai Legendaris.\n\nTiap kartu punya Peringkat dasar. Salinanmu tidak pernah di bawah Peringkat itu.",
       rankGems:
-        "Permata Peringkat di bagian atas kartu menunjukkan Peringkatnya: 1 permata abu-abu untuk Biasa, sampai 5 permata oranye untuk Legendaris.\n\nJumlah permata selalu menunjukkan Peringkat, jadi kamu tidak perlu warnanya.",
+        "Permata Peringkat adalah berlian kecil di bagian atas kartu. Hitung jumlahnya: 1 permata adalah Biasa, 5 permata adalah Legendaris.\n\nTiap Peringkat punya warna permata, tapi jumlahnya sudah cukup untuk membaca Peringkat di Pertempuran.",
       stars:
-        "Kemenangan di Tahap memberi 1 sampai 3 Bintang. 1 Bintang: menangkan Pertempuran. 2 Bintang: menang dengan setengah HP Pahlawanmu atau lebih. 3 Bintang: menang dengan setengah HP Pahlawanmu atau lebih, sebelum Giliran 15.\n\nKampanye menyimpan Bintang terbaikmu untuk tiap Tahap. Bintang dari satu Wilayah membuka petinya.",
+        "Saat menang di Tahap, kamu mendapat 1 sampai 3 Bintang. Kalah memberi 0 Bintang.\n\nTiap Bintang menambah syarat di atas yang sebelumnya. Setengah HP Pahlawan berarti Pahlawanmu punya minimal 50% dari HP maksimumnya saat Pertempuran berakhir.\n\nKampanye menyimpan Bintang terbaikmu untuk tiap Tahap. Total Bintang di satu Wilayah membuka peti pada 10, 20 dan 30 Bintang.",
       playerLevel:
-        "Level pemainmu naik dengan XP. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.\n\nLevel yang lebih tinggi memberi Pahlawanmu lebih banyak HP, Dek yang lebih besar, dan Batas Hitung mundur yang lebih tinggi. Tiap Tahap menunjukkan Level yang disarankan.",
-      coin: "Koin adalah mata uang yang kamu dapat dari Pertempuran. Koin membayar Slot Dek. Nanti, Koin juga membayar Paket, Gabung, dan Perlengkapan.\n\nKoin tampil sebagai Emas, Perak, dan Tembaga: 100 Tembaga adalah 1 Perak, dan 100 Perak adalah 1 Emas. Semuanya satu mata uang dengan satu saldo.",
+        "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.",
+      coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
     },
     aliases: {
       board: "medan, arena, peta, battlefield, map",

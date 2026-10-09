@@ -1,7 +1,11 @@
 export { chooseCommand, visibleTo } from "./ai/choose-command";
-export { createBattle, STARTING_HAND } from "./battle/create-battle";
+export {
+  createBattle,
+  playerHeroHp,
+  STARTING_HAND,
+} from "./battle/create-battle";
 export { isBlockedByUnique, legalTargets, sameTarget } from "./battle/targets";
-export { starsFor } from "./battle/stars";
+export { STAR_FAST_WIN_TURN, starsFor } from "./battle/stars";
 export { step } from "./battle/step";
 export type { StepOutput } from "./battle/step";
 export {
@@ -72,6 +76,8 @@ export {
   STARTER_DECKS,
 } from "./content/decks";
 export {
+  CAMPAIGN_LOSS_XP_FRACTION,
+  CAMPAIGN_WIN_XP,
   firstTryPathLevel,
   firstWinXp,
   PLAYER_LEVEL_XP,

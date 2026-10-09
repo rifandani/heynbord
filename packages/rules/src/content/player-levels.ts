@@ -12,7 +12,12 @@ export const PLAYER_LEVEL_XP: readonly number[] = [
 ];
 
 /** The XP of a normal win in Regions 1, 2 and 3 (Economy 2.1). */
-const REGION_WIN_XP = [40, 70, 100] as const;
+export const CAMPAIGN_WIN_XP = [40, 70, 100] as const;
+
+/** A Campaign loss gives this fraction of the XP of a win (Economy 2.1). */
+export const CAMPAIGN_LOSS_XP_FRACTION = 0.25;
+
+const REGION_WIN_XP = CAMPAIGN_WIN_XP;
 
 /** The XP of the first win of a Stage: ×2, and ×2 again for a Boss Stage. */
 export const firstWinXp = (stage: StageDefinition): number => {

@@ -307,6 +307,7 @@ const Shortcut = ({
 const SettingsButton = () => {
   const { tr } = useGameText();
   const [open, setOpen] = useState(false);
+  const button = useRef<HTMLButtonElement>(null);
   const name = tr("settings.title");
   return (
     <div
@@ -317,6 +318,7 @@ const SettingsButton = () => {
     >
       <DialogTrigger isOpen={open} onOpenChange={setOpen}>
         <Button
+          ref={button}
           aria-label={name}
           className={shortcutButtonClass(false)}
           data-testid="town-settings"
@@ -329,7 +331,7 @@ const SettingsButton = () => {
             lifted={open}
           />
         </Button>
-        <SettingsDialog />
+        <SettingsDialog from={button} />
       </DialogTrigger>
     </div>
   );

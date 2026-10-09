@@ -380,13 +380,17 @@ describe("the Message Catalogs", () => {
         .body.map((ref) => text(ref))
         .join(" ");
     expect(body("handLimit")).toContain("8 cards at most");
-    expect(body("tickingCard")).toContain("3 oldest cards");
     expect(body("summonZone")).toContain("Columns 1 to 3");
     expect(body("summonZone")).toContain("Columns 4 and 5");
     expect(body("suddenDeath")).toContain("From Turn 20");
     expect(body("recall")).toContain("from 10% at Common to 50% at Legendary");
-    expect(body("rankRare")).toBe(
-      "3 Rank Gems. Attack and HP ×1.45. Recall of a Skill Card: 30%."
+    expect(body("rankCommon")).toContain("baseline for the Attack and HP");
+    expect(body("rankCommon")).toContain(
+      "1 Rank Gems on the frame. Attack and HP ×1. Skill Card Recall: 10%."
+    );
+    expect(body("rankRare")).toContain("Rare sits in the middle");
+    expect(body("rankRare")).toContain(
+      "3 Rank Gems on the frame. Attack and HP ×1.45. Skill Card Recall: 30%."
     );
     expect(
       getEntry("rankRare")

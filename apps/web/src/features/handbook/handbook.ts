@@ -1,6 +1,7 @@
 import type {
   CardDefinition,
   ClassId,
+  CoinDenomination,
   DamageType,
   RaceId,
   RankId,
@@ -8,11 +9,13 @@ import type {
 } from "@workspace/rules";
 import {
   CARDS,
+  CAMPAIGN_WIN_XP,
   countdownLimit,
   HAND_LIMIT,
   keywordValue,
   LANE_LENGTH,
   MAX_COPIES,
+  PLAYER_LEVEL_XP,
   RANKS,
   rankPips,
   ranksOf,
@@ -21,10 +24,10 @@ import {
   SHARED_RANK_VALUES,
   STAGE_LANES,
   STARTING_HAND,
+  STAR_FAST_WIN_TURN,
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
   SUMMON_ZONE_DEPTH,
-  TICKING_CARDS,
   TURN_LIMIT,
   WALL_SUMMON_DEPTH,
 } from "@workspace/rules";
@@ -83,8 +86,6 @@ const CARD_ENTRIES = [
   "deck",
   "graveyard",
   "countdown",
-  "tickingCard",
-  "waitingCard",
   "ready",
   "recall",
   "countdownLimit",
@@ -156,7 +157,20 @@ export type EntryIcon =
  * How an Entry of a value Keyword shows N: a table for each Rank, or a line
  * that sends the Player to the card.
  */
-export type KeywordValueKind = "rankTable" | "card";
+export type KeywordValueKind =
+  | "rankTable"
+  | "rankGuideTable"
+  | "commonRankGuide"
+  | "starsTable"
+  | "coinTable"
+  | "playerLevelTable"
+  | "card";
+
+/** Attack and HP on a sample card face for the Common Rank guide. */
+export const COMMON_RANK_FACE_EXAMPLE = {
+  attack: 4,
+  hp: 5,
+} as const;
 
 export interface Entry {
   readonly id: EntryId;
@@ -218,6 +232,83 @@ export const RANK_TABLE: readonly {
   readonly rank: RankId;
   readonly value: number;
 }[] = RANKS.map((rank) => ({ rank, value: SHARED_RANK_VALUES[rank] }));
+
+/** Stat scale, Recall and shared Keyword N for the Ranks chapter guide (GDD 5.3–5.4). */
+export const RANK_GUIDE_TABLE: readonly {
+  readonly rank: RankId;
+  readonly scale: number;
+  readonly recall: number;
+  readonly keywordN: number;
+}[] = RANKS.map((rank) => ({
+  rank,
+  scale: scaleForRank(100, rank) / 100,
+  recall: recallChance(rank) / 100,
+  keywordN: SHARED_RANK_VALUES[rank],
+}));
+
+/** Each Star count and the Translation Key of its win condition (GDD 4.11). */
+export const STARS_TABLE: readonly {
+  readonly count: 1 | 2 | 3;
+  readonly rule: TextRef;
+}[] = [
+  { count: 1, rule: { key: "handbook.starsRow.1" } },
+  { count: 2, rule: { key: "handbook.starsRow.2" } },
+  {
+    count: 3,
+    rule: {
+      key: "handbook.starsRow.3",
+      args: { fastTurn: STAR_FAST_WIN_TURN },
+    },
+  },
+];
+
+/** Example Coin on the Town balance plate: 1 Gold, 54 Silver, 20 Copper (Economy 1.1). */
+export const COIN_EXAMPLE_COPPER = 15_420;
+
+/** Each Coin denomination and how it converts (Economy 1.1). */
+export const COIN_DENOM_TABLE: readonly {
+  readonly denomination: CoinDenomination;
+  readonly rule: TextRef;
+}[] = [
+  { denomination: "gold", rule: { key: "handbook.coinRow.gold" } },
+  { denomination: "silver", rule: { key: "handbook.coinRow.silver" } },
+  { denomination: "copper", rule: { key: "handbook.coinRow.copper" } },
+];
+
+/** What Coin pays for in the Handbook Coin Entry. */
+export const COIN_USES_TABLE: readonly {
+  readonly id: "deckSlots" | "later";
+  readonly rule: TextRef;
+}[] = [
+  { id: "deckSlots", rule: { key: "handbook.coinUse.deckSlots" } },
+  { id: "later", rule: { key: "handbook.coinUse.later" } },
+];
+
+/** Campaign win XP by Region, for the Player level Entry (Economy 2.1). */
+export const PLAYER_LEVEL_XP_TABLE: readonly {
+  readonly region: 1 | 2 | 3;
+  readonly win: number;
+}[] = ([1, 2, 3] as const).map((region) => ({
+  region,
+  win: CAMPAIGN_WIN_XP[region - 1] ?? 0,
+}));
+
+/** Sample levels for Hero HP, Deck size and Countdown Limit in the Handbook. */
+export const PLAYER_LEVEL_STAT_SAMPLES = [1, 5, 10, 21, 30] as const;
+
+/** Town and mode unlocks that a Player level opens (GDD 7.1). */
+export const PLAYER_LEVEL_UNLOCK_TABLE: readonly {
+  readonly level: number;
+  readonly rule: TextRef;
+}[] = [
+  { level: 2, rule: { key: "handbook.playerUnlock.packs" } },
+  { level: 3, rule: { key: "handbook.playerUnlock.workshop" } },
+  { level: 5, rule: { key: "handbook.playerUnlock.gear" } },
+  { level: 6, rule: { key: "handbook.playerUnlock.craft" } },
+  { level: 10, rule: { key: "handbook.playerUnlock.dungeon1" } },
+  { level: 20, rule: { key: "handbook.playerUnlock.dungeon2" } },
+  { level: 30, rule: { key: "handbook.playerUnlock.dungeon3" } },
+];
 
 const RANK_TABLE_KEYWORDS = rankTableKeywords(CARDS);
 
@@ -289,24 +380,34 @@ const namedEntry = (
 
 const glyph = (name: Glyph): EntryIcon => ({ kind: "glyph", glyph: name });
 
-const rankEntry = (rank: RankId): Entry => ({
-  id: `rank${capitalize(rank)}`,
-  chapter: "ranks",
-  name: { key: `ranks.${rank}` },
-  body: [
-    {
-      key: "handbook.rankLine",
-      args: {
-        gems: rankPips(rank),
-        // The Attack and HP scale, from a value of 100 at Common.
-        scale: scaleForRank(100, rank) / 100,
-        recall: recallChance(rank) / 100,
+const rankEntry = (rank: RankId): Entry => {
+  const entry: Entry = {
+    id: `rank${capitalize(rank)}`,
+    chapter: "ranks",
+    name: { key: `ranks.${rank}` },
+    body: [
+      { key: `handbook.rankTierIntro.${rank}` },
+      {
+        key: "handbook.rankTierStats",
+        args: {
+          gems: rankPips(rank),
+          scale: scaleForRank(100, rank) / 100,
+          recall: recallChance(rank) / 100,
+        },
       },
-    },
-  ],
-  icon: { kind: "rank", rank },
-  seeAlso: [],
-});
+    ],
+    icon: { kind: "rank", rank },
+    seeAlso: [],
+  };
+  if (rank === "common") {
+    return {
+      ...entry,
+      value: "commonRankGuide",
+      seeAlso: ["rank", "rankGems", "recall"],
+    };
+  }
+  return entry;
+};
 
 /** The values in the text of the Entries, from the rules, so the text never differs. */
 const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
@@ -327,16 +428,22 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
   hand: { start: STARTING_HAND },
   handLimit: { limit: HAND_LIMIT },
   deck: { copies: MAX_COPIES },
-  tickingCard: { count: TICKING_CARDS },
   recall: {
     low: recallChance("common") / 100,
     high: recallChance("legendary") / 100,
   },
   countdownLimit: { first: countdownLimit(1) },
+  stars: { fastTurn: STAR_FAST_WIN_TURN },
+  playerLevel: { maxLevel: PLAYER_LEVEL_XP.length },
 };
 
 const term = (id: EntryId, chapter: ChapterId) =>
   termEntry(id, chapter, TEXT_ARGS[id]);
+
+const rankOverviewEntry = (): Entry => ({
+  ...term("rank", "ranks"),
+  value: "rankGuideTable",
+});
 
 /** The terms that the game already names, with their Translation Key. */
 const SHOWN_NAMES: Partial<Record<EntryId, string>> = {
@@ -357,7 +464,6 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   hero: glyph("helmet"),
   deck: glyph("cards"),
   countdown: glyph("hourglass"),
-  tickingCard: glyph("hourglass"),
   recall: glyph("recall"),
   attack: glyph("sword"),
   hp: glyph("heart"),
@@ -377,6 +483,14 @@ const plainEntry = (id: EntryId, chapter: ChapterId): Entry => {
     ...entry,
     name: name ? { key: name } : entry.name,
     icon: ICONS[id],
+    value:
+      id === "stars"
+        ? "starsTable"
+        : id === "coin"
+          ? "coinTable"
+          : id === "playerLevel"
+            ? "playerLevelTable"
+            : undefined,
   };
 };
 
@@ -406,7 +520,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   side: ["hero", "routed"],
   hero: ["front", "defeated", "class"],
   turn: ["startStep", "playPhase", "resolutionPhase", "endStep"],
-  startStep: ["tickingCard", "suddenDeath", "keywordRegeneration"],
+  startStep: ["countdown", "suddenDeath", "keywordRegeneration"],
   playPhase: ["ready", "summonZone", "skillCard"],
   resolutionPhase: ["movement", "attack", "keywordRetaliation"],
   endStep: ["statusBurn", "statusPoison"],
@@ -415,13 +529,11 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   defeated: ["hero", "routed"],
   creatureCard: ["unit", "race", "role"],
   skillCard: ["recall", "class"],
-  hand: ["handLimit", "tickingCard", "countdown"],
+  hand: ["handLimit", "countdown"],
   handLimit: ["hand", "deck"],
   deck: ["countdownLimit", "graveyard", "class"],
   graveyard: ["deck", "recall"],
-  countdown: ["tickingCard", "ready", "countdownLimit"],
-  tickingCard: ["waitingCard", "countdown"],
-  waitingCard: ["tickingCard", "ready"],
+  countdown: ["ready", "countdownLimit"],
   ready: ["countdown", "playPhase"],
   recall: ["skillCard", "rank", "graveyard"],
   countdownLimit: ["countdown", "deck", "playerLevel"],
@@ -518,7 +630,7 @@ export const ENTRIES: readonly Entry[] = [
       glyph: roleGlyph(role),
     })
   ),
-  term("rank", "ranks"),
+  rankOverviewEntry(),
   ...RANKS.map(rankEntry),
   plainEntry("rankGems", "ranks"),
   ...PROGRESS_ENTRIES.map((id) => plainEntry(id, "progress")),

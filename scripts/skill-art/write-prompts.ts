@@ -75,7 +75,7 @@ const promptsFile = (
     "1. Open a new ChatGPT conversation. Attach `style-reference.png` (in this folder) and send the setup message.",
     `2. Send each card prompt in its own message. Save each image as \`apps/web/art/skills/raw/${skillClass.className}/<file>.png\`.`,
     "3. Select the images with the review checklist (art direction 5.4). For a rejected card, send its prompt again in the same conversation.",
-    `4. Do steps 4, 7 and 8 of art direction 5.3. A Skill Card has no Unit cut-out. The card art goes to \`apps/web/public/skills/${skillClass.className}/<file>.webp\` (768 × 1024).`,
+    `4. Do steps 4, 7 and 8 of art direction 5.3. A Skill Card has no Unit cut-out. The card art goes to \`apps/web/public/skills/${skillClass.className}/<file>.webp\` (600 × 800).`,
     "",
     "## Setup message",
     "",

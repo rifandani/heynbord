@@ -10,7 +10,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Base Rank sets the detail.** Common: plain, worn gear and a simple scene. Uncommon: some trim and one extra detail. Rare: ornate gear with gold or metal trim. Epic: a heroic scene with dramatic composition and more detail. The style and the light do not change.
 - **Light.** From the upper left in all images.
 - **Facing.** A Creature Card and a Token advance to the right of the image, in a three-quarter view. The chest and the lead foot point right. The face and the weapon may turn. A fortification shows its blocking face to the right. Forward in a pose means this direction. The card art and the Unit cut-out share it. See [ADR-0014](../adr/0014-creature-card-paintings-advance-to-the-right.md). A Skill Card has no Unit. When it shows travel, a throw, or a back view, that travel still goes to the right.
-- **Size.** Portrait 3:4 (card art is 768 × 1024).
+- **Size.** Portrait 3:4 (card art is 600 × 800).
 - **Gender.** The flavor text sets the gender of some figures. For the other figures, this document selects a gender, so that the set has a balanced mix.
 - **Creature Cards and Tokens** use the prompts of 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the prompts of 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
@@ -993,21 +993,23 @@ Purpose: fast Frost tempo and Hero pressure. Power 16, budget 16, deviation 0%.
 | Humor note | The pony is braver than the rider. |
 | Setting | A frozen marsh ford. |
 
-### 5.9 Rime-Eye Archer
+### 5.9 Rime-Eye Reaper
 
-`undead.rimeEyeArcher` · Shooter · Uncommon · Countdown 2 · Attack 2 · HP 3 · Speed 1 · Range 3 · Frost
+`undead.rimeEyeReaper` · Striker · Uncommon · Countdown 2 · Attack 4 · HP 3 · Speed 1 · Melee · Frost
 
 > She closes one eye. The other is already frozen open.
 
-Purpose: cheap ranged Frost control. Power 15, budget 16, deviation -6.3%.
+Purpose: cheap melee Frost control. Its high Attack kills a Frozen target fast, so the Freeze lock ends fast. Power 16, budget 16, deviation 0%.
+
+This card was a Ranged Frost Shooter, Rime-Eye Archer. No Ranged Unit has Frost damage ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md), issue #28).
 
 | Field | Brief |
 | --- | --- |
-| Subject | A skeletal woman archer with one frost eye. |
-| Pose | She holds a calm full draw. |
-| Props | Longbow, icy arrow and rusted scale vest. |
-| Gameplay cues | The icy arrowhead shows Frost. |
-| Silhouette hook | Tall bow and narrow body. |
+| Subject | A skeletal woman reaper with one frost eye. |
+| Pose | She steps forward into a low scythe sweep. |
+| Props | Frosted grave scythe, rusted scale vest and silver-teal clasp. |
+| Gameplay cues | Frost on the scythe blade shows Frost. |
+| Silhouette hook | Curved scythe and narrow body. |
 | Humor note | A frozen moth rests on her open eye. |
 | Setting | A dead willow bank. |
 
@@ -1619,18 +1621,18 @@ Purpose: a Rare front that also Tramples. Power 26, budget 27, deviation -3.7%.
 
 ### 7.13 Rimebreath Drake
 
-`feral.rimebreathDrake` · Shooter · Rare · Countdown 5 · Attack 2 · HP 6 · Speed 1 · Range 3 · Frost · Flying
+`feral.rimebreathDrake` · Striker · Rare · Countdown 5 · Attack 3 · HP 6 · Speed 1 · Melee · Frost · Flying
 
 > Its breath is the weather.
 
-Purpose: a Flying Frost Shooter. Power 27, budget 27, deviation 0%.
+Purpose: a Flying Frost Striker. Power 26, budget 27, deviation -3.7%. No Ranged Unit has Frost ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)).
 
 | Field | Brief |
 | --- | --- |
 | Subject | A slim young ice drake with wide wings. |
 | Pose | It flies forward and breathes a cone of frost. |
 | Props | None. Icicles on its nose. |
-| Gameplay cues | The wings show Flying. The frost breath shows Frost and Range. |
+| Gameplay cues | The wings show Flying. The frost breath shows Frost. |
 | Silhouette hook | The wide wings and the long neck. |
 | Humor note | Its own breath froze an icicle onto its nose. |
 | Setting | High cliffs above the clouds. |

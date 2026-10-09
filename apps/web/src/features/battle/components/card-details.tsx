@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 import { createContext, use } from "react";
 import { Button } from "react-aria-components";
 
-import type { CountdownState, UnitView } from "@/features/battle/battle-view";
+import type { UnitView } from "@/features/battle/battle-view";
 import { cardText, unitStatusText } from "@/features/battle/card-text";
 import type {
   CardText,
@@ -469,28 +469,10 @@ const BlockedLine = ({
   ) : null;
 };
 
-/** A Hand card that is not Ready (ADR-0021): when its Countdown goes down. */
-const CountdownLine = ({
-  state,
-}: {
-  readonly state: CountdownState | undefined;
-}) => {
-  const { tr } = useGameText();
-  return state === "ticking" || state === "waiting" ? (
-    <p
-      className="mb-1.5 text-xs font-semibold text-[#5b4632]"
-      data-testid="card-details-countdown"
-    >
-      {tr(`battle.${state}Line`)}
-    </p>
-  ) : null;
-};
-
 export const CardDetails = ({
   cardId,
   rank,
   countdown,
-  countdownState,
   unit,
   blocked = false,
   panelSide = "right",
@@ -499,8 +481,6 @@ export const CardDetails = ({
   readonly cardId: string;
   readonly rank: RankId;
   readonly countdown: number;
-  /** A Hand card: Ticking or Waiting (ADR-0021). */
-  readonly countdownState?: CountdownState;
   readonly unit?: UnitView;
   /** Unique (GDD 5.4): a Hand card that cannot be played now. */
   readonly blocked?: boolean;
@@ -519,7 +499,6 @@ export const CardDetails = ({
         cardId={cardId}
         rank={rank}
         countdown={countdown}
-        countdownState={countdownState}
         live={unit}
         className="z-10 shrink-0 text-[20px] [@media(max-height:500px)]:text-[12px]"
       />
@@ -532,7 +511,6 @@ export const CardDetails = ({
           <NameSr unit={unit} rank={rank} countdown={countdown} />
         </h3>
         <BlockedLine blocked={blocked} name={text(content.name)} />
-        <CountdownLine state={countdownState} />
         <EntryLinks value={onEntry}>
           <PanelBody card={card} rank={rank} content={content} unit={unit} />
         </EntryLinks>

@@ -253,6 +253,14 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
+  it("gives no Ranged Creature Card Frost damage (ADR-0025)", () => {
+    const frostCards = creatures.filter((card) => card.damageType === "frost");
+    expect(frostCards.length).toBeGreaterThan(0);
+    for (const card of frostCards) {
+      expect(card.range, card.id).toBe(0);
+    }
+  });
+
   it("keeps Shieldbearer within ±10% of its power budget (GDD 13)", () => {
     const card = getCard("human.shieldbearer");
     expect(card.kind === "creature" && creaturePower(card)).toBe(17);
@@ -456,9 +464,9 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
     });
     expect(countBy(raceCards("feral"), (card) => card.role)).toEqual({
       frontliner: 5,
-      striker: 5,
+      striker: 6,
       runner: 1,
-      shooter: 2,
+      shooter: 1,
       support: 1,
       wall: 1,
     });

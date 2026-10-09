@@ -9,7 +9,6 @@ import { cn } from "cn";
 import { useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
-import type { CountdownState } from "@/features/battle/battle-view";
 import { cardIllustration, hasCardArt } from "@/features/battle/card-art";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
@@ -64,31 +63,15 @@ export const RankGems = ({ rank }: { readonly rank: RankId }) => (
 );
 
 /**
- * The mark of a Ticking Card (ADR-0021): a small hourglass on the rim of the
- * Countdown badge. It turns over and over while the card ticks.
- */
-const TickingPip = () => (
-  <span className="absolute -right-[0.4em] -bottom-[0.4em] flex size-[1.15em] items-center justify-center rounded-full border-[0.1em] border-[#ffd98a] bg-[#1c140e] text-[#ffd98a] shadow-[0_0_0.3em_rgba(255,217,138,0.7)]">
-    <GlyphIcon
-      glyph="hourglass"
-      className="size-[0.8em] motion-safe:animate-[hourglass-turn_2.4s_ease-in-out_infinite]"
-    />
-  </span>
-);
-
-/**
  * The Countdown at the top left, on a faint hourglass. It has the same size as
- * the emblem, and it is gold when the card is Ready. In a Hand, a Ticking Card
- * has a turning hourglass pip, and a Waiting Card has a muted number.
+ * the emblem, and it is gold when the card is Ready.
  */
 const CountdownBadge = ({
   countdown,
   ready,
-  state,
 }: {
   readonly countdown: number;
   readonly ready: boolean;
-  readonly state: CountdownState | undefined;
 }) => (
   <span
     className={cn(
@@ -98,22 +81,14 @@ const CountdownBadge = ({
         ? "bg-[radial-gradient(circle_at_35%_30%,#fff1a8,#ffcf4a_55%,#d99a1c)] text-[#2a1a05]"
         : cn(darkPlate, "text-[#fff6df]")
     )}
-    data-countdown-state={state}
   >
     <GlyphIcon
       glyph="hourglass"
       className="absolute size-[1.45em] opacity-30"
     />
-    <span
-      className={cn(
-        "relative text-[1.3em] leading-none font-black tabular-nums [text-shadow:0_0.06em_0.12em_rgba(0,0,0,0.45)]",
-        // A Waiting Card: its Countdown does not go down now.
-        state === "waiting" && "opacity-55"
-      )}
-    >
+    <span className="relative text-[1.3em] leading-none font-black tabular-nums [text-shadow:0_0.06em_0.12em_rgba(0,0,0,0.45)]">
       {countdown}
     </span>
-    {state === "ticking" ? <TickingPip /> : null}
   </span>
 );
 
@@ -321,22 +296,19 @@ const CardArt = ({ card }: { readonly card: CardDefinition }) => {
  *
  * With `live`, the card is a Unit on the Board: the plates show its current
  * Attack and HP, and the Countdown is never Ready gold, because the card is
- * not in a Hand. With `countdownState`, the card is in a Hand, and the
- * hourglass shows if it is a Ticking Card or a Waiting Card.
+ * not in a Hand.
  */
 export const CardFrame = ({
   cardId,
   rank,
   countdown,
   live,
-  countdownState,
   className,
 }: {
   readonly cardId: string;
   readonly rank: RankId;
   readonly countdown: number;
   readonly live?: LiveStats;
-  readonly countdownState?: CountdownState;
   readonly className?: string;
 }) => {
   const card = getCard(cardId);
@@ -356,11 +328,7 @@ export const CardFrame = ({
         <CardArt key={cardId} card={card} />
       </span>
       <RankRow rank={rank} />
-      <CountdownBadge
-        countdown={countdown}
-        ready={!live && countdown === 0}
-        state={countdownState}
-      />
+      <CountdownBadge countdown={countdown} ready={!live && countdown === 0} />
       <Emblem card={card} />
       <BottomPlates card={card} rank={rank} live={live} />
     </span>

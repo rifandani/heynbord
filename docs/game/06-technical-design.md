@@ -132,7 +132,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 | Battle chunk (Three.js and scene code) | Less than 400 KB gzip |
 | Assets for one Battle | Less than 8 MB |
 | Draw calls in a Battle | Less than 150 |
-| Texture size | Unit cut-outs 512 px tall. Card art 768 × 1024. Use KTX2 (Basis) or WebP. |
+| Texture size | Unit cut-outs 512 px tall. Card art 600 × 800 WebP at quality 80 (larger than the largest view of a card at device pixel ratio 2). For other textures, use KTX2 (Basis) or WebP. |
 | Frame time | 16.7 ms on desktop. 33 ms on a mid-range phone. |
 | Device pixel ratio | Maximum 2. Lower it when the frame rate drops. |
 | Rigged Unit model | 10,000 triangles or fewer. 1.5 MB or less for each GLB (Draco or Meshopt, KTX2 textures). 1 material. Start values: tune them with the first pilot model on a mid-range phone. |

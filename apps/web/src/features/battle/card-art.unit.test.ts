@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 import { CARDS, getCard, getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
@@ -44,6 +44,47 @@ describe("hasCardArt", () => {
           !existsSync(new URL(`../../../public${file}`, import.meta.url))
       );
     expect(missing).toEqual([]);
+  });
+});
+
+/** A width or a height in the WebP header has 14 bits. */
+const FOURTEEN_BITS = 0x40_00;
+
+/**
+ * The width and height of a WebP file, from its header. The first chunk is
+ * `VP8 ` (lossy), `VP8L` (lossless) or `VP8X` (extended).
+ */
+const webpSize = (file: Buffer): readonly [number, number] => {
+  const chunk = file.toString("ascii", 12, 16);
+  if (chunk === "VP8 ") {
+    return [
+      file.readUInt16LE(26) % FOURTEEN_BITS,
+      file.readUInt16LE(28) % FOURTEEN_BITS,
+    ];
+  }
+  if (chunk === "VP8L") {
+    const bits = file.readUInt32LE(21);
+    return [
+      (bits % FOURTEEN_BITS) + 1,
+      (Math.floor(bits / FOURTEEN_BITS) % FOURTEEN_BITS) + 1,
+    ];
+  }
+  return [file.readUIntLE(24, 3) + 1, file.readUIntLE(27, 3) + 1];
+};
+
+describe("card art files", () => {
+  it("are all 600 × 800 (art direction 5.3)", () => {
+    const wrong = ["creature", "skills"].flatMap((folder) => {
+      const root = new URL(`../../../public/${folder}/`, import.meta.url);
+      return readdirSync(root, { recursive: true, encoding: "utf-8" })
+        .filter((path) => path.endsWith(".webp"))
+        .map((path) => {
+          const [width, height] = webpSize(readFileSync(new URL(path, root)));
+          return `${folder}/${path} ${width} × ${height}`;
+        })
+        .filter((line) => !line.endsWith(" 600 × 800"));
+    });
+    expect(wrong).toEqual([]);
   });
 });
 

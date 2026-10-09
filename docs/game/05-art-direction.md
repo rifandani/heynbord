@@ -138,8 +138,8 @@ A Skill Card has a Class, not a Race. Its image must not show a Race, because a 
 3. Select one image with the review checklist (5.4).
 4. Fix problems by hand or with inpainting (hands, weapons, extra parts).
 5. Remove the background, for the Unit cut-out.
-6. Make 2 exports: card art (portrait, with background) and Unit cut-out (transparent).
-7. Compress the textures (see Technical Design, section 6).
+6. Make 2 exports: card art (600 × 800 portrait, with background) and Unit cut-out (transparent).
+7. Compress the textures (see Technical Design, section 6). For the card art, use `cwebp -q 80 -resize 600 800 <file>.png -o <file>.webp`. A unit test fails if a card art file is not 600 × 800.
 8. Write the record (5.5).
 
 ### 5.4 Review checklist

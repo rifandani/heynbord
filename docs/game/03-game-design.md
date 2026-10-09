@@ -173,7 +173,7 @@ Each attack and each damage effect has a **Damage Type**.
 | --- | --- |
 | **Physical** | Normal damage. Melee or Ranged. |
 | **Fire** | Normal damage. The target also gets **Burn**: 1 damage in each End Step of its owner, for the next 2 End Steps. A new Burn replaces the old Burn. |
-| **Frost** | Normal damage. The target also gets **Freeze**: it skips its next action. |
+| **Frost** | Normal damage. The target also gets **Freeze**: it skips its next action. No Ranged Unit has Frost damage, at any Rank ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)). |
 | **Holy** | Armor does not reduce Holy damage. |
 
 Burn, Freeze, Entangled, Poisoned, Hobbled and Bleeding are **Statuses**. Fire and Frost damage give Burn and Freeze. The Entangle Keyword gives Entangled after attack damage. The Poison Keyword gives Poisoned after attack damage above 0. The Hobble Keyword gives Hobbled after attack damage above 0. The Bleed Keyword gives Bleeding after attack damage above 0. Fire or Frost gives its Status also when the hit does 0 damage. Entangle, Poison, Hobble and Bleed need damage above 0. Bleeding does no damage. Burn damage and Poison damage ignore Armor, Crit and Block. Burn damage does not give a new Burn. Poison damage has no Damage Type, and it does not give Burn or Poison.
@@ -275,7 +275,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | HP | Health | 1 to 30 |
 | Speed | Squares per Turn | 0 to 4 |
 | Attack type | Melee, or Ranged with Range | Range 2 or 3. Range 2 only for a Support, and Range 3 for a Shooter (5.6, ADR-0022) |
-| Damage Type | Physical, Fire, Frost or Holy | — |
+| Damage Type | Physical, Fire, Frost or Holy | Frost only for a melee Unit ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)) |
 | Keywords | 0 to 3 Keywords | — |
 | Flavor text | A short line of lore or a joke | — |
 
@@ -700,10 +700,10 @@ Each Race has a different Role profile:
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Human | 4 | 2 | 2 | 2 | 3 | 2 |
 | Elf | 1 | 2 | 3 | 5 | 3 | 1 |
-| Undead | 3 | 4 | 2 | 2 | 3 | 1 |
+| Undead | 3 | 5 | 2 | 1 | 3 | 1 |
 | Orc | 2 | 5 | 4 | 2 | 2 | 0 |
 | Goblin | 2 | 3 | 3 | 3 | 3 | 1 |
-| Feral | 5 | 5 | 1 | 2 | 1 | 1 |
+| Feral | 5 | 6 | 1 | 1 | 1 | 1 |
 
 Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary Damage Type: Holy for Human and Elf, Frost for Undead and Feral, and Fire for Orc and Goblin. Feral has no card with Countdown 1. Each Race has one Uncommon melee Pivot Card. Its two Epic Cards are one named champion with Unique and one archetypal powerhouse ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)).
 

@@ -66,11 +66,6 @@ export default {
     enemyHand: "Enemy Hand",
     ready: "Ready",
     countdown: "Countdown {value}",
-    ticking: "ticking",
-    waiting: "waiting",
-    tickingLine: "Goes down by 1 at the start of your next Turn.",
-    waitingLine:
-      "Waits. It goes down when one of the 3 cards before it is Ready.",
     selectTarget: "Select a target",
     noTarget: "No legal target now",
     uniqueBlocked: "{name} is already on your side of the Board.",
@@ -246,7 +241,7 @@ export default {
     steps: {
       ready: {
         title: "Countdown and Ready",
-        text: "The number on each card in your Hand is its Countdown. At the start of each of your Turns, the first 3 cards from the left that are not Ready go down by 1. Their hourglass runs. The other cards wait. At 0, a card is Ready, and you can play it. Play a Ready card, or end your Turn.",
+        text: "The number on each card in your Hand is its Countdown. It goes down by 1 at the start of each of your Turns. At 0, the card is Ready, and you can play it. Play a Ready card, or end your Turn.",
       },
       summonZone: {
         title: "Your Summon Zone",
@@ -302,8 +297,87 @@ export default {
     rankTable: "N at each Rank",
     rankColumn: "Rank",
     valueColumn: "N",
-    rankLine:
-      "{gems} Rank Gems. Attack and HP ×{scale:number}. Recall of a Skill Card: {recall}%.",
+    starsTable: "How to earn each Star",
+    starsColumn: "Stars",
+    starsConditionColumn: "You need",
+    starsRow: {
+      1: "Win the Battle.",
+      2: "Also keep half of your Hero HP or more at the end.",
+      3: "Also finish before Turn {fastTurn}.",
+    },
+    coinDenomTable: "One balance, three coins",
+    coinDenomColumn: "Coin",
+    coinWorthColumn: "Worth",
+    coinRow: {
+      gold: "100 Silver. The largest coin.",
+      silver: "100 Copper.",
+      copper:
+        "The smallest unit. The game stores your balance as Copper and converts for display.",
+    },
+    coinExampleCaption: "Same balance on the Town plate",
+    coinExampleNote:
+      "This is {copper} Copper in total. Gold and Silver are only how the game shows it.",
+    coinUsesTable: "What Coin pays for",
+    coinUsesColumn: "Use",
+    coinUse: {
+      deckSlots: "Extra Deck Slots in the Deck builder.",
+      later: "Packs, Combine and Gear upgrades when those Town shortcuts open.",
+    },
+    playerXpTable: "Campaign XP by result",
+    playerXpRegionColumn: "Region",
+    playerXpWinColumn: "Repeat win",
+    playerXpFirstColumn: "First win (×2)",
+    playerXpLossColumn: "Loss (25%)",
+    playerXpNote:
+      "First win is the first time you clear a Stage. A Boss Stage doubles all values in this table again.",
+    playerGrowthLevelColumn: "Level",
+    playerGrowthHeroColumn: "Hero HP",
+    playerGrowthDeckColumn: "Max Deck",
+    playerGrowthCountdownColumn: "Countdown Limit",
+    playerGrowthNote:
+      "Every level adds +1 Hero HP. Max Deck size grows by +1 each level, up to 30. The Countdown Limit follows from the Deck size rule.",
+    playerUnlockTable: "What opens at each level",
+    playerUnlockLevelColumn: "Level",
+    playerUnlockWhatColumn: "Unlock",
+    playerUnlock: {
+      packs: "Packs in Town.",
+      workshop: "Workshop: Combine and Extract.",
+      gear: "Gear on your Hero.",
+      craft: "Workshop: Craft.",
+      dungeon1: "Dungeon 1.",
+      dungeon2: "Dungeon 2.",
+      dungeon3: "Dungeon 3.",
+    },
+    rankGuideRankColumn: "Rank",
+    rankGuideScaleColumn: "Attack and HP",
+    rankGuideRecallColumn: "Recall",
+    rankGuideKeywordColumn: "Charge, Knockback, Bleed",
+    rankGuideScaleNote:
+      "Attack and HP use the numbers on the card face as the Common value, then multiply by the factor in this table.",
+    rankGuideKeywordNote:
+      "N is the number on some Keywords. Charge, Knockback and Bleed use the values in this table. Other Keywords may differ on each card.",
+    commonRankFaceCaption: "Numbers on the card face",
+    commonRankAttackLabel: "Attack",
+    commonRankHpLabel: "HP",
+    commonRankFaceNote:
+      "A Common copy uses Attack {attack} and HP {hp} in battle — the same as printed. Higher Ranks multiply these values.",
+    commonRankFactsCaption: "At Common Rank",
+    commonRankFactsColumn: "Rule",
+    commonRankFactGems: "1 grey Rank Gem on the frame.",
+    commonRankFactStats:
+      "Attack and HP ×1.0 — use the face values as they are.",
+    commonRankFactCountdown: "Countdown does not change with Rank.",
+    rankTierStats:
+      "{gems} Rank Gems on the frame. Attack and HP ×{scale:number}. Skill Card Recall: {recall}%.",
+    rankTierIntro: {
+      common:
+        "Common is the lowest Rank. It is the baseline for the Attack and HP on every card face.",
+      uncommon: "Uncommon is one step above Common.",
+      rare: "Rare sits in the middle of the five Ranks. Many cards use Rare as their Base Rank.",
+      epic: "Epic is a strong copy. Charge, Knockback and Bleed can use N = 2.",
+      legendary:
+        "Legendary is the top Rank. Charge, Knockback and Bleed can use N = 3.",
+    },
     names: {
       board: "Board",
       lane: "Lane",
@@ -326,8 +400,6 @@ export default {
       skillCard: "Skill Card",
       handLimit: "Hand Limit",
       countdown: "Countdown",
-      tickingCard: "Ticking Card",
-      waitingCard: "Waiting Card",
       recall: "Recall",
       countdownLimit: "Countdown Limit",
       unit: "Unit",
@@ -361,7 +433,7 @@ export default {
       hero: "A Hero is the commander of a Side. It stands behind its Front, outside the Board.\n\nA Hero has HP, a Class and a Deck. When its HP goes to 0, the Hero is Defeated.",
       turn: "In a Turn, one Side plays its cards, and its Units act. A Turn has 4 parts: the Start Step, the Play Phase, the Resolution Phase and the End Step.\n\nYou take the first Turn. Then the enemy takes a Turn. The Turn number goes up by 1 when both Sides took a Turn.",
       startStep:
-        "The Start Step is the first part of your Turn. These things occur in this order:\n\n1. Effects such as Regeneration and Rally occur.\n\n2. From Turn {turn}, Sudden Death damage hits your Hero.\n\n3. The Countdown of each of your Ticking Cards goes down by 1.\n\n4. Your Hero draws 1 card, if the Hand has fewer than {limit} cards.",
+        "The Start Step is the first part of your Turn. These things occur in this order:\n\n1. Effects such as Regeneration and Rally occur.\n\n2. From Turn {turn}, Sudden Death damage hits your Hero.\n\n3. The Countdown of each card in your Hand that is not Ready goes down by 1.\n\n4. Your Hero draws 1 card, if the Hand has fewer than {limit} cards.",
       playPhase:
         "In the Play Phase, you play your Ready cards. You can play all of them, in any order, or you can play no cards.\n\nA Creature Card goes into an empty Square of your Summon Zone. A Skill Card goes to its target.\n\nSelect End Turn to end the Play Phase. There is no timer.",
       resolutionPhase:
@@ -378,18 +450,14 @@ export default {
         "A Creature Card summons a Unit onto the Board. It has a Race, a Role, Attack, HP and Speed. Some Creature Cards have Keywords.\n\nWhen the Unit dies, the card goes to your Graveyard.",
       skillCard:
         "A Skill Card has a one-time effect, for example damage to an enemy Unit. It has a Class. Only a Hero of the same Class can use it.\n\nAfter the effect, Recall can send the card back to your Hand.",
-      hand: "Your Hand is the cards that your Hero holds in a Battle. They show at the bottom of the screen.\n\nAt the start of a Battle, your Hero draws {start} cards. Each card in the Hand shows its Countdown. The Hand keeps the order in which the cards came into it.",
+      hand: "Your Hand is the cards that your Hero holds in a Battle. They show at the bottom of the screen.\n\nAt the start of a Battle, your Hero draws {start} cards. Each card in the Hand shows its Countdown.",
       handLimit:
         "Your Hand can hold {limit} cards at most. When your Hand is full, your Hero does not draw, and the card stays in the Deck.",
       deck: "Your Deck is the cards that your Hero brings into a Battle. You build it in the Deck builder.\n\nA Deck can have {copies} copies of one card at most. It can have only the Skill Cards of the Class of your Hero.\n\nIn a Battle, the Deck holds only the cards that your Hero did not draw yet.",
       graveyard:
         "The Graveyard holds your cards that are used or dead. A Creature Card goes there when its Unit dies. A Skill Card goes there when Recall does not send it back.",
       countdown:
-        "The Countdown is the number of Turns that a card must tick before it is Ready. It shows in the top-left corner of the card.\n\nIn your Start Step, the Countdown of each Ticking Card goes down by 1. The Rank of a card does not change its Countdown.",
-      tickingCard:
-        "The Ticking Cards are the {count} oldest cards in your Hand that are not Ready. Only Ticking Cards count down, and their hourglass turns.\n\nThe oldest card is the card that came into the Hand first.",
-      waitingCard:
-        "A Waiting Card is a card in your Hand that is not Ready and is not a Ticking Card. Its Countdown does not go down.\n\nIt becomes a Ticking Card when an older card becomes Ready or leaves the Hand.",
+        "The Countdown is the number of your Turns until a card is Ready. It shows in the top-left corner of the card.\n\nIn your Start Step, the Countdown of each card in your Hand that is not Ready goes down by 1. The Rank of a card does not change its Countdown.",
       ready:
         "A card with a Countdown of 0 is Ready. Only Ready cards can be played. A Ready card glows in your Hand.",
       recall:
@@ -448,14 +516,14 @@ export default {
         "A Support makes other Units better, for example with Rally or Regeneration. It is Melee, or Ranged with Range 2.",
       roleWall:
         "A Wall blocks its Lane for enemy Units. Each Wall has the Wall Keyword.",
-      rank: "The Rank is the power grade of one copy of a card: Common, Uncommon, Rare, Epic or Legendary.\n\nA higher Rank gives more Attack and HP, more Recall, and sometimes a higher Keyword value. The Countdown does not change with the Rank.\n\nEach card has a lowest Rank. A copy is never below it.",
+      rank: "Rank is how strong one copy of a card is. There are five Ranks, from Common to Legendary.\n\nEach card has a Base Rank. Your copy is never below that Rank.",
       rankGems:
-        "The Rank Gems at the top of a card show its Rank: 1 grey gem for Common, up to 5 orange gems for Legendary.\n\nThe number of gems always shows the Rank, so you do not need the color.",
+        "Rank Gems are the small diamonds at the top of a card. Count them: 1 gem is Common, 5 gems is Legendary.\n\nEach Rank has a gem color, but the count is enough to read the Rank in a Battle.",
       stars:
-        "A Stage win gives 1 to 3 Stars. 1 Star: win the Battle. 2 Stars: win with half of your Hero HP or more. 3 Stars: win with half of your Hero HP or more, before Turn 15.\n\nThe Campaign keeps your best Stars for each Stage. The Stars of a Region open its chests.",
+        "When you win a Stage, you earn 1 to 3 Stars. A loss gives 0 Stars.\n\nEach Star adds a condition on the one before it. Half of your Hero HP means your Hero has at least 50% of its maximum HP when the Battle ends.\n\nThe Campaign keeps your best Stars for each Stage. The total Stars in a Region open its chests at 10, 20 and 30 Stars.",
       playerLevel:
-        "Your Player level goes up with XP. You get XP from each Battle, also from a loss.\n\nA higher level gives your Hero more HP, a larger Deck and a higher Countdown Limit. Each Stage shows a Recommended level.",
-      coin: "Coin is the currency that you earn in Battles. It pays for Deck Slots. Later, it also pays for Packs, Combine and Gear.\n\nCoin shows as Gold, Silver and Copper: 100 Copper is 1 Silver, and 100 Silver is 1 Gold. They are one currency with one balance.",
+        "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss.",
+      coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
     },
     aliases: {
       board: "battlefield, field, map, grid, arena",
