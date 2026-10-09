@@ -66,6 +66,7 @@ describe("hasCardArt", () => {
     expect(hasCardArt("goblin.ankleSnatcher")).toBe(true);
     expect(hasCardArt("elf.lethielFirstGardener")).toBe(true);
     expect(hasCardArt("mage.fireball")).toBe(true);
+    expect(hasCardArt("ranger.longShot")).toBe(true);
     expect(hasCardArt("feral.caveBear")).toBe(true);
   });
 

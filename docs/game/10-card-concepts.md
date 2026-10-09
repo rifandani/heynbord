@@ -1859,9 +1859,9 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 | Field | Brief |
 | --- | --- |
-| Effect subject | A single arrow with green fletching in a high arc over the battlefield. |
-| Partial figure | A back view of a hooded archer who aims high, facing to the right. |
-| Action | The arrow flies in a long arc to the right, over the small blurred Units of the Lanes, toward a far, dark, caped silhouette. The silhouette stands on a small rise behind the enemy Lanes and is larger than the Units. No banner. |
+| Effect subject | A single large arrow with green fletching in a high arc over the battlefield, with a long, bright arc trail. The arrow and its trail are the largest shape in the image and are easy to read at 128 px tall. |
+| Partial figure | A back view of a hooded archer who aims high, facing to the right, small in the bottom-left corner. The archer has a correct archery stance for a high shot. The aiming line goes 45 degrees up and to the right. The bow arm extends straight along this line, with the hand closed around the bow grip. The draw hand pulls the string back to the cheek, and the draw elbow is behind the head, on the same line. The bow is at a right angle to the aiming line, so its top tip leans back to the left. It is not vertical. The string is taut. The archer has already nocked the next arrow. It sits on the bow grip, is nocked on the string, and lies on the aiming line, with its arrowhead pointing 45 degrees up and to the right. Five fingers on each hand. |
+| Action | The arc trail starts at the bow grip, just in front of the nocked arrowhead, not at a tip of the bow. Its first part continues the aiming line, 45 degrees up and to the right. Then it curves over the upper half of the image to the right. The flying arrow is near the top of the arc. Far below and to the right, the small blurred Units of the Lanes and a far, dark, caped silhouette, backlit, with no crown. The silhouette stands on a small rise behind the enemy Lanes and is larger than the Units. No banner. |
 | Setting | A neutral battlefield, seen from far, with all the Lanes. |
 | Palette | Neutral steel and leather, with green fletching. Uncommon: a small brass trim on the bow. |
 

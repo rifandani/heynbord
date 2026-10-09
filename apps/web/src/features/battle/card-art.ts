@@ -57,6 +57,7 @@ const RACES_AND_CLASSES_WITH_ART: ReadonlySet<string> = new Set([
   "goblin",
   "feral",
   "warrior",
+  "ranger",
   "mage",
 ]);
 
