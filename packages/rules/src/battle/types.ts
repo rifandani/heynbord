@@ -136,8 +136,8 @@ export interface UnitState {
   readonly rally: number;
   /** True until the Unit dies the first time, then it comes back (GDD 4.9). */
   rebirth: boolean;
-  readonly regeneration: number;
-  readonly retaliation: boolean;
+  readonly regenerate: number;
+  readonly retaliate: boolean;
   /**
    * Swarm for the Rank of this Unit. 0 is none. The bonus is not stored:
    * each hit calculates it (GDD 5.4).
@@ -214,7 +214,7 @@ export type TargetRef =
 
 export type DamageSource =
   | "attack"
-  | "retaliation"
+  | "retaliate"
   /** The damage of a defender with First Strike, before the melee attack. */
   | "firstStrike"
   | "skill"
@@ -239,6 +239,19 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly unitId: number;
     readonly amount: number;
     readonly hp: number;
+  };
+  /**
+   * Rally N (GDD 5.4): the Rally Unit `unitId` gave its bonus in the Start
+   * Phase. `rallied` is the total Rally bonus of each target after this event.
+   * No event ends the bonus: it ends at `TurnEnded` of the owner and at
+   * `UnitReborn`.
+   */
+  UnitsRallied: {
+    readonly unitId: number;
+    readonly targets: readonly {
+      readonly unitId: number;
+      readonly rallied: number;
+    }[];
   };
   CountdownsTicked: {
     readonly side: Side;

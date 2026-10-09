@@ -108,7 +108,7 @@ const tokenKeywordFields = {
    * this much Attack until the end of the Turn (GDD 5.4).
    */
   rally: Schema.optionalKey(KeywordAmount),
-  regeneration: Schema.optionalKey(KeywordAmount),
+  regenerate: Schema.optionalKey(KeywordAmount),
   /**
    * After attack damage above 0, the enemy Unit becomes Hobbled with this
    * count (GDD 4.7). Hobble is the first Keyword that uses a value for each Rank.
@@ -124,7 +124,7 @@ const tokenKeywordFields = {
    * Squares toward its own Hero (GDD 4.7). A Unit with Wall is never Pushed.
    */
   knockback: Schema.optionalKey(KeywordAmount),
-  retaliation: Schema.optionalKey(Schema.Literal(true)),
+  retaliate: Schema.optionalKey(Schema.Literal(true)),
   /**
    * When this Unit comes from its Creature Card, the enemy card with the
    * lowest Countdown gets this much Countdown (GDD 5.4). One number for all

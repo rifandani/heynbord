@@ -74,7 +74,7 @@ describe("Summon X (GDD 5.4)", () => {
       attack: 1,
       hp: 1,
       maxHp: 1,
-      speed: 1,
+      speed: 2,
       swarm: 1,
       summonedTurn: 1,
     });
@@ -207,7 +207,23 @@ describe("Summon X (GDD 5.4)", () => {
     const token = played.units.find((unit) => unit.source._tag === "Token");
     const { events } = run(played, endTurn);
     expect(eventsOfType(events, "UnitMoved")).toContainEqual(
-      expect.objectContaining({ unitId: token?.id, from: 2, to: 3 })
+      expect.objectContaining({ unitId: token?.id, from: 2, to: 4 })
+    );
+  });
+
+  it("lets the Skeleton move past the friendly Unit in front of it", () => {
+    // A Shooter that has a target stays put, so Speed 1 would leave no Square.
+    const state = emptyBattle();
+    preventRout(state);
+    const skeleton = placeToken(state, {
+      tokenId: "token.skeleton",
+      owner: "player",
+      position: 1,
+    });
+    blocker(state, 0, 2);
+    const { events } = run(state, endTurn);
+    expect(eventsOfType(events, "UnitMoved")).toContainEqual(
+      expect.objectContaining({ unitId: skeleton.id, from: 1, to: 3 })
     );
   });
 

@@ -42,15 +42,6 @@ const PARCHMENT = { main: "#f3e6c4", ink: "#3a2612" } as const;
 
 const CREAM = "#fff6df";
 const HEART_RED = "#ff6b6b";
-/** The HP number of a damaged Unit: the color of a low Hero HP bar. */
-const HP_LOW = "#ff7a6b";
-
-/** The stats of a Unit on the Board, when they differ from its card. */
-export interface LiveStats {
-  readonly attack: number;
-  readonly hp: number;
-  readonly maxHp: number;
-}
 
 /** A badge with a thick bronze rim. */
 const badgeClassName =
@@ -126,13 +117,11 @@ const StatPlate = ({
   glyph,
   color,
   value,
-  valueColor = CREAM,
   className,
 }: {
   readonly glyph: Glyph;
   readonly color: string;
   readonly value: number;
-  readonly valueColor?: string;
   readonly className: string;
 }) => (
   <span
@@ -147,7 +136,7 @@ const StatPlate = ({
     <GlyphIcon glyph={glyph} className="size-[1.05em]" />
     <span
       className="text-[1.2em] leading-none font-black tabular-nums"
-      style={{ color: valueColor }}
+      style={{ color: CREAM }}
     >
       {value}
     </span>
@@ -156,40 +145,31 @@ const StatPlate = ({
 
 /**
  * Attack (with its Damage Type icon) and HP, or the effect icon of a Skill
- * Card. `live` gives the current stats of a Unit. The HP of a damaged Unit has
- * the low HP color. A Wall does not attack, so it shows no Attack.
+ * Card. They are the base values at the Rank, also for a Unit on the Board.
+ * A Wall does not attack, so it shows no Attack.
  */
-const hpColor = (live: LiveStats | undefined, hp: number) =>
-  live && hp < live.maxHp ? HP_LOW : CREAM;
-
 const CreaturePlates = ({
   plates,
-  live,
 }: {
   readonly plates: CreaturePlateValues;
-  readonly live?: LiveStats;
-}) => {
-  const hp = live?.hp ?? plates.hp;
-  return (
-    <>
-      {plates.wall ? null : (
-        <StatPlate
-          glyph={DAMAGE_GLYPH[plates.damageType]}
-          color={DAMAGE_COLORS[plates.damageType]}
-          value={live?.attack ?? plates.attack}
-          className="-left-[0.35em]"
-        />
-      )}
+}) => (
+  <>
+    {plates.wall ? null : (
       <StatPlate
-        glyph="heart"
-        color={HEART_RED}
-        value={hp}
-        valueColor={hpColor(live, hp)}
-        className="-right-[0.35em]"
+        glyph={DAMAGE_GLYPH[plates.damageType]}
+        color={DAMAGE_COLORS[plates.damageType]}
+        value={plates.attack}
+        className="-left-[0.35em]"
       />
-    </>
-  );
-};
+    )}
+    <StatPlate
+      glyph="heart"
+      color={HEART_RED}
+      value={plates.hp}
+      className="-right-[0.35em]"
+    />
+  </>
+);
 
 const effectColor = (card: SkillCardDefinition) => {
   const damageType =
@@ -210,15 +190,9 @@ const SkillPlate = ({ card }: { readonly card: SkillCardDefinition }) => (
   </span>
 );
 
-const BottomPlates = ({
-  face,
-  live,
-}: {
-  readonly face: FrameFace;
-  readonly live?: LiveStats;
-}): ReactNode =>
+const BottomPlates = ({ face }: { readonly face: FrameFace }): ReactNode =>
   face.plates.kind === "creature" ? (
-    <CreaturePlates plates={face.plates} live={live} />
+    <CreaturePlates plates={face.plates} />
   ) : (
     <SkillPlate card={face.plates.card} />
   );
@@ -367,13 +341,11 @@ const tokenFace = (token: TokenDefinition, rank: RankId): FrameFace => ({
 const FrameShell = ({
   face,
   rank,
-  live,
   className,
   children,
 }: {
   readonly face: FrameFace;
   readonly rank: RankId;
-  readonly live?: LiveStats;
   readonly className?: string;
   /** The Countdown badge of a card. A Token has none. */
   readonly children?: ReactNode;
@@ -395,7 +367,7 @@ const FrameShell = ({
     <RankRow rank={rank} />
     {children}
     <Emblem face={face} />
-    <BottomPlates face={face} live={live} />
+    <BottomPlates face={face} />
   </span>
 );
 
@@ -404,31 +376,24 @@ const FrameShell = ({
  * Gems, the emblem, and Attack and HP. The name is not on the frame. All sizes
  * are in `em`, so the font size of the parent sets the size of the card
  * (9em × 12.6em). The frame is decorative: the caller gives the accessible text.
- *
- * With `live`, the card is a Unit on the Board: the plates show its current
- * Attack and HP, and the Countdown is never Ready gold, because the card is
- * not in a Hand.
  */
 export const CardFrame = ({
   cardId,
   rank,
   countdown,
-  live,
   className,
 }: {
   readonly cardId: string;
   readonly rank: RankId;
   readonly countdown: number;
-  readonly live?: LiveStats;
   readonly className?: string;
 }) => (
   <FrameShell
     face={cardFace(getCard(cardId), rank)}
     rank={rank}
-    live={live}
     className={className}
   >
-    <CountdownBadge countdown={countdown} ready={!live && countdown === 0} />
+    <CountdownBadge countdown={countdown} ready={countdown === 0} />
   </FrameShell>
 );
 
@@ -439,18 +404,15 @@ export const CardFrame = ({
 export const TokenFrame = ({
   tokenId,
   rank,
-  live,
   className,
 }: {
   readonly tokenId: TokenId;
   readonly rank: RankId;
-  readonly live?: LiveStats;
   readonly className?: string;
 }) => (
   <FrameShell
     face={tokenFace(getToken(tokenId), rank)}
     rank={rank}
-    live={live}
     className={className}
   />
 );

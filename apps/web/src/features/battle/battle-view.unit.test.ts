@@ -16,6 +16,7 @@ import {
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
+import type { BattleView } from "@/features/battle/battle-view";
 import { applyEvent, viewFromState } from "@/features/battle/battle-view";
 
 /** Runs a Battle with the AI on both sides and returns each step. */
@@ -103,6 +104,11 @@ describe("applyEvent with Sabotage, Trample, Entangle and Rally", () => {
       expect(
         all.some(({ events }) =>
           events.some((event) => event._tag === "CardSabotaged")
+        )
+      ).toBe(true);
+      expect(
+        all.some(({ events }) =>
+          events.some((event) => event._tag === "UnitsRallied")
         )
       ).toBe(true);
     }
@@ -215,6 +221,7 @@ describe("the Graveyard view", () => {
           lane: 0,
           position: 2,
           attack: 3,
+          rallyBonus: 0,
           swarm: 0,
           swarmBonus: 0,
           reborn: false,
@@ -272,6 +279,7 @@ describe("the bonus Armor view", () => {
       lane: 0,
       position: 2,
       attack: 3,
+      rallyBonus: 0,
       swarm: 0,
       swarmBonus: 0,
       reborn: false,
@@ -336,6 +344,7 @@ describe("the Hobbled and Bleeding view", () => {
       lane: 0,
       position: 2,
       attack: 3,
+      rallyBonus: 0,
       swarm: 0,
       swarmBonus: 0,
       reborn: false,
@@ -409,6 +418,7 @@ describe("a push", () => {
       lane: 0,
       position: 5,
       attack: 2,
+      rallyBonus: 0,
       swarm: 0,
       swarmBonus: 0,
       reborn: false,
@@ -518,6 +528,7 @@ describe("the Entangled view", () => {
     lane: 0,
     position: 5,
     attack: 2,
+    rallyBonus: 0,
     swarm: 0,
     swarmBonus: 0,
     reborn: false,
@@ -611,8 +622,8 @@ const snapshot = (
   knockback: 0,
   rally: 0,
   rebirth: false,
-  regeneration: 0,
-  retaliation: false,
+  regenerate: 0,
+  retaliate: false,
   swarm: 0,
   trample: false,
   wall: false,
@@ -719,5 +730,128 @@ describe("the Token, Rebirth and Swarm view", () => {
       bonusArmor: 0,
     });
     expect(view.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);
+  });
+});
+
+/** The source of a Common Card Unit. */
+const cardSource = (
+  instanceId: number,
+  cardId: string
+): UnitSnapshot["source"] => ({
+  _tag: "Card",
+  card: { instanceId, cardId, rank: "common" },
+});
+
+describe("the Rally view", () => {
+  const deck = getStarterDeck("vanguard");
+  const { state } = createBattle({
+    seed: 3,
+    stage: getStage("1-1"),
+    player: {
+      classId: deck.classId,
+      deck: deck.deck,
+      level: 1,
+      gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+    },
+  });
+  const elk = snapshot(30, 0, 9, cardSource(80, "feral.frostElkMatriarch"), {
+    rally: 1,
+  });
+  const recruit = snapshot(31, 0, 10, cardSource(81, "human.militiaRecruit"));
+  const skeleton = snapshot(
+    32,
+    0,
+    11,
+    { _tag: "Token", tokenId: "token.skeleton", rank: "common" },
+    { attack: 1, hp: 1, maxHp: 1, swarm: 1 }
+  );
+  const start = applyEvent(
+    applyEvent(
+      { ...viewFromState(state), units: [] },
+      BattleEvent.UnitSummoned({ unit: elk })
+    ),
+    BattleEvent.UnitSummoned({ unit: recruit })
+  );
+  const rallied = applyEvent(
+    start,
+    BattleEvent.UnitsRallied({
+      unitId: elk.id,
+      targets: [{ unitId: recruit.id, rallied: 1 }],
+    })
+  );
+  const recruitOf = (view: BattleView) =>
+    view.units.find((unit) => unit.id === recruit.id);
+
+  it("sets the Rally bonus and the Attack of each target from UnitsRallied", () => {
+    expect(recruitOf(rallied)).toMatchObject({ attack: 4, rallyBonus: 1 });
+    expect(rallied.units.find((unit) => unit.id === elk.id)).toMatchObject({
+      attack: 3,
+      rallyBonus: 0,
+    });
+    const twice = applyEvent(
+      rallied,
+      BattleEvent.UnitsRallied({
+        unitId: 99,
+        targets: [{ unitId: recruit.id, rallied: 2 }],
+      })
+    );
+    expect(recruitOf(twice)).toMatchObject({ attack: 5, rallyBonus: 2 });
+  });
+
+  it("ends the Rally bonus at TurnEnded of the owner only", () => {
+    const otherSide = applyEvent(
+      rallied,
+      BattleEvent.TurnEnded({ side: "player" })
+    );
+    expect(recruitOf(otherSide)).toMatchObject({ attack: 4, rallyBonus: 1 });
+    const ownSide = applyEvent(
+      rallied,
+      BattleEvent.TurnEnded({ side: "enemy" })
+    );
+    expect(recruitOf(ownSide)).toMatchObject({ attack: 3, rallyBonus: 0 });
+  });
+
+  it("ends the Rally bonus at UnitReborn", () => {
+    const reborn = applyEvent(
+      rallied,
+      BattleEvent.UnitReborn({ unitId: recruit.id, hp: 1 })
+    );
+    expect(recruitOf(reborn)).toMatchObject({ attack: 3, rallyBonus: 0 });
+  });
+
+  it("shows the Rally bonus and the Swarm bonus of one Unit as two parts of its Attack", () => {
+    const view = applyEvent(
+      applyEvent(
+        start,
+        BattleEvent.TokenSummoned({ unit: skeleton, sourceUnitId: elk.id })
+      ),
+      BattleEvent.UnitsRallied({
+        unitId: elk.id,
+        targets: [
+          { unitId: recruit.id, rallied: 1 },
+          { unitId: skeleton.id, rallied: 1 },
+        ],
+      })
+    );
+    expect(view.units.find((unit) => unit.id === skeleton.id)).toMatchObject({
+      attack: 3,
+      rallyBonus: 1,
+      swarmBonus: 1,
+    });
+    const ended = applyEvent(view, BattleEvent.TurnEnded({ side: "enemy" }));
+    expect(ended.units.find((unit) => unit.id === skeleton.id)).toMatchObject({
+      attack: 2,
+      rallyBonus: 0,
+      swarmBonus: 1,
+    });
+  });
+
+  it("reads the Rally bonus from the rules state", () => {
+    const withRally = structuredClone(state);
+    withRally.units = [{ ...recruit, owner: "player", rallied: 2 }];
+    expect(viewFromState(withRally).units[0]).toMatchObject({
+      attack: 5,
+      rallyBonus: 2,
+    });
   });
 });

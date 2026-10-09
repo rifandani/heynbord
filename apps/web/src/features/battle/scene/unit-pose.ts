@@ -28,6 +28,8 @@ const BURNING = new Color(STATUS_TINT.burn);
 const HEALED = new Color("#9dffb4");
 /** The pale spirit light of a Rebirth: the Undead teal, near white. */
 const REBORN = new Color("#c4fbef");
+/** The light of a Rally Unit when it gives its bonus: `ready-gold`. */
+const RALLY = new Color("#ffd75a");
 
 /** The tint amount of a Status with reduced motion. It does not pulse. */
 const STILL_TINT_AMOUNT = 0.35;
@@ -105,6 +107,12 @@ const easeOut = (t: number): number => 1 - (1 - t) ** 3;
 
 /** The part of a Rebirth in which the Unit falls. Then it gets up. */
 const REBORN_FALL = 0.45;
+
+/**
+ * The part of `UnitsRallied` in which the Rally Unit pulses. Then the Attack
+ * number of each target counts up.
+ */
+export const RALLY_PULSE = 0.4;
 
 /**
  * Where a summoned Token starts: the Square of the Unit that summoned it, as
@@ -337,6 +345,36 @@ const healed: EventPose = (unit, event, progress, pose) => {
   pose.tintAmount = 0.6 * (1 - progress);
 };
 
+/**
+ * Rally: the Rally Unit grows and shines gold, then its targets get a soft
+ * gold light while their Attack counts up. With reduced motion, the Rally
+ * Unit does not grow.
+ */
+const rallied = (
+  unit: UnitView,
+  event: BattleEvent,
+  progress: number,
+  pose: Pose,
+  reducedMotion: boolean
+): void => {
+  if (event._tag !== "UnitsRallied") {
+    return;
+  }
+  if (event.unitId === unit.id) {
+    const swell = Math.sin(Math.min(1, progress / RALLY_PULSE) * Math.PI);
+    pose.scale *= reducedMotion ? 1 : 1 + 0.14 * swell;
+    pose.y += reducedMotion ? 0 : 0.12 * swell;
+    pose.tint = RALLY;
+    pose.tintAmount = 0.6 * swell;
+    return;
+  }
+  if (event.targets.some((target) => target.unitId === unit.id)) {
+    const count = Math.max(0, (progress - RALLY_PULSE) / (1 - RALLY_PULSE));
+    pose.tint = RALLY;
+    pose.tintAmount = 0.35 * Math.sin(count * Math.PI);
+  }
+};
+
 const EVENT_POSES: Readonly<Partial<Record<BattleEvent["_tag"], EventPose>>> = {
   UnitMoved: moved,
   UnitPushed: pushed,
@@ -380,6 +418,7 @@ export const poseFor = (
   }
   EVENT_POSES[event._tag]?.(unit, event, progress, pose);
   tokenSummoned(unit, event, progress, pose, origin);
+  rallied(unit, event, progress, pose, reducedMotion);
   if (
     passing &&
     !unit.flying &&

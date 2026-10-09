@@ -53,7 +53,7 @@ export const VALUE_KEYWORDS = [
   "knockback",
   "lastBreath",
   "rally",
-  "regeneration",
+  "regenerate",
   "sabotage",
   "swarm",
 ] as const;
@@ -65,7 +65,7 @@ export const FLAG_KEYWORDS = [
   "pivot",
   "poison",
   "rebirth",
-  "retaliation",
+  "retaliate",
   "trample",
   "unique",
   "wall",
@@ -216,9 +216,14 @@ export const STATUS_TEXT = {
 export interface StatusText {
   /**
    * A Status, or a change that is not a Status: bonus Armor from a Skill
-   * Card, the Swarm bonus, or a Rebirth that the Unit used.
+   * Card, the Rally bonus, the Swarm bonus, or a Rebirth that the Unit used.
    */
-  readonly status: Status | "bonusArmor" | "swarmBonus" | "reborn";
+  readonly status:
+    | Status
+    | "bonusArmor"
+    | "rallyBonus"
+    | "swarmBonus"
+    | "reborn";
   readonly name: TextRef;
   readonly rule: TextRef;
   /** The End Phases that are left, after the rule. */
@@ -235,6 +240,7 @@ type StatusCounts = Pick<
   | "hobbled"
   | "bleeding"
   | "poisoned"
+  | "rallyBonus"
   | "swarmBonus"
   | "reborn"
 >;
@@ -269,9 +275,9 @@ const flagStatus = (
     : [];
 
 /**
- * How a Unit is different from its card now (UI-05): bonus Armor, the Swarm
- * bonus, each Status that it has, then a used Rebirth. Empty for a Unit with
- * none of these.
+ * How a Unit is different from its card now (UI-05): bonus Armor, the Rally
+ * bonus, the Swarm bonus, each Status that it has, then a used Rebirth. Empty
+ * for a Unit with none of these.
  */
 export const unitStatusText = (unit: StatusCounts): StatusText[] => [
   ...(unit.bonusArmor > 0
@@ -286,6 +292,18 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
             key: "battle.status.bonusArmorRule",
             args: { turns: unit.bonusArmorTurns },
           },
+        },
+      ]
+    : []),
+  ...(unit.rallyBonus > 0
+    ? [
+        {
+          status: "rallyBonus" as const,
+          name: {
+            key: "battle.status.rallyBonus",
+            args: { value: unit.rallyBonus },
+          },
+          rule: { key: "battle.status.rallyBonusRule" },
         },
       ]
     : []),

@@ -1,11 +1,5 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
-import {
-  addCopy,
-  autoFill,
-  deckProblems,
-  getCard,
-  removeCopy,
-} from "@workspace/rules";
+import { addCopy, autoFill, deckProblems, removeCopy } from "@workspace/rules";
 import { cn } from "cn";
 import type { FocusEvent } from "react";
 import { useState } from "react";
@@ -157,7 +151,6 @@ const PeekDetails = ({
       <CardDetails
         cardId={peek.cardId}
         rank={peek.rank}
-        countdown={getCard(peek.cardId).countdown}
         panelSide={fromPool ? "right" : "left"}
         onEntry={peek.byKeyboard ? handbook.openAt : undefined}
       />

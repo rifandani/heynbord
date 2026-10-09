@@ -207,6 +207,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       hobbled: 1,
       bleeding: 1,
       poisoned: 3,
+      rallyBonus: 0,
       swarmBonus: 0,
       reborn: false,
     });
@@ -216,6 +217,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
     for (const line of lines) {
       if (
         line.status === "bonusArmor" ||
+        line.status === "rallyBonus" ||
         line.status === "swarmBonus" ||
         line.status === "reborn"
       ) {

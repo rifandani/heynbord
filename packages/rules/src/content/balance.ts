@@ -40,8 +40,8 @@ const keywordPoints = (keywords: TokenKeywords, rank: RankId): number => {
     flagPoints(keywords.poison, 3) +
     stackPoints(valueAtRank(keywords.rally), 3) +
     flagPoints(keywords.rebirth, 5) +
-    stackPoints(valueAtRank(keywords.regeneration), 2) +
-    flagPoints(keywords.retaliation, 4) +
+    stackPoints(valueAtRank(keywords.regenerate), 2) +
+    flagPoints(keywords.retaliate, 4) +
     stackPoints(keywords.sabotage ?? 0, 4) +
     stackPoints(valueAtRank(keywords.swarm), 1) +
     flagPoints(keywords.trample, 3)

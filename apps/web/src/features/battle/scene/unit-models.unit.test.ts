@@ -12,6 +12,7 @@ const unit: UnitView = {
   lane: 0,
   position: 2,
   attack: 2,
+  rallyBonus: 0,
   swarm: 0,
   swarmBonus: 0,
   reborn: false,

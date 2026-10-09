@@ -300,7 +300,7 @@ describe("Start Phase (GDD 4.3)", () => {
     expect(next.sides.player.deck).toHaveLength(1);
   });
 
-  it("heals Regeneration Units up to their maximum HP", () => {
+  it("heals Regenerate Units up to their maximum HP", () => {
     const state = emptyBattle({ activeSide: "enemy" });
     const cleric = placeUnit(state, {
       cardId: "human.dawnCleric",
@@ -613,7 +613,7 @@ describe("Rally (GDD 4.3, 5.4)", () => {
     expect(unitById(next, ally.id)?.rallied).toBe(0);
   });
 
-  it("adds no bonus to Retaliation, because it occurs in the enemy's Turn", () => {
+  it("adds no bonus to Retaliate, because it occurs in the enemy's Turn", () => {
     const state = emptyBattle({ activeSide: "enemy", lanes: 1 });
     placeUnit(state, {
       cardId: "feral.frostElkMatriarch",
@@ -641,7 +641,7 @@ describe("Rally (GDD 4.3, 5.4)", () => {
     const { events } = run(enemyTurn, endTurn);
     expect(
       eventsOfType(events, "DamageDealt")
-        .filter((event) => event.source === "retaliation")
+        .filter((event) => event.source === "retaliate")
         .map((event) => event.amount)
     ).toEqual([4]);
   });
@@ -651,6 +651,82 @@ describe("Rally (GDD 4.3, 5.4)", () => {
     expect(unitById(state, ally.id)?.rallied).toBe(2);
     expect(unitById(state, elk.id)?.rallied).toBe(1);
     expect(unitById(state, second?.id ?? 0)?.rallied).toBe(1);
+  });
+
+  it("sends UnitsRallied with the total bonus of each target", () => {
+    const { events, elk, ally } = rallyBoard();
+    expect(eventsOfType(events, "UnitsRallied")).toEqual([
+      expect.objectContaining({
+        unitId: elk.id,
+        targets: [{ unitId: ally.id, rallied: 1 }],
+      }),
+    ]);
+  });
+
+  it("sends one UnitsRallied for each Rally Unit, and the second one has the added totals", () => {
+    const { events, elk, second, ally } = rallyBoard(true);
+    // The Unit nearer the enemy acts first: `second` at Square 1, then `elk` at Square 0.
+    expect(eventsOfType(events, "UnitsRallied")).toEqual([
+      expect.objectContaining({
+        unitId: second?.id,
+        targets: [
+          { unitId: ally.id, rallied: 1 },
+          { unitId: elk.id, rallied: 1 },
+        ],
+      }),
+      expect.objectContaining({
+        unitId: elk.id,
+        targets: [
+          { unitId: ally.id, rallied: 2 },
+          { unitId: second?.id, rallied: 1 },
+        ],
+      }),
+    ]);
+  });
+
+  it("does not put a Unit with Base Attack 0 in the targets of UnitsRallied", () => {
+    const state = emptyBattle({ activeSide: "enemy", lanes: 1 });
+    const elk = placeUnit(state, {
+      cardId: "feral.frostElkMatriarch",
+      owner: "player",
+      position: 0,
+    });
+    placeUnit(state, {
+      cardId: "feral.boulderTortoise",
+      owner: "player",
+      position: 1,
+    });
+    const recruit = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 2,
+    });
+    preventRout(state);
+    const { events } = run(state, endTurn);
+    expect(eventsOfType(events, "UnitsRallied")).toEqual([
+      expect.objectContaining({
+        unitId: elk.id,
+        targets: [{ unitId: recruit.id, rallied: 1 }],
+      }),
+    ]);
+  });
+
+  it("sends no UnitsRallied for a Rally Unit with no target", () => {
+    const state = emptyBattle({ activeSide: "enemy", lanes: 2 });
+    placeUnit(state, {
+      cardId: "feral.frostElkMatriarch",
+      owner: "player",
+      position: 0,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      lane: 1,
+      position: 2,
+    });
+    preventRout(state);
+    const { events } = run(state, endTurn);
+    expect(eventsOfType(events, "UnitsRallied")).toEqual([]);
   });
 
   it("gives no bonus to a Unit with Base Attack 0, so it does not attack", () => {
@@ -672,8 +748,10 @@ describe("Rally (GDD 4.3, 5.4)", () => {
       attack: 0,
       speed: 0,
     });
-    const { state: rallied } = run(state, endTurn);
+    const { state: rallied, events: startEvents } = run(state, endTurn);
     expect(unitById(rallied, tortoise.id)?.rallied).toBe(0);
+    // The tortoise is the only other Unit in the Lane, so there is no target.
+    expect(eventsOfType(startEvents, "UnitsRallied")).toEqual([]);
     const { events } = run(rallied, endTurn);
     expect(
       eventsOfType(events, "UnitAttacked").filter(
@@ -690,7 +768,7 @@ describe("Rally (GDD 4.3, 5.4)", () => {
 });
 
 describe("Bleeding (GDD 4.7, ADR-0019)", () => {
-  it("halves each heal and rounds down, so Regeneration 2 heals 1 and Regeneration 1 heals 0", () => {
+  it("halves each heal and rounds down, so Regenerate 2 heals 1 and Regenerate 1 heals 0", () => {
     const state = emptyBattle({ activeSide: "enemy" });
     const troll = placeUnit(state, {
       cardId: "feral.caveTroll",

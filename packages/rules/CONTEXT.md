@@ -44,7 +44,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Phase**: One of the 4 parts of a Turn. Only a part of a Turn is a Phase. A part of the Tutorial is a Tutorial Step. _Avoid_: step
 
-**Start Phase**: The first part of a Turn. Regeneration, Rally, Sudden Death, Countdown and the draw occur in it. _Avoid_: Start Step, upkeep, beginning phase
+**Start Phase**: The first part of a Turn. Regenerate, Rally, Sudden Death, Countdown and the draw occur in it. _Avoid_: Start Step, upkeep, beginning phase
 
 **End Phase**: The last part of a Turn. Burn and Poison damage occur in it, and timed effects go down by 1. _Avoid_: End Step, cleanup, end of turn
 
@@ -68,15 +68,15 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Entangled**: The Status from the Entangle Keyword. An Entangled Unit has Speed 0 during its next action, but it can still attack. Entangled then ends. _Avoid_: rooted, snared, slowed
 
-**Poison**: A Keyword. After a Unit with Poison deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. _Avoid_: venom, toxin
+**Poison**: A Keyword. After a Unit with Poison deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliate does not apply Poison. _Avoid_: venom, toxin
 
 **Poisoned**: A Status from the Poison Keyword. The Unit has a stack count. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. _Avoid_: venom, toxin, damage over time
 
-**Hobble N**: A Keyword. After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled for N End Phases. Retaliation does not apply Hobble. _Avoid_: Fatigue, Cripple, Slow
+**Hobble N**: A Keyword. After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled for N End Phases. Retaliate does not apply Hobble. _Avoid_: Fatigue, Cripple, Slow
 
 **Hobbled**: A Status from the Hobble Keyword. A Hobbled Unit has a maximum Speed of 1, after all bonuses. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Hobble keeps the higher count. _Avoid_: fatigued, slowed, crippled
 
-**Bleed N**: A Keyword. After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding for N End Phases. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Wound, Rend, Maim, anti-heal
+**Bleed N**: A Keyword. After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding for N End Phases. Retaliate does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Wound, Rend, Maim, anti-heal
 
 **Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
 
@@ -132,29 +132,33 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Charge N**: A Keyword. A Unit with Charge gets +N Speed in the Turn when it is summoned. N is 1 up to Rare, 2 at Epic and 3 at Legendary. N is never more than 3. _Avoid_: Haste, Rush, Dash, Sprint
 
-**Base Attack**: The Attack of a Unit for its Rank, without bonuses such as Rally or Swarm. A Unit with Base Attack 0 never attacks and never deals Retaliation damage. _Avoid_: printed Attack, raw Attack
+**Base Attack**: The Attack of a Unit for its Rank, without bonuses such as Rally or Swarm. A Unit with Base Attack 0 never attacks and never deals Retaliate damage. _Avoid_: printed Attack, raw Attack
 
-**Rally N**: A Keyword. In its owner's Start Phase, the other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no Rally bonus. _Avoid_: Inspire, Rouse, Battle Cry
+**Rally N**: A Keyword. In its owner's Start Phase, the other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no Rally bonus. The bonus is fixed in the Start Phase: it stays when the Unit or the Rally Unit leaves the Lane, and a Unit that comes into the Lane later does not get it. _Avoid_: Inspire, Rouse, Battle Cry
 
 **Swarm N**: A Keyword. A Unit with Swarm gets +N Attack while another friendly Unit or Token is in the same Lane. More friendly Units do not increase the bonus. _Avoid_: Horde, Pack
 
+**Retaliate**: A Keyword. When a Unit with Retaliate survives a melee attack, it deals damage equal to its Attack to the attacker, with its own Damage Type. This damage is also called Retaliate. It has no Crit, it does not apply Keywords such as Poison, Entangle, Hobble, Bleed or Knockback, and it does not cause another Retaliate. A Frozen Unit does not retaliate. _Avoid_: Retaliation, thorns, counterattack
+
+**Regenerate N**: A Keyword. In its owner's Start Phase, a Unit with Regenerate heals N HP, up to its maximum HP. _Avoid_: Regeneration, regen, heal over time
+
 **Last Breath: X**: A Keyword. X occurs when the Unit leaves the Board. In v1, X deals damage to the nearest enemy Unit ahead in the same Lane, or summons a Token in the Square that the Unit left. _Avoid_: death effect, deathrattle
 
-**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. _Avoid_: revive, resurrect
+**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Armor and its Rally bonus end. _Avoid_: revive, resurrect
 
 **Summon X**: A Keyword. When a Unit with Summon comes onto the Board from its Creature Card, a Token X with the Rank of that Card copy appears next to it. The Token goes to the first empty Square of an open Lane in this order: the Square behind the Unit, then the same Column in the Lane with the lower number, then the same Column in the Lane with the higher number. The Square does not need to be in the Summon Zone. If no Square is empty, no Token appears. A Rebirth return and a Start Unit give no Token. _Avoid_: Spawn, Call, Raise
 
-**Knockback N**: A Keyword for melee Units. After a Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares back, toward its own Hero, in its own Lane. The push stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliation and First Strike do not apply Knockback. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Push, Shove, Repel, Displace
+**Knockback N**: A Keyword for melee Units. After a Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares back, toward its own Hero, in its own Lane. The push stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliate and First Strike do not apply Knockback. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Push, Shove, Repel, Displace
 
 **Pushed**: Moved to another Square by an effect such as Knockback, not by the Unit's own Movement. Speed, Flying, Frozen, Entangled and Hobbled do not change a push. Pushed is not a Status. _Avoid_: knocked back, moved, displaced
 
 **Sabotage N**: A Keyword. When a Unit with Sabotage comes onto the Board from its Creature Card, the Card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready Card is the lowest. If two Cards have the same Countdown, the oldest Card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. N is the same at each Rank. _Avoid_: Delay, Stall, Disrupt
 
-**Trample**: A Keyword for melee Units. When a Unit with Trample kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it, in the same Lane. It never hits a Hero. This second hit is not an attack: it has no Crit and no Retaliation, and it does not apply Keywords such as Poison, Hobble, Bleed or Knockback. It does not Trample again. _Avoid_: Cleave, Overrun, Pierce
+**Trample**: A Keyword for melee Units. When a Unit with Trample kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it, in the same Lane. It never hits a Hero. This second hit is not an attack: it has no Crit and no Retaliate, and it does not apply Keywords such as Poison, Hobble, Bleed or Knockback. It does not Trample again. _Avoid_: Cleave, Overrun, Pierce
 
 **Unique**: A Keyword. While a Unit from a Unique Card is on a Side of the Board, no Hero of that Side can play a copy of that Card, at any Rank. Each Unit from that Card counts, also a Unit that the Stage puts on the Board. Enemy Units do not count. A Deck can still hold more than 1 copy. _Avoid_: Singleton, One-of, Legend rule
 
-**Wall**: A Keyword. A Unit with Wall has no Movement and does not attack, also when an effect gives it Speed or Attack. It never deals Retaliation or First Strike damage. It blocks enemy Units in its Lane, and it is never Pushed. Its Hero can summon it into the Summon Zone and also into Columns 4 and 5 of an open Lane, also past an enemy Unit. Each Card with the Wall Role has Wall, and each Card with Wall has the Wall Role, Speed 0 and Attack 0. _Avoid_: Barricade, Blocker, Taunt
+**Wall**: A Keyword. A Unit with Wall has no Movement and does not attack, also when an effect gives it Speed or Attack. It never deals Retaliate or First Strike damage. It blocks enemy Units in its Lane, and it is never Pushed. Its Hero can summon it into the Summon Zone and also into Columns 4 and 5 of an open Lane, also past an enemy Unit. Each Card with the Wall Role has Wall, and each Card with Wall has the Wall Role, Speed 0 and Attack 0. _Avoid_: Barricade, Blocker, Taunt
 
 **Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a grave hound that fights for the Undead is an Undead card. Orc cards show only orcs, so that no Orc card looks like a Feral card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
 
@@ -297,8 +301,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - GDD 4.5 said "Units never move through other Units", and a friendly Unit blocked a Lane. Now a Unit moves through friendly Units, also a friendly Wall, and only an enemy Unit stops its **Movement** ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)). A push still stops before any Unit, because a push is not Movement.
 - In many games, "bleed" is damage over time. In Heynbord, **Bleeding** does no damage: it only makes heals smaller. Damage over time is **Burn** or **Poisoned** ([ADR-0019](../../docs/adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
 - GDD 4.6 says "a Unit with Attack 0 does not attack", but a bonus could make the Attack 1. The rule uses **Base Attack**, so Rally and Swarm never make a Wall attack.
-- A **Wall** did not move or attack only because it had Speed 0 and Base Attack 0. Then a Speed or Attack buff, also Charge, could make a Wall move or attack. Now the Wall Keyword itself stops Movement, attacks, Retaliation and First Strike. The Speed 0 and Attack 0 of a Wall Card are only a rule for the Card, so that the Power Budget does not count a stat that has no effect.
-- An early plan said that the **Rally N** bonus "applies to attacks and to Retaliation", as for **Swarm N**. But the Rally bonus ends at the end of its owner's **Turn**, and Retaliation and First Strike occur only in the enemy's Turn. Thus Rally never adds to Retaliation or First Strike. Swarm does, because the Swarm bonus has no duration.
+- A **Wall** did not move or attack only because it had Speed 0 and Base Attack 0. Then a Speed or Attack buff, also Charge, could make a Wall move or attack. Now the Wall Keyword itself stops Movement, attacks, Retaliate and First Strike. The Speed 0 and Attack 0 of a Wall Card are only a rule for the Card, so that the Power Budget does not count a stat that has no effect.
+- An early plan said that the **Rally N** bonus "applies to attacks and to Retaliate", as for **Swarm N**. But the Rally bonus ends at the end of its owner's **Turn**, and Retaliate and First Strike occur only in the enemy's Turn. Thus Rally never adds to Retaliate or First Strike. Swarm does, because the Swarm bonus has no duration.
 - Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
 - The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
 - All Cards in a Hand counted down at the same time before. Then the Deck size, not the Countdown, limited the cards that a Hero played. For a short time (issue #21), only 3 "Ticking Cards" counted down, and the other Cards were "Waiting Cards". Players found this slow and hard to track, so it was removed: all Cards in the Hand count down again. Now only the **Countdown Limit** of a Deck makes a long Countdown a real cost ([ADR-0021](../../docs/adr/0021-countdown-is-a-real-cost.md)). The Countdown Limit is not a cost: "cost" stays on the _Avoid_ list of **Countdown**, because a Card is never paid for in a Battle.

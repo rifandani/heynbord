@@ -80,7 +80,7 @@ export const STAGES: readonly StageDefinition[] = [
     },
   },
   {
-    // The Toll Gate: walls with Armor, Pivot and Retaliation.
+    // The Toll Gate: walls with Armor, Pivot and Retaliate.
     id: "1-4",
     region: 1,
     number: 4,

@@ -29,10 +29,10 @@ const openClosedLanes = (ctx: StepContext): void => {
   }
 };
 
-const regenerate = (ctx: StepContext): void => {
+const regenerateUnits = (ctx: StepContext): void => {
   for (const unit of actionOrder(ctx.state, ctx.state.activeSide)) {
-    if (unit.regeneration > 0) {
-      healUnit(ctx, unit, unit.regeneration);
+    if (unit.regenerate > 0) {
+      healUnit(ctx, unit, unit.regenerate);
     }
   }
 };
@@ -41,6 +41,7 @@ const regenerate = (ctx: StepContext): void => {
  * Rally N (GDD 5.4): the other friendly Units in the Lane of a Rally Unit get
  * +N Attack until the end of the Turn. The bonuses of two Rally Units add.
  * A Unit with Base Attack 0 gets no bonus, so it never attacks (GDD 4.6).
+ * Each Rally Unit with 1 or more targets sends `UnitsRallied`.
  */
 const rally = (ctx: StepContext): void => {
   const units = actionOrder(ctx.state, ctx.state.activeSide);
@@ -48,6 +49,7 @@ const rally = (ctx: StepContext): void => {
     if (leader.rally <= 0) {
       continue;
     }
+    const targets: { unitId: number; rallied: number }[] = [];
     for (const unit of units) {
       if (
         unit.id !== leader.id &&
@@ -55,7 +57,11 @@ const rally = (ctx: StepContext): void => {
         unit.attack > 0
       ) {
         unit.rallied += leader.rally;
+        targets.push({ unitId: unit.id, rallied: unit.rallied });
       }
+    }
+    if (targets.length > 0) {
+      ctx.events.push(BattleEvent.UnitsRallied({ unitId: leader.id, targets }));
     }
   }
 };
@@ -131,7 +137,7 @@ export const drawCard = (ctx: StepContext, sideId = ctx.state.activeSide) => {
 
 /**
  * The Start Phase (GDD 4.3). The Play Phase follows. Closed Lanes open first,
- * then Regeneration and Rally.
+ * then Regenerate and Rally.
  */
 export const runStartPhase = (ctx: StepContext): void => {
   ctx.events.push(
@@ -141,7 +147,7 @@ export const runStartPhase = (ctx: StepContext): void => {
     })
   );
   openClosedLanes(ctx);
-  regenerate(ctx);
+  regenerateUnits(ctx);
   rally(ctx);
   suddenDeath(ctx);
   if (isOver(ctx)) {

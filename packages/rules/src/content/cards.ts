@@ -71,7 +71,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 0,
     damageType: "physical",
-    keywords: { retaliation: true },
+    keywords: { retaliate: true },
   },
   {
     kind: "creature",
@@ -85,7 +85,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 2,
     damageType: "holy",
-    keywords: { regeneration: 1 },
+    keywords: { regenerate: 1 },
   },
   {
     kind: "creature",
@@ -127,7 +127,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 0,
     damageType: "physical",
-    keywords: { armor: 2, retaliation: true },
+    keywords: { armor: 2, retaliate: true },
   },
   {
     kind: "creature",
@@ -408,7 +408,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 0,
     damageType: "physical",
-    keywords: { retaliation: true },
+    keywords: { retaliate: true },
   },
   {
     kind: "creature",
@@ -704,7 +704,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 0,
     damageType: "physical",
-    keywords: { regeneration: 1 },
+    keywords: { regenerate: 1 },
   },
   {
     kind: "creature",
@@ -718,7 +718,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 3,
     damageType: "physical",
-    keywords: { regeneration: 1 },
+    keywords: { regenerate: 1 },
   },
   {
     kind: "creature",
@@ -732,7 +732,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 0,
     range: 0,
     damageType: "physical",
-    keywords: { wall: true, armor: 1, regeneration: 2 },
+    keywords: { wall: true, armor: 1, regenerate: 2 },
   },
   {
     kind: "creature",
@@ -760,7 +760,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 0,
     damageType: "physical",
-    keywords: { regeneration: 2 },
+    keywords: { regenerate: 2 },
   },
   {
     kind: "creature",
@@ -844,7 +844,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 0,
     damageType: "physical",
-    keywords: { regeneration: 2, trample: true },
+    keywords: { regenerate: 2, trample: true },
   },
   {
     kind: "creature",
@@ -876,7 +876,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 0,
     damageType: "physical",
-    keywords: { armor: 1, regeneration: 1 },
+    keywords: { armor: 1, regenerate: 1 },
   },
   {
     kind: "creature",
@@ -918,7 +918,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 3,
     damageType: "physical",
-    keywords: { regeneration: 1 },
+    keywords: { regenerate: 1 },
   },
   {
     kind: "creature",
@@ -988,7 +988,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 2,
     damageType: "holy",
-    keywords: { regeneration: 1 },
+    keywords: { regenerate: 1 },
   },
   {
     kind: "creature",
@@ -1002,7 +1002,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 0,
     range: 0,
     damageType: "physical",
-    keywords: { wall: true, regeneration: 1 },
+    keywords: { wall: true, regenerate: 1 },
   },
   {
     kind: "creature",
@@ -1044,7 +1044,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 2,
     damageType: "holy",
-    keywords: { flying: true, regeneration: 1 },
+    keywords: { flying: true, regenerate: 1 },
   },
   {
     kind: "creature",
@@ -1072,7 +1072,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     speed: 1,
     range: 2,
     damageType: "holy",
-    keywords: { unique: true, regeneration: 2 },
+    keywords: { unique: true, regenerate: 2 },
   },
   // Undead: many cheap Units that grow stronger together, come back and bring more.
   {
@@ -1125,7 +1125,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     baseRank: "common",
     countdown: 2,
     attack: 3,
-    hp: 5,
+    hp: 4,
     speed: 1,
     range: 3,
     damageType: "physical",

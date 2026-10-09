@@ -39,12 +39,12 @@ The player is a new Hero. The player travels through three Regions, wins the res
 
 | Race | Concept | Battle identity | Main Keywords |
 | --- | --- | --- | --- |
-| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Knockback, Rally, Retaliation, Wall |
-| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | Regeneration, Poison, Flying |
+| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong armor, Walls and support for allies. | Armor, Knockback, Rally, Retaliate, Wall |
+| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | Regenerate, Poison, Flying |
 | **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | Swarm, Rebirth, Summon, Frost damage |
 | **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them. | Charge, Heroic, Fire damage, Last Breath |
 | **Goblin** | Goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. | Make the enemy plan slower. Cheap, fragile Units that delay enemy cards, set traps and explode. | Sabotage, Hobble, Last Breath, Fire damage |
-| **Feral** | Wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. | Few, huge and slow. High Countdown, high Attack and HP. They run through the enemy front, heal and bring the cold. | Trample, Regeneration, Flying, Frost damage |
+| **Feral** | Wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. | Few, huge and slow. High Countdown, high Attack and HP. They run through the enemy front, heal and bring the cold. | Trample, Regenerate, Flying, Frost damage |
 
 The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, each Race has 1 Creature Card with Pivot, with Base Rank Uncommon.
 
@@ -100,7 +100,7 @@ A **Turn number** counts rounds. In each Turn number, the first player and then 
 Each Turn of the active side has these phases:
 
 1. **Start Phase**
-   1. Start-of-turn effects resolve (for example Regeneration and Rally).
+   1. Start-of-turn effects resolve (for example Regenerate and Rally).
    2. If the Turn number is 20 or more, Sudden Death damage hits each Hero of the active Side that is not Defeated (see 4.10).
    3. The Countdown of each card in each Hand of the active Side goes down by 1. A Ready card stays at 0 ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). The Hand keeps the order in which the cards came into it: a drawn card and a Recalled Skill Card go to the end. A card keeps its place when its Countdown changes, for example by Sabotage. If two cards have the same Countdown, Sabotage uses this order (5.4).
    4. Each Hero of the active Side that is not Defeated draws 1 card, if its Hand has fewer than 8 cards and its Deck is not empty.
@@ -112,7 +112,7 @@ Each Turn of the active side has these phases:
    - The phase ends when the player selects **End Turn**. In PvE there is no Turn timer.
 3. **Resolution Phase**
    - The active side's Units act one at a time. Section 4.4 gives the order.
-   - The other side's Units do not act. They can only use Retaliation and First Strike.
+   - The other side's Units do not act. They can only use Retaliate and First Strike.
 4. **End Phase**
    1. Burn damage hits burning Units of the active side. Poison damage then hits Poisoned Units of the active side: 1 damage per stack, then the Unit loses 1 stack.
    2. Durations go down by 1 (Field Effects and other timed effects). Freeze has no duration: it ends when the Unit skips its action (see 4.4).
@@ -128,13 +128,13 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 3. Each Unit does these steps:
    1. **Movement** (see 4.5)
    2. **Attack** (see 4.6). After a hit on an enemy Unit, the on-hit effects occur in this order: damage, then Poison, then Hobble, then Bleed, then Knockback.
-   3. **Retaliation** by the target, if the target has the Retaliation Keyword (see 4.7). Retaliation occurs after Knockback.
+   3. **Retaliate** by the target, if the target has the Retaliate Keyword (see 4.7). Retaliate occurs after Knockback.
 4. A Unit that you summoned in this Turn also acts in this Turn.
 5. A Unit that another effect creates during the Resolution Phase acts at the end of the Resolution Phase, in the same order.
 6. A Frozen Unit does not move and does not attack. Its Freeze then ends. Until then, it also does not retaliate and does not use First Strike. An attack on a Frozen Unit does not end its Freeze.
 7. An Entangled Unit has Speed 0 during its next action, but it can attack. Its Entangled Status then ends. If a Unit is Frozen and Entangled, the skipped action ends both Statuses.
 8. A Hobbled Unit has a maximum Speed of 1 during its action, after all bonuses. The count does not go down when the Unit acts. It goes down in the End Phase of its owner.
-9. A Bleeding Unit gets half of each heal, rounded down. For example, Regeneration 1 heals 0 and Regeneration 2 heals 1. The count goes down in the End Phase of its owner, not when the Unit acts.
+9. A Bleeding Unit gets half of each heal, rounded down. For example, Regenerate 1 heals 0 and Regenerate 2 heals 1. The count goes down in the End Phase of its owner, not when the Unit acts.
 
 ### 4.5 Movement
 
@@ -159,7 +159,7 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
   2. An enemy Unit next to it. The lower Lane number comes first.
   3. The enemy Unit directly in front of it.
   4. The enemy Hero, if the Unit is in its last Column.
-- A Pivot attack is a melee attack. Retaliation and First Strike apply to it.
+- A Pivot attack is a melee attack. Retaliate and First Strike apply to it.
 - **Ranged Unit:** It has a **Range** (number of Squares). It attacks the nearest enemy Unit in front of it, in the same Lane and in its Range. If no enemy Unit is in Range, and the enemy Hero is in Range, it attacks the enemy Hero. The enemy Hero is 1 Square past the last Column.
 - A Unit with **Base Attack** 0 does not attack. Base Attack is the Attack of the Unit for its Rank, without bonuses. Bonuses such as Rally do not change this.
 - A Unit with **Wall** does not attack, also when an effect gives it Attack (see 5.4).
@@ -190,8 +190,8 @@ To calculate damage, do these steps in this order:
 - The Gear of each Hero gives the Crit and Block chances (see 7.3). A Unit uses the Gear of the Hero that summoned it.
 - Heroes cannot Block.
 - All rolls use the Battle seed, so a replay gives the same result.
-- **Retaliation:** When a Unit with Retaliation survives a melee attack, it deals damage equal to its Attack to the attacker. Retaliation does not use Crit, and it does not start another Retaliation. A Unit with Base Attack 0 does not retaliate.
-  - It uses the Damage Type of the Unit with Retaliation, so it can give a Status.
+- **Retaliate:** When a Unit with Retaliate survives a melee attack, it deals damage equal to its Attack to the attacker. Retaliate does not use Crit, and it does not start another Retaliate. A Unit with Base Attack 0 does not retaliate.
+  - It uses the Damage Type of the Unit with Retaliate, so it can give a Status.
   - The Armor of the attacker reduces it, and the attacker's Hero can Block it.
   - It occurs also when the attack did 0 damage.
   - It does not occur against a Ranged attack, or when the Unit is Frozen (see 4.4).
@@ -199,10 +199,10 @@ To calculate damage, do these steps in this order:
   - It uses the Damage Type of the Unit with First Strike. It does not use Crit. The Armor of the attacker reduces it, and the attacker's Hero can Block it.
   - It does not occur against a Ranged attack, or when the Unit with First Strike is Frozen (see 4.4). A Unit with Base Attack 0 does not use it.
   - Damage above 0 applies Poison, Hobble, Bleed and Entangle, but not Knockback. An attacker that First Strike Entangles has Speed 0 in its next action, not in the action that it does now.
-- **Entangle:** After a Unit with Entangle deals attack damage above 0 to an enemy Unit, that enemy becomes Entangled. A new Entangle does not stack or extend the Status. Retaliation does not apply Entangle.
-- **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliation does not apply Hobble. An attack on a Hero does not apply Hobble.
-- **Bleed N:** After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down: Regeneration, a Skill Card heal and each other heal. Bleeding does no damage. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Bleed keeps the higher count. It does not add to the old count. Retaliation does not apply Bleed. First Strike damage above 0 applies Bleed. An attack on a Hero does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary.
-- **Knockback N:** After a melee Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. A push is not Movement and not a Status. The push stops before the first Square that holds any Unit, and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. The push ignores Speed, Charge, Frozen, Entangled, Hobbled and Flying. The pushed Unit keeps its Statuses. Retaliation and First Strike do not apply Knockback. An attack on a Hero does not apply Knockback. A Unit that dies from the hit is not Pushed. If the Unit does not change Square, there is no push.
+- **Entangle:** After a Unit with Entangle deals attack damage above 0 to an enemy Unit, that enemy becomes Entangled. A new Entangle does not stack or extend the Status. Retaliate does not apply Entangle.
+- **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliate does not apply Hobble. An attack on a Hero does not apply Hobble.
+- **Bleed N:** After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down: Regenerate, a Skill Card heal and each other heal. Bleeding does no damage. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Bleed keeps the higher count. It does not add to the old count. Retaliate does not apply Bleed. First Strike damage above 0 applies Bleed. An attack on a Hero does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary.
+- **Knockback N:** After a melee Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. A push is not Movement and not a Status. The push stops before the first Square that holds any Unit, and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. The push ignores Speed, Charge, Frozen, Entangled, Hobbled and Flying. The pushed Unit keeps its Statuses. Retaliate and First Strike do not apply Knockback. An attack on a Hero does not apply Knockback. A Unit that dies from the hit is not Pushed. If the Unit does not change Square, there is no push.
 - **Trample:** When a melee Unit with Trample kills an enemy Unit with attack damage, the damage that is left goes to the enemy Unit in the next Square behind the killed Unit, in the same Lane. The damage that is left is the final damage of the hit (after Armor, Crit and Block) minus the HP that the killed Unit had. If that Square is empty, the damage is lost. It never hits a Hero. The second hit has the Damage Type of the Trample Unit, so Fire and Frost still give their Status. The Armor of the second Unit reduces it, and its Hero can Block it. It does not roll Crit. The second hit is not an attack: the second Unit does not Retaliate, and Poison, Hobble, Bleed and Knockback do not apply. It does not Trample again. The Last Breath of the killed Unit still occurs by the normal rules.
 
 ### 4.8 Skill Cards and Recall
@@ -215,7 +215,7 @@ To calculate damage, do these steps in this order:
 
 - When a Unit from a Creature Card has 0 HP, it leaves the Board and goes to its owner's Graveyard. A Token disappears instead.
 - Last Breath effects resolve when the Unit leaves the Board. A v1 Last Breath either deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that the Unit left.
-- **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth.
+- **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Armor and its Rally bonus end.
 - **Tokens** (Units that effects create) use the Rank of the Card or effect that made them. They do not go to the Graveyard. They disappear.
 
 ### 4.10 Win, loss and Sudden Death
@@ -312,27 +312,27 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | Keyword | Rule |
 | --- | --- |
 | **Armor N** | Reduces damage to this Unit by N. It does not reduce Holy damage. |
-| **Bleed N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Bleed keeps the higher count. Retaliation does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. See 4.7. |
+| **Bleed N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Bleed keeps the higher count. Retaliate does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. See 4.7. |
 | **Charge N** | +N Speed in the Turn when you summon this Unit. N is 1 up to Rare, 2 at Epic and 3 at Legendary. N is never more than 3. |
 | **Entangle** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Entangled. An Entangled Unit has Speed 0 during its next action, but it can attack. Entangled then ends. A new Entangle does not stack or extend it. Only a Ranged Unit with Base Rank Epic or higher has Entangle (ADR-0022). |
 | **First Strike** | See 4.7. |
 | **Flying** | Moves over other Units. See 4.5. |
 | **Heroic N** | +N damage when this Unit attacks a Hero. |
-| **Hobble N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Hobble keeps the higher count. Retaliation does not apply Hobble. |
-| **Knockback N** | Melee only. After this Unit deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. The push is not Movement. It stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliation does not apply Knockback. See 4.5 and 4.7. |
+| **Hobble N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Hobble keeps the higher count. Retaliate does not apply Hobble. |
+| **Knockback N** | Melee only. After this Unit deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. The push is not Movement. It stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliate does not apply Knockback. See 4.5 and 4.7. |
 | **Last Breath: X** | X occurs when this Unit leaves the Board. In v1, X deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that this Unit left. |
 | **Pivot** | Melee only. This Unit can attack an enemy Unit directly behind it or next to it, and it attacks them before the Unit in front. See 4.5 and 4.6. |
-| **Poison** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliation does not apply Poison. In each End Phase of the Poisoned Unit's owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. |
-| **Rally N** | In your Start Phase, other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus. The bonus does not apply to Retaliation or First Strike, because they occur in the enemy's Turn. |
+| **Poison** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliate does not apply Poison. In each End Phase of the Poisoned Unit's owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. |
+| **Rally N** | In your Start Phase, other friendly Units in the same Lane get +N Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus. The bonus is fixed in the Start Phase: it stays when the Unit or the Rally Unit leaves the Lane, and a Unit that comes into the Lane later does not get it. The bonus does not apply to Retaliate or First Strike, because they occur in the enemy's Turn. |
 | **Rebirth** | See 4.9. |
-| **Regeneration N** | In your Start Phase, this Unit heals N HP. It cannot go above its maximum HP. |
-| **Retaliation** | See 4.7. |
+| **Regenerate N** | In your Start Phase, this Unit heals N HP. It cannot go above its maximum HP. |
+| **Retaliate** | See 4.7. |
 | **Sabotage N** | When this Unit comes onto the Board from its Creature Card, the card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready card (Countdown 0) is the lowest. If two cards have the same Countdown, the oldest card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. If the Hand is empty, nothing occurs. N is the same at each Rank, and it is at most 2. |
 | **Summon X** | When you summon this Unit, a Token X of the same Rank also appears in an empty Square next to it (behind it, or the same Column in a next Lane). If no Square is empty, no Token appears. |
-| **Swarm N** | While another friendly Unit or Token is in the same Lane, this Unit has +N Attack. More friendly Units do not increase the bonus. The bonus applies to attacks and Retaliation. |
+| **Swarm N** | While another friendly Unit or Token is in the same Lane, this Unit has +N Attack. More friendly Units do not increase the bonus. The bonus applies to attacks and Retaliate. |
 | **Trample** | Melee only. When this Unit kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it. See 4.7. |
 | **Unique** | Only one copy of this card can be on your side of the Board. While a Unit from this card is on your Side of the Board, no Hero of your Side can play a copy of this card, at any Rank. The card stays in the Hand. A Unit that the Stage puts on the Board also counts, and enemy Units do not count. A Deck can still hold more than 1 copy. |
-| **Wall** | It can't move and can't attack, also when an effect gives it Speed or Attack. It never deals Retaliation or First Strike damage. A Wall card has Speed 0 and Attack 0. It blocks its Lane for enemy Units. Friendly Units move through it. It can be summoned into Columns 1 to 5, not only into the Summon Zone (see 4.1). |
+| **Wall** | It can't move and can't attack, also when an effect gives it Speed or Attack. It never deals Retaliate or First Strike damage. A Wall card has Speed 0 and Attack 0. It blocks its Lane for enemy Units. Friendly Units move through it. It can be summoned into Columns 1 to 5, not only into the Summon Zone (see 4.1). |
 
 New Keywords must go through the balance process in section 13.
 
@@ -361,7 +361,7 @@ Each Creature Card has a role. Use the role to balance the card and to explain i
 | Striker | High Attack, low HP. Kills Units. | 1. An Orc melee Striker can have 2 |
 | Runner | High Speed, and sometimes Flying. Damages the Hero. | 2 to 4 |
 | Shooter | Ranged with Range 3. Stays back and attacks. | 1 |
-| Support | Rally, Regeneration or Summon. Makes other Units better. Melee, or Ranged with Range 2. | 1 |
+| Support | Rally, Regenerate or Summon. Makes other Units better. Melee, or Ranged with Range 2. | 1 |
 | Wall | Blocks a Lane for enemy Units. | 0 |
 
 The Role sets the Speed ([ADR-0024](../adr/0024-speed-1-is-the-default.md)):
@@ -713,7 +713,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - Start formula: `power = Attack × 2 + HP + Speed × 2 + Keyword points`.
    - Attack, HP and the Keyword values count at the Base Rank of the Card. The card data gives the Common Attack and HP. Use them with the Rank scale of the Base Rank (5.3). For example, an Epic card with Common Attack 4 counts Attack 7 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)).
    - Add Range and Damage Type points: Range = its value, Fire = 3, Frost = 3 and Holy = 2.
-   - Start Keyword points: Armor N = N × 3, Bleed N = N × 1, Charge N = N × 1, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regeneration N = N × 2, Retaliation = 4, Sabotage N = N × 4, Swarm N = N × 1 and Trample = 3.
+   - Start Keyword points: Armor N = N × 3, Bleed N = N × 1, Charge N = N × 1, Entangle = 2, First Strike = 4, Flying = 4, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regenerate N = N × 2, Retaliate = 4, Sabotage N = N × 4, Swarm N = N × 1 and Trample = 3.
    - Summon and a Last Breath that summons use 50% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.

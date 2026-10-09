@@ -21,6 +21,7 @@ describe("cardGlyph", () => {
     expect(classGlyph("warrior")).toBe("warhelm");
     expect(classGlyph("mage")).toBe("hat");
     expect(raceGlyph("elf")).toBe("leaf");
+    expect(raceGlyph("undead")).toBe("skull");
     expect(raceGlyph("orc")).toBe("tusks");
     expect(raceGlyph("goblin")).toBe("cog");
     expect(raceGlyph("feral")).toBe("slashes");

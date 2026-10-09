@@ -209,11 +209,7 @@ const GraveyardPile = ({
     <div className="relative w-[9em] shrink-0">
       {inspected ? (
         <div className="pointer-events-none absolute right-0 bottom-full z-40 mb-16">
-          <CardDetails
-            cardId={top.cardId}
-            rank={top.rank}
-            countdown={countdown}
-          />
+          <CardDetails cardId={top.cardId} rank={top.rank} />
         </div>
       ) : null}
       <button
@@ -277,12 +273,7 @@ const InspectedCard = ({
   readonly card: HandCardView | undefined;
 }) =>
   card?.cardId && card.rank ? (
-    <CardDetails
-      cardId={card.cardId}
-      rank={card.rank}
-      countdown={card.countdown}
-      blocked={card.blocked}
-    />
+    <CardDetails cardId={card.cardId} rank={card.rank} blocked={card.blocked} />
   ) : null;
 
 const HandHint = ({

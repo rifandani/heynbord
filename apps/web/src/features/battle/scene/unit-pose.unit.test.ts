@@ -11,6 +11,7 @@ import {
   emptyPose,
   passesFriendlyUnit,
   poseFor,
+  RALLY_PULSE,
   summonOrigin,
 } from "@/features/battle/scene/unit-pose";
 
@@ -22,6 +23,7 @@ const unit: UnitView = {
   lane: 0,
   position: 2,
   attack: 3,
+  rallyBonus: 0,
   swarm: 0,
   swarmBonus: 0,
   reborn: false,
@@ -320,6 +322,28 @@ describe("poseFor in an event", () => {
     expect(end.z).toBeCloseTo(0);
     expect(end.scale).toBeCloseTo(1);
     expect(summonOrigin(summoner, current, 3)).toBeNull();
+  });
+
+  it("pulses the Rally Unit gold, then lights its targets while their Attack counts up", () => {
+    const rally = BattleEvent.UnitsRallied({
+      unitId: unit.id,
+      targets: [{ unitId: 9, rallied: 1 }],
+    });
+    const pulse = pose(rally, RALLY_PULSE / 2);
+    expect(pulse.scale).toBeCloseTo(1.14);
+    expect(color(pulse.tint)).toBe("ffd75a");
+    expect(pulse.tintAmount).toBeCloseTo(0.6);
+    expect(pose(rally, RALLY_PULSE).scale).toBeCloseTo(1);
+    const target = { ...unit, id: 9 };
+    expect(pose(rally, RALLY_PULSE / 2, target).tintAmount).toBe(0);
+    const counting = pose(rally, (1 + RALLY_PULSE) / 2, target);
+    expect(color(counting.tint)).toBe("ffd75a");
+    expect(counting.tintAmount).toBeCloseTo(0.35);
+    expect(pose(rally, 0.5, { ...unit, id: 10 }).tint).toBeNull();
+    const calm = emptyPose();
+    poseFor(unit, rally, RALLY_PULSE / 2, 0, calm, { reducedMotion: true });
+    expect(calm.scale).toBe(1);
+    expect(color(calm.tint)).toBe("ffd75a");
   });
 
   it("shows a skipped Unit frozen and a healed Unit green", () => {

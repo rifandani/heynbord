@@ -37,11 +37,16 @@ export interface UnitView {
   readonly lane: number;
   readonly position: number;
   /**
-   * The Attack that the Unit hits with now: its Attack and the Swarm bonus.
-   * The rules do not store the Swarm bonus (GDD 5.4), so the view calculates
-   * it after each event.
+   * The Attack that the Unit hits with now: its Attack, the Rally bonus and
+   * the Swarm bonus. The rules do not store the Swarm bonus (GDD 5.4), so the
+   * view calculates it after each event.
    */
   readonly attack: number;
+  /**
+   * The part of `attack` that comes from Rally in this Turn (GDD 5.4).
+   * `UnitsRallied` sets it, and `TurnEnded` of the owner and `UnitReborn` end it.
+   */
+  readonly rallyBonus: number;
   /** Swarm for the Rank of this Unit. 0 is none. */
   readonly swarm: number;
   /** The part of `attack` that comes from Swarm now: 0 or `swarm`. */
@@ -133,8 +138,8 @@ const hasRebirth = (source: UnitSourceView): boolean => {
 };
 
 /**
- * The view of a Unit. `attack` has no Swarm bonus here: `markSwarm` adds it
- * when the view has all its Units.
+ * The view of a Unit. `attack` has the Rally bonus but no Swarm bonus here:
+ * `markSwarm` adds it when the view has all its Units.
  */
 const unitView = (unit: Readonly<UnitState>): UnitView => {
   const source = sourceView(unit);
@@ -145,7 +150,8 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     rank: unitRank(unit.source),
     lane: unit.lane,
     position: unit.position,
-    attack: unit.attack,
+    attack: unit.attack + unit.rallied,
+    rallyBonus: unit.rallied,
     swarm: unit.swarm,
     swarmBonus: 0,
     reborn: !unit.rebirth && hasRebirth(source),
@@ -255,7 +261,7 @@ const markBlockedCards = (view: BattleView): BattleView => {
  * Lane. A Unit with Attack 0 gets no bonus.
  */
 const swarmBonusOf = (units: readonly UnitView[], unit: UnitView): number => {
-  const attack = unit.attack - unit.swarmBonus;
+  const attack = unit.attack - unit.swarmBonus - unit.rallyBonus;
   return unit.swarm > 0 &&
     attack > 0 &&
     units.some(
@@ -400,6 +406,16 @@ const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
   }
 };
 
+/** Sets the Rally bonus of a Unit, and its Attack with it. */
+const withRallyBonus = (unit: UnitView, rallyBonus: number): UnitView =>
+  rallyBonus === unit.rallyBonus
+    ? unit
+    : {
+        ...unit,
+        attack: unit.attack - unit.rallyBonus + rallyBonus,
+        rallyBonus,
+      };
+
 /** The events that put a Unit on the Board, bring it back, or take it off. */
 const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
   switch (event._tag) {
@@ -409,9 +425,9 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
     }
     case "UnitReborn": {
       // Rebirth (GDD 4.9): the Unit stays in its Square with its new HP, and
-      // all its Statuses and its bonus Armor end.
+      // all its Statuses, its Rally bonus and its bonus Armor end.
       return updateUnit(view, event.unitId, (unit) => ({
-        ...unit,
+        ...withRallyBonus(unit, 0),
         hp: event.hp,
         reborn: true,
         burn: 0,
@@ -474,6 +490,15 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         hp: event.hp,
       }));
     }
+    case "UnitsRallied": {
+      return event.targets.reduce(
+        (next, target) =>
+          updateUnit(next, target.unitId, (unit) =>
+            withRallyBonus(unit, target.rallied)
+          ),
+        view
+      );
+    }
     case "DamageDealt": {
       return applyDamage(view, event);
     }
@@ -533,14 +558,16 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
       }));
     }
     case "TurnEnded": {
-      // The End Phase lowers the Hobbled and Bleeding counts of this Side, and
-      // the bonus Armor Turns of the other side's Units. Each Unit of this Side
-      // had its action, so none of them is Entangled now: a Unit with no move
-      // and no attack has no event of its own that ends Entangled.
+      // The End Phase lowers the Hobbled and Bleeding counts of this Side,
+      // ends its Rally bonus, and lowers the bonus Armor Turns of the other
+      // side's Units. Each Unit of this Side had its action, so none of them
+      // is Entangled now: a Unit with no move and no attack has no event of
+      // its own that ends Entangled.
       return {
         ...view,
-        units: view.units.map((unit) => {
-          const own = unit.owner === event.side;
+        units: view.units.map((current) => {
+          const own = current.owner === event.side;
+          const unit = own ? withRallyBonus(current, 0) : current;
           const hobbled = own ? Math.max(unit.hobbled - 1, 0) : unit.hobbled;
           const bleeding = own ? Math.max(unit.bleeding - 1, 0) : unit.bleeding;
           const entangled = own ? false : unit.entangled;

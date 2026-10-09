@@ -84,7 +84,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.4 Halberdier
 
-`human.halberdier` · Striker · Common · Countdown 3 · Attack 4 · HP 6 · Melee · Physical · Retaliation
+`human.halberdier` · Striker · Common · Countdown 3 · Attack 4 · HP 6 · Melee · Physical · Retaliate
 
 > Touch the banner and you touch the blade.
 
@@ -93,14 +93,14 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 | Subject | A veteran man soldier with a grey mustache and a stern face. |
 | Pose | A guard pose. He holds a halberd ready to strike back, and a small banner hangs from the halberd. |
 | Props | A halberd with a small blue and gold banner below the blade, a breastplate, a padded coat. |
-| Gameplay cues | Retaliation: a ready, defensive pose that says "come closer and I hit back". |
+| Gameplay cues | Retaliate: a ready, defensive pose that says "come closer and I hit back". |
 | Silhouette hook | The tall halberd blade with the banner. |
 | Humor note | He protects the banner as if it is his child. |
 | Setting | A town square with banners. |
 
 ### 2.5 Dawn Cleric
 
-`human.dawnCleric` · Support · Uncommon · Countdown 3 · Attack 2 · HP 7 · Range 2 · Holy · Regeneration 1
+`human.dawnCleric` · Support · Uncommon · Countdown 3 · Attack 2 · HP 7 · Range 2 · Holy · Regenerate 1
 
 > She sings at sunrise. Nobody asked her to.
 
@@ -109,7 +109,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 | Subject | A cheerful round-faced woman priest. |
 | Pose | She sings with her mouth wide open and one arm up. Her other hand holds a staff. |
 | Props | A staff with a sun disc on top, white and blue robes with a gold trim, a small hymn book on a cord. |
-| Gameplay cues | Holy damage: a soft gold-yellow glow from the sun disc. Regeneration: small gold sparks around her. Uncommon: gold trim on the robe. |
+| Gameplay cues | Holy damage: a soft gold-yellow glow from the sun disc. Regenerate: small gold sparks around her. Uncommon: gold trim on the robe. |
 | Silhouette hook | The round sun disc on the staff and the raised arm. |
 | Humor note | She sings very loudly. A small bird near her covers its head with a wing. |
 | Setting | A riverbank at sunrise. |
@@ -148,7 +148,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.8 Iron Bulwark
 
-`human.ironBulwark` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 6 · Melee · Physical · Armor 2 · Retaliation
+`human.ironBulwark` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 6 · Melee · Physical · Armor 2 · Retaliate
 
 > A wall that complains about the weather.
 
@@ -159,7 +159,7 @@ Purpose: the archetypal Human Epic and strongest defensive Creature Card.
 | Subject | An old stout-folk man: short, very broad and strong. A grey beard comes out under his helmet. |
 | Pose | He stands firm behind a tower shield and frowns up at a small rain cloud. |
 | Props | Very heavy full plate with gold trim, a tall tower shield with short spikes, a heavy mace. A small rain cloud rains only on him. |
-| Gameplay cues | Armor 2: the heaviest armor in the set. Retaliation: spikes on the shield. Epic: a heroic scene with dramatic composition, and the most ornate human armor in the set. |
+| Gameplay cues | Armor 2: the heaviest armor in the set. Retaliate: spikes on the shield. Epic: a heroic scene with dramatic composition, and the most ornate human armor in the set. |
 | Silhouette hook | A wide block shape: the tower shield and the very broad body. |
 | Humor note | He is like a wall, but he complains about a small rain cloud. |
 | Setting | A stone town wall in light rain. |
@@ -519,7 +519,7 @@ Purpose: a ranged Fire threat. Power 26, budget 24, deviation +8.3%.
 
 ### 3.13 Mesa Pit-Fighter
 
-`orc.mesaPitFighter` · Frontliner · Rare · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Retaliation
+`orc.mesaPitFighter` · Frontliner · Rare · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Retaliate
 
 > Hit her once. That is how counting lessons start.
 
@@ -530,7 +530,7 @@ Purpose: an aggressive Frontliner that protects through threat. Power 24, budget
 | Subject | A tall orc woman with a broken-tusk grin. |
 | Pose | She advances to the right, absorbs a hit, and the counter-punch goes to the right. |
 | Props | Iron gauntlets, red pit sash and trophy bells. |
-| Gameplay cues | The counter-swing shows Retaliation. |
+| Gameplay cues | The counter-swing shows Retaliate. |
 | Silhouette hook | Large hooked fists. |
 | Humor note | Tally marks count her attackers. |
 | Setting | A red-stone fighting pit. |
@@ -577,7 +577,7 @@ Identity: patient forest people and plant spirits. They control movement from ra
 
 ### 4.1 Rootbound Guard
 
-`elf.rootboundGuard` · Frontliner · Common · Countdown 3 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 1 · Regeneration 1
+`elf.rootboundGuard` · Frontliner · Common · Countdown 3 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 1 · Regenerate 1
 
 > He has held this path since it was somewhere else.
 
@@ -588,7 +588,7 @@ Purpose: an Elf Lane anchor. Power 20, budget 21, deviation -4.8%.
 | Subject | A broad old plant guardian in bark armor. |
 | Pose | It stands rooted behind a leaf shield. |
 | Props | Leaf shield, branch spear and boot-shaped training post. |
-| Gameplay cues | Roots in the ground show Regeneration; bark cuirass shows Armor. |
+| Gameplay cues | Roots in the ground show Regenerate; bark cuirass shows Armor. |
 | Silhouette hook | Square trunk and broad shield. |
 | Humor note | A snail uses it as a milestone. |
 | Setting | An ancient forest path. |
@@ -631,7 +631,7 @@ Purpose: cheap Flying Hero pressure. Power 17, budget 18, deviation -5.6%.
 
 ### 4.4 Mosspitcher Lookout
 
-`elf.mosspitcherLookout` · Shooter · Common · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 3 · Physical · Regeneration 1
+`elf.mosspitcherLookout` · Shooter · Common · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 3 · Physical · Regenerate 1
 
 > He can hear a boot step. He cannot hear advice.
 
@@ -642,7 +642,7 @@ Purpose: a durable Elf Shooter that heals. Power 19, budget 21, deviation -9.5%.
 | Subject | A squat pitcher-plant spirit with a mossy body. No bow. |
 | Pose | He leans forward and spits a sticky moss ball in a high arc to the right. His root toes spread flat on the planks to feel for boot steps. |
 | Props | Pitcher-shaped body with a leaf lid like a hat, moss coat, root toes and a small cluster of moss balls. |
-| Gameplay cues | The moss coat grows back: Regeneration. The high arc of the moss ball shows Range. |
+| Gameplay cues | The moss coat grows back: Regenerate. The high arc of the moss ball shows Range. |
 | Silhouette hook | A tall pitcher body with a tilted lid. |
 | Humor note | A small bird sits on his lid and gives advice. He holds the lid shut on that side. |
 | Setting | A high root platform. |
@@ -721,7 +721,7 @@ Purpose: reliable ranged Poison. Power 20, budget 21, deviation -4.8%.
 
 ### 4.9 Dewkeeper
 
-`elf.dewkeeper` · Support · Uncommon · Countdown 3 · Attack 2 · HP 8 · Speed 1 · Range 2 · Holy · Regeneration 1
+`elf.dewkeeper` · Support · Uncommon · Countdown 3 · Attack 2 · HP 8 · Speed 1 · Range 2 · Holy · Regenerate 1
 
 > She collects morning dew. Afternoon dew is paperwork.
 
@@ -739,7 +739,7 @@ Purpose: a durable Holy support. Power 22, budget 21, deviation +4.8%.
 
 ### 4.10 Bramble Nest
 
-`elf.brambleNest` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 16 · Speed 0 · Melee · Physical · Wall · Regeneration 1
+`elf.brambleNest` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 16 · Speed 0 · Melee · Physical · Wall · Regenerate 1
 
 > It is not blocking the path. It is the path now.
 
@@ -750,7 +750,7 @@ Purpose: a Wall that grows back. Power 21, budget 21, deviation 0%.
 | Subject | A dense living bramble arch. |
 | Pose | It fills an old forest road. |
 | Props | Thorn arch, seed pods and amber ribbons. |
-| Gameplay cues | Fresh shoots closing a cut show Regeneration. |
+| Gameplay cues | Fresh shoots closing a cut show Regenerate. |
 | Silhouette hook | Wide fixed arch. |
 | Humor note | A direction sign points into the hedge. |
 | Setting | An old forest road. |
@@ -793,7 +793,7 @@ Purpose: durable ranged Poison. Power 26, budget 24, deviation +8.3%.
 
 ### 4.13 Seedwind Shepherd
 
-`elf.seedwindShepherd` · Support · Rare · Countdown 4 · Attack 1 · HP 7 · Speed 1 · Range 2 · Holy · Flying · Regeneration 1
+`elf.seedwindShepherd` · Support · Rare · Countdown 4 · Attack 1 · HP 7 · Speed 1 · Range 2 · Holy · Flying · Regenerate 1
 
 > Every seed has a destination. He stays to water them.
 
@@ -804,7 +804,7 @@ Purpose: a durable Flying healer. Power 24, budget 24, deviation 0%.
 | Subject | An elf man seed shepherd. |
 | Pose | He floats under a seed sail. |
 | Props | Seed sail, ornate staff, gold-trim cloak and tiny baton. |
-| Gameplay cues | Holy dew closing a cut shows Regeneration. |
+| Gameplay cues | Holy dew closing a cut shows Regenerate. |
 | Silhouette hook | Broad sail and staff. |
 | Humor note | He directs seeds like road traffic. |
 | Setting | A canopy wind corridor. |
@@ -829,7 +829,7 @@ Purpose: the archetypal Elf Epic: approach denial, and the one Elf card with Ent
 
 ### 4.15 Lethiel, First Gardener (draft)
 
-`elf.lethielFirstGardener` · Support · Epic · Countdown 4 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Unique · Regeneration 2
+`elf.lethielFirstGardener` · Support · Epic · Countdown 4 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Unique · Regenerate 2
 
 > The forest grew wild. Lethiel called it adequate.
 
@@ -840,7 +840,7 @@ Purpose: the named Elf Epic and a durable healer. Power 25, budget 24, deviation
 | Subject | An ancient elf gardener. |
 | Pose | Lethiel touches the ground with a luminous staff. |
 | Props | Leaf mantle, seed crown, silver pruning hook and tiny ruler. |
-| Gameplay cues | Holy light closing a split in the bark shows Regeneration. |
+| Gameplay cues | Holy light closing a split in the bark shows Regenerate. |
 | Silhouette hook | Seed crown and tall staff. |
 | Humor note | Lethiel measures a colossal tree and approves. |
 | Setting | A primeval garden. |
@@ -905,7 +905,7 @@ Purpose: cheap early Hero pressure. Power 15, budget 15, deviation 0%.
 
 ### 5.4 Hushbow
 
-`undead.hushbow` · Shooter · Common · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Range 3 · Physical · Summon Skeleton
+`undead.hushbow` · Shooter · Common · Countdown 2 · Attack 3 · HP 4 · Speed 1 · Range 3 · Physical · Summon Skeleton
 
 > Quiet in life. Considerably noisier afterward.
 
@@ -927,7 +927,7 @@ Purpose: a cheap Shooter that summons a Skeleton beside it. Power 19, budget 18,
 
 > One ring for supper. Two for reinforcements.
 
-Purpose: efficient two-body Lane setup. Power 17, budget 18, deviation -5.6%.
+Purpose: efficient two-body Lane setup. Power 18, budget 18, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1447,7 +1447,7 @@ Purpose: a cheap Feral blocker with Armor. Power 17, budget 18, deviation -5.6%.
 
 > You will not hear it. You will feel the cold first.
 
-Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so that a healer or a Regeneration Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 17, budget 18, deviation -5.6%.
+Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so that a healer or a Regenerate Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 17, budget 18, deviation -5.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -1461,7 +1461,7 @@ Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so
 
 ### 7.4 Cave Bear
 
-`feral.caveBear` · Frontliner · Common · Countdown 3 · Attack 3 · HP 10 · Speed 1 · Melee · Physical · Regeneration 1
+`feral.caveBear` · Frontliner · Common · Countdown 3 · Attack 3 · HP 10 · Speed 1 · Melee · Physical · Regenerate 1
 
 > It woke up hungry. It is still waking up.
 
@@ -1472,14 +1472,14 @@ Purpose: a durable Feral front that heals 1 HP in each Start Phase. Power 20, bu
 | Subject | A huge brown cave bear with sleepy eyes. |
 | Pose | It walks forward on all fours out of a cave, half in a yawn. |
 | Props | A honeycomb in its mouth: the bait. |
-| Gameplay cues | Moss and old healed scars show Regeneration. |
+| Gameplay cues | Moss and old healed scars show Regenerate. |
 | Silhouette hook | The big shoulder hump and the round head. |
 | Humor note | It still has not opened both eyes. |
 | Setting | A cave mouth with frost. |
 
 ### 7.5 Web Spitter
 
-`feral.webSpitter` · Shooter · Common · Countdown 3 · Attack 3 · HP 8 · Speed 1 · Range 3 · Physical · Regeneration 1
+`feral.webSpitter` · Shooter · Common · Countdown 3 · Attack 3 · HP 8 · Speed 1 · Range 3 · Physical · Regenerate 1
 
 > Stay for dinner.
 
@@ -1490,14 +1490,14 @@ Purpose: a durable Feral Shooter that heals. Power 21, budget 21, deviation 0%.
 | Subject | A giant cave spider, round and furry, with many shiny eyes. Friendly cartoon shapes, not scary. |
 | Pose | It spits a sticky web line forward. |
 | Props | Web lines. A helmet that it caught hangs in a web. |
-| Gameplay cues | The round, thick body shows high HP and Regeneration. The spit line shows Range. |
+| Gameplay cues | The round, thick body shows high HP and Regenerate. The spit line shows Range. |
 | Silhouette hook | The round body and the long arched legs. |
 | Humor note | It looks proud of the caught helmet. |
 | Setting | A dark cave with blue crystals. |
 
 ### 7.6 Boulder Tortoise
 
-`feral.boulderTortoise` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 12 · Speed 0 · Melee · Physical · Wall · Armor 1 · Regeneration 2
+`feral.boulderTortoise` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 12 · Speed 0 · Melee · Physical · Wall · Armor 1 · Regenerate 2
 
 > It moves for nobody. It hardly moves for itself.
 
@@ -1508,7 +1508,7 @@ Purpose: the Feral Wall. It heals 2 HP in each Start Phase. Power 21, budget 21,
 | Subject | A giant mountain tortoise with a shell like a boulder. |
 | Pose | It sleeps across a mountain pass. |
 | Props | Moss and small trees on the shell. |
-| Gameplay cues | The stone shell shows Armor. New moss that grows over cracks shows Regeneration. |
+| Gameplay cues | The stone shell shows Armor. New moss that grows over cracks shows Regenerate. |
 | Silhouette hook | A dome. |
 | Humor note | A mountain goat stands on top of it. |
 | Setting | A narrow mountain pass. |
@@ -1533,7 +1533,7 @@ Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Pow
 
 ### 7.8 Cave Troll
 
-`feral.caveTroll` · Frontliner · Uncommon · Countdown 4 · Attack 3 · HP 9 · Speed 1 · Melee · Physical · Regeneration 2
+`feral.caveTroll` · Frontliner · Uncommon · Countdown 4 · Attack 3 · HP 9 · Speed 1 · Melee · Physical · Regenerate 2
 
 > Cut it. Wait. Cut it again.
 
@@ -1544,7 +1544,7 @@ Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 25, bu
 | Subject | A large grey cave troll with long arms and a small head. It is wild: no armor and no tribe marks. |
 | Pose | It walks forward on its knuckles, with a stalactite as a club. |
 | Props | A broken stalactite. |
-| Gameplay cues | A cut on its arm that closes shows Regeneration. |
+| Gameplay cues | A cut on its arm that closes shows Regenerate. |
 | Silhouette hook | The long arms and the bent back. |
 | Humor note | It chews on a lost shield. |
 | Setting | A damp cave. |
@@ -1641,7 +1641,7 @@ Purpose: a Flying Frost Striker. Power 26, budget 27, deviation -3.7%. No Ranged
 
 ### 7.14 Mountain Colossus
 
-`feral.mountainColossus` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Regeneration 2 · Trample
+`feral.mountainColossus` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Regenerate 2 · Trample
 
 > The mountain stood up. Then it walked.
 
@@ -1652,7 +1652,7 @@ Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 
 | Subject | A wild, old giant of living rock and moss. No clothes and no tools. |
 | Pose | It takes a huge step forward, with one fist down. |
 | Props | Rubble that flies from its step. |
-| Gameplay cues | New stone that grows over cracks shows Regeneration. The rubble shows Trample. Epic: a heroic scene under storm clouds. |
+| Gameplay cues | New stone that grows over cracks shows Regenerate. The rubble shows Trample. Epic: a heroic scene under storm clouds. |
 | Silhouette hook | The huge shoulders and the small head. |
 | Humor note | A small village of birds lives on its shoulder. |
 | Setting | A mountain pass under storm clouds. |
@@ -1685,13 +1685,13 @@ Tokens are not collectible Cards. They use the Rank of the Card or effect that m
 
 | Rank | Attack | HP | Speed | Power |
 | --- | ---: | ---: | ---: | ---: |
-| Common | 1 | 1 | 1 | 6 |
-| Uncommon | 1 | 2 | 1 | 7 |
-| Rare | 2 | 2 | 1 | 9 |
+| Common | 1 | 1 | 2 | 8 |
+| Uncommon | 1 | 2 | 2 | 9 |
+| Rare | 2 | 2 | 2 | 11 |
 | Epic | 2 | 3 | 2 | 12 |
 | Legendary | 3 | 4 | 2 | 15 |
 
-Purpose: cheap Lane mass that is weak alone.
+Purpose: cheap Lane mass that is weak alone. Speed 2 at each Rank: the Skeleton appears behind the Unit that summons it, and a ground Unit stops only in an empty Square. With Speed 1, it cannot move while that Unit stays in its Square.
 
 | Field | Brief |
 | --- | --- |

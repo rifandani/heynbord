@@ -285,7 +285,7 @@ describe("cardText (CRD-08)", () => {
 
   it("shows Swarm, Rebirth and Summon from the Undead card data (GDD 5.4)", () => {
     expect(lines("undead.chatteringCohort", "uncommon")).toEqual([
-      "Swarm 1: While another friendly Unit is in the same Lane, this Unit has +1 Attack, also for Retaliation. More friendly Units do not increase the bonus.",
+      "Swarm 1: While another friendly Unit is in the same Lane, this Unit has +1 Attack, also for Retaliate. More friendly Units do not increase the bonus.",
     ]);
     expect(lines("undead.coffinLancer", "rare")).toEqual([
       "Armor 1: Reduces damage to this Unit by 1. It does not reduce Holy damage.",
@@ -355,6 +355,7 @@ describe("unitStatusText", () => {
     hobbled: 0,
     bleeding: 0,
     poisoned: 0,
+    rallyBonus: 0,
     swarmBonus: 0,
     reborn: false,
   };
@@ -363,7 +364,7 @@ describe("unitStatusText", () => {
     expect(unitStatusText(quiet)).toEqual([]);
   });
 
-  it("lists bonus Armor, the Swarm bonus, each Status, then a used Rebirth", () => {
+  it("lists bonus Armor, the Rally bonus, the Swarm bonus, each Status, then a used Rebirth", () => {
     const lines = unitStatusText({
       bonusArmor: 1,
       bonusArmorTurns: 2,
@@ -373,11 +374,13 @@ describe("unitStatusText", () => {
       hobbled: 1,
       bleeding: 3,
       poisoned: 2,
+      rallyBonus: 2,
       swarmBonus: 1,
       reborn: true,
     });
     expect(lines.map((line) => line.status)).toEqual([
       "bonusArmor",
+      "rallyBonus",
       "swarmBonus",
       "burn",
       "freeze",
@@ -395,6 +398,7 @@ describe("unitStatusText", () => {
       )
     ).toEqual([
       "Armor +1 From a Skill Card. Turns left: 2.",
+      "Attack +2 From Rally: until the end of this Turn.",
       "Attack +1 From Swarm: another friendly Unit is in this Lane.",
       "Burn 1 damage in each End Phase of its owner. End Phases left: 2.",
       "Frozen It skips its next action.",
@@ -403,6 +407,14 @@ describe("unitStatusText", () => {
       "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
       "Poison 2 1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
       "Reborn This Unit died and came back with Rebirth. It does not come back again.",
+    ]);
+  });
+
+  it("shows the Rally bonus and the Swarm bonus as two separate lines", () => {
+    const lines = unitStatusText({ ...quiet, rallyBonus: 1, swarmBonus: 1 });
+    expect(lines.map((line) => [line.status, resolve(line.rule)])).toEqual([
+      ["rallyBonus", "From Rally: until the end of this Turn."],
+      ["swarmBonus", "From Swarm: another friendly Unit is in this Lane."],
     ]);
   });
 });

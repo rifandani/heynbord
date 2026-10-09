@@ -561,7 +561,7 @@ describe("damage (GDD 4.7)", () => {
   });
 });
 
-describe("Retaliation (GDD 4.7)", () => {
+describe("Retaliate (GDD 4.7)", () => {
   it("hits back a melee attacker when the Unit survives", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {
@@ -580,7 +580,7 @@ describe("Retaliation (GDD 4.7)", () => {
     expect(unitById(next, attacker.id)?.hp).toBe(6);
     expect(
       eventsOfType(events, "DamageDealt").map((event) => event.source)
-    ).toEqual(["attack", "retaliation"]);
+    ).toEqual(["attack", "retaliate"]);
   });
 
   it("does not hit back when the Unit is Frozen, and the Freeze stays", () => {
@@ -924,7 +924,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     expect(next.sides.enemy.hero.hp).toBe(30);
   });
 
-  it("is a melee attack, so Retaliation applies", () => {
+  it("is a melee attack, so Retaliate applies", () => {
     const state = emptyBattle();
     const warden = placeUnit(state, {
       cardId: "human.gateWarden",
@@ -1075,7 +1075,7 @@ describe("Poison (GDD 4.7)", () => {
     });
   });
 
-  it("does not apply when the attack deals 0 damage, or from Retaliation", () => {
+  it("does not apply when the attack deals 0 damage, or from Retaliate", () => {
     const blocked = emptyBattle();
     placeUnit(blocked, {
       cardId: "human.militiaRecruit",
@@ -1237,7 +1237,7 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
     expect(eventsOfType(miss.events, "StatusApplied")).toEqual([]);
   });
 
-  it("does not apply Hobble from Retaliation or from an attack on a Hero", () => {
+  it("does not apply Hobble from Retaliate or from an attack on a Hero", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -1672,7 +1672,7 @@ describe("Knockback (GDD 4.7)", () => {
     ]);
   });
 
-  it("resolves Retaliation after the push, in the order attack, push, retaliation", () => {
+  it("resolves Retaliate after the push, in the order attack, push, retaliate", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {
       cardId: "human.shieldbearer",
@@ -1698,10 +1698,10 @@ describe("Knockback (GDD 4.7)", () => {
         }
         return event._tag === "UnitPushed" ? ["push"] : [];
       })
-    ).toEqual(["attack", "push", "retaliation"]);
+    ).toEqual(["attack", "push", "retaliate"]);
   });
 
-  it("does not apply Knockback from Retaliation", () => {
+  it("does not apply Knockback from Retaliate", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -1998,7 +1998,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
     expect(rolls.some(([, second]) => second?.blocked)).toBe(true);
   });
 
-  it("is not an attack: no Retaliation, Poison, Hobble, Entangle or Knockback from the second hit", () => {
+  it("is not an attack: no Retaliate, Poison, Hobble, Entangle or Knockback from the second hit", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {
       cardId: "feral.cragRhino",
@@ -2241,7 +2241,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
     });
   });
 
-  it("is not applied by Retaliation", () => {
+  it("is not applied by Retaliate", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -2367,7 +2367,7 @@ describe("Bleed (GDD 4.7, ADR-0019)", () => {
     expect(bleedHit(2, 2)).toEqual({ count: 2, event: 2 });
   });
 
-  it("does not apply Bleed from Retaliation or from an attack on a Hero", () => {
+  it("does not apply Bleed from Retaliate or from an attack on a Hero", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -2488,7 +2488,7 @@ describe("Wall (GDD 5.4)", () => {
     expect(next.sides.enemy.hero.hp).toBe(30);
   });
 
-  it("does not deal Retaliation or First Strike damage, also with Attack above 0", () => {
+  it("does not deal Retaliate or First Strike damage, also with Attack above 0", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -2598,30 +2598,30 @@ describe("Swarm N (GDD 5.4)", () => {
     expect(damageLog(events)).toEqual([]);
   });
 
-  it("adds the bonus to Retaliation and First Strike", () => {
-    const retaliation = emptyBattle();
-    placeUnit(retaliation, {
+  it("adds the bonus to Retaliate and First Strike", () => {
+    const retaliate = emptyBattle();
+    placeUnit(retaliate, {
       cardId: "human.militiaRecruit",
       owner: "player",
       position: 4,
       hp: 10,
       maxHp: 10,
     });
-    placeUnit(retaliation, {
+    placeUnit(retaliate, {
       cardId: "human.halberdier",
       owner: "enemy",
       position: 5,
       swarm: 1,
     });
-    placeUnit(retaliation, {
+    placeUnit(retaliate, {
       cardId: "human.militiaRecruit",
       owner: "enemy",
       position: 9,
       attack: 0,
     });
-    expect(damageLog(run(retaliation, endTurn).events)).toEqual([
+    expect(damageLog(run(retaliate, endTurn).events)).toEqual([
       "attack:3",
-      "retaliation:5",
+      "retaliate:5",
     ]);
 
     const first = emptyBattle();
@@ -2759,7 +2759,7 @@ describe("Rebirth (GDD 4.9)", () => {
     expect(second.state.sides.enemy.graveyard).toEqual([cardOf(defender)]);
   });
 
-  it("is a kill: no Retaliation, no on-hit Status and no push", () => {
+  it("is a kill: no Retaliate, no on-hit Status and no push", () => {
     const { state, defender } = rebirthBoard({
       attacker: { poison: true, hobble: 1, knockback: 1 },
       defender: { cardId: "human.halberdier", attack: undefined },

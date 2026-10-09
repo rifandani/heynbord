@@ -16,6 +16,8 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   TurnStarted: 650,
   LaneOpened: 420,
   UnitHealed: 300,
+  // The Rally Unit pulses, then the Attack of each target counts up.
+  UnitsRallied: 560,
   CountdownsTicked: 220,
   CardDrawn: 200,
   CardPlayed: 180,

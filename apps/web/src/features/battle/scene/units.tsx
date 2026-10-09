@@ -11,7 +11,13 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import type { Group, Mesh, MeshBasicMaterial, Sprite } from "three";
+import type {
+  CanvasTexture,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  Sprite,
+} from "three";
 import {
   BoxGeometry,
   CircleGeometry,
@@ -68,7 +74,7 @@ import {
   summonOrigin,
 } from "@/features/battle/scene/unit-pose";
 import { buildRig } from "@/features/battle/scene/unit-rig";
-import { summonAttack } from "@/features/battle/scene/unit-stats";
+import { shownAttack, summonAttack } from "@/features/battle/scene/unit-stats";
 
 // Load the 3D models with the scene chunk, before the first summon.
 for (const spec of allUnitModels()) {
@@ -135,6 +141,35 @@ const fadeParts = (
   if (badge) {
     badge.position.y = badgeY + pose.y;
     badge.material.opacity = pose.opacity;
+  }
+};
+
+/**
+ * Puts the stat line of the current frame on its sprite. It draws a new line
+ * only while a number counts up: `stats` is the line of the view.
+ */
+const countStats = (
+  stat: Sprite | null,
+  unit: UnitView,
+  stats: CanvasTexture,
+  current: PlayingEvent | null | undefined,
+  reducedMotion: boolean
+) => {
+  if (!stat || unit.wall) {
+    return;
+  }
+  const attack = shownAttack(unit, current, playback.progress, reducedMotion);
+  const texture =
+    attack === unit.attack
+      ? stats
+      : unitStatTexture({
+          attack,
+          startAttack: summonAttack(unit),
+          hp: unit.hp,
+          maxHp: unit.maxHp,
+        });
+  if (stat.material.map !== texture) {
+    stat.material.map = texture;
   }
 };
 
@@ -385,6 +420,7 @@ const UnitFigure = ({
       Math.atan2(camera.position.x - pose.x, camera.position.z - z - pose.z)
     );
     fadeParts(stat.current, badge.current, badgeY, pose);
+    countStats(stat.current, unit, stats, current, reducedMotion);
   });
 
   const hitRef = useMemo(() => registerHitArea(unit.id), [unit.id]);

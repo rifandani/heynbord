@@ -140,6 +140,8 @@ export default {
       entangled: "Terjerat",
       entangledRule:
         "Kecepatan 0 pada aksi berikutnya. Ia tetap bisa menyerang.",
+      rallyBonus: "Serangan +{value}",
+      rallyBonusRule: "Dari Semangat: sampai akhir Giliran ini.",
       swarmBonus: "Serangan +{value}",
       swarmBonusRule: "Dari Gerombolan: ada Unit kawan lain dalam Jalur ini.",
       reborn: "Bangkit Kembali",
@@ -453,7 +455,7 @@ export default {
       playPhase:
         "Di Fase Main, kamu memainkan kartu yang Siap. Kamu bisa memainkan semuanya, dengan urutan apa pun, atau tidak memainkan kartu.\n\nKartu Makhluk masuk ke Petak kosong di Zona Panggilmu. Kartu Keahlian menuju targetnya.\n\nPilih Akhiri Giliran untuk mengakhiri Fase Main. Tidak ada batas waktu.",
       resolutionPhase:
-        "Di Fase Resolusi, Unit-mu bertindak sendiri. Kamu tidak mengendalikannya.\n\nMereka bertindak Jalur demi Jalur, dari Jalur 1 sampai Jalur terakhir. Di tiap Jalur, Unit yang paling dekat dengan Pahlawan musuh bertindak lebih dulu. Tiap Unit bergerak, lalu menyerang. Unit yang kamu panggil di Giliran ini juga bertindak.\n\nUnit musuh tidak bertindak. Mereka hanya bisa memakai Balasan dan Serang Duluan.",
+        "Di Fase Resolusi, Unit-mu bertindak sendiri. Kamu tidak mengendalikannya.\n\nMereka bertindak Jalur demi Jalur, dari Jalur 1 sampai Jalur terakhir. Di tiap Jalur, Unit yang paling dekat dengan Pahlawan musuh bertindak lebih dulu. Tiap Unit bergerak, lalu menyerang. Unit yang kamu panggil di Giliran ini juga bertindak.\n\nUnit musuh tidak bertindak. Mereka hanya bisa memakai Balas dan Serang Duluan.",
       endPhase:
         "Fase Akhir adalah bagian terakhir Giliranmu. Damage Terbakar dan Racun mengenai Unit-mu. Lalu efek berwaktu turun 1, dan Unit dengan 0 HP meninggalkan Papan.\n\nLalu musuh mengambil Gilirannya.",
       suddenDeath:
@@ -581,7 +583,9 @@ export default {
       keywordSwarm: "kawanan, keroyok, pack",
       token: "bidak, spawn, unit panggilan",
       keywordUnique: "legend rule, satu-satunya",
-      keywordRetaliation: "serangan balik, thorns, counterattack",
+      keywordRegenerate: "regeneration, regen",
+      keywordRetaliate:
+        "balasan, serangan balik, retaliation, thorns, counterattack",
       status: "debuff, kondisi, efek buruk",
       statusFreeze: "stun, membeku, pingsan",
       statusBleed: "luka, anti-heal, kurangi penyembuhan",
@@ -759,8 +763,8 @@ export default {
     poison: "Racun",
     rebirth: "Bangkit",
     rally: "Semangat {value}",
-    regeneration: "Regenerasi {value}",
-    retaliation: "Balasan",
+    regenerate: "Regenerasi {value}",
+    retaliate: "Balas",
     sabotage: "Sabotase {value}",
     summon: "Panggil {token}",
     swarm: "Gerombolan {value}",
@@ -774,7 +778,7 @@ export default {
     armor:
       "Mengurangi damage ke Unit ini sebesar {value}. Tidak mengurangi damage Suci.",
     bleed:
-      "Unit musuh yang diserangnya mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah, selama {value} Giliran. Balasan tidak menerapkan Pendarahan.",
+      "Unit musuh yang diserangnya mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah, selama {value} Giliran. Balas tidak menerapkan Pendarahan.",
     charge: "+{value} Kecepatan pada Giliran saat Unit ini dipanggil.",
     entangle:
       "Unit musuh yang diserangnya punya Kecepatan 0 pada aksi berikutnya. Unit itu masih dapat menyerang.",
@@ -784,9 +788,9 @@ export default {
       "Bergerak melewati semua Unit, juga Unit musuh. Berhenti di Petak kosong.",
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
     hobble:
-      "Unit musuh yang diserangnya punya Kecepatan maksimum 1 selama {value} Giliran. Balasan tidak menerapkan Pincang.",
+      "Unit musuh yang diserangnya punya Kecepatan maksimum 1 selama {value} Giliran. Balas tidak menerapkan Pincang.",
     knockback:
-      "Mendorong Unit musuh yang diserangnya {value} Petak ke belakang. Balasan tidak menerapkan Hentakan.",
+      "Mendorong Unit musuh yang diserangnya {value} Petak ke belakang. Balas tidak menerapkan Hentakan.",
     lastBreath:
       "Saat Unit ini meninggalkan Papan, ia memberi {value} damage ke Unit musuh terdekat di depannya.",
     pivot:
@@ -795,8 +799,8 @@ export default {
       "Setelah Unit ini memberi damage serangan di atas 0, Unit itu mendapat 1 tumpukan Racun. Pada tiap Fase Akhir pemiliknya, ia menerima 1 damage per tumpukan, lalu kehilangan 1 tumpukan.",
     rally:
       "Pada Fase Awal-mu, Unit kawan lain dalam Jalur yang sama mendapat +{value} Serangan sampai akhir Giliran. Unit dengan Serangan Dasar 0 tidak mendapat bonus.",
-    regeneration: "Pada Fase Awal-mu, Unit ini memulihkan {value} HP.",
-    retaliation:
+    regenerate: "Pada Fase Awal-mu, Unit ini memulihkan {value} HP.",
+    retaliate:
       "Saat Unit ini selamat dari serangan jarak dekat, ia memberi damage sebesar Serangannya ke penyerang.",
     sabotage:
       "Saat Unit ini datang dari kartunya, kartu dengan Hitung mundur terendah di Tangan musuh mendapat +{value} Hitung mundur. Kartu Siap adalah yang terendah.",
@@ -809,7 +813,7 @@ export default {
     summon:
       "Saat kamu memanggil Unit ini, sebuah {token} dengan Peringkat yang sama juga muncul di Petak kosong di sebelahnya: di belakangnya, atau di Kolom yang sama pada Jalur sebelah. Jika tidak ada Petak kosong, Token itu tidak muncul.",
     swarm:
-      "Selama ada Unit kawan lain dalam Jalur yang sama, Unit ini mendapat +{value} Serangan, juga untuk Balasan. Unit kawan yang lebih banyak tidak menambah bonus.",
+      "Selama ada Unit kawan lain dalam Jalur yang sama, Unit ini mendapat +{value} Serangan, juga untuk Balas. Unit kawan yang lebih banyak tidak menambah bonus.",
     fire: "Api: target terbakar 1 damage pada 2 Fase Akhir berikutnya.",
     frost: "Es: target melewatkan aksi berikutnya.",
     holy: "Suci: Zirah tidak mengurangi damage ini.",

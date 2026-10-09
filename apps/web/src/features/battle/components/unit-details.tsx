@@ -1,6 +1,5 @@
 import { useAtomValue } from "@effect/atom-react";
 import type { Side } from "@workspace/rules";
-import { getCard } from "@workspace/rules";
 import { cn } from "cn";
 
 import type { BattleSession } from "@/features/battle/battle-session";
@@ -65,7 +64,6 @@ export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
         <CardDetails
           cardId={unit.source.cardId}
           rank={unit.rank}
-          countdown={getCard(unit.source.cardId).countdown}
           unit={unit}
           panelSide={facingPanel(side)}
           onEntry={onEntry}

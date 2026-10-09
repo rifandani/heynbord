@@ -186,7 +186,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         card.keywords.knockback,
         card.keywords.lastBreath,
         card.keywords.rally,
-        card.keywords.regeneration,
+        card.keywords.regenerate,
         card.keywords.swarm,
       ];
       for (const amount of amounts) {
@@ -323,7 +323,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       "knockback",
       "pivot",
       "poison",
-      "retaliation",
+      "retaliate",
       "swarm",
       "trample",
     ] as const;
@@ -439,10 +439,10 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives Summon X 50% of the Token power at the Base Rank of the card (GDD 13)", () => {
-    // 16 + 0.5 × 6 for the Skeleton, 16 + 0.5 × 12 for the Restless Wisp.
+    // 16 + 0.5 × 8 for the Skeleton, 16 + 0.5 × 12 for the Restless Wisp.
     const skeleton = decodeCard(recruitWith({ summon: "token.skeleton" }));
     const wisp = decodeCard(recruitWith({ summon: "token.restlessWisp" }));
-    expect(skeleton.kind === "creature" && creaturePower(skeleton)).toBe(19);
+    expect(skeleton.kind === "creature" && creaturePower(skeleton)).toBe(20);
     expect(wisp.kind === "creature" && creaturePower(wisp)).toBe(22);
     // At Base Rank Epic: 3/8 is 5/14, 5 × 2 + 14 + 2 = 26, + 0.5 × 12.
     const epic = {
@@ -471,7 +471,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("fits the Undead cards to the ADR-0021 budget (Card Concepts 5)", () => {
-    // Summon Skeleton: 3/5 is 3 × 2 + 5 + Speed 1 × 2 + Range 3 + 0.5 × 6.
+    // Summon Skeleton: 3/4 is 3 × 2 + 4 + Speed 1 × 2 + Range 3 + 0.5 × 8.
     expect(power("undead.hushbow")).toBe(19);
     // Summon Restless Wisp: 1/4 is 1/6 at Rare. 1 × 2 + 6 + 2 + Frost 3 + 0.5 × 15.
     expect(power("undead.lanternWidow")).toBe(20.5);
@@ -857,7 +857,7 @@ describe("Tokens (Card Concepts 8)", () => {
 
   it("gives the Token power of Card Concepts 8 at each Rank", () => {
     // Swarm 1 is 1 point.
-    expect(powers("token.skeleton")).toEqual([6, 7, 9, 12, 15]);
+    expect(powers("token.skeleton")).toEqual([8, 9, 11, 12, 15]);
     expect(powers("token.restlessWisp")).toEqual([12, 13, 15, 18, 21]);
   });
 

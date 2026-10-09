@@ -180,11 +180,12 @@ const StatusLine = ({
 );
 
 /**
- * Bonus Armor, the Swarm bonus and a used Rebirth are not Statuses: they have
- * a glyph, and they link to the Entry of their Keyword.
+ * Bonus Armor, the Rally and Swarm bonuses and a used Rebirth are not
+ * Statuses: they have a glyph, and they link to the Entry of their Keyword.
  */
 const NOT_STATUS = {
   bonusArmor: { icon: "shield", keyword: "armor" },
+  rallyBonus: { icon: "banner", keyword: "rally" },
   swarmBonus: { icon: "sword", keyword: "swarm" },
   reborn: { icon: "recall", keyword: "rebirth" },
 } as const satisfies Readonly<
@@ -206,9 +207,10 @@ const statusEntry = ({ status }: StatusText): EntryId =>
     : keywordEntryId(NOT_STATUS[status].keyword);
 
 /**
- * How a Unit is different from its card now: bonus Armor, the Swarm bonus,
- * Burn, Freeze, Entangled, Hobbled, Bleeding, Poison and a used Rebirth. The
- * current HP stays on the card.
+ * How a Unit is different from its card now: bonus Armor, the Rally bonus,
+ * the Swarm bonus, Burn, Freeze, Entangled, Hobbled, Bleeding, Poison and a used Rebirth. The
+ * card shows the base values, and the feet of the Unit show its current
+ * Attack and HP.
  */
 const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
   const { text } = useGameText();
@@ -312,27 +314,17 @@ const KindName = ({ info }: { readonly info: CreatureInfo }) => {
   );
 };
 
-/** The Attack and, for a card out of the Board, the HP, for screen readers. */
-const StatsSr = ({
-  info,
-  unit,
-}: {
-  readonly info: CreatureInfo;
-  readonly unit: UnitView | undefined;
-}) => {
+/** The base Attack and HP on the card, for screen readers. */
+const StatsSr = ({ info }: { readonly info: CreatureInfo }) => {
   const { tr } = useGameText();
   return (
     <p className="sr-only">
       {info.wall ? null : (
         <>
-          {tr("battle.attack")} {unit?.attack ?? info.attack}
+          {tr("battle.attack")} {info.attack},{" "}
         </>
       )}
-      {unit ? null : (
-        <>
-          , {tr("battle.hp")} {info.hp}
-        </>
-      )}
+      {tr("battle.hp")} {info.hp}
     </p>
   );
 };
@@ -373,7 +365,7 @@ const CreatureBody = ({
       )}
       <KeywordRules content={content} />
       {unit ? <UnitStatus unit={unit} /> : null}
-      <StatsSr info={info} unit={unit} />
+      <StatsSr info={info} />
     </>
   );
 };
@@ -472,8 +464,11 @@ const PanelBody = ({
  * next to it. The panel starts with the card name. It shows on hover, long
  * press or keyboard focus.
  *
- * With `unit`, it is the card of a Unit on the Board: the card shows the
- * current Attack and HP, and the panel shows the Side and the Unit status. On
+ * The card always shows the base values at the Rank: Attack, HP and Countdown.
+ * The stat row shows the base Speed.
+ *
+ * With `unit`, it is the card of a Unit on the Board: the panel also shows
+ * the Side and the Unit status. On
  * a short screen, the flavor text of a Unit goes away to keep the panel short.
  * `panelSide` puts the panel at the left of the card, for Card Details at the
  * right edge of the screen.
@@ -586,7 +581,6 @@ const DetailsRow = ({
 export const CardDetails = ({
   cardId,
   rank,
-  countdown,
   unit,
   blocked = false,
   panelSide = "right",
@@ -594,7 +588,6 @@ export const CardDetails = ({
 }: {
   readonly cardId: string;
   readonly rank: RankId;
-  readonly countdown: number;
   readonly unit?: UnitView;
   /** Unique (GDD 5.4): a Hand card that cannot be played now. */
   readonly blocked?: boolean;
@@ -605,6 +598,7 @@ export const CardDetails = ({
   const { tr, text } = useGameText();
   const card = getCard(cardId);
   const content = cardText(cardId, rank);
+  const { countdown } = card;
   const place = unit
     ? tr(placeLabel(unit))
     : tr("battle.countdown", { value: countdown });
@@ -615,7 +609,6 @@ export const CardDetails = ({
           cardId={cardId}
           rank={rank}
           countdown={countdown}
-          live={unit}
           className={FRAME_CLASS}
         />
       }
@@ -655,12 +648,7 @@ export const TokenDetails = ({
   return (
     <DetailsRow
       frame={
-        <TokenFrame
-          tokenId={tokenId}
-          rank={rank}
-          live={unit}
-          className={FRAME_CLASS}
-        />
+        <TokenFrame tokenId={tokenId} rank={rank} className={FRAME_CLASS} />
       }
       name={text(content.name)}
       sr={<NameSr rank={rank} place={tr(placeLabel(unit))} />}

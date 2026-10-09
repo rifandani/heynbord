@@ -101,9 +101,20 @@ export const GLYPHS = {
   slashes: [slash(-30, -30, 38), slash(-2, -38, 44), slash(26, -34, 32)].join(
     " "
   ),
+  /**
+   * A friendly skull: Undead. Two round eyes, a nose, and two slits that make
+   * three teeth in the jaw. The holes are wide, because the stroke closes them.
+   */
+  skull: [
+    "M-31 14 C-46 4 -46 -46 0 -46 C46 -46 46 4 31 14 Q22 16 22 22 V36 Q22 44 14 44 H-14 Q-22 44 -22 36 V22 Q-22 16 -31 14 Z",
+    circle(-16, -8, 13, 14),
+    circle(16, -8, 13, 14),
+    "M0 4 L9 17 Q0 21 -9 17 Z",
+    "M-15 29 A6 6 0 0 1 -3 29 V35 A6 6 0 0 1 -15 35 Z",
+    "M3 29 A6 6 0 0 1 15 29 V35 A6 6 0 0 1 3 35 Z",
+  ].join(" "),
   /** A curled vine with a leaf: Entangled. */
   vine: "M-40 44 C-40 10 -4 22 -4 -4 C-4 -30 -32 -30 -32 -12 C-32 0 -16 0 -16 -10 M-4 -4 C6 -28 26 -36 40 -40 M14 -22 Q36 -18 38 2 Q16 0 14 -22 Z",
-  wisp: `M0 -46 C24 -22 34 4 30 22 C26 40 12 46 0 46 C-12 46 -26 40 -30 22 C-34 4 -24 -22 0 -46 Z ${circle(-11, 16, 6)} ${circle(11, 16, 6)}`,
   info: `${circle(0, 0, 44)} ${circle(0, 0, 34)} ${circle(0, -20, 6)} M-6 -6 H6 V26 H-6 Z`,
   snow: "M0 -44 V44 M-38 -22 L38 22 M-38 22 L38 -22 M-10 -34 L0 -24 L10 -34 M-10 34 L0 24 L10 34",
   // The Town Bar shortcuts (GDD 11.4).
@@ -176,7 +187,7 @@ const CLASS_GLYPH: Readonly<Record<ClassId, Glyph>> = {
 const RACE_GLYPH: Readonly<Record<RaceId, Glyph>> = {
   human: "crown",
   elf: "leaf",
-  undead: "wisp",
+  undead: "skull",
   orc: "tusks",
   goblin: "cog",
   feral: "slashes",

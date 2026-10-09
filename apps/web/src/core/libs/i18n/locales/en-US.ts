@@ -139,6 +139,8 @@ export default {
         "This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
       entangled: "Entangled",
       entangledRule: "Speed 0 in its next action. It can still attack.",
+      rallyBonus: "Attack +{value}",
+      rallyBonusRule: "From Rally: until the end of this Turn.",
       swarmBonus: "Attack +{value}",
       swarmBonusRule: "From Swarm: another friendly Unit is in this Lane.",
       reborn: "Reborn",
@@ -445,11 +447,11 @@ export default {
       hero: "A Hero is the commander of a Side. It stands behind its Front, outside the Board.\n\nA Hero has HP, a Class and a Deck. When its HP goes to 0, the Hero is Defeated.",
       turn: "In a Turn, one Side plays its cards, and its Units act. A Turn has 4 parts: the Start Phase, the Play Phase, the Resolution Phase and the End Phase.\n\nYou take the first Turn. Then the enemy takes a Turn. The Turn number goes up by 1 when both Sides took a Turn.",
       startPhase:
-        "The Start Phase is the first part of your Turn. These things occur in this order:\n\n1. Effects such as Regeneration and Rally occur.\n\n2. From Turn {turn}, Sudden Death damage hits your Hero.\n\n3. The Countdown of each card in your Hand that is not Ready goes down by 1.\n\n4. Your Hero draws 1 card, if the Hand has fewer than {limit} cards.",
+        "The Start Phase is the first part of your Turn. These things occur in this order:\n\n1. Effects such as Regenerate and Rally occur.\n\n2. From Turn {turn}, Sudden Death damage hits your Hero.\n\n3. The Countdown of each card in your Hand that is not Ready goes down by 1.\n\n4. Your Hero draws 1 card, if the Hand has fewer than {limit} cards.",
       playPhase:
         "In the Play Phase, you play your Ready cards. You can play all of them, in any order, or you can play no cards.\n\nA Creature Card goes into an empty Square of your Summon Zone. A Skill Card goes to its target.\n\nSelect End Turn to end the Play Phase. There is no timer.",
       resolutionPhase:
-        "In the Resolution Phase, your Units act by themselves. You do not control them.\n\nThey act Lane by Lane, from Lane 1 to the last Lane. In each Lane, the Unit nearest to the enemy Hero acts first. Each Unit moves, then it attacks. A Unit that you summoned in this Turn also acts.\n\nThe enemy Units do not act. They can only use Retaliation and First Strike.",
+        "In the Resolution Phase, your Units act by themselves. You do not control them.\n\nThey act Lane by Lane, from Lane 1 to the last Lane. In each Lane, the Unit nearest to the enemy Hero acts first. Each Unit moves, then it attacks. A Unit that you summoned in this Turn also acts.\n\nThe enemy Units do not act. They can only use Retaliate and First Strike.",
       endPhase:
         "The End Phase is the last part of your Turn. Burn and Poison damage hit your Units. Then the timed effects go down by 1, and Units with 0 HP leave the Board.\n\nThen the enemy takes its Turn.",
       suddenDeath:
@@ -527,7 +529,7 @@ export default {
       roleShooter:
         "A Ranged Unit with Range 3. A Shooter stays back and attacks.",
       roleSupport:
-        "A Support makes other Units better, for example with Rally or Regeneration. It is Melee, or Ranged with Range 2.",
+        "A Support makes other Units better, for example with Rally or Regenerate. It is Melee, or Ranged with Range 2.",
       roleWall:
         "A Wall blocks its Lane for enemy Units. Each Wall has the Wall Keyword.",
       rank: "Rank is how strong one copy of a card is. There are five Ranks, from Common to Legendary.\n\nEach card has a Base Rank. Your copy is never below that Rank.",
@@ -576,7 +578,8 @@ export default {
       keywordSwarm: "pack, gang up, synergy",
       token: "spawn, summoned unit, minion token",
       keywordUnique: "legend rule, singleton",
-      keywordRetaliation: "thorns, counterattack",
+      keywordRegenerate: "regeneration, regen",
+      keywordRetaliate: "retaliation, thorns, counterattack",
       status: "debuff, condition, ailment",
       statusFreeze: "stun, chill",
       statusBleed: "wound, anti-heal, healing reduction",
@@ -750,8 +753,8 @@ export default {
     poison: "Poison",
     rebirth: "Rebirth",
     rally: "Rally {value}",
-    regeneration: "Regeneration {value}",
-    retaliation: "Retaliation",
+    regenerate: "Regenerate {value}",
+    retaliate: "Retaliate",
     sabotage: "Sabotage {value}",
     summon: "Summon {token}",
     swarm: "Swarm {value}",
@@ -765,7 +768,7 @@ export default {
     armor:
       "Reduces damage to this Unit by {value}. It does not reduce Holy damage.",
     bleed:
-      "The enemy Unit it hits gets half of each heal, rounded down, for {value} Turns. Retaliation does not apply Bleed.",
+      "The enemy Unit it hits gets half of each heal, rounded down, for {value} Turns. Retaliate does not apply Bleed.",
     charge: "+{value} Speed in the Turn when you summon this Unit.",
     entangle:
       "The enemy Unit it hits has Speed 0 in its next action. That Unit can still attack.",
@@ -775,9 +778,9 @@ export default {
       "Moves over all Units, also enemy Units. It stops in an empty Square.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
     hobble:
-      "The enemy Unit it hits has a maximum Speed of 1 for {value} Turns. Retaliation does not apply Hobble.",
+      "The enemy Unit it hits has a maximum Speed of 1 for {value} Turns. Retaliate does not apply Hobble.",
     knockback:
-      "Pushes the enemy Unit it hits {value} Squares back. Retaliation does not apply Knockback.",
+      "Pushes the enemy Unit it hits {value} Squares back. Retaliate does not apply Knockback.",
     lastBreath:
       "When this Unit leaves the Board, it deals {value} damage to the nearest enemy Unit ahead.",
     pivot:
@@ -786,8 +789,8 @@ export default {
       "After this Unit deals attack damage above 0, that Unit gains 1 Poison stack. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack.",
     rally:
       "In your Start Phase, other friendly Units in the same Lane get +{value} Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus.",
-    regeneration: "In your Start Phase, this Unit heals {value} HP.",
-    retaliation:
+    regenerate: "In your Start Phase, this Unit heals {value} HP.",
+    retaliate:
       "When this Unit survives a melee attack, it deals its Attack to the attacker.",
     sabotage:
       "When this Unit comes from its card, the card with the lowest Countdown in the enemy Hand gets +{value} Countdown. A Ready card is the lowest.",
@@ -800,7 +803,7 @@ export default {
     summon:
       "When you summon this Unit, a {token} of the same Rank also appears in an empty Square next to it: behind it, or in the same Column of a next Lane. If no Square is empty, the Token does not appear.",
     swarm:
-      "While another friendly Unit is in the same Lane, this Unit has +{value} Attack, also for Retaliation. More friendly Units do not increase the bonus.",
+      "While another friendly Unit is in the same Lane, this Unit has +{value} Attack, also for Retaliate. More friendly Units do not increase the bonus.",
     fire: "Fire: the target burns for 1 damage in its next 2 End Phases.",
     frost: "Frost: the target skips its next action.",
     holy: "Holy: Armor does not reduce this damage.",

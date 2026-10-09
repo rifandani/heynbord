@@ -48,7 +48,7 @@ const swarmBonus = (state: BattleState, unit: UnitState): number =>
 
 /**
  * Attack with the Rally bonus of this Turn and the Swarm bonus (GDD 4.7,
- * step 2). A Wall never uses its Attack: no attack, no Retaliation and no
+ * step 2). A Wall never uses its Attack: no attack, no Retaliate and no
  * First Strike (GDD 5.4).
  */
 const attackOf = (state: BattleState, unit: UnitState): number =>
@@ -203,9 +203,9 @@ const pushUnit = (ctx: StepContext, unit: UnitState, squares: number): void => {
 };
 
 /**
- * Retaliation (GDD 4.7): no Crit, and it does not start another Retaliation.
+ * Retaliate (GDD 4.7): no Crit, and it does not start another Retaliate.
  * A Frozen defender does not retaliate, and it keeps its Freeze (GDD 4.4).
- * Retaliation does not apply Knockback. Only a defender that survives the
+ * Retaliate does not apply Knockback. Only a defender that survives the
  * attack retaliates: the caller does not call it after a kill, also when
  * Rebirth brings the defender back.
  */
@@ -215,7 +215,7 @@ const retaliate = (
   attacker: UnitState
 ): void => {
   if (
-    !defender.retaliation ||
+    !defender.retaliate ||
     defender.frozen ||
     attacker.range > 0 ||
     attackOf(ctx.state, defender) <= 0 ||
@@ -227,7 +227,7 @@ const retaliate = (
   damageUnit(ctx, attacker, {
     amount: attackOf(ctx.state, defender),
     damageType: defender.damageType,
-    source: "retaliation",
+    source: "retaliate",
     crit: 0,
   });
 };
@@ -236,7 +236,7 @@ const retaliate = (
  * Trample (GDD 4.7): after a melee kill, the damage that is left hits the
  * enemy Unit in the next Square behind the killed Unit. An empty Square or a
  * friendly Unit loses it, and it never hits a Hero. The hit is not an attack:
- * no Crit, no Retaliation, no on-hit Keywords and no new Trample. The Last
+ * no Crit, no Retaliate, no on-hit Keywords and no new Trample. The Last
  * Breath of the killed Unit occurs first, and the hit occurs also when that
  * Last Breath killed the Trample Unit. After a Rebirth kill, the hit still
  * goes to the Square behind, and the reborn Unit is not hit again.
@@ -316,7 +316,7 @@ const applyOnHit = (
 
 /**
  * First Strike (GDD 4.7): when an enemy melee Unit attacks a Unit with First
- * Strike, that Unit deals its damage first. Like Retaliation, it has no Crit,
+ * Strike, that Unit deals its damage first. Like Retaliate, it has no Crit,
  * and a Frozen Unit or a Unit with Base Attack 0 does not use it. Damage above
  * 0 applies Poison, Hobble, Bleed and Entangle, but not Knockback. Returns
  * whether the attacker survived, so that its attack occurs. An attacker that
