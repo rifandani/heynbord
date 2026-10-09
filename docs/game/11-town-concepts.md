@@ -1,6 +1,6 @@
 # 11 — Town Concepts
 
-This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons.
+This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons, and section 8 gives the brief for the Pack art.
 
 Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1986 × 941). It is the 1672 × 941 original, stretched to the side: the center 400 code units keep their shape, and the stretch increases to 1.67× at the left and right edges. This lets a wide desktop screen show the full Heynspire and the full Town Gate. The Town Gate layer `town-gate.webp` is cut out of the original by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 4000 × 1800 can replace it with no code change if it keeps the same composition.
 
@@ -183,6 +183,7 @@ The game docs do not keep the image prompts of the Town. Run `bun town:prompts` 
 - `style-reference.png`: 4 golden references of art direction 5.1 in one image. They set the brush, the light and the palette.
 - `painting/prompts.md`: the setup message, then the painting message.
 - `bar/`: the prompts of the Town Bar icons (7.2).
+- `packs/`: the prompts of the Pack art (8.2).
 
 The painting message is a short form of the briefs in sections 1 and 2. It is in `scripts/town-art/prompts.ts`. When you change a brief, change the painting message too, then run the script again.
 
@@ -282,4 +283,66 @@ In the order of `TOWN_SHORTCUTS`, then the Settings button.
 - [ ] The background is transparent, and the bottom edge of the object is flat.
 - [ ] No text, letters, runes, logo or signature in the image.
 - [ ] The icons do not look like the icons of another game.
+- [ ] The style matches the golden references.
+
+## 8. Pack art
+
+The Packs screen shows the three Packs side by side ([Economy 3.1](./07-economy.md#31-packs)). Each Pack has one painted image. The Packs come from the Card shop (2.7), and the Merchant Pack is the same object as the `packs` icon of the Town Bar (7.3). Until the art exists, the screen shows a CSS Pack in the same box.
+
+### 8.1 Rules for the Pack art
+
+- **Material, not size.** The three Packs have the same body size and the same position on the canvas. The material shows the job of each Pack, from cheap to rich: matte paper, shiny foil, then velvet and gold. A more expensive Pack is not a better deal ([ADR-0027](../adr/0027-the-three-packs-give-equal-value-for-each-coin.md)), so the Royal Pack is not larger or brighter. No glow, no light rays and no extra sparkles.
+- **Value, from light to dark.** In greyscale, the bodies go from light to dark: the Peddler Pack is light kraft, the Merchant Pack is a mid-dark purple with a bright band, and the Royal Pack is the darkest. The gold of the Royal Pack is only on the corners, the edges and the seal, on less than about 15% of the front face. Thus the three Packs are easy to tell apart, and the Royal Pack is not brighter.
+- **View.** Upright, from the front, with a little depth. The bottom edge is flat and level, so that the three Packs stand on one line.
+- **Light.** From the upper left, as in all other art.
+- **Outline.** The thick dark brown outline (`#2e1d10`) of the Town Bar icons, at the same thickness on the make canvas.
+- **Seal.** The seal of each Pack is at the upper center of the front face.
+- **Race stamp area.** The lower-right quarter of the front face is plain: no seal, no band end and no ornament. On a Race Pack, the game puts a round stamp there with the Race emblem of the Card Frame and a bronze rim. A Race Pack has no art of its own.
+- **No cards.** No card shows out of the Pack, because a card can show a Rank.
+- **Size.** Portrait 2:3. Make at 1024 × 1536. The Pack body fills about 80% of the width and 88% of the height. Export at 512 × 768.
+- **No text.** No letters, numbers, runes or logo. The game shows the Pack names from the Message Catalogs, in each language.
+- **Background.** Transparent, with no ground shadow. The game adds the contact shadow, so that the Pack sits on any surface.
+- **States.** Make one closed image for each Pack. The code makes the hover, focus, disabled and **Free** states, and the Race stamp. When a Pack opens, the code moves the closed image (a lift, a shake, then a fade) and the face-down cards come in. There is no tear strip, no open Pack and no layer.
+
+### 8.2 Prompts
+
+The game docs do not keep the prompts of the Pack art. Run `bun town:prompts` to write them to `apps/web/art/town/raw/packs/` (section 3). Git ignores this folder.
+
+- `../style-reference.png`: the style reference of section 3.
+- `set-reference.png`: the Merchant Pack (`apps/web/art/packs/merchant-pack.png`) when it exists, else the `packs` icon (`apps/web/art/town/bar/packs-icon.jpg`). The other Packs match its outline, brush and scale.
+- `prompts.md`: the setup message, then one prompt for each Pack of 8.3.
+
+Each Pack prompt has the rules of 8.1 and the subject line of the Pack in `scripts/town-art/subjects.ts`. Make the Merchant Pack first. Then run the script again, and make the Peddler Pack and the Royal Pack in one new ChatGPT conversation, with the Merchant Pack as the set reference.
+
+### 8.3 Pack subjects
+
+| Pack | Material | Seal |
+| --- | --- | --- |
+| `merchant` | Purple foil, gold crimped ends and a royal blue band, as the `packs` icon | A red wax seal with the gold four-point star |
+| `peddler` | Kraft paper, folded at the ends like a parcel, a few creases | A plain wax seal under crossed hemp twine with a slightly crooked bow |
+| `royal` | Deep crimson velvet with gold corner plates and gold edges | A round gold seal with a raised crown, on a thin gold cord |
+
+### 8.4 Steps
+
+1. Run `bun town:prompts`. Make the Merchant Pack first, with `packs/prompts.md` and the references of 8.2, with GPT Image, a transparent background and high quality, at 1024 × 1536. Save it as `apps/web/art/packs/merchant-pack.png`, and run `bun town:prompts` again: the other Packs use it as the set reference.
+2. Make the Peddler Pack and the Royal Pack. Select each image with the checklist in 8.5.
+3. Fix problems by hand or with inpainting (text-like marks, extra parts, a broken outline, an ornament in the Race stamp area).
+4. Put the three Packs on one canvas and check that the bodies have the same size and the same bottom line. Move or scale an image if necessary.
+5. Export each Pack as WebP with transparency at 512 × 768: `cwebp -q 80 -resize 512 768 <id>-pack.png -o <id>.webp`. Put the files in `apps/web/public/packs/` (`peddler.webp`, `merchant.webp`, `royal.webp`). Keep the full-size sources in `apps/web/art/packs/`, not in `public/`.
+6. Add a unit test in the same commit as the art. The test reads `apps/web/public/packs/` and checks that it has exactly `peddler.webp`, `merchant.webp` and `royal.webp`, and that each one is a 512 × 768 WebP with alpha (as the card art test of #30).
+
+The licence record (art direction 5.5) of the Pack art is part of the release item in the [roadmap](./09-roadmap.md), not a step of this section.
+
+### 8.5 Review checklist
+
+- [ ] In greyscale at 96 px tall, the three Packs are easy to tell apart.
+- [ ] The Merchant Pack and the `packs` icon look like the same object.
+- [ ] The three Packs have the same body size and the same bottom line. The Royal Pack does not look larger.
+- [ ] The Royal Pack body is the darkest, and its gold is only on the corners, the edges and the seal.
+- [ ] The seal is at the upper center, and the lower-right quarter of the front face is plain.
+- [ ] No card shows out of a Pack.
+- [ ] The light comes from the upper left, and the outline matches the Town Bar icons.
+- [ ] The background is transparent, with no ground shadow.
+- [ ] No text, letters, runes, logo or signature in the image.
+- [ ] The Packs do not look like the card packs of another game.
 - [ ] The style matches the golden references.

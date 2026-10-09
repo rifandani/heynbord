@@ -74,3 +74,41 @@ export const iconPromptOf = (subject: string): string =>
     "no text, no letters, no numbers, no runes, no logo, no watermark.",
     "Square 1:1.",
   ].join("\n");
+
+/**
+ * The first message of the ChatGPT conversation for the Pack art, with the
+ * style reference and the set reference attached. The set reference is the
+ * Merchant Pack when it exists, else the tilted `packs` icon.
+ */
+export const packSetupPromptOf = (setReferenceIsIcon: boolean): string =>
+  [
+    "In this conversation, you will paint the three card packs of the shop screen of a fantasy card battle game, one pack in each message.",
+    [
+      STYLE_REFERENCE,
+      setReferenceIsIcon
+        ? "Image 2 is the menu icon of the purple pack. Match its outline thickness, brush, foil and gold. Do not copy its tilted view: paint each pack upright and from the front."
+        : "Image 2 is the purple pack of the same set. Match it exactly in style, outline thickness, light, view, size and position on the canvas.",
+    ].join("\n"),
+    "The three packs hold the same number of cards. They have the same size and the same position on the canvas. Only the material and the seal change.",
+    "Each message gives the full prompt of one pack.",
+    READY,
+  ].join("\n\n");
+
+/**
+ * The message for one Pack, after the setup message. The rules come from
+ * section 8.1 of the Town Concepts.
+ */
+export const packPromptOf = (subject: string): string =>
+  [
+    `A single hand-painted fantasy game card pack: ${subject}.`,
+    "The pack stands upright and faces the viewer, seen from the front with only a little depth. Its bottom edge is flat and level.",
+    "The pack body is centered and fills about 80% of the width and 88% of the height of the canvas.",
+    "The lower-right quarter of the front face is plain material: no seal, no band end, no ornament there.",
+    "Thick dark brown outline (#2e1d10) around the whole pack, painterly soft brush shading inside,",
+    "a warm rim light on the edges. Light from the upper left.",
+    "A bright, warm and a little funny mood. Not grim, not realistic, no neon.",
+    "No glow, no light rays, no sparkles, no cards that come out of the pack.",
+    "Transparent background, isolated object, no scene, no ground, no shadow, no frame, no border,",
+    "no text, no letters, no numbers, no runes, no logo, no watermark.",
+    "Tall 2:3 portrait.",
+  ].join("\n");

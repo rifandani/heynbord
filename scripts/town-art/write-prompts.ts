@@ -12,6 +12,10 @@
  * - `raw/bar/prompts.md`: the setup message, then one prompt for each icon,
  *   in the order of section 7.3 of `docs/game/11-town-concepts.md`. A prompt
  *   is the template in `prompts.ts` with the subject in `subjects.ts`.
+ * - `raw/packs/set-reference.png`: the Merchant Pack, if it exists, else the
+ *   `packs` icon. The other Packs match it in outline, brush and scale.
+ * - `raw/packs/prompts.md`: the setup message, then one prompt for each
+ *   Pack, in the order of section 8.3.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -21,11 +25,13 @@ import sharp from "sharp";
 import { cellsOf, isTableRule, ROOT } from "../creature-art/concepts.ts";
 import {
   iconPromptOf,
+  packPromptOf,
+  packSetupPromptOf,
   PAINTING_PROMPT,
   PAINTING_SETUP_PROMPT,
   setupPromptOf,
 } from "./prompts.ts";
-import { SUBJECT } from "./subjects.ts";
+import { PACK_SUBJECT, SUBJECT } from "./subjects.ts";
 
 /** The images from ChatGPT, the reference images and the prompts. Git ignores it. */
 const RAW_DIR = path.join(ROOT, "apps/web/art/town/raw");
@@ -43,6 +49,21 @@ const SOURCE_DIR = "apps/web/art/town/bar";
 const SET_REFERENCE = ["town-icon.png", "town-icon.jpg"]
   .map((file) => path.join(SOURCE_DIR, file))
   .find((file) => existsSync(path.join(ROOT, file)));
+
+/** The full-size Pack sources. Git keeps them. */
+const PACK_SOURCE_DIR = "apps/web/art/packs";
+
+/** The `packs` icon: the set reference until the Merchant Pack exists. */
+const PACKS_ICON = path.join(SOURCE_DIR, "packs-icon.jpg");
+
+/**
+ * The first Pack of the set: the Merchant Pack, else the `packs` icon. When
+ * you add the Merchant Pack, run the script again.
+ */
+const PACK_SET_REFERENCE = [
+  path.join(PACK_SOURCE_DIR, "merchant-pack.png"),
+  PACKS_ICON,
+].find((file) => existsSync(path.join(ROOT, file)));
 
 /** Golden references of art direction 5.1: brush, light, metal, glow and fire. */
 const GOLDEN_REFERENCES = [
@@ -78,22 +99,23 @@ const writeStyleReference = async (file: string) => {
     .toFile(file);
 };
 
-/** One row of the table in 7.3. */
+/** One row of the table in 7.3 or 8.3: the ID and the second cell. */
 interface Icon {
   readonly id: string;
   readonly building: string;
 }
 
 const SECTION = "### 7.3 Icon subjects";
+const PACK_SECTION = "### 8.3 Pack subjects";
 
-/** The rows of the table in 7.3, in the order of `TOWN_SHORTCUTS`, then Settings. */
-const readIcons = (): Icon[] => {
+/** The rows of the table under `section`, in their order. */
+const readRows = (section: string): Icon[] => {
   const lines = readFileSync(TOWN_CONCEPTS, "utf-8").split("\n");
-  const start = lines.indexOf(SECTION);
+  const start = lines.indexOf(section);
   if (start === -1) {
-    throw new Error(`${TOWN_CONCEPTS}: no "${SECTION}"`);
+    throw new Error(`${TOWN_CONCEPTS}: no "${section}"`);
   }
-  const icons: Icon[] = [];
+  const rows: Icon[] = [];
   for (const line of lines.slice(start + 1)) {
     if (line.startsWith("#")) {
       break;
@@ -101,13 +123,13 @@ const readIcons = (): Icon[] => {
     const cells = cellsOf(line);
     const id = cells && /^`(?<id>[a-z]+)`$/u.exec(cells[0])?.groups?.id;
     if (cells && id && !isTableRule(cells)) {
-      icons.push({ id, building: cells[1] });
+      rows.push({ id, building: cells[1] });
     }
   }
-  if (icons.length === 0) {
-    throw new Error(`${TOWN_CONCEPTS}: no icons in "${SECTION}"`);
+  if (rows.length === 0) {
+    throw new Error(`${TOWN_CONCEPTS}: no rows in "${section}"`);
   }
-  return icons;
+  return rows;
 };
 
 const block = (text: string): string => `\`\`\`text\n${text}\n\`\`\``;
@@ -116,6 +138,16 @@ const subjectOf = (icon: Icon): string => {
   const subject = SUBJECT.get(icon.id);
   if (!subject) {
     throw new Error(`${icon.id}: no entry in scripts/town-art/subjects.ts`);
+  }
+  return subject;
+};
+
+const packSubjectOf = (pack: Icon): string => {
+  const subject = PACK_SUBJECT.get(pack.id);
+  if (!subject) {
+    throw new Error(
+      `${pack.id}: no Pack entry in scripts/town-art/subjects.ts`
+    );
   }
   return subject;
 };
@@ -166,18 +198,58 @@ const barFile = (icons: readonly Icon[]): string => {
   ].join("\n");
 };
 
-const icons = readIcons();
-const known = new Set(icons.map((icon) => icon.id));
-const extra = [...SUBJECT.keys()].filter((id) => !known.has(id));
-if (extra.length > 0) {
-  throw new Error(
-    `subjects.ts has icons that the Town Concepts do not: ${extra.join(", ")}`
-  );
-}
+const packsFile = (packs: readonly Icon[]): string => {
+  const isIcon = PACK_SET_REFERENCE === PACKS_ICON;
+  return [
+    "# Pack art prompts",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `../style-reference.png`, `set-reference.png`. Send the setup message.",
+    `2. Send each Pack prompt in its own message. Use a transparent background and high quality, at 1024 × 1536. Save each image in \`${PACK_SOURCE_DIR}/\` as \`<id>-pack.png\`.`,
+    "3. Select the images with the review checklist (Town Concepts, 8.5). For a rejected Pack, send its prompt again in the same conversation.",
+    "4. Do steps 3 to 6 of Town Concepts, 8.4.",
+    "",
+    isIcon
+      ? `\`set-reference.png\` is the \`packs\` icon (\`${PACKS_ICON}\`). Make the \`merchant\` Pack first, save it as \`${PACK_SOURCE_DIR}/merchant-pack.png\`, and run \`bun town:prompts\` again. Then make the other Packs in a new conversation.`
+      : `\`set-reference.png\` is \`${PACK_SET_REFERENCE}\`. To change the Merchant Pack, make it first and run \`bun town:prompts\` again.`,
+    "",
+    "## Setup message",
+    "",
+    block(packSetupPromptOf(isIcon)),
+    ...packs.flatMap((pack, index) => [
+      "",
+      `## ${index + 1}. \`${pack.id}\` → save as \`${pack.id}-pack.png\``,
+      "",
+      block(packPromptOf(packSubjectOf(pack))),
+    ]),
+    "",
+  ].join("\n");
+};
+
+/** Fails when `subjects` has an ID that the table does not have. */
+const checkExtra = (
+  rows: readonly Icon[],
+  subjects: ReadonlyMap<string, string>,
+  kind: string
+) => {
+  const known = new Set(rows.map((row) => row.id));
+  const extra = [...subjects.keys()].filter((id) => !known.has(id));
+  if (extra.length > 0) {
+    throw new Error(
+      `subjects.ts has ${kind} that the Town Concepts do not: ${extra.join(", ")}`
+    );
+  }
+};
+
+const icons = readRows(SECTION);
+const packs = readRows(PACK_SECTION);
+checkExtra(icons, SUBJECT, "icons");
+checkExtra(packs, PACK_SUBJECT, "Packs");
 const paintingDir = path.join(RAW_DIR, "painting");
 const barDir = path.join(RAW_DIR, "bar");
+const packsDir = path.join(RAW_DIR, "packs");
 mkdirSync(paintingDir, { recursive: true });
 mkdirSync(barDir, { recursive: true });
+mkdirSync(packsDir, { recursive: true });
 await writeStyleReference(path.join(RAW_DIR, "style-reference.png"));
 if (SET_REFERENCE) {
   await sharp(path.join(ROOT, SET_REFERENCE))
@@ -186,9 +258,19 @@ if (SET_REFERENCE) {
 }
 writeFileSync(path.join(paintingDir, "prompts.md"), paintingFile());
 writeFileSync(path.join(barDir, "prompts.md"), barFile(icons));
+if (!PACK_SET_REFERENCE) {
+  throw new Error(`no Pack set reference: ${PACKS_ICON} is missing`);
+}
+await sharp(path.join(ROOT, PACK_SET_REFERENCE))
+  .png()
+  .toFile(path.join(packsDir, "set-reference.png"));
+writeFileSync(path.join(packsDir, "prompts.md"), packsFile(packs));
 console.log(
   `Town Bar: ${icons.length} icons, set reference ${SET_REFERENCE ?? "none"}`
 );
 console.log(
-  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md and ${RAW_DIR}/bar/prompts.md`
+  `Packs: ${packs.length} Packs, set reference ${PACK_SET_REFERENCE}`
+);
+console.log(
+  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md and ${RAW_DIR}/packs/prompts.md`
 );
