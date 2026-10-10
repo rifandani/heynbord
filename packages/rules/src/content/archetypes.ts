@@ -16,9 +16,8 @@ export const MATCHUP_LEVEL = 5;
  * cards thus has fewer cards.
  *
  * Tunnel Rats and Thornwatch are diagnostic Ranger Decks with the 3 Ranger
- * Skill Cards. Wild Hunt and Deathless Host are provisional diagnostic Decks
- * (Archetypes 2.1): Creature Cards only, until the Priest Skill Cards exist.
- * Breakneck Company is a diagnostic Deck of mixed
+ * Skill Cards. Wild Hunt and Deathless Host are diagnostic Priest Decks with
+ * the 3 Priest Skill Cards (Archetypes 2.1). Breakneck Company is a diagnostic Deck of mixed
  * Undead and Orc cards with Mage Skill Cards. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
  * so that a Matchup tests most cards. Human Heavy (Countdown 3 to 4) and Human
@@ -87,13 +86,15 @@ export const ARCHETYPES: readonly Archetype[] = [
     classId: "priest",
     deck: [
       ...copies(2, "feral.bristlebackBoar", "common"),
-      ...copies(1, "feral.cragLizard", "common"),
       ...copies(1, "feral.frostfangLynx", "common"),
-      ...copies(2, "feral.caveBear", "common"),
+      ...copies(1, "feral.caveBear", "common"),
       ...copies(1, "feral.webSpitter", "common"),
       ...copies(1, "feral.caveTroll", "uncommon"),
       ...copies(2, "feral.cragRhino", "uncommon"),
       ...copies(1, "feral.frostElkMatriarch", "uncommon"),
+      ...copies(1, "priest.mend", "common"),
+      ...copies(1, "priest.smite", "common"),
+      ...copies(1, "priest.sanctuary", "uncommon"),
     ],
   },
   {
@@ -119,8 +120,6 @@ export const ARCHETYPES: readonly Archetype[] = [
     kind: "diagnostic",
     classId: "priest",
     deck: [
-      ...copies(1, "undead.graveyardDrudge", "common"),
-      ...copies(2, "undead.rattleknife", "common"),
       ...copies(1, "undead.hushbow", "common"),
       ...copies(2, "undead.graveBellTender", "common"),
       ...copies(2, "undead.chatteringCohort", "uncommon"),
@@ -130,6 +129,9 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "undead.lanternWidow", "rare"),
       ...copies(1, "undead.sirOdoLastTaxman", "epic"),
       ...copies(1, "undead.boneRampart", "epic"),
+      ...copies(1, "priest.mend", "common"),
+      ...copies(1, "priest.smite", "common"),
+      ...copies(1, "priest.sanctuary", "uncommon"),
     ],
   },
   {

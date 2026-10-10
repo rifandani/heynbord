@@ -962,13 +962,13 @@ const PackTear = ({
           }
         }}
       >
-        <PackArt pack={order.pack} race={order.race} />
+        <PackArt pack={order.pack} pool={order.pool} />
       </div>
       <div
         className="absolute inset-0 motion-safe:animate-[pack-tear-top_520ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
         style={{ clipPath: TEAR_TOP, animationDelay: `${SHAKE_MS}ms` }}
       >
-        <PackArt pack={order.pack} race={order.race} />
+        <PackArt pack={order.pack} pool={order.pool} />
       </div>
     </div>
   );

@@ -162,6 +162,11 @@ export interface UnitState {
   frozen: boolean;
   /** Speed 0 in the next action. The action then ends it (GDD 4.4). */
   entangled: boolean;
+  /**
+   * Ward N (GDD 4.7): a Buff that absorbs damage after Block. It goes down by
+   * the absorbed damage and ends at 0. 0 is no Ward. It has no time limit.
+   */
+  ward: number;
   /** Attack from Rally until the end of the Turn of the owner. */
   rallied: number;
   bonusArmor: number;
@@ -326,6 +331,13 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly source: DamageSource;
     readonly crit: boolean;
     readonly blocked: boolean;
+    /**
+     * The damage that the Ward of the target absorbed (GDD 4.7, step 7).
+     * `amount` is the damage after the Ward. A Hero has no Ward: 0.
+     */
+    readonly absorbed: number;
+    /** The Ward value of the target after the damage. 0 is no Ward. */
+    readonly ward: number;
     /** The HP of the target after the damage. */
     readonly hp: number;
   };
@@ -337,8 +349,12 @@ export type BattleEvent = Data.TaggedEnum<{
       | "poison"
       | "hobble"
       | "bleed"
-      | "entangle";
-    /** The Hobbled or Bleeding count after the hit. The other statuses do not use it. */
+      | "entangle"
+      | "ward";
+    /**
+     * The Hobbled or Bleeding count after the hit, or the new Ward value. The
+     * other statuses do not use it.
+     */
     readonly count?: number;
   };
   UnitDied: { readonly unitId: number };

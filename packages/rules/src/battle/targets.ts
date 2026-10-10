@@ -45,6 +45,9 @@ const skillTargets = (
     case "enemyLane": {
       return lanesWithUnits(state, enemy);
     }
+    case "friendlyUnit": {
+      return unitSquares(state, side);
+    }
     case "friendlyLane": {
       return lanesWithUnits(state, side);
     }

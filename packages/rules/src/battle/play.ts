@@ -13,6 +13,7 @@ import { randomInt, rollBasisPoints } from "../random";
 import type { StepContext } from "./context";
 import { direction, isInsideLane, isLaneOpen, isOver, unitAt } from "./context";
 import { damageHero, damageUnit } from "./damage";
+import { healUnit } from "./heal";
 import { entangleUnit, pushUnit } from "./resolution";
 import { unitsInArea } from "./targets";
 import type { CardInstance, HandCard, Side, Target, UnitState } from "./types";
@@ -161,6 +162,55 @@ const lowerCountdowns = (
   }
 };
 
+/**
+ * Ward N (GDD 4.7): the Unit keeps the higher Ward. The values do not add. A
+ * Ward that is not higher changes nothing, and no event occurs, the same as
+ * Entangle on an Entangled Unit.
+ */
+const wardUnit = (ctx: StepContext, unit: UnitState, ward: number): void => {
+  if (ward <= unit.ward) {
+    return;
+  }
+  unit.ward = ward;
+  ctx.events.push(
+    BattleEvent.StatusApplied({ unitId: unit.id, status: "ward", count: ward })
+  );
+};
+
+/**
+ * Damage to one enemy Unit, then the control part of the effect on a Unit
+ * that survives: a push (also at 0 damage), or an Entangle at damage above 0.
+ */
+const damageAndControl = (
+  ctx: StepContext,
+  units: readonly UnitState[],
+  effect: Extract<
+    SkillEffect,
+    { readonly type: "damageEntangle" | "damagePush" }
+  >,
+  amount: number,
+  crit: number
+): void => {
+  for (const unit of units) {
+    const { dealt, killed } = damageUnit(ctx, unit, {
+      amount,
+      damageType: effect.damageType,
+      source: "skill",
+      crit,
+    });
+    // A Unit that comes back with Rebirth did not survive the hit.
+    if (killed) {
+      continue;
+    }
+    if (effect.type === "damagePush") {
+      // The push is the main effect: it occurs also at 0 damage.
+      pushUnit(ctx, unit, effect.squares);
+    } else if (dealt > 0) {
+      entangleUnit(ctx, unit);
+    }
+  }
+};
+
 const applyEffect = (
   ctx: StepContext,
   side: Side,
@@ -188,25 +238,13 @@ const applyEffect = (
     }
     case "damageEntangle":
     case "damagePush": {
-      const amount = scaleForRank(effect.amount, card.rank);
-      for (const unit of unitsInArea(ctx.state, enemy, target, 1)) {
-        const { dealt, killed } = damageUnit(ctx, unit, {
-          amount,
-          damageType: effect.damageType,
-          source: "skill",
-          crit,
-        });
-        // A Unit that comes back with Rebirth did not survive the hit.
-        if (killed) {
-          continue;
-        }
-        if (effect.type === "damagePush") {
-          // The push is the main effect: it occurs also at 0 damage.
-          pushUnit(ctx, unit, effect.squares);
-        } else if (dealt > 0) {
-          entangleUnit(ctx, unit);
-        }
-      }
+      damageAndControl(
+        ctx,
+        unitsInArea(ctx.state, enemy, target, 1),
+        effect,
+        scaleForRank(effect.amount, card.rank),
+        crit
+      );
       return;
     }
     case "damageHero": {
@@ -217,6 +255,20 @@ const applyEffect = (
           source: "skill",
           crit,
         });
+      }
+      return;
+    }
+    case "healUnit": {
+      const heal = scaleForRank(effect.heal, card.rank);
+      for (const unit of unitsInArea(ctx.state, side, target, 1)) {
+        healUnit(ctx, unit, heal);
+      }
+      return;
+    }
+    case "wardUnit": {
+      const ward = scaleForRank(effect.ward, card.rank);
+      for (const unit of unitsInArea(ctx.state, side, target, 1)) {
+        wardUnit(ctx, unit, ward);
       }
       return;
     }

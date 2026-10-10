@@ -109,9 +109,9 @@ export const currentCast = (
 };
 
 /**
- * The color of a Skill Card effect: its Damage Type, Armor blue, or the
- * neutral cast color. Each effect type has its own case, so a new type (for
- * example a heal) does not compile until it gets a color.
+ * The color of a Skill Card effect: its Damage Type, the Holy gold of the
+ * Priest heal and Ward, Armor blue, or the neutral cast color. Each effect
+ * type has its own case, so a new type does not compile until it gets a color.
  */
 export const effectColor = (effect: SkillEffect): string => {
   switch (effect.type) {
@@ -122,6 +122,11 @@ export const effectColor = (effect: SkillEffect): string => {
     case "damagePush":
     case "damageHero": {
       return DAMAGE_COLORS[effect.damageType];
+    }
+    // The Priest cards use the Holy palette (art direction: Holy).
+    case "healUnit":
+    case "wardUnit": {
+      return DAMAGE_COLORS.holy;
     }
     case "laneArmor": {
       return "#9cc8ff";

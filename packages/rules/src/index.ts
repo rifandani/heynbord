@@ -131,4 +131,5 @@ export type {
   OpenPackInput,
   OpenPackOutput,
   OpenTenPacksOutput,
+  PackPool,
 } from "./packs/open-pack";

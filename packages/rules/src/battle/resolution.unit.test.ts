@@ -2934,3 +2934,224 @@ describe("Rebirth (GDD 4.9)", () => {
     expect(eventsOfType(events, "UnitDied")).toEqual([]);
   });
 });
+
+describe("Ward (GDD 4.7, step 7)", () => {
+  it("absorbs the damage after Armor, Crit and Block, and the Unit loses HP only for the rest", () => {
+    const state = emptyBattle({
+      player: { unitCrit: 10_000 },
+      enemy: { unitBlock: 10_000 },
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      attack: 6,
+    });
+    const shield = placeUnit(state, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      ward: 2,
+    });
+    const { state: next, events } = run(state, endTurn);
+    // (6 − Armor 1) × 2 = 10, Block ÷ 2 = 5, Ward 2 absorbs 2: 3 damage.
+    expect(unitById(next, shield.id)).toMatchObject({ hp: 4, ward: 0 });
+    expect(eventsOfType(events, "DamageDealt")[0]).toMatchObject({
+      amount: 3,
+      crit: true,
+      blocked: true,
+      absorbed: 2,
+      ward: 0,
+      hp: 4,
+    });
+  });
+
+  it("deals 0 damage when it absorbs the full hit, so Poison, Hobble, Bleed, Entangle and Knockback do not occur", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      poison: true,
+      hobble: 1,
+      bleed: 1,
+      entangle: true,
+      knockback: 1,
+    });
+    const target = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      ward: 5,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, target.id)).toMatchObject({
+      hp: 8,
+      ward: 2,
+      position: 5,
+      poisoned: 0,
+      hobbled: 0,
+      bleeding: 0,
+      entangled: false,
+    });
+    expect(eventsOfType(events, "DamageDealt")[0]).toMatchObject({
+      amount: 0,
+      absorbed: 3,
+      ward: 2,
+    });
+    expect(eventsOfType(events, "StatusApplied")).toEqual([]);
+    expect(eventsOfType(events, "UnitPushed")).toEqual([]);
+  });
+
+  it("absorbs Retaliate and First Strike damage", () => {
+    const state = emptyBattle({ lanes: 2 });
+    const intoRetaliate = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      ward: 3,
+    });
+    placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+      hp: 20,
+      maxHp: 20,
+    });
+    const intoFirstStrike = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      lane: 1,
+      position: 4,
+      ward: 3,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      lane: 1,
+      position: 5,
+      attack: 2,
+      hp: 20,
+      maxHp: 20,
+      firstStrike: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    const retaliate = eventsOfType(events, "DamageDealt").find(
+      (event) => event.source === "retaliate"
+    );
+    expect(retaliate).toMatchObject({ absorbed: 3, ward: 0 });
+    expect(unitById(next, intoFirstStrike.id)).toMatchObject({
+      hp: 8,
+      ward: 1,
+    });
+    expect(unitById(next, intoRetaliate.id)?.ward).toBe(0);
+  });
+
+  it("absorbs Burn, Poison and Last Breath damage", () => {
+    const state = emptyBattle({ lanes: 2 });
+    const burned = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      speed: 0,
+      burn: 2,
+      ward: 1,
+    });
+    const poisoned = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 1,
+      attack: 0,
+      speed: 0,
+      poisoned: 2,
+      ward: 3,
+    });
+    placeUnit(state, {
+      cardId: "orc.badlandRunt",
+      owner: "player",
+      lane: 1,
+      position: 4,
+      attack: 0,
+      speed: 0,
+      hp: 1,
+      burn: 1,
+    });
+    const ahead = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      lane: 1,
+      position: 6,
+      attack: 0,
+      ward: 4,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, burned.id)).toMatchObject({ hp: 8, ward: 0 });
+    expect(unitById(next, poisoned.id)).toMatchObject({ hp: 8, ward: 1 });
+    expect(unitById(next, ahead.id)).toMatchObject({ hp: 8, ward: 3 });
+    expect(
+      eventsOfType(events, "DamageDealt")
+        .filter((event) => event.absorbed > 0)
+        .map((event) => `${event.source}:${event.absorbed}`)
+    ).toEqual(["burn:1", "lastBreath:1", "poison:2"]);
+  });
+
+  it("has no time limit: it stays until it absorbs all N", () => {
+    const state = emptyBattle();
+    const unit = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 0,
+      attack: 0,
+      speed: 0,
+      ward: 4,
+    });
+    preventRout(state);
+    let next = state;
+    for (let turn = 0; turn < 6; turn += 1) {
+      next = run(next, endTurn).state;
+    }
+    expect(unitById(next, unit.id)?.ward).toBe(4);
+  });
+
+  it("subtracts the absorbed damage from the Trample overflow (the glossary example), and a Ward on the next Unit absorbs the overflow", () => {
+    // Attack 11 against Armor 1 deals 10. Ward 2 absorbs 2, and 8 kills the
+    // 3 HP Unit: 5 is left.
+    const plain = trampleBoard({ attack: 11, defender: { hp: 3, ward: 2 } });
+    expect(damageLog(plain.events)).toEqual(["attack:8", "trample:5"]);
+    const warded = trampleBoard({
+      attack: 11,
+      defender: { hp: 3, ward: 2 },
+      behind: { ward: 2 },
+    });
+    expect(damageLog(warded.events)).toEqual(["attack:8", "trample:3"]);
+    expect(eventsOfType(warded.events, "DamageDealt")[1]).toMatchObject({
+      absorbed: 2,
+      ward: 0,
+    });
+  });
+
+  it("ends when a Unit comes back with Rebirth", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "player",
+      position: 4,
+      attack: 6,
+    });
+    const unit = placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      hp: 2,
+      ward: 3,
+      rebirth: true,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(eventsOfType(events, "UnitReborn")).toHaveLength(1);
+    expect(unitById(next, unit.id)).toMatchObject({ hp: 1, ward: 0 });
+  });
+});

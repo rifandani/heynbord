@@ -239,7 +239,7 @@ type DamageEffect = Extract<
 
 interface SkillHit {
   readonly unit: UnitState;
-  /** The damage after Armor, before Crit and Block. */
+  /** The damage after Armor and Ward, before Crit and Block. */
   readonly damage: number;
 }
 
@@ -256,7 +256,8 @@ const skillHits = (
   return unitsInArea(state, otherSide(side), target, length).map((unit) => {
     const armor =
       effect.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
-    return { unit, damage: Math.max(0, amount - armor) };
+    // A Ward absorbs the damage after Armor (GDD 4.7, step 7).
+    return { unit, damage: Math.max(0, amount - armor - unit.ward) };
   });
 };
 
@@ -325,6 +326,110 @@ const HERO_KILL_SCORE = 1000;
 /** The weight of each point of damage to the enemy Hero from a Skill Card. */
 const SKILL_HERO_DAMAGE_WEIGHT = 2;
 
+/** The HP that a heal gives back to `unit`: half for a Bleeding Unit, up to its maximum HP. */
+const healedHp = (unit: UnitState, heal: number): number =>
+  Math.min(
+    unit.bleeding > 0 ? Math.floor(heal / 2) : heal,
+    unit.maxHp - unit.hp
+  );
+
+/** The friendly Unit of a Square target. */
+const friendlyUnitAt = (
+  state: BattleState,
+  side: Side,
+  target: Target
+): UnitState | undefined => {
+  if (target._tag !== "Square") {
+    return undefined;
+  }
+  const unit = unitAt(state, target.lane, target.position);
+  return unit?.owner === side ? unit : undefined;
+};
+
+/** The weight of each HP that a heal gives back. */
+const HEAL_WEIGHT = 2;
+
+/**
+ * The target choice of a heal (GDD 9): the friendly Unit that gets back the
+ * most HP. For the same HP, the Unit with the higher maximum HP. The maximum
+ * HP adds less than 1 point, so it only breaks a tie. A heal that gives back
+ * no HP scores 0.
+ */
+const scoreHeal = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  heal: number,
+  target: Target
+): number => {
+  const unit = friendlyUnitAt(state, side, target);
+  if (!unit) {
+    return 0;
+  }
+  const healed = healedHp(unit, scaleForRank(heal, card.rank));
+  return healed > 0 ? healed * HEAL_WEIGHT + unit.maxHp / 100 : 0;
+};
+
+/**
+ * The enemy Unit in the Lane of `unit` that is nearest to `side`'s Hero, or
+ * undefined when the Lane has no enemy Unit.
+ */
+const nearestEnemyInLane = (
+  state: BattleState,
+  side: Side,
+  lane: number
+): UnitState | undefined => {
+  let nearest: UnitState | undefined;
+  for (const other of state.units) {
+    if (
+      other.owner !== side &&
+      other.lane === lane &&
+      (!nearest || closeness(other) > closeness(nearest))
+    ) {
+      nearest = other;
+    }
+  }
+  return nearest;
+};
+
+/** True when a new Ward of `ward` is higher than the Ward of `unit`, and its Lane has an enemy Unit. */
+const needsWard = (
+  state: BattleState,
+  side: Side,
+  unit: UnitState,
+  ward: number
+) =>
+  unit.ward < ward && nearestEnemyInLane(state, side, unit.lane) !== undefined;
+
+/**
+ * The target choice of a Ward (GDD 9): in a Lane with an enemy Unit, the
+ * friendly Unit that needs the Ward and is nearest to the enemy (the Unit that
+ * the enemy attacks first). Between Lanes, the Lane where the enemy is nearest
+ * to our Hero. Each other target scores 0.
+ */
+const scoreWard = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  ward: number,
+  target: Target
+): number => {
+  const unit = friendlyUnitAt(state, side, target);
+  const value = scaleForRank(ward, card.rank);
+  if (!unit || !needsWard(state, side, unit, value)) {
+    return 0;
+  }
+  const front = state.units.some(
+    (other) =>
+      other.owner === side &&
+      other.lane === unit.lane &&
+      columnFrom(side, other.position) > columnFrom(side, unit.position) &&
+      needsWard(state, side, other, value)
+  );
+  const enemy = nearestEnemyInLane(state, side, unit.lane);
+  return front || !enemy ? 0 : value * 2 + closeness(enemy);
+};
+
 /** The other cards in `side`'s Hand that are not Ready. */
 const notReadyCards = (
   state: BattleState,
@@ -372,6 +477,20 @@ const meetsHoldRule = (
     case "damagePush":
     case "damageHero": {
       return true;
+    }
+    case "healUnit": {
+      // A friendly Unit has lost at least 50% of its maximum HP.
+      return state.units.some(
+        (unit) =>
+          unit.owner === side && (unit.maxHp - unit.hp) * 2 >= unit.maxHp
+      );
+    }
+    case "wardUnit": {
+      const unit = friendlyUnitAt(state, side, target);
+      return (
+        unit !== undefined &&
+        needsWard(state, side, unit, scaleForRank(effect.ward, card.rank))
+      );
     }
     case "laneArmor": {
       return (
@@ -429,6 +548,12 @@ const scoreSkill = (
       return amount >= state.sides[target.side].hero.hp
         ? HERO_KILL_SCORE
         : amount * SKILL_HERO_DAMAGE_WEIGHT;
+    }
+    case "healUnit": {
+      return scoreHeal(state, side, card, effect.heal, target);
+    }
+    case "wardUnit": {
+      return scoreWard(state, side, card, effect.ward, target);
     }
     case "laneArmor": {
       if (target._tag !== "Lane") {
@@ -504,6 +629,8 @@ const unitsAfterSkill = (
       });
     }
     case "damageHero":
+    case "healUnit":
+    case "wardUnit":
     case "laneArmor":
     case "lowerCountdown": {
       return state.units;

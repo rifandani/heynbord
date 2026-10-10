@@ -246,6 +246,40 @@ describe("cardText (CRD-08)", () => {
     expect(resolve(longShot.flavor)).toBe("Over their heads, into the Hero.");
   });
 
+  it("builds the Priest Skill Card text with the values of each Rank", () => {
+    const effects = (cardId: string) =>
+      RANKS.flatMap((rank) => {
+        const text = cardText(cardId, rank);
+        return text.kind === "skill" ? [resolve(text.effect)] : [];
+      });
+    expect(effects("priest.mend")).toEqual(
+      [6, 7, 9, 11, 13].map((heal) => `Heal ${heal} HP to a friendly Unit.`)
+    );
+    expect(effects("priest.smite")).toEqual(
+      [3, 4, 4, 5, 6].map(
+        (amount) =>
+          `Deal ${amount} Holy damage to an enemy Unit. Armor does not reduce it.`
+      )
+    );
+    // The card prints the Common value 5, but Sanctuary starts at Uncommon:
+    // its lowest copy gives Ward 6.
+    expect(effects("priest.sanctuary")).toEqual(
+      [5, 6, 7, 9, 11].map(
+        (ward) =>
+          `A friendly Unit gets Ward ${ward}: it absorbs the next ${ward} damage.`
+      )
+    );
+    const mend = skill("priest.mend", "common");
+    expect(resolve(mend.name)).toBe("Mend");
+    expect(resolve(mend.flavor)).toBe("Rise. You are not done yet.");
+    expect(resolve(skill("priest.smite", "common").flavor)).toBe(
+      "No armor hides you from the light."
+    );
+    expect(resolve(skill("priest.sanctuary", "uncommon").flavor)).toBe(
+      "Stand within the light."
+    );
+  });
+
   it("shows the Hobble value of a Pavise Arbalist copy for its Rank", () => {
     expect(hobbleName("rare")).toBe("Hobble 1");
     expect(hobbleName("epic")).toBe("Hobble 2");
@@ -377,6 +411,7 @@ describe("unitStatusText", () => {
     burn: 0,
     frozen: false,
     entangled: false,
+    ward: 0,
     hobbled: 0,
     bleeding: 0,
     poisoned: 0,
@@ -396,6 +431,7 @@ describe("unitStatusText", () => {
       burn: 2,
       frozen: true,
       entangled: true,
+      ward: 0,
       hobbled: 1,
       bleeding: 3,
       poisoned: 2,
@@ -433,6 +469,16 @@ describe("unitStatusText", () => {
       "Poison 2 1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
       "Reborn This Unit died and came back with Rebirth. It does not come back again.",
     ]);
+  });
+
+  it("lists the Ward first, with its value and its rule", () => {
+    const lines = unitStatusText({ ...quiet, ward: 6, burn: 1 });
+    expect(lines.map((line) => line.status)).toEqual(["ward", "burn"]);
+    const [ward] = lines;
+    expect(ward && resolve(ward.name)).toBe("Ward 6");
+    expect(ward && resolve(ward.rule)).toBe(
+      "A Buff. It absorbs damage after Armor, Crit and Block, also Holy, Burn and Poison damage, and goes down by that damage. It has no time limit. A new Ward keeps the higher value."
+    );
   });
 
   it("shows the Rally bonus and the Swarm bonus as two separate lines", () => {

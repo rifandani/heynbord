@@ -1,15 +1,16 @@
 /**
  * Pack simulation (Economy 3.1, ADR-0027): the real rate of each Rank, how
  * often the Pack Guarantee gives a card, the value for each Coin and the
- * number of Packs to Discover all cards of each Base Rank. The seeds count up
+ * number of Packs to Discover all cards of each Base Rank, for each version of
+ * a Pack: all cards, a Race Pack or a Class Pack. The seeds count up
  * from 1, so the same content always gives the same report.
  */
 import { getPack } from "../content/packs";
 import type { PackId } from "../content/packs";
 import { isRankAtLeast, RANKS } from "../content/ranks";
-import type { ClassId, DeckEntry, RaceId, RankId } from "../content/schema";
+import type { ClassId, DeckEntry, RankId } from "../content/schema";
 import { openPack, openTenPacks, packPool } from "../packs/open-pack";
-import type { OpenPackInput } from "../packs/open-pack";
+import type { OpenPackInput, PackPool } from "../packs/open-pack";
 
 /** The value of a copy of each Rank on the Combine scale (ADR-0027). */
 const COMBINE_VALUE: Readonly<Record<RankId, number>> = {
@@ -25,14 +26,14 @@ export interface PackSimulationOptions {
   readonly packs: number;
   /** The number of Players that open Packs until they Discover all cards. */
   readonly players: number;
-  /** The Race of a Race Pack, or `null` for the Pack with all cards. */
-  readonly race: RaceId | null;
+  readonly pool: PackPool;
+  /** The current Hero Class. "All cards" has only its Skill Cards. */
   readonly classId: ClassId;
 }
 
 export interface PackReport {
   readonly packId: PackId;
-  readonly race: RaceId | null;
+  readonly pool: PackPool;
   /** The share of the cards in each Rank, from 0 to 1. */
   readonly rankRates: Readonly<Record<RankId, number>>;
   /** The share of the single Packs whose Pack Guarantee gave a card, from 0 to 1. */
@@ -49,6 +50,11 @@ export interface PackReport {
    * when no card has that Base Rank.
    */
   readonly packsToDiscover: Readonly<Record<RankId, number | null>>;
+  /**
+   * The mean number of single Packs to Discover all pool cards that the Pack
+   * can give, from no Discovered card.
+   */
+  readonly packsToDiscoverAll: number;
 }
 
 /** A Player that opens more Packs than this has a bug in the Pack rules. */
@@ -67,12 +73,11 @@ const ranksRecord = <A>(value: (rank: RankId) => A): Record<RankId, A> => ({
 
 /** The IDs of the pool cards of each Base Rank. */
 const poolByBaseRank = (
-  race: RaceId | null,
-  classId: ClassId
+  options: PackSimulationOptions
 ): Record<RankId, readonly string[]> => {
-  const pool = packPool(race, classId);
+  const cards = packPool(options.pool, options.classId);
   return ranksRecord((rank) =>
-    pool.flatMap((card) => (card.baseRank === rank ? [card.id] : []))
+    cards.flatMap((card) => (card.baseRank === rank ? [card.id] : []))
   );
 };
 
@@ -83,7 +88,7 @@ const firstInput = (
   discovered: ReadonlySet<string> = new Set()
 ): OpenPackInput => ({
   pack: packId,
-  race: options.race,
+  pool: options.pool,
   classId: options.classId,
   discovered,
   guaranteeCounter: 0,
@@ -176,13 +181,16 @@ const discoverAll = (
   return done;
 };
 
-/** The mean number of Packs to Discover all cards of each Base Rank. */
+/**
+ * The mean number of Packs to Discover all cards of each Base Rank, and all
+ * cards together.
+ */
 const packsToDiscover = (
   packId: PackId,
   options: PackSimulationOptions
-): Record<RankId, number | null> => {
+): Pick<PackReport, "packsToDiscover" | "packsToDiscoverAll"> => {
   const pack = getPack(packId);
-  const pool = poolByBaseRank(options.race, options.classId);
+  const pool = poolByBaseRank(options);
   // A Base Rank is in reach when the Pack can roll that Rank or higher.
   const targets = ranksRecord((rank) =>
     RANKS.some(
@@ -192,15 +200,20 @@ const packsToDiscover = (
       : []
   );
   const totals = ranksRecord(() => 0);
+  let allTotal = 0;
   for (let seed = 1; seed <= options.players; seed += 1) {
     const done = discoverAll(packId, options, seed, targets);
     for (const rank of RANKS) {
       totals[rank] += done[rank] ?? 0;
     }
+    allTotal += Math.max(...RANKS.map((rank) => done[rank] ?? 0));
   }
-  return ranksRecord((rank) =>
-    targets[rank].length > 0 ? totals[rank] / options.players : null
-  );
+  return {
+    packsToDiscover: ranksRecord((rank) =>
+      targets[rank].length > 0 ? totals[rank] / options.players : null
+    ),
+    packsToDiscoverAll: allTotal / options.players,
+  };
 };
 
 /** Opens Packs of one kind and reports the Economy 3.1 values. */
@@ -209,15 +222,16 @@ export const simulatePack = (
   options: PackSimulationOptions
 ): PackReport => {
   const pack = getPack(packId);
-  const price = options.race === null ? pack.price : pack.racePackPrice;
+  // A Race Pack and a Class Pack cost the same (Economy 3.1).
+  const price = options.pool.kind === "all" ? pack.price : pack.versionPrice;
   const single = singlePacks(packId, options);
   return {
     packId,
-    race: options.race,
+    pool: options.pool,
     ...single,
     valuePer100Coin: (single.valuePerPack * 100) / price,
     tenPackValuePer100Coin:
       (tenPacksValue(packId, options) * 100) / (price * 10),
-    packsToDiscover: packsToDiscover(packId, options),
+    ...packsToDiscover(packId, options),
   };
 };

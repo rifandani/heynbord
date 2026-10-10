@@ -95,13 +95,19 @@ const setCounts = (
   }
 };
 
-/** Test setup: replaces Rebirth, the Rally bonus and the bonus Armor of a Unit. */
+/** Test setup: replaces Rebirth, the Rally bonus, the bonus Armor and the Ward of a Unit. */
 const setRebirthAndBonuses = (
   unit: UnitState,
   options: Partial<
-    Pick<UnitState, "rebirth" | "rallied" | "bonusArmor" | "bonusArmorTurns">
+    Pick<
+      UnitState,
+      "rebirth" | "rallied" | "bonusArmor" | "bonusArmorTurns" | "ward"
+    >
   >
 ): void => {
+  if (options.ward !== undefined) {
+    unit.ward = options.ward;
+  }
   if (options.rebirth !== undefined) {
     unit.rebirth = options.rebirth;
   }
@@ -146,6 +152,7 @@ export const placeUnit = (
       | "rallied"
       | "bonusArmor"
       | "bonusArmorTurns"
+      | "ward"
     >
   > & {
       /** Test setup: gives the Unit the Poison Keyword. */

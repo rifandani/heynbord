@@ -6,7 +6,7 @@ import { simulatePack } from "./packs";
 const options = {
   packs: 500,
   players: 3,
-  race: null,
+  pool: { kind: "all" },
   classId: "warrior",
 } as const;
 
@@ -30,11 +30,29 @@ describe("simulatePack (Economy 3.1, ADR-0027)", () => {
     expect(report.guaranteeRate).toBeGreaterThan(0);
   });
 
-  it("uses the Race Pack price for a Race Pack", () => {
-    const race = simulatePack("royal", { ...options, race: "human" });
-    expect(race.valuePer100Coin).toBeCloseTo(
-      (race.valuePerPack * 100) / 1400,
+  it.each([
+    { kind: "race", race: "human" },
+    { kind: "class", classId: "mage" },
+  ] as const)("uses the Race Pack price for a $kind version", (pool) => {
+    const report = simulatePack("royal", { ...options, pool });
+    expect(report.valuePer100Coin).toBeCloseTo(
+      (report.valuePerPack * 100) / 1400,
       10
+    );
+  });
+
+  it("reports the Packs to Discover all Skill Cards of a Class", () => {
+    const report = simulatePack("royal", {
+      ...options,
+      pool: { kind: "class", classId: "ranger" },
+    });
+    // A Royal Pack has no Common roll, but a Common-Base card comes at Uncommon.
+    expect(report.rankRates.common).toBe(0);
+    expect(report.packsToDiscover.common).toBeGreaterThan(0);
+    expect(report.packsToDiscoverAll).toBeGreaterThanOrEqual(
+      Math.max(
+        ...Object.values(report.packsToDiscover).map((packs) => packs ?? 0)
+      )
     );
   });
 

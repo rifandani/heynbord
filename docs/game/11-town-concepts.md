@@ -301,12 +301,12 @@ The Packs screen shows the three Packs side by side ([Economy 3.1](./07-economy.
 - **Light.** From the upper left, as in all other art.
 - **Outline.** The thick dark brown outline (`#2e1d10`) of the Town Bar icons, at the same thickness on the make canvas.
 - **Seal.** The seal of each Pack is at the upper center of the front face.
-- **Race stamp area.** The lower-right quarter of the front face is plain: no seal, no band end and no ornament. On a Race Pack, the game puts a round stamp at the center of that quarter, with the Race emblem of the Card Frame and a bronze rim. The stamp does not cover the gold corner plate of the Royal Pack. A Race Pack has no art of its own.
+- **Stamp area.** The lower-right quarter of the front face is plain: no seal, no band end and no ornament. On a Race Pack or a Class Pack, the game puts a round stamp at the center of that quarter, with a bronze rim. The Race Stamp has the Race emblem of the Card Frame. The Class Stamp has the Class emblem of a Skill Card: the Class glyph in ink on parchment. The stamp does not cover the gold corner plate of the Royal Pack. A Race Pack and a Class Pack have no art of their own.
 - **No cards.** No card shows out of the Pack, because a card can show a Rank.
 - **Size.** Portrait 2:3. Make at 1024 × 1536. The Pack body fills about 80% of the width and 88% of the height. Export at 512 × 768.
 - **No text.** No letters, numbers, runes or logo. The game shows the Pack names from the Message Catalogs, in each language.
 - **Background.** Transparent, with no ground shadow. The game adds the contact shadow, so that the Pack sits on any surface.
-- **States.** Make one closed image for each Pack. The code makes the hover, focus, disabled and **Free** states, and the Race stamp. When a Pack opens, the code moves the closed image (a lift, a shake, then a fade) and the face-down cards come in. There is no tear strip, no open Pack and no layer.
+- **States.** Make one closed image for each Pack. The code makes the hover, focus, disabled and **Free** states, the Race Stamp and the Class Stamp. When a Pack opens, the code moves the closed image (a lift, a shake, then a fade) and the face-down cards come in. There is no tear strip, no open Pack and no layer.
 
 ### 8.2 Prompts
 
@@ -330,7 +330,7 @@ Each Pack prompt has the rules of 8.1 and the subject line of the Pack in `scrip
 
 1. Run `bun town:prompts`. Make the Merchant Pack first, with `packs/prompts.md` and the references of 8.2, with GPT Image, a transparent background and high quality, at 1024 × 1536. Save it as `apps/web/art/packs/merchant-pack.webp`, and run `bun town:prompts` again: the other Packs use it as the set reference.
 2. Make the Peddler Pack and the Royal Pack. Select each image with the checklist in 8.5.
-3. Fix problems by hand or with inpainting (text-like marks, extra parts, a broken outline, an ornament in the Race stamp area).
+3. Fix problems by hand or with inpainting (text-like marks, extra parts, a broken outline, an ornament in the stamp area).
 4. Put the three Packs on one canvas and check that the bodies have the same size and the same bottom line. Move or scale an image if necessary.
 5. Export each Pack as WebP with transparency at 512 × 768: `cwebp -q 80 -resize 512 768 <id>-pack.webp -o <id>.webp`. Put the files in `apps/web/public/packs/` (`peddler.webp`, `merchant.webp`, `royal.webp`). Keep the full-size sources in `apps/web/art/packs/`, not in `public/`.
 6. Add a unit test in the same commit as the art. The test reads `apps/web/public/packs/` and checks that it has exactly `peddler.webp`, `merchant.webp` and `royal.webp`, and that each one is a 512 × 768 WebP with alpha (as the card art test of #30).
@@ -359,10 +359,10 @@ The Packs screen shows the inside of the Card shop (2.7) behind the Packs. One p
 
 - **One painting, a full room.** The room fills the image to all edges. There is no frame and no border.
 - **View.** From the customer's side of the counter, at eye level, straight on. The counter goes across the full width at the bottom.
-- **A calm center.** The Packs, their plates and the Pool strip cover the center (9.2). There, the painting is a plain dark plum curtain with soft folds, low contrast and no small details. Thus the Packs and the text stay easy to read. The details, the people and the bright light are at the left, at the right and at the top.
+- **A calm center.** The Packs, their plates and the pool plate cover the center (9.2). There, the painting is a plain dark plum curtain with soft folds, low contrast and no small details. Thus the Packs and the text stay easy to read. The details, the people and the bright light are at the left, at the right and at the top.
 - **Value.** Mid-dark in total. The brightest areas are the round window and the lantern light. The center is the darkest area, darker than the sides, so that the gold of the Packs and the cream text show clearly.
 - **Light.** From the upper left, through the round window, as in all other art. Warm lanterns add small pools of light.
-- **The three Packs.** All packs on the shelves and in the hands of the people are the three Packs of section 8, at a small size: the kraft parcel, the purple foil and the crimson velvet. They have no Race stamp.
+- **The three Packs.** All packs on the shelves and in the hands of the people are the three Packs of section 8, at a small size: the kraft parcel, the purple foil and the crimson velvet. They have no Race Stamp or Class Stamp.
 - **No loose cards.** No card face shows, because a card can show a Rank.
 - **No text.** Signs and labels show only simple shapes: a gold four-point star, a crown or a coin. No letters, numbers, runes or logo.
 - **Detail and humor.** Bright, warm and a little funny (art direction 1). The people and the jokes stay at the sides and at the top.
@@ -376,7 +376,7 @@ The boxes are in percent of the 1536 × 1024 image. The layout sketch of 9.3 sho
 | --- | --- | --- |
 | Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The shopkeeper's face and the window must be in it. |
 | Calm center | x 22 to 78, y 25 to 82 | A plain deep plum velvet curtain with soft folds, lit softly from above. The Packs stand in front of it. |
-| High shelf | x 22 to 78, y 13 to 25 | Rows of the three Packs. A goblin apprentice on top of the right end. The Pool strip covers its lower edge. |
+| High shelf | x 22 to 78, y 13 to 25 | Rows of the three Packs. A goblin apprentice on top of the right end. The pool plate covers its lower edge. |
 | Ceiling | x 0 to 100, y 0 to 12 | Dark wood beams, three brass lanterns, strings of pennants and Pack bundles. The title plate and the Balance Plate cover the top corners. |
 | Round window | x 2 to 22, y 14 to 46 | The round shop window of 2.7, from the inside. Morning light comes in. A child presses its face on the glass. |
 | Left corner | x 0 to 22, y 54 to 80 | A stack of kraft parcels with a sleeping cat on top. |

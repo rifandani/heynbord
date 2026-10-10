@@ -37,6 +37,8 @@ describe("fxForEvent", () => {
         source: "attack",
         crit: true,
         blocked: false,
+        absorbed: 0,
+        ward: 0,
         hp: 10,
       },
       view,
@@ -69,6 +71,8 @@ describe("fxForEvent", () => {
         source: "attack",
         crit: false,
         blocked: true,
+        absorbed: 0,
+        ward: 0,
         hp: 1,
       },
       view,
@@ -122,6 +126,8 @@ describe("fxForEvent edge cases", () => {
       source: "attack",
       crit: false,
       blocked: false,
+      absorbed: 0,
+      ward: 0,
       hp: 10,
     } as const;
     expect(fxForEvent(damage, view, view, 0, 1)[0]).toMatchObject({
@@ -208,6 +214,8 @@ describe("fxForEvent for Statuses", () => {
           source,
           crit: false,
           blocked: false,
+          absorbed: 0,
+          ward: 0,
           hp: 3,
         },
         view,
@@ -250,16 +258,24 @@ describe("fxForEvent for attacks and hits (web ADR-0009)", () => {
   } as const;
   const damage = (
     damageType: "physical" | "fire" | "frost" | "holy",
-    options: { crit?: boolean; blocked?: boolean } = {}
+    options: {
+      crit?: boolean;
+      blocked?: boolean;
+      amount?: number;
+      absorbed?: number;
+      ward?: number;
+    } = {}
   ) =>
     ({
       _tag: "DamageDealt",
       target: { _tag: "Unit", unitId: attacker?.id ?? 0 },
-      amount: 2,
+      amount: options.amount ?? 2,
       damageType,
       source: "attack",
       crit: options.crit ?? false,
       blocked: options.blocked ?? false,
+      absorbed: options.absorbed ?? 0,
+      ward: options.ward ?? 0,
       hp: 4,
     }) as const;
 
@@ -329,6 +345,55 @@ describe("fxForEvent for attacks and hits (web ADR-0009)", () => {
       1
     );
     expect(blocked).toMatchObject({ kind: "particles", burst: "hit:blocked" });
+  });
+
+  it("shows a gold −N on the Ward badge and a shield flash when a Ward absorbs damage, with the damage number too", () => {
+    const fxs = fxForEvent(
+      damage("physical", { amount: 2, absorbed: 3, ward: 1 }),
+      view,
+      view,
+      4,
+      1
+    );
+    expect(fxs).toEqual([
+      expect.objectContaining({ kind: "number", text: "-2" }),
+      expect.objectContaining({
+        kind: "number",
+        text: "-3",
+        damageType: "ward",
+        crit: false,
+        start: 4,
+      }),
+      expect.objectContaining({
+        kind: "particles",
+        burst: "ward-hit",
+        start: 4,
+      }),
+      expect.objectContaining({ kind: "particles", burst: "hit:physical" }),
+    ]);
+  });
+
+  it("shows no 0 when the Ward absorbs the full hit", () => {
+    const fxs = fxForEvent(
+      damage("physical", { amount: 0, absorbed: 2, ward: 4 }),
+      view,
+      view,
+      0,
+      1
+    );
+    const numbers = fxs.flatMap((fx) => (fx.kind === "number" ? [fx] : []));
+    expect(numbers.map((fx) => [fx.text, fx.damageType])).toEqual([
+      ["-2", "ward"],
+    ]);
+    // Damage of 0 with no Ward still shows the "0".
+    const zero = fxForEvent(
+      damage("physical", { amount: 0 }),
+      view,
+      view,
+      0,
+      1
+    );
+    expect(zero[0]).toMatchObject({ kind: "number", text: "0" });
   });
 
   it("plays the effects twice as fast at speed ×2", () => {
@@ -409,6 +474,8 @@ describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
           source: "skill",
           crit: false,
           blocked: false,
+          absorbed: 0,
+          ward: 0,
           hp: 5,
         },
         view,

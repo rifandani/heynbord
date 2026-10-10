@@ -27,6 +27,7 @@ import {
   SIDE_COLORS,
   STAT_DELTA,
   STAT_PIPE,
+  WARD_COLOR,
 } from "@/features/battle/palette";
 import type { FxCell, FxSlotName } from "@/features/battle/scene/fx-atlas";
 import type { StatusBadge } from "@/features/battle/scene/status-visuals";
@@ -341,7 +342,7 @@ export const unitStatTexture = (options: {
 /** A floating damage or heal number. A Crit is larger. The color shows the Damage Type, with an icon letter. */
 export const numberTexture = (options: {
   readonly text: string;
-  readonly damageType: DamageType | "heal" | "block";
+  readonly damageType: DamageType | "heal" | "block" | "ward";
   readonly crit: boolean;
 }): CanvasTexture =>
   cached(
@@ -354,7 +355,9 @@ export const numberTexture = (options: {
           ? HEAL_COLOR
           : options.damageType === "block"
             ? "#d7dde5"
-            : DAMAGE_COLORS[options.damageType];
+            : options.damageType === "ward"
+              ? WARD_COLOR
+              : DAMAGE_COLORS[options.damageType];
       context.font = `900 ${options.crit ? 76 : 60}px ${FONT}`;
       context.textAlign = "center";
       context.textBaseline = "middle";
@@ -790,6 +793,7 @@ const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
   "icon-entangle": glyphIcon("vine", FX_ANCHORS.iconEntangle),
   "icon-hobble": glyphIcon("speed", FX_ANCHORS.iconHobble),
   "icon-bleed": drawBleedIcon,
+  "icon-ward": glyphIcon("shield", FX_ANCHORS.iconWard),
 };
 
 /** The placeholder atlas is half size: the UV rectangles do not change. */
@@ -848,8 +852,9 @@ const drawBadgeText = (
 
 /**
  * The Status Badge above a Unit: a dark round plate with the icon of each
- * Status and its count next to it, then "+N". The icon art has no numbers.
- * `version` changes when the atlas changes, so the badge draws again.
+ * Status and its count next to it, then "+N". The icon art has no numbers. A
+ * Buff has a gold ring, and a Debuff a pale ring. `version` changes when the
+ * atlas changes, so the badge draws again.
  */
 export const statusBadgeTexture = (options: {
   readonly badges: readonly (StatusBadge & { readonly icon: BadgeIcon })[];
@@ -888,8 +893,13 @@ export const statusBadgeTexture = (options: {
         context.beginPath();
         context.arc(center, BADGE_HEIGHT / 2, PLATE_RADIUS, 0, Math.PI * 2);
         context.fill();
-        context.lineWidth = 4;
-        context.strokeStyle = "rgba(255, 246, 223, 0.35)";
+        if (badge.buff) {
+          context.lineWidth = 7;
+          context.strokeStyle = WARD_COLOR;
+        } else {
+          context.lineWidth = 4;
+          context.strokeStyle = "rgba(255, 246, 223, 0.35)";
+        }
         context.stroke();
         context.lineWidth = 12;
         const { icon } = badge;

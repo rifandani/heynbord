@@ -20,6 +20,7 @@ const STATUS_TINT: Readonly<Record<Status, string>> = {
   entangle: "#7fcf6a",
   bleed: "#e0605a",
   hobble: "#b8bec6",
+  ward: "#ffe7a3",
 };
 
 const HIT = new Color("#ff5a4a");

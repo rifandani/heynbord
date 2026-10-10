@@ -237,7 +237,8 @@ export const eventSound = (event: BattleEvent): SoundName | null => {
       if (event.crit) {
         return "crit";
       }
-      if (event.blocked) {
+      // A Ward that absorbs the full hit sounds like a Block: no damage goes in.
+      if (event.blocked || (event.amount === 0 && event.absorbed > 0)) {
         return "block";
       }
       return event.damageType === "physical" ? "hit" : event.damageType;

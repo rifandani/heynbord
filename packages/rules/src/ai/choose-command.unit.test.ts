@@ -5,6 +5,7 @@ import { createBattle } from "../battle/create-battle";
 import { step } from "../battle/step";
 import type { BattleState } from "../battle/types";
 import { Command, HAND_LIMIT, Target, TURN_LIMIT } from "../battle/types";
+import { getCard } from "../content/cards";
 import { getStarterDeck, STARTER_DECKS } from "../content/decks";
 import { getStage, STAGES } from "../content/stages";
 import { emptyBattle, giveHand, placeUnit } from "../testing/fixtures";
@@ -551,5 +552,153 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
     });
     expect(chooseCommand(state)).toEqual(playAt(4));
     expect(skillChoice("ranger.warningShot", [[0, 6]])).toEqual(playAt(0));
+  });
+});
+
+/** The enemy AI with a Ready Priest card and its own Units. */
+const priestChoice = (
+  cardId: string,
+  friends: readonly Partial<Parameters<typeof placeUnit>[1]>[],
+  setup: (state: BattleState) => void = () => {}
+) => {
+  const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
+  giveHand(state, "enemy", [[cardId, 0, getCard(cardId).baseRank]]);
+  for (const friend of friends) {
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 9,
+      attack: 0,
+      ...friend,
+    });
+  }
+  setup(state);
+  return chooseCommand(state);
+};
+
+/** One player Scrap Raider in Lane 1, at Square 2. */
+const enemy = (state: BattleState) => {
+  placeUnit(state, {
+    cardId: "orc.scrapRaider",
+    owner: "player",
+    position: 2,
+  });
+};
+
+const playAtSquare = (lane: number, position: number) =>
+  Command.PlayCard({ handIndex: 0, target: Target.Square({ lane, position }) });
+
+describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
+  it("keeps Mend until a friendly Unit has lost at least 50% of its maximum HP", () => {
+    expect(priestChoice("priest.mend", [{ hp: 6, maxHp: 10 }])).toEqual(
+      Command.EndTurn()
+    );
+    expect(priestChoice("priest.mend", [{ hp: 5, maxHp: 10 }])).toEqual(
+      playAtSquare(0, 9)
+    );
+  });
+
+  it("aims Mend at the Unit that gets back the most HP, after Bleeding", () => {
+    // The Bleeding Unit gets 3 of the 6. The other Unit gets 4.
+    expect(
+      priestChoice("priest.mend", [
+        { position: 9, hp: 2, maxHp: 10, bleeding: 1 },
+        { position: 8, hp: 6, maxHp: 10 },
+      ])
+    ).toEqual(playAtSquare(0, 8));
+  });
+
+  it("aims Mend at the Unit with the higher maximum HP when two Units get back the same HP", () => {
+    expect(
+      priestChoice("priest.mend", [
+        { position: 9, hp: 1, maxHp: 10 },
+        { lane: 1, position: 9, hp: 1, maxHp: 20 },
+      ])
+    ).toEqual(playAtSquare(1, 9));
+  });
+
+  it("keeps Sanctuary until a friendly Unit has an enemy Unit in its Lane", () => {
+    expect(priestChoice("priest.sanctuary", [{}])).toEqual(Command.EndTurn());
+    expect(
+      priestChoice("priest.sanctuary", [{}], (state) => {
+        placeUnit(state, {
+          cardId: "orc.scrapRaider",
+          owner: "player",
+          lane: 1,
+          position: 2,
+        });
+      })
+    ).toEqual(Command.EndTurn());
+  });
+
+  it("aims Sanctuary at the friendly Unit nearest to the enemy, and skips a Unit with a Ward that is not lower", () => {
+    expect(
+      priestChoice(
+        "priest.sanctuary",
+        [{ position: 9 }, { position: 7 }],
+        enemy
+      )
+    ).toEqual(playAtSquare(0, 7));
+    expect(
+      priestChoice(
+        "priest.sanctuary",
+        [{ position: 9 }, { position: 7, ward: 6 }],
+        enemy
+      )
+    ).toEqual(playAtSquare(0, 9));
+    expect(
+      priestChoice("priest.sanctuary", [{ position: 9, ward: 6 }], enemy)
+    ).toEqual(Command.EndTurn());
+  });
+
+  it("aims Sanctuary at the Lane where the enemy is nearest to its Hero", () => {
+    expect(
+      priestChoice(
+        "priest.sanctuary",
+        [{ position: 9 }, { lane: 1, position: 9 }],
+        (state) => {
+          placeUnit(state, {
+            cardId: "orc.scrapRaider",
+            owner: "player",
+            position: 2,
+          });
+          placeUnit(state, {
+            cardId: "orc.scrapRaider",
+            owner: "player",
+            lane: 1,
+            position: 5,
+          });
+        }
+      )
+    ).toEqual(playAtSquare(1, 9));
+  });
+
+  it("keeps Smite until it kills, with the Spear Throw Hold Rule, and Armor does not count", () => {
+    expect(skillChoice("priest.smite", [[5, 4]])).toEqual(Command.EndTurn());
+    expect(skillChoice("priest.smite", [[5, 3]])).toEqual(playAt(5));
+    const armored = emptyBattle({ activeSide: "enemy" });
+    giveHand(armored, "enemy", [["priest.smite", 0]]);
+    placeUnit(armored, {
+      cardId: "orc.scrapRaider",
+      owner: "player",
+      position: 5,
+      hp: 3,
+      bonusArmor: 3,
+      bonusArmorTurns: 2,
+    });
+    expect(chooseCommand(armored)).toEqual(playAt(5));
+  });
+
+  it("includes the Ward of the target in its kill estimate", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    giveHand(state, "enemy", [["priest.smite", 0]]);
+    placeUnit(state, {
+      cardId: "orc.scrapRaider",
+      owner: "player",
+      position: 5,
+      hp: 2,
+      ward: 2,
+    });
+    expect(chooseCommand(state)).toEqual(Command.EndTurn());
   });
 });

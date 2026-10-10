@@ -1,8 +1,8 @@
-import type { Collection, OpenedPack } from "@workspace/rules";
+import type { Collection, OpenedPack, PackPool } from "@workspace/rules";
 import { CARDS, getPack, PACK_SIZE, starterCollection } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
-import { INITIAL_DECK_SLOTS } from "@/features/deck/deck";
+import { CLASSES_WITH_CARDS, INITIAL_DECK_SLOTS } from "@/features/deck/deck";
 import type { PackOrder, PackWallet } from "@/features/packs/packs";
 import {
   addCopies,
@@ -19,6 +19,7 @@ import {
   orderPrice,
   packsToGuarantee,
   poolProgress,
+  startClass,
   tenPackGrid,
   tenPackHighlights,
 } from "@/features/packs/packs";
@@ -29,8 +30,14 @@ const wallet = (coin: number, collection: Collection = []): PackWallet => ({
   collection,
   packs: fresh,
 });
-const peddler: PackOrder = { pack: "peddler", race: null, count: 1 };
-const merchant: PackOrder = { pack: "merchant", race: null, count: 1 };
+const ALL: PackPool = { kind: "all" };
+const race = (id: "orc" | "elf" | "human"): PackPool => ({
+  kind: "race",
+  race: id,
+});
+const MAGE: PackPool = { kind: "class", classId: "mage" };
+const peddler: PackOrder = { pack: "peddler", pool: ALL, count: 1 };
+const merchant: PackOrder = { pack: "merchant", pool: ALL, count: 1 };
 
 const copiesOf = (collection: Collection) =>
   collection.reduce((sum, entry) => sum + entry.copies, 0);
@@ -39,16 +46,26 @@ describe("orderPrice", () => {
   it("is the Pack price, the Race Pack price, or 10 × for Open ×10", () => {
     const used = { ...fresh, freePackUsed: true };
     expect(orderPrice(peddler, used)).toBe(350);
-    expect(orderPrice({ ...peddler, race: "orc" }, used)).toBe(490);
+    expect(orderPrice({ ...peddler, pool: race("orc") }, used)).toBe(490);
     expect(orderPrice({ ...merchant, count: 10 }, used)).toBe(5000);
-    expect(orderPrice({ pack: "royal", race: "elf", count: 10 }, used)).toBe(
+    expect(
+      orderPrice({ pack: "royal", pool: race("elf"), count: 10 }, used)
+    ).toBe(14_000);
+  });
+
+  it("is the Race Pack price for a Class Pack", () => {
+    const used = { ...fresh, freePackUsed: true };
+    expect(orderPrice({ ...merchant, pool: MAGE }, used)).toBe(700);
+    expect(orderPrice({ pack: "royal", pool: MAGE, count: 10 }, used)).toBe(
       14_000
     );
+    // The free first Pack is free in any pool.
+    expect(orderPrice({ ...peddler, pool: MAGE }, fresh)).toBe(0);
   });
 
   it("is 0 for the first single Peddler Pack only", () => {
     expect(orderPrice(peddler, fresh)).toBe(0);
-    expect(isFreeOrder({ ...peddler, race: "human" }, fresh)).toBe(true);
+    expect(isFreeOrder({ ...peddler, pool: race("human") }, fresh)).toBe(true);
     expect(isFreeOrder({ ...peddler, count: 10 }, fresh)).toBe(false);
     expect(isFreeOrder(merchant, fresh)).toBe(false);
   });
@@ -196,7 +213,7 @@ describe("buyPacks", () => {
   it("opens 11 Packs for a Royal Open ×10", () => {
     const bought = buyPacks(
       wallet(10_000),
-      { pack: "royal", race: null, count: 10 },
+      { pack: "royal", pool: ALL, count: 10 },
       "warrior"
     );
     expect(bought?.opened).toHaveLength(11);
@@ -206,12 +223,36 @@ describe("buyPacks", () => {
   it("gives only cards of the Race in a Race Pack", () => {
     const bought = buyPacks(
       wallet(1000),
-      { pack: "merchant", race: "orc", count: 1 },
+      { pack: "merchant", pool: race("orc"), count: 1 },
       "warrior"
     );
     expect(
       bought?.opened[0]?.cards.every((card) => card.cardId.startsWith("orc."))
     ).toBe(true);
+  });
+
+  it("adds only the Skill Cards of the Class of a Class Pack", () => {
+    const start = starterCollection();
+    const bought = buyPacks(
+      wallet(7000, start),
+      { pack: "merchant", pool: MAGE, count: 10 },
+      "warrior"
+    );
+    const mage = new Set(
+      CARDS.flatMap((card) =>
+        card.kind === "skill" && card.class === "mage" ? [card.id] : []
+      )
+    );
+    expect(bought?.coin).toBe(0);
+    const added = addCopies(
+      [],
+      (bought?.opened ?? []).flatMap((opened) => opened.cards)
+    );
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((entry) => mage.has(entry.cardId))).toBe(true);
+    expect(copiesOf(bought?.collection ?? [])).toBe(
+      copiesOf(start) + 10 * PACK_SIZE
+    );
   });
 });
 
@@ -270,9 +311,18 @@ describe("heroClass", () => {
   });
 });
 
+describe("startClass", () => {
+  it("is the Hero Class, or the first Class with Skill Cards", () => {
+    expect(startClass("mage")).toBe("mage");
+    for (const classId of CLASSES_WITH_CARDS) {
+      expect(startClass(classId)).toBe(classId);
+    }
+  });
+});
+
 describe("poolProgress", () => {
   it("counts each Discovered card of the pool one time, in any Rank", () => {
-    const empty = poolProgress("orc", "warrior", []);
+    const empty = poolProgress(race("orc"), "warrior", []);
     expect(empty.found).toBe(0);
     expect(empty.total).toBeGreaterThan(0);
     const orc = CARDS.find(
@@ -285,19 +335,41 @@ describe("poolProgress", () => {
       { cardId: orc.id, rank: "common", copies: 2 },
       { cardId: orc.id, rank: "rare", copies: 1 },
     ];
-    expect(poolProgress("orc", "warrior", collection)).toEqual({
+    expect(poolProgress(race("orc"), "warrior", collection)).toEqual({
       found: 1,
       total: empty.total,
     });
     // An Orc card is in "All cards" too, but not in another Race pool.
-    expect(poolProgress(null, "warrior", collection).found).toBe(1);
-    expect(poolProgress("elf", "warrior", collection).found).toBe(0);
+    expect(poolProgress(ALL, "warrior", collection).found).toBe(1);
+    expect(poolProgress(race("elf"), "warrior", collection).found).toBe(0);
   });
 
   it("has the Skill Cards of the Hero Class in All cards only", () => {
-    const all = poolProgress(null, "warrior", []).total;
+    const all = poolProgress(ALL, "warrior", []).total;
     const creatures = CARDS.filter((card) => card.kind === "creature").length;
     expect(all).toBeGreaterThan(creatures);
+  });
+
+  it("counts only the Skill Cards of the Class in a Class pool", () => {
+    const mage = CARDS.filter(
+      (card) => card.kind === "skill" && card.class === "mage"
+    );
+    const [first] = mage;
+    if (!first) {
+      throw new Error("No Mage Skill Card");
+    }
+    const warrior = CARDS.find(
+      (card) => card.kind === "skill" && card.class === "warrior"
+    );
+    const collection: Collection = [
+      { cardId: first.id, rank: "rare", copies: 1 },
+      { cardId: warrior?.id ?? "", rank: "common", copies: 1 },
+    ];
+    // The Hero Class does not change a Class pool.
+    expect(poolProgress(MAGE, "warrior", collection)).toEqual({
+      found: 1,
+      total: mage.length,
+    });
   });
 });
 

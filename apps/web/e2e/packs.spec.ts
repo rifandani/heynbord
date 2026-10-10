@@ -18,6 +18,13 @@ const openPacks = async (page: Page) => {
   );
 };
 
+/** The part of `window` that the test hooks (test-hooks.ts) add. */
+interface HookWindow extends Window {
+  readonly __THREE_GAME_TEST_HOOKS__?: {
+    readonly setCoin: (copper: number) => void;
+  };
+}
+
 /** The `pool-<cardId>-<rank>` test IDs of the revealed cards. */
 const revealedCards = (page: Page) =>
   page
@@ -70,6 +77,79 @@ test.describe("Packs", () => {
     await expect(dialog).toBeVisible();
     await Promise.all(
       cards.map((card) => expect(dialog.getByTestId(card)).toBeAttached())
+    );
+  });
+
+  test("Skill Cards selects a Class Pack of the active Deck Class, with its price and Class Stamp; All cards closes the Class group", async ({
+    page,
+  }) => {
+    await openPacks(page);
+    const group = page.getByTestId("pack-pool-group");
+    await expect(group).not.toHaveAttribute("data-open");
+    // With 0 Coin, the Open button names the price that is missing.
+    await expect(page.getByTestId("pack-open-merchant")).toContainText(
+      "Need 5s"
+    );
+
+    await page.getByTestId("pack-kind-skill").click();
+    await expect(group).toHaveAttribute("data-open", "true");
+    // The first Starter Deck is a Warrior Deck.
+    await expect(page.getByTestId("pack-pool-warrior")).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
+    await expect(page.getByTestId("pack-pool-human")).toHaveCount(0);
+    // A Class Pack costs 1.4 × the price (Economy 3.1).
+    await expect(page.getByTestId("pack-open-merchant")).toContainText(
+      "Need 7s"
+    );
+    await expect(
+      page.getByTestId("pack-merchant").getByTestId("class-stamp")
+    ).toBeVisible();
+    await expect(page.getByTestId("race-stamp")).toHaveCount(0);
+
+    // Arrow keys move in the Class group.
+    await page.getByTestId("pack-pool-warrior").focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.getByTestId("pack-pool-ranger")).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
+
+    await page.evaluate(() => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setCoin(700);
+    });
+    await page.getByTestId("pack-open-merchant").click();
+    const reveal = page.getByTestId("pack-reveal");
+    await expect(reveal).toBeVisible();
+    await expect(reveal.getByTestId("class-stamp").first()).toBeAttached();
+    await page.getByTestId("reveal-all").click();
+    const cards = await revealedCards(page);
+    expect(cards).toHaveLength(5);
+    for (const card of cards) {
+      expect(card).toMatch(/^pool-ranger\./u);
+    }
+    await page.getByTestId("reveal-done").click();
+    await expect(reveal).toBeHidden();
+
+    // A switch of the kind and back keeps the Class.
+    await page.getByTestId("pack-kind-creature").click();
+    await expect(page.getByTestId("pack-pool-human")).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
+    await page.getByTestId("pack-kind-skill").click();
+    await expect(page.getByTestId("pack-pool-ranger")).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
+
+    await page.getByTestId("pack-kind-all").click();
+    await expect(group).not.toHaveAttribute("data-open");
+    await expect(page.getByTestId("class-stamp")).toHaveCount(0);
+    await expect(page.getByTestId("pack-open-merchant")).toContainText(
+      "Need 5s"
     );
   });
 

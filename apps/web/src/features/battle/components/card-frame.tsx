@@ -39,7 +39,7 @@ export const BRONZE =
   "linear-gradient(155deg, #f7dc9c 0%, #c99442 22%, #8a5a20 55%, #b47f36 80%, #e9c27a 100%)";
 
 /** The emblem color of a Skill Card: one parchment for all Classes. */
-const PARCHMENT = { main: "#f3e6c4", ink: "#3a2612" } as const;
+export const PARCHMENT = { main: "#f3e6c4", ink: "#3a2612" } as const;
 
 const CREAM = "#fff6df";
 const HEART_RED = "#ff6b6b";

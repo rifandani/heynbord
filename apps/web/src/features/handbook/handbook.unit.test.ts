@@ -233,6 +233,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       burn: 2,
       frozen: true,
       entangled: true,
+      ward: 4,
       hobbled: 1,
       bleeding: 1,
       poisoned: 3,
@@ -554,6 +555,39 @@ describe("chapterEntries", () => {
       ...RANKS.map((rank) => `rank${rank[0]?.toUpperCase()}${rank.slice(1)}`),
       "rankGems",
     ]);
+  });
+
+  it("lists the Statuses in two groups, the Buffs then the Debuffs, and the Damage Types in a third", () => {
+    const statuses = chapterEntries("statuses", nameIn("en-us"), "en-us");
+    const grouped = statuses.flatMap((entry) =>
+      entry.group && entry.group !== "damageType"
+        ? [[entry.id, entry.group]]
+        : []
+    );
+    expect(statuses[0]?.id).toBe("status");
+    expect(statuses[0]?.group).toBeUndefined();
+    expect(
+      statuses
+        .filter((entry) => entry.group === "damageType")
+        .map((entry) => entry.id)
+    ).toEqual([
+      "damageType",
+      "damagePhysical",
+      "damageFire",
+      "damageFrost",
+      "damageHoly",
+    ]);
+    expect(grouped).toEqual([
+      ["statusWard", "buff"],
+      ["statusFreeze", "debuff"],
+      ["statusBurn", "debuff"],
+      ["statusPoison", "debuff"],
+      ["statusEntangle", "debuff"],
+      ["statusBleed", "debuff"],
+      ["statusHobble", "debuff"],
+    ]);
+    expect(nameIn("en-us")(getEntry("statusWard"))).toBe("Ward N");
+    expect(nameIn("id-id")(getEntry("statusWard"))).toBe("Pelindung N");
   });
 });
 

@@ -18,14 +18,16 @@ export const PARTICLE_POOL = 200;
 export const BURST_DURATION = 0.7;
 
 /**
- * A burst when a Status starts, when Burn or Poison deals damage, when an
- * attack hits, when a Unit moves or is Pushed onto a Square, when a Unit is
- * healed or gets Armor, or when a Hero casts a Skill Card.
+ * A burst when a Status starts, when Burn or Poison deals damage, when a Ward
+ * absorbs damage, when an attack hits, when a Unit moves or is Pushed onto a
+ * Square, when a Unit is healed or gets Armor, or when a Hero casts a Skill
+ * Card.
  */
 export type BurstName =
   | Status
   | "burn-tick"
   | "poison-tick"
+  | "ward-hit"
   | HitPresetKey
   | DustPresetKey
   | "windup"
@@ -202,6 +204,24 @@ const LOOPS: Readonly<Record<Status, LoopPreset>> = {
       rotation: 0,
       opacity: 0.95 * fadeOutAfter(age, 0.8),
     }),
+  },
+  // Gold motes turn slowly around the figure: the Holy Ward.
+  ward: {
+    slot: "spark",
+    count: 4,
+    period: 2.8,
+    color: FX_ANCHORS.holy,
+    place: (random, age) => {
+      const angle = (random(0) + age) * Math.PI * 2;
+      return {
+        x: Math.cos(angle) * 0.38,
+        y: lerp(0.25, 1, random(1)) + Math.sin(age * Math.PI * 2) * 0.05,
+        z: 0.15 + Math.sin(angle) * 0.12,
+        size: lerp(0.1, 0.16, random(2)),
+        rotation: 0,
+        opacity: fade(age) * 0.85,
+      };
+    },
   },
   // A chain at the feet, which swings a little.
   hobble: {
@@ -432,6 +452,16 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       }),
     },
   ],
+  // Sanctuary: a shield forms on the Unit, and gold motes go up around it.
+  ward: [
+    { slot: "shield", count: 1, place: pulse(0.25, 0.8) },
+    {
+      slot: "spark",
+      count: 10,
+      color: FX_ANCHORS.holy,
+      place: rise(0.9, { speed: [0, 0.1], up: 1, size: [0.14, 0.24], spin: 2 }),
+    },
+  ],
   hobble: [
     { slot: "chain", count: 1, place: pulse(0.6, 0.45) },
     {
@@ -459,6 +489,16 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       slot: "bubble",
       count: 6,
       place: spray({ speed: [0.2, 0.4], up: 0.2, size: [0.08, 0.14] }),
+    },
+  ],
+  // A Ward absorbs damage: a short shield flash in the Holy gold.
+  "ward-hit": [
+    { slot: "shield", count: 1, place: pulse(0.7, 0.85) },
+    {
+      slot: "glow",
+      count: 1,
+      color: FX_ANCHORS.holy,
+      place: pulse(0.5, 1),
     },
   ],
   "hit:physical": presetBurst(FX_PRESETS["hit:physical"]),

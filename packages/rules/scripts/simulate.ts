@@ -15,18 +15,21 @@
  *   with a diagnostic Deck shows "review" when it is not on target.
  *   `noReadyTurns` is the average number of the Archetype's Turns with no Ready
  *   card in the Hand (the Sabotage lock risk, Archetypes 2.2).
- * - `packs`: each Pack, with all cards (Warrior) and as a Human Race Pack
- *   (Economy 3.1, ADR-0027). `--packs` (10,000 by default) is the number of
- *   single Packs for the Rank rates and the value for each Coin. 100 Players
- *   open Packs until they Discover all cards of each Base Rank. `--check` does
- *   not check the Packs.
+ * - `packs`: each Pack, with all cards (Warrior), as a Human Race Pack and as
+ *   a Class Pack of each Class with Skill Cards (Economy 3.1, ADR-0027).
+ *   `--packs` (10,000 by default) is the number of single Packs for the Rank
+ *   rates and the value for each Coin. 100 Players open Packs until they
+ *   Discover all cards of each Base Rank. `--check` does not check the Packs.
  */
 import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
+import { CARDS } from "../src/content/cards";
 import { STARTER_DECKS } from "../src/content/decks";
-import { PACKS } from "../src/content/packs";
+import { PACK_SIZE, PACKS } from "../src/content/packs";
 import { RANKS } from "../src/content/ranks";
-import type { RaceId } from "../src/content/schema";
+import { ClassId } from "../src/content/schema";
 import { STAGES } from "../src/content/stages";
+import { packPool } from "../src/packs/open-pack";
+import type { PackPool } from "../src/packs/open-pack";
 import { simulatePack } from "../src/simulation/packs";
 import {
   gatesRelease,
@@ -208,20 +211,45 @@ if (modes.includes("matchup")) {
   );
 }
 
-const poolName = (race: RaceId | null) => race ?? "all (warrior)";
+const poolName = (pool: PackPool) => {
+  switch (pool.kind) {
+    case "all": {
+      return "all (warrior)";
+    }
+    case "race": {
+      return `race: ${pool.race}`;
+    }
+    case "class": {
+      return `class: ${pool.classId}`;
+    }
+    default: {
+      return pool satisfies never;
+    }
+  }
+};
 
 if (modes.includes("packs")) {
-  const pools: readonly (RaceId | null)[] = [null, "human"];
+  // A Class with no Skill Cards cannot be a Class Pack.
+  const classPools: readonly PackPool[] = ClassId.literals.flatMap((classId) =>
+    CARDS.some((card) => card.kind === "skill" && card.class === classId)
+      ? [{ kind: "class", classId }]
+      : []
+  );
+  const pools: readonly PackPool[] = [
+    { kind: "all" },
+    { kind: "race", race: "human" },
+    ...classPools,
+  ];
   const reports = PACKS.flatMap((pack) =>
-    pools.map((race) =>
-      simulatePack(pack.id, { packs, players: 100, race, classId: "warrior" })
+    pools.map((pool) =>
+      simulatePack(pack.id, { packs, players: 100, pool, classId: "warrior" })
     )
   );
   console.log(`Packs: ${packs} single Packs each`);
   console.table(
     reports.map((report) => ({
       pack: report.packId,
-      pool: poolName(report.race),
+      pool: poolName(report.pool),
       ...Object.fromEntries(
         RANKS.map((rank) => [rank, percent(report.rankRates[rank], 2)])
       ),
@@ -237,14 +265,34 @@ if (modes.includes("packs")) {
   console.table(
     reports.map((report) => ({
       pack: report.packId,
-      pool: poolName(report.race),
+      pool: poolName(report.pool),
       ...Object.fromEntries(
         RANKS.map((rank) => [
           rank,
           report.packsToDiscover[rank]?.toFixed(1) ?? "—",
         ])
       ),
+      all: report.packsToDiscoverAll.toFixed(1),
     }))
+  );
+  console.log("Legendary Skill Card copies in 100 Royal Class Packs: mean");
+  console.table(
+    reports.flatMap((report) => {
+      if (report.packId !== "royal" || report.pool.kind !== "class") {
+        return [];
+      }
+      const copies = report.rankRates.legendary * PACK_SIZE * 100;
+      return [
+        {
+          pool: poolName(report.pool),
+          skillCards: packPool(report.pool, "warrior").length,
+          legendaryCopies: copies.toFixed(1),
+          legendaryCopiesPerCard: (
+            copies / packPool(report.pool, "warrior").length
+          ).toFixed(1),
+        },
+      ];
+    })
   );
 }
 

@@ -95,6 +95,7 @@ const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   bleeding: 0,
   frozen: false,
   entangled: false,
+  ward: 0,
   rallied: 0,
   bonusArmor: 0,
   bonusArmorTurns: 0,

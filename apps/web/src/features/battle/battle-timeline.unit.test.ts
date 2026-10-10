@@ -42,6 +42,8 @@ const hit = {
   source: "attack",
   crit: false,
   blocked: false,
+  absorbed: 0,
+  ward: 0,
   hp: 10,
 } as const;
 

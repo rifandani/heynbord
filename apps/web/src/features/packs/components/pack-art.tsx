@@ -1,8 +1,15 @@
-import type { CoinPart, PackId, RaceId } from "@workspace/rules";
+import type {
+  ClassId,
+  CoinPart,
+  PackId,
+  PackPool,
+  RaceId,
+} from "@workspace/rules";
 import { cn } from "cn";
 
+import { PARCHMENT } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { raceGlyph } from "@/features/battle/glyphs";
+import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
 import { RACE_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
@@ -11,13 +18,17 @@ import { BalanceIcon } from "@/features/town/components/balance-icon";
 export const packImage = (pack: PackId) => `/packs/${pack}.webp`;
 
 /**
- * The Race stamp of a Race Pack (Town Concepts 8.1): a round stamp with the
- * Race emblem of the Card Frame and a bronze rim, at the center of the
- * lower-right quarter of the Pack face. The art keeps that corner plain.
+ * The place and the bronze rim of the stamp of a Race Pack or a Class Pack
+ * (Town Concepts 8.1): the center of the lower-right quarter of the Pack
+ * face. The art keeps that corner plain.
  */
+const STAMP =
+  "absolute top-[72%] left-[70%] grid aspect-square w-[24%] -translate-1/2 place-items-center rounded-full border-[0.18em] border-[#e7bb6a] shadow-[0_0.12em_0.25em_rgba(0,0,0,0.6),inset_0_0.1em_0_rgba(255,255,255,0.3)]";
+
+/** The Race Stamp of a Race Pack: the Race emblem of the Card Frame. */
 const RaceStamp = ({ race }: { readonly race: RaceId }) => (
   <span
-    className="absolute top-[72%] left-[70%] grid aspect-square w-[24%] -translate-1/2 place-items-center rounded-full border-[0.18em] border-[#e7bb6a] shadow-[0_0.12em_0.25em_rgba(0,0,0,0.6),inset_0_0.1em_0_rgba(255,255,255,0.3)]"
+    className={STAMP}
     style={{
       background: `radial-gradient(circle at 35% 30%, ${RACE_COLORS[race].light}, ${RACE_COLORS[race].main} 55%, ${RACE_COLORS[race].dark})`,
     }}
@@ -28,21 +39,53 @@ const RaceStamp = ({ race }: { readonly race: RaceId }) => (
 );
 
 /**
+ * The Class Stamp of a Class Pack: the Class emblem of a Skill Card, the Class
+ * glyph in ink on parchment. There are no Class colors.
+ */
+const ClassStamp = ({ classId }: { readonly classId: ClassId }) => (
+  <span
+    className={STAMP}
+    style={{
+      background: `radial-gradient(circle at 35% 30%, #fffaf0, ${PARCHMENT.main} 55%, #d8c494)`,
+      color: PARCHMENT.ink,
+    }}
+    data-testid="class-stamp"
+  >
+    <GlyphIcon glyph={classGlyph(classId)} className="size-[55%]" />
+  </span>
+);
+
+/** The stamp of the pool of a Pack: none for the Pack with all cards. */
+const PoolStamp = ({ pool }: { readonly pool: PackPool }) => {
+  switch (pool.kind) {
+    case "race": {
+      return <RaceStamp race={pool.race} />;
+    }
+    case "class": {
+      return <ClassStamp classId={pool.classId} />;
+    }
+    default: {
+      return null;
+    }
+  }
+};
+
+/**
  * One Pack as a piece on a shelf: the closed image with a contact shadow (the
- * art has none), the Race stamp of a Race Pack, and the Free tag. The code
+ * art has none), the Race Stamp or the Class Stamp, and the Free tag. The code
  * makes these states, not the art (Town Concepts 8.1). Decorative: the Pack
  * name is in the text next to it.
  */
 export const PackArt = ({
   pack,
-  race,
+  pool,
   free = false,
   dim = false,
   sheen = false,
   className,
 }: {
   readonly pack: PackId;
-  readonly race: RaceId | null;
+  readonly pool: PackPool;
   readonly free?: boolean;
   /** The Player cannot buy this Pack now. */
   readonly dim?: boolean;
@@ -85,7 +128,7 @@ export const PackArt = ({
           <span className="absolute inset-y-0 left-0 w-1/2 translate-x-[-130%] bg-[linear-gradient(105deg,transparent_15%,rgba(255,246,220,0.5)_50%,transparent_85%)] motion-safe:group-hover/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-has-[[data-focus-visible]]/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)]" />
         </span>
       ) : null}
-      {race ? <RaceStamp race={race} /> : null}
+      <PoolStamp pool={pool} />
       {free ? (
         <span
           className="font-display absolute top-[16%] -right-[6%] rotate-[8deg] rounded-md border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-2 py-0.5 text-[max(12px,1.4em)] leading-tight font-black text-[#2a1a05] shadow-[0_3px_0_rgba(0,0,0,0.45)]"

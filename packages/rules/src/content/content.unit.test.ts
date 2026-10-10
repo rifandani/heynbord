@@ -116,13 +116,25 @@ const archetypeCountdowns = (id: string) =>
   );
 
 /** The damage of a damage Skill Card at each Rank, from Common. */
+/** The damage, heal or Ward value of a Skill Card at each Rank. */
 const skillAmounts = (cardId: string) => {
   const card = getCard(cardId);
-  if (card.kind !== "skill" || !("amount" in card.effect)) {
-    throw new Error(`${cardId} is a damage Skill Card`);
+  if (card.kind !== "skill") {
+    throw new Error(`${cardId} is not a Skill Card`);
   }
-  const { amount } = card.effect;
-  return RANKS.map((rank) => scaleForRank(amount, rank));
+  const { effect } = card;
+  const value =
+    "amount" in effect
+      ? effect.amount
+      : "heal" in effect
+        ? effect.heal
+        : "ward" in effect
+          ? effect.ward
+          : undefined;
+  if (value === undefined) {
+    throw new Error(`${cardId} has no damage, heal or Ward value`);
+  }
+  return RANKS.map((rank) => scaleForRank(value, rank));
 };
 
 describe("card content (CRD-01, technical design 3.5)", () => {
@@ -133,8 +145,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 99 cards: 6 Races and 3 Classes", () => {
-    expect(CARDS).toHaveLength(99);
+  it("has 102 cards: 6 Races and 4 Classes", () => {
+    expect(CARDS).toHaveLength(102);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
@@ -144,11 +156,11 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(races).toEqual(
       new Set(["human", "orc", "goblin", "feral", "elf", "undead"])
     );
-    expect(classes).toEqual(new Set(["warrior", "ranger", "mage"]));
+    expect(classes).toEqual(new Set(["warrior", "ranger", "mage", "priest"]));
   });
 
   it("gives each Class with Skill Cards 3 of them: 2 Common and 1 Uncommon", () => {
-    for (const classId of ["warrior", "ranger", "mage"]) {
+    for (const classId of ["warrior", "ranger", "mage", "priest"]) {
       const baseRanks = CARDS.flatMap((card) =>
         card.kind === "skill" && card.class === classId ? [card.baseRank] : []
       );
@@ -158,6 +170,27 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         "uncommon",
       ]);
     }
+  });
+
+  it("scales the Priest heal, damage and Ward with Rank, and targets a friendly Unit with Mend and Sanctuary", () => {
+    expect(skillAmounts("priest.mend")).toEqual([6, 7, 9, 11, 13]);
+    expect(skillAmounts("priest.smite")).toEqual([3, 4, 4, 5, 6]);
+    expect(skillAmounts("priest.sanctuary")).toEqual([5, 6, 7, 9, 11]);
+    expect(getCard("priest.mend")).toMatchObject({
+      target: "friendlyUnit",
+      countdown: 2,
+      effect: { type: "healUnit" },
+    });
+    expect(getCard("priest.smite")).toMatchObject({
+      target: "enemyUnit",
+      countdown: 2,
+      effect: { type: "damageUnit", damageType: "holy" },
+    });
+    expect(getCard("priest.sanctuary")).toMatchObject({
+      target: "friendlyUnit",
+      countdown: 3,
+      effect: { type: "wardUnit" },
+    });
   });
 
   it("scales the Ranger Skill damage with Rank, but not the push", () => {
@@ -876,9 +909,11 @@ describe("Decks and Stages", () => {
       new Set(["goblin", "ranger"])
     );
     expect(archetypeGroups("thornwatch")).toEqual(new Set(["elf", "ranger"]));
-    // Creature Cards only: one Race, and no Skill Card.
-    expect(archetypeGroups("wildHunt")).toEqual(new Set(["feral"]));
-    expect(archetypeGroups("deathlessHost")).toEqual(new Set(["undead"]));
+    // One Race with the Priest Skill Cards.
+    expect(archetypeGroups("wildHunt")).toEqual(new Set(["feral", "priest"]));
+    expect(archetypeGroups("deathlessHost")).toEqual(
+      new Set(["undead", "priest"])
+    );
     // Mixed Undead and Orc cards with the Mage Skill Cards.
     expect(archetypeGroups("breakneckCompany")).toEqual(
       new Set(["undead", "orc", "mage"])

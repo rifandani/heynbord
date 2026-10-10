@@ -5,8 +5,9 @@ import { getPack, PACKS } from "../content/packs";
 import type { PackId } from "../content/packs";
 import { isRankAtLeast, RANKS } from "../content/ranks";
 import type { DeckEntry, RankId } from "../content/schema";
-import { openPack, openTenPacks } from "./open-pack";
-import type { OpenPackInput } from "./open-pack";
+import { ClassId } from "../content/schema";
+import { openPack, openTenPacks, packPool } from "./open-pack";
+import type { OpenPackInput, PackPool } from "./open-pack";
 
 const inputFor = (
   pack: PackId,
@@ -14,7 +15,7 @@ const inputFor = (
   more: Partial<OpenPackInput> = {}
 ): OpenPackInput => ({
   pack,
-  race: null,
+  pool: { kind: "all" },
   classId: "warrior",
   discovered: new Set(),
   guaranteeCounter: 0,
@@ -104,11 +105,24 @@ describe("openPack (Economy 3.1)", () => {
   });
 
   it("gives a Race Pack only the Creature Cards of the Race", () => {
-    for (const card of openMany(500, inputFor("royal", 3, { race: "elf" }))
+    for (const card of openMany(
+      500,
+      inputFor("royal", 3, { pool: { kind: "race", race: "elf" } })
+    )
       .flat()
       .map((entry) => getCard(entry.cardId))) {
       expect(card.kind === "creature" && card.race === "elf").toBe(true);
     }
+  });
+
+  it("gives a Race Pack no Skill Cards", () => {
+    const cards = openMany(
+      500,
+      inputFor("merchant", 6, { pool: { kind: "race", race: "human" } })
+    ).flat();
+    expect(
+      cards.every((card) => getCard(card.cardId).kind === "creature")
+    ).toBe(true);
   });
 
   it("gives all cards, with only the Skill Cards of the Hero Class", () => {
@@ -164,13 +178,19 @@ describe("openPack (Economy 3.1)", () => {
     }
   );
 
-  it("shares one counter between a Pack and its Race Pack", () => {
-    const output = openPack(
-      inputFor("peddler", 4, { race: "orc", guaranteeCounter: 7 })
-    );
-    expect(highest(output.opened.cards, "rare")).toBe(true);
-    expect(output.guaranteeCounter).toBe(0);
-  });
+  it.each([
+    { kind: "race", race: "orc" },
+    { kind: "class", classId: "ranger" },
+  ] satisfies PackPool[])(
+    "shares one counter between a Pack and its $kind version",
+    (pool) => {
+      const output = openPack(
+        inputFor("peddler", 4, { pool, guaranteeCounter: 7 })
+      );
+      expect(highest(output.opened.cards, "rare")).toBe(true);
+      expect(output.guaranteeCounter).toBe(0);
+    }
+  );
 
   describe("New Card First", () => {
     const pool = CARDS.filter((card) => card.kind === "creature");
@@ -225,6 +245,98 @@ describe("openPack (Economy 3.1)", () => {
       expect(withNewCard.length).toBeLessThan(SEEDS.length / 2);
     });
   });
+});
+
+const classPool = (classId: ClassId): PackPool => ({
+  kind: "class",
+  classId,
+});
+
+const skillCardsOf = (classId: ClassId) =>
+  CARDS.filter((card) => card.kind === "skill" && card.class === classId);
+
+describe("a Class Pack (Economy 3.1)", () => {
+  const classesWithCards = ClassId.literals.filter(
+    (classId) => skillCardsOf(classId).length > 0
+  );
+  const classesWithNoCards = ClassId.literals.filter(
+    (classId) => skillCardsOf(classId).length === 0
+  );
+
+  it("has only the Skill Cards of its Class in its pool", () => {
+    for (const classId of classesWithCards) {
+      expect(packPool(classPool(classId), "warrior")).toEqual(
+        skillCardsOf(classId)
+      );
+    }
+  });
+
+  it.each(PACKS.map((pack) => pack.id))(
+    "gives the %s Class Pack only Skill Cards of its Class, at each Rank of the roll",
+    (packId) => {
+      for (const classId of classesWithCards) {
+        // The Hero Class is a different Class: the Class Pack does not use it.
+        const cards = openMany(
+          2000,
+          inputFor(packId, 12, {
+            pool: classPool(classId),
+            classId: classId === "warrior" ? "mage" : "warrior",
+          })
+        ).flat();
+        for (const entry of cards) {
+          const card = getCard(entry.cardId);
+          expect(card.kind === "skill" && card.class === classId).toBe(true);
+          expect(isRankAtLeast(entry.rank, card.baseRank)).toBe(true);
+        }
+        const rolled = new Set(cards.map((card) => card.rank));
+        for (const rank of RANKS) {
+          if (getPack(packId).dropRates[rank] > 0) {
+            expect(rolled).toContain(rank);
+          }
+        }
+      }
+    }
+  );
+
+  it("gives the same Class Pack from the same random state", () => {
+    const input = inputFor("royal", 77, { pool: classPool("mage") });
+    expect(openPack(input)).toEqual(openPack(input));
+    expect(openTenPacks(input)).toEqual(openTenPacks(input));
+  });
+
+  it("Discovers the Skill Cards that are not Discovered first in a Merchant Class Pack", () => {
+    for (const classId of classesWithCards) {
+      const [newCard] = skillCardsOf(classId).toSorted(
+        (left, right) =>
+          RANKS.indexOf(right.baseRank) - RANKS.indexOf(left.baseRank)
+      );
+      // Each Pack has a card of Uncommon or higher, so each roll permits the
+      // new card.
+      const discovered = new Set(
+        CARDS.map((card) => card.id).filter((id) => id !== newCard?.id)
+      );
+      for (const seed of SEEDS) {
+        const ids = openPack(
+          inputFor("merchant", seed, {
+            pool: classPool(classId),
+            discovered,
+          })
+        ).opened.cards.map((card) => card.cardId);
+        expect(ids).toContain(newCard?.id);
+      }
+    }
+  });
+
+  it.skipIf(classesWithNoCards.length === 0)(
+    "cannot be a Class with no Skill Cards",
+    () => {
+      for (const classId of classesWithNoCards) {
+        expect(() =>
+          openPack(inputFor("peddler", 1, { pool: classPool(classId) }))
+        ).toThrow(/no card/u);
+      }
+    }
+  );
 });
 
 describe("openTenPacks (Economy 3.1)", () => {

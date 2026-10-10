@@ -82,6 +82,7 @@ const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
   unit.entangled = false;
   unit.hobbled = 0;
   unit.bleeding = 0;
+  unit.ward = 0;
   unit.rallied = 0;
   unit.bonusArmor = 0;
   unit.bonusArmorTurns = 0;
@@ -119,7 +120,9 @@ interface HitResult {
 
 /**
  * Damage calculation (GDD 4.7): the value, minus Armor (not for Holy), Crit
- * ×2, Block ÷2 rounded up, minimum 0. Fire gives Burn and Frost gives Freeze.
+ * ×2, Block ÷2 rounded up, minimum 0. Then a Ward absorbs damage, also
+ * status damage. Absorbed damage is not dealt: `dealt` is the damage after
+ * the Ward. Fire gives Burn and Frost gives Freeze, also at 0 damage.
  */
 export const damageUnit = (
   ctx: StepContext,
@@ -139,6 +142,9 @@ export const damageUnit = (
   if (blocked) {
     amount = Math.ceil(amount / 2);
   }
+  const absorbed = Math.min(unit.ward, amount);
+  unit.ward -= absorbed;
+  amount -= absorbed;
   unit.hp -= amount;
   const target: TargetRef = { _tag: "Unit", unitId: unit.id };
   ctx.events.push(
@@ -149,6 +155,8 @@ export const damageUnit = (
       source: hit.source,
       crit,
       blocked,
+      absorbed,
+      ward: unit.ward,
       hp: Math.max(0, unit.hp),
     })
   );
@@ -182,6 +190,8 @@ export const damageHero = (ctx: StepContext, side: Side, hit: Hit): void => {
       source: hit.source,
       crit,
       blocked: false,
+      absorbed: 0,
+      ward: 0,
       hp: hero.hp,
     })
   );

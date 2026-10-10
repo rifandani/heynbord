@@ -121,4 +121,11 @@ export const FX_ANCHORS = {
   iconEntangle: "#6fbf55",
   iconHobble: "#a3a8ae",
   iconBleed: "#d0453a",
+  iconWard: "#ffe08a",
 } as const;
+
+/**
+ * Ward (GDD 4.7) is Holy protection: its badge ring, its "−N" and its shield
+ * flash use the Holy gold.
+ */
+export const WARD_COLOR = "#ffd75a";

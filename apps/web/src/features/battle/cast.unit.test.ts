@@ -25,6 +25,8 @@ const damage = Event.DamageDealt({
   source: "skill",
   crit: false,
   blocked: false,
+  absorbed: 0,
+  ward: 0,
   hp: 1,
 });
 
@@ -145,5 +147,13 @@ describe("effectColor", () => {
     expect(effectColor({ type: "lowerCountdown", cards: 2, amount: 1 })).toBe(
       "#fff6df"
     );
+  });
+
+  it("gives all 3 Priest cards the Holy gold", () => {
+    expect(effectColor({ type: "healUnit", heal: 6 })).toBe("#ffd75a");
+    expect(effectColor({ type: "wardUnit", ward: 5 })).toBe("#ffd75a");
+    expect(
+      effectColor({ type: "damageUnit", amount: 3, damageType: "holy" })
+    ).toBe("#ffd75a");
   });
 });

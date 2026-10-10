@@ -1,5 +1,5 @@
 import type { Texture } from "three";
-import { SRGBColorSpace, Texture as ImageTexture } from "three";
+import { CanvasTexture, SRGBColorSpace } from "three";
 
 import type { FxSlotName } from "@/features/battle/scene/fx-slots";
 import {
@@ -7,6 +7,7 @@ import {
   FX_ATLAS_URL,
   FX_SLOTS,
   fxSlotNames,
+  UNPAINTED_SLOTS,
 } from "@/features/battle/scene/fx-slots";
 import type { BadgeIcon } from "@/features/battle/scene/textures";
 import { fxPlaceholderAtlas } from "@/features/battle/scene/textures";
@@ -70,17 +71,53 @@ export const subscribeFxAtlas = (listener: () => void): (() => void) => {
   };
 };
 
-const loadPainted = async () => {
-  const image = new Image();
-  image.decoding = "async";
-  image.src = FX_ATLAS_URL;
+/**
+ * The painted atlas with the placeholders of the slots that it does not have
+ * yet (`UNPAINTED_SLOTS`) drawn over their empty cells.
+ */
+const withPlaceholders = (
+  painted: HTMLImageElement,
+  placeholders: HTMLCanvasElement
+): HTMLCanvasElement => {
+  const canvas = document.createElement("canvas");
+  canvas.width = painted.naturalWidth;
+  canvas.height = painted.naturalHeight;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return canvas;
+  }
+  context.drawImage(painted, 0, 0);
+  const to = canvas.width / FX_ATLAS_SIZE;
+  const from = placeholders.width / FX_ATLAS_SIZE;
+  for (const name of UNPAINTED_SLOTS) {
+    const { x, y, w, h } = FX_SLOTS[name].cell;
+    context.drawImage(
+      placeholders,
+      x * from,
+      y * from,
+      w * from,
+      h * from,
+      x * to,
+      y * to,
+      w * to,
+      h * to
+    );
+  }
+  return canvas;
+};
+
+const loadPainted = async (placeholders: HTMLCanvasElement) => {
+  const painted = new Image();
+  painted.decoding = "async";
+  painted.src = FX_ATLAS_URL;
   try {
-    await image.decode();
+    await painted.decode();
   } catch {
     // The effects keep the placeholders.
     return;
   }
-  const texture = new ImageTexture(image);
+  const image = withPlaceholders(painted, placeholders);
+  const texture = new CanvasTexture(image);
   texture.colorSpace = SRGBColorSpace;
   texture.anisotropy = 4;
   texture.needsUpdate = true;
@@ -107,7 +144,7 @@ export const fxAtlas = (): FxAtlas => {
   const image = texture.image as HTMLCanvasElement;
   atlas = { image, texture, version: 0 };
   if (FX_ATLAS_PAINTED) {
-    void loadPainted();
+    void loadPainted(image);
   }
   return atlas;
 };

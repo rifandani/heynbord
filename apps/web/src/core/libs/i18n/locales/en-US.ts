@@ -145,6 +145,9 @@ export default {
       reborn: "Reborn",
       rebornRule:
         "This Unit died and came back with Rebirth. It does not come back again.",
+      ward: "Ward {value}",
+      wardRule:
+        "A Buff. It absorbs damage after Armor, Crit and Block, also Holy, Burn and Poison damage, and goes down by that damage. It has no time limit. A new Ward keeps the higher value.",
     },
   },
   town: {
@@ -296,6 +299,7 @@ export default {
       ranks: { name: "Ranks", short: "Ranks" },
       progress: { name: "Progress", short: "Progress" },
     },
+    groups: { buff: "Buffs", debuff: "Debuffs", damageType: "Damage Types" },
     entryList: "Entries in {chapter}",
     results: "Search results",
     resultCount: "Entries found: {count}",
@@ -505,7 +509,7 @@ export default {
       token:
         "A Token is a Unit that an effect makes, for example Summon X. It is not a card, so it is never in your Hand or your Deck.\n\nA Token has the Rank of the card that made it. When it dies, it disappears. It does not go to the Graveyard.\n\nA Token is a friendly Unit for the Units of its Side, for example for Swarm.",
       status:
-        "A Status is an effect that stays on a Unit. Fire and Frost damage and some Keywords give Statuses.\n\nA Unit shows its Statuses as icons above it. The Card Details of the Unit show each Status with its rule.",
+        "A Status is an effect that stays on a Unit. A Buff helps the Unit, for example Ward. A Debuff hurts it. Fire and Frost damage and some Keywords give Debuffs.\n\nA Unit shows its Statuses as icons above it. A Buff icon has a gold ring. The Card Details of the Unit show each Status with its rule.",
       damageType:
         "Each attack and each damage effect has a Damage Type: Physical, Fire, Frost or Holy.\n\nOn a card, the Damage Type shows as the icon and the color of the Attack.",
       damagePhysical: "Physical: normal damage. Armor reduces it.",
@@ -529,7 +533,8 @@ export default {
       classRanger: "Control, and damage to the enemy Hero.",
       classMage:
         "Area damage. Mage Skill Cards hit enemy Units with Fire and Frost.",
-      classPriest: "Healing, protection and Units that come back.",
+      classPriest:
+        "Healing, protection and Holy damage. Priest Skill Cards heal and protect your Units, and Holy damage ignores Armor.",
       role: "The Role is the job of a Creature Card in a Battle. It helps you read a card. No rule uses it, but it sets the Range of a Ranged Unit.",
       roleFrontliner:
         "High HP and low Speed. A Frontliner holds its Lane against enemy Units.",
@@ -595,6 +600,7 @@ export default {
       statusFreeze: "stun, chill",
       statusBleed: "wound, anti-heal, healing reduction",
       statusHobble: "slow, cripple, fatigue",
+      statusWard: "shield, barrier, absorb, buff",
       damageType: "element",
       race: "faction, tribe, kingdom",
       class: "job, profession",
@@ -622,7 +628,12 @@ export default {
     },
     pool: {
       label: "Cards in the Packs",
+      kind: "Cards",
       all: "All cards",
+      creature: "Creature Cards",
+      skill: "Skill Cards",
+      race: "Race",
+      class: "Class",
     },
     free: "Free",
     open: "Open",
@@ -650,7 +661,7 @@ export default {
         b: "Welcome back! Mind the cat. She sleeps on the Rares.",
         c: "Good to see you again! What will it be today?",
       },
-      all: "All the cards on one shelf. Pick a Race to look closer.",
+      all: "All the cards on one shelf. Pick a Race or a Class to look closer.",
       races: {
         human: "Human cards. Steady folk, good with shields.",
         orc: "Orc cards. Hold them with both hands.",
@@ -658,6 +669,13 @@ export default {
         feral: "Feral cards. They only bite a little.",
         elf: "Elf cards. Mind the thorns.",
         undead: "Undead cards. They always come back.",
+      },
+      classes: {
+        warrior:
+          "Warrior Skill Cards. Loud ones. Keep them away from the glass.",
+        ranger: "Ranger Skill Cards. They never miss. Well, almost never.",
+        mage: "Mage Skill Cards. Please do not read them out loud in here.",
+        priest: "Priest Skill Cards. I feel better when I just hold them.",
       },
       complete: "You found every card on this shelf! I am impressed.",
       reactions: {
@@ -692,7 +710,7 @@ export default {
       yes: "Yes",
       no: "No",
       price: "Price",
-      racePrice: "Race Pack price",
+      versionPrice: "Race or Class Pack price",
       rulesTitle: "Pack rules",
       rules: {
         roll: "A Pack has 5 cards. For each card, the Pack rolls a Rank with its Drop Rates.",
@@ -703,9 +721,9 @@ export default {
         guarantee:
           "Pack Guarantee: each Pack has a counter of the Packs in a row without a card of its Guarantee Rank or higher. If the count gets to 1 less than the number of Packs, the next Pack has such a card. Such a card sets the counter back to 0. The Packs screen shows how many Packs are left.",
         ten: "Open ×10 buys 10 Packs of one kind for 10 × the price. Each Pack counts for the Pack Guarantee.",
-        pool: "All cards: all Creature Cards, and the Skill Cards of the Class of your active Deck.",
-        racePack:
-          "A Race Pack has only the Creature Cards of one Race, and no Skill Cards. It costs 1.4 × the price. A Pack and its Race Pack share one Pack Guarantee counter.",
+        pool: "All cards: all Creature Cards, and only the Skill Cards of the Class of your active Deck. A Class Pack has only the Skill Cards of the Class that you select. A Race Pack has no Skill Cards.",
+        versions:
+          "A Race Pack has only the Creature Cards of one Race. A Class Pack has only the Skill Cards of one Class, and you can select any Class. Each costs 1.4 × the price. All versions of a Pack share one Pack Guarantee counter.",
       },
       newCardFirstRule:
         "A Merchant Pack and a Royal Pack select a card that you do not have yet, if the rolled Rank permits one. If you have all those cards, the Pack selects a card at random. A Peddler Pack always selects at random.",
@@ -962,6 +980,10 @@ export default {
       "Friendly Units in a Lane get Armor {armor} for the next {turns} enemy Turns.",
     lowerCountdown:
       "The Countdown of {cards} random cards in your Hand goes down by {amount}.",
+    healUnit: "Heal {heal} HP to a friendly Unit.",
+    wardUnit:
+      "A friendly Unit gets Ward {ward}: it absorbs the next {ward} damage.",
+    armorIgnored: "{effect} Armor does not reduce it.",
   },
   cards: {
     human: {
@@ -1353,6 +1375,11 @@ export default {
       fireball: { name: "Fireball", flavor: "A warm welcome." },
       frostBolt: { name: "Frost Bolt", flavor: "Stay a while." },
       flameWave: { name: "Flame Wave", flavor: "The whole lane gets a turn." },
+    },
+    priest: {
+      mend: { name: "Mend", flavor: "Rise. You are not done yet." },
+      smite: { name: "Smite", flavor: "No armor hides you from the light." },
+      sanctuary: { name: "Sanctuary", flavor: "Stand within the light." },
     },
   },
   tokens: {

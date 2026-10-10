@@ -89,9 +89,19 @@ export const FX_SLOTS = {
   ),
   "icon-hobble": fixed(cell(1536, 1280, 128), "alpha", FX_ANCHORS.iconHobble),
   "icon-bleed": fixed(cell(1664, 1280, 128), "alpha", FX_ANCHORS.iconBleed),
+  "icon-ward": fixed(cell(1792, 1280, 128), "alpha", FX_ANCHORS.iconWard),
 } as const satisfies Readonly<Record<string, FxSlot>>;
 
 export type FxSlotName = keyof typeof FX_SLOTS;
+
+/**
+ * The slots that the painted atlas does not have yet (#45 paints the Ward
+ * icon). They keep their canvas placeholder over the painted atlas, and the
+ * DOM shows a glyph for them.
+ */
+export const UNPAINTED_SLOTS: ReadonlySet<FxSlotName> = new Set<FxSlotName>([
+  "icon-ward",
+]);
 
 /** All slot names, in the order of the table. */
 export const fxSlotNames = (): FxSlotName[] =>

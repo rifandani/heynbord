@@ -8,6 +8,7 @@ import {
   emptyBattle,
   eventsOfType,
   giveHand,
+  placeToken,
   placeUnit,
   preventRout,
   run,
@@ -638,6 +639,232 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
       expect(
         eventsOfType([...first.events, ...second.events], "UnitPushed")
       ).toEqual([]);
+    });
+  });
+});
+
+/** A friendly Halberdier (6 HP, no Armor) in Lane 1. */
+const friendAt = (
+  state: ReturnType<typeof emptyBattle>,
+  position: number,
+  options: Partial<Parameters<typeof placeUnit>[1]> = {}
+) =>
+  placeUnit(state, {
+    cardId: "human.halberdier",
+    owner: "player",
+    position,
+    ...options,
+  });
+
+describe("Priest Skill Cards (GDD 5.5)", () => {
+  describe("the friendly-Unit target", () => {
+    it("gives each Unit of the caster's Side, also a Token, a Wall and a Unit at full HP, and no enemy Unit or Hero", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [["priest.mend", 0]]);
+      friendAt(state, 2);
+      placeUnit(state, {
+        cardId: "human.townBarricade",
+        owner: "player",
+        position: 4,
+      });
+      placeToken(state, {
+        tokenId: "token.skeleton",
+        owner: "player",
+        lane: 1,
+        position: 1,
+      });
+      enemyAt(state, 6);
+      expect(legalTargets(state, 0)).toEqual([
+        square(0, 2),
+        square(0, 4),
+        square(1, 1),
+      ]);
+      expect(violation(step(state, play(0, square(0, 6))))).toBe(
+        "IllegalTarget"
+      );
+      expect(
+        violation(step(state, play(0, Target.Hero({ side: "player" }))))
+      ).toBe("IllegalTarget");
+    });
+
+    it("gives the enemy's Units when the enemy plays the card, and no target with no friendly Unit", () => {
+      const state = emptyBattle({ activeSide: "enemy" });
+      giveHand(state, "enemy", [["priest.sanctuary", 0, "uncommon"]]);
+      friendAt(state, 2);
+      expect(legalTargets(state, 0)).toEqual([]);
+      enemyAt(state, 8);
+      expect(legalTargets(state, 0)).toEqual([square(0, 8)]);
+    });
+  });
+
+  describe("Mend", () => {
+    it("heals the Unit with the value of the Rank, up to its maximum HP", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["priest.mend", 0, "rare"],
+        ["priest.mend", 0],
+      ]);
+      const hurt = friendAt(state, 2, { hp: 20, maxHp: 30 });
+      const near = friendAt(state, 3, { hp: 4 });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 2)));
+      // Rare: 6 × 1.45 = 8.7, rounded to 9.
+      expect(unitById(first.state, hurt.id)?.hp).toBe(29);
+      const second = run(first.state, play(0, square(0, 3)));
+      expect(unitById(second.state, near.id)?.hp).toBe(6);
+      expect(eventsOfType(second.events, "UnitHealed")).toEqual([
+        expect.objectContaining({ unitId: near.id, amount: 2, hp: 6 }),
+      ]);
+    });
+
+    it("gives a Bleeding Unit half of the heal, rounded down (ADR-0019)", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.mend", 0, "uncommon"]]);
+      const unit = friendAt(state, 2, { hp: 1, maxHp: 20, bleeding: 1 });
+      const { state: next } = run(state, play(0, square(0, 2)));
+      // Uncommon: 7, half is 3.5, rounded down to 3.
+      expect(unitById(next, unit.id)?.hp).toBe(4);
+    });
+
+    it("is legal on a Unit at full HP, and then heals nothing", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.mend", 0]]);
+      const unit = friendAt(state, 2);
+      const { state: next, events } = run(state, play(0, square(0, 2)));
+      expect(unitById(next, unit.id)?.hp).toBe(6);
+      expect(eventsOfType(events, "UnitHealed")).toEqual([]);
+      expect(eventsOfType(events, "RecallRolled")).toHaveLength(1);
+    });
+
+    it("does not remove a Status", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.mend", 0]]);
+      const unit = friendAt(state, 2, { hp: 1, burn: 2, poisoned: 1 });
+      const { state: next } = run(state, play(0, square(0, 2)));
+      expect(unitById(next, unit.id)).toMatchObject({
+        hp: 6,
+        burn: 2,
+        poisoned: 1,
+      });
+    });
+  });
+
+  describe("Smite", () => {
+    it("deals Holy damage with the value of the Rank, and Armor does not reduce it", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.smite", 0, "uncommon"]]);
+      const target = enemyAt(state, 6, { bonusArmor: 3, bonusArmorTurns: 2 });
+      const { state: next, events } = run(state, play(0, square(0, 6)));
+      // Uncommon: 3 × 1.2 = 3.6, rounded to 4.
+      expect(unitById(next, target.id)?.hp).toBe(2);
+      expect(eventsOfType(events, "DamageDealt")).toEqual([
+        expect.objectContaining({
+          amount: 4,
+          damageType: "holy",
+          source: "skill",
+          absorbed: 0,
+        }),
+      ]);
+    });
+
+    it("is absorbed by a Ward", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.smite", 0]]);
+      const target = enemyAt(state, 6, { ward: 2 });
+      const { state: next, events } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, target.id)).toMatchObject({ hp: 5, ward: 0 });
+      expect(eventsOfType(events, "DamageDealt")[0]).toMatchObject({
+        amount: 1,
+        absorbed: 2,
+        ward: 0,
+        hp: 5,
+      });
+    });
+  });
+
+  describe("Sanctuary", () => {
+    it("gives Ward 6 at its Base Rank Uncommon, with a StatusApplied event", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.sanctuary", 0, "uncommon"]]);
+      const unit = friendAt(state, 2);
+      const { state: next, events } = run(state, play(0, square(0, 2)));
+      // The printed value is the Common value: 5 × 1.2 = 6.
+      expect(unitById(next, unit.id)?.ward).toBe(6);
+      expect(eventsOfType(events, "StatusApplied")).toEqual([
+        expect.objectContaining({ unitId: unit.id, status: "ward", count: 6 }),
+      ]);
+    });
+
+    it("keeps the higher Ward: the values do not add, and a Ward that is not higher emits no event", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["priest.sanctuary", 0, "uncommon"],
+        ["priest.sanctuary", 0, "rare"],
+      ]);
+      const strong = friendAt(state, 2, { ward: 6 });
+      const weak = friendAt(state, 3, { ward: 2 });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 2)));
+      expect(unitById(first.state, strong.id)?.ward).toBe(6);
+      expect(eventsOfType(first.events, "StatusApplied")).toEqual([]);
+      expect(eventsOfType(first.events, "RecallRolled")).toHaveLength(1);
+      const second = run(first.state, play(0, square(0, 3)));
+      // Rare: 5 × 1.45 = 7.25, rounded to 7.
+      expect(unitById(second.state, weak.id)?.ward).toBe(7);
+      expect(eventsOfType(second.events, "StatusApplied")).toEqual([
+        expect.objectContaining({ unitId: weak.id, status: "ward", count: 7 }),
+      ]);
+    });
+  });
+
+  describe("a Ward against Skill Card damage", () => {
+    it("still lets Frost Freeze and Fire Burn when it absorbs the full hit", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["mage.frostBolt", 0],
+        ["mage.fireball", 0],
+      ]);
+      const frozen = enemyAt(state, 6, { ward: 5 });
+      const burned = enemyAt(state, 9, { ward: 5 });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, frozen.id)).toMatchObject({
+        hp: 6,
+        ward: 3,
+        frozen: true,
+      });
+      expect(eventsOfType(first.events, "DamageDealt")[0]).toMatchObject({
+        amount: 0,
+        absorbed: 2,
+        ward: 3,
+      });
+      const second = run(first.state, play(0, square(0, 9)));
+      expect(unitById(second.state, burned.id)).toMatchObject({
+        hp: 6,
+        ward: 2,
+        burn: 2,
+      });
+    });
+
+    it("stops the Pinning Shot Entangle at 0 damage, but not the Warning Shot push", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["ranger.pinningShot", 0],
+        ["ranger.warningShot", 0],
+      ]);
+      const pinned = enemyAt(state, 6, { ward: 5 });
+      const pushed = enemyAt(state, 3, { ward: 5 });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, pinned.id)).toMatchObject({
+        hp: 6,
+        entangled: false,
+      });
+      const second = run(first.state, play(0, square(0, 3)));
+      expect(unitById(second.state, pushed.id)).toMatchObject({
+        hp: 6,
+        position: 5,
+      });
     });
   });
 });

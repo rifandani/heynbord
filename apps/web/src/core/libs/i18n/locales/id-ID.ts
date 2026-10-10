@@ -146,6 +146,9 @@ export default {
       reborn: "Bangkit Kembali",
       rebornRule:
         "Unit ini sudah mati dan kembali dengan Bangkit. Ia tidak kembali lagi.",
+      ward: "Pelindung {value}",
+      wardRule:
+        "Sebuah Buff. Ia menyerap damage setelah Zirah, Crit, dan Block, juga damage Suci, Terbakar, dan Racun, lalu turun sebesar damage itu. Ia tidak punya batas waktu. Pelindung baru memakai nilai yang lebih tinggi.",
     },
   },
   town: {
@@ -299,6 +302,7 @@ export default {
       ranks: { name: "Peringkat", short: "Peringkat" },
       progress: { name: "Kemajuan", short: "Kemajuan" },
     },
+    groups: { buff: "Buff", debuff: "Debuff", damageType: "Jenis Damage" },
     entryList: "Entri di {chapter}",
     results: "Hasil pencarian",
     resultCount: "Entri yang ditemukan: {count}",
@@ -510,7 +514,7 @@ export default {
       token:
         "Token adalah Unit yang dibuat oleh sebuah efek, misalnya Panggil X. Token bukan kartu, jadi ia tidak pernah ada di Tangan atau Dek-mu.\n\nToken punya Peringkat dari kartu yang membuatnya. Saat mati, ia menghilang. Ia tidak masuk ke Kuburan.\n\nToken adalah Unit kawan bagi Unit di Pihaknya, misalnya untuk Gerombolan.",
       status:
-        "Status adalah efek yang tetap ada pada Unit. Damage Api dan Es serta beberapa Kata Kunci memberi Status.\n\nUnit menunjukkan Status-nya sebagai ikon di atasnya. Detail Kartu dari Unit itu menunjukkan tiap Status dengan aturannya.",
+        "Status adalah efek yang tetap ada pada Unit. Buff membantu Unit, misalnya Pelindung. Debuff merugikannya. Damage Api dan Es serta beberapa Kata Kunci memberi Debuff.\n\nUnit menunjukkan Status-nya sebagai ikon di atasnya. Ikon Buff punya cincin emas. Detail Kartu dari Unit itu menunjukkan tiap Status dengan aturannya.",
       damageType:
         "Tiap serangan dan tiap efek damage punya Jenis Damage: Fisik, Api, Es, atau Suci.\n\nDi kartu, Jenis Damage tampil sebagai ikon dan warna dari Serangan.",
       damagePhysical: "Fisik: damage biasa. Zirah menguranginya.",
@@ -534,7 +538,8 @@ export default {
       classRanger: "Kendali, dan damage ke Pahlawan musuh.",
       classMage:
         "Damage area. Kartu Keahlian Penyihir mengenai Unit musuh dengan Api dan Es.",
-      classPriest: "Penyembuhan, perlindungan, dan Unit yang bangkit kembali.",
+      classPriest:
+        "Penyembuhan, perlindungan, dan damage Suci. Kartu Keahlian Pendeta menyembuhkan dan melindungi Unit-mu, dan damage Suci mengabaikan Zirah.",
       role: "Peran adalah tugas Kartu Makhluk dalam Pertempuran. Peran membantumu membaca kartu. Tidak ada aturan yang memakainya, tetapi Peran menentukan Jangkauan dari Unit jarak jauh.",
       roleFrontliner:
         "HP tinggi dan Kecepatan rendah. Garis Depan menahan Jalurnya dari Unit musuh.",
@@ -602,6 +607,7 @@ export default {
       statusFreeze: "stun, membeku, pingsan",
       statusBleed: "luka, anti-heal, kurangi penyembuhan",
       statusHobble: "lambat, slow, lumpuh",
+      statusWard: "perisai, shield, barrier, serap, buff",
       damageType: "elemen, element",
       race: "faksi, suku, kerajaan, faction",
       class: "pekerjaan, profesi, job",
@@ -630,7 +636,12 @@ export default {
     },
     pool: {
       label: "Kartu di dalam Paket",
+      kind: "Kartu",
       all: "Semua kartu",
+      creature: "Kartu Makhluk",
+      skill: "Kartu Keahlian",
+      race: "Ras",
+      class: "Kelas",
     },
     free: "Gratis",
     open: "Buka",
@@ -658,7 +669,7 @@ export default {
         b: "Selamat datang lagi! Awas kucingnya. Dia tidur di atas kartu Langka.",
         c: "Senang bertemu lagi! Mau lihat yang mana hari ini?",
       },
-      all: "Semua kartu di satu rak. Pilih Ras untuk melihat lebih dekat.",
+      all: "Semua kartu di satu rak. Pilih Ras atau Kelas untuk melihat lebih dekat.",
       races: {
         human: "Kartu Manusia. Orang yang tenang, jago memakai perisai.",
         orc: "Kartu Orc. Pegang dengan dua tangan.",
@@ -666,6 +677,15 @@ export default {
         feral: "Kartu Buas. Mereka cuma menggigit sedikit.",
         elf: "Kartu Elf. Hati-hati dengan durinya.",
         undead: "Kartu Undead. Mereka selalu kembali.",
+      },
+      classes: {
+        warrior:
+          "Kartu Keahlian Prajurit. Suaranya keras. Jauhkan dari kaca, ya.",
+        ranger:
+          "Kartu Keahlian Pemanah. Tidak pernah meleset. Yah, hampir tidak pernah.",
+        mage: "Kartu Keahlian Penyihir. Tolong jangan dibaca keras-keras di sini.",
+        priest:
+          "Kartu Keahlian Pendeta. Memegangnya saja sudah membuat hatiku tenang.",
       },
       complete: "Kamu sudah menemukan semua kartu di rak ini! Hebat sekali.",
       reactions: {
@@ -700,7 +720,7 @@ export default {
       yes: "Ya",
       no: "Tidak",
       price: "Harga",
-      racePrice: "Harga Paket Ras",
+      versionPrice: "Harga Paket Ras atau Paket Kelas",
       rulesTitle: "Aturan Paket",
       rules: {
         roll: "Satu Paket berisi 5 kartu. Untuk tiap kartu, Paket mengundi Peringkat dengan Peluang Muncul-nya.",
@@ -711,9 +731,9 @@ export default {
         guarantee:
           "Jaminan Paket: tiap Paket punya penghitung Paket berturut-turut tanpa kartu Peringkat Jaminan atau lebih tinggi. Jika hitungannya 1 kurang dari jumlah Paket, Paket berikutnya berisi kartu itu. Kartu itu mengembalikan penghitung ke 0. Layar Paket menunjukkan sisa Paketnya.",
         ten: "Buka ×10 membeli 10 Paket satu jenis seharga 10 × harganya. Tiap Paket dihitung untuk Jaminan Paket.",
-        pool: "Semua kartu: semua Kartu Makhluk, dan Kartu Keahlian dari Kelas Dek aktifmu.",
-        racePack:
-          "Paket Ras hanya berisi Kartu Makhluk dari satu Ras, tanpa Kartu Keahlian. Harganya 1,4 × harga Paket. Satu Paket dan Paket Ras-nya memakai satu penghitung Jaminan Paket.",
+        pool: "Semua kartu: semua Kartu Makhluk, dan hanya Kartu Keahlian dari Kelas Dek aktifmu. Paket Kelas hanya berisi Kartu Keahlian dari Kelas yang kamu pilih. Paket Ras tidak berisi Kartu Keahlian.",
+        versions:
+          "Paket Ras hanya berisi Kartu Makhluk dari satu Ras. Paket Kelas hanya berisi Kartu Keahlian dari satu Kelas, dan kamu bisa memilih Kelas apa saja. Harga keduanya 1,4 × harga Paket. Semua versi satu Paket memakai satu penghitung Jaminan Paket.",
       },
       newCardFirstRule:
         "Paket Saudagar dan Paket Kerajaan memilih kartu yang belum kamu punya, jika Peringkat hasil undian memungkinkan. Jika kamu sudah punya semua kartu itu, Paket memilih kartu secara acak. Paket Penjaja selalu memilih secara acak.",
@@ -973,6 +993,10 @@ export default {
       "Unit kawan dalam satu Jalur mendapat Zirah {armor} selama {turns} Giliran musuh berikutnya.",
     lowerCountdown:
       "Hitung mundur {cards} kartu acak di Tanganmu turun sebesar {amount}.",
+    healUnit: "Sembuhkan {heal} HP pada satu Unit kawan.",
+    wardUnit:
+      "Satu Unit kawan mendapat Pelindung {ward}: ia menyerap {ward} damage berikutnya.",
+    armorIgnored: "{effect} Zirah tidak menguranginya.",
   },
   cards: {
     human: {
@@ -1385,6 +1409,14 @@ export default {
       fireball: { name: "Bola Api", flavor: "Sambutan yang hangat." },
       frostBolt: { name: "Panah Es", flavor: "Tinggallah sebentar." },
       flameWave: { name: "Gelombang Api", flavor: "Seluruh jalur kebagian." },
+    },
+    priest: {
+      mend: { name: "Pulihkan", flavor: "Bangkitlah. Kamu belum selesai." },
+      smite: {
+        name: "Hantaman Suci",
+        flavor: "Tidak ada zirah yang menyembunyikanmu dari cahaya.",
+      },
+      sanctuary: { name: "Suaka", flavor: "Berdirilah di dalam cahaya." },
     },
   },
   tokens: {

@@ -1,12 +1,20 @@
 import { cn } from "cn";
 import { useLayoutEffect, useRef } from "react";
 import type { Key } from "react-aria-components";
-import { Link, ListBox, ListBoxItem } from "react-aria-components";
+import {
+  Header,
+  Link,
+  ListBox,
+  ListBoxItem,
+  ListBoxSection,
+} from "react-aria-components";
 
 import { useGameText } from "@/features/battle/use-game-text";
 import { SmallIcon } from "@/features/handbook/components/entry-icon";
 import type {
   ChapterId,
+  Entry,
+  EntryGroup,
   EntryId,
   SearchHit,
 } from "@/features/handbook/handbook";
@@ -61,7 +69,30 @@ const onKey =
     }
   };
 
-/** The Entries of one Chapter: an index with the icon of each Entry at its left. */
+/** A run of Entries in the list: with a group, it has a heading. */
+interface EntryRun {
+  readonly group: EntryGroup | undefined;
+  readonly entries: readonly Entry[];
+}
+
+/** Splits the Entries into runs of the same group, in their order. */
+const entryRuns = (entries: readonly Entry[]): EntryRun[] => {
+  const runs: { group: EntryGroup | undefined; entries: Entry[] }[] = [];
+  for (const entry of entries) {
+    const last = runs.at(-1);
+    if (last && last.group === entry.group) {
+      last.entries.push(entry);
+    } else {
+      runs.push({ group: entry.group, entries: [entry] });
+    }
+  }
+  return runs;
+};
+
+/**
+ * The Entries of one Chapter: an index with the icon of each Entry at its
+ * left. A group of Entries, for example the Buffs, has a heading.
+ */
 export const ChapterIndex = ({
   chapter,
   current,
@@ -77,6 +108,23 @@ export const ChapterIndex = ({
   const list = useCurrentInView(current, focusCurrent);
   const nameOf = (id: EntryId) => text(getEntry(id).name);
   const entries = chapterEntries(chapter, (entry) => text(entry.name), locale);
+  const item = (entry: Entry) => (
+    <ListBoxItem
+      key={entry.id}
+      id={entry.id}
+      textValue={nameOf(entry.id)}
+      className={rowClass(entry.id === current)}
+      data-entry={entry.id}
+      data-current={entry.id === current || undefined}
+    >
+      {entry.icon ? (
+        <SmallIcon icon={entry.icon} className="size-[18px] text-[#7a4c1a]" />
+      ) : (
+        <span className="size-[18px] shrink-0" aria-hidden />
+      )}
+      <span className="min-w-0 truncate">{nameOf(entry.id)}</span>
+    </ListBoxItem>
+  );
   return (
     <ListBox
       ref={list}
@@ -88,26 +136,23 @@ export const ChapterIndex = ({
       className="outline-none"
       data-testid="handbook-index"
     >
-      {entries.map((entry) => (
-        <ListBoxItem
-          key={entry.id}
-          id={entry.id}
-          textValue={nameOf(entry.id)}
-          className={rowClass(entry.id === current)}
-          data-entry={entry.id}
-          data-current={entry.id === current || undefined}
-        >
-          {entry.icon ? (
-            <SmallIcon
-              icon={entry.icon}
-              className="size-[18px] text-[#7a4c1a]"
-            />
-          ) : (
-            <span className="size-[18px] shrink-0" aria-hidden />
-          )}
-          <span className="min-w-0 truncate">{nameOf(entry.id)}</span>
-        </ListBoxItem>
-      ))}
+      {entryRuns(entries).map((run) =>
+        run.group ? (
+          <ListBoxSection
+            // A section ID must not be an Entry ID: "damageType" is both.
+            key={`group-${run.group}`}
+            id={`group-${run.group}`}
+            data-testid={`handbook-group-${run.group}`}
+          >
+            <Header className="px-3 pt-3 pb-1 text-xs font-bold tracking-wider text-[#7a4c1a] uppercase">
+              {tr(`handbook.groups.${run.group}`)}
+            </Header>
+            {run.entries.map(item)}
+          </ListBoxSection>
+        ) : (
+          run.entries.map(item)
+        )
+      )}
     </ListBox>
   );
 };

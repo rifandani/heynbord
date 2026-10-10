@@ -75,6 +75,11 @@ export interface UnitView {
    * and for a Unit with no attack at the End Phase of its owner.
    */
   readonly entangled: boolean;
+  /**
+   * Ward N (GDD 4.7): a Buff that absorbs damage after Block. 0 is no Ward.
+   * `StatusApplied` sets it, and each `DamageDealt` gives the value that is left.
+   */
+  readonly ward: number;
   /** A Wall does not move or attack, so its Attack is not shown. */
   readonly wall: boolean;
 }
@@ -169,6 +174,7 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     bleeding: unit.bleeding,
     frozen: unit.frozen,
     entangled: unit.entangled,
+    ward: unit.ward,
     wall: unit.wall,
   };
 };
@@ -342,6 +348,7 @@ const applyDamage = (
   return updateUnit(view, target.unitId, (unit) => ({
     ...unit,
     hp: event.hp,
+    ward: event.ward,
     // The rules lower Burn by 1 before each Burn hit, and Poison by 1 before each Poison hit.
     burn: event.source === "burn" ? unit.burn - 1 : unit.burn,
     poisoned: event.source === "poison" ? unit.poisoned - 1 : unit.poisoned,
@@ -425,7 +432,7 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
     }
     case "UnitReborn": {
       // Rebirth (GDD 4.9): the Unit stays in its Square with its new HP, and
-      // all its Statuses, its Rally bonus and its bonus Armor end.
+      // all its Statuses (also Ward), its Rally bonus and its bonus Armor end.
       return updateUnit(view, event.unitId, (unit) => ({
         ...withRallyBonus(unit, 0),
         hp: event.hp,
@@ -436,6 +443,7 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
         bleeding: 0,
         frozen: false,
         entangled: false,
+        ward: 0,
         bonusArmor: 0,
         bonusArmorTurns: 0,
       }));
@@ -522,6 +530,9 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
           }
           case "entangle": {
             return { ...unit, entangled: true };
+          }
+          case "ward": {
+            return { ...unit, ward: event.count ?? unit.ward };
           }
           default: {
             return unit;

@@ -4,6 +4,7 @@ import type {
   Keywords,
   RankId,
   SkillCardDefinition,
+  SkillEffect,
   TokenId,
 } from "@workspace/rules";
 import {
@@ -122,7 +123,16 @@ const unitKeywords = (keywords: Keywords, rank: RankId): KeywordText[] => {
   return refs;
 };
 
-const skillEffect = (card: SkillCardDefinition, rank: RankId): TextRef => {
+/**
+ * Holy damage text says that Armor does not reduce it, so the card shows the
+ * rule with no Details lookup.
+ */
+const withDamageRule = (effect: SkillEffect, text: TextRef): TextRef =>
+  "damageType" in effect && effect.damageType === "holy"
+    ? { key: "effects.armorIgnored", args: { effect: text } }
+    : text;
+
+const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
   const { effect } = card;
   switch (effect.type) {
     case "damageUnit":
@@ -157,6 +167,18 @@ const skillEffect = (card: SkillCardDefinition, rank: RankId): TextRef => {
         },
       };
     }
+    case "healUnit": {
+      return {
+        key: "effects.healUnit",
+        args: { heal: scaleForRank(effect.heal, rank) },
+      };
+    }
+    case "wardUnit": {
+      return {
+        key: "effects.wardUnit",
+        args: { ward: scaleForRank(effect.ward, rank) },
+      };
+    }
     case "laneArmor": {
       return {
         key: "effects.laneArmor",
@@ -174,6 +196,9 @@ const skillEffect = (card: SkillCardDefinition, rank: RankId): TextRef => {
     }
   }
 };
+
+const skillEffect = (card: SkillCardDefinition, rank: RankId): TextRef =>
+  withDamageRule(card.effect, effectText(card, rank));
 
 export interface CreatureCardText {
   readonly kind: "creature";
@@ -218,6 +243,7 @@ export const STATUS_TEXT = {
     rule: "battle.status.bleedingRule",
   },
   hobble: { name: "battle.status.hobbled", rule: "battle.status.hobbledRule" },
+  ward: { name: "battle.status.ward", rule: "battle.status.wardRule" },
 } as const satisfies Readonly<
   Record<Status, { readonly name: string; readonly rule: string }>
 >;
@@ -250,14 +276,15 @@ type StatusCounts = Pick<
   | "hobbled"
   | "bleeding"
   | "poisoned"
+  | "ward"
   | "rallyBonus"
   | "swarmBonus"
   | "reborn"
 >;
 
-/** A Status with a count in its name, for example "Poison 2". */
+/** A Status with a count in its name, for example "Poison 2" or "Ward 6". */
 const countedStatus = (
-  status: "poison" | "hobble" | "bleed",
+  status: "poison" | "hobble" | "bleed" | "ward",
   count: number
 ): StatusText[] =>
   count > 0
@@ -285,11 +312,12 @@ const flagStatus = (
     : [];
 
 /**
- * How a Unit is different from its card now (UI-05): bonus Armor, the Rally
- * bonus, the Swarm bonus, each Status that it has, then a used Rebirth. Empty
- * for a Unit with none of these.
+ * How a Unit is different from its card now (UI-05): a Ward (the Buff, first
+ * as on its badge), bonus Armor, the Rally bonus, the Swarm bonus, each
+ * Debuff that it has, then a used Rebirth. Empty for a Unit with none of these.
  */
 export const unitStatusText = (unit: StatusCounts): StatusText[] => [
+  ...countedStatus("ward", unit.ward),
   ...(unit.bonusArmor > 0
     ? [
         {

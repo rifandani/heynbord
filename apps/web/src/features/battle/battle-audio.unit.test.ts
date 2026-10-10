@@ -39,6 +39,8 @@ describe("eventSound", () => {
       source: "attack",
       crit: false,
       blocked: false,
+      absorbed: 0,
+      ward: 0,
       hp: 3,
     } as const;
     expect(eventSound(damage)).toBe("hit");

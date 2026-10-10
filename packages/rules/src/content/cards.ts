@@ -1381,6 +1381,34 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyLane",
     effect: { type: "damageLane", amount: 2, damageType: "fire" },
   },
+  // Priest: healing, protection and Holy damage.
+  {
+    kind: "skill",
+    id: "priest.mend",
+    class: "priest",
+    baseRank: "common",
+    countdown: 2,
+    target: "friendlyUnit",
+    effect: { type: "healUnit", heal: 6 },
+  },
+  {
+    kind: "skill",
+    id: "priest.smite",
+    class: "priest",
+    baseRank: "common",
+    countdown: 2,
+    target: "enemyUnit",
+    effect: { type: "damageUnit", amount: 3, damageType: "holy" },
+  },
+  {
+    kind: "skill",
+    id: "priest.sanctuary",
+    class: "priest",
+    baseRank: "uncommon",
+    countdown: 3,
+    target: "friendlyUnit",
+    effect: { type: "wardUnit", ward: 5 },
+  },
 ];
 
 export const CARDS: readonly CardDefinition[] = [...creatures, ...skills];

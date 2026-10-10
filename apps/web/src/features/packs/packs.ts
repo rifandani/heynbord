@@ -6,7 +6,7 @@ import type {
   OpenedPack,
   PackDefinition,
   PackId,
-  RaceId,
+  PackPool,
   RankId,
 } from "@workspace/rules";
 import {
@@ -20,6 +20,7 @@ import {
 } from "@workspace/rules";
 
 import type { DeckSlot } from "@/features/deck/deck";
+import { CLASSES_WITH_CARDS } from "@/features/deck/deck";
 
 /**
  * The Pack state of the Player (Economy 3.1). It is in memory until the
@@ -28,7 +29,7 @@ import type { DeckSlot } from "@/features/deck/deck";
 export interface PackState {
   /**
    * The Pack Guarantee counter of each Pack: the Packs in a row without a card
-   * of the Guarantee Rank or higher. A Pack and its Race Pack share one.
+   * of the Guarantee Rank or higher. All versions of a Pack share one.
    */
   readonly guaranteeCounters: Readonly<Record<PackId, number>>;
   /** The random state of the Pack rolls. It moves forward after each Pack. */
@@ -50,8 +51,8 @@ export type OpenCount = 1 | typeof TEN_PACKS;
 /** The Packs that the Player buys in one action. */
 export interface PackOrder {
   readonly pack: PackId;
-  /** The Race of a Race Pack, or `null` for the Pack with all cards. */
-  readonly race: RaceId | null;
+  /** All cards, the Creature Cards of one Race or the Skill Cards of one Class. */
+  readonly pool: PackPool;
   readonly count: OpenCount;
 }
 
@@ -59,15 +60,15 @@ export interface PackOrder {
 export const isFreeOrder = (order: PackOrder, state: PackState): boolean =>
   !state.freePackUsed && order.pack === "peddler" && order.count === 1;
 
-/** The price of one Pack, in Copper: the Race Pack costs more. */
-export const packPrice = (pack: PackDefinition, race: RaceId | null): number =>
-  race === null ? pack.price : pack.racePackPrice;
+/** The price of one Pack, in Copper: a Race Pack and a Class Pack cost more. */
+export const packPrice = (pack: PackDefinition, pool: PackPool): number =>
+  pool.kind === "all" ? pack.price : pack.versionPrice;
 
 /** The price of an order, in Copper: 0 for the free first Pack. */
 export const orderPrice = (order: PackOrder, state: PackState): number =>
   isFreeOrder(order, state)
     ? 0
-    : packPrice(getPack(order.pack), order.race) * order.count;
+    : packPrice(getPack(order.pack), order.pool) * order.count;
 
 /** The Coin that the Player needs more for an order, in Copper, or 0. */
 export const missingCoin = (
@@ -188,7 +189,7 @@ export const buyPacks = (
   const discovered = discoveredCards(wallet.collection);
   const result = open(order, {
     pack: order.pack,
-    race: order.race,
+    pool: order.pool,
     classId,
     discovered,
     guaranteeCounter: wallet.packs.guaranteeCounters[order.pack],
@@ -221,17 +222,17 @@ export interface PoolProgress {
   readonly total: number;
 }
 
-/** The Collection progress in the pool of a Pack (`race` `null`: all cards). */
+/** The Collection progress in the pool of a Pack. */
 export const poolProgress = (
-  race: RaceId | null,
+  pool: PackPool,
   classId: ClassId,
   collection: Collection
 ): PoolProgress => {
   const discovered = discoveredCards(collection);
-  const pool = packPool(race, classId);
+  const cards = packPool(pool, classId);
   return {
-    found: pool.filter((card) => discovered.has(card.id)).length,
-    total: pool.length,
+    found: cards.filter((card) => discovered.has(card.id)).length,
+    total: cards.length,
   };
 };
 
@@ -306,6 +307,15 @@ export const heroClass = (
 ): ClassId =>
   (slots.find((slot) => slot.id === activeDeckId) ?? slots[0])?.classId ??
   "warrior";
+
+/**
+ * The Class that the Skill Cards choice starts on: the current Hero Class, or
+ * the first Class with Skill Cards when that Class has none.
+ */
+export const startClass = (classId: ClassId): ClassId =>
+  CLASSES_WITH_CARDS.includes(classId)
+    ? classId
+    : (CLASSES_WITH_CARDS[0] ?? classId);
 
 /** The three Packs, from the cheapest, as the screen shows them. */
 export const PACK_IDS: readonly PackId[] = PACKS.map((pack) => pack.id);

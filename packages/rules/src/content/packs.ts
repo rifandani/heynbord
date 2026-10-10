@@ -13,8 +13,11 @@ export interface PackDefinition {
   readonly id: PackId;
   /** The price of the Pack with all cards, in Copper. */
   readonly price: number;
-  /** The price of the Race Pack version, in Copper: 1.4 × `price`. */
-  readonly racePackPrice: number;
+  /**
+   * The price of the Race Pack and the Class Pack versions, in Copper:
+   * 1.4 × `price`. A smaller pool costs more.
+   */
+  readonly versionPrice: number;
   /** The Drop Rate of each Rank, in basis points. The 5 values add up to 10,000. */
   readonly dropRates: Readonly<Record<RankId, number>>;
   /**
@@ -41,7 +44,7 @@ export const PACKS: readonly PackDefinition[] = [
   {
     id: "peddler",
     price: 350,
-    racePackPrice: 490,
+    versionPrice: 490,
     dropRates: {
       common: 8000,
       uncommon: 1700,
@@ -56,7 +59,7 @@ export const PACKS: readonly PackDefinition[] = [
   {
     id: "merchant",
     price: 500,
-    racePackPrice: 700,
+    versionPrice: 700,
     dropRates: {
       common: 6200,
       uncommon: 2700,
@@ -71,7 +74,7 @@ export const PACKS: readonly PackDefinition[] = [
   {
     id: "royal",
     price: 1000,
-    racePackPrice: 1400,
+    versionPrice: 1400,
     dropRates: {
       common: 0,
       uncommon: 5500,

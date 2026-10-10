@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { UnitView } from "@/features/battle/battle-view";
 import {
   badgeStatuses,
+  isBuff,
   loopStatuses,
   STATUS_ORDER,
   statusesOf,
@@ -34,6 +35,7 @@ const quiet: UnitView = {
   bleeding: 0,
   frozen: false,
   entangled: false,
+  ward: 0,
   wall: false,
 };
 
@@ -45,6 +47,7 @@ const allStatuses: UnitView = {
   bleeding: 2,
   frozen: true,
   entangled: true,
+  ward: 5,
 };
 
 describe("statusesOf", () => {
@@ -52,8 +55,9 @@ describe("statusesOf", () => {
     expect(statusesOf(quiet)).toEqual([]);
   });
 
-  it("gives the Statuses in the fixed priority order", () => {
+  it("gives the Statuses in the fixed priority order, with Ward first", () => {
     expect(STATUS_ORDER).toEqual([
+      "ward",
       "freeze",
       "burn",
       "poison",
@@ -73,7 +77,7 @@ describe("loopStatuses", () => {
   it("gives at most 2 Statuses, with the highest priority first", () => {
     expect(loopStatuses(quiet)).toEqual([]);
     expect(loopStatuses({ ...quiet, bleeding: 1 })).toEqual(["bleed"]);
-    expect(loopStatuses(allStatuses)).toEqual(["freeze", "burn"]);
+    expect(loopStatuses(allStatuses)).toEqual(["ward", "freeze"]);
     expect(
       loopStatuses({ ...quiet, hobbled: 2, bleeding: 1, entangled: true })
     ).toEqual(["entangle", "bleed"]);
@@ -86,9 +90,9 @@ describe("badgeStatuses", () => {
       badgeStatuses({ ...quiet, poisoned: 3, hobbled: 1, bleeding: 2 })
     ).toEqual({
       badges: [
-        { status: "poison", count: 3 },
-        { status: "bleed", count: 2 },
-        { status: "hobble", count: 1 },
+        { status: "poison", count: 3, buff: false },
+        { status: "bleed", count: 2, buff: false },
+        { status: "hobble", count: 1, buff: false },
       ],
       more: 0,
     });
@@ -99,9 +103,9 @@ describe("badgeStatuses", () => {
       badgeStatuses({ ...quiet, burn: 2, frozen: true, entangled: true })
     ).toEqual({
       badges: [
-        { status: "freeze", count: null },
-        { status: "burn", count: null },
-        { status: "entangle", count: null },
+        { status: "freeze", count: null, buff: false },
+        { status: "burn", count: null, buff: false },
+        { status: "entangle", count: null, buff: false },
       ],
       more: 0,
     });
@@ -110,11 +114,25 @@ describe("badgeStatuses", () => {
   it("shows at most 3 badges, then the number of the other Statuses", () => {
     const { badges, more } = badgeStatuses(allStatuses);
     expect(badges.map((badge) => badge.status)).toEqual([
+      "ward",
       "freeze",
       "burn",
-      "poison",
     ]);
-    expect(more).toBe(3);
+    expect(more).toBe(4);
+  });
+
+  it("shows the Ward first, with its value as the count and the gold ring of a Buff", () => {
+    expect(badgeStatuses({ ...quiet, ward: 6, poisoned: 1 })).toEqual({
+      badges: [
+        { status: "ward", count: 6, buff: true },
+        { status: "poison", count: 1, buff: false },
+      ],
+      more: 0,
+    });
+    expect(isBuff("ward")).toBe(true);
+    expect(
+      STATUS_ORDER.filter((status) => status !== "ward").some(isBuff)
+    ).toBe(false);
   });
 
   it("gives an empty badge for a quiet Unit", () => {

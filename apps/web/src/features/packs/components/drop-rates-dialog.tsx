@@ -28,7 +28,7 @@ const RULES = [
   "guarantee",
   "ten",
   "pool",
-  "racePack",
+  "versions",
 ] as const;
 
 const CELL = "px-2 py-1.5 [@media(max-height:500px)]:py-1";
@@ -145,9 +145,9 @@ const DropRatesTable = () => {
             className="justify-end font-bold"
           />
         ))}
-        {row(tr("packs.rates.racePrice"), (pack) => (
+        {row(tr("packs.rates.versionPrice"), (pack) => (
           <CoinPrice
-            parts={coinDenominations(pack.racePackPrice)}
+            parts={coinDenominations(pack.versionPrice)}
             format={format}
             className="justify-end font-bold"
           />

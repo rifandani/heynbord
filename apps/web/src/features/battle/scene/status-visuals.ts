@@ -9,8 +9,12 @@ export type Status = Extract<
   { readonly _tag: "StatusApplied" }
 >["status"];
 
-/** The fixed priority order of the Status visuals: the loops and the badges. */
+/**
+ * The fixed priority order of the Status visuals: the loops and the badges.
+ * Ward is first, so a Unit always shows why a hit did less damage.
+ */
 export const STATUS_ORDER: readonly Status[] = [
+  "ward",
   "freeze",
   "burn",
   "poison",
@@ -27,7 +31,16 @@ export const STATUS_ICON = {
   entangle: "icon-entangle",
   bleed: "icon-bleed",
   hobble: "icon-hobble",
+  ward: "icon-ward",
 } as const satisfies Readonly<Record<Status, FxSlotName>>;
+
+/**
+ * The Buffs (rules CONTEXT: Buff, Debuff). Each other Status is a Debuff. A
+ * Buff badge has a gold ring, and the Handbook shows the two groups.
+ */
+const BUFFS: ReadonlySet<Status> = new Set<Status>(["ward"]);
+
+export const isBuff = (status: Status): boolean => BUFFS.has(status);
 
 /** A Unit shows the loops of at most this many Statuses, so the figure stays readable. */
 const MAX_LOOPS = 2;
@@ -42,9 +55,10 @@ const HAS_STATUS: Readonly<Record<Status, (unit: UnitView) => boolean>> = {
   entangle: (unit) => unit.entangled,
   bleed: (unit) => unit.bleeding > 0,
   hobble: (unit) => unit.hobbled > 0,
+  ward: (unit) => unit.ward > 0,
 };
 
-/** The count on a badge: the Poisoned stacks, and the Hobbled and Bleeding counts. */
+/** The count on a badge: the Ward value, the Poisoned stacks, and the Hobbled and Bleeding counts. */
 const COUNT_OF: Readonly<Record<Status, (unit: UnitView) => number | null>> = {
   freeze: () => null,
   burn: () => null,
@@ -52,6 +66,7 @@ const COUNT_OF: Readonly<Record<Status, (unit: UnitView) => number | null>> = {
   entangle: () => null,
   bleed: (unit) => unit.bleeding,
   hobble: (unit) => unit.hobbled,
+  ward: (unit) => unit.ward,
 };
 
 /** All Statuses of a Unit, in the priority order. */
@@ -66,6 +81,8 @@ export interface StatusBadge {
   readonly status: Status;
   /** `null` for a Status with no count. */
   readonly count: number | null;
+  /** A Buff badge has a gold ring. */
+  readonly buff: boolean;
 }
 
 export interface StatusBadgeList {
@@ -82,9 +99,11 @@ export interface StatusBadgeList {
 export const badgeStatuses = (unit: UnitView): StatusBadgeList => {
   const statuses = statusesOf(unit);
   return {
-    badges: statuses
-      .slice(0, MAX_BADGES)
-      .map((status) => ({ status, count: COUNT_OF[status](unit) })),
+    badges: statuses.slice(0, MAX_BADGES).map((status) => ({
+      status,
+      count: COUNT_OF[status](unit),
+      buff: isBuff(status),
+    })),
     more: Math.max(statuses.length - MAX_BADGES, 0),
   };
 };

@@ -22,6 +22,8 @@ const damage = (crit: boolean): BattleEvent => ({
   source: "attack",
   crit,
   blocked: false,
+  absorbed: 0,
+  ward: 0,
   hp: 10,
 });
 

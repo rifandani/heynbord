@@ -17,18 +17,26 @@ import type {
 import { randomInt } from "../random";
 import type { RandomCursor } from "../random";
 
+/**
+ * The version of a Pack (Economy 3.1): all cards, a Race Pack or a Class
+ * Pack. Each version of a Pack has the same Drop Rates and Pack Guarantee.
+ */
+export type PackPool =
+  | { readonly kind: "all" }
+  | { readonly kind: "race"; readonly race: RaceId }
+  | { readonly kind: "class"; readonly classId: ClassId };
+
 export interface OpenPackInput {
   readonly pack: PackId;
-  /** The Race of a Race Pack, or `null` for the Pack with all cards. */
-  readonly race: RaceId | null;
+  readonly pool: PackPool;
   /** The current Hero Class. "All cards" has only its Skill Cards. */
   readonly classId: ClassId;
   /** The IDs of the cards that the Player has Discovered. */
   readonly discovered: ReadonlySet<string>;
   /**
    * The Pack Guarantee counter of this Pack: the Packs in a row without a
-   * card of the Guarantee Rank or higher. The Pack and its Race Pack version
-   * share one counter.
+   * card of the Guarantee Rank or higher. All versions of the Pack share one
+   * counter.
    */
   readonly guaranteeCounter: number;
   readonly randomState: number;
@@ -88,18 +96,30 @@ const hasRank = (ranks: readonly RankId[], rank: RankId): boolean =>
   ranks.some((current) => isRankAtLeast(current, rank));
 
 /**
- * The Pack pool: the Creature Cards of the Race for a Race Pack, or all
- * Creature Cards and the Skill Cards of the Hero Class.
+ * The cards of a Pack pool: the Creature Cards of the Race for a Race Pack,
+ * the Skill Cards of the Class for a Class Pack, or all Creature Cards and the
+ * Skill Cards of the Hero Class (`classId`).
  */
 export const packPool = (
-  race: RaceId | null,
+  pool: PackPool,
   classId: ClassId
 ): readonly CardDefinition[] =>
-  CARDS.filter((card) =>
-    card.kind === "creature"
-      ? race === null || card.race === race
-      : race === null && card.class === classId
-  );
+  CARDS.filter((card) => {
+    switch (pool.kind) {
+      case "all": {
+        return card.kind === "creature" || card.class === classId;
+      }
+      case "race": {
+        return card.kind === "creature" && card.race === pool.race;
+      }
+      case "class": {
+        return card.kind === "skill" && card.class === pool.classId;
+      }
+      default: {
+        return pool satisfies never;
+      }
+    }
+  });
 
 const selectCard = (
   cursor: RandomCursor,
@@ -150,7 +170,7 @@ const openOne = (
       replaceLowest(ranks, guaranteeRank);
     }
   }
-  const pool = packPool(input.race, input.classId);
+  const pool = packPool(input.pool, input.classId);
   const cards = ranks.map((rank) => ({
     cardId: selectCard(cursor, pool, rank, pack, discovered),
     rank,

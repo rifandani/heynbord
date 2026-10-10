@@ -268,6 +268,84 @@ describe("applyEvent with the Ranger Skill Cards", () => {
   });
 });
 
+/** Stage 1-4 with an enemy Deck of big Feral and Undead cards and the 3 Priest Skill Cards. */
+const priestStage = (): StageDefinition => {
+  const stage = getStage("1-4");
+  const cardIds = [
+    "feral.caveBear",
+    "feral.cragRhino",
+    "undead.chatteringCohort",
+    "priest.mend",
+    "priest.smite",
+    "priest.sanctuary",
+  ];
+  return {
+    ...stage,
+    enemy: {
+      ...stage.enemy,
+      classId: "priest",
+      deck: cardIds.flatMap((cardId) =>
+        Array.from({ length: 2 }, () => ({ cardId, rank: "rare" as const }))
+      ),
+    },
+  };
+};
+
+describe("applyEvent with the Priest Skill Cards", () => {
+  const battles = [1, 2, 3, 4].map((seed) =>
+    steps(seed, "1-4", "vanguard", priestStage())
+  );
+  const events = battles.flat().flatMap((entry) => entry.events);
+
+  it("rebuilds the view of the next state from the events", () => {
+    for (const all of battles) {
+      for (const { before, after, events: stepEvents } of all) {
+        expect(stepEvents.reduce(applyEvent, viewFromState(before))).toEqual(
+          viewFromState(after)
+        );
+      }
+    }
+  });
+
+  it("plays a heal, a Ward and a hit that a Ward absorbs in these Battles", () => {
+    expect(
+      castEffects(events, "priest.mend").some((effects) =>
+        effects.some((event) => event._tag === "UnitHealed")
+      )
+    ).toBe(true);
+    expect(
+      castEffects(events, "priest.sanctuary").some((effects) =>
+        effects.some(
+          (event) => event._tag === "StatusApplied" && event.status === "ward"
+        )
+      )
+    ).toBe(true);
+    expect(
+      events.some((event) => event._tag === "DamageDealt" && event.absorbed > 0)
+    ).toBe(true);
+  });
+
+  it("sets the Ward from StatusApplied and from each DamageDealt", () => {
+    for (const { before, events: stepEvents } of battles.flat()) {
+      let view = viewFromState(before);
+      for (const event of stepEvents) {
+        view = applyEvent(view, event);
+        if (event._tag === "StatusApplied" && event.status === "ward") {
+          expect(
+            view.units.find((unit) => unit.id === event.unitId)?.ward
+          ).toBe(event.count);
+        }
+        if (event._tag === "DamageDealt" && event.target._tag === "Unit") {
+          const { unitId } = event.target;
+          const unit = view.units.find((candidate) => candidate.id === unitId);
+          // A Unit that died is not in the view.
+          expect(unit === undefined || unit.ward === event.ward).toBe(true);
+        }
+      }
+    }
+  });
+});
+
 describe("viewFromState", () => {
   it("hides the enemy's cards but shows their Countdowns", () => {
     const deck = getStarterDeck("raiders");
@@ -339,6 +417,7 @@ describe("the Graveyard view", () => {
           bleeding: 0,
           frozen: false,
           entangled: false,
+          ward: 0,
           wall: false,
         },
       ],
@@ -397,6 +476,7 @@ describe("the bonus Armor view", () => {
       bleeding: 0,
       frozen: false,
       entangled: false,
+      ward: 0,
       wall: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
@@ -462,6 +542,7 @@ describe("the Hobbled and Bleeding view", () => {
       bleeding: 0,
       frozen: false,
       entangled: false,
+      ward: 0,
       wall: false,
     };
     const view = {
@@ -536,6 +617,7 @@ describe("a push", () => {
       bleeding: 0,
       frozen: false,
       entangled: false,
+      ward: 0,
       wall: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
@@ -646,6 +728,7 @@ describe("the Entangled view", () => {
     bleeding: 0,
     frozen: false,
     entangled: false,
+    ward: 0,
     wall: false,
   };
   const view = { ...viewFromState(state), units: [unit] };
@@ -734,6 +817,7 @@ const snapshot = (
   bleeding: 0,
   frozen: false,
   entangled: false,
+  ward: 0,
   rallied: 0,
   bonusArmor: 0,
   bonusArmorTurns: 0,
@@ -801,7 +885,7 @@ describe("the Token, Rebirth and Swarm view", () => {
     expect(after.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);
   });
 
-  it("keeps a reborn Unit in its Square with its new HP, no Status and no bonus Armor", () => {
+  it("keeps a reborn Unit in its Square with its new HP, no Status (also no Ward) and no bonus Armor", () => {
     const lancer = snapshot(
       22,
       1,
@@ -817,9 +901,18 @@ describe("the Token, Rebirth and Swarm view", () => {
     view = [
       BattleEvent.StatusApplied({ unitId: lancer.id, status: "freeze" }),
       BattleEvent.StatusApplied({ unitId: lancer.id, status: "burn" }),
+      BattleEvent.StatusApplied({
+        unitId: lancer.id,
+        status: "ward",
+        count: 6,
+      }),
       BattleEvent.ArmorGained({ unitId: lancer.id, armor: 1, turns: 2 }),
-      BattleEvent.UnitReborn({ unitId: lancer.id, hp: 1 }),
     ].reduce(applyEvent, view);
+    expect(view.units[0]?.ward).toBe(6);
+    view = applyEvent(
+      view,
+      BattleEvent.UnitReborn({ unitId: lancer.id, hp: 1 })
+    );
     expect(view.units).toHaveLength(1);
     expect(view.units[0]).toMatchObject({
       position: 8,
@@ -827,6 +920,7 @@ describe("the Token, Rebirth and Swarm view", () => {
       reborn: true,
       frozen: false,
       burn: 0,
+      ward: 0,
       bonusArmor: 0,
     });
     expect(view.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);

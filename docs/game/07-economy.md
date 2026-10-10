@@ -164,9 +164,9 @@ The total is about 71% of the Bazaar catalog cost (section 3.5). The player must
 
 ### 3.1 Packs
 
-There are three Packs. Each Pack has its own Drop Rates, price and Pack Guarantee. Each Pack also has a **Race Pack** version with only the Creature Cards of one Race. The player selects the Race. A Race Pack costs 1.4 × the price of the same Pack with all cards.
+There are three Packs. Each Pack has its own Drop Rates, price and Pack Guarantee. Each Pack also has a **Race Pack** version with only the Creature Cards of one Race, and a **Class Pack** version with only the Skill Cards of one Class. The player selects the Race or the Class. The player can select any Class that has Skill Cards, not only the current Hero Class. A Race Pack and a Class Pack cost 1.4 × the price of the same Pack with all cards.
 
-| Pack | Cost | Race Pack cost | Cards | Job |
+| Pack | Cost | Race or Class Pack cost | Cards | Job |
 | --- | ---: | ---: | ---: | --- |
 | **Peddler Pack** | 350 Coin | 490 Coin | 5 | The most cards for each Coin. Fuel for Combine. Discovers Common and Uncommon Base Rank cards. |
 | **Merchant Pack** | 500 Coin | 700 Coin | 5 | The middle Pack. It replaces the Standard Pack. |
@@ -191,13 +191,13 @@ There are three Packs. Each Pack has its own Drop Rates, price and Pack Guarante
 3. **New Card First.** The Merchant Pack and the Royal Pack select a card that the player has not Discovered, when step 2 permits one. If there are more such cards, select one at random. If the player has Discovered all of them, select at random.
 4. The card comes in the rolled Rank.
 5. A Peddler Pack and a Merchant Pack have at least 1 card of Uncommon or higher. If the first 4 cards are all Common, the fifth card is at least Uncommon.
-6. Skill Cards come only for the current Hero Class. This keeps the Pack useful. A Race Pack has no Skill Cards.
+6. All cards has only the Skill Cards of the current Hero Class. A Class Pack has only the Skill Cards of the selected Class. A Race Pack has no Skill Cards.
 7. A Pack roll uses a random state in the player data that moves forward after each Pack. Thus a reload never gives a new roll.
 8. The Packs screen shows the Drop Rates, the Pack Guarantees and these rules before the player opens a Pack.
 
 **Rank changes.** A Pack rolls its 5 Ranks first. When a rule gives a Rank (rule 5, the Pack Guarantee or the ×10 bonus), the lowest Rank of the Pack changes to that Rank. If two or more Ranks are the lowest, the last one changes. Then the Pack selects a card for each Rank (rules 2 to 4). The reveal shows the 5 cards from the lowest Rank to the highest.
 
-**Pack Guarantee.** Each Pack has its own counter. A Pack and its Race Pack version share one counter. The counter counts the Packs in a row without a card of the Guarantee Rank or higher. For a Guarantee "in N Packs", if N − 1 Packs in a row have no such card, Pack N has one. Any card of that Rank or higher sets the counter back to 0. The Packs screen shows how many Packs are left.
+**Pack Guarantee.** Each Pack has its own counter. All versions of a Pack (all cards, the Race Packs and the Class Packs) share one counter. The counter counts the Packs in a row without a card of the Guarantee Rank or higher. For a Guarantee "in N Packs", if N − 1 Packs in a row have no such card, Pack N has one. Any card of that Rank or higher sets the counter back to 0. The Packs screen shows how many Packs are left.
 
 | Pack | Pack Guarantee |
 | --- | --- |
@@ -217,7 +217,7 @@ A Royal ×10 does not guarantee a Legendary, because then a single Royal Pack is
 
 **First Pack.** The first time that the player opens the Packs screen, one Peddler Pack is free.
 
-The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and the tables of this section the same. `bun run sim packs` reports the real rate of each Rank, how often each Pack Guarantee gives a card, the value for each Coin and the number of Packs to Discover all cards of each Base Rank.
+The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and the tables of this section the same. `bun run sim packs` reports, for all cards, a Race Pack and the Class Pack of each Class, the real rate of each Rank, how often each Pack Guarantee gives a card, the value for each Coin and the number of Packs to Discover all cards of each Base Rank. It also reports the mean number of Legendary Skill Card copies in 100 Royal Class Packs.
 
 ### 3.2 Combine
 

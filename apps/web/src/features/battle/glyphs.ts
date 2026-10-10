@@ -219,12 +219,12 @@ export const cardGlyph = (card: CardDefinition): Glyph => {
     case "damageEntangle":
     case "damagePush":
     case "damageHero": {
-      return card.effect.damageType === "frost"
-        ? "snow"
-        : card.effect.damageType === "fire"
-          ? "flame"
-          : "sword";
+      return DAMAGE_GLYPH[card.effect.damageType];
     }
+    case "healUnit": {
+      return "heart";
+    }
+    case "wardUnit":
     case "laneArmor": {
       return "shield";
     }

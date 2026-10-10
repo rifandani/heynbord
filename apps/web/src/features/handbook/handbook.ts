@@ -48,7 +48,7 @@ import {
 import type { Glyph } from "@/features/battle/glyphs";
 import { classGlyph, raceGlyph, roleGlyph } from "@/features/battle/glyphs";
 import type { Status } from "@/features/battle/scene/status-visuals";
-import { STATUS_ORDER } from "@/features/battle/scene/status-visuals";
+import { isBuff, STATUS_ORDER } from "@/features/battle/scene/status-visuals";
 import { CLASSES_WITH_CARDS, RACES_WITH_CARDS } from "@/features/deck/deck";
 import type { DiagramId } from "@/features/handbook/handbook-diagrams";
 
@@ -191,7 +191,15 @@ export interface Entry {
   readonly value?: KeywordValueKind;
   readonly diagram?: DiagramId;
   readonly seeAlso: readonly EntryId[];
+  /**
+   * The group of an Entry in its Chapter list, with a heading: a Buff or a
+   * Debuff (rules CONTEXT: Buff, Debuff), or a Damage Type.
+   */
+  readonly group?: EntryGroup;
 }
+
+/** A group of Entries with a heading in the Chapter list. */
+export type EntryGroup = "buff" | "debuff" | "damageType";
 
 const capitalize = <S extends string>(word: S): Capitalize<S> =>
   // SAFETY: the first letter in upper case is the definition of `Capitalize`.
@@ -401,6 +409,7 @@ const statusEntry = (status: Status): Entry => ({
   body: [{ key: STATUS_TEXT[status].rule }],
   icon: { kind: "status", status },
   seeAlso: [],
+  group: isBuff(status) ? "buff" : "debuff",
 });
 
 /** Physical damage has no rule on a card, so its Entry has its own text. */
@@ -416,6 +425,7 @@ const damageEntry = (damageType: DamageType): Entry => ({
   body: [damageRule(damageType)],
   icon: { kind: "damage", damageType },
   seeAlso: [],
+  group: "damageType",
 });
 
 /** An Entry with a name and a text of its own in the `handbook` keys. */
@@ -672,6 +682,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   statusEntangle: ["keywordEntangle", "movement"],
   statusBleed: ["keywordBleed", "keywordRegenerate"],
   statusHobble: ["keywordHobble", "speed"],
+  statusWard: ["damageHoly", "keywordTrample", "keywordRebirth"],
   damageType: ["status", "attack"],
   damagePhysical: ["keywordArmor"],
   damageFire: ["statusBurn"],
@@ -708,8 +719,10 @@ export const ENTRIES: readonly Entry[] = [
   ...UNIT_ENTRIES.map((id) => plainEntry(id, "units")),
   ...[...VALUE_KEYWORDS, ...TOKEN_KEYWORDS, ...FLAG_KEYWORDS].map(keywordEntry),
   term("status", "statuses"),
+  // Ward, the one Buff, is first in `STATUS_ORDER`, so the Buffs come before
+  // the Debuffs, and each group is one run in the list.
   ...STATUS_ORDER.map(statusEntry),
-  term("damageType", "statuses"),
+  { ...term("damageType", "statuses"), group: "damageType" as const },
   ...DAMAGE_TYPES.map(damageEntry),
   term("race", "kinds"),
   ...RACES_WITH_CARDS.map(raceEntry),
@@ -826,6 +839,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "statusFreeze",
   "statusBleed",
   "statusHobble",
+  "statusWard",
   "damageType",
   "race",
   "class",

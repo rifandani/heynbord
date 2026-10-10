@@ -94,6 +94,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Race Stamp**: The round stamp with the Race emblem that the game puts on the Pack art of a Race Pack. A Race Pack has no art of its own. _Avoid_: faction badge, race sticker
 
+**Class Stamp**: The round stamp with the Class emblem of a Skill Card (the Class glyph in ink on parchment) that the game puts on the Pack art of a Class Pack, in the place of the Race Stamp. There are no Class colors. _Avoid_: class badge, skill sticker
+
 **Reveal**: The screen over the Packs screen that shows the cards of the opened Packs. One Pack: 5 face-down cards that flip. Open ×10: a full flip for each Epic and Legendary card, then a grid of all the cards. _Avoid_: pull animation, pack opening
 
 ### Component Catalog

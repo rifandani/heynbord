@@ -218,6 +218,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Race Pack**: A Peddler, Merchant or Royal Pack that has only the Creature Cards of one Race. The Player selects the Race, and it costs more than the same Pack with all Cards. _Avoid_: faction pack
 
+**Class Pack**: A Peddler, Merchant or Royal Pack that has only the Skill Cards of one Class. The Player selects the Class, and it costs the same as the Race Pack of the same Pack. _Avoid_: skill pack, spell pack
+
 **Pack Guarantee**: The promise that a Pack gives a Card of a stated Rank or higher after a stated number of Packs of the same kind without one. The Packs screen shows how many Packs are left. _Avoid_: pity, mercy, bad-luck protection
 
 **New Card First**: The rule of the Merchant Pack and the Royal Pack: after the Rank roll, the Pack gives a Card that the Player has not Discovered, when the roll permits one. _Avoid_: duplicate protection, Discovery bias
@@ -337,4 +339,4 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - "debuff" was on the _Avoid_ list of **Status** before, because every Status harmed its Unit. **Ward** is the first Status that helps its Unit, so each Status is now a **Buff** or a **Debuff**. Players also say "buff" for a Rally bonus or for bonus Armor. Those are bonuses to a stat, not Buffs.
 - "Elf Skill Cards" is not a term. A **Skill Card** has a **Class**, not a **Race**. The Skill Cards of the Elf Archetype Thornwatch are **Ranger** Skill Cards, and each other Ranger Deck, for example the Goblin Deck Tunnel Rats, can use them too.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.
-- There were two Packs before: the Standard Pack (all Cards) and the Race Pack, with one Drop Rate table. Now there are three Packs with their own Drop Rates: **Peddler**, **Merchant** and **Royal**. The **Merchant Pack** replaces the Standard Pack. **Race Pack** is not a fourth Pack: it is a version of each of the three. Players say "gacha" and "pity". The terms are **Pack** and **Pack Guarantee**.
+- There were two Packs before: the Standard Pack (all Cards) and the Race Pack, with one Drop Rate table. Now there are three Packs with their own Drop Rates: **Peddler**, **Merchant** and **Royal**. The **Merchant Pack** replaces the Standard Pack. **Race Pack** is not a fourth Pack: it is a version of each of the three. **Class Pack** is also a version of each of the three, not a fourth Pack. Players say "gacha" and "pity". The terms are **Pack** and **Pack Guarantee**.

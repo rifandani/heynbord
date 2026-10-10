@@ -41,7 +41,7 @@ export type Fx =
   | {
       readonly kind: "number";
       readonly text: string;
-      readonly damageType: DamageType | "heal" | "block";
+      readonly damageType: DamageType | "heal" | "block" | "ward";
       readonly crit: boolean;
       readonly x: number;
       readonly z: number;
@@ -165,8 +165,41 @@ const meleeSlash = (
 };
 
 /**
+ * The "−N" of a Ward starts on the Status Badge above the figure, a little to
+ * the left, so it does not cover the damage number.
+ */
+const WARD_NUMBER = { height: 1.13, x: -0.32 } as const;
+
+/**
+ * A Ward that absorbed damage (GDD 4.7, step 7): a gold "−N" on its badge
+ * and a short shield flash, at the same time as the hit.
+ */
+const wardFx = (
+  event: Extract<BattleEvent, { readonly _tag: "DamageDealt" }>,
+  at: Spot,
+  time: number,
+  speed: BattleSpeed
+): Fx[] =>
+  event.absorbed > 0
+    ? [
+        {
+          kind: "number",
+          text: `-${event.absorbed}`,
+          damageType: "ward",
+          crit: false,
+          x: at.x + WARD_NUMBER.x,
+          z: at.z,
+          height: WARD_NUMBER.height,
+          start: time,
+        },
+        burstFx("ward-hit", at, time, BURST_DURATION / speed),
+      ]
+    : [];
+
+/**
  * The damage number and the hit on the target. A Burn or a Poison hit shows
- * the burst of its Status.
+ * the burst of its Status. A hit that the Ward absorbed fully shows no "0":
+ * the Ward shows the damage.
  */
 const damageFx = (
   event: Extract<BattleEvent, { readonly _tag: "DamageDealt" }>,
@@ -178,17 +211,23 @@ const damageFx = (
   if (!at) {
     return [];
   }
-  const number: Fx = {
-    kind: "number",
-    text: event.amount === 0 ? "0" : `-${event.amount}`,
-    damageType: event.blocked ? "block" : event.damageType,
-    crit: event.crit,
-    ...at,
-    start: time,
-  };
+  const numbers: Fx[] =
+    event.amount === 0 && event.absorbed > 0
+      ? []
+      : [
+          {
+            kind: "number",
+            text: event.amount === 0 ? "0" : `-${event.amount}`,
+            damageType: event.blocked ? "block" : event.damageType,
+            crit: event.crit,
+            ...at,
+            start: time,
+          },
+        ];
   const tick = tickBurst(event);
   return [
-    number,
+    ...numbers,
+    ...wardFx(event, at, time, speed),
     tick
       ? burstFx(tick, at, time, BURST_DURATION / speed)
       : burstFx(

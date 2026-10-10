@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import { CARDS } from "./cards";
 import { getPack, PACKS } from "./packs";
-import { RANKS } from "./ranks";
+import { isRankAtLeast, RANKS } from "./ranks";
+import { ClassId } from "./schema";
 
 describe("Packs (Economy 3.1, ADR-0027)", () => {
   it("has the prices, Drop Rates and rules of the Economy tables", () => {
@@ -9,7 +11,7 @@ describe("Packs (Economy 3.1, ADR-0027)", () => {
       {
         id: "peddler",
         price: 350,
-        racePackPrice: 490,
+        versionPrice: 490,
         dropRates: {
           common: 8000,
           uncommon: 1700,
@@ -24,7 +26,7 @@ describe("Packs (Economy 3.1, ADR-0027)", () => {
       {
         id: "merchant",
         price: 500,
-        racePackPrice: 700,
+        versionPrice: 700,
         dropRates: {
           common: 6200,
           uncommon: 2700,
@@ -39,7 +41,7 @@ describe("Packs (Economy 3.1, ADR-0027)", () => {
       {
         id: "royal",
         price: 1000,
-        racePackPrice: 1400,
+        versionPrice: 1400,
         dropRates: {
           common: 0,
           uncommon: 5500,
@@ -62,9 +64,9 @@ describe("Packs (Economy 3.1, ADR-0027)", () => {
     }
   });
 
-  it("prices each Race Pack at 1.4 × the Pack with all cards", () => {
+  it("prices each Race Pack and Class Pack at 1.4 × the Pack with all cards", () => {
     for (const pack of PACKS) {
-      expect(pack.racePackPrice * 10).toBe(pack.price * 14);
+      expect(pack.versionPrice * 10).toBe(pack.price * 14);
     }
   });
 
@@ -75,5 +77,27 @@ describe("Packs (Economy 3.1, ADR-0027)", () => {
       )
     ).toEqual(["royal"]);
     expect(getPack("royal").guarantee.rank).toBe("legendary");
+  });
+
+  it("gives each Class with Skill Cards a card for each Rank that a Pack can roll", () => {
+    // A rolled Rank selects a card with that Base Rank or lower, so a Class
+    // Pack needs a Skill Card at or below each Rank.
+    const rolled = RANKS.filter((rank) =>
+      PACKS.some((pack) => pack.dropRates[rank] > 0)
+    );
+    for (const classId of ClassId.literals) {
+      const skillCards = CARDS.filter(
+        (card) => card.kind === "skill" && card.class === classId
+      );
+      if (skillCards.length === 0) {
+        continue;
+      }
+      for (const rank of rolled) {
+        expect(
+          skillCards.some((card) => isRankAtLeast(rank, card.baseRank)),
+          `${classId} at ${rank}`
+        ).toBe(true);
+      }
+    }
   });
 });

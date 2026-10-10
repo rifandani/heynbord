@@ -166,7 +166,7 @@ describe("poolEntries", () => {
       "warrior.spearThrow",
       "mage.fireball",
     ]);
-    expect(skills.totalCards).toBe(9);
+    expect(skills.totalCards).toBe(12);
     const mage = poolEntries(
       collection,
       filter({ kind: "skill", classId: "mage" })
@@ -185,6 +185,15 @@ describe("poolEntries", () => {
       ["ranger.pinningShot", "common"],
       ["ranger.warningShot", "common"],
       ["ranger.longShot", "uncommon"],
+    ]);
+    const priest = poolEntries(
+      collection,
+      filter({ kind: "skill", classId: "priest" })
+    );
+    expect(priest.notOwned.map((tile) => [tile.cardId, tile.rank])).toEqual([
+      ["priest.mend", "common"],
+      ["priest.smite", "common"],
+      ["priest.sanctuary", "uncommon"],
     ]);
     const goblins = poolEntries(
       collection,
@@ -303,7 +312,7 @@ describe("problemText", () => {
 
 describe("CLASSES_WITH_CARDS, RACES_WITH_CARDS and updateSlot", () => {
   it("offers the Classes and Races with cards, and changes one slot only", () => {
-    expect(CLASSES_WITH_CARDS).toEqual(["warrior", "ranger", "mage"]);
+    expect(CLASSES_WITH_CARDS).toEqual(["warrior", "ranger", "mage", "priest"]);
     expect(RACES_WITH_CARDS.toSorted()).toEqual([
       "elf",
       "feral",

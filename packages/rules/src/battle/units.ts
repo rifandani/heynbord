@@ -69,6 +69,7 @@ const makeUnit = (options: {
     bleeding: 0,
     frozen: false,
     entangled: false,
+    ward: 0,
     rallied: 0,
     bonusArmor: 0,
     bonusArmorTurns: 0,

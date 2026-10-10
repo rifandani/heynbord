@@ -176,7 +176,7 @@ Each attack and each damage effect has a **Damage Type**.
 | **Frost** | Normal damage. The target also gets **Freeze**: it skips its next action. No Ranged Unit has Frost damage, at any Rank ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)). |
 | **Holy** | Armor does not reduce Holy damage. |
 
-Burn, Freeze, Entangled, Poisoned, Hobbled and Bleeding are **Statuses**. Fire and Frost damage give Burn and Freeze. The Entangle Keyword gives Entangled after attack damage. The Poison Keyword gives Poisoned after attack damage above 0. The Hobble Keyword gives Hobbled after attack damage above 0. The Bleed Keyword gives Bleeding after attack damage above 0. Fire or Frost gives its Status also when the hit does 0 damage. Entangle, Poison, Hobble and Bleed need damage above 0. Bleeding does no damage. Burn damage and Poison damage ignore Armor, Crit and Block. Burn damage does not give a new Burn. Poison damage has no Damage Type, and it does not give Burn or Poison.
+Burn, Freeze, Entangled, Poisoned, Hobbled, Bleeding and Ward are **Statuses**. Each Status is a **Buff** (it helps its Unit) or a **Debuff** (it harms its Unit). Ward is the only Buff. The other Statuses are Debuffs. A bonus to a stat, such as the Rally bonus, the Swarm bonus or bonus Armor, is not a Buff. Fire and Frost damage give Burn and Freeze. The Entangle Keyword gives Entangled after attack damage. The Poison Keyword gives Poisoned after attack damage above 0. The Hobble Keyword gives Hobbled after attack damage above 0. The Bleed Keyword gives Bleeding after attack damage above 0. Fire or Frost gives its Status also when the hit does 0 damage. Entangle, Poison, Hobble and Bleed need damage above 0. Bleeding does no damage. Burn damage and Poison damage ignore Armor, Crit and Block. Burn damage does not give a new Burn. Poison damage has no Damage Type, and it does not give Burn or Poison.
 
 To calculate damage, do these steps in this order:
 
@@ -186,6 +186,9 @@ To calculate damage, do these steps in this order:
 4. Roll **Crit** for the attacker's Hero. A Crit multiplies the damage by 2.
 5. Roll **Block** for the target's Hero. A Block divides the damage by 2. Round up.
 6. The minimum damage is 0.
+7. If the target has a **Ward**, the Ward absorbs the damage, up to its value. The Ward value goes down by the absorbed damage, and the Ward ends at 0. The Unit loses HP only for the rest.
+
+- **Ward N:** A Buff from a Skill Card (*Sanctuary*, 5.5). It absorbs all damage to its Unit: attacks, Skill damage, Holy damage, Retaliate, First Strike, Last Breath damage, Trample damage, Burn damage and Poison damage. Burn and Poison damage skip steps 3 to 5, but not step 7. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. Thus Poison, Hobble, Bleed, Entangle and Knockback do not occur, because they need damage above 0. Fire and Frost still give Burn and Freeze, and a Skill push still occurs. A Ward has no time limit: it stays until it absorbs all N. A new Ward keeps the higher value. The values do not add. A Hero never has a Ward.
 
 - The Gear of each Hero gives the Crit and Block chances (see 7.3). A Unit uses the Gear of the Hero that summoned it.
 - Heroes cannot Block.
@@ -203,11 +206,11 @@ To calculate damage, do these steps in this order:
 - **Hobble N:** After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Hobble keeps the higher count. It does not add to the old count. Retaliate does not apply Hobble. An attack on a Hero does not apply Hobble.
 - **Bleed N:** After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down: Regenerate, a Skill Card heal and each other heal. Bleeding does no damage. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Bleed keeps the higher count. It does not add to the old count. Retaliate does not apply Bleed. First Strike damage above 0 applies Bleed. An attack on a Hero does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary.
 - **Knockback N:** After a melee Unit with Knockback deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. A push is not Movement and not a Status. The push stops before the first Square that holds any Unit, and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. The push ignores Speed, Charge, Frozen, Entangled, Hobbled and Flying. The pushed Unit keeps its Statuses. Retaliate and First Strike do not apply Knockback. An attack on a Hero does not apply Knockback. A Unit that dies from the hit is not Pushed. If the Unit does not change Square, there is no push.
-- **Trample:** When a melee Unit with Trample kills an enemy Unit with attack damage, the damage that is left goes to the enemy Unit in the next Square behind the killed Unit, in the same Lane. The damage that is left is the final damage of the hit (after Armor, Crit and Block) minus the HP that the killed Unit had. If that Square is empty, the damage is lost. It never hits a Hero. The second hit has the Damage Type of the Trample Unit, so Fire and Frost still give their Status. The Armor of the second Unit reduces it, and its Hero can Block it. It does not roll Crit. The second hit is not an attack: the second Unit does not Retaliate, and Poison, Hobble, Bleed and Knockback do not apply. It does not Trample again. The Last Breath of the killed Unit still occurs by the normal rules.
+- **Trample:** When a melee Unit with Trample kills an enemy Unit with attack damage, the damage that is left goes to the enemy Unit in the next Square behind the killed Unit, in the same Lane. The damage that is left is the final damage of the hit (after Armor, Crit and Block) minus the damage that the Ward of the killed Unit absorbed, minus the HP that the killed Unit had. For example, 10 damage against Ward 2 and 3 HP leaves 5. A Ward on the second Unit absorbs the second hit by the normal rule. If that Square is empty, the damage is lost. It never hits a Hero. The second hit has the Damage Type of the Trample Unit, so Fire and Frost still give their Status. The Armor of the second Unit reduces it, and its Hero can Block it. It does not roll Crit. The second hit is not an attack: the second Unit does not Retaliate, and Poison, Hobble, Bleed and Knockback do not apply. It does not Trample again. The Last Breath of the killed Unit still occurs by the normal rules.
 
 ### 4.8 Skill Cards and Recall
 
-- A Skill Card has a **Target**. The Target can be a Unit, a Lane, a Square area, a Hero, the Hand, or all Units. A Hero target is an enemy Hero that is not Defeated. A Hero has no Armor and cannot Block (4.7), so Skill damage to a Hero has no Block roll. It can Crit.
+- A Skill Card has a **Target**. The Target can be an enemy Unit, a friendly Unit, a Lane, a Square area, a Hero, the Hand, or all Units. A friendly Unit is each Unit of the caster's Side, also a Token, a Wall and a Unit at full HP. A play with no effect, for example a heal on a Unit at full HP, is legal. A Hero target is an enemy Hero that is not Defeated. No Skill Card heals a Hero ([ADR-0028](../adr/0028-nothing-heals-a-hero.md)). A Hero has no Armor and cannot Block (4.7), so Skill damage to a Hero has no Block roll. It can Crit.
 - A Skill Card damage hit that kills a Unit, also when the Unit comes back with Rebirth, applies no other part of the effect to that Unit: no Status and no push.
 - After the effect, roll **Recall**. When the effect ends the Battle, no Recall roll occurs. If the roll succeeds, the card goes back to the Hand with its full Countdown. If the roll fails, the card goes to the **Graveyard**.
 - A **Field Effect** is a Skill Card effect that stays on a Square area for a number of Turns. For example, *Wildfire* (draft) puts fire on 2 × 2 Squares for 2 Turns.
@@ -216,7 +219,7 @@ To calculate damage, do these steps in this order:
 
 - When a Unit from a Creature Card has 0 HP, it leaves the Board and goes to its owner's Graveyard. A Token disappears instead.
 - Last Breath effects resolve when the Unit leaves the Board. A v1 Last Breath either deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that the Unit left.
-- **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Armor and its Rally bonus end.
+- **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses (also a Ward), its bonus Armor and its Rally bonus end.
 - **Tokens** (Units that effects create) use the Rank of the Card or effect that made them. They do not go to the Graveyard. They disappear.
 
 ### 4.10 Win, loss and Sudden Death
@@ -346,9 +349,9 @@ The Hero has one Class. The Class decides which Skill Cards the Deck can hold.
 | **Warrior** | Buffs and tempo | *War Drums*: the Countdown of 2 random cards in your Hand goes down by 1. *Shield Wall*: friendly Units in one Lane get Armor 1 for the next 2 enemy Turns. A new Shield Wall resets it. Units that come into the Lane later do not get it. |
 | **Ranger** | Control and Hero damage | *Pinning Shot*: 3 Physical damage to an enemy Unit. If the damage is above 0 and the Unit survives, it becomes Entangled. *Warning Shot*: 2 Physical damage to an enemy Unit. If the Unit survives, it is Pushed 2 Squares toward its own Hero, also at 0 damage. *Long Shot*: 4 Physical damage to the enemy Hero. No Ranger card delays the enemy Hand: that is the Goblin Keyword Sabotage. |
 | **Mage** | Area damage and Field Effects | *Fireball*: 3 Fire damage to an enemy Unit and to the Square behind it in the same Lane. It does not damage friendly Units. *Wildfire* (draft): Field Effect, 2 Fire damage per Turn on 2 × 2 Squares for 2 Turns. |
-| **Priest** | Healing, protection and return | *Mend* (draft): heal 6 HP to one Unit. *Return from Rest* (draft): summon the last friendly Creature from your Graveyard into an empty Square of your Summon Zone. |
+| **Priest** | Healing, protection and Holy damage | *Mend*: heal 6 HP to a friendly Unit. Bleeding halves the heal. *Smite*: 3 Holy damage to an enemy Unit. Armor does not reduce it. *Sanctuary*: a friendly Unit gets Ward 5 (4.7). *Return from Rest* (draft): summon the last friendly Creature from your Graveyard into an empty Square of your Summon Zone. No Priest card heals a Hero ([ADR-0028](../adr/0028-nothing-heals-a-hero.md)). |
 
-*War Drums*, *Shield Wall*, *Pinning Shot*, *Warning Shot*, *Long Shot* and *Fireball* are real cards. Their source of truth is `packages/rules/src/content/cards.ts`. The other examples are drafts.
+*War Drums*, *Shield Wall*, *Pinning Shot*, *Warning Shot*, *Long Shot*, *Fireball*, *Mend*, *Smite* and *Sanctuary* are real cards. Their source of truth is `packages/rules/src/content/cards.ts`. The other examples are drafts.
 
 The player can change the Class at any time outside a Battle, at no cost. A Deck that has Skill Cards of another Class is not valid until the player removes them.
 
@@ -554,7 +557,12 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - Some Skill Card effects have a Hold Rule: the AI keeps a Ready card until a condition is true, for example Shield Wall until an enemy Unit is in the Lane. A Hold Rule never stops a play that prevents lethal Hero damage, or a play that empties a full Hand while the Deck has cards. The Ranger Hold Rules:
   - *Pinning Shot*: the AI plays it when the hit kills, or when the target would move in its next action: the hit deals damage above 0, and the target is not a Wall, not Frozen, not already Entangled, has Speed 1 or more, and the Square in front of it is empty.
   - *Warning Shot* and *Long Shot*: no Hold Rule. For *Warning Shot*, the AI selects the enemy Unit nearest to its Hero that the push moves at least 1 Square. If the push moves no Unit, it selects the enemy Unit that takes the most damage.
-- When heal cards come, the AI keeps a heal card until a Unit has lost 50% of its HP.
+- The Hold Rule of damage to one enemy Unit, for the Warrior card *Spear Throw* and the Priest card *Smite*: the AI plays the card only when the hit kills the target (or when the hit is Frost, because a Freeze has value at each target). Between the kills, a Unit of more value scores more, and a kill that removes damage to the AI's Hero scores more.
+- The Priest Hold Rules:
+  - *Mend*: the AI keeps the card until a friendly Unit has lost at least 50% of its maximum HP. The target is the friendly Unit that gets back the most HP, after Bleeding. If two Units get back the same HP, it selects the Unit with the higher maximum HP. A heal that gives back no HP scores 0.
+  - *Sanctuary*: the AI keeps the card until a friendly Unit has an enemy Unit in its Lane and a Ward lower than the new value. The target is that friendly Unit nearest to the enemy (the Unit that the enemy attacks first). If two Lanes have one, it selects the Lane where the enemy is nearest to the AI's Hero.
+  - *Smite*: the rule of damage to one enemy Unit, above.
+- Each damage estimate of the AI, for example its kill estimate, includes the Ward of the target.
 - Difficulty comes from the enemy Deck, card Ranks and Hero HP. The AI logic is the same in all Stages.
 - When a Side has more than one Hero, the AI plays the Ready cards of each Hero in the same Play Phase. It scores the plays of all the Heroes together.
 - Auto-play uses the same AI for the player's side.
@@ -589,7 +597,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Collection | All cards, filters, card details |
 | Workshop | Combine, Extract, Craft |
 | Hero | Class, Gear, portrait |
-| Packs | The Peddler, Merchant and Royal Packs, each with a Race Pack version. The Drop Rates, the Pack Guarantees, Open ×10 and the open animation (Economy 3.1) |
+| Packs | The Peddler, Merchant and Royal Packs, each with a Race Pack and a Class Pack version. The Drop Rates, the Pack Guarantees, Open ×10 and the open animation (Economy 3.1) |
 | Achievements | List, progress, rewards |
 | Bazaar | Cosmetics and Conveniences, prices in Heynstones, the Heynstone balance |
 | Settings | A modal dialog in the center of the screen, not a separate screen (see 11.4). Audio, language, speed, reduced motion, text size, save export and import |

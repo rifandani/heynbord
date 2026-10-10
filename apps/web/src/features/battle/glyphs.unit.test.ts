@@ -18,6 +18,10 @@ describe("cardGlyph", () => {
     expect(cardGlyph(getCard("warrior.spearThrow"))).toBe("sword");
     expect(cardGlyph(getCard("warrior.shieldWall"))).toBe("shield");
     expect(cardGlyph(getCard("warrior.warDrums"))).toBe("speed");
+    expect(cardGlyph(getCard("priest.mend"))).toBe("heart");
+    expect(cardGlyph(getCard("priest.smite"))).toBe("sun");
+    expect(cardGlyph(getCard("priest.sanctuary"))).toBe("shield");
+    expect(classGlyph("priest")).toBe("sun");
     expect(classGlyph("warrior")).toBe("warhelm");
     expect(classGlyph("mage")).toBe("hat");
     expect(raceGlyph("elf")).toBe("leaf");

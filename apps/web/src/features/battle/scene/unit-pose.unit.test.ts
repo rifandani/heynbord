@@ -41,6 +41,7 @@ const unit: UnitView = {
   bleeding: 0,
   frozen: false,
   entangled: false,
+  ward: 0,
   wall: false,
 };
 
@@ -163,6 +164,8 @@ describe("poseFor at rest", () => {
         source: "attack",
         crit: false,
         blocked: false,
+        absorbed: 0,
+        ward: 0,
         hp: 1,
       }),
       BattleEvent.DamageDealt({
@@ -172,6 +175,8 @@ describe("poseFor at rest", () => {
         source: "attack",
         crit: false,
         blocked: false,
+        absorbed: 0,
+        ward: 0,
         hp: 1,
       }),
       BattleEvent.UnitSummoned({ unit: snapshot(other) }),
@@ -269,6 +274,8 @@ describe("poseFor in an event", () => {
         source: "attack",
         crit: false,
         blocked: false,
+        absorbed: 0,
+        ward: 0,
         hp: 3,
       }),
       0.5

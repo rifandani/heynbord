@@ -181,9 +181,14 @@ export const ShopkeeperBubble = ({
     };
     measure();
     // A new line changes the size of the bubble; a new screen size moves it.
+    // The pool plate gets wider or narrower when its second group opens or
+    // closes, after the new line.
     const observer = new ResizeObserver(measure);
     if (anchor.current) {
       observer.observe(anchor.current);
+    }
+    for (const piece of document.querySelectorAll("[data-shop-avoid]")) {
+      observer.observe(piece);
     }
     window.addEventListener("resize", measure);
     return () => {

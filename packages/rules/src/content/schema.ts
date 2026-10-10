@@ -230,6 +230,22 @@ const SkillEffect = Schema.Union([
     damageType: DamageType,
   }),
   Schema.Struct({
+    /**
+     * Heals one friendly Unit, up to its maximum HP. A Bleeding Unit gets half
+     * of the heal (ADR-0019). Nothing heals a Hero (ADR-0028).
+     */
+    type: Schema.Literal("healUnit"),
+    heal: Amount,
+  }),
+  Schema.Struct({
+    /**
+     * One friendly Unit gets Ward N (GDD 4.7): a Buff that absorbs damage
+     * after Block. A Ward keeps the higher value: the values do not add.
+     */
+    type: Schema.Literal("wardUnit"),
+    ward: Amount,
+  }),
+  Schema.Struct({
     type: Schema.Literal("laneArmor"),
     armor: between(1, 5),
     turns: between(1, 5),
@@ -247,6 +263,8 @@ const SkillTarget = Schema.Literals([
   "enemyUnit",
   "enemyHero",
   "enemyLane",
+  /** Each Unit of the caster's Side, also a Token, a Wall and a Unit at full HP. Never a Hero. */
+  "friendlyUnit",
   "friendlyLane",
   "none",
 ]);

@@ -1,9 +1,12 @@
 import { cn } from "cn";
 
+import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { FX_ANCHORS } from "@/features/battle/palette";
 import {
   FX_ATLAS_SIZE,
   FX_ATLAS_URL,
   FX_SLOTS,
+  UNPAINTED_SLOTS,
 } from "@/features/battle/scene/fx-slots";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { STATUS_ICON } from "@/features/battle/scene/status-visuals";
@@ -14,7 +17,8 @@ const atlasPosition = (at: number, size: number) =>
 
 /**
  * The icon of a Status from the effects atlas: the same art as the Status
- * Badge above a Unit. Decorative; the Status name is next to it.
+ * Badge above a Unit. Decorative; the Status name is next to it. A slot that
+ * the painted atlas does not have yet shows the glyph of its placeholder.
  */
 export const StatusIcon = ({
   status,
@@ -23,7 +27,22 @@ export const StatusIcon = ({
   readonly status: Status;
   readonly className?: string;
 }) => {
-  const { x, y, w } = FX_SLOTS[STATUS_ICON[status]].cell;
+  const slot = STATUS_ICON[status];
+  if (UNPAINTED_SLOTS.has(slot)) {
+    return (
+      <span
+        aria-hidden
+        className={cn(
+          "inline-grid place-items-center drop-shadow-[0_0_1px_#2a1d12]",
+          className
+        )}
+        style={{ color: FX_ANCHORS.iconWard }}
+      >
+        <GlyphIcon glyph="shield" className="size-[80%]" />
+      </span>
+    );
+  }
+  const { x, y, w } = FX_SLOTS[slot].cell;
   return (
     <span
       aria-hidden

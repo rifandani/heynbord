@@ -30,6 +30,7 @@ const unit: UnitView = {
   bleeding: 0,
   frozen: false,
   entangled: false,
+  ward: 0,
   wall: false,
 };
 
@@ -41,6 +42,8 @@ const hit = (unitId: number) =>
     source: "attack",
     crit: false,
     blocked: false,
+    absorbed: 0,
+    ward: 0,
     hp: 1,
   });
 
@@ -109,6 +112,8 @@ describe("unitClipFor", () => {
         source: "attack",
         crit: false,
         blocked: false,
+        absorbed: 0,
+        ward: 0,
         hp: 1,
       }),
       BattleEvent.UnitDied({ unitId: 99 }),
