@@ -5,7 +5,7 @@
  *
  * Each master in `apps/web/art/fx/` goes into its cell from the slot table in
  * `fx-atlas.ts`. It fails if a master is missing, has the wrong size or has
- * alpha in its empty band, or if the atlas is larger than 600 KB.
+ * alpha in its empty band, or if the atlas is larger than 640 KB.
  */
 import { existsSync, statSync } from "node:fs";
 
@@ -19,7 +19,7 @@ import {
 } from "../apps/web/src/features/battle/scene/fx-atlas.ts";
 import { ATLAS_PATH, bandOf, masterPath } from "./fx-atlas/slots.ts";
 
-const MAX_BYTES = 600 * 1024;
+const MAX_BYTES = 640 * 1024;
 
 /** The problems of one master, or an empty list. */
 const checkMaster = async (

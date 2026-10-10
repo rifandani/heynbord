@@ -6,14 +6,29 @@ Answers all ur questions automatically with ur best recommendations, except crit
 
 v1:
 
-- 46, 47
-- introduce terms Buff and Debuff, Damage over Time (Dot)
+New Card:
+
+- completely replace Dusthide Brawler Orc Unit for a Wall Unit, Orc doesnt have Wall Unit
+
+New Status:
+
+- Accursed N: Damaged creatures will take +N damage from all magical attacks (all except physical attack)
+- Devour N: +N Attack and +N HP for each kill, this Keyword is exclusive to Feral replacing Trample maybe
+- Heal N: +N HP for the lowest HP Unit on player's friendly units for each turn
+- Retreat N — After this Unit attacks, it moves up to N Squares backward
+- update the Keyword "Heroic N" into "+N Attack after this Unit attacks enemy Unit", with max N = 4, only Rare can have N=2, only Epic can have N=3, only Legendary can have N=4
+- Ambush: When regular attacking for the first time, Attack is doubled
+- Arctic Barrier: Cannot be affected by buffs or debuffs
+- Backstab: When possible, will attack enemy creature directly behind with a double Attack
+- Blood Price N: Deals N damage to the player's summoning the Unit when summoned
+- Undead King: When an enemy Units is killed, it will be rebirth by this ability as a Skeleton (treated as player's Unit)
+- ? N: When this Unit kills an enemy Unit, it gains +N HP
+- Wallbreaker: Deals triple damage to Wall Unit
+
+New features:
+
 - /grill-with-docs brainstorm with me, we need more Skills cards, every Class should have 1 Epic, 2 Rare, 3 Uncommon, 4 Common
-- /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think
-- /grill-with-docs i want to update the Keyword "Heroic N" into "+N Attack after this Unit attacks enemy Unit", with max N = 4, only Rare can have N=2, only Epic can have N=3, only Legendary can have N=4
-- /grill-with-docs i want to completely change "Trample" into another Keyword called "Devour": +1 Attack and +1 HP for each kill, this Keyword is exclusive to Feral
-- /grill-with-docs i want to add another Keyword called "Heal N": +N HP for the lowest HP Units on player's board for each turn
-- /grill-with-docs i want to add another Keyword called "Retreat N" — After this Unit attacks, it moves up to N Squares backward.
+- /grill-with-docs we already have Fire, Frost, and Holy Damage Type, i want to add another one called Lightning. the effect is Paralysis, which i think the afflicted unit can't move and i dont know more, tell me what u think, also it needs to be applied to some units / skills
 - if a 0 Base Attack unit have poison, or burn, etc skills, can they inflict those posion or burn, etc to the enemy unit?
 - /grill-with-docs dont u think we need to also have economy simulation script before adding "Bazaar" or "Packs" features, not only battle simulation
 - /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?

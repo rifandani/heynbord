@@ -28,7 +28,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 | Orc | Red badlands: dusty mesas, dry ground, bone and hide totems | Burnt orange and dark red. Leather, fur, rough iron |
 | Goblin | The hill mines: cool grey-blue tunnels, rail tracks, junk-heap workshops, brass lanterns and jars of acid-green lamp oil. No red earth and no desert | Soot grey and slate blue, brass and acid green. Patched iron, canvas, brass, junk |
 | Feral | The wild peaks and deep caves: cliffs, glaciers, cave mouths and old bones | Slate violet and ice white. Fur, horn, stone and ice |
-| Skill Cards | A neutral battlefield: green grass and a Lane of grey stone tiles, with no banners | The Damage Type color (Fire: orange-red, Frost: light blue). Physical: neutral steel and leather |
+| Skill Cards | A neutral battlefield: green grass and a Lane of grey stone tiles, with no banners | The Damage Type color (Fire: orange-red, Frost: light blue, Holy: gold-yellow). Physical: neutral steel and leather |
 
 ## 2. Human Creature Cards
 
@@ -1865,7 +1865,53 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 | Setting | A neutral battlefield, seen from far, with all the Lanes. |
 | Palette | Neutral steel and leather, with green fletching. Uncommon: a small brass trim on the bow. |
 
-## 12. When cards change
+## 12. Priest Skill Cards
+
+Identity: healing, protection and Holy damage. The palette is Holy gold-yellow light with a sun motif. The partial figure has plain cream-white linen sleeves and a rope belt, and a small gold sun pendant on a cord is the Priest mark on each card. It has no blue cloth, no staff and no sun disc, so it does not look like Dawn Cleric or the Mage, and it has no sign of a Race. A friendly Unit in the image is a back view of a soldier in a closed full helmet and a cloak.
+
+### 12.1 Mend
+
+`priest.mend` · Priest · Common · Countdown 2 · A friendly Unit · Heal 6 HP to a friendly Unit.
+
+> Rise. You are not done yet.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A warm stream of gold light that flows into a wounded soldier and lifts the soldier up. |
+| Partial figure | An open hand in a cream-white linen sleeve at the left edge of the image, palm to the right, with the gold sun pendant on a cord at the wrist. |
+| Action | The stream of light goes from the palm to the right, into the back of a soldier at the right. The soldier, seen from behind in a closed full helmet and a cloak, gets up from one knee. A cut on the soldier's arm closes in the light. |
+| Setting | A neutral battlefield. |
+| Palette | Holy gold-yellow light, with a few small soft green-white plus-shaped heal motes around the soldier. |
+
+### 12.2 Smite
+
+`priest.smite` · Priest · Common · Countdown 2 · An enemy Unit · Deal 3 Holy damage to an enemy Unit. Armor does not reduce it.
+
+> No armor hides you from the light.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A thick, vertical shaft of sunlight that strikes straight down through heavy armor. |
+| Partial figure | A raised hand in a cream-white linen sleeve at the left edge of the image, with the gold sun pendant on a cord at the wrist. |
+| Action | The shaft of sunlight comes straight down from the sky, vertical, not slanted. It hits a far, dark, heavily armored silhouette at the right of the image. The light shines through the armor: gold light comes out of the seams and through the plates. No thrown object and no weapon. |
+| Setting | A neutral battlefield. |
+| Palette | Holy gold-yellow light, with dark steel on the silhouette. |
+
+### 12.3 Sanctuary
+
+`priest.sanctuary` · Priest · Uncommon · Countdown 3 · A friendly Unit · A friendly Unit gets Ward 5: it absorbs the next 5 damage.
+
+> Stand within the light.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A clear dome of gold light over a soldier, on a circle of gold light on the ground. The dome is light only: no steel, no shield shape. |
+| Partial figure | A hand in a cream-white linen sleeve at the left edge of the image, with the gold sun pendant on a cord at the wrist. |
+| Action | A ribbon of light goes from the hand to the right and forms the dome over a soldier, seen from behind in a closed full helmet and a cloak. A dark enemy blade comes in from the right and stops on the dome. The light ripples where the blade hits it. |
+| Setting | A neutral battlefield. The gold circle lies on the grey stone tiles of a Lane. |
+| Palette | Holy gold-yellow light. Uncommon: a small brass trim on the sun pendant and on the sleeve cuff. |
+
+## 13. When cards change
 
 - When you add a card or a Token to `cards.ts`, add its entry here before you make the art. For a Creature Card or a Token, also add its subject line to `scripts/creature-art/subjects.ts`. For a Skill Card, the brief must have the fields Effect subject, Partial figure, Action, Setting and Palette: `bun skill:prompts` fails without them.
 - When you change a name or flavor text in the Message Catalog, look at the entry here again. The image must still agree with the text.

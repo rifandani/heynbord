@@ -722,6 +722,35 @@ const drawHeal: FxDraw = (context, width) => {
   context.fillRect(width * 0.2, width / 2 - arm, width * 0.6, arm * 2);
 };
 
+/** The Ward dome: a half-sphere of gold light on a thin ring of light. */
+const drawDome: FxDraw = (context, width) => {
+  const base = width * 0.72;
+  const radius = width * 0.38;
+  context.shadowColor = FX_ANCHORS.holy;
+  context.shadowBlur = width / 16;
+  const fill = context.createRadialGradient(
+    width / 2,
+    base,
+    radius * 0.4,
+    width / 2,
+    base,
+    radius
+  );
+  fill.addColorStop(0, "rgba(255, 215, 90, 0.08)");
+  fill.addColorStop(1, "rgba(255, 215, 90, 0.45)");
+  context.fillStyle = fill;
+  context.beginPath();
+  context.arc(width / 2, base, radius, Math.PI, 0);
+  context.closePath();
+  context.fill();
+  context.strokeStyle = FX_ANCHORS.holy;
+  context.lineWidth = width / 40;
+  context.stroke();
+  context.beginPath();
+  context.ellipse(width / 2, base, radius, radius * 0.18, 0, 0, Math.PI * 2);
+  context.stroke();
+};
+
 const drawTrail: FxDraw = (context, width, height) => {
   const along = context.createLinearGradient(
     width / 16,
@@ -794,6 +823,7 @@ const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
   "icon-hobble": glyphIcon("speed", FX_ANCHORS.iconHobble),
   "icon-bleed": drawBleedIcon,
   "icon-ward": glyphIcon("shield", FX_ANCHORS.iconWard),
+  ward: drawDome,
 };
 
 /** The placeholder atlas is half size: the UV rectangles do not change. */

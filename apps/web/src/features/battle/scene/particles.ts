@@ -452,9 +452,10 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       }),
     },
   ],
-  // Sanctuary: a shield forms on the Unit, and gold motes go up around it.
+  // Sanctuary: a dome of gold light forms on the Unit, and gold motes go up
+  // around it.
   ward: [
-    { slot: "shield", count: 1, place: pulse(0.25, 0.8) },
+    { slot: "ward", count: 1, place: pulse(0.25, 0.8) },
     {
       slot: "spark",
       count: 10,
@@ -491,9 +492,9 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       place: spray({ speed: [0.2, 0.4], up: 0.2, size: [0.08, 0.14] }),
     },
   ],
-  // A Ward absorbs damage: a short shield flash in the Holy gold.
+  // A Ward absorbs damage: a short flash of the gold dome.
   "ward-hit": [
-    { slot: "shield", count: 1, place: pulse(0.7, 0.85) },
+    { slot: "ward", count: 1, place: pulse(0.7, 0.85) },
     {
       slot: "glow",
       count: 1,

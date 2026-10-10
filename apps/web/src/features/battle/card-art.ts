@@ -59,6 +59,7 @@ const RACES_AND_CLASSES_WITH_ART: ReadonlySet<string> = new Set([
   "warrior",
   "ranger",
   "mage",
+  "priest",
 ]);
 
 /** Whether the art of a card exists (see `cardIllustration`). */
