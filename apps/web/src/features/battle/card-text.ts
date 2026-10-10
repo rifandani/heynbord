@@ -13,6 +13,7 @@ import {
   keywordValue,
   recallChance,
   scaleForRank,
+  skillAmountForRank,
 } from "@workspace/rules";
 import { absurd, Predicate } from "effect";
 
@@ -170,13 +171,13 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
     case "healUnit": {
       return {
         key: "effects.healUnit",
-        args: { heal: scaleForRank(effect.heal, rank) },
+        args: { heal: skillAmountForRank(effect.heal, rank) },
       };
     }
     case "wardUnit": {
       return {
         key: "effects.wardUnit",
-        args: { ward: scaleForRank(effect.ward, rank) },
+        args: { ward: skillAmountForRank(effect.ward, rank) },
       };
     }
     case "laneArmor": {

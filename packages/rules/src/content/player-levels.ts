@@ -1,4 +1,7 @@
+import { absurd } from "effect";
+
 import type { StageDefinition } from "./schema";
+import type { StageOutcome } from "./stage-coin";
 import { STAGES, stagesBefore } from "./stages";
 
 /**
@@ -19,14 +22,47 @@ export const CAMPAIGN_LOSS_XP_FRACTION = 0.25;
 
 const REGION_WIN_XP = CAMPAIGN_WIN_XP;
 
-/** The XP of the first win of a Stage: ×2, and ×2 again for a Boss Stage. */
-export const firstWinXp = (stage: StageDefinition): number => {
+/**
+ * The XP of a result from the XP of a normal win (Economy 2.1): × 2 for the
+ * first win, and 25% of a win for a loss. Stages and Dungeons (Economy 2.4)
+ * use this rule.
+ */
+export const outcomeXp = (winXp: number, outcome: StageOutcome): number => {
+  switch (outcome) {
+    case "firstWin": {
+      return winXp * 2;
+    }
+    case "win": {
+      return winXp;
+    }
+    case "loss": {
+      return Math.floor(winXp * CAMPAIGN_LOSS_XP_FRACTION);
+    }
+    default: {
+      return absurd(outcome);
+    }
+  }
+};
+
+/**
+ * The XP of a Stage result (Economy 2.1): the XP of the Region for a win, × 2
+ * for the first win, × 2 for a Boss Stage, and 25% of a win for a loss.
+ */
+export const stageXp = (
+  stage: Pick<StageDefinition, "region" | "boss">,
+  outcome: StageOutcome
+): number => {
   const winXp = REGION_WIN_XP[stage.region - 1];
   if (winXp === undefined) {
     throw new Error(`Unknown Region: ${stage.region}`);
   }
-  return winXp * 2 * (stage.boss ? 2 : 1);
+  return outcomeXp(winXp * (stage.boss ? 2 : 1), outcome);
 };
+
+/** The XP of the first win of a Stage: ×2, and ×2 again for a Boss Stage. */
+export const firstWinXp = (
+  stage: Pick<StageDefinition, "region" | "boss">
+): number => stageXp(stage, "firstWin");
 
 /** The highest Player level whose total XP is at or below `xp` (0 or more). */
 export const playerLevelForXp = (xp: number): number =>

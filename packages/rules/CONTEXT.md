@@ -64,9 +64,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. A Ranged Unit never has Frost damage, because it could Freeze the same enemy before each action of that enemy. _Avoid_: stun, chill, slow
 
-**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned, Hobbled, Bleeding or Ward. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
+**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned, Hobbled, Bleeding, Ward or Steadfast. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
 
-**Buff**: A Status that helps its Unit. Ward is the only Buff. A bonus to a stat, such as the Rally bonus, the Swarm bonus or bonus Armor, is not a Buff. _Avoid_: blessing, boon, positive status
+**Buff**: A Status that helps its Unit: Ward or Steadfast. A bonus to a stat, such as the Rally bonus, the Swarm bonus or bonus Armor, is not a Buff. _Avoid_: blessing, boon, positive status
 
 **Debuff**: A Status that harms its Unit: Burn, Freeze, Entangled, Poisoned, Hobbled or Bleeding. _Avoid_: ailment, curse, negative status
 
@@ -74,7 +74,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Poison**: A Keyword. After a Unit with Poison deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliate does not apply Poison. _Avoid_: venom, toxin
 
-**Poisoned**: A Status from the Poison Keyword. The Unit has a stack count. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. _Avoid_: venom, toxin, damage over time
+**Poisoned**: A Status from the Poison Keyword or from a Skill Card. The Unit has a stack count. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. _Avoid_: venom, toxin, damage over time
 
 **Hobble N**: A Keyword. After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled for N End Phases. Retaliate does not apply Hobble. _Avoid_: Fatigue, Cripple, Slow
 
@@ -85,6 +85,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
 
 **Ward N**: A Status from a Skill Card. A Ward absorbs damage to its Unit, after Armor, Crit and Block, up to N. Its value goes down by the damage that it absorbs, and it ends at 0. It absorbs all damage, also Holy, Burn and Poison damage. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. A Ward has no time limit. A new Ward keeps the higher value. _Avoid_: shield, barrier, absorb, aegis
+
+**Steadfast**: A Status from a Skill Card. When damage from any source would bring a Steadfast Unit to 0 HP, the Unit stays at 1 HP and Steadfast ends. A Ward absorbs the damage first. The Unit is not killed: it stays on the Board, Last Breath does not occur, and Trample has no damage that is left. A Unit with Rebirth uses Steadfast first and keeps Rebirth. Steadfast has no time limit. A new Steadfast on a Steadfast Unit has no effect. _Avoid_: endure, undying, death ward, last stand, cheat death
 
 **Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
 
@@ -208,7 +210,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Bazaar**: The offers that the Player can buy with Heynstones: only Cosmetics and Conveniences. _Avoid_: shop, store, market
 
-**Pack**: A set of random Cards that the Player buys with Coin. There are three Packs: Peddler, Merchant and Royal. Each one has its own Drop Rates and price. _Avoid_: booster, loot box, chest, gacha, pull
+**Pack**: A set of random Cards that the Player buys with Coin or gets as a reward. There are three Packs: Peddler, Merchant and Royal. Each one has its own Drop Rates and price. _Avoid_: booster, loot box, chest, gacha, pull
+
+**Unopened Pack**: A Pack that the Player got as a reward and has not opened yet. A bought Pack opens at once, so it is never an Unopened Pack. _Avoid_: free Pack, owned Pack, Reward Pack
 
 **Peddler Pack**: The cheapest Pack. It gives mostly Common Cards, the most Cards for each Coin, and no Epic or Legendary Cards. _Avoid_: basic pack, Common Pack
 
@@ -228,6 +232,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Gear**: The items in the Hero's 4 slots that give the Hero and its Units stats. _Avoid_: equipment, items
 
+**Profile**: All the saved progress of one Player: XP, balances, Collection, Decks, Gear levels, Stage results and the other records that must stay after the game closes. _Avoid_: save file, account, player data
+
 **Player level**: The level of the Player from XP. It sets the Hero HP and the Deck size limits. _Avoid_: account level, Hero level
 
 **Workshop**: The set of actions that change Card copies and Essence: Combine, Extract and Craft. _Avoid_: alchemy lab, forge
@@ -235,6 +241,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Cosmetic**: An item that changes how something looks and never changes gameplay. _Avoid_: skin (as a general word), vanity item
 
 **Achievement**: A goal that gives a reward when the Player completes it. _Avoid_: quest, mission, trophy
+
+**Play Style**: A fixed priority list that tells the economy simulation how a simulated Player spends Coin and Essence, for example Collector, Upgrader or Balanced. _Avoid_: profile, persona, spending plan
 
 ### Modes
 
@@ -257,6 +265,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Campaign**: All Regions and their Stages. _Avoid_: story mode, adventure
 
 **Stars**: The 1 to 3 result grade of a Stage win. _Avoid_: score, rating; never use for Rank
+
+**Star chest**: A reward of a Region that the Player claims when the best Stars of its Stages add up to 10, 20 or 30. Each Region has 3. _Avoid_: milestone, Star reward
+
+**Stage card pool**: The Cards that a repeat win of a Stage can give: the different Cards of its enemy Deck, but not a Skill Card of another Class than the Player's Deck. _Avoid_: drop table, loot pool
 
 **Heynspire**: The tower mode with 50 Floors. _Avoid_: tower, ascension tower
 
@@ -336,7 +348,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - Rimebreath Drake was a Ranged Unit with Frost damage before. It Froze the nearest enemy before each action of that enemy, so that enemy almost never acted (issue #24). Unlike Entangle, a higher Base Rank does not fix this: an Epic Frost Shooter locked its target longer. Now no Ranged Unit has Frost damage, at any Rank ([ADR-0025](../../docs/adr/0025-no-ranged-unit-has-frost-damage.md)). A melee Frost Unit can also Freeze the Unit in front of it again, but only in a few Battles.
 - A Shooter had Range 3 to 5 before. The Range 4 Elf Shooters made Thornwatch win about 87% of its Matchups (issue #23). Now each Shooter has **Range** 3.
 - No rule gave a Unit Speed 2 before, and 19 Creature Cards had it, also a Frontliner (Militia Recruit) and 3 Goblin Strikers. Now the **Role** sets the Speed: 1 by default, 2 or more for a Runner, and 2 for an Orc melee Striker, because Orc is the fast Race. Another card can break this only with a written reason.
-- "debuff" was on the _Avoid_ list of **Status** before, because every Status harmed its Unit. **Ward** is the first Status that helps its Unit, so each Status is now a **Buff** or a **Debuff**. Players also say "buff" for a Rally bonus or for bonus Armor. Those are bonuses to a stat, not Buffs.
+- "debuff" was on the _Avoid_ list of **Status** before, because every Status harmed its Unit. **Ward** is the first Status that helps its Unit, so each Status is now a **Buff** or a **Debuff**. **Steadfast** is the second Buff. It is not Rebirth: a Steadfast Unit does not die, and a Rebirth Unit dies and comes back. Players also say "buff" for a Rally bonus or for bonus Armor. Those are bonuses to a stat, not Buffs.
 - "Elf Skill Cards" is not a term. A **Skill Card** has a **Class**, not a **Race**. The Skill Cards of the Elf Archetype Thornwatch are **Ranger** Skill Cards, and each other Ranger Deck, for example the Goblin Deck Tunnel Rats, can use them too.
+- The **First Pack** was a free Peddler Pack the first time that the Player opened the Packs screen. Now it is an **Unopened Pack** that the Player gets when Packs unlock at **Player level** 2, the same as a Pack from a **Star chest**.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.
 - There were two Packs before: the Standard Pack (all Cards) and the Race Pack, with one Drop Rate table. Now there are three Packs with their own Drop Rates: **Peddler**, **Merchant** and **Royal**. The **Merchant Pack** replaces the Standard Pack. **Race Pack** is not a fourth Pack: it is a version of each of the three. **Class Pack** is also a version of each of the three, not a fourth Pack. Players say "gacha" and "pity". The terms are **Pack** and **Pack Guarantee**.

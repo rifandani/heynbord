@@ -171,6 +171,7 @@ export type KeywordValueKind =
   | "commonRankGuide"
   | "starsTable"
   | "coinTable"
+  | "packGuide"
   | "playerLevelTable"
   | "tokenGallery"
   | "card";
@@ -593,11 +594,13 @@ const plainEntry = (id: EntryId, chapter: ChapterId): Entry => {
         ? "starsTable"
         : id === "coin"
           ? "coinTable"
-          : id === "playerLevel"
-            ? "playerLevelTable"
-            : id === "token"
-              ? "tokenGallery"
-              : undefined,
+          : id === "pack"
+            ? "packGuide"
+            : id === "playerLevel"
+              ? "playerLevelTable"
+              : id === "token"
+                ? "tokenGallery"
+                : undefined,
   };
 };
 

@@ -1,4 +1,4 @@
-import { Data } from "effect";
+import { Data, Schema } from "effect";
 
 import { CARDS, getCard } from "../content/cards";
 import {
@@ -9,20 +9,21 @@ import {
   STARTER_DECKS,
 } from "../content/decks";
 import { RANKS } from "../content/ranks";
+import { RankId } from "../content/schema";
 import type {
   CardDefinition,
   ClassId,
   DeckEntry,
-  RankId,
   StarterDeck,
 } from "../content/schema";
 
 /** The number of copies of one card in one Rank that the Player owns. */
-export interface CollectionEntry {
-  readonly cardId: string;
-  readonly rank: RankId;
-  readonly copies: number;
-}
+export const CollectionEntry = Schema.Struct({
+  cardId: Schema.NonEmptyString,
+  rank: RankId,
+  copies: Schema.Natural,
+});
+export type CollectionEntry = typeof CollectionEntry.Type;
 
 /** All the Card copies that the Player owns, one entry for each card and Rank. */
 export type Collection = readonly CollectionEntry[];

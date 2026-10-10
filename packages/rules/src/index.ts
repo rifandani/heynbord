@@ -64,6 +64,15 @@ export { CARDS, getCard } from "./content/cards";
 export { coinDenominations } from "./content/coin";
 export type { CoinDenomination, CoinPart } from "./content/coin";
 export {
+  DUNGEON_REWARDS,
+  dungeonReward,
+  getDungeonRewards,
+} from "./content/dungeons";
+export type {
+  DungeonReward,
+  DungeonRewardDefinition,
+} from "./content/dungeons";
+export {
   DECK_SLOT_PRICES,
   MAX_DECK_SLOTS,
   nextDeckSlotPrice,
@@ -77,6 +86,27 @@ export {
   MAX_COPIES,
   STARTER_DECKS,
 } from "./content/decks";
+export {
+  GEAR_SLOTS,
+  gearUpgradeCoin,
+  gearUpgradePathCoin,
+  MAX_GEAR_LEVEL,
+} from "./content/gear";
+export {
+  floorFirstWinReward,
+  HEYNSPIRE_FLOORS,
+  HEYNSPIRE_MILESTONE_EVERY,
+  HEYNSPIRE_MILESTONE_REWARD,
+} from "./content/heynspire";
+export type { FloorReward } from "./content/heynspire";
+export {
+  ACHIEVEMENT_COUNT_ESTIMATE,
+  ACHIEVEMENT_HEYNSTONES_ESTIMATE,
+  BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
+  HEYNSTONE_SOURCES,
+  HEYNSTONE_SUPPLY,
+} from "./content/heynstones";
+export type { HeynstoneSource, HeynstoneSourceId } from "./content/heynstones";
 export { getPack, PACK_SIZE, PACKS, TEN_PACKS } from "./content/packs";
 export type { PackDefinition, PackId, TenPackBonus } from "./content/packs";
 export {
@@ -84,6 +114,7 @@ export {
   CAMPAIGN_WIN_XP,
   firstTryPathLevel,
   firstWinXp,
+  outcomeXp,
   PLAYER_LEVEL_XP,
   playerLevelForXp,
 } from "./content/player-levels";
@@ -98,6 +129,7 @@ export {
   ranksOf,
   recallChance,
   scaleForRank,
+  skillAmountForRank,
 } from "./content/ranks";
 export { ClassId, DeckEntry } from "./content/schema";
 export type {
@@ -110,6 +142,7 @@ export type {
   Keywords,
   RaceId,
   RankId,
+  SkillAmount,
   SkillCardDefinition,
   SkillEffect,
   SkillTarget,
@@ -119,10 +152,30 @@ export type {
   TokenId,
   UnitRole,
 } from "./content/schema";
-export { CAMPAIGN_WIN_COIN, stageCoin } from "./content/stage-coin";
+export {
+  CAMPAIGN_WIN_COIN,
+  outcomeCoin,
+  stageCoin,
+} from "./content/stage-coin";
 export type { StageOutcome } from "./content/stage-coin";
 export { getStage, STAGES } from "./content/stages";
+export {
+  CAMPAIGN_REGIONS,
+  STAR_CHESTS,
+  starChestsFor,
+} from "./content/star-chests";
+export type { StarChestDefinition, StarChestPack } from "./content/star-chests";
 export { getToken, TOKENS } from "./content/tokens";
+export {
+  COMBINE_COIN,
+  COMBINE_COPIES,
+  combineCoin,
+  combinePath,
+  CRAFT_ESSENCE,
+  craftEssence,
+  EXTRACT_ESSENCE,
+} from "./content/workshop";
+export type { CombineCost } from "./content/workshop";
 export { isTutorial, TUTORIAL_STAGE_ID } from "./modes/tutorial";
 export { openPack, openTenPacks, packPool } from "./packs/open-pack";
 export type {
@@ -133,3 +186,33 @@ export type {
   OpenTenPacksOutput,
   PackPool,
 } from "./packs/open-pack";
+export { buyDeckSlot, INITIAL_DECK_SLOTS } from "./profile/deck-slots";
+export { exportProfile, importProfile } from "./profile/export";
+export { ImportError } from "./profile/import-error";
+export { migrateProfile, PROFILE_MIGRATIONS } from "./profile/migrate";
+export type { ProfileMigration } from "./profile/migrate";
+export { newProfile } from "./profile/new-profile";
+export {
+  addCopies,
+  buyPacks,
+  discoveredCards,
+  markNew,
+  newPackState,
+  openUnopenedPack,
+  orderPrice,
+} from "./profile/packs";
+export type {
+  OpenCount,
+  PackOpening,
+  PackOrder,
+  RevealedCard,
+  RevealedPack,
+  UnopenedPackPool,
+} from "./profile/packs";
+export {
+  DECK_NAME_MAX,
+  DeckSlots,
+  Profile,
+  PROFILE_SCHEMA_VERSION,
+} from "./profile/schema";
+export type { DeckSlot, PackState, UnopenedPack } from "./profile/schema";

@@ -805,13 +805,6 @@
   }
 }
 
-/* The Collection groove fills from the count before the Pack to the count after it. */
-@keyframes collection-fill {
-  from {
-    scale: var(--fill-from, 0) 1;
-  }
-}
-
 /* The Card shop lights breathe a little, as a flame does. */
 @keyframes shop-lamp {
   0%,

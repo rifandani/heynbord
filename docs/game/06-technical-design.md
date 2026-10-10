@@ -118,7 +118,9 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 ## 5. Save data
 
 - Storage: IndexedDB, through a small wrapper.
-- The **Profile** model is in the rules package. It has: player level and XP, Coin (as a number of Copper), Heynstones, Essence, owned card copies, Decks, unlocked Deck slots, Gear levels, Stage results, Heynspire progress, Achievements, Cosmetics, seen Hints and settings.
+- The **Profile** model is in the rules package. It has: player level and XP, Coin (as a number of Copper), Heynstones, Essence, owned card copies, Decks, unlocked Deck slots, Gear levels, Stage results, claimed Star chests, Unopened Packs, the Pack state, a reward random state, Heynspire progress, Achievements, Cosmetics and seen Hints.
+- Settings are not in the Profile. Language, sound, reduced motion, text size and color mode are about the device and the person, so they stay in `localStorage` on the device. An import does not change them.
+- There is one Profile in each browser. An import replaces it after a confirmation. A Battle that is not finished is not saved: after a page load it gives no result.
 - Each save has a `schemaVersion`. Migrations are pure functions in the rules package: `migrate(v1) → v2 → v3`.
 - The app saves after each Battle and after each Workshop, Pack, Gear or Bazaar action.
 - **Export:** a JSON file with the Profile and a checksum. **Import:** check the schema and the checksum, run migrations, then replace the save only if all checks pass.
@@ -155,7 +157,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 | Rules unit tests | Vitest (Node) | Each rule in GDD section 4, each Keyword, each Workshop action, migrations. Follows [ADR-0001](../adr/0001-unit-tests-are-pure-module-logic.md). |
 | Determinism tests | Vitest | Run the same replay many times and compare the results. Property tests with random Decks and seeds. |
 | Content tests | Vitest | All card and Stage data pass the Effect `Schema` schemas. All Translation Keys exist. |
-| Balance simulations | Vitest + Bun script | Headless AI-against-AI Battles. `bun run sim` in `packages/rules` reports the win rates of each Stage and each Matchup (GDD section 13). The logic is in `src/simulation/` and has unit tests. CI fails when a win rate is not on its target (`bun run rules:sim:check`). |
+| Balance simulations | Vitest + Bun script | Headless AI-against-AI Battles. `bun run sim` in `packages/rules` reports the win rates of each Stage and each Matchup (GDD section 13). `bun run sim economy` simulates Players to level 30 with a win chance for each Battle (Economy 7.1). The logic is in `src/simulation/` and has unit tests. CI fails when a win rate is not on its target (`bun run rules:sim:check`). |
 | Economy simulation | Bun script | Reports the pacing targets (Economy section 4). |
 | End-to-end | Playwright | Start the game, finish Stage 1-1, open a Pack, Combine, export and import the save. |
 

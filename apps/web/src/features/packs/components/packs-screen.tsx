@@ -1,10 +1,13 @@
 import { useAtom } from "@effect/atom-react";
 import type {
   ClassId,
+  OpenCount,
   PackDefinition,
+  PackOrder,
   PackPool,
   RaceId,
   RankId,
+  RevealedPack,
 } from "@workspace/rules";
 import {
   coinDenominations,
@@ -38,13 +41,7 @@ import {
   ShopkeeperBubble,
   ShopScene,
 } from "@/features/packs/components/shop-scene";
-import type {
-  OpenCount,
-  PackOrder,
-  PackState,
-  PoolProgress,
-  RevealedPack,
-} from "@/features/packs/packs";
+import type { ShopPackState } from "@/features/packs/packs";
 import {
   bestRank,
   dropRateBar,
@@ -435,7 +432,7 @@ const OpenButton = ({
   onOpen,
 }: {
   readonly order: PackOrder;
-  readonly packState: PackState;
+  readonly packState: ShopPackState;
   readonly coin: number;
   readonly onOpen: (order: PackOrder) => void;
 }) => {
@@ -510,7 +507,7 @@ const PackStand = ({
 }: {
   readonly pack: PackDefinition;
   readonly pool: PackPool;
-  readonly packState: PackState;
+  readonly packState: ShopPackState;
   readonly coin: number;
   readonly onOpen: (order: PackOrder) => void;
 }) => {
@@ -582,11 +579,10 @@ const PackStand = ({
   );
 };
 
-/** The open reveal: the order, its opened Packs and the pool count before them. */
+/** The open reveal: the order and its opened Packs. */
 interface Opened {
   readonly order: PackOrder;
   readonly packs: readonly RevealedPack[];
-  readonly progress: PoolProgress;
   /** A new number for each purchase, so Open another starts a new reveal. */
   readonly serial: number;
 }
@@ -644,7 +640,6 @@ export const PacksScreen = () => {
   };
 
   const open = (order: PackOrder) => {
-    const before = poolProgress(order.pool, classId, collection);
     const packs = buy(order);
     if (!packs) {
       return;
@@ -657,7 +652,6 @@ export const PacksScreen = () => {
     setOpened((current) => ({
       order,
       packs,
-      progress: before,
       serial: (current?.serial ?? 0) + 1,
     }));
   };
@@ -695,19 +689,9 @@ export const PacksScreen = () => {
         )}
       </ShopScene>
       <div className="absolute inset-x-0 top-[max(0.5rem,env(safe-area-inset-top))] z-20 flex items-start gap-2 px-[max(0.5rem,env(safe-area-inset-left))]">
-        <header
-          className={cn(
-            PLATE,
-            "h-16 gap-3 pr-2 pl-4 [@media(max-height:500px)]:h-10 [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pl-3"
-          )}
-        >
-          <h1 className="font-display text-3xl leading-none font-black tracking-[0.025em] text-[#ffe08a] [text-shadow:0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:text-xl">
-            {tr("packs.title")}
-          </h1>
-          <span
-            className="h-7 w-0.5 rounded-full bg-[#e9c46a]/25"
-            aria-hidden
-          />
+        <header className="flex">
+          {/* The page heading stays for screen readers only. */}
+          <h1 className="sr-only">{tr("packs.title")}</h1>
           <DropRatesDialog className="[@media(max-height:500px)]:min-h-7 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs" />
         </header>
       </div>
@@ -751,7 +735,6 @@ export const PacksScreen = () => {
           key={opened.serial}
           order={opened.order}
           packs={opened.packs}
-          progress={opened.progress}
           again={
             missingCoin(opened.order, packState, coin) === 0
               ? { price: orderPrice(opened.order, packState) }

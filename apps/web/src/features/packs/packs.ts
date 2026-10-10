@@ -1,79 +1,56 @@
 import type {
   ClassId,
   Collection,
-  DeckEntry,
-  GuaranteeSource,
-  OpenedPack,
+  DeckSlot,
   PackDefinition,
   PackId,
+  PackOrder,
   PackPool,
+  PackState,
   RankId,
+  RevealedCard,
+  RevealedPack,
 } from "@workspace/rules";
 import {
-  getPack,
-  openPack,
-  openTenPacks,
+  buyPacks,
+  discoveredCards,
+  newPackState,
+  orderPrice as paidOrderPrice,
   packPool,
   PACKS,
   RANKS,
-  TEN_PACKS,
 } from "@workspace/rules";
 
-import type { DeckSlot } from "@/features/deck/deck";
 import { CLASSES_WITH_CARDS } from "@/features/deck/deck";
 
 /**
- * The Pack state of the Player (Economy 3.1). It is in memory until the
- * Profile keeps it (M2).
+ * The Pack state of the Packs screen: the Pack state of the Profile and the
+ * free first Pack. It is in memory until the Profile web issue (#52), which
+ * changes the free first Pack into an Unopened Pack and removes this.
  */
-export interface PackState {
-  /**
-   * The Pack Guarantee counter of each Pack: the Packs in a row without a card
-   * of the Guarantee Rank or higher. All versions of a Pack share one.
-   */
-  readonly guaranteeCounters: Readonly<Record<PackId, number>>;
-  /** The random state of the Pack rolls. It moves forward after each Pack. */
-  readonly randomState: number;
+export interface ShopPackState extends PackState {
   /** True after the Player opened the free first Peddler Pack. */
   readonly freePackUsed: boolean;
 }
 
 /** The Pack state of a new Player, with the random state of this session. */
-export const newPackState = (seed: number): PackState => ({
-  guaranteeCounters: { peddler: 0, merchant: 0, royal: 0 },
-  randomState: seed,
+export const newShopPackState = (seed: number): ShopPackState => ({
+  ...newPackState(seed),
   freePackUsed: false,
 });
 
-/** Open (1 Pack) or Open ×10. */
-export type OpenCount = 1 | typeof TEN_PACKS;
-
-/** The Packs that the Player buys in one action. */
-export interface PackOrder {
-  readonly pack: PackId;
-  /** All cards, the Creature Cards of one Race or the Skill Cards of one Class. */
-  readonly pool: PackPool;
-  readonly count: OpenCount;
-}
-
 /** The free first Pack (Economy 3.1): one Peddler Pack, one time. */
-export const isFreeOrder = (order: PackOrder, state: PackState): boolean =>
+export const isFreeOrder = (order: PackOrder, state: ShopPackState): boolean =>
   !state.freePackUsed && order.pack === "peddler" && order.count === 1;
 
-/** The price of one Pack, in Copper: a Race Pack and a Class Pack cost more. */
-export const packPrice = (pack: PackDefinition, pool: PackPool): number =>
-  pool.kind === "all" ? pack.price : pack.versionPrice;
-
 /** The price of an order, in Copper: 0 for the free first Pack. */
-export const orderPrice = (order: PackOrder, state: PackState): number =>
-  isFreeOrder(order, state)
-    ? 0
-    : packPrice(getPack(order.pack), order.pool) * order.count;
+export const orderPrice = (order: PackOrder, state: ShopPackState): number =>
+  isFreeOrder(order, state) ? 0 : paidOrderPrice(order);
 
 /** The Coin that the Player needs more for an order, in Copper, or 0. */
 export const missingCoin = (
   order: PackOrder,
-  state: PackState,
+  state: ShopPackState,
   coin: number
 ): number => Math.max(0, orderPrice(order, state) - coin);
 
@@ -94,68 +71,11 @@ export const dropRateBar = (
       : []
   );
 
-/** The IDs of the cards that the Player has Discovered: each card in the Collection. */
-export const discoveredCards = (collection: Collection): ReadonlySet<string> =>
-  new Set(collection.map((entry) => entry.cardId));
-
-/** The Collection with one more copy of each card. A new card and Rank goes at the end. */
-export const addCopies = (
-  collection: Collection,
-  copies: readonly DeckEntry[]
-): Collection => {
-  const entries = new Map(
-    collection.map((entry) => [`${entry.cardId}:${entry.rank}`, entry])
-  );
-  for (const copy of copies) {
-    const key = `${copy.cardId}:${copy.rank}`;
-    const entry = entries.get(key);
-    entries.set(
-      key,
-      entry
-        ? { ...entry, copies: entry.copies + 1 }
-        : { cardId: copy.cardId, rank: copy.rank, copies: 1 }
-    );
-  }
-  return [...entries.values()];
-};
-
-/** One card of an opened Pack. `isNew`: the Player had not Discovered it before the Pack. */
-export interface RevealedCard extends DeckEntry {
-  readonly isNew: boolean;
-}
-
-export interface RevealedPack {
-  /** The 5 cards, from the lowest Rank to the highest: the best card is last. */
-  readonly cards: readonly RevealedCard[];
-  readonly guaranteedBy: GuaranteeSource | null;
-}
-
-/**
- * Marks the cards that were not Discovered before their Pack. In Open ×10, a
- * card from an earlier Pack counts as Discovered.
- */
-export const markNew = (
-  packs: readonly OpenedPack[],
-  discovered: ReadonlySet<string>
-): readonly RevealedPack[] => {
-  const seen = new Set(discovered);
-  return packs.map((pack) => {
-    const cards = pack.cards.map((card) => ({
-      ...card,
-      isNew: !seen.has(card.cardId),
-    }));
-    for (const card of cards) {
-      seen.add(card.cardId);
-    }
-    return { cards, guaranteedBy: pack.guaranteedBy };
-  });
-};
-
 /** What a purchase changes: the Coin, the Collection and the Pack state. */
 export interface PackWallet {
   readonly coin: number;
   readonly collection: Collection;
-  readonly packs: PackState;
+  readonly packs: ShopPackState;
 }
 
 export interface PackPurchase extends PackWallet {
@@ -163,54 +83,38 @@ export interface PackPurchase extends PackWallet {
   readonly opened: readonly RevealedPack[];
 }
 
-const open = (order: PackOrder, input: Parameters<typeof openPack>[0]) => {
-  if (order.count === TEN_PACKS) {
-    return openTenPacks(input);
-  }
-  const one = openPack(input);
-  return { ...one, packs: [one.opened] };
-};
-
 /**
- * Buys an order (Economy 3.1): removes the Coin, opens the Packs with the
- * rules, adds the copies to the Collection and moves the Pack Guarantee
- * counter and the random state forward. `null` when the Coin is not enough.
- * `classId` is the current Hero Class: "All cards" has only its Skill Cards.
+ * Buys an order with the rules `buyPacks`: removes the Coin, opens the Packs,
+ * adds the copies to the Collection and moves the Pack state forward. `null`
+ * when the Coin is not enough. The rules have no free Pack, so the free first
+ * Pack gets its price before the purchase.
  */
-export const buyPacks = (
+export const buyOrder = (
   wallet: PackWallet,
   order: PackOrder,
   classId: ClassId
 ): PackPurchase | null => {
-  const price = orderPrice(order, wallet.packs);
-  if (wallet.coin < price) {
+  const free = isFreeOrder(order, wallet.packs);
+  const bought = buyPacks(
+    {
+      coin: wallet.coin + (free ? paidOrderPrice(order) : 0),
+      collection: wallet.collection,
+      packState: wallet.packs,
+    },
+    order,
+    classId
+  );
+  if (!bought) {
     return null;
   }
-  const discovered = discoveredCards(wallet.collection);
-  const result = open(order, {
-    pack: order.pack,
-    pool: order.pool,
-    classId,
-    discovered,
-    guaranteeCounter: wallet.packs.guaranteeCounters[order.pack],
-    randomState: wallet.packs.randomState,
-  });
   return {
-    coin: wallet.coin - price,
-    collection: addCopies(
-      wallet.collection,
-      result.packs.flatMap((pack) => pack.cards)
-    ),
+    coin: bought.profile.coin,
+    collection: bought.profile.collection,
     packs: {
-      guaranteeCounters: {
-        ...wallet.packs.guaranteeCounters,
-        [order.pack]: result.guaranteeCounter,
-      },
-      randomState: result.randomState,
-      freePackUsed:
-        wallet.packs.freePackUsed || isFreeOrder(order, wallet.packs),
+      ...bought.profile.packState,
+      freePackUsed: wallet.packs.freePackUsed || free,
     },
-    opened: markNew(result.packs, discovered),
+    opened: bought.opened,
   };
 };
 
@@ -261,6 +165,13 @@ export const tenPackHighlights = (
   packs.flatMap((pack) =>
     pack.cards.filter((card) => rankIndex(card.rank) >= rankIndex("epic"))
   );
+
+/**
+ * True when a Pack can give a Legendary card. The Open ×10 highlight names
+ * only the Ranks that the Pack can give: a Merchant Pack gives no Legendary.
+ */
+export const canGiveLegendary = (pack: PackDefinition): boolean =>
+  pack.dropRates.legendary > 0 || pack.guarantee.rank === "legendary";
 
 /** One place in the Open ×10 grid: the copies of one card in one Rank. */
 export interface GridCard extends RevealedCard {

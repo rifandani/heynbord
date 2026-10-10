@@ -21,9 +21,10 @@ describe("cardGlyph", () => {
     expect(cardGlyph(getCard("priest.mend"))).toBe("heart");
     expect(cardGlyph(getCard("priest.smite"))).toBe("sun");
     expect(cardGlyph(getCard("priest.sanctuary"))).toBe("shield");
-    expect(classGlyph("priest")).toBe("sun");
+    expect(classGlyph("priest")).toBe("wand");
     expect(classGlyph("warrior")).toBe("warhelm");
     expect(classGlyph("mage")).toBe("hat");
+    expect(classGlyph("ranger")).toBe("bow");
     expect(raceGlyph("elf")).toBe("leaf");
     expect(raceGlyph("undead")).toBe("skull");
     expect(raceGlyph("orc")).toBe("tusks");
@@ -34,8 +35,10 @@ describe("cardGlyph", () => {
 
 describe("roleGlyph and DAMAGE_GLYPH", () => {
   it("give each Role and each Damage Type its icon", () => {
-    expect(roleGlyph("wall")).toBe("brick");
-    expect(roleGlyph("shooter")).toBe("bow");
+    expect(roleGlyph("wall")).toBe("wall");
+    expect(roleGlyph("shooter")).toBe("arrow");
+    expect(roleGlyph("runner")).toBe("boot");
+    expect(roleGlyph("support")).toBe("bell");
     expect(DAMAGE_GLYPH).toEqual({
       physical: "sword",
       fire: "flame",

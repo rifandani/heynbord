@@ -1,4 +1,5 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
+import type { PackOrder, RevealedPack } from "@workspace/rules";
 import { useContext } from "react";
 
 import {
@@ -6,8 +7,7 @@ import {
   collectionAtom,
   deckSlotsAtom,
 } from "@/features/deck/deck.atoms";
-import type { PackOrder, RevealedPack } from "@/features/packs/packs";
-import { buyPacks, heroClass } from "@/features/packs/packs";
+import { buyOrder, heroClass } from "@/features/packs/packs";
 import { packStateAtom } from "@/features/packs/packs.atoms";
 import { balancesAtom } from "@/features/town/town.atoms";
 
@@ -29,7 +29,7 @@ export const usePacks = () => {
   const buy = (order: PackOrder): readonly RevealedPack[] | null => {
     // It reads the registry, not a render: two fast presses buy two times.
     const coins = registry.get(balancesAtom);
-    const purchase = buyPacks(
+    const purchase = buyOrder(
       {
         coin: coins.coin,
         collection: registry.get(collectionAtom),

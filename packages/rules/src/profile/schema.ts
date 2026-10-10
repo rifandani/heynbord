@@ -1,0 +1,105 @@
+import { Schema } from "effect";
+
+import { CollectionEntry } from "../collection/deck-building";
+import { MAX_DECK_SLOTS, STARTING_DECK_SLOTS } from "../content/deck-slots";
+import { PackId } from "../content/packs";
+import { ClassId, DeckEntry, GearLevels } from "../content/schema";
+import { STAR_CHESTS } from "../content/star-chests";
+
+/**
+ * The shape version of the Profile (technical design 5). A change to the
+ * shape adds 1 and a migration step from the old version.
+ */
+export const PROFILE_SCHEMA_VERSION = 1;
+
+/** The longest name that the Player can give a Deck. */
+export const DECK_NAME_MAX = 24;
+
+/**
+ * One saved Deck. The Hero Class is on the slot until the Hero screen exists
+ * (GDD 5.5).
+ */
+const DeckSlot = Schema.Struct({
+  id: Schema.NonEmptyString,
+  /** The name that the Player gave. Empty: the default name. */
+  name: Schema.String.check(Schema.isMaxLength(DECK_NAME_MAX)),
+  classId: ClassId,
+  deck: Schema.Array(DeckEntry),
+});
+export type DeckSlot = typeof DeckSlot.Type;
+
+export const DeckSlots = Schema.Array(DeckSlot);
+
+/** A random state: one 32-bit integer, as in the Battle (ADR-0006). */
+const RandomState = Schema.Number.check(Schema.isInt32());
+
+/** The Pack state of the Player (Economy 3.1). */
+const PackState = Schema.Struct({
+  /**
+   * The Pack Guarantee counter of each Pack: the Packs in a row without a card
+   * of the Guarantee Rank or higher. All versions of a Pack share one.
+   */
+  guaranteeCounters: Schema.Struct({
+    peddler: Schema.Natural,
+    merchant: Schema.Natural,
+    royal: Schema.Natural,
+  }),
+  /** The random state of the Pack rolls. It moves forward after each Pack. */
+  randomState: RandomState,
+});
+export type PackState = typeof PackState.Type;
+
+/**
+ * A Pack that the Player got as a reward and has not opened yet. For the
+ * `race` version, the Player selects the Race when the Pack opens.
+ */
+const UnopenedPack = Schema.Struct({
+  pack: PackId,
+  version: Schema.Literals(["all", "race"]),
+});
+export type UnopenedPack = typeof UnopenedPack.Type;
+
+/** The best Stars of a won Stage (GDD 4.11). */
+const Stars = Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 3 }));
+
+/** The Stars that open a Star chest: the key of a chest in each Region. */
+const StarChestStars = Schema.Natural.check(
+  Schema.makeFilter((stars: number) =>
+    STAR_CHESTS.some((chest) => chest.stars === stars)
+  )
+);
+
+/**
+ * All the saved progress of one Player (technical design 5). Settings are not
+ * in it: they belong to the device. The Player level is not in it: it comes
+ * from the XP (`playerLevelForXp`).
+ */
+export const Profile = Schema.Struct({
+  schemaVersion: Schema.Literal(PROFILE_SCHEMA_VERSION),
+  xp: Schema.Natural,
+  /** In Copper. */
+  coin: Schema.Natural,
+  essence: Schema.Natural,
+  heynstones: Schema.Natural,
+  collection: Schema.Array(CollectionEntry),
+  deckSlots: DeckSlots.check(
+    Schema.isBetweenLength(STARTING_DECK_SLOTS, MAX_DECK_SLOTS)
+  ),
+  /** The ID of the Deck Slot that the Stage Panel selects first. */
+  activeDeckId: Schema.NonEmptyString,
+  gear: GearLevels,
+  /** The best Stars of each won Stage, by Stage ID. Stage 1-1 here: the Tutorial is won. */
+  stageResults: Schema.Record(Schema.String, Stars),
+  /** The Star chests that the Player claimed: their Stars, by Region number. */
+  claimedStarChests: Schema.Record(Schema.String, Schema.Array(StarChestStars)),
+  packState: PackState,
+  unopenedPacks: Schema.Array(UnopenedPack),
+  /**
+   * The random state of the reward rolls, for example the repeat-win card. It
+   * is not the Pack random state, so a Pack does not change a reward.
+   */
+  rewardRandomState: RandomState,
+  /** The IDs of the Hints that the Player has seen. Hints are a web term. */
+  seenHints: Schema.Array(Schema.String),
+});
+export type Profile = typeof Profile.Type;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { stageCoin } from "./stage-coin";
+import { outcomeCoin, stageCoin } from "./stage-coin";
 import { getStage } from "./stages";
 
 describe("stageCoin (Economy 2.1)", () => {
@@ -32,5 +32,14 @@ describe("stageCoin (Economy 2.1)", () => {
         stageCoin({ ...stage, region, boss: false }, "win")
       )
     ).toEqual([60, 100, 150]);
+  });
+});
+
+describe("outcomeCoin (Economy 2.1, 2.4)", () => {
+  it("gives × 3 for the first win, the Coin for a win and 10% for a loss", () => {
+    expect(outcomeCoin(200, "firstWin")).toBe(600);
+    expect(outcomeCoin(200, "win")).toBe(200);
+    expect(outcomeCoin(200, "loss")).toBe(20);
+    expect(outcomeCoin(65, "loss")).toBe(6);
   });
 });

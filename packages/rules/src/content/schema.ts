@@ -6,7 +6,7 @@ import { Schema } from "effect";
  * with these schemas, so a bad value fails the test suite.
  */
 
-const RankId = Schema.Literals([
+export const RankId = Schema.Literals([
   "common",
   "uncommon",
   "rare",
@@ -184,6 +184,22 @@ export type CreatureCardDefinition = typeof CreatureCardDefinition.Type;
 
 const Amount = between(1, 30);
 
+/**
+ * A Skill Card value: one Common value that scales with the Stat scale (GDD
+ * 5.3), or an exact value for each Rank.
+ */
+const SkillAmount = Schema.Union([
+  Amount,
+  Schema.Struct({
+    common: Amount,
+    uncommon: Amount,
+    rare: Amount,
+    epic: Amount,
+    legendary: Amount,
+  }),
+]);
+export type SkillAmount = typeof SkillAmount.Type;
+
 /** Effect templates (technical design 3.5). The UI makes the card text from the same data. */
 const SkillEffect = Schema.Union([
   Schema.Struct({
@@ -235,7 +251,7 @@ const SkillEffect = Schema.Union([
      * of the heal (ADR-0019). Nothing heals a Hero (ADR-0028).
      */
     type: Schema.Literal("healUnit"),
-    heal: Amount,
+    heal: SkillAmount,
   }),
   Schema.Struct({
     /**
@@ -243,7 +259,7 @@ const SkillEffect = Schema.Union([
      * after Block. A Ward keeps the higher value: the values do not add.
      */
     type: Schema.Literal("wardUnit"),
-    ward: Amount,
+    ward: SkillAmount,
   }),
   Schema.Struct({
     type: Schema.Literal("laneArmor"),
@@ -324,7 +340,7 @@ export const DeckEntry = Schema.Struct({
 export type DeckEntry = typeof DeckEntry.Type;
 
 /** Gear levels 0 to 10 for the 4 slots (GDD 7.3). */
-const GearLevels = Schema.Struct({
+export const GearLevels = Schema.Struct({
   weapon: between(0, 10),
   armor: between(0, 10),
   trinket: between(0, 10),

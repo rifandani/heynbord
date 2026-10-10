@@ -1,7 +1,11 @@
 import { absurd } from "effect";
 
 import { getCard } from "../content/cards";
-import { recallChance, scaleForRank } from "../content/ranks";
+import {
+  recallChance,
+  scaleForRank,
+  skillAmountForRank,
+} from "../content/ranks";
 import type {
   CreatureCardDefinition,
   SkillCardDefinition,
@@ -259,14 +263,14 @@ const applyEffect = (
       return;
     }
     case "healUnit": {
-      const heal = scaleForRank(effect.heal, card.rank);
+      const heal = skillAmountForRank(effect.heal, card.rank);
       for (const unit of unitsInArea(ctx.state, side, target, 1)) {
         healUnit(ctx, unit, heal);
       }
       return;
     }
     case "wardUnit": {
-      const ward = scaleForRank(effect.ward, card.rank);
+      const ward = skillAmountForRank(effect.ward, card.rank);
       for (const unit of unitsInArea(ctx.state, side, target, 1)) {
         wardUnit(ctx, unit, ward);
       }

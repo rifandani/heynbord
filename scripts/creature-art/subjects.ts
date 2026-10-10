@@ -53,8 +53,8 @@ export const SUBJECT = new Map(
       "very big strong orc woman with large tusks, rough iron shoulder plates, fur belt, big wooden club, smashing through a wooden door with splinters flying around her",
     "orc.warchiefGrukka":
       "Warchief Grukka, huge old happy orc woman, round and heavy with a big belly, long grey-white braids with bone and gold beads, large tusks with gold rings, laugh lines and a scar across her nose, beast-skull helmet with two large curved horns, heavy armor that covers her belly, long dark red war cloak with a thick fur mantle opening behind her like a banner, necklace of gold-ringed trophy tusks, leaping down from a high rock ledge in mid-air, raising a gold-inlaid double axe in her right hand and biting a roast leg in her left hand, her cheering warband with banners and war drums on the cliff behind her at sunset",
-    "orc.dusthideBrawler":
-      "broad sturdy orc man with a pleased grin, worn hide vest and rough belt, holding a short wooden cudgel, feet planted wide in a camp entrance",
+    "orc.bonestakePalisade":
+      "rough orc palisade of sharpened wooden stakes leaning forward to the right, lashed hide panels and rough iron spikes, a horned bone totem at the center, sausages on the tips of some stakes, filling a dusty pass between red rocks, no figures",
     "orc.cinderhornBreaker":
       "muscular orc woman charging through a wooden fence beside an open gate, short battering ram of black wood held low in front of her, iron ram cap of two curled horns with glowing ember-red tips, charred leather harness and iron rings, broken boards and embers flying, no animals",
     "orc.warhowlerDrummer":

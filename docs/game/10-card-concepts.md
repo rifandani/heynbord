@@ -445,23 +445,23 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, d
 | Personality | Loud, warm and hungry. Her warriors love her. She never hurries lunch. |
 | Not Tusk Brute | Grukka must not look like the Tusk Brute. No door, no club, no bare stomach, no young muscular body, no brown leather top, no low camera angle. Show her at eye level, in the air, in a three-quarter view. |
 
-### 3.9 Dusthide Brawler
+### 3.9 Bonestake Palisade
 
-`orc.dusthideBrawler` · Frontliner · Common · Countdown 2 · Attack 3 · HP 9 · Speed 1 · Melee · Physical
+`orc.bonestakePalisade` · Wall · Common · Countdown 2 · Attack 0 · HP 15 · Speed 0 · Melee · Physical · Wall · Last Breath 3
 
-> He mistakes every warning for applause.
+> The stakes are for enemies. The sausages are for later.
 
-Purpose: limited Orc Lane protection without Armor. Power 17, budget 18, deviation -5.6%.
+Purpose: the Orc Wall. It stops a Lane for the Orc rush, and when it falls, its stakes hit the enemy in front. Power 18, budget 18, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
-| Subject | A broad orc man with a pleased grin. |
-| Pose | He plants both feet in a camp entrance. |
-| Props | Short cudgel, worn hide vest and rough belt. |
-| Gameplay cues | Wide body shows HP; small cudgel shows moderate Attack. |
-| Silhouette hook | Broad shoulders and raised cudgel. |
-| Humor note | He thinks enemy threats are cheers. |
-| Setting | An Orc camp between red rocks. |
+| Subject | A rough palisade of sharpened stakes made by orcs. |
+| Pose | It fills a dusty pass between red rocks. The stakes lean forward to the right. |
+| Props | Sharpened wooden stakes, lashed hide panels, rough iron spikes, a horned bone totem at the center, and sausages on the tips of some stakes. |
+| Gameplay cues | The broad fixed shape shows Wall. Stakes that lean toward the enemy show Last Breath. Plain worn parts show Common. |
+| Silhouette hook | A row of leaning stakes with the horned totem above it. |
+| Humor note | The orcs keep their lunch on the stakes. |
+| Setting | A dusty pass in the red badlands. |
 
 ### 3.10 Cinderhorn Breaker
 
@@ -1871,7 +1871,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.1 Mend
 
-`priest.mend` · Priest · Common · Countdown 2 · A friendly Unit · Heal 6 HP to a friendly Unit.
+`priest.mend` · Priest · Common · Countdown 2 · A friendly Unit · Heal 6 HP to a friendly Unit. Heal by Rank: Common 6, Uncommon 8, Rare 10, Epic 12, Legendary 14.
 
 > Rise. You are not done yet.
 
@@ -1899,7 +1899,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.3 Sanctuary
 
-`priest.sanctuary` · Priest · Uncommon · Countdown 3 · A friendly Unit · A friendly Unit gets Ward 5: it absorbs the next 5 damage.
+`priest.sanctuary` · Priest · Uncommon · Countdown 3 · A friendly Unit · A friendly Unit gets Ward 6: it absorbs the next 6 damage. Ward by Rank: Uncommon 6, Rare 8, Epic 10, Legendary 12.
 
 > Stand within the light.
 

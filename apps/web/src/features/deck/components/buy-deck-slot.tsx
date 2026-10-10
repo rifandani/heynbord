@@ -1,5 +1,9 @@
 import { useAtom } from "@effect/atom-react";
-import { coinDenominations, nextDeckSlotPrice } from "@workspace/rules";
+import {
+  buyDeckSlot,
+  coinDenominations,
+  nextDeckSlotPrice,
+} from "@workspace/rules";
 import { cn } from "cn";
 import { useMemo } from "react";
 import {
@@ -15,7 +19,6 @@ import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
-import { buyDeckSlot } from "@/features/deck/deck";
 import { deckSlotsAtom } from "@/features/deck/deck.atoms";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
@@ -49,12 +52,12 @@ export const BuyDeckSlot = ({
   const canBuy = balances.coin >= price;
 
   const buy = () => {
-    const bought = buyDeckSlot(slots, balances.coin);
+    const bought = buyDeckSlot({ coin: balances.coin, deckSlots: slots });
     if (!bought) {
       return;
     }
-    setSlots(bought.slots);
-    setBalances({ ...balances, coin: bought.coin });
+    setSlots(bought.profile.deckSlots);
+    setBalances({ ...balances, coin: bought.profile.coin });
     unlockAudio();
     playSound("select", 0);
     onBought(bought.slot.id);

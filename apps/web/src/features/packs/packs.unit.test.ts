@@ -1,21 +1,24 @@
-import type { Collection, OpenedPack, PackPool } from "@workspace/rules";
-import { CARDS, getPack, PACK_SIZE, starterCollection } from "@workspace/rules";
+import type { Collection, PackOrder, PackPool } from "@workspace/rules";
+import {
+  CARDS,
+  getPack,
+  INITIAL_DECK_SLOTS,
+  orderPrice as paidOrderPrice,
+} from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
-import { CLASSES_WITH_CARDS, INITIAL_DECK_SLOTS } from "@/features/deck/deck";
-import type { PackOrder, PackWallet } from "@/features/packs/packs";
+import { CLASSES_WITH_CARDS } from "@/features/deck/deck";
+import type { PackWallet } from "@/features/packs/packs";
 import {
-  addCopies,
   bestRank,
-  buyPacks,
-  discoveredCards,
+  buyOrder,
+  canGiveLegendary,
   dropRateBar,
   heroClass,
   isFreeOrder,
-  markNew,
   missingCoin,
   newCardCount,
-  newPackState,
+  newShopPackState,
   orderPrice,
   packsToGuarantee,
   poolProgress,
@@ -24,7 +27,7 @@ import {
   tenPackHighlights,
 } from "@/features/packs/packs";
 
-const fresh = newPackState(42);
+const fresh = newShopPackState(42);
 const wallet = (coin: number, collection: Collection = []): PackWallet => ({
   coin,
   collection,
@@ -39,32 +42,21 @@ const MAGE: PackPool = { kind: "class", classId: "mage" };
 const peddler: PackOrder = { pack: "peddler", pool: ALL, count: 1 };
 const merchant: PackOrder = { pack: "merchant", pool: ALL, count: 1 };
 
-const copiesOf = (collection: Collection) =>
-  collection.reduce((sum, entry) => sum + entry.copies, 0);
-
 describe("orderPrice", () => {
-  it("is the Pack price, the Race Pack price, or 10 × for Open ×10", () => {
+  it("is the rules price after the free first Pack", () => {
     const used = { ...fresh, freePackUsed: true };
-    expect(orderPrice(peddler, used)).toBe(350);
-    expect(orderPrice({ ...peddler, pool: race("orc") }, used)).toBe(490);
-    expect(orderPrice({ ...merchant, count: 10 }, used)).toBe(5000);
-    expect(
-      orderPrice({ pack: "royal", pool: race("elf"), count: 10 }, used)
-    ).toBe(14_000);
+    for (const order of [
+      peddler,
+      { ...merchant, pool: race("orc") },
+      { pack: "royal", pool: MAGE, count: 10 } as const,
+    ]) {
+      expect(orderPrice(order, used)).toBe(paidOrderPrice(order));
+    }
   });
 
-  it("is the Race Pack price for a Class Pack", () => {
-    const used = { ...fresh, freePackUsed: true };
-    expect(orderPrice({ ...merchant, pool: MAGE }, used)).toBe(700);
-    expect(orderPrice({ pack: "royal", pool: MAGE, count: 10 }, used)).toBe(
-      14_000
-    );
-    // The free first Pack is free in any pool.
-    expect(orderPrice({ ...peddler, pool: MAGE }, fresh)).toBe(0);
-  });
-
-  it("is 0 for the first single Peddler Pack only", () => {
+  it("is 0 for the first single Peddler Pack only, in any pool", () => {
     expect(orderPrice(peddler, fresh)).toBe(0);
+    expect(orderPrice({ ...peddler, pool: MAGE }, fresh)).toBe(0);
     expect(isFreeOrder({ ...peddler, pool: race("human") }, fresh)).toBe(true);
     expect(isFreeOrder({ ...peddler, count: 10 }, fresh)).toBe(false);
     expect(isFreeOrder(merchant, fresh)).toBe(false);
@@ -76,6 +68,28 @@ describe("missingCoin", () => {
     expect(missingCoin(merchant, fresh, 120)).toBe(380);
     expect(missingCoin(merchant, fresh, 500)).toBe(0);
     expect(missingCoin(peddler, fresh, 0)).toBe(0);
+  });
+});
+
+describe("buyOrder", () => {
+  it("buys with the rules and keeps the Pack state of the Packs screen", () => {
+    const bought = buyOrder(wallet(500), merchant, "warrior");
+    expect(bought?.coin).toBe(0);
+    expect(bought?.opened).toHaveLength(1);
+    expect(bought?.packs.freePackUsed).toBe(false);
+    expect(bought?.packs.randomState).not.toBe(fresh.randomState);
+    expect(buyOrder(wallet(499), merchant, "warrior")).toBeNull();
+  });
+
+  it("gives the first Peddler Pack free, one time", () => {
+    const first = buyOrder(wallet(0), peddler, "warrior");
+    expect(first?.coin).toBe(0);
+    expect(first?.packs.freePackUsed).toBe(true);
+    if (!first) {
+      throw new Error("The free Pack was not possible");
+    }
+    expect(buyOrder(first, peddler, "warrior")).toBeNull();
+    expect(buyOrder({ ...first, coin: 350 }, peddler, "warrior")?.coin).toBe(0);
   });
 });
 
@@ -104,158 +118,6 @@ describe("dropRateBar", () => {
   });
 });
 
-describe("addCopies", () => {
-  it("adds one copy for each card and adds a new card and Rank at the end", () => {
-    const collection: Collection = [{ cardId: "a", rank: "common", copies: 1 }];
-    expect(
-      addCopies(collection, [
-        { cardId: "a", rank: "common" },
-        { cardId: "a", rank: "rare" },
-        { cardId: "a", rank: "common" },
-      ])
-    ).toEqual([
-      { cardId: "a", rank: "common", copies: 3 },
-      { cardId: "a", rank: "rare", copies: 1 },
-    ]);
-  });
-});
-
-const pack = (...cardIds: string[]): OpenedPack => ({
-  cards: cardIds.map((cardId) => ({ cardId, rank: "common" })),
-  guaranteedBy: null,
-});
-
-describe("markNew", () => {
-  it("marks only the cards that were not Discovered before their Pack", () => {
-    const [first, second] = markNew(
-      [pack("a", "b", "b"), pack("b", "c")],
-      new Set(["a"])
-    );
-    expect(first?.cards.map((card) => card.isNew)).toEqual([false, true, true]);
-    // "b" came in the first Pack, so it is Discovered for the second.
-    expect(second?.cards.map((card) => card.isNew)).toEqual([false, true]);
-  });
-});
-
-describe("buyPacks", () => {
-  it("is not possible with too little Coin", () => {
-    expect(buyPacks(wallet(499), merchant, "warrior")).toBeNull();
-    expect(
-      buyPacks(wallet(3499), { ...peddler, count: 10 }, "warrior")
-    ).toBeNull();
-  });
-
-  it("removes the Coin and adds the 5 copies to the Collection", () => {
-    const start = starterCollection();
-    const bought = buyPacks(wallet(1200, start), merchant, "warrior");
-    expect(bought?.coin).toBe(700);
-    expect(bought?.opened).toHaveLength(1);
-    expect(bought?.opened[0]?.cards).toHaveLength(PACK_SIZE);
-    expect(copiesOf(bought?.collection ?? [])).toBe(
-      copiesOf(start) + PACK_SIZE
-    );
-    for (const card of bought?.opened[0]?.cards ?? []) {
-      expect(
-        bought?.collection.some(
-          (entry) => entry.cardId === card.cardId && entry.rank === card.rank
-        )
-      ).toBe(true);
-    }
-  });
-
-  it("moves the random state and the counter of that Pack forward", () => {
-    const bought = buyPacks(wallet(500), merchant, "warrior");
-    expect(bought?.packs.randomState).not.toBe(fresh.randomState);
-    // A Merchant Pack rarely has Epic: the counter is 1, or 0 after an Epic.
-    const hasEpic = bought?.opened[0]?.cards.some(
-      (card) => card.rank === "epic"
-    );
-    expect(bought?.packs.guaranteeCounters.merchant).toBe(hasEpic ? 0 : 1);
-    expect(bought?.packs.guaranteeCounters.peddler).toBe(0);
-    expect(bought?.packs.guaranteeCounters.royal).toBe(0);
-  });
-
-  it("gives the first Peddler Pack free, one time", () => {
-    const first = buyPacks(wallet(0), peddler, "warrior");
-    expect(first?.coin).toBe(0);
-    expect(first?.packs.freePackUsed).toBe(true);
-    if (!first) {
-      throw new Error("The free Pack was not possible");
-    }
-    expect(buyPacks(first, peddler, "warrior")).toBeNull();
-    expect(buyPacks({ ...first, coin: 350 }, peddler, "warrior")?.coin).toBe(0);
-  });
-
-  it("does not use the free Pack for another Pack", () => {
-    const bought = buyPacks(wallet(500), merchant, "warrior");
-    expect(bought?.packs.freePackUsed).toBe(false);
-  });
-
-  it("marks NEW only the cards that were not Discovered before the Pack", () => {
-    const start = starterCollection();
-    const known = discoveredCards(start);
-    const bought = buyPacks(
-      wallet(5000, start),
-      { ...merchant, count: 10 },
-      "warrior"
-    );
-    const seen = new Set(known);
-    for (const opened of bought?.opened ?? []) {
-      for (const card of opened.cards) {
-        expect(card.isNew).toBe(!seen.has(card.cardId));
-      }
-      for (const card of opened.cards) {
-        seen.add(card.cardId);
-      }
-    }
-  });
-
-  it("opens 11 Packs for a Royal Open ×10", () => {
-    const bought = buyPacks(
-      wallet(10_000),
-      { pack: "royal", pool: ALL, count: 10 },
-      "warrior"
-    );
-    expect(bought?.opened).toHaveLength(11);
-    expect(bought?.coin).toBe(0);
-  });
-
-  it("gives only cards of the Race in a Race Pack", () => {
-    const bought = buyPacks(
-      wallet(1000),
-      { pack: "merchant", pool: race("orc"), count: 1 },
-      "warrior"
-    );
-    expect(
-      bought?.opened[0]?.cards.every((card) => card.cardId.startsWith("orc."))
-    ).toBe(true);
-  });
-
-  it("adds only the Skill Cards of the Class of a Class Pack", () => {
-    const start = starterCollection();
-    const bought = buyPacks(
-      wallet(7000, start),
-      { pack: "merchant", pool: MAGE, count: 10 },
-      "warrior"
-    );
-    const mage = new Set(
-      CARDS.flatMap((card) =>
-        card.kind === "skill" && card.class === "mage" ? [card.id] : []
-      )
-    );
-    expect(bought?.coin).toBe(0);
-    const added = addCopies(
-      [],
-      (bought?.opened ?? []).flatMap((opened) => opened.cards)
-    );
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((entry) => mage.has(entry.cardId))).toBe(true);
-    expect(copiesOf(bought?.collection ?? [])).toBe(
-      copiesOf(start) + 10 * PACK_SIZE
-    );
-  });
-});
-
 describe("tenPackGrid", () => {
   it("joins the copies of one card and Rank, from the highest Rank, new cards first", () => {
     const grid = tenPackGrid([
@@ -278,6 +140,28 @@ describe("tenPackGrid", () => {
     expect(
       grid.map((card) => `${card.cardId}:${card.rank}×${card.copies}`)
     ).toEqual(["d:legendary×1", "c:epic×1", "b:common×1", "a:common×2"]);
+  });
+
+  it("puts a new card first in one Rank, then keeps the card ID order", () => {
+    const grid = tenPackGrid([
+      {
+        cards: [
+          { cardId: "b", rank: "rare", isNew: false },
+          { cardId: "a", rank: "rare", isNew: false },
+          { cardId: "c", rank: "rare", isNew: true },
+        ],
+        guaranteedBy: null,
+      },
+    ]);
+    expect(grid.map((card) => card.cardId)).toEqual(["c", "a", "b"]);
+  });
+});
+
+describe("canGiveLegendary", () => {
+  it("is true only for the Royal Pack", () => {
+    expect(canGiveLegendary(getPack("peddler"))).toBe(false);
+    expect(canGiveLegendary(getPack("merchant"))).toBe(false);
+    expect(canGiveLegendary(getPack("royal"))).toBe(true);
   });
 });
 
@@ -308,6 +192,7 @@ describe("heroClass", () => {
       raiders?.classId
     );
     expect(heroClass(INITIAL_DECK_SLOTS, "gone")).toBe(vanguard?.classId);
+    expect(heroClass([], "gone")).toBe("warrior");
   });
 });
 

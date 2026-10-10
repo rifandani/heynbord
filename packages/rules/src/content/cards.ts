@@ -342,17 +342,17 @@ const creatures: readonly CreatureCardDefinition[] = [
   },
   {
     kind: "creature",
-    id: "orc.dusthideBrawler",
+    id: "orc.bonestakePalisade",
     race: "orc",
-    role: "frontliner",
+    role: "wall",
     baseRank: "common",
     countdown: 2,
-    attack: 3,
-    hp: 9,
-    speed: 1,
+    attack: 0,
+    hp: 15,
+    speed: 0,
     range: 0,
     damageType: "physical",
-    keywords: {},
+    keywords: { wall: true, lastBreath: 3 },
   },
   {
     kind: "creature",
@@ -1389,7 +1389,10 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "common",
     countdown: 2,
     target: "friendlyUnit",
-    effect: { type: "healUnit", heal: 6 },
+    effect: {
+      type: "healUnit",
+      heal: { common: 6, uncommon: 8, rare: 10, epic: 12, legendary: 14 },
+    },
   },
   {
     kind: "skill",
@@ -1407,7 +1410,11 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "uncommon",
     countdown: 3,
     target: "friendlyUnit",
-    effect: { type: "wardUnit", ward: 5 },
+    effect: {
+      type: "wardUnit",
+      // Base Rank Uncommon: no Common copy exists, so Common repeats Uncommon.
+      ward: { common: 6, uncommon: 6, rare: 8, epic: 10, legendary: 12 },
+    },
   },
 ];
 

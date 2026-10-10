@@ -531,6 +531,33 @@ const openBoardWithAUnit = async (page: Page) => {
 };
 
 test.describe("Handbook (issue #25)", () => {
+  test("the Pack Entry shows the three Packs on a shelf, and a Pack shows its own Pack Guarantee count", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await page.getByTestId("town-shortcut-handbook").press("Enter");
+    await page.getByRole("tab", { name: "Progress" }).click();
+    await page.getByRole("option", { name: "Pack" }).click();
+    const guide = page.getByTestId("handbook-pack-guide");
+    await expect(guide).toBeVisible();
+    // The free first Peddler Pack is selected, with its Free tag.
+    await expect(page.getByTestId("handbook-pack-tab-peddler")).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await expect(guide.getByTestId("pack-free-tag")).toBeVisible();
+    await expect(page.getByTestId("handbook-pack-track")).toHaveAttribute(
+      "data-left",
+      "8"
+    );
+    // The Royal Pack: no Common cards, and Legendary in 20 Packs.
+    await page.getByTestId("handbook-pack-tab-royal").click();
+    await expect(page.getByTestId("handbook-pack-panel-royal")).toBeVisible();
+    await expect(page.getByTestId("handbook-pack-guarantee-now")).toContainText(
+      "Legendary in 20 Packs"
+    );
+  });
+
   test("the Town Bar opens it at the Board; it opens again at the last Entry, and the focus goes back", async ({
     page,
   }) => {

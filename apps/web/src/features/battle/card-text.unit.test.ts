@@ -253,7 +253,7 @@ describe("cardText (CRD-08)", () => {
         return text.kind === "skill" ? [resolve(text.effect)] : [];
       });
     expect(effects("priest.mend")).toEqual(
-      [6, 7, 9, 11, 13].map((heal) => `Heal ${heal} HP to a friendly Unit.`)
+      [6, 8, 10, 12, 14].map((heal) => `Heal ${heal} HP to a friendly Unit.`)
     );
     expect(effects("priest.smite")).toEqual(
       [3, 4, 4, 5, 6].map(
@@ -261,10 +261,9 @@ describe("cardText (CRD-08)", () => {
           `Deal ${amount} Holy damage to an enemy Unit. Armor does not reduce it.`
       )
     );
-    // The card prints the Common value 5, but Sanctuary starts at Uncommon:
-    // its lowest copy gives Ward 6.
+    // Sanctuary starts at Uncommon: its Common value repeats Uncommon.
     expect(effects("priest.sanctuary")).toEqual(
-      [5, 6, 7, 9, 11].map(
+      [6, 6, 8, 10, 12].map(
         (ward) =>
           `A friendly Unit gets Ward ${ward}: it absorbs the next ${ward} damage.`
       )

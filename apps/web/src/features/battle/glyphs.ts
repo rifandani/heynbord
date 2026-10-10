@@ -61,24 +61,111 @@ const slash = (x: number, top: number, bottom: number): string => {
   return `M${x + lean - half} ${top} Q${x - 1.5} ${middle - 4} ${x - lean} ${bottom} Q${x + 12} ${middle + 2} ${x + lean + half} ${top} A${half} ${half} 0 0 0 ${x + lean - half} ${top} Z`;
 };
 
+/** A corner of a polygon, with the radius that rounds it. */
+type Corner = readonly [x: number, y: number, radius?: number];
+
+/** A closed polygon with each corner rounded by a curve of its radius. */
+const roundedPolygon = (corners: readonly Corner[], radius = 3): string => {
+  const at = (index: number): Corner =>
+    corners[(index + corners.length) % corners.length] ?? [0, 0];
+  const toward = (from: Corner, to: Corner, length: number): string => {
+    const scale = length / Math.hypot(to[0] - from[0], to[1] - from[1]);
+    return `${(from[0] + (to[0] - from[0]) * scale).toFixed(1)} ${(from[1] + (to[1] - from[1]) * scale).toFixed(1)}`;
+  };
+  const outline = corners
+    .map((corner, index) => {
+      const round = corner[2] ?? radius;
+      return `${index === 0 ? "M" : "L"}${toward(corner, at(index - 1), round)} Q${corner[0].toFixed(1)} ${corner[1].toFixed(1)} ${toward(corner, at(index + 1), round)}`;
+    })
+    .join(" ");
+  return `${outline} Z`;
+};
+
+/**
+ * Three courses of bricks with offset joints. The sides slope out to a wider
+ * base, and the upper-left brick has a broken corner. Each brick is a separate
+ * shape, so the mortar is a true gap.
+ */
+const masonry = (): string => {
+  const top = -40;
+  const bottom = 41;
+  const gap = 8;
+  const course = (bottom - top - gap * 2) / 3;
+  const side = (y: number) => 40 + (6 * (y - top)) / (bottom - top);
+  const courses = [
+    { y: top, joints: [0] },
+    { y: top + course + gap, joints: [-19, 19] },
+    { y: top + (course + gap) * 2, joints: [0] },
+  ];
+  return courses
+    .flatMap(({ y, joints }, row) => {
+      const low = y + course;
+      const stops = [-1, ...joints, 1];
+      return stops.slice(0, -1).map((stop, brick) => {
+        const next = stops[brick + 1] ?? 1;
+        const left = (at: number) => (stop === -1 ? -side(at) : stop + gap / 2);
+        const right = (at: number) => (next === 1 ? side(at) : next - gap / 2);
+        const broken = row === 0 && brick === 0;
+        return roundedPolygon([
+          ...(broken ? ([[-29, y, 1]] as const) : ([[left(y), y]] as const)),
+          [right(y), y],
+          [right(low), low],
+          [left(low), low],
+          ...(broken
+            ? ([
+                [left(y + 10), y + 10, 1],
+                [-36, y + 4, 1],
+                [-32.5, y + 5.5, 1],
+              ] as const)
+            : []),
+        ]);
+      });
+    })
+    .join(" ");
+};
+
 export const GLYPHS = {
   shield: "M0 -46 L38 -32 Q38 20 0 48 Q-38 20 -38 -32 Z",
   sword:
     "M0 -50 L9 -38 L9 22 L-9 22 L-9 -38 Z M-26 22 H26 V30 H-26 Z M-5 30 H5 V48 H-5 Z",
-  bow: "M-14 -46 Q46 0 -14 46 Z M-40 0 L30 0 M30 0 L18 -9 M30 0 L18 9",
+  /**
+   * A recurve bow on the diagonal with a nocked arrow: the Ranger Class. Fill
+   * only: the string and the arrow have cut gaps where they cross, and a
+   * stroke closes them.
+   */
+  bow: "M15.4 -15.4 C14.1 -16.2 10.1 -18.7 7.4 -20.2 C4.7 -21.8 1.9 -23.3 -0.9 -24.7 C-3.7 -26.1 -6.4 -27.6 -9.3 -28.7 C-12.3 -29.8 -15.3 -30.7 -18.4 -31.2 C-21.4 -31.7 -25 -30.9 -27.7 -31.6 C-30.5 -32.3 -33.7 -34.7 -34.9 -35.3 L-34.9 -35.3 C-35.6 -35.7 -38.1 -38 -39.2 -37.7 C-40.3 -37.3 -41.2 -34.1 -41.6 -33.3 L-41.6 -33.3 C-40.9 -32.2 -39.6 -27.9 -37.7 -26.3 C-35.7 -24.7 -31.3 -24.3 -30 -23.9 L-29.9 -23.9 L-15.6 15.6 L-15.6 15.6 L23.9 29.9 L23.9 30 C24.3 31.3 24.7 35.7 26.3 37.7 C27.9 39.6 32.2 40.9 33.3 41.6 L33.3 41.6 C34.1 41.2 37.3 40.3 37.7 39.2 C38 38.1 35.7 35.6 35.3 34.9 L35.3 34.9 C34.7 33.7 32.3 30.5 31.6 27.7 C30.9 25 31.7 21.4 31.2 18.4 C30.7 15.3 29.8 12.3 28.7 9.3 C27.6 6.4 26.1 3.7 24.7 0.9 C23.3 -1.9 21.8 -4.7 20.2 -7.4 C18.7 -10.1 16.2 -14.1 15.4 -15.4 Z M3.5 -3.5 C2.6 -4.7 0.4 -8.7 -1.6 -11 C-3.5 -13.3 -5.7 -15.4 -8.1 -17.2 C-10.6 -18.9 -13.3 -20.4 -16.1 -21.5 C-18.9 -22.6 -23.4 -23.4 -24.9 -23.8 L-25 -23.8 L-12 12 L23.8 25 L23.8 24.9 C23.4 23.4 22.6 18.9 21.5 16.2 C20.4 13.4 19 10.6 17.2 8.2 C15.5 5.8 13.3 3.6 11.1 1.6 C8.8 -0.3 4.8 -2.5 3.6 -3.4 Z M-10.6 5.7 L-1.7 -3.2 L3.2 1.7 L-5.7 10.6 Z M-20.7 15.8 L-27 22.1 L-36.9 23.5 L-46 32.6 L-38.3 33.3 L-40.4 35.5 L-43 38.4 L-37.2 37.2 L-38.4 43 L-35.5 40.4 L-33.3 38.3 L-32.6 46 L-23.5 36.9 L-22.1 27 L-15.8 20.7 Z M15.6 -20.5 L30.9 -35.8 L22.4 -40 L46 -46 L40 -22.4 L35.8 -30.9 L20.5 -15.6 Z",
+  /** The arrow from the bow, without the bow: the Shooter Role. */
+  arrow:
+    "M-20.7 15.8 L-27 22.1 L-36.9 23.5 L-46 32.6 L-38.3 33.3 L-40.4 35.5 L-43 38.4 L-37.2 37.2 L-38.4 43 L-35.5 40.4 L-33.3 38.3 L-32.6 46 L-23.5 36.9 L-22.1 27 L-15.8 20.7 L20.5 -15.6 L35.8 -30.9 L40 -22.4 L46 -46 L22.4 -40 L30.9 -35.8 L15.6 -20.5 Z",
   wings:
     "M0 10 Q-30 -50 -50 -20 Q-36 -14 -42 6 Q-24 0 -22 22 Q-10 14 0 10 Q30 -50 50 -20 Q36 -14 42 6 Q24 0 22 22 Q10 14 0 10 Z",
   sun: `${circle(0, 0, 20)} ${spokes(28, 44)}`,
-  paw: [
-    circle(0, 18, 22, 18),
-    circle(-30, -10, 9, 12),
-    circle(-12, -32, 9, 12),
-    circle(12, -32, 9, 12),
-    circle(30, -10, 9, 12),
-  ].join(" "),
+  /**
+   * A boot in mid-stride, the heel up and the toe down: the Runner
+   * Role. Fill only: the cuff, the upper and the sole are apart.
+   */
+  boot: "M-13.2 -44.9 L16.1 -35.4 Q19.4 -34.3 18.3 -31 L17.5 -28.5 Q16.4 -25.1 13.1 -26.2 L-16.2 -35.7 Q-19.5 -36.8 -18.5 -40.1 L-17.6 -42.7 Q-16.6 -46 -13.2 -44.9 Z M-16.7 -31.3 L10.9 -22.3 L8.2 -8.3 C14.7 -2.6 25.3 4.6 32.3 11.5 C38.7 17.3 39.6 25.9 35 31.8 L-32 10 C-30.1 -4.2 -23.6 -18.7 -16.7 -31.3 Z M-35 13.7 L30.3 34.9 Q36.1 36.8 34.6 41.4 Q33.1 46 27.3 44.1 L-16.3 30 L-20.4 34.2 L-37.1 28.7 Q-39.6 27.9 -38.8 25.4 Z",
   // The supplied wizard hat, in the glyph box. Fill only: a stroke closes the stars.
   hat: "M-34.5 24.92L-19.1 -12.49C-16.05 -19.91 -10.51 -26.02 -3.43 -29.79L22.96 -43.86C25.17 -45.05 27.73 -43.02 27.1 -40.59L20.41 -15C20.21 -14.27 20.12 -13.51 20.12 -12.74C20.12 -11.61 20.34 -10.48 20.77 -9.42L34.5 24.92L-2.71 24.92L-0.59 18.56L6.67 16.14C7.83 15.74 8.62 14.64 8.62 13.4C8.62 12.16 7.83 11.07 6.67 10.67L-0.59 8.25L-3.02 0.99C-3.41 -0.16 -4.51 -0.95 -5.75 -0.95C-6.99 -0.95 -8.09 -0.16 -8.48 1.01L-10.91 8.27L-18.17 10.69C-19.33 11.09 -20.12 12.18 -20.12 13.42C-20.12 14.66 -19.33 15.76 -18.17 16.15L-10.91 18.58L-8.79 24.94L-34.5 24.94ZM4.24 -21.53C4.04 -22.12 3.5 -22.51 2.88 -22.51C2.25 -22.51 1.71 -22.12 1.51 -21.53L0.31 -17.9L-3.32 -16.69C-3.92 -16.5 -4.31 -15.96 -4.31 -15.33C-4.31 -14.7 -3.92 -14.16 -3.32 -13.96L0.31 -12.76L1.51 -9.13C1.71 -8.54 2.25 -8.14 2.88 -8.14C3.5 -8.14 4.04 -8.54 4.24 -9.13L5.44 -12.76L9.07 -13.96C9.67 -14.16 10.06 -14.7 10.06 -15.33C10.06 -15.96 9.67 -16.5 9.07 -16.69L5.44 -17.9ZM-40.25 33.55L40.25 33.55C43.43 33.55 46 36.12 46 39.3C46 42.48 43.43 45.05 40.25 45.05L-40.25 45.05C-43.43 45.05 -46 42.48 -46 39.3C-46 36.12 -43.43 33.55 -40.25 33.55",
-  brick: "M-44 -30 H44 V30 H-44 Z M-44 0 H44 M0 -30 V0 M-22 0 V30 M22 0 V30",
+  /**
+   * A healer wand with a sun head on the diagonal: the Priest Class. The sun is
+   * the Priest mark, and the rod keeps it apart from the Holy sun. Fill only:
+   * the rays, the grip band and the knob have cut gaps, and a stroke closes them.
+   */
+  wand: "M-21.1 11.2 L3.1 -11.1 A12.5 12.5 0 1 1 11.1 -3.1 L-11.2 21.1 Z M-25.7 12.2 L-30 16.4 L-16.4 30 L-12.2 25.7 Z M-31.2 20.8 L-38.6 27.6 L-27.6 38.6 L-20.8 31.2 Z M-33.3 33.3 A7.2 7.2 0 1 1 -43.5 43.5 A7.2 7.2 0 1 1 -33.3 33.3 Z M32.5 -9.6 L46 -13.1 L46 -16.9 L32.5 -20.4 Z M24.3 0.5 L31.9 4.2 L34.2 1.9 L30.5 -5.7 Z M9.6 2.5 L13.1 16 L16.9 16 L20.4 2.5 Z M-2.5 -20.4 L-16 -16.9 L-16 -13.1 L-2.5 -9.6 Z M5.7 -30.5 L-1.9 -34.2 L-4.2 -31.9 L-0.5 -24.3 Z M20.4 -32.5 L16.9 -46 L13.1 -46 L9.6 -32.5 Z M30.5 -24.3 L34.2 -31.9 L31.9 -34.2 L24.3 -30.5 Z",
+  /**
+   * A hand bell that calls allies together: the Support Role. Fill only: the
+   * grip, the body, the lip and the clapper have cut gaps, and a stroke closes
+   * them.
+   */
+  bell: [
+    "M-5 -27 V-35 A8 8 0 1 1 5 -35 V-27 Z",
+    "M0 -23 C20 -23 26 -12 26 2 C26 12 30 18 38 21 L-38 21 C-30 18 -26 12 -26 2 C-26 -12 -20 -23 0 -23 Z",
+    "M-40 25 H40 A4 4 0 0 1 40 33 H-40 A4 4 0 0 1 -40 25 Z",
+    circle(0, 42, 6),
+  ].join(" "),
+  /** A masonry wall: the Wall Role. Fill only: the mortar gaps are cut. */
+  wall: masonry(),
   heart:
     "M0 -14 C0 -40 -40 -40 -40 -12 C-40 10 0 26 0 42 C0 26 40 10 40 -12 C40 -40 0 -40 0 -14 Z",
   speed: "M-34 -28 L-4 0 L-34 28 M2 -28 L32 0 L2 28",
@@ -162,26 +249,32 @@ export type Glyph = keyof typeof GLYPHS;
 
 /** Filled artwork. A stroke closes the cutouts. */
 export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
+  "bow",
+  "arrow",
+  "boot",
+  "bell",
   "hat",
+  "wand",
   "warhelm",
   "lock",
   "skillCard",
+  "wall",
 ]);
 
 const ROLE_GLYPH: Readonly<Record<UnitRole, Glyph>> = {
   frontliner: "shield",
   striker: "sword",
-  runner: "paw",
-  shooter: "bow",
-  support: "sun",
-  wall: "brick",
+  runner: "boot",
+  shooter: "arrow",
+  support: "bell",
+  wall: "wall",
 };
 
 const CLASS_GLYPH: Readonly<Record<ClassId, Glyph>> = {
   warrior: "warhelm",
   ranger: "bow",
   mage: "hat",
-  priest: "sun",
+  priest: "wand",
 };
 
 const RACE_GLYPH: Readonly<Record<RaceId, Glyph>> = {

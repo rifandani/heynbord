@@ -111,7 +111,7 @@ On the First-try Path, the Region 1 Stages get the Player levels 1, 1, 2, 2, 3, 
 
 - A Boss Stage gives ×2 of the values above.
 - A loss gives 10% of the Coin and 25% of the XP of a win.
-- A repeat win has a 20% chance to give one card from the Stage card pool, in its Base Rank.
+- A repeat win has a 20% chance to give one card from the Stage card pool, in its Base Rank. The Stage card pool is the different cards of the enemy Deck of the Stage, but not a Skill Card of a Class that is not the Class of the player's Deck. Each card in the pool has the same chance.
 
 ### 2.2 Star chests
 
@@ -123,12 +123,16 @@ Each Region has 3 Star chests.
 | 20 | 30 Essence and 1 Merchant Race Pack. The player selects the Race, as for a Race Pack bought with Coin. |
 | 30 | 150 Heynstones and 100 Essence |
 
+The data is `STAR_CHESTS` in `packages/rules/src/content/star-chests.ts`. Keep the code and this table the same.
+
 ### 2.3 Heynspire
 
 | Floor | Reward for the first win |
 | --- | --- |
 | Each Floor *n* | 100 + 10 × *n* Coin, and 50 + 5 × *n* XP |
 | Each 10th Floor | Also 1 earn-only Cosmetic, 150 Essence and 50 Heynstones |
+
+The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`. Keep the code and this table the same.
 
 ### 2.4 Dungeons
 
@@ -142,6 +146,8 @@ Each Region has 3 Star chests.
 - A loss and a repeat win use the same rules as a Campaign Stage (section 2.1). The card pool is the Dungeon card pool.
 - Dungeons give no Heynstones, so the v1 Heynstone supply (section 2.6) does not change.
 - At player level 30, XP has no use. Thus Dungeon 3 gives Essence in place of XP.
+- A loss in Dungeon 3 gives 25% of the Essence of a win, as for XP. The 100 Essence of the first win is in place of × 2 Essence.
+- The data is `DUNGEON_REWARDS` in `packages/rules/src/content/dungeons.ts`. Keep the code and this table the same.
 
 ### 2.5 Achievements
 
@@ -159,6 +165,8 @@ All Heynstone sources are one-time rewards. The player cannot farm Heynstones.
 | **Total** | **About 1,700** |
 
 The total is about 71% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock.
+
+The data is `HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`. The Achievements value and the Bazaar catalog cost are estimates until their lists exist. Keep the code and this table the same.
 
 ## 3. Sinks
 
@@ -215,7 +223,7 @@ There are three Packs. Each Pack has its own Drop Rates, price and Pack Guarante
 
 A Royal ×10 does not guarantee a Legendary, because then a single Royal Pack is a bad choice: a single Pack needs up to 20 Packs for its Guarantee.
 
-**First Pack.** The first time that the player opens the Packs screen, one Peddler Pack is free.
+**First Pack.** When Packs unlock at player level 2, the player gets one Peddler Pack as an Unopened Pack. A Pack from a Star chest is also an Unopened Pack. The Packs screen shows each Unopened Pack with a free "Open" button. A bought Pack opens at once, so it is never an Unopened Pack.
 
 The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and the tables of this section the same. `bun run sim packs` reports, for all cards, a Race Pack and the Class Pack of each Class, the real rate of each Rank, how often each Pack Guarantee gives a card, the value for each Coin and the number of Packs to Discover all cards of each Base Rank. It also reports the mean number of Legendary Skill Card copies in 100 Royal Class Packs.
 
@@ -230,6 +238,7 @@ The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and 
 
 - Combine never fails.
 - From Common to Legendary, a card needs 16 Common copies and 6,000 Coin in total (8 × 50 + 4 × 200 + 2 × 800 + 1 × 3,200). This is the long-term chase.
+- The data is `COMBINE_COIN` in `packages/rules/src/content/workshop.ts`. Keep the code and this table the same.
 
 ### 3.3 Extract and Craft
 
@@ -244,6 +253,7 @@ The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and 
 - Craft gives one copy in the card's Base Rank.
 - The player can Craft only Discovered cards.
 - Combine and then Extract changes Coin into Essence at about 10 to 13 Coin per Essence. This is intended. It gives players with much Coin a slow path to the card that they want.
+- The data is `EXTRACT_ESSENCE` and `CRAFT_ESSENCE` in `packages/rules/src/content/workshop.ts`. Keep the code and this table the same.
 
 ### 3.4 Gear upgrades
 
@@ -254,6 +264,8 @@ The cost to upgrade an item to level *n* is 40 × *n*² Coin.
 | Coin | 40 | 160 | 360 | 640 | 1,000 | 1,440 | 1,960 | 2,560 | 3,240 | 4,000 |
 
 One item from level 0 to 10 costs 15,400 Coin (1g 54s). All 4 items cost 61,600 Coin (6g 16s). This is the main Coin sink for the endgame.
+
+The rule is `gearUpgradeCoin` in `packages/rules/src/content/gear.ts`. Keep the code and this table the same.
 
 ### 3.5 Bazaar
 
@@ -322,5 +334,54 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 ## 7. Tuning tools
 
-- An **economy simulation** script uses the rules package and the reward tables. It simulates a player through the Campaign and Heynspire, and it reports the values in section 4.
+- An **economy simulation** script uses the rules package and the reward tables. It simulates a player through the Campaign and Heynspire, and it reports the values in section 4. The rules for it are in section 7.1.
+
+### 7.1 Economy simulation
+
+`bun run sim economy [seeds]` simulates Players from a new Profile to Player level 30. It does not play Battles. The logic is in `packages/rules/src/simulation/economy.ts`. `bun run sim` with no mode does not run it.
+
+**Content.** The sim uses the reward and cost tables of sections 2 and 3 from the rules package. Regions 2 and 3 do not exist yet, so the sim uses **planned Stages** for them: 10 Stages for each Region, and the last one is the Boss Stage. The Coin and XP of a Stage come only from its Region and its Boss flag, so a planned Stage gives the correct rewards.
+
+**Win chance.** Each Battle is a win or a loss from a win chance:
+
+- The base chance of a Stage is the middle of its win-rate target (GDD 13): 70% for a normal Stage, 40% for a Boss Stage, and 97.5%, 92.5% and 87.5% for Stages 1-1 to 1-3. For a Heynspire Floor and a Dungeon, it is the middle of the target of a normal Stage (70%).
+- The base chance is for a Player at the Recommended level with no Gear. The Recommended level of a Heynspire Floor is the First-try Path level before it (after all Stages and the earlier Floors). The Recommended level of a Dungeon is its unlock level.
+- Each Player level above the Recommended level adds **0.5 points**, and each mean Gear level adds **2.5 points**, up to a cap of **95%**. The cap does not lower a base chance above it. `sim stage --level N --gear N` measured the two bonuses one time on 2026-10-10: on Region 1 with Vanguard (600 Battles for each Stage), the mean win rate of the normal Stages 1-4 to 1-9 went from 71.8% to 74.3% at 5 levels above, and to 83.8% at Gear 5 (90.6% at Gear 10). The Boss Stage went from 39.7% to 42.2%, 57.3% and 70.7%. The constants are in the sim. When they change, change this section too.
+- **Stars.** A Stage win gives **2 Stars**. `sim stage` on Region 1 gives about 2 Stars for each win. The Player does not repeat won Stages, so the 10-Star and the 20-Star chests open, but the 30-Star chest never opens in the sim.
+
+**Player actions.**
+
+- After a loss, the Player plays the same Stage again until a win. The Player does not repeat won Stages in the Campaign.
+- After the last Stage, the Player climbs Heynspire. When a Floor fails 3 times in a row, the Player does Dungeon wins until the next Player level, and then tries the Floor again. A Floor loss gives 10% of the Coin and 25% of the XP of its first win (GDD 7.1). After Floor 50, the Player does Dungeon wins until level 30. The Player plays the highest Dungeon that gives XP and that its level unlocks.
+- The Player uses each action only from its unlock level (GDD 7.1): Packs at level 2, Combine and Extract at level 3, Gear at level 5 and Craft at level 6.
+- The simulated Player is a **Warrior** and starts with the Warrior Starter Deck cards. The Player buys only Packs with all cards. For the Race Pack from a 20-Star chest, the Player selects the Race with the fewest Discovered cards. "All cards Discovered" means all Creature Cards and the Warrior Skill Cards.
+- A Player stops at Player level 30, or after 2,000 Battles. A Player at the cap is "stuck", and the report shows it.
+
+**Play Styles.** Each simulated Player has one Play Style. All Play Styles first open the free Peddler Pack and buy the 4th Deck slot.
+
+| Play Style | Priority |
+| --- | --- |
+| **Collector** | Merchant Pack (Royal Pack after Region 2), then Combine only to Epic or higher, then Gear |
+| **Upgrader** | Combine each pair, then Gear up to the Player level ÷ 3, then Peddler Packs with the Coin that stays |
+| **Balanced** | One Merchant Pack, then one Gear level, and again. Then Combine each pair that it can pay for |
+
+- Until the Player has the 4th Deck slot, it keeps its Coin for the slot.
+- The Player buys Open ×10 when it can pay for 10 Packs. Else it buys one Pack.
+- A Gear upgrade goes to the item with the lowest level.
+- Combine starts at the lowest Rank.
+- All Play Styles Extract each copy above 2 of a card in the same Rank.
+- When the Essence is enough, they Craft one copy of the cheapest Discovered card with Base Rank Rare or Epic that has 1 copy in its Base Rank. The copy makes a Combine pair toward an Epic or a Legendary copy. Craft never Discovers a card, because the player can Craft only Discovered cards (section 3.3).
+
+**Not in the sim.**
+
+- Achievements give no Coin or Essence in the sim, because the list of Achievements does not exist. The results are a floor.
+- A repeat win gives no card, because Stages have no card pools yet.
+- The planned Stages and the Dungeons give no first-win card, because their cards do not exist yet.
+- The 30-Star chests do not open (see **Stars**). The Heynstone ledger counts them.
+
+**Time.** One Battle is **8 minutes**, with the time in menus. The report shows Battles and hours. If the hour targets of section 4 do not agree with each other, change a target, not this value.
+
+**Report.** The sim runs 200 seeds for each Play Style. At each checkpoint of section 4, it shows the median and the 10th to 90th percentile of: Battles, hours, Player level, Packs opened, % Discovered, Epic and Legendary copies, mean Gear level, the lowest Gear level and unspent Coin. It also shows the share of the Players with a Combine done. For an "about" target, the sim uses ± 25%. "Gear mostly at level 7 or higher" is the lowest Gear level. It shows each target next to the values. It also shows one **First-try** run of each Play Style, with a win chance of 100%: this is the floor of Battles and the First-try Path of section 1.2. Then it shows the **Heynstone ledger**: each one-time source of section 2.6, the total, and the total as a % of the Bazaar catalog cost. The Heynstone sources are all fixed, so the ledger is a sum, not a simulation.
+
+`--check` does not check the economy yet. After the first re-tune, add the section 4 targets to `--check`.
 - During playtests, the game writes a local log of rewards and spending. The player can export the log and send it to the developer. The game never sends data automatically in v1.

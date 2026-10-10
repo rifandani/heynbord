@@ -1,13 +1,15 @@
 /**
  * Headless Battle simulation (GDD 13). The AI plays both Sides.
  *
- * Usage: `bun run sim [stage | matchup | packs] [battles] [--level N] [--gear N] [--packs N] [--check]`.
- * With no mode, it runs both modes. `battles` is 200 by default. With
+ * Usage: `bun run sim [stage | matchup | packs | economy] [battles] [--level N] [--gear N] [--packs N] [--check]`.
+ * With no mode, it runs `stage`, `matchup` and `packs`. `battles` is 200 by default. With
  * `--check`, it exits with code 1 when a win rate is not on its GDD 13 target
  * (CI uses it). The seeds are fixed, so the same content gives the same result.
  *
  * - `stage`: each Stage with each starter Deck, at the Recommended level of the
- *   Stage and with no Gear (docs/game/14-campaign-stages.md).
+ *   Stage and with no Gear (docs/game/14-campaign-stages.md). `--level N`
+ *   plays N levels above the Recommended level, and `--gear N` sets all 4 Gear
+ *   slots to N. They measure the win-chance bonuses of `economy` (Economy 7.1).
  * - `matchup`: each Archetype against each Archetype (docs/game/08-archetypes.md).
  *   `battles` is the number of seeds: each seed plays 2 Battles, one with each
  *   Side first. `--level` (5 by default) and `--gear` (0 by default, for all 4
@@ -20,6 +22,11 @@
  *   `--packs` (10,000 by default) is the number of single Packs for the Rank
  *   rates and the value for each Coin. 100 Players open Packs until they
  *   Discover all cards of each Base Rank. `--check` does not check the Packs.
+ * - `economy`: simulated Players of each Play Style from a new Profile to
+ *   Player level 30, with a win chance for each Battle (Economy 7.1).
+ *   `battles` is the number of seeds for each Play Style. It reports the
+ *   Economy 4 checkpoints and the Heynstone ledger. `--check` does not check
+ *   the economy yet.
  */
 import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
 import { CARDS } from "../src/content/cards";
@@ -30,6 +37,22 @@ import { ClassId } from "../src/content/schema";
 import { STAGES } from "../src/content/stages";
 import { packPool } from "../src/packs/open-pack";
 import type { PackPool } from "../src/packs/open-pack";
+import {
+  CHECKPOINTS,
+  heynstoneLedger,
+  MAX_BATTLES,
+  METRICS,
+  PACING_TARGETS,
+  PLAY_STYLES,
+  simulateEconomy,
+} from "../src/simulation/economy";
+import type {
+  CheckpointId,
+  CheckpointSnapshot,
+  Metric,
+  RangeTarget,
+  Spread,
+} from "../src/simulation/economy";
 import { simulatePack } from "../src/simulation/packs";
 import {
   gatesRelease,
@@ -42,9 +65,9 @@ import {
 import type { WinRateTarget } from "../src/simulation/simulate";
 
 const USAGE =
-  "Usage: bun run sim [stage | matchup | packs] [battles] [--level N] [--gear N] [--packs N] [--check]";
+  "Usage: bun run sim [stage | matchup | packs | economy] [battles] [--level N] [--gear N] [--packs N] [--check]";
 
-const MODES = ["stage", "matchup", "packs"] as const;
+const MODES = ["stage", "matchup", "packs", "economy"] as const;
 type Mode = (typeof MODES)[number];
 
 const isMode = (value: string): value is Mode =>
@@ -63,16 +86,22 @@ const integer = (value: string | undefined, name: string, minimum: number) => {
   return number;
 };
 
+/** The economy sim is slow and has no `--check` yet, so it runs only on request. */
 const chosenModes = (modes: Mode[]): Mode[] =>
-  modes.length > 0 ? modes : [...MODES];
+  modes.length > 0 ? modes : MODES.filter((mode) => mode !== "economy");
 
-const readFlag = (
-  arg: string,
-  rest: string[],
-  parsed: { level: number; gear: number; packs: number; check: boolean }
-): boolean => {
+/** The flags of the command line. `level` is `undefined` when it is not given. */
+interface Flags {
+  battles: number;
+  level: number | undefined;
+  gear: number;
+  packs: number;
+  check: boolean;
+}
+
+const readFlag = (arg: string, rest: string[], parsed: Flags): boolean => {
   if (arg === "--level") {
-    parsed.level = integer(rest.shift(), "--level", 1);
+    parsed.level = integer(rest.shift(), "--level", 0);
     return true;
   }
   if (arg === "--gear") {
@@ -92,9 +121,9 @@ const readFlag = (
 
 const parseArgs = (args: readonly string[]) => {
   const modes: Mode[] = [];
-  const parsed = {
+  const parsed: Flags = {
     battles: 200,
-    level: MATCHUP_LEVEL,
+    level: undefined,
     gear: 0,
     packs: 10_000,
     check: false,
@@ -151,15 +180,28 @@ const judge = (
   return `${range} MISS`;
 };
 
+const gearOf = (gearLevel: number) => ({
+  weapon: gearLevel,
+  armor: gearLevel,
+  trinket: gearLevel,
+  banner: gearLevel,
+});
+
 if (modes.includes("stage")) {
-  console.log(`Stages: ${battles} Battles each, Recommended level, no Gear`);
+  const levelsAbove = level ?? 0;
+  console.log(
+    `Stages: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear}`
+  );
   console.table(
     STAGES.flatMap((stage) =>
       STARTER_DECKS.map((deck) => {
-        const report = simulateStage(stage, deck, battles);
+        const report = simulateStage(stage, deck, battles, {
+          levelsAbove,
+          gear: gearOf(gear),
+        });
         return {
           stage: report.stageId,
-          level: stage.recommendedLevel,
+          level: stage.recommendedLevel + levelsAbove,
           deck: report.deckId,
           winRate: percent(report.winRate),
           avgTurn: report.averageTurn.toFixed(1),
@@ -176,13 +218,13 @@ if (modes.includes("stage")) {
 }
 
 if (modes.includes("matchup")) {
-  const options = {
-    seeds: battles,
-    level,
-    gear: { weapon: gear, armor: gear, trinket: gear, banner: gear },
-  };
+  const matchupLevel = level ?? MATCHUP_LEVEL;
+  if (matchupLevel < 1) {
+    fail(`--level must be an integer of 1 or more: ${matchupLevel}`);
+  }
+  const options = { seeds: battles, level: matchupLevel, gear: gearOf(gear) };
   console.log(
-    `Matchups: ${battles * 2} Battles each, level ${level}, Gear ${gear}`
+    `Matchups: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear}`
   );
   console.table(
     ARCHETYPES.flatMap((archetype) =>
@@ -293,6 +335,138 @@ if (modes.includes("packs")) {
         },
       ];
     })
+  );
+}
+
+const range = (target: RangeTarget, format: (value: number) => string) => {
+  if (target.min !== null && target.max !== null) {
+    return target.min === target.max
+      ? format(target.min)
+      : `${format(target.min)}–${format(target.max)}`;
+  }
+  return target.min === null
+    ? `≤ ${format(target.max ?? 0)}`
+    : `≥ ${format(target.min)}`;
+};
+
+const METRIC_FORMAT: Readonly<Record<Metric, (value: number) => string>> = {
+  battles: (value) => value.toFixed(0),
+  hours: (value) => value.toFixed(1),
+  level: (value) => value.toFixed(0),
+  packsOpened: (value) => value.toFixed(0),
+  discoveredShare: (value) => percent(value),
+  epicCopies: (value) => value.toFixed(0),
+  legendaryCopies: (value) => value.toFixed(0),
+  meanGear: (value) => value.toFixed(1),
+  lowestGear: (value) => value.toFixed(0),
+  coin: (value) => value.toFixed(0),
+};
+
+/** The Economy 4 target of a metric at a checkpoint, or "" when it has none. */
+const metricTarget = (id: CheckpointId, metric: Metric): string => {
+  const target = PACING_TARGETS[id];
+  const format = METRIC_FORMAT[metric];
+  switch (metric) {
+    case "level": {
+      return target.level === undefined ? "" : format(target.level);
+    }
+    case "hours":
+    case "packsOpened":
+    case "discoveredShare":
+    case "epicCopies":
+    case "legendaryCopies":
+    case "lowestGear": {
+      const value = target[metric];
+      return value === undefined ? "" : range(value, format);
+    }
+    default: {
+      return "";
+    }
+  }
+};
+
+const spreadText = (metric: Metric, spread: Spread) => {
+  const format = METRIC_FORMAT[metric];
+  return `${format(spread.median)} (${format(spread.p10)}–${format(spread.p90)})`;
+};
+
+/** A cell with the value and its target: "6 (6–7) | 6". */
+const withTarget = (id: CheckpointId, metric: Metric, value: string) => {
+  const target = metricTarget(id, metric);
+  return target === "" ? value : `${value} → ${target}`;
+};
+
+const firstTryRow = (id: CheckpointId, snap: CheckpointSnapshot | null) =>
+  snap === null
+    ? { checkpoint: id, reached: "no" }
+    : {
+        checkpoint: id,
+        ...Object.fromEntries(
+          METRICS.map((metric) => [
+            metric,
+            withTarget(id, metric, METRIC_FORMAT[metric](snap[metric])),
+          ])
+        ),
+        combines: snap.combines,
+      };
+
+if (modes.includes("economy")) {
+  console.log(
+    `Economy: ${battles} Players for each Play Style, to level 30 or ${MAX_BATTLES} Battles. Cells: median (10th–90th percentile) → target`
+  );
+  for (const playStyle of PLAY_STYLES) {
+    const report = simulateEconomy(playStyle, { seeds: battles });
+    console.log(`\nPlay Style: ${playStyle}`);
+    console.table(
+      CHECKPOINTS.map((id) => {
+        const summary = report.checkpoints[id];
+        const firstCombine = PACING_TARGETS[id].firstCombine === true;
+        return {
+          checkpoint: id,
+          reached: `${summary.reached}/${report.seeds}`,
+          ...Object.fromEntries(
+            METRICS.map((metric) => [
+              metric,
+              summary.metrics === null
+                ? "—"
+                : withTarget(
+                    id,
+                    metric,
+                    spreadText(metric, summary.metrics[metric])
+                  ),
+            ])
+          ),
+          combined: `${percent(summary.combinedShare)}${firstCombine ? " → 100%" : ""}`,
+        };
+      })
+    );
+    console.log(
+      `Stuck Players (below level 30 after ${MAX_BATTLES} Battles): ${report.stuck}/${report.seeds}`
+    );
+    console.log(`First-try run of ${playStyle} (win chance 100%):`);
+    console.table(
+      CHECKPOINTS.map((id) => firstTryRow(id, report.firstTry.checkpoints[id]))
+    );
+  }
+  console.log(
+    "\nPacks of each Play Style: collector merchant (royal after Region 2), upgrader peddler, balanced merchant."
+  );
+  const ledger = heynstoneLedger();
+  console.log("\nHeynstone ledger (one-time sources, Economy 2.6)");
+  console.table([
+    ...ledger.sources.map((source) => ({
+      source: source.id,
+      count: source.count,
+      heynstones: source.heynstones,
+      estimate: source.estimate ? "yes" : "",
+    })),
+    { source: "total", count: "", heynstones: ledger.total, estimate: "" },
+  ]);
+  console.log(
+    `Total: ${ledger.total} of the Bazaar catalog cost ${ledger.catalog} (estimate): ${percent(ledger.catalogShare)}`
+  );
+  console.log(
+    "\nNot in the sim: Achievement Coin and Essence (the results are a floor), the repeat-win card, the first-win cards of planned Stages and Dungeons, and the 30-Star chests (a win gives 2 Stars and the Player does not repeat Stages)."
   );
 }
 

@@ -7,6 +7,7 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { CoinGuide } from "@/features/handbook/components/coin-guide";
 import { LargeIcon } from "@/features/handbook/components/entry-icon";
 import { LaneStrip } from "@/features/handbook/components/lane-strip";
+import { PackGuide } from "@/features/handbook/components/pack-guide";
 import { PlayerLevelGuide } from "@/features/handbook/components/player-level-guide";
 import { RankGuide } from "@/features/handbook/components/rank-guide";
 import { StarsTable } from "@/features/handbook/components/stars-table";
@@ -89,6 +90,9 @@ const KeywordValue = ({
   }
   if (entry.value === "coinTable") {
     return <CoinGuide />;
+  }
+  if (entry.value === "packGuide") {
+    return <PackGuide />;
   }
   if (entry.value === "playerLevelTable") {
     return <PlayerLevelGuide />;

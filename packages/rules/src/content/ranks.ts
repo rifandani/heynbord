@@ -1,4 +1,4 @@
-import type { RankId } from "./schema";
+import type { RankId, SkillAmount } from "./schema";
 
 /** The Ranks in order, from the lowest (GDD 5.3). */
 export const RANKS: readonly RankId[] = [
@@ -33,6 +33,20 @@ export const rankPips = (rank: RankId): number => RANKS.indexOf(rank) + 1;
 /** Scales a printed Common value to a Rank, rounded to the nearest integer. */
 export const scaleForRank = (value: number, rank: RankId): number =>
   Math.floor((value * STAT_SCALE[rank] + 5000) / 10_000);
+
+const isScaledSkillAmount = (amount: SkillAmount): amount is number =>
+  Number.isFinite(amount);
+
+/** A Skill Card value at a Rank: a number scales, a table gives the exact value. */
+export const skillAmountForRank = (
+  amount: SkillAmount,
+  rank: RankId
+): number => {
+  if (isScaledSkillAmount(amount)) {
+    return scaleForRank(amount, rank);
+  }
+  return amount[rank];
+};
 
 export const recallChance = (rank: RankId): number => RECALL[rank];
 

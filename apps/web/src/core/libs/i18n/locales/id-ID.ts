@@ -352,6 +352,33 @@ export default {
       later:
         "Gabung dan peningkatan Perlengkapan saat pintasan Town itu dibuka.",
     },
+    packGuide: {
+      shelf: "Tiga Paket",
+      notBetter:
+        "Paket yang lebih mahal bukan penawaran yang lebih baik. Tiap Paket punya tugas yang berbeda.",
+      rollTitle: "Tiap kartu mengundi Peringkatnya",
+      rollNote:
+        "Tiap kartu dari {cards} kartu mengundi Peringkat dengan peluang ini. Kamu mendapat kartu itu di Peringkat tersebut. Tiap Paket berisi minimal 1 kartu Tak Biasa atau lebih tinggi.",
+      guaranteeTitle: "Jaminan Paket",
+      trackLabel:
+        "Paket berturut-turut tanpa kartu itu: {opened} dari {before}. {guarantee}.",
+      guaranteeNow: "Untukmu sekarang: {guarantee}.",
+      guaranteeRule:
+        "Jika {before} Paket berturut-turut tidak memberi {rank} atau lebih tinggi, Paket berikutnya memberikannya. Lalu hitungan mulai lagi dari 0.",
+      guaranteeRuleTop:
+        "Jika {before} Paket berturut-turut tidak memberi kartu {rank}, Paket berikutnya memberikannya. Lalu hitungan mulai lagi dari 0.",
+      newCardFirst: "Kartu Baru Dulu",
+      newCardFirstYes: "Memberi kartu yang belum kamu punya, jika bisa.",
+      newCardFirstNo:
+        "Memilih tiap kartu secara acak. Kamu bisa mendapat salinan kartu yang sudah kamu punya.",
+      tenGuarantee: "10 Paket, dengan minimal 1 {rank} atau lebih tinggi.",
+      tenExtra: "11 Paket dengan harga 10 Paket.",
+      versionsTitle: "Paket Ras dan Paket Kelas",
+      versions:
+        "Paket Ras hanya berisi Kartu Makhluk dari satu Ras. Paket Kelas hanya berisi Kartu Keahlian dari satu Kelas. Cap pada Paket menunjukkannya. Harga masing-masing {price}, dan masing-masing memakai satu hitungan Jaminan Paket dengan {pack}.",
+      allCards:
+        "Paket dengan semua kartu berisi semua Kartu Makhluk, dan Kartu Keahlian dari Kelas Dek aktifmu.",
+    },
     playerXpTable: "XP Kampanye menurut hasil",
     playerXpRegionColumn: "Wilayah",
     playerXpWinColumn: "Menang ulang",
@@ -561,7 +588,7 @@ export default {
       playerLevel:
         "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.",
       coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
-      pack: "Paket berisi {cards} kartu acak yang kamu beli dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nAda tiga Paket: Penjaja, Saudagar, dan Kerajaan. Tiap Paket punya harga, Peluang Muncul, dan Jaminan Paket sendiri. Paket yang lebih mahal bukan penawaran yang lebih baik: tugasnya berbeda.\n\nJaminan Paket memberi kartu dengan Peringkat tertentu setelah sejumlah Paket tanpa kartu itu. Dengan Kartu Baru Dulu, Paket Saudagar dan Paket Kerajaan memberi kartu yang belum kamu punya, jika bisa.\n\nPaket Ras hanya berisi Kartu Makhluk dari satu Ras, dan harganya lebih mahal. Paket Penjaja pertamamu gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
+      pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nPaket Penjaja pertamamu gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
     },
     aliases: {
       board: "medan, arena, peta, battlefield, map",
@@ -754,9 +781,8 @@ export default {
       next: "Kartu berikutnya",
       seeAll: "Lihat semua kartu",
       highlightCount: "Epik dan Legendaris: {number} dari {count}",
+      highlightCountEpic: "Epik: {number} dari {count}",
       summary: "{cards} kartu · {fresh} kartu baru",
-      gain: "Kartu baru: {count}",
-      noneNew: "Tidak ada kartu baru kali ini. Setiap kartu tetap ada gunanya.",
       byGuarantee: "Jaminan Paket: Paket ini memberi kartu Peringkat Jaminan.",
       byTenBonus: "Bonus Buka ×10: Paket ini memberi kartu Peringkat Jaminan.",
     },
@@ -1094,9 +1120,9 @@ export default {
         name: "Kepala Perang Grukka",
         flavor: '"Makan siang dulu. Lalu kejayaan."',
       },
-      dusthideBrawler: {
-        name: "Petarung Kulit Debu",
-        flavor: "Ia mengira setiap peringatan adalah tepuk tangan.",
+      bonestakePalisade: {
+        name: "Pagar Pancang Tulang",
+        flavor: "Pancangnya untuk musuh. Sosisnya untuk nanti.",
       },
       cinderhornBreaker: {
         name: "Pendobrak Tanduk Bara",

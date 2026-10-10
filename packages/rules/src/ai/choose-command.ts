@@ -19,10 +19,11 @@ import type {
   UnitState,
 } from "../battle/types";
 import { getCard } from "../content/cards";
-import { scaleForRank } from "../content/ranks";
+import { scaleForRank, skillAmountForRank } from "../content/ranks";
 import type {
   CreatureCardDefinition,
   DamageType,
+  SkillAmount,
   SkillCardDefinition,
   SkillEffect,
 } from "../content/schema";
@@ -359,14 +360,14 @@ const scoreHeal = (
   state: BattleState,
   side: Side,
   card: HandCard,
-  heal: number,
+  heal: SkillAmount,
   target: Target
 ): number => {
   const unit = friendlyUnitAt(state, side, target);
   if (!unit) {
     return 0;
   }
-  const healed = healedHp(unit, scaleForRank(heal, card.rank));
+  const healed = healedHp(unit, skillAmountForRank(heal, card.rank));
   return healed > 0 ? healed * HEAL_WEIGHT + unit.maxHp / 100 : 0;
 };
 
@@ -411,11 +412,11 @@ const scoreWard = (
   state: BattleState,
   side: Side,
   card: HandCard,
-  ward: number,
+  ward: SkillAmount,
   target: Target
 ): number => {
   const unit = friendlyUnitAt(state, side, target);
-  const value = scaleForRank(ward, card.rank);
+  const value = skillAmountForRank(ward, card.rank);
   if (!unit || !needsWard(state, side, unit, value)) {
     return 0;
   }
@@ -489,7 +490,7 @@ const meetsHoldRule = (
       const unit = friendlyUnitAt(state, side, target);
       return (
         unit !== undefined &&
-        needsWard(state, side, unit, scaleForRank(effect.ward, card.rank))
+        needsWard(state, side, unit, skillAmountForRank(effect.ward, card.rank))
       );
     }
     case "laneArmor": {

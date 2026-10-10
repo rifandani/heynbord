@@ -27,6 +27,16 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 
 **Exit (Playable alpha):** A new player can play Region 1 from the tutorial to the boss, and can open Packs and change the Deck. Do the first external playtest.
 
+**Order of the M2 work that is left** (decided 2026-10-10):
+
+1. **Profile.** The Profile model, IndexedDB save, migrations, export and import. The slice Player (level 10, Gear 3) goes away, and a new Player starts at level 1 with no Gear. Each later feature adds its part to the Profile.
+2. **Region 1 rewards.** XP and level ups, the first-win card, the repeat-win card, Star chests and the level locks on Buildings and shortcuts.
+3. **Workshop.** Combine and Extract, then Craft.
+4. **Hero screen.** Class, Gear upgrades and portrait. Then check the Region 1 margins again with real Gear.
+5. **First external playtest** (the M2 exit).
+
+Regions 2 and 3 (M3) come after the playtest, because their tuning needs the Workshop and Gear: the pacing target for the end of Region 2 has an Epic card, and Combine makes it. Achievements and the Bazaar stay in M4, after the Heynspire, so that their goals and the Heynstone total are planned one time.
+
 ### M3 — Content (weeks 13–19)
 
 - [ ] All 118 cards with final art: 90 Creature Cards and 28 Skill Cards.

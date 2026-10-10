@@ -1,4 +1,5 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
+import type { DeckSlot } from "@workspace/rules";
 import { addCopy, autoFill, deckProblems, removeCopy } from "@workspace/rules";
 import { cn } from "cn";
 import type { FocusEvent } from "react";
@@ -30,12 +31,7 @@ import {
   isSamePeek,
   useCardPeek,
 } from "@/features/deck/components/use-card-peek";
-import type {
-  ClassPick,
-  DeckSlot,
-  PoolFilter,
-  PoolTile,
-} from "@/features/deck/deck";
+import type { ClassPick, PoolFilter, PoolTile } from "@/features/deck/deck";
 import {
   DEFAULT_POOL_FILTER,
   defaultSlotName,

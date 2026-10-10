@@ -1,7 +1,10 @@
+import { Schema } from "effect";
+
 import type { RankId } from "./schema";
 
 /** The three Packs (Economy 3.1, ADR-0027). */
-export type PackId = "peddler" | "merchant" | "royal";
+export const PackId = Schema.Literals(["peddler", "merchant", "royal"]);
+export type PackId = typeof PackId.Type;
 
 /**
  * The bonus of Open ×10: a card of the Guarantee Rank or higher in the 10

@@ -179,7 +179,7 @@ export const ARCHETYPES: readonly Archetype[] = [
     deck: [
       ...copies(1, "orc.badlandRunt", "common"),
       ...copies(2, "orc.scrapRaider", "common"),
-      ...copies(1, "orc.dusthideBrawler", "common"),
+      ...copies(1, "orc.tuskBrute", "common"),
       ...copies(1, "orc.cinderhornBreaker", "uncommon"),
       ...copies(1, "orc.warhowlerDrummer", "uncommon"),
       ...copies(1, "orc.skyreaver", "uncommon"),

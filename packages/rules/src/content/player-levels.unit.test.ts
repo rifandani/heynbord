@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   firstTryPathLevel,
   firstWinXp,
+  outcomeXp,
   PLAYER_LEVEL_XP,
   playerLevelForXp,
 } from "./player-levels";
@@ -60,6 +61,15 @@ describe("first-win XP (Economy 2.1)", () => {
     expect(() => firstWinXp({ ...getStage("1-1"), region: 4 })).toThrow(
       "Unknown Region"
     );
+  });
+});
+
+describe("outcomeXp (Economy 2.1, 2.4)", () => {
+  it("gives × 2 for the first win, the XP for a win and 25% for a loss", () => {
+    expect(outcomeXp(70, "firstWin")).toBe(140);
+    expect(outcomeXp(70, "win")).toBe(70);
+    expect(outcomeXp(70, "loss")).toBe(17);
+    expect(outcomeXp(40, "loss")).toBe(10);
   });
 });
 

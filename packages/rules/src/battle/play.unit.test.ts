@@ -704,11 +704,11 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
         ["priest.mend", 0, "rare"],
         ["priest.mend", 0],
       ]);
-      const hurt = friendAt(state, 2, { hp: 20, maxHp: 30 });
+      const hurt = friendAt(state, 2, { hp: 19, maxHp: 30 });
       const near = friendAt(state, 3, { hp: 4 });
       preventRout(state);
       const first = run(state, play(0, square(0, 2)));
-      // Rare: 6 × 1.45 = 8.7, rounded to 9.
+      // Rare: 10.
       expect(unitById(first.state, hurt.id)?.hp).toBe(29);
       const second = run(first.state, play(0, square(0, 3)));
       expect(unitById(second.state, near.id)?.hp).toBe(6);
@@ -722,8 +722,8 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
       giveHand(state, "player", [["priest.mend", 0, "uncommon"]]);
       const unit = friendAt(state, 2, { hp: 1, maxHp: 20, bleeding: 1 });
       const { state: next } = run(state, play(0, square(0, 2)));
-      // Uncommon: 7, half is 3.5, rounded down to 3.
-      expect(unitById(next, unit.id)?.hp).toBe(4);
+      // Uncommon: 8, half is 4.
+      expect(unitById(next, unit.id)?.hp).toBe(5);
     });
 
     it("is legal on a Unit at full HP, and then heals nothing", () => {
@@ -788,7 +788,6 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
       giveHand(state, "player", [["priest.sanctuary", 0, "uncommon"]]);
       const unit = friendAt(state, 2);
       const { state: next, events } = run(state, play(0, square(0, 2)));
-      // The printed value is the Common value: 5 × 1.2 = 6.
       expect(unitById(next, unit.id)?.ward).toBe(6);
       expect(eventsOfType(events, "StatusApplied")).toEqual([
         expect.objectContaining({ unitId: unit.id, status: "ward", count: 6 }),
@@ -809,10 +808,10 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
       expect(eventsOfType(first.events, "StatusApplied")).toEqual([]);
       expect(eventsOfType(first.events, "RecallRolled")).toHaveLength(1);
       const second = run(first.state, play(0, square(0, 3)));
-      // Rare: 5 × 1.45 = 7.25, rounded to 7.
-      expect(unitById(second.state, weak.id)?.ward).toBe(7);
+      // The Ward table gives Rare the exact value 8.
+      expect(unitById(second.state, weak.id)?.ward).toBe(8);
       expect(eventsOfType(second.events, "StatusApplied")).toEqual([
-        expect.objectContaining({ unitId: weak.id, status: "ward", count: 7 }),
+        expect.objectContaining({ unitId: weak.id, status: "ward", count: 8 }),
       ]);
     });
   });

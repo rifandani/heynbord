@@ -1,6 +1,12 @@
-import type { ClassId, DeckInput, DeckProblem } from "@workspace/rules";
+import type {
+  ClassId,
+  DeckInput,
+  DeckProblem,
+  DeckSlot,
+} from "@workspace/rules";
 import {
   countdownLimit,
+  DECK_NAME_MAX,
   deckCountdown,
   deckSizeLimits,
   getCard,
@@ -27,10 +33,9 @@ import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CountdownCurve } from "@/features/deck/components/countdown-curve";
 import type { Peek } from "@/features/deck/components/use-card-peek";
-import type { DeckRow, DeckSlot } from "@/features/deck/deck";
+import type { DeckRow } from "@/features/deck/deck";
 import {
   CLASSES_WITH_CARDS,
-  DECK_NAME_MAX,
   deckRows,
   problemText,
 } from "@/features/deck/deck";

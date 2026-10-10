@@ -2,29 +2,26 @@ import type {
   CardDefinition,
   ClassId,
   Collection,
+  DeckEntry,
   DeckInput,
+  DeckSlot,
   RaceId,
   RankId,
 } from "@workspace/rules";
 import {
   CARDS,
   cardCopiesInDeck,
-  ClassId as ClassIdSchema,
   copiesLeft,
   countdownLimit,
-  DeckEntry,
   deckCountdown,
   DeckProblem,
   deckSizeLimits,
   fitsClass,
   getCard,
   MAX_COPIES,
-  nextDeckSlotPrice,
   RANKS,
   STARTER_DECKS,
-  STARTING_DECK_SLOTS,
 } from "@workspace/rules";
-import { Schema } from "effect";
 
 import type { TextRef } from "@/features/battle/card-text";
 
@@ -34,72 +31,8 @@ import type { TextRef } from "@/features/battle/card-text";
  */
 const DECK_PLAYER_LEVEL = 1;
 
-/** The longest name that the Player can give a Deck. */
-export const DECK_NAME_MAX = 24;
-
 /** The Countdowns that a card can have (GDD 5.1), the columns of the Countdown curve. */
 const COUNTDOWNS = [1, 2, 3, 4, 5, 6] as const;
-
-/**
- * One saved Deck. The Hero Class is on the slot until the Hero screen exists
- * (GDD 5.5).
- */
-const DeckSlot = Schema.Struct({
-  id: Schema.NonEmptyString,
-  /** The name that the Player gave. Empty: the default name. */
-  name: Schema.String.check(Schema.isMaxLength(DECK_NAME_MAX)),
-  classId: ClassIdSchema,
-  deck: Schema.Array(DeckEntry),
-});
-export type DeckSlot = typeof DeckSlot.Type;
-
-export const DeckSlots = Schema.Array(DeckSlot);
-
-/** An empty Deck slot with its number from 1. */
-const emptySlot = (number: number): DeckSlot => ({
-  id: `slot-${number}`,
-  name: "",
-  classId: "warrior",
-  deck: [],
-});
-
-/**
- * The Deck slots of a new Player (GDD 6, CRD-05): the Starter Decks first, so
- * that the Stage Panel keeps them, then an empty slot.
- */
-export const INITIAL_DECK_SLOTS: readonly DeckSlot[] = [
-  ...STARTER_DECKS.map((starter) => ({
-    id: starter.id,
-    name: "",
-    classId: starter.classId,
-    deck: starter.deck,
-  })),
-  ...Array.from(
-    { length: STARTING_DECK_SLOTS - STARTER_DECKS.length },
-    (_, index) => emptySlot(STARTER_DECKS.length + index + 1)
-  ),
-];
-
-/**
- * The slots and the Coin after the Player buys the next Deck Slot (Economy
- * 3.5), or `null` when the Player has the maximum or not enough Coin. A slot is
- * never removed, so the number of the new slot is free.
- */
-export const buyDeckSlot = (
-  slots: readonly DeckSlot[],
-  coin: number
-): {
-  readonly slots: readonly DeckSlot[];
-  readonly coin: number;
-  readonly slot: DeckSlot;
-} | null => {
-  const price = nextDeckSlotPrice(slots.length);
-  if (price === null || coin < price) {
-    return null;
-  }
-  const slot = emptySlot(slots.length + 1);
-  return { slots: [...slots, slot], coin: coin - price, slot };
-};
 
 const isStarterSlot = (slot: DeckSlot) =>
   STARTER_DECKS.some((starter) => starter.id === slot.id);

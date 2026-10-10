@@ -56,7 +56,7 @@ The six main Archetypes form the release-gated Matchup matrix: 15 different pair
 | Breakneck Company (diagnostic) | Mage | Mixed Undead and Orc tempo. 4 copies with Swarm, 4 with Charge, 3 melee Frost Units, 1 Fire Unit and the Mage Fire and Frost spells. | 1× Coffin-Lid Skater (C), 1× Rattleknife (C), 2× Chattering Cohort (U), 1× Pale Galloper (U), 1× Rime-Eye Reaper (U), 1× Winter Maw (R), 2× Scrap Raider (C), 1× Howling Charger (U), 1× Cinderhorn Breaker (U), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U). 14 cards, Countdown 32. |
 | Thornwatch (diagnostic) | Ranger | Elf: control from range. 4 ranged copies, 4 with Regenerate and 2 with Poison, with the Ranger Skill Cards. | 1× Rootbound Guard (C), 2× Bramble Duelist (C), 2× Fernwing Courier (C), 1× Mosspitcher Lookout (C), 1× Acorn Tender (C), 1× Thornline Archer (U), 1× Dewkeeper (U), 1× Bramble Nest (U), 1× Pinning Shot (C), 1× Warning Shot (C), 1× Long Shot (U). 13 cards, Countdown 35. |
 | Vanguard Full (diagnostic) | Warrior | Human: hold the line, with the Human set. 2 Walls, 1 copy with Rally and 2 with Knockback. | 1× Town Barricade (C), 1× Militia Recruit (C), 1× Shieldbearer (C), 2× Crossbow Guard (C), 1× Halberdier (C), 1× Bridge Pikeman (U), 1× Banner Chaplain (U), 1× King's Courier (R), 1× Dawn Reliquary (R), 1× War Drums (C), 1× Shield Wall (C), 1× Spear Throw (U). 13 cards, Countdown 32. |
-| Raiders Full (diagnostic) | Mage | Orc: rush the enemy Hero, with the Orc set. 1 copy with Rally, 1 with Charge and 2 Fire Units. | 1× Badland Runt (C), 2× Scrap Raider (C), 1× Dusthide Brawler (C), 1× Cinderhorn Breaker (U), 1× Warhowler Drummer (U), 1× Skyreaver (U), 1× Ashspit Hunter (R), 1× Mesa Pit-Fighter (R), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U). 12 cards, Countdown 32. |
+| Raiders Full (diagnostic) | Mage | Orc: rush the enemy Hero, with the Orc set. No Wall, 1 copy with Rally, 1 with Charge and 2 Fire Units. | 1× Badland Runt (C), 2× Scrap Raider (C), 1× Tusk Brute (C), 1× Cinderhorn Breaker (U), 1× Warhowler Drummer (U), 1× Skyreaver (U), 1× Ashspit Hunter (R), 1× Mesa Pit-Fighter (R), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U). 12 cards, Countdown 34. |
 | Human Heavy (diagnostic) | Warrior | Human, Countdown 3 to 4. The average Countdown is 3.5. | 2× Halberdier (C), 1× Gate Warden (U), 1× Bridge Pikeman (U), 1× Dawn Cleric (U), 2× River Knight (U), 2× King's Courier (R), 1× Pavise Arbalist (R). 10 cards, Countdown 35. |
 | Human Light (diagnostic) | Warrior | Human, Countdown 1 to 3. The average Countdown is 2.0. | 3× Militia Recruit (C), 1× Town Barricade (C), 3× Shieldbearer (C), 3× Crossbow Guard (C), 2× Halberdier (C), 1× Banner Chaplain (U), 1× Dawn Cleric (U). 14 cards, Countdown 28. |
 
@@ -85,7 +85,7 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 | Vanguard | Deathless Host | 64.8% | 50.3% | 25.6 | 14.2 | Review |
 | Vanguard | Breakneck Company | 59.5% | 49.6% | 20.5 | 9.7 | Review |
 | Vanguard | Vanguard Full | 80.3% | 46.9% | 24.1 | 12.6 | Review |
-| Vanguard | Raiders Full | 54.8% | 47.7% | 18.5 | 7.8 | 45%–55% |
+| Vanguard | Raiders Full | 54.5% | 48.1% | 18.4 | 7.8 | 45%–55% |
 | Vanguard | Human Heavy | 44.5% | 45.9% | 20.5 | 9.0 | Review |
 | Vanguard | Human Light | 59.4% | 46.1% | 24.4 | 13.1 | Review |
 | Raiders | Raiders | 50.0% | 42.7% | 15.5 | 5.3 | Mirror |
@@ -95,7 +95,7 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 | Raiders | Deathless Host | 62.5% | 47.8% | 20.8 | 11.7 | Review |
 | Raiders | Breakneck Company | 57.0% | 48.8% | 16.8 | 7.0 | Review |
 | Raiders | Vanguard Full | 80.3% | 47.3% | 19.1 | 9.6 | Review |
-| Raiders | Raiders Full | 61.7% | 46.7% | 15.8 | 5.5 | Review |
+| Raiders | Raiders Full | 58.7% | 44.5% | 15.8 | 5.6 | Review |
 | Raiders | Human Heavy | 30.0% | 43.7% | 16.2 | 6.6 | Review |
 | Raiders | Human Light | 50.0% | 49.1% | 19.6 | 10.3 | 45%–55% |
 | Tunnel Rats | Tunnel Rats | 50.0% | 48.4% | 21.9 | 12.7 | Mirror |
@@ -104,7 +104,7 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 | Tunnel Rats | Deathless Host | 42.1% | 49.6% | 24.5 | 14.7 | Review |
 | Tunnel Rats | Breakneck Company | 41.1% | 48.3% | 19.7 | 10.0 | Review |
 | Tunnel Rats | Vanguard Full | 45.9% | 46.5% | 24.0 | 14.0 | 45%–55% |
-| Tunnel Rats | Raiders Full | 34.7% | 48.4% | 18.7 | 8.9 | Review |
+| Tunnel Rats | Raiders Full | 34.1% | 50.7% | 18.4 | 8.6 | Review |
 | Tunnel Rats | Human Heavy | 22.9% | 48.8% | 19.3 | 9.4 | Review |
 | Tunnel Rats | Human Light | 11.2% | 49.7% | 20.9 | 11.0 | Review |
 | Wild Hunt | Wild Hunt | 50.0% | 50.8% | 21.3 | 11.2 | Mirror |
@@ -112,34 +112,34 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 | Wild Hunt | Deathless Host | 51.0% | 46.9% | 24.9 | 15.3 | 45%–55% |
 | Wild Hunt | Breakneck Company | 47.9% | 55.9% | 20.7 | 11.2 | 45%–55% |
 | Wild Hunt | Vanguard Full | 80.3% | 48.4% | 22.7 | 12.6 | Review |
-| Wild Hunt | Raiders Full | 58.6% | 49.3% | 17.9 | 8.4 | Review |
+| Wild Hunt | Raiders Full | 59.2% | 50.4% | 17.8 | 8.4 | Review |
 | Wild Hunt | Human Heavy | 51.5% | 56.0% | 19.3 | 9.7 | 45%–55% |
 | Wild Hunt | Human Light | 47.3% | 50.6% | 22.9 | 13.2 | 45%–55% |
 | Thornwatch | Thornwatch | 50.0% | 46.4% | 22.6 | 13.7 | Mirror |
 | Thornwatch | Deathless Host | 35.9% | 50.0% | 24.2 | 15.2 | Review |
 | Thornwatch | Breakneck Company | 35.0% | 49.9% | 20.2 | 11.2 | Review |
 | Thornwatch | Vanguard Full | 52.3% | 48.6% | 24.0 | 15.0 | 45%–55% |
-| Thornwatch | Raiders Full | 23.8% | 48.4% | 18.2 | 9.2 | Review |
+| Thornwatch | Raiders Full | 21.8% | 48.8% | 18.1 | 9.1 | Review |
 | Thornwatch | Human Heavy | 17.5% | 48.5% | 18.9 | 9.8 | Review |
 | Thornwatch | Human Light | 16.6% | 49.8% | 22.2 | 13.1 | Review |
 | Deathless Host | Deathless Host | 50.0% | 46.7% | 27.7 | 17.3 | Mirror |
 | Deathless Host | Breakneck Company | 49.5% | 50.0% | 23.7 | 13.1 | 45%–55% |
 | Deathless Host | Vanguard Full | 63.9% | 50.2% | 26.6 | 15.6 | Review |
-| Deathless Host | Raiders Full | 41.1% | 49.5% | 21.5 | 10.8 | Review |
+| Deathless Host | Raiders Full | 41.0% | 49.3% | 21.2 | 10.5 | Review |
 | Deathless Host | Human Heavy | 47.9% | 49.4% | 23.7 | 13.1 | 45%–55% |
 | Deathless Host | Human Light | 21.4% | 48.9% | 25.1 | 14.2 | Review |
 | Breakneck Company | Breakneck Company | 50.0% | 53.9% | 18.3 | 8.4 | Mirror |
 | Breakneck Company | Vanguard Full | 68.0% | 49.5% | 22.2 | 12.3 | Review |
-| Breakneck Company | Raiders Full | 53.9% | 50.5% | 17.2 | 6.7 | 45%–55% |
+| Breakneck Company | Raiders Full | 53.8% | 48.4% | 17.2 | 6.7 | 45%–55% |
 | Breakneck Company | Human Heavy | 40.4% | 52.5% | 19.2 | 9.0 | Review |
 | Breakneck Company | Human Light | 25.6% | 50.2% | 20.7 | 11.0 | Review |
 | Vanguard Full | Vanguard Full | 50.0% | 46.2% | 27.3 | 15.7 | Mirror |
-| Vanguard Full | Raiders Full | 27.5% | 49.3% | 19.7 | 9.3 | Review |
+| Vanguard Full | Raiders Full | 27.8% | 48.3% | 19.6 | 9.2 | Review |
 | Vanguard Full | Human Heavy | 16.4% | 49.1% | 20.6 | 9.3 | Review |
 | Vanguard Full | Human Light | 26.7% | 49.5% | 25.2 | 13.9 | Review |
-| Raiders Full | Raiders Full | 50.0% | 47.4% | 16.1 | 6.7 | Mirror |
-| Raiders Full | Human Heavy | 30.9% | 50.2% | 16.6 | 7.8 | Review |
-| Raiders Full | Human Light | 41.6% | 48.2% | 19.6 | 11.2 | Review |
+| Raiders Full | Raiders Full | 50.0% | 46.6% | 15.8 | 6.5 | Mirror |
+| Raiders Full | Human Heavy | 30.3% | 47.8% | 16.7 | 7.8 | Review |
+| Raiders Full | Human Light | 43.3% | 48.9% | 19.5 | 11.0 | Review |
 | Human Heavy | Human Heavy | 50.0% | 50.0% | 18.5 | 12.2 | Mirror |
 | Human Heavy | Human Light | 45.3% | 47.4% | 21.4 | 15.0 | 45%–55% |
 | Human Light | Human Light | 50.0% | 45.7% | 25.5 | 16.2 | Mirror |
@@ -180,7 +180,7 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 
 **Bleed (ADR-0019).** Bleed changes no Wild Hunt win rate by more than 0.2 percentage points. This was measured on 2026-10-07 with `bun run sim matchup 1000`, against the same rules with no Bleed. Wild Hunt has 1 Frostfang Lynx (Bleed 1), and no Archetype has Old Frostmaw. The other Archetypes heal little: only Vanguard has a heal, 1 Dawn Cleric (Regenerate 1). Wild Hunt had 4 Regenerate copies at that time (4 now too: Web Spitter changed Entangle for Regenerate 1), so Bleed matters most in the Wild Hunt mirror. Thus Bleed does not make Wild Hunt stronger. Test Bleed again when an Elf Archetype with healers exists. The other results on that branch changed for other reasons, so the table did not change at that time.
 
-**Vanguard Full and Raiders Full are weak (for review).** Vanguard Full wins 19.7% against Vanguard, 19.4% against Raiders and 27.3% against Raiders Full. Raiders Full wins 45.4% against Vanguard and 37.8% against Raiders. Before ADR-0021, Vanguard Full won 6.5% to 14.9% against these Decks, and Raiders Full won 74.5% against Vanguard and 63.0% against Raiders. Each card is in its ±10% budget. The AI ignores Rally when it selects a play. Thus these results are evidence for review, not a balance approval. Possible causes, not tested: the Countdown Limit removed their Epic cards, so they have only 13 and 12 cards, and Vanguard Full has 2 Walls with Attack 0 in place of attacking Units. Review the Human and Orc values in a separate issue.
+**Vanguard Full and Raiders Full are weak (for review).** Vanguard Full wins 19.7% against Vanguard, 19.4% against Raiders and 27.8% against Raiders Full. Raiders Full wins 45.5% against Vanguard and 41.3% against Raiders. Before ADR-0021, Vanguard Full won 6.5% to 14.9% against these Decks, and Raiders Full won 74.5% against Vanguard and 63.0% against Raiders. Each card is in its ±10% budget. The AI ignores Rally when it selects a play. Thus these results are evidence for review, not a balance approval. Possible causes, not tested: the Countdown Limit removed their Epic cards, so they have only 13 and 12 cards, and Vanguard Full has 2 Walls with Attack 0 in place of attacking Units. Review the Human and Orc values in a separate issue.
 
 ### 3.1 Balance changes
 
@@ -199,6 +199,8 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-09 | The 3 Ranger Skill Cards come in (issue #38): Pinning Shot (C, Countdown 2), Warning Shot (C, Countdown 3) and Long Shot (U, Countdown 4) ([GDD 5.5](./03-game-design.md#55-classes)). Thornwatch and Tunnel Rats each get the 3 cards and lose 3 Creature Cards (2.1). Both stay diagnostic. No card value is tuned. | A Skill Card has no Power Budget, so the check is the Matchup (1000 seeds). The tuning rule of issue #38 is for Thornwatch more than about 5 points above its ADR-0022 baseline. The result is the opposite. Thornwatch goes from 68.3% to 27.6% on average against the 10 other Archetypes, and from 59.3% to 19.0% against Vanguard. Tunnel Rats goes from 48.3% to 30.5%, and from 33.3% to 16.7% against Vanguard. The range lock of ADR-0022 does not come back. Vanguard against Raiders does not change (49.4%). The cause is the swap: 3 Creature Cards are worth much more than 3 Skill Cards (scratch tests, 200 seeds, against Vanguard and Raiders). Thornwatch with only the 3 cuts (10 cards) wins 9.3% and 10.8%. Each Ranger card adds a little: Pinning Shot +5.2 and +1.5 points, Warning Shot +2.7 and 0, Long Shot +1.2 and +0.5. In the same Thornwatch Deck, the Warrior Skill Cards win 26.5% and 18.8%, and the Mage Skill Cards 42.0% and 46.3%. Against Raiders, Vanguard wins 53.0% with its Warrior Skill Cards, 47.8% with the Ranger Skill Cards, and 81.5% with 3 Human Creature Cards (Militia Recruit, Shieldbearer, Crossbow Guard) in their place. Thus in the simulation a Skill Card is worth much less than a Creature Card of the same Countdown. The Ranger cards are near the Warrior cards and much weaker than the Mage cards. A change to the Skill Card values or to the Archetype lists is a separate decision. |
 | 2026-10-09 | The Restless Wisp Token has Speed 2 at each Rank (it was 1 up to Rare), so that each Token has Speed 2. The Wisp power is now 14 / 15 / 17 / 18 / 21, so Summon Restless Wisp costs 1 more point at Rare. Lantern Widow goes from 20.5 to 21.5 (+2.4%) with no stat change ([10 — Card Concepts, 8.2](./10-card-concepts.md#82-restless-wisp)). | Deathless Host wins 44.3% against Vanguard and 45.0% against Raiders (it was 42.4% and 43.7%), 1000 seeds. All Stages stay on target, with no change. |
 | 2026-10-10 | The 3 Priest Skill Cards and the Ward Status come in (issue #44): Mend (C, Countdown 2), Smite (C, Countdown 2) and Sanctuary (U, Countdown 3) ([GDD 4.7 and 5.5](./03-game-design.md#55-classes)). Wild Hunt loses Crag Lizard and 1 Cave Bear, and Deathless Host loses Graveyard Drudge and 2 Rattleknife (2.1). Both stay diagnostic. No card value is tuned. | A Skill Card has no Power Budget, so the check is the Matchup (1000 seeds). The tuning rule of issue #44 is for Wild Hunt or Deathless Host more than 5 points up on average. The result is the opposite, as with the Ranger Skill Cards. Wild Hunt goes from 63.8% to 61.0% on average against the 10 other Archetypes (56.8% to 57.6% against Vanguard, 59.9% to 53.6% against Raiders). Deathless Host goes from 54.2% to 46.8% (44.3% to 35.3% against Vanguard, 45.0% to 37.5% against Raiders). Deathless Host loses more, because it loses 3 Creature Cards and Wild Hunt loses 2. Vanguard against Raiders does not change (49.4%). A change to the Skill Card values or to the Archetype lists is a separate decision. |
+| 2026-10-10 | Bonestake Palisade (C, Countdown 2, 0/15, Wall, Last Breath 3) replaces Dusthide Brawler (C, Countdown 2, 3/9, Frontliner). Power 18, budget 18. In Raiders Full, Tusk Brute (C, Countdown 4) replaces Dusthide Brawler, and the Deck Countdown goes from 32 to 34. | Orc had no Wall. Last Breath is an Orc Main Keyword, and Heroic does nothing on a Unit with Attack 0. The main Matchups do not change (Vanguard wins 49.4% against Raiders), and `sim:check` passes. No Starter or Stage Deck has the card. With the Palisade in Raiders Full, the Deck won 44.7% on average against the 10 other Archetypes (it was 51.6% with Dusthide Brawler), and its Battles were longer (19.8 Turns, it was 18.4), 1000 seeds. A Wall with Attack 0 takes 3 Attack out of a rush Deck. Raiders Full is a rush test, so it gets an attacking Unit in place of the Wall. Each replacement was tested (1000 seeds, average against the 10 other Archetypes): Tusk Brute 52.8%, Howling Charger 52.8%, Pyreaxe Ravager 55.9%, Pack Stalker 48.7%, a third Scrap Raider 46.7% and Ember Shaman 69.9%. Tusk Brute is a Common, like Dusthide Brawler, and it is new in the Deck. Now Raiders Full wins 52.3% on average (45.5% against Vanguard, 41.3% against Raiders, 78.3% against Thornwatch). No Matchup tests the Palisade now. |
+| 2026-10-10 | Sanctuary gives Ward 6 at Uncommon, 8 at Rare, 10 at Epic and 12 at Legendary (it was 6 / 7 / 9 / 11 from the Rank scale). The Ward value comes from a table for each Rank, as the Mend heal does ([GDD 5.5](./03-game-design.md#55-classes)). No Deck changes. `sim:check` passes, and Vanguard wins 49.4% against Raiders. | Design choice: the Ward goes up by 2 at each Rank. |
 
 ### 3.2 Countdown slope search
 

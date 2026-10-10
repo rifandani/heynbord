@@ -1,10 +1,13 @@
 import type { Collection } from "@workspace/rules";
-import { starterCollection } from "@workspace/rules";
+import {
+  DeckSlots,
+  INITIAL_DECK_SLOTS,
+  starterCollection,
+} from "@workspace/rules";
 import { Schema } from "effect";
 import { Atom } from "effect/reactivity";
 
 import { storageRuntime } from "@/core/runtime/client";
-import { DeckSlots, INITIAL_DECK_SLOTS } from "@/features/deck/deck";
 
 const FIRST_SLOT_ID = INITIAL_DECK_SLOTS[0]?.id ?? "vanguard";
 

@@ -1,7 +1,7 @@
 import { Atom } from "effect/reactivity";
 
 import { randomSeed } from "@/features/battle/use-battle";
-import { newPackState } from "@/features/packs/packs";
+import { newShopPackState } from "@/features/packs/packs";
 
 /**
  * The Pack state of the Player: the Pack Guarantee counters, the Pack random
@@ -9,6 +9,6 @@ import { newPackState } from "@/features/packs/packs";
  * each session, when the page loads. The Profile replaces this atom in M2. App
  * state, so kept alive.
  */
-export const packStateAtom = Atom.make(newPackState(randomSeed())).pipe(
+export const packStateAtom = Atom.make(newShopPackState(randomSeed())).pipe(
   Atom.keepAlive
 );

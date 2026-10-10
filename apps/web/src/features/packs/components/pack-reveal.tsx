@@ -1,5 +1,15 @@
-import type { RankId } from "@workspace/rules";
-import { coinDenominations, getCard, TEN_PACKS } from "@workspace/rules";
+import type {
+  PackOrder,
+  RankId,
+  RevealedCard,
+  RevealedPack,
+} from "@workspace/rules";
+import {
+  coinDenominations,
+  getCard,
+  getPack,
+  TEN_PACKS,
+} from "@workspace/rules";
 import { cn } from "cn";
 import type { CSSProperties, ReactNode, RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -25,17 +35,11 @@ import {
   isSamePeek,
   useCardPeek,
 } from "@/features/deck/components/use-card-peek";
-import { FoundMeter } from "@/features/packs/components/found-meter";
 import { CoinPrice, PackArt } from "@/features/packs/components/pack-art";
-import type {
-  GridCard,
-  PackOrder,
-  PoolProgress,
-  RevealedCard,
-  RevealedPack,
-} from "@/features/packs/packs";
+import type { GridCard } from "@/features/packs/packs";
 import {
   bestRank,
+  canGiveLegendary,
   newCardCount,
   tenPackGrid,
   tenPackHighlights,
@@ -499,87 +503,54 @@ export interface AgainOffer {
 }
 
 /**
- * The end of a reveal: what the Pack gave the Collection ("New cards: 3",
- * and the "Cards found" groove that fills from the count before the Pack),
- * then Open another (wood, with its price) and Done (gold).
+ * The end of a reveal: Open another (wood, with its price) and Done (gold).
  */
 const RevealEnd = ({
   name,
-  packs,
-  progress,
   again,
   onAgain,
   onClose,
-  testId,
 }: {
   readonly name: string;
-  readonly packs: readonly RevealedPack[];
-  readonly progress: PoolProgress;
   readonly again: AgainOffer | null;
   readonly onAgain: () => void;
   readonly onClose: () => void;
-  readonly testId: string;
 }) => {
   const { tr } = useGameText();
   const { format, words } = useCoinFormat();
-  const fresh = newCardCount(packs);
-  const after: PoolProgress = {
-    found: Math.min(progress.total, progress.found + fresh),
-    total: progress.total,
-  };
   return (
-    <>
-      <div
-        className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-4 py-2 shadow-[0_3px_0_rgba(0,0,0,0.45)] motion-safe:duration-300 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-1"
-        data-testid={testId}
-        data-fresh={fresh}
-      >
-        <p
-          className={cn(
-            "text-sm leading-tight font-bold",
-            fresh > 0 ? "text-[#ffe08a]" : "text-[#e8d9bb]"
-          )}
-          data-testid="collection-gain"
-        >
-          {fresh > 0
-            ? tr("packs.reveal.gain", { count: fresh })
-            : tr("packs.reveal.noneNew")}
-        </p>
-        <FoundMeter progress={after} from={progress.found} />
-      </div>
-      <div className={ACTIONS}>
-        {again ? (
-          <GameButton
-            intent="wood"
-            size="lg"
-            onPress={onAgain}
-            aria-label={tr("packs.againLabel", {
-              pack: name,
-              price: words(again.price),
-            })}
-            className="gap-3 text-base"
-            data-testid="reveal-again"
-          >
-            {tr("packs.again")}
-            <CoinPrice
-              parts={coinDenominations(again.price)}
-              format={format}
-              className="text-sm font-bold"
-            />
-          </GameButton>
-        ) : null}
+    <div className={ACTIONS}>
+      {again ? (
         <GameButton
-          intent="gold"
+          intent="wood"
           size="lg"
-          autoFocus
-          onPress={onClose}
-          className="font-display min-w-40"
-          data-testid="reveal-done"
+          onPress={onAgain}
+          aria-label={tr("packs.againLabel", {
+            pack: name,
+            price: words(again.price),
+          })}
+          className="gap-3 text-base"
+          data-testid="reveal-again"
         >
-          {tr("packs.reveal.done")}
+          {tr("packs.again")}
+          <CoinPrice
+            parts={coinDenominations(again.price)}
+            format={format}
+            className="text-sm font-bold"
+          />
         </GameButton>
-      </div>
-    </>
+      ) : null}
+      <GameButton
+        intent="gold"
+        size="lg"
+        autoFocus
+        onPress={onClose}
+        className="font-display min-w-40"
+        data-testid="reveal-done"
+      >
+        {tr("packs.reveal.done")}
+      </GameButton>
+    </div>
   );
 };
 
@@ -592,7 +563,6 @@ const SingleReveal = ({
   pack,
   phase,
   setPhase,
-  progress,
   again,
   onAgain,
   onClose,
@@ -601,7 +571,6 @@ const SingleReveal = ({
   readonly pack: RevealedPack;
   readonly phase: Extract<Phase, { kind: "cards" }>;
   readonly setPhase: (phase: Phase) => void;
-  readonly progress: PoolProgress;
   readonly again: AgainOffer | null;
   readonly onAgain: () => void;
   readonly onClose: () => void;
@@ -696,12 +665,9 @@ const SingleReveal = ({
       {allShown ? (
         <RevealEnd
           name={name}
-          packs={[pack]}
-          progress={progress}
           again={again}
           onAgain={onAgain}
           onClose={onClose}
-          testId="reveal-summary"
         />
       ) : (
         <div className={ACTIONS}>
@@ -727,13 +693,18 @@ const SingleReveal = ({
   );
 };
 
-/** Open ×10: a full flip for each Epic and Legendary card, one at a time. */
+/**
+ * Open ×10: a full flip for each Epic and Legendary card, one at a time. The
+ * count names Legendary only when the Pack can give one.
+ */
 const Highlight = ({
   cards,
+  legendary,
   phase,
   setPhase,
 }: {
   readonly cards: readonly RevealedCard[];
+  readonly legendary: boolean;
   readonly phase: Extract<Phase, { kind: "highlight" }>;
   readonly setPhase: (phase: Phase) => void;
 }) => {
@@ -762,10 +733,12 @@ const Highlight = ({
         className="text-sm font-bold text-[#e8d9bb]"
         data-testid="highlight-count"
       >
-        {tr("packs.reveal.highlightCount", {
-          number: phase.index + 1,
-          count: cards.length,
-        })}
+        {tr(
+          legendary
+            ? "packs.reveal.highlightCount"
+            : "packs.reveal.highlightCountEpic",
+          { number: phase.index + 1, count: cards.length }
+        )}
       </p>
       <div
         key={phase.index}
@@ -862,14 +835,12 @@ const GridPlace = ({
 const Grid = ({
   name,
   packs,
-  progress,
   again,
   onAgain,
   onClose,
 }: {
   readonly name: string;
   readonly packs: readonly RevealedPack[];
-  readonly progress: PoolProgress;
   readonly again: AgainOffer | null;
   readonly onAgain: () => void;
   readonly onClose: () => void;
@@ -901,12 +872,9 @@ const Grid = ({
       </ol>
       <RevealEnd
         name={name}
-        packs={packs}
-        progress={progress}
         again={again}
         onAgain={onAgain}
         onClose={onClose}
-        testId="grid-summary"
       />
     </>
   );
@@ -982,23 +950,19 @@ const PackTear = ({
  * card; "Reveal all" flips the others one after the other; "Skip" shows them
  * at once. Each flip has a light and a chime that grow with the Rank. Open
  * ×10: a full flip for each Epic and Legendary card, then a grid of all the
- * cards. At the end, the Collection groove fills with the new cards, and Open
- * another buys the same Pack again. With reduced motion, the cards show at
+ * cards. At the end, Open another buys the same Pack again. With reduced motion, the cards show at
  * once, with no glow, flip or light. Esc closes it: the cards are in the
  * Collection already.
  */
 export const PackReveal = ({
   order,
   packs,
-  progress,
   again,
   onAgain,
   onClose,
 }: {
   readonly order: PackOrder;
   readonly packs: readonly RevealedPack[];
-  /** The "Cards found" count of the pool before these Packs. */
-  readonly progress: PoolProgress;
   readonly again: AgainOffer | null;
   readonly onAgain: () => void;
   readonly onClose: () => void;
@@ -1052,20 +1016,23 @@ export const PackReveal = ({
               pack={first}
               phase={phase}
               setPhase={setPhase}
-              progress={progress}
               again={again}
               onAgain={onAgain}
               onClose={onClose}
             />
           ) : null}
           {phase.kind === "highlight" ? (
-            <Highlight cards={highlights} phase={phase} setPhase={setPhase} />
+            <Highlight
+              cards={highlights}
+              legendary={canGiveLegendary(getPack(order.pack))}
+              phase={phase}
+              setPhase={setPhase}
+            />
           ) : null}
           {phase.kind === "grid" ? (
             <Grid
               name={name}
               packs={packs}
-              progress={progress}
               again={again}
               onAgain={onAgain}
               onClose={onClose}

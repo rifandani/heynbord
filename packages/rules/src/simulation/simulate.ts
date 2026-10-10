@@ -82,18 +82,26 @@ export interface WinRateTarget {
 export const isOnTarget = (rate: number, target: WinRateTarget): boolean =>
   rate >= target.min && rate <= target.max;
 
+/** The first-try target of a normal Stage (GDD 13, step 6). */
+export const NORMAL_STAGE_TARGET: WinRateTarget = { min: 0.6, max: 0.8 };
+
+/** The first-try target of a Boss Stage (GDD 13, step 6). */
+const BOSS_STAGE_TARGET: WinRateTarget = { min: 0.3, max: 0.5 };
+
 /**
  * The target for a new player Deck on the first try (GDD 13, step 6): 30% to
  * 50% for a Boss Stage, 60% to 80% for a normal Stage. The first Stages of
  * Region 1 make a ramp: 1-1 (the Tutorial) ≥ 95%, 1-2 ≥ 85%, 1-3 ≥ 75%.
  */
-export const stageTarget = (stage: StageDefinition): WinRateTarget => {
+export const stageTarget = (
+  stage: Pick<StageDefinition, "region" | "number" | "boss">
+): WinRateTarget => {
   if (stage.boss) {
-    return { min: 0.3, max: 0.5 };
+    return BOSS_STAGE_TARGET;
   }
   const ramp =
     stage.region === 1 ? [0.95, 0.85, 0.75][stage.number - 1] : undefined;
-  return ramp === undefined ? { min: 0.6, max: 0.8 } : { min: ramp, max: 1 };
+  return ramp === undefined ? NORMAL_STAGE_TARGET : { min: ramp, max: 1 };
 };
 
 /** Each Archetype against each other Archetype (GDD 13, step 5). */
@@ -149,16 +157,29 @@ export const expectedDeck = (
   return deck;
 };
 
+/** The Player of `simulateStage`, from the new Player on the first try. */
+export interface StagePlayerOptions {
+  /** The Player levels above the Recommended level. 0 by default. */
+  readonly levelsAbove?: number;
+  /** The Gear of the Player. No Gear by default. */
+  readonly gear?: GearLevels;
+}
+
 /**
  * Stage difficulty (GDD 13, step 6): a new Player on the first try plays the
  * Stage with the expected Deck of a starter Deck, at the Recommended level and
- * with no Gear. Gear unlocks at player level 5 (GDD 7.1).
+ * with no Gear. Gear unlocks at player level 5 (GDD 7.1). `options` changes the
+ * level and the Gear, but not the Deck, to measure their effect on the win
+ * rate (Economy 7.1).
  */
 export const simulateStage = (
   stage: StageDefinition,
   starter: StarterDeck,
-  battles: number
+  battles: number,
+  options: StagePlayerOptions = {}
 ): StageReport => {
+  const level = stage.recommendedLevel + (options.levelsAbove ?? 0);
+  const gear = options.gear ?? NO_GEAR;
   const deck = { ...starter, deck: expectedDeck(stage, starter) };
   let wins = 0;
   let turns = 0;
@@ -167,7 +188,7 @@ export const simulateStage = (
     const { state } = createBattle({
       seed,
       stage,
-      player: playerOf(deck, stage.recommendedLevel, NO_GEAR),
+      player: playerOf(deck, level, gear),
     });
     const end = playOut(state);
     wins += end.result?.winner === "player" ? 1 : 0;

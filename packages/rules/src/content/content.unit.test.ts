@@ -20,7 +20,14 @@ import {
 } from "./decks";
 import { keywordValue, RACE_KEYWORDS } from "./keywords";
 import { firstTryPathLevel } from "./player-levels";
-import { isRankAtLeast, RANKS, rankPips, ranksOf, scaleForRank } from "./ranks";
+import {
+  isRankAtLeast,
+  RANKS,
+  rankPips,
+  ranksOf,
+  scaleForRank,
+  skillAmountForRank,
+} from "./ranks";
 import {
   Archetype,
   CardDefinition,
@@ -34,6 +41,7 @@ import type {
   Keywords,
   RaceId,
   RankId,
+  SkillAmount,
   TokenId,
 } from "./schema";
 import { getStage, STAGES } from "./stages";
@@ -115,7 +123,6 @@ const archetypeCountdowns = (id: string) =>
     card.kind === "creature" ? [card.countdown] : []
   );
 
-/** The damage of a damage Skill Card at each Rank, from Common. */
 /** The damage, heal or Ward value of a Skill Card at each Rank. */
 const skillAmounts = (cardId: string) => {
   const card = getCard(cardId);
@@ -123,7 +130,7 @@ const skillAmounts = (cardId: string) => {
     throw new Error(`${cardId} is not a Skill Card`);
   }
   const { effect } = card;
-  const value =
+  const value: SkillAmount | undefined =
     "amount" in effect
       ? effect.amount
       : "heal" in effect
@@ -134,7 +141,7 @@ const skillAmounts = (cardId: string) => {
   if (value === undefined) {
     throw new Error(`${cardId} has no damage, heal or Ward value`);
   }
-  return RANKS.map((rank) => scaleForRank(value, rank));
+  return RANKS.map((rank) => skillAmountForRank(value, rank));
 };
 
 describe("card content (CRD-01, technical design 3.5)", () => {
@@ -173,9 +180,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("scales the Priest heal, damage and Ward with Rank, and targets a friendly Unit with Mend and Sanctuary", () => {
-    expect(skillAmounts("priest.mend")).toEqual([6, 7, 9, 11, 13]);
+    expect(skillAmounts("priest.mend")).toEqual([6, 8, 10, 12, 14]);
     expect(skillAmounts("priest.smite")).toEqual([3, 4, 4, 5, 6]);
-    expect(skillAmounts("priest.sanctuary")).toEqual([5, 6, 7, 9, 11]);
+    expect(skillAmounts("priest.sanctuary")).toEqual([6, 6, 8, 10, 12]);
     expect(getCard("priest.mend")).toMatchObject({
       target: "friendlyUnit",
       countdown: 2,

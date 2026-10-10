@@ -349,6 +349,33 @@ export default {
       packs: "Packs in the Packs screen.",
       later: "Combine and Gear upgrades when those Town shortcuts open.",
     },
+    packGuide: {
+      shelf: "The three Packs",
+      notBetter:
+        "A more expensive Pack is not a better deal. Each Pack does a different job.",
+      rollTitle: "Each card rolls its Rank",
+      rollNote:
+        "Each of the {cards} cards rolls a Rank with these chances. You get the card in that Rank. Each Pack has at least 1 card of Uncommon or higher.",
+      guaranteeTitle: "Pack Guarantee",
+      trackLabel:
+        "Packs in a row without one: {opened} of {before}. {guarantee}.",
+      guaranteeNow: "For you now: {guarantee}.",
+      guaranteeRule:
+        "If {before} Packs in a row give no {rank} or higher, the next Pack gives one. Then the count starts again at 0.",
+      guaranteeRuleTop:
+        "If {before} Packs in a row give no {rank} card, the next Pack gives one. Then the count starts again at 0.",
+      newCardFirst: "New Card First",
+      newCardFirstYes: "Gives a card that you do not have yet, when it can.",
+      newCardFirstNo:
+        "Selects each card at random. You can get copies of cards that you have.",
+      tenGuarantee: "10 Packs, with at least 1 {rank} or higher.",
+      tenExtra: "11 Packs for the price of 10.",
+      versionsTitle: "Race Packs and Class Packs",
+      versions:
+        "A Race Pack has only the Creature Cards of one Race. A Class Pack has only the Skill Cards of one Class. The stamp on the Pack shows which. Each costs {price}, and each shares one Pack Guarantee count with the {pack}.",
+      allCards:
+        "A Pack with all cards has all Creature Cards, and the Skill Cards of the Class of your active Deck.",
+    },
     playerXpTable: "Campaign XP by result",
     playerXpRegionColumn: "Region",
     playerXpWinColumn: "Repeat win",
@@ -555,7 +582,7 @@ export default {
       playerLevel:
         "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss.",
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
-      pack: "A Pack is {cards} random cards that you buy with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nThere are three Packs: Peddler, Merchant and Royal. Each one has its own price, Drop Rates and Pack Guarantee. A more expensive Pack is not a better deal: it does a different job.\n\nThe Pack Guarantee gives a card of a stated Rank after a stated number of Packs without one. With New Card First, the Merchant Pack and the Royal Pack give a card that you do not have yet, when they can.\n\nA Race Pack has only the Creature Cards of one Race, and it costs more. Your first Peddler Pack is free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
+      pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nYour first Peddler Pack is free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
     },
     aliases: {
       board: "battlefield, field, map, grid, arena",
@@ -743,9 +770,8 @@ export default {
       next: "Next card",
       seeAll: "See all cards",
       highlightCount: "Epic and Legendary: {number} of {count}",
+      highlightCountEpic: "Epic: {number} of {count}",
       summary: "{cards} cards · {fresh} new cards",
-      gain: "New cards: {count}",
-      noneNew: "No new cards this time. Every card still has a use.",
       byGuarantee:
         "Pack Guarantee: this Pack gave a card of the Guarantee Rank.",
       byTenBonus:
@@ -1078,9 +1104,9 @@ export default {
         name: "Warchief Grukka",
         flavor: '"Lunch first. Then glory."',
       },
-      dusthideBrawler: {
-        name: "Dusthide Brawler",
-        flavor: "He mistakes every warning for applause.",
+      bonestakePalisade: {
+        name: "Bonestake Palisade",
+        flavor: "The stakes are for enemies. The sausages are for later.",
       },
       cinderhornBreaker: {
         name: "Cinderhorn Breaker",
