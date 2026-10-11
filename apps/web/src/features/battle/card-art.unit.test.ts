@@ -70,11 +70,8 @@ describe("hasCardArt", () => {
     expect(hasCardArt("ranger.longShot")).toBe(true);
     expect(hasCardArt("priest.sanctuary")).toBe(true);
     expect(hasCardArt("feral.caveBear")).toBe(true);
-  });
-
-  it("has no art yet for the Skill Cards of #57 (issue #58)", () => {
-    expect(hasCardArt("warrior.shoulderCharge")).toBe(false);
-    expect(hasCardArt("priest.prayerOfHealing")).toBe(false);
+    expect(hasCardArt("warrior.shoulderCharge")).toBe(true);
+    expect(hasCardArt("priest.prayerOfHealing")).toBe(true);
   });
 
   it("has a file in public/ for each card with art", () => {

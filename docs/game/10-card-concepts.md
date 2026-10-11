@@ -1773,6 +1773,63 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 | Setting | A neutral battlefield. |
 | Palette | Neutral steel and leather. Uncommon: a small brass trim on the spear. |
 
+### 9.4 Shoulder Charge
+
+`warrior.shoulderCharge` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 3 Physical damage to an enemy Unit. If it takes damage and survives, push it 1 Square back toward its Hero.
+
+> Shoulders first. Questions later.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A plain steel pauldron that hits a dark armored silhouette, with a curved shock burst at the point of impact. |
+| Partial figure | A side view, cropped at the neck: the shoulder, the upper arm and the back of a warrior in leather and a plain steel pauldron. The body leans low and runs to the right. No head shows. |
+| Action | The shoulder hits the chest of a dark armored silhouette at the right. The silhouette lifts off its feet and slides back one stone tile to the right. Two short skid lines of dust on that tile show the push. Short motion lines go to the left behind the warrior. |
+| Setting | A neutral battlefield, in a close, low view of the stone tiles of a Lane. |
+| Palette | Neutral steel and leather, brown dust. |
+
+### 9.5 Shield Bash
+
+`warrior.shieldBash` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 2 Physical damage to an enemy Unit. Friendly Units in its Lane get Armor 1 for the next enemy Turn.
+
+> A shield is also a door that you can slam.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | One plain heater shield of wood planks with a steel rim and a round steel boss, with no emblem. A heater shield has a flat top edge and two sides that curve down to a point at the bottom. The shield slams forward to the right. It is one heater shield, not round shields in a line. |
+| Partial figure | A close, low side view from the left of the warrior. The shield is the nearest and largest object and fills the left half of the image. Its front face, with the boss, turns to the right and a little toward the viewer. The warrior is behind the shield: only the leather sleeve at the elbow and the edge of the left shoulder show past the left edge of the shield. The arm and the hand are behind the shield. They do not show on the front face of the shield and do not go through it. Real proportions: the shield is as tall as from the shoulder to the hip of the warrior, and the arm is normal human size next to it. |
+| Action | One enemy stands at the right: a full-body, dark, low-detail silhouette of a soldier in plain armor, with both feet on the stone tiles. It holds one straight sword in both hands, up in front of its chest. The boss of the shield slams into the flat of the blade. The sword stays straight and in one piece, and the impact pushes it back against the chest of the enemy. The enemy staggers back to the right. A ring of steel shine goes out from the point of impact. Show no other figures. |
+| Setting | A neutral battlefield. The stone tiles of a Lane go to the right. |
+| Palette | Neutral steel and leather, warm wood. |
+
+### 9.6 Cleave
+
+`warrior.cleave` · Warrior · Uncommon · Countdown 4 · An enemy Unit · Deal 3 Physical damage to an enemy Unit and the next Square behind it.
+
+> One swing, two problems.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A wide, bright crescent trail of an axe swing that cuts across two dark silhouettes. The crescent is the largest shape in the image. |
+| Partial figure | Two strong arms in leather bracers come in from the bottom-left corner. They grip a large two-handed axe at the end of a wide, flat swing to the right. |
+| Action | The crescent trail goes from the axe head to the right, through two dark silhouettes that stand one behind the other on the same Lane. Both silhouettes reel back. No blood. |
+| Setting | A neutral battlefield. The Lane goes to the right into the distance, so the second silhouette is smaller than the first. |
+| Palette | Neutral steel and leather. Uncommon: a small brass trim on the axe head. |
+
+### 9.7 Ground Slam
+
+`warrior.groundSlam` · Warrior · Uncommon · Countdown 3 · An enemy Lane · Deal 2 Physical damage to all enemy Units in a Lane.
+
+> The ground agrees with me.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A long crack that runs through all the stone tiles of a Lane, with broken tiles that jump up and plumes of dust. |
+| Partial figure | Two forearms in leather bracers come in from the bottom-left corner. The elbows are out of the image. The two fists in leather gauntlets hold the haft of a plain war hammer with a normal two-handed grip, as at the end of a downward swing with a sledgehammer: one fist at the end of the haft, the other fist one hand's width nearer the head. A long, bare part of the haft goes from the front fist to the head. Its head hits a stone tile in the foreground. |
+| Proportion | Real human proportions and anatomy. Each fist is about half as wide as the hammer head. The haft is longer than a forearm. Each wrist is straight, in line with its forearm. The fingers close around the haft and the thumb closes over the fingers. |
+| Action | The hammer hits the ground. The crack runs from the hammer head to the right along the full Lane into the distance. Small, dark, far silhouettes along the Lane lose their footing and fall as the tiles jump under them. |
+| Setting | A neutral battlefield. The Lane is long and goes into the distance. |
+| Palette | Neutral steel and leather, grey stone, brown dust. Uncommon: small brass bands on the hammer haft. |
+
 ## 10. Mage Skill Cards
 
 Identity: area damage. The palette is the Damage Type color.
@@ -1818,6 +1875,34 @@ Identity: area damage. The palette is the Damage Type color.
 | Action | The wave starts at the staff and rolls to the right along all the stone tiles of the Lane. |
 | Setting | A neutral battlefield. The Lane is long and goes into the distance. |
 | Palette | Orange-red fire. Uncommon: a small gold trim on the staff. |
+
+### 10.4 Frost Shards
+
+`mage.frostShards` · Mage · Common · Countdown 2 · An enemy Unit · Deal 1 Frost damage to an enemy Unit and the next Square behind it.
+
+> Small, sharp and very cold.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A fan-shaped spray of many small, sharp ice shards. It is many small shards, not one bolt. |
+| Partial figure | One open hand in a robe sleeve at the bottom left, palm up, seen from below. The fingers flick open as if they throw seeds. |
+| Action | The shards spray from the palm to the right in a fan and hit two dark silhouettes that stand one behind the other on the same Lane. A crust of frost covers the front of both silhouettes, and they stop in place. |
+| Setting | A neutral battlefield, in a low view close to the grass. Frost on the grass under the spray. |
+| Palette | Light blue frost. |
+
+### 10.5 Frost Wave
+
+`mage.frostWave` · Mage · Uncommon · Countdown 4 · An enemy Lane · Deal 2 Frost damage to all enemy Units in a Lane.
+
+> The whole lane stands still.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A low, curling wave of ice that freezes as it runs down a full Lane and leaves a road of frozen tiles behind it. |
+| Partial figure | Two hands in robe sleeves press flat on the stone tiles at the bottom left, palms down. Frost spreads from the fingers. No staff. |
+| Action | The ice wave starts at the hands and runs to the right along all the stone tiles of the Lane into the distance. Small, dark, far silhouettes along the Lane stand frozen in ice up to the knees. |
+| Setting | A neutral battlefield. The Lane is long and goes into the distance. |
+| Palette | Light blue frost and white ice. Uncommon: a small silver trim on the sleeve cuffs. |
 
 ## 11. Ranger Skill Cards
 
@@ -1865,6 +1950,62 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 | Setting | A neutral battlefield, seen from far, with all the Lanes. |
 | Palette | Neutral steel and leather, with green fletching. Uncommon: a small brass trim on the bow. |
 
+### 11.4 Quick Shot
+
+`ranger.quickShot` · Ranger · Common · Countdown 1 · An enemy Unit · Deal 3 Physical damage to an enemy Unit.
+
+> Draw, loose, draw again.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A fast arrow with green fletching that flies level across the image, with sharp, straight white speed lines. It is a flat, straight shot, not an arc. |
+| Partial figure | The hands of a hooded archer at the left, in a side view. The aiming line is level, to the right. The bow is vertical, at a right angle to the aiming line, and the string still vibrates (a small motion blur). The draw hand has already left the string and pulls the next arrow from a quiver at the hip. Five fingers on each hand. |
+| Action | The speed lines start at the bow grip and go level to the right. The arrow hits the shoulder of a dark silhouette at middle distance at the right, with a small spark. |
+| Setting | A neutral battlefield, in a level view at the height of a Unit. |
+| Palette | Neutral steel and leather, with green fletching. |
+
+### 11.5 Harrying Shot
+
+`ranger.harryingShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 2 Physical damage to an enemy Unit. Then deal 4 Physical damage to the enemy Hero.
+
+> One for the beast. One for its master.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | Two arrows with green fletching from one bow, on two trails that split like a fork. One trail ends in a dark beast. The other goes past the beast to its master. |
+| Partial figure | At the left edge, the bow hand of a hooded archer, seen from behind. The bow is vertical and the string still vibrates. |
+| Action | Both trails start at the bow grip. The lower trail goes down and to the right into the shoulder of a large, dark, snarling beast silhouette in the middle of the image. The upper trail goes straight to the right, over the back of the beast, to a small, far, dark, caped silhouette on a rise at the top right. The beast is the largest silhouette. No blood. |
+| Setting | A neutral battlefield. |
+| Palette | Neutral steel and leather, with green fletching. |
+
+### 11.6 Barbed Arrow
+
+`ranger.barbedArrow` · Ranger · Uncommon · Countdown 3 · An enemy Unit · Deal 5 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Bleeding 2.
+
+> It comes out the hard way.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A close view of a barbed arrowhead in flight: a black iron head with hooked barbs that glint. The arrowhead is the largest shape in the image. |
+| Partial figure | Far behind at the left, small and blurred: the hands of a hooded archer that release the string. |
+| Action | The arrow flies to the right, with its head and green fletching in sharp focus. At the right, a second barbed arrow is stuck in a dark wooden shield of a far silhouette. Its barbs hook into the wood and split it. No blood and no wound. |
+| Setting | A neutral battlefield, out of focus behind the arrow. |
+| Palette | Neutral steel and leather, black iron, with green fletching. Uncommon: a small brass ring behind the arrowhead. |
+
+### 11.7 Flushing Shot
+
+`ranger.flushingShot` · Ranger · Uncommon · Countdown 4 · An enemy Unit · Deal 7 Physical damage to an enemy Unit. If it survives, push it 3 Squares back toward its Hero, also when it takes no damage.
+
+> Back to your side of the field.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | An arrow with green fletching that hits a raised dark shield with a large, round burst of wind and dust. The burst throws the silhouette far back. |
+| Partial figure | A hooded archer, kneeling on one knee at the bottom left, in a side view from behind. The aiming line is level, to the right. The bow is canted: its top tip leans to the right. The archer has just released, and the string still vibrates. |
+| Action | The arrow trail starts at the bow grip and goes level to the right. The arrow hits the shield of a dark silhouette in the middle of the image. The silhouette flies back to the right, and three skid marks of dust on three stone tiles of the Lane show how far it goes. |
+| Setting | A neutral battlefield. The stone tiles of the Lane show the distance of the push. |
+| Palette | Neutral steel and leather, brown dust, with green fletching. Uncommon: a small brass trim on the bow tips. |
+
 ## 12. Priest Skill Cards
 
 Identity: healing, protection and Holy damage. The palette is Holy gold-yellow light with a sun motif. The partial figure has plain cream-white linen sleeves and a rope belt, and a small gold sun pendant on a cord is the Priest mark on each card. It has no blue cloth, no staff and no sun disc, so it does not look like Dawn Cleric or the Mage, and it has no sign of a Race. A friendly Unit in the image is a back view of a soldier in a closed full helmet and a cloak.
@@ -1910,6 +2051,63 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 | Action | A ribbon of light goes from the hand to the right and forms the dome over a soldier, seen from behind in a closed full helmet and a cloak. A dark enemy blade comes in from the right and stops on the dome. The light ripples where the blade hits it. |
 | Setting | A neutral battlefield. The gold circle lies on the grey stone tiles of a Lane. |
 | Palette | Holy gold-yellow light. Uncommon: a small brass trim on the sun pendant and on the sleeve cuff. |
+
+### 12.4 Blessing of Light
+
+`priest.blessingOfLight` · Priest · Common · Countdown 1 · A friendly Unit · A friendly Unit gets Ward 3: it absorbs the next 3 damage. Ward by Rank: Common 3, Uncommon 4, Rare 5, Epic 6, Legendary 7.
+
+> A little light goes a long way.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A rounded heater shield of gold light with a small sun mark at its center. The shield floats in the air in front of the soldier's chest, a short distance from the body. Nothing holds it: it is not on an arm and not in a hand. It is about as wide as the soldier's shoulders. The shield is light only: no metal, no rivets and no rim. A thin gold glow outlines the soldier's armor. No dome. |
+| Partial figure | Only a hand and a forearm in a cream-white linen sleeve, from the left edge of the image. The fingertips touch the back of the soldier's left shoulder. The gold sun pendant on a cord hangs from the wrist. |
+| Action | A three-quarter back view from behind and to the left of the soldier. The soldier, in a closed full helmet and a cloak, stands at the center-right of the image, from the head to the knees, and faces to the right. Gold light goes from the fingertips into the shoulder, runs along the armor and comes out in front of the soldier, where the shield of light forms. The shield is at the right of the soldier, between the soldier and the battlefield. Its front faces to the right, at an angle to the viewer, so the sun mark shows. |
+| Setting | A neutral battlefield, in a calm moment before a fight. The camera is at the height of the soldier's chest. |
+| Palette | Holy gold-yellow light, with plain steel and a grey cloak on the soldier. |
+| Proportion | Real human proportions and anatomy. The hand is at the same distance from the viewer as the soldier, so it is normal human size: about as wide as the soldier's helmet. No large arm or sleeve in the foreground. The soldier has two arms at the sides, and the cloak hangs straight down the back. |
+
+### 12.5 Radiant Strike
+
+`priest.radiantStrike` · Priest · Common · Countdown 2 · An enemy Unit · Deal 2 Holy damage to an enemy Unit. Heal 2 HP to each friendly Unit in its Lane.
+
+> Light that cuts. Light that mends.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A thin crescent of gold light that flies to the right and cuts a dark silhouette, and a soft wave of gold light that comes back from the hit. |
+| Partial figure | A hand in a cream-white linen sleeve comes in from the bottom-left corner, at the end of a flat sweep with the edge of the hand forward. The gold sun pendant on a cord swings from the wrist. |
+| Action | The crescent of light flies from the hand to the right and cuts across a dark silhouette far down the Lane. From the hit, a soft gold glow runs back along the stone tiles of the same Lane to two friendly soldiers in the foreground, seen from behind in closed full helmets and cloaks. A few small soft green-white plus-shaped heal motes rise around them. No blood. |
+| Setting | A neutral battlefield. The Lane goes to the right into the distance. |
+| Palette | Holy gold-yellow light, with small green-white heal motes. |
+
+### 12.6 Penance
+
+`priest.penance` · Priest · Uncommon · Countdown 2 · An enemy Unit · Deal Holy damage to an enemy Unit, equal to the Attack of that Unit.
+
+> Your own strength, returned to you.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A huge dark brute silhouette whose own raised weapon turns into gold light. The light cracks through the weapon and runs back down the arms into its body. |
+| Partial figure | A small hand in a cream-white linen sleeve at the bottom left holds up the gold sun pendant on its cord, toward the brute. The pendant shines. |
+| Action | The brute, at the right, fills most of the image and raises a huge dark club to strike. A thin ray goes from the pendant to the club. Gold cracks of light open in the club, and the light flows back along the arms into the brute's chest. The brute recoils. No thrown object and no shaft of light from the sky. |
+| Setting | A neutral battlefield, in a low view that makes the brute look huge. |
+| Palette | Holy gold-yellow light, with dark steel and dark wood on the brute. Uncommon: a small brass trim on the sun pendant and on the sleeve cuff. |
+
+### 12.7 Prayer of Healing
+
+`priest.prayerOfHealing` · Priest · Uncommon · Countdown 3 · A friendly Lane · Heal 8 HP to each friendly Unit in a Lane. Heal by Rank: Uncommon 8, Rare 10, Epic 12, Legendary 14.
+
+> One prayer for the whole line.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A long line of soft gold light that rises from all the stone tiles of a Lane, and three friendly soldiers in a row in that light. |
+| Partial figure | Two hands in cream-white linen sleeves, clasped in prayer at the bottom left. The cord of the gold sun pendant winds around the fingers, and the pendant hangs below the hands. |
+| Action | A view from behind, down the Lane. The light starts at the clasped hands and runs to the right along the full Lane into the distance. Three soldiers stand in a row in the light, seen from behind in closed full helmets and cloaks. They stand up straight, and small soft green-white plus-shaped heal motes rise around each of them. |
+| Setting | A neutral battlefield. The Lane is long and goes into the distance. |
+| Palette | Holy gold-yellow light, with small green-white heal motes. Uncommon: a small brass trim on the sun pendant and on the sleeve cuffs. |
 
 ## 13. When cards change
 

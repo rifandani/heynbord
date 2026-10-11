@@ -64,25 +64,9 @@ const RACES_AND_CLASSES_WITH_ART: ReadonlySet<string> = new Set([
 
 /**
  * The cards of a Race or Class with art that have no art yet. They show their
- * emblem. Remove a card here when its art is in `public/` (issue #58 paints
- * the Skill Cards of issue #57).
+ * emblem. Add a new card here until its art is in `public/`, then remove it.
  */
-const CARDS_WITHOUT_ART: ReadonlySet<string> = new Set([
-  "warrior.shoulderCharge",
-  "warrior.shieldBash",
-  "warrior.cleave",
-  "warrior.groundSlam",
-  "ranger.quickShot",
-  "ranger.harryingShot",
-  "ranger.barbedArrow",
-  "ranger.flushingShot",
-  "mage.frostShards",
-  "mage.frostWave",
-  "priest.blessingOfLight",
-  "priest.radiantStrike",
-  "priest.penance",
-  "priest.prayerOfHealing",
-]);
+const CARDS_WITHOUT_ART: ReadonlySet<string> = new Set<string>();
 
 /** Whether the art of a card exists (see `cardIllustration`). */
 export const hasCardArt = (cardId: string): boolean => {
