@@ -1,4 +1,4 @@
-import type { BattleEvent } from "@workspace/rules";
+import type { BattleEvent, UnopenedPack } from "@workspace/rules";
 import { getCard, legalTargets, getStarterDeck } from "@workspace/rules";
 import { absurd } from "effect";
 import type { AtomRegistry } from "effect/reactivity";
@@ -18,9 +18,11 @@ import {
   selectedCardAtom,
 } from "@/features/battle/battle.atoms";
 import { playback } from "@/features/battle/scene/playback";
-import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import type { StageResults } from "@/features/campaign/region-map";
-import { balancesAtom, gameScreenAtom } from "@/features/town/town.atoms";
+import { NEW_PLAYER } from "@/features/profile/profile";
+import { profileAtom } from "@/features/profile/profile.atoms";
+import { profileSaved } from "@/features/profile/use-profile-store";
+import { gameScreenAtom } from "@/features/town/town.atoms";
 
 /** The states that QA tools can ask for (director evidence manifest). */
 export const QA_STATES = [
@@ -68,6 +70,7 @@ const playOut = (stageId: string, seed: number): BattleSession => {
   let session = startSession({
     stageId,
     deck: getStarterDeck("vanguard"),
+    player: NEW_PLAYER,
     seed,
   });
   while (session.rules.status !== "finished") {
@@ -106,6 +109,7 @@ const enemyCastBattle = (seed: number): BattleSession => {
   let session = startSession({
     stageId: "1-3",
     deck: getStarterDeck("vanguard"),
+    player: NEW_PLAYER,
     seed,
   });
   for (
@@ -130,9 +134,9 @@ const enemyCastBattle = (seed: number): BattleSession => {
  */
 const finishedBattle = (
   seed: number,
-  winner: "player" | "enemy"
+  winner: "player" | "enemy",
+  stageId = winner === "player" ? "1-1" : "1-10"
 ): BattleSession => {
-  const stageId = winner === "player" ? "1-1" : "1-10";
   let session = playOut(stageId, seed);
   for (
     let offset = 1;
@@ -178,7 +182,12 @@ export const buildQaState = (
     case "targeting":
     case "resolution": {
       const session = playTurns(
-        startSession({ stageId: "1-2", deck: getStarterDeck("raiders"), seed }),
+        startSession({
+          stageId: "1-2",
+          deck: getStarterDeck("raiders"),
+          player: NEW_PLAYER,
+          seed,
+        }),
         4
       );
       if (state === "targeting") {
@@ -220,13 +229,35 @@ export const installTestHooks = (
     setPausedForScreenshot: (paused: boolean) => {
       playback.paused = paused;
     },
-    /** Sets the Coin balance, in Copper, so that a test can buy Packs. */
+    /** Sets the Coin of the Profile, in Copper, so that a test can buy Packs. */
     setCoin: (copper: number) => {
-      registry.set(balancesAtom, {
-        ...registry.get(balancesAtom),
-        coin: copper,
+      registry.set(profileAtom, { ...registry.get(profileAtom), coin: copper });
+    },
+    /** Adds an Unopened Pack to the Profile, as a reward does. */
+    giveUnopenedPack: (pack: UnopenedPack) => {
+      const profile = registry.get(profileAtom);
+      registry.set(profileAtom, {
+        ...profile,
+        unopenedPacks: [...profile.unopenedPacks, pack],
       });
     },
+    /** Sets the XP of the Profile, so that a test can reach a Player level. */
+    setXp: (xp: number) => {
+      registry.set(profileAtom, { ...registry.get(profileAtom), xp });
+    },
+    /**
+     * Shows the result of a won Battle of `stageId`, played by the AI for
+     * both sides, as the `victory` state does for Stage 1-1.
+     */
+    winStage: (stageId: string) => {
+      playback.session = null;
+      registry.set(selectedCardAtom, null);
+      registry.set(inspectedUnitAtom, null);
+      registry.set(battleSessionAtom, finishedBattle(seed, "player", stageId));
+      registry.set(gameScreenAtom, "campaign");
+    },
+    /** Resolves when the Profile is in IndexedDB, so that a test can reload. */
+    profileSaved,
     setState: (name: string) => {
       const known = QA_STATES.find((candidate) => candidate === name);
       if (!known) {
@@ -234,7 +265,10 @@ export const installTestHooks = (
       }
       const session = buildQaState(known, seed);
       if (known === "campaign-progress") {
-        registry.set(stageResultsAtom, QA_STAGE_RESULTS);
+        registry.set(profileAtom, {
+          ...registry.get(profileAtom),
+          stageResults: QA_STAGE_RESULTS,
+        });
       }
       playback.session = null;
       registry.set(selectedCardAtom, null);

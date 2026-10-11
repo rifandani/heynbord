@@ -1,14 +1,11 @@
 import { Atom } from "effect/reactivity";
 
 import type { StageResults } from "@/features/campaign/region-map";
+import { profileAtom } from "@/features/profile/profile.atoms";
 
-/**
- * The best Stars of each won Stage. It is in memory until the Profile keeps
- * the Stage results: a page load starts the Campaign again at Stage 1-1. App
- * state, so kept alive.
- */
-export const stageResultsAtom = Atom.make<StageResults>({}).pipe(
-  Atom.keepAlive
+/** The best Stars of each won Stage, from the Profile. */
+export const stageResultsAtom = Atom.make(
+  (get): StageResults => get(profileAtom).stageResults
 );
 
 /**

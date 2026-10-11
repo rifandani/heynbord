@@ -34,6 +34,7 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { LOCALE_LABELS } from "@/features/i18n/components/language-toggle";
 import { Locale } from "@/features/i18n/locale";
+import { ProfileRow } from "@/features/profile/components/profile-row";
 import {
   placeSheetOrigin,
   SHEET_INK_MOTION,
@@ -223,7 +224,7 @@ const SoundRow = () => {
 /**
  * The Settings dialog (GDD 11.4): a parchment dialog at the center of the
  * screen, over the current screen. A change applies at once, so it has no
- * Save button. Esc, the close button and a click outside close it. With
+ * Save button. The last row exports and imports the progress. Esc, the close button and a click outside close it. With
  * `from`, the sheet comes up out of that button and goes back into it.
  */
 export const SettingsDialog = ({
@@ -283,6 +284,11 @@ export const SettingsDialog = ({
               <div className="divide-y divide-[#c9b48c]/70">
                 <LanguageRow />
                 <SoundRow />
+                <ProfileRow
+                  className={ROW}
+                  labelClassName={ROW_LABEL}
+                  onReplaced={close}
+                />
               </div>
             </div>
           )}

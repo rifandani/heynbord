@@ -1,10 +1,12 @@
 import { RegistryContext, useAtomSet, useAtomValue } from "@effect/atom-react";
 import type { Target } from "@workspace/rules";
-import { isTutorial, STAGES, starsFor } from "@workspace/rules";
+import { isTutorial } from "@workspace/rules";
 import { Result } from "effect";
-import { useContext } from "react";
+import type { ContextType } from "react";
+import { useContext, useLayoutEffect } from "react";
 
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
+import { recordStageResult } from "@/features/battle/battle-rewards";
 import type {
   BattleOptions,
   BattleSession,
@@ -15,7 +17,7 @@ import {
   changeTutorial,
   endTurn,
   isHeld,
-  isTutorialStageWin,
+  isIdle,
   newestSession,
   playIfAble,
   setSpeed,
@@ -26,6 +28,7 @@ import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import type { UnitView } from "@/features/battle/battle-view";
 import type { InspectedUnit } from "@/features/battle/battle.atoms";
 import {
+  battleRewardsAtom,
   battleSessionAtom,
   battleSpeedAtom,
   detailsUnitAtom,
@@ -41,9 +44,7 @@ import type { Tutorial } from "@/features/battle/tutorial";
 import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 import { nextInspectedUnit } from "@/features/battle/unit-inspect";
-import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
-import { recordWin, resultCoin } from "@/features/campaign/region-map";
-import { balancesAtom } from "@/features/town/town.atoms";
+import { profileAtom } from "@/features/profile/profile.atoms";
 
 /** A new Battle seed. The seed is input to the rules, so this is not a rule. */
 export const randomSeed = (): number =>
@@ -86,6 +87,27 @@ const noteSelect = (
   }
 };
 
+/**
+ * Saves the result of a finished Battle into the Profile (GDD 11.4): the
+ * rewards of a win or a loss (Economy 2.1), one time for each Battle. A reload on the
+ * result keeps them. An Abandon and a Battle that is not finished save
+ * nothing.
+ */
+const recordResult = (
+  registry: ContextType<typeof RegistryContext>,
+  finished: BattleSession
+) => {
+  const recorded = recordStageResult(
+    registry.get(profileAtom),
+    finished,
+    registry.get(battleRewardsAtom)
+  );
+  if (recorded) {
+    registry.set(battleRewardsAtom, recorded.shown);
+    registry.set(profileAtom, recorded.profile);
+  }
+};
+
 /** The Battle state and the player's actions, for the HUD. */
 export const useBattle = () => {
   const registry = useContext(RegistryContext);
@@ -97,6 +119,15 @@ export const useBattle = () => {
   const detailsUnit = useAtomValue(detailsUnitAtom);
   const speed = useAtomValue(battleSpeedAtom);
   const setStoredSpeed = useAtomSet(battleSpeedAtom);
+
+  // When the result shows (`ResultOverlay`), before the paint, so that it
+  // shows with its rewards. The stored session, not the scene clock: after a
+  // Skip, the clock is one frame behind it.
+  useLayoutEffect(() => {
+    if (session?.view.result && isIdle(session)) {
+      recordResult(registry, session);
+    }
+  }, [registry, session]);
 
   /** The newest session: the scene clock can be ahead of the atom inside one event. */
   const live = (): BattleSession | null =>
@@ -127,35 +158,6 @@ export const useBattle = () => {
     const next = current && changeTutorial(current, change);
     if (next !== current) {
       commit(next);
-    }
-  };
-
-  /**
-   * The Stage results before a new Battle or the Campaign (in memory until the
-   * Profile): the Stars of a win, and the Coin of a win or a loss (Economy 2.1).
-   */
-  const recordResult = () => {
-    const finished = live();
-    const result = finished?.rules.result;
-    if (!finished || !result) {
-      return;
-    }
-    if (isTutorialStageWin(finished)) {
-      registry.set(tutorialStageWonAtom, true);
-    }
-    const results = registry.get(stageResultsAtom);
-    const { stageId } = finished.options;
-    const won = result.winner === "player";
-    const balances = registry.get(balancesAtom);
-    registry.set(balancesAtom, {
-      ...balances,
-      coin: balances.coin + resultCoin(STAGES, results, stageId, won),
-    });
-    if (won) {
-      registry.set(
-        stageResultsAtom,
-        recordWin(results, stageId, starsFor(finished.rules))
-      );
     }
   };
 
@@ -200,7 +202,6 @@ export const useBattle = () => {
     start: (options: BattleOptions) => {
       unlockAudio();
       playSound("select");
-      recordResult();
       select(null);
       registry.set(inspectedUnitAtom, null);
       playback.session = null;
@@ -212,7 +213,6 @@ export const useBattle = () => {
     },
     /** Back to the Campaign. Before a result, this is an Abandon: it records nothing. */
     leave: () => {
-      recordResult();
       select(null);
       registry.set(inspectedUnitAtom, null);
       playback.session = null;

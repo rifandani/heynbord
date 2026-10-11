@@ -40,6 +40,10 @@ import {
   deckSlotsAtom,
 } from "@/features/deck/deck.atoms";
 import {
+  battlePlayerAtom,
+  playerLevelAtom,
+} from "@/features/profile/profile.atoms";
+import {
   clearSheetOrigin,
   placeSheetOrigin,
   SHEET_MOTION,
@@ -180,9 +184,12 @@ const useDeckChoice = () => {
   const [deckId, setDeckId] = useAtom(activeDeckIdAtom);
   const slots = useAtomValue(deckSlotsAtom);
   const collection = useAtomValue(collectionAtom);
+  const level = useAtomValue(playerLevelAtom);
   const decks = slots.filter((slot) => slot.deck.length > 0);
   const chosen = decks.find((slot) => slot.id === deckId) ?? decks[0];
-  const problems = chosen ? deckProblems(slotInput(chosen, collection)) : [];
+  const problems = chosen
+    ? deckProblems(slotInput(chosen, collection, level))
+    : [];
   return { slots, decks, chosen, setDeckId, problem: problems[0] };
 };
 
@@ -284,6 +291,7 @@ export const StagePanel = ({
 }) => {
   const { tr } = useGameText();
   const choice = useDeckChoice();
+  const player = useAtomValue(battlePlayerAtom);
   const [editing, setEditing] = useState(false);
   const [last, setLast] = useState(stop);
   if (stop !== null && stop !== last) {
@@ -421,6 +429,7 @@ export const StagePanel = ({
                             onStart({
                               stageId: shown.stage.id,
                               deck: chosen,
+                              player,
                               seed: qaSeed() ?? randomSeed(),
                             });
                           }

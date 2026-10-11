@@ -19,10 +19,12 @@ import {
 import { CRIT_SCALE, FX_PRESETS } from "@/features/battle/scene/fx-presets";
 import { heroX, laneZ, squareX, worldOf } from "@/features/battle/scene/layout";
 import { BURST_DURATION } from "@/features/battle/scene/particles";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 const { view } = startSession({
   stageId: "1-10",
   deck: getStarterDeck("vanguard"),
+  player: NEW_PLAYER,
   seed: 1,
 });
 

@@ -1,25 +1,28 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
-import { starterCollection, TUTORIAL_STAGE_ID } from "@workspace/rules";
+import type { GearLevels } from "@workspace/rules";
 import { Atom } from "effect/reactivity";
 import type { AtomRegistry } from "effect/reactivity";
 import { use, useEffect } from "react";
 
-import { tutorialStageWonAtom } from "@/features/battle/battle.atoms";
-import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import type { StageResults } from "@/features/campaign/region-map";
-import { collectionAtom } from "@/features/deck/deck.atoms";
 import {
   DEV_OVERRIDES_KEY,
+  fromOverlay,
   parseOverrides,
   serializeOverrides,
   setBalance,
-  unlockedCollection,
+  setGear,
+  toOverlay,
+  withUnlockAll,
 } from "@/features/dev-panel/dev-overrides";
+import type { ProfileOverlay } from "@/features/profile/profile";
+import { levelStartXp } from "@/features/profile/profile";
+import {
+  profileAtom,
+  profileOverlayAtom,
+} from "@/features/profile/profile.atoms";
 import type { BalanceKind } from "@/features/town/town";
 import { balancesAtom } from "@/features/town/town.atoms";
-
-/** True while the Collection is the unlocked Collection of the panel. */
-const unlockAllAtom = Atom.make(false).pipe(Atom.keepAlive);
 
 /** False when the browser blocks `localStorage`: the panel then works in memory only. */
 const storageAtom = Atom.make(true).pipe(Atom.keepAlive);
@@ -32,41 +35,27 @@ const readStored = (): string | null | undefined => {
   }
 };
 
-const save = (registry: AtomRegistry.AtomRegistry) => {
+/** Stores the overrides of the overlay, or removes them when there is no overlay. */
+const store = (
+  registry: AtomRegistry.AtomRegistry,
+  overlay: ProfileOverlay | null
+) => {
+  const overrides = fromOverlay(overlay);
   try {
-    localStorage.setItem(
-      DEV_OVERRIDES_KEY,
-      serializeOverrides({
-        unlockAll: registry.get(unlockAllAtom),
-        stageResults: registry.get(stageResultsAtom),
-        balances: registry.get(balancesAtom),
-      })
-    );
+    if (overrides === null) {
+      localStorage.removeItem(DEV_OVERRIDES_KEY);
+    } else {
+      localStorage.setItem(DEV_OVERRIDES_KEY, serializeOverrides(overrides));
+    }
   } catch {
     registry.set(storageAtom, false);
   }
 };
 
-const applyUnlockAll = (registry: AtomRegistry.AtomRegistry, on: boolean) => {
-  registry.set(unlockAllAtom, on);
-  registry.set(collectionAtom, on ? unlockedCollection() : starterCollection());
-};
-
-const applyResults = (
-  registry: AtomRegistry.AtomRegistry,
-  results: StageResults
-) => {
-  registry.set(stageResultsAtom, results);
-  // The Town shows the Tutorial until Stage 1-1 is won, as after a real win.
-  registry.set(tutorialStageWonAtom, (results[TUTORIAL_STAGE_ID] ?? 0) > 0);
-};
-
-const NEW_PLAYER_BALANCES = { coin: 0, essence: 0, heynstones: 0 };
-
 /**
- * Applies the stored overrides once, then keeps the store up to date, also
- * with the Stage results and the balances of real play. It does nothing until the panel is
- * first used, so a plain development session still starts as a new Player.
+ * Shows the stored overrides over the Profile once, then keeps the store up
+ * to date with the overlay, also when play changes an overlay value (for
+ * example the Coin of a win). The overrides are not saved into the Profile.
  * Mount it with the devtools, not with the panel: a panel mounts only while
  * its tab is open.
  */
@@ -80,57 +69,43 @@ export const useDevOverridesSync = () => {
     }
     const overrides = parseOverrides(stored);
     if (overrides !== null) {
-      applyUnlockAll(registry, overrides.unlockAll);
-      applyResults(registry, overrides.stageResults);
-      if (overrides.balances !== undefined) {
-        registry.set(balancesAtom, overrides.balances);
-      }
+      registry.set(profileOverlayAtom, toOverlay(overrides));
     }
-    const saveIfUsed = () => {
-      if (readStored()) {
-        save(registry);
-      }
-    };
-    const unsubscribeResults = registry.subscribe(stageResultsAtom, saveIfUsed);
-    const unsubscribeBalances = registry.subscribe(balancesAtom, saveIfUsed);
-    return () => {
-      unsubscribeResults();
-      unsubscribeBalances();
-    };
+    return registry.subscribe(profileOverlayAtom, (overlay) =>
+      store(registry, overlay)
+    );
   }, [registry]);
 };
 
-/** The state and the actions of the Game Dev Panel. */
+/** The state and the actions of the Game Dev Panel. Each action changes the overlay, not the Profile. */
 export const useDevOverrides = () => {
   const registry = use(RegistryContext);
+  const overlay = useAtomValue(profileOverlayAtom);
+  const change = (next: (overlay: ProfileOverlay | null) => ProfileOverlay) =>
+    registry.set(profileOverlayAtom, next(registry.get(profileOverlayAtom)));
   return {
-    unlockAll: useAtomValue(unlockAllAtom),
+    unlockAll: overlay?.collection !== undefined,
+    /** True while the panel shows a value over the Profile. */
+    active: overlay !== null,
     storageAvailable: useAtomValue(storageAtom),
-    setUnlockAll: (on: boolean) => {
-      applyUnlockAll(registry, on);
-      save(registry);
-    },
-    setResults: (results: StageResults) => {
-      applyResults(registry, results);
-      save(registry);
-    },
-    setBalance: (kind: BalanceKind, value: number) => {
-      registry.set(
-        balancesAtom,
-        setBalance(registry.get(balancesAtom), kind, value)
-      );
-      save(registry);
-    },
-    /** Removes the stored overrides and starts again as a new Player. */
-    clear: () => {
-      try {
-        localStorage.removeItem(DEV_OVERRIDES_KEY);
-      } catch {
-        // Nothing is stored when storage is blocked.
-      }
-      applyUnlockAll(registry, false);
-      applyResults(registry, {});
-      registry.set(balancesAtom, NEW_PLAYER_BALANCES);
-    },
+    setUnlockAll: (on: boolean) =>
+      change((current) => withUnlockAll(current, on)),
+    setResults: (stageResults: StageResults) =>
+      change((current) => ({ ...current, stageResults })),
+    setBalance: (kind: BalanceKind, value: number) =>
+      change((current) => ({
+        ...current,
+        ...setBalance(registry.get(balancesAtom), kind, value),
+      })),
+    /** Sets the XP to the start of the Player level. */
+    setLevel: (level: number) =>
+      change((current) => ({ ...current, xp: levelStartXp(level) })),
+    setGear: (slot: keyof GearLevels, value: number) =>
+      change((current) => ({
+        ...current,
+        gear: setGear(registry.get(profileAtom).gear, slot, value),
+      })),
+    /** Removes the overrides: the screens show the Profile again. */
+    clear: () => registry.set(profileOverlayAtom, null),
   };
 };

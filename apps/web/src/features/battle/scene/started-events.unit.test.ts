@@ -7,10 +7,12 @@ import {
   shouldPublish,
   startedEvents,
 } from "@/features/battle/scene/started-events";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 const session = startSession({
   stageId: "1-10",
   deck: getStarterDeck("vanguard"),
+  player: NEW_PLAYER,
   seed: 1,
 });
 
@@ -77,7 +79,12 @@ describe("shouldPublish", () => {
 
   it("publishes when the Tutorial changes", () => {
     const { tutorial } = startSession(
-      { stageId: "1-1", deck: getStarterDeck("vanguard"), seed: 1 },
+      {
+        stageId: "1-1",
+        deck: getStarterDeck("vanguard"),
+        player: NEW_PLAYER,
+        seed: 1,
+      },
       1,
       true
     );

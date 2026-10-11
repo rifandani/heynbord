@@ -14,33 +14,50 @@ export const HINTS = [
   "skillCard",
   "recall",
   "deckBuilder",
-  "freePack",
+  "unopenedPack",
+  "packs",
 ] as const;
 
 export type HintId = (typeof HINTS)[number];
 
-/** The seen Hints, as the Profile will keep them. */
-export const SeenHints = Schema.Array(Schema.Literals(HINTS));
+const isHintId = Schema.is(Schema.Literals(HINTS));
+
+/** The Hints in the seen list of the Profile. The Profile can keep IDs that this build does not know. */
+export const seenHintIds = (seen: readonly string[]): readonly HintId[] =>
+  seen.filter(isHintId);
+
+/** The seen list of the Profile with more Hints. It keeps each ID one time, and the IDs that this build does not know. */
+export const addSeenHints = (
+  seen: readonly string[],
+  hints: readonly HintId[]
+): readonly string[] => [...new Set([...seen, ...hints])];
 
 /** The Handbook Entry that "Read more" opens for each Hint. */
 export const HINT_ENTRY: Readonly<Record<HintId, EntryId>> = {
   skillCard: "skillCard",
   recall: "recall",
   deckBuilder: "deck",
-  freePack: "pack",
+  unopenedPack: "pack",
+  packs: "pack",
 };
 
 /**
  * The Battle Hints show near the Hand, the Deck builder Hint near the Deck
- * shortcut, and the free Pack Hint near the Open button of the Peddler Pack.
+ * shortcut, the Unopened Pack Hint near the Open button of the first
+ * Unopened Pack, and the Packs level Hint near the Card shop in the Town.
  */
-export type HintPlace = "hand" | "deckShortcut" | "freePackButton";
+export type HintPlace =
+  | "hand"
+  | "deckShortcut"
+  | "unopenedPackButton"
+  | "cardShop";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   skillCard: "hand",
   recall: "hand",
   deckBuilder: "deckShortcut",
-  freePack: "freePackButton",
+  unopenedPack: "unopenedPackButton",
+  packs: "cardShop",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */

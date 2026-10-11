@@ -1,5 +1,5 @@
 /* oxlint-disable eslint/no-await-in-loop -- the bot plays one real input at a time; each step reads the game state that the previous step made */
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 
 import { expect, test } from "./_base";
 import type { Page } from "./_base";
@@ -54,6 +54,67 @@ declare global {
     __THREE_GAME_DIAGNOSTICS__?: Diagnostics;
   }
 }
+
+/** The part of `window` that the test hooks (test-hooks.ts) add. */
+interface HookWindow extends Window {
+  readonly __THREE_GAME_TEST_HOOKS__?: {
+    readonly setCoin: (copper: number) => void;
+    readonly winStage: (stageId: string) => void;
+    readonly profileSaved: () => Promise<void>;
+  };
+}
+
+const setCoin = (page: Page, copper: number) =>
+  page.evaluate((value) => {
+    // SAFETY: the dev and QA builds install the test hooks on `window`.
+    (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setCoin(value);
+  }, copper);
+
+/** Shows the result of a won Battle of `stageId` (QA hook). */
+const winStage = (page: Page, stageId: string) =>
+  page.evaluate((id) => {
+    // SAFETY: the dev and QA builds install the test hooks on `window`.
+    (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.winStage(id);
+  }, stageId);
+
+/**
+ * Waits until the Profile is in IndexedDB, then loads `/play` again. A plain
+ * reload would open the `?state=` of the URL again.
+ */
+const reloadAfterSave = async (page: Page) => {
+  await page.evaluate(async () => {
+    // SAFETY: the dev and QA builds install the test hooks on `window`.
+    await (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.profileSaved();
+  });
+  await page.goto("/play");
+};
+
+/** Opens the Settings dialog from the Town Bar. */
+const openSettings = async (page: Page) => {
+  // The keyboard, because the "ready to use offline" toast can cover the
+  // right end of the Town Bar.
+  await page.getByTestId("town-settings").press("Enter");
+  await expect(page.getByTestId("settings-dialog")).toBeVisible();
+};
+
+/** Imports a file from the Settings dialog. */
+const importFile = async (
+  page: Page,
+  file: { readonly name: string; readonly buffer: Buffer }
+) => {
+  const choosing = page.waitForEvent("filechooser");
+  await page.getByTestId("settings-import").click();
+  const chooser = await choosing;
+  await chooser.setFiles({ ...file, mimeType: "application/json" });
+};
+
+/** Exports the Profile from the Settings dialog, and gives the file. */
+const exportFile = async (page: Page) => {
+  const downloading = page.waitForEvent("download");
+  await page.getByTestId("settings-export").click();
+  const download = await downloading;
+  return { name: download.suggestedFilename(), path: await download.path() };
+};
 
 // WebGL suites run one test at a time: parallel contexts share the GPU and slow the timed phases.
 /** The Stages of Region 1, in Trail order. */
@@ -245,7 +306,10 @@ test.describe("Battle bot playtest", () => {
         consoleErrors.push(message.text());
       }
     });
-    await startBattle(page, "1-1", "raiders", 7);
+    // A new Player is level 1 with no Gear. With this simple bot, the Raiders
+    // lose some seeds of the Tutorial (seed 7 is one), so the test uses a
+    // seed that wins.
+    await startBattle(page, "1-1", "raiders", 4);
     // Stage 1-1 is the Tutorial until its first win (GDD 8.3).
     await expect(page.getByTestId("tutorial-text")).toHaveAttribute(
       "data-step",
@@ -259,7 +323,7 @@ test.describe("Battle bot playtest", () => {
     const fps: number[] = [];
     const drawCalls: number[] = [];
     const metrics = {
-      seed: 7,
+      seed: 4,
       stage: "1-1",
       deck: "raiders",
       turns: 0,
@@ -540,12 +604,11 @@ test.describe("Handbook (issue #25)", () => {
     await page.getByRole("option", { name: "Pack" }).click();
     const guide = page.getByTestId("handbook-pack-guide");
     await expect(guide).toBeVisible();
-    // The free first Peddler Pack is selected, with its Free tag.
+    // The Peddler Pack is selected first.
     await expect(page.getByTestId("handbook-pack-tab-peddler")).toHaveAttribute(
       "aria-selected",
       "true"
     );
-    await expect(guide.getByTestId("pack-free-tag")).toBeVisible();
     await expect(page.getByTestId("handbook-pack-track")).toHaveAttribute(
       "data-left",
       "8"
@@ -947,6 +1010,249 @@ test.describe("Campaign", () => {
     await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
       "Coin: 1 Silver, 80 Copper"
     );
+
+    // The Profile keeps the Stars, the Coin and the next Open Stage.
+    await reloadAfterSave(page);
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 1 Silver, 80 Copper"
+    );
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("stage-1-1")).toHaveAccessibleName(
+      `Stage 1-1, done, ${stars} of 3 Stars`
+    );
+    await expect(page.getByTestId("stage-1-2")).toHaveAttribute(
+      "data-state",
+      "open"
+    );
+  });
+});
+
+test.describe("Region 1 rewards (issue #54)", () => {
+  test("a new Player at level 1 sees the Packs shortcut locked with 'Opens at level 2', and cannot select the Card shop", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+    const shortcut = page.getByTestId("town-shortcut-packs");
+    await expect(shortcut).toHaveAttribute("data-locked", "true");
+    await expect(shortcut).toHaveAccessibleName("Packs, opens at level 2");
+    await shortcut.focus();
+    await expect(page.getByTestId("town-tooltip-packs")).toContainText(
+      "Opens at level 2"
+    );
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("packs")).toBeHidden();
+
+    const shop = page.getByTestId("building-cardShop");
+    await expect(shop).toHaveAttribute("data-locked", "true");
+    await expect(shop).toHaveAccessibleName("Packs, opens at level 2");
+    await expect(shop.getByTestId("building-lock-plate")).toHaveText("Level 2");
+    await shop.focus();
+    await expect(page.getByTestId("building-tooltip-cardShop")).toContainText(
+      "Opens at level 2"
+    );
+    await shop.click();
+    await expect(page.getByTestId("packs")).toBeHidden();
+    await expect(page.getByTestId("town")).toBeVisible();
+  });
+
+  test("Stage 1-1 and 1-2 give XP and cards, then level 2 opens the Card shop with the Packs Hint and the First Pack", async ({
+    page,
+  }) => {
+    await page.goto("/play?state=victory&seed=3");
+    const result = page.getByTestId("battle-result");
+    await expect(result).toBeVisible({ timeout: 30_000 });
+    // The first win of Stage 1-1: 2 × 40 XP and its first-win card.
+    const xp = page.getByTestId("result-xp");
+    await expect(xp).toHaveAttribute("data-xp", "80");
+    await expect(xp).toContainText("+80 XP");
+    await expect(page.getByTestId("result-card")).toHaveAttribute(
+      "data-card",
+      "human.militiaRecruit"
+    );
+    await expect(page.getByTestId("result-level-up")).toHaveCount(0);
+    await page.getByTestId("back-to-campaign").click();
+    await expect(page.getByTestId("town-shortcut-packs")).toHaveAttribute(
+      "data-locked",
+      "true"
+    );
+
+    // 80 + 80 XP is level 2.
+    await winStage(page, "1-2");
+    await expect(result).toBeVisible();
+    await expect(page.getByTestId("result-card")).toHaveAttribute(
+      "data-card",
+      "orc.scrapRaider"
+    );
+    await expect(page.getByTestId("result-level-up")).toHaveText(
+      "Level up! Level 2"
+    );
+    await page.getByTestId("back-to-campaign").click();
+    // One Hint at a time: the Deck builder Hint can show first, for the new card.
+    const hint = page.getByTestId("hint");
+    if (await hint.isVisible()) {
+      await page.getByTestId("hint-close").click();
+    }
+
+    await page.getByTestId("town-shortcut-town").click();
+    await expect(hint).toHaveAttribute("data-hint", "packs");
+    await expect(page.getByTestId("town-shortcut-packs")).not.toHaveAttribute(
+      "data-locked"
+    );
+    const shop = page.getByTestId("building-cardShop");
+    await expect(shop).not.toHaveAttribute("data-locked");
+    await shop.click();
+    await expect(page.getByTestId("packs")).toBeVisible();
+    await expect(
+      page.getByTestId("unopened-open-peddler-all")
+    ).toHaveAccessibleName("Open one Peddler Pack, free");
+  });
+
+  test("a reload on the result keeps the rewards, one time", async ({
+    page,
+  }) => {
+    await page.goto("/play?state=victory&seed=3");
+    await expect(page.getByTestId("battle-result")).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.getByTestId("result-coin")).toHaveAttribute(
+      "data-copper",
+      "180"
+    );
+    await reloadAfterSave(page);
+    await expect(page.getByTestId("town")).toBeVisible();
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 1 Silver, 80 Copper"
+    );
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("stage-1-1")).toHaveAttribute(
+      "data-state",
+      "done"
+    );
+    // A second load does not give the rewards again.
+    await reloadAfterSave(page);
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 1 Silver, 80 Copper"
+    );
+  });
+
+  test("a Star chest with its Stars glows; a claim shows its rewards, adds its Coin, and the chest stays open", async ({
+    page,
+  }) => {
+    // Stages 1-1 to 1-9 with 20 Stars.
+    await page.goto("/play?state=campaign-progress");
+    const chest = page.getByTestId("star-chest-10");
+    await expect(chest).toHaveAttribute("data-state", "claimable");
+    await expect(chest).toHaveAccessibleName(
+      "Chest at 10 Stars. You have the Stars. Open it to claim its rewards."
+    );
+    await expect(page.getByTestId("star-chest-30")).toHaveAccessibleName(
+      "Chest at 30 Stars. 10 more Stars open this chest."
+    );
+    await chest.click();
+    const rewards = page.getByTestId("chest-rewards");
+    await expect(rewards).toBeVisible();
+    await expect(page.getByTestId("chest-reward-pack")).toHaveText(
+      "1 Merchant Pack waits in the Card shop."
+    );
+    await page.getByTestId("chest-rewards-close").click();
+    await expect(rewards).toBeHidden();
+    await expect(chest).toHaveAttribute("data-state", "claimed");
+    await expect(chest).toHaveAccessibleName("Chest at 10 Stars. Claimed.");
+    await page.getByTestId("town-shortcut-town").click();
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 3 Silver"
+    );
+
+    await reloadAfterSave(page);
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("star-chest-10")).toHaveAttribute(
+      "data-state",
+      "claimed"
+    );
+  });
+});
+
+test.describe("Profile (issue #52)", () => {
+  test("a new Player Battle uses level 1 and no Gear", async ({ page }) => {
+    await page.goto("/play");
+    await page.getByTestId("building-townGate").click();
+    await page.getByTestId("stage-1-1").click();
+    await page.getByTestId("start-battle").click();
+    await expect
+      .poll(() => battleMode(page), { timeout: 30_000 })
+      .toBe("battle");
+    // 30 base HP + 1 for level 1, and no Armor Gear.
+    const battle = await state(page);
+    expect(battle?.playerHp).toBe(31);
+  });
+
+  test("Export then Import gives the same Town balances", async ({ page }) => {
+    await page.goto("/play");
+    await expect(page.getByTestId("building-townGate")).toBeEnabled();
+    await setCoin(page, 12_345);
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 1 Gold, 23 Silver, 45 Copper"
+    );
+    await openSettings(page);
+    const exported = await exportFile(page);
+    expect(exported.name).toMatch(
+      /^heynbord-profile-\d{4}-\d{2}-\d{2}\.json$/u
+    );
+    await page.getByTestId("settings-close").press("Enter");
+
+    // Spend the Coin, then import the file.
+    await setCoin(page, 0);
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 0 Copper"
+    );
+    await page.getByTestId("building-townGate").click();
+    await expect(page.getByTestId("campaign")).toBeVisible();
+    await openSettings(page);
+    await importFile(page, {
+      name: exported.name,
+      buffer: await readFile(exported.path),
+    });
+    const confirm = page.getByTestId("import-confirm-dialog");
+    await expect(confirm).toContainText(
+      "This replaces your progress. You cannot undo this."
+    );
+    await page.getByTestId("import-confirm").click();
+    await expect(page.getByTestId("settings-dialog")).toBeHidden();
+    await expect(page.getByTestId("town")).toBeVisible();
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 1 Gold, 23 Silver, 45 Copper"
+    );
+    await reloadAfterSave(page);
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 1 Gold, 23 Silver, 45 Copper"
+    );
+  });
+
+  test("Import refuses a file that is not a progress file, or that was changed", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await expect(page.getByTestId("building-townGate")).toBeEnabled();
+    await openSettings(page);
+    await importFile(page, {
+      name: "notes.json",
+      buffer: Buffer.from("{ not json"),
+    });
+    const refused = page.getByTestId("settings-import-error");
+    await expect(refused).toHaveText(
+      "This file is not a Heynbord progress file."
+    );
+
+    const exported = await exportFile(page);
+    const text = await readFile(exported.path, "utf-8");
+    // A hand change to the Coin does not match the checksum.
+    await importFile(page, {
+      name: "changed.json",
+      buffer: Buffer.from(text.replace('"coin": 0', '"coin": 999999')),
+    });
+    await expect(refused).toHaveAttribute("data-reason", "ChecksumMismatch");
+    await expect(page.getByTestId("import-confirm-dialog")).toHaveCount(0);
   });
 });
 

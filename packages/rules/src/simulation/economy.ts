@@ -39,6 +39,7 @@ import { outcomeCoin, stageCoin } from "../content/stage-coin";
 import type { StageOutcome } from "../content/stage-coin";
 import { STAGES } from "../content/stages";
 import { CAMPAIGN_REGIONS, starChestsFor } from "../content/star-chests";
+import { isUnlocked } from "../content/unlocks";
 import {
   COMBINE_COPIES,
   combineCoin,
@@ -99,15 +100,6 @@ const STAGES_PER_REGION = 10;
 
 /** A Heynspire Floor that fails this many times in a row sends the Player to a Dungeon. */
 const FLOOR_FAILS_BEFORE_DUNGEON = 3;
-
-/** The Player level that unlocks each Player action (GDD 7.1). */
-const UNLOCK_LEVEL = {
-  packs: 2,
-  combine: 3,
-  extract: 3,
-  gear: 5,
-  craft: 6,
-} as const;
 
 /** The Player keeps this many copies of a card in one Rank. Extract takes the others. */
 const KEEP_COPIES = 2;
@@ -461,7 +453,7 @@ const openPacks = (
  * it, else one Pack. Returns false when the Player cannot pay for one Pack.
  */
 const buyPack = (player: EconomyPlayer, packId: PackId): boolean => {
-  if (levelOf(player) < UNLOCK_LEVEL.packs) {
+  if (!isUnlocked(levelOf(player), "packs")) {
     return false;
   }
   const { price } = getPack(packId);
@@ -476,7 +468,7 @@ const buyPack = (player: EconomyPlayer, packId: PackId): boolean => {
 
 /** Upgrades the lowest Gear item by one level. Returns false when it cannot. */
 const upgradeGear = (player: EconomyPlayer, upTo = MAX_GEAR_LEVEL): boolean => {
-  if (levelOf(player) < UNLOCK_LEVEL.gear) {
+  if (!isUnlocked(levelOf(player), "gear")) {
     return false;
   }
   const slot = GEAR_SLOTS.reduce((lowest, current) =>
@@ -503,7 +495,7 @@ const combinePairs = (
   player: EconomyPlayer,
   lowestTarget: RankId = "uncommon"
 ): void => {
-  if (levelOf(player) < UNLOCK_LEVEL.combine) {
+  if (!isUnlocked(levelOf(player), "combine")) {
     return;
   }
   const first = Math.max(RANKS.indexOf(lowestTarget), 1);
@@ -527,7 +519,7 @@ const combinePairs = (
 
 /** Extracts each copy above 2 of a card in the same Rank (Economy 3.3). */
 const extractExtras = (player: EconomyPlayer): void => {
-  if (levelOf(player) < UNLOCK_LEVEL.extract) {
+  if (!isUnlocked(levelOf(player), "extract")) {
     return;
   }
   for (const counts of player.copies.values()) {
@@ -561,7 +553,7 @@ const craftCandidates = (player: EconomyPlayer): readonly CardDefinition[] =>
 
 /** Crafts the cheapest candidate while the Essence is enough. */
 const craftPairs = (player: EconomyPlayer): void => {
-  if (levelOf(player) < UNLOCK_LEVEL.craft) {
+  if (!isUnlocked(levelOf(player), "craft")) {
     return;
   }
   for (const card of craftCandidates(player)) {
@@ -619,7 +611,7 @@ const spendBalanced = (player: EconomyPlayer): void => {
  * slot. Then they Extract each copy above 2 and Craft.
  */
 export const spend = (player: EconomyPlayer, playStyle: PlayStyle): void => {
-  if (!player.freePackOpened && levelOf(player) >= UNLOCK_LEVEL.packs) {
+  if (!player.freePackOpened && isUnlocked(levelOf(player), "packs")) {
     player.freePackOpened = true;
     openPacks(player, "peddler", ALL_CARDS, false);
   }

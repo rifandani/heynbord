@@ -1,4 +1,5 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
+import { isUnlocked } from "@workspace/rules";
 import type { ContextType } from "react";
 import { useContext, useEffect } from "react";
 
@@ -13,14 +14,15 @@ import {
   nextHint,
 } from "@/features/hint/hint";
 import { seenHintsAtom, shownHintAtom } from "@/features/hint/hint.atoms";
-import { packStateAtom } from "@/features/packs/packs.atoms";
+import { unopenedPacksAtom } from "@/features/packs/packs.atoms";
+import { playerLevelAtom } from "@/features/profile/profile.atoms";
 
 type Registry = ContextType<typeof RegistryContext>;
 
 /**
  * Shows the first met Hint that the Player did not see, when no Hint shows
  * now, and keeps it as seen. It reads the seen list from the registry, not
- * from a render: the first render after a page load has the server value.
+ * from a render, which can be older.
  */
 const showNext = (registry: Registry, met: readonly HintId[]) => {
   if (registry.get(shownHintAtom) !== null) {
@@ -29,7 +31,7 @@ const showNext = (registry: Registry, met: readonly HintId[]) => {
   const seen = registry.get(seenHintsAtom);
   const hint = nextHint(met, seen);
   if (hint !== null) {
-    registry.set(seenHintsAtom, [...seen, hint]);
+    registry.set(seenHintsAtom, [hint]);
     registry.set(shownHintAtom, hint);
   }
 };
@@ -96,13 +98,35 @@ const useAnchoredHint = (hint: HintId, met: boolean) => {
   }, [registry, hint, met]);
 };
 
+/** Closes `hint` when `active` goes false, for example when its screen closes. */
+const useCloseWhenInactive = (hint: HintId, active: boolean) => {
+  const registry = useContext(RegistryContext);
+  useEffect(() => {
+    if (!active) {
+      return;
+    }
+    return () => {
+      if (registry.get(shownHintAtom) === hint) {
+        registry.set(shownHintAtom, null);
+      }
+    };
+  }, [registry, hint, active]);
+};
+
 /**
- * The Deck builder Hint (GDD 8.3): the Player owns a card that is in no Deck.
- * It shows near the Deck shortcut of the Town Bar.
+ * The Town Hints (GDD 8.3). The Packs level Hint shows near the Card shop
+ * the first time that the Town shows with Player level 2 or more, and it
+ * closes when the Town closes. It goes before the Deck builder Hint. The
+ * Deck builder Hint shows near the Deck shortcut of the Town Bar when the
+ * Player owns a card that is in no Deck.
  */
-export const useTownHints = (active: boolean) => {
+export const useTownHints = (active: boolean, inTown: boolean) => {
   const collection = useAtomValue(collectionAtom);
   const slots = useAtomValue(deckSlotsAtom);
+  const level = useAtomValue(playerLevelAtom);
+  const packs = active && inTown && isUnlocked(level, "packs");
+  useAnchoredHint("packs", packs);
+  useCloseWhenInactive("packs", packs);
   useAnchoredHint(
     "deckBuilder",
     active &&
@@ -114,10 +138,13 @@ export const useTownHints = (active: boolean) => {
 };
 
 /**
- * The free Pack Hint (Economy 3.1): the first Peddler Pack is free. It shows
- * near the Open button of the Peddler Pack while the Packs screen is open.
+ * The Unopened Pack Hint (Economy 3.1): the Player has a Pack to open for
+ * free. It shows near the Open button of the first Unopened Pack while the
+ * Packs screen is open, and it closes when the Packs screen closes: its
+ * anchor goes away.
  */
 export const usePacksHints = (active: boolean) => {
-  const packState = useAtomValue(packStateAtom);
-  useAnchoredHint("freePack", active && !packState.freePackUsed);
+  const unopened = useAtomValue(unopenedPacksAtom);
+  useAnchoredHint("unopenedPack", active && unopened.length > 0);
+  useCloseWhenInactive("unopenedPack", active);
 };

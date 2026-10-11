@@ -14,6 +14,7 @@ import {
   RALLY_PULSE,
   summonOrigin,
 } from "@/features/battle/scene/unit-pose";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 const unit: UnitView = {
   id: 7,
@@ -60,6 +61,7 @@ const pose = (
 const { view, rules } = startSession({
   stageId: "1-10",
   deck: getStarterDeck("vanguard"),
+  player: NEW_PLAYER,
   seed: 1,
 });
 

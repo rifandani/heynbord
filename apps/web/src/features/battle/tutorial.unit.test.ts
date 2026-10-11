@@ -10,7 +10,6 @@ import {
   endTurn,
   isHeld,
   isIdle,
-  isTutorialStageWin,
   newestSession,
   playCard,
   skip,
@@ -32,10 +31,16 @@ import {
   startTutorial,
   tutorialMarks,
 } from "@/features/battle/tutorial";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 const tutorialSession = (seed = 1) =>
   startSession(
-    { stageId: "1-1", deck: getStarterDeck("vanguard"), seed },
+    {
+      stageId: "1-1",
+      deck: getStarterDeck("vanguard"),
+      player: NEW_PLAYER,
+      seed,
+    },
     1,
     true
   );
@@ -365,6 +370,7 @@ describe("the Tutorial in a Battle session", () => {
       startSession({
         stageId: "1-1",
         deck: getStarterDeck("vanguard"),
+        player: NEW_PLAYER,
         seed: 1,
       }).tutorial
     ).toBeNull();
@@ -401,31 +407,5 @@ describe("the Tutorial in a Battle session", () => {
     expect(newestSession(stored, ahead)).toBe(ahead);
     const closed = changeTutorial(stored, closeText);
     expect(newestSession(closed, ahead)).toBe(closed);
-  });
-});
-
-const finished = (stageId: string, winner: "player" | "enemy") => {
-  const session = startSession({
-    stageId,
-    deck: getStarterDeck("vanguard"),
-    seed: 1,
-  });
-  return {
-    ...session,
-    rules: {
-      ...session.rules,
-      status: "finished" as const,
-      result: { winner, reason: "heroDefeated" as const },
-    },
-  };
-};
-
-describe("isTutorialStageWin", () => {
-  it("is a Player win of Stage 1-1 only", () => {
-    expect(isTutorialStageWin(finished("1-1", "player"))).toBe(true);
-    expect(isTutorialStageWin(finished("1-1", "enemy"))).toBe(false);
-    expect(isTutorialStageWin(finished("1-2", "player"))).toBe(false);
-    expect(isTutorialStageWin(tutorialSession())).toBe(false);
-    expect(isTutorialStageWin(null)).toBe(false);
   });
 });

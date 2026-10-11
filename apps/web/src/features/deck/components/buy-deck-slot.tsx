@@ -1,11 +1,11 @@
-import { useAtom } from "@effect/atom-react";
+import { RegistryContext, useAtomValue } from "@effect/atom-react";
 import {
   buyDeckSlot,
   coinDenominations,
   nextDeckSlotPrice,
 } from "@workspace/rules";
 import { cn } from "cn";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import {
   Button,
   Dialog,
@@ -20,6 +20,7 @@ import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { deckSlotsAtom } from "@/features/deck/deck.atoms";
+import { profileAtom } from "@/features/profile/profile.atoms";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
 import { balancesAtom } from "@/features/town/town.atoms";
@@ -35,8 +36,9 @@ export const BuyDeckSlot = ({
   readonly onBought: (slotId: string) => void;
 }) => {
   const { tr, locale } = useGameText();
-  const [slots, setSlots] = useAtom(deckSlotsAtom);
-  const [balances, setBalances] = useAtom(balancesAtom);
+  const registry = useContext(RegistryContext);
+  const slots = useAtomValue(deckSlotsAtom);
+  const balances = useAtomValue(balancesAtom);
   const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const format = (value: number) => number.format(value);
   const words = (copper: number) =>
@@ -52,12 +54,12 @@ export const BuyDeckSlot = ({
   const canBuy = balances.coin >= price;
 
   const buy = () => {
-    const bought = buyDeckSlot({ coin: balances.coin, deckSlots: slots });
+    // It reads the registry, not a render: two fast presses buy two times.
+    const bought = buyDeckSlot(registry.get(profileAtom));
     if (!bought) {
       return;
     }
-    setSlots(bought.profile.deckSlots);
-    setBalances({ ...balances, coin: bought.profile.coin });
+    registry.set(profileAtom, bought.profile);
     unlockAudio();
     playSound("select", 0);
     onBought(bought.slot.id);

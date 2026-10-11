@@ -8,6 +8,7 @@ import {
   statTone,
   summonAttack,
 } from "@/features/battle/scene/unit-stats";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 describe("statTone", () => {
   it("is white when the number equals the summon value", () => {
@@ -37,6 +38,7 @@ describe("shownAttack", () => {
   const { view } = startSession({
     stageId: "1-10",
     deck: getStarterDeck("vanguard"),
+    player: NEW_PLAYER,
     seed: 1,
   });
   const [first] = view.units;

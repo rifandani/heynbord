@@ -25,12 +25,6 @@ import {
 
 import type { TextRef } from "@/features/battle/card-text";
 
-/**
- * The Player level for the Deck size limits until the Profile exists: the
- * level of a new Player, 5 to 10 cards. The Starter Decks have 10 cards for it.
- */
-const DECK_PLAYER_LEVEL = 1;
-
 /** The Countdowns that a card can have (GDD 5.1), the columns of the Countdown curve. */
 const COUNTDOWNS = [1, 2, 3, 4, 5, 6] as const;
 
@@ -46,14 +40,15 @@ export const defaultSlotName = (slot: DeckSlot, index: number): TextRef =>
     ? { key: `decks.${slot.id}.name` }
     : { key: "deckBuilder.slotName", args: { number: index + 1 } };
 
-/** The Deck rules input of a slot. */
+/** The Deck rules input of a slot. `level`: the Player level, which sets the Deck size limits. */
 export const slotInput = (
   slot: DeckSlot,
-  collection: Collection
+  collection: Collection,
+  level: number
 ): DeckInput => ({
   deck: slot.deck,
   classId: slot.classId,
-  level: DECK_PLAYER_LEVEL,
+  level,
   collection,
 });
 

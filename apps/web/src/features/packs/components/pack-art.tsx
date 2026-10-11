@@ -72,21 +72,19 @@ const PoolStamp = ({ pool }: { readonly pool: PackPool }) => {
 
 /**
  * One Pack as a piece on a shelf: the closed image with a contact shadow (the
- * art has none), the Race Stamp or the Class Stamp, and the Free tag. The code
+ * art has none), and the Race Stamp or the Class Stamp. The code
  * makes these states, not the art (Town Concepts 8.1). Decorative: the Pack
  * name is in the text next to it.
  */
 export const PackArt = ({
   pack,
   pool,
-  free = false,
   dim = false,
   sheen = false,
   className,
 }: {
   readonly pack: PackId;
   readonly pool: PackPool;
-  readonly free?: boolean;
   /** The Player cannot buy this Pack now. */
   readonly dim?: boolean;
   /**
@@ -96,50 +94,39 @@ export const PackArt = ({
    */
   readonly sheen?: boolean;
   readonly className?: string;
-}) => {
-  const { tr } = useGameText();
-  return (
-    <span
-      className={cn("relative block aspect-[2/3] text-[10px]", className)}
-      aria-hidden
-    >
-      <span className="absolute inset-x-[8%] bottom-[3%] h-[7%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(0,0,0,0.6),transparent)]" />
-      <img
-        src={packImage(pack)}
-        alt=""
-        width={512}
-        height={768}
-        draggable={false}
-        className={cn(
-          "relative size-full object-contain transition-[filter] duration-200 select-none",
-          dim && "brightness-[0.7] grayscale-[0.35]"
-        )}
-      />
-      {sheen ? (
-        <span
-          className="pointer-events-none absolute inset-0 overflow-hidden"
-          style={{
-            maskImage: `url(${packImage(pack)})`,
-            maskSize: "contain",
-            maskRepeat: "no-repeat",
-            maskPosition: "center",
-          }}
-        >
-          <span className="absolute inset-y-0 left-0 w-1/2 translate-x-[-130%] bg-[linear-gradient(105deg,transparent_15%,rgba(255,246,220,0.5)_50%,transparent_85%)] motion-safe:group-hover/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-has-[[data-focus-visible]]/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)]" />
-        </span>
-      ) : null}
-      <PoolStamp pool={pool} />
-      {free ? (
-        <span
-          className="font-display absolute top-[16%] -right-[6%] rotate-[8deg] rounded-md border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-2 py-0.5 text-[max(12px,1.4em)] leading-tight font-black text-[#2a1a05] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
-          data-testid="pack-free-tag"
-        >
-          {tr("packs.free")}
-        </span>
-      ) : null}
-    </span>
-  );
-};
+}) => (
+  <span
+    className={cn("relative block aspect-[2/3] text-[10px]", className)}
+    aria-hidden
+  >
+    <span className="absolute inset-x-[8%] bottom-[3%] h-[7%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(0,0,0,0.6),transparent)]" />
+    <img
+      src={packImage(pack)}
+      alt=""
+      width={512}
+      height={768}
+      draggable={false}
+      className={cn(
+        "relative size-full object-contain transition-[filter] duration-200 select-none",
+        dim && "brightness-[0.7] grayscale-[0.35]"
+      )}
+    />
+    {sheen ? (
+      <span
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+        style={{
+          maskImage: `url(${packImage(pack)})`,
+          maskSize: "contain",
+          maskRepeat: "no-repeat",
+          maskPosition: "center",
+        }}
+      >
+        <span className="absolute inset-y-0 left-0 w-1/2 translate-x-[-130%] bg-[linear-gradient(105deg,transparent_15%,rgba(255,246,220,0.5)_50%,transparent_85%)] motion-safe:group-hover/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-has-[[data-focus-visible]]/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)]" />
+      </span>
+    ) : null}
+    <PoolStamp pool={pool} />
+  </span>
+);
 
 /**
  * A Coin price on any face: each denomination with its coin and its short

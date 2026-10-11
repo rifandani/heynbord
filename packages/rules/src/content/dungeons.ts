@@ -1,6 +1,7 @@
 import { outcomeXp } from "./player-levels";
 import { outcomeCoin } from "./stage-coin";
 import type { StageOutcome } from "./stage-coin";
+import { UNLOCK_LEVELS } from "./unlocks";
 
 export interface DungeonRewardDefinition {
   /** The Dungeon number (GDD 8.4). */
@@ -29,7 +30,7 @@ export interface DungeonRewardDefinition {
 export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
   {
     dungeon: 1,
-    unlockLevel: 10,
+    unlockLevel: UNLOCK_LEVELS.dungeon1,
     winCoin: 200,
     winXp: 140,
     winEssence: 0,
@@ -37,7 +38,7 @@ export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
   },
   {
     dungeon: 2,
-    unlockLevel: 20,
+    unlockLevel: UNLOCK_LEVELS.dungeon2,
     winCoin: 300,
     winXp: 200,
     winEssence: 0,
@@ -45,7 +46,7 @@ export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
   },
   {
     dungeon: 3,
-    unlockLevel: 30,
+    unlockLevel: UNLOCK_LEVELS.dungeon3,
     winCoin: 400,
     winXp: 0,
     winEssence: 15,

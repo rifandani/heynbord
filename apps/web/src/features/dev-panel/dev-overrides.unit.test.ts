@@ -1,22 +1,35 @@
 import type { StageDefinition } from "@workspace/rules";
-import { CARDS, MAX_COPIES, ranksOf, STAGES } from "@workspace/rules";
+import {
+  CARDS,
+  MAX_COPIES,
+  MAX_GEAR_LEVEL,
+  newProfile,
+  ranksOf,
+  STAGES,
+} from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
   canSetStars,
+  fromOverlay,
+  gearLevel,
   lastWonStage,
   nextStage,
   parseOverrides,
   serializeOverrides,
   setBalance,
+  setGear,
   setStageStars,
   stageOrder,
+  toOverlay,
   totalCopies,
   undoLast,
   unlockedCollection,
   wholeBalance,
   winNext,
+  withUnlockAll,
 } from "@/features/dev-panel/dev-overrides";
+import { applyOverlay } from "@/features/profile/profile";
 
 // SAFETY: a fixture Stage: only `id`, `region` and `number` matter to the
 // Stage order, and the rest comes from a real Stage.
@@ -83,6 +96,76 @@ describe("balances", () => {
       coin: 100,
       essence: 40,
       heynstones: 7,
+    });
+  });
+});
+
+describe("Gear", () => {
+  it("keeps a Gear level whole, from 0 to the maximum", () => {
+    expect(gearLevel(3.4)).toBe(3);
+    expect(gearLevel(-1)).toBe(0);
+    expect(gearLevel(99)).toBe(MAX_GEAR_LEVEL);
+  });
+
+  it("sets one slot and keeps the others", () => {
+    const gear = { weapon: 1, armor: 2, trinket: 3, banner: 4 };
+    expect(setGear(gear, "armor", 7)).toEqual({ ...gear, armor: 7 });
+  });
+});
+
+describe("overrides over a Profile", () => {
+  const profile = newProfile(42);
+
+  it("shows the stored values over the Profile", () => {
+    const overlay = toOverlay({
+      unlockAll: true,
+      stageResults: { "1-1": 3 },
+      balances: { coin: 15_400, essence: 30, heynstones: 150 },
+      xp: 640,
+      gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
+    });
+    const shown = applyOverlay(profile, overlay);
+    expect(shown.collection).toEqual(unlockedCollection());
+    expect(shown.stageResults).toEqual({ "1-1": 3 });
+    expect(shown.coin).toBe(15_400);
+    expect(shown.xp).toBe(640);
+    expect(shown.gear.weapon).toBe(3);
+    // The rest is the Profile.
+    expect(shown.deckSlots).toBe(profile.deckSlots);
+  });
+
+  it("covers only the values that the panel set", () => {
+    const overlay = toOverlay({ unlockAll: false, xp: 160 });
+    expect(overlay).toEqual({ xp: 160 });
+    expect(applyOverlay(profile, overlay).collection).toBe(profile.collection);
+    expect(toOverlay({ unlockAll: false })).toBeNull();
+  });
+
+  it("stores what the overlay covers, and reads it back", () => {
+    const overlay = {
+      ...withUnlockAll(null, true),
+      coin: 1,
+      essence: 2,
+      heynstones: 3,
+      gear: { weapon: 0, armor: 1, trinket: 0, banner: 0 },
+    };
+    const overrides = fromOverlay(overlay);
+    expect(overrides).toEqual({
+      unlockAll: true,
+      balances: { coin: 1, essence: 2, heynstones: 3 },
+      gear: { weapon: 0, armor: 1, trinket: 0, banner: 0 },
+    });
+    expect(overrides && toOverlay(overrides)).toEqual(overlay);
+    expect(fromOverlay(null)).toBeNull();
+    expect(fromOverlay({})).toBeNull();
+  });
+
+  it("removes the unlocked Collection", () => {
+    expect(withUnlockAll({ coin: 5 }, true).collection).toEqual(
+      unlockedCollection()
+    );
+    expect(withUnlockAll({ coin: 5, collection: [] }, false)).toEqual({
+      coin: 5,
     });
   });
 });

@@ -41,6 +41,8 @@ import {
   useTownHints,
 } from "@/features/hint/use-hints";
 import { PacksScreen } from "@/features/packs/components/packs-screen";
+import { profileReadyAtom } from "@/features/profile/profile.atoms";
+import { useProfileStore } from "@/features/profile/use-profile-store";
 import { TownBar } from "@/features/town/components/town-bar";
 import {
   TownScreen,
@@ -290,19 +292,23 @@ export const PlayScreen = () => {
   const soundVolume = useAtomValue(soundVolumeAtom);
   const [screen, setScreen] = useAtom(gameScreenAtom);
   const { leaving, open: handleOpen } = useTownLeave(screen, setScreen);
+  const ready = useAtomValue(profileReadyAtom);
 
+  useProfileStore();
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
-  useTownHints(!battle.session);
-  usePacksHints(!battle.session && screen === "packs");
+  // A Hint waits for the Profile: the seen list is in it.
+  useTownHints(ready && !battle.session, screen === "town");
+  usePacksHints(ready && !battle.session && screen === "packs");
 
   useEffect(() => setSoundEnabled(soundOn), [soundOn]);
   useEffect(() => setSoundVolume(soundVolume), [soundVolume]);
+  // The QA states change the Profile, so the hooks wait for it to load.
   useEffect(
     () =>
-      qaEnabled()
+      ready && qaEnabled()
         ? installTestHooks(registry, stateFromSearch(location.search))
         : undefined,
-    [registry]
+    [registry, ready]
   );
 
   return (

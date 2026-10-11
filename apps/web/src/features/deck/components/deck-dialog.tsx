@@ -45,6 +45,7 @@ import {
   deckSlotsAtom,
 } from "@/features/deck/deck.atoms";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { playerLevelAtom } from "@/features/profile/profile.atoms";
 import { shortcutImage } from "@/features/town/town";
 
 /** A gold corner of the cover, as on the painted book of the Deck icon. */
@@ -179,9 +180,10 @@ const DeckSpread = ({
   const [slots, setSlots] = useAtom(deckSlotsAtom);
   const [activeId, setActiveId] = useAtom(activeDeckIdAtom);
   const collection = useAtomValue(collectionAtom);
+  const level = useAtomValue(playerLevelAtom);
   const { peek, bind, hide, wasLongPress, onPanelBlur } = useCardPeek();
 
-  const input = slotInput(slot, collection);
+  const input = slotInput(slot, collection, level);
   const problems = deckProblems(input);
   const filled = autoFill(input);
   const change = (next: (current: DeckSlot) => DeckSlot) =>

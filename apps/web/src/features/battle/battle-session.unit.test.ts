@@ -19,6 +19,7 @@ import {
 } from "@/features/battle/battle-session";
 import { eventDuration } from "@/features/battle/battle-timeline";
 import { viewFromState } from "@/features/battle/battle-view";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 const readyIndex = (session: ReturnType<typeof startSession>) =>
   session.view.sides.player.hand.findIndex((card) => card.countdown === 0);
@@ -27,7 +28,12 @@ const readyIndex = (session: ReturnType<typeof startSession>) =>
 const SEED = Array.from({ length: 50 }, (_, index) => index + 1).find(
   (seed) =>
     readyIndex(
-      startSession({ stageId: "1-1", deck: getStarterDeck("vanguard"), seed })
+      startSession({
+        stageId: "1-1",
+        deck: getStarterDeck("vanguard"),
+        player: NEW_PLAYER,
+        seed,
+      })
     ) >= 0
 );
 
@@ -35,6 +41,7 @@ const start = () =>
   startSession({
     stageId: "1-1",
     deck: getStarterDeck("vanguard"),
+    player: NEW_PLAYER,
     seed: SEED ?? 1,
   });
 

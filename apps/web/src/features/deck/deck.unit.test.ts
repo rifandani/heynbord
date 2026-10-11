@@ -32,7 +32,7 @@ const collection = starterCollection();
 describe("INITIAL_DECK_SLOTS", () => {
   it("gives each Starter Deck slot a valid Deck at the Deck level", () => {
     for (const slot of INITIAL_DECK_SLOTS.slice(0, 2)) {
-      expect(deckProblems(slotInput(slot, collection))).toEqual([]);
+      expect(deckProblems(slotInput(slot, collection, 1))).toEqual([]);
     }
   });
 
@@ -171,15 +171,25 @@ describe("poolBlock", () => {
     if (!vanguard) {
       throw new Error("Missing slot");
     }
-    const input = slotInput(vanguard, collection);
+    const input = slotInput(vanguard, collection, 1);
     // A card with no copy in any Rank.
     expect(poolBlock(input, "goblin.ankleSnatcher", "common")).toBe("notOwned");
     expect(poolBlock(input, "mage.fireball", "common")).toBe("class");
     // The Vanguard holds 10 cards, the maximum at the Deck level.
     expect(poolBlock(input, "orc.scrapRaider", "common")).toBe("full");
     expect(poolBlock(input, "human.crossbowGuard", "common")).toBe("none");
-    const smaller = slotInput({ ...vanguard, deck: [] }, collection);
+    const smaller = slotInput({ ...vanguard, deck: [] }, collection, 1);
     expect(poolBlock(smaller, "orc.scrapRaider", "common")).toBeNull();
+  });
+
+  it("uses the Player level for the Deck size limits", () => {
+    if (!vanguard) {
+      throw new Error("Missing slot");
+    }
+    // A higher level has room for more cards than the 10 of level 1.
+    const input = slotInput(vanguard, collection, 10);
+    expect(input.level).toBe(10);
+    expect(poolBlock(input, "orc.scrapRaider", "common")).not.toBe("full");
   });
 
   it("blocks a card that puts the Deck over the Countdown Limit (ADR-0021)", () => {
@@ -190,7 +200,8 @@ describe("poolBlock", () => {
     // Recruit (Countdown 1), it has 9 cards and a sum of 24.
     const input = slotInput(
       { ...vanguard, deck: vanguard.deck.slice(1) },
-      collection
+      collection,
+      1
     );
     expect(poolBlock(input, "orc.scrapRaider", "common")).toBe("countdown");
     expect(poolBlock(input, "orc.badlandRunt", "common")).toBeNull();

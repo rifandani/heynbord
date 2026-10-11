@@ -13,12 +13,14 @@ import {
   tutorialStageWonAtom,
 } from "@/features/battle/battle.atoms";
 import { NO_MARKS, selectCard } from "@/features/battle/tutorial";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 const sessionWithReadyCard = () => {
   for (let seed = 1; seed < 50; seed += 1) {
     const session = startSession({
       stageId: "1-2",
       deck: getStarterDeck("vanguard"),
+      player: NEW_PLAYER,
       seed,
     });
     const index = session.view.sides.player.hand.findIndex(
@@ -40,6 +42,7 @@ describe("legalTargetsAtom", () => {
       startSession({
         stageId: "1-1",
         deck: getStarterDeck("vanguard"),
+        player: NEW_PLAYER,
         seed: 1,
       })
     );

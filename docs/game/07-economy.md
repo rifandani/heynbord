@@ -375,7 +375,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 **Not in the sim.**
 
 - Achievements give no Coin or Essence in the sim, because the list of Achievements does not exist. The results are a floor.
-- A repeat win gives no card, because Stages have no card pools yet.
+- A repeat win gives no card. The Stage card pool exists in the rules (`stageCardPool`), but the sim does not use it yet.
 - The planned Stages and the Dungeons give no first-win card, because their cards do not exist yet.
 - The 30-Star chests do not open (see **Stars**). The Heynstone ledger counts them.
 

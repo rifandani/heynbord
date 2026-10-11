@@ -13,6 +13,7 @@ import {
   tokenIllustration,
   unitIllustration,
 } from "@/features/battle/card-art";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 // SAFETY: `TOKENS` is a record with a key for each Token ID, and no other key.
 const TOKEN_IDS = Object.keys(TOKENS) as TokenId[];
@@ -134,6 +135,7 @@ describe("battleUnitSources", () => {
     const { rules } = startSession({
       stageId: "1-1",
       deck: getStarterDeck("vanguard"),
+      player: NEW_PLAYER,
       seed: 7,
     });
     const sources = battleUnitSources(rules);
@@ -150,6 +152,7 @@ describe("battleUnitSources", () => {
   it("adds each Token that a Creature Card can summon, one time", () => {
     const { rules } = startSession({
       stageId: "1-1",
+      player: NEW_PLAYER,
       deck: {
         classId: "warrior",
         deck: [

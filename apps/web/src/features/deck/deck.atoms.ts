@@ -1,42 +1,23 @@
-import type { Collection } from "@workspace/rules";
-import {
-  DeckSlots,
-  INITIAL_DECK_SLOTS,
-  starterCollection,
-} from "@workspace/rules";
-import { Schema } from "effect";
+import type { Collection, DeckSlot } from "@workspace/rules";
 import { Atom } from "effect/reactivity";
 
-import { storageRuntime } from "@/core/runtime/client";
+import { profileAtom } from "@/features/profile/profile.atoms";
 
-const FIRST_SLOT_ID = INITIAL_DECK_SLOTS[0]?.id ?? "vanguard";
-
-/**
- * The Collection: the cards of the Starter Decks, the Collection of a new
- * Player. The Profile replaces this atom in M2. App state, so kept alive.
- */
-export const collectionAtom = Atom.make<Collection>(starterCollection()).pipe(
-  Atom.keepAlive
+/** The Collection of the Profile. */
+export const collectionAtom = Atom.make(
+  (get): Collection => get(profileAtom).collection
 );
 
-/**
- * The Deck slots (CRD-05): 3 for a new Player, up to 10. A change applies at
- * once. A change to the Starter Decks or to the slots of a new Player changes
- * the key, so that each browser gets the new slots. The browser loses the
- * custom Decks of the old key. This is acceptable, because there is no Player
- * data before the Profile (M2).
- */
-export const deckSlotsAtom = Atom.kvs({
-  defaultValue: () => INITIAL_DECK_SLOTS,
-  key: "heynbord.deck-slots.v4",
-  runtime: storageRuntime,
-  schema: DeckSlots,
-}).pipe(Atom.withServerValue(() => INITIAL_DECK_SLOTS));
+/** The Deck slots of the Profile (CRD-05): 3 for a new Player, up to 10. A change applies at once. */
+export const deckSlotsAtom = Atom.writable(
+  (get): readonly DeckSlot[] => get(profileAtom).deckSlots,
+  (ctx, deckSlots: readonly DeckSlot[]) =>
+    ctx.set(profileAtom, { ...ctx.get(profileAtom), deckSlots })
+);
 
 /** The ID of the active Deck: the Deck that the Stage Panel selects first. */
-export const activeDeckIdAtom = Atom.kvs({
-  defaultValue: () => FIRST_SLOT_ID,
-  key: "heynbord.active-deck",
-  runtime: storageRuntime,
-  schema: Schema.String,
-}).pipe(Atom.withServerValue(() => FIRST_SLOT_ID));
+export const activeDeckIdAtom = Atom.writable(
+  (get): string => get(profileAtom).activeDeckId,
+  (ctx, activeDeckId: string) =>
+    ctx.set(profileAtom, { ...ctx.get(profileAtom), activeDeckId })
+);

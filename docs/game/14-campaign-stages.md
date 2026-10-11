@@ -10,7 +10,7 @@ Now only Region 1 has Stages. All names are draft names (README, "Status of name
 - **The place is the landmark.** The name of a Stage is a place on the Trail. The Region Map shows that place as the landmark next to the Stage Marker. The Battle does not show the landmark: all Stages of a Region use the one Battle Painting of the Region ([13 — Battlefield Concepts](./13-battlefield-concepts.md)).
 - **Only the current tools.** A Stage uses only the cards that exist and the fields of the Stage data: enemy Class, Hero HP, Gear, Deck, Closed Lanes and Start Units. A new rule type needs its own design.
 - **The Boss is the largest.** The Boss Stage has the largest enemy Hero HP and the largest Deck of its Region (GDD 8.1).
-- **First-win card.** Each Stage gives one fixed card on its first win: a card of the enemy Deck of that Stage, in its Base Rank. The cards are mixed, so that they help each Starter Deck. The data is the `firstWinCard` field of each Stage. The reward code does not exist yet.
+- **First-win card.** Each Stage gives one fixed card on its first win: a card of the enemy Deck of that Stage, in its Base Rank. The cards are mixed, so that they help each Starter Deck. The data is the `firstWinCard` field of each Stage. The rules Profile action `applyStageResult` gives it, and it also gives the repeat-win card from the Stage card pool (Economy 2.1).
 - **Deck size of a new Player.** An enemy Deck has the same size as the expected Deck of a new Player at the Recommended level (see 1.1), or 1 card less. The Boss Deck is the exception: it is larger than all other Decks of its Region. The enemy gets stronger with Rank, Gear and Start Units, not with more cards. A side that has more cards keeps summoning after the other side has no cards, and that decides the Battle more than Hero HP.
 - **Win-rate target.** The target is for a new player Deck on the first try (GDD 13): Stage 1-1 ≥ 95%, 1-2 ≥ 85%, 1-3 ≥ 75%, other Stages 60% to 80%, Boss Stages 30% to 50%.
 - **Tuned for the Starter Decks.** Each copy in a Starter Deck has the Rank Common or Uncommon ([GDD 6.1](./03-game-design.md#61-starter-decks)). Thus a new player has no Epic card in Region 1, and the first win of the Boss Stage gives the first Epic. The Starter Deck guides are also in GDD 6.1: 10 cards, each copy at its Base Rank, Common Creature Cards in pairs or triples, and at least 1 Skill Card of the Class.
@@ -52,17 +52,17 @@ Lane numbers are from the top, 1 to 3. A Start Unit position is its Column for t
 | Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1-1 | 6 | 0 / 0 / 0 / 0 | 10 | — | — | Militia Recruit (Common) | 1 | 100% / 100% |
-| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 94% / 94% |
-| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 85% / 85% |
+| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 95% / 91% |
+| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 84% / 85% |
 | 1-4 | 38 | 0 / 0 / 0 / 0 | 10 | — | — | Shieldbearer (Common) | 2 | 70% / 79% |
 | 1-5 | 42 | 3 / 0 / 3 / 3 | 11 | — | Militia Recruit (Common), Lane 1, Column 10 · Shieldbearer (Common), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 73% / 66% |
-| 1-6 | 42 | 1 / 0 / 1 / 1 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 74% / 68% |
+| 1-6 | 42 | 1 / 0 / 1 / 1 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 72% / 67% |
 | 1-7 | 34 | 3 / 0 / 2 / 3 | 12 | — | — | Howling Charger (Uncommon) | 4 | 74% / 65% |
 | 1-8 | 40 | 3 / 0 / 3 / 3 | 12 | Lane 1, opens on Turn 5 | Militia Recruit (Common), Lane 2, Column 12 | Gate Warden (Uncommon) | 4 | 74% / 66% |
-| 1-9 | 36 | 0 / 0 / 0 / 0 | 13 | — | — | River Knight (Uncommon) | 5 | 68% / 70% |
-| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 40% / 40% |
+| 1-9 | 36 | 0 / 0 / 0 / 0 | 13 | — | — | River Knight (Uncommon) | 5 | 67% / 69% |
+| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 41% / 40% |
 
-The win rates come from `bun run sim stage 1000` on 2026-10-08, after the Ticking Cards were removed (issue #26).
+The win rates come from `bun run sim stage 1000` on 2026-10-11, after the re-tune of the Skill Cards (issue #56, [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The enemy Decks of some Stages have War Drums and Frost Bolt, and the Starter Decks have no tuned card. Thus only Stages 1-2, 1-3, 1-6, 1-9 and 1-10 changed, by 1 to 3 points, and each Stage stays on its target. Before, the win rates came from the same command on 2026-10-08, after the Ticking Cards were removed (issue #26).
 
 Stage 1-1 has Hero HP 6. Knockback on the enemy Shieldbearers put the Tutorial under 95%. More Militia Recruits were not a legal replacement then: the Deck had 3 copies, and that swap won less often in the Tutorial. Now the Deck has 2 (see the change of 2026-10-08 below). Hero HP 6 puts the Tutorial back on the target. The Shieldbearers stay, so the Player still meets Knockback.
 

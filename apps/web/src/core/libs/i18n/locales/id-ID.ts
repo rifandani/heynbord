@@ -77,6 +77,13 @@ export default {
     routedLoss: "Pihakmu Tercerai-berai: kamu tidak punya Unit dan kartu.",
     starsLabel: "{count} dari 3 Bintang",
     coinEarned: "Koin didapat: {amount}",
+    xpEarned: "+{amount} XP",
+    xpEarnedLabel: "XP didapat: {amount}.",
+    xpBar: "Level {level}: {percent} menuju level {next}.",
+    levelShort: "Level {level}",
+    levelUp: "Naik level! Level {level}",
+    cardWon: "Kartu didapat: {name}, {rank}.",
+    newCardWon: "Kartu baru didapat: {name}, {rank}.",
     retry: "Main Lagi",
     backToCampaign: "Kembali ke Kampanye",
     abandon: {
@@ -156,6 +163,9 @@ export default {
     bar: "Bilah Kota",
     opensLater: "Dibuka nanti",
     locked: "{name}, dibuka nanti",
+    opensAtLevel: "Dibuka pada level {level}",
+    lockedAtLevel: "{name}, dibuka pada level {level}",
+    levelPlate: "Level {level}",
     buildings: {
       townGate: "Kampanye",
       cardShop: "Paket",
@@ -222,9 +232,16 @@ export default {
     },
     chest: {
       label: "Peti pada {stars} Bintang",
-      earned:
-        "Bintangmu cukup untuk peti ini. Hadiah peti belum ada di permainan.",
+      claimable: "Bintangmu cukup. Buka untuk mengambil hadiahnya.",
+      claimed: "Sudah diambil.",
       needed: "{count} Bintang lagi membuka peti ini.",
+      claimedTitle: "Peti pada {stars} Bintang: diambil",
+      essence: "+{amount} Esensi",
+      heynstones: "+{amount} Heynstone",
+      pack: "1 {pack} menunggu di Toko kartu.",
+      racePack:
+        "1 {pack} menunggu di Toko kartu. Kamu memilih Rasnya saat membukanya.",
+      ok: "OK",
     },
     panel: {
       close: "Tutup",
@@ -249,6 +266,32 @@ export default {
     sound: "Suara",
     volume: "Volume suara",
     soundOn: "Suara aktif",
+    profile: {
+      label: "Progres",
+      export: "Ekspor",
+      exportLabel: "Ekspor progresmu ke file",
+      import: "Impor",
+      importLabel: "Impor progres dari file",
+      confirmTitle: "Ganti progresmu?",
+      confirmText: "Ini mengganti progresmu. Kamu tidak bisa membatalkannya.",
+      cancel: "Batal",
+      replace: "Ganti",
+      errors: {
+        UnreadableFile: "File ini bukan file progres Heynbord.",
+        ChecksumMismatch:
+          "File ini rusak atau sudah diubah. Game tidak bisa mengimpornya.",
+        UnknownVersion: "File ini punya versi yang tidak dikenal game ini.",
+        NewerVersion:
+          "Versi game yang lebih baru membuat file ini. Muat ulang halaman untuk memperbarui game, lalu coba lagi.",
+        MigrationFailed: "Game tidak bisa memperbarui file lama ini.",
+        InvalidProfile: "File ini punya nilai yang tidak benar.",
+      },
+    },
+  },
+  profile: {
+    loadFailed:
+      "Progres tersimpanmu gagal dimuat, jadi game baru dimulai. Simpanan lama tetap ada sampai kamu bermain.",
+    saveFailed: "Progresmu tidak tersimpan.",
   },
   tutorial: {
     label: "Tutorial",
@@ -283,7 +326,10 @@ export default {
       "Kembali mengirim Kartu Keahlianmu ke Tanganmu. Hitung mundurnya mulai lagi.",
     deckBuilder:
       "Kamu punya kartu yang tidak ada di Dek mana pun. Buka Dek untuk menambahkannya.",
-    freePack: "Paket Penjaja pertamamu gratis. Buka untuk mendapat 5 kartu.",
+    unopenedPack:
+      "Ada Paket untuk kamu buka. Gratis: buka untuk mendapat 5 kartu.",
+    packs:
+      "Toko kartu sudah buka. Buka Paket di sana untuk mendapat lebih banyak kartu untuk Dek-mu.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -588,7 +634,7 @@ export default {
       playerLevel:
         "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.",
       coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
-      pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nPaket Penjaja pertamamu gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
+      pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nDi level Pemain 2, kamu mendapat satu Paket Penjaja. Paket dari hadiah menunggu di layar Paket sampai kamu membukanya, gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
     },
     aliases: {
       board: "medan, arena, peta, battlefield, map",
@@ -670,7 +716,6 @@ export default {
       race: "Ras",
       class: "Kelas",
     },
-    free: "Gratis",
     open: "Buka",
     openTen: "Buka ×10",
     openTenPlus: "Buka ×10 (+1)",
@@ -684,13 +729,21 @@ export default {
       value: "{found} / {total}",
       aria: "Kartu yang ditemukan di kumpulan ini: {found} dari {total}",
     },
+    unopened: {
+      label: "Paketmu",
+      openRaceLabel: "Buka satu {pack}, gratis. Pilih Ras dulu.",
+      count: "×{count}",
+      raceTitle: "Pilih Ras",
+      raceText: "{pack}-mu memberi Kartu Makhluk dari satu Ras.",
+      raceClose: "Tutup",
+    },
     again: "Buka lagi",
     againLabel: "Buka satu {pack} lagi, {price}",
     shopkeeper: {
       label: "Pemilik toko",
       talk: "Bicara dengan pemilik toko",
-      firstVisit:
-        "Selamat datang, teman baru! Paket kertas itu hadiah dari saya.",
+      unopened:
+        "Selamat datang, teman! Ada Paket untuk kamu buka. Yang itu tanpa Koin.",
       welcome: {
         a: "Paket segar, baru datang dari percetakan!",
         b: "Selamat datang lagi! Awas kucingnya. Dia tidur di atas kartu Langka.",

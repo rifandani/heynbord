@@ -1,18 +1,29 @@
 import type { Target } from "@workspace/rules";
-import { legalTargets } from "@workspace/rules";
+import { legalTargets, TUTORIAL_STAGE_ID } from "@workspace/rules";
 import { Schema } from "effect";
 import { Atom } from "effect/reactivity";
 
 import { storageRuntime } from "@/core/runtime/client";
+import type { ShownRewards } from "@/features/battle/battle-rewards";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { canAct } from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
 import type { TutorialMarks } from "@/features/battle/tutorial";
 import { tutorialMarks } from "@/features/battle/tutorial";
 import { unitAtTarget } from "@/features/battle/unit-inspect";
+import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 
 /** The Battle on the screen, or `null` on the Town or the Campaign. App state, so kept alive. */
 export const battleSessionAtom = Atom.make<BattleSession | null>(null).pipe(
+  Atom.keepAlive
+);
+
+/**
+ * The rewards of the last Battle result (GDD 11.4), which are already in the
+ * Profile. The result shows them while its Battle is on the screen. App state,
+ * so kept alive.
+ */
+export const battleRewardsAtom = Atom.make<ShownRewards | null>(null).pipe(
   Atom.keepAlive
 );
 
@@ -85,12 +96,10 @@ export const tutorialMarksAtom = Atom.make((get): TutorialMarks => {
   );
 });
 
-/**
- * True after a win of Stage 1-1, the input of `isTutorial`. It is in memory
- * until the Profile keeps the Stage results: a page load shows the Tutorial
- * again until a win.
- */
-export const tutorialStageWonAtom = Atom.make(false).pipe(Atom.keepAlive);
+/** True when Stage 1-1 has a result: the input of `isTutorial`. */
+export const tutorialStageWonAtom = Atom.make(
+  (get) => (get(stageResultsAtom)[TUTORIAL_STAGE_ID] ?? 0) > 0
+);
 
 const BattleSpeed = Schema.Literals([1, 2]);
 

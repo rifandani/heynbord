@@ -1,5 +1,6 @@
 import { Atom } from "effect/reactivity";
 
+import { profileAtom } from "@/features/profile/profile.atoms";
 import type { Balances, GameScreen } from "@/features/town/town";
 
 /**
@@ -10,12 +11,8 @@ export const gameScreenAtom = Atom.make<GameScreen>("town").pipe(
   Atom.keepAlive
 );
 
-/**
- * The balances that the Town shows: the values of a new Player. The Profile
- * replaces this atom in M2. App state, so kept alive.
- */
-export const balancesAtom = Atom.make<Balances>({
-  coin: 0,
-  essence: 0,
-  heynstones: 0,
-}).pipe(Atom.keepAlive);
+/** The balances of the Profile, which the Town shows. */
+export const balancesAtom = Atom.make((get): Balances => {
+  const { coin, essence, heynstones } = get(profileAtom);
+  return { coin, essence, heynstones };
+});

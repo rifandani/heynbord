@@ -40,15 +40,9 @@ const toPack = (key: Key): PackId | null =>
 /**
  * The three Packs stand on a wood shelf. Each Pack is a tab: the selected one
  * lifts off the shelf into a pool of lamp light, and a gold bar slides under
- * its name. The Peddler shows the Free tag until the Player opens it.
+ * its name.
  */
-const PackTab = ({
-  pack,
-  free,
-}: {
-  readonly pack: PackDefinition;
-  readonly free: boolean;
-}) => {
+const PackTab = ({ pack }: { readonly pack: PackDefinition }) => {
   const { tr } = useGameText();
   const { format, words } = useCoinFormat();
   return (
@@ -70,7 +64,6 @@ const PackTab = ({
           <PackArt
             pack={pack.id}
             pool={{ kind: "all" }}
-            free={free}
             sheen
             className={cn(
               "z-10 h-(--pack-h) transition-transform duration-[260ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
@@ -383,11 +376,7 @@ export const PackGuide = () => {
               className="relative flex items-start justify-around"
             >
               {PACKS.map((pack) => (
-                <PackTab
-                  key={pack.id}
-                  pack={pack}
-                  free={!packState.freePackUsed && pack.id === "peddler"}
-                />
+                <PackTab key={pack.id} pack={pack} />
               ))}
             </TabList>
           </div>

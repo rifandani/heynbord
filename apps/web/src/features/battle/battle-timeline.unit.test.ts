@@ -10,10 +10,12 @@ import {
 } from "@/features/battle/battle-timeline";
 import type { BattleView } from "@/features/battle/battle-view";
 import { FX_PRESETS } from "@/features/battle/scene/fx-presets";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 const { view } = startSession({
   stageId: "1-10",
   deck: getStarterDeck("vanguard"),
+  player: NEW_PLAYER,
   seed: 1,
 });
 const [archer] = view.units;

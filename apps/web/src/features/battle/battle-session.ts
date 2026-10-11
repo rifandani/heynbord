@@ -12,7 +12,6 @@ import {
   createBattle,
   getStage,
   step,
-  TUTORIAL_STAGE_ID,
 } from "@workspace/rules";
 import { Result } from "effect";
 
@@ -28,12 +27,7 @@ import {
   holdsPlayback,
   startTutorial,
 } from "@/features/battle/tutorial";
-
-/** The Player level and Gear of the slice. The Profile replaces them in M2. */
-const SLICE_PLAYER = {
-  level: 10,
-  gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
-} as const;
+import type { BattlePlayer } from "@/features/profile/profile";
 
 /** The Deck that the Player takes into a Battle, with its Hero Class. */
 export interface BattleDeck {
@@ -44,6 +38,8 @@ export interface BattleDeck {
 export interface BattleOptions {
   readonly stageId: string;
   readonly deck: BattleDeck;
+  /** The Player level and the Gear, from the Profile. */
+  readonly player: BattlePlayer;
   readonly seed: number;
 }
 
@@ -93,11 +89,16 @@ export const startSession = (
   speed: BattleSpeed = 1,
   tutorial = false
 ): BattleSession => {
-  const { deck } = options;
+  const { deck, player } = options;
   const { state } = createBattle({
     seed: options.seed,
     stage: getStage(options.stageId),
-    player: { classId: deck.classId, deck: deck.deck, ...SLICE_PLAYER },
+    player: {
+      classId: deck.classId,
+      deck: deck.deck,
+      level: player.level,
+      gear: player.gear,
+    },
   });
   const session: BattleSession = {
     options,
@@ -222,14 +223,6 @@ export const changeTutorial = (
   const tutorial = session.tutorial && change(session.tutorial);
   return tutorial === session.tutorial ? session : { ...session, tutorial };
 };
-
-/**
- * True for a win of the Tutorial Stage. The rules state decides, so a win
- * counts also when the Player leaves before its animation ends.
- */
-export const isTutorialStageWin = (session: BattleSession | null): boolean =>
-  session?.options.stageId === TUTORIAL_STAGE_ID &&
-  session.rules.result?.winner === "player";
 
 /** Ends the player's Turn. The Resolution Phase and the enemy's Turn go into the queue. */
 export const endTurn = (

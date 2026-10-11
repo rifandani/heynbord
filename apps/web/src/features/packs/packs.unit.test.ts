@@ -1,38 +1,28 @@
-import type { Collection, PackOrder, PackPool } from "@workspace/rules";
-import {
-  CARDS,
-  getPack,
-  INITIAL_DECK_SLOTS,
-  orderPrice as paidOrderPrice,
+import type {
+  Collection,
+  PackOrder,
+  PackPool,
+  UnopenedPack,
 } from "@workspace/rules";
+import { CARDS, getPack, INITIAL_DECK_SLOTS } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { CLASSES_WITH_CARDS } from "@/features/deck/deck";
-import type { PackWallet } from "@/features/packs/packs";
 import {
   bestRank,
-  buyOrder,
   canGiveLegendary,
   dropRateBar,
   heroClass,
-  isFreeOrder,
   missingCoin,
   newCardCount,
-  newShopPackState,
-  orderPrice,
   packsToGuarantee,
   poolProgress,
   startClass,
   tenPackGrid,
   tenPackHighlights,
+  unopenedGroups,
 } from "@/features/packs/packs";
 
-const fresh = newShopPackState(42);
-const wallet = (coin: number, collection: Collection = []): PackWallet => ({
-  coin,
-  collection,
-  packs: fresh,
-});
 const ALL: PackPool = { kind: "all" };
 const race = (id: "orc" | "elf" | "human"): PackPool => ({
   kind: "race",
@@ -42,54 +32,30 @@ const MAGE: PackPool = { kind: "class", classId: "mage" };
 const peddler: PackOrder = { pack: "peddler", pool: ALL, count: 1 };
 const merchant: PackOrder = { pack: "merchant", pool: ALL, count: 1 };
 
-describe("orderPrice", () => {
-  it("is the rules price after the free first Pack", () => {
-    const used = { ...fresh, freePackUsed: true };
-    for (const order of [
-      peddler,
-      { ...merchant, pool: race("orc") },
-      { pack: "royal", pool: MAGE, count: 10 } as const,
-    ]) {
-      expect(orderPrice(order, used)).toBe(paidOrderPrice(order));
-    }
-  });
-
-  it("is 0 for the first single Peddler Pack only, in any pool", () => {
-    expect(orderPrice(peddler, fresh)).toBe(0);
-    expect(orderPrice({ ...peddler, pool: MAGE }, fresh)).toBe(0);
-    expect(isFreeOrder({ ...peddler, pool: race("human") }, fresh)).toBe(true);
-    expect(isFreeOrder({ ...peddler, count: 10 }, fresh)).toBe(false);
-    expect(isFreeOrder(merchant, fresh)).toBe(false);
-  });
-});
-
 describe("missingCoin", () => {
   it("is the Coin that the Player needs more, or 0", () => {
-    expect(missingCoin(merchant, fresh, 120)).toBe(380);
-    expect(missingCoin(merchant, fresh, 500)).toBe(0);
-    expect(missingCoin(peddler, fresh, 0)).toBe(0);
+    expect(missingCoin(merchant, 120)).toBe(380);
+    expect(missingCoin(merchant, 500)).toBe(0);
+    // The first Peddler Pack is not free: a new Player gets it as an Unopened Pack.
+    expect(missingCoin(peddler, 0)).toBe(350);
+    expect(missingCoin({ ...merchant, pool: race("orc") }, 500)).toBe(200);
   });
 });
 
-describe("buyOrder", () => {
-  it("buys with the rules and keeps the Pack state of the Packs screen", () => {
-    const bought = buyOrder(wallet(500), merchant, "warrior");
-    expect(bought?.coin).toBe(0);
-    expect(bought?.opened).toHaveLength(1);
-    expect(bought?.packs.freePackUsed).toBe(false);
-    expect(bought?.packs.randomState).not.toBe(fresh.randomState);
-    expect(buyOrder(wallet(499), merchant, "warrior")).toBeNull();
-  });
-
-  it("gives the first Peddler Pack free, one time", () => {
-    const first = buyOrder(wallet(0), peddler, "warrior");
-    expect(first?.coin).toBe(0);
-    expect(first?.packs.freePackUsed).toBe(true);
-    if (!first) {
-      throw new Error("The free Pack was not possible");
-    }
-    expect(buyOrder(first, peddler, "warrior")).toBeNull();
-    expect(buyOrder({ ...first, coin: 350 }, peddler, "warrior")?.coin).toBe(0);
+describe("unopenedGroups", () => {
+  it("groups the same Pack and version, in the order of the first one", () => {
+    const unopened: readonly UnopenedPack[] = [
+      { pack: "merchant", version: "race" },
+      { pack: "peddler", version: "all" },
+      { pack: "merchant", version: "race" },
+      { pack: "merchant", version: "all" },
+    ];
+    expect(unopenedGroups(unopened)).toEqual([
+      { pack: "merchant", version: "race", count: 2, firstIndex: 0 },
+      { pack: "peddler", version: "all", count: 1, firstIndex: 1 },
+      { pack: "merchant", version: "all", count: 1, firstIndex: 3 },
+    ]);
+    expect(unopenedGroups([])).toEqual([]);
   });
 });
 
@@ -202,6 +168,9 @@ describe("startClass", () => {
     for (const classId of CLASSES_WITH_CARDS) {
       expect(startClass(classId)).toBe(classId);
     }
+    // A Class with no Skill Cards starts on the first Class that has them.
+    expect(startClass("priest", ["warrior", "mage"])).toBe("warrior");
+    expect(startClass("priest", [])).toBe("priest");
   });
 });
 

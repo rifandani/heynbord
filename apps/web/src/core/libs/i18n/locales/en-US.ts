@@ -77,6 +77,13 @@ export default {
     routedLoss: "Your Side is Routed: it has no Units and no cards.",
     starsLabel: "{count} of 3 Stars",
     coinEarned: "Coin earned: {amount}",
+    xpEarned: "+{amount} XP",
+    xpEarnedLabel: "XP earned: {amount}.",
+    xpBar: "Level {level}: {percent} of the way to level {next}.",
+    levelShort: "Level {level}",
+    levelUp: "Level up! Level {level}",
+    cardWon: "Card won: {name}, {rank}.",
+    newCardWon: "New card won: {name}, {rank}.",
     retry: "Play Again",
     backToCampaign: "Back to Campaign",
     abandon: {
@@ -155,6 +162,9 @@ export default {
     bar: "Town Bar",
     opensLater: "Opens later",
     locked: "{name}, opens later",
+    opensAtLevel: "Opens at level {level}",
+    lockedAtLevel: "{name}, opens at level {level}",
+    levelPlate: "Level {level}",
     buildings: {
       townGate: "Campaign",
       cardShop: "Packs",
@@ -221,9 +231,16 @@ export default {
     },
     chest: {
       label: "Chest at {stars} Stars",
-      earned:
-        "You have the Stars for this chest. Chest rewards are not in the game yet.",
+      claimable: "You have the Stars. Open it to claim its rewards.",
+      claimed: "Claimed.",
       needed: "{count} more Stars open this chest.",
+      claimedTitle: "Chest at {stars} Stars: claimed",
+      essence: "+{amount} Essence",
+      heynstones: "+{amount} Heynstones",
+      pack: "1 {pack} waits in the Card shop.",
+      racePack:
+        "1 {pack} waits in the Card shop. You select its Race when you open it.",
+      ok: "OK",
     },
     panel: {
       close: "Close",
@@ -247,6 +264,32 @@ export default {
     sound: "Sound",
     volume: "Sound volume",
     soundOn: "Sound on",
+    profile: {
+      label: "Progress",
+      export: "Export",
+      exportLabel: "Export your progress to a file",
+      import: "Import",
+      importLabel: "Import progress from a file",
+      confirmTitle: "Replace your progress?",
+      confirmText: "This replaces your progress. You cannot undo this.",
+      cancel: "Cancel",
+      replace: "Replace",
+      errors: {
+        UnreadableFile: "This file is not a Heynbord progress file.",
+        ChecksumMismatch:
+          "This file is damaged or was changed. The game cannot import it.",
+        UnknownVersion: "This file has a version that this game does not know.",
+        NewerVersion:
+          "A newer version of the game made this file. Reload the page to update the game, then try again.",
+        MigrationFailed: "The game cannot update this old file.",
+        InvalidProfile: "This file has values that are not correct.",
+      },
+    },
+  },
+  profile: {
+    loadFailed:
+      "Your saved progress did not load, so a new game started. The old save stays until you play.",
+    saveFailed: "Your progress was not saved.",
   },
   tutorial: {
     label: "Tutorial",
@@ -280,7 +323,10 @@ export default {
     recall:
       "Recall sent your Skill Card back to your Hand. Its Countdown starts again.",
     deckBuilder: "You have a card that is in no Deck. Open the Deck to add it.",
-    freePack: "Your first Peddler Pack is free. Open it to get 5 cards.",
+    unopenedPack:
+      "You have a Pack to open. It is free: open it to get 5 cards.",
+    packs:
+      "The Card shop is open. Open Packs there to get more cards for your Decks.",
   },
   handbook: {
     title: "Handbook",
@@ -582,7 +628,7 @@ export default {
       playerLevel:
         "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss.",
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
-      pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nYour first Peddler Pack is free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
+      pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
     },
     aliases: {
       board: "battlefield, field, map, grid, arena",
@@ -662,7 +708,6 @@ export default {
       race: "Race",
       class: "Class",
     },
-    free: "Free",
     open: "Open",
     openTen: "Open ×10",
     openTenPlus: "Open ×10 (+1)",
@@ -676,13 +721,21 @@ export default {
       value: "{found} / {total}",
       aria: "Cards found in this pool: {found} of {total}",
     },
+    unopened: {
+      label: "Your Packs",
+      openRaceLabel: "Open one {pack}, free. Select a Race first.",
+      count: "×{count}",
+      raceTitle: "Select a Race",
+      raceText: "Your {pack} gives Creature Cards of one Race.",
+      raceClose: "Close",
+    },
     again: "Open another",
     againLabel: "Open another {pack}, {price}",
     shopkeeper: {
       label: "The shopkeeper",
       talk: "Talk to the shopkeeper",
-      firstVisit:
-        "Welcome, new friend! That paper Pack there is my gift to you.",
+      unopened:
+        "Welcome, friend! You have a Pack to open. No Coin for that one.",
       welcome: {
         a: "Fresh Packs, just in from the printer!",
         b: "Welcome back! Mind the cat. She sleeps on the Rares.",

@@ -64,11 +64,13 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. A Ranged Unit never has Frost damage, because it could Freeze the same enemy before each action of that enemy. _Avoid_: stun, chill, slow
 
-**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Poisoned, Hobbled, Bleeding, Ward or Steadfast. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
+**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding, Exposed, Ward or Steadfast. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
 
 **Buff**: A Status that helps its Unit: Ward or Steadfast. A bonus to a stat, such as the Rally bonus, the Swarm bonus or bonus Armor, is not a Buff. _Avoid_: blessing, boon, positive status
 
-**Debuff**: A Status that harms its Unit: Burn, Freeze, Entangled, Poisoned, Hobbled or Bleeding. _Avoid_: ailment, curse, negative status
+**Debuff**: A Status that harms its Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding or Exposed. _Avoid_: ailment, curse, negative status
+
+**Paralyzed**: The effect of Lightning damage on a Unit: the Unit does not attack in its next action, but it can still move. Then Paralyzed ends. Until then, it also does not Retaliate and does not use First Strike. If it is also Frozen, Paralyzed ends with the skipped action. Lightning damage gives Paralyzed also when the hit deals 0 damage. A new Paralyzed on a Paralyzed Unit has no effect. _Avoid_: stunned, shocked, dazed, disarmed
 
 **Entangled**: A Status from the Entangle Keyword or from a Skill Card. An Entangled Unit has Speed 0 during its next action, but it can still attack. Entangled then ends. _Avoid_: rooted, snared, slowed
 
@@ -84,11 +86,13 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
 
+**Exposed N**: A Status from a Skill Card. Each Physical hit on an Exposed Unit deals N more damage, after Armor. This includes attacks, Physical Skill damage, Retaliate and Trample. It has a count of 2 End Phases of its owner, and it ends at 0. A new Exposed keeps the higher value. _Avoid_: vulnerable, weakened, marked, armor break
+
 **Ward N**: A Status from a Skill Card. A Ward absorbs damage to its Unit, after Armor, Crit and Block, up to N. Its value goes down by the damage that it absorbs, and it ends at 0. It absorbs all damage, also Holy, Burn and Poison damage. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. A Ward has no time limit. A new Ward keeps the higher value. _Avoid_: shield, barrier, absorb, aegis
 
 **Steadfast**: A Status from a Skill Card. When damage from any source would bring a Steadfast Unit to 0 HP, the Unit stays at 1 HP and Steadfast ends. A Ward absorbs the damage first. The Unit is not killed: it stays on the Board, Last Breath does not occur, and Trample has no damage that is left. A Unit with Rebirth uses Steadfast first and keeps Rebirth. Steadfast has no time limit. A new Steadfast on a Steadfast Unit has no effect. _Avoid_: endure, undying, death ward, last stand, cheat death
 
-**Damage Type**: The kind of damage: Physical, Fire, Frost or Holy. _Avoid_: element, damage kind
+**Damage Type**: The kind of damage: Physical, Fire, Frost, Holy or Lightning. _Avoid_: element, damage kind
 
 **Battle seed**: The start value of the random numbers in one Battle. The same seed and the same Commands give the same Battle. _Avoid_: random seed, RNG
 

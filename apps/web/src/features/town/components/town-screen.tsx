@@ -2,11 +2,18 @@ import { useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
 import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "react-aria-components";
+import type { PressEvent } from "react-aria-components";
+import { Button, TooltipTrigger } from "react-aria-components";
 
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { tutorialStageWonAtom } from "@/features/battle/battle.atoms";
+import { GameTooltip } from "@/features/battle/components/game-tooltip";
+import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import {
+  playerLevelAtom,
+  profileReadyAtom,
+} from "@/features/profile/profile.atoms";
 import { BalancePlate } from "@/features/town/components/balance-plate";
 import type {
   GameScreen,
@@ -15,6 +22,7 @@ import type {
 } from "@/features/town/town";
 import {
   GROUND_LINE,
+  opensAtLevel,
   PAINTING,
   PAINTING_IMAGE,
   percentBox,
@@ -98,44 +106,120 @@ const buildingBox = (building: SelectableBuilding): Rect => ({
   height: building.rect.y + building.rect.height - building.label.y,
 });
 
-/** A Building that the Player can select: its cut-out layer and its label. */
+/** The name label above a Building. */
+const NameLabel = ({
+  name,
+  height,
+}: {
+  readonly name: string;
+  readonly height: string;
+}) => (
+  <span
+    className={cn(
+      "font-display z-10 flex items-center rounded-full px-[0.6cqw] text-[max(16px,2cqw)] leading-none font-black text-[#ffd75a]",
+      "[text-shadow:0_2px_0_#3b1d08,2px_0_0_#3b1d08,-2px_0_0_#3b1d08,0_-2px_0_#3b1d08,0_4px_6px_rgba(0,0,0,0.5)]",
+      "transition-transform duration-150 group-data-[hovered]:-translate-y-0.5",
+      "group-data-[focus-visible]:bg-[#1c140e]/60 group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
+    )}
+    style={{ height }}
+  >
+    {name}
+  </span>
+);
+
+/**
+ * The lock plate in the place of the name label of a Building that the
+ * Player level has not unlocked (GDD 11.4): the lock seal of the Town Bar and
+ * the level, on a small HUD plate.
+ */
+const LockPlate = ({
+  level,
+  height,
+}: {
+  readonly level: number;
+  readonly height: string;
+}) => {
+  const { tr } = useGameText();
+  return (
+    <span className="z-10 flex items-center" style={{ height }}>
+      <span
+        className={cn(
+          "flex items-center gap-1.5 rounded-full border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 py-0.5 pr-2.5 pl-1 text-[max(12px,1.1cqw)] leading-none font-bold whitespace-nowrap text-[#e8d9bb] shadow-[0_3px_0_rgba(0,0,0,0.45)]",
+          "group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
+        )}
+        data-testid="building-lock-plate"
+      >
+        <span className="grid size-[1.6em] place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]">
+          <GlyphIcon glyph="lock" className="size-[0.9em] text-[#e9c46a]" />
+        </span>
+        {tr("town.levelPlate", { level })}
+      </span>
+    </span>
+  );
+};
+
+/**
+ * A Building that the Player can select: its cut-out layer and its label. A
+ * Building whose screen the Player level has not unlocked (`opensAt`) cannot
+ * be selected: a lock plate replaces its label, and it keeps keyboard focus,
+ * so that focus, hover and a tap show its tooltip (GDD 11.4).
+ */
 const BuildingButton = ({
   building,
   pulse,
+  disabled,
+  opensAt,
   onSelect,
 }: {
   readonly building: SelectableBuilding;
   readonly pulse: boolean;
+  /** True until the Profile loads. */
+  readonly disabled: boolean;
+  /** The level that opens the screen of the Building, or `null` when it is open. */
+  readonly opensAt: number | null;
   readonly onSelect: (building: SelectableBuilding) => void;
 }) => {
   const { tr } = useGameText();
+  const [tip, setTip] = useState(false);
   const box = buildingBox(building);
-  const labelShare = (building.label.height / box.height) * 100;
-  return (
+  const labelHeight = `${(building.label.height / box.height) * 100}%`;
+  const name = tr(`town.buildings.${building.id}`);
+  const locked = opensAt !== null;
+  const onPress = (event: PressEvent) => {
+    if (!locked) {
+      onSelect(building);
+    } else if (event.pointerType !== "mouse") {
+      setTip((open) => !open);
+    }
+  };
+  const button = (
     <Button
-      onPress={() => onSelect(building)}
-      className="group absolute flex flex-col items-center outline-none"
+      onPress={onPress}
+      isDisabled={disabled}
+      aria-label={
+        locked ? tr("town.lockedAtLevel", { name, level: opensAt }) : undefined
+      }
+      className={cn(
+        "group absolute flex flex-col items-center outline-none",
+        locked && "cursor-default"
+      )}
       style={{ ...percentBox(box), clipPath: building.clip }}
       data-testid={`building-${building.id}`}
+      data-locked={locked || undefined}
     >
-      <span
-        className={cn(
-          "font-display z-10 flex items-center rounded-full px-[0.6cqw] text-[max(16px,2cqw)] leading-none font-black text-[#ffd75a]",
-          "[text-shadow:0_2px_0_#3b1d08,2px_0_0_#3b1d08,-2px_0_0_#3b1d08,0_-2px_0_#3b1d08,0_4px_6px_rgba(0,0,0,0.5)]",
-          "transition-transform duration-150 group-data-[hovered]:-translate-y-0.5",
-          "group-data-[focus-visible]:bg-[#1c140e]/60 group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
-        )}
-        style={{ height: `${labelShare}%` }}
-      >
-        {tr(`town.buildings.${building.id}`)}
-      </span>
+      {locked ? (
+        <LockPlate level={opensAt} height={labelHeight} />
+      ) : (
+        <NameLabel name={name} height={labelHeight} />
+      )}
       <span className="relative w-full flex-1">
         <span
           className={cn(
             "absolute inset-[-8%] rounded-full bg-[radial-gradient(closest-side,rgba(255,224,138,0.9),transparent)] opacity-0 transition-opacity",
             pulse &&
               "opacity-40 motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]",
-            "group-data-[focus-visible]:opacity-80 group-data-[hovered]:opacity-80"
+            !locked &&
+              "group-data-[focus-visible]:opacity-80 group-data-[hovered]:opacity-80"
           )}
           aria-hidden
         />
@@ -147,13 +231,39 @@ const BuildingButton = ({
             // The layer is cut from the painting, so it grows from its base and
             // does not show the painted gate below it.
             "relative size-full origin-bottom object-contain transition-[scale,filter] duration-150",
-            "group-data-[hovered]:scale-[1.04] group-data-[hovered]:drop-shadow-[0_0_14px_rgba(255,224,138,0.95)]",
-            "group-data-[focus-visible]:scale-[1.04] group-data-[focus-visible]:drop-shadow-[0_0_14px_rgba(255,224,138,0.95)]",
-            "group-data-[pressed]:scale-[1.01]"
+            !locked && [
+              "group-data-[hovered]:scale-[1.04] group-data-[hovered]:drop-shadow-[0_0_14px_rgba(255,224,138,0.95)]",
+              "group-data-[focus-visible]:scale-[1.04] group-data-[focus-visible]:drop-shadow-[0_0_14px_rgba(255,224,138,0.95)]",
+              "group-data-[pressed]:scale-[1.01]",
+            ]
           )}
         />
       </span>
     </Button>
+  );
+  if (!locked) {
+    return button;
+  }
+  return (
+    <TooltipTrigger
+      isOpen={tip}
+      onOpenChange={setTip}
+      delay={200}
+      shouldCloseOnPress={false}
+    >
+      {button}
+      <GameTooltip
+        placement="top"
+        offset={8}
+        className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1 text-center text-xs font-semibold text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+        data-testid={`building-tooltip-${building.id}`}
+      >
+        {name}
+        <span className="block font-normal text-[#e9c46a]">
+          {tr("town.opensAtLevel", { level: opensAt })}
+        </span>
+      </GameTooltip>
+    </TooltipTrigger>
   );
 };
 
@@ -211,7 +321,9 @@ export const useTownLeave = (
  * The Town (GDD 11.4, web ADR-0005): the master painting with one cut-out
  * layer for each Building that the Player can select. The painting covers the
  * screen and crops its edges. `leaving` is the Building that the Town zooms
- * toward on its way out (`useTownLeave`).
+ * toward on its way out (`useTownLeave`). Until the Profile loads, the Town
+ * shows no balances and no Building opens, so that the values of a new Player
+ * never show first.
  */
 export const TownScreen = ({
   leaving,
@@ -221,8 +333,10 @@ export const TownScreen = ({
   readonly onOpen: (screen: GameScreen) => void;
 }) => {
   const { tr } = useGameText();
+  const ready = useAtomValue(profileReadyAtom);
   const tutorialWon = useAtomValue(tutorialStageWonAtom);
   const balances = useAtomValue(balancesAtom);
+  const level = useAtomValue(playerLevelAtom);
 
   useEffect(() => {
     // The Town has no Three.js, so the Battle chunk loads in the background.
@@ -263,18 +377,22 @@ export const TownScreen = ({
           <BuildingButton
             key={building.id}
             building={building}
-            pulse={!tutorialWon}
+            pulse={ready && !tutorialWon && building.id === "townGate"}
+            disabled={!ready}
+            opensAt={ready ? opensAtLevel(building, level) : null}
             onSelect={select}
           />
         ))}
       </div>
-      <BalancePlate
-        balances={balances}
-        className={cn(
-          "transition-opacity duration-[450ms] ease-in",
-          leaving && "opacity-0"
-        )}
-      />
+      {ready ? (
+        <BalancePlate
+          balances={balances}
+          className={cn(
+            "fade-in animate-in transition-opacity duration-[450ms] ease-in motion-reduce:animate-none",
+            leaving && "opacity-0"
+          )}
+        />
+      ) : null}
     </main>
   );
 };

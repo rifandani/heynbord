@@ -1,6 +1,6 @@
 # v1 has 90 Creature Cards
 
-Heynbord v1 has 15 Creature Cards for each of its 6 Races: Human, Elf, Undead, Orc, Goblin and Feral. Each Race has 5 Common, 5 Uncommon, 3 Rare and 2 Epic. This gives 90 Creature Cards and 118 collectible Cards with the planned 28 Skill Cards. An exact set of the same size for each Race gives each Race equal coverage, and it keeps the balance checks the same for all Races. There are no new Classes for Goblin and Feral, so a Class can be the main Class of more than one Race.
+Heynbord v1 has 15 Creature Cards for each of its 6 Races: Human, Elf, Undead, Orc, Goblin and Feral. Each Race has 5 Common, 5 Uncommon, 3 Rare and 2 Epic. This gives 90 Creature Cards and 130 collectible Cards with the planned 40 Skill Cards: 10 for each of the 4 Classes, with 4 Common, 3 Uncommon, 2 Rare and 1 Epic. An exact set of the same size for each Race gives each Race equal coverage, and it keeps the balance checks the same for all Races. There are no new Classes for Goblin and Feral, so a Class can be the main Class of more than one Race.
 
 The 2 Epic Cards of each Race are one named champion with Unique and one archetypal powerhouse. Legendary remains a Rank that the Player reaches through Combine, not a Base Rank.
 

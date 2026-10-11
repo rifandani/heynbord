@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { eventSound } from "@/features/battle/battle-audio";
 import { startSession } from "@/features/battle/battle-session";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 const played = (cardId: string) =>
   ({
@@ -69,6 +70,7 @@ describe("eventSound", () => {
     const [unit] = startSession({
       stageId: "1-10",
       deck: getStarterDeck("vanguard"),
+      player: NEW_PLAYER,
       seed: 1,
     }).view.units;
     // SAFETY: Stage 1-10 starts with one Unit on the Board, so `unit` is defined.

@@ -1,5 +1,12 @@
 import { useAtomValue } from "@effect/atom-react";
-import { CARDS, coinDenominations, STAGES } from "@workspace/rules";
+import {
+  CARDS,
+  coinDenominations,
+  GEAR_SLOTS,
+  MAX_GEAR_LEVEL,
+  PLAYER_LEVEL_XP,
+  STAGES,
+} from "@workspace/rules";
 import type { StageDefinition } from "@workspace/rules";
 import { cn } from "cn";
 import { useState } from "react";
@@ -34,6 +41,8 @@ import {
   winNext,
 } from "@/features/dev-panel/dev-overrides";
 import { useDevOverrides } from "@/features/dev-panel/use-dev-overrides";
+import { playerLevel } from "@/features/profile/profile";
+import { profileAtom } from "@/features/profile/profile.atoms";
 import type { BalanceKind } from "@/features/town/town";
 import { balancesAtom } from "@/features/town/town.atoms";
 
@@ -67,7 +76,7 @@ const CollectionBlock = () => {
       <p className="text-muted-fg tabular-nums">
         {unlockAll
           ? `All ${count.format(CARDS.length)} cards, each Rank from the Base Rank`
-          : `Starter Collection, ${count.format(cards)} cards`}
+          : `Profile Collection, ${count.format(cards)} cards`}
         {" · "}
         {count.format(totalCopies(collection))} copies
       </p>
@@ -121,6 +130,57 @@ const BalancesBlock = () => {
           ) : null}
         </NumberField>
       ))}
+    </section>
+  );
+};
+
+const GEAR_NAMES = {
+  weapon: "Weapon",
+  armor: "Armor",
+  trinket: "Trinket",
+  banner: "Banner",
+};
+
+/**
+ * The Player level and the Gear that the Battles and the Deck limits use. A
+ * level sets the XP to the start of that level.
+ */
+const PlayerBlock = () => {
+  const { setLevel, setGear } = useDevOverrides();
+  const profile = useAtomValue(profileAtom);
+  return (
+    <section aria-labelledby="dev-player" className="grid content-start gap-3">
+      <Heading id="dev-player">Player</Heading>
+      <NumberField
+        value={playerLevel(profile)}
+        minValue={1}
+        maxValue={PLAYER_LEVEL_XP.length}
+        step={1}
+        formatOptions={{ maximumFractionDigits: 0 }}
+        onChange={setLevel}
+      >
+        <Label>Player level</Label>
+        <NumberInput />
+        <Description className="tabular-nums">
+          {count.format(profile.xp)} XP
+        </Description>
+      </NumberField>
+      <div className="grid grid-cols-2 gap-3">
+        {GEAR_SLOTS.map((slot) => (
+          <NumberField
+            key={slot}
+            value={profile.gear[slot]}
+            minValue={0}
+            maxValue={MAX_GEAR_LEVEL}
+            step={1}
+            formatOptions={{ maximumFractionDigits: 0 }}
+            onChange={(value) => setGear(slot, value)}
+          >
+            <Label>{GEAR_NAMES[slot]}</Label>
+            <NumberInput />
+          </NumberField>
+        ))}
+      </div>
     </section>
   );
 };
@@ -339,14 +399,16 @@ const CampaignBlock = () => {
 
 /**
  * The Game Dev Panel: a TanStack Devtools tab that unlocks all cards, sets the
- * balances and wins Campaign Stages one by one. Development only.
+ * Player level, the Gear and the balances, and wins Campaign Stages one by
+ * one. Its values show over the Profile and are not saved into it.
+ * Development only.
  */
 export const GameDevPanel = ({
   theme,
 }: {
   readonly theme: "light" | "dark";
 }) => {
-  const { storageAvailable, clear } = useDevOverrides();
+  const { active, storageAvailable, clear } = useDevOverrides();
   return (
     <div
       className={cn(
@@ -361,16 +423,22 @@ export const GameDevPanel = ({
       <div className="grid gap-x-10 gap-y-6 p-4 lg:grid-cols-[minmax(14rem,18rem)_minmax(0,40rem)]">
         <div className="grid content-start gap-6">
           <CollectionBlock />
+          <PlayerBlock />
           <BalancesBlock />
         </div>
         <CampaignBlock />
         <footer className="border-border flex flex-wrap items-center gap-3 border-t pt-3 lg:col-span-full">
           <p className="text-muted-fg me-auto text-xs">
             {storageAvailable
-              ? "Changes stay after a reload until you clear them."
+              ? "Changes show over the Profile, not in it. They stay after a reload until you clear them."
               : "Browser storage is blocked: changes end at the next reload."}
           </p>
-          <Button size="xs" intent="outline" onPress={clear}>
+          <Button
+            size="xs"
+            intent="outline"
+            isDisabled={!active}
+            onPress={clear}
+          >
             Clear dev state
           </Button>
         </footer>

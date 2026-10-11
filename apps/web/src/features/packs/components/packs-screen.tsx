@@ -5,12 +5,15 @@ import type {
   PackDefinition,
   PackOrder,
   PackPool,
+  PackState,
   RaceId,
   RankId,
   RevealedPack,
+  UnopenedPackPool,
 } from "@workspace/rules";
 import {
   coinDenominations,
+  orderPrice,
   PACKS,
   rankPips,
   TEN_PACKS,
@@ -41,17 +44,16 @@ import {
   ShopkeeperBubble,
   ShopScene,
 } from "@/features/packs/components/shop-scene";
-import type { ShopPackState } from "@/features/packs/packs";
+import { UnopenedShelf } from "@/features/packs/components/unopened-shelf";
 import {
   bestRank,
   dropRateBar,
-  isFreeOrder,
   missingCoin,
   newCardCount,
-  orderPrice,
   packsToGuarantee,
   poolProgress,
   startClass,
+  unopenedGroups,
 } from "@/features/packs/packs";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { useGuaranteeText } from "@/features/packs/use-guarantee-text";
@@ -101,7 +103,7 @@ let visits = 0;
 
 /** What the shopkeeper says. */
 type ShopLine =
-  | { readonly kind: "firstVisit" }
+  | { readonly kind: "unopened" }
   | { readonly kind: "welcome"; readonly index: number }
   | { readonly kind: "complete" }
   | { readonly kind: "pool"; readonly pool: PackPool }
@@ -116,8 +118,8 @@ const useShopLineText = () => {
   const { tr } = useGameText();
   return (line: ShopLine): string => {
     switch (line.kind) {
-      case "firstVisit": {
-        return tr("packs.shopkeeper.firstVisit");
+      case "unopened": {
+        return tr("packs.shopkeeper.unopened");
       }
       case "welcome": {
         const key = WELCOMES[line.index % WELCOMES.length] ?? "a";
@@ -427,30 +429,24 @@ const GuaranteeLine = ({
 /** The two buttons of a Pack: Open and Open ×10 (Royal: Open ×10 (+1)). */
 const OpenButton = ({
   order,
-  packState,
   coin,
   onOpen,
 }: {
   readonly order: PackOrder;
-  readonly packState: ShopPackState;
   readonly coin: number;
   readonly onOpen: (order: PackOrder) => void;
 }) => {
   const { tr } = useGameText();
   const { format, words, short } = useCoinFormat();
   const name = tr(`packs.names.${order.pack}`);
-  const free = isFreeOrder(order, packState);
-  const price = orderPrice(order, packState);
-  const missing = missingCoin(order, packState, coin);
+  const price = orderPrice(order);
+  const missing = missingCoin(order, coin);
   const ten = order.count === TEN_PACKS;
   const title = ten
     ? tr(order.pack === "royal" ? "packs.openTenPlus" : "packs.openTen")
-    : free
-      ? tr("packs.free")
-      : tr("packs.open");
-  const label = free
-    ? tr("packs.openFreeLabel", { pack: name })
-    : missing > 0
+    : tr("packs.open");
+  const label =
+    missing > 0
       ? tr("packs.missingLabel", {
           action: title,
           pack: name,
@@ -469,16 +465,14 @@ const OpenButton = ({
       aria-label={label}
       className={cn(
         "min-h-12 flex-1 flex-col gap-0.5 px-2 leading-none",
-        "[@media(max-height:500px)]:min-h-9 [@media(max-height:500px)]:w-full [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:justify-between [@media(max-height:500px)]:gap-2",
-        free && "font-display text-lg font-black"
+        "[@media(max-height:500px)]:min-h-9 [@media(max-height:500px)]:w-full [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:justify-between [@media(max-height:500px)]:gap-2"
       )}
       data-testid={`pack-open${ten ? "-ten" : ""}-${order.pack}`}
-      data-free={free || undefined}
     >
       <span className="text-sm font-bold whitespace-nowrap [@media(max-height:500px)]:text-xs">
         {title}
       </span>
-      {free ? null : missing > 0 ? (
+      {missing > 0 ? (
         <span className="text-xs font-semibold whitespace-nowrap [@media(max-height:500px)]:text-[10px]">
           {tr("packs.need", { amount: short(missing) })}
         </span>
@@ -507,13 +501,12 @@ const PackStand = ({
 }: {
   readonly pack: PackDefinition;
   readonly pool: PackPool;
-  readonly packState: ShopPackState;
+  readonly packState: PackState;
   readonly coin: number;
   readonly onOpen: (order: PackOrder) => void;
 }) => {
   const { tr } = useGameText();
   const one: PackOrder = { pack: pack.id, pool, count: 1 };
-  const free = isFreeOrder(one, packState);
   const order = (count: OpenCount): PackOrder => ({
     pack: pack.id,
     pool,
@@ -527,8 +520,7 @@ const PackStand = ({
       <PackArt
         pack={pack.id}
         pool={pool}
-        free={free}
-        dim={missingCoin(one, packState, coin) > 0}
+        dim={missingCoin(one, coin) > 0}
         sheen
         className="z-10 -mb-3 h-[min(34dvh,250px)] transition-transform duration-150 ease-out group-hover/stand:-translate-y-1 motion-reduce:transition-none [@media(max-height:500px)]:mb-0 [@media(max-height:500px)]:h-auto [@media(max-height:500px)]:w-[30%] [@media(max-height:500px)]:shrink-0"
       />
@@ -561,18 +553,8 @@ const PackStand = ({
           counter={packState.guaranteeCounters[pack.id]}
         />
         <div className="mt-1 flex gap-2 [@media(max-height:500px)]:mt-0 [@media(max-height:500px)]:flex-col [@media(max-height:500px)]:gap-1">
-          <OpenButton
-            order={order(1)}
-            packState={packState}
-            coin={coin}
-            onOpen={onOpen}
-          />
-          <OpenButton
-            order={order(TEN_PACKS)}
-            packState={packState}
-            coin={coin}
-            onOpen={onOpen}
-          />
+          <OpenButton order={order(1)} coin={coin} onOpen={onOpen} />
+          <OpenButton order={order(TEN_PACKS)} coin={coin} onOpen={onOpen} />
         </div>
       </section>
     </li>
@@ -582,6 +564,8 @@ const PackStand = ({
 /** The open reveal: the order and its opened Packs. */
 interface Opened {
   readonly order: PackOrder;
+  /** True for an Unopened Pack: it has no Open another. */
+  readonly unopened: boolean;
   readonly packs: readonly RevealedPack[];
   /** A new number for each purchase, so Open another starts a new reveal. */
   readonly serial: number;
@@ -594,12 +578,22 @@ interface Opened {
  * and the Balance Plate. The lamps breathe and dust drifts in the window
  * light. The shopkeeper talks: a welcome, a line for the selected pool, and a
  * reaction to the last reveal; a press on him gives a new welcome. An Open
- * button buys the Packs and opens the reveal over the screen.
+ * button buys the Packs and opens the reveal over the screen. The Unopened
+ * Packs stand at the top left, each with a free Open button.
  */
 export const PacksScreen = () => {
   const { tr } = useGameText();
   const lineText = useShopLineText();
-  const { balances, coin, packState, collection, classId, buy } = usePacks();
+  const {
+    balances,
+    coin,
+    packState,
+    unopened,
+    collection,
+    classId,
+    buy,
+    open,
+  } = usePacks();
   const [hint, setHint] = useAtom(shownHintAtom);
   const [choice, setChoice] = useState<PoolChoice>(() => ({
     kind: "all",
@@ -618,8 +612,8 @@ export const PacksScreen = () => {
     readonly serial: number;
   }>(() => {
     visits += 1;
-    if (!packState.freePackUsed) {
-      return { line: { kind: "firstVisit" }, serial: 0 };
+    if (unopened.length > 0) {
+      return { line: { kind: "unopened" }, serial: 0 };
     }
     return progress.found >= progress.total
       ? { line: { kind: "complete" }, serial: 0 }
@@ -639,21 +633,38 @@ export const PacksScreen = () => {
     );
   };
 
-  const open = (order: PackOrder) => {
-    const packs = buy(order);
+  const reveal = (
+    order: PackOrder,
+    packs: readonly RevealedPack[] | null,
+    fromUnopened: boolean
+  ) => {
     if (!packs) {
       return;
     }
     unlockAudio();
     playSound("select");
-    if (hint === "freePack") {
+    if (hint === "unopenedPack") {
       setHint(null);
     }
     setOpened((current) => ({
       order,
+      unopened: fromUnopened,
       packs,
       serial: (current?.serial ?? 0) + 1,
     }));
+  };
+
+  const buyOrder = (order: PackOrder) => reveal(order, buy(order), false);
+
+  const openUnopened = (index: number, unopenedPool: UnopenedPackPool) => {
+    const pack = unopened[index]?.pack;
+    if (pack !== undefined) {
+      reveal(
+        { pack, pool: unopenedPool, count: 1 },
+        open(index, unopenedPool),
+        true
+      );
+    }
   };
 
   const close = () => {
@@ -694,6 +705,10 @@ export const PacksScreen = () => {
           <h1 className="sr-only">{tr("packs.title")}</h1>
           <DropRatesDialog className="[@media(max-height:500px)]:min-h-7 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs" />
         </header>
+        <UnopenedShelf
+          groups={unopenedGroups(unopened)}
+          onOpen={openUnopened}
+        />
       </div>
       <BalancePlate balances={balances} />
       <div className="pointer-events-none absolute inset-x-0 top-[calc(max(0.5rem,env(safe-area-inset-top))+4.5rem)] bottom-[80px] flex flex-col items-center justify-center gap-6 px-2 pb-4 [@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[56px] [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-2">
@@ -725,7 +740,7 @@ export const PacksScreen = () => {
               pool={pool}
               packState={packState}
               coin={coin}
-              onOpen={open}
+              onOpen={buyOrder}
             />
           ))}
         </ul>
@@ -736,11 +751,11 @@ export const PacksScreen = () => {
           order={opened.order}
           packs={opened.packs}
           again={
-            missingCoin(opened.order, packState, coin) === 0
-              ? { price: orderPrice(opened.order, packState) }
+            !opened.unopened && missingCoin(opened.order, coin) === 0
+              ? { price: orderPrice(opened.order) }
               : null
           }
-          onAgain={() => open(opened.order)}
+          onAgain={() => buyOrder(opened.order)}
           onClose={close}
         />
       ) : null}

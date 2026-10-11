@@ -30,7 +30,8 @@ import { paintedIcon } from "@/features/town/town";
 export const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   hand: "[data-testid='hand']",
   deckShortcut: "[data-testid='town-shortcut-deck']",
-  freePackButton: "[data-testid='pack-open-peddler']",
+  unopenedPackButton: "[data-testid^='unopened-open-']",
+  cardShop: "[data-testid='building-cardShop']",
 };
 
 const SIDES: readonly PanelSide[] = ["above", "below"];
@@ -151,7 +152,8 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
       return <GlyphIcon glyph="recall" className={SUBJECT_ICON} />;
     }
     case "deckBuilder":
-    case "freePack": {
+    case "unopenedPack":
+    case "packs": {
       const painted = paintedIcon(hint === "deckBuilder" ? "deck" : "packs");
       return painted ? (
         <img

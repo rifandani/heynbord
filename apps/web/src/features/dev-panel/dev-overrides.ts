@@ -1,23 +1,35 @@
-import type { Collection, StageDefinition } from "@workspace/rules";
-import { CARDS, MAX_COPIES, ranksOf } from "@workspace/rules";
-import { Option, Schema } from "effect";
+import type { Collection, GearLevels, StageDefinition } from "@workspace/rules";
+import { CARDS, MAX_COPIES, MAX_GEAR_LEVEL, ranksOf } from "@workspace/rules";
+import { Option, Schema, Struct } from "effect";
+import type { Types } from "effect";
 
 import type { StageResults } from "@/features/campaign/region-map";
+import type { ProfileOverlay } from "@/features/profile/profile";
 import type { Balances } from "@/features/town/town";
 
 /**
- * The state that the Game Dev Panel keeps in the browser. Development only: the
- * panel and this module load only with TanStack Devtools.
+ * The state that the Game Dev Panel keeps in the browser: the values that it
+ * shows over the Profile. Development only: the panel and this module load
+ * only with TanStack Devtools.
  */
 const DevOverrides = Schema.Struct({
   unlockAll: Schema.Boolean,
-  stageResults: Schema.Record(Schema.String, Schema.Number),
-  // Optional: overrides stored before the panel set balances have none.
+  // Optional: each value is there only after the panel set it.
+  stageResults: Schema.optionalKey(Schema.Record(Schema.String, Schema.Number)),
   balances: Schema.optionalKey(
     Schema.Struct({
       coin: Schema.Number,
       essence: Schema.Number,
       heynstones: Schema.Number,
+    })
+  ),
+  xp: Schema.optionalKey(Schema.Number),
+  gear: Schema.optionalKey(
+    Schema.Struct({
+      weapon: Schema.Number,
+      armor: Schema.Number,
+      trinket: Schema.Number,
+      banner: Schema.Number,
     })
   ),
 });
@@ -58,6 +70,73 @@ export const setBalance = (
   kind: keyof Balances,
   value: number
 ): Balances => ({ ...balances, [kind]: wholeBalance(value) });
+
+/** A Gear level that the panel can set: a whole number from 0 to the maximum. */
+export const gearLevel = (value: number): number =>
+  Math.min(wholeBalance(value), MAX_GEAR_LEVEL);
+
+/** The Gear with one slot set to a Gear level. */
+export const setGear = (
+  gear: GearLevels,
+  slot: keyof GearLevels,
+  value: number
+): GearLevels => ({ ...gear, [slot]: gearLevel(value) });
+
+/**
+ * The Profile overlay of stored overrides (`profile.ts`). "Unlock all cards"
+ * shows the unlocked Collection. `null`: nothing to show over the Profile.
+ */
+export const toOverlay = (overrides: DevOverrides): ProfileOverlay | null => {
+  const overlay: Types.Mutable<ProfileOverlay> = { ...overrides.balances };
+  if (overrides.unlockAll) {
+    overlay.collection = unlockedCollection();
+  }
+  if (overrides.stageResults !== undefined) {
+    overlay.stageResults = overrides.stageResults;
+  }
+  if (overrides.xp !== undefined) {
+    overlay.xp = overrides.xp;
+  }
+  if (overrides.gear !== undefined) {
+    overlay.gear = overrides.gear;
+  }
+  return Object.keys(overlay).length > 0 ? overlay : null;
+};
+
+/** The overrides to store for a Profile overlay, or `null` to store nothing. */
+export const fromOverlay = (
+  overlay: ProfileOverlay | null
+): DevOverrides | null => {
+  if (overlay === null || Object.keys(overlay).length === 0) {
+    return null;
+  }
+  const { coin, essence, heynstones } = overlay;
+  const overrides: Types.Mutable<DevOverrides> = {
+    unlockAll: overlay.collection !== undefined,
+  };
+  if (overlay.stageResults !== undefined) {
+    overrides.stageResults = overlay.stageResults;
+  }
+  if (coin !== undefined && essence !== undefined && heynstones !== undefined) {
+    overrides.balances = { coin, essence, heynstones };
+  }
+  if (overlay.xp !== undefined) {
+    overrides.xp = overlay.xp;
+  }
+  if (overlay.gear !== undefined) {
+    overrides.gear = overlay.gear;
+  }
+  return overrides;
+};
+
+/** The overlay with the unlocked Collection, or without a Collection. */
+export const withUnlockAll = (
+  overlay: ProfileOverlay | null,
+  on: boolean
+): ProfileOverlay => {
+  const rest = Struct.omit(overlay ?? {}, ["collection"]);
+  return on ? { ...rest, collection: unlockedCollection() } : rest;
+};
 
 export const totalCopies = (collection: Collection): number =>
   collection.reduce((sum, entry) => sum + entry.copies, 0);

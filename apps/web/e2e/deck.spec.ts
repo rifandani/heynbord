@@ -3,14 +3,21 @@ import type { Page } from "./_base";
 
 /**
  * The Deck dialog (GDD 6): the Town Bar Deck shortcut opens it over the
- * Town. The Deck slots are saved in the browser, so each test starts with a
- * clean storage.
+ * Town. The Profile keeps the Deck slots in IndexedDB. Each test has a new
+ * browser context, so it starts as a new Player.
  */
+
+/** The part of `window` that the test hooks (test-hooks.ts) add. */
+interface HookWindow extends Window {
+  readonly __THREE_GAME_TEST_HOOKS__?: {
+    readonly profileSaved: () => Promise<void>;
+  };
+}
 
 const openDecks = async (page: Page) => {
   await page.goto("/play");
-  await page.evaluate(() => localStorage.clear());
-  await page.reload();
+  // The Town opens its Buildings when the Profile is loaded.
+  await expect(page.getByTestId("building-townGate")).toBeEnabled();
   await page.getByTestId("town-shortcut-deck").click();
   const dialog = page.getByTestId("deck-dialog");
   await expect(dialog).toBeVisible();
@@ -18,6 +25,19 @@ const openDecks = async (page: Page) => {
 };
 
 test.describe("Deck dialog", () => {
+  test("a Deck edit stays after a reload", async ({ page }) => {
+    const dialog = await openDecks(page);
+    await dialog.getByTestId("deck-row-human.militiaRecruit-common").click();
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await page.evaluate(async () => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      await (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.profileSaved();
+    });
+    await page.reload();
+    const again = await openDecks(page);
+    await expect(again.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+  });
+
   test("opens on the active Deck, and Esc closes it", async ({ page }) => {
     const dialog = await openDecks(page);
     await expect(page.getByTestId("deck-slot-vanguard")).toHaveAttribute(

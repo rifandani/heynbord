@@ -6,16 +6,14 @@ import type {
   PackId,
   PackOrder,
   PackPool,
-  PackState,
   RankId,
   RevealedCard,
   RevealedPack,
+  UnopenedPack,
 } from "@workspace/rules";
 import {
-  buyPacks,
   discoveredCards,
-  newPackState,
-  orderPrice as paidOrderPrice,
+  orderPrice,
   packPool,
   PACKS,
   RANKS,
@@ -23,36 +21,9 @@ import {
 
 import { CLASSES_WITH_CARDS } from "@/features/deck/deck";
 
-/**
- * The Pack state of the Packs screen: the Pack state of the Profile and the
- * free first Pack. It is in memory until the Profile web issue (#52), which
- * changes the free first Pack into an Unopened Pack and removes this.
- */
-export interface ShopPackState extends PackState {
-  /** True after the Player opened the free first Peddler Pack. */
-  readonly freePackUsed: boolean;
-}
-
-/** The Pack state of a new Player, with the random state of this session. */
-export const newShopPackState = (seed: number): ShopPackState => ({
-  ...newPackState(seed),
-  freePackUsed: false,
-});
-
-/** The free first Pack (Economy 3.1): one Peddler Pack, one time. */
-export const isFreeOrder = (order: PackOrder, state: ShopPackState): boolean =>
-  !state.freePackUsed && order.pack === "peddler" && order.count === 1;
-
-/** The price of an order, in Copper: 0 for the free first Pack. */
-export const orderPrice = (order: PackOrder, state: ShopPackState): number =>
-  isFreeOrder(order, state) ? 0 : paidOrderPrice(order);
-
 /** The Coin that the Player needs more for an order, in Copper, or 0. */
-export const missingCoin = (
-  order: PackOrder,
-  state: ShopPackState,
-  coin: number
-): number => Math.max(0, orderPrice(order, state) - coin);
+export const missingCoin = (order: PackOrder, coin: number): number =>
+  Math.max(0, orderPrice(order) - coin);
 
 /**
  * The number of Packs until the Pack Guarantee: Pack N of "in N Packs" has a
@@ -70,53 +41,6 @@ export const dropRateBar = (
       ? [{ rank, basisPoints: pack.dropRates[rank] }]
       : []
   );
-
-/** What a purchase changes: the Coin, the Collection and the Pack state. */
-export interface PackWallet {
-  readonly coin: number;
-  readonly collection: Collection;
-  readonly packs: ShopPackState;
-}
-
-export interface PackPurchase extends PackWallet {
-  /** 1 Pack, 10 Packs, or 11 for a Royal Open ×10. */
-  readonly opened: readonly RevealedPack[];
-}
-
-/**
- * Buys an order with the rules `buyPacks`: removes the Coin, opens the Packs,
- * adds the copies to the Collection and moves the Pack state forward. `null`
- * when the Coin is not enough. The rules have no free Pack, so the free first
- * Pack gets its price before the purchase.
- */
-export const buyOrder = (
-  wallet: PackWallet,
-  order: PackOrder,
-  classId: ClassId
-): PackPurchase | null => {
-  const free = isFreeOrder(order, wallet.packs);
-  const bought = buyPacks(
-    {
-      coin: wallet.coin + (free ? paidOrderPrice(order) : 0),
-      collection: wallet.collection,
-      packState: wallet.packs,
-    },
-    order,
-    classId
-  );
-  if (!bought) {
-    return null;
-  }
-  return {
-    coin: bought.profile.coin,
-    collection: bought.profile.collection,
-    packs: {
-      ...bought.profile.packState,
-      freePackUsed: wallet.packs.freePackUsed || free,
-    },
-    opened: bought.opened,
-  };
-};
 
 const rankIndex = (rank: RankId) => RANKS.indexOf(rank);
 
@@ -223,10 +147,40 @@ export const heroClass = (
  * The Class that the Skill Cards choice starts on: the current Hero Class, or
  * the first Class with Skill Cards when that Class has none.
  */
-export const startClass = (classId: ClassId): ClassId =>
-  CLASSES_WITH_CARDS.includes(classId)
-    ? classId
-    : (CLASSES_WITH_CARDS[0] ?? classId);
+export const startClass = (
+  classId: ClassId,
+  withCards: readonly ClassId[] = CLASSES_WITH_CARDS
+): ClassId =>
+  withCards.includes(classId) ? classId : (withCards[0] ?? classId);
 
 /** The three Packs, from the cheapest, as the screen shows them. */
 export const PACK_IDS: readonly PackId[] = PACKS.map((pack) => pack.id);
+
+/** The Unopened Packs of one Pack and version, and the index of the first one in the list. */
+export interface UnopenedGroup {
+  readonly pack: UnopenedPack["pack"];
+  readonly version: UnopenedPack["version"];
+  readonly count: number;
+  readonly firstIndex: number;
+}
+
+/**
+ * The Unopened Packs in groups of the same Pack and version, in the order of
+ * their first Pack in the list. The screen shows one stand for each group.
+ */
+export const unopenedGroups = (
+  unopened: readonly UnopenedPack[]
+): readonly UnopenedGroup[] => {
+  const groups = new Map<string, UnopenedGroup>();
+  for (const [index, { pack, version }] of unopened.entries()) {
+    const key = `${pack}:${version}`;
+    const group = groups.get(key);
+    groups.set(
+      key,
+      group
+        ? { ...group, count: group.count + 1 }
+        : { pack, version, count: 1, firstIndex: index }
+    );
+  }
+  return [...groups.values()];
+};

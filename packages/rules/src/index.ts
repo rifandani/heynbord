@@ -166,6 +166,8 @@ export {
 } from "./content/star-chests";
 export type { StarChestDefinition, StarChestPack } from "./content/star-chests";
 export { getToken, TOKENS } from "./content/tokens";
+export { isUnlocked, UNLOCK_LEVELS } from "./content/unlocks";
+export type { UnlockFeature } from "./content/unlocks";
 export {
   COMBINE_COIN,
   COMBINE_COPIES,
@@ -216,3 +218,17 @@ export {
   PROFILE_SCHEMA_VERSION,
 } from "./profile/schema";
 export type { DeckSlot, PackState, UnopenedPack } from "./profile/schema";
+export {
+  applyStageResult,
+  FIRST_PACK,
+  REPEAT_WIN_CARD_CHANCE,
+  stageCardPool,
+} from "./profile/stage-result";
+export type {
+  StageResult,
+  StageResultInput,
+  StageRewardCard,
+  StageRewards,
+} from "./profile/stage-result";
+export { claimStarChest, regionStars } from "./profile/star-chests";
+export type { StarChestClaim } from "./profile/star-chests";
