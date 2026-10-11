@@ -1,5 +1,5 @@
-import type { StageDefinition, StageOutcome } from "@workspace/rules";
-import { stageCoin } from "@workspace/rules";
+import type { Profile, StageDefinition } from "@workspace/rules";
+import { regionStars } from "@workspace/rules";
 
 /** A point in Region Map coordinates: the 1600 × 900 box of the painting. */
 export interface Point {
@@ -191,45 +191,29 @@ export const trailStages = (
   });
 };
 
-/** A win keeps the best Stars of the Stage. A loss records nothing. */
-export const recordWin = (
-  results: StageResults,
-  stageId: string,
-  stars: number
-): StageResults =>
-  stars > (results[stageId] ?? 0) ? { ...results, [stageId]: stars } : results;
+/** The most Stars of a Region: 3 for each Stage on its Trail (GDD 8.1). */
+export const regionStarTotal = (trail: readonly TrailStage[]): number =>
+  trail.length * 3;
 
 /**
- * The Coin of a Stage result, in Copper (Economy 2.1). `results` are the
- * results before this Battle: a win of a Stage with no result is its first
- * win. A Stage that is not in the Campaign gives no Coin.
+ * A Star chest (GDD 11.5): `closed` while the Region has fewer Stars than
+ * the chest, `claimable` when it has the Stars (it glows), and `claimed`
+ * after the Player claimed it (it stays open).
  */
-export const resultCoin = (
-  stages: readonly StageDefinition[],
-  results: StageResults,
-  stageId: string,
-  won: boolean
-): number => {
-  const stage = stages.find((candidate) => candidate.id === stageId);
-  if (!stage) {
-    return 0;
+export type ChestState = "closed" | "claimable" | "claimed";
+
+export const chestState = (
+  profile: Pick<Profile, "stageResults" | "claimedStarChests">,
+  region: number,
+  stars: number
+): ChestState => {
+  if (profile.claimedStarChests[String(region)]?.includes(stars)) {
+    return "claimed";
   }
-  const outcome: StageOutcome = won
-    ? (results[stageId] ?? 0) > 0
-      ? "win"
-      : "firstWin"
-    : "loss";
-  return stageCoin(stage, outcome);
+  return regionStars(profile.stageResults, region) >= stars
+    ? "claimable"
+    : "closed";
 };
-
-/** The Stars of a Region and the maximum, for the Star chests (GDD 8.1). */
-export const regionStars = (trail: readonly TrailStage[]) => ({
-  count: trail.reduce((sum, stop) => sum + stop.stars, 0),
-  total: trail.length * 3,
-});
-
-/** Each Region gives a chest at 10, 20 and 30 Stars (GDD 8.1). */
-export const STAR_CHESTS = [10, 20, 30] as const;
 
 /** The number of legs to draw solid: from the Trail entry to the last Done Stage. */
 export const walkedLegs = (trail: readonly TrailStage[]): number =>

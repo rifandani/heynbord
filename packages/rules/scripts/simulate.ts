@@ -1,7 +1,7 @@
 /**
  * Headless Battle simulation (GDD 13). The AI plays both Sides.
  *
- * Usage: `bun run sim [stage | matchup | packs | economy] [battles] [--level N] [--gear N] [--packs N] [--check]`.
+ * Usage: `bun run sim [stage | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]`.
  * With no mode, it runs `stage`, `matchup` and `packs`. `battles` is 200 by default. With
  * `--check`, it exits with code 1 when a win rate is not on its GDD 13 target
  * (CI uses it). The seeds are fixed, so the same content gives the same result.
@@ -27,6 +27,14 @@
  *   `battles` is the number of seeds for each Play Style. It reports the
  *   Economy 4 checkpoints and the Heynstone ledger. `--check` does not check
  *   the economy yet.
+ * - `skill-swap`: the swap rule for each Skill Card (Archetypes 3.3). In a
+ *   Deck of its Class, 1 more copy of the Skill Card replaces 1 Creature Card
+ *   with the same Countdown. The Deck plays Vanguard and Raiders before and
+ *   after the swap, with `battles` seeds and the `--level` and `--gear` of
+ *   `matchup`. A card passes when each win rate changes by 5 points or less.
+ *   `reverse` is the win rate with the Skill Card copy of the Deck replaced by
+ *   the Creature Card. Like `economy`, it runs only on request, and `--check`
+ *   does not check it.
  */
 import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
 import { CARDS } from "../src/content/cards";
@@ -63,11 +71,12 @@ import {
   stageTarget,
 } from "../src/simulation/simulate";
 import type { WinRateTarget } from "../src/simulation/simulate";
+import { SWAP_LIMIT, simulateSkillSwap } from "../src/simulation/skill-swap";
 
 const USAGE =
-  "Usage: bun run sim [stage | matchup | packs | economy] [battles] [--level N] [--gear N] [--packs N] [--check]";
+  "Usage: bun run sim [stage | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]";
 
-const MODES = ["stage", "matchup", "packs", "economy"] as const;
+const MODES = ["stage", "matchup", "packs", "economy", "skill-swap"] as const;
 type Mode = (typeof MODES)[number];
 
 const isMode = (value: string): value is Mode =>
@@ -86,9 +95,11 @@ const integer = (value: string | undefined, name: string, minimum: number) => {
   return number;
 };
 
-/** The economy sim is slow and has no `--check` yet, so it runs only on request. */
+/** The economy sim and the swap report are slow and have no `--check`, so they run only on request. */
 const chosenModes = (modes: Mode[]): Mode[] =>
-  modes.length > 0 ? modes : MODES.filter((mode) => mode !== "economy");
+  modes.length > 0
+    ? modes
+    : MODES.filter((mode) => mode !== "economy" && mode !== "skill-swap");
 
 /** The flags of the command line. `level` is `undefined` when it is not given. */
 interface Flags {
@@ -467,6 +478,51 @@ if (modes.includes("economy")) {
   );
   console.log(
     "\nNot in the sim: Achievement Coin and Essence (the results are a floor), the repeat-win card, the first-win cards of planned Stages and Dungeons, and the 30-Star chests (a win gives 2 Stars and the Player does not repeat Stages)."
+  );
+}
+
+/** A change of a win rate in percentage points, with its sign: "+2.5". */
+const points = (change: number) => {
+  const text = (change * 100).toFixed(1);
+  return change > 0 ? `+${text}` : text;
+};
+
+if (modes.includes("skill-swap")) {
+  const matchupLevel = level ?? MATCHUP_LEVEL;
+  if (matchupLevel < 1) {
+    fail(`--level must be an integer of 1 or more: ${matchupLevel}`);
+  }
+  const options = { seeds: battles, level: matchupLevel, gear: gearOf(gear) };
+  console.log(
+    `Skill swap: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear}. Pass: each change is ±${(SWAP_LIMIT * 100).toFixed(1)} points or less`
+  );
+  const cache = new Map<string, number>();
+  const reports = CARDS.flatMap((card) =>
+    card.kind === "skill" ? [simulateSkillSwap(card, options, cache)] : []
+  );
+  console.table(
+    reports.flatMap((report) =>
+      report.results.map((result) => ({
+        skill: report.skillId,
+        deck: report.deckId,
+        creature: report.sameCountdown
+          ? report.creatureId
+          : `${report.creatureId} (nearest Countdown, Deck Countdown ${report.countdownChange > 0 ? "+" : ""}${report.countdownChange})`,
+        opponent: result.opponentId,
+        before: percent(result.before, 1),
+        after: percent(result.after, 1),
+        change: points(result.after - result.before),
+        reverse:
+          result.reverse === null
+            ? "—"
+            : `${percent(result.reverse, 1)} (${points(result.reverse - result.before)})`,
+        result: result.pass ? "pass" : "FAIL",
+      }))
+    )
+  );
+  const failed = reports.filter((report) => !report.pass);
+  console.log(
+    `${reports.length - failed.length} of ${reports.length} Skill Cards pass${failed.length > 0 ? `. Fail: ${failed.map((report) => report.skillId).join(", ")}` : ""}`
   );
 }
 

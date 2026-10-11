@@ -1,3 +1,4 @@
+import { useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
 import { useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
@@ -9,19 +10,18 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import { HandbookIcon } from "@/features/handbook/components/handbook-icon";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { playerLevelAtom } from "@/features/profile/profile.atoms";
 import { SettingsDialog } from "@/features/town/components/settings-dialog";
 import type { GameScreen, TownShortcut } from "@/features/town/town";
 import {
   isLocked,
+  opensAtLevel,
   paintedIcon,
   TOWN_SHORTCUTS,
   shortcutImage,
 } from "@/features/town/town";
 
 const LONG_PRESS_MS = 450;
-
-const shortcutName = (locked: boolean, name: string, lockedName: string) =>
-  locked ? lockedName : name;
 
 const pageCurrent = (current: boolean) => (current ? "page" : undefined);
 
@@ -174,21 +174,39 @@ const ShortcutFace = ({
   </>
 );
 
-const OpensLater = ({ locked }: { readonly locked: boolean }) => {
+/**
+ * The text of a lock: "Opens at level N" for a screen that the Player level
+ * has not unlocked, else "Opens later". `null` for an open shortcut.
+ */
+const useLockText = (locked: boolean, level: number | null) => {
   const { tr } = useGameText();
   if (!locked) {
     return null;
   }
-  return (
-    <span className="block font-normal text-[#e9c46a]">
-      {tr("town.opensLater")}
-    </span>
-  );
+  return level === null
+    ? tr("town.opensLater")
+    : tr("town.opensAtLevel", { level });
+};
+
+/** The accessible name of a shortcut: its name, and its lock. */
+const useShortcutName = (
+  name: string,
+  locked: boolean,
+  level: number | null
+) => {
+  const { tr } = useGameText();
+  if (!locked) {
+    return name;
+  }
+  return level === null
+    ? tr("town.locked", { name })
+    : tr("town.lockedAtLevel", { name, level });
 };
 
 /**
- * One Town Bar shortcut. A shortcut to a screen that does not exist yet keeps
- * keyboard focus, and its accessible name says "opens later". Hover and focus
+ * One Town Bar shortcut. A shortcut to a screen that does not exist yet, or
+ * that the Player level has not unlocked (GDD 11.4), keeps keyboard focus,
+ * and its accessible name says "opens later" or "opens at level N". Hover and focus
  * show its tooltip; on touch, a tap shows it. A long press shows the name of
  * any shortcut, because a phone shows the icons only. The Deck shortcut opens
  * the Deck dialog over the current screen, and the Handbook shortcut opens
@@ -211,7 +229,11 @@ const Shortcut = ({
   const handbook = useHandbook();
   const name = tr(`town.shortcuts.${shortcut.id}`);
   const { screen, dialog } = shortcut;
-  const locked = isLocked(shortcut);
+  const playerLevel = useAtomValue(playerLevelAtom);
+  const locked = isLocked(shortcut, playerLevel);
+  const opensAt = opensAtLevel(shortcut, playerLevel);
+  const lockText = useLockText(locked, opensAt);
+  const accessibleName = useShortcutName(name, locked, opensAt);
 
   const onPressStart = (event: PressEvent) => {
     longPressed.current = false;
@@ -232,7 +254,7 @@ const Shortcut = ({
     if (longPressed.current) {
       return;
     }
-    if (screen) {
+    if (screen && !locked) {
       setOpen(false);
       onOpen(screen);
     } else if (dialog === "handbook") {
@@ -265,7 +287,7 @@ const Shortcut = ({
         shouldCloseOnPress={false}
       >
         <Button
-          aria-label={shortcutName(locked, name, tr("town.locked", { name }))}
+          aria-label={accessibleName}
           aria-current={pageCurrent(current)}
           onPressStart={onPressStart}
           onPressEnd={onPressEnd}
@@ -289,7 +311,9 @@ const Shortcut = ({
           data-testid={`town-tooltip-${shortcut.id}`}
         >
           {name}
-          <OpensLater locked={locked} />
+          {lockText === null ? null : (
+            <span className="block font-normal text-[#e9c46a]">{lockText}</span>
+          )}
         </GameTooltip>
       </TooltipTrigger>
       {dialog === "deck" ? (

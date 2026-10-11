@@ -235,7 +235,7 @@ describe("Skill Cards (GDD 4.8)", () => {
       state,
       play(0, Target.Square({ lane: 0, position: 6 }))
     );
-    expect(unitById(next, target.id)).toMatchObject({ hp: 4, frozen: true });
+    expect(unitById(next, target.id)).toMatchObject({ hp: 3, frozen: true });
   });
 
   it("deals area damage from the target Square toward the enemy Hero", () => {
@@ -366,7 +366,7 @@ describe("Skill Cards (GDD 4.8)", () => {
     const countdowns = next.sides.player.hand
       .filter((card) => card.cardId !== "warrior.warDrums")
       .map((card) => card.countdown);
-    expect(countdowns).toEqual([0, 2, 4]);
+    expect(countdowns).toEqual([0, 1, 3]);
     expect(eventsOfType(events, "CountdownChanged")).toHaveLength(2);
   });
 
@@ -454,12 +454,12 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
         state,
         play(0, Target.Hero({ side: "enemy" }))
       );
-      // Rare: 4 × 1.45 = 5.8, rounded to 6. A Hero has no Armor and no Block.
-      expect(next.sides.enemy.hero.hp).toBe(24);
+      // Rare: 8 × 1.45 = 11.6, rounded to 12. A Hero has no Armor and no Block.
+      expect(next.sides.enemy.hero.hp).toBe(18);
       expect(eventsOfType(events, "DamageDealt")).toEqual([
         expect.objectContaining({
           target: { _tag: "Hero", side: "enemy" },
-          amount: 6,
+          amount: 12,
           source: "skill",
           blocked: false,
         }),
@@ -474,7 +474,7 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
         state,
         play(0, Target.Hero({ side: "player" }))
       );
-      expect(next.sides.player.hero.hp).toBe(26);
+      expect(next.sides.player.hero.hp).toBe(22);
     });
 
     it("has no target when the enemy Hero is Defeated", () => {
@@ -490,7 +490,7 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
         state,
         play(0, Target.Hero({ side: "enemy" }))
       );
-      expect(next.sides.enemy.hero.hp).toBe(22);
+      expect(next.sides.enemy.hero.hp).toBe(14);
       expect(eventsOfType(events, "DamageDealt")[0]?.crit).toBe(true);
     });
 
@@ -519,9 +519,9 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
       giveHand(state, "player", [["ranger.pinningShot", 0, "uncommon"]]);
       const target = enemyAt(state, 6);
       const { state: next, events } = run(state, play(0, square(0, 6)));
-      // Uncommon: 3 × 1.2 = 3.6, rounded to 4.
+      // Uncommon: 4 × 1.2 = 4.8, rounded to 5.
       expect(unitById(next, target.id)).toMatchObject({
-        hp: 2,
+        hp: 1,
         entangled: true,
       });
       expect(eventsOfType(events, "StatusApplied")).toEqual([
@@ -532,7 +532,7 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
     it("does not Entangle at 0 damage", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["ranger.pinningShot", 0]]);
-      const target = enemyAt(state, 6, { bonusArmor: 3, bonusArmorTurns: 2 });
+      const target = enemyAt(state, 6, { bonusArmor: 4, bonusArmorTurns: 2 });
       const { state: next, events } = run(state, play(0, square(0, 6)));
       expect(unitById(next, target.id)).toMatchObject({
         hp: 6,
@@ -567,10 +567,10 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
     it("deals damage, then Pushes the Unit 2 Squares toward its own Hero", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["ranger.warningShot", 0, "rare"]]);
-      const target = enemyAt(state, 6);
+      const target = enemyAt(state, 6, { hp: 20, maxHp: 20 });
       const { state: next, events } = run(state, play(0, square(0, 6)));
-      // Rare: 2 × 1.45 = 2.9, rounded to 3.
-      expect(unitById(next, target.id)).toMatchObject({ hp: 3, position: 8 });
+      // Rare: 8 × 1.45 = 11.6, rounded to 12.
+      expect(unitById(next, target.id)).toMatchObject({ hp: 8, position: 8 });
       expect(eventsOfType(events, "UnitPushed")).toEqual([
         expect.objectContaining({ unitId: target.id, from: 6, to: 8 }),
       ]);
@@ -582,7 +582,7 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
     it("Pushes also at 0 damage", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["ranger.warningShot", 0]]);
-      const target = enemyAt(state, 6, { bonusArmor: 3, bonusArmorTurns: 2 });
+      const target = enemyAt(state, 6, { bonusArmor: 8, bonusArmorTurns: 2 });
       const { state: next } = run(state, play(0, square(0, 6)));
       expect(unitById(next, target.id)).toMatchObject({ hp: 6, position: 8 });
     });
@@ -594,10 +594,11 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
         ["ranger.warningShot", 0],
         ["ranger.warningShot", 0],
       ]);
-      const blocked = enemyAt(state, 6);
+      const tough = { hp: 20, maxHp: 20 };
+      const blocked = enemyAt(state, 6, tough);
       enemyAt(state, 8, { attack: 0 });
-      const edge = enemyAt(state, 10, { lane: 1 });
-      const stuck = enemyAt(state, 11, { lane: 2 });
+      const edge = enemyAt(state, 10, { lane: 1, ...tough });
+      const stuck = enemyAt(state, 11, { lane: 2, ...tough });
       let next = run(state, play(0, square(0, 6))).state;
       next = run(next, play(0, square(1, 10))).state;
       const last = run(next, play(0, square(2, 11)));
@@ -616,7 +617,7 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
         position: 7,
       });
       const { state: next, events } = run(state, play(0, square(0, 7)));
-      expect(unitById(next, wall.id)).toMatchObject({ hp: 13, position: 7 });
+      expect(unitById(next, wall.id)).toMatchObject({ hp: 7, position: 7 });
       expect(eventsOfType(events, "UnitPushed")).toEqual([]);
     });
 
@@ -829,13 +830,13 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
       const first = run(state, play(0, square(0, 6)));
       expect(unitById(first.state, frozen.id)).toMatchObject({
         hp: 6,
-        ward: 3,
+        ward: 2,
         frozen: true,
       });
       expect(eventsOfType(first.events, "DamageDealt")[0]).toMatchObject({
         amount: 0,
-        absorbed: 2,
-        ward: 3,
+        absorbed: 3,
+        ward: 2,
       });
       const second = run(first.state, play(0, square(0, 9)));
       expect(unitById(second.state, burned.id)).toMatchObject({
@@ -852,7 +853,7 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
         ["ranger.warningShot", 0],
       ]);
       const pinned = enemyAt(state, 6, { ward: 5 });
-      const pushed = enemyAt(state, 3, { ward: 5 });
+      const pushed = enemyAt(state, 3, { ward: 8 });
       preventRout(state);
       const first = run(state, play(0, square(0, 6)));
       expect(unitById(first.state, pinned.id)).toMatchObject({

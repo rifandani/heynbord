@@ -1,10 +1,25 @@
+import { RegistryContext, useAtomValue } from "@effect/atom-react";
+import type { StarChestDefinition } from "@workspace/rules";
+import {
+  claimStarChest,
+  coinDenominations,
+  STAR_CHESTS,
+} from "@workspace/rules";
 import { cn } from "cn";
-import type { ReactElement } from "react";
-import { useMemo, useState } from "react";
+import type { ReactElement, ReactNode, RefObject } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
-import { Button, TooltipTrigger } from "react-aria-components";
+import {
+  Button,
+  Dialog,
+  Heading,
+  Popover,
+  TooltipTrigger,
+} from "react-aria-components";
 import { HiChevronRight } from "react-icons/hi2";
 
+import { playSound, unlockAudio } from "@/features/battle/battle-audio";
+import { GameButton } from "@/features/battle/components/game-button";
 import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -12,11 +27,16 @@ import {
   ChestIcon,
   StarIcon,
 } from "@/features/campaign/components/campaign-icons";
+import type { ChestState } from "@/features/campaign/region-map";
 import {
+  chestState,
   regionMap,
   REGION_COUNT,
-  STAR_CHESTS,
 } from "@/features/campaign/region-map";
+import { profileAtom } from "@/features/profile/profile.atoms";
+import { BalanceIcon } from "@/features/town/components/balance-icon";
+import { CoinAmount } from "@/features/town/components/balance-plate";
+import { coinWords } from "@/features/town/town";
 
 /** The HUD plate of the top band (DESIGN.md, HUD plate). */
 const PLATE =
@@ -128,70 +148,233 @@ export const RegionBanner = ({ region }: { readonly region: number }) => {
   );
 };
 
-/** One chest on the Star track, at its Star count. */
+/** One line of the chest rewards: an icon, then its text. */
+const RewardLine = ({
+  icon,
+  children,
+  testId,
+}: {
+  readonly icon: ReactNode;
+  readonly children: ReactNode;
+  readonly testId: string;
+}) => (
+  <li className="flex items-center gap-2" data-testid={testId}>
+    <span className="grid size-6 shrink-0 place-items-center" aria-hidden>
+      {icon}
+    </span>
+    <span className="min-w-0">{children}</span>
+  </li>
+);
+
+/**
+ * The rewards of a claimed Star chest (GDD 11.5): a small panel under the
+ * chest with its Coin, Essence, Heynstones and Pack. The rewards are already
+ * in the Profile. Esc, OK and a click outside close it.
+ */
+const ChestRewards = ({
+  chest,
+  anchor,
+  onClose,
+}: {
+  readonly chest: StarChestDefinition;
+  readonly anchor: RefObject<HTMLElement | null>;
+  readonly onClose: () => void;
+}) => {
+  const { tr, locale } = useGameText();
+  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  const format = (value: number) => number.format(value);
+  const ICON = "size-5";
+  return (
+    <Popover
+      triggerRef={anchor}
+      isOpen
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose();
+        }
+      }}
+      placement="bottom end"
+      offset={10}
+      className="fade-in zoom-in-95 animate-in w-64 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 p-3 text-[#fff6df] shadow-[0_6px_0_rgba(0,0,0,0.45)] duration-200 motion-reduce:animate-none"
+      data-testid="chest-rewards"
+    >
+      <Dialog className="outline-none">
+        <Heading
+          slot="title"
+          className="font-display text-base font-black text-[#ffe08a]"
+        >
+          {tr("campaign.chest.claimedTitle", { stars: chest.stars })}
+        </Heading>
+        <ul className="mt-2 grid gap-1.5 text-sm font-semibold">
+          {chest.coin > 0 ? (
+            <RewardLine
+              testId="chest-reward-coin"
+              icon={<BalanceIcon kind="coin" className={ICON} />}
+            >
+              <span className="sr-only">
+                {tr("battle.coinEarned", {
+                  amount: coinWords(chest.coin, format, (denomination) =>
+                    tr(`town.balances.denominations.${denomination}.name`)
+                  ),
+                })}
+              </span>
+              <span className="flex items-center gap-1" aria-hidden>
+                +
+                <CoinAmount
+                  parts={coinDenominations(chest.coin)}
+                  format={format}
+                />
+              </span>
+            </RewardLine>
+          ) : null}
+          {chest.essence > 0 ? (
+            <RewardLine
+              testId="chest-reward-essence"
+              icon={<BalanceIcon kind="essence" className={ICON} />}
+            >
+              {tr("campaign.chest.essence", {
+                amount: format(chest.essence),
+              })}
+            </RewardLine>
+          ) : null}
+          {chest.heynstones > 0 ? (
+            <RewardLine
+              testId="chest-reward-heynstones"
+              icon={<BalanceIcon kind="heynstones" className={ICON} />}
+            >
+              {tr("campaign.chest.heynstones", {
+                amount: format(chest.heynstones),
+              })}
+            </RewardLine>
+          ) : null}
+          {chest.pack ? (
+            <RewardLine
+              testId="chest-reward-pack"
+              icon={<GlyphIcon glyph="pack" className="size-5" />}
+            >
+              {tr(
+                chest.pack.version === "race"
+                  ? "campaign.chest.racePack"
+                  : "campaign.chest.pack",
+                { pack: tr(`packs.names.${chest.pack.pack}`) }
+              )}
+            </RewardLine>
+          ) : null}
+        </ul>
+        <GameButton
+          intent="gold"
+          size="sm"
+          autoFocus
+          onPress={onClose}
+          className="mt-3 w-full"
+          data-testid="chest-rewards-close"
+        >
+          {tr("campaign.chest.ok")}
+        </GameButton>
+      </Dialog>
+    </Popover>
+  );
+};
+
+/** The tooltip and the accessible name of a chest: its Stars, then its state. */
+const useChestTip = (stars: number, count: number, state: ChestState) => {
+  const { tr } = useGameText();
+  const status = {
+    closed: tr("campaign.chest.needed", { count: stars - count }),
+    claimable: tr("campaign.chest.claimable"),
+    claimed: tr("campaign.chest.claimed"),
+  }[state];
+  return `${tr("campaign.chest.label", { stars })}. ${status}`;
+};
+
+/**
+ * One chest on the Star track, at its Star count (GDD 11.5). A closed chest
+ * says how many Stars it still needs. A claimable chest glows, and a tap or
+ * Enter claims it and shows its rewards. A claimed chest stays open.
+ */
 const Chest = ({
   stars,
   count,
+  state,
+  rewards,
+  onClaim,
+  onCloseRewards,
 }: {
   readonly stars: number;
   readonly count: number;
+  readonly state: ChestState;
+  /** The chest whose rewards panel shows now, or `null`. */
+  readonly rewards: StarChestDefinition | null;
+  readonly onClaim: () => void;
+  readonly onCloseRewards: () => void;
 }) => {
-  const { tr } = useGameText();
-  const earned = count >= stars;
-  const tip = `${tr("campaign.chest.label", { stars })}. ${
-    earned
-      ? tr("campaign.chest.earned")
-      : tr("campaign.chest.needed", { count: stars - count })
-  }`;
+  const tip = useChestTip(stars, count, state);
+  const button = useRef<HTMLButtonElement>(null);
+  const claimable = state === "claimable";
+  const claimed = state === "claimed";
   return (
-    <TipPiece tip={tip}>
-      {(onPress) => (
-        <Button
-          onPress={onPress}
-          aria-label={tip}
-          className={cn(
-            "group relative grid size-10 shrink-0 cursor-default place-items-center rounded-lg outline-none",
-            "transition-colors duration-100 data-[hovered]:bg-[#fff6df]/10",
-            "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
-            "[@media(max-height:500px)]:size-8"
-          )}
-          data-testid={`star-chest-${stars}`}
-          data-earned={earned}
-        >
-          {earned ? (
-            <span
-              className="absolute inset-[-4px] rounded-full bg-[radial-gradient(closest-side,rgba(255,215,90,0.7),rgba(255,215,90,0))]"
-              aria-hidden
-            />
-          ) : null}
-          <ChestIcon
-            earned={earned}
+    <>
+      <TipPiece tip={tip}>
+        {(onPress) => (
+          <Button
+            ref={button}
+            onPress={(event) => (claimable ? onClaim() : onPress(event))}
+            aria-label={tip}
             className={cn(
-              "relative size-9 drop-shadow-[0_2px_0_rgba(0,0,0,0.55)] [@media(max-height:500px)]:size-7",
-              !earned && "brightness-90 saturate-[0.7]"
+              "group relative grid size-10 shrink-0 place-items-center rounded-lg outline-none",
+              "transition-colors duration-100 data-[hovered]:bg-[#fff6df]/10",
+              "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+              "[@media(max-height:500px)]:size-8",
+              claimable ? "cursor-pointer" : "cursor-default"
             )}
-          />
-          <span
-            className={cn(
-              "absolute -right-1 -bottom-1 min-w-4 rounded-[4px] border px-0.5 text-center text-xs leading-3.5 font-black tabular-nums shadow-[0_1px_0_rgba(0,0,0,0.5)]",
-              earned
-                ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05]"
-                : "border-[#e9c46a]/50 bg-[#1c140e] text-[#e8d9bb]",
-              "[@media(max-height:500px)]:-right-1.5 [@media(max-height:500px)]:-bottom-1.5"
-            )}
-            aria-hidden
+            data-testid={`star-chest-${stars}`}
+            data-state={state}
           >
-            {stars}
-          </span>
-        </Button>
-      )}
-    </TipPiece>
+            {claimable ? (
+              <span
+                className="absolute inset-[-6px] rounded-full bg-[radial-gradient(closest-side,rgba(255,215,90,0.85),rgba(255,215,90,0))] motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]"
+                aria-hidden
+              />
+            ) : null}
+            <ChestIcon
+              earned={claimed}
+              className={cn(
+                "relative size-9 drop-shadow-[0_2px_0_rgba(0,0,0,0.55)] transition-transform duration-150 [@media(max-height:500px)]:size-7",
+                state === "closed" && "brightness-90 saturate-[0.7]",
+                claimable &&
+                  "group-data-[hovered]:-translate-y-0.5 group-data-[pressed]:translate-y-0"
+              )}
+            />
+            <span
+              className={cn(
+                "absolute -right-1 -bottom-1 min-w-4 rounded-[4px] border px-0.5 text-center text-xs leading-3.5 font-black tabular-nums shadow-[0_1px_0_rgba(0,0,0,0.5)]",
+                state === "closed"
+                  ? "border-[#e9c46a]/50 bg-[#1c140e] text-[#e8d9bb]"
+                  : "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05]",
+                "[@media(max-height:500px)]:-right-1.5 [@media(max-height:500px)]:-bottom-1.5"
+              )}
+              aria-hidden
+            >
+              {stars}
+            </span>
+          </Button>
+        )}
+      </TipPiece>
+      {rewards ? (
+        <ChestRewards
+          chest={rewards}
+          anchor={button}
+          onClose={onCloseRewards}
+        />
+      ) : null}
+    </>
   );
 };
 
 /**
  * The Star chest plate (GDD 11.5) in the top-right corner: the Stars of the
- * Region on a bronze track, and the chests at 10, 20 and 30 Stars.
+ * Region on a bronze track, and the chests at 10, 20 and 30 Stars. A claim
+ * saves the Profile at once.
  */
 export const StarChests = ({
   region,
@@ -203,8 +386,20 @@ export const StarChests = ({
   readonly total: number;
 }) => {
   const { tr, locale } = useGameText();
+  const registry = useContext(RegistryContext);
+  const profile = useAtomValue(profileAtom);
+  const [opened, setOpened] = useState<StarChestDefinition | null>(null);
   const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const share = total > 0 ? Math.min(1, count / total) : 0;
+  const claim = (stars: number) => {
+    const claimed = claimStarChest(registry.get(profileAtom), region, stars);
+    if (claimed) {
+      unlockAudio();
+      playSound("revealRare");
+      registry.set(profileAtom, claimed.profile);
+      setOpened(claimed.reward);
+    }
+  };
   return (
     <section
       aria-label={tr("campaign.stars.label", {
@@ -245,13 +440,20 @@ export const StarChests = ({
             style={{ width: `${share * 100}%` }}
           />
         </span>
-        {STAR_CHESTS.map((stars) => (
+        {STAR_CHESTS.map((chest) => (
           <span
-            key={stars}
+            key={chest.stars}
             className="absolute top-0 -translate-x-1/2"
-            style={{ left: `${(stars / Math.max(total, 1)) * 100}%` }}
+            style={{ left: `${(chest.stars / Math.max(total, 1)) * 100}%` }}
           >
-            <Chest stars={stars} count={count} />
+            <Chest
+              stars={chest.stars}
+              count={count}
+              state={chestState(profile, region, chest.stars)}
+              rewards={opened?.stars === chest.stars ? opened : null}
+              onClaim={() => claim(chest.stars)}
+              onCloseRewards={() => setOpened(null)}
+            />
           </span>
         ))}
       </div>

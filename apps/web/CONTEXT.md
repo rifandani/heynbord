@@ -64,7 +64,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
 
-**Card shop**: The Building that opens the Packs screen: a small house with a purple roof. _Avoid_: Pack shop, store
+**Card shop**: The Building that opens the Packs screen: a small house with a purple roof. It opens at Player level 2. _Avoid_: Pack shop, store
+
+**Lock Plate**: The small plate with a lock and a level that replaces the name label of a Building whose screen the Player level has not unlocked. It has the same "Opens at level N" tooltip as the Town Bar shortcut. _Avoid_: level badge, locked label
 
 **Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and a shortcut to the Handbook. _Avoid_: menu bar, nav bar, footer, dock
 

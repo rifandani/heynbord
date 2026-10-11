@@ -504,7 +504,7 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
     ).toEqual(Command.EndTurn());
     expect(pinningShotChoice({ entangled: true })).toEqual(Command.EndTurn());
     expect(pinningShotChoice({ speed: 0 })).toEqual(Command.EndTurn());
-    expect(pinningShotChoice({ bonusArmor: 3, bonusArmorTurns: 2 })).toEqual(
+    expect(pinningShotChoice({ bonusArmor: 4, bonusArmorTurns: 2 })).toEqual(
       Command.EndTurn()
     );
     expect(
@@ -525,11 +525,12 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
 
   it("aims Warning Shot at the Unit nearest to its Hero that the push moves", () => {
     // The Unit at Square 9 cannot go back: the Unit at Square 8 stops it.
+    // Each Unit survives the hit.
     expect(
       skillChoice("ranger.warningShot", [
-        [3, 6],
-        [8, 6],
-        [9, 6],
+        [3, 12],
+        [8, 12],
+        [9, 12],
       ])
     ).toEqual(playAt(8));
   });

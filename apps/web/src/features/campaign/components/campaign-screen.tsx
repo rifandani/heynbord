@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
-import { STAGES } from "@workspace/rules";
+import { regionStars, STAGES } from "@workspace/rules";
 import type { CSSProperties, RefObject } from "react";
 import {
   useEffect,
@@ -35,7 +35,7 @@ import {
   MAP,
   mapFrame,
   regionMap,
-  regionStars,
+  regionStarTotal,
   trailStages,
   walkedLegs,
 } from "@/features/campaign/region-map";
@@ -250,7 +250,7 @@ export const CampaignScreen = ({
     () => trailStages(STAGES, region, results),
     [region, results]
   );
-  const stars = regionStars(trail);
+  const stars = regionStars(results, region);
   const awaken = useAwakenedStage(trail);
   const [selected, setSelected] = useState<string | null>(null);
   const root = useRef<HTMLElement>(null);
@@ -288,7 +288,11 @@ export const CampaignScreen = ({
         />
       ) : null}
       <RegionBanner region={region} />
-      <StarChests region={region} count={stars.count} total={stars.total} />
+      <StarChests
+        region={region}
+        count={stars}
+        total={regionStarTotal(trail)}
+      />
       <StagePanel
         stop={panelStop}
         from={marker}

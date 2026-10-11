@@ -650,6 +650,28 @@
   }
 }
 
+/*
+ * The XP bar of the Battle result fills from the XP before the result to the
+ * XP after it. After a level up, it fills from the start of the new level.
+ */
+@keyframes result-xp-fill {
+  from {
+    scale: var(--xp-from) 1;
+  }
+}
+
+/* "Level up!" stamps onto the result after the XP bar fills. */
+@keyframes result-level-up {
+  0% {
+    opacity: 0;
+    scale: 1.6;
+  }
+  60% {
+    opacity: 1;
+    scale: 0.94;
+  }
+}
+
 /* An Open ×10 highlight card comes in. */
 @keyframes pack-deal {
   from {

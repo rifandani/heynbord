@@ -1,5 +1,6 @@
 import type {
   BattleState,
+  RankId,
   StageDefinition,
   UnitSnapshot,
 } from "@workspace/rules";
@@ -19,12 +20,16 @@ import { describe, expect, it } from "vitest";
 import type { BattleView } from "@/features/battle/battle-view";
 import { applyEvent, viewFromState } from "@/features/battle/battle-view";
 
-/** Runs a Battle with the AI on both sides and returns each step. */
+/**
+ * Runs a Battle with the AI on both sides and returns each step. `rank` puts
+ * each copy of the player Deck at that Rank.
+ */
 const steps = (
   seed: number,
   stageId: string,
   deckId: string,
-  stage: StageDefinition = getStage(stageId)
+  stage: StageDefinition = getStage(stageId),
+  rank?: RankId
 ) => {
   const deck = getStarterDeck(deckId);
   let { state } = createBattle({
@@ -32,7 +37,7 @@ const steps = (
     stage,
     player: {
       classId: deck.classId,
-      deck: deck.deck,
+      deck: deck.deck.map((entry) => ({ ...entry, rank: rank ?? entry.rank })),
       level: 10,
       gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
     },
@@ -168,7 +173,11 @@ describe("applyEvent with Swarm, Rebirth and Summon", () => {
   });
 });
 
-/** Stage 1-4 with an enemy Deck of Elf cards and the 3 Ranger Skill Cards. */
+/**
+ * Stage 1-4 with an enemy Deck of Elf cards and the 3 Ranger Skill Cards. Each
+ * copy is Rare, except Warning Shot: at Common (8 damage), a Rare player Unit
+ * survives it and is pushed.
+ */
 const rangerStage = (): StageDefinition => {
   const stage = getStage("1-4");
   const cardIds = [
@@ -184,7 +193,13 @@ const rangerStage = (): StageDefinition => {
     enemy: {
       ...stage.enemy,
       deck: cardIds.flatMap((cardId) =>
-        Array.from({ length: 2 }, () => ({ cardId, rank: "rare" as const }))
+        Array.from({ length: 2 }, () => ({
+          cardId,
+          rank:
+            cardId === "ranger.warningShot"
+              ? ("common" as const)
+              : ("rare" as const),
+        }))
       ),
     },
   };
@@ -205,7 +220,7 @@ const castEffects = (events: readonly BattleEvent[], cardId: string) =>
 
 describe("applyEvent with the Ranger Skill Cards", () => {
   const battles = [1, 2, 3].map((seed) =>
-    steps(seed, "1-4", "vanguard", rangerStage())
+    steps(seed, "1-4", "vanguard", rangerStage(), "rare")
   );
   const events = battles.flat().flatMap((entry) => entry.events);
 

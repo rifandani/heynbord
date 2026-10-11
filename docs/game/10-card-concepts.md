@@ -1733,7 +1733,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.1 War Drums
 
-`warrior.warDrums` · Warrior · Common · Countdown 2 · No target · The Countdown of 2 random cards in your Hand goes down by 1.
+`warrior.warDrums` · Warrior · Common · Countdown 2 · No target · The Countdown of 2 random cards in your Hand goes down by 2.
 
 > Boom. Boom. Move faster.
 
@@ -1793,7 +1793,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.2 Frost Bolt
 
-`mage.frostBolt` · Mage · Common · Countdown 2 · An enemy Unit · Deal 2 Frost damage to an enemy Unit.
+`mage.frostBolt` · Mage · Common · Countdown 2 · An enemy Unit · Deal 3 Frost damage to an enemy Unit.
 
 > Stay a while.
 
@@ -1825,7 +1825,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.1 Pinning Shot
 
-`ranger.pinningShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 3 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.
+`ranger.pinningShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 4 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.
 
 > Stay right there.
 
@@ -1839,7 +1839,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.2 Warning Shot
 
-`ranger.warningShot` · Ranger · Common · Countdown 3 · An enemy Unit · Deal 2 Physical damage to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.
+`ranger.warningShot` · Ranger · Common · Countdown 3 · An enemy Unit · Deal 8 Physical damage to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.
 
 > The next one will not miss.
 
@@ -1853,7 +1853,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.3 Long Shot
 
-`ranger.longShot` · Ranger · Uncommon · Countdown 4 · The enemy Hero · Deal 4 Physical damage to the enemy Hero.
+`ranger.longShot` · Ranger · Uncommon · Countdown 4 · The enemy Hero · Deal 8 Physical damage to the enemy Hero.
 
 > Over their heads, into the Hero.
 

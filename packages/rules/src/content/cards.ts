@@ -1300,7 +1300,7 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "common",
     countdown: 2,
     target: "none",
-    effect: { type: "lowerCountdown", cards: 2, amount: 1 },
+    effect: { type: "lowerCountdown", cards: 2, amount: 2 },
   },
   {
     kind: "skill",
@@ -1328,7 +1328,7 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "common",
     countdown: 2,
     target: "enemyUnit",
-    effect: { type: "damageEntangle", amount: 3, damageType: "physical" },
+    effect: { type: "damageEntangle", amount: 4, damageType: "physical" },
   },
   {
     kind: "skill",
@@ -1339,7 +1339,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damagePush",
-      amount: 2,
+      amount: 8,
       damageType: "physical",
       squares: 2,
     },
@@ -1351,7 +1351,7 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "uncommon",
     countdown: 4,
     target: "enemyHero",
-    effect: { type: "damageHero", amount: 4, damageType: "physical" },
+    effect: { type: "damageHero", amount: 8, damageType: "physical" },
   },
   // Mage: area damage.
   {
@@ -1370,7 +1370,7 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "common",
     countdown: 2,
     target: "enemyUnit",
-    effect: { type: "damageUnit", amount: 2, damageType: "frost" },
+    effect: { type: "damageUnit", amount: 3, damageType: "frost" },
   },
   {
     kind: "skill",

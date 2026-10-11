@@ -10,6 +10,7 @@ import {
   overlaps,
   GROUND_LINE,
   isLocked,
+  opensAtLevel,
   paintedIcon,
   percentBox,
   safeArea,
@@ -114,12 +115,41 @@ describe("the Handbook shortcut", () => {
     expect(TOWN_SHORTCUTS.at(-2)?.id).toBe("bazaar");
   });
 
-  it("locks only the shortcuts to screens that do not exist yet", () => {
+  it("at level 2, locks only the shortcuts to screens that do not exist yet", () => {
     expect(
-      TOWN_SHORTCUTS.filter((shortcut) => !isLocked(shortcut)).map(
+      TOWN_SHORTCUTS.filter((shortcut) => !isLocked(shortcut, 2)).map(
         (shortcut) => shortcut.id
       )
     ).toEqual(["town", "campaign", "deck", "packs", "handbook"]);
+  });
+});
+
+describe("level locks (GDD 11.4)", () => {
+  const packs = TOWN_SHORTCUTS.find((shortcut) => shortcut.id === "packs");
+  const cardShop = SELECTABLE_BUILDINGS.find(
+    (building) => building.id === "cardShop"
+  );
+
+  it("locks the Packs at level 1, and opens them at level 2", () => {
+    expect(packs && isLocked(packs, 1)).toBe(true);
+    expect(packs && opensAtLevel(packs, 1)).toBe(2);
+    expect(packs && isLocked(packs, 2)).toBe(false);
+    expect(packs && opensAtLevel(packs, 2)).toBeNull();
+    expect(packs && opensAtLevel(packs, 30)).toBeNull();
+  });
+
+  it("locks the Card shop with the Packs, and never the Town Gate", () => {
+    expect(cardShop && opensAtLevel(cardShop, 1)).toBe(2);
+    expect(cardShop && opensAtLevel(cardShop, 2)).toBeNull();
+    for (const level of [1, 2, 30]) {
+      expect(opensAtLevel(SELECTABLE_BUILDINGS[0] ?? {}, level)).toBeNull();
+    }
+  });
+
+  it("gives no level to a screen that does not exist yet: it opens later", () => {
+    const hero = TOWN_SHORTCUTS.find((shortcut) => shortcut.id === "hero");
+    expect(hero && isLocked(hero, 30)).toBe(true);
+    expect(hero && opensAtLevel(hero, 1)).toBeNull();
   });
 });
 

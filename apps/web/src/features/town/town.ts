@@ -1,5 +1,5 @@
-import type { CoinDenomination } from "@workspace/rules";
-import { coinDenominations } from "@workspace/rules";
+import type { CoinDenomination, UnlockFeature } from "@workspace/rules";
+import { coinDenominations, isUnlocked, UNLOCK_LEVELS } from "@workspace/rules";
 
 /** The game screens in the `/play` route before a Battle (web ADR-0006). */
 export type GameScreen = "town" | "campaign" | "packs";
@@ -85,6 +85,8 @@ export interface SelectableBuilding {
   /** The label box above the Building, in painting coordinates. */
   readonly label: Rect;
   readonly image: string;
+  /** The feature of the Player level that unlocks the screen (GDD 7.1), if one does. */
+  readonly unlock?: UnlockFeature;
   /**
    * A CSS `clip-path` of the Building box (label and layer), where the box
    * covers another Building: the pointer then goes to the other Building.
@@ -110,6 +112,7 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     // gate at its lower left, so that corner goes to the Town Gate.
     id: "cardShop",
     screen: "packs",
+    unlock: "packs",
     rect: { x: 1010, y: 436, width: 199, height: 176 },
     label: { x: 1010, y: 390, width: 199, height: 46 },
     image: "/town/card-shop.webp",
@@ -139,11 +142,29 @@ export interface TownShortcut {
   readonly screen: GameScreen | null;
   /** The dialog that the shortcut opens over the current screen. */
   readonly dialog?: "deck" | "handbook";
+  /** The feature of the Player level that unlocks the screen (GDD 7.1), if one does. */
+  readonly unlock?: UnlockFeature;
 }
 
-/** True for a shortcut to a screen that does not exist yet. */
-export const isLocked = (shortcut: TownShortcut): boolean =>
-  shortcut.screen === null && shortcut.dialog === undefined;
+/**
+ * The Player level that opens a screen, or `null` when `level` already opens
+ * it or no level locks it (GDD 11.4).
+ */
+export const opensAtLevel = (
+  screen: Pick<TownShortcut, "unlock">,
+  level: number
+): number | null =>
+  screen.unlock === undefined || isUnlocked(level, screen.unlock)
+    ? null
+    : UNLOCK_LEVELS[screen.unlock];
+
+/**
+ * True for a shortcut to a screen that does not exist yet, or that the Player
+ * level has not unlocked yet.
+ */
+export const isLocked = (shortcut: TownShortcut, level: number): boolean =>
+  (shortcut.screen === null && shortcut.dialog === undefined) ||
+  opensAtLevel(shortcut, level) !== null;
 
 /**
  * The painted icon of a shortcut or of the Settings button (11 — Town Concepts
@@ -175,7 +196,7 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   // The Deck builder is a dialog over the current screen, not a screen.
   { id: "deck", screen: null, dialog: "deck" },
   { id: "workshop", screen: null },
-  { id: "packs", screen: "packs" },
+  { id: "packs", screen: "packs", unlock: "packs" },
   { id: "hero", screen: null },
   { id: "achievements", screen: null },
   { id: "bazaar", screen: null },

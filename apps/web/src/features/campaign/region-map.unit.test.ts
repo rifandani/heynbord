@@ -4,13 +4,12 @@ import { describe, expect, it } from "vitest";
 import type { Box, RegionMap, Viewport } from "@/features/campaign/region-map";
 import {
   boxesOverlap,
+  chestState,
   MAP,
   mapFrame,
   markerBoxes,
-  recordWin,
   regionMap,
-  resultCoin,
-  regionStars,
+  regionStarTotal,
   smoothPath,
   trailStages,
   walkedLegs,
@@ -82,30 +81,42 @@ describe("trailStages", () => {
       "open",
       "locked",
     ]);
-    expect(regionStars(trail)).toEqual({ count: 4, total: 30 });
+    expect(regionStarTotal(trail)).toBe(30);
     expect(walkedLegs(trail)).toBe(2);
   });
 });
 
-describe("recordWin", () => {
-  it("keeps the best Stars of a Stage", () => {
-    const first = recordWin({}, "1-1", 2);
-    expect(first).toEqual({ "1-1": 2 });
-    expect(recordWin(first, "1-1", 1)).toBe(first);
-    expect(recordWin(first, "1-1", 3)).toEqual({ "1-1": 3 });
-  });
-});
+describe("chestState", () => {
+  const nineStages = Object.fromEntries(
+    Array.from({ length: 9 }, (_, index) => [`1-${index + 1}`, 1])
+  );
 
-describe("resultCoin", () => {
-  it("gives the Coin of the first win, a repeat win and a loss (Economy 2.1)", () => {
-    expect(resultCoin(STAGES, {}, "1-1", true)).toBe(180);
-    expect(resultCoin(STAGES, { "1-1": 2 }, "1-1", true)).toBe(60);
-    expect(resultCoin(STAGES, { "1-1": 2 }, "1-1", false)).toBe(6);
-    expect(resultCoin(STAGES, {}, "1-1", false)).toBe(6);
+  it("is closed while the Region has fewer Stars than the chest", () => {
+    expect(
+      chestState({ stageResults: nineStages, claimedStarChests: {} }, 1, 10)
+    ).toBe("closed");
   });
 
-  it("gives no Coin for a Stage that is not in the Campaign", () => {
-    expect(resultCoin(STAGES, {}, "qa-stage", true)).toBe(0);
+  it("is claimable with the Stars of the Region, and only that Region", () => {
+    const results = { ...nineStages, "1-10": 1 };
+    expect(
+      chestState({ stageResults: results, claimedStarChests: {} }, 1, 10)
+    ).toBe("claimable");
+    expect(
+      chestState({ stageResults: results, claimedStarChests: {} }, 1, 20)
+    ).toBe("closed");
+    expect(
+      chestState({ stageResults: results, claimedStarChests: {} }, 2, 10)
+    ).toBe("closed");
+  });
+
+  it("stays claimed after the claim", () => {
+    const profile = {
+      stageResults: { ...nineStages, "1-10": 1 },
+      claimedStarChests: { "1": [10] },
+    };
+    expect(chestState(profile, 1, 10)).toBe("claimed");
+    expect(chestState(profile, 2, 10)).toBe("closed");
   });
 });
 

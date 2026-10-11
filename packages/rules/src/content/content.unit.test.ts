@@ -201,9 +201,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("scales the Ranger Skill damage with Rank, but not the push", () => {
-    expect(skillAmounts("ranger.pinningShot")).toEqual([3, 4, 4, 5, 6]);
-    expect(skillAmounts("ranger.warningShot")).toEqual([2, 2, 3, 4, 4]);
-    expect(skillAmounts("ranger.longShot")).toEqual([4, 5, 6, 7, 8]);
+    expect(skillAmounts("ranger.pinningShot")).toEqual([4, 5, 6, 7, 8]);
+    expect(skillAmounts("ranger.warningShot")).toEqual([8, 10, 12, 14, 17]);
+    expect(skillAmounts("ranger.longShot")).toEqual([8, 10, 12, 14, 17]);
     expect(getCard("ranger.warningShot")).toMatchObject({
       target: "enemyUnit",
       effect: { type: "damagePush", squares: 2 },

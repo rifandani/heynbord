@@ -211,7 +211,7 @@ describe("cardText (CRD-08)", () => {
       "Friendly Units in a Lane get Armor 1 for the next 2 enemy Turns."
     );
     expect(resolve(skill("warrior.warDrums", "common").effect)).toBe(
-      "The Countdown of 2 random cards in your Hand goes down by 1."
+      "The Countdown of 2 random cards in your Hand goes down by 2."
     );
     expect(resolve(skill("mage.flameWave", "uncommon").effect)).toBe(
       "Deal 2 Fire damage to all enemy Units in a Lane."
@@ -225,19 +225,19 @@ describe("cardText (CRD-08)", () => {
         return text.kind === "skill" ? [resolve(text.effect)] : [];
       });
     expect(effects("ranger.pinningShot")).toEqual(
-      [3, 4, 4, 5, 6].map(
+      [4, 5, 6, 7, 8].map(
         (amount) =>
           `Deal ${amount} Physical damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.`
       )
     );
     expect(effects("ranger.warningShot")).toEqual(
-      [2, 2, 3, 4, 4].map(
+      [8, 10, 12, 14, 17].map(
         (amount) =>
           `Deal ${amount} Physical damage to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.`
       )
     );
     expect(effects("ranger.longShot")).toEqual(
-      [4, 5, 6, 7, 8].map(
+      [8, 10, 12, 14, 17].map(
         (amount) => `Deal ${amount} Physical damage to the enemy Hero.`
       )
     );
