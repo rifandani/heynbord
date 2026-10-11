@@ -888,6 +888,230 @@ const sabotageInto = (
   return { before: state, ...run(state, play(0, square(0, 0))) };
 };
 
+describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
+  describe("Shoulder Charge", () => {
+    it("deals damage, then Pushes a Unit that survives 1 Square, only at damage above 0", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [
+        ["warrior.shoulderCharge", 0],
+        ["warrior.shoulderCharge", 0],
+      ]);
+      const target = enemyAt(state, 6);
+      const armored = enemyAt(state, 6, {
+        lane: 1,
+        bonusArmor: 3,
+        bonusArmorTurns: 2,
+      });
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, target.id)).toMatchObject({
+        hp: 3,
+        position: 7,
+      });
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, armored.id)).toMatchObject({
+        hp: 6,
+        position: 6,
+      });
+      expect(eventsOfType(second.events, "UnitPushed")).toEqual([]);
+    });
+  });
+
+  describe("Shield Bash", () => {
+    it("deals damage, then gives the caster's Units in the Lane of the target Armor 1 for the next enemy Turn", () => {
+      let state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [["warrior.shieldBash", 0]]);
+      const target = enemyAt(state, 6);
+      const friend = friendAt(state, 2, { attack: 0 });
+      const other = friendAt(state, 2, { lane: 1, attack: 0 });
+      preventRout(state);
+      ({ state } = run(state, play(0, square(0, 6))));
+      expect(unitById(state, target.id)?.hp).toBe(4);
+      expect(unitById(state, friend.id)).toMatchObject({
+        bonusArmor: 1,
+        bonusArmorTurns: 1,
+      });
+      expect(unitById(state, other.id)?.bonusArmor).toBe(0);
+      ({ state } = run(state, Command.EndTurn()));
+      expect(unitById(state, friend.id)?.bonusArmor).toBe(1);
+      // The enemy Turn ends: the Armor fades.
+      ({ state } = run(state, Command.EndTurn()));
+      expect(unitById(state, friend.id)?.bonusArmor).toBe(0);
+    });
+
+    it("gives the Armor also when the hit kills", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["warrior.shieldBash", 0]]);
+      enemyAt(state, 6, { hp: 2 });
+      const friend = friendAt(state, 2);
+      const { state: next } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, friend.id)?.bonusArmor).toBe(1);
+    });
+
+    it("keeps the higher bonus with Shield Wall: for the same bonus, the longer duration", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["warrior.shieldWall", 0],
+        ["warrior.shieldBash", 0],
+        ["warrior.shieldWall", 0],
+      ]);
+      enemyAt(state, 6, { hp: 20, maxHp: 20 });
+      const friend = friendAt(state, 2, { bonusArmor: 2, bonusArmorTurns: 1 });
+      // A lower bonus changes nothing, and no event occurs.
+      const wall = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(unitById(wall.state, friend.id)).toMatchObject({
+        bonusArmor: 2,
+        bonusArmorTurns: 1,
+      });
+      expect(eventsOfType(wall.events, "ArmorGained")).toEqual([]);
+      const fresh = friendAt(wall.state, 3);
+      const walled = run(
+        run(wall.state, play(1, Target.Lane({ lane: 0 }))).state,
+        play(0, square(0, 6))
+      );
+      // Shield Bash (1 Turn) after Shield Wall (2 Turns) keeps 2 Turns.
+      expect(unitById(walled.state, fresh.id)).toMatchObject({
+        bonusArmor: 1,
+        bonusArmorTurns: 2,
+      });
+      expect(eventsOfType(walled.events, "ArmorGained")).toEqual([]);
+    });
+  });
+
+  describe("Harrying Shot", () => {
+    it("deals damage to the Unit, then to the enemy Hero of its Lane, and the Hero hit can end the Battle", () => {
+      const state = emptyBattle({ enemy: { hp: 4 } });
+      giveHand(state, "player", [["ranger.harryingShot", 0]]);
+      const target = enemyAt(state, 6);
+      const { state: next, events } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, target.id)?.hp).toBe(4);
+      expect(next.sides.enemy.hero.hp).toBe(0);
+      expect(eventsOfType(events, "DamageDealt").map((e) => e.target)).toEqual([
+        { _tag: "Unit", unitId: target.id },
+        { _tag: "Hero", side: "enemy" },
+      ]);
+      expect(next.result).toEqual({
+        winner: "player",
+        reason: "heroDefeated",
+      });
+      expect(eventsOfType(events, "RecallRolled")).toEqual([]);
+    });
+
+    it("hits the Hero also when the Unit hit kills", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.harryingShot", 0, "rare"]]);
+      enemyAt(state, 6, { hp: 2 });
+      const { state: next } = run(state, play(0, square(0, 6)));
+      // Rare: 4 × 1.45 = 5.8, rounded to 6.
+      expect(next.sides.enemy.hero.hp).toBe(24);
+    });
+  });
+
+  describe("Barbed Arrow", () => {
+    it("deals damage, and a Unit that survives becomes Bleeding 2, only at damage above 0", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [
+        ["ranger.barbedArrow", 0, "uncommon"],
+        ["ranger.barbedArrow", 0, "uncommon"],
+      ]);
+      const target = enemyAt(state, 6, { hp: 20, maxHp: 20 });
+      const armored = enemyAt(state, 6, {
+        lane: 1,
+        bonusArmor: 6,
+        bonusArmorTurns: 2,
+      });
+      const first = run(state, play(0, square(0, 6)));
+      // Uncommon: 5 × 1.2 = 6.
+      expect(unitById(first.state, target.id)).toMatchObject({
+        hp: 14,
+        bleeding: 2,
+      });
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, armored.id)?.bleeding).toBe(0);
+    });
+  });
+
+  describe("Radiant Strike", () => {
+    it("deals Holy damage through Armor, then heals each friendly Unit in the Lane, and Bleeding halves it", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [["priest.radiantStrike", 0]]);
+      const target = enemyAt(state, 6, { bonusArmor: 3, bonusArmorTurns: 2 });
+      const hurt = friendAt(state, 2, { hp: 1 });
+      const bleeding = friendAt(state, 3, { hp: 1, bleeding: 2 });
+      const other = friendAt(state, 2, { lane: 1, hp: 1 });
+      const { state: next, events } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, target.id)?.hp).toBe(4);
+      expect(unitById(next, hurt.id)?.hp).toBe(3);
+      expect(unitById(next, bleeding.id)?.hp).toBe(2);
+      expect(unitById(next, other.id)?.hp).toBe(1);
+      expect(eventsOfType(events, "UnitHealed")).toHaveLength(2);
+      expect(next.sides.player.hero.hp).toBe(30);
+    });
+  });
+
+  describe("Penance", () => {
+    it("deals Holy damage equal to the Attack of the target with its Rally and Swarm bonuses", () => {
+      const state = emptyBattle({ lanes: 3 });
+      giveHand(state, "player", [
+        ["priest.penance", 0],
+        ["priest.penance", 0, "legendary"],
+        ["priest.penance", 0],
+      ]);
+      const rallied = enemyAt(state, 6, {
+        hp: 20,
+        maxHp: 20,
+        rallied: 2,
+        bonusArmor: 3,
+        bonusArmorTurns: 2,
+      });
+      const swarming = enemyAt(state, 6, {
+        lane: 1,
+        hp: 20,
+        maxHp: 20,
+        swarm: 1,
+      });
+      enemyAt(state, 8, { lane: 1 });
+      const harmless = enemyAt(state, 6, { lane: 2, attack: 0 });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, rallied.id)?.hp).toBe(14);
+      // The Rank does not change the damage.
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, swarming.id)?.hp).toBe(15);
+      const third = run(second.state, play(0, square(2, 6)));
+      expect(unitById(third.state, harmless.id)?.hp).toBe(6);
+    });
+
+    it("is absorbed by a Ward", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.penance", 0]]);
+      const target = enemyAt(state, 6, { ward: 3 });
+      const { state: next } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, target.id)).toMatchObject({ hp: 5, ward: 0 });
+    });
+  });
+
+  describe("Prayer of Healing", () => {
+    it("targets a friendly Lane and heals each friendly Unit in it with the value of the Rank", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [["priest.prayerOfHealing", 0, "rare"]]);
+      const big = { hp: 1, maxHp: 20 };
+      const a = friendAt(state, 2, big);
+      const b = friendAt(state, 3, { ...big, bleeding: 1 });
+      const other = friendAt(state, 2, { lane: 1, ...big });
+      const enemy = enemyAt(state, 6, { hp: 1 });
+      expect(legalTargets(state, 0)).toEqual([
+        Target.Lane({ lane: 0 }),
+        Target.Lane({ lane: 1 }),
+      ]);
+      const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(unitById(next, a.id)?.hp).toBe(11);
+      expect(unitById(next, b.id)?.hp).toBe(6);
+      expect(unitById(next, other.id)?.hp).toBe(1);
+      expect(unitById(next, enemy.id)?.hp).toBe(1);
+    });
+  });
+});
+
 describe("Sabotage (GDD 5.4, ADR-0017)", () => {
   it("adds N to the lowest Countdown in the enemy Hand, with a Battle Event", () => {
     const { before, state, events } = sabotageInto(

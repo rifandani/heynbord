@@ -1068,14 +1068,33 @@ export default {
     damagePush:
       "Beri {amount} damage {damageType} ke satu Unit musuh. Jika Unit itu bertahan hidup, dorong Unit itu {squares} Petak mundur ke arah Pahlawannya, juga saat Unit itu tidak terkena damage.",
     damageHero: "Beri {amount} damage {damageType} ke Pahlawan musuh.",
+    damageKnockback:
+      "{hit} Jika Unit itu terkena damage dan bertahan hidup, dorong Unit itu {squares} mundur ke arah Pahlawannya.",
+    damageBleed:
+      "{hit} Jika Unit itu terkena damage dan bertahan hidup, Unit itu menjadi Berdarah {bleed}.",
+    damageByAttack:
+      "Beri damage {damageType} ke satu Unit musuh, sebesar Serangan Unit itu.",
+    damageLaneArmor:
+      "{hit} Unit kawan dalam Jalurnya mendapat Zirah {armor} selama {turns}.",
+    damageLaneHeal:
+      "{hit} Sembuhkan {heal} HP pada setiap Unit kawan dalam Jalurnya.",
+    damageUnitHero:
+      "{hit} Lalu beri {heroAmount} damage {damageType} ke Pahlawan musuh.",
     laneArmor:
       "Unit kawan dalam satu Jalur mendapat Zirah {armor} selama {turns} Giliran musuh berikutnya.",
     lowerCountdown:
       "Hitung mundur {cards} kartu acak di Tanganmu turun sebesar {amount}.",
     healUnit: "Sembuhkan {heal} HP pada satu Unit kawan.",
+    healLane: "Sembuhkan {heal} HP pada setiap Unit kawan dalam satu Jalur.",
     wardUnit:
       "Satu Unit kawan mendapat Pelindung {ward}: ia menyerap {ward} damage berikutnya.",
     armorIgnored: "{effect} Zirah tidak menguranginya.",
+    counts: {
+      squareOne: "{value} Petak",
+      squareOther: "{value} Petak",
+      enemyTurnOne: "Giliran musuh berikutnya",
+      enemyTurnOther: "{value} Giliran musuh berikutnya",
+    },
   },
   cards: {
     human: {
@@ -1472,6 +1491,19 @@ export default {
         name: "Lempar Tombak",
         flavor: "Bidik yang paling berisik.",
       },
+      shoulderCharge: {
+        name: "Terjangan Bahu",
+        flavor: "Bahu dulu. Tanya belakangan.",
+      },
+      shieldBash: {
+        name: "Hantaman Perisai",
+        flavor: "Perisai juga pintu yang bisa dibanting.",
+      },
+      cleave: { name: "Tebasan Lebar", flavor: "Satu ayunan, dua masalah." },
+      groundSlam: {
+        name: "Guncangan Bumi",
+        flavor: "Tanah pun setuju denganku.",
+      },
     },
     ranger: {
       pinningShot: { name: "Tembakan Penjepit", flavor: "Diam di situ." },
@@ -1483,11 +1515,35 @@ export default {
         name: "Tembakan Jauh",
         flavor: "Melewati kepala mereka, ke Pahlawan.",
       },
+      quickShot: {
+        name: "Tembakan Cepat",
+        flavor: "Tarik, lepas, tarik lagi.",
+      },
+      harryingShot: {
+        name: "Tembakan Pengganggu",
+        flavor: "Satu untuk hewannya. Satu untuk tuannya.",
+      },
+      barbedArrow: {
+        name: "Panah Berduri",
+        flavor: "Keluarnya lebih sakit dari masuknya.",
+      },
+      flushingShot: {
+        name: "Tembakan Pengusir",
+        flavor: "Kembali ke sisimu sendiri.",
+      },
     },
     mage: {
       fireball: { name: "Bola Api", flavor: "Sambutan yang hangat." },
       frostBolt: { name: "Panah Es", flavor: "Tinggallah sebentar." },
       flameWave: { name: "Gelombang Api", flavor: "Seluruh jalur kebagian." },
+      frostShards: {
+        name: "Serpihan Es",
+        flavor: "Kecil, tajam, dan sangat dingin.",
+      },
+      frostWave: {
+        name: "Gelombang Es",
+        flavor: "Seluruh jalur berhenti diam.",
+      },
     },
     priest: {
       mend: { name: "Pulihkan", flavor: "Bangkitlah. Kamu belum selesai." },
@@ -1496,6 +1552,22 @@ export default {
         flavor: "Tidak ada zirah yang menyembunyikanmu dari cahaya.",
       },
       sanctuary: { name: "Suaka", flavor: "Berdirilah di dalam cahaya." },
+      blessingOfLight: {
+        name: "Berkah Cahaya",
+        flavor: "Sedikit cahaya pun sangat berarti.",
+      },
+      radiantStrike: {
+        name: "Sambaran Cahaya",
+        flavor: "Cahaya yang melukai. Cahaya yang memulihkan.",
+      },
+      penance: {
+        name: "Penebusan",
+        flavor: "Kekuatanmu sendiri, kembali kepadamu.",
+      },
+      prayerOfHealing: {
+        name: "Doa Penyembuhan",
+        flavor: "Satu doa untuk seluruh barisan.",
+      },
     },
   },
   tokens: {

@@ -51,7 +51,7 @@ const swarmBonus = (state: BattleState, unit: UnitState): number =>
  * step 2). A Wall never uses its Attack: no attack, no Retaliate and no
  * First Strike (GDD 5.4).
  */
-const attackOf = (state: BattleState, unit: UnitState): number =>
+export const attackOf = (state: BattleState, unit: UnitState): number =>
   unit.wall ? 0 : unit.attack + unit.rallied + swarmBonus(state, unit);
 
 /**
@@ -300,6 +300,25 @@ export const entangleUnit = (ctx: StepContext, unit: UnitState): void => {
 };
 
 /**
+ * Bleeding N (GDD 4.7, ADR-0019): the Unit keeps the higher count. The counts
+ * do not add.
+ */
+export const bleedUnit = (
+  ctx: StepContext,
+  unit: UnitState,
+  count: number
+): void => {
+  unit.bleeding = Math.max(unit.bleeding, count);
+  ctx.events.push(
+    BattleEvent.StatusApplied({
+      unitId: unit.id,
+      status: "bleed",
+      count: unit.bleeding,
+    })
+  );
+};
+
+/**
  * Poison, then Hobble, then Bleed, then Entangle, then Knockback (GDD 4.4).
  * First Strike does not apply Knockback (GDD 4.7).
  */
@@ -326,14 +345,7 @@ const applyOnHit = (
     );
   }
   if (unit.bleed > 0) {
-    struck.bleeding = Math.max(struck.bleeding, unit.bleed);
-    ctx.events.push(
-      BattleEvent.StatusApplied({
-        unitId: struck.id,
-        status: "bleed",
-        count: struck.bleeding,
-      })
-    );
+    bleedUnit(ctx, struck, unit.bleed);
   }
   if (unit.entangle) {
     entangleUnit(ctx, struck);

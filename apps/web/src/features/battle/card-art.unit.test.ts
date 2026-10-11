@@ -72,6 +72,11 @@ describe("hasCardArt", () => {
     expect(hasCardArt("feral.caveBear")).toBe(true);
   });
 
+  it("has no art yet for the Skill Cards of #57 (issue #58)", () => {
+    expect(hasCardArt("warrior.shoulderCharge")).toBe(false);
+    expect(hasCardArt("priest.prayerOfHealing")).toBe(false);
+  });
+
   it("has a file in public/ for each card with art", () => {
     const missing = CARDS.filter((card) => hasCardArt(card.id))
       .map((card) => cardIllustration(card.id))

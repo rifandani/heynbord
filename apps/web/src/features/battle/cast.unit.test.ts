@@ -149,8 +149,34 @@ describe("effectColor", () => {
     );
   });
 
-  it("gives all 3 Priest cards the Holy gold", () => {
+  it("gives the second-part damage cards the color of their Damage Type", () => {
+    expect(
+      effectColor({
+        type: "damageLaneArmor",
+        amount: 2,
+        damageType: "physical",
+        armor: 1,
+        turns: 1,
+      })
+    ).toBe(
+      effectColor({ type: "damageUnit", amount: 2, damageType: "physical" })
+    );
+    expect(
+      effectColor({
+        type: "damageUnitHero",
+        amount: 2,
+        heroAmount: 4,
+        damageType: "frost",
+      })
+    ).toBe("#8fd8ff");
+  });
+
+  it("gives the Priest cards the Holy gold", () => {
     expect(effectColor({ type: "healUnit", heal: 6 })).toBe("#ffd75a");
+    expect(effectColor({ type: "healLane", heal: 8 })).toBe("#ffd75a");
+    expect(effectColor({ type: "damageByAttack", damageType: "holy" })).toBe(
+      "#ffd75a"
+    );
     expect(effectColor({ type: "wardUnit", ward: 5 })).toBe("#ffd75a");
     expect(
       effectColor({ type: "damageUnit", amount: 3, damageType: "holy" })

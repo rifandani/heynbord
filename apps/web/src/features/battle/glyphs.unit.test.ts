@@ -21,6 +21,10 @@ describe("cardGlyph", () => {
     expect(cardGlyph(getCard("priest.mend"))).toBe("heart");
     expect(cardGlyph(getCard("priest.smite"))).toBe("sun");
     expect(cardGlyph(getCard("priest.sanctuary"))).toBe("shield");
+    expect(cardGlyph(getCard("priest.prayerOfHealing"))).toBe("heart");
+    expect(cardGlyph(getCard("priest.penance"))).toBe("sun");
+    expect(cardGlyph(getCard("warrior.shieldBash"))).toBe("sword");
+    expect(cardGlyph(getCard("ranger.barbedArrow"))).toBe("sword");
     expect(classGlyph("priest")).toBe("wand");
     expect(classGlyph("warrior")).toBe("warhelm");
     expect(classGlyph("mage")).toBe("hat");

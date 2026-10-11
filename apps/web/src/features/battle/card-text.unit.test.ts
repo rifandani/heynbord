@@ -279,6 +279,42 @@ describe("cardText (CRD-08)", () => {
     );
   });
 
+  it("builds the text of the Skill Cards of #57, with a second part after the hit and a singular count", () => {
+    const effect = (cardId: string, rank: RankId) =>
+      resolve(skill(cardId, rank).effect);
+    expect(effect("warrior.shoulderCharge", "common")).toBe(
+      "Deal 3 Physical damage to an enemy Unit. If it takes damage and survives, push it 1 Square back toward its Hero."
+    );
+    expect(effect("warrior.shieldBash", "common")).toBe(
+      "Deal 2 Physical damage to an enemy Unit. Friendly Units in its Lane get Armor 1 for the next enemy Turn."
+    );
+    // Rare: 2 × 1.45 = 2.9 and 4 × 1.45 = 5.8, rounded to 3 and 6.
+    expect(effect("ranger.harryingShot", "rare")).toBe(
+      "Deal 3 Physical damage to an enemy Unit. Then deal 6 Physical damage to the enemy Hero."
+    );
+    expect(effect("ranger.barbedArrow", "uncommon")).toBe(
+      "Deal 6 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Bleeding 2."
+    );
+    expect(effect("priest.radiantStrike", "common")).toBe(
+      "Deal 2 Holy damage to an enemy Unit. Armor does not reduce it. Heal 2 HP to each friendly Unit in its Lane."
+    );
+    expect(effect("priest.penance", "legendary")).toBe(
+      "Deal Holy damage to an enemy Unit, equal to the Attack of that Unit. Armor does not reduce it."
+    );
+    expect(effect("priest.prayerOfHealing", "rare")).toBe(
+      "Heal 10 HP to each friendly Unit in a Lane."
+    );
+    expect(effect("priest.blessingOfLight", "epic")).toBe(
+      "A friendly Unit gets Ward 6: it absorbs the next 6 damage."
+    );
+    expect(effect("mage.frostWave", "uncommon")).toBe(
+      "Deal 2 Frost damage to all enemy Units in a Lane."
+    );
+    expect(resolve(skill("warrior.groundSlam", "uncommon").name)).toBe(
+      "Ground Slam"
+    );
+  });
+
   it("shows the Hobble value of a Pavise Arbalist copy for its Rank", () => {
     expect(hobbleName("rare")).toBe("Hobble 1");
     expect(hobbleName("epic")).toBe("Hobble 2");

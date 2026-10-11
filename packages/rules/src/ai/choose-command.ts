@@ -6,7 +6,7 @@ import {
   isInsideLane,
   unitAt,
 } from "../battle/context";
-import { pushedPosition } from "../battle/resolution";
+import { attackOf, pushedPosition } from "../battle/resolution";
 import { legalTargets, unitsInArea } from "../battle/targets";
 import { suddenDeathDamage } from "../battle/turn";
 import { HAND_LIMIT, LANE_LENGTH, otherSide, Command } from "../battle/types";
@@ -234,7 +234,13 @@ type DamageEffect = Extract<
       | "damageArea"
       | "damageLane"
       | "damageEntangle"
-      | "damagePush";
+      | "damagePush"
+      | "damageKnockback"
+      | "damageBleed"
+      | "damageByAttack"
+      | "damageLaneArmor"
+      | "damageLaneHeal"
+      | "damageUnitHero";
   }
 >;
 
@@ -253,12 +259,18 @@ const skillHits = (
   target: Target
 ): SkillHit[] => {
   const length = effect.type === "damageArea" ? effect.length : 1;
-  const amount = scaleForRank(effect.amount, card.rank);
+  const amount =
+    effect.type === "damageByAttack"
+      ? 0
+      : scaleForRank(effect.amount, card.rank);
   return unitsInArea(state, otherSide(side), target, length).map((unit) => {
     const armor =
       effect.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
+    // Penance: the Attack of the target at the moment of the hit.
+    const value =
+      effect.type === "damageByAttack" ? attackOf(state, unit) : amount;
     // A Ward absorbs the damage after Armor (GDD 4.7, step 7).
-    return { unit, damage: Math.max(0, amount - armor - unit.ward) };
+    return { unit, damage: Math.max(0, value - armor - unit.ward) };
   });
 };
 
@@ -299,6 +311,22 @@ const pins = (state: BattleState, hit: SkillHit): boolean =>
 /** The bonus of an Entangle that stops a Movement. */
 const PIN_SCORE = 4;
 
+/**
+ * The hit Pushes a Unit with Knockback: it deals damage above 0, does not
+ * kill, and the push moves the Unit at least 1 Square.
+ */
+const knocksBack = (
+  state: BattleState,
+  hit: SkillHit,
+  squares: number
+): boolean =>
+  hit.damage > 0 &&
+  !kills(hit) &&
+  pushedPosition(state, hit.unit, squares) !== hit.unit.position;
+
+/** The bonus of a Knockback push that moves a Unit back. */
+const KNOCKBACK_SCORE = 4;
+
 /** The base score of a push that moves a Unit. It is above each score of a push that moves no Unit. */
 const PUSH_SCORE = 20;
 
@@ -326,6 +354,15 @@ const HERO_KILL_SCORE = 1000;
 
 /** The weight of each point of damage to the enemy Hero from a Skill Card. */
 const SKILL_HERO_DAMAGE_WEIGHT = 2;
+
+/**
+ * The score of Skill Card damage to the enemy Hero. The AI always takes the
+ * win.
+ */
+const scoreHeroHit = (state: BattleState, side: Side, amount: number) =>
+  amount >= state.sides[otherSide(side)].hero.hp
+    ? HERO_KILL_SCORE
+    : amount * SKILL_HERO_DAMAGE_WEIGHT;
 
 /** The HP that a heal gives back to `unit`: half for a Bleeding Unit, up to its maximum HP. */
 const healedHp = (unit: UnitState, heal: number): number =>
@@ -369,6 +406,62 @@ const scoreHeal = (
   }
   const healed = healedHp(unit, skillAmountForRank(heal, card.rank));
   return healed > 0 ? healed * HEAL_WEIGHT + unit.maxHp / 100 : 0;
+};
+
+/** The friendly Units in the Lane of a Square or Lane target. */
+const friendsInLane = (
+  state: BattleState,
+  side: Side,
+  target: Target
+): UnitState[] =>
+  target._tag === "Square" || target._tag === "Lane"
+    ? state.units.filter(
+        (unit) => unit.owner === side && unit.lane === target.lane
+      )
+    : [];
+
+/** The HP that a heal of each friendly Unit in the Lane of `target` gives back in total. */
+const laneHealedHp = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  heal: SkillAmount,
+  target: Target
+): number => {
+  const value = skillAmountForRank(heal, card.rank);
+  return friendsInLane(state, side, target).reduce(
+    (sum, unit) => sum + healedHp(unit, value),
+    0
+  );
+};
+
+/** The HP that the friendly Units in the Lane of `target` have lost in total. */
+const laneLostHp = (state: BattleState, side: Side, target: Target): number =>
+  friendsInLane(state, side, target).reduce(
+    (sum, unit) => sum + unit.maxHp - unit.hp,
+    0
+  );
+
+/** Prayer of Healing: the Lane has lost at least this much HP in total. */
+const LANE_HEAL_HOLD = 6;
+
+/** Radiant Strike: the heal gives back at least this much HP in total. */
+const STRIKE_HEAL_HOLD = 2;
+
+/**
+ * The score of bonus Armor for the friendly Units in a Lane: more for each
+ * enemy Turn while the Lane has an enemy threat.
+ */
+const scoreLaneArmor = (
+  state: BattleState,
+  side: Side,
+  target: Target,
+  turns: number
+): number => {
+  const friends = friendsInLane(state, side, target).length;
+  const lane =
+    target._tag === "Square" || target._tag === "Lane" ? target.lane : -1;
+  return friends * (laneThreat(state, side, lane) > 0 ? 3 * turns : 1);
 };
 
 /**
@@ -441,6 +534,56 @@ const notReadyCards = (
     (other) => other.instanceId !== card.instanceId && other.countdown > 0
   );
 
+/** The Hold Rule of each damage effect type (GDD 9). */
+const meetsDamageHoldRule = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  effect: DamageEffect,
+  target: Target
+): boolean => {
+  const hits = skillHits(state, side, card, effect, target);
+  switch (effect.type) {
+    case "damageUnit": {
+      // A Frost hit Freezes, so each hit has value: no Hold Rule.
+      return effect.damageType === "frost" || hits.some(kills);
+    }
+    case "damageArea":
+    case "damageLane": {
+      // A Frost hit Freezes also at 0 damage, so each Frost hit counts.
+      const counted = hits.filter(
+        ({ damage }) => damage > 0 || effect.damageType === "frost"
+      );
+      return counted.length >= 2 || counted.some(kills);
+    }
+    case "damageKnockback":
+    case "damageBleed":
+    case "damageByAttack": {
+      return hits.some(kills);
+    }
+    case "damageLaneArmor": {
+      return hits.some(kills) || friendsInLane(state, side, target).length > 0;
+    }
+    case "damageLaneHeal": {
+      return (
+        hits.some(kills) ||
+        laneHealedHp(state, side, card, effect.heal, target) >= STRIKE_HEAL_HOLD
+      );
+    }
+    case "damageEntangle": {
+      return hits.some((hit) => kills(hit) || pins(state, hit));
+    }
+    // The push and the Hero damage have value at each target: no Hold Rule.
+    case "damagePush":
+    case "damageUnitHero": {
+      return true;
+    }
+    default: {
+      return absurd(effect);
+    }
+  }
+};
+
 /**
  * The Hold Rule of each Skill Card effect type (GDD 9). It is true when the
  * play at `target` meets the condition. While it is false, the AI keeps the
@@ -455,27 +598,20 @@ const meetsHoldRule = (
 ): boolean => {
   const { effect } = definition;
   switch (effect.type) {
-    case "damageUnit": {
-      // A Frost hit Freezes, so each hit has value: no Hold Rule.
-      return (
-        effect.damageType === "frost" ||
-        skillHits(state, side, card, effect, target).some(kills)
-      );
-    }
+    case "damageUnit":
     case "damageArea":
-    case "damageLane": {
-      const hits = skillHits(state, side, card, effect, target).filter(
-        ({ damage }) => damage > 0
-      );
-      return hits.length >= 2 || hits.some(kills);
-    }
-    case "damageEntangle": {
-      return skillHits(state, side, card, effect, target).some(
-        (hit) => kills(hit) || pins(state, hit)
-      );
-    }
-    // The push and the Hero damage have value at each target: no Hold Rule.
+    case "damageLane":
+    case "damageKnockback":
+    case "damageBleed":
+    case "damageByAttack":
+    case "damageLaneArmor":
+    case "damageLaneHeal":
+    case "damageEntangle":
     case "damagePush":
+    case "damageUnitHero": {
+      return meetsDamageHoldRule(state, side, card, effect, target);
+    }
+    // The Hero damage has value at each target: no Hold Rule.
     case "damageHero": {
       return true;
     }
@@ -485,6 +621,9 @@ const meetsHoldRule = (
         (unit) =>
           unit.owner === side && (unit.maxHp - unit.hp) * 2 >= unit.maxHp
       );
+    }
+    case "healLane": {
+      return laneLostHp(state, side, target) >= LANE_HEAL_HOLD;
     }
     case "wardUnit": {
       const unit = friendlyUnitAt(state, side, target);
@@ -521,10 +660,46 @@ const scoreSkill = (
   switch (effect.type) {
     case "damageUnit":
     case "damageArea":
-    case "damageLane": {
+    case "damageLane":
+    case "damageBleed":
+    case "damageByAttack": {
       return scoreDamage(
         skillHits(state, side, card, effect, target),
         effect.damageType
+      );
+    }
+    case "damageKnockback": {
+      const hits = skillHits(state, side, card, effect, target);
+      return (
+        scoreDamage(hits, effect.damageType) +
+        hits.filter((hit) => knocksBack(state, hit, effect.squares)).length *
+          KNOCKBACK_SCORE
+      );
+    }
+    case "damageLaneArmor": {
+      return (
+        scoreDamage(
+          skillHits(state, side, card, effect, target),
+          effect.damageType
+        ) + scoreLaneArmor(state, side, target, effect.turns)
+      );
+    }
+    case "damageLaneHeal": {
+      return (
+        scoreDamage(
+          skillHits(state, side, card, effect, target),
+          effect.damageType
+        ) +
+        laneHealedHp(state, side, card, effect.heal, target) * HEAL_WEIGHT
+      );
+    }
+    case "damageUnitHero": {
+      return (
+        scoreDamage(
+          skillHits(state, side, card, effect, target),
+          effect.damageType
+        ) +
+        scoreHeroHit(state, side, scaleForRank(effect.heroAmount, card.rank))
       );
     }
     case "damageEntangle": {
@@ -542,28 +717,23 @@ const scoreSkill = (
       );
     }
     case "damageHero": {
-      if (target._tag !== "Hero") {
-        return 0;
-      }
-      const amount = scaleForRank(effect.amount, card.rank);
-      return amount >= state.sides[target.side].hero.hp
-        ? HERO_KILL_SCORE
-        : amount * SKILL_HERO_DAMAGE_WEIGHT;
+      return target._tag === "Hero"
+        ? scoreHeroHit(state, side, scaleForRank(effect.amount, card.rank))
+        : 0;
     }
     case "healUnit": {
       return scoreHeal(state, side, card, effect.heal, target);
+    }
+    case "healLane": {
+      return laneHealedHp(state, side, card, effect.heal, target) * HEAL_WEIGHT;
     }
     case "wardUnit": {
       return scoreWard(state, side, card, effect.ward, target);
     }
     case "laneArmor": {
-      if (target._tag !== "Lane") {
-        return 0;
-      }
-      const friends = state.units.filter(
-        (unit) => unit.owner === side && unit.lane === target.lane
-      ).length;
-      return friends * (laneThreat(state, side, target.lane) > 0 ? 6 : 1);
+      return target._tag === "Lane"
+        ? scoreLaneArmor(state, side, target, effect.turns)
+        : 0;
     }
     case "lowerCountdown": {
       const notReady = notReadyCards(state, side, card);
@@ -577,7 +747,8 @@ const scoreSkill = (
 
 /**
  * A Unit that survives a damage Skill Card: a Frost hit Freezes it (GDD 4.7),
- * an Entangle at damage above 0 stops its next Movement, and a push moves it.
+ * an Entangle at damage above 0 stops its next Movement, and a push (for
+ * Knockback, at damage above 0) moves it.
  */
 const afterHit = (
   state: BattleState,
@@ -589,7 +760,8 @@ const afterHit = (
   frozen: unit.frozen || effect.damageType === "frost",
   entangled: unit.entangled || (effect.type === "damageEntangle" && damage > 0),
   position:
-    effect.type === "damagePush"
+    effect.type === "damagePush" ||
+    (effect.type === "damageKnockback" && damage > 0)
       ? pushedPosition(state, unit, effect.squares)
       : unit.position,
 });
@@ -612,7 +784,13 @@ const unitsAfterSkill = (
     case "damageArea":
     case "damageLane":
     case "damageEntangle":
-    case "damagePush": {
+    case "damagePush":
+    case "damageKnockback":
+    case "damageBleed":
+    case "damageByAttack":
+    case "damageLaneArmor":
+    case "damageLaneHeal":
+    case "damageUnitHero": {
       const hits = new Map(
         skillHits(state, side, card, effect, target).map(
           ({ unit, damage }) => [unit, damage] as const
@@ -631,6 +809,7 @@ const unitsAfterSkill = (
     }
     case "damageHero":
     case "healUnit":
+    case "healLane":
     case "wardUnit":
     case "laneArmor":
     case "lowerCountdown": {

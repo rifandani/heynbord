@@ -120,11 +120,18 @@ export const effectColor = (effect: SkillEffect): string => {
     case "damageLane":
     case "damageEntangle":
     case "damagePush":
+    case "damageKnockback":
+    case "damageBleed":
+    case "damageByAttack":
+    case "damageLaneArmor":
+    case "damageLaneHeal":
+    case "damageUnitHero":
     case "damageHero": {
       return DAMAGE_COLORS[effect.damageType];
     }
     // The Priest cards use the Holy palette (art direction: Holy).
     case "healUnit":
+    case "healLane":
     case "wardUnit": {
       return DAMAGE_COLORS.holy;
     }

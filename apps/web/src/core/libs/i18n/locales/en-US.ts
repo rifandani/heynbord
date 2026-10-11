@@ -1055,14 +1055,33 @@ export default {
     damagePush:
       "Deal {amount} {damageType} damage to an enemy Unit. If it survives, push it {squares} Squares back toward its Hero, also when it takes no damage.",
     damageHero: "Deal {amount} {damageType} damage to the enemy Hero.",
+    damageKnockback:
+      "{hit} If it takes damage and survives, push it {squares} back toward its Hero.",
+    damageBleed:
+      "{hit} If it takes damage and survives, it becomes Bleeding {bleed}.",
+    damageByAttack:
+      "Deal {damageType} damage to an enemy Unit, equal to the Attack of that Unit.",
+    damageLaneArmor:
+      "{hit} Friendly Units in its Lane get Armor {armor} for {turns}.",
+    damageLaneHeal: "{hit} Heal {heal} HP to each friendly Unit in its Lane.",
+    damageUnitHero:
+      "{hit} Then deal {heroAmount} {damageType} damage to the enemy Hero.",
     laneArmor:
       "Friendly Units in a Lane get Armor {armor} for the next {turns} enemy Turns.",
     lowerCountdown:
       "The Countdown of {cards} random cards in your Hand goes down by {amount}.",
     healUnit: "Heal {heal} HP to a friendly Unit.",
+    healLane: "Heal {heal} HP to each friendly Unit in a Lane.",
     wardUnit:
       "A friendly Unit gets Ward {ward}: it absorbs the next {ward} damage.",
     armorIgnored: "{effect} Armor does not reduce it.",
+    /** A number and its noun. The card text selects One for 1, else Other. */
+    counts: {
+      squareOne: "{value} Square",
+      squareOther: "{value} Squares",
+      enemyTurnOne: "the next enemy Turn",
+      enemyTurnOther: "the next {value} enemy Turns",
+    },
   },
   cards: {
     human: {
@@ -1438,6 +1457,19 @@ export default {
       warDrums: { name: "War Drums", flavor: "Boom. Boom. Move faster." },
       shieldWall: { name: "Shield Wall", flavor: "Lock shields and hold." },
       spearThrow: { name: "Spear Throw", flavor: "Aim for the loud one." },
+      shoulderCharge: {
+        name: "Shoulder Charge",
+        flavor: "Shoulders first. Questions later.",
+      },
+      shieldBash: {
+        name: "Shield Bash",
+        flavor: "A shield is also a door that you can slam.",
+      },
+      cleave: { name: "Cleave", flavor: "One swing, two problems." },
+      groundSlam: {
+        name: "Ground Slam",
+        flavor: "The ground agrees with me.",
+      },
     },
     ranger: {
       pinningShot: { name: "Pinning Shot", flavor: "Stay right there." },
@@ -1449,16 +1481,50 @@ export default {
         name: "Long Shot",
         flavor: "Over their heads, into the Hero.",
       },
+      quickShot: { name: "Quick Shot", flavor: "Draw, loose, draw again." },
+      harryingShot: {
+        name: "Harrying Shot",
+        flavor: "One for the beast. One for its master.",
+      },
+      barbedArrow: {
+        name: "Barbed Arrow",
+        flavor: "It comes out the hard way.",
+      },
+      flushingShot: {
+        name: "Flushing Shot",
+        flavor: "Back to your side of the field.",
+      },
     },
     mage: {
       fireball: { name: "Fireball", flavor: "A warm welcome." },
       frostBolt: { name: "Frost Bolt", flavor: "Stay a while." },
       flameWave: { name: "Flame Wave", flavor: "The whole lane gets a turn." },
+      frostShards: {
+        name: "Frost Shards",
+        flavor: "Small, sharp and very cold.",
+      },
+      frostWave: { name: "Frost Wave", flavor: "The whole lane stands still." },
     },
     priest: {
       mend: { name: "Mend", flavor: "Rise. You are not done yet." },
       smite: { name: "Smite", flavor: "No armor hides you from the light." },
       sanctuary: { name: "Sanctuary", flavor: "Stand within the light." },
+      blessingOfLight: {
+        name: "Blessing of Light",
+        flavor: "A little light goes a long way.",
+      },
+      radiantStrike: {
+        name: "Radiant Strike",
+        flavor: "Light that cuts. Light that mends.",
+      },
+      penance: {
+        name: "Penance",
+        flavor: "Your own strength, returned to you.",
+      },
+      prayerOfHealing: {
+        name: "Prayer of Healing",
+        flavor: "One prayer for the whole line.",
+      },
     },
   },
   tokens: {

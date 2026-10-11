@@ -133,6 +133,31 @@ const withDamageRule = (effect: SkillEffect, text: TextRef): TextRef =>
     ? { key: "effects.armorIgnored", args: { effect: text } }
     : text;
 
+/** A number with its noun, in the singular for 1: "1 Square", "3 Squares". */
+const counted = (noun: "square" | "enemyTurn", value: number): TextRef => ({
+  key: `effects.counts.${noun}${value === 1 ? "One" : "Other"}`,
+  args: { value },
+});
+
+/**
+ * The first sentence of a Skill Card that hits one enemy Unit, with the Holy
+ * rule. A card with a second part puts that part after it.
+ */
+const hitText = (
+  effect: Extract<
+    SkillEffect,
+    { readonly amount: number; readonly damageType: DamageType }
+  >,
+  rank: RankId
+): TextRef =>
+  withDamageRule(effect, {
+    key: "effects.damageUnit",
+    args: {
+      amount: scaleForRank(effect.amount, rank),
+      damageType: { key: `damageTypes.${effect.damageType}` },
+    },
+  });
+
 const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
   const { effect } = card;
   switch (effect.type) {
@@ -140,37 +165,88 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
     case "damageLane":
     case "damageEntangle":
     case "damageHero": {
-      return {
+      return withDamageRule(effect, {
         key: `effects.${effect.type}`,
         args: {
           amount: scaleForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
         },
-      };
+      });
     }
     case "damageArea": {
-      return {
+      return withDamageRule(effect, {
         key: "effects.damageArea",
         args: {
           amount: scaleForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
           extra: effect.length - 1,
         },
-      };
+      });
     }
     case "damagePush": {
-      return {
+      return withDamageRule(effect, {
         key: "effects.damagePush",
         args: {
           amount: scaleForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
           squares: effect.squares,
         },
+      });
+    }
+    case "damageKnockback": {
+      return {
+        key: "effects.damageKnockback",
+        args: {
+          hit: hitText(effect, rank),
+          squares: counted("square", effect.squares),
+        },
       };
     }
-    case "healUnit": {
+    case "damageBleed": {
       return {
-        key: "effects.healUnit",
+        key: "effects.damageBleed",
+        args: { hit: hitText(effect, rank), bleed: effect.bleed },
+      };
+    }
+    case "damageByAttack": {
+      return withDamageRule(effect, {
+        key: "effects.damageByAttack",
+        args: { damageType: { key: `damageTypes.${effect.damageType}` } },
+      });
+    }
+    case "damageLaneArmor": {
+      return {
+        key: "effects.damageLaneArmor",
+        args: {
+          hit: hitText(effect, rank),
+          armor: effect.armor,
+          turns: counted("enemyTurn", effect.turns),
+        },
+      };
+    }
+    case "damageLaneHeal": {
+      return {
+        key: "effects.damageLaneHeal",
+        args: {
+          hit: hitText(effect, rank),
+          heal: skillAmountForRank(effect.heal, rank),
+        },
+      };
+    }
+    case "damageUnitHero": {
+      return {
+        key: "effects.damageUnitHero",
+        args: {
+          hit: hitText(effect, rank),
+          heroAmount: scaleForRank(effect.heroAmount, rank),
+          damageType: { key: `damageTypes.${effect.damageType}` },
+        },
+      };
+    }
+    case "healUnit":
+    case "healLane": {
+      return {
+        key: `effects.${effect.type}`,
         args: { heal: skillAmountForRank(effect.heal, rank) },
       };
     }
@@ -197,9 +273,6 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
     }
   }
 };
-
-const skillEffect = (card: SkillCardDefinition, rank: RankId): TextRef =>
-  withDamageRule(card.effect, effectText(card, rank));
 
 export interface CreatureCardText {
   readonly kind: "creature";
@@ -432,7 +505,7 @@ export const cardText = (cardId: string, rank: RankId): CardText => {
   return {
     ...base,
     kind: "skill",
-    effect: skillEffect(card, rank),
+    effect: effectText(card, rank),
     recall: { key: "battle.recall", args: { value: recall } },
   };
 };

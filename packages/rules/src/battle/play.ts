@@ -18,10 +18,10 @@ import type { StepContext } from "./context";
 import { direction, isInsideLane, isLaneOpen, isOver, unitAt } from "./context";
 import { damageHero, damageUnit } from "./damage";
 import { healUnit } from "./heal";
-import { entangleUnit, pushUnit } from "./resolution";
+import { attackOf, bleedUnit, entangleUnit, pushUnit } from "./resolution";
 import { unitsInArea } from "./targets";
-import type { CardInstance, HandCard, Side, Target, UnitState } from "./types";
-import { BattleEvent, otherSide, unitRank } from "./types";
+import type { CardInstance, HandCard, Side, UnitState } from "./types";
+import { BattleEvent, otherSide, Target, unitRank } from "./types";
 import { createToken, createUnit } from "./units";
 
 /**
@@ -182,16 +182,47 @@ const wardUnit = (ctx: StepContext, unit: UnitState, ward: number): void => {
 };
 
 /**
+ * Bonus Armor from a Skill Card (GDD 4.8). The Unit keeps the higher bonus,
+ * and for the same bonus, the longer duration. A bonus that changes nothing
+ * emits no event, the same as a Ward that is not higher.
+ */
+const giveBonusArmor = (
+  ctx: StepContext,
+  unit: UnitState,
+  armor: number,
+  turns: number
+): void => {
+  if (
+    armor < unit.bonusArmor ||
+    (armor === unit.bonusArmor && turns <= unit.bonusArmorTurns)
+  ) {
+    return;
+  }
+  unit.bonusArmor = armor;
+  unit.bonusArmorTurns = turns;
+  ctx.events.push(BattleEvent.ArmorGained({ unitId: unit.id, armor, turns }));
+};
+
+type ControlEffect = Extract<
+  SkillEffect,
+  {
+    readonly type:
+      | "damageEntangle"
+      | "damagePush"
+      | "damageKnockback"
+      | "damageBleed";
+  }
+>;
+
+/**
  * Damage to one enemy Unit, then the control part of the effect on a Unit
- * that survives: a push (also at 0 damage), or an Entangle at damage above 0.
+ * that survives: a push (also at 0 damage), or a Knockback push, an Entangle
+ * or a Bleed at damage above 0.
  */
 const damageAndControl = (
   ctx: StepContext,
   units: readonly UnitState[],
-  effect: Extract<
-    SkillEffect,
-    { readonly type: "damageEntangle" | "damagePush" }
-  >,
+  effect: ControlEffect,
   amount: number,
   crit: number
 ): void => {
@@ -206,11 +237,170 @@ const damageAndControl = (
     if (killed) {
       continue;
     }
-    if (effect.type === "damagePush") {
-      // The push is the main effect: it occurs also at 0 damage.
-      pushUnit(ctx, unit, effect.squares);
-    } else if (dealt > 0) {
-      entangleUnit(ctx, unit);
+    switch (effect.type) {
+      case "damagePush": {
+        // The push is the main effect: it occurs also at 0 damage.
+        pushUnit(ctx, unit, effect.squares);
+        break;
+      }
+      case "damageKnockback": {
+        if (dealt > 0) {
+          pushUnit(ctx, unit, effect.squares);
+        }
+        break;
+      }
+      case "damageEntangle": {
+        if (dealt > 0) {
+          entangleUnit(ctx, unit);
+        }
+        break;
+      }
+      case "damageBleed": {
+        if (dealt > 0) {
+          bleedUnit(ctx, unit, effect.bleed);
+        }
+        break;
+      }
+      default: {
+        absurd(effect);
+      }
+    }
+  }
+};
+
+/** The Lane of a Square target, as a Lane target. `undefined` for other targets. */
+const laneOf = (target: Target): Target | undefined =>
+  target._tag === "Square" ? Target.Lane({ lane: target.lane }) : undefined;
+
+/**
+ * The second part of a Skill Card that hits one enemy Unit (GDD 4.8): bonus
+ * Armor or a heal for the caster's Units in the Lane of the target, or damage
+ * to the enemy Hero of that Lane. It comes after the hit, also when the hit
+ * kills.
+ */
+const applyFollowUp = (
+  ctx: StepContext,
+  side: Side,
+  card: CardInstance,
+  effect: Extract<
+    SkillEffect,
+    {
+      readonly type: "damageLaneArmor" | "damageLaneHeal" | "damageUnitHero";
+    }
+  >,
+  target: Target,
+  crit: number
+): void => {
+  const lane = laneOf(target);
+  if (!lane) {
+    return;
+  }
+  switch (effect.type) {
+    case "damageLaneArmor": {
+      for (const unit of unitsInArea(ctx.state, side, lane, 1)) {
+        giveBonusArmor(ctx, unit, effect.armor, effect.turns);
+      }
+      return;
+    }
+    case "damageLaneHeal": {
+      const heal = skillAmountForRank(effect.heal, card.rank);
+      for (const unit of unitsInArea(ctx.state, side, lane, 1)) {
+        healUnit(ctx, unit, heal);
+      }
+      return;
+    }
+    case "damageUnitHero": {
+      // In v1 each Side has 1 Hero: the other Side's Hero holds each Lane.
+      damageHero(ctx, otherSide(side), {
+        amount: scaleForRank(effect.heroAmount, card.rank),
+        damageType: effect.damageType,
+        source: "skill",
+        crit,
+      });
+      return;
+    }
+    default: {
+      absurd(effect);
+    }
+  }
+};
+
+type HitEffect = Extract<
+  SkillEffect,
+  {
+    readonly type:
+      | "damageUnit"
+      | "damageArea"
+      | "damageLane"
+      | "damageByAttack"
+      | "damageLaneArmor"
+      | "damageLaneHeal"
+      | "damageUnitHero";
+  }
+>;
+
+/**
+ * Damage to the enemy Units of the target, then the second part of the
+ * card. Penance deals the Attack of each Unit at the moment of the hit.
+ */
+const applyHit = (
+  ctx: StepContext,
+  side: Side,
+  card: CardInstance,
+  effect: HitEffect,
+  target: Target,
+  crit: number
+): void => {
+  const length = effect.type === "damageArea" ? effect.length : 1;
+  for (const unit of unitsInArea(ctx.state, otherSide(side), target, length)) {
+    damageUnit(ctx, unit, {
+      amount:
+        effect.type === "damageByAttack"
+          ? attackOf(ctx.state, unit)
+          : scaleForRank(effect.amount, card.rank),
+      damageType: effect.damageType,
+      source: "skill",
+      crit,
+    });
+  }
+  if (
+    effect.type === "damageLaneArmor" ||
+    effect.type === "damageLaneHeal" ||
+    effect.type === "damageUnitHero"
+  ) {
+    applyFollowUp(ctx, side, card, effect, target, crit);
+  }
+};
+
+/** A heal, a Ward or bonus Armor on the caster's Units of the target. */
+const applyFriendly = (
+  ctx: StepContext,
+  side: Side,
+  card: CardInstance,
+  effect: Extract<
+    SkillEffect,
+    { readonly type: "healUnit" | "healLane" | "wardUnit" | "laneArmor" }
+  >,
+  target: Target
+): void => {
+  for (const unit of unitsInArea(ctx.state, side, target, 1)) {
+    switch (effect.type) {
+      case "healUnit":
+      case "healLane": {
+        healUnit(ctx, unit, skillAmountForRank(effect.heal, card.rank));
+        break;
+      }
+      case "wardUnit": {
+        wardUnit(ctx, unit, skillAmountForRank(effect.ward, card.rank));
+        break;
+      }
+      case "laneArmor": {
+        giveBonusArmor(ctx, unit, effect.armor, effect.turns);
+        break;
+      }
+      default: {
+        absurd(effect);
+      }
     }
   }
 };
@@ -222,29 +412,25 @@ const applyEffect = (
   effect: SkillEffect,
   target: Target
 ): void => {
-  const enemy = otherSide(side);
   const crit = ctx.state.sides[side].hero.skillCrit;
   switch (effect.type) {
     case "damageUnit":
     case "damageArea":
-    case "damageLane": {
-      const length = effect.type === "damageArea" ? effect.length : 1;
-      const amount = scaleForRank(effect.amount, card.rank);
-      for (const unit of unitsInArea(ctx.state, enemy, target, length)) {
-        damageUnit(ctx, unit, {
-          amount,
-          damageType: effect.damageType,
-          source: "skill",
-          crit,
-        });
-      }
+    case "damageLane":
+    case "damageByAttack":
+    case "damageLaneArmor":
+    case "damageLaneHeal":
+    case "damageUnitHero": {
+      applyHit(ctx, side, card, effect, target, crit);
       return;
     }
     case "damageEntangle":
-    case "damagePush": {
+    case "damagePush":
+    case "damageKnockback":
+    case "damageBleed": {
       damageAndControl(
         ctx,
-        unitsInArea(ctx.state, enemy, target, 1),
+        unitsInArea(ctx.state, otherSide(side), target, 1),
         effect,
         scaleForRank(effect.amount, card.rank),
         crit
@@ -262,32 +448,11 @@ const applyEffect = (
       }
       return;
     }
-    case "healUnit": {
-      const heal = skillAmountForRank(effect.heal, card.rank);
-      for (const unit of unitsInArea(ctx.state, side, target, 1)) {
-        healUnit(ctx, unit, heal);
-      }
-      return;
-    }
-    case "wardUnit": {
-      const ward = skillAmountForRank(effect.ward, card.rank);
-      for (const unit of unitsInArea(ctx.state, side, target, 1)) {
-        wardUnit(ctx, unit, ward);
-      }
-      return;
-    }
+    case "healUnit":
+    case "healLane":
+    case "wardUnit":
     case "laneArmor": {
-      for (const unit of unitsInArea(ctx.state, side, target, 1)) {
-        unit.bonusArmor = effect.armor;
-        unit.bonusArmorTurns = effect.turns;
-        ctx.events.push(
-          BattleEvent.ArmorGained({
-            unitId: unit.id,
-            armor: effect.armor,
-            turns: effect.turns,
-          })
-        );
-      }
+      applyFriendly(ctx, side, card, effect, target);
       return;
     }
     case "lowerCountdown": {

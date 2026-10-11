@@ -240,6 +240,67 @@ const SkillEffect = Schema.Union([
     squares: between(1, 3),
   }),
   Schema.Struct({
+    /**
+     * Damage to one enemy Unit. When the damage is above 0 and the Unit
+     * survives, it is Pushed this many Squares, as with the Knockback Keyword.
+     */
+    type: Schema.Literal("damageKnockback"),
+    amount: Amount,
+    damageType: DamageType,
+    squares: between(1, 3),
+  }),
+  Schema.Struct({
+    /**
+     * Damage to one enemy Unit. When the damage is above 0 and the Unit
+     * survives, it becomes Bleeding with this count, as with the Bleed
+     * Keyword. The count does not scale with the Rank.
+     */
+    type: Schema.Literal("damageBleed"),
+    amount: Amount,
+    damageType: DamageType,
+    bleed: between(1, 5),
+  }),
+  Schema.Struct({
+    /**
+     * Damage to one enemy Unit equal to its Attack at the moment of the hit,
+     * with the Rally and Swarm bonuses. A Unit with Attack 0, and a Wall,
+     * take 0 damage. The Rank does not change the damage.
+     */
+    type: Schema.Literal("damageByAttack"),
+    damageType: DamageType,
+  }),
+  Schema.Struct({
+    /**
+     * Damage to one enemy Unit, then the caster's Units in its Lane get bonus
+     * Armor, as with `laneArmor`. The Armor comes also when the hit kills.
+     */
+    type: Schema.Literal("damageLaneArmor"),
+    amount: Amount,
+    damageType: DamageType,
+    armor: between(1, 5),
+    turns: between(1, 5),
+  }),
+  Schema.Struct({
+    /**
+     * Damage to one enemy Unit, then each of the caster's Units in its Lane
+     * is healed, as with `healUnit`. The heal comes also when the hit kills.
+     */
+    type: Schema.Literal("damageLaneHeal"),
+    amount: Amount,
+    damageType: DamageType,
+    heal: SkillAmount,
+  }),
+  Schema.Struct({
+    /**
+     * Damage to one enemy Unit, then `heroAmount` damage to the enemy Hero of
+     * its Lane (the Hero whose Front holds that Lane). The Hero hit can Crit.
+     */
+    type: Schema.Literal("damageUnitHero"),
+    amount: Amount,
+    heroAmount: Amount,
+    damageType: DamageType,
+  }),
+  Schema.Struct({
     /** Damage to one enemy Hero. A Hero has no Armor and cannot Block (GDD 4.7). */
     type: Schema.Literal("damageHero"),
     amount: Amount,
@@ -254,6 +315,11 @@ const SkillEffect = Schema.Union([
     heal: SkillAmount,
   }),
   Schema.Struct({
+    /** Heals each friendly Unit in one Lane, as with `healUnit`. */
+    type: Schema.Literal("healLane"),
+    heal: SkillAmount,
+  }),
+  Schema.Struct({
     /**
      * One friendly Unit gets Ward N (GDD 4.7): a Buff that absorbs damage
      * after Block. A Ward keeps the higher value: the values do not add.
@@ -262,6 +328,11 @@ const SkillEffect = Schema.Union([
     ward: SkillAmount,
   }),
   Schema.Struct({
+    /**
+     * Friendly Units in one Lane get bonus Armor for `turns` enemy Turns. A
+     * Unit keeps the higher bonus. For the same bonus, it keeps the longer
+     * duration.
+     */
     type: Schema.Literal("laneArmor"),
     armor: between(1, 5),
     turns: between(1, 5),

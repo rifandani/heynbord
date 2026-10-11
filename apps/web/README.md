@@ -44,20 +44,19 @@ New Skills:
 
 Sequence:
 
-1. Profile: #51 (rules), then #52 (web).
-2. Region 1 rewards: #53 (rules), then #54 (web). XP and level ups, the first-win card, the repeat-win card, Star chests and the level locks.
-3. Workshop: Combine and Extract, then Craft.
-4. Hero screen: Gear upgrades. Then check the Region 1 margins again with real Gear.
-5. First external playtest: this is the M2 exit.
-6. Regions 2 and 3 (M3): their tuning needs Combine and Gear.
-7. Heynspire, then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
-
-8. #56
-9. #57, then #58
-10. #59, then #60
-11. #61, then #62
-12. #63, then #64
-13. #65, then #66
+1. #57, then #58
+2. #59, then #60
+3. #61, then #62
+4. #63, then #64
+5. #65, then #66
+6. #67 "Re-fit Vanguard and Raiders": blocked by #50 and #65.
+7. #68 "Promote Diagnostic Decks": blocked by #67.
+8. #50
+9. Workshop: Combine and Extract, then Craft.
+10. Hero screen: Gear upgrades. Then check the Region 1 margins again with real Gear.
+11. First external playtest: this is the M2 exit.
+12. Regions 2 and 3 (M3): their tuning needs Combine and Gear.
+13. Heynspire, then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
 
 New features:
 

@@ -703,3 +703,151 @@ describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
     expect(chooseCommand(state)).toEqual(Command.EndTurn());
   });
 });
+
+/** The enemy AI with a Ready card at its Base Rank, and player Scrap Raiders (3 Attack) with `options`. */
+const raidersChoice = (
+  cardId: string,
+  raiders: readonly Partial<Parameters<typeof placeUnit>[1]>[],
+  setup: (state: BattleState) => void = () => {}
+) => {
+  const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
+  giveHand(state, "enemy", [[cardId, 0, getCard(cardId).baseRank]]);
+  for (const raider of raiders) {
+    placeUnit(state, {
+      cardId: "orc.scrapRaider",
+      owner: "player",
+      position: 5,
+      ...raider,
+    });
+  }
+  setup(state);
+  return chooseCommand(state);
+};
+
+/** A hurt enemy-side Militia Recruit (the AI's Unit) in Lane 0. */
+const hurtFriend =
+  (position: number, hp: number) =>
+  (state: BattleState): void => {
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position,
+      attack: 0,
+      hp,
+      maxHp: 8,
+    });
+  };
+
+describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
+  it("keeps Shoulder Charge, Quick Shot, Barbed Arrow and Penance until the hit kills", () => {
+    for (const [cardId, kill] of [
+      ["warrior.shoulderCharge", 3],
+      ["ranger.quickShot", 3],
+      // Uncommon: 5 × 1.2 = 6.
+      ["ranger.barbedArrow", 6],
+      // The Attack of the Scrap Raider.
+      ["priest.penance", 3],
+    ] as const) {
+      expect(raidersChoice(cardId, [{ hp: kill + 1 }]), cardId).toEqual(
+        Command.EndTurn()
+      );
+      expect(raidersChoice(cardId, [{ hp: kill }]), cardId).toEqual(
+        playAtSquare(0, 5)
+      );
+    }
+  });
+
+  it("aims Penance at the target with the highest Attack", () => {
+    expect(
+      raidersChoice("priest.penance", [
+        { hp: 3 },
+        { lane: 1, position: 6, hp: 5, attack: 5 },
+      ])
+    ).toEqual(playAtSquare(1, 6));
+  });
+
+  it("keeps Shield Bash until it kills, or a friendly Unit is in the Lane of the target", () => {
+    expect(raidersChoice("warrior.shieldBash", [{}])).toEqual(
+      Command.EndTurn()
+    );
+    expect(raidersChoice("warrior.shieldBash", [{ hp: 2 }])).toEqual(
+      playAtSquare(0, 5)
+    );
+    expect(raidersChoice("warrior.shieldBash", [{}], hurtFriend(9, 8))).toEqual(
+      playAtSquare(0, 5)
+    );
+  });
+
+  it("keeps Cleave until it kills a Unit or hits 2 Units", () => {
+    expect(raidersChoice("warrior.cleave", [{ hp: 6 }])).toEqual(
+      Command.EndTurn()
+    );
+    expect(
+      raidersChoice("warrior.cleave", [{ hp: 6 }, { position: 6, hp: 6 }])
+    ).toEqual(playAtSquare(0, 6));
+  });
+
+  it("counts each Frost hit for Frost Shards and Frost Wave, also at 0 damage, because Frost Freezes", () => {
+    const armored = { position: 6, bonusArmor: 3, bonusArmorTurns: 2 };
+    expect(raidersChoice("mage.frostShards", [{}])).toEqual(Command.EndTurn());
+    expect(raidersChoice("mage.frostShards", [{}, armored])).toEqual(
+      playAtSquare(0, 6)
+    );
+    expect(raidersChoice("mage.frostWave", [{}])).toEqual(Command.EndTurn());
+    expect(raidersChoice("mage.frostWave", [{}, armored])).toEqual(
+      Command.PlayCard({ handIndex: 0, target: Target.Lane({ lane: 0 }) })
+    );
+    // Ground Slam is Physical: a hit at 0 damage does not count.
+    expect(raidersChoice("warrior.groundSlam", [{}, armored])).toEqual(
+      Command.EndTurn()
+    );
+  });
+
+  it("plays Harrying Shot and Flushing Shot with no Hold Rule", () => {
+    for (const cardId of ["ranger.harryingShot", "ranger.flushingShot"]) {
+      expect(raidersChoice(cardId, [{ hp: 20, maxHp: 20 }]), cardId).toEqual(
+        playAtSquare(0, 5)
+      );
+    }
+  });
+
+  it("keeps Blessing of Light with the Sanctuary rule", () => {
+    expect(priestChoice("priest.blessingOfLight", [{}])).toEqual(
+      Command.EndTurn()
+    );
+    expect(priestChoice("priest.blessingOfLight", [{}], enemy)).toEqual(
+      playAtSquare(0, 9)
+    );
+  });
+
+  it("keeps Radiant Strike until it kills, or its heal gives back 2 HP or more", () => {
+    expect(raidersChoice("priest.radiantStrike", [{}])).toEqual(
+      Command.EndTurn()
+    );
+    expect(
+      raidersChoice("priest.radiantStrike", [{}], hurtFriend(9, 7))
+    ).toEqual(Command.EndTurn());
+    expect(
+      raidersChoice("priest.radiantStrike", [{}], hurtFriend(9, 6))
+    ).toEqual(playAtSquare(0, 5));
+  });
+
+  it("keeps Prayer of Healing until the Lane has lost at least 6 HP in total", () => {
+    const lane = Command.PlayCard({
+      handIndex: 0,
+      target: Target.Lane({ lane: 0 }),
+    });
+    expect(
+      priestChoice("priest.prayerOfHealing", [
+        { hp: 5, maxHp: 8 },
+        { position: 8, hp: 6, maxHp: 8 },
+      ])
+    ).toEqual(Command.EndTurn());
+    expect(
+      priestChoice("priest.prayerOfHealing", [
+        { hp: 4, maxHp: 8 },
+        { position: 8, hp: 6, maxHp: 8 },
+      ])
+    ).toEqual(lane);
+  });
+});

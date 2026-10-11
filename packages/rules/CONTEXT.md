@@ -130,6 +130,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Archetype**: A named reference Deck for one style of play, for example a Human Wall Warrior Deck. The team uses Archetypes to measure balance. A Player never sees an Archetype. _Avoid_: deck type, meta deck, benchmark deck
 
+**Main Archetype**: An Archetype whose Matchups gate release: each pair with another Main Archetype must be in 45% to 55%. _Avoid_: core deck, gated deck
+
+**Diagnostic Deck**: An Archetype whose Matchups are for review only and do not gate release. It becomes a Main Archetype when it passes the gate. _Avoid_: test deck, debug deck
+
 **Matchup**: Many Battles between two Archetypes, with the AI on both Sides, to measure if one Archetype is stronger than the other. _Avoid_: versus, pairing, mirror test
 
 **Power Points**: The strength of one Creature Card at its Base Rank, from its Attack, HP, Speed, Range, Damage Type and Keywords. _Avoid_: power level, rating, score, value

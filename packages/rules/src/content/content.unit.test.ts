@@ -124,6 +124,12 @@ const archetypeCountdowns = (id: string) =>
   );
 
 /** The damage, heal or Ward value of a Skill Card at each Rank. */
+/** The sorted Base Ranks of the Skill Cards of a Class. */
+const baseRanks = (classId: string) =>
+  CARDS.flatMap((card) =>
+    card.kind === "skill" && card.class === classId ? [card.baseRank] : []
+  ).toSorted();
+
 const skillAmounts = (cardId: string) => {
   const card = getCard(cardId);
   if (card.kind !== "skill") {
@@ -152,8 +158,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 102 cards: 6 Races and 4 Classes", () => {
-    expect(CARDS).toHaveLength(102);
+  it("has 116 cards: 6 Races and 4 Classes", () => {
+    expect(CARDS).toHaveLength(116);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
@@ -166,17 +172,46 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(classes).toEqual(new Set(["warrior", "ranger", "mage", "priest"]));
   });
 
-  it("gives each Class with Skill Cards 3 of them: 2 Common and 1 Uncommon", () => {
-    for (const classId of ["warrior", "ranger", "mage", "priest"]) {
-      const baseRanks = CARDS.flatMap((card) =>
-        card.kind === "skill" && card.class === classId ? [card.baseRank] : []
-      );
-      expect(baseRanks.toSorted(), classId).toEqual([
+  it("gives each Class 4 Common and 3 Uncommon Skill Cards, and the Mage 3 and 2 before its Lightning cards (#65)", () => {
+    for (const classId of ["warrior", "ranger", "priest"]) {
+      expect(baseRanks(classId), classId).toEqual([
+        "common",
+        "common",
         "common",
         "common",
         "uncommon",
+        "uncommon",
+        "uncommon",
       ]);
     }
+    expect(baseRanks("mage")).toEqual([
+      "common",
+      "common",
+      "common",
+      "uncommon",
+      "uncommon",
+    ]);
+  });
+
+  it("gives the Common and Uncommon Skill Cards of #57 their effects and values", () => {
+    expect(skillAmounts("warrior.shoulderCharge")).toEqual([3, 4, 4, 5, 6]);
+    expect(skillAmounts("ranger.quickShot")).toEqual([3, 4, 4, 5, 6]);
+    expect(skillAmounts("priest.blessingOfLight")).toEqual([3, 4, 5, 6, 7]);
+    expect(skillAmounts("priest.prayerOfHealing")).toEqual([8, 8, 10, 12, 14]);
+    expect(getCard("priest.prayerOfHealing")).toMatchObject({
+      target: "friendlyLane",
+      countdown: 3,
+      effect: { type: "healLane" },
+    });
+    expect(getCard("priest.penance")).toMatchObject({
+      target: "enemyUnit",
+      countdown: 2,
+      effect: { type: "damageByAttack", damageType: "holy" },
+    });
+    expect(getCard("ranger.harryingShot")).toMatchObject({
+      target: "enemyUnit",
+      effect: { type: "damageUnitHero", amount: 2, heroAmount: 4 },
+    });
   });
 
   it("scales the Priest heal, damage and Ward with Rank, and targets a friendly Unit with Mend and Sanctuary", () => {

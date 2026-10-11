@@ -311,10 +311,17 @@ export const cardGlyph = (card: CardDefinition): Glyph => {
     case "damageLane":
     case "damageEntangle":
     case "damagePush":
+    case "damageKnockback":
+    case "damageBleed":
+    case "damageByAttack":
+    case "damageLaneArmor":
+    case "damageLaneHeal":
+    case "damageUnitHero":
     case "damageHero": {
       return DAMAGE_GLYPH[card.effect.damageType];
     }
-    case "healUnit": {
+    case "healUnit":
+    case "healLane": {
       return "heart";
     }
     case "wardUnit":

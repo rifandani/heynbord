@@ -124,7 +124,7 @@ describe("poolEntries", () => {
       "warrior.spearThrow",
       "mage.fireball",
     ]);
-    expect(skills.totalCards).toBe(12);
+    expect(skills.totalCards).toBe(26);
     const mage = poolEntries(
       collection,
       filter({ kind: "skill", classId: "mage" })
@@ -134,24 +134,32 @@ describe("poolEntries", () => {
         tile.cardId.startsWith("mage.")
       )
     ).toBe(true);
-    expect(mage).toMatchObject({ ownedCards: 1, totalCards: 3 });
+    expect(mage).toMatchObject({ ownedCards: 1, totalCards: 5 });
     const ranger = poolEntries(
       collection,
       filter({ kind: "skill", classId: "ranger" })
     );
     expect(ranger.notOwned.map((tile) => [tile.cardId, tile.rank])).toEqual([
+      ["ranger.quickShot", "common"],
       ["ranger.pinningShot", "common"],
+      ["ranger.harryingShot", "common"],
       ["ranger.warningShot", "common"],
+      ["ranger.barbedArrow", "uncommon"],
       ["ranger.longShot", "uncommon"],
+      ["ranger.flushingShot", "uncommon"],
     ]);
     const priest = poolEntries(
       collection,
       filter({ kind: "skill", classId: "priest" })
     );
     expect(priest.notOwned.map((tile) => [tile.cardId, tile.rank])).toEqual([
+      ["priest.blessingOfLight", "common"],
       ["priest.mend", "common"],
       ["priest.smite", "common"],
+      ["priest.radiantStrike", "common"],
+      ["priest.penance", "uncommon"],
       ["priest.sanctuary", "uncommon"],
+      ["priest.prayerOfHealing", "uncommon"],
     ]);
     const goblins = poolEntries(
       collection,
