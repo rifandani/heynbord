@@ -19,7 +19,12 @@ import type {
   UnitState,
 } from "../battle/types";
 import { getCard } from "../content/cards";
-import { scaleForRank, skillAmountForRank } from "../content/ranks";
+import {
+  scaleForRank,
+  skillAmountForRank,
+  skillCountForRank,
+  skillSquaresForRank,
+} from "../content/ranks";
 import type {
   CreatureCardDefinition,
   DamageType,
@@ -268,7 +273,7 @@ const skillHits = (
   const amount =
     effect.type === "damageByAttack"
       ? 0
-      : scaleForRank(effect.amount, card.rank);
+      : skillAmountForRank(effect.amount, card.rank);
   return unitsInArea(state, otherSide(side), target, length).map((unit) => {
     const armor =
       effect.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
@@ -277,7 +282,7 @@ const skillHits = (
       effect.type === "damageByAttack" ? attackOf(state, unit) : amount;
     // Exposed adds to a Physical hit after Armor (GDD 4.7, step 4).
     const exposed = effect.damageType === "physical" ? unit.exposed : 0;
-    // A Ward absorbs the damage after Armor (GDD 4.7, step 7).
+    // A Ward absorbs the damage after Armor (GDD 4.7, step 8).
     return {
       unit,
       damage: Math.max(0, Math.max(0, value - armor) + exposed - unit.ward),
@@ -503,12 +508,13 @@ const scoreLaneArmor = (
   state: BattleState,
   side: Side,
   target: Target,
+  armor: number,
   turns: number
 ): number => {
   const friends = friendsInLane(state, side, target).length;
   const lane =
     target._tag === "Square" || target._tag === "Lane" ? target.lane : -1;
-  return friends * (laneThreat(state, side, lane) > 0 ? 3 * turns : 1);
+  return friends * armor * (laneThreat(state, side, lane) > 0 ? 3 * turns : 1);
 };
 
 /**
@@ -819,12 +825,16 @@ const extraActors = (
 const scoreExtraActions = (
   state: BattleState,
   side: Side,
-  target: Target
+  target: Target,
+  legendaryAttack: number
 ): number =>
   extraActors(state, side, target).reduce(
-    (sum, unit) => sum + 2 + attackOf(state, unit) * 2,
+    (sum, unit) => sum + 2 + (attackOf(state, unit) + legendaryAttack) * 2,
     0
-  );
+  ) +
+  attackBonusTargets(state, side, target).length *
+    legendaryAttack *
+    BONUS_ATTACK_WEIGHT;
 
 /**
  * The Hold Rules of the Warrior cards *Expose Weakness*, *Call to Arms* and
@@ -996,7 +1006,10 @@ const meetsHoldRule = (
       return meetsWarriorHoldRule(state, side, effect, target);
     }
     case "lowerCountdown": {
-      return notReadyCards(state, side, card).length >= effect.cards;
+      return (
+        notReadyCards(state, side, card).length >=
+        skillCountForRank(effect.cards, card.rank)
+      );
     }
     default: {
       return absurd(effect);
@@ -1025,12 +1038,23 @@ const scoreDamageSkill = (
     case "damageKnockback": {
       return (
         damage +
-        hits.filter((hit) => knocksBack(state, hit, effect.squares)).length *
+        hits.filter((hit) =>
+          knocksBack(state, hit, skillSquaresForRank(effect.squares, card.rank))
+        ).length *
           KNOCKBACK_SCORE
       );
     }
     case "damageLaneArmor": {
-      return damage + scoreLaneArmor(state, side, target, effect.turns);
+      return (
+        damage +
+        scoreLaneArmor(
+          state,
+          side,
+          target,
+          skillAmountForRank(effect.armor, card.rank),
+          effect.turns
+        )
+      );
     }
     case "damageLaneHeal": {
       return (
@@ -1041,7 +1065,11 @@ const scoreDamageSkill = (
     case "damageUnitHero": {
       return (
         damage +
-        scoreHeroHit(state, side, scaleForRank(effect.heroAmount, card.rank))
+        scoreHeroHit(
+          state,
+          side,
+          skillAmountForRank(effect.heroAmount, card.rank)
+        )
       );
     }
     case "damagePoison": {
@@ -1056,7 +1084,11 @@ const scoreDamageSkill = (
       return damage + hits.filter((hit) => pins(state, hit)).length * PIN_SCORE;
     }
     case "damagePush": {
-      return scorePush(state, hits, effect.squares);
+      return scorePush(
+        state,
+        hits,
+        skillSquaresForRank(effect.squares, card.rank)
+      );
     }
     default: {
       return absurd(effect);
@@ -1078,7 +1110,11 @@ const scoreSkill = (
   switch (effect.type) {
     case "damageHero": {
       return target._tag === "Hero"
-        ? scoreHeroHit(state, side, scaleForRank(effect.amount, card.rank))
+        ? scoreHeroHit(
+            state,
+            side,
+            skillAmountForRank(effect.amount, card.rank)
+          )
         : 0;
     }
     case "healUnit": {
@@ -1103,7 +1139,13 @@ const scoreSkill = (
     }
     case "laneArmor": {
       return target._tag === "Lane"
-        ? scoreLaneArmor(state, side, target, effect.turns)
+        ? scoreLaneArmor(
+            state,
+            side,
+            target,
+            skillAmountForRank(effect.armor, card.rank),
+            effect.turns
+          )
         : 0;
     }
     case "exposeUnit": {
@@ -1112,16 +1154,24 @@ const scoreSkill = (
     case "laneAttack": {
       return (
         attackBonusTargets(state, side, target).length *
-        effect.attack *
+        skillAmountForRank(effect.attack, card.rank) *
         BONUS_ATTACK_WEIGHT
       );
     }
     case "laneExtraAction": {
-      return scoreExtraActions(state, side, target);
+      return scoreExtraActions(
+        state,
+        side,
+        target,
+        card.rank === "legendary" ? (effect.legendaryAttack ?? 0) : 0
+      );
     }
     case "lowerCountdown": {
       const notReady = notReadyCards(state, side, card);
-      return Math.min(effect.cards, notReady.length) * 5;
+      return (
+        Math.min(skillCountForRank(effect.cards, card.rank), notReady.length) *
+        5
+      );
     }
     default: {
       return absurd(effect);
@@ -1138,7 +1188,8 @@ const afterHit = (
   state: BattleState,
   unit: UnitState,
   damage: number,
-  effect: DamageEffect
+  effect: DamageEffect,
+  rank: HandCard["rank"]
 ): UnitState => ({
   ...unit,
   frozen: unit.frozen || effect.damageType === "frost",
@@ -1150,7 +1201,7 @@ const afterHit = (
   position:
     effect.type === "damagePush" ||
     (effect.type === "damageKnockback" && damage > 0)
-      ? pushedPosition(state, unit, effect.squares)
+      ? pushedPosition(state, unit, skillSquaresForRank(effect.squares, rank))
       : unit.position,
 });
 
@@ -1183,7 +1234,7 @@ const unitsAfterSkill = (
     if (kills({ unit, damage })) {
       return [];
     }
-    return [afterHit(state, unit, damage, effect)];
+    return [afterHit(state, unit, damage, effect, card.rank)];
   });
 };
 

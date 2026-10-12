@@ -148,3 +148,37 @@ export const SHOP_PROMPT = [
   "light from the upper left, warm wood, plum and purple, gold and brass accents, cream highlights,",
   "the center is darker and softer than the sides, signs show only a gold star or a crown, no text, no letters, no labels, no logo, no frame, no UI",
 ].join("\n");
+
+/**
+ * The first message of the ChatGPT conversation for the Workshop inside,
+ * with the layout sketch, the style reference and the outside reference
+ * attached. The rules come from section 10.1 of the Town Concepts.
+ */
+export const WORKSHOP_SETUP_PROMPT = [
+  "In this conversation, you will paint the inside of the workshop of a fantasy card battle game: the background of the workshop screen, where the player combines and upgrades cards.",
+  [
+    "Image 1 is a rough layout sketch. Keep its composition: the forge and its stone chimney at the left edge, the anvil and the smith in front of the forge, the junk cart at the right, the long work bench along the bottom, the ceiling beams at the top, and the calm dark wall in the center. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the same workshop from the outside, in the town painting: a timber frame with heavy beams, pale stone and a tall pale stone chimney over the forge. Paint the inside of this building. Do not copy its view.",
+  ].join("\n"),
+  "The game shows its buttons, a large grid of cards and a side panel over the center of the painting. Thus the center stays calm, soft and dark, and the forge fire, the people and the bright light are at the left, at the right and at the top.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for the Workshop inside, after its setup message. It is a
+ * short form of the brief in section 10 of the Town Concepts. When you
+ * change the brief there, change this message too.
+ */
+export const WORKSHOP_PROMPT = [
+  "the cozy inside of a small fantasy smithy workshop, seen from the open door at eye level, straight on, wide 3:2 landscape, the room fills the full image to all edges,",
+  "at the left edge a stone forge with a pale stone hood and a tall pale stone chimney that goes up to the ceiling, a low bright orange fire in the forge and a leather bellows, its glow lights the floor and the left part of the room only,",
+  "in front of the forge a heavy iron anvil, a small stocky dwarf-like smith with a big braided ginger beard, a leather apron and thick gloves swings his hammer with all his strength onto a blank glowing white-gold card on the anvil, his tongue sticks out a little, only the plain back and the edge of the card show, a few short sparks fly off it to the left, the smith is small, about one third of the image height, he and the anvil stand close to the fire and stay inside the left sixth of the image,",
+  "at the right edge a small wooden junk cart with crooked wheels, full of gears, pots, kettles, springs and pipes, a small green goblin tinker with brass goggles on his forehead sits on top of it and fixes a toy-like gear contraption, a spring jumps out next to his ear, barrels and crates below and next to the cart, the goblin and the cart stay inside the right sixth of the image,",
+  "in the center a plain back wall of dark smoke-stained timber planks, calm and dim, with only a few iron tools that hang in soft shadow, no bright light and no sparks there,",
+  "heavy dark timber ceiling beams across the top, a chain with an iron hook, hanging tongs and hammers, one brass lantern with warm candle light, a small high window at the upper left with morning light,",
+  "a thick scarred wooden work bench runs across the full width at the bottom, with a vise, files, a small hammer, a few loose gears, a small open box of gold coins, and a water bucket at its left end,",
+  "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a busy, welcoming and a little funny mood,",
+  "light from the upper left, warm timber, pale stone, forge orange, iron grey, brass and gold accents, cream highlights,",
+  "the center is darker and softer than the sides, no card faces, no card packs, signs show only a hammer or a gear, no text, no letters, no labels, no logo, no frame, no UI",
+].join("\n");

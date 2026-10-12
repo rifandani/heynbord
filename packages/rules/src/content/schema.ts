@@ -200,23 +200,74 @@ const SkillAmount = Schema.Union([
 ]);
 export type SkillAmount = typeof SkillAmount.Type;
 
+/** The number of random Cards that a Skill Card can affect. */
+const SkillCount = Schema.Union([
+  between(1, 8),
+  Schema.Struct({
+    common: between(1, 8),
+    uncommon: between(1, 8),
+    rare: between(1, 8),
+    epic: between(1, 8),
+    legendary: between(1, 8),
+  }),
+]);
+export type SkillCount = typeof SkillCount.Type;
+
+/** The number of Squares that a Skill Card can Push: fixed or set by Rank. */
+const SkillSquares = Schema.Union([
+  between(1, 3),
+  Schema.Struct({
+    common: between(1, 3),
+    uncommon: between(1, 3),
+    rare: between(1, 3),
+    epic: between(1, 3),
+    legendary: between(1, 3),
+  }),
+]);
+export type SkillSquares = typeof SkillSquares.Type;
+
+/** The Countdown reduction from a Skill Card. */
+const SkillReduction = Schema.Union([
+  between(1, 3),
+  Schema.Struct({
+    common: between(1, 3),
+    uncommon: between(1, 3),
+    rare: between(1, 3),
+    epic: between(1, 3),
+    legendary: between(1, 3),
+  }),
+]);
+export type SkillReduction = typeof SkillReduction.Type;
+
+/** Bonus Armor is 1 to 5, including when its value changes with the Rank. */
+const SkillArmor = Schema.Union([
+  between(1, 5),
+  Schema.Struct({
+    common: between(1, 5),
+    uncommon: between(1, 5),
+    rare: between(1, 5),
+    epic: between(1, 5),
+    legendary: between(1, 5),
+  }),
+]);
+
 /** Effect templates (technical design 3.5). The UI makes the card text from the same data. */
 const SkillEffect = Schema.Union([
   Schema.Struct({
     type: Schema.Literal("damageUnit"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
   }),
   Schema.Struct({
     type: Schema.Literal("damageArea"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
     /** The area starts at the target Square and goes this many Squares toward the enemy Hero. */
     length: between(1, 4),
   }),
   Schema.Struct({
     type: Schema.Literal("damageLane"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
   }),
   Schema.Struct({
@@ -225,7 +276,7 @@ const SkillEffect = Schema.Union([
      * survives, it becomes Entangled, as with the Entangle Keyword.
      */
     type: Schema.Literal("damageEntangle"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
   }),
   Schema.Struct({
@@ -235,9 +286,9 @@ const SkillEffect = Schema.Union([
      * effect.
      */
     type: Schema.Literal("damagePush"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
-    squares: between(1, 3),
+    squares: SkillSquares,
   }),
   Schema.Struct({
     /**
@@ -245,9 +296,9 @@ const SkillEffect = Schema.Union([
      * survives, it is Pushed this many Squares, as with the Knockback Keyword.
      */
     type: Schema.Literal("damageKnockback"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
-    squares: between(1, 3),
+    squares: SkillSquares,
   }),
   Schema.Struct({
     /**
@@ -256,7 +307,7 @@ const SkillEffect = Schema.Union([
      * Keyword. The count does not scale with the Rank.
      */
     type: Schema.Literal("damageBleed"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
     bleed: between(1, 5),
   }),
@@ -267,7 +318,7 @@ const SkillEffect = Schema.Union([
      * effect. A Unit that the hit kills gets no stacks.
      */
     type: Schema.Literal("damagePoison"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
     poison: SkillAmount,
   }),
@@ -277,7 +328,7 @@ const SkillEffect = Schema.Union([
      * damage above 0 becomes Entangled, as with `damageEntangle`.
      */
     type: Schema.Literal("damageLaneEntangle"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
   }),
   Schema.Struct({
@@ -295,9 +346,9 @@ const SkillEffect = Schema.Union([
      * Armor, as with `laneArmor`. The Armor comes also when the hit kills.
      */
     type: Schema.Literal("damageLaneArmor"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
-    armor: between(1, 5),
+    armor: SkillArmor,
     turns: between(1, 5),
   }),
   Schema.Struct({
@@ -306,7 +357,7 @@ const SkillEffect = Schema.Union([
      * is healed, as with `healUnit`. The heal comes also when the hit kills.
      */
     type: Schema.Literal("damageLaneHeal"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
     heal: SkillAmount,
   }),
@@ -316,14 +367,14 @@ const SkillEffect = Schema.Union([
      * its Lane (the Hero whose Front holds that Lane). The Hero hit can Crit.
      */
     type: Schema.Literal("damageUnitHero"),
-    amount: Amount,
-    heroAmount: Amount,
+    amount: SkillAmount,
+    heroAmount: SkillAmount,
     damageType: DamageType,
   }),
   Schema.Struct({
     /** Damage to one enemy Hero. A Hero has no Armor and cannot Block (GDD 4.7). */
     type: Schema.Literal("damageHero"),
-    amount: Amount,
+    amount: SkillAmount,
     damageType: DamageType,
   }),
   Schema.Struct({
@@ -382,10 +433,10 @@ const SkillEffect = Schema.Union([
     /**
      * Friendly Units in one Lane with Base Attack above 0 get bonus Attack
      * until the end of the caster's next Turn (GDD 4.8). A new bonus Attack
-     * replaces the old one. The value does not scale with the Rank.
+     * replaces the old one.
      */
     type: Schema.Literal("laneAttack"),
-    attack: between(1, 5),
+    attack: SkillAmount,
   }),
   Schema.Struct({
     /**
@@ -393,22 +444,24 @@ const SkillEffect = Schema.Union([
      * attack, from the front Unit to the back Unit (GDD 4.4).
      */
     type: Schema.Literal("laneExtraAction"),
+    /** Optional bonus Attack at Legendary Rank, until the end of the next Turn. */
+    legendaryAttack: Schema.optionalKey(between(1, 5)),
   }),
   Schema.Struct({
     /**
-     * Friendly Units in one Lane get bonus Armor for `turns` enemy Turns. A
-     * Unit keeps the higher bonus. For the same bonus, it keeps the longer
-     * duration.
+     * Friendly Units in one Lane get bonus Armor for `turns` enemy Turns. The
+     * Armor can scale with the Skill Card Rank. A Unit keeps the higher bonus.
+     * For the same bonus, it keeps the longer duration.
      */
     type: Schema.Literal("laneArmor"),
-    armor: between(1, 5),
+    armor: SkillArmor,
     turns: between(1, 5),
   }),
   Schema.Struct({
     /** Lowers the Countdown of random cards in the caster's Hand that are not Ready. */
     type: Schema.Literal("lowerCountdown"),
-    cards: between(1, 8),
-    amount: between(1, 3),
+    cards: SkillCount,
+    amount: SkillReduction,
   }),
 ]);
 export type SkillEffect = typeof SkillEffect.Type;

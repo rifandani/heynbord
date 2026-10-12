@@ -3,8 +3,9 @@ import { absurd } from "effect";
 import { getCard } from "../content/cards";
 import {
   recallChance,
-  scaleForRank,
   skillAmountForRank,
+  skillCountForRank,
+  skillSquaresForRank,
 } from "../content/ranks";
 import type {
   CreatureCardDefinition,
@@ -342,7 +343,7 @@ const damageAndControl = (
 ): void => {
   for (const unit of units) {
     const { dealt, killed } = damageUnit(ctx, unit, {
-      amount: scaleForRank(effect.amount, card.rank),
+      amount: skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
       crit,
@@ -354,12 +355,12 @@ const damageAndControl = (
     switch (effect.type) {
       case "damagePush": {
         // The push is the main effect: it occurs also at 0 damage.
-        pushUnit(ctx, unit, effect.squares);
+        pushUnit(ctx, unit, skillSquaresForRank(effect.squares, card.rank));
         break;
       }
       case "damageKnockback": {
         if (dealt > 0) {
-          pushUnit(ctx, unit, effect.squares);
+          pushUnit(ctx, unit, skillSquaresForRank(effect.squares, card.rank));
         }
         break;
       }
@@ -418,8 +419,9 @@ const applyFollowUp = (
   }
   switch (effect.type) {
     case "damageLaneArmor": {
+      const armor = skillAmountForRank(effect.armor, card.rank);
       for (const unit of unitsInArea(ctx.state, side, lane, 1)) {
-        giveBonusArmor(ctx, unit, effect.armor, effect.turns);
+        giveBonusArmor(ctx, unit, armor, effect.turns);
       }
       return;
     }
@@ -433,7 +435,7 @@ const applyFollowUp = (
     case "damageUnitHero": {
       // In v1 each Side has 1 Hero: the other Side's Hero holds each Lane.
       damageHero(ctx, otherSide(side), {
-        amount: scaleForRank(effect.heroAmount, card.rank),
+        amount: skillAmountForRank(effect.heroAmount, card.rank),
         damageType: effect.damageType,
         source: "skill",
         crit,
@@ -478,7 +480,7 @@ const applyHit = (
       amount:
         effect.type === "damageByAttack"
           ? attackOf(ctx.state, unit)
-          : scaleForRank(effect.amount, card.rank),
+          : skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
       crit,
@@ -547,11 +549,20 @@ const applyFriendly = (
         break;
       }
       case "laneArmor": {
-        giveBonusArmor(ctx, unit, effect.armor, effect.turns);
+        giveBonusArmor(
+          ctx,
+          unit,
+          skillAmountForRank(effect.armor, card.rank),
+          effect.turns
+        );
         break;
       }
       case "laneAttack": {
-        giveBonusAttack(ctx, unit, effect.attack);
+        giveBonusAttack(
+          ctx,
+          unit,
+          skillAmountForRank(effect.attack, card.rank)
+        );
         break;
       }
       default: {
@@ -577,6 +588,11 @@ const applyWarrior = (
 ): void => {
   if (effect.type === "laneExtraAction") {
     if (target._tag === "Lane") {
+      if (card.rank === "legendary" && effect.legendaryAttack !== undefined) {
+        for (const unit of unitsInArea(ctx.state, side, target, 1)) {
+          giveBonusAttack(ctx, unit, effect.legendaryAttack);
+        }
+      }
       runExtraActions(ctx, side, target.lane);
     }
     return;
@@ -622,7 +638,7 @@ const applyEffect = (
     case "damageHero": {
       if (target._tag === "Hero") {
         damageHero(ctx, target.side, {
-          amount: scaleForRank(effect.amount, card.rank),
+          amount: skillAmountForRank(effect.amount, card.rank),
           damageType: effect.damageType,
           source: "skill",
           crit,
@@ -636,7 +652,12 @@ const applyEffect = (
       return;
     }
     case "lowerCountdown": {
-      lowerCountdowns(ctx, side, effect.cards, effect.amount);
+      lowerCountdowns(
+        ctx,
+        side,
+        skillCountForRank(effect.cards, card.rank),
+        skillAmountForRank(effect.amount, card.rank)
+      );
       return;
     }
     default: {

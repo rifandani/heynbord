@@ -23,6 +23,7 @@ export const STATUS_ORDER: readonly Status[] = [
   "entangle",
   "bleed",
   "hobble",
+  "exposed",
 ];
 
 /** The badge icon of each Status in the effects atlas. */
@@ -35,6 +36,7 @@ export const STATUS_ICON = {
   hobble: "icon-hobble",
   ward: "icon-ward",
   steadfast: "icon-steadfast",
+  exposed: "icon-exposed",
 } as const satisfies Readonly<Record<Status, FxSlotName>>;
 
 /**
@@ -60,9 +62,13 @@ const HAS_STATUS: Readonly<Record<Status, (unit: UnitView) => boolean>> = {
   hobble: (unit) => unit.hobbled > 0,
   ward: (unit) => unit.ward > 0,
   steadfast: (unit) => unit.steadfast,
+  exposed: (unit) => unit.exposed > 0,
 };
 
-/** The count on a badge: the Ward value, the Poisoned stacks, and the Hobbled and Bleeding counts. */
+/**
+ * The count on a badge: the Ward value, the Poisoned stacks, the Hobbled and
+ * Bleeding counts, and the Exposed value.
+ */
 const COUNT_OF: Readonly<Record<Status, (unit: UnitView) => number | null>> = {
   freeze: () => null,
   burn: () => null,
@@ -72,6 +78,7 @@ const COUNT_OF: Readonly<Record<Status, (unit: UnitView) => number | null>> = {
   hobble: (unit) => unit.hobbled,
   ward: (unit) => unit.ward,
   steadfast: () => null,
+  exposed: (unit) => unit.exposed,
 };
 
 /** All Statuses of a Unit, in the priority order. */

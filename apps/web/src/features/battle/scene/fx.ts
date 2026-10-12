@@ -79,6 +79,9 @@ export type Fx =
 /** The ring of a Rebirth: the pale Undead spirit light. */
 const REBORN_RING = "#c4fbef";
 
+/** The ring of a bonus Attack (AttackGained): the war gold of Rally. */
+const RALLY_RING = "#ffd75a";
+
 /** The ring of a Cleanse (DebuffsRemoved): a clean white light. */
 const CLEANSE_RING = "#fff6df";
 
@@ -174,7 +177,7 @@ const meleeSlash = (
 const WARD_NUMBER = { height: 1.13, x: -0.32 } as const;
 
 /**
- * A Ward that absorbed damage (GDD 4.7, step 7): a gold "−N" on its badge
+ * A Ward that absorbed damage (GDD 4.7, step 8): a gold "−N" on its badge
  * and a short shield flash, at the same time as the hit.
  */
 const wardFx = (
@@ -442,6 +445,14 @@ export const fxForEvent = (
     case "ArmorGained": {
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
       return at ? [impactFx("armor", at, time, speed)] : [];
+    }
+    case "AttackGained": {
+      // Call to Arms: a ring of the war gold of Rally. The Attack number at
+      // the feet shows the new value.
+      const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
+      return at
+        ? [{ kind: "ring", color: RALLY_RING, x: at.x, z: at.z, start: time }]
+        : [];
     }
     default: {
       return unitLightFx(event, before, after, time, speed);

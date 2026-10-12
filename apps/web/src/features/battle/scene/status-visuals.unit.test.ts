@@ -26,6 +26,10 @@ const quiet: UnitView = {
   armor: 0,
   bonusArmor: 0,
   bonusArmorTurns: 0,
+  bonusAttack: 0,
+  bonusAttackTurns: 0,
+  exposed: 0,
+  exposedTurns: 0,
   range: 0,
   flying: false,
   damageType: "physical",
@@ -50,6 +54,8 @@ const allStatuses: UnitView = {
   entangled: true,
   ward: 5,
   steadfast: true,
+  exposed: 2,
+  exposedTurns: 2,
 };
 
 describe("statusesOf", () => {
@@ -67,6 +73,7 @@ describe("statusesOf", () => {
       "entangle",
       "bleed",
       "hobble",
+      "exposed",
     ]);
     expect(statusesOf(allStatuses)).toEqual(STATUS_ORDER);
     expect(statusesOf({ ...quiet, hobbled: 1, poisoned: 1 })).toEqual([
@@ -121,7 +128,7 @@ describe("badgeStatuses", () => {
       "steadfast",
       "freeze",
     ]);
-    expect(more).toBe(5);
+    expect(more).toBe(6);
   });
 
   it("shows the Ward first, with its value as the count and the gold ring of a Buff", () => {

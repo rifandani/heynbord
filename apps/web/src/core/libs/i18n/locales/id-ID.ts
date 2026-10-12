@@ -129,6 +129,9 @@ export default {
     status: {
       bonusArmor: "Zirah +{value}",
       bonusArmorRule: "Dari Kartu Keahlian. Sisa Giliran: {turns}.",
+      bonusAttack: "Serangan +{value}",
+      bonusAttackRule:
+        "Dari Kartu Keahlian: sampai akhir Giliranmu berikutnya. Sisa Fase Akhir: {turns}.",
       burn: "Terbakar",
       burnRule: "1 damage pada tiap Fase Akhir pemiliknya.",
       burnLeft: "Sisa Fase Akhir: {value}.",
@@ -159,6 +162,9 @@ export default {
       steadfast: "Teguh",
       steadfastRule:
         "Sebuah Buff. Saat damage akan membawa Unit ini ke 0 HP, ia tetap pada 1 HP, dan Teguh berakhir. Pelindung menyerap damage itu lebih dulu. Ia tidak punya batas waktu.",
+      exposed: "Terbuka {value}",
+      exposedRule:
+        "Sebuah Debuff. Tiap serangan Fisik pada Unit ini memberi damage tambahan sebesar nilai Terbuka, setelah Zirah. Damage Api, Es, Suci, Terbakar dan Racun tidak mendapatkannya. Ia berakhir setelah 2 Fase Akhir pemiliknya. Terbuka yang baru memakai nilai yang lebih tinggi.",
     },
   },
   town: {
@@ -172,6 +178,7 @@ export default {
     buildings: {
       townGate: "Kampanye",
       cardShop: "Paket",
+      workshop: "Bengkel",
     },
     shortcuts: {
       town: "Kota",
@@ -333,6 +340,10 @@ export default {
       "Ada Paket untuk kamu buka. Gratis: buka untuk mendapat 5 kartu.",
     packs:
       "Toko kartu sudah buka. Buka Paket di sana untuk mendapat lebih banyak kartu untuk Dek-mu.",
+    workshop:
+      "Bengkel sudah buka. Gabung 2 salinan kartu menjadi 1 salinan di Peringkat berikutnya.",
+    craft:
+      "Buat sudah terbuka di Bengkel. Pakai Esensi untuk membuat salinan kartu yang sudah kamu temukan.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -398,8 +409,8 @@ export default {
     coinUse: {
       deckSlots: "Slot Dek tambahan di pembuat Dek.",
       packs: "Paket di layar Paket.",
-      later:
-        "Gabung dan peningkatan Perlengkapan saat pintasan Town itu dibuka.",
+      combine: "Gabung di Bengkel, mulai level Pemain {level}.",
+      later: "Peningkatan Perlengkapan saat pintasan Town itu dibuka.",
     },
     packGuide: {
       shelf: "Tiga Paket",
@@ -523,6 +534,7 @@ export default {
       stars: "Bintang",
       playerLevel: "Level pemain",
       pack: "Paket",
+      workshop: "Bengkel",
     },
     entries: {
       board:
@@ -638,6 +650,8 @@ export default {
         "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.",
       coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
       pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nDi level Pemain 2, kamu mendapat satu Paket Penjaja. Paket dari hadiah menunggu di layar Paket sampai kamu membukanya, gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
+      workshop:
+        "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya.",
     },
     aliases: {
       board: "medan, arena, peta, battlefield, map",
@@ -685,6 +699,7 @@ export default {
       statusHobble: "lambat, slow, lumpuh",
       statusWard: "perisai, shield, barrier, serap, buff",
       statusSteadfast: "bertahan, tak mati, endure, undying, last stand",
+      statusExposed: "rentan, lemah, ditandai, vulnerable, armor break",
       damageType: "elemen, element",
       race: "faksi, suku, kerajaan, faction",
       class: "pekerjaan, profesi, job",
@@ -695,6 +710,8 @@ export default {
       playerLevel: "level akun, xp",
       coin: "emas, perak, tembaga, uang, gold",
       pack: "booster, paket kartu, loot box, peti, chest, peluang, odds",
+      workshop:
+        "tempa, forge, crafting, upgrade, fuse, merge, naik level, dust, disenchant, salvage",
     },
   },
   packs: {
@@ -842,6 +859,55 @@ export default {
       summary: "{cards} kartu · {fresh} kartu baru",
       byGuarantee: "Jaminan Paket: Paket ini memberi kartu Peringkat Jaminan.",
       byTenBonus: "Bonus Buka ×10: Paket ini memberi kartu Peringkat Jaminan.",
+    },
+  },
+  workshop: {
+    label: "Bengkel",
+    title: "Bengkel",
+    grid: "Kartu ditemukan",
+    count: "Kartu: {count}",
+    ownership: { all: "Semua", owned: "Dimiliki", notOwned: "0 salinan" },
+    empty: {
+      noneFound: "Kamu belum menemukan {group}.",
+      noneOwned: "Kamu tidak punya salinan {group} sekarang.",
+      allOwned: "Kamu punya salinan semua {group} yang sudah kamu temukan.",
+    },
+    noCopies: "0 salinan",
+    copies: "×{count}",
+    rankCopies: "{rank}, salinan: {count}",
+    pairReady: "Sepasang siap untuk Gabung",
+    combineCount: "2 → 1",
+    combineLabel:
+      "Gabung 2 salinan {from} menjadi 1 salinan {to}, dengan {price}",
+    combineCopiesLabel: "Gabung {from} ke {to}: kamu perlu 2 salinan {from}",
+    combineCoinLabel: "Gabung {from} ke {to}: kamu perlu {amount} lagi",
+    needCopies: "Perlu 2 salinan",
+    extract: "Ekstrak",
+    extractLabel: "Ekstrak 1 salinan {rank} untuk {essence} Esensi",
+    craft: "Buat",
+    need: "Perlu",
+    craftLabel: "Buat 1 salinan {rank} dengan {essence} Esensi",
+    craftNeedLabel: "Buat 1 salinan {rank}: kamu perlu {essence} Esensi lagi",
+    path: {
+      label: "Jalan ke Legendaris",
+      value: "{value}/{target}",
+      leftOne: "1 salinan {rank} lagi · {coin}",
+      leftOther: "{count} salinan {rank} lagi · {coin}",
+      complete: "Salinanmu cukup untuk 1 salinan Legendaris.",
+      aria: "{value} dari {target} salinan {rank}. Koin yang masih perlu: {coin}.",
+    },
+    done: {
+      combine: "Digabung: {name} sekarang {rank}.",
+      craft: "Dibuat: 1 salinan {rank} dari {name}.",
+      extract: "Diekstrak: 1 salinan {rank} dari {name}, +{essence} Esensi.",
+    },
+    extractDialog: {
+      title: "Ekstrak salinan ini?",
+      text: "{name}, {rank}. Ekstrak tidak bisa dibatalkan.",
+      gain: "+{essence} Esensi",
+      decks: "Dek ini memakai salinan ini. Salinan itu keluar dari Dek:",
+      rank: "Salinan {rank} mahal untuk didapat lagi.",
+      keep: "Simpan",
     },
   },
   deckBuilder: {
@@ -1102,6 +1168,14 @@ export default {
       "Satu Unit kawan mendapat Teguh: saat damage akan membawanya ke 0 HP, ia tetap pada 1 HP.",
     cleanseUnit:
       "Hapus semua Debuff dari satu Unit kawan. Lalu sembuhkan {heal} HP padanya.",
+    exposeUnit:
+      "Satu Unit musuh menjadi Terbuka {exposed}: tiap serangan Fisik padanya memberi {exposed} damage tambahan, setelah Zirah, sampai akhir Giliranmu berikutnya.",
+    laneAttack:
+      "Unit kawan dalam satu Jalur mendapat +{attack} Serangan sampai akhir Giliranmu berikutnya.",
+    laneExtraAction:
+      "Setiap Unit kawan dalam satu Jalur mendapat satu aksi lagi sekarang: ia bergerak dan menyerang, dari Unit terdepan ke Unit paling belakang.",
+    laneExtraActionLegendary:
+      "Setiap Unit kawan dalam satu Jalur mendapat +{attack} Serangan sampai akhir Giliranmu berikutnya, lalu mendapat satu aksi lagi sekarang: ia bergerak dan menyerang, dari Unit terdepan ke Unit paling belakang.",
     armorIgnored: "{effect} Zirah tidak menguranginya.",
     counts: {
       squareOne: "{value} Petak",
@@ -1517,6 +1591,18 @@ export default {
       groundSlam: {
         name: "Guncangan Bumi",
         flavor: "Tanah pun setuju denganku.",
+      },
+      callToArms: {
+        name: "Seruan Perang",
+        flavor: "Satu terompet. Semua pedang menjawab.",
+      },
+      exposeWeakness: {
+        name: "Bongkar Kelemahan",
+        flavor: "Di sana. Di bawah tali zirah. Pukul di sana.",
+      },
+      onslaught: {
+        name: "Serbuan",
+        flavor: "Lagi! Sebelum mereka bangkit!",
       },
     },
     ranger: {

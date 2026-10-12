@@ -7,8 +7,7 @@ import type { EntryId } from "@/features/handbook/handbook";
 
 /**
  * The Hints of the features that are in the game (GDD 8.3, issue #4). The
- * Hints for Workshop, Gear, Craft, Dungeons and Heynspire come with their
- * screens.
+ * Hints for Gear, Dungeons and Heynspire come with their screens.
  */
 export const HINTS = [
   "skillCard",
@@ -16,6 +15,8 @@ export const HINTS = [
   "deckBuilder",
   "unopenedPack",
   "packs",
+  "workshop",
+  "craft",
 ] as const;
 
 export type HintId = (typeof HINTS)[number];
@@ -39,18 +40,22 @@ export const HINT_ENTRY: Readonly<Record<HintId, EntryId>> = {
   deckBuilder: "deck",
   unopenedPack: "pack",
   packs: "pack",
+  workshop: "workshop",
+  craft: "workshop",
 };
 
 /**
  * The Battle Hints show near the Hand, the Deck builder Hint near the Deck
  * shortcut, the Unopened Pack Hint near the Open button of the first
- * Unopened Pack, and the Packs level Hint near the Card shop in the Town.
+ * Unopened Pack, the Packs level Hint near the Card shop in the Town, and the
+ * Workshop and Craft level Hints near the Workshop in the Town.
  */
 export type HintPlace =
   | "hand"
   | "deckShortcut"
   | "unopenedPackButton"
-  | "cardShop";
+  | "cardShop"
+  | "workshop";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   skillCard: "hand",
@@ -58,6 +63,8 @@ export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   deckBuilder: "deckShortcut",
   unopenedPack: "unopenedPackButton",
   packs: "cardShop",
+  workshop: "workshop",
+  craft: "workshop",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */

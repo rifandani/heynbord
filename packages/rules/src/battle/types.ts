@@ -358,7 +358,7 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly crit: boolean;
     readonly blocked: boolean;
     /**
-     * The damage that the Ward of the target absorbed (GDD 4.7, step 7).
+     * The damage that the Ward of the target absorbed (GDD 4.7, step 8).
      * `amount` is the damage after the Ward. A Hero has no Ward: 0.
      */
     readonly absorbed: number;

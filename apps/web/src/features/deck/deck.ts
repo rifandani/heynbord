@@ -88,8 +88,11 @@ export interface DeckRow {
 const cardOrder = (cardId: string) =>
   CARDS.findIndex((card) => card.id === cardId);
 
-/** The order of the Deck list and the card pool: Countdown, then card list order, then the highest Rank. */
-const byCountdown = (
+/**
+ * The order of the Deck list, the card pool and the Workshop grid: Countdown,
+ * then card list order, then the highest Rank.
+ */
+export const byCountdown = (
   a: { readonly cardId: string; readonly rank: RankId },
   b: { readonly cardId: string; readonly rank: RankId }
 ): number =>
@@ -174,7 +177,11 @@ export interface Pool {
   readonly totalCards: number;
 }
 
-const matchesGroup = (card: CardDefinition, filter: PoolFilter): boolean => {
+/** True when the card agrees with the kind, Race and Class filters. The Ownership filter does not apply. */
+export const matchesGroup = (
+  card: CardDefinition,
+  filter: PoolFilter
+): boolean => {
   if (filter.kind !== "all" && card.kind !== filter.kind) {
     return false;
   }
@@ -221,7 +228,7 @@ export const poolEntries = (
 };
 
 /** The cards that the pool filters show, as text: "Orc Creature Cards". */
-const poolGroupText = (filter: PoolFilter): TextRef => {
+export const poolGroupText = (filter: PoolFilter): TextRef => {
   if (filter.kind === "creature") {
     return filter.race === "all"
       ? { key: "deckBuilder.groups.creature" }

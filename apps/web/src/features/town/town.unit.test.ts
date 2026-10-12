@@ -34,11 +34,29 @@ describe("safeArea", () => {
 });
 
 describe("SELECTABLE_BUILDINGS", () => {
-  it("keeps each selectable Building and its label in the safe area", () => {
-    for (const building of SELECTABLE_BUILDINGS) {
-      expect(contains(safeArea(), building.rect)).toBe(true);
-      expect(contains(safeArea(), building.label)).toBe(true);
+  it("keeps each label, and the part of its Building under it, in the safe area", () => {
+    for (const { id, rect, label } of SELECTABLE_BUILDINGS) {
+      expect(contains(safeArea(), label), id).toBe(true);
+      expect(
+        contains(safeArea(), { ...rect, x: label.x, width: label.width }),
+        id
+      ).toBe(true);
     }
+  });
+
+  it("puts each label right above its Building, in the width of the Building", () => {
+    for (const { id, rect, label } of SELECTABLE_BUILDINGS) {
+      expect(label.y + label.height, id).toBe(rect.y);
+      expect(contains({ ...rect, y: label.y }, label), id).toBe(true);
+    }
+  });
+
+  it("keeps the full Town Gate and Card shop in the safe area: only the Workshop is wider", () => {
+    expect(
+      SELECTABLE_BUILDINGS.filter(
+        (building) => !contains(safeArea(), building.rect)
+      ).map((building) => building.id)
+    ).toEqual(["workshop"]);
   });
 
   it("gives each Building a screen of a Town Bar shortcut, and a layer file", () => {
@@ -50,6 +68,7 @@ describe("SELECTABLE_BUILDINGS", () => {
     expect(SELECTABLE_BUILDINGS.map((building) => building.screen)).toEqual([
       "campaign",
       "packs",
+      "workshop",
     ]);
   });
 });
@@ -91,12 +110,12 @@ describe("overlaps", () => {
 });
 
 describe("TOWN_SHORTCUTS", () => {
-  it("opens the Town, the Campaign and the Packs", () => {
+  it("opens the Town, the Campaign, the Workshop and the Packs", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => shortcut.screen !== null).map(
         (shortcut) => shortcut.id
       )
-    ).toEqual(["town", "campaign", "packs"]);
+    ).toEqual(["town", "campaign", "workshop", "packs"]);
     expect(TOWN_SHORTCUTS[0]?.id).toBe("town");
     expect(new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.id)).size).toBe(
       TOWN_SHORTCUTS.length
@@ -143,6 +162,19 @@ describe("level locks (GDD 11.4)", () => {
     expect(cardShop && opensAtLevel(cardShop, 2)).toBeNull();
     for (const level of [1, 2, 30]) {
       expect(opensAtLevel(SELECTABLE_BUILDINGS[0] ?? {}, level)).toBeNull();
+    }
+  });
+
+  it("locks the Workshop and its Building until level 3 (Combine and Extract)", () => {
+    const workshop = TOWN_SHORTCUTS.find(
+      (shortcut) => shortcut.id === "workshop"
+    );
+    const building = SELECTABLE_BUILDINGS.find(
+      (item) => item.id === "workshop"
+    );
+    for (const screen of [workshop, building]) {
+      expect(screen && opensAtLevel(screen, 2)).toBe(3);
+      expect(screen && opensAtLevel(screen, 3)).toBeNull();
     }
   });
 

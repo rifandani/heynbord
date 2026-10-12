@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { ownedCopies } from "../collection/deck-building";
 import { PLAYER_LEVEL_XP } from "../content/player-levels";
 import { STAGES } from "../content/stages";
 import { EXTRACT_ESSENCE } from "../content/workshop";
@@ -154,7 +155,9 @@ describe("spend (Economy 7.1)", () => {
     const player = playerAt(3, 0);
     // Vanguard has 3 Common Crossbow Guards.
     spend(player, "collector");
-    expect(player.copies.get("human.crossbowGuard")?.common).toBe(2);
+    expect(
+      ownedCopies(player.collection, "human.crossbowGuard", "common")
+    ).toBe(2);
     expect(player.essence).toBe(EXTRACT_ESSENCE.common);
   });
 });

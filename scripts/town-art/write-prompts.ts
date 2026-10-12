@@ -21,6 +21,11 @@
  * - `raw/shop/pack-reference.png`: the three Packs side by side, so the
  *   Packs on the shelves are the Packs of the game.
  * - `raw/shop/prompts.md`: the setup message, then the painting message.
+ * - `raw/workshop/layout.png`: the layout sketch of the Workshop inside,
+ *   with the areas of section 10.2.
+ * - `raw/workshop/outside-reference.png`: the Workshop in the Town
+ *   painting, so the inside matches the outside.
+ * - `raw/workshop/prompts.md`: the setup message, then the painting message.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -37,6 +42,8 @@ import {
   setupPromptOf,
   SHOP_PROMPT,
   SHOP_SETUP_PROMPT,
+  WORKSHOP_PROMPT,
+  WORKSHOP_SETUP_PROMPT,
 } from "./prompts.ts";
 import { PACK_SUBJECT, SUBJECT } from "./subjects.ts";
 
@@ -106,19 +113,22 @@ const writeStyleReference = async (file: string) => {
     .toFile(file);
 };
 
-/** The Card shop inside: the size of the ChatGPT image (section 9.1). */
-const SHOP = { width: 1536, height: 1024 } as const;
+/**
+ * The Card shop inside and the Workshop inside: the size of the ChatGPT
+ * image (sections 9.1 and 10.1).
+ */
+const ROOM = { width: 1536, height: 1024 } as const;
 
-/** A box in percent of the shop image, as in the table of 9.2. */
-const shopBox = (x0: number, x1: number, y0: number, y1: number) =>
-  `x="${(x0 * SHOP.width) / 100}" y="${(y0 * SHOP.height) / 100}" width="${((x1 - x0) * SHOP.width) / 100}" height="${((y1 - y0) * SHOP.height) / 100}"`;
+/** A box in percent of a room image, as in the tables of 9.2 and 10.2. */
+const roomBox = (x0: number, x1: number, y0: number, y1: number) =>
+  `x="${(x0 * ROOM.width) / 100}" y="${(y0 * ROOM.height) / 100}" width="${((x1 - x0) * ROOM.width) / 100}" height="${((y1 - y0) * ROOM.height) / 100}"`;
 
 /** Small Pack shapes in a row on a shelf, in the three Pack colors. */
 const packRow = (x0: number, x1: number, y: number): string => {
   const colors = ["#c79a5b", "#6b3fa0", "#8e1f2c"];
-  const left = (x0 * SHOP.width) / 100;
-  const right = (x1 * SHOP.width) / 100;
-  const top = (y * SHOP.height) / 100;
+  const left = (x0 * ROOM.width) / 100;
+  const right = (x1 * ROOM.width) / 100;
+  const top = (y * ROOM.height) / 100;
   const count = Math.floor((right - left - 6) / 30);
   return Array.from(
     { length: count },
@@ -133,40 +143,101 @@ const packRow = (x0: number, x1: number, y: number): string => {
  */
 const writeShopLayout = async (file: string) => {
   const svg = [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${SHOP.width}" height="${SHOP.height}">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
     // The back wall.
     `<rect width="100%" height="100%" fill="#7a5638"/>`,
     // The side shelves.
-    `<rect ${shopBox(0, 22, 54, 80)} fill="#5a3a22"/>`,
-    `<rect ${shopBox(82, 100, 12, 80)} fill="#5a3a22"/>`,
+    `<rect ${roomBox(0, 22, 54, 80)} fill="#5a3a22"/>`,
+    `<rect ${roomBox(82, 100, 12, 80)} fill="#5a3a22"/>`,
     ...[20, 32, 44, 56, 68].map((y) => packRow(84, 100, y)),
     // The calm curtain in the center.
-    `<rect ${shopBox(22, 78, 25, 82)} fill="#3a2238"/>`,
+    `<rect ${roomBox(22, 78, 25, 82)} fill="#3a2238"/>`,
     // The high shelf with Packs, and the goblin apprentice at its right end.
-    `<rect ${shopBox(22, 78, 13, 25)} fill="#5a3a22"/>`,
+    `<rect ${roomBox(22, 78, 13, 25)} fill="#5a3a22"/>`,
     packRow(23, 77, 17),
-    `<circle cx="${0.7 * SHOP.width}" cy="${0.115 * SHOP.height}" r="26" fill="#6fa055"/>`,
+    `<circle cx="${0.7 * ROOM.width}" cy="${0.115 * ROOM.height}" r="26" fill="#6fa055"/>`,
     // The ceiling beams and the three lanterns.
-    `<rect ${shopBox(0, 100, 0, 9)} fill="#3b2414"/>`,
+    `<rect ${roomBox(0, 100, 0, 9)} fill="#3b2414"/>`,
     ...[22, 50, 78].map(
       (x) =>
-        `<circle cx="${(x * SHOP.width) / 100}" cy="${0.15 * SHOP.height}" r="24" fill="#ffd27a"/>`
+        `<circle cx="${(x * ROOM.width) / 100}" cy="${0.15 * ROOM.height}" r="24" fill="#ffd27a"/>`
     ),
     // The round window and the kraft parcels with the cat.
-    `<circle cx="${0.11 * SHOP.width}" cy="${0.3 * SHOP.height}" r="${0.16 * SHOP.height}" fill="#f6e7b0"/>`,
-    `<rect ${shopBox(3, 16, 60, 78)} fill="#c79a5b"/>`,
-    `<ellipse cx="${0.095 * SHOP.width}" cy="${0.585 * SHOP.height}" rx="70" ry="26" fill="#e08a3a"/>`,
+    `<circle cx="${0.11 * ROOM.width}" cy="${0.3 * ROOM.height}" r="${0.16 * ROOM.height}" fill="#f6e7b0"/>`,
+    `<rect ${roomBox(3, 16, 60, 78)} fill="#c79a5b"/>`,
+    `<ellipse cx="${0.095 * ROOM.width}" cy="${0.585 * ROOM.height}" rx="70" ry="26" fill="#e08a3a"/>`,
     // The shopkeeper.
-    `<circle cx="${0.88 * SHOP.width}" cy="${0.34 * SHOP.height}" r="70" fill="#d9b49a"/>`,
-    `<rect ${shopBox(80, 96, 42, 80)} rx="60" fill="#5b3d86"/>`,
+    `<circle cx="${0.88 * ROOM.width}" cy="${0.34 * ROOM.height}" r="70" fill="#d9b49a"/>`,
+    `<rect ${roomBox(80, 96, 42, 80)} rx="60" fill="#5b3d86"/>`,
     // The counter, with the bell and the coin chest.
-    `<rect ${shopBox(0, 100, 80, 100)} fill="#b0763e"/>`,
-    `<rect ${shopBox(0, 100, 84, 100)} fill="#8a5a2c"/>`,
-    `<circle cx="${0.05 * SHOP.width}" cy="${0.775 * SHOP.height}" r="20" fill="#d9a441"/>`,
-    `<rect ${shopBox(84, 93, 73, 80)} fill="#e9c46a"/>`,
+    `<rect ${roomBox(0, 100, 80, 100)} fill="#b0763e"/>`,
+    `<rect ${roomBox(0, 100, 84, 100)} fill="#8a5a2c"/>`,
+    `<circle cx="${0.05 * ROOM.width}" cy="${0.775 * ROOM.height}" r="20" fill="#d9a441"/>`,
+    `<rect ${roomBox(84, 93, 73, 80)} fill="#e9c46a"/>`,
     "</svg>",
   ].join("");
   await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/**
+ * The layout sketch of the Workshop inside: flat shapes at the areas of the
+ * table in section 10.2. ChatGPT keeps its composition, not its colors.
+ */
+const writeWorkshopLayout = async (file: string) => {
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
+    // The calm back wall of dark timber planks.
+    `<rect width="100%" height="100%" fill="#3a2a1e"/>`,
+    ...[28, 40, 52, 64, 76].map(
+      (x) => `<rect ${roomBox(x, x + 0.4, 16, 84)} fill="#33251a"/>`
+    ),
+    // The ceiling beams, the lantern and the small high window.
+    `<rect ${roomBox(0, 100, 0, 9)} fill="#2a1a10"/>`,
+    `<rect ${roomBox(0, 100, 12, 15)} fill="#2a1a10"/>`,
+    `<rect ${roomBox(4, 13, 2, 10)} fill="#f6e7b0"/>`,
+    `<circle cx="${0.62 * ROOM.width}" cy="${0.13 * ROOM.height}" r="18" fill="#ffd27a"/>`,
+    // The forge with its pale stone hood and chimney at the left edge, and
+    // its low fire.
+    `<rect ${roomBox(0, 7, 0, 50)} fill="#cfc4ae"/>`,
+    `<rect ${roomBox(0, 16, 36, 50)} fill="#cfc4ae"/>`,
+    `<rect ${roomBox(0, 14, 50, 84)} fill="#8f8574"/>`,
+    `<rect ${roomBox(1, 10, 52, 70)} fill="#ff8a2a"/>`,
+    // The anvil and the smith in front of the forge, and the glowing card.
+    `<rect ${roomBox(8, 15, 72, 84)} fill="#4a4f57"/>`,
+    `<circle cx="${0.135 * ROOM.width}" cy="${0.6 * ROOM.height}" r="34" fill="#d9b49a"/>`,
+    `<rect ${roomBox(11, 16, 64, 80)} rx="20" fill="#7a4a2a"/>`,
+    `<rect ${roomBox(9, 12, 70, 72)} fill="#fff4c2"/>`,
+    // The goblin tinker on the junk cart, with barrels and crates.
+    `<rect ${roomBox(85, 100, 46, 76)} fill="#8a5a2c"/>`,
+    `<circle cx="${0.92 * ROOM.width}" cy="${0.38 * ROOM.height}" r="30" fill="#6fa055"/>`,
+    `<circle cx="${0.88 * ROOM.width}" cy="${0.79 * ROOM.height}" r="40" fill="#5a3a22"/>`,
+    `<circle cx="${0.97 * ROOM.width}" cy="${0.79 * ROOM.height}" r="40" fill="#5a3a22"/>`,
+    // The work bench, with the coin box.
+    `<rect ${roomBox(0, 100, 84, 100)} fill="#9a6838"/>`,
+    `<rect ${roomBox(0, 100, 88, 100)} fill="#7a4e28"/>`,
+    `<rect ${roomBox(70, 76, 80, 84)} fill="#e9c46a"/>`,
+    "</svg>",
+  ].join("");
+  await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/**
+ * The Workshop in the Town painting, in pixels of `town.webp`: its timber
+ * frame, its blue roof and its chimney (the smoke point of section 1.3).
+ */
+const WORKSHOP_OUTSIDE = {
+  left: 1420,
+  top: 500,
+  width: 400,
+  height: 240,
+} as const;
+
+const writeWorkshopOutside = async (file: string) => {
+  await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
+    .extract(WORKSHOP_OUTSIDE)
+    .resize({ width: WORKSHOP_OUTSIDE.width * 2 })
+    .png()
+    .toFile(file);
 };
 
 /** The three Pack sources side by side, in the order of section 8.3. */
@@ -355,6 +426,41 @@ const shopFile = (): string =>
     "",
   ].join("\n");
 
+const WORKSHOP_FIXES = [
+  "| Problem | Fix |",
+  "| --- | --- |",
+  '| The center is busy or bright | Select the center and send "Edit the image only in the selected area: a plain back wall of dark smoke-stained timber planks in dim warm light. Keep all else the same." |',
+  '| The forge glow or the sparks go across the center | Select them and send "Edit the image only in the selected area: no glow and no sparks here, dim timber wall. Keep all else the same." |',
+  "| The forge, the smith or the goblin is in the center | Send the painting message again. |",
+  '| The smith or the anvil goes past the left sixth (the card grid hides them) | Send the painting message again with "the smith is very small and stands at the far left edge, half in front of the forge". |',
+  "| A card face shows on the anvil | Select the card and ask for the plain back of a blank card that glows white-gold. |",
+  "| A card pack is in the room | Select it and ask for the object around it, for example a crate or a pot. |",
+  "| Text-like marks on a sign, a crate or a barrel | Select the area and ask for the material around it, for example plain wood or plain iron. |",
+].join("\n");
+
+const workshopFile = (): string =>
+  [
+    "# Workshop inside prompts",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
+    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
+    "3. Select one image with the review checklist (Town Concepts, 10.6). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder.",
+    "4. Do steps 3 to 5 of Town Concepts, 10.5.",
+    "",
+    "## Setup message",
+    "",
+    block(WORKSHOP_SETUP_PROMPT),
+    "",
+    "## Painting",
+    "",
+    block(WORKSHOP_PROMPT),
+    "",
+    "## Fixes",
+    "",
+    WORKSHOP_FIXES,
+    "",
+  ].join("\n");
+
 /** Fails when `subjects` has an ID that the table does not have. */
 const checkExtra = (
   rows: readonly Icon[],
@@ -378,8 +484,10 @@ const paintingDir = path.join(RAW_DIR, "painting");
 const barDir = path.join(RAW_DIR, "bar");
 const packsDir = path.join(RAW_DIR, "packs");
 const shopDir = path.join(RAW_DIR, "shop");
+const workshopDir = path.join(RAW_DIR, "workshop");
 mkdirSync(paintingDir, { recursive: true });
 mkdirSync(shopDir, { recursive: true });
+mkdirSync(workshopDir, { recursive: true });
 mkdirSync(barDir, { recursive: true });
 mkdirSync(packsDir, { recursive: true });
 await writeStyleReference(path.join(RAW_DIR, "style-reference.png"));
@@ -400,6 +508,9 @@ writeFileSync(path.join(packsDir, "prompts.md"), packsFile(packs));
 await writeShopLayout(path.join(shopDir, "layout.png"));
 await writePackReference(path.join(shopDir, "pack-reference.png"));
 writeFileSync(path.join(shopDir, "prompts.md"), shopFile());
+await writeWorkshopLayout(path.join(workshopDir, "layout.png"));
+await writeWorkshopOutside(path.join(workshopDir, "outside-reference.png"));
+writeFileSync(path.join(workshopDir, "prompts.md"), workshopFile());
 console.log(
   `Town Bar: ${icons.length} icons, set reference ${SET_REFERENCE ?? "none"}`
 );
@@ -407,5 +518,5 @@ console.log(
   `Packs: ${packs.length} Packs, set reference ${PACK_SET_REFERENCE}`
 );
 console.log(
-  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md and ${RAW_DIR}/shop/prompts.md`
+  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md and ${RAW_DIR}/workshop/prompts.md`
 );

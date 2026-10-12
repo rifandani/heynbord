@@ -230,6 +230,8 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
     const lines = unitStatusText({
       bonusArmor: 0,
       bonusArmorTurns: 0,
+      bonusAttack: 0,
+      bonusAttackTurns: 0,
       burn: 2,
       frozen: true,
       entangled: true,
@@ -238,6 +240,8 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       hobbled: 1,
       bleeding: 1,
       poisoned: 3,
+      exposed: 2,
+      exposedTurns: 2,
       rallyBonus: 0,
       swarmBonus: 0,
       reborn: false,
@@ -248,6 +252,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
     for (const line of lines) {
       if (
         line.status === "bonusArmor" ||
+        line.status === "bonusAttack" ||
         line.status === "rallyBonus" ||
         line.status === "swarmBonus" ||
         line.status === "reborn"
@@ -587,6 +592,7 @@ describe("chapterEntries", () => {
       ["statusEntangle", "debuff"],
       ["statusBleed", "debuff"],
       ["statusHobble", "debuff"],
+      ["statusExposed", "debuff"],
     ]);
     expect(nameIn("en-us")(getEntry("statusWard"))).toBe("Ward N");
     expect(nameIn("id-id")(getEntry("statusWard"))).toBe("Pelindung N");

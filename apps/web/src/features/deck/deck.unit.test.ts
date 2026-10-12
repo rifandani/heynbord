@@ -124,7 +124,7 @@ describe("poolEntries", () => {
       "warrior.spearThrow",
       "mage.fireball",
     ]);
-    expect(skills.totalCards).toBe(32);
+    expect(skills.totalCards).toBe(35);
     const mage = poolEntries(
       collection,
       filter({ kind: "skill", classId: "mage" })

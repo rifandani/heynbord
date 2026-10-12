@@ -2,7 +2,7 @@ import type { CoinDenomination, UnlockFeature } from "@workspace/rules";
 import { coinDenominations, isUnlocked, UNLOCK_LEVELS } from "@workspace/rules";
 
 /** The game screens in the `/play` route before a Battle (web ADR-0006). */
-export type GameScreen = "town" | "campaign" | "packs";
+export type GameScreen = "town" | "campaign" | "packs" | "workshop";
 
 /** A box in Town painting coordinates. */
 export interface Rect {
@@ -78,11 +78,15 @@ export const BALANCE_PLATE_CORNER: Rect = {
 
 /** A Building that the Player can select, with its cut-out layer and its label. */
 export interface SelectableBuilding {
-  readonly id: "townGate" | "cardShop";
+  readonly id: "townGate" | "cardShop" | "workshop";
   readonly screen: GameScreen;
   /** The cut-out layer, in painting coordinates. */
   readonly rect: Rect;
-  /** The label box above the Building, in painting coordinates. */
+  /**
+   * The label box above the Building, in painting coordinates. Its bottom is
+   * the top of `rect`, and it is in the width of `rect`. It can be narrower
+   * than `rect` when a narrow screen crops a part of the Building.
+   */
   readonly label: Rect;
   readonly image: string;
   /** The feature of the Player level that unlocks the screen (GDD 7.1), if one does. */
@@ -119,6 +123,20 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     // The cut goes from (25%, 100%) to (0, 62%). The polygon goes past the
     // box, so that the hover glow is not cut.
     clip: "polygon(-10% -20%, 110% -20%, 110% 110%, 31.6% 110%, -10% 46.8%)",
+  },
+  {
+    // The Workshop (11 — Town Concepts 2.5): the forge with the blue roof and
+    // the tall chimney, at the right of the Market. A 4:3 screen crops its
+    // right part (the chimney and the house), so its label is over its left
+    // part, in the safe area. The cut follows the roofs, the chimney and the
+    // wall, so the plaza and the wall around it go to the painting.
+    id: "workshop",
+    screen: "workshop",
+    unlock: "combine",
+    rect: { x: 1318, y: 480, width: 427, height: 225 },
+    label: { x: 1318, y: 434, width: 208, height: 46 },
+    image: "/town/workshop.webp",
+    clip: "polygon(-3.3% -3.7%, 51.1% -3.7%, 51.1% 16.2%, 64.6% 16.2%, 64.6% 14.8%, 84.8% 14.8%, 85.7% 28.8%, 103.7% 39.9%, 103.7% 81.2%, 88.8% 83.8%, 54.3% 100.4%, 26.2% 105.5%, -3.3% 101.8%)",
   },
 ];
 
@@ -195,7 +213,7 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "dungeons", screen: null },
   // The Deck builder is a dialog over the current screen, not a screen.
   { id: "deck", screen: null, dialog: "deck" },
-  { id: "workshop", screen: null },
+  { id: "workshop", screen: "workshop", unlock: "combine" },
   { id: "packs", screen: "packs", unlock: "packs" },
   { id: "hero", screen: null },
   { id: "achievements", screen: null },

@@ -5,6 +5,8 @@
  * report gives the values at each checkpoint of Economy 4. The seeds count up
  * from 1, so the same content always gives the same report.
  */
+import { ownedCopies } from "../collection/deck-building";
+import type { Collection } from "../collection/deck-building";
 import { CARDS } from "../content/cards";
 import { DECK_SLOT_PRICES, STARTING_DECK_SLOTS } from "../content/deck-slots";
 import { getStarterDeck } from "../content/decks";
@@ -48,6 +50,8 @@ import {
 } from "../content/workshop";
 import { openPack, openTenPacks, packPool } from "../packs/open-pack";
 import type { OpenedPack, PackPool } from "../packs/open-pack";
+import { addCopies, discoveredCards } from "../profile/packs";
+import { combineCopies, craftCopy, extractCopy } from "../profile/workshop";
 import { randomInt } from "../random";
 import type { RandomCursor } from "../random";
 import { NORMAL_STAGE_TARGET, stageTarget } from "./simulate";
@@ -296,9 +300,8 @@ export interface EconomyPlayer {
   coin: number;
   essence: number;
   battles: number;
-  /** The copies of each card in each Rank. */
-  readonly copies: Map<string, Record<RankId, number>>;
-  readonly discovered: Set<string>;
+  /** The Collection rules of the game change it (GDD 7.4). */
+  collection: Collection;
   readonly gear: Record<keyof GearLevels, number>;
   deckSlots: number;
   freePackOpened: boolean;
@@ -321,22 +324,6 @@ export interface EconomyPlayer {
 /** The Player level of `player`. */
 const levelOf = (player: EconomyPlayer): number => playerLevelForXp(player.xp);
 
-const noCopies = (): Record<RankId, number> => ({
-  common: 0,
-  uncommon: 0,
-  rare: 0,
-  epic: 0,
-  legendary: 0,
-});
-
-/** Adds one copy to the collection of `player`. The card is Discovered. */
-const addCopy = (player: EconomyPlayer, entry: DeckEntry): void => {
-  const counts = player.copies.get(entry.cardId) ?? noCopies();
-  counts[entry.rank] += 1;
-  player.copies.set(entry.cardId, counts);
-  player.discovered.add(entry.cardId);
-};
-
 /**
  * A new Profile: the Warrior Starter Deck cards, 3 Deck slots and no Coin.
  * The Pack random state comes from `seed`.
@@ -347,8 +334,7 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     coin: 0,
     essence: 0,
     battles: 0,
-    copies: new Map(),
-    discovered: new Set(),
+    collection: addCopies([], getStarterDeck(STARTER_DECK_ID).deck),
     gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
     deckSlots: STARTING_DECK_SLOTS,
     freePackOpened: false,
@@ -365,9 +351,6 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     stagesWon: 0,
     dungeonsWon: new Set(),
   };
-  for (const entry of getStarterDeck(STARTER_DECK_ID).deck) {
-    addCopy(player, entry);
-  }
   return player;
 };
 
@@ -381,16 +364,15 @@ const meanGear = (player: EconomyPlayer): number =>
 const lowestGear = (player: EconomyPlayer): number =>
   Math.min(...GEAR_SLOTS.map((slot) => player.gear[slot]));
 
-const countRank = (player: EconomyPlayer, rank: RankId): number => {
-  let total = 0;
-  for (const counts of player.copies.values()) {
-    total += counts[rank];
-  }
-  return total;
-};
+const countRank = (player: EconomyPlayer, rank: RankId): number =>
+  player.collection.reduce(
+    (total, entry) => (entry.rank === rank ? total + entry.copies : total),
+    0
+  );
 
 const snapshot = (player: EconomyPlayer): CheckpointSnapshot => {
   const pool = poolCards();
+  const discovered = discoveredCards(player.collection);
   return {
     battles: player.battles,
     hours: (player.battles * BATTLE_MINUTES) / 60,
@@ -398,8 +380,7 @@ const snapshot = (player: EconomyPlayer): CheckpointSnapshot => {
     packsOpened: player.packsOpened,
     combines: player.combines,
     discoveredShare:
-      pool.filter((card) => player.discovered.has(card.id)).length /
-      pool.length,
+      pool.filter((card) => discovered.has(card.id)).length / pool.length,
     epicCopies: countRank(player, "epic"),
     legendaryCopies: countRank(player, "legendary"),
     meanGear: meanGear(player),
@@ -412,9 +393,7 @@ const snapshot = (player: EconomyPlayer): CheckpointSnapshot => {
 // ─── Player actions ──────────────────────────────────────────────────────────
 
 const takeOpened = (player: EconomyPlayer, opened: OpenedPack): void => {
-  for (const card of opened.cards) {
-    addCopy(player, card);
-  }
+  player.collection = addCopies(player.collection, opened.cards);
   player.packsOpened += 1;
 };
 
@@ -429,7 +408,7 @@ const openPacks = (
     pack: packId,
     pool,
     classId: HERO_CLASS,
-    discovered: player.discovered,
+    discovered: discoveredCards(player.collection),
     guaranteeCounter: player.guaranteeCounters[packId],
     randomState: player.packRandomState,
   } as const;
@@ -498,6 +477,9 @@ const combinePairs = (
   if (!isUnlocked(levelOf(player), "combine")) {
     return;
   }
+  // The cards in the order that the Player Discovered them. A Combine does
+  // not Discover a card.
+  const cards = [...discoveredCards(player.collection)];
   const first = Math.max(RANKS.indexOf(lowestTarget), 1);
   for (let target = first; target < RANKS.length; target += 1) {
     const to = RANKS[target];
@@ -506,11 +488,20 @@ const combinePairs = (
       continue;
     }
     const cost = combineCoin(to);
-    for (const counts of player.copies.values()) {
-      while (counts[from] >= COMBINE_COPIES && player.coin >= cost) {
+    const pairs = new Set<string>();
+    for (const entry of player.collection) {
+      if (entry.rank === from && entry.copies >= COMBINE_COPIES) {
+        pairs.add(entry.cardId);
+      }
+    }
+    for (const cardId of cards) {
+      while (pairs.has(cardId) && player.coin >= cost) {
+        const collection = combineCopies(player.collection, cardId, from);
+        if (collection === null) {
+          break;
+        }
         player.coin -= cost;
-        counts[from] -= COMBINE_COPIES;
-        counts[to] += 1;
+        player.collection = collection;
         player.combines += 1;
       }
     }
@@ -522,14 +513,15 @@ const extractExtras = (player: EconomyPlayer): void => {
   if (!isUnlocked(levelOf(player), "extract")) {
     return;
   }
-  for (const counts of player.copies.values()) {
-    for (const rank of RANKS) {
-      const extra = counts[rank] - KEEP_COPIES;
-      if (extra > 0) {
-        counts[rank] -= extra;
-        player.essence += extra * EXTRACT_ESSENCE[rank];
-        player.extracts += extra;
+  for (const { cardId, rank, copies } of player.collection) {
+    for (let extra = copies - KEEP_COPIES; extra > 0; extra -= 1) {
+      const collection = extractCopy(player.collection, cardId, rank);
+      if (collection === null) {
+        break;
       }
+      player.collection = collection;
+      player.essence += EXTRACT_ESSENCE[rank];
+      player.extracts += 1;
     }
   }
 };
@@ -544,8 +536,8 @@ const craftCandidates = (player: EconomyPlayer): readonly CardDefinition[] =>
     .filter(
       (card) =>
         (card.baseRank === "rare" || card.baseRank === "epic") &&
-        player.discovered.has(card.id) &&
-        player.copies.get(card.id)?.[card.baseRank] === 1
+        // A copy in the Collection: the card is Discovered.
+        ownedCopies(player.collection, card.id, card.baseRank) === 1
     )
     .toSorted(
       (left, right) => (craftEssence(left) ?? 0) - (craftEssence(right) ?? 0)
@@ -561,8 +553,12 @@ const craftPairs = (player: EconomyPlayer): void => {
     if (cost === null || player.essence < cost) {
       return;
     }
+    const collection = craftCopy(player.collection, card.id);
+    if (collection === null) {
+      return;
+    }
     player.essence -= cost;
-    addCopy(player, { cardId: card.id, rank: card.baseRank });
+    player.collection = collection;
     player.crafts += 1;
   }
 };
@@ -651,9 +647,10 @@ export const spend = (player: EconomyPlayer, playStyle: PlayStyle): void => {
 /** The Race with the fewest Discovered Creature Cards. The first Race wins a tie. */
 const leastDiscoveredRace = (player: EconomyPlayer): RaceId => {
   const counts = new Map<RaceId, number>();
+  const discovered = discoveredCards(player.collection);
   for (const card of CARDS) {
     if (card.kind === "creature") {
-      const found = player.discovered.has(card.id) ? 1 : 0;
+      const found = discovered.has(card.id) ? 1 : 0;
       counts.set(card.race, (counts.get(card.race) ?? 0) + found);
     }
   }
@@ -816,7 +813,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       return;
     }
     if (stage.firstWinCard !== null) {
-      addCopy(player, stage.firstWinCard);
+      player.collection = addCopies(player.collection, [stage.firstWinCard]);
     }
     player.stagesWon += 1;
     addStars(player, stage.region, STARS_PER_WIN);

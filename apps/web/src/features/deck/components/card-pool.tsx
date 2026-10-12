@@ -2,117 +2,27 @@ import type { DeckInput } from "@workspace/rules";
 import { copiesLeft, getCard } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
-import {
-  Button,
-  Label,
-  Radio,
-  RadioGroup,
-  SelectionIndicator,
-} from "react-aria-components";
+import { Button } from "react-aria-components";
 
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
+import { PoolFilters } from "@/features/deck/components/pool-filters";
 import type { Peek } from "@/features/deck/components/use-card-peek";
-import type {
-  KindFilter,
-  OwnershipFilter,
-  PoolBlock,
-  PoolFilter,
-  PoolTile,
-} from "@/features/deck/deck";
+import type { PoolBlock, PoolFilter, PoolTile } from "@/features/deck/deck";
 import {
-  CLASSES_WITH_CARDS,
   classText,
   DEFAULT_POOL_FILTER,
   emptyPoolText,
   poolBlock,
   poolEntries,
-  RACES_WITH_CARDS,
 } from "@/features/deck/deck";
-
-const OWNERSHIP: readonly OwnershipFilter[] = ["all", "owned", "notOwned"];
-const KINDS: readonly KindFilter[] = ["all", "creature", "skill"];
 
 type PeekBind = (target: Peek) => object;
 
 /** The Card Details of a card, when they show; they come right after the card. */
 type PeekAt = (target: Peek) => ReactNode;
-
-const segment = ({ isSelected }: { readonly isSelected: boolean }) =>
-  cn(
-    "relative isolate flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-xs font-bold whitespace-nowrap transition-colors duration-200 outline-none select-none",
-    "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
-    "[@media(max-height:500px)]:h-6 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-[11px]",
-    isSelected
-      ? "text-[#2a1a05]"
-      : "text-[#5b4632] data-[hovered]:bg-[#f6ead0] data-[hovered]:text-[#2a1d12]"
-  );
-
-/**
- * The gold plate of the selected segment. It is one piece: when the
- * selection changes, it slides along the strip to the new segment.
- */
-const segmentPlate = cn(
-  "absolute top-0 left-0 -z-10 size-full rounded-md bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[0_1px_2px_rgba(60,30,5,0.45)]",
-  "motion-safe:transition-[translate,width,height] motion-safe:duration-[220ms] motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
-);
-
-/**
- * One filter of the pool: a row of segments on a parchment strip. The
- * selected segment is gold, as the ribbon of the open Deck, and the gold
- * plate slides to the new segment.
- */
-const Segments = <Value extends string>({
-  label,
-  value,
-  options,
-  onChange,
-  testId,
-  render,
-}: {
-  readonly label: string;
-  readonly value: Value;
-  readonly options: readonly Value[];
-  readonly onChange: (value: Value) => void;
-  readonly testId: string;
-  readonly render: (value: Value) => ReactNode;
-}) => (
-  <RadioGroup
-    value={value}
-    onChange={(next) => {
-      const option = options.find((candidate) => candidate === next);
-      if (option) {
-        onChange(option);
-      }
-    }}
-    orientation="horizontal"
-    className="flex max-w-full flex-wrap items-center gap-0.5 rounded-lg border-2 border-[#c9b48c] bg-[#ead9b4] p-0.5"
-    data-testid={testId}
-  >
-    <Label className="sr-only">{label}</Label>
-    {options.map((id) => (
-      <Radio
-        key={id}
-        value={id}
-        className={segment}
-        data-testid={`${testId}-${id}`}
-      >
-        {({ isSelected }) => (
-          <>
-            {render(id)}
-            <SelectionIndicator
-              isSelected={isSelected}
-              className={segmentPlate}
-            />
-          </>
-        )}
-      </Radio>
-    ))}
-  </RadioGroup>
-);
 
 const plate =
   "flex h-6 max-w-full items-center rounded-lg border-2 px-2 text-xs leading-none font-bold [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]";
@@ -295,7 +205,7 @@ export const CardPool = ({
   readonly wasLongPress: () => boolean;
   readonly peekAt: PeekAt;
 }) => {
-  const { tr, text } = useGameText();
+  const { tr } = useGameText();
   const pool = poolEntries(input.collection, filter);
   const both = pool.owned.length > 0 && pool.notOwned.length > 0;
   const card = (tile: PoolTile) => (
@@ -309,8 +219,6 @@ export const CardPool = ({
       peekAt={peekAt}
     />
   );
-  const change = (next: Partial<PoolFilter>) =>
-    onFilter({ ...filter, ...next });
   return (
     <section
       aria-labelledby="deck-pool-title"
@@ -332,70 +240,7 @@ export const CardPool = ({
             })}
           </span>
         </h3>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 [@media(max-height:500px)]:gap-y-1">
-          <Segments
-            label={tr("deckBuilder.filters.kind")}
-            value={filter.kind}
-            options={KINDS}
-            onChange={(kind) => change({ kind })}
-            testId="pool-filter"
-            render={(id) => tr(`deckBuilder.filters.${id}`)}
-          />
-          <Segments
-            label={tr("deckBuilder.filters.ownership")}
-            value={filter.ownership}
-            options={OWNERSHIP}
-            onChange={(ownership) => change({ ownership })}
-            testId="pool-own"
-            render={(id) => tr(`deckBuilder.filters.${id}`)}
-          />
-        </div>
-        <div className="flex flex-col items-start gap-1.5 [@media(max-height:500px)]:gap-1">
-          {filter.kind === "creature" ? (
-            <Segments
-              label={tr("deckBuilder.filters.race")}
-              value={filter.race}
-              options={["all", ...RACES_WITH_CARDS]}
-              onChange={(race) => change({ race })}
-              testId="pool-race"
-              render={(id) =>
-                id === "all" ? (
-                  tr("deckBuilder.filters.allRaces")
-                ) : (
-                  <>
-                    <GlyphIcon
-                      glyph={raceGlyph(id)}
-                      className="size-3.5 shrink-0 [@media(max-height:500px)]:size-3"
-                    />
-                    {tr(`races.${id}`)}
-                  </>
-                )
-              }
-            />
-          ) : null}
-          {filter.kind === "skill" ? (
-            <Segments
-              label={tr("deckBuilder.filters.class")}
-              value={filter.classId}
-              options={["all", ...CLASSES_WITH_CARDS]}
-              onChange={(classId) => change({ classId })}
-              testId="pool-class"
-              render={(id) =>
-                id === "all" ? (
-                  tr("deckBuilder.filters.allClasses")
-                ) : (
-                  <>
-                    <GlyphIcon
-                      glyph={classGlyph(id)}
-                      className="size-3.5 shrink-0 [@media(max-height:500px)]:size-3"
-                    />
-                    {text(classText(id))}
-                  </>
-                )
-              }
-            />
-          ) : null}
-        </div>
+        <PoolFilters filter={filter} onFilter={onFilter} />
       </header>
       {/* A new key for each filter, so that the list starts at the top. */}
       <div

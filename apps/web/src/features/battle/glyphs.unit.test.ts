@@ -30,6 +30,9 @@ describe("cardGlyph", () => {
     expect(cardGlyph(getCard("ranger.barbedArrow"))).toBe("sword");
     expect(cardGlyph(getCard("ranger.venomArrow"))).toBe("sword");
     expect(cardGlyph(getCard("ranger.rainOfArrows"))).toBe("sword");
+    expect(cardGlyph(getCard("warrior.callToArms"))).toBe("horn");
+    expect(cardGlyph(getCard("warrior.exposeWeakness"))).toBe("brokenShield");
+    expect(cardGlyph(getCard("warrior.onslaught"))).toBe("crossedSwords");
     expect(classGlyph("priest")).toBe("wand");
     expect(classGlyph("warrior")).toBe("warhelm");
     expect(classGlyph("mage")).toBe("hat");

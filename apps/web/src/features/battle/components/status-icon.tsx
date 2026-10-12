@@ -22,6 +22,7 @@ const PLACEHOLDER: Partial<
 > = {
   ward: { glyph: "shield", color: FX_ANCHORS.iconWard },
   steadfast: { glyph: "anchor", color: FX_ANCHORS.iconSteadfast },
+  exposed: { glyph: "brokenShield", color: FX_ANCHORS.iconExposed },
 };
 
 /** A CSS position of a cell in the atlas, in % of the free space. */

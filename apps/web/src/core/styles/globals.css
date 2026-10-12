@@ -884,6 +884,32 @@
   }
 }
 
+/* The Workshop: the card of the Rank panel turns over to its new Rank. */
+@keyframes workshop-flip {
+  0% {
+    transform: perspective(60em) rotateY(90deg);
+    scale: 1.06;
+  }
+  60% {
+    scale: 1.06;
+  }
+  100% {
+    transform: perspective(60em) rotateY(0deg);
+    scale: 1;
+  }
+}
+
+/* The Workshop: a copy count that changed hops once. */
+@keyframes workshop-count {
+  0%,
+  100% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.35;
+  }
+}
+
 :root {
   --bg: oklch(1 0 0);
   --fg: oklch(0.21 0.006 285.885);

@@ -49,6 +49,7 @@ import {
   useTownLeave,
 } from "@/features/town/components/town-screen";
 import { gameScreenAtom } from "@/features/town/town.atoms";
+import { WorkshopScreen } from "@/features/workshop/components/workshop-screen";
 
 const BattleCanvas = lazy(
   () => import("@/features/battle/scene/battle-canvas")
@@ -282,7 +283,7 @@ const useEscToTown = (active: boolean, toTown: () => void) => {
 
 /**
  * The game in one route (web ADR-0006): the Town, the Campaign (the Region
- * Map), then the Battle, and the Packs. The Town Bar shows on each screen
+ * Map), then the Battle, the Packs and the Workshop. The Town Bar shows on each screen
  * except the Battle.
  */
 export const PlayScreen = () => {
@@ -324,6 +325,7 @@ export const PlayScreen = () => {
             <CampaignScreen onStart={(options) => battle.start(options)} />
           ) : null}
           {screen === "packs" ? <PacksScreen /> : null}
+          {screen === "workshop" ? <WorkshopScreen /> : null}
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}

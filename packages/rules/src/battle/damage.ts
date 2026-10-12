@@ -155,7 +155,7 @@ export const damageUnit = (
   unit.ward -= absorbed;
   amount -= absorbed;
   unit.hp -= amount;
-  // Steadfast (step 8): it comes before Rebirth, so a Unit with Rebirth keeps
+  // Steadfast (step 9): it comes before Rebirth, so a Unit with Rebirth keeps
   // its Rebirth.
   const held = unit.hp <= 0 && unit.steadfast;
   if (held) {

@@ -29,7 +29,8 @@ export type SoundName =
   | "cardFlip"
   | "revealRare"
   | "revealEpic"
-  | "revealLegendary";
+  | "revealLegendary"
+  | "anvil";
 
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -199,6 +200,15 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
     }
     tone(2093, 0.9, { type: "sine", delay: 0.45, slideTo: 2637, gain: 0.05 });
     noise(0.6, 5200, 0.05);
+  },
+  // The Workshop: a hammer on the anvil. A short hit, then a bright metal ring
+  // with partials that are not in tune, as a struck bar of iron.
+  anvil: () => {
+    noise(0.05, 3400, 0.3);
+    tone(1180, 0.55, { type: "sine", gain: 0.16 });
+    tone(2730, 0.32, { type: "sine", gain: 0.07 });
+    tone(4410, 0.18, { type: "sine", gain: 0.04 });
+    tone(240, 0.1, { type: "square", gain: 0.06 });
   },
 };
 

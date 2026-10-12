@@ -180,11 +180,14 @@ const StatusLine = ({
 );
 
 /**
- * Bonus Armor, the Rally and Swarm bonuses and a used Rebirth are not
- * Statuses: they have a glyph, and they link to the Entry of their Keyword.
+ * Bonus Armor, bonus Attack, the Rally and Swarm bonuses and a used Rebirth
+ * are not Statuses: they have a glyph, and they link to the Entry of their
+ * Keyword. Bonus Attack has no Keyword: it links to Rally, the other Attack
+ * bonus of the Warrior.
  */
 const NOT_STATUS = {
   bonusArmor: { icon: "shield", keyword: "armor" },
+  bonusAttack: { icon: "horn", keyword: "rally" },
   rallyBonus: { icon: "banner", keyword: "rally" },
   swarmBonus: { icon: "sword", keyword: "swarm" },
   reborn: { icon: "recall", keyword: "rebirth" },
@@ -207,8 +210,8 @@ const statusEntry = ({ status }: StatusText): EntryId =>
     : keywordEntryId(NOT_STATUS[status].keyword);
 
 /**
- * How a Unit is different from its card now: bonus Armor, the Rally bonus,
- * the Swarm bonus, Burn, Freeze, Entangled, Hobbled, Bleeding, Poison and a used Rebirth. The
+ * How a Unit is different from its card now: bonus Armor, bonus Attack, the
+ * Rally bonus, the Swarm bonus, the Statuses and a used Rebirth. The
  * card shows the base values, and the feet of the Unit show its current
  * Attack and HP.
  */

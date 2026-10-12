@@ -129,6 +129,9 @@ export default {
     status: {
       bonusArmor: "Armor +{value}",
       bonusArmorRule: "From a Skill Card. Turns left: {turns}.",
+      bonusAttack: "Attack +{value}",
+      bonusAttackRule:
+        "From a Skill Card: until the end of your next Turn. End Phases left: {turns}.",
       burn: "Burn",
       burnRule: "1 damage in each End Phase of its owner.",
       burnLeft: "End Phases left: {value}.",
@@ -158,6 +161,9 @@ export default {
       steadfast: "Steadfast",
       steadfastRule:
         "A Buff. When damage would bring this Unit to 0 HP, it stays at 1 HP, and Steadfast ends. A Ward absorbs the damage first. It has no time limit.",
+      exposed: "Exposed {value}",
+      exposedRule:
+        "A Debuff. Each Physical hit on this Unit deals more damage, equal to the Exposed value, after Armor. Fire, Frost, Holy, Burn and Poison damage do not get it. It ends after 2 End Phases of its owner. A new Exposed keeps the higher value.",
     },
   },
   town: {
@@ -171,6 +177,7 @@ export default {
     buildings: {
       townGate: "Campaign",
       cardShop: "Packs",
+      workshop: "Workshop",
     },
     shortcuts: {
       town: "Town",
@@ -330,6 +337,10 @@ export default {
       "You have a Pack to open. It is free: open it to get 5 cards.",
     packs:
       "The Card shop is open. Open Packs there to get more cards for your Decks.",
+    workshop:
+      "The Workshop is open. Combine 2 copies of a card into 1 copy of the next Rank.",
+    craft:
+      "Craft is open in the Workshop. Use Essence to make a copy of a card that you found.",
   },
   handbook: {
     title: "Handbook",
@@ -396,7 +407,8 @@ export default {
     coinUse: {
       deckSlots: "Extra Deck Slots in the Deck builder.",
       packs: "Packs in the Packs screen.",
-      later: "Combine and Gear upgrades when those Town shortcuts open.",
+      combine: "Combine in the Workshop, from Player level {level}.",
+      later: "Gear upgrades when that Town shortcut opens.",
     },
     packGuide: {
       shelf: "The three Packs",
@@ -518,6 +530,7 @@ export default {
       stars: "Stars",
       playerLevel: "Player level",
       pack: "Pack",
+      workshop: "Workshop",
     },
     entries: {
       board:
@@ -632,6 +645,8 @@ export default {
         "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss.",
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
       pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
+      workshop:
+        "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank.",
     },
     aliases: {
       board: "battlefield, field, map, grid, arena",
@@ -678,6 +693,7 @@ export default {
       statusHobble: "slow, cripple, fatigue",
       statusWard: "shield, barrier, absorb, buff",
       statusSteadfast: "endure, undying, death ward, last stand, cheat death",
+      statusExposed: "vulnerable, weakened, marked, armor break, sunder",
       damageType: "element",
       race: "faction, tribe, kingdom",
       class: "job, profession",
@@ -688,6 +704,8 @@ export default {
       playerLevel: "account level, xp",
       coin: "gold, silver, copper, money",
       pack: "booster, card pack, loot box, chest, drop rate, odds",
+      workshop:
+        "forge, crafting, upgrade, fuse, merge, level up, dust, disenchant, salvage",
     },
   },
   packs: {
@@ -833,6 +851,54 @@ export default {
         "Pack Guarantee: this Pack gave a card of the Guarantee Rank.",
       byTenBonus:
         "Open ×10 bonus: this Pack gave a card of the Guarantee Rank.",
+    },
+  },
+  workshop: {
+    label: "Workshop",
+    title: "Workshop",
+    grid: "Found cards",
+    count: "Cards: {count}",
+    ownership: { all: "All", owned: "Owned", notOwned: "0 copies" },
+    empty: {
+      noneFound: "You found no {group} yet.",
+      noneOwned: "You have no copies of {group} now.",
+      allOwned: "You have copies of all the {group} that you found.",
+    },
+    noCopies: "0 copies",
+    copies: "×{count}",
+    rankCopies: "{rank}, copies: {count}",
+    pairReady: "A pair is ready to Combine",
+    combineCount: "2 → 1",
+    combineLabel: "Combine 2 {from} copies into 1 {to} copy, for {price}",
+    combineCopiesLabel: "Combine {from} to {to}: you need 2 {from} copies",
+    combineCoinLabel: "Combine {from} to {to}: you need {amount} more",
+    needCopies: "Need 2 copies",
+    extract: "Extract",
+    extractLabel: "Extract 1 {rank} copy for {essence} Essence",
+    craft: "Craft",
+    need: "Need",
+    craftLabel: "Craft 1 {rank} copy for {essence} Essence",
+    craftNeedLabel: "Craft 1 {rank} copy: you need {essence} more Essence",
+    path: {
+      label: "Path to Legendary",
+      value: "{value}/{target}",
+      leftOne: "1 more {rank} copy · {coin}",
+      leftOther: "{count} more {rank} copies · {coin}",
+      complete: "You have the copies for a Legendary copy.",
+      aria: "{value} of {target} {rank} copies. Coin still needed: {coin}.",
+    },
+    done: {
+      combine: "Combined: {name} is now {rank}.",
+      craft: "Crafted: 1 {rank} copy of {name}.",
+      extract: "Extracted: 1 {rank} copy of {name}, +{essence} Essence.",
+    },
+    extractDialog: {
+      title: "Extract this copy?",
+      text: "{name}, {rank}. You cannot undo an Extract.",
+      gain: "+{essence} Essence",
+      decks: "These Decks use this copy. It goes out of them:",
+      rank: "{rank} copies cost much to get again.",
+      keep: "Keep",
     },
   },
   deckBuilder: {
@@ -1088,6 +1154,14 @@ export default {
       "A friendly Unit gets Steadfast: when damage would bring it to 0 HP, it stays at 1 HP.",
     cleanseUnit:
       "Remove all Debuffs from a friendly Unit. Then heal {heal} HP to it.",
+    exposeUnit:
+      "An enemy Unit becomes Exposed {exposed}: each Physical hit on it deals {exposed} more damage, after Armor, until the end of your next Turn.",
+    laneAttack:
+      "Friendly Units in a Lane get +{attack} Attack until the end of your next Turn.",
+    laneExtraAction:
+      "Each friendly Unit in a Lane takes one more action now: it moves and attacks, from the front Unit to the back Unit.",
+    laneExtraActionLegendary:
+      "Each friendly Unit in a Lane gets +{attack} Attack until the end of your next Turn, then takes one more action now: it moves and attacks, from the front Unit to the back Unit.",
     armorIgnored: "{effect} Armor does not reduce it.",
     /** A number and its noun. The card text selects One for 1, else Other. */
     counts: {
@@ -1484,6 +1558,15 @@ export default {
         name: "Ground Slam",
         flavor: "The ground agrees with me.",
       },
+      callToArms: {
+        name: "Call to Arms",
+        flavor: "One horn. Every blade answers.",
+      },
+      exposeWeakness: {
+        name: "Expose Weakness",
+        flavor: "There. Under the strap. Hit there.",
+      },
+      onslaught: { name: "Onslaught", flavor: "Again! Before they stand!" },
     },
     ranger: {
       pinningShot: { name: "Pinning Shot", flavor: "Stay right there." },

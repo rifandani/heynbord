@@ -209,9 +209,9 @@ const NewBadge = ({ stamp }: { readonly stamp?: number }) => {
  * The light of a flip, behind the card, when its face shows. It grows with
  * the Rank: Uncommon has a ring; Rare a ring and a burst; Epic adds turning
  * rays; Legendary has all of them larger, with a second ring. Common has
- * none: the turn is enough.
+ * none: the turn is enough. The Workshop shows it after a Combine or a Craft.
  */
-const RankBurst = ({
+export const RankBurst = ({
   rank,
   delay,
 }: {

@@ -46,7 +46,7 @@ const REQUIRED_FIELDS = [
 const conceptOf = (heading: string, lines: readonly string[]): SkillConcept => {
   const name = /^### \d+\.\d+ (?<name>.+)$/u.exec(heading)?.groups?.name;
   const where = `${name ?? heading} in ${CONCEPTS}`;
-  // `warrior.warDrums` · Warrior · Common · Countdown 2 · No target · Effect.
+  // `warrior.warDrums` · Warrior · Uncommon · Countdown 2 · No target · Effect.
   const header = lines.find((line) => line.startsWith("`"))?.split(" · ") ?? [];
   const id = /^`(?<id>[a-z]+\.[A-Za-z]+)`$/u.exec(header[0] ?? "")?.groups?.id;
   const flavor = lines.find((line) => line.startsWith("> "));

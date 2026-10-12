@@ -34,6 +34,7 @@ import {
   SUMMON_ZONE_DEPTH,
   TOKENS,
   TURN_LIMIT,
+  UNLOCK_LEVELS,
   WALL_SUMMON_DEPTH,
 } from "@workspace/rules";
 
@@ -110,7 +111,13 @@ const UNIT_ENTRIES = [
   "token",
 ] as const;
 
-const PROGRESS_ENTRIES = ["stars", "playerLevel", "coin", "pack"] as const;
+const PROGRESS_ENTRIES = [
+  "stars",
+  "playerLevel",
+  "coin",
+  "pack",
+  "workshop",
+] as const;
 
 const DAMAGE_TYPES: readonly DamageType[] = [
   "physical",
@@ -301,11 +308,18 @@ export const COIN_DENOM_TABLE: readonly {
 
 /** What Coin pays for in the Handbook Coin Entry. */
 export const COIN_USES_TABLE: readonly {
-  readonly id: "deckSlots" | "packs" | "later";
+  readonly id: "deckSlots" | "packs" | "combine" | "later";
   readonly rule: TextRef;
 }[] = [
   { id: "deckSlots", rule: { key: "handbook.coinUse.deckSlots" } },
   { id: "packs", rule: { key: "handbook.coinUse.packs" } },
+  {
+    id: "combine",
+    rule: {
+      key: "handbook.coinUse.combine",
+      args: { level: UNLOCK_LEVELS.combine },
+    },
+  },
   { id: "later", rule: { key: "handbook.coinUse.later" } },
 ];
 
@@ -540,6 +554,7 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
   stars: { fastTurn: STAR_FAST_WIN_TURN },
   playerLevel: { maxLevel: PLAYER_LEVEL_XP.length },
   pack: { cards: PACK_SIZE },
+  workshop: { combine: UNLOCK_LEVELS.combine, craft: UNLOCK_LEVELS.craft },
 };
 
 const term = (id: EntryId, chapter: ChapterId) =>
@@ -578,6 +593,7 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   stars: { kind: "star" },
   coin: { kind: "coin" },
   pack: glyph("pack"),
+  workshop: glyph("anvil"),
   rankGems: { kind: "rank", rank: "rare" },
 };
 
@@ -692,6 +708,12 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
     "keywordLastBreath",
     "keywordTrample",
   ],
+  statusExposed: [
+    "keywordArmor",
+    "damagePhysical",
+    "keywordRetaliate",
+    "keywordTrample",
+  ],
   damageType: ["status", "attack"],
   damagePhysical: ["keywordArmor"],
   damageFire: ["statusBurn"],
@@ -707,8 +729,9 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   rankGems: ["rank"],
   stars: ["hp", "turn"],
   playerLevel: ["countdownLimit", "hero"],
-  coin: ["deck", "pack"],
+  coin: ["deck", "pack", "workshop"],
   pack: ["coin", "rank"],
+  workshop: ["rank", "coin", "playerLevel"],
 };
 
 const withLinks = (entry: Entry): Entry => ({
@@ -850,6 +873,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "statusHobble",
   "statusWard",
   "statusSteadfast",
+  "statusExposed",
   "damageType",
   "race",
   "class",
@@ -860,6 +884,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "playerLevel",
   "coin",
   "pack",
+  "workshop",
 ]);
 
 /**

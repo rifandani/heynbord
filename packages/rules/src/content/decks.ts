@@ -57,7 +57,7 @@ export const STARTER_DECKS: readonly StarterDeck[] = [
       ...copies(3, "human.crossbowGuard", "common"),
       ...copies(2, "human.halberdier", "common"),
       ...copies(2, "human.riverKnight", "uncommon"),
-      ...copies(1, "warrior.spearThrow", "uncommon"),
+      ...copies(1, "warrior.spearThrow", "common"),
     ],
   },
   {

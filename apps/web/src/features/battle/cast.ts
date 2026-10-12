@@ -9,7 +9,11 @@ import type {
 import { getCard, LANE_LENGTH } from "@workspace/rules";
 import { absurd } from "effect";
 
-import { CAST_COLOR, DAMAGE_COLORS } from "@/features/battle/palette";
+import {
+  CAST_COLOR,
+  DAMAGE_COLORS,
+  FX_ANCHORS,
+} from "@/features/battle/palette";
 
 /**
  * The 3 beats of a Skill Card cast on the screen. `reveal` is its CardPlayed
@@ -110,7 +114,8 @@ export const currentCast = (
 
 /**
  * The color of a Skill Card effect: its Damage Type, the Holy gold of the
- * Priest heal and Ward, Armor blue, or the neutral cast color. Each effect
+ * Priest heal and Ward, Armor blue, the war gold of a Warrior bonus, the
+ * Exposed rose, or the neutral cast color. Each effect
  * with no Damage Type has its own case, so a new type does not compile until
  * it gets a color.
  */
@@ -131,6 +136,14 @@ export const effectColor = (effect: SkillEffect): string => {
     }
     case "laneArmor": {
       return "#9cc8ff";
+    }
+    // The Warrior war gold of the Rally bonus.
+    case "laneAttack":
+    case "laneExtraAction": {
+      return "#ffd75a";
+    }
+    case "exposeUnit": {
+      return FX_ANCHORS.iconExposed;
     }
     case "lowerCountdown": {
       return CAST_COLOR;

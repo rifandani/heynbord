@@ -50,7 +50,7 @@ export const STAGES: readonly StageDefinition[] = [
         ...copies(1, "human.militiaRecruit", "common"),
         ...copies(1, "human.crossbowGuard", "uncommon"),
         ...copies(2, "orc.howlingCharger", "uncommon"),
-        ...copies(1, "warrior.warDrums", "common"),
+        ...copies(1, "warrior.warDrums", "uncommon"),
       ],
       startUnits: [],
     },
@@ -286,7 +286,7 @@ export const STAGES: readonly StageDefinition[] = [
         ...copies(1, "human.ironBulwark", "epic"),
         ...copies(1, "warrior.spearThrow", "uncommon"),
         ...copies(1, "warrior.shieldWall", "uncommon"),
-        ...copies(1, "warrior.warDrums", "common"),
+        ...copies(1, "warrior.warDrums", "uncommon"),
       ],
       // Boss rule (GDD 8.1): the Baron's bodyguard, an Epic Shieldbearer,
       // starts on the Board as a Start Unit.

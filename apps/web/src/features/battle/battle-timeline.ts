@@ -30,6 +30,8 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   CardSabotaged: 260,
   ArmorGained: 260,
   ArmorFaded: 80,
+  AttackGained: 260,
+  AttackFaded: 80,
   UnitMoved: 0,
   UnitPushed: 0,
   UnitSkipped: 360,

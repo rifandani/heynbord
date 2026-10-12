@@ -200,7 +200,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives the Common and Uncommon Skill Cards of #57 their effects and values", () => {
-    expect(skillAmounts("warrior.shoulderCharge")).toEqual([3, 4, 4, 5, 6]);
+    expect(skillAmounts("warrior.shoulderCharge")).toEqual([3, 4, 5, 6, 7]);
     expect(skillAmounts("ranger.quickShot")).toEqual([3, 4, 4, 5, 6]);
     expect(skillAmounts("priest.blessingOfLight")).toEqual([3, 4, 5, 6, 7]);
     expect(skillAmounts("priest.prayerOfHealing")).toEqual([8, 8, 10, 12, 14]);
@@ -274,19 +274,22 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(skillAmounts("warrior.exposeWeakness")).toEqual([2, 2, 2, 3, 4]);
     expect(getCard("warrior.callToArms")).toMatchObject({
       baseRank: "rare",
-      countdown: 4,
+      countdown: 3,
       target: "friendlyLane",
-      effect: { type: "laneAttack", attack: 2 },
+      effect: {
+        type: "laneAttack",
+        attack: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+      },
     });
     expect(getCard("warrior.exposeWeakness")).toMatchObject({
       baseRank: "rare",
-      countdown: 3,
+      countdown: 2,
       target: "enemyUnit",
       effect: { type: "exposeUnit" },
     });
     expect(getCard("warrior.onslaught")).toMatchObject({
       baseRank: "epic",
-      countdown: 6,
+      countdown: 2,
       target: "friendlyLane",
       effect: { type: "laneExtraAction" },
     });

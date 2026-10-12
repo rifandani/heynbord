@@ -1733,7 +1733,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.1 War Drums
 
-`warrior.warDrums` · Warrior · Common · Countdown 2 · No target · The Countdown of 2 random cards in your Hand goes down by 2.
+`warrior.warDrums` · Warrior · Uncommon · Countdown 2 · No target · Its effect improves with its Rank.
 
 > Boom. Boom. Move faster.
 
@@ -1741,13 +1741,20 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 | --- | --- |
 | Effect subject | A large war drum. Rings of sound go out from it. |
 | Partial figure | Two strong arms in leather bracers hit the drum with sticks. |
-| Action | The sticks hit the drum. Two sound rings go out. Two cards in the air near the drum glow and move faster. |
+| Action | The sticks hit the drum. Sound rings go out. One, two or three cards in the air near the drum glow and move faster. |
 | Setting | A neutral battlefield. Small blurred soldier shapes march quickly to the right in the background. |
 | Palette | Neutral steel and leather, warm wood. |
 
+| Rank | Effect |
+| --- | --- |
+| Uncommon | The Countdown of 1 random card in your Hand goes down by 2. |
+| Rare | The Countdown of 2 random cards in your Hand goes down by 2. |
+| Epic | The Countdown of 3 random cards in your Hand goes down by 2. |
+| Legendary | The Countdown of 3 random cards in your Hand goes down by 3. |
+
 ### 9.2 Shield Wall
 
-`warrior.shieldWall` · Warrior · Common · Countdown 2 · A friendly Lane · Friendly Units in a Lane get Armor 1 for the next 2 enemy Turns.
+`warrior.shieldWall` · Warrior · Common · Countdown 2 · A friendly Lane · Friendly Units in a Lane get Armor 1 at Common, 2 at Uncommon, 3 at Rare, 4 at Epic and 5 at Legendary for the next 2 enemy Turns.
 
 > Lock shields and hold.
 
@@ -1761,7 +1768,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.3 Spear Throw
 
-`warrior.spearThrow` · Warrior · Uncommon · Countdown 3 · An enemy Unit · Deal 4 Physical damage to an enemy Unit.
+`warrior.spearThrow` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 5 Physical damage at Common, 6 at Uncommon, 7 at Rare, 8 at Epic and 9 at Legendary.
 
 > Aim for the loud one.
 
@@ -1771,11 +1778,11 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 | Partial figure | A back view of a thrower who faces to the right. The arm is at the end of the throw. |
 | Action | The spear flies to the right, to a far, dark silhouette that shouts with its mouth wide open. |
 | Setting | A neutral battlefield. |
-| Palette | Neutral steel and leather. Uncommon: a small brass trim on the spear. |
+| Palette | Neutral steel and leather. |
 
 ### 9.4 Shoulder Charge
 
-`warrior.shoulderCharge` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 3 Physical damage to an enemy Unit. If it takes damage and survives, push it 1 Square back toward its Hero.
+`warrior.shoulderCharge` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 3 Physical damage at Common, 4 at Uncommon, 5 at Rare, 6 at Epic and 7 at Legendary. If it takes damage and survives, push it 1 Square, or 2 Squares at Legendary, back toward its Hero.
 
 > Shoulders first. Questions later.
 
@@ -1783,13 +1790,13 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 | --- | --- |
 | Effect subject | A plain steel pauldron that hits a dark armored silhouette, with a curved shock burst at the point of impact. |
 | Partial figure | A side view, cropped at the neck: the shoulder, the upper arm and the back of a warrior in leather and a plain steel pauldron. The body leans low and runs to the right. No head shows. |
-| Action | The shoulder hits the chest of a dark armored silhouette at the right. The silhouette lifts off its feet and slides back one stone tile to the right. Two short skid lines of dust on that tile show the push. Short motion lines go to the left behind the warrior. |
+| Action | The shoulder hits the chest of a dark armored silhouette at the right. The silhouette lifts off its feet and slides back one stone tile to the right. Two short skid lines of dust on that tile show the push. Short motion lines go to the left behind the warrior. At Legendary, show the silhouette pushed two Squares. |
 | Setting | A neutral battlefield, in a close, low view of the stone tiles of a Lane. |
 | Palette | Neutral steel and leather, brown dust. |
 
 ### 9.5 Shield Bash
 
-`warrior.shieldBash` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 2 Physical damage to an enemy Unit. Friendly Units in its Lane get Armor 1 for the next enemy Turn.
+`warrior.shieldBash` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 2 Physical damage at Common, 3 at Uncommon, 4 at Rare, 5 at Epic and 6 at Legendary. Friendly Units in its Lane get Armor 1 at Common, Uncommon and Rare, 2 at Epic and 3 at Legendary for the next enemy Turn.
 
 > A shield is also a door that you can slam.
 
@@ -1803,7 +1810,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.6 Cleave
 
-`warrior.cleave` · Warrior · Uncommon · Countdown 4 · An enemy Unit · Deal 3 Physical damage to an enemy Unit and the next Square behind it.
+`warrior.cleave` · Warrior · Uncommon · Countdown 3 · An enemy Unit · Deal 4 Physical damage to an enemy Unit and the next Square behind it. Damage by Rank: Uncommon 4, Rare 5, Epic 6, Legendary 7.
 
 > One swing, two problems.
 
@@ -1817,7 +1824,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.7 Ground Slam
 
-`warrior.groundSlam` · Warrior · Uncommon · Countdown 3 · An enemy Lane · Deal 2 Physical damage to all enemy Units in a Lane.
+`warrior.groundSlam` · Warrior · Uncommon · Countdown 3 · An enemy Lane · Deal 2 Physical damage to all enemy Units in a Lane. Damage by Rank: Uncommon 2, Rare 3, Epic 4, Legendary 5.
 
 > The ground agrees with me.
 
@@ -1829,6 +1836,51 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 | Action | The hammer hits the ground. The crack runs from the hammer head to the right along the full Lane into the distance. Small, dark, far silhouettes along the Lane lose their footing and fall as the tiles jump under them. |
 | Setting | A neutral battlefield. The Lane is long and goes into the distance. |
 | Palette | Neutral steel and leather, grey stone, brown dust. Uncommon: small brass bands on the hammer haft. |
+
+### 9.8 Call to Arms
+
+`warrior.callToArms` · Warrior · Rare · Countdown 3 · A friendly Lane · Friendly Units in a Lane get +3 Attack at Rare, +4 at Epic and +5 at Legendary until the end of your next Turn.
+
+> One horn. Every blade answers.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A long, curved war horn, raised high and blown hard. Along the Lane in front of it, a row of soldiers lift their blades at the same moment, and each blade flashes with warm light. The horn and the row of raised blades are the two main shapes. No banners and no flags. |
+| Partial figure | A back view from behind and to the left of a warrior, cropped at the waist, in the left third of the image. The warrior wears a closed plain steel helmet, a leather coat and a steel pauldron. Both hands hold the horn to the mouthpiece under the helmet, and the bell of the horn points up and to the right. |
+| Proportion | Real human proportions and anatomy. The horn is as long as the warrior's arm. Five fingers on each hand. |
+| Action | The horn sounds. Wide, soft, curved waves of warm light go out from the bell to the right, over the Lane. Four soldiers stand in a row along the Lane, in three-quarter back views, in closed plain helmets, and face to the right. As the waves reach them, they raise their swords and spears high together. Each raised blade catches a bright flash of light. Far at the right, small dark enemy silhouettes stop and step back. |
+| Setting | A neutral battlefield in a low view behind the line. The Lane of grey stone tiles goes from the warrior to the right into the distance. |
+| Palette | Neutral steel and leather, a dark brown horn, and warm white-gold flashes on the blades. Rare: gold bands on the horn and a gold trim on the warrior's pauldron. |
+
+### 9.9 Expose Weakness
+
+`warrior.exposeWeakness` · Warrior · Rare · Countdown 2 · An enemy Unit · An enemy Unit becomes Exposed 2: each Physical hit on it deals 2 more damage, after Armor, until the end of your next Turn. Exposed by Rank: Rare 2, Epic 3, Legendary 4.
+
+> There. Under the strap. Hit there.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A weak point in the armor of a large, dark enemy: under the leather strap at the side of its breastplate, a zigzag crack in the steel plate glows rose-red from inside. A thin ring of rose-red light circles the crack, like an aim mark. The crack is the brightest shape in the image. |
+| Partial figure | An over-the-shoulder view from behind and to the left of a warrior. The warrior is in the left foreground, cropped at the chest: the back of a closed plain steel helmet, a leather coat and a steel pauldron. The warrior's right arm points a plain sword straight at the crack. Only the sword and the gloved hand on its grip show past the shoulder. |
+| Proportion | Real human proportions and anatomy. The hand on the grip is as wide as the sword guard. Five fingers on each hand. |
+| Action | The enemy stands in the middle distance at the right, in a side view that faces to the left, toward the warrior. It is a full-body, dark, heavily armored silhouette with a closed helmet and no face. It raises a large axe high over its head with both arms, so its side under the arm is open, and the strap and the crack show. The sword tip points at the crack from far away and does not touch it. Thin rose-red lines of light go from the crack across the plate, so the whole plate looks weak. No blood, no wound and no skin. |
+| Setting | A neutral battlefield, soft and out of focus behind the enemy. |
+| Palette | Neutral steel and leather, with dark steel on the enemy and a rose-red glow in the crack, the color of a pink rose. Rare: a gold trim on the warrior's pauldron and on the sword guard. |
+
+### 9.10 Onslaught
+
+`warrior.onslaught` · Warrior · Epic · Countdown 2 · A friendly Lane · Each friendly Unit in a Lane takes one more action now: it moves and attacks, from the front Unit to the back Unit. At Legendary, each gets +1 Attack until the end of your next Turn.
+
+> Again! Before they stand!
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A whole line of armored soldiers that rushes to the right along a Lane, one behind the other, and crashes a second time into enemies that are still on the ground. It is a large, heroic charge, with dust and motion that fill the full width of the image. The line of soldiers is the largest shape. |
+| Partial figure | A commander at the bottom left, seen from behind and to the left, cropped at the waist. The commander wears a closed steel helmet with a short crest and a dark cloak, and points a sword high and forward to the right, with the mouth of the helmet toward the line, as if to shout. |
+| Proportion | Real human proportions and anatomy. The commander is a little smaller than the nearest soldier in the line. Five fingers on each hand. |
+| Action | A wide view from the side and a little above. The Lane of grey stone tiles goes from the bottom left to the right into the distance. Five soldiers in closed plain helmets, steel and leather, with plain round shields and swords, run at full speed to the right in a line along the Lane. Each soldier leans forward, with the shield in front. Long motion lines and trails of brown dust go to the left behind each soldier. At the right end, the front soldier slams a shield into dark enemy silhouettes that are on one knee and try to stand. The enemies fall back to the right. Broken spears and dropped shields of the enemy lie on the tiles. No blood. |
+| Setting | A neutral battlefield in a wide, dramatic view. Dark storm clouds open, and a shaft of sunlight from the upper left lights the line of soldiers. |
+| Palette | Neutral steel and leather, brown dust, a dark storm sky and warm sunlight, with dark enemies. Epic: a heroic scene, with gold trim on the commander's helmet crest, cloak clasp and sword guard. |
 
 ## 10. Mage Skill Cards
 

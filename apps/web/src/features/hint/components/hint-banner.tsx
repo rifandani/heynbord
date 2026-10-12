@@ -32,6 +32,7 @@ export const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   deckShortcut: "[data-testid='town-shortcut-deck']",
   unopenedPackButton: "[data-testid^='unopened-open-']",
   cardShop: "[data-testid='building-cardShop']",
+  workshop: "[data-testid='building-workshop']",
 };
 
 const SIDES: readonly PanelSide[] = ["above", "below"];
@@ -153,8 +154,16 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
     }
     case "deckBuilder":
     case "unopenedPack":
-    case "packs": {
-      const painted = paintedIcon(hint === "deckBuilder" ? "deck" : "packs");
+    case "packs":
+    case "workshop":
+    case "craft": {
+      const shortcut =
+        hint === "deckBuilder"
+          ? "deck"
+          : hint === "workshop" || hint === "craft"
+            ? "workshop"
+            : "packs";
+      const painted = paintedIcon(shortcut);
       return painted ? (
         <img
           src={painted}
@@ -166,7 +175,13 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
         />
       ) : (
         <GlyphIcon
-          glyph={hint === "deckBuilder" ? "cards" : "pack"}
+          glyph={
+            shortcut === "deck"
+              ? "cards"
+              : shortcut === "workshop"
+                ? "anvil"
+                : "pack"
+          }
           className={SUBJECT_ICON}
         />
       );

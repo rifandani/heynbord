@@ -1038,3 +1038,115 @@ describe("chooseCommand: the Rare and Epic Priest Skill Cards of #61 (GDD 9)", (
     ).toEqual(lane);
   });
 });
+
+const laneTarget = (index: number) =>
+  Command.PlayCard({ handIndex: 0, target: Target.Lane({ lane: index }) });
+
+/** A player Scrap Raider at `position`. */
+const playerRaiderAt =
+  (position: number, options: Partial<Parameters<typeof placeUnit>[1]> = {}) =>
+  (state: BattleState) => {
+    placeUnit(state, {
+      cardId: "orc.scrapRaider",
+      owner: "player",
+      position,
+      ...options,
+    });
+  };
+
+describe("chooseCommand: the Rare and Epic Warrior Skill Cards of #63 (GDD 9)", () => {
+  it("keeps Expose Weakness until a friendly Physical Unit hits the enemy Unit in this Turn", () => {
+    // Militia Recruit: Speed 1, melee. Square 2 is too far from Square 9.
+    expect(
+      priestChoice("warrior.exposeWeakness", [{ attack: 3 }], playerRaiderAt(2))
+    ).toEqual(Command.EndTurn());
+    expect(
+      priestChoice("warrior.exposeWeakness", [{ attack: 3 }], playerRaiderAt(7))
+    ).toEqual(playAtSquare(0, 7));
+    // A Unit with Attack 0 does not hit.
+    expect(
+      priestChoice("warrior.exposeWeakness", [{}], playerRaiderAt(7))
+    ).toEqual(Command.EndTurn());
+  });
+
+  it("aims Expose Weakness at a Unit with Armor, but first at a Unit that the Exposed damage lets the hits kill", () => {
+    const armored = { lane: 1, bonusArmor: 2, bonusArmorTurns: 2 };
+    expect(
+      priestChoice(
+        "warrior.exposeWeakness",
+        [{ attack: 3 }, { lane: 1, attack: 3 }],
+        (state) => {
+          playerRaiderAt(7, { hp: 20 })(state);
+          playerRaiderAt(7, { ...armored, hp: 20 })(state);
+        }
+      )
+    ).toEqual(playAtSquare(1, 7));
+    // Attack 3 + Exposed 2 kills a Unit with 5 HP.
+    expect(
+      priestChoice(
+        "warrior.exposeWeakness",
+        [{ attack: 3 }, { lane: 1, attack: 3 }],
+        (state) => {
+          playerRaiderAt(7, { hp: 5 })(state);
+          playerRaiderAt(7, { ...armored, hp: 20 })(state);
+        }
+      )
+    ).toEqual(playAtSquare(0, 7));
+  });
+
+  it("keeps Call to Arms until the Lane has 2 friendly Units with Attack above 0, and an enemy Unit or the enemy Hero in reach", () => {
+    const two = [
+      { position: 9, attack: 3 },
+      { position: 8, attack: 3 },
+    ];
+    expect(priestChoice("warrior.callToArms", two)).toEqual(Command.EndTurn());
+    expect(priestChoice("warrior.callToArms", two, playerRaiderAt(2))).toEqual(
+      laneTarget(0)
+    );
+    expect(
+      priestChoice(
+        "warrior.callToArms",
+        [{ position: 9, attack: 3 }, { position: 8 }],
+        playerRaiderAt(2)
+      )
+    ).toEqual(Command.EndTurn());
+    // The enemy Hero is in reach from Square 1.
+    expect(
+      priestChoice("warrior.callToArms", [
+        { position: 1, attack: 3 },
+        { position: 3, attack: 3 },
+      ])
+    ).toEqual(laneTarget(0));
+  });
+
+  it("keeps Onslaught until the Lane has 2 friendly Units that can act: a Frozen Unit and a Wall do not count", () => {
+    expect(
+      priestChoice("warrior.onslaught", [
+        { position: 9, attack: 3 },
+        { position: 8, attack: 3, frozen: true },
+      ])
+    ).toEqual(Command.EndTurn());
+    expect(
+      priestChoice("warrior.onslaught", [
+        { position: 9, attack: 3 },
+        { position: 8, wall: true },
+      ])
+    ).toEqual(Command.EndTurn());
+    expect(
+      priestChoice("warrior.onslaught", [
+        { position: 9, attack: 3 },
+        { position: 8, attack: 3 },
+      ])
+    ).toEqual(laneTarget(0));
+  });
+
+  it("counts Exposed in the kill estimate of a Physical hit", () => {
+    // Spear Throw 5 against a Scrap Raider with more HP: Exposed 2 makes it a kill.
+    expect(raidersChoice("warrior.spearThrow", [{ hp: 6 }])).toEqual(
+      Command.EndTurn()
+    );
+    expect(
+      raidersChoice("warrior.spearThrow", [{ hp: 6, exposed: 2 }])
+    ).toEqual(playAtSquare(0, 5));
+  });
+});

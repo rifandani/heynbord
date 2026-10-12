@@ -109,7 +109,7 @@ On 2026-10-08, Speed 1 became the default, and the Role sets more Speed ([ADR-00
 On 2026-10-08, the Ticking Cards were removed, and all Cards in the Hand count down again ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), issue #26). The Power Budget stays `21 + 3 × (Countdown − 3)`, so no card changed. Raiders then won 58% of Stage 1-6 and 49% of 1-7, and Vanguard won 81% of 1-8 (1000 seeds). These enemy Decks changed:
 
 - **1-6:** the Militia Recruit is Common (it was Uncommon). Both Shieldbearers at Uncommon also worked (71% / 65%), but this change gives both Decks more margin.
-- **1-7:** Spear Throw is Uncommon (it was Rare), its Base Rank. The other Rank, Hero HP and Gear changes left Raiders at 56% or less, or put Vanguard above 80%.
+- **1-7:** Spear Throw is Uncommon (it was Rare), its Base Rank at that time. The other Rank, Hero HP and Gear changes left Raiders at 56% or less, or put Vanguard above 80%.
 - **1-8:** the Scrap Raider is Rare (it was Common). With an Uncommon Scrap Raider, Vanguard won 77%. A Rare Crossbow Guard put Raiders at 48%.
 
 Some margins are thin: Raiders wins 79% of Stage 1-4. The Tutorial bot wins 95.0% of Stage 1-1 with Raiders over 400 seeds.
@@ -121,7 +121,7 @@ C, U, R and E are the Ranks Common, Uncommon, Rare and Epic.
 | Stage | Deck |
 | --- | --- |
 | 1-1 | 2× Militia Recruit (C), 2× Badland Runt (C), 3× Shieldbearer (C), 2× Scrap Raider (C), 1× Halberdier (C) |
-| 1-2 | 2× Badland Runt (C), 2× Scrap Raider (C), 1× Militia Recruit (C), 1× Crossbow Guard (U), 2× Howling Charger (U), 1× War Drums (C) |
+| 1-2 | 2× Badland Runt (C), 2× Scrap Raider (C), 1× Militia Recruit (C), 1× Crossbow Guard (U), 2× Howling Charger (U), 1× War Drums (U) |
 | 1-3 | 1× Badland Runt (C), 2× Ember Shaman (C), 1× Shieldbearer (C), 2× Skyreaver (U), 2× Frost Bolt (C), 1× Fireball (C), 1× Flame Wave (U) |
 | 1-4 | 3× Shieldbearer (C), 2× Gate Warden (U), 2× Halberdier (C), 1× Scrap Raider (C), 2× Crossbow Guard (U) |
 | 1-5 | 2× Militia Recruit (C), 1× Scrap Raider (C), 1× Badland Runt (U), 1× Crossbow Guard (C), 2× Halberdier (C), 3× Shieldbearer (C), 1× Spear Throw (U) |
@@ -129,7 +129,7 @@ C, U, R and E are the Ranks Common, Uncommon, Rare and Epic.
 | 1-7 | 1× Halberdier (C), 1× Ember Shaman (C), 2× Scrap Raider (U), 1× Pack Stalker (R), 1× Howling Charger (U), 1× Howling Charger (R), 2× Skyreaver (U), 1× Skyreaver (R), 1× Tusk Brute (R), 1× Spear Throw (U) |
 | 1-8 | 1× Shieldbearer (C), 1× Shieldbearer (R), 2× Halberdier (C), 1× Halberdier (U), 1× Crossbow Guard (U), 1× Gate Warden (U), 1× Scrap Raider (R), 2× Howling Charger (U), 1× Tusk Brute (R), 1× Shield Wall (C) |
 | 1-9 | 1× Crossbow Guard (U), 1× Crossbow Guard (C), 1× Ember Shaman (C), 1× Halberdier (C), 1× Shieldbearer (C), 2× Skyreaver (U), 1× Scrap Raider (C), 1× Militia Recruit (C), 1× Dawn Cleric (U), 1× River Knight (U), 1× Frost Bolt (C), 1× Fireball (C) |
-| 1-10 | 3× Militia Recruit (C), 1× Gate Warden (R), 2× Shieldbearer (C), 1× Crossbow Guard (C), 1× Crossbow Guard (U), 2× Halberdier (U), 1× Iron Bulwark (E), 1× Spear Throw (U), 1× Shield Wall (U), 1× War Drums (C) |
+| 1-10 | 3× Militia Recruit (C), 1× Gate Warden (R), 2× Shieldbearer (C), 1× Crossbow Guard (C), 1× Crossbow Guard (U), 2× Halberdier (U), 1× Iron Bulwark (E), 1× Spear Throw (U), 1× Shield Wall (U), 1× War Drums (U) |
 
 ## 3. When a Stage changes
 

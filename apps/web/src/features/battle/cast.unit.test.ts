@@ -149,6 +149,12 @@ describe("effectColor", () => {
     );
   });
 
+  it("uses the war gold for a Warrior bonus and the extra action, and rose for Exposed", () => {
+    expect(effectColor({ type: "laneAttack", attack: 3 })).toBe("#ffd75a");
+    expect(effectColor({ type: "laneExtraAction" })).toBe("#ffd75a");
+    expect(effectColor({ type: "exposeUnit", exposed: 2 })).toBe("#ff6fa0");
+  });
+
   it("gives the second-part damage cards the color of their Damage Type", () => {
     expect(
       effectColor({

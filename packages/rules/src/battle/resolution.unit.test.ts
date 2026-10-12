@@ -3050,7 +3050,7 @@ describe("Rebirth (GDD 4.9)", () => {
   });
 });
 
-describe("Ward (GDD 4.7, step 7)", () => {
+describe("Ward (GDD 4.7, step 8)", () => {
   it("absorbs the damage after Armor, Crit and Block, and the Unit loses HP only for the rest", () => {
     const state = emptyBattle({
       player: { unitCrit: 10_000 },
@@ -3271,7 +3271,7 @@ describe("Ward (GDD 4.7, step 7)", () => {
   });
 });
 
-describe("Steadfast (GDD 4.7, step 8)", () => {
+describe("Steadfast (GDD 4.7, step 9)", () => {
   it("keeps the Unit at 1 HP when an attack would bring it to 0 HP, then Steadfast ends, and the Unit survives the hit", () => {
     const state = emptyBattle();
     const attacker = placeUnit(state, {

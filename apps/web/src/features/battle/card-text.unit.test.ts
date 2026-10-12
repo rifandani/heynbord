@@ -218,6 +218,18 @@ describe("cardText (CRD-08)", () => {
     );
   });
 
+  it.each([
+    ["common", 5],
+    ["uncommon", 6],
+    ["rare", 7],
+    ["epic", 8],
+    ["legendary", 9],
+  ] as const)("shows Spear Throw damage at %s", (rank, damage) => {
+    expect(resolve(skill("warrior.spearThrow", rank).effect)).toBe(
+      `Deal ${damage} Physical damage to an enemy Unit.`
+    );
+  });
+
   it("builds the Ranger Skill Card text with the values of each Rank", () => {
     const effects = (cardId: string) =>
       RANKS.flatMap((rank) => {
@@ -335,6 +347,48 @@ describe("cardText (CRD-08)", () => {
     );
     expect(resolve(skill("priest.unbrokenVow", "rare").name)).toBe(
       "Unbroken Vow"
+    );
+  });
+
+  it.each([
+    ["uncommon", 2],
+    ["rare", 3],
+    ["epic", 4],
+    ["legendary", 5],
+  ] as const)("shows Ground Slam damage at %s", (rank, damage) => {
+    expect(resolve(skill("warrior.groundSlam", rank).effect)).toBe(
+      `Deal ${damage} Physical damage to all enemy Units in a Lane.`
+    );
+  });
+
+  it.each([
+    ["uncommon", 4],
+    ["rare", 5],
+    ["epic", 6],
+    ["legendary", 7],
+  ] as const)("shows Cleave damage at %s", (rank, damage) => {
+    expect(resolve(skill("warrior.cleave", rank).effect)).toBe(
+      `Deal ${damage} Physical damage to an enemy Unit and the next 1 Square behind it.`
+    );
+  });
+
+  it("builds the text of the Rare and Epic Warrior Skill Cards of #63", () => {
+    const effect = (cardId: string, rank: RankId) =>
+      resolve(skill(cardId, rank).effect);
+    expect(effect("warrior.callToArms", "rare")).toBe(
+      "Friendly Units in a Lane get +3 Attack until the end of your next Turn."
+    );
+    expect(effect("warrior.exposeWeakness", "rare")).toBe(
+      "An enemy Unit becomes Exposed 2: each Physical hit on it deals 2 more damage, after Armor, until the end of your next Turn."
+    );
+    expect(effect("warrior.exposeWeakness", "legendary")).toBe(
+      "An enemy Unit becomes Exposed 4: each Physical hit on it deals 4 more damage, after Armor, until the end of your next Turn."
+    );
+    expect(effect("warrior.onslaught", "epic")).toBe(
+      "Each friendly Unit in a Lane takes one more action now: it moves and attacks, from the front Unit to the back Unit."
+    );
+    expect(resolve(skill("warrior.exposeWeakness", "rare").name)).toBe(
+      "Expose Weakness"
     );
   });
 
@@ -487,6 +541,10 @@ describe("unitStatusText", () => {
   const quiet = {
     bonusArmor: 0,
     bonusArmorTurns: 0,
+    bonusAttack: 0,
+    bonusAttackTurns: 0,
+    exposed: 0,
+    exposedTurns: 0,
     burn: 0,
     frozen: false,
     entangled: false,
@@ -504,10 +562,14 @@ describe("unitStatusText", () => {
     expect(unitStatusText(quiet)).toEqual([]);
   });
 
-  it("lists bonus Armor, the Rally bonus, the Swarm bonus, each Status, then a used Rebirth", () => {
+  it("lists bonus Armor, bonus Attack, the Rally bonus, the Swarm bonus, each Status, then a used Rebirth", () => {
     const lines = unitStatusText({
       bonusArmor: 1,
       bonusArmorTurns: 2,
+      bonusAttack: 3,
+      bonusAttackTurns: 1,
+      exposed: 2,
+      exposedTurns: 2,
       burn: 2,
       frozen: true,
       entangled: true,
@@ -522,6 +584,7 @@ describe("unitStatusText", () => {
     });
     expect(lines.map((line) => line.status)).toEqual([
       "bonusArmor",
+      "bonusAttack",
       "rallyBonus",
       "swarmBonus",
       "burn",
@@ -530,6 +593,7 @@ describe("unitStatusText", () => {
       "hobble",
       "bleed",
       "poison",
+      "exposed",
       "reborn",
     ]);
     expect(
@@ -540,6 +604,7 @@ describe("unitStatusText", () => {
       )
     ).toEqual([
       "Armor +1 From a Skill Card. Turns left: 2.",
+      "Attack +3 From a Skill Card: until the end of your next Turn. End Phases left: 1.",
       "Attack +2 From Rally: until the end of this Turn.",
       "Attack +1 From Swarm: another friendly Unit is in this Lane.",
       "Burn 1 damage in each End Phase of its owner. End Phases left: 2.",
@@ -548,6 +613,7 @@ describe("unitStatusText", () => {
       "Hobbled 1 This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner.",
       "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
       "Poison 2 1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
+      "Exposed 2 A Debuff. Each Physical hit on this Unit deals more damage, equal to the Exposed value, after Armor. Fire, Frost, Holy, Burn and Poison damage do not get it. It ends after 2 End Phases of its owner. A new Exposed keeps the higher value. End Phases left: 2.",
       "Reborn This Unit died and came back with Rebirth. It does not come back again.",
     ]);
   });

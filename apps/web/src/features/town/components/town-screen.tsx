@@ -183,6 +183,13 @@ const BuildingButton = ({
   const [tip, setTip] = useState(false);
   const box = buildingBox(building);
   const labelHeight = `${(building.label.height / box.height) * 100}%`;
+  // The label is over its own part of the Building: the full width for most
+  // Buildings, the part in the safe area for the Workshop.
+  const labelPlace = {
+    marginLeft: `${((building.label.x - box.x) / box.width) * 100}%`,
+    width: `${(building.label.width / box.width) * 100}%`,
+    height: labelHeight,
+  };
   const name = tr(`town.buildings.${building.id}`);
   const locked = opensAt !== null;
   const onPress = (event: PressEvent) => {
@@ -207,11 +214,13 @@ const BuildingButton = ({
       data-testid={`building-${building.id}`}
       data-locked={locked || undefined}
     >
-      {locked ? (
-        <LockPlate level={opensAt} height={labelHeight} />
-      ) : (
-        <NameLabel name={name} height={labelHeight} />
-      )}
+      <span className="z-10 flex justify-center self-start" style={labelPlace}>
+        {locked ? (
+          <LockPlate level={opensAt} height="100%" />
+        ) : (
+          <NameLabel name={name} height="100%" />
+        )}
+      </span>
       <span className="relative w-full flex-1">
         <span
           className={cn(

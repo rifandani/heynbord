@@ -1,6 +1,6 @@
 # 11 — Town Concepts
 
-This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons, section 8 gives the brief for the Pack art, and section 9 gives the brief for the inside of the Card shop, behind the Packs screen.
+This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons, section 8 gives the brief for the Pack art, section 9 gives the brief for the inside of the Card shop, behind the Packs screen, and section 10 gives the brief for the inside of the Workshop, behind the Workshop screen.
 
 Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1986 × 941). It is the 1672 × 941 original, stretched to the side: the center 400 code units keep their shape, and the stretch increases to 1.67× at the left and right edges. This lets a wide desktop screen show the full Heynspire and the full Town Gate. The Town Gate layer `town-gate.webp` and the Card shop layer `card-shop.webp` are cut out of the painting by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 4000 × 1800 can replace it with no code change if it keeps the same composition.
 
@@ -30,11 +30,13 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Area | Box (x, y) | Rule |
 | --- | --- | --- |
 | Ground line | y 864 | The base of the Town Gate. The game keeps this line on the top edge of the Town Bar, on all screens. The painting below it goes under the Town Bar. Put only road and trees there. |
-| Safe area | x 374 to 1526, y 136 to 864 | Each screen shape from 4:3 to 19.5:9 shows this area above the Town Bar. All selectable Buildings must be in it. |
+| Safe area | x 374 to 1526, y 136 to 864 | Each screen shape from 4:3 to 19.5:9 shows this area above the Town Bar. The label of each selectable Building, and the part of the Building under its label, must be in it. |
 | Town Gate | x 720 to 1064, y 520 to 864 | The cut-out layer of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the layer. |
 | Town Gate label | x 720 to 1064, y 474 to 520 | The game writes "Campaign" here, on the tips of the two tower roofs. |
 | Card shop | x 1010 to 1209, y 436 to 612 | The cut-out layer of the Card shop: the house with the purple roof, its awnings and its stalls. The box covers the right tower of the Town Gate at its lower left, so the game cuts that corner from the selectable area, and the pointer there selects the Town Gate. |
 | Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Packs" here, above the purple roof. |
+| Workshop | x 1318 to 1745, y 480 to 705 | The cut-out layer of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. The cut follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
+| Workshop label | x 1318 to 1526, y 434 to 480 | The game writes "Workshop" here, over the left part of the Workshop, in the safe area. |
 | Balance Plate corner | x 1280 to 1900, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
 | Sky | Above the safe area | A screen wider than about 2.2:1 above the Town Bar crops it first. On a 19.5:9 phone, the top of the Heynspire is also cropped. |
 | Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here, for example the Dungeons cave. |
@@ -128,7 +130,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 | Props | An anvil and a work bench outside, glowing sparks at the door, barrels and crates, a goblin tinker's junk cart full of gears and pots. |
 | Silhouette hook | The tall chimney. |
 | Humor note | A small dwarf-like smith hits a glowing card on the anvil. |
-| Position | Right of the Town Gate, inside the wall (about x 980 to 1100). |
+| Position | Right of the Town Gate, inside the wall, at the right of the Market. In the current painting, it is at x 1318 to 1745, and its roof is blue (box in 1.2). |
 
 ### 2.6 Market
 
@@ -188,6 +190,7 @@ The game docs do not keep the image prompts of the Town. Run `bun town:prompts` 
 - `bar/`: the prompts of the Town Bar icons (7.2).
 - `packs/`: the prompts of the Pack art (8.2).
 - `shop/`: the prompts of the Card shop inside (9.4).
+- `workshop/`: the prompts of the Workshop inside (10.4).
 
 The painting message is a short form of the briefs in sections 1 and 2. It is in `scripts/town-art/prompts.ts`. When you change a brief, change the painting message too, then run the script again.
 
@@ -206,7 +209,7 @@ The painting message is a short form of the briefs in sections 1 and 2. It is in
 
 - [ ] All 9 Buildings of section 2 are in the image, and each is easy to find.
 - [ ] The base of the Town Gate is on the ground line, and the label area above it is readable.
-- [ ] All selectable Buildings are in the safe area.
+- [ ] The label of each selectable Building, and the part of the Building under it, are in the safe area.
 - [ ] Below the ground line, there is only road and trees.
 - [ ] The light comes from the upper left, as in all other art.
 - [ ] No text, letters, logo or signature in the image.
@@ -215,7 +218,7 @@ The painting message is a short form of the briefs in sections 1 and 2. It is in
 
 ## 6. When the Town changes
 
-- When a screen comes (for example the Workshop), cut its Building out of the same master painting into a new layer, and add the Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its box must be in the safe area.
+- When a screen comes (for example the Bazaar), cut its Building out of the same master painting into a new layer, and add the Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its label, and the part of the Building under the label, must be in the safe area.
 - When you add a screen with no Building in section 2, add its brief here first. Then paint it into the master painting with inpainting, in the same style.
 - When you change the painting, check the ambient layers (1.3) again.
 
@@ -423,4 +426,79 @@ The licence record (art direction 5.5) of the shop art is part of the release it
 - [ ] The light comes from the upper left.
 - [ ] No text, letters, runes, logo or signature in the image.
 - [ ] The shop does not look like a known shop from another game.
+- [ ] The style matches the golden references.
+
+## 10. Workshop inside
+
+The Workshop screen ([GDD 7.4](./03-game-design.md#74-workshop)) shows the inside of the Workshop (2.5) behind the card grid and the Rank panel. One painting covers the full screen. It makes the Workshop warm, busy and a little funny, so that the Player wants to Combine a pair. The image is `apps/web/public/town/workshop-inside.webp`.
+
+### 10.1 Rules for the Workshop art
+
+- **One painting, a full room.** The room fills the image to all edges. There is no frame and no border.
+- **View.** From the open door, at eye level, straight on. A work bench goes across the full width at the bottom.
+- **The same Workshop as the Town.** The room is the inside of the Workshop in the Town painting: a timber frame with heavy beams, pale stone walls and the tall pale stone chimney of the forge.
+- **A calm center.** The card grid and the Rank panel cover most of the screen (10.2). There, the painting is a plain back wall of dark smoke-stained timber planks, with low contrast and no small details. Thus the cards and the text stay easy to read. The forge, the people and the bright light are at the left, at the right and at the top.
+- **The forge glow stays at the side.** The fire of the forge is at the left edge, low. Its glow lights the floor and the left part of the room, not the center of the back wall. No sparks, smoke or glow go across the center.
+- **Value.** Mid-dark in total. The brightest areas are the forge fire and the glowing card on the anvil. The center is the darkest area, darker than the sides, so that the Rank colors of the cards and the cream text show clearly.
+- **Light.** From the upper left, through a small high window, as in all other art. The forge adds warm orange light from the low left.
+- **No card faces.** The glowing card on the anvil shows only its plain back or its edge. No card face shows, because a card can show a Rank. No pack of section 8 is in the room: the Workshop does not sell Packs.
+- **No text.** Signs and labels show only simple shapes: a hammer, a gear or a coin. No letters, numbers, runes or logo.
+- **Detail and humor.** Bright, warm and a little funny (art direction 1). The people and the jokes stay at the sides and at the top.
+- **Size.** Landscape 3:2. Make at 1536 × 1024 and export at the same size. The screen covers its full area with the image, as on the Packs screen (9.1), so a wide screen crops the top and the bottom, and a 4:3 screen crops the sides.
+
+### 10.2 Positions on the painting
+
+The boxes are in percent of the 1536 × 1024 image. The layout sketch of 10.4 shows them. On a 1366 × 768 laptop screen, the card grid and the Rank panel cover about x 14 to 86 and y 18 to 84: the card grid at the left and in the center, the Rank panel at the right. On a wider screen, more of the sides shows.
+
+| Area | Box (x, y) | Content |
+| --- | --- | --- |
+| Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The smith, the anvil and the goblin tinker must be in it. |
+| Calm wall | x 16 to 84, y 16 to 84 | A plain back wall of dark smoke-stained timber planks, with a few iron tools that hang in shadow. The card grid and the Rank panel stand in front of it. |
+| Ceiling | x 0 to 100, y 0 to 16 | Heavy dark timber beams, a chain with a hook, hanging tongs and hammers, one brass lantern, and a small high window at the upper left. The title plate and the Balance Plate cover the top corners. |
+| Forge | x 0 to 16, y 10 to 84 | The stone forge with a pale stone hood, and the chimney that goes up to the ceiling along the left edge. The fire is low, at x 0 to 10 and y 50 to 72. A leather bellows. |
+| Anvil and smith | x 6 to 16, y 54 to 84 | The anvil in front of the forge. The small dwarf-like smith strikes a glowing card on it. |
+| Junk cart | x 84 to 100, y 28 to 84 | The goblin tinker's junk cart, full of gears, pots and springs. The goblin tinker sits on top of it. Barrels and crates below and next to it. |
+| Work bench | x 0 to 100, y 84 to 100 | A thick, scarred wood work bench with a vise, files, a small hammer and a few loose gears. A water bucket at the left end. The Town Bar covers its lower part. |
+
+### 10.3 Subjects
+
+| Subject | Brief |
+| --- | --- |
+| Smith | A small, stocky, dwarf-like smith with a big braided ginger beard, a leather apron and thick gloves. He swings his hammer with all his strength. His tongue sticks out a little. |
+| Glowing card | A blank card on the anvil, seen at an angle so that only its plain back and its edge show. It glows white-gold, and a few short sparks fly off it to the left, away from the center. |
+| Goblin tinker | A small green goblin with brass goggles on his forehead. He sits on top of his junk cart and fixes a toy-like gear contraption. A spring jumps out of it next to his ear. |
+| Junk cart | A small wooden cart with crooked wheels, full of gears, pots, kettles, springs and pipes. |
+| Riches | A small open box of gold coins on the work bench, and brass tools. They show that the Workshop also costs Coin. |
+
+### 10.4 Prompts
+
+The game docs do not keep the prompts of the Workshop art. Run `bun town:prompts` to write them to `apps/web/art/town/raw/workshop/` (section 3). Git ignores this folder.
+
+- `layout.png`: the layout sketch, with flat shapes at the boxes of 10.2.
+- `../style-reference.png`: the style reference of section 3.
+- `outside-reference.png`: the Workshop in the Town painting, cropped from `apps/web/public/town/town.webp`. The inside matches its timber, its pale stone and its chimney.
+- `prompts.md`: the setup message, the painting message and a list of fixes.
+
+The painting message is a short form of 10.1 to 10.3. It is in `scripts/town-art/prompts.ts`. When you change the brief, change the painting message and the layout sketch too, then run the script again.
+
+### 10.5 Steps
+
+1. Run `bun town:prompts`. Make 4 to 8 images with `workshop/prompts.md` and the references of 10.4, with GPT Image and high quality, at 1536 × 1024.
+2. Select one image with the checklist in 10.6.
+3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting (the fixes in `prompts.md`).
+4. Put a screenshot of the Workshop screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the card grid and the Rank panel. If the Workshop screen does not exist yet, use the boxes of 10.2.
+5. Export as WebP with no alpha: `cwebp -q 80 workshop-inside.png -o workshop-inside.webp`. If the source is already a smaller WebP, use the source. Put the file in `apps/web/public/town/` as `workshop-inside.webp`, and keep the full-size source in `apps/web/art/town/`. The Workshop screen shows it (cover, centered), with darker edges over it, as the Packs screen does.
+
+The licence record (art direction 5.5) of the Workshop art is part of the release item in the [roadmap](./09-roadmap.md), not a step of this section.
+
+### 10.6 Review checklist
+
+- [ ] The center behind the card grid and the Rank panel is calm and dark, and the cards and the text stay easy to read.
+- [ ] The forge fire is at the left edge, and its glow and its sparks do not go across the center.
+- [ ] The smith, the glowing card, the goblin tinker and the junk cart are each easy to find, and they are not in the center.
+- [ ] The room looks like the inside of the Workshop in the Town painting: timber beams, pale stone and the tall chimney.
+- [ ] No card face shows, and no Pack is in the room.
+- [ ] The light comes from the upper left.
+- [ ] No text, letters, runes, logo or signature in the image.
+- [ ] The Workshop does not look like a known forge from another game.
 - [ ] The style matches the golden references.

@@ -116,7 +116,9 @@ const useCloseWhenInactive = (hint: HintId, active: boolean) => {
 /**
  * The Town Hints (GDD 8.3). The Packs level Hint shows near the Card shop
  * the first time that the Town shows with Player level 2 or more, and it
- * closes when the Town closes. It goes before the Deck builder Hint. The
+ * closes when the Town closes. The Workshop (level 3) and Craft (level 6)
+ * Hints show near the Workshop in the same way, one after the other. The
+ * level Hints go before the Deck builder Hint. The
  * Deck builder Hint shows near the Deck shortcut of the Town Bar when the
  * Player owns a card that is in no Deck.
  */
@@ -127,6 +129,12 @@ export const useTownHints = (active: boolean, inTown: boolean) => {
   const packs = active && inTown && isUnlocked(level, "packs");
   useAnchoredHint("packs", packs);
   useCloseWhenInactive("packs", packs);
+  const workshop = active && inTown && isUnlocked(level, "combine");
+  useAnchoredHint("workshop", workshop);
+  useCloseWhenInactive("workshop", workshop);
+  const craft = active && inTown && isUnlocked(level, "craft");
+  useAnchoredHint("craft", craft);
+  useCloseWhenInactive("craft", craft);
   useAnchoredHint(
     "deckBuilder",
     active &&

@@ -130,6 +130,8 @@ export {
   recallChance,
   scaleForRank,
   skillAmountForRank,
+  skillCountForRank,
+  skillSquaresForRank,
 } from "./content/ranks";
 export { ClassId, DeckEntry } from "./content/schema";
 export type {
@@ -143,8 +145,10 @@ export type {
   RaceId,
   RankId,
   SkillAmount,
+  SkillCount,
   SkillCardDefinition,
   SkillEffect,
+  SkillSquares,
   SkillTarget,
   StageDefinition,
   StarterDeck,
@@ -232,3 +236,12 @@ export type {
 } from "./profile/stage-result";
 export { claimStarChest, regionStars } from "./profile/star-chests";
 export type { StarChestClaim } from "./profile/star-chests";
+export {
+  combine,
+  combineCopies,
+  craft,
+  craftCopy,
+  decksUsingCopy,
+  extract,
+  extractCopy,
+} from "./profile/workshop";

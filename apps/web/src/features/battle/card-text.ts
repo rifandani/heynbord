@@ -3,6 +3,7 @@ import type {
   DamageType,
   Keywords,
   RankId,
+  SkillAmount,
   SkillCardDefinition,
   SkillEffect,
   TokenId,
@@ -12,8 +13,9 @@ import {
   getToken,
   keywordValue,
   recallChance,
-  scaleForRank,
   skillAmountForRank,
+  skillCountForRank,
+  skillSquaresForRank,
 } from "@workspace/rules";
 import { absurd, Predicate } from "effect";
 
@@ -146,19 +148,22 @@ const counted = (noun: "square" | "enemyTurn", value: number): TextRef => ({
 const hitText = (
   effect: Extract<
     SkillEffect,
-    { readonly amount: number; readonly damageType: DamageType }
+    { readonly amount: SkillAmount; readonly damageType: DamageType }
   >,
   rank: RankId
 ): TextRef =>
   withDamageRule(effect, {
     key: "effects.damageUnit",
     args: {
-      amount: scaleForRank(effect.amount, rank),
+      amount: skillAmountForRank(effect.amount, rank),
       damageType: { key: `damageTypes.${effect.damageType}` },
     },
   });
 
-/** The text of an effect with no damage: a heal, a Ward, Steadfast, a Cleanse, bonus Armor or a lower Countdown. */
+/**
+ * The text of an effect with no damage: a heal, a Ward, Steadfast, a Cleanse,
+ * Exposed, bonus Armor, bonus Attack, an extra action or a lower Countdown.
+ */
 const friendlyEffectText = (
   effect: Exclude<SkillEffect, { readonly damageType: DamageType }>,
   rank: RankId
@@ -190,13 +195,39 @@ const friendlyEffectText = (
     case "laneArmor": {
       return {
         key: "effects.laneArmor",
-        args: { armor: effect.armor, turns: effect.turns },
+        args: {
+          armor: skillAmountForRank(effect.armor, rank),
+          turns: effect.turns,
+        },
       };
+    }
+    case "exposeUnit": {
+      return {
+        key: "effects.exposeUnit",
+        args: { exposed: skillAmountForRank(effect.exposed, rank) },
+      };
+    }
+    case "laneAttack": {
+      return {
+        key: "effects.laneAttack",
+        args: { attack: skillAmountForRank(effect.attack, rank) },
+      };
+    }
+    case "laneExtraAction": {
+      return rank === "legendary" && effect.legendaryAttack !== undefined
+        ? {
+            key: "effects.laneExtraActionLegendary",
+            args: { attack: effect.legendaryAttack },
+          }
+        : { key: "effects.laneExtraAction" };
     }
     case "lowerCountdown": {
       return {
         key: "effects.lowerCountdown",
-        args: { cards: effect.cards, amount: effect.amount },
+        args: {
+          cards: skillCountForRank(effect.cards, rank),
+          amount: skillAmountForRank(effect.amount, rank),
+        },
       };
     }
     default: {
@@ -216,7 +247,7 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
       return withDamageRule(effect, {
         key: `effects.${effect.type}`,
         args: {
-          amount: scaleForRank(effect.amount, rank),
+          amount: skillAmountForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
         },
       });
@@ -225,7 +256,7 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
       return withDamageRule(effect, {
         key: "effects.damageArea",
         args: {
-          amount: scaleForRank(effect.amount, rank),
+          amount: skillAmountForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
           extra: effect.length - 1,
         },
@@ -235,9 +266,9 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
       return withDamageRule(effect, {
         key: "effects.damagePush",
         args: {
-          amount: scaleForRank(effect.amount, rank),
+          amount: skillAmountForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
-          squares: effect.squares,
+          squares: skillSquaresForRank(effect.squares, rank),
         },
       });
     }
@@ -246,7 +277,7 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
         key: "effects.damageKnockback",
         args: {
           hit: hitText(effect, rank),
-          squares: counted("square", effect.squares),
+          squares: counted("square", skillSquaresForRank(effect.squares, rank)),
         },
       };
     }
@@ -276,7 +307,7 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
         key: "effects.damageLaneArmor",
         args: {
           hit: hitText(effect, rank),
-          armor: effect.armor,
+          armor: skillAmountForRank(effect.armor, rank),
           turns: counted("enemyTurn", effect.turns),
         },
       };
@@ -295,7 +326,7 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
         key: "effects.damageUnitHero",
         args: {
           hit: hitText(effect, rank),
-          heroAmount: scaleForRank(effect.heroAmount, rank),
+          heroAmount: skillAmountForRank(effect.heroAmount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
         },
       };
@@ -354,6 +385,7 @@ export const STATUS_TEXT = {
     name: "battle.status.steadfast",
     rule: "battle.status.steadfastRule",
   },
+  exposed: { name: "battle.status.exposed", rule: "battle.status.exposedRule" },
 } as const satisfies Readonly<
   Record<Status, { readonly name: string; readonly rule: string }>
 >;
@@ -361,12 +393,14 @@ export const STATUS_TEXT = {
 /** One line of the Unit status in the Details Panel. */
 export interface StatusText {
   /**
-   * A Status, or a change that is not a Status: bonus Armor from a Skill
-   * Card, the Rally bonus, the Swarm bonus, or a Rebirth that the Unit used.
+   * A Status, or a change that is not a Status: bonus Armor or bonus Attack
+   * from a Skill Card, the Rally bonus, the Swarm bonus, or a Rebirth that
+   * the Unit used.
    */
   readonly status:
     | Status
     | "bonusArmor"
+    | "bonusAttack"
     | "rallyBonus"
     | "swarmBonus"
     | "reborn";
@@ -380,6 +414,10 @@ type StatusCounts = Pick<
   UnitView,
   | "bonusArmor"
   | "bonusArmorTurns"
+  | "bonusAttack"
+  | "bonusAttackTurns"
+  | "exposed"
+  | "exposedTurns"
   | "burn"
   | "frozen"
   | "entangled"
@@ -422,11 +460,48 @@ const flagStatus = (
       ]
     : [];
 
+/** The bonus Attack of a Skill Card, with the End Phases that are left. */
+const bonusAttackText = (unit: StatusCounts): StatusText[] =>
+  unit.bonusAttack > 0
+    ? [
+        {
+          status: "bonusAttack",
+          name: {
+            key: "battle.status.bonusAttack",
+            args: { value: unit.bonusAttack },
+          },
+          rule: {
+            key: "battle.status.bonusAttackRule",
+            args: { turns: unit.bonusAttackTurns },
+          },
+        },
+      ]
+    : [];
+
+/** Exposed N, with the End Phases that are left. */
+const exposedText = (unit: StatusCounts): StatusText[] =>
+  unit.exposed > 0
+    ? [
+        {
+          status: "exposed",
+          name: {
+            key: STATUS_TEXT.exposed.name,
+            args: { value: unit.exposed },
+          },
+          rule: { key: STATUS_TEXT.exposed.rule },
+          left: {
+            key: "battle.status.burnLeft",
+            args: { value: unit.exposedTurns },
+          },
+        },
+      ]
+    : [];
+
 /**
  * How a Unit is different from its card now (UI-05): its Buffs (Ward and
- * Steadfast, first as on its badge), bonus Armor, the Rally bonus, the Swarm
- * bonus, each Debuff that it has, then a used Rebirth. Empty for a Unit with
- * none of these.
+ * Steadfast, first as on its badge), bonus Armor, bonus Attack, the Rally
+ * bonus, the Swarm bonus, each Debuff that it has, then a used Rebirth. Empty
+ * for a Unit with none of these.
  */
 export const unitStatusText = (unit: StatusCounts): StatusText[] => [
   ...countedStatus("ward", unit.ward),
@@ -446,6 +521,7 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
         },
       ]
     : []),
+  ...bonusAttackText(unit),
   ...(unit.rallyBonus > 0
     ? [
         {
@@ -485,6 +561,7 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
   ...countedStatus("hobble", unit.hobbled),
   ...countedStatus("bleed", unit.bleeding),
   ...countedStatus("poison", unit.poisoned),
+  ...exposedText(unit),
   ...(unit.reborn
     ? [
         {

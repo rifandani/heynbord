@@ -124,6 +124,49 @@ const masonry = (): string => {
     .join(" ");
 };
 
+/**
+ * Two swords that cross at the center, with their points up: the `sword`
+ * glyph turned 40° to each side.
+ */
+const crossedSwords = (): string => {
+  const parts: readonly (readonly (readonly [number, number])[])[] = [
+    [
+      [0, -50],
+      [7, -40],
+      [7, 20],
+      [-7, 20],
+      [-7, -40],
+    ],
+    [
+      [-20, 20],
+      [20, 20],
+      [20, 27],
+      [-20, 27],
+    ],
+    [
+      [-4, 27],
+      [4, 27],
+      [4, 44],
+      [-4, 44],
+    ],
+  ];
+  const turned = (angle: number) =>
+    parts
+      .map(
+        (part) =>
+          `${part
+            .map(([x, y], index) => {
+              const turnedX = x * Math.cos(angle) - y * Math.sin(angle);
+              const turnedY = x * Math.sin(angle) + y * Math.cos(angle);
+              return `${index === 0 ? "M" : "L"}${turnedX.toFixed(1)} ${turnedY.toFixed(1)}`;
+            })
+            .join(" ")} Z`
+      )
+      .join(" ");
+  const angle = (40 * Math.PI) / 180;
+  return `${turned(angle)} ${turned(-angle)}`;
+};
+
 export const GLYPHS = {
   shield: "M0 -46 L38 -32 Q38 20 0 48 Q-38 20 -38 -32 Z",
   sword:
@@ -166,6 +209,11 @@ export const GLYPHS = {
   ].join(" "),
   /** A masonry wall: the Wall Role. Fill only: the mortar gaps are cut. */
   wall: masonry(),
+  // Exposed (GDD 4.7): a shield that a zigzag crack splits in two.
+  brokenShield:
+    "M-6 -44 L-38 -32 Q-38 20 -6 46 L-1 24 L-12 8 L0 -8 L-10 -26 Z M6 -44 L38 -32 Q38 20 6 46 L11 24 L0 8 L12 -8 L2 -26 Z",
+  // Onslaught: two swords that cross, for one more action.
+  crossedSwords: crossedSwords(),
   // Steadfast (GDD 4.7): the Unit holds firm at 1 HP.
   anchor: `${circle(0, -36, 8)} M0 -28 V40 M-18 -14 H18 M-36 12 Q-34 40 0 40 Q34 40 36 12 M-44 20 L-36 12 L-28 20 M28 20 L36 12 L44 20`,
   heart:
@@ -326,6 +374,15 @@ export const cardGlyph = (card: CardDefinition): Glyph => {
     }
     case "steadfastUnit": {
       return "anchor";
+    }
+    case "exposeUnit": {
+      return "brokenShield";
+    }
+    case "laneAttack": {
+      return "horn";
+    }
+    case "laneExtraAction": {
+      return "crossedSwords";
     }
     case "lowerCountdown": {
       return "speed";

@@ -111,10 +111,6 @@
         "matcher": "Write|Edit",
         "hooks": [
           {
-            "command": "bun lint:fix",
-            "type": "command"
-          },
-          {
             "command": "bun check:dupes",
             "type": "command"
           }

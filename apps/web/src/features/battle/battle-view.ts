@@ -37,9 +37,9 @@ export interface UnitView {
   readonly lane: number;
   readonly position: number;
   /**
-   * The Attack that the Unit hits with now: its Attack, the Rally bonus and
-   * the Swarm bonus. The rules do not store the Swarm bonus (GDD 5.4), so the
-   * view calculates it after each event.
+   * The Attack that the Unit hits with now: its Attack, the Rally bonus, the
+   * bonus Attack of a Skill Card and the Swarm bonus. The rules do not store
+   * the Swarm bonus (GDD 5.4), so the view calculates it after each event.
    */
   readonly attack: number;
   /**
@@ -51,6 +51,13 @@ export interface UnitView {
   readonly swarm: number;
   /** The part of `attack` that comes from Swarm now: 0 or `swarm`. */
   readonly swarmBonus: number;
+  /**
+   * The part of `attack` that comes from a Skill Card (*Call to Arms*, GDD
+   * 4.8). `AttackGained` sets it, and `AttackFaded` and `UnitReborn` end it.
+   */
+  readonly bonusAttack: number;
+  /** The End Phases of the owner until the bonus Attack goes away. */
+  readonly bonusAttackTurns: number;
   /** The Unit died one time and came back with Rebirth (GDD 4.9). */
   readonly reborn: boolean;
   readonly hp: number;
@@ -68,6 +75,14 @@ export interface UnitView {
   readonly hobbled: number;
   /** Bleeding count. 0 is not Bleeding. */
   readonly bleeding: number;
+  /**
+   * Exposed N (GDD 4.7): each Physical hit deals N more damage. 0 is not
+   * Exposed. `StatusApplied` sets it, and the End Phase of the owner lowers
+   * `exposedTurns`.
+   */
+  readonly exposed: number;
+  /** The End Phases of the owner that are left for Exposed. */
+  readonly exposedTurns: number;
   readonly frozen: boolean;
   /**
    * Speed 0 in the next action, and the action ends it. The rules show no
@@ -160,10 +175,12 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     rank: unitRank(unit.source),
     lane: unit.lane,
     position: unit.position,
-    attack: unit.attack + unit.rallied,
+    attack: unit.attack + unit.rallied + unit.bonusAttack,
     rallyBonus: unit.rallied,
     swarm: unit.swarm,
     swarmBonus: 0,
+    bonusAttack: unit.bonusAttack,
+    bonusAttackTurns: unit.bonusAttackTurns,
     reborn: !unit.rebirth && hasRebirth(source),
     hp: unit.hp,
     maxHp: unit.maxHp,
@@ -177,6 +194,8 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     poisoned: unit.poisoned,
     hobbled: unit.hobbled,
     bleeding: unit.bleeding,
+    exposed: unit.exposed,
+    exposedTurns: unit.exposedTurns,
     frozen: unit.frozen,
     entangled: unit.entangled,
     ward: unit.ward,
@@ -273,7 +292,8 @@ const markBlockedCards = (view: BattleView): BattleView => {
  * Lane. A Unit with Attack 0 gets no bonus.
  */
 const swarmBonusOf = (units: readonly UnitView[], unit: UnitView): number => {
-  const attack = unit.attack - unit.swarmBonus - unit.rallyBonus;
+  const attack =
+    unit.attack - unit.swarmBonus - unit.rallyBonus - unit.bonusAttack;
   return unit.swarm > 0 &&
     attack > 0 &&
     units.some(
@@ -429,6 +449,52 @@ const withRallyBonus = (unit: UnitView, rallyBonus: number): UnitView =>
         rallyBonus,
       };
 
+/** A Unit with a new bonus Attack from a Skill Card. The Attack changes with it. */
+const withBonusAttack = (
+  unit: UnitView,
+  bonusAttack: number,
+  bonusAttackTurns: number
+): UnitView => ({
+  ...unit,
+  attack: unit.attack - unit.bonusAttack + bonusAttack,
+  bonusAttack,
+  bonusAttackTurns,
+});
+
+/**
+ * The End Phase of `side` for one Unit: it lowers the Hobbled, Bleeding and
+ * Exposed counts and the bonus Attack Turns of this Side, ends its Rally
+ * bonus, and lowers the bonus Armor Turns of the other side's Units. Each
+ * Unit of this Side had its action, so none of them is Entangled now: a Unit
+ * with no move and no attack has no event of its own that ends Entangled.
+ */
+const endPhaseOf = (current: UnitView, side: Side): UnitView => {
+  if (current.owner !== side) {
+    return current.bonusArmorTurns > 0
+      ? { ...current, bonusArmorTurns: current.bonusArmorTurns - 1 }
+      : current;
+  }
+  const unit = withRallyBonus(current, 0);
+  const exposedTurns = Math.max(unit.exposedTurns - 1, 0);
+  const next = {
+    ...unit,
+    hobbled: Math.max(unit.hobbled - 1, 0),
+    bleeding: Math.max(unit.bleeding - 1, 0),
+    exposed: exposedTurns > 0 ? unit.exposed : 0,
+    exposedTurns,
+    bonusAttackTurns: Math.max(unit.bonusAttackTurns - 1, 0),
+    entangled: false,
+  };
+  return next.hobbled === unit.hobbled &&
+    next.bleeding === unit.bleeding &&
+    next.exposed === unit.exposed &&
+    next.exposedTurns === unit.exposedTurns &&
+    next.bonusAttackTurns === unit.bonusAttackTurns &&
+    next.entangled === unit.entangled
+    ? unit
+    : next;
+};
+
 /** The events that put a Unit on the Board, bring it back, or take it off. */
 const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
   switch (event._tag) {
@@ -438,15 +504,18 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
     }
     case "UnitReborn": {
       // Rebirth (GDD 4.9): the Unit stays in its Square with its new HP, and
-      // all its Statuses (also Ward), its Rally bonus and its bonus Armor end.
+      // all its Statuses (also Ward), its Rally bonus, its bonus Attack and
+      // its bonus Armor end.
       return updateUnit(view, event.unitId, (unit) => ({
-        ...withRallyBonus(unit, 0),
+        ...withBonusAttack(withRallyBonus(unit, 0), 0, 0),
         hp: event.hp,
         reborn: true,
         burn: 0,
         poisoned: 0,
         hobbled: 0,
         bleeding: 0,
+        exposed: 0,
+        exposedTurns: 0,
         frozen: false,
         entangled: false,
         ward: 0,
@@ -543,6 +612,13 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
           case "steadfast": {
             return { ...unit, steadfast: true };
           }
+          case "exposed": {
+            return {
+              ...unit,
+              exposed: event.count ?? unit.exposed,
+              exposedTurns: 2,
+            };
+          }
           default: {
             return unit;
           }
@@ -564,6 +640,8 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         poisoned: 0,
         hobbled: 0,
         bleeding: 0,
+        exposed: 0,
+        exposedTurns: 0,
         frozen: false,
         entangled: false,
       }));
@@ -596,31 +674,20 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         bonusArmorTurns: 0,
       }));
     }
+    case "AttackGained": {
+      return updateUnit(view, event.unitId, (unit) =>
+        withBonusAttack(unit, event.attack, event.turns)
+      );
+    }
+    case "AttackFaded": {
+      return updateUnit(view, event.unitId, (unit) =>
+        withBonusAttack(unit, 0, 0)
+      );
+    }
     case "TurnEnded": {
-      // The End Phase lowers the Hobbled and Bleeding counts of this Side,
-      // ends its Rally bonus, and lowers the bonus Armor Turns of the other
-      // side's Units. Each Unit of this Side had its action, so none of them
-      // is Entangled now: a Unit with no move and no attack has no event of
-      // its own that ends Entangled.
       return {
         ...view,
-        units: view.units.map((current) => {
-          const own = current.owner === event.side;
-          const unit = own ? withRallyBonus(current, 0) : current;
-          const hobbled = own ? Math.max(unit.hobbled - 1, 0) : unit.hobbled;
-          const bleeding = own ? Math.max(unit.bleeding - 1, 0) : unit.bleeding;
-          const entangled = own ? false : unit.entangled;
-          const bonusArmorTurns =
-            !own && unit.bonusArmorTurns > 0
-              ? unit.bonusArmorTurns - 1
-              : unit.bonusArmorTurns;
-          return hobbled === unit.hobbled &&
-            bleeding === unit.bleeding &&
-            entangled === unit.entangled &&
-            bonusArmorTurns === unit.bonusArmorTurns
-            ? unit
-            : { ...unit, hobbled, bleeding, entangled, bonusArmorTurns };
-        }),
+        units: view.units.map((unit) => endPhaseOf(unit, event.side)),
       };
     }
     case "BattleEnded": {

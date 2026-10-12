@@ -17,7 +17,7 @@ import {
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
-import type { BattleView } from "@/features/battle/battle-view";
+import type { BattleView, UnitView } from "@/features/battle/battle-view";
 import { applyEvent, viewFromState } from "@/features/battle/battle-view";
 
 /**
@@ -445,6 +445,181 @@ describe("applyEvent with the Rare and Epic Priest Skill Cards of #61", () => {
   });
 });
 
+/** Stage 1-4 with an enemy Deck of Human melee cards and the 3 Warrior Skill Cards of #63. */
+const rareWarriorStage = (): StageDefinition => {
+  const stage = getStage("1-4");
+  const cards = [
+    ["human.militiaRecruit", "rare"],
+    ["human.halberdier", "rare"],
+    ["human.riverKnight", "rare"],
+    ["warrior.callToArms", "rare"],
+    ["warrior.exposeWeakness", "rare"],
+    ["warrior.onslaught", "epic"],
+  ] as const;
+  return {
+    ...stage,
+    enemy: {
+      ...stage.enemy,
+      classId: "warrior",
+      deck: cards.flatMap(([cardId, rank]) =>
+        Array.from({ length: 2 }, () => ({ cardId, rank }))
+      ),
+    },
+  };
+};
+
+describe("applyEvent with the Rare and Epic Warrior Skill Cards of #63", () => {
+  const battles = [1, 2, 3, 4].map((seed) =>
+    steps(seed, "1-4", "vanguard", rareWarriorStage(), "rare")
+  );
+  const events = battles.flat().flatMap((entry) => entry.events);
+
+  it("rebuilds the view of the next state from the events", () => {
+    for (const all of battles) {
+      for (const { before, after, events: stepEvents } of all) {
+        expect(stepEvents.reduce(applyEvent, viewFromState(before))).toEqual(
+          viewFromState(after)
+        );
+      }
+    }
+  });
+
+  it("plays a bonus Attack, Exposed and an extra action", () => {
+    expect(
+      castEffects(events, "warrior.callToArms").some((effects) =>
+        effects.some((event) => event._tag === "AttackGained")
+      )
+    ).toBe(true);
+    expect(events.some((event) => event._tag === "AttackFaded")).toBe(true);
+    expect(
+      castEffects(events, "warrior.exposeWeakness").some((effects) =>
+        effects.some(
+          (event) =>
+            event._tag === "StatusApplied" && event.status === "exposed"
+        )
+      )
+    ).toBe(true);
+    expect(
+      castEffects(events, "warrior.onslaught").some((effects) =>
+        effects.some((event) => event._tag === "UnitAttacked")
+      )
+    ).toBe(true);
+  });
+});
+
+/** A Halberdier Unit view at Square 5 of Lane 1, with no bonus and no Status. */
+const halberdierView = (owner: "player" | "enemy", id: number): UnitView => ({
+  id,
+  owner,
+  source: { _tag: "Card", cardId: "human.halberdier" },
+  rank: "common",
+  lane: 0,
+  position: 5,
+  attack: 3,
+  rallyBonus: 0,
+  swarm: 0,
+  swarmBonus: 0,
+  bonusAttack: 0,
+  bonusAttackTurns: 0,
+  reborn: false,
+  hp: 6,
+  maxHp: 6,
+  armor: 0,
+  bonusArmor: 0,
+  bonusArmorTurns: 0,
+  range: 0,
+  flying: false,
+  damageType: "physical",
+  burn: 0,
+  poisoned: 0,
+  hobbled: 0,
+  bleeding: 0,
+  exposed: 0,
+  exposedTurns: 0,
+  frozen: false,
+  entangled: false,
+  ward: 0,
+  steadfast: false,
+  wall: false,
+});
+
+describe("the bonus Attack and Exposed view", () => {
+  const state = (() => {
+    const { state: start } = createBattle({
+      seed: 1,
+      stage: getStage("1-1"),
+      player: {
+        classId: "warrior",
+        deck: getStarterDeck("vanguard").deck,
+        level: 1,
+        gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+      },
+    });
+    return start;
+  })();
+
+  it("adds the bonus Attack to the Attack, counts down its Turns at the End Phase of the owner, and ends it at AttackFaded", () => {
+    const view: BattleView = {
+      ...viewFromState(state),
+      units: [halberdierView("player", 7)],
+    };
+    const gained = applyEvent(
+      view,
+      BattleEvent.AttackGained({ unitId: 7, attack: 3, turns: 2 })
+    );
+    expect(gained.units[0]).toMatchObject({
+      attack: 6,
+      bonusAttack: 3,
+      bonusAttackTurns: 2,
+    });
+    const ended = applyEvent(gained, BattleEvent.TurnEnded({ side: "player" }));
+    expect(ended.units[0]).toMatchObject({ attack: 6, bonusAttackTurns: 1 });
+    const enemyEnded = applyEvent(
+      ended,
+      BattleEvent.TurnEnded({ side: "enemy" })
+    );
+    expect(enemyEnded.units[0]?.bonusAttackTurns).toBe(1);
+    const faded = applyEvent(
+      enemyEnded,
+      BattleEvent.AttackFaded({ unitId: 7 })
+    );
+    expect(faded.units[0]).toMatchObject({
+      attack: 3,
+      bonusAttack: 0,
+      bonusAttackTurns: 0,
+    });
+  });
+
+  it("sets Exposed from StatusApplied, ends it after 2 End Phases of the owner, and Cleanse ends it", () => {
+    const view: BattleView = {
+      ...viewFromState(state),
+      units: [halberdierView("enemy", 8)],
+    };
+    const exposed = applyEvent(
+      view,
+      BattleEvent.StatusApplied({ unitId: 8, status: "exposed", count: 2 })
+    );
+    expect(exposed.units[0]).toMatchObject({ exposed: 2, exposedTurns: 2 });
+    const playerEnded = applyEvent(
+      exposed,
+      BattleEvent.TurnEnded({ side: "player" })
+    );
+    expect(playerEnded.units[0]?.exposedTurns).toBe(2);
+    const once = applyEvent(
+      playerEnded,
+      BattleEvent.TurnEnded({ side: "enemy" })
+    );
+    expect(once.units[0]).toMatchObject({ exposed: 2, exposedTurns: 1 });
+    const twice = applyEvent(once, BattleEvent.TurnEnded({ side: "enemy" }));
+    expect(twice.units[0]).toMatchObject({ exposed: 0, exposedTurns: 0 });
+    const cleansed = applyEvent(
+      exposed,
+      BattleEvent.DebuffsRemoved({ unitId: 8 })
+    );
+    expect(cleansed.units[0]).toMatchObject({ exposed: 0, exposedTurns: 0 });
+  });
+});
+
 /** Stage 1-4 with an enemy Deck of big Feral and Undead cards and the 3 Priest Skill Cards. */
 const priestStage = (): StageDefinition => {
   const stage = getStage("1-4");
@@ -585,6 +760,10 @@ describe("the Graveyard view", () => {
           armor: 0,
           bonusArmor: 0,
           bonusArmorTurns: 0,
+          bonusAttack: 0,
+          bonusAttackTurns: 0,
+          exposed: 0,
+          exposedTurns: 0,
           range: 1,
           flying: false,
           damageType: "physical" as const,
@@ -645,6 +824,10 @@ describe("the bonus Armor view", () => {
       armor: 0,
       bonusArmor: 0,
       bonusArmorTurns: 0,
+      bonusAttack: 0,
+      bonusAttackTurns: 0,
+      exposed: 0,
+      exposedTurns: 0,
       range: 1,
       flying: false,
       damageType: "physical" as const,
@@ -712,6 +895,10 @@ describe("the Hobbled and Bleeding view", () => {
       armor: 0,
       bonusArmor: 0,
       bonusArmorTurns: 0,
+      bonusAttack: 0,
+      bonusAttackTurns: 0,
+      exposed: 0,
+      exposedTurns: 0,
       range: 0,
       flying: false,
       damageType: "physical" as const,
@@ -788,6 +975,10 @@ describe("a push", () => {
       armor: 0,
       bonusArmor: 0,
       bonusArmorTurns: 0,
+      bonusAttack: 0,
+      bonusAttackTurns: 0,
+      exposed: 0,
+      exposedTurns: 0,
       range: 0,
       flying: false,
       damageType: "physical" as const,
@@ -900,6 +1091,10 @@ describe("the Entangled view", () => {
     armor: 0,
     bonusArmor: 0,
     bonusArmorTurns: 0,
+    bonusAttack: 0,
+    bonusAttackTurns: 0,
+    exposed: 0,
+    exposedTurns: 0,
     range: 0,
     flying: false,
     damageType: "physical" as const,
@@ -1004,6 +1199,10 @@ const snapshot = (
   rallied: 0,
   bonusArmor: 0,
   bonusArmorTurns: 0,
+  bonusAttack: 0,
+  bonusAttackTurns: 0,
+  exposed: 0,
+  exposedTurns: 0,
   ...extra,
 });
 

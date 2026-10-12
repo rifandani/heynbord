@@ -856,6 +856,7 @@ const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
   "icon-bleed": drawBleedIcon,
   "icon-ward": glyphIcon("shield", FX_ANCHORS.iconWard),
   "icon-steadfast": glyphIcon("anchor", FX_ANCHORS.iconSteadfast),
+  "icon-exposed": glyphIcon("brokenShield", FX_ANCHORS.iconExposed),
   ward: drawDome,
   steadfast: drawSeal,
 };

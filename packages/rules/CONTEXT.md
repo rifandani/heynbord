@@ -54,6 +54,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Resolution Phase**: The part of a Turn in which the active side's Units move and attack automatically. _Avoid_: combat phase, battle phase, auto phase
 
+**Action**: The Movement and then the attack of one Unit. Each Unit has one action in each Resolution Phase of its owner. An **extra action** from a Skill Card is one more action in the Play Phase: it uses up a Freeze and an Entangled, the same as a normal action, and no Phase effect occurs again. _Avoid_: activation, extra turn
+
 **Speed**: The maximum number of Squares that a Unit goes forward in its Movement in one Turn. The default Speed is 1. Only a Runner has Speed 2 or more, and an Orc melee Striker can have Speed 2. _Avoid_: move, pace, Movement points
 
 **Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units, but it stops before an enemy Flying Unit. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
@@ -66,7 +68,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding, Exposed, Ward or Steadfast. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
 
-**Buff**: A Status that helps its Unit: Ward or Steadfast. A bonus to a stat, such as the Rally bonus, the Swarm bonus or bonus Armor, is not a Buff. _Avoid_: blessing, boon, positive status
+**Buff**: A Status that helps its Unit: Ward or Steadfast. A bonus to a stat, such as the Rally bonus, the Swarm bonus, bonus Armor or bonus Attack, is not a Buff. _Avoid_: blessing, boon, positive status
 
 **Debuff**: A Status that harms its Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding or Exposed. _Avoid_: ailment, curse, negative status
 
@@ -86,7 +88,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
 
-**Exposed N**: A Status from a Skill Card. Each Physical hit on an Exposed Unit deals N more damage, after Armor. This includes attacks, Physical Skill damage, Retaliate and Trample. It has a count of 2 End Phases of its owner, and it ends at 0. A new Exposed keeps the higher value. _Avoid_: vulnerable, weakened, marked, armor break
+**Exposed N**: A Status from a Skill Card. Each Physical hit on an Exposed Unit deals N more damage, after Armor. This includes attacks, Physical Skill damage, Retaliate, First Strike, Last Breath and Trample. Burn and Poison damage do not get it. It has a count of 2 End Phases of its owner, and it ends at 0. A new Exposed keeps the higher value. _Avoid_: vulnerable, weakened, marked, armor break
 
 **Ward N**: A Status from a Skill Card. A Ward absorbs damage to its Unit, after Armor, Crit and Block, up to N. Its value goes down by the damage that it absorbs, and it ends at 0. It absorbs all damage, also Holy, Burn and Poison damage. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. A Ward has no time limit. A new Ward keeps the higher value. _Avoid_: shield, barrier, absorb, aegis
 
@@ -164,7 +166,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Last Breath: X**: A Keyword. X occurs when the Unit leaves the Board. In v1, X deals damage to the nearest enemy Unit ahead in the same Lane, or summons a Token in the Square that the Unit left. _Avoid_: death effect, deathrattle
 
-**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Armor and its Rally bonus end. _Avoid_: revive, resurrect
+**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Armor, its bonus Attack and its Rally bonus end. _Avoid_: revive, resurrect
 
 **Summon X**: A Keyword. When a Unit with Summon comes onto the Board from its Creature Card, a Token X with the Rank of that Card copy appears next to it. The Token goes to the first empty Square of an open Lane in this order: the Square behind the Unit, then the same Column in the Lane with the lower number, then the same Column in the Lane with the higher number. The Square does not need to be in the Summon Zone. If no Square is empty, no Token appears. A Rebirth return and a Start Unit give no Token. _Avoid_: Spawn, Call, Raise
 

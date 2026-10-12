@@ -123,6 +123,7 @@ export const FX_ANCHORS = {
   iconBleed: "#d0453a",
   iconWard: "#ffe08a",
   iconSteadfast: "#f2b552",
+  iconExposed: "#ff6fa0",
 } as const;
 
 /**

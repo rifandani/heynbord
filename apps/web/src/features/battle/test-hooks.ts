@@ -1,5 +1,10 @@
-import type { BattleEvent, UnopenedPack } from "@workspace/rules";
-import { getCard, legalTargets, getStarterDeck } from "@workspace/rules";
+import type { BattleEvent, RankId, UnopenedPack } from "@workspace/rules";
+import {
+  addCopies,
+  getCard,
+  legalTargets,
+  getStarterDeck,
+} from "@workspace/rules";
 import { absurd } from "effect";
 import type { AtomRegistry } from "effect/reactivity";
 
@@ -239,6 +244,21 @@ export const installTestHooks = (
       registry.set(profileAtom, {
         ...profile,
         unopenedPacks: [...profile.unopenedPacks, pack],
+      });
+    },
+    /** Sets the Essence of the Profile, so that a test can Craft. */
+    setEssence: (essence: number) => {
+      registry.set(profileAtom, { ...registry.get(profileAtom), essence });
+    },
+    /** Adds copies of a card in one Rank to the Collection, as a Pack does. */
+    giveCopies: (cardId: string, rank: RankId, count: number) => {
+      const profile = registry.get(profileAtom);
+      registry.set(profileAtom, {
+        ...profile,
+        collection: addCopies(
+          profile.collection,
+          Array.from({ length: count }, () => ({ cardId, rank }))
+        ),
       });
     },
     /** Sets the XP of the Profile, so that a test can reach a Player level. */

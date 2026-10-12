@@ -81,6 +81,12 @@ describe("hasCardArt", () => {
     expect(hasCardArt("priest.aegisOfDawn")).toBe(true);
   });
 
+  it("has art for the Rare and Epic Warrior Skill Cards (#64)", () => {
+    expect(hasCardArt("warrior.callToArms")).toBe(true);
+    expect(hasCardArt("warrior.exposeWeakness")).toBe(true);
+    expect(hasCardArt("warrior.onslaught")).toBe(true);
+  });
+
   it("has a file in public/ for each card with art", () => {
     const missing = CARDS.filter((card) => hasCardArt(card.id))
       .map((card) => cardIllustration(card.id))

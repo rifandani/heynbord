@@ -1,4 +1,4 @@
-import type { RankId, SkillAmount } from "./schema";
+import type { RankId, SkillAmount, SkillCount, SkillSquares } from "./schema";
 
 /** The Ranks in order, from the lowest (GDD 5.3). */
 export const RANKS: readonly RankId[] = [
@@ -46,6 +46,31 @@ export const skillAmountForRank = (
     return scaleForRank(amount, rank);
   }
   return amount[rank];
+};
+
+const isScalarSkillCount = (count: SkillCount): count is number =>
+  Number.isFinite(count);
+
+/** A Skill Card count at a Rank: one value or an exact Rank table. */
+export const skillCountForRank = (count: SkillCount, rank: RankId): number => {
+  if (isScalarSkillCount(count)) {
+    return count;
+  }
+  return count[rank];
+};
+
+const isScalarSkillSquares = (squares: SkillSquares): squares is number =>
+  Number.isFinite(squares);
+
+/** A Skill Card push distance at a Rank: one value or an exact Rank table. */
+export const skillSquaresForRank = (
+  squares: SkillSquares,
+  rank: RankId
+): number => {
+  if (isScalarSkillSquares(squares)) {
+    return squares;
+  }
+  return squares[rank];
 };
 
 export const recallChance = (rank: RankId): number => RECALL[rank];

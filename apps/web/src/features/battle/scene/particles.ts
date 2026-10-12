@@ -239,6 +239,22 @@ const LOOPS: Readonly<Record<Status, LoopPreset>> = {
       opacity: 0.45 + fade(age) * 0.25,
     }),
   },
+  // A rose crack on the figure that flickers: the Unit is open to hits.
+  exposed: {
+    slot: "slash",
+    count: 1,
+    period: 1.6,
+    steady: true,
+    color: FX_ANCHORS.iconExposed,
+    place: (_random, age) => ({
+      x: 0,
+      y: 0.6,
+      z: 0.25,
+      size: 0.34,
+      rotation: 0.3,
+      opacity: 0.45 + fade(age) * 0.4,
+    }),
+  },
   // A chain at the feet, which swings a little.
   hobble: {
     slot: "chain",
@@ -493,6 +509,21 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       count: 8,
       color: FX_ANCHORS.iconSteadfast,
       place: rise(0.8, { speed: [0, 0.1], up: 1.1, size: [0.12, 0.2] }),
+    },
+  ],
+  // Expose Weakness: a rose crack opens on the Unit, and shards fly out.
+  exposed: [
+    {
+      slot: "slash",
+      count: 1,
+      color: FX_ANCHORS.iconExposed,
+      place: pulse(0.4, 0.8),
+    },
+    {
+      slot: "spark",
+      count: 8,
+      color: FX_ANCHORS.iconExposed,
+      place: spray({ speed: [0.3, 0.6], up: 0.1, size: [0.08, 0.14] }),
     },
   ],
   hobble: [

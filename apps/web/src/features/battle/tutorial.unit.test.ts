@@ -105,6 +105,10 @@ const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   rallied: 0,
   bonusArmor: 0,
   bonusArmorTurns: 0,
+  bonusAttack: 0,
+  bonusAttackTurns: 0,
+  exposed: 0,
+  exposedTurns: 0,
 });
 
 const summoned = (owner: "player" | "enemy", lane: number): BattleEvent => ({
