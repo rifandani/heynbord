@@ -33,8 +33,9 @@
  *   after the swap, with `battles` seeds and the `--level` and `--gear` of
  *   `matchup`. A card passes when each win rate changes by 5 points or less.
  *   `reverse` is the win rate with the Skill Card copy of the Deck replaced by
- *   the Creature Card. Like `economy`, it runs only on request, and `--check`
- *   does not check it.
+ *   the Creature Card. `lock` is the share of Battles in which an opponent
+ *   Unit skipped 3 or more actions in a row (ADR-0025), before → after. Like
+ *   `economy`, it runs only on request, and `--check` does not check it.
  */
 import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
 import { CARDS } from "../src/content/cards";
@@ -70,7 +71,7 @@ import {
   simulateStage,
   stageTarget,
 } from "../src/simulation/simulate";
-import type { WinRateTarget } from "../src/simulation/simulate";
+import type { MatchupReport, WinRateTarget } from "../src/simulation/simulate";
 import { SWAP_LIMIT, simulateSkillSwap } from "../src/simulation/skill-swap";
 
 const USAGE =
@@ -496,7 +497,7 @@ if (modes.includes("skill-swap")) {
   console.log(
     `Skill swap: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear}. Pass: each change is ±${(SWAP_LIMIT * 100).toFixed(1)} points or less`
   );
-  const cache = new Map<string, number>();
+  const cache = new Map<string, MatchupReport>();
   const reports = CARDS.flatMap((card) =>
     card.kind === "skill" ? [simulateSkillSwap(card, options, cache)] : []
   );
@@ -516,6 +517,7 @@ if (modes.includes("skill-swap")) {
           result.reverse === null
             ? "—"
             : `${percent(result.reverse, 1)} (${points(result.reverse - result.before)})`,
+        lock: `${percent(result.lockBefore, 1)} → ${percent(result.lockAfter, 1)}`,
         result: result.pass ? "pass" : "FAIL",
       }))
     )

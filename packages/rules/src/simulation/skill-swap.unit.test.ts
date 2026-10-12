@@ -4,6 +4,7 @@ import { getCard } from "../content/cards";
 import { deckCountdown } from "../content/decks";
 import type { SkillCardDefinition } from "../content/schema";
 import { NO_GEAR } from "./simulate";
+import type { MatchupReport } from "./simulate";
 import {
   isSwapPass,
   simulateSkillSwap,
@@ -104,7 +105,7 @@ describe("isSwapPass", () => {
 
 describe("simulateSkillSwap", () => {
   it("reports the win rates before and after against Vanguard and Raiders", () => {
-    const cache = new Map<string, number>();
+    const cache = new Map<string, MatchupReport>();
     const options = { seeds: 2, level: 5, gear: NO_GEAR };
     const report = simulateSkillSwap(skill("priest.smite"), options, cache);
     expect(report).toMatchObject({
@@ -119,6 +120,10 @@ describe("simulateSkillSwap", () => {
       "raiders",
     ]);
     expect(report.pass).toBe(report.results.every((result) => result.pass));
+    for (const result of report.results) {
+      expect(result.lockBefore).toBeGreaterThanOrEqual(0);
+      expect(result.lockAfter).toBeLessThanOrEqual(1);
+    }
     // The base Matchups of a Deck play one time for each Class.
     expect([...cache.keys()]).toEqual([
       "wildHunt:vanguard",

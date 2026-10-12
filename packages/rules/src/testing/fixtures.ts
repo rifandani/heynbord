@@ -51,6 +51,7 @@ export const emptyBattle = (
     enemy: { hero: hero(overrides.enemy), hand: [], deck: [], graveyard: [] },
   },
   units: [],
+  fieldEffects: [],
   nextId: 1,
   result: null,
 });
@@ -73,6 +74,30 @@ export const preventRout = (state: BattleState): void => {
         rank: "common",
       });
     }
+  }
+};
+
+/** Test setup: replaces Burn, Freeze, Entangled, Paralyzed and Poisoned of a Unit. */
+const setStatuses = (
+  unit: UnitState,
+  options: Partial<
+    Pick<UnitState, "burn" | "frozen" | "entangled" | "paralyzed" | "poisoned">
+  >
+): void => {
+  if (options.burn !== undefined) {
+    unit.burn = options.burn;
+  }
+  if (options.frozen !== undefined) {
+    unit.frozen = options.frozen;
+  }
+  if (options.entangled !== undefined) {
+    unit.entangled = options.entangled;
+  }
+  if (options.paralyzed !== undefined) {
+    unit.paralyzed = options.paralyzed;
+  }
+  if (options.poisoned !== undefined) {
+    unit.poisoned = options.poisoned;
   }
 };
 
@@ -163,6 +188,7 @@ export const placeUnit = (
       | "maxHp"
       | "burn"
       | "frozen"
+      | "paralyzed"
       | "entangled"
       | "poisoned"
       | "hobble"
@@ -195,6 +221,10 @@ export const placeUnit = (
       readonly firstStrike?: boolean;
       /** Test setup: gives the Unit the Swarm Keyword with this value. */
       readonly swarm?: number;
+      /** Test setup: gives the Unit the Retaliate Keyword. */
+      readonly retaliate?: boolean;
+      /** Test setup: replaces the printed Damage Type. */
+      readonly damageType?: UnitState["damageType"];
     }
 ): UnitState => {
   const definition = getCard(options.cardId);
@@ -224,18 +254,7 @@ export const placeUnit = (
   if (options.maxHp !== undefined) {
     unit.maxHp = options.maxHp;
   }
-  if (options.burn !== undefined) {
-    unit.burn = options.burn;
-  }
-  if (options.frozen !== undefined) {
-    unit.frozen = options.frozen;
-  }
-  if (options.entangled !== undefined) {
-    unit.entangled = options.entangled;
-  }
-  if (options.poisoned !== undefined) {
-    unit.poisoned = options.poisoned;
-  }
+  setStatuses(unit, options);
   if (options.poison) {
     unit.poison = true;
   }
@@ -254,6 +273,8 @@ export const placeUnit = (
     trample: options.trample ?? unit.trample,
     firstStrike: options.firstStrike ?? unit.firstStrike,
     swarm: options.swarm ?? unit.swarm,
+    retaliate: options.retaliate ?? unit.retaliate,
+    damageType: options.damageType ?? unit.damageType,
   };
   state.nextId += 1;
   state.units.push(placed);

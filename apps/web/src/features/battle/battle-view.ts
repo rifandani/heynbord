@@ -4,6 +4,7 @@ import type {
   BattleState,
   ClassId,
   DamageType,
+  FieldEffect,
   RankId,
   Side,
   TokenId,
@@ -85,6 +86,11 @@ export interface UnitView {
   readonly exposedTurns: number;
   readonly frozen: boolean;
   /**
+   * Paralyzed (GDD 4.4): no attack in the next action. `StatusApplied` sets
+   * it, and `AttackSkipped` and `UnitSkipped` of the Unit end it.
+   */
+  readonly paralyzed: boolean;
+  /**
    * Speed 0 in the next action, and the action ends it. The rules show no
    * event for this, so the view ends it on the attack or the skip of the Unit,
    * and for a Unit with no attack at the End Phase of its owner.
@@ -137,6 +143,22 @@ export interface SideView {
   readonly graveyard: readonly GraveyardCardView[];
 }
 
+/**
+ * A Field Effect on the Board (GDD 4.8): its area and the hits that are left.
+ * `FieldEffectStruck` lowers `turns`, and `FieldEffectEnded` removes it.
+ */
+export interface FieldEffectView {
+  readonly id: number;
+  readonly owner: Side;
+  readonly cardId: string;
+  readonly lane: number;
+  readonly position: number;
+  readonly lanes: number;
+  readonly columns: number;
+  readonly damageType: DamageType;
+  readonly turns: number;
+}
+
 export interface BattleView {
   readonly lanes: number;
   /** The indexes of the Closed Lanes (GDD 4.1). */
@@ -145,6 +167,7 @@ export interface BattleView {
   readonly activeSide: Side;
   readonly sides: Readonly<Record<Side, SideView>>;
   readonly units: readonly UnitView[];
+  readonly fieldEffects: readonly FieldEffectView[];
   readonly result: BattleResult | null;
 }
 
@@ -197,12 +220,25 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     exposed: unit.exposed,
     exposedTurns: unit.exposedTurns,
     frozen: unit.frozen,
+    paralyzed: unit.paralyzed,
     entangled: unit.entangled,
     ward: unit.ward,
     steadfast: unit.steadfast,
     wall: unit.wall,
   };
 };
+
+const fieldEffectView = (field: Readonly<FieldEffect>): FieldEffectView => ({
+  id: field.id,
+  owner: field.owner,
+  cardId: field.card.cardId,
+  lane: field.lane,
+  position: field.position,
+  lanes: field.lanes,
+  columns: field.columns,
+  damageType: field.damageType,
+  turns: field.turns,
+});
 
 const visibleCard = (
   side: Side,
@@ -348,6 +384,7 @@ export const viewFromState = (state: BattleState): BattleView =>
       enemy: sideView(state, "enemy"),
     },
     units: state.units.map(unitView),
+    fieldEffects: state.fieldEffects.map(fieldEffectView),
     result: state.result,
   });
 
@@ -379,6 +416,45 @@ const applyDamage = (
     burn: event.source === "burn" ? unit.burn - 1 : unit.burn,
     poisoned: event.source === "poison" ? unit.poisoned - 1 : unit.poisoned,
   }));
+};
+
+/** The events of a Field Effect (GDD 4.8) and of a Paralyzed action (GDD 4.4). */
+const applyFieldEvent = (view: BattleView, event: BattleEvent): BattleView => {
+  switch (event._tag) {
+    case "FieldEffectPlaced": {
+      return {
+        ...view,
+        fieldEffects: [...view.fieldEffects, fieldEffectView(event.field)],
+      };
+    }
+    case "FieldEffectStruck": {
+      return {
+        ...view,
+        fieldEffects: view.fieldEffects.map((field) =>
+          field.id === event.fieldId ? { ...field, turns: event.turns } : field
+        ),
+      };
+    }
+    case "FieldEffectEnded": {
+      return {
+        ...view,
+        fieldEffects: view.fieldEffects.filter(
+          (field) => field.id !== event.fieldId
+        ),
+      };
+    }
+    case "AttackSkipped": {
+      // The action ends Paralyzed and Entangled.
+      return updateUnit(view, event.unitId, (unit) => ({
+        ...unit,
+        paralyzed: false,
+        entangled: false,
+      }));
+    }
+    default: {
+      return view;
+    }
+  }
 };
 
 const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
@@ -434,7 +510,7 @@ const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
       }));
     }
     default: {
-      return view;
+      return applyFieldEvent(view, event);
     }
   }
 };
@@ -517,6 +593,7 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
         exposed: 0,
         exposedTurns: 0,
         frozen: false,
+        paralyzed: false,
         entangled: false,
         ward: 0,
         bonusArmor: 0,
@@ -594,6 +671,9 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
           case "freeze": {
             return { ...unit, frozen: true };
           }
+          case "paralyze": {
+            return { ...unit, paralyzed: true };
+          }
           case "poison": {
             return { ...unit, poisoned: event.count ?? unit.poisoned + 1 };
           }
@@ -643,14 +723,16 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         exposed: 0,
         exposedTurns: 0,
         frozen: false,
+        paralyzed: false,
         entangled: false,
       }));
     }
     case "UnitSkipped": {
-      // A skipped action ends Freeze and Entangled.
+      // A skipped action ends Freeze, Paralyzed and Entangled.
       return updateUnit(view, event.unitId, (unit) => ({
         ...unit,
         frozen: false,
+        paralyzed: false,
         entangled: false,
       }));
     }

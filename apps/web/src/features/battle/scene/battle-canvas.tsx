@@ -11,6 +11,7 @@ import { CastMarks } from "@/features/battle/scene/cast-marks";
 import { Diagnostics } from "@/features/battle/scene/diagnostics";
 import { EffectsLayer } from "@/features/battle/scene/effects-layer";
 import { Environment } from "@/features/battle/scene/environment";
+import { FieldEffects } from "@/features/battle/scene/field-effects";
 import { Heroes } from "@/features/battle/scene/heroes";
 import { ParticleLayer } from "@/features/battle/scene/particle-layer";
 import { PlaybackDriver } from "@/features/battle/scene/playback-driver";
@@ -70,6 +71,7 @@ const BattleCanvas = ({
         <Environment />
         <Board lanes={lanes} closedLanes={closedLanes} />
         <Heroes />
+        <FieldEffects />
         <Units />
         <CastMarks />
         <EffectsLayer />

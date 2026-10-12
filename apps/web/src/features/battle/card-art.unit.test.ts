@@ -87,6 +87,18 @@ describe("hasCardArt", () => {
     expect(hasCardArt("warrior.onslaught")).toBe(true);
   });
 
+  it("has art for the Lightning and Field Effect Mage Skill Cards (#66)", () => {
+    for (const cardId of [
+      "mage.spark",
+      "mage.arcLightning",
+      "mage.wildfire",
+      "mage.thunderstorm",
+      "mage.blizzard",
+    ]) {
+      expect(hasCardArt(cardId), cardId).toBe(true);
+    }
+  });
+
   it("has a file in public/ for each card with art", () => {
     const missing = CARDS.filter((card) => hasCardArt(card.id))
       .map((card) => cardIllustration(card.id))

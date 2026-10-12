@@ -160,8 +160,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 125 cards: 6 Races and 4 Classes", () => {
-    expect(CARDS).toHaveLength(125);
+  it("has 130 cards: 6 Races and 4 Classes", () => {
+    expect(CARDS).toHaveLength(130);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
@@ -174,9 +174,10 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(classes).toEqual(new Set(["warrior", "ranger", "mage", "priest"]));
   });
 
-  it("gives each Class 4 Common and 3 Uncommon Skill Cards, the Ranger (#59), the Priest (#61) and the Warrior (#63) also 2 Rare and 1 Epic, and the Mage 3 and 2 before its Lightning cards (#65)", () => {
-    // The Rare and Epic cards of #59 (Ranger), #61 (Priest) and #63 (Warrior).
-    for (const classId of ["ranger", "priest", "warrior"]) {
+  it("gives each Class 4 Common, 3 Uncommon, 2 Rare and 1 Epic Skill Cards (ADR-0013)", () => {
+    // The Rare and Epic cards of #59 (Ranger), #61 (Priest), #63 (Warrior)
+    // and #65 (Mage).
+    for (const classId of ["ranger", "priest", "warrior", "mage"]) {
       expect(baseRanks(classId), classId).toEqual([
         "common",
         "common",
@@ -190,18 +191,59 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         "uncommon",
       ]);
     }
-    expect(baseRanks("mage")).toEqual([
-      "common",
-      "common",
-      "common",
-      "uncommon",
-      "uncommon",
-    ]);
+  });
+
+  it("gives the Mage cards of #65 their targets, effects and values", () => {
+    expect(getCard("mage.spark")).toMatchObject({
+      countdown: 1,
+      target: "enemyUnit",
+      effect: { type: "damageUnit", damageType: "lightning" },
+    });
+    expect(skillAmounts("mage.spark")).toEqual([1, 1, 1, 2, 2]);
+    expect(getCard("mage.arcLightning")).toMatchObject({
+      target: "enemyUnit",
+      effect: { type: "damageArc", damageType: "lightning" },
+    });
+    expect(getCard("mage.thunderstorm")).toMatchObject({
+      target: "none",
+      effect: { type: "damageRandom", damageType: "lightning", units: 3 },
+    });
+    expect(getCard("mage.wildfire")).toMatchObject({
+      target: "area",
+      effect: {
+        type: "fieldEffect",
+        damageType: "fire",
+        lanes: 2,
+        columns: 2,
+        turns: 2,
+      },
+    });
+    expect(getCard("mage.blizzard")).toMatchObject({
+      baseRank: "epic",
+      target: "area",
+      effect: {
+        type: "fieldEffect",
+        damageType: "frost",
+        lanes: 3,
+        columns: 2,
+        turns: 2,
+      },
+    });
+  });
+
+  it("gives the area target only to a Field Effect, and a Field Effect only the area target (GDD 4.8)", () => {
+    for (const card of CARDS) {
+      if (card.kind === "skill") {
+        expect(card.target === "area", card.id).toBe(
+          card.effect.type === "fieldEffect"
+        );
+      }
+    }
   });
 
   it("gives the Common and Uncommon Skill Cards of #57 their effects and values", () => {
     expect(skillAmounts("warrior.shoulderCharge")).toEqual([3, 4, 5, 6, 7]);
-    expect(skillAmounts("ranger.quickShot")).toEqual([3, 4, 4, 5, 6]);
+    expect(skillAmounts("ranger.quickShot")).toEqual([3, 4, 5, 6, 7]);
     expect(skillAmounts("priest.blessingOfLight")).toEqual([3, 4, 5, 6, 7]);
     expect(skillAmounts("priest.prayerOfHealing")).toEqual([8, 8, 10, 12, 14]);
     expect(getCard("priest.prayerOfHealing")).toMatchObject({
@@ -216,7 +258,12 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     });
     expect(getCard("ranger.harryingShot")).toMatchObject({
       target: "enemyUnit",
-      effect: { type: "damageUnitHero", amount: 2, heroAmount: 4 },
+      effect: {
+        type: "damageUnitHero",
+        amount: { common: 3, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
+        heroAmount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+        damageType: "physical",
+      },
     });
   });
 
@@ -318,7 +365,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("scales the Ranger Skill damage with Rank, but not the push", () => {
     expect(skillAmounts("ranger.pinningShot")).toEqual([4, 5, 6, 7, 8]);
-    expect(skillAmounts("ranger.warningShot")).toEqual([8, 10, 12, 14, 17]);
+    expect(skillAmounts("ranger.warningShot")).toEqual([6, 7, 8, 10, 12]);
     expect(skillAmounts("ranger.longShot")).toEqual([8, 10, 12, 14, 17]);
     expect(getCard("ranger.warningShot")).toMatchObject({
       target: "enemyUnit",
@@ -473,6 +520,29 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     for (const card of frostCards) {
       expect(card.range, card.id).toBe(0);
     }
+  });
+
+  it("gives no Ranged Creature Card Lightning damage before a lock check (ADR-0029)", () => {
+    // A Ranged Unit Paralyzes the same enemy before each of its actions, the
+    // same as the Frost lock of ADR-0025. A sim lock check comes first.
+    for (const card of creatures) {
+      if (card.damageType === "lightning") {
+        expect(card.range, card.id).toBe(0);
+      }
+    }
+  });
+
+  it("gives Lightning 3 Damage Type points, the same as Frost (GDD 13, ADR-0029)", () => {
+    const card = getCard("human.militiaRecruit");
+    if (card.kind !== "creature") {
+      throw new Error("Militia Recruit is a Creature Card");
+    }
+    expect(creaturePower({ ...card, damageType: "lightning" })).toBe(
+      creaturePower(card) + 3
+    );
+    expect(creaturePower({ ...card, damageType: "lightning" })).toBe(
+      creaturePower({ ...card, damageType: "frost" })
+    );
   });
 
   it("keeps Shieldbearer within ±10% of its power budget (GDD 13)", () => {

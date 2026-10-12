@@ -8,6 +8,7 @@ import type { BattleView } from "@/features/battle/battle-view";
 import type { Cast } from "@/features/battle/cast";
 import { castSquares, effectColor } from "@/features/battle/cast";
 import { DAMAGE_COLORS, FX_ANCHORS } from "@/features/battle/palette";
+import { fieldTiles } from "@/features/battle/scene/field-tiles";
 import type {
   FxPresetKey,
   ImpactPresetKey,
@@ -325,6 +326,49 @@ const windup = (
   duration: eventSeconds(event, speed, before) * WINDUP_END,
 });
 
+/** A ring on each Square of a Field Effect area, in the color of its Damage Type. */
+const fieldRings = (view: BattleView, fieldId: number, time: number): Fx[] => {
+  const field = view.fieldEffects.find((each) => each.id === fieldId);
+  return field
+    ? fieldTiles([field], view.lanes).map((tile) => ({
+        kind: "ring",
+        color: tile.color,
+        x: tile.x,
+        z: tile.z,
+        start: time,
+      }))
+    : [];
+};
+
+/**
+ * The effects of a Field Effect (GDD 4.8) and of a Paralyzed action: rings
+ * on the area when it is placed and when it strikes, and cyan sparks on a
+ * Paralyzed Unit when it does not attack.
+ */
+const fieldAndParalyzeFx = (
+  event: BattleEvent,
+  before: BattleView,
+  after: BattleView,
+  time: number,
+  speed: BattleSpeed
+): Fx[] => {
+  switch (event._tag) {
+    case "FieldEffectPlaced": {
+      return fieldRings(after, event.field.id, time);
+    }
+    case "FieldEffectStruck": {
+      return fieldRings(before, event.fieldId, time);
+    }
+    case "AttackSkipped": {
+      const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
+      return at ? [burstFx("paralyze", at, time, BURST_DURATION / speed)] : [];
+    }
+    default: {
+      return [];
+    }
+  }
+};
+
 /**
  * The light on a Unit when it holds or comes back: Steadfast that holds it at
  * 1 HP, a Cleanse that ends its Debuffs, or a Rebirth.
@@ -376,7 +420,7 @@ const unitLightFx = (
         : [];
     }
     default: {
-      return [];
+      return fieldAndParalyzeFx(event, before, after, time, speed);
     }
   }
 };
@@ -498,16 +542,19 @@ const castCenter = (
   if (cast.target._tag === "Hero") {
     return { x: heroX(cast.target.side), z: 0 };
   }
-  const squares = castSquares(cast);
-  const [first] = squares;
-  const last = squares.at(-1);
-  if (!first || !last) {
+  const squares = castSquares(cast, lanes);
+  if (squares.length === 0) {
     return null;
   }
-  return {
-    x: (squareX(first.position) + squareX(last.position)) / 2,
-    z: laneZ(first.lane, lanes),
-  };
+  // The middle of all the Squares, also of an area of more Lanes.
+  const sum = squares.reduce(
+    (total, square) => ({
+      x: total.x + squareX(square.position),
+      z: total.z + laneZ(square.lane, lanes),
+    }),
+    { x: 0, z: 0 }
+  );
+  return { x: sum.x / squares.length, z: sum.z / squares.length };
 };
 
 /** The spell bolt flies in the second half of the cast reveal. */

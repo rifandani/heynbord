@@ -20,7 +20,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Summon Zone**: A Side's Columns 1 to 3, in all Lanes. The Heroes of that Side summon Units only into it. The one exception is a Unit with Wall, which can also go into Columns 4 and 5. _Avoid_: Summon Column, spawn zone, deploy row
 
-**Field Effect**: An effect from a Skill Card that stays on a Square area for a number of Turns. _Avoid_: tile effect, battlefield skill, aura
+**Field Effect**: An effect from a Skill Card that stays on a Square area for a number of Turns. In each End Phase of its owner, it hits the enemy Units in its area. The player selects the corner Square of the area that is nearest to their Hero, in the upper Lane of the area. _Avoid_: tile effect, battlefield skill, aura
 
 ### Battle
 

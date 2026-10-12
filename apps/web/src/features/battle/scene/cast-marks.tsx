@@ -39,7 +39,7 @@ export const CastMarks = () => {
       hideFrom(tiles.current, 0);
       return;
     }
-    const squares = castSquares(cast);
+    const squares = castSquares(cast, session.view.lanes);
     const color = effectColor(cast.skill.effect);
     for (const [index, square] of squares.entries()) {
       const tile = tiles.current[index];

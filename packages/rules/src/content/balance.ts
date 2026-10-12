@@ -48,11 +48,18 @@ const keywordPoints = (keywords: TokenKeywords, rank: RankId): number => {
   );
 };
 
+/**
+ * Damage Type points (GDD 13). Lightning is provisional (ADR-0029): Paralyzed
+ * stops the attack, Retaliate and First Strike, the same as Freeze. The Unit
+ * can still move, but Movement alone has little value, so it has the Frost
+ * value.
+ */
 const DAMAGE_TYPE_POINTS: Record<DamageType, number> = {
   physical: 0,
   fire: 3,
   frost: 3,
   holy: 2,
+  lightning: 3,
 };
 
 /**

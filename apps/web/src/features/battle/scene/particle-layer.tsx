@@ -14,6 +14,7 @@ import {
 } from "three";
 
 import { currentCast } from "@/features/battle/cast";
+import { fieldParticles } from "@/features/battle/scene/field-tiles";
 import {
   fxList,
   projectileParticles,
@@ -230,12 +231,22 @@ const emittersNow = (reducedMotion: boolean): Emitter[] => {
 };
 
 /**
- * The quads that are not from an emitter: the billboards of the effects
- * list, the projectile of a ranged attack, and the spell bolt of a cast.
+ * The quads that are not from an emitter: the fire or snow of each Field
+ * Effect, the billboards of the effects list, the projectile of a ranged
+ * attack, and the spell bolt of a cast. The Field Effect ground is first, so
+ * the other effects draw over it.
  */
 const singlesNow = (reducedMotion: boolean): Particle[] => {
   const { session } = playback;
   const singles = [
+    ...(session
+      ? fieldParticles(
+          session.view.fieldEffects,
+          session.view.lanes,
+          playback.time,
+          reducedMotion
+        )
+      : []),
     ...projectileParticles(session?.current, playback.progress, reducedMotion),
     ...(session
       ? spellBoltParticles(
@@ -260,8 +271,8 @@ const singlesNow = (reducedMotion: boolean): Particle[] => {
 
 /**
  * The Status loops on the Units, the Status, hit, dust, heal and Armor
- * bursts, the cast wind-ups, the melee slashes, the ranged projectiles and the
- * spell bolts, from one particle pool with the effects atlas (web ADR-0009).
+ * bursts, the cast wind-ups, the melee slashes, the ranged projectiles, the
+ * spell bolts and the Field Effect ground, from one particle pool with the effects atlas (web ADR-0009).
  * All motion uses `playback.time`.
  */
 export const ParticleLayer = () => {

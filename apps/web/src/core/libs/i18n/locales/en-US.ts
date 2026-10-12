@@ -137,6 +137,9 @@ export default {
       burnLeft: "End Phases left: {value}.",
       frozen: "Frozen",
       frozenRule: "It skips its next action.",
+      paralyzed: "Paralyzed",
+      paralyzedRule:
+        "A Debuff. It does not attack in its next action, but it can still move. Until then, it does not Retaliate and does not use First Strike.",
       poisoned: "Poison {value}",
       poisonedRule:
         "1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
@@ -621,7 +624,7 @@ export default {
         "Bonuses and speed. Warrior Skill Cards make your cards Ready sooner and give Armor to your Units.",
       classRanger: "Control, and damage to the enemy Hero.",
       classMage:
-        "Area damage. Mage Skill Cards hit enemy Units with Fire and Frost.",
+        "Area damage. Mage Skill Cards hit enemy Units with Fire, Frost and Lightning.",
       classPriest:
         "Healing, protection and Holy damage. Priest Skill Cards heal and protect your Units, and Holy damage ignores Armor.",
       role: "The Role is the job of a Creature Card in a Battle. It helps you read a card. No rule uses it, but it sets the Range of a Ranged Unit.",
@@ -689,6 +692,7 @@ export default {
       keywordRetaliate: "retaliation, thorns, counterattack",
       status: "debuff, condition, ailment",
       statusFreeze: "stun, chill",
+      statusParalyze: "shock, shocked, daze, disarm",
       statusBleed: "wound, anti-heal, healing reduction",
       statusHobble: "slow, cripple, fatigue",
       statusWard: "shield, barrier, absorb, buff",
@@ -1043,6 +1047,7 @@ export default {
     fire: "Fire",
     frost: "Frost",
     holy: "Holy",
+    lightning: "Lightning",
   },
   keywords: {
     armor: "Armor {value}",
@@ -1113,6 +1118,8 @@ export default {
     fire: "Fire: the target burns for 1 damage in its next 2 End Phases.",
     frost: "Frost: the target skips its next action.",
     holy: "Holy: Armor does not reduce this damage.",
+    lightning:
+      "Lightning: the target does not attack in its next action, but it can still move.",
   },
   effects: {
     damageUnit: "Deal {amount} {damageType} damage to an enemy Unit.",
@@ -1124,7 +1131,7 @@ export default {
       "Deal {amount} {damageType} damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.",
     damagePush:
       "Deal {amount} {damageType} damage to an enemy Unit. If it survives, push it {squares} Squares back toward its Hero, also when it takes no damage.",
-    damageHero: "Deal {amount} {damageType} damage to the enemy Hero.",
+    damageHero: "Deal {amount} damage to the enemy Hero.",
     damageKnockback:
       "{hit} If it takes damage and survives, push it {squares} back toward its Hero.",
     damageBleed:
@@ -1138,8 +1145,7 @@ export default {
     damageLaneArmor:
       "{hit} Friendly Units in its Lane get Armor {armor} for {turns}.",
     damageLaneHeal: "{hit} Heal {heal} HP to each friendly Unit in its Lane.",
-    damageUnitHero:
-      "{hit} Then deal {heroAmount} {damageType} damage to the enemy Hero.",
+    damageUnitHero: "{hit} Then deal {heroAmount} damage to the enemy Hero.",
     laneArmor:
       "Friendly Units in a Lane get Armor {armor} for the next {turns} enemy Turns.",
     lowerCountdown:
@@ -1162,6 +1168,12 @@ export default {
       "Each friendly Unit in a Lane takes one more action now: it moves and attacks, from the front Unit to the back Unit.",
     laneExtraActionLegendary:
       "Each friendly Unit in a Lane gets +{attack} Attack until the end of your next Turn, then takes one more action now: it moves and attacks, from the front Unit to the back Unit.",
+    damageArc:
+      "Deal {amount} {damageType} damage to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it.",
+    damageRandom:
+      "Deal {amount} {damageType} damage to {units} random different enemy Units.",
+    fieldEffect:
+      "Select an area of {lanes} Lanes × {columns} Columns. For {turns}, in each of your End Phases, each enemy Unit in the area takes {amount} {damageType} damage.",
     armorIgnored: "{effect} Armor does not reduce it.",
     /** A number and its noun. The card text selects One for 1, else Other. */
     counts: {
@@ -1169,6 +1181,8 @@ export default {
       squareOther: "{value} Squares",
       enemyTurnOne: "the next enemy Turn",
       enemyTurnOther: "the next {value} enemy Turns",
+      turnOne: "{value} Turn",
+      turnOther: "{value} Turns",
     },
   },
   cards: {
@@ -1607,6 +1621,17 @@ export default {
         flavor: "Small, sharp and very cold.",
       },
       frostWave: { name: "Frost Wave", flavor: "The whole lane stands still." },
+      spark: { name: "Spark", flavor: "Hold still. You have no choice." },
+      arcLightning: {
+        name: "Arc Lightning",
+        flavor: "It never strikes once.",
+      },
+      wildfire: { name: "Wildfire", flavor: "The grass had it coming." },
+      thunderstorm: {
+        name: "Thunderstorm",
+        flavor: "Somebody always gets struck.",
+      },
+      blizzard: { name: "Blizzard", flavor: "Nobody goes anywhere today." },
     },
     priest: {
       mend: { name: "Mend", flavor: "Rise. You are not done yet." },

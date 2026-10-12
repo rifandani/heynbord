@@ -136,7 +136,10 @@ const withDamageRule = (effect: SkillEffect, text: TextRef): TextRef =>
     : text;
 
 /** A number with its noun, in the singular for 1: "1 Square", "3 Squares". */
-const counted = (noun: "square" | "enemyTurn", value: number): TextRef => ({
+const counted = (
+  noun: "square" | "enemyTurn" | "turn",
+  value: number
+): TextRef => ({
   key: `effects.counts.${noun}${value === 1 ? "One" : "Other"}`,
   args: { value },
 });
@@ -236,6 +239,47 @@ const friendlyEffectText = (
   }
 };
 
+/**
+ * The text of the Mage templates of #65: *Arc Lightning* (the target and the
+ * Units next to it), *Thunderstorm* (random enemy Units) and a Field Effect.
+ */
+const mageEffectText = (
+  effect: Extract<
+    SkillEffect,
+    { readonly type: "damageArc" | "damageRandom" | "fieldEffect" }
+  >,
+  rank: RankId
+): TextRef => {
+  const amount = skillAmountForRank(effect.amount, rank);
+  const damageType = { key: `damageTypes.${effect.damageType}` };
+  switch (effect.type) {
+    case "damageArc": {
+      return { key: "effects.damageArc", args: { amount, damageType } };
+    }
+    case "damageRandom": {
+      return {
+        key: "effects.damageRandom",
+        args: { amount, damageType, units: effect.units },
+      };
+    }
+    case "fieldEffect": {
+      return {
+        key: "effects.fieldEffect",
+        args: {
+          amount,
+          damageType,
+          lanes: effect.lanes,
+          columns: effect.columns,
+          turns: counted("turn", effect.turns),
+        },
+      };
+    }
+    default: {
+      return absurd(effect);
+    }
+  }
+};
+
 const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
   const { effect } = card;
   switch (effect.type) {
@@ -244,6 +288,12 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
     case "damageEntangle":
     case "damageLaneEntangle":
     case "damageHero": {
+      if (effect.type === "damageHero") {
+        return {
+          key: "effects.damageHero",
+          args: { amount: skillAmountForRank(effect.amount, rank) },
+        };
+      }
       return withDamageRule(effect, {
         key: `effects.${effect.type}`,
         args: {
@@ -327,12 +377,13 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
         args: {
           hit: hitText(effect, rank),
           heroAmount: skillAmountForRank(effect.heroAmount, rank),
-          damageType: { key: `damageTypes.${effect.damageType}` },
         },
       };
     }
     default: {
-      return friendlyEffectText(effect, rank);
+      return "damageType" in effect
+        ? mageEffectText(effect, rank)
+        : friendlyEffectText(effect, rank);
     }
   }
 };
@@ -386,6 +437,10 @@ export const STATUS_TEXT = {
     rule: "battle.status.steadfastRule",
   },
   exposed: { name: "battle.status.exposed", rule: "battle.status.exposedRule" },
+  paralyze: {
+    name: "battle.status.paralyzed",
+    rule: "battle.status.paralyzedRule",
+  },
 } as const satisfies Readonly<
   Record<Status, { readonly name: string; readonly rule: string }>
 >;
@@ -420,6 +475,7 @@ type StatusCounts = Pick<
   | "exposedTurns"
   | "burn"
   | "frozen"
+  | "paralyzed"
   | "entangled"
   | "hobbled"
   | "bleeding"
@@ -447,7 +503,7 @@ const countedStatus = (
     : [];
 
 const flagStatus = (
-  status: "freeze" | "entangle" | "steadfast",
+  status: "freeze" | "paralyze" | "entangle" | "steadfast",
   on: boolean
 ): StatusText[] =>
   on
@@ -557,6 +613,7 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
       ]
     : []),
   ...flagStatus("freeze", unit.frozen),
+  ...flagStatus("paralyze", unit.paralyzed),
   ...flagStatus("entangle", unit.entangled),
   ...countedStatus("hobble", unit.hobbled),
   ...countedStatus("bleed", unit.bleeding),

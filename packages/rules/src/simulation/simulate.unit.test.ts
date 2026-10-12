@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { createBattle } from "../battle/create-battle";
-import { STAGE_LANES } from "../battle/types";
+import { BattleEvent, STAGE_LANES } from "../battle/types";
 import { ARCHETYPES } from "../content/archetypes";
 import { deckCountdown, getStarterDeck } from "../content/decks";
 import { getStage, STAGES } from "../content/stages";
+import { emptyBattle, placeUnit } from "../testing/fixtures";
 import {
   createMatchupBattle,
   expectedDeck,
@@ -16,6 +17,7 @@ import {
   simulateMatchup,
   simulateStage,
   stageTarget,
+  skipRunTracker,
 } from "./simulate";
 
 const vanguard = getStarterDeck("vanguard");
@@ -39,6 +41,36 @@ describe("playOut (GDD 13)", () => {
 
   it("throws when a Battle passes the Command limit", () => {
     expect(() => playOut(startOf(3), 2)).toThrow("not finished after 2");
+  });
+});
+
+describe("skipRunTracker (ADR-0025)", () => {
+  const state = emptyBattle();
+  placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "player",
+    position: 2,
+  });
+  const unitId = state.units[0]?.id ?? 0;
+  const skip = BattleEvent.UnitSkipped({ unitId });
+  const end = BattleEvent.TurnEnded({ side: "player" });
+  const other = BattleEvent.TurnEnded({ side: "enemy" });
+
+  it("finds a run of 3 skipped actions in a row of one Unit", () => {
+    const tracker = skipRunTracker();
+    for (const _ of [1, 2, 3]) {
+      tracker.observe([skip, end, other], state);
+    }
+    expect([...tracker.locked]).toEqual(["player"]);
+  });
+
+  it("ends a run when the Unit acts in a Turn of its Side", () => {
+    const tracker = skipRunTracker();
+    tracker.observe([skip, end, other], state);
+    tracker.observe([skip, end, other], state);
+    tracker.observe([end, other], state);
+    tracker.observe([skip, end, other], state);
+    expect([...tracker.locked]).toEqual([]);
   });
 });
 

@@ -89,5 +89,6 @@ export const cloneState = (state: BattleState): BattleState => ({
     enemy: cloneSide(state.sides.enemy),
   },
   units: state.units.map((unit) => ({ ...unit })),
+  fieldEffects: state.fieldEffects.map((field) => ({ ...field })),
   closedLanes: [...state.closedLanes],
 });

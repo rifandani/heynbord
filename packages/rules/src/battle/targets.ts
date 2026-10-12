@@ -1,16 +1,71 @@
 import { absurd } from "effect";
 
 import { getCard } from "../content/cards";
-import type { SkillTarget } from "../content/schema";
+import type { SkillCardDefinition } from "../content/schema";
 import {
   direction,
+  isInsideLane,
   isLaneOpen,
   openLanes,
   summonPositions,
   unitAt,
 } from "./context";
 import type { BattleState, Side, UnitState } from "./types";
-import { SUMMON_ZONE_DEPTH, Target, WALL_SUMMON_DEPTH } from "./types";
+import {
+  LANE_LENGTH,
+  SUMMON_ZONE_DEPTH,
+  Target,
+  WALL_SUMMON_DEPTH,
+} from "./types";
+
+/** The size of a Field Effect area (GDD 4.8). */
+export interface AreaSize {
+  readonly lanes: number;
+  readonly columns: number;
+}
+
+/**
+ * The Squares of a Field Effect area (GDD 4.8). `lane` and `position` are the
+ * corner Square nearest to the Hero of `owner`, in the upper Lane of the area.
+ * The area goes `size.lanes` Lanes down and `size.columns` Squares toward the
+ * enemy Hero. It does not check the Board edges: `areaCorners` does.
+ */
+export const areaSquares = (
+  owner: Side,
+  lane: number,
+  position: number,
+  size: AreaSize
+): { readonly lane: number; readonly position: number }[] =>
+  Array.from({ length: size.lanes }, (_, down) =>
+    Array.from({ length: size.columns }, (_column, ahead) => ({
+      lane: lane + down,
+      position: position + direction(owner) * ahead,
+    }))
+  ).flat();
+
+/**
+ * Each corner Square of a legal Field Effect area for `side` (GDD 4.8): the
+ * area stays inside the Board, and no Square of it is in a Closed Lane. It
+ * can include the Summon Zone of each Side, and empty Squares.
+ */
+const areaCorners = (
+  state: BattleState,
+  side: Side,
+  size: AreaSize
+): Target[] =>
+  openLanes(state).flatMap((lane) =>
+    Array.from({ length: LANE_LENGTH }, (_, position) => position).flatMap(
+      (position) =>
+        areaSquares(side, lane, position, size).every(
+          (square) =>
+            square.lane < state.lanes &&
+            isLaneOpen(state, square.lane) &&
+            isInsideLane(square.position)
+        )
+          ? [Target.Square({ lane, position })]
+          : []
+    )
+  );
 
 const unitSquares = (state: BattleState, owner: Side): Target[] =>
   state.units.flatMap((unit) =>
@@ -29,9 +84,10 @@ const lanesWithUnits = (state: BattleState, owner: Side): Target[] =>
 const skillTargets = (
   state: BattleState,
   side: Side,
-  target: SkillTarget
+  definition: SkillCardDefinition
 ): Target[] => {
   const enemy: Side = side === "player" ? "enemy" : "player";
+  const { target, effect } = definition;
   switch (target) {
     case "enemyUnit": {
       return unitSquares(state, enemy);
@@ -50,6 +106,12 @@ const skillTargets = (
     }
     case "friendlyLane": {
       return lanesWithUnits(state, side);
+    }
+    case "area": {
+      // A content test checks that only a Field Effect has an area target.
+      return effect.type === "fieldEffect"
+        ? areaCorners(state, side, effect)
+        : [];
     }
     case "none": {
       return [Target.NoTarget()];
@@ -115,7 +177,7 @@ export const legalTargets = (
       )
     );
   }
-  return skillTargets(state, side, definition.target);
+  return skillTargets(state, side, definition);
 };
 
 /**

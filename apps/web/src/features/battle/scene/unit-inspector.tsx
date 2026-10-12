@@ -46,7 +46,7 @@ const device = new Vector2();
 const world = new Vector3();
 
 /** The Unit under a screen point: the nearest hit box that a ray from the camera hits. */
-const unitUnder = (
+export const unitUnder = (
   canvas: HTMLCanvasElement,
   camera: Camera,
   clientX: number,

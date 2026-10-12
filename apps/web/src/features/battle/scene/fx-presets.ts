@@ -159,6 +159,22 @@ export const FX_PRESETS: Readonly<Record<FxPresetKey, FxPreset>> = {
     DAMAGE_COLORS.holy,
     400
   ),
+  // A bolt that strikes from above, and fast sparks that jump out: Lightning.
+  "hit:lightning": hit(
+    "bolt",
+    1,
+    {
+      slot: "spark",
+      count: 12,
+      speed: [0.7, 1.2],
+      up: 0.2,
+      size: [0.08, 0.16],
+      gravity: 0.1,
+      spin: 6,
+    },
+    DAMAGE_COLORS.lightning,
+    300
+  ),
   // No burst: the Block took the damage.
   "hit:blocked": hit(
     "spark",

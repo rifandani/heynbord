@@ -33,6 +33,11 @@ describe("cardGlyph", () => {
     expect(cardGlyph(getCard("warrior.callToArms"))).toBe("horn");
     expect(cardGlyph(getCard("warrior.exposeWeakness"))).toBe("brokenShield");
     expect(cardGlyph(getCard("warrior.onslaught"))).toBe("crossedSwords");
+    expect(cardGlyph(getCard("mage.spark"))).toBe("bolt");
+    expect(cardGlyph(getCard("mage.arcLightning"))).toBe("bolt");
+    expect(cardGlyph(getCard("mage.thunderstorm"))).toBe("bolt");
+    expect(cardGlyph(getCard("mage.wildfire"))).toBe("flame");
+    expect(cardGlyph(getCard("mage.blizzard"))).toBe("snow");
     expect(classGlyph("priest")).toBe("wand");
     expect(classGlyph("warrior")).toBe("warhelm");
     expect(classGlyph("mage")).toBe("hat");
@@ -56,6 +61,7 @@ describe("roleGlyph and DAMAGE_GLYPH", () => {
       fire: "flame",
       frost: "snow",
       holy: "sun",
+      lightning: "bolt",
     });
   });
 });

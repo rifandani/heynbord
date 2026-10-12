@@ -7,7 +7,7 @@ import {
   unitAt,
 } from "../battle/context";
 import { attackOf, currentSpeed, pushedPosition } from "../battle/resolution";
-import { legalTargets, unitsInArea } from "../battle/targets";
+import { areaSquares, legalTargets, unitsInArea } from "../battle/targets";
 import { suddenDeathDamage } from "../battle/turn";
 import { HAND_LIMIT, LANE_LENGTH, otherSide, Command } from "../battle/types";
 import type {
@@ -159,6 +159,7 @@ const heroDamage = (
       unit.owner !== side &&
       unit.attack > 0 &&
       !unit.frozen &&
+      !unit.paralyzed &&
       !isBlocked(unit, blockers) &&
       reachesHero(unit)
         ? sum + unit.attack + unit.heroic
@@ -261,33 +262,107 @@ interface SkillHit {
   readonly damage: number;
 }
 
+/** The Mage effect types with their own targets: *Arc Lightning*, *Thunderstorm* and a Field Effect. */
+type MageEffect = Extract<
+  SkillEffect,
+  { readonly type: "damageArc" | "damageRandom" | "fieldEffect" }
+>;
+
+const isMageEffect = (effect: SkillEffect): effect is MageEffect =>
+  effect.type === "damageArc" ||
+  effect.type === "damageRandom" ||
+  effect.type === "fieldEffect";
+
+/**
+ * The enemy Units that a Mage effect can hit: the Arc target and the enemy
+ * Units next to it in its Column, each enemy Unit for *Thunderstorm* (the
+ * score weighs the random choice), or the enemy Units in a Field Effect area.
+ */
+const mageUnits = (
+  state: BattleState,
+  side: Side,
+  effect: MageEffect,
+  target: Target
+): UnitState[] => {
+  const enemy = otherSide(side);
+  if (effect.type === "damageRandom") {
+    return state.units.filter((unit) => unit.owner === enemy);
+  }
+  if (target._tag !== "Square") {
+    return [];
+  }
+  const squares =
+    effect.type === "fieldEffect"
+      ? areaSquares(side, target.lane, target.position, effect)
+      : [target.lane, target.lane - 1, target.lane + 1].map((lane) => ({
+          lane,
+          position: target.position,
+        }));
+  return squares.flatMap(({ lane, position }) => {
+    const unit = unitAt(state, lane, position);
+    return unit?.owner === enemy ? [unit] : [];
+  });
+};
+
+/** The damage of a hit of `value` on `unit`, after Armor, Exposed and Ward. */
+const hitOn = (
+  unit: UnitState,
+  value: number,
+  damageType: DamageType
+): SkillHit => {
+  const armor = damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
+  // Exposed adds to a Physical hit after Armor (GDD 4.7, step 4).
+  const exposed = damageType === "physical" ? unit.exposed : 0;
+  // A Ward absorbs the damage after Armor (GDD 4.7, step 8).
+  return {
+    unit,
+    damage: Math.max(0, Math.max(0, value - armor) + exposed - unit.ward),
+  };
+};
+
 /** The enemy Units that a damage Skill Card hits, with the damage to each. */
 const skillHits = (
   state: BattleState,
   side: Side,
   card: HandCard,
-  effect: DamageEffect,
+  effect: DamageEffect | MageEffect,
   target: Target
 ): SkillHit[] => {
+  if (isMageEffect(effect)) {
+    const amount = skillAmountForRank(effect.amount, card.rank);
+    return mageUnits(state, side, effect, target).map((unit) =>
+      hitOn(unit, amount, effect.damageType)
+    );
+  }
   const length = effect.type === "damageArea" ? effect.length : 1;
   const amount =
     effect.type === "damageByAttack"
       ? 0
       : skillAmountForRank(effect.amount, card.rank);
-  return unitsInArea(state, otherSide(side), target, length).map((unit) => {
-    const armor =
-      effect.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
+  return unitsInArea(state, otherSide(side), target, length).map((unit) =>
     // Penance: the Attack of the target at the moment of the hit.
-    const value =
-      effect.type === "damageByAttack" ? attackOf(state, unit) : amount;
-    // Exposed adds to a Physical hit after Armor (GDD 4.7, step 4).
-    const exposed = effect.damageType === "physical" ? unit.exposed : 0;
-    // A Ward absorbs the damage after Armor (GDD 4.7, step 8).
-    return {
+    hitOn(
       unit,
-      damage: Math.max(0, Math.max(0, value - armor) + exposed - unit.ward),
-    };
-  });
+      effect.type === "damageByAttack" ? attackOf(state, unit) : amount,
+      effect.damageType
+    )
+  );
+};
+
+/**
+ * True when a hit of `damageType` gives its Status also at 0 damage, and the
+ * Status has value at each target: Freeze and Paralyzed.
+ */
+const controlsAtZero = (damageType: DamageType): boolean =>
+  damageType === "frost" || damageType === "lightning";
+
+/** The score of the Status of a hit with damage above 0. */
+const STATUS_SCORE: Record<DamageType, number> = {
+  physical: 0,
+  holy: 0,
+  fire: 2,
+  lightning: 3,
+  frost: 4,
 };
 
 /** The hit takes the Unit to 0 HP, and Steadfast does not hold it at 1 HP (GDD 4.7). */
@@ -303,8 +378,12 @@ const scoreDamage = (
     if (kills(hit)) {
       return sum + unitValue(unit) + 10;
     }
-    const status = damageType === "frost" ? 4 : damageType === "fire" ? 2 : 0;
-    return sum + damage * 2 + (damage > 0 ? status : 0);
+    const status = STATUS_SCORE[damageType];
+    // Paralyzed comes also at 0 damage. Freeze too, but the Frost score
+    // stays as it was before Lightning, so the old cards play the same.
+    return (
+      sum + damage * 2 + (damage > 0 || damageType === "lightning" ? status : 0)
+    );
   }, 0);
 
 /**
@@ -320,6 +399,37 @@ const wouldMove = (state: BattleState, unit: UnitState): boolean => {
     nextSpeed(unit) >= 1 &&
     isInsideLane(front) &&
     !unitAt(state, unit.lane, front)
+  );
+};
+
+/**
+ * True when `unit` attacks in its next action (*Spark*, GDD 9): it is not a
+ * Wall, not Frozen and not Paralyzed, it has Attack, and a Unit of the other
+ * side or the Hero that it attacks is in reach of its Speed and Range. It is
+ * an estimate: it does not predict fights.
+ */
+const wouldAttack = (state: BattleState, unit: UnitState): boolean => {
+  if (
+    unit.wall ||
+    unit.frozen ||
+    unit.paralyzed ||
+    attackOf(state, unit) <= 0
+  ) {
+    return false;
+  }
+  const dir = direction(unit.owner);
+  const reach = nextSpeed(unit) + Math.max(unit.range, 1);
+  return (
+    reachesHero(unit) ||
+    state.units.some((other) => {
+      const distance = (other.position - unit.position) * dir;
+      return (
+        other.owner !== unit.owner &&
+        other.lane === unit.lane &&
+        distance > 0 &&
+        distance <= reach
+      );
+    })
   );
 };
 
@@ -625,13 +735,20 @@ const CLEANSE_BLEEDING_SCORE = 4;
 /** The score of a Burn, a Hobble or an Entangle that *Cleanse* ends. */
 const CLEANSE_OTHER_SCORE = 2;
 
+/** The score of a Paralysis that *Cleanse* ends: the Unit gets its attack back. */
+const CLEANSE_PARALYZED_SCORE = 20;
+
 /**
  * The value of the Debuffs that *Cleanse* ends on `unit` (GDD 9): a Freeze
- * first (a Wall does not act, so its Freeze has no value), then the most
- * Poisoned stacks, then Bleeding on a damaged Unit. 0 when no Debuff has value.
+ * first (a Wall does not act, so its Freeze has no value), then a Paralysis
+ * of a Unit with Attack, then the most Poisoned stacks, then Bleeding on a
+ * damaged Unit. 0 when no Debuff has value.
  */
 const cleanseValue = (unit: UnitState): number =>
   (unit.frozen && !unit.wall ? CLEANSE_FROZEN_SCORE : 0) +
+  (unit.paralyzed && !unit.frozen && !unit.wall && unit.attack > 0
+    ? CLEANSE_PARALYZED_SCORE
+    : 0) +
   unit.poisoned * CLEANSE_POISON_SCORE +
   (unit.bleeding > 0 && unit.hp < unit.maxHp ? CLEANSE_BLEEDING_SCORE : 0) +
   (unit.burn > 0 || unit.hobbled > 0 || (unit.entangled && !unit.wall)
@@ -671,7 +788,7 @@ const targetThisTurn = (
   state: BattleState,
   unit: UnitState
 ): UnitState | undefined => {
-  if (unit.frozen || attackOf(state, unit) <= 0) {
+  if (unit.frozen || unit.paralyzed || attackOf(state, unit) <= 0) {
     return undefined;
   }
   const dir = direction(unit.owner);
@@ -868,6 +985,74 @@ const meetsWarriorHoldRule = (
   }
 };
 
+/** *Arc Lightning*, *Thunderstorm* and a Field Effect: at least this many enemy Units. */
+const MAGE_UNITS_HOLD = 2;
+
+/**
+ * The Hold Rules of the Mage cards with their own targets (GDD 9): *Arc
+ * Lightning* hits 2 or more Units or kills, *Thunderstorm* has 2 or more enemy
+ * Units on the Board, and a Field Effect has 2 or more enemy Units in its area.
+ */
+const meetsMageHoldRule = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  effect: MageEffect,
+  target: Target
+): boolean => {
+  const hits = skillHits(state, side, card, effect, target);
+  if (effect.type === "damageArc") {
+    return hits.length >= MAGE_UNITS_HOLD || hits.some(kills);
+  }
+  return hits.length >= MAGE_UNITS_HOLD;
+};
+
+/** The score of each later hit of a Field Effect on a Unit that survives the first hit. */
+const scoreLaterHits = (
+  hits: readonly SkillHit[],
+  damageType: DamageType,
+  later: number
+): number =>
+  later *
+  hits.reduce(
+    (sum, hit) =>
+      kills(hit) ? sum : sum + hit.damage * 2 + STATUS_SCORE[damageType],
+    0
+  );
+
+/**
+ * The score of a Mage card with its own target (GDD 9): the damage score of
+ * its hits. *Thunderstorm* weighs each enemy Unit by the chance that the
+ * random choice hits it. A Field Effect adds its later hits on the Units that
+ * survive, at their place now.
+ */
+const scoreMageSkill = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  effect: MageEffect,
+  target: Target
+): number => {
+  const hits = skillHits(state, side, card, effect, target);
+  const damage = scoreDamage(hits, effect.damageType);
+  switch (effect.type) {
+    case "damageArc": {
+      return damage;
+    }
+    case "damageRandom": {
+      return hits.length <= effect.units
+        ? damage
+        : (damage * effect.units) / hits.length;
+    }
+    case "fieldEffect": {
+      return damage + scoreLaterHits(hits, effect.damageType, effect.turns - 1);
+    }
+    default: {
+      return absurd(effect);
+    }
+  }
+};
+
 /** The other cards in `side`'s Hand that are not Ready. */
 const notReadyCards = (
   state: BattleState,
@@ -889,14 +1074,23 @@ const meetsDamageHoldRule = (
   const hits = skillHits(state, side, card, effect, target);
   switch (effect.type) {
     case "damageUnit": {
-      // A Frost hit Freezes, so each hit has value: no Hold Rule.
-      return effect.damageType === "frost" || hits.some(kills);
+      // A Frost hit Freezes, so each hit has value: no Hold Rule. A Lightning
+      // hit (*Spark*) has value on a Unit that would attack.
+      return (
+        effect.damageType === "frost" ||
+        hits.some(
+          (hit) =>
+            kills(hit) ||
+            (effect.damageType === "lightning" && wouldAttack(state, hit.unit))
+        )
+      );
     }
     case "damageArea":
     case "damageLane": {
-      // A Frost hit Freezes also at 0 damage, so each Frost hit counts.
+      // A Frost or Lightning hit gives its Status also at 0 damage, so each
+      // such hit counts.
       const counted = hits.filter(
-        ({ damage }) => damage > 0 || effect.damageType === "frost"
+        ({ damage }) => damage > 0 || controlsAtZero(effect.damageType)
       );
       return counted.length >= 2 || counted.some(kills);
     }
@@ -936,36 +1130,22 @@ const meetsDamageHoldRule = (
 };
 
 /**
- * The Hold Rule of each Skill Card effect type (GDD 9). It is true when the
- * play at `target` meets the condition. While it is false, the AI keeps the
- * card in the Hand.
+ * The Hold Rules of the Priest cards that protect a friendly Unit: a Ward,
+ * *Aegis of Dawn*, *Unbroken Vow* and *Cleanse* (GDD 9).
  */
-const meetsHoldRule = (
+const meetsProtectHoldRule = (
   state: BattleState,
   side: Side,
   card: HandCard,
-  definition: SkillCardDefinition,
+  effect: Extract<
+    SkillEffect,
+    {
+      readonly type: "wardUnit" | "wardLane" | "steadfastUnit" | "cleanseUnit";
+    }
+  >,
   target: Target
 ): boolean => {
-  const { effect } = definition;
-  if (isDamageEffect(effect)) {
-    return meetsDamageHoldRule(state, side, card, effect, target);
-  }
   switch (effect.type) {
-    // The Hero damage has value at each target: no Hold Rule.
-    case "damageHero": {
-      return true;
-    }
-    case "healUnit": {
-      // A friendly Unit has lost at least 50% of its maximum HP.
-      return state.units.some(
-        (unit) =>
-          unit.owner === side && (unit.maxHp - unit.hp) * 2 >= unit.maxHp
-      );
-    }
-    case "healLane": {
-      return laneLostHp(state, side, target) >= LANE_HEAL_HOLD;
-    }
     case "wardUnit": {
       const unit = friendlyUnitAt(state, side, target);
       return (
@@ -991,6 +1171,52 @@ const meetsHoldRule = (
         unit !== undefined &&
         (cleanseValue(unit) > 0 || (unit.maxHp - unit.hp) * 2 >= unit.maxHp)
       );
+    }
+    default: {
+      return absurd(effect);
+    }
+  }
+};
+
+/**
+ * The Hold Rule of each Skill Card effect type (GDD 9). It is true when the
+ * play at `target` meets the condition. While it is false, the AI keeps the
+ * card in the Hand.
+ */
+const meetsHoldRule = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  definition: SkillCardDefinition,
+  target: Target
+): boolean => {
+  const { effect } = definition;
+  if (isDamageEffect(effect)) {
+    return meetsDamageHoldRule(state, side, card, effect, target);
+  }
+  if (isMageEffect(effect)) {
+    return meetsMageHoldRule(state, side, card, effect, target);
+  }
+  switch (effect.type) {
+    // The Hero damage has value at each target: no Hold Rule.
+    case "damageHero": {
+      return true;
+    }
+    case "healUnit": {
+      // A friendly Unit has lost at least 50% of its maximum HP.
+      return state.units.some(
+        (unit) =>
+          unit.owner === side && (unit.maxHp - unit.hp) * 2 >= unit.maxHp
+      );
+    }
+    case "healLane": {
+      return laneLostHp(state, side, target) >= LANE_HEAL_HOLD;
+    }
+    case "wardUnit":
+    case "wardLane":
+    case "steadfastUnit":
+    case "cleanseUnit": {
+      return meetsProtectHoldRule(state, side, card, effect, target);
     }
     case "laneArmor": {
       return (
@@ -1107,6 +1333,9 @@ const scoreSkill = (
   if (isDamageEffect(effect)) {
     return scoreDamageSkill(state, side, card, effect, target);
   }
+  if (isMageEffect(effect)) {
+    return scoreMageSkill(state, side, card, effect, target);
+  }
   switch (effect.type) {
     case "damageHero": {
       return target._tag === "Hero"
@@ -1181,18 +1410,19 @@ const scoreSkill = (
 
 /**
  * A Unit that survives a damage Skill Card: a Frost hit Freezes it (GDD 4.7),
- * an Entangle at damage above 0 stops its next Movement, and a push (for
- * Knockback, at damage above 0) moves it.
+ * a Lightning hit Paralyzes it, an Entangle at damage above 0 stops its next
+ * Movement, and a push (for Knockback, at damage above 0) moves it.
  */
 const afterHit = (
   state: BattleState,
   unit: UnitState,
   damage: number,
-  effect: DamageEffect,
+  effect: DamageEffect | MageEffect,
   rank: HandCard["rank"]
 ): UnitState => ({
   ...unit,
   frozen: unit.frozen || effect.damageType === "frost",
+  paralyzed: unit.paralyzed || effect.damageType === "lightning",
   entangled:
     unit.entangled ||
     ((effect.type === "damageEntangle" ||
@@ -1207,8 +1437,9 @@ const afterHit = (
 
 /**
  * The Units after a Skill Card. A damage card removes the Units that it kills
- * and changes the others with `afterHit`. Other Skill Cards do not change the
- * Hero damage.
+ * and changes the others with `afterHit`. *Thunderstorm* counts only when it
+ * hits each enemy Unit, because the random choice is not known. Other Skill
+ * Cards do not change the Hero damage.
  */
 const unitsAfterSkill = (
   state: BattleState,
@@ -1218,13 +1449,15 @@ const unitsAfterSkill = (
   target: Target
 ): UnitState[] => {
   const { effect } = definition;
-  if (!isDamageEffect(effect)) {
+  if (!(isDamageEffect(effect) || isMageEffect(effect))) {
+    return state.units;
+  }
+  const predicted = skillHits(state, side, card, effect, target);
+  if (effect.type === "damageRandom" && predicted.length > effect.units) {
     return state.units;
   }
   const hits = new Map(
-    skillHits(state, side, card, effect, target).map(
-      ({ unit, damage }) => [unit, damage] as const
-    )
+    predicted.map(({ unit, damage }) => [unit, damage] as const)
   );
   return state.units.flatMap((unit) => {
     const damage = hits.get(unit);

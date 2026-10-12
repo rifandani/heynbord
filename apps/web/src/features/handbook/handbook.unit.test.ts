@@ -234,6 +234,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       bonusAttackTurns: 0,
       burn: 2,
       frozen: true,
+      paralyzed: true,
       entangled: true,
       ward: 4,
       steadfast: true,
@@ -582,11 +583,13 @@ describe("chapterEntries", () => {
       "damageFire",
       "damageFrost",
       "damageHoly",
+      "damageLightning",
     ]);
     expect(grouped).toEqual([
       ["statusWard", "buff"],
       ["statusSteadfast", "buff"],
       ["statusFreeze", "debuff"],
+      ["statusParalyze", "debuff"],
       ["statusBurn", "debuff"],
       ["statusPoison", "debuff"],
       ["statusEntangle", "debuff"],

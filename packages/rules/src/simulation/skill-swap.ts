@@ -15,7 +15,7 @@ import type {
   SkillCardDefinition,
 } from "../content/schema";
 import { simulateMatchup } from "./simulate";
-import type { MatchupOptions } from "./simulate";
+import type { MatchupOptions, MatchupReport } from "./simulate";
 
 /** The Deck of each Class that gets the swap. */
 export const SWAP_DECKS: Readonly<Record<ClassId, string>> = {
@@ -149,6 +149,12 @@ export interface SwapResult {
   readonly reverse: number | null;
   /** True when `after` is within `SWAP_LIMIT` of `before`. */
   readonly pass: boolean;
+  /**
+   * The lock rate of the Deck before and after the swap (ADR-0025): the share
+   * of Battles in which an opponent Unit skipped 3 or more actions in a row.
+   */
+  readonly lockBefore: number;
+  readonly lockAfter: number;
 }
 
 export interface SkillSwapReport {
@@ -178,22 +184,24 @@ export const isSwapPass = (before: number, after: number, battles: number) =>
 export const simulateSkillSwap = (
   skill: SkillCardDefinition,
   options: MatchupOptions,
-  cache = new Map<string, number>()
+  cache = new Map<string, MatchupReport>()
 ): SkillSwapReport => {
   const swap = skillSwap(skill);
-  const rate = (deck: Archetype, opponentId: string) =>
-    simulateMatchup(deck, archetypeOf(opponentId), options).winRate;
+  const matchup = (deck: Archetype, opponentId: string) =>
+    simulateMatchup(deck, archetypeOf(opponentId), options);
   const results = SWAP_OPPONENTS.map((opponentId): SwapResult => {
     const key = `${swap.base.id}:${opponentId}`;
-    const before = cache.get(key) ?? rate(swap.base, opponentId);
+    const before = cache.get(key) ?? matchup(swap.base, opponentId);
     cache.set(key, before);
-    const after = rate(swap.swapped, opponentId);
+    const after = matchup(swap.swapped, opponentId);
     return {
       opponentId,
-      before,
-      after,
-      reverse: swap.reverse ? rate(swap.reverse, opponentId) : null,
-      pass: isSwapPass(before, after, options.seeds * 2),
+      before: before.winRate,
+      after: after.winRate,
+      reverse: swap.reverse ? matchup(swap.reverse, opponentId).winRate : null,
+      pass: isSwapPass(before.winRate, after.winRate, options.seeds * 2),
+      lockBefore: before.lockRate,
+      lockAfter: after.lockRate,
     };
   });
   return {

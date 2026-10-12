@@ -124,6 +124,7 @@ const DAMAGE_TYPES: readonly DamageType[] = [
   "fire",
   "frost",
   "holy",
+  "lightning",
 ];
 
 const ROLES: readonly UnitRole[] = [
@@ -697,6 +698,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   status: ["damageType", "statusBurn", "statusFreeze"],
   statusBurn: ["damageFire", "endPhase"],
   statusFreeze: ["damageFrost"],
+  statusParalyze: ["damageLightning", "statusFreeze", "keywordRetaliate"],
   statusPoison: ["keywordPoison", "endPhase"],
   statusEntangle: ["keywordEntangle", "movement"],
   statusBleed: ["keywordBleed", "keywordRegenerate"],
@@ -719,6 +721,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   damageFire: ["statusBurn"],
   damageFrost: ["statusFreeze"],
   damageHoly: ["keywordArmor"],
+  damageLightning: ["statusParalyze"],
   race: ["creatureCard"],
   class: ["skillCard", "hero"],
   role: ["creatureCard", "range"],
@@ -869,6 +872,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "keywordRetaliate",
   "status",
   "statusFreeze",
+  "statusParalyze",
   "statusBleed",
   "statusHobble",
   "statusWard",

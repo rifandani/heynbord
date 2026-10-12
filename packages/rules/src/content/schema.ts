@@ -29,7 +29,18 @@ export type RaceId = typeof RaceId.Type;
 export const ClassId = Schema.Literals(["warrior", "ranger", "mage", "priest"]);
 export type ClassId = typeof ClassId.Type;
 
-const DamageType = Schema.Literals(["physical", "fire", "frost", "holy"]);
+/**
+ * Lightning gives Paralyzed (ADR-0029). It is open to each Race and Class. A
+ * Ranged Creature Card with Lightning needs a lock check before it goes into
+ * the content, the same as Frost (ADR-0025): a content test stops it.
+ */
+const DamageType = Schema.Literals([
+  "physical",
+  "fire",
+  "frost",
+  "holy",
+  "lightning",
+]);
 export type DamageType = typeof DamageType.Type;
 
 const UnitRole = Schema.Literals([
@@ -372,6 +383,41 @@ const SkillEffect = Schema.Union([
     damageType: DamageType,
   }),
   Schema.Struct({
+    /**
+     * Damage to one enemy Unit and to the enemy Units in the same Column in
+     * the Lanes next to it (*Arc Lightning*). A Closed Lane has no Unit, so
+     * with only 1 open Lane it hits only its target.
+     */
+    type: Schema.Literal("damageArc"),
+    amount: SkillAmount,
+    damageType: DamageType,
+  }),
+  Schema.Struct({
+    /**
+     * Damage to `units` random different enemy Units (*Thunderstorm*). With
+     * fewer enemy Units, it hits each one time. It never hits a Hero. The
+     * Battle seed sets the choice.
+     */
+    type: Schema.Literal("damageRandom"),
+    amount: SkillAmount,
+    damageType: DamageType,
+    units: between(1, 8),
+  }),
+  Schema.Struct({
+    /**
+     * A Field Effect (GDD 4.8) on an area of `lanes` Lanes × `columns`
+     * Columns. In each End Phase of its owner, for `turns` End Phases, it
+     * deals the damage to each enemy Unit in the area. The first hit is in the
+     * End Phase of the Turn when it is played.
+     */
+    type: Schema.Literal("fieldEffect"),
+    amount: SkillAmount,
+    damageType: DamageType,
+    lanes: between(1, 3),
+    columns: between(1, 4),
+    turns: between(1, 5),
+  }),
+  Schema.Struct({
     /** Damage to one enemy Hero. A Hero has no Armor and cannot Block (GDD 4.7). */
     type: Schema.Literal("damageHero"),
     amount: SkillAmount,
@@ -473,6 +519,12 @@ const SkillTarget = Schema.Literals([
   /** Each Unit of the caster's Side, also a Token, a Wall and a Unit at full HP. Never a Hero. */
   "friendlyUnit",
   "friendlyLane",
+  /**
+   * The area of a Field Effect: the corner Square nearest to the caster's
+   * Hero, in the upper Lane of the area (GDD 4.8). The area stays inside the
+   * Board, and no Square of it is in a Closed Lane. Only a `fieldEffect` has it.
+   */
+  "area",
   "none",
 ]);
 export type SkillTarget = typeof SkillTarget.Type;

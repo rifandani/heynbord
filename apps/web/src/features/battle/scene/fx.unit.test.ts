@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
 import { eventDuration } from "@/features/battle/battle-timeline";
-import type { BattleView } from "@/features/battle/battle-view";
+import type { BattleView, UnitView } from "@/features/battle/battle-view";
 import { currentCast } from "@/features/battle/cast";
 import { DAMAGE_COLORS } from "@/features/battle/palette";
 import type { Fx } from "@/features/battle/scene/fx";
@@ -162,6 +162,118 @@ describe("fxForEvent edge cases", () => {
     expect(
       fxForEvent({ _tag: "UnitSummoned", unit: snapshot }, view, view, 0, 1)[0]
     ).toMatchObject({ color: "#ff7a6b" });
+  });
+});
+
+describe("fxForEvent for the Mage cards of #65", () => {
+  const field = {
+    id: 5,
+    owner: "player" as const,
+    cardId: "mage.wildfire",
+    lane: 0,
+    position: 6,
+    lanes: 2,
+    columns: 2,
+    damageType: "fire" as const,
+    turns: 2,
+  };
+  const withField: BattleView = { ...view, fieldEffects: [field] };
+
+  it("puts a ring of the Damage Type color on each Square of a Field Effect when it is placed and when it strikes", () => {
+    const placed = fxForEvent(
+      {
+        _tag: "FieldEffectPlaced",
+        field: {
+          ...field,
+          card: { instanceId: 1, cardId: "mage.wildfire", rank: "rare" },
+          amount: 2,
+        },
+      },
+      view,
+      withField,
+      2,
+      1
+    );
+    expect(placed).toHaveLength(4);
+    expect(placed[0]).toMatchObject({
+      kind: "ring",
+      color: DAMAGE_COLORS.fire,
+      x: squareX(6),
+      z: laneZ(0, view.lanes),
+      start: 2,
+    });
+    expect(
+      fxForEvent(
+        { _tag: "FieldEffectStruck", fieldId: 5, turns: 1 },
+        withField,
+        withField,
+        0,
+        1
+      )
+    ).toHaveLength(4);
+    expect(
+      fxForEvent(
+        { _tag: "FieldEffectEnded", fieldId: 5 },
+        withField,
+        view,
+        0,
+        1
+      )
+    ).toEqual([]);
+  });
+
+  it("shows the Paralyzed sparks when a Unit does not attack", () => {
+    const unit: UnitView = {
+      id: 77,
+      owner: "enemy",
+      source: { _tag: "Card", cardId: "human.halberdier" },
+      rank: "common",
+      lane: 0,
+      position: 6,
+      attack: 4,
+      rallyBonus: 0,
+      swarm: 0,
+      swarmBonus: 0,
+      bonusAttack: 0,
+      bonusAttackTurns: 0,
+      reborn: false,
+      hp: 6,
+      maxHp: 6,
+      armor: 0,
+      bonusArmor: 0,
+      bonusArmorTurns: 0,
+      range: 0,
+      flying: false,
+      damageType: "physical",
+      burn: 0,
+      poisoned: 0,
+      hobbled: 0,
+      bleeding: 0,
+      exposed: 0,
+      exposedTurns: 0,
+      frozen: false,
+      paralyzed: false,
+      entangled: false,
+      ward: 0,
+      steadfast: false,
+      wall: false,
+    };
+    const withUnit: BattleView = { ...view, units: [unit] };
+    expect(
+      fxForEvent(
+        { _tag: "AttackSkipped", unitId: 77 },
+        withUnit,
+        withUnit,
+        1,
+        2
+      )
+    ).toEqual([
+      expect.objectContaining({
+        kind: "particles",
+        burst: "paralyze",
+        duration: BURST_DURATION / 2,
+      }),
+    ]);
   });
 });
 

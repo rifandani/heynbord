@@ -243,14 +243,14 @@ describe("cardText (CRD-08)", () => {
       )
     );
     expect(effects("ranger.warningShot")).toEqual(
-      [8, 10, 12, 14, 17].map(
+      [6, 7, 8, 10, 12].map(
         (amount) =>
           `Deal ${amount} Physical damage to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.`
       )
     );
     expect(effects("ranger.longShot")).toEqual(
       [8, 10, 12, 14, 17].map(
-        (amount) => `Deal ${amount} Physical damage to the enemy Hero.`
+        (amount) => `Deal ${amount} damage to the enemy Hero.`
       )
     );
     const longShot = skill("ranger.longShot", "uncommon");
@@ -299,10 +299,6 @@ describe("cardText (CRD-08)", () => {
     );
     expect(effect("warrior.shieldBash", "common")).toBe(
       "Deal 2 Physical damage to an enemy Unit. Friendly Units in its Lane get Armor 1 for the next enemy Turn."
-    );
-    // Rare: 2 × 1.45 = 2.9 and 4 × 1.45 = 5.8, rounded to 3 and 6.
-    expect(effect("ranger.harryingShot", "rare")).toBe(
-      "Deal 3 Physical damage to an enemy Unit. Then deal 6 Physical damage to the enemy Hero."
     );
     expect(effect("ranger.barbedArrow", "uncommon")).toBe(
       "Deal 6 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Bleeding 2."
@@ -392,6 +388,30 @@ describe("cardText (CRD-08)", () => {
     );
   });
 
+  it("builds the text of the Lightning and Field Effect Mage cards of #65", () => {
+    const effect = (cardId: string, rank: RankId) =>
+      resolve(skill(cardId, rank).effect);
+    expect(effect("mage.spark", "common")).toBe(
+      "Deal 1 Lightning damage to an enemy Unit."
+    );
+    expect(effect("mage.arcLightning", "uncommon")).toBe(
+      "Deal 2 Lightning damage to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it."
+    );
+    expect(effect("mage.thunderstorm", "rare")).toBe(
+      "Deal 2 Lightning damage to 3 random different enemy Units."
+    );
+    expect(effect("mage.thunderstorm", "epic")).toBe(
+      "Deal 3 Lightning damage to 3 random different enemy Units."
+    );
+    expect(effect("mage.wildfire", "rare")).toBe(
+      "Select an area of 2 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 2 Fire damage."
+    );
+    expect(effect("mage.blizzard", "epic")).toBe(
+      "Select an area of 3 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 1 Frost damage."
+    );
+    expect(resolve(skill("mage.blizzard", "epic").name)).toBe("Blizzard");
+  });
+
   it("builds the text of the Rare and Epic Ranger Skill Cards of #59", () => {
     const effect = (cardId: string, rank: RankId) =>
       resolve(skill(cardId, rank).effect);
@@ -403,7 +423,7 @@ describe("cardText (CRD-08)", () => {
     );
     // Rare: 6 × 1.45 = 8.7, rounded to 9.
     expect(effect("ranger.heartseeker", "rare")).toBe(
-      "Deal 9 Physical damage to the enemy Hero."
+      "Deal 9 damage to the enemy Hero."
     );
     expect(effect("ranger.rainOfArrows", "epic")).toBe(
       "Deal 2 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
@@ -412,6 +432,21 @@ describe("cardText (CRD-08)", () => {
       "Rain of Arrows"
     );
   });
+
+  it.each([
+    ["common", 3, 3],
+    ["uncommon", 4, 3],
+    ["rare", 5, 3],
+    ["epic", 6, 4],
+    ["legendary", 7, 5],
+  ] as const)(
+    "shows Harrying Shot damage at %s",
+    (rank, unitDamage, heroDamage) => {
+      expect(resolve(skill("ranger.harryingShot", rank).effect)).toBe(
+        `Deal ${unitDamage} Physical damage to an enemy Unit. Then deal ${heroDamage} damage to the enemy Hero.`
+      );
+    }
+  );
 
   it("shows the Hobble value of a Pavise Arbalist copy for its Rank", () => {
     expect(hobbleName("rare")).toBe("Hobble 1");
@@ -547,6 +582,7 @@ describe("unitStatusText", () => {
     exposedTurns: 0,
     burn: 0,
     frozen: false,
+    paralyzed: false,
     entangled: false,
     ward: 0,
     steadfast: false,
@@ -572,6 +608,7 @@ describe("unitStatusText", () => {
       exposedTurns: 2,
       burn: 2,
       frozen: true,
+      paralyzed: true,
       entangled: true,
       ward: 0,
       steadfast: false,
@@ -589,6 +626,7 @@ describe("unitStatusText", () => {
       "swarmBonus",
       "burn",
       "freeze",
+      "paralyze",
       "entangle",
       "hobble",
       "bleed",
@@ -609,6 +647,7 @@ describe("unitStatusText", () => {
       "Attack +1 From Swarm: another friendly Unit is in this Lane.",
       "Burn 1 damage in each End Phase of its owner. End Phases left: 2.",
       "Frozen It skips its next action.",
+      "Paralyzed A Debuff. It does not attack in its next action, but it can still move. Until then, it does not Retaliate and does not use First Strike.",
       "Entangled Speed 0 in its next action. It can still attack.",
       "Hobbled 1 This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner.",
       "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",

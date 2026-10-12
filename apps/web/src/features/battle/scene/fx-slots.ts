@@ -58,8 +58,8 @@ const fixed = (at: FxCell, blend: FxSlot["blend"], anchor: string): FxSlot => ({
  * The slot table of the effects atlas: the source of truth for the code, the
  * placeholders and the pack script of the painted atlas (#12). The code uses
  * only the slot names, so the art can change with no code change. The row at
- * y = 1536 after the `ward` and `steadfast` cells and the rest of the row at
- * y = 1408 after `icon-exposed` are free for new slots.
+ * y = 1536 after the `bolt` cell, the row at y = 1792 and the rest of the row
+ * at y = 1408 after `icon-paralyze` are free for new slots.
  */
 export const FX_SLOTS = {
   glow: code(cell(0, 0, 512), "additive"),
@@ -97,8 +97,18 @@ export const FX_SLOTS = {
     FX_ANCHORS.iconSteadfast
   ),
   "icon-exposed": fixed(cell(1536, 1408, 128), "alpha", FX_ANCHORS.iconExposed),
+  "icon-paralyze": fixed(
+    cell(1664, 1408, 128),
+    "alpha",
+    FX_ANCHORS.iconParalyze
+  ),
   ward: fixed(cell(0, 1536, 512, 256), "additive", FX_ANCHORS.holy),
   steadfast: fixed(cell(512, 1536, 256), "additive", FX_ANCHORS.iconSteadfast),
+  // The ground of a Field Effect Square (#66), seen from above: fire and snow.
+  "field-fire": fixed(cell(768, 1536, 256), "alpha", FX_ANCHORS.fire),
+  "field-snow": fixed(cell(1024, 1536, 256), "alpha", FX_ANCHORS.frost),
+  // A jagged lightning bolt from above: the Lightning hit (#66).
+  bolt: code(cell(1280, 1536, 256), "additive"),
 } as const satisfies Readonly<Record<string, FxSlot>>;
 
 export type FxSlotName = keyof typeof FX_SLOTS;

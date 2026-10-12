@@ -175,7 +175,7 @@ describe("applyEvent with Swarm, Rebirth and Summon", () => {
 
 /**
  * Stage 1-4 with an enemy Deck of Elf cards and the 3 Ranger Skill Cards. Each
- * copy is Rare, except Warning Shot: at Common (8 damage), a Rare player Unit
+ * copy is Rare, except Warning Shot: at Common (6 damage), a Rare player Unit
  * survives it and is pushed.
  */
 const rangerStage = (): StageDefinition => {
@@ -507,6 +507,65 @@ describe("applyEvent with the Rare and Epic Warrior Skill Cards of #63", () => {
   });
 });
 
+/** Stage 1-4 with an enemy Mage Deck of the Lightning and Field Effect cards of #65. */
+const mageStage = (): StageDefinition => {
+  const stage = getStage("1-4");
+  const cards = [
+    ["human.militiaRecruit", "rare"],
+    ["human.halberdier", "rare"],
+    ["mage.spark", "rare"],
+    ["mage.arcLightning", "rare"],
+    ["mage.wildfire", "rare"],
+    ["mage.thunderstorm", "rare"],
+    ["mage.blizzard", "epic"],
+  ] as const;
+  return {
+    ...stage,
+    enemy: {
+      ...stage.enemy,
+      classId: "mage",
+      deck: cards.flatMap(([cardId, rank]) =>
+        Array.from({ length: 2 }, () => ({ cardId, rank }))
+      ),
+    },
+  };
+};
+
+describe("applyEvent with the Mage cards of #65", () => {
+  const battles = [1, 2, 3, 4].map((seed) =>
+    steps(seed, "1-4", "vanguard", mageStage(), "rare")
+  );
+  const events = battles.flat().flatMap((entry) => entry.events);
+
+  it("rebuilds the view of the next state from the events", () => {
+    for (const all of battles) {
+      for (const { before, after, events: stepEvents } of all) {
+        expect(stepEvents.reduce(applyEvent, viewFromState(before))).toEqual(
+          viewFromState(after)
+        );
+      }
+    }
+  });
+
+  it("plays Paralyzed, a skipped attack and a Field Effect that strikes and ends", () => {
+    expect(
+      events.some(
+        (event) => event._tag === "StatusApplied" && event.status === "paralyze"
+      )
+    ).toBe(true);
+    expect(events.some((event) => event._tag === "AttackSkipped")).toBe(true);
+    expect(events.some((event) => event._tag === "FieldEffectPlaced")).toBe(
+      true
+    );
+    expect(events.some((event) => event._tag === "FieldEffectStruck")).toBe(
+      true
+    );
+    expect(events.some((event) => event._tag === "FieldEffectEnded")).toBe(
+      true
+    );
+  });
+});
+
 /** A Halberdier Unit view at Square 5 of Lane 1, with no bonus and no Status. */
 const halberdierView = (owner: "player" | "enemy", id: number): UnitView => ({
   id,
@@ -537,10 +596,91 @@ const halberdierView = (owner: "player" | "enemy", id: number): UnitView => ({
   exposed: 0,
   exposedTurns: 0,
   frozen: false,
+  paralyzed: false,
   entangled: false,
   ward: 0,
   steadfast: false,
   wall: false,
+});
+
+describe("the Paralyzed and Field Effect view", () => {
+  const base: BattleView = {
+    ...viewFromState(
+      createBattle({
+        seed: 1,
+        stage: getStage("1-1"),
+        player: {
+          classId: "mage",
+          deck: getStarterDeck("vanguard").deck,
+          level: 1,
+          gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+        },
+      }).state
+    ),
+    units: [],
+    fieldEffects: [],
+  };
+
+  it("sets Paralyzed from StatusApplied, and ends it at AttackSkipped, UnitSkipped and DebuffsRemoved", () => {
+    const view: BattleView = { ...base, units: [halberdierView("enemy", 4)] };
+    const paralyzed = applyEvent(
+      view,
+      BattleEvent.StatusApplied({ unitId: 4, status: "paralyze" })
+    );
+    expect(paralyzed.units[0]?.paralyzed).toBe(true);
+    for (const end of [
+      BattleEvent.AttackSkipped({ unitId: 4 }),
+      BattleEvent.UnitSkipped({ unitId: 4 }),
+      BattleEvent.DebuffsRemoved({ unitId: 4 }),
+      BattleEvent.UnitReborn({ unitId: 4, hp: 1 }),
+    ]) {
+      expect(applyEvent(paralyzed, end).units[0]?.paralyzed, end._tag).toBe(
+        false
+      );
+    }
+  });
+
+  it("adds a Field Effect at FieldEffectPlaced, lowers its hits at FieldEffectStruck and removes it at FieldEffectEnded", () => {
+    const placed = applyEvent(
+      base,
+      BattleEvent.FieldEffectPlaced({
+        field: {
+          id: 9,
+          owner: "player",
+          card: { instanceId: 1, cardId: "mage.wildfire", rank: "rare" },
+          lane: 0,
+          position: 6,
+          lanes: 2,
+          columns: 2,
+          amount: 2,
+          damageType: "fire",
+          turns: 2,
+        },
+      })
+    );
+    expect(placed.fieldEffects).toEqual([
+      {
+        id: 9,
+        owner: "player",
+        cardId: "mage.wildfire",
+        lane: 0,
+        position: 6,
+        lanes: 2,
+        columns: 2,
+        damageType: "fire",
+        turns: 2,
+      },
+    ]);
+    const struck = applyEvent(
+      placed,
+      BattleEvent.FieldEffectStruck({ fieldId: 9, turns: 1 })
+    );
+    expect(struck.fieldEffects[0]?.turns).toBe(1);
+    expect(
+      applyEvent(struck, BattleEvent.FieldEffectEnded({ fieldId: 9 }))
+        .fieldEffects
+    ).toEqual([]);
+  });
 });
 
 describe("the bonus Attack and Exposed view", () => {
@@ -772,6 +912,7 @@ describe("the Graveyard view", () => {
           hobbled: 0,
           bleeding: 0,
           frozen: false,
+          paralyzed: false,
           entangled: false,
           ward: 0,
           steadfast: false,
@@ -836,6 +977,7 @@ describe("the bonus Armor view", () => {
       hobbled: 0,
       bleeding: 0,
       frozen: false,
+      paralyzed: false,
       entangled: false,
       ward: 0,
       steadfast: false,
@@ -907,6 +1049,7 @@ describe("the Hobbled and Bleeding view", () => {
       hobbled: 0,
       bleeding: 0,
       frozen: false,
+      paralyzed: false,
       entangled: false,
       ward: 0,
       steadfast: false,
@@ -987,6 +1130,7 @@ describe("a push", () => {
       hobbled: 0,
       bleeding: 0,
       frozen: false,
+      paralyzed: false,
       entangled: false,
       ward: 0,
       steadfast: false,
@@ -1103,6 +1247,7 @@ describe("the Entangled view", () => {
     hobbled: 0,
     bleeding: 0,
     frozen: false,
+    paralyzed: false,
     entangled: false,
     ward: 0,
     steadfast: false,
@@ -1193,6 +1338,7 @@ const snapshot = (
   hobbled: 0,
   bleeding: 0,
   frozen: false,
+  paralyzed: false,
   entangled: false,
   ward: 0,
   steadfast: false,
@@ -1301,6 +1447,7 @@ describe("the Token, Rebirth and Swarm view", () => {
       hp: 1,
       reborn: true,
       frozen: false,
+      paralyzed: false,
       burn: 0,
       ward: 0,
       steadfast: false,

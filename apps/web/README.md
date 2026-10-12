@@ -9,7 +9,7 @@ v1:
 New Unit Ability:
 
 - remove "until the end of the Turn" restriction in "Rally"
-- make sure to distinguish between physical damage and magic damage
+- make sure to distinguish between damage types when damage hits a Unit
 - update the Keyword "Heroic N" into "+N Attack after this Unit attacks enemy Unit", with max N = 4, only Rare can have N=2, only Epic can have N=3, only Legendary can have N=4
 - Devour N: When this Unit kills an enemy Unit, it gains +N Attack and +N HP, im thinking this Keyword is exclusive to Feral replacing Trample, but do u think its a good idea?
 - Resistance N: Reduce magic damage by N (similar to Armor)
@@ -31,8 +31,8 @@ New Unit Ability:
 - Inspiration: Reduces the Countdown of a card with the highest Countdown in its summoner's hand by 1.
 - Stun: Damaged Unit have a 20% chance of skipping their next turn
 - Quick Study: When enemy hero uses a Skill, a card with highest countdown in summoner’s hand will reduce by 1
-- Iron Guardian: Takes all physical damage that would be dealt to adjacent ally Units or Heroes
-- Spell Guardian: Takes all magic damage that would be dealt to adjacent ally Units or Heroes
+- Iron Guardian: Takes all physical damage that would be dealt to adjacent ally Units
+- Spell Guardian: Takes all magic damage that would be dealt to adjacent ally Units
 - Disrupt: When this Unit deals damage to enemy hero, the Countdown of 1 lowest countdown card in this enemy’s hero hand is increased by 1
 - Purge: Has a 20% chance to remove 1 buff from a random enemy Unit
 - Dispel: Has a 20% chance to remove 1 buff from a random player's Unit
@@ -85,7 +85,7 @@ Warrior:
 
 Elf:
 
-- Skybreaker: Deals 2 damage and prevents enemy Flying creatures from passing over
+- Skybreaker: Deals 2 damage and prevents enemy Flying Unit from passing over for 2 turns, starts at Uncommon
 
 Feral:
 

@@ -4,7 +4,13 @@ export {
   playerHeroHp,
   STARTING_HAND,
 } from "./battle/create-battle";
-export { isBlockedByUnique, legalTargets, sameTarget } from "./battle/targets";
+export {
+  areaSquares,
+  isBlockedByUnique,
+  legalTargets,
+  sameTarget,
+} from "./battle/targets";
+export type { AreaSize } from "./battle/targets";
 export { STAR_FAST_WIN_TURN, starsFor } from "./battle/stars";
 export { step } from "./battle/step";
 export type { StepOutput } from "./battle/step";
@@ -30,6 +36,7 @@ export type {
   BattleState,
   CardInstance,
   DamageSource,
+  FieldEffect,
   HandCard,
   HeroState,
   PlayerSetup,

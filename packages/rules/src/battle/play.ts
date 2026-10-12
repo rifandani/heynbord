@@ -16,7 +16,14 @@ import type {
 import { getToken } from "../content/tokens";
 import { randomInt, rollBasisPoints } from "../random";
 import type { StepContext } from "./context";
-import { direction, isInsideLane, isLaneOpen, isOver, unitAt } from "./context";
+import {
+  direction,
+  findUnit,
+  isInsideLane,
+  isLaneOpen,
+  isOver,
+  unitAt,
+} from "./context";
 import { damageHero, damageUnit } from "./damage";
 import { healUnit } from "./heal";
 import {
@@ -28,7 +35,13 @@ import {
   runExtraActions,
 } from "./resolution";
 import { unitsInArea } from "./targets";
-import type { CardInstance, HandCard, Side, UnitState } from "./types";
+import type {
+  CardInstance,
+  FieldEffect,
+  HandCard,
+  Side,
+  UnitState,
+} from "./types";
 import { BattleEvent, otherSide, Target, unitRank } from "./types";
 import { createToken, createUnit } from "./units";
 
@@ -264,6 +277,7 @@ const giveBonusAttack = (
 const hasDebuff = (unit: UnitState): boolean =>
   unit.burn > 0 ||
   unit.frozen ||
+  unit.paralyzed ||
   unit.entangled ||
   unit.poisoned > 0 ||
   unit.hobbled > 0 ||
@@ -280,6 +294,7 @@ const removeDebuffs = (ctx: StepContext, unit: UnitState): void => {
   }
   unit.burn = 0;
   unit.frozen = false;
+  unit.paralyzed = false;
   unit.entangled = false;
   unit.poisoned = 0;
   unit.hobbled = 0;
@@ -602,6 +617,115 @@ const applyWarrior = (
   }
 };
 
+/**
+ * The enemy Units that *Arc Lightning* hits: the Unit of the target Square,
+ * then the enemy Units in the same Column in the Lane above and the Lane
+ * below. A Closed Lane has no Unit.
+ */
+const arcUnits = (
+  ctx: StepContext,
+  side: Side,
+  target: Target
+): UnitState[] => {
+  if (target._tag !== "Square") {
+    return [];
+  }
+  return [target.lane, target.lane - 1, target.lane + 1].flatMap((lane) => {
+    const unit = unitAt(ctx.state, lane, target.position);
+    return unit && unit.owner !== side ? [unit] : [];
+  });
+};
+
+/**
+ * `count` random different enemy Units (*Thunderstorm*). With fewer enemy
+ * Units, each one. The Battle seed sets the choice. A Hero is never one.
+ */
+const randomEnemyUnits = (
+  ctx: StepContext,
+  side: Side,
+  count: number
+): UnitState[] => {
+  let candidates = ctx.state.units.filter((unit) => unit.owner !== side);
+  const chosen: UnitState[] = [];
+  while (chosen.length < count && candidates.length > 0) {
+    const index = randomInt(ctx.random, candidates.length);
+    // SAFETY: `randomInt` returns a value in `[0, candidates.length)` and the
+    // loop runs only while `candidates` is not empty.
+    chosen.push(candidates[index] as UnitState);
+    candidates = candidates.filter((_, other) => other !== index);
+  }
+  return chosen;
+};
+
+/**
+ * A Field Effect goes on the Board (GDD 4.8). It hits first in the End Phase
+ * of this Turn: `runEndPhase` does the hits.
+ */
+const placeFieldEffect = (
+  ctx: StepContext,
+  side: Side,
+  card: CardInstance,
+  effect: Extract<SkillEffect, { readonly type: "fieldEffect" }>,
+  target: Target
+): void => {
+  if (target._tag !== "Square") {
+    return;
+  }
+  const { state } = ctx;
+  const field: FieldEffect = {
+    id: state.nextId,
+    owner: side,
+    card,
+    lane: target.lane,
+    position: target.position,
+    lanes: effect.lanes,
+    columns: effect.columns,
+    amount: skillAmountForRank(effect.amount, card.rank),
+    damageType: effect.damageType,
+    turns: effect.turns,
+  };
+  state.nextId += 1;
+  state.fieldEffects.push(field);
+  ctx.events.push(BattleEvent.FieldEffectPlaced({ field: { ...field } }));
+};
+
+/**
+ * The Mage cards with new templates: *Arc Lightning* (the target and the
+ * Units next to it), *Thunderstorm* (random enemy Units) and a Field Effect
+ * (*Wildfire*, *Blizzard*). A Unit that an earlier hit removed is not hit.
+ */
+const applyMage = (
+  ctx: StepContext,
+  side: Side,
+  card: CardInstance,
+  effect: Extract<
+    SkillEffect,
+    { readonly type: "damageArc" | "damageRandom" | "fieldEffect" }
+  >,
+  target: Target,
+  crit: number
+): void => {
+  if (effect.type === "fieldEffect") {
+    placeFieldEffect(ctx, side, card, effect, target);
+    return;
+  }
+  const units =
+    effect.type === "damageArc"
+      ? arcUnits(ctx, side, target)
+      : randomEnemyUnits(ctx, side, effect.units);
+  for (const unit of units) {
+    if (isOver(ctx) || !findUnit(ctx.state, unit.id)) {
+      continue;
+    }
+    damageUnit(ctx, unit, {
+      amount: skillAmountForRank(effect.amount, card.rank),
+      damageType: effect.damageType,
+      source: "skill",
+      crit,
+    });
+  }
+};
+
 const applyEffect = (
   ctx: StepContext,
   side: Side,
@@ -649,6 +773,12 @@ const applyEffect = (
     case "exposeUnit":
     case "laneExtraAction": {
       applyWarrior(ctx, side, card, effect, target);
+      return;
+    }
+    case "damageArc":
+    case "damageRandom":
+    case "fieldEffect": {
+      applyMage(ctx, side, card, effect, target, crit);
       return;
     }
     case "lowerCountdown": {

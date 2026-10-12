@@ -124,7 +124,7 @@ describe("poolEntries", () => {
       "warrior.spearThrow",
       "mage.fireball",
     ]);
-    expect(skills.totalCards).toBe(35);
+    expect(skills.totalCards).toBe(40);
     const mage = poolEntries(
       collection,
       filter({ kind: "skill", classId: "mage" })
@@ -134,7 +134,7 @@ describe("poolEntries", () => {
         tile.cardId.startsWith("mage.")
       )
     ).toBe(true);
-    expect(mage).toMatchObject({ ownedCards: 1, totalCards: 5 });
+    expect(mage).toMatchObject({ ownedCards: 1, totalCards: 10 });
     const ranger = poolEntries(
       collection,
       filter({ kind: "skill", classId: "ranger" })

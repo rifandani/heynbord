@@ -19,6 +19,7 @@ export type SoundName =
   | "fire"
   | "frost"
   | "holy"
+  | "lightning"
   | "death"
   | "heal"
   | "ready"
@@ -160,6 +161,11 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
   holy: () => {
     tone(880, 0.3, { type: "sine", gain: 0.15 });
     tone(1320, 0.3, { type: "sine", gain: 0.1 });
+  },
+  // A short crack: bright noise and a buzz that falls fast.
+  lightning: () => {
+    noise(0.08, 5200, 0.35);
+    tone(2400, 0.14, { type: "sawtooth", slideTo: 600, gain: 0.07 });
   },
   death: () => tone(300, 0.35, { type: "sawtooth", slideTo: 80, gain: 0.12 }),
   heal: () => tone(523, 0.25, { type: "sine", gain: 0.15, slideTo: 784 }),

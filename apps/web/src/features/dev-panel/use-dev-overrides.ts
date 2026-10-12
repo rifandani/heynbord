@@ -69,10 +69,7 @@ export const useDevOverridesSync = () => {
       return;
     }
     const overrides = parseOverrides(stored);
-    registry.set(
-      profileOverlayAtom,
-      toOverlay(overrides ?? { unlockAll: true })
-    );
+    registry.set(profileOverlayAtom, overrides ? toOverlay(overrides) : null);
     return registry.subscribe(profileOverlayAtom, (overlay) =>
       store(registry, overlay)
     );

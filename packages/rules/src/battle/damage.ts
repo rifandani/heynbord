@@ -79,6 +79,7 @@ const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
   unit.burn = 0;
   unit.poisoned = 0;
   unit.frozen = false;
+  unit.paralyzed = false;
   unit.entangled = false;
   unit.hobbled = 0;
   unit.bleeding = 0;
@@ -109,6 +110,13 @@ const applyStatus = (
     ctx.events.push(
       BattleEvent.StatusApplied({ unitId: unit.id, status: "freeze" })
     );
+  } else if (damageType === "lightning" && !unit.paralyzed) {
+    // A new Paralyzed on a Paralyzed Unit has no effect and no event, the
+    // same as Entangle on an Entangled Unit.
+    unit.paralyzed = true;
+    ctx.events.push(
+      BattleEvent.StatusApplied({ unitId: unit.id, status: "paralyze" })
+    );
   }
 };
 
@@ -127,8 +135,8 @@ interface HitResult {
  * Damage calculation (GDD 4.7): the value, minus Armor (not for Holy), plus
  * Exposed for a Physical hit, Crit ×2, Block ÷2 rounded up, minimum 0. Then a
  * Ward absorbs damage, also status damage. Absorbed damage is not dealt: `dealt` is the damage after
- * the Ward. Then Steadfast keeps the Unit at 1 HP. Fire gives Burn and Frost
- * gives Freeze, also at 0 damage.
+ * the Ward. Then Steadfast keeps the Unit at 1 HP. Fire gives Burn, Frost
+ * gives Freeze and Lightning gives Paralyzed, also at 0 damage.
  */
 export const damageUnit = (
   ctx: StepContext,

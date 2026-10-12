@@ -67,6 +67,7 @@ const SOUNDS: readonly SoundName[] = [
   "fire",
   "frost",
   "holy",
+  "lightning",
   "death",
   "heal",
   "ready",

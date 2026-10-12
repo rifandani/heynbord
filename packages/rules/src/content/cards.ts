@@ -1441,7 +1441,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damagePush",
-      amount: 8,
+      amount: { common: 6, uncommon: 7, rare: 8, epic: 10, legendary: 12 },
       damageType: "physical",
       squares: 2,
     },
@@ -1462,7 +1462,11 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "common",
     countdown: 1,
     target: "enemyUnit",
-    effect: { type: "damageUnit", amount: 3, damageType: "physical" },
+    effect: {
+      type: "damageUnit",
+      amount: { common: 3, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
+      damageType: "physical",
+    },
   },
   {
     kind: "skill",
@@ -1473,8 +1477,8 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damageUnitHero",
-      amount: 2,
-      heroAmount: 4,
+      amount: { common: 3, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
+      heroAmount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
       damageType: "physical",
     },
   },
@@ -1539,7 +1543,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyLane",
     effect: { type: "damageLaneEntangle", amount: 1, damageType: "physical" },
   },
-  // Mage: area damage.
+  // Mage: area damage, Lightning and Field Effects.
   {
     kind: "skill",
     id: "mage.fireball",
@@ -1584,6 +1588,75 @@ const skills: readonly SkillCardDefinition[] = [
     countdown: 4,
     target: "enemyLane",
     effect: { type: "damageLane", amount: 2, damageType: "frost" },
+  },
+  {
+    kind: "skill",
+    id: "mage.spark",
+    class: "mage",
+    baseRank: "common",
+    countdown: 1,
+    target: "enemyUnit",
+    effect: { type: "damageUnit", amount: 1, damageType: "lightning" },
+  },
+  {
+    kind: "skill",
+    id: "mage.arcLightning",
+    class: "mage",
+    baseRank: "uncommon",
+    // The swap rule (#56): Countdown 4 lost 8.8 / 9.8 points.
+    countdown: 3,
+    target: "enemyUnit",
+    effect: { type: "damageArc", amount: 2, damageType: "lightning" },
+  },
+  {
+    kind: "skill",
+    id: "mage.wildfire",
+    class: "mage",
+    baseRank: "rare",
+    countdown: 4,
+    target: "area",
+    effect: {
+      type: "fieldEffect",
+      // Base Rank Rare: no lower copy exists, so the lower Ranks repeat Rare.
+      // The Rank scale gives 3 at Rare, and the swap rule failed it.
+      amount: { common: 2, uncommon: 2, rare: 2, epic: 3, legendary: 3 },
+      damageType: "fire",
+      lanes: 2,
+      columns: 2,
+      turns: 2,
+    },
+  },
+  {
+    kind: "skill",
+    id: "mage.thunderstorm",
+    class: "mage",
+    baseRank: "rare",
+    countdown: 5,
+    target: "none",
+    effect: {
+      type: "damageRandom",
+      // The Rank scale of 3 gives 4 at Rare, and the swap rule failed it.
+      amount: { common: 2, uncommon: 2, rare: 2, epic: 3, legendary: 3 },
+      damageType: "lightning",
+      units: 3,
+    },
+  },
+  {
+    kind: "skill",
+    id: "mage.blizzard",
+    class: "mage",
+    baseRank: "epic",
+    countdown: 6,
+    target: "area",
+    effect: {
+      type: "fieldEffect",
+      // The Freeze is the payoff. More damage failed the swap rule.
+      amount: { common: 1, uncommon: 1, rare: 1, epic: 1, legendary: 2 },
+      damageType: "frost",
+      lanes: 3,
+      columns: 2,
+      turns: 2,
+    },
   },
   // Priest: healing, protection and Holy damage.
   {

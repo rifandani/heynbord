@@ -374,7 +374,9 @@ const CreatureBody = ({
 };
 
 const skillDamageType = (card: SkillCardDefinition) =>
-  "damageType" in card.effect ? card.effect.damageType : undefined;
+  card.effect.type !== "damageHero" && "damageType" in card.effect
+    ? card.effect.damageType
+    : undefined;
 
 const SkillBody = ({
   card,

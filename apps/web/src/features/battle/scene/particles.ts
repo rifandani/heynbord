@@ -161,6 +161,21 @@ const LOOPS: Readonly<Record<Status, LoopPreset>> = {
       opacity: fade(age) * 0.9,
     }),
   },
+  // Small cyan sparks jump on and off the figure: Paralyzed.
+  paralyze: {
+    slot: "spark",
+    count: 4,
+    period: 0.7,
+    color: FX_ANCHORS.iconParalyze,
+    place: (random, age) => ({
+      x: lerp(-0.32, 0.32, random(0)),
+      y: lerp(0.3, 1.05, random(1)),
+      z: lerp(0.05, 0.25, random(2)),
+      size: lerp(0.1, 0.18, random(3)) * (age < 0.5 ? 1 : 0.6),
+      rotation: random(4) * Math.PI,
+      opacity: age < 0.35 ? 1 : 0,
+    }),
+  },
   // Bubbles go up and wobble.
   poison: {
     slot: "bubble",
@@ -455,6 +470,21 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       place: spray({ speed: [0.4, 0.8], up: 0, size: [0.14, 0.22], spin: 3 }),
     },
   ],
+  // Spark or Arc Lightning: a cyan flash, and sparks that jump out.
+  paralyze: [
+    {
+      slot: "burst",
+      count: 1,
+      color: FX_ANCHORS.iconParalyze,
+      place: pulse(0.3, 0.75),
+    },
+    {
+      slot: "spark",
+      count: 8,
+      color: FX_ANCHORS.iconParalyze,
+      place: spray({ speed: [0.5, 0.9], up: 0.2, size: [0.08, 0.14], spin: 6 }),
+    },
+  ],
   poison: [
     { slot: "bubble", count: 1, place: pulse(0.2, 0.5) },
     {
@@ -569,6 +599,7 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
   "hit:fire": presetBurst(FX_PRESETS["hit:fire"]),
   "hit:frost": presetBurst(FX_PRESETS["hit:frost"]),
   "hit:holy": presetBurst(FX_PRESETS["hit:holy"]),
+  "hit:lightning": presetBurst(FX_PRESETS["hit:lightning"]),
   "hit:blocked": presetBurst(FX_PRESETS["hit:blocked"]),
   move: dustBurst(FX_PRESETS.move),
   push: dustBurst(FX_PRESETS.push),
@@ -587,7 +618,7 @@ export const burstParticleCount = (burst: BurstName): number =>
  * A fixed number from 0 to 1 for three integers. The particles are only a
  * look, so this hash does not need the exact integer math of the rules.
  */
-const hash = (a: number, b: number, c: number): number => {
+export const hash = (a: number, b: number, c: number): number => {
   const value = Math.sin(a * 12.9898 + b * 78.233 + c * 37.719) * 43_758.5453;
   return value - Math.floor(value);
 };

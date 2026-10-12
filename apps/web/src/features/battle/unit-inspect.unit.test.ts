@@ -7,6 +7,7 @@ import {
   hoverStep,
   NO_HOVER,
   nextInspectedUnit,
+  targetIndexOfUnit,
   unitAtTarget,
 } from "@/features/battle/unit-inspect";
 
@@ -109,5 +110,33 @@ describe("detailsSide", () => {
   it("puts the Card Details on the side of the Unit owner", () => {
     expect(detailsSide("player")).toBe("left");
     expect(detailsSide("enemy")).toBe("right");
+  });
+});
+
+describe("targetIndexOfUnit", () => {
+  const units = [
+    { id: 1, lane: 0, position: 6 },
+    { id: 2, lane: 1, position: 2 },
+  ];
+
+  it("gives the legal target that is the Square of the Unit, for an area corner or a Unit target", () => {
+    const corners = [
+      Target.Square({ lane: 0, position: 0 }),
+      Target.Square({ lane: 0, position: 6 }),
+      Target.Square({ lane: 1, position: 2 }),
+    ];
+    expect(targetIndexOfUnit(units, corners, 1)).toBe(1);
+    expect(targetIndexOfUnit(units, corners, 2)).toBe(2);
+  });
+
+  it("gives null with no Unit, with no card selected, and when the Square of the Unit is not a legal target", () => {
+    expect(targetIndexOfUnit(units, [], 1)).toBeNull();
+    expect(
+      targetIndexOfUnit(units, [Target.Square({ lane: 0, position: 0 })], 1)
+    ).toBeNull();
+    expect(targetIndexOfUnit(units, [Target.Lane({ lane: 0 })], 1)).toBeNull();
+    expect(
+      targetIndexOfUnit(units, [Target.Square({ lane: 0, position: 6 })], null)
+    ).toBeNull();
   });
 });

@@ -4,7 +4,8 @@ import { actionOrder, findUnit, isOver } from "./context";
 import { damageHero, damageUnit, finishBattle } from "./damage";
 import { healUnit } from "./heal";
 import { runResolutionPhase } from "./resolution";
-import type { BattleState, Side } from "./types";
+import { areaSquares } from "./targets";
+import type { BattleState, FieldEffect, Side, UnitState } from "./types";
 import {
   BattleEvent,
   HAND_LIMIT,
@@ -157,6 +158,69 @@ export const runStartPhase = (ctx: StepContext): void => {
   drawCard(ctx);
 };
 
+/**
+ * The enemy Units in the area of `field`, in the action order of their Side.
+ * The list is fixed before the hits.
+ */
+const unitsInField = (ctx: StepContext, field: FieldEffect): UnitState[] => {
+  const squares = areaSquares(field.owner, field.lane, field.position, field);
+  return actionOrder(ctx.state, otherSide(field.owner)).filter((unit) =>
+    squares.some(
+      (square) => square.lane === unit.lane && square.position === unit.position
+    )
+  );
+};
+
+/**
+ * Each Field Effect of the active Side hits (GDD 4.8): its damage to each
+ * enemy Unit in its area, in the order of play. It is normal Skill damage:
+ * Armor, Crit of the caster's Trinket and Block apply, and Fire gives Burn
+ * and Frost gives Freeze. Two Field Effects on the same Square both hit.
+ */
+const strikeFieldEffects = (ctx: StepContext): void => {
+  const { state } = ctx;
+  const crit = state.sides[state.activeSide].hero.skillCrit;
+  for (const field of state.fieldEffects) {
+    if (field.owner !== state.activeSide || isOver(ctx)) {
+      continue;
+    }
+    ctx.events.push(
+      BattleEvent.FieldEffectStruck({
+        fieldId: field.id,
+        turns: field.turns - 1,
+      })
+    );
+    for (const unit of unitsInField(ctx, field)) {
+      if (isOver(ctx) || !findUnit(state, unit.id)) {
+        continue;
+      }
+      damageUnit(ctx, unit, {
+        amount: field.amount,
+        damageType: field.damageType,
+        source: "field",
+        crit,
+      });
+    }
+  }
+};
+
+/**
+ * The duration of each Field Effect of the active Side goes down by 1. At 0,
+ * it leaves the Board.
+ */
+const fadeFieldEffects = (ctx: StepContext): void => {
+  const { state } = ctx;
+  for (const field of state.fieldEffects) {
+    if (field.owner === state.activeSide) {
+      field.turns -= 1;
+      if (field.turns <= 0) {
+        ctx.events.push(BattleEvent.FieldEffectEnded({ fieldId: field.id }));
+      }
+    }
+  }
+  state.fieldEffects = state.fieldEffects.filter((field) => field.turns > 0);
+};
+
 const applyBurn = (ctx: StepContext): void => {
   const { state } = ctx;
   for (const unit of actionOrder(state, state.activeSide)) {
@@ -266,13 +330,18 @@ const fadeArmor = (ctx: StepContext): void => {
 };
 
 /**
- * The End Phase (GDD 4.3): Burn, then Poison, then durations go down. Skill
- * Card Armor counts the other side's Turns, so it covers that many enemy Turns.
- * A Hobbled, a Bleeding and an Exposed count go down in this Phase, after
- * Burn and Poison. The Rally bonus ends, and the bonus Attack of a Skill Card
+ * The End Phase (GDD 4.3): the Field Effects of the active Side hit, then
+ * Burn, then Poison, then durations go down. Skill Card Armor counts the other
+ * side's Turns, so it covers that many enemy Turns. A Hobbled, a Bleeding and
+ * an Exposed count go down in this Phase, after Burn and Poison. The Rally
+ * bonus ends, the bonus Attack of a Skill Card can end, and a Field Effect
  * can end.
  */
 const runEndPhase = (ctx: StepContext): void => {
+  strikeFieldEffects(ctx);
+  if (isOver(ctx)) {
+    return;
+  }
   applyBurn(ctx);
   applyPoison(ctx);
   lowerHobble(ctx);
@@ -281,6 +350,7 @@ const runEndPhase = (ctx: StepContext): void => {
   endRally(ctx);
   fadeAttack(ctx);
   fadeArmor(ctx);
+  fadeFieldEffects(ctx);
   ctx.events.push(BattleEvent.TurnEnded({ side: ctx.state.activeSide }));
 };
 

@@ -15,6 +15,7 @@ import { loopStatuses } from "@/features/battle/scene/status-visuals";
  */
 const STATUS_TINT: Readonly<Record<Status, string>> = {
   freeze: "#a9dcff",
+  paralyze: "#b5fbf3",
   burn: "#ffb070",
   poison: "#b6e05a",
   entangle: "#7fcf6a",

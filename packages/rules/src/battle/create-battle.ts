@@ -108,6 +108,7 @@ export const createBattle = (setup: BattleSetup): BattleStart => {
       },
     },
     units: [],
+    fieldEffects: [],
     nextId: 1,
     result: null,
   };

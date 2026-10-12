@@ -99,6 +99,7 @@ const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   hobbled: 0,
   bleeding: 0,
   frozen: false,
+  paralyzed: false,
   entangled: false,
   ward: 0,
   steadfast: false,

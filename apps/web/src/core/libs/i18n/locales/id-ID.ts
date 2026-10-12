@@ -137,6 +137,9 @@ export default {
       burnLeft: "Sisa Fase Akhir: {value}.",
       frozen: "Beku",
       frozenRule: "Ia melewatkan aksi berikutnya.",
+      paralyzed: "Lumpuh",
+      paralyzedRule:
+        "Sebuah Debuff. Ia tidak menyerang pada aksi berikutnya, tetapi ia tetap bisa bergerak. Sampai saat itu, ia tidak memakai Balas dan Serang Duluan.",
       poisoned: "Racun {value}",
       poisonedRule:
         "1 damage per tumpukan pada tiap Fase Akhir pemiliknya. Lalu ia kehilangan 1 tumpukan.",
@@ -625,7 +628,7 @@ export default {
         "Bonus dan kecepatan. Kartu Keahlian Prajurit membuat kartumu lebih cepat Siap dan memberi Zirah ke Unit-mu.",
       classRanger: "Kendali, dan damage ke Pahlawan musuh.",
       classMage:
-        "Damage area. Kartu Keahlian Penyihir mengenai Unit musuh dengan Api dan Es.",
+        "Damage area. Kartu Keahlian Penyihir mengenai Unit musuh dengan Api, Es, dan Petir.",
       classPriest:
         "Penyembuhan, perlindungan, dan damage Suci. Kartu Keahlian Pendeta menyembuhkan dan melindungi Unit-mu, dan damage Suci mengabaikan Zirah.",
       role: "Peran adalah tugas Kartu Makhluk dalam Pertempuran. Peran membantumu membaca kartu. Tidak ada aturan yang memakainya, tetapi Peran menentukan Jangkauan dari Unit jarak jauh.",
@@ -695,6 +698,7 @@ export default {
         "balasan, serangan balik, retaliation, thorns, counterattack",
       status: "debuff, kondisi, efek buruk",
       statusFreeze: "stun, membeku, pingsan",
+      statusParalyze: "kesetrum, setrum, shock, disarm",
       statusBleed: "luka, anti-heal, kurangi penyembuhan",
       statusHobble: "lambat, slow, lumpuh",
       statusWard: "perisai, shield, barrier, serap, buff",
@@ -1056,6 +1060,7 @@ export default {
     fire: "Api",
     frost: "Es",
     holy: "Suci",
+    lightning: "Petir",
   },
   keywords: {
     armor: "Zirah {value}",
@@ -1126,6 +1131,8 @@ export default {
     fire: "Api: target terbakar 1 damage pada 2 Fase Akhir berikutnya.",
     frost: "Es: target melewatkan aksi berikutnya.",
     holy: "Suci: Zirah tidak mengurangi damage ini.",
+    lightning:
+      "Petir: target tidak menyerang pada aksi berikutnya, tetapi ia tetap bisa bergerak.",
   },
   effects: {
     damageUnit: "Beri {amount} damage {damageType} ke satu Unit musuh.",
@@ -1137,7 +1144,7 @@ export default {
       "Beri {amount} damage {damageType} ke satu Unit musuh. Jika Unit itu terkena damage dan bertahan hidup, Unit itu menjadi Terjerat.",
     damagePush:
       "Beri {amount} damage {damageType} ke satu Unit musuh. Jika Unit itu bertahan hidup, dorong Unit itu {squares} Petak mundur ke arah Pahlawannya, juga saat Unit itu tidak terkena damage.",
-    damageHero: "Beri {amount} damage {damageType} ke Pahlawan musuh.",
+    damageHero: "Beri {amount} damage ke Pahlawan musuh.",
     damageKnockback:
       "{hit} Jika Unit itu terkena damage dan bertahan hidup, dorong Unit itu {squares} mundur ke arah Pahlawannya.",
     damageBleed:
@@ -1152,8 +1159,7 @@ export default {
       "{hit} Unit kawan dalam Jalurnya mendapat Zirah {armor} selama {turns}.",
     damageLaneHeal:
       "{hit} Sembuhkan {heal} HP pada setiap Unit kawan dalam Jalurnya.",
-    damageUnitHero:
-      "{hit} Lalu beri {heroAmount} damage {damageType} ke Pahlawan musuh.",
+    damageUnitHero: "{hit} Lalu beri {heroAmount} damage ke Pahlawan musuh.",
     laneArmor:
       "Unit kawan dalam satu Jalur mendapat Zirah {armor} selama {turns} Giliran musuh berikutnya.",
     lowerCountdown:
@@ -1176,12 +1182,20 @@ export default {
       "Setiap Unit kawan dalam satu Jalur mendapat satu aksi lagi sekarang: ia bergerak dan menyerang, dari Unit terdepan ke Unit paling belakang.",
     laneExtraActionLegendary:
       "Setiap Unit kawan dalam satu Jalur mendapat +{attack} Serangan sampai akhir Giliranmu berikutnya, lalu mendapat satu aksi lagi sekarang: ia bergerak dan menyerang, dari Unit terdepan ke Unit paling belakang.",
+    damageArc:
+      "Beri {amount} damage {damageType} ke satu Unit musuh dan ke Unit musuh di Kolom yang sama pada Jalur di sebelahnya.",
+    damageRandom:
+      "Beri {amount} damage {damageType} ke {units} Unit musuh acak yang berbeda.",
+    fieldEffect:
+      "Pilih area {lanes} Jalur × {columns} Kolom. Selama {turns}, pada tiap Fase Akhirmu, tiap Unit musuh di area itu terkena {amount} damage {damageType}.",
     armorIgnored: "{effect} Zirah tidak menguranginya.",
     counts: {
       squareOne: "{value} Petak",
       squareOther: "{value} Petak",
       enemyTurnOne: "Giliran musuh berikutnya",
       enemyTurnOther: "{value} Giliran musuh berikutnya",
+      turnOne: "{value} Giliran",
+      turnOther: "{value} Giliran",
     },
   },
   cards: {
@@ -1655,6 +1669,26 @@ export default {
       frostWave: {
         name: "Gelombang Es",
         flavor: "Seluruh jalur berhenti diam.",
+      },
+      spark: {
+        name: "Percikan",
+        flavor: "Diam di tempat. Kamu tidak punya pilihan.",
+      },
+      arcLightning: {
+        name: "Busur Petir",
+        flavor: "Ia tidak pernah menyambar sekali saja.",
+      },
+      wildfire: {
+        name: "Api Liar",
+        flavor: "Rumput itu memang pantas terbakar.",
+      },
+      thunderstorm: {
+        name: "Badai Petir",
+        flavor: "Selalu ada yang tersambar.",
+      },
+      blizzard: {
+        name: "Badai Salju",
+        flavor: "Hari ini tidak ada yang pergi ke mana pun.",
       },
     },
     priest: {

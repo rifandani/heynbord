@@ -38,6 +38,7 @@ const quiet: UnitView = {
   hobbled: 0,
   bleeding: 0,
   frozen: false,
+  paralyzed: false,
   entangled: false,
   ward: 0,
   steadfast: false,
@@ -51,6 +52,7 @@ const allStatuses: UnitView = {
   hobbled: 1,
   bleeding: 2,
   frozen: true,
+  paralyzed: true,
   entangled: true,
   ward: 5,
   steadfast: true,
@@ -68,6 +70,7 @@ describe("statusesOf", () => {
       "ward",
       "steadfast",
       "freeze",
+      "paralyze",
       "burn",
       "poison",
       "entangle",
@@ -108,6 +111,16 @@ describe("badgeStatuses", () => {
     });
   });
 
+  it("shows Paralyzed after Frozen, with no count", () => {
+    expect(badgeStatuses({ ...quiet, paralyzed: true, burn: 1 })).toEqual({
+      badges: [
+        { status: "paralyze", count: null, buff: false },
+        { status: "burn", count: null, buff: false },
+      ],
+      more: 0,
+    });
+  });
+
   it("gives no count for Burn, Frozen and Entangled", () => {
     expect(
       badgeStatuses({ ...quiet, burn: 2, frozen: true, entangled: true })
@@ -128,7 +141,7 @@ describe("badgeStatuses", () => {
       "steadfast",
       "freeze",
     ]);
-    expect(more).toBe(6);
+    expect(more).toBe(7);
   });
 
   it("shows the Ward first, with its value as the count and the gold ring of a Buff", () => {

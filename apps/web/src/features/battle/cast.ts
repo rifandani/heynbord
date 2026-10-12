@@ -6,7 +6,7 @@ import type {
   Side,
   Target,
 } from "@workspace/rules";
-import { getCard, LANE_LENGTH } from "@workspace/rules";
+import { areaSquares, getCard, LANE_LENGTH } from "@workspace/rules";
 import { absurd } from "effect";
 
 import {
@@ -120,6 +120,9 @@ export const currentCast = (
  * it gets a color.
  */
 export const effectColor = (effect: SkillEffect): string => {
+  if (effect.type === "damageHero") {
+    return CAST_COLOR;
+  }
   // Each damage effect shows its Damage Type.
   if ("damageType" in effect) {
     return DAMAGE_COLORS[effect.damageType];
@@ -159,13 +162,27 @@ export interface CastSquare {
   readonly position: number;
 }
 
+/** Square of `lane` and `position` on a Board with `lanes` Lanes. */
+const onBoard = (square: CastSquare, lanes: number): boolean =>
+  square.lane >= 0 &&
+  square.lane < lanes &&
+  square.position >= 0 &&
+  square.position < LANE_LENGTH;
+
 /**
- * The Squares that a cast hits, in order from the caster's Hero. A Lane target
- * is the whole Lane. An area goes from the target Square toward the enemy
- * Hero. A cast with no target or with a Hero target hits no Square.
+ * The Squares that a Skill Card effect of `side` at `target` hits, in order
+ * from the caster's Hero. A Lane target is the whole Lane. A `damageArea` goes
+ * from the target Square toward the enemy Hero. *Arc Lightning* also hits the
+ * same Column in the Lanes next to it. A Field Effect covers its full area
+ * from the corner Square (GDD 4.8). A cast with no target or with a Hero
+ * target hits no Square. `lanes` is the number of Lanes of the Board.
  */
-export const castSquares = (cast: Cast): readonly CastSquare[] => {
-  const { target, side, skill } = cast;
+export const effectSquares = (
+  effect: SkillEffect,
+  side: Side,
+  target: Target,
+  lanes: number
+): readonly CastSquare[] => {
   const step = side === "player" ? 1 : -1;
   if (target._tag === "Lane") {
     return Array.from({ length: LANE_LENGTH }, (_, index) => ({
@@ -176,13 +193,50 @@ export const castSquares = (cast: Cast): readonly CastSquare[] => {
   if (target._tag === "NoTarget" || target._tag === "Hero") {
     return [];
   }
-  const length = skill.effect.type === "damageArea" ? skill.effect.length : 1;
-  const squares: CastSquare[] = [];
-  for (let index = 0; index < length; index += 1) {
-    const position = target.position + index * step;
-    if (position >= 0 && position < LANE_LENGTH) {
-      squares.push({ lane: target.lane, position });
-    }
+  if (effect.type === "fieldEffect") {
+    return areaSquares(side, target.lane, target.position, effect).filter(
+      (square) => onBoard(square, lanes)
+    );
   }
-  return squares;
+  if (effect.type === "damageArc") {
+    return [target.lane, target.lane - 1, target.lane + 1]
+      .map((lane) => ({ lane, position: target.position }))
+      .filter((square) => onBoard(square, lanes));
+  }
+  const length = effect.type === "damageArea" ? effect.length : 1;
+  return Array.from({ length }, (_, index) => ({
+    lane: target.lane,
+    position: target.position + index * step,
+  })).filter((square) => onBoard(square, lanes));
+};
+
+/** The Squares that a cast hits, in order from the caster's Hero (`effectSquares`). */
+export const castSquares = (cast: Cast, lanes: number): readonly CastSquare[] =>
+  effectSquares(cast.skill.effect, cast.side, cast.target, lanes);
+
+/**
+ * The full area of a target of a card in the Hand, while the player selects
+ * the target, when the card hits more than its target Square: a Field Effect
+ * area (GDD 4.8) or *Arc Lightning*. Else `null`: the target marker already
+ * shows the Square. The player is the caster.
+ */
+export const targetPreview = (
+  cardId: string,
+  target: Target,
+  lanes: number
+): {
+  readonly squares: readonly CastSquare[];
+  readonly color: string;
+} | null => {
+  const card = getCard(cardId);
+  if (
+    card.kind !== "skill" ||
+    (card.effect.type !== "fieldEffect" && card.effect.type !== "damageArc")
+  ) {
+    return null;
+  }
+  return {
+    squares: effectSquares(card.effect, "player", target, lanes),
+    color: effectColor(card.effect),
+  };
 };

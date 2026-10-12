@@ -6,5 +6,6 @@ describe("scenePicker", () => {
   it("finds nothing before the scene sets it", () => {
     expect(scenePicker.pick(10, 10)).toBeNull();
     expect(scenePicker.points()).toEqual([]);
+    expect(scenePicker.unitTarget(10, 10)).toBeNull();
   });
 });

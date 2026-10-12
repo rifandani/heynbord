@@ -253,6 +253,8 @@ export const GLYPHS = {
   /** A curled vine with a leaf: Entangled. */
   vine: "M-40 44 C-40 10 -4 22 -4 -4 C-4 -30 -32 -30 -32 -12 C-32 0 -16 0 -16 -10 M-4 -4 C6 -28 26 -36 40 -40 M14 -22 Q36 -18 38 2 Q16 0 14 -22 Z",
   info: `${circle(0, 0, 44)} ${circle(0, 0, 34)} ${circle(0, -20, 6)} M-6 -6 H6 V26 H-6 Z`,
+  /** A zigzag bolt: Lightning (ADR-0029) and Paralyzed. */
+  bolt: "M10 -46 L-28 6 H-4 L-14 46 L28 -10 H4 L18 -46 Z",
   snow: "M0 -44 V44 M-38 -22 L38 22 M-38 22 L38 -22 M-10 -34 L0 -24 L10 -34 M-10 34 L0 24 L10 34",
   // The Town Bar shortcuts (GDD 11.4).
   house: "M-40 -2 L0 -40 L40 -2 Z M-30 -2 H30 V42 H-30 Z M-8 42 V16 H8 V42 Z",
@@ -342,6 +344,7 @@ export const DAMAGE_GLYPH = {
   fire: "flame",
   frost: "snow",
   holy: "sun",
+  lightning: "bolt",
 } as const satisfies Readonly<Record<DamageType, Glyph>>;
 
 export const raceGlyph = (race: RaceId): Glyph => RACE_GLYPH[race];
@@ -354,6 +357,9 @@ export const classGlyph = (classId: ClassId): Glyph => CLASS_GLYPH[classId];
 export const cardGlyph = (card: CardDefinition): Glyph => {
   if (card.kind === "creature") {
     return card.keywords.flying ? "wings" : ROLE_GLYPH[card.role];
+  }
+  if (card.effect.type === "damageHero") {
+    return "crossedSwords";
   }
   // Each damage effect shows its Damage Type.
   if ("damageType" in card.effect) {

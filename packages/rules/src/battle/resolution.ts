@@ -227,7 +227,8 @@ export const pushUnit = (
 
 /**
  * Retaliate (GDD 4.7): no Crit, and it does not start another Retaliate.
- * A Frozen defender does not retaliate, and it keeps its Freeze (GDD 4.4).
+ * A Frozen or Paralyzed defender does not retaliate, and it keeps its Status
+ * (GDD 4.4).
  * Retaliate does not apply Knockback. Only a defender that survives the
  * attack retaliates: the caller does not call it after a kill, also when
  * Rebirth brings the defender back.
@@ -240,6 +241,7 @@ const retaliate = (
   if (
     !defender.retaliate ||
     defender.frozen ||
+    defender.paralyzed ||
     attacker.range > 0 ||
     attackOf(ctx.state, defender) <= 0 ||
     !findUnit(ctx.state, defender.id) ||
@@ -378,7 +380,7 @@ const applyOnHit = (
 /**
  * First Strike (GDD 4.7): when an enemy melee Unit attacks a Unit with First
  * Strike, that Unit deals its damage first. Like Retaliate, it has no Crit,
- * and a Frozen Unit or a Unit with Base Attack 0 does not use it. Damage above
+ * and a Frozen or Paralyzed Unit or a Unit with Base Attack 0 does not use it. Damage above
  * 0 applies Poison, Hobble, Bleed and Entangle, but not Knockback. Returns
  * whether the attacker survived, so that its attack occurs. An attacker that
  * dies and comes back with Rebirth does not attack.
@@ -395,6 +397,7 @@ const firstStrike = (
   if (
     !defender?.firstStrike ||
     defender.frozen ||
+    defender.paralyzed ||
     attackOf(ctx.state, defender) <= 0
   ) {
     return true;
@@ -464,20 +467,28 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
 
 /**
  * One action of a Unit (GDD 4.4): Movement, then attack. A Frozen Unit skips
- * the action, and then its Freeze ends. The action (also a skipped one) ends
- * Entangled. An Entangle from First Strike during the action stays for the
- * next action.
+ * the action, and then its Freeze ends. A Paralyzed Unit moves, but it does
+ * not attack, and then Paralyzed ends. The action (also a skipped one) ends
+ * Entangled and Paralyzed, so Freeze and then Paralysis is not a 2-action
+ * lock. An Entangle or a Paralysis from First Strike during the action stays
+ * for the next action.
  */
 const act = (ctx: StepContext, unit: UnitState): void => {
   if (unit.frozen) {
     unit.frozen = false;
     unit.entangled = false;
+    unit.paralyzed = false;
     ctx.events.push(BattleEvent.UnitSkipped({ unitId: unit.id }));
     return;
   }
-  const { entangled } = unit;
+  const { entangled, paralyzed } = unit;
   move(ctx, unit);
-  attack(ctx, unit);
+  if (paralyzed) {
+    unit.paralyzed = false;
+    ctx.events.push(BattleEvent.AttackSkipped({ unitId: unit.id }));
+  } else {
+    attack(ctx, unit);
+  }
   if (entangled) {
     unit.entangled = false;
   }
@@ -508,7 +519,7 @@ export const runResolutionPhase = (ctx: StepContext): void => {
 /**
  * The extra action of a Skill Card (*Onslaught*, GDD 4.4): each Unit of
  * `side` in `lane` does one more action now, from the front Unit to the back
- * Unit. It is a normal action, so it uses up a Freeze and an Entangled. No
+ * Unit. It is a normal action, so it uses up a Freeze, a Paralysis and an Entangled. No
  * Phase effect occurs again. Charge applies in the Turn of the summon.
  */
 export const runExtraActions = (

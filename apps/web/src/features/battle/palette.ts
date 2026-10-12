@@ -65,6 +65,9 @@ export const DAMAGE_COLORS: Readonly<Record<DamageType, string>> = {
   fire: "#ff6a33",
   frost: "#8fd8ff",
   holy: "#ffd75a",
+  // Electric cyan: not the gold of Holy, not the pale blue of Frost and not
+  // the purple of the Epic gem (#66).
+  lightning: "#3ff2e0",
 };
 
 /**
@@ -124,6 +127,7 @@ export const FX_ANCHORS = {
   iconWard: "#ffe08a",
   iconSteadfast: "#f2b552",
   iconExposed: "#ff6fa0",
+  iconParalyze: "#3ff2e0",
 } as const;
 
 /**

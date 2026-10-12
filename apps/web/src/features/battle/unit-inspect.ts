@@ -110,6 +110,30 @@ export const unitAtTarget = (
   );
 };
 
+/**
+ * The index in `targets` of the Square target that holds the Unit `unitId`,
+ * or `null` when no legal target is its Square. The pointer on a Unit figure
+ * selects its Square, so an area card, an enemy-Unit card and a friendly-Unit
+ * card all target a Unit the same way. The figure hides the Square marker.
+ */
+export const targetIndexOfUnit = (
+  units: readonly Placed[],
+  targets: readonly Target[],
+  unitId: number | null
+): number | null => {
+  const unit = units.find((candidate) => candidate.id === unitId);
+  if (!unit) {
+    return null;
+  }
+  const index = targets.findIndex(
+    (target) =>
+      target._tag === "Square" &&
+      target.lane === unit.lane &&
+      target.position === unit.position
+  );
+  return index === -1 ? null : index;
+};
+
 export type ScreenSide = "left" | "right";
 
 /**

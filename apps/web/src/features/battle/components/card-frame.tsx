@@ -173,6 +173,9 @@ const CreaturePlates = ({
 );
 
 const effectColor = (card: SkillCardDefinition) => {
+  if (card.effect.type === "damageHero") {
+    return CREAM;
+  }
   const damageType =
     "damageType" in card.effect ? card.effect.damageType : undefined;
   return damageType ? DAMAGE_COLORS[damageType] : CREAM;

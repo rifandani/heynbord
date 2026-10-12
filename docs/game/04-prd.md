@@ -54,7 +54,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | BAT-04 | Creature Cards must go only into empty Squares of the Summon Zone (Columns 1 to 3 of each open Lane). | M |
 | BAT-05 | Units must move and attack automatically by the rules in GDD section 4. | M |
 | BAT-06 | The same seed, Decks and player actions must always give the same Battle result. | M |
-| BAT-07 | The game must support the Damage Types Physical, Fire, Frost and Holy, and Crit and Block. | M |
+| BAT-07 | The game must support the Damage Types Physical, Fire, Frost, Holy and Lightning, and Crit and Block. | M |
 | BAT-08 | The game must support all v1 Keywords in GDD section 5.4. | M |
 | BAT-09 | Skill Cards must support Recall and Field Effects. | M |
 | BAT-10 | Sudden Death must start at Turn number 20, and the Turn limit must be Turn number 60. | M |

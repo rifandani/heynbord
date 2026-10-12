@@ -783,6 +783,75 @@ const drawSeal: FxDraw = (context, width) => {
   }
 };
 
+/**
+ * The ground of a Field Effect Square, seen from above: a soft patch in
+ * `ground` with `spots` in `color` on it, which fades at its edges.
+ */
+const groundPatch =
+  (ground: string, color: string): FxDraw =>
+  (context, width) => {
+    const center = width / 2;
+    const patch = context.createRadialGradient(
+      center,
+      center,
+      width * 0.1,
+      center,
+      center,
+      width * 0.44
+    );
+    patch.addColorStop(0, ground);
+    patch.addColorStop(0.7, ground);
+    patch.addColorStop(1, "rgba(0, 0, 0, 0)");
+    context.fillStyle = patch;
+    context.fillRect(0, 0, width, width);
+    context.fillStyle = color;
+    context.shadowColor = color;
+    context.shadowBlur = width / 24;
+    for (const [x, y, radius] of [
+      [0.32, 0.36, 0.07],
+      [0.62, 0.3, 0.05],
+      [0.5, 0.56, 0.08],
+      [0.3, 0.66, 0.05],
+      [0.7, 0.64, 0.06],
+    ] as const) {
+      context.beginPath();
+      context.arc(x * width, y * width, radius * width, 0, Math.PI * 2);
+      context.fill();
+    }
+  };
+
+/** A jagged lightning bolt from the top to the bottom, with one fork. */
+const drawBolt: FxDraw = (context, width) => {
+  context.strokeStyle = "#ffffff";
+  context.shadowColor = "#ffffff";
+  context.shadowBlur = width / 14;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.lineWidth = width / 22;
+  const points = [
+    [0.46, 0.08],
+    [0.56, 0.3],
+    [0.42, 0.46],
+    [0.58, 0.66],
+    [0.5, 0.92],
+  ] as const;
+  context.beginPath();
+  for (const [index, [x, y]] of points.entries()) {
+    if (index === 0) {
+      context.moveTo(x * width, y * width);
+    } else {
+      context.lineTo(x * width, y * width);
+    }
+  }
+  context.stroke();
+  context.lineWidth = width / 40;
+  context.beginPath();
+  context.moveTo(0.42 * width, 0.46 * width);
+  context.lineTo(0.3 * width, 0.6 * width);
+  context.lineTo(0.34 * width, 0.74 * width);
+  context.stroke();
+};
+
 const drawTrail: FxDraw = (context, width, height) => {
   const along = context.createLinearGradient(
     width / 16,
@@ -857,8 +926,12 @@ const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
   "icon-ward": glyphIcon("shield", FX_ANCHORS.iconWard),
   "icon-steadfast": glyphIcon("anchor", FX_ANCHORS.iconSteadfast),
   "icon-exposed": glyphIcon("brokenShield", FX_ANCHORS.iconExposed),
+  "icon-paralyze": glyphIcon("bolt", FX_ANCHORS.iconParalyze),
   ward: drawDome,
   steadfast: drawSeal,
+  "field-fire": groundPatch("rgba(40, 22, 14, 0.85)", FX_ANCHORS.fire),
+  "field-snow": groundPatch("rgba(240, 248, 255, 0.9)", FX_ANCHORS.frost),
+  bolt: drawBolt,
 };
 
 /** The placeholder atlas is half size: the UV rectangles do not change. */

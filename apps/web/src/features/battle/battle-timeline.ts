@@ -35,12 +35,19 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   UnitMoved: 0,
   UnitPushed: 0,
   UnitSkipped: 360,
+  // The Paralyzed Unit sparks where its attack would be.
+  AttackSkipped: 320,
   UnitAttacked: 360,
   DamageDealt: 280,
   StatusApplied: 160,
   // The hit holds on the Unit at 1 HP for a beat, so the Player sees it.
   SteadfastHeld: 420,
   DebuffsRemoved: 300,
+  // The area fades in on the Board.
+  FieldEffectPlaced: 420,
+  // The area pulses, then its hits play.
+  FieldEffectStruck: 300,
+  FieldEffectEnded: 200,
   UnitDied: 460,
   // The Unit falls as in a death, then gets up again.
   UnitReborn: 640,

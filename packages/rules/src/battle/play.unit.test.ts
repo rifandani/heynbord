@@ -569,8 +569,8 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
       giveHand(state, "player", [["ranger.warningShot", 0, "rare"]]);
       const target = enemyAt(state, 6, { hp: 20, maxHp: 20 });
       const { state: next, events } = run(state, play(0, square(0, 6)));
-      // Rare: 8 × 1.45 = 11.6, rounded to 12.
-      expect(unitById(next, target.id)).toMatchObject({ hp: 8, position: 8 });
+      // Rare: 8 Physical damage, then a push of 2 Squares.
+      expect(unitById(next, target.id)).toMatchObject({ hp: 12, position: 8 });
       expect(eventsOfType(events, "UnitPushed")).toEqual([
         expect.objectContaining({ unitId: target.id, from: 6, to: 8 }),
       ]);
@@ -979,11 +979,11 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
 
   describe("Harrying Shot", () => {
     it("deals damage to the Unit, then to the enemy Hero of its Lane, and the Hero hit can end the Battle", () => {
-      const state = emptyBattle({ enemy: { hp: 4 } });
+      const state = emptyBattle({ enemy: { hp: 3 } });
       giveHand(state, "player", [["ranger.harryingShot", 0]]);
       const target = enemyAt(state, 6);
       const { state: next, events } = run(state, play(0, square(0, 6)));
-      expect(unitById(next, target.id)?.hp).toBe(4);
+      expect(unitById(next, target.id)?.hp).toBe(3);
       expect(next.sides.enemy.hero.hp).toBe(0);
       expect(eventsOfType(events, "DamageDealt").map((e) => e.target)).toEqual([
         { _tag: "Unit", unitId: target.id },
@@ -1001,8 +1001,7 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       giveHand(state, "player", [["ranger.harryingShot", 0, "rare"]]);
       enemyAt(state, 6, { hp: 2 });
       const { state: next } = run(state, play(0, square(0, 6)));
-      // Rare: 4 × 1.45 = 5.8, rounded to 6.
-      expect(next.sides.enemy.hero.hp).toBe(24);
+      expect(next.sides.enemy.hero.hp).toBe(27);
     });
   });
 

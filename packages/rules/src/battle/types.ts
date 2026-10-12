@@ -167,6 +167,12 @@ export interface UnitState {
   /** End Phases of the owner that are left for Exposed. It ends at 0. */
   exposedTurns: number;
   frozen: boolean;
+  /**
+   * Paralyzed (GDD 4.4, ADR-0029): no attack in the next action, but the Unit
+   * can move. The action then ends it. Until then, no Retaliate and no First
+   * Strike.
+   */
+  paralyzed: boolean;
   /** Speed 0 in the next action. The action then ends it (GDD 4.4). */
   entangled: boolean;
   /**
@@ -187,6 +193,28 @@ export interface UnitState {
   bonusAttack: number;
   /** End Phases of the owner that are left for the bonus Attack. */
   bonusAttackTurns: number;
+}
+
+/**
+ * A Field Effect on the Board (GDD 4.8). The area is `lanes` Lanes from
+ * `lane` down, and `columns` Squares from `position` toward the enemy Hero of
+ * `owner`. In each End Phase of `owner`, it deals `amount` damage to each
+ * enemy Unit in the area, then `turns` goes down by 1. It ends at 0.
+ */
+export interface FieldEffect {
+  readonly id: number;
+  readonly owner: Side;
+  /** The Skill Card that made it. */
+  readonly card: CardInstance;
+  readonly lane: number;
+  readonly position: number;
+  readonly lanes: number;
+  readonly columns: number;
+  /** The damage of each hit, at the Rank of the card. */
+  readonly amount: number;
+  readonly damageType: DamageType;
+  /** The End Phases of the owner that are left. */
+  turns: number;
 }
 
 export interface BattleResult {
@@ -211,6 +239,9 @@ export interface BattleState {
   status: "ongoing" | "finished";
   sides: Record<Side, SideState>;
   units: UnitState[];
+  /** The Field Effects on the Board, in the order of play. */
+  fieldEffects: FieldEffect[];
+  /** The next ID of a Unit or a Field Effect. */
   nextId: number;
   result: BattleResult | null;
 }
@@ -244,6 +275,8 @@ export type DamageSource =
   | "poison"
   | "lastBreath"
   | "suddenDeath"
+  /** The hit of a Field Effect in the End Phase of its owner (GDD 4.8). */
+  | "field"
   /** The damage that is left after a Trample kill. It is not an attack. */
   | "trample";
 
@@ -345,6 +378,11 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly to: number;
   };
   UnitSkipped: { readonly unitId: number };
+  /**
+   * Paralyzed (GDD 4.4): the Unit did its Movement, but not its attack, and
+   * Paralyzed ended. A Unit that is also Frozen gets `UnitSkipped` instead.
+   */
+  AttackSkipped: { readonly unitId: number };
   UnitAttacked: {
     readonly unitId: number;
     readonly target: TargetRef;
@@ -372,6 +410,7 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly status:
       | "burn"
       | "freeze"
+      | "paralyze"
       | "poison"
       | "hobble"
       | "bleed"
@@ -393,10 +432,20 @@ export type BattleEvent = Data.TaggedEnum<{
   SteadfastHeld: { readonly unitId: number };
   /**
    * A Skill Card (*Cleanse*) ended all Debuffs of the Unit: Burn, Freeze,
-   * Entangled, Poisoned, Hobbled, Bleeding and Exposed. Its Buffs stay. A Unit with no
+   * Paralyzed, Entangled, Poisoned, Hobbled, Bleeding and Exposed. Its Buffs stay. A Unit with no
    * Debuff gets no event.
    */
   DebuffsRemoved: { readonly unitId: number };
+  /** A Skill Card put a Field Effect on the Board (GDD 4.8). */
+  FieldEffectPlaced: { readonly field: Readonly<FieldEffect> };
+  /**
+   * The Field Effect hits in the End Phase of its owner. The `DamageDealt`
+   * events of its hits come next. `turns` is the number of hits that are left
+   * after this one.
+   */
+  FieldEffectStruck: { readonly fieldId: number; readonly turns: number };
+  /** The Field Effect left the Board: its last hit occurred, or its Hero is Defeated. */
+  FieldEffectEnded: { readonly fieldId: number };
   UnitDied: { readonly unitId: number };
   /**
    * Rebirth (GDD 4.9): the Unit died and came back in the same Square. It

@@ -76,6 +76,7 @@ Common (grey), Uncommon (green), Rare (blue), Epic (purple), Legendary (orange).
 | Fire | Orange-red | Flame |
 | Frost | Light blue | Snowflake |
 | Holy | Gold-yellow | Sun |
+| Lightning | Electric cyan (`#3ff2e0`), with a white core. It is more green and stronger than the pale blue of Frost, and it is not the purple of the Epic gem | Bolt |
 
 Always use the icon with the color, for players with color blindness.
 
@@ -129,7 +130,7 @@ The game docs do not keep the prompts of Skill Cards. Run `bun skill:prompts` to
 
 The setup message gives the rules of this section, the Identity of the Class, and the Skill Card setting and palette ([10 — Card Concepts, 1.1](./10-card-concepts.md#11-settings)). Each card prompt has the effect and the flavor text of the card, its art brief in 10 — Card Concepts (effect subject, partial figure, action, setting and palette) and the detail of its Base Rank. Use one ChatGPT conversation for each Class: attach the style reference to the setup message, then send each card prompt in its own message. To change an image, change the brief, then run the script again.
 
-A Skill Card has a Class, not a Race. Its image must not show a Race, because a Hero of any Race can use it. Show the effect, with only a partial figure (hands, a back view or a silhouette). The Damage Type color is the main color. For Physical, use a neutral steel and leather palette. Travel, a throw or a back view goes to the right. A Skill Card has no Unit cut-out.
+A Skill Card has a Class, not a Race. Its image must not show a Race, because a Hero of any Race can use it. Show the effect, with only a partial figure (hands, a back view or a silhouette). When the Skill Card damages a Unit, its Damage Type color is the main color. For Physical, use a neutral steel and leather palette. Travel, a throw or a back view goes to the right. A Skill Card has no Unit cut-out.
 
 ### 5.3 Steps for each card
 

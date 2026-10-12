@@ -142,5 +142,6 @@
     "command": "bun x ccusage statusline"
   },
   "syncClaudeAiSkills": false,
-  "disableBundledSkills": true
+  "disableBundledSkills": true,
+  "autoMemoryEnabled": false
 }

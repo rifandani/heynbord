@@ -28,7 +28,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 | Orc | Red badlands: dusty mesas, dry ground, bone and hide totems | Burnt orange and dark red. Leather, fur, rough iron |
 | Goblin | The hill mines: cool grey-blue tunnels, rail tracks, junk-heap workshops, brass lanterns and jars of acid-green lamp oil. No red earth and no desert | Soot grey and slate blue, brass and acid green. Patched iron, canvas, brass, junk |
 | Feral | The wild peaks and deep caves: cliffs, glaciers, cave mouths and old bones | Slate violet and ice white. Fur, horn, stone and ice |
-| Skill Cards | A neutral battlefield: green grass and a Lane of grey stone tiles, with no banners | The Damage Type color (Fire: orange-red, Frost: light blue, Holy: gold-yellow). Physical: neutral steel and leather |
+| Skill Cards | A neutral battlefield: green grass and a Lane of grey stone tiles, with no banners | The Damage Type color (Fire: orange-red, Frost: light blue, Holy: gold-yellow, Lightning: electric cyan with a white core). Physical: neutral steel and leather |
 
 ## 2. Human Creature Cards
 
@@ -1956,6 +1956,81 @@ Identity: area damage. The palette is the Damage Type color.
 | Setting | A neutral battlefield. The Lane is long and goes into the distance. |
 | Palette | Light blue frost and white ice. Uncommon: a small silver trim on the sleeve cuffs. |
 
+### 10.6 Spark
+
+`mage.spark` · Mage · Common · Countdown 1 · An enemy Unit · Deal 1 Lightning damage to an enemy Unit. Lightning makes it Paralyzed: it does not attack in its next action.
+
+> Hold still. You have no choice.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | One small, fast spark of lightning: a short, thin, jagged bolt that jumps from a finger snap to an enemy. It is small and quick, not a large blast. The bright snap at the fingers and the stiff enemy are the two main shapes. |
+| Partial figure | One hand in a plain robe sleeve at the bottom left, close to the viewer, in a side view. The thumb and the middle finger have just snapped. A small bright star of light flashes at the fingertips. |
+| Proportion | Real human proportions and anatomy. The hand is normal human size, no larger than one quarter of the image width. Five fingers. |
+| Action | The short bolt jumps level to the right over the grass, with a thin motion streak behind it, and hits the raised arm of a dark silhouette in the middle distance at the right. The silhouette swings a club over its head, but it stops stiff in the middle of the swing: small thin arcs of lightning crawl over its arm and the club, and its fingers spread open. The club does not hit. |
+| Setting | A neutral battlefield in a low view. A dark, calm afternoon sky, so that the small spark is bright against it. |
+| Palette | Electric cyan-white lightning, the color of a neon tube, with a white core. Not purple and not pale blue. Plain cloth on the sleeve and a dark silhouette. |
+
+### 10.7 Arc Lightning
+
+`mage.arcLightning` · Mage · Uncommon · Countdown 3 · An enemy Unit · Deal 2 Lightning damage to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it. Lightning makes each Unit Paralyzed: it does not attack in its next action.
+
+> It never strikes once.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A chain of lightning that jumps from one enemy to the next: one bolt hits the middle enemy, then forks into two arcs that jump to the enemy on each side of it. The three linked arcs are the largest shape in the image. |
+| Partial figure | A back view of a robed figure from behind and to the left, cropped at the waist, in the left foreground. The hood is up. One arm points forward to the right with the fingers spread open, and the bolt comes from the fingers. No staff. |
+| Proportion | Real human proportions and anatomy. The figure is cropped at the waist and takes no more than one third of the image width. Five fingers on the hand. |
+| Action | Three Lanes of grey stone tiles go side by side to the right, with grass between them. On each Lane, one dark, armored silhouette stands at the same distance: one near Lane, one middle Lane and one far Lane, so they stand in a line across the Lanes. The main bolt goes from the fingers to the middle silhouette. From it, one arc jumps to the near silhouette and one arc jumps to the far silhouette. All three silhouettes stand stiff, with their weapons stopped in the air and thin arcs that crawl over their armor. |
+| Setting | A neutral battlefield in a wide, low view. A dull grey sky. |
+| Palette | Electric cyan-white lightning, the color of a neon tube, with a white core. Not purple and not pale blue. A plain dark robe and dark silhouettes. Uncommon: a small silver trim on the sleeve cuff. |
+
+### 10.8 Wildfire
+
+`mage.wildfire` · Mage · Rare · Countdown 4 · An area · Select an area of 2 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 2 Fire damage. Damage by Rank: Rare 2, Epic 3, Legendary 3.
+
+> The grass had it coming.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A square patch of the battlefield that burns: a carpet of low, hungry flames on the grass and on the stone tiles, with a clear straight edge. Inside the square, everything burns. Outside it, the grass is still green and calm. The burning square on the ground is the largest shape. It is an area on the ground, not a ball of fire and not a wave. |
+| Partial figure | One hand in a robe sleeve at the top left, palm down, with the fingers open. It has just let one small glowing ember fall. |
+| Proportion | Real human proportions and anatomy. The hand is normal human size, no larger than one fifth of the image width. Five fingers. |
+| Action | A high view from above and to the left, so the square shape of the area reads on the ground. The square covers two Lanes of grey stone tiles and the grass between them, two Squares long. The ember falls into the dry grass at the near corner, and the fire runs from there over the full square. Three dark silhouettes stand inside the square. They jump and hop from foot to foot, and lift their boots from the flames. Thin smoke rises. No blood. |
+| Setting | A neutral battlefield on a dry, warm day, with long dry grass. |
+| Palette | Orange-red fire with yellow at the base of the flames, black scorched grass inside the square, and green grass outside it. Rare: fine gold embroidery on the sleeve cuff. |
+
+### 10.9 Thunderstorm
+
+`mage.thunderstorm` · Mage · Rare · Countdown 5 · No target · Deal 2 Lightning damage to 3 random different enemy Units. Damage by Rank: Rare 2, Epic 3, Legendary 3. Lightning makes each Unit Paralyzed: it does not attack in its next action.
+
+> Somebody always gets struck.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A dark, heavy storm cloud that fills the top third of the image, with three bolts of lightning that strike down from it at three different places on the battlefield. The bolts come from above. They are the brightest shapes in the image. |
+| Partial figure | A small robed figure at the bottom left, seen from behind, cropped at the waist. The hood is up. One arm raises a plain wooden staff high to the cloud. A thin thread of lightning links the tip of the staff to the cloud. |
+| Proportion | Real human proportions and anatomy. The figure is small, no larger than one fifth of the image height. Five fingers on the hand. |
+| Action | A wide view of the enemy side of the battlefield, a little from above. Six dark, armored silhouettes stand far apart on the Lanes of grey stone tiles. Three of them, at random places (one near, one in the middle distance and one far), are struck: each one stands stiff and bright inside its bolt, with small arcs that jump over the armor. One more silhouette holds a shield over its head and looks up in fear. The other two are not struck. No blood. |
+| Setting | A neutral battlefield under a storm. Wind bends the grass. The light comes from the bolts and from a thin gap in the clouds at the upper left. |
+| Palette | Electric cyan-white lightning, the color of a neon tube, with a white core. Not purple and not pale blue. A dark slate-grey storm cloud, dark silhouettes and a plain dark robe. Rare: a gold trim on the staff head. |
+
+### 10.10 Blizzard
+
+`mage.blizzard` · Mage · Epic · Countdown 6 · An area · Select an area of 3 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 1 Frost damage. Damage by Rank: Epic 1, Legendary 2. Frost makes each Unit Frozen.
+
+> Nobody goes anywhere today.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A huge, howling blizzard that turns over a wide part of the battlefield: a wall of white snow and ice wind that turns in a circle, over three Lanes at the same time, and stands on a deep field of snow with a clear edge. Inside it, all is white snow and ice. Outside it, the grass is green. It is the largest and most dramatic Mage image, much larger than the Frost Wave. |
+| Partial figure | A mage at the bottom left, seen from behind and to the left, cropped at the waist. The hood is up, and a long cloak blows to the right in the wind. Both arms are out in front, with open hands, as if they turn the storm. No staff. |
+| Proportion | Real human proportions and anatomy. The mage is a little larger than one quarter of the image height. Five fingers on each hand. |
+| Action | A wide view from the side and a little above. Three Lanes of grey stone tiles go from the left to the right into the distance. Over the middle of the image, the blizzard covers all three Lanes, two Squares long. Snow lies deep on the tiles, and its edge is a clear line on the grass. Five dark, armored silhouettes stand inside the blizzard. They are frozen in the middle of a step, with ice up to the knees, frost on the helmets and long icicles on their weapons. One enemy at the edge of the snow tries to pull one boot out of the ice. No blood. |
+| Setting | A neutral battlefield in a wide, dramatic view. Dark grey-blue storm clouds above the blizzard. At the upper left, a cold shaft of sunlight lights the mage. |
+| Palette | Light blue frost, white snow and white ice, with a grey-blue storm sky and dark silhouettes. Epic: a heroic scene, with silver trim on the cloak and on the sleeve cuffs, and small ice crystals that glitter in the light. |
+
 ## 11. Ranger Skill Cards
 
 Identity: control and Hero damage. Physical, so the palette is neutral steel and leather, with forest-green fletching as the Ranger mark on each card. The partial figure is a hooded archer, seen from behind or as hands only, with no pointed ears, no tusks and no other sign of a Race.
@@ -1976,7 +2051,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.2 Warning Shot
 
-`ranger.warningShot` · Ranger · Common · Countdown 3 · An enemy Unit · Deal 8 Physical damage to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.
+`ranger.warningShot` · Ranger · Common · Countdown 3 · An enemy Unit · Deal 6 Physical damage at Common, 7 at Uncommon, 8 at Rare, 10 at Epic and 12 at Legendary to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.
 
 > The next one will not miss.
 
@@ -1990,7 +2065,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.3 Long Shot
 
-`ranger.longShot` · Ranger · Uncommon · Countdown 4 · The enemy Hero · Deal 8 Physical damage to the enemy Hero.
+`ranger.longShot` · Ranger · Uncommon · Countdown 4 · The enemy Hero · Deal 8 damage to the enemy Hero.
 
 > Over their heads, into the Hero.
 
@@ -2004,7 +2079,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.4 Quick Shot
 
-`ranger.quickShot` · Ranger · Common · Countdown 1 · An enemy Unit · Deal 3 Physical damage to an enemy Unit.
+`ranger.quickShot` · Ranger · Common · Countdown 1 · An enemy Unit · Deal 3 Physical damage at Common, 4 at Uncommon, 5 at Rare, 6 at Epic and 7 at Legendary to an enemy Unit.
 
 > Draw, loose, draw again.
 
@@ -2018,7 +2093,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.5 Harrying Shot
 
-`ranger.harryingShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 2 Physical damage to an enemy Unit. Then deal 4 Physical damage to the enemy Hero.
+`ranger.harryingShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 3 Physical damage to an enemy Unit and 3 damage to the enemy Hero at Common; 4 and 3 at Uncommon; 5 and 3 at Rare; 6 and 4 at Epic; 7 and 5 at Legendary.
 
 > One for the beast. One for its master.
 
@@ -2074,7 +2149,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.9 Heartseeker
 
-`ranger.heartseeker` · Ranger · Rare · Countdown 5 · The enemy Hero · Deal 6 Physical damage to the enemy Hero.
+`ranger.heartseeker` · Ranger · Rare · Countdown 5 · The enemy Hero · Deal 6 damage to the enemy Hero.
 
 > One arrow. One heart.
 

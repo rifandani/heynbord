@@ -9,7 +9,12 @@ import { chooseCommand } from "../ai/choose-command";
 import { createBattle, playerHeroHp } from "../battle/create-battle";
 import { starsFor } from "../battle/stars";
 import { step } from "../battle/step";
-import type { BattleState, PlayerSetup, Side } from "../battle/types";
+import type {
+  BattleEvent,
+  BattleState,
+  PlayerSetup,
+  Side,
+} from "../battle/types";
 import { getCard } from "../content/cards";
 import {
   countdownLimit,
@@ -39,12 +44,14 @@ export const NO_GEAR: GearLevels = {
 /**
  * The AI plays both Sides until the Battle ends. It throws when the AI chooses
  * an illegal Command, or when the Battle passes `maxCommands`. `onTurn` sees
- * the state at the start of each Play Phase.
+ * the state at the start of each Play Phase. `onStep` sees the events of each
+ * Command and the state after it.
  */
 export const playOut = (
   start: BattleState,
   maxCommands = MAX_COMMANDS,
-  onTurn?: (state: BattleState) => void
+  onTurn?: (state: BattleState) => void,
+  onStep?: (events: readonly BattleEvent[], state: BattleState) => void
 ): BattleState => {
   let state = start;
   onTurn?.(state);
@@ -60,6 +67,7 @@ export const playOut = (
       throw new Error(`AI chose an illegal Command: ${result.failure._tag}`);
     }
     ({ state } = result.success);
+    onStep?.(result.success.events, state);
     if (command._tag === "EndTurn" && state.status !== "finished") {
       onTurn?.(state);
     }
@@ -229,21 +237,76 @@ export interface MatchupReport {
    * (Archetypes 2.2). It is for review only.
    */
   readonly noReadyTurns: number;
+  /**
+   * The share of Battles, from 0 to 1, in which a Unit of the opponent
+   * skipped `LOCK_RUN` or more actions in a row (the Freeze lock of ADR-0025).
+   * It is for review only.
+   */
+  readonly lockRate: number;
 }
 
+/** A run of this many skipped actions in a row is a lock (ADR-0025). */
+const LOCK_RUN = 3;
+
 /**
- * Plays one Matchup Battle. Returns the end state and the number of Turns of
- * each Side with no Ready card in the Hand.
+ * Counts the runs of skipped actions (`UnitSkipped`) of each Unit. An action
+ * of the Unit that is not skipped ends its run: each Unit of a Side that did
+ * not skip in that Side's Turn. `locked` names each Side that had a Unit
+ * with a run of `LOCK_RUN` or more.
+ */
+export const skipRunTracker = () => {
+  const runs = new Map<number, number>();
+  const owners = new Map<number, Side>();
+  const locked = new Set<Side>();
+  let skipped = new Set<number>();
+  const observe = (events: readonly BattleEvent[], state: BattleState) => {
+    for (const unit of state.units) {
+      owners.set(unit.id, unit.owner);
+    }
+    for (const event of events) {
+      if (event._tag === "UnitSummoned" || event._tag === "TokenSummoned") {
+        owners.set(event.unit.id, event.unit.owner);
+      } else if (event._tag === "UnitSkipped") {
+        const run = (runs.get(event.unitId) ?? 0) + 1;
+        runs.set(event.unitId, run);
+        skipped.add(event.unitId);
+        const owner = owners.get(event.unitId);
+        if (run >= LOCK_RUN && owner !== undefined) {
+          locked.add(owner);
+        }
+      } else if (event._tag === "TurnEnded") {
+        for (const [unitId, owner] of owners) {
+          if (owner === event.side && !skipped.has(unitId)) {
+            runs.delete(unitId);
+          }
+        }
+        skipped = new Set();
+      }
+    }
+  };
+  return { observe, locked };
+};
+
+/**
+ * Plays one Matchup Battle. Returns the end state, the number of Turns of
+ * each Side with no Ready card in the Hand, and the Sides with a locked Unit.
  */
 const playMatchupBattle = (start: BattleState) => {
   const noReady: Record<Side, number> = { player: 0, enemy: 0 };
-  const end = playOut(start, MAX_COMMANDS, (state) => {
-    const { activeSide } = state;
-    if (!state.sides[activeSide].hand.some((card) => card.countdown === 0)) {
-      noReady[activeSide] += 1;
-    }
-  });
-  return { end, noReady };
+  const skips = skipRunTracker();
+  skips.observe([], start);
+  const end = playOut(
+    start,
+    MAX_COMMANDS,
+    (state) => {
+      const { activeSide } = state;
+      if (!state.sides[activeSide].hand.some((card) => card.countdown === 0)) {
+        noReady[activeSide] += 1;
+      }
+    },
+    skips.observe
+  );
+  return { end, noReady, locked: skips.locked };
 };
 
 /**
@@ -299,14 +362,25 @@ export const simulateMatchup = (
   let firstSideWins = 0;
   let turns = 0;
   let noReadyTurns = 0;
+  let locks = 0;
   for (let seed = 1; seed <= options.seeds; seed += 1) {
-    const { end: ahead, noReady: aheadNoReady } = playMatchupBattle(
+    const {
+      end: ahead,
+      noReady: aheadNoReady,
+      locked: aheadLocked,
+    } = playMatchupBattle(
       createMatchupBattle(seed, archetype, opponent, options)
     );
-    const { end: behind, noReady: behindNoReady } = playMatchupBattle(
+    const {
+      end: behind,
+      noReady: behindNoReady,
+      locked: behindLocked,
+    } = playMatchupBattle(
       createMatchupBattle(seed, opponent, archetype, options)
     );
     noReadyTurns += aheadNoReady.player + behindNoReady.enemy;
+    locks +=
+      (aheadLocked.has("enemy") ? 1 : 0) + (behindLocked.has("player") ? 1 : 0);
     wins += ahead.result?.winner === "player" ? 1 : 0;
     wins += behind.result?.winner === "enemy" ? 1 : 0;
     for (const end of [ahead, behind]) {
@@ -323,5 +397,6 @@ export const simulateMatchup = (
     firstSideWinRate: firstSideWins / battles,
     averageTurn: turns / battles,
     noReadyTurns: noReadyTurns / battles,
+    lockRate: locks / battles,
   };
 };
