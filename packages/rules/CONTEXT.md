@@ -56,7 +56,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Speed**: The maximum number of Squares that a Unit goes forward in its Movement in one Turn. The default Speed is 1. Only a Runner has Speed 2 or more, and an Orc melee Striker can have Speed 2. _Avoid_: move, pace, Movement points
 
-**Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
+**Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units, but it stops before an enemy Flying Unit. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
 
 **Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Phase from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
 
@@ -311,6 +311,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Starter Deck** can also be an **Archetype**. An Archetype does not have to be a Starter Deck. A **Matchup** of an Archetype against itself is a mirror.
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
 - A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
+- A **Deck** holds a **Card** and a **Rank**, not one specific **Card copy**. After a **Combine**, a Deck that used the old-Rank copies uses the new-Rank copy. After an **Extract**, the copy goes out of each Deck that used it. A Card stays **Discovered** after its last copy is Extracted.
 - Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage. A loss or a repeat win gives XP too, so a real Player is at or above the level of the **First-try Path**.
 - A **Region** has 10 **Stages**, and the last one is a **Boss Stage**.
 - The **Tutorial** ends with the first win of Stage 1-1. A loss or an **Abandon** does not end it. A later play of Stage 1-1 is a normal **Stage**. The Tutorial has 4 **Tutorial Steps**. Auto-play is not available in the Tutorial. A **Hint** shows one time for each subject, at any time after the Tutorial.
@@ -344,6 +345,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The first text for **Knockback** said that the attacked Unit "moves" back. A Unit moves only in its own Movement, with its Speed. The term is **Pushed**, so Speed 0, Entangled and Hobbled do not stop Knockback.
 - **Charge** gave +2 Speed at each Rank before. Now it is **Charge N**, and N increases with the Rank from 1 to a maximum of 3. Speed does not increase with the Rank, but Charge does. Thus a higher Rank makes a Charge Unit faster only in the Turn when it is summoned.
 - GDD 4.5 said "Units never move through other Units", and a friendly Unit blocked a Lane. Now a Unit moves through friendly Units, also a friendly Wall, and only an enemy Unit stops its **Movement** ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)). A push still stops before any Unit, because a push is not Movement.
+- A Flying Unit moved over all Units before, also enemy Flying Units. Now an enemy Flying Unit stops a Flying Unit, the same as an enemy Unit stops a ground Unit ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)).
 - In many games, "bleed" is damage over time. In Heynbord, **Bleeding** does no damage: it only makes heals smaller. Damage over time is **Burn** or **Poisoned** ([ADR-0019](../../docs/adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
 - GDD 4.6 says "a Unit with Attack 0 does not attack", but a bonus could make the Attack 1. The rule uses **Base Attack**, so Rally and Swarm never make a Wall attack.
 - A **Wall** did not move or attack only because it had Speed 0 and Base Attack 0. Then a Speed or Attack buff, also Charge, could make a Wall move or attack. Now the Wall Keyword itself stops Movement, attacks, Retaliate and First Strike. The Speed 0 and Attack 0 of a Wall Card are only a rule for the Card, so that the Power Budget does not count a stat that has no effect.

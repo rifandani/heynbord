@@ -219,6 +219,38 @@ const lowerBleeding = (ctx: StepContext): void => {
   }
 };
 
+/**
+ * The Exposed count of each Unit of the active Side goes down by 1 (GDD 4.7).
+ * At 0, Exposed ends. No event occurs, the same as for Hobbled.
+ */
+const lowerExposed = (ctx: StepContext): void => {
+  for (const unit of ctx.state.units) {
+    if (unit.owner === ctx.state.activeSide && unit.exposedTurns > 0) {
+      unit.exposedTurns -= 1;
+      if (unit.exposedTurns === 0) {
+        unit.exposed = 0;
+      }
+    }
+  }
+};
+
+/**
+ * Skill Card bonus Attack counts the End Phases of its owner: it lasts until
+ * the end of the caster's next Turn (GDD 4.8).
+ */
+const fadeAttack = (ctx: StepContext): void => {
+  const { state } = ctx;
+  for (const unit of state.units) {
+    if (unit.owner === state.activeSide && unit.bonusAttackTurns > 0) {
+      unit.bonusAttackTurns -= 1;
+      if (unit.bonusAttackTurns === 0) {
+        unit.bonusAttack = 0;
+        ctx.events.push(BattleEvent.AttackFaded({ unitId: unit.id }));
+      }
+    }
+  }
+};
+
 /** Skill Card Armor counts the other side's Turns, so it covers that many enemy Turns. */
 const fadeArmor = (ctx: StepContext): void => {
   const { state } = ctx;
@@ -236,15 +268,18 @@ const fadeArmor = (ctx: StepContext): void => {
 /**
  * The End Phase (GDD 4.3): Burn, then Poison, then durations go down. Skill
  * Card Armor counts the other side's Turns, so it covers that many enemy Turns.
- * A Hobbled and a Bleeding count go down in this Phase, after Burn and Poison.
- * The Rally bonus ends.
+ * A Hobbled, a Bleeding and an Exposed count go down in this Phase, after
+ * Burn and Poison. The Rally bonus ends, and the bonus Attack of a Skill Card
+ * can end.
  */
 const runEndPhase = (ctx: StepContext): void => {
   applyBurn(ctx);
   applyPoison(ctx);
   lowerHobble(ctx);
   lowerBleeding(ctx);
+  lowerExposed(ctx);
   endRally(ctx);
+  fadeAttack(ctx);
   fadeArmor(ctx);
   ctx.events.push(BattleEvent.TurnEnded({ side: ctx.state.activeSide }));
 };

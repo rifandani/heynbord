@@ -158,7 +158,7 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 | Human Heavy | Human Light | 45.3% | 47.4% | 21.4 | 15.0 | 45%–55% |
 | Human Light | Human Light | 50.0% | 45.7% | 25.5 | 16.2 | Mirror |
 
-The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-11, after the re-tune of the Skill Cards with the swap rule (issue #56, 3.1 and 3.3). Each Archetype has a tuned card or plays against one, so most pairs changed. Vanguard wins 48.9% against Raiders (it was 49.4%). The 14 Skill Cards of issue #57 change no Archetype list, and the table is the same after them (`bun run sim:check`, 2026-10-11).
+The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-11, after the re-tune of the Skill Cards with the swap rule (issue #56, 3.1 and 3.3). Each Archetype has a tuned card or plays against one, so most pairs changed. Vanguard wins 48.9% against Raiders (it was 49.4%). The 14 Skill Cards of issue #57 change no Archetype list, and the table is the same after them (`bun run sim:check`, 2026-10-11). The 3 Rare and Epic Priest Skill Cards of issue #61 also change no Archetype list: Vanguard still wins 48.9% against Raiders (`bun run sim matchup 1000`, 2026-10-12).
 
 **Goblin, Feral and Undead risks (2.2).** The AI ignores Sabotage, Trample, Entangle, Rally, Swarm, Rebirth and Summon when it selects a play. Thus these results are evidence for review, not a balance approval.
 
@@ -217,6 +217,7 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-10 | Sanctuary gives Ward 6 at Uncommon, 8 at Rare, 10 at Epic and 12 at Legendary (it was 6 / 7 / 9 / 11 from the Rank scale). The Ward value comes from a table for each Rank, as the Mend heal does ([GDD 5.5](./03-game-design.md#55-classes)). No Deck changes. `sim:check` passes, and Vanguard wins 49.4% against Raiders. | Design choice: the Ward goes up by 2 at each Rank. |
 | 2026-10-11 | Re-tune of the 12 Skill Cards with the swap rule (issue #56, 3.3). War Drums: the Countdown of 2 cards goes down by 2 (it was 1). Pinning Shot: 4 damage (it was 3). Warning Shot: 8 damage (it was 2), push 2 Squares. Long Shot: 8 Hero damage (it was 4). Frost Bolt: 3 damage (it was 2). The values are the Common values, and they scale with the Rank (Long Shot is 10 at its Base Rank Uncommon). The other 7 cards do not change. No Base Rank, Countdown or effect type changes. | A Skill Card was worth much less than a Creature Card with the same Countdown (the Ranger and Priest rows above). With the old values, 4 cards failed the swap rule against a melee Creature Card (change against Vanguard / Raiders): War Drums −5.5 / −4.0, Warning Shot −8.3 / −8.8, Long Shot −8.0 / −9.0 and Frost Bolt −5.4 / −5.9 points. Each new value is the smallest one that passes, from a sweep with 1000 seeds. The 3 Ranger cards share Thornwatch, so a change to one moves the others: Pinning Shot passed first, then failed (−5.5) after Warning Shot and Long Shot got stronger. Warning Shot cannot pass reliably (3.3). Now 11 of 12 cards pass. Vanguard wins 48.9% against Raiders (it was 49.4%), because Vanguard has War Drums and Raiders has Frost Bolt. `sim:check` passes. Average against the 10 other Archetypes: Thornwatch 27.5% → 41.1%, Tunnel Rats 31.4% → 45.1%, Vanguard 61.9% → 59.5%, Raiders 59.6% → 56.7%. Stages 1-2, 1-3, 1-6, 1-9 and 1-10 change by 1 to 3 points and stay on target ([14 — Campaign Stages](./14-campaign-stages.md)). |
 | 2026-10-11 | 14 Common and Uncommon Skill Cards come in (issue #57, [GDD 5.5](./03-game-design.md#55-classes)): Shoulder Charge, Shield Bash, Cleave, Ground Slam, Quick Shot, Harrying Shot, Barbed Arrow, Flushing Shot, Frost Shards, Frost Wave, Blessing of Light, Radiant Strike, Penance and Prayer of Healing. Changes from the provisional values of the issue: Cleave Countdown 4 (it was 3), Ground Slam Countdown 3 (4), Quick Shot 3 damage (2), Harrying Shot 4 Hero damage (2), Barbed Arrow 5 damage (3), Flushing Shot 7 damage (3), Penance Countdown 2 (3), Prayer of Healing Countdown 3 (4) and heal 8 / 10 / 12 / 14 from Uncommon (4 / 6 / 8 / 10). No Archetype, Starter Deck or Stage Deck changes (2.3). | Each card must pass the swap rule (3.3). With the provisional values, 8 cards failed (change against Vanguard / Raiders, 300 seeds unless noted): Cleave −2.2 / +9.2, Ground Slam −5.6 / −1.5 (1000 seeds), Quick Shot −6.8 / −5.8, Harrying Shot −6.2 / −4.2, Barbed Arrow −7.3 / −4.7, Flushing Shot −7.2 / −7.3, Penance −7.9 / −4.5 (1000 seeds) and Prayer of Healing −15.8 / −16.2. A Countdown change also changes the Creature Card of the swap. Each new value is the nearest value that passes in a sweep with 1000 seeds. Now 13 of 14 cards pass. Quick Shot cannot pass (3.3). Vanguard wins 48.9% against Raiders (no change), and `sim:check` passes with no Stage change. `bun run sim packs`: a Peddler or Merchant Class Pack needs 9.3 or 2.3 Packs to Discover all Common and Uncommon cards of a Class (1.5 and 1.0 for the Mage), and each Class with 7 cards gets 1.1 Legendary copies for each card in 100 Royal Class Packs (the Mage 1.6). The economy sim moves no "Discovered" checkpoint by more than 1 point (Economy 4), because its Player Discovers only the Warrior Skill Cards. |
+| 2026-10-11 | The 3 Rare and Epic Ranger Skill Cards come in (issue #59, [GDD 5.5](./03-game-design.md#55-classes)): Venom Arrow (R, Countdown 4, 1 damage, then Poisoned 3 / 4 / 5 stacks at Rare / Epic / Legendary, also at 0 damage), Heartseeker (R, Countdown 5, 6 Hero damage, 9 at Rare) and Rain of Arrows (E, Countdown 6, 1 damage to each enemy Unit in a Lane, 2 at Epic, then Entangled at damage above 0). Changes from the provisional values of the issue: Venom Arrow 1 damage (it was 2), Rain of Arrows 1 damage (3). The Venom Arrow AI does not prefer a Wall or a Unit with Armor, as the issue proposed: it prefers the Unit with the highest Attack (GDD 9). No Archetype, Starter Deck or Stage Deck changes (2.3). | Each card must pass the swap rule (3.3). With the provisional values (1000 seeds, change against Vanguard / Raiders), Heartseeker passed (+1.5 / −3.2), Venom Arrow failed (−9.4 / +7.8) and Rain of Arrows failed (+20.7 / +18.3). For Venom Arrow, no damage value from 1 to 4 passed with the Wall and Armor preference (−5.9 to −10.9 against Vanguard). The preference sends the stacks to Town Barricade and Shieldbearer, which do not attack: with no preference, the change was −8.1; with Wall and Armor targets avoided, −3.1. A target choice by Attack gave −0.8 / +6.3 with 2 damage and −3.3 / +3.0 with 1 damage. For Rain of Arrows, the Lane Entangle is the strong part: 2 damage at Epic passes at Countdown 3 to 6, and 4 damage fails at each Countdown from 2 to 5 (+11.7 to +22.7). Each card keeps the Countdown and the stack table of the issue. Now 27 of 29 cards pass, and Warning Shot and Quick Shot still fail (3.3). Vanguard wins 48.9% against Raiders (no change), and `sim:check` passes with no Stage change. `bun run sim packs`: only the Ranger Class Pack rows change (Economy 4). The economy sim does not change, because its Player Discovers only the Warrior Skill Cards. |
 
 ### 3.2 Countdown slope search
 
@@ -265,7 +266,7 @@ HH is Human Heavy, HL Human Light, WH Wild Hunt, TR Tunnel Rats, V Vanguard and 
 
 ### 3.3 Skill Card swap
 
-A Skill Card has no Power Budget. The swap rule measures it against a Creature Card with the same Countdown (issue #56). Run `bun run sim skill-swap 1000` in `packages/rules` (about 2 minutes for the 26 cards). `--check` does not check the swap.
+A Skill Card has no Power Budget. The swap rule measures it against a Creature Card with the same Countdown (issue #56). Run `bun run sim skill-swap 1000` in `packages/rules` (about 2 minutes for the 29 cards). `--check` does not check the swap.
 
 - **The swap.** In a Deck of the card's Class, 1 more copy of the Skill Card replaces 1 Creature Card. The Decks are Vanguard Full (Warrior), Raiders Full (Mage), Thornwatch (Ranger) and Wild Hunt (Priest). Each one already has 1 copy of each Skill Card of its Class, so the swap Deck has 2 copies. A swap Deck is a scratch Deck for the report. The Archetype lists do not change.
 - **The Creature Card.** It is a melee Unit (Range 0) with the same Countdown as the Skill Card. If no melee Creature Card has that Countdown, it has the nearest one, and the report says so. Of two nearest Countdowns, the higher one, so that the Deck Countdown does not go up. Then the card with the most copies, and then the first in Deck order.
@@ -328,6 +329,44 @@ The swap Decks have no copy of these cards, so there is no reverse column.
 - Flushing Shot needs 8 damage at its Base Rank Uncommon to pass. As with Warning Shot, it then kills most Units that it hits, so its push seldom occurs.
 - Penance has no value to scale, so a Rank changes only its Recall chance.
 - The new Ranger cards make the Ranger curve cheap (Countdown 1 to 4), and Prayer of Healing heals each Unit of a Lane as much as Mend heals one Unit at the same Rank. The Skill Power Budget (#50) can measure these after all 40 cards exist.
+
+Results of the 3 Rare and Epic Ranger Skill Cards of issue #59, 2026-10-11, with their final values. A card plays at its Base Rank value.
+
+| Skill Card | Deck | Creature Card | Before | After | Change | Result |
+| --- | --- | --- | --- | --- | --- | --- |
+| Venom Arrow | Thornwatch | Rootbound Guard (Countdown 3, nearest) | 29.8% / 29.8% | 26.6% / 32.7% | −3.3 / +3.0 | Pass |
+| Heartseeker | Thornwatch | Rootbound Guard (Countdown 3, nearest) | 29.8% / 29.8% | 31.4% / 26.6% | +1.5 / −3.2 | Pass |
+| Rain of Arrows | Thornwatch | Rootbound Guard (Countdown 3, nearest) | 29.8% / 29.8% | 31.7% / 30.3% | +1.9 / +0.5 | Pass |
+
+With 3000 seeds, the changes are −1.4 / +1.6 (Venom Arrow), +3.7 / −2.8 (Heartseeker) and +2.6 / +0.3 (Rain of Arrows).
+
+**Findings for review (issue #59).**
+
+- Venom Arrow is not the Ranger answer to Walls and high Armor in the Matchups. A Wall does not attack, so the AI gets more value when it puts the stacks on a Unit with a high Attack. The card text does not change: the stacks still come at 0 damage.
+- With 1 damage, Venom Arrow deals 1 at Rare, 2 at Epic and 2 at Legendary. Its value is almost all in the stacks.
+- Heartseeker deals 9 Hero damage at Rare (Countdown 5), and Long Shot deals 10 at Uncommon (Countdown 4). Both pass the swap rule, so a Rare Hero card is not stronger than an Uncommon one. #50 can measure this.
+- Rain of Arrows deals only 2 damage at Epic, so most of its value is the Entangle of the whole Lane.
+- The swap takes out Rootbound Guard for all 3 cards, and each swap raises the Deck Countdown (+1, +2 and +3). Thornwatch has no melee Creature Card with Countdown 4 or more.
+
+Results of the 3 Rare and Epic Priest Skill Cards of issue #61, 2026-10-12, with their final values. A card plays at its Base Rank value.
+
+| Skill Card | Deck | Creature Card | Before | After | Change | Result |
+| --- | --- | --- | --- | --- | --- | --- |
+| Unbroken Vow | Wild Hunt | Bristleback Boar | 57.4% / 52.9% | 57.0% / 50.2% | −0.4 / −2.7 | Pass |
+| Cleanse | Wild Hunt | Cave Bear | 57.4% / 52.9% | 53.6% / 49.4% | −3.7 / −3.5 | Pass |
+| Aegis of Dawn | Wild Hunt | Crag Rhino (Countdown 4, nearest) | 57.4% / 52.9% | 54.4% / 48.9% | −3.0 / −4.1 | Pass |
+
+With 3000 seeds, the changes are −0.3 / −2.4 (Unbroken Vow), −3.7 / −3.0 (Cleanse) and −3.3 / −2.7 (Aegis of Dawn).
+
+**Unbroken Vow needs Countdown 2.** With the Countdown 3 of the issue, it fails against Cave Bear: −8.4 / −7.7. The target does not cause this. Before the AI counted Steadfast in its kill estimate (GDD 9), the Sanctuary target (the friendly Unit nearest to the enemy) gave −7.8 / −8.5, and a target that an enemy Unit in its Lane can kill now gave −6.9 / −8.2. At Countdown 2 it passed with each of the 3 targets (3000 seeds), so it keeps the target of the issue: the Unit of the most value. At Countdown 2 the swap takes out Bristleback Boar, a Countdown 2 card, in place of Cave Bear.
+
+**Cleanse needs a heal fallback and heal 6.** With the issue values (heal 4) and a Hold Rule that waits for a Debuff, it is −15.6 / −5.1. Vanguard gives no Debuff, so the card stays in the Hand in that Matchup. With the *Mend* rule as a fallback (GDD 9), heal 4 is −6.5 / −5.9 (fail), heal 6 is −3.7 / −3.5 and heal 8 is −1.5 / −2.9. The table is 6 at Rare, 7 at Epic and 8 at Legendary, 2 more than the issue at each Rank.
+
+**Findings for review (issue #61).**
+
+- Cleanse is a heal first: Vanguard and Raiders give few Debuffs (Raiders gives Burn and Freeze). Against a Poison, Hobble or Bleed Deck (Thornwatch, Tunnel Rats), its Debuff part has more value. The swap rule does not measure those Matchups.
+- Steadfast saves one lethal hit and leaves the Unit at 1 HP. Its value is about that of a Countdown 2 card. Unbroken Vow (Rare) has the Countdown of Mend and Smite (Common).
+- Aegis of Dawn passes at the issue values. Wild Hunt has no melee Creature Card with Countdown 5 or 6, so the swap raises the Deck Countdown by 2.
 
 ## 4. When an Archetype or a card changes
 

@@ -102,25 +102,23 @@ Goblin:
 
 Sequence:
 
-1. #59, then #60
-2. #61, then #62
-3. #63, then #64
-4. #65, then #66
-5. #67 "Re-fit Vanguard and Raiders": blocked by #50 and #65.
-6. #68 "Promote Diagnostic Decks": blocked by #67.
-7. #50
-8. Workshop feature: Combine and Extract, and Craft.
-9. Hero feature: Gear upgrades. Then check the Region 1 margins again with real Gear.
-10. First external playtest: this is the M2 exit.
-11. Regions 2 and 3 (M3): their tuning needs Combine and Gear.
-12. Heynspire, then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
+1. #63, then #64
+2. #65, then #66
+3. #67 "Re-fit Vanguard and Raiders": blocked by #50 and #65.
+4. #68 "Promote Diagnostic Decks": blocked by #67.
+5. #50
+6. Workshop feature: Combine and Extract, and Craft.
+7. Hero feature: Gear upgrades. Then check the Region 1 margins again with real Gear. Vitality is your hero‘s life = armour, Fortitude influences your Units‘ block rate = headgear, Valour influences your Units‘ critical hit rate = weapon
+8. First external playtest: this is the M2 exit.
+9. Regions 2 and 3 (M3): their tuning needs Combine and Gear.
+10. Heynspire, then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
 
 New features:
 
-- Flying should not be able to pass enemy Flying unit
 - /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
 - /grill-with-docs rewards for winning campaigns, for winning stage 1-10 i think we can give them elf, we also should have a prediction record / simulation like if the user complete stage 1-1 how many coins and cards they have. Also victory result modal in campaign battle still not showing what the rewards
 - /grill-with-docs a smart auto-play button for Stages that the player has already won (whats the reward for completing already completed stage?)
+- /grill-with-docs introduce new items called "Skip Ticket", it will auto-skip Stages that the player has already won
 - /grill-with-docs how do we save player's progress so far? for now i want to save it locally, but later i want it to be saved in DB of course
 - /grill-with-docs add campaign region 2 which is about mixed Orc & Goblin territory (the first time we introduce Goblin)
 - /grill-with-docs add campaign region 3 which is all about Goblin & Elf territory (the first time we introduce Elf)
@@ -132,9 +130,8 @@ New features:
 
 v2:
 
-Vitality is your hero‘s life = armour, Fortitude influences your Units‘ block rate = headgear, Valour influences your Units‘ critical hit rate = weapon
-
-- blender mcp + all 3D unit, hero, hero equipments
+- hybrids, awakening
+- blender mcp + all 3D unit
 - standardize UI components at design system level
 - dynamic og image generation
 - add better auth + skills

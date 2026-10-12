@@ -31,6 +31,7 @@ const unit: UnitView = {
   frozen: false,
   entangled: false,
   ward: 0,
+  steadfast: false,
   wall: false,
 };
 

@@ -262,6 +262,26 @@ const SkillEffect = Schema.Union([
   }),
   Schema.Struct({
     /**
+     * Damage to one enemy Unit. When the Unit survives, it becomes Poisoned
+     * with `poison` more stacks, also at 0 damage: the stacks are the main
+     * effect. A Unit that the hit kills gets no stacks.
+     */
+    type: Schema.Literal("damagePoison"),
+    amount: Amount,
+    damageType: DamageType,
+    poison: SkillAmount,
+  }),
+  Schema.Struct({
+    /**
+     * Damage to each enemy Unit in one Lane. Each Unit that survives with
+     * damage above 0 becomes Entangled, as with `damageEntangle`.
+     */
+    type: Schema.Literal("damageLaneEntangle"),
+    amount: Amount,
+    damageType: DamageType,
+  }),
+  Schema.Struct({
+    /**
      * Damage to one enemy Unit equal to its Attack at the moment of the hit,
      * with the Rally and Swarm bonuses. A Unit with Attack 0, and a Wall,
      * take 0 damage. The Rank does not change the damage.
@@ -326,6 +346,53 @@ const SkillEffect = Schema.Union([
      */
     type: Schema.Literal("wardUnit"),
     ward: SkillAmount,
+  }),
+  Schema.Struct({
+    /** Each friendly Unit in one Lane gets Ward N, as with `wardUnit`. */
+    type: Schema.Literal("wardLane"),
+    ward: SkillAmount,
+  }),
+  Schema.Struct({
+    /**
+     * One friendly Unit gets Steadfast (GDD 4.7): when damage would bring it
+     * to 0 HP, it stays at 1 HP and Steadfast ends. A new Steadfast on a
+     * Steadfast Unit has no effect.
+     */
+    type: Schema.Literal("steadfastUnit"),
+  }),
+  Schema.Struct({
+    /**
+     * All Debuffs of one friendly Unit end, then the Unit is healed, as with
+     * `healUnit`. The Debuffs end first, so Bleeding does not halve this heal.
+     * Buffs stay.
+     */
+    type: Schema.Literal("cleanseUnit"),
+    heal: SkillAmount,
+  }),
+  Schema.Struct({
+    /**
+     * One enemy Unit becomes Exposed N (GDD 4.7): each Physical hit on it
+     * deals N more damage, after Armor. The count is 2 End Phases of its
+     * owner. A new Exposed keeps the higher value.
+     */
+    type: Schema.Literal("exposeUnit"),
+    exposed: SkillAmount,
+  }),
+  Schema.Struct({
+    /**
+     * Friendly Units in one Lane with Base Attack above 0 get bonus Attack
+     * until the end of the caster's next Turn (GDD 4.8). A new bonus Attack
+     * replaces the old one. The value does not scale with the Rank.
+     */
+    type: Schema.Literal("laneAttack"),
+    attack: between(1, 5),
+  }),
+  Schema.Struct({
+    /**
+     * Each friendly Unit in one Lane does one more action now: Movement and
+     * attack, from the front Unit to the back Unit (GDD 4.4).
+     */
+    type: Schema.Literal("laneExtraAction"),
   }),
   Schema.Struct({
     /**

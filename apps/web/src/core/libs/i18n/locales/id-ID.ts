@@ -156,6 +156,9 @@ export default {
       ward: "Pelindung {value}",
       wardRule:
         "Sebuah Buff. Ia menyerap damage setelah Zirah, Crit, dan Block, juga damage Suci, Terbakar, dan Racun, lalu turun sebesar damage itu. Ia tidak punya batas waktu. Pelindung baru memakai nilai yang lebih tinggi.",
+      steadfast: "Teguh",
+      steadfastRule:
+        "Sebuah Buff. Saat damage akan membawa Unit ini ke 0 HP, ia tetap pada 1 HP, dan Teguh berakhir. Pelindung menyerap damage itu lebih dulu. Ia tidak punya batas waktu.",
     },
   },
   town: {
@@ -583,7 +586,7 @@ export default {
       ranged:
         "Unit jarak jauh menyerang Unit musuh terdekat di depannya, di Jalurnya dan dalam Jangkauannya. Ia tidak bergerak saat ada Unit musuh dalam Jangkauannya.\n\nSaat tidak ada Unit musuh dalam Jangkauannya dan Pahlawan musuh ada di dalamnya, ia menyerang Pahlawan musuh. Pahlawan musuh berjarak 1 Petak setelah Kolom terakhir.",
       movement:
-        "Dalam aksinya, Unit lebih dulu bergerak maju di sepanjang Jalurnya, sampai sejauh Kecepatannya.\n\nIa bergerak melewati Unit kawan, tetapi berhenti sebelum Unit musuh. Ia selalu berhenti di Petak kosong. Unit Terbang bergerak melewati semua Unit.",
+        "Dalam aksinya, Unit lebih dulu bergerak maju di sepanjang Jalurnya, sampai sejauh Kecepatannya.\n\nIa bergerak melewati Unit kawan, tetapi berhenti sebelum Unit musuh. Ia selalu berhenti di Petak kosong. Unit Terbang bergerak melewati semua Unit, tetapi berhenti sebelum Unit Terbang musuh.",
       token:
         "Token adalah Unit yang dibuat oleh sebuah efek, misalnya Panggil X. Token bukan kartu, jadi ia tidak pernah ada di Tangan atau Dek-mu.\n\nToken punya Peringkat dari kartu yang membuatnya. Saat mati, ia menghilang. Ia tidak masuk ke Kuburan.\n\nToken adalah Unit kawan bagi Unit di Pihaknya, misalnya untuk Gerombolan.",
       status:
@@ -681,6 +684,7 @@ export default {
       statusBleed: "luka, anti-heal, kurangi penyembuhan",
       statusHobble: "lambat, slow, lumpuh",
       statusWard: "perisai, shield, barrier, serap, buff",
+      statusSteadfast: "bertahan, tak mati, endure, undying, last stand",
       damageType: "elemen, element",
       race: "faksi, suku, kerajaan, faction",
       class: "pekerjaan, profesi, job",
@@ -1024,7 +1028,7 @@ export default {
     firstStrike:
       "Saat Unit musuh jarak dekat menyerang Unit ini, Unit ini memberi damage lebih dulu. Jika penyerang mati, serangannya tidak terjadi.",
     flying:
-      "Bergerak melewati semua Unit, juga Unit musuh. Berhenti di Petak kosong.",
+      "Bergerak melewati semua Unit, tetapi berhenti sebelum Unit Terbang musuh. Berhenti di Petak kosong.",
     heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
     hobble:
       "Unit musuh yang diserangnya punya Kecepatan maksimum 1 selama {value} Giliran. Balas tidak menerapkan Pincang.",
@@ -1072,6 +1076,10 @@ export default {
       "{hit} Jika Unit itu terkena damage dan bertahan hidup, dorong Unit itu {squares} mundur ke arah Pahlawannya.",
     damageBleed:
       "{hit} Jika Unit itu terkena damage dan bertahan hidup, Unit itu menjadi Berdarah {bleed}.",
+    damagePoison:
+      "{hit} Jika Unit itu bertahan hidup, Unit itu mendapat {poison} tumpukan Racun, juga saat Unit itu tidak terkena damage.",
+    damageLaneEntangle:
+      "Beri {amount} damage {damageType} ke semua Unit musuh dalam satu Jalur. Tiap Unit yang terkena damage dan bertahan hidup menjadi Terjerat.",
     damageByAttack:
       "Beri damage {damageType} ke satu Unit musuh, sebesar Serangan Unit itu.",
     damageLaneArmor:
@@ -1088,6 +1096,12 @@ export default {
     healLane: "Sembuhkan {heal} HP pada setiap Unit kawan dalam satu Jalur.",
     wardUnit:
       "Satu Unit kawan mendapat Pelindung {ward}: ia menyerap {ward} damage berikutnya.",
+    wardLane:
+      "Setiap Unit kawan dalam satu Jalur mendapat Pelindung {ward}: ia menyerap {ward} damage berikutnya.",
+    steadfastUnit:
+      "Satu Unit kawan mendapat Teguh: saat damage akan membawanya ke 0 HP, ia tetap pada 1 HP.",
+    cleanseUnit:
+      "Hapus semua Debuff dari satu Unit kawan. Lalu sembuhkan {heal} HP padanya.",
     armorIgnored: "{effect} Zirah tidak menguranginya.",
     counts: {
       squareOne: "{value} Petak",
@@ -1531,6 +1545,18 @@ export default {
         name: "Tembakan Pengusir",
         flavor: "Kembali ke sisimu sendiri.",
       },
+      venomArrow: {
+        name: "Panah Bisa",
+        flavor: "Panahnya kecil. Racunnya tidak.",
+      },
+      heartseeker: {
+        name: "Penembus Jantung",
+        flavor: "Satu panah. Satu jantung.",
+      },
+      rainOfArrows: {
+        name: "Hujan Panah",
+        flavor: "Lihat ke atas. Terlambat.",
+      },
     },
     mage: {
       fireball: { name: "Bola Api", flavor: "Sambutan yang hangat." },
@@ -1567,6 +1593,18 @@ export default {
       prayerOfHealing: {
         name: "Doa Penyembuhan",
         flavor: "Satu doa untuk seluruh barisan.",
+      },
+      cleanse: {
+        name: "Penyucian",
+        flavor: "Basuh semuanya. Berdirilah dengan bersih.",
+      },
+      unbrokenVow: {
+        name: "Sumpah Teguh",
+        flavor: "Bukan hari ini. Bukan seperti ini.",
+      },
+      aegisOfDawn: {
+        name: "Perisai Fajar",
+        flavor: "Cahaya pertama menjaga seluruh barisan.",
       },
     },
   },

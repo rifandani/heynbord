@@ -36,6 +36,7 @@ const quiet: UnitView = {
   frozen: false,
   entangled: false,
   ward: 0,
+  steadfast: false,
   wall: false,
 };
 
@@ -48,6 +49,7 @@ const allStatuses: UnitView = {
   frozen: true,
   entangled: true,
   ward: 5,
+  steadfast: true,
 };
 
 describe("statusesOf", () => {
@@ -55,9 +57,10 @@ describe("statusesOf", () => {
     expect(statusesOf(quiet)).toEqual([]);
   });
 
-  it("gives the Statuses in the fixed priority order, with Ward first", () => {
+  it("gives the Statuses in the fixed priority order, with the Buffs Ward and Steadfast first", () => {
     expect(STATUS_ORDER).toEqual([
       "ward",
+      "steadfast",
       "freeze",
       "burn",
       "poison",
@@ -77,7 +80,7 @@ describe("loopStatuses", () => {
   it("gives at most 2 Statuses, with the highest priority first", () => {
     expect(loopStatuses(quiet)).toEqual([]);
     expect(loopStatuses({ ...quiet, bleeding: 1 })).toEqual(["bleed"]);
-    expect(loopStatuses(allStatuses)).toEqual(["ward", "freeze"]);
+    expect(loopStatuses(allStatuses)).toEqual(["ward", "steadfast"]);
     expect(
       loopStatuses({ ...quiet, hobbled: 2, bleeding: 1, entangled: true })
     ).toEqual(["entangle", "bleed"]);
@@ -115,10 +118,10 @@ describe("badgeStatuses", () => {
     const { badges, more } = badgeStatuses(allStatuses);
     expect(badges.map((badge) => badge.status)).toEqual([
       "ward",
+      "steadfast",
       "freeze",
-      "burn",
     ]);
-    expect(more).toBe(4);
+    expect(more).toBe(5);
   });
 
   it("shows the Ward first, with its value as the count and the gold ring of a Buff", () => {
@@ -131,8 +134,23 @@ describe("badgeStatuses", () => {
     });
     expect(isBuff("ward")).toBe(true);
     expect(
-      STATUS_ORDER.filter((status) => status !== "ward").some(isBuff)
+      STATUS_ORDER.filter(
+        (status) => status !== "ward" && status !== "steadfast"
+      ).some(isBuff)
     ).toBe(false);
+  });
+
+  it("shows Steadfast after the Ward, with no count and the gold ring of a Buff", () => {
+    expect(
+      badgeStatuses({ ...quiet, steadfast: true, ward: 3, frozen: true })
+    ).toEqual({
+      badges: [
+        { status: "ward", count: 3, buff: true },
+        { status: "steadfast", count: null, buff: true },
+        { status: "freeze", count: null, buff: false },
+      ],
+      more: 0,
+    });
   });
 
   it("gives an empty badge for a quiet Unit", () => {

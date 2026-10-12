@@ -58,8 +58,8 @@ const fixed = (at: FxCell, blend: FxSlot["blend"], anchor: string): FxSlot => ({
  * The slot table of the effects atlas: the source of truth for the code, the
  * placeholders and the pack script of the painted atlas (#12). The code uses
  * only the slot names, so the art can change with no code change. The row at
- * y = 1536 after x = 512 and the rest of the cell at (1536, 1024) are free
- * for new slots.
+ * y = 1536 after the `ward` and `steadfast` cells and the rest of the cell at
+ * (1536, 1024) are free for new slots.
  */
 export const FX_SLOTS = {
   glow: code(cell(0, 0, 512), "additive"),
@@ -91,7 +91,13 @@ export const FX_SLOTS = {
   "icon-hobble": fixed(cell(1536, 1280, 128), "alpha", FX_ANCHORS.iconHobble),
   "icon-bleed": fixed(cell(1664, 1280, 128), "alpha", FX_ANCHORS.iconBleed),
   "icon-ward": fixed(cell(1792, 1280, 128), "alpha", FX_ANCHORS.iconWard),
+  "icon-steadfast": fixed(
+    cell(1920, 1280, 128),
+    "alpha",
+    FX_ANCHORS.iconSteadfast
+  ),
   ward: fixed(cell(0, 1536, 512, 256), "additive", FX_ANCHORS.holy),
+  steadfast: fixed(cell(512, 1536, 256), "additive", FX_ANCHORS.iconSteadfast),
 } as const satisfies Readonly<Record<string, FxSlot>>;
 
 export type FxSlotName = keyof typeof FX_SLOTS;

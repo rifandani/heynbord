@@ -246,6 +246,10 @@ export const eventSound = (event: BattleEvent): SoundName | null => {
     case "UnitDied": {
       return "death";
     }
+    // Steadfast stops a lethal hit, as a Block stops half of one.
+    case "SteadfastHeld": {
+      return "block";
+    }
     case "UnitHealed": {
       return "heal";
     }

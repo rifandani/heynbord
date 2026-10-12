@@ -72,6 +72,13 @@ describe("hasCardArt", () => {
     expect(hasCardArt("feral.caveBear")).toBe(true);
     expect(hasCardArt("warrior.shoulderCharge")).toBe(true);
     expect(hasCardArt("priest.prayerOfHealing")).toBe(true);
+    expect(hasCardArt("ranger.rainOfArrows")).toBe(true);
+  });
+
+  it("has art for the Rare and Epic Priest Skill Cards (#62)", () => {
+    expect(hasCardArt("priest.cleanse")).toBe(true);
+    expect(hasCardArt("priest.unbrokenVow")).toBe(true);
+    expect(hasCardArt("priest.aegisOfDawn")).toBe(true);
   });
 
   it("has a file in public/ for each card with art", () => {

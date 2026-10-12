@@ -234,6 +234,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       frozen: true,
       entangled: true,
       ward: 4,
+      steadfast: true,
       hobbled: 1,
       bleeding: 1,
       poisoned: 3,
@@ -579,6 +580,7 @@ describe("chapterEntries", () => {
     ]);
     expect(grouped).toEqual([
       ["statusWard", "buff"],
+      ["statusSteadfast", "buff"],
       ["statusFreeze", "debuff"],
       ["statusBurn", "debuff"],
       ["statusPoison", "debuff"],
@@ -588,6 +590,8 @@ describe("chapterEntries", () => {
     ]);
     expect(nameIn("en-us")(getEntry("statusWard"))).toBe("Ward N");
     expect(nameIn("id-id")(getEntry("statusWard"))).toBe("Pelindung N");
+    expect(nameIn("en-us")(getEntry("statusSteadfast"))).toBe("Steadfast");
+    expect(nameIn("id-id")(getEntry("statusSteadfast"))).toBe("Teguh");
   });
 });
 

@@ -66,7 +66,11 @@ const SUBJECT: Readonly<Record<FxSlotName, string>> = {
     "a blood drop in front of a broken heal cross: a pale plus sign that is cracked in two.",
   "icon-ward":
     "a rounded heater shield made of gold light, with a small sun mark at its center. It is light, not metal: no rivets, no rim and no steel. It is not round and not a kite shield.",
+  "icon-steadfast":
+    "an anchor of warm gold light: a simple anchor with a ring at the top, a crossbar and two curved arms. It is light, not iron: no chain, no rope and no rust.",
   ward: "a protective dome of gold holy light, seen from the front: a clear half-sphere with a bright rim and a faint glow inside, standing on a thin bright ring at its base. Light only: no steel, no shield shape and no figure inside.",
+  steadfast:
+    "a round holy seal of warm gold light, seen straight from above: one thick bright ring, with twelve short, even sun rays that point out from its outer edge, and a thin second ring inside it. The center is empty. Light only: no runes, no letters, no anchor, no metal and no figure.",
 };
 
 const colorRule = (name: FxSlotName): string => {

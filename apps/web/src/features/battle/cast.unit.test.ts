@@ -169,6 +169,25 @@ describe("effectColor", () => {
         damageType: "frost",
       })
     ).toBe("#8fd8ff");
+    expect(
+      effectColor({
+        type: "damagePoison",
+        amount: 1,
+        damageType: "physical",
+        poison: 3,
+      })
+    ).toBe(
+      effectColor({ type: "damageUnit", amount: 1, damageType: "physical" })
+    );
+    expect(
+      effectColor({
+        type: "damageLaneEntangle",
+        amount: 1,
+        damageType: "physical",
+      })
+    ).toBe(
+      effectColor({ type: "damageUnit", amount: 1, damageType: "physical" })
+    );
   });
 
   it("gives the Priest cards the Holy gold", () => {
@@ -178,6 +197,9 @@ describe("effectColor", () => {
       "#ffd75a"
     );
     expect(effectColor({ type: "wardUnit", ward: 5 })).toBe("#ffd75a");
+    expect(effectColor({ type: "wardLane", ward: 6 })).toBe("#ffd75a");
+    expect(effectColor({ type: "steadfastUnit" })).toBe("#ffd75a");
+    expect(effectColor({ type: "cleanseUnit", heal: 6 })).toBe("#ffd75a");
     expect(
       effectColor({ type: "damageUnit", amount: 3, damageType: "holy" })
     ).toBe("#ffd75a");

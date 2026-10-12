@@ -97,9 +97,11 @@ await sharp({
   )
   // `exact` keeps the colors under the transparent pixels, which the master
   // step spread from the edges, so linear filtering makes no dark edges.
+  // Alpha quality 80 in place of 90 saves about 80 KB, and the blended
+  // (premultiplied) error of each slot stays almost the same (#62).
   .webp({
     quality: 82,
-    alphaQuality: 90,
+    alphaQuality: 80,
     effort: 6,
     smartSubsample: true,
     exact: true,

@@ -1,6 +1,7 @@
 import { cn } from "cn";
 
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import type { Glyph } from "@/features/battle/glyphs";
 import { FX_ANCHORS } from "@/features/battle/palette";
 import {
   FX_ATLAS_SIZE,
@@ -10,6 +11,18 @@ import {
 } from "@/features/battle/scene/fx-slots";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { STATUS_ICON } from "@/features/battle/scene/status-visuals";
+
+/**
+ * The glyph and the color of the placeholder of each Status icon that the
+ * painted atlas can be without (`UNPAINTED_SLOTS`). They are the same as the
+ * canvas placeholder of its slot.
+ */
+const PLACEHOLDER: Partial<
+  Record<Status, { readonly glyph: Glyph; readonly color: string }>
+> = {
+  ward: { glyph: "shield", color: FX_ANCHORS.iconWard },
+  steadfast: { glyph: "anchor", color: FX_ANCHORS.iconSteadfast },
+};
 
 /** A CSS position of a cell in the atlas, in % of the free space. */
 const atlasPosition = (at: number, size: number) =>
@@ -28,7 +41,8 @@ export const StatusIcon = ({
   readonly className?: string;
 }) => {
   const slot = STATUS_ICON[status];
-  if (UNPAINTED_SLOTS.has(slot)) {
+  const placeholder = PLACEHOLDER[status];
+  if (UNPAINTED_SLOTS.has(slot) && placeholder) {
     return (
       <span
         aria-hidden
@@ -36,9 +50,9 @@ export const StatusIcon = ({
           "inline-grid place-items-center drop-shadow-[0_0_1px_#2a1d12]",
           className
         )}
-        style={{ color: FX_ANCHORS.iconWard }}
+        style={{ color: placeholder.color }}
       >
-        <GlyphIcon glyph="shield" className="size-[80%]" />
+        <GlyphIcon glyph={placeholder.glyph} className="size-[80%]" />
       </span>
     );
   }

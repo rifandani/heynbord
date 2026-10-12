@@ -21,6 +21,7 @@ const STATUS_TINT: Readonly<Record<Status, string>> = {
   bleed: "#e0605a",
   hobble: "#b8bec6",
   ward: "#ffe7a3",
+  steadfast: "#f7cf86",
 };
 
 const HIT = new Color("#ff5a4a");

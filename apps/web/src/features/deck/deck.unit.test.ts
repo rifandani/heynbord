@@ -124,7 +124,7 @@ describe("poolEntries", () => {
       "warrior.spearThrow",
       "mage.fireball",
     ]);
-    expect(skills.totalCards).toBe(26);
+    expect(skills.totalCards).toBe(32);
     const mage = poolEntries(
       collection,
       filter({ kind: "skill", classId: "mage" })
@@ -147,6 +147,9 @@ describe("poolEntries", () => {
       ["ranger.barbedArrow", "uncommon"],
       ["ranger.longShot", "uncommon"],
       ["ranger.flushingShot", "uncommon"],
+      ["ranger.venomArrow", "rare"],
+      ["ranger.heartseeker", "rare"],
+      ["ranger.rainOfArrows", "epic"],
     ]);
     const priest = poolEntries(
       collection,
@@ -158,8 +161,11 @@ describe("poolEntries", () => {
       ["priest.smite", "common"],
       ["priest.radiantStrike", "common"],
       ["priest.penance", "uncommon"],
+      ["priest.unbrokenVow", "rare"],
       ["priest.sanctuary", "uncommon"],
       ["priest.prayerOfHealing", "uncommon"],
+      ["priest.cleanse", "rare"],
+      ["priest.aegisOfDawn", "epic"],
     ]);
     const goblins = poolEntries(
       collection,

@@ -7,7 +7,7 @@ import { eventDuration, pushArrival } from "@/features/battle/battle-timeline";
 import type { BattleView } from "@/features/battle/battle-view";
 import type { Cast } from "@/features/battle/cast";
 import { castSquares, effectColor } from "@/features/battle/cast";
-import { DAMAGE_COLORS } from "@/features/battle/palette";
+import { DAMAGE_COLORS, FX_ANCHORS } from "@/features/battle/palette";
 import type {
   FxPresetKey,
   ImpactPresetKey,
@@ -78,6 +78,9 @@ export type Fx =
 
 /** The ring of a Rebirth: the pale Undead spirit light. */
 const REBORN_RING = "#c4fbef";
+
+/** The ring of a Cleanse (DebuffsRemoved): a clean white light. */
+const CLEANSE_RING = "#fff6df";
 
 /** Active effects. The playback driver adds them. The effects layer removes them when they end. */
 export const fxList: Fx[] = [];
@@ -320,6 +323,62 @@ const windup = (
 });
 
 /**
+ * The light on a Unit when it holds or comes back: Steadfast that holds it at
+ * 1 HP, a Cleanse that ends its Debuffs, or a Rebirth.
+ */
+const unitLightFx = (
+  event: BattleEvent,
+  before: BattleView,
+  after: BattleView,
+  time: number,
+  speed: BattleSpeed
+): Fx[] => {
+  switch (event._tag) {
+    case "SteadfastHeld": {
+      // The Unit stays at 1 HP: the gold seal of Steadfast flashes again,
+      // and a gold ring goes out. The badge then loses its anchor.
+      const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
+      return at
+        ? [
+            {
+              kind: "ring",
+              color: FX_ANCHORS.iconSteadfast,
+              x: at.x,
+              z: at.z,
+              start: time,
+            },
+            burstFx("steadfast", at, time, BURST_DURATION / speed),
+          ]
+        : [];
+    }
+    case "DebuffsRemoved": {
+      const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
+      return at
+        ? [{ kind: "ring", color: CLEANSE_RING, x: at.x, z: at.z, start: time }]
+        : [];
+    }
+    case "UnitReborn": {
+      // A pale ring and the heal light when the Unit gets up again.
+      const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
+      return at
+        ? [
+            { kind: "ring", color: REBORN_RING, x: at.x, z: at.z, start: time },
+            impactFx(
+              "heal",
+              at,
+              time + eventSeconds(event, speed, before) / 2,
+              speed
+            ),
+          ]
+        : [];
+    }
+    default: {
+      return [];
+    }
+  }
+};
+
+/**
  * The effects that start with an event. `before` is the view before it,
  * `after` the view after it. Speed ×2 halves the effect times.
  */
@@ -375,21 +434,6 @@ export const fxForEvent = (
         },
       ];
     }
-    case "UnitReborn": {
-      // A pale ring and the heal light when the Unit gets up again.
-      const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
-      return at
-        ? [
-            { kind: "ring", color: REBORN_RING, x: at.x, z: at.z, start: time },
-            impactFx(
-              "heal",
-              at,
-              time + eventSeconds(event, speed, before) / 2,
-              speed
-            ),
-          ]
-        : [];
-    }
     case "CardPlayed": {
       return getCard(event.card.cardId).kind === "skill"
         ? [windup(event, before, time, speed)]
@@ -400,7 +444,7 @@ export const fxForEvent = (
       return at ? [impactFx("armor", at, time, speed)] : [];
     }
     default: {
-      return [];
+      return unitLightFx(event, before, after, time, speed);
     }
   }
 };

@@ -80,6 +80,11 @@ export interface UnitView {
    * `StatusApplied` sets it, and each `DamageDealt` gives the value that is left.
    */
   readonly ward: number;
+  /**
+   * Steadfast (GDD 4.7): a Buff. `StatusApplied` sets it, and
+   * `SteadfastHeld` ends it.
+   */
+  readonly steadfast: boolean;
   /** A Wall does not move or attack, so its Attack is not shown. */
   readonly wall: boolean;
 }
@@ -175,6 +180,7 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     frozen: unit.frozen,
     entangled: unit.entangled,
     ward: unit.ward,
+    steadfast: unit.steadfast,
     wall: unit.wall,
   };
 };
@@ -520,7 +526,7 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
             return { ...unit, frozen: true };
           }
           case "poison": {
-            return { ...unit, poisoned: unit.poisoned + 1 };
+            return { ...unit, poisoned: event.count ?? unit.poisoned + 1 };
           }
           case "hobble": {
             return { ...unit, hobbled: event.count ?? unit.hobbled };
@@ -534,11 +540,33 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
           case "ward": {
             return { ...unit, ward: event.count ?? unit.ward };
           }
+          case "steadfast": {
+            return { ...unit, steadfast: true };
+          }
           default: {
             return unit;
           }
         }
       });
+    }
+    case "SteadfastHeld": {
+      // The `DamageDealt` before it already gave the HP: 1.
+      return updateUnit(view, event.unitId, (unit) => ({
+        ...unit,
+        steadfast: false,
+      }));
+    }
+    case "DebuffsRemoved": {
+      // Cleanse: all Debuffs end, and the Buffs (Ward, Steadfast) stay.
+      return updateUnit(view, event.unitId, (unit) => ({
+        ...unit,
+        burn: 0,
+        poisoned: 0,
+        hobbled: 0,
+        bleeding: 0,
+        frozen: false,
+        entangled: false,
+      }));
     }
     case "UnitSkipped": {
       // A skipped action ends Freeze and Entangled.

@@ -751,6 +751,38 @@ const drawDome: FxDraw = (context, width) => {
   context.stroke();
 };
 
+/** The Steadfast seal: a ring of gold light with short sun rays, seen from above. */
+const drawSeal: FxDraw = (context, width) => {
+  const center = width / 2;
+  context.strokeStyle = FX_ANCHORS.iconSteadfast;
+  context.shadowColor = FX_ANCHORS.iconSteadfast;
+  context.shadowBlur = width / 24;
+  context.lineCap = "round";
+  for (const [radius, line] of [
+    [0.3, width / 24],
+    [0.22, width / 64],
+  ] as const) {
+    context.lineWidth = line;
+    context.beginPath();
+    context.arc(center, center, width * radius, 0, Math.PI * 2);
+    context.stroke();
+  }
+  context.lineWidth = width / 40;
+  for (let index = 0; index < 12; index += 1) {
+    const angle = (index * Math.PI) / 6;
+    context.beginPath();
+    context.moveTo(
+      center + Math.cos(angle) * width * 0.34,
+      center + Math.sin(angle) * width * 0.34
+    );
+    context.lineTo(
+      center + Math.cos(angle) * width * 0.42,
+      center + Math.sin(angle) * width * 0.42
+    );
+    context.stroke();
+  }
+};
+
 const drawTrail: FxDraw = (context, width, height) => {
   const along = context.createLinearGradient(
     width / 16,
@@ -823,7 +855,9 @@ const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
   "icon-hobble": glyphIcon("speed", FX_ANCHORS.iconHobble),
   "icon-bleed": drawBleedIcon,
   "icon-ward": glyphIcon("shield", FX_ANCHORS.iconWard),
+  "icon-steadfast": glyphIcon("anchor", FX_ANCHORS.iconSteadfast),
   ward: drawDome,
+  steadfast: drawSeal,
 };
 
 /** The placeholder atlas is half size: the UV rectangles do not change. */

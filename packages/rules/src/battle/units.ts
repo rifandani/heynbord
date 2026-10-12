@@ -67,12 +67,17 @@ const makeUnit = (options: {
     poisoned: 0,
     hobbled: 0,
     bleeding: 0,
+    exposed: 0,
+    exposedTurns: 0,
     frozen: false,
     entangled: false,
     ward: 0,
+    steadfast: false,
     rallied: 0,
     bonusArmor: 0,
     bonusArmorTurns: 0,
+    bonusAttack: 0,
+    bonusAttackTurns: 0,
   };
 };
 

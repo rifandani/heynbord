@@ -158,12 +158,60 @@ const hitText = (
     },
   });
 
+/** The text of an effect with no damage: a heal, a Ward, Steadfast, a Cleanse, bonus Armor or a lower Countdown. */
+const friendlyEffectText = (
+  effect: Exclude<SkillEffect, { readonly damageType: DamageType }>,
+  rank: RankId
+): TextRef => {
+  switch (effect.type) {
+    case "healUnit":
+    case "healLane": {
+      return {
+        key: `effects.${effect.type}`,
+        args: { heal: skillAmountForRank(effect.heal, rank) },
+      };
+    }
+    case "wardUnit":
+    case "wardLane": {
+      return {
+        key: `effects.${effect.type}`,
+        args: { ward: skillAmountForRank(effect.ward, rank) },
+      };
+    }
+    case "steadfastUnit": {
+      return { key: "effects.steadfastUnit" };
+    }
+    case "cleanseUnit": {
+      return {
+        key: "effects.cleanseUnit",
+        args: { heal: skillAmountForRank(effect.heal, rank) },
+      };
+    }
+    case "laneArmor": {
+      return {
+        key: "effects.laneArmor",
+        args: { armor: effect.armor, turns: effect.turns },
+      };
+    }
+    case "lowerCountdown": {
+      return {
+        key: "effects.lowerCountdown",
+        args: { cards: effect.cards, amount: effect.amount },
+      };
+    }
+    default: {
+      return absurd(effect);
+    }
+  }
+};
+
 const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
   const { effect } = card;
   switch (effect.type) {
     case "damageUnit":
     case "damageLane":
     case "damageEntangle":
+    case "damageLaneEntangle":
     case "damageHero": {
       return withDamageRule(effect, {
         key: `effects.${effect.type}`,
@@ -208,6 +256,15 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
         args: { hit: hitText(effect, rank), bleed: effect.bleed },
       };
     }
+    case "damagePoison": {
+      return {
+        key: "effects.damagePoison",
+        args: {
+          hit: hitText(effect, rank),
+          poison: skillAmountForRank(effect.poison, rank),
+        },
+      };
+    }
     case "damageByAttack": {
       return withDamageRule(effect, {
         key: "effects.damageByAttack",
@@ -243,33 +300,8 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
         },
       };
     }
-    case "healUnit":
-    case "healLane": {
-      return {
-        key: `effects.${effect.type}`,
-        args: { heal: skillAmountForRank(effect.heal, rank) },
-      };
-    }
-    case "wardUnit": {
-      return {
-        key: "effects.wardUnit",
-        args: { ward: skillAmountForRank(effect.ward, rank) },
-      };
-    }
-    case "laneArmor": {
-      return {
-        key: "effects.laneArmor",
-        args: { armor: effect.armor, turns: effect.turns },
-      };
-    }
-    case "lowerCountdown": {
-      return {
-        key: "effects.lowerCountdown",
-        args: { cards: effect.cards, amount: effect.amount },
-      };
-    }
     default: {
-      return absurd(effect);
+      return friendlyEffectText(effect, rank);
     }
   }
 };
@@ -318,6 +350,10 @@ export const STATUS_TEXT = {
   },
   hobble: { name: "battle.status.hobbled", rule: "battle.status.hobbledRule" },
   ward: { name: "battle.status.ward", rule: "battle.status.wardRule" },
+  steadfast: {
+    name: "battle.status.steadfast",
+    rule: "battle.status.steadfastRule",
+  },
 } as const satisfies Readonly<
   Record<Status, { readonly name: string; readonly rule: string }>
 >;
@@ -351,6 +387,7 @@ type StatusCounts = Pick<
   | "bleeding"
   | "poisoned"
   | "ward"
+  | "steadfast"
   | "rallyBonus"
   | "swarmBonus"
   | "reborn"
@@ -372,7 +409,7 @@ const countedStatus = (
     : [];
 
 const flagStatus = (
-  status: "freeze" | "entangle",
+  status: "freeze" | "entangle" | "steadfast",
   on: boolean
 ): StatusText[] =>
   on
@@ -386,12 +423,14 @@ const flagStatus = (
     : [];
 
 /**
- * How a Unit is different from its card now (UI-05): a Ward (the Buff, first
- * as on its badge), bonus Armor, the Rally bonus, the Swarm bonus, each
- * Debuff that it has, then a used Rebirth. Empty for a Unit with none of these.
+ * How a Unit is different from its card now (UI-05): its Buffs (Ward and
+ * Steadfast, first as on its badge), bonus Armor, the Rally bonus, the Swarm
+ * bonus, each Debuff that it has, then a used Rebirth. Empty for a Unit with
+ * none of these.
  */
 export const unitStatusText = (unit: StatusCounts): StatusText[] => [
   ...countedStatus("ward", unit.ward),
+  ...flagStatus("steadfast", unit.steadfast),
   ...(unit.bonusArmor > 0
     ? [
         {

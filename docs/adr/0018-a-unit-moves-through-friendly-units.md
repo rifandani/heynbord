@@ -4,7 +4,7 @@ In its **Movement**, a ground Unit moves through the Units of its own Side, also
 
 ## Considered Options
 
-- **Pass all Units.** Rejected. Enemy Units must block a Lane, or Frontliners and Walls have no job. Flying stays the only way past an enemy Unit.
+- **Pass all Units.** Rejected. Enemy Units must block a Lane, or Frontliners and Walls have no job. Flying stays the only way past an enemy ground Unit.
 - **Swap with the friendly Unit in front.** Rejected. It moves a Unit that did not act.
 - **Friendly Squares use no Speed.** Rejected. A Unit can then jump through a full Lane.
 - **The faster Unit acts first in a Lane, or all Units move before all Units attack.** Rejected. The front Unit still acts first (GDD 4.4). These options change a central rule, the attack order, the tests, the bot playtests and the Battle animation.
@@ -16,3 +16,4 @@ In its **Movement**, a ground Unit moves through the Units of its own Side, also
 - "Friendly" is the Side, so a Unit also moves through the Units of an ally Hero.
 - Ground Runners become stronger and Flying becomes less special. The Keyword points do not change now.
 - In the Battle, a ground Unit that walks through a friendly Unit steps a little toward the camera, so that it shows in front.
+- Later change (2026-10-11): an enemy Flying Unit stops a Flying Unit, also when the enemy Unit is Frozen, Entangled or Ranged. A Flying Unit still moves over friendly Units and enemy ground Units, also an enemy Wall. Without this, two Flying Decks flew past each other and only raced to the Heroes. A Wall that stops Flying was rejected, because Flying Runners then have no way past a Wall. A stop only for an enemy Flying Unit directly in front was rejected, because a ground Unit stops before each enemy Unit on its path, and one rule is easier to learn. The Flying Keyword points do not change.

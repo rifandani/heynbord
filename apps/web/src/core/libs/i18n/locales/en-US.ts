@@ -155,6 +155,9 @@ export default {
       ward: "Ward {value}",
       wardRule:
         "A Buff. It absorbs damage after Armor, Crit and Block, also Holy, Burn and Poison damage, and goes down by that damage. It has no time limit. A new Ward keeps the higher value.",
+      steadfast: "Steadfast",
+      steadfastRule:
+        "A Buff. When damage would bring this Unit to 0 HP, it stays at 1 HP, and Steadfast ends. A Ward absorbs the damage first. It has no time limit.",
     },
   },
   town: {
@@ -578,7 +581,7 @@ export default {
       ranged:
         "A Ranged Unit attacks the nearest enemy Unit in front of it, in its Lane and in its Range. It does not move when an enemy Unit is in its Range.\n\nWhen no enemy Unit is in its Range and the enemy Hero is, it attacks the enemy Hero. The enemy Hero is 1 Square past the last Column.",
       movement:
-        "In its action, a Unit first moves forward along its Lane, up to its Speed.\n\nIt moves through friendly Units, but it stops before an enemy Unit. It always stops in an empty Square. A Flying Unit moves over all Units.",
+        "In its action, a Unit first moves forward along its Lane, up to its Speed.\n\nIt moves through friendly Units, but it stops before an enemy Unit. It always stops in an empty Square. A Flying Unit moves over all Units, but it stops before an enemy Flying Unit.",
       token:
         "A Token is a Unit that an effect makes, for example Summon X. It is not a card, so it is never in your Hand or your Deck.\n\nA Token has the Rank of the card that made it. When it dies, it disappears. It does not go to the Graveyard.\n\nA Token is a friendly Unit for the Units of its Side, for example for Swarm.",
       status:
@@ -674,6 +677,7 @@ export default {
       statusBleed: "wound, anti-heal, healing reduction",
       statusHobble: "slow, cripple, fatigue",
       statusWard: "shield, barrier, absorb, buff",
+      statusSteadfast: "endure, undying, death ward, last stand, cheat death",
       damageType: "element",
       race: "faction, tribe, kingdom",
       class: "job, profession",
@@ -1011,7 +1015,7 @@ export default {
     firstStrike:
       "When an enemy melee Unit attacks this Unit, this Unit deals its damage first. If the attacker dies, its attack does not occur.",
     flying:
-      "Moves over all Units, also enemy Units. It stops in an empty Square.",
+      "Moves over all Units, but stops before an enemy Flying Unit. It stops in an empty Square.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
     hobble:
       "The enemy Unit it hits has a maximum Speed of 1 for {value} Turns. Retaliate does not apply Hobble.",
@@ -1059,6 +1063,10 @@ export default {
       "{hit} If it takes damage and survives, push it {squares} back toward its Hero.",
     damageBleed:
       "{hit} If it takes damage and survives, it becomes Bleeding {bleed}.",
+    damagePoison:
+      "{hit} If it survives, it gains {poison} Poison stacks, also when it takes no damage.",
+    damageLaneEntangle:
+      "Deal {amount} {damageType} damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled.",
     damageByAttack:
       "Deal {damageType} damage to an enemy Unit, equal to the Attack of that Unit.",
     damageLaneArmor:
@@ -1074,6 +1082,12 @@ export default {
     healLane: "Heal {heal} HP to each friendly Unit in a Lane.",
     wardUnit:
       "A friendly Unit gets Ward {ward}: it absorbs the next {ward} damage.",
+    wardLane:
+      "Each friendly Unit in a Lane gets Ward {ward}: it absorbs the next {ward} damage.",
+    steadfastUnit:
+      "A friendly Unit gets Steadfast: when damage would bring it to 0 HP, it stays at 1 HP.",
+    cleanseUnit:
+      "Remove all Debuffs from a friendly Unit. Then heal {heal} HP to it.",
     armorIgnored: "{effect} Armor does not reduce it.",
     /** A number and its noun. The card text selects One for 1, else Other. */
     counts: {
@@ -1494,6 +1508,12 @@ export default {
         name: "Flushing Shot",
         flavor: "Back to your side of the field.",
       },
+      venomArrow: {
+        name: "Venom Arrow",
+        flavor: "The arrow is small. The poison is not.",
+      },
+      heartseeker: { name: "Heartseeker", flavor: "One arrow. One heart." },
+      rainOfArrows: { name: "Rain of Arrows", flavor: "Look up. Too late." },
     },
     mage: {
       fireball: { name: "Fireball", flavor: "A warm welcome." },
@@ -1524,6 +1544,15 @@ export default {
       prayerOfHealing: {
         name: "Prayer of Healing",
         flavor: "One prayer for the whole line.",
+      },
+      cleanse: { name: "Cleanse", flavor: "Wash it away. Stand clean." },
+      unbrokenVow: {
+        name: "Unbroken Vow",
+        flavor: "Not today. Not like this.",
+      },
+      aegisOfDawn: {
+        name: "Aegis of Dawn",
+        flavor: "The first light guards the whole line.",
       },
     },
   },

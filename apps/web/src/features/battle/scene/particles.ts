@@ -223,6 +223,22 @@ const LOOPS: Readonly<Record<Status, LoopPreset>> = {
       };
     },
   },
+  // A gold seal at the feet turns slowly: the Unit holds firm.
+  steadfast: {
+    slot: "steadfast",
+    count: 1,
+    period: 3.2,
+    steady: true,
+    ground: true,
+    place: (_random, age) => ({
+      x: 0,
+      y: 0.02,
+      z: 0,
+      size: 0.62,
+      rotation: age * Math.PI * 2,
+      opacity: 0.45 + fade(age) * 0.25,
+    }),
+  },
   // A chain at the feet, which swings a little.
   hobble: {
     slot: "chain",
@@ -461,6 +477,22 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       count: 10,
       color: FX_ANCHORS.holy,
       place: rise(0.9, { speed: [0, 0.1], up: 1, size: [0.14, 0.24], spin: 2 }),
+    },
+  ],
+  // Unbroken Vow, and the moment that Steadfast holds: a gold seal forms at
+  // the feet, and gold motes go up around the Unit.
+  steadfast: [
+    {
+      slot: "steadfast",
+      count: 1,
+      ground: true,
+      place: runeRing(0.9),
+    },
+    {
+      slot: "spark",
+      count: 8,
+      color: FX_ANCHORS.iconSteadfast,
+      place: rise(0.8, { speed: [0, 0.1], up: 1.1, size: [0.12, 0.2] }),
     },
   ],
   hobble: [

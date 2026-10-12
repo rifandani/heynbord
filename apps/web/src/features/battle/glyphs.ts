@@ -166,6 +166,8 @@ export const GLYPHS = {
   ].join(" "),
   /** A masonry wall: the Wall Role. Fill only: the mortar gaps are cut. */
   wall: masonry(),
+  // Steadfast (GDD 4.7): the Unit holds firm at 1 HP.
+  anchor: `${circle(0, -36, 8)} M0 -28 V40 M-18 -14 H18 M-36 12 Q-34 40 0 40 Q34 40 36 12 M-44 20 L-36 12 L-28 20 M28 20 L36 12 L44 20`,
   heart:
     "M0 -14 C0 -40 -40 -40 -40 -12 C-40 10 0 26 0 42 C0 26 40 10 40 -12 C40 -40 0 -40 0 -14 Z",
   speed: "M-34 -28 L-4 0 L-34 28 M2 -28 L32 0 L2 28",
@@ -305,28 +307,25 @@ export const cardGlyph = (card: CardDefinition): Glyph => {
   if (card.kind === "creature") {
     return card.keywords.flying ? "wings" : ROLE_GLYPH[card.role];
   }
+  // Each damage effect shows its Damage Type.
+  if ("damageType" in card.effect) {
+    return DAMAGE_GLYPH[card.effect.damageType];
+  }
   switch (card.effect.type) {
-    case "damageUnit":
-    case "damageArea":
-    case "damageLane":
-    case "damageEntangle":
-    case "damagePush":
-    case "damageKnockback":
-    case "damageBleed":
-    case "damageByAttack":
-    case "damageLaneArmor":
-    case "damageLaneHeal":
-    case "damageUnitHero":
-    case "damageHero": {
-      return DAMAGE_GLYPH[card.effect.damageType];
-    }
     case "healUnit":
     case "healLane": {
       return "heart";
     }
+    case "cleanseUnit": {
+      return "heart";
+    }
     case "wardUnit":
+    case "wardLane":
     case "laneArmor": {
       return "shield";
+    }
+    case "steadfastUnit": {
+      return "anchor";
     }
     case "lowerCountdown": {
       return "speed";

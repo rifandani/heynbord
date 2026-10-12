@@ -686,6 +686,12 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   statusBleed: ["keywordBleed", "keywordRegenerate"],
   statusHobble: ["keywordHobble", "speed"],
   statusWard: ["damageHoly", "keywordTrample", "keywordRebirth"],
+  statusSteadfast: [
+    "statusWard",
+    "keywordRebirth",
+    "keywordLastBreath",
+    "keywordTrample",
+  ],
   damageType: ["status", "attack"],
   damagePhysical: ["keywordArmor"],
   damageFire: ["statusBurn"],
@@ -722,8 +728,8 @@ export const ENTRIES: readonly Entry[] = [
   ...UNIT_ENTRIES.map((id) => plainEntry(id, "units")),
   ...[...VALUE_KEYWORDS, ...TOKEN_KEYWORDS, ...FLAG_KEYWORDS].map(keywordEntry),
   term("status", "statuses"),
-  // Ward, the one Buff, is first in `STATUS_ORDER`, so the Buffs come before
-  // the Debuffs, and each group is one run in the list.
+  // The Buffs (Ward, Steadfast) are first in `STATUS_ORDER`, so they come
+  // before the Debuffs, and each group is one run in the list.
   ...STATUS_ORDER.map(statusEntry),
   { ...term("damageType", "statuses"), group: "damageType" as const },
   ...DAMAGE_TYPES.map(damageEntry),
@@ -843,6 +849,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "statusBleed",
   "statusHobble",
   "statusWard",
+  "statusSteadfast",
   "damageType",
   "race",
   "class",

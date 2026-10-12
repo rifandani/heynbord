@@ -77,4 +77,5 @@ The order of the versions after v1 can change after player feedback.
 | **v2.x — Social** | Guilds, guild bosses, friends, weekly Heynspire reset, events |
 | **v3 — Co-op** | 2v2 and co-op bosses, real-time Turns with a 30-second timer |
 | **v3.x — Expansion** | New Races, Hybrid Units, a sixth Rank, new Keywords and Damage Types |
+| **To be decided** | Return rewards: a free Merchant Pack each day, a login streak bonus, event rewards. They need their own economy design. They also give a path back to a valid Deck for a player who Extracted too many cards (GDD 7.4) |
 | **To be decided** | Trading between players (needs a separate design review, see Economy section 6) |

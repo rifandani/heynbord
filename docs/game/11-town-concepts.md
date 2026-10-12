@@ -120,7 +120,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 
 ### 2.5 Workshop
 
-`Workshop` · Decoration in v1
+`Workshop` · Selectable · Cut-out layer · Opens at player level 3
 
 | Field | Brief |
 | --- | --- |

@@ -159,6 +159,13 @@ export interface UnitState {
   hobbled: number;
   /** Bleeding count. 0 is not Bleeding. Above 0, each heal is half, rounded down. */
   bleeding: number;
+  /**
+   * Exposed N (GDD 4.7): each Physical hit on the Unit deals this much more
+   * damage, after Armor. 0 is not Exposed.
+   */
+  exposed: number;
+  /** End Phases of the owner that are left for Exposed. It ends at 0. */
+  exposedTurns: number;
   frozen: boolean;
   /** Speed 0 in the next action. The action then ends it (GDD 4.4). */
   entangled: boolean;
@@ -167,10 +174,19 @@ export interface UnitState {
    * the absorbed damage and ends at 0. 0 is no Ward. It has no time limit.
    */
   ward: number;
+  /**
+   * Steadfast (GDD 4.7): a Buff. When damage would bring the Unit to 0 HP, it
+   * stays at 1 HP and Steadfast ends. It has no time limit.
+   */
+  steadfast: boolean;
   /** Attack from Rally until the end of the Turn of the owner. */
   rallied: number;
   bonusArmor: number;
   bonusArmorTurns: number;
+  /** Bonus Attack from a Skill Card (*Call to Arms*, GDD 4.8). */
+  bonusAttack: number;
+  /** End Phases of the owner that are left for the bonus Attack. */
+  bonusAttackTurns: number;
 }
 
 export interface BattleResult {
@@ -305,6 +321,16 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly turns: number;
   };
   ArmorFaded: { readonly unitId: number };
+  /**
+   * Bonus Attack from a Skill Card (GDD 4.8). `turns` is the number of End
+   * Phases of the owner that it lasts.
+   */
+  AttackGained: {
+    readonly unitId: number;
+    readonly attack: number;
+    readonly turns: number;
+  };
+  AttackFaded: { readonly unitId: number };
   UnitMoved: {
     readonly unitId: number;
     readonly lane: number;
@@ -350,13 +376,27 @@ export type BattleEvent = Data.TaggedEnum<{
       | "hobble"
       | "bleed"
       | "entangle"
-      | "ward";
+      | "ward"
+      | "steadfast"
+      | "exposed";
     /**
-     * The Hobbled or Bleeding count after the hit, or the new Ward value. The
-     * other statuses do not use it.
+     * The Poisoned, Hobbled or Bleeding count after the hit, the new Ward
+     * value, or the new Exposed value. The other statuses do not use it.
      */
     readonly count?: number;
   };
+  /**
+   * Steadfast (GDD 4.7): the damage of the `DamageDealt` event before this one
+   * would bring the Unit to 0 HP. The Unit stays at 1 HP, and Steadfast ends.
+   * The Unit is not killed.
+   */
+  SteadfastHeld: { readonly unitId: number };
+  /**
+   * A Skill Card (*Cleanse*) ended all Debuffs of the Unit: Burn, Freeze,
+   * Entangled, Poisoned, Hobbled, Bleeding and Exposed. Its Buffs stay. A Unit with no
+   * Debuff gets no event.
+   */
+  DebuffsRemoved: { readonly unitId: number };
   UnitDied: { readonly unitId: number };
   /**
    * Rebirth (GDD 4.9): the Unit died and came back in the same Square. It

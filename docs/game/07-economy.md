@@ -311,6 +311,8 @@ Use these targets to tune the numbers. Check them with an economy simulation and
 - The Player levels are the First-try Path levels of section 1.2. A Player who loses or plays again is at a higher level.
 - **Re-tune needed.** The Pack counts above were set for 88 cards. v1 now has 118 cards ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)). The "Discovered" targets stay the same. Tune the Coin rewards again with the economy simulation in M3, so that the Player can reach these targets with 118 cards.
 - **Skill Cards of issue #57.** The 14 Common and Uncommon Skill Cards (116 cards in `cards.ts`) move no "Discovered" median of the economy sim (7.1) by more than 1 point, because the simulated Player Discovers only the Warrior Skill Cards (4 of the 14). At Heynspire Floor 50, the Player has Discovered 96% (Collector), 63% (Upgrader) and 91% (Balanced) of the cards. It was 96%, 63% and 90% (2026-10-11). The milestone does not move.
+- **Ranger Skill Cards of issue #59.** Venom Arrow, Heartseeker (Rare) and Rain of Arrows (Epic) make 119 cards in `cards.ts`. The economy sim gives the same result as before (2026-10-11), because its Player Discovers only the Warrior Skill Cards. The milestone does not move. The Ranger Class Pack pool now has 10 cards (`bun run sim packs`, mean of 100 Players). A Peddler Pack never rolls an Epic card, so it cannot give Rain of Arrows. It needs 76.0 Packs to Discover the 9 Ranger cards from Common to Rare (it was 9.3 Packs for the 7 Common and Uncommon cards), because only 4.17% of its cards are Rare. A Merchant Class Pack needs 9.8 Packs for all 10 cards (it was 2.3), and a Royal Class Pack 4.0 (it was 2.0).
+- **Priest Skill Cards of issue #61.** Unbroken Vow, Cleanse (Rare) and Aegis of Dawn (Epic) make 122 cards in `cards.ts`. The milestone does not move, for the same reason as #59: the simulated Player Discovers only the Warrior Skill Cards, and the all-cards Pack rows do not change. The Priest Class Pack pool now has 10 cards, the same as the Ranger pool, with the same results (`bun run sim packs`, 2026-10-12): 76.0 Peddler Packs for the 9 cards from Common to Rare, 9.8 Merchant Packs and 4.0 Royal Packs for all 10 cards (it was 9.3, 2.3 and 2.0).
 - Total XP to level 21 (Deck size 30) is 8,380. Total XP to level 30 is 24,130.
 
 ## 5. Monetization rules after v1
@@ -369,6 +371,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 - Until the Player has the 4th Deck slot, it keeps its Coin for the slot.
 - The Player buys Open ×10 when it can pay for 10 Packs. Else it buys one Pack.
 - A Gear upgrade goes to the item with the lowest level.
+- Combine, Extract and Craft use the same rules actions as the game (GDD 7.4). The sim adds only the Play Style choices.
 - Combine starts at the lowest Rank.
 - All Play Styles Extract each copy above 2 of a card in the same Rank.
 - When the Essence is enough, they Craft one copy of the cheapest Discovered card with Base Rank Rare or Epic that has 1 copy in its Base Rank. The copy makes a Combine pair toward an Epic or a Legendary copy. Craft never Discovers a card, because the player can Craft only Discovered cards (section 3.3).

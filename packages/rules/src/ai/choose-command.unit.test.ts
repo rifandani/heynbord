@@ -403,6 +403,51 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
     ).toEqual(spearThrowAt(0, 9));
   });
 
+  it("does not count an enemy Flying Unit that a friendly Flying Unit blocks", () => {
+    expect(
+      spearThrowChoice(
+        {
+          cardId: "orc.skyreaver",
+          owner: "player",
+          lane: 0,
+          position: 9,
+          hp: 4,
+        },
+        (state) => {
+          placeUnit(state, {
+            cardId: "orc.skyreaver",
+            owner: "enemy",
+            lane: 0,
+            position: 10,
+          });
+        }
+      )
+    ).toEqual(spearThrowAt(1, 3));
+  });
+
+  it("blocks an enemy Flying Unit with a new Flying Unit", () => {
+    const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
+    giveHand(state, "enemy", [["orc.skyreaver", 0]]);
+    placeUnit(state, {
+      cardId: "orc.skyreaver",
+      owner: "player",
+      lane: 0,
+      position: 9,
+    });
+    placeUnit(state, {
+      cardId: "orc.tuskBrute",
+      owner: "player",
+      lane: 1,
+      position: 5,
+    });
+    expect(chooseCommand(state)).toEqual(
+      Command.PlayCard({
+        handIndex: 0,
+        target: Target.Square({ lane: 0, position: 10 }),
+      })
+    );
+  });
+
   it("counts an enemy Ranged Unit that has the Hero in its Range", () => {
     expect(
       spearThrowChoice({
@@ -848,6 +893,148 @@ describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
         { hp: 4, maxHp: 8 },
         { position: 8, hp: 6, maxHp: 8 },
       ])
+    ).toEqual(lane);
+  });
+});
+
+describe("chooseCommand: the Rare and Epic Ranger Skill Cards of #59 (GDD 9)", () => {
+  it("keeps Venom Arrow while the hit kills, because a Unit that dies gets no stacks", () => {
+    // Rare: 1 damage.
+    expect(raidersChoice("ranger.venomArrow", [{ hp: 1 }])).toEqual(
+      Command.EndTurn()
+    );
+    expect(raidersChoice("ranger.venomArrow", [{ hp: 2 }])).toEqual(
+      playAtSquare(0, 5)
+    );
+  });
+
+  it("aims Venom Arrow at the Unit with the highest Attack, not at a Wall or a Unit with Armor", () => {
+    expect(
+      raidersChoice("ranger.venomArrow", [
+        { hp: 12, maxHp: 12, attack: 1, bonusArmor: 2, bonusArmorTurns: 2 },
+        { lane: 1, position: 6, hp: 8, maxHp: 8, attack: 5 },
+      ])
+    ).toEqual(playAtSquare(1, 6));
+  });
+
+  it("aims Venom Arrow at the Unit with more HP left when the Attack is the same", () => {
+    expect(
+      raidersChoice("ranger.venomArrow", [
+        { hp: 2 },
+        { lane: 1, position: 6, hp: 9, maxHp: 9 },
+      ])
+    ).toEqual(playAtSquare(1, 6));
+  });
+
+  it("plays Heartseeker with no Hold Rule", () => {
+    expect(raidersChoice("ranger.heartseeker", [{}])).toEqual(
+      Command.PlayCard({
+        handIndex: 0,
+        target: Target.Hero({ side: "player" }),
+      })
+    );
+  });
+
+  it("keeps Rain of Arrows until the Lane has 2 enemy Units, or the hit kills", () => {
+    const lane = Command.PlayCard({
+      handIndex: 0,
+      target: Target.Lane({ lane: 0 }),
+    });
+    expect(raidersChoice("ranger.rainOfArrows", [{}])).toEqual(
+      Command.EndTurn()
+    );
+    // Epic: 2 damage.
+    expect(raidersChoice("ranger.rainOfArrows", [{ hp: 2 }])).toEqual(lane);
+    expect(raidersChoice("ranger.rainOfArrows", [{}, { position: 6 }])).toEqual(
+      lane
+    );
+  });
+});
+
+describe("chooseCommand: the Rare and Epic Priest Skill Cards of #61 (GDD 9)", () => {
+  it("keeps Cleanse until a friendly Unit has a Debuff of value: Bleeding on a Unit at full HP and a Frozen Wall do not count", () => {
+    expect(priestChoice("priest.cleanse", [{}])).toEqual(Command.EndTurn());
+    expect(priestChoice("priest.cleanse", [{ bleeding: 2 }])).toEqual(
+      Command.EndTurn()
+    );
+    expect(
+      priestChoice("priest.cleanse", [{ frozen: true, wall: true }])
+    ).toEqual(Command.EndTurn());
+    expect(
+      priestChoice("priest.cleanse", [{ bleeding: 2, hp: 7, maxHp: 8 }])
+    ).toEqual(playAtSquare(0, 9));
+  });
+
+  it("plays Cleanse as a heal with the Mend rule when no Unit has a Debuff of value", () => {
+    expect(priestChoice("priest.cleanse", [{ hp: 5, maxHp: 8 }])).toEqual(
+      Command.EndTurn()
+    );
+    expect(priestChoice("priest.cleanse", [{ hp: 4, maxHp: 8 }])).toEqual(
+      playAtSquare(0, 9)
+    );
+  });
+
+  it("aims Cleanse at a Frozen Unit first, then at the Unit with the most Poisoned stacks", () => {
+    expect(
+      priestChoice("priest.cleanse", [
+        { position: 9, poisoned: 5 },
+        { lane: 1, position: 9, frozen: true },
+      ])
+    ).toEqual(playAtSquare(1, 9));
+    expect(
+      priestChoice("priest.cleanse", [
+        { position: 9, poisoned: 2 },
+        { lane: 1, position: 9, poisoned: 4 },
+      ])
+    ).toEqual(playAtSquare(1, 9));
+  });
+
+  it("keeps Unbroken Vow until a friendly Unit that is not Steadfast has an enemy Unit in its Lane", () => {
+    expect(priestChoice("priest.unbrokenVow", [{}])).toEqual(Command.EndTurn());
+    expect(
+      priestChoice("priest.unbrokenVow", [{ steadfast: true }], enemy)
+    ).toEqual(Command.EndTurn());
+    expect(priestChoice("priest.unbrokenVow", [{}], enemy)).toEqual(
+      playAtSquare(0, 9)
+    );
+  });
+
+  it("aims Unbroken Vow at the friendly Unit of the most value", () => {
+    expect(
+      priestChoice(
+        "priest.unbrokenVow",
+        [{ position: 9 }, { position: 8, attack: 5 }],
+        enemy
+      )
+    ).toEqual(playAtSquare(0, 8));
+  });
+
+  it("does not count a hit on a Steadfast Unit as a kill", () => {
+    expect(raidersChoice("warrior.spearThrow", [{ hp: 2 }])).toEqual(
+      playAtSquare(0, 5)
+    );
+    expect(
+      raidersChoice("warrior.spearThrow", [{ hp: 2, steadfast: true }])
+    ).toEqual(Command.EndTurn());
+  });
+
+  it("keeps Aegis of Dawn until a Lane has 2 friendly Units and an enemy Unit", () => {
+    const lane = Command.PlayCard({
+      handIndex: 0,
+      target: Target.Lane({ lane: 0 }),
+    });
+    expect(priestChoice("priest.aegisOfDawn", [{}], enemy)).toEqual(
+      Command.EndTurn()
+    );
+    expect(
+      priestChoice("priest.aegisOfDawn", [{ position: 9 }, { position: 8 }])
+    ).toEqual(Command.EndTurn());
+    expect(
+      priestChoice(
+        "priest.aegisOfDawn",
+        [{ position: 9 }, { position: 8 }],
+        enemy
+      )
     ).toEqual(lane);
   });
 });

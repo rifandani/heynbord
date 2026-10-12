@@ -2006,6 +2006,48 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 | Setting | A neutral battlefield. The stone tiles of the Lane show the distance of the push. |
 | Palette | Neutral steel and leather, brown dust, with green fletching. Uncommon: a small brass trim on the bow tips. |
 
+### 11.8 Venom Arrow
+
+`ranger.venomArrow` · Ranger · Rare · Countdown 4 · An enemy Unit · Deal 1 Physical damage to an enemy Unit. If it survives, it gains 3 Poison stacks, also when it takes no damage.
+
+> The arrow is small. The poison is not.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A small, thin arrow with green fletching, stuck in the shoulder plate of a large, dark, armored soldier. From the point where the arrow goes in, glowing yellow-green poison spreads over the dark armor in a large web of veins, and thick yellow-green drops drip from it. The poison shape is much larger than the arrow. The image has one arrow only. |
+| Partial figure | Far behind at the left, small and out of focus: a back view of a hooded archer who lowers a bow just after the shot. The archer is the only figure at the left. No hand in the foreground, and no hand holds an arrow. |
+| Action | The soldier is close, in the foreground at the right, in a side view that faces to the left, toward the archer. It wears a closed helmet, with no face. It is cropped below the chest, so its arms and hands are out of the image. The arrow shaft points back to the left, toward the archer, so the shot clearly comes from the archer. The soldier staggers a little. Thin yellow-green wisps rise from the poison veins. No blood, no wound and no skin. |
+| Setting | A neutral battlefield, soft and out of focus behind the soldier. |
+| Palette | Neutral steel and leather, with green fletching and a bright yellow-green poison accent, the color of a fresh lime. The poison is brighter and more yellow than the fletching. The armor is dark and in shadow, so the poison is the brightest shape. Rare: a thin gold band on the arrow shaft behind the fletching, and gold trim on the archer's bow. |
+
+### 11.9 Heartseeker
+
+`ranger.heartseeker` · Ranger · Rare · Countdown 5 · The enemy Hero · Deal 6 Physical damage to the enemy Hero.
+
+> One arrow. One heart.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | One arrow with green fletching that flies on a thin, perfectly straight line of white-gold light, like a ruled line. The line ends at a small bright point of light on the chest of a far Hero silhouette, where its heart is. It is a level, straight shot, not an arc. |
+| Partial figure | A large back view of a hooded archer, seen from behind and a little to the left, cropped at the waist, in the left third of the image. The aiming line is level, to the right and a little into the distance. The bow arm extends straight along this line, with the hand closed around the bow grip. The bow is vertical, at a right angle to the aiming line. The archer has just released: the draw hand is open beside the jaw, under the hood, the string still vibrates, and no arrow is on the string. Five fingers on each hand. |
+| Action | The line of light starts at the bow grip and goes level to the right. The arrow is halfway along it. The line goes through a narrow gap between two dark, blurred enemy shields in the middle distance. Far away at the right, a dark, caped silhouette with no crown stands still, backlit, with the small bright point on its chest. The view is narrow and close, like through a long lens. The image has one arrow only. |
+| Setting | A neutral battlefield in a low, level view at the height of the archer's eyes. The background is soft and out of focus, so the line of light is the sharpest shape. |
+| Palette | Neutral steel and leather, with green fletching and a white-gold line of light. Rare: gold inlay along the bow limbs and a gold trim on the bracer. |
+
+### 11.10 Rain of Arrows
+
+`ranger.rainOfArrows` · Ranger · Epic · Countdown 6 · An enemy Lane · Deal 1 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled.
+
+> Look up. Too late.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A huge volley of hundreds of arrows with green fletching that comes down on a whole Lane. The volley is a dense, dark, wide wedge against a bright sky. It fills the top two thirds of the image and is the largest shape. The arrowheads catch the sunlight. |
+| Partial figure | A small back view of a hooded archer at the bottom left, on a rise, with the bow raised high just after the release. The cloak blows to the right. Behind the archer, on the same rise, the small dark shapes of more archers lower their bows. Five fingers on each hand. |
+| Action | The volley comes from the upper left and comes down to the right, onto a long Lane of grey stone tiles that goes from the middle of the image into the distance at the right. Four small, dark silhouettes stand in a row along the Lane. They look up and raise their arms and shields. The first arrows are already stuck in the tiles around their feet and pin their cloaks and boots to the ground, so they cannot move. No ropes, no vines and no blood. |
+| Setting | A neutral battlefield in a wide, dramatic view. Dark storm clouds open, and a shaft of sunlight from the upper left lights the volley and the Lane. |
+| Palette | Neutral steel and leather, with green fletching, a dark storm sky and warm sunlight. Epic: a heroic scene, with gold trim on the archer's bow and cloak clasp. |
+
 ## 12. Priest Skill Cards
 
 Identity: healing, protection and Holy damage. The palette is Holy gold-yellow light with a sun motif. The partial figure has plain cream-white linen sleeves and a rope belt, and a small gold sun pendant on a cord is the Priest mark on each card. It has no blue cloth, no staff and no sun disc, so it does not look like Dawn Cleric or the Mage, and it has no sign of a Race. A friendly Unit in the image is a back view of a soldier in a closed full helmet and a cloak.
@@ -2108,6 +2150,50 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 | Action | A view from behind, down the Lane. The light starts at the clasped hands and runs to the right along the full Lane into the distance. Three soldiers stand in a row in the light, seen from behind in closed full helmets and cloaks. They stand up straight, and small soft green-white plus-shaped heal motes rise around each of them. |
 | Setting | A neutral battlefield. The Lane is long and goes into the distance. |
 | Palette | Holy gold-yellow light, with small green-white heal motes. Uncommon: a small brass trim on the sun pendant and on the sleeve cuffs. |
+
+### 12.8 Cleanse
+
+`priest.cleanse` · Priest · Rare · Countdown 3 · A friendly Unit · Remove all Debuffs from a friendly Unit. Then heal 6 HP to it. Heal by Rank: Rare 6, Epic 7, Legendary 8.
+
+> Wash it away. Stand clean.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | Gold light that pours down over a soldier like clear water from a spring, and washes dark Debuffs off the armor. The falling light is the largest shape in the image. |
+| Partial figure | Only a hand and a forearm in a cream-white linen sleeve, from the upper-left edge of the image, held above the soldier's helmet with the palm down. The gold sun pendant on a cord hangs from the wrist. |
+| Action | A three-quarter back view from behind and to the left of the soldier. The soldier, in a closed full helmet and a cloak, stands at the center-right of the image and faces to the right. The light falls from the palm onto the helmet and the shoulders, runs down the armor, and splashes in soft ripples of light on the stone tiles at the feet. The light washes off three Debuffs: a crust of pale blue ice on one shoulder cracks and falls away in pieces, a dark thorny vine around the legs snaps, and dark yellow-green drops run off the armor into the ground. Under the light, the armor is clean and bright. A few small soft green-white plus-shaped heal motes rise around the soldier. No wound and no skin. |
+| Setting | A neutral battlefield. |
+| Palette | Holy gold-yellow light, with small green-white heal motes. The pieces of ice, the vine and the dark drops are small and dull, so the gold light is the brightest shape. Rare: fine gold embroidery on the sleeve cuff, and fine gold rays around the sun pendant. |
+| Proportion | Real human proportions and anatomy. The hand is at the same distance from the viewer as the soldier, so it is normal human size: about as wide as the soldier's helmet. No large arm or sleeve in the foreground. |
+
+### 12.9 Unbroken Vow
+
+`priest.unbrokenVow` · Priest · Rare · Countdown 2 · A friendly Unit · A friendly Unit gets Steadfast: when damage would bring it to 0 HP, it stays at 1 HP.
+
+> Not today. Not like this.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | A battered soldier who takes a huge hit and does not fall. A round seal of gold light with short sun rays lies on the stone tiles under the soldier's boots and holds the soldier in place. |
+| Partial figure | Only a hand and a forearm in a cream-white linen sleeve, from the left edge of the image. The hand grips the back of the soldier's left shoulder firmly. The gold sun pendant on a cord hangs from the wrist. |
+| Action | A three-quarter back view from behind and to the left of the soldier, in a low view. The soldier, in a closed full helmet and a torn cloak, stands at the center of the image and faces to the right. A huge dark axe of a large dark silhouette at the right hits the soldier's raised shield. The shield cracks, and the soldier is pushed back: the back knee bends and the boots skid, but the soldier stays standing. Gold light goes from the hand into the shoulder, runs down the body and into the seal under the boots. Broken spears lie on the tiles around the soldier. No blood. |
+| Setting | A neutral battlefield, late in a hard fight, with dust in the air. |
+| Palette | Holy gold-yellow light, with dented plain steel and a dark grey torn cloak on the soldier, and dark steel on the enemy. Rare: fine gold embroidery on the sleeve cuff, and fine gold rays around the sun pendant. |
+| Proportion | Real human proportions and anatomy. The hand is at the same distance from the viewer as the soldier, so it is normal human size: about as wide as the soldier's helmet. No large arm or sleeve in the foreground. The soldier has two arms: one holds the shield and one holds a sword low. |
+
+### 12.10 Aegis of Dawn
+
+`priest.aegisOfDawn` · Priest · Epic · Countdown 6 · A friendly Lane · Each friendly Unit in a Lane gets Ward 6: it absorbs the next 6 damage. Ward by Rank: Epic 6, Legendary 8.
+
+> The first light guards the whole line.
+
+| Field | Brief |
+| --- | --- |
+| Effect subject | One long, low vault of clear gold light, like a dome stretched along a whole Lane, over four soldiers in a row. It stands on a long line of gold light on the stone tiles. The vault is light only: no steel, no shield shapes. It is the largest shape in the image and is much larger than the dome of one soldier. |
+| Partial figure | A small figure at the bottom left, seen from behind: two arms in cream-white linen sleeves raised high to the sky, with open hands. The rope belt shows, and the gold sun pendant on its cord swings on the chest. No staff. |
+| Action | A wide view from the side and a little above. The Lane goes from the middle left of the image to the right. Four soldiers stand in a row along the Lane, in three-quarter back views, in closed full helmets and cloaks, and face to the right. Low on the horizon at the upper left, the dawn sun breaks through the clouds. Its first rays go through the raised hands and flow on to the right as a ribbon of light that forms the vault over the full Lane. From the right, a dark volley of enemy arrows and a burst of dark fire hit the vault and break on it. The light ripples at each hit. No blood. |
+| Setting | A neutral battlefield at dawn, in a wide, dramatic view. The sky at the left is warm and bright, and the sky at the right is still dark with storm clouds. |
+| Palette | Holy gold-yellow light, with warm dawn colors, plain steel and grey cloaks on the soldiers, and dark arrows and dark fire from the enemy. Epic: a heroic scene, with gold embroidery on the sleeve cuffs and a gold sun pendant with fine rays. |
 
 ## 13. When cards change
 

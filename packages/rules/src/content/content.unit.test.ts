@@ -143,9 +143,11 @@ const skillAmounts = (cardId: string) => {
         ? effect.heal
         : "ward" in effect
           ? effect.ward
-          : undefined;
+          : "exposed" in effect
+            ? effect.exposed
+            : undefined;
   if (value === undefined) {
-    throw new Error(`${cardId} has no damage, heal or Ward value`);
+    throw new Error(`${cardId} has no damage, heal, Ward or Exposed value`);
   }
   return RANKS.map((rank) => skillAmountForRank(value, rank));
 };
@@ -158,8 +160,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 116 cards: 6 Races and 4 Classes", () => {
-    expect(CARDS).toHaveLength(116);
+  it("has 125 cards: 6 Races and 4 Classes", () => {
+    expect(CARDS).toHaveLength(125);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
@@ -172,13 +174,17 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(classes).toEqual(new Set(["warrior", "ranger", "mage", "priest"]));
   });
 
-  it("gives each Class 4 Common and 3 Uncommon Skill Cards, and the Mage 3 and 2 before its Lightning cards (#65)", () => {
-    for (const classId of ["warrior", "ranger", "priest"]) {
+  it("gives each Class 4 Common and 3 Uncommon Skill Cards, the Ranger (#59), the Priest (#61) and the Warrior (#63) also 2 Rare and 1 Epic, and the Mage 3 and 2 before its Lightning cards (#65)", () => {
+    // The Rare and Epic cards of #59 (Ranger), #61 (Priest) and #63 (Warrior).
+    for (const classId of ["ranger", "priest", "warrior"]) {
       expect(baseRanks(classId), classId).toEqual([
         "common",
         "common",
         "common",
         "common",
+        "epic",
+        "rare",
+        "rare",
         "uncommon",
         "uncommon",
         "uncommon",
@@ -211,6 +217,78 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(getCard("ranger.harryingShot")).toMatchObject({
       target: "enemyUnit",
       effect: { type: "damageUnitHero", amount: 2, heroAmount: 4 },
+    });
+  });
+
+  it("gives the Rare and Epic Ranger Skill Cards of #59 their effects and values", () => {
+    expect(skillAmounts("ranger.venomArrow")).toEqual([1, 1, 1, 2, 2]);
+    expect(skillAmounts("ranger.heartseeker")).toEqual([6, 7, 9, 11, 13]);
+    expect(skillAmounts("ranger.rainOfArrows")).toEqual([1, 1, 1, 2, 2]);
+    expect(getCard("ranger.venomArrow")).toMatchObject({
+      baseRank: "rare",
+      countdown: 4,
+      target: "enemyUnit",
+      effect: {
+        type: "damagePoison",
+        poison: { rare: 3, epic: 4, legendary: 5 },
+      },
+    });
+    expect(getCard("ranger.heartseeker")).toMatchObject({
+      baseRank: "rare",
+      countdown: 5,
+      target: "enemyHero",
+      effect: { type: "damageHero" },
+    });
+    expect(getCard("ranger.rainOfArrows")).toMatchObject({
+      baseRank: "epic",
+      countdown: 6,
+      target: "enemyLane",
+      effect: { type: "damageLaneEntangle" },
+    });
+  });
+
+  it("gives the Rare and Epic Priest Skill Cards of #61 their effects and values", () => {
+    expect(skillAmounts("priest.cleanse")).toEqual([6, 6, 6, 7, 8]);
+    expect(skillAmounts("priest.aegisOfDawn")).toEqual([6, 6, 6, 6, 8]);
+    expect(getCard("priest.cleanse")).toMatchObject({
+      baseRank: "rare",
+      countdown: 3,
+      target: "friendlyUnit",
+      effect: { type: "cleanseUnit" },
+    });
+    expect(getCard("priest.unbrokenVow")).toMatchObject({
+      baseRank: "rare",
+      countdown: 2,
+      target: "friendlyUnit",
+      effect: { type: "steadfastUnit" },
+    });
+    expect(getCard("priest.aegisOfDawn")).toMatchObject({
+      baseRank: "epic",
+      countdown: 6,
+      target: "friendlyLane",
+      effect: { type: "wardLane" },
+    });
+  });
+
+  it("gives the Rare and Epic Warrior Skill Cards of #63 their effects and values", () => {
+    expect(skillAmounts("warrior.exposeWeakness")).toEqual([2, 2, 2, 3, 4]);
+    expect(getCard("warrior.callToArms")).toMatchObject({
+      baseRank: "rare",
+      countdown: 4,
+      target: "friendlyLane",
+      effect: { type: "laneAttack", attack: 2 },
+    });
+    expect(getCard("warrior.exposeWeakness")).toMatchObject({
+      baseRank: "rare",
+      countdown: 3,
+      target: "enemyUnit",
+      effect: { type: "exposeUnit" },
+    });
+    expect(getCard("warrior.onslaught")).toMatchObject({
+      baseRank: "epic",
+      countdown: 6,
+      target: "friendlyLane",
+      effect: { type: "laneExtraAction" },
     });
   });
 

@@ -18,7 +18,14 @@ import type { StepContext } from "./context";
 import { direction, isInsideLane, isLaneOpen, isOver, unitAt } from "./context";
 import { damageHero, damageUnit } from "./damage";
 import { healUnit } from "./heal";
-import { attackOf, bleedUnit, entangleUnit, pushUnit } from "./resolution";
+import {
+  attackOf,
+  bleedUnit,
+  entangleUnit,
+  poisonUnit,
+  pushUnit,
+  runExtraActions,
+} from "./resolution";
 import { unitsInArea } from "./targets";
 import type { CardInstance, HandCard, Side, UnitState } from "./types";
 import { BattleEvent, otherSide, Target, unitRank } from "./types";
@@ -182,6 +189,106 @@ const wardUnit = (ctx: StepContext, unit: UnitState, ward: number): void => {
 };
 
 /**
+ * Steadfast (GDD 4.7): a new Steadfast on a Steadfast Unit has no effect, and
+ * no event occurs, the same as Entangle on an Entangled Unit.
+ */
+const steadfastUnit = (ctx: StepContext, unit: UnitState): void => {
+  if (unit.steadfast) {
+    return;
+  }
+  unit.steadfast = true;
+  ctx.events.push(
+    BattleEvent.StatusApplied({ unitId: unit.id, status: "steadfast" })
+  );
+};
+
+/** The number of End Phases of its owner that Exposed lasts (GDD 4.7). */
+const EXPOSED_END_PHASES = 2;
+
+/**
+ * Exposed N (GDD 4.7): the Unit keeps the higher value. A new Exposed with
+ * the same value or higher sets the count to 2 again. A lower value changes
+ * nothing, and no event occurs.
+ */
+const exposeUnit = (
+  ctx: StepContext,
+  unit: UnitState,
+  exposed: number
+): void => {
+  if (
+    exposed < unit.exposed ||
+    (exposed === unit.exposed && unit.exposedTurns >= EXPOSED_END_PHASES)
+  ) {
+    return;
+  }
+  unit.exposed = exposed;
+  unit.exposedTurns = EXPOSED_END_PHASES;
+  ctx.events.push(
+    BattleEvent.StatusApplied({
+      unitId: unit.id,
+      status: "exposed",
+      count: exposed,
+    })
+  );
+};
+
+/** The number of End Phases of its owner that a bonus Attack lasts: until the end of the next Turn. */
+const BONUS_ATTACK_END_PHASES = 2;
+
+/**
+ * Bonus Attack from a Skill Card (GDD 4.8). A new bonus replaces the old one,
+ * also its duration. A Unit with Base Attack 0 gets no bonus, the same as for
+ * Rally.
+ */
+const giveBonusAttack = (
+  ctx: StepContext,
+  unit: UnitState,
+  attack: number
+): void => {
+  if (unit.attack <= 0) {
+    return;
+  }
+  unit.bonusAttack = attack;
+  unit.bonusAttackTurns = BONUS_ATTACK_END_PHASES;
+  ctx.events.push(
+    BattleEvent.AttackGained({
+      unitId: unit.id,
+      attack,
+      turns: BONUS_ATTACK_END_PHASES,
+    })
+  );
+};
+
+/** True when `unit` has a Debuff (rules CONTEXT: Debuff). */
+const hasDebuff = (unit: UnitState): boolean =>
+  unit.burn > 0 ||
+  unit.frozen ||
+  unit.entangled ||
+  unit.poisoned > 0 ||
+  unit.hobbled > 0 ||
+  unit.bleeding > 0 ||
+  unit.exposed > 0;
+
+/**
+ * Cleanse (GDD 5.5): all Debuffs of the Unit end. Its Buffs (Ward and
+ * Steadfast) stay. A Unit with no Debuff gets no event.
+ */
+const removeDebuffs = (ctx: StepContext, unit: UnitState): void => {
+  if (!hasDebuff(unit)) {
+    return;
+  }
+  unit.burn = 0;
+  unit.frozen = false;
+  unit.entangled = false;
+  unit.poisoned = 0;
+  unit.hobbled = 0;
+  unit.bleeding = 0;
+  unit.exposed = 0;
+  unit.exposedTurns = 0;
+  ctx.events.push(BattleEvent.DebuffsRemoved({ unitId: unit.id }));
+};
+
+/**
  * Bonus Armor from a Skill Card (GDD 4.8). The Unit keeps the higher bonus,
  * and for the same bonus, the longer duration. A bonus that changes nothing
  * emits no event, the same as a Ward that is not higher.
@@ -203,32 +310,39 @@ const giveBonusArmor = (
   ctx.events.push(BattleEvent.ArmorGained({ unitId: unit.id, armor, turns }));
 };
 
+/** The Skill Card effect types that damage enemy Units, then control the Units that survive. */
+const CONTROL_EFFECT_TYPES = [
+  "damageEntangle",
+  "damageLaneEntangle",
+  "damagePush",
+  "damageKnockback",
+  "damageBleed",
+  "damagePoison",
+] as const satisfies readonly SkillEffect["type"][];
+
 type ControlEffect = Extract<
   SkillEffect,
-  {
-    readonly type:
-      | "damageEntangle"
-      | "damagePush"
-      | "damageKnockback"
-      | "damageBleed";
-  }
+  { readonly type: (typeof CONTROL_EFFECT_TYPES)[number] }
 >;
 
+const isControlEffect = (effect: SkillEffect): effect is ControlEffect =>
+  CONTROL_EFFECT_TYPES.some((type) => type === effect.type);
+
 /**
- * Damage to one enemy Unit, then the control part of the effect on a Unit
- * that survives: a push (also at 0 damage), or a Knockback push, an Entangle
- * or a Bleed at damage above 0.
+ * Damage to the enemy Units of the target, then the control part of the
+ * effect on each Unit that survives: a push or Poisoned stacks (also at 0
+ * damage), or a Knockback push, an Entangle or a Bleed at damage above 0.
  */
 const damageAndControl = (
   ctx: StepContext,
   units: readonly UnitState[],
+  card: CardInstance,
   effect: ControlEffect,
-  amount: number,
   crit: number
 ): void => {
   for (const unit of units) {
     const { dealt, killed } = damageUnit(ctx, unit, {
-      amount,
+      amount: scaleForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
       crit,
@@ -249,7 +363,8 @@ const damageAndControl = (
         }
         break;
       }
-      case "damageEntangle": {
+      case "damageEntangle":
+      case "damageLaneEntangle": {
         if (dealt > 0) {
           entangleUnit(ctx, unit);
         }
@@ -259,6 +374,12 @@ const damageAndControl = (
         if (dealt > 0) {
           bleedUnit(ctx, unit, effect.bleed);
         }
+        break;
+      }
+      case "damagePoison": {
+        // The stacks are the main effect: they come also at 0 damage, and
+        // also when a Ward absorbs the full hit.
+        poisonUnit(ctx, unit, skillAmountForRank(effect.poison, card.rank));
         break;
       }
       default: {
@@ -372,15 +493,36 @@ const applyHit = (
   }
 };
 
-/** A heal, a Ward or bonus Armor on the caster's Units of the target. */
+/** The Skill Card effect types that help the caster's Units of the target. */
+const FRIENDLY_EFFECT_TYPES = [
+  "healUnit",
+  "healLane",
+  "wardUnit",
+  "wardLane",
+  "steadfastUnit",
+  "cleanseUnit",
+  "laneArmor",
+  "laneAttack",
+] as const satisfies readonly SkillEffect["type"][];
+
+type FriendlyEffect = Extract<
+  SkillEffect,
+  { readonly type: (typeof FRIENDLY_EFFECT_TYPES)[number] }
+>;
+
+const isFriendlyEffect = (effect: SkillEffect): effect is FriendlyEffect =>
+  FRIENDLY_EFFECT_TYPES.some((type) => type === effect.type);
+
+/**
+ * A heal, a Ward, Steadfast, a Cleanse, bonus Armor or bonus Attack on the
+ * caster's Units of the target. A Cleanse removes the Debuffs first, so
+ * Bleeding does not halve its heal.
+ */
 const applyFriendly = (
   ctx: StepContext,
   side: Side,
   card: CardInstance,
-  effect: Extract<
-    SkillEffect,
-    { readonly type: "healUnit" | "healLane" | "wardUnit" | "laneArmor" }
-  >,
+  effect: FriendlyEffect,
   target: Target
 ): void => {
   for (const unit of unitsInArea(ctx.state, side, target, 1)) {
@@ -390,18 +532,57 @@ const applyFriendly = (
         healUnit(ctx, unit, skillAmountForRank(effect.heal, card.rank));
         break;
       }
-      case "wardUnit": {
+      case "wardUnit":
+      case "wardLane": {
         wardUnit(ctx, unit, skillAmountForRank(effect.ward, card.rank));
+        break;
+      }
+      case "steadfastUnit": {
+        steadfastUnit(ctx, unit);
+        break;
+      }
+      case "cleanseUnit": {
+        removeDebuffs(ctx, unit);
+        healUnit(ctx, unit, skillAmountForRank(effect.heal, card.rank));
         break;
       }
       case "laneArmor": {
         giveBonusArmor(ctx, unit, effect.armor, effect.turns);
         break;
       }
+      case "laneAttack": {
+        giveBonusAttack(ctx, unit, effect.attack);
+        break;
+      }
       default: {
         absurd(effect);
       }
     }
+  }
+};
+
+/**
+ * Exposed on the enemy Unit of the target, or an extra action for each of the
+ * caster's Units in the Lane of the target (*Onslaught*).
+ */
+const applyWarrior = (
+  ctx: StepContext,
+  side: Side,
+  card: CardInstance,
+  effect: Extract<
+    SkillEffect,
+    { readonly type: "exposeUnit" | "laneExtraAction" }
+  >,
+  target: Target
+): void => {
+  if (effect.type === "laneExtraAction") {
+    if (target._tag === "Lane") {
+      runExtraActions(ctx, side, target.lane);
+    }
+    return;
+  }
+  for (const unit of unitsInArea(ctx.state, otherSide(side), target, 1)) {
+    exposeUnit(ctx, unit, skillAmountForRank(effect.exposed, card.rank));
   }
 };
 
@@ -413,6 +594,20 @@ const applyEffect = (
   target: Target
 ): void => {
   const crit = ctx.state.sides[side].hero.skillCrit;
+  if (isControlEffect(effect)) {
+    damageAndControl(
+      ctx,
+      unitsInArea(ctx.state, otherSide(side), target, 1),
+      card,
+      effect,
+      crit
+    );
+    return;
+  }
+  if (isFriendlyEffect(effect)) {
+    applyFriendly(ctx, side, card, effect, target);
+    return;
+  }
   switch (effect.type) {
     case "damageUnit":
     case "damageArea":
@@ -422,19 +617,6 @@ const applyEffect = (
     case "damageLaneHeal":
     case "damageUnitHero": {
       applyHit(ctx, side, card, effect, target, crit);
-      return;
-    }
-    case "damageEntangle":
-    case "damagePush":
-    case "damageKnockback":
-    case "damageBleed": {
-      damageAndControl(
-        ctx,
-        unitsInArea(ctx.state, otherSide(side), target, 1),
-        effect,
-        scaleForRank(effect.amount, card.rank),
-        crit
-      );
       return;
     }
     case "damageHero": {
@@ -448,11 +630,9 @@ const applyEffect = (
       }
       return;
     }
-    case "healUnit":
-    case "healLane":
-    case "wardUnit":
-    case "laneArmor": {
-      applyFriendly(ctx, side, card, effect, target);
+    case "exposeUnit":
+    case "laneExtraAction": {
+      applyWarrior(ctx, side, card, effect, target);
       return;
     }
     case "lowerCountdown": {

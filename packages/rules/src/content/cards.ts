@@ -1372,6 +1372,37 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyLane",
     effect: { type: "damageLane", amount: 2, damageType: "physical" },
   },
+  {
+    kind: "skill",
+    id: "warrior.callToArms",
+    class: "warrior",
+    baseRank: "rare",
+    countdown: 4,
+    target: "friendlyLane",
+    effect: { type: "laneAttack", attack: 2 },
+  },
+  {
+    kind: "skill",
+    id: "warrior.exposeWeakness",
+    class: "warrior",
+    baseRank: "rare",
+    countdown: 3,
+    target: "enemyUnit",
+    effect: {
+      type: "exposeUnit",
+      // Base Rank Rare: no Common or Uncommon copy exists, so they repeat Rare.
+      exposed: { common: 2, uncommon: 2, rare: 2, epic: 3, legendary: 4 },
+    },
+  },
+  {
+    kind: "skill",
+    id: "warrior.onslaught",
+    class: "warrior",
+    baseRank: "epic",
+    countdown: 6,
+    target: "friendlyLane",
+    effect: { type: "laneExtraAction" },
+  },
   // Ranger: control and Hero damage.
   {
     kind: "skill",
@@ -1455,6 +1486,39 @@ const skills: readonly SkillCardDefinition[] = [
       damageType: "physical",
       squares: 3,
     },
+  },
+  {
+    kind: "skill",
+    id: "ranger.venomArrow",
+    class: "ranger",
+    baseRank: "rare",
+    countdown: 4,
+    target: "enemyUnit",
+    effect: {
+      type: "damagePoison",
+      amount: 1,
+      damageType: "physical",
+      // Base Rank Rare: no Common or Uncommon copy exists, so they repeat Rare.
+      poison: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+    },
+  },
+  {
+    kind: "skill",
+    id: "ranger.heartseeker",
+    class: "ranger",
+    baseRank: "rare",
+    countdown: 5,
+    target: "enemyHero",
+    effect: { type: "damageHero", amount: 6, damageType: "physical" },
+  },
+  {
+    kind: "skill",
+    id: "ranger.rainOfArrows",
+    class: "ranger",
+    baseRank: "epic",
+    countdown: 6,
+    target: "enemyLane",
+    effect: { type: "damageLaneEntangle", amount: 1, damageType: "physical" },
   },
   // Mage: area damage.
   {
@@ -1583,6 +1647,41 @@ const skills: readonly SkillCardDefinition[] = [
       type: "healLane",
       // Base Rank Uncommon: no Common copy exists, so Common repeats Uncommon.
       heal: { common: 8, uncommon: 8, rare: 10, epic: 12, legendary: 14 },
+    },
+  },
+  {
+    kind: "skill",
+    id: "priest.cleanse",
+    class: "priest",
+    baseRank: "rare",
+    countdown: 3,
+    target: "friendlyUnit",
+    effect: {
+      type: "cleanseUnit",
+      // Base Rank Rare: no Common or Uncommon copy exists, so they repeat Rare.
+      heal: { common: 6, uncommon: 6, rare: 6, epic: 7, legendary: 8 },
+    },
+  },
+  {
+    kind: "skill",
+    id: "priest.unbrokenVow",
+    class: "priest",
+    baseRank: "rare",
+    countdown: 2,
+    target: "friendlyUnit",
+    effect: { type: "steadfastUnit" },
+  },
+  {
+    kind: "skill",
+    id: "priest.aegisOfDawn",
+    class: "priest",
+    baseRank: "epic",
+    countdown: 6,
+    target: "friendlyLane",
+    effect: {
+      type: "wardLane",
+      // Base Rank Epic: no lower copy exists, so the lower Ranks repeat Epic.
+      ward: { common: 6, uncommon: 6, rare: 6, epic: 6, legendary: 8 },
     },
   },
 ];

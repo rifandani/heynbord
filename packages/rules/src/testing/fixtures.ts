@@ -95,18 +95,33 @@ const setCounts = (
   }
 };
 
-/** Test setup: replaces Rebirth, the Rally bonus, the bonus Armor and the Ward of a Unit. */
+/**
+ * Test setup: replaces Rebirth, the Rally bonus, the bonus Armor, the bonus
+ * Attack, Exposed and the Buffs of a Unit.
+ */
 const setRebirthAndBonuses = (
   unit: UnitState,
   options: Partial<
     Pick<
       UnitState,
-      "rebirth" | "rallied" | "bonusArmor" | "bonusArmorTurns" | "ward"
+      | "rebirth"
+      | "rallied"
+      | "bonusArmor"
+      | "bonusArmorTurns"
+      | "bonusAttack"
+      | "bonusAttackTurns"
+      | "exposed"
+      | "exposedTurns"
+      | "ward"
+      | "steadfast"
     >
   >
 ): void => {
   if (options.ward !== undefined) {
     unit.ward = options.ward;
+  }
+  if (options.steadfast !== undefined) {
+    unit.steadfast = options.steadfast;
   }
   if (options.rebirth !== undefined) {
     unit.rebirth = options.rebirth;
@@ -119,6 +134,14 @@ const setRebirthAndBonuses = (
   }
   if (options.bonusArmorTurns !== undefined) {
     unit.bonusArmorTurns = options.bonusArmorTurns;
+  }
+  if (options.bonusAttack !== undefined) {
+    unit.bonusAttack = options.bonusAttack;
+    unit.bonusAttackTurns = options.bonusAttackTurns ?? 2;
+  }
+  if (options.exposed !== undefined) {
+    unit.exposed = options.exposed;
+    unit.exposedTurns = options.exposedTurns ?? 2;
   }
 };
 
@@ -152,7 +175,12 @@ export const placeUnit = (
       | "rallied"
       | "bonusArmor"
       | "bonusArmorTurns"
+      | "bonusAttack"
+      | "bonusAttackTurns"
+      | "exposed"
+      | "exposedTurns"
       | "ward"
+      | "steadfast"
     >
   > & {
       /** Test setup: gives the Unit the Poison Keyword. */

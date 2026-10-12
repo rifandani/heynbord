@@ -82,10 +82,14 @@ const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
   unit.entangled = false;
   unit.hobbled = 0;
   unit.bleeding = 0;
+  unit.exposed = 0;
+  unit.exposedTurns = 0;
   unit.ward = 0;
   unit.rallied = 0;
   unit.bonusArmor = 0;
   unit.bonusArmorTurns = 0;
+  unit.bonusAttack = 0;
+  unit.bonusAttackTurns = 0;
   ctx.events.push(BattleEvent.UnitReborn({ unitId: unit.id, hp: unit.hp }));
   return true;
 };
@@ -113,16 +117,18 @@ interface HitResult {
   readonly dealt: number;
   /**
    * The hit took the Unit to 0 HP. It left the Board, or it came back with
-   * Rebirth. Either way, it did not survive the hit.
+   * Rebirth. Either way, it did not survive the hit. A Unit that Steadfast
+   * held at 1 HP survived it.
    */
   readonly killed: boolean;
 }
 
 /**
- * Damage calculation (GDD 4.7): the value, minus Armor (not for Holy), Crit
- * ×2, Block ÷2 rounded up, minimum 0. Then a Ward absorbs damage, also
- * status damage. Absorbed damage is not dealt: `dealt` is the damage after
- * the Ward. Fire gives Burn and Frost gives Freeze, also at 0 damage.
+ * Damage calculation (GDD 4.7): the value, minus Armor (not for Holy), plus
+ * Exposed for a Physical hit, Crit ×2, Block ÷2 rounded up, minimum 0. Then a
+ * Ward absorbs damage, also status damage. Absorbed damage is not dealt: `dealt` is the damage after
+ * the Ward. Then Steadfast keeps the Unit at 1 HP. Fire gives Burn and Frost
+ * gives Freeze, also at 0 damage.
  */
 export const damageUnit = (
   ctx: StepContext,
@@ -132,7 +138,10 @@ export const damageUnit = (
   const status = isStatusDamage(hit.source);
   const armor =
     status || hit.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
-  let amount = Math.max(0, hit.amount - armor);
+  // Exposed (step 4): after Armor, so it also hurts a Unit with high Armor.
+  // Poison damage is Physical, but it is status damage: no Exposed.
+  const exposed = !status && hit.damageType === "physical" ? unit.exposed : 0;
+  let amount = Math.max(0, hit.amount - armor) + exposed;
   const crit = !status && rollBasisPoints(ctx.random, hit.crit);
   if (crit) {
     amount *= 2;
@@ -146,6 +155,13 @@ export const damageUnit = (
   unit.ward -= absorbed;
   amount -= absorbed;
   unit.hp -= amount;
+  // Steadfast (step 8): it comes before Rebirth, so a Unit with Rebirth keeps
+  // its Rebirth.
+  const held = unit.hp <= 0 && unit.steadfast;
+  if (held) {
+    unit.hp = 1;
+    unit.steadfast = false;
+  }
   const target: TargetRef = { _tag: "Unit", unitId: unit.id };
   ctx.events.push(
     BattleEvent.DamageDealt({
@@ -160,6 +176,9 @@ export const damageUnit = (
       hp: Math.max(0, unit.hp),
     })
   );
+  if (held) {
+    ctx.events.push(BattleEvent.SteadfastHeld({ unitId: unit.id }));
+  }
   if (unit.hp <= 0) {
     if (!rebirth(ctx, unit)) {
       killUnit(ctx, unit);

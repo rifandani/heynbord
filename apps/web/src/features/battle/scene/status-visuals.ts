@@ -11,10 +11,12 @@ export type Status = Extract<
 
 /**
  * The fixed priority order of the Status visuals: the loops and the badges.
- * Ward is first, so a Unit always shows why a hit did less damage.
+ * Ward is first, so a Unit always shows why a hit did less damage. Steadfast,
+ * the other Buff, comes next, so the Buffs are one run in the Handbook.
  */
 export const STATUS_ORDER: readonly Status[] = [
   "ward",
+  "steadfast",
   "freeze",
   "burn",
   "poison",
@@ -32,13 +34,14 @@ export const STATUS_ICON = {
   bleed: "icon-bleed",
   hobble: "icon-hobble",
   ward: "icon-ward",
+  steadfast: "icon-steadfast",
 } as const satisfies Readonly<Record<Status, FxSlotName>>;
 
 /**
  * The Buffs (rules CONTEXT: Buff, Debuff). Each other Status is a Debuff. A
  * Buff badge has a gold ring, and the Handbook shows the two groups.
  */
-const BUFFS: ReadonlySet<Status> = new Set<Status>(["ward"]);
+const BUFFS: ReadonlySet<Status> = new Set<Status>(["ward", "steadfast"]);
 
 export const isBuff = (status: Status): boolean => BUFFS.has(status);
 
@@ -56,6 +59,7 @@ const HAS_STATUS: Readonly<Record<Status, (unit: UnitView) => boolean>> = {
   bleed: (unit) => unit.bleeding > 0,
   hobble: (unit) => unit.hobbled > 0,
   ward: (unit) => unit.ward > 0,
+  steadfast: (unit) => unit.steadfast,
 };
 
 /** The count on a badge: the Ward value, the Poisoned stacks, and the Hobbled and Bleeding counts. */
@@ -67,6 +71,7 @@ const COUNT_OF: Readonly<Record<Status, (unit: UnitView) => number | null>> = {
   bleed: (unit) => unit.bleeding,
   hobble: (unit) => unit.hobbled,
   ward: (unit) => unit.ward,
+  steadfast: () => null,
 };
 
 /** All Statuses of a Unit, in the priority order. */

@@ -306,12 +306,11 @@ describe("a Class Pack (Economy 3.1)", () => {
 
   it("Discovers the Skill Cards that are not Discovered first in a Merchant Class Pack", () => {
     for (const classId of classesWithCards) {
-      const [newCard] = skillCardsOf(classId).toSorted(
-        (left, right) =>
-          RANKS.indexOf(right.baseRank) - RANKS.indexOf(left.baseRank)
+      // Each Pack has a card of Uncommon or higher, so each roll permits an
+      // Uncommon new card.
+      const newCard = skillCardsOf(classId).find(
+        (card) => card.baseRank === "uncommon"
       );
-      // Each Pack has a card of Uncommon or higher, so each roll permits the
-      // new card.
       const discovered = new Set(
         CARDS.map((card) => card.id).filter((id) => id !== newCard?.id)
       );

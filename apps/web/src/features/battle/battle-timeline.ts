@@ -36,6 +36,9 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   UnitAttacked: 360,
   DamageDealt: 280,
   StatusApplied: 160,
+  // The hit holds on the Unit at 1 HP for a beat, so the Player sees it.
+  SteadfastHeld: 420,
+  DebuffsRemoved: 300,
   UnitDied: 460,
   // The Unit falls as in a death, then gets up again.
   UnitReborn: 640,

@@ -10,7 +10,7 @@ import {
   unitAt,
 } from "./context";
 import { damageHero, damageUnit } from "./damage";
-import type { BattleState, TargetRef, UnitState } from "./types";
+import type { BattleState, Side, TargetRef, UnitState } from "./types";
 import { BattleEvent, otherSide } from "./types";
 
 /**
@@ -19,7 +19,7 @@ import { BattleEvent, otherSide } from "./types";
  * Entangled Unit has Speed 0 (GDD 4.5). A Wall has no Movement, also with
  * Speed or Charge (GDD 5.4).
  */
-const currentSpeed = (state: BattleState, unit: UnitState): number => {
+export const currentSpeed = (state: BattleState, unit: UnitState): number => {
   if (unit.entangled || unit.wall) {
     return 0;
   }
@@ -47,12 +47,14 @@ const swarmBonus = (state: BattleState, unit: UnitState): number =>
     : 0;
 
 /**
- * Attack with the Rally bonus of this Turn and the Swarm bonus (GDD 4.7,
- * step 2). A Wall never uses its Attack: no attack, no Retaliate and no
- * First Strike (GDD 5.4).
+ * Attack with the Rally bonus of this Turn, the Swarm bonus and the bonus
+ * Attack of a Skill Card (GDD 4.7, step 2). A Wall never uses its Attack: no
+ * attack, no Retaliate and no First Strike (GDD 5.4).
  */
 export const attackOf = (state: BattleState, unit: UnitState): number =>
-  unit.wall ? 0 : unit.attack + unit.rallied + swarmBonus(state, unit);
+  unit.wall
+    ? 0
+    : unit.attack + unit.rallied + unit.bonusAttack + swarmBonus(state, unit);
 
 /**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of
@@ -138,8 +140,10 @@ const targetOf = (state: BattleState, unit: UnitState) =>
 
 /**
  * Movement (GDD 4.5, ADR-0018). A ground Unit moves through friendly Units and
- * stops before an enemy Unit. A Flying Unit moves over all Units. Each Unit
- * stops in the farthest empty Square that its Speed reaches.
+ * stops before an enemy Unit. A Flying Unit moves over friendly Units, enemy
+ * ground Units and enemy Walls, but it stops before an enemy Flying Unit. A
+ * status does not change this. Each Unit stops in the farthest empty Square
+ * that its Speed reaches.
  * A ranged Unit with a target in Range, and a Pivot Unit with an enemy Unit
  * behind it or next to it, do not move.
  */
@@ -165,7 +169,7 @@ const move = (ctx: StepContext, unit: UnitState): void => {
     const other = unitAt(state, unit.lane, position);
     if (!other) {
       to = position;
-    } else if (other.owner !== unit.owner && !unit.flying) {
+    } else if (other.owner !== unit.owner && (!unit.flying || other.flying)) {
       break;
     }
   }
@@ -319,6 +323,25 @@ export const bleedUnit = (
 };
 
 /**
+ * Poisoned (GDD 4.7): new stacks add to the old stacks. The event gives the
+ * stack count after the hit.
+ */
+export const poisonUnit = (
+  ctx: StepContext,
+  unit: UnitState,
+  stacks: number
+): void => {
+  unit.poisoned += stacks;
+  ctx.events.push(
+    BattleEvent.StatusApplied({
+      unitId: unit.id,
+      status: "poison",
+      count: unit.poisoned,
+    })
+  );
+};
+
+/**
  * Poison, then Hobble, then Bleed, then Entangle, then Knockback (GDD 4.4).
  * First Strike does not apply Knockback (GDD 4.7).
  */
@@ -329,10 +352,7 @@ const applyOnHit = (
   { knockback }: { readonly knockback: boolean }
 ): void => {
   if (unit.poison) {
-    struck.poisoned += 1;
-    ctx.events.push(
-      BattleEvent.StatusApplied({ unitId: struck.id, status: "poison" })
-    );
+    poisonUnit(ctx, struck, 1);
   }
   if (unit.hobble > 0) {
     struck.hobbled = Math.max(struck.hobbled, unit.hobble);
@@ -443,33 +463,61 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
 };
 
 /**
- * The Resolution Phase (GDD 4.3, 4.4): the active side's Units act one at a
- * time. A Frozen Unit skips this action, and then its Freeze ends. The action
- * (also a skipped one) ends Entangled. An Entangle from First Strike during
- * the action stays for the next action.
+ * One action of a Unit (GDD 4.4): Movement, then attack. A Frozen Unit skips
+ * the action, and then its Freeze ends. The action (also a skipped one) ends
+ * Entangled. An Entangle from First Strike during the action stays for the
+ * next action.
  */
-export const runResolutionPhase = (ctx: StepContext): void => {
-  const { state } = ctx;
-  const order = actionOrder(state, state.activeSide).map((unit) => unit.id);
-  for (const unitId of order) {
-    const unit = findUnit(state, unitId);
+const act = (ctx: StepContext, unit: UnitState): void => {
+  if (unit.frozen) {
+    unit.frozen = false;
+    unit.entangled = false;
+    ctx.events.push(BattleEvent.UnitSkipped({ unitId: unit.id }));
+    return;
+  }
+  const { entangled } = unit;
+  move(ctx, unit);
+  attack(ctx, unit);
+  if (entangled) {
+    unit.entangled = false;
+  }
+};
+
+/**
+ * Each Unit of `units` acts one time, in the order of the list. The list is
+ * fixed first: a Unit that dies before its action does not act.
+ */
+const actInOrder = (ctx: StepContext, units: readonly UnitState[]): void => {
+  for (const unitId of units.map((unit) => unit.id)) {
+    const unit = findUnit(ctx.state, unitId);
     if (!unit) {
       continue;
     }
-    if (unit.frozen) {
-      unit.frozen = false;
-      unit.entangled = false;
-      ctx.events.push(BattleEvent.UnitSkipped({ unitId }));
-      continue;
-    }
-    const { entangled } = unit;
-    move(ctx, unit);
-    attack(ctx, unit);
-    if (entangled) {
-      unit.entangled = false;
-    }
+    act(ctx, unit);
     if (isOver(ctx)) {
       return;
     }
   }
+};
+
+/** The Resolution Phase (GDD 4.3, 4.4): the active side's Units act one at a time. */
+export const runResolutionPhase = (ctx: StepContext): void => {
+  actInOrder(ctx, actionOrder(ctx.state, ctx.state.activeSide));
+};
+
+/**
+ * The extra action of a Skill Card (*Onslaught*, GDD 4.4): each Unit of
+ * `side` in `lane` does one more action now, from the front Unit to the back
+ * Unit. It is a normal action, so it uses up a Freeze and an Entangled. No
+ * Phase effect occurs again. Charge applies in the Turn of the summon.
+ */
+export const runExtraActions = (
+  ctx: StepContext,
+  side: Side,
+  lane: number
+): void => {
+  actInOrder(
+    ctx,
+    actionOrder(ctx.state, side).filter((unit) => unit.lane === lane)
+  );
 };

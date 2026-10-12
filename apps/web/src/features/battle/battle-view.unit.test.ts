@@ -283,6 +283,168 @@ describe("applyEvent with the Ranger Skill Cards", () => {
   });
 });
 
+/** Stage 1-4 with an enemy Deck of Elf cards and the Rare and Epic Ranger Skill Cards of #59, each at its Base Rank. */
+const rareRangerStage = (): StageDefinition => {
+  const stage = getStage("1-4");
+  const cards = [
+    ["elf.brambleDuelist", "rare"],
+    ["elf.fernwingCourier", "rare"],
+    ["elf.thornlineArcher", "rare"],
+    ["ranger.venomArrow", "rare"],
+    ["ranger.heartseeker", "rare"],
+    ["ranger.rainOfArrows", "epic"],
+  ] as const;
+  return {
+    ...stage,
+    enemy: {
+      ...stage.enemy,
+      deck: cards.flatMap(([cardId, rank]) =>
+        Array.from({ length: 2 }, () => ({ cardId, rank }))
+      ),
+    },
+  };
+};
+
+describe("applyEvent with the Rare and Epic Ranger Skill Cards of #59", () => {
+  const battles = [1, 2, 3].map((seed) =>
+    steps(seed, "1-4", "vanguard", rareRangerStage(), "rare")
+  );
+  const events = battles.flat().flatMap((entry) => entry.events);
+
+  it("rebuilds the view of the next state from the events", () => {
+    for (const all of battles) {
+      for (const { before, after, events: stepEvents } of all) {
+        expect(stepEvents.reduce(applyEvent, viewFromState(before))).toEqual(
+          viewFromState(after)
+        );
+      }
+    }
+  });
+
+  it("plays Poisoned stacks, a Lane Entangle and Skill damage to a Hero", () => {
+    expect(
+      castEffects(events, "ranger.venomArrow").some((effects) =>
+        effects.some(
+          (event) =>
+            event._tag === "StatusApplied" &&
+            event.status === "poison" &&
+            (event.count ?? 0) >= 3
+        )
+      )
+    ).toBe(true);
+    expect(
+      castEffects(events, "ranger.rainOfArrows").some((effects) =>
+        effects.some(
+          (event) =>
+            event._tag === "StatusApplied" && event.status === "entangle"
+        )
+      )
+    ).toBe(true);
+    expect(
+      castEffects(events, "ranger.heartseeker").some((effects) =>
+        effects.some(
+          (event) =>
+            event._tag === "DamageDealt" && event.target._tag === "Hero"
+        )
+      )
+    ).toBe(true);
+  });
+
+  it("sets the Poisoned stacks from StatusApplied", () => {
+    for (const { before, events: stepEvents } of battles.flat()) {
+      let view = viewFromState(before);
+      for (const event of stepEvents) {
+        view = applyEvent(view, event);
+        if (event._tag === "StatusApplied" && event.status === "poison") {
+          expect(
+            view.units.find((unit) => unit.id === event.unitId)?.poisoned
+          ).toBe(event.count);
+        }
+      }
+    }
+  });
+});
+
+/** Stage 1-4 with an enemy Priest Deck of Feral cards and the Rare and Epic Priest Skill Cards of #61, each at its Base Rank. */
+const rarePriestStage = (): StageDefinition => {
+  const stage = getStage("1-4");
+  const cards = [
+    ["feral.caveBear", "rare"],
+    ["feral.cragRhino", "rare"],
+    ["feral.bristlebackBoar", "rare"],
+    ["priest.cleanse", "rare"],
+    ["priest.unbrokenVow", "rare"],
+    ["priest.aegisOfDawn", "epic"],
+  ] as const;
+  return {
+    ...stage,
+    enemy: {
+      ...stage.enemy,
+      classId: "priest",
+      deck: cards.flatMap(([cardId, rank]) =>
+        Array.from({ length: 2 }, () => ({ cardId, rank }))
+      ),
+    },
+  };
+};
+
+describe("applyEvent with the Rare and Epic Priest Skill Cards of #61", () => {
+  // The Raiders Starter Deck gives Burn and Freeze, so Cleanse has Debuffs to end.
+  const battles = [1, 2, 3, 4].map((seed) =>
+    steps(seed, "1-4", "raiders", rarePriestStage(), "rare")
+  );
+  const events = battles.flat().flatMap((entry) => entry.events);
+
+  it("rebuilds the view of the next state from the events", () => {
+    for (const all of battles) {
+      for (const { before, after, events: stepEvents } of all) {
+        expect(stepEvents.reduce(applyEvent, viewFromState(before))).toEqual(
+          viewFromState(after)
+        );
+      }
+    }
+  });
+
+  it("plays Steadfast, a hit that Steadfast holds, a Cleanse and a Lane Ward", () => {
+    expect(
+      castEffects(events, "priest.unbrokenVow").some((effects) =>
+        effects.some(
+          (event) =>
+            event._tag === "StatusApplied" && event.status === "steadfast"
+        )
+      )
+    ).toBe(true);
+    expect(events.some((event) => event._tag === "SteadfastHeld")).toBe(true);
+    expect(
+      castEffects(events, "priest.cleanse").some((effects) =>
+        effects.some((event) => event._tag === "DebuffsRemoved")
+      )
+    ).toBe(true);
+    expect(
+      castEffects(events, "priest.aegisOfDawn").some(
+        (effects) =>
+          effects.filter(
+            (event) => event._tag === "StatusApplied" && event.status === "ward"
+          ).length >= 2
+      )
+    ).toBe(true);
+  });
+
+  it("ends Steadfast at SteadfastHeld, with the Unit at 1 HP", () => {
+    for (const { before, events: stepEvents } of battles.flat()) {
+      let view = viewFromState(before);
+      for (const event of stepEvents) {
+        view = applyEvent(view, event);
+        if (event._tag === "SteadfastHeld") {
+          expect(
+            view.units.find((unit) => unit.id === event.unitId)
+          ).toMatchObject({ hp: 1, steadfast: false });
+        }
+      }
+    }
+  });
+});
+
 /** Stage 1-4 with an enemy Deck of big Feral and Undead cards and the 3 Priest Skill Cards. */
 const priestStage = (): StageDefinition => {
   const stage = getStage("1-4");
@@ -433,6 +595,7 @@ describe("the Graveyard view", () => {
           frozen: false,
           entangled: false,
           ward: 0,
+          steadfast: false,
           wall: false,
         },
       ],
@@ -492,6 +655,7 @@ describe("the bonus Armor view", () => {
       frozen: false,
       entangled: false,
       ward: 0,
+      steadfast: false,
       wall: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
@@ -558,6 +722,7 @@ describe("the Hobbled and Bleeding view", () => {
       frozen: false,
       entangled: false,
       ward: 0,
+      steadfast: false,
       wall: false,
     };
     const view = {
@@ -633,6 +798,7 @@ describe("a push", () => {
       frozen: false,
       entangled: false,
       ward: 0,
+      steadfast: false,
       wall: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
@@ -744,6 +910,7 @@ describe("the Entangled view", () => {
     frozen: false,
     entangled: false,
     ward: 0,
+    steadfast: false,
     wall: false,
   };
   const view = { ...viewFromState(state), units: [unit] };
@@ -833,6 +1000,7 @@ const snapshot = (
   frozen: false,
   entangled: false,
   ward: 0,
+  steadfast: false,
   rallied: 0,
   bonusArmor: 0,
   bonusArmorTurns: 0,
@@ -936,6 +1104,7 @@ describe("the Token, Rebirth and Swarm view", () => {
       frozen: false,
       burn: 0,
       ward: 0,
+      steadfast: false,
       bonusArmor: 0,
     });
     expect(view.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);

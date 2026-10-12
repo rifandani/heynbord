@@ -188,7 +188,7 @@ describe("cardText (CRD-08)", () => {
       ["Heroic 1", "+1 damage when this Unit attacks a Hero."],
       [
         "Flying",
-        "Moves over all Units, also enemy Units. It stops in an empty Square.",
+        "Moves over all Units, but stops before an enemy Flying Unit. It stops in an empty Square.",
       ],
     ]);
     expect(text.damageRule).toBeUndefined();
@@ -312,6 +312,50 @@ describe("cardText (CRD-08)", () => {
     );
     expect(resolve(skill("warrior.groundSlam", "uncommon").name)).toBe(
       "Ground Slam"
+    );
+  });
+
+  it("builds the text of the Rare and Epic Priest Skill Cards of #61", () => {
+    const effect = (cardId: string, rank: RankId) =>
+      resolve(skill(cardId, rank).effect);
+    expect(effect("priest.cleanse", "rare")).toBe(
+      "Remove all Debuffs from a friendly Unit. Then heal 6 HP to it."
+    );
+    expect(effect("priest.cleanse", "legendary")).toBe(
+      "Remove all Debuffs from a friendly Unit. Then heal 8 HP to it."
+    );
+    expect(effect("priest.unbrokenVow", "rare")).toBe(
+      "A friendly Unit gets Steadfast: when damage would bring it to 0 HP, it stays at 1 HP."
+    );
+    expect(effect("priest.aegisOfDawn", "epic")).toBe(
+      "Each friendly Unit in a Lane gets Ward 6: it absorbs the next 6 damage."
+    );
+    expect(effect("priest.aegisOfDawn", "legendary")).toBe(
+      "Each friendly Unit in a Lane gets Ward 8: it absorbs the next 8 damage."
+    );
+    expect(resolve(skill("priest.unbrokenVow", "rare").name)).toBe(
+      "Unbroken Vow"
+    );
+  });
+
+  it("builds the text of the Rare and Epic Ranger Skill Cards of #59", () => {
+    const effect = (cardId: string, rank: RankId) =>
+      resolve(skill(cardId, rank).effect);
+    expect(effect("ranger.venomArrow", "rare")).toBe(
+      "Deal 1 Physical damage to an enemy Unit. If it survives, it gains 3 Poison stacks, also when it takes no damage."
+    );
+    expect(effect("ranger.venomArrow", "legendary")).toBe(
+      "Deal 2 Physical damage to an enemy Unit. If it survives, it gains 5 Poison stacks, also when it takes no damage."
+    );
+    // Rare: 6 × 1.45 = 8.7, rounded to 9.
+    expect(effect("ranger.heartseeker", "rare")).toBe(
+      "Deal 9 Physical damage to the enemy Hero."
+    );
+    expect(effect("ranger.rainOfArrows", "epic")).toBe(
+      "Deal 2 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
+    );
+    expect(resolve(skill("ranger.rainOfArrows", "epic").name)).toBe(
+      "Rain of Arrows"
     );
   });
 
@@ -447,6 +491,7 @@ describe("unitStatusText", () => {
     frozen: false,
     entangled: false,
     ward: 0,
+    steadfast: false,
     hobbled: 0,
     bleeding: 0,
     poisoned: 0,
@@ -467,6 +512,7 @@ describe("unitStatusText", () => {
       frozen: true,
       entangled: true,
       ward: 0,
+      steadfast: false,
       hobbled: 1,
       bleeding: 3,
       poisoned: 2,
@@ -504,6 +550,25 @@ describe("unitStatusText", () => {
       "Poison 2 1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
       "Reborn This Unit died and came back with Rebirth. It does not come back again.",
     ]);
+  });
+
+  it("lists Steadfast after the Ward, with its rule", () => {
+    const lines = unitStatusText({
+      ...quiet,
+      ward: 6,
+      steadfast: true,
+      burn: 1,
+    });
+    expect(lines.map((line) => line.status)).toEqual([
+      "ward",
+      "steadfast",
+      "burn",
+    ]);
+    const [, steadfast] = lines;
+    expect(steadfast && resolve(steadfast.name)).toBe("Steadfast");
+    expect(steadfast && resolve(steadfast.rule)).toBe(
+      "A Buff. When damage would bring this Unit to 0 HP, it stays at 1 HP, and Steadfast ends. A Ward absorbs the damage first. It has no time limit."
+    );
   });
 
   it("lists the Ward first, with its value and its rule", () => {

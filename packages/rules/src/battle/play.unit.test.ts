@@ -1112,6 +1112,628 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
   });
 });
 
+describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
+  describe("Venom Arrow", () => {
+    it("deals damage, then the Unit becomes Poisoned with the stacks of the Rank, and new stacks add to the old stacks", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [
+        ["ranger.venomArrow", 0, "rare"],
+        ["ranger.venomArrow", 0, "legendary"],
+      ]);
+      const target = enemyAt(state, 6);
+      const poisoned = enemyAt(state, 6, { lane: 1, poisoned: 2 });
+      const first = run(state, play(0, square(0, 6)));
+      // Rare: 1 × 1.45 = 1.45, rounded to 1. The Rare stacks are 3.
+      expect(unitById(first.state, target.id)).toMatchObject({
+        hp: 5,
+        poisoned: 3,
+      });
+      expect(eventsOfType(first.events, "StatusApplied")).toEqual([
+        expect.objectContaining({
+          unitId: target.id,
+          status: "poison",
+          count: 3,
+        }),
+      ]);
+      const second = run(first.state, play(0, square(1, 6)));
+      // Legendary: 5 stacks on the old 2.
+      expect(unitById(second.state, poisoned.id)?.poisoned).toBe(7);
+    });
+
+    it("gives the stacks also at 0 damage, and when a Ward absorbs the full hit", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [
+        ["ranger.venomArrow", 0, "epic"],
+        ["ranger.venomArrow", 0, "epic"],
+      ]);
+      const wall = enemyAt(state, 6, {
+        cardId: "human.townBarricade",
+        bonusArmor: 3,
+        bonusArmorTurns: 2,
+      });
+      const warded = enemyAt(state, 6, { lane: 1, ward: 5 });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, wall.id)?.poisoned).toBe(4);
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, warded.id)).toMatchObject({
+        hp: 6,
+        poisoned: 4,
+      });
+    });
+
+    it("gives no stacks to a Unit that it kills, or that comes back with Rebirth", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["ranger.venomArrow", 0, "rare"],
+        ["ranger.venomArrow", 0, "rare"],
+      ]);
+      const killed = enemyAt(state, 6, { hp: 1 });
+      const reborn = enemyAt(state, 8, { hp: 1, rebirth: true });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, killed.id)).toBeUndefined();
+      const second = run(first.state, play(0, square(0, 8)));
+      expect(unitById(second.state, reborn.id)?.poisoned).toBe(0);
+      expect(eventsOfType(second.events, "StatusApplied")).toEqual([]);
+    });
+  });
+
+  describe("Heartseeker", () => {
+    it("targets only the enemy Hero, and damages it with the value of its Base Rank Rare", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.heartseeker", 0, "rare"]]);
+      enemyAt(state, 6);
+      expect(legalTargets(state, 0)).toEqual([Target.Hero({ side: "enemy" })]);
+      const { state: next } = run(
+        state,
+        play(0, Target.Hero({ side: "enemy" }))
+      );
+      // Rare: 6 × 1.45 = 8.7, rounded to 9.
+      expect(next.sides.enemy.hero.hp).toBe(21);
+    });
+  });
+
+  describe("Rain of Arrows", () => {
+    it("deals damage to each enemy Unit in the Lane, and each Unit that survives with damage above 0 becomes Entangled", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [["ranger.rainOfArrows", 0, "epic"]]);
+      const front = enemyAt(state, 6);
+      const killed = enemyAt(state, 7, { hp: 2 });
+      const armored = enemyAt(state, 8, { bonusArmor: 2, bonusArmorTurns: 2 });
+      const other = enemyAt(state, 6, { lane: 1 });
+      const friend = friendAt(state, 2);
+      expect(legalTargets(state, 0)).toEqual([
+        Target.Lane({ lane: 0 }),
+        Target.Lane({ lane: 1 }),
+      ]);
+      const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
+      // Epic: 1 × 1.75 = 1.75, rounded to 2.
+      expect(unitById(next, front.id)).toMatchObject({
+        hp: 4,
+        entangled: true,
+      });
+      expect(unitById(next, killed.id)).toBeUndefined();
+      expect(unitById(next, armored.id)).toMatchObject({
+        hp: 6,
+        entangled: false,
+      });
+      expect(unitById(next, other.id)).toMatchObject({
+        hp: 6,
+        entangled: false,
+      });
+      expect(unitById(next, friend.id)?.hp).toBe(6);
+    });
+
+    it("does not stack a new Entangled", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.rainOfArrows", 0, "epic"]]);
+      const target = enemyAt(state, 6, { entangled: true });
+      const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(unitById(next, target.id)).toMatchObject({
+        hp: 4,
+        entangled: true,
+      });
+    });
+  });
+});
+
+describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
+  describe("Cleanse", () => {
+    it("ends all Debuffs first, so Bleeding does not halve the heal, and keeps the Buffs", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.cleanse", 0, "rare"]]);
+      const unit = friendAt(state, 2, {
+        hp: 1,
+        maxHp: 20,
+        burn: 2,
+        frozen: true,
+        entangled: true,
+        poisoned: 3,
+        hobbled: 2,
+        bleeding: 2,
+        ward: 3,
+        steadfast: true,
+      });
+      expect(legalTargets(state, 0)).toEqual([square(0, 2)]);
+      const { state: next, events } = run(state, play(0, square(0, 2)));
+      // The Rare heal is 6, not 6 ÷ 2.
+      expect(unitById(next, unit.id)).toMatchObject({
+        hp: 7,
+        burn: 0,
+        frozen: false,
+        entangled: false,
+        poisoned: 0,
+        hobbled: 0,
+        bleeding: 0,
+        ward: 3,
+        steadfast: true,
+      });
+      expect(
+        events
+          .filter(
+            (event) =>
+              event._tag === "DebuffsRemoved" || event._tag === "UnitHealed"
+          )
+          .map((event) => event._tag)
+      ).toEqual(["DebuffsRemoved", "UnitHealed"]);
+    });
+
+    it("heals with the value of the Rank, and a Unit with no Debuff gets no DebuffsRemoved event", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["priest.cleanse", 0, "epic"],
+        ["priest.cleanse", 0, "legendary"],
+      ]);
+      const epic = friendAt(state, 2, { hp: 1, maxHp: 20 });
+      const legendary = friendAt(state, 3, { hp: 1, maxHp: 20 });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 2)));
+      expect(unitById(first.state, epic.id)?.hp).toBe(8);
+      expect(eventsOfType(first.events, "DebuffsRemoved")).toEqual([]);
+      const second = run(first.state, play(0, square(0, 3)));
+      expect(unitById(second.state, legendary.id)?.hp).toBe(9);
+    });
+
+    it("lets a Frozen Unit act in the Resolution Phase of the same Turn", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.cleanse", 0, "rare"]]);
+      const unit = friendAt(state, 2, { frozen: true });
+      preventRout(state);
+      const cleansed = run(state, play(0, square(0, 2)));
+      const { events } = run(cleansed.state, Command.EndTurn());
+      expect(eventsOfType(events, "UnitSkipped")).toEqual([]);
+      expect(eventsOfType(events, "UnitMoved")).toEqual([
+        expect.objectContaining({ unitId: unit.id, from: 2, to: 3 }),
+      ]);
+    });
+  });
+
+  describe("Unbroken Vow", () => {
+    it("gives Steadfast with a StatusApplied event, and a new Steadfast on a Steadfast Unit has no effect", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["priest.unbrokenVow", 0, "rare"],
+        ["priest.unbrokenVow", 0, "rare"],
+      ]);
+      const unit = friendAt(state, 2);
+      preventRout(state);
+      const first = run(state, play(0, square(0, 2)));
+      expect(unitById(first.state, unit.id)?.steadfast).toBe(true);
+      expect(eventsOfType(first.events, "StatusApplied")).toEqual([
+        expect.objectContaining({ unitId: unit.id, status: "steadfast" }),
+      ]);
+      const second = run(first.state, play(0, square(0, 2)));
+      expect(unitById(second.state, unit.id)?.steadfast).toBe(true);
+      expect(eventsOfType(second.events, "StatusApplied")).toEqual([]);
+    });
+  });
+
+  describe("Steadfast against Skill Card damage", () => {
+    it("keeps the Unit at 1 HP, and the rest of the effect still applies: a push and Poisoned stacks", () => {
+      const state = emptyBattle({ lanes: 3 });
+      giveHand(state, "player", [
+        ["priest.smite", 0],
+        ["ranger.warningShot", 0],
+        ["ranger.venomArrow", 0, "rare"],
+      ]);
+      const smitten = enemyAt(state, 6, { hp: 2, steadfast: true });
+      const pushed = enemyAt(state, 6, { lane: 1, steadfast: true });
+      const poisoned = enemyAt(state, 6, {
+        lane: 2,
+        hp: 1,
+        steadfast: true,
+      });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, smitten.id)).toMatchObject({
+        hp: 1,
+        steadfast: false,
+      });
+      expect(eventsOfType(first.events, "SteadfastHeld")).toEqual([
+        expect.objectContaining({ unitId: smitten.id }),
+      ]);
+      expect(eventsOfType(first.events, "UnitDied")).toEqual([]);
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, pushed.id)).toMatchObject({
+        hp: 1,
+        position: 8,
+        steadfast: false,
+      });
+      const third = run(second.state, play(0, square(2, 6)));
+      expect(unitById(third.state, poisoned.id)).toMatchObject({
+        hp: 1,
+        poisoned: 3,
+        steadfast: false,
+      });
+    });
+  });
+
+  describe("Aegis of Dawn", () => {
+    it("gives each friendly Unit in the Lane Ward 6 at Epic, keeps a higher Ward, and gives no enemy Unit a Ward", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [["priest.aegisOfDawn", 0, "epic"]]);
+      const a = friendAt(state, 2);
+      const strong = friendAt(state, 3, { ward: 7 });
+      const other = friendAt(state, 2, { lane: 1 });
+      const enemy = enemyAt(state, 6);
+      expect(legalTargets(state, 0)).toEqual([
+        Target.Lane({ lane: 0 }),
+        Target.Lane({ lane: 1 }),
+      ]);
+      const { state: next, events } = run(
+        state,
+        play(0, Target.Lane({ lane: 0 }))
+      );
+      expect(unitById(next, a.id)?.ward).toBe(6);
+      expect(unitById(next, strong.id)?.ward).toBe(7);
+      expect(unitById(next, other.id)?.ward).toBe(0);
+      expect(unitById(next, enemy.id)?.ward).toBe(0);
+      expect(eventsOfType(events, "StatusApplied")).toEqual([
+        expect.objectContaining({ unitId: a.id, status: "ward", count: 6 }),
+      ]);
+    });
+
+    it("gives Ward 8 at Legendary", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.aegisOfDawn", 0, "legendary"]]);
+      const unit = friendAt(state, 2);
+      const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(unitById(next, unit.id)?.ward).toBe(8);
+    });
+  });
+});
+
+describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
+  describe("Call to Arms", () => {
+    it("gives bonus Attack 2 to each friendly Unit in the Lane with Base Attack above 0, not to a Wall, another Lane or an enemy Unit", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [["warrior.callToArms", 0, "rare"]]);
+      const a = friendAt(state, 2);
+      const b = friendAt(state, 3);
+      const wall = placeUnit(state, {
+        cardId: "human.townBarricade",
+        owner: "player",
+        position: 4,
+      });
+      const other = friendAt(state, 2, { lane: 1 });
+      const enemy = enemyAt(state, 8);
+      expect(legalTargets(state, 0)).toEqual([
+        Target.Lane({ lane: 0 }),
+        Target.Lane({ lane: 1 }),
+      ]);
+      const { state: next, events } = run(
+        state,
+        play(0, Target.Lane({ lane: 0 }))
+      );
+      expect(eventsOfType(events, "AttackGained")).toEqual([
+        expect.objectContaining({ unitId: a.id, attack: 2, turns: 2 }),
+        expect.objectContaining({ unitId: b.id, attack: 2, turns: 2 }),
+      ]);
+      expect(unitById(next, wall.id)?.bonusAttack).toBe(0);
+      expect(unitById(next, other.id)?.bonusAttack).toBe(0);
+      expect(unitById(next, enemy.id)?.bonusAttack).toBe(0);
+    });
+
+    it("adds to the attack damage, and lasts until the end of the caster's next Turn", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["warrior.callToArms", 0, "rare"]]);
+      friendAt(state, 2);
+      const unit = friendAt(state, 6);
+      const enemy = enemyAt(state, 7, { hp: 20, maxHp: 20 });
+      preventRout(state);
+      const played = run(state, play(0, Target.Lane({ lane: 0 })));
+      const firstTurn = run(played.state, Command.EndTurn());
+      // Halberdier Attack 4 + 2. The enemy Halberdier retaliates.
+      expect(
+        eventsOfType(firstTurn.events, "DamageDealt").find(
+          (event) =>
+            event.source === "attack" &&
+            event.target._tag === "Unit" &&
+            event.target.unitId === enemy.id
+        )?.amount
+      ).toBe(6);
+      expect(unitById(firstTurn.state, unit.id)).toMatchObject({
+        bonusAttack: 2,
+        bonusAttackTurns: 1,
+      });
+      expect(eventsOfType(firstTurn.events, "AttackFaded")).toEqual([]);
+      const enemyTurn = run(firstTurn.state, Command.EndTurn());
+      expect(unitById(enemyTurn.state, unit.id)?.bonusAttack).toBe(2);
+      const secondTurn = run(enemyTurn.state, Command.EndTurn());
+      expect(unitById(secondTurn.state, unit.id)).toMatchObject({
+        bonusAttack: 0,
+        bonusAttackTurns: 0,
+      });
+      expect(eventsOfType(secondTurn.events, "AttackFaded")).toContainEqual(
+        expect.objectContaining({ unitId: unit.id })
+      );
+    });
+
+    it("resets the bonus and its duration when a new Call to Arms comes", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["warrior.callToArms", 0, "rare"]]);
+      const unit = friendAt(state, 2, { bonusAttack: 2, bonusAttackTurns: 1 });
+      const { state: next, events } = run(
+        state,
+        play(0, Target.Lane({ lane: 0 }))
+      );
+      expect(unitById(next, unit.id)).toMatchObject({
+        bonusAttack: 2,
+        bonusAttackTurns: 2,
+      });
+      expect(eventsOfType(events, "AttackGained")).toHaveLength(1);
+    });
+  });
+
+  describe("Expose Weakness", () => {
+    it("makes an enemy Unit Exposed 2 at Rare, 3 at Epic and 4 at Legendary, and a new Exposed keeps the higher value", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [
+        ["warrior.exposeWeakness", 0, "epic"],
+        ["warrior.exposeWeakness", 0, "rare"],
+        ["warrior.exposeWeakness", 0, "legendary"],
+      ]);
+      friendAt(state, 2);
+      const enemy = enemyAt(state, 6);
+      preventRout(state);
+      expect(legalTargets(state, 0)).toEqual([square(0, 6)]);
+      const epic = run(state, play(0, square(0, 6)));
+      expect(unitById(epic.state, enemy.id)).toMatchObject({
+        exposed: 3,
+        exposedTurns: 2,
+      });
+      expect(eventsOfType(epic.events, "StatusApplied")).toEqual([
+        expect.objectContaining({
+          unitId: enemy.id,
+          status: "exposed",
+          count: 3,
+        }),
+      ]);
+      const rare = run(epic.state, play(0, square(0, 6)));
+      expect(unitById(rare.state, enemy.id)?.exposed).toBe(3);
+      expect(eventsOfType(rare.events, "StatusApplied")).toEqual([]);
+      const legendary = run(rare.state, play(0, square(0, 6)));
+      expect(unitById(legendary.state, enemy.id)?.exposed).toBe(4);
+    });
+
+    it("adds N to each Physical Skill hit after Armor, and not to Holy or Frost damage", () => {
+      const state = emptyBattle({ lanes: 3 });
+      giveHand(state, "player", [
+        ["warrior.spearThrow", 0],
+        ["priest.smite", 0],
+        ["mage.frostBolt", 0],
+      ]);
+      const armored = { bonusArmor: 3, bonusArmorTurns: 2, exposed: 2 };
+      const speared = enemyAt(state, 6, { ...armored, hp: 20, maxHp: 20 });
+      const smitten = enemyAt(state, 6, { lane: 1, ...armored, hp: 20 });
+      const frozen = enemyAt(state, 6, { lane: 2, ...armored, hp: 20 });
+      preventRout(state);
+      const first = run(state, play(0, square(0, 6)));
+      // Spear Throw 4 − Armor 3 + Exposed 2.
+      expect(unitById(first.state, speared.id)?.hp).toBe(17);
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, smitten.id)?.hp).toBe(17);
+      const third = run(second.state, play(0, square(2, 6)));
+      expect(unitById(third.state, frozen.id)?.hp).toBe(20);
+    });
+
+    it("comes before Crit and Block, so a Crit doubles it and a Block halves it", () => {
+      const crit = emptyBattle({ player: { unitCrit: 10_000 } });
+      const critTarget = enemyAt(crit, 6, { hp: 20, exposed: 2 });
+      friendAt(crit, 5);
+      preventRout(crit);
+      const critHit = eventsOfType(
+        run(crit, Command.EndTurn()).events,
+        "DamageDealt"
+      ).find((event) => event.source === "attack");
+      expect(critHit).toMatchObject({ amount: 12, crit: true });
+      expect(critTarget.id).toBeGreaterThan(0);
+
+      const block = emptyBattle({ enemy: { unitBlock: 10_000 } });
+      enemyAt(block, 6, { hp: 20, exposed: 2 });
+      friendAt(block, 5);
+      preventRout(block);
+      const blockHit = eventsOfType(
+        run(block, Command.EndTurn()).events,
+        "DamageDealt"
+      ).find((event) => event.source === "attack");
+      // (4 + 2) ÷ 2.
+      expect(blockHit).toMatchObject({ amount: 3, blocked: true });
+    });
+
+    it("adds N to Retaliate and to Trample damage, and hurts a Wall with high Armor", () => {
+      const state = emptyBattle({ lanes: 2 });
+      // An Exposed attacker takes Retaliate 4 + 2 from a Halberdier.
+      const attacker = friendAt(state, 5, { hp: 20, maxHp: 20, exposed: 2 });
+      enemyAt(state, 6, { hp: 20, maxHp: 20 });
+      // Trample: 10 − 1 HP = 9 left, + Exposed 2 on the second Unit.
+      placeUnit(state, {
+        cardId: "human.halberdier",
+        owner: "player",
+        lane: 1,
+        position: 5,
+        attack: 10,
+        trample: true,
+      });
+      enemyAt(state, 6, { lane: 1, hp: 1 });
+      const behind = enemyAt(state, 7, {
+        lane: 1,
+        hp: 30,
+        maxHp: 30,
+        exposed: 2,
+      });
+      preventRout(state);
+      const { state: next, events } = run(state, Command.EndTurn());
+      expect(
+        eventsOfType(events, "DamageDealt").find(
+          (event) => event.source === "retaliate"
+        )?.amount
+      ).toBe(6);
+      expect(unitById(next, attacker.id)?.hp).toBe(14);
+      expect(unitById(next, behind.id)?.hp).toBe(19);
+
+      const wallState = emptyBattle();
+      giveHand(wallState, "player", [["warrior.spearThrow", 0, "uncommon"]]);
+      const wall = placeUnit(wallState, {
+        cardId: "human.townBarricade",
+        owner: "enemy",
+        position: 6,
+        bonusArmor: 5,
+        bonusArmorTurns: 2,
+        exposed: 2,
+      });
+      const hit = run(wallState, play(0, square(0, 6)));
+      // Spear Throw 5 at Uncommon − Armor 5 + Exposed 2.
+      expect(unitById(hit.state, wall.id)?.hp).toBe(13);
+    });
+
+    it("does not add to Burn or Poison damage, and ends after 2 End Phases of its owner", () => {
+      const state = emptyBattle({ activeSide: "enemy" });
+      const unit = enemyAt(state, 6, {
+        hp: 20,
+        maxHp: 20,
+        poisoned: 2,
+        burn: 2,
+        exposed: 2,
+      });
+      preventRout(state);
+      const first = run(state, Command.EndTurn());
+      // Burn 1 + Poison 2, no Exposed.
+      expect(unitById(first.state, unit.id)).toMatchObject({
+        hp: 17,
+        exposed: 2,
+        exposedTurns: 1,
+      });
+      const second = run(
+        run(first.state, Command.EndTurn()).state,
+        Command.EndTurn()
+      );
+      expect(unitById(second.state, unit.id)).toMatchObject({
+        exposed: 0,
+        exposedTurns: 0,
+      });
+    });
+
+    it("is a Debuff: Cleanse ends it", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.cleanse", 0, "rare"]]);
+      const unit = friendAt(state, 2, { exposed: 3 });
+      const { state: next, events } = run(state, play(0, square(0, 2)));
+      expect(unitById(next, unit.id)).toMatchObject({
+        exposed: 0,
+        exposedTurns: 0,
+      });
+      expect(eventsOfType(events, "DebuffsRemoved")).toHaveLength(1);
+    });
+  });
+
+  describe("Onslaught", () => {
+    it("gives each friendly Unit in the Lane one more action now, from the front Unit to the back Unit", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [["warrior.onslaught", 0, "epic"]]);
+      const back = friendAt(state, 2);
+      const front = friendAt(state, 4);
+      const other = friendAt(state, 2, { lane: 1 });
+      const enemy = enemyAt(state, 6, { hp: 20, maxHp: 20 });
+      preventRout(state);
+      const played = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(
+        played.events
+          .filter(
+            (event) =>
+              event._tag === "UnitMoved" || event._tag === "UnitAttacked"
+          )
+          .map((event) => [event._tag, event.unitId])
+      ).toEqual([
+        ["UnitMoved", front.id],
+        ["UnitAttacked", front.id],
+        ["UnitMoved", back.id],
+      ]);
+      expect(unitById(played.state, other.id)?.position).toBe(2);
+      expect(unitById(played.state, enemy.id)?.hp).toBe(16);
+      // The Resolution Phase still gives the normal action.
+      const resolved = run(played.state, Command.EndTurn());
+      expect(unitById(resolved.state, back.id)?.position).toBe(4);
+      expect(unitById(resolved.state, enemy.id)?.hp).toBe(12);
+    });
+
+    it("is a normal action: it uses up a Freeze and an Entangled, and no Phase effect occurs again", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["warrior.onslaught", 0, "epic"]]);
+      const frozen = friendAt(state, 4, { frozen: true });
+      const entangled = friendAt(state, 2, { entangled: true, rallied: 1 });
+      preventRout(state);
+      const { state: next, events } = run(
+        state,
+        play(0, Target.Lane({ lane: 0 }))
+      );
+      expect(eventsOfType(events, "UnitSkipped")).toEqual([
+        expect.objectContaining({ unitId: frozen.id }),
+      ]);
+      expect(eventsOfType(events, "UnitMoved")).toEqual([]);
+      expect(eventsOfType(events, "UnitsRallied")).toEqual([]);
+      expect(eventsOfType(events, "TurnStarted")).toEqual([]);
+      expect(eventsOfType(events, "TurnEnded")).toEqual([]);
+      expect(unitById(next, frozen.id)?.frozen).toBe(false);
+      expect(unitById(next, entangled.id)).toMatchObject({
+        entangled: false,
+        rallied: 1,
+      });
+    });
+
+    it("gives the action to a Unit summoned in this Turn, with its Charge", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["warrior.onslaught", 0, "epic"]]);
+      // River Knight: Speed 2 + Charge 1 at Uncommon.
+      const knight = placeUnit(state, {
+        cardId: "human.riverKnight",
+        owner: "player",
+        position: 1,
+        rank: "uncommon",
+        summonedTurn: 1,
+      });
+      preventRout(state);
+      const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(unitById(next, knight.id)?.position).toBe(4);
+    });
+
+    it("ends the Battle when an extra attack defeats the enemy Hero, with no Recall roll", () => {
+      const state = emptyBattle({ enemy: { hp: 3 } });
+      giveHand(state, "player", [["warrior.onslaught", 0, "epic"]]);
+      friendAt(state, 11);
+      friendAt(state, 10);
+      const { state: next, events } = run(
+        state,
+        play(0, Target.Lane({ lane: 0 }))
+      );
+      expect(next.result).toEqual({ winner: "player", reason: "heroDefeated" });
+      expect(eventsOfType(events, "RecallRolled")).toEqual([]);
+      expect(eventsOfType(events, "UnitAttacked")).toHaveLength(1);
+    });
+  });
+});
+
 describe("Sabotage (GDD 5.4, ADR-0017)", () => {
   it("adds N to the lowest Countdown in the enemy Hand, with a Battle Event", () => {
     const { before, state, events } = sabotageInto(
