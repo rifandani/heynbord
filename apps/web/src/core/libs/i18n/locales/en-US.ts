@@ -84,6 +84,8 @@ export default {
     levelUp: "Level up! Level {level}",
     cardWon: "Card won: {name}, {rank}.",
     newCardWon: "New card won: {name}, {rank}.",
+    sweepTicketsEarned: "+{count} Sweep Tickets",
+    sweepTicketsEarnedLabel: "Sweep Tickets earned: {count}.",
     retry: "Play Again",
     backToCampaign: "Back to Campaign",
     abandon: {
@@ -306,12 +308,15 @@ export default {
     regionOf: "Region {number} of {count}",
     regions: {
       "1": "Hearthvale",
-      "2": "The Thornwood",
-      "3": "The Hollow Marches",
+      "2": "The Red Mesas",
+      "3": "The Glowcap Hollows",
+      "4": "The Thornwood",
+      "5": "The Hollow Marches",
     },
     previousRegion: "Previous Region: {name}",
     nextRegion: "Next Region: {name}",
     regionLater: "{name} opens later.",
+    regionLocked: "Win Boss Stage {id}, {stage}, to unlock {name}.",
     trail: "Stages",
     marker: {
       done: "Stage {id}, done, {stars} of 3 Stars",
@@ -352,6 +357,25 @@ export default {
       repeatWin: "Repeat win: Coin, XP and a chance of a card from this Stage.",
       deck: "Deck",
       fight: "Fight",
+    },
+    sweep: {
+      label: "Sweep",
+      button: "Sweep ×{count}",
+      tickets: "Tickets: {count}",
+      ticketsLabel: "You have {count} Sweep Tickets.",
+      control: "Sweep Tickets to use",
+      fewer: "Use 1 Ticket less",
+      more: "Use 1 Ticket more",
+      max: "Max",
+      maxLabel: "Use the most Tickets: {count}",
+      noTickets: "Each win that you play gives {count} Sweep Tickets.",
+      resultLabel: "Sweep of {count} Tickets. Each Ticket is a win.",
+      noCard: "No card this time.",
+      cardCopies: "Cards won: {name}, {rank}, {count} copies.",
+      newCardCopies: "New cards won: {name}, {rank}, {count} copies.",
+      ticketsLeft: "Sweep Tickets left: {count}",
+      again: "Sweep Again ×{count}",
+      close: "Close",
     },
   },
   settings: {
@@ -430,6 +454,7 @@ export default {
       "Craft is open in the Workshop. Use Essence to make a copy of a card that you found.",
     battleLog: "Open the Battle Log to see what happened.",
     gear: "Each press upgrades a Gear item by 1 level, for Coin. A level never goes down.",
+    sweep: "Use Sweep Tickets to get the rewards of this Stage at once.",
   },
   handbook: {
     title: "Handbook",
@@ -624,6 +649,7 @@ export default {
       rank: "Rank",
       rankGems: "Rank Gems",
       stars: "Stars",
+      sweep: "Sweep",
       playerLevel: "Player level",
       pack: "Pack",
       workshop: "Workshop",
@@ -726,6 +752,8 @@ export default {
         "Rank Gems are the small diamonds at the top of a card. Count them: 1 gem is Common, 5 gems is Legendary.\n\nEach Rank has a gem color, but the count is enough to read the Rank in a Battle.",
       stars:
         "When you win a Stage, you earn 1 to 3 Stars. A loss gives 0 Stars.\n\nEach Star adds a condition on the one before it. Half of your Hero HP means your Hero has at least 50% of its maximum HP when the Battle ends.\n\nThe Campaign keeps your best Stars for each Stage. The total Stars in a Region open its chests at 10, 20 and 30 Stars.",
+      sweep:
+        "When your best Stars on a Stage are 3, its Stage Panel has a Sweep button. A Sweep uses 1 to {max} Sweep Tickets. Each Ticket gives one repeat-win reward of the Stage at once: Coin, XP and a chance of a card. No Battle occurs, and a Sweep always wins.\n\nThe Class of your Active Deck sets the cards that a Sweep can give. A Sweep never changes your Stars, and it gives no Sweep Tickets.\n\nEach win that you play gives {tickets} Sweep Tickets. A loss gives none. You cannot buy Sweep Tickets.",
       playerLevel:
         "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss.",
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
@@ -789,6 +817,8 @@ export default {
       rank: "rarity, tier, quality",
       rankGems: "pips",
       stars: "score, rating",
+      sweep:
+        "auto battle, quick battle, auto-resolve, raid, skip ticket, raid ticket, farm, repeat",
       playerLevel: "account level, xp",
       coin: "gold, silver, copper, money",
       pack: "booster, card pack, loot box, chest, drop rate, odds",
@@ -1078,9 +1108,10 @@ export default {
     size: "{count} / {max} cards",
     countdownSum: "Countdown {sum} / {limit}",
     sizeMin: "At least {min}",
-    add: "Add {name}, {rank}, Countdown {countdown}. Copies left: {left}.",
+    moreProblems: "And {count} more.",
+    add: "Add {name}, {rank}, Countdown {countdown}. Copies owned: {owned}. Copies left: {left}.",
     remove: "Remove one {name}, {rank}. In this Deck: {count}.",
-    left: "×{count}",
+    left: "{owned} owned · {left} left",
     blocked: {
       none: "All in Deck",
       full: "Deck is full",
@@ -1136,6 +1167,16 @@ export default {
     "1-8": { name: "The Rockfall Pass", enemy: "Pass Warden" },
     "1-9": { name: "The Great Oak", enemy: "The Baron's Lookout" },
     "1-10": { name: "Brassbelly Hall", enemy: "Baron Brassbelly" },
+    "2-1": { name: "The Dust Road", enemy: "Mesa Outrider" },
+    "2-2": { name: "The Scrap Market", enemy: "Junk Haggler" },
+    "2-3": { name: "The Powder Shed", enemy: "Fuse Mistress" },
+    "2-4": { name: "The Junk Wall", enemy: "Gatefixer Grub" },
+    "2-5": { name: "Sniper's Ridge", enemy: "Spyglass Sniper" },
+    "2-6": { name: "The Fighting Pit", enemy: "Pit Boss" },
+    "2-7": { name: "The War Drum Camp", enemy: "Drum Shaman" },
+    "2-8": { name: "The Cave-in", enemy: "Tunnel Foreman" },
+    "2-9": { name: "The Mine Mouth", enemy: "Snikkit's Lookout" },
+    "2-10": { name: "Snikkit's Throne Hall", enemy: "Boss Snikkit" },
   },
   classes: {
     warrior: "Warrior",
@@ -1250,6 +1291,8 @@ export default {
   },
   effects: {
     damageUnit: "Deal {amount} {damageType} damage to an enemy Unit.",
+    damageUnitNoRebirth:
+      "{hit} If it dies, it does not come back with Rebirth.",
     damageArea:
       "Deal {amount} {damageType} damage to an enemy Unit and the next {extra} Square behind it.",
     damageLane:

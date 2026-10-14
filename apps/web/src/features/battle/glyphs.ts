@@ -292,6 +292,12 @@ export const GLYPHS = {
    */
   scroll:
     "M-33 -47 H33 A7 7 0 0 1 33 -33 H-33 A7 7 0 0 1 -33 -47 Z M-28 -30 H28 V31 H-28 Z M-18 -19 H18 V-13 H-18 Z M-18 -5 H18 V1 H-18 Z M-18 9 H6 V15 H-18 Z M-33 34 H33 A7 7 0 0 1 33 48 H-33 A7 7 0 0 1 -33 34 Z",
+  /**
+   * A Sweep Ticket: a ticket stub with a round notch in each end, a line of
+   * holes to tear it, and a star. Fill only: the holes and the star are cut.
+   */
+  ticket:
+    "M-40 -28 H40 Q46 -28 46 -22 V-8 A8 8 0 0 0 46 8 V22 Q46 28 40 28 H-40 Q-46 28 -46 22 V8 A8 8 0 0 0 -46 -8 V-22 Q-46 -28 -40 -28 Z M-23 -20 H-17 V-12 H-23 Z M-23 -4 H-17 V4 H-23 Z M-23 12 H-17 V20 H-23 Z M12 -15 L15.8 -5.2 L26.3 -4.6 L18.2 2.1 L20.8 12.1 L12 6.5 L3.2 12.1 L5.8 2.1 L-2.3 -4.6 L8.2 -5.2 Z",
   /** Play in the Battle Log. */
   play: "M-24 -38 L38 0 L-24 38 Z",
   pause: "M-32 -38 H-10 V38 H-32 Z M10 -38 H32 V38 H10 Z",
@@ -315,6 +321,7 @@ export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
   "skillCard",
   "wall",
   "scroll",
+  "ticket",
 ]);
 
 /**

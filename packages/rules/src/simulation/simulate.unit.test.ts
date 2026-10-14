@@ -184,7 +184,7 @@ describe("simulateMatchup (GDD 13, steps 4 and 5)", () => {
     });
     const { player, enemy } = state.sides;
     expect({ ...enemy.hero, classId: "warrior" }).toEqual(player.hero);
-    expect(player.hero.maxHp).toBe(30 + 5 + 2 * 2);
+    expect(player.hero.maxHp).toBe(30 + 5 + 2);
     expect(enemy.hero.classId).toBe("mage");
     expect(state.lanes).toBe(STAGE_LANES);
     expect(state.closedLanes).toEqual([]);
@@ -203,17 +203,20 @@ const archetype = (id: string) => {
 describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
   it("plays each diagnostic Archetype against each main Archetype with no illegal Command", () => {
     for (const diagnostic of [
-      "tunnelRats",
-      "wildHunt",
-      "thornwatch",
-      "deathlessHost",
       "breakneckCompany",
       "vanguardFull",
       "raidersFull",
       "humanHeavy",
       "humanLight",
     ]) {
-      for (const main of ["vanguard", "raiders"]) {
+      for (const main of [
+        "vanguard",
+        "raiders",
+        "tunnelRats",
+        "wildHunt",
+        "thornwatch",
+        "deathlessHost",
+      ]) {
         const report = simulateMatchup(
           archetype(diagnostic),
           archetype(main),
@@ -251,14 +254,21 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
       true
     );
     expect(gatesRelease(archetype("vanguard"), archetype("tunnelRats"))).toBe(
-      false
+      true
     );
+    expect(
+      gatesRelease(archetype("thornwatch"), archetype("deathlessHost"))
+    ).toBe(true);
+    // Wild Hunt is main after the tuning of issue #80 (Archetypes 3.1).
     expect(gatesRelease(archetype("wildHunt"), archetype("raiders"))).toBe(
-      false
+      true
     );
     expect(gatesRelease(archetype("tunnelRats"), archetype("wildHunt"))).toBe(
-      false
+      true
     );
+    expect(
+      gatesRelease(archetype("wildHunt"), archetype("breakneckCompany"))
+    ).toBe(false);
     expect(
       gatesRelease(archetype("vanguardFull"), archetype("raidersFull"))
     ).toBe(false);
@@ -306,7 +316,7 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
       simulateMatchup(vanguardArchetype, raidersArchetype, {
         seeds: 20,
         level: 5,
-        gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
+        gear: { weapon: 6, armor: 6, trinket: 6, banner: 6 },
       })
     ).toMatchObject({
       winRate: 0.45,
@@ -318,11 +328,26 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
 
 describe("win-rate targets (GDD 13)", () => {
   it("gives the Region 1 ramp, normal Stages and the Boss Stage their targets", () => {
-    expect(STAGES.map((stage) => stageTarget(stage))).toEqual([
+    expect(
+      STAGES.filter((stage) => stage.region === 1).map((stage) =>
+        stageTarget(stage)
+      )
+    ).toEqual([
       { min: 0.95, max: 1 },
       { min: 0.85, max: 1 },
       { min: 0.75, max: 1 },
       ...Array.from({ length: 6 }, () => ({ min: 0.6, max: 0.8 })),
+      { min: 0.3, max: 0.5 },
+    ]);
+  });
+
+  it("gives Region 2 no ramp: 9 normal Stages and the Boss Stage", () => {
+    expect(
+      STAGES.filter((stage) => stage.region === 2).map((stage) =>
+        stageTarget(stage)
+      )
+    ).toEqual([
+      ...Array.from({ length: 9 }, () => ({ min: 0.6, max: 0.8 })),
       { min: 0.3, max: 0.5 },
     ]);
   });

@@ -74,7 +74,7 @@ export const jokePromptsOf = (region: RegionArt): string[] =>
  * The first message of the ChatGPT conversation for one Battle Painting, with
  * the style reference and (after the first Region) the set reference
  * attached. The rules come from section 1 of the Battlefield Concepts. The
- * open ground is the box of 1.2, in the 3:2 image.
+ * open ground is the box of 1.3, in the 3:2 image.
  */
 export const battleSetupPromptOf = (
   region: RegionArt,

@@ -2,8 +2,8 @@ import { absurd } from "effect";
 
 import type { StageDefinition } from "./schema";
 
-/** The Coin of a normal win in Regions 1, 2 and 3, in Copper (Economy 2.1). */
-export const CAMPAIGN_WIN_COIN = [60, 100, 150] as const;
+/** The Coin of a normal win in Regions 1 to 5, in Copper (Economy 2.1). */
+export const CAMPAIGN_WIN_COIN = [60, 100, 150, 200, 250] as const;
 
 /** The result of a Stage Battle for its rewards. */
 export type StageOutcome = "firstWin" | "win" | "loss";

@@ -569,6 +569,7 @@ const applyHit = (
       source: "skill",
       dealer: heroDealer(side),
       crit,
+      noRebirth: effect.type === "damageUnit" && effect.noRebirth === true,
     });
   }
   if (

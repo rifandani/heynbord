@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { exportProfile, importProfile } from "./export";
 import { newProfile } from "./new-profile";
+import { PROFILE_SCHEMA_VERSION } from "./schema";
 import type { Profile } from "./schema";
 
 const played: Profile = {
@@ -13,6 +14,7 @@ const played: Profile = {
   stageResults: { "1-1": 3, "1-2": 2 },
   claimedStarChests: { 1: [10] },
   unopenedPacks: [{ pack: "merchant", version: "race" }],
+  sweepTickets: 4,
   seenHints: ["stagePanel"],
 };
 
@@ -66,7 +68,7 @@ describe("exportProfile and importProfile", () => {
   });
 
   it("refuses a version that is newer than this build", () => {
-    expect(reason(fileOf(2))).toBe("NewerVersion");
+    expect(reason(fileOf(PROFILE_SCHEMA_VERSION + 1))).toBe("NewerVersion");
   });
 
   it("refuses a Profile that the Schema does not decode", () => {

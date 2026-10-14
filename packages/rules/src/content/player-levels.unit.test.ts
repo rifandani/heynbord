@@ -58,7 +58,7 @@ describe("first-win XP (Economy 2.1)", () => {
   });
 
   it("throws for a Region with no XP value", () => {
-    expect(() => firstWinXp({ ...getStage("1-1"), region: 4 })).toThrow(
+    expect(() => firstWinXp({ ...getStage("1-1"), region: 6 })).toThrow(
       "Unknown Region"
     );
   });
@@ -75,9 +75,19 @@ describe("outcomeXp (Economy 2.1, 2.4)", () => {
 
 describe("First-try Path", () => {
   it("gives the Region 1 Stages the levels 1, 1, 2, 2, 3, 3, 4, 4, 5, 5", () => {
-    expect(STAGES.map((stage) => firstTryPathLevel(stage))).toEqual([
-      1, 1, 2, 2, 3, 3, 4, 4, 5, 5,
-    ]);
+    expect(
+      STAGES.filter((stage) => stage.region === 1).map((stage) =>
+        firstTryPathLevel(stage)
+      )
+    ).toEqual([1, 1, 2, 2, 3, 3, 4, 4, 5, 5]);
+  });
+
+  it("gives the Region 2 Stages the levels 6, 6, 7, 7, 7, 8, 8, 8, 9, 9", () => {
+    expect(
+      STAGES.filter((stage) => stage.region === 2).map((stage) =>
+        firstTryPathLevel(stage)
+      )
+    ).toEqual([6, 6, 7, 7, 7, 8, 8, 8, 9, 9]);
   });
 
   it("counts the first wins of the Stages before the given Stage only", () => {

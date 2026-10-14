@@ -27,7 +27,11 @@ const SWAP_DECKS: Readonly<Record<ClassId, string>> = {
   priest: "wildHunt",
 };
 
-/** The opponents of the swap: the two release-gated Archetypes. */
+/**
+ * The opponents of the swap: Vanguard and Raiders, the first two main
+ * Archetypes. The swap keeps them after the promotion of other main
+ * Archetypes (issue #68), so that the swap results stay comparable.
+ */
 const SWAP_OPPONENTS: readonly string[] = ["vanguard", "raiders"];
 
 /** The largest change of a win rate that passes, from 0 to 1. */

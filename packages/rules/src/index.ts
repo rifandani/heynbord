@@ -249,6 +249,7 @@ export {
   FIRST_PACK,
   REPEAT_WIN_CARD_CHANCE,
   stageCardPool,
+  SWEEP_TICKETS_PER_WIN,
 } from "./profile/stage-result";
 export type {
   StageResult,
@@ -256,8 +257,15 @@ export type {
   StageRewardCard,
   StageRewards,
 } from "./profile/stage-result";
+export {
+  isRegionUnlocked,
+  newestUnlockedRegion,
+  unlockingBossStage,
+} from "./profile/regions";
 export { claimStarChest, regionStars } from "./profile/star-chests";
 export type { StarChestClaim } from "./profile/star-chests";
+export { applySweep, MAX_SWEEP_TICKETS } from "./profile/sweep";
+export type { SweepInput, SweepResult, SweepRewards } from "./profile/sweep";
 export {
   combine,
   combineCopies,

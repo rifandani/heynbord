@@ -290,7 +290,15 @@ const mageEffectText = (
 const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
   const { effect } = card;
   switch (effect.type) {
-    case "damageUnit":
+    case "damageUnit": {
+      if (effect.noRebirth) {
+        return {
+          key: "effects.damageUnitNoRebirth",
+          args: { hit: hitText(effect, rank) },
+        };
+      }
+      return hitText(effect, rank);
+    }
     case "damageLane":
     case "damageEntangle":
     case "damageLaneEntangle":

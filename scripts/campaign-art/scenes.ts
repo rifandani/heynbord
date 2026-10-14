@@ -25,6 +25,18 @@ export const SCENE = new Map<string, Scene>(
       clearing: "short grass",
       boss: "on the hill, a big fortified wooden hall with a palisade, with a roof in the shape of a giant hat with a feather",
     },
+    "red-mesas": {
+      land: "a dry land of red flat-topped mesas and deep canyons, with scrap piles, rail tracks and small orc camps",
+      road: "one dusty clay road, then plank walkways along a canyon, then a ramp up the largest mesa",
+      clearing: "flat dusty clay",
+      boss: "cut into the largest mesa, a goblin mine hall with a gate of scrap and a huge bucket crown on top",
+    },
+    "glowcap-hollows": {
+      land: "deep, wide green hollows between steep hills, full of giant glowing mushrooms, roots and small glowing pools",
+      road: "one mine track out of a tunnel at the bottom left, then a path of moss and roots, then steps of shelf fungus",
+      clearing: "soft moss",
+      boss: "in a ring of giant mushrooms, an elf grove hall with a roof of mushroom caps and soft light in the windows",
+    },
     thornwood: {
       land: "a deep old forest of giant trees, moss and thorn hedges, seen from above, with small open glades",
       road: "one mossy forest road of roots",
@@ -32,7 +44,7 @@ export const SCENE = new Map<string, Scene>(
       boss: "on the hill, a huge old tree giant asleep on a mound of brambles, with a sleepy face in the bark and one eye half open",
     },
     "hollow-marches": {
-      land: "wide misty marshes with reeds, pools, old dead trees and a few dry hills",
+      land: "wide misty marshes with reeds, pools, frozen bog pools, old dead trees and a few icy hills",
       road: "one road of old stones at the bottom left, then wooden boardwalks over the water, then a stone causeway to the island",
       clearing: "dry grass",
       boss: "on an island, a castle of pale bone-white stone with thin towers, violet banners and soft green light in the windows",

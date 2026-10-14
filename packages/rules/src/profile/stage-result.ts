@@ -17,6 +17,9 @@ import type { Profile, UnopenedPack } from "./schema";
 /** The chance of a card from a repeat win, in basis points (Economy 2.1). */
 export const REPEAT_WIN_CARD_CHANCE = 2000;
 
+/** The Sweep Tickets that each played win gives (ADR-0035). The M3 re-tune can change it. */
+export const SWEEP_TICKETS_PER_WIN = 2;
+
 /** The First Pack: the Unopened Pack that the Packs unlock gives (Economy 3.1). */
 export const FIRST_PACK: UnopenedPack = { pack: "peddler", version: "all" };
 
@@ -62,6 +65,8 @@ export interface StageRewards {
   readonly card: StageRewardCard | null;
   /** The Unopened Packs that the result added: the First Pack at the Packs unlock. */
   readonly unopenedPacks: readonly UnopenedPack[];
+  /** The Sweep Tickets that the result added: 2 for a win, 0 for a loss. */
+  readonly sweepTickets: number;
 }
 
 export interface StageResult<P> {
@@ -77,8 +82,21 @@ type StageResultProfile = Pick<
   | "collection"
   | "stageResults"
   | "unopenedPacks"
+  | "sweepTickets"
   | "rewardRandomState"
 >;
+
+/** The Stage of `stageId`. It throws for an unknown Stage. */
+export const findStage = (
+  stages: readonly StageDefinition[],
+  stageId: string
+): StageDefinition => {
+  const stage = stages.find((candidate) => candidate.id === stageId);
+  if (stage === undefined) {
+    throw new Error(`Unknown Stage: ${stageId}`);
+  }
+  return stage;
+};
 
 /**
  * The card of a win, and the reward random state after it. A first win gives
@@ -110,22 +128,72 @@ const winCard = (
   return [{ cardId, rank: getCard(cardId).baseRank }, cursor.state];
 };
 
+/** The XP, Coin and card of one outcome of a Stage. */
+export interface OutcomeRewards {
+  readonly xp: number;
+  /** In Copper. */
+  readonly coin: number;
+  readonly card: DeckEntry | null;
+  /** The reward random state after the card roll. */
+  readonly rewardRandomState: number;
+}
+
+/**
+ * The XP, Coin and card of one outcome of `stage` (Economy 2.1). A Stage
+ * result and each Ticket of a Sweep use it.
+ */
+export const outcomeRewards = (
+  stage: StageDefinition,
+  outcome: StageOutcome,
+  classId: ClassId,
+  rewardRandomState: number
+): OutcomeRewards => {
+  const [card, nextState] = winCard(stage, outcome, classId, rewardRandomState);
+  return {
+    xp: stageXp(stage, outcome),
+    coin: stageCoin(stage, outcome),
+    card,
+    rewardRandomState: nextState,
+  };
+};
+
+/**
+ * The levels before and after an XP change, and the Unopened Packs that it
+ * gives: the First Pack when the level goes to the Packs unlock.
+ */
+export const levelUp = (xpBefore: number, xpAfter: number) => {
+  const levelBefore = playerLevelForXp(xpBefore);
+  const levelAfter = playerLevelForXp(xpAfter);
+  const unopenedPacks: readonly UnopenedPack[] =
+    !isUnlocked(levelBefore, "packs") && isUnlocked(levelAfter, "packs")
+      ? [FIRST_PACK]
+      : [];
+  return { levelBefore, levelAfter, unopenedPacks };
+};
+
+/** A reward card, with `isNew` when `collection` has not Discovered it. */
+export const rewardCard = (
+  card: DeckEntry,
+  collection: Profile["collection"]
+): StageRewardCard => ({
+  ...card,
+  isNew: !discoveredCards(collection).has(card.cardId),
+});
+
 /**
  * Applies the result of a Stage Battle (Economy 2.1). A win of a Stage with no
  * result is a first win, any other win is a repeat win. It gives the XP and
  * the Coin of the outcome, keeps the best Stars of a win, gives the card of a
- * win, and adds the First Pack when the level goes to the Packs unlock. An
- * Abandon and a Battle that is not finished never call it.
+ * win and the Sweep Tickets of a win (ADR-0035), and adds the First Pack when
+ * the level goes to the Packs unlock. An Abandon and a Battle that is not
+ * finished never call it.
  */
 export const applyStageResult = <P extends StageResultProfile>(
   profile: P,
   input: StageResultInput,
   stages: readonly StageDefinition[] = STAGES
 ): StageResult<P> => {
-  const stage = stages.find((candidate) => candidate.id === input.stageId);
-  if (stage === undefined) {
-    throw new Error(`Unknown Stage: ${input.stageId}`);
-  }
+  const stage = findStage(stages, input.stageId);
   const bestStars = profile.stageResults[stage.id];
   if (
     input.won &&
@@ -137,20 +205,17 @@ export const applyStageResult = <P extends StageResultProfile>(
   if (input.won) {
     outcome = bestStars === undefined ? "firstWin" : "win";
   }
-  const xp = stageXp(stage, outcome);
-  const coin = stageCoin(stage, outcome);
-  const levelBefore = playerLevelForXp(profile.xp);
-  const levelAfter = playerLevelForXp(profile.xp + xp);
-  const unopenedPacks =
-    !isUnlocked(levelBefore, "packs") && isUnlocked(levelAfter, "packs")
-      ? [FIRST_PACK]
-      : [];
-  const [card, rewardRandomState] = winCard(
+  const { xp, coin, card, rewardRandomState } = outcomeRewards(
     stage,
     outcome,
     input.classId,
     profile.rewardRandomState
   );
+  const { levelBefore, levelAfter, unopenedPacks } = levelUp(
+    profile.xp,
+    profile.xp + xp
+  );
+  const sweepTickets = input.won ? SWEEP_TICKETS_PER_WIN : 0;
   const stageResults = input.won
     ? {
         ...profile.stageResults,
@@ -167,6 +232,7 @@ export const applyStageResult = <P extends StageResultProfile>(
         : profile.collection,
       stageResults,
       unopenedPacks: [...profile.unopenedPacks, ...unopenedPacks],
+      sweepTickets: profile.sweepTickets + sweepTickets,
       rewardRandomState,
     },
     rewards: {
@@ -175,13 +241,9 @@ export const applyStageResult = <P extends StageResultProfile>(
       coin,
       levelBefore,
       levelAfter,
-      card: card
-        ? {
-            ...card,
-            isNew: !discoveredCards(profile.collection).has(card.cardId),
-          }
-        : null,
+      card: card ? rewardCard(card, profile.collection) : null,
       unopenedPacks,
+      sweepTickets,
     },
   };
 };

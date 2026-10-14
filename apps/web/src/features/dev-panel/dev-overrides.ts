@@ -23,6 +23,7 @@ const DevOverrides = Schema.Struct({
       heynstones: Schema.Number,
     })
   ),
+  sweepTickets: Schema.optionalKey(Schema.Number),
   xp: Schema.optionalKey(Schema.Number),
   gear: Schema.optionalKey(
     Schema.Struct({
@@ -94,6 +95,9 @@ export const toOverlay = (overrides: DevOverrides): ProfileOverlay | null => {
   if (overrides.stageResults !== undefined) {
     overlay.stageResults = overrides.stageResults;
   }
+  if (overrides.sweepTickets !== undefined) {
+    overlay.sweepTickets = overrides.sweepTickets;
+  }
   if (overrides.xp !== undefined) {
     overlay.xp = overrides.xp;
   }
@@ -119,6 +123,9 @@ export const fromOverlay = (
   }
   if (coin !== undefined && essence !== undefined && heynstones !== undefined) {
     overrides.balances = { coin, essence, heynstones };
+  }
+  if (overlay.sweepTickets !== undefined) {
+    overrides.sweepTickets = overlay.sweepTickets;
   }
   if (overlay.xp !== undefined) {
     overrides.xp = overlay.xp;

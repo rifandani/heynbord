@@ -69,7 +69,7 @@ export const HEYNSTONE_SOURCES: readonly HeynstoneSource[] = [
   },
 ];
 
-/** The total Heynstones of all one-time sources: about 1,700 (Economy 2.6). */
+/** The total Heynstones of all one-time sources: about 2,000 (Economy 2.6). */
 export const HEYNSTONE_SUPPLY = HEYNSTONE_SOURCES.reduce(
   (sum, source) => sum + source.heynstones,
   0

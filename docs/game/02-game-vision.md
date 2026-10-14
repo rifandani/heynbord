@@ -96,7 +96,7 @@ The tone is like a classic adventure story. It is colorful and heroic, and chara
 
 v1 includes:
 
-- A campaign of 3 regions with about 30 stages and 3 bosses.
+- A campaign of 5 regions with 50 stages and 5 bosses.
 - **Heynspire** (draft name): a tower of 50 floors for the endgame.
 - 3 **Dungeons**: Battles against 2 or 3 bosses at the same time, which unlock at player level 10, 20 and 30.
 - 130 Cards: 90 Creature Cards across 6 Races, 40 Skill Cards across 4 Classes, and 5 Ranks.

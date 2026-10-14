@@ -6,13 +6,14 @@ import { useContext, useEffect } from "react";
 
 import type { BattleSession } from "@/features/battle/battle-session";
 import { collectionAtom, deckSlotsAtom } from "@/features/deck/deck.atoms";
-import { HINT_ANCHOR } from "@/features/hint/components/hint-banner";
+import { hintAnchor } from "@/features/hint/components/hint-banner";
 import type { HintId } from "@/features/hint/hint";
 import {
   battleHints,
   hasCardOutOfDecks,
   HINT_PLACE,
   isBattleLogHintMet,
+  isSweepHintMet,
   nextHint,
 } from "@/features/hint/hint";
 import { seenHintsAtom, shownHintAtom } from "@/features/hint/hint.atoms";
@@ -93,7 +94,7 @@ const useAnchoredHint = (hint: HintId, met: boolean) => {
       if (registry.get(seenHintsAtom).includes(hint)) {
         return;
       }
-      const anchor = document.querySelector(HINT_ANCHOR[HINT_PLACE[hint]]);
+      const anchor = document.querySelector(hintAnchor(HINT_PLACE[hint]));
       if (anchor !== null && !dialogCovers(anchor)) {
         showNext(registry, [hint]);
       }
@@ -184,4 +185,15 @@ export const useResultHints = (result: BattleResult, tutorial: boolean) => {
   const lost = isBattleLogHintMet({ result, tutorial });
   useAnchoredHint("battleLog", lost);
   useCloseWhenInactive("battleLog", lost);
+};
+
+/**
+ * The Sweep Hint (GDD 8.3): the first time that the Stage Panel shows a Stage
+ * with 3 best Stars. It shows near the Sweep button, and it closes when the
+ * Stage Panel closes or shows the Sweep Result: its anchor goes away.
+ */
+export const useStagePanelHints = (stars: number | null) => {
+  const met = stars !== null && isSweepHintMet(stars);
+  useAnchoredHint("sweep", met);
+  useCloseWhenInactive("sweep", met);
 };

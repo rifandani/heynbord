@@ -23,13 +23,7 @@ export const HERO_ART_FILE: Readonly<Record<HeroArt, string>> = {
  * badge for an icon. Remove an ID when its WebP file is in `public/`: a unit
  * test checks the files.
  */
-export const UNPAINTED_HERO_ART: ReadonlySet<HeroArt> = new Set<HeroArt>([
-  "barracksInside",
-  "weapon",
-  "armor",
-  "trinket",
-  "banner",
-]);
+export const UNPAINTED_HERO_ART: ReadonlySet<HeroArt> = new Set<HeroArt>();
 
 /** The painted file of `art`, or `null` while it shows its code fallback. */
 export const heroArt = (art: HeroArt): string | null =>

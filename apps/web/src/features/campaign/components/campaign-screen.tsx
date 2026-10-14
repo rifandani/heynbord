@@ -1,5 +1,6 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
 import { regionStars, STAGES } from "@workspace/rules";
+import { cn } from "cn";
 import type { CSSProperties, RefObject } from "react";
 import {
   useEffect,
@@ -34,8 +35,9 @@ import type {
 import {
   MAP,
   mapFrame,
-  regionMap,
   regionStarTotal,
+  shownRegionMap,
+  smoothPath,
   trailStages,
   walkedLegs,
 } from "@/features/campaign/region-map";
@@ -158,7 +160,36 @@ const useAwakenedStage = (trail: readonly TrailStage[]) => {
 const preloadBattleCanvas = () =>
   import("@/features/battle/scene/battle-canvas");
 
-/** The painted map, the Trail and the Stage Markers. */
+/** The calm ground of a Region with no painting yet: no landmarks, only light. */
+const PLACEHOLDER_GROUND =
+  "bg-[radial-gradient(ellipse_at_50%_40%,#8a9a74,#5d6c51_60%,#3f4a38)]";
+
+/**
+ * The placeholder of a Region Map with no painting: a soft road under the
+ * Trail, so that the progress line does not float on the plain ground.
+ */
+const PlaceholderRoad = ({ map }: { readonly map: RegionMap }) => (
+  <svg
+    viewBox={`0 0 ${MAP.width} ${MAP.height}`}
+    className="pointer-events-none absolute inset-0 size-full"
+    aria-hidden
+  >
+    <path
+      d={map.legs.map((leg) => smoothPath(leg)).join(" ")}
+      fill="none"
+      stroke="rgba(226,204,156,0.3)"
+      strokeWidth={44}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/**
+ * The painted map, the Trail and the Stage Markers. A Region with no
+ * painting yet shows the placeholder: a plain ground with the Trail. A Region
+ * with no Stages yet shows only the ground.
+ */
 const RegionCanvas = ({
   map,
   trail,
@@ -178,9 +209,16 @@ const RegionCanvas = ({
   const viewport = useViewport(root);
   const frame = mapFrame(map, viewport);
   const { scale } = frame;
-  return (
-    <>
-      {/* The backdrop: the same painting, soft, behind any side that the map does not cover. */}
+  // The backdrop: the same painting, soft, behind any side that the map does
+  // not cover. A Region with no painting has the plain ground there.
+  const backdrop =
+    map.image === null ? (
+      <div
+        className={cn("absolute inset-0", PLACEHOLDER_GROUND)}
+        data-testid="region-placeholder"
+        aria-hidden
+      />
+    ) : (
       <img
         src={map.image}
         alt=""
@@ -188,6 +226,13 @@ const RegionCanvas = ({
         className="absolute inset-0 size-full scale-110 object-cover blur-2xl brightness-[0.72] saturate-[0.9] select-none"
         aria-hidden
       />
+    );
+  if (trail.length === 0) {
+    return backdrop;
+  }
+  return (
+    <>
+      {backdrop}
       <div
         className="absolute"
         style={{
@@ -198,12 +243,16 @@ const RegionCanvas = ({
           ...paintingMask(frame, viewport),
         }}
       >
-        <img
-          src={map.image}
-          alt=""
-          draggable={false}
-          className="absolute inset-0 size-full select-none"
-        />
+        {map.image === null ? (
+          <PlaceholderRoad map={map} />
+        ) : (
+          <img
+            src={map.image}
+            alt=""
+            draggable={false}
+            className="absolute inset-0 size-full select-none"
+          />
+        )}
         <TrailLine map={map} walked={walkedLegs(trail)} />
       </div>
       <nav
@@ -235,13 +284,16 @@ const RegionCanvas = ({
 /**
  * The Campaign screen (GDD 11.5, web ADR-0008): the Region Map painting with
  * the Trail, a Stage Marker on each clearing, the Region name and the Star
- * chests. A Done or Open Stage Marker opens the Stage Panel.
+ * chests. A Done or Open Stage Marker opens the Stage Panel. The Region
+ * arrows open the other Regions.
  */
 export const CampaignScreen = ({
-  region = 1,
+  region,
+  onRegion,
   onStart,
 }: {
-  readonly region?: number;
+  readonly region: number;
+  readonly onRegion: (region: number) => void;
   readonly onStart: (options: BattleOptions) => void;
 }) => {
   const { tr } = useGameText();
@@ -255,7 +307,7 @@ export const CampaignScreen = ({
   const [selected, setSelected] = useState<string | null>(null);
   const root = useRef<HTMLElement>(null);
   const marker = useRef<Element | null>(null);
-  const map = regionMap(region);
+  const map = shownRegionMap(region);
   const panelStop = trail.find((stop) => stop.stage.id === selected) ?? null;
 
   useEffect(() => {
@@ -277,17 +329,23 @@ export const CampaignScreen = ({
       className="fade-in animate-in fixed inset-0 overflow-hidden bg-[#9fcbe8] duration-300 motion-reduce:animate-none"
       data-testid="campaign"
     >
-      {map ? (
-        <RegionCanvas
-          map={map}
-          trail={trail}
-          selected={selected}
-          awaken={awaken}
-          onOpen={open}
-          root={root}
-        />
-      ) : null}
-      <RegionBanner region={region} />
+      {/* A new Region mounts a new canvas, so its Stage Markers rise again. */}
+      <RegionCanvas
+        key={region}
+        map={map}
+        trail={trail}
+        selected={selected}
+        awaken={awaken}
+        onOpen={open}
+        root={root}
+      />
+      <RegionBanner
+        region={region}
+        onRegion={(next) => {
+          setSelected(null);
+          onRegion(next);
+        }}
+      />
       <StarChests
         region={region}
         count={stars}

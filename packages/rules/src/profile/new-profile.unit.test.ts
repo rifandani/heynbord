@@ -32,11 +32,12 @@ describe("newProfile", () => {
     expect(profile.activeDeckId).toBe(INITIAL_DECK_SLOTS[0]?.id);
   });
 
-  it("has no Stage results, Star chests, Unopened Packs or seen Hints", () => {
+  it("has no Stage results, Star chests, Unopened Packs, Sweep Tickets or seen Hints", () => {
     const profile = newProfile(42);
     expect(profile.stageResults).toEqual({});
     expect(profile.claimedStarChests).toEqual({});
     expect(profile.unopenedPacks).toEqual([]);
+    expect(profile.sweepTickets).toBe(0);
     expect(profile.seenHints).toEqual([]);
     expect(profile.packState.guaranteeCounters).toEqual({
       peddler: 0,

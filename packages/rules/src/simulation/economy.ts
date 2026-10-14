@@ -85,9 +85,10 @@ const LEVEL_WIN_BONUS = 0.005;
 /**
  * The win chance that each mean Gear level adds. Measured one time with
  * `sim stage --gear N` on Region 1 with Vanguard: about +2.5 points for each
- * level (Economy 7.1).
+ * old level, and a level is half of an old level (ADR-0037), so +1.25 points
+ * (Economy 7.1).
  */
-const GEAR_WIN_BONUS = 0.025;
+const GEAR_WIN_BONUS = 0.0125;
 
 /** The level and Gear bonuses do not raise a win chance above this. */
 const WIN_CHANCE_CAP = 0.95;
@@ -191,6 +192,8 @@ export type CheckpointId =
   | "region1"
   | "region2"
   | "region3"
+  | "region4"
+  | "region5"
   | "floor50"
   | "level30";
 
@@ -198,6 +201,8 @@ export const CHECKPOINTS: readonly CheckpointId[] = [
   "region1",
   "region2",
   "region3",
+  "region4",
+  "region5",
   "floor50",
   "level30",
 ];
@@ -207,6 +212,8 @@ const REGION_CHECKPOINTS: readonly CheckpointId[] = [
   "region1",
   "region2",
   "region3",
+  "region4",
+  "region5",
 ];
 
 /** A range target. `null` ends are open. */
@@ -225,7 +232,7 @@ interface PacingTarget {
   /** From 0 to 1. */
   readonly discoveredShare?: RangeTarget;
   readonly legendaryCopies?: RangeTarget;
-  /** "Gear mostly at level 7 or higher": the lowest Gear item. */
+  /** "Gear mostly at level 14 or higher": the lowest Gear item. */
   readonly lowestGear?: RangeTarget;
 }
 
@@ -249,12 +256,15 @@ export const PACING_TARGETS: Readonly<Record<CheckpointId, PacingTarget>> = {
     packsOpened: { min: 25, max: 35 },
     discoveredShare: { min: 0.6, max: 0.75 },
   },
+  // Draft targets of ADR-0036: check them with the economy sim.
+  region4: { hours: { min: 10, max: 18 }, level: 20 },
+  region5: { hours: { min: 13, max: 22 }, level: 23 },
   floor50: {
-    hours: { min: 22.5, max: 37.5 },
-    level: 24,
+    hours: { min: 26.25, max: 43.75 },
+    level: 28,
     discoveredShare: { min: 1, max: 1 },
     legendaryCopies: { min: 3, max: 6 },
-    lowestGear: { min: 7, max: null },
+    lowestGear: { min: 14, max: null },
   },
   // 1 to 2 weeks of play: Economy 4 gives no hours.
   level30: { level: 30 },
@@ -357,9 +367,10 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
 const poolCards = (): readonly CardDefinition[] =>
   packPool(ALL_CARDS, HERO_CLASS);
 
-const meanGear = (player: EconomyPlayer): number =>
-  GEAR_SLOTS.reduce((total, slot) => total + player.gear[slot], 0) /
-  GEAR_SLOTS.length;
+const meanOf = (gear: GearLevels): number =>
+  GEAR_SLOTS.reduce((total, slot) => total + gear[slot], 0) / GEAR_SLOTS.length;
+
+const meanGear = (player: EconomyPlayer): number => meanOf(player.gear);
 
 const lowestGear = (player: EconomyPlayer): number =>
   Math.min(...GEAR_SLOTS.map((slot) => player.gear[slot]));
@@ -580,9 +591,9 @@ const spendCollector = (player: EconomyPlayer): void => {
 
 const spendUpgrader = (player: EconomyPlayer): void => {
   combinePairs(player);
-  const gearCap = Math.floor(levelOf(player) / 3);
+  const gearCap = Math.floor((levelOf(player) * 2) / 3);
   while (upgradeGear(player, gearCap)) {
-    // Upgrade Gear up to the Player level ÷ 3.
+    // Upgrade Gear up to the Player level × 2 ÷ 3.
   }
   // The Pack with the most cards for each Coin: fuel for Combine.
   while (buyPack(player, "peddler")) {
@@ -593,8 +604,10 @@ const spendUpgrader = (player: EconomyPlayer): void => {
 const spendBalanced = (player: EconomyPlayer): void => {
   for (;;) {
     const pack = buyPack(player, "merchant");
+    // 2 Gear levels: one old level (ADR-0037).
     const gear = upgradeGear(player);
-    if (!pack && !gear) {
+    const moreGear = gear && upgradeGear(player);
+    if (!pack && !gear && !moreGear) {
       break;
     }
   }
@@ -746,6 +759,8 @@ export interface EconomyRun {
   readonly stageLevels: readonly number[];
   /** The Player level before the first try of each Campaign Stage, in order. */
   readonly levelsAtStages: readonly number[];
+  /** The Gear levels before the first try of each Campaign Stage, in order. */
+  readonly gearAtStages: readonly GearLevels[];
 }
 
 /** The highest Dungeon with XP that the Player level unlocks, or `null`. */
@@ -765,10 +780,13 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     region1: null,
     region2: null,
     region3: null,
+    region4: null,
+    region5: null,
     floor50: null,
     level30: null,
   };
   const levelsAtStages: number[] = [];
+  const gearAtStages: GearLevels[] = [];
   const progress: RunProgress = {
     position: { kind: "campaign", stage: 0 },
     floorFails: 0,
@@ -799,6 +817,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   const playStage = (index: number, stage: EconomyStage) => {
     if (levelsAtStages.length === index) {
       levelsAtStages.push(levelOf(player));
+      gearAtStages.push({ ...player.gear });
     }
     const won = wins(
       winChance(middle(stageTarget(stage)), stage.recommendedLevel, player)
@@ -909,7 +928,45 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     end: snapshot(player),
     stageLevels: stages.map((stage) => stage.recommendedLevel),
     levelsAtStages,
+    gearAtStages,
   };
+};
+
+/**
+ * The Expected Gear of each Campaign Stage, by Stage id (ADR-0034): the Gear
+ * levels of each slot before the first try of the Stage on the First-try
+ * Path. Of all Play Styles, it takes the one with the highest mean Gear level
+ * before that Stage. The first Play Style of PLAY_STYLES wins a tie.
+ */
+export const expectedGear = (): ReadonlyMap<string, GearLevels> => {
+  const stages = economyStages();
+  // The First-try run wins each Battle, so Battle n is the first try of Stage n.
+  const runs = PLAY_STYLES.map((playStyle) =>
+    simulateEconomyRun({
+      playStyle,
+      seed: 1,
+      fixedWinChance: 1,
+      maxBattles: stages.length,
+    })
+  );
+  return new Map(
+    stages.map((stage, index) => {
+      let best: GearLevels | null = null;
+      for (const run of runs) {
+        const gear = run.gearAtStages[index];
+        if (
+          gear !== undefined &&
+          (best === null || meanOf(gear) > meanOf(best))
+        ) {
+          best = gear;
+        }
+      }
+      if (best === null) {
+        throw new Error(`No First-try run got to Stage ${stage.id}`);
+      }
+      return [stage.id, best];
+    })
+  );
 };
 
 // ─── Report ──────────────────────────────────────────────────────────────────
@@ -1033,6 +1090,8 @@ export const simulateEconomy = (
       region1: at("region1"),
       region2: at("region2"),
       region3: at("region3"),
+      region4: at("region4"),
+      region5: at("region5"),
       floor50: at("floor50"),
       level30: at("level30"),
     },

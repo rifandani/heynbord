@@ -1,4 +1,5 @@
-import { STAGES } from "@workspace/rules";
+import type { StageDefinition } from "@workspace/rules";
+import { CAMPAIGN_REGIONS, STAGES } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import type { Box, RegionMap, Viewport } from "@/features/campaign/region-map";
@@ -10,6 +11,8 @@ import {
   markerBoxes,
   regionMap,
   regionStarTotal,
+  regionStatus,
+  shownRegionMap,
   smoothPath,
   trailStages,
   walkedLegs,
@@ -63,6 +66,39 @@ describe("regionMap", () => {
   });
 });
 
+describe("shownRegionMap", () => {
+  it("has a Region Map or a placeholder for each Region", () => {
+    for (let region = 1; region <= CAMPAIGN_REGIONS; region += 1) {
+      expect(shownRegionMap(region).region).toBe(region);
+    }
+  });
+
+  it("puts the Trail of Hearthvale on a plain ground for a Region with no painting", () => {
+    const placeholder = shownRegionMap(CAMPAIGN_REGIONS);
+    expect(regionMap(CAMPAIGN_REGIONS)).toBeNull();
+    expect(placeholder.image).toBeNull();
+    expect(placeholder.stops).toEqual(hearthvale.stops);
+    expect(placeholder.legs).toEqual(hearthvale.legs);
+  });
+});
+
+/** Region 1 and Region 2 with 2 Stages each, the second a Boss Stage. */
+const twoRegions = [1, 2].flatMap((region) =>
+  [1, 2].map((number) => {
+    const stage = STAGES.find((item) => item.region === 1);
+    if (!stage) {
+      throw new Error("No Stage in Region 1");
+    }
+    return {
+      ...stage,
+      id: `${region}-${number}`,
+      region,
+      number,
+      boss: number === 2,
+    } satisfies StageDefinition;
+  })
+);
+
 describe("trailStages", () => {
   it("opens only the first Stage for a new Player", () => {
     const trail = trailStages(STAGES, 1, {});
@@ -83,6 +119,38 @@ describe("trailStages", () => {
     ]);
     expect(regionStarTotal(trail)).toBe(30);
     expect(walkedLegs(trail)).toBe(2);
+  });
+
+  it("keeps all the Stages of a locked Region locked, after the Boss Stage before it", () => {
+    const trail = trailStages(twoRegions, 2, { "1-1": 3 });
+    expect(trail.map((stop) => stop.state)).toEqual(["locked", "locked"]);
+    expect(trail.map((stop) => stop.after?.id)).toEqual(["1-2", "2-1"]);
+  });
+
+  it("opens the first Stage of a Region after the win of the Boss Stage before it", () => {
+    const trail = trailStages(twoRegions, 2, { "1-1": 3, "1-2": 1 });
+    expect(trail.map((stop) => stop.state)).toEqual(["open", "locked"]);
+    expect(trail[0]?.after).toBeNull();
+  });
+});
+
+describe("regionStatus", () => {
+  it("is open for Region 1 and for a Region after a won Boss Stage", () => {
+    expect(regionStatus(twoRegions, 1, {})).toEqual({ kind: "open" });
+    expect(regionStatus(twoRegions, 2, { "1-2": 1 })).toEqual({
+      kind: "open",
+    });
+  });
+
+  it("is locked with the Boss Stage to win before that", () => {
+    const status = regionStatus(twoRegions, 2, { "1-1": 3 });
+    expect(status.kind === "locked" && status.boss.id).toBe("1-2");
+  });
+
+  it("is later for a Region with no Stages yet", () => {
+    expect(regionStatus(twoRegions, 3, { "1-2": 1, "2-2": 1 })).toEqual({
+      kind: "later",
+    });
   });
 });
 

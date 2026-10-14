@@ -978,6 +978,20 @@ test.describe("Campaign", () => {
     await expect(page.getByTestId("town")).toBeVisible();
   });
 
+  test("hover on the reward card of the Stage Panel shows its Card Details", async ({
+    page,
+  }) => {
+    await page.goto("/play?state=campaign-progress");
+    await page.getByTestId("stage-1-10").click();
+    const peek = page.getByTestId("stage-reward-peek");
+    await expect(peek).toBeHidden();
+    await page.getByTestId("stage-reward-frame").hover();
+    await expect(peek).toBeVisible();
+    await expect(peek).toContainText("Iron Bulwark");
+    await page.getByTestId("stage-panel").getByRole("heading").hover();
+    await expect(peek).toBeHidden();
+  });
+
   test("a win marks the Stage Done with its Stars, opens the next Stage and adds its Coin", async ({
     page,
   }) => {

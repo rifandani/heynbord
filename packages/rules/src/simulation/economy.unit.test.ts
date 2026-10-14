@@ -3,9 +3,11 @@ import { describe, expect, it } from "vitest";
 import { ownedCopies } from "../collection/deck-building";
 import { PLAYER_LEVEL_XP } from "../content/player-levels";
 import { STAGES } from "../content/stages";
+import { UNLOCK_LEVELS } from "../content/unlocks";
 import { EXTRACT_ESSENCE } from "../content/workshop";
 import {
   economyStages,
+  expectedGear,
   heynstoneLedger,
   newEconomyPlayer,
   simulateEconomy,
@@ -13,6 +15,7 @@ import {
   spend,
 } from "./economy";
 import type { EconomyPlayer } from "./economy";
+import { NO_GEAR } from "./simulate";
 
 /** A Player at `level` with `coin`, the free Pack and the 4th Deck slot done. */
 const playerAt = (level: number, coin: number): EconomyPlayer => {
@@ -28,22 +31,23 @@ const gearSum = (player: EconomyPlayer) =>
   Object.values(player.gear).reduce((total, level) => total + level, 0);
 
 describe("economyStages (Economy 7.1)", () => {
-  it("adds 10 planned Stages to Regions 2 and 3, with the Boss Stage last", () => {
+  it("adds 10 planned Stages to each Region up to Region 5, with the Boss Stage last", () => {
     const stages = economyStages();
-    expect(stages).toHaveLength(30);
+    expect(stages).toHaveLength(50);
     expect(stages.slice(0, STAGES.length).map((stage) => stage.id)).toEqual(
       STAGES.map((stage) => stage.id)
     );
     expect(
       stages.filter((stage) => stage.boss).map((stage) => stage.id)
-    ).toEqual(["1-10", "2-10", "3-10"]);
+    ).toEqual(["1-10", "2-10", "3-10", "4-10", "5-10"]);
     expect(stages.at(-1)?.firstWinCard).toBeNull();
   });
 
   it("gives the planned Stages the First-try Path levels of Economy 1.2", () => {
     expect(economyStages().map((stage) => stage.recommendedLevel)).toEqual([
       1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 10, 10, 11,
-      11, 12, 12, 13, 13, 13, 14,
+      11, 12, 12, 13, 13, 13, 14, 15, 15, 16, 16, 17, 17, 17, 18, 18, 19, 20,
+      20, 20, 21, 21, 21, 21, 22, 22, 22,
     ]);
   });
 });
@@ -64,7 +68,9 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
     expect(run.checkpoints.region1).toMatchObject({ battles: 10, level: 6 });
     expect(run.checkpoints.region2).toMatchObject({ battles: 20, level: 10 });
     expect(run.checkpoints.region3).toMatchObject({ battles: 30, level: 15 });
-    expect(run.checkpoints.floor50).toMatchObject({ battles: 80, level: 24 });
+    expect(run.checkpoints.region4).toMatchObject({ battles: 40, level: 20 });
+    expect(run.checkpoints.region5).toMatchObject({ battles: 50, level: 23 });
+    expect(run.checkpoints.floor50).toMatchObject({ battles: 100, level: 28 });
     expect(run.checkpoints.level30?.level).toBe(30);
     expect(run.stuck).toBe(false);
   });
@@ -101,6 +107,47 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
   });
 });
 
+describe("expectedGear (ADR-0034)", () => {
+  const gear = expectedGear();
+
+  it("gives no Gear before the Gear unlock level", () => {
+    const early = STAGES.filter(
+      (stage) => stage.recommendedLevel < UNLOCK_LEVELS.gear
+    );
+    expect(early.length).toBeGreaterThan(0);
+    for (const stage of early) {
+      expect(gear.get(stage.id)).toEqual(NO_GEAR);
+    }
+  });
+
+  it("gives each slot level 2 or 3 before Stage 1-9, and the highest mean before 1-10", () => {
+    expect(gear.get("1-9")).toEqual({
+      weapon: 3,
+      armor: 2,
+      trinket: 2,
+      banner: 2,
+    });
+    expect(gear.get("1-10")).toEqual({
+      weapon: 3,
+      armor: 3,
+      trinket: 3,
+      banner: 3,
+    });
+  });
+
+  it("comes from the Gear of the First-try runs before each Stage", () => {
+    const run = simulateEconomyRun({
+      playStyle: "collector",
+      seed: 1,
+      fixedWinChance: 1,
+    });
+    expect(run.gearAtStages).toHaveLength(run.levelsAtStages.length);
+    const ids = economyStages().map((stage) => stage.id);
+    expect([...gear.keys()]).toEqual(ids);
+    expect(run.gearAtStages[ids.indexOf("1-10")]).toEqual(gear.get("1-10"));
+  });
+});
+
 describe("spend (Economy 7.1)", () => {
   it("first opens the free Peddler Pack at level 2, and saves for the 4th Deck slot", () => {
     const player = newEconomyPlayer(1);
@@ -124,31 +171,33 @@ describe("spend (Economy 7.1)", () => {
     spend(player, "collector");
     expect(player.packsOpened).toBe(1);
     expect(player.combines).toBe(0);
-    // 400 Coin: 4 × 40 to level 1, then 160 to level 2. 80 Coin stays.
-    expect(gearSum(player)).toBe(5);
-    expect(player.coin).toBe(80);
+    // 400 Coin: 4 × 10 to level 1, 4 × 30 to level 2, 4 × 60 to level 3.
+    expect(gearSum(player)).toBe(12);
+    expect(player.coin).toBe(0);
   });
 
-  it("Upgrader: Combine each pair, then Gear up to the level ÷ 3, then Packs", () => {
+  it("Upgrader: Combine each pair, then Gear up to the level × 2 ÷ 3, then Packs", () => {
     const player = playerAt(6, 900);
     spend(player, "upgrader");
     // The Vanguard pairs: 3 Common pairs (3 × 50), then 1 Uncommon pair (200).
     expect(player.combines).toBe(4);
-    // 550 Coin: 4 × 40 to level 1, then 2 × 160 to level 2. 70 Coin stays.
-    expect(gearSum(player)).toBe(6);
-    expect(Math.max(...Object.values(player.gear))).toBe(2);
+    // 550 Coin: 4 × 10, 4 × 30 and 4 × 60 to level 3, then 100 to level 4,
+    // the cap at level 6. 50 Coin stays.
+    expect(gearSum(player)).toBe(13);
+    expect(Math.max(...Object.values(player.gear))).toBe(4);
     expect(player.packsOpened).toBe(0);
-    expect(player.coin).toBe(70);
+    expect(player.coin).toBe(50);
   });
 
-  it("Balanced: one Pack and one Gear level in turn, then Combine", () => {
-    const player = playerAt(6, 900);
+  it("Balanced: one Pack and two Gear levels in turn, then Combine", () => {
+    const player = playerAt(6, 950);
     spend(player, "balanced");
     expect(player.packsOpened).toBe(1);
-    // 400 Coin: 4 × 40 and 1 × 160. Then a Common pair (50) of the 80 Coin.
-    expect(gearSum(player)).toBe(5);
+    // 450 Coin: 4 × 10, 4 × 30 and 4 × 60. Then a Common pair (50) of the 50
+    // Coin.
+    expect(gearSum(player)).toBe(12);
     expect(player.combines).toBe(1);
-    expect(player.coin).toBe(30);
+    expect(player.coin).toBe(0);
   });
 
   it("Extracts each copy above 2 of a card in the same Rank", () => {

@@ -1,8 +1,10 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
 import type { StarChestDefinition } from "@workspace/rules";
 import {
+  CAMPAIGN_REGIONS,
   claimStarChest,
   coinDenominations,
+  STAGES,
   STAR_CHESTS,
 } from "@workspace/rules";
 import { cn } from "cn";
@@ -16,23 +18,20 @@ import {
   Popover,
   TooltipTrigger,
 } from "react-aria-components";
-import { HiChevronRight } from "react-icons/hi2";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import {
   ChestIcon,
   StarIcon,
 } from "@/features/campaign/components/campaign-icons";
-import type { ChestState } from "@/features/campaign/region-map";
-import {
-  chestState,
-  regionMap,
-  REGION_COUNT,
-} from "@/features/campaign/region-map";
+import type { ChestState, RegionStatus } from "@/features/campaign/region-map";
+import { chestState, regionStatus } from "@/features/campaign/region-map";
 import { profileAtom } from "@/features/profile/profile.atoms";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
@@ -77,37 +76,81 @@ const TipPiece = ({
   );
 };
 
-/**
- * The arrow to the next Region. While that Region has no Region Map, it shows
- * a lock seal and says that the Region opens later.
- */
-const NextRegion = ({ region }: { readonly region: number }) => {
+/** The line about a Region that is not open, or `null` for an open Region. */
+const useRegionLine = () => {
   const { tr } = useGameText();
-  const next = region + 1;
-  if (next > REGION_COUNT) {
+  return (region: number, status: RegionStatus): string | null => {
+    const name = tr(`campaign.regions.${region}`);
+    if (status.kind === "later") {
+      return tr("campaign.regionLater", { name });
+    }
+    if (status.kind === "locked") {
+      return tr("campaign.regionLocked", {
+        id: status.boss.id,
+        stage: tr(`stages.${status.boss.id}.name`),
+        name,
+      });
+    }
     return null;
-  }
-  const name = tr(`campaign.regions.${next}`);
-  const ready = regionMap(next) !== null;
+  };
+};
+
+/**
+ * The arrow to the previous or the next Region. It opens that Region, also a
+ * locked one. While that Region is not open, the arrow shows a lock seal, and
+ * its tooltip says why.
+ */
+const RegionArrow = ({
+  region,
+  direction,
+  onRegion,
+  ref,
+}: {
+  /** The Region that the arrow opens. */
+  readonly region: number;
+  readonly direction: "previous" | "next";
+  readonly onRegion: (region: number) => void;
+  readonly ref: RefObject<HTMLButtonElement | null>;
+}) => {
+  const { tr } = useGameText();
+  const results = useAtomValue(stageResultsAtom);
+  const line = useRegionLine();
+  const name = tr(`campaign.regions.${region}`);
+  const label = tr(
+    direction === "next" ? "campaign.nextRegion" : "campaign.previousRegion",
+    { name }
+  );
+  const status = regionStatus(STAGES, region, results);
+  const why = line(region, status);
+  const Chevron = direction === "next" ? HiChevronRight : HiChevronLeft;
   return (
-    <TipPiece
-      tip={`${tr("campaign.nextRegion", { name })}. ${ready ? "" : tr("campaign.regionLater", { name })}`.trim()}
-    >
-      {(onPress) => (
+    <TipPiece tip={why ? `${label}. ${why}` : label}>
+      {() => (
         <Button
-          onPress={onPress}
-          aria-label={tr("campaign.nextRegion", { name })}
+          ref={ref}
+          onPress={() => {
+            unlockAudio();
+            playSound("select");
+            onRegion(region);
+          }}
+          aria-label={label}
           className={cn(
-            "relative grid size-10 shrink-0 cursor-default place-items-center rounded-lg text-[#fff6df]/70 outline-none",
+            "relative grid size-10 shrink-0 cursor-pointer place-items-center rounded-lg text-[#fff6df]/70 outline-none",
             "transition-colors duration-100 data-[hovered]:bg-[#fff6df]/10 data-[hovered]:text-[#fff6df]",
             "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
             "[@media(max-height:500px)]:size-8"
           )}
-          data-testid="next-region"
+          data-testid={`${direction}-region`}
+          data-region={region}
         >
-          <HiChevronRight className="size-6" aria-hidden />
-          {ready ? null : (
-            <span className="absolute right-0 bottom-0 grid size-4 place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]">
+          <Chevron className="size-6" aria-hidden />
+          {status.kind === "open" ? null : (
+            <span
+              className={cn(
+                "absolute bottom-0 grid size-4 place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]",
+                direction === "next" ? "right-0" : "left-0"
+              )}
+            >
               <GlyphIcon glyph="lock" className="size-2.5 text-[#e9c46a]" />
             </span>
           )}
@@ -119,31 +162,98 @@ const NextRegion = ({ region }: { readonly region: number }) => {
 
 /**
  * The Region name in the top band (GDD 11.5), with the arrows to the other
- * Regions. There is no arrow before Region 1 or after Region 3. Only Region 1
- * has a Region Map now, so the back arrow comes with Region 2.
+ * Regions. There is no arrow before Region 1 or after the last Region. Under
+ * the name, a line tells which Region of all it is, or why it is not open.
  */
-export const RegionBanner = ({ region }: { readonly region: number }) => {
+export const RegionBanner = ({
+  region,
+  onRegion,
+}: {
+  readonly region: number;
+  readonly onRegion: (region: number) => void;
+}) => {
   const { tr } = useGameText();
+  const results = useAtomValue(stageResultsAtom);
+  const line = useRegionLine();
   const name = tr(`campaign.regions.${region}`);
+  const why = line(region, regionStatus(STAGES, region, results));
+  const previous = useRef<HTMLButtonElement>(null);
+  const next = useRef<HTMLButtonElement>(null);
+  // When an arrow goes away at the first or the last Region, the focus goes
+  // to the other arrow after the render, so that it does not go to the page.
+  const go = (target: number) => {
+    onRegion(target);
+    const other =
+      target === 1 ? next : target === CAMPAIGN_REGIONS ? previous : null;
+    if (other) {
+      requestAnimationFrame(() => other.current?.focus());
+    }
+  };
   return (
     <header
       className={cn(
         PLATE,
-        "absolute top-[max(0.5rem,env(safe-area-inset-top))] left-[max(0.5rem,env(safe-area-inset-left))] z-20 gap-1 pr-1.5 pl-4 [@media(max-height:500px)]:pl-3"
+        "absolute top-[max(0.5rem,env(safe-area-inset-top))] left-[max(0.5rem,env(safe-area-inset-left))] z-20 gap-1 pr-1.5",
+        region > 1 ? "pl-1.5" : "pl-4 [@media(max-height:500px)]:pl-3"
       )}
       data-testid="region-banner"
+      data-region={region}
       data-campaign-hud
     >
-      <div className="flex min-w-0 flex-col justify-center pr-2">
+      {region > 1 ? (
+        <>
+          <RegionArrow
+            ref={previous}
+            region={region - 1}
+            direction="previous"
+            onRegion={go}
+          />
+          <span
+            className="h-7 w-0.5 rounded-full bg-[#e9c46a]/25"
+            aria-hidden
+          />
+        </>
+      ) : null}
+      <div
+        className={cn(
+          "flex min-w-0 flex-col justify-center pr-2",
+          region > 1 && "pl-2"
+        )}
+      >
         <h1 className="font-display truncate text-3xl leading-none font-black tracking-[0.025em] text-[#ffe08a] [text-shadow:0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:text-2xl">
           {name}
         </h1>
-        <p className="mt-1.5 text-xs leading-none font-semibold text-[#e8d9bb] [@media(max-height:500px)]:sr-only">
-          {tr("campaign.regionOf", { number: region, count: REGION_COUNT })}
+        <p
+          className="mt-1.5 flex items-center gap-1 text-xs leading-none font-semibold text-[#e8d9bb] [@media(max-height:500px)]:sr-only"
+          data-testid="region-line"
+        >
+          {why ? (
+            <>
+              <GlyphIcon glyph="lock" className="size-3 text-[#e9c46a]" />
+              {why}
+            </>
+          ) : (
+            tr("campaign.regionOf", {
+              number: region,
+              count: CAMPAIGN_REGIONS,
+            })
+          )}
         </p>
       </div>
-      <span className="h-7 w-0.5 rounded-full bg-[#e9c46a]/25" aria-hidden />
-      <NextRegion region={region} />
+      {region < CAMPAIGN_REGIONS ? (
+        <>
+          <span
+            className="h-7 w-0.5 rounded-full bg-[#e9c46a]/25"
+            aria-hidden
+          />
+          <RegionArrow
+            ref={next}
+            region={region + 1}
+            direction="next"
+            onRegion={go}
+          />
+        </>
+      ) : null}
     </header>
   );
 };
@@ -390,7 +500,9 @@ export const StarChests = ({
   const profile = useAtomValue(profileAtom);
   const [opened, setOpened] = useState<StarChestDefinition | null>(null);
   const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const share = total > 0 ? Math.min(1, count / total) : 0;
+  // A Region with no Stages yet keeps its chests on a full track.
+  const track = Math.max(total, STAR_CHESTS.at(-1)?.stars ?? 1);
+  const share = Math.min(1, count / track);
   const claim = (stars: number) => {
     const claimed = claimStarChest(registry.get(profileAtom), region, stars);
     if (claimed) {
@@ -444,7 +556,7 @@ export const StarChests = ({
           <span
             key={chest.stars}
             className="absolute top-0 -translate-x-1/2"
-            style={{ left: `${(chest.stars / Math.max(total, 1)) * 100}%` }}
+            style={{ left: `${(chest.stars / track) * 100}%` }}
           >
             <Chest
               stars={chest.stars}

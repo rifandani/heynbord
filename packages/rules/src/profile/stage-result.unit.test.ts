@@ -11,6 +11,7 @@ import {
   FIRST_PACK,
   REPEAT_WIN_CARD_CHANCE,
   stageCardPool,
+  SWEEP_TICKETS_PER_WIN,
 } from "./stage-result";
 import type { StageResultInput } from "./stage-result";
 
@@ -117,6 +118,27 @@ describe("applyStageResult: XP, Coin and Stars (Economy 2.1)", () => {
 
   it("rejects an unknown Stage", () => {
     expect(() => applyStageResult(fresh, win("9-9"))).toThrow(/Unknown Stage/u);
+  });
+});
+
+describe("applyStageResult: Sweep Tickets (ADR-0035)", () => {
+  it("adds 2 Sweep Tickets on a first win and on a repeat win", () => {
+    expect(SWEEP_TICKETS_PER_WIN).toBe(2);
+    const first = applyStageResult(fresh, win("1-4"));
+    expect(first.rewards.sweepTickets).toBe(2);
+    expect(first.profile.sweepTickets).toBe(2);
+    const repeat = applyStageResult(first.profile, win("1-4", 1));
+    expect(repeat.rewards.sweepTickets).toBe(2);
+    expect(repeat.profile.sweepTickets).toBe(4);
+  });
+
+  it("adds no Sweep Tickets on a loss", () => {
+    const { profile, rewards } = applyStageResult(
+      { ...fresh, sweepTickets: 3 },
+      loss("1-4")
+    );
+    expect(rewards.sweepTickets).toBe(0);
+    expect(profile.sweepTickets).toBe(3);
   });
 });
 

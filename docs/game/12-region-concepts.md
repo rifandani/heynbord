@@ -11,11 +11,11 @@ Each Region has 2 paintings, and no more:
 
 A Stage has no painting of its own. Its landmark is a small part of the Region Map, and its Battle uses the Battle Painting of its Region.
 
-The Hearthvale Region Map exists (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen shows it (`apps/web/src/features/campaign/`). Its clearings are not at the positions of 1.1: they are measured on the painting (see 1.3). The Thornwood and The Hollow Marches have no Region Map yet.
+The Hearthvale Region Map exists (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen shows it (`apps/web/src/features/campaign/`). Its clearings are not at the positions of 1.1: they are measured on the painting (see 1.3). The Red Mesas, The Glowcap Hollows, The Thornwood and The Hollow Marches have no Region Map yet.
 
 ## 1. Rules for the Region art
 
-- **One Region Map for each Region.** The 3 Region Maps are one set. Make them with the same view, scale, light and style.
+- **One Region Map for each Region.** The 5 Region Maps are one set. Make them with the same view, scale, light and style.
 - **View.** A high bird's-eye view, about 45° down, like a painted map. The same view as the Town. Landmarks show their front and their roof.
 - **Light.** From the upper left, warm, as in all other art.
 - **Size.** Landscape 16:9. Make the master at 3200 × 1800. The game uses a WebP export at 2560 × 1440, less than about 400 KB. The positions in 1.1 use a 1600 × 900 box, so 1 code unit is 2 pixels of the master.
@@ -29,7 +29,7 @@ The Hearthvale Region Map exists (`apps/web/public/battle/hearthvale-region.webp
 
 ### 1.1 Positions on the painting
 
-The painting covers the screen and crops its edges, as in the Town (`apps/web/src/features/town/town.ts`). The line y 864 stays on the top edge of the Town Bar. The painting below it goes under the Town Bar. The positions are in the 1600 × 900 box. **All 3 Region Maps use the same positions**, so that the game has one set of Stage Marker positions.
+The painting covers the screen and crops its edges, as in the Town (`apps/web/src/features/town/town.ts`). The line y 864 stays on the top edge of the Town Bar. The painting below it goes under the Town Bar. The positions are in the 1600 × 900 box. **All 5 Region Maps use the same positions**, so that the game has one set of Stage Marker positions.
 
 | Area | Box (x, y) | Rule |
 | --- | --- | --- |
@@ -98,7 +98,7 @@ The Boss clearing is in the top band, in front of Brassbelly Hall. Clearings 1 a
 
 ## 2. Regions
 
-The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
+The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are draft names. Hearthvale and The Red Mesas have their Stages. Regions 3 to 5 have only proposed landmarks until their Stages are designed.
 
 ### 2.1 Hearthvale
 
@@ -115,9 +115,39 @@ The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
 | Time and weather | A clear late morning. Soft white clouds. |
 | Battle Painting | A forest clearing where the outlaws wait for travelers. Brief in [13 — Battlefield Concepts, 1.1](./13-battlefield-concepts.md#11-hearthvale). |
 
-### 2.2 The Thornwood
+### 2.2 The Red Mesas
 
-`Region 2` · Elves and Feral creatures · Boss: the Old Bramble
+`Region 2` · Orc tribes and Goblin miners · Debut Race: Goblin · Boss: Boss Snikkit · Stages in [14 — Campaign Stages, 3.1](./14-campaign-stages.md#31-stages)
+
+| Item | Brief |
+| --- | --- |
+| Place | A dry land of red mesas with flat tops and deep canyons between them. The Orc tribes live on the mesas. Under them, the Goblins dig mines and sell scrap. Boss Snikkit, the goblin mine king, pays the Orcs with rocks that he paints gold. |
+| Trail | A dusty road between the mesas, then plank walkways and rail tracks along a canyon, then a ramp up to the mine hall in the largest mesa. |
+| Landmarks | 1 The Dust Road: a dusty road between two red mesas, with an orc lookout post · 2 The Scrap Market: goblin market stalls of scrap under awnings · 3 The Powder Shed: a small shed with powder barrels and a smoking roof · 4 The Junk Wall: a wall of scrap, carts and bones across a canyon · 5 Sniper's Ridge: a high ledge with a big brass spyglass · 6 The Fighting Pit: an orc fighting pit with a crowd fence · 7 The War Drum Camp: an orc camp with very big war drums · 8 The Cave-in: a collapsed mine tunnel with rubble and props · 9 The Mine Mouth: a big mine entrance with rail tracks and smoke |
+| Boss landmark | Snikkit's Throne Hall: a mine hall cut into the largest mesa, with a gate of scrap and a huge bucket crown on top. |
+| Palette | Rust red, ochre, dusty orange, clear sky blue, soft teal shade. The light is still warm from the upper left. |
+| Humor note | A goblin pays an orc with a rock painted gold. An orc tries on Snikkit's bucket crown. |
+| Time and weather | A bright, dry midday with a few high clouds. |
+| Battle Painting | A flat, dusty clay floor between the mesas. Brief in [13 — Battlefield Concepts, 1.2](./13-battlefield-concepts.md#12-the-red-mesas). |
+
+### 2.3 The Glowcap Hollows
+
+`Region 3` · Goblin tunnels and Elves · Debut Race: Elf · Boss: Lady Glimmerbough · Proposed landmarks: the Stages are not designed yet
+
+| Item | Brief |
+| --- | --- |
+| Place | Deep, wide hollows between steep hills, open to the sky and full of giant mushrooms that glow. The Goblin tunnels from the Red Mesas break out here into an old Elf grove. The Elves and their plant spirits guard the grove from the diggers. |
+| Trail | A goblin mine track out of a tunnel, then a path of moss and roots between the giant mushrooms, then steps of shelf fungus up to the grove hall. |
+| Landmarks | 1 a goblin tunnel exit with a broken mine cart · 2 a goblin drill stuck in the stem of a giant mushroom · 3 a pool that glows, with stepping stones · 4 a rope bridge between two giant mushroom caps · 5 an elf watch post on a mushroom cap, with lanterns · 6 a goblin camp with scrap tents under the mushrooms · 7 a ring of small glowing mushrooms around an old stone · 8 a small waterfall of glowing water into a cave · 9 an elf gate of woven roots, with a hole that the goblins dug under it |
+| Boss landmark | Lady Glimmerbough's grove hall: an elf hall in a ring of giant mushrooms, with a roof of mushroom caps and soft light in the windows. |
+| Palette | Moss green, deep violet and blue shade, soft cyan and green glow of the mushrooms, warm brown roots. The light is still warm from the upper left. |
+| Humor note | A goblin uses a glowing mushroom as a lamp, and an elf takes it back. A tiny mushroom spirit sits on a goblin helmet. |
+| Time and weather | A bright late afternoon. The hollows are in soft shade, so the mushrooms glow. |
+| Battle Painting | Proposed: a mossy floor between giant glowing mushrooms, with roots, a goblin tunnel exit and small glowing pools at the edges. No brief in 13 yet. Until it has its painting, the Region uses the Hearthvale Battle Painting. |
+
+### 2.4 The Thornwood
+
+`Region 4` · Elves and Feral creatures · Debut Race: Feral · Boss: the Old Bramble · Proposed landmarks: the Stages are not designed yet
 
 | Item | Brief |
 | --- | --- |
@@ -130,17 +160,17 @@ The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
 | Time and weather | A bright afternoon. Light falls through the leaves in long beams. |
 | Battle Painting | Proposed: a soft, mossy glade between giant trees, with roots, thorn hedges and a cave mouth at the edges. No brief in 13 yet. Until it has its painting, the Region uses the Hearthvale Battle Painting. |
 
-### 2.3 The Hollow Marches
+### 2.5 The Hollow Marches
 
-`Region 3` · Undead and Goblins · Boss: Queen Marrow
+`Region 5` · Feral beasts and Undead · Debut Race: Undead · Boss: Queen Marrow · Proposed landmarks: the Stages are not designed yet
 
 | Item | Brief |
 | --- | --- |
-| Place | Wide marshes with mist, reeds and old dead trees. The Undead of Queen Marrow rule here. Goblins dig mines under the dry hills and sell junk to anyone who pays. Strange, but not scary: the art stays bright (art direction 1). |
+| Place | Wide marshes with mist, reeds and old dead trees. The Undead of Queen Marrow rule here. Feral beasts of the cold live in the frozen bogs and the ice caves of the hills: bog trolls and frost beasts. Strange, but not scary: the art stays bright (art direction 1). |
 | Trail | Old stone roads, then long wooden boardwalks over the water, then a stone causeway to the castle island. |
-| Landmarks | 1 a crooked sign post with a lantern (no letters) · 2 a sunken chapel · 3 a goblin raft workshop with reed roofs and a smoking chimney · 4 a long boardwalk over a bog · 5 a small graveyard with leaning stones · 6 a broken windmill on a mound · 7 a ferry with a skeleton ferryman · 8 a goblin mine entrance in a dry hill, with rail tracks and smoke · 9 an old stone bridge with green fire bowls |
+| Landmarks | 1 a crooked sign post with a lantern (no letters) · 2 a sunken chapel · 3 a frozen bog pool, with a bog troll asleep in the ice · 4 a long boardwalk over a bog · 5 a small graveyard with leaning stones · 6 a broken windmill on a mound · 7 a ferry with a skeleton ferryman · 8 an ice cave in a hill, with a frost beast at its mouth and frost on the rocks · 9 an old stone bridge with green fire bowls |
 | Boss landmark | The castle of Queen Marrow on an island: pale bone-white stone, thin towers, violet banners, soft green light in the windows. |
-| Palette | Misty teal, violet, moss green, bone white, soft green glow. The light is still warm from the upper left. |
+| Palette | Misty teal, violet, moss green, ice blue, bone white, soft green glow. The light is still warm from the upper left. |
 | Humor note | A skeleton sits and fishes on a boardwalk. A frog with a small crown sits on a lily pad. |
 | Time and weather | A bright late afternoon with low mist on the water. |
 | Battle Painting | Proposed: a dry, grassy island in the marsh, with reeds, still water, dead trees and low mist at the edges. No brief in 13 yet. Until it has its painting, the Region uses the Hearthvale Battle Painting. |
@@ -150,12 +180,12 @@ The Regions, enemies and Bosses come from GDD 3.3. The names are draft names.
 The game docs do not keep the image prompts of the Region Maps. Run `bun campaign:prompts` to write them to `apps/web/art/campaign/raw/`. Git ignores this folder.
 
 - `map-style-reference.png`: the Town painting. It sets the style and the camera.
-- `map-set-reference.png`: the Hearthvale Region Map. Regions 2 and 3 attach it, so that the set matches.
+- `map-set-reference.png`: the Hearthvale Region Map. Regions 2 to 5 attach it, so that the set matches.
 - `<region>/prompts.md`: the Region Map conversation, then the Battle Painting conversation ([13 — Battlefield Concepts](./13-battlefield-concepts.md)).
 
 The Region Map prompts come from the brief of the Region in section 2, the clearing centers in 1.1, and the scene line of the Region in `scripts/campaign-art/scenes.ts`: the land, the road, the ground of the clearings and the Boss landmark, in a few words. Add a scene line when you add a Region. To change an image, change the brief or the scene line, then run the script again.
 
-Use one ChatGPT conversation for each Region Map. Attach the layout sketch `apps/web/art/campaign/region-map-layout-3x2.png`, the style reference and (for Regions 2 and 3) the set reference to the setup message. The sketch sets the composition: the road, the 10 clearings (pale ovals), the Boss hill (brown house), the far land (dark green) and the clouds (white). ChatGPT cannot make 16:9, so the sketch is 1536 × 1024, with the 1600 × 900 box of 1.1 in the middle. Crop the top and the bottom to 16:9. The sketch in the same box at 16:9 is `region-map-layout-16x9.png`.
+Use one ChatGPT conversation for each Region Map. Attach the layout sketch `apps/web/art/campaign/region-map-layout-3x2.png`, the style reference and (for Regions 2 to 5) the set reference to the setup message. The sketch sets the composition: the road, the 10 clearings (pale ovals), the Boss hill (brown house), the far land (dark green) and the clouds (white). ChatGPT cannot make 16:9, so the sketch is 1536 × 1024, with the 1600 × 900 box of 1.1 in the middle. Crop the top and the bottom to 16:9. The sketch in the same box at 16:9 is `region-map-layout-16x9.png`.
 
 The prompts are short. A long list of rules, counts and "no" words gives bad results, because the model adds the items that the "no" words name. Do not try to get the Stage positions from the words: get them from the sketch. Make the base painting first. Then add each landmark of section 2 and each joke with one edit message. One small edit at a time is much easier for the model than 10 items in one prompt.
 

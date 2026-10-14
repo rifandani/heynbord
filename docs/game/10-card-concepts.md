@@ -1401,13 +1401,13 @@ Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns 
 
 ## 7. Feral Creature Cards
 
-Identity: wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. They are few, huge and slow: high Countdown, high Attack and HP. They Trample, regenerate and bring the cold. All values in this section are **provisional**.
+Identity: wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. They are few, huge and slow: high Countdown, high Attack and HP. They Trample, regenerate and bring the cold. All values in this section are **provisional**. The 7 cards of the Wild Hunt Archetype got their values in issue #80 ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
 
 Feral cards have no Countdown 1. Commons are Countdown 2 to 3, Uncommons 3 to 4, Rares 4 to 5 and Epics 6. A Feral figure wears no armor and carries no tools of a people. The art can show the lure that called it: bait, a horn or a torch.
 
 ### 7.1 Bristleback Boar
 
-`feral.bristlebackBoar` · Common · Countdown 2 · Attack 4 · HP 4 · Physical · Swift · Trample
+`feral.bristlebackBoar` · Common · Countdown 2 · Attack 3 · HP 6 · Physical · Swift · Trample
 
 > It does not go around things.
 
@@ -1443,11 +1443,11 @@ Purpose: a cheap Feral blocker with Bulwark. Power 15, budget 16, deviation -6.3
 
 ### 7.3 Frostfang Lynx
 
-`feral.frostfangLynx` · Common · Countdown 2 · Attack 4 · HP 3 · Frost · Bleed 1
+`feral.frostfangLynx` · Common · Countdown 2 · Attack 4 · HP 5 · Frost · Bleed 1
 
 > You will not hear it. You will feel the cold first.
 
-Purpose: a cheap Frost attacker that Freezes its target and makes it Bleeding, so that a healer or a Regenerate Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 15, budget 16, deviation -6.3%.
+Purpose: a cheap Frost attacker that Freezes its target and makes it Bleeding, so that a healer or a Regenerate Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 17, budget 16, deviation +6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1461,11 +1461,11 @@ Purpose: a cheap Frost attacker that Freezes its target and makes it Bleeding, s
 
 ### 7.4 Cave Bear
 
-`feral.caveBear` · Common · Countdown 3 · Attack 3 · HP 12 · Physical · Heavy · Regenerate 1
+`feral.caveBear` · Common · Countdown 2 · Attack 3 · HP 10 · Physical · Heavy · Regenerate 1
 
 > It woke up hungry. It is still waking up.
 
-Purpose: a durable Feral front that heals 1 HP in each Start Phase. Power 18, budget 19, deviation -5.3%.
+Purpose: a durable Feral front that heals 1 HP in each Start Phase. Power 16, budget 16, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1479,11 +1479,11 @@ Purpose: a durable Feral front that heals 1 HP in each Start Phase. Power 18, bu
 
 ### 7.5 Web Spitter
 
-`feral.webSpitter` · Common · Countdown 3 · Attack 3 · HP 8 · Physical · Long-range · Regenerate 1
+`feral.webSpitter` · Common · Countdown 3 · Attack 4 · HP 7 · Physical · Long-range · Regenerate 1
 
 > Stay for dinner.
 
-Purpose: a durable Feral Long-range Unit that heals. Power 18, budget 19, deviation -5.3%.
+Purpose: a durable Feral Long-range Unit that heals. Power 19, budget 19, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1533,11 +1533,11 @@ Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Pow
 
 ### 7.8 Cave Troll
 
-`feral.caveTroll` · Uncommon · Countdown 4 · Attack 3 · HP 9 · Physical · Heavy · Regenerate 2
+`feral.caveTroll` · Uncommon · Countdown 3 · Attack 3 · HP 7 · Physical · Heavy · Regenerate 2
 
 > Cut it. Wait. Cut it again.
 
-Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 21, budget 22, deviation -4.5%.
+Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1551,11 +1551,11 @@ Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 21, bu
 
 ### 7.9 Crag Rhino
 
-`feral.cragRhino` · Uncommon · Countdown 4 · Attack 4 · HP 8 · Physical · Trample
+`feral.cragRhino` · Uncommon · Countdown 3 · Attack 4 · HP 5 · Physical · Trample
 
 > The road ends where it stops.
 
-Purpose: a large Trample attacker. Power 23, budget 22, deviation +4.5%.
+Purpose: a large Trample attacker. Power 19, budget 19, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1569,11 +1569,11 @@ Purpose: a large Trample attacker. Power 23, budget 22, deviation +4.5%.
 
 ### 7.10 Frost Elk Matriarch
 
-`feral.frostElkMatriarch` · Uncommon · Countdown 4 · Attack 3 · HP 7 · Frost · Rally 1
+`feral.frostElkMatriarch` · Uncommon · Countdown 3 · Attack 3 · HP 5 · Frost · Rally 1
 
 > Where she walks, the herd follows.
 
-Purpose: the Feral Rally Unit. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 22, budget 22, deviation 0%.
+Purpose: the Feral Rally Unit. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 20, budget 19, deviation +5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -2195,7 +2195,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.2 Smite
 
-`priest.smite` · Priest · Common · Countdown 2 · An enemy Unit · Deal 3 Holy damage to an enemy Unit.
+`priest.smite` · Priest · Common · Countdown 2 · An enemy Unit · Deal 3 Holy damage to an enemy Unit. If it dies, it does not come back with Rebirth.
 
 > No armor hides you from the light.
 

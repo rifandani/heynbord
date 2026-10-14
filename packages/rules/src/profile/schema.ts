@@ -8,9 +8,10 @@ import { STAR_CHESTS } from "../content/star-chests";
 
 /**
  * The shape version of the Profile (technical design 5). A change to the
- * shape adds 1 and a migration step from the old version.
+ * shape, or to the meaning of a saved value, adds 1 and a migration step from
+ * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 1;
+export const PROFILE_SCHEMA_VERSION = 3;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -94,6 +95,8 @@ export const Profile = Schema.Struct({
   claimedStarChests: Schema.Record(Schema.String, Schema.Array(StarChestStars)),
   packState: PackState,
   unopenedPacks: Schema.Array(UnopenedPack),
+  /** The Sweep Tickets that the Player has (ADR-0035). They are earn-only. */
+  sweepTickets: Schema.Natural,
   /**
    * The random state of the reward rolls, for example the repeat-win card. It
    * is not the Pack random state, so a Pack does not change a reward.

@@ -96,14 +96,15 @@ export interface GridCard extends RevealedCard {
 }
 
 /**
- * The Open ×10 grid: one place for each card and Rank, from the highest Rank,
- * then the new cards first. The places of one Rank keep the card list order.
+ * One place for each card and Rank in `cards`, with its copies, from the
+ * highest Rank, then the new cards first. The Open ×10 grid and the Sweep
+ * Result use it.
  */
-export const tenPackGrid = (
-  packs: readonly RevealedPack[]
+export const cardPlaces = (
+  cards: readonly RevealedCard[]
 ): readonly GridCard[] => {
   const places = new Map<string, GridCard>();
-  for (const card of packs.flatMap((pack) => pack.cards)) {
+  for (const card of cards) {
     const key = `${card.cardId}:${card.rank}`;
     const place = places.get(key);
     places.set(
@@ -124,6 +125,14 @@ export const tenPackGrid = (
       left.cardId.localeCompare(right.cardId)
   );
 };
+
+/**
+ * The Open ×10 grid: one place for each card and Rank, from the highest Rank,
+ * then the new cards first.
+ */
+export const tenPackGrid = (
+  packs: readonly RevealedPack[]
+): readonly GridCard[] => cardPlaces(packs.flatMap((pack) => pack.cards));
 
 /**
  * The current Hero Class: the Class of the Active Deck (GDD 5.5, ADR-0033).

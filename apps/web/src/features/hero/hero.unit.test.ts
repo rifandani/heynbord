@@ -22,20 +22,20 @@ import {
 const NO_GEAR = { weapon: 0, armor: 0, trinket: 0, banner: 0 } as const;
 
 describe("heroHpParts (GDD 4.10, 7.3)", () => {
-  it("adds the base, the Player level and 2 HP for each Armor level", () => {
-    expect(heroHpParts(6, { armor: 5 })).toEqual({
+  it("adds the base, the Player level and 1 HP for each Armor level", () => {
+    expect(heroHpParts(6, { armor: 10 })).toEqual({
       total: 46,
       base: 30,
       level: 6,
-      armorLevel: 5,
-      armorPerLevel: 2,
+      armorLevel: 10,
+      armorPerLevel: 1,
       armor: 10,
     });
   });
 
-  it("has no Armor part at Armor level 0, and +20 at level 10", () => {
+  it("has no Armor part at Armor level 0, and +20 at level 20", () => {
     expect(heroHpParts(5, { armor: 0 })).toMatchObject({ total: 35, armor: 0 });
-    expect(heroHpParts(30, { armor: 10 })).toMatchObject({
+    expect(heroHpParts(30, { armor: 20 })).toMatchObject({
       total: 80,
       armor: 20,
     });
@@ -43,30 +43,30 @@ describe("heroHpParts (GDD 4.10, 7.3)", () => {
 });
 
 describe("gearItem: the stat now and next (GDD 7.3)", () => {
-  // [slot, stat, now and next at 0, at 5, now at 10]: basis points or HP.
+  // [slot, stat, now and next at 0, at 10, now at 20]: basis points or HP.
   const TABLE = [
-    ["weapon", "unitCrit", [0, 100], [500, 600], 1000],
-    ["armor", "heroHp", [0, 2], [10, 12], 20],
-    ["trinket", "skillCrit", [0, 150], [750, 900], 1500],
-    ["banner", "unitBlock", [0, 100], [500, 600], 1000],
+    ["weapon", "unitCrit", [0, 50], [500, 550], 1000],
+    ["armor", "heroHp", [0, 1], [10, 11], 20],
+    ["trinket", "skillCrit", [0, 75], [750, 825], 1500],
+    ["banner", "unitBlock", [0, 50], [500, 550], 1000],
   ] as const;
 
-  for (const [slot, stat, zero, five, ten] of TABLE) {
-    it(`${slot}: ${stat} at levels 0, 5 and 10`, () => {
+  for (const [slot, stat, zero, ten, twenty] of TABLE) {
+    it(`${slot}: ${stat} at levels 0, 10 and 20`, () => {
       expect(gearItem(slot, 0, 0)).toMatchObject({
         stat,
         level: 0,
         now: zero[0],
         next: zero[1],
       });
-      expect(gearItem(slot, 5, 0)).toMatchObject({
-        level: 5,
-        now: five[0],
-        next: five[1],
-      });
       expect(gearItem(slot, 10, 0)).toMatchObject({
         level: 10,
-        now: ten,
+        now: ten[0],
+        next: ten[1],
+      });
+      expect(gearItem(slot, 20, 0)).toMatchObject({
+        level: 20,
+        now: twenty,
         next: null,
         upgrade: { kind: "max" },
       });
@@ -83,21 +83,21 @@ describe("gearItem: the stat now and next (GDD 7.3)", () => {
 
 describe("gearItem: the upgrade (Economy 3.4)", () => {
   it("costs the Coin of the next level when the Coin is enough", () => {
-    expect(gearItem("weapon", 0, 40).upgrade).toEqual({
+    expect(gearItem("weapon", 0, 10).upgrade).toEqual({
       kind: "ready",
-      coin: 40,
+      coin: 10,
     });
-    expect(gearItem("weapon", 4, 5000).upgrade).toEqual({
+    expect(gearItem("weapon", 8, 5000).upgrade).toEqual({
       kind: "ready",
-      coin: 1000,
+      coin: 450,
     });
   });
 
   it("says how much Coin is missing when it is not enough", () => {
-    expect(gearItem("armor", 5, 1000).upgrade).toEqual({
+    expect(gearItem("armor", 10, 500).upgrade).toEqual({
       kind: "coin",
-      coin: 1440,
-      missing: 440,
+      coin: 660,
+      missing: 160,
     });
   });
 

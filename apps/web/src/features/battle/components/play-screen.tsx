@@ -1,4 +1,10 @@
-import { RegistryContext, useAtom, useAtomValue } from "@effect/atom-react";
+import {
+  RegistryContext,
+  useAtom,
+  useAtomSet,
+  useAtomValue,
+} from "@effect/atom-react";
+import { getStage } from "@workspace/rules";
 import { cn } from "cn";
 import { lazy, Suspense, useContext, useEffect, useMemo } from "react";
 
@@ -37,6 +43,10 @@ import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
 import { installTestHooks } from "@/features/battle/test-hooks";
 import { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import {
+  campaignRegionAtom,
+  chosenRegionAtom,
+} from "@/features/campaign/campaign.atoms";
 import { CampaignScreen } from "@/features/campaign/components/campaign-screen";
 import { HandbookDialog } from "@/features/handbook/components/handbook-dialog";
 import { useHandbook } from "@/features/handbook/use-handbook";
@@ -56,6 +66,7 @@ import {
   TownScreen,
   useTownLeave,
 } from "@/features/town/components/town-screen";
+import type { GameScreen } from "@/features/town/town";
 import { gameScreenAtom } from "@/features/town/town.atoms";
 import { WorkshopScreen } from "@/features/workshop/components/workshop-screen";
 
@@ -382,6 +393,31 @@ const useEscToTown = (active: boolean, toTown: () => void) => {
 };
 
 /**
+ * The Region that the Campaign shows (GDD 11.5): the Region of the last
+ * Battle, so "Back to Campaign" opens it, and the newest unlocked Region when
+ * the Player opens the Campaign from another screen.
+ */
+const useCampaignRegion = (battle: Battle) => {
+  const region = useAtomValue(campaignRegionAtom);
+  const setRegion = useAtomSet(chosenRegionAtom);
+  const stageId = battle.session?.options.stageId;
+  useEffect(() => {
+    if (stageId) {
+      setRegion(getStage(stageId).region);
+    }
+  }, [stageId, setRegion]);
+  /** Opens a screen. The Campaign then opens at the newest unlocked Region. */
+  const withRegion =
+    (open: (screen: GameScreen) => void) => (screen: GameScreen) => {
+      if (screen === "campaign") {
+        setRegion(null);
+      }
+      open(screen);
+    };
+  return { region, setRegion, withRegion };
+};
+
+/**
  * The game in one route (web ADR-0006): the Town, the Campaign (the Region
  * Map), then the Battle, the Packs, the Workshop and the Hero screen. The Town Bar shows on each screen
  * except the Battle.
@@ -392,7 +428,11 @@ export const PlayScreen = () => {
   const soundOn = useAtomValue(soundOnAtom);
   const soundVolume = useAtomValue(soundVolumeAtom);
   const [screen, setScreen] = useAtom(gameScreenAtom);
-  const { leaving, open: handleOpen } = useTownLeave(screen, setScreen);
+  const campaign = useCampaignRegion(battle);
+  const { leaving, open: handleOpen } = useTownLeave(
+    screen,
+    campaign.withRegion(setScreen)
+  );
   const ready = useAtomValue(profileReadyAtom);
 
   useProfileStore();
@@ -423,7 +463,11 @@ export const PlayScreen = () => {
             <TownScreen leaving={leaving} onOpen={handleOpen} />
           ) : null}
           {screen === "campaign" ? (
-            <CampaignScreen onStart={(options) => battle.start(options)} />
+            <CampaignScreen
+              region={campaign.region}
+              onRegion={(region) => campaign.setRegion(region)}
+              onStart={(options) => battle.start(options)}
+            />
           ) : null}
           {screen === "packs" ? <PacksScreen /> : null}
           {screen === "workshop" ? <WorkshopScreen /> : null}

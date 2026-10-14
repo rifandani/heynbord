@@ -177,8 +177,8 @@ export interface StagePlayerOptions {
  * Stage difficulty (GDD 13, step 6): a new Player on the first try plays the
  * Stage with the expected Deck of a starter Deck, at the Recommended level and
  * with no Gear. Gear unlocks at player level 5 (GDD 7.1). `options` changes the
- * level and the Gear, but not the Deck, to measure their effect on the win
- * rate (Economy 7.1).
+ * level and the Gear, but not the Deck: for the Expected Gear of the Stage
+ * (ADR-0034), or to measure their effect on the win rate (Economy 7.1).
  */
 export const simulateStage = (
   stage: StageDefinition,

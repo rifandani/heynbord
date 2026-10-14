@@ -25,6 +25,7 @@ export const HINTS = [
   "craft",
   "battleLog",
   "gear",
+  "sweep",
 ] as const;
 
 export type HintId = (typeof HINTS)[number];
@@ -62,6 +63,7 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
   craft: toEntry("workshop"),
   battleLog: { _tag: "KeyGuide", line: "battleLog" },
   gear: toEntry("gear"),
+  sweep: toEntry("sweep"),
 };
 
 /**
@@ -69,9 +71,9 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
  * shortcut, the Unopened Pack Hint near the Open button of the first
  * Unopened Pack, the Packs level Hint near the Card shop in the Town, and the
  * Workshop and Craft level Hints near the Workshop in the Town, the Battle
- * Log Hint near the Battle Log button of the result screen, and the Gear Hint
+ * Log Hint near the Battle Log button of the result screen, the Gear Hint
  * below the first upgrade of the Hero screen, so that it does not cover the
- * Hero plate.
+ * Hero plate, and the Sweep Hint near the Sweep button of the Stage Panel.
  */
 export type HintPlace =
   | "hand"
@@ -80,7 +82,8 @@ export type HintPlace =
   | "cardShop"
   | "workshop"
   | "resultBattleLog"
-  | "firstGearItem";
+  | "firstGearItem"
+  | "sweepButton";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   skillCard: "hand",
@@ -92,6 +95,7 @@ export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   craft: "workshop",
   battleLog: "resultBattleLog",
   gear: "firstGearItem",
+  sweep: "sweepButton",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */
@@ -154,6 +158,13 @@ export interface ResultFacts {
  */
 export const isBattleLogHintMet = (facts: ResultFacts): boolean =>
   !facts.tutorial && facts.result.winner === "enemy";
+
+/**
+ * The Sweep Hint: the Stage Panel shows a Stage with 3 best Stars. The
+ * Tutorial is only in a Battle of Stage 1-1, and it ends with the first win,
+ * so this Hint never shows during the Tutorial.
+ */
+export const isSweepHintMet = (stars: number): boolean => stars === 3;
 
 /**
  * The Deck builder Hint: the Player owns a card (one card in one Rank) that

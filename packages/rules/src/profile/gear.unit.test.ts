@@ -14,14 +14,14 @@ const withGear = (coin: number, gear: Partial<GearLevels> = {}) => ({
 });
 
 describe("upgradeGear (GDD 7.3, Economy 3.4)", () => {
-  it("upgrades level 0 to 1 for 40 Coin, and changes only that slot", () => {
+  it("upgrades level 0 to 1 for 10 Coin, and changes only that slot", () => {
     const upgraded = upgradeGear(withGear(100), "weapon");
-    expect(upgraded?.coin).toBe(60);
+    expect(upgraded?.coin).toBe(90);
     expect(upgraded?.gear).toEqual({ ...NO_GEAR, weapon: 1 });
   });
 
-  it("upgrades level 9 to 10 for 4,000 Coin", () => {
-    const upgraded = upgradeGear(withGear(4000, { banner: 9 }), "banner");
+  it("upgrades level 19 to 20 for 2,100 Coin", () => {
+    const upgraded = upgradeGear(withGear(2100, { banner: 19 }), "banner");
     expect(upgraded?.coin).toBe(0);
     expect(upgraded?.gear.banner).toBe(MAX_GEAR_LEVEL);
   });
@@ -40,7 +40,7 @@ describe("upgradeGear (GDD 7.3, Economy 3.4)", () => {
     }
   });
 
-  it("fails at level 10, and the Profile does not change", () => {
+  it("fails at level 20, and the Profile does not change", () => {
     const profile = withGear(1_000_000, { trinket: MAX_GEAR_LEVEL });
     expect(upgradeGear(profile, "trinket")).toBeNull();
     expect(profile.coin).toBe(1_000_000);
@@ -50,12 +50,12 @@ describe("upgradeGear (GDD 7.3, Economy 3.4)", () => {
   it("fails with too little Coin, and the Profile does not change", () => {
     const profile = withGear(gearUpgradeCoin(5) - 1, { armor: 4 });
     expect(upgradeGear(profile, "armor")).toBeNull();
-    expect(profile.coin).toBe(999);
+    expect(profile.coin).toBe(149);
     expect(profile.gear).toEqual({ ...NO_GEAR, armor: 4 });
   });
 
   it("needs no Player level: the screen that calls it has the lock (PRG-04)", () => {
     expect(newProfile(1).xp).toBe(0);
-    expect(upgradeGear(withGear(40), "weapon")?.gear.weapon).toBe(1);
+    expect(upgradeGear(withGear(10), "weapon")?.gear.weapon).toBe(1);
   });
 });

@@ -33,7 +33,7 @@ The player is a new **Hero** in the world of Heynbord. The player collects cards
 
 Long ago, the peoples of Heynbord almost destroyed the world in war. Then the **Lanekeepers** (draft) wrote the **Accord** (draft). Under the Accord, all wars happen on marked battlefields with lanes, and all armies obey the same rules. Today, kings and chiefs settle every argument with a battle in the lanes. Some battles are about land. Many are about very small things, for example a stolen cheese or a rude song.
 
-The player is a new Hero. The player travels through three Regions, wins the respect of each people, and finds out who wants to break the Accord.
+The player is a new Hero. The player travels through five Regions, wins the respect of each people, and finds out who wants to break the Accord.
 
 ### 3.2 Races
 
@@ -52,11 +52,15 @@ A Main Keyword is the signature of that Race. The Race that gives a signature up
 
 ### 3.3 Regions (draft names)
 
-| No. | Region | Main enemies | Lanes | Boss (draft) |
-| --- | --- | --- | --- | --- |
-| 1 | **Hearthvale** | Human outlaws and the Orc sellswords that the Baron pays | 3 | **Baron Brassbelly**, a bandit lord with a very large hat |
-| 2 | **The Thornwood** | Elves and the Feral creatures of the deep forest | 3 | **The Old Bramble**, a forest giant that wakes up angry |
-| 3 | **The Hollow Marches** | Undead and the Goblins that dig under the marsh hills | 3 | **Queen Marrow**, ruler of the Undead |
+| No. | Region | Main enemies | Debut Race | Lanes | Boss (draft) |
+| --- | --- | --- | --- | --- | --- |
+| 1 | **Hearthvale** | Human outlaws and the Orc sellswords that the Baron pays | Human and Orc | 3 | **Baron Brassbelly**, a bandit lord with a very large hat |
+| 2 | **The Red Mesas** | The Orc tribes of the mesas and the Goblin mines under them | Goblin | 3 | **Boss Snikkit**, the goblin mine king (Ranger) |
+| 3 | **The Glowcap Hollows** | Goblin tunnels that break into an Elf grove of giant glowing mushrooms | Elf | 3 | **Lady Glimmerbough**, an Elf grove warden |
+| 4 | **The Thornwood** | Elves and the Feral creatures of the deep forest | Feral | 3 | **The Old Bramble**, a forest giant that wakes up angry |
+| 5 | **The Hollow Marches** | The Feral beasts of the frozen marsh and the Undead | Undead | 3 | **Queen Marrow**, ruler of the Undead |
+
+Each Region keeps the newest Race of the Region before it and adds one new Race: its **Debut Race**. The Boss of a Region is of a Debut Race of that Region. A Debut Race is only about the enemies: the player can get cards of each Race from Packs at any time ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)).
 
 ## 4. Battle
 
@@ -249,7 +253,7 @@ To calculate damage, do these steps in this order:
 
 - When a Unit from a Creature Card has 0 HP, it leaves the Board and goes to its owner's Graveyard. A Token disappears instead.
 - Last Breath effects resolve when the Unit leaves the Board. A v1 Last Breath either deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that the Unit left.
-- **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses (also a Ward), its bonus Bulwark and its Rally bonus end. A Unit with Steadfast does not die from the hit (4.7), so it keeps its Rebirth.
+- **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses (also a Ward), its bonus Bulwark and its Rally bonus end. A Unit with Steadfast does not die from the hit (4.7), so it keeps its Rebirth. A Unit that *Smite* kills does not come back: it dies as a Unit without Rebirth.
 - **Tokens** (Units that effects create) use the Rank of the Card or effect that made them. They do not go to the Graveyard. They disappear.
 
 ### 4.10 Win, loss and Sudden Death
@@ -281,7 +285,9 @@ The game shows the best Star result for each Stage. The word "star" is only for 
 
 - **Speed ×1 / ×2:** The player can change the animation speed at any time.
 - **Skip:** The player can skip the animations of the current Resolution Phase. The result is the same.
-- **Auto-play:** The AI plays the player's cards. Auto-play is available on Stages and Dungeons that the player has already won. The player can set a number of repeats (1 to 10). Repeats stop at the first loss.
+- **Auto-play:** The AI plays the player's cards. Watched Auto-play is available on Dungeons that the player has already won. The player can set a number of repeats (1 to 10). Repeats stop at the first loss.
+- **Sweep:** On a Stage with 3 best Stars, the Stage Panel has a Sweep button next to Play, and it shows the Sweep Tickets of the player. The player selects a number of Tickets (1 to 10, and not more than the player has). Each Ticket gives one repeat-win reward of the Stage at once (see 8.1), with no Battle, and the Sweep Result shows. A Sweep always wins. The Class of the Active Deck sets the Stage card pool. A Sweep never changes the Stars, gives no Sweep Tickets and does not count for an Achievement. A Hint tells the player about the Sweep (see 8.3), and the Handbook has an Entry for it ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)).
+- **Sweep Tickets:** Each win that the player plays (a Stage, a Dungeon or a Floor) gives 2 Sweep Tickets. The Battle result shows them. A loss, an Abandon and a watched Auto-play win give none. Sweep Tickets are earn-only: the Bazaar never sells them, and they never change into Coin, Essence or Heynstones. There is no maximum.
 - **Battle Log:** In a Solo Battle, the player can look back at the past moments of the current Battle (see 11.2). The Battle Log is view only. It never changes the Battle and has no undo. It shows only what the player saw at that moment: played cards and roll results, but not the enemy Hand, the enemy draws or the roll values. It goes away when the player leaves the Battle. It is not available in the Tutorial. A Replay (the seed, the Decks and the Commands, BAT-14) is a different thing.
 - Speed, Skip and Auto-play never change the result, because the rules are deterministic.
 
@@ -386,7 +392,7 @@ The Hero has one Class. The Class decides which Skill Cards the Deck can hold.
 | **Warrior** | Buffs and tempo | *War Drums* (U, Countdown 2): at Uncommon, the Countdown of 1 random card in your Hand goes down by 2; at Rare, 2 random cards go down by 2; at Epic, 3 random cards go down by 2; at Legendary, 3 random cards go down by 3. *Shield Wall* (C, 2): friendly Units in one Lane get Bulwark 1 at Common, 2 at Uncommon, 3 at Rare, 4 at Epic and 5 at Legendary for the next 2 enemy Turns. *Shoulder Charge* (C, 2): 3 Physical damage at Common, 4 at Uncommon, 5 at Rare, 6 at Epic and 7 at Legendary to an enemy Unit. If the damage is above 0 and the Unit survives, it is Pushed 1 Square, or 2 Squares at Legendary, as with Knockback. *Shield Bash* (C, 2): 2 Physical damage at Common, 3 at Uncommon, 4 at Rare, 5 at Epic and 6 at Legendary to an enemy Unit. Then your Units in its Lane get Bulwark 1 at Common, Uncommon and Rare, 2 at Epic and 3 at Legendary for the next enemy Turn (4.8). *Spear Throw* (C, 2): 5 Physical damage at Common, 6 at Uncommon, 7 at Rare, 8 at Epic and 9 at Legendary to an enemy Unit. *Ground Slam* (U, 3): 2 Physical damage to each enemy Unit in a Lane at Uncommon, 3 at Rare and 4 at Epic. *Cleave* (U, 3): 4 Physical damage to an enemy Unit and to the Square behind it; 5 at Rare, 6 at Epic and 7 at Legendary. *Expose Weakness* (R, 2): an enemy Unit becomes Exposed 2 at Rare, 3 at Epic and 4 at Legendary (4.7). *Call to Arms* (R, 3): friendly Units in a Lane get +4 Attack at Rare, +5 at Epic and +6 at Legendary until the end of your next Turn (4.8). *Onslaught* (E, 2): each friendly Unit in a Lane takes one more action now, from the front Unit to the back Unit; at Legendary, each also gets +1 Attack until the end of your next Turn (4.4, 4.8). War Drums is the only card that lowers a Countdown. |
 | **Ranger** | Control and Hero damage | *Quick Shot* (C, Countdown 1): 5 Physical damage at Common, 6 at Uncommon, 7 at Rare, 8 at Epic and 9 at Legendary to an enemy Unit. *Pinning Shot* (C, 2): 6 Physical damage to an enemy Unit. If the damage is above 0 and the Unit survives, it becomes Entangled. *Harrying Shot* (C, 2): Physical damage to an enemy Unit and damage to the enemy Hero in its Lane. It deals 4 and 4 at Common, 5 and 4 at Uncommon, 6 and 4 at Rare, 7 and 5 at Epic, and 8 and 6 at Legendary. *Warning Shot* (C, 3): 8 Physical damage at Common, 9 at Uncommon, 10 at Rare, 12 at Epic and 14 at Legendary to an enemy Unit. If the Unit survives, it is Pushed 2 Squares toward its own Hero, also at 0 damage. *Barbed Arrow* (U, 3): 5 Physical damage to an enemy Unit. If the damage is above 0 and the Unit survives, it is Bleeding 3. *Long Shot* (U, 4): 12 damage to the enemy Hero. *Skybreaker* (U, 3): 7 Physical damage at Uncommon, 9 at Rare, 11 at Epic and 14 at Legendary to an enemy Unit. If the Unit is Flying and survives, it becomes Grounded (4.7), also at 0 damage. *Venom Arrow* (R, 4): 4 Physical damage at Rare, 5 at Epic and 6 at Legendary to an enemy Unit. If the Unit survives, it becomes Poisoned with 5 more stacks at Rare, 6 at Epic and 7 at Legendary, also at 0 damage (4.8). *Hunter's Focus* (R, 4): a friendly Unit gets +4 Attack at Rare, +5 at Epic and +6 at Legendary, and +1 Range at each Rank, until the end of the caster's next Turn (4.8). A Melee Unit attacks as a Ranged Unit while it has the bonus Range. *Rain of Arrows* (E, 6): 3 Physical damage to each enemy Unit in a Lane at Epic, and 5 at Legendary. Each Unit that survives with damage above 0 becomes Entangled. A new Entangled does not stack. No Ranger card delays the enemy Hand: that is the Goblin Keyword Sabotage. |
 | **Mage** | Area damage and Field Effects | *Frost Bolt* (C, Countdown 2): 3 Frost damage to an enemy Unit. *Frost Shards* (C, 2): 2 Frost damage to an enemy Unit and to the Square behind it. *Fireball* (C, 3): 3 Fire damage to an enemy Unit and to the Square behind it in the same Lane. It does not damage friendly Units. *Flame Wave* (U, 4): 2 Fire damage to each enemy Unit in a Lane. *Frost Wave* (U, 3): 2 Frost damage to each enemy Unit in a Lane. *Spark* (C, 1): 2 Lightning damage to an enemy Unit. *Arc Lightning* (U, 3): 3 Lightning damage at Uncommon, 4 at Rare and 5 at Epic and Legendary to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it. *Wildfire* (R, 4): Field Effect on 2 Lanes × 2 Columns for 2 Turns: 2 Fire damage to each enemy Unit in the area in each of your End Phases; 3 at Epic and Legendary. *Thunderstorm* (R, 5): 3 Lightning damage to 3 random different enemy Units; 4 at Epic and Legendary. *Blizzard* (E, 6): Field Effect on 3 Lanes × 2 Columns for 2 Turns: 2 Frost damage to each enemy Unit in the area in each of your End Phases; 3 at Legendary (4.8). The damage values of Arc Lightning, Wildfire, Thunderstorm and Blizzard come from a table. |
-| **Priest** | Healing, protection and Holy damage | *Blessing of Light* (C, Countdown 1): a friendly Unit gets Ward 4 at Common, 5 at Uncommon, 6 at Rare, 7 at Epic and 8 at Legendary. *Mend* (C, 2): heal 8 HP to a friendly Unit at Common, 10 at Uncommon, 12 at Rare, 14 at Epic and 16 at Legendary. *Smite* (C, 2): 3 Holy damage to an enemy Unit. *Radiant Strike* (C, 2): 2 Holy damage to an enemy Unit, then heal 2 HP to each friendly Unit in its Lane. *Penance* (U, 2): Holy damage to an enemy Unit equal to its Attack at the moment of the hit, with its Rally and Swarm bonuses. A Unit with Attack 0, and a Wall, take 0 damage. The Rank does not change the damage. *Sanctuary* (U, 3): a friendly Unit gets Ward 9 at Uncommon, 11 at Rare, 13 at Epic and 15 at Legendary (4.7). *Prayer of Healing* (U, 3): heal 11 HP to each friendly Unit in a Lane at Uncommon, 13 at Rare, 15 at Epic and 17 at Legendary. *Unbroken Vow* (R, 2): a friendly Unit gets Steadfast (4.7). *Cleanse* (R, 3): remove all Debuffs from a friendly Unit, then heal 8 HP to it at Rare, 9 at Epic and 10 at Legendary (4.8). *Aegis of Dawn* (E, 6): each friendly Unit in a Lane gets Ward 8 at Epic and 10 at Legendary. The Hero of the target cannot Block Holy damage, and a Ward absorbs it. Bleeding halves each heal. The Ward and heal values of Blessing of Light, Mend, Sanctuary, Prayer of Healing, Cleanse and Aegis of Dawn come from a table, not from the Rank scale. No Priest card heals a Hero ([ADR-0028](../adr/0028-nothing-heals-a-hero.md)). |
+| **Priest** | Healing, protection and Holy damage | *Blessing of Light* (C, Countdown 1): a friendly Unit gets Ward 4 at Common, 5 at Uncommon, 6 at Rare, 7 at Epic and 8 at Legendary. *Mend* (C, 2): heal 8 HP to a friendly Unit at Common, 10 at Uncommon, 12 at Rare, 14 at Epic and 16 at Legendary. *Smite* (C, 2): 3 Holy damage to an enemy Unit. A Unit that it kills does not come back with Rebirth (4.9). *Radiant Strike* (C, 2): 2 Holy damage to an enemy Unit, then heal 2 HP to each friendly Unit in its Lane. *Penance* (U, 2): Holy damage to an enemy Unit equal to its Attack at the moment of the hit, with its Rally and Swarm bonuses. A Unit with Attack 0, and a Wall, take 0 damage. The Rank does not change the damage. *Sanctuary* (U, 3): a friendly Unit gets Ward 9 at Uncommon, 11 at Rare, 13 at Epic and 15 at Legendary (4.7). *Prayer of Healing* (U, 3): heal 11 HP to each friendly Unit in a Lane at Uncommon, 13 at Rare, 15 at Epic and 17 at Legendary. *Unbroken Vow* (R, 2): a friendly Unit gets Steadfast (4.7). *Cleanse* (R, 3): remove all Debuffs from a friendly Unit, then heal 8 HP to it at Rare, 9 at Epic and 10 at Legendary (4.8). *Aegis of Dawn* (E, 6): each friendly Unit in a Lane gets Ward 8 at Epic and 10 at Legendary. The Hero of the target cannot Block Holy damage, and a Ward absorbs it. Bleeding halves each heal. The Ward and heal values of Blessing of Light, Mend, Sanctuary, Prayer of Healing, Cleanse and Aegis of Dawn come from a table, not from the Rank scale. No Priest card heals a Hero ([ADR-0028](../adr/0028-nothing-heals-a-hero.md)). |
 
 The values are the Common values, and they scale with the Rank (GDD 5.3), unless a table gives them. A card plays at the value of its Base Rank or a higher Rank: for example, Long Shot deals 14 at Uncommon, and Rain of Arrows deals 3 at Epic and 5 at Legendary. Push and Bleed counts usually do not scale. Shoulder Charge pushes 2 Squares at Legendary. Bonus Attack does not scale. The damage values of Quick Shot, Venom Arrow and Rain of Arrows, bonus Attack of Hunter's Focus, Poisoned stacks of Venom Arrow, bonus Bulwark of Shield Wall, and Exposed value of Expose Weakness come from tables. All cards in this table are real cards. Their source of truth is `packages/rules/src/content/cards.ts`.
 
@@ -430,7 +436,7 @@ Each Unit has a Base Speed of 2 and a Base Range of 1. This includes each Token,
 
 - The Deck builder has an **Auto-fill** button. It fills the Deck with the strongest valid cards. It does not add a card that puts the Deck over the Countdown Limit.
 - The Deck builder shows the Countdown curve (how many cards have each Countdown).
-- The Deck builder shows all cards of the game. An owned card has one tile for each Rank that the player owns. A card that the player does not own has one tile in its Base Rank: grey, with a "Not owned" plate. The player cannot add it, but can see its card details. The owned cards come first, then the cards that are not owned. Each group is in Countdown order. The header shows the number of different cards that the player owns, for example "14 / 66 owned".
+- The Deck builder shows all cards of the game. An owned card has one tile for each Rank that the player owns. A card that the player does not own has one tile in its Base Rank: grey, with a "Not owned" plate. The player cannot add it, but can see its card details. The owned cards come first, then the cards that are not owned. Each group is in Countdown order. When the player can add an owned tile, its plate shows the copies that the player owns in that Rank and the copies that are still free for the Deck, for example "3 owned · 1 left". Otherwise the plate tells why the player cannot add it. The header shows the number of different cards that the player owns, for example "14 / 66 owned".
 - Deck builder filters: All, owned or not owned; All, Creature Cards or Skill Cards; then the Race for Creature Cards, or the Class for Skill Cards. The filters apply together. The Class filter starts on the Class of the Deck. The filters reset when the dialog closes.
 - The game does not let the player start a Battle with a Deck that is not valid. It shows the reason.
 
@@ -471,22 +477,21 @@ The Campaign is tuned for these Decks ([14 — Campaign Stages](./14-campaign-st
 | 10 | Dungeon 1 |
 | 20 | Dungeon 2 |
 | 30 | Dungeon 3 |
-| Finish Region 3 | Heynspire |
+| Finish Region 5 | Heynspire |
 
 Each unlock shows a Hint (see 8.3).
 
 ### 7.2 Collection
 
-- The Collection shows all cards in full, also the cards that the player does not own. A card that the player does not own is grey, with a "Not owned" plate.
+- The Collection is all the card copies that the player owns. It has no screen of its own: the Deck builder shows it (see 6), with the copies of each card in each Rank.
 - A card is **Discovered** after the player owns it one time. The player can Craft only Discovered cards.
-- The Collection shows the number of copies of each card in each Rank.
-- Filters: Race, Class, Rank, Countdown, Keyword, owned or not owned.
+- There is no Inventory screen. Each thing that the player owns shows on the screen where the player uses it: the cards in the Deck builder and the Workshop, the balances on the Balance Plate, the Unopened Packs on the Packs screen, the Gear on the Hero screen and the Sweep Tickets on the Stage Panel.
 
 ### 7.3 Gear
 
-The Hero has 4 Gear slots. Each slot has one item. Each item has a level from 0 to 10. The player upgrades items with Coin. An upgrade never fails, and the level never goes down.
+The Hero has 4 Gear slots. Each slot has one item. Each item has a level from 0 to 20. The player upgrades items with Coin. An upgrade never fails, and the level never goes down. Each level adds the same part of the stat: 0.5% Unit Crit, +1 Hero HP, 0.75% Hero Crit or 0.5% Unit Block ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)).
 
-| Slot | Stat | Level 0 | Level 10 |
+| Slot | Stat | Level 0 | Level 20 |
 | --- | --- | --- | --- |
 | Weapon | Unit Crit chance | 0% | 10% |
 | Armor | Hero HP bonus | +0 | +20 |
@@ -518,12 +523,13 @@ The [Economy](./07-economy.md) document gives the costs.
 
 ### 8.1 Campaign
 
-- 3 Regions. Each Region has 10 Stages. Stage 10 of each Region is a **Boss Stage**.
+- 5 Regions. Each Region has 10 Stages, thus the Campaign has 50 Stages. Stage 10 of each Region is a **Boss Stage**.
+- Each Region adds one Debut Race to the enemies, and the Boss is of a Debut Race of its Region (see 3.3).
 - The Stages in a Region unlock in order. A Region unlocks when the player wins the Boss Stage of the previous Region.
 - Each Stage defines: enemy Hero, enemy Deck, enemy Hero HP, Closed Lanes, Units at the start, special rules, and rewards.
 - The design of each Stage is in [14 — Campaign Stages](./14-campaign-stages.md).
 - **First win reward:** a fixed card, Coin and XP.
-- **Repeat win reward:** Coin, XP, and a chance of a card from the Stage card pool.
+- **Repeat win reward:** Coin, XP, and a chance of a card from the Stage card pool. Each Sweep Ticket (see 4.12) gives this reward.
 - **Star chests:** Each Region gives a chest at 10, 20 and 30 Stars. The player claims a chest with a tap when the Region has its Stars. Its Coin, Essence and Heynstones go to the balances at once. Its Pack becomes an Unopened Pack, which the player opens on the Packs screen. For a Race Pack, the player selects the Race there.
 
 The enemy Hero of a **Boss Stage** is a **Boss**: an enemy Hero with a name and special rules. Boss Stages have special rules. For example:
@@ -534,7 +540,7 @@ The enemy Hero of a **Boss Stage** is a **Boss**: an enemy Hero with a name and 
 
 ### 8.2 Heynspire (draft name)
 
-- Heynspire unlocks after the player wins the Region 3 Boss Stage.
+- Heynspire unlocks after the player wins the Region 5 Boss Stage.
 - It has 50 **Floors**. The player climbs one Floor at a time.
 - The enemies come from the Campaign card pool with higher Ranks and higher Hero HP on each Floor.
 - All Floors use 4 Lanes. Each v1 Floor has 1 enemy Hero, with a Front of all 4 Lanes.
@@ -571,8 +577,9 @@ A **Hint** is a one-line tip. It shows one time, when the player first meets som
 | Gear | Player level 5 |
 | Craft | Player level 6 |
 | Dungeons | Player level 10 |
-| Heynspire | The win of the Region 3 Boss Stage |
+| Heynspire | The win of the Region 5 Boss Stage |
 | Battle Log | The first loss of a Stage after the Tutorial, on the result screen: "Open the Battle Log to see what happened." |
+| Sweep | The first time that the Stage Panel shows a Stage with 3 best Stars, near the Sweep button: "Use Sweep Tickets to get the rewards of this Stage at once." |
 
 ### 8.4 Dungeons
 
@@ -594,7 +601,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 
 - Dungeon 1 teaches the multi-Boss rules in the simplest form: 2 Bosses with 2 Lanes each.
 - Dungeon 2 teaches Fronts of different sizes.
-- Dungeon 3 is the final challenge. It uses the 3 Campaign Bosses again, so it needs no new Boss characters.
+- Dungeon 3 is the final challenge. It uses 3 of the 5 Campaign Bosses again, so it needs no new Boss characters.
 - The names of the Dungeons and the 4 new Bosses are drafts.
 
 ## 9. Enemy AI
@@ -664,14 +671,13 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Dungeons | Dungeon list, unlock levels, Bosses, rewards |
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
 | Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons and a locked ribbon that buys the next Deck slot, all cards with filters (see 6), the Countdown curve, validation, Auto-fill |
-| Collection | All cards, filters, card details |
 | Workshop | The Discovered cards with the filters of the Deck builder, and a Rank panel for the selected card: Combine, Extract, Craft and the path to Legendary (see 7.4) |
 | Hero | The Class of the Active Deck and its Deck, with "Change Deck" to the Deck builder ([ADR-0033](../adr/0033-the-class-stays-on-the-deck-slot.md)); the Hero HP and its parts; the 4 Gear items with their level, their stat now and at the next level, and the Gear upgrade (see 7.3). The portrait and the Gear looks are Cosmetics (see 10). |
 | Packs | The Peddler, Merchant and Royal Packs, each with a Race Pack and a Class Pack version. The Drop Rates, the Pack Guarantees, Open ×10 and the open animation (Economy 3.1) |
 | Achievements | List, progress, rewards |
 | Bazaar | Cosmetics and Conveniences, prices in Heynstones, the Heynstone balance |
 | Settings | A modal dialog in the center of the screen, not a separate screen (see 11.4). Audio, language, speed, reduced motion, text size, save export and import |
-| **Handbook** | A modal dialog over the current screen, not a separate screen (see 11.4). It tells how the game works: 8 Chapters of Entries for the rules, the terms and the icons that the Player meets, with a search that also knows the words of other games ("mana" finds Countdown). An Entry exists only for a feature that is in the game, and all Entries can be read from the start. It does not list cards: the Collection does. It opens from the Town Bar, from the Top Bar of the Battle and the H key, from a rules term in a Details Panel that has focus, and from "Read more" on a Hint (see 8.3). |
+| **Handbook** | A modal dialog over the current screen, not a separate screen (see 11.4). It tells how the game works: 8 Chapters of Entries for the rules, the terms and the icons that the Player meets, with a search that also knows the words of other games ("mana" finds Countdown). An Entry exists only for a feature that is in the game, and all Entries can be read from the start. It does not list cards: the Deck builder does. It opens from the Town Bar, from the Top Bar of the Battle and the H key, from a rules term in a Details Panel that has focus, and from "Read more" on a Hint (see 8.3). |
 
 ### 11.2 Battle screen layout (landscape)
 
@@ -723,14 +729,14 @@ The Town is the first screen of the game. It is a layered 2D painting ([web ADR-
 | Workshop | A workshop with a chimney and smoke |
 | Bazaar | A market with colored tents |
 | Packs | A small card shop |
-| Collection and Deck builder | One library building |
+| No screen | **Library**: a stone library building. It is only decoration. |
 | Hero | A barracks with a training yard |
 | Achievements | A hall of banners |
 
 - All Buildings are in the painting from v1. A Building with no screen yet is only decoration: no label, no hover, and the Player cannot select it. The Town Gate (Campaign), the Card shop (Packs) and the Workshop can be selected. The Card shop opens at Player level 2, and the Workshop at level 3 (see 7.1).
 - The painting fills the screen and crops its edges. The label of each selectable Building, and the part of the Building under its label, stay in a center safe area that every landscape aspect shows. The Workshop is wider than its label: a 4:3 screen crops its right part. Decoration Buildings can be near the edges.
 - Small ambient motion: clouds, chimney smoke, flags and water. The Town Gate has a soft pulse of light until the end of the Tutorial (the first win of Stage 1-1). Before the Profile exists, the pulse always shows. A selection zooms a little toward the Building and fades to its screen. With reduced motion, all motion stops and the change is a plain fade.
-- The **Town Bar** is at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen of the table above, and a Town shortcut at its left end. The Deck shortcut opens the Deck builder dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. A change applies at once, so the dialog has no Save button. Esc, the close button and a click outside the dialog close it. The Collection screen of the library Building comes later. A shortcut to a screen that does not exist yet is disabled, with a lock and the tooltip "Opens later". A disabled shortcut can get keyboard focus, a screen reader reads its name and "opens later", and focus, hover and long press show the tooltip. A shortcut to a screen that the Player level has not unlocked yet (see 7.1) has the same lock, with the tooltip "Opens at level N", and a screen reader reads its name and "opens at level N". On the Town painting, the Building of that screen cannot be selected, and a small lock plate with the same tooltip replaces its name label. When the Player gets the level, the level Hint shows (see 8.3) and the lock goes away. On desktop, each shortcut has an icon and a label. On a phone, it has an icon only, and long press shows its name. The Handbook shortcut is the last shortcut, between the Bazaar shortcut and the Settings button. The Town, the Handbook and Settings have no Building. Like the Deck shortcut, the Handbook shortcut opens a dialog over the current screen, so it has no current state and no lock, and its icon stays lifted while the dialog is open. The Settings button is at its right end, apart from the shortcuts. It opens the Settings dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. The Settings dialog has the language and the sound, and later the other options of 11.1. A change applies at once. Esc, the close button and a click outside the dialog close it, and the Player stays on the same screen. The Town Bar has no separate language and sound buttons.
+- The **Town Bar** is at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen of the table above, and a Town shortcut at its left end. The Deck shortcut opens the Deck builder dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. A change applies at once, so the dialog has no Save button. Esc, the close button and a click outside the dialog close it. The Deck builder is a dialog and has no Building. A shortcut to a screen that does not exist yet is disabled, with a lock and the tooltip "Opens later". A disabled shortcut can get keyboard focus, a screen reader reads its name and "opens later", and focus, hover and long press show the tooltip. A shortcut to a screen that the Player level has not unlocked yet (see 7.1) has the same lock, with the tooltip "Opens at level N", and a screen reader reads its name and "opens at level N". On the Town painting, the Building of that screen cannot be selected, and a small lock plate with the same tooltip replaces its name label. When the Player gets the level, the level Hint shows (see 8.3) and the lock goes away. On desktop, each shortcut has an icon and a label. On a phone, it has an icon only, and long press shows its name. The Handbook shortcut is the last shortcut, between the Bazaar shortcut and the Settings button. The Town, the Handbook and Settings have no Building. Like the Deck shortcut, the Handbook shortcut opens a dialog over the current screen, so it has no current state and no lock, and its icon stays lifted while the dialog is open. The Settings button is at its right end, apart from the shortcuts. It opens the Settings dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. The Settings dialog has the language and the sound, and later the other options of 11.1. A change applies at once. Esc, the close button and a click outside the dialog close it, and the Player stays on the same screen. The Town Bar has no separate language and sound buttons.
 - The game is one route ([web ADR-0006](../../apps/web/docs/adr/0006-the-game-is-one-route.md)). The Town shortcut goes back to the Town, and Esc does the same. The Battle result shows the Coin of the result (Economy 2.1) and has "Play Again" and "Back to Campaign". It also shows the XP of the result on a bar, "Level up! Level N" when the Player gets a level, and the card that the Player won, with a "New" ribbon if it is not Discovered. It does not tell the unlocks of the new level: the level Hint tells them in the Town (see 8.3). The rewards go into the Profile when the result shows, so that a page load on the result does not lose them. A Battle that is not finished when the page loads again gives no result: no loss, no rewards, and it is not an Abandon. To leave a Battle is an Abandon, with a confirm dialog. The browser Back button leaves the game. A reload opens the Town.
 
 ### 11.5 Campaign
@@ -738,7 +744,7 @@ The Town is the first screen of the game. It is a layered 2D painting ([web ADR-
 The Campaign screen shows one **Region Map** at a time: a flat 2D painting of one Region, with a **Trail** from the first Stage to the Boss Stage ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The art brief and the positions are in [12 — Region Concepts](./12-region-concepts.md).
 
 - **Which Region opens.** From the Town Gate, the newest unlocked Region. From "Back to Campaign" after a Battle, the Region of that Battle.
-- **Top band.** The Region name, with a back arrow and a next arrow at its two sides. The arrows go to the other Regions. The Player can also open a locked Region. All its Stage Markers are then Locked, and a line under the name says which Boss Stage unlocks it. There is no arrow before Region 1 or after Region 3.
+- **Top band.** The Region name, with a back arrow and a next arrow at its two sides. The arrows go to the other Regions. The Player can also open a locked Region. All its Stage Markers are then Locked, and a line under the name says which Boss Stage unlocks it. There is no arrow before Region 1 or after Region 5.
 - **Stage Markers.** The game draws one Stage Marker on each stop of the Trail. Each Stage Marker is a shield, with a small plate under it that shows the Stage ID (for example "1-3").
 
   | State | Look | Select |
@@ -763,9 +769,9 @@ The Campaign screen shows one **Region Map** at a time: a flat 2D painting of on
 | Skill Cards | 40 (10 for each Class: 4 Common, 3 Uncommon, 2 Rare and 1 Epic) |
 | Total collectible cards | 130 |
 | Tokens | About 8; the Creature Card draft defines 2 |
-| Campaign Stages | 30 (with 3 Boss Stages) |
+| Campaign Stages | 50 (5 Regions, with 5 Boss Stages) |
 | Heynspire Floors | 50 |
-| Dungeons | 3 (with 4 new Bosses, and the 3 Campaign Bosses again in Dungeon 3) |
+| Dungeons | 3 (with 4 new Bosses, and 3 of the 5 Campaign Bosses again in Dungeon 3) |
 | Achievements | About 40 |
 | Cosmetics | About 30 (8 earn-only, the rest in the Bazaar) |
 
@@ -805,7 +811,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - The swap rule (±5 points, 1000 seeds) stays the true check. If the content test and the sim do not agree, the sim wins. When a card fails the sim: first check the Hold Rule, and fix the AI if it wastes the card. Then change the rate of an effect kind if many cards of that kind fail in the same direction. Change the values of one card only if it is the only one.
 4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).
 5. Check each Archetype's win rate in each **Matchup**. The target is 45% to 55% against the other Archetypes.
-6. Check Stage difficulty with `bun run sim stage`. The results are in [14 — Campaign Stages](./14-campaign-stages.md). The target win rate for a new player Deck on the first try is 60% to 80% for normal Stages and 30% to 50% for Boss Stages and Dungeons. The first Stages of Region 1 make a ramp: Stage 1-1 (the Tutorial) ≥ 95%, Stage 1-2 ≥ 85%, Stage 1-3 ≥ 75%. For a Dungeon, use a Deck that is typical at its unlock level.
+6. Check Stage difficulty with `bun run sim stage`. The results are in [14 — Campaign Stages](./14-campaign-stages.md). The target win rate for a new player Deck on the first try is 60% to 80% for normal Stages and 30% to 50% for Boss Stages and Dungeons. The first Stages of Region 1 make a ramp: Stage 1-1 (the Tutorial) ≥ 95%, Stage 1-2 ≥ 85%, Stage 1-3 ≥ 75%. Each Stage must hit its target with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). For a Dungeon, use a Deck that is typical at its unlock level.
 
 ## 14. Items for later versions
 

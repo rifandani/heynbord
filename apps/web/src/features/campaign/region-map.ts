@@ -1,5 +1,9 @@
 import type { Profile, StageDefinition } from "@workspace/rules";
-import { regionStars } from "@workspace/rules";
+import {
+  isRegionUnlocked,
+  regionStars,
+  unlockingBossStage,
+} from "@workspace/rules";
 
 /** A point in Region Map coordinates: the 1600 × 900 box of the painting. */
 export interface Point {
@@ -10,9 +14,6 @@ export interface Point {
 /** The Region Map painting coordinates: a 16:9 box (web ADR-0008). */
 export const MAP = { width: 1600, height: 900 } as const;
 
-/** The number of Regions in v1 (GDD 8.1). */
-export const REGION_COUNT = 3;
-
 /**
  * One Region Map (12 — Region Concepts). Each stop is the center of a painted
  * clearing, in Trail order. Leg `n` is the center line of the painted road
@@ -21,7 +22,8 @@ export const REGION_COUNT = 3;
  */
 export interface RegionMap {
   readonly region: number;
-  readonly image: string;
+  /** The painting, or `null` for the placeholder of a Region with no painting yet. */
+  readonly image: string | null;
   /**
    * The large landmark of the Boss behind the last stop. The screen keeps it
    * in view, so the Player sees where the Trail goes.
@@ -147,6 +149,8 @@ const REGION_MAPS = {
   1: HEARTHVALE,
   2: null,
   3: null,
+  4: null,
+  5: null,
 } as const satisfies RegionMaps;
 
 /** The Region Map of a Region, or `null` while its painting does not exist. */
@@ -154,6 +158,18 @@ export const regionMap = (
   region: number,
   maps: RegionMaps = REGION_MAPS
 ): RegionMap | null => maps[region] ?? null;
+
+/**
+ * The Region Map that the Campaign screen shows: the painting of the Region,
+ * or a placeholder while the painting does not exist. The placeholder uses
+ * the stops and the legs of Hearthvale with no image, so that the Trail and
+ * the Stage Markers show on a plain backdrop with no wrong landmarks.
+ */
+export const shownRegionMap = (
+  region: number,
+  maps: RegionMaps = REGION_MAPS
+): RegionMap =>
+  regionMap(region, maps) ?? { ...HEARTHVALE, region, image: null };
 
 /** The best Stars (1 to 3) of each won Stage, by Stage ID. */
 export type StageResults = Readonly<Record<string, number>>;
@@ -172,7 +188,9 @@ export interface TrailStage {
 
 /**
  * The Stages of a Region in Trail order. The Stages in a Region unlock in
- * order (GDD 8.1): a Stage is Open when the Stage before it is Done.
+ * order (GDD 8.1): a Stage is Open when the Stage before it is Done. The
+ * first Stage of a locked Region stays Locked, and its Boss Stage to win
+ * first is the Boss Stage of the previous Region.
  */
 export const trailStages = (
   stages: readonly StageDefinition[],
@@ -182,13 +200,44 @@ export const trailStages = (
   const inRegion = stages
     .filter((stage) => stage.region === region)
     .toSorted((a, b) => a.number - b.number);
+  const regionOpen = isRegionUnlocked(results, region, stages);
   return inRegion.map((stage, index) => {
     const stars = results[stage.id] ?? 0;
-    const before = inRegion[index - 1] ?? null;
-    const unlocked = before === null || (results[before.id] ?? 0) > 0;
+    // The first Stage waits for the Boss Stage of the previous Region.
+    const before =
+      index === 0
+        ? unlockingBossStage(region, stages)
+        : (inRegion[index - 1] ?? null);
+    const unlocked =
+      index === 0 ? regionOpen : (results[before?.id ?? ""] ?? 0) > 0;
     const state: StageState = stars > 0 ? "done" : unlocked ? "open" : "locked";
     return { stage, state, stars, after: unlocked ? null : before };
   });
+};
+
+/**
+ * What the Region banner says about a Region (GDD 11.5). Open: the Player can
+ * play its Stages. Locked: the Player must win `boss` first. Later: the Region
+ * has no Stages in the game yet, or the Region before it has no Boss Stage.
+ */
+export type RegionStatus =
+  | { readonly kind: "open" }
+  | { readonly kind: "locked"; readonly boss: StageDefinition }
+  | { readonly kind: "later" };
+
+export const regionStatus = (
+  stages: readonly StageDefinition[],
+  region: number,
+  results: StageResults
+): RegionStatus => {
+  if (!stages.some((stage) => stage.region === region)) {
+    return { kind: "later" };
+  }
+  if (isRegionUnlocked(results, region, stages)) {
+    return { kind: "open" };
+  }
+  const boss = unlockingBossStage(region, stages);
+  return boss ? { kind: "locked", boss } : { kind: "later" };
 };
 
 /** The most Stars of a Region: 3 for each Stage on its Trail (GDD 8.1). */

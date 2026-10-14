@@ -1,5 +1,12 @@
 # @workspace/web
 
+ /grill-with-docs introduce new items called "Enchanting Gems", which is a collectible items to enhance hero gears, currently we only need coins which is too easy, this gems can be acquired "free" as prizes maybe in dungeons/heynspire, for now there's 4 gems:
+
+- Common Gem: can be used to enchant equipment up to levels 1 to 5.
+- Uncommon Gem: can be used to enchant equipment up to levels 6 to 10.
+- Rare Gem: can be used to enchant equipment up to levels 11 to 15.
+- Epic Gem: can be used to enchant equipment up to levels 16 to 20.
+
 Answers all ur questions automatically with ur best recommendations, except critical questions.
 
 ## Todo
@@ -79,22 +86,6 @@ For Unique Unit:
 
 New Skills:
 
-Priest:
-
-- Cleanse: Remove all debuffs to friendly Unit
-- Purify: Remove 1 debuff with the longest duration from target friendly Unit and restore 4 Life to it
-- Holy Light N: Deals N damage to enemy units. Killed enemy can't be resurrected/rebirth
-
-Mage:
-
-- Reflect Magic: Reflect magic damage for 1 turns
-- Absorb Magic: Absorb magic damage for 1 turns
-- Nullify Magic: Nullify magic damage for 2 turns
-
-Undead:
-
-- Mind Control: apply Charm to enemy for 1 turn (Charm is a new Keyword: The targeted enemy unit is forced to fight on your side against its own allies for the duration of the effect)
-
 Warrior:
 
 - Reflect Physical: Reflect physical damage for 1 turns (the art should be drinking potion)
@@ -104,63 +95,60 @@ Warrior:
 - Bestow Pivot: Target friendly Unit gains Keyword "Pivot" for 2 turns
 - Bestow Retaliate: Target friendly Unit gains Keyword "Retaliate" for 2 turns
 - Sacrificial Guard: Your hero will take all damage that would be dealt to target friendly Units for 2 turns
-
-Elf:
-
-- Fortify N: Reduces non-melee damage by half to friendly units for N turns
-
-Feral:
-
-- Primal Retribution: Inflict debuff to enemy Unit, any damage it deals, it will also receive the same
-
-Orc:
-
 - Immovable Object: friendly Unit cannot move but gains +8 Life and Keywords: Pivot and Retaliate. Last 2 turns.
 
-Goblin:
+Ranger:
 
+- Fortify: Reduces non-melee damage by half to friendly units for 2 turns
 - Silence: Enemy Unit lose 1 random Keyword for 2 turns
 - Slow: Enemy Unit -1 Movement for 2 turns
+- Swift Death: Places a card with the highest Countdown from target enemy hero's hand into his graveyard
+- Premediation: Your hero takes 5 damage. Draw two cards.
+- Disinformation: Returns target Unit to its Summoner's hand. Resets its Countdown to half of its highest number (rounded up).
+- Sow Disorder: Increases Countdown of 3 random cards in target enemy hero's hand by 1
+- Deadly Blow: Your hero takes 3 damage. Kill target enemy Unit whose Countdown is 3 or less.
+- Fatal Opening: Doubles all damage target enemy Unit takes for 1 turn.
+
+Mage:
+
+- Reflect Magic: Reflect magic damage for 1 turns
+- Absorb Magic: Absorb magic damage for 1 turns
+- Nullify Magic: Nullify magic damage for 2 turns
+- Mind Control: apply Charm to enemy for 1 turn (Charm is a new Keyword: The targeted enemy unit is forced to fight on your side against its own allies for the duration of the effect)
+
+Priest:
+
+- Cleanse: Remove all debuffs to friendly Unit
+- Purify: Remove 1 debuff with the longest duration from target friendly Unit and restore 4 Life to it
+- Retribution: Inflict debuff to enemy Unit, any damage it deals, it will also receive the same
+- Haste: Decreases Countdown of a card with the highest Countdown in target friendly hero's hand by 4
+- Zeal: Decreases Countdown of each card in target friendly hero's hand by 1.
 
 Sequence:
 
-1. #50
-1. #67 "Re-fit Vanguard and Raiders": blocked by #50.
 1. #68 "Promote Diagnostic Decks": blocked by #67.
-1. Workshop feature: Combine and Extract, and Craft.
-1. Hero feature: Gear upgrades. Then check the Region 1 margins again with real Gear. Vitality is your hero‘s life = armour, Fortitude influences your Units‘ block rate = headgear, Valour influences your Units‘ critical hit rate = weapon
-1. First external playtest: this is the M2 exit.
-1. Regions 2 and 3 (M3): their tuning needs Combine and Gear.
+1. Regions 2 to 5 (M3): their tuning needs Combine and Gear.
 1. Heynspire, then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
 
 New features:
 
-continue hunters focus
-
-- /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
-- /grill-with-docs rewards for winning campaigns, for winning stage 1-10 i think we can give them elf, we also should have a prediction record / simulation like if the user complete stage 1-1 how many coins and cards they have. Also victory result modal in campaign battle still not showing what the rewards
-- /grill-with-docs a smart auto-play button for Stages that the player has already won (whats the reward for completing already completed stage?)
-- /grill-with-docs introduce new items called "Skip Ticket", it will auto-skip Stages that the player has already won
-- /grill-with-docs how do we save player's progress so far? for now i want to save it locally, but later i want it to be saved in DB of course
-- /grill-with-docs add campaign region 2 which is about mixed Orc & Goblin territory (the first time we introduce Goblin)
-- /grill-with-docs add campaign region 3 which is all about Goblin & Elf territory (the first time we introduce Elf)
-- /grill-with-docs add campaign region 4 which is all about Elf & Feral territory (the first time we introduce Feral)
-- /grill-with-docs add campaign region 5 which is all about Feral & Undead territory (the first time we introduce Undead)
 - brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
-- differentiate between https://kingsandlegends-archive.fandom.com/wiki/Alchemy_Lab and https://kingsandlegends-archive.fandom.com/wiki/Blacksmith
+- differentiate between
 - cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 - check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
 v2:
 
+- Story scenes at the start and end of each Region (need to install some claude motion skills first)
 - blender mcp + all 3D unit
 - hybrids, awakening
 - standardize UI components at design system level
 - dynamic og image generation
 - add better auth + skills
 - add server side feature flag
-- add production ready error monitoring, logs with evlog + skills
+- add error monitoring, logs with evlog + skills
 - add alchemy + cloudflare binding
+- save player's progress in DB
 - Enemy AI: a search-based AI (for example Monte Carlo) that uses the deterministic engine
 - Asynchronous online: an account, a server
 - https://kingsandlegends-archive.fandom.com/wiki/Seaport
@@ -176,3 +164,5 @@ v2:
 - The original had 7 damage types and an action order of 11 steps
 - The original deck had 15 to 30 cards (new players started at 5 to 10, and the limits went up by 1 each level). A deck could hold at most 3 copies of a card. Skill cards had to match your class.
 - The original had 10 slots (with mounts and runes) and 4 stats: Hero HP, Hero Crit, Unit Crit, Unit Block.
+- https://kingsandlegends-archive.fandom.com/wiki/Alchemy_Lab
+- https://kingsandlegends-archive.fandom.com/wiki/Blacksmith

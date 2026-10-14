@@ -311,20 +311,24 @@ const SizeMeter = ({ input }: { readonly input: DeckInput }) => {
   );
 };
 
+/** Only the first reasons show, so that the list cannot hide the Deck list. */
+const MAX_PROBLEMS = 3;
+
 /** The reasons when the Deck is not valid (CRD-04). */
 const Problems = ({
   problems,
 }: {
   readonly problems: readonly DeckProblem[];
 }) => {
-  const { text } = useGameText();
+  const { text, tr } = useGameText();
   if (problems.length === 0) {
     return null;
   }
+  const hidden = problems.length - MAX_PROBLEMS;
   return (
     <output className="block" data-testid="deck-problems">
       <ul className="flex flex-col gap-1">
-        {problems.map((problem) => {
+        {problems.slice(0, MAX_PROBLEMS).map((problem) => {
           const reason: TextRef = problemText(problem);
           return (
             <li
@@ -340,6 +344,14 @@ const Problems = ({
           );
         })}
       </ul>
+      {hidden > 0 && (
+        <p
+          className="mt-1 pl-4 text-sm leading-snug text-[#5b4632] italic [@media(max-height:500px)]:text-xs"
+          data-testid="deck-problems-more"
+        >
+          {tr("deckBuilder.moreProblems", { count: hidden })}
+        </p>
+      )}
     </output>
   );
 };

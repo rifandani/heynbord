@@ -32,6 +32,8 @@ export interface Hit {
    * keeps its Damage Type and its Status. Steadfast still holds.
    */
   readonly trueDamage?: boolean;
+  /** A Unit that the hit kills does not come back with Rebirth (*Smite*). */
+  readonly noRebirth?: boolean;
 }
 
 /** Burn, Poison and Sudden Death are status damage: no Bulwark, no Crit, no Block, no new status. */
@@ -158,8 +160,8 @@ interface HitResult {
  * minimum 0 (ADR-0031). Then a
  * Ward absorbs damage, also status damage. Absorbed damage is not dealt: `dealt` is the damage after
  * the Ward. True Damage skips all of these steps. Then Steadfast keeps the
- * Unit at 1 HP. Fire gives Burn, Frost gives Freeze and Lightning gives
- * Paralyzed, also at 0 damage.
+ * Unit at 1 HP. A `noRebirth` hit that kills stops Rebirth. Fire gives Burn,
+ * Frost gives Freeze and Lightning gives Paralyzed, also at 0 damage.
  */
 export const damageUnit = (
   ctx: StepContext,
@@ -222,7 +224,8 @@ export const damageUnit = (
     ctx.events.push(BattleEvent.SteadfastHeld({ unitId: unit.id }));
   }
   if (unit.hp <= 0) {
-    if (!rebirth(ctx, unit)) {
+    const noRebirth = hit.noRebirth ?? false;
+    if (noRebirth || !rebirth(ctx, unit)) {
       killUnit(ctx, unit);
     }
     return { dealt: amount, killed: true };

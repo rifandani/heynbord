@@ -2,7 +2,7 @@
 
 This document gives the design of each Stage of the Campaign: its place, its enemy, the new thing that it teaches, its enemy Deck and its first-win card. The rules for all Stages are in [GDD 8.1](./03-game-design.md#81-campaign). The data is in `packages/rules/src/content/stages.ts`. The Stage names and the enemy names are in the Message Catalogs (`apps/web/src/core/libs/i18n/locales/`). The landmark of each Stage is on its Region Map ([12 — Region Concepts](./12-region-concepts.md)).
 
-Now only Region 1 has Stages. All names are draft names (README, "Status of names").
+Now only Regions 1 and 2 have Stages. All names are draft names (README, "Status of names").
 
 ## 1. Rules for the Stages
 
@@ -10,18 +10,23 @@ Now only Region 1 has Stages. All names are draft names (README, "Status of name
 - **The place is the landmark.** The name of a Stage is a place on the Trail. The Region Map shows that place as the landmark next to the Stage Marker. The Battle does not show the landmark: all Stages of a Region use the one Battle Painting of the Region ([13 — Battlefield Concepts](./13-battlefield-concepts.md)).
 - **Only the current tools.** A Stage uses only the cards that exist and the fields of the Stage data: enemy Class, Hero HP, Gear, Deck, Closed Lanes and Start Units. A new rule type needs its own design.
 - **The Boss is the largest.** The Boss Stage has the largest enemy Hero HP and the largest Deck of its Region (GDD 8.1).
+- **The Boss is of a Debut Race.** The Boss is of a Debut Race of its Region (GDD 3.3, [ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)).
 - **First-win card.** Each Stage gives one fixed card on its first win: a card of the enemy Deck of that Stage, in its Base Rank. The cards are mixed, so that they help each Starter Deck. The data is the `firstWinCard` field of each Stage. The rules Profile action `applyStageResult` gives it, and it also gives the repeat-win card from the Stage card pool (Economy 2.1).
 - **Deck size of a new Player.** An enemy Deck has the same size as the expected Deck of a new Player at the Recommended level (see 1.1), or 1 card less. The Boss Deck is the exception: it is larger than all other Decks of its Region. The enemy gets stronger with Rank, Gear and Start Units, not with more cards. A side that has more cards keeps summoning after the other side has no cards, and that decides the Battle more than Hero HP.
-- **Win-rate target.** The target is for a new player Deck on the first try (GDD 13): Stage 1-1 ≥ 95%, 1-2 ≥ 85%, 1-3 ≥ 75%, other Stages 60% to 80%, Boss Stages 30% to 50%.
+- **Win-rate target.** The target is for a new player Deck on the first try (GDD 13): Stage 1-1 ≥ 95%, 1-2 ≥ 85%, 1-3 ≥ 75%, other Stages 60% to 80%, Boss Stages 30% to 50%. Each Stage must hit its target two times, both at the Recommended level: with no Gear, and with the **Expected Gear** (see 1.1 and [ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)).
 - **Tuned for the Starter Decks.** Each copy in a Starter Deck has the Rank Common or Uncommon ([GDD 6.1](./03-game-design.md#61-starter-decks)). Thus a new player has no Epic card in Region 1, and the first win of the Boss Stage gives the first Epic. The Starter Deck guides are also in GDD 6.1: 10 cards, each copy at its Base Rank, Common Creature Cards in pairs or triples, and at least 1 Skill Card of the Class.
-- **Skill Cards of each Region.** The Region 1 enemy Decks keep the Warrior and Mage Skill Cards that they have. The enemy Decks of Regions 2 and 3 can use all 40 Skill Cards, of all 4 Classes. Then a Ranger or Priest Player can also get a Skill Card from a Stage card pool ([Archetypes 2.3](./08-archetypes.md#23-skill-cards-and-the-gate)).
+- **Skill Cards of each Region.** The Region 1 enemy Decks keep the Warrior and Mage Skill Cards that they have. The enemy Decks of Regions 2 to 5 can use all 40 Skill Cards, of all 4 Classes. Then a Ranger or Priest Player can also get a Skill Card from a Stage card pool ([Archetypes 2.3](./08-archetypes.md#23-skill-cards-and-the-gate)).
 - **Tune the enemy strength first.** To change the difficulty of a Stage, first change Hero HP, Gear, the Ranks of the enemy cards and Start Units. Change an enemy Deck card or a first-win card only when the Stage cannot reach its target in another way, because these cards are the identity of the Stage.
 
 ### 1.1 Recommended level
 
 Each Stage has a **Recommended level**: the Player level that the **First-try Path** gives before the Stage ([Economy 1.2](./07-economy.md#12-player-levels)). The First-try Path is the first win of each earlier Stage, in Stage order, with no losses and no repeats. The Player sees the Recommended level. It is the `recommendedLevel` field of each Stage in `stages.ts`.
 
-The simulation (`bun run sim stage` in `packages/rules`) plays each Stage with the **expected Deck** of each Starter Deck, at the Recommended level of the Stage, with no Gear. Gear unlocks at player level 5 (GDD 7.1), so a new player has no Gear in Region 1. `--level N` plays N levels above the Recommended level, and `--gear N` sets all 4 Gear items to level N, with the same Deck. They measure the win-chance bonuses of the economy simulation ([Economy 7.1](./07-economy.md#71-economy-simulation)).
+The simulation (`bun run sim stage` in `packages/rules`) plays each Stage with the **expected Deck** of each Starter Deck, at the Recommended level of the Stage, with no Gear. Then it plays each Stage that has Expected Gear a second time, at that Gear.
+
+The **Expected Gear** of a Stage is the highest Gear that a Player on the First-try Path has before the Stage, over all Play Styles ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). The sim calculates it from the First-try run of each Play Style of the economy simulation ([Economy 7.1](./07-economy.md#71-economy-simulation)). It reads the level of each Gear slot before the first Battle of the Stage, and it takes the Play Style with the highest mean level. If two Play Styles have the same mean, it takes the first one in the order Collector, Upgrader, Balanced. Thus nobody writes the Expected Gear by hand, and it does not go out of date. Gear unlocks at player level 5 (GDD 7.1), so the Expected Gear is 0 / 0 / 0 / 0 for Stages 1-1 to 1-8. Before Stage 1-9 it is 3 / 2 / 2 / 2, and before Stage 1-10 it is 3 / 3 / 3 / 3. A Player who loses gets Gear sooner. That is a catch-up, not a miss.
+
+With `--check`, the sim fails when a row with no Gear or a row with Expected Gear is not on its target. `--level N` plays N levels above the Recommended level, and `--gear N` sets all 4 Gear items to level N, with the same Deck. They measure the win-chance bonuses of the economy simulation, so with these flags the sim plays no Expected Gear rows.
 
 The expected Deck is the Starter Deck (10 cards), then the first-win cards of the earlier Stages, in Stage order, up to the maximum Deck size at the Recommended level (GDD 6). It skips a fourth copy of a card, a Skill Card of another Class and a card that puts the Deck over the Countdown Limit of the Recommended level ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md)). For example, at Stage 1-5 (level 3, maximum 12 cards) the expected Vanguard Deck is the Starter Deck, Militia Recruit and Scrap Raider. The expected Raiders Deck already has 3 Scrap Raiders and 3 Ember Shamans, so it skips the first-win cards of Stages 1-2 and 1-3, and it gets Militia Recruit and Shieldbearer.
 
@@ -48,29 +53,55 @@ The band of **Baron Brassbelly**: Human outlaws and the Orc sellswords that he p
 
 ### 2.2 Numbers
 
-Lane numbers are from the top, 1 to 3. A Start Unit position is its Column for the Player (1 is next to the Player's Hero). Gear is weapon / armor / trinket / banner.
+Lane numbers are from the top, 1 to 3. A Start Unit position is its Column for the Player (1 is next to the Player's Hero). Gear is weapon / armor / trinket / banner, with levels 0 to 20 ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)). The notes from before 2026-10-15 give Gear levels on the old scale of 0 to 10: an old level is 2 levels now.
 
-| Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1-1 | 6 | 0 / 0 / 0 / 0 | 10 | — | — | Militia Recruit (Common) | 1 | 100% / 100% |
-| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 90% / 89% |
-| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 88% / 88% |
-| 1-4 | 38 | 0 / 0 / 0 / 0 | 10 | — | — | Shieldbearer (Common) | 2 | 66% / 67% |
-| 1-5 | 42 | 3 / 0 / 3 / 3 | 11 | — | Militia Recruit (Common), Lane 1, Column 10 · Shieldbearer (Common), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 68% / 56% (miss) |
-| 1-6 | 42 | 1 / 0 / 1 / 1 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 62% / 63% |
-| 1-7 | 34 | 1 / 0 / 1 / 1 | 12 | — | — | Howling Charger (Uncommon) | 4 | 73% / 57% (miss) |
-| 1-8 | 40 | 1 / 0 / 1 / 1 | 12 | Lane 1, opens on Turn 5 | Militia Recruit (Common), Lane 2, Column 12 | Gate Warden (Uncommon) | 4 | 66% / 47% (miss) |
-| 1-9 | 36 | 0 / 0 / 0 / 0 | 13 | — | — | River Knight (Uncommon) | 5 | 64% / 71% |
-| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 35% / 36% |
+The Gear column is the enemy Gear. The Expected Gear column is the Gear of the Player (see 1.1). A Stage with Expected Gear 0 / 0 / 0 / 0 has no second row, so its win rate at Expected Gear is "—".
 
-The win rates come from `bun scripts/simulate.ts 1000 --check` in `packages/rules` on 2026-10-14, after the balance pass of [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md). Three Stages are not on their target with Raiders: 1-5 (55.9%), 1-7 (57.1%) and 1-8 (47.0%). The target is 60% to 80%. Before the change, 3 Stages also missed their target, so the CI balance gate fails as it did before. Before, the win rates came from `bun run sim stage 1000` on 2026-10-11, after the re-tune of the Skill Cards (issue #56, [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
+| Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) | Expected Gear | Win rate at Expected Gear (Vanguard / Raiders) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1-1 | 6 | 0 / 0 / 0 / 0 | 10 | — | — | Militia Recruit (Common) | 1 | 100% / 100% | 0 / 0 / 0 / 0 | — |
+| 1-2 | 32 | 4 / 0 / 0 / 4 | 9 | — | — | Scrap Raider (Common) | 1 | 90% / 89% | 0 / 0 / 0 / 0 | — |
+| 1-3 | 38 | 6 / 0 / 6 / 6 | 10 | — | — | Ember Shaman (Common) | 2 | 88% / 90% | 0 / 0 / 0 / 0 | — |
+| 1-4 | 38 | 0 / 0 / 0 / 0 | 10 | — | — | Shieldbearer (Common) | 2 | 66% / 72% | 0 / 0 / 0 / 0 | — |
+| 1-5 | 42 | 6 / 0 / 6 / 6 | 11 | — | Militia Recruit (Common), Lane 1, Column 10 · Shieldbearer (Common), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 70% / 73% | 0 / 0 / 0 / 0 | — |
+| 1-6 | 42 | 2 / 0 / 2 / 2 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 62% / 64% | 0 / 0 / 0 / 0 | — |
+| 1-7 | 32 | 2 / 0 / 2 / 2 | 12 | — | — | Howling Charger (Uncommon) | 4 | 75% / 64% | 0 / 0 / 0 / 0 | — |
+| 1-8 | 40 | 2 / 0 / 2 / 2 | 12 | Lane 1, opens on Turn 5 | Militia Recruit (Common), Lane 2, Column 11 | Gate Warden (Uncommon) | 4 | 71% / 65% | 0 / 0 / 0 / 0 | — |
+| 1-9 | 36 | 0 / 0 / 0 / 0 | 13 | — | — | River Knight (Uncommon) | 5 | 64% / 71% | 3 / 2 / 2 / 2 | 69% / 76% |
+| 1-10 | 44 | 2 / 0 / 0 / 2 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 36% / 39% | 3 / 3 / 3 / 3 | 38% / 46% |
+
+All win rates come from one run of `bun scripts/simulate.ts stage 1000 --check` in `packages/rules` on 2026-10-14, after the re-tune of Stages 1-5, 1-7 and 1-8 (issue #79). All rows are on their target, with no Gear and with the Expected Gear, so the CI balance gate passes. On 2026-10-15, the Gear got 20 levels ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)). The enemy Gear doubled, so the enemy stats did not change. The Expected Gear and its win rates come from a new run of `bun scripts/simulate.ts stage 1000 --check`, and all rows are still on their target. The rows with no Gear did not change. Before, the win rates came from the re-tune of Stage 1-10 for the Expected Gear (issue #78, [ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)), from `bun scripts/simulate.ts 1000 --check` on 2026-10-14, after the balance pass of [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md), and from `bun run sim stage 1000` on 2026-10-11, after the re-tune of the Skill Cards (issue #56, [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). Some rows with no change to their Stage are different from the earlier table, for example Raiders on 1-4 (72%, it was 67%).
+
+On 2026-10-14, Stages 1-5, 1-7 and 1-8 got a re-tune for Raiders with no Gear (issue #79). Before, Vanguard and Raiders won 68% / 59% of 1-5, 73% / 57% of 1-7 and 67% / 49% of 1-8 (1000 Battles). The target is 60% to 80%. These Stages have no Expected Gear, so only the row with no Gear applies. The first-win cards, the Start Units of 1-5, the rush of 1-7 and the Closed Lane of 1-8 do not change. No enemy Deck card changes, and the Deck sizes do not change. Stage 1-10 keeps the largest enemy Hero HP of Region 1 (44). These Stages changed:
+
+- **1-5:** Spear Throw is Common (it was Uncommon), its Base Rank. Now Vanguard and Raiders win 70% / 73%. Over 2000 Battles, they win 69% / 72%.
+- **1-7:** Hero HP 32 (it was 34). Both Scrap Raiders are Common (they were Uncommon), and the Pack Stalker is Rare (it was Uncommon). Now Vanguard and Raiders win 75% / 64%. Over 2000 Battles, they win 76% / 63%.
+- **1-8:** 1 Halberdier, the Scrap Raider and the Tusk Brute are Common (they were Uncommon). The Militia Recruit Start Unit is in Column 11 (it was in Column 12). Now Vanguard and Raiders win 71% / 65%. Over 2000 Battles, they win 71% / 65%.
+
+On 1-7 and 1-8, Raiders had to go up by more points than Vanguard. Most changes of Hero HP, Gear and Rank moved both Decks up together, or moved Vanguard above 80%. On 1-7, the Pack Stalker at a higher Rank lowers Raiders more than Vanguard (70% / 50% alone). Thus the Rare Pack Stalker takes back some of the Vanguard gain. On 1-8, the Militia Recruit Start Unit one Column nearer to the Player hits Vanguard the most (54.5% / 51% alone). Thus it takes back the Vanguard gain of the Common copies. The other tests (1000 Battles, Vanguard and Raiders, with no Gear):
+
+- **1-5:** Hero HP 38: 69% / 61%. Enemy Gear 1 / 0 / 1 / 1: 71% / 63%. The Badland Runt at Common: 74.5% / 60.5%. The Crossbow Guard Start Unit in Column 12: 64% / 62%. These put Raiders near the bottom of the target.
+- **1-7:** Hero HP 32 only: 75% / 60%. Both Scrap Raiders Common only: 76% / 63%. Spear Throw Common: 78% / 63%. Hero HP 32 and both Scrap Raiders Common: 77% / 65%, but over 2000 Battles Vanguard won 78.5%. The same change and an Uncommon Halberdier: 74% / 61%.
+- **1-8:** Hero HP 32: 69% / 53%. No Gear: 69% / 50%. The Crossbow Guard at Common: 82.5% / 60%, and with the Start Unit in Column 11: 76.5% / 64%. The Halberdier, the Scrap Raider and the Tusk Brute at Common, with the Start Unit in Column 12: 78% / 66%. No Start Unit: 72.6% / 61.5%.
+
+On 2026-10-14, each Stage got a second win-rate check, at the Expected Gear (issue #78, [ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). Only Stages 1-9 and 1-10 of Region 1 have Expected Gear. Before this pass, Vanguard and Raiders won 64% / 71% of 1-9 and 40% / 53% of 1-10 with no Gear, and 68% / 75% and 43% / 59% with the Expected Gear (1000 Battles). The old 1-10 row of the table (35% / 36%) was wrong: the sim did not give these values when the row was written. Stage 1-9 is on its target in all four rows, so it did not change. Stage 1-10 changed:
+
+- **1-10:** both Crossbow Guards are Common (one was Uncommon), and both Halberdiers are Rare (they were Uncommon). Now Vanguard and Raiders win 36% / 39% with no Gear and 38% / 46% with the Expected Gear. Over 2000 Battles, they win 35% / 39% and 37% / 44%. Hero HP stays 44, so the Boss still has the largest Hero HP of Region 1. The Epic Shieldbearer bodyguard, the Iron Bulwark first-win card and all enemy Deck cards stay.
+
+Raiders had to go down by more points than Vanguard. But most single changes of Rank, Start Units, Hero HP and Gear lowered Vanguard by more points than Raiders, or by about the same number. Only Uncommon Shieldbearers lowered Raiders a little more (4 points, and Vanguard 3 points). The Raiders Starter Deck has no Skyreavers now, so a Crossbow Guard at a higher Rank does not hit Raiders more. The Crossbow Guards hit Vanguard the most: with both Uncommon, Vanguard won 24% and Raiders 46%. With both Common, Vanguard won 57% and Raiders 63%. Thus Common Crossbow Guards close most of the gap, and the Rare Halberdiers then lower both Decks. The other tests (1000 Battles, Vanguard and Raiders, with no Gear and then with the Expected Gear):
+
+- Both Crossbow Guards Common and 1 Halberdier Rare: 45% / 52%, then 48% / 55%. Raiders was above the target.
+- The same change and Uncommon Shieldbearers: 44% / 47%, then 46% / 50%. Over 2000 Battles, Raiders won 50.8% with the Expected Gear.
+- Both Crossbow Guards Common, both Halberdiers Rare and Uncommon Shieldbearers: 32% / 36%, then 36% / 42%. Vanguard was near the bottom of the target.
+- Hero HP 47 only: 39% / 52%, then 41% / 57%. Enemy Gear 2 / 0 / 0 / 1 only: 40% / 52%, then 42% / 58%.
+- A Common Crossbow Guard Start Unit in Lane 3: 24% / 41%, then 29% / 46%.
 
 On 2026-10-14, each Unit got Base Speed 2, and the Keywords Swift, Fleet, Heavy, Mid-range, Long-range and Extreme-range replaced the Roles ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)). The cards got new HP (see [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). Mild Stage changes made Stages 1-7 and 1-8 easier:
 
 - **1-7:** Gear 1 / 0 / 1 / 1 (it was 3 / 0 / 2 / 3). All Rare copies are Uncommon: the Pack Stalker, 1 Howling Charger, 1 Skyreaver and the Tusk Brute.
 - **1-8:** Gear 1 / 0 / 1 / 1 (it was 3 / 0 / 3 / 3). The Shieldbearer, the Scrap Raider and the Tusk Brute are Uncommon (they were Rare).
 
-Raiders still wins less than the target in 1-5, 1-7 and 1-8. A stronger change to these Stages was not part of this pass.
+Raiders still won less than the target in 1-5, 1-7 and 1-8. A stronger change to these Stages was not part of this pass (see issue #79 above).
 
 Stage 1-1 has Hero HP 6. Knockback on the enemy Shieldbearers put the Tutorial under 95%. More Militia Recruits were not a legal replacement then: the Deck had 3 copies, and that swap won less often in the Tutorial. Now the Deck has 2 (see the change of 2026-10-08 below). Hero HP 6 puts the Tutorial back on the target. The Shieldbearers stay, so the Player still meets Knockback.
 
@@ -131,16 +162,83 @@ C, U, R and E are the Ranks Common, Uncommon, Rare and Epic.
 | 1-2 | 2× Badland Runt (C), 2× Scrap Raider (C), 1× Militia Recruit (C), 1× Crossbow Guard (U), 2× Howling Charger (U), 1× War Drums (U) |
 | 1-3 | 1× Badland Runt (C), 2× Ember Shaman (C), 1× Shieldbearer (C), 2× Skyreaver (U), 2× Frost Bolt (C), 1× Fireball (C), 1× Flame Wave (U) |
 | 1-4 | 3× Shieldbearer (C), 2× Gate Warden (U), 2× Halberdier (C), 1× Scrap Raider (C), 2× Crossbow Guard (U) |
-| 1-5 | 2× Militia Recruit (C), 1× Scrap Raider (C), 1× Badland Runt (U), 1× Crossbow Guard (C), 2× Halberdier (C), 3× Shieldbearer (C), 1× Spear Throw (U) |
+| 1-5 | 2× Militia Recruit (C), 1× Scrap Raider (C), 1× Badland Runt (U), 1× Crossbow Guard (C), 2× Halberdier (C), 3× Shieldbearer (C), 1× Spear Throw (C) |
 | 1-6 | 2× Halberdier (C), 2× Ember Shaman (C), 2× Shieldbearer (R), 1× Dawn Cleric (U), 1× Militia Recruit (C), 2× Frost Bolt (C), 1× Fireball (C) |
-| 1-7 | 1× Halberdier (C), 1× Ember Shaman (C), 2× Scrap Raider (U), 1× Pack Stalker (U), 2× Howling Charger (U), 3× Skyreaver (U), 1× Tusk Brute (U), 1× Spear Throw (U) |
-| 1-8 | 1× Shieldbearer (C), 1× Shieldbearer (U), 2× Halberdier (C), 1× Halberdier (U), 1× Crossbow Guard (U), 1× Gate Warden (U), 1× Scrap Raider (U), 2× Howling Charger (U), 1× Tusk Brute (U), 1× Shield Wall (C) |
+| 1-7 | 1× Halberdier (C), 1× Ember Shaman (C), 2× Scrap Raider (C), 1× Pack Stalker (R), 2× Howling Charger (U), 3× Skyreaver (U), 1× Tusk Brute (U), 1× Spear Throw (U) |
+| 1-8 | 1× Shieldbearer (C), 1× Shieldbearer (U), 3× Halberdier (C), 1× Crossbow Guard (U), 1× Gate Warden (U), 1× Scrap Raider (C), 2× Howling Charger (U), 1× Tusk Brute (C), 1× Shield Wall (C) |
 | 1-9 | 1× Crossbow Guard (U), 1× Crossbow Guard (C), 1× Ember Shaman (C), 1× Halberdier (C), 1× Shieldbearer (C), 2× Skyreaver (U), 1× Scrap Raider (C), 1× Militia Recruit (C), 1× Dawn Cleric (U), 1× River Knight (U), 1× Frost Bolt (C), 1× Fireball (C) |
-| 1-10 | 3× Militia Recruit (C), 1× Gate Warden (R), 2× Shieldbearer (C), 1× Crossbow Guard (C), 1× Crossbow Guard (U), 2× Halberdier (U), 1× Iron Bulwark (E), 1× Spear Throw (U), 1× Shield Wall (U), 1× War Drums (U) |
+| 1-10 | 3× Militia Recruit (C), 1× Gate Warden (R), 2× Shieldbearer (C), 2× Crossbow Guard (C), 2× Halberdier (R), 1× Iron Bulwark (E), 1× Spear Throw (U), 1× Shield Wall (U), 1× War Drums (U) |
 
-## 3. When a Stage changes
+## 3. Region 2: The Red Mesas
+
+The Orc tribes of the mesas and the Goblin mines under them (GDD 3.3). **Boss Snikkit**, the goblin mine king, pays the Orcs with rocks that he paints gold. The Orcs think that it is real gold, so they fight for him. Region 2 is the Debut of the Goblins: Sabotage and Hobble are new, because no Region 1 Deck has them.
+
+- **No ramp.** The ramp of Stages 1-1 to 1-3 is only in Region 1. The target of each normal Stage is 60% to 80%, and of the Boss Stage 30% to 50%, with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)).
+- **Skill Cards.** The enemy Decks can use the Skill Cards of all 4 Classes (see 1).
+- **First-win cards.** The cards are mixed, so that they help both Starter Decks: 2-1 Ankle Snatcher (C), 2-2 Tunnel Saboteur (C), 2-3 Fuse Runner (C), 2-4 Scrap Plate Guard (C), 2-5 Junk Slinger (C), 2-6 Mesa Pit Fighter (R), 2-7 Warhowler Drummer (U), 2-8 Grease Trapper (U), 2-9 Spyglass Sniper (R) and 2-10 Warchief Grukka (E). With Grukka, the Orc warchief shows that he respects the Player.
+- **No Boss card in the Boss Deck.** The Boss Snikkit card is not in the Deck of Stage 2-10. Thus the Boss Hero and a Unit of the same person are never on the Board together.
+
+### 3.1 Stages
+
+| Stage | Name | Enemy (Class) | Landmark | New thing |
+| --- | --- | --- | --- | --- |
+| 2-1 | The Dust Road | Mesa Outrider (Warrior) | A dusty road between two red mesas, with an orc lookout post | **Hobble:** Ankle Snatchers make the front Units slow. |
+| 2-2 | The Scrap Market | Junk Haggler (Warrior) | Goblin market stalls of scrap under awnings | **Sabotage:** Tunnel Saboteurs delay a card in the Hand. |
+| 2-3 | The Powder Shed | Fuse Mistress (Mage) | A small shed with powder barrels and a smoking roof | **Goblin bombs:** Last Breath 3 on Fuse Runner and Rocket Barrel Rider. |
+| 2-4 | The Junk Wall | Gatefixer Grub (Warrior) | A wall of scrap, carts and bones across a canyon | **Walls that sabotage or explode:** Junk Barricade and Bonestake Palisade. |
+| 2-5 | Sniper's Ridge | Spyglass Sniper (Ranger) | A high ledge with a big brass spyglass | **Enemy Ranger Skill Cards** for the first time, and Goblin Long-range Units: Junk Slinger and Bomb Lobber. |
+| 2-6 | The Fighting Pit | Pit Boss (Warrior) | An orc fighting pit with a crowd fence | **Fire goes through Armor** ([ADR-0031](../adr/0031-armor-reduces-only-physical-damage.md)): Pyreaxe Ravager, Cinderhorn Breakers, Ember Shamans and a Bomb Lobber. The Player now has Armor Gear. |
+| 2-7 | The War Drum Camp | Drum Shaman (Priest) | An orc camp with very big war drums | **Enemy Priest Skill Cards** for the first time, and Rally: the enemy heals and wards its Units. |
+| 2-8 | The Cave-in | Tunnel Foreman (Ranger) | A collapsed mine tunnel with rubble and props | **The middle Lane is closed:** Lane 2 opens on Turn 5. |
+| 2-9 | The Mine Mouth | Snikkit's Lookout (Mage) | A big mine entrance with rail tracks and smoke | **The final test:** all of the above together. |
+| 2-10 | Snikkit's Throne Hall | Boss Snikkit (Ranger) — **Boss** | A mine hall cut into the largest mesa, with a gate of scrap and a huge bucket crown on top | **The Boss rule:** Warchief Grukka (Epic), whom Snikkit pays in painted-rock "gold", is a Start Unit in the middle Lane. Junk Barricades are Start Units in Lanes 1 and 3. |
+
+### 3.2 Numbers
+
+The columns are the same as in 2.2.
+
+| Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) | Expected Gear | Win rate at Expected Gear (Vanguard / Raiders) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2-1 | 40 | 0 / 0 / 0 / 0 | 15 | — | — | Ankle Snatcher (Common) | 6 | 66% / 70% | 4 / 4 / 4 / 3 | 72% / 73% |
+| 2-2 | 40 | 0 / 0 / 0 / 0 | 15 | — | — | Tunnel Saboteur (Common) | 6 | 70% / 69% | 5 / 4 / 4 / 4 | 76% / 71% |
+| 2-3 | 42 | 0 / 0 / 0 / 0 | 16 | — | — | Fuse Runner (Common) | 7 | 68% / 67% | 5 / 5 / 5 / 4 | 71% / 72% |
+| 2-4 | 42 | 0 / 0 / 0 / 0 | 15 | — | — | Scrap Plate Guard (Common) | 7 | 63% / 73% | 6 / 5 / 5 / 5 | 68% / 78% |
+| 2-5 | 42 | 0 / 0 / 0 / 0 | 16 | — | — | Junk Slinger (Common) | 7 | 63% / 72% | 6 / 6 / 5 / 5 | 73% / 76% |
+| 2-6 | 44 | 0 / 0 / 0 / 0 | 16 | — | — | Mesa Pit Fighter (Rare) | 8 | 66% / 73% | 6 / 6 / 6 / 5 | 70% / 78% |
+| 2-7 | 44 | 0 / 0 / 0 / 0 | 17 | — | — | Warhowler Drummer (Uncommon) | 8 | 64% / 66% | 6 / 6 / 6 / 6 | 70% / 72% |
+| 2-8 | 44 | 0 / 0 / 0 / 0 | 16 | Lane 2, opens on Turn 5 | — | Grease Trapper (Uncommon) | 8 | 68% / 68% | 7 / 6 / 6 / 6 | 74% / 72% |
+| 2-9 | 46 | 0 / 0 / 0 / 0 | 17 | — | — | Spyglass Sniper (Rare) | 9 | 69% / 63% | 7 / 7 / 6 / 6 | 77% / 71% |
+| 2-10 | 54 | 0 / 0 / 0 / 0 | 19 | — | Warchief Grukka (Epic), Lane 2, Column 11 · Junk Barricade (Uncommon), Lane 1, Column 11 · Junk Barricade (Uncommon), Lane 3, Column 11 | Warchief Grukka (Epic) | 9 | 38% / 33% | 7 / 7 / 7 / 6 | 46% / 40% |
+
+All win rates come from one run of `bun scripts/simulate.ts stage 1000 --check` in `packages/rules` on 2026-10-14, when the Region 2 Stages were added ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)). All rows of Regions 1 and 2 are on their target, with no Gear and with the Expected Gear. The Region 1 rows did not change. On 2026-10-15, the Gear got 20 levels ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)). The enemy Gear doubled, so the enemy stats did not change. The Expected Gear and its win rates come from a new run of `bun scripts/simulate.ts stage 1000 --check`, and all rows are still on their target. The rows with no Gear did not change.
+
+Notes from the first tuning:
+
+- **The expected Deck is full.** At level 6, the expected Deck of each Starter Deck already has 15 of 15 cards: the Starter Deck and the Region 1 first-win cards. Thus the Region 2 first-win cards do not go into the expected Deck, and they do not change the win rates of the later Region 2 Stages. When the expected Deck rule changes, tune Region 2 again.
+- **Rank is the strong tool.** In Region 2, Hero HP and enemy Gear move the win rate by only a few points. Rank +1 on each copy took Stage 2-1 from 93% to 49%. Thus each Stage raises the Rank of only some copies. The enemy Gear stays 0 / 0 / 0 / 0, and it is a reserve for a later re-tune.
+- **No Epic card in a normal Stage.** No copy of a normal Stage goes above Rare. The only Epic cards of Region 2 are Warchief Grukka in the Boss Stage.
+- **2-6 (Fire).** The first Deck had 2 Pyreaxe Ravagers and 2 Ashspit Hunters (Rare), and Vanguard won only 24%. Now 1 Pyreaxe Ravager stays, and the other became a Tusk Brute. The Ashspit Hunters became a Cinderhorn Breaker and an Ember Shaman, and a second War Drums replaces the Spear Throw. The Spear Throw hit Vanguard the most: with it, Vanguard won only 53% with no Gear (500 Battles).
+- **2-8 (The Cave-in).** The Closed middle Lane makes the Stage easy (97% with each copy at its Base Rank). Thus almost each copy is one Rank above its Base Rank.
+- **2-10 (Boss).** Hero HP 54 (the first value was 50) keeps the Boss the largest of Region 2. The Grukka card of the Deck cannot come to the Board while the Grukka Start Unit is on it, because Grukka is Unique.
+
+### 3.3 Enemy Decks
+
+| Stage | Deck |
+| --- | --- |
+| 2-1 | 3× Ankle Snatcher (C), 2× Badland Runt (U), 2× Scrap Raider (U), 2× Tusk Brute (U), 2× Howling Charger (R), 1× Ember Shaman (U), 1× Junk Slinger (C), 1× War Drums (U), 1× Spear Throw (C) |
+| 2-2 | 3× Tunnel Saboteur (C), 2× Ankle Snatcher (U), 2× Scrap Raider (U), 2× Scrap Plate Guard (U), 1× Ember Shaman (U), 1× Howling Charger (R), 1× Howling Charger (U), 1× Tusk Brute (C), 1× Shield Bash (C), 1× War Drums (U) |
+| 2-3 | 3× Fuse Runner (C), 2× Rocket Barrel Rider (R), 1× Mine Sapper (R), 2× Badland Runt (U), 2× Scrap Raider (U), 1× Tunnel Saboteur (U), 2× Ember Shaman (U), 1× Fireball (C), 1× Spark (C), 1× Frost Bolt (C) |
+| 2-4 | 2× Junk Barricade (R), 1× Bonestake Palisade (C), 3× Scrap Plate Guard (C), 2× Junk Slinger (U), 2× Ember Shaman (U), 1× Tunnel Saboteur (C), 2× Scrap Raider (C), 1× Shield Wall (C), 1× Spear Throw (C) |
+| 2-5 | 2× Junk Slinger (C), 2× Bomb Lobber (U), 1× Spyglass Sniper (R), 2× Scrap Plate Guard (U), 2× Ankle Snatcher (C), 2× Scrap Raider (C), 1× Tunnel Saboteur (C), 1× Quick Shot (C), 1× Harrying Shot (C), 1× Long Shot (U), 1× Warning Shot (C) |
+| 2-6 | 1× Mesa Pit Fighter (R), 1× Pyreaxe Ravager (R), 3× Cinderhorn Breaker (U), 3× Ember Shaman (C), 1× Tusk Brute (C), 2× Scrap Raider (C), 1× Bomb Lobber (U), 2× Fuse Runner (C), 2× War Drums (U) |
+| 2-7 | 2× Warhowler Drummer (U), 2× Scrap Plate Guard (U), 2× Tusk Brute (C), 2× Scrap Raider (C), 2× Ember Shaman (C), 1× Junk Slinger (C), 1× Howling Charger (U), 2× Mend (C), 1× Blessing of Light (C), 1× Radiant Strike (C), 1× Sanctuary (U) |
+| 2-8 | 1× Grease Trapper (R), 1× Grease Trapper (U), 2× Tunnel Saboteur (U), 2× Ankle Snatcher (U), 2× Junk Slinger (U), 2× Scrap Plate Guard (U), 1× Junk Barricade (R), 2× Fuse Runner (U), 1× Tusk Brute (U), 1× Quick Shot (U), 1× Pinning Shot (U) |
+| 2-9 | 1× Spyglass Sniper (R), 1× Grease Trapper (R), 1× Tunnel Saboteur (U), 1× Ankle Snatcher (U), 1× Fuse Runner (C), 1× Junk Barricade (R), 1× Scrap Plate Guard (U), 1× Junk Slinger (U), 1× Bomb Lobber (U), 1× Cinderhorn Breaker (U), 1× Warhowler Drummer (U), 1× Ember Shaman (C), 1× Scrap Raider (C), 1× Tusk Brute (C), 1× Fireball (C), 1× Frost Bolt (C), 1× Arc Lightning (U) |
+| 2-10 | 1× Warchief Grukka (E), 2× Junk Barricade (U), 2× Grease Trapper (U), 2× Tunnel Saboteur (C), 1× Spyglass Sniper (R), 2× Junk Slinger (C), 2× Bomb Lobber (U), 1× Mine Sapper (R), 2× Fuse Runner (C), 1× Scrap Plate Guard (C), 1× Howling Charger (U), 1× Quick Shot (C), 1× Harrying Shot (C) |
+
+## 4. When a Stage changes
 
 1. Change the data in `stages.ts`.
-2. Run `bun run sim stage 1000` in `packages/rules`. Each Stage must be in its target with each Starter Deck. CI runs `bun run rules:sim:check`, and it fails when a Stage is not on its target.
-3. Update the tables in section 2.
+2. Run `bun run sim stage 1000` in `packages/rules`. Each Stage must be in its target with each Starter Deck, with no Gear and with its Expected Gear. CI runs `bun run rules:sim:check`, and it fails when a Stage is not on its target.
+3. Update the tables of the Region (sections 2 and 3).
 4. If the name or the place changes, update the Message Catalogs and the landmark on the Region Map (12 — Region Concepts, section 2).

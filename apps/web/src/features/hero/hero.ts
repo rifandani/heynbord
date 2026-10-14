@@ -20,8 +20,8 @@ import { defaultSlotName } from "@/features/deck/deck";
 
 /**
  * The parts of the Hero HP (GDD 4.10, 7.3): the base, 1 for each Player
- * level, and the Armor bonus (2 for each Armor level). The Hero screen shows
- * "46 = 30 base + 6 level + 5 × 2 Armor".
+ * level, and the Armor bonus (1 for each Armor level). The Hero screen shows
+ * "46 = 30 base + 6 level + 10 × 1 Armor".
  */
 export interface HeroHpParts {
   readonly total: number;
@@ -49,7 +49,7 @@ export const heroHpParts = (
 
 /**
  * What the upgrade button of a Gear item does: upgrade for `coin`, wait for
- * `missing` more Coin, or nothing, because the item is at level 10.
+ * `missing` more Coin, or nothing, because the item is at level 20.
  */
 export type GearUpgrade =
   | { readonly kind: "ready"; readonly coin: number }
@@ -58,7 +58,7 @@ export type GearUpgrade =
 
 /**
  * One Gear item on the Gear Rack: its level, its stat now and at the next
- * level (`null` at level 10), and its upgrade. A stat value is basis points
+ * level (`null` at level 20), and its upgrade. A stat value is basis points
  * (100 = 1%) for a chance, and HP for the Armor.
  */
 export interface GearItem {

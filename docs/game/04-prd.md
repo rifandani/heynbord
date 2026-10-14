@@ -2,7 +2,7 @@
 
 ## 1. Summary
 
-Heynbord v1 is a single-player web game. It is a fantasy collectible card game with automatic lane battles and a countdown hand. The player plays a Campaign of 30 Stages and a tower of 50 Floors. The player collects 130 cards and makes them stronger without real money. The game saves in the browser.
+Heynbord v1 is a single-player web game. It is a fantasy collectible card game with automatic lane battles and a countdown hand. The player plays a Campaign of 50 Stages and a tower of 50 Floors. The player collects 130 cards and makes them stronger without real money. The game saves in the browser.
 
 - Vision: [02 — Game Vision](./02-game-vision.md)
 - Rules: [03 — Game Design](./03-game-design.md)
@@ -59,7 +59,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | BAT-09 | Skill Cards must support Recall and Field Effects. | M |
 | BAT-10 | Sudden Death must start at Turn number 20, and the Turn limit must be Turn number 60. | M |
 | BAT-11 | The player must be able to change speed (×1, ×2) and skip the Resolution Phase animation. | M |
-| BAT-12 | Auto-play with 1 to 10 repeats must be available on won Stages and won Dungeons. | S |
+| BAT-12 | Watched Auto-play with 1 to 10 repeats must be available on won Dungeons. On Stages with 3 best Stars, a Sweep must give 1 to 10 repeat-win rewards at once for 1 Sweep Ticket each, with no Battle. Each win that the player plays must give 2 Sweep Tickets (GDD 4.12, ADR-0035). | S |
 | BAT-13 | The player must be able to see a log of all actions in the current Battle, and see the Board at each past moment, in the Battle Log (GDD sections 4.12 and 11.2). It shows each card play and each Keyword that occurred, and only what the player saw at that moment. | S |
 | BAT-14 | The player must be able to watch a replay of the last Battle. | C |
 | BAT-15 | A Side must support 1 to 4 Heroes, each with its own Front, Deck, Hand and Gear. A Side must lose only when all its Heroes are Defeated (GDD sections 4.1 and 4.10). | S |
@@ -82,10 +82,10 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | ID | Requirement | Priority |
 | --- | --- | --- |
 | PRG-01 | The player must get XP and levels up to level 30, with the unlocks in GDD section 7.1. | M |
-| PRG-02 | The Collection and the Deck builder must show all cards with filters, also the cards that the player does not own. | M |
+| PRG-02 | The Deck builder must show all cards with filters, also the cards that the player does not own, and the copies of each owned card in each Rank. There is no separate Collection screen. | M |
 | PRG-03 | The Workshop must support Combine, Extract and Craft with the costs in the Economy document. | M |
 | PRG-04 | Combine and Gear upgrades must never fail and never cause a downgrade. | M |
-| PRG-05 | The Hero must have 4 Gear slots with levels 0 to 10. | M |
+| PRG-05 | The Hero must have 4 Gear slots with levels 0 to 20. | M |
 | PRG-06 | The player must be able to change the Hero Class outside a Battle at no cost. | M |
 | PRG-07 | Packs must use the drop rates and rules in the Economy document, and the game must show them before the player opens a Pack. | M |
 | PRG-08 | The game must show Coin in Gold, Silver and Copper with the display rule in the Economy document. | M |
@@ -95,10 +95,10 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| MOD-01 | The Campaign must have 3 Regions with 10 Stages each, and Stage 10 of each Region must be a Boss Stage. | M |
+| MOD-01 | The Campaign must have 5 Regions with 10 Stages each, and Stage 10 of each Region must be a Boss Stage. | M |
 | MOD-02 | Each Stage must give 1 to 3 Stars and the rewards in the Economy document. | M |
 | MOD-03 | The Tutorial and the Hints must follow GDD section 8.3. | M |
-| MOD-04 | Heynspire must have 50 Floors and unlock after the Region 3 Boss Stage. | S |
+| MOD-04 | Heynspire must have 50 Floors and unlock after the Region 5 Boss Stage. | S |
 | MOD-05 | The enemy AI must use the score method in GDD section 9 and must not see the player's Hand. | M |
 | MOD-06 | The game must have about 40 Achievements and about 30 Cosmetics. | S |
 | MOD-08 | The Bazaar must sell Cosmetics for Heynstones, with the prices in the Economy document. Earn-only Cosmetics must not be in the Bazaar. | S |

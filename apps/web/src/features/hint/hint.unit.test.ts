@@ -16,6 +16,7 @@ import {
   HINT_TARGET,
   HINTS,
   isBattleLogHintMet,
+  isSweepHintMet,
   nextHint,
 } from "@/features/hint/hint";
 
@@ -126,6 +127,24 @@ describe("isBattleLogHintMet", () => {
   it("shows one time: not again after the Player saw it", () => {
     expect(nextHint(["battleLog"], [])).toBe("battleLog");
     expect(nextHint(["battleLog"], ["battleLog"])).toBeNull();
+  });
+});
+
+describe("isSweepHintMet", () => {
+  it("meets the Sweep Hint on a Stage with 3 best Stars", () => {
+    expect(isSweepHintMet(3)).toBe(true);
+  });
+
+  it("does not meet it on a Stage with 0 to 2 best Stars", () => {
+    for (const stars of [0, 1, 2]) {
+      expect(isSweepHintMet(stars)).toBe(false);
+    }
+  });
+
+  it("opens the Sweep Entry, and shows one time", () => {
+    expect(HINT_TARGET.sweep).toEqual({ _tag: "Entry", entry: "sweep" });
+    expect(nextHint(["sweep"], [])).toBe("sweep");
+    expect(nextHint(["sweep"], ["sweep"])).toBeNull();
   });
 });
 

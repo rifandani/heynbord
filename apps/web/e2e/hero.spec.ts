@@ -71,7 +71,7 @@ test.describe("Hero screen", () => {
       "warrior"
     );
     await expect(page.getByTestId("hero-hp-sum")).toHaveText(
-      "= 30 base + 5 level + 0 × 2 Armor"
+      "= 30 base + 5 level + 0 × 1 Armor"
     );
 
     const hint = page.getByTestId("hint");
@@ -103,42 +103,42 @@ test.describe("Hero screen", () => {
     const weapon = page.getByTestId("gear-weapon");
     const upgrade = page.getByTestId("gear-upgrade-weapon");
     await expect(weapon).toHaveAttribute("data-level", "0");
-    await expect(weapon.getByTestId("gear-stat")).toHaveText("0%→1%");
+    await expect(weapon.getByTestId("gear-stat")).toHaveText("0%→0.5%");
     await expect(upgrade).toHaveAccessibleName(
-      "Upgrade Weapon to level 1, for 40 Copper"
+      "Upgrade Weapon to level 1, for 10 Copper"
     );
 
     await upgrade.click();
     await expect(weapon).toHaveAttribute("data-level", "1");
-    await expect(weapon.getByTestId("gear-stat")).toHaveText("1%→2%");
+    await expect(weapon.getByTestId("gear-stat")).toHaveText("0.5%→1%");
     await expect(page.getByTestId("hero-said")).toHaveText(
-      "Weapon is now level 1. Unit Crit: 1%."
+      "Weapon is now level 1. Unit Crit: 0.5%."
     );
     await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
-      "Coin: 9 Silver, 60 Copper"
+      "Coin: 9 Silver, 90 Copper"
     );
     // The focus stays on the upgrade, so Enter upgrades again.
     await expect(upgrade).toBeFocused();
 
-    // An Armor upgrade adds 2 to the Hero HP.
+    // An Armor upgrade adds 1 to the Hero HP.
     await page.getByTestId("gear-upgrade-armor").click();
     await expect(page.getByTestId("hero-hp")).toHaveAttribute(
       "data-total",
-      "37"
+      "36"
     );
     await expect(page.getByTestId("hero-hp-sum")).toHaveText(
-      "= 30 base + 5 level + 1 × 2 Armor"
+      "= 30 base + 5 level + 1 × 1 Armor"
     );
 
-    // Level 2 costs 160 Copper. With 100, the button is off and says what is missing.
+    // Level 2 costs 30 Copper. With 20, the button is off and says what is missing.
     await page.evaluate(() => {
       // SAFETY: the dev and QA builds install the test hooks on `window`.
-      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setCoin(100);
+      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setCoin(20);
     });
     await expect(upgrade).toBeDisabled();
-    await expect(upgrade).toHaveText("Need60c");
+    await expect(upgrade).toHaveText("Need10c");
     await expect(upgrade).toHaveAccessibleName(
-      "Upgrade Weapon: you need 60 Copper more"
+      "Upgrade Weapon: you need 10 Copper more"
     );
 
     await page.evaluate(async () => {

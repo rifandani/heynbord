@@ -193,19 +193,19 @@ const SKILL_BUDGET_EXCEPTIONS = {
   "warrior.callToArms":
     "Swap −3.0 / −2.9 points. The sim passes, and the sim wins over the test.",
   "ranger.longShot":
-    "Swap +2.0 / −0.6 points. The sim passes, and the sim wins over the test.",
+    "Swap −8.4 / −13.0 points. The sim fails with no value change: after the promotion (issue #68), Thornwatch has no Long Shot, so the swap Deck has 1 copy, not 2. It passed with 2 copies (+2.0 / −0.6).",
   "ranger.quickShot":
-    "Swap +1.1 / +1.4 points. The sim passes, and the sim wins over the test.",
+    "Swap −1.2 / +1.8 points. The sim passes, and the sim wins over the test.",
   "ranger.barbedArrow":
-    "Swap −7.2 / −0.5 points. The sim fails. It has no value change: the stronger Thornwatch cards moved its base Deck.",
+    "Swap −4.1 / −2.1 points. The sim passes, and the sim wins over the test.",
   "ranger.skybreaker":
-    "Swap −4.5 / −0.5 points. The sim passes, and the sim wins over the test.",
+    "Swap −1.9 / −2.1 points. The sim passes, and the sim wins over the test.",
   "ranger.venomArrow":
-    "Swap −5.6 / −3.0 points. The sim fails. More damage and more stacks moved it little.",
+    "Swap −4.0 / +0.1 points. The sim passes, and the sim wins over the test.",
   "ranger.huntersFocus":
-    "Swap −8.3 / −8.3 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −10.0 / −11.5 points. The sim fails, and its sim value did not move with more amount. Thornwatch holds it after the promotion (issue #68), so a change to it also moves the Main Matchups.",
   "ranger.rainOfArrows":
-    "Swap −2.2 / −2.3 points. The sim passes, and the sim wins over the test.",
+    "Swap −1.6 / 0.0 points. The sim passes, and the sim wins over the test.",
   "mage.fireball":
     "Swap −8.5 / −7.1 points. The sim fails. Raiders holds it after the re-fit (issue #67), so a change to it also moves the Main Matchup.",
   "mage.frostBolt":
@@ -215,21 +215,21 @@ const SKILL_BUDGET_EXCEPTIONS = {
   "mage.arcLightning":
     "Swap −9.5 / −7.3 points. The sim fails, and its sim value did not move with more amount.",
   "priest.mend":
-    "Swap +0.3 / −4.3 points. The sim passes, and the sim wins over the test.",
+    "Swap −3.7 / −6.7 points. The sim fails with no value change: the Feral tuning of issue #80 moved its base Deck. It passed before (+0.7 / −4.8). Wild Hunt holds it, so a change to it also moves the Main Matchups.",
   "priest.smite":
-    "Swap −3.2 / −2.9 points. The sim passes, and the sim wins over the test.",
+    "Swap −6.0 / −5.5 points. The sim fails with no value change: the Feral tuning of issue #80 moved its base Deck. It passed before (−3.1 / +0.8).",
   "priest.sanctuary":
-    "Swap +0.3 / −2.8 points. The sim passes, and the sim wins over the test.",
+    "Swap −3.0 / −7.4 points. The sim fails with no value change: after the Feral tuning of issue #80, the swap takes out a Crag Rhino in place of a Cave Bear (now Countdown 2). It passed before (−3.5 / −4.0). Wild Hunt holds it, so a change to it also moves the Main Matchups.",
   "priest.blessingOfLight":
-    "Swap −2.9 / −5.5 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −4.6 / −6.7 points. The sim fails, and its sim value did not move with more amount. Deathless Host holds it after the promotion (issue #68), so a change to it also moves the Main Matchups.",
   "priest.radiantStrike":
-    "Swap −0.8 / −0.8 points. The sim passes, and the sim wins over the test.",
+    "Swap −4.5 / −3.8 points. The sim passes, and the sim wins over the test.",
   "priest.prayerOfHealing":
-    "Swap −3.3 / −6.1 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −13.5 / −13.4 points. The sim fails, and its sim value did not move with more amount. After the Feral tuning of issue #80, the swap takes out a Crag Rhino in place of a Cave Bear. Deathless Host holds it after the promotion (issue #68), so a change to it also moves the Main Matchups.",
   "priest.cleanse":
-    "Swap −4.3 / −4.6 points. The sim passes, and the sim wins over the test.",
+    "Swap −11.2 / −12.4 points. The sim fails with no value change: the re-fit Wild Hunt (issue #68) and the Feral tuning of issue #80 moved its base Deck, and the swap takes out a Crag Rhino in place of a Cave Bear. It passed before (−4.3 / −4.6).",
   "priest.aegisOfDawn":
-    "Swap −7.2 / −10.5 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −0.2 / −5.9 points. The sim fails, and its sim value did not move with more amount.",
 } satisfies Readonly<Record<string, string>>;
 
 describe("card content (CRD-01, technical design 3.5)", () => {
@@ -759,8 +759,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(power("goblin.tunnelSaboteur")).toBe(17);
     expect(power("goblin.grandGearjammer")).toBe(22);
     expect(power("feral.bristlebackBoar")).toBe(17);
-    expect(power("feral.webSpitter")).toBe(18);
-    expect(power("feral.frostElkMatriarch")).toBe(22);
+    expect(power("feral.webSpitter")).toBe(19);
+    expect(power("feral.frostElkMatriarch")).toBe(20);
     // Unique and Wall use 0 points.
     expect(power("feral.oldFrostmaw")).toBe(29);
     expect(power("goblin.junkBarricade")).toBe(17);
@@ -822,7 +822,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives Bleed N × 1 power points (GDD 13)", () => {
-    expect(power("feral.frostfangLynx")).toBe(15);
+    expect(power("feral.frostfangLynx")).toBe(17);
   });
 
   it("gives First Strike 4 and Entangle 2 power points (GDD 13)", () => {
@@ -1094,7 +1094,7 @@ describe("Decks and Stages", () => {
     }
   });
 
-  it("opens all Lanes in the first 3 Stages (GDD 8.3), and has 1 Boss Stage", () => {
+  it("opens all Lanes in the first 3 Stages (GDD 8.3), and has 1 Boss Stage in each Region", () => {
     const first = STAGES.filter((stage) =>
       ["1-1", "1-2", "1-3"].includes(stage.id)
     );
@@ -1102,9 +1102,18 @@ describe("Decks and Stages", () => {
     for (const stage of first) {
       expect(stage.closedLanes, `${stage.id} Closed Lanes`).toEqual([]);
     }
+    const regions = [...new Set(STAGES.map((stage) => stage.region))];
     expect(
       STAGES.filter((stage) => stage.boss).map((stage) => stage.id)
-    ).toEqual(["1-10"]);
+    ).toEqual(regions.map((region) => `${region}-10`));
+    for (const region of regions) {
+      expect(
+        STAGES.filter((stage) => stage.region === region).map(
+          (stage) => stage.number
+        ),
+        `Region ${region} Stage numbers`
+      ).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    }
   });
 
   it("gives each Stage a Recommended level that does not go down", () => {
@@ -1188,16 +1197,16 @@ describe("Decks and Stages", () => {
     }
   });
 
-  it("marks Vanguard and Raiders main, and the other Archetypes diagnostic (Archetypes 2.1)", () => {
+  it("marks the promoted Archetypes main, and the other Archetypes diagnostic (Archetypes 2.1, 2.3)", () => {
     expect(
       ARCHETYPES.map((archetype) => [archetype.id, archetype.kind])
     ).toEqual([
       ["vanguard", "main"],
       ["raiders", "main"],
-      ["tunnelRats", "diagnostic"],
-      ["wildHunt", "diagnostic"],
-      ["thornwatch", "diagnostic"],
-      ["deathlessHost", "diagnostic"],
+      ["tunnelRats", "main"],
+      ["wildHunt", "main"],
+      ["thornwatch", "main"],
+      ["deathlessHost", "main"],
       ["breakneckCompany", "diagnostic"],
       ["vanguardFull", "diagnostic"],
       ["raidersFull", "diagnostic"],

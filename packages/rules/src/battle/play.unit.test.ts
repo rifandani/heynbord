@@ -792,6 +792,24 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
         hp: 5,
       });
     });
+
+    it("kills a Unit with Rebirth, and the Unit does not come back", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.smite", 0]]);
+      const target = enemyAt(state, 6, { hp: 3, rebirth: true });
+      preventRout(state);
+      const { state: next, events } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, target.id)).toBeUndefined();
+      expect(eventsOfType(events, "UnitReborn")).toEqual([]);
+    });
+
+    it("does not end the Rebirth of a Unit that survives", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.smite", 0]]);
+      const target = enemyAt(state, 6, { hp: 4, rebirth: true });
+      const { state: next } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, target.id)).toMatchObject({ hp: 1, rebirth: true });
+    });
   });
 
   describe("Sanctuary", () => {

@@ -5,8 +5,8 @@
 | Milestone | Weeks | Result |
 | --- | --- | --- |
 | M0 — Foundation | 1–2 | Documents, rules package, empty 3D scene in `apps/web` |
-| M2 — Meta loop (**Playable alpha**) | 7–12 | Collection, Deck builder, Packs, Workshop, save, first Region |
-| M3 — Content | 13–19 | 130 cards, 30 Stages, 3 bosses, 3 Dungeons, both languages |
+| M2 — Meta loop (**Playable alpha**) | 7–12 | Deck builder, Packs, Workshop, save, first Region |
+| M3 — Content | 13–19 | 130 cards, 50 Stages, 5 bosses, 3 Dungeons, both languages |
 | M4 — Polish and release (**v1.0**) | 20–26 | Heynspire, Achievements, mobile landscape, audio, performance, playtests |
 
 The schedule is for one developer. If a Milestone is late, cut **C** requirements, then **S** requirements (see the PRD). Do not move the end date of a Milestone more than 2 weeks before you cut scope.
@@ -18,7 +18,7 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 - [ ] All v1 Keywords, Damage Types, Skill Cards, Recall and Field Effects.
 - [ ] Show "Recalled!" animations when a Skill Card returns to the Hand after a successful Recall roll.
 - [ ] Profile model, IndexedDB save, export and import, migrations.
-- [ ] Collection, Deck builder with validation, Packs, and the Workshop. In the Workshop the player can Combine, Extract, and Craft cards, so a weak card is never useless.
+- [ ] Deck builder with validation, Packs, and the Workshop. In the Workshop the player can Combine, Extract, and Craft cards, so a weak card is never useless.
 - [ ] Player level, unlocks, Gear.
 - [ ] Region 1 (10 Stages) with the tutorial and the first boss.
 - [ ] The Town is the first screen of the game. The player selects a Building to open a screen. The Town Gate and the Card shop can be selected.
@@ -35,12 +35,15 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 4. **Hero screen.** Class, Gear upgrades and portrait. Then check the Region 1 margins again with real Gear.
 5. **First external playtest** (the M2 exit).
 
-Regions 2 and 3 (M3) come after the playtest, because their tuning needs the Workshop and Gear: the pacing target for the end of Region 2 has an Epic card, and Combine makes it. Achievements and the Bazaar stay in M4, after the Heynspire, so that their goals and the Heynstone total are planned one time.
+Regions 2 to 5 (M3) come after the playtest, because their tuning needs the Workshop and Gear: the pacing target for the end of Region 2 has an Epic card, and Combine makes it. Achievements and the Bazaar stay in M4, after the Heynspire, so that their goals and the Heynstone total are planned one time.
 
 ### M3 — Content (weeks 13–19)
 
 - [ ] All 130 cards with final art: 90 Creature Cards and 40 Skill Cards.
-- [ ] Regions 2 and 3, with bosses and story scenes.
+- [ ] Regions 2 to 5 (40 Stages), with bosses and story scenes ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)). Region 2 (The Red Mesas): the Stage design is done ([14 — Campaign Stages, 3](./14-campaign-stages.md#3-region-2-the-red-mesas)), and its Stage data and tuning are in progress.
+- [ ] Region Map and Battle Painting images for Regions 2, 3 and 5 ([12 — Region Concepts](./12-region-concepts.md), [13 — Battlefield Concepts](./13-battlefield-concepts.md)). Until a Region has its Battle Painting, it uses the Hearthvale painting.
+- [ ] Enemy AI scores for Sabotage, Hobble and Last Breath. Now the enemy AI does not weigh them when it selects a card to summon.
+- [ ] Hints for each Race and Keyword when the Player meets them for the first time.
 - [ ] Battles with 1 to 4 Heroes on a Side ([ADR-0009](../adr/0009-a-side-has-one-or-more-heroes.md)).
 - [ ] 3 Dungeons with their Bosses (GDD section 8.4). Dungeons use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)).
 - [ ] Balance simulation script. Tune cards to the targets in GDD section 13.
@@ -48,13 +51,15 @@ Regions 2 and 3 (M3) come after the playtest, because their tuning needs the Wor
 - [ ] `id-id` translation of all text.
 - [ ] Final names for Regions, Bosses, Dungeons and the 4 new Dungeon Bosses, Heynspire and the lore names.
 
+**Schedule risk.** The Campaign has 50 Stages, so M3 has 40 new Stages ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)). If M3 is late, apply the cut rule of section 1. Do not cut a Region: each Region adds one Debut Race.
+
 **Exit:** A player can finish the full Campaign. Balance and economy reports meet their targets. Dungeon 1 (4 Lanes) is easy to read on a phone in landscape (screenshot check).
 
 ### M4 — Polish and release v1.0 (weeks 20–26)
 
-- [ ] Heynspire (50 Floors). All Floors use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)).
+- [ ] Heynspire (50 Floors). All Floors use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)). Heynspire unlocks after the Region 5 Boss Stage, so the strength of Floor 1 starts at the values of the Region 5 Boss.
 - [ ] Achievements and Cosmetics.
-- [ ] Heynstones and the Bazaar (Cosmetics).
+- [ ] Heynstones and the Bazaar (Cosmetics). Check the Heynstone total again: the Star chests of 5 Regions give 750 Heynstones ([07 — Economy, 2.6](./07-economy.md)).
 - [ ] Auto-play, Battle Log (BAT-13: #73, #74, #76).
 - [ ] Mobile landscape layout and touch input. Portrait warning.
 - [ ] Sound effects and music.

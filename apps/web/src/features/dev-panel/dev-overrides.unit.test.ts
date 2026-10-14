@@ -121,6 +121,7 @@ describe("overrides over a Profile", () => {
       unlockAll: true,
       stageResults: { "1-1": 3 },
       balances: { coin: 15_400, essence: 30, heynstones: 150 },
+      sweepTickets: 12,
       xp: 640,
       gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
     });
@@ -128,6 +129,7 @@ describe("overrides over a Profile", () => {
     expect(shown.collection).toEqual(unlockedCollection());
     expect(shown.stageResults).toEqual({ "1-1": 3 });
     expect(shown.coin).toBe(15_400);
+    expect(shown.sweepTickets).toBe(12);
     expect(shown.xp).toBe(640);
     expect(shown.gear.weapon).toBe(3);
     // The rest is the Profile.
@@ -147,12 +149,14 @@ describe("overrides over a Profile", () => {
       coin: 1,
       essence: 2,
       heynstones: 3,
+      sweepTickets: 4,
       gear: { weapon: 0, armor: 1, trinket: 0, banner: 0 },
     };
     const overrides = fromOverlay(overlay);
     expect(overrides).toEqual({
       unlockAll: true,
       balances: { coin: 1, essence: 2, heynstones: 3 },
+      sweepTickets: 4,
       gear: { weapon: 0, armor: 1, trinket: 0, banner: 0 },
     });
     expect(overrides && toOverlay(overrides)).toEqual(overlay);

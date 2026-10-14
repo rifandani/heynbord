@@ -2182,6 +2182,8 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       owner: "player",
       position: 4,
       attack: 9,
+      hp: 8,
+      maxHp: 8,
       poison: true,
       hobble: 2,
       knockback: 1,

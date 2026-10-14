@@ -104,8 +104,9 @@ const coinParts = (copper: number) =>
     .join(" · ");
 
 const BalancesBlock = () => {
-  const { setBalance } = useDevOverrides();
+  const { setBalance, setSweepTickets } = useDevOverrides();
   const balances = useAtomValue(balancesAtom);
+  const { sweepTickets } = useAtomValue(profileAtom);
   return (
     <section
       aria-labelledby="dev-balances"
@@ -130,6 +131,16 @@ const BalancesBlock = () => {
           ) : null}
         </NumberField>
       ))}
+      <NumberField
+        value={sweepTickets}
+        minValue={0}
+        step={1}
+        formatOptions={{ maximumFractionDigits: 0 }}
+        onChange={setSweepTickets}
+      >
+        <Label>Sweep Tickets</Label>
+        <NumberInput />
+      </NumberField>
     </section>
   );
 };
@@ -399,7 +410,7 @@ const CampaignBlock = () => {
 
 /**
  * The Game Dev Panel: a TanStack Devtools tab that unlocks all cards, sets the
- * Player level, the Gear and the balances, and wins Campaign Stages one by
+ * Player level, the Gear, the balances and the Sweep Tickets, and wins Campaign Stages one by
  * one. Its values show over the Profile and are not saved into it.
  * Development only.
  */

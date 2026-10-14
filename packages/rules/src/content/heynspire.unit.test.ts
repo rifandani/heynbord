@@ -41,12 +41,12 @@ describe("Heynspire rewards (Economy 2.3)", () => {
     expect(() => floorFirstWinReward(1.5)).toThrow(RangeError);
   });
 
-  it("gives 8,875 XP for all 50 first wins: Region 3 (4,620 XP) to all Floors is 13,495 XP (Economy 1.2)", () => {
+  it("gives 8,875 XP for all 50 first wins: Region 5 (11,000 XP) to all Floors is 19,875 XP (Economy 1.2)", () => {
     let xp = 0;
     for (let floor = 1; floor <= HEYNSPIRE_FLOORS; floor += 1) {
       xp += floorFirstWinReward(floor).xp;
     }
     expect(xp).toBe(8875);
-    expect(4620 + xp).toBe(13_495);
+    expect(11_000 + xp).toBe(19_875);
   });
 });

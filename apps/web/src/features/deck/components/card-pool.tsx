@@ -1,5 +1,5 @@
 import type { DeckInput } from "@workspace/rules";
-import { copiesLeft, getCard } from "@workspace/rules";
+import { copiesLeft, getCard, ownedCopies } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
 import { Button } from "react-aria-components";
@@ -27,12 +27,14 @@ type PeekAt = (target: Peek) => ReactNode;
 const plate =
   "flex h-6 max-w-full items-center rounded-lg border-2 px-2 text-xs leading-none font-bold [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]";
 
-/** The plate under a card: the free copies, or why the card cannot go in now. */
+/** The plate under a card: the owned and free copies, or why the card cannot go in now. */
 const CopiesPlate = ({
+  owned,
   left,
   block,
   classLabel,
 }: {
+  readonly owned: number;
   readonly left: number;
   readonly block: PoolBlock | null;
   readonly classLabel: string;
@@ -40,8 +42,10 @@ const CopiesPlate = ({
   const { tr } = useGameText();
   if (block === null) {
     return (
-      <span className="flex h-6 min-w-9 items-center justify-center rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-2 text-sm leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:text-xs">
-        {tr("deckBuilder.left", { count: left })}
+      <span className="flex h-6 max-w-full min-w-9 items-center justify-center rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-2 text-xs leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]">
+        <span className="truncate">
+          {tr("deckBuilder.left", { owned, left })}
+        </span>
       </span>
     );
   }
@@ -86,6 +90,7 @@ const PoolCard = ({
   const { tr, text } = useGameText();
   const card = getCard(tile.cardId);
   const block = poolBlock(input, tile.cardId, tile.rank);
+  const owned = ownedCopies(input.collection, tile.cardId, tile.rank);
   const left = copiesLeft(input, tile.cardId, tile.rank);
   const classLabel = card.kind === "skill" ? text(classText(card.class)) : "";
   const label = {
@@ -105,7 +110,11 @@ const PoolCard = ({
         aria-label={
           block === "notOwned"
             ? tr("deckBuilder.notOwnedCard", label)
-            : tr("deckBuilder.add", { ...label, left: Math.max(left, 0) })
+            : tr("deckBuilder.add", {
+                ...label,
+                owned,
+                left: Math.max(left, 0),
+              })
         }
         aria-disabled={block === null ? undefined : true}
         className={cn(
@@ -130,7 +139,12 @@ const PoolCard = ({
               "brightness-[0.82] saturate-[0.55]"
           )}
         />
-        <CopiesPlate left={left} block={block} classLabel={classLabel} />
+        <CopiesPlate
+          owned={owned}
+          left={left}
+          block={block}
+          classLabel={classLabel}
+        />
       </Button>
       {peekAt({ cardId: tile.cardId, rank: tile.rank, from: "pool" })}
     </li>

@@ -5,7 +5,7 @@
 Heynbord runs in the existing Bun monorepo. There are two main parts:
 
 - **`packages/rules`** (`@workspace/rules`): a pure TypeScript package with all game rules. It does not use React, Three.js or the DOM. It is deterministic.
-- **`apps/web`**: the existing React app. It shows the menus, the Collection and the Workshop with React components. It shows the Battle in a Three.js scene with React Three Fiber.
+- **`apps/web`**: the existing React app. It shows the menus, the Deck builder and the Workshop with React components. It shows the Battle in a Three.js scene with React Three Fiber.
 
 [ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md) records why the rules are a separate package. [ADR-0007](../adr/0007-effect-is-the-application-runtime.md) records why `apps/web` runs its logic as Effect programs and keeps its shared state in Effect Atoms.
 
@@ -15,7 +15,7 @@ Heynbord runs in the existing Bun monorepo. There are two main parts:
 ┌──────────────────────────── apps/web ────────────────────────────┐
 │                                                                  │
 │  React UI (React Aria, TanStack Router)                          │
-│  Title · Town · Deck builder · Collection · Workshop · Settings  │
+│  Title · Town · Deck builder · Workshop · Settings               │
 │                                                                  │
 │  Battle view                                                     │
 │  ┌──────────────┐  Commands   ┌────────────────────────────────┐ │

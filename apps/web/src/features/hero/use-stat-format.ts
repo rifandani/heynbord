@@ -5,8 +5,8 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { isChance } from "@/features/hero/hero";
 
 /**
- * A Gear stat in the current language: a chance as a percent ("1.5%", or
- * "1,5%" in id-ID) from basis points, and the Hero HP of the Armor as a bonus
+ * A Gear stat in the current language: a chance as a percent ("0.75%", or
+ * "0,75%" in id-ID) from basis points, and the Hero HP of the Armor as a bonus
  * ("+10").
  */
 export const useStatFormat = () => {
@@ -14,7 +14,7 @@ export const useStatFormat = () => {
   return useMemo(() => {
     const percent = new Intl.NumberFormat(locale, {
       style: "percent",
-      maximumFractionDigits: 1,
+      maximumFractionDigits: 2,
     });
     const number = new Intl.NumberFormat(locale, { signDisplay: "always" });
     return (stat: GearStat, value: number): string =>

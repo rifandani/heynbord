@@ -269,6 +269,11 @@ const SkillEffect = Schema.Union([
     type: Schema.Literal("damageUnit"),
     amount: SkillAmount,
     damageType: DamageType,
+    /**
+     * A Unit that the hit kills does not come back with Rebirth (GDD 4.9).
+     * It leaves the Board, as a Unit without Rebirth does.
+     */
+    noRebirth: Schema.optionalKey(Schema.Literal(true)),
   }),
   Schema.Struct({
     type: Schema.Literal("damageArea"),
@@ -601,12 +606,12 @@ export const DeckEntry = Schema.Struct({
 });
 export type DeckEntry = typeof DeckEntry.Type;
 
-/** Gear levels 0 to 10 for the 4 slots (GDD 7.3). */
+/** Gear levels 0 to 20 for the 4 slots (GDD 7.3, ADR-0037). */
 export const GearLevels = Schema.Struct({
-  weapon: between(0, 10),
-  armor: between(0, 10),
-  trinket: between(0, 10),
-  banner: between(0, 10),
+  weapon: between(0, 20),
+  armor: between(0, 20),
+  trinket: between(0, 20),
+  banner: between(0, 20),
 });
 export type GearLevels = typeof GearLevels.Type;
 
@@ -633,7 +638,7 @@ export type ClosedLane = typeof ClosedLane.Type;
 
 export const StageDefinition = Schema.Struct({
   id: Schema.NonEmptyString,
-  region: between(1, 3),
+  region: between(1, 5),
   number: between(1, 10),
   boss: Schema.Boolean,
   /**

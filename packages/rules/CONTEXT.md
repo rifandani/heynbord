@@ -158,6 +158,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Power Budget**: The Power Points that a Card can have for its Countdown. A Creature Card and a Skill Card with the same Countdown have the same Power Budget. A Card must stay near its Power Budget. _Avoid_: cost, mana curve, stat budget, Skill Power Budget
 
+**Countdown Band**: The Countdowns that the Creature Cards of one Race can have for each Base Rank. For example, a Feral Common has Countdown 2 or 3, and no Feral card has Countdown 1. _Avoid_: Countdown range, cost tier, mana band
+
 **Graveyard**: The place for a Hero's Cards that are used or dead. _Avoid_: discard pile, cemetery, crypt
 
 **Keyword**: A named rule on a Card, for example Flying or Bulwark. _Avoid_: trait, perk, tag, ability
@@ -196,7 +198,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Last Breath: X**: A Keyword. X occurs when the Unit leaves the Board. In v1, X deals damage to the nearest enemy Unit ahead in the same Lane, or summons a Token in the Square that the Unit left. _Avoid_: death effect, deathrattle
 
-**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Bulwark, its bonus Attack and its Rally bonus end. _Avoid_: revive, resurrect
+**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Bulwark, its bonus Attack and its Rally bonus end. A Unit that _Smite_ kills does not come back. _Avoid_: revive, resurrect
 
 **Summon X**: A Keyword. When a Unit with Summon comes onto the Board from its Creature Card, a Token X with the Rank of that Card copy appears next to it. The Token goes to the first empty Square of an open Lane in this order: the Square behind the Unit, then the same Column in the Lane with the lower number, then the same Column in the Lane with the higher number. The Square does not need to be in the Summon Zone. If no Square is empty, no Token appears. A Rebirth return and a Start Unit give no Token. _Avoid_: Spawn, Call, Raise
 
@@ -272,7 +274,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Drop Rate**: The chance of each Rank for each Card in a Pack. Each of the three Packs has its own Drop Rates. _Avoid_: odds, luck
 
-**Gear**: The items in the Hero's 4 slots that give the Hero and its Units stats. Each slot holds one fixed item: the Weapon, the Armor, the Trinket or the Banner. An item has a level from 0 to 10. _Avoid_: equipment, items, gear set
+**Gear**: The items in the Hero's 4 slots that give the Hero and its Units stats. Each slot holds one fixed item: the Weapon, the Armor, the Trinket or the Banner. An item has a level from 0 to 20. _Avoid_: equipment, items, gear set
 
 **Gear upgrade**: The action that adds 1 level to one Gear item for Coin. It never fails, and a Gear level never goes down. _Avoid_: enchant, refine, level up, forge
 
@@ -296,6 +298,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **First-try Path**: The first win of each earlier Stage, in Stage order, with no losses and no repeats. It gives the smallest XP that a Player can have at a Stage. _Avoid_: golden path, ideal run, expected path
 
+**Expected Gear**: The highest Gear levels that a Player on the First-try Path has before a Stage, over all Play Styles. It is level 0 for each Stage before Gear unlocks. _Avoid_: typical Gear, recommended Gear
+
 **Boss Stage**: The last Stage of a Region, with special rules. Its enemy Hero is a Boss. _Avoid_: boss level, raid
 
 **Start Unit**: A Unit that a Stage puts on the enemy Side of the Board before the first Turn, for example the Boss's bodyguard. It is a copy of a Card, so its Rank is at least the Card's Base Rank. _Avoid_: pre-placed Unit, spawn, Unique boss Unit
@@ -308,6 +312,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Campaign**: All Regions and their Stages. _Avoid_: story mode, adventure
 
+**Debut Race**: A Race that the Player fights for the first time in a Region. Region 1 has two (Human and Orc). Each later Region has one, and it also has the Debut Race of the Region before it. The Boss of a Region is of a Debut Race of that Region. A Debut Race is only about the enemies: the Player can get cards of each Race from Packs at any time. _Avoid_: new Race, featured Race, unlocked Race
+
 **Stars**: The 1 to 3 result grade of a Stage win. _Avoid_: score, rating; never use for Rank
 
 **Star chest**: A reward of a Region that the Player claims when the best Stars of its Stages add up to 10, 20 or 30. Each Region has 3. _Avoid_: milestone, Star reward
@@ -319,6 +325,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Floor**: One Battle in Heynspire. _Avoid_: level, stage
 
 **Auto-play**: A mode in which the enemy AI logic plays the Player's Cards. _Avoid_: bot, auto battle
+
+**Sweep**: The use of 1 to 10 Sweep Tickets on a 3-Star Stage. Each Ticket gives one repeat-win reward of the Stage at once, with no Battle. _Avoid_: auto battle, quick battle, auto-resolve, raid, skip
+
+**Sweep Ticket**: An earn-only item that the Player uses for a Sweep. A win that the Player plays gives Sweep Tickets. _Avoid_: Skip Ticket, raid ticket, energy, stamina
 
 **Hold Rule**: A condition of the AI for one type of Skill Card effect. While the condition is false, the AI keeps a Ready Card with that effect in the Hand and does not play it. It is not a game rule: a Player can play the same Card at any time. _Avoid_: reserve, save, hold threshold
 
@@ -350,8 +360,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
 - A **Deck** holds a **Card** and a **Rank**, not one specific **Card copy**. After a **Combine**, a Deck that used the old-Rank copies uses the new-Rank copy. After an **Extract**, the copy goes out of each Deck that used it. A Card stays **Discovered** after its last copy is Extracted.
 - Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage. A loss or a repeat win gives XP too, so a real Player is at or above the level of the **First-try Path**.
+- Each **Stage** hits its win-rate target two times: with no **Gear** and with the **Expected Gear**, both at the **Recommended level**. A Player who loses gets **Gear** sooner. That is a catch-up, not a miss.
 - A **Region** has 10 **Stages**, and the last one is a **Boss Stage**.
 - The **Tutorial** ends with the first win of Stage 1-1. A loss or an **Abandon** does not end it. A later play of Stage 1-1 is a normal **Stage**. The Tutorial has 4 **Tutorial Steps**. Auto-play is not available in the Tutorial. A **Hint** shows one time for each subject, at any time after the Tutorial.
+- The Player can **Sweep** a **Stage** only when its best **Stars** are 3. A Sweep always wins: each **Sweep Ticket** gives one repeat-win reward. A Sweep never changes the **Stars**, and it gives no Sweep Tickets.
+- A win that the Player plays gives 2 **Sweep Tickets**: in a **Stage**, a **Dungeon** or a **Floor**. A loss, an **Abandon** and an **Auto-play** win give none. The Bazaar never sells Sweep Tickets, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0035](../../docs/adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)).
 - A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**.
 - The Player has one balance of **Coin**, shown in **Gold**, **Silver** and **Copper**, and a separate balance of **Heynstones**.
 - **Coin** and **Heynstones** never change into each other or into **Essence**.
@@ -390,6 +403,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - An early plan said that the **Rally N** bonus "applies to attacks and to Retaliate", as for **Swarm N**. But the Rally bonus ends at the end of its owner's **Turn**, and Retaliate and First Strike occur only in the enemy's Turn. Thus Rally never adds to Retaliate or First Strike. Swarm does, because the Swarm bonus has no duration.
 - Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
 - The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
+- The GDD had a Collection screen before, next to the Deck builder. The two screens showed almost the same cards, so the Collection screen was removed. The **Collection** is the data that the Player owns, not a screen: the Deck builder shows it. "Inventory" is not a term: each thing that the Player owns shows on the screen where the Player uses it.
 - All Cards in a Hand counted down at the same time before. Then the Deck size, not the Countdown, limited the cards that a Hero played. For a short time (issue #21), only 3 "Ticking Cards" counted down, and the other Cards were "Waiting Cards". Players found this slow and hard to track, so it was removed: all Cards in the Hand count down again. Now only the **Countdown Limit** of a Deck makes a long Countdown a real cost ([ADR-0021](../../docs/adr/0021-countdown-is-a-real-cost.md)). The Countdown Limit is not a cost: "cost" stays on the _Avoid_ list of **Countdown**, because a Card is never paid for in a Battle.
 - Melee and Common Units had **Entangle** before. On a Melee Unit it did almost nothing, and on a Ranged Unit it kept one enemy at Speed 0 in each Turn (issue #23). Now only a Ranged Unit with Base Rank Epic or higher has Entangle.
 - A **Main Keyword** was the only Race signature before, and other Races could borrow each one. Thus "signature Keyword" in ADR-0017 did not mean "only this Race". Now each Race also has one **Race Keyword** that no other Race can have ([ADR-0026](../../docs/adr/0026-each-race-has-one-race-keyword.md)). Entangle was "not an Elf Main Keyword" in ADR-0022. Now it is the Elf Race Keyword.
@@ -406,3 +420,4 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The Player feature that shows the past moments of the current Battle is the **Battle Log** (web), not a **Replay**. A Replay is the data that runs a full Battle again, for bug reports and for result checks in PvP.
 - **Bulwark** reduced all damage except Holy before. Then Holy was the only Damage Type that went through Bulwark. Now **Bulwark N** reduces only Physical damage, so Fire, Frost, Lightning and Holy all go through it. The new special rule of Holy is that it cannot be **Blocked**.
 - The Keyword **Bulwark N** had the name "Armor N" before. "Armor" is also the name of a Gear slot, but Armor Gear gives Hero HP and does not reduce damage. Now "Armor" is only the Gear slot. ADR-0031 and the old rows of the balance log still say "Armor".
+- GDD 4.12 had watched **Auto-play** on each won Stage. Then an Auto-play win could give more **Stars**, and the AI could open **Star chests** for the Player. Now a Stage has the **Sweep**, only at 3 Stars. A Sweep is not Auto-play: it plays no Battle. Watched Auto-play stays only on won **Dungeons**. "Skip Ticket" is not a term, because **Skip** already means to skip the animations of a Resolution Phase. The term is **Sweep Ticket**.

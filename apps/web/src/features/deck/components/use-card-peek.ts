@@ -5,13 +5,19 @@ import type { PressEvent } from "react-aria-components";
 
 /**
  * A card whose Card Details show, and the page that it is on: a page of the
- * Deck book, the Token gallery of the Handbook, the cards of opened Packs, or
- * the Workshop grid.
+ * Deck book, the Token gallery of the Handbook, the cards of opened Packs, the
+ * Workshop grid, or the reward of a Stage Panel.
  */
 export interface Peek {
   readonly cardId: string;
   readonly rank: RankId;
-  readonly from: "pool" | "deck" | "handbook" | "packs" | "workshop";
+  readonly from:
+    | "pool"
+    | "deck"
+    | "handbook"
+    | "packs"
+    | "workshop"
+    | "campaign";
   /** The place of the card, when the page can show two copies of it. */
   readonly place?: string;
 }

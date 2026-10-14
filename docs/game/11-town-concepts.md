@@ -112,7 +112,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 
 ### 2.4 Library
 
-`Collection and Deck builder` · Decoration in v1
+No screen · Decoration only
 
 | Field | Brief |
 | --- | --- |

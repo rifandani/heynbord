@@ -10,6 +10,7 @@ import type {
 } from "@workspace/rules";
 import {
   CARDS,
+  CAMPAIGN_REGIONS,
   CAMPAIGN_WIN_XP,
   countdownLimit,
   HAND_LIMIT,
@@ -17,6 +18,7 @@ import {
   LANE_LENGTH,
   MAX_COPIES,
   MAX_GEAR_LEVEL,
+  MAX_SWEEP_TICKETS,
   PACK_SIZE,
   PLAYER_LEVEL_XP,
   KEYWORD_ACTIVATES,
@@ -33,6 +35,7 @@ import {
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
   SUMMON_ZONE_DEPTH,
+  SWEEP_TICKETS_PER_WIN,
   TOKENS,
   TURN_LIMIT,
   UNLOCK_LEVELS,
@@ -114,6 +117,7 @@ const UNIT_ENTRIES = [
 
 const PROGRESS_ENTRIES = [
   "stars",
+  "sweep",
   "playerLevel",
   "coin",
   "pack",
@@ -315,11 +319,11 @@ export const COIN_USES_TABLE: readonly {
 
 /** Campaign win XP by Region, for the Player level Entry (Economy 2.1). */
 export const PLAYER_LEVEL_XP_TABLE: readonly {
-  readonly region: 1 | 2 | 3;
+  readonly region: number;
   readonly win: number;
-}[] = ([1, 2, 3] as const).map((region) => ({
-  region,
-  win: CAMPAIGN_WIN_XP[region - 1] ?? 0,
+}[] = Array.from({ length: CAMPAIGN_REGIONS }, (_, index) => ({
+  region: index + 1,
+  win: CAMPAIGN_WIN_XP[index] ?? 0,
 }));
 
 /** Sample levels for Hero HP, Deck size and Countdown Limit in the Handbook. */
@@ -559,6 +563,7 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
   pack: { cards: PACK_SIZE },
   workshop: { combine: UNLOCK_LEVELS.combine, craft: UNLOCK_LEVELS.craft },
   gear: { level: UNLOCK_LEVELS.gear, max: MAX_GEAR_LEVEL },
+  sweep: { tickets: SWEEP_TICKETS_PER_WIN, max: MAX_SWEEP_TICKETS },
 };
 
 const term = (id: EntryId, chapter: ChapterId) =>
@@ -599,6 +604,7 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   pack: glyph("pack"),
   workshop: glyph("anvil"),
   gear: glyph("breastplate"),
+  sweep: glyph("ticket"),
   rankGems: { kind: "rank", rank: "rare" },
 };
 
@@ -739,7 +745,8 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   class: ["skillCard", "hero"],
   rank: ["rankGems", "recall"],
   rankGems: ["rank"],
-  stars: ["hp", "turn"],
+  stars: ["hp", "turn", "sweep"],
+  sweep: ["stars", "coin", "playerLevel", "class"],
   playerLevel: ["countdownLimit", "hero"],
   coin: ["deck", "pack", "workshop", "gear"],
   pack: ["coin", "rank"],
@@ -889,6 +896,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "rank",
   "rankGems",
   "stars",
+  "sweep",
   "playerLevel",
   "coin",
   "pack",

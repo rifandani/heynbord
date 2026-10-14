@@ -1,9 +1,7 @@
 import { useAtomValue } from "@effect/atom-react";
-import { coinDenominations, getCard, starsFor } from "@workspace/rules";
-import type { BattleResult, Side, StageRewardCard } from "@workspace/rules";
+import { starsFor } from "@workspace/rules";
+import type { BattleResult, Side } from "@workspace/rules";
 import { cn } from "cn";
-import type { CSSProperties } from "react";
-import { useMemo } from "react";
 import { Button } from "react-aria-components";
 
 import type { ShownRewards } from "@/features/battle/battle-rewards";
@@ -14,17 +12,19 @@ import {
   battleRewardsAtom,
   battleSessionAtom,
 } from "@/features/battle/battle.atoms";
-import { CardFrame } from "@/features/battle/components/card-frame";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import {
+  ResultCard,
+  ResultCoin,
+  ResultTickets,
+  ResultXp,
+} from "@/features/battle/components/result-rewards";
 import { randomSeed } from "@/features/battle/use-battle";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import { useResultHints } from "@/features/hint/use-hints";
-import { levelProgress } from "@/features/profile/profile";
-import { CoinAmount } from "@/features/town/components/balance-plate";
-import { coinWords } from "@/features/town/town";
 
 /** The side whose Turn starts in the current event, or `null`. */
 const startingSide = (session: BattleSession | null): Side | null => {
@@ -139,151 +139,10 @@ const ResultReason = ({ result }: { readonly result: BattleResult }) => {
   return null;
 };
 
-/** The Coin of the result (Economy 2.1), on a small Night Plate, as the Balance Plate shows Coin. */
-const ResultCoin = ({ coin }: { readonly coin: number }) => {
-  const { tr, locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const format = (value: number) => number.format(value);
-  if (coin === 0) {
-    return null;
-  }
-  const words = coinWords(coin, format, (denomination) =>
-    tr(`town.balances.denominations.${denomination}.name`)
-  );
-  return (
-    <p
-      className="flex w-fit items-center gap-2 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-3 py-1.5 text-sm leading-none font-black text-[#fff6df] tabular-nums shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:py-1"
-      data-testid="result-coin"
-      data-copper={coin}
-    >
-      <span className="sr-only">
-        {tr("battle.coinEarned", { amount: words })}
-      </span>
-      <span aria-hidden className="flex items-center gap-2">
-        +
-        <CoinAmount parts={coinDenominations(coin)} format={format} />
-      </span>
-    </p>
-  );
-};
-
-/** The fill of the XP bar before and after the result, as CSS values. */
-const xpFill = (
-  shown: ShownRewards
-): CSSProperties & Record<"--xp-from", number> => ({
-  "--xp-from":
-    shown.rewards.levelAfter > shown.rewards.levelBefore
-      ? 0
-      : levelProgress(shown.xp - shown.rewards.xp),
-  scale: `${levelProgress(shown.xp)} 1`,
-});
-
-/**
- * The XP of the result (GDD 11.4): "+N XP", and a bar from the start of the
- * current level to the next level that fills from the XP before the result.
- * "Level up! Level N" stamps on when the Player gets a level. With reduced
- * motion, the bar shows its end at once.
- */
-const ResultXp = ({ shown }: { readonly shown: ShownRewards }) => {
-  const { tr, locale } = useGameText();
-  const { rewards } = shown;
-  const levelUp = rewards.levelAfter > rewards.levelBefore;
-  const percent = useMemo(
-    () => new Intl.NumberFormat(locale, { style: "percent" }),
-    [locale]
-  ).format(levelProgress(shown.xp));
-  return (
-    <div
-      className="w-full max-w-56 text-left"
-      data-testid="result-xp"
-      data-xp={rewards.xp}
-      data-level={rewards.levelAfter}
-    >
-      <p className="sr-only">
-        {tr("battle.xpEarnedLabel", { amount: rewards.xp })}{" "}
-        {tr("battle.xpBar", {
-          level: rewards.levelAfter,
-          percent,
-          next: rewards.levelAfter + 1,
-        })}
-      </p>
-      <div
-        className="flex items-baseline justify-between gap-2 text-xs font-bold text-[#5b4632]"
-        aria-hidden
-      >
-        <span>{tr("battle.levelShort", { level: rewards.levelAfter })}</span>
-        <span className="font-black text-[#0e6f86] tabular-nums">
-          {tr("battle.xpEarned", { amount: rewards.xp })}
-        </span>
-      </div>
-      <span
-        className="mt-1 block h-2.5 overflow-hidden rounded-full border border-[#5b3a1e]/60 bg-[#3a2a1c] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6)] [@media(max-height:500px)]:h-2"
-        aria-hidden
-      >
-        <span
-          className="block h-full origin-left rounded-full bg-gradient-to-b from-[#7fe0f0] to-[#0e8aa6] motion-safe:animate-[result-xp-fill_900ms_cubic-bezier(0.2,0.8,0.2,1)_350ms_both]"
-          style={xpFill(shown)}
-          data-testid="result-xp-fill"
-        />
-      </span>
-      {levelUp ? (
-        <p
-          className="font-display mt-1.5 w-fit rounded-[4px] border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-2 py-0.5 text-sm leading-tight font-black text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.35)] motion-safe:animate-[result-level-up_420ms_cubic-bezier(0.2,0.8,0.2,1)_1250ms_both] [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:text-xs"
-          data-testid="result-level-up"
-        >
-          {tr("battle.levelUp", { level: rewards.levelAfter })}
-        </p>
-      ) : null}
-    </div>
-  );
-};
-
-/** The card that the result gave, as a small Card Frame, with a "New" ribbon when it is not Discovered. */
-const ResultCard = ({ card }: { readonly card: StageRewardCard }) => {
-  const { tr } = useGameText();
-  const name = tr(`cards.${card.cardId}.name`);
-  const rank = tr(`ranks.${card.rank}`);
-  return (
-    <div
-      className="flex shrink-0 flex-col items-center"
-      data-testid="result-card"
-      data-card={card.cardId}
-      data-new={card.isNew || undefined}
-    >
-      <p className="sr-only">
-        {card.isNew
-          ? tr("battle.newCardWon", { name, rank })
-          : tr("battle.cardWon", { name, rank })}
-      </p>
-      <span className="relative" aria-hidden>
-        <CardFrame
-          cardId={card.cardId}
-          rank={card.rank}
-          countdown={getCard(card.cardId).countdown}
-          className="-rotate-2 text-[6px] motion-safe:animate-[stage-panel-deal_440ms_cubic-bezier(0.2,0.8,0.2,1)_300ms_both] [@media(max-height:500px)]:text-[4.5px]"
-        />
-        {card.isNew ? (
-          <span
-            className="absolute -top-2 left-1/2 z-20 -translate-x-1/2 rounded-[4px] border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1.5 py-px text-[10px] leading-tight font-black tracking-wide text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.45)] motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_740ms_both]"
-            data-testid="result-card-new"
-          >
-            {tr("packs.reveal.new")}
-          </span>
-        ) : null}
-      </span>
-      <span
-        className="mt-1 max-w-24 truncate text-xs font-bold text-[#2a1d12]"
-        aria-hidden
-      >
-        {name}
-      </span>
-    </div>
-  );
-};
-
 /**
  * The rewards of the result (GDD 11.4): the card won at the left, and the
- * Coin and the XP at the right. They are already in the Profile.
+ * Coin, the Sweep Tickets of a win and the XP at the right. They are already
+ * in the Profile.
  */
 const ResultRewards = ({ shown }: { readonly shown: ShownRewards }) => {
   const { rewards } = shown;
@@ -294,7 +153,10 @@ const ResultRewards = ({ shown }: { readonly shown: ShownRewards }) => {
     >
       {rewards.card ? <ResultCard card={rewards.card} /> : null}
       <div className="flex min-w-0 flex-1 flex-col items-start gap-2 [@media(max-height:500px)]:gap-1.5">
-        <ResultCoin coin={rewards.coin} />
+        <div className="flex flex-wrap gap-1.5">
+          <ResultCoin coin={rewards.coin} />
+          <ResultTickets tickets={rewards.sweepTickets} />
+        </div>
         <ResultXp shown={shown} />
       </div>
     </div>

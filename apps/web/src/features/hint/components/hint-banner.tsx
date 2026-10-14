@@ -28,7 +28,7 @@ import { shownHintAtom } from "@/features/hint/hint.atoms";
 import { paintedIcon } from "@/features/town/town";
 
 /** The element that each Hint shows next to. */
-export const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
+const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   hand: "[data-testid='hand']",
   deckShortcut: "[data-testid='town-shortcut-deck']",
   unopenedPackButton: "[data-testid^='unopened-open-']",
@@ -36,25 +36,68 @@ export const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   workshop: "[data-testid='building-workshop']",
   resultBattleLog: "[data-testid='result-battle-log']",
   firstGearItem: "[data-gear-upgrade='weapon']",
+  // Not while the Stage Panel comes up out of its Stage Marker.
+  sweepButton: "[data-testid='sweep']:not([data-entering] *)",
 };
+
+/** The places in a modal dialog. A Hint there shows over the scrim of the dialog. */
+const IN_DIALOG: ReadonlySet<HintPlace> = new Set(["sweepButton"]);
+
+/** The phone-in-landscape layout (DESIGN.md, The Short Screen Rule). */
+const SHORT_SCREEN = "(max-height: 500px)";
+
+const isShortScreen = () => window.matchMedia(SHORT_SCREEN).matches;
+
+/**
+ * On a short screen, the Stage Panel fills the screen, so the Sweep Hint
+ * points at the label of the Sweep row from the empty part of the left
+ * column, and it covers no control.
+ */
+const SWEEP_ROW = "[data-hint-anchor='sweep-row']:not([data-entering] *)";
+
+/**
+ * Puts the focus on the subject of a Hint in a dialog, or else on the dialog.
+ * The Handbook gives the focus back to it when it closes, because the Hint
+ * and its "Read more" are then gone: so the dialog keeps the focus, and Esc
+ * closes the dialog and not the screen under it.
+ */
+const focusDialogOf = (place: HintPlace) => {
+  const subject = document.querySelector<HTMLElement>(HINT_ANCHOR[place]);
+  const target =
+    subject && !subject.matches(":disabled")
+      ? subject
+      : subject?.closest<HTMLElement>('[role="dialog"]');
+  target?.focus();
+};
+
+/** The element that a Hint shows next to now. */
+export const hintAnchor = (place: HintPlace): string =>
+  place === "sweepButton" && isShortScreen() ? SWEEP_ROW : HINT_ANCHOR[place];
 
 /**
  * The sides of its anchor where a Hint can show, in order of preference. The
  * Battle Log Hint goes below the Battle Log button, out of the result
  * dialog, so that it does not cover Retry and Back to Campaign. The Gear Hint
  * goes below the first upgrade, so that the Hero plate stays clear on the
- * first visit.
+ * first visit. The Sweep Hint goes below the Sweep button, out of the Stage
+ * Panel, so that it does not cover the Ticket control.
  */
-const sidesFor = (place: HintPlace): readonly PanelSide[] =>
-  place === "resultBattleLog" || place === "firstGearItem"
+const sidesFor = (place: HintPlace): readonly PanelSide[] => {
+  if (place === "sweepButton" && isShortScreen()) {
+    return ["left", "above"];
+  }
+  return place === "resultBattleLog" ||
+    place === "firstGearItem" ||
+    place === "sweepButton"
     ? ["below", "above"]
     : ["above", "below"];
+};
 
 /** The space between the banner and the screen edge. */
 const EDGE = 8;
 
 const anchorBox = (place: HintPlace): ScreenBox | null =>
-  document.querySelector(HINT_ANCHOR[place])?.getBoundingClientRect() ?? null;
+  document.querySelector(hintAnchor(place))?.getBoundingClientRect() ?? null;
 
 /**
  * The open and close motion (`hint-pop`): the banner grows out of the tip of
@@ -64,6 +107,7 @@ const anchorBox = (place: HintPlace): ScreenBox | null =>
 const HINT_MOTION = cn(
   "origin-[50%_100%] [--hint-from-y:8px] data-[side]:origin-[var(--pointer)_100%]",
   "data-[side=below]:origin-[var(--pointer)_0%] data-[side=below]:[--hint-from-y:-8px]",
+  "data-[side=left]:origin-[100%_var(--pointer)] data-[side=left]:[--hint-from-y:0px]",
   "motion-safe:animate-[hint-pop_320ms_cubic-bezier(0.2,0.8,0.2,1)_both]",
   "motion-safe:data-[leaving]:animate-[hint-pop_180ms_cubic-bezier(0.2,0.8,0.2,1)_reverse_both]"
 );
@@ -169,6 +213,15 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
     case "battleLog": {
       // The glyph of the Battle Log button.
       return <GlyphIcon glyph="scroll" className={SUBJECT_ICON} />;
+    }
+    case "sweep": {
+      // A Sweep Ticket in Ready Gold, turned a little as a ticket in a hand.
+      return (
+        <GlyphIcon
+          glyph="ticket"
+          className={cn(SUBJECT_ICON, "-rotate-8 text-[#ffd75a]")}
+        />
+      );
     }
     case "deckBuilder":
     case "unopenedPack":
@@ -302,6 +355,9 @@ const Banner = ({
       className={cn(
         "group pointer-events-auto absolute flex w-max max-w-[min(420px,calc(100vw-1rem))] items-center gap-2.5 rounded-lg border-2 border-[#5b3a1e] bg-[#f6ead0] py-2 pr-1.5 pl-2 text-[#2a1d12] shadow-xl data-[leaving]:pointer-events-none [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:py-1.5",
         HINT_MOTION,
+        // In a dialog on a short screen, the Hint fits next to the dialog parts.
+        IN_DIALOG.has(HINT_PLACE[hint]) &&
+          "[@media(max-height:500px)]:max-w-[340px]",
         // With no anchor, the banner waits at the bottom center of the screen.
         "bottom-24 left-1/2 -translate-x-1/2 data-[side]:bottom-auto data-[side]:translate-x-0"
       )}
@@ -314,7 +370,8 @@ const Banner = ({
         className={cn(
           "absolute hidden size-3 rotate-45 border-[#5b3a1e] bg-[#f6ead0] group-data-[side]:block",
           "group-data-[side=above]:-bottom-[7px] group-data-[side=above]:left-[calc(var(--pointer)-6px)] group-data-[side=above]:border-r-2 group-data-[side=above]:border-b-2",
-          "group-data-[side=below]:-top-[7px] group-data-[side=below]:left-[calc(var(--pointer)-6px)] group-data-[side=below]:border-t-2 group-data-[side=below]:border-l-2"
+          "group-data-[side=below]:-top-[7px] group-data-[side=below]:left-[calc(var(--pointer)-6px)] group-data-[side=below]:border-t-2 group-data-[side=below]:border-l-2",
+          "group-data-[side=left]:top-[calc(var(--pointer)-6px)] group-data-[side=left]:-right-[7px] group-data-[side=left]:border-t-2 group-data-[side=left]:border-r-2"
         )}
       />
       <SubjectSeal hint={hint} />
@@ -328,6 +385,9 @@ const Banner = ({
         {tr(`hints.${hint}`)}{" "}
         <Button
           onPress={() => {
+            if (IN_DIALOG.has(HINT_PLACE[hint])) {
+              focusDialogOf(HINT_PLACE[hint]);
+            }
             close();
             readMore(target);
           }}
@@ -373,8 +433,20 @@ export const HintBanner = () => {
   }
   const onLeft = useCallback(() => setLeaving(null), []);
   const shown = hint ?? leaving;
+  const inDialog = shown !== null && IN_DIALOG.has(HINT_PLACE[shown]);
   return (
-    <div className="pointer-events-none fixed inset-0 z-40" aria-live="polite">
+    <div
+      className={cn(
+        "pointer-events-none fixed inset-0",
+        // Over the scrim of a modal dialog (z-50), under the Portrait Guard.
+        inDialog ? "z-[55]" : "z-40"
+      )}
+      aria-live="polite"
+      // A modal dialog makes all else inert when it opens, but not the top
+      // layer: so a Hint in a dialog stays in reach of the pointer, the focus
+      // and a screen reader, and a press on it does not close the dialog.
+      data-react-aria-top-layer
+    >
       {shown ? (
         <Banner
           key={shown}

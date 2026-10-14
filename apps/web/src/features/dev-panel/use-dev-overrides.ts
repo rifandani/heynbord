@@ -13,6 +13,7 @@ import {
   setBalance,
   setGear,
   toOverlay,
+  wholeBalance,
   withUnlockAll,
 } from "@/features/dev-panel/dev-overrides";
 import type { ProfileOverlay } from "@/features/profile/profile";
@@ -96,6 +97,8 @@ export const useDevOverrides = () => {
         ...current,
         ...setBalance(registry.get(balancesAtom), kind, value),
       })),
+    setSweepTickets: (value: number) =>
+      change((current) => ({ ...current, sweepTickets: wholeBalance(value) })),
     /** Sets the XP to the start of the Player level. */
     setLevel: (level: number) =>
       change((current) => ({ ...current, xp: levelStartXp(level) })),

@@ -18,10 +18,13 @@ export const MATCHUP_LEVEL = 5;
  * Vanguard and Raiders hold the Skill Cards of the re-fit (issue #67,
  * Archetypes 2.3): 3 cards of their Class, picked by hand for their style.
  *
- * Tunnel Rats and Thornwatch are diagnostic Ranger Decks with the 3 Ranger
- * Skill Cards. Wild Hunt and Deathless Host are diagnostic Priest Decks with
- * the 3 Priest Skill Cards (Archetypes 2.1). Breakneck Company is a diagnostic Deck of mixed
- * Undead and Orc cards with Mage Skill Cards. Vanguard
+ * Deathless Host, Tunnel Rats and Thornwatch are main Archetypes from the
+ * promotion of issue #68 (Archetypes 2.3): each one holds 3 Skill Cards of its
+ * Class, picked by hand for its style, and passes the gate against each other
+ * main Archetype. Wild Hunt failed that promotion with its re-fit Priest Skill
+ * Cards. It is a main Archetype after the Feral Creature Card tuning of issue
+ * #80 (Archetypes 3.1), with the same list. Breakneck Company is a diagnostic
+ * Deck of mixed Undead and Orc cards with Mage Skill Cards. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
  * so that a Matchup tests most cards. They keep the old 3 Skill Cards of their
  * Class, because they are also the Warrior and Mage swap Decks. Human Heavy (Countdown 3 to 4) and Human
@@ -67,11 +70,10 @@ export const ARCHETYPES: readonly Archetype[] = [
   },
   {
     id: "tunnelRats",
-    kind: "diagnostic",
+    kind: "main",
     classId: "ranger",
     deck: [
-      ...copies(1, "goblin.ankleSnatcher", "common"),
-      ...copies(1, "goblin.fuseRunner", "common"),
+      ...copies(2, "goblin.ankleSnatcher", "common"),
       ...copies(2, "goblin.junkSlinger", "common"),
       ...copies(1, "goblin.tunnelSaboteur", "common"),
       ...copies(1, "goblin.scrapPlateGuard", "common"),
@@ -81,12 +83,12 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "goblin.grandGearjammer", "epic"),
       ...copies(1, "ranger.pinningShot", "common"),
       ...copies(1, "ranger.warningShot", "common"),
-      ...copies(1, "ranger.longShot", "uncommon"),
+      ...copies(1, "ranger.skybreaker", "uncommon"),
     ],
   },
   {
     id: "wildHunt",
-    kind: "diagnostic",
+    kind: "main",
     classId: "priest",
     deck: [
       ...copies(2, "feral.bristlebackBoar", "common"),
@@ -97,31 +99,30 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(2, "feral.cragRhino", "uncommon"),
       ...copies(1, "feral.frostElkMatriarch", "uncommon"),
       ...copies(1, "priest.mend", "common"),
-      ...copies(1, "priest.smite", "common"),
       ...copies(1, "priest.sanctuary", "uncommon"),
+      ...copies(1, "priest.unbrokenVow", "rare"),
     ],
   },
   {
     id: "thornwatch",
-    kind: "diagnostic",
+    kind: "main",
     classId: "ranger",
     deck: [
-      ...copies(1, "elf.rootboundGuard", "common"),
+      ...copies(2, "elf.rootboundGuard", "common"),
       ...copies(2, "elf.brambleDuelist", "common"),
       ...copies(2, "elf.fernwingCourier", "common"),
       ...copies(1, "elf.mosspitcherLookout", "common"),
-      ...copies(1, "elf.acornTender", "common"),
       ...copies(1, "elf.thornlineArcher", "uncommon"),
-      ...copies(1, "elf.dewkeeper", "uncommon"),
+      ...copies(1, "elf.gladeTurnblade", "uncommon"),
       ...copies(1, "elf.brambleNest", "uncommon"),
       ...copies(1, "ranger.pinningShot", "common"),
       ...copies(1, "ranger.warningShot", "common"),
-      ...copies(1, "ranger.longShot", "uncommon"),
+      ...copies(1, "ranger.huntersFocus", "rare"),
     ],
   },
   {
     id: "deathlessHost",
-    kind: "diagnostic",
+    kind: "main",
     classId: "priest",
     deck: [
       ...copies(1, "undead.hushbow", "common"),
@@ -133,9 +134,9 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "undead.lanternWidow", "rare"),
       ...copies(1, "undead.sirOdoLastTaxman", "epic"),
       ...copies(1, "undead.boneRampart", "epic"),
-      ...copies(1, "priest.mend", "common"),
-      ...copies(1, "priest.smite", "common"),
-      ...copies(1, "priest.sanctuary", "uncommon"),
+      ...copies(1, "priest.prayerOfHealing", "uncommon"),
+      ...copies(1, "priest.radiantStrike", "common"),
+      ...copies(1, "priest.blessingOfLight", "common"),
     ],
   },
   {

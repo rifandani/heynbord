@@ -7,8 +7,8 @@ import type { Profile } from "./schema";
 
 /**
  * The Profile of a new Player: XP 0, no balances, the Starter Collection and
- * the Starter Decks, Gear 0, and no Stage results, Star chests or Unopened
- * Packs. Both random states come from the seed, so the same seed gives the
+ * the Starter Decks, Gear 0, and no Stage results, Star chests, Unopened
+ * Packs or Sweep Tickets. Both random states come from the seed, so the same seed gives the
  * same Profile.
  */
 export const newProfile = (seed: number): Profile => ({
@@ -25,6 +25,7 @@ export const newProfile = (seed: number): Profile => ({
   claimedStarChests: {},
   packState: newPackState(seed),
   unopenedPacks: [],
+  sweepTickets: 0,
   // The first value of the seed, so that the two random states differ.
   rewardRandomState: seedState(nextRandom(seedState(seed))[0]),
   seenHints: [],

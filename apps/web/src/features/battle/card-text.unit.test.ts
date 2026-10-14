@@ -269,7 +269,8 @@ describe("cardText (CRD-08)", () => {
     );
     expect(effects("priest.smite")).toEqual(
       [3, 4, 4, 5, 6].map(
-        (amount) => `Deal ${amount} Holy damage to an enemy Unit.`
+        (amount) =>
+          `Deal ${amount} Holy damage to an enemy Unit. If it dies, it does not come back with Rebirth.`
       )
     );
     // Sanctuary starts at Uncommon: its Common value repeats Uncommon.

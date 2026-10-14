@@ -84,6 +84,8 @@ export default {
     levelUp: "Naik level! Level {level}",
     cardWon: "Kartu didapat: {name}, {rank}.",
     newCardWon: "Kartu baru didapat: {name}, {rank}.",
+    sweepTicketsEarned: "+{count} Tiket Sweep",
+    sweepTicketsEarnedLabel: "Tiket Sweep didapat: {count}.",
     retry: "Main Lagi",
     backToCampaign: "Kembali ke Kampanye",
     abandon: {
@@ -307,12 +309,15 @@ export default {
     regionOf: "Wilayah {number} dari {count}",
     regions: {
       "1": "Hearthvale",
-      "2": "Hutan Duri",
-      "3": "Rawa Hampa",
+      "2": "Mesa Merah",
+      "3": "Lembah Jamur Cahaya",
+      "4": "Hutan Duri",
+      "5": "Rawa Hampa",
     },
     previousRegion: "Wilayah sebelumnya: {name}",
     nextRegion: "Wilayah berikutnya: {name}",
     regionLater: "{name} dibuka nanti.",
+    regionLocked: "Menangkan Tahap Bos {id}, {stage}, untuk membuka {name}.",
     trail: "Tahap",
     marker: {
       done: "Tahap {id}, selesai, {stars} dari 3 Bintang",
@@ -354,6 +359,26 @@ export default {
         "Kemenangan ulang: Koin, XP, dan peluang kartu dari Tahap ini.",
       deck: "Dek",
       fight: "Bertarung",
+    },
+    sweep: {
+      label: "Sweep",
+      button: "Sweep ×{count}",
+      tickets: "Tiket: {count}",
+      ticketsLabel: "Kamu punya {count} Tiket Sweep.",
+      control: "Tiket Sweep yang dipakai",
+      fewer: "Pakai 1 Tiket lebih sedikit",
+      more: "Pakai 1 Tiket lebih banyak",
+      max: "Maks",
+      maxLabel: "Pakai Tiket terbanyak: {count}",
+      noTickets:
+        "Tiap kemenangan yang kamu mainkan memberi {count} Tiket Sweep.",
+      resultLabel: "Sweep {count} Tiket. Tiap Tiket adalah satu kemenangan.",
+      noCard: "Kali ini tidak ada kartu.",
+      cardCopies: "Kartu didapat: {name}, {rank}, {count} salinan.",
+      newCardCopies: "Kartu baru didapat: {name}, {rank}, {count} salinan.",
+      ticketsLeft: "Sisa Tiket Sweep: {count}",
+      again: "Sweep Lagi ×{count}",
+      close: "Tutup",
     },
   },
   settings: {
@@ -433,6 +458,7 @@ export default {
       "Buat sudah terbuka di Bengkel. Pakai Esensi untuk membuat salinan kartu yang sudah kamu temukan.",
     battleLog: "Buka Catatan Pertempuran untuk melihat apa yang terjadi.",
     gear: "Tiap tekan meningkatkan 1 Perlengkapan sebanyak 1 level, dengan Koin. Level tidak pernah turun.",
+    sweep: "Pakai Tiket Sweep untuk langsung mendapat hadiah Tahap ini.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -628,6 +654,7 @@ export default {
       rank: "Peringkat",
       rankGems: "Permata Peringkat",
       stars: "Bintang",
+      sweep: "Sweep",
       playerLevel: "Level pemain",
       pack: "Paket",
       workshop: "Bengkel",
@@ -730,6 +757,8 @@ export default {
         "Permata Peringkat adalah berlian kecil di bagian atas kartu. Hitung jumlahnya: 1 permata adalah Biasa, 5 permata adalah Legendaris.\n\nTiap Peringkat punya warna permata, tapi jumlahnya sudah cukup untuk membaca Peringkat di Pertempuran.",
       stars:
         "Saat menang di Tahap, kamu mendapat 1 sampai 3 Bintang. Kalah memberi 0 Bintang.\n\nTiap Bintang menambah syarat di atas yang sebelumnya. Setengah HP Pahlawan berarti Pahlawanmu punya minimal 50% dari HP maksimumnya saat Pertempuran berakhir.\n\nKampanye menyimpan Bintang terbaikmu untuk tiap Tahap. Total Bintang di satu Wilayah membuka peti pada 10, 20 dan 30 Bintang.",
+      sweep:
+        "Saat Bintang terbaikmu di satu Tahap adalah 3, Panel Tahap-nya punya tombol Sweep. Satu Sweep memakai 1 sampai {max} Tiket Sweep. Tiap Tiket langsung memberi satu hadiah kemenangan ulang dari Tahap itu: Koin, XP, dan peluang kartu. Tidak ada Pertempuran, dan Sweep selalu menang.\n\nKelas Dek Aktif-mu menentukan kartu yang bisa diberikan Sweep. Sweep tidak pernah mengubah Bintangmu, dan tidak memberi Tiket Sweep.\n\nTiap kemenangan yang kamu mainkan memberi {tickets} Tiket Sweep. Kekalahan tidak memberi Tiket. Kamu tidak bisa membeli Tiket Sweep.",
       playerLevel:
         "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.",
       coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
@@ -794,6 +823,8 @@ export default {
       rank: "kelangkaan, rarity, tier, kualitas",
       rankGems: "pip, titik",
       stars: "skor, nilai, score",
+      sweep:
+        "auto battle, quick battle, auto-resolve, raid, skip ticket, raid ticket, farm, sapu, ulang, tiket",
       playerLevel: "level akun, xp",
       coin: "emas, perak, tembaga, uang, gold",
       pack: "booster, paket kartu, loot box, peti, chest, peluang, odds",
@@ -1086,9 +1117,10 @@ export default {
     size: "{count} / {max} kartu",
     countdownSum: "Hitung mundur {sum} / {limit}",
     sizeMin: "Minimal {min}",
-    add: "Tambah {name}, {rank}, Hitung mundur {countdown}. Sisa salinan: {left}.",
+    moreProblems: "Dan {count} lagi.",
+    add: "Tambah {name}, {rank}, Hitung mundur {countdown}. Salinan dimiliki: {owned}. Sisa salinan: {left}.",
     remove: "Buang satu {name}, {rank}. Di Dek ini: {count}.",
-    left: "×{count}",
+    left: "{owned} dimiliki · {left} sisa",
     blocked: {
       none: "Semua di Dek",
       full: "Dek penuh",
@@ -1148,6 +1180,16 @@ export default {
     "1-8": { name: "Celah Longsoran Batu", enemy: "Penjaga Celah" },
     "1-9": { name: "Pohon Ek Raksasa", enemy: "Pengintai Sang Baron" },
     "1-10": { name: "Aula Brassbelly", enemy: "Baron Brassbelly" },
+    "2-1": { name: "Jalan Berdebu", enemy: "Penunggang Mesa" },
+    "2-2": { name: "Pasar Rongsokan", enemy: "Tukang Tawar Rongsokan" },
+    "2-3": { name: "Gudang Mesiu", enemy: "Nyonya Sumbu" },
+    "2-4": { name: "Tembok Rongsokan", enemy: "Grub Tukang Gerbang" },
+    "2-5": { name: "Bukit Penembak Jitu", enemy: "Penembak Teropong" },
+    "2-6": { name: "Lubang Pertarungan", enemy: "Bos Lubang" },
+    "2-7": { name: "Kemah Genderang Perang", enemy: "Dukun Genderang" },
+    "2-8": { name: "Terowongan Runtuh", enemy: "Mandor Terowongan" },
+    "2-9": { name: "Mulut Tambang", enemy: "Pengintai Snikkit" },
+    "2-10": { name: "Aula Takhta Snikkit", enemy: "Bos Snikkit" },
   },
   classes: {
     warrior: "Prajurit",
@@ -1262,6 +1304,8 @@ export default {
   },
   effects: {
     damageUnit: "Beri {amount} damage {damageType} ke satu Unit musuh.",
+    damageUnitNoRebirth:
+      "{hit} Jika Unit itu mati, Unit itu tidak kembali dengan Bangkit.",
     damageArea:
       "Beri {amount} damage {damageType} ke satu Unit musuh dan {extra} Petak berikutnya di belakangnya.",
     damageLane:

@@ -26,7 +26,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Hand Card**: The small card in the Hand. It shows the art, the Countdown, the Rank gems, the emblem, and Attack and HP for a Creature Card. _Avoid_: card face, mini card, card thumbnail
 
-**Card Details**: A larger copy of a card with a Details Panel next to it. It shows on hover, long press and keyboard focus for a Hand Card and for a Unit on the Board of either Side, and in the Collection. For a Unit, the card shows the current Attack and HP of the Unit, and the Details Panel shows how the Unit is different from its card. _Avoid_: tooltip, card popup, card info, inspect view
+**Card Details**: A larger copy of a card with a Details Panel next to it. It shows on hover, long press and keyboard focus for a Hand Card and for a Unit on the Board of either Side, and in the Deck builder. For a Unit, the card shows the current Attack and HP of the Unit, and the Details Panel shows how the Unit is different from its card. _Avoid_: tooltip, card popup, card info, inspect view
 
 **Details Panel**: The text panel next to the card in the Card Details. It starts with the card name, then the fields that the card itself does not show, for example Keywords and flavor text. _Avoid_: side panel, info box, ability box
 
@@ -80,7 +80,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and a shortcut to the Handbook. _Avoid_: menu bar, nav bar, footer, dock
 
-**Handbook**: The dialog that tells how the game works: the rules, the terms and the icons that the Player meets. It opens over the current screen, from the Town Bar and from the Top Bar of the Battle. It has no Building. It explains concepts and does not list cards: the Collection lists cards. It has an entry only for a feature that is in the game, and the Player can read all its entries from the start. _Avoid_: Wiki, codex, help, encyclopedia, rulebook, guide
+**Handbook**: The dialog that tells how the game works: the rules, the terms and the icons that the Player meets. It opens over the current screen, from the Town Bar and from the Top Bar of the Battle. It has no Building. It explains concepts and does not list cards: the Deck builder lists cards. It has an entry only for a feature that is in the game, and the Player can read all its entries from the start. _Avoid_: Wiki, codex, help, encyclopedia, rulebook, guide
 
 **Chapter**: One group of Entries in the Handbook, for example Battle, Cards, Keywords or Statuses. _Avoid_: category, section, tab
 
@@ -97,6 +97,8 @@ React app on TanStack Start. The server renders and streams each page.
 **Stage Marker**: The mark on the Trail for one Stage. It shows the state of the Stage, and the Player selects it to play that Stage. _Avoid_: checkpoint, node, pin, level button
 
 **Stage Panel**: The dialog that opens when the Player selects a Stage Marker. It shows the Stage, its enemy Hero, its rewards, the best Stars and the Deck, and it starts the Battle. _Avoid_: stage popup, stage details, pre-battle screen, lobby
+
+**Sweep Result**: The dialog that shows the result of a Sweep: the total Coin, XP and cards of all its Tickets, and the Sweep Tickets that stay. _Avoid_: sweep report, auto-play summary, loot screen
 
 ### Packs screen
 

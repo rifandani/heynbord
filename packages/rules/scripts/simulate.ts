@@ -7,9 +7,12 @@
  * (CI uses it). The seeds are fixed, so the same content gives the same result.
  *
  * - `stage`: each Stage with each starter Deck, at the Recommended level of the
- *   Stage and with no Gear (docs/game/14-campaign-stages.md). `--level N`
+ *   Stage and with no Gear (docs/game/14-campaign-stages.md). A Stage with
+ *   Expected Gear (ADR-0034) also plays a second row at that Gear. The
+ *   Expected Gear comes from the First-try runs of `economy`. `--level N`
  *   plays N levels above the Recommended level, and `--gear N` sets all 4 Gear
- *   slots to N. They measure the win-chance bonuses of `economy` (Economy 7.1).
+ *   slots to N. They measure the win-chance bonuses of `economy` (Economy
+ *   7.1), so with them there are no Expected Gear rows.
  * - `matchup`: each Archetype against each Archetype (docs/game/08-archetypes.md).
  *   `battles` is the number of seeds: each seed plays 2 Battles, one with each
  *   Side first. `--level` (5 by default) and `--gear` (0 by default, for all 4
@@ -47,11 +50,13 @@ import { STARTER_DECKS } from "../src/content/decks";
 import { PACK_SIZE, PACKS } from "../src/content/packs";
 import { RANKS } from "../src/content/ranks";
 import { ClassId } from "../src/content/schema";
+import type { GearLevels } from "../src/content/schema";
 import { STAGES } from "../src/content/stages";
 import { packPool } from "../src/packs/open-pack";
 import type { PackPool } from "../src/packs/open-pack";
 import {
   CHECKPOINTS,
+  expectedGear,
   heynstoneLedger,
   MAX_BATTLES,
   METRICS,
@@ -71,6 +76,7 @@ import {
   gatesRelease,
   isOnTarget,
   MATCHUP_TARGET,
+  NO_GEAR,
   simulateMatchup,
   simulateStage,
   stageTarget,
@@ -106,11 +112,11 @@ const chosenModes = (modes: Mode[]): Mode[] =>
     ? modes
     : MODES.filter((mode) => mode !== "economy" && mode !== "skill-swap");
 
-/** The flags of the command line. `level` is `undefined` when it is not given. */
+/** The flags of the command line. `level` and `gear` are `undefined` when they are not given. */
 interface Flags {
   battles: number;
   level: number | undefined;
-  gear: number;
+  gear: number | undefined;
   packs: number;
   check: boolean;
 }
@@ -140,7 +146,7 @@ const parseArgs = (args: readonly string[]) => {
   const parsed: Flags = {
     battles: 200,
     level: undefined,
-    gear: 0,
+    gear: undefined,
     packs: 10_000,
     check: false,
   };
@@ -196,40 +202,57 @@ const judge = (
   return `${range} MISS`;
 };
 
-const gearOf = (gearLevel: number) => ({
+const gearOf = (gearLevel = 0): GearLevels => ({
   weapon: gearLevel,
   armor: gearLevel,
   trinket: gearLevel,
   banner: gearLevel,
 });
 
+/** Gear as weapon / armor / trinket / banner: "2/1/1/1". */
+const gearText = (levels: GearLevels) =>
+  `${levels.weapon}/${levels.armor}/${levels.trinket}/${levels.banner}`;
+
+const hasGear = (levels: GearLevels) => gearText(levels) !== gearText(NO_GEAR);
+
 if (modes.includes("stage")) {
   const levelsAbove = level ?? 0;
+  // `--level` and `--gear` measure a bonus, so they play only one Gear row.
+  const expected =
+    level === undefined && gear === undefined ? expectedGear() : null;
   console.log(
-    `Stages: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear}`
+    `Stages: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear (ADR-0034)"}`
   );
   console.table(
-    STAGES.flatMap((stage) =>
-      STARTER_DECKS.map((deck) => {
-        const report = simulateStage(stage, deck, battles, {
-          levelsAbove,
-          gear: gearOf(gear),
-        });
-        return {
-          stage: report.stageId,
-          level: stage.recommendedLevel + levelsAbove,
-          deck: report.deckId,
-          winRate: percent(report.winRate),
-          avgTurn: report.averageTurn.toFixed(1),
-          avgStars: report.averageStars.toFixed(2),
-          target: judge(
-            `Stage ${report.stageId} with ${report.deckId}`,
-            report.winRate,
-            stageTarget(stage)
-          ),
-        };
-      })
-    )
+    STAGES.flatMap((stage) => {
+      const stageGear = expected?.get(stage.id) ?? NO_GEAR;
+      const rows: { gear: GearLevels; expected: boolean }[] = [
+        { gear: gearOf(gear), expected: false },
+        ...(hasGear(stageGear) ? [{ gear: stageGear, expected: true }] : []),
+      ];
+      return rows.flatMap((row) =>
+        STARTER_DECKS.map((deck) => {
+          const report = simulateStage(stage, deck, battles, {
+            levelsAbove,
+            gear: row.gear,
+          });
+          return {
+            stage: report.stageId,
+            level: stage.recommendedLevel + levelsAbove,
+            gear: `${gearText(row.gear)}${row.expected ? " expected" : ""}`,
+            deck: report.deckId,
+            winRate: percent(report.winRate),
+            avgTurn: report.averageTurn.toFixed(1),
+            avgStars: report.averageStars.toFixed(2),
+            target: judge(
+              `Stage ${report.stageId} with ${report.deckId}, Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
+              report.winRate,
+              stageTarget(stage)
+            ),
+          };
+        })
+      );
+    })
   );
 }
 
@@ -240,7 +263,7 @@ if (modes.includes("matchup")) {
   }
   const options = { seeds: battles, level: matchupLevel, gear: gearOf(gear) };
   console.log(
-    `Matchups: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear}`
+    `Matchups: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear ?? 0}`
   );
   console.table(
     ARCHETYPES.flatMap((archetype) =>
@@ -511,7 +534,7 @@ if (modes.includes("skill-swap")) {
   }
   const options = { seeds: battles, level: matchupLevel, gear: gearOf(gear) };
   console.log(
-    `Skill swap: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear}. Pass: each change is ±${(SWAP_LIMIT * 100).toFixed(1)} points or less`
+    `Skill swap: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear ?? 0}. Pass: each change is ±${(SWAP_LIMIT * 100).toFixed(1)} points or less`
   );
   const cache = new Map<string, MatchupReport>();
   const reports = CARDS.flatMap((card) =>

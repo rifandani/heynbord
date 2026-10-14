@@ -24,7 +24,7 @@ const NOTCHES = Array.from({ length: MAX_GEAR_LEVEL }, (_, index) => index);
 /**
  * The icon of a Gear item: its painted icon, or its glyph on a round dark
  * badge with a bronze rim until a person paints it (11 — Town Concepts 12).
- * At level 10 the "Max" seal sits on its lower right; it stamps on when the
+ * At level 20 the "Max" seal sits on its lower right; it stamps on when the
  * item gets there.
  */
 const GearIcon = ({
@@ -83,7 +83,8 @@ const NEXT_NOTCH =
   "group-has-[[data-hovered]]/gear:shadow-[inset_0_0_0_1.5px_rgba(255,224,138,0.85)] group-has-[[data-focus-visible]]/gear:shadow-[inset_0_0_0_1.5px_rgba(255,224,138,0.85)]";
 
 /**
- * The level of a Gear item: 10 notches cut into the plate, gold to the level.
+ * The level of a Gear item: 20 notches in 2 rows of 10, cut into the plate,
+ * gold to the level.
  * The notch of the last upgrade flashes as it fills. While the pointer or the
  * keyboard focus is on an upgrade that is on, the next notch shows a faint
  * gold edge.
@@ -129,14 +130,14 @@ const LevelGroove = ({
         </span>
       </span>
       <span
-        className="flex gap-[3px] rounded-md bg-[#120c08]/80 p-[3px] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8),0_1px_0_rgba(255,226,170,0.18)]"
+        className="grid grid-cols-10 gap-[3px] rounded-md bg-[#120c08]/80 p-[3px] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8),0_1px_0_rgba(255,226,170,0.18)]"
         aria-hidden
       >
         {NOTCHES.map((index) => (
           <span
             key={index === level - 1 ? `${index}:${flash}` : index}
             className={cn(
-              "h-3 flex-1 rounded-[2px] transition-[background-color,box-shadow] duration-150 [@media(max-height:500px)]:h-2",
+              "h-2.5 rounded-[2px] transition-[background-color,box-shadow] duration-150 [@media(max-height:500px)]:h-1.5",
               index < level
                 ? "bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]"
                 : "bg-[#3a2a1c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.7)]",
@@ -156,7 +157,7 @@ const LevelGroove = ({
  * One Gear item on the Gear Rack (GDD 7.3): its icon, its name, its level
  * groove, its stat now and at the next level, and one gold upgrade with its
  * Coin. Each press upgrades 1 level at once, with no confirmation. Off at
- * level 10 ("Max level") and when the Coin is not enough ("Need 1s 50c").
+ * level 20 ("Max level") and when the Coin is not enough ("Need 1s 50c").
  */
 export const GearPlate = ({
   item,
@@ -265,7 +266,7 @@ export const GearPlate = ({
         className={cn(
           "mt-auto w-full text-sm whitespace-nowrap [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs",
           // An upgrade that is off is an engraved plate with no drop, because
-          // it cannot be pressed. Its text stays at full contrast: at level 10
+          // it cannot be pressed. Its text stays at full contrast: at level 20
           // the gold "Max level", else the Coin that is still missing.
           upgrade.kind !== "ready" &&
             "border-[#e9c46a]/50 bg-[#120c08]/70 shadow-[inset_0_1px_3px_rgba(0,0,0,0.75)] data-[disabled]:cursor-default data-[disabled]:opacity-100 data-[disabled]:grayscale-0",

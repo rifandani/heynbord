@@ -3,6 +3,9 @@ import { Result, Schema } from "effect";
 import { ImportError } from "./import-error";
 import { Profile, PROFILE_SCHEMA_VERSION } from "./schema";
 
+const isJsonObject = Schema.is(Schema.JsonObject);
+const isNumber = Schema.is(Schema.Number);
+
 /**
  * One migration step: it changes a Profile of version N into the shape of
  * version N + 1. The chain sets the new `schemaVersion`.
@@ -11,15 +14,33 @@ export type ProfileMigration = (
   profile: Schema.JsonObject
 ) => Schema.JsonObject;
 
-/**
- * The migration steps, by the version that each step starts from. Version 1
- * is the first version, so there is no step yet. A change to the Profile
- * shape adds a step here, and old saves still load.
- */
-export const PROFILE_MIGRATIONS: Readonly<Record<number, ProfileMigration>> =
-  {};
+/** Each Gear level × 2. A value that is not a level stays, and the decode refuses it. */
+const doubledGear = (gear: Schema.JsonObject): Schema.JsonObject =>
+  Object.fromEntries(
+    Object.entries(gear).map(([slot, level]) => [
+      slot,
+      isNumber(level) ? level * 2 : level,
+    ])
+  );
 
-const isJsonObject = Schema.is(Schema.JsonObject);
+/**
+ * The migration steps, by the version that each step starts from. A change to
+ * the Profile shape, or to the meaning of a saved value, adds a step here, and
+ * old saves still load.
+ */
+export const PROFILE_MIGRATIONS = {
+  /** Version 2 adds the Sweep Tickets (ADR-0035). An old save has none. */
+  1: (profile) => ({ ...profile, sweepTickets: 0 }),
+  /**
+   * Version 3 has 20 Gear levels with the stats of the old 10 (ADR-0037), so
+   * each saved level doubles and the stats stay the same.
+   */
+  2: (profile) =>
+    isJsonObject(profile.gear)
+      ? { ...profile, gear: doubledGear(profile.gear) }
+      : profile,
+} satisfies Readonly<Record<number, ProfileMigration>>;
+
 const isVersion = Schema.is(Schema.Int);
 const decodeProfile = Schema.decodeUnknownResult(Profile);
 

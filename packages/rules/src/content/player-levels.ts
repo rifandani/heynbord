@@ -14,8 +14,8 @@ export const PLAYER_LEVEL_XP: readonly number[] = [
   15_630, 17_530, 19_580, 21_780, 24_130,
 ];
 
-/** The XP of a normal win in Regions 1, 2 and 3 (Economy 2.1). */
-export const CAMPAIGN_WIN_XP = [40, 70, 100] as const;
+/** The XP of a normal win in Regions 1 to 5 (Economy 2.1). */
+export const CAMPAIGN_WIN_XP = [40, 70, 100, 130, 160] as const;
 
 /** A Campaign loss gives this fraction of the XP of a win (Economy 2.1). */
 export const CAMPAIGN_LOSS_XP_FRACTION = 0.25;

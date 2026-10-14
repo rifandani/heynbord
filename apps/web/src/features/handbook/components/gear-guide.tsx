@@ -25,8 +25,8 @@ const LEVELS = Array.from({ length: MAX_GEAR_LEVEL }, (_, index) => index + 1);
 
 /**
  * The Gear Entry (GDD 7.3, Economy 3.4): what each of the 4 items gives at
- * level 10, and the Coin of each level. The numbers come from the rules, so
- * the Entry follows a balance change.
+ * the highest level, and the Coin of each level. The numbers come from the
+ * rules, so the Entry follows a balance change.
  */
 export const GearGuide = () => {
   const { tr } = useGameText();

@@ -23,7 +23,7 @@ import { useCountTo } from "@/features/workshop/use-count-to";
 const PLATE =
   "flex rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
 
-/** The chime of a Gear item at level 10 comes this long after the strike. */
+/** The chime of a Gear item at level 20 comes this long after the strike. */
 const MAX_CHIME_MS = 180;
 
 /**
@@ -47,7 +47,7 @@ const ClassSeal = ({ classId }: { readonly classId: ClassId }) => (
 
 /**
  * The Hero HP and its parts (GDD 4.10, 7.3): the total as the big number, and
- * the sum next to it, "= 30 base + 6 level + 5 × 2 Armor". The total counts to
+ * the sum next to it, "= 30 base + 6 level + 10 × 1 Armor". The total counts to
  * its new value after an Armor upgrade.
  */
 const HeroHp = ({ hp }: { readonly hp: HeroHpParts }) => {
@@ -102,7 +102,7 @@ const HeroHp = ({ hp }: { readonly hp: HeroHpParts }) => {
 };
 
 /**
- * The sounds of a Gear upgrade: the strike, and at level 10 the chime of a
+ * The sounds of a Gear upgrade: the strike, and at level 20 the chime of a
  * Rare card. The timers stop when the screen closes.
  */
 const useUpgradeSounds = () => {

@@ -1,7 +1,10 @@
 import type { PackId } from "./packs";
 
-/** The number of Campaign Regions in v1 (GDD 3.3). Each Region has the 3 Star chests. */
-export const CAMPAIGN_REGIONS = 3;
+/**
+ * The number of Campaign Regions in v1 (GDD 3.3, ADR-0036). Each Region has
+ * the 3 Star chests.
+ */
+export const CAMPAIGN_REGIONS = 5;
 
 /**
  * The Pack in a Star chest: the Pack with all cards, or a Race Pack. For a

@@ -39,6 +39,7 @@ const OVERLAY_FIELDS = [
   "coin",
   "essence",
   "heynstones",
+  "sweepTickets",
   "gear",
   "collection",
   "stageResults",

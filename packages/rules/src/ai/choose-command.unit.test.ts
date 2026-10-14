@@ -21,7 +21,7 @@ const autoBattle = (seed: number, stageId: string, deckId: string) => {
       classId: deck.classId,
       deck: deck.deck,
       level: 10,
-      gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
+      gear: { weapon: 6, armor: 6, trinket: 6, banner: 6 },
     },
   });
   const log: string[] = [];

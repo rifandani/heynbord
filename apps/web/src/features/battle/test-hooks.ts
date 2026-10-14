@@ -261,6 +261,13 @@ export const installTestHooks = (
         ),
       });
     },
+    /** Sets the Sweep Tickets of the Profile, so that a test can Sweep. */
+    setSweepTickets: (sweepTickets: number) => {
+      registry.set(profileAtom, {
+        ...registry.get(profileAtom),
+        sweepTickets,
+      });
+    },
     /** Sets the XP of the Profile, so that a test can reach a Player level. */
     setXp: (xp: number) => {
       registry.set(profileAtom, { ...registry.get(profileAtom), xp });
