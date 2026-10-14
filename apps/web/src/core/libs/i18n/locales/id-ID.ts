@@ -106,7 +106,10 @@ export default {
       skip: "Lewati animasi",
       inspect: "Lihat Detail Kartu dari Unit",
       handbook: "Buka Buku Panduan",
-      cancel: "Batal",
+      battleLog: "Buka atau tutup Catatan Pertempuran",
+      logEntry: "Catatan Pertempuran: satu Entri Catatan mundur atau maju",
+      logTurn: "Catatan Pertempuran: satu Giliran mundur atau maju",
+      cancel: "Batal, atau Kembali ke Saat Ini",
     },
     attack: "Serangan",
     hp: "HP",
@@ -127,8 +130,8 @@ export default {
     tokenReminder:
       "Token bukan kartu. Saat mati, ia menghilang. Ia tidak masuk ke Kuburan.",
     status: {
-      bonusArmor: "Zirah +{value}",
-      bonusArmorRule: "Dari Kartu Keahlian. Sisa Giliran: {turns}.",
+      bonusBulwark: "Benteng +{value}",
+      bonusBulwarkRule: "Dari Kartu Keahlian. Sisa Giliran: {turns}.",
       bonusAttack: "Serangan +{value}",
       bonusAttackRule:
         "Dari Kartu Keahlian: sampai akhir Giliranmu berikutnya. Sisa Fase Akhir: {turns}.",
@@ -167,13 +170,87 @@ export default {
         "Unit ini sudah mati dan kembali dengan Bangkit. Ia tidak kembali lagi.",
       ward: "Pelindung {value}",
       wardRule:
-        "Sebuah Buff. Ia menyerap damage setelah Zirah, Crit, dan Block, juga damage Suci, Terbakar, dan Racun, lalu turun sebesar damage itu. Ia tidak punya batas waktu. Pelindung baru memakai nilai yang lebih tinggi.",
+        "Sebuah Buff. Ia menyerap damage setelah Benteng, Crit, dan Block, juga damage Suci, Terbakar, dan Racun, lalu turun sebesar damage itu. Ia tidak punya batas waktu. Pelindung baru memakai nilai yang lebih tinggi.",
       steadfast: "Teguh",
       steadfastRule:
         "Sebuah Buff. Saat damage akan membawa Unit ini ke 0 HP, ia tetap pada 1 HP, dan Teguh berakhir. Pelindung menyerap damage itu lebih dulu. Ia tidak punya batas waktu.",
       exposed: "Terbuka {value}",
       exposedRule:
-        "Sebuah Debuff. Tiap serangan Fisik pada Unit ini memberi damage tambahan sebesar nilai Terbuka, setelah Zirah. Damage Api, Es, Suci, Terbakar dan Racun tidak mendapatkannya. Ia berakhir setelah 2 Fase Akhir pemiliknya. Terbuka yang baru memakai nilai yang lebih tinggi.",
+        "Sebuah Debuff. Tiap serangan Fisik pada Unit ini memberi damage tambahan sebesar nilai Terbuka, setelah Benteng. Damage Api, Es, Suci, Terbakar dan Racun tidak mendapatkannya. Ia berakhir setelah 2 Fase Akhir pemiliknya. Terbuka yang baru memakai nilai yang lebih tinggi.",
+    },
+  },
+  battleLog: {
+    open: "Catatan Pertempuran",
+    title: "Catatan Pertempuran",
+    backToLive: "Kembali ke Saat Ini",
+    play: "Putar",
+    pause: "Jeda",
+    previous: "Entri Catatan sebelumnya",
+    next: "Entri Catatan berikutnya",
+    showBoard: "Lihat Papan",
+    showLog: "Lihat Catatan",
+    banner: "Giliran {number} · {side} · Catatan Pertempuran",
+    turn: "Giliran {number} · {side}",
+    turnHp: "Kamu {playerHp} HP · {enemy} {enemyHp} HP",
+    entries: "Entri Catatan",
+    empty:
+      "Belum ada yang terjadi di Pertempuran ini. Tiap kartu yang dimainkan dan tiap Aksi Unit tampil di sini.",
+    selected: "Catatan Pertempuran: {summary}",
+    damage: "Total damage {amount}",
+    deaths: "Unit yang mati: {count}",
+    square: "Jalur {lane}, Kolom {column}",
+    yourHero: "Pahlawanmu",
+    unknownUnit: "sebuah Unit",
+    token: "sebuah Token",
+    flags: {
+      crit: "Crit",
+      block: "Block",
+      trueDamage: "Damage Murni",
+      ward: "Pelindung −{amount}",
+    },
+    line: {
+      playYou: "Kamu memainkan {card}.",
+      playEnemy: "{hero} memainkan {card}.",
+      target: "Target: {target}.",
+      targetLane: "Target: Jalur {lane}.",
+      summon: "{unit} masuk ke {square}.",
+      move: "{unit} bergerak dari Kolom {from} ke Kolom {to}.",
+      push: "{unit} terdorong dari Kolom {from} ke Kolom {to}.",
+      skip: "{unit} melewatkan aksinya.",
+      noAttack: "{unit} bergerak, tetapi tidak menyerang.",
+      attack: "{unit} menyerang {target}.",
+      damage: "{target} terkena {amount} damage {damageType}.",
+      heal: "{unit} pulih {amount} HP.",
+      rallied: "{unit} memberi bonus Semangat-nya.",
+      died: "{unit} mati.",
+      reborn: "{unit} kembali dengan {hp} HP.",
+      keyword: "{unit} memakai {keyword}.",
+      status: "{unit} mendapat {status}.",
+      steadfast: "{unit} tetap pada 1 HP.",
+      cleansed: "Semua Debuff {unit} berakhir.",
+      bulwark: "{unit} mendapat Benteng +{value}.",
+      attackBonus: "{unit} mendapat Serangan +{value}.",
+      rangeBonus: "{unit} mendapat Jangkauan +{value}.",
+      fieldPlaced: "{card} tetap di Papan. Serangan: {turns}.",
+      fieldStruck: "{card} mengenai areanya. Sisa serangan: {turns}.",
+      laneOpened: "Jalur {lane} terbuka.",
+      won: "Pertempuran berakhir. Kamu menang.",
+      lost: "Pertempuran berakhir. Kamu kalah.",
+      drawYou: "Kamu mengambil {card}.",
+      drawEnemy: "{hero} mengambil sebuah kartu.",
+      countdownsYou: "Hitung mundur di Tanganmu turun.",
+      countdownsEnemy: "Hitung mundur di Tangan {hero} turun.",
+      recalled: "{card} kembali ke Tangan.",
+      toGraveyard: "{card} masuk ke Kuburan.",
+      countdownYours: "{card} di Tanganmu mendapat hitung mundur {countdown}.",
+      countdownHidden:
+        "Sebuah kartu di Tangan {hero} mendapat hitung mundur {countdown}.",
+      burnOne: "Terbakar mengenai {unit}.",
+      burnMany: "Terbakar mengenai {count} Unit.",
+      poisonOne: "Racun mengenai {unit}.",
+      poisonMany: "Racun mengenai {count} Unit.",
+      suddenDeath: "Mati Mendadak mengenai Pahlawan giliran ini.",
+      nothing: "Tidak ada yang berubah.",
     },
   },
   town: {
@@ -353,6 +430,7 @@ export default {
       "Bengkel sudah buka. Gabung 2 salinan kartu menjadi 1 salinan di Peringkat berikutnya.",
     craft:
       "Buat sudah terbuka di Bengkel. Pakai Esensi untuk membuat salinan kartu yang sudah kamu temukan.",
+    battleLog: "Buka Catatan Pertempuran untuk melihat apa yang terjadi.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -367,7 +445,7 @@ export default {
       units: { name: "Unit", short: "Unit" },
       keywords: { name: "Kata Kunci", short: "Kata Kunci" },
       statuses: { name: "Status dan Jenis Damage", short: "Status" },
-      kinds: { name: "Ras, Kelas, dan Peran", short: "Ras" },
+      kinds: { name: "Ras dan Kelas", short: "Ras" },
       ranks: { name: "Peringkat", short: "Peringkat" },
       progress: { name: "Kemajuan", short: "Kemajuan" },
     },
@@ -385,7 +463,8 @@ export default {
     tokenX: "Token X",
     raceKeyword:
       "Kata Kunci Ras: {keyword}. Hanya Unit dari Ras ini yang bisa memilikinya.",
-    seeCard: "N ada di tiap kartu. Lihat kartunya.",
+    keywordPlate:
+      "Saat sebuah Kata Kunci terjadi dalam Pertempuran, namanya muncul di atas Unit.",
     tokenGallery: "Token di dalam game",
     tokenRank: "Peringkat",
     summonedBy: "Dipanggil oleh",
@@ -537,7 +616,6 @@ export default {
       damageType: "Jenis Damage",
       race: "Ras",
       class: "Kelas",
-      role: "Peran",
       rank: "Peringkat",
       rankGems: "Permata Peringkat",
       stars: "Bintang",
@@ -577,7 +655,7 @@ export default {
       defeated:
         "Pahlawan dengan 0 HP Tumbang. Saat semua Pahlawan dari satu Pihak Tumbang, Pihak itu kalah.\n\nDalam satu Tahap, tiap Pihak punya 1 Pahlawan, jadi Pahlawan dengan 0 HP mengakhiri Pertempuran.",
       creatureCard:
-        "Kartu Makhluk memanggil Unit ke Papan. Kartu ini punya Ras, Peran, Serangan, HP, dan Kecepatan. Beberapa Kartu Makhluk punya Kata Kunci.\n\nSaat Unit-nya mati, kartu itu masuk ke Kuburanmu.",
+        "Kartu Makhluk memanggil Unit ke Papan. Kartu ini punya Ras, Serangan, dan HP. Beberapa Kartu Makhluk punya Kata Kunci.\n\nSaat Unit-nya mati, kartu itu masuk ke Kuburanmu.",
       skillCard:
         "Kartu Keahlian punya efek sekali pakai, misalnya damage ke Unit musuh. Kartu ini punya Kelas. Hanya Pahlawan dengan Kelas yang sama yang bisa memakainya.\n\nSetelah efeknya, Kembali bisa mengirim kartu itu kembali ke Tanganmu.",
       hand: "Tanganmu adalah kartu yang dipegang Pahlawanmu dalam Pertempuran. Kartu itu tampil di bagian bawah layar.\n\nDi awal Pertempuran, Pahlawanmu mengambil {start} kartu. Tiap kartu di Tangan menunjukkan Hitung mundurnya.",
@@ -596,16 +674,16 @@ export default {
         "Batas Hitung mundur adalah jumlah maksimum Hitung mundur dari kartu di Dek-mu. Tiap kartu dihitung, juga Kartu Keahlian.\n\nPada Level pemain 1, batasnya {first}. Batas ini naik dengan Level pemainmu. Dek musuh dalam Tahap tidak punya batas ini.",
       unit: "Unit adalah figur di Papan. Kartu Makhluk menaruhnya di sana.\n\nUnit menunjukkan Serangan dan HP-nya di kakinya. Unit-mu menghadap Pahlawan musuh, dan Unit musuh menghadap Pahlawanmu.",
       attack:
-        "Serangan adalah damage yang diberikan Unit dengan satu serangan. Zirah dari target bisa memperkecil damage itu.\n\nUnit dengan Serangan 0 di kartunya tidak pernah menyerang, juga dengan bonus. Peringkat yang lebih tinggi memberi Serangan lebih besar.",
+        "Serangan adalah damage yang diberikan Unit dengan satu serangan. Benteng dari target bisa memperkecil damage itu.\n\nUnit dengan Serangan 0 di kartunya tidak pernah menyerang, juga dengan bonus. Peringkat yang lebih tinggi memberi Serangan lebih besar.",
       hp: "HP adalah nyawa dari Unit atau Pahlawan. Damage menurunkannya, dan penyembuhan mengembalikannya sampai maksimumnya.\n\nPada 0 HP, Unit meninggalkan Papan, dan Pahlawan Tumbang. Peringkat yang lebih tinggi memberi HP lebih banyak.",
       speed:
-        "Kecepatan adalah jumlah Petak maksimum yang ditempuh Unit ke depan dalam satu Giliran. Unit dengan Kecepatan 0 tidak pernah bergerak.",
+        "Kecepatan adalah jumlah Petak maksimum yang ditempuh Unit ke depan dalam satu Giliran. Setiap Unit punya Kecepatan 2. Gesit, Lesat, dan Berat mengubahnya.\n\nTembok tidak pernah bergerak.",
       range:
-        "Jangkauan adalah jumlah Petak maksimum di depan Unit jarak jauh tempat ia bisa menyerang.\n\nPendukung jarak jauh punya Jangkauan 2, dan Penembak punya Jangkauan 3. Kartu Keahlian bisa memberi bonus Jangkauan untuk waktu singkat. Saat itu, Unit jarak dekat menyerang sebagai Unit jarak jauh.",
+        "Jangkauan adalah jumlah Petak maksimum di depan Unit tempat ia bisa menyerang. Setiap Unit punya Jangkauan 1. Jangkauan Sedang, Jangkauan Jauh, dan Jangkauan Ekstrem memberi Jangkauan lebih.\n\nUnit dengan Jangkauan 1 adalah Unit jarak dekat. Unit dengan Jangkauan 2 atau lebih adalah Unit jarak jauh. Kartu Keahlian bisa memberi bonus Jangkauan untuk waktu singkat. Saat itu, Unit jarak dekat menyerang sebagai Unit jarak jauh.",
       melee:
-        "Unit jarak dekat menyerang Unit musuh di Petak berikutnya di depannya.\n\nSaat ia ada di Kolom terakhirnya dan tidak ada Unit musuh di depannya, ia menyerang Pahlawan musuh.",
+        "Unit jarak dekat punya Jangkauan 1. Ia menyerang Unit musuh di Petak berikutnya di depannya.\n\nSaat ia ada di Kolom terakhirnya dan tidak ada Unit musuh di depannya, ia menyerang Pahlawan musuh.",
       ranged:
-        "Unit jarak jauh menyerang Unit musuh terdekat di depannya, di Jalurnya dan dalam Jangkauannya. Ia tidak bergerak saat ada Unit musuh dalam Jangkauannya.\n\nSaat tidak ada Unit musuh dalam Jangkauannya dan Pahlawan musuh ada di dalamnya, ia menyerang Pahlawan musuh. Pahlawan musuh berjarak 1 Petak setelah Kolom terakhir.",
+        "Unit jarak jauh punya Jangkauan 2 atau lebih. Ia menyerang Unit musuh terdekat di depannya, di Jalurnya dan dalam Jangkauannya. Ia tidak bergerak saat ada Unit musuh dalam Jangkauannya.\n\nSaat tidak ada Unit musuh dalam Jangkauannya dan Pahlawan musuh ada di dalamnya, ia menyerang Pahlawan musuh. Pahlawan musuh berjarak 1 Petak setelah Kolom terakhir.",
       movement:
         "Dalam aksinya, Unit lebih dulu bergerak maju di sepanjang Jalurnya, sampai sejauh Kecepatannya.\n\nIa bergerak melewati Unit kawan, tetapi berhenti sebelum Unit musuh. Ia selalu berhenti di Petak kosong. Unit Terbang bergerak melewati semua Unit, tetapi berhenti sebelum Unit Terbang musuh.",
       token:
@@ -613,11 +691,11 @@ export default {
       status:
         "Status adalah efek yang tetap ada pada Unit. Buff membantu Unit, misalnya Pelindung. Debuff merugikannya. Damage Api dan Es serta beberapa Kata Kunci memberi Debuff.\n\nUnit menunjukkan Status-nya sebagai ikon di atasnya. Ikon Buff punya cincin emas. Detail Kartu dari Unit itu menunjukkan tiap Status dengan aturannya.",
       damageType:
-        "Tiap serangan dan tiap efek damage punya Jenis Damage: Fisik, Api, Es, atau Suci.\n\nDi kartu, Jenis Damage tampil sebagai ikon dan warna dari Serangan.",
-      damagePhysical: "Fisik: damage biasa. Zirah menguranginya.",
+        "Tiap serangan dan tiap efek damage punya Jenis Damage: Fisik, Api, Es, Suci, atau Petir.\n\nDi kartu, Jenis Damage tampil sebagai ikon dan warna dari Serangan.",
+      damagePhysical: "Fisik: damage biasa. Benteng menguranginya.",
       race: "Ras adalah bangsa yang dibela Kartu Makhluk. Ras tampil di lambang di sudut kanan atas kartu.\n\nDek boleh mencampur semua Ras. Tiap Ras punya gaya bermainnya sendiri.",
       raceHuman:
-        "Manusia dan orang-orang tangguh dari kota sungai. Mereka menahan barisan dengan Zirah kuat, Tembok, dan dukungan untuk kawan.",
+        "Manusia dan orang-orang tangguh dari kota sungai. Mereka menahan barisan dengan Benteng, Tembok, dan dukungan untuk kawan.",
       raceElf:
         "Elf dari hutan tua, dan roh tanaman yang bertarung bersama mereka. Mereka mengendalikan Jalur dari jauh dengan Jerat, penyembuhan, dan Racun.",
       raceUndead:
@@ -631,25 +709,12 @@ export default {
       class:
         "Kelas dari Pahlawan menentukan Kartu Keahlian yang boleh ada di Dek-nya. Kamu memilih Kelas dari tiap Dek di penyusun Dek.\n\nKartu Keahlian menunjukkan Kelas-nya di lambangnya.",
       classWarrior:
-        "Bonus dan kecepatan. Kartu Keahlian Prajurit membuat kartumu lebih cepat Siap dan memberi Zirah ke Unit-mu.",
+        "Bonus dan kecepatan. Kartu Keahlian Prajurit membuat kartumu lebih cepat Siap dan memberi Benteng ke Unit-mu.",
       classRanger: "Kendali, dan damage ke Pahlawan musuh.",
       classMage:
         "Damage area. Kartu Keahlian Penyihir mengenai Unit musuh dengan Api, Es, dan Petir.",
       classPriest:
-        "Penyembuhan, perlindungan, dan damage Suci. Kartu Keahlian Pendeta menyembuhkan dan melindungi Unit-mu, dan damage Suci mengabaikan Zirah.",
-      role: "Peran adalah tugas Kartu Makhluk dalam Pertempuran. Peran membantumu membaca kartu. Tidak ada aturan yang memakainya, tetapi Peran menentukan Jangkauan dari Unit jarak jauh.",
-      roleFrontliner:
-        "HP tinggi dan Kecepatan rendah. Garis Depan menahan Jalurnya dari Unit musuh.",
-      roleStriker:
-        "Serangan tinggi dan HP rendah. Penyerang membunuh Unit musuh.",
-      roleRunner:
-        "Kecepatan tinggi, atau Terbang. Pelari cepat sampai ke Pahlawan musuh.",
-      roleShooter:
-        "Unit jarak jauh dengan Jangkauan 3. Penembak tetap di belakang dan menyerang.",
-      roleSupport:
-        "Pendukung membuat Unit lain lebih baik, misalnya dengan Semangat atau Regenerasi. Ia jarak dekat, atau jarak jauh dengan Jangkauan 2.",
-      roleWall:
-        "Tembok menghalangi Jalurnya dari Unit musuh. Tiap Tembok punya Kata Kunci Tembok.",
+        "Penyembuhan, perlindungan, dan damage Suci. Kartu Keahlian Pendeta menyembuhkan dan melindungi Unit-mu. Block tidak berlaku pada damage Suci.",
       rank: "Peringkat adalah seberapa kuat satu salinan kartu. Ada lima Peringkat, dari Biasa sampai Legendaris.\n\nTiap kartu punya Peringkat dasar. Salinanmu tidak pernah di bawah Peringkat itu.",
       rankGems:
         "Permata Peringkat adalah berlian kecil di bagian atas kartu. Hitung jumlahnya: 1 permata adalah Biasa, 5 permata adalah Legendaris.\n\nTiap Peringkat punya warna permata, tapi jumlahnya sudah cukup untuk membaca Peringkat di Pertempuran.",
@@ -702,6 +767,7 @@ export default {
       keywordRegenerate: "regeneration, regen",
       keywordRetaliate:
         "balasan, serangan balik, retaliation, thorns, counterattack",
+      keywordBulwark: "zirah, armor, pengurangan damage, ketahanan",
       status: "debuff, kondisi, efek buruk",
       statusFreeze: "stun, membeku, pingsan",
       statusParalyze: "kesetrum, setrum, shock, disarm",
@@ -714,7 +780,6 @@ export default {
       damageType: "elemen, element",
       race: "faksi, suku, kerajaan, faction",
       class: "pekerjaan, profesi, job",
-      role: "tipe unit, unit type",
       rank: "kelangkaan, rarity, tier, kualitas",
       rankGems: "pip, titik",
       stars: "skor, nilai, score",
@@ -1010,7 +1075,7 @@ export default {
     vanguard: {
       name: "Barisan Depan Manusia",
       description:
-        "Prajurit. Tahan jalur dengan zirah, lalu dorong dengan ksatria.",
+        "Prajurit. Tahan jalur dengan Benteng, lalu dorong dengan ksatria.",
     },
     raiders: {
       name: "Perampok Orc",
@@ -1054,14 +1119,6 @@ export default {
     epic: "Epik",
     legendary: "Legendaris",
   },
-  roles: {
-    frontliner: "Garis Depan",
-    striker: "Penyerang",
-    runner: "Pelari",
-    shooter: "Penembak",
-    support: "Pendukung",
-    wall: "Tembok",
-  },
   damageTypes: {
     physical: "Fisik",
     fire: "Api",
@@ -1070,16 +1127,21 @@ export default {
     lightning: "Petir",
   },
   keywords: {
-    armor: "Zirah {value}",
     bleed: "Pendarahan {value}",
+    bulwark: "Benteng {value}",
     charge: "Terjang {value}",
     entangle: "Jerat",
+    extremeRange: "Jangkauan Ekstrem",
     firstStrike: "Serang Duluan",
+    fleet: "Lesat",
     flying: "Terbang",
+    heavy: "Berat",
     heroic: "Heroik {value}",
     hobble: "Pincang {value}",
     knockback: "Hentakan {value}",
     lastBreath: "Nafas Terakhir {value}",
+    longRange: "Jangkauan Jauh",
+    midRange: "Jangkauan Sedang",
     pivot: "Berbalik",
     poison: "Racun",
     rebirth: "Bangkit",
@@ -1089,6 +1151,7 @@ export default {
     sabotage: "Sabotase {value}",
     summon: "Panggil {token}",
     swarm: "Gerombolan {value}",
+    swift: "Gesit",
     trample: "Gilas",
     unique: "Unik",
     wall: "Tembok",
@@ -1096,13 +1159,18 @@ export default {
     melee: "Jarak Dekat",
   },
   keywordRules: {
-    armor:
-      "Mengurangi damage ke Unit ini sebesar {value}. Tidak mengurangi damage Suci.",
     bleed:
       "Unit musuh yang diserangnya mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah, selama {value} Giliran. Balas tidak menerapkan Pendarahan.",
+    bulwark: "Mengurangi damage Fisik ke Unit ini sebesar {value}.",
     charge: "+{value} Kecepatan pada Giliran saat Unit ini dipanggil.",
     entangle:
       "Unit musuh yang diserangnya punya Kecepatan 0 pada aksi berikutnya. Unit itu masih dapat menyerang.",
+    extremeRange: "+3 Jangkauan.",
+    fleet: "+2 Kecepatan.",
+    heavy: "−1 Kecepatan.",
+    longRange: "+2 Jangkauan.",
+    midRange: "+1 Jangkauan.",
+    swift: "+1 Kecepatan.",
     firstStrike:
       "Saat Unit musuh jarak dekat menyerang Unit ini, Unit ini memberi damage lebih dulu. Jika penyerang mati, serangannya tidak terjadi.",
     flying:
@@ -1137,7 +1205,7 @@ export default {
       "Selama ada Unit kawan lain dalam Jalur yang sama, Unit ini mendapat +{value} Serangan, juga untuk Balas. Unit kawan yang lebih banyak tidak menambah bonus.",
     fire: "Api: target terbakar 1 damage pada 2 Fase Akhir berikutnya.",
     frost: "Es: target melewatkan aksi berikutnya.",
-    holy: "Suci: Zirah tidak mengurangi damage ini.",
+    holy: "Suci: Block dari Pahlawan target tidak berlaku pada damage ini.",
     lightning:
       "Petir: target tidak menyerang pada aksi berikutnya, tetapi ia tetap bisa bergerak.",
   },
@@ -1164,13 +1232,13 @@ export default {
       "Beri {amount} damage {damageType} ke semua Unit musuh dalam satu Jalur. Tiap Unit yang terkena damage dan bertahan hidup menjadi Terjerat.",
     damageByAttack:
       "Beri damage {damageType} ke satu Unit musuh, sebesar Serangan Unit itu.",
-    damageLaneArmor:
-      "{hit} Unit kawan dalam Jalurnya mendapat Zirah {armor} selama {turns}.",
+    damageLaneBulwark:
+      "{hit} Unit kawan dalam Jalurnya mendapat Benteng {bulwark} selama {turns}.",
     damageLaneHeal:
       "{hit} Sembuhkan {heal} HP pada setiap Unit kawan dalam Jalurnya.",
     damageUnitHero: "{hit} Lalu beri {heroAmount} damage ke Pahlawan musuh.",
-    laneArmor:
-      "Unit kawan dalam satu Jalur mendapat Zirah {armor} selama {turns} Giliran musuh berikutnya.",
+    laneBulwark:
+      "Unit kawan dalam satu Jalur mendapat Benteng {bulwark} selama {turns} Giliran musuh berikutnya.",
     lowerCountdown:
       "Hitung mundur {cards} kartu acak di Tanganmu turun sebesar {amount}.",
     healUnit: "Sembuhkan {heal} HP pada satu Unit kawan.",
@@ -1184,7 +1252,7 @@ export default {
     cleanseUnit:
       "Hapus semua Debuff dari satu Unit kawan. Lalu sembuhkan {heal} HP padanya.",
     exposeUnit:
-      "Satu Unit musuh menjadi Terbuka {exposed}: tiap serangan Fisik padanya memberi {exposed} damage tambahan, setelah Zirah, sampai akhir Giliranmu berikutnya.",
+      "Satu Unit musuh menjadi Terbuka {exposed}: tiap serangan Fisik padanya memberi {exposed} damage tambahan, setelah Benteng, sampai akhir Giliranmu berikutnya.",
     laneAttack:
       "Unit kawan dalam satu Jalur mendapat +{attack} Serangan sampai akhir Giliranmu berikutnya.",
     unitAttackRange:
@@ -1199,7 +1267,6 @@ export default {
       "Beri {amount} damage {damageType} ke {units} Unit musuh acak yang berbeda.",
     fieldEffect:
       "Pilih area {lanes} Jalur × {columns} Kolom. Selama {turns}, pada tiap Fase Akhirmu, tiap Unit musuh di area itu terkena {amount} damage {damageType}.",
-    armorIgnored: "{effect} Zirah tidak menguranginya.",
     counts: {
       squareOne: "{value} Petak",
       squareOther: "{value} Petak",

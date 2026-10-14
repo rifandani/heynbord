@@ -109,9 +109,9 @@ describe("movement (GDD 4.5)", () => {
       position: 0,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, runt.id)?.position).toBe(2);
+    expect(unitById(next, runt.id)?.position).toBe(3);
     expect(eventsOfType(events, "UnitMoved")).toEqual([
-      expect.objectContaining({ unitId: runt.id, from: 0, to: 2 }),
+      expect.objectContaining({ unitId: runt.id, from: 0, to: 3 }),
     ]);
   });
 
@@ -128,9 +128,9 @@ describe("movement (GDD 4.5)", () => {
       position: 1,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(unitById(next, runt.id)?.position).toBe(2);
+    expect(unitById(next, runt.id)?.position).toBe(3);
     expect(eventsOfType(events, "UnitMoved")).toEqual([
-      expect.objectContaining({ unitId: runt.id, from: 0, to: 2 }),
+      expect.objectContaining({ unitId: runt.id, from: 0, to: 3 }),
     ]);
   });
 
@@ -144,10 +144,10 @@ describe("movement (GDD 4.5)", () => {
     placeUnit(state, {
       cardId: "human.townBarricade",
       owner: "player",
-      position: 2,
+      position: 3,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, runt.id)?.position).toBe(1);
+    expect(unitById(next, runt.id)?.position).toBe(2);
   });
 
   it("moves a ground Unit through a friendly Unit that does not move", () => {
@@ -164,7 +164,7 @@ describe("movement (GDD 4.5)", () => {
       frozen: true,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, runt.id)?.position).toBe(2);
+    expect(unitById(next, runt.id)?.position).toBe(3);
   });
 
   it("moves an enemy ground Unit through a friendly Unit toward the player's Hero", () => {
@@ -180,7 +180,7 @@ describe("movement (GDD 4.5)", () => {
       position: 10,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, runt.id)?.position).toBe(9);
+    expect(unitById(next, runt.id)?.position).toBe(8);
   });
 
   it("keeps a faster ground Unit behind a slower friendly Unit that acts first", () => {
@@ -189,6 +189,7 @@ describe("movement (GDD 4.5)", () => {
       cardId: "orc.badlandRunt",
       owner: "player",
       position: 0,
+      speed: 2,
     });
     const slow = placeUnit(state, {
       cardId: "orc.badlandRunt",
@@ -251,7 +252,7 @@ describe("movement (GDD 4.5)", () => {
       attack: 0,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, bird.id)?.position).toBe(5);
+    expect(unitById(next, bird.id)?.position).toBe(6);
   });
 
   it("moves a Flying Unit over an enemy ground Unit, an enemy Wall and a friendly Flying Unit", () => {
@@ -385,12 +386,14 @@ describe("movement (GDD 4.5)", () => {
       cardId: "orc.skyreaver",
       owner: "player",
       position: 2,
+      speed: 2,
       grounded: 2,
     });
     const foe = placeUnit(state, {
       cardId: "orc.skyreaver",
       owner: "enemy",
       position: 9,
+      speed: 2,
       grounded: 2,
     });
     const first = run(state, endTurn).state;
@@ -419,7 +422,7 @@ describe("movement (GDD 4.5)", () => {
       position: 11,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, runt.id)?.position).toBe(9);
+    expect(unitById(next, runt.id)?.position).toBe(8);
   });
 
   it("keeps a ranged Unit in place when an enemy is in its Range", () => {
@@ -450,7 +453,7 @@ describe("movement (GDD 4.5)", () => {
       chargeByRank("uncommon"),
       chargeByRank("epic"),
       chargeByRank("legendary"),
-    ]).toEqual([3, 4, 5]);
+    ]).toEqual([4, 5, 6]);
   });
 
   it("gives Charge +1 Speed only in the Turn of the summon", () => {
@@ -462,7 +465,7 @@ describe("movement (GDD 4.5)", () => {
       summonedTurn: 3,
       rank: "uncommon",
     });
-    expect(unitById(run(fresh, endTurn).state, knight.id)?.position).toBe(3);
+    expect(unitById(run(fresh, endTurn).state, knight.id)?.position).toBe(4);
 
     const old = emptyBattle({ turnNumber: 4 });
     const veteran = placeUnit(old, {
@@ -472,7 +475,7 @@ describe("movement (GDD 4.5)", () => {
       summonedTurn: 3,
       rank: "uncommon",
     });
-    expect(unitById(run(old, endTurn).state, veteran.id)?.position).toBe(2);
+    expect(unitById(run(old, endTurn).state, veteran.id)?.position).toBe(3);
   });
 });
 
@@ -583,7 +586,7 @@ describe("attack (GDD 4.6)", () => {
 });
 
 describe("damage (GDD 4.7)", () => {
-  it("subtracts Armor from Physical damage", () => {
+  it("subtracts Bulwark from Physical damage", () => {
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -596,10 +599,10 @@ describe("damage (GDD 4.7)", () => {
       position: 5,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, shield.id)?.hp).toBe(5);
+    expect(unitById(next, shield.id)?.hp).toBe(7);
   });
 
-  it("ignores Armor for Holy damage", () => {
+  it("ignores Bulwark for Holy damage", () => {
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "human.dawnCleric",
@@ -612,7 +615,7 @@ describe("damage (GDD 4.7)", () => {
       position: 5,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, shield.id)?.hp).toBe(5);
+    expect(unitById(next, shield.id)?.hp).toBe(7);
   });
 
   it("never deals less than 0 damage", () => {
@@ -704,12 +707,12 @@ describe("damage (GDD 4.7)", () => {
       maxHp: 20,
     });
     const first = run(state, endTurn);
-    // 4 Fire - Armor 1.
-    expect(unitById(first.state, target.id)).toMatchObject({ hp: 17, burn: 2 });
+    // 4 Fire: Bulwark 1 does not reduce it (ADR-0031).
+    expect(unitById(first.state, target.id)).toMatchObject({ hp: 16, burn: 2 });
     const second = run(first.state, endTurn);
-    // The enemy's End Phase: Burn ignores Armor.
+    // The enemy's End Phase: Burn ignores Bulwark.
     expect(unitById(second.state, target.id)).toMatchObject({
-      hp: 16,
+      hp: 15,
       burn: 1,
     });
   });
@@ -1109,7 +1112,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
       position: 4,
     });
     const { state: next } = run(state, endTurn);
-    expect(unitById(next, warden.id)?.hp).toBe(3);
+    expect(unitById(next, warden.id)?.hp).toBe(4);
   });
 
   it("moves when no enemy Unit is behind it or next to it, and a Unit without Pivot ignores the Unit behind it", () => {
@@ -1184,7 +1187,7 @@ describe("Last Breath (GDD 4.9)", () => {
     });
   });
 
-  it("deals the Damage Type of the Unit, so a Dawn Reliquary deals Holy damage that Armor does not reduce", () => {
+  it("deals the Damage Type of the Unit, so a Dawn Reliquary deals Holy damage that Bulwark does not reduce", () => {
     const state = emptyBattle();
     const reliquary = placeUnit(state, {
       cardId: "human.dawnReliquary",
@@ -1234,13 +1237,13 @@ describe("Poison (GDD 4.7)", () => {
       poisoned: 1,
     });
     const first = run(state, endTurn);
-    // Attack 2, Armor 1: 1 damage. The old stack and the new stack add.
+    // Attack 2, Bulwark 1: 1 damage. The old stack and the new stack add.
     expect(unitById(first.state, target.id)).toMatchObject({
       hp: 19,
       poisoned: 2,
     });
     const second = run(first.state, endTurn);
-    // The enemy End Phase: 2 damage, and Armor does not reduce it.
+    // The enemy End Phase: 2 damage, and Bulwark does not reduce it.
     expect(unitById(second.state, target.id)).toMatchObject({
       hp: 17,
       poisoned: 1,
@@ -1256,13 +1259,15 @@ describe("Poison (GDD 4.7)", () => {
       attack: 1,
       poison: true,
     });
-    const armored = placeUnit(blocked, {
+    const bulwarked = placeUnit(blocked, {
       cardId: "human.shieldbearer",
       owner: "enemy",
       position: 5,
       attack: 0,
     });
-    expect(unitById(run(blocked, endTurn).state, armored.id)?.poisoned).toBe(0);
+    expect(unitById(run(blocked, endTurn).state, bulwarked.id)?.poisoned).toBe(
+      0
+    );
 
     const state = emptyBattle();
     const attacker = placeUnit(state, {
@@ -1363,7 +1368,7 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
     expect(unitById(run(blocked, endTurn).state, flyer.id)?.position).toBe(3);
   });
 
-  it("applies Hobble after attack damage above 0, and not when Armor reduces the damage to 0", () => {
+  it("applies Hobble after attack damage above 0, and not when Bulwark reduces the damage to 0", () => {
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "human.militiaRecruit",
@@ -1398,14 +1403,14 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
       attack: 1,
       hobble: 2,
     });
-    const armored = placeUnit(blocked, {
+    const bulwarked = placeUnit(blocked, {
       cardId: "human.shieldbearer",
       owner: "enemy",
       position: 5,
       attack: 0,
     });
     const miss = run(blocked, endTurn);
-    expect(unitById(miss.state, armored.id)?.hobbled).toBe(0);
+    expect(unitById(miss.state, bulwarked.id)?.hobbled).toBe(0);
     expect(eventsOfType(miss.events, "StatusApplied")).toEqual([]);
   });
 
@@ -1651,7 +1656,7 @@ describe("Knockback (GDD 4.7)", () => {
     expect(eventsOfType(events, "UnitPushed")).toEqual([]);
   });
 
-  it("does not Push when Armor reduces the damage to 0", () => {
+  it("does not Push when Bulwark reduces the damage to 0", () => {
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "human.shieldbearer",
@@ -2013,7 +2018,7 @@ const trampleBoard = (
 
 describe("Trample (GDD 4.7, ADR-0017)", () => {
   it("hits the next enemy Unit behind with the damage that is left (the glossary example)", () => {
-    // Attack 9 against Armor 1 deals 8. The killed Unit had 4 HP, so 4 is left.
+    // Attack 9 against Bulwark 1 deals 8. The killed Unit had 4 HP, so 4 is left.
     const { state, defender, behind, events } = trampleBoard();
     expect(unitById(state, defender.id)).toBeUndefined();
     expect(unitById(state, behind?.id ?? 0)?.hp).toBe(16);
@@ -2026,7 +2031,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
     });
   });
 
-  it("lets the Armor of the second Unit reduce the hit", () => {
+  it("lets the Bulwark of the second Unit reduce the hit", () => {
     const { events } = trampleBoard({
       behind: { cardId: "feral.cragLizard" },
     });
@@ -2262,7 +2267,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(unitById(next, attacker.id)).toBeUndefined();
-    expect(unitById(next, behind.id)?.hp).toBe(16);
+    expect(unitById(next, behind.id)?.hp).toBe(17);
     expect(
       events.flatMap((event) => {
         if (event._tag === "DamageDealt") {
@@ -2306,7 +2311,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
 });
 
 describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
-  it("Entangles the enemy Unit after attack damage above 0, and not when Armor makes it 0", () => {
+  it("Entangles the enemy Unit after attack damage above 0, and not when Bulwark makes it 0", () => {
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "elf.canopyVinewarden",
@@ -2327,20 +2332,20 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
       expect.objectContaining({ unitId: target.id, status: "entangle" }),
     ]);
 
-    const armored = emptyBattle();
-    placeUnit(armored, {
+    const bulwarked = emptyBattle();
+    placeUnit(bulwarked, {
       cardId: "elf.canopyVinewarden",
       owner: "player",
       position: 2,
       attack: 1,
     });
-    const plated = placeUnit(armored, {
+    const plated = placeUnit(bulwarked, {
       cardId: "goblin.scrapPlateGuard",
       owner: "enemy",
       position: 4,
       attack: 0,
     });
-    expect(unitById(run(armored, endTurn).state, plated.id)?.entangled).toBe(
+    expect(unitById(run(bulwarked, endTurn).state, plated.id)?.entangled).toBe(
       false
     );
   });
@@ -2384,7 +2389,7 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
 
     // The action after has full Speed.
     const moved = run(run(next, endTurn).state, endTurn).state;
-    expect(unitById(moved, runt.id)?.position).toBe(9);
+    expect(unitById(moved, runt.id)?.position).toBe(8);
   });
 
   it("does not stack or extend: a second Entangle before the action still ends after one action", () => {
@@ -2509,7 +2514,7 @@ const bleedingByLynx = (rank: "common" | "rare" | "epic" | "legendary") => {
 };
 
 describe("Bleed (GDD 4.7, ADR-0019)", () => {
-  it("makes the enemy Unit Bleeding after attack damage above 0, and not when Armor reduces the damage to 0", () => {
+  it("makes the enemy Unit Bleeding after attack damage above 0, and not when Bulwark reduces the damage to 0", () => {
     const { count, event } = bleedHit(2, 0);
     expect(count).toBe(2);
     expect(event).toBe(2);
@@ -2522,14 +2527,14 @@ describe("Bleed (GDD 4.7, ADR-0019)", () => {
       attack: 1,
       bleed: 2,
     });
-    const armored = placeUnit(blocked, {
+    const bulwarked = placeUnit(blocked, {
       cardId: "human.shieldbearer",
       owner: "enemy",
       position: 5,
       attack: 0,
     });
     const miss = run(blocked, endTurn);
-    expect(unitById(miss.state, armored.id)?.bleeding).toBe(0);
+    expect(unitById(miss.state, bulwarked.id)?.bleeding).toBe(0);
     expect(eventsOfType(miss.events, "StatusApplied")).toEqual([]);
   });
 
@@ -2833,7 +2838,7 @@ describe("Swarm N (GDD 5.4)", () => {
       )
     ).toEqual(["attack:5"]);
 
-    // Attack 7 + Swarm 2 against Armor 1 deals 8. The killed Unit had 4 HP.
+    // Attack 7 + Swarm 2 against Bulwark 1 deals 8. The killed Unit had 4 HP.
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "feral.cragRhino",
@@ -2948,7 +2953,7 @@ describe("Rebirth (GDD 4.9)", () => {
     expect(eventsOfType(events, "UnitPushed")).toEqual([]);
   });
 
-  it("removes all Statuses, the Rally bonus and the bonus Armor", () => {
+  it("removes all Statuses, the Rally bonus and the bonus Bulwark", () => {
     const { state, defender } = rebirthBoard({
       defender: {
         hp: 1,
@@ -2959,8 +2964,8 @@ describe("Rebirth (GDD 4.9)", () => {
         hobbled: 2,
         bleeding: 2,
         rallied: 1,
-        bonusArmor: 2,
-        bonusArmorTurns: 2,
+        bonusBulwark: 2,
+        bonusBulwarkTurns: 2,
       },
     });
     const { state: next, events } = run(state, endTurn);
@@ -2974,8 +2979,8 @@ describe("Rebirth (GDD 4.9)", () => {
       hobbled: 0,
       bleeding: 0,
       rallied: 0,
-      bonusArmor: 0,
-      bonusArmorTurns: 0,
+      bonusBulwark: 0,
+      bonusBulwarkTurns: 0,
     });
   });
 
@@ -3108,7 +3113,7 @@ describe("Rebirth (GDD 4.9)", () => {
 });
 
 describe("Ward (GDD 4.7, step 8)", () => {
-  it("absorbs the damage after Armor, Crit and Block, and the Unit loses HP only for the rest", () => {
+  it("absorbs the damage after Bulwark, Crit and Block, and the Unit loses HP only for the rest", () => {
     const state = emptyBattle({
       player: { unitCrit: 10_000 },
       enemy: { unitBlock: 10_000 },
@@ -3127,15 +3132,15 @@ describe("Ward (GDD 4.7, step 8)", () => {
       ward: 2,
     });
     const { state: next, events } = run(state, endTurn);
-    // (6 − Armor 1) × 2 = 10, Block ÷ 2 = 5, Ward 2 absorbs 2: 3 damage.
-    expect(unitById(next, shield.id)).toMatchObject({ hp: 4, ward: 0 });
+    // (6 − Bulwark 1) × 2 = 10, Block ÷ 2 = 5, Ward 2 absorbs 2: 3 damage.
+    expect(unitById(next, shield.id)).toMatchObject({ hp: 6, ward: 0 });
     expect(eventsOfType(events, "DamageDealt")[0]).toMatchObject({
       amount: 3,
       crit: true,
       blocked: true,
       absorbed: 2,
       ward: 0,
-      hp: 4,
+      hp: 6,
     });
   });
 
@@ -3289,7 +3294,7 @@ describe("Ward (GDD 4.7, step 8)", () => {
   });
 
   it("subtracts the absorbed damage from the Trample overflow (the glossary example), and a Ward on the next Unit absorbs the overflow", () => {
-    // Attack 11 against Armor 1 deals 10. Ward 2 absorbs 2, and 8 kills the
+    // Attack 11 against Bulwark 1 deals 10. Ward 2 absorbs 2, and 8 kills the
     // 3 HP Unit: 5 is left.
     const plain = trampleBoard({ attack: 11, defender: { hp: 3, ward: 2 } });
     expect(damageLog(plain.events)).toEqual(["attack:8", "trample:5"]);

@@ -64,8 +64,10 @@ export interface BattleSession {
   /** Time in `current`, in milliseconds. */
   readonly elapsed: number;
   readonly speed: BattleSpeed;
-  /** All events that the screen has applied, in order (Battle log). */
+  /** All events that the screen has applied, in order. The Battle Log reads them. */
   readonly log: readonly BattleEvent[];
+  /** The view before the first event of `log`: the Battle Log starts from it. */
+  readonly start: BattleView;
   /** The Tutorial of this play (GDD 8.3), or `null` for a normal Stage. */
   readonly tutorial: Tutorial | null;
 }
@@ -100,10 +102,12 @@ export const startSession = (
       gear: player.gear,
     },
   });
+  const view = viewFromState(state);
   const session: BattleSession = {
     options,
     rules: state,
-    view: viewFromState(state),
+    view,
+    start: view,
     queue: [],
     current: null,
     elapsed: 0,

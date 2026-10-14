@@ -4,6 +4,7 @@ import {
   inspectDirection,
   KEY_GUIDE,
   keyCommand,
+  logKeyAction,
   nextReadyCard,
 } from "@/features/battle/components/battle-keys";
 
@@ -44,18 +45,51 @@ describe("keyCommand", () => {
 
 describe("KEY_GUIDE", () => {
   it("shows each Battle key action one time", () => {
-    const keys = [
-      "ArrowLeft",
-      "ArrowUp",
-      "Enter",
-      "e",
-      "s",
-      "i",
-      "h",
-      "Escape",
-    ];
+    const keys = ["ArrowLeft", "ArrowUp", "Enter", "e", "s", "i", "h", "l"];
     const actions = keys.map((key) => press(key)?.action);
-    expect(KEY_GUIDE.map((row) => row.action)).toEqual(actions);
+    expect(KEY_GUIDE.map((row) => row.action)).toEqual([
+      ...actions,
+      "logEntry",
+      "logTurn",
+      "cancel",
+    ]);
+  });
+});
+
+const logCommand = (key: string) => {
+  const found = press(key);
+  if (!found) {
+    throw new Error(`No command for ${key}`);
+  }
+  return found;
+};
+
+describe("logKeyAction", () => {
+  it("goes one Log Entry with ←/→ and one Turn with Shift+←/→", () => {
+    expect(logKeyAction(logCommand("ArrowLeft"), false)).toEqual({
+      _tag: "step",
+      step: -1,
+      byTurn: false,
+    });
+    expect(logKeyAction(logCommand("ArrowRight"), true)).toEqual({
+      _tag: "step",
+      step: 1,
+      byTurn: true,
+    });
+  });
+
+  it("goes Back to Live with L and Esc", () => {
+    expect(logKeyAction(logCommand("l"), false)._tag).toBe("close");
+    expect(logKeyAction(logCommand("L"), false)._tag).toBe("close");
+    expect(logKeyAction(logCommand("Escape"), false)._tag).toBe("close");
+  });
+
+  it("keeps Inspect and the Handbook, and turns off all Live input", () => {
+    expect(logKeyAction(logCommand("i"), false)._tag).toBe("live");
+    expect(logKeyAction(logCommand("h"), false)._tag).toBe("live");
+    for (const key of ["Enter", "e", "s", "ArrowUp", "ArrowDown"]) {
+      expect(logKeyAction(logCommand(key), false)._tag).toBe("off");
+    }
   });
 });
 

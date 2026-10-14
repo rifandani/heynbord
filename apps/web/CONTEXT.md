@@ -50,11 +50,19 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Status Badge**: The row of Status icons above a Unit on the Board, each with its count when the Status has one. It shows at most 3 Statuses, then "+N". The Details Panel shows the full list and the rules text. _Avoid_: debuff bar, buff icons, status bar, status icons
 
+**Keyword Plate**: The small Night Plate with a Keyword name and its value that shows over a Unit in Live when that Keyword occurs, for example "Swarm 2". It shows each time a Keyword changes the Battle, for all Keywords that can occur. _Avoid_: keyword flash, keyword popup, keyword toast, activation
+
 **Wind-up**: The rune ring and the particles at the caster Hero at the start of a Skill Card cast. It looks the same for all Classes: the position of the Hero shows who casts. _Avoid_: charge-up, cast circle, Class aura
 
 **Spell Bolt**: The glow that flies from the caster Hero to the target Squares of a Skill Card, in the color of its effect. _Avoid_: projectile, missile
 
-**Key Guide**: The list of the keys that play a full Battle and what each key does. It opens from the info button in the Top Bar, on hover, on keyboard focus and on press. _Avoid_: keyboard help, hotkeys, shortcuts, accessibility info, controls hint
+**Key Guide**: The list of the keys that play a full Battle and what each key does. It opens from the info button in the Top Bar, on hover, on keyboard focus and on press. "Read more" on a Hint for a screen control opens it at the line of its key, and marks that line. _Avoid_: keyboard help, hotkeys, shortcuts, accessibility info, controls hint
+
+**Battle Log**: The view-only mode of the Battle screen that shows the past moments of the current Battle. It has the list of Log Entries, and the Board, the Hand Bar and the Heroes show the selected Log Entry. It shows only what the Player saw at that moment. It never changes the Battle, and it goes away when the Player leaves the Battle. _Avoid_: replay, rewind, history, combat log, turn history, undo
+
+**Log Entry**: One past moment in the Battle Log: one card play, one Unit Action or one Phase effect, with all its results. The Log Entries are under one header for each Turn of a Side. _Avoid_: log line, event, step, history item
+
+**Live**: The current moment of the Battle, as opposed to a Log Entry. "Back to Live" closes the Battle Log. _Avoid_: present, now, current turn
 
 ### Town
 
@@ -121,3 +129,4 @@ React app on TanStack Start. The server renders and streams each page.
 - Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, and the Workshop Building opens the Workshop. Later, the Bazaar Building opens the Bazaar.
 - The **Handbook** and the **Card Details** show the same rule text for a Keyword, a Status or a Damage Type. The Handbook never has its own copy of a rule.
 - A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.
+- The **Battle Log** shows the Battle Events that the screen already played. It never shows a later moment than **Live**. While it is open, the Live playback pauses.

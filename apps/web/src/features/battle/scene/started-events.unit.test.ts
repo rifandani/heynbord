@@ -22,6 +22,7 @@ const damage = (crit: boolean): BattleEvent => ({
   amount: 2,
   damageType: "physical",
   source: "attack",
+  dealer: null,
   crit,
   blocked: false,
   trueDamage: false,

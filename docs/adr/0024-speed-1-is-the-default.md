@@ -2,6 +2,8 @@
 
 No rule told when a Unit has Speed 2. Of the 71 Creature Cards that can move, 50 had Speed 1 and 19 had Speed 2. Among the 19 were a Frontliner (Militia Recruit), although GDD 5.6 says "Frontliner: low Speed", and 3 Goblin Strikers, although Goblin is not a fast Race. Each Square of Speed costs 2 Power Points, the same as 1 Attack. Thus a card designer could buy Speed for any card, and the Player could not read the Speed from the Role.
 
+> Superseded on 2026-10-14 by [ADR-0030](./0030-keywords-set-speed-and-range-and-there-are-no-roles.md): there are no Roles. Each Unit has Base Speed 2, and the Keywords Swift, Fleet and Heavy change it. The guards of this ADR (a Ranged Unit has Speed 1 or less, a Flying Unit has no Speed 3, at most 1 card with Speed 3 or 4 for each Race) are removed.
+
 We decided:
 
 - **The default Speed is 1.** This includes each Frontliner, Shooter and Support, and each Striker that is not an Orc Striker.

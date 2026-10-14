@@ -1,6 +1,7 @@
 import type { BattleEvent } from "@workspace/rules";
 
-import type { UnitView } from "@/features/battle/battle-view";
+import type { UnitSourceView, UnitView } from "@/features/battle/battle-view";
+import { sourceId } from "@/features/battle/card-art";
 
 /** The names of the clips in a packed Unit model (`scripts/pack-unit-model.ts`). */
 export type UnitClipName = "idle" | "walk" | "attack" | "hurt" | "death";
@@ -22,6 +23,19 @@ const UNIT_MODELS: Readonly<Record<string, UnitModelSpec>> = {};
 /** The 3D model of a card, or `undefined` if the card has only a cut-out figure. */
 export const unitModelOf = (cardId: string): UnitModelSpec | undefined =>
   UNIT_MODELS[cardId];
+
+/** The height of a cut-out figure. A 3D model has its own height. */
+const CUT_OUT_HEIGHT = 1.03;
+
+/** The Status Badge sits this far above the head of the figure. */
+const BADGE_GAP = 0.3;
+
+/**
+ * The height of the middle of the Status Badge of a Unit, above the head of
+ * its figure. A Keyword Plate sits above it.
+ */
+export const badgeHeight = (source: UnitSourceView): number =>
+  (unitModelOf(sourceId(source))?.height ?? CUT_OUT_HEIGHT) + BADGE_GAP;
 
 /** All 3D models, to load them before the first Unit is summoned. */
 export const allUnitModels = (): readonly UnitModelSpec[] =>

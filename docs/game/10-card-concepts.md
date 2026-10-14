@@ -15,7 +15,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Creature Cards and Tokens** use the prompts of 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the prompts of 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
 - **Provisional power.** A Summon or a Last Breath that summons uses 50% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
-- **Power Budget `21 + 3 × (Countdown − 3)`** (the same as `12 + 3 × Countdown`). The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget.
+- **Power Budget `19 + 3 × (Countdown − 3)`** (the same as `10 + 3 × Countdown`). The base was 21 before [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md): the Base Speed 2 is now free. The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget.
 - **Common values and Power Points.** The Attack and HP on each line are Common values. The Power on each line measures Attack and HP at the Base Rank of the card, with the Rank scale of GDD 5.3 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Thus an Uncommon, Rare or Epic card has lower Common Attack and HP than a Common card of the same power.
 
 ### 1.1 Settings
@@ -36,7 +36,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.1 Militia Recruit
 
-`human.militiaRecruit` · Frontliner · Common · Countdown 1 · Attack 3 · HP 8 · Speed 1 · Melee · Physical
+`human.militiaRecruit` · Common · Countdown 1 · Attack 3 · HP 8 · Physical · Heavy
 
 > "I brought my own pitchfork!"
 
@@ -52,7 +52,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.2 Shieldbearer
 
-`human.shieldbearer` · Frontliner · Common · Countdown 2 · Attack 1 · HP 7 · Melee · Physical · Armor 1 · Knockback 1 at Common, 2 at Epic, 3 at Legendary
+`human.shieldbearer` · Common · Countdown 2 · Attack 1 · HP 9 · Physical · Heavy · Bulwark 1 · Knockback 1 at Common, 2 at Epic, 3 at Legendary
 
 > Her shield has more dents than a tin pot.
 
@@ -61,14 +61,14 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 | Subject | A strong, calm woman soldier with a wide stance. |
 | Pose | She crouches a little behind a large round shield, with a short sword low at her side. |
 | Props | A large round shield with many dents and a faded blue and gold paint, a short sword, a simple steel cap, a mail shirt. |
-| Gameplay cues | The large shield is ready to bash and push. Armor 1: the shield is the main shape. Low Attack: the sword is small and low. |
+| Gameplay cues | The large shield is ready to bash and push. Bulwark 1: the shield is the main shape. Low Attack: the sword is small and low. |
 | Silhouette hook | The large round shield that covers most of her body. |
 | Humor note | The shield has many visible dents, but she is not worried. |
 | Setting | A stone bridge over the river. |
 
 ### 2.3 Crossbow Guard
 
-`human.crossbowGuard` · Shooter · Common · Countdown 2 · Attack 4 · HP 5 · Range 3 · Physical
+`human.crossbowGuard` · Common · Countdown 2 · Attack 4 · HP 5 · Physical · Long-range
 
 > Never late. Never misses. Sometimes asleep.
 
@@ -84,7 +84,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.4 Halberdier
 
-`human.halberdier` · Striker · Common · Countdown 3 · Attack 4 · HP 6 · Melee · Physical · Retaliate
+`human.halberdier` · Common · Countdown 3 · Attack 4 · HP 6 · Physical · Retaliate
 
 > Touch the banner and you touch the blade.
 
@@ -100,7 +100,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.5 Dawn Cleric
 
-`human.dawnCleric` · Support · Uncommon · Countdown 3 · Attack 2 · HP 7 · Range 2 · Holy · Regenerate 1
+`human.dawnCleric` · Uncommon · Countdown 3 · Attack 2 · HP 8 · Holy · Mid-range · Regenerate 1
 
 > She sings at sunrise. Nobody asked her to.
 
@@ -116,7 +116,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.6 River Knight
 
-`human.riverKnight` · Runner · Uncommon · Countdown 4 · Attack 4 · HP 6 · Speed 2 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
+`human.riverKnight` · Uncommon · Countdown 4 · Attack 4 · HP 6 · Physical · Swift · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > His horse is braver than he is.
 
@@ -125,14 +125,14 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 | Subject | A young man knight on a big, bold horse. |
 | Pose | The horse charges forward with joy. The knight holds the reins tightly and leans back, with wide eyes. His lance still points forward. |
 | Props | A lance, a blue and gold horse cloth, light plate armor, a helmet with the visor up. |
-| Gameplay cues | Charge and Speed 2: water splashes and motion. Uncommon: a gold trim on the horse cloth. |
+| Gameplay cues | Charge and Swift: water splashes and motion. Uncommon: a gold trim on the horse cloth. |
 | Silhouette hook | The horse and rider shape with the long lance. |
 | Humor note | The horse is brave and happy. The knight is nervous. |
 | Setting | A shallow river ford, with water splashing. |
 
 ### 2.7 Gate Warden
 
-`human.gateWarden` · Frontliner · Uncommon · Countdown 3 · Attack 3 · HP 7 · Melee · Physical · Pivot
+`human.gateWarden` · Uncommon · Countdown 3 · Attack 3 · HP 8 · Physical · Heavy · Pivot
 
 > Nobody gets past. Nobody gets behind, either.
 
@@ -148,7 +148,7 @@ Identity: proud and stubborn humans and stout folk of the river towns. They love
 
 ### 2.8 Iron Bulwark
 
-`human.ironBulwark` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 6 · Melee · Physical · Armor 2 · Retaliate
+`human.ironBulwark` · Epic · Countdown 6 · Attack 2 · HP 6 · Physical · Heavy · Bulwark 2 · Retaliate
 
 > A wall that complains about the weather.
 
@@ -159,18 +159,18 @@ Purpose: the archetypal Human Epic and strongest defensive Creature Card.
 | Subject | An old stout-folk man: short, very broad and strong. A grey beard comes out under his helmet. |
 | Pose | He stands firm behind a tower shield and frowns up at a small rain cloud. |
 | Props | Very heavy full plate with gold trim, a tall tower shield with short spikes, a heavy mace. A small rain cloud rains only on him. |
-| Gameplay cues | Armor 2: the heaviest armor in the set. Retaliate: spikes on the shield. Epic: a heroic scene with dramatic composition, and the most ornate human armor in the set. |
+| Gameplay cues | Bulwark 2: the heaviest armor in the set. Retaliate: spikes on the shield. Epic: a heroic scene with dramatic composition, and the most ornate human armor in the set. |
 | Silhouette hook | A wide block shape: the tower shield and the very broad body. |
 | Humor note | He is like a wall, but he complains about a small rain cloud. |
 | Setting | A stone town wall in light rain. |
 
 ### 2.9 Town Barricade
 
-`human.townBarricade` · Wall · Common · Countdown 1 · Attack 0 · HP 15 · Speed 0 · Melee · Physical · Wall
+`human.townBarricade` · Common · Countdown 1 · Attack 0 · HP 14 · Physical · Wall
 
 > The passage permit is under the sandbags.
 
-Purpose: a cheap Lane block. Power 15, budget 15, deviation 0%.
+Purpose: a cheap Lane block. Power 14, budget 13, deviation +7.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -184,11 +184,11 @@ Purpose: a cheap Lane block. Power 15, budget 15, deviation 0%.
 
 ### 2.10 Bridge Pikeman
 
-`human.bridgePikeman` · Striker · Uncommon · Countdown 3 · Attack 4 · HP 5 · Speed 1 · Melee · Physical · Knockback 1, 2 at Epic, 3 at Legendary
+`human.bridgePikeman` · Uncommon · Countdown 3 · Attack 4 · HP 5 · Physical · Knockback 1, 2 at Epic, 3 at Legendary
 
 > Please enter the queue. The back of the queue.
 
-Purpose: a Striker that pushes the enemy off the bridge. Power 21, budget 21, deviation 0%.
+Purpose: a melee attacker that pushes the enemy off the bridge. Power 19, budget 19, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -202,11 +202,11 @@ Purpose: a Striker that pushes the enemy off the bridge. Power 21, budget 21, de
 
 ### 2.11 Banner Chaplain
 
-`human.bannerChaplain` · Support · Uncommon · Countdown 3 · Attack 2 · HP 6 · Speed 1 · Range 2 · Holy · Rally 1
+`human.bannerChaplain` · Uncommon · Countdown 3 · Attack 2 · HP 8 · Holy · Mid-range · Rally 1
 
 > The sermon ends when morale improves.
 
-Purpose: a low-cost Rally source and Holy attacker. Power 20, budget 21, deviation -4.8%.
+Purpose: a low-cost Rally source and Holy attacker. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -220,65 +220,65 @@ Purpose: a low-cost Rally source and Holy attacker. Power 20, budget 21, deviati
 
 ### 2.12 King's Courier
 
-`human.kingsCourier` · Runner · Rare · Countdown 4 · Attack 2 · HP 5 · Speed 4 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
+`human.kingsCourier` · Rare · Countdown 4 · Attack 2 · HP 6 · Physical · Fleet · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > The message says urgent. She was already running.
 
-Purpose: maximum Human Speed with less Attack than River Knight. Power 24, budget 24, deviation 0%.
+Purpose: maximum Human Speed with less Attack than River Knight. Power 20, budget 22, deviation -9.1%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A lean woman royal courier. |
 | Pose | She sprints across a bridge with one foot in the air. |
 | Props | Short spear, sealed scroll case, blue riding coat and ornate gold clasps. |
-| Gameplay cues | Loose papers, water spray and the streaming coat show Speed 4 and Charge. |
+| Gameplay cues | Loose papers, water spray and the streaming coat show Fleet and Charge. |
 | Silhouette hook | Forward spear and long coat. |
 | Humor note | A tired horse watches her pass. |
 | Setting | A bridge and riverside road. |
 
 ### 2.13 Pavise Arbalist
 
-`human.paviseArbalist` · Shooter · Rare · Countdown 4 · Attack 3 · HP 6 · Speed 1 · Range 3 · Physical · Armor 1 · Hobble 1 at Rare, 2 at Epic, 3 at Legendary
+`human.paviseArbalist` · Rare · Countdown 4 · Attack 3 · HP 6 · Physical · Long-range · Bulwark 1 · Hobble 1 at Rare, 2 at Epic, 3 at Legendary
 
 > He brings his own wall and calls it a firing position.
 
-Purpose: a durable Shooter. Power 26, budget 24, deviation +8.3%.
+Purpose: a durable Long-range Unit. Power 23, budget 22, deviation +4.5%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A patient older man arbalist. |
 | Pose | He kneels behind a tall pavise and aims a heavy crossbow. |
 | Props | Windlass crossbow, barbed bolts, ornate pavise, mail sleeves and bolt case. |
-| Gameplay cues | The long aim shows Range 3; the shield shows Armor 1; the barbed bolts show Hobble. |
+| Gameplay cues | The long aim shows Long-range; the shield shows Bulwark 1; the barbed bolts show Hobble. |
 | Silhouette hook | Tall shield and horizontal crossbow. |
 | Humor note | A stool and tea cup wait behind the shield. |
 | Setting | A river-town wall. |
 
 ### 2.14 Dawn Reliquary
 
-`human.dawnReliquary` · Wall · Rare · Countdown 4 · Attack 0 · HP 9 · Speed 0 · Melee · Holy · Armor 2 · Wall · Last Breath: deal 2 Holy damage
+`human.dawnReliquary` · Rare · Countdown 4 · Attack 0 · HP 9 · Holy · Bulwark 2 · Wall · Last Breath: deal 2 Holy damage
 
 > Even broken, it gets the last word.
 
-Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves. Power 23, budget 24, deviation -4.2%.
+Purpose: a premium Wall that damages the nearest enemy Unit ahead when it leaves. Power 23, budget 22, deviation +4.5%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A large armored roadside reliquary. |
 | Pose | It stands across the Lane like a sealed gate. |
 | Props | Oak doors, steel bands, sun emblem, candles and blue prayer cloths. |
-| Gameplay cues | Thick bands show Armor; gold light in cracks shows Last Breath. |
+| Gameplay cues | Thick bands show Bulwark; gold light in cracks shows Last Breath. |
 | Silhouette hook | Tall arched shrine and round sun emblem. |
 | Humor note | One candle stays upright despite the damage. |
 | Setting | A stone approach to a river-town temple. |
 
 ### 2.15 Marshal Elian Voss (draft)
 
-`human.marshalElianVoss` · Support · Epic · Countdown 6 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Armor 1 · Rally 2 · Unique
+`human.marshalElianVoss` · Epic · Countdown 6 · Attack 1 · HP 6 · Holy · Mid-range · Bulwark 1 · Rally 2 · Unique
 
 > Hold the line. I have six more reasons.
 
-Purpose: the named Human Epic and Rally capstone. Power 30, budget 30, deviation 0%.
+Purpose: the named Human Epic and Rally capstone. Power 27, budget 28, deviation -3.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -298,43 +298,43 @@ Each Orc figure is an orc. The art shows no animals, mounts or beasts, because a
 
 ### 3.1 Badland Runt
 
-`orc.badlandRunt` · Runner · Common · Countdown 1 · Attack 4 · HP 1 · Speed 2 · Melee · Physical · Last Breath 1
+`orc.badlandRunt` · Common · Countdown 1 · Attack 4 · HP 2 · Physical · Swift · Last Breath 1
 
 > Small, loud and already biting.
 
-Purpose: a one-HP trade. Last Breath 1 hits the nearest enemy Unit ahead when it leaves. Power 14, budget 15, deviation -6.7%.
+Purpose: a one-HP trade. Last Breath 1 hits the nearest enemy Unit ahead when it leaves. Power 13, budget 13, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A young orc boy, the smallest of the warband, with big ears and small new tusks. |
 | Pose | He jumps forward with his mouth open in a war cry, ready to bite. |
 | Props | An adult iron helmet that is too big for him, a short bone knife, orange war paint stripes. |
-| Gameplay cues | High Attack and HP 1: small body, big war cry. Speed 2: a jump with dust behind him. A spare knife in his boot shows Last Breath. |
+| Gameplay cues | High Attack and HP 1: small body, big war cry. Swift: a jump with dust behind him. A spare knife in his boot shows Last Breath. |
 | Silhouette hook | The big helmet and the open mouth. |
 | Humor note | He is very small, but he acts very fierce. The helmet falls over one eye. |
 | Setting | Dusty red ground in the badlands. |
 
 ### 3.2 Scrap Raider
 
-`orc.scrapRaider` · Runner · Common · Countdown 2 · Attack 3 · HP 4 · Speed 2 · Melee · Physical · Heroic 1 · Last Breath 1
+`orc.scrapRaider` · Common · Countdown 2 · Attack 3 · HP 5 · Physical · Swift · Heroic 1 · Last Breath 1
 
 > Everything shiny is his now.
 
-Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, deviation -5.6%.
+Purpose: a fast Unit that hits the Hero and still hits when he falls. Power 16, budget 16, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A thin, fast orc man with a big grin. |
 | Pose | He runs forward with a cleaver and carries a full sack over his shoulder. |
 | Props | A cleaver, a sack full of shiny things (spoons, pans, a small bell), many stolen rings and necklaces, scrap-metal armor. |
-| Gameplay cues | Speed 2: a running pose. Heroic 1: he looks ahead to the right, at a bigger prize. A hidden blade in the sack shows Last Breath. |
+| Gameplay cues | Swift: a running pose. Heroic 1: he looks ahead to the right, at a bigger prize. A hidden blade in the sack shows Last Breath. |
 | Silhouette hook | The large sack on his back. |
 | Humor note | He wears many stolen shiny things, also a spoon as an earring. |
 | Setting | A badland trail. |
 
 ### 3.3 Ember Shaman
 
-`orc.emberShaman` · Shooter · Common · Countdown 3 · Attack 4 · HP 6 · Range 3 · Fire
+`orc.emberShaman` · Common · Countdown 3 · Attack 4 · HP 6 · Fire · Long-range
 
 > She cooks dinner and enemies the same way.
 
@@ -350,7 +350,7 @@ Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, 
 
 ### 3.4 Howling Charger
 
-`orc.howlingCharger` · Striker · Uncommon · Countdown 3 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
+`orc.howlingCharger` · Uncommon · Countdown 3 · Attack 3 · HP 7 · Physical · Swift · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > You hear him long before you see him.
 
@@ -366,7 +366,7 @@ Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, 
 
 ### 3.5 Skyreaver
 
-`orc.skyreaver` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Flying · Heroic 1
+`orc.skyreaver` · Uncommon · Countdown 3 · Attack 3 · HP 3 · Physical · Swift · Flying · Heroic 1
 
 > She steals hats from very high up.
 
@@ -382,11 +382,11 @@ Purpose: a fast Hero runner that still hits when he falls. Power 17, budget 18, 
 
 ### 3.6 Pack Stalker
 
-`orc.packStalker` · Striker · Uncommon · Countdown 2 · Attack 2 · HP 4 · Speed 2 · Melee · Physical · Pivot · Last Breath 1
+`orc.packStalker` · Uncommon · Countdown 2 · Attack 2 · HP 5 · Physical · Swift · Pivot · Last Breath 1
 
 > He always knows where you are. Mostly behind you.
 
-Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, deviation -5.6%.
+Purpose: the Orc Pivot Unit, and a trade that still hits. Power 16, budget 16, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -400,7 +400,7 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, d
 
 ### 3.7 Tusk Brute
 
-`orc.tuskBrute` · Striker · Common · Countdown 4 · Attack 5 · HP 7 · Melee · Physical · Heroic 2
+`orc.tuskBrute` · Common · Countdown 4 · Attack 5 · HP 7 · Physical · Heroic 2
 
 > Doors are only a suggestion.
 
@@ -416,7 +416,7 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, d
 
 ### 3.8 Warchief Grukka
 
-`orc.warchiefGrukka` · Striker · Epic · Countdown 6 · Attack 3 · HP 5 · Speed 2 · Melee · Physical · Charge 2 at Epic, 3 at Legendary · Heroic 2 · Unique
+`orc.warchiefGrukka` · Epic · Countdown 6 · Attack 3 · HP 5 · Physical · Swift · Charge 2 at Epic, 3 at Legendary · Heroic 2 · Unique
 
 > "Lunch first. Then glory."
 
@@ -447,11 +447,11 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 17, budget 18, d
 
 ### 3.9 Bonestake Palisade
 
-`orc.bonestakePalisade` · Wall · Common · Countdown 2 · Attack 0 · HP 15 · Speed 0 · Melee · Physical · Wall · Last Breath 3
+`orc.bonestakePalisade` · Common · Countdown 2 · Attack 0 · HP 14 · Physical · Wall · Last Breath 3
 
 > The stakes are for enemies. The sausages are for later.
 
-Purpose: the Orc Wall. It stops a Lane for the Orc rush, and when it falls, its stakes hit the enemy in front. Power 18, budget 18, deviation 0%.
+Purpose: the Orc Wall. It stops a Lane for the Orc rush, and when it falls, its stakes hit the enemy in front. Power 17, budget 16, deviation +6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -465,11 +465,11 @@ Purpose: the Orc Wall. It stops a Lane for the Orc rush, and when it falls, its 
 
 ### 3.10 Cinderhorn Breaker
 
-`orc.cinderhornBreaker` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Fire · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
+`orc.cinderhornBreaker` · Uncommon · Countdown 3 · Attack 3 · HP 4 · Fire · Swift · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > She never waits for the gate to open.
 
-Purpose: a fast Fire attacker. Power 22, budget 21, deviation +4.8%.
+Purpose: a fast Fire attacker. Power 19, budget 19, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -483,11 +483,11 @@ Purpose: a fast Fire attacker. Power 22, budget 21, deviation +4.8%.
 
 ### 3.11 Warhowler Drummer
 
-`orc.warhowlerDrummer` · Support · Uncommon · Countdown 2 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Rally 1
+`orc.warhowlerDrummer` · Uncommon · Countdown 2 · Attack 2 · HP 7 · Physical · Rally 1
 
 > She only knows one rhythm: faster.
 
-Purpose: a low-Countdown rush enabler. Power 17, budget 18, deviation -5.6%.
+Purpose: a low-Countdown rush enabler. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -501,29 +501,29 @@ Purpose: a low-Countdown rush enabler. Power 17, budget 18, deviation -5.6%.
 
 ### 3.12 Ashspit Hunter
 
-`orc.ashspitHunter` · Shooter · Rare · Countdown 4 · Attack 4 · HP 4 · Speed 1 · Range 3 · Fire
+`orc.ashspitHunter` · Rare · Countdown 4 · Attack 4 · HP 4 · Fire · Long-range
 
 > He measures range by how far the eyebrows burn.
 
-Purpose: a ranged Fire threat. Power 26, budget 24, deviation +8.3%.
+Purpose: a ranged Fire threat. Power 23, budget 22, deviation +4.5%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A lean orc man with one singed eyebrow. |
 | Pose | He braces a long fire tube. |
 | Props | Iron fire tube, brass trim, ember basket and leather coat. |
-| Gameplay cues | The long weapon shows Range 3; its trail shows Fire. |
+| Gameplay cues | The long weapon shows Long-range; its trail shows Fire. |
 | Silhouette hook | Horizontal tube and ember basket. |
 | Humor note | His remaining eyebrow shows concern. |
 | Setting | A ledge above a canyon. |
 
 ### 3.13 Mesa Pit-Fighter
 
-`orc.mesaPitFighter` · Frontliner · Rare · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Retaliate
+`orc.mesaPitFighter` · Rare · Countdown 4 · Attack 3 · HP 7 · Physical · Heavy · Retaliate
 
 > Hit her once. That is how counting lessons start.
 
-Purpose: an aggressive Frontliner that protects through threat. Power 24, budget 24, deviation 0%.
+Purpose: an aggressive Heavy Unit that protects through threat. Power 20, budget 22, deviation -9.1%.
 
 | Field | Brief |
 | --- | --- |
@@ -537,11 +537,11 @@ Purpose: an aggressive Frontliner that protects through threat. Power 24, budget
 
 ### 3.14 Pyreaxe Ravager
 
-`orc.pyreaxeRavager` · Striker · Rare · Countdown 5 · Attack 4 · HP 5 · Speed 1 · Melee · Fire · Heroic 2
+`orc.pyreaxeRavager` · Rare · Countdown 5 · Attack 4 · HP 5 · Fire · Heroic 2
 
 > The axe is hot. Her temper is hotter.
 
-Purpose: a heavy Fire finisher. Power 28, budget 27, deviation +3.7%.
+Purpose: a heavy Fire finisher. Power 26, budget 25, deviation +4.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -555,11 +555,11 @@ Purpose: a heavy Fire finisher. Power 28, budget 27, deviation +3.7%.
 
 ### 3.15 Warband Standard-Bearer
 
-`orc.warbandStandardBearer` · Support · Epic · Countdown 6 · Attack 2 · HP 4 · Speed 1 · Melee · Physical · Charge 2 at Epic, 3 at Legendary · Heroic 2 · Rally 2
+`orc.warbandStandardBearer` · Epic · Countdown 6 · Attack 2 · HP 4 · Physical · Charge 2 at Epic, 3 at Legendary · Heroic 2 · Rally 2
 
 > Follow the banner. Ignore where it is going.
 
-Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero pressure. Power 30, budget 30, deviation 0%.
+Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero pressure. Power 27, budget 28, deviation -3.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -577,29 +577,29 @@ Identity: patient forest people and plant spirits. They control movement from ra
 
 ### 4.1 Rootbound Guard
 
-`elf.rootboundGuard` · Frontliner · Common · Countdown 3 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 1 · Regenerate 1
+`elf.rootboundGuard` · Common · Countdown 3 · Attack 3 · HP 9 · Physical · Heavy · Bulwark 1 · Regenerate 1
 
 > He has held this path since it was somewhere else.
 
-Purpose: an Elf Lane anchor. Power 20, budget 21, deviation -4.8%.
+Purpose: an Elf Lane anchor. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A broad old plant guardian in bark armor. |
 | Pose | It stands rooted behind a leaf shield. |
 | Props | Leaf shield, branch spear and boot-shaped training post. |
-| Gameplay cues | Roots in the ground show Regenerate; bark cuirass shows Armor. |
+| Gameplay cues | Roots in the ground show Regenerate; bark cuirass shows Bulwark. |
 | Silhouette hook | Square trunk and broad shield. |
 | Humor note | A snail uses it as a milestone. |
 | Setting | An ancient forest path. |
 
 ### 4.2 Bramble Duelist
 
-`elf.brambleDuelist` · Striker · Common · Countdown 2 · Attack 5 · HP 5 · Speed 1 · Melee · Physical
+`elf.brambleDuelist` · Common · Countdown 2 · Attack 5 · HP 5 · Physical
 
 > One cut for honor. Two because the hedge was rude.
 
-Purpose: a simple Elf attacker. Power 17, budget 18, deviation -5.6%.
+Purpose: a simple Elf attacker. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -613,11 +613,11 @@ Purpose: a simple Elf attacker. Power 17, budget 18, deviation -5.6%.
 
 ### 4.3 Fernwing Courier
 
-`elf.fernwingCourier` · Runner · Common · Countdown 2 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Flying
+`elf.fernwingCourier` · Common · Countdown 2 · Attack 3 · HP 3 · Physical · Swift · Flying
 
 > The message says urgent. The parcel is a sandwich.
 
-Purpose: cheap Flying Hero pressure. Power 17, budget 18, deviation -5.6%.
+Purpose: cheap Flying Hero pressure. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -631,11 +631,11 @@ Purpose: cheap Flying Hero pressure. Power 17, budget 18, deviation -5.6%.
 
 ### 4.4 Mosspitcher Lookout
 
-`elf.mosspitcherLookout` · Shooter · Common · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Range 3 · Physical · Regenerate 1
+`elf.mosspitcherLookout` · Common · Countdown 3 · Attack 3 · HP 8 · Physical · Long-range · Regenerate 1
 
 > He can hear a boot step. He cannot hear advice.
 
-Purpose: a durable Elf Shooter that heals. Power 19, budget 21, deviation -9.5%.
+Purpose: a durable Elf Long-range Unit that heals. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -649,11 +649,11 @@ Purpose: a durable Elf Shooter that heals. Power 19, budget 21, deviation -9.5%.
 
 ### 4.5 Acorn Tender
 
-`elf.acornTender` · Shooter · Common · Countdown 3 · Attack 3 · HP 3 · Speed 1 · Range 3 · Holy · Poison
+`elf.acornTender` · Common · Countdown 3 · Attack 3 · HP 6 · Holy · Long-range · Poison
 
 > Growth takes patience. Wilt takes less.
 
-Purpose: a Holy shooter that applies Poison. Power 19, budget 21, deviation -9.5%.
+Purpose: a Holy Long-range Unit that applies Poison. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -667,11 +667,11 @@ Purpose: a Holy shooter that applies Poison. Power 19, budget 21, deviation -9.5
 
 ### 4.6 Glade Turnblade
 
-`elf.gladeTurnblade` · Striker · Uncommon · Countdown 3 · Attack 4 · HP 4 · Speed 1 · Melee · Physical · Pivot
+`elf.gladeTurnblade` · Uncommon · Countdown 3 · Attack 4 · HP 4 · Physical · Pivot
 
 > Behind him is only another front.
 
-Purpose: the Elf Pivot Unit. Power 20, budget 21, deviation -4.8%.
+Purpose: the Elf Pivot Unit. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -685,11 +685,11 @@ Purpose: the Elf Pivot Unit. Power 20, budget 21, deviation -4.8%.
 
 ### 4.7 Canopy Skirmisher
 
-`elf.canopySkirmisher` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Flying
+`elf.canopySkirmisher` · Uncommon · Countdown 3 · Attack 3 · HP 3 · Physical · Swift · Flying
 
 > The stairs were deemed inefficient.
 
-Purpose: mobile pressure with fragile stats. Power 20, budget 21, deviation -4.8%.
+Purpose: mobile pressure with fragile stats. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -703,11 +703,11 @@ Purpose: mobile pressure with fragile stats. Power 20, budget 21, deviation -4.8
 
 ### 4.8 Thornline Archer
 
-`elf.thornlineArcher` · Shooter · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 1 · Range 3 · Physical · Poison
+`elf.thornlineArcher` · Uncommon · Countdown 3 · Attack 3 · HP 4 · Physical · Long-range · Poison
 
 > The arrow leaves. The ache stays.
 
-Purpose: reliable ranged Poison. Power 20, budget 21, deviation -4.8%.
+Purpose: reliable ranged Poison. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -721,11 +721,11 @@ Purpose: reliable ranged Poison. Power 20, budget 21, deviation -4.8%.
 
 ### 4.9 Dewkeeper
 
-`elf.dewkeeper` · Support · Uncommon · Countdown 3 · Attack 2 · HP 8 · Speed 1 · Range 2 · Holy · Regenerate 1
+`elf.dewkeeper` · Uncommon · Countdown 3 · Attack 2 · HP 8 · Holy · Mid-range · Regenerate 1
 
 > She collects morning dew. Afternoon dew is paperwork.
 
-Purpose: a durable Holy support. Power 22, budget 21, deviation +4.8%.
+Purpose: a durable Holy support. Power 19, budget 19, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -739,11 +739,11 @@ Purpose: a durable Holy support. Power 22, budget 21, deviation +4.8%.
 
 ### 4.10 Bramble Nest
 
-`elf.brambleNest` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 16 · Speed 0 · Melee · Physical · Wall · Regenerate 1
+`elf.brambleNest` · Uncommon · Countdown 3 · Attack 0 · HP 15 · Physical · Wall · Regenerate 1
 
 > It is not blocking the path. It is the path now.
 
-Purpose: a Wall that grows back. Power 21, budget 21, deviation 0%.
+Purpose: a Wall that grows back. Power 20, budget 19, deviation +5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -757,11 +757,11 @@ Purpose: a Wall that grows back. Power 21, budget 21, deviation 0%.
 
 ### 4.11 Amberwing Dart
 
-`elf.amberwingDart` · Runner · Rare · Countdown 3 · Attack 2 · HP 3 · Speed 2 · Melee · Physical · Flying · Poison
+`elf.amberwingDart` · Rare · Countdown 3 · Attack 2 · HP 3 · Physical · Swift · Flying · Poison
 
 > It stops armies and loses arguments with windows.
 
-Purpose: a fast Flying Poison attacker with low HP. Power 21, budget 21, deviation 0%.
+Purpose: a fast Flying Poison attacker with low HP. Power 19, budget 19, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -775,29 +775,29 @@ Purpose: a fast Flying Poison attacker with low HP. Power 21, budget 21, deviati
 
 ### 4.12 Elderreed Dartmaster
 
-`elf.elderreedDartmaster` · Shooter · Rare · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Range 3 · Physical · Poison
+`elf.elderreedDartmaster` · Rare · Countdown 4 · Attack 3 · HP 7 · Physical · Long-range · Poison
 
 > She waits for the perfect shot. Lunch waits too.
 
-Purpose: durable ranged Poison. Power 26, budget 24, deviation +8.3%.
+Purpose: durable ranged Poison. Power 23, budget 22, deviation +4.5%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | An older elf woman, a master of the blowpipe. No bow. |
 | Pose | She crouches along a high branch and aims a very long reed blowpipe to the right, with calm cheeks and one eye closed. |
 | Props | Reed blowpipe longer than she is tall with gold-metal bands, a belt case of thorn darts and a layered green cloak. |
-| Gameplay cues | The long straight blowpipe shows Range 3. Green sap on the thorn darts shows Poison. |
+| Gameplay cues | The long straight blowpipe shows Long-range. Green sap on the thorn darts shows Poison. |
 | Silhouette hook | One very long, thin horizontal line. |
 | Humor note | Squirrels inspect her untouched picnic. |
 | Setting | The crown canopy. |
 
 ### 4.13 Seedwind Shepherd
 
-`elf.seedwindShepherd` · Support · Rare · Countdown 4 · Attack 1 · HP 7 · Speed 1 · Range 2 · Holy · Flying · Regenerate 1
+`elf.seedwindShepherd` · Rare · Countdown 4 · Attack 1 · HP 7 · Holy · Mid-range · Flying · Regenerate 1
 
 > Every seed has a destination. He stays to water them.
 
-Purpose: a durable Flying healer. Power 24, budget 24, deviation 0%.
+Purpose: a durable Flying healer. Power 21, budget 22, deviation -4.5%.
 
 | Field | Brief |
 | --- | --- |
@@ -811,29 +811,29 @@ Purpose: a durable Flying healer. Power 24, budget 24, deviation 0%.
 
 ### 4.14 Canopy Vinewarden
 
-`elf.canopyVinewarden` · Shooter · Epic · Countdown 5 · Attack 3 · HP 3 · Speed 1 · Range 3 · Physical · First Strike · Entangle
+`elf.canopyVinewarden` · Epic · Countdown 5 · Attack 3 · HP 3 · Physical · Long-range · First Strike · Entangle
 
 > The warning was yesterday.
 
-Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards with Entangle (ADR-0022, ADR-0026). Power 26, budget 27, deviation -3.7%.
+Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards with Entangle (ADR-0022, ADR-0026). Power 23, budget 25, deviation -8.0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | An elf woman canopy sentinel who commands the living gate. No bow. |
 | Pose | She stands on the gate arch and thrusts one open hand forward. A huge braid of thorned vines grows from the gate and lashes down to the right at an attacker below. |
 | Props | Layered leaf armor with silver trim, a living vine braid as thick as a tree trunk and a silver bracer on the lead arm. |
-| Gameplay cues | The vines hit before the attacker can lift his axe: First Strike. The vines coil around him: Entangle. The long reach of the vine shows Range 3. |
+| Gameplay cues | The vines hit before the attacker can lift his axe: First Strike. The vines coil around him: Entangle. The long reach of the vine shows Long-range. |
 | Silhouette hook | A huge S-curve of vine from her hand. |
 | Humor note | Yesterday's warning bell hangs broken in a knot of vine. |
 | Setting | A colossal canopy gate. |
 
 ### 4.15 Lethiel, First Gardener (draft)
 
-`elf.lethielFirstGardener` · Support · Epic · Countdown 5 · Attack 1 · HP 6 · Speed 1 · Range 2 · Holy · Unique · Entangle · Regenerate 2
+`elf.lethielFirstGardener` · Epic · Countdown 5 · Attack 1 · HP 6 · Holy · Mid-range · Unique · Entangle · Regenerate 2
 
 > The forest grew wild. Lethiel called it adequate.
 
-Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race Keyword (ADR-0026). Power 27, budget 27, deviation 0%.
+Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race Keyword (ADR-0026). Power 24, budget 25, deviation -4.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -851,11 +851,11 @@ Identity: old spirits in bones and armor. They use many cheap Units, Swarm, Rebi
 
 ### 5.1 Graveyard Drudge
 
-`undead.graveyardDrudge` · Frontliner · Common · Countdown 1 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Swarm 1
+`undead.graveyardDrudge` · Common · Countdown 1 · Attack 3 · HP 7 · Physical · Heavy · Swarm 1
 
 > He works better when somebody watches.
 
-Purpose: a cheap blocker that rewards a crowded Lane. Power 15, budget 15, deviation 0%.
+Purpose: a cheap blocker that rewards a crowded Lane. Power 12, budget 13, deviation -7.7%.
 
 | Field | Brief |
 | --- | --- |
@@ -869,11 +869,11 @@ Purpose: a cheap blocker that rewards a crowded Lane. Power 15, budget 15, devia
 
 ### 5.2 Rattleknife
 
-`undead.rattleknife` · Striker · Common · Countdown 1 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Swarm 1
+`undead.rattleknife` · Common · Countdown 1 · Attack 3 · HP 6 · Physical · Swarm 1
 
 > One knife is a hobby. Two is a plan.
 
-Purpose: a cheap Swarm attacker. Power 15, budget 15, deviation 0%.
+Purpose: a cheap Swarm attacker. Power 13, budget 13, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -887,11 +887,11 @@ Purpose: a cheap Swarm attacker. Power 15, budget 15, deviation 0%.
 
 ### 5.3 Coffin-Lid Skater
 
-`undead.coffinLidSkater` · Runner · Common · Countdown 1 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
+`undead.coffinLidSkater` · Common · Countdown 1 · Attack 3 · HP 6 · Physical · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > The hill was steeper when he was alive.
 
-Purpose: cheap early Hero pressure. Power 15, budget 15, deviation 0%.
+Purpose: cheap early Hero pressure. Power 13, budget 13, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -905,11 +905,11 @@ Purpose: cheap early Hero pressure. Power 15, budget 15, deviation 0%.
 
 ### 5.4 Hushbow
 
-`undead.hushbow` · Shooter · Common · Countdown 2 · Attack 3 · HP 4 · Speed 1 · Range 3 · Physical · Summon Skeleton
+`undead.hushbow` · Common · Countdown 2 · Attack 3 · HP 5 · Physical · Long-range · Summon Skeleton
 
 > Quiet in life. Considerably noisier afterward.
 
-Purpose: a cheap Shooter that summons a Skeleton beside it. Power 19, budget 18, deviation +5.6%.
+Purpose: a cheap Long-range Unit that summons a Skeleton beside it. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -923,11 +923,11 @@ Purpose: a cheap Shooter that summons a Skeleton beside it. Power 19, budget 18,
 
 ### 5.5 Grave Bell Tender
 
-`undead.graveBellTender` · Support · Common · Countdown 2 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Summon Skeleton
+`undead.graveBellTender` · Common · Countdown 2 · Attack 3 · HP 7 · Physical · Summon Skeleton
 
 > One ring for supper. Two for reinforcements.
 
-Purpose: efficient two-body Lane setup. Power 18, budget 18, deviation 0%.
+Purpose: efficient two-body Lane setup. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -941,11 +941,11 @@ Purpose: efficient two-body Lane setup. Power 18, budget 18, deviation 0%.
 
 ### 5.6 Backwatch Bailiff
 
-`undead.backwatchBailiff` · Frontliner · Uncommon · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Melee · Physical · Pivot
+`undead.backwatchBailiff` · Uncommon · Countdown 2 · Attack 3 · HP 5 · Physical · Heavy · Pivot
 
 > Nobody passes without the correct expired permit.
 
-Purpose: the Undead Pivot Unit. Power 19, budget 18, deviation +5.6%.
+Purpose: the Undead Pivot Unit. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -959,11 +959,11 @@ Purpose: the Undead Pivot Unit. Power 19, budget 18, deviation +5.6%.
 
 ### 5.7 Chattering Cohort
 
-`undead.chatteringCohort` · Striker · Uncommon · Countdown 2 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Swarm 1
+`undead.chatteringCohort` · Uncommon · Countdown 2 · Attack 3 · HP 7 · Physical · Swarm 1
 
 > They agree on everything, very loudly.
 
-Purpose: the main cheap Swarm attacker. Power 19, budget 18, deviation +5.6%.
+Purpose: the main cheap Swarm attacker. Power 17, budget 16, deviation +6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -977,11 +977,11 @@ Purpose: the main cheap Swarm attacker. Power 19, budget 18, deviation +5.6%.
 
 ### 5.8 Pale Galloper
 
-`undead.paleGalloper` · Runner · Uncommon · Countdown 2 · Attack 2 · HP 4 · Speed 2 · Melee · Frost · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
+`undead.paleGalloper` · Uncommon · Countdown 2 · Attack 2 · HP 4 · Frost · Swift · Charge 1 up to Rare, 2 at Epic, 3 at Legendary
 
 > The rider asked for a slower horse.
 
-Purpose: fast Frost tempo and Hero pressure. Power 17, budget 18, deviation -5.6%.
+Purpose: fast Frost tempo and Hero pressure. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -995,13 +995,13 @@ Purpose: fast Frost tempo and Hero pressure. Power 17, budget 18, deviation -5.6
 
 ### 5.9 Rime-Eye Reaper
 
-`undead.rimeEyeReaper` · Striker · Uncommon · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Melee · Frost
+`undead.rimeEyeReaper` · Uncommon · Countdown 2 · Attack 3 · HP 5 · Frost
 
 > She closes one eye. The other is already frozen open.
 
-Purpose: cheap melee Frost control. Its high Attack kills a Frozen target fast, so the Freeze lock ends fast. Power 19, budget 18, deviation +5.6%.
+Purpose: cheap melee Frost control. Its high Attack kills a Frozen target fast, so the Freeze lock ends fast. Power 17, budget 16, deviation +6.3%.
 
-This card was a Ranged Frost Shooter, Rime-Eye Archer. No Ranged Unit has Frost damage ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md), issue #28).
+This card was a Ranged Frost Unit with Range 3, Rime-Eye Archer. No Ranged Unit has Frost damage ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md), issue #28).
 
 | Field | Brief |
 | --- | --- |
@@ -1015,11 +1015,11 @@ This card was a Ranged Frost Shooter, Rime-Eye Archer. No Ranged Unit has Frost 
 
 ### 5.10 Ossuary Piper
 
-`undead.ossuaryPiper` · Support · Uncommon · Countdown 2 · Attack 3 · HP 5 · Speed 1 · Melee · Physical · Rally 1
+`undead.ossuaryPiper` · Uncommon · Countdown 2 · Attack 3 · HP 5 · Physical · Rally 1
 
 > Nobody knows the tune. Everybody marches.
 
-Purpose: a Swarm payoff and Lane support. Power 19, budget 18, deviation +5.6%.
+Purpose: a Swarm payoff and Lane support. Power 17, budget 16, deviation +6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1033,29 +1033,29 @@ Purpose: a Swarm payoff and Lane support. Power 19, budget 18, deviation +5.6%.
 
 ### 5.11 Coffin Lancer
 
-`undead.coffinLancer` · Frontliner · Rare · Countdown 2 · Attack 1 · HP 4 · Speed 1 · Melee · Physical · Armor 1 · Rebirth
+`undead.coffinLancer` · Rare · Countdown 2 · Attack 1 · HP 5 · Physical · Heavy · Bulwark 1 · Rebirth
 
 > The coffin is defensive equipment.
 
-Purpose: a compact persistent blocker. Power 18, budget 18, deviation 0%.
+Purpose: a compact persistent blocker. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | An armored skeleton knight. |
 | Pose | It kneels behind a coffin shield with a lance level. |
 | Props | Ornate lance, coffin and tarnished silver trim. |
-| Gameplay cues | The coffin shows Armor; a pale double image shows Rebirth. |
+| Gameplay cues | The coffin shows Bulwark; a pale double image shows Rebirth. |
 | Silhouette hook | Coffin rectangle and long lance. |
 | Humor note | A pillow remains inside the shield. |
 | Setting | A ruined noble crypt. |
 
 ### 5.12 Winter Maw
 
-`undead.winterMaw` · Striker · Rare · Countdown 3 · Attack 2 · HP 4 · Speed 1 · Melee · Frost · First Strike · Swarm 1
+`undead.winterMaw` · Rare · Countdown 3 · Attack 2 · HP 4 · Frost · First Strike · Swarm 1
 
 > It brings enough cold for the whole pack.
 
-Purpose: an anti-melee finisher and Swarm payoff. Power 22, budget 21, deviation +4.8%.
+Purpose: an anti-melee finisher and Swarm payoff. Power 20, budget 19, deviation +5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1069,11 +1069,11 @@ Purpose: an anti-melee finisher and Swarm payoff. Power 22, budget 21, deviation
 
 ### 5.13 Lantern Widow
 
-`undead.lanternWidow` · Support · Rare · Countdown 3 · Attack 1 · HP 4 · Speed 1 · Melee · Frost · Summon Restless Wisp
+`undead.lanternWidow` · Rare · Countdown 3 · Attack 1 · HP 4 · Frost · Summon Restless Wisp
 
 > She always leaves a light on for the late.
 
-Purpose: Frost support that creates a mobile second threat. Power 21.5, budget 21, deviation +2.4%.
+Purpose: Frost support that creates a mobile second threat. Power 17.5, budget 19, deviation -7.9%.
 
 | Field | Brief |
 | --- | --- |
@@ -1087,13 +1087,13 @@ Purpose: Frost support that creates a mobile second threat. Power 21.5, budget 2
 
 ### 5.14 Sir Odo, the Last Taxman
 
-`undead.sirOdoLastTaxman` · Striker · Epic · Countdown 4 · Attack 2 · HP 4 · Speed 1 · Melee · Physical · Unique · Charge 2 at Epic, 3 at Legendary · Rebirth
+`undead.sirOdoLastTaxman` · Epic · Countdown 4 · Attack 2 · HP 4 · Physical · Unique · Charge 2 at Epic, 3 at Legendary · Rebirth
 
 > Death excuses neither payment nor the late fee.
 
-Purpose: the named Undead Epic and a large finisher that comes back slowly. Charge gives him a fast first Turn. Rebirth brings him back at 1 HP, and the reborn Odo does not get Charge again. Power 24, budget 24, deviation 0%.
+Purpose: the named Undead Epic and a large finisher that comes back slowly. Charge gives him a fast first Turn. Rebirth brings him back at 1 HP, and the reborn Odo does not get Charge again. Power 22, budget 22, deviation 0%.
 
-He had Speed 2. Only an Orc melee Striker can have Speed 2, and another Race uses Charge N for a fast Striker ([ADR-0024](../adr/0024-speed-1-is-the-default.md), issue #35).
+He had Speed 2 before, and then Speed 1 ([ADR-0024](../adr/0024-speed-1-is-the-default.md), issue #35). Now he has the Base Speed 2 and no Speed Keyword, the same as most Units ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1107,11 +1107,11 @@ He had Speed 2. Only an Orc melee Striker can have Speed 2, and another Race use
 
 ### 5.15 Bone Rampart
 
-`undead.boneRampart` · Wall · Epic · Countdown 3 · Attack 0 · HP 5 · Speed 0 · Melee · Physical · Wall · Armor 2 · Rebirth
+`undead.boneRampart` · Epic · Countdown 3 · Attack 0 · HP 5 · Physical · Wall · Bulwark 2 · Rebirth
 
 > Please use the other Lane.
 
-Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budget 21, deviation -4.8%.
+Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budget 19, deviation +5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1131,29 +1131,29 @@ Goblin art must not look like Orc art. Each Goblin figure is very small: about h
 
 ### 6.1 Ankle Snatcher
 
-`goblin.ankleSnatcher` · Runner · Common · Countdown 1 · Attack 3 · HP 3 · Speed 2 · Melee · Physical · Hobble 1
+`goblin.ankleSnatcher` · Common · Countdown 1 · Attack 3 · HP 3 · Physical · Swift · Hobble 1
 
 > Ankles are the easiest part of a knight to reach.
 
-Purpose: a cheap fast trap that slows the first enemy Runner. Power 14, budget 15, deviation -6.7%.
+Purpose: a cheap fast trap that slows the first fast enemy Unit. Power 12, budget 13, deviation -7.7%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A small goblin girl with a long hook. |
 | Pose | She runs low and hooks forward at ankle height. |
 | Props | A hook made from a bent pipe, a coil of rope, patched goggles on her forehead. |
-| Gameplay cues | The hook at ankle height shows Hobble. The long stride shows Speed 2. |
+| Gameplay cues | The hook at ankle height shows Hobble. The long stride shows Swift. |
 | Silhouette hook | The long hook and the long ears that stream back. |
 | Humor note | One boot already hangs from the hook. |
 | Setting | A narrow mine tunnel mouth with lanterns. |
 
 ### 6.2 Fuse Runner
 
-`goblin.fuseRunner` · Runner · Common · Countdown 1 · Attack 2 · HP 4 · Speed 2 · Melee · Physical · Last Breath 3
+`goblin.fuseRunner` · Common · Countdown 1 · Attack 2 · HP 4 · Physical · Swift · Last Breath 3
 
 > The fuse is long. The plan is short.
 
-Purpose: a one-Countdown bomb. Last Breath 3 hits the nearest enemy Unit ahead when it leaves. Power 15, budget 15, deviation 0%.
+Purpose: a one-Countdown bomb. Last Breath 3 hits the nearest enemy Unit ahead when it leaves. Power 13, budget 13, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1167,11 +1167,11 @@ Purpose: a one-Countdown bomb. Last Breath 3 hits the nearest enemy Unit ahead w
 
 ### 6.3 Junk Slinger
 
-`goblin.junkSlinger` · Shooter · Common · Countdown 2 · Attack 4 · HP 4 · Speed 1 · Range 3 · Physical · Hobble 1
+`goblin.junkSlinger` · Common · Countdown 2 · Attack 4 · HP 4 · Physical · Long-range · Hobble 1
 
 > One goblin's junk is another knight's limp.
 
-Purpose: a cheap Shooter that slows the Unit it hits. Power 18, budget 18, deviation 0%.
+Purpose: a cheap Long-range Unit that slows the Unit it hits. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1185,11 +1185,11 @@ Purpose: a cheap Shooter that slows the Unit it hits. Power 18, budget 18, devia
 
 ### 6.4 Tunnel Saboteur
 
-`goblin.tunnelSaboteur` · Support · Common · Countdown 2 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Sabotage 1
+`goblin.tunnelSaboteur` · Common · Countdown 2 · Attack 3 · HP 7 · Physical · Sabotage 1
 
 > He does not fight your army. He fights your schedule.
 
-Purpose: the first Sabotage card. When it comes from its Card, the enemy card with the lowest Countdown gets +1 Countdown. Power 19, budget 18, deviation +5.6%.
+Purpose: the first Sabotage card. When it comes from its Card, the enemy card with the lowest Countdown gets +1 Countdown. Power 17, budget 16, deviation +6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1203,29 +1203,29 @@ Purpose: the first Sabotage card. When it comes from its Card, the enemy card wi
 
 ### 6.5 Scrap-Plate Guard
 
-`goblin.scrapPlateGuard` · Frontliner · Common · Countdown 2 · Attack 3 · HP 8 · Speed 1 · Melee · Physical · Armor 1
+`goblin.scrapPlateGuard` · Common · Countdown 2 · Attack 3 · HP 8 · Physical · Heavy · Bulwark 1
 
 > Armor is armor. Even if it was a stove.
 
-Purpose: a cheap Goblin Lane anchor. Power 19, budget 18, deviation +5.6%.
+Purpose: a cheap Goblin Lane anchor. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A small, round goblin woman in armor made from stove plates that is much too big for her. |
 | Pose | She braces behind a shield made from a cart wheel. |
 | Props | A cart-wheel shield, a stove door on her chest, a short pick. |
-| Gameplay cues | The stove plates show Armor. |
+| Gameplay cues | The stove plates show Bulwark. |
 | Silhouette hook | The round wheel shield and a stove pipe on her helmet. |
 | Humor note | A small kettle still steams on her shoulder plate. |
 | Setting | A mine yard. |
 
 ### 6.6 Sidestep Shiv
 
-`goblin.sidestepShiv` · Striker · Uncommon · Countdown 2 · Attack 3 · HP 4 · Speed 1 · Melee · Physical · Pivot
+`goblin.sidestepShiv` · Uncommon · Countdown 2 · Attack 3 · HP 4 · Physical · Pivot
 
 > Front door? Never heard of it.
 
-Purpose: the Goblin Pivot Unit. Power 18, budget 18, deviation 0%.
+Purpose: the Goblin Pivot Unit. Power 16, budget 16, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1239,11 +1239,11 @@ Purpose: the Goblin Pivot Unit. Power 18, budget 18, deviation 0%.
 
 ### 6.7 Junk Barricade
 
-`goblin.junkBarricade` · Wall · Uncommon · Countdown 2 · Attack 0 · HP 12 · Speed 0 · Melee · Physical · Wall · Sabotage 1
+`goblin.junkBarricade` · Uncommon · Countdown 2 · Attack 0 · HP 11 · Physical · Wall · Sabotage 1
 
 > Built in one night. Paid for by nobody.
 
-Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 18, budget 18, deviation 0%.
+Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 17, budget 16, deviation +6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1257,11 +1257,11 @@ Purpose: the Goblin Wall. It also delays an enemy card when it comes in. Power 1
 
 ### 6.8 Bomb Lobber
 
-`goblin.bombLobber` · Shooter · Uncommon · Countdown 3 · Attack 3 · HP 3 · Speed 1 · Range 3 · Fire
+`goblin.bombLobber` · Uncommon · Countdown 3 · Attack 3 · HP 4 · Fire · Long-range
 
 > Catch!
 
-Purpose: a ranged Fire Shooter that Burns its target. Power 20, budget 21, deviation -4.8%.
+Purpose: a Long-range Fire Unit that Burns its target. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1275,11 +1275,11 @@ Purpose: a ranged Fire Shooter that Burns its target. Power 20, budget 21, devia
 
 ### 6.9 Grease Trapper
 
-`goblin.greaseTrapper` · Support · Uncommon · Countdown 3 · Attack 3 · HP 5 · Speed 1 · Melee · Physical · Hobble 2 · Sabotage 1
+`goblin.greaseTrapper` · Uncommon · Countdown 3 · Attack 3 · HP 5 · Physical · Hobble 2 · Sabotage 1
 
 > Mind the floor.
 
-Purpose: slows a Unit for 2 End Phases, and delays an enemy card when it comes in. Power 22, budget 21, deviation +4.8%.
+Purpose: slows a Unit for 2 End Phases, and delays an enemy card when it comes in. Power 20, budget 19, deviation +5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1293,29 +1293,29 @@ Purpose: slows a Unit for 2 End Phases, and delays an enemy card when it comes i
 
 ### 6.10 Rocket Barrel Rider
 
-`goblin.rocketBarrelRider` · Runner · Uncommon · Countdown 3 · Attack 3 · HP 2 · Speed 3 · Melee · Fire · Last Breath 2
+`goblin.rocketBarrelRider` · Uncommon · Countdown 3 · Attack 3 · HP 3 · Fire · Swift · Last Breath 2
 
 > Steering is a later invention.
 
-Purpose: the fastest Goblin Runner. Its Fire hits Burn, and Last Breath 2 hits when it falls. Power 21, budget 21, deviation 0%.
+Purpose: a fast Goblin Unit that hits the Hero. Its Fire hits Burn, and Last Breath 2 hits when it falls. Power 19, budget 19, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A young goblin woman who rides a barrel with a rocket on the back. |
 | Pose | She flies low and forward on the barrel and holds on with both hands. |
 | Props | A powder barrel, a flame out of the back, a leather cap with goggles, a scarf. |
-| Gameplay cues | The flame trail shows Speed 3 and Fire. The powder barrel shows Last Breath. |
+| Gameplay cues | The flame trail shows Swift and Fire. The powder barrel shows Last Breath. |
 | Silhouette hook | The barrel and the long flame trail. |
 | Humor note | Her eyes are shut tight. |
 | Setting | A mine rail track that goes down a slope. |
 
 ### 6.11 Mine Sapper
 
-`goblin.mineSapper` · Striker · Rare · Countdown 4 · Attack 3 · HP 5 · Speed 1 · Melee · Fire · Last Breath 3
+`goblin.mineSapper` · Rare · Countdown 4 · Attack 3 · HP 5 · Fire · Last Breath 3
 
 > Every wall has a weak spot. I bring my own.
 
-Purpose: a Fire Striker that hits hard and explodes when it falls. Power 23, budget 24, deviation -4.2%.
+Purpose: a Fire attacker that hits hard and explodes when it falls. Power 21, budget 22, deviation -4.5%.
 
 | Field | Brief |
 | --- | --- |
@@ -1329,47 +1329,47 @@ Purpose: a Fire Striker that hits hard and explodes when it falls. Power 23, bud
 
 ### 6.12 Spyglass Sniper
 
-`goblin.spyglassSniper` · Shooter · Rare · Countdown 4 · Attack 3 · HP 6 · Speed 1 · Range 3 · Physical · Sabotage 1
+`goblin.spyglassSniper` · Rare · Countdown 4 · Attack 3 · HP 6 · Physical · Long-range · Sabotage 1
 
 > I see your plans. I do not like them.
 
-Purpose: a Shooter that delays an enemy card. Power 26, budget 24, deviation +8.3%.
+Purpose: a Long-range Unit that delays an enemy card. Power 23, budget 22, deviation +4.5%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | An old goblin woman with a long crossbow. |
 | Pose | She aims, with one eye at a brass spyglass on the crossbow. |
 | Props | A long crossbow with a brass spyglass, a notebook full of drawings with no letters, goggles with many lenses. |
-| Gameplay cues | The spyglass shows Range 3. The notebook of stolen plans shows Sabotage. |
+| Gameplay cues | The spyglass shows Long-range. The notebook of stolen plans shows Sabotage. |
 | Silhouette hook | The long crossbow and the spyglass. |
 | Humor note | A small bird sits on the end of the crossbow. |
 | Setting | A high rock above the mine entrance. |
 
 ### 6.13 Junk Walker
 
-`goblin.junkWalker` · Frontliner · Rare · Countdown 4 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Armor 2
+`goblin.junkWalker` · Rare · Countdown 4 · Attack 3 · HP 6 · Physical · Heavy · Bulwark 2
 
 > It walks. Mostly forward.
 
-Purpose: the Goblin Lane anchor with Armor 2. Power 25, budget 24, deviation +4.2%.
+Purpose: the Goblin Lane anchor with Bulwark 2. Power 21, budget 22, deviation -4.5%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A goblin woman who drives a walking machine made from boiler plates. |
 | Pose | The machine takes a heavy step forward with a big claw arm. |
 | Props | A round boiler body, pipe legs, a claw arm, an open seat with levers, brass gauges and rivets. |
-| Gameplay cues | The thick plates show Armor 2. |
+| Gameplay cues | The thick plates show Bulwark 2. |
 | Silhouette hook | The round boiler and the two pipe legs. |
 | Humor note | A second goblin runs behind with an oil can. |
 | Setting | A mine yard with a crane. |
 
 ### 6.14 Grand Gearjammer
 
-`goblin.grandGearjammer` · Support · Epic · Countdown 4 · Attack 2 · HP 3 · Speed 1 · Range 2 · Physical · Sabotage 2
+`goblin.grandGearjammer` · Epic · Countdown 4 · Attack 2 · HP 3 · Physical · Mid-range · Sabotage 2
 
 > Every plan has gears. We have more.
 
-Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 25, budget 24, deviation +4.2%.
+Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Turns later. Power 22, budget 22, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1383,11 +1383,11 @@ Purpose: the archetypal Goblin Epic. Sabotage 2 makes the enemy's next card 2 Tu
 
 ### 6.15 Boss Snikkit
 
-`goblin.bossSnikkit` · Striker · Epic · Countdown 5 · Attack 2 · HP 4 · Speed 1 · Melee · Fire · Unique · Sabotage 1 · Last Breath 3
+`goblin.bossSnikkit` · Epic · Countdown 5 · Attack 2 · HP 4 · Fire · Unique · Sabotage 1 · Last Breath 3
 
 > "Everything down here is mine. That is the joke. Laugh."
 
-Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns what he hits, and explodes when he falls. Power 27, budget 27, deviation 0%.
+Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns what he hits, and explodes when he falls. Power 25, budget 25, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1407,47 +1407,47 @@ Feral cards have no Countdown 1. Commons are Countdown 2 to 3, Uncommons 3 to 4,
 
 ### 7.1 Bristleback Boar
 
-`feral.bristlebackBoar` · Runner · Common · Countdown 2 · Attack 4 · HP 4 · Speed 2 · Melee · Physical · Trample
+`feral.bristlebackBoar` · Common · Countdown 2 · Attack 4 · HP 4 · Physical · Swift · Trample
 
 > It does not go around things.
 
-Purpose: the only Feral Runner. Trample lets a kill also hit the Unit behind. Power 19, budget 18, deviation +5.6%.
+Purpose: the only fast Feral Unit. Trample lets a kill also hit the Unit behind. Power 17, budget 16, deviation +6.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A wild mountain boar with a ridge of stiff bristles. |
 | Pose | It charges forward with its head down. |
 | Props | Boards of a broken fence fly around it. |
-| Gameplay cues | The broken fence shows Trample. The dust shows Speed 2. |
+| Gameplay cues | The broken fence shows Trample. The dust shows Swift. |
 | Silhouette hook | The bristle ridge and the low head. |
 | Humor note | An apple, the bait that called it, is stuck on one tusk. |
 | Setting | A rocky mountain path. |
 
 ### 7.2 Crag Lizard
 
-`feral.cragLizard` · Frontliner · Common · Countdown 2 · Attack 2 · HP 8 · Speed 1 · Melee · Physical · Armor 1
+`feral.cragLizard` · Common · Countdown 2 · Attack 2 · HP 10 · Physical · Heavy · Bulwark 1
 
 > It sat on this rock for a hundred years. Now it is your rock.
 
-Purpose: a cheap Feral blocker with Armor. Power 17, budget 18, deviation -5.6%.
+Purpose: a cheap Feral blocker with Bulwark. Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A large grey lizard with plates like rock. |
 | Pose | It walks forward low, with its mouth open in a hiss. |
 | Props | None. Snow on its back plates. |
-| Gameplay cues | The rock plates show Armor. |
+| Gameplay cues | The rock plates show Bulwark. |
 | Silhouette hook | The low wide body and the plated back. |
 | Humor note | A small bird sits on its back, and the lizard does not know. |
 | Setting | Grey cliffs with patches of snow. |
 
 ### 7.3 Frostfang Lynx
 
-`feral.frostfangLynx` · Striker · Common · Countdown 2 · Attack 4 · HP 3 · Speed 1 · Melee · Frost · Bleed 1
+`feral.frostfangLynx` · Common · Countdown 2 · Attack 4 · HP 3 · Frost · Bleed 1
 
 > You will not hear it. You will feel the cold first.
 
-Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so that a healer or a Regenerate Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 17, budget 18, deviation -5.6%.
+Purpose: a cheap Frost attacker that Freezes its target and makes it Bleeding, so that a healer or a Regenerate Unit heals less. Bleed is 1 up to Rare, 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Power 15, budget 16, deviation -6.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1461,11 +1461,11 @@ Purpose: a cheap Frost Striker that Freezes its target and makes it Bleeding, so
 
 ### 7.4 Cave Bear
 
-`feral.caveBear` · Frontliner · Common · Countdown 3 · Attack 3 · HP 10 · Speed 1 · Melee · Physical · Regenerate 1
+`feral.caveBear` · Common · Countdown 3 · Attack 3 · HP 12 · Physical · Heavy · Regenerate 1
 
 > It woke up hungry. It is still waking up.
 
-Purpose: a durable Feral front that heals 1 HP in each Start Phase. Power 20, budget 21, deviation -4.8%.
+Purpose: a durable Feral front that heals 1 HP in each Start Phase. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1479,11 +1479,11 @@ Purpose: a durable Feral front that heals 1 HP in each Start Phase. Power 20, bu
 
 ### 7.5 Web Spitter
 
-`feral.webSpitter` · Shooter · Common · Countdown 3 · Attack 3 · HP 8 · Speed 1 · Range 3 · Physical · Regenerate 1
+`feral.webSpitter` · Common · Countdown 3 · Attack 3 · HP 8 · Physical · Long-range · Regenerate 1
 
 > Stay for dinner.
 
-Purpose: a durable Feral Shooter that heals. Power 21, budget 21, deviation 0%.
+Purpose: a durable Feral Long-range Unit that heals. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1497,29 +1497,29 @@ Purpose: a durable Feral Shooter that heals. Power 21, budget 21, deviation 0%.
 
 ### 7.6 Boulder Tortoise
 
-`feral.boulderTortoise` · Wall · Uncommon · Countdown 3 · Attack 0 · HP 12 · Speed 0 · Melee · Physical · Wall · Armor 1 · Regenerate 2
+`feral.boulderTortoise` · Uncommon · Countdown 3 · Attack 0 · HP 11 · Physical · Wall · Bulwark 1 · Regenerate 2
 
 > It moves for nobody. It hardly moves for itself.
 
-Purpose: the Feral Wall. It heals 2 HP in each Start Phase. Power 21, budget 21, deviation 0%.
+Purpose: the Feral Wall. It heals 2 HP in each Start Phase. Power 20, budget 19, deviation +5.3%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A giant mountain tortoise with a shell like a boulder. |
 | Pose | It sleeps across a mountain pass. |
 | Props | Moss and small trees on the shell. |
-| Gameplay cues | The stone shell shows Armor. New moss that grows over cracks shows Regenerate. |
+| Gameplay cues | The stone shell shows Bulwark. New moss that grows over cracks shows Regenerate. |
 | Silhouette hook | A dome. |
 | Humor note | A mountain goat stands on top of it. |
 | Setting | A narrow mountain pass. |
 
 ### 7.7 Tailsweep Basilisk
 
-`feral.tailsweepBasilisk` · Striker · Uncommon · Countdown 3 · Attack 3 · HP 6 · Speed 1 · Melee · Physical · Pivot
+`feral.tailsweepBasilisk` · Uncommon · Countdown 3 · Attack 3 · HP 6 · Physical · Pivot
 
 > Look it in the eye? It looks at your ankles.
 
-Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Power 20, budget 21, deviation -4.8%.
+Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Power 18, budget 19, deviation -5.3%.
 
 | Field | Brief |
 | --- | --- |
@@ -1533,11 +1533,11 @@ Purpose: the Feral Pivot Unit. Its tail hits Units behind it and next to it. Pow
 
 ### 7.8 Cave Troll
 
-`feral.caveTroll` · Frontliner · Uncommon · Countdown 4 · Attack 3 · HP 9 · Speed 1 · Melee · Physical · Regenerate 2
+`feral.caveTroll` · Uncommon · Countdown 4 · Attack 3 · HP 9 · Physical · Heavy · Regenerate 2
 
 > Cut it. Wait. Cut it again.
 
-Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 25, budget 24, deviation +4.2%.
+Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 21, budget 22, deviation -4.5%.
 
 | Field | Brief |
 | --- | --- |
@@ -1551,11 +1551,11 @@ Purpose: a durable Feral front that heals 2 HP in each Start Phase. Power 25, bu
 
 ### 7.9 Crag Rhino
 
-`feral.cragRhino` · Striker · Uncommon · Countdown 4 · Attack 4 · HP 8 · Speed 1 · Melee · Physical · Trample
+`feral.cragRhino` · Uncommon · Countdown 4 · Attack 4 · HP 8 · Physical · Trample
 
 > The road ends where it stops.
 
-Purpose: a heavy Trample Striker. Power 25, budget 24, deviation +4.2%.
+Purpose: a large Trample attacker. Power 23, budget 22, deviation +4.5%.
 
 | Field | Brief |
 | --- | --- |
@@ -1569,11 +1569,11 @@ Purpose: a heavy Trample Striker. Power 25, budget 24, deviation +4.2%.
 
 ### 7.10 Frost Elk Matriarch
 
-`feral.frostElkMatriarch` · Support · Uncommon · Countdown 4 · Attack 3 · HP 7 · Speed 1 · Melee · Frost · Rally 1
+`feral.frostElkMatriarch` · Uncommon · Countdown 4 · Attack 3 · HP 7 · Frost · Rally 1
 
 > Where she walks, the herd follows.
 
-Purpose: the Feral Support. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 24, budget 24, deviation 0%.
+Purpose: the Feral Rally Unit. Rally 1 gives the other friendly Units in her Lane +1 Attack. Her Frost hits Freeze. Power 22, budget 22, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1587,11 +1587,11 @@ Purpose: the Feral Support. Rally 1 gives the other friendly Units in her Lane +
 
 ### 7.11 Avalanche Yeti
 
-`feral.avalancheYeti` · Striker · Rare · Countdown 4 · Attack 4 · HP 5 · Speed 1 · Melee · Physical · Trample
+`feral.avalancheYeti` · Rare · Countdown 4 · Attack 4 · HP 5 · Physical · Trample
 
 > It came down with the snow. The snow was the smaller problem.
 
-Purpose: a Rare Trample Striker with high Attack. Power 24, budget 24, deviation 0%.
+Purpose: a Rare Trample attacker with high Attack. Power 22, budget 22, deviation 0%.
 
 | Field | Brief |
 | --- | --- |
@@ -1605,29 +1605,29 @@ Purpose: a Rare Trample Striker with high Attack. Power 24, budget 24, deviation
 
 ### 7.12 Woolly Mammoth
 
-`feral.woollyMammoth` · Frontliner · Rare · Countdown 5 · Attack 3 · HP 7 · Speed 1 · Melee · Physical · Armor 1 · Trample
+`feral.woollyMammoth` · Rare · Countdown 5 · Attack 3 · HP 8 · Physical · Heavy · Bulwark 1 · Trample
 
 > It does not stop. Plan around it.
 
-Purpose: a Rare front that also Tramples. Power 26, budget 27, deviation -3.7%.
+Purpose: a Rare front that also Tramples. Power 24, budget 25, deviation -4.0%.
 
 | Field | Brief |
 | --- | --- |
 | Subject | A woolly mammoth with long curved tusks. |
 | Pose | It walks forward with heavy steps, with its tusks low. |
 | Props | A fence that broke over its tusks. |
-| Gameplay cues | Thick matted fur with ice shows Armor. The broken fence shows Trample. |
+| Gameplay cues | Thick matted fur with ice shows Bulwark. The broken fence shows Trample. |
 | Silhouette hook | The high dome head and the long tusks. |
 | Humor note | A bird's nest sits in its fur. |
 | Setting | A glacier valley. |
 
 ### 7.13 Rimebreath Drake
 
-`feral.rimebreathDrake` · Striker · Rare · Countdown 5 · Attack 3 · HP 6 · Speed 1 · Melee · Frost · Flying
+`feral.rimebreathDrake` · Rare · Countdown 5 · Attack 3 · HP 6 · Frost · Flying
 
 > Its breath is the weather.
 
-Purpose: a Flying Frost Striker. Power 26, budget 27, deviation -3.7%. No Ranged Unit has Frost ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)).
+Purpose: a Flying Frost attacker. Power 24, budget 25, deviation -4.0%. No Ranged Unit has Frost ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1641,11 +1641,11 @@ Purpose: a Flying Frost Striker. Power 26, budget 27, deviation -3.7%. No Ranged
 
 ### 7.14 Mountain Colossus
 
-`feral.mountainColossus` · Frontliner · Epic · Countdown 6 · Attack 2 · HP 7 · Speed 1 · Melee · Physical · Regenerate 2 · Trample
+`feral.mountainColossus` · Epic · Countdown 6 · Attack 2 · HP 8 · Physical · Heavy · Regenerate 2 · Trample
 
 > The mountain stood up. Then it walked.
 
-Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 29, budget 30, deviation -3.3%.
+Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 27, budget 28, deviation -3.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -1659,11 +1659,11 @@ Purpose: the archetypal Feral Epic: a huge front that heals and Tramples. Power 
 
 ### 7.15 Old Frostmaw (draft)
 
-`feral.oldFrostmaw` · Striker · Epic · Countdown 6 · Attack 3 · HP 6 · Speed 1 · Melee · Frost · Unique · Trample · Bleed 2
+`feral.oldFrostmaw` · Epic · Countdown 6 · Attack 3 · HP 6 · Frost · Unique · Trample · Bleed 2
 
 > Every village has a story about it. Every story is too small.
 
-Purpose: the named Feral Epic: a huge Frost Striker that Tramples, and its bite makes the target Bleeding. Bleed is 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Its Common HP went from 14 to 13 to pay for Bleed. Then ADR-0020 lowered its Common Attack and HP. Power 31, budget 30, deviation +3.3%.
+Purpose: the named Feral Epic: a huge Frost attacker that Tramples, and its bite makes the target Bleeding. Bleed is 2 at Epic and 3 at Legendary ([ADR-0019](../adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)). Its Common HP went from 14 to 13 to pay for Bleed. Then ADR-0020 lowered its Common Attack and HP. Power 29, budget 28, deviation +3.6%.
 
 | Field | Brief |
 | --- | --- |
@@ -1677,21 +1677,21 @@ Purpose: the named Feral Epic: a huge Frost Striker that Tramples, and its bite 
 
 ## 8. Tokens
 
-Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**. The ID line of a Token gives its Race, so that its art uses the setting and the palette of that Race (1.1). A Token has no Base Rank: its art uses the Common detail, because it is cheap Lane mass. Each Token has Speed 2 at each Rank: it appears behind the Unit that summons it, and it must get to the front.
+Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**. The ID line of a Token gives its Race, so that its art uses the setting and the palette of that Race (1.1). A Token has no Base Rank: its art uses the Common detail, because it is cheap Lane mass. Each Token has the Base Speed 2 and no Speed Keyword, the same as each Unit ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)): it appears behind the Unit that summons it, and it must get to the front.
 
 ### 8.1 Skeleton
 
-`token.skeleton` · Undead · Melee · Physical · Swarm 1
+`token.skeleton` · Undead · Physical · Swarm 1
 
-| Rank | Attack | HP | Speed | Power |
-| --- | ---: | ---: | ---: | ---: |
-| Common | 1 | 1 | 2 | 8 |
-| Uncommon | 1 | 2 | 2 | 9 |
-| Rare | 2 | 2 | 2 | 11 |
-| Epic | 2 | 3 | 2 | 12 |
-| Legendary | 3 | 4 | 2 | 15 |
+| Rank | Attack | HP | Power |
+| --- | ---: | ---: | ---: |
+| Common | 1 | 1 | 4 |
+| Uncommon | 1 | 2 | 5 |
+| Rare | 2 | 2 | 7 |
+| Epic | 2 | 3 | 8 |
+| Legendary | 3 | 4 | 11 |
 
-Purpose: cheap Lane mass that is weak alone. Speed 2 at each Rank: the Skeleton appears behind the Unit that summons it, and a ground Unit stops only in an empty Square. With Speed 1, it cannot move while that Unit stays in its Square.
+Purpose: cheap Lane mass that is weak alone. It has the Base Speed 2: the Skeleton appears behind the Unit that summons it, and a ground Unit stops only in an empty Square. With Speed 1, it cannot move while that Unit stays in its Square.
 
 | Field | Brief |
 | --- | --- |
@@ -1705,17 +1705,17 @@ Purpose: cheap Lane mass that is weak alone. Speed 2 at each Rank: the Skeleton 
 
 ### 8.2 Restless Wisp
 
-`token.restlessWisp` · Undead · Melee · Frost · Flying
+`token.restlessWisp` · Undead · Frost · Flying
 
-| Rank | Attack | HP | Speed | Power |
-| --- | ---: | ---: | ---: | ---: |
-| Common | 1 | 1 | 2 | 14 |
-| Uncommon | 1 | 2 | 2 | 15 |
-| Rare | 2 | 2 | 2 | 17 |
-| Epic | 2 | 3 | 2 | 18 |
-| Legendary | 3 | 4 | 2 | 21 |
+| Rank | Attack | HP | Power |
+| --- | ---: | ---: | ---: |
+| Common | 1 | 1 | 10 |
+| Uncommon | 1 | 2 | 11 |
+| Rare | 2 | 2 | 13 |
+| Epic | 2 | 3 | 14 |
+| Legendary | 3 | 4 | 17 |
 
-Purpose: a mobile Frost Token. Speed 2 at each Rank, the same as each Token (8).
+Purpose: a mobile Frost Token. It has the Base Speed 2, the same as each Token (8).
 
 | Field | Brief |
 | --- | --- |
@@ -1754,7 +1754,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.2 Shield Wall
 
-`warrior.shieldWall` · Warrior · Common · Countdown 2 · A friendly Lane · Friendly Units in a Lane get Armor 1 at Common, 2 at Uncommon, 3 at Rare, 4 at Epic and 5 at Legendary for the next 2 enemy Turns.
+`warrior.shieldWall` · Warrior · Common · Countdown 2 · A friendly Lane · Friendly Units in a Lane get Bulwark 1 at Common, 2 at Uncommon, 3 at Rare, 4 at Epic and 5 at Legendary for the next 2 enemy Turns.
 
 > Lock shields and hold.
 
@@ -1796,7 +1796,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.5 Shield Bash
 
-`warrior.shieldBash` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 2 Physical damage at Common, 3 at Uncommon, 4 at Rare, 5 at Epic and 6 at Legendary. Friendly Units in its Lane get Armor 1 at Common, Uncommon and Rare, 2 at Epic and 3 at Legendary for the next enemy Turn.
+`warrior.shieldBash` · Warrior · Common · Countdown 2 · An enemy Unit · Deal 2 Physical damage at Common, 3 at Uncommon, 4 at Rare, 5 at Epic and 6 at Legendary. Friendly Units in its Lane get Bulwark 1 at Common, Uncommon and Rare, 2 at Epic and 3 at Legendary for the next enemy Turn.
 
 > A shield is also a door that you can slam.
 
@@ -1854,7 +1854,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.9 Expose Weakness
 
-`warrior.exposeWeakness` · Warrior · Rare · Countdown 2 · An enemy Unit · An enemy Unit becomes Exposed 2: each Physical hit on it deals 2 more damage, after Armor, until the end of your next Turn. Exposed by Rank: Rare 2, Epic 3, Legendary 4.
+`warrior.exposeWeakness` · Warrior · Rare · Countdown 2 · An enemy Unit · An enemy Unit becomes Exposed 2: each Physical hit on it deals 2 more damage, after Bulwark, until the end of your next Turn. Exposed by Rank: Rare 2, Epic 3, Legendary 4.
 
 > There. Under the strap. Hit there.
 
@@ -2195,7 +2195,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.2 Smite
 
-`priest.smite` · Priest · Common · Countdown 2 · An enemy Unit · Deal 3 Holy damage to an enemy Unit. Armor does not reduce it.
+`priest.smite` · Priest · Common · Countdown 2 · An enemy Unit · Deal 3 Holy damage to an enemy Unit.
 
 > No armor hides you from the light.
 

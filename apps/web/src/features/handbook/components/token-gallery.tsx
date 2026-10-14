@@ -1,6 +1,12 @@
 import { useMediaQuery } from "@reactuses/core";
 import type { CreatureCardDefinition, RankId } from "@workspace/rules";
-import { getToken, RANKS } from "@workspace/rules";
+import {
+  getToken,
+  isRangedRange,
+  keywordRange,
+  keywordSpeed,
+  RANKS,
+} from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode, RefObject } from "react";
 import { useRef, useState } from "react";
@@ -209,7 +215,7 @@ const Traits = ({
       glyph: DAMAGE_GLYPH[definition.damageType],
     },
     {
-      id: definition.range > 0 ? "ranged" : "melee",
+      id: isRangedRange(keywordRange(definition.keywords)) ? "ranged" : "melee",
       name: text(content.attackType),
       glyph: "range",
     },
@@ -304,7 +310,7 @@ const TokenRow = ({
           <Stat
             glyph="speed"
             label={tr("battle.speedStat")}
-            value={values.speed}
+            value={keywordSpeed(definition.keywords)}
           />
         </ul>
         <Traits token={token} rank={rank} onOpen={onOpen} />

@@ -81,7 +81,6 @@ const KeywordValue = ({
   readonly entry: Entry;
   readonly onOpen: (id: EntryId) => void;
 }) => {
-  const { tr } = useGameText();
   if (entry.value === "tokenGallery") {
     return <TokenGallery onOpen={onOpen} />;
   }
@@ -102,16 +101,6 @@ const KeywordValue = ({
   }
   if (entry.value === "rankGuideTable") {
     return <RankGuide />;
-  }
-  if (entry.value === "card") {
-    return (
-      <p
-        className="text-sm font-semibold text-[#5b4632]"
-        data-testid="handbook-see-card"
-      >
-        {tr("handbook.seeCard")}
-      </p>
-    );
   }
   return null;
 };

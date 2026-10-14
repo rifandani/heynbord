@@ -1,4 +1,4 @@
-import { useAtom } from "@effect/atom-react";
+import { useAtom, useAtomSet } from "@effect/atom-react";
 import { cn } from "cn";
 import { absurd } from "effect";
 import type { AnimationEvent, FocusEvent, ReactElement } from "react";
@@ -12,6 +12,7 @@ import {
 import { Button } from "react-aria-components";
 import { HiXMark } from "react-icons/hi2";
 
+import { keyGuideAtom } from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import type {
@@ -21,8 +22,8 @@ import type {
 import { placePanel } from "@/features/battle/tutorial-placement";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useHandbook } from "@/features/handbook/use-handbook";
-import type { HintId, HintPlace } from "@/features/hint/hint";
-import { HINT_ENTRY, HINT_MS, HINT_PLACE } from "@/features/hint/hint";
+import type { HintId, HintPlace, HintTarget } from "@/features/hint/hint";
+import { HINT_MS, HINT_PLACE, HINT_TARGET } from "@/features/hint/hint";
 import { shownHintAtom } from "@/features/hint/hint.atoms";
 import { paintedIcon } from "@/features/town/town";
 
@@ -33,9 +34,16 @@ export const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   unopenedPackButton: "[data-testid^='unopened-open-']",
   cardShop: "[data-testid='building-cardShop']",
   workshop: "[data-testid='building-workshop']",
+  resultBattleLog: "[data-testid='result-battle-log']",
 };
 
-const SIDES: readonly PanelSide[] = ["above", "below"];
+/**
+ * The sides of its anchor where a Hint can show, in order of preference. The
+ * Battle Log Hint goes below the Battle Log button, out of the result
+ * dialog, so that it does not cover Retry and Back to Campaign.
+ */
+const sidesFor = (place: HintPlace): readonly PanelSide[] =>
+  place === "resultBattleLog" ? ["below", "above"] : ["above", "below"];
 
 /** The space between the banner and the screen edge. */
 const EDGE = 8;
@@ -70,7 +78,8 @@ const usePlacement = (hint: HintId, leaving: boolean) => {
     let frame = 0;
     const place = () => {
       const node = banner.current;
-      const anchor = anchorBox(HINT_PLACE[hint]);
+      const hintPlace = HINT_PLACE[hint];
+      const anchor = anchorBox(hintPlace);
       const placement =
         node && anchor
           ? placePanel({
@@ -83,7 +92,7 @@ const usePlacement = (hint: HintId, leaving: boolean) => {
                 right: window.innerWidth - EDGE,
                 bottom: window.innerHeight - EDGE,
               },
-              sides: SIDES,
+              sides: sidesFor(hintPlace),
             })
           : null;
       if (node && placement) {
@@ -151,6 +160,10 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
     }
     case "recall": {
       return <GlyphIcon glyph="recall" className={SUBJECT_ICON} />;
+    }
+    case "battleLog": {
+      // The glyph of the Battle Log button.
+      return <GlyphIcon glyph="scroll" className={SUBJECT_ICON} />;
     }
     case "deckBuilder":
     case "unopenedPack":
@@ -223,6 +236,30 @@ const TimeLine = ({ held }: { readonly held: boolean }) => (
   />
 );
 
+/**
+ * Opens what "Read more" points to: the Handbook at an Entry, or the Key
+ * Guide at the line of a key.
+ */
+const useReadMore = () => {
+  const handbook = useHandbook();
+  const setKeyGuide = useAtomSet(keyGuideAtom);
+  return (target: HintTarget) => {
+    switch (target._tag) {
+      case "Entry": {
+        handbook.openAt(target.entry);
+        return;
+      }
+      case "KeyGuide": {
+        setKeyGuide({ line: target.line });
+        return;
+      }
+      default: {
+        absurd(target);
+      }
+    }
+  };
+};
+
 const Banner = ({
   hint,
   close,
@@ -236,7 +273,8 @@ const Banner = ({
   readonly onLeft: () => void;
 }) => {
   const { tr } = useGameText();
-  const handbook = useHandbook();
+  const readMore = useReadMore();
+  const target = HINT_TARGET[hint];
   const banner = usePlacement(hint, leaving);
   const { held, handlers } = useAutoClose(close);
   const onAnimationEnd = (event: AnimationEvent<HTMLElement>) => {
@@ -281,14 +319,14 @@ const Banner = ({
         <Button
           onPress={() => {
             close();
-            handbook.openAt(HINT_ENTRY[hint]);
+            readMore(target);
           }}
           className="cursor-pointer rounded-sm font-semibold whitespace-nowrap text-[#0e6f86] underline decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid"
           data-testid="hint-read-more"
         >
-          {/* The Handbook glyph: "Read more" opens the Handbook. */}
+          {/* The glyph of what "Read more" opens: the Handbook or the Key Guide. */}
           <GlyphIcon
-            glyph="book"
+            glyph={target._tag === "Entry" ? "book" : "info"}
             className="mr-1 mb-px inline-block size-[1.1em] align-middle"
           />
           {tr("hints.readMore")}
@@ -311,7 +349,7 @@ const Banner = ({
  * The Hint on the screen (GDD 8.3): a small banner near its subject, with no
  * arrow. It does not stop the game. It closes on a tap of its close button,
  * or by itself after some seconds. "Read more" opens the Handbook at the
- * Entry of its subject. It is in a live region, so a screen reader reads it.
+ * Entry of its subject, or the Key Guide at the line of its key. It is in a live region, so a screen reader reads it.
  * A closed Hint stays on the screen until its close motion ends.
  */
 export const HintBanner = () => {

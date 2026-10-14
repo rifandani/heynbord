@@ -6,6 +6,16 @@ import type { ContextType } from "react";
 import { useContext, useLayoutEffect } from "react";
 
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
+import {
+  canPlayLog,
+  openBattleLog,
+  pauseBattleLog,
+  playBattleLog,
+  selectLogEntry,
+  setBattleLogSpeed,
+  stepBattleLog,
+} from "@/features/battle/battle-log-session";
+import type { BattleLogState } from "@/features/battle/battle-log-session";
 import { recordStageResult } from "@/features/battle/battle-rewards";
 import type {
   BattleOptions,
@@ -28,6 +38,7 @@ import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import type { UnitView } from "@/features/battle/battle-view";
 import type { InspectedUnit } from "@/features/battle/battle.atoms";
 import {
+  battleLogAtom,
   battleRewardsAtom,
   battleSessionAtom,
   battleSpeedAtom,
@@ -36,6 +47,7 @@ import {
   inspectedUnitAtom,
   legalTargetsAtom,
   selectedCardAtom,
+  shownSessionAtom,
   targetFocusByKeyAtom,
   tutorialStageWonAtom,
 } from "@/features/battle/battle.atoms";
@@ -108,10 +120,21 @@ const recordResult = (
   }
 };
 
-/** The Battle state and the player's actions, for the HUD. */
+/** The Battle Log is in each Solo Battle, but not in the Tutorial (GDD 4.12). */
+const hasBattleLog = (session: BattleSession | null): boolean =>
+  session !== null && session.tutorial === null;
+
+/**
+ * The Battle state and the player's actions, for the HUD. `session` is what
+ * the screen shows: the selected moment of the open Battle Log, else Live.
+ * `liveSession` is Live. Each Command goes to Live, and none goes while the
+ * Battle Log is open.
+ */
 export const useBattle = () => {
   const registry = useContext(RegistryContext);
-  const session = useAtomValue(battleSessionAtom);
+  const liveSession = useAtomValue(battleSessionAtom);
+  const session = useAtomValue(shownSessionAtom);
+  const log = useAtomValue(battleLogAtom);
   const selected = useAtomValue(selectedCardAtom);
   const targets = useAtomValue(legalTargetsAtom);
   const focused = useAtomValue(focusedTargetAtom);
@@ -124,14 +147,22 @@ export const useBattle = () => {
   // shows with its rewards. The stored session, not the scene clock: after a
   // Skip, the clock is one frame behind it.
   useLayoutEffect(() => {
-    if (session?.view.result && isIdle(session)) {
-      recordResult(registry, session);
+    if (liveSession?.view.result && isIdle(liveSession)) {
+      recordResult(registry, liveSession);
     }
-  }, [registry, session]);
+  }, [registry, liveSession]);
 
-  /** The newest session: the scene clock can be ahead of the atom inside one event. */
+  const logOpen = () => registry.get(battleLogAtom) !== null;
+
+  /**
+   * The newest Live session: the scene clock can be ahead of the atom inside
+   * one event. While the Battle Log is open, the clock shows the Battle Log,
+   * and the atom is Live.
+   */
   const live = (): BattleSession | null =>
-    newestSession(registry.get(battleSessionAtom), playback.session);
+    logOpen()
+      ? registry.get(battleSessionAtom)
+      : newestSession(registry.get(battleSessionAtom), playback.session);
 
   const commit = (next: BattleSession | null) => {
     registry.set(battleSessionAtom, next);
@@ -166,7 +197,7 @@ export const useBattle = () => {
       handIndexArg === undefined
         ? registry.get(selectedCardAtom)
         : handIndexArg;
-    const next = playIfAble(live(), handIndex, target);
+    const next = logOpen() ? null : playIfAble(live(), handIndex, target);
     if (!next) {
       return false;
     }
@@ -176,13 +207,21 @@ export const useBattle = () => {
     return true;
   };
 
+  const changeLog = (change: (state: BattleLogState) => BattleLogState) => {
+    const current = registry.get(battleLogAtom);
+    if (current) {
+      registry.set(battleLogAtom, change(current));
+    }
+  };
+
   return {
     session,
+    liveSession,
     selected,
     targets,
     focused,
     speed,
-    canAct: whenSession(session, canAct, false),
+    canAct: log === null && whenSession(liveSession, canAct, false),
     /** True in the keyboard Inspect mode, while its Unit is on the Board. */
     inspecting: keyboardInspect(inspected, detailsUnit),
     /** The I key: starts the keyboard Inspect mode at the first Unit, or stops it. */
@@ -198,12 +237,51 @@ export const useBattle = () => {
     inspectNext,
     stopInspect: () => registry.set(inspectedUnitAtom, null),
     /** Tutorial Step 3 holds the playback until its text closes. */
-    held: whenSession(session, isHeld, false),
+    held: whenSession(liveSession, isHeld, false),
+    /** The open Battle Log, or `null`. */
+    log,
+    hasBattleLog: hasBattleLog(liveSession),
+    /**
+     * The L key, the Top Bar button and the result: opens the Battle Log at
+     * the last Log Entry, and Live pauses at the same point.
+     */
+    openLog: () => {
+      const current = live();
+      if (logOpen() || !current || !hasBattleLog(current)) {
+        return;
+      }
+      // Live keeps the newest point of the scene clock, and continues from it.
+      commit(current);
+      select(null);
+      registry.set(inspectedUnitAtom, null);
+      registry.set(battleLogAtom, openBattleLog(current));
+    },
+    /** Back to Live (Esc): Live continues from the same point. */
+    closeLog: () => {
+      if (!logOpen()) {
+        return;
+      }
+      registry.set(inspectedUnitAtom, null);
+      registry.set(battleLogAtom, null);
+    },
+    selectLogEntry: (entry: number) =>
+      changeLog((state) => selectLogEntry(state, entry)),
+    /** ←/→ go one Log Entry, Shift+←/→ one Turn. */
+    stepLog: (step: 1 | -1, byTurn: boolean) =>
+      changeLog((state) => stepBattleLog(state, step, byTurn)),
+    toggleLogPlay: () =>
+      changeLog((state) => {
+        if (state.playing) {
+          return pauseBattleLog(state);
+        }
+        return canPlayLog(state) ? playBattleLog(state) : state;
+      }),
     start: (options: BattleOptions) => {
       unlockAudio();
       playSound("select");
       select(null);
       registry.set(inspectedUnitAtom, null);
+      registry.set(battleLogAtom, null);
       playback.session = null;
       const tutorial = isTutorial(
         options.stageId,
@@ -215,6 +293,8 @@ export const useBattle = () => {
     leave: () => {
       select(null);
       registry.set(inspectedUnitAtom, null);
+      // The Battle Log is not saved: it goes away with the Battle.
+      registry.set(battleLogAtom, null);
       playback.session = null;
       commit(null);
     },
@@ -237,10 +317,10 @@ export const useBattle = () => {
         );
       }
     },
-    canEndTurn: whenSession(session, canEndTurn, false),
+    canEndTurn: log === null && whenSession(liveSession, canEndTurn, false),
     endTurn: () => {
       const current = live();
-      if (!current || !canEndTurn(current)) {
+      if (logOpen() || !current || !canEndTurn(current)) {
         return;
       }
       unlockAudio();
@@ -252,7 +332,7 @@ export const useBattle = () => {
     },
     skip: () => {
       const current = live();
-      if (current) {
+      if (current && !logOpen()) {
         commit(skip(current));
       }
     },
@@ -262,6 +342,7 @@ export const useBattle = () => {
       if (current) {
         commit(setSpeed(current, value));
       }
+      changeLog((state) => setBattleLogSpeed(state, value));
     },
   };
 };

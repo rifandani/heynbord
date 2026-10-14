@@ -1,6 +1,8 @@
+import { isRangedRange } from "../content/keywords";
 import type { StepContext } from "./context";
 import {
   actionOrder,
+  activateKeyword,
   direction,
   enemyHeroPosition,
   findUnit,
@@ -8,25 +10,32 @@ import {
   isOver,
   lastPosition,
   unitAt,
+  unitDealer,
 } from "./context";
 import { damageHero, damageUnit } from "./damage";
 import type { BattleState, Side, TargetRef, UnitState } from "./types";
 import { BattleEvent, otherSide } from "./types";
 
+/** Charge N gives +N Speed in the Turn of the summon (GDD 5.4), else 0. */
+const chargeBonus = (state: BattleState, unit: UnitState): number =>
+  unit.summonedTurn === state.turnNumber ? unit.charge : 0;
+
 /**
- * Speed after Charge N, which gives +N Speed in the Turn of the summon
- * (GDD 5.4). A Hobbled Unit then has a maximum Speed of 1, and an
- * Entangled Unit has Speed 0 (GDD 4.5). A Wall has no Movement, also with
- * Speed or Charge (GDD 5.4).
+ * Speed with a Charge bonus of `charge`. A Hobbled Unit then has a maximum
+ * Speed of 1, and an Entangled Unit has Speed 0 (GDD 4.5). A Wall has no
+ * Movement, also with Speed or Charge (GDD 5.4).
  */
-export const currentSpeed = (state: BattleState, unit: UnitState): number => {
+const speedWith = (unit: UnitState, charge: number): number => {
   if (unit.entangled || unit.wall) {
     return 0;
   }
-  const speed =
-    unit.speed + (unit.summonedTurn === state.turnNumber ? unit.charge : 0);
+  const speed = unit.speed + charge;
   return unit.hobbled > 0 ? Math.min(speed, 1) : speed;
 };
+
+/** Speed after Charge N, which gives +N Speed in the Turn of the summon (GDD 5.4). */
+export const currentSpeed = (state: BattleState, unit: UnitState): number =>
+  speedWith(unit, chargeBonus(state, unit));
 
 /**
  * Swarm N (GDD 5.4): +N Attack while another Unit of the same Side, with HP
@@ -47,6 +56,16 @@ const swarmBonus = (state: BattleState, unit: UnitState): number =>
     : 0;
 
 /**
+ * Sends `KeywordActivated` for Swarm when the Swarm bonus is part of the
+ * Attack of `unit` now. Call it just before a hit that uses `attackOf`.
+ */
+export const activateSwarm = (ctx: StepContext, unit: UnitState): void => {
+  if (!unit.wall && swarmBonus(ctx.state, unit) > 0) {
+    activateKeyword(ctx, unit, "swarm", unit.swarm);
+  }
+};
+
+/**
  * Attack with the Rally bonus of this Turn, the Swarm bonus and the bonus
  * Attack of a Skill Card (GDD 4.7, step 2). A Wall never uses its Attack: no
  * attack, no Retaliate and no First Strike (GDD 5.4).
@@ -56,14 +75,17 @@ export const attackOf = (state: BattleState, unit: UnitState): number =>
     ? 0
     : unit.attack + unit.rallied + unit.bonusAttack + swarmBonus(state, unit);
 
-/**
- * Range with the bonus Range of a Skill Card (GDD 4.8). Above 0, the Unit is
- * a Ranged Unit for all rules, so a Melee Unit with bonus Range attacks as a
- * Ranged Unit until the bonus ends.
- */
+/** Range with the bonus Range of a Skill Card (GDD 4.8). */
 export const rangeOf = (
   unit: Pick<UnitState, "range" | "bonusRange">
 ): number => unit.range + unit.bonusRange;
+
+/**
+ * A Unit with Range 2 or more is a Ranged Unit for all rules (ADR-0030), so a
+ * Melee Unit with bonus Range attacks as a Ranged Unit until the bonus ends.
+ */
+const isRanged = (unit: Pick<UnitState, "range" | "bonusRange">): boolean =>
+  isRangedRange(rangeOf(unit));
 
 /**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of
@@ -127,7 +149,7 @@ const pivotTarget = (
   state: BattleState,
   unit: UnitState
 ): TargetRef | undefined => {
-  if (!unit.pivot || rangeOf(unit) > 0) {
+  if (!unit.pivot || isRanged(unit)) {
     return undefined;
   }
   return (
@@ -143,7 +165,7 @@ const pivotTarget = (
 };
 
 const targetOf = (state: BattleState, unit: UnitState) =>
-  rangeOf(unit) > 0
+  isRanged(unit)
     ? rangedTarget(state, unit)
     : (pivotTarget(state, unit) ?? meleeTarget(state, unit));
 
@@ -166,15 +188,15 @@ export const isFlying = (
  */
 const staysPut = (state: BattleState, unit: UnitState, speed: number) =>
   speed <= 0 ||
-  (rangeOf(unit) > 0 && rangedTarget(state, unit)) ||
+  (isRanged(unit) && rangedTarget(state, unit)) ||
   pivotTarget(state, unit);
 
-const move = (ctx: StepContext, unit: UnitState): void => {
-  const { state } = ctx;
-  const speed = currentSpeed(state, unit);
-  if (staysPut(state, unit, speed)) {
-    return;
-  }
+/** The Square where the Movement of `unit` with `speed` stops. */
+const destination = (
+  state: BattleState,
+  unit: UnitState,
+  speed: number
+): number => {
   const dir = direction(unit.owner);
   const from = unit.position;
   let to = from;
@@ -193,12 +215,32 @@ const move = (ctx: StepContext, unit: UnitState): void => {
       break;
     }
   }
-  if (to !== from) {
-    unit.position = to;
-    ctx.events.push(
-      BattleEvent.UnitMoved({ unitId: unit.id, lane: unit.lane, from, to })
-    );
+  return to;
+};
+
+/**
+ * The Movement of `unit`. Charge activates only when the Unit goes farther
+ * than it goes without the Charge bonus.
+ */
+const move = (ctx: StepContext, unit: UnitState): void => {
+  const { state } = ctx;
+  const speed = currentSpeed(state, unit);
+  if (staysPut(state, unit, speed)) {
+    return;
   }
+  const from = unit.position;
+  const to = destination(state, unit, speed);
+  if (to === from) {
+    return;
+  }
+  const charge = chargeBonus(state, unit);
+  if (charge > 0 && to !== destination(state, unit, speedWith(unit, 0))) {
+    activateKeyword(ctx, unit, "charge", charge);
+  }
+  unit.position = to;
+  ctx.events.push(
+    BattleEvent.UnitMoved({ unitId: unit.id, lane: unit.lane, from, to })
+  );
 };
 
 /**
@@ -262,17 +304,20 @@ const retaliate = (
     !defender.retaliate ||
     defender.frozen ||
     defender.paralyzed ||
-    rangeOf(attacker) > 0 ||
+    isRanged(attacker) ||
     attackOf(ctx.state, defender) <= 0 ||
     !findUnit(ctx.state, defender.id) ||
     !findUnit(ctx.state, attacker.id)
   ) {
     return;
   }
+  activateKeyword(ctx, defender, "retaliate");
+  activateSwarm(ctx, defender);
   damageUnit(ctx, attacker, {
     amount: attackOf(ctx.state, defender),
     damageType: defender.damageType,
     source: "retaliate",
+    dealer: unitDealer(defender),
     crit: 0,
   });
 };
@@ -292,7 +337,7 @@ const trample = (
   killed: UnitState,
   left: number
 ): void => {
-  if (!unit.trample || rangeOf(unit) > 0 || left <= 0 || isOver(ctx)) {
+  if (!unit.trample || isRanged(unit) || left <= 0 || isOver(ctx)) {
     return;
   }
   const next = unitAt(
@@ -303,10 +348,12 @@ const trample = (
   if (!next || next.owner === unit.owner) {
     return;
   }
+  activateKeyword(ctx, unit, "trample");
   damageUnit(ctx, next, {
     amount: left,
     damageType: unit.damageType,
     source: "trample",
+    dealer: unitDealer(unit),
     crit: 0,
   });
 };
@@ -365,7 +412,10 @@ export const poisonUnit = (
 
 /**
  * Poison, then Hobble, then Bleed, then Entangle, then Knockback (GDD 4.4).
- * First Strike does not apply Knockback (GDD 4.7).
+ * First Strike does not apply Knockback (GDD 4.7). Each Keyword activates
+ * only when it changes the struck Unit: a Hobble or a Bleed that is not
+ * higher than the count of the Unit, an Entangle on an Entangled Unit and a
+ * Knockback that does not move the Unit do not activate.
  */
 const applyOnHit = (
   ctx: StepContext,
@@ -374,9 +424,13 @@ const applyOnHit = (
   { knockback }: { readonly knockback: boolean }
 ): void => {
   if (unit.poison) {
+    activateKeyword(ctx, unit, "poison");
     poisonUnit(ctx, struck, 1);
   }
   if (unit.hobble > 0) {
+    if (unit.hobble > struck.hobbled) {
+      activateKeyword(ctx, unit, "hobble", unit.hobble);
+    }
     struck.hobbled = Math.max(struck.hobbled, unit.hobble);
     ctx.events.push(
       BattleEvent.StatusApplied({
@@ -387,12 +441,22 @@ const applyOnHit = (
     );
   }
   if (unit.bleed > 0) {
+    if (unit.bleed > struck.bleeding) {
+      activateKeyword(ctx, unit, "bleed", unit.bleed);
+    }
     bleedUnit(ctx, struck, unit.bleed);
   }
-  if (unit.entangle) {
+  if (unit.entangle && !struck.entangled) {
+    activateKeyword(ctx, unit, "entangle");
     entangleUnit(ctx, struck);
   }
-  if (knockback && rangeOf(unit) === 0 && unit.knockback > 0) {
+  if (
+    knockback &&
+    !isRanged(unit) &&
+    unit.knockback > 0 &&
+    pushedPosition(ctx.state, struck, unit.knockback) !== struck.position
+  ) {
+    activateKeyword(ctx, unit, "knockback", unit.knockback);
     pushUnit(ctx, struck, unit.knockback);
   }
 };
@@ -410,7 +474,7 @@ const firstStrike = (
   attacker: UnitState,
   target: TargetRef
 ): boolean => {
-  if (target._tag !== "Unit" || rangeOf(attacker) > 0) {
+  if (target._tag !== "Unit" || isRanged(attacker)) {
     return true;
   }
   const defender = findUnit(ctx.state, target.unitId);
@@ -422,10 +486,13 @@ const firstStrike = (
   ) {
     return true;
   }
+  activateKeyword(ctx, defender, "firstStrike");
+  activateSwarm(ctx, defender);
   const { dealt, killed } = damageUnit(ctx, attacker, {
     amount: attackOf(ctx.state, defender),
     damageType: defender.damageType,
     source: "firstStrike",
+    dealer: unitDealer(defender),
     crit: 0,
   });
   if (killed) {
@@ -437,29 +504,48 @@ const firstStrike = (
   return !isOver(ctx);
 };
 
+/**
+ * The attack of `unit` (GDD 4.6, 4.7). Pivot activates when the Unit attacks
+ * its Pivot target, before a First Strike of that target. Swarm and Heroic
+ * activate after `UnitAttacked`, before the damage.
+ */
 const attack = (ctx: StepContext, unit: UnitState): void => {
   const { state } = ctx;
   const power = attackOf(state, unit);
   if (power <= 0) {
     return;
   }
+  const swarm = swarmBonus(state, unit);
   const target = targetOf(state, unit);
-  if (!target || !firstStrike(ctx, unit, target)) {
+  if (!target) {
+    return;
+  }
+  if (pivotTarget(state, unit)) {
+    activateKeyword(ctx, unit, "pivot");
+  }
+  if (!firstStrike(ctx, unit, target)) {
     return;
   }
   ctx.events.push(
     BattleEvent.UnitAttacked({
       unitId: unit.id,
       target,
-      ranged: rangeOf(unit) > 0,
+      ranged: isRanged(unit),
     })
   );
+  if (swarm > 0) {
+    activateKeyword(ctx, unit, "swarm", unit.swarm);
+  }
   const crit = state.sides[unit.owner].hero.unitCrit;
   if (target._tag === "Hero") {
+    if (unit.heroic > 0) {
+      activateKeyword(ctx, unit, "heroic", unit.heroic);
+    }
     damageHero(ctx, target.side, {
       amount: power + unit.heroic,
       damageType: unit.damageType,
       source: "attack",
+      dealer: unitDealer(unit),
       crit,
     });
     return;
@@ -473,6 +559,7 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
     amount: power,
     damageType: unit.damageType,
     source: "attack",
+    dealer: unitDealer(unit),
     crit,
   });
   if (killed) {

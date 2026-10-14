@@ -599,7 +599,8 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
 
         <PileDivider />
         <GraveyardPile cards={player.graveyard} speed={battle.speed} />
-        <EndTurnPanel battle={battle} />
+        {/* The Battle Log has no End Turn: all Live input is off. */}
+        {battle.log ? null : <EndTurnPanel battle={battle} />}
       </div>
       <div className="min-w-0 flex-1" aria-hidden />
 

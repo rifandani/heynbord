@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { useAtom } from "@effect/atom-react";
+import { cn } from "cn";
+import { useEffect } from "react";
 import { TooltipTrigger } from "react-aria-components";
 
+import { keyGuideAtom } from "@/features/battle/battle.atoms";
 import { KEY_GUIDE } from "@/features/battle/components/battle-keys";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GameTooltip } from "@/features/battle/components/game-tooltip";
@@ -13,11 +16,14 @@ const TRIGGER_ID = "key-guide-button";
  * The Key Guide button in the Top Bar (UI-02). The guide opens on hover and on
  * keyboard focus, like a tooltip. A touch or keyboard press also opens and
  * closes it, because a tooltip does not open on a tap. A press out of the
- * button closes it.
+ * button closes it. "Read more" on a Hint opens it at the line of a key, and
+ * that line is marked.
  */
 export const KeyGuide = () => {
   const { tr } = useGameText();
-  const [open, setOpen] = useState(false);
+  const [guide, setGuide] = useAtom(keyGuideAtom);
+  const open = guide !== null;
+  const setOpen = (value: boolean) => setGuide(value ? { line: null } : null);
 
   useEffect(() => {
     if (!open) {
@@ -26,13 +32,13 @@ export const KeyGuide = () => {
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target instanceof Element ? event.target : null;
       if (!target?.closest(`[data-testid="${TRIGGER_ID}"]`)) {
-        setOpen(false);
+        setGuide(null);
       }
     };
     document.addEventListener("pointerdown", onPointerDown, true);
     return () =>
       document.removeEventListener("pointerdown", onPointerDown, true);
-  }, [open]);
+  }, [open, setGuide]);
 
   return (
     <TooltipTrigger
@@ -47,7 +53,7 @@ export const KeyGuide = () => {
         aria-label={tr("battle.keyGuide.label")}
         onPress={(event) => {
           if (event.pointerType !== "mouse") {
-            setOpen((value) => !value);
+            setOpen(!open);
           }
         }}
         data-testid={TRIGGER_ID}
@@ -65,7 +71,16 @@ export const KeyGuide = () => {
         </p>
         <dl className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1 text-xs">
           {KEY_GUIDE.map(({ keys, action }) => (
-            <div key={action} className="contents">
+            <div
+              key={action}
+              className={cn(
+                "col-span-2 -mx-1 grid grid-cols-subgrid items-center rounded-md px-1",
+                guide?.line === action &&
+                  "bg-[#e9c46a]/25 ring-2 ring-[#e9c46a]"
+              )}
+              data-testid={`key-guide-${action}`}
+              data-marked={guide?.line === action || undefined}
+            >
               <dt className="flex gap-1">
                 {keys.map((key) => (
                   <kbd

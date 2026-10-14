@@ -237,10 +237,10 @@ describe("wind-up bursts (web ADR-0009)", () => {
   });
 });
 
-describe("heal and Armor bursts", () => {
+describe("heal and Bulwark bursts", () => {
   it.each([
     ["heal", "heal"],
-    ["armor", "shield"],
+    ["bulwark", "shield"],
   ] as const)(
     "shows %s as a fade of its main image with reduced motion",
     (preset, slot) => {

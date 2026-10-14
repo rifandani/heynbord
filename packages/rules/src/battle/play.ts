@@ -17,8 +17,10 @@ import { getToken } from "../content/tokens";
 import { randomInt, rollBasisPoints } from "../random";
 import type { StepContext } from "./context";
 import {
+  activateKeyword,
   direction,
   findUnit,
+  heroDealer,
   isInsideLane,
   isLaneOpen,
   isOver,
@@ -27,6 +29,7 @@ import {
 import { damageHero, damageUnit } from "./damage";
 import { healUnit } from "./heal";
 import {
+  activateSwarm,
   attackOf,
   bleedUnit,
   entangleUnit,
@@ -42,7 +45,7 @@ import type {
   Side,
   UnitState,
 } from "./types";
-import { BattleEvent, otherSide, Target, unitRank } from "./types";
+import { BattleEvent, heroOf, otherSide, Target, unitRank } from "./types";
 import { createToken, createUnit } from "./units";
 
 /**
@@ -100,6 +103,7 @@ const sabotage = (ctx: StepContext, unit: UnitState, amount: number): void => {
   if (!target) {
     return;
   }
+  activateKeyword(ctx, unit, "sabotage", amount);
   target.countdown += amount;
   ctx.events.push(
     BattleEvent.CardSabotaged({
@@ -145,6 +149,7 @@ const summonToken = (
   if (!square) {
     return;
   }
+  activateKeyword(ctx, unit, "summon");
   const token = createToken({
     id: state.nextId,
     owner: unit.owner,
@@ -354,25 +359,27 @@ const removeDebuffs = (ctx: StepContext, unit: UnitState): void => {
 };
 
 /**
- * Bonus Armor from a Skill Card (GDD 4.8). The Unit keeps the higher bonus,
+ * Bonus Bulwark from a Skill Card (GDD 4.8). The Unit keeps the higher bonus,
  * and for the same bonus, the longer duration. A bonus that changes nothing
  * emits no event, the same as a Ward that is not higher.
  */
-const giveBonusArmor = (
+const giveBonusBulwark = (
   ctx: StepContext,
   unit: UnitState,
-  armor: number,
+  bulwark: number,
   turns: number
 ): void => {
   if (
-    armor < unit.bonusArmor ||
-    (armor === unit.bonusArmor && turns <= unit.bonusArmorTurns)
+    bulwark < unit.bonusBulwark ||
+    (bulwark === unit.bonusBulwark && turns <= unit.bonusBulwarkTurns)
   ) {
     return;
   }
-  unit.bonusArmor = armor;
-  unit.bonusArmorTurns = turns;
-  ctx.events.push(BattleEvent.ArmorGained({ unitId: unit.id, armor, turns }));
+  unit.bonusBulwark = bulwark;
+  unit.bonusBulwarkTurns = turns;
+  ctx.events.push(
+    BattleEvent.BulwarkGained({ unitId: unit.id, bulwark, turns })
+  );
 };
 
 /** The Skill Card effect types that damage enemy Units, then control the Units that survive. */
@@ -401,6 +408,7 @@ const isControlEffect = (effect: SkillEffect): effect is ControlEffect =>
  */
 const damageAndControl = (
   ctx: StepContext,
+  side: Side,
   units: readonly UnitState[],
   card: CardInstance,
   effect: ControlEffect,
@@ -411,6 +419,7 @@ const damageAndControl = (
       amount: skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
+      dealer: heroDealer(side),
       crit,
     });
     // A Unit that comes back with Rebirth did not survive the hit.
@@ -466,7 +475,7 @@ const laneOf = (target: Target): Target | undefined =>
 
 /**
  * The second part of a Skill Card that hits one enemy Unit (GDD 4.8): bonus
- * Armor or a heal for the caster's Units in the Lane of the target, or damage
+ * Bulwark or a heal for the caster's Units in the Lane of the target, or damage
  * to the enemy Hero of that Lane. It comes after the hit, also when the hit
  * kills.
  */
@@ -477,7 +486,7 @@ const applyFollowUp = (
   effect: Extract<
     SkillEffect,
     {
-      readonly type: "damageLaneArmor" | "damageLaneHeal" | "damageUnitHero";
+      readonly type: "damageLaneBulwark" | "damageLaneHeal" | "damageUnitHero";
     }
   >,
   target: Target,
@@ -488,10 +497,10 @@ const applyFollowUp = (
     return;
   }
   switch (effect.type) {
-    case "damageLaneArmor": {
-      const armor = skillAmountForRank(effect.armor, card.rank);
+    case "damageLaneBulwark": {
+      const bulwark = skillAmountForRank(effect.bulwark, card.rank);
       for (const unit of unitsInArea(ctx.state, side, lane, 1)) {
-        giveBonusArmor(ctx, unit, armor, effect.turns);
+        giveBonusBulwark(ctx, unit, bulwark, effect.turns);
       }
       return;
     }
@@ -508,6 +517,7 @@ const applyFollowUp = (
         amount: skillAmountForRank(effect.heroAmount, card.rank),
         damageType: effect.damageType,
         source: "skill",
+        dealer: heroDealer(side),
         crit,
       });
       return;
@@ -526,7 +536,7 @@ type HitEffect = Extract<
       | "damageArea"
       | "damageLane"
       | "damageByAttack"
-      | "damageLaneArmor"
+      | "damageLaneBulwark"
       | "damageLaneHeal"
       | "damageUnitHero";
   }
@@ -546,6 +556,10 @@ const applyHit = (
 ): void => {
   const length = effect.type === "damageArea" ? effect.length : 1;
   for (const unit of unitsInArea(ctx.state, otherSide(side), target, length)) {
+    if (effect.type === "damageByAttack") {
+      // Penance deals the Attack of the Unit, so its Swarm bonus adds to it.
+      activateSwarm(ctx, unit);
+    }
     damageUnit(ctx, unit, {
       amount:
         effect.type === "damageByAttack"
@@ -553,11 +567,12 @@ const applyHit = (
           : skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
+      dealer: heroDealer(side),
       crit,
     });
   }
   if (
-    effect.type === "damageLaneArmor" ||
+    effect.type === "damageLaneBulwark" ||
     effect.type === "damageLaneHeal" ||
     effect.type === "damageUnitHero"
   ) {
@@ -573,7 +588,7 @@ const FRIENDLY_EFFECT_TYPES = [
   "wardLane",
   "steadfastUnit",
   "cleanseUnit",
-  "laneArmor",
+  "laneBulwark",
   "laneAttack",
   "unitAttackRange",
 ] as const satisfies readonly SkillEffect["type"][];
@@ -587,7 +602,7 @@ const isFriendlyEffect = (effect: SkillEffect): effect is FriendlyEffect =>
   FRIENDLY_EFFECT_TYPES.some((type) => type === effect.type);
 
 /**
- * A heal, a Ward, Steadfast, a Cleanse, bonus Armor, bonus Attack or bonus
+ * A heal, a Ward, Steadfast, a Cleanse, bonus Bulwark, bonus Attack or bonus
  * Range on the caster's Units of the target. A Cleanse removes the Debuffs first, so
  * Bleeding does not halve its heal.
  */
@@ -619,11 +634,11 @@ const applyFriendly = (
         healUnit(ctx, unit, skillAmountForRank(effect.heal, card.rank));
         break;
       }
-      case "laneArmor": {
-        giveBonusArmor(
+      case "laneBulwark": {
+        giveBonusBulwark(
           ctx,
           unit,
-          skillAmountForRank(effect.armor, card.rank),
+          skillAmountForRank(effect.bulwark, card.rank),
           effect.turns
         );
         break;
@@ -786,6 +801,7 @@ const applyMage = (
       amount: skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
+      dealer: heroDealer(side),
       crit,
     });
   }
@@ -802,6 +818,7 @@ const applyEffect = (
   if (isControlEffect(effect)) {
     damageAndControl(
       ctx,
+      side,
       unitsInArea(ctx.state, otherSide(side), target, 1),
       card,
       effect,
@@ -818,7 +835,7 @@ const applyEffect = (
     case "damageArea":
     case "damageLane":
     case "damageByAttack":
-    case "damageLaneArmor":
+    case "damageLaneBulwark":
     case "damageLaneHeal":
     case "damageUnitHero": {
       applyHit(ctx, side, card, effect, target, crit);
@@ -830,6 +847,7 @@ const applyEffect = (
           amount: skillAmountForRank(effect.amount, card.rank),
           damageType: effect.damageType,
           source: "skill",
+          dealer: heroDealer(side),
           crit,
         });
       }
@@ -907,7 +925,15 @@ export const playCard = (
     cardId: handCard.cardId,
     rank: handCard.rank,
   };
-  ctx.events.push(BattleEvent.CardPlayed({ side, handIndex, card, target }));
+  ctx.events.push(
+    BattleEvent.CardPlayed({
+      side,
+      hero: heroOf(side),
+      handIndex,
+      card,
+      target,
+    })
+  );
   const definition = getCard(card.cardId);
   if (definition.kind === "creature") {
     // SAFETY: `legalTargets` gives only Square targets for a Creature Card.

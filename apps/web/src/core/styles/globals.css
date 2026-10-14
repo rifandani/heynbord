@@ -523,6 +523,47 @@
  * The seal of a Hint stamps onto the parchment: it comes down from a little
  * above the page, turned, presses in, and settles.
  */
+/* The Battle Log unrolls from its top edge, like a scroll (GDD 11.2). */
+@keyframes log-panel {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0 round 16px);
+    transform: translateY(-6px);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 16px);
+    transform: none;
+  }
+}
+
+/* The "Battle Log" banner comes down under the Turn badge. */
+@keyframes log-banner {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The results of the selected Log Entry open under its summary. */
+@keyframes log-lines {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes hint-seal {
   0% {
     opacity: 0;

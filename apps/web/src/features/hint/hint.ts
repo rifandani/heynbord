@@ -1,8 +1,14 @@
-import type { BattleEvent, Collection, DeckEntry } from "@workspace/rules";
+import type {
+  BattleEvent,
+  BattleResult,
+  Collection,
+  DeckEntry,
+} from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 import { Schema } from "effect";
 
 import type { HandCardView } from "@/features/battle/battle-view";
+import type { KeyGuideLine } from "@/features/battle/components/battle-keys";
 import type { EntryId } from "@/features/handbook/handbook";
 
 /**
@@ -17,6 +23,7 @@ export const HINTS = [
   "packs",
   "workshop",
   "craft",
+  "battleLog",
 ] as const;
 
 export type HintId = (typeof HINTS)[number];
@@ -33,29 +40,42 @@ export const addSeenHints = (
   hints: readonly HintId[]
 ): readonly string[] => [...new Set([...seen, ...hints])];
 
-/** The Handbook Entry that "Read more" opens for each Hint. */
-export const HINT_ENTRY: Readonly<Record<HintId, EntryId>> = {
-  skillCard: "skillCard",
-  recall: "recall",
-  deckBuilder: "deck",
-  unopenedPack: "pack",
-  packs: "pack",
-  workshop: "workshop",
-  craft: "workshop",
+/**
+ * What "Read more" opens (GDD 8.3): the Handbook at the Entry of a game
+ * concept, or the Key Guide at the line of the key of a screen control.
+ */
+export type HintTarget =
+  | { readonly _tag: "Entry"; readonly entry: EntryId }
+  | { readonly _tag: "KeyGuide"; readonly line: KeyGuideLine };
+
+const toEntry = (id: EntryId): HintTarget => ({ _tag: "Entry", entry: id });
+
+/** What "Read more" opens for each Hint. The Battle Log is a screen control: it has no Handbook Entry. */
+export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
+  skillCard: toEntry("skillCard"),
+  recall: toEntry("recall"),
+  deckBuilder: toEntry("deck"),
+  unopenedPack: toEntry("pack"),
+  packs: toEntry("pack"),
+  workshop: toEntry("workshop"),
+  craft: toEntry("workshop"),
+  battleLog: { _tag: "KeyGuide", line: "battleLog" },
 };
 
 /**
  * The Battle Hints show near the Hand, the Deck builder Hint near the Deck
  * shortcut, the Unopened Pack Hint near the Open button of the first
  * Unopened Pack, the Packs level Hint near the Card shop in the Town, and the
- * Workshop and Craft level Hints near the Workshop in the Town.
+ * Workshop and Craft level Hints near the Workshop in the Town, and the
+ * Battle Log Hint near the Battle Log button of the result screen.
  */
 export type HintPlace =
   | "hand"
   | "deckShortcut"
   | "unopenedPackButton"
   | "cardShop"
-  | "workshop";
+  | "workshop"
+  | "resultBattleLog";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   skillCard: "hand",
@@ -65,6 +85,7 @@ export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   packs: "cardShop",
   workshop: "workshop",
   craft: "workshop",
+  battleLog: "resultBattleLog",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */
@@ -114,6 +135,19 @@ export const battleHints = (facts: BattleFacts): readonly HintId[] => {
   }
   return met;
 };
+
+/** The parts of a Battle result that the Battle Log Hint reads. */
+export interface ResultFacts {
+  readonly result: BattleResult;
+  readonly tutorial: boolean;
+}
+
+/**
+ * The Battle Log Hint: the Player lost a Stage after the Tutorial. An Abandon
+ * has no result, so it does not meet it.
+ */
+export const isBattleLogHintMet = (facts: ResultFacts): boolean =>
+  !facts.tutorial && facts.result.winner === "enemy";
 
 /**
  * The Deck builder Hint: the Player owns a card (one card in one Rank) that

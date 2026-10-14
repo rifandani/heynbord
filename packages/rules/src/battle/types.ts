@@ -1,5 +1,6 @@
 import { Data } from "effect";
 
+import type { ActivatedKeyword } from "../content/keywords";
 import type {
   ClassId,
   ClosedLane,
@@ -110,10 +111,10 @@ export interface UnitState {
   hp: number;
   maxHp: number;
   readonly speed: number;
-  /** 0 is melee. */
+  /** 1 is a Melee Unit. 2 or more is a Ranged Unit (ADR-0030). */
   readonly range: number;
   readonly damageType: DamageType;
-  readonly armor: number;
+  readonly bulwark: number;
   /** Charge for the Rank of this Unit: +N Speed in the Turn of the summon. 0 is none. */
   readonly charge: number;
   /** After attack damage above 0, the enemy Unit becomes Entangled. */
@@ -166,7 +167,7 @@ export interface UnitState {
   grounded: number;
   /**
    * Exposed N (GDD 4.7): each Physical hit on the Unit deals this much more
-   * damage, after Armor. 0 is not Exposed.
+   * damage, after Bulwark. 0 is not Exposed.
    */
   exposed: number;
   /** End Phases of the owner that are left for Exposed. It ends at 0. */
@@ -192,8 +193,8 @@ export interface UnitState {
   steadfast: boolean;
   /** Attack from Rally until the end of the Turn of the owner. */
   rallied: number;
-  bonusArmor: number;
-  bonusArmorTurns: number;
+  bonusBulwark: number;
+  bonusBulwarkTurns: number;
   /** Bonus Attack from a Skill Card (*Call to Arms*, GDD 4.8). */
   bonusAttack: number;
   /** End Phases of the owner that are left for the bonus Attack. */
@@ -278,6 +279,34 @@ export type TargetRef =
   | { readonly _tag: "Unit"; readonly unitId: number }
   | { readonly _tag: "Hero"; readonly side: Side };
 
+/**
+ * One Hero of a Battle: its Side and its index in that Side (ADR-0009). In v1
+ * each Side has 1 Hero, so `hero` is always 0. A Dungeon with 2 or more
+ * Bosses will use the other indexes.
+ */
+export interface HeroRef {
+  readonly side: Side;
+  readonly hero: number;
+}
+
+/**
+ * The Hero of `side`. In v1 each Side has 1 Hero (`SideState.hero`). This is
+ * the one place that changes when a Side gets more Heroes (ADR-0009).
+ */
+export const heroOf = (side: Side): HeroRef => ({ side, hero: 0 });
+
+/**
+ * Who dealt a damage: a Unit, or a Hero for the damage of a Skill Card or a
+ * Field Effect. `hero` of a Unit is the Hero that owns it.
+ */
+export type DamageDealer =
+  | {
+      readonly _tag: "Unit";
+      readonly unitId: number;
+      readonly hero: HeroRef;
+    }
+  | { readonly _tag: "Hero"; readonly hero: HeroRef };
+
 export type DamageSource =
   | "attack"
   | "retaliate"
@@ -328,6 +357,8 @@ export type BattleEvent = Data.TaggedEnum<{
   CardDrawn: { readonly side: Side; readonly card: HandCard };
   CardPlayed: {
     readonly side: Side;
+    /** The Hero that played the card. */
+    readonly hero: HeroRef;
     readonly handIndex: number;
     readonly card: CardInstance;
     readonly target: Target;
@@ -361,12 +392,12 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly instanceId: number;
     readonly countdown: number;
   };
-  ArmorGained: {
+  BulwarkGained: {
     readonly unitId: number;
-    readonly armor: number;
+    readonly bulwark: number;
     readonly turns: number;
   };
-  ArmorFaded: { readonly unitId: number };
+  BulwarkFaded: { readonly unitId: number };
   /**
    * Bonus Attack from a Skill Card (GDD 4.8). `turns` is the number of End
    * Phases of the owner that it lasts.
@@ -412,9 +443,14 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly amount: number;
     readonly damageType: DamageType;
     readonly source: DamageSource;
+    /**
+     * The Unit or the Hero that dealt the damage. `null` for Burn, Poison and
+     * Sudden Death damage: no Unit and no Hero deals it.
+     */
+    readonly dealer: DamageDealer | null;
     readonly crit: boolean;
     readonly blocked: boolean;
-    /** True Damage (GDD 4.7): no Armor, Exposed, Crit, Block or Ward. */
+    /** True Damage (GDD 4.7): no Bulwark, Exposed, Crit, Block or Ward. */
     readonly trueDamage: boolean;
     /**
      * The damage that the Ward of the target absorbed (GDD 4.7, step 8).
@@ -468,6 +504,23 @@ export type BattleEvent = Data.TaggedEnum<{
   FieldEffectStruck: { readonly fieldId: number; readonly turns: number };
   /** The Field Effect left the Board: its last hit occurred, or its Hero is Defeated. */
   FieldEffectEnded: { readonly fieldId: number };
+  /**
+   * The Keyword `keyword` of the Unit `unitId` did something (GDD 5.4). It
+   * comes at the moment when the Keyword changes the Battle, before the events
+   * of its result: for example before the `DamageDealt` of Retaliate, or before
+   * the `UnitPushed` of Knockback. A Keyword that changes nothing does not
+   * send it. `hero` is the Hero that owns the Unit. `value` is the value of
+   * the Keyword for a value Keyword, for example Heroic N or Swarm N. It is
+   * not in the event for a Keyword with no value. The existing events of a
+   * Keyword (`UnitsRallied`, `TokenSummoned`, `CardSabotaged`, `UnitReborn`)
+   * still come after it. The event never names a Hand card.
+   */
+  KeywordActivated: {
+    readonly unitId: number;
+    readonly keyword: ActivatedKeyword;
+    readonly hero: HeroRef;
+    readonly value?: number;
+  };
   UnitDied: { readonly unitId: number };
   /**
    * Rebirth (GDD 4.9): the Unit died and came back in the same Square. It

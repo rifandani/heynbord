@@ -80,7 +80,7 @@ export const STAGES: readonly StageDefinition[] = [
     },
   },
   {
-    // The Toll Gate: walls with Armor, Pivot and Retaliate.
+    // The Toll Gate: walls with Bulwark, Pivot and Retaliate.
     id: "1-4",
     region: 1,
     number: 4,
@@ -172,7 +172,7 @@ export const STAGES: readonly StageDefinition[] = [
     },
   },
   {
-    // The Sellsword Camp: a rush of Charge, Flying and fast Runners.
+    // The Sellsword Camp: a rush of Charge, Flying and Swift Units.
     id: "1-7",
     region: 1,
     number: 7,
@@ -183,17 +183,15 @@ export const STAGES: readonly StageDefinition[] = [
     enemy: {
       heroHp: 34,
       classId: "warrior",
-      gear: { weapon: 3, armor: 0, trinket: 2, banner: 3 },
+      gear: { weapon: 1, armor: 0, trinket: 1, banner: 1 },
       deck: [
         ...copies(1, "human.halberdier", "common"),
         ...copies(1, "orc.emberShaman", "common"),
         ...copies(2, "orc.scrapRaider", "uncommon"),
-        ...copies(1, "orc.packStalker", "rare"),
-        ...copies(1, "orc.howlingCharger", "uncommon"),
-        ...copies(1, "orc.howlingCharger", "rare"),
-        ...copies(2, "orc.skyreaver", "uncommon"),
-        ...copies(1, "orc.skyreaver", "rare"),
-        ...copies(1, "orc.tuskBrute", "rare"),
+        ...copies(1, "orc.packStalker", "uncommon"),
+        ...copies(2, "orc.howlingCharger", "uncommon"),
+        ...copies(3, "orc.skyreaver", "uncommon"),
+        ...copies(1, "orc.tuskBrute", "uncommon"),
         ...copies(1, "warrior.spearThrow", "uncommon"),
       ],
       startUnits: [],
@@ -211,17 +209,17 @@ export const STAGES: readonly StageDefinition[] = [
     enemy: {
       heroHp: 40,
       classId: "warrior",
-      gear: { weapon: 3, armor: 0, trinket: 3, banner: 3 },
+      gear: { weapon: 1, armor: 0, trinket: 1, banner: 1 },
       deck: [
         ...copies(1, "human.shieldbearer", "common"),
-        ...copies(1, "human.shieldbearer", "rare"),
+        ...copies(1, "human.shieldbearer", "uncommon"),
         ...copies(2, "human.halberdier", "common"),
         ...copies(1, "human.halberdier", "uncommon"),
         ...copies(1, "human.crossbowGuard", "uncommon"),
         ...copies(1, "human.gateWarden", "uncommon"),
-        ...copies(1, "orc.scrapRaider", "rare"),
+        ...copies(1, "orc.scrapRaider", "uncommon"),
         ...copies(2, "orc.howlingCharger", "uncommon"),
-        ...copies(1, "orc.tuskBrute", "rare"),
+        ...copies(1, "orc.tuskBrute", "uncommon"),
         ...copies(1, "warrior.shieldWall", "common"),
       ],
       startUnits: [

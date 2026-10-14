@@ -84,7 +84,15 @@ describe("Summon X (GDD 5.4)", () => {
     expect(events.map((event) => event._tag)).toEqual([
       "CardPlayed",
       "UnitSummoned",
+      "KeywordActivated",
       "TokenSummoned",
+    ]);
+    expect(eventsOfType(events, "KeywordActivated")).toEqual([
+      expect.objectContaining({
+        unitId: caller?.id,
+        keyword: "summon",
+        hero: { side: "player", hero: 0 },
+      }),
     ]);
   });
 

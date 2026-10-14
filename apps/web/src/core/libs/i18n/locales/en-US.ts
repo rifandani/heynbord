@@ -106,7 +106,10 @@ export default {
       skip: "Skip the animation",
       inspect: "See the Card Details of the Units",
       handbook: "Open the Handbook",
-      cancel: "Cancel",
+      battleLog: "Open or close the Battle Log",
+      logEntry: "Battle Log: one Log Entry back or forward",
+      logTurn: "Battle Log: one Turn back or forward",
+      cancel: "Cancel, or go Back to Live",
     },
     attack: "Attack",
     hp: "HP",
@@ -127,8 +130,8 @@ export default {
     tokenReminder:
       "A Token is not a card. When it dies, it disappears. It does not go to the Graveyard.",
     status: {
-      bonusArmor: "Armor +{value}",
-      bonusArmorRule: "From a Skill Card. Turns left: {turns}.",
+      bonusBulwark: "Bulwark +{value}",
+      bonusBulwarkRule: "From a Skill Card. Turns left: {turns}.",
       bonusAttack: "Attack +{value}",
       bonusAttackRule:
         "From a Skill Card: until the end of your next Turn. End Phases left: {turns}.",
@@ -166,13 +169,87 @@ export default {
         "This Unit died and came back with Rebirth. It does not come back again.",
       ward: "Ward {value}",
       wardRule:
-        "A Buff. It absorbs damage after Armor, Crit and Block, also Holy, Burn and Poison damage, and goes down by that damage. It has no time limit. A new Ward keeps the higher value.",
+        "A Buff. It absorbs damage after Bulwark, Crit and Block, also Holy, Burn and Poison damage, and goes down by that damage. It has no time limit. A new Ward keeps the higher value.",
       steadfast: "Steadfast",
       steadfastRule:
         "A Buff. When damage would bring this Unit to 0 HP, it stays at 1 HP, and Steadfast ends. A Ward absorbs the damage first. It has no time limit.",
       exposed: "Exposed {value}",
       exposedRule:
-        "A Debuff. Each Physical hit on this Unit deals more damage, equal to the Exposed value, after Armor. Fire, Frost, Holy, Burn and Poison damage do not get it. It ends after 2 End Phases of its owner. A new Exposed keeps the higher value.",
+        "A Debuff. Each Physical hit on this Unit deals more damage, equal to the Exposed value, after Bulwark. Fire, Frost, Holy, Burn and Poison damage do not get it. It ends after 2 End Phases of its owner. A new Exposed keeps the higher value.",
+    },
+  },
+  battleLog: {
+    open: "Battle Log",
+    title: "Battle Log",
+    backToLive: "Back to Live",
+    play: "Play",
+    pause: "Pause",
+    previous: "Previous Log Entry",
+    next: "Next Log Entry",
+    showBoard: "Show Board",
+    showLog: "Show the Log",
+    banner: "Turn {number} · {side} · Battle Log",
+    turn: "Turn {number} · {side}",
+    turnHp: "You {playerHp} HP · {enemy} {enemyHp} HP",
+    entries: "Log Entries",
+    empty:
+      "Nothing happened in this Battle yet. Each card play and each Unit Action shows here.",
+    selected: "Battle Log: {summary}",
+    damage: "{amount} damage in total",
+    deaths: "Units that died: {count}",
+    square: "Lane {lane}, Column {column}",
+    yourHero: "Your Hero",
+    unknownUnit: "a Unit",
+    token: "a Token",
+    flags: {
+      crit: "Crit",
+      block: "Block",
+      trueDamage: "True Damage",
+      ward: "Ward −{amount}",
+    },
+    line: {
+      playYou: "You play {card}.",
+      playEnemy: "{hero} plays {card}.",
+      target: "Target: {target}.",
+      targetLane: "Target: Lane {lane}.",
+      summon: "{unit} comes onto {square}.",
+      move: "{unit} moves from Column {from} to Column {to}.",
+      push: "{unit} goes back from Column {from} to Column {to}.",
+      skip: "{unit} skips its action.",
+      noAttack: "{unit} moves, but does not attack.",
+      attack: "{unit} attacks {target}.",
+      damage: "{target} takes {amount} {damageType} damage.",
+      heal: "{unit} heals {amount} HP.",
+      rallied: "{unit} gives its Rally bonus.",
+      died: "{unit} dies.",
+      reborn: "{unit} comes back with {hp} HP.",
+      keyword: "{unit} uses {keyword}.",
+      status: "{unit} gets {status}.",
+      steadfast: "{unit} stays at 1 HP.",
+      cleansed: "All Debuffs of {unit} end.",
+      bulwark: "{unit} gets Bulwark +{value}.",
+      attackBonus: "{unit} gets Attack +{value}.",
+      rangeBonus: "{unit} gets Range +{value}.",
+      fieldPlaced: "{card} stays on the Board. Hits: {turns}.",
+      fieldStruck: "{card} hits its area. Hits left: {turns}.",
+      laneOpened: "Lane {lane} opens.",
+      won: "The Battle ends. You win.",
+      lost: "The Battle ends. You lose.",
+      drawYou: "You draw {card}.",
+      drawEnemy: "{hero} draws a card.",
+      countdownsYou: "The Countdowns in your Hand go down.",
+      countdownsEnemy: "The Countdowns in the Hand of {hero} go down.",
+      recalled: "{card} goes back to the Hand.",
+      toGraveyard: "{card} goes to the Graveyard.",
+      countdownYours: "{card} in your Hand gets Countdown {countdown}.",
+      countdownHidden:
+        "A card in the Hand of {hero} gets Countdown {countdown}.",
+      burnOne: "Burn hits {unit}.",
+      burnMany: "Burn hits {count} Units.",
+      poisonOne: "Poison hits {unit}.",
+      poisonMany: "Poison hits {count} Units.",
+      suddenDeath: "Sudden Death hits the Hero of this Turn.",
+      nothing: "Nothing changes.",
     },
   },
   town: {
@@ -350,6 +427,7 @@ export default {
       "The Workshop is open. Combine 2 copies of a card into 1 copy of the next Rank.",
     craft:
       "Craft is open in the Workshop. Use Essence to make a copy of a card that you found.",
+    battleLog: "Open the Battle Log to see what happened.",
   },
   handbook: {
     title: "Handbook",
@@ -364,7 +442,7 @@ export default {
       units: { name: "Units", short: "Units" },
       keywords: { name: "Keywords", short: "Keywords" },
       statuses: { name: "Statuses and Damage Types", short: "Statuses" },
-      kinds: { name: "Races, Classes and Roles", short: "Races" },
+      kinds: { name: "Races and Classes", short: "Races" },
       ranks: { name: "Ranks", short: "Ranks" },
       progress: { name: "Progress", short: "Progress" },
     },
@@ -382,7 +460,8 @@ export default {
     tokenX: "Token X",
     raceKeyword:
       "Race Keyword: {keyword}. Only a Unit of this Race can have it.",
-    seeCard: "N is on each card. See the card.",
+    keywordPlate:
+      "When a Keyword occurs in a Battle, its name shows over the Unit.",
     tokenGallery: "Tokens in the game",
     tokenRank: "Rank",
     summonedBy: "Summoned by",
@@ -533,7 +612,6 @@ export default {
       damageType: "Damage Type",
       race: "Race",
       class: "Class",
-      role: "Role",
       rank: "Rank",
       rankGems: "Rank Gems",
       stars: "Stars",
@@ -573,7 +651,7 @@ export default {
       defeated:
         "A Hero with 0 HP is Defeated. When all the Heroes of a Side are Defeated, that Side loses the Battle.\n\nIn a Stage, each Side has 1 Hero, so a Hero at 0 HP ends the Battle.",
       creatureCard:
-        "A Creature Card summons a Unit onto the Board. It has a Race, a Role, Attack, HP and Speed. Some Creature Cards have Keywords.\n\nWhen the Unit dies, the card goes to your Graveyard.",
+        "A Creature Card summons a Unit onto the Board. It has a Race, Attack and HP. Some Creature Cards have Keywords.\n\nWhen the Unit dies, the card goes to your Graveyard.",
       skillCard:
         "A Skill Card has a one-time effect, for example damage to an enemy Unit. It has a Class. Only a Hero of the same Class can use it.\n\nAfter the effect, Recall can send the card back to your Hand.",
       hand: "Your Hand is the cards that your Hero holds in a Battle. They show at the bottom of the screen.\n\nAt the start of a Battle, your Hero draws {start} cards. Each card in the Hand shows its Countdown.",
@@ -592,16 +670,16 @@ export default {
         "The Countdown Limit is the maximum sum of the Countdowns of the cards in your Deck. Each card counts, also a Skill Card.\n\nAt Player level 1, the limit is {first}. It goes up with your Player level. An enemy Deck in a Stage does not have the limit.",
       unit: "A Unit is a figure on the Board. A Creature Card puts it there.\n\nA Unit shows its Attack and HP at its feet. Your Units face the enemy Hero, and the enemy Units face your Hero.",
       attack:
-        "Attack is the damage that a Unit deals with one attack. The Armor of the target can make the damage smaller.\n\nA Unit with Attack 0 on its card never attacks, also with a bonus. A higher Rank gives more Attack.",
+        "Attack is the damage that a Unit deals with one attack. The Bulwark of the target can make the damage smaller.\n\nA Unit with Attack 0 on its card never attacks, also with a bonus. A higher Rank gives more Attack.",
       hp: "HP is the health of a Unit or a Hero. Damage makes it lower, and a heal gives it back up to its maximum.\n\nAt 0 HP, a Unit leaves the Board, and a Hero is Defeated. A higher Rank gives more HP.",
       speed:
-        "Speed is the maximum number of Squares that a Unit moves forward in one Turn. A Unit with Speed 0 never moves.",
+        "Speed is the maximum number of Squares that a Unit moves forward in one Turn. Each Unit has Speed 2. Swift, Fleet and Heavy change it.\n\nA Wall never moves.",
       range:
-        "Range is the maximum number of Squares in front of a Ranged Unit at which it attacks.\n\nA Ranged Support has Range 2, and a Shooter has Range 3. A Skill Card can give bonus Range for a short time. Then a Melee Unit attacks as a Ranged Unit.",
+        "Range is the maximum number of Squares in front of a Unit at which it attacks. Each Unit has Range 1. Mid-range, Long-range and Extreme-range give more Range.\n\nA Unit with Range 1 is a Melee Unit. A Unit with Range 2 or more is a Ranged Unit. A Skill Card can give bonus Range for a short time. Then a Melee Unit attacks as a Ranged Unit.",
       melee:
-        "A Melee Unit attacks the enemy Unit in the next Square in front of it.\n\nWhen it is in its last Column and no enemy Unit is in front of it, it attacks the enemy Hero.",
+        "A Melee Unit has Range 1. It attacks the enemy Unit in the next Square in front of it.\n\nWhen it is in its last Column and no enemy Unit is in front of it, it attacks the enemy Hero.",
       ranged:
-        "A Ranged Unit attacks the nearest enemy Unit in front of it, in its Lane and in its Range. It does not move when an enemy Unit is in its Range.\n\nWhen no enemy Unit is in its Range and the enemy Hero is, it attacks the enemy Hero. The enemy Hero is 1 Square past the last Column.",
+        "A Ranged Unit has Range 2 or more. It attacks the nearest enemy Unit in front of it, in its Lane and in its Range. It does not move when an enemy Unit is in its Range.\n\nWhen no enemy Unit is in its Range and the enemy Hero is, it attacks the enemy Hero. The enemy Hero is 1 Square past the last Column.",
       movement:
         "In its action, a Unit first moves forward along its Lane, up to its Speed.\n\nIt moves through friendly Units, but it stops before an enemy Unit. It always stops in an empty Square. A Flying Unit moves over all Units, but it stops before an enemy Flying Unit.",
       token:
@@ -609,11 +687,11 @@ export default {
       status:
         "A Status is an effect that stays on a Unit. A Buff helps the Unit, for example Ward. A Debuff hurts it. Fire and Frost damage and some Keywords give Debuffs.\n\nA Unit shows its Statuses as icons above it. A Buff icon has a gold ring. The Card Details of the Unit show each Status with its rule.",
       damageType:
-        "Each attack and each damage effect has a Damage Type: Physical, Fire, Frost or Holy.\n\nOn a card, the Damage Type shows as the icon and the color of the Attack.",
-      damagePhysical: "Physical: normal damage. Armor reduces it.",
+        "Each attack and each damage effect has a Damage Type: Physical, Fire, Frost, Holy or Lightning.\n\nOn a card, the Damage Type shows as the icon and the color of the Attack.",
+      damagePhysical: "Physical: normal damage. Bulwark reduces it.",
       race: "The Race is the people that a Creature Card fights for. It shows on the emblem in the top-right corner of the card.\n\nA Deck can mix all Races. Each Race has its own style of play.",
       raceHuman:
-        "Humans and stout folk of the river towns. They hold the line with strong Armor, Walls and support for their friends.",
+        "Humans and stout folk of the river towns. They hold the line with Bulwark, Walls and support for their friends.",
       raceElf:
         "Elves of the old forests, and the plant spirits that fight with them. They control the Lanes from range: they Entangle, heal and Poison.",
       raceUndead:
@@ -627,24 +705,12 @@ export default {
       class:
         "The Class of a Hero sets which Skill Cards its Deck can hold. You select the Class of each Deck in the Deck builder.\n\nA Skill Card shows its Class on its emblem.",
       classWarrior:
-        "Bonuses and speed. Warrior Skill Cards make your cards Ready sooner and give Armor to your Units.",
+        "Bonuses and speed. Warrior Skill Cards make your cards Ready sooner and give Bulwark to your Units.",
       classRanger: "Control, and damage to the enemy Hero.",
       classMage:
         "Area damage. Mage Skill Cards hit enemy Units with Fire, Frost and Lightning.",
       classPriest:
-        "Healing, protection and Holy damage. Priest Skill Cards heal and protect your Units, and Holy damage ignores Armor.",
-      role: "The Role is the job of a Creature Card in a Battle. It helps you read a card. No rule uses it, but it sets the Range of a Ranged Unit.",
-      roleFrontliner:
-        "High HP and low Speed. A Frontliner holds its Lane against enemy Units.",
-      roleStriker: "High Attack and low HP. A Striker kills enemy Units.",
-      roleRunner:
-        "High Speed, or Flying. A Runner gets to the enemy Hero quickly.",
-      roleShooter:
-        "A Ranged Unit with Range 3. A Shooter stays back and attacks.",
-      roleSupport:
-        "A Support makes other Units better, for example with Rally or Regenerate. It is Melee, or Ranged with Range 2.",
-      roleWall:
-        "A Wall blocks its Lane for enemy Units. Each Wall has the Wall Keyword.",
+        "Healing, protection and Holy damage. Priest Skill Cards heal and protect your Units. Holy damage cannot be Blocked.",
       rank: "Rank is how strong one copy of a card is. There are five Ranks, from Common to Legendary.\n\nEach card has a Base Rank. Your copy is never below that Rank.",
       rankGems:
         "Rank Gems are the small diamonds at the top of a card. Count them: 1 gem is Common, 5 gems is Legendary.\n\nEach Rank has a gem color, but the count is enough to read the Rank in a Battle.",
@@ -696,6 +762,7 @@ export default {
       keywordUnique: "legend rule, singleton",
       keywordRegenerate: "regeneration, regen",
       keywordRetaliate: "retaliation, thorns, counterattack",
+      keywordBulwark: "armor, armour, damage reduction, toughness",
       status: "debuff, condition, ailment",
       statusFreeze: "stun, chill",
       statusParalyze: "shock, shocked, daze, disarm",
@@ -708,7 +775,6 @@ export default {
       damageType: "element",
       race: "faction, tribe, kingdom",
       class: "job, profession",
-      role: "unit type, archetype",
       rank: "rarity, tier, quality",
       rankGems: "pips",
       stars: "score, rating",
@@ -1001,7 +1067,7 @@ export default {
     vanguard: {
       name: "Human Vanguard",
       description:
-        "Warrior. Hold the Lanes with armor, then push with knights.",
+        "Warrior. Hold the Lanes with Bulwark, then push with knights.",
     },
     raiders: {
       name: "Orc Raiders",
@@ -1041,14 +1107,6 @@ export default {
     epic: "Epic",
     legendary: "Legendary",
   },
-  roles: {
-    frontliner: "Frontliner",
-    striker: "Striker",
-    runner: "Runner",
-    shooter: "Shooter",
-    support: "Support",
-    wall: "Wall",
-  },
   damageTypes: {
     physical: "Physical",
     fire: "Fire",
@@ -1057,16 +1115,21 @@ export default {
     lightning: "Lightning",
   },
   keywords: {
-    armor: "Armor {value}",
     bleed: "Bleed {value}",
+    bulwark: "Bulwark {value}",
     charge: "Charge {value}",
     entangle: "Entangle",
+    extremeRange: "Extreme-range",
     firstStrike: "First Strike",
+    fleet: "Fleet",
     flying: "Flying",
+    heavy: "Heavy",
     heroic: "Heroic {value}",
     hobble: "Hobble {value}",
     knockback: "Knockback {value}",
     lastBreath: "Last Breath {value}",
+    longRange: "Long-range",
+    midRange: "Mid-range",
     pivot: "Pivot",
     poison: "Poison",
     rebirth: "Rebirth",
@@ -1076,6 +1139,7 @@ export default {
     sabotage: "Sabotage {value}",
     summon: "Summon {token}",
     swarm: "Swarm {value}",
+    swift: "Swift",
     trample: "Trample",
     unique: "Unique",
     wall: "Wall",
@@ -1083,17 +1147,22 @@ export default {
     melee: "Melee",
   },
   keywordRules: {
-    armor:
-      "Reduces damage to this Unit by {value}. It does not reduce Holy damage.",
     bleed:
       "The enemy Unit it hits gets half of each heal, rounded down, for {value} Turns. Retaliate does not apply Bleed.",
+    bulwark: "Reduces Physical damage to this Unit by {value}.",
     charge: "+{value} Speed in the Turn when you summon this Unit.",
     entangle:
       "The enemy Unit it hits has Speed 0 in its next action. That Unit can still attack.",
+    extremeRange: "+3 Range.",
+    fleet: "+2 Speed.",
+    heavy: "−1 Speed.",
+    longRange: "+2 Range.",
+    midRange: "+1 Range.",
+    swift: "+1 Speed.",
     firstStrike:
       "When an enemy melee Unit attacks this Unit, this Unit deals its damage first. If the attacker dies, its attack does not occur.",
     flying:
-      "Moves over all Units, but stops before an enemy Flying Unit. It stops in an empty Square.",
+      "Moves over all Units except enemy Flying Unit. It stops in an empty Square.",
     heroic: "+{value} damage when this Unit attacks a Hero.",
     hobble:
       "The enemy Unit it hits has a maximum Speed of 1 for {value} Turns. Retaliate does not apply Hobble.",
@@ -1124,7 +1193,7 @@ export default {
       "While another friendly Unit is in the same Lane, this Unit has +{value} Attack, also for Retaliate. More friendly Units do not increase the bonus.",
     fire: "Fire: the target burns for 1 damage in its next 2 End Phases.",
     frost: "Frost: the target skips its next action.",
-    holy: "Holy: Armor does not reduce this damage.",
+    holy: "Holy: the Hero of the target cannot Block this damage.",
     lightning:
       "Lightning: the target does not attack in its next action, but it can still move.",
   },
@@ -1151,12 +1220,12 @@ export default {
       "Deal {amount} {damageType} damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled.",
     damageByAttack:
       "Deal {damageType} damage to an enemy Unit, equal to the Attack of that Unit.",
-    damageLaneArmor:
-      "{hit} Friendly Units in its Lane get Armor {armor} for {turns}.",
+    damageLaneBulwark:
+      "{hit} Friendly Units in its Lane get Bulwark {bulwark} for {turns}.",
     damageLaneHeal: "{hit} Heal {heal} HP to each friendly Unit in its Lane.",
     damageUnitHero: "{hit} Then deal {heroAmount} damage to the enemy Hero.",
-    laneArmor:
-      "Friendly Units in a Lane get Armor {armor} for the next {turns} enemy Turns.",
+    laneBulwark:
+      "Friendly Units in a Lane get Bulwark {bulwark} for the next {turns} enemy Turns.",
     lowerCountdown:
       "The Countdown of {cards} random cards in your Hand goes down by {amount}.",
     healUnit: "Heal {heal} HP to a friendly Unit.",
@@ -1170,7 +1239,7 @@ export default {
     cleanseUnit:
       "Remove all Debuffs from a friendly Unit. Then heal {heal} HP to it.",
     exposeUnit:
-      "An enemy Unit becomes Exposed {exposed}: each Physical hit on it deals {exposed} more damage, after Armor, until the end of your next Turn.",
+      "An enemy Unit becomes Exposed {exposed}: each Physical hit on it deals {exposed} more damage, after Bulwark, until the end of your next Turn.",
     laneAttack:
       "Friendly Units in a Lane get +{attack} Attack until the end of your next Turn.",
     unitAttackRange:
@@ -1185,7 +1254,6 @@ export default {
       "Deal {amount} {damageType} damage to {units} random different enemy Units.",
     fieldEffect:
       "Select an area of {lanes} Lanes × {columns} Columns. For {turns}, in each of your End Phases, each enemy Unit in the area takes {amount} {damageType} damage.",
-    armorIgnored: "{effect} Armor does not reduce it.",
     /** A number and its noun. The card text selects One for 1, else Other. */
     counts: {
       squareOne: "{value} Square",

@@ -6,12 +6,15 @@ import {
   classGlyph,
   DAMAGE_GLYPH,
   raceGlyph,
-  roleGlyph,
+  iconGlyph,
+  unitIcon,
 } from "@/features/battle/glyphs";
 
 describe("cardGlyph", () => {
-  it("shows the role, Flying, or the Skill Card effect", () => {
-    expect(cardGlyph(getCard("human.shieldbearer"))).toBe("shield");
+  it("shows Melee, Ranged, Wall, Flying, or the Skill Card effect", () => {
+    expect(cardGlyph(getCard("human.shieldbearer"))).toBe("sword");
+    expect(cardGlyph(getCard("human.crossbowGuard"))).toBe("arrow");
+    expect(cardGlyph(getCard("human.townBarricade"))).toBe("wall");
     expect(cardGlyph(getCard("orc.skyreaver"))).toBe("wings");
     expect(cardGlyph(getCard("mage.fireball"))).toBe("flame");
     expect(cardGlyph(getCard("mage.frostBolt"))).toBe("snow");
@@ -50,12 +53,16 @@ describe("cardGlyph", () => {
   });
 });
 
-describe("roleGlyph and DAMAGE_GLYPH", () => {
-  it("give each Role and each Damage Type its icon", () => {
-    expect(roleGlyph("wall")).toBe("wall");
-    expect(roleGlyph("shooter")).toBe("arrow");
-    expect(roleGlyph("runner")).toBe("boot");
-    expect(roleGlyph("support")).toBe("bell");
+describe("unitIcon, iconGlyph and DAMAGE_GLYPH", () => {
+  it("give each Unit icon and each Damage Type its icon (ADR-0030)", () => {
+    expect(unitIcon({})).toBe("melee");
+    expect(unitIcon({ midRange: true })).toBe("ranged");
+    expect(unitIcon({ wall: true })).toBe("wall");
+    expect(unitIcon({ flying: true, longRange: true })).toBe("flying");
+    expect(iconGlyph("melee")).toBe("sword");
+    expect(iconGlyph("ranged")).toBe("arrow");
+    expect(iconGlyph("wall")).toBe("wall");
+    expect(iconGlyph("flying")).toBe("wings");
     expect(DAMAGE_GLYPH).toEqual({
       physical: "sword",
       fire: "flame",

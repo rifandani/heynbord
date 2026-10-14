@@ -7,7 +7,12 @@ import type {
   SkillCardDefinition,
   TokenId,
 } from "@workspace/rules";
-import { getCard, getToken, scaleForRank } from "@workspace/rules";
+import {
+  getCard,
+  getToken,
+  keywordSpeed,
+  scaleForRank,
+} from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
 import { createContext, use } from "react";
@@ -149,7 +154,7 @@ const isStatus = (icon: Status | Glyph): icon is Status =>
 /**
  * One line of the Unit status: an icon, a name in Keyword rust, and its rule.
  * A Status uses its badge icon from the effects atlas, the same as above the
- * Unit; bonus Armor has no badge, so it uses a glyph.
+ * Unit; bonus Bulwark has no badge, so it uses a glyph.
  */
 const StatusLine = ({
   icon,
@@ -180,14 +185,14 @@ const StatusLine = ({
 );
 
 /**
- * Bonus Armor, bonus Attack, the Rally and Swarm bonuses and a used Rebirth
+ * Bonus Bulwark, bonus Attack, the Rally and Swarm bonuses and a used Rebirth
  * are not Statuses: they have a glyph, and they link to the Entry of their
  * Keyword. Bonus Attack has no Keyword: it links to Rally, the other Attack
  * bonus of the Warrior. Bonus Range has no Keyword: it links to the Entry of
  * Ranged.
  */
 const NOT_STATUS = {
-  bonusArmor: { icon: "shield", keyword: "armor" },
+  bonusBulwark: { icon: "shield", keyword: "bulwark" },
   bonusAttack: { icon: "horn", keyword: "rally" },
   bonusRange: { icon: "range", entry: "ranged" },
   rallyBonus: { icon: "banner", keyword: "rally" },
@@ -216,7 +221,7 @@ const statusEntry = ({ status }: StatusText): EntryId => {
 };
 
 /**
- * How a Unit is different from its card now: bonus Armor, bonus Attack, the
+ * How a Unit is different from its card now: bonus Bulwark, bonus Attack, the
  * Rally bonus, the Swarm bonus, the Statuses and a used Rebirth. The
  * card shows the base values, and the feet of the Unit show its current
  * Attack and HP.
@@ -277,11 +282,11 @@ const KeywordRules = ({ content }: { readonly content: CreatureCardText }) => {
 
 /**
  * The values of a Creature Card or a Token at a Rank that the Details Panel
- * shows. A Token has no Role: its kind line says "Token".
+ * shows. The kind line of a Token also says "Token".
  */
 interface CreatureInfo {
   readonly race: RaceId;
-  readonly role: CreatureCardDefinition["role"] | null;
+  readonly token: boolean;
   readonly wall: boolean;
   readonly damageType: DamageType;
   readonly speed: number;
@@ -294,10 +299,10 @@ const cardInfo = (
   rank: RankId
 ): CreatureInfo => ({
   race: card.race,
-  role: card.role,
+  token: false,
   wall: card.keywords.wall ?? false,
   damageType: card.damageType,
-  speed: card.speed,
+  speed: keywordSpeed(card.keywords),
   attack: scaleForRank(card.attack, rank),
   hp: scaleForRank(card.hp, rank),
 });
@@ -306,21 +311,18 @@ const tokenInfo = (tokenId: TokenId, rank: RankId): CreatureInfo => {
   const token = getToken(tokenId);
   return {
     race: token.race,
-    role: null,
+    token: true,
     wall: token.keywords.wall ?? false,
     damageType: token.damageType,
+    speed: keywordSpeed(token.keywords),
     ...token.ranks[rank],
   };
 };
 
-/** The Role of a card, or "Token" with a link to its Entry. */
-const KindName = ({ info }: { readonly info: CreatureInfo }) => {
+/** "Token" with a link to its Entry. */
+const TokenName = () => {
   const { tr } = useGameText();
-  return info.role ? (
-    tr(`roles.${info.role}`)
-  ) : (
-    <TermName entry="token">{tr("handbook.names.token")}</TermName>
-  );
+  return <TermName entry="token">{tr("handbook.names.token")}</TermName>;
 };
 
 /** The base Attack and HP on the card, for screen readers. */
@@ -352,7 +354,13 @@ const CreatureBody = ({
     <>
       <KindLine glyph={raceGlyph(info.race)} owner={unitOwner(unit)}>
         <span>
-          {tr(`races.${info.race}`)} · <KindName info={info} />
+          {tr(`races.${info.race}`)}
+          {info.token ? (
+            <>
+              {" "}
+              · <TokenName />
+            </>
+          ) : null}
         </span>
       </KindLine>
       {/* A Wall does not move or attack, so it shows no attack stats. */}

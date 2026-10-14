@@ -5,7 +5,7 @@ import { ToggleButton } from "react-aria-components";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
 import type { HandCardView } from "@/features/battle/battle-view";
-import { battleSessionAtom, soundOnAtom } from "@/features/battle/battle.atoms";
+import { shownSessionAtom, soundOnAtom } from "@/features/battle/battle.atoms";
 import {
   GameButton,
   gameButtonStyles,
@@ -69,7 +69,37 @@ const HandbookButton = () => {
   );
 };
 
-/** Speed, Skip, sound (BAT-11), the Handbook and the Key Guide (UI-02). */
+/**
+ * The Battle Log button (GDD 11.2), next to Skip. The L key does the same.
+ * It is gold while the Battle Log is open, because the Battle Log is then the
+ * current place; a press goes Back to Live.
+ */
+const BattleLogButton = ({ battle }: { readonly battle: Battle }) => {
+  const { tr } = useGameText();
+  if (!battle.hasBattleLog) {
+    return null;
+  }
+  const open = battle.log !== null;
+  return (
+    <ToggleButton
+      isSelected={open}
+      onChange={(selected) => (selected ? battle.openLog() : battle.closeLog())}
+      aria-label={tr("battleLog.open")}
+      className={gameButtonStyles({
+        intent: open ? "gold" : "ghost",
+        size: "sm",
+      })}
+      data-testid="battle-log-button"
+    >
+      <GlyphIcon glyph="scroll" className="size-4" />
+      <span className="[@media(max-width:900px)]:sr-only">
+        {tr("battleLog.open")}
+      </span>
+    </ToggleButton>
+  );
+};
+
+/** Speed, Skip, the Battle Log, sound (BAT-11), the Handbook and the Key Guide (UI-02). */
 const BattleControls = ({
   battle,
   session,
@@ -95,11 +125,12 @@ const BattleControls = ({
       <GameButton
         intent="ghost"
         size="sm"
-        isDisabled={isIdle(session) || battle.held}
+        isDisabled={isIdle(session) || battle.held || battle.log !== null}
         onPress={() => battle.skip()}
       >
         {tr("battle.skip")}
       </GameButton>
+      <BattleLogButton battle={battle} />
       <ToggleButton
         isSelected={soundOn}
         onChange={setSoundOn}
@@ -144,8 +175,10 @@ const EnemyHand = ({ hand }: { readonly hand: readonly HandCardView[] }) => {
 /** Heroes, the Turn number and the Battle controls (GDD 11.2, BAT-11). */
 export const TopBar = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
-  const session = useAtomValue(battleSessionAtom);
-  if (!session) {
+  // The Heroes, the Turn and the enemy Hand of the selected moment in the Battle Log.
+  const session = useAtomValue(shownSessionAtom);
+  const live = battle.liveSession;
+  if (!session || !live) {
     return null;
   }
   const { view } = session;
@@ -156,7 +189,7 @@ export const TopBar = ({ battle }: { readonly battle: Battle }) => {
       className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-2 p-2 pt-[max(0.5rem,env(safe-area-inset-top))] pr-[max(0.5rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))]"
     >
       <div className="pointer-events-auto flex min-w-0 items-start gap-2">
-        <LeaveBattle battle={battle} finished={view.result !== null} />
+        <LeaveBattle battle={battle} finished={live.view.result !== null} />
         <HeroPanel
           side="player"
           hero={view.sides.player.hero}
@@ -166,7 +199,7 @@ export const TopBar = ({ battle }: { readonly battle: Battle }) => {
       </div>
       <div className="pointer-events-auto flex flex-col items-center gap-1">
         <TurnBadge turnNumber={view.turnNumber} yourTurn={yourTurn} />
-        <BattleControls battle={battle} session={session} />
+        <BattleControls battle={battle} session={live} />
       </div>
       <div className="pointer-events-auto flex min-w-0 flex-col items-end gap-1">
         <HeroPanel

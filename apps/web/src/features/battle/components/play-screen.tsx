@@ -1,4 +1,5 @@
 import { RegistryContext, useAtom, useAtomValue } from "@effect/atom-react";
+import { cn } from "cn";
 import { lazy, Suspense, useContext, useEffect, useMemo } from "react";
 
 import {
@@ -14,8 +15,13 @@ import type {
 import {
   inspectDirection,
   keyCommand,
+  logKeyAction,
   nextReadyCard,
 } from "@/features/battle/components/battle-keys";
+import {
+  BattleLogBanner,
+  BattleLogPanel,
+} from "@/features/battle/components/battle-log-panel";
 import { BattlePainting } from "@/features/battle/components/battle-painting";
 import { CastCard } from "@/features/battle/components/cast-card";
 import { HandBar } from "@/features/battle/components/hand-bar";
@@ -129,6 +135,11 @@ const KEY_HANDLERS: Readonly<
     event.preventDefault();
     openHandbook();
   },
+  // Live pauses while the Battle Log is open (GDD 11.2).
+  battleLog: ({ battle }, event) => {
+    event.preventDefault();
+    battle.openLog();
+  },
   cancel: ({ battle }) => battle.select(null),
 };
 
@@ -158,17 +169,73 @@ const inspectKey = (
   return false;
 };
 
-const commandFromKey = (event: KeyboardEvent) =>
-  isTyping(event.target) || inDialog(event.target) ? null : keyCommand(event);
+/** The result dialog takes its own keys, but L opens the Battle Log from it. */
+const inResult = (target: EventTarget | null): boolean =>
+  target instanceof Element &&
+  target.closest('[data-testid="battle-result"]') !== null;
+
+const commandFromKey = (event: KeyboardEvent) => {
+  if (isTyping(event.target)) {
+    return null;
+  }
+  const command = keyCommand(event);
+  if (!inDialog(event.target)) {
+    return command;
+  }
+  return command?.action === "battleLog" && inResult(event.target)
+    ? command
+    : null;
+};
+
+/**
+ * The keys of the open Battle Log: ←/→ one Log Entry, Shift+←/→ one Turn, L
+ * and Esc Back to Live. Inspect and the Handbook work as in Live, and the
+ * other Live keys do nothing.
+ */
+const runLogKey = (
+  keys: KeyContext,
+  event: KeyboardEvent,
+  command: BattleKeyCommand
+) => {
+  const action = logKeyAction(command, event.shiftKey);
+  switch (action._tag) {
+    case "step": {
+      event.preventDefault();
+      keys.battle.stepLog(action.step, action.byTurn);
+      return;
+    }
+    case "close": {
+      event.preventDefault();
+      keys.battle.closeLog();
+      return;
+    }
+    case "live": {
+      KEY_HANDLERS[command.action](keys, event, command.step);
+      break;
+    }
+    case "off": {
+      // All Live input is off in the Battle Log.
+      break;
+    }
+    default: {
+      return action satisfies never;
+    }
+  }
+};
 
 const runKey = (
   keys: KeyContext,
   event: KeyboardEvent,
   command: BattleKeyCommand
 ) => {
-  if (!inspectKey(keys.battle, event, command)) {
-    KEY_HANDLERS[command.action](keys, event, command.step);
+  if (inspectKey(keys.battle, event, command)) {
+    return;
   }
+  if (keys.battle.log) {
+    runLogKey(keys, event, command);
+    return;
+  }
+  KEY_HANDLERS[command.action](keys, event, command.step);
 };
 
 const DETAILS = '[data-testid="unit-details"]';
@@ -212,6 +279,33 @@ const useBattleKeys = (battle: Battle, openHandbook: () => void) => {
   }, [battle, openHandbook]);
 };
 
+/** The 3D Board, which loads in its own chunk. */
+const BoardLayer = ({
+  battle,
+  webgl2,
+}: {
+  readonly battle: Battle;
+  readonly webgl2: boolean;
+}) => {
+  const { tr } = useGameText();
+  if (!webgl2) {
+    return null;
+  }
+  return (
+    <Suspense
+      fallback={
+        <div className="absolute inset-0 flex items-center justify-center">
+          <p className="font-display rounded-xl bg-[#1c140e]/85 px-6 py-3 text-xl">
+            {tr("battle.loading")}
+          </p>
+        </div>
+      }
+    >
+      <BattleCanvas onPick={(target) => battle.play(target)} />
+    </Suspense>
+  );
+};
+
 const BattleStage = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
   const webgl2 = useMemo(() => hasWebgl2(), []);
@@ -222,27 +316,29 @@ const BattleStage = ({ battle }: { readonly battle: Battle }) => {
   );
   const handbook = useHandbook();
   useBattleKeys(battle, handbook.open);
-  useBattleHints(battle.session);
+  useBattleHints(battle.liveSession);
   return (
     <div
       className="fixed inset-0 overflow-hidden overscroll-none text-[#fff6df]"
       data-testid="battle-stage"
     >
-      {/* The painting loads before the 3D chunk, so it shows at once (web ADR-0007). */}
-      <BattlePainting src={painting} />
-      {webgl2 ? (
-        <Suspense
-          fallback={
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="font-display rounded-xl bg-[#1c140e]/85 px-6 py-3 text-xl">
-                {tr("battle.loading")}
-              </p>
-            </div>
-          }
-        >
-          <BattleCanvas onPick={(target) => battle.play(target)} />
-        </Suspense>
-      ) : (
+      {/*
+       * In the Battle Log, the painting and the Board are grey and a little
+       * warm, like an old picture, so that a past moment never looks like Live.
+       */}
+      <div
+        className={cn(
+          "absolute inset-0 transition-[filter] duration-300 ease-out motion-reduce:transition-none",
+          battle.log && "[filter:saturate(0.28)_sepia(0.2)_brightness(0.95)]"
+        )}
+        data-testid="battle-board-layer"
+        data-past={battle.log ? true : undefined}
+      >
+        {/* The painting loads before the 3D chunk, so it shows at once (web ADR-0007). */}
+        <BattlePainting src={painting} />
+        <BoardLayer battle={battle} webgl2={webgl2} />
+      </div>
+      {webgl2 ? null : (
         <div
           role="alert"
           className="absolute inset-0 flex items-center justify-center bg-[#1c140e] p-8 text-center text-lg"
@@ -255,7 +351,9 @@ const BattleStage = ({ battle }: { readonly battle: Battle }) => {
       <UnitDetails battle={battle} />
       <TopBar battle={battle} />
       <TurnBanner />
+      <BattleLogBanner battle={battle} />
       <HandBar battle={battle} />
+      <BattleLogPanel battle={battle} />
       <ResultOverlay battle={battle} />
     </div>
   );

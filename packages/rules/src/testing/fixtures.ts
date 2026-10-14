@@ -126,7 +126,7 @@ const setCounts = (
 };
 
 /**
- * Test setup: replaces Rebirth, the Rally bonus, the bonus Armor, the bonus
+ * Test setup: replaces Rebirth, the Rally bonus, the bonus Bulwark, the bonus
  * Attack, the bonus Range, Exposed and the Buffs of a Unit.
  */
 const setRebirthAndBonuses = (
@@ -136,8 +136,8 @@ const setRebirthAndBonuses = (
       UnitState,
       | "rebirth"
       | "rallied"
-      | "bonusArmor"
-      | "bonusArmorTurns"
+      | "bonusBulwark"
+      | "bonusBulwarkTurns"
       | "bonusAttack"
       | "bonusAttackTurns"
       | "bonusRange"
@@ -161,11 +161,11 @@ const setRebirthAndBonuses = (
   if (options.rallied !== undefined) {
     unit.rallied = options.rallied;
   }
-  if (options.bonusArmor !== undefined) {
-    unit.bonusArmor = options.bonusArmor;
+  if (options.bonusBulwark !== undefined) {
+    unit.bonusBulwark = options.bonusBulwark;
   }
-  if (options.bonusArmorTurns !== undefined) {
-    unit.bonusArmorTurns = options.bonusArmorTurns;
+  if (options.bonusBulwarkTurns !== undefined) {
+    unit.bonusBulwarkTurns = options.bonusBulwarkTurns;
   }
   if (options.bonusAttack !== undefined) {
     unit.bonusAttack = options.bonusAttack;
@@ -211,8 +211,8 @@ export const placeUnit = (
       | "wall"
       | "rebirth"
       | "rallied"
-      | "bonusArmor"
-      | "bonusArmorTurns"
+      | "bonusBulwark"
+      | "bonusBulwarkTurns"
       | "bonusAttack"
       | "bonusAttackTurns"
       | "bonusRange"

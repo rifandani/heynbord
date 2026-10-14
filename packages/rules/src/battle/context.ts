@@ -1,6 +1,7 @@
+import type { ActivatedKeyword } from "../content/keywords";
 import type { RandomCursor } from "../random";
-import type { BattleEvent, BattleState, Side, UnitState } from "./types";
-import { LANE_LENGTH, SUMMON_ZONE_DEPTH } from "./types";
+import type { BattleState, DamageDealer, Side, UnitState } from "./types";
+import { BattleEvent, heroOf, LANE_LENGTH, SUMMON_ZONE_DEPTH } from "./types";
 
 /**
  * The working copy of one `step`. `step` copies the input state first, so the
@@ -14,6 +15,38 @@ export interface StepContext {
 
 export const isOver = (ctx: StepContext): boolean =>
   ctx.state.status === "finished";
+
+/**
+ * Sends `KeywordActivated` for the Keyword `keyword` of `unit`. The caller
+ * sends it only when the Keyword changes the Battle, and before the events of
+ * its result. `value` is the value of a value Keyword.
+ */
+export const activateKeyword = (
+  ctx: StepContext,
+  unit: UnitState,
+  keyword: ActivatedKeyword,
+  value?: number
+): void => {
+  const activation = { unitId: unit.id, keyword, hero: heroOf(unit.owner) };
+  ctx.events.push(
+    BattleEvent.KeywordActivated(
+      value === undefined ? activation : { ...activation, value }
+    )
+  );
+};
+
+/** `unit` deals the damage. */
+export const unitDealer = (unit: UnitState): DamageDealer => ({
+  _tag: "Unit",
+  unitId: unit.id,
+  hero: heroOf(unit.owner),
+});
+
+/** The Hero of `side` deals the damage, with a Skill Card or a Field Effect. */
+export const heroDealer = (side: Side): DamageDealer => ({
+  _tag: "Hero",
+  hero: heroOf(side),
+});
 
 /** +1 for the player (toward the enemy Hero), -1 for the enemy. */
 export const direction = (side: Side): number => (side === "player" ? 1 : -1);

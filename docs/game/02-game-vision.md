@@ -76,7 +76,7 @@ When a player plays Heynbord, they must feel:
 | --- | --- | --- |
 | *Kings and Legends* / *Rise of Mythos* | Countdown hand, lanes, auto-combat, ranks, Combine | Fair economy, modern 3D web presentation, smaller and clearer rule set |
 | *Hearthstone* | Polish, readable board, card feel | No mana. Units move in lanes. |
-| *Plants vs. Zombies* | Lane readability, unit roles | Both sides are players with decks. |
+| *Plants vs. Zombies* | Lane readability, clear unit jobs | Both sides are players with decks. |
 | *Teamfight Tactics* | Watch-the-battle satisfaction | Turn-based with a hand of cards, not a shop and a bench |
 
 ## World and tone

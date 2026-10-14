@@ -6,7 +6,7 @@ import { FX_PRESETS, presetSlots } from "@/features/battle/scene/fx-presets";
 describe("the attack and hit presets (web ADR-0009)", () => {
   it("has a hit preset for each Damage Type and for a Blocked hit, and the cast presets", () => {
     expect(Object.keys(FX_PRESETS).toSorted()).toEqual([
-      "armor",
+      "bulwark",
       "heal",
       "hit:blocked",
       "hit:fire",
@@ -42,7 +42,7 @@ describe("the attack and hit presets (web ADR-0009)", () => {
     ["move", ["dust", "dust"]],
     ["push", ["dust", "dust", "dust"]],
     ["heal", ["heal", "spark"]],
-    ["armor", ["shield", "spark"]],
+    ["bulwark", ["shield", "spark"]],
   ] as const)("gives %s the atlas images of the issue", (key, slots) => {
     expect(presetSlots(FX_PRESETS[key])).toEqual(slots);
   });

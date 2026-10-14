@@ -9,15 +9,12 @@ const caller = (
     kind: "creature",
     id,
     race: "undead",
-    role: "support",
     baseRank: "common",
     countdown: 2,
     attack: 1,
     hp: 5,
-    speed: 1,
-    range: 0,
     damageType: "physical",
-    keywords,
+    keywords: { heavy: true, ...keywords },
   },
 ];
 

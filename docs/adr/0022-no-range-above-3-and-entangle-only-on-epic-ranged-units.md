@@ -12,6 +12,8 @@ We decided:
 
 > Changed on 2026-10-13 by the Ranger Skill Card *Hunter's Focus* ([GDD 4.8](../game/03-game-design.md#48-skill-cards-and-recall)): the limit is for the printed Range of a Creature Card. A bonus Range from a Skill Card can give 1 Unit Range 4 until the end of the caster's next Turn. The Range 4 Shooters of issue #23 had Range 4 for the full Battle. Hunter's Focus passes the swap rule ([Archetypes 3.3](../game/08-archetypes.md#33-skill-card-swap)).
 
+> Changed on 2026-10-14 by [ADR-0030](./0030-keywords-set-speed-and-range-and-there-are-no-roles.md): the Range limit is removed, and there are no Roles. Each Unit has Base Range 1, and a Melee Unit has Range 1. The Keywords Mid-range, Long-range and Extreme-range give Range 2, 3 and 4. Only a card with Base Rank Epic or higher has Extreme-range. The Entangle limit of this ADR stays.
+
 ## Considered Options
 
 All results are the Thornwatch win rate, with 500 seeds (1000 Battles) for each Matchup. "Average" is the average against the 8 other Archetypes. Before the change: Vanguard 89.5%, Raiders 83.5%, average 87.4%.

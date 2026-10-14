@@ -55,7 +55,7 @@ Regions 2 and 3 (M3) come after the playtest, because their tuning needs the Wor
 - [ ] Heynspire (50 Floors). All Floors use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)).
 - [ ] Achievements and Cosmetics.
 - [ ] Heynstones and the Bazaar (Cosmetics).
-- [ ] Auto-play, Battle log.
+- [ ] Auto-play, Battle Log (BAT-13: #73, #74, #76).
 - [ ] Mobile landscape layout and touch input. Portrait warning.
 - [ ] Sound effects and music.
 - [ ] Accessibility options and keyboard play.

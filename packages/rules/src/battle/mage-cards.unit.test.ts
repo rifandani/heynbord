@@ -45,14 +45,26 @@ describe("Lightning and Paralyzed (GDD 4.4, 4.7, ADR-0029)", () => {
     ]);
   });
 
-  it("is normal damage: Armor reduces it, and it Paralyzes also at 0 damage", () => {
+  it("Bulwark does not reduce it (ADR-0031)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["mage.spark", 0]]);
-    const enemy = unitAt(state, "enemy", 6, { bonusArmor: 2 });
+    const enemy = unitAt(state, "enemy", 6, { bonusBulwark: 2 });
     preventRout(state);
     const { state: next, events } = run(state, play(0, square(0, 6)));
     expect(eventsOfType(events, "DamageDealt")).toEqual([
-      expect.objectContaining({ amount: 0 }),
+      expect.objectContaining({ amount: 1 }),
+    ]);
+    expect(unitById(next, enemy.id)).toMatchObject({ hp: 5, paralyzed: true });
+  });
+
+  it("Paralyzes also at 0 damage", () => {
+    const state = emptyBattle();
+    giveHand(state, "player", [["mage.spark", 0]]);
+    const enemy = unitAt(state, "enemy", 6, { ward: 2 });
+    preventRout(state);
+    const { state: next, events } = run(state, play(0, square(0, 6)));
+    expect(eventsOfType(events, "DamageDealt")).toEqual([
+      expect.objectContaining({ amount: 0, absorbed: 1 }),
     ]);
     expect(unitById(next, enemy.id)).toMatchObject({ hp: 6, paralyzed: true });
   });
@@ -215,7 +227,7 @@ describe("Lightning and Paralyzed (GDD 4.4, 4.7, ADR-0029)", () => {
       expect.objectContaining({ unitId: friend.id }),
     ]);
     expect(unitById(next, friend.id)).toMatchObject({
-      position: 3,
+      position: 4,
       paralyzed: false,
     });
   });
@@ -511,15 +523,15 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
     expect(unitById(ended.state, enemy.id)?.hp).toBe(20 - 2 - 2);
   });
 
-  it("is normal Skill damage: Armor reduces it, and the caster's Trinket Crit applies", () => {
+  it("is normal Skill damage: Bulwark does not reduce Fire, and the caster's Trinket Crit applies", () => {
     const state = emptyBattle({ lanes: 2, player: { skillCrit: 10_000 } });
     giveHand(state, "player", [["mage.wildfire", 0, "rare"]]);
     unitAt(state, "enemy", 6, {
       hp: 20,
       maxHp: 20,
       speed: 0,
-      bonusArmor: 1,
-      bonusArmorTurns: 5,
+      bonusBulwark: 1,
+      bonusBulwarkTurns: 5,
     });
     preventRout(state);
     const placed = run(state, play(0, square(0, 6)));
@@ -528,6 +540,6 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
       eventsOfType(ended.events, "DamageDealt").find(
         (event) => event.source === "field"
       )
-    ).toMatchObject({ amount: 2, crit: true });
+    ).toMatchObject({ amount: 4, crit: true });
   });
 });

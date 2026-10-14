@@ -12,6 +12,7 @@ const damage = (
     amount: 2,
     damageType: "physical",
     source: "attack",
+    dealer: null,
     crit: false,
     blocked: false,
     trueDamage: false,
@@ -23,6 +24,7 @@ const damage = (
 const cast = (side: "player" | "enemy", cardId: string) =>
   BattleEvent.CardPlayed({
     side,
+    hero: { side, hero: 0 },
     handIndex: 0,
     card: { instanceId: 1, cardId, rank: "common" },
     target: { _tag: "NoTarget" },

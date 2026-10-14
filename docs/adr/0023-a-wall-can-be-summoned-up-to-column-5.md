@@ -2,6 +2,8 @@
 
 A Hero can summon a Unit with the **Wall** Keyword into any empty Square of Columns 1 to 5 of an open Lane, also past an enemy Unit. All other Units still use the **Summon Zone**, Columns 1 to 3 ([ADR-0011](./0011-the-summon-zone-is-3-columns-deep.md)). Columns 4 and 5 are not part of the Summon Zone: the Wall Keyword gives the exception. The rule is the same for both Sides and for all Heroes, also AI Heroes and Bosses.
 
+> Changed on 2026-10-14 by [ADR-0030](./0030-keywords-set-speed-and-range-and-there-are-no-roles.md): there are no Roles, so only the Wall Keyword gives this exception. A Wall card now has the Base Speed 2, the same as each Unit, but the Wall Keyword stops its Movement. "A Wall has Speed 0" below means that a Wall does not move.
+
 We did this because a Wall has Speed 0. Other Units act in the Turn when they are summoned, so a Speed 2 Unit summoned into Column 3 is at Column 5 after its first Turn. A Wall stays where it is summoned for the full Battle, so its only control is the Square that it goes into. At Column 3 it stopped enemies near its own Hero and left only 2 Squares behind it for friendly Ranged Units. A barricade that sits next to the Hero also looks wrong. Column 5 gives a Wall the same reach as a typical Unit after its first Turn, and it leaves Columns 6 to 9 free before the enemy Summon Zone.
 
 ## Considered Options

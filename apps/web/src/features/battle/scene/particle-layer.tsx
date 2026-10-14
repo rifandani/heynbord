@@ -270,7 +270,7 @@ const singlesNow = (reducedMotion: boolean): Particle[] => {
 };
 
 /**
- * The Status loops on the Units, the Status, hit, dust, heal and Armor
+ * The Status loops on the Units, the Status, hit, dust, heal and Bulwark
  * bursts, the cast wind-ups, the melee slashes, the ranged projectiles, the
  * spell bolts and the Field Effect ground, from one particle pool with the effects atlas (web ADR-0009).
  * All motion uses `playback.time`.

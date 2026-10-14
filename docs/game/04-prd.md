@@ -60,7 +60,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | BAT-10 | Sudden Death must start at Turn number 20, and the Turn limit must be Turn number 60. | M |
 | BAT-11 | The player must be able to change speed (×1, ×2) and skip the Resolution Phase animation. | M |
 | BAT-12 | Auto-play with 1 to 10 repeats must be available on won Stages and won Dungeons. | S |
-| BAT-13 | The player must be able to see a log of all actions in the current Battle. | S |
+| BAT-13 | The player must be able to see a log of all actions in the current Battle, and see the Board at each past moment, in the Battle Log (GDD sections 4.12 and 11.2). It shows each card play and each Keyword that occurred, and only what the player saw at that moment. | S |
 | BAT-14 | The player must be able to watch a replay of the last Battle. | C |
 | BAT-15 | A Side must support 1 to 4 Heroes, each with its own Front, Deck, Hand and Gear. A Side must lose only when all its Heroes are Defeated (GDD sections 4.1 and 4.10). | S |
 

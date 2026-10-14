@@ -4,7 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import type { Target } from "@workspace/rules";
 import { useState } from "react";
 
-import { battleSessionAtom } from "@/features/battle/battle.atoms";
+import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { Board } from "@/features/battle/scene/board";
 import { CameraRig } from "@/features/battle/scene/camera-rig";
 import { CastMarks } from "@/features/battle/scene/cast-marks";
@@ -13,12 +13,13 @@ import { EffectsLayer } from "@/features/battle/scene/effects-layer";
 import { Environment } from "@/features/battle/scene/environment";
 import { FieldEffects } from "@/features/battle/scene/field-effects";
 import { Heroes } from "@/features/battle/scene/heroes";
+import { KeywordPlateLayer } from "@/features/battle/scene/keyword-plate-layer";
 import { ParticleLayer } from "@/features/battle/scene/particle-layer";
 import { PlaybackDriver } from "@/features/battle/scene/playback-driver";
 import { TargetMarkers } from "@/features/battle/scene/target-markers";
 import { TutorialMarks } from "@/features/battle/scene/tutorial-marks";
 import { UnitInspector } from "@/features/battle/scene/unit-inspector";
-import { Units } from "@/features/battle/scene/units";
+import { FallenMarks, Units } from "@/features/battle/scene/units";
 
 const NO_LANES: readonly number[] = [];
 
@@ -35,7 +36,7 @@ const BattleCanvas = ({
 }: {
   readonly onPick: (target: Target) => void;
 }) => {
-  const session = useAtomValue(battleSessionAtom);
+  const session = useAtomValue(shownSessionAtom);
   const lanes = session?.view.lanes ?? 1;
   const closedLanes = session?.view.closedLanes ?? NO_LANES;
   const [dpr, setDpr] = useState(() =>
@@ -73,8 +74,10 @@ const BattleCanvas = ({
         <Heroes />
         <FieldEffects />
         <Units />
+        <FallenMarks />
         <CastMarks />
         <EffectsLayer />
+        <KeywordPlateLayer />
         <ParticleLayer />
         <TutorialMarks />
         <TargetMarkers onPick={onPick} />

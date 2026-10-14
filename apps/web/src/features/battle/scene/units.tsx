@@ -26,13 +26,15 @@ import {
   RingGeometry,
 } from "three";
 
+import type { FallenUnit } from "@/features/battle/battle-log";
 import type {
   BattleSession,
   PlayingEvent,
 } from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
 import {
-  battleSessionAtom,
+  battleLogAtom,
+  shownSessionAtom,
   detailsUnitAtom,
 } from "@/features/battle/battle.atoms";
 import { battleUnitSources, sourceId } from "@/features/battle/card-art";
@@ -42,7 +44,7 @@ import {
   fxSlotIcon,
   subscribeFxAtlas,
 } from "@/features/battle/scene/fx-atlas";
-import { laneZ } from "@/features/battle/scene/layout";
+import { laneZ, squareX } from "@/features/battle/scene/layout";
 import { playback } from "@/features/battle/scene/playback";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import {
@@ -61,6 +63,7 @@ import { unitAnchors } from "@/features/battle/scene/unit-anchors";
 import type { UnitModelSpec } from "@/features/battle/scene/unit-models";
 import {
   allUnitModels,
+  badgeHeight,
   unitClipFor,
   unitModelOf,
 } from "@/features/battle/scene/unit-models";
@@ -90,6 +93,10 @@ const HIT = new BoxGeometry(0.8, 1.75, 0.8);
 HIT.translate(0, 0.675, 0);
 // The focus ring of an inspected Unit uses its Side color.
 const FOCUS_RING = new RingGeometry(0.43, 0.52, 40);
+// The Battle Log ring of a Unit that the selected Log Entry changed: a light
+// parchment band with an ink edge, so that it stays clear on the grey Board.
+const LOG_RING = new RingGeometry(0.54, 0.66, 48);
+const LOG_RING_EDGE = new RingGeometry(0.66, 0.71, 48);
 
 const WHITE = new Color("#ffffff");
 
@@ -121,12 +128,6 @@ const tintFigure = (material: MeshBasicMaterial | null, pose: Pose) => {
 
 /** The line sits below the lower edge of the figure, not on the art. */
 const STAT_Y = -0.08;
-
-/** The height of a cut-out figure. A 3D model has its own height. */
-const FIGURE_HEIGHT = 1.03;
-
-/** The Status Badge sits above the head of the figure. */
-const BADGE_GAP = 0.3;
 
 const fadeParts = (
   stat: Sprite | null,
@@ -308,6 +309,28 @@ const FocusRing = ({ owner }: { readonly owner: UnitView["owner"] }) => (
   </group>
 );
 
+/** The ring of a Unit that the selected Log Entry changed (GDD 11.2). */
+const LogRing = () => (
+  <group rotation-x={-Math.PI / 2} position-y={0.11}>
+    <mesh geometry={LOG_RING} renderOrder={2}>
+      <meshBasicMaterial
+        color="#fff3d1"
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </mesh>
+    <mesh geometry={LOG_RING_EDGE} renderOrder={2}>
+      <meshBasicMaterial
+        color="#2a1d12"
+        transparent
+        opacity={0.75}
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </mesh>
+  </group>
+);
+
 /** Registers the group of a Unit for the Status loops while it is on the Board. */
 const registerAnchor = (unitId: number) => (group: Group | null) => {
   if (!group) {
@@ -363,6 +386,7 @@ const UnitFigure = ({
   lanes,
   dying,
   inspected,
+  logMarked,
   reducedMotion,
 }: {
   readonly unit: UnitView;
@@ -370,6 +394,8 @@ const UnitFigure = ({
   /** A dying Unit plays its death, and cannot be inspected. */
   readonly dying: boolean;
   readonly inspected: boolean;
+  /** The selected Log Entry of the Battle Log changed this Unit. */
+  readonly logMarked: boolean;
   readonly reducedMotion: boolean;
 }) => {
   const group = useRef<Group>(null);
@@ -391,7 +417,7 @@ const UnitFigure = ({
   const shadow = useMemo(() => blobShadowTexture(), []);
   const z = laneZ(unit.lane, lanes);
   const model = unitModelOf(sourceId(unit.source));
-  const badgeY = (model?.height ?? FIGURE_HEIGHT) + BADGE_GAP;
+  const badgeY = badgeHeight(unit.source);
 
   // The enemy faces left: its figure is mirrored.
   const facing = facingOf(unit.owner);
@@ -443,6 +469,7 @@ const UnitFigure = ({
       >
         <meshBasicMaterial map={shadow} transparent depthWrite={false} />
       </mesh>
+      {logMarked ? <LogRing /> : null}
       {inspected ? <FocusRing owner={unit.owner} /> : null}
       {dying ? null : (
         <mesh
@@ -483,6 +510,59 @@ const UnitFigure = ({
 
 const inspectedUnitId = (unit: UnitView | null) => unit?.id ?? null;
 
+const NO_UNITS: readonly number[] = [];
+const NO_FALLEN: readonly FallenUnit[] = [];
+
+// The mark of a Square where a Unit died in the selected Log Entry: a faint
+// ink ring with a cross, so the Player sees where the Unit was.
+const FALLEN_RING = new RingGeometry(0.36, 0.44, 40);
+const FALLEN_BAR = new PlaneGeometry(0.66, 0.08);
+
+/** The Squares of the Units that died in the selected Log Entry (GDD 11.2). */
+export const FallenMarks = () => {
+  const log = useAtomValue(battleLogAtom);
+  const lanes = log?.shown.view.lanes ?? 1;
+  const fallen = log?.book.entries[log.selected]?.fallen ?? NO_FALLEN;
+  return (
+    <>
+      {fallen.map((unit) => (
+        <group
+          key={unit.unitId}
+          rotation-x={-Math.PI / 2}
+          position={[squareX(unit.position), 0.1, laneZ(unit.lane, lanes)]}
+          name={`fallen-${unit.unitId}`}
+        >
+          <mesh geometry={FALLEN_RING} renderOrder={2}>
+            <meshBasicMaterial
+              color="#2a1d12"
+              transparent
+              opacity={0.55}
+              depthWrite={false}
+              toneMapped={false}
+            />
+          </mesh>
+          {[Math.PI / 4, -Math.PI / 4].map((angle) => (
+            <mesh
+              key={angle}
+              geometry={FALLEN_BAR}
+              rotation-z={angle}
+              renderOrder={2}
+            >
+              <meshBasicMaterial
+                color="#2a1d12"
+                transparent
+                opacity={0.55}
+                depthWrite={false}
+                toneMapped={false}
+              />
+            </mesh>
+          ))}
+        </group>
+      ))}
+    </>
+  );
+};
+
 const dyingFrom = (current: PlayingEvent | null): UnitView | undefined => {
   if (current?.event._tag !== "UnitDied") {
     return undefined;
@@ -498,8 +578,10 @@ const battleOptions = (session: BattleSession | null) => session?.options;
 
 /** All Units on the Board, and a Unit that is dying in the current event. */
 export const Units = () => {
-  const session = useAtomValue(battleSessionAtom);
+  const session = useAtomValue(shownSessionAtom);
   const detailsId = inspectedUnitId(useAtomValue(detailsUnitAtom));
+  const log = useAtomValue(battleLogAtom);
+  const changed = new Set(log?.book.entries[log.selected]?.changed ?? NO_UNITS);
   const options = battleOptions(session);
   const reducedMotion = useMemo(() => prefersReducedMotion(), []);
   // Load the card art of both Sides at the Battle start, before the first summon.
@@ -527,6 +609,7 @@ export const Units = () => {
           lanes={view.lanes}
           dying={unit === dying}
           inspected={unit.id === detailsId}
+          logMarked={changed.has(unit.id)}
           reducedMotion={reducedMotion}
         />
       ))}

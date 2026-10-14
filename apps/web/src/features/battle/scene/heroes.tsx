@@ -5,7 +5,7 @@ import { useMemo, useRef } from "react";
 import type { Mesh, MeshBasicMaterial } from "three";
 import { Color } from "three";
 
-import { battleSessionAtom } from "@/features/battle/battle.atoms";
+import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { SIDE_COLORS } from "@/features/battle/palette";
 import type { HeroPose } from "@/features/battle/scene/hero-pose";
 import { heroPose } from "@/features/battle/scene/hero-pose";
@@ -44,7 +44,7 @@ const tintHero = (material: MeshBasicMaterial | null, pose: HeroPose) => {
 };
 
 const HeroFigure = ({ side }: { readonly side: Side }) => {
-  const session = useAtomValue(battleSessionAtom);
+  const session = useAtomValue(shownSessionAtom);
   const classId = session?.view.sides[side].hero.classId ?? "warrior";
   const texture = useMemo(
     () => heroFigureTexture(side, classId),

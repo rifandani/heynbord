@@ -36,12 +36,12 @@ The band of **Baron Brassbelly**: Human outlaws and the Orc sellswords that he p
 | Stage | Name | Enemy (Class) | Landmark | New thing |
 | --- | --- | --- | --- | --- |
 | 1-1 | The Muddy Ford | Bandit Scout (Warrior) | A shallow, muddy river ford with stepping stones | **The Tutorial** (GDD 8.3). A small, weak Deck. |
-| 1-2 | Two Bridges | Bandit Twins (Warrior) | Two small wooden bridges side by side over a stream | **Fast enemies:** Runners, Charge and a ranged Unit. |
+| 1-2 | Two Bridges | Bandit Twins (Warrior) | Two small wooden bridges side by side over a stream | **Fast enemies:** Swift Units, Charge and a Ranged Unit. |
 | 1-3 | The Burning Mill | Hedge Witch (Mage) | A water mill with a burning roof | **Enemy spells:** the first Mage spells that hit Units, and Flying. |
-| 1-4 | The Toll Gate | Toll Sergeant (Warrior) | A wooden toll gate across the road | **Walls:** Armor, Pivot and Retaliate. The Player learns to attack in another Lane, or to use Fire and Frost. |
+| 1-4 | The Toll Gate | Toll Sergeant (Warrior) | A wooden toll gate across the road | **Walls:** Bulwark, Pivot and Retaliate. The Player learns to attack in another Lane, or to use Fire and Frost. |
 | 1-5 | The Outlaw Camp | Camp Cook (Warrior) | Tents, a campfire and a very big pot | **Start Units:** 3 outlaw Units are on the Board at the start. A Shieldbearer holds the middle Lane. This prepares the Player for the Boss bodyguard. |
 | 1-6 | The Old Watchtower | Watchtower Hexer (Mage) | A ruined stone watchtower | **Ranged enemies:** Ember Shamans behind a front line of Halberdiers and Shieldbearers, with Mage spells. |
-| 1-7 | The Sellsword Camp | Sellsword Captain (Warrior) | An Orc camp with war drums | **Rush:** Charge, Flying and fast Runners. A race to the enemy Hero. |
+| 1-7 | The Sellsword Camp | Sellsword Captain (Warrior) | An Orc camp with war drums | **Rush:** Charge, Flying and Swift Units. A race to the enemy Hero. |
 | 1-8 | The Rockfall Pass | Pass Warden (Warrior) | A narrow rocky pass with fallen rocks | **The first Closed Lane:** Lane 1 is closed until Turn 5, while the outlaws clear the rocks. |
 | 1-9 | The Great Oak | The Baron's Lookout (Mage) | A very large oak with a lookout platform | **The final test:** walls, ranged Units, Flying and spells together. |
 | 1-10 | Brassbelly Hall | Baron Brassbelly (Warrior) — **Boss** | A fortified hall on a hill, with a roof in the shape of a very large hat | **The Boss rule:** the Baron's bodyguard, an Epic Shieldbearer, is a Start Unit in the center Lane. |
@@ -53,17 +53,24 @@ Lane numbers are from the top, 1 to 3. A Start Unit position is its Column for t
 | Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1-1 | 6 | 0 / 0 / 0 / 0 | 10 | — | — | Militia Recruit (Common) | 1 | 100% / 100% |
-| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 95% / 91% |
-| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 84% / 85% |
-| 1-4 | 38 | 0 / 0 / 0 / 0 | 10 | — | — | Shieldbearer (Common) | 2 | 70% / 79% |
-| 1-5 | 42 | 3 / 0 / 3 / 3 | 11 | — | Militia Recruit (Common), Lane 1, Column 10 · Shieldbearer (Common), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 73% / 66% |
-| 1-6 | 42 | 1 / 0 / 1 / 1 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 72% / 67% |
-| 1-7 | 34 | 3 / 0 / 2 / 3 | 12 | — | — | Howling Charger (Uncommon) | 4 | 74% / 65% |
-| 1-8 | 40 | 3 / 0 / 3 / 3 | 12 | Lane 1, opens on Turn 5 | Militia Recruit (Common), Lane 2, Column 12 | Gate Warden (Uncommon) | 4 | 74% / 66% |
-| 1-9 | 36 | 0 / 0 / 0 / 0 | 13 | — | — | River Knight (Uncommon) | 5 | 67% / 69% |
-| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 41% / 40% |
+| 1-2 | 32 | 2 / 0 / 0 / 2 | 9 | — | — | Scrap Raider (Common) | 1 | 90% / 89% |
+| 1-3 | 38 | 3 / 0 / 3 / 3 | 10 | — | — | Ember Shaman (Common) | 2 | 88% / 88% |
+| 1-4 | 38 | 0 / 0 / 0 / 0 | 10 | — | — | Shieldbearer (Common) | 2 | 66% / 67% |
+| 1-5 | 42 | 3 / 0 / 3 / 3 | 11 | — | Militia Recruit (Common), Lane 1, Column 10 · Shieldbearer (Common), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 68% / 56% (miss) |
+| 1-6 | 42 | 1 / 0 / 1 / 1 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 62% / 63% |
+| 1-7 | 34 | 1 / 0 / 1 / 1 | 12 | — | — | Howling Charger (Uncommon) | 4 | 73% / 57% (miss) |
+| 1-8 | 40 | 1 / 0 / 1 / 1 | 12 | Lane 1, opens on Turn 5 | Militia Recruit (Common), Lane 2, Column 12 | Gate Warden (Uncommon) | 4 | 66% / 47% (miss) |
+| 1-9 | 36 | 0 / 0 / 0 / 0 | 13 | — | — | River Knight (Uncommon) | 5 | 64% / 71% |
+| 1-10 | 44 | 1 / 0 / 0 / 1 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 35% / 36% |
 
-The win rates come from `bun run sim stage 1000` on 2026-10-11, after the re-tune of the Skill Cards (issue #56, [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The enemy Decks of some Stages have War Drums and Frost Bolt, and the Starter Decks have no tuned card. Thus only Stages 1-2, 1-3, 1-6, 1-9 and 1-10 changed, by 1 to 3 points, and each Stage stays on its target. Before, the win rates came from the same command on 2026-10-08, after the Ticking Cards were removed (issue #26).
+The win rates come from `bun scripts/simulate.ts 1000 --check` in `packages/rules` on 2026-10-14, after the balance pass of [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md). Three Stages are not on their target with Raiders: 1-5 (55.9%), 1-7 (57.1%) and 1-8 (47.0%). The target is 60% to 80%. Before the change, 3 Stages also missed their target, so the CI balance gate fails as it did before. Before, the win rates came from `bun run sim stage 1000` on 2026-10-11, after the re-tune of the Skill Cards (issue #56, [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
+
+On 2026-10-14, each Unit got Base Speed 2, and the Keywords Swift, Fleet, Heavy, Mid-range, Long-range and Extreme-range replaced the Roles ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)). The cards got new HP (see [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). Mild Stage changes made Stages 1-7 and 1-8 easier:
+
+- **1-7:** Gear 1 / 0 / 1 / 1 (it was 3 / 0 / 2 / 3). All Rare copies are Uncommon: the Pack Stalker, 1 Howling Charger, 1 Skyreaver and the Tusk Brute.
+- **1-8:** Gear 1 / 0 / 1 / 1 (it was 3 / 0 / 3 / 3). The Shieldbearer, the Scrap Raider and the Tusk Brute are Uncommon (they were Rare).
+
+Raiders still wins less than the target in 1-5, 1-7 and 1-8. A stronger change to these Stages was not part of this pass.
 
 Stage 1-1 has Hero HP 6. Knockback on the enemy Shieldbearers put the Tutorial under 95%. More Militia Recruits were not a legal replacement then: the Deck had 3 copies, and that swap won less often in the Tutorial. Now the Deck has 2 (see the change of 2026-10-08 below). Hero HP 6 puts the Tutorial back on the target. The Shieldbearers stay, so the Player still meets Knockback.
 
@@ -100,7 +107,7 @@ With these Decks, most Stages were too hard, and Raiders won much less than Vang
 - **1-8:** the Rare Crossbow Guard became a Halberdier (C), 1 Halberdier is Uncommon and the Tusk Brute is Rare. The Gate Warden stays Uncommon, because it is the first-win card.
 - **1-10:** 1 Crossbow Guard is Common (both were Uncommon). Before, Vanguard and Raiders won only 26% and 29%.
 
-On 2026-10-08, Speed 1 became the default, and the Role sets more Speed ([ADR-0024](../adr/0024-speed-1-is-the-default.md)). Militia Recruit became 3/8 with Speed 1 (it was 3/6 with Speed 2). The Starter Decks and many enemy Decks have Militia Recruits. After the change, Raiders won 57% of Stage 1-5, and Vanguard won 60% of Stage 1-4. The bot of the Tutorial simulation in the web app won 92.5% of Stage 1-1. These enemy Decks changed:
+On 2026-10-08, Speed 1 became the default, and the Role set more Speed ([ADR-0024](../adr/0024-speed-1-is-the-default.md)). On 2026-10-14, [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md) replaced this rule: each Unit has Base Speed 2, and there are no Roles. The numbers in this paragraph are from before that change. Militia Recruit became 3/8 with Speed 1 (it was 3/6 with Speed 2). The Starter Decks and many enemy Decks have Militia Recruits. After the change, Raiders won 57% of Stage 1-5, and Vanguard won 60% of Stage 1-4. The bot of the Tutorial simulation in the web app won 92.5% of Stage 1-1. These enemy Decks changed:
 
 - **1-1:** 1 Militia Recruit became a third Shieldbearer (C). The Militia Recruits stay, because one is the first-win card. A third Scrap Raider also worked, but the Tutorial bot won less often with it (96.8% and 94.5% over 400 seeds, against 98.0% and 95.0%).
 - **1-4:** the Tusk Brute became a Scrap Raider (C). Vanguard wins 65% and Raiders 79%. Each Rank change on the Crossbow Guards put Raiders at 80% or more. Gate Warden is already at its Base Rank.
@@ -112,7 +119,7 @@ On 2026-10-08, the Ticking Cards were removed, and all Cards in the Hand count d
 - **1-7:** Spear Throw is Uncommon (it was Rare), its Base Rank at that time. The other Rank, Hero HP and Gear changes left Raiders at 56% or less, or put Vanguard above 80%.
 - **1-8:** the Scrap Raider is Rare (it was Common). With an Uncommon Scrap Raider, Vanguard won 77%. A Rare Crossbow Guard put Raiders at 48%.
 
-Some margins are thin: Raiders wins 79% of Stage 1-4. The Tutorial bot wins 95.0% of Stage 1-1 with Raiders over 400 seeds.
+Before 2026-10-14, some margins were thin: Raiders won 79% of Stage 1-4, and the Tutorial bot won 95.0% of Stage 1-1 with Raiders over 400 seeds.
 
 ### 2.3 Enemy Decks
 
@@ -126,8 +133,8 @@ C, U, R and E are the Ranks Common, Uncommon, Rare and Epic.
 | 1-4 | 3× Shieldbearer (C), 2× Gate Warden (U), 2× Halberdier (C), 1× Scrap Raider (C), 2× Crossbow Guard (U) |
 | 1-5 | 2× Militia Recruit (C), 1× Scrap Raider (C), 1× Badland Runt (U), 1× Crossbow Guard (C), 2× Halberdier (C), 3× Shieldbearer (C), 1× Spear Throw (U) |
 | 1-6 | 2× Halberdier (C), 2× Ember Shaman (C), 2× Shieldbearer (R), 1× Dawn Cleric (U), 1× Militia Recruit (C), 2× Frost Bolt (C), 1× Fireball (C) |
-| 1-7 | 1× Halberdier (C), 1× Ember Shaman (C), 2× Scrap Raider (U), 1× Pack Stalker (R), 1× Howling Charger (U), 1× Howling Charger (R), 2× Skyreaver (U), 1× Skyreaver (R), 1× Tusk Brute (R), 1× Spear Throw (U) |
-| 1-8 | 1× Shieldbearer (C), 1× Shieldbearer (R), 2× Halberdier (C), 1× Halberdier (U), 1× Crossbow Guard (U), 1× Gate Warden (U), 1× Scrap Raider (R), 2× Howling Charger (U), 1× Tusk Brute (R), 1× Shield Wall (C) |
+| 1-7 | 1× Halberdier (C), 1× Ember Shaman (C), 2× Scrap Raider (U), 1× Pack Stalker (U), 2× Howling Charger (U), 3× Skyreaver (U), 1× Tusk Brute (U), 1× Spear Throw (U) |
+| 1-8 | 1× Shieldbearer (C), 1× Shieldbearer (U), 2× Halberdier (C), 1× Halberdier (U), 1× Crossbow Guard (U), 1× Gate Warden (U), 1× Scrap Raider (U), 2× Howling Charger (U), 1× Tusk Brute (U), 1× Shield Wall (C) |
 | 1-9 | 1× Crossbow Guard (U), 1× Crossbow Guard (C), 1× Ember Shaman (C), 1× Halberdier (C), 1× Shieldbearer (C), 2× Skyreaver (U), 1× Scrap Raider (C), 1× Militia Recruit (C), 1× Dawn Cleric (U), 1× River Knight (U), 1× Frost Bolt (C), 1× Fireball (C) |
 | 1-10 | 3× Militia Recruit (C), 1× Gate Warden (R), 2× Shieldbearer (C), 1× Crossbow Guard (C), 1× Crossbow Guard (U), 2× Halberdier (U), 1× Iron Bulwark (E), 1× Spear Throw (U), 1× Shield Wall (U), 1× War Drums (U) |
 

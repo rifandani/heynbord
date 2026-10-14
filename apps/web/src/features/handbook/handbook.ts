@@ -7,7 +7,6 @@ import type {
   RaceId,
   RankId,
   TokenId,
-  UnitRole,
 } from "@workspace/rules";
 import {
   CARDS,
@@ -19,6 +18,7 @@ import {
   MAX_COPIES,
   PACK_SIZE,
   PLAYER_LEVEL_XP,
+  KEYWORD_ACTIVATES,
   RACE_KEYWORDS,
   RANKS,
   rankPips,
@@ -47,7 +47,7 @@ import {
   VALUE_KEYWORDS,
 } from "@/features/battle/card-text";
 import type { Glyph } from "@/features/battle/glyphs";
-import { classGlyph, raceGlyph, roleGlyph } from "@/features/battle/glyphs";
+import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { isBuff, STATUS_ORDER } from "@/features/battle/scene/status-visuals";
 import { CLASSES_WITH_CARDS, RACES_WITH_CARDS } from "@/features/deck/deck";
@@ -127,15 +127,6 @@ const DAMAGE_TYPES: readonly DamageType[] = [
   "lightning",
 ];
 
-const ROLES: readonly UnitRole[] = [
-  "frontliner",
-  "striker",
-  "runner",
-  "shooter",
-  "support",
-  "wall",
-];
-
 /**
  * One Entry of the Handbook. Each ID is one word, so that its Translation
  * Keys never nest in other keys (`handbook.entries.<id>`).
@@ -154,8 +145,6 @@ export type EntryId =
   | `race${Capitalize<RaceId>}`
   | "class"
   | `class${Capitalize<ClassId>}`
-  | "role"
-  | `role${Capitalize<UnitRole>}`
   | "rank"
   | `rank${Capitalize<RankId>}`
   | "rankGems";
@@ -386,13 +375,26 @@ export const firstTokenRank = (token: GalleryToken): RankId =>
 
 const RANK_TABLE_KEYWORDS = rankTableKeywords(CARDS);
 
+/** True for a Keyword that occurs in a Battle: a Keyword Plate shows it (`KEYWORD_ACTIVATES`). */
+const activates = (keyword: Keyword): boolean =>
+  Object.entries(KEYWORD_ACTIVATES).some(
+    ([name, active]) => active && name === keyword
+  );
+
+/** The line of a Keyword that occurs in a Battle: its name shows over the Unit. */
+const plateLine = (keyword: Keyword): TextRef[] =>
+  activates(keyword) ? [{ key: "handbook.keywordPlate" }] : [];
+
 const keywordEntry = (keyword: Keyword): Entry => {
   if (TOKEN_KEYWORDS.some((name) => name === keyword)) {
     return {
       id: keywordEntryId(keyword),
       chapter: "keywords",
       name: { key: `keywords.${keyword}`, args: { token: X.name } },
-      body: [{ key: `keywordRules.${keyword}`, args: { token: X.rule } }],
+      body: [
+        { key: `keywordRules.${keyword}`, args: { token: X.rule } },
+        ...plateLine(keyword),
+      ],
       seeAlso: [],
     };
   }
@@ -402,7 +404,7 @@ const keywordEntry = (keyword: Keyword): Entry => {
     id: keywordEntryId(keyword),
     chapter: "keywords",
     name: { key: `keywords.${keyword}`, args },
-    body: [{ key: `keywordRules.${keyword}`, args }],
+    body: [{ key: `keywordRules.${keyword}`, args }, ...plateLine(keyword)],
     value: valued
       ? RANK_TABLE_KEYWORDS.has(keyword)
         ? "rankTable"
@@ -648,7 +650,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   suddenDeath: ["startPhase", "defeated"],
   routed: ["side", "deck", "hand"],
   defeated: ["hero", "routed"],
-  creatureCard: ["unit", "race", "role"],
+  creatureCard: ["unit", "race", "range"],
   skillCard: ["recall", "class"],
   hand: ["handLimit", "countdown"],
   handLimit: ["hand", "deck"],
@@ -659,24 +661,29 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   recall: ["skillCard", "rank", "graveyard"],
   countdownLimit: ["countdown", "deck", "playerLevel"],
   unit: ["creatureCard", "token", "attack", "hp", "movement"],
-  attack: ["damageType", "keywordArmor", "melee", "ranged"],
+  attack: ["damageType", "keywordBulwark", "melee", "ranged"],
   hp: ["attack", "defeated"],
-  speed: ["movement", "keywordCharge", "statusHobble"],
-  range: ["ranged", "roleShooter"],
-  melee: ["ranged", "attack"],
-  ranged: ["range", "melee"],
+  speed: ["movement", "keywordSwift", "keywordHeavy", "keywordCharge"],
+  range: ["melee", "ranged", "keywordLongRange"],
+  melee: ["ranged", "range", "attack"],
+  ranged: ["range", "melee", "keywordMidRange"],
   movement: ["speed", "keywordFlying", "statusEntangle"],
   token: ["unit", "keywordSummon", "graveyard"],
-  keywordArmor: ["damageHoly"],
+  keywordBulwark: ["damagePhysical"],
   keywordBleed: ["statusBleed", "keywordRegenerate"],
   keywordCharge: ["speed"],
   keywordEntangle: ["statusEntangle", "ranged"],
+  keywordExtremeRange: ["range", "ranged", "rank"],
   keywordFirstStrike: ["keywordRetaliate", "melee"],
+  keywordFleet: ["speed", "keywordSwift"],
   keywordFlying: ["movement", "statusGrounded"],
+  keywordHeavy: ["speed", "statusHobble"],
   keywordHeroic: ["hero"],
   keywordHobble: ["statusHobble", "speed"],
   keywordKnockback: ["keywordWall", "melee"],
   keywordLastBreath: ["defeated"],
+  keywordLongRange: ["range", "ranged", "keywordExtremeRange"],
+  keywordMidRange: ["range", "ranged", "keywordLongRange"],
   keywordPivot: ["melee"],
   keywordPoison: ["statusPoison", "endPhase"],
   keywordRebirth: ["hp", "status", "keywordLastBreath"],
@@ -686,9 +693,10 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   keywordSabotage: ["countdown"],
   keywordSummon: ["token", "square"],
   keywordSwarm: ["lane", "attack", "token"],
+  keywordSwift: ["speed", "keywordFleet", "keywordHeavy"],
   keywordTrample: ["melee"],
   keywordUnique: ["creatureCard"],
-  keywordWall: ["roleWall", "summonZone"],
+  keywordWall: ["summonZone", "movement"],
   status: ["damageType", "statusBurn", "statusFreeze"],
   statusBurn: ["damageFire", "endPhase"],
   statusFreeze: ["damageFrost"],
@@ -706,23 +714,19 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
     "keywordTrample",
   ],
   statusExposed: [
-    "keywordArmor",
+    "keywordBulwark",
     "damagePhysical",
     "keywordRetaliate",
     "keywordTrample",
   ],
   damageType: ["status", "attack"],
-  damagePhysical: ["keywordArmor"],
+  damagePhysical: ["keywordBulwark"],
   damageFire: ["statusBurn"],
   damageFrost: ["statusFreeze"],
-  damageHoly: ["keywordArmor"],
+  damageHoly: ["damageType"],
   damageLightning: ["statusParalyze"],
   race: ["creatureCard"],
   class: ["skillCard", "hero"],
-  role: ["creatureCard", "range"],
-  roleShooter: ["ranged", "range"],
-  roleSupport: ["keywordRally", "keywordRegenerate"],
-  roleWall: ["keywordWall"],
   rank: ["rankGems", "recall"],
   rankGems: ["rank"],
   stars: ["hp", "turn"],
@@ -761,13 +765,6 @@ export const ENTRIES: readonly Entry[] = [
     namedEntry(`class${capitalize(classId)}`, "kinds", `classes.${classId}`, {
       kind: "glyph",
       glyph: classGlyph(classId),
-    })
-  ),
-  term("role", "kinds"),
-  ...ROLES.map((role) =>
-    namedEntry(`role${capitalize(role)}`, "kinds", `roles.${role}`, {
-      kind: "glyph",
-      glyph: roleGlyph(role),
     })
   ),
   rankOverviewEntry(),
@@ -865,6 +862,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "keywordUnique",
   "keywordRegenerate",
   "keywordRetaliate",
+  "keywordBulwark",
   "status",
   "statusFreeze",
   "statusParalyze",
@@ -877,7 +875,6 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "damageType",
   "race",
   "class",
-  "role",
   "rank",
   "rankGems",
   "stars",

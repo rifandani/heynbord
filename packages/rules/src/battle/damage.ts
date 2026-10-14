@@ -1,9 +1,17 @@
 import type { DamageType } from "../content/schema";
 import { rollBasisPoints } from "../random";
 import type { StepContext } from "./context";
-import { direction, isInsideLane, isOver, unitAt } from "./context";
+import {
+  activateKeyword,
+  direction,
+  isInsideLane,
+  isOver,
+  unitAt,
+  unitDealer,
+} from "./context";
 import type {
   BattleResult,
+  DamageDealer,
   DamageSource,
   Side,
   TargetRef,
@@ -15,16 +23,18 @@ export interface Hit {
   readonly amount: number;
   readonly damageType: DamageType;
   readonly source: DamageSource;
+  /** The Unit or the Hero that deals the hit. `null` for status damage. */
+  readonly dealer: DamageDealer | null;
   /** Crit chance of the attacking side, in basis points. 0 for no Crit roll. */
   readonly crit: number;
   /**
-   * True Damage (GDD 4.7): no Armor, Exposed, Crit, Block or Ward. The hit
+   * True Damage (GDD 4.7): no Bulwark, Exposed, Crit, Block or Ward. The hit
    * keeps its Damage Type and its Status. Steadfast still holds.
    */
   readonly trueDamage?: boolean;
 }
 
-/** Burn, Poison and Sudden Death are status damage: no Armor, no Crit, no Block, no new status. */
+/** Burn, Poison and Sudden Death are status damage: no Bulwark, no Crit, no Block, no new status. */
 const isStatusDamage = (source: DamageSource): boolean =>
   source === "burn" || source === "poison" || source === "suddenDeath";
 
@@ -56,11 +66,13 @@ const killUnit = (ctx: StepContext, unit: UnitState): void => {
   ) {
     const other = unitAt(state, unit.lane, position);
     if (other && other.owner !== unit.owner) {
+      activateKeyword(ctx, unit, "lastBreath", unit.lastBreath);
       // oxlint-disable-next-line eslint/no-use-before-define -- Last Breath deals damage, and that damage can kill
       damageUnit(ctx, other, {
         amount: unit.lastBreath,
         damageType: unit.damageType,
         source: "lastBreath",
+        dealer: unitDealer(unit),
         crit: 0,
       });
       return;
@@ -93,12 +105,13 @@ const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
   unit.exposedTurns = 0;
   unit.ward = 0;
   unit.rallied = 0;
-  unit.bonusArmor = 0;
-  unit.bonusArmorTurns = 0;
+  unit.bonusBulwark = 0;
+  unit.bonusBulwarkTurns = 0;
   unit.bonusAttack = 0;
   unit.bonusAttackTurns = 0;
   unit.bonusRange = 0;
   unit.bonusRangeTurns = 0;
+  activateKeyword(ctx, unit, "rebirth");
   ctx.events.push(BattleEvent.UnitReborn({ unitId: unit.id, hp: unit.hp }));
   return true;
 };
@@ -140,8 +153,9 @@ interface HitResult {
 }
 
 /**
- * Damage calculation (GDD 4.7): the value, minus Armor (not for Holy), plus
- * Exposed for a Physical hit, Crit ×2, Block ÷2 rounded up, minimum 0. Then a
+ * Damage calculation (GDD 4.7): the value, minus Bulwark for a Physical hit, plus
+ * Exposed for a Physical hit, Crit ×2, Block ÷2 rounded up (not for Holy),
+ * minimum 0 (ADR-0031). Then a
  * Ward absorbs damage, also status damage. Absorbed damage is not dealt: `dealt` is the damage after
  * the Ward. True Damage skips all of these steps. Then Steadfast keeps the
  * Unit at 1 HP. Fire gives Burn, Frost gives Freeze and Lightning gives
@@ -154,20 +168,25 @@ export const damageUnit = (
 ): HitResult => {
   const status = isStatusDamage(hit.source);
   const trueDamage = hit.trueDamage ?? false;
-  // Status damage and True Damage get no Armor, Exposed, Crit or Block.
+  // Status damage and True Damage get no Bulwark, Exposed, Crit or Block.
   const fixed = status || trueDamage;
-  const armor =
-    fixed || hit.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
-  // Exposed (step 4): after Armor, so it also hurts a Unit with high Armor.
+  const physical = !fixed && hit.damageType === "physical";
+  // Bulwark (step 3) reduces only Physical damage (ADR-0031).
+  const bulwark = physical ? unit.bulwark + unit.bonusBulwark : 0;
+  // Exposed (step 4): after Bulwark, so it also hurts a Unit with high Bulwark.
   // Poison damage is Physical, but it is status damage: no Exposed.
-  const exposed = !fixed && hit.damageType === "physical" ? unit.exposed : 0;
-  let amount = Math.max(0, hit.amount - armor) + exposed;
+  const exposed = physical ? unit.exposed : 0;
+  let amount = Math.max(0, hit.amount - bulwark) + exposed;
   const crit = !fixed && rollBasisPoints(ctx.random, hit.crit);
   if (crit) {
     amount *= 2;
   }
   const blockChance = ctx.state.sides[unit.owner].hero.unitBlock;
-  const blocked = !fixed && rollBasisPoints(ctx.random, blockChance);
+  // Holy damage cannot be Blocked (ADR-0031).
+  const blocked =
+    !fixed &&
+    hit.damageType !== "holy" &&
+    rollBasisPoints(ctx.random, blockChance);
   if (blocked) {
     amount = Math.ceil(amount / 2);
   }
@@ -190,6 +209,7 @@ export const damageUnit = (
       amount,
       damageType: hit.damageType,
       source: hit.source,
+      dealer: hit.dealer,
       crit,
       blocked,
       trueDamage,
@@ -214,7 +234,7 @@ export const damageUnit = (
 };
 
 /**
- * Heroes have no Armor and cannot Block (GDD 4.7). True Damage has no Crit.
+ * Heroes have no Bulwark and cannot Block (GDD 4.7). True Damage has no Crit.
  * The Battle ends at 0 HP.
  */
 export const damageHero = (ctx: StepContext, side: Side, hit: Hit): void => {
@@ -235,6 +255,7 @@ export const damageHero = (ctx: StepContext, side: Side, hit: Hit): void => {
       amount,
       damageType: hit.damageType,
       source: hit.source,
+      dealer: hit.dealer,
       crit,
       blocked: false,
       trueDamage,

@@ -2,7 +2,7 @@ import { useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
 import type { CSSProperties } from "react";
 
-import { battleSessionAtom } from "@/features/battle/battle.atoms";
+import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { cardText } from "@/features/battle/card-text";
 import type { Cast } from "@/features/battle/cast";
 import { currentCast, effectColor } from "@/features/battle/cast";
@@ -152,7 +152,7 @@ const CastPiece = ({
  */
 export const CastCard = () => {
   const { tr, text } = useGameText();
-  const session = useAtomValue(battleSessionAtom);
+  const session = useAtomValue(shownSessionAtom);
   const cast = session
     ? currentCast(session.log, session.current !== null)
     : null;

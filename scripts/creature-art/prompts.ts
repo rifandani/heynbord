@@ -87,7 +87,7 @@ export const promptOf = (concept: CreatureConcept, race: RaceArt): string => {
   const subject = subjectOf(concept.id);
   const accent = DAMAGE_ACCENT.get(concept.damageType);
   return [
-    `Card: ${concept.name}, ${articleOf(concept.rank)} ${concept.rank} ${race.name} ${concept.role} with ${concept.damageType} damage.\nFlavor text: ${concept.flavor}`,
+    `Card: ${concept.name}, ${articleOf(concept.rank)} ${concept.rank} ${race.name} card with ${concept.damageType} damage.\nFlavor text: ${concept.flavor}`,
     `Image: ${subject}.`,
     rowsOf(concept.brief),
     concept.characterSheet.length > 0

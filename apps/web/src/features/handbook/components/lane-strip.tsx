@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-import { FILLED_GLYPHS, GLYPHS, roleGlyph } from "@/features/battle/glyphs";
+import { FILLED_GLYPHS, GLYPHS, iconGlyph } from "@/features/battle/glyphs";
 import type { Glyph } from "@/features/battle/glyphs";
 import type {
   Diagram,
@@ -177,10 +177,9 @@ const Hero = ({
   );
 };
 
-const unitGlyph = (unit: DiagramUnit): Glyph =>
-  unit.role === "flying" ? "wings" : roleGlyph(unit.role);
+const unitGlyph = (unit: DiagramUnit): Glyph => iconGlyph(unit.icon);
 
-/** A Unit as a round token in the color of its Side, with its Role icon. */
+/** A Unit as a round token in the color of its Side, with the icon of its card. */
 const Unit = ({ unit }: { readonly unit: DiagramUnit }) => {
   const cx = columnX(unit.column);
   const cy = laneY(unit.lane);
@@ -344,7 +343,7 @@ const Arrow = ({
 const ARROW_COLORS = [INK, SIDE.player.rim, SIDE.enemy.rim];
 
 /**
- * A Lane strip diagram (issue #25): Squares, Units as Role icons, and arrows,
+ * A Lane strip diagram (issue #25): Squares, Units as card icons, and arrows,
  * drawn in code. It has no text, so it works in each Locale; the Entry text
  * explains it, and a screen reader skips it.
  */

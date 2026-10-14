@@ -28,8 +28,8 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   RecallRolled: 600,
   CountdownChanged: 160,
   CardSabotaged: 260,
-  ArmorGained: 260,
-  ArmorFaded: 80,
+  BulwarkGained: 260,
+  BulwarkFaded: 80,
   AttackGained: 260,
   AttackFaded: 80,
   RangeGained: 260,
@@ -50,6 +50,9 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   // The area pulses, then its hits play.
   FieldEffectStruck: 300,
   FieldEffectEnded: 200,
+  // No beat of its own: the Battle Log (#74) uses it, and its Keyword Plate
+  // (#75) shows at the same time as its result, so the Battle does not wait.
+  KeywordActivated: 0,
   UnitDied: 460,
   // The Unit falls as in a death, then gets up again.
   UnitReborn: 640,

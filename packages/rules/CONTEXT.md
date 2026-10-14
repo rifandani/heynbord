@@ -68,7 +68,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding, Exposed, Grounded, Ward or Steadfast. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
 
-**Buff**: A Status that helps its Unit: Ward or Steadfast. A bonus to a stat, such as the Rally bonus, the Swarm bonus, bonus Armor, Bonus Attack or Bonus Range, is not a Buff. _Avoid_: blessing, boon, positive status
+**Buff**: A Status that helps its Unit: Ward or Steadfast. A bonus to a stat, such as the Rally bonus, the Swarm bonus, bonus Bulwark, Bonus Attack or Bonus Range, is not a Buff. _Avoid_: blessing, boon, positive status
 
 **Bonus Attack**: Attack that a Skill Card gives to a Unit until the end of its owner's next Turn. A Unit with Base Attack 0 does not get it. A new Bonus Attack replaces the old one, and Rebirth ends it. It is not a Buff. _Avoid_: empower, bestow, attack buff
 
@@ -82,7 +82,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Poison**: A Keyword. After a Unit with Poison deals attack damage above 0 to an enemy Unit, that Unit becomes Poisoned with 1 more stack. Retaliate does not apply Poison. _Avoid_: venom, toxin
 
-**Poisoned**: A Status from the Poison Keyword or from a Skill Card. The Unit has a stack count. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Armor, Crit and Block, and it has no Damage Type. _Avoid_: venom, toxin, damage over time
+**Poisoned**: A Status from the Poison Keyword or from a Skill Card. The Unit has a stack count. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack. A new stack adds to the old stacks. This damage ignores Bulwark, Crit and Block, and it has no Damage Type. _Avoid_: venom, toxin, damage over time
 
 **Hobble N**: A Keyword. After a Unit with Hobble deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled for N End Phases. Retaliate does not apply Hobble. _Avoid_: Fatigue, Cripple, Slow
 
@@ -94,17 +94,21 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
 
-**Exposed N**: A Status from a Skill Card. Each Physical hit on an Exposed Unit deals N more damage, after Armor. This includes attacks, Physical Skill damage, Retaliate, First Strike, Last Breath and Trample. Burn, Poison and True Damage do not get it. It has a count of 2 End Phases of its owner, and it ends at 0. A new Exposed keeps the higher value. _Avoid_: vulnerable, weakened, marked, armor break
+**Exposed N**: A Status from a Skill Card. Each Physical hit on an Exposed Unit deals N more damage, after Bulwark. This includes attacks, Physical Skill damage, Retaliate, First Strike, Last Breath and Trample. Burn, Poison and True Damage do not get it. It has a count of 2 End Phases of its owner, and it ends at 0. A new Exposed keeps the higher value. _Avoid_: vulnerable, weakened, marked, armor break
 
-**Ward N**: A Status from a Skill Card. A Ward absorbs damage to its Unit, after Armor, Crit and Block, up to N. Its value goes down by the damage that it absorbs, and it ends at 0. It absorbs all damage except True Damage, also Holy, Burn and Poison damage. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. A Ward has no time limit. A new Ward keeps the higher value. _Avoid_: shield, barrier, absorb, aegis
+**Ward N**: A Status from a Skill Card. A Ward absorbs damage to its Unit, after Bulwark, Crit and Block, up to N. Its value goes down by the damage that it absorbs, and it ends at 0. It absorbs all damage except True Damage, also Holy, Burn and Poison damage. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. A Ward has no time limit. A new Ward keeps the higher value. _Avoid_: shield, barrier, absorb, aegis
 
 **Steadfast**: A Status from a Skill Card. When damage from any source would bring a Steadfast Unit to 0 HP, the Unit stays at 1 HP and Steadfast ends. A Ward absorbs the damage first. The Unit is not killed: it stays on the Board, Last Breath does not occur, and Trample has no damage that is left. A Unit with Rebirth uses Steadfast first and keeps Rebirth. Steadfast has no time limit. A new Steadfast on a Steadfast Unit has no effect. _Avoid_: endure, undying, death ward, last stand, cheat death
 
 **Damage Type**: The kind of damage: Physical, Fire, Frost, Holy or Lightning. _Avoid_: element, damage kind
 
-**True Damage**: A hit whose damage nothing decreases or absorbs. It ignores Armor, Block and Ward. Nothing increases it: it has no Crit, no Exposed and no Attack bonus such as Rally, Swarm or Bonus Attack. Its value is the value in the text of its effect: for an attack, the Base Attack. It keeps its Damage Type and the Status of that type, or it has no Damage Type. On-hit Keywords and Retaliate apply as usual. The later Burn damage from a True Fire hit is not True Damage. Card text says "N True Damage", or "N True Fire damage" with a Damage Type. Steadfast still keeps the Unit at 1 HP, because Steadfast does not decrease the damage. True Damage is not a Damage Type. _Avoid_: pure damage, piercing damage, unblockable damage, direct damage
+**Block**: A chance that the Hero of a Unit gives to that Unit, from the Banner Gear. A Blocked hit deals half of its damage, rounded up. All hits on a Unit can be Blocked, except Holy damage, Burn, Poison and True Damage. A Hero never Blocks. _Avoid_: parry, dodge, evade
+
+**True Damage**: A hit whose damage nothing decreases or absorbs. It ignores Bulwark, Block and Ward. Nothing increases it: it has no Crit, no Exposed and no Attack bonus such as Rally, Swarm or Bonus Attack. Its value is the value in the text of its effect: for an attack, the Base Attack. It keeps its Damage Type and the Status of that type, or it has no Damage Type. On-hit Keywords and Retaliate apply as usual. The later Burn damage from a True Fire hit is not True Damage. Card text says "N True Damage", or "N True Fire damage" with a Damage Type. Steadfast still keeps the Unit at 1 HP, because Steadfast does not decrease the damage. True Damage is not a Damage Type. _Avoid_: pure damage, piercing damage, unblockable damage, direct damage
 
 **Battle seed**: The start value of the random numbers in one Battle. The same seed and the same Commands give the same Battle. _Avoid_: random seed, RNG
+
+**Replay**: The Battle seed, the Decks, the Stage and the list of Commands of one Battle. The rules run it again and get the same Battle. _Avoid_: Battle Log, recording, demo
 
 **Abandon**: The end of a Battle when the Player leaves it before a win or a loss. An Abandoned Battle records no result. _Avoid_: quit, forfeit, surrender, retreat
 
@@ -152,15 +156,29 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Graveyard**: The place for a Hero's Cards that are used or dead. _Avoid_: discard pile, cemetery, crypt
 
-**Keyword**: A named rule on a Card, for example Flying or Armor. _Avoid_: trait, perk, tag, ability
+**Keyword**: A named rule on a Card, for example Flying or Bulwark. _Avoid_: trait, perk, tag, ability
 
 **Race Keyword**: The one Keyword that only Units of one Race can have, from a Card, a Token or any other effect. Each Race has exactly one: Human Knockback, Elf Entangle, Undead Rebirth, Orc Heroic, Goblin Sabotage and Feral Trample. A Race Keyword is also a Main Keyword of its Race, but most Main Keywords are not Race Keywords: other Races can borrow them. Only the Keyword is locked, not its effect: a Skill Card of any Class can still make a Unit Entangled or Push it. _Avoid_: signature keyword, exclusive keyword, racial ability
 
 **Main Keyword**: A Keyword that is part of the battle identity of a Race. Other Races can borrow it. _Avoid_: core keyword, theme keyword
 
+**Bulwark N**: A Keyword. It reduces Physical damage to its Unit by N. It does not reduce Fire, Frost, Holy or Lightning damage. A Skill Card can give bonus Bulwark, with the same rule. The Armor Gear of a Hero is a different thing: it gives Hero HP. _Avoid_: armor, defense, toughness, damage reduction
+
 **Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. Only a Ranged Unit has Entangle, because a Melee Unit attacks an enemy that cannot move closer. Its Base Rank is Epic or higher, because it can Entangle the same enemy in each Turn. It is the Elf Race Keyword. _Avoid_: Root, Snare
 
 **Charge N**: A Keyword. A Unit with Charge gets +N Speed in the Turn when it is summoned. N is 1 up to Rare, 2 at Epic and 3 at Legendary. N is never more than 3. _Avoid_: Haste, Rush, Dash, Sprint
+
+**Swift**: A Keyword. A Unit with Swift gets +1 Speed. The value is the same at each Rank. _Avoid_: Sprint, Haste, Fast
+
+**Fleet**: A Keyword. A Unit with Fleet gets +2 Speed. The value is the same at each Rank. _Avoid_: Cavalry, Mounted, Very Fast
+
+**Heavy**: A Keyword. A Unit with Heavy gets −1 Speed. The value is the same at each Rank. It is not a Status, and it is not Hobbled. _Avoid_: Hindered, Slow, Encumbered
+
+**Mid-range**: A Keyword. A Unit with Mid-range gets +1 Range, so it is a Ranged Unit with Range 2. The value is the same at each Rank. _Avoid_: Short-range, Ranged 1
+
+**Long-range**: A Keyword. A Unit with Long-range gets +2 Range, so it is a Ranged Unit with Range 3. The value is the same at each Rank. _Avoid_: Sniper, Ranged 2
+
+**Extreme-range**: A Keyword. A Unit with Extreme-range gets +3 Range, so it is a Ranged Unit with Range 4. The value is the same at each Rank. Only a Card with Base Rank Epic or higher has it. _Avoid_: Artillery, Ranged 3
 
 **Base Attack**: The Attack of a Unit for its Rank, without bonuses such as Rally or Swarm. A Unit with Base Attack 0 never attacks and never deals Retaliate damage. _Avoid_: printed Attack, raw Attack
 
@@ -174,7 +192,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Last Breath: X**: A Keyword. X occurs when the Unit leaves the Board. In v1, X deals damage to the nearest enemy Unit ahead in the same Lane, or summons a Token in the Square that the Unit left. _Avoid_: death effect, deathrattle
 
-**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Armor, its bonus Attack and its Rally bonus end. _Avoid_: revive, resurrect
+**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Bulwark, its bonus Attack and its Rally bonus end. _Avoid_: revive, resurrect
 
 **Summon X**: A Keyword. When a Unit with Summon comes onto the Board from its Creature Card, a Token X with the Rank of that Card copy appears next to it. The Token goes to the first empty Square of an open Lane in this order: the Square behind the Unit, then the same Column in the Lane with the lower number, then the same Column in the Lane with the higher number. The Square does not need to be in the Summon Zone. If no Square is empty, no Token appears. A Rebirth return and a Start Unit give no Token. _Avoid_: Spawn, Call, Raise
 
@@ -188,7 +206,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Unique**: A Keyword. While a Unit from a Unique Card is on a Side of the Board, no Hero of that Side can play a copy of that Card, at any Rank. Each Unit from that Card counts, also a Unit that the Stage puts on the Board. Enemy Units do not count. A Deck can still hold more than 1 copy. _Avoid_: Singleton, One-of, Legend rule
 
-**Wall**: A Keyword. A Unit with Wall has no Movement and does not attack, also when an effect gives it Speed or Attack. It never deals Retaliate or First Strike damage. It blocks enemy Units in its Lane, and it is never Pushed. Its Hero can summon it into the Summon Zone and also into Columns 4 and 5 of an open Lane, also past an enemy Unit. Each Card with the Wall Role has Wall, and each Card with Wall has the Wall Role, Speed 0 and Attack 0. _Avoid_: Barricade, Blocker, Taunt
+**Wall**: A Keyword. A Unit with Wall has no Movement and does not attack, also when an effect gives it Speed or Attack. It never deals Retaliate or First Strike damage. It blocks enemy Units in its Lane, and it is never Pushed. Its Hero can summon it into the Summon Zone and also into Columns 4 and 5 of an open Lane, also past an enemy Unit. Each Card with Wall has Attack 0. _Avoid_: Barricade, Blocker, Taunt
 
 **Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a grave hound that fights for the Undead is an Undead card. Orc cards show only orcs, so that no Orc card looks like a Feral card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
 
@@ -312,6 +330,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - Each **Hero** has one **Front**. A Hero can summon into the **Summon Zone** of any Front of its Side. Its **Skill Cards** can target any **Square**, and an enemy **Hero** that is not **Defeated**.
 - A **Stage** has 3 **Lanes**. A **Dungeon**, a **Floor** and a Battle with 2 or more **Players** have 4 Lanes. The type of Battle sets the number of Lanes. A Stage or a Dungeon can make the Board smaller only with **Closed Lanes**.
 - A **Unit** belongs to the Hero that summoned it, and uses that Hero's **Gear**.
+- A **Creature Card** has at most 1 of the Speed Keywords **Swift**, **Fleet** and **Heavy**, and at most 1 of the Range Keywords **Mid-range**, **Long-range** and **Extreme-range**. It can have one of each.
 - A **Skill Card** or a **Keyword** can heal a **Unit**. Nothing heals a **Hero**: in a Battle, Hero HP only goes down ([ADR-0028](../../docs/adr/0028-nothing-heals-a-hero.md)).
 - When a Hero is **Defeated**, its Units and **Field Effects** are removed, and its **Front** goes to the nearest Hero of its Side that is not Defeated.
 - A **Side** that is **Routed** loses, also when its Heroes still have HP. The rule is the same for the Player's Side and the enemy Side. A Side is not Routed while one of its Heroes has a rule that can still put a Unit on the Board.
@@ -360,7 +379,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A Flying Unit moved over all Units before, also enemy Flying Units. Now an enemy Flying Unit stops a Flying Unit, the same as an enemy Unit stops a ground Unit ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)).
 - In many games, "bleed" is damage over time. In Heynbord, **Bleeding** does no damage: it only makes heals smaller. Damage over time is **Burn** or **Poisoned** ([ADR-0019](../../docs/adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
 - GDD 4.6 says "a Unit with Attack 0 does not attack", but a bonus could make the Attack 1. The rule uses **Base Attack**, so Rally and Swarm never make a Wall attack.
-- A **Wall** did not move or attack only because it had Speed 0 and Base Attack 0. Then a Speed or Attack buff, also Charge, could make a Wall move or attack. Now the Wall Keyword itself stops Movement, attacks, Retaliate and First Strike. The Speed 0 and Attack 0 of a Wall Card are only a rule for the Card, so that the Power Budget does not count a stat that has no effect.
+- A **Wall** did not move or attack only because it had Speed 0 and Base Attack 0. Then a Speed or Attack buff, also Charge, could make a Wall move or attack. Now the Wall Keyword itself stops Movement, attacks, Retaliate and First Strike. The Attack 0 of a Wall Card is only a rule for the Card, so that the Power Budget does not count a stat that has no effect. A Wall Card had Speed 0 before. Now it has the Base Speed 2, the same as each Unit, and the Wall Keyword stops its Movement.
 - An early plan said that the **Rally N** bonus "applies to attacks and to Retaliate", as for **Swarm N**. But the Rally bonus ends at the end of its owner's **Turn**, and Retaliate and First Strike occur only in the enemy's Turn. Thus Rally never adds to Retaliate or First Strike. Swarm does, because the Swarm bonus has no duration.
 - Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
 - The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
@@ -372,8 +391,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A Melee Unit had no Range before, and a Ranged Unit had Range 1 or more. Now each Unit has a Base Range of 1: a **Melee Unit** has Range 1, and a **Ranged Unit** has Range 2 or more.
 - No rule gave a Unit Speed 2 before, and 19 Creature Cards had it, also a Frontliner (Militia Recruit) and 3 Goblin Strikers. Then the Role set the Speed: 1 by default, 2 or more for a Runner. Now each Unit has a Base **Speed** of 2, and Keywords change it.
 - A Creature Card had a **Role** before: Frontliner, Striker, Runner, Shooter, Support or Wall. No Battle rule used it, and Players could not read a stat from it. Now there are no Roles. Keywords tell the Speed and the Range of a Card. "Shooter", "Runner" and the other Role names are not terms.
-- "debuff" was on the _Avoid_ list of **Status** before, because every Status harmed its Unit. **Ward** is the first Status that helps its Unit, so each Status is now a **Buff** or a **Debuff**. **Steadfast** is the second Buff. It is not Rebirth: a Steadfast Unit does not die, and a Rebirth Unit dies and comes back. Players also say "buff" for a Rally bonus or for bonus Armor. Those are bonuses to a stat, not Buffs.
+- "debuff" was on the _Avoid_ list of **Status** before, because every Status harmed its Unit. **Ward** is the first Status that helps its Unit, so each Status is now a **Buff** or a **Debuff**. **Steadfast** is the second Buff. It is not Rebirth: a Steadfast Unit does not die, and a Rebirth Unit dies and comes back. Players also say "buff" for a Rally bonus or for bonus Bulwark. Those are bonuses to a stat, not Buffs.
 - "Elf Skill Cards" is not a term. A **Skill Card** has a **Class**, not a **Race**. The Skill Cards of the Elf Archetype Thornwatch are **Ranger** Skill Cards, and each other Ranger Deck, for example the Goblin Deck Tunnel Rats, can use them too.
 - The **First Pack** was a free Peddler Pack the first time that the Player opened the Packs screen. Now it is an **Unopened Pack** that the Player gets when Packs unlock at **Player level** 2, the same as a Pack from a **Star chest**.
 - The campaign-stages doc said "expected player level". The term is **Recommended level**, because the Player also sees it.
 - There were two Packs before: the Standard Pack (all Cards) and the Race Pack, with one Drop Rate table. Now there are three Packs with their own Drop Rates: **Peddler**, **Merchant** and **Royal**. The **Merchant Pack** replaces the Standard Pack. **Race Pack** is not a fourth Pack: it is a version of each of the three. **Class Pack** is also a version of each of the three, not a fourth Pack. Players say "gacha" and "pity". The terms are **Pack** and **Pack Guarantee**.
+- The Player feature that shows the past moments of the current Battle is the **Battle Log** (web), not a **Replay**. A Replay is the data that runs a full Battle again, for bug reports and for result checks in PvP.
+- **Bulwark** reduced all damage except Holy before. Then Holy was the only Damage Type that went through Bulwark. Now **Bulwark N** reduces only Physical damage, so Fire, Frost, Lightning and Holy all go through it. The new special rule of Holy is that it cannot be **Blocked**.
+- The Keyword **Bulwark N** had the name "Armor N" before. "Armor" is also the name of a Gear slot, but Armor Gear gives Hero HP and does not reduce damage. Now "Armor" is only the Gear slot. ADR-0031 and the old rows of the balance log still say "Armor".

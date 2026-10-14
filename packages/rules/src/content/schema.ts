@@ -43,16 +43,6 @@ const DamageType = Schema.Literals([
 ]);
 export type DamageType = typeof DamageType.Type;
 
-const UnitRole = Schema.Literals([
-  "frontliner",
-  "striker",
-  "runner",
-  "shooter",
-  "support",
-  "wall",
-]);
-export type UnitRole = typeof UnitRole.Type;
-
 const between = (minimum: number, maximum: number) =>
   Schema.Int.check(Schema.isBetween({ minimum, maximum }));
 
@@ -83,7 +73,7 @@ export type TokenId = typeof TokenId.Type;
  * never makes a Token.
  */
 const tokenKeywordFields = {
-  armor: Schema.optionalKey(KeywordAmount),
+  bulwark: Schema.optionalKey(KeywordAmount),
   /**
    * +N Speed in the Turn of the summon (GDD 5.4). N is at most 3. A content
    * test checks the Rank table.
@@ -102,6 +92,21 @@ const tokenKeywordFields = {
    */
   firstStrike: Schema.optionalKey(Schema.Literal(true)),
   flying: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * The Speed Keywords (ADR-0030): +1, +2 or −1 Speed from the Base Speed 2,
+   * the same at each Rank. A content test checks that a card has at most 1.
+   */
+  swift: Schema.optionalKey(Schema.Literal(true)),
+  fleet: Schema.optionalKey(Schema.Literal(true)),
+  heavy: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * The Range Keywords (ADR-0030): +1, +2 or +3 Range from the Base Range 1,
+   * the same at each Rank. A content test checks that a card has at most 1,
+   * and that Extreme-range is only at Base Rank Epic or higher.
+   */
+  midRange: Schema.optionalKey(Schema.Literal(true)),
+  longRange: Schema.optionalKey(Schema.Literal(true)),
+  extremeRange: Schema.optionalKey(Schema.Literal(true)),
   heroic: Schema.optionalKey(KeywordAmount),
   /** Deals this much damage to the nearest enemy Unit ahead when this Unit leaves. */
   lastBreath: Schema.optionalKey(KeywordAmount),
@@ -180,14 +185,10 @@ const CreatureCardDefinition = Schema.Struct({
   kind: Schema.Literal("creature"),
   id: Schema.NonEmptyString,
   race: RaceId,
-  role: UnitRole,
   baseRank: RankId,
   countdown: between(1, 6),
   attack: between(0, 12),
   hp: between(1, 30),
-  speed: between(0, 4),
-  /** 0 is a melee Unit. 2 or 3 is a ranged Unit with that Range (ADR-0022). */
-  range: between(0, 3),
   damageType: DamageType,
   keywords: Keywords,
 });
@@ -250,8 +251,8 @@ const SkillReduction = Schema.Union([
 ]);
 export type SkillReduction = typeof SkillReduction.Type;
 
-/** Bonus Armor is 1 to 5, including when its value changes with the Rank. */
-const SkillArmor = Schema.Union([
+/** Bonus Bulwark is 1 to 5, including when its value changes with the Rank. */
+const SkillBulwark = Schema.Union([
   between(1, 5),
   Schema.Struct({
     common: between(1, 5),
@@ -364,12 +365,12 @@ const SkillEffect = Schema.Union([
   Schema.Struct({
     /**
      * Damage to one enemy Unit, then the caster's Units in its Lane get bonus
-     * Armor, as with `laneArmor`. The Armor comes also when the hit kills.
+     * Bulwark, as with `laneBulwark`. The Bulwark comes also when the hit kills.
      */
-    type: Schema.Literal("damageLaneArmor"),
+    type: Schema.Literal("damageLaneBulwark"),
     amount: SkillAmount,
     damageType: DamageType,
-    armor: SkillArmor,
+    bulwark: SkillBulwark,
     turns: between(1, 5),
   }),
   Schema.Struct({
@@ -428,7 +429,7 @@ const SkillEffect = Schema.Union([
     turns: between(1, 5),
   }),
   Schema.Struct({
-    /** Damage to one enemy Hero. A Hero has no Armor and cannot Block (GDD 4.7). */
+    /** Damage to one enemy Hero. A Hero has no Bulwark and cannot Block (GDD 4.7). */
     type: Schema.Literal("damageHero"),
     amount: SkillAmount,
     damageType: DamageType,
@@ -479,7 +480,7 @@ const SkillEffect = Schema.Union([
   Schema.Struct({
     /**
      * One enemy Unit becomes Exposed N (GDD 4.7): each Physical hit on it
-     * deals N more damage, after Armor. The count is 2 End Phases of its
+     * deals N more damage, after Bulwark. The count is 2 End Phases of its
      * owner. A new Exposed keeps the higher value.
      */
     type: Schema.Literal("exposeUnit"),
@@ -516,12 +517,12 @@ const SkillEffect = Schema.Union([
   }),
   Schema.Struct({
     /**
-     * Friendly Units in one Lane get bonus Armor for `turns` enemy Turns. The
-     * Armor can scale with the Skill Card Rank. A Unit keeps the higher bonus.
+     * Friendly Units in one Lane get bonus Bulwark for `turns` enemy Turns. The
+     * Bulwark can scale with the Skill Card Rank. A Unit keeps the higher bonus.
      * For the same bonus, it keeps the longer duration.
      */
-    type: Schema.Literal("laneArmor"),
-    armor: SkillArmor,
+    type: Schema.Literal("laneBulwark"),
+    bulwark: SkillBulwark,
     turns: between(1, 5),
   }),
   Schema.Struct({
@@ -565,7 +566,6 @@ export type SkillCardDefinition = typeof SkillCardDefinition.Type;
 const TokenRankValues = Schema.Struct({
   attack: between(0, 12),
   hp: between(1, 30),
-  speed: between(0, 4),
 });
 
 /**
@@ -576,8 +576,6 @@ const TokenRankValues = Schema.Struct({
 export const TokenDefinition = Schema.Struct({
   id: TokenId,
   race: RaceId,
-  /** 0 is a melee Unit. */
-  range: between(0, 3),
   damageType: DamageType,
   keywords: TokenKeywords,
   ranks: Schema.Struct({

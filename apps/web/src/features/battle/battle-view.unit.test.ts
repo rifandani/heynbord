@@ -582,9 +582,9 @@ const halberdierView = (owner: "player" | "enemy", id: number): UnitView => ({
   reborn: false,
   hp: 6,
   maxHp: 6,
-  armor: 0,
-  bonusArmor: 0,
-  bonusArmorTurns: 0,
+  bulwark: 0,
+  bonusBulwark: 0,
+  bonusBulwarkTurns: 0,
   range: 0,
   flying: false,
   damageType: "physical",
@@ -899,9 +899,9 @@ describe("the Graveyard view", () => {
           reborn: false,
           hp: 1,
           maxHp: 2,
-          armor: 0,
-          bonusArmor: 0,
-          bonusArmorTurns: 0,
+          bulwark: 0,
+          bonusBulwark: 0,
+          bonusBulwarkTurns: 0,
           bonusAttack: 0,
           bonusAttackTurns: 0,
           bonusRange: 0,
@@ -940,8 +940,8 @@ describe("the Graveyard view", () => {
   });
 });
 
-describe("the bonus Armor view", () => {
-  it("counts down the Turns in each End Phase of the owner, then the Armor fades", () => {
+describe("the bonus Bulwark view", () => {
+  it("counts down the Turns in each End Phase of the owner, then the Bulwark fades", () => {
     const deck = getStarterDeck("vanguard");
     const { state } = createBattle({
       seed: 3,
@@ -967,9 +967,9 @@ describe("the bonus Armor view", () => {
       reborn: false,
       hp: 2,
       maxHp: 2,
-      armor: 0,
-      bonusArmor: 0,
-      bonusArmorTurns: 0,
+      bulwark: 0,
+      bonusBulwark: 0,
+      bonusBulwarkTurns: 0,
       bonusAttack: 0,
       bonusAttackTurns: 0,
       bonusRange: 0,
@@ -992,23 +992,27 @@ describe("the bonus Armor view", () => {
       wall: false,
     };
     const view = { ...viewFromState(state), units: [unit] };
-    const armorOf = (events: readonly BattleEvent[]) => {
+    const bulwarkOf = (events: readonly BattleEvent[]) => {
       const [after] = events.reduce(applyEvent, view).units;
-      return [after?.bonusArmor, after?.bonusArmorTurns];
+      return [after?.bonusBulwark, after?.bonusBulwarkTurns];
     };
-    const gained = BattleEvent.ArmorGained({ unitId: 7, armor: 1, turns: 2 });
-    expect(armorOf([gained])).toEqual([1, 2]);
+    const gained = BattleEvent.BulwarkGained({
+      unitId: 7,
+      bulwark: 1,
+      turns: 2,
+    });
+    expect(bulwarkOf([gained])).toEqual([1, 2]);
     expect(
-      armorOf([gained, BattleEvent.TurnEnded({ side: "player" })])
+      bulwarkOf([gained, BattleEvent.TurnEnded({ side: "player" })])
     ).toEqual([1, 2]);
-    expect(armorOf([gained, BattleEvent.TurnEnded({ side: "enemy" })])).toEqual(
-      [1, 1]
-    );
     expect(
-      armorOf([
+      bulwarkOf([gained, BattleEvent.TurnEnded({ side: "enemy" })])
+    ).toEqual([1, 1]);
+    expect(
+      bulwarkOf([
         gained,
         BattleEvent.TurnEnded({ side: "enemy" }),
-        BattleEvent.ArmorFaded({ unitId: 7 }),
+        BattleEvent.BulwarkFaded({ unitId: 7 }),
         BattleEvent.TurnEnded({ side: "player" }),
       ])
     ).toEqual([0, 0]);
@@ -1042,9 +1046,9 @@ describe("the Hobbled and Bleeding view", () => {
       reborn: false,
       hp: 2,
       maxHp: 2,
-      armor: 0,
-      bonusArmor: 0,
-      bonusArmorTurns: 0,
+      bulwark: 0,
+      bonusBulwark: 0,
+      bonusBulwarkTurns: 0,
       bonusAttack: 0,
       bonusAttackTurns: 0,
       bonusRange: 0,
@@ -1126,9 +1130,9 @@ describe("a push", () => {
       reborn: false,
       hp: 4,
       maxHp: 4,
-      armor: 0,
-      bonusArmor: 0,
-      bonusArmorTurns: 0,
+      bulwark: 0,
+      bonusBulwark: 0,
+      bonusBulwarkTurns: 0,
       bonusAttack: 0,
       bonusAttackTurns: 0,
       bonusRange: 0,
@@ -1246,9 +1250,9 @@ describe("the Entangled view", () => {
     reborn: false,
     hp: 4,
     maxHp: 4,
-    armor: 0,
-    bonusArmor: 0,
-    bonusArmorTurns: 0,
+    bulwark: 0,
+    bonusBulwark: 0,
+    bonusBulwarkTurns: 0,
     bonusAttack: 0,
     bonusAttackTurns: 0,
     bonusRange: 0,
@@ -1330,7 +1334,7 @@ const snapshot = (
   speed: 1,
   range: 0,
   damageType: "physical",
-  armor: 0,
+  bulwark: 0,
   charge: 0,
   entangle: false,
   firstStrike: false,
@@ -1361,8 +1365,8 @@ const snapshot = (
   ward: 0,
   steadfast: false,
   rallied: 0,
-  bonusArmor: 0,
-  bonusArmorTurns: 0,
+  bonusBulwark: 0,
+  bonusBulwarkTurns: 0,
   bonusAttack: 0,
   bonusAttackTurns: 0,
   bonusRange: 0,
@@ -1433,7 +1437,7 @@ describe("the Token, Rebirth and Swarm view", () => {
     expect(after.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);
   });
 
-  it("keeps a reborn Unit in its Square with its new HP, no Status (also no Ward) and no bonus Armor", () => {
+  it("keeps a reborn Unit in its Square with its new HP, no Status (also no Ward) and no bonus Bulwark", () => {
     const lancer = snapshot(
       22,
       1,
@@ -1454,7 +1458,7 @@ describe("the Token, Rebirth and Swarm view", () => {
         status: "ward",
         count: 6,
       }),
-      BattleEvent.ArmorGained({ unitId: lancer.id, armor: 1, turns: 2 }),
+      BattleEvent.BulwarkGained({ unitId: lancer.id, bulwark: 1, turns: 2 }),
     ].reduce(applyEvent, view);
     expect(view.units[0]?.ward).toBe(6);
     view = applyEvent(
@@ -1471,7 +1475,7 @@ describe("the Token, Rebirth and Swarm view", () => {
       burn: 0,
       ward: 0,
       steadfast: false,
-      bonusArmor: 0,
+      bonusBulwark: 0,
     });
     expect(view.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);
   });

@@ -18,6 +18,7 @@ const played = (
 ) =>
   Event.CardPlayed({
     side,
+    hero: { side, hero: 0 },
     handIndex: 0,
     card: { instanceId: 7, cardId, rank: "common" },
     target,
@@ -28,6 +29,7 @@ const damage = Event.DamageDealt({
   amount: 3,
   damageType: "fire",
   source: "skill",
+  dealer: null,
   crit: false,
   blocked: false,
   trueDamage: false,
@@ -206,11 +208,11 @@ describe("targetPreview", () => {
 });
 
 describe("effectColor", () => {
-  it("uses the Damage Type color, Armor blue, or the neutral cast color", () => {
+  it("uses the Damage Type color, Bulwark blue, or the neutral cast color", () => {
     expect(
       effectColor({ type: "damageUnit", amount: 2, damageType: "frost" })
     ).toBe("#8fd8ff");
-    expect(effectColor({ type: "laneArmor", armor: 1, turns: 2 })).toBe(
+    expect(effectColor({ type: "laneBulwark", bulwark: 1, turns: 2 })).toBe(
       "#9cc8ff"
     );
     expect(effectColor({ type: "lowerCountdown", cards: 2, amount: 1 })).toBe(
@@ -227,10 +229,10 @@ describe("effectColor", () => {
   it("gives the second-part damage cards the color of their Damage Type", () => {
     expect(
       effectColor({
-        type: "damageLaneArmor",
+        type: "damageLaneBulwark",
         amount: 2,
         damageType: "physical",
-        armor: 1,
+        bulwark: 1,
         turns: 1,
       })
     ).toBe(

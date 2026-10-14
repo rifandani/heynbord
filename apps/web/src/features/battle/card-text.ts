@@ -11,6 +11,8 @@ import type {
 import {
   getCard,
   getToken,
+  isRangedRange,
+  keywordRange,
   keywordValue,
   recallChance,
   skillAmountForRank,
@@ -49,8 +51,8 @@ export interface KeywordText {
 
 /** The Keywords with a value N (GDD 5.4), in the order of the Details Panel. */
 export const VALUE_KEYWORDS = [
-  "armor",
   "bleed",
+  "bulwark",
   "charge",
   "heroic",
   "hobble",
@@ -64,12 +66,18 @@ export const VALUE_KEYWORDS = [
 /** The Keywords with no value (GDD 5.4). */
 export const FLAG_KEYWORDS = [
   "entangle",
+  "extremeRange",
   "firstStrike",
+  "fleet",
   "flying",
+  "heavy",
+  "longRange",
+  "midRange",
   "pivot",
   "poison",
   "rebirth",
   "retaliate",
+  "swift",
   "trample",
   "unique",
   "wall",
@@ -126,15 +134,6 @@ const unitKeywords = (keywords: Keywords, rank: RankId): KeywordText[] => {
   return refs;
 };
 
-/**
- * Holy damage text says that Armor does not reduce it, so the card shows the
- * rule with no Details lookup.
- */
-const withDamageRule = (effect: SkillEffect, text: TextRef): TextRef =>
-  "damageType" in effect && effect.damageType === "holy"
-    ? { key: "effects.armorIgnored", args: { effect: text } }
-    : text;
-
 /** A number with its noun, in the singular for 1: "1 Square", "3 Squares". */
 const counted = (
   noun: "square" | "enemyTurn" | "turn",
@@ -154,18 +153,17 @@ const hitText = (
     { readonly amount: SkillAmount; readonly damageType: DamageType }
   >,
   rank: RankId
-): TextRef =>
-  withDamageRule(effect, {
-    key: "effects.damageUnit",
-    args: {
-      amount: skillAmountForRank(effect.amount, rank),
-      damageType: { key: `damageTypes.${effect.damageType}` },
-    },
-  });
+): TextRef => ({
+  key: "effects.damageUnit",
+  args: {
+    amount: skillAmountForRank(effect.amount, rank),
+    damageType: { key: `damageTypes.${effect.damageType}` },
+  },
+});
 
 /**
  * The text of an effect with no damage: a heal, a Ward, Steadfast, a Cleanse,
- * Exposed, bonus Armor, bonus Attack, an extra action or a lower Countdown.
+ * Exposed, bonus Bulwark, bonus Attack, an extra action or a lower Countdown.
  */
 const friendlyEffectText = (
   effect: Exclude<SkillEffect, { readonly damageType: DamageType }>,
@@ -195,11 +193,11 @@ const friendlyEffectText = (
         args: { heal: skillAmountForRank(effect.heal, rank) },
       };
     }
-    case "laneArmor": {
+    case "laneBulwark": {
       return {
-        key: "effects.laneArmor",
+        key: "effects.laneBulwark",
         args: {
-          armor: skillAmountForRank(effect.armor, rank),
+          bulwark: skillAmountForRank(effect.bulwark, rank),
           turns: effect.turns,
         },
       };
@@ -303,33 +301,33 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
           args: { amount: skillAmountForRank(effect.amount, rank) },
         };
       }
-      return withDamageRule(effect, {
+      return {
         key: `effects.${effect.type}`,
         args: {
           amount: skillAmountForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
         },
-      });
+      };
     }
     case "damageArea": {
-      return withDamageRule(effect, {
+      return {
         key: "effects.damageArea",
         args: {
           amount: skillAmountForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
           extra: effect.length - 1,
         },
-      });
+      };
     }
     case "damagePush": {
-      return withDamageRule(effect, {
+      return {
         key: "effects.damagePush",
         args: {
           amount: skillAmountForRank(effect.amount, rank),
           damageType: { key: `damageTypes.${effect.damageType}` },
           squares: skillSquaresForRank(effect.squares, rank),
         },
-      });
+      };
     }
     case "damageKnockback": {
       return {
@@ -362,17 +360,17 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
       };
     }
     case "damageByAttack": {
-      return withDamageRule(effect, {
+      return {
         key: "effects.damageByAttack",
         args: { damageType: { key: `damageTypes.${effect.damageType}` } },
-      });
+      };
     }
-    case "damageLaneArmor": {
+    case "damageLaneBulwark": {
       return {
-        key: "effects.damageLaneArmor",
+        key: "effects.damageLaneBulwark",
         args: {
           hit: hitText(effect, rank),
-          armor: skillAmountForRank(effect.armor, rank),
+          bulwark: skillAmountForRank(effect.bulwark, rank),
           turns: counted("enemyTurn", effect.turns),
         },
       };
@@ -467,13 +465,13 @@ export const STATUS_TEXT = {
 /** One line of the Unit status in the Details Panel. */
 export interface StatusText {
   /**
-   * A Status, or a change that is not a Status: bonus Armor, bonus Attack or
+   * A Status, or a change that is not a Status: bonus Bulwark, bonus Attack or
    * bonus Range from a Skill Card, the Rally bonus, the Swarm bonus, or a Rebirth that
    * the Unit used.
    */
   readonly status:
     | Status
-    | "bonusArmor"
+    | "bonusBulwark"
     | "bonusAttack"
     | "bonusRange"
     | "rallyBonus"
@@ -487,8 +485,8 @@ export interface StatusText {
 
 type StatusCounts = Pick<
   UnitView,
-  | "bonusArmor"
-  | "bonusArmorTurns"
+  | "bonusBulwark"
+  | "bonusBulwarkTurns"
   | "bonusAttack"
   | "bonusAttackTurns"
   | "bonusRange"
@@ -596,24 +594,24 @@ const exposedText = (unit: StatusCounts): StatusText[] =>
 
 /**
  * How a Unit is different from its card now (UI-05): its Buffs (Ward and
- * Steadfast, first as on its badge), bonus Armor, bonus Attack, bonus Range, the Rally
+ * Steadfast, first as on its badge), bonus Bulwark, bonus Attack, bonus Range, the Rally
  * bonus, the Swarm bonus, each Debuff that it has, then a used Rebirth. Empty
  * for a Unit with none of these.
  */
 export const unitStatusText = (unit: StatusCounts): StatusText[] => [
   ...countedStatus("ward", unit.ward),
   ...flagStatus("steadfast", unit.steadfast),
-  ...(unit.bonusArmor > 0
+  ...(unit.bonusBulwark > 0
     ? [
         {
-          status: "bonusArmor" as const,
+          status: "bonusBulwark" as const,
           name: {
-            key: "battle.status.bonusArmor",
-            args: { value: unit.bonusArmor },
+            key: "battle.status.bonusBulwark",
+            args: { value: unit.bonusBulwark },
           },
           rule: {
-            key: "battle.status.bonusArmorRule",
-            args: { turns: unit.bonusArmorTurns },
+            key: "battle.status.bonusBulwarkRule",
+            args: { turns: unit.bonusBulwarkTurns },
           },
         },
       ]
@@ -676,17 +674,15 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
 /** The rules text of a Creature Card or a Token: attack type, Keywords and Damage Type. */
 const creatureBody = (
   body: {
-    readonly range: number;
     readonly damageType: DamageType;
     readonly keywords: Keywords;
   },
   rank: RankId
 ): Omit<CreatureCardText, "name" | "flavor"> => ({
   kind: "creature",
-  attackType:
-    body.range > 0
-      ? { key: "keywords.ranged", args: { value: body.range } }
-      : { key: "keywords.melee" },
+  attackType: isRangedRange(keywordRange(body.keywords))
+    ? { key: "keywords.ranged", args: { value: keywordRange(body.keywords) } }
+    : { key: "keywords.melee" },
   keywords: unitKeywords(body.keywords, rank),
   damageRule:
     body.damageType === "physical"

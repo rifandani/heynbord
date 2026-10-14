@@ -18,7 +18,13 @@ import {
   getStarterDeck,
   STARTER_DECKS,
 } from "./decks";
-import { keywordValue, RACE_KEYWORDS } from "./keywords";
+import {
+  isRangedRange,
+  keywordRange,
+  keywordSpeed,
+  keywordValue,
+  RACE_KEYWORDS,
+} from "./keywords";
 import { firstTryPathLevel } from "./player-levels";
 import {
   isRankAtLeast,
@@ -74,6 +80,10 @@ const checkDeck = (deck: readonly DeckEntry[]) => {
 const creatures = CARDS.flatMap((card) =>
   card.kind === "creature" ? [card] : []
 );
+
+/** Range 2 or more from the Range Keywords (ADR-0030). */
+const isRanged = (card: CreatureCardDefinition): boolean =>
+  isRangedRange(keywordRange(card.keywords));
 
 /** Tunnel Saboteur with another Sabotage value, to test the schema. */
 const withSabotage = (sabotage: number | Partial<Record<RankId, number>>) => ({
@@ -403,20 +413,22 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         );
       }
     }
-    // `21 + s × (Countdown − 3)` with s = 3 (ADR-0021): 21 at Countdown 3, and
-    // Countdown 6 is 1.67 × Countdown 2.
-    expect(powerBudget(3)).toBe(21);
-    expect(powerBudget(2)).toBe(18);
-    expect(powerBudget(6)).toBe(30);
+    // `19 + s × (Countdown − 3)` with s = 3 (ADR-0021, ADR-0030): 19 at
+    // Countdown 3, and Countdown 6 is 1.75 × Countdown 2.
+    expect(powerBudget(3)).toBe(19);
+    expect(powerBudget(2)).toBe(16);
+    expect(powerBudget(6)).toBe(28);
+    // 4/2 with Swift 2 and Last Breath 1.
     const runt = getCard("orc.badlandRunt");
-    expect(runt.kind === "creature" && creaturePower(runt)).toBe(14);
+    expect(runt.kind === "creature" && creaturePower(runt)).toBe(13);
+    // 3/8 with Heavy −2.
     const recruit = getCard("human.militiaRecruit");
-    expect(recruit.kind === "creature" && creaturePower(recruit)).toBe(16);
-    expect(recruit.kind === "creature" && budgetDeviation(recruit)).toBe(666);
+    expect(recruit.kind === "creature" && creaturePower(recruit)).toBe(12);
+    expect(recruit.kind === "creature" && budgetDeviation(recruit)).toBe(-769);
   });
 
   it("keeps the Power Budget slope at or above its floor (ADR-0021)", () => {
-    expect(POWER_BUDGET_SLOPE).toBeGreaterThanOrEqual(1.47);
+    expect(POWER_BUDGET_SLOPE).toBeGreaterThanOrEqual(1.33);
     expect(powerBudget(6)).toBeGreaterThanOrEqual(1.3 * powerBudget(2));
   });
 
@@ -425,9 +437,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     if (recruit.kind !== "creature") {
       throw new Error("Militia Recruit is a Creature Card");
     }
-    // 3/8 is 5/14 at Epic: 5 × 2 + 14 + Speed 1 × 2.
-    expect(creaturePower(recruit)).toBe(16);
-    expect(creaturePower({ ...recruit, baseRank: "epic" })).toBe(26);
+    // 3/8 is 5/14 at Epic: 5 × 2 + 14, with Heavy −2.
+    expect(creaturePower(recruit)).toBe(12);
+    expect(creaturePower({ ...recruit, baseRank: "epic" })).toBe(22);
   });
 
   it("starts each Keyword value table at the Base Rank, and a higher Rank never goes down", () => {
@@ -436,7 +448,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         continue;
       }
       const amounts = [
-        card.keywords.armor,
+        card.keywords.bulwark,
         card.keywords.bleed,
         card.keywords.charge,
         card.keywords.heroic,
@@ -474,60 +486,66 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         ? [card]
         : []
     );
-    expect(cards.every((card) => card.range === 0)).toBe(true);
+    expect(cards.every((card) => !isRanged(card))).toBe(true);
     expect(cards.map((card) => card.id)).toEqual([
       "human.shieldbearer",
       "human.bridgePikeman",
     ]);
   });
 
-  it("gives Wall to each Wall Role card and only to them, with Speed 0 and Attack 0 (ADR-0023)", () => {
-    for (const card of creatures) {
-      expect(card.keywords.wall ?? false, card.id).toBe(card.role === "wall");
-    }
+  it("gives each Wall card Attack 0 and no Speed or Range Keyword (ADR-0023, ADR-0030)", () => {
     const walls = creatures.filter((card) => card.keywords.wall);
-    expect(walls.every((card) => card.speed === 0 && card.attack === 0)).toBe(
-      true
-    );
-  });
-
-  it("gives a ranged Support Range 2 and a Shooter Range 3 (GDD 5.6, ADR-0022)", () => {
-    for (const card of creatures) {
-      if (card.role === "shooter") {
-        expect(card.range, card.id).toBe(3);
-      } else if (card.role === "support" && card.range > 0) {
-        expect(card.range, card.id).toBe(2);
-      } else {
-        expect(card.range, card.id).not.toBe(2);
-      }
+    expect(walls.length).toBeGreaterThan(0);
+    for (const card of walls) {
+      expect(card.attack, card.id).toBe(0);
+      expect(keywordSpeed(card.keywords), card.id).toBe(2);
+      expect(keywordRange(card.keywords), card.id).toBe(1);
     }
   });
 
-  it("permits no Range above 3 (ADR-0022)", () => {
-    const shooter = getCard("human.crossbowGuard");
-    expect(() => decodeCard({ ...shooter, range: 4 })).toThrow();
-    expect(decodeCard(shooter)).toEqual(shooter);
+  it("gives each Unit Base Speed 2 and Base Range 1, and the Keywords change them (ADR-0030)", () => {
+    expect(keywordSpeed({})).toBe(2);
+    expect(keywordSpeed({ swift: true })).toBe(3);
+    expect(keywordSpeed({ fleet: true })).toBe(4);
+    expect(keywordSpeed({ heavy: true })).toBe(1);
+    expect(keywordRange({})).toBe(1);
+    expect(keywordRange({ midRange: true })).toBe(2);
+    expect(keywordRange({ longRange: true })).toBe(3);
+    expect(keywordRange({ extremeRange: true })).toBe(4);
+    expect(isRangedRange(1)).toBe(false);
+    expect(isRangedRange(2)).toBe(true);
   });
 
-  it("gives a Ranged Unit Speed 1 or less (ADR-0024)", () => {
-    for (const card of creatures) {
-      if (card.range > 0) {
-        expect(card.speed, card.id).toBeLessThanOrEqual(1);
-      }
+  it("gives a card or a Token at most 1 Speed Keyword and at most 1 Range Keyword (ADR-0030)", () => {
+    const speedKeywords = ["swift", "fleet", "heavy"] as const;
+    const rangeKeywords = ["midRange", "longRange", "extremeRange"] as const;
+    const bodies = [
+      ...creatures.map((card) => [card.id, card.keywords] as const),
+      ...Object.values(TOKENS).map(
+        (token) => [token.id, token.keywords] as const
+      ),
+    ];
+    for (const [id, keywords] of bodies) {
+      const count = (names: readonly (keyof typeof keywords)[]) =>
+        names.filter((name) => keywords[name]).length;
+      expect(count(speedKeywords), id).toBeLessThanOrEqual(1);
+      expect(count(rangeKeywords), id).toBeLessThanOrEqual(1);
     }
   });
 
-  it("permits no Speed above 4 (ADR-0024)", () => {
-    const runner = getCard("human.kingsCourier");
-    expect(() => decodeCard({ ...runner, speed: 5 })).toThrow();
-    expect(decodeCard(runner)).toEqual(runner);
+  it("puts Extreme-range only on a card with Base Rank Epic or higher (ADR-0030)", () => {
+    for (const card of creatures) {
+      if (card.keywords.extremeRange) {
+        expect(isRankAtLeast(card.baseRank, "epic"), card.id).toBe(true);
+      }
+    }
   });
 
   it("puts Entangle only on a Ranged Unit with Base Rank Epic or higher (ADR-0022)", () => {
     const entanglers = creatures.filter((card) => card.keywords.entangle);
     expect(entanglers.length).toBeGreaterThan(0);
     for (const card of entanglers) {
-      expect(card.range, card.id).toBeGreaterThan(0);
+      expect(isRanged(card), card.id).toBe(true);
       expect(isRankAtLeast(card.baseRank, "epic"), card.id).toBe(true);
     }
   });
@@ -536,7 +554,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     const frostCards = creatures.filter((card) => card.damageType === "frost");
     expect(frostCards.length).toBeGreaterThan(0);
     for (const card of frostCards) {
-      expect(card.range, card.id).toBe(0);
+      expect(isRanged(card), card.id).toBe(false);
     }
   });
 
@@ -545,7 +563,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     // same as the Frost lock of ADR-0025. A sim lock check comes first.
     for (const card of creatures) {
       if (card.damageType === "lightning") {
-        expect(card.range, card.id).toBe(0);
+        expect(isRanged(card), card.id).toBe(false);
       }
     }
   });
@@ -565,8 +583,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("keeps Shieldbearer within ±10% of its power budget (GDD 13)", () => {
     const card = getCard("human.shieldbearer");
-    expect(card.kind === "creature" && creaturePower(card)).toBe(17);
-    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(18);
+    expect(card.kind === "creature" && creaturePower(card)).toBe(15);
+    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(16);
     expect(
       card.kind === "creature" && Math.abs(budgetDeviation(card))
     ).toBeLessThanOrEqual(1000);
@@ -574,7 +592,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("puts Pivot only on melee Units, with 1 Uncommon Pivot card for each Race (GDD 3.2, 4.6)", () => {
     const pivots = creatures.filter((card) => card.keywords.pivot);
-    expect(pivots.every((card) => card.range === 0)).toBe(true);
+    expect(pivots.every((card) => !isRanged(card))).toBe(true);
     expect(pivots.every((card) => card.baseRank === "uncommon")).toBe(true);
     expect(pivots.map((card) => card.race).toSorted()).toEqual([
       "elf",
@@ -590,7 +608,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     const tramplers = creatures.filter((card) => card.keywords.trample);
     expect(tramplers.length).toBeGreaterThan(0);
     for (const card of tramplers) {
-      expect(card.range, card.id).toBe(0);
+      expect(isRanged(card), card.id).toBe(false);
     }
   });
 
@@ -632,14 +650,14 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives Sabotage N × 4, Trample 3 and Rally N × 3 power points (GDD 13)", () => {
-    expect(power("goblin.tunnelSaboteur")).toBe(19);
-    expect(power("goblin.grandGearjammer")).toBe(25);
-    expect(power("feral.bristlebackBoar")).toBe(19);
-    expect(power("feral.webSpitter")).toBe(21);
-    expect(power("feral.frostElkMatriarch")).toBe(24);
+    expect(power("goblin.tunnelSaboteur")).toBe(17);
+    expect(power("goblin.grandGearjammer")).toBe(22);
+    expect(power("feral.bristlebackBoar")).toBe(17);
+    expect(power("feral.webSpitter")).toBe(18);
+    expect(power("feral.frostElkMatriarch")).toBe(22);
     // Unique and Wall use 0 points.
-    expect(power("feral.oldFrostmaw")).toBe(31);
-    expect(power("goblin.junkBarricade")).toBe(18);
+    expect(power("feral.oldFrostmaw")).toBe(29);
+    expect(power("goblin.junkBarricade")).toBe(17);
   });
 
   it("puts Bleed only on the Frostfang Lynx and Old Frostmaw, with 1 up to Rare, 2 at Epic and 3 at Legendary (ADR-0019)", () => {
@@ -690,58 +708,58 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives Charge N × 1 power points at the Base Rank (GDD 13)", () => {
-    // Charge 1: 3/5 is 4/6 at Uncommon. 4 × 2 + 6 + Speed 2 × 2 + 1.
+    // Charge 1: 3/7 is 4/8 at Uncommon. 4 × 2 + 8 + Swift 2 + 1.
     expect(power("orc.howlingCharger")).toBe(19);
     // Charge 2 at Epic.
-    expect(power("orc.warchiefGrukka")).toBe(29);
-    expect(power("orc.warbandStandardBearer")).toBe(29);
+    expect(power("orc.warchiefGrukka")).toBe(27);
+    expect(power("orc.warbandStandardBearer")).toBe(27);
   });
 
   it("gives Bleed N × 1 power points (GDD 13)", () => {
-    expect(power("feral.frostfangLynx")).toBe(17);
+    expect(power("feral.frostfangLynx")).toBe(15);
   });
 
   it("gives First Strike 4 and Entangle 2 power points (GDD 13)", () => {
-    // 3/3 is 5/5 at Epic: 5 × 2 + 5 + Speed 1 × 2 + Range 3, with First
-    // Strike 4 and Entangle 2.
-    expect(power("elf.canopyVinewarden")).toBe(26);
+    // 3/3 is 5/5 at Epic: 5 × 2 + 5 + Long-range 2, with First Strike 4 and
+    // Entangle 2.
+    expect(power("elf.canopyVinewarden")).toBe(23);
   });
 
   it("fits Lethiel with Entangle to the budget of Countdown 5 (ADR-0026)", () => {
-    // 1/6 is 2/11 at Epic: 2 × 2 + 11 + Speed 1 × 2 + Range 2 + Holy 2, with
+    // 1/6 is 2/11 at Epic: 2 × 2 + 11 + Mid-range 1 + Holy 1, with
     // Regenerate 2 × 2 and Entangle 2.
     const card = getCard("elf.lethielFirstGardener");
     expect(card.kind === "creature" && card.keywords.entangle).toBe(true);
-    expect(power("elf.lethielFirstGardener")).toBe(27);
-    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(27);
-    expect(card.kind === "creature" && budgetDeviation(card)).toBe(0);
+    expect(power("elf.lethielFirstGardener")).toBe(23);
+    expect(card.kind === "creature" && powerBudget(card.countdown)).toBe(25);
+    expect(card.kind === "creature" && budgetDeviation(card)).toBe(-800);
   });
 
   it("gives Swarm N × 1 and Rebirth 5 power points at the Base Rank (GDD 13)", () => {
-    // 3/8 at Common: 3 × 2 + 8 + Speed 1 × 2 = 16.
+    // 3/8 at Common with no Keyword: 3 × 2 + 8 = 14.
     const swarm = decodeCard(recruitWith({ swarm: 2 }));
     const rebirth = decodeCard(recruitWith({ rebirth: true }));
     const both = decodeCard(
       recruitWith({ swarm: { common: 1, epic: 2 }, rebirth: true })
     );
-    expect(swarm.kind === "creature" && creaturePower(swarm)).toBe(18);
-    expect(rebirth.kind === "creature" && creaturePower(rebirth)).toBe(21);
-    expect(both.kind === "creature" && creaturePower(both)).toBe(22);
+    expect(swarm.kind === "creature" && creaturePower(swarm)).toBe(16);
+    expect(rebirth.kind === "creature" && creaturePower(rebirth)).toBe(19);
+    expect(both.kind === "creature" && creaturePower(both)).toBe(20);
   });
 
   it("gives Summon X 50% of the Token power at the Base Rank of the card (GDD 13)", () => {
-    // 16 + 0.5 × 8 for the Skeleton, 16 + 0.5 × 14 for the Restless Wisp.
+    // 14 + 0.5 × 4 for the Skeleton, 14 + 0.5 × 10 for the Restless Wisp.
     const skeleton = decodeCard(recruitWith({ summon: "token.skeleton" }));
     const wisp = decodeCard(recruitWith({ summon: "token.restlessWisp" }));
-    expect(skeleton.kind === "creature" && creaturePower(skeleton)).toBe(20);
-    expect(wisp.kind === "creature" && creaturePower(wisp)).toBe(23);
-    // At Base Rank Epic: 3/8 is 5/14, 5 × 2 + 14 + 2 = 26, + 0.5 × 12.
+    expect(skeleton.kind === "creature" && creaturePower(skeleton)).toBe(16);
+    expect(wisp.kind === "creature" && creaturePower(wisp)).toBe(19);
+    // At Base Rank Epic: 3/8 is 5/14, 5 × 2 + 14 = 24, + 0.5 × 8.
     const epic = {
       ...recruitWith({ summon: "token.skeleton" }),
       baseRank: "epic",
     } as const;
-    expect(creaturePower(epic)).toBe(32);
-    // A fraction: the Restless Wisp has power 17 at Rare.
+    expect(creaturePower(epic)).toBe(28);
+    // A fraction: the Restless Wisp has power 13 at Rare.
     const rare = {
       ...recruitWith({ summon: "token.restlessWisp" }),
       baseRank: "rare",
@@ -762,13 +780,13 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("fits the Undead cards to the ADR-0021 budget (Card Concepts 5)", () => {
-    // Summon Skeleton: 3/4 is 3 × 2 + 4 + Speed 1 × 2 + Range 3 + 0.5 × 8.
-    expect(power("undead.hushbow")).toBe(19);
-    // Summon Restless Wisp: 1/4 is 1/6 at Rare. 1 × 2 + 6 + 2 + Frost 3 + 0.5 × 17.
-    expect(power("undead.lanternWidow")).toBe(21.5);
-    // Rebirth and Charge 2 at Epic: 2/4 is 4/7. 4 × 2 + 7 + 2 + 5 + 2.
-    expect(power("undead.sirOdoLastTaxman")).toBe(24);
-    // Wall: 0/5 is 0/9 at Epic. 9 + Armor 2 × 3 + Rebirth 5.
+    // Summon Skeleton: 3/5 is 3 × 2 + 5 + Long-range 2 + 0.5 × 4.
+    expect(power("undead.hushbow")).toBe(15);
+    // Summon Restless Wisp: 1/4 is 1/6 at Rare. 1 × 2 + 6 + Frost 3 + 0.5 × 13.
+    expect(power("undead.lanternWidow")).toBe(17.5);
+    // Rebirth and Charge 2 at Epic: 2/4 is 4/7. 4 × 2 + 7 + 5 + 2.
+    expect(power("undead.sirOdoLastTaxman")).toBe(22);
+    // Wall: 0/5 is 0/9 at Epic. 9 + Bulwark 2 × 3 + Rebirth 5.
     expect(power("undead.boneRampart")).toBe(20);
     const undead = creatures.filter((creature) => creature.race === "undead");
     for (const card of undead) {
@@ -845,41 +863,6 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
       });
     }
   );
-
-  it("gives Elf, Goblin, Feral and Undead the Role profiles of GDD 12", () => {
-    expect(countBy(raceCards("elf"), (card) => card.role)).toEqual({
-      frontliner: 1,
-      striker: 2,
-      runner: 3,
-      shooter: 5,
-      support: 3,
-      wall: 1,
-    });
-    expect(countBy(raceCards("goblin"), (card) => card.role)).toEqual({
-      frontliner: 2,
-      striker: 3,
-      runner: 3,
-      shooter: 3,
-      support: 3,
-      wall: 1,
-    });
-    expect(countBy(raceCards("feral"), (card) => card.role)).toEqual({
-      frontliner: 5,
-      striker: 6,
-      runner: 1,
-      shooter: 1,
-      support: 1,
-      wall: 1,
-    });
-    expect(countBy(raceCards("undead"), (card) => card.role)).toEqual({
-      frontliner: 3,
-      striker: 5,
-      runner: 2,
-      shooter: 1,
-      support: 3,
-      wall: 1,
-    });
-  });
 
   it("gives Elf 11 Physical and 4 Holy cards, Goblin 11 Physical and 4 Fire cards, and Feral and Undead 11 Physical and 4 Frost cards", () => {
     expect(countBy(raceCards("elf"), (card) => card.damageType)).toEqual({
@@ -1184,9 +1167,9 @@ describe("Tokens (Card Concepts 8)", () => {
   });
 
   it("gives the Token power of Card Concepts 8 at each Rank", () => {
-    // Swarm 1 is 1 point.
-    expect(powers("token.skeleton")).toEqual([8, 9, 11, 12, 15]);
-    expect(powers("token.restlessWisp")).toEqual([14, 15, 17, 18, 21]);
+    // Swarm 1 is 1 point. The Base Speed 2 is free (ADR-0030).
+    expect(powers("token.skeleton")).toEqual([4, 5, 7, 8, 11]);
+    expect(powers("token.restlessWisp")).toEqual([10, 11, 13, 14, 17]);
   });
 
   it("is not a Card", () => {

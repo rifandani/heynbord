@@ -4,10 +4,12 @@ import { Schema } from "effect";
 import { Atom } from "effect/reactivity";
 
 import { storageRuntime } from "@/core/runtime/client";
+import type { BattleLogState } from "@/features/battle/battle-log-session";
 import type { ShownRewards } from "@/features/battle/battle-rewards";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { canAct } from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
+import type { KeyGuideLine } from "@/features/battle/components/battle-keys";
 import type { TutorialMarks } from "@/features/battle/tutorial";
 import { tutorialMarks } from "@/features/battle/tutorial";
 import { unitAtTarget } from "@/features/battle/unit-inspect";
@@ -16,6 +18,32 @@ import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 /** The Battle on the screen, or `null` on the Town or the Campaign. App state, so kept alive. */
 export const battleSessionAtom = Atom.make<BattleSession | null>(null).pipe(
   Atom.keepAlive
+);
+
+/**
+ * The open Battle Log (GDD 11.2), or `null` when Live shows. Live pauses
+ * while it is open. It goes away when the Player leaves the Battle.
+ */
+export const battleLogAtom = Atom.make<BattleLogState | null>(null).pipe(
+  Atom.keepAlive
+);
+
+/**
+ * The open Key Guide (UI-02), or `null`. `line` is the line that the Key
+ * Guide marks, or `null`: "Read more" on a Hint for a screen control opens the
+ * Key Guide at the line of its key (GDD 8.3). It closes when the Battle goes.
+ */
+export const keyGuideAtom = Atom.make<{
+  readonly line: KeyGuideLine | null;
+} | null>(null);
+
+/**
+ * The session that the scene and the HUD show: the selected moment of the
+ * open Battle Log, else Live. Commands always go to the Live session.
+ */
+export const shownSessionAtom = Atom.make(
+  (get): BattleSession | null =>
+    get(battleLogAtom)?.shown ?? get(battleSessionAtom)
 );
 
 /**
@@ -39,7 +67,13 @@ export const focusedTargetAtom = Atom.make(0).pipe(Atom.keepAlive);
 export const legalTargetsAtom = Atom.make((get): readonly Target[] => {
   const session = get(battleSessionAtom);
   const selected = get(selectedCardAtom);
-  if (!session || selected === null || !canAct(session)) {
+  // All Live input is off in the Battle Log.
+  if (
+    !session ||
+    selected === null ||
+    !canAct(session) ||
+    get(battleLogAtom) !== null
+  ) {
     return [];
   }
   return legalTargets(session.rules, selected);
@@ -68,11 +102,12 @@ export const targetFocusByKeyAtom = Atom.make(false).pipe(Atom.keepAlive);
 /**
  * The Unit whose Card Details show now, or `null`: the inspected Unit, else
  * the Unit on the target that the keyboard focuses. A dead Unit is not in the
- * view, so its Card Details close. Nothing shows after the result.
+ * view, so its Card Details close. Nothing shows after the result, but the
+ * Battle Log shows the values of the Unit at the selected moment.
  */
 export const detailsUnitAtom = Atom.make((get): UnitView | null => {
-  const session = get(battleSessionAtom);
-  if (!session || session.view.result) {
+  const session = get(shownSessionAtom);
+  if (!session || (session.view.result && get(battleLogAtom) === null)) {
     return null;
   }
   const { units } = session.view;

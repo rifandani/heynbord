@@ -77,7 +77,7 @@ describe("createBattle (GDD 4.2)", () => {
         lane: 1,
         position: 10,
         attack: 2,
-        hp: 12,
+        hp: 16,
       }),
     ]);
   });

@@ -70,10 +70,10 @@ export interface UnitView {
   readonly reborn: boolean;
   readonly hp: number;
   readonly maxHp: number;
-  readonly armor: number;
-  readonly bonusArmor: number;
-  /** The End Phases of the other side until the bonus Armor goes away. */
-  readonly bonusArmorTurns: number;
+  readonly bulwark: number;
+  readonly bonusBulwark: number;
+  /** The End Phases of the other side until the bonus Bulwark goes away. */
+  readonly bonusBulwarkTurns: number;
   /** Range with the bonus Range. Above 0, the Unit attacks as a Ranged Unit. */
   readonly range: number;
   readonly flying: boolean;
@@ -223,9 +223,9 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     reborn: !unit.rebirth && hasRebirth(source),
     hp: unit.hp,
     maxHp: unit.maxHp,
-    armor: unit.armor,
-    bonusArmor: unit.bonusArmor,
-    bonusArmorTurns: unit.bonusArmorTurns,
+    bulwark: unit.bulwark,
+    bonusBulwark: unit.bonusBulwark,
+    bonusBulwarkTurns: unit.bonusBulwarkTurns,
     range: unit.range + unit.bonusRange,
     flying: unit.flying,
     damageType: unit.damageType,
@@ -569,14 +569,14 @@ const withBonusRange = (
 /**
  * The End Phase of `side` for one Unit: it lowers the Hobbled, Bleeding,
  * Grounded and Exposed counts and the bonus Attack and bonus Range Turns of this Side, ends its Rally
- * bonus, and lowers the bonus Armor Turns of the other side's Units. Each
+ * bonus, and lowers the bonus Bulwark Turns of the other side's Units. Each
  * Unit of this Side had its action, so none of them is Entangled now: a Unit
  * with no move and no attack has no event of its own that ends Entangled.
  */
 const endPhaseOf = (current: UnitView, side: Side): UnitView => {
   if (current.owner !== side) {
-    return current.bonusArmorTurns > 0
-      ? { ...current, bonusArmorTurns: current.bonusArmorTurns - 1 }
+    return current.bonusBulwarkTurns > 0
+      ? { ...current, bonusBulwarkTurns: current.bonusBulwarkTurns - 1 }
       : current;
   }
   const unit = withRallyBonus(current, 0);
@@ -614,7 +614,7 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
     case "UnitReborn": {
       // Rebirth (GDD 4.9): the Unit stays in its Square with its new HP, and
       // all its Statuses (also Ward), its Rally bonus, its bonus Attack, its
-      // bonus Range and its bonus Armor end.
+      // bonus Range and its bonus Bulwark end.
       return updateUnit(view, event.unitId, (unit) => ({
         ...withBonusRange(withBonusAttack(withRallyBonus(unit, 0), 0, 0), 0, 0),
         hp: event.hp,
@@ -630,8 +630,8 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
         paralyzed: false,
         entangled: false,
         ward: 0,
-        bonusArmor: 0,
-        bonusArmorTurns: 0,
+        bonusBulwark: 0,
+        bonusBulwarkTurns: 0,
       }));
     }
     case "UnitDied": {
@@ -661,23 +661,23 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
 };
 
 /**
- * The events of a bonus from a Skill Card: bonus Armor, bonus Attack and
+ * The events of a bonus from a Skill Card: bonus Bulwark, bonus Attack and
  * bonus Range.
  */
 const applyBonusEvent = (view: BattleView, event: BattleEvent): BattleView => {
   switch (event._tag) {
-    case "ArmorGained": {
+    case "BulwarkGained": {
       return updateUnit(view, event.unitId, (unit) => ({
         ...unit,
-        bonusArmor: event.armor,
-        bonusArmorTurns: event.turns,
+        bonusBulwark: event.bulwark,
+        bonusBulwarkTurns: event.turns,
       }));
     }
-    case "ArmorFaded": {
+    case "BulwarkFaded": {
       return updateUnit(view, event.unitId, (unit) => ({
         ...unit,
-        bonusArmor: 0,
-        bonusArmorTurns: 0,
+        bonusBulwark: 0,
+        bonusBulwarkTurns: 0,
       }));
     }
     case "AttackGained": {

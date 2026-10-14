@@ -1,4 +1,4 @@
-import type { UnitRole } from "@workspace/rules";
+import type { UnitIcon } from "@/features/battle/glyphs";
 
 /**
  * The Lane strip diagrams of the Handbook (issue #25): a small, static part of
@@ -19,12 +19,12 @@ export type DiagramId =
 
 export type DiagramSide = "player" | "enemy";
 
-/** A Unit on the strip, drawn as its Role glyph. Flying shows wings, as on the card. */
+/** A Unit on the strip, drawn with the icon of its card (ADR-0030). */
 export interface DiagramUnit {
   readonly lane: number;
   readonly column: number;
   readonly side: DiagramSide;
-  readonly role: UnitRole | "flying";
+  readonly icon: UnitIcon;
   /** A Unit that dies in the diagram, for example to Trample. */
   readonly falls?: boolean;
 }
@@ -84,8 +84,8 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
       { from: 10, to: 12, side: "enemy", kind: "zone" },
     ],
     units: [
-      { lane: 0, column: 2, side: "player", role: "frontliner" },
-      { lane: 0, column: 11, side: "enemy", role: "striker" },
+      { lane: 0, column: 2, side: "player", icon: "melee" },
+      { lane: 0, column: 11, side: "enemy", icon: "melee" },
     ],
     arrows: [{ lane: 0, from: 0, to: 2, kind: "summon", side: "player" }],
   },
@@ -95,9 +95,9 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     columns: 12,
     zones: [],
     units: [
-      { lane: 0, column: 6, side: "player", role: "striker" },
-      { lane: 1, column: 12, side: "player", role: "runner" },
-      { lane: 2, column: 9, side: "enemy", role: "frontliner" },
+      { lane: 0, column: 6, side: "player", icon: "melee" },
+      { lane: 1, column: 12, side: "player", icon: "melee" },
+      { lane: 2, column: 9, side: "enemy", icon: "melee" },
     ],
     arrows: [{ lane: 1, from: 12, to: 13, kind: "attack", side: "player" }],
   },
@@ -107,9 +107,9 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     columns: SHORT,
     zones: [],
     units: [
-      { lane: 0, column: 2, side: "player", role: "striker" },
-      { lane: 0, column: 3, side: "player", role: "frontliner" },
-      { lane: 0, column: 6, side: "enemy", role: "frontliner" },
+      { lane: 0, column: 2, side: "player", icon: "melee" },
+      { lane: 0, column: 3, side: "player", icon: "melee" },
+      { lane: 0, column: 6, side: "enemy", icon: "melee" },
     ],
     arrows: [
       { lane: 0, from: 2, to: 5, kind: "move", side: "player" },
@@ -122,8 +122,8 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     columns: SHORT,
     zones: [],
     units: [
-      { lane: 0, column: 2, side: "player", role: "flying" },
-      { lane: 0, column: 3, side: "enemy", role: "frontliner" },
+      { lane: 0, column: 2, side: "player", icon: "flying" },
+      { lane: 0, column: 3, side: "enemy", icon: "melee" },
     ],
     arrows: [{ lane: 0, from: 2, to: 5, kind: "fly", side: "player" }],
   },
@@ -133,8 +133,8 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     columns: SHORT,
     zones: [],
     units: [
-      { lane: 0, column: 4, side: "player", role: "frontliner" },
-      { lane: 0, column: 5, side: "enemy", role: "striker" },
+      { lane: 0, column: 4, side: "player", icon: "melee" },
+      { lane: 0, column: 5, side: "enemy", icon: "melee" },
     ],
     arrows: [
       { lane: 0, from: 4, to: 5, kind: "attack", side: "player" },
@@ -147,9 +147,9 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     columns: SHORT,
     zones: [],
     units: [
-      { lane: 0, column: 3, side: "player", role: "striker" },
-      { lane: 0, column: 4, side: "enemy", role: "runner", falls: true },
-      { lane: 0, column: 5, side: "enemy", role: "frontliner" },
+      { lane: 0, column: 3, side: "player", icon: "melee" },
+      { lane: 0, column: 4, side: "enemy", icon: "melee", falls: true },
+      { lane: 0, column: 5, side: "enemy", icon: "melee" },
     ],
     arrows: [
       { lane: 0, from: 3, to: 4, kind: "attack", side: "player" },
@@ -162,9 +162,9 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     columns: SHORT,
     zones: [],
     units: [
-      { lane: 0, column: 3, side: "enemy", role: "runner" },
-      { lane: 0, column: 4, side: "player", role: "frontliner" },
-      { lane: 0, column: 5, side: "enemy", role: "frontliner" },
+      { lane: 0, column: 3, side: "enemy", icon: "melee" },
+      { lane: 0, column: 4, side: "player", icon: "melee" },
+      { lane: 0, column: 5, side: "enemy", icon: "melee" },
     ],
     arrows: [{ lane: 0, from: 4, to: 3, kind: "attack", side: "player" }],
   },
@@ -177,8 +177,8 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
       { from: 4, to: 5, side: "player", kind: "extra" },
     ],
     units: [
-      { lane: 0, column: 5, side: "player", role: "wall" },
-      { lane: 0, column: 8, side: "enemy", role: "runner" },
+      { lane: 0, column: 5, side: "player", icon: "wall" },
+      { lane: 0, column: 8, side: "enemy", icon: "melee" },
     ],
     arrows: [{ lane: 0, from: 8, to: 6, kind: "blocked", side: "enemy" }],
   },
@@ -188,9 +188,9 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     columns: SHORT,
     zones: [{ from: 3, to: 5, side: "player", kind: "range" }],
     units: [
-      { lane: 0, column: 2, side: "player", role: "shooter" },
-      { lane: 0, column: 5, side: "enemy", role: "frontliner" },
-      { lane: 0, column: 7, side: "enemy", role: "striker" },
+      { lane: 0, column: 2, side: "player", icon: "ranged" },
+      { lane: 0, column: 5, side: "enemy", icon: "melee" },
+      { lane: 0, column: 7, side: "enemy", icon: "melee" },
     ],
     arrows: [{ lane: 0, from: 2, to: 5, kind: "attack", side: "player" }],
   },
@@ -200,8 +200,8 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     columns: SHORT,
     zones: [],
     units: [
-      { lane: 0, column: 4, side: "player", role: "frontliner" },
-      { lane: 0, column: 5, side: "enemy", role: "striker", falls: true },
+      { lane: 0, column: 4, side: "player", icon: "melee" },
+      { lane: 0, column: 5, side: "enemy", icon: "melee", falls: true },
     ],
     arrows: [
       { lane: 0, from: 4, to: 5, kind: "attack", side: "player" },

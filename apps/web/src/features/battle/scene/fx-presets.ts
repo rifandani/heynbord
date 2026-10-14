@@ -34,8 +34,8 @@ export const DUST_PRESETS = ["move", "push"] as const;
 
 export type DustPresetKey = (typeof DUST_PRESETS)[number];
 
-/** The impact of a heal or an Armor gain. A hit and a Status have their own bursts. */
-export type ImpactPresetKey = "heal" | "armor";
+/** The impact of a heal or a Bulwark gain. A hit and a Status have their own bursts. */
+export type ImpactPresetKey = "heal" | "bulwark";
 
 /**
  * The attack, hit, movement and cast effects, with keys from the rules data
@@ -69,7 +69,7 @@ export interface FxPreset {
   /**
    * The time that the effect needs at speed ×1, in ms. Its event is at least
    * this long, up to the limit of the event. A ranged attack also gets the
-   * flight time of its projectile. A dust puff, a heal and an Armor gain do
+   * flight time of its projectile. A dust puff, a heal and a Bulwark gain do
    * not change the time of their event: this is only the life of the effect.
    * A wind-up fills its cast up to the spell bolt, and this is the shortest
    * time that it needs.
@@ -254,7 +254,7 @@ export const FX_PRESETS: Readonly<Record<FxPresetKey, FxPreset>> = {
     time: 650,
   },
   // A shield on the Unit, and blue sparks around it.
-  armor: {
+  bulwark: {
     main: "shield",
     size: 0.75,
     trail: null,

@@ -20,6 +20,7 @@ import {
   hitPreset,
   tickBurst,
 } from "@/features/battle/scene/fx-presets";
+import type { KeywordPlate } from "@/features/battle/scene/keyword-plates";
 import {
   CAMERA_PITCH,
   HERO_FIGURE_Y,
@@ -61,7 +62,7 @@ export type Fx =
       /**
        * A particle burst when a Status starts or deals damage, when an
        * attack hits, when a Unit moves or is Pushed, is healed or gets
-       * Armor, or when a Hero casts a Skill Card (web ADR-0009).
+       * Bulwark, or when a Hero casts a Skill Card (web ADR-0009).
        */
       readonly kind: "particles";
       readonly burst: BurstName;
@@ -76,7 +77,8 @@ export type Fx =
       /** In scene seconds. Speed ×2 halves it. */
       readonly duration: number;
     }
-  | ({ readonly kind: "billboard" } & Billboard);
+  | ({ readonly kind: "billboard" } & Billboard)
+  | KeywordPlate;
 
 /** The ring of a Rebirth: the pale Undead spirit light. */
 const REBORN_RING = "#c4fbef";
@@ -121,7 +123,7 @@ const burstFx = (
 const presetSeconds = (preset: FxPresetKey, speed: BattleSpeed): number =>
   FX_PRESETS[preset].time / 1000 / speed;
 
-/** The heal or Armor impact on a Unit. */
+/** The heal or Bulwark impact on a Unit. */
 const impactFx = (
   preset: ImpactPresetKey,
   at: Spot,
@@ -487,9 +489,9 @@ export const fxForEvent = (
         ? [windup(event, before, time, speed)]
         : [];
     }
-    case "ArmorGained": {
+    case "BulwarkGained": {
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
-      return at ? [impactFx("armor", at, time, speed)] : [];
+      return at ? [impactFx("bulwark", at, time, speed)] : [];
     }
     case "AttackGained": {
       // Call to Arms: a ring of the war gold of Rally. The Attack number at

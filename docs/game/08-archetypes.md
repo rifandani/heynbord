@@ -16,7 +16,7 @@ C, U, R and E are the Ranks Common, Uncommon, Rare and Epic. Each Archetype obey
 
 | Archetype | Class | Style | Deck |
 | --- | --- | --- | --- |
-| Vanguard | Warrior | Human: hold the line. Walls and Armor in front, Shooters behind, with Warrior buffs. The style of the Vanguard Starter Deck. | 1× Town Barricade (C), 1× Militia Recruit (C), 1× Gate Warden (U), 1× Shieldbearer (C), 2× Crossbow Guard (C), 2× Halberdier (C), 1× Dawn Cleric (U), 2× River Knight (U), 1× War Drums (U), 1× Shield Wall (C), 1× Spear Throw (U). 14 cards, Countdown 34. |
+| Vanguard | Warrior | Human: hold the line. Walls and Bulwark in front, Long-range Units behind, with Warrior buffs. The style of the Vanguard Starter Deck. | 1× Town Barricade (C), 1× Militia Recruit (C), 1× Gate Warden (U), 1× Shieldbearer (C), 2× Crossbow Guard (C), 2× Halberdier (C), 1× Dawn Cleric (U), 2× River Knight (U), 1× War Drums (U), 1× Shield Wall (C), 1× Spear Throw (U). 14 cards, Countdown 34. |
 | Raiders | Mage | Orc: rush the enemy Hero. Charge, Flying and high attack, with Mage Fire and Frost spells. The style of the Raiders Starter Deck. | 1× Badland Runt (C), 1× Pack Stalker (U), 2× Scrap Raider (C), 2× Ember Shaman (C), 1× Howling Charger (U), 2× Skyreaver (U), 1× Cinderhorn Breaker (U), 1× Fireball (C), 1× Frost Bolt (C), 1× Flame Wave (U). 13 cards, Countdown 34. |
 
 ### 2.1 Full-set plan
@@ -31,7 +31,7 @@ The 90-Creature-Card set adds four main Archetypes and two diagnostic Decks. The
 | Raiders | Main | Mage | Orc rush reference |
 | Tunnel Rats | Main | Ranger | Goblin Sabotage, trap and bomb reference |
 | Wild Hunt | Main | Priest | Feral few-and-huge reference: Trample and Regenerate, kept alive with Priest healing |
-| Accord Line | Diagnostic | Warrior | Mixed Human and Elf control; tests Armor, Rally, Entangle and ranged Units |
+| Accord Line | Diagnostic | Warrior | Mixed Human and Elf control; tests Bulwark, Rally, Entangle and ranged Units |
 | Breakneck Company | Diagnostic | Mage | Mixed Undead and Orc tempo; tests cheap Units, Swarm, Charge, Fire and Frost |
 | Vanguard Full | Diagnostic | Warrior | The full Human set; tests Wall, Rally, Unique, Knockback and a Holy Last Breath |
 | Raiders Full | Diagnostic | Mage | The full Orc set; tests Rally, Retaliate, Fire, Charge and the Orc Epic pair |
@@ -91,74 +91,74 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 
 | Archetype | Opponent | Win rate | First-Side win rate | Average Turn | No Ready | Target |
 | --- | --- | --- | --- | --- | --- | --- |
-| Vanguard | Vanguard | 50.0% | 44.4% | 23.5 | 12.4 | Mirror |
-| Vanguard | Raiders | 48.9% | 47.7% | 18.3 | 7.9 | 45%–55% |
-| Vanguard | Tunnel Rats | 74.2% | 47.3% | 20.8 | 11.2 | Review |
-| Vanguard | Wild Hunt | 42.6% | 50.0% | 21.8 | 10.6 | Review |
-| Vanguard | Thornwatch | 70.2% | 46.1% | 21.5 | 10.9 | Review |
-| Vanguard | Deathless Host | 63.6% | 50.8% | 25.4 | 14.3 | Review |
-| Vanguard | Breakneck Company | 57.0% | 50.1% | 20.5 | 10.0 | Review |
-| Vanguard | Vanguard Full | 81.6% | 47.5% | 23.7 | 12.6 | Review |
-| Vanguard | Raiders Full | 53.5% | 47.2% | 18.3 | 7.9 | 45%–55% |
-| Vanguard | Human Heavy | 43.5% | 48.6% | 20.5 | 9.3 | Review |
-| Vanguard | Human Light | 59.8% | 46.0% | 24.4 | 13.4 | Review |
-| Raiders | Raiders | 50.0% | 42.2% | 15.4 | 5.2 | Mirror |
-| Raiders | Tunnel Rats | 56.2% | 48.8% | 17.5 | 8.5 | Review |
-| Raiders | Wild Hunt | 47.0% | 49.0% | 17.1 | 7.6 | 45%–55% |
-| Raiders | Thornwatch | 70.3% | 47.1% | 17.4 | 8.0 | Review |
-| Raiders | Deathless Host | 63.4% | 48.7% | 20.9 | 11.7 | Review |
-| Raiders | Breakneck Company | 56.9% | 47.6% | 16.7 | 6.8 | Review |
-| Raiders | Vanguard Full | 81.3% | 49.2% | 18.9 | 9.4 | Review |
-| Raiders | Raiders Full | 58.7% | 42.9% | 15.8 | 5.5 | Review |
-| Raiders | Human Heavy | 31.3% | 43.8% | 16.2 | 6.6 | Review |
-| Raiders | Human Light | 50.9% | 49.5% | 19.6 | 10.4 | 45%–55% |
-| Tunnel Rats | Tunnel Rats | 50.0% | 44.8% | 20.8 | 11.7 | Mirror |
-| Tunnel Rats | Wild Hunt | 38.8% | 49.5% | 20.3 | 10.5 | Review |
-| Tunnel Rats | Thornwatch | 51.4% | 48.4% | 21.2 | 11.5 | 45%–55% |
-| Tunnel Rats | Deathless Host | 60.9% | 49.5% | 24.4 | 14.7 | Review |
-| Tunnel Rats | Breakneck Company | 58.0% | 48.4% | 19.4 | 9.8 | Review |
-| Tunnel Rats | Vanguard Full | 57.4% | 46.8% | 23.3 | 13.4 | Review |
-| Tunnel Rats | Raiders Full | 53.6% | 50.3% | 18.0 | 8.3 | 45%–55% |
-| Tunnel Rats | Human Heavy | 43.2% | 46.3% | 19.2 | 9.4 | Review |
-| Tunnel Rats | Human Light | 18.4% | 48.6% | 21.1 | 11.2 | Review |
-| Wild Hunt | Wild Hunt | 50.0% | 50.8% | 21.3 | 11.2 | Mirror |
-| Wild Hunt | Thornwatch | 68.7% | 46.8% | 20.5 | 11.2 | Review |
-| Wild Hunt | Deathless Host | 51.0% | 46.9% | 24.9 | 15.3 | 45%–55% |
-| Wild Hunt | Breakneck Company | 48.0% | 56.0% | 20.5 | 11.0 | 45%–55% |
-| Wild Hunt | Vanguard Full | 79.3% | 48.1% | 22.4 | 12.4 | Review |
-| Wild Hunt | Raiders Full | 57.7% | 49.8% | 17.8 | 8.3 | Review |
-| Wild Hunt | Human Heavy | 51.5% | 56.0% | 19.3 | 9.7 | 45%–55% |
-| Wild Hunt | Human Light | 47.3% | 50.6% | 22.9 | 13.2 | 45%–55% |
-| Thornwatch | Thornwatch | 50.0% | 47.8% | 21.6 | 12.7 | Mirror |
-| Thornwatch | Deathless Host | 55.6% | 49.3% | 24.2 | 15.3 | Review |
-| Thornwatch | Breakneck Company | 50.1% | 50.2% | 20.3 | 11.4 | 45%–55% |
-| Thornwatch | Vanguard Full | 66.3% | 49.6% | 23.4 | 14.4 | Review |
-| Thornwatch | Raiders Full | 37.9% | 47.1% | 18.1 | 9.2 | Review |
-| Thornwatch | Human Heavy | 35.6% | 46.8% | 19.2 | 10.1 | Review |
-| Thornwatch | Human Light | 26.4% | 48.9% | 22.4 | 13.4 | Review |
-| Deathless Host | Deathless Host | 50.0% | 46.7% | 27.7 | 17.3 | Mirror |
-| Deathless Host | Breakneck Company | 48.4% | 50.5% | 23.5 | 13.0 | 45%–55% |
-| Deathless Host | Vanguard Full | 66.0% | 48.1% | 26.4 | 15.3 | Review |
-| Deathless Host | Raiders Full | 41.3% | 48.8% | 21.3 | 10.7 | Review |
-| Deathless Host | Human Heavy | 47.9% | 49.4% | 23.7 | 13.1 | 45%–55% |
-| Deathless Host | Human Light | 21.4% | 48.9% | 25.1 | 14.2 | Review |
-| Breakneck Company | Breakneck Company | 50.0% | 53.5% | 18.3 | 8.3 | Mirror |
-| Breakneck Company | Vanguard Full | 69.5% | 49.6% | 22.3 | 12.4 | Review |
-| Breakneck Company | Raiders Full | 53.4% | 49.6% | 17.1 | 6.6 | 45%–55% |
-| Breakneck Company | Human Heavy | 40.6% | 52.3% | 19.1 | 9.0 | Review |
-| Breakneck Company | Human Light | 27.1% | 51.1% | 20.8 | 11.1 | Review |
-| Vanguard Full | Vanguard Full | 50.0% | 47.3% | 26.9 | 15.5 | Mirror |
-| Vanguard Full | Raiders Full | 26.4% | 48.8% | 19.4 | 9.3 | Review |
-| Vanguard Full | Human Heavy | 17.4% | 50.2% | 20.6 | 9.5 | Review |
-| Vanguard Full | Human Light | 26.9% | 48.6% | 25.1 | 14.1 | Review |
-| Raiders Full | Raiders Full | 50.0% | 45.6% | 15.9 | 6.5 | Mirror |
-| Raiders Full | Human Heavy | 32.1% | 47.0% | 16.7 | 7.8 | Review |
-| Raiders Full | Human Light | 45.5% | 47.6% | 19.5 | 11.0 | 45%–55% |
-| Human Heavy | Human Heavy | 50.0% | 50.0% | 18.5 | 12.2 | Mirror |
-| Human Heavy | Human Light | 45.3% | 47.4% | 21.4 | 15.0 | 45%–55% |
-| Human Light | Human Light | 50.0% | 45.7% | 25.5 | 16.2 | Mirror |
+| Vanguard | Vanguard | 50.0% | 47.9% | 20.1 | 10.0 | Mirror |
+| Vanguard | Raiders | 56.5% | 50.6% | 15.3 | 5.8 | 45%–55% (miss) |
+| Vanguard | Tunnel Rats | 76.5% | 47.3% | 17.2 | 8.4 | Review |
+| Vanguard | Wild Hunt | 37.4% | 48.8% | 18.4 | 8.1 | Review |
+| Vanguard | Thornwatch | 60.0% | 47.4% | 18.4 | 8.7 | Review |
+| Vanguard | Deathless Host | 47.0% | 50.8% | 21.5 | 11.3 | 45%–55% |
+| Vanguard | Breakneck Company | 35.4% | 50.5% | 18.1 | 8.2 | Review |
+| Vanguard | Vanguard Full | 83.9% | 47.6% | 19.7 | 9.9 | Review |
+| Vanguard | Raiders Full | 60.5% | 51.2% | 15.8 | 6.2 | Review |
+| Vanguard | Human Heavy | 30.4% | 48.1% | 17.3 | 7.3 | Review |
+| Vanguard | Human Light | 59.3% | 46.6% | 20.5 | 10.6 | Review |
+| Raiders | Raiders | 50.0% | 43.3% | 14.5 | 4.7 | Mirror |
+| Raiders | Tunnel Rats | 63.8% | 47.5% | 15.2 | 6.4 | Review |
+| Raiders | Wild Hunt | 49.4% | 54.3% | 14.0 | 4.8 | 45%–55% |
+| Raiders | Thornwatch | 59.2% | 49.3% | 15.1 | 5.8 | Review |
+| Raiders | Deathless Host | 45.4% | 55.2% | 16.4 | 7.4 | 45%–55% |
+| Raiders | Breakneck Company | 30.3% | 50.1% | 14.4 | 5.0 | Review |
+| Raiders | Vanguard Full | 83.0% | 48.5% | 16.1 | 6.8 | Review |
+| Raiders | Raiders Full | 60.3% | 45.6% | 14.1 | 4.4 | Review |
+| Raiders | Human Heavy | 25.6% | 56.4% | 13.4 | 4.4 | Review |
+| Raiders | Human Light | 53.9% | 55.6% | 16.0 | 7.1 | 45%–55% |
+| Tunnel Rats | Tunnel Rats | 50.0% | 41.7% | 17.3 | 8.3 | Mirror |
+| Tunnel Rats | Wild Hunt | 32.7% | 56.5% | 16.0 | 6.3 | Review |
+| Tunnel Rats | Thornwatch | 35.9% | 52.3% | 16.8 | 7.2 | Review |
+| Tunnel Rats | Deathless Host | 35.2% | 51.2% | 18.9 | 9.3 | Review |
+| Tunnel Rats | Breakneck Company | 23.5% | 50.4% | 16.1 | 6.5 | Review |
+| Tunnel Rats | Vanguard Full | 58.5% | 47.1% | 19.2 | 9.5 | Review |
+| Tunnel Rats | Raiders Full | 42.4% | 50.0% | 15.7 | 6.1 | Review |
+| Tunnel Rats | Human Heavy | 17.1% | 56.7% | 14.6 | 5.1 | Review |
+| Tunnel Rats | Human Light | 19.5% | 51.1% | 17.7 | 8.0 | Review |
+| Wild Hunt | Wild Hunt | 50.0% | 58.5% | 17.9 | 8.1 | Mirror |
+| Wild Hunt | Thornwatch | 73.0% | 51.4% | 16.9 | 8.0 | Review |
+| Wild Hunt | Deathless Host | 41.8% | 56.5% | 20.6 | 11.6 | Review |
+| Wild Hunt | Breakneck Company | 34.4% | 59.9% | 17.0 | 8.1 | Review |
+| Wild Hunt | Vanguard Full | 85.7% | 50.2% | 18.5 | 8.9 | Review |
+| Wild Hunt | Raiders Full | 58.4% | 59.1% | 14.5 | 5.5 | Review |
+| Wild Hunt | Human Heavy | 41.9% | 50.6% | 16.3 | 7.1 | Review |
+| Wild Hunt | Human Light | 54.8% | 52.6% | 19.3 | 10.0 | 45%–55% |
+| Thornwatch | Thornwatch | 50.0% | 51.6% | 17.5 | 8.7 | Mirror |
+| Thornwatch | Deathless Host | 37.6% | 56.0% | 19.3 | 10.4 | Review |
+| Thornwatch | Breakneck Company | 36.5% | 53.0% | 17.4 | 8.5 | Review |
+| Thornwatch | Vanguard Full | 77.0% | 50.5% | 18.2 | 9.4 | Review |
+| Thornwatch | Raiders Full | 47.7% | 47.8% | 15.6 | 6.9 | 45%–55% |
+| Thornwatch | Human Heavy | 18.6% | 48.9% | 15.2 | 6.3 | Review |
+| Thornwatch | Human Light | 42.5% | 53.1% | 19.0 | 10.1 | Review |
+| Deathless Host | Deathless Host | 50.0% | 53.7% | 22.7 | 12.7 | Mirror |
+| Deathless Host | Breakneck Company | 38.1% | 54.7% | 19.8 | 9.7 | Review |
+| Deathless Host | Vanguard Full | 77.8% | 48.4% | 21.8 | 11.3 | Review |
+| Deathless Host | Raiders Full | 64.1% | 54.3% | 17.1 | 7.1 | Review |
+| Deathless Host | Human Heavy | 38.6% | 52.8% | 19.5 | 9.2 | Review |
+| Deathless Host | Human Light | 51.3% | 52.3% | 22.0 | 11.7 | 45%–55% |
+| Breakneck Company | Breakneck Company | 50.0% | 54.8% | 16.6 | 6.8 | Mirror |
+| Breakneck Company | Vanguard Full | 86.7% | 50.5% | 18.4 | 8.6 | Review |
+| Breakneck Company | Raiders Full | 75.9% | 52.2% | 14.4 | 4.6 | Review |
+| Breakneck Company | Human Heavy | 50.8% | 55.4% | 15.8 | 6.1 | 45%–55% |
+| Breakneck Company | Human Light | 63.5% | 52.0% | 19.0 | 9.5 | Review |
+| Vanguard Full | Vanguard Full | 50.0% | 45.2% | 22.1 | 12.4 | Mirror |
+| Vanguard Full | Raiders Full | 27.7% | 48.8% | 17.0 | 7.7 | Review |
+| Vanguard Full | Human Heavy | 11.9% | 49.8% | 17.0 | 7.5 | Review |
+| Vanguard Full | Human Light | 23.1% | 50.3% | 20.9 | 11.1 | Review |
+| Raiders Full | Raiders Full | 50.0% | 47.8% | 14.4 | 5.3 | Mirror |
+| Raiders Full | Human Heavy | 22.7% | 54.9% | 13.6 | 5.1 | Review |
+| Raiders Full | Human Light | 45.0% | 53.5% | 16.6 | 8.3 | 45%–55% |
+| Human Heavy | Human Heavy | 50.0% | 44.8% | 15.6 | 9.3 | Mirror |
+| Human Heavy | Human Light | 67.7% | 52.8% | 18.2 | 11.9 | Review |
+| Human Light | Human Light | 50.0% | 49.5% | 21.8 | 12.5 | Mirror |
 
-The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun run sim matchup 1000` on 2026-10-11, after the re-tune of the Skill Cards with the swap rule (issue #56, 3.1 and 3.3). Each Archetype has a tuned card or plays against one, so most pairs changed. Vanguard wins 48.9% against Raiders (it was 49.4%). The 14 Skill Cards of issue #57 change no Archetype list, and the table is the same after them (`bun run sim:check`, 2026-10-11). The 3 Rare and Epic Priest Skill Cards of issue #61 also change no Archetype list: Vanguard still wins 48.9% against Raiders (`bun run sim matchup 1000`, 2026-10-12).
+The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun scripts/simulate.ts 1000 --check` in `packages/rules` on 2026-10-14, after the balance pass of [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md) (3.1). Vanguard wins 56.5% against Raiders, so the main Matchup is not on its 45% to 55% target, and the CI balance gate fails. Just before the change, with the content of the last commit, Vanguard won 58.7%, and the gate also failed. Thornwatch, with faster Long-range Units, wins 40.0% against Vanguard (25.3% before this change) and 40.8% against Raiders (29.0%). It is stronger, but it stays below 45% against both main Archetypes. The findings below this paragraph are from before 2026-10-14, unless they give another date. Before, the results came from `bun run sim matchup 1000` on 2026-10-11, after the re-tune of the Skill Cards with the swap rule (issue #56, 3.1 and 3.3). Then Vanguard won 48.9% against Raiders.
 
 **Goblin, Feral and Undead risks (2.2).** The AI ignores Sabotage, Trample, Entangle, Rally, Swarm, Rebirth and Summon when it selects a play. Thus these results are evidence for review, not a balance approval.
 
@@ -225,6 +225,9 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-12 | The 5 Mage Skill Cards of issue #65 come in ([GDD 5.5](./03-game-design.md#55-classes)) with the Lightning Damage Type, the Paralyzed Status and Field Effects ([ADR-0029](../adr/0029-lightning-damage-gives-paralyzed.md)): Spark (C, Countdown 1, 1 Lightning damage), Arc Lightning (U, Countdown 3, 2 Lightning damage to the target and to the enemy Units next to it in its Column), Wildfire (R, Countdown 4, Fire Field Effect on 2 × 2 Squares for 2 Turns, 2 damage at Rare), Thunderstorm (R, Countdown 5, 2 Lightning damage at Rare to 3 random enemy Units) and Blizzard (E, Countdown 6, Frost Field Effect on 3 × 2 Squares for 2 Turns, 1 damage at Epic). Changes from the provisional values of the issue: Arc Lightning Countdown 3 (it was 4), and the damage of Wildfire, Thunderstorm and Blizzard comes from a Rank table (3.3). No Archetype, Starter Deck or Stage Deck changes (2.3). | Each card passes the swap rule (3.3). The Blizzard lock is 1.2% / 0.5%. The Stage and Matchup results of `bun run sim` (200 seeds) are the same as before the change, so Vanguard against Raiders does not change. `bun run sim packs`: only the Mage Class Pack rows change (Economy 4). |
 | 2026-10-12 | Skybreaker (U, Countdown 3) replaces Flushing Shot ([GDD 4.7 and 5.5](./03-game-design.md#55-classes)). It deals 3 / 5 / 7 / 10 Physical damage at Uncommon / Rare / Epic / Legendary. A Flying Unit that survives becomes Grounded, also at 0 damage: it does not have Flying for 2 End Phases of its owner. No Archetype, Starter Deck or Stage Deck had Flushing Shot, so no Deck changes (2.3). | Flushing Shot and Warning Shot had the same effect (damage, then a push). Skybreaker is a counter card for Flying Units. It fails the swap rule (−7.1 / −8.8, 3.3), and the fail is accepted: the card is not tuned against Decks with few or no Flying Units. |
 | 2026-10-13 | Hunter's Focus (R, Countdown 4) replaces Heartseeker ([GDD 4.8 and 5.5](./03-game-design.md#55-classes)). A friendly Unit gets +3 / +4 / +5 Attack at Rare / Epic / Legendary and +1 Range until the end of the caster's next Turn. A Melee Unit with the bonus Range attacks as a Ranged Unit. A Shooter can have Range 4 for this time ([ADR-0022](../adr/0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md)). No Archetype, Starter Deck or Stage Deck had Heartseeker, so no Deck changes (2.3). | Long Shot and Heartseeker had the same effect (damage to the enemy Hero). It passes the swap rule (−1.0 / −2.4, 3.3). |
+| 2026-10-14 | There are no Roles. Each Unit has Base Speed 2 and Base Range 1, and the Keywords Swift, Fleet, Heavy, Mid-range, Long-range and Extreme-range change them. The budget is `19 + 3 × (Countdown − 3)` ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)). | The Role did not tell a Player the Speed or the Range of a card. |
+| 2026-10-14 | Balance pass for ADR-0030. HP only, Attack does not change. To stay within ±10% of the new budget: Shieldbearer 1/7 → 1/9, Dawn Cleric 2/7 → 2/8, Gate Warden 3/7 → 3/8, Town Barricade 0/15 → 0/14, Banner Chaplain 2/6 → 2/7, King's Courier 2/5 → 2/6, Bonestake Palisade 0/15 → 0/14, Junk Barricade 0/12 → 0/11, Bomb Lobber 3/3 → 3/4, Rocket Barrel Rider 3/2 → 3/3, Crag Lizard 2/8 → 2/10, Cave Bear 3/10 → 3/12, Boulder Tortoise 0/12 → 0/11, Woolly Mammoth 3/7 → 3/8, Mountain Colossus 2/7 → 2/8, Rootbound Guard 3/7 → 3/9, Mosspitcher Lookout 3/6 → 3/8, Acorn Tender 3/3 → 3/5, Thornline Archer 3/3 → 3/4, Bramble Nest 0/16 → 0/15, Graveyard Drudge 3/6 → 3/7, Hushbow 3/4 → 3/5, Grave Bell Tender 3/6 → 3/7, Coffin Lancer 1/4 → 1/5. The Orc melee cards of Raiders get +1 HP, to exactly their budget: Badland Runt 4/1 → 4/2, Pack Stalker 2/4 → 2/5, Scrap Raider 3/4 → 3/5, Howling Charger 3/5 → 3/7 (+1 for the budget and +1 for Raiders), Cinderhorn Breaker 3/3 → 3/4. Stages 1-7 and 1-8 get less Gear and no Rare copies ([14 — Campaign Stages](./14-campaign-stages.md)). The Token Power goes down by 4, because the Base Speed is free: Skeleton 4 / 5 / 7 / 8 / 11 and Restless Wisp 10 / 11 / 13 / 14 / 17 from Common to Legendary. | Heavy cards and Long-range cards went below their budget, and Walls went above it. With only the budget fit, Vanguard won 74.6% against Raiders. With the Raiders HP, it wins 56.5% (58.7% before ADR-0030). The main Matchup and Stages 1-5, 1-7 and 1-8 with Raiders still miss their target, the same count of misses as before. The designer selected mild Stage changes for this pass. |
+| 2026-10-14 | Armor reduces only Physical damage, and Holy cannot be Blocked ([ADR-0031](../adr/0031-armor-reduces-only-physical-damage.md)). Holy costs 1 point, not 2. To stay within ±10% of the budget: Banner Chaplain 2/7 → 2/8 and Acorn Tender 3/5 → 3/6. Matchup at 400 Battles: Vanguard against Raiders 58.5% → 55.8% (target 45%–55%, still a MISS). |
 
 ### 3.2 Countdown slope search
 
@@ -281,7 +284,7 @@ A Skill Card has no Power Budget. The swap rule measures it against a Creature C
 - **Reverse.** The `reverse` column replaces the Skill Card copy that is already in the Deck with 1 more copy of the Creature Card. It measures the first copy, and it is for review only.
 - **Lock.** The `lock` column is the share of Battles in which a Unit of the opponent skipped 3 or more actions in a row, before → after the swap ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)). An action of the Unit that is not skipped ends its run. It is for review only.
 
-**Why melee only.** A Range 3 Shooter is worth much more than other Creature Cards with the same Countdown. With the old values, the change against Vanguard / Raiders was: War Drums against Crossbow Guard −14.5 / −14.2, but against Shieldbearer −5.5 / −4.0. Flame Wave against Ashspit Hunter −34.8 / −26.0, but against Tusk Brute −1.6 / −4.3. Sanctuary against Web Spitter −20.1 / −15.5, but against Cave Bear −3.0 / −2.7. In Vanguard Full, Shieldbearer in place of 1 Crossbow Guard also lost −13.2 / −13.8, so the cause is the Shooter, not the Skill Card. Each Shooter is within its Power Budget. Thus the Power Budget can give Range 3 too few points. That is a separate decision.
+**Why melee only.** A Range 3 Unit is worth much more than other Creature Cards with the same Countdown. With the old values, the change against Vanguard / Raiders was: War Drums against Crossbow Guard −14.5 / −14.2, but against Shieldbearer −5.5 / −4.0. Flame Wave against Ashspit Hunter −34.8 / −26.0, but against Tusk Brute −1.6 / −4.3. Sanctuary against Web Spitter −20.1 / −15.5, but against Cave Bear −3.0 / −2.7. In Vanguard Full, Shieldbearer in place of 1 Crossbow Guard also lost −13.2 / −13.8, so the cause is the Shooter, not the Skill Card. Each Shooter is within its Power Budget. Thus the Power Budget can give Range 3 too few points. That is a separate decision.
 
 Results after the re-tune (3.1), 2026-10-11. Change is in percentage points, against Vanguard / Raiders.
 
@@ -300,7 +303,7 @@ Results after the re-tune (3.1), 2026-10-11. Change is in percentage points, aga
 | Smite | Wild Hunt | Bristleback Boar | 57.4% / 52.9% | 53.4% / 49.2% | −3.9 / −3.7 | Pass |
 | Sanctuary | Wild Hunt | Cave Bear | 57.4% / 52.9% | 54.6% / 49.8% | −2.7 / −3.2 | Pass |
 
-**Warning Shot cannot pass reliably.** It is on the line against Vanguard: −5.8 points with 1000 seeds, −4.6 with 3000 seeds. More damage does not help: with 8, 9 or 10 damage, or a push of 3 Squares, the change stays near −6 with 1000 seeds, because 8 damage already kills most Units of Vanguard. With 6 damage it is −6.0 with 3000 seeds. The swap takes out Rootbound Guard, the only Frontliner of Thornwatch. A Creature Card in its place also loses 5 to 7 points (Bramble Nest −4.9 / −6.2, Bramble Duelist −5.1 / −6.6). Against Bramble Nest, Warning Shot gains +2.3 / +7.2. Thus Warning Shot is about as good as a Creature Card here.
+**Warning Shot cannot pass reliably.** It is on the line against Vanguard: −5.8 points with 1000 seeds, −4.6 with 3000 seeds. More damage does not help: with 8, 9 or 10 damage, or a push of 3 Squares, the change stays near −6 with 1000 seeds, because 8 damage already kills most Units of Vanguard. With 6 damage it is −6.0 with 3000 seeds. The swap takes out Rootbound Guard, the only Heavy Unit of Thornwatch. A Creature Card in its place also loses 5 to 7 points (Bramble Nest −4.9 / −6.2, Bramble Duelist −5.1 / −6.6). Against Bramble Nest, Warning Shot gains +2.3 / +7.2. Thus Warning Shot is about as good as a Creature Card here.
 
 **Findings for review.**
 
@@ -350,7 +353,7 @@ With 3000 seeds, the changes are −1.4 / +1.6 (Venom Arrow), +3.7 / −2.8 (Hea
 
 **Findings for review (issue #59).**
 
-- Venom Arrow is not the Ranger answer to Walls and high Armor in the Matchups. A Wall does not attack, so the AI gets more value when it puts the stacks on a Unit with a high Attack. The card text does not change: the stacks still come at 0 damage.
+- Venom Arrow is not the Ranger answer to Walls and high Bulwark in the Matchups. A Wall does not attack, so the AI gets more value when it puts the stacks on a Unit with a high Attack. The card text does not change: the stacks still come at 0 damage.
 - In the 2026-10-11 simulation, Venom Arrow dealt 1 at Rare, 2 at Epic and 2 at Legendary. The 2026-10-12 change raises these values to 3, 4 and 5; its Poison stacks stay 3, 4 and 5.
 - Heartseeker deals 9 Hero damage at Rare (Countdown 5), and Long Shot deals 10 at Uncommon (Countdown 4). Both pass the swap rule, so a Rare Hero card is not stronger than an Uncommon one. #50 can measure this. On 2026-10-13, Hunter's Focus replaced Heartseeker.
 - In the 2026-10-11 simulation, Rain of Arrows dealt 2 damage at Epic, so most of its value was the Entangle of the whole Lane.
@@ -396,7 +399,7 @@ With 3000 seeds, the changes are −4.6 / −2.3 (Call to Arms), −2.8 / −1.6
 
 - One extra action for one Lane is worth about a Countdown 2 card in the Matchups. In 200 seeds against Vanguard, an *Onslaught* play at Countdown 6 gave 0.7 attacks and 0.6 moves on average: Vanguard Full has 2 Crossbow Guards, a Town Barricade and Units that die early, so a Lane seldom has 2 Units in contact. Onslaught has Countdown 2 and a Recall chance of 28% at Epic; at Legendary, it also gives +1 Attack until the end of the next Turn.
 - *Expose Weakness* has Countdown 2 at Rare, the same as *Unbroken Vow*. Its value comes from the hits of the next 2 Turns, so it is a setup card.
-- The 3 Warrior cards have no damage, so they do not hurt a Wall directly. *Expose Weakness* is the Warrior answer to Armor and Walls: the bonus comes after Armor.
+- The 3 Warrior cards have no damage, so they do not hurt a Wall directly. *Expose Weakness* is the Warrior answer to Bulwark and Walls: the bonus comes after Bulwark.
 - The swap Deck for Warrior is the weakest swap Deck (18% against the main Archetypes). The swap rule measures the cards in a Deck that loses most Battles.
 
 **Spear Throw damage increase, 2026-10-12.** Spear Throw now deals 5 / 6 / 7 / 8 / 9 Physical damage at Common / Uncommon / Rare / Epic / Legendary, up from 4 / 5 / 6 / 7 / 8. In `bun run sim skill-swap 1000`, the swap Deck changes from 19.6% / 25.6% to 29.6% / 31.7% against Vanguard / Raiders (+10.0 / +6.2 points). It fails the ±5 point swap rule.
@@ -434,7 +437,7 @@ With 3000 seeds, the changes are −1.6 / −3.6 (Spark), −0.5 / −0.8 (Arc L
 | --- | --- | --- | --- | --- | --- | --- |
 | Skybreaker | Thornwatch | Rootbound Guard | 25.9% / 29.5% | 18.9% / 20.7% | −7.1 / −8.8 | Fail |
 
-**Skybreaker fails, and the fail is accepted.** Skybreaker is a counter card for Flying Units. Vanguard has no Flying Unit, so against Vanguard the card is only a 3-damage hit, and the AI keeps it in the Hand until the hit kills a Unit. Raiders has 2 Skyreavers, but the card also fails there: Grounded stops 2 Movements of one Skyreaver, and the swap takes out Rootbound Guard, the only Frontliner of Thornwatch (the same loss as Warning Shot). The card is not tuned against Decks that have few or no Flying Units. A change to the swap rule for counter cards (for example, a measure only against Archetypes with Flying Units) is a separate decision.
+**Skybreaker fails, and the fail is accepted.** Skybreaker is a counter card for Flying Units. Vanguard has no Flying Unit, so against Vanguard the card is only a 3-damage hit, and the AI keeps it in the Hand until the hit kills a Unit. Raiders has 2 Skyreavers, but the card also fails there: Grounded stops 2 Movements of one Skyreaver, and the swap takes out Rootbound Guard, the only Heavy Unit of Thornwatch (the same loss as Warning Shot). The card is not tuned against Decks that have few or no Flying Units. A change to the swap rule for counter cards (for example, a measure only against Archetypes with Flying Units) is a separate decision.
 
 **Hunter's Focus, 2026-10-13.** Hunter's Focus replaces Heartseeker. It plays at its Base Rank Rare value (+3 Attack and +1 Range). Thornwatch has no copy of it, so the swap Deck has 1 copy and there is no reverse column (`bun run sim skill-swap 1000`). The Thornwatch Deck before the swap wins 25.9% / 29.5% against Vanguard / Raiders.
 
@@ -445,7 +448,7 @@ With 3000 seeds, the changes are −1.6 / −3.6 (Spark), −0.5 / −0.8 (Arc L
 **Findings for review.**
 
 - Hunter's Focus has Countdown 4 and gives its bonus to 1 Unit. Call to Arms (R, Countdown 3) gives +3 Attack to each friendly Unit in a Lane. The swap rule passes, but the Skill Power Budget (#50) can compare the two cards.
-- The AI scores a Shooter that gets a target from Range 4 higher than a Unit that already has a target. For a Melee Unit, the AI does not count that Retaliate and First Strike do not hit it.
+- The AI scores a Long-range Unit that gets a target from Range 4 higher than a Unit that already has a target. For a Melee Unit, the AI does not count that Retaliate and First Strike do not hit it.
 
 ## 4. When an Archetype or a card changes
 

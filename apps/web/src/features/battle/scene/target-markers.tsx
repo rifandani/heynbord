@@ -7,7 +7,7 @@ import { Mesh, MeshBasicMaterial, Raycaster, Vector2, Vector3 } from "three";
 
 import type { BattleSession } from "@/features/battle/battle-session";
 import {
-  battleSessionAtom,
+  shownSessionAtom,
   detailsUnitAtom,
   focusedTargetAtom,
   legalTargetsAtom,
@@ -97,7 +97,7 @@ export const TargetMarkers = ({
 }: {
   readonly onPick: (target: Target) => void;
 }) => {
-  const session = useAtomValue(battleSessionAtom);
+  const session = useAtomValue(shownSessionAtom);
   const targets = useAtomValue(legalTargetsAtom);
   const focused = useAtomValue(focusedTargetAtom);
   const selected = useAtomValue(selectedCardAtom);

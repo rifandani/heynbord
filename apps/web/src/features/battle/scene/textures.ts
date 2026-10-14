@@ -1067,3 +1067,77 @@ export const statusBadgeTexture = (options: {
       }
     }
   );
+
+/** The canvas of a Keyword Plate: 6 to 1, as its sprite (`keyword-plate-layer.tsx`). */
+const KEYWORD_PLATE_WIDTH = 768;
+const KEYWORD_PLATE_HEIGHT = 128;
+const KEYWORD_PLATE_BODY = 96;
+const KEYWORD_PLATE_BORDER = 6;
+const KEYWORD_PLATE_PADDING = 30;
+const KEYWORD_PLATE_FONT = 56;
+
+/** The rounded body of a Keyword Plate, `width` px wide, in the middle of the canvas. */
+const keywordPlatePath = (width: number): Path2D => {
+  const path = new Path2D();
+  const top = (KEYWORD_PLATE_HEIGHT - KEYWORD_PLATE_BODY) / 2;
+  path.roundRect(
+    (KEYWORD_PLATE_WIDTH - width) / 2,
+    top,
+    width,
+    KEYWORD_PLATE_BODY,
+    22
+  );
+  return path;
+};
+
+/**
+ * A Keyword Plate (web ADR-0009): a Night Plate with a border in the Side
+ * color, and the Keyword name with its value in Inter 700 `cream`, for
+ * example "Swarm 2". The plate is as wide as its text. The canvas is wide
+ * enough for the longest label in id-ID; a longer label gets a smaller font.
+ */
+export const keywordPlateTexture = (options: {
+  readonly label: string;
+  readonly side: Side;
+}): CanvasTexture =>
+  cached(
+    `keyword-plate:${options.side}:${options.label}`,
+    KEYWORD_PLATE_WIDTH,
+    KEYWORD_PLATE_HEIGHT,
+    (context) => {
+      const room =
+        KEYWORD_PLATE_WIDTH -
+        2 * (KEYWORD_PLATE_PADDING + KEYWORD_PLATE_BORDER * 2);
+      context.font = `700 ${KEYWORD_PLATE_FONT}px ${FONT}`;
+      const measured = context.measureText(options.label).width;
+      if (measured > room) {
+        const size = Math.floor((KEYWORD_PLATE_FONT * room) / measured);
+        context.font = `700 ${size}px ${FONT}`;
+      }
+      const textWidth = Math.min(measured, room);
+      const plate = keywordPlatePath(
+        textWidth + 2 * (KEYWORD_PLATE_PADDING + KEYWORD_PLATE_BORDER)
+      );
+      // The hard shadow of the Night Plate chips of the HUD.
+      context.save();
+      context.translate(0, 5);
+      context.fillStyle = "rgba(0, 0, 0, 0.45)";
+      // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
+      context.fill(plate);
+      context.restore();
+      context.fillStyle = "rgba(28, 20, 14, 0.92)";
+      // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
+      context.fill(plate);
+      context.lineWidth = KEYWORD_PLATE_BORDER;
+      context.strokeStyle = SIDE_COLORS[options.side].main;
+      context.stroke(plate);
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillStyle = "#fff6df";
+      context.fillText(
+        options.label,
+        KEYWORD_PLATE_WIDTH / 2,
+        KEYWORD_PLATE_HEIGHT / 2 + 3
+      );
+    }
+  );

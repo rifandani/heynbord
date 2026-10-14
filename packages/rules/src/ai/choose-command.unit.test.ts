@@ -192,7 +192,7 @@ describe("chooseCommand (GDD 9)", () => {
     );
   });
 
-  it("keeps a Lane Armor card when no friendly Unit is in a Lane", () => {
+  it("keeps a Lane Bulwark card when no friendly Unit is in a Lane", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["warrior.shieldWall", 0]]);
     expect(chooseCommand(state)).toEqual(Command.EndTurn());
@@ -549,9 +549,9 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
     ).toEqual(Command.EndTurn());
     expect(pinningShotChoice({ entangled: true })).toEqual(Command.EndTurn());
     expect(pinningShotChoice({ speed: 0 })).toEqual(Command.EndTurn());
-    expect(pinningShotChoice({ bonusArmor: 4, bonusArmorTurns: 2 })).toEqual(
-      Command.EndTurn()
-    );
+    expect(
+      pinningShotChoice({ bonusBulwark: 4, bonusBulwarkTurns: 2 })
+    ).toEqual(Command.EndTurn());
     expect(
       pinningShotChoice({ cardId: "human.townBarricade", hp: 15 })
     ).toEqual(Command.EndTurn());
@@ -588,8 +588,8 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
       owner: "player",
       position: 0,
       hp: 6,
-      bonusArmor: 1,
-      bonusArmorTurns: 2,
+      bonusBulwark: 1,
+      bonusBulwarkTurns: 2,
     });
     placeUnit(state, {
       cardId: "human.townBarricade",
@@ -719,20 +719,20 @@ describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
     ).toEqual(playAtSquare(1, 9));
   });
 
-  it("keeps Smite until it kills, with the Spear Throw Hold Rule, and Armor does not count", () => {
+  it("keeps Smite until it kills, with the Spear Throw Hold Rule, and Bulwark does not count", () => {
     expect(skillChoice("priest.smite", [[5, 4]])).toEqual(Command.EndTurn());
     expect(skillChoice("priest.smite", [[5, 3]])).toEqual(playAt(5));
-    const armored = emptyBattle({ activeSide: "enemy" });
-    giveHand(armored, "enemy", [["priest.smite", 0]]);
-    placeUnit(armored, {
+    const bulwarked = emptyBattle({ activeSide: "enemy" });
+    giveHand(bulwarked, "enemy", [["priest.smite", 0]]);
+    placeUnit(bulwarked, {
       cardId: "orc.scrapRaider",
       owner: "player",
       position: 5,
       hp: 3,
-      bonusArmor: 3,
-      bonusArmorTurns: 2,
+      bonusBulwark: 3,
+      bonusBulwarkTurns: 2,
     });
-    expect(chooseCommand(armored)).toEqual(playAt(5));
+    expect(chooseCommand(bulwarked)).toEqual(playAt(5));
   });
 
   it("includes the Ward of the target in its kill estimate", () => {
@@ -833,17 +833,17 @@ describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
   });
 
   it("counts each Frost hit for Frost Shards and Frost Wave, also at 0 damage, because Frost Freezes", () => {
-    const armored = { position: 6, bonusArmor: 3, bonusArmorTurns: 2 };
+    const bulwarked = { position: 6, bonusBulwark: 3, bonusBulwarkTurns: 2 };
     expect(raidersChoice("mage.frostShards", [{}])).toEqual(Command.EndTurn());
-    expect(raidersChoice("mage.frostShards", [{}, armored])).toEqual(
+    expect(raidersChoice("mage.frostShards", [{}, bulwarked])).toEqual(
       playAtSquare(0, 6)
     );
     expect(raidersChoice("mage.frostWave", [{}])).toEqual(Command.EndTurn());
-    expect(raidersChoice("mage.frostWave", [{}, armored])).toEqual(
+    expect(raidersChoice("mage.frostWave", [{}, bulwarked])).toEqual(
       Command.PlayCard({ handIndex: 0, target: Target.Lane({ lane: 0 }) })
     );
     // Ground Slam is Physical: a hit at 0 damage does not count.
-    expect(raidersChoice("warrior.groundSlam", [{}, armored])).toEqual(
+    expect(raidersChoice("warrior.groundSlam", [{}, bulwarked])).toEqual(
       Command.EndTurn()
     );
   });
@@ -946,10 +946,10 @@ describe("chooseCommand: the Rare and Epic Ranger Skill Cards of #59 (GDD 9)", (
     );
   });
 
-  it("aims Venom Arrow at the Unit with the highest Attack, not at a Wall or a Unit with Armor", () => {
+  it("aims Venom Arrow at the Unit with the highest Attack, not at a Wall or a Unit with Bulwark", () => {
     expect(
       raidersChoice("ranger.venomArrow", [
-        { hp: 12, maxHp: 12, attack: 1, bonusArmor: 2, bonusArmorTurns: 2 },
+        { hp: 12, maxHp: 12, attack: 1, bonusBulwark: 2, bonusBulwarkTurns: 2 },
         { lane: 1, position: 6, hp: 8, maxHp: 8, attack: 5 },
       ])
     ).toEqual(playAtSquare(1, 6));
@@ -1098,15 +1098,15 @@ describe("chooseCommand: the Rare and Epic Warrior Skill Cards of #63 (GDD 9)", 
     ).toEqual(Command.EndTurn());
   });
 
-  it("aims Expose Weakness at a Unit with Armor, but first at a Unit that the Exposed damage lets the hits kill", () => {
-    const armored = { lane: 1, bonusArmor: 2, bonusArmorTurns: 2 };
+  it("aims Expose Weakness at a Unit with Bulwark, but first at a Unit that the Exposed damage lets the hits kill", () => {
+    const bulwarked = { lane: 1, bonusBulwark: 2, bonusBulwarkTurns: 2 };
     expect(
       priestChoice(
         "warrior.exposeWeakness",
         [{ attack: 3 }, { lane: 1, attack: 3 }],
         (state) => {
           playerRaiderAt(7, { hp: 20 })(state);
-          playerRaiderAt(7, { ...armored, hp: 20 })(state);
+          playerRaiderAt(7, { ...bulwarked, hp: 20 })(state);
         }
       )
     ).toEqual(playAtSquare(1, 7));
@@ -1117,7 +1117,7 @@ describe("chooseCommand: the Rare and Epic Warrior Skill Cards of #63 (GDD 9)", 
         [{ attack: 3 }, { lane: 1, attack: 3 }],
         (state) => {
           playerRaiderAt(7, { hp: 5 })(state);
-          playerRaiderAt(7, { ...armored, hp: 20 })(state);
+          playerRaiderAt(7, { ...bulwarked, hp: 20 })(state);
         }
       )
     ).toEqual(playAtSquare(0, 7));
@@ -1187,12 +1187,13 @@ describe("chooseCommand: Hunter's Focus (GDD 9)", () => {
       position: 9,
       attack: 4,
     };
-    // Crossbow Guard: Speed 1 and Range 3, so Range 4 reaches Square 4.
+    // Crossbow Guard: Speed 2 and Range 3. It moves to Square 7, and Range 4
+    // reaches Square 3.
     expect(
-      priestChoice("ranger.huntersFocus", [shooter], playerRaiderAt(3))
+      priestChoice("ranger.huntersFocus", [shooter], playerRaiderAt(2))
     ).toEqual(Command.EndTurn());
     expect(
-      priestChoice("ranger.huntersFocus", [shooter], playerRaiderAt(4))
+      priestChoice("ranger.huntersFocus", [shooter], playerRaiderAt(3))
     ).toEqual(playAtSquare(0, 9));
     expect(
       priestChoice("ranger.huntersFocus", [{ position: 9 }], playerRaiderAt(8))
@@ -1208,7 +1209,7 @@ describe("chooseCommand: Hunter's Focus (GDD 9)", () => {
     const melee = { lane: 1, position: 9, attack: 6 };
     expect(
       priestChoice("ranger.huntersFocus", [shooter, melee], (state) => {
-        playerRaiderAt(4)(state);
+        playerRaiderAt(3)(state);
         playerRaiderAt(8, { lane: 1 })(state);
       })
     ).toEqual(playAtSquare(0, 9));

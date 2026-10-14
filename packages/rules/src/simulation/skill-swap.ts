@@ -8,6 +8,7 @@
 import { ARCHETYPES } from "../content/archetypes";
 import { getCard } from "../content/cards";
 import { deckCountdown, MAX_COPIES } from "../content/decks";
+import { isRangedRange, keywordRange } from "../content/keywords";
 import type {
   Archetype,
   ClassId,
@@ -64,7 +65,9 @@ export const swappedCreature = (
 ): DeckEntry => {
   const creatures = deck.filter((entry) => {
     const card = getCard(entry.cardId);
-    return card.kind === "creature" && card.range === 0;
+    return (
+      card.kind === "creature" && !isRangedRange(keywordRange(card.keywords))
+    );
   });
   const [first] = creatures;
   if (first === undefined) {

@@ -1,4 +1,4 @@
-import { keywordValue } from "../content/keywords";
+import { keywordRange, keywordSpeed, keywordValue } from "../content/keywords";
 import { scaleForRank } from "../content/ranks";
 import type {
   CreatureCardDefinition,
@@ -13,8 +13,6 @@ import type { CardInstance, Side, UnitSource, UnitState } from "./types";
 interface UnitBody {
   readonly attack: number;
   readonly hp: number;
-  readonly speed: number;
-  readonly range: number;
   readonly damageType: DamageType;
   readonly keywords: TokenKeywords;
 }
@@ -40,10 +38,10 @@ const makeUnit = (options: {
     attack: body.attack,
     hp: body.hp,
     maxHp: body.hp,
-    speed: body.speed,
-    range: body.range,
+    speed: keywordSpeed(keywords),
+    range: keywordRange(keywords),
     damageType: body.damageType,
-    armor: keywordValue(keywords.armor, rank),
+    bulwark: keywordValue(keywords.bulwark, rank),
     charge: keywordValue(keywords.charge, rank),
     entangle: keywords.entangle ?? false,
     firstStrike: keywords.firstStrike ?? false,
@@ -76,8 +74,8 @@ const makeUnit = (options: {
     ward: 0,
     steadfast: false,
     rallied: 0,
-    bonusArmor: 0,
-    bonusArmorTurns: 0,
+    bonusBulwark: 0,
+    bonusBulwarkTurns: 0,
     bonusAttack: 0,
     bonusAttackTurns: 0,
     bonusRange: 0,
@@ -109,7 +107,7 @@ export const createUnit = (options: {
 };
 
 /**
- * Makes a Token Unit (GDD 4.9). Its Rank table gives Attack, HP and Speed:
+ * Makes a Token Unit (GDD 4.9). Its Rank table gives Attack and HP:
  * they do not scale (Card Concepts 8).
  */
 export const createToken = (options: {

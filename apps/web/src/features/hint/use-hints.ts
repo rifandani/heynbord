@@ -1,4 +1,5 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
+import type { BattleResult } from "@workspace/rules";
 import { isUnlocked } from "@workspace/rules";
 import type { ContextType } from "react";
 import { useContext, useEffect } from "react";
@@ -11,6 +12,7 @@ import {
   battleHints,
   hasCardOutOfDecks,
   HINT_PLACE,
+  isBattleLogHintMet,
   nextHint,
 } from "@/features/hint/hint";
 import { seenHintsAtom, shownHintAtom } from "@/features/hint/hint.atoms";
@@ -66,11 +68,17 @@ export const useBattleHints = (session: BattleSession | null) => {
   );
 };
 
-/** True when a dialog covers the screen, for example the Deck builder. */
-const dialogIsOpen = () => document.querySelector('[role="dialog"]') !== null;
+/**
+ * True when a dialog covers `anchor`, for example the Deck builder: a dialog
+ * that does not hold the anchor.
+ */
+const dialogCovers = (anchor: Element) =>
+  [...document.querySelectorAll('[role="dialog"]')].some(
+    (dialog) => !dialog.contains(anchor)
+  );
 
 /**
- * Shows `hint` when it is met, its anchor is on the screen and no dialog
+ * Shows `hint` when it is met, its anchor is on the screen and no other dialog
  * covers it. It waits while another Hint shows, and stops when this one was
  * seen.
  */
@@ -85,15 +93,16 @@ const useAnchoredHint = (hint: HintId, met: boolean) => {
       if (registry.get(seenHintsAtom).includes(hint)) {
         return;
       }
-      if (
-        document.querySelector(HINT_ANCHOR[HINT_PLACE[hint]]) !== null &&
-        !dialogIsOpen()
-      ) {
+      const anchor = document.querySelector(HINT_ANCHOR[HINT_PLACE[hint]]);
+      if (anchor !== null && !dialogCovers(anchor)) {
         showNext(registry, [hint]);
       }
       frame = requestAnimationFrame(wait);
     };
-    wait();
+    // The first check is in the next frame. When the effect runs again at
+    // once (React StrictMode), its cleanup must not close a Hint that it
+    // showed and kept as seen.
+    frame = requestAnimationFrame(wait);
     return () => cancelAnimationFrame(frame);
   }, [registry, hint, met]);
 };
@@ -155,4 +164,15 @@ export const usePacksHints = (active: boolean) => {
   const unopened = useAtomValue(unopenedPacksAtom);
   useAnchoredHint("unopenedPack", active && unopened.length > 0);
   useCloseWhenInactive("unopenedPack", active);
+};
+
+/**
+ * The Battle Log Hint (GDD 8.3): the first loss of a Stage after the
+ * Tutorial. It shows near the Battle Log button of the result screen, and it
+ * closes when the result screen closes.
+ */
+export const useResultHints = (result: BattleResult, tutorial: boolean) => {
+  const lost = isBattleLogHintMet({ result, tutorial });
+  useAnchoredHint("battleLog", lost);
+  useCloseWhenInactive("battleLog", lost);
 };

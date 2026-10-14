@@ -20,7 +20,7 @@ export const BURST_DURATION = 0.7;
 /**
  * A burst when a Status starts, when Burn or Poison deals damage, when a Ward
  * absorbs damage, when an attack hits, when a Unit moves or is Pushed onto a
- * Square, when a Unit is healed or gets Armor, or when a Hero casts a Skill
+ * Square, when a Unit is healed or gets Bulwark, or when a Hero casts a Skill
  * Card.
  */
 export type BurstName =
@@ -635,7 +635,7 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
   push: dustBurst(FX_PRESETS.push),
   windup: windupBurst(FX_PRESETS.windup),
   heal: presetBurst(FX_PRESETS.heal),
-  armor: presetBurst(FX_PRESETS.armor),
+  bulwark: presetBurst(FX_PRESETS.bulwark),
 };
 
 export const loopParticleCount = (status: Status): number =>

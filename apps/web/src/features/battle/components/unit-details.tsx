@@ -48,7 +48,11 @@ export const UnitDetails = ({ battle }: { readonly battle: Battle }) => {
   if (!unit) {
     return null;
   }
-  const side = dockSide(unit.owner, tutorialIsOpen(battle.session));
+  // The open Tutorial text and the Battle Log panel have the right side.
+  const side = dockSide(
+    unit.owner,
+    tutorialIsOpen(battle.session) || battle.log !== null
+  );
   const onEntry = battle.inspecting ? handbook.openAt : undefined;
   return (
     <div

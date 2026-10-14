@@ -18,6 +18,7 @@ export {
   BattleEvent,
   Command,
   HAND_LIMIT,
+  heroOf,
   LANE_LENGTH,
   otherSide,
   STAGE_LANES,
@@ -35,9 +36,11 @@ export type {
   BattleSetup,
   BattleState,
   CardInstance,
+  DamageDealer,
   DamageSource,
   FieldEffect,
   HandCard,
+  HeroRef,
   HeroState,
   PlayerSetup,
   Side,
@@ -126,10 +129,17 @@ export {
   playerLevelForXp,
 } from "./content/player-levels";
 export {
+  BASE_RANGE,
+  BASE_SPEED,
+  isRangedRange,
+  KEYWORD_ACTIVATES,
+  keywordRange,
+  keywordSpeed,
   keywordValue,
   RACE_KEYWORDS,
   SHARED_RANK_VALUES,
 } from "./content/keywords";
+export type { ActivatedKeyword } from "./content/keywords";
 export {
   rankPips,
   RANKS,
@@ -161,7 +171,7 @@ export type {
   StarterDeck,
   TokenDefinition,
   TokenId,
-  UnitRole,
+  TokenKeywords,
 } from "./content/schema";
 export {
   CAMPAIGN_WIN_COIN,

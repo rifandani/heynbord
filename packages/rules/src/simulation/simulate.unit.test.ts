@@ -297,9 +297,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: NO_GEAR,
       })
     ).toMatchObject({
-      winRate: 0.55,
-      firstSideWinRate: 0.45,
-      averageTurn: 18.05,
+      winRate: 0.625,
+      firstSideWinRate: 0.475,
+      averageTurn: 15.175,
     });
     // Gear 3 rolls Crit and Block.
     expect(
@@ -309,9 +309,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
       })
     ).toMatchObject({
-      winRate: 0.65,
-      firstSideWinRate: 0.4,
-      averageTurn: 18.2,
+      winRate: 0.6,
+      firstSideWinRate: 0.45,
+      averageTurn: 15.625,
     });
   });
 });

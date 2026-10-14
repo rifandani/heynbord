@@ -1,5 +1,10 @@
 import type { CardDefinition, RaceId } from "@workspace/rules";
-import { CARDS, RACE_KEYWORDS, RANKS } from "@workspace/rules";
+import {
+  CARDS,
+  KEYWORD_ACTIVATES,
+  RACE_KEYWORDS,
+  RANKS,
+} from "@workspace/rules";
 import { Predicate } from "effect";
 import { describe, expect, it } from "vitest";
 
@@ -181,7 +186,6 @@ describe("ENTRIES", () => {
     expect(kinds.filter((id) => id.startsWith("class")).length).toBe(
       CLASSES_WITH_CARDS.length + 1
     );
-    expect(kinds.filter((id) => id.startsWith("role")).length).toBe(7);
   });
 
   it("names the Race Keyword of each Race in its Entry and links to it (ADR-0026)", () => {
@@ -208,7 +212,7 @@ describe("ENTRIES", () => {
 
 describe("Entries of Keywords, Statuses and Damage Types", () => {
   it("has an Entry for each Keyword, with the rule key of the Details Panel", () => {
-    expect(KEYWORDS).toHaveLength(22);
+    expect(KEYWORDS).toHaveLength(28);
     for (const card of CARDS) {
       const text = cardText(card.id, card.baseRank);
       if (text.kind !== "creature") {
@@ -218,7 +222,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
         const entry = getEntry(keywordEntryId(line.keyword));
         expect(entry.chapter).toBe("keywords");
         expect(entry.name.key).toBe(line.name.key);
-        expect(entry.body.map((ref) => ref.key)).toEqual([line.rule.key]);
+        expect(entry.body[0]?.key).toBe(line.rule.key);
       }
     }
     for (const keyword of KEYWORDS) {
@@ -228,8 +232,8 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
 
   it("has an Entry for each Status, with the name and rule keys of the Details Panel", () => {
     const lines = unitStatusText({
-      bonusArmor: 0,
-      bonusArmorTurns: 0,
+      bonusBulwark: 0,
+      bonusBulwarkTurns: 0,
       bonusAttack: 0,
       bonusAttackTurns: 0,
       bonusRange: 0,
@@ -255,7 +259,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
     );
     for (const line of lines) {
       if (
-        line.status === "bonusArmor" ||
+        line.status === "bonusBulwark" ||
         line.status === "bonusAttack" ||
         line.status === "bonusRange" ||
         line.status === "rallyBonus" ||
@@ -306,6 +310,36 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
     expect(text(getEntry("keywordSwarm").name)).toBe("Swarm N");
     expect(text(getEntry("statusPoison").name)).toBe("Poison N");
     expect(text(getEntry("statusFreeze").name)).toBe("Frozen");
+  });
+});
+
+describe("the Keyword Plate line (#75)", () => {
+  const activated = new Set(
+    Object.entries(KEYWORD_ACTIVATES)
+      .filter(([, active]) => active)
+      .map(([keyword]) => keyword)
+  );
+
+  it("says in each Keyword that occurs in a Battle that its name shows over the Unit", () => {
+    expect(activated.size).toBe(18);
+    for (const keyword of KEYWORDS) {
+      const keys = getEntry(keywordEntryId(keyword)).body.map((ref) => ref.key);
+      expect(keys).toEqual(
+        activated.has(keyword)
+          ? [`keywordRules.${keyword}`, "handbook.keywordPlate"]
+          : [`keywordRules.${keyword}`]
+      );
+    }
+  });
+
+  it("has the line in both Message Catalogs", () => {
+    const line = getEntry("keywordSwarm").body[1] ?? { key: "" };
+    expect(textIn("en-us")(line)).toBe(
+      "When a Keyword occurs in a Battle, its name shows over the Unit."
+    );
+    expect(textIn("id-id")(line)).toBe(
+      "Saat sebuah Kata Kunci terjadi dalam Pertempuran, namanya muncul di atas Unit."
+    );
   });
 });
 
@@ -400,7 +434,7 @@ describe("rankTableKeywords", () => {
     ]);
   });
 
-  it("gives the shared table to those Keywords, and 'See the card' to the other value Keywords", () => {
+  it("gives the shared table to those Keywords, and no table to the other value Keywords", () => {
     const table = rankTableKeywords(CARDS);
     for (const keyword of VALUE_KEYWORDS) {
       expect(getEntry(keywordEntryId(keyword)).value, keyword).toBe(
@@ -543,13 +577,13 @@ describe("chapterEntries", () => {
       const names = chapterEntries("keywords", nameIn(locale), locale).map(
         nameIn(locale)
       );
-      expect(names).toHaveLength(22);
+      expect(names).toHaveLength(28);
       expect(names).toEqual(
         names.toSorted((a, b) => a.localeCompare(b, locale))
       );
     }
     expect(chapterEntries("keywords", nameIn("en-us"), "en-us")[0]?.id).toBe(
-      "keywordArmor"
+      "keywordBleed"
     );
   });
 

@@ -134,7 +134,7 @@ A Skill Card has a Class, not a Race. Its image must not show a Race, because a 
 
 ### 5.3 Steps for each card
 
-1. Write the card concept in [10 — Card Concepts](./10-card-concepts.md): name, Race or Class, Role, subject, pose, props and setting. For a Creature Card or a Token, add its subject line to `scripts/creature-art/subjects.ts`. For a Skill Card, write its brief: effect subject, partial figure, action, setting and palette.
+1. Write the card concept in [10 — Card Concepts](./10-card-concepts.md): name, Race or Class, subject, pose, props and setting. For a Creature Card or a Token, add its subject line to `scripts/creature-art/subjects.ts`. For a Skill Card, write its brief: effect subject, partial figure, action, setting and palette.
 2. Make 4 to 8 images with the prompts (5.2 or 5.2.1) and the style references.
 3. Select one image with the review checklist (5.4).
 4. Fix problems by hand or with inpainting (hands, weapons, extra parts).

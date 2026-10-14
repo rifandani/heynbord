@@ -28,7 +28,6 @@ export interface CreatureConcept {
   readonly id: string;
   readonly race: string;
   readonly name: string;
-  readonly role: string;
   readonly rank: string;
   readonly damageType: string;
   readonly flavor: string;
@@ -38,7 +37,7 @@ export interface CreatureConcept {
   readonly characterSheet: Rows;
 }
 
-/** The art brief of one Token. A Token has no Role, no Base Rank and no flavor text. */
+/** The art brief of one Token. A Token has no Base Rank and no flavor text. */
 export interface TokenConcept {
   readonly id: string;
   /** The Race on the ID line. The art uses the setting and the palette of that Race. */
@@ -165,8 +164,7 @@ const conceptOf = (section: Section): CreatureConcept => {
     id,
     race: id.slice(0, id.indexOf(".")),
     name,
-    role: header[1],
-    rank: header[2],
+    rank: header[1],
     damageType: header[damageIndex],
     flavor: flavor.slice(2).trim(),
     brief,
@@ -176,7 +174,7 @@ const conceptOf = (section: Section): CreatureConcept => {
   };
 };
 
-/** A Token. Its ID line is `` `token.<name>` · <Race> · <range> · <Damage Type> · <Keywords> ``. */
+/** A Token. Its ID line is `` `token.<name>` · <Race> · <Damage Type> · <Keywords> ``. */
 const tokenOf = (section: Section): TokenConcept => {
   const { id, name, header, damageIndex, brief } = entryOf(section);
   return {

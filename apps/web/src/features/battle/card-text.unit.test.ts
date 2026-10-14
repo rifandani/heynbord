@@ -80,7 +80,6 @@ const dataKeys = (): string[] => {
       card.kind === "creature" ? `races.${card.race}` : `classes.${card.class}`
     );
     if (card.kind === "creature") {
-      keys.add(`roles.${card.role}`);
       keys.add(`damageTypes.${card.damageType}`);
     }
   }
@@ -188,8 +187,9 @@ describe("cardText (CRD-08)", () => {
       ["Heroic 1", "+1 damage when this Unit attacks a Hero."],
       [
         "Flying",
-        "Moves over all Units, but stops before an enemy Flying Unit. It stops in an empty Square.",
+        "Moves over all Units except enemy Flying Unit. It stops in an empty Square.",
       ],
+      ["Swift", "+1 Speed."],
     ]);
     expect(text.damageRule).toBeUndefined();
     expect(resolve(creature("human.dawnCleric", "uncommon").attackType)).toBe(
@@ -208,7 +208,7 @@ describe("cardText (CRD-08)", () => {
     );
     expect(resolve(text.recall)).toBe("Recall 35%");
     expect(resolve(skill("warrior.shieldWall", "common").effect)).toBe(
-      "Friendly Units in a Lane get Armor 1 for the next 2 enemy Turns."
+      "Friendly Units in a Lane get Bulwark 1 for the next 2 enemy Turns."
     );
     expect(resolve(skill("warrior.warDrums", "common").effect)).toBe(
       "The Countdown of 2 random cards in your Hand goes down by 2."
@@ -269,8 +269,7 @@ describe("cardText (CRD-08)", () => {
     );
     expect(effects("priest.smite")).toEqual(
       [3, 4, 4, 5, 6].map(
-        (amount) =>
-          `Deal ${amount} Holy damage to an enemy Unit. Armor does not reduce it.`
+        (amount) => `Deal ${amount} Holy damage to an enemy Unit.`
       )
     );
     // Sanctuary starts at Uncommon: its Common value repeats Uncommon.
@@ -298,16 +297,16 @@ describe("cardText (CRD-08)", () => {
       "Deal 3 Physical damage to an enemy Unit. If it takes damage and survives, push it 1 Square back toward its Hero."
     );
     expect(effect("warrior.shieldBash", "common")).toBe(
-      "Deal 2 Physical damage to an enemy Unit. Friendly Units in its Lane get Armor 1 for the next enemy Turn."
+      "Deal 2 Physical damage to an enemy Unit. Friendly Units in its Lane get Bulwark 1 for the next enemy Turn."
     );
     expect(effect("ranger.barbedArrow", "uncommon")).toBe(
       "Deal 6 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Bleeding 2."
     );
     expect(effect("priest.radiantStrike", "common")).toBe(
-      "Deal 2 Holy damage to an enemy Unit. Armor does not reduce it. Heal 2 HP to each friendly Unit in its Lane."
+      "Deal 2 Holy damage to an enemy Unit. Heal 2 HP to each friendly Unit in its Lane."
     );
     expect(effect("priest.penance", "legendary")).toBe(
-      "Deal Holy damage to an enemy Unit, equal to the Attack of that Unit. Armor does not reduce it."
+      "Deal Holy damage to an enemy Unit, equal to the Attack of that Unit."
     );
     expect(effect("priest.prayerOfHealing", "rare")).toBe(
       "Heal 10 HP to each friendly Unit in a Lane."
@@ -375,10 +374,10 @@ describe("cardText (CRD-08)", () => {
       "Friendly Units in a Lane get +3 Attack until the end of your next Turn."
     );
     expect(effect("warrior.exposeWeakness", "rare")).toBe(
-      "An enemy Unit becomes Exposed 2: each Physical hit on it deals 2 more damage, after Armor, until the end of your next Turn."
+      "An enemy Unit becomes Exposed 2: each Physical hit on it deals 2 more damage, after Bulwark, until the end of your next Turn."
     );
     expect(effect("warrior.exposeWeakness", "legendary")).toBe(
-      "An enemy Unit becomes Exposed 4: each Physical hit on it deals 4 more damage, after Armor, until the end of your next Turn."
+      "An enemy Unit becomes Exposed 4: each Physical hit on it deals 4 more damage, after Bulwark, until the end of your next Turn."
     );
     expect(effect("warrior.onslaught", "epic")).toBe(
       "Each friendly Unit in a Lane takes one more action now: it moves and attacks, from the front Unit to the back Unit."
@@ -489,20 +488,25 @@ describe("cardText (CRD-08)", () => {
     const names = (cardId: string, rank: RankId) =>
       creature(cardId, rank).keywords.map((keyword) => resolve(keyword.name));
     expect(names("human.townBarricade", "common")).toEqual(["Wall"]);
-    expect(names("human.bannerChaplain", "uncommon")).toEqual(["Rally 1"]);
+    expect(names("human.bannerChaplain", "uncommon")).toEqual([
+      "Rally 1",
+      "Mid-range",
+    ]);
     expect(names("human.dawnReliquary", "rare")).toEqual([
-      "Armor 2",
+      "Bulwark 2",
       "Last Breath 2",
       "Wall",
     ]);
     expect(names("human.marshalElianVoss", "epic")).toEqual([
-      "Armor 1",
+      "Bulwark 1",
       "Rally 2",
+      "Mid-range",
       "Unique",
     ]);
     expect(names("orc.warchiefGrukka", "epic")).toEqual([
       "Charge 2",
       "Heroic 2",
+      "Swift",
       "Unique",
     ]);
     const [rally] = creature("orc.warhowlerDrummer", "uncommon").keywords;
@@ -521,7 +525,8 @@ describe("cardText (CRD-08)", () => {
       "Swarm 1: While another friendly Unit is in the same Lane, this Unit has +1 Attack, also for Retaliate. More friendly Units do not increase the bonus.",
     ]);
     expect(lines("undead.coffinLancer", "rare")).toEqual([
-      "Armor 1: Reduces damage to this Unit by 1. It does not reduce Holy damage.",
+      "Bulwark 1: Reduces Physical damage to this Unit by 1.",
+      "Heavy: −1 Speed.",
       "Rebirth: The first time this Unit dies, it comes back in the same Square with 1 HP. Its Statuses end, and it loses Rebirth.",
     ]);
   });
@@ -580,8 +585,8 @@ describe("unitStatusText", () => {
   const resolve = (ref: TextRef) =>
     resolveText((key, args) => t(key as never, args as never), ref);
   const quiet = {
-    bonusArmor: 0,
-    bonusArmorTurns: 0,
+    bonusBulwark: 0,
+    bonusBulwarkTurns: 0,
     bonusAttack: 0,
     bonusAttackTurns: 0,
     bonusRange: 0,
@@ -603,14 +608,14 @@ describe("unitStatusText", () => {
     reborn: false,
   };
 
-  it("is empty for a Unit with no bonus Armor and no Status", () => {
+  it("is empty for a Unit with no bonus Bulwark and no Status", () => {
     expect(unitStatusText(quiet)).toEqual([]);
   });
 
-  it("lists bonus Armor, bonus Attack, bonus Range, the Rally bonus, the Swarm bonus, each Status, then a used Rebirth", () => {
+  it("lists bonus Bulwark, bonus Attack, bonus Range, the Rally bonus, the Swarm bonus, each Status, then a used Rebirth", () => {
     const lines = unitStatusText({
-      bonusArmor: 1,
-      bonusArmorTurns: 2,
+      bonusBulwark: 1,
+      bonusBulwarkTurns: 2,
       bonusAttack: 3,
       bonusAttackTurns: 1,
       bonusRange: 1,
@@ -632,7 +637,7 @@ describe("unitStatusText", () => {
       reborn: true,
     });
     expect(lines.map((line) => line.status)).toEqual([
-      "bonusArmor",
+      "bonusBulwark",
       "bonusAttack",
       "bonusRange",
       "rallyBonus",
@@ -655,7 +660,7 @@ describe("unitStatusText", () => {
           .join(" ")
       )
     ).toEqual([
-      "Armor +1 From a Skill Card. Turns left: 2.",
+      "Bulwark +1 From a Skill Card. Turns left: 2.",
       "Attack +3 From a Skill Card: until the end of your next Turn. End Phases left: 1.",
       "Range +1 From a Skill Card: until the end of your next Turn. A Melee Unit attacks as a Ranged Unit. End Phases left: 1.",
       "Attack +2 From Rally: until the end of this Turn.",
@@ -668,7 +673,7 @@ describe("unitStatusText", () => {
       "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
       "Grounded 2 A Debuff. This Unit does not have Flying: it stops before enemy Units, and enemy Flying Units move over it. The count goes down by 1 in each End Phase of its owner.",
       "Poison 2 1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
-      "Exposed 2 A Debuff. Each Physical hit on this Unit deals more damage, equal to the Exposed value, after Armor. Fire, Frost, Holy, Burn and Poison damage do not get it. It ends after 2 End Phases of its owner. A new Exposed keeps the higher value. End Phases left: 2.",
+      "Exposed 2 A Debuff. Each Physical hit on this Unit deals more damage, equal to the Exposed value, after Bulwark. Fire, Frost, Holy, Burn and Poison damage do not get it. It ends after 2 End Phases of its owner. A new Exposed keeps the higher value. End Phases left: 2.",
       "Reborn This Unit died and came back with Rebirth. It does not come back again.",
     ]);
   });
@@ -698,7 +703,7 @@ describe("unitStatusText", () => {
     const [ward] = lines;
     expect(ward && resolve(ward.name)).toBe("Ward 6");
     expect(ward && resolve(ward.rule)).toBe(
-      "A Buff. It absorbs damage after Armor, Crit and Block, also Holy, Burn and Poison damage, and goes down by that damage. It has no time limit. A new Ward keeps the higher value."
+      "A Buff. It absorbs damage after Bulwark, Crit and Block, also Holy, Burn and Poison damage, and goes down by that damage. It has no time limit. A new Ward keeps the higher value."
     );
   });
 

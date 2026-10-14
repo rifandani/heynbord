@@ -37,6 +37,7 @@ describe("fxForEvent", () => {
         amount: 3,
         damageType: "fire",
         source: "attack",
+        dealer: null,
         crit: true,
         blocked: false,
         trueDamage: false,
@@ -72,6 +73,7 @@ describe("fxForEvent", () => {
         amount: 1,
         damageType: "physical",
         source: "attack",
+        dealer: null,
         crit: false,
         blocked: true,
         trueDamage: false,
@@ -128,6 +130,7 @@ describe("fxForEvent edge cases", () => {
       amount: 0,
       damageType: "frost",
       source: "attack",
+      dealer: null,
       crit: false,
       blocked: false,
       trueDamage: false,
@@ -149,7 +152,7 @@ describe("fxForEvent edge cases", () => {
     ).toEqual([]);
     expect(
       fxForEvent(
-        { _tag: "ArmorGained", unitId: 999, armor: 1, turns: 1 },
+        { _tag: "BulwarkGained", unitId: 999, bulwark: 1, turns: 1 },
         view,
         view,
         0,
@@ -244,9 +247,9 @@ describe("fxForEvent for the Mage cards of #65", () => {
       reborn: false,
       hp: 6,
       maxHp: 6,
-      armor: 0,
-      bonusArmor: 0,
-      bonusArmorTurns: 0,
+      bulwark: 0,
+      bonusBulwark: 0,
+      bonusBulwarkTurns: 0,
       range: 0,
       flying: false,
       damageType: "physical",
@@ -332,6 +335,7 @@ describe("fxForEvent for Statuses", () => {
           amount: 1,
           damageType: "physical",
           source,
+          dealer: null,
           crit: false,
           blocked: false,
           trueDamage: false,
@@ -393,6 +397,7 @@ describe("fxForEvent for attacks and hits (web ADR-0009)", () => {
       amount: options.amount ?? 2,
       damageType,
       source: "attack",
+      dealer: null,
       crit: options.crit ?? false,
       blocked: options.blocked ?? false,
       trueDamage: false,
@@ -544,6 +549,7 @@ const played = (cardId: string, side: Side = "enemy") =>
   ({
     _tag: "CardPlayed",
     side,
+    hero: { side, hero: 0 },
     handIndex: 0,
     card: { instanceId: 1, cardId, rank: "common" },
     target: { _tag: "Square", lane: 0, position: 4 },
@@ -594,6 +600,7 @@ describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
           amount: 3,
           damageType: "fire",
           source: "skill",
+          dealer: null,
           crit: false,
           blocked: false,
           trueDamage: false,
@@ -644,12 +651,12 @@ describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
     ]);
   });
 
-  it("shows the Armor impact on each Unit that gets Armor", () => {
+  it("shows the Bulwark impact on each Unit that gets Bulwark", () => {
     const [unit] = view.units;
     const at = worldOf(view, { _tag: "Unit", unitId: unit?.id ?? 0 });
     expect(
       fxForEvent(
-        { _tag: "ArmorGained", unitId: unit?.id ?? 0, armor: 1, turns: 2 },
+        { _tag: "BulwarkGained", unitId: unit?.id ?? 0, bulwark: 1, turns: 2 },
         view,
         view,
         1,
@@ -658,11 +665,11 @@ describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
     ).toEqual([
       expect.objectContaining({
         kind: "particles",
-        burst: "armor",
+        burst: "bulwark",
         x: at?.x,
         z: at?.z,
         start: 1,
-        duration: FX_PRESETS.armor.time / 1000,
+        duration: FX_PRESETS.bulwark.time / 1000,
       }),
     ]);
   });
@@ -910,6 +917,7 @@ const cast = (cardId: string) =>
       {
         _tag: "CardPlayed",
         side: "enemy",
+        hero: { side: "enemy", hero: 0 },
         handIndex: 0,
         card: { instanceId: 1, cardId, rank: "common" },
         target:

@@ -10,7 +10,7 @@ New Unit Ability:
 
 - update the Keyword "Heroic N" into "+N Attack after this Unit attacks enemy Unit", only Rare can have N=2, only Epic can have N=3, only Legendary can have N=4
 - Devour N: When this Unit kills an enemy Unit, it gains +N Attack and +N HP, im thinking this Keyword is exclusive to Feral replacing Trample, but do u think its a good idea?
-- Resistance N: Reduce magic damage by N (similar to Armor)
+- Resistance N: Reduce magic damage by N (similar to Bulwark)
 - Heal N: +N HP for the lowest HP Unit on player's friendly units for each turn
 - Retreat N — After this Unit attacks, it moves up to N Squares backward
 - Ambush: When regular attacking for the first time, Attack is doubled
@@ -18,7 +18,7 @@ New Unit Ability:
 - Unrestrained: Cannot be affected by movement restrictions
 - Wallbreaker: Deals double damage to Wall Unit
 - Dragon Slayer: Deals double damage to Units whose Countdown is 5 or more
-- Sunder: Deals double damage to Units with the Keyword Armor
+- Sunder: Deals double damage to Units with the Keyword Bulwark
 - Piercing: Damage dealt cannot be reduced
 - Skybane: Deals double damage to Flying Units
 - Piercing: Damage dealt by this Unit cannot be reduced
@@ -64,7 +64,7 @@ For Unique Unit:
 - Undead King: When an enemy Units is killed, it will be rebirth by this Keyword as a Skeleton (treated as player's Unit)
 - Frighten: Has a 25% chance of returning a random enemy Unit within range to its summoner's hand
 - Spawnbane N: Deals N damage to Units summoned by enemy heroes
-- Hardened: Reduces physical damage taken to 4
+- Iron Guard: Reduces physical damage taken to 4
 - Spell Guard: Reduces magic damage taken to 4
 - Brotherhood N: All other friendly Human Units gain +N Attack and +N HP
 - Bloodlust N: All other friendly Orc Units gain +N Attack and +N HP
@@ -137,7 +137,6 @@ New features:
 
 continue hunters focus
 
-- /grill-with-docs when we're battling PvE, i want a feature where me as a Player can see the past turns, so that i can observe what happens in last turns, reconsider my strategy against the enemy, what cards have been played, what Keywords activated, etc, it's like a battle/turn history where i can travel back and go through turns interactively
 - /grill-with-docs new Hero's Class for goblin and feral, maybe Shaman?
 - /grill-with-docs rewards for winning campaigns, for winning stage 1-10 i think we can give them elf, we also should have a prediction record / simulation like if the user complete stage 1-1 how many coins and cards they have. Also victory result modal in campaign battle still not showing what the rewards
 - /grill-with-docs a smart auto-play button for Stages that the player has already won (whats the reward for completing already completed stage?)

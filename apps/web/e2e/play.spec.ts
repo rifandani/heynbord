@@ -632,19 +632,18 @@ test.describe("Handbook (issue #25)", () => {
     await expect(dialog).toHaveAttribute("data-form", "book");
     const entry = page.getByTestId("handbook-entry");
     await expect(entry).toHaveAttribute("data-entry", "board");
-    // A value Keyword of the shared Rank table, then one with a value on each card.
+    // A value Keyword of the shared Rank table, then one without it.
     await page.getByRole("tab", { name: "Keywords" }).click();
     await page.getByRole("option", { name: "Charge N" }).click();
     await expect(page.getByTestId("handbook-rank-table")).toBeVisible();
-    await page.getByRole("option", { name: "Armor N" }).click();
-    await expect(page.getByTestId("handbook-see-card")).toBeVisible();
+    await page.getByRole("option", { name: "Bulwark N" }).click();
     await expect(page.getByTestId("handbook-rank-table")).toBeHidden();
     // "See also" opens a related Entry in another Chapter.
     await page
       .getByTestId("handbook-see-also")
-      .getByRole("link", { name: "Holy" })
+      .getByRole("link", { name: "Physical" })
       .click();
-    await expect(entry).toHaveAttribute("data-entry", "damageHoly");
+    await expect(entry).toHaveAttribute("data-entry", "damagePhysical");
     await expect(
       page.getByRole("tab", { name: "Statuses and Damage Types" })
     ).toHaveAttribute("aria-selected", "true");
@@ -1170,6 +1169,40 @@ test.describe("Region 1 rewards (issue #54)", () => {
       "data-state",
       "claimed"
     );
+  });
+});
+
+test.describe("Battle Log Hint (issue #76)", () => {
+  test("the first Stage loss shows the Battle Log Hint, and Read more opens the Key Guide at L", async ({
+    page,
+  }) => {
+    // A loss of Stage 1-10: not the Tutorial.
+    await page.goto("/play?state=defeat&seed=3");
+    await expect(page.getByTestId("battle-result")).toBeVisible({
+      timeout: 30_000,
+    });
+    const hint = page.getByTestId("hint");
+    // One Hint at a time: a Battle Hint can show first.
+    await expect(hint).toBeVisible();
+    if ((await hint.getAttribute("data-hint")) !== "battleLog") {
+      await page.getByTestId("hint-close").click();
+    }
+    await expect(hint).toHaveAttribute("data-hint", "battleLog");
+    await expect(hint).toContainText(
+      "Open the Battle Log to see what happened."
+    );
+    // It shows below the Battle Log button, so that Retry stays free.
+    const button = await page.getByTestId("result-battle-log").boundingBox();
+    const banner = await hint.boundingBox();
+    expect(banner?.y).toBeGreaterThan((button?.y ?? 0) + (button?.height ?? 0));
+    await page.getByTestId("hint-read-more").click();
+    await expect(hint).toBeHidden();
+    await expect(page.getByTestId("key-guide")).toBeVisible();
+    await expect(page.getByTestId("key-guide-battleLog")).toHaveAttribute(
+      "data-marked",
+      "true"
+    );
+    await expect(page.getByTestId("key-guide-battleLog")).toContainText("L");
   });
 });
 

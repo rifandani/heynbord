@@ -42,6 +42,7 @@ const hit = {
   amount: 2,
   damageType: "physical",
   source: "attack",
+  dealer: null,
   crit: false,
   blocked: false,
   trueDamage: false,
@@ -54,6 +55,7 @@ const played = (cardId: string, side: "player" | "enemy") =>
   ({
     _tag: "CardPlayed",
     side,
+    hero: { side, hero: 0 },
     handIndex: 0,
     card: { instanceId: 1, cardId, rank: "common" },
     target: { _tag: "NoTarget" },
@@ -123,6 +125,18 @@ describe("eventDuration (technical design 4.3)", () => {
     expect(
       eventDuration(played("mage.fireball", "enemy"), 1, view)
     ).toBeGreaterThan(skill);
+  });
+
+  it("gives a Keyword 0 ms at each speed: its Keyword Plate does not change the Battle time (#75)", () => {
+    const keyword = {
+      _tag: "KeywordActivated",
+      unitId: archer?.id ?? 0,
+      keyword: "swarm",
+      hero: { side: "enemy", hero: 0 },
+      value: 2,
+    } as const;
+    expect(eventDuration(keyword, 1, view)).toBe(0);
+    expect(eventDuration(keyword, 2, view)).toBe(0);
   });
 
   it("halves each time at speed ×2", () => {

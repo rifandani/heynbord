@@ -114,7 +114,7 @@ export const currentCast = (
 
 /**
  * The color of a Skill Card effect: its Damage Type, the Holy gold of the
- * Priest heal and Ward, Armor blue, the war gold of a Warrior bonus, the
+ * Priest heal and Ward, Bulwark blue, the war gold of a Warrior bonus, the
  * Exposed rose, or the neutral cast color. Each effect
  * with no Damage Type has its own case, so a new type does not compile until
  * it gets a color.
@@ -137,7 +137,7 @@ export const effectColor = (effect: SkillEffect): string => {
     case "cleanseUnit": {
       return DAMAGE_COLORS.holy;
     }
-    case "laneArmor": {
+    case "laneBulwark": {
       return "#9cc8ff";
     }
     // The Warrior war gold of the Rally bonus.

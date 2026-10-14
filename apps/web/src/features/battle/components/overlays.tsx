@@ -10,15 +10,18 @@ import type { ShownRewards } from "@/features/battle/battle-rewards";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
 import {
+  battleLogAtom,
   battleRewardsAtom,
   battleSessionAtom,
 } from "@/features/battle/battle.atoms";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GameButton } from "@/features/battle/components/game-button";
+import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { randomSeed } from "@/features/battle/use-battle";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { useResultHints } from "@/features/hint/use-hints";
 import { levelProgress } from "@/features/profile/profile";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
@@ -45,10 +48,15 @@ const TurnBannerText = ({ side }: { readonly side: Side }) => {
   );
 };
 
-/** "Your Turn" / "Enemy Turn" while the TurnStarted event plays. Screen readers hear it too. */
+/**
+ * "Your Turn" / "Enemy Turn" while the TurnStarted event plays. Screen readers
+ * hear it too. It never shows in the Battle Log: Live pauses, and the Play of
+ * the Battle Log must not look like Live.
+ */
 export const TurnBanner = () => {
   const session = useAtomValue(battleSessionAtom);
-  const side = startingSide(session);
+  const logOpen = useAtomValue(battleLogAtom) !== null;
+  const side = logOpen ? null : startingSide(session);
   return (
     <div
       className="pointer-events-none absolute inset-x-0 top-[38%] z-10 flex justify-center"
@@ -312,6 +320,7 @@ const ResultDialog = ({
   const won = result.winner === "player";
   const stars = starsFor(session.rules);
   const shown = useShownRewards(session);
+  useResultHints(result, session.tutorial !== null);
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]">
       <section
@@ -348,19 +357,34 @@ const ResultDialog = ({
             {tr("battle.backToCampaign")}
           </GameButton>
         </div>
+        {battle.hasBattleLog ? (
+          <GameButton
+            intent="wood"
+            size="sm"
+            onPress={() => battle.openLog()}
+            className="mt-2"
+            data-testid="result-battle-log"
+          >
+            <GlyphIcon glyph="scroll" className="size-4" />
+            {tr("battleLog.open")}
+          </GameButton>
+        ) : null}
       </section>
     </div>
   );
 };
 
-/** Victory or defeat, the Stars (GDD 4.11), and what to do next. */
+/**
+ * Victory or defeat, the Stars (GDD 4.11), and what to do next. The Battle
+ * Log opens from it, and "Back to Live" shows it again.
+ */
 export const ResultOverlay = ({
   battle,
 }: {
   readonly battle: ReturnType<typeof useBattle>;
 }) => {
   const session = useAtomValue(battleSessionAtom);
-  if (!session?.view.result || !isIdle(session)) {
+  if (!session?.view.result || !isIdle(session) || battle.log) {
     return null;
   }
   return (

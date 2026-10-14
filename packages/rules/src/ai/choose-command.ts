@@ -25,6 +25,7 @@ import type {
   UnitState,
 } from "../battle/types";
 import { getCard } from "../content/cards";
+import { isRangedRange, keywordRange, keywordSpeed } from "../content/keywords";
 import {
   scaleForRank,
   skillAmountForRank,
@@ -68,7 +69,7 @@ const closeness = (unit: UnitState): number =>
   unit.owner === "player" ? unit.position + 1 : LANE_LENGTH - unit.position;
 
 const unitValue = (unit: UnitState): number =>
-  unit.attack * 2 + unit.hp + unit.speed * 2 + unit.armor * 3;
+  unit.attack * 2 + unit.hp + unit.speed * 2 + unit.bulwark * 3;
 
 /** The danger of the other side's Units in a Lane. Units near our Hero count more. */
 const laneThreat = (state: BattleState, side: Side, lane: number): number =>
@@ -143,13 +144,13 @@ const isBlocked = (unit: UnitState, blockers: readonly Blocker[]): boolean => {
 
 /**
  * True when the next action of `unit` gets the enemy Hero in its Range. A
- * melee Unit must get to its last Column: Range 1 from the Hero.
+ * Melee Unit has Range 1, so it must get to its last Column.
  */
 const reachesHero = (unit: UnitState): boolean => {
   const distance =
     (enemyHeroPosition(unit.owner) - unit.position) * direction(unit.owner);
   const moved = Math.min(nextSpeed(unit), distance - 1);
-  return distance - moved <= Math.max(rangeOf(unit), 1);
+  return distance - moved <= rangeOf(unit);
 };
 
 /**
@@ -230,8 +231,10 @@ const scoreCreature = (
   const value =
     scaleForRank(definition.attack, card.rank) * 2 +
     scaleForRank(definition.hp, card.rank) +
-    definition.speed * 2;
-  const pivot = (definition.keywords.pivot ?? false) && definition.range === 0;
+    keywordSpeed(definition.keywords) * 2;
+  const pivot =
+    (definition.keywords.pivot ?? false) &&
+    !isRangedRange(keywordRange(definition.keywords));
   const pressure = blocksLane(state, side, target.lane, target.position, pivot)
     ? laneThreat(state, side, target.lane) -
       laneDefense(state, side, target.lane)
@@ -254,7 +257,7 @@ const DAMAGE_EFFECT_TYPES = [
   "damagePoison",
   "damageGround",
   "damageByAttack",
-  "damageLaneArmor",
+  "damageLaneBulwark",
   "damageLaneHeal",
   "damageUnitHero",
 ] as const satisfies readonly SkillEffect["type"][];
@@ -269,7 +272,7 @@ const isDamageEffect = (effect: SkillEffect): effect is DamageEffect =>
 
 interface SkillHit {
   readonly unit: UnitState;
-  /** The damage after Armor and Ward, before Crit and Block. */
+  /** The damage after Bulwark and Ward, before Crit and Block. */
   readonly damage: number;
 }
 
@@ -315,19 +318,21 @@ const mageUnits = (
   });
 };
 
-/** The damage of a hit of `value` on `unit`, after Armor, Exposed and Ward. */
+/** The damage of a hit of `value` on `unit`, after Bulwark, Exposed and Ward. */
 const hitOn = (
   unit: UnitState,
   value: number,
   damageType: DamageType
 ): SkillHit => {
-  const armor = damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
-  // Exposed adds to a Physical hit after Armor (GDD 4.7, step 4).
-  const exposed = damageType === "physical" ? unit.exposed : 0;
-  // A Ward absorbs the damage after Armor (GDD 4.7, step 8).
+  const physical = damageType === "physical";
+  // Bulwark reduces only Physical damage (ADR-0031).
+  const bulwark = physical ? unit.bulwark + unit.bonusBulwark : 0;
+  // Exposed adds to a Physical hit after Bulwark (GDD 4.7, step 4).
+  const exposed = physical ? unit.exposed : 0;
+  // A Ward absorbs the damage after Bulwark (GDD 4.7, step 8).
   return {
     unit,
-    damage: Math.max(0, Math.max(0, value - armor) + exposed - unit.ward),
+    damage: Math.max(0, Math.max(0, value - bulwark) + exposed - unit.ward),
   };
 };
 
@@ -429,7 +434,7 @@ const wouldAttack = (state: BattleState, unit: UnitState): boolean => {
     return false;
   }
   const dir = direction(unit.owner);
-  const reach = nextSpeed(unit) + Math.max(rangeOf(unit), 1);
+  const reach = nextSpeed(unit) + rangeOf(unit);
   return (
     reachesHero(unit) ||
     state.units.some((other) => {
@@ -473,7 +478,7 @@ const poisonTotal = (stacks: number): number => (stacks * (stacks + 1)) / 2;
 /**
  * The weight of each Attack point of the target of Poisoned stacks. A Unit
  * that deals more damage is a better target. The swap rule (Archetypes 3.3)
- * found that a Wall or a Unit with Armor is a worse target.
+ * found that a Wall or a Unit with Bulwark is a worse target.
  */
 const POISON_ATTACK_WEIGHT = 3;
 
@@ -648,20 +653,22 @@ const LANE_HEAL_HOLD = 6;
 const STRIKE_HEAL_HOLD = 2;
 
 /**
- * The score of bonus Armor for the friendly Units in a Lane: more for each
+ * The score of bonus Bulwark for the friendly Units in a Lane: more for each
  * enemy Turn while the Lane has an enemy threat.
  */
-const scoreLaneArmor = (
+const scoreLaneBulwark = (
   state: BattleState,
   side: Side,
   target: Target,
-  armor: number,
+  bulwark: number,
   turns: number
 ): number => {
   const friends = friendsInLane(state, side, target).length;
   const lane =
     target._tag === "Square" || target._tag === "Lane" ? target.lane : -1;
-  return friends * armor * (laneThreat(state, side, lane) > 0 ? 3 * turns : 1);
+  return (
+    friends * bulwark * (laneThreat(state, side, lane) > 0 ? 3 * turns : 1)
+  );
 };
 
 /**
@@ -858,7 +865,7 @@ const targetThisTurn = (
     return undefined;
   }
   const distance = (target.position - unit.position) * dir;
-  return distance <= currentSpeed(state, unit) + Math.max(rangeOf(unit), 1)
+  return distance <= currentSpeed(state, unit) + rangeOf(unit)
     ? target
     : undefined;
 };
@@ -889,13 +896,13 @@ const enemyUnitAt = (
   return unit && unit.owner !== side ? unit : undefined;
 };
 
-/** The weight of each point of Armor of an Exposed target: Exposed comes after Armor. */
-const EXPOSE_ARMOR_WEIGHT = 2;
+/** The weight of each point of Bulwark of an Exposed target: Exposed comes after Bulwark. */
+const EXPOSE_BULWARK_WEIGHT = 2;
 
 /**
  * The target choice of *Expose Weakness* (GDD 9): an enemy Unit that friendly
  * Physical Units hit in this Turn. Each hit scores the Exposed value, and the
- * Armor of the Unit adds more, so a Unit with Armor or a Wall wins. When the
+ * Bulwark of the Unit adds more, so a Unit with Bulwark or a Wall wins. When the
  * Exposed damage makes the hits kill the Unit, the kill scores as damage.
  * Each other target scores 0.
  */
@@ -915,9 +922,9 @@ const scoreExpose = (
     return 0;
   }
   const value = skillAmountForRank(exposed, card.rank);
-  const armor = unit.armor + unit.bonusArmor;
+  const bulwark = unit.bulwark + unit.bonusBulwark;
   const before = hitters.reduce(
-    (sum, hitter) => sum + Math.max(0, attackOf(state, hitter) - armor),
+    (sum, hitter) => sum + Math.max(0, attackOf(state, hitter) - bulwark),
     0
   );
   const after = before + Math.max(0, value - unit.exposed) * hitters.length;
@@ -925,7 +932,7 @@ const scoreExpose = (
   const kill = !unit.steadfast && before < health && after >= health;
   return (
     (after - before) * 2 +
-    armor * EXPOSE_ARMOR_WEIGHT +
+    bulwark * EXPOSE_BULWARK_WEIGHT +
     (kill ? unitValue(unit) + 10 : 0)
   );
 };
@@ -1229,7 +1236,7 @@ const meetsDamageHoldRule = (
     case "damageLaneEntangle": {
       return hits.length >= 2 || hits.some(kills);
     }
-    case "damageLaneArmor": {
+    case "damageLaneBulwark": {
       return hits.some(kills) || friendsInLane(state, side, target).length > 0;
     }
     case "damageLaneHeal": {
@@ -1341,7 +1348,7 @@ const meetsHoldRule = (
     case "cleanseUnit": {
       return meetsProtectHoldRule(state, side, card, effect, target);
     }
-    case "laneArmor": {
+    case "laneBulwark": {
       return (
         target._tag === "Lane" &&
         state.units.some(
@@ -1396,14 +1403,14 @@ const scoreDamageSkill = (
           KNOCKBACK_SCORE
       );
     }
-    case "damageLaneArmor": {
+    case "damageLaneBulwark": {
       return (
         damage +
-        scoreLaneArmor(
+        scoreLaneBulwark(
           state,
           side,
           target,
-          skillAmountForRank(effect.armor, card.rank),
+          skillAmountForRank(effect.bulwark, card.rank),
           effect.turns
         )
       );
@@ -1493,13 +1500,13 @@ const scoreSkill = (
     case "cleanseUnit": {
       return scoreCleanse(state, side, card, effect.heal, target);
     }
-    case "laneArmor": {
+    case "laneBulwark": {
       return target._tag === "Lane"
-        ? scoreLaneArmor(
+        ? scoreLaneBulwark(
             state,
             side,
             target,
-            skillAmountForRank(effect.armor, card.rank),
+            skillAmountForRank(effect.bulwark, card.rank),
             effect.turns
           )
         : 0;

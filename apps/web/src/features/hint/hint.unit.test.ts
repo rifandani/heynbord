@@ -7,13 +7,15 @@ import type { LanguageMessages } from "@/core/libs/i18n/init";
 import enUS from "@/core/libs/i18n/locales/en-US";
 import idID from "@/core/libs/i18n/locales/id-ID";
 import type { HandCardView } from "@/features/battle/battle-view";
+import { KEY_GUIDE } from "@/features/battle/components/battle-keys";
 import { getEntry } from "@/features/handbook/handbook";
 import type { BattleFacts } from "@/features/hint/hint";
 import {
   battleHints,
   hasCardOutOfDecks,
-  HINT_ENTRY,
+  HINT_TARGET,
   HINTS,
+  isBattleLogHintMet,
   nextHint,
 } from "@/features/hint/hint";
 
@@ -91,6 +93,42 @@ describe("battleHints", () => {
   });
 });
 
+describe("isBattleLogHintMet", () => {
+  it("meets the Battle Log Hint at a loss after the Tutorial", () => {
+    for (const reason of ["heroDefeated", "turnLimit", "routed"] as const) {
+      expect(
+        isBattleLogHintMet({
+          result: { winner: "enemy", reason },
+          tutorial: false,
+        })
+      ).toBe(true);
+    }
+  });
+
+  it("does not meet it at a win", () => {
+    expect(
+      isBattleLogHintMet({
+        result: { winner: "player", reason: "heroDefeated" },
+        tutorial: false,
+      })
+    ).toBe(false);
+  });
+
+  it("does not meet it at a loss in the Tutorial", () => {
+    expect(
+      isBattleLogHintMet({
+        result: { winner: "enemy", reason: "heroDefeated" },
+        tutorial: true,
+      })
+    ).toBe(false);
+  });
+
+  it("shows one time: not again after the Player saw it", () => {
+    expect(nextHint(["battleLog"], [])).toBe("battleLog");
+    expect(nextHint(["battleLog"], ["battleLog"])).toBeNull();
+  });
+});
+
 describe("hasCardOutOfDecks", () => {
   const owned = [
     { cardId: creatureId, rank: "common", copies: 2 },
@@ -154,9 +192,25 @@ describe("the Hint text", () => {
     }
   });
 
-  it("opens the Handbook at an Entry that exists", () => {
+  it("opens the Handbook at an Entry, or the Key Guide at a line, that exists", () => {
+    const lines = KEY_GUIDE.map((line) => line.action);
     for (const hint of HINTS) {
-      expect(getEntry(HINT_ENTRY[hint]).id).toBe(HINT_ENTRY[hint]);
+      const target = HINT_TARGET[hint];
+      if (target._tag === "Entry") {
+        expect(getEntry(target.entry).id).toBe(target.entry);
+      } else {
+        expect(lines).toContain(target.line);
+      }
     }
+  });
+
+  it("opens the Key Guide at the Battle Log key for the Battle Log Hint", () => {
+    expect(HINT_TARGET.battleLog).toEqual({
+      _tag: "KeyGuide",
+      line: "battleLog",
+    });
+    expect(KEY_GUIDE.find((line) => line.action === "battleLog")?.keys).toEqual(
+      ["L"]
+    );
   });
 });

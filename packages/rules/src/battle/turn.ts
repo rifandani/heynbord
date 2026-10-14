@@ -1,8 +1,14 @@
 import { getCard } from "../content/cards";
 import type { StepContext } from "./context";
-import { actionOrder, findUnit, isOver } from "./context";
+import {
+  actionOrder,
+  activateKeyword,
+  findUnit,
+  heroDealer,
+  isOver,
+} from "./context";
 import { damageHero, damageUnit, finishBattle } from "./damage";
-import { healUnit } from "./heal";
+import { healedAmount, healUnit } from "./heal";
 import { runResolutionPhase } from "./resolution";
 import { areaSquares } from "./targets";
 import type { BattleState, FieldEffect, Side, UnitState } from "./types";
@@ -30,9 +36,11 @@ const openClosedLanes = (ctx: StepContext): void => {
   }
 };
 
+/** Regenerate N (GDD 5.4). A Unit at its maximum HP gets no heal, so its Regenerate does not activate. */
 const regenerateUnits = (ctx: StepContext): void => {
   for (const unit of actionOrder(ctx.state, ctx.state.activeSide)) {
-    if (unit.regenerate > 0) {
+    if (unit.regenerate > 0 && healedAmount(unit, unit.regenerate) > 0) {
+      activateKeyword(ctx, unit, "regenerate", unit.regenerate);
       healUnit(ctx, unit, unit.regenerate);
     }
   }
@@ -62,6 +70,7 @@ const rally = (ctx: StepContext): void => {
       }
     }
     if (targets.length > 0) {
+      activateKeyword(ctx, leader, "rally", leader.rally);
       ctx.events.push(BattleEvent.UnitsRallied({ unitId: leader.id, targets }));
     }
   }
@@ -94,6 +103,7 @@ const suddenDeath = (ctx: StepContext): void => {
     amount,
     damageType: "physical",
     source: "suddenDeath",
+    dealer: null,
     crit: 0,
   });
 };
@@ -174,7 +184,7 @@ const unitsInField = (ctx: StepContext, field: FieldEffect): UnitState[] => {
 /**
  * Each Field Effect of the active Side hits (GDD 4.8): its damage to each
  * enemy Unit in its area, in the order of play. It is normal Skill damage:
- * Armor, Crit of the caster's Trinket and Block apply, and Fire gives Burn
+ * Bulwark, Crit of the caster's Trinket and Block apply, and Fire gives Burn
  * and Frost gives Freeze. Two Field Effects on the same Square both hit.
  */
 const strikeFieldEffects = (ctx: StepContext): void => {
@@ -198,6 +208,7 @@ const strikeFieldEffects = (ctx: StepContext): void => {
         amount: field.amount,
         damageType: field.damageType,
         source: "field",
+        dealer: heroDealer(field.owner),
         crit,
       });
     }
@@ -230,6 +241,7 @@ const applyBurn = (ctx: StepContext): void => {
         amount: 1,
         damageType: "fire",
         source: "burn",
+        dealer: null,
         crit: 0,
       });
     }
@@ -260,6 +272,7 @@ const applyPoison = (ctx: StepContext): void => {
       amount: stacks,
       damageType: "physical",
       source: "poison",
+      dealer: null,
       crit: 0,
     });
   }
@@ -332,15 +345,15 @@ const fadeAttack = (ctx: StepContext): void => {
   }
 };
 
-/** Skill Card Armor counts the other side's Turns, so it covers that many enemy Turns. */
-const fadeArmor = (ctx: StepContext): void => {
+/** Skill Card Bulwark counts the other side's Turns, so it covers that many enemy Turns. */
+const fadeBulwark = (ctx: StepContext): void => {
   const { state } = ctx;
   for (const unit of state.units) {
-    if (unit.owner !== state.activeSide && unit.bonusArmorTurns > 0) {
-      unit.bonusArmorTurns -= 1;
-      if (unit.bonusArmorTurns === 0) {
-        unit.bonusArmor = 0;
-        ctx.events.push(BattleEvent.ArmorFaded({ unitId: unit.id }));
+    if (unit.owner !== state.activeSide && unit.bonusBulwarkTurns > 0) {
+      unit.bonusBulwarkTurns -= 1;
+      if (unit.bonusBulwarkTurns === 0) {
+        unit.bonusBulwark = 0;
+        ctx.events.push(BattleEvent.BulwarkFaded({ unitId: unit.id }));
       }
     }
   }
@@ -348,7 +361,7 @@ const fadeArmor = (ctx: StepContext): void => {
 
 /**
  * The End Phase (GDD 4.3): the Field Effects of the active Side hit, then
- * Burn, then Poison, then durations go down. Skill Card Armor counts the other
+ * Burn, then Poison, then durations go down. Skill Card Bulwark counts the other
  * side's Turns, so it covers that many enemy Turns. A Hobbled, a Bleeding, a
  * Grounded and an Exposed count go down in this Phase, after Burn and Poison. The Rally
  * bonus ends, the bonus Attack of a Skill Card can end, and a Field Effect
@@ -367,7 +380,7 @@ const runEndPhase = (ctx: StepContext): void => {
   lowerExposed(ctx);
   endRally(ctx);
   fadeAttack(ctx);
-  fadeArmor(ctx);
+  fadeBulwark(ctx);
   fadeFieldEffects(ctx);
   ctx.events.push(BattleEvent.TurnEnded({ side: ctx.state.activeSide }));
 };
