@@ -34,11 +34,15 @@
  *   `matchup`. A card passes when each win rate changes by 5 points or less.
  *   `reverse` is the win rate with the Skill Card copy of the Deck replaced by
  *   the Creature Card. `lock` is the share of Battles in which an opponent
- *   Unit skipped 3 or more actions in a row (ADR-0025), before → after. Like
- *   `economy`, it runs only on request, and `--check` does not check it.
+ *   Unit skipped 3 or more actions in a row (ADR-0025), before → after.
+ *   `points` is the Power Points of the Skill Card against its Power Budget
+ *   (ADR-0032), and the `creature` column gives the Power Points of the
+ *   Creature Card minus its budget. Like `economy`, it runs only on request,
+ *   and `--check` does not check it.
  */
 import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
-import { CARDS } from "../src/content/cards";
+import { skillBudgetCheck } from "../src/content/balance";
+import { CARDS, getCard } from "../src/content/cards";
 import { STARTER_DECKS } from "../src/content/decks";
 import { PACK_SIZE, PACKS } from "../src/content/packs";
 import { RANKS } from "../src/content/ranks";
@@ -488,6 +492,18 @@ const points = (change: number) => {
   return change > 0 ? `+${text}` : text;
 };
 
+/** The Power Points of a Skill Card against its budget (ADR-0032). */
+const pointsOf = (skillId: string) => {
+  const card = getCard(skillId);
+  if (card.kind !== "skill") {
+    return "—";
+  }
+  const budget = skillBudgetCheck(card);
+  return `${budget.power.toFixed(1)} / ${budget.budget}${budget.nearestStep ? "" : " off step"}`;
+};
+
+const signedPoints = (value: number) => (value > 0 ? `+${value}` : `${value}`);
+
 if (modes.includes("skill-swap")) {
   const matchupLevel = level ?? MATCHUP_LEVEL;
   if (matchupLevel < 1) {
@@ -505,10 +521,9 @@ if (modes.includes("skill-swap")) {
     reports.flatMap((report) =>
       report.results.map((result) => ({
         skill: report.skillId,
+        points: pointsOf(report.skillId),
         deck: report.deckId,
-        creature: report.sameCountdown
-          ? report.creatureId
-          : `${report.creatureId} (nearest Countdown, Deck Countdown ${report.countdownChange > 0 ? "+" : ""}${report.countdownChange})`,
+        creature: `${report.creatureId} (${signedPoints(report.creatureDeviation)} points${report.sameCountdown ? "" : `, nearest Countdown, Deck Countdown ${signedPoints(report.countdownChange)}`})`,
         opponent: result.opponentId,
         before: percent(result.before, 1),
         after: percent(result.after, 1),

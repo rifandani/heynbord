@@ -175,8 +175,8 @@ describe("applyEvent with Swarm, Rebirth and Summon", () => {
 
 /**
  * Stage 1-4 with an enemy Deck of Elf cards and the 3 Ranger Skill Cards. Each
- * copy is Rare, except Warning Shot: at Common (6 damage), a Rare player Unit
- * survives it and is pushed.
+ * copy is Rare, except Warning Shot and Pinning Shot: at Common (8 and 6
+ * damage), an Epic player Unit survives them, and is pushed or Entangled.
  */
 const rangerStage = (): StageDefinition => {
   const stage = getStage("1-4");
@@ -196,7 +196,7 @@ const rangerStage = (): StageDefinition => {
         Array.from({ length: 2 }, () => ({
           cardId,
           rank:
-            cardId === "ranger.warningShot"
+            cardId === "ranger.warningShot" || cardId === "ranger.pinningShot"
               ? ("common" as const)
               : ("rare" as const),
         }))
@@ -220,7 +220,7 @@ const castEffects = (events: readonly BattleEvent[], cardId: string) =>
 
 describe("applyEvent with the Ranger Skill Cards", () => {
   const battles = [1, 2, 3].map((seed) =>
-    steps(seed, "1-4", "vanguard", rangerStage(), "rare")
+    steps(seed, "1-4", "vanguard", rangerStage(), "epic")
   );
   const events = battles.flat().flatMap((entry) => entry.events);
 

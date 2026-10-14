@@ -68,11 +68,13 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town**: The hub screen of the game, and the first screen that the Player sees. It is a painted view of a town, with one Building for each screen that the Player can open. _Avoid_: Camp, city, hub, home, lobby, main menu
 
-**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop and the Workshop can be selected. _Avoid_: hotspot, landmark, location, house
+**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop and the Barracks can be selected. _Avoid_: hotspot, landmark, location, house
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
 
 **Card shop**: The Building that opens the Packs screen: a small house with a purple roof. It opens at Player level 2. _Avoid_: Pack shop, store
+
+**Barracks**: The Building that opens the Hero screen: a long stone barracks with a fenced training yard. It opens at Player level 5. _Avoid_: Hero Building, armory, training hall
 
 **Lock Plate**: The small plate with a lock and a level that replaces the name label of a Building whose screen the Player level has not unlocked. It has the same "Opens at level N" tooltip as the Town Bar shortcut. _Avoid_: level badge, locked label
 
@@ -108,6 +110,10 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Reveal**: The screen over the Packs screen that shows the cards of the opened Packs. One Pack: 5 face-down cards that flip. Open ×10: a full flip for each Epic and Legendary card, then a grid of all the cards. _Avoid_: pull animation, pack opening
 
+### Hero screen
+
+**Hero screen**: The screen that shows the Player's Hero: its Class, its Hero HP and its 4 Gear items. The Player does Gear upgrades there. It shows the Class of the Active Deck, and it opens the Deck dialog to change it. _Avoid_: Character screen, armory, equipment screen, Gear screen, profile
+
 ### Workshop screen
 
 **Rank Panel**: The HUD plate at the right of the Workshop screen for the selected card. The card is at the top, with the Path to Legendary. Under it is a ladder of Rank rows, from Legendary at the top to the Base Rank at the bottom. A Combine sits on the rung between two rows, each row has Extract, and the Base Rank row has Craft. _Avoid_: card panel, upgrade panel, detail panel
@@ -126,7 +132,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 ## Relationships
 
-- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, and the Workshop Building opens the Workshop. Later, the Bazaar Building opens the Bazaar.
+- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, and the Barracks opens the Hero screen. Later, the Bazaar Building opens the Bazaar.
 - The **Handbook** and the **Card Details** show the same rule text for a Keyword, a Status or a Damage Type. The Handbook never has its own copy of a rule.
 - A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.
 - The **Battle Log** shows the Battle Events that the screen already played. It never shows a later moment than **Live**. While it is open, the Live playback pauses.

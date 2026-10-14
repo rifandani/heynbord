@@ -508,11 +508,12 @@ const pinningShotChoice = (
 ) => {
   const state = emptyBattle({ activeSide: "enemy" });
   giveHand(state, "enemy", [["ranger.pinningShot", 0]]);
+  // The Scrap Raider survives the 6 damage of the hit.
   placeUnit(state, {
     cardId: "orc.scrapRaider",
     owner: "player",
     position: 5,
-    hp: 6,
+    hp: 8,
     ...raider,
   });
   setup(state);
@@ -550,7 +551,7 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
     expect(pinningShotChoice({ entangled: true })).toEqual(Command.EndTurn());
     expect(pinningShotChoice({ speed: 0 })).toEqual(Command.EndTurn());
     expect(
-      pinningShotChoice({ bonusBulwark: 4, bonusBulwarkTurns: 2 })
+      pinningShotChoice({ bonusBulwark: 6, bonusBulwarkTurns: 2 })
     ).toEqual(Command.EndTurn());
     expect(
       pinningShotChoice({ cardId: "human.townBarricade", hp: 15 })
@@ -580,6 +581,17 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
     ).toEqual(playAt(8));
   });
 
+  it("aims Warning Shot at a Unit that the hit kills before a Unit that the push moves (issue #50)", () => {
+    // The hit kills the Unit at Square 3. The push moves the Unit at Square 8,
+    // which is nearer to the enemy Hero.
+    expect(
+      skillChoice("ranger.warningShot", [
+        [3, 5],
+        [8, 12],
+      ])
+    ).toEqual(playAt(3));
+  });
+
   it("aims Warning Shot at the Unit that takes the most damage when the push moves no Unit, and never keeps it", () => {
     const state = emptyBattle({ activeSide: "enemy" });
     giveHand(state, "enemy", [["ranger.warningShot", 0]]);
@@ -587,7 +599,7 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
       cardId: "orc.scrapRaider",
       owner: "player",
       position: 0,
-      hp: 6,
+      hp: 12,
       bonusBulwark: 1,
       bonusBulwarkTurns: 2,
     });
@@ -645,11 +657,11 @@ describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
   });
 
   it("aims Mend at the Unit that gets back the most HP, after Bleeding", () => {
-    // The Bleeding Unit gets 3 of the 6. The other Unit gets 4.
+    // The Bleeding Unit gets 4 of the 8. The other Unit gets 6.
     expect(
       priestChoice("priest.mend", [
         { position: 9, hp: 2, maxHp: 10, bleeding: 1 },
-        { position: 8, hp: 6, maxHp: 10 },
+        { position: 8, hp: 4, maxHp: 10 },
       ])
     ).toEqual(playAtSquare(0, 8));
   });
@@ -688,12 +700,12 @@ describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
     expect(
       priestChoice(
         "priest.sanctuary",
-        [{ position: 9 }, { position: 7, ward: 6 }],
+        [{ position: 9 }, { position: 7, ward: 9 }],
         enemy
       )
     ).toEqual(playAtSquare(0, 9));
     expect(
-      priestChoice("priest.sanctuary", [{ position: 9, ward: 6 }], enemy)
+      priestChoice("priest.sanctuary", [{ position: 9, ward: 9 }], enemy)
     ).toEqual(Command.EndTurn());
   });
 
@@ -787,7 +799,7 @@ describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
   it("keeps Shoulder Charge, Quick Shot, Barbed Arrow and Penance until the hit kills", () => {
     for (const [cardId, kill] of [
       ["warrior.shoulderCharge", 3],
-      ["ranger.quickShot", 3],
+      ["ranger.quickShot", 5],
       // Uncommon: 5 × 1.2 = 6.
       ["ranger.barbedArrow", 6],
       // The Attack of the Scrap Raider.
@@ -937,11 +949,11 @@ describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
 
 describe("chooseCommand: the Rare and Epic Ranger Skill Cards of #59 (GDD 9)", () => {
   it("keeps Venom Arrow while the hit kills, because a Unit that dies gets no stacks", () => {
-    // Rare: 1 damage.
-    expect(raidersChoice("ranger.venomArrow", [{ hp: 1 }])).toEqual(
+    // Rare: 4 damage.
+    expect(raidersChoice("ranger.venomArrow", [{ hp: 4 }])).toEqual(
       Command.EndTurn()
     );
-    expect(raidersChoice("ranger.venomArrow", [{ hp: 2 }])).toEqual(
+    expect(raidersChoice("ranger.venomArrow", [{ hp: 5 }])).toEqual(
       playAtSquare(0, 5)
     );
   });

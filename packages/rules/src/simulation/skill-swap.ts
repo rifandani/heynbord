@@ -6,6 +6,7 @@
  * Raiders. The card passes when each win rate changes by 5 points or less.
  */
 import { ARCHETYPES } from "../content/archetypes";
+import { creaturePower, powerBudget } from "../content/balance";
 import { getCard } from "../content/cards";
 import { deckCountdown, MAX_COPIES } from "../content/decks";
 import { isRangedRange, keywordRange } from "../content/keywords";
@@ -164,6 +165,12 @@ export interface SkillSwapReport {
   readonly skillId: string;
   readonly deckId: string;
   readonly creatureId: string;
+  /**
+   * The Power Points of the Creature Card minus its Power Budget (issue #50).
+   * A swap delta measures the Skill Card against these points, not against
+   * the budget.
+   */
+  readonly creatureDeviation: number;
   readonly sameCountdown: boolean;
   /** The Deck Countdown after the swap minus before it. */
   readonly countdownChange: number;
@@ -207,10 +214,15 @@ export const simulateSkillSwap = (
       lockAfter: after.lockRate,
     };
   });
+  const creature = getCard(swap.creature.cardId);
   return {
     skillId: skill.id,
     deckId: swap.base.id,
     creatureId: swap.creature.cardId,
+    creatureDeviation:
+      creature.kind === "creature"
+        ? creaturePower(creature) - powerBudget(creature.countdown)
+        : 0,
     sameCountdown: swap.sameCountdown,
     countdownChange:
       deckCountdown(swap.swapped.deck) - deckCountdown(swap.base.deck),

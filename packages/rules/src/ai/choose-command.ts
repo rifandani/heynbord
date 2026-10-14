@@ -509,9 +509,18 @@ const scorePoison = (
 const PUSH_SCORE = 20;
 
 /**
- * The target choice of a push (GDD 9): first the enemy Unit nearest to our
- * Hero that the push moves at least 1 Square, else the enemy Unit that takes
- * the most damage. Each target scores above 0, so the card is never held.
+ * The base score of a kill by a push card. It is above each score of a push
+ * that moves a Unit (`PUSH_SCORE` + a closeness of at most 12): a push only
+ * delays a Unit, and the swap rule found that a push in place of a kill wastes
+ * the damage (issue #50).
+ */
+const PUSH_KILL_SCORE = PUSH_SCORE + 13;
+
+/**
+ * The target choice of a push (GDD 9): first a Unit that the hit kills, the
+ * Unit of the most value first. Then the enemy Unit nearest to our Hero that
+ * the push moves at least 1 Square, else the enemy Unit that takes the most
+ * damage. Each target scores above 0, so the card is never held.
  */
 const scorePush = (
   state: BattleState,
@@ -519,8 +528,10 @@ const scorePush = (
   squares: number
 ): number =>
   hits.reduce((sum, hit) => {
+    if (kills(hit)) {
+      return sum + PUSH_KILL_SCORE + unitValue(hit.unit);
+    }
     const moved =
-      !kills(hit) &&
       pushedPosition(state, hit.unit, squares) !== hit.unit.position;
     return (
       sum + (moved ? PUSH_SCORE + closeness(hit.unit) : hit.damage * 2 + 1)

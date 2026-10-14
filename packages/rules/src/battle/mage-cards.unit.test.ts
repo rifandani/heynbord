@@ -30,15 +30,15 @@ const unitAt = (
   placeUnit(state, { cardId: "human.halberdier", owner, position, ...options });
 
 describe("Lightning and Paralyzed (GDD 4.4, 4.7, ADR-0029)", () => {
-  it("Spark deals 1 Lightning damage, and the Unit becomes Paralyzed", () => {
+  it("Spark deals 2 Lightning damage, and the Unit becomes Paralyzed", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["mage.spark", 0]]);
     const enemy = unitAt(state, "enemy", 6);
     preventRout(state);
     const { state: next, events } = run(state, play(0, square(0, 6)));
-    expect(unitById(next, enemy.id)).toMatchObject({ hp: 5, paralyzed: true });
+    expect(unitById(next, enemy.id)).toMatchObject({ hp: 4, paralyzed: true });
     expect(eventsOfType(events, "DamageDealt")).toEqual([
-      expect.objectContaining({ amount: 1, damageType: "lightning" }),
+      expect.objectContaining({ amount: 2, damageType: "lightning" }),
     ]);
     expect(eventsOfType(events, "StatusApplied")).toEqual([
       expect.objectContaining({ unitId: enemy.id, status: "paralyze" }),
@@ -52,19 +52,19 @@ describe("Lightning and Paralyzed (GDD 4.4, 4.7, ADR-0029)", () => {
     preventRout(state);
     const { state: next, events } = run(state, play(0, square(0, 6)));
     expect(eventsOfType(events, "DamageDealt")).toEqual([
-      expect.objectContaining({ amount: 1 }),
+      expect.objectContaining({ amount: 2 }),
     ]);
-    expect(unitById(next, enemy.id)).toMatchObject({ hp: 5, paralyzed: true });
+    expect(unitById(next, enemy.id)).toMatchObject({ hp: 4, paralyzed: true });
   });
 
   it("Paralyzes also at 0 damage", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["mage.spark", 0]]);
-    const enemy = unitAt(state, "enemy", 6, { ward: 2 });
+    const enemy = unitAt(state, "enemy", 6, { ward: 3 });
     preventRout(state);
     const { state: next, events } = run(state, play(0, square(0, 6)));
     expect(eventsOfType(events, "DamageDealt")).toEqual([
-      expect.objectContaining({ amount: 0, absorbed: 1 }),
+      expect.objectContaining({ amount: 0, absorbed: 2 }),
     ]);
     expect(unitById(next, enemy.id)).toMatchObject({ hp: 6, paralyzed: true });
   });
@@ -273,10 +273,10 @@ describe("Arc Lightning (GDD 5.5)", () => {
       event.target._tag === "Unit" ? event.target.unitId : -1
     );
     expect(hits).toEqual([target.id, above.id, below.id]);
-    // 2 at Common is 2 at Uncommon (×1.2, rounded).
+    // A Rank table: 3 at Uncommon.
     for (const unit of [target, above, below]) {
       expect(unitById(next, unit.id)).toMatchObject({
-        hp: 4,
+        hp: 3,
         paralyzed: true,
       });
     }
@@ -333,10 +333,10 @@ describe("Thunderstorm (GDD 5.5)", () => {
     expect(hit).toHaveLength(3);
     expect(new Set(hit).size).toBe(3);
     expect(enemies.map((unit) => unit.id)).toEqual(expect.arrayContaining(hit));
-    // A Rank table: 2 at Rare.
+    // A Rank table: 3 at Rare.
     expect(eventsOfType(events, "DamageDealt")).toEqual(
       hit.map(() =>
-        expect.objectContaining({ amount: 2, damageType: "lightning" })
+        expect.objectContaining({ amount: 3, damageType: "lightning" })
       )
     );
   });

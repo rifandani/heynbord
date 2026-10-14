@@ -159,7 +159,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 
 ### 2.8 Barracks
 
-`Hero` · Decoration in v1
+`Hero` · Opens the Hero screen
 
 | Field | Brief |
 | --- | --- |

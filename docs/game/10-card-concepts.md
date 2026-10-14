@@ -1839,7 +1839,7 @@ Identity: buffs and tempo. Physical, so the palette is neutral steel and leather
 
 ### 9.8 Call to Arms
 
-`warrior.callToArms` · Warrior · Rare · Countdown 3 · A friendly Lane · Friendly Units in a Lane get +3 Attack at Rare, +4 at Epic and +5 at Legendary until the end of your next Turn.
+`warrior.callToArms` · Warrior · Rare · Countdown 3 · A friendly Lane · Friendly Units in a Lane get +4 Attack at Rare, +5 at Epic and +6 at Legendary until the end of your next Turn.
 
 > One horn. Every blade answers.
 
@@ -1930,7 +1930,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.4 Frost Shards
 
-`mage.frostShards` · Mage · Common · Countdown 2 · An enemy Unit · Deal 1 Frost damage to an enemy Unit and the next Square behind it.
+`mage.frostShards` · Mage · Common · Countdown 2 · An enemy Unit · Deal 2 Frost damage to an enemy Unit and the next Square behind it.
 
 > Small, sharp and very cold.
 
@@ -1944,7 +1944,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.5 Frost Wave
 
-`mage.frostWave` · Mage · Uncommon · Countdown 4 · An enemy Lane · Deal 2 Frost damage to all enemy Units in a Lane.
+`mage.frostWave` · Mage · Uncommon · Countdown 3 · An enemy Lane · Deal 2 Frost damage to all enemy Units in a Lane.
 
 > The whole lane stands still.
 
@@ -1958,7 +1958,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.6 Spark
 
-`mage.spark` · Mage · Common · Countdown 1 · An enemy Unit · Deal 1 Lightning damage to an enemy Unit. Lightning makes it Paralyzed: it does not attack in its next action.
+`mage.spark` · Mage · Common · Countdown 1 · An enemy Unit · Deal 2 Lightning damage to an enemy Unit. Lightning makes it Paralyzed: it does not attack in its next action.
 
 > Hold still. You have no choice.
 
@@ -1973,7 +1973,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.7 Arc Lightning
 
-`mage.arcLightning` · Mage · Uncommon · Countdown 3 · An enemy Unit · Deal 2 Lightning damage to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it. Lightning makes each Unit Paralyzed: it does not attack in its next action.
+`mage.arcLightning` · Mage · Uncommon · Countdown 3 · An enemy Unit · Deal 3 Lightning damage to an enemy Unit and to the enemy Units in the same Column in the Lanes next to it. Damage by Rank: Uncommon 3, Rare 4, Epic 5, Legendary 5. Lightning makes each Unit Paralyzed: it does not attack in its next action.
 
 > It never strikes once.
 
@@ -2003,7 +2003,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.9 Thunderstorm
 
-`mage.thunderstorm` · Mage · Rare · Countdown 5 · No target · Deal 2 Lightning damage to 3 random different enemy Units. Damage by Rank: Rare 2, Epic 3, Legendary 3. Lightning makes each Unit Paralyzed: it does not attack in its next action.
+`mage.thunderstorm` · Mage · Rare · Countdown 5 · No target · Deal 3 Lightning damage to 3 random different enemy Units. Damage by Rank: Rare 3, Epic 4, Legendary 4. Lightning makes each Unit Paralyzed: it does not attack in its next action.
 
 > Somebody always gets struck.
 
@@ -2018,7 +2018,7 @@ Identity: area damage. The palette is the Damage Type color.
 
 ### 10.10 Blizzard
 
-`mage.blizzard` · Mage · Epic · Countdown 6 · An area · Select an area of 3 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 1 Frost damage. Damage by Rank: Epic 1, Legendary 2. Frost makes each Unit Frozen.
+`mage.blizzard` · Mage · Epic · Countdown 6 · An area · Select an area of 3 Lanes × 2 Columns. For 2 Turns, in each of your End Phases, each enemy Unit in the area takes 2 Frost damage. Damage by Rank: Epic 2, Legendary 3. Frost makes each Unit Frozen.
 
 > Nobody goes anywhere today.
 
@@ -2037,7 +2037,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.1 Pinning Shot
 
-`ranger.pinningShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 4 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.
+`ranger.pinningShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 6 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Entangled.
 
 > Stay right there.
 
@@ -2051,7 +2051,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.2 Warning Shot
 
-`ranger.warningShot` · Ranger · Common · Countdown 3 · An enemy Unit · Deal 6 Physical damage at Common, 7 at Uncommon, 8 at Rare, 10 at Epic and 12 at Legendary to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.
+`ranger.warningShot` · Ranger · Common · Countdown 3 · An enemy Unit · Deal 8 Physical damage at Common, 9 at Uncommon, 10 at Rare, 12 at Epic and 14 at Legendary to an enemy Unit. If it survives, push it 2 Squares back toward its Hero, also when it takes no damage.
 
 > The next one will not miss.
 
@@ -2065,7 +2065,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.3 Long Shot
 
-`ranger.longShot` · Ranger · Uncommon · Countdown 4 · The enemy Hero · Deal 8 damage to the enemy Hero.
+`ranger.longShot` · Ranger · Uncommon · Countdown 4 · The enemy Hero · Deal 12 damage to the enemy Hero.
 
 > Over their heads, into the Hero.
 
@@ -2079,7 +2079,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.4 Quick Shot
 
-`ranger.quickShot` · Ranger · Common · Countdown 1 · An enemy Unit · Deal 3 Physical damage at Common, 4 at Uncommon, 5 at Rare, 6 at Epic and 7 at Legendary to an enemy Unit.
+`ranger.quickShot` · Ranger · Common · Countdown 1 · An enemy Unit · Deal 5 Physical damage at Common, 6 at Uncommon, 7 at Rare, 8 at Epic and 9 at Legendary to an enemy Unit.
 
 > Draw, loose, draw again.
 
@@ -2093,7 +2093,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.5 Harrying Shot
 
-`ranger.harryingShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 3 Physical damage to an enemy Unit and 3 damage to the enemy Hero at Common; 4 and 3 at Uncommon; 5 and 3 at Rare; 6 and 4 at Epic; 7 and 5 at Legendary.
+`ranger.harryingShot` · Ranger · Common · Countdown 2 · An enemy Unit · Deal 4 Physical damage to an enemy Unit and 4 damage to the enemy Hero at Common; 5 and 4 at Uncommon; 6 and 4 at Rare; 7 and 5 at Epic; 8 and 6 at Legendary.
 
 > One for the beast. One for its master.
 
@@ -2107,7 +2107,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.6 Barbed Arrow
 
-`ranger.barbedArrow` · Ranger · Uncommon · Countdown 3 · An enemy Unit · Deal 5 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Bleeding 2.
+`ranger.barbedArrow` · Ranger · Uncommon · Countdown 3 · An enemy Unit · Deal 5 Physical damage to an enemy Unit. If it takes damage and survives, it becomes Bleeding 3.
 
 > It comes out the hard way.
 
@@ -2121,7 +2121,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.7 Skybreaker
 
-`ranger.skybreaker` · Ranger · Uncommon · Countdown 3 · An enemy Unit · Deal 3 Physical damage at Uncommon, 5 at Rare, 7 at Epic and 10 at Legendary to an enemy Unit. If it is a Flying Unit and survives, it becomes Grounded 2, also when it takes no damage: it does not fly for 2 Turns.
+`ranger.skybreaker` · Ranger · Uncommon · Countdown 3 · An enemy Unit · Deal 7 Physical damage at Uncommon, 9 at Rare, 11 at Epic and 14 at Legendary to an enemy Unit. If it is a Flying Unit and survives, it becomes Grounded 2, also when it takes no damage: it does not fly for 2 Turns.
 
 > What flies can fall.
 
@@ -2135,7 +2135,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.8 Venom Arrow
 
-`ranger.venomArrow` · Ranger · Rare · Countdown 4 · An enemy Unit · Deal 3 Physical damage at Rare, 4 at Epic and 5 at Legendary. If it survives, it gains 3 Poison stacks at Rare, 4 at Epic and 5 at Legendary, also when it takes no damage.
+`ranger.venomArrow` · Ranger · Rare · Countdown 4 · An enemy Unit · Deal 4 Physical damage at Rare, 5 at Epic and 6 at Legendary. If it survives, it gains 5 Poison stacks at Rare, 6 at Epic and 7 at Legendary, also when it takes no damage.
 
 > The arrow is small. The poison is not.
 
@@ -2149,7 +2149,7 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 
 ### 11.9 Hunter's Focus
 
-`ranger.huntersFocus` · Ranger · Rare · Countdown 4 · A friendly Unit · Give a friendly Unit +3 Attack at Rare, +4 at Epic and +5 at Legendary, and +1 Range, until the end of your next Turn. A Melee Unit attacks as a Ranged Unit.
+`ranger.huntersFocus` · Ranger · Rare · Countdown 4 · A friendly Unit · Give a friendly Unit +4 Attack at Rare, +5 at Epic and +6 at Legendary, and +1 Range, until the end of your next Turn. A Melee Unit attacks as a Ranged Unit.
 
 > Breathe out. Then let go.
 
@@ -2181,7 +2181,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.1 Mend
 
-`priest.mend` · Priest · Common · Countdown 2 · A friendly Unit · Heal 6 HP to a friendly Unit. Heal by Rank: Common 6, Uncommon 8, Rare 10, Epic 12, Legendary 14.
+`priest.mend` · Priest · Common · Countdown 2 · A friendly Unit · Heal 8 HP to a friendly Unit. Heal by Rank: Common 8, Uncommon 10, Rare 12, Epic 14, Legendary 16.
 
 > Rise. You are not done yet.
 
@@ -2209,7 +2209,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.3 Sanctuary
 
-`priest.sanctuary` · Priest · Uncommon · Countdown 3 · A friendly Unit · A friendly Unit gets Ward 6: it absorbs the next 6 damage. Ward by Rank: Uncommon 6, Rare 8, Epic 10, Legendary 12.
+`priest.sanctuary` · Priest · Uncommon · Countdown 3 · A friendly Unit · A friendly Unit gets Ward 9: it absorbs the next 9 damage. Ward by Rank: Uncommon 9, Rare 11, Epic 13, Legendary 15.
 
 > Stand within the light.
 
@@ -2223,7 +2223,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.4 Blessing of Light
 
-`priest.blessingOfLight` · Priest · Common · Countdown 1 · A friendly Unit · A friendly Unit gets Ward 3: it absorbs the next 3 damage. Ward by Rank: Common 3, Uncommon 4, Rare 5, Epic 6, Legendary 7.
+`priest.blessingOfLight` · Priest · Common · Countdown 1 · A friendly Unit · A friendly Unit gets Ward 4: it absorbs the next 4 damage. Ward by Rank: Common 4, Uncommon 5, Rare 6, Epic 7, Legendary 8.
 
 > A little light goes a long way.
 
@@ -2266,7 +2266,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.7 Prayer of Healing
 
-`priest.prayerOfHealing` · Priest · Uncommon · Countdown 3 · A friendly Lane · Heal 8 HP to each friendly Unit in a Lane. Heal by Rank: Uncommon 8, Rare 10, Epic 12, Legendary 14.
+`priest.prayerOfHealing` · Priest · Uncommon · Countdown 3 · A friendly Lane · Heal 11 HP to each friendly Unit in a Lane. Heal by Rank: Uncommon 11, Rare 13, Epic 15, Legendary 17.
 
 > One prayer for the whole line.
 
@@ -2280,7 +2280,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.8 Cleanse
 
-`priest.cleanse` · Priest · Rare · Countdown 3 · A friendly Unit · Remove all Debuffs from a friendly Unit. Then heal 6 HP to it. Heal by Rank: Rare 6, Epic 7, Legendary 8.
+`priest.cleanse` · Priest · Rare · Countdown 3 · A friendly Unit · Remove all Debuffs from a friendly Unit. Then heal 8 HP to it. Heal by Rank: Rare 8, Epic 9, Legendary 10.
 
 > Wash it away. Stand clean.
 
@@ -2310,7 +2310,7 @@ Identity: healing, protection and Holy damage. The palette is Holy gold-yellow l
 
 ### 12.10 Aegis of Dawn
 
-`priest.aegisOfDawn` · Priest · Epic · Countdown 6 · A friendly Lane · Each friendly Unit in a Lane gets Ward 6: it absorbs the next 6 damage. Ward by Rank: Epic 6, Legendary 8.
+`priest.aegisOfDawn` · Priest · Epic · Countdown 6 · A friendly Lane · Each friendly Unit in a Lane gets Ward 8: it absorbs the next 8 damage. Ward by Rank: Epic 8, Legendary 10.
 
 > The first light guards the whole line.
 

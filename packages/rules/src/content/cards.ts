@@ -1137,7 +1137,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "friendlyLane",
     effect: {
       type: "laneAttack",
-      attack: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+      attack: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
     },
   },
   {
@@ -1170,7 +1170,7 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "common",
     countdown: 2,
     target: "enemyUnit",
-    effect: { type: "damageEntangle", amount: 4, damageType: "physical" },
+    effect: { type: "damageEntangle", amount: 6, damageType: "physical" },
   },
   {
     kind: "skill",
@@ -1181,7 +1181,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damagePush",
-      amount: { common: 6, uncommon: 7, rare: 8, epic: 10, legendary: 12 },
+      amount: { common: 8, uncommon: 9, rare: 10, epic: 12, legendary: 14 },
       damageType: "physical",
       squares: 2,
     },
@@ -1193,7 +1193,7 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "uncommon",
     countdown: 4,
     target: "enemyHero",
-    effect: { type: "damageHero", amount: 8, damageType: "physical" },
+    effect: { type: "damageHero", amount: 12, damageType: "physical" },
   },
   {
     kind: "skill",
@@ -1204,7 +1204,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damageUnit",
-      amount: { common: 3, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
+      amount: { common: 5, uncommon: 6, rare: 7, epic: 8, legendary: 9 },
       damageType: "physical",
     },
   },
@@ -1217,8 +1217,8 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damageUnitHero",
-      amount: { common: 3, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
-      heroAmount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+      amount: { common: 4, uncommon: 5, rare: 6, epic: 7, legendary: 8 },
+      heroAmount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
       damageType: "physical",
     },
   },
@@ -1233,7 +1233,7 @@ const skills: readonly SkillCardDefinition[] = [
       type: "damageBleed",
       amount: 5,
       damageType: "physical",
-      bleed: 2,
+      bleed: 3,
     },
   },
   {
@@ -1246,7 +1246,7 @@ const skills: readonly SkillCardDefinition[] = [
     effect: {
       type: "damageGround",
       // Base Rank Uncommon: a Common copy does not exist, so Common repeats Uncommon.
-      amount: { common: 3, uncommon: 3, rare: 5, epic: 7, legendary: 10 },
+      amount: { common: 7, uncommon: 7, rare: 9, epic: 11, legendary: 14 },
       damageType: "physical",
     },
   },
@@ -1259,10 +1259,10 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damagePoison",
-      amount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+      amount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
       damageType: "physical",
       // Base Rank Rare: Common and Uncommon copies do not exist, so both tables repeat Rare.
-      poison: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+      poison: { common: 5, uncommon: 5, rare: 5, epic: 6, legendary: 7 },
     },
   },
   {
@@ -1275,7 +1275,7 @@ const skills: readonly SkillCardDefinition[] = [
     effect: {
       type: "unitAttackRange",
       // Base Rank Rare: no Common or Uncommon copy exists, so they repeat Rare.
-      attack: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+      attack: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
       range: 1,
     },
   },
@@ -1328,14 +1328,14 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "common",
     countdown: 2,
     target: "enemyUnit",
-    effect: { type: "damageArea", amount: 1, damageType: "frost", length: 2 },
+    effect: { type: "damageArea", amount: 2, damageType: "frost", length: 2 },
   },
   {
     kind: "skill",
     id: "mage.frostWave",
     class: "mage",
     baseRank: "uncommon",
-    countdown: 4,
+    countdown: 3,
     target: "enemyLane",
     effect: { type: "damageLane", amount: 2, damageType: "frost" },
   },
@@ -1346,7 +1346,7 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "common",
     countdown: 1,
     target: "enemyUnit",
-    effect: { type: "damageUnit", amount: 1, damageType: "lightning" },
+    effect: { type: "damageUnit", amount: 2, damageType: "lightning" },
   },
   {
     kind: "skill",
@@ -1356,7 +1356,11 @@ const skills: readonly SkillCardDefinition[] = [
     // The swap rule (#56): Countdown 4 lost 8.8 / 9.8 points.
     countdown: 3,
     target: "enemyUnit",
-    effect: { type: "damageArc", amount: 2, damageType: "lightning" },
+    effect: {
+      type: "damageArc",
+      amount: { common: 3, uncommon: 3, rare: 4, epic: 5, legendary: 5 },
+      damageType: "lightning",
+    },
   },
   {
     kind: "skill",
@@ -1386,7 +1390,7 @@ const skills: readonly SkillCardDefinition[] = [
     effect: {
       type: "damageRandom",
       // The Rank scale of 3 gives 4 at Rare, and the swap rule failed it.
-      amount: { common: 2, uncommon: 2, rare: 2, epic: 3, legendary: 3 },
+      amount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 4 },
       damageType: "lightning",
       units: 3,
     },
@@ -1401,7 +1405,7 @@ const skills: readonly SkillCardDefinition[] = [
     effect: {
       type: "fieldEffect",
       // The Freeze is the payoff. More damage failed the swap rule.
-      amount: { common: 1, uncommon: 1, rare: 1, epic: 1, legendary: 2 },
+      amount: { common: 2, uncommon: 2, rare: 2, epic: 2, legendary: 3 },
       damageType: "frost",
       lanes: 3,
       columns: 2,
@@ -1418,7 +1422,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "friendlyUnit",
     effect: {
       type: "healUnit",
-      heal: { common: 6, uncommon: 8, rare: 10, epic: 12, legendary: 14 },
+      heal: { common: 8, uncommon: 10, rare: 12, epic: 14, legendary: 16 },
     },
   },
   {
@@ -1440,7 +1444,7 @@ const skills: readonly SkillCardDefinition[] = [
     effect: {
       type: "wardUnit",
       // Base Rank Uncommon: no Common copy exists, so Common repeats Uncommon.
-      ward: { common: 6, uncommon: 6, rare: 8, epic: 10, legendary: 12 },
+      ward: { common: 9, uncommon: 9, rare: 11, epic: 13, legendary: 15 },
     },
   },
   {
@@ -1452,7 +1456,7 @@ const skills: readonly SkillCardDefinition[] = [
     target: "friendlyUnit",
     effect: {
       type: "wardUnit",
-      ward: { common: 3, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
+      ward: { common: 4, uncommon: 5, rare: 6, epic: 7, legendary: 8 },
     },
   },
   {
@@ -1488,7 +1492,7 @@ const skills: readonly SkillCardDefinition[] = [
     effect: {
       type: "healLane",
       // Base Rank Uncommon: no Common copy exists, so Common repeats Uncommon.
-      heal: { common: 8, uncommon: 8, rare: 10, epic: 12, legendary: 14 },
+      heal: { common: 11, uncommon: 11, rare: 13, epic: 15, legendary: 17 },
     },
   },
   {
@@ -1501,7 +1505,7 @@ const skills: readonly SkillCardDefinition[] = [
     effect: {
       type: "cleanseUnit",
       // Base Rank Rare: no Common or Uncommon copy exists, so they repeat Rare.
-      heal: { common: 6, uncommon: 6, rare: 6, epic: 7, legendary: 8 },
+      heal: { common: 8, uncommon: 8, rare: 8, epic: 9, legendary: 10 },
     },
   },
   {
@@ -1523,7 +1527,7 @@ const skills: readonly SkillCardDefinition[] = [
     effect: {
       type: "wardLane",
       // Base Rank Epic: no lower copy exists, so the lower Ranks repeat Epic.
-      ward: { common: 6, uncommon: 6, rare: 6, epic: 6, legendary: 8 },
+      ward: { common: 8, uncommon: 8, rare: 8, epic: 8, legendary: 10 },
     },
   },
 ];

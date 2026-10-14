@@ -142,6 +142,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Deck Slot**: A place where the Player saves one Deck. A new Player has 3 Deck Slots. The Player buys more with Coin, up to 10. _Avoid_: deck (for the place), loadout, preset
 
+**Active Deck**: The Deck that the Player's Hero takes into the next Battle. Its Class is the Hero Class. _Avoid_: current deck, selected deck, equipped deck
+
 **Archetype**: A named reference Deck for one style of play, for example a Human Wall Warrior Deck. The team uses Archetypes to measure balance. A Player never sees an Archetype. _Avoid_: deck type, meta deck, benchmark deck
 
 **Main Archetype**: An Archetype whose Matchups gate release: each pair with another Main Archetype must be in 45% to 55%. _Avoid_: core deck, gated deck
@@ -150,9 +152,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Matchup**: Many Battles between two Archetypes, with the AI on both Sides, to measure if one Archetype is stronger than the other. _Avoid_: versus, pairing, mirror test
 
-**Power Points**: The strength of one Creature Card at its Base Rank, from its Attack, HP, Speed, Range, Damage Type and Keywords. _Avoid_: power level, rating, score, value
+**Power Points**: The strength of one Card at its Base Rank. A Creature Card gets them from its Attack, HP, Speed, Range, Damage Type and Keywords. A Skill Card gets them from its effect, its Damage Type and its Recall. _Avoid_: power level, rating, score, value, Skill Points
 
-**Power Budget**: The Power Points that a Creature Card can have for its Countdown. A Card must stay near its Power Budget. _Avoid_: cost, mana curve, stat budget
+**Power Budget**: The Power Points that a Card can have for its Countdown. A Creature Card and a Skill Card with the same Countdown have the same Power Budget. A Card must stay near its Power Budget. _Avoid_: cost, mana curve, stat budget, Skill Power Budget
 
 **Graveyard**: The place for a Hero's Cards that are used or dead. _Avoid_: discard pile, cemetery, crypt
 
@@ -268,7 +270,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Drop Rate**: The chance of each Rank for each Card in a Pack. Each of the three Packs has its own Drop Rates. _Avoid_: odds, luck
 
-**Gear**: The items in the Hero's 4 slots that give the Hero and its Units stats. _Avoid_: equipment, items
+**Gear**: The items in the Hero's 4 slots that give the Hero and its Units stats. Each slot holds one fixed item: the Weapon, the Armor, the Trinket or the Banner. An item has a level from 0 to 10. _Avoid_: equipment, items, gear set
+
+**Gear upgrade**: The action that adds 1 level to one Gear item for Coin. It never fails, and a Gear level never goes down. _Avoid_: enchant, refine, level up, forge
 
 **Profile**: All the saved progress of one Player: XP, balances, Collection, Decks, Gear levels, Stage results and the other records that must stay after the game closes. _Avoid_: save file, account, player data
 
@@ -324,7 +328,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 ## Relationships
 
-- A **Player** controls one **Hero**. The Hero has one **Class**.
+- A **Player** controls one **Hero**. The Hero has one **Class**: the Class of the **Active Deck**. The Player changes the Hero Class when the Player selects a Deck of another Class.
 - A **Battle** has two **Sides**. Each Side has 1 or more **Heroes**. In v1, the Player's Side has exactly 1 Hero.
 - Each **Hero** has its own **Deck**, **Hand**, **Graveyard**, **Class** and **Gear**. All the Heroes of a Side play in the same **Turn**.
 - Each **Hero** has one **Front**. A Hero can summon into the **Summon Zone** of any Front of its Side. Its **Skill Cards** can target any **Square**, and an enemy **Hero** that is not **Defeated**.
@@ -360,6 +364,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - "Fuse" in the original games was a random recipe system. Heynbord does not have it. **Combine** and **Craft** replace it.
 - **Recall** was named "Mastery" before. "Mastery" told the Rank, not the effect, so Players did not know what it did.
 - **Hero** and **Player** are different. A Player is a person. A Hero is the commander on the Board.
+- GDD 5.5 and an early code note put the **Class** on the **Hero**, and moved it there when the Hero screen came. The Class stays on the **Deck Slot**, and the Hero has the Class of the **Active Deck**. Thus a change of Class never makes a Deck invalid.
 - The GDD used "a Unique boss Unit" for a Unit that starts on the Board in a Boss Stage. The term is **Start Unit**, and that Unit is not a **Boss**. A Boss is always a Hero, in a Boss Stage and in a Dungeon.
 - A **Hero** used to lose the Battle at 0 HP. Now a Hero is **Defeated** at 0 HP, and only a **Side** with no Heroes left loses ([ADR-0009](../../docs/adr/0009-a-side-has-one-or-more-heroes.md)). A Side that is **Routed** also loses ([ADR-0012](../../docs/adr/0012-a-routed-side-loses.md)).
 - The **Board** used to have 1 to 3 Lanes in v1, and each Stage set its number of Lanes. Now the type of Battle sets it: 3 Lanes in a **Stage**, 4 Lanes in a **Dungeon**, in **Heynspire** and in a Battle with 2 or more **Players**.

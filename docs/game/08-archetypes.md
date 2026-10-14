@@ -76,10 +76,10 @@ The power budget checks one card. It does not see these risks. Test each one in 
 The Skill Card set grows from 12 to 40 cards (issues #56 to #66). These rules tell which Decks get the new cards (grill #55, 2026-10-11).
 
 - **Diagnostic Decks change with each batch.** Each Skill Card batch can change the Skill Cards of the Diagnostic Decks, and it reports the Matchups.
-- **Main Archetypes change one time.** Vanguard and Raiders keep their 3 Skill Cards until all 40 cards and the Skill Power Budget (#50) exist. Then one re-fit pass gives each one the Skill Cards that fit its style, and a full Matchup checks 45% to 55% again. Thus the swap rule (3.3) and each batch report use a fixed anchor until the re-fit.
+- **Main Archetypes change one time.** Vanguard and Raiders keep their 3 Skill Cards until all 40 cards exist and the Power Budget covers Skill Cards (#50, [ADR-0032](../adr/0032-a-skill-card-uses-the-power-budget-of-a-creature-card.md)). Then one re-fit pass gives each one the Skill Cards that fit its style, and a full Matchup checks 45% to 55% again. Thus the swap rule (3.3) and each batch report use a fixed anchor until the re-fit.
 - **2 to 5 Skill Cards.** Each Archetype that has Skill Cards holds 2 to 5 of them, within the Deck rules of level 5. Human Heavy and Human Light hold none, because they test the Creature Card Power Budget only.
 - **Pick by style.** The re-fit picks the Skill Cards by hand, for the style in the table of section 2, with one line of reason for each pick. A sim search for the strongest list is not the method.
-- **When the gate fails.** First change the Deck list (other Skill Cards, other copies). Then change Skill Card values within the Skill Power Budget. Change Creature Card values last. If no list with 2 to 5 Skill Cards passes, the Archetype keeps its old Skill Cards, and the report records why.
+- **When the gate fails.** First change the Deck list (other Skill Cards, other copies). Then change Skill Card values within the Power Budget, which covers Skill Cards ([ADR-0032](../adr/0032-a-skill-card-uses-the-power-budget-of-a-creature-card.md)). Change Creature Card values last. If no list with 2 to 5 Skill Cards passes, the Archetype keeps its old Skill Cards, and the report records why.
 - **Swap report after the re-fit.** Run the swap report (3.3) one time against the new Vanguard and Raiders. A Skill Card that fails then goes to a tuning issue.
 - **Promotion.** After the re-fit, Thornwatch, Deathless Host, Tunnel Rats and Wild Hunt get a re-fit with the Skill Cards of their Class. Promote them one at a time, the Deck nearest to the gate first. A Diagnostic Deck becomes a Main Archetype when each pair with each Main Archetype is in 45% to 55%. Then it is part of the gate for the next Deck. A Deck that fails stays a Diagnostic Deck, and its gap goes to a Creature Card tuning issue.
 - **Starter Decks do not change.** The new Skill Cards come to the Player from Packs. The Starter Decks keep their 1 Skill Card ([GDD 6.1](./03-game-design.md#61-starter-decks)).
@@ -228,6 +228,7 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-14 | There are no Roles. Each Unit has Base Speed 2 and Base Range 1, and the Keywords Swift, Fleet, Heavy, Mid-range, Long-range and Extreme-range change them. The budget is `19 + 3 × (Countdown − 3)` ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)). | The Role did not tell a Player the Speed or the Range of a card. |
 | 2026-10-14 | Balance pass for ADR-0030. HP only, Attack does not change. To stay within ±10% of the new budget: Shieldbearer 1/7 → 1/9, Dawn Cleric 2/7 → 2/8, Gate Warden 3/7 → 3/8, Town Barricade 0/15 → 0/14, Banner Chaplain 2/6 → 2/7, King's Courier 2/5 → 2/6, Bonestake Palisade 0/15 → 0/14, Junk Barricade 0/12 → 0/11, Bomb Lobber 3/3 → 3/4, Rocket Barrel Rider 3/2 → 3/3, Crag Lizard 2/8 → 2/10, Cave Bear 3/10 → 3/12, Boulder Tortoise 0/12 → 0/11, Woolly Mammoth 3/7 → 3/8, Mountain Colossus 2/7 → 2/8, Rootbound Guard 3/7 → 3/9, Mosspitcher Lookout 3/6 → 3/8, Acorn Tender 3/3 → 3/5, Thornline Archer 3/3 → 3/4, Bramble Nest 0/16 → 0/15, Graveyard Drudge 3/6 → 3/7, Hushbow 3/4 → 3/5, Grave Bell Tender 3/6 → 3/7, Coffin Lancer 1/4 → 1/5. The Orc melee cards of Raiders get +1 HP, to exactly their budget: Badland Runt 4/1 → 4/2, Pack Stalker 2/4 → 2/5, Scrap Raider 3/4 → 3/5, Howling Charger 3/5 → 3/7 (+1 for the budget and +1 for Raiders), Cinderhorn Breaker 3/3 → 3/4. Stages 1-7 and 1-8 get less Gear and no Rare copies ([14 — Campaign Stages](./14-campaign-stages.md)). The Token Power goes down by 4, because the Base Speed is free: Skeleton 4 / 5 / 7 / 8 / 11 and Restless Wisp 10 / 11 / 13 / 14 / 17 from Common to Legendary. | Heavy cards and Long-range cards went below their budget, and Walls went above it. With only the budget fit, Vanguard won 74.6% against Raiders. With the Raiders HP, it wins 56.5% (58.7% before ADR-0030). The main Matchup and Stages 1-5, 1-7 and 1-8 with Raiders still miss their target, the same count of misses as before. The designer selected mild Stage changes for this pass. |
 | 2026-10-14 | Armor reduces only Physical damage, and Holy cannot be Blocked ([ADR-0031](../adr/0031-armor-reduces-only-physical-damage.md)). Holy costs 1 point, not 2. To stay within ±10% of the budget: Banner Chaplain 2/7 → 2/8 and Acorn Tender 3/5 → 3/6. Matchup at 400 Battles: Vanguard against Raiders 58.5% → 55.8% (target 45%–55%, still a MISS). |
+| 2026-10-14 | The Power Budget covers Skill Cards ([ADR-0032](../adr/0032-a-skill-card-uses-the-power-budget-of-a-creature-card.md), issue #50, 3.4). 22 Skill Cards change: Call to Arms +4 Attack at Rare; Pinning Shot 6 damage; Warning Shot 8 / 9 / 10 / 12 / 14; Long Shot 12; Quick Shot 5 / 6 / 7 / 8 / 9; Harrying Shot 4 / 5 / 6 / 7 / 8 and Hero damage 4 / 4 / 4 / 5 / 6; Barbed Arrow Bleed 3; Skybreaker 7 at Uncommon; Venom Arrow 4 damage and 5 stacks at Rare; Hunter's Focus +4 Attack at Rare; Frost Shards 2; Frost Wave Countdown 3; Spark 2; Arc Lightning 3 at Uncommon; Thunderstorm 3 at Rare; Blizzard 2 at Epic; Mend 8; Sanctuary Ward 9 at Uncommon; Blessing of Light Ward 4; Prayer of Healing 11 at Uncommon; Cleanse 8 at Rare; Aegis of Dawn Ward 8 at Epic. The AI uses Warning Shot first for a kill. | The swap rule found most Skill Cards 2 to 9 Power Points under their budget (18 of 40 passed). Now 24 of 40 pass. The anchor cards of Vanguard and Raiders do not change. Vanguard against Raiders is 54.3%. The 4 Raiders Stage misses of `rules:sim:check` (1-5, 1-7, 1-8, 1-10) were the same before this change. |
 
 ### 3.2 Countdown slope search
 
@@ -276,7 +277,7 @@ HH is Human Heavy, HL Human Light, WH Wild Hunt, TR Tunnel Rats, V Vanguard and 
 
 ### 3.3 Skill Card swap
 
-A Skill Card has no Power Budget. The swap rule measures it against a Creature Card with the same Countdown (issue #56). Run `bun run sim skill-swap 1000` in `packages/rules` (about 2 minutes for the 29 cards). `--check` does not check the swap.
+A Skill Card has no Power Budget. The swap rule measures it against a Creature Card with the same Countdown (issue #56). Run `bun run sim skill-swap 1000` in `packages/rules` (about 3 minutes for the 40 cards). `--check` does not check the swap.
 
 - **The swap.** In a Deck of the card's Class, 1 more copy of the Skill Card replaces 1 Creature Card. The Decks are Vanguard Full (Warrior), Raiders Full (Mage), Thornwatch (Ranger) and Wild Hunt (Priest). Each one already has 1 copy of each Skill Card of its Class, so the swap Deck has 2 copies. A swap Deck is a scratch Deck for the report. The Archetype lists do not change.
 - **The Creature Card.** It is a melee Unit (Range 0) with the same Countdown as the Skill Card. If no melee Creature Card has that Countdown, it has the nearest one, and the report says so. Of two nearest Countdowns, the higher one, so that the Deck Countdown does not go up. Then the card with the most copies, and then the first in Deck order.
@@ -339,7 +340,7 @@ The swap Decks have no copy of these cards, so there is no reverse column.
 - Frost hits at 0 damage now count for the area and Lane Hold Rules, but a 0-damage hit still scores 0 (the Frost Bolt score). A change to that score changes Frost Bolt and thus Raiders, so it is a separate decision.
 - Flushing Shot needs 8 damage at its Base Rank Uncommon to pass. As with Warning Shot, it then kills most Units that it hits, so its push seldom occurs. On 2026-10-12, Skybreaker replaced Flushing Shot, because the two cards had the same effect (see the Skybreaker result below).
 - Penance has no value to scale, so a Rank changes only its Recall chance.
-- The new Ranger cards make the Ranger curve cheap (Countdown 1 to 4), and Prayer of Healing heals each Unit of a Lane as much as Mend heals one Unit at the same Rank. The Skill Power Budget (#50) can measure these after all 40 cards exist.
+- The new Ranger cards make the Ranger curve cheap (Countdown 1 to 4), and Prayer of Healing heals each Unit of a Lane as much as Mend heals one Unit at the same Rank. The Power Budget of Skill Cards (#50, section 3.4) now measures these.
 
 Results of the 3 Rare and Epic Ranger Skill Cards of issue #59, 2026-10-11, with their final values. A card plays at its Base Rank value.
 
@@ -447,8 +448,93 @@ With 3000 seeds, the changes are −1.6 / −3.6 (Spark), −0.5 / −0.8 (Arc L
 
 **Findings for review.**
 
-- Hunter's Focus has Countdown 4 and gives its bonus to 1 Unit. Call to Arms (R, Countdown 3) gives +3 Attack to each friendly Unit in a Lane. The swap rule passes, but the Skill Power Budget (#50) can compare the two cards.
+- Hunter's Focus has Countdown 4 and gives its bonus to 1 Unit. Call to Arms (R, Countdown 3) gives +3 Attack to each friendly Unit in a Lane. The swap rule passes, and the Power Budget of Skill Cards (#50, section 3.4) now compares the two cards.
 - The AI scores a Long-range Unit that gets a target from Range 4 higher than a Unit that already has a target. For a Melee Unit, the AI does not count that Retaliate and First Strike do not hit it.
+
+### 3.4 Power Budget of Skill Cards
+
+A Skill Card uses the same Power Points and the same Power Budget as a Creature Card ([ADR-0032](../adr/0032-a-skill-card-uses-the-power-budget-of-a-creature-card.md), issue #50). `skillPower` in `packages/rules/src/content/balance.ts` has the rates, and the content test checks each Skill Card with the nearest-step rule and a hard cap of ±25%. Run `bun scripts/fit-skill-budget.ts 1000` in `packages/rules` to fit the rates again (about 4 minutes). It prints the rates and does not change `balance.ts`.
+
+**Calibration.** In each swap Deck, one Creature Card that is not in Vanguard or Raiders gets −4 HP and +4 HP, in memory only. The win-rate change for each Power Point, against Vanguard / Raiders (1000 seeds):
+
+| Swap Deck | Calibration card | Points for each Power Point |
+| --- | --- | --- |
+| Vanguard Full | Bridge Pikeman | 1.26 / 1.64 |
+| Raiders Full | Tusk Brute | 2.23 / 2.86 |
+| Thornwatch | Rootbound Guard | 2.02 / 2.14 |
+| Wild Hunt | Cave Bear | 1.29 / 0.93 |
+
+Thus the ±5-point swap band is about ±2 to ±5 Power Points. The value of a Skill Card in the sim is the budget of its Countdown, plus the Power Points of the removed Creature Card minus its own budget, plus the swap delta in Power Points (the mean of the two opponents).
+
+**Fit.** Least squares of the points against the sim value of all 40 cards. A rate is never below 0. The flat points of Entangle (2), Bleed (1 for each count), bonus Range (1 for each Square), area length, random Units, Field Effect size and turns, and bonus Bulwark turns are set by hand. The fit selected Recall weight 0 (RMS error 2.06 Power Points; 2.13 at weight 1 and 2.36 at weight 3).
+
+| Rate | Points | Rate | Points |
+| --- | --- | --- | --- |
+| Damage to one Unit | 2.3 for each damage | Heal one Unit | 1.8 for each HP |
+| Area damage | 4.0 | Heal a Lane | 1.2 |
+| Lane damage | 7.4 | Ward on one Unit | 1.8 |
+| Arc damage | 2.6 | Ward on a Lane | 2.4 |
+| Random damage | 4.1 | Exposed | 6.7 |
+| Field Effect damage | 6.4 | Bonus Attack on a Lane | 4.1 |
+| Hero damage | 1.5 | Bonus Attack on one Unit | 3.9 |
+| Poisoned stacks | 1.9 | Bonus Bulwark on a Lane | 10.2 |
+| Countdown down | 6.4 for each Countdown | Damage equal to Attack | 11.5 |
+| Push | 0 | Steadfast | 12 |
+| Grounded | 0 | Extra action of a Lane | 16.4 |
+| Cleanse (before the heal) | 0 | | |
+
+Damage Type points of a Skill Card: Physical 0, Fire 2.4, Frost 5.1, Holy 7.2, Lightning 7.9. Holy is only on Priest cards and Lightning only on Mage cards, so these points also hold the effect of the Class Deck.
+
+**Hold Rules first.** The AI plays each Ranger card about as often as the cards of the other Classes (1.1 to 1.25 plays for each copy in each Battle, 100 seeds). Only Warning Shot was wasted: it pushed a Unit in place of a kill, so more damage did not change its result. Now a kill scores above a push ([GDD 9](./03-game-design.md#9-enemy-ai)).
+
+**Card changes.** The 6 anchor cards of Vanguard and Raiders (War Drums, Shield Wall, Spear Throw, Fireball, Frost Bolt, Flame Wave) do not change: they wait for the re-fit (2.3). 22 other cards changed toward their budget in 4 sim rounds (3.1). Some changes did not move the sim value and were taken back: Ground Slam at Countdown 2 (+1.6 / +6.6), Penance at Countdown 3 (−7.7 / +1.2) and Unbroken Vow at Countdown 1 (−2.1 / −6.1). The base Decks Thornwatch and Wild Hunt hold the changed Ranger and Priest cards, so their win rates went up (41.4% → 62.0% and 63.7% → 70.2% against Vanguard).
+
+Results, 2026-10-14. Change is in percentage points, against Vanguard / Raiders (1000 seeds). "Off step" is a card that misses its nearest step. 24 of 40 cards pass.
+
+| Skill Card | Points / budget | Creature Card (points from budget) | Before | After | Change | Result |
+| --- | --- | --- | --- | --- | --- | --- |
+| warrior.warDrums | 12.8 / 16 | human.shieldbearer (−1 points) | 18.6% / 18.0% | 15.8% / 14.1% | −2.8 / −3.9 | Pass |
+| warrior.shieldWall | 12.2 / 16 | human.shieldbearer (−1 points) | 18.6% / 18.0% | 16.7% / 14.3% | −2.0 / −3.7 | Pass |
+| warrior.spearThrow | 11.5 / 16 off step | human.shieldbearer (−1 points) | 18.6% / 18.0% | 27.3% / 21.5% | +8.6 / +3.5 | Fail |
+| warrior.shoulderCharge | 6.9 / 16 off step | human.shieldbearer (−1 points) | 18.6% / 18.0% | 17.8% / 17.8% | −0.8 / −0.2 | Pass |
+| warrior.shieldBash | 14.8 / 16 off step | human.shieldbearer (−1 points) | 18.6% / 18.0% | 16.5% / 17.5% | −2.1 / −0.5 | Pass |
+| warrior.cleave | 17.0 / 19 | human.halberdier (−1 points) | 18.6% / 18.0% | 14.5% / 18.5% | −4.2 / +0.5 | Pass |
+| warrior.groundSlam | 14.8 / 19 off step | human.halberdier (−1 points) | 18.6% / 18.0% | 13.2% / 17.6% | −5.4 / −0.4 | Fail |
+| warrior.callToArms | 16.4 / 19 off step | human.halberdier (−1 points) | 18.6% / 18.0% | 16.4% / 15.4% | −2.3 / −2.5 | Pass |
+| warrior.exposeWeakness | 13.4 / 16 | human.shieldbearer (−1 points) | 18.6% / 18.0% | 17.2% / 14.8% | −1.5 / −3.2 | Pass |
+| warrior.onslaught | 16.4 / 16 | human.shieldbearer (−1 points) | 18.6% / 18.0% | 20.9% / 19.7% | +2.3 / +1.7 | Pass |
+| ranger.pinningShot | 15.8 / 16 | elf.brambleDuelist (−1 points) | 62.0% / 51.4% | 60.3% / 50.9% | −1.7 / −0.5 | Pass |
+| ranger.warningShot | 18.4 / 19 | elf.rootboundGuard (−1 points) | 62.0% / 51.4% | 53.8% / 46.0% | −8.2 / −5.4 | Fail |
+| ranger.longShot | 21.0 / 22 off step | elf.rootboundGuard (−1 points, nearest Countdown, Deck Countdown +1) | 62.0% / 51.4% | 63.5% / 49.5% | +1.6 / −1.9 | Pass |
+| ranger.quickShot | 11.5 / 13 off step | elf.brambleDuelist (−1 points, nearest Countdown, Deck Countdown −1) | 62.0% / 51.4% | 60.6% / 48.4% | −1.4 / −3.0 | Pass |
+| ranger.harryingShot | 15.2 / 16 | elf.brambleDuelist (−1 points) | 62.0% / 51.4% | 55.3% / 49.8% | −6.7 / −1.6 | Fail |
+| ranger.barbedArrow | 16.8 / 19 off step | elf.rootboundGuard (−1 points) | 62.0% / 51.4% | 55.0% / 47.0% | −6.9 / −4.4 | Fail |
+| ranger.skybreaker | 16.1 / 19 off step | elf.rootboundGuard (−1 points) | 62.0% / 51.4% | 57.5% / 47.0% | −4.5 / −4.4 | Pass |
+| ranger.venomArrow | 18.7 / 22 off step | elf.rootboundGuard (−1 points, nearest Countdown, Deck Countdown +1) | 62.0% / 51.4% | 55.4% / 47.9% | −6.6 / −3.6 | Fail |
+| ranger.huntersFocus | 16.6 / 22 off step | elf.rootboundGuard (−1 points, nearest Countdown, Deck Countdown +1) | 62.0% / 51.4% | 51.5% / 42.9% | −10.4 / −8.5 | Fail |
+| ranger.rainOfArrows | 24.2 / 28 off step | elf.rootboundGuard (−1 points, nearest Countdown, Deck Countdown +3) | 62.0% / 51.4% | 57.3% / 47.9% | −4.7 / −3.5 | Pass |
+| mage.fireball | 15.4 / 19 off step | orc.cinderhornBreaker (0 points) | 39.6% / 39.8% | 32.9% / 32.3% | −6.7 / −7.5 | Fail |
+| mage.frostBolt | 12.0 / 16 off step | orc.scrapRaider (0 points) | 39.6% / 39.8% | 32.5% / 32.7% | −7.1 / −7.1 | Fail |
+| mage.flameWave | 17.2 / 22 off step | orc.tuskBrute (−1 points) | 39.6% / 39.8% | 32.5% / 30.6% | −7.1 / −9.2 | Fail |
+| mage.frostShards | 14.1 / 16 | orc.scrapRaider (0 points) | 39.6% / 39.8% | 35.2% / 35.1% | −4.4 / −4.7 | Pass |
+| mage.frostWave | 19.9 / 19 | orc.cinderhornBreaker (0 points) | 39.6% / 39.8% | 37.2% / 35.0% | −2.4 / −4.8 | Pass |
+| mage.spark | 12.5 / 13 | orc.badlandRunt (0 points) | 39.6% / 39.8% | 37.8% / 39.4% | −1.8 / −0.4 | Pass |
+| mage.arcLightning | 15.7 / 19 off step | orc.cinderhornBreaker (0 points) | 39.6% / 39.8% | 31.1% / 32.3% | −8.6 / −7.5 | Fail |
+| mage.wildfire | 20.2 / 22 | orc.tuskBrute (−1 points) | 39.6% / 39.8% | 35.0% / 34.9% | −4.6 / −4.9 | Pass |
+| mage.thunderstorm | 24.2 / 25 | orc.tuskBrute (−1 points, nearest Countdown, Deck Countdown +1) | 39.6% / 39.8% | 39.1% / 42.0% | −0.6 / +2.2 | Pass |
+| mage.blizzard | 24.9 / 28 | orc.tuskBrute (−1 points, nearest Countdown, Deck Countdown +2) | 39.6% / 39.8% | 36.1% / 39.3% | −3.5 / −0.5 | Pass |
+| priest.mend | 14.4 / 16 off step | feral.bristlebackBoar (+1 points) | 70.2% / 56.1% | 69.6% / 51.6% | −0.6 / −4.5 | Pass |
+| priest.smite | 14.1 / 16 off step | feral.bristlebackBoar (+1 points) | 70.2% / 56.1% | 65.8% / 52.5% | −4.4 / −3.6 | Pass |
+| priest.sanctuary | 16.2 / 19 off step | feral.caveBear (−1 points) | 70.2% / 56.1% | 68.8% / 52.0% | −1.3 / −4.1 | Pass |
+| priest.blessingOfLight | 7.2 / 13 off step | feral.bristlebackBoar (+1 points, nearest Countdown, Deck Countdown −1) | 70.2% / 56.1% | 67.2% / 51.0% | −3.0 / −5.1 | Fail |
+| priest.radiantStrike | 14.2 / 16 off step | feral.bristlebackBoar (+1 points) | 70.2% / 56.1% | 67.9% / 54.1% | −2.3 / −2.0 | Pass |
+| priest.penance | 18.7 / 16 | feral.bristlebackBoar (+1 points) | 70.2% / 56.1% | 67.3% / 61.3% | −2.9 / +5.1 | Fail |
+| priest.prayerOfHealing | 13.2 / 19 off step | feral.caveBear (−1 points) | 70.2% / 56.1% | 65.3% / 50.7% | −4.8 / −5.4 | Fail |
+| priest.cleanse | 14.4 / 19 off step | feral.caveBear (−1 points) | 70.2% / 56.1% | 66.8% / 51.2% | −3.4 / −4.9 | Pass |
+| priest.unbrokenVow | 12.0 / 16 | feral.bristlebackBoar (+1 points) | 70.2% / 56.1% | 67.6% / 48.8% | −2.6 / −7.4 | Fail |
+| priest.aegisOfDawn | 19.2 / 28 off step | feral.cragRhino (+1 points, nearest Countdown, Deck Countdown +2) | 70.2% / 56.1% | 61.5% / 44.3% | −8.7 / −11.8 | Fail |
+
+**Open decisions (issue #50).** 24 cards miss their nearest step or the cap, and the content test lists each one with its reason. 13 of them pass the sim, and the sim wins. 16 cards fail the sim: the 4 anchor cards Spear Throw, Fireball, Frost Bolt and Flame Wave, and Ground Slam, Warning Shot, Harrying Shot, Barbed Arrow, Venom Arrow, Hunter's Focus, Arc Lightning, Blessing of Light, Penance, Prayer of Healing, Unbroken Vow and Aegis of Dawn. For Hunter's Focus, Arc Lightning, Aegis of Dawn, Blessing of Light and Prayer of Healing, more amount did not move the sim value. They need an AI change, a new effect or another Countdown, not a larger number.
 
 ## 4. When an Archetype or a card changes
 

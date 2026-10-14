@@ -8,6 +8,11 @@ import {
   creaturePower,
   POWER_BUDGET_SLOPE,
   powerBudget,
+  recallMultiplier,
+  SKILL_BUDGET_CAP,
+  SKILL_RATES,
+  skillBudgetCheck,
+  skillPower,
   tokenPower,
 } from "./balance";
 import { CARDS, getCard } from "./cards";
@@ -162,6 +167,71 @@ const skillAmounts = (cardId: string) => {
   return RANKS.map((rank) => skillAmountForRank(value, rank));
 };
 
+const skill = (id: string) => {
+  const card = getCard(id);
+  if (card.kind !== "skill") {
+    throw new Error(`${id} is not a Skill Card`);
+  }
+  return card;
+};
+
+/**
+ * The Skill Cards that miss their nearest step or the hard cap, with the
+ * reason (GDD 13, ADR-0032). The swap change is against Vanguard / Raiders
+ * (1000 seeds, Archetypes 3.4). The sim wins over the content test. A card
+ * leaves the list when a tuning pass brings it to its budget.
+ */
+const SKILL_BUDGET_EXCEPTIONS = {
+  "warrior.spearThrow":
+    "Swap +8.6 / +3.5 points. An anchor card of Vanguard or Raiders: it waits for the Archetype re-fit (Archetypes 2.3). The sim finds it too strong, but one damage rate for all Classes puts it under.",
+  "warrior.shoulderCharge":
+    "Swap −0.8 / −0.2 points. The sim passes, and the sim wins over the test. A damage point is worth more in the Warrior Deck than the one damage rate gives.",
+  "warrior.shieldBash":
+    "Swap −2.1 / −0.5 points. The sim passes, and the sim wins over the test.",
+  "warrior.groundSlam":
+    "Swap −5.4 / −0.4 points. The sim fails by 0.4 points. At Countdown 2 it failed high (+6.6 against Raiders), and 3 damage is far over.",
+  "warrior.callToArms":
+    "Swap −2.3 / −2.5 points. The sim passes, and the sim wins over the test.",
+  "ranger.longShot":
+    "Swap +1.6 / −1.9 points. The sim passes, and the sim wins over the test.",
+  "ranger.quickShot":
+    "Swap −1.4 / −3.0 points. The sim passes, and the sim wins over the test.",
+  "ranger.barbedArrow":
+    "Swap −6.9 / −4.4 points. The sim fails. It has no value change: the stronger Thornwatch cards moved its base Deck.",
+  "ranger.skybreaker":
+    "Swap −4.5 / −4.4 points. The sim passes, and the sim wins over the test.",
+  "ranger.venomArrow":
+    "Swap −6.6 / −3.6 points. The sim fails. More damage and more stacks moved it little.",
+  "ranger.huntersFocus":
+    "Swap −10.4 / −8.5 points. The sim fails, and its sim value did not move with more amount.",
+  "ranger.rainOfArrows":
+    "Swap −4.7 / −3.5 points. The sim passes, and the sim wins over the test.",
+  "mage.fireball":
+    "Swap −6.7 / −7.5 points. An anchor card of Vanguard or Raiders: it waits for the Archetype re-fit (Archetypes 2.3).",
+  "mage.frostBolt":
+    "Swap −7.1 / −7.1 points. An anchor card of Vanguard or Raiders: it waits for the Archetype re-fit (Archetypes 2.3).",
+  "mage.flameWave":
+    "Swap −7.1 / −9.2 points. An anchor card of Vanguard or Raiders: it waits for the Archetype re-fit (Archetypes 2.3).",
+  "mage.arcLightning":
+    "Swap −8.6 / −7.5 points. The sim fails, and its sim value did not move with more amount.",
+  "priest.mend":
+    "Swap −0.6 / −4.5 points. The sim passes, and the sim wins over the test.",
+  "priest.smite":
+    "Swap −4.4 / −3.6 points. The sim passes, and the sim wins over the test.",
+  "priest.sanctuary":
+    "Swap −1.3 / −4.1 points. The sim passes, and the sim wins over the test.",
+  "priest.blessingOfLight":
+    "Swap −3.0 / −5.1 points. The sim fails, and its sim value did not move with more amount.",
+  "priest.radiantStrike":
+    "Swap −2.3 / −2.0 points. The sim passes, and the sim wins over the test.",
+  "priest.prayerOfHealing":
+    "Swap −4.8 / −5.4 points. The sim fails, and its sim value did not move with more amount.",
+  "priest.cleanse":
+    "Swap −3.4 / −4.9 points. The sim passes, and the sim wins over the test.",
+  "priest.aegisOfDawn":
+    "Swap −8.7 / −11.8 points. The sim fails, and its sim value did not move with more amount.",
+} satisfies Readonly<Record<string, string>>;
+
 describe("card content (CRD-01, technical design 3.5)", () => {
   it("passes the card schema and has unique IDs", () => {
     for (const card of CARDS) {
@@ -209,7 +279,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "enemyUnit",
       effect: { type: "damageUnit", damageType: "lightning" },
     });
-    expect(skillAmounts("mage.spark")).toEqual([1, 1, 1, 2, 2]);
+    expect(skillAmounts("mage.spark")).toEqual([2, 2, 3, 4, 4]);
     expect(getCard("mage.arcLightning")).toMatchObject({
       target: "enemyUnit",
       effect: { type: "damageArc", damageType: "lightning" },
@@ -253,9 +323,11 @@ describe("card content (CRD-01, technical design 3.5)", () => {
 
   it("gives the Common and Uncommon Skill Cards of #57 their effects and values", () => {
     expect(skillAmounts("warrior.shoulderCharge")).toEqual([3, 4, 5, 6, 7]);
-    expect(skillAmounts("ranger.quickShot")).toEqual([3, 4, 5, 6, 7]);
-    expect(skillAmounts("priest.blessingOfLight")).toEqual([3, 4, 5, 6, 7]);
-    expect(skillAmounts("priest.prayerOfHealing")).toEqual([8, 8, 10, 12, 14]);
+    expect(skillAmounts("ranger.quickShot")).toEqual([5, 6, 7, 8, 9]);
+    expect(skillAmounts("priest.blessingOfLight")).toEqual([4, 5, 6, 7, 8]);
+    expect(skillAmounts("priest.prayerOfHealing")).toEqual([
+      11, 11, 13, 15, 17,
+    ]);
     expect(getCard("priest.prayerOfHealing")).toMatchObject({
       target: "friendlyLane",
       countdown: 3,
@@ -270,15 +342,15 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "enemyUnit",
       effect: {
         type: "damageUnitHero",
-        amount: { common: 3, uncommon: 4, rare: 5, epic: 6, legendary: 7 },
-        heroAmount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+        amount: { common: 4, uncommon: 5, rare: 6, epic: 7, legendary: 8 },
+        heroAmount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
         damageType: "physical",
       },
     });
   });
 
   it("gives Skybreaker its Base Rank, Countdown, effect and values", () => {
-    expect(skillAmounts("ranger.skybreaker")).toEqual([3, 3, 5, 7, 10]);
+    expect(skillAmounts("ranger.skybreaker")).toEqual([7, 7, 9, 11, 14]);
     expect(getCard("ranger.skybreaker")).toMatchObject({
       class: "ranger",
       baseRank: "uncommon",
@@ -289,7 +361,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives the Rare and Epic Ranger Skill Cards their effects and values", () => {
-    expect(skillAmounts("ranger.venomArrow")).toEqual([3, 3, 3, 4, 5]);
+    expect(skillAmounts("ranger.venomArrow")).toEqual([4, 4, 4, 5, 6]);
     expect(skillAmounts("ranger.rainOfArrows")).toEqual([3, 3, 3, 3, 5]);
     expect(getCard("ranger.venomArrow")).toMatchObject({
       baseRank: "rare",
@@ -297,8 +369,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "enemyUnit",
       effect: {
         type: "damagePoison",
-        amount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
-        poison: { rare: 3, epic: 4, legendary: 5 },
+        amount: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
+        poison: { rare: 5, epic: 6, legendary: 7 },
       },
     });
     expect(getCard("ranger.huntersFocus")).toMatchObject({
@@ -307,7 +379,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "friendlyUnit",
       effect: {
         type: "unitAttackRange",
-        attack: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+        attack: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
         range: 1,
       },
     });
@@ -323,8 +395,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("gives the Rare and Epic Priest Skill Cards of #61 their effects and values", () => {
-    expect(skillAmounts("priest.cleanse")).toEqual([6, 6, 6, 7, 8]);
-    expect(skillAmounts("priest.aegisOfDawn")).toEqual([6, 6, 6, 6, 8]);
+    expect(skillAmounts("priest.cleanse")).toEqual([8, 8, 8, 9, 10]);
+    expect(skillAmounts("priest.aegisOfDawn")).toEqual([8, 8, 8, 8, 10]);
     expect(getCard("priest.cleanse")).toMatchObject({
       baseRank: "rare",
       countdown: 3,
@@ -353,7 +425,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
       target: "friendlyLane",
       effect: {
         type: "laneAttack",
-        attack: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+        attack: { common: 4, uncommon: 4, rare: 4, epic: 5, legendary: 6 },
       },
     });
     expect(getCard("warrior.exposeWeakness")).toMatchObject({
@@ -371,9 +443,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("scales the Priest heal, damage and Ward with Rank, and targets a friendly Unit with Mend and Sanctuary", () => {
-    expect(skillAmounts("priest.mend")).toEqual([6, 8, 10, 12, 14]);
+    expect(skillAmounts("priest.mend")).toEqual([8, 10, 12, 14, 16]);
     expect(skillAmounts("priest.smite")).toEqual([3, 4, 4, 5, 6]);
-    expect(skillAmounts("priest.sanctuary")).toEqual([6, 6, 8, 10, 12]);
+    expect(skillAmounts("priest.sanctuary")).toEqual([9, 9, 11, 13, 15]);
     expect(getCard("priest.mend")).toMatchObject({
       target: "friendlyUnit",
       countdown: 2,
@@ -392,9 +464,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   });
 
   it("scales the Ranger Skill damage with Rank, but not the push", () => {
-    expect(skillAmounts("ranger.pinningShot")).toEqual([4, 5, 6, 7, 8]);
-    expect(skillAmounts("ranger.warningShot")).toEqual([6, 7, 8, 10, 12]);
-    expect(skillAmounts("ranger.longShot")).toEqual([8, 10, 12, 14, 17]);
+    expect(skillAmounts("ranger.pinningShot")).toEqual([6, 7, 9, 11, 13]);
+    expect(skillAmounts("ranger.warningShot")).toEqual([8, 9, 10, 12, 14]);
+    expect(skillAmounts("ranger.longShot")).toEqual([12, 14, 17, 21, 25]);
     expect(getCard("ranger.warningShot")).toMatchObject({
       target: "enemyUnit",
       effect: { type: "damagePush", squares: 2 },
@@ -425,6 +497,40 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     const recruit = getCard("human.militiaRecruit");
     expect(recruit.kind === "creature" && creaturePower(recruit)).toBe(12);
     expect(recruit.kind === "creature" && budgetDeviation(recruit)).toBe(-769);
+  });
+
+  it("keeps each Skill Card at its Power Budget with the nearest-step rule and the hard cap (ADR-0032)", () => {
+    for (const card of CARDS) {
+      if (card.kind !== "skill") {
+        continue;
+      }
+      const check = skillBudgetCheck(card);
+      const passes =
+        check.nearestStep && Math.abs(check.deviation) <= SKILL_BUDGET_CAP;
+      // A card in the list has a written reason (GDD 13), and it must still
+      // fail, so that the list stays current.
+      expect(passes, card.id).toBe(
+        !Object.hasOwn(SKILL_BUDGET_EXCEPTIONS, card.id)
+      );
+    }
+  });
+
+  it("measures a Skill Card at its Base Rank, with each effect and no Crit (ADR-0032)", () => {
+    const quickShot = skill("ranger.quickShot");
+    const rate = SKILL_RATES.unitDamage;
+    // 5 Physical damage to one Unit at Common.
+    expect(skillPower(quickShot)).toBe(5 * rate * recallMultiplier("common"));
+    // At Base Rank Epic, the damage table reads 8: the Base Rank counts.
+    expect(skillPower({ ...quickShot, baseRank: "epic" })).toBe(
+      8 * rate * recallMultiplier("epic")
+    );
+    // A card with no main amount has no step, so only the cap checks it.
+    expect(skillBudgetCheck(skill("priest.unbrokenVow")).steps).toEqual([]);
+    // The steps are the main amount 1 lower and 1 higher at the Base Rank.
+    expect(skillBudgetCheck(quickShot).steps).toEqual([
+      4 * rate * recallMultiplier("common"),
+      6 * rate * recallMultiplier("common"),
+    ]);
   });
 
   it("keeps the Power Budget slope at or above its floor (ADR-0021)", () => {
