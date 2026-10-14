@@ -31,7 +31,8 @@ export type SoundName =
   | "revealRare"
   | "revealEpic"
   | "revealLegendary"
-  | "anvil";
+  | "anvil"
+  | "gearUp";
 
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -215,6 +216,14 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
     tone(2730, 0.32, { type: "sine", gain: 0.07 });
     tone(4410, 0.18, { type: "sine", gain: 0.04 });
     tone(240, 0.1, { type: "square", gain: 0.06 });
+  },
+  // The Hero screen: a Gear upgrade. A lighter strike of the same iron, then a
+  // second, higher ring a moment later: one level up.
+  gearUp: () => {
+    noise(0.04, 3000, 0.22);
+    tone(1180, 0.4, { type: "sine", gain: 0.12 });
+    tone(2730, 0.22, { type: "sine", gain: 0.05 });
+    tone(1568, 0.45, { type: "sine", delay: 0.09, gain: 0.1 });
   },
 };
 

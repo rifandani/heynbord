@@ -2,7 +2,7 @@ import type { CoinDenomination, UnlockFeature } from "@workspace/rules";
 import { coinDenominations, isUnlocked, UNLOCK_LEVELS } from "@workspace/rules";
 
 /** The game screens in the `/play` route before a Battle (web ADR-0006). */
-export type GameScreen = "town" | "campaign" | "packs" | "workshop";
+export type GameScreen = "town" | "campaign" | "packs" | "workshop" | "hero";
 
 /** A box in Town painting coordinates. */
 export interface Rect {
@@ -78,7 +78,7 @@ export const BALANCE_PLATE_CORNER: Rect = {
 
 /** A Building that the Player can select, with its cut-out layer and its label. */
 export interface SelectableBuilding {
-  readonly id: "townGate" | "cardShop" | "workshop";
+  readonly id: "townGate" | "cardShop" | "workshop" | "barracks";
   readonly screen: GameScreen;
   /** The cut-out layer, in painting coordinates. */
   readonly rect: Rect;
@@ -137,6 +137,21 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     label: { x: 1318, y: 434, width: 208, height: 46 },
     image: "/town/workshop.webp",
     clip: "polygon(-3.3% -3.7%, 51.1% -3.7%, 51.1% 16.2%, 64.6% 16.2%, 64.6% 14.8%, 84.8% 14.8%, 85.7% 28.8%, 103.7% 39.9%, 103.7% 81.2%, 88.8% 83.8%, 54.3% 100.4%, 26.2% 105.5%, -3.3% 101.8%)",
+  },
+  {
+    // The Barracks (11 — Town Concepts 2.8): the long stone barracks with the
+    // blue roof, the training yard and its fence, inside the wall at the far
+    // left. A 4:3 screen crops its left part (the round tower and the left
+    // wing), so its label is over its right wing, in the safe area. The cut
+    // follows the roofs and the fence (`scripts/town-art/cut-barracks.ts`),
+    // and it goes around the label.
+    id: "barracks",
+    screen: "hero",
+    unlock: "gear",
+    rect: { x: 91, y: 320, width: 464, height: 206 },
+    label: { x: 376, y: 274, width: 179, height: 46 },
+    image: "/town/barracks.webp",
+    clip: "polygon(-2.5% 39.3%, 9.8% 19%, 19.6% 37.5%, 44.8% 28%, 45.1% 22.5%, 54.6% 16.5%, 61.4% 16.5%, 61.4% -3%, 103% -3%, 103% 71%, 91.5% 82%, 55.6% 103%, 19.6% 87%, 5% 84%, -2.5% 73%)",
   },
 ];
 
@@ -215,7 +230,7 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "deck", screen: null, dialog: "deck" },
   { id: "workshop", screen: "workshop", unlock: "combine" },
   { id: "packs", screen: "packs", unlock: "packs" },
-  { id: "hero", screen: null },
+  { id: "hero", screen: "hero", unlock: "gear" },
   { id: "achievements", screen: null },
   { id: "bazaar", screen: null },
   // The Handbook has no Building (GDD 11.4): it is a dialog, like the Deck builder.

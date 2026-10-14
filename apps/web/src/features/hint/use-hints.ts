@@ -167,6 +167,15 @@ export const usePacksHints = (active: boolean) => {
 };
 
 /**
+ * The Gear Hint (GDD 8.3): the first time that the Hero screen opens. It
+ * shows near the first Gear item, and it closes when the Hero screen closes.
+ */
+export const useHeroHints = (active: boolean) => {
+  useAnchoredHint("gear", active);
+  useCloseWhenInactive("gear", active);
+};
+
+/**
  * The Battle Log Hint (GDD 8.3): the first loss of a Stage after the
  * Tutorial. It shows near the Battle Log button of the result screen, and it
  * closes when the result screen closes.

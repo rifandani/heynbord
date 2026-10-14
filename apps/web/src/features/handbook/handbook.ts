@@ -16,6 +16,7 @@ import {
   keywordValue,
   LANE_LENGTH,
   MAX_COPIES,
+  MAX_GEAR_LEVEL,
   PACK_SIZE,
   PLAYER_LEVEL_XP,
   KEYWORD_ACTIVATES,
@@ -117,6 +118,7 @@ const PROGRESS_ENTRIES = [
   "coin",
   "pack",
   "workshop",
+  "gear",
 ] as const;
 
 const DAMAGE_TYPES: readonly DamageType[] = [
@@ -170,6 +172,7 @@ export type KeywordValueKind =
   | "coinTable"
   | "packGuide"
   | "playerLevelTable"
+  | "gearTable"
   | "tokenGallery"
   | "card";
 
@@ -292,7 +295,7 @@ export const COIN_DENOM_TABLE: readonly {
 
 /** What Coin pays for in the Handbook Coin Entry. */
 export const COIN_USES_TABLE: readonly {
-  readonly id: "deckSlots" | "packs" | "combine" | "later";
+  readonly id: "deckSlots" | "packs" | "combine" | "gear";
   readonly rule: TextRef;
 }[] = [
   { id: "deckSlots", rule: { key: "handbook.coinUse.deckSlots" } },
@@ -304,7 +307,10 @@ export const COIN_USES_TABLE: readonly {
       args: { level: UNLOCK_LEVELS.combine },
     },
   },
-  { id: "later", rule: { key: "handbook.coinUse.later" } },
+  {
+    id: "gear",
+    rule: { key: "handbook.coinUse.gear", args: { level: UNLOCK_LEVELS.gear } },
+  },
 ];
 
 /** Campaign win XP by Region, for the Player level Entry (Economy 2.1). */
@@ -552,6 +558,7 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
   playerLevel: { maxLevel: PLAYER_LEVEL_XP.length },
   pack: { cards: PACK_SIZE },
   workshop: { combine: UNLOCK_LEVELS.combine, craft: UNLOCK_LEVELS.craft },
+  gear: { level: UNLOCK_LEVELS.gear, max: MAX_GEAR_LEVEL },
 };
 
 const term = (id: EntryId, chapter: ChapterId) =>
@@ -591,6 +598,7 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   coin: { kind: "coin" },
   pack: glyph("pack"),
   workshop: glyph("anvil"),
+  gear: glyph("breastplate"),
   rankGems: { kind: "rank", rank: "rare" },
 };
 
@@ -611,9 +619,11 @@ const plainEntry = (id: EntryId, chapter: ChapterId): Entry => {
             ? "packGuide"
             : id === "playerLevel"
               ? "playerLevelTable"
-              : id === "token"
-                ? "tokenGallery"
-                : undefined,
+              : id === "gear"
+                ? "gearTable"
+                : id === "token"
+                  ? "tokenGallery"
+                  : undefined,
   };
 };
 
@@ -641,7 +651,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   summonZone: ["column", "keywordWall", "creatureCard"],
   closedLane: ["lane", "summonZone"],
   side: ["hero", "routed"],
-  hero: ["front", "defeated", "class"],
+  hero: ["front", "defeated", "class", "gear"],
   turn: ["startPhase", "playPhase", "resolutionPhase", "endPhase"],
   startPhase: ["countdown", "suddenDeath", "keywordRegenerate"],
   playPhase: ["ready", "summonZone", "skillCard"],
@@ -731,9 +741,10 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   rankGems: ["rank"],
   stars: ["hp", "turn"],
   playerLevel: ["countdownLimit", "hero"],
-  coin: ["deck", "pack", "workshop"],
+  coin: ["deck", "pack", "workshop", "gear"],
   pack: ["coin", "rank"],
   workshop: ["rank", "coin", "playerLevel"],
+  gear: ["hero", "class", "coin", "playerLevel"],
 };
 
 const withLinks = (entry: Entry): Entry => ({
@@ -882,6 +893,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "coin",
   "pack",
   "workshop",
+  "gear",
 ]);
 
 /**

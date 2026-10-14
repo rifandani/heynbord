@@ -51,12 +51,12 @@ describe("SELECTABLE_BUILDINGS", () => {
     }
   });
 
-  it("keeps the full Town Gate and Card shop in the safe area: only the Workshop is wider", () => {
+  it("keeps the full Town Gate and Card shop in the safe area: only the Workshop and the Barracks are wider", () => {
     expect(
       SELECTABLE_BUILDINGS.filter(
         (building) => !contains(safeArea(), building.rect)
       ).map((building) => building.id)
-    ).toEqual(["workshop"]);
+    ).toEqual(["workshop", "barracks"]);
   });
 
   it("gives each Building a screen of a Town Bar shortcut, and a layer file", () => {
@@ -69,6 +69,7 @@ describe("SELECTABLE_BUILDINGS", () => {
       "campaign",
       "packs",
       "workshop",
+      "hero",
     ]);
   });
 });
@@ -110,12 +111,12 @@ describe("overlaps", () => {
 });
 
 describe("TOWN_SHORTCUTS", () => {
-  it("opens the Town, the Campaign, the Workshop and the Packs", () => {
+  it("opens the Town, the Campaign, the Workshop, the Packs and the Hero screen", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => shortcut.screen !== null).map(
         (shortcut) => shortcut.id
       )
-    ).toEqual(["town", "campaign", "workshop", "packs"]);
+    ).toEqual(["town", "campaign", "workshop", "packs", "hero"]);
     expect(TOWN_SHORTCUTS[0]?.id).toBe("town");
     expect(new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.id)).size).toBe(
       TOWN_SHORTCUTS.length
@@ -178,10 +179,23 @@ describe("level locks (GDD 11.4)", () => {
     }
   });
 
-  it("gives no level to a screen that does not exist yet: it opens later", () => {
+  it("locks the Hero screen and the Barracks until level 5 (Gear)", () => {
     const hero = TOWN_SHORTCUTS.find((shortcut) => shortcut.id === "hero");
-    expect(hero && isLocked(hero, 30)).toBe(true);
-    expect(hero && opensAtLevel(hero, 1)).toBeNull();
+    const barracks = SELECTABLE_BUILDINGS.find(
+      (item) => item.id === "barracks"
+    );
+    for (const screen of [hero, barracks]) {
+      expect(screen && opensAtLevel(screen, 4)).toBe(5);
+      expect(screen && opensAtLevel(screen, 5)).toBeNull();
+    }
+    expect(hero && isLocked(hero, 4)).toBe(true);
+    expect(hero && isLocked(hero, 5)).toBe(false);
+  });
+
+  it("gives no level to a screen that does not exist yet: it opens later", () => {
+    const bazaar = TOWN_SHORTCUTS.find((shortcut) => shortcut.id === "bazaar");
+    expect(bazaar && isLocked(bazaar, 30)).toBe(true);
+    expect(bazaar && opensAtLevel(bazaar, 1)).toBeNull();
   });
 });
 

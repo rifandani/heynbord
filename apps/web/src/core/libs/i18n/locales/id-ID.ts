@@ -265,6 +265,7 @@ export default {
       townGate: "Kampanye",
       cardShop: "Paket",
       workshop: "Bengkel",
+      barracks: "Pahlawan",
     },
     shortcuts: {
       town: "Kota",
@@ -431,6 +432,7 @@ export default {
     craft:
       "Buat sudah terbuka di Bengkel. Pakai Esensi untuk membuat salinan kartu yang sudah kamu temukan.",
     battleLog: "Buka Catatan Pertempuran untuk melihat apa yang terjadi.",
+    gear: "Tiap tekan meningkatkan 1 Perlengkapan sebanyak 1 level, dengan Koin. Level tidak pernah turun.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -492,13 +494,20 @@ export default {
     coinExampleCaption: "Saldo yang sama di piring Town",
     coinExampleNote:
       "Totalnya {copper} Tembaga. Emas dan Perak hanya cara game menampilkannya.",
+    gearItemsTable: "4 Perlengkapan",
+    gearItemColumn: "Perlengkapan",
+    gearStatColumn: "Memberi",
+    gearMaxColumn: "Level {max}",
+    gearCostTable: "Koin untuk tiap level",
+    gearCostLevel: "Level {level}",
+    gearCostTotal: "Level 0 sampai {max}: {coin} untuk tiap Perlengkapan.",
     coinUsesTable: "Koin dipakai untuk",
     coinUsesColumn: "Pemakaian",
     coinUse: {
       deckSlots: "Slot Dek tambahan di pembuat Dek.",
       packs: "Paket di layar Paket.",
       combine: "Gabung di Bengkel, mulai level Pemain {level}.",
-      later: "Peningkatan Perlengkapan saat pintasan Town itu dibuka.",
+      gear: "Peningkatan Perlengkapan di layar Pahlawan, mulai level Pemain {level}.",
     },
     packGuide: {
       shelf: "Tiga Paket",
@@ -622,6 +631,7 @@ export default {
       playerLevel: "Level pemain",
       pack: "Paket",
       workshop: "Bengkel",
+      gear: "Perlengkapan",
     },
     entries: {
       board:
@@ -726,6 +736,7 @@ export default {
       pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nDi level Pemain 2, kamu mendapat satu Paket Penjaja. Paket dari hadiah menunggu di layar Paket sampai kamu membukanya, gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
       workshop:
         "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya.",
+      gear: "Pahlawanmu punya 4 Perlengkapan: Senjata, Zirah, Jimat, dan Panji. Barak di Kota dan pintasan Pahlawan membuka layar Pahlawan, mulai level Pemain {level}.\n\nTiap Perlengkapan punya level dari 0 sampai {max}. Satu peningkatan menambah 1 level, dengan Koin. Peningkatan tidak pernah gagal, dan level tidak pernah turun.\n\nSerangan Crit memberi 2 kali damage-nya. Serangan yang di-Block memberi setengah damage-nya. Di tiap Pertempuran, Pahlawan dan Unit-mu memakai Perlengkapanmu.",
     },
     aliases: {
       board: "medan, arena, peta, battlefield, map",
@@ -788,6 +799,7 @@ export default {
       pack: "booster, paket kartu, loot box, peti, chest, peluang, odds",
       workshop:
         "tempa, forge, crafting, upgrade, fuse, merge, naik level, dust, disenchant, salvage",
+      gear: "equipment, gear, item, senjata, zirah, gudang senjata, enchant, refine, upgrade, crit, block",
     },
   },
   packs: {
@@ -939,7 +951,6 @@ export default {
   },
   workshop: {
     label: "Bengkel",
-    title: "Bengkel",
     grid: "Kartu ditemukan",
     count: "Kartu: {count}",
     ownership: { all: "Semua", owned: "Dimiliki", notOwned: "0 salinan" },
@@ -985,6 +996,46 @@ export default {
       rank: "Salinan {rank} mahal untuk didapat lagi.",
       keep: "Simpan",
     },
+  },
+  hero: {
+    label: "Pahlawan",
+    deck: "Dek Aktif: {name}",
+    changeDeck: "Ganti Dek",
+    changeDeckLabel:
+      "Ganti Dek. Pahlawanmu memakai Kelas dari Dek yang kamu pakai.",
+    hp: "HP Pahlawan",
+    hpSum: "= {base} dasar + {level} level + {armorLevel} × {perLevel} Zirah",
+    hpLabel:
+      "HP Pahlawan {total}: {base} dasar, {level} dari level Pemain, {armor} dari Zirah.",
+    gear: "Perlengkapan",
+    slots: {
+      weapon: "Senjata",
+      armor: "Zirah",
+      trinket: "Jimat",
+      banner: "Panji",
+    },
+    stats: {
+      unitCrit: "Crit Unit",
+      heroHp: "HP Pahlawan",
+      skillCrit: "Crit Skill",
+      unitBlock: "Block Unit",
+    },
+    statHelp: {
+      unitCrit: "Peluang serangan Unit-mu memberi 2 kali damage.",
+      heroHp: "HP lebih untuk Pahlawanmu di tiap Pertempuran.",
+      skillCrit: "Peluang damage Kartu Keahlian-mu menjadi 2 kali.",
+      unitBlock: "Peluang Unit-mu hanya menerima setengah damage serangan.",
+    },
+    level: "{level} / {max}",
+    levelName: "Level",
+    levelLabel: "Level {level} dari {max}",
+    upgrade: "Tingkatkan",
+    upgradeLabel: "Tingkatkan {name} ke level {level}, dengan {price}",
+    needLabel: "Tingkatkan {name}: kamu perlu {amount} lagi",
+    max: "Level maks",
+    maxLabel: "{name} sudah di level tertinggi",
+    maxSeal: "Maks",
+    done: "{name} sekarang level {level}. {stat}: {value}.",
   },
   deckBuilder: {
     title: "Dek",

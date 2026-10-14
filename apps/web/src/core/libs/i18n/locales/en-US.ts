@@ -264,6 +264,7 @@ export default {
       townGate: "Campaign",
       cardShop: "Packs",
       workshop: "Workshop",
+      barracks: "Hero",
     },
     shortcuts: {
       town: "Town",
@@ -428,6 +429,7 @@ export default {
     craft:
       "Craft is open in the Workshop. Use Essence to make a copy of a card that you found.",
     battleLog: "Open the Battle Log to see what happened.",
+    gear: "Each press upgrades a Gear item by 1 level, for Coin. A level never goes down.",
   },
   handbook: {
     title: "Handbook",
@@ -490,13 +492,20 @@ export default {
     coinExampleCaption: "Same balance on the Town plate",
     coinExampleNote:
       "This is {copper} Copper in total. Gold and Silver are only how the game shows it.",
+    gearItemsTable: "The 4 Gear items",
+    gearItemColumn: "Item",
+    gearStatColumn: "Gives",
+    gearMaxColumn: "Level {max}",
+    gearCostTable: "Coin for each level",
+    gearCostLevel: "Level {level}",
+    gearCostTotal: "Level 0 to {max}: {coin} for each item.",
     coinUsesTable: "What Coin pays for",
     coinUsesColumn: "Use",
     coinUse: {
       deckSlots: "Extra Deck Slots in the Deck builder.",
       packs: "Packs in the Packs screen.",
       combine: "Combine in the Workshop, from Player level {level}.",
-      later: "Gear upgrades when that Town shortcut opens.",
+      gear: "Gear upgrades on the Hero screen, from Player level {level}.",
     },
     packGuide: {
       shelf: "The three Packs",
@@ -618,6 +627,7 @@ export default {
       playerLevel: "Player level",
       pack: "Pack",
       workshop: "Workshop",
+      gear: "Gear",
     },
     entries: {
       board:
@@ -722,6 +732,7 @@ export default {
       pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
       workshop:
         "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank.",
+      gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin. An upgrade never fails, and a level never goes down.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
     },
     aliases: {
       board: "battlefield, field, map, grid, arena",
@@ -783,6 +794,7 @@ export default {
       pack: "booster, card pack, loot box, chest, drop rate, odds",
       workshop:
         "forge, crafting, upgrade, fuse, merge, level up, dust, disenchant, salvage",
+      gear: "equipment, items, gear set, armory, enchant, refine, upgrade, crit, block",
     },
   },
   packs: {
@@ -932,7 +944,6 @@ export default {
   },
   workshop: {
     label: "Workshop",
-    title: "Workshop",
     grid: "Found cards",
     count: "Cards: {count}",
     ownership: { all: "All", owned: "Owned", notOwned: "0 copies" },
@@ -977,6 +988,46 @@ export default {
       rank: "{rank} copies cost much to get again.",
       keep: "Keep",
     },
+  },
+  hero: {
+    label: "Hero",
+    deck: "Active Deck: {name}",
+    changeDeck: "Change Deck",
+    changeDeckLabel:
+      "Change Deck. Your Hero has the Class of the Deck that you use.",
+    hp: "Hero HP",
+    hpSum: "= {base} base + {level} level + {armorLevel} × {perLevel} Armor",
+    hpLabel:
+      "Hero HP {total}: {base} base, {level} from your Player level, {armor} from your Armor.",
+    gear: "Gear",
+    slots: {
+      weapon: "Weapon",
+      armor: "Armor",
+      trinket: "Trinket",
+      banner: "Banner",
+    },
+    stats: {
+      unitCrit: "Unit Crit",
+      heroHp: "Hero HP",
+      skillCrit: "Skill Crit",
+      unitBlock: "Unit Block",
+    },
+    statHelp: {
+      unitCrit: "Chance that a hit of your Units deals 2 times its damage.",
+      heroHp: "More HP for your Hero in each Battle.",
+      skillCrit: "Chance that your Skill Card damage is 2 times.",
+      unitBlock: "Chance that your Units take half the damage of a hit.",
+    },
+    level: "{level} / {max}",
+    levelName: "Level",
+    levelLabel: "Level {level} of {max}",
+    upgrade: "Upgrade",
+    upgradeLabel: "Upgrade {name} to level {level}, for {price}",
+    needLabel: "Upgrade {name}: you need {amount} more",
+    max: "Max level",
+    maxLabel: "{name} is at the highest level",
+    maxSeal: "Max",
+    done: "{name} is now level {level}. {stat}: {value}.",
   },
   deckBuilder: {
     title: "Decks",

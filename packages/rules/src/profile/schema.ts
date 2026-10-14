@@ -16,8 +16,8 @@ export const PROFILE_SCHEMA_VERSION = 1;
 export const DECK_NAME_MAX = 24;
 
 /**
- * One saved Deck. The Hero Class is on the slot until the Hero screen exists
- * (GDD 5.5).
+ * One saved Deck, with its Hero Class (GDD 5.5). The Player's Hero has the
+ * Class of the Active Deck: the Class stays on the slot (ADR-0033).
  */
 const DeckSlot = Schema.Struct({
   id: Schema.NonEmptyString,

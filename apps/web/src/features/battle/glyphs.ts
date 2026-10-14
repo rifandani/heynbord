@@ -265,6 +265,11 @@ export const GLYPHS = {
   warhelm:
     "M-46.14 -47.18C-34.51 -25.25 -18.31 -7.66 -0.78 9.99L-0.07 10.72L-0.05 10.71C4.21 14.99 8.55 19.29 12.91 23.65C9.23 26.54 5.3 29.16 1.21 31.52L6.78 37.1L20.2 23.68C28.47 29.07 35.1 36.11 40.53 44.34L46.01 38.86C37.72 33.49 30.44 27.1 25.31 18.57L38.77 5.11L33.2 -0.46C31.03 3.8 28.43 7.74 25.49 11.37C16.92 2.82 8.6 -5.4 0.07 -13.14C0.03 -13.17 -0.01 -13.22 -0.06 -13.26C-14.14 -26.03 -28.81 -37.52 -46.14 -47.18ZM46.02 -47.18C29.8 -38.14 15.92 -27.5 2.67 -15.7L7.12 -11.49L18.22 -22.59L20.8 -20.01L9.78 -8.99L14.58 -4.46C26.65 -17.53 37.55 -31.2 46.02 -47.18ZM-18.34 -22.59L20.83 16.58A78.71 78.71 0 0 1 18.21 19.12L-20.92 -20.01ZM-33.32 -0.46L-38.89 5.11L-25.43 18.57C-30.56 27.1 -37.84 33.49 -46.13 38.86L-40.65 44.34C-35.22 36.11 -28.59 29.07 -20.32 23.68L-6.9 37.1L-1.32 31.52C-5.42 29.16 -9.35 26.54 -13.03 23.65C-9.54 20.17 -6.08 16.73 -2.65 13.31L-7.5 8.29L-18.34 19.13C-19.23 18.3 -20.1 17.44 -20.95 16.58L-10.04 5.67L-14.83 0.71C-18.4 4.2 -21.98 7.76 -25.6 11.38C-28.55 7.75 -31.15 3.81 -33.32 -0.46Z",
   banner: `M-30 -46 H30 V40 L0 22 L-30 40 Z ${circle(0, -10, 10)}`,
+  /** The Armor Gear: a breastplate with a ridge and a belt. Filled, so the grooves stay open. */
+  breastplate:
+    "M-24 -44 L-10 -40 Q0 -28 10 -40 L24 -44 L42 -30 L34 -14 Q30 -10 30 0 V26 Q14 46 0 46 Q-14 46 -30 26 V0 Q-30 -10 -34 -14 L-42 -30 Z M-2.5 -24 H2.5 V9 H-2.5 Z M-27 14 H27 V20 H-27 Z",
+  /** The Trinket Gear: an amulet with a gem on a chain. Filled, so the ring stays open. */
+  amulet: `M-34 -46 L-21 -46 L-3 -11 L-15 -9 Z M34 -46 L21 -46 L3 -11 L15 -9 Z ${circle(0, 19, 27)} ${circle(0, 19, 13)} M0 9 L9 19 L0 29 L-9 19 Z`,
   /**
    * A war horn that sounds the start of a Battle: the Handbook Battle Chapter.
    * Two gaps cut it into the body, a band and the rim of the bell.
@@ -299,6 +304,8 @@ export type Glyph = keyof typeof GLYPHS;
 
 /** Filled artwork. A stroke closes the cutouts. */
 export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
+  "breastplate",
+  "amulet",
   "bow",
   "arrow",
   "hat",

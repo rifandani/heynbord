@@ -80,6 +80,20 @@ test.describe("Workshop", () => {
     );
   });
 
+  test("hover on a tile shows its Card Details; the pointer away hides them", async ({
+    page,
+  }) => {
+    await openWorkshop(page, 0);
+    const peek = page.getByTestId("workshop-peek");
+    await page.getByTestId(`workshop-tile-${RECRUIT}`).hover();
+    await expect(peek).toBeVisible();
+    await expect(peek.getByTestId("card-details-name")).toContainText(
+      "Militia Recruit"
+    );
+    await page.getByTestId("workshop-count").hover();
+    await expect(peek).toBeHidden();
+  });
+
   test("Combine a pair: 2 Common copies become 1 Uncommon copy, for 50 Copper, and the Profile keeps it", async ({
     page,
   }) => {

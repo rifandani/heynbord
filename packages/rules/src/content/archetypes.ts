@@ -15,12 +15,16 @@ export const MATCHUP_LEVEL = 5;
  * and within the Countdown Limit of level 5 (35, ADR-0021). A Deck of slow
  * cards thus has fewer cards.
  *
+ * Vanguard and Raiders hold the Skill Cards of the re-fit (issue #67,
+ * Archetypes 2.3): 3 cards of their Class, picked by hand for their style.
+ *
  * Tunnel Rats and Thornwatch are diagnostic Ranger Decks with the 3 Ranger
  * Skill Cards. Wild Hunt and Deathless Host are diagnostic Priest Decks with
  * the 3 Priest Skill Cards (Archetypes 2.1). Breakneck Company is a diagnostic Deck of mixed
  * Undead and Orc cards with Mage Skill Cards. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
- * so that a Matchup tests most cards. Human Heavy (Countdown 3 to 4) and Human
+ * so that a Matchup tests most cards. They keep the old 3 Skill Cards of their
+ * Class, because they are also the Warrior and Mage swap Decks. Human Heavy (Countdown 3 to 4) and Human
  * Light (Countdown 1 to 3) are diagnostic Decks of one Race, so that a Matchup
  * tests the Power Budget for each Countdown (ADR-0020). The results of a
  * diagnostic Deck are for review, and they do not gate release.
@@ -39,9 +43,9 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(2, "human.halberdier", "common"),
       ...copies(1, "human.dawnCleric", "uncommon"),
       ...copies(2, "human.riverKnight", "uncommon"),
-      ...copies(1, "warrior.warDrums", "uncommon"),
       ...copies(1, "warrior.shieldWall", "common"),
-      ...copies(1, "warrior.spearThrow", "uncommon"),
+      ...copies(1, "warrior.shieldBash", "common"),
+      ...copies(1, "warrior.callToArms", "rare"),
     ],
   },
   {
@@ -56,9 +60,9 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "orc.howlingCharger", "uncommon"),
       ...copies(2, "orc.skyreaver", "uncommon"),
       ...copies(1, "orc.cinderhornBreaker", "uncommon"),
-      ...copies(1, "mage.fireball", "common"),
       ...copies(1, "mage.frostBolt", "common"),
-      ...copies(1, "mage.flameWave", "uncommon"),
+      ...copies(1, "mage.fireball", "common"),
+      ...copies(1, "mage.frostWave", "uncommon"),
     ],
   },
   {

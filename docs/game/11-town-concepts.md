@@ -37,6 +37,8 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Packs" here, above the purple roof. |
 | Workshop | x 1318 to 1745, y 480 to 705 | The cut-out layer of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. The cut follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
 | Workshop label | x 1318 to 1526, y 434 to 480 | The game writes "Workshop" here, over the left part of the Workshop, in the safe area. |
+| Barracks | x 91 to 555, y 320 to 526 | The cut-out layer of the Barracks: the round tower, the long building with the blue roof, the training yard with the dummies and the fence. The cut follows the roofs and the fence (`scripts/town-art/cut-barracks.ts`). Only its right part (from x 374) is in the safe area: a 4:3 screen crops the tower and the left wing. |
+| Barracks label | x 376 to 555, y 274 to 320 | The game writes "Hero" here, over the right wing of the Barracks, in the safe area. |
 | Balance Plate corner | x 1280 to 1900, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
 | Sky | Above the safe area | A screen wider than about 2.2:1 above the Town Bar crops it first. On a 19.5:9 phone, the top of the Heynspire is also cropped. |
 | Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here, for example the Dungeons cave. |
@@ -163,11 +165,12 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 
 | Field | Brief |
 | --- | --- |
-| Shape | A long stone barracks with a red-brown roof and a fenced training yard. |
+| Shape | A long stone barracks with a fenced training yard. The current painting gives it a blue roof and a round tower at its left end. |
 | Props | Straw training dummies, a weapon rack, a chimney. |
 | Silhouette hook | The fence and the dummies. |
 | Humor note | One dummy wears a cooking pot as a helmet. |
-| Position | The far left, inside the wall (about x 300 to 460). |
+| Position | The far left, inside the wall. In the current painting, it is at x 91 to 555 (box in 1.2). |
+| Export | A layer cut out of the master painting: run `bun scripts/town-art/cut-barracks.ts`. The Barracks opens the Hero screen (GDD 7.3) at Player level 5; below that level, a Lock Plate replaces its label. |
 
 ### 2.9 Hall of banners
 
@@ -191,6 +194,8 @@ The game docs do not keep the image prompts of the Town. Run `bun town:prompts` 
 - `packs/`: the prompts of the Pack art (8.2).
 - `shop/`: the prompts of the Card shop inside (9.4).
 - `workshop/`: the prompts of the Workshop inside (10.4).
+- `barracks/`: the prompts of the Barracks inside (11.4).
+- `gear/`: the prompts of the Gear icons (12.2).
 
 The painting message is a short form of the briefs in sections 1 and 2. It is in `scripts/town-art/prompts.ts`. When you change a brief, change the painting message too, then run the script again.
 
@@ -502,3 +507,103 @@ The licence record (art direction 5.5) of the Workshop art is part of the releas
 - [ ] No text, letters, runes, logo or signature in the image.
 - [ ] The Workshop does not look like a known forge from another game.
 - [ ] The style matches the golden references.
+
+## 11. Barracks inside
+
+The Hero screen ([GDD 7.3](./03-game-design.md#73-gear)) shows the inside of the Barracks (2.8) behind the Hero plate and the 4 Gear plates. One painting covers the full screen. It makes the Barracks calm, warm and a little funny, so that the Player wants to come back and upgrade the Gear. The image is `apps/web/public/town/barracks-inside.webp`. Until it exists, the Hero screen shows a timber wall in code, in the same place (`UNPAINTED_HERO_ART` in `apps/web/src/features/hero/hero-art.ts`).
+
+### 11.1 Rules for the Barracks art
+
+- **One painting, a full room.** The room fills the image to all edges. There is no frame and no border.
+- **View.** From the middle of the hall, at eye level, straight on. A low bench goes across the full width at the bottom.
+- **The same Barracks as the Town.** The room is the inside of the Barracks in the Town painting: pale stone walls, timber beams and arched doors. The training yard shows through an open door.
+- **A calm center.** The Hero plate and the Gear Rack cover most of the screen (11.2). There, the painting is a plain back wall of pale stone in soft shadow, with low contrast and no small details. Thus the plates and the text stay easy to read.
+- **No Hero and no Gear.** No knight, no Hero figure and no finished Weapon, Armor, Trinket or Banner: the Hero and the Gear looks are Cosmetics that come later (GDD 10). The room shows only practice gear: wooden swords, wooden shields and straw dummies.
+- **Value.** Mid-dark in total. The brightest areas are the open door and the high window. The center is the darkest area.
+- **Light.** From the upper left, through a small high window, as in all other art. Daylight comes in at the open door at the left.
+- **No text.** Banners show only plain blue and gold. No letters, numbers, runes or logo.
+- **Detail and humor.** The straw dummy with a cooking pot as a helmet (2.8) stands at the right, and a cat sleeps on the bench. The jokes stay at the sides and at the top.
+- **Size.** Landscape 3:2. Make at 1536 × 1024 and export at the same size. The screen covers its full area with the image, as on the Workshop screen (10.1).
+
+### 11.2 Positions on the painting
+
+The boxes are in percent of the 1536 × 1024 image. On a 1366 × 768 laptop screen, the Hero plate and the Gear Rack cover about x 12 to 88 and y 25 to 82.
+
+| Area | Box (x, y) | Content |
+| --- | --- | --- |
+| Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The weapon rack, the door and the dummy must be in it. |
+| Calm wall | x 14 to 86, y 16 to 84 | A plain back wall of pale stone blocks in soft warm shadow, with only a few empty iron hooks. The plates stand in front of it. |
+| Ceiling | x 0 to 100, y 0 to 16 | Heavy dark timber beams, a row of long blue and gold banners with no symbols, one iron chandelier, and a small high window at the upper left. The title plate and the Balance Plate cover the top corners. |
+| Left side | x 0 to 14, y 16 to 84 | An open arched door with daylight and a glimpse of the training yard, and a wooden weapon rack with practice swords, spears and round shields. |
+| Right side | x 86 to 100, y 16 to 84 | The straw dummy with the cooking pot, a wooden bench with a folded blanket and a sleeping cat, and a barrel of wooden practice swords. |
+| Floor | x 0 to 100, y 84 to 100 | Worn wooden planks with a little straw, and a long low bench. The Town Bar covers its lower part. |
+
+### 11.3 Subjects
+
+| Subject | Brief |
+| --- | --- |
+| Training dummy | A straw dummy on a post, with a dented cooking pot as a helmet. It leans a little, as if it is tired. |
+| Cat | An orange cat that sleeps on the folded blanket of the bench, curled up. |
+| Weapon rack | Blunt wooden practice swords, practice spears and round wooden shields. No real weapon. |
+
+### 11.4 Prompts
+
+Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/barracks/` (section 3): `layout.png` (the layout sketch, with flat shapes at the boxes of 11.2), `outside-reference.png` (the Barracks cut out of the Town painting) and `prompts.md`. The painting message is a short form of 11.1 to 11.3, in `scripts/town-art/prompts.ts`. When you change the brief, change the painting message and the layout sketch too.
+
+### 11.5 Steps
+
+1. Run `bun town:prompts`. Make 4 to 8 images with `barracks/prompts.md` and the references of 11.4, with GPT Image and high quality, at 1536 × 1024.
+2. Select one image with the checklist in 11.6.
+3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting.
+4. Put a screenshot of the Hero screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the Hero plate and the Gear Rack.
+5. Export as WebP with no alpha: `cwebp -q 80 barracks-inside.png -o barracks-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`. Then remove `barracksInside` from `UNPAINTED_HERO_ART` in `apps/web/src/features/hero/hero-art.ts`: a unit test checks the list and the files.
+
+### 11.6 Review checklist
+
+- [ ] The center behind the plates is calm and dark, and the text stays easy to read.
+- [ ] The door, the weapon rack, the dummy and the cat are each easy to find, and they are not in the center.
+- [ ] The room looks like the inside of the Barracks in the Town painting.
+- [ ] No Hero, no knight, and no finished Weapon, Armor, Trinket or Banner.
+- [ ] The light comes from the upper left.
+- [ ] No text, letters, runes, logo or signature in the image.
+- [ ] The style matches the golden references.
+
+## 12. Gear icons
+
+The Hero screen shows one painted icon for each of the 4 Gear items (GDD 7.3): the Weapon, the Armor, the Trinket and the Banner. The icons show the item, not its level: the level groove of the screen shows the level. The names and the icons do not depend on the Class of the Hero. Until an icon exists, the screen shows the Gear glyph on a round dark badge in the same box (`UNPAINTED_HERO_ART` in `apps/web/src/features/hero/hero-art.ts`).
+
+### 12.1 Rules for the icons
+
+- **One object for each icon.** No scene, no ground, no frame and no badge circle. The background is transparent.
+- **The same set as the Town Bar.** The same thick dark brown outline (`#2e1d10`), view, light and brush as the `hero` Town Bar icon (7.3).
+- **Plain items.** No magic glow, no runes, no symbol of a Class and no damage. Royal blue, gold and steel, the colors of the Town banners.
+- **Size.** Square 1:1. Make at 1024 × 1024. The object fills about 80% of the canvas. Export at 256 × 256.
+- **No text.** No letters, numbers, runes or logo.
+
+### 12.2 Prompts
+
+Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/gear/` (section 3): `set-reference.png` (the `hero` Town Bar icon) and `prompts.md`. The prompts are in `scripts/town-art/prompts.ts` (`GEAR_SUBJECT` and `gearIconPromptOf`). When you change a subject in 12.3, change it there too.
+
+### 12.3 Icon subjects
+
+| Item | Subject |
+| --- | --- |
+| Weapon | A short broad sword with a steel blade, a gold cross-guard and a blue leather grip, on its diagonal with the tip to the upper right. |
+| Armor | A steel breastplate with a gold trim and two blue leather straps. |
+| Trinket | A round gold amulet with one large blue gem, on a short gold chain. |
+| Banner | A small blue pennant with a gold border and a swallowtail end, on a short wooden pole with a gold tip. |
+
+### 12.4 Steps
+
+1. Make each icon with `gear/prompts.md` in one ChatGPT conversation, at 1024 × 1024 with a transparent background.
+2. Keep the full-size sources in `apps/web/art/hero/gear/` (`weapon.png`, `armor.png`, `trinket.png`, `banner.png`).
+3. Export each one at 256 × 256 as WebP with alpha: `cwebp -q 85 -alpha_q 100 -resize 256 256 weapon.png -o weapon.webp`. Put the files in `apps/web/public/hero/gear/`.
+4. Remove the IDs of the new icons from `UNPAINTED_HERO_ART` in `apps/web/src/features/hero/hero-art.ts`: a unit test checks the list and the files.
+
+### 12.5 Review checklist
+
+- [ ] The 4 icons look like one set, and like the Town Bar icons.
+- [ ] Each item is easy to know at 44 px (a phone in landscape).
+- [ ] No item shows a Class: the Weapon is not a staff or a bow, and the Trinket is not a holy symbol.
+- [ ] The background is transparent, with clean edges on a dark plate.
+- [ ] No text, letters, runes or logo.

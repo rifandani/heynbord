@@ -8,8 +8,39 @@ export const GEAR_SLOTS: readonly (keyof GearLevels)[] = [
   "banner",
 ];
 
+/** One Gear slot: the Weapon, the Armor, the Trinket or the Banner. */
+export type GearSlot = keyof GearLevels;
+
 /** The highest level of a Gear item (GDD 7.3). A new item is level 0. */
 export const MAX_GEAR_LEVEL = 10;
+
+/**
+ * The stat that each Gear item gives (GDD 7.3): Unit Crit chance (Weapon),
+ * Hero HP (Armor), Skill Crit chance (Trinket, for Skill Card damage) and
+ * Unit Block chance (Banner).
+ */
+export type GearStat = "unitCrit" | "heroHp" | "skillCrit" | "unitBlock";
+
+/**
+ * The stat of each Gear slot and what one level adds: basis points (100 =
+ * 1%) for a chance, HP for the Armor. Level 10 is the right column of the
+ * GDD 7.3 table: 10%, +20 HP, 15% and 10%.
+ */
+export const GEAR_STATS: Readonly<
+  Record<GearSlot, { readonly stat: GearStat; readonly perLevel: number }>
+> = {
+  weapon: { stat: "unitCrit", perLevel: 100 },
+  armor: { stat: "heroHp", perLevel: 2 },
+  trinket: { stat: "skillCrit", perLevel: 150 },
+  banner: { stat: "unitBlock", perLevel: 100 },
+};
+
+/**
+ * The stat of one Gear item at `level`: basis points for a chance, HP for the
+ * Armor (GDD 7.3).
+ */
+export const gearStatValue = (slot: GearSlot, level: number): number =>
+  GEAR_STATS[slot].perLevel * level;
 
 /** The Gear upgrade cost is this number × level², in Copper (Economy 3.4). */
 const GEAR_COIN_PER_LEVEL_SQUARED = 40;

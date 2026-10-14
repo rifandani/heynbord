@@ -126,8 +126,7 @@ export const tenPackGrid = (
 };
 
 /**
- * The current Hero Class: the Class of the active Deck, until the Hero screen
- * exists (GDD 5.5).
+ * The current Hero Class: the Class of the Active Deck (GDD 5.5, ADR-0033).
  */
 export const heroClass = (
   slots: readonly DeckSlot[],

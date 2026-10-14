@@ -104,6 +104,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Block**: A chance that the Hero of a Unit gives to that Unit, from the Banner Gear. A Blocked hit deals half of its damage, rounded up. All hits on a Unit can be Blocked, except Holy damage, Burn, Poison and True Damage. A Hero never Blocks. _Avoid_: parry, dodge, evade
 
+**Crit**: A chance that a hit deals 2 times its damage. The Weapon Gear gives the **Unit Crit** chance to the Units of its Hero, and the Trinket Gear gives the **Skill Crit** chance to the Skill Card damage of its Hero. Retaliate, First Strike, Trample, Burn, Poison, Sudden Death and True Damage have no Crit. _Avoid_: critical hit, crit strike, lucky hit
+
 **True Damage**: A hit whose damage nothing decreases or absorbs. It ignores Bulwark, Block and Ward. Nothing increases it: it has no Crit, no Exposed and no Attack bonus such as Rally, Swarm or Bonus Attack. Its value is the value in the text of its effect: for an attack, the Base Attack. It keeps its Damage Type and the Status of that type, or it has no Damage Type. On-hit Keywords and Retaliate apply as usual. The later Burn damage from a True Fire hit is not True Damage. Card text says "N True Damage", or "N True Fire damage" with a Damage Type. Steadfast still keeps the Unit at 1 HP, because Steadfast does not decrease the damage. True Damage is not a Damage Type. _Avoid_: pure damage, piercing damage, unblockable damage, direct damage
 
 **Battle seed**: The start value of the random numbers in one Battle. The same seed and the same Commands give the same Battle. _Avoid_: random seed, RNG

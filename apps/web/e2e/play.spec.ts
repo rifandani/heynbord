@@ -807,9 +807,11 @@ test.describe("Town", () => {
     page,
   }) => {
     await page.goto("/play");
-    const hero = page.getByRole("button", { name: "Hero, opens later" });
-    await hero.focus();
-    await expect(page.getByTestId("town-tooltip-hero")).toContainText(
+    const achievements = page.getByRole("button", {
+      name: "Achievements, opens later",
+    });
+    await achievements.focus();
+    await expect(page.getByTestId("town-tooltip-achievements")).toContainText(
       "Opens later"
     );
     await page.keyboard.press("Enter");

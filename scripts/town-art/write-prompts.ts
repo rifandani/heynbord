@@ -26,6 +26,12 @@
  * - `raw/workshop/outside-reference.png`: the Workshop in the Town
  *   painting, so the inside matches the outside.
  * - `raw/workshop/prompts.md`: the setup message, then the painting message.
+ * - `raw/barracks/layout.png`, `raw/barracks/outside-reference.png` and
+ *   `raw/barracks/prompts.md`: the same for the Barracks inside (section 11).
+ * - `raw/gear/set-reference.png`: the `hero` Town Bar icon. The 4 Gear icons
+ *   match it in outline, view angle and scale.
+ * - `raw/gear/prompts.md`: the setup message, then one prompt for each Gear
+ *   icon, in the order of section 12.3.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -34,6 +40,11 @@ import sharp from "sharp";
 
 import { cellsOf, isTableRule, ROOT } from "../creature-art/concepts.ts";
 import {
+  BARRACKS_PROMPT,
+  BARRACKS_SETUP_PROMPT,
+  GEAR_SETUP_PROMPT,
+  GEAR_SUBJECT,
+  gearIconPromptOf,
   iconPromptOf,
   packPromptOf,
   packSetupPromptOf,
@@ -236,6 +247,58 @@ const writeWorkshopOutside = async (file: string) => {
   await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
     .extract(WORKSHOP_OUTSIDE)
     .resize({ width: WORKSHOP_OUTSIDE.width * 2 })
+    .png()
+    .toFile(file);
+};
+
+/**
+ * The layout sketch of the Barracks inside: flat shapes at the areas of the
+ * table in section 11.2. ChatGPT keeps its composition, not its colors.
+ */
+const writeBarracksLayout = async (file: string) => {
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
+    // The calm back wall of pale stone in shadow.
+    `<rect width="100%" height="100%" fill="#5e5548"/>`,
+    ...[30, 46, 62].map(
+      (y) => `<rect ${roomBox(14, 86, y, y + 0.4)} fill="#544b3f"/>`
+    ),
+    // The ceiling beams, the banners, the chandelier and the high window.
+    `<rect ${roomBox(0, 100, 0, 8)} fill="#2a1a10"/>`,
+    `<rect ${roomBox(0, 100, 12, 15)} fill="#2a1a10"/>`,
+    ...[24, 38, 62, 76].map(
+      (x) => `<rect ${roomBox(x, x + 4, 15, 30)} fill="#2f4f9a"/>`
+    ),
+    `<rect ${roomBox(4, 12, 2, 10)} fill="#f6e7b0"/>`,
+    `<circle cx="${0.5 * ROOM.width}" cy="${0.1 * ROOM.height}" r="22" fill="#ffd27a"/>`,
+    // The weapon rack and the open door to the yard at the left edge.
+    `<rect ${roomBox(0, 7, 20, 70)} rx="40" fill="#f3e3a8"/>`,
+    `<rect ${roomBox(7, 14, 38, 82)} fill="#7a5233"/>`,
+    // The straw dummy with the pot, the bench and the cat at the right edge.
+    `<rect ${roomBox(88, 96, 34, 80)} rx="30" fill="#d9b85a"/>`,
+    `<circle cx="${0.92 * ROOM.width}" cy="${0.32 * ROOM.height}" r="34" fill="#8a8f96"/>`,
+    `<rect ${roomBox(86, 100, 70, 80)} fill="#7a5233"/>`,
+    `<circle cx="${0.97 * ROOM.width}" cy="${0.68 * ROOM.height}" r="20" fill="#e08a3a"/>`,
+    // The plank floor and the low bench.
+    `<rect ${roomBox(0, 100, 84, 100)} fill="#6b4a2e"/>`,
+    `<rect ${roomBox(10, 90, 86, 90)} fill="#8a5a2c"/>`,
+    "</svg>",
+  ].join("");
+  await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/** The Barracks in the Town painting, in pixels of `town.webp` (its cut-out box). */
+const BARRACKS_OUTSIDE = {
+  left: 95,
+  top: 335,
+  width: 485,
+  height: 215,
+} as const;
+
+const writeBarracksOutside = async (file: string) => {
+  await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
+    .extract(BARRACKS_OUTSIDE)
+    .resize({ width: BARRACKS_OUTSIDE.width * 2 })
     .png()
     .toFile(file);
 };
@@ -461,6 +524,45 @@ const workshopFile = (): string =>
     "",
   ].join("\n");
 
+const barracksFile = (): string =>
+  [
+    "# Barracks inside prompts",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
+    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
+    "3. Select one image with the review checklist (Town Concepts, 11.6). Fix small problems with the edit tool of ChatGPT. Save it in this folder.",
+    "4. Do steps 3 to 5 of Town Concepts, 11.5.",
+    "",
+    "## Setup message",
+    "",
+    block(BARRACKS_SETUP_PROMPT),
+    "",
+    "## Painting",
+    "",
+    block(BARRACKS_PROMPT),
+    "",
+  ].join("\n");
+
+const gearFile = (): string =>
+  [
+    "# Gear icon prompts",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `../style-reference.png`, `set-reference.png`. Send the setup message.",
+    "2. Send each icon prompt in its own message. Use high quality, at 1024 × 1024, with a transparent background.",
+    "3. Select one image for each icon with the review checklist (Town Concepts, 12.5), then do the steps of 12.4.",
+    "",
+    "## Setup message",
+    "",
+    block(GEAR_SETUP_PROMPT),
+    "",
+    ...Object.entries(GEAR_SUBJECT).flatMap(([slot, subject]) => [
+      `## ${slot}`,
+      "",
+      block(gearIconPromptOf(subject)),
+      "",
+    ]),
+  ].join("\n");
+
 /** Fails when `subjects` has an ID that the table does not have. */
 const checkExtra = (
   rows: readonly Icon[],
@@ -485,6 +587,10 @@ const barDir = path.join(RAW_DIR, "bar");
 const packsDir = path.join(RAW_DIR, "packs");
 const shopDir = path.join(RAW_DIR, "shop");
 const workshopDir = path.join(RAW_DIR, "workshop");
+const barracksDir = path.join(RAW_DIR, "barracks");
+const gearDir = path.join(RAW_DIR, "gear");
+mkdirSync(barracksDir, { recursive: true });
+mkdirSync(gearDir, { recursive: true });
 mkdirSync(paintingDir, { recursive: true });
 mkdirSync(shopDir, { recursive: true });
 mkdirSync(workshopDir, { recursive: true });
@@ -511,6 +617,13 @@ writeFileSync(path.join(shopDir, "prompts.md"), shopFile());
 await writeWorkshopLayout(path.join(workshopDir, "layout.png"));
 await writeWorkshopOutside(path.join(workshopDir, "outside-reference.png"));
 writeFileSync(path.join(workshopDir, "prompts.md"), workshopFile());
+await writeBarracksLayout(path.join(barracksDir, "layout.png"));
+await writeBarracksOutside(path.join(barracksDir, "outside-reference.png"));
+writeFileSync(path.join(barracksDir, "prompts.md"), barracksFile());
+await sharp(path.join(ROOT, SOURCE_DIR, "hero-icon.jpg"))
+  .png()
+  .toFile(path.join(gearDir, "set-reference.png"));
+writeFileSync(path.join(gearDir, "prompts.md"), gearFile());
 console.log(
   `Town Bar: ${icons.length} icons, set reference ${SET_REFERENCE ?? "none"}`
 );
@@ -518,5 +631,5 @@ console.log(
   `Packs: ${packs.length} Packs, set reference ${PACK_SET_REFERENCE}`
 );
 console.log(
-  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md and ${RAW_DIR}/workshop/prompts.md`
+  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md and ${RAW_DIR}/gear/prompts.md`
 );

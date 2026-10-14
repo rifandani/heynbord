@@ -1,4 +1,5 @@
 import { getCard } from "../content/cards";
+import { gearStatValue } from "../content/gear";
 import type { GearLevels, ClassId } from "../content/schema";
 import { seedState, shuffle } from "../random";
 import type { StepContext } from "./context";
@@ -18,32 +19,24 @@ import { STAGE_LANES } from "./types";
 export const STARTING_HAND = 4;
 
 /** Base Hero HP of the Player before the level bonus (GDD 4.10). */
-const PLAYER_BASE_HP = 30;
+export const PLAYER_BASE_HP = 30;
 
 /** The Hero HP of the Player at a player level, before the Gear bonus (GDD 4.10). */
 export const playerHeroHp = (level: number): number => PLAYER_BASE_HP + level;
-
-/** Gear stats for each level (GDD 7.3): basis points or HP. */
-const GEAR_PER_LEVEL = {
-  unitCrit: 100,
-  armorHp: 2,
-  skillCrit: 150,
-  unitBlock: 100,
-} as const;
 
 const makeHero = (
   classId: ClassId,
   baseHp: number,
   gear: GearLevels
 ): HeroState => {
-  const hp = baseHp + gear.armor * GEAR_PER_LEVEL.armorHp;
+  const hp = baseHp + gearStatValue("armor", gear.armor);
   return {
     hp,
     maxHp: hp,
     classId,
-    unitCrit: gear.weapon * GEAR_PER_LEVEL.unitCrit,
-    skillCrit: gear.trinket * GEAR_PER_LEVEL.skillCrit,
-    unitBlock: gear.banner * GEAR_PER_LEVEL.unitBlock,
+    unitCrit: gearStatValue("weapon", gear.weapon),
+    skillCrit: gearStatValue("trinket", gear.trinket),
+    unitBlock: gearStatValue("banner", gear.banner),
   };
 };
 

@@ -951,6 +951,47 @@
   }
 }
 
+/* The Hero screen: the notch of a Gear upgrade fills with a short gold flash. */
+@keyframes gear-notch {
+  0% {
+    scale: 1 1.9;
+    filter: brightness(1.9);
+    box-shadow: 0 0 10px 3px rgba(255, 215, 90, 0.9);
+  }
+  100% {
+    scale: 1;
+    filter: none;
+    box-shadow: 0 0 0 0 rgba(255, 215, 90, 0);
+  }
+}
+
+/* The Hero screen: a short gold glow on the Gear plate of an upgrade. */
+@keyframes gear-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 90, 0);
+  }
+  25% {
+    box-shadow:
+      0 0 22px 4px rgba(255, 215, 90, 0.55),
+      inset 0 0 0 2px rgba(255, 224, 138, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 90, 0);
+  }
+}
+
+/* The Hero screen: the new stat value of a Gear upgrade rises into its place. */
+@keyframes gear-roll {
+  0% {
+    opacity: 0;
+    translate: 0 60%;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
 :root {
   --bg: oklch(1 0 0);
   --fg: oklch(0.21 0.006 285.885);

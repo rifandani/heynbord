@@ -1,11 +1,18 @@
 import { getCard } from "@workspace/rules";
 import { cn } from "cn";
-import { GridList, GridListItem } from "react-aria-components";
+import { useRef } from "react";
+import { GridList, GridListItem, Popover } from "react-aria-components";
 
+import { CardDetails } from "@/features/battle/components/card-details";
 import { CardFrame, RankGems } from "@/features/battle/components/card-frame";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import type { Peek, ShownPeek } from "@/features/deck/components/use-card-peek";
+import {
+  isSamePeek,
+  useCardPeek,
+} from "@/features/deck/components/use-card-peek";
 import type { PoolFilter } from "@/features/deck/deck";
 import type { RankCopies, WorkshopTile } from "@/features/workshop/workshop";
 
@@ -108,9 +115,81 @@ const EmptyGrid = ({
 };
 
 /**
+ * One tile of the grid. Hover, keyboard focus or a long press shows its Card
+ * Details at its highest owned Rank, as in the Deck builder. They open beside
+ * the card, out of the grid, so that the scroll of the grid never cuts them.
+ */
+const Tile = ({
+  tile,
+  words,
+  bind,
+  peek,
+  onHide,
+}: {
+  readonly tile: WorkshopTile;
+  readonly words: string;
+  readonly bind: (target: Peek) => object;
+  readonly peek: ShownPeek | null;
+  readonly onHide: () => void;
+}) => {
+  const frame = useRef<HTMLSpanElement>(null);
+  const target: Peek = {
+    cardId: tile.cardId,
+    rank: tile.rank,
+    from: "workshop",
+  };
+  return (
+    <GridListItem
+      id={tile.cardId}
+      textValue={words}
+      {...bind(target)}
+      className="group flex cursor-pointer flex-col items-center gap-1 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+      data-testid={`workshop-tile-${tile.cardId}`}
+      data-rank={tile.rank}
+    >
+      <span
+        ref={frame}
+        className="relative rounded-[0.85em] transition-[translate,box-shadow] duration-150 ease-out group-data-[hovered]:-translate-y-1 group-data-[selected]:shadow-[0_0_0_0.25em_#ffd75a,0_0_1.4em_0.35em_rgba(255,215,90,0.55)] motion-reduce:group-data-[hovered]:translate-y-0"
+      >
+        <CardFrame
+          cardId={tile.cardId}
+          rank={tile.rank}
+          countdown={getCard(tile.cardId).countdown}
+          className={cn(
+            tile.copies.every((row) => row.copies === 0) &&
+              "brightness-[0.82] saturate-[0.55]"
+          )}
+        />
+        {tile.pairReady ? <PairMark /> : null}
+      </span>
+      <CopyStrip copies={tile.copies} />
+      {peek && isSamePeek(peek, target) ? (
+        <Popover
+          triggerRef={frame}
+          isOpen
+          isNonModal
+          onOpenChange={(open) => {
+            if (!open) {
+              onHide();
+            }
+          }}
+          placement="right"
+          offset={12}
+          className="fade-in animate-in pointer-events-none duration-150 motion-reduce:animate-none"
+          data-testid="workshop-peek"
+        >
+          <CardDetails cardId={tile.cardId} rank={tile.rank} />
+        </Popover>
+      ) : null}
+    </GridListItem>
+  );
+};
+
+/**
  * The Workshop grid (GDD 7.4): one tile for each Discovered card, at its
  * highest owned Rank, with the copies of each Rank under it. The arrow keys
  * move in the grid, and Enter or a press selects a card for the Rank panel.
+ * Hover, keyboard focus or a long press shows the Card Details of a tile.
  */
 export const WorkshopGrid = ({
   tiles,
@@ -129,6 +208,7 @@ export const WorkshopGrid = ({
 }) => {
   const { tr } = useGameText();
   const words = useTileWords();
+  const { peek, bind, hide } = useCardPeek();
   return (
     <GridList
       // A new key for each filter, so that the list starts at the top.
@@ -136,6 +216,8 @@ export const WorkshopGrid = ({
       aria-label={tr("workshop.grid")}
       layout="grid"
       items={tiles}
+      // The tiles render again when the Card Details change.
+      dependencies={[peek]}
       selectionMode="single"
       disallowEmptySelection
       selectedKeys={selected === null ? [] : [selected]}
@@ -161,27 +243,13 @@ export const WorkshopGrid = ({
       data-testid="workshop-grid"
     >
       {(tile) => (
-        <GridListItem
-          id={tile.cardId}
-          textValue={words(tile)}
-          className="group flex cursor-pointer flex-col items-center gap-1 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
-          data-testid={`workshop-tile-${tile.cardId}`}
-          data-rank={tile.rank}
-        >
-          <span className="relative rounded-[0.85em] transition-[translate,box-shadow] duration-150 ease-out group-data-[hovered]:-translate-y-1 group-data-[selected]:shadow-[0_0_0_0.25em_#ffd75a,0_0_1.4em_0.35em_rgba(255,215,90,0.55)] motion-reduce:group-data-[hovered]:translate-y-0">
-            <CardFrame
-              cardId={tile.cardId}
-              rank={tile.rank}
-              countdown={getCard(tile.cardId).countdown}
-              className={cn(
-                tile.copies.every((row) => row.copies === 0) &&
-                  "brightness-[0.82] saturate-[0.55]"
-              )}
-            />
-            {tile.pairReady ? <PairMark /> : null}
-          </span>
-          <CopyStrip copies={tile.copies} />
-        </GridListItem>
+        <Tile
+          tile={tile}
+          words={words(tile)}
+          bind={bind}
+          peek={peek}
+          onHide={hide}
+        />
       )}
     </GridList>
   );

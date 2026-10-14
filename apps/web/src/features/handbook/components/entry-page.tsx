@@ -6,6 +6,7 @@ import { RankGems } from "@/features/battle/components/card-frame";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CoinGuide } from "@/features/handbook/components/coin-guide";
 import { LargeIcon } from "@/features/handbook/components/entry-icon";
+import { GearGuide } from "@/features/handbook/components/gear-guide";
 import { LaneStrip } from "@/features/handbook/components/lane-strip";
 import { PackGuide } from "@/features/handbook/components/pack-guide";
 import { PlayerLevelGuide } from "@/features/handbook/components/player-level-guide";
@@ -95,6 +96,9 @@ const KeywordValue = ({
   }
   if (entry.value === "playerLevelTable") {
     return <PlayerLevelGuide />;
+  }
+  if (entry.value === "gearTable") {
+    return <GearGuide />;
   }
   if (entry.value === "rankTable") {
     return <RankTable />;

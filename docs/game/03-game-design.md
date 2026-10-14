@@ -666,7 +666,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons and a locked ribbon that buys the next Deck slot, all cards with filters (see 6), the Countdown curve, validation, Auto-fill |
 | Collection | All cards, filters, card details |
 | Workshop | The Discovered cards with the filters of the Deck builder, and a Rank panel for the selected card: Combine, Extract, Craft and the path to Legendary (see 7.4) |
-| Hero | Class, Gear, portrait |
+| Hero | The Class of the Active Deck and its Deck, with "Change Deck" to the Deck builder ([ADR-0033](../adr/0033-the-class-stays-on-the-deck-slot.md)); the Hero HP and its parts; the 4 Gear items with their level, their stat now and at the next level, and the Gear upgrade (see 7.3). The portrait and the Gear looks are Cosmetics (see 10). |
 | Packs | The Peddler, Merchant and Royal Packs, each with a Race Pack and a Class Pack version. The Drop Rates, the Pack Guarantees, Open ×10 and the open animation (Economy 3.1) |
 | Achievements | List, progress, rewards |
 | Bazaar | Cosmetics and Conveniences, prices in Heynstones, the Heynstone balance |

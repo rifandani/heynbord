@@ -13,7 +13,7 @@ import type { EntryId } from "@/features/handbook/handbook";
 
 /**
  * The Hints of the features that are in the game (GDD 8.3, issue #4). The
- * Hints for Gear, Dungeons and Heynspire come with their screens.
+ * Hints for Dungeons and Heynspire come with their screens.
  */
 export const HINTS = [
   "skillCard",
@@ -24,6 +24,7 @@ export const HINTS = [
   "workshop",
   "craft",
   "battleLog",
+  "gear",
 ] as const;
 
 export type HintId = (typeof HINTS)[number];
@@ -60,14 +61,17 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
   workshop: toEntry("workshop"),
   craft: toEntry("workshop"),
   battleLog: { _tag: "KeyGuide", line: "battleLog" },
+  gear: toEntry("gear"),
 };
 
 /**
  * The Battle Hints show near the Hand, the Deck builder Hint near the Deck
  * shortcut, the Unopened Pack Hint near the Open button of the first
  * Unopened Pack, the Packs level Hint near the Card shop in the Town, and the
- * Workshop and Craft level Hints near the Workshop in the Town, and the
- * Battle Log Hint near the Battle Log button of the result screen.
+ * Workshop and Craft level Hints near the Workshop in the Town, the Battle
+ * Log Hint near the Battle Log button of the result screen, and the Gear Hint
+ * below the first upgrade of the Hero screen, so that it does not cover the
+ * Hero plate.
  */
 export type HintPlace =
   | "hand"
@@ -75,7 +79,8 @@ export type HintPlace =
   | "unopenedPackButton"
   | "cardShop"
   | "workshop"
-  | "resultBattleLog";
+  | "resultBattleLog"
+  | "firstGearItem";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   skillCard: "hand",
@@ -86,6 +91,7 @@ export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   workshop: "workshop",
   craft: "workshop",
   battleLog: "resultBattleLog",
+  gear: "firstGearItem",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */

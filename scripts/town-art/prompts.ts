@@ -182,3 +182,85 @@ export const WORKSHOP_PROMPT = [
   "light from the upper left, warm timber, pale stone, forge orange, iron grey, brass and gold accents, cream highlights,",
   "the center is darker and softer than the sides, no card faces, no card packs, signs show only a hammer or a gear, no text, no letters, no labels, no logo, no frame, no UI",
 ].join("\n");
+
+/**
+ * The first message of the ChatGPT conversation for the Barracks inside,
+ * with the layout sketch, the style reference and the outside reference
+ * attached. The rules come from section 11.1 of the Town Concepts.
+ */
+export const BARRACKS_SETUP_PROMPT = [
+  "In this conversation, you will paint the inside of the barracks of a fantasy card battle game: the background of the hero screen, where the player upgrades the gear of the hero.",
+  [
+    "Image 1 is a rough layout sketch. Keep its composition: the weapon rack and the open door to the training yard at the left edge, the straw dummy and the bench at the right edge, the beams and the hanging banners at the top, the low bench along the bottom, and the calm wall in the center. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the same barracks from the outside, in the town painting: pale stone walls, arched doors, a blue roof and a fenced training yard with straw dummies. Paint the inside of this building. Do not copy its view.",
+  ].join("\n"),
+  "The game shows a wide panel and four tall item panels over the center of the painting. Thus the center stays calm, soft and dark, and the people, the bright light and the details are at the left, at the right and at the top.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for the Barracks inside, after its setup message. It is a
+ * short form of the brief in section 11 of the Town Concepts. When you
+ * change the brief there, change this message too.
+ */
+export const BARRACKS_PROMPT = [
+  "the inside of a long fantasy stone barracks, seen from the middle of the hall at eye level, straight on, wide 3:2 landscape, the room fills the full image to all edges,",
+  "at the left edge a wooden weapon rack with blunt wooden practice swords, practice spears and round wooden practice shields, and an open arched door with bright morning daylight and a glimpse of the fenced training yard outside, they stay inside the left sixth of the image,",
+  "at the right edge a straw training dummy that wears a dented cooking pot as a helmet, a wooden bench with a folded blanket and a sleeping orange cat on it, a barrel full of wooden practice swords, they stay inside the right sixth of the image,",
+  "in the center a plain back wall of pale stone blocks in soft warm shadow, calm and dim, with only a few empty iron hooks and pegs, no bright light, no people and no objects there,",
+  "heavy dark timber ceiling beams across the top, a row of long hanging banners in royal blue and gold with no symbols, one iron chandelier with warm candle light, a small high window at the upper left with morning light,",
+  "a long low wooden bench runs across the full width at the bottom, on a floor of worn wooden planks with a little straw,",
+  "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a calm, welcoming and a little funny mood,",
+  "light from the upper left, pale stone, warm timber, royal blue and gold, straw yellow, cream highlights,",
+  "the center is darker and softer than the sides, only blunt wooden practice weapons, no real swords, no armor, no amulets, no hero, no knight, no text, no letters, no labels, no logo, no frame, no UI",
+].join("\n");
+
+/**
+ * The first message of the ChatGPT conversation for the 4 Gear icons, with
+ * the style reference and the `hero` Town Bar icon attached. The rules come
+ * from section 12.1 of the Town Concepts.
+ */
+export const GEAR_SETUP_PROMPT = [
+  "In this conversation, you will paint the four gear icons of the hero screen of a fantasy card battle game, one icon in each message.",
+  [
+    STYLE_REFERENCE,
+    "Image 2 is the hero menu icon of the same game. Match it exactly in style, outline thickness, light, view angle and scale. Do not copy its object.",
+  ].join("\n"),
+  "The four icons are one set: the same outline, the same light and the same size on the canvas. Each message gives the full prompt of one icon.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for one Gear icon, after the setup message. The rules come
+ * from section 12.1 of the Town Concepts.
+ */
+export const gearIconPromptOf = (subject: string): string =>
+  [
+    `A single hand-painted fantasy game item icon: ${subject}.`,
+    "Chunky, toy-like proportions with a bold, simple silhouette that stays readable at 44 pixels.",
+    "Seen from a slight three-quarter view from the front and a little above.",
+    "Thick dark brown outline (#2e1d10) around the whole object, painterly soft brush shading inside,",
+    "glossy highlights on metal and gems, a warm rim light on the edges.",
+    "Light from the upper left. Bright, warm and heroic. Not dark, not realistic, no gore, no neon.",
+    "The item is plain and new: no magic glow, no runes, no symbols of a class, no damage.",
+    "The object is centered and fills about 80% of the square canvas.",
+    "Transparent background, isolated object, no scene, no ground, no shadow, no frame, no border, no badge circle,",
+    "no text, no letters, no numbers, no logo, no watermark.",
+    "Square 1:1.",
+  ].join("\n");
+
+/**
+ * The subject of each Gear icon (section 12.3). The names and the art do not
+ * depend on the Class of the Hero.
+ */
+export const GEAR_SUBJECT = {
+  weapon:
+    "a short broad sword with a polished steel blade, a gold cross-guard and a royal blue leather grip, lying on its diagonal with the tip to the upper right",
+  armor:
+    "a polished steel breastplate with a gold trim at its edges and two royal blue leather straps",
+  trinket:
+    "a round gold amulet with one large royal blue gem in its center, on a short gold chain",
+  banner:
+    "a small royal blue pennant with a gold border and a swallowtail end, on a short wooden pole with a gold tip",
+} as const;

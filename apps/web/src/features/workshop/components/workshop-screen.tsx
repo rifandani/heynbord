@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { SoundName } from "@/features/battle/battle-audio";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { PoolFilters } from "@/features/deck/components/pool-filters";
 import type { PoolFilter } from "@/features/deck/deck";
@@ -179,22 +178,6 @@ export const WorkshopScreen = () => {
     >
       {/* The Workshop inside (Town Concepts, section 10). */}
       <WorkshopScene />
-      <div className="absolute inset-x-0 top-[max(0.5rem,env(safe-area-inset-top))] z-20 flex items-start gap-2 px-[max(0.5rem,env(safe-area-inset-left))]">
-        <header
-          className={cn(
-            PLATE,
-            "h-11 items-center gap-2 px-3 [@media(max-height:500px)]:h-9 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:px-2"
-          )}
-        >
-          <GlyphIcon
-            glyph="anvil"
-            className="size-5 text-[#ffd75a] [@media(max-height:500px)]:size-4"
-          />
-          <h1 className="font-display text-lg font-bold text-[#ffe08a] [@media(max-height:500px)]:text-sm">
-            {tr("workshop.title")}
-          </h1>
-        </header>
-      </div>
       <BalancePlate
         balances={{ coin, essence, heynstones: workshop.balances.heynstones }}
       />

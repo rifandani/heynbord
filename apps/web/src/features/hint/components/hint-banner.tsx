@@ -35,15 +35,20 @@ export const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   cardShop: "[data-testid='building-cardShop']",
   workshop: "[data-testid='building-workshop']",
   resultBattleLog: "[data-testid='result-battle-log']",
+  firstGearItem: "[data-gear-upgrade='weapon']",
 };
 
 /**
  * The sides of its anchor where a Hint can show, in order of preference. The
  * Battle Log Hint goes below the Battle Log button, out of the result
- * dialog, so that it does not cover Retry and Back to Campaign.
+ * dialog, so that it does not cover Retry and Back to Campaign. The Gear Hint
+ * goes below the first upgrade, so that the Hero plate stays clear on the
+ * first visit.
  */
 const sidesFor = (place: HintPlace): readonly PanelSide[] =>
-  place === "resultBattleLog" ? ["below", "above"] : ["above", "below"];
+  place === "resultBattleLog" || place === "firstGearItem"
+    ? ["below", "above"]
+    : ["above", "below"];
 
 /** The space between the banner and the screen edge. */
 const EDGE = 8;
@@ -169,13 +174,16 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
     case "unopenedPack":
     case "packs":
     case "workshop":
-    case "craft": {
+    case "craft":
+    case "gear": {
       const shortcut =
         hint === "deckBuilder"
           ? "deck"
           : hint === "workshop" || hint === "craft"
             ? "workshop"
-            : "packs";
+            : hint === "gear"
+              ? "hero"
+              : "packs";
       const painted = paintedIcon(shortcut);
       return painted ? (
         <img
@@ -193,7 +201,9 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
               ? "cards"
               : shortcut === "workshop"
                 ? "anvil"
-                : "pack"
+                : shortcut === "hero"
+                  ? "helmet"
+                  : "pack"
           }
           className={SUBJECT_ICON}
         />

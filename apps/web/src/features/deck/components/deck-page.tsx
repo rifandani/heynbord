@@ -88,7 +88,10 @@ const DeckName = ({
   );
 };
 
-/** The Hero Class of the slot (GDD 5.5), until the Hero screen exists. */
+/**
+ * The Hero Class of the slot (GDD 5.5). The Deck builder is the only place
+ * that sets it: the Class stays on the Deck Slot (ADR-0033).
+ */
 const ClassChoice = ({
   classId,
   onChange,

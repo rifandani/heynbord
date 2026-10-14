@@ -1,6 +1,7 @@
 export { chooseCommand, visibleTo } from "./ai/choose-command";
 export {
   createBattle,
+  PLAYER_BASE_HP,
   playerHeroHp,
   STARTING_HAND,
 } from "./battle/create-battle";
@@ -98,10 +99,13 @@ export {
 } from "./content/decks";
 export {
   GEAR_SLOTS,
+  GEAR_STATS,
+  gearStatValue,
   gearUpgradeCoin,
   gearUpgradePathCoin,
   MAX_GEAR_LEVEL,
 } from "./content/gear";
+export type { GearSlot, GearStat } from "./content/gear";
 export {
   floorFirstWinReward,
   HEYNSPIRE_FLOORS,
@@ -211,6 +215,7 @@ export type {
 } from "./packs/open-pack";
 export { buyDeckSlot, INITIAL_DECK_SLOTS } from "./profile/deck-slots";
 export { exportProfile, importProfile } from "./profile/export";
+export { upgradeGear } from "./profile/gear";
 export { ImportError } from "./profile/import-error";
 export { migrateProfile, PROFILE_MIGRATIONS } from "./profile/migrate";
 export type { ProfileMigration } from "./profile/migrate";

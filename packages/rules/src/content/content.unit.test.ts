@@ -183,53 +183,53 @@ const skill = (id: string) => {
  */
 const SKILL_BUDGET_EXCEPTIONS = {
   "warrior.spearThrow":
-    "Swap +8.6 / +3.5 points. An anchor card of Vanguard or Raiders: it waits for the Archetype re-fit (Archetypes 2.3). The sim finds it too strong, but one damage rate for all Classes puts it under.",
+    "Swap +8.1 / +4.0 points. The sim finds it too strong, but one damage rate for all Classes puts it under. After the re-fit (issue #67), no Main Archetype holds it.",
   "warrior.shoulderCharge":
-    "Swap −0.8 / −0.2 points. The sim passes, and the sim wins over the test. A damage point is worth more in the Warrior Deck than the one damage rate gives.",
+    "Swap −1.9 / +0.5 points. The sim passes, and the sim wins over the test. A damage point is worth more in the Warrior Deck than the one damage rate gives.",
   "warrior.shieldBash":
-    "Swap −2.1 / −0.5 points. The sim passes, and the sim wins over the test.",
+    "Swap −2.6 / +0.4 points. The sim passes, and the sim wins over the test.",
   "warrior.groundSlam":
-    "Swap −5.4 / −0.4 points. The sim fails by 0.4 points. At Countdown 2 it failed high (+6.6 against Raiders), and 3 damage is far over.",
+    "Swap −6.5 / −1.4 points. The sim fails by 1.5 points. At Countdown 2 it failed high (+6.6 against Raiders), and 3 damage is far over.",
   "warrior.callToArms":
-    "Swap −2.3 / −2.5 points. The sim passes, and the sim wins over the test.",
+    "Swap −3.0 / −2.9 points. The sim passes, and the sim wins over the test.",
   "ranger.longShot":
-    "Swap +1.6 / −1.9 points. The sim passes, and the sim wins over the test.",
+    "Swap +2.0 / −0.6 points. The sim passes, and the sim wins over the test.",
   "ranger.quickShot":
-    "Swap −1.4 / −3.0 points. The sim passes, and the sim wins over the test.",
+    "Swap +1.1 / +1.4 points. The sim passes, and the sim wins over the test.",
   "ranger.barbedArrow":
-    "Swap −6.9 / −4.4 points. The sim fails. It has no value change: the stronger Thornwatch cards moved its base Deck.",
+    "Swap −7.2 / −0.5 points. The sim fails. It has no value change: the stronger Thornwatch cards moved its base Deck.",
   "ranger.skybreaker":
-    "Swap −4.5 / −4.4 points. The sim passes, and the sim wins over the test.",
+    "Swap −4.5 / −0.5 points. The sim passes, and the sim wins over the test.",
   "ranger.venomArrow":
-    "Swap −6.6 / −3.6 points. The sim fails. More damage and more stacks moved it little.",
+    "Swap −5.6 / −3.0 points. The sim fails. More damage and more stacks moved it little.",
   "ranger.huntersFocus":
-    "Swap −10.4 / −8.5 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −8.3 / −8.3 points. The sim fails, and its sim value did not move with more amount.",
   "ranger.rainOfArrows":
-    "Swap −4.7 / −3.5 points. The sim passes, and the sim wins over the test.",
+    "Swap −2.2 / −2.3 points. The sim passes, and the sim wins over the test.",
   "mage.fireball":
-    "Swap −6.7 / −7.5 points. An anchor card of Vanguard or Raiders: it waits for the Archetype re-fit (Archetypes 2.3).",
+    "Swap −8.5 / −7.1 points. The sim fails. Raiders holds it after the re-fit (issue #67), so a change to it also moves the Main Matchup.",
   "mage.frostBolt":
-    "Swap −7.1 / −7.1 points. An anchor card of Vanguard or Raiders: it waits for the Archetype re-fit (Archetypes 2.3).",
+    "Swap −9.6 / −9.0 points. The sim fails. Raiders holds it after the re-fit (issue #67), so a change to it also moves the Main Matchup.",
   "mage.flameWave":
-    "Swap −7.1 / −9.2 points. An anchor card of Vanguard or Raiders: it waits for the Archetype re-fit (Archetypes 2.3).",
+    "Swap −7.7 / −9.2 points. The sim fails. After the re-fit (issue #67), no Main Archetype holds it.",
   "mage.arcLightning":
-    "Swap −8.6 / −7.5 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −9.5 / −7.3 points. The sim fails, and its sim value did not move with more amount.",
   "priest.mend":
-    "Swap −0.6 / −4.5 points. The sim passes, and the sim wins over the test.",
+    "Swap +0.3 / −4.3 points. The sim passes, and the sim wins over the test.",
   "priest.smite":
-    "Swap −4.4 / −3.6 points. The sim passes, and the sim wins over the test.",
+    "Swap −3.2 / −2.9 points. The sim passes, and the sim wins over the test.",
   "priest.sanctuary":
-    "Swap −1.3 / −4.1 points. The sim passes, and the sim wins over the test.",
+    "Swap +0.3 / −2.8 points. The sim passes, and the sim wins over the test.",
   "priest.blessingOfLight":
-    "Swap −3.0 / −5.1 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −2.9 / −5.5 points. The sim fails, and its sim value did not move with more amount.",
   "priest.radiantStrike":
-    "Swap −2.3 / −2.0 points. The sim passes, and the sim wins over the test.",
+    "Swap −0.8 / −0.8 points. The sim passes, and the sim wins over the test.",
   "priest.prayerOfHealing":
-    "Swap −4.8 / −5.4 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −3.3 / −6.1 points. The sim fails, and its sim value did not move with more amount.",
   "priest.cleanse":
-    "Swap −3.4 / −4.9 points. The sim passes, and the sim wins over the test.",
+    "Swap −4.3 / −4.6 points. The sim passes, and the sim wins over the test.",
   "priest.aegisOfDawn":
-    "Swap −8.7 / −11.8 points. The sim fails, and its sim value did not move with more amount.",
+    "Swap −7.2 / −10.5 points. The sim fails, and its sim value did not move with more amount.",
 } satisfies Readonly<Record<string, string>>;
 
 describe("card content (CRD-01, technical design 3.5)", () => {
@@ -1218,7 +1218,7 @@ describe("Decks and Stages", () => {
     expect(archetypeGroups("breakneckCompany")).toEqual(
       new Set(["undead", "orc", "mage"])
     );
-    // The full Human and Orc sets, with the Skill Cards of the main Archetype.
+    // The full Human and Orc sets, with the old 3 Skill Cards of their Class.
     expect(archetypeGroups("vanguardFull")).toEqual(
       new Set(["human", "warrior"])
     );

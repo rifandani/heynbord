@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   GEAR_SLOTS,
+  GEAR_STATS,
+  gearStatValue,
   gearUpgradeCoin,
   gearUpgradePathCoin,
   MAX_GEAR_LEVEL,
@@ -37,5 +39,24 @@ describe("Gear upgrades (Economy 3.4)", () => {
     expect(gearUpgradePathCoin(9, 10)).toBe(4000);
     expect(() => gearUpgradePathCoin(5, 4)).toThrow(RangeError);
     expect(() => gearUpgradePathCoin(0, 11)).toThrow(RangeError);
+  });
+});
+
+describe("Gear stats (GDD 7.3)", () => {
+  it("gives the GDD 7.3 values at level 0 and level 10", () => {
+    expect(GEAR_SLOTS.map((slot) => gearStatValue(slot, 0))).toEqual([
+      0, 0, 0, 0,
+    ]);
+    expect(
+      GEAR_SLOTS.map((slot) => [
+        GEAR_STATS[slot].stat,
+        gearStatValue(slot, MAX_GEAR_LEVEL),
+      ])
+    ).toEqual([
+      ["unitCrit", 1000],
+      ["heroHp", 20],
+      ["skillCrit", 1500],
+      ["unitBlock", 1000],
+    ]);
   });
 });

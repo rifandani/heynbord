@@ -40,9 +40,11 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { CampaignScreen } from "@/features/campaign/components/campaign-screen";
 import { HandbookDialog } from "@/features/handbook/components/handbook-dialog";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { HeroScreen } from "@/features/hero/components/hero-screen";
 import { HintBanner } from "@/features/hint/components/hint-banner";
 import {
   useBattleHints,
+  useHeroHints,
   usePacksHints,
   useTownHints,
 } from "@/features/hint/use-hints";
@@ -381,7 +383,7 @@ const useEscToTown = (active: boolean, toTown: () => void) => {
 
 /**
  * The game in one route (web ADR-0006): the Town, the Campaign (the Region
- * Map), then the Battle, the Packs and the Workshop. The Town Bar shows on each screen
+ * Map), then the Battle, the Packs, the Workshop and the Hero screen. The Town Bar shows on each screen
  * except the Battle.
  */
 export const PlayScreen = () => {
@@ -398,6 +400,7 @@ export const PlayScreen = () => {
   // A Hint waits for the Profile: the seen list is in it.
   useTownHints(ready && !battle.session, screen === "town");
   usePacksHints(ready && !battle.session && screen === "packs");
+  useHeroHints(ready && !battle.session && screen === "hero");
 
   useEffect(() => setSoundEnabled(soundOn), [soundOn]);
   useEffect(() => setSoundVolume(soundVolume), [soundVolume]);
@@ -424,6 +427,7 @@ export const PlayScreen = () => {
           ) : null}
           {screen === "packs" ? <PacksScreen /> : null}
           {screen === "workshop" ? <WorkshopScreen /> : null}
+          {screen === "hero" ? <HeroScreen /> : null}
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}
