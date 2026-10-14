@@ -184,12 +184,6 @@ export type KeywordValueKind =
   | "tokenGallery"
   | "card";
 
-/** Attack and HP on a sample card face for the Common Rank guide. */
-export const COMMON_RANK_FACE_EXAMPLE = {
-  attack: 4,
-  hp: 5,
-} as const;
-
 export interface Entry {
   readonly id: EntryId;
   readonly chapter: ChapterId;
@@ -678,7 +672,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   keywordCharge: ["speed"],
   keywordEntangle: ["statusEntangle", "ranged"],
   keywordFirstStrike: ["keywordRetaliate", "melee"],
-  keywordFlying: ["movement"],
+  keywordFlying: ["movement", "statusGrounded"],
   keywordHeroic: ["hero"],
   keywordHobble: ["statusHobble", "speed"],
   keywordKnockback: ["keywordWall", "melee"],
@@ -703,6 +697,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   statusEntangle: ["keywordEntangle", "movement"],
   statusBleed: ["keywordBleed", "keywordRegenerate"],
   statusHobble: ["keywordHobble", "speed"],
+  statusGrounded: ["keywordFlying", "movement"],
   statusWard: ["damageHoly", "keywordTrample", "keywordRebirth"],
   statusSteadfast: [
     "statusWard",
@@ -875,6 +870,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "statusParalyze",
   "statusBleed",
   "statusHobble",
+  "statusGrounded",
   "statusWard",
   "statusSteadfast",
   "statusExposed",

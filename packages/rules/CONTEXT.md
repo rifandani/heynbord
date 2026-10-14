@@ -56,9 +56,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Action**: The Movement and then the attack of one Unit. Each Unit has one action in each Resolution Phase of its owner. An **extra action** from a Skill Card is one more action in the Play Phase: it uses up a Freeze and an Entangled, the same as a normal action, and no Phase effect occurs again. _Avoid_: activation, extra turn
 
-**Speed**: The maximum number of Squares that a Unit goes forward in its Movement in one Turn. The default Speed is 1. Only a Runner has Speed 2 or more, and an Orc melee Striker can have Speed 2. _Avoid_: move, pace, Movement points
+**Speed**: The maximum number of Squares that a Unit goes forward in its Movement in one Turn. Each Unit has a Base Speed of 2. Keywords, Statuses and Skill Cards change it. _Avoid_: move, pace, Movement points
 
-**Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units, but it stops before an enemy Flying Unit. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
+**Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units, but it stops before an enemy Flying Unit. A Grounded Unit moves as a ground Unit. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
 
 **Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Phase from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
 
@@ -66,11 +66,15 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Freeze**: The effect of Frost damage on a Unit: the Unit skips its next action. A Unit with a Freeze is Frozen. A Ranged Unit never has Frost damage, because it could Freeze the same enemy before each action of that enemy. _Avoid_: stun, chill, slow
 
-**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding, Exposed, Ward or Steadfast. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
+**Status**: An effect that stays on a Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding, Exposed, Grounded, Ward or Steadfast. A Damage Type, a Keyword or a Skill Card can put a Status on a Unit. It belongs to the target Unit. Each Status is a Buff or a Debuff. _Avoid_: condition, ailment, effect
 
-**Buff**: A Status that helps its Unit: Ward or Steadfast. A bonus to a stat, such as the Rally bonus, the Swarm bonus, bonus Armor or bonus Attack, is not a Buff. _Avoid_: blessing, boon, positive status
+**Buff**: A Status that helps its Unit: Ward or Steadfast. A bonus to a stat, such as the Rally bonus, the Swarm bonus, bonus Armor, Bonus Attack or Bonus Range, is not a Buff. _Avoid_: blessing, boon, positive status
 
-**Debuff**: A Status that harms its Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding or Exposed. _Avoid_: ailment, curse, negative status
+**Bonus Attack**: Attack that a Skill Card gives to a Unit until the end of its owner's next Turn. A Unit with Base Attack 0 does not get it. A new Bonus Attack replaces the old one, and Rebirth ends it. It is not a Buff. _Avoid_: empower, bestow, attack buff
+
+**Bonus Range**: Range that a Skill Card gives to a Unit for a short time. It ends together with the Bonus Attack from the same card, and Rebirth ends it. A Melee Unit with Bonus Range is a Ranged Unit until the bonus ends. It is not a Buff. _Avoid_: reach, bestow, range buff
+
+**Debuff**: A Status that harms its Unit: Burn, Freeze, Entangled, Paralyzed, Poisoned, Hobbled, Bleeding, Exposed or Grounded. _Avoid_: ailment, curse, negative status
 
 **Paralyzed**: The effect of Lightning damage on a Unit: the Unit does not attack in its next action, but it can still move. Then Paralyzed ends. Until then, it also does not Retaliate and does not use First Strike. If it is also Frozen, Paralyzed ends with the skipped action. Lightning damage gives Paralyzed also when the hit deals 0 damage. A new Paralyzed on a Paralyzed Unit has no effect. _Avoid_: stunned, shocked, dazed, disarmed
 
@@ -84,17 +88,21 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Hobbled**: A Status from the Hobble Keyword. A Hobbled Unit has a maximum Speed of 1, after all bonuses. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Hobble keeps the higher count. _Avoid_: fatigued, slowed, crippled
 
+**Grounded**: A Status from a Skill Card. A Grounded Unit does not have Flying, for all rules: it stops before enemy Units, and enemy Flying Units move over it. It has a count of 2 that goes down by 1 in each End Phase of its owner, and it ends at 0. Only a Flying Unit can become Grounded. A new Grounded keeps the higher count. _Avoid_: downed, clipped, pinned, anti-air
+
 **Bleed N**: A Keyword. After a Unit with Bleed deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding for N End Phases. Retaliate does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. _Avoid_: Wound, Rend, Maim, anti-heal
 
 **Bleeding**: A Status from the Bleed Keyword. A Bleeding Unit gets half of each heal, rounded down. It has a count that goes down by 1 in each End Phase of its owner, and it ends at 0. A new Bleed keeps the higher count. Bleeding does no damage. _Avoid_: wounded, grievous wounds, healing reduction
 
-**Exposed N**: A Status from a Skill Card. Each Physical hit on an Exposed Unit deals N more damage, after Armor. This includes attacks, Physical Skill damage, Retaliate, First Strike, Last Breath and Trample. Burn and Poison damage do not get it. It has a count of 2 End Phases of its owner, and it ends at 0. A new Exposed keeps the higher value. _Avoid_: vulnerable, weakened, marked, armor break
+**Exposed N**: A Status from a Skill Card. Each Physical hit on an Exposed Unit deals N more damage, after Armor. This includes attacks, Physical Skill damage, Retaliate, First Strike, Last Breath and Trample. Burn, Poison and True Damage do not get it. It has a count of 2 End Phases of its owner, and it ends at 0. A new Exposed keeps the higher value. _Avoid_: vulnerable, weakened, marked, armor break
 
-**Ward N**: A Status from a Skill Card. A Ward absorbs damage to its Unit, after Armor, Crit and Block, up to N. Its value goes down by the damage that it absorbs, and it ends at 0. It absorbs all damage, also Holy, Burn and Poison damage. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. A Ward has no time limit. A new Ward keeps the higher value. _Avoid_: shield, barrier, absorb, aegis
+**Ward N**: A Status from a Skill Card. A Ward absorbs damage to its Unit, after Armor, Crit and Block, up to N. Its value goes down by the damage that it absorbs, and it ends at 0. It absorbs all damage except True Damage, also Holy, Burn and Poison damage. Absorbed damage is not dealt: a hit that the Ward absorbs fully deals 0 damage. A Ward has no time limit. A new Ward keeps the higher value. _Avoid_: shield, barrier, absorb, aegis
 
 **Steadfast**: A Status from a Skill Card. When damage from any source would bring a Steadfast Unit to 0 HP, the Unit stays at 1 HP and Steadfast ends. A Ward absorbs the damage first. The Unit is not killed: it stays on the Board, Last Breath does not occur, and Trample has no damage that is left. A Unit with Rebirth uses Steadfast first and keeps Rebirth. Steadfast has no time limit. A new Steadfast on a Steadfast Unit has no effect. _Avoid_: endure, undying, death ward, last stand, cheat death
 
 **Damage Type**: The kind of damage: Physical, Fire, Frost, Holy or Lightning. _Avoid_: element, damage kind
+
+**True Damage**: A hit whose damage nothing decreases or absorbs. It ignores Armor, Block and Ward. Nothing increases it: it has no Crit, no Exposed and no Attack bonus such as Rally, Swarm or Bonus Attack. Its value is the value in the text of its effect: for an attack, the Base Attack. It keeps its Damage Type and the Status of that type, or it has no Damage Type. On-hit Keywords and Retaliate apply as usual. The later Burn damage from a True Fire hit is not True Damage. Card text says "N True Damage", or "N True Fire damage" with a Damage Type. Steadfast still keeps the Unit at 1 HP, because Steadfast does not decrease the damage. True Damage is not a Damage Type. _Avoid_: pure damage, piercing damage, unblockable damage, direct damage
 
 **Battle seed**: The start value of the random numbers in one Battle. The same seed and the same Commands give the same Battle. _Avoid_: random seed, RNG
 
@@ -186,9 +194,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Feral**: The one Race with no people. A Feral card is a wild creature that serves no people, for example a wyrm or a giant spider. A creature that fights for a people is a card of that people's Race, not a Feral card. _Avoid_: beast, creature, wild (as a Race name)
 
-**Role**: The job of a Creature Card in a Battle: Frontliner, Striker, Runner, Shooter, Support or Wall. It helps Players read a Card. No Battle rule uses it, but it sets the Range of a Ranged Unit. _Avoid_: class, type, archetype
+**Range**: The maximum number of Squares in front of a Unit at which it attacks the nearest enemy Unit. Each Unit has a Base Range of 1. Keywords and Bonus Range increase it. There is no maximum Range. _Avoid_: reach, attack distance
 
-**Range**: The maximum number of Squares in front of a Ranged Unit at which it attacks the nearest enemy Unit. A Melee Unit has no Range. A Ranged Support always has Range 2. A Shooter always has Range 3. No Unit has a Range of more than 3. _Avoid_: reach, attack distance
+**Melee Unit**: A Unit with Range 1. It attacks only the Square in front of it. _Avoid_: close-range Unit, fighter
+
+**Ranged Unit**: A Unit with Range 2 or more. A Melee Unit with Bonus Range is a Ranged Unit until the bonus ends. _Avoid_: shooter, archer, caster
 
 **Class**: The type of a Hero, and of the Skill Cards that the Hero can use: Warrior, Ranger, Mage or Priest. _Avoid_: job, profession, role
 
@@ -341,7 +351,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)). A Unit with **Wall** can also be summoned into Columns 4 and 5. Those Squares are not part of the Summon Zone ([ADR-0023](../../docs/adr/0023-a-wall-can-be-summoned-up-to-column-5.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
 - A **Race** was always a people before. **Feral** is the one Race with no people ([ADR-0013](../../docs/adr/0013-v1-has-90-creature-cards.md)). "Feral" is not a word for every wild creature: a troll that fights for the orcs is an Orc card.
-- The GDD says "Deck archetype". The term is **Archetype**, and it is always a Deck. It is not a **Role**: a Role is the job of one Creature Card.
+- The GDD says "Deck archetype". The term is **Archetype**, and it is always a Deck.
 - The **Workshop** and the **Bazaar** were "places" before. Now they are the actions and the offers. The Town Building that opens each one is a web term.
 - The first name for **Hobble** was "Fatigue". "Fatigue" usually means damage from an empty Deck in card games, and it is on the _Avoid_ list of **Sudden Death**.
 - The first text for **Knockback** said that the attacked Unit "moves" back. A Unit moves only in its own Movement, with its Speed. The term is **Pushed**, so Speed 0, Entangled and Hobbled do not stop Knockback.
@@ -358,8 +368,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - Melee and Common Units had **Entangle** before. On a Melee Unit it did almost nothing, and on a Ranged Unit it kept one enemy at Speed 0 in each Turn (issue #23). Now only a Ranged Unit with Base Rank Epic or higher has Entangle.
 - A **Main Keyword** was the only Race signature before, and other Races could borrow each one. Thus "signature Keyword" in ADR-0017 did not mean "only this Race". Now each Race also has one **Race Keyword** that no other Race can have ([ADR-0026](../../docs/adr/0026-each-race-has-one-race-keyword.md)). Entangle was "not an Elf Main Keyword" in ADR-0022. Now it is the Elf Race Keyword.
 - Rimebreath Drake was a Ranged Unit with Frost damage before. It Froze the nearest enemy before each action of that enemy, so that enemy almost never acted (issue #24). Unlike Entangle, a higher Base Rank does not fix this: an Epic Frost Shooter locked its target longer. Now no Ranged Unit has Frost damage, at any Rank ([ADR-0025](../../docs/adr/0025-no-ranged-unit-has-frost-damage.md)). A melee Frost Unit can also Freeze the Unit in front of it again, but only in a few Battles.
-- A Shooter had Range 3 to 5 before. The Range 4 Elf Shooters made Thornwatch win about 87% of its Matchups (issue #23). Now each Shooter has **Range** 3.
-- No rule gave a Unit Speed 2 before, and 19 Creature Cards had it, also a Frontliner (Militia Recruit) and 3 Goblin Strikers. Now the **Role** sets the Speed: 1 by default, 2 or more for a Runner, and 2 for an Orc melee Striker, because Orc is the fast Race. Another card can break this only with a written reason.
+- A Shooter had Range 3 to 5 before. The Range 4 Elf Shooters made Thornwatch win about 87% of its Matchups (issue #23). Then no Creature Card had a Range above 3. Now there is no maximum **Range**, and Keywords set the Range of a Card.
+- A Melee Unit had no Range before, and a Ranged Unit had Range 1 or more. Now each Unit has a Base Range of 1: a **Melee Unit** has Range 1, and a **Ranged Unit** has Range 2 or more.
+- No rule gave a Unit Speed 2 before, and 19 Creature Cards had it, also a Frontliner (Militia Recruit) and 3 Goblin Strikers. Then the Role set the Speed: 1 by default, 2 or more for a Runner. Now each Unit has a Base **Speed** of 2, and Keywords change it.
+- A Creature Card had a **Role** before: Frontliner, Striker, Runner, Shooter, Support or Wall. No Battle rule used it, and Players could not read a stat from it. Now there are no Roles. Keywords tell the Speed and the Range of a Card. "Shooter", "Runner" and the other Role names are not terms.
 - "debuff" was on the _Avoid_ list of **Status** before, because every Status harmed its Unit. **Ward** is the first Status that helps its Unit, so each Status is now a **Buff** or a **Debuff**. **Steadfast** is the second Buff. It is not Rebirth: a Steadfast Unit does not die, and a Rebirth Unit dies and comes back. Players also say "buff" for a Rally bonus or for bonus Armor. Those are bonuses to a stat, not Buffs.
 - "Elf Skill Cards" is not a term. A **Skill Card** has a **Class**, not a **Race**. The Skill Cards of the Elf Archetype Thornwatch are **Ranger** Skill Cards, and each other Ranger Deck, for example the Goblin Deck Tunnel Rats, can use them too.
 - The **First Pack** was a free Peddler Pack the first time that the Player opened the Packs screen. Now it is an **Unopened Pack** that the Player gets when Packs unlock at **Player level** 2, the same as a Pack from a **Star chest**.

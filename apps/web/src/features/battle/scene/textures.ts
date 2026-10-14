@@ -927,6 +927,7 @@ const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
   "icon-steadfast": glyphIcon("anchor", FX_ANCHORS.iconSteadfast),
   "icon-exposed": glyphIcon("brokenShield", FX_ANCHORS.iconExposed),
   "icon-paralyze": glyphIcon("bolt", FX_ANCHORS.iconParalyze),
+  "icon-grounded": glyphIcon("grounded", FX_ANCHORS.iconGrounded),
   ward: drawDome,
   steadfast: drawSeal,
   "field-fire": groundPatch("rgba(40, 22, 14, 0.85)", FX_ANCHORS.fire),

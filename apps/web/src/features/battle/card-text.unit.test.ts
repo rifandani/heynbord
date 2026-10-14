@@ -206,7 +206,7 @@ describe("cardText (CRD-08)", () => {
     expect(resolve(text.effect)).toBe(
       "Deal 6 Fire damage to an enemy Unit and the next 1 Square behind it."
     );
-    expect(resolve(text.recall)).toBe("Recall 50%");
+    expect(resolve(text.recall)).toBe("Recall 35%");
     expect(resolve(skill("warrior.shieldWall", "common").effect)).toBe(
       "Friendly Units in a Lane get Armor 1 for the next 2 enemy Turns."
     );
@@ -421,12 +421,18 @@ describe("cardText (CRD-08)", () => {
     expect(effect("ranger.venomArrow", "legendary")).toBe(
       "Deal 2 Physical damage to an enemy Unit. If it survives, it gains 5 Poison stacks, also when it takes no damage."
     );
-    // Rare: 6 × 1.45 = 8.7, rounded to 9.
-    expect(effect("ranger.heartseeker", "rare")).toBe(
-      "Deal 9 damage to the enemy Hero."
+    // Base Rank Rare: Attack has exact Rank values, and Range is +1 at each Rank.
+    expect(effect("ranger.huntersFocus", "rare")).toBe(
+      "A friendly Unit gets +3 Attack and +1 Range until the end of your next Turn. A Melee Unit attacks as a Ranged Unit."
+    );
+    expect(effect("ranger.huntersFocus", "legendary")).toBe(
+      "A friendly Unit gets +5 Attack and +1 Range until the end of your next Turn. A Melee Unit attacks as a Ranged Unit."
     );
     expect(effect("ranger.rainOfArrows", "epic")).toBe(
-      "Deal 2 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
+      "Deal 3 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
+    );
+    expect(effect("ranger.rainOfArrows", "legendary")).toBe(
+      "Deal 5 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled."
     );
     expect(resolve(skill("ranger.rainOfArrows", "epic").name)).toBe(
       "Rain of Arrows"
@@ -578,6 +584,8 @@ describe("unitStatusText", () => {
     bonusArmorTurns: 0,
     bonusAttack: 0,
     bonusAttackTurns: 0,
+    bonusRange: 0,
+    bonusRangeTurns: 0,
     exposed: 0,
     exposedTurns: 0,
     burn: 0,
@@ -588,6 +596,7 @@ describe("unitStatusText", () => {
     steadfast: false,
     hobbled: 0,
     bleeding: 0,
+    grounded: 0,
     poisoned: 0,
     rallyBonus: 0,
     swarmBonus: 0,
@@ -598,12 +607,14 @@ describe("unitStatusText", () => {
     expect(unitStatusText(quiet)).toEqual([]);
   });
 
-  it("lists bonus Armor, bonus Attack, the Rally bonus, the Swarm bonus, each Status, then a used Rebirth", () => {
+  it("lists bonus Armor, bonus Attack, bonus Range, the Rally bonus, the Swarm bonus, each Status, then a used Rebirth", () => {
     const lines = unitStatusText({
       bonusArmor: 1,
       bonusArmorTurns: 2,
       bonusAttack: 3,
       bonusAttackTurns: 1,
+      bonusRange: 1,
+      bonusRangeTurns: 1,
       exposed: 2,
       exposedTurns: 2,
       burn: 2,
@@ -614,6 +625,7 @@ describe("unitStatusText", () => {
       steadfast: false,
       hobbled: 1,
       bleeding: 3,
+      grounded: 2,
       poisoned: 2,
       rallyBonus: 2,
       swarmBonus: 1,
@@ -622,6 +634,7 @@ describe("unitStatusText", () => {
     expect(lines.map((line) => line.status)).toEqual([
       "bonusArmor",
       "bonusAttack",
+      "bonusRange",
       "rallyBonus",
       "swarmBonus",
       "burn",
@@ -630,6 +643,7 @@ describe("unitStatusText", () => {
       "entangle",
       "hobble",
       "bleed",
+      "grounded",
       "poison",
       "exposed",
       "reborn",
@@ -643,6 +657,7 @@ describe("unitStatusText", () => {
     ).toEqual([
       "Armor +1 From a Skill Card. Turns left: 2.",
       "Attack +3 From a Skill Card: until the end of your next Turn. End Phases left: 1.",
+      "Range +1 From a Skill Card: until the end of your next Turn. A Melee Unit attacks as a Ranged Unit. End Phases left: 1.",
       "Attack +2 From Rally: until the end of this Turn.",
       "Attack +1 From Swarm: another friendly Unit is in this Lane.",
       "Burn 1 damage in each End Phase of its owner. End Phases left: 2.",
@@ -651,6 +666,7 @@ describe("unitStatusText", () => {
       "Entangled Speed 0 in its next action. It can still attack.",
       "Hobbled 1 This Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner.",
       "Bleeding 3 This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
+      "Grounded 2 A Debuff. This Unit does not have Flying: it stops before enemy Units, and enemy Flying Units move over it. The count goes down by 1 in each End Phase of its owner.",
       "Poison 2 1 damage per stack in each End Phase of its owner. Then it loses 1 stack.",
       "Exposed 2 A Debuff. Each Physical hit on this Unit deals more damage, equal to the Exposed value, after Armor. Fire, Frost, Holy, Burn and Poison damage do not get it. It ends after 2 End Phases of its owner. A new Exposed keeps the higher value. End Phases left: 2.",
       "Reborn This Unit died and came back with Rebirth. It does not come back again.",

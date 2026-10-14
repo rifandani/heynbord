@@ -212,6 +212,8 @@ export const GLYPHS = {
   // Exposed (GDD 4.7): a shield that a zigzag crack splits in two.
   brokenShield:
     "M-6 -44 L-38 -32 Q-38 20 -6 46 L-1 24 L-12 8 L0 -8 L-10 -26 Z M6 -44 L38 -32 Q38 20 6 46 L11 24 L0 8 L12 -8 L2 -26 Z",
+  // Grounded (GDD 4.7): an arrow that points down onto the ground.
+  grounded: "M-8 -46 H8 V4 H26 L0 30 L-26 4 H-8 Z M-44 36 H44 V46 H-44 Z",
   // Onslaught: two swords that cross, for one more action.
   crossedSwords: crossedSwords(),
   // Steadfast (GDD 4.7): the Unit holds firm at 1 HP.
@@ -386,6 +388,9 @@ export const cardGlyph = (card: CardDefinition): Glyph => {
     }
     case "laneAttack": {
       return "horn";
+    }
+    case "unitAttackRange": {
+      return "range";
     }
     case "laneExtraAction": {
       return "crossedSwords";

@@ -232,6 +232,8 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       bonusArmorTurns: 0,
       bonusAttack: 0,
       bonusAttackTurns: 0,
+      bonusRange: 0,
+      bonusRangeTurns: 0,
       burn: 2,
       frozen: true,
       paralyzed: true,
@@ -240,6 +242,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       steadfast: true,
       hobbled: 1,
       bleeding: 1,
+      grounded: 2,
       poisoned: 3,
       exposed: 2,
       exposedTurns: 2,
@@ -254,6 +257,7 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
       if (
         line.status === "bonusArmor" ||
         line.status === "bonusAttack" ||
+        line.status === "bonusRange" ||
         line.status === "rallyBonus" ||
         line.status === "swarmBonus" ||
         line.status === "reborn"
@@ -511,14 +515,14 @@ describe("the Message Catalogs", () => {
     expect(body("summonZone")).toContain("Columns 1 to 3");
     expect(body("summonZone")).toContain("Columns 4 and 5");
     expect(body("suddenDeath")).toContain("From Turn 20");
-    expect(body("recall")).toContain("from 10% at Common to 50% at Legendary");
+    expect(body("recall")).toContain("from 7% at Common to 35% at Legendary");
     expect(body("rankCommon")).toContain("baseline for the Attack and HP");
     expect(body("rankCommon")).toContain(
-      "1 Rank Gems on the frame. Attack and HP ×1. Skill Card Recall: 10%."
+      "1 Rank Gems on the frame. Attack and HP ×1. Skill Card Recall: 7%."
     );
     expect(body("rankRare")).toContain("Rare sits in the middle");
     expect(body("rankRare")).toContain(
-      "3 Rank Gems on the frame. Attack and HP ×1.45. Skill Card Recall: 30%."
+      "3 Rank Gems on the frame. Attack and HP ×1.45. Skill Card Recall: 21%."
     );
     expect(
       getEntry("rankRare")
@@ -595,6 +599,7 @@ describe("chapterEntries", () => {
       ["statusEntangle", "debuff"],
       ["statusBleed", "debuff"],
       ["statusHobble", "debuff"],
+      ["statusGrounded", "debuff"],
       ["statusExposed", "debuff"],
     ]);
     expect(nameIn("en-us")(getEntry("statusWard"))).toBe("Ward N");

@@ -106,15 +106,12 @@
         ]
       }
     ],
-    "Stop": [
+    "PostToolUse": [
       {
+        "matcher": "Write|Edit",
         "hooks": [
           {
             "command": "bash -c 'cd \"$CLAUDE_PROJECT_DIR\" && bun lint:fix >&2; status=$?; if [ \"$status\" -ne 0 ]; then exit 2; fi'",
-            "type": "command"
-          },
-          {
-            "command": "bash -c 'cd \"$CLAUDE_PROJECT_DIR\" && bun check:dupes >&2; status=$?; if [ \"$status\" -ne 0 ]; then exit 2; fi'",
             "type": "command"
           }
         ]

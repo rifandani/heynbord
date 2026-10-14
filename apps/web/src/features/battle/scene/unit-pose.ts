@@ -4,6 +4,7 @@ import { Color } from "three";
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import { pushEase } from "@/features/battle/battle-timeline";
 import type { UnitView } from "@/features/battle/battle-view";
+import { fliesNow } from "@/features/battle/battle-view";
 import { laneZ, squareX } from "@/features/battle/scene/layout";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { loopStatuses } from "@/features/battle/scene/status-visuals";
@@ -24,6 +25,7 @@ const STATUS_TINT: Readonly<Record<Status, string>> = {
   ward: "#ffe7a3",
   steadfast: "#f7cf86",
   exposed: "#ffa3c2",
+  grounded: "#e8bd8c",
 };
 
 const HIT = new Color("#ff5a4a");
@@ -236,7 +238,7 @@ const moved: EventPose = (unit, event, progress, pose) => {
   pose.x = squareX(event.from + (event.to - event.from) * progress);
   pose.y +=
     Math.abs(Math.sin(progress * squares * Math.PI)) *
-    (unit.flying ? 0.5 : 0.2);
+    (fliesNow(unit) ? 0.5 : 0.2);
 };
 
 /** A fast slide. It has no walk hop, so a push does not look like Movement. */
@@ -425,7 +427,7 @@ export const poseFor = (
   rallied(unit, event, progress, pose, reducedMotion);
   if (
     passing &&
-    !unit.flying &&
+    !fliesNow(unit) &&
     event._tag === "UnitMoved" &&
     event.unitId === unit.id
   ) {

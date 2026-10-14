@@ -20,11 +20,11 @@ const STAT_SCALE: Record<RankId, number> = {
 
 /** Recall chance of a Skill Card for each Rank, in basis points. */
 const RECALL: Record<RankId, number> = {
-  common: 1000,
-  uncommon: 2000,
-  rare: 3000,
-  epic: 4000,
-  legendary: 5000,
+  common: 700,
+  uncommon: 1400,
+  rare: 2100,
+  epic: 2800,
+  legendary: 3500,
 };
 
 /** The number of pips that the UI shows for a Rank (1 to 5). */

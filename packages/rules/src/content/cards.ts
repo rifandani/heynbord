@@ -1498,16 +1498,16 @@ const skills: readonly SkillCardDefinition[] = [
   },
   {
     kind: "skill",
-    id: "ranger.flushingShot",
+    id: "ranger.skybreaker",
     class: "ranger",
     baseRank: "uncommon",
-    countdown: 4,
+    countdown: 3,
     target: "enemyUnit",
     effect: {
-      type: "damagePush",
-      amount: 7,
+      type: "damageGround",
+      // Base Rank Uncommon: a Common copy does not exist, so Common repeats Uncommon.
+      amount: { common: 3, uncommon: 3, rare: 5, epic: 7, legendary: 10 },
       damageType: "physical",
-      squares: 3,
     },
   },
   {
@@ -1519,20 +1519,25 @@ const skills: readonly SkillCardDefinition[] = [
     target: "enemyUnit",
     effect: {
       type: "damagePoison",
-      amount: 1,
+      amount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
       damageType: "physical",
-      // Base Rank Rare: no Common or Uncommon copy exists, so they repeat Rare.
+      // Base Rank Rare: Common and Uncommon copies do not exist, so both tables repeat Rare.
       poison: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
     },
   },
   {
     kind: "skill",
-    id: "ranger.heartseeker",
+    id: "ranger.huntersFocus",
     class: "ranger",
     baseRank: "rare",
-    countdown: 5,
-    target: "enemyHero",
-    effect: { type: "damageHero", amount: 6, damageType: "physical" },
+    countdown: 4,
+    target: "friendlyUnit",
+    effect: {
+      type: "unitAttackRange",
+      // Base Rank Rare: no Common or Uncommon copy exists, so they repeat Rare.
+      attack: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+      range: 1,
+    },
   },
   {
     kind: "skill",
@@ -1541,7 +1546,12 @@ const skills: readonly SkillCardDefinition[] = [
     baseRank: "epic",
     countdown: 6,
     target: "enemyLane",
-    effect: { type: "damageLaneEntangle", amount: 1, damageType: "physical" },
+    effect: {
+      type: "damageLaneEntangle",
+      // Base Rank Epic: damage has exact Rank values, not the Rank scale.
+      amount: { common: 3, uncommon: 3, rare: 3, epic: 3, legendary: 5 },
+      damageType: "physical",
+    },
   },
   // Mage: area damage, Lightning and Field Effects.
   {

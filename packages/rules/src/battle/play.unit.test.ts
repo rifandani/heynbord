@@ -18,7 +18,7 @@ import { createBattle } from "./create-battle";
 import { step } from "./step";
 import { isBlockedByUnique, legalTargets, unitsInArea } from "./targets";
 import { Command, Target } from "./types";
-import type { Side } from "./types";
+import type { BattleEvent, Side } from "./types";
 
 const play = (handIndex: number, target: Target) =>
   Command.PlayCard({ handIndex, target });
@@ -1029,6 +1029,90 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
     });
   });
 
+  describe("Skybreaker", () => {
+    it("deals damage with the value of the Rank, and a Flying Unit that survives becomes Grounded 2", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [
+        ["ranger.skybreaker", 0, "rare"],
+        ["ranger.skybreaker", 0],
+      ]);
+      const bird = enemyAt(state, 6, {
+        cardId: "orc.skyreaver",
+        hp: 20,
+        maxHp: 20,
+      });
+      const ground = enemyAt(state, 6, { lane: 1, hp: 20, maxHp: 20 });
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, bird.id)).toMatchObject({
+        hp: 15,
+        grounded: 2,
+      });
+      expect(eventsOfType(first.events, "StatusApplied")).toEqual([
+        expect.objectContaining({
+          unitId: bird.id,
+          status: "grounded",
+          count: 2,
+        }),
+      ]);
+      // A ground Unit gets only the damage.
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, ground.id)).toMatchObject({
+        hp: 17,
+        grounded: 0,
+      });
+      expect(eventsOfType(second.events, "StatusApplied")).toEqual([]);
+    });
+
+    it("makes a Flying Unit Grounded also at 0 damage, but not when the hit kills it", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [
+        ["ranger.skybreaker", 0],
+        ["ranger.skybreaker", 0],
+      ]);
+      const armored = enemyAt(state, 6, {
+        cardId: "orc.skyreaver",
+        bonusArmor: 6,
+        bonusArmorTurns: 2,
+      });
+      const weak = enemyAt(state, 6, {
+        lane: 1,
+        cardId: "orc.skyreaver",
+        hp: 3,
+      });
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, armored.id)?.grounded).toBe(2);
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, weak.id)).toBeUndefined();
+      expect(eventsOfType(second.events, "StatusApplied")).toEqual([]);
+    });
+
+    it("keeps the higher Grounded count: a new Grounded sets 1 back to 2, and 2 gets no event", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [
+        ["ranger.skybreaker", 0],
+        ["ranger.skybreaker", 0],
+      ]);
+      const low = enemyAt(state, 6, {
+        cardId: "orc.skyreaver",
+        hp: 20,
+        maxHp: 20,
+        grounded: 1,
+      });
+      const full = enemyAt(state, 6, {
+        lane: 1,
+        cardId: "orc.skyreaver",
+        hp: 20,
+        maxHp: 20,
+        grounded: 2,
+      });
+      const first = run(state, play(0, square(0, 6)));
+      expect(unitById(first.state, low.id)?.grounded).toBe(2);
+      const second = run(first.state, play(0, square(1, 6)));
+      expect(unitById(second.state, full.id)?.grounded).toBe(2);
+      expect(eventsOfType(second.events, "StatusApplied")).toEqual([]);
+    });
+  });
+
   describe("Radiant Strike", () => {
     it("deals Holy damage through Armor, then heals each friendly Unit in the Lane, and Bleeding halves it", () => {
       const state = emptyBattle({ lanes: 2 });
@@ -1111,6 +1195,24 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
   });
 });
 
+/** The attack on the Unit `unitId`, if one occurred. */
+const attackOn = (
+  events: readonly BattleEvent[],
+  unitId: number
+): BattleEvent | undefined =>
+  events.find(
+    (event) =>
+      event._tag === "UnitAttacked" &&
+      event.target._tag === "Unit" &&
+      event.target.unitId === unitId
+  );
+
+/** The damage of one source, for example Retaliate. */
+const damageFrom = (events: readonly BattleEvent[], source: string) =>
+  eventsOfType(events, "DamageDealt").filter(
+    (event) => event.source === source
+  );
+
 describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
   describe("Venom Arrow", () => {
     it("deals damage, then the Unit becomes Poisoned with the stacks of the Rank, and new stacks add to the old stacks", () => {
@@ -1122,9 +1224,9 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       const target = enemyAt(state, 6);
       const poisoned = enemyAt(state, 6, { lane: 1, poisoned: 2 });
       const first = run(state, play(0, square(0, 6)));
-      // Rare: 1 × 1.45 = 1.45, rounded to 1. The Rare stacks are 3.
+      // Rare: 3 Physical damage. The Rare stacks are 3.
       expect(unitById(first.state, target.id)).toMatchObject({
-        hp: 5,
+        hp: 3,
         poisoned: 3,
       });
       expect(eventsOfType(first.events, "StatusApplied")).toEqual([
@@ -1178,18 +1280,169 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
     });
   });
 
-  describe("Heartseeker", () => {
-    it("targets only the enemy Hero, and damages it with the value of its Base Rank Rare", () => {
+  describe("Hunter's Focus", () => {
+    it("targets a friendly Unit and gives it bonus Attack of the Rank and Range +1, not to a Unit with Base Attack 0", () => {
+      const state = emptyBattle({ lanes: 2 });
+      giveHand(state, "player", [
+        ["ranger.huntersFocus", 0, "rare"],
+        ["ranger.huntersFocus", 0, "legendary"],
+        ["ranger.huntersFocus", 0, "rare"],
+      ]);
+      const rare = friendAt(state, 2);
+      const legendary = friendAt(state, 2, { lane: 1 });
+      const wall = placeUnit(state, {
+        cardId: "human.townBarricade",
+        owner: "player",
+        position: 4,
+      });
+      enemyAt(state, 8);
+      expect(legalTargets(state, 0)).toEqual([
+        square(0, 2),
+        square(1, 2),
+        square(0, 4),
+      ]);
+      const first = run(state, play(0, square(0, 2)));
+      expect(eventsOfType(first.events, "AttackGained")).toEqual([
+        expect.objectContaining({ unitId: rare.id, attack: 3, turns: 2 }),
+      ]);
+      expect(eventsOfType(first.events, "RangeGained")).toEqual([
+        expect.objectContaining({ unitId: rare.id, range: 1, turns: 2 }),
+      ]);
+      expect(unitById(first.state, rare.id)).toMatchObject({
+        bonusAttack: 3,
+        bonusAttackTurns: 2,
+        bonusRange: 1,
+        bonusRangeTurns: 2,
+      });
+      const second = run(first.state, play(0, square(1, 2)));
+      expect(unitById(second.state, legendary.id)).toMatchObject({
+        bonusAttack: 5,
+        bonusRange: 1,
+      });
+      const third = run(second.state, play(0, square(0, 4)));
+      expect(unitById(third.state, wall.id)).toMatchObject({
+        bonusAttack: 0,
+        bonusRange: 0,
+      });
+      expect(eventsOfType(third.events, "RangeGained")).toEqual([]);
+    });
+
+    it("gives a Shooter Range 4, and the bonus Range ends with its own count", () => {
       const state = emptyBattle();
-      giveHand(state, "player", [["ranger.heartseeker", 0, "rare"]]);
-      enemyAt(state, 6);
-      expect(legalTargets(state, 0)).toEqual([Target.Hero({ side: "enemy" })]);
-      const { state: next } = run(
-        state,
-        play(0, Target.Hero({ side: "enemy" }))
+      giveHand(state, "player", [["ranger.huntersFocus", 0, "rare"]]);
+      const shooter = placeUnit(state, {
+        cardId: "human.crossbowGuard",
+        owner: "player",
+        position: 2,
+        speed: 0,
+      });
+      const enemy = enemyAt(state, 6, { hp: 30, maxHp: 30 });
+      preventRout(state);
+      const played = run(state, play(0, square(0, 2)));
+      const firstTurn = run(played.state, Command.EndTurn());
+      // Crossbow Guard Attack 4 + 3, at a distance of 4 Squares.
+      expect(attackOn(firstTurn.events, enemy.id)).toMatchObject({
+        unitId: shooter.id,
+        ranged: true,
+      });
+      expect(unitById(firstTurn.state, enemy.id)?.hp).toBe(23);
+      const enemyTurn = run(firstTurn.state, Command.EndTurn());
+      expect(unitById(enemyTurn.state, shooter.id)?.bonusRange).toBe(1);
+      const secondTurn = run(enemyTurn.state, Command.EndTurn());
+      expect(unitById(secondTurn.state, shooter.id)).toMatchObject({
+        bonusRange: 0,
+        bonusRangeTurns: 0,
+      });
+      expect(eventsOfType(secondTurn.events, "RangeFaded")).toContainEqual(
+        expect.objectContaining({ unitId: shooter.id })
       );
-      // Rare: 6 × 1.45 = 8.7, rounded to 9.
-      expect(next.sides.enemy.hero.hp).toBe(21);
+    });
+
+    it("makes a Melee Unit attack as a Ranged Unit: no Retaliate, no First Strike, no Trample and no Knockback", () => {
+      const state = emptyBattle({ lanes: 2 });
+      const ranged = { bonusRange: 1, trample: true, knockback: 1 };
+      const retaliated = friendAt(state, 5, ranged);
+      const retaliator = enemyAt(state, 6, { hp: 30, maxHp: 30 });
+      const struck = friendAt(state, 5, { lane: 1, ...ranged });
+      const killed = enemyAt(state, 6, { lane: 1, hp: 1, firstStrike: true });
+      const behind = enemyAt(state, 7, { lane: 1 });
+      preventRout(state);
+      const { state: next, events } = run(state, Command.EndTurn());
+      expect(attackOn(events, retaliator.id)).toMatchObject({
+        unitId: retaliated.id,
+        ranged: true,
+      });
+      expect(attackOn(events, killed.id)).toMatchObject({
+        unitId: struck.id,
+        ranged: true,
+      });
+      expect(damageFrom(events, "retaliate")).toEqual([]);
+      expect(damageFrom(events, "firstStrike")).toEqual([]);
+      expect(damageFrom(events, "trample")).toEqual([]);
+      expect(unitById(next, retaliator.id)).toMatchObject({
+        hp: 26,
+        position: 6,
+      });
+      expect(unitById(next, behind.id)?.hp).toBe(6);
+    });
+
+    it("makes a Pivot Unit attack in front as a Ranged Unit, not behind", () => {
+      const state = emptyBattle();
+      const warden = placeUnit(state, {
+        cardId: "human.gateWarden",
+        owner: "player",
+        position: 5,
+        bonusRange: 1,
+      });
+      const back = enemyAt(state, 4);
+      const front = enemyAt(state, 6, { hp: 30, maxHp: 30 });
+      preventRout(state);
+      const { events } = run(state, Command.EndTurn());
+      expect(attackOn(events, front.id)).toMatchObject({
+        unitId: warden.id,
+        ranged: true,
+      });
+      expect(attackOn(events, back.id)).toBeUndefined();
+    });
+
+    it("keeps the bonus Range and its count when Call to Arms replaces the bonus Attack", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["warrior.callToArms", 0, "rare"]]);
+      friendAt(state, 2);
+      const unit = friendAt(state, 3, {
+        bonusAttack: 3,
+        bonusAttackTurns: 1,
+        bonusRange: 1,
+        bonusRangeTurns: 1,
+      });
+      preventRout(state);
+      const played = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(unitById(played.state, unit.id)).toMatchObject({
+        bonusAttack: 3,
+        bonusAttackTurns: 2,
+        bonusRange: 1,
+        bonusRangeTurns: 1,
+      });
+      const { state: next } = run(played.state, Command.EndTurn());
+      expect(unitById(next, unit.id)).toMatchObject({
+        bonusAttack: 3,
+        bonusAttackTurns: 1,
+        bonusRange: 0,
+        bonusRangeTurns: 0,
+      });
+    });
+
+    it("ends the bonus Range when the Unit comes back with Rebirth", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.quickShot", 0]]);
+      const enemy = enemyAt(state, 6, { hp: 1, rebirth: true, bonusRange: 1 });
+      const { state: next } = run(state, play(0, square(0, 6)));
+      expect(unitById(next, enemy.id)).toMatchObject({
+        hp: 1,
+        rebirth: false,
+        bonusRange: 0,
+        bonusRangeTurns: 0,
+      });
     });
   });
 
@@ -1207,15 +1460,15 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
         Target.Lane({ lane: 1 }),
       ]);
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
-      // Epic: 1 × 1.75 = 1.75, rounded to 2.
+      // Epic: the exact Rank table gives 3 damage.
       expect(unitById(next, front.id)).toMatchObject({
-        hp: 4,
+        hp: 3,
         entangled: true,
       });
       expect(unitById(next, killed.id)).toBeUndefined();
       expect(unitById(next, armored.id)).toMatchObject({
-        hp: 6,
-        entangled: false,
+        hp: 5,
+        entangled: true,
       });
       expect(unitById(next, other.id)).toMatchObject({
         hp: 6,
@@ -1230,7 +1483,18 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       const target = enemyAt(state, 6, { entangled: true });
       const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
       expect(unitById(next, target.id)).toMatchObject({
-        hp: 4,
+        hp: 3,
+        entangled: true,
+      });
+    });
+
+    it("deals 5 damage at Legendary", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["ranger.rainOfArrows", 0, "legendary"]]);
+      const target = enemyAt(state, 6, { hp: 8, maxHp: 8 });
+      const { state: next } = run(state, play(0, Target.Lane({ lane: 0 })));
+      expect(unitById(next, target.id)).toMatchObject({
+        hp: 3,
         entangled: true,
       });
     });
@@ -1276,6 +1540,18 @@ describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
           )
           .map((event) => event._tag)
       ).toEqual(["DebuffsRemoved", "UnitHealed"]);
+    });
+
+    it("ends Grounded, so the Unit flies again", () => {
+      const state = emptyBattle();
+      giveHand(state, "player", [["priest.cleanse", 0, "rare"]]);
+      const bird = friendAt(state, 2, {
+        cardId: "orc.skyreaver",
+        grounded: 2,
+      });
+      const { state: next, events } = run(state, play(0, square(0, 2)));
+      expect(unitById(next, bird.id)?.grounded).toBe(0);
+      expect(eventsOfType(events, "DebuffsRemoved")).toHaveLength(1);
     });
 
     it("heals with the value of the Rank, and a Unit with no Debuff gets no DebuffsRemoved event", () => {

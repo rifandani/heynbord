@@ -15,7 +15,7 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 
 /** The painted Pack (11 — Town Concepts 8): 512 × 768 WebP with alpha. */
-export const packImage = (pack: PackId) => `/packs/${pack}.webp`;
+const packImage = (pack: PackId) => `/packs/${pack}.webp`;
 
 /**
  * The place and the bronze rim of the stamp of a Race Pack or a Class Pack

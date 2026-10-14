@@ -142,7 +142,8 @@ export const effectColor = (effect: SkillEffect): string => {
     }
     // The Warrior war gold of the Rally bonus.
     case "laneAttack":
-    case "laneExtraAction": {
+    case "laneExtraAction":
+    case "unitAttackRange": {
       return "#ffd75a";
     }
     case "exposeUnit": {
@@ -177,7 +178,7 @@ const onBoard = (square: CastSquare, lanes: number): boolean =>
  * from the corner Square (GDD 4.8). A cast with no target or with a Hero
  * target hits no Square. `lanes` is the number of Lanes of the Board.
  */
-export const effectSquares = (
+const effectSquares = (
   effect: SkillEffect,
   side: Side,
   target: Target,

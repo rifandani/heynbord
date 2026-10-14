@@ -28,6 +28,8 @@ const quiet: UnitView = {
   bonusArmorTurns: 0,
   bonusAttack: 0,
   bonusAttackTurns: 0,
+  bonusRange: 0,
+  bonusRangeTurns: 0,
   exposed: 0,
   exposedTurns: 0,
   range: 0,
@@ -37,6 +39,7 @@ const quiet: UnitView = {
   poisoned: 0,
   hobbled: 0,
   bleeding: 0,
+  grounded: 0,
   frozen: false,
   paralyzed: false,
   entangled: false,
@@ -51,6 +54,7 @@ const allStatuses: UnitView = {
   poisoned: 3,
   hobbled: 1,
   bleeding: 2,
+  grounded: 2,
   frozen: true,
   paralyzed: true,
   entangled: true,
@@ -76,6 +80,7 @@ describe("statusesOf", () => {
       "entangle",
       "bleed",
       "hobble",
+      "grounded",
       "exposed",
     ]);
     expect(statusesOf(allStatuses)).toEqual(STATUS_ORDER);
@@ -111,6 +116,18 @@ describe("badgeStatuses", () => {
     });
   });
 
+  it("gives the Grounded count after Hobbled", () => {
+    expect(
+      badgeStatuses({ ...quiet, flying: true, grounded: 2, hobbled: 1 })
+    ).toEqual({
+      badges: [
+        { status: "hobble", count: 1, buff: false },
+        { status: "grounded", count: 2, buff: false },
+      ],
+      more: 0,
+    });
+  });
+
   it("shows Paralyzed after Frozen, with no count", () => {
     expect(badgeStatuses({ ...quiet, paralyzed: true, burn: 1 })).toEqual({
       badges: [
@@ -141,7 +158,7 @@ describe("badgeStatuses", () => {
       "steadfast",
       "freeze",
     ]);
-    expect(more).toBe(7);
+    expect(more).toBe(8);
   });
 
   it("shows the Ward first, with its value as the count and the gold ring of a Buff", () => {

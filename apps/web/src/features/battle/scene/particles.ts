@@ -270,6 +270,21 @@ const LOOPS: Readonly<Record<Status, LoopPreset>> = {
       opacity: 0.45 + fade(age) * 0.4,
     }),
   },
+  // Dust that stays low at the feet: the Unit cannot fly.
+  grounded: {
+    slot: "dust",
+    count: 3,
+    period: 2.2,
+    color: FX_ANCHORS.iconGrounded,
+    place: (random, age) => ({
+      x: lerp(-0.35, 0.35, random(0)),
+      y: lerp(0.05, 0.2, age),
+      z: lerp(-0.1, 0.25, random(1)),
+      size: lerp(0.14, 0.22, random(2)),
+      rotation: 0,
+      opacity: fade(age) * 0.7,
+    }),
+  },
   // A chain at the feet, which swings a little.
   hobble: {
     slot: "chain",
@@ -554,6 +569,21 @@ const BURSTS: Readonly<Record<BurstName, readonly Emission[]>> = {
       count: 8,
       color: FX_ANCHORS.iconExposed,
       place: spray({ speed: [0.3, 0.6], up: 0.1, size: [0.08, 0.14] }),
+    },
+  ],
+  // Skybreaker: the Unit drops, and dust flies out at its feet.
+  grounded: [
+    {
+      slot: "glow",
+      count: 1,
+      color: FX_ANCHORS.iconGrounded,
+      place: pulse(0.35, 0.7),
+    },
+    {
+      slot: "dust",
+      count: 8,
+      color: FX_ANCHORS.iconGrounded,
+      place: spray({ speed: [0.3, 0.6], up: -0.3, size: [0.15, 0.25] }),
     },
   ],
   hobble: [

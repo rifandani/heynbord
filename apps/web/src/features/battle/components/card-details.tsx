@@ -183,18 +183,21 @@ const StatusLine = ({
  * Bonus Armor, bonus Attack, the Rally and Swarm bonuses and a used Rebirth
  * are not Statuses: they have a glyph, and they link to the Entry of their
  * Keyword. Bonus Attack has no Keyword: it links to Rally, the other Attack
- * bonus of the Warrior.
+ * bonus of the Warrior. Bonus Range has no Keyword: it links to the Entry of
+ * Ranged.
  */
 const NOT_STATUS = {
   bonusArmor: { icon: "shield", keyword: "armor" },
   bonusAttack: { icon: "horn", keyword: "rally" },
+  bonusRange: { icon: "range", entry: "ranged" },
   rallyBonus: { icon: "banner", keyword: "rally" },
   swarmBonus: { icon: "sword", keyword: "swarm" },
   reborn: { icon: "recall", keyword: "rebirth" },
 } as const satisfies Readonly<
   Record<
     Exclude<StatusText["status"], Status>,
-    { readonly icon: Glyph; readonly keyword: Keyword }
+    | { readonly icon: Glyph; readonly keyword: Keyword }
+    | { readonly icon: Glyph; readonly entry: EntryId }
   >
 >;
 
@@ -204,10 +207,13 @@ const isStatusLine = (status: StatusText["status"]): status is Status =>
 const statusIcon = ({ status }: StatusText): Status | Glyph =>
   isStatusLine(status) ? status : NOT_STATUS[status].icon;
 
-const statusEntry = ({ status }: StatusText): EntryId =>
-  isStatusLine(status)
-    ? statusEntryId(status)
-    : keywordEntryId(NOT_STATUS[status].keyword);
+const statusEntry = ({ status }: StatusText): EntryId => {
+  if (isStatusLine(status)) {
+    return statusEntryId(status);
+  }
+  const link = NOT_STATUS[status];
+  return "entry" in link ? link.entry : keywordEntryId(link.keyword);
+};
 
 /**
  * How a Unit is different from its card now: bonus Armor, bonus Attack, the

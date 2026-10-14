@@ -267,30 +267,48 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     });
   });
 
-  it("gives the Rare and Epic Ranger Skill Cards of #59 their effects and values", () => {
-    expect(skillAmounts("ranger.venomArrow")).toEqual([1, 1, 1, 2, 2]);
-    expect(skillAmounts("ranger.heartseeker")).toEqual([6, 7, 9, 11, 13]);
-    expect(skillAmounts("ranger.rainOfArrows")).toEqual([1, 1, 1, 2, 2]);
+  it("gives Skybreaker its Base Rank, Countdown, effect and values", () => {
+    expect(skillAmounts("ranger.skybreaker")).toEqual([3, 3, 5, 7, 10]);
+    expect(getCard("ranger.skybreaker")).toMatchObject({
+      class: "ranger",
+      baseRank: "uncommon",
+      countdown: 3,
+      target: "enemyUnit",
+      effect: { type: "damageGround", damageType: "physical" },
+    });
+  });
+
+  it("gives the Rare and Epic Ranger Skill Cards their effects and values", () => {
+    expect(skillAmounts("ranger.venomArrow")).toEqual([3, 3, 3, 4, 5]);
+    expect(skillAmounts("ranger.rainOfArrows")).toEqual([3, 3, 3, 3, 5]);
     expect(getCard("ranger.venomArrow")).toMatchObject({
       baseRank: "rare",
       countdown: 4,
       target: "enemyUnit",
       effect: {
         type: "damagePoison",
+        amount: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
         poison: { rare: 3, epic: 4, legendary: 5 },
       },
     });
-    expect(getCard("ranger.heartseeker")).toMatchObject({
+    expect(getCard("ranger.huntersFocus")).toMatchObject({
       baseRank: "rare",
-      countdown: 5,
-      target: "enemyHero",
-      effect: { type: "damageHero" },
+      countdown: 4,
+      target: "friendlyUnit",
+      effect: {
+        type: "unitAttackRange",
+        attack: { common: 3, uncommon: 3, rare: 3, epic: 4, legendary: 5 },
+        range: 1,
+      },
     });
     expect(getCard("ranger.rainOfArrows")).toMatchObject({
       baseRank: "epic",
       countdown: 6,
       target: "enemyLane",
-      effect: { type: "damageLaneEntangle" },
+      effect: {
+        type: "damageLaneEntangle",
+        amount: { common: 3, uncommon: 3, rare: 3, epic: 3, legendary: 5 },
+      },
     });
   });
 

@@ -13,6 +13,26 @@
     {
       "file": "apps/web/src/master-design/**",
       "exports": ["*"]
+    },
+    {
+      "file": "scripts/campaign-art/regions.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "scripts/creature-art/concepts.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "scripts/skill-art/concepts.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "scripts/creature-art/prompts.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "scripts/skill-art/prompts.ts",
+      "exports": ["*"]
     }
   ],
   "ignorePatterns": ["repos/**"],

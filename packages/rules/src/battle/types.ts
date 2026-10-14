@@ -160,6 +160,11 @@ export interface UnitState {
   /** Bleeding count. 0 is not Bleeding. Above 0, each heal is half, rounded down. */
   bleeding: number;
   /**
+   * Grounded count (GDD 4.7). 0 is not Grounded. Above 0, a Flying Unit does
+   * not have Flying, for all rules. Only a Flying Unit becomes Grounded.
+   */
+  grounded: number;
+  /**
    * Exposed N (GDD 4.7): each Physical hit on the Unit deals this much more
    * damage, after Armor. 0 is not Exposed.
    */
@@ -193,6 +198,14 @@ export interface UnitState {
   bonusAttack: number;
   /** End Phases of the owner that are left for the bonus Attack. */
   bonusAttackTurns: number;
+  /**
+   * Bonus Range from a Skill Card (*Hunter's Focus*, GDD 4.8). Above 0, a
+   * Melee Unit is a Ranged Unit. It has its own count, so a new bonus Attack
+   * from another card does not change it.
+   */
+  bonusRange: number;
+  /** End Phases of the owner that are left for the bonus Range. */
+  bonusRangeTurns: number;
 }
 
 /**
@@ -364,6 +377,12 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly turns: number;
   };
   AttackFaded: { readonly unitId: number };
+  RangeGained: {
+    readonly unitId: number;
+    readonly range: number;
+    readonly turns: number;
+  };
+  RangeFaded: { readonly unitId: number };
   UnitMoved: {
     readonly unitId: number;
     readonly lane: number;
@@ -395,6 +414,8 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly source: DamageSource;
     readonly crit: boolean;
     readonly blocked: boolean;
+    /** True Damage (GDD 4.7): no Armor, Exposed, Crit, Block or Ward. */
+    readonly trueDamage: boolean;
     /**
      * The damage that the Ward of the target absorbed (GDD 4.7, step 8).
      * `amount` is the damage after the Ward. A Hero has no Ward: 0.
@@ -417,10 +438,11 @@ export type BattleEvent = Data.TaggedEnum<{
       | "entangle"
       | "ward"
       | "steadfast"
-      | "exposed";
+      | "exposed"
+      | "grounded";
     /**
-     * The Poisoned, Hobbled or Bleeding count after the hit, the new Ward
-     * value, or the new Exposed value. The other statuses do not use it.
+     * The Poisoned, Hobbled, Bleeding or Grounded count after the hit, the new
+     * Ward value, or the new Exposed value. The other statuses do not use it.
      */
     readonly count?: number;
   };
@@ -432,7 +454,7 @@ export type BattleEvent = Data.TaggedEnum<{
   SteadfastHeld: { readonly unitId: number };
   /**
    * A Skill Card (*Cleanse*) ended all Debuffs of the Unit: Burn, Freeze,
-   * Paralyzed, Entangled, Poisoned, Hobbled, Bleeding and Exposed. Its Buffs stay. A Unit with no
+   * Paralyzed, Entangled, Poisoned, Hobbled, Bleeding, Exposed and Grounded. Its Buffs stay. A Unit with no
    * Debuff gets no event.
    */
   DebuffsRemoved: { readonly unitId: number };

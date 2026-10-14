@@ -246,6 +246,28 @@ const exposeUnit = (
   );
 };
 
+/** The number of End Phases of its owner that Grounded lasts (GDD 4.7). */
+const GROUNDED_END_PHASES = 2;
+
+/**
+ * Grounded (GDD 4.7): only a Flying Unit becomes Grounded. The Unit keeps the
+ * higher count, so a new Grounded sets the count to 2 again. A Grounded that
+ * changes nothing emits no event.
+ */
+const groundUnit = (ctx: StepContext, unit: UnitState): void => {
+  if (!unit.flying || unit.grounded >= GROUNDED_END_PHASES) {
+    return;
+  }
+  unit.grounded = GROUNDED_END_PHASES;
+  ctx.events.push(
+    BattleEvent.StatusApplied({
+      unitId: unit.id,
+      status: "grounded",
+      count: unit.grounded,
+    })
+  );
+};
+
 /** The number of End Phases of its owner that a bonus Attack lasts: until the end of the next Turn. */
 const BONUS_ATTACK_END_PHASES = 2;
 
@@ -273,6 +295,31 @@ const giveBonusAttack = (
   );
 };
 
+/**
+ * Bonus Range from a Skill Card (GDD 4.8), with its own duration: a new bonus
+ * Attack from another card does not change it. A new bonus Range replaces the
+ * old one. A Unit with Base Attack 0 gets no bonus, the same as for bonus
+ * Attack. A Melee Unit with bonus Range is a Ranged Unit until it ends.
+ */
+const giveBonusRange = (
+  ctx: StepContext,
+  unit: UnitState,
+  range: number
+): void => {
+  if (unit.attack <= 0) {
+    return;
+  }
+  unit.bonusRange = range;
+  unit.bonusRangeTurns = BONUS_ATTACK_END_PHASES;
+  ctx.events.push(
+    BattleEvent.RangeGained({
+      unitId: unit.id,
+      range,
+      turns: BONUS_ATTACK_END_PHASES,
+    })
+  );
+};
+
 /** True when `unit` has a Debuff (rules CONTEXT: Debuff). */
 const hasDebuff = (unit: UnitState): boolean =>
   unit.burn > 0 ||
@@ -282,6 +329,7 @@ const hasDebuff = (unit: UnitState): boolean =>
   unit.poisoned > 0 ||
   unit.hobbled > 0 ||
   unit.bleeding > 0 ||
+  unit.grounded > 0 ||
   unit.exposed > 0;
 
 /**
@@ -299,6 +347,7 @@ const removeDebuffs = (ctx: StepContext, unit: UnitState): void => {
   unit.poisoned = 0;
   unit.hobbled = 0;
   unit.bleeding = 0;
+  unit.grounded = 0;
   unit.exposed = 0;
   unit.exposedTurns = 0;
   ctx.events.push(BattleEvent.DebuffsRemoved({ unitId: unit.id }));
@@ -334,6 +383,7 @@ const CONTROL_EFFECT_TYPES = [
   "damageKnockback",
   "damageBleed",
   "damagePoison",
+  "damageGround",
 ] as const satisfies readonly SkillEffect["type"][];
 
 type ControlEffect = Extract<
@@ -346,8 +396,8 @@ const isControlEffect = (effect: SkillEffect): effect is ControlEffect =>
 
 /**
  * Damage to the enemy Units of the target, then the control part of the
- * effect on each Unit that survives: a push or Poisoned stacks (also at 0
- * damage), or a Knockback push, an Entangle or a Bleed at damage above 0.
+ * effect on each Unit that survives: a push, Poisoned stacks or Grounded (also
+ * at 0 damage), or a Knockback push, an Entangle or a Bleed at damage above 0.
  */
 const damageAndControl = (
   ctx: StepContext,
@@ -396,6 +446,11 @@ const damageAndControl = (
         // The stacks are the main effect: they come also at 0 damage, and
         // also when a Ward absorbs the full hit.
         poisonUnit(ctx, unit, skillAmountForRank(effect.poison, card.rank));
+        break;
+      }
+      case "damageGround": {
+        // Grounded is the main effect: it comes also at 0 damage.
+        groundUnit(ctx, unit);
         break;
       }
       default: {
@@ -520,6 +575,7 @@ const FRIENDLY_EFFECT_TYPES = [
   "cleanseUnit",
   "laneArmor",
   "laneAttack",
+  "unitAttackRange",
 ] as const satisfies readonly SkillEffect["type"][];
 
 type FriendlyEffect = Extract<
@@ -531,8 +587,8 @@ const isFriendlyEffect = (effect: SkillEffect): effect is FriendlyEffect =>
   FRIENDLY_EFFECT_TYPES.some((type) => type === effect.type);
 
 /**
- * A heal, a Ward, Steadfast, a Cleanse, bonus Armor or bonus Attack on the
- * caster's Units of the target. A Cleanse removes the Debuffs first, so
+ * A heal, a Ward, Steadfast, a Cleanse, bonus Armor, bonus Attack or bonus
+ * Range on the caster's Units of the target. A Cleanse removes the Debuffs first, so
  * Bleeding does not halve its heal.
  */
 const applyFriendly = (
@@ -578,6 +634,15 @@ const applyFriendly = (
           unit,
           skillAmountForRank(effect.attack, card.rank)
         );
+        break;
+      }
+      case "unitAttackRange": {
+        giveBonusAttack(
+          ctx,
+          unit,
+          skillAmountForRank(effect.attack, card.rank)
+        );
+        giveBonusRange(ctx, unit, effect.range);
         break;
       }
       default: {

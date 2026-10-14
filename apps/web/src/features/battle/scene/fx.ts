@@ -5,6 +5,7 @@ import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import { eventDuration, pushArrival } from "@/features/battle/battle-timeline";
 import type { BattleView } from "@/features/battle/battle-view";
+import { fliesNow } from "@/features/battle/battle-view";
 import type { Cast } from "@/features/battle/cast";
 import { castSquares, effectColor } from "@/features/battle/cast";
 import { DAMAGE_COLORS, FX_ANCHORS } from "@/features/battle/palette";
@@ -277,7 +278,7 @@ const dustPuffs = (
 ): Fx[] => {
   const unit = before.units.find((candidate) => candidate.id === event.unitId);
   const squares = Math.abs(event.to - event.from);
-  if (!unit || unit.flying || squares === 0) {
+  if (!unit || fliesNow(unit) || squares === 0) {
     return [];
   }
   const preset = event._tag === "UnitMoved" ? "move" : "push";

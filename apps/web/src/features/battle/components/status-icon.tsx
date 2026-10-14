@@ -24,6 +24,7 @@ const PLACEHOLDER: Partial<
   steadfast: { glyph: "anchor", color: FX_ANCHORS.iconSteadfast },
   exposed: { glyph: "brokenShield", color: FX_ANCHORS.iconExposed },
   paralyze: { glyph: "bolt", color: FX_ANCHORS.iconParalyze },
+  grounded: { glyph: "grounded", color: FX_ANCHORS.iconGrounded },
 };
 
 /** A CSS position of a cell in the atlas, in % of the free space. */

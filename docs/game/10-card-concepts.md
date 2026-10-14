@@ -2119,23 +2119,23 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 | Setting | A neutral battlefield, out of focus behind the arrow. |
 | Palette | Neutral steel and leather, black iron, with green fletching. Uncommon: a small brass ring behind the arrowhead. |
 
-### 11.7 Flushing Shot
+### 11.7 Skybreaker
 
-`ranger.flushingShot` · Ranger · Uncommon · Countdown 4 · An enemy Unit · Deal 7 Physical damage to an enemy Unit. If it survives, push it 3 Squares back toward its Hero, also when it takes no damage.
+`ranger.skybreaker` · Ranger · Uncommon · Countdown 3 · An enemy Unit · Deal 3 Physical damage at Uncommon, 5 at Rare, 7 at Epic and 10 at Legendary to an enemy Unit. If it is a Flying Unit and survives, it becomes Grounded 2, also when it takes no damage: it does not fly for 2 Turns.
 
-> Back to your side of the field.
+> What flies can fall.
 
 | Field | Brief |
 | --- | --- |
-| Effect subject | An arrow with green fletching that hits a raised dark shield with a large, round burst of wind and dust. The burst throws the silhouette far back. |
-| Partial figure | A hooded archer, kneeling on one knee at the bottom left, in a side view from behind. The aiming line is level, to the right. The bow is canted: its top tip leans to the right. The archer has just released, and the string still vibrates. |
-| Action | The arrow trail starts at the bow grip and goes level to the right. The arrow hits the shield of a dark silhouette in the middle of the image. The silhouette flies back to the right, and three skid marks of dust on three stone tiles of the Lane show how far it goes. |
-| Setting | A neutral battlefield. The stone tiles of the Lane show the distance of the push. |
-| Palette | Neutral steel and leather, brown dust, with green fletching. Uncommon: a small brass trim on the bow tips. |
+| Effect subject | An arrow with green fletching that goes through the wing of a dark winged silhouette high in the air. A burst of torn feathers comes out of the wing. |
+| Partial figure | A hooded archer, low at the bottom left, in a side view from behind. The bow points steeply up and to the right. The archer has just released. |
+| Action | The arrow trail starts at the bow and goes up to the right. The hit wing folds, and the silhouette falls down to the right, toward the stone tiles of the Lane. A small shadow on the tiles shows where it will land. |
+| Setting | A neutral battlefield with an open sky. The stone tiles of the Lane are at the bottom of the image. |
+| Palette | Neutral steel and leather, dark feathers, with green fletching. Uncommon: a small brass trim on the bow tips. |
 
 ### 11.8 Venom Arrow
 
-`ranger.venomArrow` · Ranger · Rare · Countdown 4 · An enemy Unit · Deal 1 Physical damage to an enemy Unit. If it survives, it gains 3 Poison stacks, also when it takes no damage.
+`ranger.venomArrow` · Ranger · Rare · Countdown 4 · An enemy Unit · Deal 3 Physical damage at Rare, 4 at Epic and 5 at Legendary. If it survives, it gains 3 Poison stacks at Rare, 4 at Epic and 5 at Legendary, also when it takes no damage.
 
 > The arrow is small. The poison is not.
 
@@ -2147,23 +2147,23 @@ Identity: control and Hero damage. Physical, so the palette is neutral steel and
 | Setting | A neutral battlefield, soft and out of focus behind the soldier. |
 | Palette | Neutral steel and leather, with green fletching and a bright yellow-green poison accent, the color of a fresh lime. The poison is brighter and more yellow than the fletching. The armor is dark and in shadow, so the poison is the brightest shape. Rare: a thin gold band on the arrow shaft behind the fletching, and gold trim on the archer's bow. |
 
-### 11.9 Heartseeker
+### 11.9 Hunter's Focus
 
-`ranger.heartseeker` · Ranger · Rare · Countdown 5 · The enemy Hero · Deal 6 damage to the enemy Hero.
+`ranger.huntersFocus` · Ranger · Rare · Countdown 4 · A friendly Unit · Give a friendly Unit +3 Attack at Rare, +4 at Epic and +5 at Legendary, and +1 Range, until the end of your next Turn. A Melee Unit attacks as a Ranged Unit.
 
-> One arrow. One heart.
+> Breathe out. Then let go.
 
 | Field | Brief |
 | --- | --- |
-| Effect subject | One arrow with green fletching that flies on a thin, perfectly straight line of white-gold light, like a ruled line. The line ends at a small bright point of light on the chest of a far Hero silhouette, where its heart is. It is a level, straight shot, not an arc. |
-| Partial figure | A large back view of a hooded archer, seen from behind and a little to the left, cropped at the waist, in the left third of the image. The aiming line is level, to the right and a little into the distance. The bow arm extends straight along this line, with the hand closed around the bow grip. The bow is vertical, at a right angle to the aiming line. The archer has just released: the draw hand is open beside the jaw, under the hood, the string still vibrates, and no arrow is on the string. Five fingers on each hand. |
-| Action | The line of light starts at the bow grip and goes level to the right. The arrow is halfway along it. The line goes through a narrow gap between two dark, blurred enemy shields in the middle distance. Far away at the right, a dark, caped silhouette with no crown stands still, backlit, with the small bright point on its chest. The view is narrow and close, like through a long lens. The image has one arrow only. |
-| Setting | A neutral battlefield in a low, level view at the height of the archer's eyes. The background is soft and out of focus, so the line of light is the sharpest shape. |
-| Palette | Neutral steel and leather, with green fletching and a white-gold line of light. Rare: gold inlay along the bow limbs and a gold trim on the bracer. |
+| Effect subject | A thin ring of green-gold light, like the reticle of a hunter's sight, that closes around the bow hand and the eyes of one friendly archer. From the ring, a straight, faint ruled line of the same light goes far to the right, past a row of small wooden range stakes in the ground, and ends one stake farther than the others. The ring and the line are the brightest shapes and are easy to read at 128 px tall. |
+| Partial figure | A back view of a hooded archer, seen from behind and a little to the left, cropped at the knees, in the left half of the image. The archer is calm and still, at full draw, and aims level to the right. The bow arm extends straight along the aiming line, with the hand closed around the bow grip. The bow is vertical, at a right angle to the aiming line. The draw hand holds the string at the cheek, under the hood. One arrow with green fletching is nocked and lies on the aiming line. Five fingers on each hand. |
+| Action | A soft green-gold glow rises from the archer's shoulders and bow, as from a blessing on a friendly Unit, not from a hit. The ruled line of light starts at the arrowhead and goes level to the right. Four short wooden stakes stand in a row along a Lane of grey stone tiles, at equal distances. The line of light goes past the last stake and ends at a small bright point in the far, empty Lane. No enemy, no hit and no blood. The image has one arrow only, and it is still on the string. |
+| Setting | A neutral battlefield at dawn, in a low, level view at the height of the archer's eyes. The background is soft and out of focus, so the ring and the line are the sharpest shapes. |
+| Palette | Neutral steel and leather, with green fletching and a green-gold light. Rare: gold inlay along the bow limbs and a gold trim on the bracer. |
 
 ### 11.10 Rain of Arrows
 
-`ranger.rainOfArrows` · Ranger · Epic · Countdown 6 · An enemy Lane · Deal 1 Physical damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled.
+`ranger.rainOfArrows` · Ranger · Epic · Countdown 6 · An enemy Lane · Deal 3 Physical damage to all enemy Units in a Lane at Epic, and 5 at Legendary. Each Unit that takes damage and survives becomes Entangled.
 
 > Look up. Too late.
 

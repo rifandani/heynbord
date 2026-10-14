@@ -75,6 +75,10 @@ describe("hasCardArt", () => {
     expect(hasCardArt("ranger.rainOfArrows")).toBe(true);
   });
 
+  it("has art for Hunter's Focus", () => {
+    expect(hasCardArt("ranger.huntersFocus")).toBe(true);
+  });
+
   it("has art for the Rare and Epic Priest Skill Cards (#62)", () => {
     expect(hasCardArt("priest.cleanse")).toBe(true);
     expect(hasCardArt("priest.unbrokenVow")).toBe(true);

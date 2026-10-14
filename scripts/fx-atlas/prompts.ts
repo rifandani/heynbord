@@ -70,6 +70,8 @@ const SUBJECT: Readonly<Record<FxSlotName, string>> = {
     "an anchor of warm gold light: a simple anchor with a ring at the top, a crossbar and two curved arms. It is light, not iron: no chain, no rope and no rust.",
   "icon-exposed":
     "a broken heater shield of rose-red metal: a zigzag crack splits it into two halves with a small gap between them. No sword, no blood and no figure.",
+  "icon-grounded":
+    "a feathered wing that folds down, with a thick arrow under it that points straight down onto a short flat ground line. No bird, no body, no blood and no figure.",
   "icon-paralyze":
     "a jagged lightning bolt with three sharp zigzags, and two tiny sparks next to it. It is not a sword and not an arrow.",
   ward: "a protective dome of gold holy light, seen from the front: a clear half-sphere with a bright rim and a faint glow inside, standing on a thin bright ring at its base. Light only: no steel, no shield shape and no figure inside.",

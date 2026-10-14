@@ -3,7 +3,6 @@ import type {
   Collection,
   DeckSlot,
   PackDefinition,
-  PackId,
   PackOrder,
   PackPool,
   RankId,
@@ -11,13 +10,7 @@ import type {
   RevealedPack,
   UnopenedPack,
 } from "@workspace/rules";
-import {
-  discoveredCards,
-  orderPrice,
-  packPool,
-  PACKS,
-  RANKS,
-} from "@workspace/rules";
+import { discoveredCards, orderPrice, packPool, RANKS } from "@workspace/rules";
 
 import { CLASSES_WITH_CARDS } from "@/features/deck/deck";
 
@@ -152,9 +145,6 @@ export const startClass = (
   withCards: readonly ClassId[] = CLASSES_WITH_CARDS
 ): ClassId =>
   withCards.includes(classId) ? classId : (withCards[0] ?? classId);
-
-/** The three Packs, from the cheapest, as the screen shows them. */
-export const PACK_IDS: readonly PackId[] = PACKS.map((pack) => pack.id);
 
 /** The Unopened Packs of one Pack and version, and the index of the first one in the list. */
 export interface UnopenedGroup {

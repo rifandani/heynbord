@@ -76,7 +76,11 @@ const chargeByRank = (rank: "uncommon" | "epic" | "legendary") => {
 };
 
 /** The position of a Skyreaver (Speed 3) after it moves toward an enemy Flying Unit with `status`. */
-const blockedBy = (status: { frozen?: boolean; entangled?: boolean }) => {
+const blockedBy = (status: {
+  frozen?: boolean;
+  entangled?: boolean;
+  grounded?: number;
+}) => {
   const state = emptyBattle();
   const bird = placeUnit(state, {
     cardId: "orc.skyreaver",
@@ -341,6 +345,59 @@ describe("movement (GDD 4.5)", () => {
   it("stops a Flying Unit before a Frozen or Entangled enemy Flying Unit", () => {
     expect(blockedBy({ frozen: true })).toBe(4);
     expect(blockedBy({ entangled: true })).toBe(4);
+  });
+
+  it("moves a Flying Unit over a Grounded enemy Flying Unit (GDD 4.7)", () => {
+    expect(blockedBy({ grounded: 2 })).toBe(6);
+  });
+
+  it("stops a Grounded Flying Unit before an enemy ground Unit, but it still moves through a friendly Unit", () => {
+    const state = emptyBattle();
+    const bird = placeUnit(state, {
+      cardId: "orc.skyreaver",
+      owner: "player",
+      position: 2,
+      speed: 4,
+      grounded: 1,
+    });
+    placeUnit(state, {
+      cardId: "orc.badlandRunt",
+      owner: "player",
+      position: 3,
+      speed: 0,
+    });
+    placeUnit(state, {
+      cardId: "human.militiaRecruit",
+      owner: "enemy",
+      position: 5,
+      attack: 0,
+      hp: 30,
+      maxHp: 30,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, bird.id)?.position).toBe(4);
+  });
+
+  it("lowers the Grounded count only in the End Phase of the owner, and then the Unit flies again", () => {
+    const state = emptyBattle();
+    preventRout(state);
+    const bird = placeUnit(state, {
+      cardId: "orc.skyreaver",
+      owner: "player",
+      position: 2,
+      grounded: 2,
+    });
+    const foe = placeUnit(state, {
+      cardId: "orc.skyreaver",
+      owner: "enemy",
+      position: 9,
+      grounded: 2,
+    });
+    const first = run(state, endTurn).state;
+    expect(unitById(first, bird.id)?.grounded).toBe(1);
+    expect(unitById(first, foe.id)?.grounded).toBe(2);
+    const second = run(run(first, endTurn).state, endTurn).state;
+    expect(unitById(second, bird.id)?.grounded).toBe(0);
   });
 
   it("never moves a Unit past its last Column", () => {

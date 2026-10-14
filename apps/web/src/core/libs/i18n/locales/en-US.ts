@@ -132,6 +132,9 @@ export default {
       bonusAttack: "Attack +{value}",
       bonusAttackRule:
         "From a Skill Card: until the end of your next Turn. End Phases left: {turns}.",
+      bonusRange: "Range +{value}",
+      bonusRangeRule:
+        "From a Skill Card: until the end of your next Turn. A Melee Unit attacks as a Ranged Unit. End Phases left: {turns}.",
       burn: "Burn",
       burnRule: "1 damage in each End Phase of its owner.",
       burnLeft: "End Phases left: {value}.",
@@ -149,6 +152,9 @@ export default {
       bleeding: "Bleeding {value}",
       bleedingRule:
         "This Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner.",
+      grounded: "Grounded {value}",
+      groundedRule:
+        "A Debuff. This Unit does not have Flying: it stops before enemy Units, and enemy Flying Units move over it. The count goes down by 1 in each End Phase of its owner.",
       entangled: "Entangled",
       entangledRule: "Speed 0 in its next action. It can still attack.",
       rallyBonus: "Attack +{value}",
@@ -591,7 +597,7 @@ export default {
       speed:
         "Speed is the maximum number of Squares that a Unit moves forward in one Turn. A Unit with Speed 0 never moves.",
       range:
-        "Range is the maximum number of Squares in front of a Ranged Unit at which it attacks.\n\nA Ranged Support has Range 2, and a Shooter has Range 3.",
+        "Range is the maximum number of Squares in front of a Ranged Unit at which it attacks.\n\nA Ranged Support has Range 2, and a Shooter has Range 3. A Skill Card can give bonus Range for a short time. Then a Melee Unit attacks as a Ranged Unit.",
       melee:
         "A Melee Unit attacks the enemy Unit in the next Square in front of it.\n\nWhen it is in its last Column and no enemy Unit is in front of it, it attacks the enemy Hero.",
       ranged:
@@ -698,6 +704,7 @@ export default {
       statusWard: "shield, barrier, absorb, buff",
       statusSteadfast: "endure, undying, death ward, last stand, cheat death",
       statusExposed: "vulnerable, weakened, marked, armor break, sunder",
+      statusGrounded: "downed, clipped, pinned, anti-air",
       damageType: "element",
       race: "faction, tribe, kingdom",
       class: "job, profession",
@@ -1138,6 +1145,8 @@ export default {
       "{hit} If it takes damage and survives, it becomes Bleeding {bleed}.",
     damagePoison:
       "{hit} If it survives, it gains {poison} Poison stacks, also when it takes no damage.",
+    damageGround:
+      "{hit} If it is a Flying Unit and survives, it becomes Grounded 2, also when it takes no damage.",
     damageLaneEntangle:
       "Deal {amount} {damageType} damage to all enemy Units in a Lane. Each Unit that takes damage and survives becomes Entangled.",
     damageByAttack:
@@ -1164,6 +1173,8 @@ export default {
       "An enemy Unit becomes Exposed {exposed}: each Physical hit on it deals {exposed} more damage, after Armor, until the end of your next Turn.",
     laneAttack:
       "Friendly Units in a Lane get +{attack} Attack until the end of your next Turn.",
+    unitAttackRange:
+      "A friendly Unit gets +{attack} Attack and +{range} Range until the end of your next Turn. A Melee Unit attacks as a Ranged Unit.",
     laneExtraAction:
       "Each friendly Unit in a Lane takes one more action now: it moves and attacks, from the front Unit to the back Unit.",
     laneExtraActionLegendary:
@@ -1601,15 +1612,18 @@ export default {
         name: "Barbed Arrow",
         flavor: "It comes out the hard way.",
       },
-      flushingShot: {
-        name: "Flushing Shot",
-        flavor: "Back to your side of the field.",
+      skybreaker: {
+        name: "Skybreaker",
+        flavor: "What flies can fall.",
       },
       venomArrow: {
         name: "Venom Arrow",
         flavor: "The arrow is small. The poison is not.",
       },
-      heartseeker: { name: "Heartseeker", flavor: "One arrow. One heart." },
+      huntersFocus: {
+        name: "Hunter's Focus",
+        flavor: "Breathe out. Then let go.",
+      },
       rainOfArrows: { name: "Rain of Arrows", flavor: "Look up. Too late." },
     },
     mage: {

@@ -101,10 +101,12 @@ const setStatuses = (
   }
 };
 
-/** Test setup: replaces the Hobble and Bleed values and counts of a Unit. */
+/** Test setup: replaces the Hobble and Bleed values and counts, and the Grounded count, of a Unit. */
 const setCounts = (
   unit: UnitState,
-  options: Partial<Pick<UnitState, "hobble" | "hobbled" | "bleed" | "bleeding">>
+  options: Partial<
+    Pick<UnitState, "hobble" | "hobbled" | "bleed" | "bleeding" | "grounded">
+  >
 ): void => {
   if (options.hobble !== undefined) {
     unit.hobble = options.hobble;
@@ -118,11 +120,14 @@ const setCounts = (
   if (options.bleeding !== undefined) {
     unit.bleeding = options.bleeding;
   }
+  if (options.grounded !== undefined) {
+    unit.grounded = options.grounded;
+  }
 };
 
 /**
  * Test setup: replaces Rebirth, the Rally bonus, the bonus Armor, the bonus
- * Attack, Exposed and the Buffs of a Unit.
+ * Attack, the bonus Range, Exposed and the Buffs of a Unit.
  */
 const setRebirthAndBonuses = (
   unit: UnitState,
@@ -135,6 +140,8 @@ const setRebirthAndBonuses = (
       | "bonusArmorTurns"
       | "bonusAttack"
       | "bonusAttackTurns"
+      | "bonusRange"
+      | "bonusRangeTurns"
       | "exposed"
       | "exposedTurns"
       | "ward"
@@ -163,6 +170,10 @@ const setRebirthAndBonuses = (
   if (options.bonusAttack !== undefined) {
     unit.bonusAttack = options.bonusAttack;
     unit.bonusAttackTurns = options.bonusAttackTurns ?? 2;
+  }
+  if (options.bonusRange !== undefined) {
+    unit.bonusRange = options.bonusRange;
+    unit.bonusRangeTurns = options.bonusRangeTurns ?? 2;
   }
   if (options.exposed !== undefined) {
     unit.exposed = options.exposed;
@@ -195,6 +206,7 @@ export const placeUnit = (
       | "hobbled"
       | "bleed"
       | "bleeding"
+      | "grounded"
       | "knockback"
       | "wall"
       | "rebirth"
@@ -203,6 +215,8 @@ export const placeUnit = (
       | "bonusArmorTurns"
       | "bonusAttack"
       | "bonusAttackTurns"
+      | "bonusRange"
+      | "bonusRangeTurns"
       | "exposed"
       | "exposedTurns"
       | "ward"

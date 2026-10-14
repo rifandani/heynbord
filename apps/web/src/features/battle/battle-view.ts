@@ -59,6 +59,13 @@ export interface UnitView {
   readonly bonusAttack: number;
   /** The End Phases of the owner until the bonus Attack goes away. */
   readonly bonusAttackTurns: number;
+  /**
+   * The part of `range` that comes from a Skill Card (*Hunter's Focus*, GDD
+   * 4.8). `RangeGained` sets it, and `RangeFaded` and `UnitReborn` end it.
+   */
+  readonly bonusRange: number;
+  /** The End Phases of the owner until the bonus Range goes away. */
+  readonly bonusRangeTurns: number;
   /** The Unit died one time and came back with Rebirth (GDD 4.9). */
   readonly reborn: boolean;
   readonly hp: number;
@@ -67,6 +74,7 @@ export interface UnitView {
   readonly bonusArmor: number;
   /** The End Phases of the other side until the bonus Armor goes away. */
   readonly bonusArmorTurns: number;
+  /** Range with the bonus Range. Above 0, the Unit attacks as a Ranged Unit. */
   readonly range: number;
   readonly flying: boolean;
   readonly damageType: DamageType;
@@ -76,6 +84,8 @@ export interface UnitView {
   readonly hobbled: number;
   /** Bleeding count. 0 is not Bleeding. */
   readonly bleeding: number;
+  /** Grounded count (GDD 4.7). 0 is not Grounded. Above 0, the Unit does not fly. */
+  readonly grounded: number;
   /**
    * Exposed N (GDD 4.7): each Physical hit deals N more damage. 0 is not
    * Exposed. `StatusApplied` sets it, and the End Phase of the owner lowers
@@ -109,6 +119,10 @@ export interface UnitView {
   /** A Wall does not move or attack, so its Attack is not shown. */
   readonly wall: boolean;
 }
+
+/** True when the Unit flies now: it has Flying and is not Grounded (GDD 4.7). */
+export const fliesNow = (unit: UnitView): boolean =>
+  unit.flying && unit.grounded === 0;
 
 /** A card in a Hand. `cardId` is `null` for a card that the player cannot see. */
 export interface HandCardView {
@@ -204,19 +218,22 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     swarmBonus: 0,
     bonusAttack: unit.bonusAttack,
     bonusAttackTurns: unit.bonusAttackTurns,
+    bonusRange: unit.bonusRange,
+    bonusRangeTurns: unit.bonusRangeTurns,
     reborn: !unit.rebirth && hasRebirth(source),
     hp: unit.hp,
     maxHp: unit.maxHp,
     armor: unit.armor,
     bonusArmor: unit.bonusArmor,
     bonusArmorTurns: unit.bonusArmorTurns,
-    range: unit.range,
+    range: unit.range + unit.bonusRange,
     flying: unit.flying,
     damageType: unit.damageType,
     burn: unit.burn,
     poisoned: unit.poisoned,
     hobbled: unit.hobbled,
     bleeding: unit.bleeding,
+    grounded: unit.grounded,
     exposed: unit.exposed,
     exposedTurns: unit.exposedTurns,
     frozen: unit.frozen,
@@ -537,9 +554,21 @@ const withBonusAttack = (
   bonusAttackTurns,
 });
 
+/** A Unit with a new bonus Range from a Skill Card. The Range changes with it. */
+const withBonusRange = (
+  unit: UnitView,
+  bonusRange: number,
+  bonusRangeTurns: number
+): UnitView => ({
+  ...unit,
+  range: unit.range - unit.bonusRange + bonusRange,
+  bonusRange,
+  bonusRangeTurns,
+});
+
 /**
- * The End Phase of `side` for one Unit: it lowers the Hobbled, Bleeding and
- * Exposed counts and the bonus Attack Turns of this Side, ends its Rally
+ * The End Phase of `side` for one Unit: it lowers the Hobbled, Bleeding,
+ * Grounded and Exposed counts and the bonus Attack and bonus Range Turns of this Side, ends its Rally
  * bonus, and lowers the bonus Armor Turns of the other side's Units. Each
  * Unit of this Side had its action, so none of them is Entangled now: a Unit
  * with no move and no attack has no event of its own that ends Entangled.
@@ -556,16 +585,20 @@ const endPhaseOf = (current: UnitView, side: Side): UnitView => {
     ...unit,
     hobbled: Math.max(unit.hobbled - 1, 0),
     bleeding: Math.max(unit.bleeding - 1, 0),
+    grounded: Math.max(unit.grounded - 1, 0),
     exposed: exposedTurns > 0 ? unit.exposed : 0,
     exposedTurns,
     bonusAttackTurns: Math.max(unit.bonusAttackTurns - 1, 0),
+    bonusRangeTurns: Math.max(unit.bonusRangeTurns - 1, 0),
     entangled: false,
   };
   return next.hobbled === unit.hobbled &&
     next.bleeding === unit.bleeding &&
+    next.grounded === unit.grounded &&
     next.exposed === unit.exposed &&
     next.exposedTurns === unit.exposedTurns &&
     next.bonusAttackTurns === unit.bonusAttackTurns &&
+    next.bonusRangeTurns === unit.bonusRangeTurns &&
     next.entangled === unit.entangled
     ? unit
     : next;
@@ -580,16 +613,17 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
     }
     case "UnitReborn": {
       // Rebirth (GDD 4.9): the Unit stays in its Square with its new HP, and
-      // all its Statuses (also Ward), its Rally bonus, its bonus Attack and
-      // its bonus Armor end.
+      // all its Statuses (also Ward), its Rally bonus, its bonus Attack, its
+      // bonus Range and its bonus Armor end.
       return updateUnit(view, event.unitId, (unit) => ({
-        ...withBonusAttack(withRallyBonus(unit, 0), 0, 0),
+        ...withBonusRange(withBonusAttack(withRallyBonus(unit, 0), 0, 0), 0, 0),
         hp: event.hp,
         reborn: true,
         burn: 0,
         poisoned: 0,
         hobbled: 0,
         bleeding: 0,
+        grounded: 0,
         exposed: 0,
         exposedTurns: 0,
         frozen: false,
@@ -622,6 +656,52 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
     }
     default: {
       return applyCardEvent(view, event);
+    }
+  }
+};
+
+/**
+ * The events of a bonus from a Skill Card: bonus Armor, bonus Attack and
+ * bonus Range.
+ */
+const applyBonusEvent = (view: BattleView, event: BattleEvent): BattleView => {
+  switch (event._tag) {
+    case "ArmorGained": {
+      return updateUnit(view, event.unitId, (unit) => ({
+        ...unit,
+        bonusArmor: event.armor,
+        bonusArmorTurns: event.turns,
+      }));
+    }
+    case "ArmorFaded": {
+      return updateUnit(view, event.unitId, (unit) => ({
+        ...unit,
+        bonusArmor: 0,
+        bonusArmorTurns: 0,
+      }));
+    }
+    case "AttackGained": {
+      return updateUnit(view, event.unitId, (unit) =>
+        withBonusAttack(unit, event.attack, event.turns)
+      );
+    }
+    case "AttackFaded": {
+      return updateUnit(view, event.unitId, (unit) =>
+        withBonusAttack(unit, 0, 0)
+      );
+    }
+    case "RangeGained": {
+      return updateUnit(view, event.unitId, (unit) =>
+        withBonusRange(unit, event.range, event.turns)
+      );
+    }
+    case "RangeFaded": {
+      return updateUnit(view, event.unitId, (unit) =>
+        withBonusRange(unit, 0, 0)
+      );
+    }
+    default: {
+      return applyLifeEvent(view, event);
     }
   }
 };
@@ -683,6 +763,9 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
           case "bleed": {
             return { ...unit, bleeding: event.count ?? unit.bleeding };
           }
+          case "grounded": {
+            return { ...unit, grounded: event.count ?? unit.grounded };
+          }
           case "entangle": {
             return { ...unit, entangled: true };
           }
@@ -720,6 +803,7 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         poisoned: 0,
         hobbled: 0,
         bleeding: 0,
+        grounded: 0,
         exposed: 0,
         exposedTurns: 0,
         frozen: false,
@@ -742,30 +826,6 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         unit.entangled ? { ...unit, entangled: false } : unit
       );
     }
-    case "ArmorGained": {
-      return updateUnit(view, event.unitId, (unit) => ({
-        ...unit,
-        bonusArmor: event.armor,
-        bonusArmorTurns: event.turns,
-      }));
-    }
-    case "ArmorFaded": {
-      return updateUnit(view, event.unitId, (unit) => ({
-        ...unit,
-        bonusArmor: 0,
-        bonusArmorTurns: 0,
-      }));
-    }
-    case "AttackGained": {
-      return updateUnit(view, event.unitId, (unit) =>
-        withBonusAttack(unit, event.attack, event.turns)
-      );
-    }
-    case "AttackFaded": {
-      return updateUnit(view, event.unitId, (unit) =>
-        withBonusAttack(unit, 0, 0)
-      );
-    }
     case "TurnEnded": {
       return {
         ...view,
@@ -776,7 +836,7 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
       return { ...view, result: event.result };
     }
     default: {
-      return applyLifeEvent(view, event);
+      return applyBonusEvent(view, event);
     }
   }
 };

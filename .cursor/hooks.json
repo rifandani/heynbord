@@ -1,12 +1,9 @@
 {
   "version": 1,
   "hooks": {
-    "stop": [
+    "afterFileEdit": [
       {
         "command": "bun lint:fix"
-      },
-      {
-        "command": "bun check:dupes"
       }
     ],
     "preToolUse": [

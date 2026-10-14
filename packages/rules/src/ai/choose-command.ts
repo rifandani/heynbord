@@ -6,7 +6,13 @@ import {
   isInsideLane,
   unitAt,
 } from "../battle/context";
-import { attackOf, currentSpeed, pushedPosition } from "../battle/resolution";
+import {
+  attackOf,
+  currentSpeed,
+  isFlying,
+  pushedPosition,
+  rangeOf,
+} from "../battle/resolution";
 import { areaSquares, legalTargets, unitsInArea } from "../battle/targets";
 import { suddenDeathDamage } from "../battle/turn";
 import { HAND_LIMIT, LANE_LENGTH, otherSide, Command } from "../battle/types";
@@ -104,7 +110,10 @@ const HERO_DAMAGE_WEIGHT = 3;
 const LETHAL_BONUS = 100;
 
 /** A Unit, or a new Unit from a play, that can block an enemy Unit. */
-type Blocker = Pick<UnitState, "owner" | "lane" | "position" | "flying">;
+type Blocker = Pick<
+  UnitState,
+  "owner" | "lane" | "position" | "flying" | "grounded"
+>;
 
 /** Speed in the next action. The Unit was not summoned in that Turn, so Charge does not apply. */
 const nextSpeed = (unit: UnitState): number => {
@@ -118,7 +127,8 @@ const nextSpeed = (unit: UnitState): number => {
  * True when a Unit of the other side is between `unit` and the Hero that it
  * attacks. As in Movement (GDD 4.5), a ground `unit` stops before all enemy
  * Units, also Flying Units. A Flying `unit` stops only before an enemy Flying
- * Unit: it moves over enemy ground Units and Walls.
+ * Unit: it moves over enemy ground Units and Walls. A Grounded Unit is not
+ * Flying (GDD 4.7).
  */
 const isBlocked = (unit: UnitState, blockers: readonly Blocker[]): boolean => {
   const dir = direction(unit.owner);
@@ -127,7 +137,7 @@ const isBlocked = (unit: UnitState, blockers: readonly Blocker[]): boolean => {
       blocker.owner !== unit.owner &&
       blocker.lane === unit.lane &&
       (blocker.position - unit.position) * dir > 0 &&
-      (!unit.flying || blocker.flying)
+      (!isFlying(unit) || isFlying(blocker))
   );
 };
 
@@ -139,7 +149,7 @@ const reachesHero = (unit: UnitState): boolean => {
   const distance =
     (enemyHeroPosition(unit.owner) - unit.position) * direction(unit.owner);
   const moved = Math.min(nextSpeed(unit), distance - 1);
-  return distance - moved <= Math.max(unit.range, 1);
+  return distance - moved <= Math.max(rangeOf(unit), 1);
 };
 
 /**
@@ -242,6 +252,7 @@ const DAMAGE_EFFECT_TYPES = [
   "damageKnockback",
   "damageBleed",
   "damagePoison",
+  "damageGround",
   "damageByAttack",
   "damageLaneArmor",
   "damageLaneHeal",
@@ -418,7 +429,7 @@ const wouldAttack = (state: BattleState, unit: UnitState): boolean => {
     return false;
   }
   const dir = direction(unit.owner);
-  const reach = nextSpeed(unit) + Math.max(unit.range, 1);
+  const reach = nextSpeed(unit) + Math.max(rangeOf(unit), 1);
   return (
     reachesHero(unit) ||
     state.units.some((other) => {
@@ -510,6 +521,32 @@ const scorePush = (
       sum + (moved ? PUSH_SCORE + closeness(hit.unit) : hit.damage * 2 + 1)
     );
   }, 0);
+
+/**
+ * The hit makes a Unit Grounded (GDD 4.7): the Unit is Flying, is not
+ * Grounded yet, and survives the hit.
+ */
+const grounds = (hit: SkillHit): boolean => !kills(hit) && isFlying(hit.unit);
+
+/**
+ * The base score of a hit that makes a Unit Grounded. It is above each score
+ * of a kill by the same card, so the AI prefers a Flying target.
+ */
+const GROUND_SCORE = 50;
+
+/**
+ * The target choice of *Skybreaker* (GDD 9): first the enemy Flying Unit that
+ * is not Grounded and is nearest to our Hero, else a Unit that the hit kills.
+ * The Hold Rule keeps the card when it does neither.
+ */
+const scoreGround = (
+  hits: readonly SkillHit[],
+  damageType: DamageType
+): number =>
+  scoreDamage(hits, damageType) +
+  hits
+    .filter(grounds)
+    .reduce((sum, hit) => sum + GROUND_SCORE + closeness(hit.unit), 0);
 
 /** The score of Hero damage that defeats the enemy Hero: the AI always takes the win. */
 const HERO_KILL_SCORE = 1000;
@@ -723,6 +760,16 @@ const steadfastTarget = (
     : undefined;
 };
 
+/** The score of *Unbroken Vow*: the Unit of the most value (the AI card value) gets it. */
+const scoreSteadfast = (
+  state: BattleState,
+  side: Side,
+  target: Target
+): number => {
+  const unit = steadfastTarget(state, side, target);
+  return unit ? unitValue(unit) : 0;
+};
+
 /** The score of a Freeze that *Cleanse* ends. It is above each other Debuff, so a Frozen Unit is the first target. */
 const CLEANSE_FROZEN_SCORE = 40;
 
@@ -732,7 +779,7 @@ const CLEANSE_POISON_SCORE = 4;
 /** The score of Bleeding that *Cleanse* ends on a damaged Unit. */
 const CLEANSE_BLEEDING_SCORE = 4;
 
-/** The score of a Burn, a Hobble or an Entangle that *Cleanse* ends. */
+/** The score of a Burn, a Hobble, a Grounded or an Entangle that *Cleanse* ends. */
 const CLEANSE_OTHER_SCORE = 2;
 
 /** The score of a Paralysis that *Cleanse* ends: the Unit gets its attack back. */
@@ -751,7 +798,10 @@ const cleanseValue = (unit: UnitState): number =>
     : 0) +
   unit.poisoned * CLEANSE_POISON_SCORE +
   (unit.bleeding > 0 && unit.hp < unit.maxHp ? CLEANSE_BLEEDING_SCORE : 0) +
-  (unit.burn > 0 || unit.hobbled > 0 || (unit.entangled && !unit.wall)
+  (unit.burn > 0 ||
+  unit.hobbled > 0 ||
+  unit.grounded > 0 ||
+  (unit.entangled && !unit.wall)
     ? CLEANSE_OTHER_SCORE
     : 0);
 
@@ -808,7 +858,7 @@ const targetThisTurn = (
     return undefined;
   }
   const distance = (target.position - unit.position) * dir;
-  return distance <= currentSpeed(state, unit) + Math.max(unit.range, 1)
+  return distance <= currentSpeed(state, unit) + Math.max(rangeOf(unit), 1)
     ? target
     : undefined;
 };
@@ -917,6 +967,74 @@ const meetsAttackHoldRule = (
 
 /** The score of each point of bonus Attack on each Unit: it lasts until the end of the next Turn. */
 const BONUS_ATTACK_WEIGHT = 3;
+
+/**
+ * `unit` after *Hunter's Focus*: it has the bonus Attack and the bonus Range
+ * of the card. A Unit with Base Attack 0 gets nothing (GDD 4.8).
+ */
+const focusedUnit = (
+  card: HandCard,
+  effect: Extract<SkillEffect, { readonly type: "unitAttackRange" }>,
+  unit: UnitState
+): UnitState =>
+  unit.attack > 0
+    ? {
+        ...unit,
+        bonusAttack: skillAmountForRank(effect.attack, card.rank),
+        bonusRange: effect.range,
+      }
+    : unit;
+
+/**
+ * The Hold Rule of *Hunter's Focus* (GDD 9): the friendly Unit of the target
+ * has Base Attack above 0, and with the bonus it attacks in this Turn.
+ */
+const meetsFocusHoldRule = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  effect: Extract<SkillEffect, { readonly type: "unitAttackRange" }>,
+  target: Target
+): boolean => {
+  const unit = friendlyUnitAt(state, side, target);
+  return (
+    unit !== undefined &&
+    unit.attack > 0 &&
+    wouldAttack(state, focusedUnit(card, effect, unit))
+  );
+};
+
+/** The score of *Hunter's Focus* when the bonus Range gives the Unit a target that it did not have. */
+const RANGE_GAIN_WEIGHT = 2;
+
+/**
+ * The score of *Hunter's Focus* (GDD 9): the bonus Attack, plus the Attack of
+ * the Unit, so that the strongest Unit gets it. When the bonus Range gives the
+ * Unit an enemy Unit or the enemy Hero that it did not reach, the score is
+ * higher.
+ */
+const scoreFocus = (
+  state: BattleState,
+  side: Side,
+  card: HandCard,
+  effect: Extract<SkillEffect, { readonly type: "unitAttackRange" }>,
+  target: Target
+): number => {
+  const unit = friendlyUnitAt(state, side, target);
+  if (!unit || unit.attack <= 0) {
+    return 0;
+  }
+  const focused = focusedUnit(card, effect, unit);
+  const attack = attackOf(state, focused);
+  const gains =
+    wouldAttack(state, focused) &&
+    !wouldAttack(state, { ...focused, bonusRange: unit.bonusRange });
+  return (
+    skillAmountForRank(effect.attack, card.rank) * BONUS_ATTACK_WEIGHT +
+    attack +
+    (gains ? attack * RANGE_GAIN_WEIGHT : 0)
+  );
+};
 
 /**
  * True when `unit` acts in an extra action (*Onslaught*): it is not a Wall and
@@ -1103,6 +1221,11 @@ const meetsDamageHoldRule = (
       // The stacks need a Unit that survives the hit.
       return hits.some((hit) => !kills(hit));
     }
+    case "damageGround": {
+      // A Flying Unit to make Grounded, else a kill. On other targets, the
+      // AI keeps the card for a Flying Unit that comes later.
+      return hits.some((hit) => grounds(hit) || kills(hit));
+    }
     case "damageLaneEntangle": {
       return hits.length >= 2 || hits.some(kills);
     }
@@ -1231,6 +1354,9 @@ const meetsHoldRule = (
     case "laneExtraAction": {
       return meetsWarriorHoldRule(state, side, effect, target);
     }
+    case "unitAttackRange": {
+      return meetsFocusHoldRule(state, side, card, effect, target);
+    }
     case "lowerCountdown": {
       return (
         notReadyCards(state, side, card).length >=
@@ -1309,6 +1435,9 @@ const scoreDamageSkill = (
     case "damageLaneEntangle": {
       return damage + hits.filter((hit) => pins(state, hit)).length * PIN_SCORE;
     }
+    case "damageGround": {
+      return scoreGround(hits, effect.damageType);
+    }
     case "damagePush": {
       return scorePush(
         state,
@@ -1359,9 +1488,7 @@ const scoreSkill = (
       return scoreLaneWard(state, side, card, effect.ward, target);
     }
     case "steadfastUnit": {
-      // The Unit of the most value (the AI card value) gets it.
-      const unit = steadfastTarget(state, side, target);
-      return unit ? unitValue(unit) : 0;
+      return scoreSteadfast(state, side, target);
     }
     case "cleanseUnit": {
       return scoreCleanse(state, side, card, effect.heal, target);
@@ -1386,6 +1513,9 @@ const scoreSkill = (
         skillAmountForRank(effect.attack, card.rank) *
         BONUS_ATTACK_WEIGHT
       );
+    }
+    case "unitAttackRange": {
+      return scoreFocus(state, side, card, effect, target);
     }
     case "laneExtraAction": {
       return scoreExtraActions(
@@ -1511,6 +1641,7 @@ const scorePlay = (
           lane: target.lane,
           position: target.position,
           flying: definition.keywords.flying ?? false,
+          grounded: 0,
         }
       : undefined;
   const after = heroDamage(state.units, side, summoned);

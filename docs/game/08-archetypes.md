@@ -220,7 +220,11 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-11 | The 3 Rare and Epic Ranger Skill Cards come in (issue #59, [GDD 5.5](./03-game-design.md#55-classes)): Venom Arrow (R, Countdown 4, 1 damage, then Poisoned 3 / 4 / 5 stacks at Rare / Epic / Legendary, also at 0 damage), Heartseeker (R, Countdown 5, 6 Hero damage, 9 at Rare) and Rain of Arrows (E, Countdown 6, 1 damage to each enemy Unit in a Lane, 2 at Epic, then Entangled at damage above 0). Changes from the provisional values of the issue: Venom Arrow 1 damage (it was 2), Rain of Arrows 1 damage (3). The Venom Arrow AI does not prefer a Wall or a Unit with Armor, as the issue proposed: it prefers the Unit with the highest Attack (GDD 9). No Archetype, Starter Deck or Stage Deck changes (2.3). | Each card must pass the swap rule (3.3). With the provisional values (1000 seeds, change against Vanguard / Raiders), Heartseeker passed (+1.5 / −3.2), Venom Arrow failed (−9.4 / +7.8) and Rain of Arrows failed (+20.7 / +18.3). For Venom Arrow, no damage value from 1 to 4 passed with the Wall and Armor preference (−5.9 to −10.9 against Vanguard). The preference sends the stacks to Town Barricade and Shieldbearer, which do not attack: with no preference, the change was −8.1; with Wall and Armor targets avoided, −3.1. A target choice by Attack gave −0.8 / +6.3 with 2 damage and −3.3 / +3.0 with 1 damage. For Rain of Arrows, the Lane Entangle is the strong part: 2 damage at Epic passes at Countdown 3 to 6, and 4 damage fails at each Countdown from 2 to 5 (+11.7 to +22.7). Each card keeps the Countdown and the stack table of the issue. Now 27 of 29 cards pass, and Warning Shot and Quick Shot still fail (3.3). Vanguard wins 48.9% against Raiders (no change), and `sim:check` passes with no Stage change. `bun run sim packs`: only the Ranger Class Pack rows change (Economy 4). The economy sim does not change, because its Player Discovers only the Warrior Skill Cards. |
 | 2026-10-12 | Shield Bash now deals 2 / 3 / 4 / 5 / 6 damage and gives Armor 1 / 1 / 1 / 2 / 3 from Common to Legendary. No Archetype, Starter Deck or Stage Deck changes (2.3). | Its Common values do not change. The 1,000-seed swap simulation gives −5.3 / −2.5 points against Vanguard / Raiders, so it narrowly fails the ±5-point rule against Vanguard. At 3,000 seeds it gives −4.8 / −3.9 and passes. The swap simulation uses the Common base value, so it does not measure the higher-Rank values. |
 | 2026-10-12 | Quick Shot damage is 3 / 4 / 5 / 6 / 7 from Common to Legendary. No Archetype, Starter Deck or Stage Deck changes (2.3). | The Common and Uncommon values do not change. The standard Rank scale gives only 4 / 5 / 6 at Rare / Epic / Legendary, so the higher values use an exact Rank table. |
+| 2026-10-12 | Venom Arrow deals 3 / 4 / 5 Physical damage at Rare / Epic / Legendary. Its Poison stacks stay 3 / 4 / 5, also when the hit deals 0 damage. No other card or Deck changes. | The Rare and higher damage values use an exact Rank table. The 2026-10-11 matchup results use the old damage values and do not measure this change. |
+| 2026-10-12 | Rain of Arrows deals 3 Physical damage at Epic and 5 at Legendary. Each surviving Unit that takes damage still becomes Entangled. | Its Epic and Legendary damage values use an exact Rank table. The 2026-10-11 matchup results used 2 damage at Epic and do not measure this change. |
 | 2026-10-12 | The 5 Mage Skill Cards of issue #65 come in ([GDD 5.5](./03-game-design.md#55-classes)) with the Lightning Damage Type, the Paralyzed Status and Field Effects ([ADR-0029](../adr/0029-lightning-damage-gives-paralyzed.md)): Spark (C, Countdown 1, 1 Lightning damage), Arc Lightning (U, Countdown 3, 2 Lightning damage to the target and to the enemy Units next to it in its Column), Wildfire (R, Countdown 4, Fire Field Effect on 2 × 2 Squares for 2 Turns, 2 damage at Rare), Thunderstorm (R, Countdown 5, 2 Lightning damage at Rare to 3 random enemy Units) and Blizzard (E, Countdown 6, Frost Field Effect on 3 × 2 Squares for 2 Turns, 1 damage at Epic). Changes from the provisional values of the issue: Arc Lightning Countdown 3 (it was 4), and the damage of Wildfire, Thunderstorm and Blizzard comes from a Rank table (3.3). No Archetype, Starter Deck or Stage Deck changes (2.3). | Each card passes the swap rule (3.3). The Blizzard lock is 1.2% / 0.5%. The Stage and Matchup results of `bun run sim` (200 seeds) are the same as before the change, so Vanguard against Raiders does not change. `bun run sim packs`: only the Mage Class Pack rows change (Economy 4). |
+| 2026-10-12 | Skybreaker (U, Countdown 3) replaces Flushing Shot ([GDD 4.7 and 5.5](./03-game-design.md#55-classes)). It deals 3 / 5 / 7 / 10 Physical damage at Uncommon / Rare / Epic / Legendary. A Flying Unit that survives becomes Grounded, also at 0 damage: it does not have Flying for 2 End Phases of its owner. No Archetype, Starter Deck or Stage Deck had Flushing Shot, so no Deck changes (2.3). | Flushing Shot and Warning Shot had the same effect (damage, then a push). Skybreaker is a counter card for Flying Units. It fails the swap rule (−7.1 / −8.8, 3.3), and the fail is accepted: the card is not tuned against Decks with few or no Flying Units. |
+| 2026-10-13 | Hunter's Focus (R, Countdown 4) replaces Heartseeker ([GDD 4.8 and 5.5](./03-game-design.md#55-classes)). A friendly Unit gets +3 / +4 / +5 Attack at Rare / Epic / Legendary and +1 Range until the end of the caster's next Turn. A Melee Unit with the bonus Range attacks as a Ranged Unit. A Shooter can have Range 4 for this time ([ADR-0022](../adr/0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md)). No Archetype, Starter Deck or Stage Deck had Heartseeker, so no Deck changes (2.3). | Long Shot and Heartseeker had the same effect (damage to the enemy Hero). It passes the swap rule (−1.0 / −2.4, 3.3). |
 
 ### 3.2 Countdown slope search
 
@@ -301,7 +305,7 @@ Results after the re-tune (3.1), 2026-10-11. Change is in percentage points, aga
 **Findings for review.**
 
 - With 8 damage, Warning Shot kills most Units that it hits, so its push seldom occurs. In 6 test Battles of Stage 1-4 with an enemy Deck of Elf and Ranger cards against the Vanguard Starter Deck, a Common Warning Shot pushed no Unit. With 6 damage, it pushed about 1 Unit in each Battle. The push is the main idea of the card, so a change to its effect type is a separate decision.
-- Long Shot deals 10 damage to the enemy Hero at its Base Rank Uncommon. A Hero has 35 HP at level 5. The provisional Rare card Heartseeker of issue #59 (6 Hero damage) needs a new value with the same swap rule.
+- Long Shot deals 10 damage to the enemy Hero at its Base Rank Uncommon. A Hero has 35 HP at level 5. The provisional Rare card Heartseeker of issue #59 (6 Hero damage) needs a new value with the same swap rule. On 2026-10-13, Hunter's Focus replaced Heartseeker, because the two cards had the same effect (see the Hunter's Focus result below).
 - The swap Deck has 2 copies of the Skill Card. The reverse column shows that the first copy is often worth more than the second (for example, Long Shot +7.0 / +12.0 in reverse).
 
 Results of the 14 Skill Cards of issue #57, 2026-10-11, with their final values. A card with Base Rank Uncommon plays at its Uncommon value.
@@ -330,7 +334,7 @@ The swap Decks have no copy of these cards, so there is no reverse column.
 **Findings for review (issue #57).**
 
 - Frost hits at 0 damage now count for the area and Lane Hold Rules, but a 0-damage hit still scores 0 (the Frost Bolt score). A change to that score changes Frost Bolt and thus Raiders, so it is a separate decision.
-- Flushing Shot needs 8 damage at its Base Rank Uncommon to pass. As with Warning Shot, it then kills most Units that it hits, so its push seldom occurs.
+- Flushing Shot needs 8 damage at its Base Rank Uncommon to pass. As with Warning Shot, it then kills most Units that it hits, so its push seldom occurs. On 2026-10-12, Skybreaker replaced Flushing Shot, because the two cards had the same effect (see the Skybreaker result below).
 - Penance has no value to scale, so a Rank changes only its Recall chance.
 - The new Ranger cards make the Ranger curve cheap (Countdown 1 to 4), and Prayer of Healing heals each Unit of a Lane as much as Mend heals one Unit at the same Rank. The Skill Power Budget (#50) can measure these after all 40 cards exist.
 
@@ -347,9 +351,9 @@ With 3000 seeds, the changes are −1.4 / +1.6 (Venom Arrow), +3.7 / −2.8 (Hea
 **Findings for review (issue #59).**
 
 - Venom Arrow is not the Ranger answer to Walls and high Armor in the Matchups. A Wall does not attack, so the AI gets more value when it puts the stacks on a Unit with a high Attack. The card text does not change: the stacks still come at 0 damage.
-- With 1 damage, Venom Arrow deals 1 at Rare, 2 at Epic and 2 at Legendary. Its value is almost all in the stacks.
-- Heartseeker deals 9 Hero damage at Rare (Countdown 5), and Long Shot deals 10 at Uncommon (Countdown 4). Both pass the swap rule, so a Rare Hero card is not stronger than an Uncommon one. #50 can measure this.
-- Rain of Arrows deals only 2 damage at Epic, so most of its value is the Entangle of the whole Lane.
+- In the 2026-10-11 simulation, Venom Arrow dealt 1 at Rare, 2 at Epic and 2 at Legendary. The 2026-10-12 change raises these values to 3, 4 and 5; its Poison stacks stay 3, 4 and 5.
+- Heartseeker deals 9 Hero damage at Rare (Countdown 5), and Long Shot deals 10 at Uncommon (Countdown 4). Both pass the swap rule, so a Rare Hero card is not stronger than an Uncommon one. #50 can measure this. On 2026-10-13, Hunter's Focus replaced Heartseeker.
+- In the 2026-10-11 simulation, Rain of Arrows dealt 2 damage at Epic, so most of its value was the Entangle of the whole Lane.
 - The swap takes out Rootbound Guard for all 3 cards, and each swap raises the Deck Countdown (+1, +2 and +3). Thornwatch has no melee Creature Card with Countdown 4 or more.
 
 Results of the 3 Rare and Epic Priest Skill Cards of issue #61, 2026-10-12, with their final values. A card plays at its Base Rank value.
@@ -390,7 +394,7 @@ With 3000 seeds, the changes are −4.6 / −2.3 (Call to Arms), −2.8 / −1.6
 
 **Findings for review (issue #63).**
 
-- One extra action for one Lane is worth about a Countdown 2 card in the Matchups. In 200 seeds against Vanguard, an *Onslaught* play at Countdown 6 gave 0.7 attacks and 0.6 moves on average: Vanguard Full has 2 Crossbow Guards, a Town Barricade and Units that die early, so a Lane seldom has 2 Units in contact. Onslaught has Countdown 2 and a Recall chance of 40% at Epic; at Legendary, it also gives +1 Attack until the end of the next Turn.
+- One extra action for one Lane is worth about a Countdown 2 card in the Matchups. In 200 seeds against Vanguard, an *Onslaught* play at Countdown 6 gave 0.7 attacks and 0.6 moves on average: Vanguard Full has 2 Crossbow Guards, a Town Barricade and Units that die early, so a Lane seldom has 2 Units in contact. Onslaught has Countdown 2 and a Recall chance of 28% at Epic; at Legendary, it also gives +1 Attack until the end of the next Turn.
 - *Expose Weakness* has Countdown 2 at Rare, the same as *Unbroken Vow*. Its value comes from the hits of the next 2 Turns, so it is a setup card.
 - The 3 Warrior cards have no damage, so they do not hurt a Wall directly. *Expose Weakness* is the Warrior answer to Armor and Walls: the bonus comes after Armor.
 - The swap Deck for Warrior is the weakest swap Deck (18% against the main Archetypes). The swap rule measures the cards in a Deck that loses most Battles.
@@ -423,6 +427,25 @@ With 3000 seeds, the changes are −1.6 / −3.6 (Spark), −0.5 / −0.8 (Arc L
 - With the same lock count, Wild Hunt makes a Vanguard Unit skip 3 or more actions in a row in 7.7% of Battles (1000 seeds, its melee Frost Units). ADR-0025 gives about 4% for the melee Frost lock. The count of this report can be different from the count of ADR-0025, or the cards changed after it. A check of the melee Frost lock is a separate decision.
 - A Field Effect has its strength in the first hit: the enemy Units move, so the second hit of *Wildfire* often hits fewer Units. A Frozen Unit does not move, so *Blizzard* hits the same Units 2 times.
 - *Thunderstorm* is strong against Raiders (+3.0 to +4.2): Raiders has many Units with low HP.
+
+**Skybreaker, 2026-10-12.** Skybreaker replaces Flushing Shot. It plays at its Base Rank Uncommon value (3 damage). Thornwatch has no copy of it, so the swap Deck has 1 copy and there is no reverse column (`bun run sim skill-swap 1000`). The Thornwatch Deck before the swap wins 25.9% / 29.5% against Vanguard / Raiders.
+
+| Skill Card | Deck | Creature Card | Before | After | Change | Result |
+| --- | --- | --- | --- | --- | --- | --- |
+| Skybreaker | Thornwatch | Rootbound Guard | 25.9% / 29.5% | 18.9% / 20.7% | −7.1 / −8.8 | Fail |
+
+**Skybreaker fails, and the fail is accepted.** Skybreaker is a counter card for Flying Units. Vanguard has no Flying Unit, so against Vanguard the card is only a 3-damage hit, and the AI keeps it in the Hand until the hit kills a Unit. Raiders has 2 Skyreavers, but the card also fails there: Grounded stops 2 Movements of one Skyreaver, and the swap takes out Rootbound Guard, the only Frontliner of Thornwatch (the same loss as Warning Shot). The card is not tuned against Decks that have few or no Flying Units. A change to the swap rule for counter cards (for example, a measure only against Archetypes with Flying Units) is a separate decision.
+
+**Hunter's Focus, 2026-10-13.** Hunter's Focus replaces Heartseeker. It plays at its Base Rank Rare value (+3 Attack and +1 Range). Thornwatch has no copy of it, so the swap Deck has 1 copy and there is no reverse column (`bun run sim skill-swap 1000`). The Thornwatch Deck before the swap wins 25.9% / 29.5% against Vanguard / Raiders.
+
+| Skill Card | Deck | Creature Card | Before | After | Change | Result |
+| --- | --- | --- | --- | --- | --- | --- |
+| Hunter's Focus | Thornwatch | Rootbound Guard (Countdown 3, nearest) | 25.9% / 29.5% | 24.9% / 27.2% | −1.0 / −2.4 | Pass |
+
+**Findings for review.**
+
+- Hunter's Focus has Countdown 4 and gives its bonus to 1 Unit. Call to Arms (R, Countdown 3) gives +3 Attack to each friendly Unit in a Lane. The swap rule passes, but the Skill Power Budget (#50) can compare the two cards.
+- The AI scores a Shooter that gets a target from Range 4 higher than a Unit that already has a target. For a Melee Unit, the AI does not count that Retaliate and First Strike do not hit it.
 
 ## 4. When an Archetype or a card changes
 

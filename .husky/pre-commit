@@ -6,8 +6,21 @@ if [ -z "$STAGED_FILES" ]; then
   exit 0
 fi
 
-bun lint:fix
+# Run ultracite + fallow fix concurrently (both start before either is awaited)
+(
+  bun lint:fix
+) &
+ULTRACITE_PID=$!
+
+(
+  bun check:fix
+) &
+FALLOW_PID=$!
+
+wait "$ULTRACITE_PID"
 ULTRACITE_EXIT=$?
+wait "$FALLOW_PID"
+FALLOW_EXIT=$?
 
 # Re-stage files that were already staged
 echo "$STAGED_FILES" | while IFS= read -r file; do
@@ -16,9 +29,18 @@ echo "$STAGED_FILES" | while IFS= read -r file; do
   fi
 done
 
+EXIT_CODE=0
 if [ $ULTRACITE_EXIT -ne 0 ]; then
   echo "Ultracite found issues that could not be auto-fixed."
-  exit $ULTRACITE_EXIT
+  EXIT_CODE=$ULTRACITE_EXIT
+fi
+if [ $FALLOW_EXIT -ne 0 ]; then
+  echo "Fallow found issues that could not be auto-fixed."
+  EXIT_CODE=$FALLOW_EXIT
 fi
 
-echo "✨ Files fixed by Ultracite"
+if [ $EXIT_CODE -ne 0 ]; then
+  exit $EXIT_CODE
+fi
+
+echo "✨ Files fixed by Ultracite + Fallow"

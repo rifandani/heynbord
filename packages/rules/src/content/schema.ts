@@ -335,6 +335,16 @@ const SkillEffect = Schema.Union([
   }),
   Schema.Struct({
     /**
+     * Damage to one enemy Unit. When a Flying Unit survives, it becomes
+     * Grounded (GDD 4.7), also at 0 damage: Grounded is the main effect. A
+     * ground Unit gets only the damage.
+     */
+    type: Schema.Literal("damageGround"),
+    amount: SkillAmount,
+    damageType: DamageType,
+  }),
+  Schema.Struct({
+    /**
      * Damage to each enemy Unit in one Lane. Each Unit that survives with
      * damage above 0 becomes Entangled, as with `damageEntangle`.
      */
@@ -483,6 +493,17 @@ const SkillEffect = Schema.Union([
      */
     type: Schema.Literal("laneAttack"),
     attack: SkillAmount,
+  }),
+  Schema.Struct({
+    /**
+     * One friendly Unit with Base Attack above 0 gets bonus Attack and bonus
+     * Range until the end of the caster's next Turn (GDD 4.8). A Melee Unit
+     * with bonus Range is a Ranged Unit until the bonus ends. Each bonus has
+     * its own duration, and a new one replaces the old one.
+     */
+    type: Schema.Literal("unitAttackRange"),
+    attack: SkillAmount,
+    range: between(1, 3),
   }),
   Schema.Struct({
     /**

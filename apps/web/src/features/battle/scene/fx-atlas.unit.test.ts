@@ -24,8 +24,8 @@ const overlaps = (a: FxSlotName, b: FxSlotName) => {
 describe("the effects atlas slot table", () => {
   const names = fxSlotNames();
 
-  it("has the 33 slots of the atlas", () => {
-    expect(names).toHaveLength(33);
+  it("has the 34 slots of the atlas", () => {
+    expect(names).toHaveLength(34);
     expect(FX_ATLAS_SIZE).toBe(2048);
   });
 

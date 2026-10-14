@@ -57,6 +57,15 @@ export const attackOf = (state: BattleState, unit: UnitState): number =>
     : unit.attack + unit.rallied + unit.bonusAttack + swarmBonus(state, unit);
 
 /**
+ * Range with the bonus Range of a Skill Card (GDD 4.8). Above 0, the Unit is
+ * a Ranged Unit for all rules, so a Melee Unit with bonus Range attacks as a
+ * Ranged Unit until the bonus ends.
+ */
+export const rangeOf = (
+  unit: Pick<UnitState, "range" | "bonusRange">
+): number => unit.range + unit.bonusRange;
+
+/**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of
  * it in its Range, else the enemy Hero if the Hero is in Range.
  */
@@ -65,7 +74,7 @@ const rangedTarget = (
   unit: UnitState
 ): TargetRef | undefined => {
   const dir = direction(unit.owner);
-  for (let distance = 1; distance <= unit.range; distance += 1) {
+  for (let distance = 1; distance <= rangeOf(unit); distance += 1) {
     const position = unit.position + dir * distance;
     if (position === enemyHeroPosition(unit.owner)) {
       return { _tag: "Hero", side: otherSide(unit.owner) };
@@ -118,7 +127,7 @@ const pivotTarget = (
   state: BattleState,
   unit: UnitState
 ): TargetRef | undefined => {
-  if (!unit.pivot || unit.range > 0) {
+  if (!unit.pivot || rangeOf(unit) > 0) {
     return undefined;
   }
   return (
@@ -134,22 +143,30 @@ const pivotTarget = (
 };
 
 const targetOf = (state: BattleState, unit: UnitState) =>
-  unit.range > 0
+  rangeOf(unit) > 0
     ? rangedTarget(state, unit)
     : (pivotTarget(state, unit) ?? meleeTarget(state, unit));
 
 /**
+ * Flying (GDD 4.5) for all rules. A Grounded Unit does not have Flying (GDD
+ * 4.7): it moves as a ground Unit, and enemy Flying Units move over it.
+ */
+export const isFlying = (
+  unit: Pick<UnitState, "flying" | "grounded">
+): boolean => unit.flying && unit.grounded === 0;
+
+/**
  * Movement (GDD 4.5, ADR-0018). A ground Unit moves through friendly Units and
  * stops before an enemy Unit. A Flying Unit moves over friendly Units, enemy
- * ground Units and enemy Walls, but it stops before an enemy Flying Unit. A
- * status does not change this. Each Unit stops in the farthest empty Square
+ * ground Units and enemy Walls, but it stops before an enemy Flying Unit. Of
+ * the statuses, only Grounded changes this. Each Unit stops in the farthest empty Square
  * that its Speed reaches.
  * A ranged Unit with a target in Range, and a Pivot Unit with an enemy Unit
  * behind it or next to it, do not move.
  */
 const staysPut = (state: BattleState, unit: UnitState, speed: number) =>
   speed <= 0 ||
-  (unit.range > 0 && rangedTarget(state, unit)) ||
+  (rangeOf(unit) > 0 && rangedTarget(state, unit)) ||
   pivotTarget(state, unit);
 
 const move = (ctx: StepContext, unit: UnitState): void => {
@@ -169,7 +186,10 @@ const move = (ctx: StepContext, unit: UnitState): void => {
     const other = unitAt(state, unit.lane, position);
     if (!other) {
       to = position;
-    } else if (other.owner !== unit.owner && (!unit.flying || other.flying)) {
+    } else if (
+      other.owner !== unit.owner &&
+      (!isFlying(unit) || isFlying(other))
+    ) {
       break;
     }
   }
@@ -242,7 +262,7 @@ const retaliate = (
     !defender.retaliate ||
     defender.frozen ||
     defender.paralyzed ||
-    attacker.range > 0 ||
+    rangeOf(attacker) > 0 ||
     attackOf(ctx.state, defender) <= 0 ||
     !findUnit(ctx.state, defender.id) ||
     !findUnit(ctx.state, attacker.id)
@@ -272,7 +292,7 @@ const trample = (
   killed: UnitState,
   left: number
 ): void => {
-  if (!unit.trample || unit.range > 0 || left <= 0 || isOver(ctx)) {
+  if (!unit.trample || rangeOf(unit) > 0 || left <= 0 || isOver(ctx)) {
     return;
   }
   const next = unitAt(
@@ -372,7 +392,7 @@ const applyOnHit = (
   if (unit.entangle) {
     entangleUnit(ctx, struck);
   }
-  if (knockback && unit.range === 0 && unit.knockback > 0) {
+  if (knockback && rangeOf(unit) === 0 && unit.knockback > 0) {
     pushUnit(ctx, struck, unit.knockback);
   }
 };
@@ -390,7 +410,7 @@ const firstStrike = (
   attacker: UnitState,
   target: TargetRef
 ): boolean => {
-  if (target._tag !== "Unit" || attacker.range > 0) {
+  if (target._tag !== "Unit" || rangeOf(attacker) > 0) {
     return true;
   }
   const defender = findUnit(ctx.state, target.unitId);
@@ -431,7 +451,7 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
     BattleEvent.UnitAttacked({
       unitId: unit.id,
       target,
-      ranged: unit.range > 0,
+      ranged: rangeOf(unit) > 0,
     })
   );
   const crit = state.sides[unit.owner].hero.unitCrit;

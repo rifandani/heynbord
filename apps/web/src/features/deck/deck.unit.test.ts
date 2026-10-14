@@ -145,10 +145,10 @@ describe("poolEntries", () => {
       ["ranger.harryingShot", "common"],
       ["ranger.warningShot", "common"],
       ["ranger.barbedArrow", "uncommon"],
+      ["ranger.skybreaker", "uncommon"],
       ["ranger.longShot", "uncommon"],
-      ["ranger.flushingShot", "uncommon"],
       ["ranger.venomArrow", "rare"],
-      ["ranger.heartseeker", "rare"],
+      ["ranger.huntersFocus", "rare"],
       ["ranger.rainOfArrows", "epic"],
     ]);
     const priest = poolEntries(

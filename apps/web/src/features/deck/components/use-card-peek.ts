@@ -31,7 +31,7 @@ export const isSamePeek = (shown: ShownPeek | null, target: Peek): boolean =>
   shown.place === target.place;
 
 /** The element that holds the Card Details. */
-export const PEEK_PANEL = "[data-testid='deck-peek']";
+const PEEK_PANEL = "[data-testid='deck-peek']";
 
 /** The Handbook that a link in the Card Details opens. */
 const HANDBOOK = "[data-testid='handbook-dialog']";

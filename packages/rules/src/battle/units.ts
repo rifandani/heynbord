@@ -67,6 +67,7 @@ const makeUnit = (options: {
     poisoned: 0,
     hobbled: 0,
     bleeding: 0,
+    grounded: 0,
     exposed: 0,
     exposedTurns: 0,
     frozen: false,
@@ -79,6 +80,8 @@ const makeUnit = (options: {
     bonusArmorTurns: 0,
     bonusAttack: 0,
     bonusAttackTurns: 0,
+    bonusRange: 0,
+    bonusRangeTurns: 0,
   };
 };
 

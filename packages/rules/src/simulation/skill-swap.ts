@@ -18,7 +18,7 @@ import { simulateMatchup } from "./simulate";
 import type { MatchupOptions, MatchupReport } from "./simulate";
 
 /** The Deck of each Class that gets the swap. */
-export const SWAP_DECKS: Readonly<Record<ClassId, string>> = {
+const SWAP_DECKS: Readonly<Record<ClassId, string>> = {
   warrior: "vanguardFull",
   mage: "raidersFull",
   ranger: "thornwatch",
@@ -26,7 +26,7 @@ export const SWAP_DECKS: Readonly<Record<ClassId, string>> = {
 };
 
 /** The opponents of the swap: the two release-gated Archetypes. */
-export const SWAP_OPPONENTS: readonly string[] = ["vanguard", "raiders"];
+const SWAP_OPPONENTS: readonly string[] = ["vanguard", "raiders"];
 
 /** The largest change of a win rate that passes, from 0 to 1. */
 export const SWAP_LIMIT = 0.05;
@@ -40,7 +40,7 @@ const archetypeOf = (id: string): Archetype => {
 };
 
 /** The swap Deck of a Skill Card, before the swap. */
-export const swapDeckOf = (skill: SkillCardDefinition): Archetype =>
+const swapDeckOf = (skill: SkillCardDefinition): Archetype =>
   archetypeOf(SWAP_DECKS[skill.class]);
 
 const countOf = (deck: readonly DeckEntry[], cardId: string) =>

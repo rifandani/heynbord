@@ -848,12 +848,50 @@ describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
     );
   });
 
-  it("plays Harrying Shot and Flushing Shot with no Hold Rule", () => {
-    for (const cardId of ["ranger.harryingShot", "ranger.flushingShot"]) {
-      expect(raidersChoice(cardId, [{ hp: 20, maxHp: 20 }]), cardId).toEqual(
-        playAtSquare(0, 5)
-      );
-    }
+  it("plays Harrying Shot with no Hold Rule", () => {
+    expect(
+      raidersChoice("ranger.harryingShot", [{ hp: 20, maxHp: 20 }])
+    ).toEqual(playAtSquare(0, 5));
+  });
+
+  it("aims Skybreaker at the enemy Flying Unit that is not Grounded and is nearest to its Hero", () => {
+    const bird = { cardId: "orc.skyreaver", hp: 20, maxHp: 20 };
+    expect(raidersChoice("ranger.skybreaker", [bird])).toEqual(
+      playAtSquare(0, 5)
+    );
+    expect(
+      raidersChoice("ranger.skybreaker", [
+        { ...bird, position: 3 },
+        { ...bird, lane: 1, position: 7 },
+      ])
+    ).toEqual(playAtSquare(1, 7));
+    // A Flying Unit comes before a kill.
+    expect(
+      raidersChoice("ranger.skybreaker", [
+        { hp: 3 },
+        { ...bird, lane: 1, position: 3 },
+      ])
+    ).toEqual(playAtSquare(1, 3));
+    expect(
+      raidersChoice("ranger.skybreaker", [
+        { ...bird, position: 7, grounded: 2 },
+        { ...bird, lane: 1, position: 3 },
+      ])
+    ).toEqual(playAtSquare(1, 3));
+  });
+
+  it("keeps Skybreaker when no enemy Flying Unit can become Grounded and the hit kills no Unit", () => {
+    expect(raidersChoice("ranger.skybreaker", [{ hp: 20, maxHp: 20 }])).toEqual(
+      Command.EndTurn()
+    );
+    expect(
+      raidersChoice("ranger.skybreaker", [
+        { cardId: "orc.skyreaver", hp: 20, maxHp: 20, grounded: 1 },
+      ])
+    ).toEqual(Command.EndTurn());
+    expect(raidersChoice("ranger.skybreaker", [{ hp: 3 }])).toEqual(
+      playAtSquare(0, 5)
+    );
   });
 
   it("keeps Blessing of Light with the Sanctuary rule", () => {
@@ -924,15 +962,6 @@ describe("chooseCommand: the Rare and Epic Ranger Skill Cards of #59 (GDD 9)", (
         { lane: 1, position: 6, hp: 9, maxHp: 9 },
       ])
     ).toEqual(playAtSquare(1, 6));
-  });
-
-  it("plays Heartseeker with no Hold Rule", () => {
-    expect(raidersChoice("ranger.heartseeker", [{}])).toEqual(
-      Command.PlayCard({
-        handIndex: 0,
-        target: Target.Hero({ side: "player" }),
-      })
-    );
   });
 
   it("keeps Rain of Arrows until the Lane has 2 enemy Units, or the hit kills", () => {
@@ -1148,5 +1177,46 @@ describe("chooseCommand: the Rare and Epic Warrior Skill Cards of #63 (GDD 9)", 
     expect(
       raidersChoice("warrior.spearThrow", [{ hp: 6, exposed: 2 }])
     ).toEqual(playAtSquare(0, 5));
+  });
+});
+
+describe("chooseCommand: Hunter's Focus (GDD 9)", () => {
+  it("keeps Hunter's Focus until a friendly Unit with Base Attack above 0 attacks in this Turn with the bonus", () => {
+    const shooter = {
+      cardId: "human.crossbowGuard",
+      position: 9,
+      attack: 4,
+    };
+    // Crossbow Guard: Speed 1 and Range 3, so Range 4 reaches Square 4.
+    expect(
+      priestChoice("ranger.huntersFocus", [shooter], playerRaiderAt(3))
+    ).toEqual(Command.EndTurn());
+    expect(
+      priestChoice("ranger.huntersFocus", [shooter], playerRaiderAt(4))
+    ).toEqual(playAtSquare(0, 9));
+    expect(
+      priestChoice("ranger.huntersFocus", [{ position: 9 }], playerRaiderAt(8))
+    ).toEqual(Command.EndTurn());
+  });
+
+  it("aims Hunter's Focus at the Unit that gets a target from the bonus Range, else at the Unit with the most Attack", () => {
+    const shooter = {
+      cardId: "human.crossbowGuard",
+      position: 9,
+      attack: 4,
+    };
+    const melee = { lane: 1, position: 9, attack: 6 };
+    expect(
+      priestChoice("ranger.huntersFocus", [shooter, melee], (state) => {
+        playerRaiderAt(4)(state);
+        playerRaiderAt(8, { lane: 1 })(state);
+      })
+    ).toEqual(playAtSquare(0, 9));
+    expect(
+      priestChoice("ranger.huntersFocus", [shooter, melee], (state) => {
+        playerRaiderAt(6)(state);
+        playerRaiderAt(8, { lane: 1 })(state);
+      })
+    ).toEqual(playAtSquare(1, 9));
   });
 });

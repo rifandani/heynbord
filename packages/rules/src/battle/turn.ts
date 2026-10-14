@@ -283,6 +283,15 @@ const lowerBleeding = (ctx: StepContext): void => {
   }
 };
 
+/** The Grounded count of each Unit of the active Side goes down by 1 (GDD 4.7). */
+const lowerGrounded = (ctx: StepContext): void => {
+  for (const unit of ctx.state.units) {
+    if (unit.owner === ctx.state.activeSide && unit.grounded > 0) {
+      unit.grounded -= 1;
+    }
+  }
+};
+
 /**
  * The Exposed count of each Unit of the active Side goes down by 1 (GDD 4.7).
  * At 0, Exposed ends. No event occurs, the same as for Hobbled.
@@ -299,8 +308,9 @@ const lowerExposed = (ctx: StepContext): void => {
 };
 
 /**
- * Skill Card bonus Attack counts the End Phases of its owner: it lasts until
- * the end of the caster's next Turn (GDD 4.8).
+ * Skill Card bonus Attack and bonus Range count the End Phases of their
+ * owner: they last until the end of the caster's next Turn (GDD 4.8). Each
+ * has its own count.
  */
 const fadeAttack = (ctx: StepContext): void => {
   const { state } = ctx;
@@ -310,6 +320,13 @@ const fadeAttack = (ctx: StepContext): void => {
       if (unit.bonusAttackTurns === 0) {
         unit.bonusAttack = 0;
         ctx.events.push(BattleEvent.AttackFaded({ unitId: unit.id }));
+      }
+    }
+    if (unit.owner === state.activeSide && unit.bonusRangeTurns > 0) {
+      unit.bonusRangeTurns -= 1;
+      if (unit.bonusRangeTurns === 0) {
+        unit.bonusRange = 0;
+        ctx.events.push(BattleEvent.RangeFaded({ unitId: unit.id }));
       }
     }
   }
@@ -332,8 +349,8 @@ const fadeArmor = (ctx: StepContext): void => {
 /**
  * The End Phase (GDD 4.3): the Field Effects of the active Side hit, then
  * Burn, then Poison, then durations go down. Skill Card Armor counts the other
- * side's Turns, so it covers that many enemy Turns. A Hobbled, a Bleeding and
- * an Exposed count go down in this Phase, after Burn and Poison. The Rally
+ * side's Turns, so it covers that many enemy Turns. A Hobbled, a Bleeding, a
+ * Grounded and an Exposed count go down in this Phase, after Burn and Poison. The Rally
  * bonus ends, the bonus Attack of a Skill Card can end, and a Field Effect
  * can end.
  */
@@ -346,6 +363,7 @@ const runEndPhase = (ctx: StepContext): void => {
   applyPoison(ctx);
   lowerHobble(ctx);
   lowerBleeding(ctx);
+  lowerGrounded(ctx);
   lowerExposed(ctx);
   endRally(ctx);
   fadeAttack(ctx);

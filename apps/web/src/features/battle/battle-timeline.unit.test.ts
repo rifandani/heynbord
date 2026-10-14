@@ -44,6 +44,7 @@ const hit = {
   source: "attack",
   crit: false,
   blocked: false,
+  trueDamage: false,
   absorbed: 0,
   ward: 0,
   hp: 10,

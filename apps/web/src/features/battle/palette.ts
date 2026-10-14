@@ -128,6 +128,7 @@ export const FX_ANCHORS = {
   iconSteadfast: "#f2b552",
   iconExposed: "#ff6fa0",
   iconParalyze: "#3ff2e0",
+  iconGrounded: "#d9a066",
 } as const;
 
 /**

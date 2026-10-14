@@ -132,6 +132,9 @@ export default {
       bonusAttack: "Serangan +{value}",
       bonusAttackRule:
         "Dari Kartu Keahlian: sampai akhir Giliranmu berikutnya. Sisa Fase Akhir: {turns}.",
+      bonusRange: "Jangkauan +{value}",
+      bonusRangeRule:
+        "Dari Kartu Keahlian: sampai akhir Giliranmu berikutnya. Unit jarak dekat menyerang sebagai Unit jarak jauh. Sisa Fase Akhir: {turns}.",
       burn: "Terbakar",
       burnRule: "1 damage pada tiap Fase Akhir pemiliknya.",
       burnLeft: "Sisa Fase Akhir: {value}.",
@@ -149,6 +152,9 @@ export default {
       bleeding: "Berdarah {value}",
       bleedingRule:
         "Unit ini mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah. Hitungan turun 1 pada tiap Fase Akhir pemiliknya.",
+      grounded: "Jatuh {value}",
+      groundedRule:
+        "Debuff. Unit ini tidak punya Terbang: ia berhenti sebelum Unit musuh, dan Unit Terbang musuh bergerak melewatinya. Hitungan turun 1 pada tiap Fase Akhir pemiliknya.",
       entangled: "Terjerat",
       entangledRule:
         "Kecepatan 0 pada aksi berikutnya. Ia tetap bisa menyerang.",
@@ -595,7 +601,7 @@ export default {
       speed:
         "Kecepatan adalah jumlah Petak maksimum yang ditempuh Unit ke depan dalam satu Giliran. Unit dengan Kecepatan 0 tidak pernah bergerak.",
       range:
-        "Jangkauan adalah jumlah Petak maksimum di depan Unit jarak jauh tempat ia bisa menyerang.\n\nPendukung jarak jauh punya Jangkauan 2, dan Penembak punya Jangkauan 3.",
+        "Jangkauan adalah jumlah Petak maksimum di depan Unit jarak jauh tempat ia bisa menyerang.\n\nPendukung jarak jauh punya Jangkauan 2, dan Penembak punya Jangkauan 3. Kartu Keahlian bisa memberi bonus Jangkauan untuk waktu singkat. Saat itu, Unit jarak dekat menyerang sebagai Unit jarak jauh.",
       melee:
         "Unit jarak dekat menyerang Unit musuh di Petak berikutnya di depannya.\n\nSaat ia ada di Kolom terakhirnya dan tidak ada Unit musuh di depannya, ia menyerang Pahlawan musuh.",
       ranged:
@@ -704,6 +710,7 @@ export default {
       statusWard: "perisai, shield, barrier, serap, buff",
       statusSteadfast: "bertahan, tak mati, endure, undying, last stand",
       statusExposed: "rentan, lemah, ditandai, vulnerable, armor break",
+      statusGrounded: "jatuh, tak bisa terbang, anti-udara, downed, anti-air",
       damageType: "elemen, element",
       race: "faksi, suku, kerajaan, faction",
       class: "pekerjaan, profesi, job",
@@ -1151,6 +1158,8 @@ export default {
       "{hit} Jika Unit itu terkena damage dan bertahan hidup, Unit itu menjadi Berdarah {bleed}.",
     damagePoison:
       "{hit} Jika Unit itu bertahan hidup, Unit itu mendapat {poison} tumpukan Racun, juga saat Unit itu tidak terkena damage.",
+    damageGround:
+      "{hit} Jika Unit itu adalah Unit Terbang dan bertahan hidup, Unit itu menjadi Jatuh 2, juga saat Unit itu tidak terkena damage.",
     damageLaneEntangle:
       "Beri {amount} damage {damageType} ke semua Unit musuh dalam satu Jalur. Tiap Unit yang terkena damage dan bertahan hidup menjadi Terjerat.",
     damageByAttack:
@@ -1178,6 +1187,8 @@ export default {
       "Satu Unit musuh menjadi Terbuka {exposed}: tiap serangan Fisik padanya memberi {exposed} damage tambahan, setelah Zirah, sampai akhir Giliranmu berikutnya.",
     laneAttack:
       "Unit kawan dalam satu Jalur mendapat +{attack} Serangan sampai akhir Giliranmu berikutnya.",
+    unitAttackRange:
+      "Satu Unit kawan mendapat +{attack} Serangan dan +{range} Jangkauan sampai akhir Giliranmu berikutnya. Unit jarak dekat menyerang sebagai Unit jarak jauh.",
     laneExtraAction:
       "Setiap Unit kawan dalam satu Jalur mendapat satu aksi lagi sekarang: ia bergerak dan menyerang, dari Unit terdepan ke Unit paling belakang.",
     laneExtraActionLegendary:
@@ -1641,17 +1652,17 @@ export default {
         name: "Panah Berduri",
         flavor: "Keluarnya lebih sakit dari masuknya.",
       },
-      flushingShot: {
-        name: "Tembakan Pengusir",
-        flavor: "Kembali ke sisimu sendiri.",
+      skybreaker: {
+        name: "Pemecah Langit",
+        flavor: "Yang terbang bisa jatuh.",
       },
       venomArrow: {
         name: "Panah Bisa",
         flavor: "Panahnya kecil. Racunnya tidak.",
       },
-      heartseeker: {
-        name: "Penembus Jantung",
-        flavor: "Satu panah. Satu jantung.",
+      huntersFocus: {
+        name: "Fokus Pemburu",
+        flavor: "Embuskan napas. Lalu lepaskan.",
       },
       rainOfArrows: {
         name: "Hujan Panah",

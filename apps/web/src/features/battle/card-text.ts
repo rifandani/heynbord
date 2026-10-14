@@ -216,6 +216,15 @@ const friendlyEffectText = (
         args: { attack: skillAmountForRank(effect.attack, rank) },
       };
     }
+    case "unitAttackRange": {
+      return {
+        key: "effects.unitAttackRange",
+        args: {
+          attack: skillAmountForRank(effect.attack, rank),
+          range: effect.range,
+        },
+      };
+    }
     case "laneExtraAction": {
       return rank === "legendary" && effect.legendaryAttack !== undefined
         ? {
@@ -346,6 +355,12 @@ const effectText = (card: SkillCardDefinition, rank: RankId): TextRef => {
         },
       };
     }
+    case "damageGround": {
+      return {
+        key: "effects.damageGround",
+        args: { hit: hitText(effect, rank) },
+      };
+    }
     case "damageByAttack": {
       return withDamageRule(effect, {
         key: "effects.damageByAttack",
@@ -441,6 +456,10 @@ export const STATUS_TEXT = {
     name: "battle.status.paralyzed",
     rule: "battle.status.paralyzedRule",
   },
+  grounded: {
+    name: "battle.status.grounded",
+    rule: "battle.status.groundedRule",
+  },
 } as const satisfies Readonly<
   Record<Status, { readonly name: string; readonly rule: string }>
 >;
@@ -448,14 +467,15 @@ export const STATUS_TEXT = {
 /** One line of the Unit status in the Details Panel. */
 export interface StatusText {
   /**
-   * A Status, or a change that is not a Status: bonus Armor or bonus Attack
-   * from a Skill Card, the Rally bonus, the Swarm bonus, or a Rebirth that
+   * A Status, or a change that is not a Status: bonus Armor, bonus Attack or
+   * bonus Range from a Skill Card, the Rally bonus, the Swarm bonus, or a Rebirth that
    * the Unit used.
    */
   readonly status:
     | Status
     | "bonusArmor"
     | "bonusAttack"
+    | "bonusRange"
     | "rallyBonus"
     | "swarmBonus"
     | "reborn";
@@ -471,6 +491,8 @@ type StatusCounts = Pick<
   | "bonusArmorTurns"
   | "bonusAttack"
   | "bonusAttackTurns"
+  | "bonusRange"
+  | "bonusRangeTurns"
   | "exposed"
   | "exposedTurns"
   | "burn"
@@ -479,6 +501,7 @@ type StatusCounts = Pick<
   | "entangled"
   | "hobbled"
   | "bleeding"
+  | "grounded"
   | "poisoned"
   | "ward"
   | "steadfast"
@@ -489,7 +512,7 @@ type StatusCounts = Pick<
 
 /** A Status with a count in its name, for example "Poison 2" or "Ward 6". */
 const countedStatus = (
-  status: "poison" | "hobble" | "bleed" | "ward",
+  status: "poison" | "hobble" | "bleed" | "grounded" | "ward",
   count: number
 ): StatusText[] =>
   count > 0
@@ -534,6 +557,24 @@ const bonusAttackText = (unit: StatusCounts): StatusText[] =>
       ]
     : [];
 
+/** The bonus Range of a Skill Card, with the End Phases that are left. */
+const bonusRangeText = (unit: StatusCounts): StatusText[] =>
+  unit.bonusRange > 0
+    ? [
+        {
+          status: "bonusRange",
+          name: {
+            key: "battle.status.bonusRange",
+            args: { value: unit.bonusRange },
+          },
+          rule: {
+            key: "battle.status.bonusRangeRule",
+            args: { turns: unit.bonusRangeTurns },
+          },
+        },
+      ]
+    : [];
+
 /** Exposed N, with the End Phases that are left. */
 const exposedText = (unit: StatusCounts): StatusText[] =>
   unit.exposed > 0
@@ -555,7 +596,7 @@ const exposedText = (unit: StatusCounts): StatusText[] =>
 
 /**
  * How a Unit is different from its card now (UI-05): its Buffs (Ward and
- * Steadfast, first as on its badge), bonus Armor, bonus Attack, the Rally
+ * Steadfast, first as on its badge), bonus Armor, bonus Attack, bonus Range, the Rally
  * bonus, the Swarm bonus, each Debuff that it has, then a used Rebirth. Empty
  * for a Unit with none of these.
  */
@@ -578,6 +619,7 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
       ]
     : []),
   ...bonusAttackText(unit),
+  ...bonusRangeText(unit),
   ...(unit.rallyBonus > 0
     ? [
         {
@@ -617,6 +659,7 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
   ...flagStatus("entangle", unit.entangled),
   ...countedStatus("hobble", unit.hobbled),
   ...countedStatus("bleed", unit.bleeding),
+  ...countedStatus("grounded", unit.grounded),
   ...countedStatus("poison", unit.poisoned),
   ...exposedText(unit),
   ...(unit.reborn

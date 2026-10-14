@@ -17,6 +17,11 @@ export interface Hit {
   readonly source: DamageSource;
   /** Crit chance of the attacking side, in basis points. 0 for no Crit roll. */
   readonly crit: number;
+  /**
+   * True Damage (GDD 4.7): no Armor, Exposed, Crit, Block or Ward. The hit
+   * keeps its Damage Type and its Status. Steadfast still holds.
+   */
+  readonly trueDamage?: boolean;
 }
 
 /** Burn, Poison and Sudden Death are status damage: no Armor, no Crit, no Block, no new status. */
@@ -83,6 +88,7 @@ const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
   unit.entangled = false;
   unit.hobbled = 0;
   unit.bleeding = 0;
+  unit.grounded = 0;
   unit.exposed = 0;
   unit.exposedTurns = 0;
   unit.ward = 0;
@@ -91,6 +97,8 @@ const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
   unit.bonusArmorTurns = 0;
   unit.bonusAttack = 0;
   unit.bonusAttackTurns = 0;
+  unit.bonusRange = 0;
+  unit.bonusRangeTurns = 0;
   ctx.events.push(BattleEvent.UnitReborn({ unitId: unit.id, hp: unit.hp }));
   return true;
 };
@@ -135,8 +143,9 @@ interface HitResult {
  * Damage calculation (GDD 4.7): the value, minus Armor (not for Holy), plus
  * Exposed for a Physical hit, Crit ×2, Block ÷2 rounded up, minimum 0. Then a
  * Ward absorbs damage, also status damage. Absorbed damage is not dealt: `dealt` is the damage after
- * the Ward. Then Steadfast keeps the Unit at 1 HP. Fire gives Burn, Frost
- * gives Freeze and Lightning gives Paralyzed, also at 0 damage.
+ * the Ward. True Damage skips all of these steps. Then Steadfast keeps the
+ * Unit at 1 HP. Fire gives Burn, Frost gives Freeze and Lightning gives
+ * Paralyzed, also at 0 damage.
  */
 export const damageUnit = (
   ctx: StepContext,
@@ -144,22 +153,26 @@ export const damageUnit = (
   hit: Hit
 ): HitResult => {
   const status = isStatusDamage(hit.source);
+  const trueDamage = hit.trueDamage ?? false;
+  // Status damage and True Damage get no Armor, Exposed, Crit or Block.
+  const fixed = status || trueDamage;
   const armor =
-    status || hit.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
+    fixed || hit.damageType === "holy" ? 0 : unit.armor + unit.bonusArmor;
   // Exposed (step 4): after Armor, so it also hurts a Unit with high Armor.
   // Poison damage is Physical, but it is status damage: no Exposed.
-  const exposed = !status && hit.damageType === "physical" ? unit.exposed : 0;
+  const exposed = !fixed && hit.damageType === "physical" ? unit.exposed : 0;
   let amount = Math.max(0, hit.amount - armor) + exposed;
-  const crit = !status && rollBasisPoints(ctx.random, hit.crit);
+  const crit = !fixed && rollBasisPoints(ctx.random, hit.crit);
   if (crit) {
     amount *= 2;
   }
   const blockChance = ctx.state.sides[unit.owner].hero.unitBlock;
-  const blocked = !status && rollBasisPoints(ctx.random, blockChance);
+  const blocked = !fixed && rollBasisPoints(ctx.random, blockChance);
   if (blocked) {
     amount = Math.ceil(amount / 2);
   }
-  const absorbed = Math.min(unit.ward, amount);
+  // A Ward absorbs status damage, but not True Damage.
+  const absorbed = trueDamage ? 0 : Math.min(unit.ward, amount);
   unit.ward -= absorbed;
   amount -= absorbed;
   unit.hp -= amount;
@@ -179,6 +192,7 @@ export const damageUnit = (
       source: hit.source,
       crit,
       blocked,
+      trueDamage,
       absorbed,
       ward: unit.ward,
       hp: Math.max(0, unit.hp),
@@ -199,14 +213,20 @@ export const damageUnit = (
   return { dealt: amount, killed: false };
 };
 
-/** Heroes have no Armor and cannot Block (GDD 4.7). The Battle ends at 0 HP. */
+/**
+ * Heroes have no Armor and cannot Block (GDD 4.7). True Damage has no Crit.
+ * The Battle ends at 0 HP.
+ */
 export const damageHero = (ctx: StepContext, side: Side, hit: Hit): void => {
   if (isOver(ctx)) {
     return;
   }
   const { hero } = ctx.state.sides[side];
+  const trueDamage = hit.trueDamage ?? false;
   const crit =
-    !isStatusDamage(hit.source) && rollBasisPoints(ctx.random, hit.crit);
+    !isStatusDamage(hit.source) &&
+    !trueDamage &&
+    rollBasisPoints(ctx.random, hit.crit);
   const amount = Math.max(0, crit ? hit.amount * 2 : hit.amount);
   hero.hp = Math.max(0, hero.hp - amount);
   ctx.events.push(
@@ -217,6 +237,7 @@ export const damageHero = (ctx: StepContext, side: Side, hit: Hit): void => {
       source: hit.source,
       crit,
       blocked: false,
+      trueDamage,
       absorbed: 0,
       ward: 0,
       hp: hero.hp,

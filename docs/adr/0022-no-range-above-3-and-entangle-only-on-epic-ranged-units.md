@@ -10,6 +10,8 @@ We decided:
 
 > Changed on 2026-10-09 by [ADR-0026](0026-each-race-has-one-race-keyword.md): Entangle is now the Elf Race Keyword, and thus an Elf Main Keyword. It is still only on Ranged Units with Base Rank Epic or higher.
 
+> Changed on 2026-10-13 by the Ranger Skill Card *Hunter's Focus* ([GDD 4.8](../game/03-game-design.md#48-skill-cards-and-recall)): the limit is for the printed Range of a Creature Card. A bonus Range from a Skill Card can give 1 Unit Range 4 until the end of the caster's next Turn. The Range 4 Shooters of issue #23 had Range 4 for the full Battle. Hunter's Focus passes the swap rule ([Archetypes 3.3](../game/08-archetypes.md#33-skill-card-swap)).
+
 ## Considered Options
 
 All results are the Thornwatch win rate, with 500 seeds (1000 Battles) for each Matchup. "Average" is the average against the 8 other Archetypes. Before the change: Vanguard 89.5%, Raiders 83.5%, average 87.4%.

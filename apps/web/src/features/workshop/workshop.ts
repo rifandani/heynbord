@@ -62,7 +62,7 @@ export interface WorkshopTile {
 }
 
 /** True when a Rank below Legendary has at least 2 copies. */
-export const hasPair = (copies: readonly RankCopies[]): boolean =>
+const hasPair = (copies: readonly RankCopies[]): boolean =>
   copies.some(
     (row) => row.rank !== "legendary" && row.copies >= COMBINE_COPIES
   );

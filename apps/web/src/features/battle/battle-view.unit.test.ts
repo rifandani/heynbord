@@ -291,7 +291,7 @@ const rareRangerStage = (): StageDefinition => {
     ["elf.fernwingCourier", "rare"],
     ["elf.thornlineArcher", "rare"],
     ["ranger.venomArrow", "rare"],
-    ["ranger.heartseeker", "rare"],
+    ["ranger.huntersFocus", "rare"],
     ["ranger.rainOfArrows", "epic"],
   ] as const;
   return {
@@ -321,7 +321,7 @@ describe("applyEvent with the Rare and Epic Ranger Skill Cards of #59", () => {
     }
   });
 
-  it("plays Poisoned stacks, a Lane Entangle and Skill damage to a Hero", () => {
+  it("plays Poisoned stacks, a Lane Entangle and a bonus Range", () => {
     expect(
       castEffects(events, "ranger.venomArrow").some((effects) =>
         effects.some(
@@ -341,11 +341,8 @@ describe("applyEvent with the Rare and Epic Ranger Skill Cards of #59", () => {
       )
     ).toBe(true);
     expect(
-      castEffects(events, "ranger.heartseeker").some((effects) =>
-        effects.some(
-          (event) =>
-            event._tag === "DamageDealt" && event.target._tag === "Hero"
-        )
+      castEffects(events, "ranger.huntersFocus").some((effects) =>
+        effects.some((event) => event._tag === "RangeGained")
       )
     ).toBe(true);
   });
@@ -580,6 +577,8 @@ const halberdierView = (owner: "player" | "enemy", id: number): UnitView => ({
   swarmBonus: 0,
   bonusAttack: 0,
   bonusAttackTurns: 0,
+  bonusRange: 0,
+  bonusRangeTurns: 0,
   reborn: false,
   hp: 6,
   maxHp: 6,
@@ -593,6 +592,7 @@ const halberdierView = (owner: "player" | "enemy", id: number): UnitView => ({
   poisoned: 0,
   hobbled: 0,
   bleeding: 0,
+  grounded: 0,
   exposed: 0,
   exposedTurns: 0,
   frozen: false,
@@ -727,6 +727,8 @@ describe("the bonus Attack and Exposed view", () => {
       attack: 3,
       bonusAttack: 0,
       bonusAttackTurns: 0,
+      bonusRange: 0,
+      bonusRangeTurns: 0,
     });
   });
 
@@ -902,6 +904,8 @@ describe("the Graveyard view", () => {
           bonusArmorTurns: 0,
           bonusAttack: 0,
           bonusAttackTurns: 0,
+          bonusRange: 0,
+          bonusRangeTurns: 0,
           exposed: 0,
           exposedTurns: 0,
           range: 1,
@@ -911,6 +915,7 @@ describe("the Graveyard view", () => {
           poisoned: 0,
           hobbled: 0,
           bleeding: 0,
+          grounded: 0,
           frozen: false,
           paralyzed: false,
           entangled: false,
@@ -967,6 +972,8 @@ describe("the bonus Armor view", () => {
       bonusArmorTurns: 0,
       bonusAttack: 0,
       bonusAttackTurns: 0,
+      bonusRange: 0,
+      bonusRangeTurns: 0,
       exposed: 0,
       exposedTurns: 0,
       range: 1,
@@ -976,6 +983,7 @@ describe("the bonus Armor view", () => {
       poisoned: 0,
       hobbled: 0,
       bleeding: 0,
+      grounded: 0,
       frozen: false,
       paralyzed: false,
       entangled: false,
@@ -1039,6 +1047,8 @@ describe("the Hobbled and Bleeding view", () => {
       bonusArmorTurns: 0,
       bonusAttack: 0,
       bonusAttackTurns: 0,
+      bonusRange: 0,
+      bonusRangeTurns: 0,
       exposed: 0,
       exposedTurns: 0,
       range: 0,
@@ -1048,6 +1058,7 @@ describe("the Hobbled and Bleeding view", () => {
       poisoned: 0,
       hobbled: 0,
       bleeding: 0,
+      grounded: 0,
       frozen: false,
       paralyzed: false,
       entangled: false,
@@ -1120,6 +1131,8 @@ describe("a push", () => {
       bonusArmorTurns: 0,
       bonusAttack: 0,
       bonusAttackTurns: 0,
+      bonusRange: 0,
+      bonusRangeTurns: 0,
       exposed: 0,
       exposedTurns: 0,
       range: 0,
@@ -1129,6 +1142,7 @@ describe("a push", () => {
       poisoned: 0,
       hobbled: 0,
       bleeding: 0,
+      grounded: 0,
       frozen: false,
       paralyzed: false,
       entangled: false,
@@ -1237,6 +1251,8 @@ describe("the Entangled view", () => {
     bonusArmorTurns: 0,
     bonusAttack: 0,
     bonusAttackTurns: 0,
+    bonusRange: 0,
+    bonusRangeTurns: 0,
     exposed: 0,
     exposedTurns: 0,
     range: 0,
@@ -1246,6 +1262,7 @@ describe("the Entangled view", () => {
     poisoned: 0,
     hobbled: 0,
     bleeding: 0,
+    grounded: 0,
     frozen: false,
     paralyzed: false,
     entangled: false,
@@ -1337,6 +1354,7 @@ const snapshot = (
   poisoned: 0,
   hobbled: 0,
   bleeding: 0,
+  grounded: 0,
   frozen: false,
   paralyzed: false,
   entangled: false,
@@ -1347,6 +1365,8 @@ const snapshot = (
   bonusArmorTurns: 0,
   bonusAttack: 0,
   bonusAttackTurns: 0,
+  bonusRange: 0,
+  bonusRangeTurns: 0,
   exposed: 0,
   exposedTurns: 0,
   ...extra,

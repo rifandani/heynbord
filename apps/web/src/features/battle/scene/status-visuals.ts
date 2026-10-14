@@ -24,6 +24,7 @@ export const STATUS_ORDER: readonly Status[] = [
   "entangle",
   "bleed",
   "hobble",
+  "grounded",
   "exposed",
 ];
 
@@ -39,6 +40,7 @@ export const STATUS_ICON = {
   steadfast: "icon-steadfast",
   exposed: "icon-exposed",
   paralyze: "icon-paralyze",
+  grounded: "icon-grounded",
 } as const satisfies Readonly<Record<Status, FxSlotName>>;
 
 /**
@@ -66,11 +68,12 @@ const HAS_STATUS: Readonly<Record<Status, (unit: UnitView) => boolean>> = {
   steadfast: (unit) => unit.steadfast,
   exposed: (unit) => unit.exposed > 0,
   paralyze: (unit) => unit.paralyzed,
+  grounded: (unit) => unit.grounded > 0,
 };
 
 /**
- * The count on a badge: the Ward value, the Poisoned stacks, the Hobbled and
- * Bleeding counts, and the Exposed value.
+ * The count on a badge: the Ward value, the Poisoned stacks, the Hobbled,
+ * Bleeding and Grounded counts, and the Exposed value.
  */
 const COUNT_OF: Readonly<Record<Status, (unit: UnitView) => number | null>> = {
   freeze: () => null,
@@ -83,6 +86,7 @@ const COUNT_OF: Readonly<Record<Status, (unit: UnitView) => number | null>> = {
   steadfast: () => null,
   exposed: (unit) => unit.exposed,
   paralyze: () => null,
+  grounded: (unit) => unit.grounded,
 };
 
 /** All Statuses of a Unit, in the priority order. */
