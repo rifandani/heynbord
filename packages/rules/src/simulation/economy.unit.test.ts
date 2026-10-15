@@ -17,11 +17,22 @@ import {
 import type { EconomyPlayer } from "./economy";
 import { NO_GEAR } from "./simulate";
 
-/** A Player at `level` with `coin`, the free Pack and the 4th Deck slot done. */
-const playerAt = (level: number, coin: number): EconomyPlayer => {
+/** 20 Forge Stones of each tier: all that the 4 Gear items need. */
+const ALL_FORGE_STONES = { common: 20, uncommon: 20, rare: 20, epic: 20 };
+
+/**
+ * A Player at `level` with `coin` and `forgeStones`, the free Pack and the
+ * 4th Deck slot done.
+ */
+const playerAt = (
+  level: number,
+  coin: number,
+  forgeStones = ALL_FORGE_STONES
+): EconomyPlayer => {
   const player = newEconomyPlayer(1);
   player.xp = PLAYER_LEVEL_XP[level - 1] ?? 0;
   player.coin = coin;
+  player.forgeStones = forgeStones;
   player.freePackOpened = true;
   player.deckSlots = 4;
   return player;
@@ -120,10 +131,10 @@ describe("expectedGear (ADR-0034)", () => {
     }
   });
 
-  it("gives each slot level 2 or 3 before Stage 1-9, and the highest mean before 1-10", () => {
+  it("gives 10 levels before Stage 1-9 and 11 before 1-10: 1 Common Forge Stone for each first win and 2 from the 10-Star chest (ADR-0038)", () => {
     expect(gear.get("1-9")).toEqual({
       weapon: 3,
-      armor: 2,
+      armor: 3,
       trinket: 2,
       banner: 2,
     });
@@ -131,7 +142,16 @@ describe("expectedGear (ADR-0034)", () => {
       weapon: 3,
       armor: 3,
       trinket: 3,
-      banner: 3,
+      banner: 2,
+    });
+  });
+
+  it("stops at level 5 in Region 2: Regions 1 and 2 give only Common Forge Stones", () => {
+    expect(gear.get("2-10")).toEqual({
+      weapon: 5,
+      armor: 5,
+      trinket: 5,
+      banner: 5,
     });
   });
 
@@ -171,8 +191,9 @@ describe("spend (Economy 7.1)", () => {
     spend(player, "collector");
     expect(player.packsOpened).toBe(1);
     expect(player.combines).toBe(0);
-    // 400 Coin: 4 × 10 to level 1, 4 × 30 to level 2, 4 × 60 to level 3.
-    expect(gearSum(player)).toBe(12);
+    // 400 Coin: 4 × 5 to level 1, 4 × 15, 4 × 30 and 4 × 50 to level 4.
+    expect(gearSum(player)).toBe(16);
+    expect(player.forgeStones.common).toBe(4);
     expect(player.coin).toBe(0);
   });
 
@@ -181,23 +202,57 @@ describe("spend (Economy 7.1)", () => {
     spend(player, "upgrader");
     // The Vanguard pairs: 3 Common pairs (3 × 50), then 1 Uncommon pair (200).
     expect(player.combines).toBe(4);
-    // 550 Coin: 4 × 10, 4 × 30 and 4 × 60 to level 3, then 100 to level 4,
-    // the cap at level 6. 50 Coin stays.
-    expect(gearSum(player)).toBe(13);
+    // 550 Coin: 4 × 5, 4 × 15, 4 × 30 and 4 × 50 to level 4, the cap at
+    // level 6. 150 Coin stays: less than a Peddler Pack.
+    expect(gearSum(player)).toBe(16);
     expect(Math.max(...Object.values(player.gear))).toBe(4);
     expect(player.packsOpened).toBe(0);
-    expect(player.coin).toBe(50);
+    expect(player.coin).toBe(150);
   });
 
   it("Balanced: one Pack and two Gear levels in turn, then Combine", () => {
     const player = playerAt(6, 950);
     spend(player, "balanced");
     expect(player.packsOpened).toBe(1);
-    // 450 Coin: 4 × 10, 4 × 30 and 4 × 60. Then a Common pair (50) of the 50
-    // Coin.
-    expect(gearSum(player)).toBe(12);
+    // 450 Coin: 4 × 5, 4 × 15, 4 × 30 and 4 × 50 to level 4. Then a Common
+    // pair (50) of the 50 Coin.
+    expect(gearSum(player)).toBe(16);
     expect(player.combines).toBe(1);
     expect(player.coin).toBe(0);
+  });
+
+  it("needs a Forge Stone of the tier of the new level for each Gear level (ADR-0038)", () => {
+    const player = playerAt(6, 900, {
+      common: 3,
+      uncommon: 20,
+      rare: 20,
+      epic: 20,
+    });
+    spend(player, "collector");
+    // 3 Common Forge Stones: 3 items to level 1. Uncommon cannot replace Common.
+    expect(gearSum(player)).toBe(3);
+    expect(player.forgeStones).toEqual({
+      common: 0,
+      uncommon: 20,
+      rare: 20,
+      epic: 20,
+    });
+    expect(player.coin).toBe(400 - 3 * 5);
+  });
+
+  it("goes to the next priority when the Forge Stone is missing", () => {
+    const player = playerAt(6, 1250, {
+      common: 0,
+      uncommon: 0,
+      rare: 0,
+      epic: 0,
+    });
+    spend(player, "upgrader");
+    // No Gear: the Coin after the 4 Combines (350) buys 2 Peddler Packs.
+    expect(gearSum(player)).toBe(0);
+    expect(player.combines).toBe(4);
+    expect(player.packsOpened).toBe(2);
+    expect(player.coin).toBe(200);
   });
 
   it("Extracts each copy above 2 of a card in the same Rank", () => {

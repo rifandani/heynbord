@@ -5,51 +5,90 @@ import {
   GEAR_STATS,
   gearStatValue,
   gearUpgradeCoin,
+  gearUpgradeForgeStone,
   gearUpgradePathCoin,
+  gearUpgradePathForgeStones,
   MAX_GEAR_LEVEL,
 } from "./gear";
 
-/** The Coin row of the table in Economy 3.4, levels 1 to 20. */
+/** The table of Economy 3.4, levels 1 to 20: the Coin and the Forge Stone tier. */
 const ECONOMY_COSTS = [
-  10, 30, 60, 100, 150, 210, 280, 360, 450, 550, 660, 780, 910, 1050, 1200,
-  1360, 1530, 1710, 1900, 2100,
-];
+  [5, "common"],
+  [15, "common"],
+  [30, "common"],
+  [50, "common"],
+  [75, "common"],
+  [105, "uncommon"],
+  [140, "uncommon"],
+  [180, "uncommon"],
+  [225, "uncommon"],
+  [275, "uncommon"],
+  [330, "rare"],
+  [390, "rare"],
+  [455, "rare"],
+  [525, "rare"],
+  [600, "rare"],
+  [680, "epic"],
+  [765, "epic"],
+  [855, "epic"],
+  [950, "epic"],
+  [1050, "epic"],
+] as const;
 
-describe("Gear upgrades (Economy 3.4)", () => {
-  it("costs 5 × n × (n + 1) Coin to upgrade to level n, as in the Economy table", () => {
+describe("Gear upgrades (Economy 3.4, ADR-0038)", () => {
+  it("costs 2.5 × n × (n + 1) Coin and 1 Forge Stone of the tier of level n, as in the Economy table", () => {
     expect(MAX_GEAR_LEVEL).toBe(ECONOMY_COSTS.length);
-    for (const [index, cost] of ECONOMY_COSTS.entries()) {
-      expect(gearUpgradeCoin(index + 1), `level ${index + 1}`).toBe(cost);
+    for (const [index, [coin, tier]] of ECONOMY_COSTS.entries()) {
+      const level = index + 1;
+      expect(gearUpgradeCoin(level), `level ${level}`).toBe(coin);
+      expect(gearUpgradeForgeStone(level), `level ${level}`).toBe(tier);
     }
   });
 
   it("refuses a level outside 1 to 20", () => {
-    expect(() => gearUpgradeCoin(0)).toThrow(RangeError);
-    expect(() => gearUpgradeCoin(21)).toThrow(RangeError);
-    expect(() => gearUpgradeCoin(2.5)).toThrow(RangeError);
+    for (const level of [0, 21, 2.5]) {
+      expect(() => gearUpgradeCoin(level)).toThrow(RangeError);
+      expect(() => gearUpgradeForgeStone(level)).toThrow(RangeError);
+    }
   });
 
-  it("costs 15,400 Coin for one item from level 0 to 20, and 61,600 for all 4", () => {
-    expect(gearUpgradePathCoin(0, MAX_GEAR_LEVEL)).toBe(15_400);
+  it("costs 7,700 Coin and 5 Forge Stones of each tier for one item from level 0 to 20", () => {
+    expect(gearUpgradePathCoin(0, MAX_GEAR_LEVEL)).toBe(7700);
+    expect(gearUpgradePathForgeStones(0, MAX_GEAR_LEVEL)).toEqual({
+      common: 5,
+      uncommon: 5,
+      rare: 5,
+      epic: 5,
+    });
+  });
+
+  it("costs 30,800 Coin for all 4 items", () => {
     expect(GEAR_SLOTS).toHaveLength(4);
     expect(GEAR_SLOTS.length * gearUpgradePathCoin(0, MAX_GEAR_LEVEL)).toBe(
-      61_600
+      30_800
     );
   });
 
-  it("costs the same as the old level n for levels 2n − 1 and 2n (ADR-0037)", () => {
-    for (let old = 1; old <= MAX_GEAR_LEVEL / 2; old += 1) {
-      expect(gearUpgradePathCoin(old * 2 - 2, old * 2), `old ${old}`).toBe(
-        40 * old * old
+  it("costs half of the ADR-0037 Coin: 20 × n² for levels 2n − 1 and 2n", () => {
+    for (let pair = 1; pair <= MAX_GEAR_LEVEL / 2; pair += 1) {
+      expect(gearUpgradePathCoin(pair * 2 - 2, pair * 2), `pair ${pair}`).toBe(
+        20 * pair * pair
       );
     }
   });
 
   it("costs only the levels above the start", () => {
     expect(gearUpgradePathCoin(3, 3)).toBe(0);
-    expect(gearUpgradePathCoin(19, 20)).toBe(2100);
+    expect(gearUpgradePathCoin(19, 20)).toBe(1050);
+    expect(gearUpgradePathForgeStones(4, 7)).toEqual({
+      common: 1,
+      uncommon: 2,
+      rare: 0,
+      epic: 0,
+    });
     expect(() => gearUpgradePathCoin(5, 4)).toThrow(RangeError);
     expect(() => gearUpgradePathCoin(0, 21)).toThrow(RangeError);
+    expect(() => gearUpgradePathForgeStones(5, 4)).toThrow(RangeError);
   });
 });
 

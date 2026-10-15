@@ -32,8 +32,14 @@ describe("newProfile", () => {
     expect(profile.activeDeckId).toBe(INITIAL_DECK_SLOTS[0]?.id);
   });
 
-  it("has no Stage results, Star chests, Unopened Packs, Sweep Tickets or seen Hints", () => {
+  it("has no Forge Stones, Stage results, Star chests, Unopened Packs, Sweep Tickets or seen Hints", () => {
     const profile = newProfile(42);
+    expect(profile.forgeStones).toEqual({
+      common: 0,
+      uncommon: 0,
+      rare: 0,
+      epic: 0,
+    });
     expect(profile.stageResults).toEqual({});
     expect(profile.claimedStarChests).toEqual({});
     expect(profile.unopenedPacks).toEqual([]);

@@ -5,6 +5,7 @@ import { INITIAL_DECK_SLOTS } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
+  forgeStoneCounts,
   gearItem,
   gearItems,
   heroDeck,
@@ -20,6 +21,11 @@ import {
 } from "@/features/hero/hero-art";
 
 const NO_GEAR = { weapon: 0, armor: 0, trinket: 0, banner: 0 } as const;
+
+const NO_STONES = { common: 0, uncommon: 0, rare: 0, epic: 0 } as const;
+
+/** 1 Forge Stone of each tier. */
+const ONE_OF_EACH = { common: 1, uncommon: 1, rare: 1, epic: 1 } as const;
 
 describe("heroHpParts (GDD 4.10, 7.3)", () => {
   it("adds the base, the Player level and 1 HP for each Armor level", () => {
@@ -53,18 +59,18 @@ describe("gearItem: the stat now and next (GDD 7.3)", () => {
 
   for (const [slot, stat, zero, ten, twenty] of TABLE) {
     it(`${slot}: ${stat} at levels 0, 10 and 20`, () => {
-      expect(gearItem(slot, 0, 0)).toMatchObject({
+      expect(gearItem(slot, 0, 0, NO_STONES)).toMatchObject({
         stat,
         level: 0,
         now: zero[0],
         next: zero[1],
       });
-      expect(gearItem(slot, 10, 0)).toMatchObject({
+      expect(gearItem(slot, 10, 0, NO_STONES)).toMatchObject({
         level: 10,
         now: ten[0],
         next: ten[1],
       });
-      expect(gearItem(slot, 20, 0)).toMatchObject({
+      expect(gearItem(slot, 20, 0, NO_STONES)).toMatchObject({
         level: 20,
         now: twenty,
         next: null,
@@ -81,29 +87,62 @@ describe("gearItem: the stat now and next (GDD 7.3)", () => {
   });
 });
 
-describe("gearItem: the upgrade (Economy 3.4)", () => {
-  it("costs the Coin of the next level when the Coin is enough", () => {
-    expect(gearItem("weapon", 0, 10).upgrade).toEqual({
+describe("gearItem: the upgrade (Economy 3.4, ADR-0038)", () => {
+  it("costs the Coin and the Forge Stone of the next level when both are enough", () => {
+    expect(gearItem("weapon", 0, 5, ONE_OF_EACH).upgrade).toEqual({
       kind: "ready",
-      coin: 10,
+      coin: 5,
+      tier: "common",
+      stones: 1,
     });
-    expect(gearItem("weapon", 8, 5000).upgrade).toEqual({
+    expect(
+      gearItem("weapon", 8, 5000, { ...NO_STONES, uncommon: 3 }).upgrade
+    ).toEqual({
       kind: "ready",
-      coin: 450,
+      coin: 225,
+      tier: "uncommon",
+      stones: 3,
     });
   });
 
   it("says how much Coin is missing when it is not enough", () => {
-    expect(gearItem("armor", 10, 500).upgrade).toEqual({
-      kind: "coin",
-      coin: 660,
-      missing: 160,
+    expect(gearItem("armor", 10, 200, ONE_OF_EACH).upgrade).toEqual({
+      kind: "short",
+      coin: 330,
+      tier: "rare",
+      stones: 1,
+      missingCoin: 130,
+      hasStone: true,
+    });
+  });
+
+  it("is off with no Forge Stone of the tier of the next level, also with the Coin", () => {
+    // Level 16 needs an Epic Forge Stone: the other tiers do not count.
+    expect(
+      gearItem("banner", 15, 1_000_000, {
+        common: 9,
+        uncommon: 9,
+        rare: 9,
+        epic: 0,
+      }).upgrade
+    ).toEqual({
+      kind: "short",
+      coin: 680,
+      tier: "epic",
+      stones: 0,
+      missingCoin: 0,
+      hasStone: false,
+    });
+    expect(gearItem("banner", 15, 0, NO_STONES).upgrade).toMatchObject({
+      kind: "short",
+      missingCoin: 680,
+      hasStone: false,
     });
   });
 
   it("lists the 4 items in the GDD 7.3 order", () => {
     expect(
-      gearItems({ ...NO_GEAR, trinket: 3 }, 0).map((item) => [
+      gearItems({ ...NO_GEAR, trinket: 3 }, 0, NO_STONES).map((item) => [
         item.slot,
         item.level,
       ])
@@ -116,12 +155,25 @@ describe("gearItem: the upgrade (Economy 3.4)", () => {
   });
 });
 
+describe("forgeStoneCounts (GDD 7.2, ADR-0038)", () => {
+  it("lists the 4 tiers from the lowest Gear levels, with their counts", () => {
+    expect(
+      forgeStoneCounts({ common: 4, uncommon: 0, rare: 2, epic: 1 })
+    ).toEqual([
+      { tier: "common", count: 4 },
+      { tier: "uncommon", count: 0 },
+      { tier: "rare", count: 2 },
+      { tier: "epic", count: 1 },
+    ]);
+  });
+});
+
 /** The 4 items, each one that can upgrade or not. */
 const items = (ready: readonly boolean[]) =>
   (["weapon", "armor", "trinket", "banner"] as const).map((slot, index) => ({
     slot,
     upgrade: ready[index]
-      ? ({ kind: "ready", coin: 40 } as const)
+      ? ({ kind: "ready", coin: 40, tier: "common", stones: 1 } as const)
       : ({ kind: "max" } as const),
   }));
 

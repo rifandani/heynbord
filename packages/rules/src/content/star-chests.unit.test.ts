@@ -12,6 +12,7 @@ describe("Star chests (Economy 2.2)", () => {
         essence: 0,
         heynstones: 0,
         pack: { pack: "merchant", version: "all" },
+        forgeStones: 2,
       },
       {
         stars: 20,
@@ -19,8 +20,16 @@ describe("Star chests (Economy 2.2)", () => {
         essence: 30,
         heynstones: 0,
         pack: { pack: "merchant", version: "race" },
+        forgeStones: 0,
       },
-      { stars: 30, coin: 0, essence: 100, heynstones: 150, pack: null },
+      {
+        stars: 30,
+        coin: 0,
+        essence: 100,
+        heynstones: 150,
+        pack: null,
+        forgeStones: 0,
+      },
     ]);
   });
 

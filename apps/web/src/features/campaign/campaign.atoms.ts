@@ -10,12 +10,13 @@ export const stageResultsAtom = Atom.make(
 );
 
 /**
- * The Open Stage that the Campaign showed last. When a win opens a new Stage,
- * its marker wakes up once.
+ * The Open Stages that the Campaign knows of, in all Regions, or `null` before
+ * its first show. When a win opens a new Stage, its marker wakes up once
+ * (`wakeUpStage`).
  */
-export const seenOpenStageAtom = Atom.make<string | null>(null).pipe(
-  Atom.keepAlive
-);
+export const seenOpenStagesAtom = Atom.make<ReadonlySet<string> | null>(
+  null
+).pipe(Atom.keepAlive);
 
 /**
  * The Region that the Player opened with the Region arrows, or that the last

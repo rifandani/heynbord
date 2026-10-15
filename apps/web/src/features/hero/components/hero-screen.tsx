@@ -10,9 +10,10 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
+import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { GearPlate } from "@/features/hero/components/gear-item";
 import { HeroScene } from "@/features/hero/components/hero-scene";
-import type { HeroHpParts } from "@/features/hero/hero";
+import type { ForgeStoneCount, HeroHpParts } from "@/features/hero/hero";
 import { upgradeFocusAfter } from "@/features/hero/hero";
 import { useHero } from "@/features/hero/use-hero";
 import { useStatFormat } from "@/features/hero/use-stat-format";
@@ -102,6 +103,66 @@ const HeroHp = ({ hp }: { readonly hp: HeroHpParts }) => {
 };
 
 /**
+ * The 4 Forge Stone counts (GDD 7.2, ADR-0038) on a slim HUD plate: each tier
+ * with its stone in the Card Rank color, its name and its count. A count of 0
+ * is dimmer. The Forge Stones show only here: there is no Inventory screen.
+ */
+const ForgeStonePlate = ({
+  counts,
+}: {
+  readonly counts: readonly ForgeStoneCount[];
+}) => {
+  const { tr } = useGameText();
+  return (
+    <section
+      aria-labelledby="hero-forge-stones"
+      className={cn(
+        PLATE,
+        "w-fit max-w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 [@media(max-height:500px)]:gap-x-3 [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:py-1"
+      )}
+      data-testid="hero-forge-stones"
+    >
+      <h2
+        id="hero-forge-stones"
+        className="text-xs font-bold text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]"
+      >
+        {tr("hero.forgeStones")}
+      </h2>
+      <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 [@media(max-height:500px)]:gap-x-3">
+        {counts.map(({ tier, count }) => {
+          const name = tr(`forgeStones.tiers.${tier}`);
+          return (
+            <li
+              key={tier}
+              className={cn(
+                "flex items-center gap-1.5 text-[13px] whitespace-nowrap [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:text-[11px]",
+                count === 0 && "opacity-60"
+              )}
+              data-testid={`hero-forge-stone-${tier}`}
+              data-count={count}
+            >
+              <ForgeStoneIcon
+                tier={tier}
+                className="size-5 shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-3.5"
+              />
+              <span className="sr-only">
+                {tr("hero.forgeStoneCount", { tier: name, count })}
+              </span>
+              <span aria-hidden className="flex items-baseline gap-1">
+                <span className="font-semibold text-[#e8d9bb]">{name}</span>
+                <span className="text-base font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xs">
+                  {count}
+                </span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+};
+
+/**
  * The sounds of a Gear upgrade: the strike, and at level 20 the chime of a
  * Rare card. The timers stop when the screen closes.
  */
@@ -129,7 +190,8 @@ const useUpgradeSounds = () => {
 /**
  * The Hero screen (GDD 7.3, issue #77, "Gear Rack"): the inside of the
  * Barracks, the Hero plate with the Class of the Active Deck (ADR-0033), its
- * Deck and the Hero HP with its parts, and the 4 Gear items side by side.
+ * Deck and the Hero HP with its parts, the 4 Forge Stone counts (ADR-0038),
+ * and the 4 Gear items side by side.
  * Each press of an upgrade adds 1 level at once: the notch fills, the stat
  * rolls to its new value, a sound plays and the Coin counts down. After an
  * upgrade, the focus stays on that upgrade while it is on, else it goes to
@@ -266,6 +328,7 @@ export const HeroScreen = () => {
             <HeroHp hp={hero.hp} />
           </section>
         ) : null}
+        <ForgeStonePlate counts={hero.forgeStones} />
         <ul
           ref={rack}
           tabIndex={-1}

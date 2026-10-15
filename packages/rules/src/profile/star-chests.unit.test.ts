@@ -43,6 +43,23 @@ describe("claimStarChest (Economy 2.2)", () => {
     expect(claim?.profile.claimedStarChests).toEqual({ "1": [10] });
   });
 
+  it("adds 2 Forge Stones of the tier of the Region from the 10-Star chest (ADR-0038)", () => {
+    const claim = claimStarChest(withStars(10), 1, 10);
+    expect(claim?.forgeStones).toEqual({ tier: "common", count: 2 });
+    expect(claim?.profile.forgeStones).toEqual({
+      ...fresh.forgeStones,
+      common: 2,
+    });
+  });
+
+  it("adds no Forge Stones from the 20-Star and the 30-Star chests", () => {
+    for (const stars of [20, 30]) {
+      const claim = claimStarChest(withStars(30), 1, stars);
+      expect(claim?.forgeStones, `${stars}`).toBeNull();
+      expect(claim?.profile.forgeStones, `${stars}`).toEqual(fresh.forgeStones);
+    }
+  });
+
   it("gives null for a chest that is already claimed", () => {
     const first = claimStarChest(withStars(30), 1, 10);
     expect(first).not.toBeNull();

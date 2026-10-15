@@ -1,4 +1,9 @@
-import type { BattleEvent, RankId, UnopenedPack } from "@workspace/rules";
+import type {
+  BattleEvent,
+  ForgeStones,
+  RankId,
+  UnopenedPack,
+} from "@workspace/rules";
 import {
   addCopies,
   getCard,
@@ -266,6 +271,13 @@ export const installTestHooks = (
       registry.set(profileAtom, {
         ...registry.get(profileAtom),
         sweepTickets,
+      });
+    },
+    /** Sets the Forge Stones of the Profile, so that a test can upgrade Gear. */
+    setForgeStones: (forgeStones: ForgeStones) => {
+      registry.set(profileAtom, {
+        ...registry.get(profileAtom),
+        forgeStones,
       });
     },
     /** Sets the XP of the Profile, so that a test can reach a Player level. */

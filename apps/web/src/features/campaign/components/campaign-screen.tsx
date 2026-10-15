@@ -15,7 +15,7 @@ import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
-  seenOpenStageAtom,
+  seenOpenStagesAtom,
   stageResultsAtom,
 } from "@/features/campaign/campaign.atoms";
 import {
@@ -29,6 +29,7 @@ import type {
   Box,
   MapFrame,
   RegionMap,
+  StageResults,
   TrailStage,
   Viewport,
 } from "@/features/campaign/region-map";
@@ -40,6 +41,7 @@ import {
   smoothPath,
   trailStages,
   walkedLegs,
+  wakeUpStage,
 } from "@/features/campaign/region-map";
 
 /** The phone-in-landscape layout (DESIGN.md, The Short Screen Rule). */
@@ -135,26 +137,36 @@ const paintingMask = (
 const AWAKEN_MS = 1700;
 
 /**
- * The Open Stage wakes up once when the Campaign first shows it after a win.
- * Returns the ID of the Stage that wakes up now.
+ * The Open Stage wakes up once when the Campaign first shows it after a win,
+ * also after a change of Region (`wakeUpStage`). Returns the ID of the Stage
+ * that wakes up now.
  */
-const useAwakenedStage = (trail: readonly TrailStage[]) => {
-  const open = trail.find((stop) => stop.state === "open")?.stage.id ?? null;
-  const [seen, setSeen] = useAtom(seenOpenStageAtom);
-  const [awaken, setAwaken] = useState(() =>
-    seen !== null && open !== seen ? open : null
-  );
+const useAwakenedStage = (region: number, results: StageResults) => {
+  const [seen, setSeen] = useAtom(seenOpenStagesAtom);
+  // The wake-up is found in the render, so the marker wakes up on its first
+  // paint. It changes with the Region and the results, not with `seen`.
+  const [wake, setWake] = useState(() => ({
+    region,
+    results,
+    ...wakeUpStage(STAGES, region, results, seen),
+  }));
+  if (wake.region !== region || wake.results !== results) {
+    setWake({ region, results, ...wakeUpStage(STAGES, region, results, seen) });
+  }
   useEffect(() => {
-    setSeen(open);
-  }, [open, setSeen]);
+    setSeen(wake.seen);
+  }, [wake.seen, setSeen]);
   useEffect(() => {
-    if (awaken === null) {
+    if (wake.awaken === null) {
       return;
     }
-    const timer = setTimeout(() => setAwaken(null), AWAKEN_MS);
+    const timer = setTimeout(
+      () => setWake((current) => ({ ...current, awaken: null })),
+      AWAKEN_MS
+    );
     return () => clearTimeout(timer);
-  }, [awaken]);
-  return awaken;
+  }, [wake.awaken]);
+  return wake.awaken;
 };
 
 const preloadBattleCanvas = () =>
@@ -303,7 +315,7 @@ export const CampaignScreen = ({
     [region, results]
   );
   const stars = regionStars(results, region);
-  const awaken = useAwakenedStage(trail);
+  const awaken = useAwakenedStage(region, results);
   const [selected, setSelected] = useState<string | null>(null);
   const root = useRef<HTMLElement>(null);
   const marker = useRef<Element | null>(null);

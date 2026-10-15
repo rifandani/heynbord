@@ -36,6 +36,7 @@ const repeatWins = (
   let profile = start;
   let xp = 0;
   let coin = 0;
+  let forgeStones = 0;
   const cards: string[] = [];
   for (let index = 0; index < count; index += 1) {
     const result = applyStageResult(profile, {
@@ -46,12 +47,13 @@ const repeatWins = (
     });
     xp += result.rewards.xp;
     coin += result.rewards.coin;
+    forgeStones += result.rewards.forgeStones?.count ?? 0;
     if (result.rewards.card) {
       cards.push(result.rewards.card.cardId);
     }
     ({ profile } = result);
   }
-  return { profile, xp, coin, cards };
+  return { profile, xp, coin, forgeStones, cards };
 };
 
 describe("applySweep: rewards (ADR-0035)", () => {
@@ -77,6 +79,46 @@ describe("applySweep: rewards (ADR-0035)", () => {
     expect(profile.coin).toBe(repeats.profile.coin);
     expect(profile.collection).toEqual(repeats.profile.collection);
     expect(profile.rewardRandomState).toBe(repeats.profile.rewardRandomState);
+    expect(rewards.forgeStones?.count ?? 0).toBe(repeats.forgeStones);
+    expect(profile.forgeStones).toEqual(repeats.profile.forgeStones);
+  });
+
+  it("gives the Forge Stones of each Ticket, of the tier of the Region (ADR-0038)", () => {
+    // Find a start where the 10 Tickets give at least 1 Forge Stone.
+    let start = ready("1-9");
+    for (let seed = 0; seed < 200; seed += 1) {
+      start = ready("1-9", 3, MAX_SWEEP_TICKETS, newProfile(seed));
+      if (repeatWins(start, "1-9", MAX_SWEEP_TICKETS).forgeStones >= 1) {
+        break;
+      }
+    }
+    const repeats = repeatWins(start, "1-9", MAX_SWEEP_TICKETS);
+    const { profile, rewards } = applySweep(
+      start,
+      sweep("1-9", MAX_SWEEP_TICKETS)
+    );
+    expect(repeats.forgeStones).toBeGreaterThanOrEqual(1);
+    expect(rewards.forgeStones).toEqual({
+      tier: "common",
+      count: repeats.forgeStones,
+    });
+    expect(profile.forgeStones.common).toBe(
+      start.forgeStones.common + repeats.forgeStones
+    );
+  });
+
+  it("gives no Forge Stones when no Ticket rolls one", () => {
+    // Find a start where 1 Ticket gives no Forge Stone.
+    let start = ready("1-9");
+    for (let seed = 0; seed < 200; seed += 1) {
+      start = ready("1-9", 3, MAX_SWEEP_TICKETS, newProfile(seed));
+      if (repeatWins(start, "1-9", 1).forgeStones === 0) {
+        break;
+      }
+    }
+    const { profile, rewards } = applySweep(start, sweep("1-9", 1));
+    expect(rewards.forgeStones).toBeNull();
+    expect(profile.forgeStones).toEqual(start.forgeStones);
   });
 
   it("removes the Tickets that it used, gives no Tickets and does not change the Stars", () => {

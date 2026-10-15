@@ -11,7 +11,7 @@ Each Region has 2 paintings, and no more:
 
 A Stage has no painting of its own. Its landmark is a small part of the Region Map, and its Battle uses the Battle Painting of its Region.
 
-The Hearthvale Region Map exists (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen shows it (`apps/web/src/features/campaign/`). Its clearings are not at the positions of 1.1: they are measured on the painting (see 1.3). The Red Mesas, The Glowcap Hollows, The Thornwood and The Hollow Marches have no Region Map yet.
+The Hearthvale Region Map exists (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen shows it (`apps/web/src/features/campaign/`). Its clearings are not at the positions of 1.1: they are measured on the painting (see 1.3). The Red Mesas, The Glowcap Hollows, The Thornwood and The Hollow Marches have no Region Map yet. Until a Region has one, the Campaign screen shows a placeholder: a plain ground and a soft road with the Hearthvale positions of 1.3, and no landmarks ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The placeholder goes away when the Region gets its entry in `REGION_MAPS` (step 6).
 
 ## 1. Rules for the Region art
 

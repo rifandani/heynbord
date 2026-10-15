@@ -2,6 +2,8 @@
  * The Sweep action of the Profile (GDD 4.12, ADR-0035). It is pure: each
  * Sweep Ticket gives one repeat-win reward of the Stage, with no Battle.
  */
+import { addForgeStones, regionForgeStoneTier } from "../content/forge-stones";
+import type { ForgeStoneReward } from "../content/forge-stones";
 import type { ClassId, StageDefinition } from "../content/schema";
 import { STAGES } from "../content/stages";
 import { addCopies } from "./packs";
@@ -33,6 +35,11 @@ export interface SweepRewards {
   readonly levelAfter: number;
   /** The repeat-win cards, in Ticket order. */
   readonly cards: readonly StageRewardCard[];
+  /**
+   * The Forge Stones of all Tickets (ADR-0038), all of the tier of the Region
+   * of the Stage, or `null` when no Ticket gave one.
+   */
+  readonly forgeStones: ForgeStoneReward | null;
   /** The Unopened Packs that the Sweep added: the First Pack at the Packs unlock. */
   readonly unopenedPacks: readonly UnopenedPack[];
   /** The Sweep Tickets that the Player has after the Sweep. */
@@ -53,15 +60,17 @@ type SweepProfile = Pick<
   | "stageResults"
   | "unopenedPacks"
   | "sweepTickets"
+  | "forgeStones"
   | "rewardRandomState"
 >;
 
 /**
  * Applies a Sweep (ADR-0035). Each Ticket gives the rewards of one repeat
- * win, in order, so the Sweep of N Tickets is the same as N repeat wins. A
- * Sweep always wins and plays no Battle. It removes the Tickets that it used,
- * gives no Tickets, never changes the Stars, and adds the First Pack when the
- * level goes to the Packs unlock. It throws when the best Stars of the Stage
+ * win, with its Forge Stone chance (ADR-0038), in order, so the Sweep of N
+ * Tickets is the same as N repeat wins. A Sweep always wins and plays no
+ * Battle. It removes the Tickets that it used, gives no Tickets, never
+ * changes the Stars, and adds the First Pack when the level goes to the
+ * Packs unlock. It throws when the best Stars of the Stage
  * are not 3, or when the Tickets are not 1 to `MAX_SWEEP_TICKETS`, or are more
  * than the Player has.
  */
@@ -89,6 +98,7 @@ export const applySweep = <P extends SweepProfile>(
   }
   let xp = 0;
   let coin = 0;
+  let stones = 0;
   let { collection } = profile;
   let { rewardRandomState } = profile;
   const cards: StageRewardCard[] = [];
@@ -101,6 +111,7 @@ export const applySweep = <P extends SweepProfile>(
     );
     xp += rewards.xp;
     coin += rewards.coin;
+    stones += rewards.forgeStones?.count ?? 0;
     ({ rewardRandomState } = rewards);
     if (rewards.card) {
       cards.push(rewardCard(rewards.card, collection));
@@ -112,6 +123,10 @@ export const applySweep = <P extends SweepProfile>(
     profile.xp + xp
   );
   const sweepTicketsLeft = profile.sweepTickets - tickets;
+  const forgeStones: ForgeStoneReward | null =
+    stones > 0
+      ? { tier: regionForgeStoneTier(stage.region), count: stones }
+      : null;
   return {
     profile: {
       ...profile,
@@ -120,6 +135,7 @@ export const applySweep = <P extends SweepProfile>(
       collection,
       unopenedPacks: [...profile.unopenedPacks, ...unopenedPacks],
       sweepTickets: sweepTicketsLeft,
+      forgeStones: addForgeStones(profile.forgeStones, forgeStones),
       rewardRandomState,
     },
     rewards: {
@@ -128,6 +144,7 @@ export const applySweep = <P extends SweepProfile>(
       levelBefore,
       levelAfter,
       cards,
+      forgeStones,
       unopenedPacks,
       sweepTicketsLeft,
     },

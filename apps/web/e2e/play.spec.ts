@@ -1007,6 +1007,10 @@ test.describe("Campaign", () => {
       "data-copper",
       "180"
     );
+    // And 1 Forge Stone of the tier of Region 1 (ADR-0038).
+    const stones = page.getByTestId("result-forge-stones");
+    await expect(stones).toHaveAttribute("data-tier", "common");
+    await expect(stones).toContainText("+1 × Common Forge Stone");
     await page.getByTestId("back-to-campaign").click();
     const won = page.getByTestId("stage-1-1");
     await expect(won).toHaveAttribute("data-state", "done");
@@ -1169,6 +1173,9 @@ test.describe("Region 1 rewards (issue #54)", () => {
     await expect(rewards).toBeVisible();
     await expect(page.getByTestId("chest-reward-pack")).toHaveText(
       "1 Merchant Pack waits in the Card shop."
+    );
+    await expect(page.getByTestId("chest-reward-forge-stones")).toHaveText(
+      "+2 × Common Forge Stone"
     );
     await page.getByTestId("chest-rewards-close").click();
     await expect(rewards).toBeHidden();

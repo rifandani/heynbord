@@ -1,5 +1,5 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
-import type { StarChestDefinition } from "@workspace/rules";
+import type { StarChestClaim } from "@workspace/rules";
 import {
   CAMPAIGN_REGIONS,
   claimStarChest,
@@ -32,6 +32,7 @@ import {
 } from "@/features/campaign/components/campaign-icons";
 import type { ChestState, RegionStatus } from "@/features/campaign/region-map";
 import { chestState, regionStatus } from "@/features/campaign/region-map";
+import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { profileAtom } from "@/features/profile/profile.atoms";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
@@ -258,6 +259,9 @@ export const RegionBanner = ({
   );
 };
 
+/** What a claimed chest gave: its rewards and its Forge Stones of the Region. */
+type ChestClaim = Pick<StarChestClaim<unknown>, "reward" | "forgeStones">;
+
 /** One line of the chest rewards: an icon, then its text. */
 const RewardLine = ({
   icon,
@@ -278,15 +282,15 @@ const RewardLine = ({
 
 /**
  * The rewards of a claimed Star chest (GDD 11.5): a small panel under the
- * chest with its Coin, Essence, Heynstones and Pack. The rewards are already
- * in the Profile. Esc, OK and a click outside close it.
+ * chest with its Coin, Essence, Heynstones, Forge Stones and Pack. The
+ * rewards are already in the Profile. Esc, OK and a click outside close it.
  */
 const ChestRewards = ({
-  chest,
+  claim,
   anchor,
   onClose,
 }: {
-  readonly chest: StarChestDefinition;
+  readonly claim: ChestClaim;
   readonly anchor: RefObject<HTMLElement | null>;
   readonly onClose: () => void;
 }) => {
@@ -294,6 +298,7 @@ const ChestRewards = ({
   const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const format = (value: number) => number.format(value);
   const ICON = "size-5";
+  const { reward: chest, forgeStones } = claim;
   return (
     <Popover
       triggerRef={anchor}
@@ -357,6 +362,17 @@ const ChestRewards = ({
               })}
             </RewardLine>
           ) : null}
+          {forgeStones ? (
+            <RewardLine
+              testId="chest-reward-forge-stones"
+              icon={<ForgeStoneIcon tier={forgeStones.tier} className={ICON} />}
+            >
+              {tr("battle.forgeStonesEarned", {
+                count: forgeStones.count,
+                tier: tr(`forgeStones.tiers.${forgeStones.tier}`),
+              })}
+            </RewardLine>
+          ) : null}
           {chest.pack ? (
             <RewardLine
               testId="chest-reward-pack"
@@ -413,8 +429,8 @@ const Chest = ({
   readonly stars: number;
   readonly count: number;
   readonly state: ChestState;
-  /** The chest whose rewards panel shows now, or `null`. */
-  readonly rewards: StarChestDefinition | null;
+  /** The claim whose rewards panel shows now, or `null`. */
+  readonly rewards: ChestClaim | null;
   readonly onClaim: () => void;
   readonly onCloseRewards: () => void;
 }) => {
@@ -472,7 +488,7 @@ const Chest = ({
       </TipPiece>
       {rewards ? (
         <ChestRewards
-          chest={rewards}
+          claim={rewards}
           anchor={button}
           onClose={onCloseRewards}
         />
@@ -498,7 +514,7 @@ export const StarChests = ({
   const { tr, locale } = useGameText();
   const registry = useContext(RegistryContext);
   const profile = useAtomValue(profileAtom);
-  const [opened, setOpened] = useState<StarChestDefinition | null>(null);
+  const [opened, setOpened] = useState<ChestClaim | null>(null);
   const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   // A Region with no Stages yet keeps its chests on a full track.
   const track = Math.max(total, STAR_CHESTS.at(-1)?.stars ?? 1);
@@ -509,7 +525,7 @@ export const StarChests = ({
       unlockAudio();
       playSound("revealRare");
       registry.set(profileAtom, claimed.profile);
-      setOpened(claimed.reward);
+      setOpened(claimed);
     }
   };
   return (
@@ -562,7 +578,7 @@ export const StarChests = ({
               stars={chest.stars}
               count={count}
               state={chestState(profile, region, chest.stars)}
-              rewards={opened?.stars === chest.stars ? opened : null}
+              rewards={opened?.reward.stars === chest.stars ? opened : null}
               onClaim={() => claim(chest.stars)}
               onCloseRewards={() => setOpened(null)}
             />

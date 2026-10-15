@@ -15,6 +15,7 @@ import {
   shownRegionMap,
   smoothPath,
   trailStages,
+  wakeUpStage,
   walkedLegs,
 } from "@/features/campaign/region-map";
 
@@ -131,6 +132,51 @@ describe("trailStages", () => {
     const trail = trailStages(twoRegions, 2, { "1-1": 3, "1-2": 1 });
     expect(trail.map((stop) => stop.state)).toEqual(["open", "locked"]);
     expect(trail[0]?.after).toBeNull();
+  });
+});
+
+describe("wakeUpStage", () => {
+  it("wakes up nothing at the first show, and knows the Open Stages of all Regions", () => {
+    const wake = wakeUpStage(twoRegions, 1, { "1-1": 3, "1-2": 1 }, null);
+    expect(wake.awaken).toBeNull();
+    expect([...wake.seen]).toEqual(["2-1"]);
+  });
+
+  it("wakes up the Stage that a win opened, one time", () => {
+    const before = wakeUpStage(twoRegions, 1, {}, null);
+    const won = { "1-1": 3 };
+    const wake = wakeUpStage(twoRegions, 1, won, before.seen);
+    expect(wake.awaken).toBe("1-2");
+    expect(wakeUpStage(twoRegions, 1, won, wake.seen).awaken).toBeNull();
+  });
+
+  it("wakes up Stage 1 of a Region that the Boss win unlocked, after a change of Region", () => {
+    const before = wakeUpStage(twoRegions, 1, { "1-1": 3 }, null);
+    const won = { "1-1": 3, "1-2": 1 };
+    // Back to the Campaign: the Region of the Boss has no Open Stage now.
+    const region1 = wakeUpStage(twoRegions, 1, won, before.seen);
+    expect(region1.awaken).toBeNull();
+    const region2 = wakeUpStage(twoRegions, 2, won, region1.seen);
+    expect(region2.awaken).toBe("2-1");
+    // Back to Region 2 again: it does not wake up again.
+    const again = wakeUpStage(twoRegions, 1, won, region2.seen);
+    expect(wakeUpStage(twoRegions, 2, won, again.seen).awaken).toBeNull();
+  });
+
+  it("does not wake up a seen Stage when the Player moves between Regions", () => {
+    const results = { "1-1": 3, "1-2": 1, "2-1": 2 };
+    const first = wakeUpStage(twoRegions, 1, results, null);
+    const region2 = wakeUpStage(twoRegions, 2, results, first.seen);
+    expect(region2.awaken).toBeNull();
+    const region1 = wakeUpStage(twoRegions, 1, results, region2.seen);
+    expect(region1.awaken).toBeNull();
+  });
+
+  it("does not wake up a Stage in a Region with no Open Stage", () => {
+    const seen = new Set<string>();
+    const wake = wakeUpStage(twoRegions, 2, { "1-1": 3 }, seen);
+    expect(wake.awaken).toBeNull();
+    expect(wake.seen).toBe(seen);
   });
 });
 

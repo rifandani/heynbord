@@ -4,6 +4,8 @@
  * does not roll a reward again.
  */
 import { getCard } from "../content/cards";
+import { addForgeStones, stageForgeStones } from "../content/forge-stones";
+import type { ForgeStoneReward } from "../content/forge-stones";
 import { playerLevelForXp, stageXp } from "../content/player-levels";
 import type { ClassId, DeckEntry, StageDefinition } from "../content/schema";
 import { stageCoin } from "../content/stage-coin";
@@ -67,6 +69,8 @@ export interface StageRewards {
   readonly unopenedPacks: readonly UnopenedPack[];
   /** The Sweep Tickets that the result added: 2 for a win, 0 for a loss. */
   readonly sweepTickets: number;
+  /** The Forge Stones of the result (ADR-0038), or `null`. */
+  readonly forgeStones: ForgeStoneReward | null;
 }
 
 export interface StageResult<P> {
@@ -83,6 +87,7 @@ type StageResultProfile = Pick<
   | "stageResults"
   | "unopenedPacks"
   | "sweepTickets"
+  | "forgeStones"
   | "rewardRandomState"
 >;
 
@@ -128,19 +133,21 @@ const winCard = (
   return [{ cardId, rank: getCard(cardId).baseRank }, cursor.state];
 };
 
-/** The XP, Coin and card of one outcome of a Stage. */
+/** The XP, Coin, card and Forge Stones of one outcome of a Stage. */
 export interface OutcomeRewards {
   readonly xp: number;
   /** In Copper. */
   readonly coin: number;
   readonly card: DeckEntry | null;
-  /** The reward random state after the card roll. */
+  readonly forgeStones: ForgeStoneReward | null;
+  /** The reward random state after the card and the Forge Stone rolls. */
   readonly rewardRandomState: number;
 }
 
 /**
- * The XP, Coin and card of one outcome of `stage` (Economy 2.1). A Stage
- * result and each Ticket of a Sweep use it.
+ * The XP, Coin, card and Forge Stones of one outcome of `stage` (Economy
+ * 2.1). A Stage result and each Ticket of a Sweep use it. A repeat win rolls
+ * the card first, then the Forge Stone.
  */
 export const outcomeRewards = (
   stage: StageDefinition,
@@ -148,12 +155,15 @@ export const outcomeRewards = (
   classId: ClassId,
   rewardRandomState: number
 ): OutcomeRewards => {
-  const [card, nextState] = winCard(stage, outcome, classId, rewardRandomState);
+  const [card, afterCard] = winCard(stage, outcome, classId, rewardRandomState);
+  const cursor = { state: afterCard };
+  const forgeStones = stageForgeStones(stage, outcome, cursor);
   return {
     xp: stageXp(stage, outcome),
     coin: stageCoin(stage, outcome),
     card,
-    rewardRandomState: nextState,
+    forgeStones,
+    rewardRandomState: cursor.state,
   };
 };
 
@@ -183,10 +193,10 @@ export const rewardCard = (
 /**
  * Applies the result of a Stage Battle (Economy 2.1). A win of a Stage with no
  * result is a first win, any other win is a repeat win. It gives the XP and
- * the Coin of the outcome, keeps the best Stars of a win, gives the card of a
- * win and the Sweep Tickets of a win (ADR-0035), and adds the First Pack when
- * the level goes to the Packs unlock. An Abandon and a Battle that is not
- * finished never call it.
+ * the Coin of the outcome, keeps the best Stars of a win, gives the card, the
+ * Forge Stones (ADR-0038) and the Sweep Tickets (ADR-0035) of a win, and adds
+ * the First Pack when the level goes to the Packs unlock. An Abandon and a
+ * Battle that is not finished never call it.
  */
 export const applyStageResult = <P extends StageResultProfile>(
   profile: P,
@@ -205,7 +215,7 @@ export const applyStageResult = <P extends StageResultProfile>(
   if (input.won) {
     outcome = bestStars === undefined ? "firstWin" : "win";
   }
-  const { xp, coin, card, rewardRandomState } = outcomeRewards(
+  const { xp, coin, card, forgeStones, rewardRandomState } = outcomeRewards(
     stage,
     outcome,
     input.classId,
@@ -233,6 +243,7 @@ export const applyStageResult = <P extends StageResultProfile>(
       stageResults,
       unopenedPacks: [...profile.unopenedPacks, ...unopenedPacks],
       sweepTickets: profile.sweepTickets + sweepTickets,
+      forgeStones: addForgeStones(profile.forgeStones, forgeStones),
       rewardRandomState,
     },
     rewards: {
@@ -244,6 +255,7 @@ export const applyStageResult = <P extends StageResultProfile>(
       card: card ? rewardCard(card, profile.collection) : null,
       unopenedPacks,
       sweepTickets,
+      forgeStones,
     },
   };
 };

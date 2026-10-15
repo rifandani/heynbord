@@ -42,7 +42,7 @@ Regions 2 to 5 (M3) come after the playtest, because their tuning needs the Work
 - [ ] All 130 cards with final art: 90 Creature Cards and 40 Skill Cards.
 - [ ] Regions 2 to 5 (40 Stages), with bosses and story scenes ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)). Region 2 (The Red Mesas): the Stage design is done ([14 — Campaign Stages, 3](./14-campaign-stages.md#3-region-2-the-red-mesas)), and its Stage data and tuning are in progress.
 - [ ] Region Map and Battle Painting images for Regions 2, 3 and 5 ([12 — Region Concepts](./12-region-concepts.md), [13 — Battlefield Concepts](./13-battlefield-concepts.md)). Until a Region has its Battle Painting, it uses the Hearthvale painting.
-- [ ] Enemy AI scores for Sabotage, Hobble and Last Breath. Now the enemy AI does not weigh them when it selects a card to summon.
+- [x] Enemy AI scores for Sabotage, Hobble and Last Breath when it selects a card to summon (issue [#84](https://github.com/rifandani/heynbord/issues/84), GDD 9).
 - [ ] Hints for each Race and Keyword when the Player meets them for the first time.
 - [ ] Battles with 1 to 4 Heroes on a Side ([ADR-0009](../adr/0009-a-side-has-one-or-more-heroes.md)).
 - [ ] 3 Dungeons with their Bosses (GDD section 8.4). Dungeons use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)).

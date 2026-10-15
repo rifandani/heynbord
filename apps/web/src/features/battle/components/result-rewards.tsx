@@ -1,5 +1,9 @@
 import { coinDenominations, getCard } from "@workspace/rules";
-import type { StageRewardCard, StageRewards } from "@workspace/rules";
+import type {
+  ForgeStoneReward,
+  StageRewardCard,
+  StageRewards,
+} from "@workspace/rules";
 import { cn } from "cn";
 import type { CSSProperties } from "react";
 import { useMemo } from "react";
@@ -7,6 +11,7 @@ import { useMemo } from "react";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { levelProgress } from "@/features/profile/profile";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
@@ -64,6 +69,42 @@ export const ResultTickets = ({ tickets }: { readonly tickets: number }) => {
           className="size-4.5 -rotate-8 text-[#ffd75a]"
         />
         {tr("battle.sweepTicketsEarned", { count: tickets })}
+      </span>
+    </p>
+  );
+};
+
+/**
+ * The Forge Stones of a result (ADR-0038), on the same Night Plate as the
+ * Coin: the stone in its tier color and "+1 × Common Forge Stone". No Forge
+ * Stone shows nothing.
+ */
+export const ResultForgeStones = ({
+  stones,
+}: {
+  readonly stones: ForgeStoneReward | null;
+}) => {
+  const { tr } = useGameText();
+  if (stones === null || stones.count === 0) {
+    return null;
+  }
+  const tier = tr(`forgeStones.tiers.${stones.tier}`);
+  return (
+    <p
+      className={REWARD_PLATE}
+      data-testid="result-forge-stones"
+      data-tier={stones.tier}
+      data-count={stones.count}
+    >
+      <span className="sr-only">
+        {tr("battle.forgeStonesEarnedLabel", { count: stones.count, tier })}
+      </span>
+      <span aria-hidden className="flex items-center gap-1.5">
+        <ForgeStoneIcon
+          tier={stones.tier}
+          className="size-4.5 drop-shadow-[0_1px_0_rgba(0,0,0,0.5)]"
+        />
+        {tr("battle.forgeStonesEarned", { count: stones.count, tier })}
       </span>
     </p>
   );

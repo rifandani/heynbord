@@ -47,6 +47,7 @@ import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
 import { skillBudgetCheck } from "../src/content/balance";
 import { CARDS, getCard } from "../src/content/cards";
 import { STARTER_DECKS } from "../src/content/decks";
+import { FORGE_STONE_TIERS } from "../src/content/forge-stones";
 import { PACK_SIZE, PACKS } from "../src/content/packs";
 import { RANKS } from "../src/content/ranks";
 import { ClassId } from "../src/content/schema";
@@ -424,10 +425,12 @@ const metricTarget = (id: CheckpointId, metric: Metric): string => {
   }
 };
 
-const spreadText = (metric: Metric, spread: Spread) => {
-  const format = METRIC_FORMAT[metric];
-  return `${format(spread.median)} (${format(spread.p10)}–${format(spread.p90)})`;
-};
+/** A spread as "median (10th–90th percentile)". */
+const spreadWith = (format: (value: number) => string, spread: Spread) =>
+  `${format(spread.median)} (${format(spread.p10)}–${format(spread.p90)})`;
+
+const spreadText = (metric: Metric, spread: Spread) =>
+  spreadWith(METRIC_FORMAT[metric], spread);
 
 /** A cell with the value and its target: "6 (6–7) | 6". */
 const withTarget = (id: CheckpointId, metric: Metric, value: string) => {
@@ -447,6 +450,9 @@ const firstTryRow = (id: CheckpointId, snap: CheckpointSnapshot | null) =>
           ])
         ),
         combines: snap.combines,
+        forgeStones: FORGE_STONE_TIERS.map(
+          (tier) => snap.forgeStones[tier]
+        ).join("/"),
       };
 
 if (modes.includes("economy")) {
@@ -480,6 +486,25 @@ if (modes.includes("economy")) {
       })
     );
     console.log(
+      "Forge Stones that the Players did not use (ADR-0038). Cells: median (10th–90th percentile)"
+    );
+    console.table(
+      CHECKPOINTS.map((id) => {
+        const { forgeStones } = report.checkpoints[id];
+        return {
+          checkpoint: id,
+          ...Object.fromEntries(
+            FORGE_STONE_TIERS.map((tier) => [
+              tier,
+              forgeStones === null
+                ? "—"
+                : spreadWith((value) => value.toFixed(0), forgeStones[tier]),
+            ])
+          ),
+        };
+      })
+    );
+    console.log(
       `Stuck Players (below level 30 after ${MAX_BATTLES} Battles): ${report.stuck}/${report.seeds}`
     );
     console.log(`First-try run of ${playStyle} (win chance 100%):`);
@@ -505,7 +530,7 @@ if (modes.includes("economy")) {
     `Total: ${ledger.total} of the Bazaar catalog cost ${ledger.catalog} (estimate): ${percent(ledger.catalogShare)}`
   );
   console.log(
-    "\nNot in the sim: Achievement Coin and Essence (the results are a floor), the repeat-win card, the first-win cards of planned Stages and Dungeons, and the 30-Star chests (a win gives 2 Stars and the Player does not repeat Stages)."
+    "\nNot in the sim: Achievement Coin and Essence (the results are a floor), the repeat-win card, the repeat-win and Sweep Forge Stones, Dungeon 3, the first-win cards of planned Stages and Dungeons, and the 30-Star chests (a win gives 2 Stars and the Player does not repeat Stages)."
   );
 }
 

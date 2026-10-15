@@ -1,3 +1,5 @@
+import { FORGE_STONE_TIERS } from "./forge-stones";
+import type { ForgeStones, ForgeStoneTier } from "./forge-stones";
 import type { GearLevels } from "./schema";
 
 /** The 4 Gear slots of a Hero (GDD 7.3). */
@@ -43,33 +45,78 @@ export const gearStatValue = (slot: GearSlot, level: number): number =>
   GEAR_STATS[slot].perLevel * level;
 
 /**
- * The Gear upgrade cost is this number × level × (level + 1), in Copper
- * (Economy 3.4). Levels 2n − 1 and 2n together cost the same as the old level
- * n (40 × n²), so a migrated Profile paid the correct Coin (ADR-0037).
+ * The Gear upgrade Coin is this number × level × (level + 1) ÷ 2, in Copper
+ * (Economy 3.4). It is half of the cost of ADR-0037, because each level also
+ * needs a Forge Stone (ADR-0038). level × (level + 1) is always even, so the
+ * Coin is a whole number.
  */
 const GEAR_COIN_PER_LEVEL_STEP = 5;
 
-/** The Coin to upgrade one Gear item to `level` (1 to 20), in Copper (Economy 3.4). */
-export const gearUpgradeCoin = (level: number): number => {
+/** Each Forge Stone tier upgrades this many Gear levels, from level 1 (ADR-0038). */
+const GEAR_LEVELS_PER_FORGE_STONE_TIER = 5;
+
+const checkUpgradeLevel = (level: number): void => {
   if (!Number.isInteger(level) || level < 1 || level > MAX_GEAR_LEVEL) {
     throw new RangeError(
       `A Gear upgrade goes to a level from 1 to ${MAX_GEAR_LEVEL}: ${level}`
     );
   }
-  return GEAR_COIN_PER_LEVEL_STEP * level * (level + 1);
+};
+
+/** The Coin to upgrade one Gear item to `level` (1 to 20), in Copper (Economy 3.4). */
+export const gearUpgradeCoin = (level: number): number => {
+  checkUpgradeLevel(level);
+  return (GEAR_COIN_PER_LEVEL_STEP * level * (level + 1)) / 2;
+};
+
+/**
+ * The tier of the 1 Forge Stone that an upgrade to `level` (1 to 20) uses
+ * (Economy 3.4, ADR-0038): Common for levels 1 to 5, Uncommon for 6 to 10,
+ * Rare for 11 to 15 and Epic for 16 to 20.
+ */
+export const gearUpgradeForgeStone = (level: number): ForgeStoneTier => {
+  checkUpgradeLevel(level);
+  const tier =
+    FORGE_STONE_TIERS[
+      Math.floor((level - 1) / GEAR_LEVELS_PER_FORGE_STONE_TIER)
+    ];
+  if (tier === undefined) {
+    throw new RangeError(`No Forge Stone tier for Gear level ${level}`);
+  }
+  return tier;
+};
+
+const checkPath = (from: number, to: number): void => {
+  if (!Number.isInteger(from) || from < 0 || to < from) {
+    throw new RangeError(`A Gear upgrade cannot go from ${from} to ${to}`);
+  }
 };
 
 /**
  * The Coin to upgrade one Gear item from level `from` to level `to`, in
- * Copper. Level 0 to 20 is 15,400 Coin (Economy 3.4).
+ * Copper. Level 0 to 20 is 7,700 Coin (Economy 3.4).
  */
 export const gearUpgradePathCoin = (from: number, to: number): number => {
-  if (!Number.isInteger(from) || from < 0 || to < from) {
-    throw new RangeError(`A Gear upgrade cannot go from ${from} to ${to}`);
-  }
+  checkPath(from, to);
   let coin = 0;
   for (let level = from + 1; level <= to; level += 1) {
     coin += gearUpgradeCoin(level);
   }
   return coin;
+};
+
+/**
+ * The Forge Stones to upgrade one Gear item from level `from` to level `to`.
+ * Level 0 to 20 is 5 of each tier (Economy 3.4).
+ */
+export const gearUpgradePathForgeStones = (
+  from: number,
+  to: number
+): ForgeStones => {
+  checkPath(from, to);
+  const stones = { common: 0, uncommon: 0, rare: 0, epic: 0 };
+  for (let level = from + 1; level <= to; level += 1) {
+    stones[gearUpgradeForgeStone(level)] += 1;
+  }
+  return stones;
 };

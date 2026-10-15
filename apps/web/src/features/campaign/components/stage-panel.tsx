@@ -31,6 +31,7 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import {
   NewChip,
   ResultCoin,
+  ResultForgeStones,
   ResultXp,
 } from "@/features/battle/components/result-rewards";
 import { classGlyph } from "@/features/battle/glyphs";
@@ -693,7 +694,8 @@ const SweepCards = ({ shown }: { readonly shown: ShownSweep }) => {
 /**
  * The Sweep Result (GDD 4.12): the page of the Stage Panel after a Sweep.
  * "Victory" with a gold stamp of the Tickets, the cards in a fan, the total
- * Coin and XP (as the Battle result), and the Sweep Tickets that stay. The
+ * Coin, Forge Stones and XP (as the Battle result), and the Sweep Tickets
+ * that stay. The
  * rewards are already in the Profile. "Sweep Again" uses the same number of
  * Tickets and is the gold action; when the Player has too few Tickets, it is
  * off and "Close" is the gold action. "Close" turns the page back.
@@ -749,7 +751,10 @@ const SweepResult = ({
           )}
         >
           <div className="flex flex-col items-start gap-1.5">
-            <ResultCoin coin={shown.rewards.coin} />
+            <div className="flex flex-wrap gap-1.5">
+              <ResultCoin coin={shown.rewards.coin} />
+              <ResultForgeStones stones={shown.rewards.forgeStones} />
+            </div>
             <p
               className="flex items-center gap-1.5 text-xs font-bold text-[#5b4632]"
               data-testid="sweep-tickets-left"

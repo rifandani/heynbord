@@ -1,12 +1,5 @@
 # @workspace/web
 
- /grill-with-docs introduce new items called "Enchanting Gems", which is a collectible items to enhance hero gears, currently we only need coins which is too easy, this gems can be acquired "free" as prizes maybe in dungeons/heynspire, for now there's 4 gems:
-
-- Common Gem: can be used to enchant equipment up to levels 1 to 5.
-- Uncommon Gem: can be used to enchant equipment up to levels 6 to 10.
-- Rare Gem: can be used to enchant equipment up to levels 11 to 15.
-- Epic Gem: can be used to enchant equipment up to levels 16 to 20.
-
 Answers all ur questions automatically with ur best recommendations, except critical questions.
 
 ## Todo
@@ -132,13 +125,12 @@ Sequence:
 
 New features:
 
-- brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
-- differentiate between
 - cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 - check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
 v2:
 
+- brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
 - Story scenes at the start and end of each Region (need to install some claude motion skills first)
 - blender mcp + all 3D unit
 - hybrids, awakening

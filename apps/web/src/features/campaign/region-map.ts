@@ -215,6 +215,48 @@ export const trailStages = (
   });
 };
 
+/** The ID of the Open Stage on a Trail, or `null` when it has none. */
+const openStageId = (trail: readonly TrailStage[]): string | null =>
+  trail.find((stop) => stop.state === "open")?.stage.id ?? null;
+
+/** The wake-up of the Region that the Campaign shows now. */
+export interface StageWakeUp {
+  /** The ID of the Stage whose marker wakes up now, or `null`. */
+  readonly awaken: string | null;
+  /** The Open Stages that the Campaign knows of after this show. */
+  readonly seen: ReadonlySet<string>;
+}
+
+/**
+ * When a win opens a Stage, its marker wakes up one time: the first time that
+ * the Campaign shows it Open. `seen` holds the Open Stages that the Campaign
+ * knows of, or `null` before its first show. At the first show, the Open
+ * Stages of all Regions are known and none wakes up. Thus Stage 1 of a Region
+ * that was locked then wakes up when the Player first opens that Region, and
+ * a Stage that the Player saw does not wake up again in another Region.
+ */
+export const wakeUpStage = (
+  stages: readonly StageDefinition[],
+  region: number,
+  results: StageResults,
+  seen: ReadonlySet<string> | null
+): StageWakeUp => {
+  if (seen === null) {
+    const regions = new Set(stages.map((stage) => stage.region));
+    const open = [...regions].flatMap((item) =>
+      trailStages(stages, item, results).flatMap((stop) =>
+        stop.state === "open" ? [stop.stage.id] : []
+      )
+    );
+    return { awaken: null, seen: new Set(open) };
+  }
+  const open = openStageId(trailStages(stages, region, results));
+  if (open === null || seen.has(open)) {
+    return { awaken: null, seen };
+  }
+  return { awaken: open, seen: new Set([...seen, open]) };
+};
+
 /**
  * What the Region banner says about a Region (GDD 11.5). Open: the Player can
  * play its Stages. Locked: the Player must win `boss` first. Later: the Region

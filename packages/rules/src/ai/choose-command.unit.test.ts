@@ -1233,3 +1233,92 @@ describe("chooseCommand: Hunter's Focus (GDD 9)", () => {
     ).toEqual(playAtSquare(1, 9));
   });
 });
+
+/** The Hand index of the AI's play, or undefined when it ends the Turn. */
+const playedIndex = (command: Command): number | undefined =>
+  command._tag === "PlayCard" ? command.handIndex : undefined;
+
+/**
+ * The enemy AI with two Ready Creature Cards and an empty Board. Both cards
+ * get the same Square score, so the value of the card decides.
+ */
+const firstSummon = (
+  cards: Parameters<typeof giveHand>[2],
+  playerHand: Parameters<typeof giveHand>[2] = []
+) => {
+  const state = emptyBattle({ activeSide: "enemy" });
+  giveHand(state, "enemy", cards);
+  giveHand(state, "player", playerHand);
+  return playedIndex(chooseCommand(state));
+};
+
+/**
+ * The enemy AI with one Ready Creature Card and two player Units with Attack 3:
+ * a Heavy Unit (Speed 1) in Lane 0 and a Swift Unit (Speed 3) in Lane 1. The
+ * Unit in Lane 0 is 1 Square nearer to the AI's Hero, so Lane 0 has a little
+ * more threat.
+ */
+const hobbleChoice = (
+  cardId: string,
+  setup: (state: BattleState) => void = () => {}
+) => {
+  const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
+  giveHand(state, "enemy", [[cardId, 0]]);
+  placeUnit(state, {
+    cardId: "feral.caveTroll",
+    owner: "player",
+    lane: 0,
+    position: 4,
+  });
+  placeUnit(state, {
+    cardId: "orc.howlingCharger",
+    owner: "player",
+    lane: 1,
+    position: 3,
+  });
+  setup(state);
+  const command = chooseCommand(state);
+  return command._tag === "PlayCard" && command.target._tag === "Square"
+    ? command.target.lane
+    : undefined;
+};
+
+describe("chooseCommand: Goblin Keywords (GDD 9, issue #84)", () => {
+  it("gives Sabotage more value when the enemy Hand has a card that is Ready now or in the next Turn", () => {
+    const cards = [
+      ["elf.brambleDuelist", 0, "uncommon"],
+      ["goblin.tunnelSaboteur", 0],
+    ] as const;
+    // No enemy card: Sabotage does nothing, and the Bramble Duelist has more value.
+    expect(firstSummon(cards)).toBe(0);
+    expect(firstSummon(cards, [["human.militiaRecruit", 4]])).toBe(0);
+    expect(firstSummon(cards, [["human.militiaRecruit", 1]])).toBe(1);
+    expect(firstSummon(cards, [["human.militiaRecruit", 0]])).toBe(1);
+  });
+
+  it("sends a Hobble Unit to the Lane where it slows a fast enemy Unit", () => {
+    // Without Hobble, the AI blocks the Lane with more threat.
+    expect(hobbleChoice("human.militiaRecruit")).toBe(0);
+    expect(hobbleChoice("goblin.ankleSnatcher")).toBe(1);
+    // A Unit that is already Hobbled for as long, or has Speed 1, loses nothing.
+    expect(
+      hobbleChoice("goblin.ankleSnatcher", (state) => {
+        const charger = state.units.find((unit) => unit.lane === 1);
+        if (charger) {
+          charger.hobbled = 1;
+        }
+      })
+    ).toBe(0);
+  });
+
+  it("gives Last Breath a small value", () => {
+    // Fuse Runner (2/4, Swift) has less value than Militia Recruit (3/8,
+    // Heavy) without its Last Breath 3.
+    expect(
+      firstSummon([
+        ["human.militiaRecruit", 0],
+        ["goblin.fuseRunner", 0],
+      ])
+    ).toBe(1);
+  });
+});

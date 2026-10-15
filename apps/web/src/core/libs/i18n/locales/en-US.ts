@@ -86,6 +86,8 @@ export default {
     newCardWon: "New card won: {name}, {rank}.",
     sweepTicketsEarned: "+{count} Sweep Tickets",
     sweepTicketsEarnedLabel: "Sweep Tickets earned: {count}.",
+    forgeStonesEarned: "+{count} × {tier} Forge Stone",
+    forgeStonesEarnedLabel: "Forge Stones earned: {count} × {tier}.",
     retry: "Play Again",
     backToCampaign: "Back to Campaign",
     abandon: {
@@ -453,7 +455,7 @@ export default {
     craft:
       "Craft is open in the Workshop. Use Essence to make a copy of a card that you found.",
     battleLog: "Open the Battle Log to see what happened.",
-    gear: "Each press upgrades a Gear item by 1 level, for Coin. A level never goes down.",
+    gear: "Each press upgrades a Gear item by 1 level, for Coin and a Forge Stone. A level never goes down.",
     sweep: "Use Sweep Tickets to get the rewards of this Stage at once.",
   },
   handbook: {
@@ -521,9 +523,12 @@ export default {
     gearItemColumn: "Item",
     gearStatColumn: "Gives",
     gearMaxColumn: "Level {max}",
-    gearCostTable: "Coin for each level",
+    gearCostTable: "Coin and Forge Stone for each level",
     gearCostLevel: "Level {level}",
-    gearCostTotal: "Level 0 to {max}: {coin} for each item.",
+    gearCostStone: "1 × {tier} Forge Stone",
+    gearCostTier: "{tier} Forge Stone: levels {from} to {to}",
+    gearCostTotal:
+      "Level 0 to {max}: {coin} and {stones} Forge Stones of each tier for each item.",
     coinUsesTable: "What Coin pays for",
     coinUsesColumn: "Use",
     coinUse: {
@@ -760,7 +765,7 @@ export default {
       pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
       workshop:
         "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank.",
-      gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin. An upgrade never fails, and a level never goes down.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
+      gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin and 1 Forge Stone. The level sets the tier of the Forge Stone: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15 and Epic for 16 to 20. A Forge Stone of a different tier cannot replace it. An upgrade never fails, and a level never goes down.\n\nStage wins, Star chests, Sweeps, Dungeons and Heynspire give Forge Stones. You cannot buy them. The Hero screen shows the Forge Stones that you have.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
     },
     aliases: {
       board: "battlefield, field, map, grid, arena",
@@ -1052,12 +1057,29 @@ export default {
     levelName: "Level",
     levelLabel: "Level {level} of {max}",
     upgrade: "Upgrade",
-    upgradeLabel: "Upgrade {name} to level {level}, for {price}",
+    upgradeLabel:
+      "Upgrade {name} to level {level}, for {price} and 1 {tier} Forge Stone",
     needLabel: "Upgrade {name}: you need {amount} more",
     max: "Max level",
     maxLabel: "{name} is at the highest level",
     maxSeal: "Max",
     done: "{name} is now level {level}. {stat}: {value}.",
+    forgeStones: "Forge Stones",
+    forgeStoneCount: "{tier} Forge Stones: {count}",
+    stoneCost: "1 × {tier} Forge Stone",
+    stoneHave: "You have {count}",
+    needStone: "Need Forge Stone",
+    needStoneLabel: "Upgrade {name}: you need 1 {tier} Forge Stone",
+    needBothLabel:
+      "Upgrade {name}: you need {amount} more and 1 {tier} Forge Stone",
+  },
+  forgeStones: {
+    tiers: {
+      common: "Common",
+      uncommon: "Uncommon",
+      rare: "Rare",
+      epic: "Epic",
+    },
   },
   deckBuilder: {
     title: "Decks",

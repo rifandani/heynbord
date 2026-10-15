@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { getCard } from "../content/cards";
+import { REPEAT_WIN_FORGE_STONE_CHANCE } from "../content/forge-stones";
 import type { StageDefinition } from "../content/schema";
 import { getStage, STAGES } from "../content/stages";
 import { newProfile } from "./new-profile";
@@ -139,6 +140,73 @@ describe("applyStageResult: Sweep Tickets (ADR-0035)", () => {
     );
     expect(rewards.sweepTickets).toBe(0);
     expect(profile.sweepTickets).toBe(3);
+  });
+});
+
+/** Stage 1-4 and the Boss Stage 1-10 as Stages of `region`. */
+const inRegion = (region: number): readonly StageDefinition[] => [
+  { ...getStage("1-4"), id: `${region}-4`, region },
+  { ...getStage("1-10"), id: `${region}-10`, region },
+];
+
+describe("applyStageResult: Forge Stones (Economy 2.1, ADR-0038)", () => {
+  it("gives 1 Forge Stone of the tier of the Region on a first win, also on a Boss Stage", () => {
+    for (const [region, tier] of [
+      [1, "common"],
+      [2, "common"],
+      [3, "uncommon"],
+      [4, "uncommon"],
+      [5, "rare"],
+    ] as const) {
+      for (const stageId of [`${region}-4`, `${region}-10`]) {
+        const { profile, rewards } = applyStageResult(
+          fresh,
+          win(stageId),
+          inRegion(region)
+        );
+        expect(rewards.forgeStones, stageId).toEqual({ tier, count: 1 });
+        expect(profile.forgeStones, stageId).toEqual({
+          ...fresh.forgeStones,
+          [tier]: 1,
+        });
+      }
+    }
+  });
+
+  it("gives no Forge Stone on a loss", () => {
+    const before = {
+      ...fresh,
+      forgeStones: { ...fresh.forgeStones, common: 2 },
+    };
+    for (const profile of [before, wonBefore("1-4", 3, before)]) {
+      const result = applyStageResult(profile, loss("1-4"));
+      expect(result.rewards.forgeStones).toBeNull();
+      expect(result.profile.forgeStones).toEqual(before.forgeStones);
+    }
+  });
+
+  it("gives 1 Forge Stone of the tier of the Region on about 10% of repeat wins", () => {
+    const REPEATS = 10_000;
+    let profile = wonBefore("3-4", 3);
+    let hits = 0;
+    for (let index = 0; index < REPEATS; index += 1) {
+      const result = applyStageResult(profile, win("3-4"), inRegion(3));
+      if (result.rewards.forgeStones) {
+        expect(result.rewards.forgeStones).toEqual({
+          tier: "uncommon",
+          count: 1,
+        });
+        hits += 1;
+      }
+      ({ profile } = result);
+    }
+    expect(REPEAT_WIN_FORGE_STONE_CHANCE).toBe(1000);
+    expect(hits / REPEATS).toBeGreaterThan(0.085);
+    expect(hits / REPEATS).toBeLessThan(0.115);
+    expect(profile.forgeStones).toEqual({
+      ...fresh.forgeStones,
+      uncommon: hits,
+    });
   });
 });
 

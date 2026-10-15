@@ -13,8 +13,10 @@ Pillar 1 ("Fair to the player") controls all decisions in this document.
 | **Essence** | Craft resource | Extract, Heynspire milestones, Achievements | Craft |
 | **XP** | Progress | Battles | Player level |
 | **Stars** | Progress | Stage wins | Star chests |
+| **Forge Stones** | Gear resource, 4 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire | Gear upgrades |
 
 - Coin, Heynstones and Essence never change into each other. See [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md).
+- Forge Stones are earn-only. The Bazaar never sells them, and they never change into Coin, Heynstones or Essence. See [ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md).
 - In v1, the player can only earn Heynstones. From v2, the player can also buy them with real money (section 5).
 
 ### 1.1 Coin denominations
@@ -113,6 +115,8 @@ On the First-try Path, the Region 1 Stages get the Player levels 1, 1, 2, 2, 3, 
 | 5 The Hollow Marches | 250 | 160 | ×3 Coin, ×2 XP, and a fixed card |
 
 - A Boss Stage gives ×2 of the values above.
+- A first win also gives 1 Forge Stone of the tier of the Region: Common in Regions 1 and 2, Uncommon in Regions 3 and 4, and Rare in Region 5. A Boss Stage gives the same Forge Stone.
+- A repeat win has a 10% chance to give 1 Forge Stone of the tier of the Region. A Sweep uses the same rule for each Sweep Ticket. A loss gives no Forge Stone.
 - A loss gives 10% of the Coin and 25% of the XP of a win.
 - A Sweep (GDD 4.12) gives one repeat-win reward for each Sweep Ticket, with no Battle. Each win that the player plays gives 2 Sweep Tickets.
 - A repeat win has a 20% chance to give one card from the Stage card pool, in its Base Rank. The Stage card pool is the different cards of the enemy Deck of the Stage, but not a Skill Card of a Class that is not the Class of the player's Deck. Each card in the pool has the same chance.
@@ -123,7 +127,7 @@ Each Region has 3 Star chests.
 
 | Stars in the Region | Reward |
 | --- | --- |
-| 10 | 300 Coin and 1 Merchant Pack |
+| 10 | 300 Coin, 1 Merchant Pack and 2 Forge Stones of the tier of the Region |
 | 20 | 30 Essence and 1 Merchant Race Pack. The player selects the Race, as for a Race Pack bought with Coin. |
 | 30 | 150 Heynstones and 100 Essence |
 
@@ -134,7 +138,8 @@ The data is `STAR_CHESTS` in `packages/rules/src/content/star-chests.ts`. Keep t
 | Floor | Reward for the first win |
 | --- | --- |
 | Each Floor *n* | 100 + 10 × *n* Coin, and 50 + 5 × *n* XP |
-| Each 10th Floor | Also 1 earn-only Cosmetic, 150 Essence and 50 Heynstones |
+| Each 5th Floor that is not a 10th Floor | Also 2 Rare Forge Stones |
+| Each 10th Floor | Also 1 earn-only Cosmetic, 150 Essence, 50 Heynstones and 2 Epic Forge Stones |
 
 The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`. Keep the code and this table the same.
 
@@ -148,6 +153,7 @@ The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`. 
 
 - The values start at the Boss Stage values of the Region that the player usually plays at the unlock level.
 - A loss and a repeat win use the same rules as a Campaign Stage (section 2.1). The card pool is the Dungeon card pool.
+- A win has a 25% chance to give 1 Forge Stone: Uncommon in Dungeon 1, Rare in Dungeon 2 and Epic in Dungeon 3. The first win gives 3 Forge Stones in place of the chance. A loss gives none.
 - Dungeons give no Heynstones, so the v1 Heynstone supply (section 2.6) does not change.
 - At player level 30, XP has no use. Thus Dungeon 3 gives Essence in place of XP.
 - A loss in Dungeon 3 gives 25% of the Essence of a win, as for XP. The 100 Essence of the first win is in place of × 2 Essence.
@@ -171,6 +177,22 @@ All Heynstone sources are one-time rewards. The player cannot farm Heynstones.
 The total is about 83% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock. With 5 Regions, the 30-Star chests give 750 Heynstones (it was 450 with 3 Regions). Check the total again when the Bazaar is planned in M4.
 
 The data is `HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`. The Achievements value and the Bazaar catalog cost are estimates until their lists exist. Keep the code and this table the same.
+
+### 2.7 Forge Stone supply
+
+A Gear upgrade uses 1 Forge Stone of the tier of the new level (section 3.4). All 4 Gear items need 20 Forge Stones of each tier. The one-time sources give:
+
+| Source | Common | Uncommon | Rare | Epic |
+| --- | --- | --- | --- | --- |
+| Stage first wins (10 for each Region) | 20 | 20 | 10 | — |
+| 10-Star chests (5) | 4 | 4 | 2 | — |
+| Dungeon first wins (3) | — | 3 | 3 | 3 |
+| Heynspire Floors (5th and 10th) | — | — | 10 | 10 |
+| **Total** | **24** | **27** | **25** | **13** |
+
+The repeat wins, the Sweeps and the Dungeon wins give the rest. The Epic Forge Stones come mostly from Dungeon 3, so Gear levels 16 to 20 are the endgame. These numbers are a start: the economy sim tunes them ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
+
+The rules are `stageForgeStones` and `regionForgeStoneTier` in `packages/rules/src/content/forge-stones.ts`, `STAR_CHESTS`, `floorFirstWinReward` and `dungeonForgeStones` with `DUNGEON_REWARDS`. Keep the code and these tables the same.
 
 ## 3. Sinks
 
@@ -261,19 +283,21 @@ The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and 
 
 ### 3.4 Gear upgrades
 
-The cost to upgrade an item to level *n* is 5 × *n* × (*n* + 1) Coin. Levels 2*n* − 1 and 2*n* together cost 40 × *n*², the cost of one level before Gear had 20 levels ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)).
+The cost to upgrade an item to level *n* is 2.5 × *n* × (*n* + 1) Coin and 1 Forge Stone of the tier of level *n* ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)). *n* × (*n* + 1) is always even, so the Coin is a whole number. The Coin is half of the cost of [ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md).
 
 | Level | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Coin | 10 | 30 | 60 | 100 | 150 | 210 | 280 | 360 | 450 | 550 |
+| Coin | 5 | 15 | 30 | 50 | 75 | 105 | 140 | 180 | 225 | 275 |
+| Forge Stone | Common | Common | Common | Common | Common | Uncommon | Uncommon | Uncommon | Uncommon | Uncommon |
 
 | Level | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Coin | 660 | 780 | 910 | 1,050 | 1,200 | 1,360 | 1,530 | 1,710 | 1,900 | 2,100 |
+| Coin | 330 | 390 | 455 | 525 | 600 | 680 | 765 | 855 | 950 | 1,050 |
+| Forge Stone | Rare | Rare | Rare | Rare | Rare | Epic | Epic | Epic | Epic | Epic |
 
-One item from level 0 to 20 costs 15,400 Coin (1g 54s). All 4 items cost 61,600 Coin (6g 16s). This is the main Coin sink for the endgame.
+One item from level 0 to 20 costs 7,700 Coin (77s) and 5 Forge Stones of each tier. All 4 items cost 30,800 Coin (3g 8s) and 20 Forge Stones of each tier. The Forge Stone supply (section 2.7), not the Coin, is the main limit of the Gear pace.
 
-The rule is `gearUpgradeCoin` in `packages/rules/src/content/gear.ts`. Keep the code and this table the same.
+The rules are `gearUpgradeCoin` and `gearUpgradeForgeStone` in `packages/rules/src/content/gear.ts`. Keep the code and this table the same.
 
 ### 3.5 Bazaar
 
@@ -298,7 +322,7 @@ A new player has 3 Deck slots: one for each Starter Deck and one empty. The play
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Coin | 500 | 1,000 | 1,500 | 2,000 | 3,000 | 4,000 | 5,000 |
 
-- All 7 slots cost 17,000 Coin (1g 70s), a bit more than one Gear item from level 0 to 20.
+- All 7 slots cost 17,000 Coin (1g 70s), a bit more than the Coin of two Gear items from level 0 to 20.
 - The 4th slot costs the same as a Merchant Pack, so the player can buy it in Region 1. The last slots are a small Coin sink for the endgame.
 - A Deck slot is a Convenience: it gives no power. It costs Coin and not Heynstones, so in v2 nobody pays real money for it.
 - A purchase is permanent. The player cannot sell or remove a Deck slot.
@@ -320,6 +344,7 @@ Use these targets to tune the numbers. Check them with an economy simulation and
 
 - The Player levels are the First-try Path levels of section 1.2. A Player who loses or plays again is at a higher level.
 - **5 Regions ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)).** The hours of the Region 4 and Region 5 rows and of Heynspire Floor 50 are draft targets. Check them with the economy sim.
+- **Forge Stones ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).** The Gear Coin is half, and each level needs a Forge Stone. The economy sim (7.1, 200 seeds) models Forge Stones since 2026-10-15. At Heynspire Floor 50, the mean Gear level is 15.5 (Collector), 15.3 (Upgrader) and 13.0 (Balanced). With the Coin-only cost of ADR-0037, it was 12.8, 12.0 and 9.3. The lowest Gear level is 15, 15 and 13. Thus the "Gear mostly at level 14 or higher" row passes for the Collector and the Upgrader, and it fails for the Balanced Player. The Balanced Player has about 10 Rare and 10 Epic Forge Stones that it did not use, and only 28 Coin: the Coin that it spends on Merchant Packs is its limit, not the Forge Stones. The Gear of all Play Styles stops at level 5 in Region 2 and at level 10 in Region 4, because Regions 1 and 2 give only Common and Regions 3 and 4 only Uncommon Forge Stones. The hours do not move by more than 0.5. **M3 re-tune:** the Balanced row still fails. Do not change the target. Check it again when the sim uses repeat wins and Sweeps, then change the supply of section 2.7.
 - **Re-tune needed.** The Pack counts above were set for 88 cards. v1 now has 118 cards ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)). The "Discovered" targets stay the same. Tune the Coin rewards again with the economy simulation in M3, so that the Player can reach these targets with 118 cards.
 - **Skill Cards of issue #57.** The 14 Common and Uncommon Skill Cards (116 cards in `cards.ts`) move no "Discovered" median of the economy sim (7.1) by more than 1 point, because the simulated Player Discovers only the Warrior Skill Cards (4 of the 14). At Heynspire Floor 50, the Player has Discovered 96% (Collector), 63% (Upgrader) and 91% (Balanced) of the cards. It was 96%, 63% and 90% (2026-10-11). The milestone does not move.
 - **Ranger Skill Cards of issue #59.** Venom Arrow, Heartseeker (Rare) and Rain of Arrows (Epic) make 119 cards in `cards.ts`. The economy sim gives the same result as before (2026-10-11), because its Player Discovers only the Warrior Skill Cards. The milestone does not move. The Ranger Class Pack pool now has 10 cards (`bun run sim packs`, mean of 100 Players). A Peddler Pack never rolls an Epic card, so it cannot give Rain of Arrows. It needs 76.0 Packs to Discover the 9 Ranger cards from Common to Rare (it was 9.3 Packs for the 7 Common and Uncommon cards), because only 4.17% of its cards are Rare. A Merchant Class Pack needs 9.8 Packs for all 10 cards (it was 2.3), and a Royal Class Pack 4.0 (it was 2.0). On 2026-10-13, Hunter's Focus (Rare) replaced Heartseeker: the pool keeps 10 cards and the same Ranks, so these results do not change.
@@ -384,7 +409,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 - Until the Player has the 4th Deck slot, it keeps its Coin for the slot.
 - The Player buys Open ×10 when it can pay for 10 Packs. Else it buys one Pack.
-- A Gear upgrade goes to the item with the lowest level.
+- A Gear upgrade goes to the item with the lowest level. It needs the Coin and the Forge Stone. When the Forge Stone is missing, the Play Style goes to its next priority.
 - Combine, Extract and Craft use the same rules actions as the game (GDD 7.4). The sim adds only the Play Style choices.
 - Combine starts at the lowest Rank.
 - All Play Styles Extract each copy above 2 of a card in the same Rank.
@@ -394,12 +419,13 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 - Achievements give no Coin or Essence in the sim, because the list of Achievements does not exist. The results are a floor.
 - A repeat win gives no card. The Stage card pool exists in the rules (`stageCardPool`), but the sim does not use it yet.
+- The Player does not repeat Stages or Sweep, so the repeat-win and the Sweep Forge Stones are not in the sim. The Player never plays Dungeon 3, because it gives no XP, so its Epic Forge Stones are not in the sim. The Forge Stone results are a floor.
 - The planned Stages and the Dungeons give no first-win card, because their cards do not exist yet.
 - The 30-Star chests do not open (see **Stars**). The Heynstone ledger counts them.
 
 **Time.** One Battle is **8 minutes**, with the time in menus. The report shows Battles and hours. If the hour targets of section 4 do not agree with each other, change a target, not this value.
 
-**Report.** The sim runs 200 seeds for each Play Style. At each checkpoint of section 4, it shows the median and the 10th to 90th percentile of: Battles, hours, Player level, Packs opened, % Discovered, Epic and Legendary copies, mean Gear level, the lowest Gear level and unspent Coin. It also shows the share of the Players with a Combine done. For an "about" target, the sim uses ± 25%. "Gear mostly at level 14 or higher" is the lowest Gear level. It shows each target next to the values. It also shows one **First-try** run of each Play Style, with a win chance of 100%: this is the floor of Battles and the First-try Path of section 1.2. Then it shows the **Heynstone ledger**: each one-time source of section 2.6, the total, and the total as a % of the Bazaar catalog cost. The Heynstone sources are all fixed, so the ledger is a sum, not a simulation.
+**Report.** The sim runs 200 seeds for each Play Style. At each checkpoint of section 4, it shows the median and the 10th to 90th percentile of: Battles, hours, Player level, Packs opened, % Discovered, Epic and Legendary copies, mean Gear level, the lowest Gear level and unspent Coin. It also shows the share of the Players with a Combine done. For an "about" target, the sim uses ± 25%. "Gear mostly at level 14 or higher" is the lowest Gear level. It shows each target next to the values. A second table shows the median and the 10th to 90th percentile of the Forge Stones of each tier that the Players did not use. It also shows one **First-try** run of each Play Style, with a win chance of 100%: this is the floor of Battles and the First-try Path of section 1.2. Then it shows the **Heynstone ledger**: each one-time source of section 2.6, the total, and the total as a % of the Bazaar catalog cost. The Heynstone sources are all fixed, so the ledger is a sum, not a simulation.
 
 `--check` does not check the economy yet. After the first re-tune, add the section 4 targets to `--check`.
 - During playtests, the game writes a local log of rewards and spending. The player can export the log and send it to the developer. The game never sends data automatically in v1.

@@ -5,7 +5,8 @@ import { Label, Meter } from "react-aria-components";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
-import type { GearItem } from "@/features/hero/hero";
+import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
+import type { GearItem, GearUpgrade } from "@/features/hero/hero";
 import { GEAR_GLYPH, GEAR_GLYPH_TURN, heroArt } from "@/features/hero/hero-art";
 import { useStatFormat } from "@/features/hero/use-stat-format";
 import { CoinPrice } from "@/features/packs/components/pack-art";
@@ -154,10 +155,79 @@ const LevelGroove = ({
 };
 
 /**
+ * The Forge Stone of the next level (ADR-0038): the stone in its tier color,
+ * "1 × Rare Forge Stone", and "You have N", in a warm red when N is 0.
+ */
+const StoneCost = ({
+  upgrade,
+}: {
+  readonly upgrade: Exclude<GearUpgrade, { kind: "max" }>;
+}) => {
+  const { tr } = useGameText();
+  const tier = tr(`forgeStones.tiers.${upgrade.tier}`);
+  const missing = upgrade.stones < 1;
+  return (
+    <p
+      className="flex w-full items-center justify-between gap-2 text-xs leading-tight [@media(max-height:500px)]:text-[10px]"
+      data-testid="gear-stone-cost"
+      data-tier={upgrade.tier}
+      data-stones={upgrade.stones}
+    >
+      <span className="flex min-w-0 items-center gap-1.5 font-bold text-[#fff6df]">
+        <ForgeStoneIcon
+          tier={upgrade.tier}
+          className="size-4 shrink-0 drop-shadow-[0_1px_0_rgba(0,0,0,0.5)] [@media(max-height:500px)]:size-3"
+        />
+        <span className="truncate">{tr("hero.stoneCost", { tier })}</span>
+      </span>
+      <span
+        className={cn(
+          "shrink-0 font-semibold whitespace-nowrap tabular-nums [@media(max-height:500px)]:sr-only",
+          missing ? "text-[#ff9b85]" : "text-[#e8d9bb]"
+        )}
+      >
+        {tr("hero.stoneHave", { count: upgrade.stones })}
+      </span>
+    </p>
+  );
+};
+
+/** The accessible name of the upgrade: what it costs, or what is missing. */
+const useUpgradeLabel = (item: GearItem, name: string): string => {
+  const { tr } = useGameText();
+  const { words } = useCoinFormat();
+  const { upgrade } = item;
+  if (upgrade.kind === "max") {
+    return tr("hero.maxLabel", { name });
+  }
+  const tier = tr(`forgeStones.tiers.${upgrade.tier}`);
+  if (upgrade.kind === "ready") {
+    return tr("hero.upgradeLabel", {
+      name,
+      level: item.level + 1,
+      price: words(upgrade.coin),
+      tier,
+    });
+  }
+  if (upgrade.missingCoin > 0 && !upgrade.hasStone) {
+    return tr("hero.needBothLabel", {
+      name,
+      amount: words(upgrade.missingCoin),
+      tier,
+    });
+  }
+  return upgrade.missingCoin > 0
+    ? tr("hero.needLabel", { name, amount: words(upgrade.missingCoin) })
+    : tr("hero.needStoneLabel", { name, tier });
+};
+
+/**
  * One Gear item on the Gear Rack (GDD 7.3): its icon, its name, its level
- * groove, its stat now and at the next level, and one gold upgrade with its
- * Coin. Each press upgrades 1 level at once, with no confirmation. Off at
- * level 20 ("Max level") and when the Coin is not enough ("Need 1s 50c").
+ * groove, its stat now and at the next level, the Forge Stone of the next
+ * level, and one gold upgrade with its Coin. Each press upgrades 1 level at
+ * once, with no confirmation. Off at level 20 ("Max level"), when the Coin is
+ * not enough ("Need 1s 50c") and when the Forge Stone is missing ("Need Forge
+ * Stone").
  */
 export const GearPlate = ({
   item,
@@ -171,19 +241,10 @@ export const GearPlate = ({
 }) => {
   const { tr } = useGameText();
   const stat = useStatFormat();
-  const { format, words } = useCoinFormat();
+  const { format } = useCoinFormat();
   const name = tr(`hero.slots.${item.slot}`);
   const { upgrade } = item;
-  const label =
-    upgrade.kind === "ready"
-      ? tr("hero.upgradeLabel", {
-          name,
-          level: item.level + 1,
-          price: words(upgrade.coin),
-        })
-      : upgrade.kind === "coin"
-        ? tr("hero.needLabel", { name, amount: words(upgrade.missing) })
-        : tr("hero.maxLabel", { name });
+  const label = useUpgradeLabel(item, name);
   const titleId = `gear-${item.slot}-name`;
 
   return (
@@ -257,50 +318,59 @@ export const GearPlate = ({
           {tr(`hero.statHelp.${item.stat}`)}
         </p>
       </div>
-      <GameButton
-        intent={upgrade.kind === "ready" ? "gold" : "ghost"}
-        size="md"
-        isDisabled={upgrade.kind !== "ready"}
-        onPress={onUpgrade}
-        aria-label={label}
-        className={cn(
-          "mt-auto w-full text-sm whitespace-nowrap [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs",
-          // An upgrade that is off is an engraved plate with no drop, because
-          // it cannot be pressed. Its text stays at full contrast: at level 20
-          // the gold "Max level", else the Coin that is still missing.
-          upgrade.kind !== "ready" &&
-            "border-[#e9c46a]/50 bg-[#120c08]/70 shadow-[inset_0_1px_3px_rgba(0,0,0,0.75)] data-[disabled]:cursor-default data-[disabled]:opacity-100 data-[disabled]:grayscale-0",
-          upgrade.kind === "max" && "text-[#ffe08a]",
-          upgrade.kind === "coin" && "text-[#e8d9bb]"
-        )}
-        data-testid={`gear-upgrade-${item.slot}`}
-        data-gear-upgrade={item.slot}
-        data-state={upgrade.kind}
-      >
-        {upgrade.kind === "ready" ? (
-          <>
-            <span className="font-bold">{tr("hero.upgrade")}</span>
-            <CoinPrice
-              parts={coinDenominations(upgrade.coin)}
-              format={format}
-            />
-          </>
-        ) : upgrade.kind === "coin" ? (
-          <>
-            <span className="font-semibold">{tr("workshop.need")}</span>
-            <CoinPrice
-              parts={coinDenominations(upgrade.missing)}
-              format={format}
-              className="font-bold text-[#fff6df]"
-            />
-          </>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 font-semibold">
-            <GlyphIcon glyph="check" className="size-3.5 shrink-0" />
-            {tr("hero.max")}
-          </span>
-        )}
-      </GameButton>
+      <div className="mt-auto flex w-full flex-col gap-1.5 [@media(max-height:500px)]:gap-1">
+        {upgrade.kind === "max" ? null : <StoneCost upgrade={upgrade} />}
+        <GameButton
+          intent={upgrade.kind === "ready" ? "gold" : "ghost"}
+          size="md"
+          isDisabled={upgrade.kind !== "ready"}
+          onPress={onUpgrade}
+          aria-label={label}
+          className={cn(
+            "w-full text-sm whitespace-nowrap [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs",
+            // An upgrade that is off is an engraved plate with no drop, because
+            // it cannot be pressed. Its text stays at full contrast: at level 20
+            // the gold "Max level", else the Coin or the Forge Stone that is
+            // still missing.
+            upgrade.kind !== "ready" &&
+              "border-[#e9c46a]/50 bg-[#120c08]/70 shadow-[inset_0_1px_3px_rgba(0,0,0,0.75)] data-[disabled]:cursor-default data-[disabled]:opacity-100 data-[disabled]:grayscale-0",
+            upgrade.kind === "max" && "text-[#ffe08a]",
+            upgrade.kind === "short" && "text-[#e8d9bb]"
+          )}
+          data-testid={`gear-upgrade-${item.slot}`}
+          data-gear-upgrade={item.slot}
+          data-state={upgrade.kind}
+        >
+          {upgrade.kind === "ready" ? (
+            <>
+              <span className="font-bold">{tr("hero.upgrade")}</span>
+              <CoinPrice
+                parts={coinDenominations(upgrade.coin)}
+                format={format}
+              />
+            </>
+          ) : upgrade.kind === "short" && upgrade.missingCoin > 0 ? (
+            <>
+              <span className="font-semibold">{tr("workshop.need")}</span>
+              <CoinPrice
+                parts={coinDenominations(upgrade.missingCoin)}
+                format={format}
+                className="font-bold text-[#fff6df]"
+              />
+            </>
+          ) : upgrade.kind === "short" ? (
+            <span className="inline-flex items-center gap-1.5 font-semibold">
+              <ForgeStoneIcon tier={upgrade.tier} className="size-4 shrink-0" />
+              {tr("hero.needStone")}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 font-semibold">
+              <GlyphIcon glyph="check" className="size-3.5 shrink-0" />
+              {tr("hero.max")}
+            </span>
+          )}
+        </GameButton>
+      </div>
     </li>
   );
 };

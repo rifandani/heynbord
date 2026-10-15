@@ -25,7 +25,12 @@ import type {
   UnitState,
 } from "../battle/types";
 import { getCard } from "../content/cards";
-import { isRangedRange, keywordRange, keywordSpeed } from "../content/keywords";
+import {
+  isRangedRange,
+  keywordRange,
+  keywordSpeed,
+  keywordValue,
+} from "../content/keywords";
 import {
   scaleForRank,
   skillAmountForRank,
@@ -212,6 +217,61 @@ const defenseScore = (
 const columnFrom = (side: Side, position: number): number =>
   side === "player" ? position : LANE_LENGTH - 1 - position;
 
+/** The score for each point of Sabotage (Power Points: Sabotage N = N × 4). */
+const SABOTAGE_SCORE = 4;
+
+/**
+ * Sabotage N (GDD 5.4) adds N Countdown to the card with the lowest Countdown
+ * in the enemy Hand. The score doubles when that card is Ready now or in the
+ * next enemy Turn (Countdown 1 or less). An empty enemy Hand gives 0. The
+ * Countdowns of the enemy Hand are visible (GDD 9).
+ */
+const scoreSabotage = (
+  state: BattleState,
+  side: Side,
+  amount: number
+): number => {
+  const { hand } = state.sides[otherSide(side)];
+  if (amount <= 0 || hand.length === 0) {
+    return 0;
+  }
+  const lowest = Math.min(...hand.map((card) => card.countdown));
+  return amount * SABOTAGE_SCORE * (lowest <= 1 ? 2 : 1);
+};
+
+/** The score for each Speed point that Hobble takes, for each Hobbled count. */
+const HOBBLE_SCORE = 2;
+
+/**
+ * Hobble N (GDD 4.7): a Hobbled Unit has Speed 1 at most. The score is the
+ * Speed above 1 of the fastest enemy Unit in the Lane, times N. An enemy Unit
+ * that is already Hobbled for N or more does not count.
+ */
+const scoreHobble = (
+  state: BattleState,
+  side: Side,
+  lane: number,
+  amount: number
+): number => {
+  if (amount <= 0) {
+    return 0;
+  }
+  const lost = state.units.reduce(
+    (most, unit) =>
+      unit.owner !== side && unit.lane === lane && unit.hobbled < amount
+        ? Math.max(most, unit.speed - 1)
+        : most,
+    0
+  );
+  return lost * amount * HOBBLE_SCORE;
+};
+
+/**
+ * The score for each point of Last Breath damage. It is small, because the
+ * damage occurs only when the Unit dies, and only when an enemy Unit is ahead.
+ */
+const LAST_BREATH_SCORE = 1;
+
 /**
  * GDD 9: the AI prefers the deepest Square that blocks the enemy: in its
  * Summon Zone, or in Columns 1 to 5 for a Wall (ADR-0023). A Square past an
@@ -228,13 +288,21 @@ const scoreCreature = (
   if (target._tag !== "Square") {
     return 0;
   }
+  const { keywords } = definition;
   const value =
     scaleForRank(definition.attack, card.rank) * 2 +
     scaleForRank(definition.hp, card.rank) +
-    keywordSpeed(definition.keywords) * 2;
+    keywordSpeed(keywords) * 2 +
+    scoreSabotage(state, side, keywords.sabotage ?? 0) +
+    scoreHobble(
+      state,
+      side,
+      target.lane,
+      keywordValue(keywords.hobble, card.rank)
+    ) +
+    keywordValue(keywords.lastBreath, card.rank) * LAST_BREATH_SCORE;
   const pivot =
-    (definition.keywords.pivot ?? false) &&
-    !isRangedRange(keywordRange(definition.keywords));
+    (keywords.pivot ?? false) && !isRangedRange(keywordRange(keywords));
   const pressure = blocksLane(state, side, target.lane, target.position, pivot)
     ? laneThreat(state, side, target.lane) -
       laneDefense(state, side, target.lane)

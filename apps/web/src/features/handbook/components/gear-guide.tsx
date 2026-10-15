@@ -1,16 +1,20 @@
+import type { ForgeStoneTier } from "@workspace/rules";
 import {
   coinDenominations,
   GEAR_SLOTS,
   GEAR_STATS,
   gearStatValue,
   gearUpgradeCoin,
+  gearUpgradeForgeStone,
   gearUpgradePathCoin,
+  gearUpgradePathForgeStones,
   MAX_GEAR_LEVEL,
 } from "@workspace/rules";
 import { cn } from "cn";
 
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { GEAR_GLYPH, GEAR_GLYPH_TURN } from "@/features/hero/hero-art";
 import { useStatFormat } from "@/features/hero/use-stat-format";
 import { CoinPrice } from "@/features/packs/components/pack-art";
@@ -23,10 +27,25 @@ const ROW = "border-t border-[#c9b48c]/70";
 
 const LEVELS = Array.from({ length: MAX_GEAR_LEVEL }, (_, index) => index + 1);
 
+/** The Forge Stone tiers with their first and last Gear level, from level 1. */
+const TIER_BANDS = LEVELS.reduce<
+  { readonly tier: ForgeStoneTier; readonly from: number; to: number }[]
+>((bands, level) => {
+  const tier = gearUpgradeForgeStone(level);
+  const last = bands.at(-1);
+  if (last?.tier === tier) {
+    last.to = level;
+  } else {
+    bands.push({ tier, from: level, to: level });
+  }
+  return bands;
+}, []);
+
 /**
  * The Gear Entry (GDD 7.3, Economy 3.4): what each of the 4 items gives at
- * the highest level, and the Coin of each level. The numbers come from the
- * rules, so the Entry follows a balance change.
+ * the highest level, and the Coin and the Forge Stone tier of each level
+ * (ADR-0038). The numbers come from the rules, so the Entry follows a balance
+ * change.
  */
 export const GearGuide = () => {
   const { tr } = useGameText();
@@ -86,24 +105,49 @@ export const GearGuide = () => {
           {tr("handbook.gearCostTable")}
         </figcaption>
         <ol className="grid grid-cols-5 gap-x-2 gap-y-1.5 text-xs">
-          {LEVELS.map((level) => (
-            <li key={level} className="flex flex-col">
-              <span className="font-semibold text-[#5b4632]">
-                {tr("handbook.gearCostLevel", { level })}
-              </span>
-              <CoinPrice
-                parts={coinDenominations(gearUpgradeCoin(level))}
-                format={format}
-                className="font-black text-[#2a1a05]"
-              />
-              <span className="sr-only">{words(gearUpgradeCoin(level))}</span>
+          {LEVELS.map((level) => {
+            const tier = gearUpgradeForgeStone(level);
+            return (
+              <li key={level} className="flex flex-col" data-tier={tier}>
+                <span className="flex items-center gap-1 font-semibold text-[#5b4632]">
+                  <ForgeStoneIcon tier={tier} className="size-3 shrink-0" />
+                  {tr("handbook.gearCostLevel", { level })}
+                </span>
+                <CoinPrice
+                  parts={coinDenominations(gearUpgradeCoin(level))}
+                  format={format}
+                  className="font-black text-[#2a1a05]"
+                />
+                <span className="sr-only">
+                  {words(gearUpgradeCoin(level))},{" "}
+                  {tr("handbook.gearCostStone", {
+                    tier: tr(`forgeStones.tiers.${tier}`),
+                  })}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+        <ul
+          className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-[#5b4632]"
+          data-testid="handbook-gear-stone-tiers"
+        >
+          {TIER_BANDS.map(({ tier, from, to }) => (
+            <li key={tier} className="flex items-center gap-1">
+              <ForgeStoneIcon tier={tier} className="size-3 shrink-0" />
+              {tr("handbook.gearCostTier", {
+                tier: tr(`forgeStones.tiers.${tier}`),
+                from,
+                to,
+              })}
             </li>
           ))}
-        </ol>
+        </ul>
         <p className="mt-2 text-xs leading-snug text-[#5b4632]">
           {tr("handbook.gearCostTotal", {
             max: MAX_GEAR_LEVEL,
             coin: words(gearUpgradePathCoin(0, MAX_GEAR_LEVEL)),
+            stones: gearUpgradePathForgeStones(0, MAX_GEAR_LEVEL).common,
           })}
         </p>
       </figure>

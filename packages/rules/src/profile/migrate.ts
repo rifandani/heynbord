@@ -1,5 +1,6 @@
 import { Result, Schema } from "effect";
 
+import { NO_FORGE_STONES } from "../content/forge-stones";
 import { ImportError } from "./import-error";
 import { Profile, PROFILE_SCHEMA_VERSION } from "./schema";
 
@@ -39,6 +40,11 @@ export const PROFILE_MIGRATIONS = {
     isJsonObject(profile.gear)
       ? { ...profile, gear: doubledGear(profile.gear) }
       : profile,
+  /**
+   * Version 4 adds the Forge Stones (ADR-0038). An old save has none. Its
+   * Gear levels stay: it gets no Coin back and pays no Forge Stones for them.
+   */
+  3: (profile) => ({ ...profile, forgeStones: { ...NO_FORGE_STONES } }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

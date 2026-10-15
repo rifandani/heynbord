@@ -24,6 +24,8 @@ export interface StarChestDefinition {
   readonly essence: number;
   readonly heynstones: number;
   readonly pack: StarChestPack | null;
+  /** The Forge Stones of the tier of the Region (Economy 2.2, ADR-0038). */
+  readonly forgeStones: number;
 }
 
 /**
@@ -37,6 +39,7 @@ export const STAR_CHESTS: readonly StarChestDefinition[] = [
     essence: 0,
     heynstones: 0,
     pack: { pack: "merchant", version: "all" },
+    forgeStones: 2,
   },
   {
     stars: 20,
@@ -44,8 +47,16 @@ export const STAR_CHESTS: readonly StarChestDefinition[] = [
     essence: 30,
     heynstones: 0,
     pack: { pack: "merchant", version: "race" },
+    forgeStones: 0,
   },
-  { stars: 30, coin: 0, essence: 100, heynstones: 150, pack: null },
+  {
+    stars: 30,
+    coin: 0,
+    essence: 100,
+    heynstones: 150,
+    pack: null,
+    forgeStones: 0,
+  },
 ];
 
 /**

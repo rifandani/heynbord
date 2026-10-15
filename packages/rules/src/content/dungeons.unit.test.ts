@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { DUNGEON_REWARDS, dungeonReward, getDungeonRewards } from "./dungeons";
+import {
+  DUNGEON_FORGE_STONE_CHANCE,
+  DUNGEON_REWARDS,
+  dungeonForgeStones,
+  dungeonReward,
+  getDungeonRewards,
+} from "./dungeons";
 
 describe("Dungeon rewards (Economy 2.4)", () => {
   it("has the 3 Dungeons of the Economy table and their unlock levels (GDD 7.1)", () => {
@@ -80,5 +86,52 @@ describe("Dungeon rewards (Economy 2.4)", () => {
     // 13,495 XP after all 50 Floors; level 30 is 24,130 XP.
     expect(13_495 + firstWin + 52 * repeatWin).toBeGreaterThanOrEqual(24_130);
     expect(13_495 + firstWin + 51 * repeatWin).toBeLessThan(24_130);
+  });
+});
+
+describe("Dungeon Forge Stones (Economy 2.4, ADR-0038)", () => {
+  it("gives Uncommon Forge Stones in Dungeon 1, Rare in Dungeon 2 and Epic in Dungeon 3", () => {
+    expect(DUNGEON_REWARDS.map((dungeon) => dungeon.forgeStoneTier)).toEqual([
+      "uncommon",
+      "rare",
+      "epic",
+    ]);
+  });
+
+  it("gives 3 Forge Stones for the first win, with no random value", () => {
+    for (const dungeon of DUNGEON_REWARDS) {
+      const cursor = { state: 7 };
+      expect(dungeonForgeStones(dungeon, "firstWin", cursor)).toEqual({
+        tier: dungeon.forgeStoneTier,
+        count: 3,
+      });
+      expect(cursor.state).toBe(7);
+    }
+  });
+
+  it("gives no Forge Stone for a loss, with no random value", () => {
+    const cursor = { state: 7 };
+    expect(dungeonForgeStones(getDungeonRewards(3), "loss", cursor)).toBeNull();
+    expect(cursor.state).toBe(7);
+  });
+
+  it("gives 1 Forge Stone on about 25% of repeat wins, the same for the same random state", () => {
+    const REPEATS = 10_000;
+    const dungeon = getDungeonRewards(2);
+    const cursor = { state: 11 };
+    let hits = 0;
+    for (let index = 0; index < REPEATS; index += 1) {
+      const stones = dungeonForgeStones(dungeon, "win", cursor);
+      if (stones) {
+        expect(stones).toEqual({ tier: "rare", count: 1 });
+        hits += 1;
+      }
+    }
+    expect(DUNGEON_FORGE_STONE_CHANCE).toBe(2500);
+    expect(hits / REPEATS).toBeGreaterThan(0.235);
+    expect(hits / REPEATS).toBeLessThan(0.265);
+    expect(dungeonForgeStones(dungeon, "win", { state: 5 })).toEqual(
+      dungeonForgeStones(dungeon, "win", { state: 5 })
+    );
   });
 });

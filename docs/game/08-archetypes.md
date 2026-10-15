@@ -183,74 +183,74 @@ Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 se
 | --- | --- | --- | --- | --- | --- | --- |
 | Vanguard | Vanguard | 50.0% | 45.6% | 19.0 | 9.2 | Mirror |
 | Vanguard | Raiders | 50.0% | 52.3% | 14.9 | 5.0 | 45%–55% |
-| Vanguard | Tunnel Rats | 49.5% | 46.7% | 18.4 | 8.9 | 45%–55% |
+| Vanguard | Tunnel Rats | 49.0% | 47.1% | 18.7 | 9.2 | 45%–55% |
 | Vanguard | Wild Hunt | 45.6% | 52.9% | 17.6 | 7.7 | 45%–55% |
 | Vanguard | Thornwatch | 50.7% | 47.3% | 19.3 | 9.3 | 45%–55% |
 | Vanguard | Deathless Host | 48.4% | 52.9% | 20.7 | 10.9 | 45%–55% |
-| Vanguard | Breakneck Company | 32.1% | 53.9% | 17.2 | 7.1 | Review |
-| Vanguard | Vanguard Full | 76.4% | 47.0% | 19.5 | 9.9 | Review |
-| Vanguard | Raiders Full | 56.7% | 51.9% | 15.6 | 5.6 | Review |
-| Vanguard | Human Heavy | 37.0% | 48.4% | 17.1 | 7.0 | Review |
+| Vanguard | Breakneck Company | 32.9% | 54.5% | 17.3 | 7.2 | Review |
+| Vanguard | Vanguard Full | 77.0% | 47.1% | 19.5 | 9.9 | Review |
+| Vanguard | Raiders Full | 56.6% | 51.6% | 15.6 | 5.6 | Review |
+| Vanguard | Human Heavy | 35.6% | 49.3% | 17.0 | 6.9 | Review |
 | Vanguard | Human Light | 50.6% | 49.9% | 20.1 | 10.3 | 45%–55% |
 | Raiders | Raiders | 50.0% | 42.0% | 14.0 | 4.5 | Mirror |
-| Raiders | Tunnel Rats | 51.3% | 41.3% | 15.7 | 6.8 | 45%–55% |
+| Raiders | Tunnel Rats | 50.0% | 41.1% | 15.6 | 6.7 | 45%–55% |
 | Raiders | Wild Hunt | 54.5% | 54.4% | 14.1 | 4.8 | 45%–55% |
 | Raiders | Thornwatch | 53.1% | 46.7% | 15.7 | 6.3 | 45%–55% |
 | Raiders | Deathless Host | 50.0% | 55.3% | 15.8 | 6.8 | 45%–55% |
-| Raiders | Breakneck Company | 30.7% | 49.1% | 14.4 | 4.8 | Review |
-| Raiders | Vanguard Full | 83.3% | 50.3% | 15.3 | 6.3 | Review |
-| Raiders | Raiders Full | 60.2% | 44.9% | 14.1 | 4.4 | Review |
-| Raiders | Human Heavy | 32.2% | 55.1% | 13.6 | 4.4 | Review |
+| Raiders | Breakneck Company | 30.9% | 48.9% | 14.4 | 4.9 | Review |
+| Raiders | Vanguard Full | 82.9% | 50.2% | 15.3 | 6.3 | Review |
+| Raiders | Raiders Full | 60.4% | 45.4% | 14.1 | 4.4 | Review |
+| Raiders | Human Heavy | 30.0% | 55.5% | 13.5 | 4.3 | Review |
 | Raiders | Human Light | 56.3% | 54.7% | 15.7 | 6.7 | Review |
-| Tunnel Rats | Tunnel Rats | 50.0% | 39.4% | 18.8 | 9.6 | Mirror |
-| Tunnel Rats | Wild Hunt | 54.0% | 51.2% | 16.9 | 7.3 | 45%–55% |
-| Tunnel Rats | Thornwatch | 50.3% | 46.3% | 19.6 | 9.8 | 45%–55% |
-| Tunnel Rats | Deathless Host | 54.7% | 48.2% | 20.3 | 10.7 | 45%–55% |
-| Tunnel Rats | Breakneck Company | 33.4% | 44.0% | 17.1 | 7.4 | Review |
-| Tunnel Rats | Vanguard Full | 84.2% | 47.3% | 19.4 | 9.9 | Review |
-| Tunnel Rats | Raiders Full | 60.0% | 45.1% | 16.1 | 6.5 | Review |
-| Tunnel Rats | Human Heavy | 30.3% | 56.8% | 16.0 | 6.3 | Review |
-| Tunnel Rats | Human Light | 49.1% | 47.8% | 20.0 | 10.4 | 45%–55% |
+| Tunnel Rats | Tunnel Rats | 50.0% | 41.3% | 18.6 | 9.4 | Mirror |
+| Tunnel Rats | Wild Hunt | 53.3% | 51.7% | 16.9 | 7.3 | 45%–55% |
+| Tunnel Rats | Thornwatch | 51.8% | 48.4% | 19.6 | 9.8 | 45%–55% |
+| Tunnel Rats | Deathless Host | 54.0% | 48.0% | 20.3 | 10.8 | 45%–55% |
+| Tunnel Rats | Breakneck Company | 33.8% | 45.3% | 17.1 | 7.5 | Review |
+| Tunnel Rats | Vanguard Full | 84.9% | 47.6% | 19.7 | 10.2 | Review |
+| Tunnel Rats | Raiders Full | 63.0% | 45.8% | 16.0 | 6.4 | Review |
+| Tunnel Rats | Human Heavy | 30.3% | 56.3% | 15.9 | 6.2 | Review |
+| Tunnel Rats | Human Light | 50.0% | 47.9% | 20.1 | 10.5 | 45%–55% |
 | Wild Hunt | Wild Hunt | 50.0% | 55.1% | 16.9 | 8.4 | Mirror |
 | Wild Hunt | Thornwatch | 52.9% | 51.1% | 17.7 | 9.0 | 45%–55% |
 | Wild Hunt | Deathless Host | 49.9% | 57.9% | 20.0 | 11.4 | 45%–55% |
-| Wild Hunt | Breakneck Company | 35.3% | 57.3% | 17.4 | 9.0 | Review |
-| Wild Hunt | Vanguard Full | 77.0% | 52.1% | 18.3 | 9.6 | Review |
-| Wild Hunt | Raiders Full | 59.9% | 56.5% | 14.7 | 6.0 | Review |
-| Wild Hunt | Human Heavy | 44.3% | 51.9% | 15.9 | 7.3 | Review |
+| Wild Hunt | Breakneck Company | 35.9% | 57.1% | 17.5 | 9.0 | Review |
+| Wild Hunt | Vanguard Full | 76.4% | 52.0% | 18.3 | 9.6 | Review |
+| Wild Hunt | Raiders Full | 60.3% | 56.5% | 14.7 | 6.0 | Review |
+| Wild Hunt | Human Heavy | 41.0% | 51.7% | 15.9 | 7.2 | Review |
 | Wild Hunt | Human Light | 48.0% | 53.2% | 18.7 | 10.1 | 45%–55% |
 | Thornwatch | Thornwatch | 50.0% | 48.5% | 21.0 | 12.0 | Mirror |
 | Thornwatch | Deathless Host | 50.0% | 55.5% | 21.0 | 12.0 | 45%–55% |
-| Thornwatch | Breakneck Company | 43.8% | 48.5% | 18.5 | 9.3 | Review |
-| Thornwatch | Vanguard Full | 87.3% | 49.5% | 19.8 | 11.0 | Review |
-| Thornwatch | Raiders Full | 58.7% | 46.5% | 16.1 | 7.1 | Review |
-| Thornwatch | Human Heavy | 29.3% | 47.8% | 16.7 | 7.6 | Review |
+| Thornwatch | Breakneck Company | 44.4% | 48.4% | 18.5 | 9.4 | Review |
+| Thornwatch | Vanguard Full | 87.4% | 49.5% | 19.7 | 10.9 | Review |
+| Thornwatch | Raiders Full | 58.3% | 46.7% | 16.1 | 7.2 | Review |
+| Thornwatch | Human Heavy | 28.7% | 47.1% | 16.6 | 7.5 | Review |
 | Thornwatch | Human Light | 56.6% | 50.8% | 21.1 | 12.3 | Review |
 | Deathless Host | Deathless Host | 50.0% | 56.5% | 22.2 | 11.0 | Mirror |
-| Deathless Host | Breakneck Company | 38.9% | 54.3% | 19.0 | 8.6 | Review |
-| Deathless Host | Vanguard Full | 78.5% | 48.9% | 21.5 | 9.7 | Review |
-| Deathless Host | Raiders Full | 64.8% | 54.8% | 16.9 | 6.5 | Review |
-| Deathless Host | Human Heavy | 37.9% | 52.5% | 19.3 | 8.2 | Review |
+| Deathless Host | Breakneck Company | 39.3% | 54.4% | 19.0 | 8.6 | Review |
+| Deathless Host | Vanguard Full | 78.4% | 48.7% | 21.5 | 9.8 | Review |
+| Deathless Host | Raiders Full | 64.3% | 54.8% | 16.8 | 6.4 | Review |
+| Deathless Host | Human Heavy | 37.0% | 52.7% | 19.2 | 8.1 | Review |
 | Deathless Host | Human Light | 48.0% | 52.9% | 21.7 | 10.5 | 45%–55% |
-| Breakneck Company | Breakneck Company | 50.0% | 54.8% | 16.6 | 6.8 | Mirror |
-| Breakneck Company | Vanguard Full | 88.1% | 50.3% | 17.4 | 7.9 | Review |
-| Breakneck Company | Raiders Full | 75.9% | 52.2% | 14.4 | 4.6 | Review |
-| Breakneck Company | Human Heavy | 53.2% | 55.2% | 15.6 | 6.0 | 45%–55% |
-| Breakneck Company | Human Light | 63.4% | 52.8% | 18.7 | 9.2 | Review |
-| Vanguard Full | Vanguard Full | 50.0% | 45.5% | 22.3 | 12.7 | Mirror |
-| Vanguard Full | Raiders Full | 28.1% | 49.6% | 16.7 | 7.4 | Review |
-| Vanguard Full | Human Heavy | 14.4% | 49.5% | 17.1 | 7.6 | Review |
-| Vanguard Full | Human Light | 22.8% | 49.4% | 21.1 | 11.3 | Review |
-| Raiders Full | Raiders Full | 50.0% | 47.8% | 14.4 | 5.3 | Mirror |
-| Raiders Full | Human Heavy | 25.0% | 55.1% | 13.7 | 5.2 | Review |
-| Raiders Full | Human Light | 44.0% | 52.0% | 16.5 | 8.2 | Review |
-| Human Heavy | Human Heavy | 50.0% | 44.8% | 15.6 | 9.3 | Mirror |
-| Human Heavy | Human Light | 62.4% | 52.6% | 18.2 | 11.9 | Review |
+| Breakneck Company | Breakneck Company | 50.0% | 54.6% | 16.6 | 6.8 | Mirror |
+| Breakneck Company | Vanguard Full | 87.4% | 50.1% | 17.4 | 7.9 | Review |
+| Breakneck Company | Raiders Full | 75.7% | 52.4% | 14.4 | 4.6 | Review |
+| Breakneck Company | Human Heavy | 53.1% | 55.5% | 15.7 | 6.0 | 45%–55% |
+| Breakneck Company | Human Light | 63.0% | 52.8% | 18.7 | 9.2 | Review |
+| Vanguard Full | Vanguard Full | 50.0% | 45.7% | 22.3 | 12.7 | Mirror |
+| Vanguard Full | Raiders Full | 27.8% | 49.9% | 16.7 | 7.3 | Review |
+| Vanguard Full | Human Heavy | 14.3% | 50.0% | 17.1 | 7.5 | Review |
+| Vanguard Full | Human Light | 22.7% | 49.5% | 21.1 | 11.3 | Review |
+| Raiders Full | Raiders Full | 50.0% | 48.3% | 14.5 | 5.3 | Mirror |
+| Raiders Full | Human Heavy | 22.9% | 56.0% | 13.6 | 5.1 | Review |
+| Raiders Full | Human Light | 44.3% | 52.3% | 16.5 | 8.2 | Review |
+| Human Heavy | Human Heavy | 50.0% | 46.8% | 15.7 | 9.4 | Mirror |
+| Human Heavy | Human Light | 62.8% | 52.9% | 18.1 | 11.8 | Review |
 | Human Light | Human Light | 50.0% | 50.8% | 21.9 | 12.5 | Mirror |
 
-The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun scripts/simulate.ts matchup 1000 --check` in `packages/rules` on 2026-10-14, after the Feral Creature Card tuning of issue [#80](https://github.com/rifandani/heynbord/issues/80) (3.1). Each of the 15 pairs of the 6 Main Archetypes is in 45% to 55%, and the check passes. The rows without Wild Hunt did not change. 4 pairs are within 1 point of an edge. With 3000 seeds: Wild Hunt wins 52.5% against Vanguard (54.4% with 1000 seeds), 43.7% against Raiders (45.5%) and 45.4% against Tunnel Rats (46.0%). Tunnel Rats wins 54.8% against Deathless Host (54.7%). The 3000-seed result does not decide the gate. Before #80, Wild Hunt was a diagnostic Deck, and it won 64.7% against Vanguard, 42.6% against Raiders, 59.6% against Tunnel Rats, 62.6% against Thornwatch and 46.9% against Deathless Host. The other results of this table came from the promotion of Deathless Host, Tunnel Rats and Thornwatch (issue #68, 2.3). After the re-fit of Vanguard and Raiders (issue #67), and before #68, Vanguard also won 50.0% against Raiders. With the old Skill Cards, after the Power Budget of Skill Cards (#50), Vanguard won 54.3%. Before #50, after the balance pass of [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md), it won 56.5%. Before #68, with their old Skill Cards: Thornwatch won 57.9% against Vanguard and 49.3% against Raiders. Deathless Host won 57.3% and 52.5%. Tunnel Rats won 47.4% and 44.9%. Wild Hunt won 61.7% and 50.5%. The findings below this paragraph are from before 2026-10-14, unless they give another date. Before, the results came from `bun run sim matchup 1000` on 2026-10-11, after the re-tune of the Skill Cards with the swap rule (issue #56, 3.1 and 3.3). Then Vanguard won 48.9% against Raiders.
+The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun scripts/simulate.ts matchup 1000 --check` in `packages/rules` on 2026-10-15, after the enemy AI started to give a value to Sabotage, Hobble and Last Breath (issue [#84](https://github.com/rifandani/heynbord/issues/84), GDD 9). Each of the 15 pairs of the 6 Main Archetypes is in 45% to 55%, and the check passes. The Main pairs without Tunnel Rats did not change. Tunnel Rats now wins 51.0% against Vanguard (50.5% before #84), 50.0% against Raiders (48.7%), 53.3% against Wild Hunt (54.0%), 51.8% against Thornwatch (49.7%) and 54.0% against Deathless Host (54.7%). Some rows of the diagnostic Decks also changed. Those rows were already out of date before #84: the AI change does not change them. 3 Main pairs are within 1 point of an edge: Wild Hunt against Vanguard and against Raiders, and Tunnel Rats against Deathless Host. The text that follows in this paragraph is from 2026-10-14, after the Feral Creature Card tuning of issue [#80](https://github.com/rifandani/heynbord/issues/80) (3.1). Then the rows without Wild Hunt did not change, and 4 pairs were within 1 point of an edge. With 3000 seeds: Wild Hunt wins 52.5% against Vanguard (54.4% with 1000 seeds), 43.7% against Raiders (45.5%) and 45.4% against Tunnel Rats (46.0%). Tunnel Rats wins 54.8% against Deathless Host (54.7%). The 3000-seed result does not decide the gate. Before #80, Wild Hunt was a diagnostic Deck, and it won 64.7% against Vanguard, 42.6% against Raiders, 59.6% against Tunnel Rats, 62.6% against Thornwatch and 46.9% against Deathless Host. The other results of this table came from the promotion of Deathless Host, Tunnel Rats and Thornwatch (issue #68, 2.3). After the re-fit of Vanguard and Raiders (issue #67), and before #68, Vanguard also won 50.0% against Raiders. With the old Skill Cards, after the Power Budget of Skill Cards (#50), Vanguard won 54.3%. Before #50, after the balance pass of [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md), it won 56.5%. Before #68, with their old Skill Cards: Thornwatch won 57.9% against Vanguard and 49.3% against Raiders. Deathless Host won 57.3% and 52.5%. Tunnel Rats won 47.4% and 44.9%. Wild Hunt won 61.7% and 50.5%. The findings below this paragraph are from before 2026-10-14, unless they give another date. Before, the results came from `bun run sim matchup 1000` on 2026-10-11, after the re-tune of the Skill Cards with the swap rule (issue #56, 3.1 and 3.3). Then Vanguard won 48.9% against Raiders.
 
-**Goblin, Feral and Undead risks (2.2).** The AI ignores Sabotage, Trample, Entangle, Rally, Swarm, Rebirth and Summon when it selects a play. Thus these results are evidence for review, not a balance approval.
+**Goblin, Feral and Undead risks (2.2).** The AI ignores Trample, Entangle, Rally, Swarm, Rebirth and Summon when it selects a play. Since issue [#84](https://github.com/rifandani/heynbord/issues/84), it gives a value to Sabotage, Hobble and Last Breath (GDD 9). Thus these results are evidence for review, not a balance approval.
 
 | Risk | Result | Finding |
 | --- | --- | --- |

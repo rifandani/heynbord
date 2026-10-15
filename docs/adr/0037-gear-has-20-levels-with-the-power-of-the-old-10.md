@@ -14,3 +14,7 @@ The game director wants a Gear item to go to level 20. The economy sim shows tha
 - A Profile migration doubles each saved Gear level, and the Stage data doubles each enemy Gear level. A migrated Player has the same stats and paid the same Coin.
 - Each number that counts Gear levels doubles: the "Gear mostly at level 7 or higher" pacing target becomes 14, the win-chance bonus of the economy sim becomes 1.25 points for each mean Gear level, and the Upgrader Play Style upgrades Gear up to the Player level × 2 ÷ 3.
 - With smaller steps, the Coin that stays after Packs and Combine can buy a Gear level. So the Gear goes up a little: in the economy sim, the mean Gear at Heynspire Floor 50 went from old level 4.0 to about 6 for the Collector and the Upgrader, and from 3.8 to 4.7 for the Balanced Player. The "level 14 or higher" target still fails. The Expected Gear (ADR-0034) goes up by about half of an old level, and `sim stage 1000 --check` still passes.
+
+## Update: a Gear upgrade costs half of the Coin and a Forge Stone
+
+[ADR-0038](./0038-gear-upgrades-need-earn-only-forge-stones.md) adds 1 Forge Stone to each Gear upgrade and makes the Coin cost half: 2.5 × *n* × (*n* + 1). Levels 2*n* − 1 and 2*n* together now cost 20 × *n*², and one item from 0 to 20 costs 7,700 Coin. The 20 levels, the stats of each level and the migration of the Gear levels above do not change. A Profile that upgraded Gear at the cost of this ADR gets no Coin back and pays no Forge Stones for its levels.

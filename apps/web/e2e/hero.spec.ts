@@ -3,19 +3,37 @@ import type { Page } from "./_base";
 
 /**
  * The Hero screen (GDD 7.3, issue #77): the Barracks and the Hero shortcut
- * open it at Player level 5, a Gear upgrade adds 1 level for Coin and the
- * Profile keeps it, and "Change Deck" changes the Class of the Hero
- * (ADR-0033).
+ * open it at Player level 5, a Gear upgrade adds 1 level for Coin and a
+ * Forge Stone (ADR-0038) and the Profile keeps it, and "Change Deck" changes
+ * the Class of the Hero (ADR-0033).
  */
 
 /** The part of `window` that the test hooks (test-hooks.ts) add. */
 interface HookWindow extends Window {
   readonly __THREE_GAME_TEST_HOOKS__?: {
     readonly setCoin: (copper: number) => void;
+    readonly setForgeStones: (stones: ForgeStones) => void;
     readonly setXp: (xp: number) => void;
     readonly profileSaved: () => Promise<void>;
   };
 }
+
+/** The Forge Stones of each tier. */
+interface ForgeStones {
+  readonly common: number;
+  readonly uncommon: number;
+  readonly rare: number;
+  readonly epic: number;
+}
+
+const NO_STONES: ForgeStones = { common: 0, uncommon: 0, rare: 0, epic: 0 };
+
+/** Sets the Forge Stones of the Profile with the test hook. */
+const setForgeStones = (page: Page, stones: ForgeStones) =>
+  page.evaluate((value) => {
+    // SAFETY: the dev and QA builds install the test hooks on `window`.
+    (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setForgeStones(value);
+  }, stones);
 
 /** The total XP of Player level 5 (Economy 1.2). */
 const LEVEL_5_XP = 640;
@@ -93,19 +111,32 @@ test.describe("Hero screen", () => {
     await expect(page.getByTestId("hint")).toHaveCount(0);
   });
 
-  test("a Gear upgrade takes its Coin, and the Profile keeps the new level", async ({
+  test("a Gear upgrade takes its Coin and its Forge Stone, and the Profile keeps the new level", async ({
     page,
   }) => {
     await openTown(page, LEVEL_5_XP, 1000);
+    await setForgeStones(page, { ...NO_STONES, common: 2, rare: 1 });
     await page.getByTestId("town-shortcut-hero").click();
     await expect(page.getByTestId("hero")).toBeVisible();
+
+    // The 4 Forge Stone counts.
+    const common = page.getByTestId("hero-forge-stone-common");
+    await expect(common).toHaveAttribute("data-count", "2");
+    await expect(common).toContainText("Common Forge Stones: 2");
+    await expect(page.getByTestId("hero-forge-stone-rare")).toHaveAttribute(
+      "data-count",
+      "1"
+    );
 
     const weapon = page.getByTestId("gear-weapon");
     const upgrade = page.getByTestId("gear-upgrade-weapon");
     await expect(weapon).toHaveAttribute("data-level", "0");
     await expect(weapon.getByTestId("gear-stat")).toHaveText("0%→0.5%");
+    await expect(weapon.getByTestId("gear-stone-cost")).toContainText(
+      "1 × Common Forge Stone"
+    );
     await expect(upgrade).toHaveAccessibleName(
-      "Upgrade Weapon to level 1, for 10 Copper"
+      "Upgrade Weapon to level 1, for 5 Copper and 1 Common Forge Stone"
     );
 
     await upgrade.click();
@@ -115,12 +146,13 @@ test.describe("Hero screen", () => {
       "Weapon is now level 1. Unit Crit: 0.5%."
     );
     await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
-      "Coin: 9 Silver, 90 Copper"
+      "Coin: 9 Silver, 95 Copper"
     );
+    await expect(common).toHaveAttribute("data-count", "1");
     // The focus stays on the upgrade, so Enter upgrades again.
     await expect(upgrade).toBeFocused();
 
-    // An Armor upgrade adds 1 to the Hero HP.
+    // An Armor upgrade adds 1 to the Hero HP and uses the last Common Forge Stone.
     await page.getByTestId("gear-upgrade-armor").click();
     await expect(page.getByTestId("hero-hp")).toHaveAttribute(
       "data-total",
@@ -129,16 +161,27 @@ test.describe("Hero screen", () => {
     await expect(page.getByTestId("hero-hp-sum")).toHaveText(
       "= 30 base + 5 level + 1 × 1 Armor"
     );
+    await expect(common).toHaveAttribute("data-count", "0");
 
-    // Level 2 costs 30 Copper. With 20, the button is off and says what is missing.
+    // No Common Forge Stone: the upgrade is off, also with the Coin. The Rare
+    // Forge Stone cannot replace it.
+    await expect(upgrade).toBeDisabled();
+    await expect(upgrade).toHaveText("Need Forge Stone");
+    await expect(upgrade).toHaveAccessibleName(
+      "Upgrade Weapon: you need 1 Common Forge Stone"
+    );
+
+    // Level 2 costs 15 Copper. With a Forge Stone and 10 Copper, the button
+    // says what Coin is missing.
+    await setForgeStones(page, { ...NO_STONES, common: 1, rare: 1 });
     await page.evaluate(() => {
       // SAFETY: the dev and QA builds install the test hooks on `window`.
-      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setCoin(20);
+      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setCoin(10);
     });
     await expect(upgrade).toBeDisabled();
-    await expect(upgrade).toHaveText("Need10c");
+    await expect(upgrade).toHaveText("Need5c");
     await expect(upgrade).toHaveAccessibleName(
-      "Upgrade Weapon: you need 10 Copper more"
+      "Upgrade Weapon: you need 5 Copper more"
     );
 
     await page.evaluate(async () => {
@@ -154,6 +197,10 @@ test.describe("Hero screen", () => {
     );
     await expect(page.getByTestId("gear-armor")).toHaveAttribute(
       "data-level",
+      "1"
+    );
+    await expect(page.getByTestId("hero-forge-stone-common")).toHaveAttribute(
+      "data-count",
       "1"
     );
   });

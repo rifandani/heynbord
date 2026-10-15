@@ -2,6 +2,7 @@ import { Schema } from "effect";
 
 import { CollectionEntry } from "../collection/deck-building";
 import { MAX_DECK_SLOTS, STARTING_DECK_SLOTS } from "../content/deck-slots";
+import { ForgeStones } from "../content/forge-stones";
 import { PackId } from "../content/packs";
 import { ClassId, DeckEntry, GearLevels } from "../content/schema";
 import { STAR_CHESTS } from "../content/star-chests";
@@ -11,7 +12,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 3;
+export const PROFILE_SCHEMA_VERSION = 4;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -89,6 +90,8 @@ export const Profile = Schema.Struct({
   /** The ID of the Deck Slot that the Stage Panel selects first. */
   activeDeckId: Schema.NonEmptyString,
   gear: GearLevels,
+  /** The Forge Stones of each tier that the Player has (ADR-0038). They are earn-only. */
+  forgeStones: ForgeStones,
   /** The best Stars of each won Stage, by Stage ID. Stage 1-1 here: the Tutorial is won. */
   stageResults: Schema.Record(Schema.String, Stars),
   /** The Star chests that the Player claimed: their Stars, by Region number. */

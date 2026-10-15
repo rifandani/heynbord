@@ -49,6 +49,29 @@ describe("migrateProfile", () => {
     });
   });
 
+  it("gives 0 Forge Stones to a version 3 Profile, and keeps its Gear levels and Coin (ADR-0038)", () => {
+    const { forgeStones: _, ...v3 } = {
+      ...newProfile(3),
+      schemaVersion: 3,
+      coin: 1234,
+      gear: { weapon: 20, armor: 14, trinket: 3, banner: 0 },
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v3));
+    expect(migrated.forgeStones).toEqual({
+      common: 0,
+      uncommon: 0,
+      rare: 0,
+      epic: 0,
+    });
+    expect(migrated.gear).toEqual({
+      weapon: 20,
+      armor: 14,
+      trinket: 3,
+      banner: 0,
+    });
+    expect(migrated.coin).toBe(1234);
+  });
+
   it("refuses a version 2 Profile with Gear that is not levels", () => {
     const v2 = {
       ...newProfile(3),
@@ -106,6 +129,7 @@ describe("migrateProfile", () => {
       { deckSlots: [] },
       { stageResults: { "1-1": 4 } },
       { sweepTickets: -1 },
+      { forgeStones: { common: -1, uncommon: 0, rare: 0, epic: 0 } },
       { claimedStarChests: { 1: [15] } },
       { unopenedPacks: [{ pack: "royal", version: "class" }] },
     ]) {
@@ -113,6 +137,11 @@ describe("migrateProfile", () => {
         failure(migrateProfile({ ...newProfile(3), ...change }))?._tag
       ).toBe("InvalidProfile");
     }
+  });
+
+  it("refuses a Profile of the current version with no Forge Stones", () => {
+    const { forgeStones: _, ...noStones } = newProfile(3);
+    expect(failure(migrateProfile(noStones))?._tag).toBe("InvalidProfile");
   });
 
   it("accepts claimed Star chests at their Stars", () => {

@@ -17,6 +17,7 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import {
   ResultCard,
   ResultCoin,
+  ResultForgeStones,
   ResultTickets,
   ResultXp,
 } from "@/features/battle/components/result-rewards";
@@ -141,8 +142,8 @@ const ResultReason = ({ result }: { readonly result: BattleResult }) => {
 
 /**
  * The rewards of the result (GDD 11.4): the card won at the left, and the
- * Coin, the Sweep Tickets of a win and the XP at the right. They are already
- * in the Profile.
+ * Coin, the Sweep Tickets and the Forge Stones of a win and the XP at the
+ * right. They are already in the Profile.
  */
 const ResultRewards = ({ shown }: { readonly shown: ShownRewards }) => {
   const { rewards } = shown;
@@ -156,6 +157,7 @@ const ResultRewards = ({ shown }: { readonly shown: ShownRewards }) => {
         <div className="flex flex-wrap gap-1.5">
           <ResultCoin coin={rewards.coin} />
           <ResultTickets tickets={rewards.sweepTickets} />
+          <ResultForgeStones stones={rewards.forgeStones} />
         </div>
         <ResultXp shown={shown} />
       </div>

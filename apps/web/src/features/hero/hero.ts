@@ -1,15 +1,19 @@
 import type {
   ClassId,
   DeckSlot,
+  ForgeStones,
+  ForgeStoneTier,
   GearLevels,
   GearSlot,
   GearStat,
 } from "@workspace/rules";
 import {
+  FORGE_STONE_TIERS,
   GEAR_SLOTS,
   GEAR_STATS,
   gearStatValue,
   gearUpgradeCoin,
+  gearUpgradeForgeStone,
   MAX_GEAR_LEVEL,
   PLAYER_BASE_HP,
   playerHeroHp,
@@ -48,12 +52,27 @@ export const heroHpParts = (
 };
 
 /**
- * What the upgrade button of a Gear item does: upgrade for `coin`, wait for
- * `missing` more Coin, or nothing, because the item is at level 20.
+ * What the upgrade button of a Gear item does (Economy 3.4, ADR-0038):
+ * upgrade for `coin` and 1 Forge Stone of `tier`, wait for `missingCoin` more
+ * Coin or for the Forge Stone (`hasStone` false), or nothing, because the item
+ * is at level 20. `stones` is the count of `tier` that the Player has.
  */
 export type GearUpgrade =
-  | { readonly kind: "ready"; readonly coin: number }
-  | { readonly kind: "coin"; readonly coin: number; readonly missing: number }
+  | {
+      readonly kind: "ready";
+      readonly coin: number;
+      readonly tier: ForgeStoneTier;
+      readonly stones: number;
+    }
+  | {
+      readonly kind: "short";
+      readonly coin: number;
+      readonly tier: ForgeStoneTier;
+      readonly stones: number;
+      /** The Coin that is missing, or 0. */
+      readonly missingCoin: number;
+      readonly hasStone: boolean;
+    }
   | { readonly kind: "max" };
 
 /**
@@ -70,35 +89,57 @@ export interface GearItem {
   readonly upgrade: GearUpgrade;
 }
 
-const upgradeOf = (level: number, coin: number): GearUpgrade => {
+const upgradeOf = (
+  level: number,
+  coin: number,
+  forgeStones: ForgeStones
+): GearUpgrade => {
   if (level >= MAX_GEAR_LEVEL) {
     return { kind: "max" };
   }
   const cost = gearUpgradeCoin(level + 1);
-  return coin >= cost
-    ? { kind: "ready", coin: cost }
-    : { kind: "coin", coin: cost, missing: cost - coin };
+  const tier = gearUpgradeForgeStone(level + 1);
+  const stones = forgeStones[tier];
+  const missingCoin = Math.max(0, cost - coin);
+  const hasStone = stones >= 1;
+  return missingCoin === 0 && hasStone
+    ? { kind: "ready", coin: cost, tier, stones }
+    : { kind: "short", coin: cost, tier, stones, missingCoin, hasStone };
 };
 
 export const gearItem = (
   slot: GearSlot,
   level: number,
-  coin: number
+  coin: number,
+  forgeStones: ForgeStones
 ): GearItem => ({
   slot,
   level,
   stat: GEAR_STATS[slot].stat,
   now: gearStatValue(slot, level),
   next: level >= MAX_GEAR_LEVEL ? null : gearStatValue(slot, level + 1),
-  upgrade: upgradeOf(level, coin),
+  upgrade: upgradeOf(level, coin, forgeStones),
 });
 
 /** The 4 Gear items of the Gear Rack, in the GDD 7.3 order. */
 export const gearItems = (
   gear: GearLevels,
-  coin: number
+  coin: number,
+  forgeStones: ForgeStones
 ): readonly GearItem[] =>
-  GEAR_SLOTS.map((slot) => gearItem(slot, gear[slot], coin));
+  GEAR_SLOTS.map((slot) => gearItem(slot, gear[slot], coin, forgeStones));
+
+/** One Forge Stone count of the Hero screen (GDD 7.2, ADR-0038). */
+export interface ForgeStoneCount {
+  readonly tier: ForgeStoneTier;
+  readonly count: number;
+}
+
+/** The 4 Forge Stone counts, from the lowest Gear levels. */
+export const forgeStoneCounts = (
+  forgeStones: ForgeStones
+): readonly ForgeStoneCount[] =>
+  FORGE_STONE_TIERS.map((tier) => ({ tier, count: forgeStones[tier] }));
 
 /** True for a stat that is a chance: it shows as a percent. */
 export const isChance = (stat: GearStat): boolean => stat !== "heroHp";

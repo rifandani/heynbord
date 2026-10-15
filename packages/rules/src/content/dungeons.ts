@@ -1,3 +1,6 @@
+import { rollBasisPoints } from "../random";
+import type { RandomCursor } from "../random";
+import type { ForgeStoneReward, ForgeStoneTier } from "./forge-stones";
 import { outcomeXp } from "./player-levels";
 import { outcomeCoin } from "./stage-coin";
 import type { StageOutcome } from "./stage-coin";
@@ -19,6 +22,8 @@ export interface DungeonRewardDefinition {
    * win uses × 2 of `winEssence`.
    */
   readonly firstWinEssence: number | null;
+  /** The tier of the Forge Stones of a win (ADR-0038). */
+  readonly forgeStoneTier: ForgeStoneTier;
 }
 
 /**
@@ -35,6 +40,7 @@ export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
     winXp: 140,
     winEssence: 0,
     firstWinEssence: null,
+    forgeStoneTier: "uncommon",
   },
   {
     dungeon: 2,
@@ -43,6 +49,7 @@ export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
     winXp: 200,
     winEssence: 0,
     firstWinEssence: null,
+    forgeStoneTier: "rare",
   },
   {
     dungeon: 3,
@@ -51,6 +58,7 @@ export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
     winXp: 0,
     winEssence: 15,
     firstWinEssence: 100,
+    forgeStoneTier: "epic",
   },
 ];
 
@@ -88,3 +96,32 @@ export const dungeonReward = (
       ? dungeon.firstWinEssence
       : outcomeXp(dungeon.winEssence, outcome),
 });
+
+/** The chance of 1 Forge Stone from a repeat win of a Dungeon, in basis points (Economy 2.4). */
+export const DUNGEON_FORGE_STONE_CHANCE = 2500;
+
+/** The Forge Stones of the first win of a Dungeon, in place of the chance (Economy 2.4). */
+export const DUNGEON_FIRST_WIN_FORGE_STONES = 3;
+
+/**
+ * The Forge Stones of a Dungeon result (Economy 2.4, ADR-0038), all of the
+ * tier of the Dungeon: 3 for the first win, a 25% chance of 1 for a repeat
+ * win, none for a loss. Only a repeat win uses a random value.
+ */
+export const dungeonForgeStones = (
+  dungeon: DungeonRewardDefinition,
+  outcome: StageOutcome,
+  cursor: RandomCursor
+): ForgeStoneReward | null => {
+  const tier = dungeon.forgeStoneTier;
+  if (outcome === "firstWin") {
+    return { tier, count: DUNGEON_FIRST_WIN_FORGE_STONES };
+  }
+  if (
+    outcome === "win" &&
+    rollBasisPoints(cursor, DUNGEON_FORGE_STONE_CHANCE)
+  ) {
+    return { tier, count: 1 };
+  }
+  return null;
+};

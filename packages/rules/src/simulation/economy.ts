@@ -10,9 +10,29 @@ import type { Collection } from "../collection/deck-building";
 import { CARDS } from "../content/cards";
 import { DECK_SLOT_PRICES, STARTING_DECK_SLOTS } from "../content/deck-slots";
 import { getStarterDeck } from "../content/decks";
-import { DUNGEON_REWARDS, dungeonReward } from "../content/dungeons";
+import {
+  DUNGEON_REWARDS,
+  dungeonForgeStones,
+  dungeonReward,
+} from "../content/dungeons";
 import type { DungeonRewardDefinition } from "../content/dungeons";
-import { GEAR_SLOTS, gearUpgradeCoin, MAX_GEAR_LEVEL } from "../content/gear";
+import {
+  addForgeStones,
+  NO_FORGE_STONES,
+  regionForgeStoneTier,
+  stageForgeStones,
+} from "../content/forge-stones";
+import type {
+  ForgeStoneReward,
+  ForgeStones,
+  ForgeStoneTier,
+} from "../content/forge-stones";
+import {
+  GEAR_SLOTS,
+  gearUpgradeCoin,
+  gearUpgradeForgeStone,
+  MAX_GEAR_LEVEL,
+} from "../content/gear";
 import { floorFirstWinReward, HEYNSPIRE_FLOORS } from "../content/heynspire";
 import {
   BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
@@ -286,6 +306,8 @@ export interface CheckpointSnapshot {
   /** In Copper. */
   readonly coin: number;
   readonly essence: number;
+  /** The Forge Stones that the Player has and did not use (ADR-0038). */
+  readonly forgeStones: ForgeStones;
 }
 
 /** Where the Player is in the content. */
@@ -313,6 +335,8 @@ export interface EconomyPlayer {
   /** The Collection rules of the game change it (GDD 7.4). */
   collection: Collection;
   readonly gear: Record<keyof GearLevels, number>;
+  /** The Forge Stones that the Player has (ADR-0038). */
+  forgeStones: ForgeStones;
   deckSlots: number;
   freePackOpened: boolean;
   packsOpened: number;
@@ -322,6 +346,8 @@ export interface EconomyPlayer {
   readonly guaranteeCounters: Record<PackId, number>;
   /** The Pack random state of the Profile (Economy 3.1, rule 7). */
   packRandomState: number;
+  /** The reward random state of the Profile: the Forge Stone chances. */
+  readonly rewardCursor: RandomCursor;
   /** The Stars and the number of opened Star chests of each Region. */
   readonly stars: number[];
   readonly openedChests: number[];
@@ -346,6 +372,7 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     battles: 0,
     collection: addCopies([], getStarterDeck(STARTER_DECK_ID).deck),
     gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+    forgeStones: NO_FORGE_STONES,
     deckSlots: STARTING_DECK_SLOTS,
     freePackOpened: false,
     packsOpened: 0,
@@ -356,6 +383,9 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     // The Pack random state is not the Battle random state, so that a change
     // of the win chance does not change the cards of the same Pack.
     packRandomState: seed * 7919 + 17,
+    // The reward random state is not the Battle random state either, so that
+    // a change of a Forge Stone chance does not change a Battle result.
+    rewardCursor: { state: seed * 104_729 + 31 },
     stars: Array.from({ length: CAMPAIGN_REGIONS }, () => 0),
     openedChests: Array.from({ length: CAMPAIGN_REGIONS }, () => 0),
     stagesWon: 0,
@@ -398,6 +428,7 @@ const snapshot = (player: EconomyPlayer): CheckpointSnapshot => {
     lowestGear: lowestGear(player),
     coin: player.coin,
     essence: player.essence,
+    forgeStones: player.forgeStones,
   };
 };
 
@@ -456,7 +487,11 @@ const buyPack = (player: EconomyPlayer, packId: PackId): boolean => {
   return true;
 };
 
-/** Upgrades the lowest Gear item by one level. Returns false when it cannot. */
+/**
+ * Upgrades the lowest Gear item by one level, for the Coin and the Forge Stone
+ * of the new level (ADR-0038). Returns false when it cannot, so the Play Style
+ * goes to its next priority.
+ */
 const upgradeGear = (player: EconomyPlayer, upTo = MAX_GEAR_LEVEL): boolean => {
   if (!isUnlocked(levelOf(player), "gear")) {
     return false;
@@ -469,10 +504,15 @@ const upgradeGear = (player: EconomyPlayer, upTo = MAX_GEAR_LEVEL): boolean => {
     return false;
   }
   const cost = gearUpgradeCoin(next);
-  if (player.coin < cost) {
+  const tier = gearUpgradeForgeStone(next);
+  if (player.coin < cost || player.forgeStones[tier] < 1) {
     return false;
   }
   player.coin -= cost;
+  player.forgeStones = {
+    ...player.forgeStones,
+    [tier]: player.forgeStones[tier] - 1,
+  };
   player.gear[slot] = next;
   return true;
 };
@@ -688,6 +728,10 @@ const addStars = (player: EconomyPlayer, region: number, stars: number) => {
   for (const chest of chests.slice(player.openedChests[index] ?? 0)) {
     player.coin += chest.coin;
     player.essence += chest.essence;
+    player.forgeStones = addForgeStones(player.forgeStones, {
+      tier: regionForgeStoneTier(region),
+      count: chest.forgeStones,
+    });
     if (chest.pack !== null) {
       const pool: PackPool =
         chest.pack.version === "race"
@@ -704,11 +748,13 @@ interface BattleReward {
   readonly coin: number;
   readonly xp: number;
   readonly essence: number;
+  readonly forgeStones: ForgeStoneReward | null;
 }
 
 const giveReward = (player: EconomyPlayer, reward: BattleReward) => {
   player.coin += reward.coin;
   player.essence += reward.essence;
+  player.forgeStones = addForgeStones(player.forgeStones, reward.forgeStones);
   player.xp = Math.min(
     player.xp + reward.xp,
     PLAYER_LEVEL_XP.at(-1) ?? player.xp
@@ -811,7 +857,10 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       outcome = player.dungeonsWon.has(dungeon.dungeon) ? "win" : "firstWin";
       player.dungeonsWon.add(dungeon.dungeon);
     }
-    giveReward(player, dungeonReward(dungeon, outcome));
+    giveReward(player, {
+      ...dungeonReward(dungeon, outcome),
+      forgeStones: dungeonForgeStones(dungeon, outcome, player.rewardCursor),
+    });
   };
 
   const playStage = (index: number, stage: EconomyStage) => {
@@ -827,6 +876,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       coin: stageCoin(stage, outcome),
       xp: stageXp(stage, outcome),
       essence: 0,
+      forgeStones: stageForgeStones(stage, outcome, player.rewardCursor),
     });
     if (!won) {
       return;
@@ -853,6 +903,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
         coin: outcomeCoin(reward.coin, "loss"),
         xp: outcomeXp(reward.xp, "loss"),
         essence: 0,
+        forgeStones: null,
       });
       progress.floorFails += 1;
       if (progress.floorFails >= FLOOR_FAILS_BEFORE_DUNGEON) {
@@ -972,7 +1023,10 @@ export const expectedGear = (): ReadonlyMap<string, GearLevels> => {
 // ─── Report ──────────────────────────────────────────────────────────────────
 
 /** The metrics of a checkpoint that the report shows. */
-export type Metric = Exclude<keyof CheckpointSnapshot, "combines" | "essence">;
+export type Metric = Exclude<
+  keyof CheckpointSnapshot,
+  "combines" | "essence" | "forgeStones"
+>;
 
 export const METRICS: readonly Metric[] = [
   "battles",
@@ -998,6 +1052,8 @@ interface CheckpointSummary {
   /** The number of Players that got to the checkpoint. */
   readonly reached: number;
   readonly metrics: Readonly<Record<Metric, Spread>> | null;
+  /** The Forge Stones that the Players did not use, by tier (ADR-0038). */
+  readonly forgeStones: Readonly<Record<ForgeStoneTier, Spread>> | null;
   /** The share of the Players with a Combine done, from 0 to 1. */
   readonly combinedShare: number;
 }
@@ -1034,10 +1090,12 @@ const summarize = (
   snapshots: readonly CheckpointSnapshot[]
 ): CheckpointSummary => {
   if (snapshots.length === 0) {
-    return { reached: 0, metrics: null, combinedShare: 0 };
+    return { reached: 0, metrics: null, forgeStones: null, combinedShare: 0 };
   }
   const spread = (metric: Metric) =>
     spreadOf(snapshots.map((snap) => snap[metric]));
+  const stones = (tier: ForgeStoneTier) =>
+    spreadOf(snapshots.map((snap) => snap.forgeStones[tier]));
   return {
     reached: snapshots.length,
     metrics: {
@@ -1051,6 +1109,12 @@ const summarize = (
       meanGear: spread("meanGear"),
       lowestGear: spread("lowestGear"),
       coin: spread("coin"),
+    },
+    forgeStones: {
+      common: stones("common"),
+      uncommon: stones("uncommon"),
+      rare: stones("rare"),
+      epic: stones("epic"),
     },
     combinedShare:
       snapshots.filter((snap) => snap.combines > 0).length / snapshots.length,
