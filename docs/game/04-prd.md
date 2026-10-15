@@ -85,7 +85,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | PRG-02 | The Deck builder must show all cards with filters, also the cards that the player does not own, and the copies of each owned card in each Rank. There is no separate Collection screen. | M |
 | PRG-03 | The Workshop must support Combine, Extract and Craft with the costs in the Economy document. | M |
 | PRG-04 | Combine and Gear upgrades must never fail and never cause a downgrade. | M |
-| PRG-05 | The Hero must have 4 Gear slots with levels 0 to 20. | M |
+| PRG-05 | The Hero must have 4 Gear slots with levels 0 to 25. | M |
 | PRG-06 | The player must be able to change the Hero Class outside a Battle at no cost. | M |
 | PRG-07 | Packs must use the drop rates and rules in the Economy document, and the game must show them before the player opens a Pack. | M |
 | PRG-08 | The game must show Coin in Gold, Silver and Copper with the display rule in the Economy document. | M |

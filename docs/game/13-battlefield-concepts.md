@@ -2,14 +2,14 @@
 
 This document gives the art brief for the Battle Painting: the painted ground and background behind the Board, one for each Region. The Battle Painting is a flat 2D image behind the 3D scene ([web ADR-0007](../../apps/web/docs/adr/0007-the-battlefield-is-a-2d-painting.md)). The Units, the Heroes and the effects stand on it. The Squares are not drawn.
 
-Now only the Hearthvale Battle Painting exists (`apps/web/public/battle/hearthvale.webp`). The Red Mesas has a brief (1.2), but no painting yet. The other Regions have no brief yet. `BATTLE_PAINTINGS` in `apps/web/src/features/battle/battle-painting.ts` gives it to all Regions. If no painting loads, the Battle shows a meadow gradient (`apps/web/src/features/battle/components/battle-painting.tsx`).
+All 5 Battle Paintings exist in `apps/web/public/battle/`: `hearthvale.webp` (1672 × 941), and `red-mesas.webp`, `glowcap-hollows.webp`, `thornwood.webp` and `hollow-marches.webp` (1536 × 864, the middle 16:9 band of the 1536 × 1024 image from ChatGPT). `BATTLE_PAINTINGS` in `apps/web/src/features/battle/battle-painting.ts` gives each Region its painting. A Region with no entry uses the Hearthvale painting. If no painting loads, the Battle shows a meadow gradient (`apps/web/src/features/battle/components/battle-painting.tsx`).
 
 ## 1. Rules for the Battle art
 
 - **One painting for each Region.** All Stages of the Region use it, the Boss Stage too. A Stage has no Battle Painting of its own. A Region with no painting uses the Hearthvale painting. Dungeons and Heynspire use it too, until they have their own.
 - **View.** From the Battle camera: about 45° down, from the player side. The horizon is far above the top of the screen, so the painting shows only ground. **No sky.**
 - **Light.** From the upper left, warm, as in all other art.
-- **Size.** Landscape 16:9. Make the master at 3200 × 1800. The game uses a WebP export at 2560 × 1440, less than about 400 KB. The positions in 1.3 use a 1600 × 900 box, so 1 code unit is 2 pixels of the master.
+- **Size.** Landscape 16:9. Make the master at 3200 × 1800. The game uses a WebP export at 2560 × 1440, less than about 400 KB. The positions in 1.6 use a 1600 × 900 box, so 1 code unit is 2 pixels of the master.
 - **No text, no people, no animals** in the open ground. The image has no labels, letters, logo or UI.
 - **No Lanes and no Squares.** The open ground has no lines, paths, rows, fences or tiles. The Player must never think that the painting shows a Lane or a Square.
 - **Units first.** The open ground is soft and has low contrast, so that each Unit and its Attack and HP line are easy to read on it (Pillar 5). The detail, the dark colors and the humor go to the edges.
@@ -36,7 +36,40 @@ Now only the Hearthvale Battle Painting exists (`apps/web/public/battle/hearthva
 | Humor note | At one side edge, a goblin hides in a mine cart with a sack of rocks painted gold. Never in the open ground. |
 | Time and weather | A bright, dry midday. Warm light from the upper left. |
 
-### 1.3 Positions on the painting
+### 1.3 The Glowcap Hollows
+
+| Item | Brief |
+| --- | --- |
+| Place | A mossy floor in the Glowcap Hollows, where the Goblin tunnels break out into the old Elf grove. |
+| Ground | A soft, even floor of short moss, with a few tiny pale flowers. Soft, even light. |
+| Edges | Giant mushrooms that glow soft cyan and violet, thick roots, mossy rocks, small glowing pools and a goblin tunnel exit with a broken mine cart. Shade under the mushroom caps. |
+| Palette | Moss green, deep violet and blue shade, soft cyan and green glow, warm brown roots. No single Race color is the main color. |
+| Humor note | At one side edge, a goblin uses a glowing mushroom as a lamp, and a tiny mushroom spirit sits on its helmet. Never in the open ground. |
+| Time and weather | A bright late afternoon. The edges are in soft shade, so the mushrooms glow. Warm light from the upper left. |
+
+### 1.4 The Thornwood
+
+| Item | Brief |
+| --- | --- |
+| Place | A glade between the giant trees of the Thornwood, near the caves of the Feral creatures. |
+| Ground | A soft, mossy glade with short grass and a few fallen leaves. Soft light patches. |
+| Edges | Trunks of giant trees, thick roots, thorn hedges, mossy standing stones and a dark cave mouth under the roots. Shade under the trees. |
+| Palette | Deep emerald, moss green, teal shade, gold light, some autumn red at the edges. No single Race color is the main color. |
+| Humor note | At one side edge, a cave bear is stuck in a thorn bush, and a squirrel runs away with an elf arrow. Never in the open ground. |
+| Time and weather | A bright afternoon. Light falls through the leaves from the upper left. |
+
+### 1.5 The Hollow Marches
+
+| Item | Brief |
+| --- | --- |
+| Place | A dry, grassy island in the Hollow Marches, between still water and old dead trees. |
+| Ground | Firm, flat ground with short, pale green and gold grass. Soft, even light. |
+| Edges | Still water with reeds and lily pads, old dead trees, pale stones, a broken boardwalk and low mist on the water. |
+| Palette | Misty teal, moss green, pale gold grass, violet shade, bone white, soft green glow. No single Race color is the main color. |
+| Humor note | At one side edge, a skeleton sits on the broken boardwalk and fishes. A frog with a small crown sits on a lily pad next to it. Never in the open ground. |
+| Time and weather | A bright late afternoon. Low mist on the water at the edges, never on the open ground. |
+
+### 1.6 Positions on the painting
 
 The painting covers the screen and crops its edges. The positions are in the 1600 × 900 box, for the Battle camera on a 16:9 screen (`apps/web/src/features/battle/scene/layout.ts`, `cameraFrame`).
 
@@ -81,7 +114,7 @@ The script makes a Battle Painting prompt for each Region that has a brief in se
 2. Select one image with the checklist in 4.
 3. Fix problems by hand or with inpainting: paths or lines on the meadow, strange trees, text-like marks.
 4. Crop to 16:9 and export the master at 3200 × 1800.
-5. Export a WebP at 2560 × 1440, less than about 400 KB (Technical Design, section 6). Name it after the Region, for example `hearthvale.webp`.
+5. Export a WebP at 2560 × 1440, or at the size of the crop if the image is smaller, less than about 400 KB (Technical Design, section 6). Name it after the Region, for example `red-mesas.webp`.
 6. Put it in `apps/web/public/battle/`, and set its path for the Region in `BATTLE_PAINTINGS` in `apps/web/src/features/battle/battle-painting.ts`.
 7. Open a Battle at 4:3, 16:9 and a phone in landscape. Check that the Board and the Heroes stand on the open meadow, and that each Unit and its Attack and HP line are easy to read.
 8. Write the licence record (art direction 5.5).
@@ -89,7 +122,7 @@ The script makes a Battle Painting prompt for each Region that has a brief in se
 ## 4. Review checklist
 
 - [ ] The painting has no sky and no horizon.
-- [ ] The open ground in 1.3 has only meadow: no paths, lines, objects, people or animals.
+- [ ] The open ground in 1.6 has only meadow: no paths, lines, objects, people or animals.
 - [ ] Nothing in the painting looks like a Lane, a row or a Square.
 - [ ] A Unit with a gold base and a Unit with a red base are both easy to see on the meadow.
 - [ ] The edges are darker and have more detail than the center.

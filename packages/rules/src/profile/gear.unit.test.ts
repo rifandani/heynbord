@@ -15,7 +15,13 @@ import { newProfile } from "./new-profile";
 const NO_GEAR: GearLevels = { weapon: 0, armor: 0, trinket: 0, banner: 0 };
 
 /** 1 Forge Stone of each tier. */
-const ONE_OF_EACH: ForgeStones = { common: 1, uncommon: 1, rare: 1, epic: 1 };
+const ONE_OF_EACH: ForgeStones = {
+  common: 1,
+  uncommon: 1,
+  rare: 1,
+  epic: 1,
+  legendary: 1,
+};
 
 const withGear = (
   coin: number,
@@ -40,6 +46,26 @@ describe("upgradeGear (GDD 7.3, Economy 3.4, ADR-0038)", () => {
     const upgraded = upgradeGear(withGear(1050, { banner: 19 }), "banner");
     expect(upgraded?.coin).toBe(0);
     expect(upgraded?.forgeStones).toEqual({ ...ONE_OF_EACH, epic: 0 });
+    expect(upgraded?.gear.banner).toBe(20);
+  });
+
+  it("upgrades level 20 to 21 with a Legendary Forge Stone, and an Epic Forge Stone cannot replace it (ADR-0039)", () => {
+    const upgraded = upgradeGear(withGear(1155, { weapon: 20 }), "weapon");
+    expect(upgraded?.coin).toBe(0);
+    expect(upgraded?.forgeStones).toEqual({ ...ONE_OF_EACH, legendary: 0 });
+    expect(upgraded?.gear.weapon).toBe(21);
+    const noLegendary = withGear(
+      1155,
+      { weapon: 20 },
+      { ...ONE_OF_EACH, epic: 5, legendary: 0 }
+    );
+    expect(upgradeGear(noLegendary, "weapon")).toBeNull();
+  });
+
+  it("upgrades level 24 to 25 for 1,625 Coin and 1 Legendary Forge Stone", () => {
+    const upgraded = upgradeGear(withGear(1625, { banner: 24 }), "banner");
+    expect(upgraded?.coin).toBe(0);
+    expect(upgraded?.forgeStones).toEqual({ ...ONE_OF_EACH, legendary: 0 });
     expect(upgraded?.gear.banner).toBe(MAX_GEAR_LEVEL);
   });
 
@@ -63,7 +89,7 @@ describe("upgradeGear (GDD 7.3, Economy 3.4, ADR-0038)", () => {
     }
   });
 
-  it("fails at level 20, and the Profile does not change", () => {
+  it("fails at level 25, and the Profile does not change", () => {
     const profile = withGear(1_000_000, { trinket: MAX_GEAR_LEVEL });
     expect(upgradeGear(profile, "trinket")).toBeNull();
     expect(profile.coin).toBe(1_000_000);

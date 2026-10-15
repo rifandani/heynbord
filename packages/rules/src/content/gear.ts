@@ -1,4 +1,4 @@
-import { FORGE_STONE_TIERS } from "./forge-stones";
+import { FORGE_STONE_TIERS, NO_FORGE_STONES } from "./forge-stones";
 import type { ForgeStones, ForgeStoneTier } from "./forge-stones";
 import type { GearLevels } from "./schema";
 
@@ -13,8 +13,8 @@ export const GEAR_SLOTS: readonly (keyof GearLevels)[] = [
 /** One Gear slot: the Weapon, the Armor, the Trinket or the Banner. */
 export type GearSlot = keyof GearLevels;
 
-/** The highest level of a Gear item (GDD 7.3, ADR-0037). A new item is level 0. */
-export const MAX_GEAR_LEVEL = 20;
+/** The highest level of a Gear item (GDD 7.3, ADR-0039). A new item is level 0. */
+export const MAX_GEAR_LEVEL = 25;
 
 /**
  * The stat that each Gear item gives (GDD 7.3): Unit Crit chance (Weapon),
@@ -25,8 +25,8 @@ export type GearStat = "unitCrit" | "heroHp" | "skillCrit" | "unitBlock";
 
 /**
  * The stat of each Gear slot and what one level adds: basis points (100 =
- * 1%) for a chance, HP for the Armor. Level 20 is the right column of the
- * GDD 7.3 table: 10%, +20 HP, 15% and 10% (ADR-0037).
+ * 1%) for a chance, HP for the Armor. Level 25 is the right column of the
+ * GDD 7.3 table: 12.5%, +25 HP, 18.75% and 12.5% (ADR-0037, ADR-0039).
  */
 export const GEAR_STATS: Readonly<
   Record<GearSlot, { readonly stat: GearStat; readonly perLevel: number }>
@@ -52,7 +52,7 @@ export const gearStatValue = (slot: GearSlot, level: number): number =>
  */
 const GEAR_COIN_PER_LEVEL_STEP = 5;
 
-/** Each Forge Stone tier upgrades this many Gear levels, from level 1 (ADR-0038). */
+/** Each Forge Stone tier upgrades this many Gear levels, from level 1 (ADR-0038, ADR-0039). */
 const GEAR_LEVELS_PER_FORGE_STONE_TIER = 5;
 
 const checkUpgradeLevel = (level: number): void => {
@@ -63,16 +63,16 @@ const checkUpgradeLevel = (level: number): void => {
   }
 };
 
-/** The Coin to upgrade one Gear item to `level` (1 to 20), in Copper (Economy 3.4). */
+/** The Coin to upgrade one Gear item to `level` (1 to 25), in Copper (Economy 3.4). */
 export const gearUpgradeCoin = (level: number): number => {
   checkUpgradeLevel(level);
   return (GEAR_COIN_PER_LEVEL_STEP * level * (level + 1)) / 2;
 };
 
 /**
- * The tier of the 1 Forge Stone that an upgrade to `level` (1 to 20) uses
- * (Economy 3.4, ADR-0038): Common for levels 1 to 5, Uncommon for 6 to 10,
- * Rare for 11 to 15 and Epic for 16 to 20.
+ * The tier of the 1 Forge Stone that an upgrade to `level` (1 to 25) uses
+ * (Economy 3.4, ADR-0038, ADR-0039): Common for levels 1 to 5, Uncommon for
+ * 6 to 10, Rare for 11 to 15, Epic for 16 to 20 and Legendary for 21 to 25.
  */
 export const gearUpgradeForgeStone = (level: number): ForgeStoneTier => {
   checkUpgradeLevel(level);
@@ -94,7 +94,7 @@ const checkPath = (from: number, to: number): void => {
 
 /**
  * The Coin to upgrade one Gear item from level `from` to level `to`, in
- * Copper. Level 0 to 20 is 7,700 Coin (Economy 3.4).
+ * Copper. Level 0 to 25 is 14,625 Coin (Economy 3.4).
  */
 export const gearUpgradePathCoin = (from: number, to: number): number => {
   checkPath(from, to);
@@ -107,14 +107,14 @@ export const gearUpgradePathCoin = (from: number, to: number): number => {
 
 /**
  * The Forge Stones to upgrade one Gear item from level `from` to level `to`.
- * Level 0 to 20 is 5 of each tier (Economy 3.4).
+ * Level 0 to 25 is 5 of each tier (Economy 3.4).
  */
 export const gearUpgradePathForgeStones = (
   from: number,
   to: number
 ): ForgeStones => {
   checkPath(from, to);
-  const stones = { common: 0, uncommon: 0, rare: 0, epic: 0 };
+  const stones = { ...NO_FORGE_STONES };
   for (let level = from + 1; level <= to; level += 1) {
     stones[gearUpgradeForgeStone(level)] += 1;
   }

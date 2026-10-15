@@ -24,9 +24,16 @@ interface ForgeStones {
   readonly uncommon: number;
   readonly rare: number;
   readonly epic: number;
+  readonly legendary: number;
 }
 
-const NO_STONES: ForgeStones = { common: 0, uncommon: 0, rare: 0, epic: 0 };
+const NO_STONES: ForgeStones = {
+  common: 0,
+  uncommon: 0,
+  rare: 0,
+  epic: 0,
+  legendary: 0,
+};
 
 /** Sets the Forge Stones of the Profile with the test hook. */
 const setForgeStones = (page: Page, stones: ForgeStones) =>
@@ -119,7 +126,13 @@ test.describe("Hero screen", () => {
     await page.getByTestId("town-shortcut-hero").click();
     await expect(page.getByTestId("hero")).toBeVisible();
 
-    // The 4 Forge Stone counts.
+    // The 5 Forge Stone counts.
+    await expect(
+      page.getByTestId("hero-forge-stones").locator("li")
+    ).toHaveCount(5);
+    await expect(
+      page.getByTestId("hero-forge-stone-legendary")
+    ).toHaveAttribute("data-count", "0");
     const common = page.getByTestId("hero-forge-stone-common");
     await expect(common).toHaveAttribute("data-count", "2");
     await expect(common).toContainText("Common Forge Stones: 2");

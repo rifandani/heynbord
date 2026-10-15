@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { ownedCopies } from "../collection/deck-building";
+import { NO_FORGE_STONES } from "../content/forge-stones";
 import { PLAYER_LEVEL_XP } from "../content/player-levels";
 import { STAGES } from "../content/stages";
 import { UNLOCK_LEVELS } from "../content/unlocks";
@@ -18,7 +19,13 @@ import type { EconomyPlayer } from "./economy";
 import { NO_GEAR } from "./simulate";
 
 /** 20 Forge Stones of each tier: all that the 4 Gear items need. */
-const ALL_FORGE_STONES = { common: 20, uncommon: 20, rare: 20, epic: 20 };
+const ALL_FORGE_STONES = {
+  common: 20,
+  uncommon: 20,
+  rare: 20,
+  epic: 20,
+  legendary: 20,
+};
 
 /**
  * A Player at `level` with `coin` and `forgeStones`, the free Pack and the
@@ -227,6 +234,7 @@ describe("spend (Economy 7.1)", () => {
       uncommon: 20,
       rare: 20,
       epic: 20,
+      legendary: 20,
     });
     spend(player, "collector");
     // 3 Common Forge Stones: 3 items to level 1. Uncommon cannot replace Common.
@@ -236,17 +244,13 @@ describe("spend (Economy 7.1)", () => {
       uncommon: 20,
       rare: 20,
       epic: 20,
+      legendary: 20,
     });
     expect(player.coin).toBe(400 - 3 * 5);
   });
 
   it("goes to the next priority when the Forge Stone is missing", () => {
-    const player = playerAt(6, 1250, {
-      common: 0,
-      uncommon: 0,
-      rare: 0,
-      epic: 0,
-    });
+    const player = playerAt(6, 1250, NO_FORGE_STONES);
     spend(player, "upgrader");
     // No Gear: the Coin after the 4 Combines (350) buys 2 Peddler Packs.
     expect(gearSum(player)).toBe(0);

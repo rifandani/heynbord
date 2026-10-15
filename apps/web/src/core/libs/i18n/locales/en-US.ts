@@ -765,7 +765,7 @@ export default {
       pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
       workshop:
         "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank.",
-      gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin and 1 Forge Stone. The level sets the tier of the Forge Stone: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15 and Epic for 16 to 20. A Forge Stone of a different tier cannot replace it. An upgrade never fails, and a level never goes down.\n\nStage wins, Star chests, Sweeps, Dungeons and Heynspire give Forge Stones. You cannot buy them. The Hero screen shows the Forge Stones that you have.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
+      gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin and 1 Forge Stone. The level sets the tier of the Forge Stone: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15, Epic for 16 to 20 and Legendary for 21 to 25. A Forge Stone of a different tier cannot replace it. An upgrade never fails, and a level never goes down.\n\nStage wins, Star chests, Sweeps, Dungeons and Heynspire give Forge Stones. You cannot buy them. The Hero screen shows the Forge Stones that you have.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
     },
     aliases: {
       board: "battlefield, field, map, grid, arena",
@@ -1079,6 +1079,7 @@ export default {
       uncommon: "Uncommon",
       rare: "Rare",
       epic: "Epic",
+      legendary: "Legendary",
     },
   },
   deckBuilder: {
@@ -1199,6 +1200,16 @@ export default {
     "2-8": { name: "The Cave-in", enemy: "Tunnel Foreman" },
     "2-9": { name: "The Mine Mouth", enemy: "Snikkit's Lookout" },
     "2-10": { name: "Snikkit's Throne Hall", enemy: "Boss Snikkit" },
+    "3-1": { name: "The Tunnel Exit", enemy: "Mossfoot Sentry" },
+    "3-2": { name: "The Stuck Drill", enemy: "Drillboss Nub" },
+    "3-3": { name: "The Glowing Pool", enemy: "Dewdrop Alchemist" },
+    "3-4": { name: "The Rope Bridge", enemy: "Bridgewarden Fennick" },
+    "3-5": { name: "The Lantern Post", enemy: "Lantern Lookout" },
+    "3-6": { name: "The Goblin Camp", enemy: "Gig the Hired" },
+    "3-7": { name: "The Mushroom Ring", enemy: "Ring Singer" },
+    "3-8": { name: "The Glowing Falls", enemy: "Falls Warden" },
+    "3-9": { name: "The Root Gate", enemy: "Glimmerbough's Gatekeeper" },
+    "3-10": { name: "Glimmerbough's Grove Hall", enemy: "Lady Glimmerbough" },
   },
   classes: {
     warrior: "Warrior",

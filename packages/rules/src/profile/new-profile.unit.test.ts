@@ -39,6 +39,7 @@ describe("newProfile", () => {
       uncommon: 0,
       rare: 0,
       epic: 0,
+      legendary: 0,
     });
     expect(profile.stageResults).toEqual({});
     expect(profile.claimedStarChests).toEqual({});

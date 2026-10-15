@@ -139,6 +139,338 @@ const HEARTHVALE: RegionMap = {
   ],
 };
 
+/** The Red Mesas (Region 2). The positions are measured on this painting. */
+const RED_MESAS: RegionMap = {
+  region: 2,
+  image: "/battle/red-mesas-region.webp",
+  // Snikkit's Throne Hall, from its bucket crown to its gate. The Boss
+  // clearing is the end of the road, in front of the gate.
+  bossLandmark: { left: 1080, top: 10, right: 1300, bottom: 200 },
+  stops: [
+    { x: 286, y: 760 },
+    { x: 495, y: 672 },
+    { x: 385, y: 557 },
+    { x: 557, y: 467 },
+    { x: 764, y: 524 },
+    { x: 898, y: 667 },
+    { x: 1113, y: 764 },
+    { x: 1354, y: 667 },
+    { x: 1408, y: 494 },
+    { x: 1198, y: 252 },
+  ],
+  legs: [
+    [
+      { x: 0, y: 823 },
+      { x: 94, y: 810 },
+      { x: 198, y: 786 },
+      { x: 286, y: 760 },
+    ],
+    [
+      { x: 286, y: 760 },
+      { x: 354, y: 748 },
+      { x: 438, y: 710 },
+      { x: 495, y: 672 },
+    ],
+    [
+      { x: 495, y: 672 },
+      { x: 458, y: 625 },
+      { x: 422, y: 583 },
+      { x: 385, y: 557 },
+    ],
+    [
+      { x: 385, y: 557 },
+      { x: 448, y: 526 },
+      { x: 510, y: 484 },
+      { x: 557, y: 467 },
+    ],
+    [
+      { x: 557, y: 467 },
+      { x: 625, y: 479 },
+      { x: 688, y: 500 },
+      { x: 764, y: 524 },
+    ],
+    [
+      { x: 764, y: 524 },
+      { x: 807, y: 573 },
+      { x: 849, y: 625 },
+      { x: 898, y: 667 },
+    ],
+    [
+      { x: 898, y: 667 },
+      { x: 969, y: 708 },
+      { x: 1042, y: 748 },
+      { x: 1113, y: 764 },
+    ],
+    [
+      { x: 1113, y: 764 },
+      { x: 1198, y: 740 },
+      { x: 1286, y: 700 },
+      { x: 1354, y: 667 },
+    ],
+    [
+      { x: 1354, y: 667 },
+      { x: 1401, y: 615 },
+      { x: 1417, y: 552 },
+      { x: 1408, y: 494 },
+    ],
+    [
+      { x: 1408, y: 494 },
+      { x: 1391, y: 438 },
+      { x: 1344, y: 375 },
+      { x: 1286, y: 313 },
+      { x: 1240, y: 273 },
+      { x: 1198, y: 252 },
+    ],
+  ],
+};
+
+/** The Glowcap Hollows (Region 3). The positions are measured on this painting. */
+const GLOWCAP_HOLLOWS: RegionMap = {
+  region: 3,
+  image: "/battle/glowcap-hollows-region.webp",
+  // The grove hall of Lady Glimmerbough, from its mushroom roof to its steps.
+  bossLandmark: { left: 1040, top: 60, right: 1320, bottom: 270 },
+  stops: [
+    { x: 290, y: 748 },
+    { x: 491, y: 649 },
+    { x: 391, y: 526 },
+    { x: 579, y: 414 },
+    { x: 759, y: 489 },
+    { x: 902, y: 641 },
+    { x: 1126, y: 731 },
+    { x: 1351, y: 634 },
+    { x: 1358, y: 461 },
+    { x: 1165, y: 306 },
+  ],
+  legs: [
+    [
+      { x: 0, y: 823 },
+      { x: 115, y: 800 },
+      { x: 208, y: 773 },
+      { x: 290, y: 748 },
+    ],
+    [
+      { x: 290, y: 748 },
+      { x: 354, y: 724 },
+      { x: 438, y: 688 },
+      { x: 491, y: 649 },
+    ],
+    [
+      { x: 491, y: 649 },
+      { x: 458, y: 599 },
+      { x: 427, y: 557 },
+      { x: 391, y: 526 },
+    ],
+    [
+      { x: 391, y: 526 },
+      { x: 438, y: 484 },
+      { x: 500, y: 443 },
+      { x: 579, y: 414 },
+    ],
+    [
+      { x: 579, y: 414 },
+      { x: 656, y: 427 },
+      { x: 708, y: 458 },
+      { x: 759, y: 489 },
+    ],
+    [
+      { x: 759, y: 489 },
+      { x: 813, y: 542 },
+      { x: 854, y: 594 },
+      { x: 902, y: 641 },
+    ],
+    [
+      { x: 902, y: 641 },
+      { x: 969, y: 677 },
+      { x: 1042, y: 714 },
+      { x: 1126, y: 731 },
+    ],
+    [
+      { x: 1126, y: 731 },
+      { x: 1208, y: 714 },
+      { x: 1292, y: 667 },
+      { x: 1351, y: 634 },
+    ],
+    [
+      { x: 1351, y: 634 },
+      { x: 1365, y: 583 },
+      { x: 1375, y: 516 },
+      { x: 1358, y: 461 },
+    ],
+    [
+      { x: 1358, y: 461 },
+      { x: 1323, y: 417 },
+      { x: 1260, y: 375 },
+      { x: 1208, y: 333 },
+      { x: 1165, y: 306 },
+    ],
+  ],
+};
+
+/** The Thornwood (Region 4). The positions are measured on this painting. */
+const THORNWOOD: RegionMap = {
+  region: 4,
+  image: "/battle/thornwood-region.webp",
+  // The Old Bramble, from its crown of leaves to its bramble hill.
+  bossLandmark: { left: 1060, top: 60, right: 1380, bottom: 340 },
+  stops: [
+    { x: 292, y: 777 },
+    { x: 471, y: 657 },
+    { x: 368, y: 543 },
+    { x: 540, y: 450 },
+    { x: 732, y: 519 },
+    { x: 863, y: 668 },
+    { x: 1046, y: 757 },
+    { x: 1265, y: 663 },
+    { x: 1299, y: 516 },
+    { x: 1125, y: 395 },
+  ],
+  legs: [
+    [
+      { x: 0, y: 792 },
+      { x: 104, y: 783 },
+      { x: 208, y: 779 },
+      { x: 292, y: 777 },
+    ],
+    [
+      { x: 292, y: 777 },
+      { x: 375, y: 750 },
+      { x: 438, y: 698 },
+      { x: 471, y: 657 },
+    ],
+    [
+      { x: 471, y: 657 },
+      { x: 438, y: 604 },
+      { x: 406, y: 573 },
+      { x: 368, y: 543 },
+    ],
+    [
+      { x: 368, y: 543 },
+      { x: 438, y: 500 },
+      { x: 490, y: 469 },
+      { x: 540, y: 450 },
+    ],
+    [
+      { x: 540, y: 450 },
+      { x: 625, y: 458 },
+      { x: 677, y: 484 },
+      { x: 732, y: 519 },
+    ],
+    [
+      { x: 732, y: 519 },
+      { x: 792, y: 573 },
+      { x: 823, y: 625 },
+      { x: 863, y: 668 },
+    ],
+    [
+      { x: 863, y: 668 },
+      { x: 938, y: 698 },
+      { x: 990, y: 729 },
+      { x: 1046, y: 757 },
+    ],
+    [
+      { x: 1046, y: 757 },
+      { x: 1135, y: 729 },
+      { x: 1208, y: 693 },
+      { x: 1265, y: 663 },
+    ],
+    [
+      { x: 1265, y: 663 },
+      { x: 1313, y: 604 },
+      { x: 1313, y: 557 },
+      { x: 1299, y: 516 },
+    ],
+    [
+      { x: 1299, y: 516 },
+      { x: 1250, y: 469 },
+      { x: 1198, y: 432 },
+      { x: 1125, y: 395 },
+    ],
+  ],
+};
+
+/** The Hollow Marches (Region 5). The positions are measured on this painting. */
+const HOLLOW_MARCHES: RegionMap = {
+  region: 5,
+  image: "/battle/hollow-marches-region.webp",
+  // The castle of Queen Marrow, from its towers to its gate.
+  bossLandmark: { left: 1020, top: 55, right: 1310, bottom: 280 },
+  stops: [
+    { x: 318, y: 761 },
+    { x: 477, y: 654 },
+    { x: 370, y: 548 },
+    { x: 546, y: 446 },
+    { x: 749, y: 510 },
+    { x: 873, y: 661 },
+    { x: 1093, y: 769 },
+    { x: 1376, y: 706 },
+    { x: 1313, y: 495 },
+    { x: 1117, y: 372 },
+  ],
+  legs: [
+    [
+      { x: 0, y: 818 },
+      { x: 104, y: 792 },
+      { x: 208, y: 771 },
+      { x: 318, y: 761 },
+    ],
+    [
+      { x: 318, y: 761 },
+      { x: 385, y: 729 },
+      { x: 427, y: 693 },
+      { x: 477, y: 654 },
+    ],
+    [
+      { x: 477, y: 654 },
+      { x: 417, y: 604 },
+      { x: 396, y: 578 },
+      { x: 370, y: 548 },
+    ],
+    [
+      { x: 370, y: 548 },
+      { x: 438, y: 500 },
+      { x: 479, y: 474 },
+      { x: 546, y: 446 },
+    ],
+    [
+      { x: 546, y: 446 },
+      { x: 625, y: 458 },
+      { x: 688, y: 484 },
+      { x: 749, y: 510 },
+    ],
+    [
+      { x: 749, y: 510 },
+      { x: 792, y: 563 },
+      { x: 833, y: 615 },
+      { x: 873, y: 661 },
+    ],
+    [
+      { x: 873, y: 661 },
+      { x: 938, y: 708 },
+      { x: 1010, y: 745 },
+      { x: 1093, y: 769 },
+    ],
+    [
+      { x: 1093, y: 769 },
+      { x: 1198, y: 750 },
+      { x: 1292, y: 729 },
+      { x: 1376, y: 706 },
+    ],
+    [
+      { x: 1376, y: 706 },
+      { x: 1417, y: 625 },
+      { x: 1385, y: 542 },
+      { x: 1313, y: 495 },
+    ],
+    [
+      { x: 1313, y: 495 },
+      { x: 1229, y: 448 },
+      { x: 1167, y: 417 },
+      { x: 1117, y: 372 },
+    ],
+  ],
+};
+
 /**
  * The Region Map of each Region, or `null` while its painting does not exist.
  * To add one, follow 12 — Region Concepts, step 6.
@@ -147,10 +479,10 @@ type RegionMaps = Readonly<Record<number, RegionMap | null>>;
 
 const REGION_MAPS = {
   1: HEARTHVALE,
-  2: null,
-  3: null,
-  4: null,
-  5: null,
+  2: RED_MESAS,
+  3: GLOWCAP_HOLLOWS,
+  4: THORNWOOD,
+  5: HOLLOW_MARCHES,
 } as const satisfies RegionMaps;
 
 /** The Region Map of a Region, or `null` while its painting does not exist. */
@@ -393,29 +725,36 @@ export interface Viewport {
   readonly obstacles: readonly Box[];
 }
 
-/** The painting on the screen: its top-left corner and pixels per map unit. */
+/**
+ * The painting on the screen: its top-left corner and pixels per map unit.
+ * A map x is `scale * stretch` pixels wide, so the painting can fill the
+ * width of a screen that is a little wider or narrower than 16:9.
+ */
 export interface MapFrame {
   readonly x: number;
   readonly y: number;
   readonly scale: number;
+  readonly stretch: number;
 }
 
 /** A margin between two Stage Markers, or a marker and the screen edge or the HUD. */
 const EDGE = 6;
 
 /**
- * The box of each Stage Marker at a scale, in pixels from the painting
- * origin, with a margin. The last stop is the Boss Stage.
+ * The box of each Stage Marker at a scale and a stretch, in pixels from the
+ * painting origin, with a margin. The last stop is the Boss Stage.
  */
 export const markerBoxes = (
   stops: readonly Point[],
-  scale: number
+  scale: number,
+  stretch = 1
 ): readonly Box[] =>
   stops.map((stop, index) => {
     const size = markerSize(scale, index === stops.length - 1);
+    const x = stop.x * scale * stretch;
     return {
-      left: stop.x * scale - size.width / 2 - EDGE,
-      right: stop.x * scale + size.width / 2 + EDGE,
+      left: x - size.width / 2 - EDGE,
+      right: x + size.width / 2 + EDGE,
       top: stop.y * scale - size.above - EDGE,
       bottom: stop.y * scale + size.below + EDGE,
     };
@@ -431,8 +770,30 @@ const boundsOf = (boxes: readonly Box[]): Box => ({
 /** The parts of a Region Map that the frame keeps in view. */
 type FramedMap = Pick<RegionMap, "stops" | "bossLandmark">;
 
-const fits = (map: FramedMap, viewport: Viewport, scale: number) => {
-  const bounds = boundsOf(markerBoxes(map.stops, scale));
+/** The size of the painting on the screen. */
+type Size = Pick<MapFrame, "scale" | "stretch">;
+
+/**
+ * The box that the frame keeps on the screen at a scale, in pixels from the
+ * painting origin: each Stage Marker, and the Boss landmark from its middle
+ * line down, so that the Player sees at least half of it.
+ */
+const framedBounds = (map: FramedMap, { scale, stretch }: Size): Box => {
+  const { left, top, right, bottom } = map.bossLandmark;
+  const middle = ((top + bottom) / 2) * scale;
+  return boundsOf([
+    ...markerBoxes(map.stops, scale, stretch),
+    {
+      left: left * scale * stretch,
+      right: right * scale * stretch,
+      top: middle,
+      bottom: middle,
+    },
+  ]);
+};
+
+const fits = (map: FramedMap, viewport: Viewport, size: Size) => {
+  const bounds = framedBounds(map, size);
   return (
     bounds.right - bounds.left <= viewport.width &&
     bounds.bottom - bounds.top <=
@@ -445,21 +806,21 @@ const clampTo = (value: number, low: number, high: number) =>
   low > high ? (low + high) / 2 : Math.min(high, Math.max(low, value));
 
 /**
- * The position of the painting at a scale where no Stage Marker goes under a
- * HUD piece, or `null`. It covers the screen when it can, with its line
- * y 864 on the top edge of the Town Bar, as in the Town. If a marker goes
- * under the top HUD there, the painting moves down as far as the Town Bar
- * lets it.
+ * The position of the painting at a size where no Stage Marker goes under a
+ * HUD piece, or `null`. It covers the screen above the Town Bar when it can.
+ * If a marker goes under the top HUD there, the painting moves down as far as
+ * the Town Bar lets it.
  */
 const place = (
   map: FramedMap,
   viewport: Viewport,
-  scale: number
+  size: Size
 ): MapFrame | null => {
-  const width = MAP.width * scale;
+  const { scale, stretch } = size;
+  const width = MAP.width * scale * stretch;
   const height = MAP.height * scale;
-  const boxes = markerBoxes(map.stops, scale);
-  const bounds = boundsOf(boxes);
+  const boxes = markerBoxes(map.stops, scale, stretch);
+  const bounds = framedBounds(map, size);
   const floor = viewport.height - viewport.bottom;
   const left = -bounds.left;
   const right = viewport.width - bounds.right;
@@ -470,11 +831,12 @@ const place = (
   );
   const low = viewport.top - bounds.top;
   const high = floor - bounds.bottom;
-  // The painting covers the screen and moves down as far as it can, so that
-  // the Player sees as much of the Boss landmark as the Stage Markers let.
+  // The painting covers the screen above the Town Bar and moves down as far
+  // as it can, so that the Player sees as much of the Boss landmark as the
+  // Stage Markers let.
   const coverY = clampTo(
     viewport.top - map.bossLandmark.top * scale,
-    viewport.height - height,
+    floor - height,
     0
   );
   // That position first; then the painting moves down, then sideways.
@@ -500,28 +862,81 @@ const place = (
       )
     );
   const position = positions.find(clear);
-  return position ? { ...position, scale } : null;
+  return position ? { ...position, ...size } : null;
 };
 
 /**
- * Places the painting on the screen, as large as it can be. All Stage
- * Markers always stay on the screen, above the Town Bar and clear of the HUD,
- * and as much of the Boss landmark as they let:
- * when the cover size cannot hold them (a very wide or a short screen), the
- * painting gets smaller and a soft backdrop fills the sides.
+ * The most that the painting stretches or squashes on the x axis, so that it
+ * fills the width of a screen that is wider or narrower than 16:9. More than
+ * this bends the art, so the screen then cuts the painting instead.
+ */
+export const MAX_STRETCH = 0.1;
+
+/**
+ * The most stretch when the painting gets smaller than the cover size, so
+ * that the Stage Markers fit. The painting then still fills the screen width
+ * on most screens, with no soft backdrop at its sides.
+ */
+export const FIT_STRETCH = 0.2;
+
+/** No two Stage Markers touch at a size (their margins can touch). */
+const apart = (map: FramedMap, { scale, stretch }: Size) => {
+  const boxes = markerBoxes(map.stops, scale, stretch).map((box) => ({
+    left: box.left + EDGE,
+    right: box.right - EDGE,
+    top: box.top + EDGE,
+    bottom: box.bottom - EDGE,
+  }));
+  return boxes.every((box, index) =>
+    boxes.slice(index + 1).every((other) => !boxesOverlap(box, other))
+  );
+};
+
+/**
+ * Places the painting on the screen. It covers the screen above the Town Bar,
+ * with a stretch on the x axis of at most `MAX_STRETCH`, so that it fills the
+ * screen width and the screen cuts as little of it as it can. On a small
+ * screen (a phone), the Stage Markers can touch at that size: the painting
+ * then gets larger, with less stretch, until they do not. All Stage Markers
+ * always stay on the screen, above the Town Bar and clear of the HUD, with at
+ * least half of the Boss landmark, and as much more of it as they let: when
+ * the cover size cannot hold them (a very wide or a short screen), the
+ * painting gets smaller, with a stretch of at most `FIT_STRETCH`. A soft
+ * backdrop fills each side that the painting then does not cover.
  */
 export const mapFrame = (map: FramedMap, viewport: Viewport): MapFrame => {
-  const cover = Math.max(
-    viewport.width / MAP.width,
-    viewport.height / MAP.height
-  );
-  let scale = cover;
-  if (!fits(map, viewport, cover)) {
-    let low = 0.05;
+  const across = viewport.width / MAP.width;
+  const down = (viewport.height - viewport.bottom) / MAP.height;
+  const sizeAt = (scale: number): Size => ({
+    scale,
+    // At the cover size and larger, `across / scale` is never more than
+    // `1 + MAX_STRETCH`. Only a smaller painting stretches more.
+    stretch: Math.min(
+      1 + FIT_STRETCH,
+      Math.max(1 / (1 + MAX_STRETCH), across / scale)
+    ),
+  });
+  const cover = Math.max(across, down);
+  let scale = Math.max(down, across / (1 + MAX_STRETCH));
+  if (!apart(map, sizeAt(scale)) && apart(map, sizeAt(cover))) {
+    let low = scale;
     let high = cover;
     for (let step = 0; step < 24; step += 1) {
       const middle = (low + high) / 2;
-      if (fits(map, viewport, middle)) {
+      if (apart(map, sizeAt(middle))) {
+        high = middle;
+      } else {
+        low = middle;
+      }
+    }
+    scale = high;
+  }
+  if (!fits(map, viewport, sizeAt(scale))) {
+    let low = 0.05;
+    let high = scale;
+    for (let step = 0; step < 24; step += 1) {
+      const middle = (low + high) / 2;
+      if (fits(map, viewport, sizeAt(middle))) {
         low = middle;
       } else {
         high = middle;
@@ -530,17 +945,17 @@ export const mapFrame = (map: FramedMap, viewport: Viewport): MapFrame => {
     scale = low;
   }
   for (let step = 0; step < 40; step += 1) {
-    const frame = place(map, viewport, scale);
+    const frame = place(map, viewport, sizeAt(scale));
     if (frame) {
       return frame;
     }
     scale *= 0.97;
   }
   return (
-    place(map, { ...viewport, obstacles: [] }, scale) ?? {
+    place(map, { ...viewport, obstacles: [] }, sizeAt(scale)) ?? {
       x: 0,
       y: 0,
-      scale,
+      ...sizeAt(scale),
     }
   );
 };

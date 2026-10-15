@@ -16,7 +16,7 @@ import { playerLevelAtom, profileAtom } from "@/features/profile/profile.atoms";
  * The Hero screen state from the Profile, and the Gear upgrade (GDD 7.3).
  * The upgrade is one Profile change, so the Profile store saves it at once
  * (SAV-01). It returns `true` when it changed the Profile, or `false` when the
- * rules said no (level 20, or not enough Coin or Forge Stones).
+ * rules said no (level 25, or not enough Coin or Forge Stones).
  */
 export const useHero = () => {
   const registry = useContext(RegistryContext);

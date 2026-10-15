@@ -12,7 +12,11 @@ export const HEYNSPIRE_MILESTONE_REWARD = {
   heynstones: 50,
   /** Earn-only Cosmetics. The list of Cosmetics does not exist yet. */
   cosmetics: 1,
-  forgeStones: { tier: "epic", count: 2 } satisfies ForgeStoneReward,
+  /** 2 Epic Forge Stones (ADR-0038) and 1 Legendary Forge Stone (ADR-0039). */
+  forgeStones: [
+    { tier: "epic", count: 2 },
+    { tier: "legendary", count: 1 },
+  ] satisfies readonly ForgeStoneReward[],
 } as const;
 
 /**
@@ -34,15 +38,18 @@ export interface FloorReward {
   readonly essence: number;
   readonly heynstones: number;
   readonly cosmetics: number;
-  /** Rare Forge Stones on each 5th Floor, Epic on each 10th Floor, or `null`. */
-  readonly forgeStones: ForgeStoneReward | null;
+  /**
+   * Rare Forge Stones on each 5th Floor, Epic and Legendary on each 10th
+   * Floor, or none.
+   */
+  readonly forgeStones: readonly ForgeStoneReward[];
 }
 
 /**
  * The rewards for the first win of Floor `floor` (1 to 50, Economy 2.3):
  * 100 + 10 × n Coin and 50 + 5 × n XP, 2 Rare Forge Stones on each 5th Floor
  * that is not a 10th Floor, and the milestone rewards with 2 Epic Forge Stones
- * on each 10th Floor. Keep the code and the Economy table the same.
+ * and 1 Legendary Forge Stone on each 10th Floor. Keep the code and the Economy table the same.
  */
 export const floorFirstWinReward = (floor: number): FloorReward => {
   if (!Number.isInteger(floor) || floor < 1 || floor > HEYNSPIRE_FLOORS) {
@@ -52,11 +59,11 @@ export const floorFirstWinReward = (floor: number): FloorReward => {
   }
   const milestone = floor % HEYNSPIRE_MILESTONE_EVERY === 0;
   const halfMilestone = floor % HEYNSPIRE_HALF_MILESTONE_EVERY === 0;
-  let forgeStones: ForgeStoneReward | null = null;
+  let forgeStones: readonly ForgeStoneReward[] = [];
   if (milestone) {
     ({ forgeStones } = HEYNSPIRE_MILESTONE_REWARD);
   } else if (halfMilestone) {
-    forgeStones = HEYNSPIRE_HALF_MILESTONE_FORGE_STONES;
+    forgeStones = [HEYNSPIRE_HALF_MILESTONE_FORGE_STONES];
   }
   return {
     coin: 100 + 10 * floor,

@@ -23,6 +23,8 @@ export const TrailLine = ({
   return (
     <svg
       viewBox={`0 0 ${MAP.width} ${MAP.height}`}
+      // The line stretches with the painting (`MapFrame.stretch`).
+      preserveAspectRatio="none"
       className="pointer-events-none absolute inset-0 size-full"
       aria-hidden
     >

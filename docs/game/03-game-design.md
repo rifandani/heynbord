@@ -489,14 +489,14 @@ Each unlock shows a Hint (see 8.3).
 
 ### 7.3 Gear
 
-The Hero has 4 Gear slots. Each slot has one item. Each item has a level from 0 to 20. The player upgrades items with Coin and Forge Stones. Each level needs 1 Forge Stone of its tier: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15 and Epic for 16 to 20. Forge Stones are earn-only ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md), Economy 2.7). An upgrade never fails, and the level never goes down. Each level adds the same part of the stat: 0.5% Unit Crit, +1 Hero HP, 0.75% Hero Crit or 0.5% Unit Block ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)).
+The Hero has 4 Gear slots. Each slot has one item. Each item has a level from 0 to 25 ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)). The player upgrades items with Coin and Forge Stones. Each level needs 1 Forge Stone of its tier: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15, Epic for 16 to 20 and Legendary for 21 to 25. Forge Stones are earn-only ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md), Economy 2.7). An upgrade never fails, and the level never goes down. Each level adds the same part of the stat: 0.5% Unit Crit, +1 Hero HP, 0.75% Hero Crit or 0.5% Unit Block ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)).
 
-| Slot | Stat | Level 0 | Level 20 |
-| --- | --- | --- | --- |
-| Weapon | Unit Crit chance | 0% | 10% |
-| Armor | Hero HP bonus | +0 | +20 |
-| Trinket | Hero Crit chance (Skill Card damage) | 0% | 15% |
-| Banner | Unit Block chance | 0% | 10% |
+| Slot | Stat | Level 0 | Level 20 | Level 25 |
+| --- | --- | --- | --- | --- |
+| Weapon | Unit Crit chance | 0% | 10% | 12.5% |
+| Armor | Hero HP bonus | +0 | +20 | +25 |
+| Trinket | Hero Crit chance (Skill Card damage) | 0% | 15% | 18.75% |
+| Banner | Unit Block chance | 0% | 10% | 12.5% |
 
 Cosmetics can change the look of each item. Cosmetics never change the stats.
 
@@ -673,7 +673,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
 | Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons and a locked ribbon that buys the next Deck slot, all cards with filters (see 6), the Countdown curve, validation, Auto-fill |
 | Workshop | The Discovered cards with the filters of the Deck builder, and a Rank panel for the selected card: Combine, Extract, Craft and the path to Legendary (see 7.4) |
-| Hero | The Class of the Active Deck and its Deck, with "Change Deck" to the Deck builder ([ADR-0033](../adr/0033-the-class-stays-on-the-deck-slot.md)); the Hero HP and its parts; the 4 Gear items with their level, their stat now and at the next level, the Gear upgrade with its Coin and Forge Stone cost, and the 4 Forge Stone counts (see 7.3). The portrait and the Gear looks are Cosmetics (see 10). |
+| Hero | The Class of the Active Deck and its Deck, with "Change Deck" to the Deck builder ([ADR-0033](../adr/0033-the-class-stays-on-the-deck-slot.md)); the Hero HP and its parts; the 4 Gear items with their level, their stat now and at the next level, the Gear upgrade with its Coin and Forge Stone cost, and the 5 Forge Stone counts (see 7.3). The portrait and the Gear looks are Cosmetics (see 10). |
 | Packs | The Peddler, Merchant and Royal Packs, each with a Race Pack and a Class Pack version. The Drop Rates, the Pack Guarantees, Open ×10 and the open animation (Economy 3.1) |
 | Achievements | List, progress, rewards |
 | Bazaar | Cosmetics and Conveniences, prices in Heynstones, the Heynstone balance |

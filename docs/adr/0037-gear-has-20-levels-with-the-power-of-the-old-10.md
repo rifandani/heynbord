@@ -18,3 +18,7 @@ The game director wants a Gear item to go to level 20. The economy sim shows tha
 ## Update: a Gear upgrade costs half of the Coin and a Forge Stone
 
 [ADR-0038](./0038-gear-upgrades-need-earn-only-forge-stones.md) adds 1 Forge Stone to each Gear upgrade and makes the Coin cost half: 2.5 × *n* × (*n* + 1). Levels 2*n* − 1 and 2*n* together now cost 20 × *n*², and one item from 0 to 20 costs 7,700 Coin. The 20 levels, the stats of each level and the migration of the Gear levels above do not change. A Profile that upgraded Gear at the cost of this ADR gets no Coin back and pays no Forge Stones for its levels.
+
+## Update: Gear has 25 levels
+
+[ADR-0039](./0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md) adds levels 21 to 25, with the same step and the same Coin formula as levels 1 to 20. The rescale of this ADR and the stats of levels 0 to 20 do not change.

@@ -104,7 +104,7 @@ const useViewport = (root: RefObject<HTMLElement | null>): Viewport => {
 
 /**
  * The edges of the painting fade into the backdrop on a side where the
- * painting does not reach the screen edge.
+ * painting does not reach the screen edge, or the Town Bar at the bottom.
  */
 const fade = (side: boolean) => (side ? "transparent" : "black");
 
@@ -112,12 +112,12 @@ const paintingMask = (
   frame: MapFrame,
   viewport: Viewport
 ): CSSProperties | undefined => {
-  const width = MAP.width * frame.scale;
+  const width = MAP.width * frame.scale * frame.stretch;
   const height = MAP.height * frame.scale;
   const left = frame.x > 0.5;
   const right = frame.x + width < viewport.width - 0.5;
   const top = frame.y > 0.5;
-  const bottom = frame.y + height < viewport.height - 0.5;
+  const bottom = frame.y + height < viewport.height - viewport.bottom - 0.5;
   if (!(left || right || top || bottom)) {
     return undefined;
   }
@@ -183,6 +183,7 @@ const PLACEHOLDER_GROUND =
 const PlaceholderRoad = ({ map }: { readonly map: RegionMap }) => (
   <svg
     viewBox={`0 0 ${MAP.width} ${MAP.height}`}
+    preserveAspectRatio="none"
     className="pointer-events-none absolute inset-0 size-full"
     aria-hidden
   >
@@ -220,7 +221,7 @@ const RegionCanvas = ({
   const { tr } = useGameText();
   const viewport = useViewport(root);
   const frame = mapFrame(map, viewport);
-  const { scale } = frame;
+  const { scale, stretch } = frame;
   // The backdrop: the same painting, soft, behind any side that the map does
   // not cover. A Region with no painting has the plain ground there.
   const backdrop =
@@ -250,7 +251,7 @@ const RegionCanvas = ({
         style={{
           left: frame.x,
           top: frame.y,
-          width: MAP.width * scale,
+          width: MAP.width * scale * stretch,
           height: MAP.height * scale,
           ...paintingMask(frame, viewport),
         }}
@@ -279,7 +280,7 @@ const RegionCanvas = ({
               key={stop.stage.id}
               stop={stop}
               index={index}
-              left={point.x * scale}
+              left={point.x * scale * stretch}
               top={point.y * scale}
               scale={scale}
               selected={selected === stop.stage.id}

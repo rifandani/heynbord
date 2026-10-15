@@ -62,6 +62,7 @@ describe("migrateProfile", () => {
       uncommon: 0,
       rare: 0,
       epic: 0,
+      legendary: 0,
     });
     expect(migrated.gear).toEqual({
       weapon: 20,
@@ -70,6 +71,24 @@ describe("migrateProfile", () => {
       banner: 0,
     });
     expect(migrated.coin).toBe(1234);
+  });
+
+  it("gives 0 Legendary Forge Stones to a version 4 Profile, and keeps its other Forge Stones and Gear levels (ADR-0039)", () => {
+    const v4 = {
+      ...newProfile(3),
+      schemaVersion: 4,
+      gear: { weapon: 20, armor: 17, trinket: 3, banner: 0 },
+      forgeStones: { common: 1, uncommon: 2, rare: 3, epic: 4 },
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v4));
+    expect(migrated.forgeStones).toEqual({
+      common: 1,
+      uncommon: 2,
+      rare: 3,
+      epic: 4,
+      legendary: 0,
+    });
+    expect(migrated.gear).toEqual(v4.gear);
   });
 
   it("refuses a version 2 Profile with Gear that is not levels", () => {
@@ -129,7 +148,16 @@ describe("migrateProfile", () => {
       { deckSlots: [] },
       { stageResults: { "1-1": 4 } },
       { sweepTickets: -1 },
-      { forgeStones: { common: -1, uncommon: 0, rare: 0, epic: 0 } },
+      {
+        forgeStones: {
+          common: -1,
+          uncommon: 0,
+          rare: 0,
+          epic: 0,
+          legendary: 0,
+        },
+      },
+      { gear: { weapon: 26, armor: 0, trinket: 0, banner: 0 } },
       { claimedStarChests: { 1: [15] } },
       { unopenedPacks: [{ pack: "royal", version: "class" }] },
     ]) {

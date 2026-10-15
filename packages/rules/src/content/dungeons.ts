@@ -24,6 +24,8 @@ export interface DungeonRewardDefinition {
   readonly firstWinEssence: number | null;
   /** The tier of the Forge Stones of a win (ADR-0038). */
   readonly forgeStoneTier: ForgeStoneTier;
+  /** True when a win can also give Legendary Forge Stones (ADR-0039). */
+  readonly legendaryForgeStones: boolean;
 }
 
 /**
@@ -41,6 +43,7 @@ export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
     winEssence: 0,
     firstWinEssence: null,
     forgeStoneTier: "uncommon",
+    legendaryForgeStones: false,
   },
   {
     dungeon: 2,
@@ -50,6 +53,7 @@ export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
     winEssence: 0,
     firstWinEssence: null,
     forgeStoneTier: "rare",
+    legendaryForgeStones: false,
   },
   {
     dungeon: 3,
@@ -59,6 +63,7 @@ export const DUNGEON_REWARDS: readonly DungeonRewardDefinition[] = [
     winEssence: 15,
     firstWinEssence: 100,
     forgeStoneTier: "epic",
+    legendaryForgeStones: true,
   },
 ];
 
@@ -104,24 +109,57 @@ export const DUNGEON_FORGE_STONE_CHANCE = 2500;
 export const DUNGEON_FIRST_WIN_FORGE_STONES = 3;
 
 /**
- * The Forge Stones of a Dungeon result (Economy 2.4, ADR-0038), all of the
- * tier of the Dungeon: 3 for the first win, a 25% chance of 1 for a repeat
- * win, none for a loss. Only a repeat win uses a random value.
+ * The chance of 1 Legendary Forge Stone from a repeat win of a Dungeon that
+ * gives them, in basis points (Economy 2.4, ADR-0039).
+ */
+export const DUNGEON_LEGENDARY_FORGE_STONE_CHANCE = 1000;
+
+/** The Legendary Forge Stones of the first win of a Dungeon that gives them (Economy 2.4). */
+export const DUNGEON_FIRST_WIN_LEGENDARY_FORGE_STONES = 1;
+
+/**
+ * The Forge Stones of one tier for a Dungeon result: `firstWin` for the first
+ * win, a `chance` of 1 for a repeat win, none for a loss. Only a repeat win
+ * uses a random value.
+ */
+const outcomeForgeStones = (
+  tier: ForgeStoneTier,
+  outcome: StageOutcome,
+  cursor: RandomCursor,
+  { firstWin, chance }: { readonly firstWin: number; readonly chance: number }
+): ForgeStoneReward | null => {
+  if (outcome === "firstWin") {
+    return { tier, count: firstWin };
+  }
+  if (outcome === "win" && rollBasisPoints(cursor, chance)) {
+    return { tier, count: 1 };
+  }
+  return null;
+};
+
+/**
+ * The Forge Stones of a Dungeon result (Economy 2.4, ADR-0038): 3 of the tier
+ * of the Dungeon for the first win, a 25% chance of 1 for a repeat win, none
+ * for a loss. A Dungeon with `legendaryForgeStones` also gives 1 Legendary
+ * Forge Stone for the first win, and a separate 10% chance of 1 for a repeat
+ * win (ADR-0039).
  */
 export const dungeonForgeStones = (
   dungeon: DungeonRewardDefinition,
   outcome: StageOutcome,
   cursor: RandomCursor
-): ForgeStoneReward | null => {
-  const tier = dungeon.forgeStoneTier;
-  if (outcome === "firstWin") {
-    return { tier, count: DUNGEON_FIRST_WIN_FORGE_STONES };
-  }
-  if (
-    outcome === "win" &&
-    rollBasisPoints(cursor, DUNGEON_FORGE_STONE_CHANCE)
-  ) {
-    return { tier, count: 1 };
-  }
-  return null;
+): readonly ForgeStoneReward[] => {
+  const rewards = [
+    outcomeForgeStones(dungeon.forgeStoneTier, outcome, cursor, {
+      firstWin: DUNGEON_FIRST_WIN_FORGE_STONES,
+      chance: DUNGEON_FORGE_STONE_CHANCE,
+    }),
+    dungeon.legendaryForgeStones
+      ? outcomeForgeStones("legendary", outcome, cursor, {
+          firstWin: DUNGEON_FIRST_WIN_LEGENDARY_FORGE_STONES,
+          chance: DUNGEON_LEGENDARY_FORGE_STONE_CHANCE,
+        })
+      : null,
+  ];
+  return rewards.filter((reward) => reward !== null);
 };

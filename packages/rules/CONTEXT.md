@@ -274,13 +274,13 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Drop Rate**: The chance of each Rank for each Card in a Pack. Each of the three Packs has its own Drop Rates. _Avoid_: odds, luck
 
-**Gear**: The items in the Hero's 4 slots that give the Hero and its Units stats. Each slot holds one fixed item: the Weapon, the Armor, the Trinket or the Banner. An item has a level from 0 to 20. _Avoid_: equipment, items, gear set
+**Gear**: The items in the Hero's 4 slots that give the Hero and its Units stats. Each slot holds one fixed item: the Weapon, the Armor, the Trinket or the Banner. An item has a level from 0 to 25. _Avoid_: equipment, items, gear set
 
 **Gear upgrade**: The action that adds 1 level to one Gear item for Coin and 1 Forge Stone of the tier of the new level. It never fails, and a Gear level never goes down. _Avoid_: enchant, refine, level up, forge
 
-**Forge Stone**: An earn-only item that a Gear upgrade uses. Each Forge Stone has a Forge Stone tier, and each tier upgrades Gear to the levels of one band: Common to levels 1 to 5, Uncommon to 6 to 10, Rare to 11 to 15 and Epic to 16 to 20. _Avoid_: Enchanting Gem, gem, enchant stone, material, shard
+**Forge Stone**: An earn-only item that a Gear upgrade uses. Each Forge Stone has a Forge Stone tier, and each tier upgrades Gear to the levels of one band: Common to levels 1 to 5, Uncommon to 6 to 10, Rare to 11 to 15, Epic to 16 to 20 and Legendary to 21 to 25. _Avoid_: Enchanting Gem, Legendary Gem, gem, enchant stone, material, shard
 
-**Forge Stone tier**: The grade of a Forge Stone: Common, Uncommon, Rare or Epic. It uses the names of the Ranks, but it is not a Rank: a Rank is the grade of a Card copy. _Avoid_: Forge Stone Rank, rarity
+**Forge Stone tier**: The grade of a Forge Stone: Common, Uncommon, Rare, Epic or Legendary. It uses the names of the Ranks, but it is not a Rank: a Rank is the grade of a Card copy. _Avoid_: Forge Stone Rank, rarity
 
 **Profile**: All the saved progress of one Player: XP, balances, Collection, Decks, Gear levels, Forge Stones, Stage results and the other records that must stay after the game closes. _Avoid_: save file, account, player data
 
@@ -370,7 +370,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The Player can **Sweep** a **Stage** only when its best **Stars** are 3. A Sweep always wins: each **Sweep Ticket** gives one repeat-win reward. A Sweep never changes the **Stars**, and it gives no Sweep Tickets.
 - A win that the Player plays gives 2 **Sweep Tickets**: in a **Stage**, a **Dungeon** or a **Floor**. A loss, an **Abandon** and an **Auto-play** win give none. The Bazaar never sells Sweep Tickets, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0035](../../docs/adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)).
 - A **Gear upgrade** to level _n_ uses 1 **Forge Stone** of the tier of level _n_. A Forge Stone of a different tier cannot replace it, and Forge Stones never combine or change into a different tier. The Bazaar never sells Forge Stones, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0038](../../docs/adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
-- A **Stage** first win, a 10-Star **Star chest**, a repeat win, a **Sweep**, a **Dungeon** win and some **Floor** first wins give **Forge Stones** (Economy 2). The Player keeps them before **Gear** unlocks.
+- A **Stage** first win, a 10-Star **Star chest**, a repeat win, a **Sweep**, a **Dungeon** win and some **Floor** first wins give **Forge Stones** (Economy 2). Only Dungeon 3 wins and the first wins of the 10th Floors give Legendary Forge Stones. The Player keeps them before **Gear** unlocks.
 - A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**.
 - The Player has one balance of **Coin**, shown in **Gold**, **Silver** and **Copper**, and a separate balance of **Heynstones**.
 - **Coin** and **Heynstones** never change into each other or into **Essence**.
@@ -427,4 +427,4 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - **Bulwark** reduced all damage except Holy before. Then Holy was the only Damage Type that went through Bulwark. Now **Bulwark N** reduces only Physical damage, so Fire, Frost, Lightning and Holy all go through it. The new special rule of Holy is that it cannot be **Blocked**.
 - The Keyword **Bulwark N** had the name "Armor N" before. "Armor" is also the name of a Gear slot, but Armor Gear gives Hero HP and does not reduce damage. Now "Armor" is only the Gear slot. ADR-0031 and the old rows of the balance log still say "Armor".
 - GDD 4.12 had watched **Auto-play** on each won Stage. Then an Auto-play win could give more **Stars**, and the AI could open **Star chests** for the Player. Now a Stage has the **Sweep**, only at 3 Stars. A Sweep is not Auto-play: it plays no Battle. Watched Auto-play stays only on won **Dungeons**. "Skip Ticket" is not a term, because **Skip** already means to skip the animations of a Resolution Phase. The term is **Sweep Ticket**.
-- The first name of **Forge Stone** was "Enchanting Gem". It is not a term: "gems" is a word to avoid for **Heynstones**, and a Player can think that money buys them. "Enchant" is a word to avoid for **Gear upgrade**.
+- The first name of **Forge Stone** was "Enchanting Gem". It is not a term: "gems" is a word to avoid for **Heynstones**, and a Player can think that money buys them. "Enchant" is a word to avoid for **Gear upgrade**. For the same reasons, the item for Gear levels 21 to 25 is not a "Legendary Gem". It is the Legendary **Forge Stone tier**.

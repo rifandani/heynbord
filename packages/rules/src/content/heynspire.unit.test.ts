@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { addForgeStoneRewards, NO_FORGE_STONES } from "./forge-stones";
 import { floorFirstWinReward, HEYNSPIRE_FLOORS } from "./heynspire";
 
 describe("Heynspire rewards (Economy 2.3)", () => {
@@ -14,19 +15,22 @@ describe("Heynspire rewards (Economy 2.3)", () => {
       essence: 0,
       heynstones: 0,
       cosmetics: 0,
-      forgeStones: null,
+      forgeStones: [],
     });
     expect(floorFirstWinReward(9)).toMatchObject({ coin: 190, xp: 95 });
   });
 
-  it("also gives 1 Cosmetic, 150 Essence, 50 Heynstones and 2 Epic Forge Stones on each 10th Floor", () => {
+  it("also gives 1 Cosmetic, 150 Essence, 50 Heynstones, 2 Epic and 1 Legendary Forge Stone on each 10th Floor", () => {
     expect(floorFirstWinReward(10)).toEqual({
       coin: 200,
       xp: 100,
       essence: 150,
       heynstones: 50,
       cosmetics: 1,
-      forgeStones: { tier: "epic", count: 2 },
+      forgeStones: [
+        { tier: "epic", count: 2 },
+        { tier: "legendary", count: 1 },
+      ],
     });
     expect(floorFirstWinReward(50)).toEqual({
       coin: 600,
@@ -34,7 +38,10 @@ describe("Heynspire rewards (Economy 2.3)", () => {
       essence: 150,
       heynstones: 50,
       cosmetics: 1,
-      forgeStones: { tier: "epic", count: 2 },
+      forgeStones: [
+        { tier: "epic", count: 2 },
+        { tier: "legendary", count: 1 },
+      ],
     });
   });
 
@@ -45,25 +52,27 @@ describe("Heynspire rewards (Economy 2.3)", () => {
       essence: 0,
       heynstones: 0,
       cosmetics: 0,
-      forgeStones: { tier: "rare", count: 2 },
+      forgeStones: [{ tier: "rare", count: 2 }],
     });
-    expect(floorFirstWinReward(45).forgeStones).toEqual({
-      tier: "rare",
-      count: 2,
-    });
+    expect(floorFirstWinReward(45).forgeStones).toEqual([
+      { tier: "rare", count: 2 },
+    ]);
   });
 
-  it("gives 10 Rare and 10 Epic Forge Stones for all 50 first wins (Economy 2.7)", () => {
-    const totals = { rare: 0, epic: 0, other: 0 };
+  it("gives 10 Rare, 10 Epic and 5 Legendary Forge Stones for all 50 first wins (Economy 2.7)", () => {
+    let totals = NO_FORGE_STONES;
     for (let floor = 1; floor <= HEYNSPIRE_FLOORS; floor += 1) {
-      const stones = floorFirstWinReward(floor).forgeStones;
-      if (stones?.tier === "rare" || stones?.tier === "epic") {
-        totals[stones.tier] += stones.count;
-      } else if (stones !== null) {
-        totals.other += stones.count;
-      }
+      totals = addForgeStoneRewards(
+        totals,
+        floorFirstWinReward(floor).forgeStones
+      );
     }
-    expect(totals).toEqual({ rare: 10, epic: 10, other: 0 });
+    expect(totals).toEqual({
+      ...NO_FORGE_STONES,
+      rare: 10,
+      epic: 10,
+      legendary: 5,
+    });
   });
 
   it("refuses a Floor outside 1 to 50", () => {

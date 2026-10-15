@@ -770,7 +770,7 @@ export default {
       pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nDi level Pemain 2, kamu mendapat satu Paket Penjaja. Paket dari hadiah menunggu di layar Paket sampai kamu membukanya, gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
       workshop:
         "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya.",
-      gear: "Pahlawanmu punya 4 Perlengkapan: Senjata, Zirah, Jimat, dan Panji. Barak di Kota dan pintasan Pahlawan membuka layar Pahlawan, mulai level Pemain {level}.\n\nTiap Perlengkapan punya level dari 0 sampai {max}. Satu peningkatan menambah 1 level, dengan Koin dan 1 Batu Tempa. Level menentukan tingkat Batu Tempa: Biasa untuk level 1 sampai 5, Tak Biasa untuk 6 sampai 10, Langka untuk 11 sampai 15, dan Epik untuk 16 sampai 20. Batu Tempa dari tingkat lain tidak bisa menggantikannya. Peningkatan tidak pernah gagal, dan level tidak pernah turun.\n\nKemenangan Tahap, peti Bintang, Sweep, Dungeon, dan Heynspire memberi Batu Tempa. Kamu tidak bisa membelinya. Layar Pahlawan menampilkan Batu Tempa yang kamu punya.\n\nSerangan Crit memberi 2 kali damage-nya. Serangan yang di-Block memberi setengah damage-nya. Di tiap Pertempuran, Pahlawan dan Unit-mu memakai Perlengkapanmu.",
+      gear: "Pahlawanmu punya 4 Perlengkapan: Senjata, Zirah, Jimat, dan Panji. Barak di Kota dan pintasan Pahlawan membuka layar Pahlawan, mulai level Pemain {level}.\n\nTiap Perlengkapan punya level dari 0 sampai {max}. Satu peningkatan menambah 1 level, dengan Koin dan 1 Batu Tempa. Level menentukan tingkat Batu Tempa: Biasa untuk level 1 sampai 5, Tak Biasa untuk 6 sampai 10, Langka untuk 11 sampai 15, Epik untuk 16 sampai 20, dan Legendaris untuk 21 sampai 25. Batu Tempa dari tingkat lain tidak bisa menggantikannya. Peningkatan tidak pernah gagal, dan level tidak pernah turun.\n\nKemenangan Tahap, peti Bintang, Sweep, Dungeon, dan Heynspire memberi Batu Tempa. Kamu tidak bisa membelinya. Layar Pahlawan menampilkan Batu Tempa yang kamu punya.\n\nSerangan Crit memberi 2 kali damage-nya. Serangan yang di-Block memberi setengah damage-nya. Di tiap Pertempuran, Pahlawan dan Unit-mu memakai Perlengkapanmu.",
     },
     aliases: {
       board: "medan, arena, peta, battlefield, map",
@@ -1088,6 +1088,7 @@ export default {
       uncommon: "Tak Biasa",
       rare: "Langka",
       epic: "Epik",
+      legendary: "Legendaris",
     },
   },
   deckBuilder: {
@@ -1212,6 +1213,16 @@ export default {
     "2-8": { name: "Terowongan Runtuh", enemy: "Mandor Terowongan" },
     "2-9": { name: "Mulut Tambang", enemy: "Pengintai Snikkit" },
     "2-10": { name: "Aula Takhta Snikkit", enemy: "Bos Snikkit" },
+    "3-1": { name: "Pintu Keluar Terowongan", enemy: "Penjaga Kaki Lumut" },
+    "3-2": { name: "Bor yang Macet", enemy: "Bos Bor Nub" },
+    "3-3": { name: "Kolam Berpendar", enemy: "Alkemis Tetes Embun" },
+    "3-4": { name: "Jembatan Tali", enemy: "Penjaga Jembatan Fennick" },
+    "3-5": { name: "Pos Lentera", enemy: "Pengintai Lentera" },
+    "3-6": { name: "Kemah Goblin", enemy: "Gig si Sewaan" },
+    "3-7": { name: "Lingkaran Jamur", enemy: "Penyanyi Lingkaran" },
+    "3-8": { name: "Air Terjun Berpendar", enemy: "Penjaga Air Terjun" },
+    "3-9": { name: "Gerbang Akar", enemy: "Penjaga Gerbang Glimmerbough" },
+    "3-10": { name: "Aula Hutan Glimmerbough", enemy: "Nyonya Glimmerbough" },
   },
   classes: {
     warrior: "Prajurit",

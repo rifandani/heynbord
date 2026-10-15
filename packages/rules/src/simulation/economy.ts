@@ -17,6 +17,7 @@ import {
 } from "../content/dungeons";
 import type { DungeonRewardDefinition } from "../content/dungeons";
 import {
+  addForgeStoneRewards,
   addForgeStones,
   NO_FORGE_STONES,
   regionForgeStoneTier,
@@ -748,13 +749,16 @@ interface BattleReward {
   readonly coin: number;
   readonly xp: number;
   readonly essence: number;
-  readonly forgeStones: ForgeStoneReward | null;
+  readonly forgeStones: readonly ForgeStoneReward[];
 }
 
 const giveReward = (player: EconomyPlayer, reward: BattleReward) => {
   player.coin += reward.coin;
   player.essence += reward.essence;
-  player.forgeStones = addForgeStones(player.forgeStones, reward.forgeStones);
+  player.forgeStones = addForgeStoneRewards(
+    player.forgeStones,
+    reward.forgeStones
+  );
   player.xp = Math.min(
     player.xp + reward.xp,
     PLAYER_LEVEL_XP.at(-1) ?? player.xp
@@ -872,11 +876,12 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       winChance(middle(stageTarget(stage)), stage.recommendedLevel, player)
     );
     const outcome: StageOutcome = won ? "firstWin" : "loss";
+    const stones = stageForgeStones(stage, outcome, player.rewardCursor);
     giveReward(player, {
       coin: stageCoin(stage, outcome),
       xp: stageXp(stage, outcome),
       essence: 0,
-      forgeStones: stageForgeStones(stage, outcome, player.rewardCursor),
+      forgeStones: stones === null ? [] : [stones],
     });
     if (!won) {
       return;
@@ -903,7 +908,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
         coin: outcomeCoin(reward.coin, "loss"),
         xp: outcomeXp(reward.xp, "loss"),
         essence: 0,
-        forgeStones: null,
+        forgeStones: [],
       });
       progress.floorFails += 1;
       if (progress.floorFails >= FLOOR_FAILS_BEFORE_DUNGEON) {
@@ -1115,6 +1120,7 @@ const summarize = (
       uncommon: stones("uncommon"),
       rare: stones("rare"),
       epic: stones("epic"),
+      legendary: stones("legendary"),
     },
     combinedShare:
       snapshots.filter((snap) => snap.combines > 0).length / snapshots.length,

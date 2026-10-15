@@ -76,7 +76,9 @@ export { coinDenominations } from "./content/coin";
 export type { CoinDenomination, CoinPart } from "./content/coin";
 export {
   DUNGEON_FIRST_WIN_FORGE_STONES,
+  DUNGEON_FIRST_WIN_LEGENDARY_FORGE_STONES,
   DUNGEON_FORGE_STONE_CHANCE,
+  DUNGEON_LEGENDARY_FORGE_STONE_CHANCE,
   DUNGEON_REWARDS,
   dungeonForgeStones,
   dungeonReward,
@@ -101,6 +103,7 @@ export {
   STARTER_DECKS,
 } from "./content/decks";
 export {
+  addForgeStoneRewards,
   addForgeStones,
   FORGE_STONE_TIERS,
   ForgeStones,

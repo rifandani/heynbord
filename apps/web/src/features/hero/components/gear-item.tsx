@@ -25,7 +25,7 @@ const NOTCHES = Array.from({ length: MAX_GEAR_LEVEL }, (_, index) => index);
 /**
  * The icon of a Gear item: its painted icon, or its glyph on a round dark
  * badge with a bronze rim until a person paints it (11 — Town Concepts 12).
- * At level 20 the "Max" seal sits on its lower right; it stamps on when the
+ * At level 25 the "Max" seal sits on its lower right; it stamps on when the
  * item gets there.
  */
 const GearIcon = ({
@@ -225,7 +225,7 @@ const useUpgradeLabel = (item: GearItem, name: string): string => {
  * One Gear item on the Gear Rack (GDD 7.3): its icon, its name, its level
  * groove, its stat now and at the next level, the Forge Stone of the next
  * level, and one gold upgrade with its Coin. Each press upgrades 1 level at
- * once, with no confirmation. Off at level 20 ("Max level"), when the Coin is
+ * once, with no confirmation. Off at level 25 ("Max level"), when the Coin is
  * not enough ("Need 1s 50c") and when the Forge Stone is missing ("Need Forge
  * Stone").
  */
@@ -329,7 +329,7 @@ export const GearPlate = ({
           className={cn(
             "w-full text-sm whitespace-nowrap [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs",
             // An upgrade that is off is an engraved plate with no drop, because
-            // it cannot be pressed. Its text stays at full contrast: at level 20
+            // it cannot be pressed. Its text stays at full contrast: at level 25
             // the gold "Max level", else the Coin or the Forge Stone that is
             // still missing.
             upgrade.kind !== "ready" &&

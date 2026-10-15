@@ -11,7 +11,9 @@ Each Region has 2 paintings, and no more:
 
 A Stage has no painting of its own. Its landmark is a small part of the Region Map, and its Battle uses the Battle Painting of its Region.
 
-The Hearthvale Region Map exists (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen shows it (`apps/web/src/features/campaign/`). Its clearings are not at the positions of 1.1: they are measured on the painting (see 1.3). The Red Mesas, The Glowcap Hollows, The Thornwood and The Hollow Marches have no Region Map yet. Until a Region has one, the Campaign screen shows a placeholder: a plain ground and a soft road with the Hearthvale positions of 1.3, and no landmarks ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The placeholder goes away when the Region gets its entry in `REGION_MAPS` (step 6).
+All 5 Region Maps exist in `apps/web/public/battle/`: `hearthvale-region.webp` (1672 × 941), and `red-mesas-region.webp`, `glowcap-hollows-region.webp`, `thornwood-region.webp` and `hollow-marches-region.webp` (1536 × 864). The Campaign screen shows them (`apps/web/src/features/campaign/`). Their clearings are not at the positions of 1.1: they are measured on each painting (see 1.3). A Region with no Stages in the data shows only a soft copy of its painting, with no Trail. If a Region has no entry in `REGION_MAPS`, the Campaign screen shows a placeholder: a plain ground and a soft road with the Hearthvale positions of 1.3, and no landmarks ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)).
+
+The landmarks of Regions 4 and 5 are proposals (section 2). If the Stage design of one of these Regions changes a landmark, edit the painting again. The Region 3 Stages use the painted landmarks, so its painting did not change.
 
 ## 1. Rules for the Region art
 
@@ -84,7 +86,7 @@ The painting must give a calm place for each of these layers. The positions are 
 
 The positions in 1.1 are the target for a new painting. A generated painting does not put its clearings at exactly these positions, so the game uses the positions measured on each final painting. They are in `REGION_MAPS` in `apps/web/src/features/campaign/region-map.ts`: the clearing centers (`stops`) and the center line of the road to each clearing (`legs`), in the 1600 × 900 box.
 
-Hearthvale, measured on its painting:
+Each Region Map has its own measured positions in `REGION_MAPS`. Hearthvale, measured on its painting:
 
 | Clearing | Center (x, y) | Clearing | Center (x, y) |
 | --- | --- | --- | --- |
@@ -98,7 +100,7 @@ The Boss clearing is in the top band, in front of Brassbelly Hall. Clearings 1 a
 
 ## 2. Regions
 
-The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are draft names. Hearthvale and The Red Mesas have their Stages. Regions 3 to 5 have only proposed landmarks until their Stages are designed.
+The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are draft names. Hearthvale, The Red Mesas and The Glowcap Hollows have their Stages. Regions 4 and 5 have only proposed landmarks until their Stages are designed.
 
 ### 2.1 Hearthvale
 
@@ -132,18 +134,18 @@ The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are dr
 
 ### 2.3 The Glowcap Hollows
 
-`Region 3` · Goblin tunnels and Elves · Debut Race: Elf · Boss: Lady Glimmerbough · Proposed landmarks: the Stages are not designed yet
+`Region 3` · Goblin tunnels and Elves · Debut Race: Elf · Boss: Lady Glimmerbough · Stages in [14 — Campaign Stages, 4.1](./14-campaign-stages.md#41-stages)
 
 | Item | Brief |
 | --- | --- |
-| Place | Deep, wide hollows between steep hills, open to the sky and full of giant mushrooms that glow. The Goblin tunnels from the Red Mesas break out here into an old Elf grove. The Elves and their plant spirits guard the grove from the diggers. |
+| Place | Deep, wide hollows between steep hills, open to the sky and full of giant mushrooms that glow. The Goblin tunnels from the Red Mesas break out here into an old Elf grove. Lady Glimmerbough hired the goblin diggers to build walls and set traps for the grove, and she pays them with glowcaps. |
 | Trail | A goblin mine track out of a tunnel, then a path of moss and roots between the giant mushrooms, then steps of shelf fungus up to the grove hall. |
-| Landmarks | 1 a goblin tunnel exit with a broken mine cart · 2 a goblin drill stuck in the stem of a giant mushroom · 3 a pool that glows, with stepping stones · 4 a rope bridge between two giant mushroom caps · 5 an elf watch post on a mushroom cap, with lanterns · 6 a goblin camp with scrap tents under the mushrooms · 7 a ring of small glowing mushrooms around an old stone · 8 a small waterfall of glowing water into a cave · 9 an elf gate of woven roots, with a hole that the goblins dug under it |
-| Boss landmark | Lady Glimmerbough's grove hall: an elf hall in a ring of giant mushrooms, with a roof of mushroom caps and soft light in the windows. |
+| Landmarks | 1 The Tunnel Exit: a goblin tunnel exit with a broken mine cart · 2 The Stuck Drill: a goblin drill stuck in the stem of a giant mushroom · 3 The Glowing Pool: a pool that glows, with stepping stones · 4 The Rope Bridge: a rope bridge between two giant mushroom caps · 5 The Lantern Post: an elf watch post on a mushroom cap, with lanterns · 6 The Goblin Camp: a goblin camp with scrap tents under the mushrooms · 7 The Mushroom Ring: a ring of small glowing mushrooms around an old stone · 8 The Glowing Falls: a small waterfall of glowing water into a cave · 9 The Root Gate: an elf gate of woven roots, with a hole that the goblins dug under it |
+| Boss landmark | Glimmerbough's Grove Hall: an elf hall in a ring of giant mushrooms, with a roof of mushroom caps and soft light in the windows. |
 | Palette | Moss green, deep violet and blue shade, soft cyan and green glow of the mushrooms, warm brown roots. The light is still warm from the upper left. |
 | Humor note | A goblin uses a glowing mushroom as a lamp, and an elf takes it back. A tiny mushroom spirit sits on a goblin helmet. |
 | Time and weather | A bright late afternoon. The hollows are in soft shade, so the mushrooms glow. |
-| Battle Painting | Proposed: a mossy floor between giant glowing mushrooms, with roots, a goblin tunnel exit and small glowing pools at the edges. No brief in 13 yet. Until it has its painting, the Region uses the Hearthvale Battle Painting. |
+| Battle Painting | A mossy floor between giant glowing mushrooms. Brief in [13 — Battlefield Concepts, 1.3](./13-battlefield-concepts.md#13-the-glowcap-hollows). |
 
 ### 2.4 The Thornwood
 
@@ -158,7 +160,7 @@ The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are dr
 | Palette | Deep emerald, moss green, teal shade, gold light that falls through the leaves, some autumn red. |
 | Humor note | A cave bear is stuck in a thorn bush. A squirrel steals arrows from an elf archer. |
 | Time and weather | A bright afternoon. Light falls through the leaves in long beams. |
-| Battle Painting | Proposed: a soft, mossy glade between giant trees, with roots, thorn hedges and a cave mouth at the edges. No brief in 13 yet. Until it has its painting, the Region uses the Hearthvale Battle Painting. |
+| Battle Painting | A soft, mossy glade between giant trees. Brief in [13 — Battlefield Concepts, 1.4](./13-battlefield-concepts.md#14-the-thornwood). |
 
 ### 2.5 The Hollow Marches
 
@@ -173,7 +175,7 @@ The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are dr
 | Palette | Misty teal, violet, moss green, ice blue, bone white, soft green glow. The light is still warm from the upper left. |
 | Humor note | A skeleton sits and fishes on a boardwalk. A frog with a small crown sits on a lily pad. |
 | Time and weather | A bright late afternoon with low mist on the water. |
-| Battle Painting | Proposed: a dry, grassy island in the marsh, with reeds, still water, dead trees and low mist at the edges. No brief in 13 yet. Until it has its painting, the Region uses the Hearthvale Battle Painting. |
+| Battle Painting | A dry, grassy island in the marsh. Brief in [13 — Battlefield Concepts, 1.5](./13-battlefield-concepts.md#15-the-hollow-marches). |
 
 ## 3. Prompts
 
@@ -194,8 +196,8 @@ The prompts are short. A long list of rules, counts and "no" words gives bad res
 1. Make 4 to 8 base images with the prompts of the Region and the reference images (section 3).
 2. Select one image with the checklist in 5.
 3. Add the landmarks and the jokes of the Region with the edit messages (section 3). Fix problems by hand or with inpainting: dashed lines or marks on the road, objects on a clearing, text-like marks, strange buildings.
-4. Move the clearings and the Boss landmark near the positions in 1.1, by hand or with inpainting. Crop to 16:9 and export the master at 3200 × 1800.
-5. Export a WebP at 2560 × 1440, less than about 400 KB (Technical Design, section 6). Name it after the Region, for example `hearthvale.webp`. Put it in `apps/web/public/campaign/`.
+4. Move the clearings and the Boss landmark near the positions in 1.1, by hand or with inpainting. Crop to 16:9 and export the master at 3200 × 1800. For a 1536 × 1024 image from ChatGPT, crop the 1536 × 864 band that keeps the top of the Boss landmark. The generated maps put their land about 40 px higher than the sketch, so the band is y 40 to 904 for Regions 2 to 5, not the y 80 to 944 of the sketch.
+5. Export a WebP at 2560 × 1440, or at the size of the crop if the image is smaller, less than about 400 KB (Technical Design, section 6). Name it `<region>-region.webp`, for example `red-mesas-region.webp`. Put it in `apps/web/public/battle/`, next to the Battle Paintings. `bun campaign:prompts` reads the Hearthvale Region Map from there.
 6. Measure the center of each clearing, and trace the center line of the painted road from the Trail entry to clearing 10, as lists of points in the 1600 × 900 box (1.3). The game draws the Stage Markers and the progress line on these points. Put them and the file name in `REGION_MAPS` in `apps/web/src/features/campaign/region-map.ts`, and run its unit tests.
 7. Open the Campaign screen at 4:3, 16:9, 21:9 and a phone in landscape. Check that all 10 Stage Markers are on their clearings, and that the Region name, the arrows and the Star chest panel do not cover a Stage Marker or the Boss landmark.
 8. Write the licence record (art direction 5.5).

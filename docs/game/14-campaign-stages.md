@@ -2,7 +2,7 @@
 
 This document gives the design of each Stage of the Campaign: its place, its enemy, the new thing that it teaches, its enemy Deck and its first-win card. The rules for all Stages are in [GDD 8.1](./03-game-design.md#81-campaign). The data is in `packages/rules/src/content/stages.ts`. The Stage names and the enemy names are in the Message Catalogs (`apps/web/src/core/libs/i18n/locales/`). The landmark of each Stage is on its Region Map ([12 — Region Concepts](./12-region-concepts.md)).
 
-Now only Regions 1 and 2 have Stages. All names are draft names (README, "Status of names").
+Now only Regions 1 to 3 have Stages. All names are draft names (README, "Status of names").
 
 ## 1. Rules for the Stages
 
@@ -53,7 +53,7 @@ The band of **Baron Brassbelly**: Human outlaws and the Orc sellswords that he p
 
 ### 2.2 Numbers
 
-Lane numbers are from the top, 1 to 3. A Start Unit position is its Column for the Player (1 is next to the Player's Hero). Gear is weapon / armor / trinket / banner, with levels 0 to 20 ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)). The notes from before 2026-10-15 give Gear levels on the old scale of 0 to 10: an old level is 2 levels now.
+Lane numbers are from the top, 1 to 3. A Start Unit position is its Column for the Player (1 is next to the Player's Hero). Gear is weapon / armor / trinket / banner, with levels 0 to 25 ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md), [ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)). The Stages use levels 0 to 20 only. The notes from before 2026-10-15 give Gear levels on the old scale of 0 to 10: an old level is 2 levels now.
 
 The Gear column is the enemy Gear. The Expected Gear column is the Gear of the Player (see 1.1). A Stage with Expected Gear 0 / 0 / 0 / 0 has no second row, so its win rate at Expected Gear is "—".
 
@@ -236,9 +236,78 @@ Notes from the first tuning:
 | 2-9 | 1× Spyglass Sniper (R), 1× Grease Trapper (R), 1× Tunnel Saboteur (U), 1× Ankle Snatcher (U), 1× Fuse Runner (C), 1× Junk Barricade (R), 1× Scrap Plate Guard (U), 1× Junk Slinger (U), 1× Bomb Lobber (U), 1× Cinderhorn Breaker (U), 1× Warhowler Drummer (U), 1× Ember Shaman (C), 1× Scrap Raider (C), 1× Tusk Brute (C), 1× Fireball (C), 1× Frost Bolt (C), 1× Arc Lightning (U) |
 | 2-10 | 1× Warchief Grukka (E), 2× Junk Barricade (U), 2× Grease Trapper (U), 2× Tunnel Saboteur (C), 1× Spyglass Sniper (R), 2× Junk Slinger (C), 2× Bomb Lobber (U), 1× Mine Sapper (R), 2× Fuse Runner (C), 1× Scrap Plate Guard (C), 1× Howling Charger (U), 1× Quick Shot (C), 1× Harrying Shot (C) |
 
-## 4. When a Stage changes
+## 4. Region 3: The Glowcap Hollows
+
+The Goblin tunnels from the Red Mesas break out into an old Elf grove of giant glowing mushrooms (GDD 3.3). **Lady Glimmerbough**, the grove warden, did not chase the goblin diggers out. She hired them. They build walls and set traps for the grove, and she pays them with glowcaps. The goblins sell the glowcaps in the Red Mesas as lamps. The Player comes out of the goblin tunnels, so the Elves think that the Player is one more digger. Region 3 is the Debut of the Elves: Regenerate, Poison and Entangle are new to the enemies. The first Stages have mostly Goblins, and the Stages near the grove hall have mostly Elves.
+
+- **No ramp.** The target of each normal Stage is 60% to 80%, and of the Boss Stage 30% to 50%, with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)).
+- **Skill Cards.** The enemy Decks can use the Skill Cards of all 4 Classes (see 1).
+- **The landmarks were painted first.** The Region Map was made before the Stages, with the proposed landmarks of [12 — Region Concepts, 2.3](./12-region-concepts.md#23-the-glowcap-hollows). Each Stage takes the place of its painted landmark, so the painting does not change.
+- **First-win cards.** The cards are mixed, so that they help both Starter Decks: 3-1 Rootbound Guard (C), 3-2 Bramble Nest (U), 3-3 Acorn Tender (C), 3-4 Fernwing Courier (C), 3-5 Mosspitcher Lookout (C), 3-6 Sidestep Shiv (U), 3-7 Seedwind Shepherd (R), 3-8 Canopy Skirmisher (U), 3-9 Elderreed Dartmaster (R) and 3-10 Lethiel, First Gardener (E). Lady Glimmerbough sees that the Player is not a digger, and she lets Lethiel go with the Player.
+- **No Boss card.** Lady Glimmerbough has no card. Each Race has 15 cards ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)), and the Elf Epic cards are Canopy Vinewarden and Lethiel. Thus she is only a Hero, as Baron Brassbelly is.
+
+### 4.1 Stages
+
+| Stage | Name | Enemy (Class) | Landmark | New thing |
+| --- | --- | --- | --- | --- |
+| 3-1 | The Tunnel Exit | Mossfoot Sentry (Warrior) | A goblin tunnel exit with a broken mine cart | **Regenerate:** Rootbound Guards and Dewkeepers heal in each Start Phase. Kill a Unit in one Turn, or it heals. |
+| 3-2 | The Stuck Drill | Drillboss Nub (Warrior) | A goblin drill stuck in the stem of a giant mushroom | **Walls that heal:** Bramble Nests (Wall, Regenerate) with Dewkeepers behind them. |
+| 3-3 | The Glowing Pool | Dewdrop Alchemist (Mage) | A pool that glows, with stepping stones | **Poison:** Acorn Tenders and Thornline Archers. Each hit adds a stack, and the stacks hurt in each End Phase. |
+| 3-4 | The Rope Bridge | Bridgewarden Fennick (Ranger) | A rope bridge between two giant mushroom caps | **Elf Flying:** Fernwing Couriers, Canopy Skirmishers and an Amberwing Dart (Flying and Poison). |
+| 3-5 | The Lantern Post | Lantern Lookout (Ranger) | An elf watch post on a mushroom cap, with lanterns | **Elf Long-range:** Mosspitcher Lookouts (Regenerate) and Thornline Archers behind Bramble Nests, with Venom Arrow. |
+| 3-6 | The Goblin Camp | Gig the Hired (Warrior) | A goblin camp with scrap tents under the mushrooms | **Pivot:** Sidestep Shivs and Glade Turnblades hit the Unit behind or next to them first. |
+| 3-7 | The Mushroom Ring | Ring Singer (Priest) | A ring of small glowing mushrooms around an old stone | **The grove heals:** Regenerate Units with Prayer of Healing and Cleanse, both for the first time. |
+| 3-8 | The Glowing Falls | Falls Warden (Mage) | A small waterfall of glowing water into a cave | **A Lane that stays closed:** the water covers Lane 3 for the full Battle. The Battle has only 2 Lanes. |
+| 3-9 | The Root Gate | Glimmerbough's Gatekeeper (Ranger) | An elf gate of woven roots, with a hole that the goblins dug under it | **The final test:** all of the above together. |
+| 3-10 | Glimmerbough's Grove Hall | Lady Glimmerbough (Priest) — **Boss** | An elf hall in a ring of giant mushrooms, with a roof of mushroom caps | **The Boss rule and Entangle:** her bodyguard, a Canopy Vinewarden (Epic, Long-range, First Strike, Entangle), is a Start Unit in the middle Lane, behind a Bramble Nest Start Unit. |
+
+### 4.2 Numbers
+
+The columns are the same as in 2.2.
+
+| Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) | Expected Gear | Win rate at Expected Gear (Vanguard / Raiders) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 3-1 | 48 | 0 / 0 / 0 / 0 | 18 | — | — | Rootbound Guard (Common) | 10 | 64% / 73% | 5 / 5 / 5 / 5 | 70% / 79% |
+| 3-2 | 48 | 0 / 0 / 0 / 0 | 18 | — | — | Bramble Nest (Uncommon) | 10 | 66% / 72% | 6 / 5 / 5 / 5 | 72% / 77% |
+| 3-3 | 50 | 0 / 0 / 0 / 0 | 19 | — | — | Acorn Tender (Common) | 11 | 63% / 75% | 6 / 6 / 5 / 5 | 70% / 79% |
+| 3-4 | 50 | 0 / 0 / 0 / 0 | 20 | — | — | Fernwing Courier (Common) | 11 | 65% / 70% | 6 / 6 / 6 / 5 | 72% / 76% |
+| 3-5 | 48 | 0 / 0 / 0 / 0 | 20 | — | — | Mosspitcher Lookout (Common) | 12 | 62% / 66% | 6 / 6 / 6 / 6 | 71% / 73% |
+| 3-6 | 52 | 0 / 0 / 0 / 0 | 20 | — | — | Sidestep Shiv (Uncommon) | 12 | 70% / 70% | 7 / 7 / 7 / 6 | 77% / 75% |
+| 3-7 | 54 | 0 / 0 / 0 / 0 | 21 | — | — | Seedwind Shepherd (Rare) | 13 | 64% / 67% | 7 / 7 / 7 / 7 | 71% / 73% |
+| 3-8 | 54 | 0 / 0 / 0 / 0 | 21 | Lane 3, closed for the full Battle | — | Canopy Skirmisher (Uncommon) | 13 | 66% / 68% | 8 / 7 / 7 / 7 | 75% / 76% |
+| 3-9 | 56 | 0 / 0 / 0 / 0 | 22 | — | — | Elderreed Dartmaster (Rare) | 13 | 64% / 63% | 8 / 8 / 7 / 7 | 74% / 73% |
+| 3-10 | 64 | 0 / 0 / 0 / 0 | 23 | — | Canopy Vinewarden (Epic), Lane 2, Column 11 · Bramble Nest (Uncommon), Lane 2, Column 10 | Lethiel, First Gardener (Epic) | 14 | 35% / 38% | 8 / 8 / 8 / 7 | 45% / 49% |
+
+All win rates come from one run of `bun scripts/simulate.ts stage 1000 --check` in `packages/rules` on 2026-10-15, when the Region 3 Stages were added. All rows of Regions 1 to 3 are on their target, with no Gear and with the Expected Gear. Over 2000 Battles, Vanguard and Raiders win 63% / 74% and 70% / 79% of 3-1, and 35% / 39% and 45% / 49% of 3-10. The economy sim (Economy 7.1) gives the same result as before, because the Coin, XP and Forge Stones of a Stage come only from its Region and its Boss flag.
+
+Notes from the first tuning:
+
+- **The expected Deck takes Region 3 cards.** At level 10, the expected Deck has 18 or 19 cards, and its Countdown is almost at the Countdown Limit. The Region 3 first-win cards go into it when there is space. Thus a change to a Region 3 first-win card changes the win rates of the later Region 3 Stages.
+- **Gear adds more.** Region 3 gives Uncommon Forge Stones (Economy 2.1), so the Expected Gear is 5 to 8 (Region 2: 3 to 5). It adds about 6 to 10 points. Raiders gets more from Gear than Vanguard. Thus each normal Stage must stay at about 62% to 72% with no Gear.
+- **Rank is the strong tool.** The first Decks had each copy at its Base Rank. Vanguard and Raiders won 96% / 97% of 3-1 and 96% / 91% of 3-6 (300 Battles). Thus these Stages raise the Rank of most copies.
+- **The Long-range Stages were too hard.** At the Base Rank, 3-5 gave 24% / 42%, 3-9 gave 46% / 56% and 3-10 gave 6% / 11% (300 Battles). Hero HP moved them only a few points. Thus some Rare and Epic copies became cheaper cards. 3-5 lost the Elderreed Dartmaster, the Spyglass Sniper and the Long Shot. 3-9 lost the Amberwing Dart, the Junk Walker and the Venom Arrow. Each kept its first-win card.
+- **3-2 (The Stuck Drill).** Raiders won 81% with the Expected Gear, and Vanguard won only 62% with no Gear. Each Rank change moved both Decks together. The Junk Walker (Bulwark 2) hit Vanguard the most, so a second Dewkeeper replaces it.
+- **3-1 (The Tunnel Exit).** One Rare Scrap Plate Guard took Raiders with the Expected Gear from 81% to 79%.
+- **3-10 (Boss).** The first Boss Deck had a Canopy Vinewarden, Bramble Nests, Thornline Archers, a Cleanse and a Prayer of Healing. The Canopy Vinewarden is now only the Start Unit, so the Boss rule stays. The Deck has 23 cards: 1 more than 3-9, and the same size as the expected Deck at level 14. Hero HP 64 keeps the Boss the largest of Region 3.
+
+### 4.3 Enemy Decks
+
+| Stage | Deck |
+| --- | --- |
+| 3-1 | 3× Rootbound Guard (U), 2× Dewkeeper (U), 2× Bramble Duelist (U), 1× Ankle Snatcher (U), 1× Ankle Snatcher (C), 2× Tunnel Saboteur (C), 1× Scrap Plate Guard (R), 1× Scrap Plate Guard (U), 1× Junk Slinger (U), 1× Junk Slinger (C), 1× Fuse Runner (C), 1× Shield Bash (C), 1× War Drums (U) |
+| 3-2 | 2× Bramble Nest (U), 2× Rootbound Guard (U), 2× Junk Slinger (U), 2× Bomb Lobber (U), 2× Tunnel Saboteur (C), 1× Bramble Duelist (U), 1× Bramble Duelist (C), 1× Junk Barricade (U), 2× Dewkeeper (U), 2× Ankle Snatcher (C), 1× Shield Wall (C) |
+| 3-3 | 3× Acorn Tender (C), 2× Thornline Archer (U), 2× Rootbound Guard (C), 2× Bramble Duelist (C), 2× Scrap Plate Guard (C), 2× Ankle Snatcher (U), 1× Tunnel Saboteur (C), 1× Fuse Runner (C), 1× Dewkeeper (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Shards (C) |
+| 3-4 | 3× Fernwing Courier (U), 2× Canopy Skirmisher (U), 1× Amberwing Dart (R), 2× Rootbound Guard (C), 2× Bramble Duelist (C), 2× Acorn Tender (U), 2× Ankle Snatcher (C), 1× Junk Slinger (U), 1× Junk Slinger (C), 1× Scrap Plate Guard (U), 1× Warning Shot (C), 1× Harrying Shot (C), 1× Pinning Shot (C) |
+| 3-5 | 3× Mosspitcher Lookout (C), 3× Bramble Duelist (C), 2× Thornline Archer (U), 2× Bramble Nest (U), 2× Rootbound Guard (C), 2× Scrap Plate Guard (C), 1× Ankle Snatcher (C), 1× Tunnel Saboteur (C), 1× Venom Arrow (R), 1× Pinning Shot (C), 1× Warning Shot (C), 1× Quick Shot (C) |
+| 3-6 | 3× Sidestep Shiv (R), 2× Glade Turnblade (R), 2× Scrap Plate Guard (U), 2× Ankle Snatcher (U), 2× Tunnel Saboteur (U), 2× Fuse Runner (U), 1× Grease Trapper (U), 1× Junk Walker (R), 1× Bomb Lobber (U), 1× Rocket Barrel Rider (U), 1× Mosspitcher Lookout (C), 1× Spear Throw (C), 1× War Drums (U) |
+| 3-7 | 1× Seedwind Shepherd (R), 2× Dewkeeper (U), 2× Rootbound Guard (U), 1× Rootbound Guard (C), 2× Mosspitcher Lookout (C), 2× Bramble Duelist (C), 2× Acorn Tender (C), 1× Bramble Nest (U), 2× Scrap Plate Guard (C), 1× Junk Slinger (C), 1× Prayer of Healing (U), 1× Cleanse (R), 2× Mend (C), 1× Smite (C) |
+| 3-8 | 2× Canopy Skirmisher (U), 2× Fernwing Courier (U), 2× Thornline Archer (U), 2× Rootbound Guard (U), 2× Bramble Duelist (U), 1× Glade Turnblade (U), 2× Scrap Plate Guard (C), 2× Tunnel Saboteur (C), 1× Grease Trapper (U), 1× Bomb Lobber (U), 1× Junk Walker (R), 1× Frost Bolt (C), 1× Arc Lightning (U), 1× Spark (C) |
+| 3-9 | 1× Elderreed Dartmaster (R), 1× Fernwing Courier (C), 1× Seedwind Shepherd (R), 1× Canopy Skirmisher (U), 1× Thornline Archer (U), 1× Mosspitcher Lookout (C), 1× Acorn Tender (C), 1× Dewkeeper (U), 2× Rootbound Guard (C), 1× Bramble Nest (U), 1× Glade Turnblade (U), 1× Bramble Duelist (C), 1× Sidestep Shiv (U), 2× Scrap Plate Guard (C), 1× Tunnel Saboteur (C), 1× Ankle Snatcher (C), 1× Grease Trapper (U), 1× Harrying Shot (C), 1× Pinning Shot (C), 1× Quick Shot (C) |
+| 3-10 | 1× Lethiel, First Gardener (E), 3× Bramble Duelist (C), 1× Fernwing Courier (C), 2× Ankle Snatcher (C), 3× Mosspitcher Lookout (C), 2× Rootbound Guard (C), 2× Acorn Tender (C), 1× Glade Turnblade (U), 1× Junk Walker (R), 1× Grease Trapper (U), 1× Tunnel Saboteur (C), 2× Mend (C), 1× Smite (C), 1× Bramble Nest (U), 1× Dewkeeper (U) |
+
+## 5. When a Stage changes
 
 1. Change the data in `stages.ts`.
 2. Run `bun run sim stage 1000` in `packages/rules`. Each Stage must be in its target with each Starter Deck, with no Gear and with its Expected Gear. CI runs `bun run rules:sim:check`, and it fails when a Stage is not on its target.
-3. Update the tables of the Region (sections 2 and 3).
+3. Update the tables of the Region (sections 2 to 4).
 4. If the name or the place changes, update the Message Catalogs and the landmark on the Region Map (12 — Region Concepts, section 2).

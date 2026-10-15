@@ -606,12 +606,12 @@ export const DeckEntry = Schema.Struct({
 });
 export type DeckEntry = typeof DeckEntry.Type;
 
-/** Gear levels 0 to 20 for the 4 slots (GDD 7.3, ADR-0037). */
+/** Gear levels 0 to 25 for the 4 slots (GDD 7.3, ADR-0039). */
 export const GearLevels = Schema.Struct({
-  weapon: between(0, 20),
-  armor: between(0, 20),
-  trinket: between(0, 20),
-  banner: between(0, 20),
+  weapon: between(0, 25),
+  armor: between(0, 25),
+  trinket: between(0, 25),
+  banner: between(0, 25),
 });
 export type GearLevels = typeof GearLevels.Type;
 

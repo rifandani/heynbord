@@ -9,6 +9,10 @@ type BattlePaintings = Readonly<Record<number, string | null>>;
 
 const BATTLE_PAINTINGS = {
   1: "/battle/hearthvale.webp",
+  2: "/battle/red-mesas.webp",
+  3: "/battle/glowcap-hollows.webp",
+  4: "/battle/thornwood.webp",
+  5: "/battle/hollow-marches.webp",
 } as const satisfies BattlePaintings;
 
 /** A Region with no painting of its own uses the painting of Region 1 (Hearthvale). */

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   DUNGEON_FORGE_STONE_CHANCE,
+  DUNGEON_LEGENDARY_FORGE_STONE_CHANCE,
   DUNGEON_REWARDS,
   dungeonForgeStones,
   dungeonReward,
@@ -99,19 +100,37 @@ describe("Dungeon Forge Stones (Economy 2.4, ADR-0038)", () => {
   });
 
   it("gives 3 Forge Stones for the first win, with no random value", () => {
-    for (const dungeon of DUNGEON_REWARDS) {
+    for (const dungeon of DUNGEON_REWARDS.slice(0, 2)) {
       const cursor = { state: 7 };
-      expect(dungeonForgeStones(dungeon, "firstWin", cursor)).toEqual({
-        tier: dungeon.forgeStoneTier,
-        count: 3,
-      });
+      expect(dungeonForgeStones(dungeon, "firstWin", cursor)).toEqual([
+        { tier: dungeon.forgeStoneTier, count: 3 },
+      ]);
       expect(cursor.state).toBe(7);
     }
   });
 
+  it("gives Legendary Forge Stones only in Dungeon 3 (ADR-0039)", () => {
+    expect(
+      DUNGEON_REWARDS.map((dungeon) => dungeon.legendaryForgeStones)
+    ).toEqual([false, false, true]);
+  });
+
+  it("gives 3 Epic and 1 Legendary Forge Stone for the first win of Dungeon 3, with no random value", () => {
+    const cursor = { state: 7 };
+    expect(
+      dungeonForgeStones(getDungeonRewards(3), "firstWin", cursor)
+    ).toEqual([
+      { tier: "epic", count: 3 },
+      { tier: "legendary", count: 1 },
+    ]);
+    expect(cursor.state).toBe(7);
+  });
+
   it("gives no Forge Stone for a loss, with no random value", () => {
     const cursor = { state: 7 };
-    expect(dungeonForgeStones(getDungeonRewards(3), "loss", cursor)).toBeNull();
+    expect(dungeonForgeStones(getDungeonRewards(3), "loss", cursor)).toEqual(
+      []
+    );
     expect(cursor.state).toBe(7);
   });
 
@@ -122,8 +141,8 @@ describe("Dungeon Forge Stones (Economy 2.4, ADR-0038)", () => {
     let hits = 0;
     for (let index = 0; index < REPEATS; index += 1) {
       const stones = dungeonForgeStones(dungeon, "win", cursor);
-      if (stones) {
-        expect(stones).toEqual({ tier: "rare", count: 1 });
+      if (stones.length > 0) {
+        expect(stones).toEqual([{ tier: "rare", count: 1 }]);
         hits += 1;
       }
     }
@@ -133,5 +152,30 @@ describe("Dungeon Forge Stones (Economy 2.4, ADR-0038)", () => {
     expect(dungeonForgeStones(dungeon, "win", { state: 5 })).toEqual(
       dungeonForgeStones(dungeon, "win", { state: 5 })
     );
+  });
+
+  it("gives 1 Legendary Forge Stone on about 10% of Dungeon 3 repeat wins, with a roll separate from the Epic roll", () => {
+    const REPEATS = 10_000;
+    const dungeon = getDungeonRewards(3);
+    const cursor = { state: 11 };
+    const hits = { epic: 0, legendary: 0, both: 0 };
+    for (let index = 0; index < REPEATS; index += 1) {
+      const stones = dungeonForgeStones(dungeon, "win", cursor);
+      for (const stone of stones) {
+        expect(stone.count).toBe(1);
+        hits[stone.tier === "legendary" ? "legendary" : "epic"] += 1;
+      }
+      if (stones.length === 2) {
+        hits.both += 1;
+      }
+    }
+    expect(DUNGEON_LEGENDARY_FORGE_STONE_CHANCE).toBe(1000);
+    expect(hits.epic / REPEATS).toBeGreaterThan(0.235);
+    expect(hits.epic / REPEATS).toBeLessThan(0.265);
+    expect(hits.legendary / REPEATS).toBeGreaterThan(0.09);
+    expect(hits.legendary / REPEATS).toBeLessThan(0.11);
+    // Separate rolls: about 25% × 10% of the wins give both.
+    expect(hits.both / REPEATS).toBeGreaterThan(0.018);
+    expect(hits.both / REPEATS).toBeLessThan(0.032);
   });
 });

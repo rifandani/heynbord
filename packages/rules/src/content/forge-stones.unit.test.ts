@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  addForgeStoneRewards,
   addForgeStones,
   FORGE_STONE_TIERS,
   NO_FORGE_STONES,
@@ -10,8 +11,14 @@ import {
 import { CAMPAIGN_REGIONS } from "./star-chests";
 
 describe("Forge Stones (ADR-0038)", () => {
-  it("has 4 tiers, from the lowest Gear levels", () => {
-    expect(FORGE_STONE_TIERS).toEqual(["common", "uncommon", "rare", "epic"]);
+  it("has 5 tiers, from the lowest Gear levels (ADR-0039)", () => {
+    expect(FORGE_STONE_TIERS).toEqual([
+      "common",
+      "uncommon",
+      "rare",
+      "epic",
+      "legendary",
+    ]);
   });
 
   it("gives Common in Regions 1 and 2, Uncommon in Regions 3 and 4 and Rare in Region 5 (Economy 2.1)", () => {
@@ -33,6 +40,17 @@ describe("Forge Stones (ADR-0038)", () => {
       rare: 3,
     });
     expect(addForgeStones(stones, null)).toBe(stones);
+  });
+
+  it("adds the Forge Stones of all rewards", () => {
+    const stones = { ...NO_FORGE_STONES, epic: 1 };
+    expect(
+      addForgeStoneRewards(stones, [
+        { tier: "epic", count: 2 },
+        { tier: "legendary", count: 1 },
+      ])
+    ).toEqual({ ...NO_FORGE_STONES, epic: 3, legendary: 1 });
+    expect(addForgeStoneRewards(stones, [])).toBe(stones);
   });
 
   it("uses a random value only for a repeat win of a Stage", () => {

@@ -1,5 +1,9 @@
 # @workspace/web
 
+- fix this trail line in region 2
+- /grill-with-docs lets continue develop the campaign battle stages for region 4
+- /grill-with-docs lets develop the "Dungeons" feature
+
 Answers all ur questions automatically with ur best recommendations, except critical questions.
 
 ## Todo
@@ -119,8 +123,6 @@ Priest:
 
 Sequence:
 
-1. #68 "Promote Diagnostic Decks": blocked by #67.
-1. Regions 2 to 5 (M3): their tuning needs Combine and Gear.
 1. Heynspire, then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
 
 New features:

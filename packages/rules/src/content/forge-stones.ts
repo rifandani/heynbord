@@ -6,10 +6,16 @@ import type { StageDefinition } from "./schema";
 import type { StageOutcome } from "./stage-coin";
 
 /**
- * The 4 Forge Stone tiers (ADR-0038). They use the names of the Ranks, but a
- * Forge Stone tier is not a Rank.
+ * The 5 Forge Stone tiers (ADR-0038, ADR-0039). They use the names of the
+ * Ranks, but a Forge Stone tier is not a Rank.
  */
-const ForgeStoneTier = Schema.Literals(["common", "uncommon", "rare", "epic"]);
+const ForgeStoneTier = Schema.Literals([
+  "common",
+  "uncommon",
+  "rare",
+  "epic",
+  "legendary",
+]);
 export type ForgeStoneTier = typeof ForgeStoneTier.Type;
 
 /** The Forge Stone tiers, from the lowest Gear levels. */
@@ -22,6 +28,7 @@ export const ForgeStones = Schema.Struct({
   uncommon: Schema.Natural,
   rare: Schema.Natural,
   epic: Schema.Natural,
+  legendary: Schema.Natural,
 });
 export type ForgeStones = typeof ForgeStones.Type;
 
@@ -30,6 +37,7 @@ export const NO_FORGE_STONES: ForgeStones = {
   uncommon: 0,
   rare: 0,
   epic: 0,
+  legendary: 0,
 };
 
 /** Forge Stones of one tier that a reward gives. */
@@ -46,6 +54,12 @@ export const addForgeStones = <S extends ForgeStones>(
   reward === null || reward.count === 0
     ? stones
     : { ...stones, [reward.tier]: stones[reward.tier] + reward.count };
+
+/** `stones` with the Forge Stones of all `rewards` added. */
+export const addForgeStoneRewards = <S extends ForgeStones>(
+  stones: S,
+  rewards: readonly ForgeStoneReward[]
+): S => rewards.reduce<S>(addForgeStones, stones);
 
 /**
  * The Forge Stone tier of each Region, from Region 1 (Economy 2.1). Keep the

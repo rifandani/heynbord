@@ -24,7 +24,7 @@ import { useCountTo } from "@/features/workshop/use-count-to";
 const PLATE =
   "flex rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
 
-/** The chime of a Gear item at level 20 comes this long after the strike. */
+/** The chime of a Gear item at level 25 comes this long after the strike. */
 const MAX_CHIME_MS = 180;
 
 /**
@@ -103,9 +103,9 @@ const HeroHp = ({ hp }: { readonly hp: HeroHpParts }) => {
 };
 
 /**
- * The 4 Forge Stone counts (GDD 7.2, ADR-0038) on a slim HUD plate: each tier
- * with its stone in the Card Rank color, its name and its count. A count of 0
- * is dimmer. The Forge Stones show only here: there is no Inventory screen.
+ * The 5 Forge Stone counts (GDD 7.2, ADR-0038, ADR-0039) on a slim HUD
+ * plate: each tier with its stone in the Card Rank color, its name and its
+ * count. A count of 0 is dimmer. The Forge Stones show only here: there is no Inventory screen.
  */
 const ForgeStonePlate = ({
   counts,
@@ -163,7 +163,7 @@ const ForgeStonePlate = ({
 };
 
 /**
- * The sounds of a Gear upgrade: the strike, and at level 20 the chime of a
+ * The sounds of a Gear upgrade: the strike, and at level 25 the chime of a
  * Rare card. The timers stop when the screen closes.
  */
 const useUpgradeSounds = () => {
@@ -190,7 +190,7 @@ const useUpgradeSounds = () => {
 /**
  * The Hero screen (GDD 7.3, issue #77, "Gear Rack"): the inside of the
  * Barracks, the Hero plate with the Class of the Active Deck (ADR-0033), its
- * Deck and the Hero HP with its parts, the 4 Forge Stone counts (ADR-0038),
+ * Deck and the Hero HP with its parts, the 5 Forge Stone counts (ADR-0038),
  * and the 4 Gear items side by side.
  * Each press of an upgrade adds 1 level at once: the notch fills, the stat
  * rolls to its new value, a sound plays and the Coin counts down. After an

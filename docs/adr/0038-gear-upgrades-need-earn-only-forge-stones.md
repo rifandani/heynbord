@@ -31,3 +31,7 @@ Forge Stones are earn-only, the same as Sweep Tickets. The Bazaar never sells th
 - In the economy sim, a Gear upgrade needs the Coin and the Forge Stone. When the Forge Stone is missing, the Play Style goes to its next priority. Run `sim stage 1000 --check` again (ADR-0034), because the Expected Gear changes. If the "level 14 or higher" target still fails, the M3 re-tune changes the Forge Stone supply, not the target.
 - The Forge Stone numbers in Economy 2 are a start. The economy sim tunes them.
 - The Hero screen shows the 4 Forge Stone counts, and the Gear upgrade shows its Coin and Forge Stone cost. There is no Inventory screen (GDD 7.2).
+
+## Update: a 5th tier, Legendary
+
+[ADR-0039](./0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md) adds Gear levels 21 to 25 and the Legendary Forge Stone tier for them. Only the 10th Heynspire Floors and Dungeon 3 give Legendary Forge Stones. All the rules of this ADR apply to the new tier.

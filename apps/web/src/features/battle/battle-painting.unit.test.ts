@@ -1,8 +1,17 @@
+import { CAMPAIGN_REGIONS } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { battlePaintingFor } from "@/features/battle/battle-painting";
 
 describe("battlePaintingFor", () => {
+  it("gives each Region of the Campaign a painting of its own", () => {
+    const shown = Array.from({ length: CAMPAIGN_REGIONS }, (_, index) =>
+      battlePaintingFor(index + 1)
+    );
+    expect(shown.every((painting) => painting !== null)).toBe(true);
+    expect(new Set(shown).size).toBe(CAMPAIGN_REGIONS);
+  });
+
   const paintings = {
     1: "/battle/hearthvale.webp",
     2: "/battle/region-2.webp",

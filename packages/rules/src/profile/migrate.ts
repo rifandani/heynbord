@@ -1,6 +1,5 @@
 import { Result, Schema } from "effect";
 
-import { NO_FORGE_STONES } from "../content/forge-stones";
 import { ImportError } from "./import-error";
 import { Profile, PROFILE_SCHEMA_VERSION } from "./schema";
 
@@ -24,6 +23,11 @@ const doubledGear = (gear: Schema.JsonObject): Schema.JsonObject =>
     ])
   );
 
+/** The Forge Stones with 0 of the Legendary tier added (ADR-0039). */
+const withLegendaryForgeStones = (
+  forgeStones: Schema.JsonObject
+): Schema.JsonObject => ({ ...forgeStones, legendary: 0 });
+
 /**
  * The migration steps, by the version that each step starts from. A change to
  * the Profile shape, or to the meaning of a saved value, adds a step here, and
@@ -44,7 +48,21 @@ export const PROFILE_MIGRATIONS = {
    * Version 4 adds the Forge Stones (ADR-0038). An old save has none. Its
    * Gear levels stay: it gets no Coin back and pays no Forge Stones for them.
    */
-  3: (profile) => ({ ...profile, forgeStones: { ...NO_FORGE_STONES } }),
+  3: (profile) => ({
+    ...profile,
+    forgeStones: { common: 0, uncommon: 0, rare: 0, epic: 0 },
+  }),
+  /**
+   * Version 5 adds the Legendary Forge Stone tier (ADR-0039). An old save has
+   * none. Its Gear levels stay.
+   */
+  4: (profile) =>
+    isJsonObject(profile.forgeStones)
+      ? {
+          ...profile,
+          forgeStones: withLegendaryForgeStones(profile.forgeStones),
+        }
+      : profile,
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

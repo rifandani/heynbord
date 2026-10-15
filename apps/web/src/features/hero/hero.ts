@@ -55,7 +55,7 @@ export const heroHpParts = (
  * What the upgrade button of a Gear item does (Economy 3.4, ADR-0038):
  * upgrade for `coin` and 1 Forge Stone of `tier`, wait for `missingCoin` more
  * Coin or for the Forge Stone (`hasStone` false), or nothing, because the item
- * is at level 20. `stones` is the count of `tier` that the Player has.
+ * is at level 25. `stones` is the count of `tier` that the Player has.
  */
 export type GearUpgrade =
   | {
@@ -77,7 +77,7 @@ export type GearUpgrade =
 
 /**
  * One Gear item on the Gear Rack: its level, its stat now and at the next
- * level (`null` at level 20), and its upgrade. A stat value is basis points
+ * level (`null` at level 25), and its upgrade. A stat value is basis points
  * (100 = 1%) for a chance, and HP for the Armor.
  */
 export interface GearItem {
@@ -135,7 +135,7 @@ export interface ForgeStoneCount {
   readonly count: number;
 }
 
-/** The 4 Forge Stone counts, from the lowest Gear levels. */
+/** The 5 Forge Stone counts, from the lowest Gear levels. */
 export const forgeStoneCounts = (
   forgeStones: ForgeStones
 ): readonly ForgeStoneCount[] =>

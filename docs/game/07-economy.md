@@ -13,7 +13,7 @@ Pillar 1 ("Fair to the player") controls all decisions in this document.
 | **Essence** | Craft resource | Extract, Heynspire milestones, Achievements | Craft |
 | **XP** | Progress | Battles | Player level |
 | **Stars** | Progress | Stage wins | Star chests |
-| **Forge Stones** | Gear resource, 4 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire | Gear upgrades |
+| **Forge Stones** | Gear resource, 5 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire | Gear upgrades |
 
 - Coin, Heynstones and Essence never change into each other. See [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md).
 - Forge Stones are earn-only. The Bazaar never sells them, and they never change into Coin, Heynstones or Essence. See [ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md).
@@ -139,7 +139,7 @@ The data is `STAR_CHESTS` in `packages/rules/src/content/star-chests.ts`. Keep t
 | --- | --- |
 | Each Floor *n* | 100 + 10 × *n* Coin, and 50 + 5 × *n* XP |
 | Each 5th Floor that is not a 10th Floor | Also 2 Rare Forge Stones |
-| Each 10th Floor | Also 1 earn-only Cosmetic, 150 Essence, 50 Heynstones and 2 Epic Forge Stones |
+| Each 10th Floor | Also 1 earn-only Cosmetic, 150 Essence, 50 Heynstones, 2 Epic Forge Stones and 1 Legendary Forge Stone |
 
 The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`. Keep the code and this table the same.
 
@@ -154,6 +154,7 @@ The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`. 
 - The values start at the Boss Stage values of the Region that the player usually plays at the unlock level.
 - A loss and a repeat win use the same rules as a Campaign Stage (section 2.1). The card pool is the Dungeon card pool.
 - A win has a 25% chance to give 1 Forge Stone: Uncommon in Dungeon 1, Rare in Dungeon 2 and Epic in Dungeon 3. The first win gives 3 Forge Stones in place of the chance. A loss gives none.
+- Dungeon 3 also gives Legendary Forge Stones ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)): 1 for the first win, and a 10% chance of 1 for a repeat win. This roll is separate from the Epic roll.
 - Dungeons give no Heynstones, so the v1 Heynstone supply (section 2.6) does not change.
 - At player level 30, XP has no use. Thus Dungeon 3 gives Essence in place of XP.
 - A loss in Dungeon 3 gives 25% of the Essence of a win, as for XP. The 100 Essence of the first win is in place of × 2 Essence.
@@ -182,15 +183,15 @@ The data is `HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`. T
 
 A Gear upgrade uses 1 Forge Stone of the tier of the new level (section 3.4). All 4 Gear items need 20 Forge Stones of each tier. The one-time sources give:
 
-| Source | Common | Uncommon | Rare | Epic |
-| --- | --- | --- | --- | --- |
-| Stage first wins (10 for each Region) | 20 | 20 | 10 | — |
-| 10-Star chests (5) | 4 | 4 | 2 | — |
-| Dungeon first wins (3) | — | 3 | 3 | 3 |
-| Heynspire Floors (5th and 10th) | — | — | 10 | 10 |
-| **Total** | **24** | **27** | **25** | **13** |
+| Source | Common | Uncommon | Rare | Epic | Legendary |
+| --- | --- | --- | --- | --- | --- |
+| Stage first wins (10 for each Region) | 20 | 20 | 10 | — | — |
+| 10-Star chests (5) | 4 | 4 | 2 | — | — |
+| Dungeon first wins (3) | — | 3 | 3 | 3 | 1 |
+| Heynspire Floors (5th and 10th) | — | — | 10 | 10 | 5 |
+| **Total** | **24** | **27** | **25** | **13** | **6** |
 
-The repeat wins, the Sweeps and the Dungeon wins give the rest. The Epic Forge Stones come mostly from Dungeon 3, so Gear levels 16 to 20 are the endgame. These numbers are a start: the economy sim tunes them ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
+The repeat wins, the Sweeps and the Dungeon wins give the rest. The Epic Forge Stones come mostly from Dungeon 3, so Gear levels 16 to 20 are the endgame. The Legendary Forge Stones come only from Dungeon 3 and the 10th Heynspire Floors, so Gear levels 21 to 25 are the last goal of the endgame ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)). These numbers are a start: the economy sim tunes them ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
 
 The rules are `stageForgeStones` and `regionForgeStoneTier` in `packages/rules/src/content/forge-stones.ts`, `STAR_CHESTS`, `floorFirstWinReward` and `dungeonForgeStones` with `DUNGEON_REWARDS`. Keep the code and these tables the same.
 
@@ -295,7 +296,12 @@ The cost to upgrade an item to level *n* is 2.5 × *n* × (*n* + 1) Coin and 1 F
 | Coin | 330 | 390 | 455 | 525 | 600 | 680 | 765 | 855 | 950 | 1,050 |
 | Forge Stone | Rare | Rare | Rare | Rare | Rare | Epic | Epic | Epic | Epic | Epic |
 
-One item from level 0 to 20 costs 7,700 Coin (77s) and 5 Forge Stones of each tier. All 4 items cost 30,800 Coin (3g 8s) and 20 Forge Stones of each tier. The Forge Stone supply (section 2.7), not the Coin, is the main limit of the Gear pace.
+| Level | 21 | 22 | 23 | 24 | 25 |
+| --- | --- | --- | --- | --- | --- |
+| Coin | 1,155 | 1,265 | 1,380 | 1,500 | 1,625 |
+| Forge Stone | Legendary | Legendary | Legendary | Legendary | Legendary |
+
+One item from level 0 to 25 costs 14,625 Coin (1g 46s 25c) and 5 Forge Stones of each tier. All 4 items cost 58,500 Coin (5g 85s) and 20 Forge Stones of each tier. Levels 0 to 20 are 7,700 Coin of this for each item ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)). The Forge Stone supply (section 2.7), not the Coin, is the main limit of the Gear pace.
 
 The rules are `gearUpgradeCoin` and `gearUpgradeForgeStone` in `packages/rules/src/content/gear.ts`. Keep the code and this table the same.
 
@@ -382,7 +388,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 `bun run sim economy [seeds]` simulates Players from a new Profile to Player level 30. It does not play Battles. The logic is in `packages/rules/src/simulation/economy.ts`. `bun run sim` with no mode does not run it.
 
-**Content.** The sim uses the reward and cost tables of sections 2 and 3 from the rules package. The sim plays the Stages of Regions 1 to 5 (`CAMPAIGN_REGIONS` is 5). Regions 1 and 2 have their Stages. Regions 3 to 5 do not exist yet, so the sim uses **planned Stages** for them: 10 Stages for each Region, and the last one is the Boss Stage. The Coin and XP of a Stage come only from its Region and its Boss flag, so a planned Stage gives the correct rewards.
+**Content.** The sim uses the reward and cost tables of sections 2 and 3 from the rules package. The sim plays the Stages of Regions 1 to 5 (`CAMPAIGN_REGIONS` is 5). Regions 1 to 3 have their Stages. Regions 4 and 5 do not exist yet, so the sim uses **planned Stages** for them: 10 Stages for each Region, and the last one is the Boss Stage. The Coin and XP of a Stage come only from its Region and its Boss flag, so a planned Stage gives the correct rewards.
 
 **Win chance.** Each Battle is a win or a loss from a win chance:
 
@@ -419,7 +425,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 - Achievements give no Coin or Essence in the sim, because the list of Achievements does not exist. The results are a floor.
 - A repeat win gives no card. The Stage card pool exists in the rules (`stageCardPool`), but the sim does not use it yet.
-- The Player does not repeat Stages or Sweep, so the repeat-win and the Sweep Forge Stones are not in the sim. The Player never plays Dungeon 3, because it gives no XP, so its Epic Forge Stones are not in the sim. The Forge Stone results are a floor.
+- The Player does not repeat Stages or Sweep, so the repeat-win and the Sweep Forge Stones are not in the sim. The Player never plays Dungeon 3, because it gives no XP, so its Epic and Legendary Forge Stones are not in the sim. The Forge Stone results are a floor.
 - The planned Stages and the Dungeons give no first-win card, because their cards do not exist yet.
 - The 30-Star chests do not open (see **Stars**). The Heynstone ledger counts them.
 
