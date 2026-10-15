@@ -63,6 +63,8 @@ export const PROFILE_MIGRATIONS = {
           forgeStones: withLegendaryForgeStones(profile.forgeStones),
         }
       : profile,
+  /** Version 6 adds the Dungeon results. An old save has won no Dungeon. */
+  5: (profile) => ({ ...profile, dungeonResults: {} }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

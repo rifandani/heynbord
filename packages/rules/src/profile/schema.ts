@@ -12,7 +12,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 5;
+export const PROFILE_SCHEMA_VERSION = 6;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -64,6 +64,9 @@ export type UnopenedPack = typeof UnopenedPack.Type;
 /** The best Stars of a won Stage (GDD 4.11). */
 const Stars = Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 3 }));
 
+/** The wins of a won Dungeon: 1 or more. */
+const DungeonWins = Schema.Int.check(Schema.isGreaterThanOrEqualTo(1));
+
 /** The Stars that open a Star chest: the key of a chest in each Region. */
 const StarChestStars = Schema.Natural.check(
   Schema.makeFilter((stars: number) =>
@@ -94,6 +97,8 @@ export const Profile = Schema.Struct({
   forgeStones: ForgeStones,
   /** The best Stars of each won Stage, by Stage ID. Stage 1-1 here: the Tutorial is won. */
   stageResults: Schema.Record(Schema.String, Stars),
+  /** The win count of each won Dungeon, by Dungeon ID. A Dungeon gives no Stars. */
+  dungeonResults: Schema.Record(Schema.String, DungeonWins),
   /** The Star chests that the Player claimed: their Stars, by Region number. */
   claimedStarChests: Schema.Record(Schema.String, Schema.Array(StarChestStars)),
   packState: PackState,

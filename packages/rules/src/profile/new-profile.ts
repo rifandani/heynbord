@@ -8,8 +8,8 @@ import type { Profile } from "./schema";
 
 /**
  * The Profile of a new Player: XP 0, no balances, the Starter Collection and
- * the Starter Decks, Gear 0, and no Forge Stones, Stage results, Star
- * chests, Unopened Packs or Sweep Tickets. Both random states come from the
+ * the Starter Decks, Gear 0, and no Forge Stones, Stage results, Dungeon
+ * results, Star chests, Unopened Packs or Sweep Tickets. Both random states come from the
  * seed, so the same seed gives the same Profile.
  */
 export const newProfile = (seed: number): Profile => ({
@@ -24,6 +24,7 @@ export const newProfile = (seed: number): Profile => ({
   gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
   forgeStones: NO_FORGE_STONES,
   stageResults: {},
+  dungeonResults: {},
   claimedStarChests: {},
   packState: newPackState(seed),
   unopenedPacks: [],

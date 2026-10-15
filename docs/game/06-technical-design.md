@@ -118,7 +118,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 ## 5. Save data
 
 - Storage: IndexedDB, through a small wrapper.
-- The **Profile** model is in the rules package. It has: player level and XP, Coin (as a number of Copper), Heynstones, Essence, owned card copies, Decks, unlocked Deck slots, Gear levels, Stage results, claimed Star chests, Unopened Packs, the Pack state, a reward random state, Heynspire progress, Achievements, Cosmetics and seen Hints.
+- The **Profile** model is in the rules package. It has: player level and XP, Coin (as a number of Copper), Heynstones, Essence, owned card copies, Decks, unlocked Deck slots, Gear levels, Stage results, Dungeon results, claimed Star chests, Unopened Packs, the Pack state, a reward random state, Heynspire progress, Achievements, Cosmetics and seen Hints.
 - Settings are not in the Profile. Language, sound, reduced motion, text size and color mode are about the device and the person, so they stay in `localStorage` on the device. An import does not change them.
 - There is one Profile in each browser. An import replaces it after a confirmation. A Battle that is not finished is not saved: after a page load it gives no result.
 - Each save has a `schemaVersion`. Migrations are pure functions in the rules package: `migrate(v1) → v2 → v3`.

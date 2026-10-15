@@ -241,6 +241,12 @@ export type {
   PackPool,
 } from "./packs/open-pack";
 export { buyDeckSlot, INITIAL_DECK_SLOTS } from "./profile/deck-slots";
+export { applyDungeonResult, dungeonCardPool } from "./profile/dungeon-result";
+export type {
+  DungeonResult,
+  DungeonResultInput,
+  DungeonRewards,
+} from "./profile/dungeon-result";
 export { exportProfile, importProfile } from "./profile/export";
 export { upgradeGear } from "./profile/gear";
 export { ImportError } from "./profile/import-error";

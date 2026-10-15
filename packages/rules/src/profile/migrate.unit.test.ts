@@ -91,6 +91,17 @@ describe("migrateProfile", () => {
     expect(migrated.gear).toEqual(v4.gear);
   });
 
+  it("gives no Dungeon results to a version 5 Profile, and keeps its Stage results", () => {
+    const { dungeonResults: _, ...v5 } = {
+      ...newProfile(3),
+      schemaVersion: 5,
+      stageResults: { "1-1": 3, "1-2": 2 },
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v5));
+    expect(migrated.dungeonResults).toEqual({});
+    expect(migrated.stageResults).toEqual(v5.stageResults);
+  });
+
   it("refuses a version 2 Profile with Gear that is not levels", () => {
     const v2 = {
       ...newProfile(3),
@@ -147,6 +158,8 @@ describe("migrateProfile", () => {
       { xp: 1.5 },
       { deckSlots: [] },
       { stageResults: { "1-1": 4 } },
+      { dungeonResults: { "dungeon-1": 0 } },
+      { dungeonResults: { "dungeon-1": 1.5 } },
       { sweepTickets: -1 },
       {
         forgeStones: {

@@ -86,8 +86,12 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
   },
 ];
 
-export const getDungeon = (dungeonId: string): DungeonDefinition => {
-  const dungeon = DUNGEONS.find((candidate) => candidate.id === dungeonId);
+/** The Dungeon of `dungeonId` in `dungeons`. It throws for an unknown Dungeon. */
+export const getDungeon = (
+  dungeonId: string,
+  dungeons: readonly DungeonDefinition[] = DUNGEONS
+): DungeonDefinition => {
+  const dungeon = dungeons.find((candidate) => candidate.id === dungeonId);
   if (!dungeon) {
     throw new Error(`Unknown Dungeon: ${dungeonId}`);
   }

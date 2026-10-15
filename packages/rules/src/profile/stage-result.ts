@@ -26,19 +26,23 @@ export const SWEEP_TICKETS_PER_WIN = 2;
 export const FIRST_PACK: UnopenedPack = { pack: "peddler", version: "all" };
 
 /**
- * The Stage card pool (Economy 2.1): the different cards of the enemy Deck, in
+ * A card pool of a repeat win (Economy 2.1): the different cards of `deck`, in
  * Deck order, but not a Skill Card of a Class that is not `classId`.
  */
+export const repeatWinCardPool = (
+  deck: readonly DeckEntry[],
+  classId: ClassId
+): readonly string[] =>
+  [...new Set(deck.map((entry) => entry.cardId))].filter((cardId) => {
+    const card = getCard(cardId);
+    return card.kind === "creature" || card.class === classId;
+  });
+
+/** The Stage card pool (Economy 2.1): the repeat-win card pool of the enemy Deck. */
 export const stageCardPool = (
   stage: Pick<StageDefinition, "enemy">,
   classId: ClassId
-): readonly string[] =>
-  [...new Set(stage.enemy.deck.map((entry) => entry.cardId))].filter(
-    (cardId) => {
-      const card = getCard(cardId);
-      return card.kind === "creature" || card.class === classId;
-    }
-  );
+): readonly string[] => repeatWinCardPool(stage.enemy.deck, classId);
 
 /** A Stage Battle that ended in a win or a loss. An Abandon has no result. */
 export interface StageResultInput {
@@ -106,17 +110,18 @@ export const findStage = (
 /**
  * The card of a win, and the reward random state after it. A first win gives
  * the fixed `firstWinCard`. A repeat win rolls the chance, and on a hit selects
- * a card of the Stage card pool with equal chance, in its Base Rank. The
- * random state moves forward on each repeat win, also on a miss.
+ * a card of `cardPool` with equal chance, in its Base Rank. The random state
+ * moves forward on each repeat win, also on a miss. A Stage and a Dungeon use
+ * it.
  */
-const winCard = (
-  stage: StageDefinition,
+export const winCard = (
+  firstWinCard: DeckEntry,
+  cardPool: () => readonly string[],
   outcome: StageOutcome,
-  classId: ClassId,
   randomState: number
 ): readonly [DeckEntry | null, number] => {
   if (outcome === "firstWin") {
-    return [stage.firstWinCard, randomState];
+    return [firstWinCard, randomState];
   }
   if (outcome === "loss") {
     return [null, randomState];
@@ -125,7 +130,7 @@ const winCard = (
   if (!rollBasisPoints(cursor, REPEAT_WIN_CARD_CHANCE)) {
     return [null, cursor.state];
   }
-  const pool = stageCardPool(stage, classId);
+  const pool = cardPool();
   const cardId = pool[randomInt(cursor, pool.length)];
   if (cardId === undefined) {
     return [null, cursor.state];
@@ -155,7 +160,12 @@ export const outcomeRewards = (
   classId: ClassId,
   rewardRandomState: number
 ): OutcomeRewards => {
-  const [card, afterCard] = winCard(stage, outcome, classId, rewardRandomState);
+  const [card, afterCard] = winCard(
+    stage.firstWinCard,
+    () => stageCardPool(stage, classId),
+    outcome,
+    rewardRandomState
+  );
   const cursor = { state: afterCard };
   const forgeStones = stageForgeStones(stage, outcome, cursor);
   return {
