@@ -8,7 +8,7 @@ import { Command, HAND_LIMIT, Target, TURN_LIMIT } from "../battle/types";
 import { getCard } from "../content/cards";
 import { getStarterDeck, STARTER_DECKS } from "../content/decks";
 import { getStage, STAGES } from "../content/stages";
-import { emptyBattle, giveHand, placeUnit } from "../testing/fixtures";
+import { emptyBattle, giveHand, placeUnit, heroOf } from "../testing/fixtures";
 import { chooseCommand, visibleTo } from "./choose-command";
 
 /** Plays a full Battle with the AI on both sides (Auto-play for the player). */
@@ -63,6 +63,7 @@ const spearThrowChoice = (
 
 const spearThrowAt = (lane: number, position: number) =>
   Command.PlayCard({
+    hero: 0,
     handIndex: 0,
     target: Target.Square({ lane, position }),
   });
@@ -101,15 +102,15 @@ describe("visibleTo (GDD 9)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["human.militiaRecruit", 2]]);
     giveHand(state, "enemy", [["orc.badlandRunt", 1]]);
-    state.sides.enemy.deck = [
+    heroOf(state, "enemy").deck = [
       { instanceId: 1, cardId: "orc.tuskBrute", rank: "common" },
     ];
     const view = visibleTo(state, "enemy");
-    expect(view.sides.player.hand).toEqual([
+    expect(heroOf(view, "player").hand).toEqual([
       expect.objectContaining({ cardId: "hidden", countdown: 2 }),
     ]);
-    expect(view.sides.enemy.hand[0]?.cardId).toBe("orc.badlandRunt");
-    expect(view.sides.enemy.deck).toEqual([]);
+    expect(heroOf(view, "enemy").hand[0]?.cardId).toBe("orc.badlandRunt");
+    expect(heroOf(view, "enemy").deck).toEqual([]);
     expect(view.random).toBe(0);
     expect(view.seed).toBe(0);
   });
@@ -133,6 +134,7 @@ describe("chooseCommand (GDD 9)", () => {
     });
     expect(chooseCommand(state)).toEqual(
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
         target: Target.Square({ lane: 1, position: 9 }),
       })
@@ -149,6 +151,7 @@ describe("chooseCommand (GDD 9)", () => {
     });
     expect(chooseCommand(state)).toEqual(
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
         target: Target.Square({ lane: 0, position: 11 }),
       })
@@ -163,6 +166,7 @@ describe("chooseCommand (GDD 9)", () => {
     });
     expect(chooseCommand(pivot)).toEqual(
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
         target: Target.Square({ lane: 0, position: 10 }),
       })
@@ -186,6 +190,7 @@ describe("chooseCommand (GDD 9)", () => {
     });
     expect(chooseCommand(state)).toEqual(
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
         target: Target.Square({ lane: 0, position: 6 }),
       })
@@ -233,6 +238,7 @@ const shieldWallChoice = (setup: (state: BattleState) => void = () => {}) => {
 /** A play of the first Hand card at a Square of Lane 0. */
 const playAt = (position: number) =>
   Command.PlayCard({
+    hero: 0,
     handIndex: 0,
     target: Target.Square({ lane: 0, position }),
   });
@@ -243,14 +249,14 @@ const fullHand = (state: BattleState) => {
     state,
     "player",
     Array.from(
-      { length: HAND_LIMIT - state.sides.player.hand.length },
+      { length: HAND_LIMIT - heroOf(state, "player").hand.length },
       () => ["human.militiaRecruit", 5] as const
     )
   );
 };
 
 const shieldWallAt = (lane: number) =>
-  Command.PlayCard({ handIndex: 0, target: Target.Lane({ lane }) });
+  Command.PlayCard({ hero: 0, handIndex: 0, target: Target.Lane({ lane }) });
 
 describe("chooseCommand: Hold Rules (GDD 9)", () => {
   it("keeps Shield Wall until an enemy Unit is in the Lane", () => {
@@ -275,7 +281,7 @@ describe("chooseCommand: Hold Rules (GDD 9)", () => {
     expect(chooseCommand(state)).toEqual(Command.EndTurn());
     giveHand(state, "player", [["human.shieldbearer", 4]]);
     expect(chooseCommand(state)).toEqual(
-      Command.PlayCard({ handIndex: 0, target: Target.NoTarget() })
+      Command.PlayCard({ hero: 0, handIndex: 0, target: Target.NoTarget() })
     );
   });
 
@@ -306,7 +312,7 @@ describe("chooseCommand: Hold Rules (GDD 9)", () => {
     expect(
       shieldWallChoice((state) => {
         fullHand(state);
-        state.sides.player.deck = [
+        heroOf(state, "player").deck = [
           { instanceId: 1, cardId: "orc.tuskBrute", rank: "common" },
         ];
       })
@@ -332,6 +338,7 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
     });
     expect(chooseCommand(state)).toEqual(
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
         target: Target.Square({ lane: 0, position: 10 }),
       })
@@ -442,6 +449,7 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
     });
     expect(chooseCommand(state)).toEqual(
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
         target: Target.Square({ lane: 0, position: 10 }),
       })
@@ -563,8 +571,9 @@ describe("chooseCommand: Ranger Skill Cards (GDD 9)", () => {
     giveHand(state, "enemy", [["ranger.longShot", 0]]);
     expect(chooseCommand(state)).toEqual(
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
-        target: Target.Hero({ side: "player" }),
+        target: Target.Hero({ side: "player", hero: 0 }),
       })
     );
   });
@@ -644,7 +653,11 @@ const enemy = (state: BattleState) => {
 };
 
 const playAtSquare = (lane: number, position: number) =>
-  Command.PlayCard({ handIndex: 0, target: Target.Square({ lane, position }) });
+  Command.PlayCard({
+    hero: 0,
+    handIndex: 0,
+    target: Target.Square({ lane, position }),
+  });
 
 describe("chooseCommand: Priest Skill Cards (GDD 9)", () => {
   it("keeps Mend until a friendly Unit has lost at least 50% of its maximum HP", () => {
@@ -852,7 +865,11 @@ describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
     );
     expect(raidersChoice("mage.frostWave", [{}])).toEqual(Command.EndTurn());
     expect(raidersChoice("mage.frostWave", [{}, bulwarked])).toEqual(
-      Command.PlayCard({ handIndex: 0, target: Target.Lane({ lane: 0 }) })
+      Command.PlayCard({
+        hero: 0,
+        handIndex: 0,
+        target: Target.Lane({ lane: 0 }),
+      })
     );
     // Ground Slam is Physical: a hit at 0 damage does not count.
     expect(raidersChoice("warrior.groundSlam", [{}, bulwarked])).toEqual(
@@ -929,6 +946,7 @@ describe("chooseCommand: the Skill Cards of #57 (GDD 9)", () => {
 
   it("keeps Prayer of Healing until the Lane has lost at least 6 HP in total", () => {
     const lane = Command.PlayCard({
+      hero: 0,
       handIndex: 0,
       target: Target.Lane({ lane: 0 }),
     });
@@ -978,6 +996,7 @@ describe("chooseCommand: the Rare and Epic Ranger Skill Cards of #59 (GDD 9)", (
 
   it("keeps Rain of Arrows until the Lane has 2 enemy Units, or the hit kills", () => {
     const lane = Command.PlayCard({
+      hero: 0,
       handIndex: 0,
       target: Target.Lane({ lane: 0 }),
     });
@@ -1061,6 +1080,7 @@ describe("chooseCommand: the Rare and Epic Priest Skill Cards of #61 (GDD 9)", (
 
   it("keeps Aegis of Dawn until a Lane has 2 friendly Units and an enemy Unit", () => {
     const lane = Command.PlayCard({
+      hero: 0,
       handIndex: 0,
       target: Target.Lane({ lane: 0 }),
     });
@@ -1081,7 +1101,11 @@ describe("chooseCommand: the Rare and Epic Priest Skill Cards of #61 (GDD 9)", (
 });
 
 const laneTarget = (index: number) =>
-  Command.PlayCard({ handIndex: 0, target: Target.Lane({ lane: index }) });
+  Command.PlayCard({
+    hero: 0,
+    handIndex: 0,
+    target: Target.Lane({ lane: index }),
+  });
 
 /** A player Scrap Raider at `position`. */
 const playerRaiderAt =

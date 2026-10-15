@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
 import { eventDuration } from "@/features/battle/battle-timeline";
+import { heroOf } from "@/features/battle/battle-view";
 import type { BattleView, UnitView } from "@/features/battle/battle-view";
 import { currentCast } from "@/features/battle/cast";
 import { DAMAGE_COLORS } from "@/features/battle/palette";
@@ -33,7 +34,7 @@ describe("fxForEvent", () => {
     const fx = fxForEvent(
       {
         _tag: "DamageDealt",
-        target: { _tag: "Hero", side: "enemy" },
+        target: { _tag: "Hero", side: "enemy", hero: 0 },
         amount: 3,
         damageType: "fire",
         source: "attack",
@@ -126,7 +127,7 @@ describe("fxForEvent edge cases", () => {
   it("shows a zero, and nothing for a target that is gone", () => {
     const damage = {
       _tag: "DamageDealt",
-      target: { _tag: "Hero", side: "player" },
+      target: { _tag: "Hero", side: "player", hero: 0 },
       amount: 0,
       damageType: "frost",
       source: "attack",
@@ -175,6 +176,7 @@ describe("fxForEvent for the Mage cards of #65", () => {
   const field = {
     id: 5,
     owner: "player" as const,
+    hero: 0,
     cardId: "mage.wildfire",
     lane: 0,
     position: 6,
@@ -232,6 +234,7 @@ describe("fxForEvent for the Mage cards of #65", () => {
     const unit: UnitView = {
       id: 77,
       owner: "enemy",
+      hero: 0,
       source: { _tag: "Card", cardId: "human.halberdier" },
       rank: "common",
       lane: 0,
@@ -378,7 +381,7 @@ describe("fxForEvent for attacks and hits (web ADR-0009)", () => {
   const attack = {
     _tag: "UnitAttacked",
     unitId: attacker?.id ?? 0,
-    target: { _tag: "Hero", side: "player" },
+    target: { _tag: "Hero", side: "player", hero: 0 },
     ranged: false,
   } as const;
   const damage = (
@@ -539,8 +542,7 @@ const withEnemyClass = (classId: ClassId): BattleView => ({
   sides: {
     ...view.sides,
     enemy: {
-      ...view.sides.enemy,
-      hero: { ...view.sides.enemy.hero, classId },
+      heroes: view.sides.enemy.heroes.map((hero) => ({ ...hero, classId })),
     },
   },
 });
@@ -590,7 +592,7 @@ describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
     const [unit] = view.units;
     const targets = [
       { _tag: "Unit", unitId: unit?.id ?? 0 },
-      { _tag: "Hero", side: "player" },
+      { _tag: "Hero", side: "player", hero: 0 },
     ] as const;
     const hits = targets.map((target) =>
       fxForEvent(
@@ -688,7 +690,7 @@ describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
   });
 
   it("gives a Creature Card no wind-up", () => {
-    const [creature] = view.sides.player.hand;
+    const [creature] = heroOf(view, "player").hand;
     expect(
       fxForEvent(
         {
@@ -837,7 +839,7 @@ describe("projectileAt", () => {
           _tag: "UnitAttacked",
           unitId: overrides.unitId ?? attacker?.id ?? 0,
           ranged: overrides.ranged ?? true,
-          target: { _tag: "Hero", side: "player" },
+          target: { _tag: "Hero", side: "player", hero: 0 },
         },
         duration: 500,
         before: view,
@@ -885,7 +887,7 @@ describe("projectileParticles", () => {
       _tag: "UnitAttacked",
       unitId: attacker?.id ?? 0,
       ranged: true,
-      target: { _tag: "Hero", side: "player" },
+      target: { _tag: "Hero", side: "player", hero: 0 },
     },
     duration: 500,
     before: view,
@@ -924,7 +926,7 @@ const cast = (cardId: string) =>
           cardId === "warrior.warDrums"
             ? { _tag: "NoTarget" }
             : cardId === "ranger.longShot"
-              ? { _tag: "Hero", side: "player" }
+              ? { _tag: "Hero", side: "player", hero: 0 }
               : { _tag: "Square", lane: 0, position: 4 },
       },
     ],
@@ -934,36 +936,36 @@ const cast = (cardId: string) =>
 describe("spellBoltAt", () => {
   it("flies from the caster Hero to the target Squares in the second half of the reveal", () => {
     const fireball = cast("mage.fireball");
-    expect(spellBoltAt(fireball, view.lanes, 0.3)).toBeNull();
-    const start = spellBoltAt(fireball, view.lanes, 0.5);
+    expect(spellBoltAt(fireball, view, 0.3)).toBeNull();
+    const start = spellBoltAt(fireball, view, 0.5);
     expect(start?.x).toBeCloseTo(heroX("enemy"));
     expect(start?.color).toBe(DAMAGE_COLORS.fire);
     expect(start?.size).toBeGreaterThan(1);
     // The area of an enemy Fireball goes from Square 4 toward the player Hero.
-    const end = spellBoltAt(fireball, view.lanes, 0.92);
+    const end = spellBoltAt(fireball, view, 0.92);
     expect(end?.x).toBeCloseTo((squareX(4) + squareX(3)) / 2);
     expect(end?.z).toBeCloseTo(laneZ(0, view.lanes));
-    expect(spellBoltAt(fireball, view.lanes, 0.95)).toBeNull();
+    expect(spellBoltAt(fireball, view, 0.95)).toBeNull();
   });
 
   it("flies to the target Hero of a Hero target", () => {
-    const end = spellBoltAt(cast("ranger.longShot"), view.lanes, 0.92);
+    const end = spellBoltAt(cast("ranger.longShot"), view, 0.92);
     expect(end?.x).toBeCloseTo(heroX("player"));
     expect(end?.z).toBeCloseTo(0);
     expect(end?.color).toBe(DAMAGE_COLORS.physical);
   });
 
   it("does not fly for a cast with no target, or outside the reveal", () => {
-    expect(spellBoltAt(cast("warrior.warDrums"), view.lanes, 0.7)).toBeNull();
-    expect(spellBoltAt(null, view.lanes, 0.7)).toBeNull();
+    expect(spellBoltAt(cast("warrior.warDrums"), view, 0.7)).toBeNull();
+    expect(spellBoltAt(null, view, 0.7)).toBeNull();
   });
 });
 
 describe("spellBoltParticles", () => {
   it("draws a trail and a glow head at the bolt, in the color of the effect", () => {
     const fireball = cast("mage.fireball");
-    const head = spellBoltAt(fireball, view.lanes, 0.75);
-    const [trail, glow] = spellBoltParticles(fireball, view.lanes, 0.75);
+    const head = spellBoltAt(fireball, view, 0.75);
+    const [trail, glow] = spellBoltParticles(fireball, view, 0.75);
     expect(glow).toMatchObject({
       slot: "glow",
       x: head?.x,
@@ -977,8 +979,8 @@ describe("spellBoltParticles", () => {
 
   it("is hidden with reduced motion, and before and after the flight", () => {
     const fireball = cast("mage.fireball");
-    expect(spellBoltParticles(fireball, view.lanes, 0.75, true)).toEqual([]);
-    expect(spellBoltParticles(fireball, view.lanes, 0.3)).toEqual([]);
-    expect(spellBoltParticles(fireball, view.lanes, 0.95)).toEqual([]);
+    expect(spellBoltParticles(fireball, view, 0.75, true)).toEqual([]);
+    expect(spellBoltParticles(fireball, view, 0.3)).toEqual([]);
+    expect(spellBoltParticles(fireball, view, 0.95)).toEqual([]);
   });
 });

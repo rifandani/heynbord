@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { emptyBattle, eventsOfType, placeUnit } from "../testing/fixtures";
+import {
+  emptyBattle,
+  eventsOfType,
+  placeUnit,
+  heroOf,
+} from "../testing/fixtures";
 import type { StepContext } from "./context";
 import { damageHero, damageUnit } from "./damage";
 import type { Hit } from "./damage";
@@ -92,8 +97,8 @@ describe("True Damage (GDD 4.7)", () => {
   it("has no Crit on a Hero", () => {
     const state = emptyBattle();
     const ctx = contextOf(state);
-    damageHero(ctx, "enemy", trueHit());
-    expect(state.sides.enemy.hero.hp).toBe(26);
+    damageHero(ctx, { side: "enemy", hero: 0 }, trueHit());
+    expect(heroOf(state, "enemy").hp).toBe(26);
     expect(eventsOfType(ctx.events, "DamageDealt")[0]).toMatchObject({
       crit: false,
       trueDamage: true,

@@ -2,6 +2,7 @@ import { useAtomValue } from "@effect/atom-react";
 import {
   CARDS,
   coinDenominations,
+  FORGE_STONE_TIERS,
   GEAR_SLOTS,
   MAX_GEAR_LEVEL,
   PLAYER_LEVEL_XP,
@@ -41,6 +42,7 @@ import {
   winNext,
 } from "@/features/dev-panel/dev-overrides";
 import { useDevOverrides } from "@/features/dev-panel/use-dev-overrides";
+import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { playerLevel } from "@/features/profile/profile";
 import { profileAtom } from "@/features/profile/profile.atoms";
 import type { BalanceKind } from "@/features/town/town";
@@ -141,6 +143,46 @@ const BalancesBlock = () => {
         <Label>Sweep Tickets</Label>
         <NumberInput />
       </NumberField>
+    </section>
+  );
+};
+
+const FORGE_STONE_NAMES = {
+  common: "Common",
+  uncommon: "Uncommon",
+  rare: "Rare",
+  epic: "Epic",
+  legendary: "Legendary",
+};
+
+/** The count of each Forge Stone tier that the Gear upgrades use. */
+const ForgeStonesBlock = () => {
+  const { setForgeStones } = useDevOverrides();
+  const { forgeStones } = useAtomValue(profileAtom);
+  return (
+    <section
+      aria-labelledby="dev-forge-stones"
+      className="grid content-start gap-3"
+    >
+      <Heading id="dev-forge-stones">Forge Stones</Heading>
+      <div className="grid grid-cols-2 gap-3">
+        {FORGE_STONE_TIERS.map((tier) => (
+          <NumberField
+            key={tier}
+            value={forgeStones[tier]}
+            minValue={0}
+            step={1}
+            formatOptions={{ maximumFractionDigits: 0 }}
+            onChange={(value) => setForgeStones(tier, value)}
+          >
+            <Label className="inline-flex items-center gap-1.5">
+              <ForgeStoneIcon tier={tier} className="size-4" />
+              {FORGE_STONE_NAMES[tier]}
+            </Label>
+            <NumberInput />
+          </NumberField>
+        ))}
+      </div>
     </section>
   );
 };
@@ -410,8 +452,9 @@ const CampaignBlock = () => {
 
 /**
  * The Game Dev Panel: a TanStack Devtools tab that unlocks all cards, sets the
- * Player level, the Gear, the balances and the Sweep Tickets, and wins Campaign Stages one by
- * one. Its values show over the Profile and are not saved into it.
+ * Player level, the Gear, the balances, the Sweep Tickets and the Forge
+ * Stones, and wins Campaign Stages one by one. Its values show over the
+ * Profile and are not saved into it.
  * Development only.
  */
 export const GameDevPanel = ({
@@ -436,6 +479,7 @@ export const GameDevPanel = ({
           <CollectionBlock />
           <PlayerBlock />
           <BalancesBlock />
+          <ForgeStonesBlock />
         </div>
         <CampaignBlock />
         <footer className="border-border flex flex-wrap items-center gap-3 border-t pt-3 lg:col-span-full">

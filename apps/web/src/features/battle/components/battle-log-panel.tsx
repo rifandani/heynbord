@@ -8,6 +8,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react-aria-components";
 import { Button, ToggleButton } from "react-aria-components";
 
+import { enemyNameRef } from "@/features/battle/battle-content";
 import type {
   BattleLogBook,
   LogEntry,
@@ -28,6 +29,7 @@ import {
   logRoster,
   logUnitName,
 } from "@/features/battle/battle-log-text";
+import type { BattleOptions } from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
 import {
   CardDetails,
@@ -75,14 +77,15 @@ const useEntryTexts = (book: BattleLogBook): readonly LogEntryText[] =>
     return book.entries.map((entry) => entryText(book, entry, roster));
   }, [book]);
 
-/** The name of a Hero: "Your Hero", or the enemy of the Stage. */
-const useHeroName = (battle: Battle) => {
-  const { tr } = useGameText();
-  const stageId = battle.liveSession?.options.stageId ?? "";
-  return (side: Side) =>
-    side === "player"
+/** The name of a Hero: "Your Hero", the enemy of the Stage, or a Boss of the Dungeon. */
+type HeroName = (side: Side, hero: number) => string;
+
+const useHeroName = (options: BattleOptions | undefined): HeroName => {
+  const { tr, text } = useGameText();
+  return (side, hero) =>
+    side === "player" || !options
       ? tr("battleLog.yourHero")
-      : tr(`stages.${stageId}.enemy`);
+      : text(enemyNameRef(options, hero));
 };
 
 const LINK =
@@ -99,7 +102,7 @@ const ArgNode = ({
 }: {
   readonly arg: LogArg;
   readonly links: LinkActions | null;
-  readonly heroName: (side: Side) => string;
+  readonly heroName: HeroName;
 }) => {
   const { text, tr } = useGameText();
   if (Predicate.isNumber(arg)) {
@@ -110,7 +113,9 @@ const ArgNode = ({
       return <>{text(arg.ref)}</>;
     }
     case "Hero": {
-      return <span className="font-semibold">{heroName(arg.side)}</span>;
+      return (
+        <span className="font-semibold">{heroName(arg.side, arg.hero)}</span>
+      );
     }
     case "Unit": {
       const name = text(logUnitName(arg.unit));
@@ -252,7 +257,7 @@ const RichLine = ({
 }: {
   readonly line: LogLine;
   readonly links: LinkActions | null;
-  readonly heroName: (side: Side) => string;
+  readonly heroName: HeroName;
 }) => {
   const { tr } = useGameText();
   const nodes: ReactNode[] = [];
@@ -400,7 +405,7 @@ const EntryRow = ({
   readonly onSelect: () => void;
   readonly onStep: (step: 1 | -1) => void;
   readonly links: LinkActions;
-  readonly heroName: (side: Side) => string;
+  readonly heroName: HeroName;
 }) => {
   const side = entrySide(book, entry);
   // React Aria stops each key at the button: only ↑/↓ stay here, and the
@@ -485,10 +490,10 @@ const SideChip = ({ side }: { readonly side: Side }) => {
 /** "Turn 4 · Enemy", and the HP of each Hero at the end of that Turn. */
 const TurnHeader = ({
   turn,
-  enemyName,
+  heroName,
 }: {
   readonly turn: LogTurn;
-  readonly enemyName: string;
+  readonly heroName: HeroName;
 }) => {
   const { tr } = useGameText();
   return (
@@ -507,11 +512,12 @@ const TurnHeader = ({
         <SideChip side={turn.side} />
       </h3>
       <p className="mt-0.5 text-xs leading-tight text-[#5b4632] tabular-nums">
-        {tr("battleLog.turnHp", {
-          playerHp: turn.hp.player,
-          enemy: enemyName,
-          enemyHp: turn.hp.enemy,
-        })}
+        {[
+          ...turn.hp.player.map((hp) => tr("battleLog.yourHp", { hp })),
+          ...turn.hp.enemy.map((hp, hero) =>
+            tr("battleLog.heroHp", { name: heroName("enemy", hero), hp })
+          ),
+        ].join(" · ")}
       </p>
     </div>
   );
@@ -714,7 +720,7 @@ const EntryList = ({
 }) => {
   const { tr } = useGameText();
   const texts = useEntryTexts(log.book);
-  const heroName = useHeroName(battle);
+  const heroName = useHeroName(battle.liveSession?.options);
   const list = useRef<HTMLDivElement>(null);
   const { book, selected } = log;
 
@@ -761,7 +767,7 @@ const EntryList = ({
               turn.side === "player" ? tr("battle.player") : tr("battle.enemy"),
           })}
         >
-          <TurnHeader turn={turn} enemyName={heroName("enemy")} />
+          <TurnHeader turn={turn} heroName={heroName} />
           <ol className="space-y-0.5 px-1">
             {book.entries.slice(turn.first, turn.end).map((entry) => {
               const text = texts[entry.index];
@@ -788,14 +794,9 @@ const EntryList = ({
 
 /** The summary of the selected Log Entry, for screen readers. */
 const SelectedAnnouncement = ({ log }: { readonly log: BattleLogState }) => {
-  const { tr } = useGameText();
   const texts = useEntryTexts(log.book);
-  const { stageId } = log.shown.options;
   const text = texts[log.selected];
-  const heroName = (side: Side) =>
-    side === "player"
-      ? tr("battleLog.yourHero")
-      : tr(`stages.${stageId}.enemy`);
+  const heroName = useHeroName(log.shown.options);
   return (
     <p className="sr-only" aria-live="polite" data-testid="log-announcement">
       {text ? (

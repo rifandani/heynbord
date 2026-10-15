@@ -2,6 +2,7 @@ import type { BattleEvent } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 
 import type { BattleView } from "@/features/battle/battle-view";
+import { hasManyHeroes } from "@/features/battle/battle-view";
 import {
   FX_PRESETS,
   hitPreset,
@@ -54,6 +55,16 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   // (#75) shows at the same time as its result, so the Battle does not wait.
   KeywordActivated: 0,
   UnitDied: 460,
+  // The Units of a Defeated Hero (ADR-0009) leave the Board at once, while it falls.
+  UnitRemoved: 0,
+  // A Defeated Boss falls back and fades (GDD 11.2). A Stage has 1 Hero for
+  // each Side: there, the Battle ends at once, as before (`heroDefeatedTime`).
+  HeroDefeated: 900,
+  // The Front Bracket grows over the new Lanes, and the Boss walks to their middle.
+  FrontMoved: 700,
+  // The threshold notch breaks, the Boss flashes and the rule label shows.
+  // Then the events of its effect play.
+  BossRuleActivated: 900,
   // The Unit falls as in a death, then gets up again.
   UnitReborn: 640,
   TurnEnded: 80,
@@ -128,7 +139,9 @@ export const eventDuration = (
   view: BattleView
 ): number => {
   let base = BASE_DURATION[event._tag];
-  if (event._tag === "UnitMoved") {
+  if (event._tag === "HeroDefeated" && !hasManyHeroes(view, event.hero.side)) {
+    base = 0;
+  } else if (event._tag === "UnitMoved") {
     base = Math.abs(event.to - event.from) * MOVE_PER_SQUARE;
   } else if (event._tag === "UnitPushed") {
     base = Math.abs(event.to - event.from) * PUSH_PER_SQUARE;

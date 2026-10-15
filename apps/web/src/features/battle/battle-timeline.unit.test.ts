@@ -32,13 +32,13 @@ const archerAt = (position: number): BattleView => ({
 const shot = {
   _tag: "UnitAttacked",
   unitId: archer?.id ?? 0,
-  target: { _tag: "Hero", side: "player" },
+  target: { _tag: "Hero", side: "player", hero: 0 },
   ranged: true,
 } as const;
 
 const hit = {
   _tag: "DamageDealt",
-  target: { _tag: "Hero", side: "enemy" },
+  target: { _tag: "Hero", side: "enemy", hero: 0 },
   amount: 2,
   damageType: "physical",
   source: "attack",

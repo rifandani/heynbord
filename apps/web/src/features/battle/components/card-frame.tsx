@@ -201,13 +201,13 @@ const BottomPlates = ({ face }: { readonly face: FrameFace }): ReactNode =>
     <SkillPlate card={face.plates.card} />
   );
 
-/** The art window. A Skill Card has an arched top, so its shape differs from a Creature Card. */
-const artWindowStyle = (face: FrameFace, rank: RankId): CSSProperties => ({
+/**
+ * The art window. It has the same shape on all cards: the bottom plates show
+ * the kind of card.
+ */
+const artWindowStyle = (rank: RankId): CSSProperties => ({
   border: `0.14em solid ${RANK_COLORS[rank]}`,
-  borderRadius:
-    face.plates.kind === "skill"
-      ? "50% 50% 0.55em 0.55em / 4.6em 4.6em 0.55em 0.55em"
-      : "0.55em",
+  borderRadius: "0.55em",
 });
 
 /** The art that loaded in this page session. A new frame shows it at once, with no placeholder. */
@@ -395,7 +395,7 @@ const FrameShell = ({
   >
     <span
       className="relative block size-full overflow-hidden bg-[#2a1d12]"
-      style={artWindowStyle(face, rank)}
+      style={artWindowStyle(rank)}
     >
       <CardArt key={face.id} face={face} />
     </span>

@@ -1,5 +1,7 @@
 import { getStage } from "@workspace/rules";
 
+import type { BattleOptions } from "@/features/battle/battle-session";
+
 /**
  * The Battle Painting of each Region (web ADR-0007), or `null` while its art
  * does not exist. To add one, put the WebP file in `public/battle/` and add
@@ -27,6 +29,11 @@ export const battlePaintingFor = (
   paintings: BattlePaintings = BATTLE_PAINTINGS
 ): string | null => paintings[region] ?? paintings[FALLBACK_REGION] ?? null;
 
-/** The painting for the Region of a Stage. */
-export const stagePainting = (stageId: string): string | null =>
-  battlePaintingFor(getStage(stageId).region);
+/**
+ * The painting of a Battle: the Region of its Stage. A Dungeon is outside the
+ * Campaign and has no painting of its own yet, so it uses the fallback.
+ */
+export const battlePainting = (options: BattleOptions): string | null =>
+  battlePaintingFor(
+    options.dungeon ? FALLBACK_REGION : getStage(options.stageId).region
+  );

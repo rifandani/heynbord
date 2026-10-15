@@ -99,8 +99,10 @@ export const battleUnitSources = (
 ): readonly UnitSourceView[] => {
   const cards = new Set<string>();
   for (const side of Object.values(state.sides)) {
-    for (const card of [...side.hand, ...side.deck, ...side.graveyard]) {
-      cards.add(card.cardId);
+    for (const hero of side.heroes) {
+      for (const card of [...hero.hand, ...hero.deck, ...hero.graveyard]) {
+        cards.add(card.cardId);
+      }
     }
   }
   const tokens = new Set<TokenId>();

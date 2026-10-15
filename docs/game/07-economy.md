@@ -100,7 +100,7 @@ A loss gives 25% of the XP of a win, and a repeat win gives the normal XP (secti
 
 The Heynspire and Dungeon rows use the first-win XP of each Floor (section 2.3) and the XP of a Dungeon 2 win (section 2.4).
 
-On the First-try Path, the Region 1 Stages get the Player levels 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, and the Stages of Region 2 get 6, 6, 7, 7, 7, 8, 8, 8, 9, 9. The Stages of Region 3 will get 10, 10, 11, 11, 12, 12, 13, 13, 13, 14, the Stages of Region 4 will get 15, 15, 16, 16, 17, 17, 17, 18, 18, 19, and the Stages of Region 5 will get 20, 20, 20, 21, 21, 21, 21, 22, 22, 22.
+On the First-try Path, the Region 1 Stages get the Player levels 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, and the Stages of Region 2 get 6, 6, 7, 7, 7, 8, 8, 8, 9, 9. The Stages of Region 3 get 10, 10, 11, 11, 12, 12, 13, 13, 13, 14, the Stages of Region 4 get 15, 15, 16, 16, 17, 17, 17, 18, 18, 19, and the Stages of Region 5 get 20, 20, 20, 21, 21, 21, 21, 22, 22, 22.
 
 ## 2. Sources (faucets)
 
@@ -388,7 +388,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 `bun run sim economy [seeds]` simulates Players from a new Profile to Player level 30. It does not play Battles. The logic is in `packages/rules/src/simulation/economy.ts`. `bun run sim` with no mode does not run it.
 
-**Content.** The sim uses the reward and cost tables of sections 2 and 3 from the rules package. The sim plays the Stages of Regions 1 to 5 (`CAMPAIGN_REGIONS` is 5). Regions 1 to 3 have their Stages. Regions 4 and 5 do not exist yet, so the sim uses **planned Stages** for them: 10 Stages for each Region, and the last one is the Boss Stage. The Coin and XP of a Stage come only from its Region and its Boss flag, so a planned Stage gives the correct rewards.
+**Content.** The sim uses the reward and cost tables of sections 2 and 3 from the rules package. The sim plays the Stages of Regions 1 to 5 (`CAMPAIGN_REGIONS` is 5). All 5 Regions have their Stages. When a Stage does not exist, the sim uses a **planned Stage** in its place, with the last Stage of each Region as the Boss Stage. The Coin and XP of a Stage come only from its Region and its Boss flag, so a planned Stage gives the correct rewards.
 
 **Win chance.** Each Battle is a win or a loss from a win chance:
 
@@ -426,7 +426,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 - Achievements give no Coin or Essence in the sim, because the list of Achievements does not exist. The results are a floor.
 - A repeat win gives no card. The Stage card pool exists in the rules (`stageCardPool`), but the sim does not use it yet.
 - The Player does not repeat Stages or Sweep, so the repeat-win and the Sweep Forge Stones are not in the sim. The Player never plays Dungeon 3, because it gives no XP, so its Epic and Legendary Forge Stones are not in the sim. The Forge Stone results are a floor.
-- The planned Stages and the Dungeons give no first-win card, because their cards do not exist yet.
+- The Dungeons give no first-win card in the sim. Only Dungeon 1 has one now (`DUNGEONS`), and the sim does not use it yet.
 - The 30-Star chests do not open (see **Stars**). The Heynstone ledger counts them.
 
 **Time.** One Battle is **8 minutes**, with the time in menus. The report shows Battles and hours. If the hour targets of section 4 do not agree with each other, change a target, not this value.

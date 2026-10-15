@@ -7,6 +7,7 @@ import { unitClipFor } from "@/features/battle/scene/unit-models";
 const unit: UnitView = {
   id: 7,
   owner: "player",
+  hero: 0,
   source: { _tag: "Card", cardId: "human.militiaRecruit" },
   rank: "common",
   lane: 0,
@@ -71,7 +72,7 @@ describe("unitClipFor", () => {
     const attack = BattleEvent.UnitAttacked({
       unitId: unit.id,
       ranged: false,
-      target: { _tag: "Hero", side: "enemy" },
+      target: { _tag: "Hero", side: "enemy", hero: 0 },
     });
     expect(unitClipFor(unit, attack, 0.4, 9, 2)).toEqual({
       name: "attack",
@@ -117,7 +118,7 @@ describe("unitClipFor", () => {
       }),
       hit(99),
       BattleEvent.DamageDealt({
-        target: { _tag: "Hero", side: "enemy" },
+        target: { _tag: "Hero", side: "enemy", hero: 0 },
         amount: 1,
         damageType: "fire",
         source: "attack",

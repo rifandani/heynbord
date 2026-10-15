@@ -588,7 +588,8 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - Each Dungeon unlocks at a player level (see 7.1). It does not need Campaign progress.
 - The enemy Side has 1 Hero for each Boss. Each Boss has its own Front, Deck, Hand, Class and Gear (see 4.1 and 4.10).
 - Each Boss needs at least 1 Lane. Dungeons always use 4 Lanes, so a Dungeon can have 1 to 4 Bosses. v1 Dungeons have 2 or 3 Bosses.
-- Each Dungeon defines: the Bosses, the Front of each Boss, the Deck, Hero HP, Class and Gear of each Boss, Closed Lanes, Units at the start, special rules, and rewards.
+- Each Dungeon defines: the Bosses, the Front of each Boss, the Deck, Hero HP, Class and Gear of each Boss, Closed Lanes, Units at the start, the Boss Rules of each Boss, and rewards.
+- A **Boss Rule** activates automatically, one time, when the HP of its Boss goes to or below a set percentage. Its effect is Countdown −X on the Cards with the highest Countdown in that Boss's Hand, a Summon into that Boss's Front, or a Draw. The Dungeons screen shows the Boss Rules, and the HP plate has a marker at each threshold ([ADR-0040](../adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)).
 - The player can play a Dungeon again after a win.
 - **First win reward** and **repeat win reward:** the same structure as Stages (see 8.1). The [Economy](./07-economy.md) document gives the values.
 - A Dungeon win gives no Stars.
@@ -603,6 +604,13 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - Dungeon 2 teaches Fronts of different sizes.
 - Dungeon 3 is the final challenge. It uses 3 of the 5 Campaign Bosses again, so it needs no new Boss characters.
 - The names of the Dungeons and the 4 new Bosses are drafts.
+
+**Dungeon 1: The Rootdeep Mine** (draft names). The Goblin diggers of the Red Mesas dug into the roots of the Glowcap Hollows. The first win gives Grand Gearjammer (Epic). [14 — Campaign Stages, section 7](./14-campaign-stages.md#7-dungeons) gives the Decks and the simulation results.
+
+| Boss | Front | Class | Hero HP | Boss Rule |
+| --- | --- | --- | --- | --- |
+| Foreman Gritjaw, the Orc foreman of the mine, with his Goblin crew | Lanes 1 and 2 | Warrior | 24 | At 50% HP: Summon a Mesa Pit Fighter (Rare) in Lane 2, Column 11. |
+| Rootwarden Sylla, the Elf warden of the roots, with the Goblins that she hired | Lanes 3 and 4 | Ranger | 24 | At 50% HP: Countdown −2 on the 2 cards with the highest Countdown in her Hand. |
 
 ## 9. Enemy AI
 
@@ -642,7 +650,10 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
   - A Paralyzed enemy Unit does not count in the Hero damage estimate, the same as a Frozen Unit. A Lightning hit adds a small Status score, also at 0 damage.
 - Each damage estimate of the AI, for example its kill estimate, includes the Ward and the Exposed value of the target. A hit on a Unit with Steadfast never counts as a kill, because Steadfast holds the Unit at 1 HP.
 - Difficulty comes from the enemy Deck, card Ranks and Hero HP. The AI logic is the same in all Stages.
-- When a Side has more than one Hero, the AI plays the Ready cards of each Hero in the same Play Phase. It scores the plays of all the Heroes together.
+- When a Side has more than one Hero, one AI controls all the Heroes of that Side that are not Defeated. It plays the Ready cards of each Hero in the same Play Phase. It scores the plays of all the Heroes together, and each play names its Hero. If two plays have the same score, the Hero with the lower index plays. A Defeated Hero does not play.
+  - The Hero damage estimate and the lethal check use the Hero whose Front holds each Lane. Thus a play that saves one Hero from lethal damage gets the bonus, also when the card comes from another Hero of the Side.
+  - Sabotage uses the Hand of the enemy Hero whose Front holds the Lane of the summon. Skill Card damage to an enemy Hero uses the HP of the Hero that it hits, and damage that makes that Hero Defeated always wins.
+  - The AI does not see the Hand of any Hero of the other Side. It does not plan around Boss Rule HP thresholds ([ADR-0040](../adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)).
 - Auto-play uses the same AI for the player's side.
 
 ## 10. Achievements, Cosmetics and the Bazaar
@@ -673,7 +684,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
 | Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons and a locked ribbon that buys the next Deck slot, all cards with filters (see 6), the Countdown curve, validation, Auto-fill |
 | Workshop | The Discovered cards with the filters of the Deck builder, and a Rank panel for the selected card: Combine, Extract, Craft and the path to Legendary (see 7.4) |
-| Hero | The Class of the Active Deck and its Deck, with "Change Deck" to the Deck builder ([ADR-0033](../adr/0033-the-class-stays-on-the-deck-slot.md)); the Hero HP and its parts; the 4 Gear items with their level, their stat now and at the next level, the Gear upgrade with its Coin and Forge Stone cost, and the 5 Forge Stone counts (see 7.3). The portrait and the Gear looks are Cosmetics (see 10). |
+| Hero | The Hero HP and its parts; the 4 Gear items with their level, their stat now and at the next level, the Gear upgrade with its Coin and Forge Stone cost, and the 5 Forge Stone counts (see 7.3). The portrait and the Gear looks are Cosmetics (see 10). |
 | Packs | The Peddler, Merchant and Royal Packs, each with a Race Pack and a Class Pack version. The Drop Rates, the Pack Guarantees, Open ×10 and the open animation (Economy 3.1) |
 | Achievements | List, progress, rewards |
 | Bazaar | Cosmetics and Conveniences, prices in Heynstones, the Heynstone balance |
@@ -703,6 +714,10 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - The Top Bar has a Handbook button next to the Key Guide button, and the H key does the same. In the Battle, the Handbook is one page at one side of the Board, so that most of the Board stays in view. The Battle does not pause. The Key Guide lists H.
 - In the keyboard Inspect mode (the I key), Tab goes into the Card Details of the Unit. There, the names of the Keywords, Statuses and Damage Types are links to their Handbook Entries. Card Details that show only on hover or long press have no links.
 - When the enemy Side has more than one Hero, each enemy Hero shows at the end of its Front, with its own HP and Hand. A Defeated Hero shows as Defeated, and the Board shows its Front go to the next Hero.
+  - The Top Bar shows one plate for each Boss, in Lane order. Each plate has a Lane strip with one cell for each Lane, full for the Lanes of its Front, the HP bar with a notch at each Boss Rule threshold, and the Countdowns of the Hand of that Boss. A Defeated Boss keeps its plate, with a Defeated seal.
+  - On the Board, each Boss stands at the middle of its Front, on a Front Bracket on the ground across its Lanes ([web ADR-0011](../../apps/web/docs/adr/0011-a-boss-front-is-a-code-drawn-bracket-on-the-ground.md)).
+  - A Skill Card that targets an enemy Hero targets one Boss that is not Defeated: its marker goes across the Lanes of that Boss's Front, and a press on its plate also plays the card.
+  - A Defeat, a Front move and a Boss Rule each have a short animation, and Skip jumps over it. The Battle Log lists them.
 - **Battle Log** (4.12): The Top Bar has a Battle Log button, and the L key does the same. The Key Guide lists L. It opens at any time in a Solo Battle, also in the enemy Turn, and from the result screen after the Battle ends. While it is open, the Live playback pauses. "Back to Live" (Esc) continues from the same point.
   - A panel at the right side lists the **Log Entries** under one header for each Turn of a Side. The header shows the Turn number, the Side and the HP of each Hero at the end of that Turn. On a narrow screen, the panel is a sheet over the bottom of the Board, with a "Show Board" toggle.
   - A Log Entry is one card play, one Unit Action or one Phase effect, with all its results. Its text names the Hero, the card, the Units, the Squares, the damage (Damage Type, Crit, Block, Ward) and each Keyword and Status that occurred. A card name opens the Card Details. A Keyword or Status name opens its Handbook Entry.
@@ -812,7 +827,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - The swap rule (±5 points, 1000 seeds) stays the true check. If the content test and the sim do not agree, the sim wins. When a card fails the sim: first check the Hold Rule, and fix the AI if it wastes the card. Then change the rate of an effect kind if many cards of that kind fail in the same direction. Change the values of one card only if it is the only one.
 4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).
 5. Check each Archetype's win rate in each **Matchup**. The target is 45% to 55% against the other Archetypes.
-6. Check Stage difficulty with `bun run sim stage`. The results are in [14 — Campaign Stages](./14-campaign-stages.md). The target win rate for a new player Deck on the first try is 60% to 80% for normal Stages and 30% to 50% for Boss Stages and Dungeons. The first Stages of Region 1 make a ramp: Stage 1-1 (the Tutorial) ≥ 95%, Stage 1-2 ≥ 85%, Stage 1-3 ≥ 75%. Each Stage must hit its target with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). For a Dungeon, use a Deck that is typical at its unlock level.
+6. Check Stage difficulty with `bun run sim stage`, and Dungeon difficulty with `bun run sim dungeon`. The results are in [14 — Campaign Stages](./14-campaign-stages.md). The target win rate for a new player Deck on the first try is 60% to 80% for normal Stages and 30% to 50% for Boss Stages and Dungeons. The first Stages of Region 1 make a ramp: Stage 1-1 (the Tutorial) ≥ 95%, Stage 1-2 ≥ 85%, Stage 1-3 ≥ 75%. Each Stage must hit its target with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). For a Dungeon, use a Deck that is typical at its unlock level.
 
 ## 14. Items for later versions
 

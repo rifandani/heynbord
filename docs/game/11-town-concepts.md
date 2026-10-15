@@ -570,7 +570,7 @@ Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/barracks/`
 
 ## 12. Gear icons
 
-The Hero screen shows one painted icon for each of the 4 Gear items (GDD 7.3): the Weapon, the Armor, the Trinket and the Banner. The icons show the item, not its level: the level groove of the screen shows the level. The names and the icons do not depend on the Class of the Hero. Until an icon exists, the screen shows the Gear glyph on a round dark badge in the same box (`UNPAINTED_HERO_ART` in `apps/web/src/features/hero/hero-art.ts`).
+The Hero screen shows one painted icon for each of the 4 Gear items (GDD 7.3): the Weapon, the Armor, the Trinket and the Banner. The icons show the item, not its level: the level number of the screen shows the level. The names and the icons do not depend on the Class of the Hero. Until an icon exists, the screen shows the Gear glyph on a round dark badge in the same box (`UNPAINTED_HERO_ART` in `apps/web/src/features/hero/hero-art.ts`).
 
 ### 12.1 Rules for the icons
 

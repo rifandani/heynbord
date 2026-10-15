@@ -15,7 +15,8 @@ import type { BattleEvent, BattleState, Side } from "./types";
 
 const endTurn = Command.EndTurn();
 
-const play = (target: Target) => Command.PlayCard({ handIndex: 0, target });
+const play = (target: Target) =>
+  Command.PlayCard({ hero: 0, handIndex: 0, target });
 
 const square = (lane: number, position: number) =>
   Target.Square({ lane, position });

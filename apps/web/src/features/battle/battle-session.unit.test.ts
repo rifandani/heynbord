@@ -18,11 +18,11 @@ import {
   tick,
 } from "@/features/battle/battle-session";
 import { eventDuration } from "@/features/battle/battle-timeline";
-import { viewFromState } from "@/features/battle/battle-view";
+import { viewFromState, heroOf } from "@/features/battle/battle-view";
 import { NEW_PLAYER } from "@/features/profile/profile";
 
 const readyIndex = (session: ReturnType<typeof startSession>) =>
-  session.view.sides.player.hand.findIndex((card) => card.countdown === 0);
+  heroOf(session.view, "player").hand.findIndex((card) => card.countdown === 0);
 
 /** The first seed whose opening Hand has a Ready card. */
 const SEED = Array.from({ length: 50 }, (_, index) => index + 1).find(
@@ -73,7 +73,7 @@ describe("playCard and endTurn", () => {
 
   it("returns a RuleViolation for an illegal play", () => {
     const session = start();
-    const waiting = session.view.sides.player.hand.findIndex(
+    const waiting = heroOf(session.view, "player").hand.findIndex(
       (card) => card.countdown > 0
     );
     expect(

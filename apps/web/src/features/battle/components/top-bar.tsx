@@ -2,10 +2,13 @@ import { useAtom, useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
 import { ToggleButton } from "react-aria-components";
 
+import { enemyNameRef } from "@/features/battle/battle-content";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
 import type { HandCardView } from "@/features/battle/battle-view";
+import { hasManyHeroes, heroOf } from "@/features/battle/battle-view";
 import { shownSessionAtom, soundOnAtom } from "@/features/battle/battle.atoms";
+import { BossPlates } from "@/features/battle/components/boss-plates";
 import {
   GameButton,
   gameButtonStyles,
@@ -172,9 +175,12 @@ const EnemyHand = ({ hand }: { readonly hand: readonly HandCardView[] }) => {
   );
 };
 
-/** Heroes, the Turn number and the Battle controls (GDD 11.2, BAT-11). */
+/**
+ * Heroes, the Turn number and the Battle controls (GDD 11.2, BAT-11). In a
+ * Dungeon, the enemy side shows one plate for each Boss.
+ */
 export const TopBar = ({ battle }: { readonly battle: Battle }) => {
-  const { tr } = useGameText();
+  const { tr, text } = useGameText();
   // The Heroes, the Turn and the enemy Hand of the selected moment in the Battle Log.
   const session = useAtomValue(shownSessionAtom);
   const live = battle.liveSession;
@@ -192,7 +198,7 @@ export const TopBar = ({ battle }: { readonly battle: Battle }) => {
         <LeaveBattle battle={battle} finished={live.view.result !== null} />
         <HeroPanel
           side="player"
-          hero={view.sides.player.hero}
+          hero={heroOf(view, "player")}
           name={tr("battle.player")}
           active={yourTurn}
         />
@@ -201,15 +207,21 @@ export const TopBar = ({ battle }: { readonly battle: Battle }) => {
         <TurnBadge turnNumber={view.turnNumber} yourTurn={yourTurn} />
         <BattleControls battle={battle} session={live} />
       </div>
-      <div className="pointer-events-auto flex min-w-0 flex-col items-end gap-1">
-        <HeroPanel
-          side="enemy"
-          hero={view.sides.enemy.hero}
-          name={tr(`stages.${session.options.stageId}.enemy`)}
-          active={!yourTurn}
-        />
-        <EnemyHand hand={view.sides.enemy.hand} />
-      </div>
+      {hasManyHeroes(view, "enemy") ? (
+        <div className="pointer-events-auto min-w-0">
+          <BossPlates battle={battle} />
+        </div>
+      ) : (
+        <div className="pointer-events-auto flex min-w-0 flex-col items-end gap-1">
+          <HeroPanel
+            side="enemy"
+            hero={heroOf(view, "enemy")}
+            name={text(enemyNameRef(session.options))}
+            active={!yourTurn}
+          />
+          <EnemyHand hand={heroOf(view, "enemy").hand} />
+        </div>
+      )}
     </header>
   );
 };

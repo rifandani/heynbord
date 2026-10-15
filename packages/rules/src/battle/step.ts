@@ -23,15 +23,19 @@ const check = (
   if (command._tag === "EndTurn") {
     return undefined;
   }
-  const { handIndex, target } = command;
-  const card = state.sides[state.activeSide].hand[handIndex];
+  const { hero, handIndex, target } = command;
+  const caster = state.sides[state.activeSide].heroes[hero];
+  if (!caster || caster.hp <= 0) {
+    return RuleViolation.InvalidHero({ hero });
+  }
+  const card = caster.hand[handIndex];
   if (!card) {
     return RuleViolation.InvalidHandIndex({ handIndex });
   }
   if (card.countdown > 0) {
     return RuleViolation.CardNotReady({ handIndex });
   }
-  const legal = legalTargets(state, handIndex).some((candidate) =>
+  const legal = legalTargets(state, hero, handIndex).some((candidate) =>
     sameTarget(candidate, target)
   );
   return legal ? undefined : RuleViolation.IllegalTarget({ handIndex, target });
@@ -55,7 +59,7 @@ export const step = (
   const random = { state: next.random };
   const ctx: StepContext = { state: next, events: [], random };
   if (command._tag === "PlayCard") {
-    playCard(ctx, command.handIndex, command.target);
+    playCard(ctx, command.hero, command.handIndex, command.target);
   } else {
     endTurn(ctx);
   }

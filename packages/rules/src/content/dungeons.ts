@@ -1,10 +1,98 @@
 import { rollBasisPoints } from "../random";
 import type { RandomCursor } from "../random";
+import { copies } from "./decks";
 import type { ForgeStoneReward, ForgeStoneTier } from "./forge-stones";
 import { outcomeXp } from "./player-levels";
+import type { DungeonDefinition } from "./schema";
 import { outcomeCoin } from "./stage-coin";
 import type { StageOutcome } from "./stage-coin";
 import { UNLOCK_LEVELS } from "./unlocks";
+
+const NO_GEAR = { weapon: 0, armor: 0, trinket: 0, banner: 0 };
+
+/**
+ * The Dungeons (GDD 8.4). Each Dungeon has 4 Lanes (ADR-0010) and 1 enemy
+ * Hero for each Boss. The names of the Dungeons and the new Bosses are drafts
+ * (PRD open question 1). Dungeons 2 and 3 come later.
+ */
+export const DUNGEONS: readonly DungeonDefinition[] = [
+  // Dungeon 1 (The Rootdeep Mine): the Goblin diggers of the Red Mesas dug
+  // into the roots of the Glowcap Hollows. It teaches the multi-Boss rules in
+  // the simplest form: 2 Bosses with 2 Lanes each.
+  {
+    id: "dungeon-1",
+    number: 1,
+    unlockLevel: UNLOCK_LEVELS.dungeon1,
+    firstWinCard: { cardId: "goblin.grandGearjammer", rank: "epic" },
+    closedLanes: [],
+    bosses: [
+      {
+        // The Orc foreman of the mine. His Goblin crew builds walls of junk
+        // and bone in front of him, and his Grand Gearjammer jams the plans
+        // of the Player.
+        id: "foremanGritjaw",
+        front: [0, 1],
+        heroHp: 24,
+        classId: "warrior",
+        gear: NO_GEAR,
+        deck: [
+          ...copies(1, "goblin.grandGearjammer", "epic"),
+          ...copies(3, "orc.bonestakePalisade", "common"),
+          ...copies(2, "goblin.junkBarricade", "uncommon"),
+          ...copies(2, "goblin.scrapPlateGuard", "common"),
+          ...copies(2, "goblin.fuseRunner", "common"),
+          ...copies(1, "orc.scrapRaider", "common"),
+        ],
+        startUnits: [],
+        // Boss Rule: at half HP, Gritjaw calls his Pit Fighter from the mine.
+        bossRules: [
+          {
+            threshold: 50,
+            effect: {
+              type: "summon",
+              cardId: "orc.mesaPitFighter",
+              rank: "rare",
+              lane: 1,
+              position: 10,
+            },
+          },
+        ],
+      },
+      {
+        // The Elf warden of the roots, with the Goblins that she hired. Many
+        // cheap Units come at the Player in her 2 Lanes.
+        id: "rootwardenSylla",
+        front: [2, 3],
+        heroHp: 24,
+        classId: "ranger",
+        gear: NO_GEAR,
+        deck: [
+          ...copies(2, "elf.fernwingCourier", "common"),
+          ...copies(2, "elf.rootboundGuard", "common"),
+          ...copies(2, "elf.acornTender", "common"),
+          ...copies(2, "goblin.ankleSnatcher", "common"),
+          ...copies(2, "goblin.junkSlinger", "common"),
+          ...copies(2, "goblin.fuseRunner", "common"),
+          ...copies(1, "ranger.quickShot", "common"),
+        ],
+        startUnits: [],
+        // Boss Rule: at half HP, the roots wake, and her 2 slowest cards come
+        // 2 Turns sooner.
+        bossRules: [
+          { threshold: 50, effect: { type: "countdown", amount: 2, cards: 2 } },
+        ],
+      },
+    ],
+  },
+];
+
+export const getDungeon = (dungeonId: string): DungeonDefinition => {
+  const dungeon = DUNGEONS.find((candidate) => candidate.id === dungeonId);
+  if (!dungeon) {
+    throw new Error(`Unknown Dungeon: ${dungeonId}`);
+  }
+  return dungeon;
+};
 
 export interface DungeonRewardDefinition {
   /** The Dungeon number (GDD 8.4). */

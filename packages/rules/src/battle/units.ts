@@ -7,7 +7,9 @@ import type {
   TokenDefinition,
   TokenKeywords,
 } from "../content/schema";
-import type { CardInstance, Side, UnitSource, UnitState } from "./types";
+import type { StepContext } from "./context";
+import type { CardInstance, HeroRef, UnitSource, UnitState } from "./types";
+import { BattleEvent } from "./types";
 
 /** The values of a Unit at its Rank, from a card or from a Token. */
 interface UnitBody {
@@ -19,7 +21,7 @@ interface UnitBody {
 
 const makeUnit = (options: {
   readonly id: number;
-  readonly owner: Side;
+  readonly owner: HeroRef;
   readonly source: UnitSource;
   readonly rank: RankId;
   readonly body: UnitBody;
@@ -31,7 +33,8 @@ const makeUnit = (options: {
   const { keywords } = body;
   return {
     id: options.id,
-    owner: options.owner,
+    owner: options.owner.side,
+    hero: options.owner.hero,
     source: options.source,
     lane: options.lane,
     position: options.position,
@@ -83,10 +86,10 @@ const makeUnit = (options: {
   };
 };
 
-/** Makes a Unit from a Creature Card copy. Attack and HP scale with the Rank (GDD 5.3). */
+/** Makes a Unit of the Hero `owner` from a Creature Card copy. Attack and HP scale with the Rank (GDD 5.3). */
 export const createUnit = (options: {
   readonly id: number;
-  readonly owner: Side;
+  readonly owner: HeroRef;
   readonly card: CardInstance;
   readonly definition: CreatureCardDefinition;
   readonly lane: number;
@@ -112,7 +115,7 @@ export const createUnit = (options: {
  */
 export const createToken = (options: {
   readonly id: number;
-  readonly owner: Side;
+  readonly owner: HeroRef;
   readonly token: TokenDefinition;
   readonly rank: RankId;
   readonly lane: number;
@@ -125,4 +128,33 @@ export const createToken = (options: {
     source: { _tag: "Token", tokenId: token.id, rank },
     body: { ...token, ...token.ranks[rank] },
   });
+};
+
+/**
+ * Puts a Unit on the Board. Only `playCard` applies the effects of a Unit that
+ * comes from its Creature Card, such as Sabotage and Summon: a Start Unit and
+ * the Unit of a Boss Rule do not.
+ */
+export const summon = (
+  ctx: StepContext,
+  owner: HeroRef,
+  card: CardInstance,
+  definition: CreatureCardDefinition,
+  lane: number,
+  position: number
+): UnitState => {
+  const { state } = ctx;
+  const unit = createUnit({
+    id: state.nextId,
+    owner,
+    card,
+    definition,
+    lane,
+    position,
+    turnNumber: state.turnNumber,
+  });
+  state.nextId += 1;
+  state.units.push(unit);
+  ctx.events.push(BattleEvent.UnitSummoned({ unit: { ...unit } }));
+  return unit;
 };

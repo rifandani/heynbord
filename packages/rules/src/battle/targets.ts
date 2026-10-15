@@ -3,6 +3,7 @@ import { absurd } from "effect";
 import { getCard } from "../content/cards";
 import type { SkillCardDefinition } from "../content/schema";
 import {
+  activeHeroes,
   direction,
   isInsideLane,
   isLaneOpen,
@@ -93,10 +94,7 @@ const skillTargets = (
       return unitSquares(state, enemy);
     }
     case "enemyHero": {
-      // In v1 each Side has exactly 1 Hero.
-      return state.sides[enemy].hero.hp > 0
-        ? [Target.Hero({ side: enemy })]
-        : [];
+      return activeHeroes(state, enemy).map((ref) => Target.Hero(ref));
     }
     case "enemyLane": {
       return lanesWithUnits(state, enemy);
@@ -142,7 +140,8 @@ export const isBlockedByUnique = (
 };
 
 /**
- * All legal targets of the card at `handIndex` for the active side. A Creature
+ * All legal targets of the card at `handIndex` in the Hand of the Hero `hero`
+ * of the active side. A Creature
  * Card goes to an empty Square of the Summon Zone (GDD 4.1, ADR-0011), also
  * past an enemy Unit. No card can target a Closed Lane, and a Unique card has
  * no target while it is blocked. An empty list means that the card cannot be
@@ -150,11 +149,19 @@ export const isBlockedByUnique = (
  */
 export const legalTargets = (
   state: BattleState,
+  hero: number,
   handIndex: number
 ): Target[] => {
   const side = state.activeSide;
-  const card = state.sides[side].hand[handIndex];
-  if (state.status !== "ongoing" || !card || card.countdown > 0) {
+  const caster = state.sides[side].heroes[hero];
+  const card = caster?.hand[handIndex];
+  if (
+    state.status !== "ongoing" ||
+    !caster ||
+    caster.hp <= 0 ||
+    !card ||
+    card.countdown > 0
+  ) {
     return [];
   }
   const definition = getCard(card.cardId);
@@ -214,7 +221,7 @@ export const sameTarget = (a: Target, b: Target): boolean => {
     return a.lane === b.lane && a.position === b.position;
   }
   if (a._tag === "Hero" && b._tag === "Hero") {
-    return a.side === b.side;
+    return a.side === b.side && a.hero === b.hero;
   }
   return a._tag === "NoTarget" && b._tag === "NoTarget";
 };

@@ -50,7 +50,7 @@ export interface LogEntry {
   readonly fallen: readonly FallenUnit[];
 }
 
-/** One Turn header: one Turn of one Side, and the Hero HP at its end. */
+/** One Turn header: one Turn of one Side, and the HP of each Hero at its end. */
 export interface LogTurn {
   readonly index: number;
   readonly turnNumber: number;
@@ -59,7 +59,8 @@ export interface LogTurn {
   readonly first: number;
   /** The Log Entry after the last one of the Turn. */
   readonly end: number;
-  readonly hp: Readonly<Record<Side, number>>;
+  /** The HP of each Hero of each Side, in Hero order. */
+  readonly hp: Readonly<Record<Side, readonly number[]>>;
 }
 
 /**
@@ -374,8 +375,8 @@ export const buildBattleLog = (
             first: turn.first,
             end,
             hp: {
-              player: last.sides.player.hero.hp,
-              enemy: last.sides.enemy.hero.hp,
+              player: last.sides.player.heroes.map((hero) => hero.hp),
+              enemy: last.sides.enemy.heroes.map((hero) => hero.hp),
             },
           },
         ]

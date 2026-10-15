@@ -27,6 +27,8 @@ export interface Cast {
   /** The log index of the CardPlayed event. It names one cast. */
   readonly id: number;
   readonly side: Side;
+  /** The index of the Hero of `side` that casts it (ADR-0009). */
+  readonly hero: number;
   readonly card: CardInstance;
   readonly target: Target;
   readonly skill: SkillCardDefinition;
@@ -59,6 +61,7 @@ const castAt = (
     ? {
         id: index,
         side: event.side,
+        hero: event.hero.hero,
         card: event.card,
         target: event.target,
         skill,

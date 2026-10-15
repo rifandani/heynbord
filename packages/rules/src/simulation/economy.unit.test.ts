@@ -49,11 +49,18 @@ const gearSum = (player: EconomyPlayer) =>
   Object.values(player.gear).reduce((total, level) => total + level, 0);
 
 describe("economyStages (Economy 7.1)", () => {
-  it("adds 10 planned Stages to each Region up to Region 5, with the Boss Stage last", () => {
-    const stages = economyStages();
-    expect(stages).toHaveLength(50);
-    expect(stages.slice(0, STAGES.length).map((stage) => stage.id)).toEqual(
+  it("uses the real Stages of all 5 Regions", () => {
+    expect(economyStages().map((stage) => stage.id)).toEqual(
       STAGES.map((stage) => stage.id)
+    );
+  });
+
+  it("adds 10 planned Stages to each Region up to Region 5, with the Boss Stage last", () => {
+    const real = STAGES.filter((stage) => stage.region < 5);
+    const stages = economyStages(real);
+    expect(stages).toHaveLength(50);
+    expect(stages.slice(0, real.length).map((stage) => stage.id)).toEqual(
+      real.map((stage) => stage.id)
     );
     expect(
       stages.filter((stage) => stage.boss).map((stage) => stage.id)

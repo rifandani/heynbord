@@ -1,22 +1,29 @@
 import type { ForgeStoneTier } from "@workspace/rules";
+import type { CSSProperties, Ref } from "react";
 
 import { RANK_COLORS } from "@/features/battle/palette";
 
 /**
  * A Forge Stone (ADR-0038): a cut stone with 3 lit faces, in the Card Rank
- * color of its tier. The text next to it always gives the tier, never only
- * the color.
+ * color of its tier. The text next to it, or the accessible name of its
+ * control, always gives the tier, never only the color.
  */
 export const ForgeStoneIcon = ({
   tier,
   className,
+  style,
+  ref,
 }: {
   readonly tier: ForgeStoneTier;
   readonly className?: string;
+  readonly style?: CSSProperties;
+  readonly ref?: Ref<SVGSVGElement>;
 }) => (
   <svg
+    ref={ref}
     viewBox="0 0 24 24"
     className={className}
+    style={style}
     aria-hidden
     data-forge-stone={tier}
   >

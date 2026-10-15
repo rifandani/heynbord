@@ -9,7 +9,9 @@ import type { ShownRewards } from "@/features/battle/battle-rewards";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { canAct } from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
+import { heroOf } from "@/features/battle/battle-view";
 import type { KeyGuideLine } from "@/features/battle/components/battle-keys";
+import { PLAYER_HERO } from "@/features/battle/player-hero";
 import type { TutorialMarks } from "@/features/battle/tutorial";
 import { tutorialMarks } from "@/features/battle/tutorial";
 import { unitAtTarget } from "@/features/battle/unit-inspect";
@@ -76,7 +78,7 @@ export const legalTargetsAtom = Atom.make((get): readonly Target[] => {
   ) {
     return [];
   }
-  return legalTargets(session.rules, selected);
+  return legalTargets(session.rules, PLAYER_HERO, selected);
 });
 
 /**
@@ -126,7 +128,9 @@ export const tutorialMarksAtom = Atom.make((get): TutorialMarks => {
   const selected = get(selectedCardAtom);
   return tutorialMarks(
     session?.tutorial ?? null,
-    selected === null ? undefined : session?.view.sides.player.hand[selected],
+    selected === null || !session
+      ? undefined
+      : heroOf(session.view, "player").hand[selected],
     get(legalTargetsAtom).length
   );
 });

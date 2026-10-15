@@ -21,22 +21,55 @@ export const laneZ = (lane: number, lanes: number): number =>
 export const heroX = (side: Side): number =>
   side === "player" ? squareX(-1) - 0.35 : squareX(LANE_LENGTH) + 0.35;
 
+/**
+ * The z of the middle of a Front: a Hero stands at the middle of the Lanes
+ * that it holds (GDD 11.2). A Front of all Lanes is the middle of the Board,
+ * so a Stage Hero stands at z 0. An empty Front (a Defeated Hero after its
+ * Front moved) gives 0.
+ */
+export const frontZ = (front: readonly number[], lanes: number): number => {
+  if (front.length === 0) {
+    return 0;
+  }
+  return (
+    (laneZ(Math.min(...front), lanes) + laneZ(Math.max(...front), lanes)) / 2
+  );
+};
+
+/** The z of a Hero in a view: the middle of its Front. */
+export const heroZ = (view: BattleView, side: Side, hero: number): number =>
+  frontZ(view.sides[side].heroes[hero]?.front ?? [], view.lanes);
+
 /** The height of the center of a Hero figure. The Hero stands on the ground, with no pedestal (web ADR-0007). */
 export const HERO_FIGURE_Y = 1.2;
+
+/**
+ * The size of the Hero figures of a Side. A Front can be 1 Lane, and a full
+ * figure is wider than a Lane, so the Bosses of a Dungeon are smaller: then
+ * they do not cover each other.
+ */
+export const heroScale = (
+  view: Pick<BattleView, "sides">,
+  side: Side
+): number => (view.sides[side].heroes.length > 1 ? 0.7 : 1);
 
 /** The world position of a Unit or a Hero in a view, or `null` if it is not on the Board. */
 export const worldOf = (
   view: BattleView,
   target:
     | { readonly _tag: "Unit"; readonly unitId: number }
-    | { readonly _tag: "Hero"; readonly side: Side }
+    | { readonly _tag: "Hero"; readonly side: Side; readonly hero: number }
 ): {
   readonly x: number;
   readonly z: number;
   readonly height: number;
 } | null => {
   if (target._tag === "Hero") {
-    return { x: heroX(target.side), z: 0, height: HERO_FIGURE_Y + 0.85 };
+    return {
+      x: heroX(target.side),
+      z: heroZ(view, target.side, target.hero),
+      height: (HERO_FIGURE_Y + 0.85) * heroScale(view, target.side),
+    };
   }
   const unit = view.units.find((candidate) => candidate.id === target.unitId);
   return unit

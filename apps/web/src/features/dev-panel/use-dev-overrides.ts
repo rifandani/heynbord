@@ -1,5 +1,5 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
-import type { GearLevels } from "@workspace/rules";
+import type { ForgeStoneTier, GearLevels } from "@workspace/rules";
 import { Atom } from "effect/reactivity";
 import type { AtomRegistry } from "effect/reactivity";
 import { use, useEffect } from "react";
@@ -11,6 +11,7 @@ import {
   parseOverrides,
   serializeOverrides,
   setBalance,
+  setForgeStones,
   setGear,
   toOverlay,
   wholeBalance,
@@ -99,6 +100,15 @@ export const useDevOverrides = () => {
       })),
     setSweepTickets: (value: number) =>
       change((current) => ({ ...current, sweepTickets: wholeBalance(value) })),
+    setForgeStones: (tier: ForgeStoneTier, value: number) =>
+      change((current) => ({
+        ...current,
+        forgeStones: setForgeStones(
+          registry.get(profileAtom).forgeStones,
+          tier,
+          value
+        ),
+      })),
     /** Sets the XP to the start of the Player level. */
     setLevel: (level: number) =>
       change((current) => ({ ...current, xp: levelStartXp(level) })),

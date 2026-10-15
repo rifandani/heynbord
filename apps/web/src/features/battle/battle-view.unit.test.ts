@@ -17,8 +17,13 @@ import {
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
+import {
+  heroOf,
+  applyEvent,
+  viewFromState,
+} from "@/features/battle/battle-view";
 import type { BattleView, UnitView } from "@/features/battle/battle-view";
-import { applyEvent, viewFromState } from "@/features/battle/battle-view";
+import { playerHand } from "@/features/battle/player-hero";
 
 /**
  * Runs a Battle with the AI on both sides and returns each step. `rank` puts
@@ -567,6 +572,7 @@ describe("applyEvent with the Mage cards of #65", () => {
 const halberdierView = (owner: "player" | "enemy", id: number): UnitView => ({
   id,
   owner,
+  hero: 0,
   source: { _tag: "Card", cardId: "human.halberdier" },
   rank: "common",
   lane: 0,
@@ -647,6 +653,7 @@ describe("the Paralyzed and Field Effect view", () => {
         field: {
           id: 9,
           owner: "player",
+          hero: 0,
           card: { instanceId: 1, cardId: "mage.wildfire", rank: "rare" },
           lane: 0,
           position: 6,
@@ -855,15 +862,15 @@ describe("viewFromState", () => {
     });
     const view = viewFromState(state);
     expect(
-      view.sides.enemy.hand.every(
+      heroOf(view, "enemy").hand.every(
         (card) => card.cardId === null && card.rank === null
       )
     ).toBe(true);
-    expect(view.sides.enemy.hand.map((card) => card.countdown)).toEqual(
-      state.sides.enemy.hand.map((card) => card.countdown)
+    expect(heroOf(view, "enemy").hand.map((card) => card.countdown)).toEqual(
+      state.sides.enemy.heroes[0]?.hand.map((card) => card.countdown)
     );
-    expect(view.sides.player.hand.map((card) => card.cardId)).toEqual(
-      state.sides.player.hand.map((card) => card.cardId)
+    expect(heroOf(view, "player").hand.map((card) => card.cardId)).toEqual(
+      playerHand(state).map((card) => card.cardId)
     );
   });
 });
@@ -888,6 +895,7 @@ describe("the Graveyard view", () => {
         {
           id: 7,
           owner: "player" as const,
+          hero: 0,
           source: { _tag: "Card" as const, cardId: "orc.badlandRunt" },
           rank: "common" as const,
           lane: 0,
@@ -929,14 +937,17 @@ describe("the Graveyard view", () => {
       BattleEvent.UnitDied({ unitId: 7 }),
       BattleEvent.RecallRolled({
         side: "player",
+        hero: 0,
         card: { instanceId: 40, cardId: "mage.fireball", rank: "rare" },
         success: false,
       }),
     ];
-    expect(events.reduce(applyEvent, view).sides.player.graveyard).toEqual([
-      { cardId: "orc.badlandRunt", rank: "common" },
-      { cardId: "mage.fireball", rank: "rare" },
-    ]);
+    expect(heroOf(events.reduce(applyEvent, view), "player").graveyard).toEqual(
+      [
+        { cardId: "orc.badlandRunt", rank: "common" },
+        { cardId: "mage.fireball", rank: "rare" },
+      ]
+    );
   });
 });
 
@@ -956,6 +967,7 @@ describe("the bonus Bulwark view", () => {
     const unit = {
       id: 7,
       owner: "player" as const,
+      hero: 0,
       source: { _tag: "Card" as const, cardId: "orc.badlandRunt" },
       rank: "common" as const,
       lane: 0,
@@ -1035,6 +1047,7 @@ describe("the Hobbled and Bleeding view", () => {
     const unit = {
       id: 7,
       owner: "player" as const,
+      hero: 0,
       source: { _tag: "Card" as const, cardId: "orc.badlandRunt" },
       rank: "common" as const,
       lane: 0,
@@ -1119,6 +1132,7 @@ describe("a push", () => {
     const unit = {
       id: 7,
       owner: "enemy" as const,
+      hero: 0,
       source: { _tag: "Card" as const, cardId: "human.militiaRecruit" },
       rank: "common" as const,
       lane: 0,
@@ -1177,25 +1191,27 @@ describe("a card that Unique blocks (GDD 5.4)", () => {
       },
     });
     const voss = "human.marshalElianVoss";
-    state.sides.player.hand = [
-      { instanceId: 901, cardId: voss, rank: "epic", countdown: 0 },
-      { instanceId: 902, cardId: voss, rank: "legendary", countdown: 0 },
-    ];
+    for (const hero of state.sides.player.heroes) {
+      hero.hand = [
+        { instanceId: 901, cardId: voss, rank: "epic", countdown: 0 },
+        { instanceId: 902, cardId: voss, rank: "legendary", countdown: 0 },
+      ];
+    }
     const before = viewFromState(state);
-    expect(before.sides.player.hand.map((card) => card.blocked)).toEqual([
+    expect(heroOf(before, "player").hand.map((card) => card.blocked)).toEqual([
       false,
       false,
     ]);
-    const [target] = legalTargets(state, 0);
+    const [target] = legalTargets(state, 0, 0);
     if (!target) {
       throw new Error("Expected a legal target");
     }
     const { state: after, events } = Result.getOrThrow(
-      step(state, Command.PlayCard({ handIndex: 0, target }))
+      step(state, Command.PlayCard({ hero: 0, handIndex: 0, target }))
     );
     const played = events.reduce(applyEvent, before);
     expect(played).toEqual(viewFromState(after));
-    expect(played.sides.player.hand).toEqual([
+    expect(heroOf(played, "player").hand).toEqual([
       expect.objectContaining({ instanceId: 902, blocked: true }),
     ]);
     const unitId =
@@ -1203,7 +1219,7 @@ describe("a card that Unique blocks (GDD 5.4)", () => {
         (unit) => unit.source._tag === "Card" && unit.source.cardId === voss
       )?.id ?? -1;
     const died = applyEvent(played, BattleEvent.UnitDied({ unitId }));
-    expect(died.sides.player.hand[0]?.blocked).toBe(false);
+    expect(heroOf(died, "player").hand[0]?.blocked).toBe(false);
   });
 
   it("is never set on a card that the player cannot see", () => {
@@ -1219,7 +1235,7 @@ describe("a card that Unique blocks (GDD 5.4)", () => {
       },
     });
     expect(
-      viewFromState(state).sides.enemy.hand.every((card) => !card.blocked)
+      heroOf(viewFromState(state), "enemy").hand.every((card) => !card.blocked)
     ).toBe(true);
   });
 });
@@ -1239,6 +1255,7 @@ describe("the Entangled view", () => {
   const unit = {
     id: 7,
     owner: "enemy" as const,
+    hero: 0,
     source: { _tag: "Card" as const, cardId: "human.militiaRecruit" },
     rank: "common" as const,
     lane: 0,
@@ -1289,7 +1306,7 @@ describe("the Entangled view", () => {
       entangled,
       BattleEvent.UnitAttacked({
         unitId: 7,
-        target: { _tag: "Hero", side: "player" },
+        target: { _tag: "Hero", side: "player", hero: 0 },
         ranged: false,
       })
     );
@@ -1325,6 +1342,7 @@ const snapshot = (
 ): UnitSnapshot => ({
   id,
   owner: "enemy",
+  hero: 0,
   source,
   lane,
   position,
@@ -1434,7 +1452,9 @@ describe("the Token, Rebirth and Swarm view", () => {
       BattleEvent.UnitDied({ unitId: skeleton.id })
     );
     expect(after.units).toEqual([]);
-    expect(after.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);
+    expect(heroOf(after, "enemy").graveyard).toEqual(
+      heroOf(start, "enemy").graveyard
+    );
   });
 
   it("keeps a reborn Unit in its Square with its new HP, no Status (also no Ward) and no bonus Bulwark", () => {
@@ -1477,7 +1497,9 @@ describe("the Token, Rebirth and Swarm view", () => {
       steadfast: false,
       bonusBulwark: 0,
     });
-    expect(view.sides.enemy.graveyard).toEqual(start.sides.enemy.graveyard);
+    expect(heroOf(view, "enemy").graveyard).toEqual(
+      heroOf(start, "enemy").graveyard
+    );
   });
 });
 

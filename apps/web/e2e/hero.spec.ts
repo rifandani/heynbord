@@ -4,8 +4,7 @@ import type { Page } from "./_base";
 /**
  * The Hero screen (GDD 7.3, issue #77): the Barracks and the Hero shortcut
  * open it at Player level 5, a Gear upgrade adds 1 level for Coin and a
- * Forge Stone (ADR-0038) and the Profile keeps it, and "Change Deck" changes
- * the Class of the Hero (ADR-0033).
+ * Forge Stone (ADR-0038) and the Profile keeps it.
  */
 
 /** The part of `window` that the test hooks (test-hooks.ts) add. */
@@ -90,11 +89,6 @@ test.describe("Hero screen", () => {
       "aria-current",
       "page"
     );
-    // A new Player: the Class of the Active Deck, Human Vanguard.
-    await expect(page.getByTestId("hero-class")).toHaveAttribute(
-      "data-class",
-      "warrior"
-    );
     await expect(page.getByTestId("hero-hp-sum")).toHaveText(
       "= 30 base + 5 level + 0 × 1 Armor"
     );
@@ -145,8 +139,11 @@ test.describe("Hero screen", () => {
     const upgrade = page.getByTestId("gear-upgrade-weapon");
     await expect(weapon).toHaveAttribute("data-level", "0");
     await expect(weapon.getByTestId("gear-stat")).toHaveText("0%→0.5%");
-    await expect(weapon.getByTestId("gear-stone-cost")).toContainText(
-      "1 × Common Forge Stone"
+    // The upgrade shows all its requirements: the Coin and 1 Forge Stone.
+    await expect(upgrade).toHaveText("Upgrade5c×1");
+    await expect(weapon.getByTestId("gear-upgrade-stone")).toHaveAttribute(
+      "data-tier",
+      "common"
     );
     await expect(upgrade).toHaveAccessibleName(
       "Upgrade Weapon to level 1, for 5 Copper and 1 Common Forge Stone"
@@ -179,20 +176,20 @@ test.describe("Hero screen", () => {
     // No Common Forge Stone: the upgrade is off, also with the Coin. The Rare
     // Forge Stone cannot replace it.
     await expect(upgrade).toBeDisabled();
-    await expect(upgrade).toHaveText("Need Forge Stone");
+    await expect(upgrade).toHaveText("Upgrade15c×1");
     await expect(upgrade).toHaveAccessibleName(
       "Upgrade Weapon: you need 1 Common Forge Stone"
     );
 
-    // Level 2 costs 15 Copper. With a Forge Stone and 10 Copper, the button
-    // says what Coin is missing.
+    // Level 2 costs 15 Copper. With a Forge Stone and 10 Copper, the Coin is
+    // the requirement that is missing.
     await setForgeStones(page, { ...NO_STONES, common: 1, rare: 1 });
     await page.evaluate(() => {
       // SAFETY: the dev and QA builds install the test hooks on `window`.
       (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setCoin(10);
     });
     await expect(upgrade).toBeDisabled();
-    await expect(upgrade).toHaveText("Need5c");
+    await expect(upgrade).toHaveText("Upgrade15c×1");
     await expect(upgrade).toHaveAccessibleName(
       "Upgrade Weapon: you need 5 Copper more"
     );
@@ -218,29 +215,37 @@ test.describe("Hero screen", () => {
     );
   });
 
-  test("Change Deck opens the Deck dialog, and a Deck of another Class changes the Class", async ({
+  test("the upgrade to level 5 says that the next levels need Uncommon Forge Stones", async ({
     page,
   }) => {
-    await openTown(page, LEVEL_5_XP, 0);
+    await openTown(page, LEVEL_5_XP, 1000);
+    await setForgeStones(page, { ...NO_STONES, common: 5, uncommon: 1 });
     await page.getByTestId("town-shortcut-hero").click();
-    await expect(page.getByTestId("hero-class")).toHaveAttribute(
-      "data-class",
-      "warrior"
-    );
+    await expect(page.getByTestId("hero")).toBeVisible();
+    const upgrade = page.getByTestId("gear-upgrade-weapon");
+    const stone = page
+      .getByTestId("gear-weapon")
+      .getByTestId("gear-upgrade-stone");
 
-    await page.getByTestId("hero-change-deck").click();
-    const dialog = page.getByTestId("deck-dialog");
-    await expect(dialog).toBeVisible();
-    await page.getByTestId("deck-slot-raiders").click();
-    // The offline toast can cover the footer of the book, so the key presses it.
-    await dialog.getByTestId("deck-use").press("Enter");
-    await page.keyboard.press("Escape");
-    await expect(dialog).toBeHidden();
-
-    await expect(page.getByTestId("hero-class")).toHaveAttribute(
-      "data-class",
-      "mage"
+    for (const level of [1, 2, 3, 4]) {
+      // oxlint-disable-next-line no-await-in-loop -- each upgrade waits for the one before it.
+      await upgrade.click();
+      // oxlint-disable-next-line no-await-in-loop -- as above.
+      await expect(page.getByTestId("gear-weapon")).toHaveAttribute(
+        "data-level",
+        String(level)
+      );
+    }
+    await expect(page.getByTestId("hero-said")).toHaveText(
+      "Weapon is now level 4. Unit Crit: 2%."
     );
-    await expect(page.getByTestId("hero-change-deck")).toBeFocused();
+    await expect(stone).toHaveAttribute("data-tier", "common");
+
+    await upgrade.click();
+    await expect(page.getByTestId("hero-said")).toHaveText(
+      "Weapon is now level 5. Unit Crit: 2.5%. The next levels need Uncommon Forge Stones."
+    );
+    await expect(stone).toHaveAttribute("data-tier", "uncommon");
+    await expect(upgrade).toHaveAccessibleName(/1 Uncommon Forge Stone$/u);
   });
 });

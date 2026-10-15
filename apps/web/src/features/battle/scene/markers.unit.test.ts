@@ -1,6 +1,7 @@
 import { LANE_LENGTH, Target } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
+import type { BattleView, HeroView } from "@/features/battle/battle-view";
 import { heroX, laneZ, squareX } from "@/features/battle/scene/layout";
 import {
   markerOpacity,
@@ -10,30 +11,74 @@ import {
   toScreen,
 } from "@/features/battle/scene/markers";
 
+const hero = (front: readonly number[]): HeroView => ({
+  hp: 20,
+  maxHp: 20,
+  classId: "warrior",
+  front,
+  bossRules: [],
+  hand: [],
+  deck: 0,
+  graveyard: [],
+});
+
+/** A Board of `lanes` Lanes, with the enemy Heroes of `fronts`. */
+const board = (
+  lanes: number,
+  fronts: readonly (readonly number[])[] = [
+    Array.from({ length: lanes }, (_, lane) => lane),
+  ]
+): Pick<BattleView, "lanes" | "sides"> => ({
+  lanes,
+  sides: {
+    player: { heroes: [hero(fronts.flat())] },
+    enemy: { heroes: fronts.map(hero) },
+  },
+});
+
 describe("markerSpot", () => {
   it("marks a Square, or a whole Lane", () => {
-    expect(markerSpot(Target.Square({ lane: 1, position: 3 }), 2)).toEqual({
+    expect(
+      markerSpot(Target.Square({ lane: 1, position: 3 }), board(2))
+    ).toEqual({
       x: squareX(3),
       z: laneZ(1, 2),
       width: 0.96,
       depth: 0.98,
     });
-    expect(markerSpot(Target.Lane({ lane: 0 }), 2)).toEqual({
+    expect(markerSpot(Target.Lane({ lane: 0 }), board(2))).toEqual({
       x: 0,
       z: laneZ(0, 2),
       width: LANE_LENGTH,
       depth: 0.98,
     });
-    expect(markerSpot(Target.NoTarget(), 2)).toBeNull();
+    expect(markerSpot(Target.NoTarget(), board(2))).toBeNull();
   });
 
-  it("marks the ground under a Hero, across all Lanes", () => {
-    expect(markerSpot(Target.Hero({ side: "enemy" }), 3)).toEqual({
+  it("marks the ground under a Stage Hero, across all Lanes", () => {
+    expect(
+      markerSpot(Target.Hero({ side: "enemy", hero: 0 }), board(3))
+    ).toEqual({
       x: heroX("enemy"),
       z: 0,
       width: 1.3,
       depth: laneZ(2, 3) - laneZ(0, 3) + 0.98,
     });
+  });
+
+  it("marks only the Front of a Boss in a Dungeon (GDD 11.2)", () => {
+    const dungeon = board(4, [[0], [1, 2], [3]]);
+    expect(
+      markerSpot(Target.Hero({ side: "enemy", hero: 1 }), dungeon)
+    ).toEqual({
+      x: heroX("enemy"),
+      z: (laneZ(1, 4) + laneZ(2, 4)) / 2,
+      width: 1.3,
+      depth: laneZ(2, 4) - laneZ(1, 4) + 0.98,
+    });
+    expect(
+      markerSpot(Target.Hero({ side: "enemy", hero: 2 }), dungeon)
+    ).toMatchObject({ z: laneZ(3, 4), depth: 0.98 });
   });
 });
 

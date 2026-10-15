@@ -1,6 +1,4 @@
 import type {
-  ClassId,
-  DeckSlot,
   ForgeStones,
   ForgeStoneTier,
   GearLevels,
@@ -18,9 +16,6 @@ import {
   PLAYER_BASE_HP,
   playerHeroHp,
 } from "@workspace/rules";
-
-import type { TextRef } from "@/features/battle/card-text";
-import { defaultSlotName } from "@/features/deck/deck";
 
 /**
  * The parts of the Hero HP (GDD 4.10, 7.3): the base, 1 for each Player
@@ -157,42 +152,4 @@ export const upgradeFocusAfter = (
   const index = items.findIndex((item) => item.slot === from);
   const order = [...items.slice(index), ...items.slice(0, index)];
   return order.find((item) => item.upgrade.kind === "ready")?.slot ?? null;
-};
-
-/** The name of a Deck: the name that the Player gave, or the default name. */
-export type DeckName =
-  | { readonly _tag: "Given"; readonly name: string }
-  | { readonly _tag: "Default"; readonly name: TextRef };
-
-/** The Hero part of the screen: the Class of the Active Deck, and its name (ADR-0033). */
-export interface HeroDeck {
-  readonly classId: ClassId;
-  readonly deckName: DeckName;
-}
-
-/**
- * The Active Deck and its Class. The Player's Hero has the Class of the
- * Active Deck (ADR-0033). A slot with no name shows its default name. When
- * the ID is not a slot, the first slot is the Active Deck, as in the Stage
- * Panel.
- */
-export const heroDeck = (
-  slots: readonly DeckSlot[],
-  activeDeckId: string
-): HeroDeck | null => {
-  const index = Math.max(
-    0,
-    slots.findIndex((slot) => slot.id === activeDeckId)
-  );
-  const slot = slots[index];
-  if (!slot) {
-    return null;
-  }
-  return {
-    classId: slot.classId,
-    deckName:
-      slot.name === ""
-        ? { _tag: "Default", name: defaultSlotName(slot, index) }
-        : { _tag: "Given", name: slot.name },
-  };
 };

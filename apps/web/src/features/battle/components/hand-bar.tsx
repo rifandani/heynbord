@@ -10,6 +10,7 @@ import type {
   GraveyardCardView,
   HandCardView,
 } from "@/features/battle/battle-view";
+import { heroOf } from "@/features/battle/battle-view";
 import {
   detailsUnitAtom,
   tutorialMarksAtom,
@@ -508,7 +509,7 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
   if (!session) {
     return null;
   }
-  const { player } = session.view.sides;
+  const player = heroOf(session.view, "player");
   const { hand } = player;
   const dragIndex = activeDragIndex(drag);
   const playing = session.current;

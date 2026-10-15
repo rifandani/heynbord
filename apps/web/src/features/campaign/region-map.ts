@@ -215,10 +215,12 @@ const RED_MESAS: RegionMap = {
     ],
     [
       { x: 1408, y: 494 },
-      { x: 1391, y: 438 },
-      { x: 1344, y: 375 },
-      { x: 1286, y: 313 },
-      { x: 1240, y: 273 },
+      { x: 1388, y: 462 },
+      { x: 1362, y: 432 },
+      { x: 1330, y: 402 },
+      { x: 1304, y: 368 },
+      { x: 1278, y: 330 },
+      { x: 1248, y: 295 },
       { x: 1198, y: 252 },
     ],
   ],
@@ -340,8 +342,9 @@ const THORNWOOD: RegionMap = {
     ],
     [
       { x: 471, y: 657 },
-      { x: 438, y: 604 },
-      { x: 406, y: 573 },
+      { x: 434, y: 630 },
+      { x: 405, y: 603 },
+      { x: 382, y: 578 },
       { x: 368, y: 543 },
     ],
     [
@@ -364,8 +367,10 @@ const THORNWOOD: RegionMap = {
     ],
     [
       { x: 863, y: 668 },
-      { x: 938, y: 698 },
-      { x: 990, y: 729 },
+      { x: 885, y: 692 },
+      { x: 925, y: 710 },
+      { x: 965, y: 729 },
+      { x: 1000, y: 745 },
       { x: 1046, y: 757 },
     ],
     [
@@ -382,8 +387,10 @@ const THORNWOOD: RegionMap = {
     ],
     [
       { x: 1299, y: 516 },
-      { x: 1250, y: 469 },
-      { x: 1198, y: 432 },
+      { x: 1262, y: 482 },
+      { x: 1222, y: 462 },
+      { x: 1182, y: 444 },
+      { x: 1146, y: 423 },
       { x: 1125, y: 395 },
     ],
   ],
@@ -428,8 +435,13 @@ const HOLLOW_MARCHES: RegionMap = {
     ],
     [
       { x: 370, y: 548 },
-      { x: 438, y: 500 },
-      { x: 479, y: 474 },
+      { x: 364, y: 514 },
+      { x: 361, y: 488 },
+      { x: 368, y: 471 },
+      { x: 392, y: 466 },
+      { x: 420, y: 467 },
+      { x: 450, y: 464 },
+      { x: 482, y: 457 },
       { x: 546, y: 446 },
     ],
     [
@@ -458,8 +470,13 @@ const HOLLOW_MARCHES: RegionMap = {
     ],
     [
       { x: 1376, y: 706 },
-      { x: 1417, y: 625 },
-      { x: 1385, y: 542 },
+      { x: 1408, y: 690 },
+      { x: 1432, y: 666 },
+      { x: 1446, y: 630 },
+      { x: 1452, y: 597 },
+      { x: 1434, y: 566 },
+      { x: 1400, y: 541 },
+      { x: 1360, y: 521 },
       { x: 1313, y: 495 },
     ],
     [
@@ -866,16 +883,16 @@ const place = (
 };
 
 /**
- * The most that the painting stretches or squashes on the x axis, so that it
- * fills the width of a screen that is wider or narrower than 16:9. More than
- * this bends the art, so the screen then cuts the painting instead.
+ * The most that the painting squashes on the x axis, so that it fills the
+ * width of a screen that is narrower than 16:9. More than this bends the art,
+ * so the screen then cuts the sides of the painting instead.
  */
 export const MAX_STRETCH = 0.1;
 
 /**
- * The most stretch when the painting gets smaller than the cover size, so
- * that the Stage Markers fit. The painting then still fills the screen width
- * on most screens, with no soft backdrop at its sides.
+ * The most that the painting stretches on the x axis, so that it fills the
+ * width of a screen that is wider than 16:9. The painting then fills the
+ * screen width on most screens, with no soft backdrop at its sides.
  */
 export const FIT_STRETCH = 0.2;
 
@@ -893,16 +910,16 @@ const apart = (map: FramedMap, { scale, stretch }: Size) => {
 };
 
 /**
- * Places the painting on the screen. It covers the screen above the Town Bar,
- * with a stretch on the x axis of at most `MAX_STRETCH`, so that it fills the
- * screen width and the screen cuts as little of it as it can. On a small
- * screen (a phone), the Stage Markers can touch at that size: the painting
- * then gets larger, with less stretch, until they do not. All Stage Markers
- * always stay on the screen, above the Town Bar and clear of the HUD, with at
- * least half of the Boss landmark, and as much more of it as they let: when
- * the cover size cannot hold them (a very wide or a short screen), the
- * painting gets smaller, with a stretch of at most `FIT_STRETCH`. A soft
- * backdrop fills each side that the painting then does not cover.
+ * Places the painting on the screen. The full height of the painting fits
+ * above the Town Bar, so the screen does not cut its top or its bottom. To
+ * fill the screen width, the painting stretches on the x axis by at most
+ * `FIT_STRETCH`, or squashes by at most `MAX_STRETCH`. A soft backdrop fills
+ * each side of a wider screen that the painting then does not cover, and a
+ * narrower screen cuts the sides. On a small screen (a phone), the Stage
+ * Markers can touch at that size: the painting then gets larger, until they
+ * do not. All Stage Markers always stay on the screen, above the Town Bar and
+ * clear of the HUD, with at least half of the Boss landmark: when the screen
+ * cannot hold them (a short screen), the painting gets smaller.
  */
 export const mapFrame = (map: FramedMap, viewport: Viewport): MapFrame => {
   const across = viewport.width / MAP.width;
@@ -917,7 +934,9 @@ export const mapFrame = (map: FramedMap, viewport: Viewport): MapFrame => {
     ),
   });
   const cover = Math.max(across, down);
-  let scale = Math.max(down, across / (1 + MAX_STRETCH));
+  // The full height of the painting fits above the Town Bar. The stretch
+  // fills the width of a screen that is wider than the painting.
+  let scale = down;
   if (!apart(map, sizeAt(scale)) && apart(map, sizeAt(cover))) {
     let low = scale;
     let high = cover;

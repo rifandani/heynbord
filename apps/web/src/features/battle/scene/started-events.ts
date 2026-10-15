@@ -42,7 +42,7 @@ export const startedEvents = (
     if (plate) {
       fx.push(plate);
     }
-    const sound = eventSound(event);
+    const sound = eventSound(event, view);
     if (sound) {
       sounds.push(sound);
     }

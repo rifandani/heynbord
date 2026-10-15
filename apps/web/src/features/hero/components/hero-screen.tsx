@@ -1,17 +1,18 @@
-import type { ClassId, GearSlot } from "@workspace/rules";
-import { MAX_GEAR_LEVEL } from "@workspace/rules";
+import type { ForgeStoneTier, GearSlot } from "@workspace/rules";
+import { gearUpgradeForgeStone, MAX_GEAR_LEVEL } from "@workspace/rules";
 import { cn } from "cn";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { PARCHMENT } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { classGlyph } from "@/features/battle/glyphs";
+import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
-import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
-import { GearPlate } from "@/features/hero/components/gear-item";
+import type { GearStrike } from "@/features/hero/components/gear-item";
+import {
+  GEAR_STRIKE_MS,
+  GearPlate,
+} from "@/features/hero/components/gear-item";
 import { HeroScene } from "@/features/hero/components/hero-scene";
 import type { ForgeStoneCount, HeroHpParts } from "@/features/hero/hero";
 import { upgradeFocusAfter } from "@/features/hero/hero";
@@ -26,25 +27,6 @@ const PLATE =
 
 /** The chime of a Gear item at level 25 comes this long after the strike. */
 const MAX_CHIME_MS = 180;
-
-/**
- * The Class seal of the Hero: the Class glyph in ink on the radial parchment
- * plate of the Skill Card emblem, with a bronze rim. There are no Class
- * colors.
- */
-const ClassSeal = ({ classId }: { readonly classId: ClassId }) => (
-  <span
-    className="grid size-14 shrink-0 place-items-center rounded-full border-[3px] border-[#e7bb6a] shadow-[0_3px_0_rgba(0,0,0,0.45),inset_0_2px_0_rgba(255,255,255,0.35)] [@media(max-height:500px)]:size-9 [@media(max-height:500px)]:border-2"
-    style={{
-      background: `radial-gradient(circle at 35% 30%, #fffaf0, ${PARCHMENT.main} 55%, #d8c494)`,
-      color: PARCHMENT.ink,
-    }}
-    aria-hidden
-    data-testid="hero-class-seal"
-  >
-    <GlyphIcon glyph={classGlyph(classId)} className="size-[58%]" />
-  </span>
-);
 
 /**
  * The Hero HP and its parts (GDD 4.10, 7.3): the total as the big number, and
@@ -109,8 +91,11 @@ const HeroHp = ({ hp }: { readonly hp: HeroHpParts }) => {
  */
 const ForgeStonePlate = ({
   counts,
+  spent,
 }: {
   readonly counts: readonly ForgeStoneCount[];
+  /** The serial of the last upgrade that used a stone of each tier, in this visit. */
+  readonly spent: Readonly<Partial<Record<ForgeStoneTier, number>>>;
 }) => {
   const { tr } = useGameText();
   return (
@@ -150,7 +135,15 @@ const ForgeStonePlate = ({
               </span>
               <span aria-hidden className="flex items-baseline gap-1">
                 <span className="font-semibold text-[#e8d9bb]">{name}</span>
-                <span className="text-base font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xs">
+                {/* The count hops when an upgrade takes a stone of this tier. */}
+                <span
+                  key={spent[tier] ?? 0}
+                  className={cn(
+                    "inline-block text-base font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xs",
+                    spent[tier] !== undefined &&
+                      "motion-safe:animate-[workshop-count_420ms_cubic-bezier(0.2,0.8,0.2,1)]"
+                  )}
+                >
                   {count}
                 </span>
               </span>
@@ -164,7 +157,9 @@ const ForgeStonePlate = ({
 
 /**
  * The sounds of a Gear upgrade: the strike, and at level 25 the chime of a
- * Rare card. The timers stop when the screen closes.
+ * Rare card. The strike sounds when the Forge Stone strikes its Gear item, or
+ * at once with reduced motion, because then the stone does not fly. The
+ * timers stop when the screen closes.
  */
 const useUpgradeSounds = () => {
   const timers = useRef<number[]>([]);
@@ -176,36 +171,44 @@ const useUpgradeSounds = () => {
       }
     };
   }, []);
+  const later = (ms: number, play: () => void) => {
+    timers.current.push(window.setTimeout(play, ms));
+  };
   return (maxed: boolean) => {
     unlockAudio();
-    playSound("gearUp", 0);
+    const strike = prefersReducedMotion() ? 0 : GEAR_STRIKE_MS;
+    if (strike === 0) {
+      playSound("gearUp", 0);
+    } else {
+      later(strike, () => playSound("gearUp", 0));
+    }
     if (maxed) {
-      timers.current.push(
-        window.setTimeout(() => playSound("revealRare", 0), MAX_CHIME_MS)
-      );
+      later(strike + MAX_CHIME_MS, () => playSound("revealRare", 0));
     }
   };
 };
 
 /**
  * The Hero screen (GDD 7.3, issue #77, "Gear Rack"): the inside of the
- * Barracks, the Hero plate with the Class of the Active Deck (ADR-0033), its
- * Deck and the Hero HP with its parts, the 5 Forge Stone counts (ADR-0038),
- * and the 4 Gear items side by side.
- * Each press of an upgrade adds 1 level at once: the notch fills, the stat
- * rolls to its new value, a sound plays and the Coin counts down. After an
+ * Barracks, the Hero plate with the Hero HP and its parts, the 5 Forge Stone
+ * counts (ADR-0038), and the 4 Gear items side by side.
+ * Each press of an upgrade adds 1 level at once: its Forge Stone leaps from
+ * the upgrade into the item and strikes it, the level hops, the stat rolls to
+ * its new value, a sound plays and the Coin counts down. After an
  * upgrade, the focus stays on that upgrade while it is on, else it goes to
- * the next one that is on. "Change Deck" opens the Deck dialog.
+ * the next one that is on.
  */
 export const HeroScreen = () => {
-  const { tr, text } = useGameText();
+  const { tr } = useGameText();
   const hero = useHero();
   const stat = useStatFormat();
   const sounds = useUpgradeSounds();
   const coin = useCountTo(hero.coin);
-  const [deckOpen, setDeckOpen] = useState(false);
-  const [flash, setFlash] = useState<
-    Readonly<Partial<Record<GearSlot, number>>>
+  const [strikes, setStrikes] = useState<
+    Readonly<Partial<Record<GearSlot, GearStrike>>>
+  >({});
+  const [spent, setSpent] = useState<
+    Readonly<Partial<Record<ForgeStoneTier, number>>>
   >({});
   const [said, setSaid] = useState("");
   const rack = useRef<HTMLUListElement>(null);
@@ -238,22 +241,34 @@ export const HeroScreen = () => {
     }
     const level = hero.gear[slot] + 1;
     const item = hero.items.find((entry) => entry.slot === slot);
+    const tier = gearUpgradeForgeStone(level);
+    const nextTier =
+      level < MAX_GEAR_LEVEL ? gearUpgradeForgeStone(level + 1) : tier;
     pendingFocus.current = slot;
-    setFlash((current) => ({ ...current, [slot]: (current[slot] ?? 0) + 1 }));
+    setStrikes((current) => ({
+      ...current,
+      [slot]: {
+        serial: (current[slot]?.serial ?? 0) + 1,
+        tier,
+        newTier: nextTier !== tier,
+      },
+    }));
+    setSpent((current) => ({ ...current, [tier]: (current[tier] ?? 0) + 1 }));
     sounds(level >= MAX_GEAR_LEVEL);
     if (item !== undefined && item.next !== null) {
+      const done = tr("hero.done", {
+        name: tr(`hero.slots.${slot}`),
+        level,
+        stat: tr(`hero.stats.${item.stat}`),
+        value: stat(item.stat, item.next),
+      });
       setSaid(
-        tr("hero.done", {
-          name: tr(`hero.slots.${slot}`),
-          level,
-          stat: tr(`hero.stats.${item.stat}`),
-          value: stat(item.stat, item.next),
-        })
+        nextTier === tier
+          ? done
+          : `${done} ${tr("hero.nextTier", { tier: tr(`forgeStones.tiers.${nextTier}`) })}`
       );
     }
   };
-
-  const { deck } = hero;
 
   return (
     <main
@@ -279,56 +294,16 @@ export const HeroScreen = () => {
           "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2"
         )}
       >
-        {deck ? (
-          <section
-            aria-labelledby="hero-class"
-            className={cn(
-              PLATE,
-              "items-center gap-4 px-4 py-3 [@media(max-height:500px)]:gap-2.5 [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:py-1.5"
-            )}
-            data-testid="hero-plate"
-          >
-            <ClassSeal classId={deck.classId} />
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <h2
-                id="hero-class"
-                className="font-display text-xl leading-tight font-bold text-[#ffe08a] [@media(max-height:500px)]:text-sm"
-                data-testid="hero-class"
-                data-class={deck.classId}
-              >
-                {tr(`classes.${deck.classId}`)}
-              </h2>
-              <p
-                className="truncate text-[13px] text-[#e8d9bb] [@media(max-height:500px)]:text-[11px]"
-                data-testid="hero-deck"
-              >
-                {tr("hero.deck", {
-                  name:
-                    deck.deckName._tag === "Given"
-                      ? deck.deckName.name
-                      : text(deck.deckName.name),
-                })}
-              </p>
-            </div>
-            <GameButton
-              intent="wood"
-              size="sm"
-              onPress={() => setDeckOpen(true)}
-              aria-label={tr("hero.changeDeckLabel")}
-              className="shrink-0 whitespace-nowrap [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs"
-              data-testid="hero-change-deck"
-            >
-              <GlyphIcon glyph="cards" className="size-4 shrink-0" />
-              {tr("hero.changeDeck")}
-            </GameButton>
-            <span
-              className="h-10 w-0.5 shrink-0 rounded-full bg-[#e9c46a]/25 [@media(max-height:500px)]:h-7"
-              aria-hidden
-            />
-            <HeroHp hp={hero.hp} />
-          </section>
-        ) : null}
-        <ForgeStonePlate counts={hero.forgeStones} />
+        <section
+          className={cn(
+            PLATE,
+            "w-fit max-w-full items-center px-4 py-3 [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:py-1.5"
+          )}
+          data-testid="hero-plate"
+        >
+          <HeroHp hp={hero.hp} />
+        </section>
+        <ForgeStonePlate counts={hero.forgeStones} spent={spent} />
         <ul
           ref={rack}
           tabIndex={-1}
@@ -340,13 +315,12 @@ export const HeroScreen = () => {
             <GearPlate
               key={item.slot}
               item={item}
-              flash={flash[item.slot] ?? 0}
+              strike={strikes[item.slot] ?? null}
               onUpgrade={() => upgrade(item.slot)}
             />
           ))}
         </ul>
       </div>
-      <DeckDialog isOpen={deckOpen} onOpenChange={setDeckOpen} />
       <p className="sr-only" aria-live="polite" data-testid="hero-said">
         {said}
       </p>

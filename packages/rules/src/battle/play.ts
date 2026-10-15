@@ -8,7 +8,6 @@ import {
   skillSquaresForRank,
 } from "../content/ranks";
 import type {
-  CreatureCardDefinition,
   SkillCardDefinition,
   SkillEffect,
   TokenId,
@@ -21,9 +20,12 @@ import {
   direction,
   findUnit,
   heroDealer,
+  heroOfLane,
+  heroState,
   isInsideLane,
   isLaneOpen,
   isOver,
+  ownerOf,
   unitAt,
 } from "./context";
 import { damageHero, damageUnit } from "./damage";
@@ -42,48 +44,19 @@ import type {
   CardInstance,
   FieldEffect,
   HandCard,
+  HeroRef,
   Side,
   UnitState,
 } from "./types";
-import { BattleEvent, heroOf, otherSide, Target, unitRank } from "./types";
-import { createToken, createUnit } from "./units";
+import { BattleEvent, otherSide, Target, unitRank } from "./types";
+import { createToken, summon } from "./units";
 
 /**
- * Puts a Unit on the Board. Only `playCard` applies the effects of a Unit that
- * comes from its Creature Card, such as Sabotage and Summon: a Start Unit does
- * not.
+ * The Hand of the enemy Hero of the Front that holds `lane` (ADR-0009).
  */
-export const summon = (
-  ctx: StepContext,
-  owner: Side,
-  card: CardInstance,
-  definition: CreatureCardDefinition,
-  lane: number,
-  position: number
-): UnitState => {
-  const { state } = ctx;
-  const unit = createUnit({
-    id: state.nextId,
-    owner,
-    card,
-    definition,
-    lane,
-    position,
-    turnNumber: state.turnNumber,
-  });
-  state.nextId += 1;
-  state.units.push(unit);
-  ctx.events.push(BattleEvent.UnitSummoned({ unit: { ...unit } }));
-  return unit;
-};
-
-/**
- * The Hand of the enemy Hero of the Front that holds `lane`. In v1 each Side
- * has 1 Hero, so it is the Hand of the other Side for each Lane.
- */
-const enemyHandOfLane = (ctx: StepContext, side: Side, _lane: number) => {
-  const enemy = otherSide(side);
-  return { side: enemy, hand: ctx.state.sides[enemy].hand };
+const enemyHandOfLane = (ctx: StepContext, side: Side, lane: number) => {
+  const enemy = heroOfLane(ctx.state, otherSide(side), lane);
+  return { enemy, hand: heroState(ctx.state, enemy).hand };
 };
 
 /**
@@ -93,7 +66,7 @@ const enemyHandOfLane = (ctx: StepContext, side: Side, _lane: number) => {
  * maximum Countdown.
  */
 const sabotage = (ctx: StepContext, unit: UnitState, amount: number): void => {
-  const { side, hand } = enemyHandOfLane(ctx, unit.owner, unit.lane);
+  const { enemy, hand } = enemyHandOfLane(ctx, unit.owner, unit.lane);
   let target: HandCard | undefined;
   for (const card of hand) {
     if (!target || card.countdown < target.countdown) {
@@ -108,7 +81,8 @@ const sabotage = (ctx: StepContext, unit: UnitState, amount: number): void => {
   ctx.events.push(
     BattleEvent.CardSabotaged({
       unitId: unit.id,
-      side,
+      side: enemy.side,
+      hero: enemy.hero,
       instanceId: target.instanceId,
       countdown: target.countdown,
     })
@@ -152,7 +126,7 @@ const summonToken = (
   activateKeyword(ctx, unit, "summon");
   const token = createToken({
     id: state.nextId,
-    owner: unit.owner,
+    owner: ownerOf(unit),
     token: getToken(tokenId),
     rank: unitRank(unit.source),
     lane: square.lane,
@@ -168,11 +142,11 @@ const summonToken = (
 
 const lowerCountdowns = (
   ctx: StepContext,
-  side: Side,
+  caster: HeroRef,
   cards: number,
   amount: number
 ): void => {
-  let candidates = ctx.state.sides[side].hand.filter(
+  let candidates = heroState(ctx.state, caster).hand.filter(
     (card) => card.countdown > 0
   );
   for (let count = 0; count < cards && candidates.length > 0; count += 1) {
@@ -184,7 +158,8 @@ const lowerCountdowns = (
     card.countdown = Math.max(0, card.countdown - amount);
     ctx.events.push(
       BattleEvent.CountdownChanged({
-        side,
+        side: caster.side,
+        hero: caster.hero,
         instanceId: card.instanceId,
         countdown: card.countdown,
       })
@@ -408,7 +383,7 @@ const isControlEffect = (effect: SkillEffect): effect is ControlEffect =>
  */
 const damageAndControl = (
   ctx: StepContext,
-  side: Side,
+  caster: HeroRef,
   units: readonly UnitState[],
   card: CardInstance,
   effect: ControlEffect,
@@ -419,7 +394,7 @@ const damageAndControl = (
       amount: skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
-      dealer: heroDealer(side),
+      dealer: heroDealer(caster),
       crit,
     });
     // A Unit that comes back with Rebirth did not survive the hit.
@@ -470,7 +445,9 @@ const damageAndControl = (
 };
 
 /** The Lane of a Square target, as a Lane target. `undefined` for other targets. */
-const laneOf = (target: Target): Target | undefined =>
+const laneOf = (
+  target: Target
+): Extract<Target, { readonly _tag: "Lane" }> | undefined =>
   target._tag === "Square" ? Target.Lane({ lane: target.lane }) : undefined;
 
 /**
@@ -481,7 +458,7 @@ const laneOf = (target: Target): Target | undefined =>
  */
 const applyFollowUp = (
   ctx: StepContext,
-  side: Side,
+  caster: HeroRef,
   card: CardInstance,
   effect: Extract<
     SkillEffect,
@@ -496,6 +473,7 @@ const applyFollowUp = (
   if (!lane) {
     return;
   }
+  const { side } = caster;
   switch (effect.type) {
     case "damageLaneBulwark": {
       const bulwark = skillAmountForRank(effect.bulwark, card.rank);
@@ -512,12 +490,11 @@ const applyFollowUp = (
       return;
     }
     case "damageUnitHero": {
-      // In v1 each Side has 1 Hero: the other Side's Hero holds each Lane.
-      damageHero(ctx, otherSide(side), {
+      damageHero(ctx, heroOfLane(ctx.state, otherSide(side), lane.lane), {
         amount: skillAmountForRank(effect.heroAmount, card.rank),
         damageType: effect.damageType,
         source: "skill",
-        dealer: heroDealer(side),
+        dealer: heroDealer(caster),
         crit,
       });
       return;
@@ -548,14 +525,15 @@ type HitEffect = Extract<
  */
 const applyHit = (
   ctx: StepContext,
-  side: Side,
+  caster: HeroRef,
   card: CardInstance,
   effect: HitEffect,
   target: Target,
   crit: number
 ): void => {
   const length = effect.type === "damageArea" ? effect.length : 1;
-  for (const unit of unitsInArea(ctx.state, otherSide(side), target, length)) {
+  const enemy = otherSide(caster.side);
+  for (const unit of unitsInArea(ctx.state, enemy, target, length)) {
     if (effect.type === "damageByAttack") {
       // Penance deals the Attack of the Unit, so its Swarm bonus adds to it.
       activateSwarm(ctx, unit);
@@ -567,7 +545,7 @@ const applyHit = (
           : skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
-      dealer: heroDealer(side),
+      dealer: heroDealer(caster),
       crit,
       noRebirth: effect.type === "damageUnit" && effect.noRebirth === true,
     });
@@ -577,7 +555,7 @@ const applyHit = (
     effect.type === "damageLaneHeal" ||
     effect.type === "damageUnitHero"
   ) {
-    applyFollowUp(ctx, side, card, effect, target, crit);
+    applyFollowUp(ctx, caster, card, effect, target, crit);
   }
 };
 
@@ -744,7 +722,7 @@ const randomEnemyUnits = (
  */
 const placeFieldEffect = (
   ctx: StepContext,
-  side: Side,
+  caster: HeroRef,
   card: CardInstance,
   effect: Extract<SkillEffect, { readonly type: "fieldEffect" }>,
   target: Target
@@ -755,7 +733,8 @@ const placeFieldEffect = (
   const { state } = ctx;
   const field: FieldEffect = {
     id: state.nextId,
-    owner: side,
+    owner: caster.side,
+    hero: caster.hero,
     card,
     lane: target.lane,
     position: target.position,
@@ -777,7 +756,7 @@ const placeFieldEffect = (
  */
 const applyMage = (
   ctx: StepContext,
-  side: Side,
+  caster: HeroRef,
   card: CardInstance,
   effect: Extract<
     SkillEffect,
@@ -787,13 +766,13 @@ const applyMage = (
   crit: number
 ): void => {
   if (effect.type === "fieldEffect") {
-    placeFieldEffect(ctx, side, card, effect, target);
+    placeFieldEffect(ctx, caster, card, effect, target);
     return;
   }
   const units =
     effect.type === "damageArc"
-      ? arcUnits(ctx, side, target)
-      : randomEnemyUnits(ctx, side, effect.units);
+      ? arcUnits(ctx, caster.side, target)
+      : randomEnemyUnits(ctx, caster.side, effect.units);
   for (const unit of units) {
     if (isOver(ctx) || !findUnit(ctx.state, unit.id)) {
       continue;
@@ -802,7 +781,7 @@ const applyMage = (
       amount: skillAmountForRank(effect.amount, card.rank),
       damageType: effect.damageType,
       source: "skill",
-      dealer: heroDealer(side),
+      dealer: heroDealer(caster),
       crit,
     });
   }
@@ -810,16 +789,17 @@ const applyMage = (
 
 const applyEffect = (
   ctx: StepContext,
-  side: Side,
+  caster: HeroRef,
   card: CardInstance,
   effect: SkillEffect,
   target: Target
 ): void => {
-  const crit = ctx.state.sides[side].hero.skillCrit;
+  const { side } = caster;
+  const crit = heroState(ctx.state, caster).skillCrit;
   if (isControlEffect(effect)) {
     damageAndControl(
       ctx,
-      side,
+      caster,
       unitsInArea(ctx.state, otherSide(side), target, 1),
       card,
       effect,
@@ -839,16 +819,16 @@ const applyEffect = (
     case "damageLaneBulwark":
     case "damageLaneHeal":
     case "damageUnitHero": {
-      applyHit(ctx, side, card, effect, target, crit);
+      applyHit(ctx, caster, card, effect, target, crit);
       return;
     }
     case "damageHero": {
       if (target._tag === "Hero") {
-        damageHero(ctx, target.side, {
+        damageHero(ctx, target, {
           amount: skillAmountForRank(effect.amount, card.rank),
           damageType: effect.damageType,
           source: "skill",
-          dealer: heroDealer(side),
+          dealer: heroDealer(caster),
           crit,
         });
       }
@@ -862,13 +842,13 @@ const applyEffect = (
     case "damageArc":
     case "damageRandom":
     case "fieldEffect": {
-      applyMage(ctx, side, card, effect, target, crit);
+      applyMage(ctx, caster, card, effect, target, crit);
       return;
     }
     case "lowerCountdown": {
       lowerCountdowns(
         ctx,
-        side,
+        caster,
         skillCountForRank(effect.cards, card.rank),
         skillAmountForRank(effect.amount, card.rank)
       );
@@ -889,38 +869,50 @@ const applyEffect = (
  */
 const castSkill = (
   ctx: StepContext,
-  side: Side,
+  caster: HeroRef,
   card: CardInstance,
   definition: SkillCardDefinition,
   target: Target
 ): void => {
-  applyEffect(ctx, side, card, definition.effect, target);
+  applyEffect(ctx, caster, card, definition.effect, target);
   if (isOver(ctx)) {
     return;
   }
   const success = rollBasisPoints(ctx.random, recallChance(card.rank));
-  ctx.events.push(BattleEvent.RecallRolled({ side, card, success }));
-  const sideState = ctx.state.sides[side];
+  ctx.events.push(
+    BattleEvent.RecallRolled({
+      side: caster.side,
+      hero: caster.hero,
+      card,
+      success,
+    })
+  );
+  const hero = heroState(ctx.state, caster);
   if (success) {
-    sideState.hand.push({ ...card, countdown: definition.countdown });
+    hero.hand.push({ ...card, countdown: definition.countdown });
   } else {
-    sideState.graveyard.push(card);
+    hero.graveyard.push(card);
   }
 };
 
-/** Plays a Ready card. The caller has checked the target with `legalTargets`. */
+/**
+ * The Hero `hero` of the active Side plays a Ready card from its Hand. The
+ * caller has checked the target with `legalTargets`.
+ */
 export const playCard = (
   ctx: StepContext,
+  heroIndex: number,
   handIndex: number,
   target: Target
 ): void => {
   const { state } = ctx;
   const side = state.activeSide;
-  const sideState = state.sides[side];
+  const caster: HeroRef = { side, hero: heroIndex };
+  const hero = heroState(state, caster);
   // SAFETY: the caller checked the play with `legalTargets`, which gives no
   // target when `handIndex` has no card.
-  const handCard = sideState.hand[handIndex] as HandCard;
-  sideState.hand = sideState.hand.filter((_, index) => index !== handIndex);
+  const handCard = hero.hand[handIndex] as HandCard;
+  hero.hand = hero.hand.filter((_, index) => index !== handIndex);
   const card: CardInstance = {
     instanceId: handCard.instanceId,
     cardId: handCard.cardId,
@@ -929,7 +921,7 @@ export const playCard = (
   ctx.events.push(
     BattleEvent.CardPlayed({
       side,
-      hero: heroOf(side),
+      hero: caster,
       handIndex,
       card,
       target,
@@ -942,7 +934,7 @@ export const playCard = (
       Target,
       { readonly _tag: "Square" }
     >;
-    const unit = summon(ctx, side, card, definition, lane, position);
+    const unit = summon(ctx, caster, card, definition, lane, position);
     const amount = definition.keywords.sabotage ?? 0;
     if (amount > 0) {
       sabotage(ctx, unit, amount);
@@ -952,5 +944,5 @@ export const playCard = (
     }
     return;
   }
-  castSkill(ctx, side, card, definition, target);
+  castSkill(ctx, caster, card, definition, target);
 };

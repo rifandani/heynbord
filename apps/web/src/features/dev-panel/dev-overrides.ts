@@ -1,5 +1,16 @@
-import type { Collection, GearLevels, StageDefinition } from "@workspace/rules";
-import { CARDS, MAX_COPIES, MAX_GEAR_LEVEL, ranksOf } from "@workspace/rules";
+import type {
+  Collection,
+  ForgeStoneTier,
+  GearLevels,
+  StageDefinition,
+} from "@workspace/rules";
+import {
+  CARDS,
+  ForgeStones,
+  MAX_COPIES,
+  MAX_GEAR_LEVEL,
+  ranksOf,
+} from "@workspace/rules";
 import { Option, Schema, Struct } from "effect";
 import type { Types } from "effect";
 
@@ -24,6 +35,7 @@ const DevOverrides = Schema.Struct({
     })
   ),
   sweepTickets: Schema.optionalKey(Schema.Number),
+  forgeStones: Schema.optionalKey(ForgeStones),
   xp: Schema.optionalKey(Schema.Number),
   gear: Schema.optionalKey(
     Schema.Struct({
@@ -72,6 +84,13 @@ export const setBalance = (
   value: number
 ): Balances => ({ ...balances, [kind]: wholeBalance(value) });
 
+/** The Forge Stones with one tier set to a whole number. */
+export const setForgeStones = (
+  forgeStones: ForgeStones,
+  tier: ForgeStoneTier,
+  value: number
+): ForgeStones => ({ ...forgeStones, [tier]: wholeBalance(value) });
+
 /** A Gear level that the panel can set: a whole number from 0 to the maximum. */
 export const gearLevel = (value: number): number =>
   Math.min(wholeBalance(value), MAX_GEAR_LEVEL);
@@ -97,6 +116,9 @@ export const toOverlay = (overrides: DevOverrides): ProfileOverlay | null => {
   }
   if (overrides.sweepTickets !== undefined) {
     overlay.sweepTickets = overrides.sweepTickets;
+  }
+  if (overrides.forgeStones !== undefined) {
+    overlay.forgeStones = overrides.forgeStones;
   }
   if (overrides.xp !== undefined) {
     overlay.xp = overrides.xp;
@@ -126,6 +148,9 @@ export const fromOverlay = (
   }
   if (overlay.sweepTickets !== undefined) {
     overrides.sweepTickets = overlay.sweepTickets;
+  }
+  if (overlay.forgeStones !== undefined) {
+    overrides.forgeStones = overlay.forgeStones;
   }
   if (overlay.xp !== undefined) {
     overrides.xp = overlay.xp;

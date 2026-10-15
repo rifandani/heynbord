@@ -618,23 +618,74 @@ export type GearLevels = typeof GearLevels.Type;
 /** A Lane index of a Stage: 0 to 2 (ADR-0010). */
 const StageLane = between(0, 2);
 
-const StartUnit = Schema.Struct({
-  cardId: Schema.NonEmptyString,
-  rank: RankId,
-  lane: StageLane,
-  /** Square index from the player's Hero: 0 is the player's Column 1. */
-  position: between(0, 11),
-});
+/** A Lane index of a Dungeon: 0 to 3 (ADR-0010). */
+const DungeonLane = between(0, 3);
+
+const startUnit = (lane: typeof StageLane) =>
+  Schema.Struct({
+    cardId: Schema.NonEmptyString,
+    rank: RankId,
+    lane,
+    /** Square index from the player's Hero: 0 is the player's Column 1. */
+    position: between(0, 11),
+  });
 
 /**
  * A Closed Lane (GDD 4.1). It opens in the Start Phase of the first Turn of
  * `opensOnTurn`. Without `opensOnTurn`, it stays closed for the full Battle.
  */
-const ClosedLane = Schema.Struct({
-  lane: StageLane,
-  opensOnTurn: Schema.optionalKey(between(2, 60)),
-});
+const closedLane = (lane: typeof StageLane) =>
+  Schema.Struct({
+    lane,
+    opensOnTurn: Schema.optionalKey(between(2, 60)),
+  });
+
+const ClosedLane = closedLane(StageLane);
 export type ClosedLane = typeof ClosedLane.Type;
+
+/**
+ * The effect of a Boss Rule (ADR-0040). Each effect acts for the Boss of the
+ * rule. No effect heals a Hero (ADR-0028).
+ */
+const BossRuleEffect = Schema.Union([
+  Schema.Struct({
+    /**
+     * Countdown −`amount` on the `cards` cards with the highest Countdown in
+     * the Hand. On a tie, the card that is earlier in the Hand goes first.
+     */
+    type: Schema.Literal("countdown"),
+    amount: between(1, 6),
+    cards: between(1, 8),
+  }),
+  Schema.Struct({
+    /**
+     * Summon a copy of a Creature Card at `rank` into a Square of the Front.
+     * Nothing occurs when that Square has a Unit or its Lane is closed.
+     */
+    type: Schema.Literal("summon"),
+    cardId: Schema.NonEmptyString,
+    rank: RankId,
+    /** A Lane index: 0 to 3, the Lanes of a Dungeon (ADR-0010). */
+    lane: between(0, 3),
+    /** Square index from the player's Hero: 0 is the player's Column 1. */
+    position: between(0, 11),
+  }),
+  Schema.Struct({
+    /** The Boss draws `cards` cards. */
+    type: Schema.Literal("draw"),
+    cards: between(1, 8),
+  }),
+]);
+
+/**
+ * A Boss Rule (ADR-0040): it activates one time, when damage puts the HP of
+ * the Boss at or below `threshold` percent of its maximum HP.
+ */
+export const BossRule = Schema.Struct({
+  threshold: between(1, 99),
+  effect: BossRuleEffect,
+});
+export type BossRule = typeof BossRule.Type;
 
 export const StageDefinition = Schema.Struct({
   id: Schema.NonEmptyString,
@@ -659,10 +710,58 @@ export const StageDefinition = Schema.Struct({
     classId: ClassId,
     gear: GearLevels,
     deck: Schema.Array(DeckEntry).check(Schema.isMinLength(5)),
-    startUnits: Schema.Array(StartUnit),
+    startUnits: Schema.Array(startUnit(StageLane)),
+    /** The Boss Rules of the enemy Hero (ADR-0040). Campaign Stages have none. */
+    bossRules: Schema.optionalKey(Schema.Array(BossRule)),
   }),
 });
 export type StageDefinition = typeof StageDefinition.Type;
+
+/**
+ * A Boss of a Dungeon (GDD 8.4): one enemy Hero with its own Front, Deck,
+ * Hand, Class and Gear.
+ */
+const DungeonBoss = Schema.Struct({
+  /** The key of the Boss name in the Message Catalogs. */
+  id: Schema.NonEmptyString,
+  /**
+   * The Lanes that the Boss stands behind, from the lowest Lane. A content
+   * test checks that the Fronts of a Dungeon hold each Lane one time, and
+   * that each Front is a block of Lanes next to each other.
+   */
+  front: Schema.Array(DungeonLane).check(Schema.isMinLength(1)),
+  heroHp: between(1, 200),
+  classId: ClassId,
+  gear: GearLevels,
+  deck: Schema.Array(DeckEntry).check(Schema.isMinLength(5)),
+  /** A content test checks that each Start Unit is in the Front of its Boss. */
+  startUnits: Schema.Array(startUnit(DungeonLane)),
+  bossRules: Schema.Array(BossRule),
+});
+export type DungeonBoss = typeof DungeonBoss.Type;
+
+/**
+ * A Dungeon (GDD 8.4): one Battle with 4 Lanes against all its Bosses. The
+ * rewards are in `DUNGEON_REWARDS` (Economy 2.4).
+ */
+export const DungeonDefinition = Schema.Struct({
+  id: Schema.NonEmptyString,
+  number: between(1, 3),
+  /**
+   * The Player level that unlocks the Dungeon (GDD 7.1). It is also its
+   * Recommended level. A content test checks it against `UNLOCK_LEVELS`.
+   */
+  unlockLevel: between(1, 30),
+  /** The card that the first win gives: an Epic copy of a card of a Boss Deck. */
+  firstWinCard: DeckEntry,
+  closedLanes: Schema.Array(closedLane(DungeonLane)),
+  /** 1 to 4 Bosses, because each Boss needs at least 1 of the 4 Lanes. */
+  bosses: Schema.Array(DungeonBoss).check(
+    Schema.isMinLength(1),
+    Schema.isMaxLength(4)
+  ),
+});
+export type DungeonDefinition = typeof DungeonDefinition.Type;
 
 /** A starter Deck that the Player can take into a Battle in the slice. */
 export const StarterDeck = Schema.Struct({

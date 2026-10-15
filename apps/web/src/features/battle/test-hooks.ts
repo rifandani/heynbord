@@ -19,7 +19,7 @@ import {
   skip,
   startSession,
 } from "@/features/battle/battle-session";
-import { applyEvent } from "@/features/battle/battle-view";
+import { applyEvent, heroOf } from "@/features/battle/battle-view";
 import {
   battleSessionAtom,
   focusedTargetAtom,
@@ -27,6 +27,15 @@ import {
   legalTargetsAtom,
   selectedCardAtom,
 } from "@/features/battle/battle.atoms";
+import { PLAYER_HERO, playerHand } from "@/features/battle/player-hero";
+import {
+  dungeonBefore,
+  playDungeonTurns,
+  qaThreeBossDungeon,
+  qaTwoBossDungeon,
+  qaWeakTwoBossDungeon,
+  startDungeon,
+} from "@/features/battle/qa-dungeons";
 import { playback } from "@/features/battle/scene/playback";
 import type { StageResults } from "@/features/campaign/region-map";
 import { NEW_PLAYER } from "@/features/profile/profile";
@@ -45,8 +54,20 @@ export const QA_STATES = [
   "enemy-cast",
   "victory",
   "defeat",
+  "dungeon",
+  "dungeon-three",
+  "dungeon-boss-rule",
+  "dungeon-defeat",
 ] as const;
 export type QaState = (typeof QA_STATES)[number];
+
+/** The states that start in the middle of their queued events, so that a capture shows them play. */
+const PLAYING_STATES: ReadonlySet<QaState> = new Set([
+  "resolution",
+  "enemy-cast",
+  "dungeon-boss-rule",
+  "dungeon-defeat",
+]);
 
 const playTurns = (session: BattleSession, turns: number): BattleSession => {
   let next = session;
@@ -63,8 +84,8 @@ const playTurns = (session: BattleSession, turns: number): BattleSession => {
 /** True when the player has a Ready card with a legal target now. */
 const canTarget = (session: BattleSession): boolean =>
   session.rules.activeSide === "player" &&
-  session.rules.sides.player.hand.some(
-    (_, index) => legalTargets(session.rules, index).length > 0
+  playerHand(session.rules).some(
+    (_, index) => legalTargets(session.rules, PLAYER_HERO, index).length > 0
   );
 
 /** Plays more Turns until the player can select a target, for 8 Turns at most. */
@@ -212,6 +233,24 @@ export const buildQaState = (
     case "victory": {
       return finishedBattle(seed, "player");
     }
+    case "dungeon": {
+      return playDungeonTurns(startDungeon(qaTwoBossDungeon(), seed), 3);
+    }
+    case "dungeon-three": {
+      return playDungeonTurns(startDungeon(qaThreeBossDungeon(), seed), 3);
+    }
+    case "dungeon-boss-rule": {
+      return dungeonBefore(
+        startDungeon(qaWeakTwoBossDungeon(), seed),
+        (event) => event._tag === "BossRuleActivated"
+      );
+    }
+    case "dungeon-defeat": {
+      return dungeonBefore(
+        startDungeon(qaWeakTwoBossDungeon(), seed),
+        (event) => event._tag === "HeroDefeated"
+      );
+    }
     case "defeat": {
       return finishedBattle(seed, "enemy");
     }
@@ -315,12 +354,12 @@ export const installTestHooks = (
       registry.set(battleSessionAtom, session);
       // A Battle and its result go back to the Campaign (GDD 11.4).
       registry.set(gameScreenAtom, known === "town" ? "town" : "campaign");
-      if ((known === "resolution" || known === "enemy-cast") && session) {
+      if (PLAYING_STATES.has(known) && session) {
         // Start the first queued events, so the capture shows Units in action.
         playback.session = session;
       }
       if (known === "targeting" && session) {
-        const ready = session.view.sides.player.hand.findIndex(
+        const ready = heroOf(session.view, "player").hand.findIndex(
           (card, index) => {
             registry.set(selectedCardAtom, index);
             return (

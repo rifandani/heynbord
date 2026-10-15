@@ -9,13 +9,14 @@ import {
   preventRout,
   run,
   unitById,
+  heroOf,
 } from "../testing/fixtures";
 import { legalTargets } from "./targets";
 import { Command, Target } from "./types";
 import type { BattleState } from "./types";
 
 const play = (handIndex: number, target: Target) =>
-  Command.PlayCard({ handIndex, target });
+  Command.PlayCard({ hero: 0, handIndex, target });
 
 const square = (lane: number, position: number) =>
   Target.Square({ lane, position });
@@ -325,7 +326,7 @@ describe("Thunderstorm (GDD 5.5)", () => {
     ];
     unitAt(state, "player", 2);
     preventRout(state);
-    expect(legalTargets(state, 0)).toEqual([Target.NoTarget()]);
+    expect(legalTargets(state, 0, 0)).toEqual([Target.NoTarget()]);
     const { events } = run(state, play(0, Target.NoTarget()));
     const hit = eventsOfType(events, "DamageDealt").map((event) =>
       event.target._tag === "Unit" ? event.target.unitId : -1
@@ -366,7 +367,7 @@ describe("Thunderstorm (GDD 5.5)", () => {
     preventRout(none);
     const { state: next, events } = run(none, play(0, Target.NoTarget()));
     expect(eventsOfType(events, "DamageDealt")).toEqual([]);
-    expect(next.sides.enemy.hero.hp).toBe(30);
+    expect(heroOf(next, "enemy").hp).toBe(30);
     expect(eventsOfType(events, "RecallRolled")).toHaveLength(1);
   });
 });
@@ -378,13 +379,13 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
       ["mage.wildfire", 0, "rare"],
       ["mage.blizzard", 0, "epic"],
     ]);
-    const wildfire = legalTargets(state, 0);
+    const wildfire = legalTargets(state, 0, 0);
     // Lanes 1 and 2 can be the upper Lane, and Columns 1 to 11 the corner.
     expect(wildfire).toHaveLength(2 * 11);
     expect(wildfire).toContainEqual(square(1, 10));
     expect(wildfire).not.toContainEqual(square(2, 0));
     expect(wildfire).not.toContainEqual(square(0, 11));
-    const blizzard = legalTargets(state, 1);
+    const blizzard = legalTargets(state, 0, 1);
     expect(blizzard).toHaveLength(11);
     expect(
       blizzard.every((target) => target._tag === "Square" && target.lane === 0)
@@ -394,7 +395,7 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
   it("gives the enemy Side corners toward the player's Hero", () => {
     const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
     giveHand(state, "enemy", [["mage.wildfire", 0, "rare"]]);
-    const targets = legalTargets(state, 0);
+    const targets = legalTargets(state, 0, 0);
     expect(targets).toContainEqual(square(0, 11));
     expect(targets).not.toContainEqual(square(0, 0));
   });
@@ -405,8 +406,8 @@ describe("Field Effects (GDD 4.8): Wildfire and Blizzard", () => {
       ["mage.wildfire", 0, "rare"],
       ["mage.blizzard", 0, "epic"],
     ]);
-    expect(legalTargets(state, 0)).toEqual([]);
-    expect(legalTargets(state, 1)).toEqual([]);
+    expect(legalTargets(state, 0, 0)).toEqual([]);
+    expect(legalTargets(state, 0, 1)).toEqual([]);
   });
 
   it("hits each enemy Unit in the area in each End Phase of its owner, 2 times, then ends", () => {

@@ -2,6 +2,7 @@ import type { BattleEvent, BattleState } from "@workspace/rules";
 import { getCard, legalTargets } from "@workspace/rules";
 
 import type { BattleView, HandCardView } from "@/features/battle/battle-view";
+import { PLAYER_HERO, playerHand } from "@/features/battle/player-hero";
 
 /**
  * The 4 Tutorial Steps (GDD 8.3, ADR-0004), in the order of the GDD table:
@@ -168,9 +169,9 @@ export const afterEvent = (
  */
 const laneToBlock = (state: BattleState): number | null => {
   const summonLanes = new Set(
-    state.sides.player.hand.flatMap((card, handIndex) =>
+    playerHand(state).flatMap((card, handIndex) =>
       getCard(card.cardId).kind === "creature"
-        ? legalTargets(state, handIndex).flatMap((target) =>
+        ? legalTargets(state, PLAYER_HERO, handIndex).flatMap((target) =>
             target._tag === "Square" ? [target.lane] : []
           )
         : []

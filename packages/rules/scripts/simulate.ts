@@ -1,8 +1,8 @@
 /**
  * Headless Battle simulation (GDD 13). The AI plays both Sides.
  *
- * Usage: `bun run sim [stage | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]`.
- * With no mode, it runs `stage`, `matchup` and `packs`. `battles` is 200 by default. With
+ * Usage: `bun run sim [stage | dungeon | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]`.
+ * With no mode, it runs `stage`, `dungeon`, `matchup` and `packs`. `battles` is 200 by default. With
  * `--check`, it exits with code 1 when a win rate is not on its GDD 13 target
  * (CI uses it). The seeds are fixed, so the same content gives the same result.
  *
@@ -13,6 +13,11 @@
  *   plays N levels above the Recommended level, and `--gear N` sets all 4 Gear
  *   slots to N. They measure the win-chance bonuses of `economy` (Economy
  *   7.1), so with them there are no Expected Gear rows.
+ * - `dungeon`: each Dungeon with each starter Deck, at the unlock level of the
+ *   Dungeon (GDD 13, step 6). The Deck is typical at that level: the expected
+ *   Deck at the first Stage of that level. A second row plays the Expected
+ *   Gear of that Stage (ADR-0034). `--level` and `--gear` work as in `stage`.
+ *   `defeated` is the average number of Bosses that the Player Defeated.
  * - `matchup`: each Archetype against each Archetype (docs/game/08-archetypes.md).
  *   `battles` is the number of seeds: each seed plays 2 Battles, one with each
  *   Side first. `--level` (5 by default) and `--gear` (0 by default, for all 4
@@ -47,6 +52,7 @@ import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
 import { skillBudgetCheck } from "../src/content/balance";
 import { CARDS, getCard } from "../src/content/cards";
 import { STARTER_DECKS } from "../src/content/decks";
+import { DUNGEONS } from "../src/content/dungeons";
 import { FORGE_STONE_TIERS } from "../src/content/forge-stones";
 import { PACK_SIZE, PACKS } from "../src/content/packs";
 import { RANKS } from "../src/content/ranks";
@@ -74,10 +80,13 @@ import type {
 } from "../src/simulation/economy";
 import { simulatePack } from "../src/simulation/packs";
 import {
+  DUNGEON_TARGET,
+  dungeonStage,
   gatesRelease,
   isOnTarget,
   MATCHUP_TARGET,
   NO_GEAR,
+  simulateDungeon,
   simulateMatchup,
   simulateStage,
   stageTarget,
@@ -86,9 +95,16 @@ import type { MatchupReport, WinRateTarget } from "../src/simulation/simulate";
 import { SWAP_LIMIT, simulateSkillSwap } from "../src/simulation/skill-swap";
 
 const USAGE =
-  "Usage: bun run sim [stage | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]";
+  "Usage: bun run sim [stage | dungeon | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]";
 
-const MODES = ["stage", "matchup", "packs", "economy", "skill-swap"] as const;
+const MODES = [
+  "stage",
+  "dungeon",
+  "matchup",
+  "packs",
+  "economy",
+  "skill-swap",
+] as const;
 type Mode = (typeof MODES)[number];
 
 const isMode = (value: string): value is Mode =>
@@ -249,6 +265,49 @@ if (modes.includes("stage")) {
               `Stage ${report.stageId} with ${report.deckId}, Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
               report.winRate,
               stageTarget(stage)
+            ),
+          };
+        })
+      );
+    })
+  );
+}
+
+if (modes.includes("dungeon")) {
+  const levelsAbove = level ?? 0;
+  // `--level` and `--gear` measure a bonus, so they play only one Gear row.
+  const expected =
+    level === undefined && gear === undefined ? expectedGear() : null;
+  console.log(
+    `Dungeons: ${battles} Battles each, unlock level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear of the first Stage at the unlock level (ADR-0034)"}`
+  );
+  console.table(
+    DUNGEONS.flatMap((dungeon) => {
+      const dungeonGear = expected?.get(dungeonStage(dungeon).id) ?? NO_GEAR;
+      const rows: { gear: GearLevels; expected: boolean }[] = [
+        { gear: gearOf(gear), expected: false },
+        ...(hasGear(dungeonGear)
+          ? [{ gear: dungeonGear, expected: true }]
+          : []),
+      ];
+      return rows.flatMap((row) =>
+        STARTER_DECKS.map((deck) => {
+          const report = simulateDungeon(dungeon, deck, battles, {
+            levelsAbove,
+            gear: row.gear,
+          });
+          return {
+            dungeon: report.dungeonId,
+            level: dungeon.unlockLevel + levelsAbove,
+            gear: `${gearText(row.gear)}${row.expected ? " expected" : ""}`,
+            deck: report.deckId,
+            winRate: percent(report.winRate),
+            avgTurn: report.averageTurn.toFixed(1),
+            defeated: report.averageDefeated.toFixed(2),
+            target: judge(
+              `Dungeon ${report.dungeonId} with ${report.deckId}, Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
+              report.winRate,
+              DUNGEON_TARGET
             ),
           };
         })
@@ -530,7 +589,7 @@ if (modes.includes("economy")) {
     `Total: ${ledger.total} of the Bazaar catalog cost ${ledger.catalog} (estimate): ${percent(ledger.catalogShare)}`
   );
   console.log(
-    "\nNot in the sim: Achievement Coin and Essence (the results are a floor), the repeat-win card, the repeat-win and Sweep Forge Stones, Dungeon 3, the first-win cards of planned Stages and Dungeons, and the 30-Star chests (a win gives 2 Stars and the Player does not repeat Stages)."
+    "\nNot in the sim: Achievement Coin and Essence (the results are a floor), the repeat-win card, the repeat-win and Sweep Forge Stones, Dungeon 3, the first-win cards of Dungeons, and the 30-Star chests (a win gives 2 Stars and the Player does not repeat Stages)."
   );
 }
 

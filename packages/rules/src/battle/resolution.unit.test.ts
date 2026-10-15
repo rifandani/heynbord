@@ -9,6 +9,7 @@ import {
   preventRout,
   run,
   unitById,
+  heroOf,
 } from "../testing/fixtures";
 import { Command } from "./types";
 import type { BattleEvent } from "./types";
@@ -508,7 +509,7 @@ describe("attack (GDD 4.6)", () => {
     });
     const { state: next } = run(state, endTurn);
     // Attack 3 + Heroic 1.
-    expect(next.sides.enemy.hero.hp).toBe(26);
+    expect(heroOf(next, "enemy").hp).toBe(26);
   });
 
   it("does not attack a friendly Unit in front", () => {
@@ -569,7 +570,7 @@ describe("attack (GDD 4.6)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(eventsOfType(events, "UnitMoved")).toHaveLength(0);
-    expect(next.sides.enemy.hero.hp).toBe(26);
+    expect(heroOf(next, "enemy").hp).toBe(26);
   });
 
   it("does not attack with Attack 0", () => {
@@ -688,7 +689,7 @@ describe("damage (GDD 4.7)", () => {
       position: 11,
     });
     const { state: next } = run(state, endTurn);
-    expect(next.sides.enemy.hero.hp).toBe(26);
+    expect(heroOf(next, "enemy").hp).toBe(26);
   });
 
   it("gives Burn with Fire: 1 damage in each End Phase of the owner, 2 times", () => {
@@ -979,7 +980,7 @@ describe("death and action order (GDD 4.4, 4.9)", () => {
       maxHp: 5,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(next.sides.enemy.graveyard).toEqual([cardOf(victim)]);
+    expect(heroOf(next, "enemy").graveyard).toEqual([cardOf(victim)]);
     expect(eventsOfType(events, "UnitDied")).toEqual([
       expect.objectContaining({ unitId: victim.id }),
     ]);
@@ -1096,7 +1097,7 @@ describe("Pivot (GDD 4.5, 4.6)", () => {
     });
     const { state: next } = run(state, endTurn);
     expect(unitById(next, passed.id)?.hp).toBe(5);
-    expect(next.sides.enemy.hero.hp).toBe(30);
+    expect(heroOf(next, "enemy").hp).toBe(30);
   });
 
   it("is a melee attack, so Retaliate applies", () => {
@@ -1179,7 +1180,7 @@ describe("Last Breath (GDD 4.9)", () => {
     expect(unitById(next, behind.id)?.hp).toBe(4);
     expect(unitById(next, blocker.id)?.hp).toBe(4);
     expect(unitById(next, ahead.id)?.hp).toBe(3);
-    expect(next.sides.enemy.hero.hp).toBe(30);
+    expect(heroOf(next, "enemy").hp).toBe(30);
     expect(eventsOfType(events, "DamageDealt").at(-1)).toMatchObject({
       source: "lastBreath",
       amount: 1,
@@ -1441,7 +1442,7 @@ describe("Hobble (GDD 4.5, 4.7)", () => {
       hobble: 2,
     });
     const shot = run(hero, endTurn);
-    expect(shot.state.sides.enemy.hero.hp).toBeLessThan(30);
+    expect(heroOf(shot.state, "enemy").hp).toBeLessThan(30);
     expect(eventsOfType(shot.events, "StatusApplied")).toEqual([]);
   });
 
@@ -1908,7 +1909,7 @@ describe("Knockback (GDD 4.7)", () => {
       position: 11,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(next.sides.enemy.hero.hp).toBe(29);
+    expect(heroOf(next, "enemy").hp).toBe(29);
     expect(eventsOfType(events, "UnitPushed")).toEqual([]);
   });
 
@@ -2087,7 +2088,7 @@ describe("Trample (GDD 4.7, ADR-0017)", () => {
       hp: 4,
     });
     const { state: next, events } = run(state, endTurn);
-    expect(next.sides.enemy.hero.hp).toBe(30);
+    expect(heroOf(next, "enemy").hp).toBe(30);
     expect(damageLog(events)).toEqual(["attack:8"]);
   });
 
@@ -2573,7 +2574,7 @@ describe("Bleed (GDD 4.7, ADR-0019)", () => {
       bleed: 2,
     });
     const shot = run(hero, endTurn);
-    expect(shot.state.sides.enemy.hero.hp).toBeLessThan(30);
+    expect(heroOf(shot.state, "enemy").hp).toBeLessThan(30);
     expect(eventsOfType(shot.events, "StatusApplied")).toEqual([]);
   });
 
@@ -2664,7 +2665,7 @@ describe("Wall (GDD 5.4)", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(eventsOfType(events, "UnitAttacked")).toEqual([]);
-    expect(next.sides.enemy.hero.hp).toBe(30);
+    expect(heroOf(next, "enemy").hp).toBe(30);
   });
 
   it("does not deal Retaliate or First Strike damage, also with Attack above 0", () => {
@@ -2927,7 +2928,7 @@ describe("Rebirth (GDD 4.9)", () => {
       { unitId: defender.id, hp: 1 },
     ]);
     expect(eventsOfType(first.events, "UnitDied")).toEqual([]);
-    expect(first.state.sides.enemy.graveyard).toEqual([]);
+    expect(heroOf(first.state, "enemy").graveyard).toEqual([]);
 
     const second = run(run(first.state, endTurn).state, endTurn);
     expect(unitById(second.state, defender.id)).toBeUndefined();
@@ -2935,7 +2936,7 @@ describe("Rebirth (GDD 4.9)", () => {
       { unitId: defender.id },
     ]);
     expect(eventsOfType(second.events, "UnitReborn")).toEqual([]);
-    expect(second.state.sides.enemy.graveyard).toEqual([cardOf(defender)]);
+    expect(heroOf(second.state, "enemy").graveyard).toEqual([cardOf(defender)]);
   });
 
   it("is a kill: no Retaliate, no on-hit Status and no push", () => {
@@ -3041,7 +3042,9 @@ describe("Rebirth (GDD 4.9)", () => {
     });
     expect(eventsOfType(events, "UnitSummoned")).toEqual([]);
     expect(eventsOfType(events, "CardSabotaged")).toEqual([]);
-    expect(next.sides.player.hand.map((card) => card.countdown)).toEqual([2]);
+    expect(heroOf(next, "player").hand.map((card) => card.countdown)).toEqual([
+      2,
+    ]);
   });
 
   it("lets a Trample hit after a Rebirth kill go to the next Square behind, and does not hit the reborn Unit again", () => {

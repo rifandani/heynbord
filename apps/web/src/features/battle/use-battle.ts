@@ -36,6 +36,7 @@ import {
 } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import type { UnitView } from "@/features/battle/battle-view";
+import { heroOf } from "@/features/battle/battle-view";
 import type { InspectedUnit } from "@/features/battle/battle.atoms";
 import {
   battleLogAtom,
@@ -94,7 +95,7 @@ const noteSelect = (
 ) => {
   if (handIndex !== null && current && canAct(current)) {
     update((tutorial) =>
-      selectCard(tutorial, current.view.sides.player.hand[handIndex])
+      selectCard(tutorial, heroOf(current.view, "player").hand[handIndex])
     );
   }
 };

@@ -19,6 +19,7 @@ import { NEW_PLAYER } from "@/features/profile/profile";
 const unit: UnitView = {
   id: 7,
   owner: "player",
+  hero: 0,
   source: { _tag: "Card", cardId: "orc.badlandRunt" },
   rank: "common",
   lane: 0,
@@ -182,7 +183,7 @@ describe("poseFor at rest", () => {
         hp: 1,
       }),
       BattleEvent.DamageDealt({
-        target: { _tag: "Hero", side: "enemy" },
+        target: { _tag: "Hero", side: "enemy", hero: 0 },
         amount: 1,
         damageType: "fire",
         source: "attack",
@@ -260,7 +261,7 @@ describe("poseFor in an event", () => {
     const event = BattleEvent.UnitAttacked({
       unitId: unit.id,
       ranged: false,
-      target: { _tag: "Hero", side: "enemy" },
+      target: { _tag: "Hero", side: "enemy", hero: 0 },
     });
     expect(pose(event, 0.35 / 2).x).toBeCloseTo(squareX(2) - 0.06);
     expect(pose(event, 0.45).x).toBeCloseTo(squareX(2) - 0.12 + 0.31);
@@ -274,7 +275,7 @@ describe("poseFor in an event", () => {
     const event = BattleEvent.UnitAttacked({
       unitId: unit.id,
       ranged: true,
-      target: { _tag: "Hero", side: "enemy" },
+      target: { _tag: "Hero", side: "enemy", hero: 0 },
     });
     expect(pose(event, 0.2).lean).toBeCloseTo(-0.12);
     expect(pose(event, 0.2).x).toBe(squareX(2));

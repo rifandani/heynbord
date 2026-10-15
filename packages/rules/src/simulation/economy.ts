@@ -161,7 +161,7 @@ const asEconomyStage = (stage: StageDefinition): EconomyStage => ({
 
 /**
  * The Campaign of the sim: the real Stages, and a planned Stage for each
- * Stage of Regions 1 to 3 that does not exist yet. The Recommended level of a
+ * Stage of the Campaign that does not exist yet. The Recommended level of a
  * planned Stage comes from the First-try Path (Economy 1.2).
  */
 export const economyStages = (

@@ -18,8 +18,8 @@ export type { StepOutput } from "./battle/step";
 export {
   BattleEvent,
   Command,
+  DUNGEON_LANES,
   HAND_LIMIT,
-  heroOf,
   LANE_LENGTH,
   otherSide,
   STAGE_LANES,
@@ -36,6 +36,8 @@ export type {
   BattleResult,
   BattleSetup,
   BattleState,
+  BossRuleEffect,
+  BossRuleState,
   CardInstance,
   DamageDealer,
   DamageSource,
@@ -80,8 +82,10 @@ export {
   DUNGEON_FORGE_STONE_CHANCE,
   DUNGEON_LEGENDARY_FORGE_STONE_CHANCE,
   DUNGEON_REWARDS,
+  DUNGEONS,
   dungeonForgeStones,
   dungeonReward,
+  getDungeon,
   getDungeonRewards,
 } from "./content/dungeons";
 export type {
@@ -181,6 +185,8 @@ export type {
   ClosedLane,
   CreatureCardDefinition,
   DamageType,
+  DungeonBoss,
+  DungeonDefinition,
   GearLevels,
   KeywordAmount,
   Keywords,

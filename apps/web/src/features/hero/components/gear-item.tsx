@@ -1,9 +1,13 @@
+import type { ForgeStoneTier } from "@workspace/rules";
 import { coinDenominations, MAX_GEAR_LEVEL } from "@workspace/rules";
 import { cn } from "cn";
+import type { CSSProperties, RefObject } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { Label, Meter } from "react-aria-components";
 
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import type { GearItem, GearUpgrade } from "@/features/hero/hero";
@@ -20,56 +24,194 @@ const PLATE =
 const SMALL_LABEL =
   "text-xs font-bold text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]";
 
-const NOTCHES = Array.from({ length: MAX_GEAR_LEVEL }, (_, index) => index);
+/**
+ * The time that the Forge Stone of an upgrade takes to leap from the upgrade
+ * into its Gear item. The strike of the stone is the beat of the upgrade: the
+ * sparks, the level hop, the stat roll, the glow and the sound start then.
+ */
+export const GEAR_STRIKE_MS = 200;
+
+/**
+ * The last upgrade of a Gear item in this visit: its serial (from 1), the
+ * Forge Stone tier that it used, and `newTier` when the next level needs a
+ * stone of the next tier.
+ */
+export interface GearStrike {
+  readonly serial: number;
+  readonly tier: ForgeStoneTier;
+  readonly newTier: boolean;
+}
+
+/** The animation delay that puts a beat of the upgrade on the strike. */
+const ON_STRIKE: CSSProperties = { animationDelay: `${GEAR_STRIKE_MS}ms` };
+
+/**
+ * The sparks of a strike: the angle of each one and how far it flies, in
+ * percent of the icon. They are a little uneven, as from a real hammer.
+ */
+const SPARKS: readonly { readonly angle: number; readonly reach: number }[] = [
+  { angle: -96, reach: 58 },
+  { angle: -58, reach: 50 },
+  { angle: -22, reach: 60 },
+  { angle: 14, reach: 48 },
+  { angle: 52, reach: 56 },
+  { angle: 128, reach: 54 },
+  { angle: 166, reach: 60 },
+  { angle: 204, reach: 50 },
+  { angle: 238, reach: 57 },
+];
+
+/**
+ * The strike of a Forge Stone on its Gear item: a short flash and sparks in
+ * the color of its tier, which scale with the icon. A new element for each
+ * strike, so that it plays again.
+ */
+const StrikeSparks = ({ tier }: { readonly tier: ForgeStoneTier }) => {
+  const color = RANK_COLORS[tier];
+  return (
+    <span
+      className="[container-type:size] pointer-events-none absolute inset-0 motion-reduce:hidden"
+      data-testid="gear-strike"
+      data-tier={tier}
+    >
+      <span
+        className="absolute inset-[12%] animate-[pack-burst_420ms_ease-out_both] rounded-full"
+        style={{
+          ...ON_STRIKE,
+          background: `radial-gradient(circle, rgba(255,246,223,0.95) 0%, ${color} 34%, transparent 68%)`,
+        }}
+      />
+      {SPARKS.map(({ angle, reach }) => (
+        <span
+          key={angle}
+          className="absolute top-1/2 left-1/2 size-0"
+          style={{ rotate: `${angle}deg` }}
+        >
+          <span
+            className="absolute top-[-1.5px] left-0 h-[3px] w-[14cqw] origin-left animate-[gear-spark_480ms_cubic-bezier(0.16,1,0.3,1)_both] rounded-full"
+            // SAFETY: a CSS custom property for the keyframes. React's
+            // `CSSProperties` does not model custom properties.
+            style={
+              {
+                ...ON_STRIKE,
+                "--spark-reach": `${reach}cqw`,
+                background: `linear-gradient(90deg, transparent, ${color} 45%, #fff6df)`,
+              } as CSSProperties
+            }
+          />
+        </span>
+      ))}
+    </span>
+  );
+};
+
+/**
+ * The line of light that goes across a painted Gear icon, as across a Pack on
+ * the Pack Stand. The painted icon is its mask, so the light only touches the
+ * item. It plays when the upgrade is under the pointer or has the keyboard
+ * focus, and one time when the item gets to level 25.
+ */
+const GearSheen = ({
+  painted,
+  maxed,
+}: {
+  readonly painted: string;
+  readonly maxed: boolean;
+}) => (
+  <span
+    className="pointer-events-none absolute inset-0 overflow-hidden"
+    style={{
+      mask: `url("${painted}") center / contain no-repeat`,
+      WebkitMask: `url("${painted}") center / contain no-repeat`,
+    }}
+  >
+    <span
+      className={cn(
+        "absolute inset-y-0 left-0 w-1/2 translate-x-[-130%] bg-[linear-gradient(105deg,transparent_15%,rgba(255,246,220,0.6)_50%,transparent_85%)]",
+        maxed
+          ? "motion-safe:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)_520ms]"
+          : "motion-safe:group-has-[[data-gear-upgrade][data-focus-visible]]/gear:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-has-[[data-gear-upgrade][data-hovered]]/gear:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)]"
+      )}
+    />
+  </span>
+);
 
 /**
  * The icon of a Gear item: its painted icon, or its glyph on a round dark
  * badge with a bronze rim until a person paints it (11 — Town Concepts 12).
- * At level 25 the "Max" seal sits on its lower right; it stamps on when the
- * item gets there.
+ * When its upgrade is ready and under the pointer or the focus, the item lifts
+ * off the plate and the light goes across it. A strike makes it give a little
+ * and throws sparks in the tier color. At level 25 the "Max" seal sits on its
+ * lower right; it stamps on when the item gets there.
  */
 const GearIcon = ({
   item,
-  stamp,
+  strike,
+  ref,
 }: {
   readonly item: GearItem;
-  readonly stamp: boolean;
+  readonly strike: GearStrike | null;
+  readonly ref: RefObject<HTMLSpanElement | null>;
 }) => {
   const { tr } = useGameText();
   const painted = heroArt(item.slot);
+  const maxed = item.upgrade.kind === "max";
   return (
     <span
-      className="relative grid size-24 shrink-0 place-items-center [@media(max-height:500px)]:size-11"
+      ref={ref}
+      className={cn(
+        "relative grid size-24 shrink-0 place-items-center transition-[translate,filter] duration-200 ease-out [@media(max-height:500px)]:size-11",
+        // A disabled upgrade gets no hover and no focus, so only a ready item lifts.
+        "group-has-[[data-gear-upgrade][data-hovered]]/gear:brightness-110 motion-safe:group-has-[[data-gear-upgrade][data-hovered]]/gear:-translate-y-1",
+        "group-has-[[data-gear-upgrade][data-focus-visible]]/gear:brightness-110 motion-safe:group-has-[[data-gear-upgrade][data-focus-visible]]/gear:-translate-y-1"
+      )}
       aria-hidden
     >
-      {painted ? (
-        <img
-          src={painted}
-          alt=""
-          width={256}
-          height={256}
-          draggable={false}
-          className="size-full object-contain drop-shadow-[0_3px_0_rgba(0,0,0,0.45)] select-none"
-        />
-      ) : (
-        <span className="grid size-[84%] place-items-center rounded-full border-[3px] border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] shadow-[0_3px_0_rgba(0,0,0,0.45),inset_0_2px_0_rgba(255,226,170,0.18)] [@media(max-height:500px)]:border-2">
-          <GlyphIcon
-            glyph={GEAR_GLYPH[item.slot]}
-            className={cn(
-              "size-[54%] text-[#f3e6c4] drop-shadow-[0_2px_0_rgba(0,0,0,0.5)]",
-              GEAR_GLYPH_TURN[item.slot]
-            )}
-          />
-        </span>
+      <span
+        key={`struck-${strike?.serial ?? 0}`}
+        className={cn(
+          "relative grid size-full place-items-center",
+          strike !== null &&
+            "motion-safe:animate-[gear-struck_340ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+        )}
+        style={ON_STRIKE}
+      >
+        {painted ? (
+          <>
+            <img
+              src={painted}
+              alt=""
+              width={256}
+              height={256}
+              draggable={false}
+              className="size-full object-contain drop-shadow-[0_3px_0_rgba(0,0,0,0.45)] select-none"
+            />
+            <GearSheen painted={painted} maxed={maxed && strike !== null} />
+          </>
+        ) : (
+          <span className="grid size-[84%] place-items-center rounded-full border-[3px] border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] shadow-[0_3px_0_rgba(0,0,0,0.45),inset_0_2px_0_rgba(255,226,170,0.18)] [@media(max-height:500px)]:border-2">
+            <GlyphIcon
+              glyph={GEAR_GLYPH[item.slot]}
+              className={cn(
+                "size-[54%] text-[#f3e6c4] drop-shadow-[0_2px_0_rgba(0,0,0,0.5)]",
+                GEAR_GLYPH_TURN[item.slot]
+              )}
+            />
+          </span>
+        )}
+      </span>
+      {strike === null ? null : (
+        <StrikeSparks key={`sparks-${strike.serial}`} tier={strike.tier} />
       )}
-      {item.upgrade.kind === "max" ? (
+      {maxed ? (
         <span
           className={cn(
             "absolute -right-1 -bottom-1 grid place-items-center rounded-full border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1.5 py-0.5 text-[11px] leading-none font-black tracking-[0.04em] text-[#2a1a05] uppercase shadow-[0_2px_0_rgba(0,0,0,0.45)]",
             "[@media(max-height:500px)]:-right-2 [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:text-[9px]",
-            stamp &&
+            strike !== null &&
               "motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
           )}
+          style={ON_STRIKE}
           data-testid={`gear-max-${item.slot}`}
         >
           {tr("hero.maxSeal")}
@@ -79,27 +221,17 @@ const GearIcon = ({
   );
 };
 
-/** The faint gold edge of the next notch, while the upgrade has the pointer or the keyboard focus. */
-const NEXT_NOTCH =
-  "group-has-[[data-hovered]]/gear:shadow-[inset_0_0_0_1.5px_rgba(255,224,138,0.85)] group-has-[[data-focus-visible]]/gear:shadow-[inset_0_0_0_1.5px_rgba(255,224,138,0.85)]";
-
 /**
- * The level of a Gear item: 20 notches in 2 rows of 10, cut into the plate,
- * gold to the level.
- * The notch of the last upgrade flashes as it fills. While the pointer or the
- * keyboard focus is on an upgrade that is on, the next notch shows a faint
- * gold edge.
+ * The level of a Gear item: "Level 7 / 25". The level number pops when it
+ * changes.
  */
-const LevelGroove = ({
+const GearLevel = ({
   level,
   flash,
-  ready,
 }: {
   readonly level: number;
   /** The serial of the last upgrade of this item in this visit, or 0. */
   readonly flash: number;
-  /** True when the upgrade is on. */
-  readonly ready: boolean;
 }) => {
   const { tr } = useGameText();
   return (
@@ -120,6 +252,7 @@ const LevelGroove = ({
               flash > 0 &&
                 "motion-safe:animate-[workshop-count_420ms_cubic-bezier(0.2,0.8,0.2,1)]"
             )}
+            style={ON_STRIKE}
             data-testid="gear-level"
           >
             {level}
@@ -130,66 +263,109 @@ const LevelGroove = ({
           </span>
         </span>
       </span>
-      <span
-        className="grid grid-cols-10 gap-[3px] rounded-md bg-[#120c08]/80 p-[3px] shadow-[inset_0_1px_3px_rgba(0,0,0,0.8),0_1px_0_rgba(255,226,170,0.18)]"
-        aria-hidden
-      >
-        {NOTCHES.map((index) => (
-          <span
-            key={index === level - 1 ? `${index}:${flash}` : index}
-            className={cn(
-              "h-2.5 rounded-[2px] transition-[background-color,box-shadow] duration-150 [@media(max-height:500px)]:h-1.5",
-              index < level
-                ? "bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]"
-                : "bg-[#3a2a1c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.7)]",
-              index === level && ready && NEXT_NOTCH,
-              index === level - 1 &&
-                flash > 0 &&
-                "motion-safe:animate-[gear-notch_520ms_cubic-bezier(0.2,0.8,0.2,1)]"
-            )}
-          />
-        ))}
-      </span>
     </Meter>
   );
 };
 
 /**
- * The Forge Stone of the next level (ADR-0038): the stone in its tier color,
- * "1 × Rare Forge Stone", and "You have N", in a warm red when N is 0.
+ * A requirement of the upgrade that is missing: a warm red with a dashed line
+ * under it, so the color is not the only cue (DESIGN.md, The Never Color
+ * Alone Rule).
  */
-const StoneCost = ({
+const MISSING = "border-b-[1.5px] border-dashed border-current text-[#ff9b85]";
+
+/**
+ * All that the next level needs, in the upgrade: its Coin, and 1 Forge Stone
+ * in its tier color (ADR-0038). When the upgrade is off, each requirement that
+ * is missing shows in a warm red. The accessible name of the upgrade gives the
+ * tier. When an upgrade makes the next level need a new tier (`turn`), the
+ * stone turns over into its new color after the strike.
+ */
+const UpgradeCost = ({
   upgrade,
+  turn,
+  stoneRef,
 }: {
   readonly upgrade: Exclude<GearUpgrade, { kind: "max" }>;
+  readonly turn: boolean;
+  /** The stone of the cost: the Forge Stone of an upgrade leaps from here. */
+  readonly stoneRef: RefObject<SVGSVGElement | null>;
 }) => {
-  const { tr } = useGameText();
-  const tier = tr(`forgeStones.tiers.${upgrade.tier}`);
-  const missing = upgrade.stones < 1;
+  const { format } = useCoinFormat();
+  const short = upgrade.kind === "short";
   return (
-    <p
-      className="flex w-full items-center justify-between gap-2 text-xs leading-tight [@media(max-height:500px)]:text-[10px]"
-      data-testid="gear-stone-cost"
-      data-tier={upgrade.tier}
-      data-stones={upgrade.stones}
-    >
-      <span className="flex min-w-0 items-center gap-1.5 font-bold text-[#fff6df]">
-        <ForgeStoneIcon
-          tier={upgrade.tier}
-          className="size-4 shrink-0 drop-shadow-[0_1px_0_rgba(0,0,0,0.5)] [@media(max-height:500px)]:size-3"
-        />
-        <span className="truncate">{tr("hero.stoneCost", { tier })}</span>
-      </span>
+    <>
+      <CoinPrice
+        parts={coinDenominations(upgrade.coin)}
+        format={format}
+        className={cn("font-bold", short && upgrade.missingCoin > 0 && MISSING)}
+      />
       <span
         className={cn(
-          "shrink-0 font-semibold whitespace-nowrap tabular-nums [@media(max-height:500px)]:sr-only",
-          missing ? "text-[#ff9b85]" : "text-[#e8d9bb]"
+          "inline-flex items-center gap-0.5 font-bold tabular-nums",
+          short && !upgrade.hasStone && MISSING
         )}
+        aria-hidden
+        data-testid="gear-upgrade-stone"
+        data-tier={upgrade.tier}
+        data-stones={upgrade.stones}
       >
-        {tr("hero.stoneHave", { count: upgrade.stones })}
+        <ForgeStoneIcon
+          key={upgrade.tier}
+          ref={stoneRef}
+          tier={upgrade.tier}
+          className={cn(
+            "size-[1.15em] shrink-0 drop-shadow-[0_1px_0_rgba(0,0,0,0.5)]",
+            turn &&
+              "motion-safe:animate-[gear-tier-turn_460ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+          )}
+          style={
+            turn ? { animationDelay: `${GEAR_STRIKE_MS + 80}ms` } : undefined
+          }
+        />
+        ×1
       </span>
-    </p>
+    </>
   );
+};
+
+/**
+ * The Forge Stone of an upgrade on its way: it leaps out of the cost in the
+ * upgrade, on an arc, into the Gear icon, and goes into it at the strike.
+ * The plate measures the way before the paint, so the stone starts on the
+ * stone of the cost at all screen sizes. Reduced motion shows no flight.
+ */
+const useStoneFlight = (strike: GearStrike | null) => {
+  const plate = useRef<HTMLLIElement>(null);
+  const icon = useRef<HTMLSpanElement>(null);
+  const cost = useRef<SVGSVGElement>(null);
+  const button = useRef<HTMLDivElement>(null);
+  const flight = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    const stone = flight.current;
+    const box = plate.current?.getBoundingClientRect();
+    const to = icon.current?.getBoundingClientRect();
+    // At level 25 the cost is gone: the stone leaps from the button.
+    const from = (cost.current ?? button.current)?.getBoundingClientRect();
+    if (!(strike && stone && box && to && from)) {
+      return;
+    }
+    const x = from.left + from.width / 2 - box.left;
+    const y = from.top + from.height / 2 - box.top;
+    stone.style.left = `${x}px`;
+    stone.style.top = `${y}px`;
+    stone.style.setProperty(
+      "--gear-fly-x",
+      `${to.left + to.width / 2 - box.left - x}px`
+    );
+    stone.style.setProperty(
+      "--gear-fly-y",
+      `${to.top + to.height / 2 - box.top - y}px`
+    );
+  }, [strike]);
+
+  return { plate, icon, cost, button, flight };
 };
 
 /** The accessible name of the upgrade: what it costs, or what is missing. */
@@ -222,33 +398,38 @@ const useUpgradeLabel = (item: GearItem, name: string): string => {
 };
 
 /**
- * One Gear item on the Gear Rack (GDD 7.3): its icon, its name, its level
- * groove, its stat now and at the next level, the Forge Stone of the next
- * level, and one gold upgrade with its Coin. Each press upgrades 1 level at
- * once, with no confirmation. Off at level 25 ("Max level"), when the Coin is
- * not enough ("Need 1s 50c") and when the Forge Stone is missing ("Need Forge
- * Stone").
+ * One Gear item on the Gear Rack (GDD 7.3): its icon, its name, its level,
+ * its stat now and at the next level, and one gold upgrade with all
+ * that the next level needs: its Coin and 1 Forge Stone. Each press upgrades 1
+ * level at once, with no confirmation. Off at level 25 ("Max level"), and when
+ * the Coin is not enough or the Forge Stone is missing (that requirement in a
+ * warm red).
+ * An upgrade is one beat: its Forge Stone leaps from the cost into the item
+ * and strikes it, and then the sparks, the level hop, the stat roll and the
+ * glow play together.
  */
 export const GearPlate = ({
   item,
-  flash,
+  strike,
   onUpgrade,
 }: {
   readonly item: GearItem;
-  /** The serial of the last upgrade of this item in this visit, or 0. */
-  readonly flash: number;
+  /** The last upgrade of this item in this visit, or `null`. */
+  readonly strike: GearStrike | null;
   readonly onUpgrade: () => void;
 }) => {
   const { tr } = useGameText();
   const stat = useStatFormat();
-  const { format } = useCoinFormat();
   const name = tr(`hero.slots.${item.slot}`);
   const { upgrade } = item;
   const label = useUpgradeLabel(item, name);
   const titleId = `gear-${item.slot}-name`;
+  const flash = strike?.serial ?? 0;
+  const { plate, icon, cost, button, flight } = useStoneFlight(strike);
 
   return (
     <li
+      ref={plate}
       aria-labelledby={titleId}
       className={cn(
         PLATE,
@@ -265,11 +446,26 @@ export const GearPlate = ({
         <span
           key={flash}
           className="pointer-events-none absolute -inset-0.5 rounded-xl motion-safe:animate-[gear-glow_900ms_ease-out_both]"
+          style={ON_STRIKE}
           aria-hidden
         />
       ) : null}
+      {strike === null ? null : (
+        <span
+          key={`flight-${strike.serial}`}
+          ref={flight}
+          className="pointer-events-none absolute z-10 -mt-2.5 -ml-2.5 size-5 opacity-0 motion-safe:animate-[gear-stone-fly_200ms_linear_both] motion-reduce:hidden [@media(max-height:500px)]:-mt-2 [@media(max-height:500px)]:-ml-2 [@media(max-height:500px)]:size-4"
+          aria-hidden
+          data-testid="gear-stone-flight"
+        >
+          <ForgeStoneIcon
+            tier={strike.tier}
+            className="size-full drop-shadow-[0_0_6px_rgba(255,246,223,0.75)]"
+          />
+        </span>
+      )}
       <span className="flex w-full flex-col items-center gap-1.5 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:gap-2">
-        <GearIcon item={item} stamp={flash > 0} />
+        <GearIcon ref={icon} item={item} strike={strike} />
         <h3
           id={titleId}
           className="font-display text-lg leading-tight font-bold text-[#ffe08a] [@media(max-height:500px)]:text-sm"
@@ -277,16 +473,16 @@ export const GearPlate = ({
           {name}
         </h3>
       </span>
-      <LevelGroove
-        level={item.level}
-        flash={flash}
-        ready={upgrade.kind === "ready"}
-      />
+      <GearLevel level={item.level} flash={flash} />
       <div className="flex w-full flex-col gap-0.5">
-        <span className="flex items-baseline justify-between gap-2">
-          <span className={SMALL_LABEL}>{tr(`hero.stats.${item.stat}`)}</span>
+        {/* On a narrow plate the value goes under its name, at the right,
+            so the name never breaks. */}
+        <span className="flex flex-wrap items-baseline justify-between gap-x-2">
+          <span className={cn(SMALL_LABEL, "whitespace-nowrap")}>
+            {tr(`hero.stats.${item.stat}`)}
+          </span>
           <span
-            className="flex items-baseline gap-1 font-black whitespace-nowrap tabular-nums"
+            className="ml-auto flex items-baseline gap-1 font-black whitespace-nowrap tabular-nums"
             data-testid="gear-stat"
           >
             <span
@@ -296,6 +492,7 @@ export const GearPlate = ({
                 flash > 0 &&
                   "motion-safe:animate-[gear-roll_320ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
               )}
+              style={ON_STRIKE}
             >
               {stat(item.stat, item.now)}
             </span>
@@ -318,8 +515,7 @@ export const GearPlate = ({
           {tr(`hero.statHelp.${item.stat}`)}
         </p>
       </div>
-      <div className="mt-auto flex w-full flex-col gap-1.5 [@media(max-height:500px)]:gap-1">
-        {upgrade.kind === "max" ? null : <StoneCost upgrade={upgrade} />}
+      <div ref={button} className="mt-auto flex w-full flex-col">
         <GameButton
           intent={upgrade.kind === "ready" ? "gold" : "ghost"}
           size="md"
@@ -327,11 +523,11 @@ export const GearPlate = ({
           onPress={onUpgrade}
           aria-label={label}
           className={cn(
-            "w-full text-sm whitespace-nowrap [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs",
+            "w-full px-2.5 text-sm whitespace-nowrap [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs",
             // An upgrade that is off is an engraved plate with no drop, because
             // it cannot be pressed. Its text stays at full contrast: at level 25
-            // the gold "Max level", else the Coin or the Forge Stone that is
-            // still missing.
+            // the gold "Max level", else the requirements, with the missing
+            // ones in a warm red.
             upgrade.kind !== "ready" &&
               "border-[#e9c46a]/50 bg-[#120c08]/70 shadow-[inset_0_1px_3px_rgba(0,0,0,0.75)] data-[disabled]:cursor-default data-[disabled]:opacity-100 data-[disabled]:grayscale-0",
             upgrade.kind === "max" && "text-[#ffe08a]",
@@ -341,32 +537,28 @@ export const GearPlate = ({
           data-gear-upgrade={item.slot}
           data-state={upgrade.kind}
         >
-          {upgrade.kind === "ready" ? (
-            <>
-              <span className="font-bold">{tr("hero.upgrade")}</span>
-              <CoinPrice
-                parts={coinDenominations(upgrade.coin)}
-                format={format}
-              />
-            </>
-          ) : upgrade.kind === "short" && upgrade.missingCoin > 0 ? (
-            <>
-              <span className="font-semibold">{tr("workshop.need")}</span>
-              <CoinPrice
-                parts={coinDenominations(upgrade.missingCoin)}
-                format={format}
-                className="font-bold text-[#fff6df]"
-              />
-            </>
-          ) : upgrade.kind === "short" ? (
-            <span className="inline-flex items-center gap-1.5 font-semibold">
-              <ForgeStoneIcon tier={upgrade.tier} className="size-4 shrink-0" />
-              {tr("hero.needStone")}
-            </span>
-          ) : (
+          {upgrade.kind === "max" ? (
             <span className="inline-flex items-center gap-1.5 font-semibold">
               <GlyphIcon glyph="check" className="size-3.5 shrink-0" />
               {tr("hero.max")}
+            </span>
+          ) : (
+            // One line. When the plate is too narrow for all of it, the word
+            // "Upgrade" wraps to a second line that is cut off, so the cost
+            // always shows. The row is reversed and the word is ordered last,
+            // so it is the piece that wraps, but it stays first in the text.
+            // The accessible name keeps the word.
+            <span className="flex h-[1.5em] w-full min-w-0 flex-row-reverse flex-wrap content-start items-center justify-center gap-x-2 overflow-hidden">
+              <span className="order-1 flex h-full items-center font-bold">
+                {tr("hero.upgrade")}
+              </span>
+              <span className="flex h-full items-center gap-x-1.5">
+                <UpgradeCost
+                  upgrade={upgrade}
+                  turn={strike?.newTier ?? false}
+                  stoneRef={cost}
+                />
+              </span>
             </span>
           )}
         </GameButton>

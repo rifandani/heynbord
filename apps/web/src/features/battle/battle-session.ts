@@ -3,6 +3,7 @@ import type {
   BattleState,
   ClassId,
   DeckEntry,
+  DungeonDefinition,
   RuleViolation,
   Target,
 } from "@workspace/rules";
@@ -19,6 +20,7 @@ import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import { eventDuration } from "@/features/battle/battle-timeline";
 import type { BattleView } from "@/features/battle/battle-view";
 import { applyEvent, viewFromState } from "@/features/battle/battle-view";
+import { PLAYER_HERO } from "@/features/battle/player-hero";
 import type { Tutorial } from "@/features/battle/tutorial";
 import {
   afterEvent,
@@ -36,7 +38,13 @@ export interface BattleDeck {
 }
 
 export interface BattleOptions {
+  /** The Stage, or the id of the Dungeon when `dungeon` is set. */
   readonly stageId: string;
+  /**
+   * A Dungeon Battle (GDD 8.4): 4 Lanes and 1 enemy Hero for each Boss. No
+   * screen starts one yet: only the test hooks do (issue #93).
+   */
+  readonly dungeon?: DungeonDefinition;
   readonly deck: BattleDeck;
   /** The Player level and the Gear, from the Profile. */
   readonly player: BattlePlayer;
@@ -92,16 +100,21 @@ export const startSession = (
   tutorial = false
 ): BattleSession => {
   const { deck, player } = options;
-  const { state } = createBattle({
-    seed: options.seed,
-    stage: getStage(options.stageId),
-    player: {
-      classId: deck.classId,
-      deck: deck.deck,
-      level: player.level,
-      gear: player.gear,
-    },
-  });
+  const battlePlayer = {
+    classId: deck.classId,
+    deck: deck.deck,
+    level: player.level,
+    gear: player.gear,
+  };
+  const { state } = createBattle(
+    options.dungeon
+      ? { seed: options.seed, dungeon: options.dungeon, player: battlePlayer }
+      : {
+          seed: options.seed,
+          stage: getStage(options.stageId),
+          player: battlePlayer,
+        }
+  );
   const view = viewFromState(state);
   const session: BattleSession = {
     options,
@@ -182,7 +195,10 @@ export const playCard = (
   target: Target
 ): Result.Result<BattleSession, RuleViolation> =>
   Result.map(
-    step(session.rules, Command.PlayCard({ handIndex, target })),
+    step(
+      session.rules,
+      Command.PlayCard({ hero: PLAYER_HERO, handIndex, target })
+    ),
     (output) => enqueue(session, output.state, output.events)
   );
 

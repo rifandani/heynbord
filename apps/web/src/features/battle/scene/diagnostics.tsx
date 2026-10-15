@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 
 import type { BattleSession } from "@/features/battle/battle-session";
+import { heroOf } from "@/features/battle/battle-view";
 import { qaEnabled } from "@/features/battle/qa";
 import { playback } from "@/features/battle/scene/playback";
 import { scenePicker } from "@/features/battle/scene/scene-picker";
@@ -33,10 +34,10 @@ const battleState = (session: BattleSession) => {
     seed: session.options.seed,
     turnNumber: view.turnNumber,
     activeSide: view.activeSide,
-    playerHp: view.sides.player.hero.hp,
-    enemyHp: view.sides.enemy.hero.hp,
+    playerHp: heroOf(view, "player").hp,
+    enemyHp: view.sides.enemy.heroes.map((hero) => hero.hp),
     units: view.units.length,
-    hand: view.sides.player.hand.map((card) => card.countdown),
+    hand: heroOf(view, "player").hand.map((card) => card.countdown),
     queued: session.queue.length,
     current: eventTag(session.current),
     result: view.result,

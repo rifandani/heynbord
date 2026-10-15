@@ -4,7 +4,6 @@ import {
   useAtomSet,
   useAtomValue,
 } from "@effect/atom-react";
-import { getStage } from "@workspace/rules";
 import { cn } from "cn";
 import { lazy, Suspense, useContext, useEffect, useMemo } from "react";
 
@@ -12,7 +11,9 @@ import {
   setSoundEnabled,
   setSoundVolume,
 } from "@/features/battle/battle-audio";
-import { stagePainting } from "@/features/battle/battle-painting";
+import { battleStage } from "@/features/battle/battle-content";
+import { battlePainting } from "@/features/battle/battle-painting";
+import { heroOf } from "@/features/battle/battle-view";
 import { soundOnAtom, soundVolumeAtom } from "@/features/battle/battle.atoms";
 import type {
   BattleKeyAction,
@@ -102,7 +103,7 @@ interface KeyContext {
 
 /** ArrowLeft and ArrowRight move the selection over the Ready cards. */
 const moveSelection = (battle: Battle, event: KeyboardEvent, step: 1 | -1) => {
-  const hand = battle.session?.view.sides.player.hand ?? [];
+  const hand = battle.session ? heroOf(battle.session.view, "player").hand : [];
   const next = nextReadyCard(hand, battle.selected, step);
   if (next === null) {
     return;
@@ -322,10 +323,10 @@ const BoardLayer = ({
 const BattleStage = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
   const webgl2 = useMemo(() => hasWebgl2(), []);
-  const stageId = battle.session?.options.stageId;
+  const options = battle.session?.options;
   const painting = useMemo(
-    () => (stageId ? stagePainting(stageId) : null),
-    [stageId]
+    () => (options ? battlePainting(options) : null),
+    [options]
   );
   const handbook = useHandbook();
   useBattleKeys(battle, handbook.open);
@@ -400,12 +401,13 @@ const useEscToTown = (active: boolean, toTown: () => void) => {
 const useCampaignRegion = (battle: Battle) => {
   const region = useAtomValue(campaignRegionAtom);
   const setRegion = useAtomSet(chosenRegionAtom);
-  const stageId = battle.session?.options.stageId;
+  const options = battle.session?.options;
+  const stageRegion = options ? battleStage(options)?.region : undefined;
   useEffect(() => {
-    if (stageId) {
-      setRegion(getStage(stageId).region);
+    if (stageRegion !== undefined) {
+      setRegion(stageRegion);
     }
-  }, [stageId, setRegion]);
+  }, [stageRegion, setRegion]);
   /** Opens a screen. The Campaign then opens at the newest unlocked Region. */
   const withRegion =
     (open: (screen: GameScreen) => void) => (screen: GameScreen) => {

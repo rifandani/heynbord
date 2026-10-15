@@ -6,6 +6,7 @@ import type { Camera, Group, Object3D } from "three";
 import { Mesh, MeshBasicMaterial, Raycaster, Vector2, Vector3 } from "three";
 
 import type { BattleSession } from "@/features/battle/battle-session";
+import { heroOf } from "@/features/battle/battle-view";
 import {
   shownSessionAtom,
   detailsUnitAtom,
@@ -80,9 +81,9 @@ const areaPreview = (
   target: Target | undefined
 ) => {
   const cardId =
-    selected === null
+    selected === null || !session
       ? null
-      : session?.view.sides.player.hand[selected]?.cardId;
+      : heroOf(session.view, "player").hand[selected]?.cardId;
   return session && cardId && target
     ? targetPreview(cardId, target, session.view.lanes)
     : null;
@@ -128,10 +129,11 @@ export const TargetMarkers = ({
   useEffect(() => {
     pick.current = onPick;
   }, [onPick]);
-  const lanes = session?.view.lanes ?? 1;
+  const view = session?.view;
+  const lanes = view?.lanes ?? 1;
   const spots = useMemo(
-    () => targets.map((target) => markerSpot(target, lanes)),
-    [targets, lanes]
+    () => (view ? targets.map((target) => markerSpot(target, view)) : []),
+    [targets, view]
   );
 
   useEffect(() => {

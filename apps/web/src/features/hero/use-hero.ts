@@ -3,13 +3,7 @@ import type { GearSlot } from "@workspace/rules";
 import { upgradeGear } from "@workspace/rules";
 import { useContext } from "react";
 
-import { activeDeckIdAtom, deckSlotsAtom } from "@/features/deck/deck.atoms";
-import {
-  forgeStoneCounts,
-  gearItems,
-  heroDeck,
-  heroHpParts,
-} from "@/features/hero/hero";
+import { forgeStoneCounts, gearItems, heroHpParts } from "@/features/hero/hero";
 import { playerLevelAtom, profileAtom } from "@/features/profile/profile.atoms";
 
 /**
@@ -22,8 +16,6 @@ export const useHero = () => {
   const registry = useContext(RegistryContext);
   const profile = useAtomValue(profileAtom);
   const level = useAtomValue(playerLevelAtom);
-  const slots = useAtomValue(deckSlotsAtom);
-  const activeDeckId = useAtomValue(activeDeckIdAtom);
 
   return {
     level,
@@ -37,7 +29,6 @@ export const useHero = () => {
     items: gearItems(profile.gear, profile.coin, profile.forgeStones),
     forgeStones: forgeStoneCounts(profile.forgeStones),
     hp: heroHpParts(level, profile.gear),
-    deck: heroDeck(slots, activeDeckId),
     // It reads the registry, not a render: two fast presses upgrade two times.
     upgrade: (slot: GearSlot): boolean => {
       const changed = upgradeGear(registry.get(profileAtom), slot);

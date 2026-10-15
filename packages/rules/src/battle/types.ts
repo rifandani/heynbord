@@ -5,6 +5,7 @@ import type {
   ClassId,
   ClosedLane,
   DamageType,
+  DungeonDefinition,
   RankId,
   StageDefinition,
   TokenId,
@@ -36,6 +37,12 @@ export const WALL_SUMMON_DEPTH = 5;
  */
 export const STAGE_LANES = 3;
 
+/**
+ * The number of Lanes in a Dungeon (GDD 8.4, ADR-0010). A Dungeon makes the
+ * Board smaller only with Closed Lanes.
+ */
+export const DUNGEON_LANES = 4;
+
 /** The maximum number of cards in a Hand. A side does not draw when its Hand is full. */
 export const HAND_LIMIT = 8;
 
@@ -60,6 +67,37 @@ export interface HandCard extends CardInstance {
   countdown: number;
 }
 
+/**
+ * The effect of a Boss Rule in a Battle (ADR-0040). A Summon has its Card copy
+ * from the Battle setup, so the activation needs no new instance ID.
+ */
+export type BossRuleEffect =
+  | {
+      readonly type: "countdown";
+      readonly amount: number;
+      readonly cards: number;
+    }
+  | {
+      readonly type: "summon";
+      readonly card: CardInstance;
+      readonly lane: number;
+      readonly position: number;
+    }
+  | { readonly type: "draw"; readonly cards: number };
+
+/** A Boss Rule of a Hero in a Battle (ADR-0040). */
+export interface BossRuleState {
+  /** A percentage of the maximum HP of the Hero: 1 to 99. */
+  readonly threshold: number;
+  readonly effect: BossRuleEffect;
+  /** A Boss Rule activates at most one time in a Battle. */
+  activated: boolean;
+}
+
+/**
+ * One Hero of a Side (ADR-0009). A Hero at 0 HP is Defeated: it is out of the
+ * Battle, and its Front is empty.
+ */
 export interface HeroState {
   hp: number;
   maxHp: number;
@@ -70,13 +108,18 @@ export interface HeroState {
   readonly skillCrit: number;
   /** Unit Block chance from the Banner, in basis points. */
   readonly unitBlock: number;
-}
-
-export interface SideState {
-  hero: HeroState;
+  /** The Lanes that the Hero stands behind, from the lowest Lane. */
+  front: number[];
   hand: HandCard[];
   deck: CardInstance[];
   graveyard: CardInstance[];
+  /** The Boss Rules of a Boss, in content order (ADR-0040). Other Heroes have none. */
+  bossRules: BossRuleState[];
+}
+
+/** The Heroes of a Side, in Lane order of their Fronts at the start (ADR-0009). */
+export interface SideState {
+  heroes: HeroState[];
 }
 
 /**
@@ -104,6 +147,8 @@ export const unitRank = (source: UnitSource): RankId =>
 export interface UnitState {
   readonly id: number;
   readonly owner: Side;
+  /** The index of the Hero of `owner` that summoned the Unit (ADR-0009). */
+  readonly hero: number;
   readonly source: UnitSource;
   lane: number;
   position: number;
@@ -218,6 +263,8 @@ export interface UnitState {
 export interface FieldEffect {
   readonly id: number;
   readonly owner: Side;
+  /** The index of the Hero of `owner` that played the card. */
+  readonly hero: number;
   /** The Skill Card that made it. */
   readonly card: CardInstance;
   readonly lane: number;
@@ -242,6 +289,7 @@ export interface BattleResult {
  * server and compared. `random` is the seeded random state (ADR-0006).
  */
 export interface BattleState {
+  /** The ID of the Stage or of the Dungeon. */
   readonly stageId: string;
   readonly seed: number;
   random: number;
@@ -260,40 +308,38 @@ export interface BattleState {
   result: BattleResult | null;
 }
 
-/** What a Card targets when it is played. A Hero target names the Side of the Hero. */
+/** What a Card targets when it is played. A Hero target names the Side and the index of the Hero. */
 export type Target = Data.TaggedEnum<{
   Lane: { readonly lane: number };
   Square: { readonly lane: number; readonly position: number };
-  Hero: { readonly side: Side };
+  Hero: { readonly side: Side; readonly hero: number };
   NoTarget: Record<never, never>;
 }>;
 export const Target = Data.taggedEnum<Target>();
 
 export type Command = Data.TaggedEnum<{
-  PlayCard: { readonly handIndex: number; readonly target: Target };
+  /** `hero` is the index of the Hero of the active Side that plays the card from its Hand. */
+  PlayCard: {
+    readonly hero: number;
+    readonly handIndex: number;
+    readonly target: Target;
+  };
   EndTurn: Record<never, never>;
 }>;
 export const Command = Data.taggedEnum<Command>();
 
 export type TargetRef =
   | { readonly _tag: "Unit"; readonly unitId: number }
-  | { readonly _tag: "Hero"; readonly side: Side };
+  | { readonly _tag: "Hero"; readonly side: Side; readonly hero: number };
 
 /**
- * One Hero of a Battle: its Side and its index in that Side (ADR-0009). In v1
- * each Side has 1 Hero, so `hero` is always 0. A Dungeon with 2 or more
- * Bosses will use the other indexes.
+ * One Hero of a Battle: its Side and its index in that Side (ADR-0009). The
+ * Player's Side always has 1 Hero, so its index is 0.
  */
 export interface HeroRef {
   readonly side: Side;
   readonly hero: number;
 }
-
-/**
- * The Hero of `side`. In v1 each Side has 1 Hero (`SideState.hero`). This is
- * the one place that changes when a Side gets more Heroes (ADR-0009).
- */
-export const heroOf = (side: Side): HeroRef => ({ side, hero: 0 });
 
 /**
  * Who dealt a damage: a Unit, or a Hero for the damage of a Skill Card or a
@@ -352,9 +398,14 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   CountdownsTicked: {
     readonly side: Side;
+    readonly hero: number;
     readonly countdowns: readonly number[];
   };
-  CardDrawn: { readonly side: Side; readonly card: HandCard };
+  CardDrawn: {
+    readonly side: Side;
+    readonly hero: number;
+    readonly card: HandCard;
+  };
   CardPlayed: {
     readonly side: Side;
     /** The Hero that played the card. */
@@ -374,21 +425,24 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   RecallRolled: {
     readonly side: Side;
+    readonly hero: number;
     readonly card: CardInstance;
     readonly success: boolean;
   };
   CountdownChanged: {
     readonly side: Side;
+    readonly hero: number;
     readonly instanceId: number;
     readonly countdown: number;
   };
   /**
    * Sabotage (GDD 5.4): the summon of `unitId` made a card in the Hand of the
-   * Hero of `side` later. `countdown` is the new Countdown of that card.
+   * Hero `hero` of `side` later. `countdown` is the new Countdown of that card.
    */
   CardSabotaged: {
     readonly unitId: number;
     readonly side: Side;
+    readonly hero: number;
     readonly instanceId: number;
     readonly countdown: number;
   };
@@ -523,6 +577,38 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   UnitDied: { readonly unitId: number };
   /**
+   * The Unit left the Board because its Hero is Defeated (ADR-0009). It is not
+   * a death: its Card does not go to the Graveyard, and Last Breath and
+   * Rebirth do not occur.
+   */
+  UnitRemoved: { readonly unitId: number };
+  /**
+   * The Hero is at 0 HP and out of the Battle (ADR-0009). When it was the last
+   * Hero of its Side that was not Defeated, `BattleEnded` comes next.
+   */
+  HeroDefeated: { readonly hero: HeroRef };
+  /**
+   * The Front of the Defeated Hero `from` went to `to`, the nearest Hero of
+   * the same Side that is not Defeated (ADR-0009). `lanes` are the Lanes that
+   * moved.
+   */
+  FrontMoved: {
+    readonly from: HeroRef;
+    readonly to: HeroRef;
+    readonly lanes: readonly number[];
+  };
+  /**
+   * The Boss Rule `rule` (its index in the Boss Rules of `hero`) activated
+   * (ADR-0040). The events of its effect come next: `CountdownChanged`,
+   * `UnitSummoned` or `CardDrawn`. An effect that changes nothing sends no
+   * more events.
+   */
+  BossRuleActivated: {
+    readonly hero: HeroRef;
+    readonly rule: number;
+    readonly threshold: number;
+  };
+  /**
    * Rebirth (GDD 4.9): the Unit died and came back in the same Square. It
    * replaces `UnitDied` for that death. `hp` is the new HP.
    */
@@ -534,6 +620,8 @@ export const BattleEvent = Data.taggedEnum<BattleEvent>();
 
 export type RuleViolation = Data.TaggedEnum<{
   BattleFinished: Record<never, never>;
+  /** No Hero of the active Side that is not Defeated has this index. */
+  InvalidHero: { readonly hero: number };
   InvalidHandIndex: { readonly handIndex: number };
   CardNotReady: { readonly handIndex: number };
   IllegalTarget: { readonly handIndex: number; readonly target: Target };
@@ -553,8 +641,15 @@ export interface PlayerSetup {
   };
 }
 
-export interface BattleSetup {
-  readonly seed: number;
-  readonly stage: StageDefinition;
-  readonly player: PlayerSetup;
-}
+/** A Battle setup against the enemy of a Stage or against the Bosses of a Dungeon. */
+export type BattleSetup =
+  | {
+      readonly seed: number;
+      readonly stage: StageDefinition;
+      readonly player: PlayerSetup;
+    }
+  | {
+      readonly seed: number;
+      readonly dungeon: DungeonDefinition;
+      readonly player: PlayerSetup;
+    };

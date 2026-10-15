@@ -6,6 +6,7 @@
 import { Result } from "effect";
 
 import { chooseCommand } from "../ai/choose-command";
+import { isDefeated } from "../battle/context";
 import { createBattle, playerHeroHp } from "../battle/create-battle";
 import { starsFor } from "../battle/stars";
 import { step } from "../battle/step";
@@ -25,6 +26,7 @@ import {
 import type {
   Archetype,
   DeckEntry,
+  DungeonDefinition,
   GearLevels,
   StageDefinition,
   StarterDeck,
@@ -111,6 +113,9 @@ export const stageTarget = (
     stage.region === 1 ? [0.95, 0.85, 0.75][stage.number - 1] : undefined;
   return ramp === undefined ? NORMAL_STAGE_TARGET : { min: ramp, max: 1 };
 };
+
+/** The first-try target of a Dungeon, the same as a Boss Stage (GDD 13, step 6). */
+export const DUNGEON_TARGET: WinRateTarget = BOSS_STAGE_TARGET;
 
 /** Each Archetype against each other Archetype (GDD 13, step 5). */
 export const MATCHUP_TARGET: WinRateTarget = { min: 0.45, max: 0.55 };
@@ -213,6 +218,78 @@ export const simulateStage = (
   };
 };
 
+/**
+ * The first Stage at the unlock level of a Dungeon. A Player on the
+ * First-try Path gets the Dungeon before this Stage, so its expected Deck and
+ * its Expected Gear (ADR-0034) are typical at that level (GDD 13, step 6).
+ */
+export const dungeonStage = (
+  dungeon: DungeonDefinition,
+  stages: readonly StageDefinition[] = STAGES
+): StageDefinition => {
+  const stage = stages.find(
+    (candidate) => candidate.recommendedLevel >= dungeon.unlockLevel
+  );
+  if (stage === undefined) {
+    throw new Error(`No Stage at the unlock level of ${dungeon.id}`);
+  }
+  return stage;
+};
+
+export interface DungeonReport {
+  readonly dungeonId: string;
+  readonly deckId: string;
+  readonly battles: number;
+  /** The player's win rate, from 0 to 1. */
+  readonly winRate: number;
+  readonly averageTurn: number;
+  /** The average number of Bosses that the player Defeated, also in a loss. */
+  readonly averageDefeated: number;
+}
+
+/**
+ * Dungeon difficulty (GDD 13, step 6): a new Player on the first try plays the
+ * Dungeon at its unlock level (its Recommended level) and with no Gear, with
+ * the expected Deck of a starter Deck at the first Stage of that level
+ * (`dungeonStage`). `options` changes the level and the Gear, as in
+ * `simulateStage`: for the Expected Gear of that Stage (ADR-0034).
+ */
+export const simulateDungeon = (
+  dungeon: DungeonDefinition,
+  starter: StarterDeck,
+  battles: number,
+  options: StagePlayerOptions = {}
+): DungeonReport => {
+  const level = dungeon.unlockLevel + (options.levelsAbove ?? 0);
+  const gear = options.gear ?? NO_GEAR;
+  const deck = {
+    ...starter,
+    deck: expectedDeck(dungeonStage(dungeon), starter),
+  };
+  let wins = 0;
+  let turns = 0;
+  let defeated = 0;
+  for (let seed = 1; seed <= battles; seed += 1) {
+    const { state } = createBattle({
+      seed,
+      dungeon,
+      player: playerOf(deck, level, gear),
+    });
+    const end = playOut(state);
+    wins += end.result?.winner === "player" ? 1 : 0;
+    turns += end.turnNumber;
+    defeated += end.sides.enemy.heroes.filter(isDefeated).length;
+  }
+  return {
+    dungeonId: dungeon.id,
+    deckId: starter.id,
+    battles,
+    winRate: wins / battles,
+    averageTurn: turns / battles,
+    averageDefeated: defeated / battles,
+  };
+};
+
 export interface MatchupOptions {
   /** The number of seeds. Each seed plays 2 Battles, one with each Side first. */
   readonly seeds: number;
@@ -300,7 +377,10 @@ const playMatchupBattle = (start: BattleState) => {
     MAX_COMMANDS,
     (state) => {
       const { activeSide } = state;
-      if (!state.sides[activeSide].hand.some((card) => card.countdown === 0)) {
+      const ready = state.sides[activeSide].heroes.some((hero) =>
+        hero.hand.some((card) => card.countdown === 0)
+      );
+      if (!ready) {
         noReady[activeSide] += 1;
       }
     },

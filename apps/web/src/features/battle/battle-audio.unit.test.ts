@@ -21,7 +21,7 @@ describe("eventSound", () => {
       eventSound({
         _tag: "UnitAttacked",
         unitId: 1,
-        target: { _tag: "Hero", side: "enemy" },
+        target: { _tag: "Hero", side: "enemy", hero: 0 },
         ranged: true,
       })
     ).toBe("ranged");
@@ -29,13 +29,13 @@ describe("eventSound", () => {
       eventSound({
         _tag: "UnitAttacked",
         unitId: 1,
-        target: { _tag: "Hero", side: "enemy" },
+        target: { _tag: "Hero", side: "enemy", hero: 0 },
         ranged: false,
       })
     ).toBe("melee");
     const damage = {
       _tag: "DamageDealt",
-      target: { _tag: "Hero", side: "enemy" },
+      target: { _tag: "Hero", side: "enemy", hero: 0 },
       amount: 2,
       damageType: "physical",
       source: "attack",

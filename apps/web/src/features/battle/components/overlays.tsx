@@ -4,6 +4,7 @@ import type { BattleResult, Side } from "@workspace/rules";
 import { cn } from "cn";
 import { Button } from "react-aria-components";
 
+import { battleNameRef } from "@/features/battle/battle-content";
 import type { ShownRewards } from "@/features/battle/battle-rewards";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
@@ -180,7 +181,7 @@ const ResultDialog = ({
   readonly session: BattleSession;
   readonly result: BattleResult;
 }) => {
-  const { tr } = useGameText();
+  const { tr, text } = useGameText();
   const won = result.winner === "player";
   const stars = starsFor(session.rules);
   const shown = useShownRewards(session);
@@ -197,7 +198,7 @@ const ResultDialog = ({
       >
         <ResultTitle won={won} />
         <p className="mt-1 text-sm text-[#5b4632]">
-          {tr(`stages.${session.options.stageId}.name`)}
+          {text(battleNameRef(session.options))}
         </p>
         {won ? <ResultStars stars={stars} /> : null}
         {shown ? <ResultRewards shown={shown} /> : null}

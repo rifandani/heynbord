@@ -1,6 +1,7 @@
 import type {
   BattleEvent,
   DamageType,
+  HeroRef,
   RankId,
   Side,
   TargetRef,
@@ -57,7 +58,7 @@ export type LogArg =
       readonly name: TextRef;
     }
   | { readonly _tag: "Damage"; readonly damageType: DamageType }
-  | { readonly _tag: "Hero"; readonly side: Side };
+  | { readonly _tag: "Hero"; readonly side: Side; readonly hero: number };
 
 /** The roll results and the defense of one hit: they show as small chips after the line. */
 export type LogFlag =
@@ -247,7 +248,7 @@ const unitArg = (context: LineContext, unitId: number): LogArg => {
 
 const targetArg = (context: LineContext, target: TargetRef): LogArg =>
   target._tag === "Hero"
-    ? { _tag: "Hero", side: target.side }
+    ? { _tag: "Hero", side: target.side, hero: target.hero }
     : unitArg(context, target.unitId);
 
 const damageFlags = (
@@ -268,10 +269,11 @@ const damageFlags = (
 const handCardLine = (
   context: LineContext,
   side: Side,
+  hero: number,
   instanceId: number,
   countdown: number
 ): LogLine => {
-  const card = context.view.sides[side].hand.find(
+  const card = context.view.sides[side].heroes[hero]?.hand.find(
     (candidate) => candidate.instanceId === instanceId
   );
   return side === "player" && card?.cardId && card.rank
@@ -279,7 +281,10 @@ const handCardLine = (
         card: { _tag: "Card", cardId: card.cardId, rank: card.rank },
         countdown,
       })
-    : line("countdownHidden", { hero: { _tag: "Hero", side }, countdown });
+    : line("countdownHidden", {
+        hero: { _tag: "Hero", side, hero },
+        countdown,
+      });
 };
 
 const cardLine = (
@@ -307,12 +312,16 @@ const cardLine = (
               rank: event.card.rank,
             },
           })
-        : line("drawEnemy", { hero: { _tag: "Hero", side: event.side } });
+        : line("drawEnemy", {
+            hero: { _tag: "Hero", side: event.side, hero: event.hero },
+          });
     }
     case "CountdownsTicked": {
       return event.side === "player"
         ? line("countdownsYou")
-        : line("countdownsEnemy", { hero: { _tag: "Hero", side: event.side } });
+        : line("countdownsEnemy", {
+            hero: { _tag: "Hero", side: event.side, hero: event.hero },
+          });
     }
     case "RecallRolled": {
       const card: LogArg = {
@@ -327,6 +336,7 @@ const cardLine = (
       return handCardLine(
         context,
         event.side,
+        event.hero,
         event.instanceId,
         event.countdown
       );
@@ -410,6 +420,54 @@ const unitLine = (event: BattleEvent, context: LineContext): LogLine | null => {
   }
 };
 
+const heroArg = (ref: HeroRef): LogArg => ({
+  _tag: "Hero",
+  side: ref.side,
+  hero: ref.hero,
+});
+
+/** "Lane 2" or "Lanes 1, 2", from Lane indexes. */
+const lanesArg = (lanes: readonly number[]): LogArg => ({
+  _tag: "Text",
+  ref:
+    lanes.length === 1
+      ? { key: "battleLog.laneOne", args: { lane: (lanes[0] ?? 0) + 1 } }
+      : {
+          key: "battleLog.laneList",
+          args: { lanes: lanes.map((lane) => lane + 1).join(", ") },
+        },
+});
+
+/** The lines of a Defeated Hero, its Front, and a Boss Rule (ADR-0009, ADR-0040). */
+const heroLine = (
+  event: Extract<
+    BattleEvent,
+    { readonly _tag: "HeroDefeated" | "FrontMoved" | "BossRuleActivated" }
+  >
+): LogLine => {
+  switch (event._tag) {
+    case "HeroDefeated": {
+      return line("heroDefeated", { hero: heroArg(event.hero) });
+    }
+    case "FrontMoved": {
+      return line("frontMoved", {
+        from: heroArg(event.from),
+        to: heroArg(event.to),
+        lanes: lanesArg(event.lanes),
+      });
+    }
+    case "BossRuleActivated": {
+      return line("bossRule", {
+        hero: heroArg(event.hero),
+        threshold: event.threshold,
+      });
+    }
+    default: {
+      return event satisfies never;
+    }
+  }
+};
+
 const effectLine = (
   event: BattleEvent,
   context: LineContext
@@ -485,6 +543,11 @@ const effectLine = (
     case "LaneOpened": {
       return line("laneOpened", { lane: event.lane + 1 });
     }
+    case "HeroDefeated":
+    case "FrontMoved":
+    case "BossRuleActivated": {
+      return heroLine(event);
+    }
     case "BattleEnded": {
       return line(event.result.winner === "player" ? "won" : "lost");
     }
@@ -526,7 +589,9 @@ const targetLine = (
       return line("targetLane", { lane: target.lane + 1 });
     }
     case "Hero": {
-      return line("target", { target: { _tag: "Hero", side: target.side } });
+      return line("target", {
+        target: { _tag: "Hero", side: target.side, hero: target.hero },
+      });
     }
     default: {
       return null;
@@ -574,7 +639,10 @@ const playSummary = (events: readonly BattleEvent[]): LogLine | null => {
   };
   return played.side === "player"
     ? line("playYou", { card })
-    : line("playEnemy", { hero: { _tag: "Hero", side: played.side }, card });
+    : line("playEnemy", {
+        hero: { _tag: "Hero", side: played.side, hero: played.hero.hero },
+        card,
+      });
 };
 
 /** "Burn hits Bone Archer." for one Unit, or "Burn hits 3 Units.". */

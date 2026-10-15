@@ -8,7 +8,11 @@ export const starsFor = (state: BattleState): number => {
   if (state.result?.winner !== "player") {
     return 0;
   }
-  const { hero } = state.sides.player;
+  // The Player's Side always has 1 Hero.
+  const [hero] = state.sides.player.heroes;
+  if (!hero) {
+    return 0;
+  }
   if (hero.hp * 2 < hero.maxHp) {
     return 1;
   }

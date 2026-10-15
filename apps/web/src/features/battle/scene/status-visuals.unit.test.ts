@@ -12,6 +12,7 @@ import {
 const quiet: UnitView = {
   id: 1,
   owner: "player",
+  hero: 0,
   source: { _tag: "Card", cardId: "human.militiaRecruit" },
   rank: "common",
   lane: 0,

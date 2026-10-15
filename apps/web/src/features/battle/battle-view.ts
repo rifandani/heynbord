@@ -2,11 +2,13 @@ import type {
   BattleEvent,
   BattleResult,
   BattleState,
+  BossRuleState,
   ClassId,
   DamageType,
   FieldEffect,
   RankId,
   Side,
+  HeroState,
   TokenId,
   UnitState,
 } from "@workspace/rules";
@@ -33,6 +35,8 @@ export type UnitSourceView =
 export interface UnitView {
   readonly id: number;
   readonly owner: Side;
+  /** The index of the Hero of `owner` that summoned the Unit (ADR-0009). */
+  readonly hero: number;
   readonly source: UnitSourceView;
   readonly rank: RankId;
   readonly lane: number;
@@ -143,19 +147,72 @@ export interface GraveyardCardView {
   readonly rank: RankId;
 }
 
+/**
+ * The effect of a Boss Rule, as the Player sees it (ADR-0040). The Boss Rules
+ * are open information: the Dungeons screen also shows them.
+ */
+export type BossRuleEffectView =
+  | {
+      readonly type: "countdown";
+      readonly amount: number;
+      readonly cards: number;
+    }
+  | {
+      readonly type: "summon";
+      readonly cardId: string;
+      readonly rank: RankId;
+    }
+  | { readonly type: "draw"; readonly cards: number };
+
+/** A Boss Rule of a Hero: its HP threshold, its effect, and if it activated. */
+export interface BossRuleView {
+  /** A percentage of the maximum HP of the Hero: 1 to 99. */
+  readonly threshold: number;
+  readonly effect: BossRuleEffectView;
+  readonly activated: boolean;
+}
+
+/**
+ * One Hero of a Side (ADR-0009). A Hero at 0 HP is Defeated: its Front goes
+ * to another Hero of its Side, so its `front` is empty after `FrontMoved`.
+ */
 export interface HeroView {
   readonly hp: number;
   readonly maxHp: number;
   readonly classId: ClassId;
-}
-
-export interface SideView {
-  readonly hero: HeroView;
+  /** The Lanes that the Hero stands behind, from the lowest Lane. */
+  readonly front: readonly number[];
+  /** The Boss Rules of a Boss, in content order. Other Heroes have none. */
+  readonly bossRules: readonly BossRuleView[];
   readonly hand: readonly HandCardView[];
   readonly deck: number;
   /** The cards in the order that they went in. The last card is on top. */
   readonly graveyard: readonly GraveyardCardView[];
 }
+
+/** The Heroes of a Side, in Lane order of their Fronts at the start. */
+export interface SideView {
+  readonly heroes: readonly HeroView[];
+}
+
+/** A Hero at 0 HP is Defeated (ADR-0009). */
+export const isDefeated = (hero: HeroView): boolean => hero.hp === 0;
+
+/**
+ * The Hero `hero` of `side`. The Player's Side always has 1 Hero, at index 0.
+ * A view always has a Hero at each index that the rules name.
+ */
+export const heroOf = (view: BattleView, side: Side, hero = 0): HeroView => {
+  const found = view.sides[side].heroes[hero];
+  if (!found) {
+    throw new Error(`The ${side} Side has no Hero ${hero}`);
+  }
+  return found;
+};
+
+/** True when a Side has 2 or more Heroes: a Dungeon (GDD 8.4). */
+export const hasManyHeroes = (view: BattleView, side: Side): boolean =>
+  view.sides[side].heroes.length > 1;
 
 /**
  * A Field Effect on the Board (GDD 4.8): its area and the hits that are left.
@@ -208,6 +265,7 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
   return {
     id: unit.id,
     owner: unit.owner,
+    hero: unit.hero,
     source,
     rank: unitRank(unit.source),
     lane: unit.lane,
@@ -287,27 +345,51 @@ const graveyardCard = (card: {
   readonly rank: RankId;
 }): GraveyardCardView => ({ cardId: card.cardId, rank: card.rank });
 
+const bossRuleEffectView = (
+  effect: BossRuleState["effect"]
+): BossRuleEffectView =>
+  effect.type === "summon"
+    ? { type: "summon", cardId: effect.card.cardId, rank: effect.card.rank }
+    : effect;
+
+const heroView = (side: Side, hero: Readonly<HeroState>): HeroView => ({
+  hp: hero.hp,
+  maxHp: hero.maxHp,
+  classId: hero.classId,
+  front: [...hero.front],
+  bossRules: hero.bossRules.map((rule) => ({
+    threshold: rule.threshold,
+    effect: bossRuleEffectView(rule.effect),
+    activated: rule.activated,
+  })),
+  hand: hero.hand.map((card) => visibleCard(side, card)),
+  deck: hero.deck.length,
+  graveyard: hero.graveyard.map(graveyardCard),
+});
+
 const sideView = (state: BattleState, side: Side): SideView => {
-  const source = state.sides[side];
-  return {
-    hero: {
-      hp: source.hero.hp,
-      maxHp: source.hero.maxHp,
-      classId: source.hero.classId,
-    },
-    hand: source.hand.map((card) => visibleCard(side, card)),
-    deck: source.deck.length,
-    graveyard: source.graveyard.map(graveyardCard),
-  };
+  const { heroes } = state.sides[side];
+  if (heroes.length === 0) {
+    throw new Error(`The ${side} Side has no Hero`);
+  }
+  return { heroes: heroes.map((hero) => heroView(side, hero)) };
 };
 
-const updateSide = (
+const updateHero = (
   view: BattleView,
   side: Side,
-  change: (current: SideView) => SideView
+  hero: number,
+  change: (current: HeroView) => HeroView
 ): BattleView => ({
   ...view,
-  sides: { ...view.sides, [side]: change(view.sides[side]) },
+  sides: {
+    ...view.sides,
+    [side]: {
+      heroes: view.sides[side].heroes.map((current, index) =>
+        index === hero ? change(current) : current
+      ),
+    },
+  },
 });
 
 /**
@@ -321,7 +403,7 @@ const markBlockedCards = (view: BattleView): BattleView => {
       ? [unit.source.cardId]
       : []
   );
-  const { hand } = view.sides.player;
+  const { hand } = heroOf(view, "player");
   const blocked = hand.map((card) =>
     card.cardId === null
       ? false
@@ -330,9 +412,9 @@ const markBlockedCards = (view: BattleView): BattleView => {
   if (hand.every((card, index) => card.blocked === blocked[index])) {
     return view;
   }
-  return updateSide(view, "player", (side) => ({
-    ...side,
-    hand: side.hand.map((card, index) => ({
+  return updateHero(view, "player", 0, (hero) => ({
+    ...hero,
+    hand: hero.hand.map((card, index) => ({
       ...card,
       blocked: blocked[index] ?? false,
     })),
@@ -420,9 +502,9 @@ const applyDamage = (
 ): BattleView => {
   const { target } = event;
   if (target._tag === "Hero") {
-    return updateSide(view, target.side, (side) => ({
-      ...side,
-      hero: { ...side.hero, hp: event.hp },
+    return updateHero(view, target.side, target.hero, (hero) => ({
+      ...hero,
+      hp: event.hp,
     }));
   }
   return updateUnit(view, target.unitId, (unit) => ({
@@ -477,7 +559,7 @@ const applyFieldEvent = (view: BattleView, event: BattleEvent): BattleView => {
 const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
   switch (event._tag) {
     case "CountdownsTicked": {
-      return updateSide(view, event.side, (side) => ({
+      return updateHero(view, event.side, event.hero, (side) => ({
         ...side,
         hand: side.hand.map((card, index) => ({
           ...card,
@@ -486,21 +568,21 @@ const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
       }));
     }
     case "CardDrawn": {
-      return updateSide(view, event.side, (side) => ({
+      return updateHero(view, event.side, event.hero, (side) => ({
         ...side,
         hand: [...side.hand, visibleCard(event.side, event.card)],
         deck: side.deck - 1,
       }));
     }
     case "CardPlayed": {
-      return updateSide(view, event.side, (side) => ({
+      return updateHero(view, event.side, event.hero.hero, (side) => ({
         ...side,
         hand: side.hand.filter((_, index) => index !== event.handIndex),
       }));
     }
     case "RecallRolled": {
       const { countdown } = getCard(event.card.cardId);
-      return updateSide(view, event.side, (side) =>
+      return updateHero(view, event.side, event.hero, (side) =>
         event.success
           ? {
               ...side,
@@ -517,7 +599,7 @@ const applyCardEvent = (view: BattleView, event: BattleEvent): BattleView => {
     }
     case "CountdownChanged":
     case "CardSabotaged": {
-      return updateSide(view, event.side, (side) => ({
+      return updateHero(view, event.side, event.hero, (side) => ({
         ...side,
         hand: side.hand.map((card) =>
           card.instanceId === event.instanceId
@@ -634,6 +716,13 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
         bonusBulwarkTurns: 0,
       }));
     }
+    case "UnitRemoved": {
+      // A Unit of a Defeated Hero: no death, so its Card does not go to the Graveyard.
+      return {
+        ...view,
+        units: view.units.filter((candidate) => candidate.id !== event.unitId),
+      };
+    }
     case "UnitDied": {
       const unit = view.units.find(
         (candidate) => candidate.id === event.unitId
@@ -645,7 +734,7 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
       // The Card of a Card Unit goes to the Graveyard. A Token disappears.
       const { source } = unit ?? {};
       return unit && source?._tag === "Card"
-        ? updateSide(without, unit.owner, (side) => ({
+        ? updateHero(without, unit.owner, unit.hero, (side) => ({
             ...side,
             graveyard: [
               ...side.graveyard,
@@ -831,6 +920,30 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         ...view,
         units: view.units.map((unit) => endPhaseOf(unit, event.side)),
       };
+    }
+    case "FrontMoved": {
+      // ADR-0009: the Lanes of the Defeated Hero go to the nearest Hero of its Side.
+      const { from, to, lanes } = event;
+      return updateHero(
+        updateHero(view, from.side, from.hero, (hero) => ({
+          ...hero,
+          front: [],
+        })),
+        to.side,
+        to.hero,
+        (hero) => ({
+          ...hero,
+          front: [...hero.front, ...lanes].toSorted((a, b) => a - b),
+        })
+      );
+    }
+    case "BossRuleActivated": {
+      return updateHero(view, event.hero.side, event.hero.hero, (hero) => ({
+        ...hero,
+        bossRules: hero.bossRules.map((rule, index) =>
+          index === event.rule ? { ...rule, activated: true } : rule
+        ),
+      }));
     }
     case "BattleEnded": {
       return { ...view, result: event.result };

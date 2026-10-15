@@ -231,6 +231,69 @@
   }
 }
 
+/*
+ * A Boss Rule activates (ADR-0040): its notch on the Boss HP bar flashes
+ * gold and breaks, the plate glows, and a label comes out of the bottom of
+ * the plate and goes before the effect plays. They take the time of the event.
+ */
+@keyframes boss-notch {
+  0% {
+    transform: scaleY(1);
+  }
+  18% {
+    transform: scaleY(2);
+    background-color: #ffd75a;
+    box-shadow: 0 0 8px 2px rgba(255, 215, 90, 0.9);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes boss-rule-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 90, 0);
+  }
+  20% {
+    box-shadow: 0 0 22px 6px rgba(255, 215, 90, 0.85);
+  }
+  100% {
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  }
+}
+
+@keyframes boss-rule-label {
+  0% {
+    transform: translateY(-10px) scale(0.85);
+    opacity: 0;
+  }
+  18% {
+    transform: translateY(0) scale(1.04);
+    opacity: 1;
+  }
+  28% {
+    transform: none;
+  }
+  84% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
+}
+
+/* A Boss plate that a selected card can target: it breathes, as the target markers on the Board do. */
+@keyframes boss-target {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.22);
+  }
+}
+
 /* The Town ambient motion (GDD 11.4): a puff of chimney smoke rises and fades. */
 @keyframes town-smoke {
   0% {
@@ -951,20 +1014,6 @@
   }
 }
 
-/* The Hero screen: the notch of a Gear upgrade fills with a short gold flash. */
-@keyframes gear-notch {
-  0% {
-    scale: 1 1.9;
-    filter: brightness(1.9);
-    box-shadow: 0 0 10px 3px rgba(255, 215, 90, 0.9);
-  }
-  100% {
-    scale: 1;
-    filter: none;
-    box-shadow: 0 0 0 0 rgba(255, 215, 90, 0);
-  }
-}
-
 /* The Hero screen: a short gold glow on the Gear plate of an upgrade. */
 @keyframes gear-glow {
   0% {
@@ -989,6 +1038,89 @@
   100% {
     opacity: 1;
     translate: 0 0;
+  }
+}
+
+/* The Hero screen: the Forge Stone of an upgrade leaps out of the upgrade
+   button into its Gear item, on an arc, and goes into it. */
+@keyframes gear-stone-fly {
+  0% {
+    opacity: 0;
+    scale: 0.8;
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  15% {
+    opacity: 1;
+    scale: 1.3;
+  }
+  55% {
+    translate: calc(var(--gear-fly-x) * 0.5)
+      calc(var(--gear-fly-y) * 0.6 - 28px);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 0.55;
+    rotate: 200deg;
+    translate: var(--gear-fly-x) var(--gear-fly-y);
+  }
+}
+
+/* The Hero screen: the Gear item gives a little under the strike of the
+   Forge Stone, then comes back. */
+@keyframes gear-struck {
+  0%,
+  100% {
+    scale: 1;
+    translate: 0 0;
+  }
+  25% {
+    scale: 0.92 0.86;
+    translate: 0 4%;
+  }
+  60% {
+    scale: 1.05;
+    translate: 0 -2%;
+  }
+}
+
+/* The Hero screen: a spark flies out of the strike and goes out. The layer is
+   a size container, so the sparks scale with the Gear icon. */
+@keyframes gear-spark {
+  0% {
+    opacity: 0;
+    scale: 0.4 1;
+    translate: 12cqw 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1 0.5;
+    translate: var(--spark-reach) 0;
+  }
+}
+
+/* The Hero screen: when the next level needs a new Forge Stone tier, the
+   stone in the upgrade turns over into its new color. */
+@keyframes gear-tier-turn {
+  0% {
+    opacity: 0;
+    scale: 0.3;
+    rotate: -120deg;
+  }
+  60% {
+    opacity: 1;
+    scale: 1.45;
+    rotate: 12deg;
+  }
+  100% {
+    scale: 1;
+    rotate: 0deg;
   }
 }
 

@@ -1,6 +1,9 @@
 import type { BattleEvent } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 
+import type { BattleView } from "@/features/battle/battle-view";
+import { hasManyHeroes } from "@/features/battle/battle-view";
+
 /**
  * Battle sounds made with Web Audio (art direction 7.2): short tones and
  * filtered noise, so no audio file loads. The context starts only after a user
@@ -32,7 +35,10 @@ export type SoundName =
   | "revealEpic"
   | "revealLegendary"
   | "anvil"
-  | "gearUp";
+  | "gearUp"
+  | "bossDefeated"
+  | "frontMoved"
+  | "bossRule";
 
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -185,6 +191,21 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
       tone(note, 0.35, { delay: index * 0.16, gain: 0.18, type: "sine" });
     }
   },
+  // A Boss falls (ADR-0009): a low fall, then a dull drop on the ground.
+  bossDefeated: () => {
+    tone(220, 0.5, { type: "sawtooth", slideTo: 70, gain: 0.13 });
+    noise(0.25, 260, 0.28);
+  },
+  // A Front moves: a short march of two low steps.
+  frontMoved: () => {
+    noise(0.07, 420, 0.16);
+    tone(196, 0.12, { delay: 0.14, type: "square", gain: 0.07 });
+  },
+  // A Boss Rule activates (ADR-0040): a war horn rises.
+  bossRule: () => {
+    tone(196, 0.32, { type: "sawtooth", slideTo: 294, gain: 0.1 });
+    tone(392, 0.24, { delay: 0.12, type: "square", gain: 0.06 });
+  },
   // The Packs screen: the paper of a Pack tears, then a card turns over.
   packTear: () => {
     noise(0.28, 3200, 0.22);
@@ -241,8 +262,58 @@ export const playSound = (name: SoundName, minGap = 50): void => {
 };
 
 /** The sound of a Battle Event, if it has one. */
-export const eventSound = (event: BattleEvent): SoundName | null => {
+const damageSound = (
+  event: Extract<BattleEvent, { readonly _tag: "DamageDealt" }>
+): SoundName => {
+  if (event.source === "burn") {
+    return "fire";
+  }
+  if (event.crit) {
+    return "crit";
+  }
+  // A Ward that absorbs the full hit sounds like a Block: no damage goes in.
+  if (event.blocked || (event.amount === 0 && event.absorbed > 0)) {
+    return "block";
+  }
+  return event.damageType === "physical" ? "hit" : event.damageType;
+};
+
+/**
+ * The sound of a Defeated Hero, a Front move or a Boss Rule. In a Stage, the
+ * Battle ends on the defeat, so only the victory or defeat sound plays.
+ */
+const heroSound = (
+  event: BattleEvent,
+  view: BattleView | undefined
+): SoundName | null => {
   switch (event._tag) {
+    case "HeroDefeated": {
+      return view && hasManyHeroes(view, event.hero.side)
+        ? "bossDefeated"
+        : null;
+    }
+    case "FrontMoved": {
+      return "frontMoved";
+    }
+    case "BossRuleActivated": {
+      return "bossRule";
+    }
+    default: {
+      return null;
+    }
+  }
+};
+
+export const eventSound = (
+  event: BattleEvent,
+  view?: BattleView
+): SoundName | null => {
+  switch (event._tag) {
+    case "HeroDefeated":
+    case "FrontMoved":
+    case "BossRuleActivated": {
+      return heroSound(event, view);
+    }
     case "UnitSummoned": {
       return "summon";
     }
@@ -256,17 +327,7 @@ export const eventSound = (event: BattleEvent): SoundName | null => {
       return event.ranged ? "ranged" : "melee";
     }
     case "DamageDealt": {
-      if (event.source === "burn") {
-        return "fire";
-      }
-      if (event.crit) {
-        return "crit";
-      }
-      // A Ward that absorbs the full hit sounds like a Block: no damage goes in.
-      if (event.blocked || (event.amount === 0 && event.absorbed > 0)) {
-        return "block";
-      }
-      return event.damageType === "physical" ? "hit" : event.damageType;
+      return damageSound(event);
     }
     case "UnitDied": {
       return "death";

@@ -17,6 +17,8 @@ import {
   skip,
   startSession,
 } from "@/features/battle/battle-session";
+import { heroOf } from "@/features/battle/battle-view";
+import { playerHand } from "@/features/battle/player-hero";
 import type { TutorialStep } from "@/features/battle/tutorial";
 import { closeText, openText, selectCard } from "@/features/battle/tutorial";
 import { NEW_PLAYER } from "@/features/profile/profile";
@@ -35,8 +37,8 @@ const settle = (start: BattleSession): BattleSession => {
 
 /** The first Ready card with a legal target, and that target. */
 const firstPlay = (session: BattleSession) => {
-  for (const [handIndex] of session.rules.sides.player.hand.entries()) {
-    const [target] = legalTargets(session.rules, handIndex);
+  for (const [handIndex] of playerHand(session.rules).entries()) {
+    const [target] = legalTargets(session.rules, 0, handIndex);
     if (target) {
       return { handIndex, target };
     }
@@ -59,7 +61,7 @@ const playTutorial = (deck: StarterDeck, seed: number) => {
   );
   while (session.rules.status !== "finished") {
     for (let play = firstPlay(session); play; play = firstPlay(session)) {
-      const card = session.view.sides.player.hand[play.handIndex];
+      const card = heroOf(session.view, "player").hand[play.handIndex];
       const selected = canAct(session)
         ? changeTutorial(session, (tutorial) => selectCard(tutorial, card))
         : session;

@@ -3,6 +3,7 @@ import { Atom, AtomRegistry } from "effect/reactivity";
 import { describe, expect, it } from "vitest";
 
 import { changeTutorial, startSession } from "@/features/battle/battle-session";
+import { heroOf } from "@/features/battle/battle-view";
 import {
   battleSessionAtom,
   battleSpeedAtom,
@@ -23,7 +24,7 @@ const sessionWithReadyCard = () => {
       player: NEW_PLAYER,
       seed,
     });
-    const index = session.view.sides.player.hand.findIndex(
+    const index = heroOf(session.view, "player").hand.findIndex(
       (card) => card.countdown === 0 && card.cardId?.startsWith("human")
     );
     if (index !== -1) {
@@ -74,7 +75,8 @@ describe("tutorialMarksAtom", () => {
     const { session, index } = sessionWithReadyCard();
     const tutorial = changeTutorial(
       { ...session, tutorial: startSession(session.options, 1, true).tutorial },
-      (current) => selectCard(current, session.view.sides.player.hand[index])
+      (current) =>
+        selectCard(current, heroOf(session.view, "player").hand[index])
     );
     registry.set(battleSessionAtom, tutorial);
     expect(registry.get(tutorialMarksAtom)).toEqual({

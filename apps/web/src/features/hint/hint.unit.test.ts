@@ -34,6 +34,7 @@ const handCard = (cardId: string | null, countdown: number): HandCardView => ({
 const recall = (side: "player" | "enemy", success: boolean): BattleEvent => ({
   _tag: "RecallRolled",
   side,
+  hero: 0,
   // SAFETY: the Hints read only the side and the result of a Recall.
   card: { cardId: skillId } as CardInstance,
   success,

@@ -18,7 +18,7 @@ const session = startSession({
 
 const damage = (crit: boolean): BattleEvent => ({
   _tag: "DamageDealt",
-  target: { _tag: "Hero", side: "enemy" },
+  target: { _tag: "Hero", side: "enemy", hero: 0 },
   amount: 2,
   damageType: "physical",
   source: "attack",

@@ -4,16 +4,20 @@ import { createBattle } from "../battle/create-battle";
 import { BattleEvent, STAGE_LANES } from "../battle/types";
 import { ARCHETYPES } from "../content/archetypes";
 import { deckCountdown, getStarterDeck } from "../content/decks";
+import { getDungeon } from "../content/dungeons";
 import { getStage, STAGES } from "../content/stages";
 import { emptyBattle, placeUnit } from "../testing/fixtures";
 import {
   createMatchupBattle,
+  DUNGEON_TARGET,
+  dungeonStage,
   expectedDeck,
   gatesRelease,
   isOnTarget,
   MATCHUP_TARGET,
   NO_GEAR,
   playOut,
+  simulateDungeon,
   simulateMatchup,
   simulateStage,
   stageTarget,
@@ -159,6 +163,34 @@ describe("simulateStage (GDD 13, step 6)", () => {
   });
 });
 
+describe("simulateDungeon (GDD 13, step 6)", () => {
+  const dungeon = getDungeon("dungeon-1");
+
+  it("uses the Deck of the first Stage at the unlock level", () => {
+    const stage = dungeonStage(dungeon);
+    expect(stage.id).toBe("3-1");
+    expect(stage.recommendedLevel).toBe(dungeon.unlockLevel);
+  });
+
+  it("plays at the unlock level and gives the same report each time", () => {
+    const report = simulateDungeon(dungeon, vanguard, 4);
+    expect(report).toMatchObject({
+      dungeonId: "dungeon-1",
+      deckId: "vanguard",
+      battles: 4,
+    });
+    expect(report.winRate).toBeGreaterThanOrEqual(0);
+    expect(report.winRate).toBeLessThanOrEqual(1);
+    expect(report.averageDefeated).toBeGreaterThanOrEqual(0);
+    expect(report.averageDefeated).toBeLessThanOrEqual(dungeon.bosses.length);
+    expect(simulateDungeon(dungeon, vanguard, 4)).toEqual(report);
+  });
+
+  it("has the target of a Boss Stage", () => {
+    expect(DUNGEON_TARGET).toEqual({ min: 0.3, max: 0.5 });
+  });
+});
+
 describe("simulateMatchup (GDD 13, steps 4 and 5)", () => {
   it("gives a mirror Matchup exactly 50%, because each seed plays both ways", () => {
     for (const archetype of ARCHETYPES) {
@@ -182,10 +214,15 @@ describe("simulateMatchup (GDD 13, steps 4 and 5)", () => {
       ...options,
       gear,
     });
-    const { player, enemy } = state.sides;
-    expect({ ...enemy.hero, classId: "warrior" }).toEqual(player.hero);
-    expect(player.hero.maxHp).toBe(30 + 5 + 2);
-    expect(enemy.hero.classId).toBe("mage");
+    const [player] = state.sides.player.heroes;
+    const [enemy] = state.sides.enemy.heroes;
+    expect({ ...enemy, classId: "warrior", hand: [], deck: [] }).toEqual({
+      ...player,
+      hand: [],
+      deck: [],
+    });
+    expect(player?.maxHp).toBe(30 + 5 + 2);
+    expect(enemy?.classId).toBe("mage");
     expect(state.lanes).toBe(STAGE_LANES);
     expect(state.closedLanes).toEqual([]);
     expect(state.units).toEqual([]);

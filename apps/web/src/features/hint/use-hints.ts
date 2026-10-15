@@ -5,6 +5,7 @@ import type { ContextType } from "react";
 import { useContext, useEffect } from "react";
 
 import type { BattleSession } from "@/features/battle/battle-session";
+import { heroOf } from "@/features/battle/battle-view";
 import { collectionAtom, deckSlotsAtom } from "@/features/deck/deck.atoms";
 import { hintAnchor } from "@/features/hint/components/hint-banner";
 import type { HintId } from "@/features/hint/hint";
@@ -52,7 +53,7 @@ export const useBattleHints = (session: BattleSession | null) => {
     showNext(
       registry,
       battleHints({
-        hand: session.view.sides.player.hand,
+        hand: heroOf(session.view, "player").hand,
         log: session.log,
         tutorial: session.tutorial !== null,
       })

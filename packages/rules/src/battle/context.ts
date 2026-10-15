@@ -1,7 +1,14 @@
 import type { ActivatedKeyword } from "../content/keywords";
 import type { RandomCursor } from "../random";
-import type { BattleState, DamageDealer, Side, UnitState } from "./types";
-import { BattleEvent, heroOf, LANE_LENGTH, SUMMON_ZONE_DEPTH } from "./types";
+import type {
+  BattleState,
+  DamageDealer,
+  HeroRef,
+  HeroState,
+  Side,
+  UnitState,
+} from "./types";
+import { BattleEvent, LANE_LENGTH, SUMMON_ZONE_DEPTH } from "./types";
 
 /**
  * The working copy of one `step`. `step` copies the input state first, so the
@@ -16,6 +23,51 @@ export interface StepContext {
 export const isOver = (ctx: StepContext): boolean =>
   ctx.state.status === "finished";
 
+/** The Hero that owns `unit`. */
+export const ownerOf = (unit: Pick<UnitState, "owner" | "hero">): HeroRef => ({
+  side: unit.owner,
+  hero: unit.hero,
+});
+
+/**
+ * The state of the Hero `ref`. The Battle has a Hero at each index of a
+ * Side, so a missing Hero is an engine error.
+ */
+export const heroState = (state: BattleState, ref: HeroRef): HeroState => {
+  const hero = state.sides[ref.side].heroes[ref.hero];
+  if (!hero) {
+    throw new Error(`No Hero ${ref.hero} on the ${ref.side} Side`);
+  }
+  return hero;
+};
+
+/** A Hero at 0 HP is Defeated (ADR-0009). */
+export const isDefeated = (hero: HeroState): boolean => hero.hp <= 0;
+
+/** The Heroes of `side` that are not Defeated, in index order. */
+export const activeHeroes = (state: BattleState, side: Side): HeroRef[] =>
+  state.sides[side].heroes.flatMap((hero, index) =>
+    isDefeated(hero) ? [] : [{ side, hero: index }]
+  );
+
+/**
+ * The Hero of `side` whose Front holds `lane` (ADR-0009). A Unit that gets to
+ * the end of that Lane hits it.
+ */
+export const heroOfLane = (
+  state: BattleState,
+  side: Side,
+  lane: number
+): HeroRef => {
+  const index = state.sides[side].heroes.findIndex((hero) =>
+    hero.front.includes(lane)
+  );
+  if (index === -1) {
+    throw new Error(`No Front of the ${side} Side holds Lane ${lane}`);
+  }
+  return { side, hero: index };
+};
+
 /**
  * Sends `KeywordActivated` for the Keyword `keyword` of `unit`. The caller
  * sends it only when the Keyword changes the Battle, and before the events of
@@ -27,7 +79,7 @@ export const activateKeyword = (
   keyword: ActivatedKeyword,
   value?: number
 ): void => {
-  const activation = { unitId: unit.id, keyword, hero: heroOf(unit.owner) };
+  const activation = { unitId: unit.id, keyword, hero: ownerOf(unit) };
   ctx.events.push(
     BattleEvent.KeywordActivated(
       value === undefined ? activation : { ...activation, value }
@@ -39,13 +91,13 @@ export const activateKeyword = (
 export const unitDealer = (unit: UnitState): DamageDealer => ({
   _tag: "Unit",
   unitId: unit.id,
-  hero: heroOf(unit.owner),
+  hero: ownerOf(unit),
 });
 
-/** The Hero of `side` deals the damage, with a Skill Card or a Field Effect. */
-export const heroDealer = (side: Side): DamageDealer => ({
+/** The Hero `hero` deals the damage, with a Skill Card or a Field Effect. */
+export const heroDealer = (hero: HeroRef): DamageDealer => ({
   _tag: "Hero",
-  hero: heroOf(side),
+  hero,
 });
 
 /** +1 for the player (toward the enemy Hero), -1 for the enemy. */
@@ -108,10 +160,14 @@ export const actionOrder = (state: BattleState, side: Side): UnitState[] => {
 };
 
 const cloneSide = (side: BattleState["sides"]["player"]) => ({
-  hero: { ...side.hero },
-  hand: side.hand.map((card) => ({ ...card })),
-  deck: [...side.deck],
-  graveyard: [...side.graveyard],
+  heroes: side.heroes.map((hero) => ({
+    ...hero,
+    front: [...hero.front],
+    hand: hero.hand.map((card) => ({ ...card })),
+    deck: [...hero.deck],
+    graveyard: [...hero.graveyard],
+    bossRules: hero.bossRules.map((rule) => ({ ...rule })),
+  })),
 });
 
 /** A deep copy of the state. All fields are plain data. */

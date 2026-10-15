@@ -18,6 +18,7 @@ import {
   parseOverrides,
   serializeOverrides,
   setBalance,
+  setForgeStones,
   setGear,
   setStageStars,
   stageOrder,
@@ -100,6 +101,17 @@ describe("balances", () => {
   });
 });
 
+describe("Forge Stones", () => {
+  it("sets one tier to a whole number and keeps the others", () => {
+    const stones = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 };
+    expect(setForgeStones(stones, "rare", 9.6)).toEqual({
+      ...stones,
+      rare: 10,
+    });
+    expect(setForgeStones(stones, "epic", -2)).toEqual({ ...stones, epic: 0 });
+  });
+});
+
 describe("Gear", () => {
   it("keeps a Gear level whole, from 0 to the maximum", () => {
     expect(gearLevel(3.4)).toBe(3);
@@ -122,6 +134,7 @@ describe("overrides over a Profile", () => {
       stageResults: { "1-1": 3 },
       balances: { coin: 15_400, essence: 30, heynstones: 150 },
       sweepTickets: 12,
+      forgeStones: { common: 5, uncommon: 4, rare: 3, epic: 2, legendary: 1 },
       xp: 640,
       gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
     });
@@ -130,6 +143,7 @@ describe("overrides over a Profile", () => {
     expect(shown.stageResults).toEqual({ "1-1": 3 });
     expect(shown.coin).toBe(15_400);
     expect(shown.sweepTickets).toBe(12);
+    expect(shown.forgeStones.legendary).toBe(1);
     expect(shown.xp).toBe(640);
     expect(shown.gear.weapon).toBe(3);
     // The rest is the Profile.
@@ -150,6 +164,7 @@ describe("overrides over a Profile", () => {
       essence: 2,
       heynstones: 3,
       sweepTickets: 4,
+      forgeStones: { common: 1, uncommon: 0, rare: 0, epic: 0, legendary: 2 },
       gear: { weapon: 0, armor: 1, trinket: 0, banner: 0 },
     };
     const overrides = fromOverlay(overlay);
@@ -157,6 +172,7 @@ describe("overrides over a Profile", () => {
       unlockAll: true,
       balances: { coin: 1, essence: 2, heynstones: 3 },
       sweepTickets: 4,
+      forgeStones: { common: 1, uncommon: 0, rare: 0, epic: 0, legendary: 2 },
       gear: { weapon: 0, armor: 1, trinket: 0, banner: 0 },
     });
     expect(overrides && toOverlay(overrides)).toEqual(overlay);

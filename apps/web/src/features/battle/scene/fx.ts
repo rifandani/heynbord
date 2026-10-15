@@ -25,6 +25,7 @@ import {
   CAMERA_PITCH,
   HERO_FIGURE_Y,
   heroX,
+  heroZ,
   laneZ,
   squareX,
   worldOf,
@@ -323,7 +324,7 @@ const windup = (
   burst: "windup",
   scale: 1,
   x: heroX(event.side),
-  z: 0,
+  z: heroZ(before, event.side, event.hero.hero),
   height: RUNE_RING_HEIGHT,
   start: time,
   duration: eventSeconds(event, speed, before) * WINDUP_END,
@@ -540,10 +541,14 @@ interface Projectile {
  */
 const castCenter = (
   cast: Cast,
-  lanes: number
+  view: BattleView
 ): { readonly x: number; readonly z: number } | null => {
+  const { lanes } = view;
   if (cast.target._tag === "Hero") {
-    return { x: heroX(cast.target.side), z: 0 };
+    return {
+      x: heroX(cast.target.side),
+      z: heroZ(view, cast.target.side, cast.target.hero),
+    };
   }
   const squares = castSquares(cast, lanes);
   if (squares.length === 0) {
@@ -570,13 +575,13 @@ const BOLT_END = 0.92;
  */
 export const spellBoltAt = (
   cast: Cast | null,
-  lanes: number,
+  view: BattleView,
   progress: number
 ): Projectile | null => {
   if (cast?.phase !== "reveal") {
     return null;
   }
-  const to = castCenter(cast, lanes);
+  const to = castCenter(cast, view);
   const flight = (progress - BOLT_START) / (BOLT_END - BOLT_START);
   if (!to || flight < 0 || flight > 1) {
     return null;
@@ -584,11 +589,12 @@ export const spellBoltAt = (
   // Fast at the end, as a thrown spell.
   const eased = flight * flight;
   const fromX = heroX(cast.side);
+  const fromZ = heroZ(view, cast.side, cast.hero);
   const fromY = HERO_FIGURE_Y + 0.6;
   return {
     x: fromX + (to.x - fromX) * eased,
     y: fromY + (0.5 - fromY) * eased + Math.sin(eased * Math.PI) * 1.2,
-    z: to.z * eased,
+    z: fromZ + (to.z - fromZ) * eased,
     color: effectColor(cast.skill.effect),
     size: 2.2 - eased * 0.6,
   };
@@ -702,16 +708,16 @@ export const projectileParticles = (
  */
 export const spellBoltParticles = (
   cast: Cast | null,
-  lanes: number,
+  view: BattleView,
   progress: number,
   reducedMotion = false
 ): Particle[] => {
-  const head = reducedMotion ? null : spellBoltAt(cast, lanes, progress);
+  const head = reducedMotion ? null : spellBoltAt(cast, view, progress);
   if (!head) {
     return [];
   }
   return flightQuads(
     head,
-    spellBoltAt(cast, lanes, Math.max(progress - TRAIL_SPAN, BOLT_START))
+    spellBoltAt(cast, view, Math.max(progress - TRAIL_SPAN, BOLT_START))
   );
 };

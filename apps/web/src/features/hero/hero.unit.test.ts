@@ -1,14 +1,12 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { INITIAL_DECK_SLOTS } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
   forgeStoneCounts,
   gearItem,
   gearItems,
-  heroDeck,
   heroHpParts,
   isChance,
   upgradeFocusAfter,
@@ -236,32 +234,6 @@ describe("upgradeFocusAfter", () => {
     expect(
       upgradeFocusAfter(items([false, false, false, false]), "weapon")
     ).toBeNull();
-  });
-});
-
-describe("heroDeck (ADR-0033)", () => {
-  it("is the Class and the name of the Active Deck", () => {
-    const slots = [
-      INITIAL_DECK_SLOTS[0],
-      { id: "slot-2", name: "Frost Pages", classId: "mage", deck: [] },
-    ] as const;
-    expect(heroDeck(slots, "slot-2")).toEqual({
-      classId: "mage",
-      deckName: { _tag: "Given", name: "Frost Pages" },
-    });
-  });
-
-  it("gives the default name to a slot with no name", () => {
-    expect(heroDeck(INITIAL_DECK_SLOTS, "vanguard")).toEqual({
-      classId: INITIAL_DECK_SLOTS[0].classId,
-      deckName: { _tag: "Default", name: { key: "decks.vanguard.name" } },
-    });
-  });
-
-  it("uses the first slot when the ID is not a slot", () => {
-    expect(heroDeck(INITIAL_DECK_SLOTS, "gone")?.classId).toBe(
-      INITIAL_DECK_SLOTS[0].classId
-    );
   });
 });
 

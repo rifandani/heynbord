@@ -1,11 +1,15 @@
 import type { DamageType } from "../content/schema";
 import { rollBasisPoints } from "../random";
+import { activateBossRules } from "./boss-rules";
 import type { StepContext } from "./context";
 import {
+  activeHeroes,
   activateKeyword,
   direction,
+  heroState,
   isInsideLane,
   isOver,
+  ownerOf,
   unitAt,
   unitDealer,
 } from "./context";
@@ -13,6 +17,7 @@ import type {
   BattleResult,
   DamageDealer,
   DamageSource,
+  HeroRef,
   Side,
   TargetRef,
   UnitState,
@@ -54,7 +59,7 @@ const killUnit = (ctx: StepContext, unit: UnitState): void => {
   const { state } = ctx;
   state.units = state.units.filter((candidate) => candidate.id !== unit.id);
   if (unit.source._tag === "Card") {
-    state.sides[unit.owner].graveyard.push(unit.source.card);
+    heroState(state, ownerOf(unit)).graveyard.push(unit.source.card);
   }
   ctx.events.push(BattleEvent.UnitDied({ unitId: unit.id }));
   if (unit.lastBreath <= 0 || isOver(ctx)) {
@@ -183,7 +188,7 @@ export const damageUnit = (
   if (crit) {
     amount *= 2;
   }
-  const blockChance = ctx.state.sides[unit.owner].hero.unitBlock;
+  const blockChance = heroState(ctx.state, ownerOf(unit)).unitBlock;
   // Holy damage cannot be Blocked (ADR-0031).
   const blocked =
     !fixed &&
@@ -236,15 +241,79 @@ export const damageUnit = (
   return { dealt: amount, killed: false };
 };
 
+/** The number of Lanes between two Fronts: 1 for Fronts next to each other. */
+const frontDistance = (a: readonly number[], b: readonly number[]): number =>
+  Math.min(...a.flatMap((lane) => b.map((other) => Math.abs(lane - other))));
+
+/**
+ * The Front of the Defeated Hero `ref` goes to the nearest Hero of its Side
+ * that is not Defeated. For the same distance, the Hero with the lower Lane
+ * number gets it (ADR-0009).
+ */
+const moveFront = (ctx: StepContext, ref: HeroRef): void => {
+  const { state } = ctx;
+  const defeated = heroState(state, ref);
+  const lanes = defeated.front;
+  let nearest: HeroRef | undefined;
+  for (const candidate of activeHeroes(state, ref.side)) {
+    if (!nearest) {
+      nearest = candidate;
+      continue;
+    }
+    const { front } = heroState(state, candidate);
+    const best = heroState(state, nearest).front;
+    const distance = frontDistance(lanes, front);
+    const bestDistance = frontDistance(lanes, best);
+    if (
+      distance < bestDistance ||
+      (distance === bestDistance && Math.min(...front) < Math.min(...best))
+    ) {
+      nearest = candidate;
+    }
+  }
+  if (!nearest || lanes.length === 0) {
+    return;
+  }
+  const receiver = heroState(state, nearest);
+  receiver.front = [...receiver.front, ...lanes].toSorted((a, b) => a - b);
+  defeated.front = [];
+  ctx.events.push(BattleEvent.FrontMoved({ from: ref, to: nearest, lanes }));
+};
+
+/**
+ * The Hero `ref` is Defeated (ADR-0009). The Battle ends when its Side has no
+ * other Hero that is not Defeated.
+ */
+const defeatHero = (ctx: StepContext, ref: HeroRef): void => {
+  const { state } = ctx;
+  ctx.events.push(BattleEvent.HeroDefeated({ hero: ref }));
+  if (activeHeroes(state, ref.side).length === 0) {
+    finishBattle(ctx, { winner: otherSide(ref.side), reason: "heroDefeated" });
+    return;
+  }
+  const owns = (owned: { readonly owner: Side; readonly hero: number }) =>
+    owned.owner === ref.side && owned.hero === ref.hero;
+  // Its Units leave with no death: no Graveyard, Last Breath or Rebirth.
+  for (const unit of state.units.filter(owns)) {
+    ctx.events.push(BattleEvent.UnitRemoved({ unitId: unit.id }));
+  }
+  state.units = state.units.filter((unit) => !owns(unit));
+  for (const field of state.fieldEffects.filter(owns)) {
+    ctx.events.push(BattleEvent.FieldEffectEnded({ fieldId: field.id }));
+  }
+  state.fieldEffects = state.fieldEffects.filter((field) => !owns(field));
+  moveFront(ctx, ref);
+};
+
 /**
  * Heroes have no Bulwark and cannot Block (GDD 4.7). True Damage has no Crit.
- * The Battle ends at 0 HP.
+ * The Hero is Defeated at 0 HP. Else its Boss Rules can activate (ADR-0040).
  */
-export const damageHero = (ctx: StepContext, side: Side, hit: Hit): void => {
+export const damageHero = (ctx: StepContext, ref: HeroRef, hit: Hit): void => {
   if (isOver(ctx)) {
     return;
   }
-  const { hero } = ctx.state.sides[side];
+  const hero = heroState(ctx.state, ref);
   const trueDamage = hit.trueDamage ?? false;
   const crit =
     !isStatusDamage(hit.source) &&
@@ -254,7 +323,7 @@ export const damageHero = (ctx: StepContext, side: Side, hit: Hit): void => {
   hero.hp = Math.max(0, hero.hp - amount);
   ctx.events.push(
     BattleEvent.DamageDealt({
-      target: { _tag: "Hero", side },
+      target: { _tag: "Hero", side: ref.side, hero: ref.hero },
       amount,
       damageType: hit.damageType,
       source: hit.source,
@@ -267,7 +336,12 @@ export const damageHero = (ctx: StepContext, side: Side, hit: Hit): void => {
       hp: hero.hp,
     })
   );
+  // A Hero target is also a valid `ref`: keep only the Side and the index.
+  const owner = { side: ref.side, hero: ref.hero };
   if (hero.hp === 0) {
-    finishBattle(ctx, { winner: otherSide(side), reason: "heroDefeated" });
+    // A Defeated Boss gets no Boss Rules (ADR-0040).
+    defeatHero(ctx, owner);
+    return;
   }
+  activateBossRules(ctx, owner);
 };

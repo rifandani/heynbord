@@ -310,6 +310,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Boss**: An enemy Hero with a name and special rules. One Boss is one Hero. _Avoid_: Dungeon Boss, boss Unit, elite, champion
 
+**Boss Rule**: A rule of a Boss that activates automatically, one time, when the HP of the Boss goes to or below a set percentage of its maximum HP. It is part of the Boss data, not a Card. _Avoid_: Phase, enrage, ability, passive, special rule
+
 **Dungeon**: A named place outside the Campaign where the Player fights one Battle against all its Bosses, with no Battles before them. The Player can play a Dungeon again. _Avoid_: raid, boss rush, instance, level
 
 **Region**: A group of 10 Stages. _Avoid_: chapter, world, area
@@ -323,6 +325,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Star chest**: A reward of a Region that the Player claims when the best Stars of its Stages add up to 10, 20 or 30. Each Region has 3. _Avoid_: milestone, Star reward
 
 **Stage card pool**: The Cards that a repeat win of a Stage can give: the different Cards of its enemy Deck, but not a Skill Card of another Class than the Player's Deck. _Avoid_: drop table, loot pool
+
+**Dungeon card pool**: The Cards that a repeat win of a Dungeon can give: the different Cards of the enemy Decks of all its Bosses, but not a Skill Card of another Class than the Player's Deck. _Avoid_: drop table, loot pool, Boss pool
 
 **Heynspire**: The tower mode with 50 Floors. _Avoid_: tower, ascension tower
 
@@ -371,7 +375,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A win that the Player plays gives 2 **Sweep Tickets**: in a **Stage**, a **Dungeon** or a **Floor**. A loss, an **Abandon** and an **Auto-play** win give none. The Bazaar never sells Sweep Tickets, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0035](../../docs/adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)).
 - A **Gear upgrade** to level _n_ uses 1 **Forge Stone** of the tier of level _n_. A Forge Stone of a different tier cannot replace it, and Forge Stones never combine or change into a different tier. The Bazaar never sells Forge Stones, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0038](../../docs/adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
 - A **Stage** first win, a 10-Star **Star chest**, a repeat win, a **Sweep**, a **Dungeon** win and some **Floor** first wins give **Forge Stones** (Economy 2). Only Dungeon 3 wins and the first wins of the 10th Floors give Legendary Forge Stones. The Player keeps them before **Gear** unlocks.
-- A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**.
+- A **Boss** has 0 or more **Boss Rules** ([ADR-0040](../../docs/adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)). A Boss Rule activates at most one time in a Battle, and never for a **Defeated** Boss. A Boss Rule never heals a Hero ([ADR-0028](../../docs/adr/0028-nothing-heals-a-hero.md)). A Boss Rule that can still put a Unit on the Board stops its Side from being **Routed** until it activates.
+- A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**. The **Recommended level** of a Dungeon is its unlock level.
 - The Player has one balance of **Coin**, shown in **Gold**, **Silver** and **Copper**, and a separate balance of **Heynstones**.
 - **Coin** and **Heynstones** never change into each other or into **Essence**.
 

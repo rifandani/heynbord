@@ -1,4 +1,11 @@
-import { CARDS, RANKS, STAGES, STARTER_DECKS, TOKENS } from "@workspace/rules";
+import {
+  CARDS,
+  DUNGEONS,
+  RANKS,
+  STAGES,
+  STARTER_DECKS,
+  TOKENS,
+} from "@workspace/rules";
 import type { RankId, TokenId } from "@workspace/rules";
 import { Predicate } from "effect";
 import { describe, expect, it } from "vitest";
@@ -100,6 +107,12 @@ const dataKeys = (): string[] => {
   for (const stage of STAGES) {
     keys.add(`stages.${stage.id}.name`);
     keys.add(`stages.${stage.id}.enemy`);
+  }
+  for (const dungeon of DUNGEONS) {
+    keys.add(`dungeons.${dungeon.id}.name`);
+    for (const boss of dungeon.bosses) {
+      keys.add(`dungeons.${dungeon.id}.bosses.${boss.id}`);
+    }
   }
   for (const deck of STARTER_DECKS) {
     keys.add(`decks.${deck.id}.name`);

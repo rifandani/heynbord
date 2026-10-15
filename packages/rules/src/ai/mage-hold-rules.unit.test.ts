@@ -43,7 +43,11 @@ const keep = (status: "paralyzed" | "frozen") =>
   });
 
 const playAt = (lane: number, position: number) =>
-  Command.PlayCard({ handIndex: 0, target: Target.Square({ lane, position }) });
+  Command.PlayCard({
+    hero: 0,
+    handIndex: 0,
+    target: Target.Square({ lane, position }),
+  });
 
 describe("chooseCommand: Mage Hold Rules of #65 (GDD 9)", () => {
   it("keeps Spark until the target would attack in its next action, or the hit kills", () => {
@@ -100,7 +104,9 @@ describe("chooseCommand: Mage Hold Rules of #65 (GDD 9)", () => {
         [0, 5, 6],
         [2, 3, 6],
       ])
-    ).toEqual(Command.PlayCard({ handIndex: 0, target: Target.NoTarget() }));
+    ).toEqual(
+      Command.PlayCard({ hero: 0, handIndex: 0, target: Target.NoTarget() })
+    );
   });
 
   it("keeps Wildfire and Blizzard until an area has 2 or more enemy Units, and plays on the area with the most", () => {

@@ -24,8 +24,12 @@ import {
   startSession,
   tick,
 } from "@/features/battle/battle-session";
+import {
+  heroOf,
+  applyEvent,
+  viewFromState,
+} from "@/features/battle/battle-view";
 import type { BattleView } from "@/features/battle/battle-view";
-import { applyEvent, viewFromState } from "@/features/battle/battle-view";
 
 const PLAYER = { side: "player", hero: 0 } as const;
 const ENEMY = { side: "enemy", hero: 0 } as const;
@@ -40,6 +44,7 @@ const snapshot = (
 ): UnitSnapshot => ({
   id,
   owner,
+  hero: 0,
   source: {
     _tag: "Card",
     card: { instanceId: 100 + id, cardId, rank: "common" },
@@ -295,9 +300,10 @@ describe("buildBattleLog: the Log Entries", () => {
       Event.UnitDied({ unitId: 3 }),
       Event.TurnEnded({ side: "player" }),
       Event.TurnStarted({ side: "enemy", turnNumber: 1 }),
-      Event.CountdownsTicked({ side: "enemy", countdowns: [1, 2] }),
+      Event.CountdownsTicked({ side: "enemy", hero: 0, countdowns: [1, 2] }),
       Event.CardDrawn({
         side: "enemy",
+        hero: 0,
         card: {
           instanceId: 77,
           cardId: "orc.badlandRunt",
@@ -350,7 +356,7 @@ describe("buildBattleLog: the Log Entries", () => {
     const log = book([
       Event.TurnStarted({ side: "player", turnNumber: 41 }),
       Event.DamageDealt({
-        target: { _tag: "Hero", side: "player" },
+        target: { _tag: "Hero", side: "player", hero: 0 },
         amount: 1,
         damageType: "physical",
         source: "suddenDeath",
@@ -362,7 +368,7 @@ describe("buildBattleLog: the Log Entries", () => {
         ward: 0,
         hp: 9,
       }),
-      Event.CountdownsTicked({ side: "player", countdowns: [0] }),
+      Event.CountdownsTicked({ side: "player", hero: 0, countdowns: [0] }),
     ]);
     expect(entriesOf(log)).toEqual([
       {
@@ -382,6 +388,7 @@ describe("buildBattleLog: the Log Entries", () => {
       hit(2, 3, 2, "attack"),
       Event.RecallRolled({
         side: "player",
+        hero: 0,
         card: { instanceId: 900, cardId: "warrior.onslaught", rank: "common" },
         success: false,
       }),
@@ -457,9 +464,10 @@ describe("buildBattleLog: the Log Entries", () => {
       Event.UnitHealed({ unitId: 1, amount: 1, hp: 5 }),
       keyword(3, "rally"),
       Event.UnitsRallied({ unitId: 3, targets: [{ unitId: 1, rallied: 1 }] }),
-      Event.CountdownsTicked({ side: "player", countdowns: [0] }),
+      Event.CountdownsTicked({ side: "player", hero: 0, countdowns: [0] }),
       Event.CardDrawn({
         side: "player",
+        hero: 0,
         card: {
           instanceId: 78,
           cardId: "human.militiaRecruit",
@@ -485,9 +493,10 @@ describe("entryText", () => {
   it("never names the card of an enemy draw", () => {
     const log = book([
       Event.TurnStarted({ side: "enemy", turnNumber: 1 }),
-      Event.CountdownsTicked({ side: "enemy", countdowns: [1] }),
+      Event.CountdownsTicked({ side: "enemy", hero: 0, countdowns: [1] }),
       Event.CardDrawn({
         side: "enemy",
+        hero: 0,
         card: {
           instanceId: 77,
           cardId: "orc.skyreaver",
@@ -504,7 +513,7 @@ describe("entryText", () => {
     const args = argsOf([text.summary, ...text.lines]);
     expect(JSON.stringify(args)).not.toContain("orc.skyreaver");
     expect(text.summary.key).toBe("battleLog.line.drawEnemy");
-    expect(log.views[0]?.sides.enemy.hand.at(-1)).toMatchObject({
+    expect(log.views[0]?.sides.enemy.heroes[0]?.hand.at(-1)).toMatchObject({
       cardId: null,
       rank: null,
       countdown: 3,
@@ -641,15 +650,21 @@ describe("buildBattleLog on a played Battle", () => {
         `an entry ends at event ${session.log.length}`
       ).toBeDefined();
       const view = entry ? log.views[entry.index] : undefined;
-      expect(view?.sides.player.hand).toEqual(session.view.sides.player.hand);
-      expect(view?.sides.enemy.hand).toEqual(session.view.sides.enemy.hand);
-      expect(view?.sides.player.deck).toBe(session.view.sides.player.deck);
-      expect(view?.sides.player.graveyard).toEqual(
-        session.view.sides.player.graveyard
+      expect(view?.sides.player.heroes[0]?.hand).toEqual(
+        heroOf(session.view, "player").hand
       );
-      expect(view?.sides.enemy.hand.every((card) => card.cardId === null)).toBe(
-        true
+      expect(view?.sides.enemy.heroes[0]?.hand).toEqual(
+        heroOf(session.view, "enemy").hand
       );
+      expect(view?.sides.player.heroes[0]?.deck).toBe(
+        heroOf(session.view, "player").deck
+      );
+      expect(view?.sides.player.heroes[0]?.graveyard).toEqual(
+        heroOf(session.view, "player").graveyard
+      );
+      expect(
+        view?.sides.enemy.heroes[0]?.hand.every((card) => card.cardId === null)
+      ).toBe(true);
     }
   });
 
@@ -674,12 +689,12 @@ describe("stepEntry, stepTurn and entryOfEvent", () => {
     attack(3, 5),
     Event.TurnEnded({ side: "player" }),
     Event.TurnStarted({ side: "enemy", turnNumber: 1 }),
-    Event.CountdownsTicked({ side: "enemy", countdowns: [1] }),
+    Event.CountdownsTicked({ side: "enemy", hero: 0, countdowns: [1] }),
     move(2, 0, 5, 4),
     move(4, 0, 6, 5),
     Event.TurnEnded({ side: "enemy" }),
     Event.TurnStarted({ side: "player", turnNumber: 2 }),
-    Event.CountdownsTicked({ side: "player", countdowns: [0] }),
+    Event.CountdownsTicked({ side: "player", hero: 0, countdowns: [0] }),
   ]);
 
   it("goes one entry back or forward, and stops at the ends", () => {

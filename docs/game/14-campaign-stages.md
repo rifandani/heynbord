@@ -1,8 +1,8 @@
 # 14 — Campaign Stages
 
-This document gives the design of each Stage of the Campaign: its place, its enemy, the new thing that it teaches, its enemy Deck and its first-win card. The rules for all Stages are in [GDD 8.1](./03-game-design.md#81-campaign). The data is in `packages/rules/src/content/stages.ts`. The Stage names and the enemy names are in the Message Catalogs (`apps/web/src/core/libs/i18n/locales/`). The landmark of each Stage is on its Region Map ([12 — Region Concepts](./12-region-concepts.md)).
+This document gives the design of each Stage of the Campaign: its place, its enemy, the new thing that it teaches, its enemy Deck and its first-win card. Section 7 gives the design of the Dungeons. The rules for all Stages are in [GDD 8.1](./03-game-design.md#81-campaign). The data is in `packages/rules/src/content/stages.ts`. The Stage names and the enemy names are in the Message Catalogs (`apps/web/src/core/libs/i18n/locales/`). The landmark of each Stage is on its Region Map ([12 — Region Concepts](./12-region-concepts.md)).
 
-Now only Regions 1 to 3 have Stages. All names are draft names (README, "Status of names").
+All 5 Regions have Stages. All names are draft names (README, "Status of names").
 
 ## 1. Rules for the Stages
 
@@ -305,9 +305,198 @@ Notes from the first tuning:
 | 3-9 | 1× Elderreed Dartmaster (R), 1× Fernwing Courier (C), 1× Seedwind Shepherd (R), 1× Canopy Skirmisher (U), 1× Thornline Archer (U), 1× Mosspitcher Lookout (C), 1× Acorn Tender (C), 1× Dewkeeper (U), 2× Rootbound Guard (C), 1× Bramble Nest (U), 1× Glade Turnblade (U), 1× Bramble Duelist (C), 1× Sidestep Shiv (U), 2× Scrap Plate Guard (C), 1× Tunnel Saboteur (C), 1× Ankle Snatcher (C), 1× Grease Trapper (U), 1× Harrying Shot (C), 1× Pinning Shot (C), 1× Quick Shot (C) |
 | 3-10 | 1× Lethiel, First Gardener (E), 3× Bramble Duelist (C), 1× Fernwing Courier (C), 2× Ankle Snatcher (C), 3× Mosspitcher Lookout (C), 2× Rootbound Guard (C), 2× Acorn Tender (C), 1× Glade Turnblade (U), 1× Junk Walker (R), 1× Grease Trapper (U), 1× Tunnel Saboteur (C), 2× Mend (C), 1× Smite (C), 1× Bramble Nest (U), 1× Dewkeeper (U) |
 
-## 5. When a Stage changes
+## 5. Region 4: The Thornwood
+
+A deep, old forest of giant trees and thorn hedges (GDD 3.3). The Elves of the Thornwood keep **the Old Bramble** asleep: a forest giant that sleeps on a hill of brambles. When it wakes, the Feral creatures of the caves under the roots wake with it. Then the Player comes out of the Glowcap Hollows with Lethiel, First Gardener. The Thornwood Elves think that the Player took her, so they block the forest road and call the Feral creatures to fight. The noise of the Battles wakes the Old Bramble, and it wakes up angry. Region 4 is the Debut of the Feral: Trample is new to the enemies.
+
+- **No ramp.** The target of each normal Stage is 60% to 80%, and of the Boss Stage 30% to 50%, with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)).
+- **Only Elves and the forest Feral.** The enemy Decks use Elf cards, Feral cards and Skill Cards, and no Human, Orc or Goblin card. Region 4 uses only the 9 Feral cards of the forest and the caves: Bristleback Boar, Crag Lizard, Cave Bear, Web Spitter, Boulder Tortoise, Tailsweep Basilisk, Cave Troll, Crag Rhino and Mountain Colossus. The 6 Feral cards of the cold (Frostfang Lynx, Frost Elk Matriarch, Avalanche Yeti, Woolly Mammoth, Rimebreath Drake and Old Frostmaw) are for Region 5, where the frost beasts live ([12 — Region Concepts, 2.5](./12-region-concepts.md#25-the-hollow-marches)). Thus Bleed is not in Region 4.
+- **Skill Cards.** The enemy Decks can use the Skill Cards of all 4 Classes (see 1). Region 4 shows 4 Skill Cards to the enemies for the first time: Expose Weakness, Call to Arms, Penance and Cleave.
+- **The landmarks were painted first.** The Region Map was made before the Stages, with the proposed landmarks of [12 — Region Concepts, 2.4](./12-region-concepts.md#24-the-thornwood). Each Stage takes the place of its painted landmark, so the painting does not change. The Stage names are not the same as the names of Region 3, also when the landmark is of the same type (a rope bridge, a ring of mushrooms, a waterfall).
+- **First-win cards.** The cards are mixed, so that they help both Starter Decks: 4-1 Bristleback Boar (C), 4-2 Cave Bear (C), 4-3 Crag Lizard (C), 4-4 Crag Rhino (U), 4-5 Web Spitter (C), 4-6 Boulder Tortoise (U), 4-7 Tailsweep Basilisk (U), 4-8 Cave Troll (U), 4-9 Amberwing Dart (R) and 4-10 Mountain Colossus (E). Each forest Feral card is a first-win card. When the Old Bramble goes back to sleep, its Mountain Colossus goes with the Player.
+- **No Boss card.** The Old Bramble has no card. Each Race has 15 cards ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)), and the Feral Epic cards are Mountain Colossus and Old Frostmaw. Thus the Old Bramble is only a Hero, as Baron Brassbelly and Lady Glimmerbough are.
+
+### 5.1 Stages
+
+| Stage | Name | Enemy (Class) | Landmark | New thing |
+| --- | --- | --- | --- | --- |
+| 4-1 | The Leaning Gate | Hedgewarden Sorrel (Warrior) | A forest gate of two leaning trees | **Trample:** Bristleback Boars and Crag Rhinos. When a Trample Unit kills a Unit, the damage that is left hits the Unit behind it. Do not put Units in a line in front of them. |
+| 4-2 | The Lantern Tree | Lamplighter Teasel (Priest) | An elf tree with lanterns | **The cave beasts:** Cave Bears and Cave Trolls (Heavy, Regenerate 2) with Mend behind them. A large Unit that heals 2 in each Start Phase. |
+| 4-3 | The Toadstool Ring | Puffcap Vetch (Warrior) | A ring of large mushrooms | **Exposed:** Expose Weakness for the first time. Each Physical hit on an Exposed Unit deals more damage, also Trample damage. |
+| 4-4 | The Ravine Bridge | Ropewarden Alder (Ranger) | A rope bridge over a ravine | **Two Closed Lanes:** only the middle Lane crosses the ravine. Lanes 1 and 3 open on Turn 5. All Units fight in one Lane, where Trample is strong. |
+| 4-5 | The Web Cave | Old Silkmother (Ranger), a giant spider | A dark cave mouth under giant roots, with a big web across it | **Feral Long-range:** Web Spitters (Long-range, Regenerate), with Pinning Shot. |
+| 4-6 | The Standing Stones | Stonesinger Bryony (Mage) | A ring of mossy standing stones | **Feral Walls:** Boulder Tortoises (Wall, Bulwark 1, Regenerate 2). Physical damage does little to them. Use Fire, Frost or another Lane. |
+| 4-7 | The Treetop Village | Elder Hawthorn (Warrior) | An elf village of tree houses | **Call to Arms** for the first time: all enemy Units in a Lane get +4 Attack for one Turn. |
+| 4-8 | The Still Pool | Poolkeeper Willow (Priest) | A waterfall and a pool | **Penance** for the first time: Holy damage to a Unit, equal to the Attack of that Unit. A Unit with a high Attack is a target. |
+| 4-9 | The Broken Hedge | The Old Bramble's Hedgekeeper (Ranger) | A thorn hedge wall with a hole broken in it | **The final test:** Trample, the cave beasts, Web Spitters and Pivot together, with Ranger Skill Cards. |
+| 4-10 | The Bramble Hill | The Old Bramble (Warrior) — **Boss** | The Old Bramble: a forest giant that sleeps on a hill of brambles. It looks like a huge old tree with a face in the bark. One eye is half open. | **The bodyguard and Cleave:** a Mountain Colossus (Epic, Heavy, Regenerate 2, Trample) is a Start Unit in the middle Lane, behind a Bramble Nest Start Unit. The Old Bramble plays Cleave for the first time. |
+
+### 5.2 Numbers
+
+The columns are the same as in 2.2.
+
+| Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) | Expected Gear | Win rate at Expected Gear (Vanguard / Raiders) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 4-1 | 58 | 0 / 0 / 0 / 0 | 23 | — | — | Bristleback Boar (Common) | 15 | 68% / 67% | 8 / 8 / 8 / 8 | 77% / 76% |
+| 4-2 | 52 | 0 / 0 / 0 / 0 | 23 | — | — | Cave Bear (Common) | 15 | 68% / 66% | 9 / 8 / 8 / 8 | 78% / 77% |
+| 4-3 | 60 | 0 / 0 / 0 / 0 | 24 | — | — | Crag Lizard (Common) | 16 | 70% / 66% | 9 / 9 / 8 / 8 | 79% / 77% |
+| 4-4 | 64 | 0 / 0 / 0 / 0 | 24 | Lane 1, opens on Turn 5 · Lane 3, opens on Turn 5 | — | Crag Rhino (Uncommon) | 16 | 65% / 65% | 9 / 9 / 9 / 8 | 77% / 76% |
+| 4-5 | 62 | 0 / 0 / 0 / 0 | 25 | — | — | Web Spitter (Common) | 17 | 65% / 63% | 9 / 9 / 9 / 9 | 75% / 75% |
+| 4-6 | 50 | 0 / 0 / 0 / 0 | 25 | — | — | Boulder Tortoise (Uncommon) | 17 | 64% / 65% | 10 / 10 / 10 / 9 | 74% / 75% |
+| 4-7 | 62 | 0 / 0 / 0 / 0 | 25 | — | — | Tailsweep Basilisk (Uncommon) | 17 | 66% / 62% | 10 / 10 / 10 / 10 | 78% / 75% |
+| 4-8 | 56 | 0 / 0 / 0 / 0 | 27 | — | — | Cave Troll (Uncommon) | 18 | 63% / 68% | 10 / 10 / 10 / 10 | 73% / 78% |
+| 4-9 | 54 | 0 / 0 / 0 / 0 | 26 | — | — | Amberwing Dart (Rare) | 18 | 63% / 67% | 10 / 10 / 10 / 10 | 76% / 77% |
+| 4-10 | 66 | 0 / 0 / 0 / 0 | 28 | — | Mountain Colossus (Epic), Lane 2, Column 11 · Bramble Nest (Uncommon), Lane 2, Column 10 | Mountain Colossus (Epic) | 19 | 31% / 38% | 10 / 10 / 10 / 10 | 41% / 48% |
+
+All win rates come from one run of `bun scripts/simulate.ts stage 1000 --check` in `packages/rules` on 2026-10-15, when the Region 4 Stages were added. All rows of Regions 1 to 4 are on their target, with no Gear and with the Expected Gear. Over 2000 Battles, Vanguard and Raiders win 31% / 37% and 42% / 49% of 4-10. Over 3000 Battles, they win 31% / 36% and 42% / 49%.
+
+Notes from the first tuning:
+
+- **The expected Deck is full.** From level 15, the expected Deck is at the maximum Deck size with the Starter Deck and the first-win cards of Regions 1 to 3. Thus no Region 4 first-win card goes into it, and a change to a Region 4 first-win card does not change the later Region 4 win rates.
+- **Gear adds more.** The Expected Gear is 8 to 10 (Region 3: 5 to 8). It adds about 9 to 13 points to a normal Stage. Thus each normal Stage must stay at about 62% to 70% with no Gear.
+- **The first Decks were too hard.** With most copies one Rank above the Base Rank, Vanguard and Raiders won 2% to 39% of the normal Stages (100 Battles). With each copy at its Base Rank, they won 93% / 86% of 4-1, but only 35% / 40% of 4-5 and 25% / 36% of 4-9 (200 Battles). The Feral Units with Regenerate 2 and the Web Spitters made the late Stages hard. Thus these Decks have fewer Cave Trolls and Web Spitters, and more Bramble Duelists and Fernwing Couriers. Each Stage kept its new thing and its first-win card.
+- **Hero HP does little.** As in Region 2, a change of Hero HP moves the win rate by only a few points. The enemy Gear stays 0 / 0 / 0 / 0, and it is a reserve for a later re-tune.
+- **More cards make a Stage harder.** A copy that goes into a Deck to reach the Deck size can move the win rate more than a Rank change. 4-5 had 23 cards. A third Crag Lizard and a Mosspitcher Lookout took Vanguard from 64% to 45% (200 Battles). Thus weak cards (Fernwing Couriers and Ranger Skill Cards) filled the Deck.
+- **4-8 (The Still Pool).** Raiders won about 6 points more than Vanguard. With Mend, Raiders won 80% with the Expected Gear (2000 Battles). Sanctuary in place of Mend gave 77% (1000 Battles).
+- **4-10 (Boss).** The Boss target is 20 points wide. Gear added 10 to 16 points to the Boss Stage, and Raiders won about 7 points more than Vanguard in most tests. Thus the first Boss Decks could not hit the target with both Decks. Three changes closed the gap:
+  - The Bramble Nest Start Unit is in the middle Lane in front of the Colossus, as in Region 3. With Bramble Nests in Lanes 1 and 3, Raiders won 5 to 7 points more than Vanguard. With the Nest in the middle Lane, Raiders won 3 to 4 points more (3000 Battles).
+  - 2 Acorn Tenders (Holy damage) replace the Mosspitcher Lookouts. Then the Expected Gear added 12 points to Vanguard (it was 14), and 13 points to Raiders (3000 Battles). A possible reason: a Unit cannot Block Holy damage, so the Banner Gear adds less.
+  - Shield Bash replaces Ground Slam. Ground Slam hit Vanguard more than Raiders: without it, Vanguard won 6 points more and Raiders 3 points more (1000 Battles).
+  
+  Hero HP 66 keeps the Boss the largest of Region 4. The margins of the Boss are small: Vanguard wins 31% with no Gear, and Raiders 48% with the Expected Gear.
+
+### 5.3 Enemy Decks
+
+| Stage | Deck |
+| --- | --- |
+| 4-1 | 3× Bristleback Boar (U), 2× Crag Rhino (U), 2× Cave Bear (U), 2× Crag Lizard (C), 3× Bramble Duelist (U), 2× Rootbound Guard (C), 2× Mosspitcher Lookout (C), 2× Fernwing Courier (C), 1× Thornline Archer (U), 1× Glade Turnblade (U), 1× Shield Bash (C), 1× Spear Throw (C), 1× War Drums (U) |
+| 4-2 | 3× Cave Bear (C), 2× Cave Troll (U), 2× Crag Lizard (C), 1× Bristleback Boar (C), 2× Mosspitcher Lookout (C), 2× Thornline Archer (U), 2× Dewkeeper (U), 2× Bramble Duelist (C), 2× Acorn Tender (C), 2× Mend (C), 1× Blessing of Light (C), 1× Radiant Strike (C), 1× Smite (C) |
+| 4-3 | 2× Expose Weakness (R), 3× Crag Lizard (U), 2× Bristleback Boar (U), 2× Crag Rhino (U), 2× Cave Bear (C), 3× Bramble Duelist (U), 1× Glade Turnblade (U), 1× Glade Turnblade (R), 2× Rootbound Guard (C), 2× Acorn Tender (C), 2× Mosspitcher Lookout (C), 1× Shield Bash (C), 1× Shoulder Charge (C) |
+| 4-4 | 2× Crag Rhino (U), 1× Crag Rhino (R), 2× Bristleback Boar (C), 2× Cave Troll (U), 2× Crag Lizard (C), 2× Canopy Skirmisher (U), 2× Fernwing Courier (C), 2× Thornline Archer (U), 2× Mosspitcher Lookout (C), 1× Rootbound Guard (C), 1× Quick Shot (C), 1× Warning Shot (C), 1× Harrying Shot (C), 1× Skybreaker (U), 2× Bramble Duelist (U) |
+| 4-5 | 3× Web Spitter (C), 1× Tailsweep Basilisk (U), 2× Bristleback Boar (C), 1× Crag Rhino (U), 2× Thornline Archer (U), 1× Dewkeeper (U), 1× Pinning Shot (C), 2× Quick Shot (C), 3× Bramble Duelist (C), 1× Rootbound Guard (C), 3× Fernwing Courier (C), 2× Warning Shot (C), 1× Crag Lizard (C), 2× Harrying Shot (C) |
+| 4-6 | 3× Boulder Tortoise (U), 2× Crag Rhino (U), 2× Bristleback Boar (C), 2× Mosspitcher Lookout (C), 2× Thornline Archer (U), 2× Acorn Tender (C), 1× Dewkeeper (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Shards (C), 1× Arc Lightning (U), 1× Frost Wave (U), 1× Web Spitter (C), 3× Bramble Duelist (C), 2× Fernwing Courier (C) |
+| 4-7 | 2× Call to Arms (R), 2× Tailsweep Basilisk (U), 1× Tailsweep Basilisk (R), 2× Bristleback Boar (U), 2× Crag Rhino (U), 2× Cave Bear (U), 2× Glade Turnblade (U), 2× Canopy Skirmisher (U), 2× Rootbound Guard (C), 2× Mosspitcher Lookout (C), 1× Seedwind Shepherd (R), 1× Shield Bash (C), 1× War Drums (U), 1× Spear Throw (C), 1× Bramble Duelist (C), 1× Bramble Duelist (U) |
+| 4-8 | 2× Penance (U), 2× Cave Bear (C), 2× Crag Rhino (U), 2× Dewkeeper (U), 2× Acorn Tender (C), 2× Mosspitcher Lookout (C), 1× Rootbound Guard (U), 2× Rootbound Guard (C), 1× Seedwind Shepherd (R), 1× Prayer of Healing (U), 1× Smite (C), 1× Boulder Tortoise (U), 2× Bramble Duelist (C), 1× Cave Troll (U), 1× Web Spitter (C), 3× Fernwing Courier (C), 1× Sanctuary (U) |
+| 4-9 | 2× Bristleback Boar (C), 2× Crag Rhino (U), 1× Cave Bear (C), 1× Cave Troll (U), 1× Crag Lizard (C), 1× Tailsweep Basilisk (U), 1× Amberwing Dart (R), 2× Mosspitcher Lookout (C), 1× Rootbound Guard (C), 1× Canopy Skirmisher (U), 1× Glade Turnblade (U), 1× Dewkeeper (U), 1× Pinning Shot (C), 1× Quick Shot (C), 1× Harrying Shot (C), 1× Warning Shot (C), 1× Web Spitter (C), 3× Bramble Duelist (C), 1× Thornline Archer (U), 2× Fernwing Courier (C) |
+| 4-10 | 1× Mountain Colossus (E), 2× Crag Rhino (U), 1× Crag Rhino (R), 2× Bristleback Boar (C), 1× Bristleback Boar (U), 2× Cave Bear (U), 2× Boulder Tortoise (U), 2× Crag Lizard (C), 1× Tailsweep Basilisk (U), 2× Thornline Archer (U), 1× Rootbound Guard (C), 3× Bramble Duelist (C), 1× Fernwing Courier (C), 1× Cleave (U), 1× Call to Arms (R), 1× Expose Weakness (R), 1× Shield Wall (C), 1× Shield Bash (C), 1× Acorn Tender (C), 1× Acorn Tender (U) |
+
+## 6. Region 5: The Hollow Marches
+
+Wide marshes with mist, reeds and old dead trees (GDD 3.3). **Queen Marrow** rules the Undead here from her castle on an island. When the Old Bramble woke up, the noise woke the frost beasts in the ice caves of the hills, and they came down into the marsh. Then the Player comes out of the Thornwood with a Mountain Colossus. Queen Marrow thinks that the Player sent the beasts, so her court stops the Player at each crossing of the marsh. Region 5 is the Debut of the Undead: Swarm, Summon and Rebirth are new to the enemies. Bleed is also new: it comes with the frost beasts. Region 5 is the last Region of the Campaign. The first win of its Boss Stage unlocks Heynspire ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)).
+
+- **No ramp.** The target of each normal Stage is 60% to 80%, and of the Boss Stage 30% to 50%, with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)).
+- **Only Undead and Feral.** The enemy Decks use Undead cards, Feral cards and Skill Cards, and no Human, Orc, Goblin or Elf card. Feral is the newest Race of Region 4, so the first Stages also use the Feral cards of the forest. The 6 Feral cards of the cold (Frostfang Lynx, Frost Elk Matriarch, Avalanche Yeti, Woolly Mammoth, Rimebreath Drake and Old Frostmaw) are the frost beasts of the marsh. A Cave Troll is the bog troll of 5-3. Each of the 15 Undead cards and each Feral card of the cold is in an enemy Deck, so each one is in a Stage card pool.
+- **Skill Cards.** The enemy Decks can use the Skill Cards of all 4 Classes (see 1). Region 5 shows 7 Skill Cards to the enemies for the first time: Barbed Arrow, Unbroken Vow, Ground Slam, Wildfire, Thunderstorm, Hunter's Focus and Blizzard. Aegis of Dawn, Rain of Arrows and Onslaught are in no enemy Deck. They are Epic, and an Epic Skill Card in an enemy Hand changes a win rate by too much for a fine tune.
+- **The landmarks were painted first.** The Region Map was made before the Stages, with the proposed landmarks of [12 — Region Concepts, 2.5](./12-region-concepts.md#25-the-hollow-marches). Each Stage takes the place of its painted landmark, so the painting does not change. The Stage names are not the same as the names of the earlier Regions (3-5 is the Lantern Post, so 5-1 is the Crooked Post).
+- **First-win cards.** The cards are mixed, so that they help both Starter Decks: 5-1 Rattleknife (C), 5-2 Grave Bell Tender (C), 5-3 Frostfang Lynx (C), 5-4 Coffin-Lid Skater (C), 5-5 Coffin Lancer (R), 5-6 Rime-Eye Reaper (U), 5-7 Lantern Widow (R), 5-8 Frost Elk Matriarch (U), 5-9 Ossuary Piper (U) and 5-10 Bone Rampart (E). Queen Marrow sees that the frost beasts came down on their own. After 300 quiet years in her castle, she likes a good fight. She gives the Player a Bone Rampart from her castle wall, and she points to Heynspire.
+- **No Boss card.** Queen Marrow has no card. Each Race has 15 cards ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)), and the Undead Epic cards are Sir Odo, the Last Taxman and Bone Rampart. Thus Queen Marrow is only a Hero, as the Old Bramble is.
+- **No Boss Rule.** Queen Marrow is the last Boss of the Campaign, but she has no Boss Rule. In v1, only Dungeon Bosses use Boss Rules, and the Campaign Boss Stages use the Stage data only ([ADR-0040](../adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)).
+
+### 6.1 Stages
+
+| Stage | Name | Enemy (Class) | Landmark | New thing |
+| --- | --- | --- | --- | --- |
+| 5-1 | The Crooked Post | Postwarden Grimsby (Warrior) | A crooked sign post with a lantern (no letters) | **Swarm:** Rattleknives, Graveyard Drudges and Chattering Cohorts get more Attack while another friendly Unit is in their Lane. Many cheap Units hit harder together. |
+| 5-2 | The Sunken Chapel | Sexton Mildew (Priest) | A sunken chapel | **Summon:** each Grave Bell Tender and Hushbow (Long-range) brings a Skeleton Token. Kill the Tokens, or they fill the Lane. |
+| 5-3 | The Frozen Bog | Bogtrapper Shiver (Ranger) | A frozen bog pool, with a bog troll asleep in the ice | **Bleed:** Frostfang Lynxes and Barbed Arrow make a Unit Bleeding. A Bleeding Unit gets half of each heal. |
+| 5-4 | The Long Boardwalk | Captain Creakbones (Warrior) | A long boardwalk over a bog | **Ground Slam** for the first time: damage to all Units in a Lane, while the Undead riders (Pale Gallopers and Coffin-Lid Skaters) charge along the boardwalk. Do not put many small Units in one Lane. |
+| 5-5 | The Leaning Graves | Gravekeeper Mould (Priest) | A small graveyard with leaning stones | **Rebirth:** Coffin Lancers come back the first time that they die. **Unbroken Vow** for the first time: Steadfast keeps a Unit at 1 HP. |
+| 5-6 | The Broken Windmill | Miller Dustwhistle (Mage) | A broken windmill on a mound | **Wildfire** and **Thunderstorm** for the first time: Fire damage on an area for 2 Turns, and Lightning on 3 random Units. Do not put all Units close together. |
+| 5-7 | The Bone Ferry | Ferryman Charn (Ranger) | A ferry with a skeleton ferryman | **Frost from the air:** Lantern Widows bring Restless Wisps (Flying, Frost), with Rimebreath Drakes. **Hunter's Focus** for the first time: a Melee Unit attacks as a Ranged Unit for a short time. |
+| 5-8 | The Ice Cave | Rimeherd Ulla (Warrior) | An ice cave in a hill, with a frost beast at its mouth and frost on the rocks | **The great frost beasts:** Woolly Mammoths, Avalanche Yetis and Old Frostmaw (Epic, Trample, Bleed 2), with the Rally of Frost Elk Matriarchs. |
+| 5-9 | The Witchfire Bridge | The Queen's Tollkeeper (Ranger) | An old stone bridge with green fire bowls | **The final test:** Swarm, Summon, Rebirth, Bleed and the frost beasts together, with Ranger Skill Cards. Sir Odo, the Last Taxman, takes the toll. |
+| 5-10 | Marrow Castle | Queen Marrow (Mage) — **Boss** | The castle of Queen Marrow on an island: pale bone-white stone, thin towers, violet banners, soft green light in the windows | **The bodyguard and Blizzard:** a Bone Rampart (Epic, Wall, Bulwark 2, Rebirth) is a Start Unit in the middle Lane, with a Hushbow Start Unit behind it. Queen Marrow plays Blizzard for the first time. |
+
+### 6.2 Numbers
+
+The columns are the same as in 2.2.
+
+| Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) | Expected Gear | Win rate at Expected Gear (Vanguard / Raiders) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 5-1 | 60 | 0 / 0 / 0 / 0 | 28 | — | — | Rattleknife (Common) | 20 | 62% / 66% | 10 / 10 / 10 / 10 | 74% / 79% |
+| 5-2 | 56 | 0 / 0 / 0 / 0 | 28 | — | — | Grave Bell Tender (Common) | 20 | 63% / 67% | 10 / 10 / 10 / 10 | 76% / 77% |
+| 5-3 | 62 | 0 / 0 / 0 / 0 | 29 | — | — | Frostfang Lynx (Common) | 20 | 61% / 64% | 11 / 10 / 10 / 10 | 74% / 78% |
+| 5-4 | 64 | 0 / 0 / 0 / 0 | 29 | — | — | Coffin-Lid Skater (Common) | 21 | 64% / 68% | 11 / 11 / 11 / 10 | 72% / 78% |
+| 5-5 | 62 | 0 / 0 / 0 / 0 | 29 | — | — | Coffin Lancer (Rare) | 21 | 63% / 65% | 11 / 11 / 11 / 11 | 77% / 77% |
+| 5-6 | 50 | 0 / 0 / 0 / 0 | 29 | — | — | Rime-Eye Reaper (Uncommon) | 21 | 61% / 67% | 12 / 12 / 12 / 11 | 73% / 79% |
+| 5-7 | 55 | 0 / 0 / 0 / 0 | 29 | — | — | Lantern Widow (Rare) | 21 | 61% / 69% | 12 / 12 / 12 / 12 | 76% / 80% |
+| 5-8 | 58 | 0 / 0 / 0 / 0 | 29 | — | — | Frost Elk Matriarch (Uncommon) | 22 | 62% / 68% | 13 / 12 / 12 / 12 | 74% / 79% |
+| 5-9 | 60 | 0 / 0 / 0 / 0 | 29 | — | — | Ossuary Piper (Uncommon) | 22 | 61% / 66% | 13 / 13 / 12 / 12 | 76% / 79% |
+| 5-10 | 70 | 0 / 0 / 0 / 0 | 30 | — | Bone Rampart (Epic), Lane 2, Column 10 · Hushbow (Common), Lane 2, Column 11 | Bone Rampart (Epic) | 22 | 32% / 33% | 13 / 13 / 13 / 12 | 46% / 49% |
+
+All win rates come from one run of `bun scripts/simulate.ts stage 1000 --check` in `packages/rules` on 2026-10-15, when the Region 5 Stages were added. All rows of Regions 1 to 5 are on their target, with no Gear and with the Expected Gear. Over 2000 Battles, Vanguard and Raiders win 31.6% / 33.1% and 45.8% / 48.8% of 5-10. Over 3000 Battles, they win 31.6% / 33.9% and 46.4% / 49.6%.
+
+Notes from the first tuning:
+
+- **The Deck sizes.** At levels 21 and 22 the maximum Deck size is 30, and the Boss Deck must be larger than all other Decks of its Region. Thus Stages 5-4 to 5-9 have 29 cards (1 card less than the maximum), and the Boss has 30.
+- **The Undead Commons are weak at their Base Rank.** With each copy at its Base Rank, Vanguard and Raiders won 88% to 99% of 5-1, 5-2, 5-4 and 5-5 (200 Battles). One Rank up on all Creature Cards moved a Stage down by 20 to 40 points, and two Ranks up gave 4% to 35%. Thus the Rank is a coarse lever in Region 5. The fine steps came from a few copies, Hero HP and enemy Gear.
+- **Gear adds more.** The Expected Gear is 10 to 13 (Region 4: 8 to 10). It adds about 9 to 16 points to a normal Stage.
+- **Raiders and the Expected Gear.** In most Stages, Raiders with the Expected Gear won about 18 to 20 points more than Vanguard with no Gear. The target window is 20 points wide, so some margins are small: Vanguard wins 60.8% of 5-7 with no Gear, and Raiders 79.7% with the Expected Gear. Some swaps changed the two Decks by different amounts (1000 Battles, Vanguard with no Gear / Raiders with the Expected Gear, in 5-6): Winter Maw to Chattering Cohort +8.1 / +1.9, Frostfang Lynx to Rimebreath Drake −2.4 / −3.1, Spark to Frost Shards −1.4 / −1.6. In 5-7, Hero HP 58 to 50 gave +3.0 / +2.1.
+- **Web Spitters hit Vanguard.** In 5-3 and 5-7, one Web Spitter less gave Vanguard 10 to 13 more points and Raiders about 5 (200 Battles). Thus each of these Decks has 1 Web Spitter.
+- **The order of the Deck changes the result.** The sim uses the seeds 1 to 1000, and the order of the copies in a Deck changes each shuffle. A new order of the same cards moved some win rates by 3 to 4 points (1000 Battles). Thus the tables come from the data as it is in `stages.ts`, and a new order of a Deck needs a new run of the sim.
+- **A card is never below its Base Rank.** The content test does not let a Stage Deck have a copy below its Base Rank. Thus a Lantern Widow (Rare) cannot be Uncommon to make 5-7 easier.
+- **5-10 (Boss).** The Expected Gear added 14 to 20 points to the Boss Stage in each test, and the Boss target is 20 points wide. A Hushbow Start Unit behind the Bone Rampart closed the gap between Vanguard and Raiders: with a Rare Hushbow, they won 17% / 18.5% with no Gear (200 Battles). A Common Hushbow, 1 Frost Bolt in place of 1 Frostfang Lynx, no enemy Gear and Hero HP 70 put all four rows on the target. Hero HP 70 keeps the Boss the largest of Region 5. The margins of the Boss are small: Vanguard wins 31.6% with no Gear, and Raiders 48.5% with the Expected Gear.
+
+### 6.3 Enemy Decks
+
+| Stage | Deck |
+| --- | --- |
+| 5-1 | 3× Rattleknife (R), 1× Graveyard Drudge (R), 2× Graveyard Drudge (U), 2× Chattering Cohort (R), 2× Bristleback Boar (U), 2× Crag Rhino (R), 2× Cave Bear (U), 2× Crag Lizard (U), 2× Backwatch Bailiff (R), 2× Rime-Eye Reaper (R), 1× Tailsweep Basilisk (R), 2× Spear Throw (U), 2× Shield Bash (U), 1× War Drums (R), 1× Shield Wall (U), 1× Shoulder Charge (U) |
+| 5-2 | 3× Grave Bell Tender (U), 3× Hushbow (U), 2× Rattleknife (U), 2× Graveyard Drudge (U), 1× Cave Bear (U), 1× Cave Bear (C), 2× Cave Troll (U), 2× Crag Lizard (C), 1× Bristleback Boar (C), 2× Backwatch Bailiff (R), 2× Rime-Eye Reaper (R), 2× Mend (U), 2× Smite (U), 1× Blessing of Light (U), 1× Radiant Strike (U), 1× Prayer of Healing (R) |
+| 5-3 | 3× Frostfang Lynx (C), 2× Barbed Arrow (U), 2× Cave Troll (R), 1× Crag Rhino (R), 1× Crag Rhino (U), 2× Bristleback Boar (C), 3× Graveyard Drudge (C), 1× Web Spitter (C), 2× Rattleknife (C), 1× Chattering Cohort (R), 1× Chattering Cohort (U), 2× Hushbow (C), 1× Grave Bell Tender (C), 2× Quick Shot (C), 2× Harrying Shot (C), 1× Pinning Shot (C), 2× Warning Shot (C) |
+| 5-4 | 2× Ground Slam (U), 3× Pale Galloper (R), 1× Coffin-Lid Skater (C), 2× Coffin-Lid Skater (U), 2× Bristleback Boar (C), 2× Crag Rhino (U), 2× Frostfang Lynx (C), 2× Rattleknife (U), 2× Graveyard Drudge (U), 2× Backwatch Bailiff (R), 2× Chattering Cohort (R), 1× Ossuary Piper (R), 2× Rime-Eye Reaper (R), 2× Spear Throw (C), 1× War Drums (U), 1× Shield Bash (C) |
+| 5-5 | 3× Coffin Lancer (E), 2× Unbroken Vow (E), 3× Graveyard Drudge (U), 2× Grave Bell Tender (U), 2× Hushbow (U), 2× Rattleknife (U), 2× Backwatch Bailiff (R), 2× Chattering Cohort (R), 2× Rime-Eye Reaper (R), 2× Cave Bear (U), 1× Cave Troll (R), 2× Mend (U), 2× Smite (U), 1× Sanctuary (R), 1× Penance (R) |
+| 5-6 | 2× Wildfire (R), 2× Thunderstorm (R), 1× Winter Maw (R), 3× Rime-Eye Reaper (U), 1× Rimebreath Drake (R), 1× Frostfang Lynx (C), 3× Backwatch Bailiff (U), 3× Graveyard Drudge (C), 2× Rattleknife (C), 2× Hushbow (C), 3× Chattering Cohort (U), 2× Frost Bolt (C), 2× Fireball (C), 2× Frost Shards (C) |
+| 5-7 | 3× Lantern Widow (R), 2× Rimebreath Drake (R), 2× Hunter's Focus (R), 2× Hushbow (C), 3× Rattleknife (C), 1× Pale Galloper (U), 2× Frostfang Lynx (C), 3× Graveyard Drudge (C), 1× Web Spitter (C), 2× Chattering Cohort (U), 2× Backwatch Bailiff (U), 2× Quick Shot (C), 3× Warning Shot (C), 1× Skybreaker (U) |
+| 5-8 | 2× Woolly Mammoth (R), 2× Avalanche Yeti (R), 1× Old Frostmaw (E), 2× Frost Elk Matriarch (U), 3× Frostfang Lynx (C), 2× Cave Troll (U), 2× Crag Rhino (U), 2× Rattleknife (C), 2× Graveyard Drudge (C), 2× Rime-Eye Reaper (U), 2× Coffin-Lid Skater (C), 2× Ground Slam (U), 1× Call to Arms (R), 2× Cleave (U), 1× War Drums (U), 1× Spear Throw (C) |
+| 5-9 | 1× Sir Odo, the Last Taxman (E), 2× Winter Maw (R), 1× Coffin Lancer (R), 1× Lantern Widow (R), 1× Frostfang Lynx (U), 1× Frostfang Lynx (C), 1× Woolly Mammoth (R), 1× Avalanche Yeti (R), 2× Grave Bell Tender (C), 2× Hushbow (C), 2× Rattleknife (C), 2× Graveyard Drudge (C), 2× Chattering Cohort (U), 2× Ossuary Piper (U), 1× Pale Galloper (U), 1× Barbed Arrow (U), 1× Hunter's Focus (R), 2× Quick Shot (C), 2× Harrying Shot (C), 1× Pinning Shot (C) |
+| 5-10 | 1× Bone Rampart (E), 1× Blizzard (E), 2× Winter Maw (R), 1× Lantern Widow (R), 1× Rimebreath Drake (R), 1× Woolly Mammoth (R), 1× Coffin Lancer (R), 2× Rime-Eye Reaper (U), 2× Pale Galloper (U), 2× Hushbow (C), 2× Grave Bell Tender (C), 2× Graveyard Drudge (C), 2× Rattleknife (C), 2× Chattering Cohort (U), 2× Frost Bolt (C), 1× Frostfang Lynx (C), 1× Backwatch Bailiff (U), 1× Thunderstorm (R), 1× Wildfire (R), 1× Frost Wave (U), 1× Frost Shards (C) |
+
+## 7. Dungeons
+
+A Dungeon is not a Stage of the Campaign ([GDD 8.4](./03-game-design.md#84-dungeons)), but its design and its simulation use the same tools. The data is `DUNGEONS` in `packages/rules/src/content/dungeons.ts`, with the rewards (`DUNGEON_REWARDS`, Economy 2.4). The Dungeon names and the Boss names are draft names in the Message Catalogs (`dungeons.<id>.name` and `dungeons.<id>.bosses.<boss>`). Dungeons 2 and 3 come later. Dungeon 3 needs the Bosses of Regions 4 and 5.
+
+### 7.1 Rules for the Dungeons
+
+- **One Battle, 4 Lanes, 1 Hero for each Boss.** Each Boss has its own Front, Hero HP, Class, Gear, Deck, Start Units and Boss Rules. A content test checks that each Lane is in exactly one Front, that each Front is a block of Lanes next to each other, and that each Start Unit and each Boss Rule Summon is in the Front of its Boss.
+- **Small and cheap Boss Decks.** Each Boss has its own Hand, so the enemy Side draws 1 card for each Boss in each Turn. With 2 Bosses, the enemy gets 2 cards for each card of the Player. Thus a Boss Deck is smaller than the Deck of a Stage enemy, and most of its cards are Common, with a low Countdown. A Wall does not hit the Player, so a Boss with many Walls makes the Battle longer, not harder. Hero HP is a weak lever: in Dungeon 1, 4 more HP for each Boss changes the win rate by about 2 points.
+- **First-win card.** The first win gives an Epic copy of a card of a Boss Deck. A content test checks it.
+- **Win-rate target.** 30% to 50%, the same as a Boss Stage (GDD 13). The Dungeon must hit it two times, at its unlock level: with no Gear, and with the Expected Gear of the first Stage at that level.
+
+### 7.2 Simulation
+
+`bun run sim dungeon` in `packages/rules` plays each Dungeon with each Starter Deck at its unlock level (its Recommended level). The Deck is typical at that level: it is the expected Deck (see 1.1) at the first Stage with that Recommended level. Then the Player has won all Stages before it. The second row of each Deck plays the Expected Gear of the same Stage (ADR-0034). `defeated` is the average number of Bosses that the Player Defeated in a Battle, also in a loss. With `--check`, the sim fails when a row is not on its target. CI runs it with the Stages.
+
+### 7.3 Dungeon 1: The Rootdeep Mine
+
+The Goblin diggers of the Red Mesas dug into the roots of the Glowcap Hollows. The Orc foreman of the mine and the Elf warden of the roots each hold one half of the tunnel. Dungeon 1 teaches the multi-Boss rules in the simplest form: 2 Bosses with 2 Lanes each. It unlocks at Player level 10, when the Player starts Region 3, so it uses the Races of Regions 2 and 3: Orc, Goblin and Elf.
+
+| Boss | Front | Class | Hero HP | Gear | Deck size | Start Units | Boss Rule |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Foreman Gritjaw (Orc) | Lanes 1 and 2 | Warrior | 24 | 0 / 0 / 0 / 0 | 11 | — | At 50% HP: Summon a Mesa Pit Fighter (Rare) in Lane 2, Column 11. |
+| Rootwarden Sylla (Elf) | Lanes 3 and 4 | Ranger | 24 | 0 / 0 / 0 / 0 | 13 | — | At 50% HP: Countdown −2 on the 2 cards with the highest Countdown in her Hand. |
+
+| Boss | Deck |
+| --- | --- |
+| Foreman Gritjaw | 1× Grand Gearjammer (E), 3× Bonestake Palisade (C), 2× Junk Barricade (U), 2× Scrap Plate Guard (C), 2× Fuse Runner (C), 1× Scrap Raider (C) |
+| Rootwarden Sylla | 2× Fernwing Courier (C), 2× Rootbound Guard (C), 2× Acorn Tender (C), 2× Ankle Snatcher (C), 2× Junk Slinger (C), 2× Fuse Runner (C), 1× Quick Shot (C) |
+
+- **The two Bosses.** Gritjaw builds walls of junk and bone in front of him, and his Grand Gearjammer (Sabotage 2) makes the Player's next card late. Sylla sends many cheap Units into her 2 Lanes. Thus the Player must find the weaker Front, and then fight one Boss after the other.
+- **First-win card:** Grand Gearjammer (Epic), the Goblin Epic. No Stage gives it.
+- **Results** (`bun run sim dungeon 1000`, level 10, no Closed Lanes):
+
+| Gear | Win rate (Vanguard / Raiders) | Average Turn (Vanguard / Raiders) | Bosses Defeated (Vanguard / Raiders) |
+| --- | --- | --- | --- |
+| 0 / 0 / 0 / 0 | 36% / 40% | 18.8 / 18.3 | 0.61 / 0.67 |
+| 5 / 5 / 5 / 5 (Expected Gear of Stage 3-1) | 44% / 44% | 19.4 / 18.8 | 0.75 / 0.74 |
+
+The expected Deck at Stage 3-1 has 19 cards for Vanguard and 18 cards for Raiders. About 2 of 3 wins Defeat both Bosses. In the other wins, the enemy Side is Routed. The first draft had Boss Decks of 14 cards with Rare and Epic cards and 30 HP for each Boss, and it won 0% to 1%: the 2 Hands of the enemy filled all 4 Lanes before a Player Unit got to a Boss.
+
+## 8. When a Stage changes
 
 1. Change the data in `stages.ts`.
 2. Run `bun run sim stage 1000` in `packages/rules`. Each Stage must be in its target with each Starter Deck, with no Gear and with its Expected Gear. CI runs `bun run rules:sim:check`, and it fails when a Stage is not on its target.
-3. Update the tables of the Region (sections 2 to 4).
+3. Update the tables of the Region (sections 2 to 6).
 4. If the name or the place changes, update the Message Catalogs and the landmark on the Region Map (12 — Region Concepts, section 2).
+
+For a Dungeon, change the data in `dungeons.ts`, run `bun run sim dungeon 1000`, and update section 7.

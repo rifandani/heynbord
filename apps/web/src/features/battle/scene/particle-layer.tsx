@@ -251,7 +251,7 @@ const singlesNow = (reducedMotion: boolean): Particle[] => {
     ...(session
       ? spellBoltParticles(
           currentCast(session.log, session.current !== null),
-          session.view.lanes,
+          session.view,
           playback.progress,
           reducedMotion
         )

@@ -10,6 +10,7 @@ import {
   preventRout,
   run,
   unitById,
+  heroOf,
 } from "../testing/fixtures";
 import { legalTargets } from "./targets";
 import { Command, Target } from "./types";
@@ -34,7 +35,7 @@ const square = (lane: number, position: number) =>
 const playInto = (state: BattleState, lane: number, position: number) =>
   run(
     state,
-    Command.PlayCard({ handIndex: 0, target: square(lane, position) })
+    Command.PlayCard({ hero: 0, handIndex: 0, target: square(lane, position) })
   );
 
 /** A Unit that fills a Square, so that no Token can go there. */
@@ -307,7 +308,7 @@ describe("Tokens (GDD 4.9)", () => {
       expect.objectContaining({ unitId: token.id }),
     ]);
     expect(unitById(next, token.id)).toBeUndefined();
-    expect(next.sides.enemy.graveyard).toEqual([]);
+    expect(heroOf(next, "enemy").graveyard).toEqual([]);
   });
 
   it("still sends the Card of a dead Card Unit to the Graveyard", () => {
@@ -327,7 +328,7 @@ describe("Tokens (GDD 4.9)", () => {
       speed: 0,
     });
     const { state: next } = run(state, endTurn);
-    expect(next.sides.enemy.graveyard).toEqual([cardOf(victim)]);
+    expect(heroOf(next, "enemy").graveyard).toEqual([cardOf(victim)]);
   });
 
   it("counts a Token as a friendly Unit for Swarm", () => {
@@ -421,15 +422,15 @@ describe("Tokens (GDD 4.9)", () => {
       ["test.uniqueCaller", 0],
     ]);
     const { state: played } = playInto(state, 1, 2);
-    expect(legalTargets(played, 0)).toEqual([]);
+    expect(legalTargets(played, 0, 0)).toEqual([]);
     // Only the Token stays on the Board.
     played.units = played.units.filter((unit) => unit.source._tag === "Token");
-    expect(legalTargets(played, 0).length).toBeGreaterThan(0);
+    expect(legalTargets(played, 0, 0).length).toBeGreaterThan(0);
   });
 
   it("stops a Routed result while it is on the Board", () => {
     const routed = emptyBattle();
-    routed.sides.enemy.deck.push({
+    heroOf(routed, "enemy").deck.push({
       instanceId: 1,
       cardId: "human.militiaRecruit",
       rank: "common",

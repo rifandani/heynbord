@@ -41,6 +41,7 @@ const damage = Event.DamageDealt({
 const recall = (success: boolean) =>
   Event.RecallRolled({
     side: "enemy",
+    hero: 0,
     card: { instanceId: 7, cardId: "mage.fireball", rank: "common" },
     success,
   });
@@ -79,7 +80,7 @@ describe("currentCast", () => {
   });
 
   it("ends a cast that ends the Battle: it has no Recall roll", () => {
-    const hero: Target = { _tag: "Hero", side: "player" };
+    const hero: Target = { _tag: "Hero", side: "player", hero: 0 };
     expect(
       currentCast(
         [
@@ -140,7 +141,11 @@ describe("castSquares", () => {
     ).toEqual([]);
     expect(
       castSquares(
-        cast("ranger.longShot", "player", { _tag: "Hero", side: "enemy" }),
+        cast("ranger.longShot", "player", {
+          _tag: "Hero",
+          side: "enemy",
+          hero: 0,
+        }),
         3
       )
     ).toEqual([]);

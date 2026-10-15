@@ -6,9 +6,12 @@ import {
   direction,
   enemyHeroPosition,
   findUnit,
+  heroOfLane,
+  heroState,
   isInsideLane,
   isOver,
   lastPosition,
+  ownerOf,
   unitAt,
   unitDealer,
 } from "./context";
@@ -87,6 +90,12 @@ export const rangeOf = (
 const isRanged = (unit: Pick<UnitState, "range" | "bonusRange">): boolean =>
   isRangedRange(rangeOf(unit));
 
+/** The enemy Hero whose Front holds the Lane of `unit` (ADR-0009). */
+const heroTarget = (state: BattleState, unit: UnitState): TargetRef => ({
+  _tag: "Hero",
+  ...heroOfLane(state, otherSide(unit.owner), unit.lane),
+});
+
 /**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of
  * it in its Range, else the enemy Hero if the Hero is in Range.
@@ -99,7 +108,7 @@ const rangedTarget = (
   for (let distance = 1; distance <= rangeOf(unit); distance += 1) {
     const position = unit.position + dir * distance;
     if (position === enemyHeroPosition(unit.owner)) {
-      return { _tag: "Hero", side: otherSide(unit.owner) };
+      return heroTarget(state, unit);
     }
     const other = unitAt(state, unit.lane, position);
     if (other && other.owner !== unit.owner) {
@@ -130,7 +139,7 @@ const meleeTarget = (
   unit: UnitState
 ): TargetRef | undefined => {
   if (unit.position === lastPosition(unit.owner)) {
-    return { _tag: "Hero", side: otherSide(unit.owner) };
+    return heroTarget(state, unit);
   }
   return enemyUnitAt(
     state,
@@ -536,12 +545,12 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
   if (swarm > 0) {
     activateKeyword(ctx, unit, "swarm", unit.swarm);
   }
-  const crit = state.sides[unit.owner].hero.unitCrit;
+  const crit = heroState(state, ownerOf(unit)).unitCrit;
   if (target._tag === "Hero") {
     if (unit.heroic > 0) {
       activateKeyword(ctx, unit, "heroic", unit.heroic);
     }
-    damageHero(ctx, target.side, {
+    damageHero(ctx, target, {
       amount: power + unit.heroic,
       damageType: unit.damageType,
       source: "attack",

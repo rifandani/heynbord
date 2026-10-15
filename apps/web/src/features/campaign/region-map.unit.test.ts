@@ -348,7 +348,7 @@ describe("mapFrame", () => {
   );
 
   it.each(MAP_SCREENS.filter((screen) => screen[4] > 500))(
-    "%s: the painting covers a %s screen above the Town Bar, with a small stretch",
+    "%s: the full height of the painting is above the Town Bar of a %s screen, and it fills the width or stays in the middle",
     (_, __, map, width, height) => {
       const frame = mapFrame(map, {
         width,
@@ -357,34 +357,36 @@ describe("mapFrame", () => {
         bottom: 80,
         obstacles: hud(width, false),
       });
-      expect(frame.x).toBeLessThanOrEqual(0.5);
-      expect(frame.y).toBeLessThanOrEqual(0.5);
-      expect(
-        frame.x + MAP.width * frame.scale * frame.stretch
-      ).toBeGreaterThanOrEqual(width - 0.5);
-      expect(frame.y + MAP.height * frame.scale).toBeGreaterThanOrEqual(
-        height - 80 - 0.5
-      );
+      const paintingWidth = MAP.width * frame.scale * frame.stretch;
+      expect(frame.y).toBeCloseTo(0);
+      expect(MAP.height * frame.scale).toBeCloseTo(height - 80);
+      if (paintingWidth >= width - 0.5) {
+        expect(frame.x).toBeLessThanOrEqual(0.5);
+        expect(frame.x + paintingWidth).toBeGreaterThanOrEqual(width - 0.5);
+      } else {
+        // A soft copy of the painting fills the sides.
+        expect(frame.stretch).toBeCloseTo(1 + FIT_STRETCH);
+        expect(frame.x).toBeCloseTo((width - paintingWidth) / 2);
+      }
       expect(frame.stretch).toBeLessThanOrEqual(1 + FIT_STRETCH);
       expect(frame.stretch).toBeGreaterThanOrEqual(1 / (1 + MAX_STRETCH));
     }
   );
 
-  it("stretches the painting no more than 10% on a 16:9 to 2:1 screen", () => {
-    for (const [width, height] of [
-      [1920, 1080],
-      [1916, 967],
-      [1440, 900],
-    ] as const) {
-      const frame = mapFrame(hearthvale, {
-        width,
-        height,
-        top: 8,
-        bottom: 80,
-        obstacles: hud(width, false),
-      });
-      expect(frame.stretch).toBeLessThanOrEqual(1 + MAX_STRETCH + 1e-9);
-    }
+  it("shows all of the painting above the Town Bar of a wide browser window", () => {
+    const frame = mapFrame(hearthvale, {
+      width: 1917,
+      height: 960,
+      top: 8,
+      bottom: 80,
+      obstacles: hud(1917, false),
+    });
+    expect(frame.y).toBeCloseTo(0);
+    expect(MAP.height * frame.scale).toBeCloseTo(880);
+    expect(frame.stretch).toBeCloseTo(1 + FIT_STRETCH);
+    // Less than 1.5% of the screen width at each side is the soft copy.
+    expect(frame.x).toBeGreaterThan(0);
+    expect(frame.x).toBeLessThan(1917 * 0.015);
   });
 
   it("shows all of the painting above the Town Bar of a 16:9 screen", () => {

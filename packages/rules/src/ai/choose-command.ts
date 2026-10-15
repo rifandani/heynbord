@@ -1,8 +1,12 @@
 import { absurd } from "effect";
 
 import {
+  activeHeroes,
   direction,
   enemyHeroPosition,
+  heroOfLane,
+  heroState,
+  isDefeated,
   isInsideLane,
   unitAt,
 } from "../battle/context";
@@ -19,6 +23,7 @@ import { HAND_LIMIT, LANE_LENGTH, otherSide, Command } from "../battle/types";
 import type {
   BattleState,
   HandCard,
+  HeroState,
   Side,
   SideState,
   Target,
@@ -46,25 +51,28 @@ import type {
 } from "../content/schema";
 
 /**
- * The state as `side` sees it (GDD 9): the other side's Hand shows only
- * Countdowns, and no Deck order or random state is visible. A hidden card ID
+ * The state as `side` sees it (GDD 9): the Hands of the other side's Heroes
+ * show only Countdowns, and no Deck order or random state is visible. A hidden card ID
  * makes `getCard` throw, so the AI cannot read it by mistake.
  */
 export const visibleTo = (state: BattleState, side: Side): BattleState => {
   const other = otherSide(side);
-  const hidden = state.sides[other];
   const sides: Record<Side, SideState> = { ...state.sides };
   sides[other] = {
-    ...hidden,
-    hand: hidden.hand.map((card) => ({
-      instanceId: card.instanceId,
-      cardId: "hidden",
-      rank: "common",
-      countdown: card.countdown,
+    heroes: state.sides[other].heroes.map((hero) => ({
+      ...hero,
+      hand: hero.hand.map((card) => ({
+        instanceId: card.instanceId,
+        cardId: "hidden",
+        rank: "common",
+        countdown: card.countdown,
+      })),
+      deck: [],
     })),
-    deck: [],
   };
-  sides[side] = { ...state.sides[side], deck: [] };
+  sides[side] = {
+    heroes: state.sides[side].heroes.map((hero) => ({ ...hero, deck: [] })),
+  };
   // The seed rebuilds both Deck orders, so it is hidden too.
   return { ...state, seed: 0, random: 0, sides };
 };
@@ -159,59 +167,75 @@ const reachesHero = (unit: UnitState): boolean => {
 };
 
 /**
- * The damage that the Units of the other side deal to `side`'s Hero in their
- * next action (GDD 9). It is an estimate, not a simulation: it does not
+ * The damage that the Units of the other side deal to each Hero of `side` in
+ * their next action (GDD 9), by Hero index. A Unit hits the Hero whose Front
+ * holds its Lane (ADR-0009). It is an estimate, not a simulation: it does not
  * predict fights, Crit or Rally. It uses only the Units on the Board, not the
- * hidden Hand. `summoned` is the new Unit of a Creature Card play.
+ * hidden Hands. `summoned` is the new Unit of a Creature Card play.
  */
 const heroDamage = (
+  state: BattleState,
   units: readonly UnitState[],
   side: Side,
   summoned?: Blocker
-): number => {
+): number[] => {
   const blockers: readonly Blocker[] = summoned ? [...units, summoned] : units;
-  return units.reduce(
-    (sum, unit) =>
+  const damage = state.sides[side].heroes.map(() => 0);
+  for (const unit of units) {
+    if (
       unit.owner !== side &&
       unit.attack > 0 &&
       !unit.frozen &&
       !unit.paralyzed &&
       !isBlocked(unit, blockers) &&
       reachesHero(unit)
-        ? sum + unit.attack + unit.heroic
-        : sum,
-    0
-  );
+    ) {
+      const { hero } = heroOfLane(state, side, unit.lane);
+      damage[hero] = (damage[hero] ?? 0) + unit.attack + unit.heroic;
+    }
+  }
+  return damage;
 };
 
 /**
- * True when a play makes the estimated Hero damage not lethal. Lethal also
- * counts the Sudden Death damage at the next Start Phase of `side` (the next
- * Turn number for both Sides).
+ * The Heroes of `side` that a play saves: the estimated Hero damage was
+ * lethal before the play and is not lethal after it. Lethal also counts the
+ * Sudden Death damage at the next Start Phase of `side` (the next Turn number
+ * for both Sides). A Defeated Hero is never saved.
  */
-const savesHero = (
+const savedHeroes = (
   state: BattleState,
   side: Side,
-  before: number,
-  after: number
-): boolean => {
-  const hp =
-    state.sides[side].hero.hp - suddenDeathDamage(state.turnNumber + 1);
-  return hp - before <= 0 && hp - after > 0;
+  before: readonly number[],
+  after: readonly number[]
+): number => {
+  const suddenDeath = suddenDeathDamage(state.turnNumber + 1);
+  return state.sides[side].heroes.filter((hero, index) => {
+    const hp = hero.hp - suddenDeath;
+    return (
+      !isDefeated(hero) &&
+      hp - (before[index] ?? 0) <= 0 &&
+      hp - (after[index] ?? 0) > 0
+    );
+  }).length;
 };
 
 /**
- * The score for the Hero damage that a play removes. A play that makes the
- * damage not lethal gets a bonus.
+ * The score for the Hero damage that a play removes, for all Heroes of
+ * `side`. Each Hero that the play saves from lethal damage gives a bonus.
  */
 const defenseScore = (
   state: BattleState,
   side: Side,
-  before: number,
-  after: number
+  before: readonly number[],
+  after: readonly number[]
 ): number =>
-  (before - after) * HERO_DAMAGE_WEIGHT +
-  (savesHero(state, side, before, after) ? LETHAL_BONUS : 0);
+  before.reduce(
+    (sum, damage, index) => sum + (damage - (after[index] ?? 0)),
+    0
+  ) *
+    HERO_DAMAGE_WEIGHT +
+  savedHeroes(state, side, before, after) * LETHAL_BONUS;
 
 /** The Column of a Square from `side`'s Hero, from 0. */
 const columnFrom = (side: Side, position: number): number =>
@@ -222,16 +246,18 @@ const SABOTAGE_SCORE = 4;
 
 /**
  * Sabotage N (GDD 5.4) adds N Countdown to the card with the lowest Countdown
- * in the enemy Hand. The score doubles when that card is Ready now or in the
- * next enemy Turn (Countdown 1 or less). An empty enemy Hand gives 0. The
- * Countdowns of the enemy Hand are visible (GDD 9).
+ * in the Hand of the enemy Hero whose Front holds `lane` (ADR-0009). The score
+ * doubles when that card is Ready now or in the next enemy Turn (Countdown 1
+ * or less). An empty enemy Hand gives 0. The Countdowns of the enemy Hands are
+ * visible (GDD 9).
  */
 const scoreSabotage = (
   state: BattleState,
   side: Side,
+  lane: number,
   amount: number
 ): number => {
-  const { hand } = state.sides[otherSide(side)];
+  const { hand } = heroState(state, heroOfLane(state, otherSide(side), lane));
   if (amount <= 0 || hand.length === 0) {
     return 0;
   }
@@ -293,7 +319,7 @@ const scoreCreature = (
     scaleForRank(definition.attack, card.rank) * 2 +
     scaleForRank(definition.hp, card.rank) +
     keywordSpeed(keywords) * 2 +
-    scoreSabotage(state, side, keywords.sabotage ?? 0) +
+    scoreSabotage(state, side, target.lane, keywords.sabotage ?? 0) +
     scoreHobble(
       state,
       side,
@@ -632,20 +658,59 @@ const scoreGround = (
     .filter(grounds)
     .reduce((sum, hit) => sum + GROUND_SCORE + closeness(hit.unit), 0);
 
-/** The score of Hero damage that defeats the enemy Hero: the AI always takes the win. */
+/**
+ * The score of Hero damage that makes an enemy Hero Defeated: the AI always
+ * takes it. For the last Hero of a Side, it is the win.
+ */
 const HERO_KILL_SCORE = 1000;
 
 /** The weight of each point of damage to the enemy Hero from a Skill Card. */
 const SKILL_HERO_DAMAGE_WEIGHT = 2;
 
 /**
- * The score of Skill Card damage to the enemy Hero. The AI always takes the
- * win.
+ * The enemy Hero that a Skill Card hits: the Hero of a Hero target, or the
+ * Hero whose Front holds the Lane of a Square or Lane target (ADR-0009).
  */
-const scoreHeroHit = (state: BattleState, side: Side, amount: number) =>
-  amount >= state.sides[otherSide(side)].hero.hp
+const enemyHeroOf = (
+  state: BattleState,
+  side: Side,
+  target: Target
+): HeroState | undefined => {
+  switch (target._tag) {
+    case "Hero": {
+      return heroState(state, target);
+    }
+    case "Square":
+    case "Lane": {
+      return heroState(state, heroOfLane(state, otherSide(side), target.lane));
+    }
+    case "NoTarget": {
+      return undefined;
+    }
+    default: {
+      return absurd(target);
+    }
+  }
+};
+
+/**
+ * The score of Skill Card damage to the enemy Hero of `target`. The AI always
+ * takes a Defeat.
+ */
+const scoreHeroHit = (
+  state: BattleState,
+  side: Side,
+  target: Target,
+  amount: number
+): number => {
+  const enemy = enemyHeroOf(state, side, target);
+  if (!enemy) {
+    return 0;
+  }
+  return amount >= enemy.hp
     ? HERO_KILL_SCORE
     : amount * SKILL_HERO_DAMAGE_WEIGHT;
+};
 
 /** The HP that a heal gives back to `unit`: half for a Bleeding Unit, up to its maximum HP. */
 const healedHp = (unit: UnitState, heal: number): number =>
@@ -1257,13 +1322,14 @@ const scoreMageSkill = (
   }
 };
 
-/** The other cards in `side`'s Hand that are not Ready. */
+/** The other cards in the Hand of the Hero `hero` of `side` that are not Ready. */
 const notReadyCards = (
   state: BattleState,
   side: Side,
+  hero: number,
   card: HandCard
 ): HandCard[] =>
-  state.sides[side].hand.filter(
+  heroState(state, { side, hero }).hand.filter(
     (other) => other.instanceId !== card.instanceId && other.countdown > 0
   );
 
@@ -1395,6 +1461,7 @@ const meetsProtectHoldRule = (
 const meetsHoldRule = (
   state: BattleState,
   side: Side,
+  hero: number,
   card: HandCard,
   definition: SkillCardDefinition,
   target: Target
@@ -1445,7 +1512,7 @@ const meetsHoldRule = (
     }
     case "lowerCountdown": {
       return (
-        notReadyCards(state, side, card).length >=
+        notReadyCards(state, side, hero, card).length >=
         skillCountForRank(effect.cards, card.rank)
       );
     }
@@ -1506,6 +1573,7 @@ const scoreDamageSkill = (
         scoreHeroHit(
           state,
           side,
+          target,
           skillAmountForRank(effect.heroAmount, card.rank)
         )
       );
@@ -1540,6 +1608,7 @@ const scoreDamageSkill = (
 const scoreSkill = (
   state: BattleState,
   side: Side,
+  hero: number,
   card: HandCard,
   definition: SkillCardDefinition,
   target: Target
@@ -1557,6 +1626,7 @@ const scoreSkill = (
         ? scoreHeroHit(
             state,
             side,
+            target,
             skillAmountForRank(effect.amount, card.rank)
           )
         : 0;
@@ -1612,7 +1682,7 @@ const scoreSkill = (
       );
     }
     case "lowerCountdown": {
-      const notReady = notReadyCards(state, side, card);
+      const notReady = notReadyCards(state, side, hero, card);
       return (
         Math.min(skillCountForRank(effect.cards, card.rank), notReady.length) *
         5
@@ -1688,35 +1758,38 @@ const unitsAfterSkill = (
 };
 
 /**
- * The score of a play: its value, plus the Hero damage that it removes. A
- * Skill Card play that does not meet its Hold Rule scores 0, unless it makes
- * the Hero damage not lethal or `handFull` is true.
+ * The score of a play by the Hero `hero` of `side`: its value, plus the Hero
+ * damage that it removes from all Heroes of `side`. A Skill Card play that
+ * does not meet its Hold Rule scores 0, unless it makes the damage to a Hero
+ * not lethal or `handFull` is true.
  */
 const scorePlay = (
   state: BattleState,
   side: Side,
+  hero: number,
   card: HandCard,
   target: Target,
-  before: number,
+  before: readonly number[],
   handFull: boolean
 ): number => {
   const definition = getCard(card.cardId);
   if (definition.kind === "skill") {
     const after = heroDamage(
+      state,
       unitsAfterSkill(state, side, card, definition, target),
       side
     );
     if (
       !(
         handFull ||
-        savesHero(state, side, before, after) ||
-        meetsHoldRule(state, side, card, definition, target)
+        savedHeroes(state, side, before, after) > 0 ||
+        meetsHoldRule(state, side, hero, card, definition, target)
       )
     ) {
       return 0;
     }
     return (
-      scoreSkill(state, side, card, definition, target) +
+      scoreSkill(state, side, hero, card, definition, target) +
       defenseScore(state, side, before, after)
     );
   }
@@ -1730,7 +1803,7 @@ const scorePlay = (
           grounded: 0,
         }
       : undefined;
-  const after = heroDamage(state.units, side, summoned);
+  const after = heroDamage(state, state.units, side, summoned);
   return (
     scoreCreature(state, side, card, definition, target) +
     defenseScore(state, side, before, after)
@@ -1738,27 +1811,45 @@ const scorePlay = (
 };
 
 /**
- * The enemy AI (GDD 9). It scores each legal play (each Ready card in each
- * legal place) and returns the best one. It returns `EndTurn` when no play
- * scores above 0. A play that has no effect scores 0. Call it again after each
- * play: the scores change. Auto-play uses the same function for the player's
- * side.
+ * The enemy AI (GDD 9). One AI controls all the Heroes of the active side
+ * that are not Defeated (ADR-0009). It scores each legal play (each Ready card
+ * in the Hand of each such Hero, in each legal place) and returns the best
+ * one. On a tie, the Hero with the lower index plays. It returns `EndTurn`
+ * when no play scores above 0. A play that has no effect scores 0. Call it
+ * again after each play: the scores change. Auto-play uses the same function
+ * for the player's side.
  */
 export const chooseCommand = (state: BattleState): Command => {
+  if (state.status !== "ongoing") {
+    return Command.EndTurn();
+  }
   const side = state.activeSide;
   const view = visibleTo(state, side);
-  const before = heroDamage(view.units, side);
-  // A full Hand gets no draw. The view hides the Deck order, but a player
-  // sees how many cards the Deck has, so this reads the real state.
-  const handFull =
-    state.sides[side].hand.length >= HAND_LIMIT &&
-    state.sides[side].deck.length > 0;
+  const before = heroDamage(view, view.units, side);
   let best: { readonly score: number; readonly command: Command } | undefined;
-  for (const [handIndex, card] of view.sides[side].hand.entries()) {
-    for (const target of legalTargets(view, handIndex)) {
-      const score = scorePlay(view, side, card, target, before, handFull);
-      if (score > 0 && (!best || score > best.score)) {
-        best = { score, command: Command.PlayCard({ handIndex, target }) };
+  for (const ref of activeHeroes(view, side)) {
+    const { hero } = ref;
+    // A full Hand gets no draw. The view hides the Deck order, but a player
+    // sees how many cards the Deck has, so this reads the real state.
+    const caster = heroState(state, ref);
+    const handFull = caster.hand.length >= HAND_LIMIT && caster.deck.length > 0;
+    for (const [handIndex, card] of heroState(view, ref).hand.entries()) {
+      for (const target of legalTargets(view, hero, handIndex)) {
+        const score = scorePlay(
+          view,
+          side,
+          hero,
+          card,
+          target,
+          before,
+          handFull
+        );
+        if (score > 0 && (!best || score > best.score)) {
+          best = {
+            score,
+            command: Command.PlayCard({ hero, handIndex, target }),
+          };
+        }
       }
     }
   }

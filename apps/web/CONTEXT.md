@@ -46,6 +46,12 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Top Bar**: The panel at the top of the Battle screen. It holds the two Heroes, the Turn number, the Battle controls, the Handbook button and the Key Guide button. _Avoid_: header, HUD top, status bar
 
+**Boss Plate**: The plate of one enemy Boss in the Top Bar of a Dungeon Battle: its Lane Strip, name, HP with a notch at each Boss Rule threshold, and the Countdowns of its Hand. A Defeated Boss keeps its plate. _Avoid_: boss bar, boss card, hero panel (a Stage has one Hero panel for each Side)
+
+**Lane Strip**: The column of cells on a Boss Plate, one for each Lane from Lane 1 at the top. The cells of the Front of the Boss are full. _Avoid_: lane map, mini-map, lane pips
+
+**Front Bracket**: The rounded mark on the ground under a Boss across the Lanes of its Front (web ADR-0011). It grows when a Front moves to that Boss. _Avoid_: front zone, territory, lane highlight
+
 **Battle Painting**: The painted ground and background behind the Board, one for each Region. It is a flat 2D image, not a 3D scene. The Squares are not drawn on it. _Avoid_: stage background, backdrop, arena, battlefield map, Board skin
 
 **Status Badge**: The row of Status icons above a Unit on the Board, each with its count when the Status has one. It shows at most 3 Statuses, then "+N". The Details Panel shows the full list and the rules text. _Avoid_: debuff bar, buff icons, status bar, status icons

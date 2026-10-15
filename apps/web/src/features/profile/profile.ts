@@ -40,6 +40,7 @@ const OVERLAY_FIELDS = [
   "essence",
   "heynstones",
   "sweepTickets",
+  "forgeStones",
   "gear",
   "collection",
   "stageResults",

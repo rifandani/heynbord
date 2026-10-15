@@ -3,6 +3,7 @@ import { LANE_LENGTH } from "@workspace/rules";
 import { Predicate } from "effect";
 import type { Object3D } from "three";
 
+import type { BattleView } from "@/features/battle/battle-view";
 import { heroX, laneZ, squareX } from "@/features/battle/scene/layout";
 
 interface MarkerSpot {
@@ -23,13 +24,15 @@ const HERO_WIDTH = 1.3;
 /**
  * Where a target shows on the Board: a Square, a whole Lane, or the ground
  * under a Hero. A Creature Card targets a Square of the Summon Zone. A Lane
- * Skill Card hits the whole Lane. A Hero marker goes across all Lanes, as the
- * Hero stands behind all of them.
+ * Skill Card hits the whole Lane. A Hero marker goes across the Lanes of its
+ * Front, as the Hero stands behind them: all Lanes in a Stage, and the Lanes
+ * of one Boss in a Dungeon (GDD 11.2).
  */
 export const markerSpot = (
   target: Target,
-  lanes: number
+  view: Pick<BattleView, "lanes" | "sides">
 ): MarkerSpot | null => {
+  const { lanes } = view;
   if (target._tag === "Square") {
     return {
       x: squareX(target.position),
@@ -47,11 +50,14 @@ export const markerSpot = (
     };
   }
   if (target._tag === "Hero") {
+    const front = view.sides[target.side].heroes[target.hero]?.front ?? [];
+    const first = front.length > 0 ? Math.min(...front) : 0;
+    const last = front.length > 0 ? Math.max(...front) : lanes - 1;
     return {
       x: heroX(target.side),
-      z: 0,
+      z: (laneZ(first, lanes) + laneZ(last, lanes)) / 2,
       width: HERO_WIDTH,
-      depth: laneZ(lanes - 1, lanes) - laneZ(0, lanes) + SQUARE_DEPTH,
+      depth: laneZ(last, lanes) - laneZ(first, lanes) + SQUARE_DEPTH,
     };
   }
   return null;

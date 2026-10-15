@@ -16,17 +16,30 @@ import { getCard } from "../content/cards";
 import type { RankId, TokenId } from "../content/schema";
 import { getToken } from "../content/tokens";
 
-const hero = (overrides: Partial<HeroState> = {}): HeroState => ({
+/** A Hero with empty Hand, Deck and Graveyard. The default Front is each Lane of the Board. */
+const makeHero = (
+  lanes: number,
+  overrides: Partial<HeroState> = {}
+): HeroState => ({
   hp: 30,
   maxHp: 30,
   classId: "warrior",
   unitCrit: 0,
   skillCrit: 0,
   unitBlock: 0,
+  front: Array.from({ length: lanes }, (_, lane) => lane),
+  hand: [],
+  deck: [],
+  graveyard: [],
+  bossRules: [],
   ...overrides,
 });
 
-/** A Battle in the player's Play Phase with empty Hands, Decks and Board. */
+/**
+ * A Battle in the player's Play Phase with empty Hands, Decks and Board. Each
+ * Side has 1 Hero with a Front of each Lane, or the enemy Side has one Hero
+ * for each item of `enemyHeroes` (ADR-0009), which then must give each Front.
+ */
 export const emptyBattle = (
   overrides: Partial<
     Pick<
@@ -36,25 +49,34 @@ export const emptyBattle = (
   > & {
     readonly player?: Partial<HeroState>;
     readonly enemy?: Partial<HeroState>;
+    readonly enemyHeroes?: readonly (Partial<HeroState> &
+      Pick<HeroState, "front">)[];
   } = {}
-): BattleState => ({
-  stageId: "test",
-  seed: 1,
-  random: overrides.random ?? 1,
-  lanes: overrides.lanes ?? 1,
-  closedLanes: overrides.closedLanes ?? [],
-  turnNumber: overrides.turnNumber ?? 1,
-  activeSide: overrides.activeSide ?? "player",
-  status: "ongoing",
-  sides: {
-    player: { hero: hero(overrides.player), hand: [], deck: [], graveyard: [] },
-    enemy: { hero: hero(overrides.enemy), hand: [], deck: [], graveyard: [] },
-  },
-  units: [],
-  fieldEffects: [],
-  nextId: 1,
-  result: null,
-});
+): BattleState => {
+  const lanes = overrides.lanes ?? 1;
+  return {
+    stageId: "test",
+    seed: 1,
+    random: overrides.random ?? 1,
+    lanes,
+    closedLanes: overrides.closedLanes ?? [],
+    turnNumber: overrides.turnNumber ?? 1,
+    activeSide: overrides.activeSide ?? "player",
+    status: "ongoing",
+    sides: {
+      player: { heroes: [makeHero(lanes, overrides.player)] },
+      enemy: {
+        heroes: overrides.enemyHeroes?.map((enemy) =>
+          makeHero(lanes, enemy)
+        ) ?? [makeHero(lanes, overrides.enemy)],
+      },
+    },
+    units: [],
+    fieldEffects: [],
+    nextId: 1,
+    result: null,
+  };
+};
 
 let nextInstance = 1000;
 
@@ -65,10 +87,12 @@ let nextInstance = 1000;
  */
 export const preventRout = (state: BattleState): void => {
   for (const side of ["player", "enemy"] as const) {
-    const { hand, deck } = state.sides[side];
-    if (hand.length === 0 && deck.length === 0) {
+    const heroes = state.sides[side].heroes.filter((each) => each.hp > 0);
+    if (
+      heroes.every((each) => each.hand.length === 0 && each.deck.length === 0)
+    ) {
       nextInstance += 1;
-      deck.push({
+      heroes[0]?.deck.push({
         instanceId: nextInstance,
         cardId: "human.militiaRecruit",
         rank: "common",
@@ -187,6 +211,8 @@ export const placeUnit = (
   options: {
     readonly cardId: string;
     readonly owner: Side;
+    /** The index of the Hero of `owner`. The default is 0. */
+    readonly hero?: number;
     readonly lane?: number;
     readonly position: number;
     readonly rank?: RankId;
@@ -248,7 +274,7 @@ export const placeUnit = (
   nextInstance += 1;
   const unit: UnitState = createUnit({
     id: state.nextId,
-    owner: options.owner,
+    owner: { side: options.owner, hero: options.hero ?? 0 },
     card: {
       instanceId: nextInstance,
       cardId: options.cardId,
@@ -301,6 +327,8 @@ export const placeToken = (
   options: {
     readonly tokenId: TokenId;
     readonly owner: Side;
+    /** The index of the Hero of `owner`. The default is 0. */
+    readonly hero?: number;
     readonly lane?: number;
     readonly position: number;
     readonly rank?: RankId;
@@ -308,7 +336,7 @@ export const placeToken = (
 ): UnitState => {
   const unit = createToken({
     id: state.nextId,
-    owner: options.owner,
+    owner: { side: options.owner, hero: options.hero ?? 0 },
     token: getToken(options.tokenId),
     rank: options.rank ?? "common",
     lane: options.lane ?? 0,
@@ -323,7 +351,20 @@ export const placeToken = (
   return unit;
 };
 
-/** Puts cards into a Hand. Changes `state` (test setup only). */
+/** The Hero `index` of `side`. Fails the test when the Side has no such Hero. */
+export const heroOf = (
+  state: BattleState,
+  side: Side,
+  index = 0
+): HeroState => {
+  const found = state.sides[side].heroes[index];
+  if (!found) {
+    throw new Error(`No Hero ${index} on the ${side} Side`);
+  }
+  return found;
+};
+
+/** Puts cards into the Hand of the Hero `index` of `side`. Changes `state` (test setup only). */
 export const giveHand = (
   state: BattleState,
   side: Side,
@@ -331,11 +372,12 @@ export const giveHand = (
     cardId: string,
     countdown: number,
     rank?: RankId,
-  ])[]
+  ])[],
+  index = 0
 ): void => {
   for (const [cardId, countdown, rank] of cards) {
     nextInstance += 1;
-    state.sides[side].hand.push({
+    heroOf(state, side, index).hand.push({
       instanceId: nextInstance,
       cardId,
       rank: rank ?? "common",

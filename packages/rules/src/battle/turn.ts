@@ -1,20 +1,28 @@
-import { getCard } from "../content/cards";
+import { hasWaitingSummon } from "./boss-rules";
 import type { StepContext } from "./context";
 import {
   actionOrder,
   activateKeyword,
+  activeHeroes,
   findUnit,
   heroDealer,
+  heroState,
   isOver,
 } from "./context";
 import { damageHero, damageUnit, finishBattle } from "./damage";
+import { drawCard } from "./hand";
 import { healedAmount, healUnit } from "./heal";
 import { runResolutionPhase } from "./resolution";
 import { areaSquares } from "./targets";
-import type { BattleState, FieldEffect, Side, UnitState } from "./types";
+import type {
+  BattleState,
+  FieldEffect,
+  HeroRef,
+  Side,
+  UnitState,
+} from "./types";
 import {
   BattleEvent,
-  HAND_LIMIT,
   otherSide,
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
@@ -93,62 +101,48 @@ export const suddenDeathDamage = (turnNumber: number): number => {
   return turnNumber >= SUDDEN_DEATH_DOUBLE_TURN ? 2 : 1;
 };
 
+/** Sudden Death hits each Hero of the active Side that is not Defeated (GDD 4.10, ADR-0009). */
 const suddenDeath = (ctx: StepContext): void => {
   const { turnNumber, activeSide } = ctx.state;
   const amount = suddenDeathDamage(turnNumber);
   if (amount === 0) {
     return;
   }
-  damageHero(ctx, activeSide, {
-    amount,
-    damageType: "physical",
-    source: "suddenDeath",
-    dealer: null,
-    crit: 0,
-  });
+  for (const hero of activeHeroes(ctx.state, activeSide)) {
+    damageHero(ctx, hero, {
+      amount,
+      damageType: "physical",
+      source: "suddenDeath",
+      dealer: null,
+      crit: 0,
+    });
+  }
 };
 
 /**
  * Each card in the Hand that is not Ready counts down by 1 (GDD 4.3, ADR-0021).
  * A Ready card stays at 0.
  */
-const tickCountdowns = (ctx: StepContext): void => {
-  const side = ctx.state.sides[ctx.state.activeSide];
-  for (const card of side.hand) {
+const tickCountdowns = (ctx: StepContext, ref: HeroRef): void => {
+  const hero = heroState(ctx.state, ref);
+  for (const card of hero.hand) {
     if (card.countdown > 0) {
       card.countdown -= 1;
     }
   }
   ctx.events.push(
     BattleEvent.CountdownsTicked({
-      side: ctx.state.activeSide,
-      countdowns: side.hand.map((card) => card.countdown),
-    })
-  );
-};
-
-/** Draws 1 card when the Hand is not full and the Deck is not empty. */
-export const drawCard = (ctx: StepContext, sideId = ctx.state.activeSide) => {
-  const side = ctx.state.sides[sideId];
-  const [next] = side.deck;
-  if (!next || side.hand.length >= HAND_LIMIT) {
-    return;
-  }
-  side.deck = side.deck.slice(1);
-  const card = { ...next, countdown: getCard(next.cardId).countdown };
-  side.hand.push(card);
-  ctx.events.push(
-    BattleEvent.CardDrawn({
-      side: sideId,
-      // A copy: the Hand card changes later, and the event must keep the drawn Countdown.
-      card: { ...card },
+      side: ref.side,
+      hero: ref.hero,
+      countdowns: hero.hand.map((card) => card.countdown),
     })
   );
 };
 
 /**
  * The Start Phase (GDD 4.3). The Play Phase follows. Closed Lanes open first,
- * then Regenerate and Rally.
+ * then Regenerate and Rally. Each Hero of the active Side that is not
+ * Defeated counts down its Hand and draws, in Hero order (ADR-0009).
  */
 export const runStartPhase = (ctx: StepContext): void => {
   ctx.events.push(
@@ -164,8 +158,10 @@ export const runStartPhase = (ctx: StepContext): void => {
   if (isOver(ctx)) {
     return;
   }
-  tickCountdowns(ctx);
-  drawCard(ctx);
+  for (const hero of activeHeroes(ctx.state, ctx.state.activeSide)) {
+    tickCountdowns(ctx, hero);
+    drawCard(ctx, hero);
+  }
 };
 
 /**
@@ -189,7 +185,6 @@ const unitsInField = (ctx: StepContext, field: FieldEffect): UnitState[] => {
  */
 const strikeFieldEffects = (ctx: StepContext): void => {
   const { state } = ctx;
-  const crit = state.sides[state.activeSide].hero.skillCrit;
   for (const field of state.fieldEffects) {
     if (field.owner !== state.activeSide || isOver(ctx)) {
       continue;
@@ -200,6 +195,8 @@ const strikeFieldEffects = (ctx: StepContext): void => {
         turns: field.turns - 1,
       })
     );
+    const caster = { side: field.owner, hero: field.hero };
+    const crit = heroState(state, caster).skillCrit;
     for (const unit of unitsInField(ctx, field)) {
       if (isOver(ctx) || !findUnit(state, unit.id)) {
         continue;
@@ -208,7 +205,7 @@ const strikeFieldEffects = (ctx: StepContext): void => {
         amount: field.amount,
         damageType: field.damageType,
         source: "field",
-        dealer: heroDealer(field.owner),
+        dealer: heroDealer(caster),
         crit,
       });
     }
@@ -386,13 +383,21 @@ const runEndPhase = (ctx: StepContext): void => {
 };
 
 /**
- * Routed (ADR-0012): no Units on the Board and no Cards in the Hand and the
- * Deck. A Card that is not Ready or that has no legal target still counts.
+ * Routed (ADR-0012): no Units on the Board and no Cards in the Hands and the
+ * Decks of the Heroes that are not Defeated. A Card that is not Ready or that
+ * has no legal target still counts. A Summon Boss Rule that has not activated
+ * also counts (ADR-0040).
  */
 const isRouted = (state: BattleState, side: Side): boolean =>
   state.units.every((unit) => unit.owner !== side) &&
-  state.sides[side].hand.length === 0 &&
-  state.sides[side].deck.length === 0;
+  activeHeroes(state, side).every((ref) => {
+    const hero = heroState(state, ref);
+    return (
+      hero.hand.length === 0 &&
+      hero.deck.length === 0 &&
+      !hasWaitingSummon(hero)
+    );
+  });
 
 /**
  * The Routed check at the end of each Turn, after the End Phase and before

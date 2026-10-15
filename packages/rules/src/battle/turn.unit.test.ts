@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import { getCard } from "../content/cards";
 import { getStarterDeck } from "../content/decks";
+import { getDungeon } from "../content/dungeons";
+import type { DungeonDefinition } from "../content/schema";
 import { getStage } from "../content/stages";
 import {
   emptyBattle,
@@ -12,6 +14,7 @@ import {
   preventRout,
   run,
   unitById,
+  heroOf,
 } from "../testing/fixtures";
 import { createBattle } from "./create-battle";
 import { starsFor } from "./stars";
@@ -22,7 +25,7 @@ import type { BattleState } from "./types";
 const endTurn = Command.EndTurn();
 
 const countdownsOf = (state: BattleState) =>
-  state.sides.player.hand.map((card) => card.countdown);
+  heroOf(state, "player").hand.map((card) => card.countdown);
 
 /** An enemy Turn at `turnNumber` that the Routed check does not end. */
 const enemyTurnAt = (turnNumber: number) => {
@@ -48,8 +51,8 @@ const setup = (seed: number, stageId = "1-1") => {
 describe("createBattle (GDD 4.2)", () => {
   it("draws 4 cards for each side and runs the player's first Start Phase", () => {
     const { state, events } = createBattle(setup(7));
-    expect(state.sides.player.hand).toHaveLength(5);
-    expect(state.sides.enemy.hand).toHaveLength(4);
+    expect(heroOf(state, "player").hand).toHaveLength(5);
+    expect(heroOf(state, "enemy").hand).toHaveLength(4);
     expect(state.activeSide).toBe("player");
     expect(state.turnNumber).toBe(1);
     expect(eventsOfType(events, "TurnStarted")).toEqual([
@@ -59,14 +62,14 @@ describe("createBattle (GDD 4.2)", () => {
 
   it("gives the player 30 + level HP plus the Armor Gear bonus", () => {
     const { state } = createBattle(setup(7));
-    expect(state.sides.player.hero).toMatchObject({
+    expect(heroOf(state, "player")).toMatchObject({
       hp: 46,
       maxHp: 46,
       unitCrit: 300,
       skillCrit: 450,
       unitBlock: 300,
     });
-    expect(state.sides.enemy.hero.hp).toBe(6);
+    expect(heroOf(state, "enemy").hp).toBe(6);
   });
 
   it("puts the Stage's start Units on the Board", () => {
@@ -126,12 +129,9 @@ describe("createBattle (GDD 4.2)", () => {
     for (const seed of [1, 2, 3]) {
       const { state } = createBattle(setup(seed));
       const deckSize = getStarterDeck("vanguard").deck.length;
-      expect(state.sides.enemy.hand.map((card) => card.instanceId)).toEqual([
-        deckSize + 1,
-        deckSize + 2,
-        deckSize + 3,
-        deckSize + 4,
-      ]);
+      expect(
+        heroOf(state, "enemy").hand.map((card) => card.instanceId)
+      ).toEqual([deckSize + 1, deckSize + 2, deckSize + 3, deckSize + 4]);
     }
   });
 
@@ -144,9 +144,84 @@ describe("createBattle (GDD 4.2)", () => {
 
   it("gives the same Battle for the same seed", () => {
     expect(createBattle(setup(99))).toEqual(createBattle(setup(99)));
-    expect(createBattle(setup(99)).state.sides.player.hand).not.toEqual(
-      createBattle(setup(100)).state.sides.player.hand
+    expect(heroOf(createBattle(setup(99)).state, "player").hand).not.toEqual(
+      heroOf(createBattle(setup(100)).state, "player").hand
     );
+  });
+});
+
+const dungeonSetup = (seed: number, dungeon: DungeonDefinition) => {
+  const { stage: _, ...rest } = setup(seed);
+  return { ...rest, dungeon };
+};
+
+describe("createBattle with a Dungeon (GDD 8.4)", () => {
+  const dungeon = getDungeon("dungeon-1");
+
+  it("gives a Dungeon 4 Lanes and 1 enemy Hero for each Boss, with its own Front, HP, Class and Deck", () => {
+    const { state } = createBattle(dungeonSetup(7, dungeon));
+    expect(state).toMatchObject({ stageId: "dungeon-1", lanes: 4 });
+    expect(heroOf(state, "player").front).toEqual([0, 1, 2, 3]);
+    expect(state.sides.enemy.heroes).toHaveLength(dungeon.bosses.length);
+    for (const [index, boss] of dungeon.bosses.entries()) {
+      const hero = heroOf(state, "enemy", index);
+      expect(hero).toMatchObject({
+        hp: boss.heroHp,
+        maxHp: boss.heroHp,
+        classId: boss.classId,
+        front: boss.front,
+      });
+      expect(hero.hand).toHaveLength(4);
+      expect(hero.hand.length + hero.deck.length).toBe(boss.deck.length);
+      expect(
+        [...hero.hand, ...hero.deck].map((card) => card.cardId).toSorted()
+      ).toEqual(boss.deck.map((entry) => entry.cardId).toSorted());
+      expect(hero.bossRules).toHaveLength(boss.bossRules.length);
+    }
+  });
+
+  it("puts each Start Unit on the Board for its Boss, and keeps the Closed Lanes", () => {
+    const [first, second] = dungeon.bosses;
+    if (!first || !second) {
+      throw new Error("Dungeon 1 has 2 Bosses");
+    }
+    const withStartUnits: DungeonDefinition = {
+      ...dungeon,
+      closedLanes: [{ lane: 0, opensOnTurn: 4 }],
+      bosses: [
+        first,
+        {
+          ...second,
+          startUnits: [
+            {
+              cardId: "elf.rootboundGuard",
+              rank: "rare",
+              lane: 3,
+              position: 10,
+            },
+          ],
+        },
+      ],
+    };
+    const { state } = createBattle(dungeonSetup(7, withStartUnits));
+    expect(state.closedLanes).toEqual([{ lane: 0, opensOnTurn: 4 }]);
+    expect(state.units).toEqual([
+      expect.objectContaining({
+        source: expect.objectContaining({
+          card: expect.objectContaining({ cardId: "elf.rootboundGuard" }),
+        }),
+        owner: "enemy",
+        hero: 1,
+        lane: 3,
+        position: 10,
+      }),
+    ]);
+  });
+
+  it("starts the same Dungeon Battle for the same seed", () => {
+    const first = createBattle(dungeonSetup(3, dungeon));
+    const again = createBattle(dungeonSetup(3, dungeon));
+    expect(again).toEqual(first);
   });
 });
 
@@ -157,12 +232,12 @@ describe("Start Phase (GDD 4.3)", () => {
       ["human.militiaRecruit", 0],
       ["human.halberdier", 3],
     ]);
-    state.sides.player.deck = [
+    heroOf(state, "player").deck = [
       { instanceId: 1, cardId: "human.shieldbearer", rank: "common" },
     ];
     preventRout(state);
     const { state: next, events } = run(state, endTurn);
-    expect(next.sides.player.hand.map((card) => card.countdown)).toEqual([
+    expect(heroOf(next, "player").hand.map((card) => card.countdown)).toEqual([
       0, 2, 2,
     ]);
     expect(eventsOfType(events, "CardDrawn")).toEqual([
@@ -221,14 +296,14 @@ describe("Start Phase (GDD 4.3)", () => {
       preventRout(state);
       const played = run(
         state,
-        Command.PlayCard({ handIndex: 0, target: Target.NoTarget() })
+        Command.PlayCard({ hero: 0, handIndex: 0, target: Target.NoTarget() })
       );
       const [roll] = eventsOfType(played.events, "RecallRolled");
       if (!roll?.success) {
         continue;
       }
       recalled = true;
-      expect(played.state.sides.player.hand.at(-1)).toMatchObject({
+      expect(heroOf(played.state, "player").hand.at(-1)).toMatchObject({
         cardId: "warrior.warDrums",
         countdown: 2,
       });
@@ -236,7 +311,7 @@ describe("Start Phase (GDD 4.3)", () => {
       const enemyTurn = run(played.state, endTurn).state;
       const { state: next } = run(enemyTurn, endTurn);
       expect(countdownsOf(next).toSorted()).toEqual([1, 3, 3, 5]);
-      expect(next.sides.player.hand.at(-1)).toMatchObject({
+      expect(heroOf(next, "player").hand.at(-1)).toMatchObject({
         cardId: "warrior.warDrums",
         countdown: 1,
       });
@@ -256,6 +331,7 @@ describe("Start Phase (GDD 4.3)", () => {
     const sabotaged = run(
       state,
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
         target: Target.Square({ lane: 0, position: LANE_LENGTH - 1 }),
       })
@@ -276,6 +352,7 @@ describe("Start Phase (GDD 4.3)", () => {
     const sabotaged = run(
       state,
       Command.PlayCard({
+        hero: 0,
         handIndex: 0,
         target: Target.Square({ lane: 0, position: LANE_LENGTH - 1 }),
       })
@@ -292,12 +369,12 @@ describe("Start Phase (GDD 4.3)", () => {
       "player",
       Array.from({ length: 8 }, () => ["human.militiaRecruit", 1] as const)
     );
-    state.sides.player.deck = [
+    heroOf(state, "player").deck = [
       { instanceId: 1, cardId: "human.shieldbearer", rank: "common" },
     ];
     const { state: next } = run(state, endTurn);
-    expect(next.sides.player.hand).toHaveLength(8);
-    expect(next.sides.player.deck).toHaveLength(1);
+    expect(heroOf(next, "player").hand).toHaveLength(8);
+    expect(heroOf(next, "player").deck).toHaveLength(1);
   });
 
   it("heals Regenerate Units up to their maximum HP", () => {
@@ -357,11 +434,11 @@ describe("Closed Lanes (GDD 4.1)", () => {
 describe("Sudden Death and the Turn limit (GDD 4.10)", () => {
   it("hits the active Hero for 1 from Turn number 20 and for 2 from Turn number 40", () => {
     const twenty = run(enemyTurnAt(19), endTurn).state;
-    expect(twenty.sides.player.hero.hp).toBe(29);
+    expect(heroOf(twenty, "player").hp).toBe(29);
     const forty = run(enemyTurnAt(39), endTurn).state;
-    expect(forty.sides.player.hero.hp).toBe(28);
+    expect(heroOf(forty, "player").hp).toBe(28);
     const early = run(enemyTurnAt(18), endTurn).state;
-    expect(early.sides.player.hero.hp).toBe(30);
+    expect(heroOf(early, "player").hp).toBe(30);
   });
 
   it("ends the Battle when Sudden Death takes the last HP", () => {
@@ -402,7 +479,7 @@ describe("win and loss", () => {
     });
     const { state: next, events } = run(state, endTurn);
     expect(next.result).toEqual({ winner: "player", reason: "heroDefeated" });
-    expect(next.sides.enemy.hero.hp).toBe(0);
+    expect(heroOf(next, "enemy").hp).toBe(0);
     // The second Unit does not act, and no End Phase runs.
     expect(eventsOfType(events, "UnitAttacked")).toHaveLength(1);
     expect(eventsOfType(events, "TurnEnded")).toHaveLength(0);
@@ -495,7 +572,7 @@ describe("Routed (ADR-0012)", () => {
       giveHand(state, "enemy", [["human.halberdier", 3]]);
       const played = run(
         state,
-        Command.PlayCard({ handIndex: 0, target: Target.NoTarget() })
+        Command.PlayCard({ hero: 0, handIndex: 0, target: Target.NoTarget() })
       );
       const [roll] = eventsOfType(played.events, "RecallRolled");
       const success = roll?.success === true;
@@ -536,13 +613,17 @@ describe("purity", () => {
     const { state } = createBattle(setup(3));
     const before = structuredClone(state);
     run(state, endTurn);
-    const ready = state.sides.player.hand.findIndex(
+    const ready = heroOf(state, "player").hand.findIndex(
       (card) => card.countdown === 0
     );
     if (ready !== -1) {
       step(
         state,
-        Command.PlayCard({ handIndex: ready, target: Target.Lane({ lane: 0 }) })
+        Command.PlayCard({
+          hero: 0,
+          handIndex: ready,
+          target: Target.Lane({ lane: 0 }),
+        })
       );
     }
     expect(state).toEqual(before);

@@ -1,7 +1,7 @@
 import { Predicate, Schema } from "effect";
 import { describe, expect, it } from "vitest";
 
-import { STAGE_LANES } from "../battle/types";
+import { DUNGEON_LANES, STAGE_LANES } from "../battle/types";
 import { ARCHETYPES, MATCHUP_LEVEL } from "./archetypes";
 import {
   budgetDeviation,
@@ -23,6 +23,7 @@ import {
   getStarterDeck,
   STARTER_DECKS,
 } from "./decks";
+import { DUNGEON_REWARDS, DUNGEONS, getDungeon } from "./dungeons";
 import {
   isRangedRange,
   keywordRange,
@@ -41,7 +42,9 @@ import {
 } from "./ranks";
 import {
   Archetype,
+  BossRule,
   CardDefinition,
+  DungeonDefinition,
   StageDefinition,
   StarterDeck,
   TokenDefinition,
@@ -57,11 +60,14 @@ import type {
 } from "./schema";
 import { getStage, STAGES } from "./stages";
 import { getToken, TOKENS } from "./tokens";
+import { UNLOCK_LEVELS } from "./unlocks";
 
 const decodeCard = Schema.decodeUnknownSync(CardDefinition);
 const decodeStage = Schema.decodeUnknownSync(StageDefinition);
 const decodeDeck = Schema.decodeUnknownSync(StarterDeck);
 const decodeArchetype = Schema.decodeUnknownSync(Archetype);
+const decodeBossRule = Schema.decodeUnknownSync(BossRule);
+const decodeDungeon = Schema.decodeUnknownSync(DungeonDefinition);
 /** Strict: a Keyword that a Token cannot have, such as Summon, fails. */
 const decodeToken = Schema.decodeUnknownSync(TokenDefinition, {
   onExcessProperty: "error",
@@ -1266,6 +1272,193 @@ describe("Decks and Stages", () => {
   it("throws for an unknown Stage or Deck", () => {
     expect(() => getStage("9-9")).toThrow("Unknown Stage");
     expect(() => getStarterDeck("nope")).toThrow("Unknown starter Deck");
+  });
+});
+
+describe("Boss Rules (ADR-0040)", () => {
+  it("gives no Campaign Stage a Boss Rule", () => {
+    for (const stage of STAGES) {
+      expect(stage.enemy.bossRules, `${stage.id} Boss Rules`).toBeUndefined();
+    }
+  });
+
+  it("accepts a threshold of 1 to 99 and each effect", () => {
+    for (const rule of [
+      { threshold: 1, effect: { type: "draw", cards: 1 } },
+      { threshold: 99, effect: { type: "countdown", amount: 6, cards: 8 } },
+      {
+        threshold: 50,
+        effect: {
+          type: "summon",
+          cardId: "human.militiaRecruit",
+          rank: "rare",
+          lane: 3,
+          position: 11,
+        },
+      },
+    ]) {
+      expect(decodeBossRule(rule)).toEqual(rule);
+    }
+  });
+
+  it("rejects a threshold out of 1 to 99 and bad effect values", () => {
+    const summon = {
+      type: "summon",
+      cardId: "human.militiaRecruit",
+      rank: "common",
+      lane: 0,
+      position: 9,
+    };
+    for (const rule of [
+      { threshold: 0, effect: { type: "draw", cards: 1 } },
+      { threshold: 100, effect: { type: "draw", cards: 1 } },
+      { threshold: 50.5, effect: { type: "draw", cards: 1 } },
+      { threshold: 50, effect: { type: "draw", cards: 0 } },
+      { threshold: 50, effect: { type: "draw", cards: 9 } },
+      { threshold: 50, effect: { type: "countdown", amount: 0, cards: 1 } },
+      { threshold: 50, effect: { type: "countdown", amount: 1, cards: 0 } },
+      { threshold: 50, effect: { ...summon, lane: 4 } },
+      { threshold: 50, effect: { ...summon, position: 12 } },
+      { threshold: 50, effect: { ...summon, rank: "mythic" } },
+      { threshold: 50, effect: { ...summon, cardId: "" } },
+      // No effect heals a Hero (ADR-0028).
+      { threshold: 50, effect: { type: "heal", amount: 5 } },
+    ]) {
+      expect(() => decodeBossRule(rule), JSON.stringify(rule)).toThrow();
+    }
+  });
+});
+
+/** The Lanes of a Dungeon Board, from Lane 1. */
+const DUNGEON_BOARD = Array.from({ length: DUNGEON_LANES }, (_, lane) => lane);
+
+describe("Dungeons (GDD 8.4)", () => {
+  it("passes the schema and the Deck rules, with unique IDs", () => {
+    for (const dungeon of DUNGEONS) {
+      expect(decodeDungeon(dungeon)).toEqual(dungeon);
+      for (const boss of dungeon.bosses) {
+        checkDeck(boss.deck);
+      }
+    }
+    const ids = DUNGEONS.flatMap((dungeon) => [
+      dungeon.id,
+      ...dungeon.bosses.map((boss) => boss.id),
+    ]);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(DUNGEONS.map((dungeon) => dungeon.number)).toEqual(
+      DUNGEONS.map((_, index) => index + 1)
+    );
+  });
+
+  it("puts each Lane in exactly one Front, and each Front is a block of Lanes next to each other", () => {
+    for (const dungeon of DUNGEONS) {
+      expect(
+        dungeon.bosses.flatMap((boss) => boss.front).toSorted((a, b) => a - b),
+        `${dungeon.id} Fronts`
+      ).toEqual(DUNGEON_BOARD);
+      for (const boss of dungeon.bosses) {
+        const [first = 0] = boss.front;
+        expect(boss.front.length, `${boss.id} Lanes`).toBeGreaterThanOrEqual(1);
+        expect(boss.front, `${boss.id} Front`).toEqual(
+          boss.front.map((_, index) => first + index)
+        );
+      }
+    }
+  });
+
+  it("refuses a Dungeon with no Boss or more than 4 Bosses, and a Lane out of 0 to 3", () => {
+    const dungeon = getDungeon("dungeon-1");
+    const [boss] = dungeon.bosses;
+    expect(() => decodeDungeon({ ...dungeon, bosses: [] })).toThrow();
+    expect(() =>
+      decodeDungeon({
+        ...dungeon,
+        bosses: Array.from({ length: 5 }, () => boss),
+      })
+    ).toThrow();
+    expect(() =>
+      decodeDungeon({ ...dungeon, bosses: [{ ...boss, front: [] }] })
+    ).toThrow();
+    expect(() =>
+      decodeDungeon({ ...dungeon, bosses: [{ ...boss, front: [4] }] })
+    ).toThrow();
+    expect(() =>
+      decodeDungeon({ ...dungeon, closedLanes: [{ lane: 4 }] })
+    ).toThrow();
+  });
+
+  it("puts each Start Unit and each Boss Rule Summon in the Front of its Boss, out of the Closed Lanes", () => {
+    for (const dungeon of DUNGEONS) {
+      const closed = dungeon.closedLanes.map((lane) => lane.lane);
+      expect(new Set(closed).size, `${dungeon.id} Closed Lanes`).toBe(
+        closed.length
+      );
+      expect(closed.length, `${dungeon.id} open Lanes`).toBeLessThan(
+        DUNGEON_LANES
+      );
+      for (const boss of dungeon.bosses) {
+        for (const unit of boss.startUnits) {
+          expect(boss.front, `${boss.id} start Unit`).toContain(unit.lane);
+          expect(closed, `${boss.id} start Unit`).not.toContain(unit.lane);
+          const card = getCard(unit.cardId);
+          expect(card.kind).toBe("creature");
+          expect(isRankAtLeast(unit.rank, card.baseRank)).toBe(true);
+        }
+        for (const { effect } of boss.bossRules) {
+          if (effect.type === "summon") {
+            expect(boss.front, `${boss.id} Boss Rule`).toContain(effect.lane);
+            const card = getCard(effect.cardId);
+            expect(card.kind).toBe("creature");
+            expect(isRankAtLeast(effect.rank, card.baseRank)).toBe(true);
+          }
+        }
+      }
+    }
+  });
+
+  it("unlocks each Dungeon at the level of its rewards, and gives an Epic copy of a Boss card for the first win", () => {
+    for (const dungeon of DUNGEONS) {
+      const rewards = DUNGEON_REWARDS.find(
+        (candidate) => candidate.dungeon === dungeon.number
+      );
+      expect(rewards?.unlockLevel, `${dungeon.id} unlock level`).toBe(
+        dungeon.unlockLevel
+      );
+      const { cardId, rank } = dungeon.firstWinCard;
+      expect(rank, `${dungeon.id} first-win Rank`).toBe("epic");
+      expect(isRankAtLeast(rank, getCard(cardId).baseRank)).toBe(true);
+      expect(
+        dungeon.bosses.flatMap((boss) =>
+          boss.deck.map((entry) => entry.cardId)
+        ),
+        `${dungeon.id} first-win card`
+      ).toContain(cardId);
+    }
+  });
+
+  it("gives Dungeon 1 2 Bosses with 2 Lanes each, of the Races of Regions 2 and 3, 2 Classes and 1 Boss Rule each", () => {
+    const dungeon = getDungeon("dungeon-1");
+    expect(dungeon.unlockLevel).toBe(UNLOCK_LEVELS.dungeon1);
+    expect(dungeon.bosses.map((boss) => boss.front)).toEqual([
+      [0, 1],
+      [2, 3],
+    ]);
+    expect(new Set(dungeon.bosses.map((boss) => boss.classId)).size).toBe(2);
+    for (const boss of dungeon.bosses) {
+      expect(boss.bossRules, `${boss.id} Boss Rules`).toHaveLength(1);
+      for (const entry of boss.deck) {
+        const card = getCard(entry.cardId);
+        if (card.kind === "creature") {
+          expect(["orc", "goblin", "elf"], entry.cardId).toContain(card.race);
+        } else {
+          expect(card.class, entry.cardId).toBe(boss.classId);
+        }
+      }
+    }
+  });
+
+  it("throws for an unknown Dungeon", () => {
+    expect(() => getDungeon("dungeon-9")).toThrow("Unknown Dungeon");
   });
 });
 

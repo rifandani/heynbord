@@ -13,6 +13,7 @@ import {
   preventRout,
   run,
   unitById,
+  heroOf,
 } from "../testing/fixtures";
 import { createBattle } from "./create-battle";
 import { step } from "./step";
@@ -21,7 +22,7 @@ import { Command, Target } from "./types";
 import type { BattleEvent, Side } from "./types";
 
 const play = (handIndex: number, target: Target) =>
-  Command.PlayCard({ handIndex, target });
+  Command.PlayCard({ hero: 0, handIndex, target });
 
 const violation = (result: ReturnType<typeof step>) =>
   Result.isFailure(result) ? result.failure._tag : "none";
@@ -37,7 +38,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     const state = emptyBattle({ lanes: 2 });
     giveHand(state, "player", [["human.militiaRecruit", 0]]);
     const { state: next, events } = run(state, play(0, square(1, 2)));
-    expect(next.sides.player.hand).toHaveLength(0);
+    expect(heroOf(next, "player").hand).toHaveLength(0);
     expect(next.units).toEqual([
       expect.objectContaining({ owner: "player", lane: 1, position: 2, hp: 8 }),
     ]);
@@ -47,7 +48,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
   it("gives Columns 1 to 3 of each open Lane, for each Side (ADR-0011)", () => {
     const state = emptyBattle({ lanes: 2 });
     giveHand(state, "player", [["human.militiaRecruit", 0]]);
-    expect(legalTargets(state, 0)).toEqual([
+    expect(legalTargets(state, 0, 0)).toEqual([
       square(0, 0),
       square(0, 1),
       square(0, 2),
@@ -58,7 +59,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     expect(violation(step(state, play(0, square(0, 3))))).toBe("IllegalTarget");
     const enemy = emptyBattle({ activeSide: "enemy" });
     giveHand(enemy, "enemy", [["orc.badlandRunt", 0]]);
-    expect(legalTargets(enemy, 0)).toEqual([
+    expect(legalTargets(enemy, 0, 0)).toEqual([
       square(0, 11),
       square(0, 10),
       square(0, 9),
@@ -75,7 +76,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
       owner: "enemy",
       position: 1,
     });
-    expect(legalTargets(state, 0)).toEqual([square(0, 0), square(0, 2)]);
+    expect(legalTargets(state, 0, 0)).toEqual([square(0, 0), square(0, 2)]);
     const { state: next } = run(state, play(0, square(0, 2)));
     expect(next.units.at(-1)).toMatchObject({ owner: "player", position: 2 });
   });
@@ -83,7 +84,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
   it("gives a Wall Columns 1 to 5, for each Side (ADR-0023)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["human.townBarricade", 0]]);
-    expect(legalTargets(state, 0)).toEqual([
+    expect(legalTargets(state, 0, 0)).toEqual([
       square(0, 0),
       square(0, 1),
       square(0, 2),
@@ -93,7 +94,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     expect(violation(step(state, play(0, square(0, 5))))).toBe("IllegalTarget");
     const enemy = emptyBattle({ activeSide: "enemy" });
     giveHand(enemy, "enemy", [["feral.boulderTortoise", 0]]);
-    expect(legalTargets(enemy, 0)).toEqual([
+    expect(legalTargets(enemy, 0, 0)).toEqual([
       square(0, 11),
       square(0, 10),
       square(0, 9),
@@ -127,7 +128,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["human.militiaRecruit", 1]]);
     expect(violation(step(state, play(0, square(0, 0))))).toBe("CardNotReady");
-    expect(legalTargets(state, 0)).toEqual([]);
+    expect(legalTargets(state, 0, 0)).toEqual([]);
   });
 
   it("refuses an occupied Square, a Lane target, a Lane that does not exist, and a bad hand index", () => {
@@ -154,7 +155,7 @@ describe("playing a Creature Card (GDD 4.1, 4.3)", () => {
       closedLanes: [{ lane: 0 }, { lane: 2 }],
     });
     giveHand(state, "player", [["human.militiaRecruit", 0]]);
-    expect(legalTargets(state, 0)).toEqual([
+    expect(legalTargets(state, 0, 0)).toEqual([
       square(1, 0),
       square(1, 1),
       square(1, 2),
@@ -286,7 +287,7 @@ describe("Skill Cards (GDD 4.8)", () => {
       lane: 0,
       position: 9,
     });
-    expect(legalTargets(state, 0)).toEqual([
+    expect(legalTargets(state, 0, 0)).toEqual([
       Target.Lane({ lane: 0 }),
       Target.Lane({ lane: 1 }),
     ]);
@@ -363,8 +364,8 @@ describe("Skill Cards (GDD 4.8)", () => {
       ["human.ironBulwark", 5],
     ]);
     const { state: next, events } = run(state, play(0, Target.NoTarget()));
-    const countdowns = next.sides.player.hand
-      .filter((card) => card.cardId !== "warrior.warDrums")
+    const countdowns = heroOf(next, "player")
+      .hand.filter((card) => card.cardId !== "warrior.warDrums")
       .map((card) => card.countdown);
     expect(countdowns).toEqual([0, 1, 3]);
     expect(eventsOfType(events, "CountdownChanged")).toHaveLength(2);
@@ -384,10 +385,10 @@ describe("Skill Cards (GDD 4.8)", () => {
         position: 6,
       });
     }
-    expect(legalTargets(state, 0)).toEqual([
+    expect(legalTargets(state, 0, 0)).toEqual([
       Target.Square({ lane: 0, position: 6 }),
     ]);
-    expect(legalTargets(state, 1)).toEqual([Target.Lane({ lane: 0 })]);
+    expect(legalTargets(state, 0, 1)).toEqual([Target.Lane({ lane: 0 })]);
     expect(violation(step(state, play(1, Target.Lane({ lane: 1 }))))).toBe(
       "IllegalTarget"
     );
@@ -396,7 +397,7 @@ describe("Skill Cards (GDD 4.8)", () => {
   it("refuses a Unit target when there is no enemy Unit", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["mage.frostBolt", 0]]);
-    expect(legalTargets(state, 0)).toEqual([]);
+    expect(legalTargets(state, 0, 0)).toEqual([]);
     expect(
       violation(step(state, play(0, Target.Square({ lane: 0, position: 5 }))))
     ).toBe("IllegalTarget");
@@ -411,13 +412,13 @@ describe("Skill Cards (GDD 4.8)", () => {
       const [recall] = eventsOfType(events, "RecallRolled");
       outcomes.add(recall?.success ?? false);
       if (recall?.success) {
-        expect(next.sides.player.hand).toEqual([
+        expect(heroOf(next, "player").hand).toEqual([
           expect.objectContaining({ cardId: "warrior.warDrums", countdown: 2 }),
         ]);
-        expect(next.sides.player.graveyard).toEqual([]);
+        expect(heroOf(next, "player").graveyard).toEqual([]);
       } else {
-        expect(next.sides.player.hand).toEqual([]);
-        expect(next.sides.player.graveyard).toHaveLength(1);
+        expect(heroOf(next, "player").hand).toEqual([]);
+        expect(heroOf(next, "player").graveyard).toHaveLength(1);
       }
     }
     expect(outcomes).toEqual(new Set([true, false]));
@@ -443,22 +444,26 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
       const state = emptyBattle();
       giveHand(state, "player", [["ranger.longShot", 0, "rare"]]);
       enemyAt(state, 6);
-      expect(legalTargets(state, 0)).toEqual([Target.Hero({ side: "enemy" })]);
+      expect(legalTargets(state, 0, 0)).toEqual([
+        Target.Hero({ side: "enemy", hero: 0 }),
+      ]);
       expect(violation(step(state, play(0, square(0, 6))))).toBe(
         "IllegalTarget"
       );
       expect(
-        violation(step(state, play(0, Target.Hero({ side: "player" }))))
+        violation(
+          step(state, play(0, Target.Hero({ side: "player", hero: 0 })))
+        )
       ).toBe("IllegalTarget");
       const { state: next, events } = run(
         state,
-        play(0, Target.Hero({ side: "enemy" }))
+        play(0, Target.Hero({ side: "enemy", hero: 0 }))
       );
       // Rare: 12 × 1.45 = 17.4, rounded to 17. A Hero has no Bulwark and no Block.
-      expect(next.sides.enemy.hero.hp).toBe(13);
+      expect(heroOf(next, "enemy").hp).toBe(13);
       expect(eventsOfType(events, "DamageDealt")).toEqual([
         expect.objectContaining({
-          target: { _tag: "Hero", side: "enemy" },
+          target: { _tag: "Hero", side: "enemy", hero: 0 },
           amount: 17,
           source: "skill",
           blocked: false,
@@ -469,18 +474,20 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
     it("targets the player Hero when the enemy plays it", () => {
       const state = emptyBattle({ activeSide: "enemy" });
       giveHand(state, "enemy", [["ranger.longShot", 0]]);
-      expect(legalTargets(state, 0)).toEqual([Target.Hero({ side: "player" })]);
+      expect(legalTargets(state, 0, 0)).toEqual([
+        Target.Hero({ side: "player", hero: 0 }),
+      ]);
       const { state: next } = run(
         state,
-        play(0, Target.Hero({ side: "player" }))
+        play(0, Target.Hero({ side: "player", hero: 0 }))
       );
-      expect(next.sides.player.hero.hp).toBe(18);
+      expect(heroOf(next, "player").hp).toBe(18);
     });
 
     it("has no target when the enemy Hero is Defeated", () => {
       const state = emptyBattle({ enemy: { hp: 0 } });
       giveHand(state, "player", [["ranger.longShot", 0]]);
-      expect(legalTargets(state, 0)).toEqual([]);
+      expect(legalTargets(state, 0, 0)).toEqual([]);
     });
 
     it("can Crit with the Skill Crit of the caster", () => {
@@ -488,10 +495,10 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
       giveHand(state, "player", [["ranger.longShot", 0]]);
       const { state: next, events } = run(
         state,
-        play(0, Target.Hero({ side: "enemy" }))
+        play(0, Target.Hero({ side: "enemy", hero: 0 }))
       );
       // 12 damage, ×2 for the Crit.
-      expect(next.sides.enemy.hero.hp).toBe(6);
+      expect(heroOf(next, "enemy").hp).toBe(6);
       expect(eventsOfType(events, "DamageDealt")[0]?.crit).toBe(true);
     });
 
@@ -500,7 +507,7 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
       giveHand(state, "player", [["ranger.longShot", 0, "legendary"]]);
       const { state: next, events } = run(
         state,
-        play(0, Target.Hero({ side: "enemy" }))
+        play(0, Target.Hero({ side: "enemy", hero: 0 }))
       );
       expect(next.status).toBe("finished");
       expect(next.result).toEqual({
@@ -509,8 +516,8 @@ describe("Ranger Skill Cards (GDD 5.5)", () => {
       });
       expect(events.at(-1)?._tag).toBe("BattleEnded");
       expect(eventsOfType(events, "RecallRolled")).toEqual([]);
-      expect(next.sides.player.hand).toEqual([]);
-      expect(next.sides.player.graveyard).toEqual([]);
+      expect(heroOf(next, "player").hand).toEqual([]);
+      expect(heroOf(next, "player").graveyard).toEqual([]);
     });
   });
 
@@ -683,7 +690,7 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
         position: 1,
       });
       enemyAt(state, 6);
-      expect(legalTargets(state, 0)).toEqual([
+      expect(legalTargets(state, 0, 0)).toEqual([
         square(0, 2),
         square(0, 4),
         square(1, 1),
@@ -692,7 +699,9 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
         "IllegalTarget"
       );
       expect(
-        violation(step(state, play(0, Target.Hero({ side: "player" }))))
+        violation(
+          step(state, play(0, Target.Hero({ side: "player", hero: 0 })))
+        )
       ).toBe("IllegalTarget");
     });
 
@@ -700,9 +709,9 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
       const state = emptyBattle({ activeSide: "enemy" });
       giveHand(state, "enemy", [["priest.sanctuary", 0, "uncommon"]]);
       friendAt(state, 2);
-      expect(legalTargets(state, 0)).toEqual([]);
+      expect(legalTargets(state, 0, 0)).toEqual([]);
       enemyAt(state, 8);
-      expect(legalTargets(state, 0)).toEqual([square(0, 8)]);
+      expect(legalTargets(state, 0, 0)).toEqual([square(0, 8)]);
     });
   });
 
@@ -899,7 +908,7 @@ describe("Priest Skill Cards (GDD 5.5)", () => {
 });
 
 const countdowns = (state: ReturnType<typeof emptyBattle>, side: Side) =>
-  state.sides[side].hand.map((card) => card.countdown);
+  heroOf(state, side).hand.map((card) => card.countdown);
 
 /** The player plays the card in Hand index 0 against an enemy Hand with these Countdowns. */
 const sabotageInto = (
@@ -1016,10 +1025,10 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       const target = enemyAt(state, 6);
       const { state: next, events } = run(state, play(0, square(0, 6)));
       expect(unitById(next, target.id)?.hp).toBe(2);
-      expect(next.sides.enemy.hero.hp).toBe(0);
+      expect(heroOf(next, "enemy").hp).toBe(0);
       expect(eventsOfType(events, "DamageDealt").map((e) => e.target)).toEqual([
         { _tag: "Unit", unitId: target.id },
-        { _tag: "Hero", side: "enemy" },
+        { _tag: "Hero", side: "enemy", hero: 0 },
       ]);
       expect(next.result).toEqual({
         winner: "player",
@@ -1033,7 +1042,7 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       giveHand(state, "player", [["ranger.harryingShot", 0, "rare"]]);
       enemyAt(state, 6, { hp: 2 });
       const { state: next } = run(state, play(0, square(0, 6)));
-      expect(next.sides.enemy.hero.hp).toBe(26);
+      expect(heroOf(next, "enemy").hp).toBe(26);
     });
   });
 
@@ -1163,7 +1172,7 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       expect(unitById(next, bleeding.id)?.hp).toBe(2);
       expect(unitById(next, other.id)?.hp).toBe(1);
       expect(eventsOfType(events, "UnitHealed")).toHaveLength(2);
-      expect(next.sides.player.hero.hp).toBe(30);
+      expect(heroOf(next, "player").hp).toBe(30);
     });
   });
 
@@ -1218,7 +1227,7 @@ describe("the Common and Uncommon Skill Cards of #57 (GDD 5.5)", () => {
       const b = friendAt(state, 3, { ...big, bleeding: 1 });
       const other = friendAt(state, 2, { lane: 1, ...big });
       const enemy = enemyAt(state, 6, { hp: 1 });
-      expect(legalTargets(state, 0)).toEqual([
+      expect(legalTargets(state, 0, 0)).toEqual([
         Target.Lane({ lane: 0 }),
         Target.Lane({ lane: 1 }),
       ]);
@@ -1339,7 +1348,7 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
         position: 4,
       });
       enemyAt(state, 8);
-      expect(legalTargets(state, 0)).toEqual([
+      expect(legalTargets(state, 0, 0)).toEqual([
         square(0, 2),
         square(1, 2),
         square(0, 4),
@@ -1501,7 +1510,7 @@ describe("the Rare and Epic Ranger Skill Cards of #59 (GDD 5.5)", () => {
       });
       const other = enemyAt(state, 6, { lane: 1 });
       const friend = friendAt(state, 2);
-      expect(legalTargets(state, 0)).toEqual([
+      expect(legalTargets(state, 0, 0)).toEqual([
         Target.Lane({ lane: 0 }),
         Target.Lane({ lane: 1 }),
       ]);
@@ -1564,7 +1573,7 @@ describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
         ward: 3,
         steadfast: true,
       });
-      expect(legalTargets(state, 0)).toEqual([square(0, 2)]);
+      expect(legalTargets(state, 0, 0)).toEqual([square(0, 2)]);
       const { state: next, events } = run(state, play(0, square(0, 2)));
       // The Rare heal is 8, not 8 ÷ 2.
       expect(unitById(next, unit.id)).toMatchObject({
@@ -1698,7 +1707,7 @@ describe("the Rare and Epic Priest Skill Cards of #61 (GDD 5.5)", () => {
       const strong = friendAt(state, 3, { ward: 9 });
       const other = friendAt(state, 2, { lane: 1 });
       const enemy = enemyAt(state, 6);
-      expect(legalTargets(state, 0)).toEqual([
+      expect(legalTargets(state, 0, 0)).toEqual([
         Target.Lane({ lane: 0 }),
         Target.Lane({ lane: 1 }),
       ]);
@@ -1819,7 +1828,7 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
       });
       const other = friendAt(state, 2, { lane: 1 });
       const enemy = enemyAt(state, 8);
-      expect(legalTargets(state, 0)).toEqual([
+      expect(legalTargets(state, 0, 0)).toEqual([
         Target.Lane({ lane: 0 }),
         Target.Lane({ lane: 1 }),
       ]);
@@ -1899,7 +1908,7 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
       friendAt(state, 2);
       const enemy = enemyAt(state, 6);
       preventRout(state);
-      expect(legalTargets(state, 0)).toEqual([square(0, 6)]);
+      expect(legalTargets(state, 0, 0)).toEqual([square(0, 6)]);
       const epic = run(state, play(0, square(0, 6)));
       expect(unitById(epic.state, enemy.id)).toMatchObject({
         exposed: 3,
@@ -2150,7 +2159,7 @@ describe("Sabotage (GDD 5.4, ADR-0017)", () => {
       expect.objectContaining({
         unitId: unit?.id,
         side: "enemy",
-        instanceId: before.sides.enemy.hand[1]?.instanceId,
+        instanceId: heroOf(before, "enemy").hand[1]?.instanceId,
         countdown: 3,
       }),
     ]);
@@ -2254,7 +2263,7 @@ describe("Unique (GDD 5.4)", () => {
     giveHand(state, "player", [[VOSS, 0]]);
     expect(isBlockedByUnique(VOSS, [VOSS])).toBe(true);
     expect(isBlockedByUnique(VOSS, [])).toBe(false);
-    expect(legalTargets(state, 0)).toEqual([]);
+    expect(legalTargets(state, 0, 0)).toEqual([]);
     expect(violation(step(state, play(0, square(0, 0))))).toBe("IllegalTarget");
   });
 
@@ -2267,14 +2276,14 @@ describe("Unique (GDD 5.4)", () => {
       rank: "epic",
     });
     giveHand(state, "player", [[VOSS, 0, "legendary"]]);
-    expect(legalTargets(state, 0)).toEqual([]);
+    expect(legalTargets(state, 0, 0)).toEqual([]);
   });
 
   it("does not count an enemy Unit from the same card", () => {
     const state = emptyBattle();
     placeUnit(state, { cardId: VOSS, owner: "enemy", position: 8 });
     giveHand(state, "player", [[VOSS, 0]]);
-    expect(legalTargets(state, 0)).toHaveLength(3);
+    expect(legalTargets(state, 0, 0)).toHaveLength(3);
   });
 
   it("does not block a card without Unique", () => {
@@ -2285,7 +2294,7 @@ describe("Unique (GDD 5.4)", () => {
       position: 4,
     });
     giveHand(state, "player", [["human.militiaRecruit", 0]]);
-    expect(legalTargets(state, 0)).toHaveLength(3);
+    expect(legalTargets(state, 0, 0)).toHaveLength(3);
     expect(
       isBlockedByUnique("human.militiaRecruit", ["human.militiaRecruit"])
     ).toBe(false);
@@ -2298,9 +2307,9 @@ describe("Unique (GDD 5.4)", () => {
       [VOSS, 0],
     ]);
     const { state: next } = run(state, play(0, square(0, 0)));
-    expect(legalTargets(next, 0)).toEqual([]);
+    expect(legalTargets(next, 0, 0)).toEqual([]);
     next.units = [];
-    expect(legalTargets(next, 0)).toHaveLength(3);
+    expect(legalTargets(next, 0, 0)).toHaveLength(3);
   });
 
   it("counts a Start Unit of the Stage", () => {
@@ -2323,6 +2332,8 @@ describe("Unique (GDD 5.4)", () => {
     });
     state.activeSide = "enemy";
     giveHand(state, "enemy", [[VOSS, 0]]);
-    expect(legalTargets(state, state.sides.enemy.hand.length - 1)).toEqual([]);
+    expect(
+      legalTargets(state, 0, heroOf(state, "enemy").hand.length - 1)
+    ).toEqual([]);
   });
 });

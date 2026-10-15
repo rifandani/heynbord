@@ -13,7 +13,7 @@ A Stage has no painting of its own. Its landmark is a small part of the Region M
 
 All 5 Region Maps exist in `apps/web/public/battle/`: `hearthvale-region.webp` (1672 × 941), and `red-mesas-region.webp`, `glowcap-hollows-region.webp`, `thornwood-region.webp` and `hollow-marches-region.webp` (1536 × 864). The Campaign screen shows them (`apps/web/src/features/campaign/`). Their clearings are not at the positions of 1.1: they are measured on each painting (see 1.3). A Region with no Stages in the data shows only a soft copy of its painting, with no Trail. If a Region has no entry in `REGION_MAPS`, the Campaign screen shows a placeholder: a plain ground and a soft road with the Hearthvale positions of 1.3, and no landmarks ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)).
 
-The landmarks of Regions 4 and 5 are proposals (section 2). If the Stage design of one of these Regions changes a landmark, edit the painting again. The Region 3 Stages use the painted landmarks, so its painting did not change.
+The Stages of Regions 3, 4 and 5 use the painted landmarks (section 2), so their paintings did not change. If a later Stage change moves a landmark, edit the painting again.
 
 ## 1. Rules for the Region art
 
@@ -100,7 +100,7 @@ The Boss clearing is in the top band, in front of Brassbelly Hall. Clearings 1 a
 
 ## 2. Regions
 
-The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are draft names. Hearthvale, The Red Mesas and The Glowcap Hollows have their Stages. Regions 4 and 5 have only proposed landmarks until their Stages are designed.
+The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are draft names. All 5 Regions have their Stages, and each landmark has the name of its Stage.
 
 ### 2.1 Hearthvale
 
@@ -149,14 +149,14 @@ The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are dr
 
 ### 2.4 The Thornwood
 
-`Region 4` · Elves and Feral creatures · Debut Race: Feral · Boss: the Old Bramble · Proposed landmarks: the Stages are not designed yet
+`Region 4` · Elves and Feral creatures · Debut Race: Feral · Boss: the Old Bramble · Stages in [14 — Campaign Stages, 5.1](./14-campaign-stages.md#51-stages)
 
 | Item | Brief |
 | --- | --- |
 | Place | A deep, old forest with giant trees and thorn hedges. Elf villages are high in the trees. Feral creatures live in the caves and hollows under the roots: giant spiders, cave bears and old trolls. |
 | Trail | A forest road of roots and moss, with rope bridges and wooden steps. It goes deeper into the forest to the Boss. |
-| Landmarks | 1 a forest gate of two leaning trees · 2 an elf tree with lanterns · 3 a ring of large mushrooms · 4 a rope bridge over a ravine · 5 a dark cave mouth under giant roots, with a big web across it · 6 a ring of mossy standing stones · 7 an elf village of tree houses · 8 a waterfall and a pool · 9 a thorn hedge wall with a hole broken in it |
-| Boss landmark | The Old Bramble: a forest giant that sleeps on a hill of brambles. It looks like a huge old tree with a face in the bark. One eye is half open. |
+| Landmarks | 1 The Leaning Gate: a forest gate of two leaning trees · 2 The Lantern Tree: an elf tree with lanterns · 3 The Toadstool Ring: a ring of large mushrooms · 4 The Ravine Bridge: a rope bridge over a ravine · 5 The Web Cave: a dark cave mouth under giant roots, with a big web across it · 6 The Standing Stones: a ring of mossy standing stones · 7 The Treetop Village: an elf village of tree houses · 8 The Still Pool: a waterfall and a pool · 9 The Broken Hedge: a thorn hedge wall with a hole broken in it |
+| Boss landmark | The Bramble Hill: the Old Bramble, a forest giant that sleeps on a hill of brambles. It looks like a huge old tree with a face in the bark. One eye is half open. |
 | Palette | Deep emerald, moss green, teal shade, gold light that falls through the leaves, some autumn red. |
 | Humor note | A cave bear is stuck in a thorn bush. A squirrel steals arrows from an elf archer. |
 | Time and weather | A bright afternoon. Light falls through the leaves in long beams. |
@@ -164,14 +164,14 @@ The Regions, enemies, Debut Races and Bosses come from GDD 3.3. The names are dr
 
 ### 2.5 The Hollow Marches
 
-`Region 5` · Feral beasts and Undead · Debut Race: Undead · Boss: Queen Marrow · Proposed landmarks: the Stages are not designed yet
+`Region 5` · Feral beasts and Undead · Debut Race: Undead · Boss: Queen Marrow · Stages in [14 — Campaign Stages, 6.1](./14-campaign-stages.md#61-stages)
 
 | Item | Brief |
 | --- | --- |
 | Place | Wide marshes with mist, reeds and old dead trees. The Undead of Queen Marrow rule here. Feral beasts of the cold live in the frozen bogs and the ice caves of the hills: bog trolls and frost beasts. Strange, but not scary: the art stays bright (art direction 1). |
 | Trail | Old stone roads, then long wooden boardwalks over the water, then a stone causeway to the castle island. |
-| Landmarks | 1 a crooked sign post with a lantern (no letters) · 2 a sunken chapel · 3 a frozen bog pool, with a bog troll asleep in the ice · 4 a long boardwalk over a bog · 5 a small graveyard with leaning stones · 6 a broken windmill on a mound · 7 a ferry with a skeleton ferryman · 8 an ice cave in a hill, with a frost beast at its mouth and frost on the rocks · 9 an old stone bridge with green fire bowls |
-| Boss landmark | The castle of Queen Marrow on an island: pale bone-white stone, thin towers, violet banners, soft green light in the windows. |
+| Landmarks | 1 The Crooked Post: a crooked sign post with a lantern (no letters) · 2 The Sunken Chapel: a sunken chapel · 3 The Frozen Bog: a frozen bog pool, with a bog troll asleep in the ice · 4 The Long Boardwalk: a long boardwalk over a bog · 5 The Leaning Graves: a small graveyard with leaning stones · 6 The Broken Windmill: a broken windmill on a mound · 7 The Bone Ferry: a ferry with a skeleton ferryman · 8 The Ice Cave: an ice cave in a hill, with a frost beast at its mouth and frost on the rocks · 9 The Witchfire Bridge: an old stone bridge with green fire bowls |
+| Boss landmark | Marrow Castle: the castle of Queen Marrow on an island: pale bone-white stone, thin towers, violet banners, soft green light in the windows. |
 | Palette | Misty teal, violet, moss green, ice blue, bone white, soft green glow. The light is still warm from the upper left. |
 | Humor note | A skeleton sits and fishes on a boardwalk. A frog with a small crown sits on a lily pad. |
 | Time and weather | A bright late afternoon with low mist on the water. |

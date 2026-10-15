@@ -18,6 +18,7 @@ import {
 } from "@/features/battle/battle-session";
 import type { HandCardView } from "@/features/battle/battle-view";
 import { viewFromState } from "@/features/battle/battle-view";
+import { playerHand } from "@/features/battle/player-hero";
 import {
   afterEvent,
   atPlayPhase,
@@ -62,6 +63,7 @@ const { view } = tutorialSession();
 const unit = (owner: "player" | "enemy", lane: number): UnitSnapshot => ({
   id: owner === "player" ? 1 : 2,
   owner,
+  hero: 0,
   source: {
     _tag: "Card",
     card: { instanceId: 9, cardId: "human.militiaRecruit", rank: "common" },
@@ -223,7 +225,7 @@ describe("Step 3: the Resolution Phase", () => {
       {
         _tag: "UnitAttacked",
         unitId: 1,
-        target: { _tag: "Hero", side: "enemy" },
+        target: { _tag: "Hero", side: "enemy", hero: 0 },
         ranged: false,
       },
       units
@@ -251,7 +253,7 @@ describe("Step 3: the Resolution Phase", () => {
 /** A Player Play Phase with a Ready Creature Card in the Hand. */
 const playPhase = (): BattleState => {
   const { rules } = tutorialSession();
-  const [card] = rules.sides.player.hand;
+  const [card] = playerHand(rules);
   if (!card) {
     throw new Error("No card");
   }
@@ -261,14 +263,16 @@ const playPhase = (): BattleState => {
     sides: {
       ...rules.sides,
       player: {
-        ...rules.sides.player,
-        hand: [
-          {
-            ...card,
-            cardId: "human.militiaRecruit",
-            countdown: 0,
-          },
-        ],
+        heroes: rules.sides.player.heroes.map((hero) => ({
+          ...hero,
+          hand: [
+            {
+              ...card,
+              cardId: "human.militiaRecruit",
+              countdown: 0,
+            },
+          ],
+        })),
       },
     },
   };
@@ -305,7 +309,12 @@ describe("Step 4: the Lane choice", () => {
       ...state,
       sides: {
         ...state.sides,
-        player: { ...state.sides.player, hand: [] },
+        player: {
+          heroes: state.sides.player.heroes.map((hero) => ({
+            ...hero,
+            hand: [],
+          })),
+        },
       },
     });
     expect(noCard.shown).toEqual(["ready"]);
@@ -356,7 +365,7 @@ describe("Step text", () => {
 const toFirstResolution = (start: BattleSession): BattleSession => {
   let session = changeTutorial(start, closeText);
   for (let turn = 0; turn < 10 && !isHeld(session); turn += 1) {
-    const index = session.rules.sides.player.hand.findIndex(
+    const index = playerHand(session.rules).findIndex(
       (card) => card.countdown === 0 && getCard(card.cardId).kind === "creature"
     );
     if (index !== -1) {

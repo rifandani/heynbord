@@ -1,8 +1,7 @@
 # @workspace/web
 
-- fix this trail line in region 2
-- /grill-with-docs lets continue develop the campaign battle stages for region 4
-- /grill-with-docs lets develop the "Dungeons" feature
+1. /grill-with-docs lets develop the "Heynspire" feature
+1. then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
 
 Answers all ur questions automatically with ur best recommendations, except critical questions.
 
@@ -123,7 +122,14 @@ Priest:
 
 Sequence:
 
-1. Heynspire, then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
+3. #93 Battle UI. It can start when #90 is done. It does not need #89, #91 or #92, so it can run next to step 4.
+4. #91 Dungeon 1. It needs #88, #89 and #90. sim dungeon must have the multi-Boss AI and the Boss Rules before the 30–50% win-rate check means anything.
+5. #92 Profile and rewards. It needs the Dungeon definition from #91, for the fixed first-win card and the Dungeon card pool.
+6. #94 Dungeons screen. This is last. It needs #91, #92 and #93.
+
+The fastest path: #89 → #91 → #92 → #94. #90 and #93 can happen alongside it.
+
+After these 7 issues (no issues exist for these yet): Dungeon 2, watched Auto-play, and then Dungeon 3. Dungeon 3 also needs the Old Bramble (Region 4) and Queen Marrow (Region 5) to exist as Campaign Bosses.
 
 New features:
 
