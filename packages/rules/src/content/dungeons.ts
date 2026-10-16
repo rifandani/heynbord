@@ -46,7 +46,15 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
           ...copies(2, "goblin.fuseRunner", "common"),
           ...copies(1, "orc.scrapRaider", "common"),
         ],
-        startUnits: [],
+        // A Bonestake Palisade of his crew holds Lane 1.
+        startUnits: [
+          {
+            cardId: "orc.bonestakePalisade",
+            rank: "common",
+            lane: 0,
+            position: 10,
+          },
+        ],
         // Boss Rule: at half HP, Gritjaw calls his Pit Fighter from the mine.
         bossRules: [
           {
@@ -102,7 +110,7 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
         // Lanes, so the Player can hit him in each of them. He has more HP.
         id: "abbotKnell",
         front: [0, 1, 2],
-        heroHp: 22,
+        heroHp: 18,
         classId: "priest",
         gear: NO_GEAR,
         deck: [
@@ -113,7 +121,10 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
           ...copies(1, "priest.smite", "common"),
           ...copies(1, "priest.mend", "common"),
         ],
-        startUnits: [],
+        // A Bone Rampart from the barrow wall holds Lane 3.
+        startUnits: [
+          { cardId: "undead.boneRampart", rank: "epic", lane: 2, position: 10 },
+        ],
         // Boss Rule: at half HP, the bell rings again, and a Chattering
         // Cohort climbs out of the barrow in the middle of his Front. A Draw
         // or a Countdown rule does nothing here: his Deck and his Hand are

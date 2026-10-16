@@ -137,6 +137,30 @@ describe("migrateProfile", () => {
     expect(migrated.stageResults).toEqual(v7.stageResults);
   });
 
+  it("gives no Achievements and 0 Tallies to a version 8 Profile, and keeps its progress", () => {
+    const {
+      completedAchievements: _completed,
+      claimedAchievements: _claimed,
+      tallies: _tallies,
+      ...v8
+    } = {
+      ...newProfile(3),
+      schemaVersion: 8,
+      stageResults: { "1-10": 2 },
+      heynstones: 50,
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v8));
+    expect(migrated.completedAchievements).toEqual([]);
+    expect(migrated.claimedAchievements).toEqual([]);
+    expect(migrated.tallies).toEqual({
+      packsOpened: 0,
+      combines: 0,
+      crafts: 0,
+    });
+    expect(migrated.stageResults).toEqual(v8.stageResults);
+    expect(migrated.heynstones).toBe(50);
+  });
+
   it("refuses a version 6 Profile with no Sweep Tickets", () => {
     const {
       campaignSweepTickets: _campaign,
@@ -220,6 +244,8 @@ describe("migrateProfile", () => {
       },
       { gear: { weapon: 26, armor: 0, trinket: 0, banner: 0 } },
       { claimedStarChests: { 1: [15] } },
+      { tallies: { packsOpened: -1, combines: 0, crafts: 0 } },
+      { completedAchievements: [1] },
       { unopenedPacks: [{ pack: "royal", version: "class" }] },
     ]) {
       expect(

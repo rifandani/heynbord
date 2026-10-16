@@ -700,6 +700,12 @@ export const StageDefinition = Schema.Struct({
    */
   recommendedLevel: between(1, 30),
   /**
+   * The Star Turn (GDD 4.11, ADR-0047): a win with 50% or more of the Hero HP
+   * before this Turn number gives 3 Stars. `bun run sim stage --check` checks
+   * it against the 3-Star target of GDD 13. The Stage Panel shows it.
+   */
+  starTurn: between(2, 60),
+  /**
    * The card that the first win gives: a card of the enemy Deck, in its Base
    * Rank (docs/game/14-campaign-stages.md). A content test checks it.
    */

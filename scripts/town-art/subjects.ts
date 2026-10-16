@@ -11,7 +11,7 @@ export const SUBJECT = new Map<string, string>(
     campaign:
       "a small stone gatehouse with two round towers, blue conical roofs and tiny gold flags, the wooden doors open, and a sandy road that comes out of the arch toward the viewer",
     heynspire:
-      "a very tall, thin white stone tower with blue roofs and a spiral stair around it, small glowing windows, and three small floating stones around its top, with a soft white cloud around the peak",
+      "a white stone castle on a small grey rock crag with a flat base, with a tall slim central round keep, a ring of smaller round turrets around it, royal blue conical roofs with gold tips, small gold flags on the tallest roofs and small glowing windows",
     dungeons:
       "a dark cave arch in grey rocks with two broken old pillars, a lit torch on one side, a cute (not scary) wooden warning barrier with a small skull, and two small glowing yellow eyes in the dark",
     deck: "an open thick leather book with gold corners, with a fan of three fantasy playing cards that comes out of its pages; the card backs are royal blue with a gold pattern and no symbols",

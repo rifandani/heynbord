@@ -1,4 +1,5 @@
 import {
+  ACHIEVEMENTS,
   CARDS,
   DUNGEONS,
   RANKS,
@@ -113,6 +114,10 @@ const dataKeys = (): string[] => {
     for (const boss of dungeon.bosses) {
       keys.add(`dungeons.${dungeon.id}.bosses.${boss.id}`);
     }
+  }
+  for (const achievement of ACHIEVEMENTS) {
+    keys.add(`achievements.${achievement.id}.name`);
+    keys.add(`achievements.${achievement.id}.goal`);
   }
   for (const deck of STARTER_DECKS) {
     keys.add(`decks.${deck.id}.name`);

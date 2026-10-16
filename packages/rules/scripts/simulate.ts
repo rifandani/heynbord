@@ -13,6 +13,10 @@
  *   plays N levels above the Recommended level, and `--gear N` sets all 4 Gear
  *   slots to N. They measure the win-chance bonuses of `economy` (Economy
  *   7.1), so with them there are no Expected Gear rows.
+ *   The first row of each Gear row also shows the 3-Star share of the wins
+ *   of all starter Decks with the Star Turn of the Stage, its GDD 13 target,
+ *   and the suggested Star Turn (ADR-0047). `--check` fails a share that is
+ *   not on target, but not with `--level` or `--gear`.
  * - `dungeon`: each Dungeon with each starter Deck, at the unlock level of the
  *   Dungeon (GDD 13, step 6). The Deck is typical at that level: the starter
  *   Deck and the first-win cards of all Stages below that level. A second row
@@ -37,10 +41,12 @@
  *   rates and the value for each Coin. 100 Players open Packs until they
  *   Discover all cards of each Base Rank. `--check` does not check the Packs.
  * - `economy`: simulated Players of each Play Style from a new Profile to
- *   Player level 30, with a win chance for each Battle (Economy 7.1).
- *   `battles` is the number of seeds for each Play Style. It reports the
- *   Economy 4 checkpoints and the Heynstone ledger. `--check` does not check
- *   the economy yet.
+ *   Player level 30, with a win chance and a 3-Star chance for each Battle.
+ *   The Players replay each Stage for 3 Stars and use their Sweep Tickets
+ *   (Economy 7.1, ADR-0046). `battles` is the number of seeds for each Play
+ *   Style. It reports the Economy 4 checkpoints, the Stars, replays and
+ *   Sweeps, and the Heynstone ledger. The Player level targets are on the
+ *   First-try run only. `--check` does not check the economy yet.
  * - `skill-swap`: the swap rule for each Skill Card (Archetypes 3.3). In a
  *   Deck of its Class, 1 more copy of the Skill Card replaces 1 Creature Card
  *   with the same Countdown. The Deck plays Vanguard and Raiders before and
@@ -64,7 +70,7 @@ import { FORGE_STONE_TIERS } from "../src/content/forge-stones";
 import { PACK_SIZE, PACKS } from "../src/content/packs";
 import { RANKS } from "../src/content/ranks";
 import { ClassId } from "../src/content/schema";
-import type { GearLevels } from "../src/content/schema";
+import type { GearLevels, StageDefinition } from "../src/content/schema";
 import { STAGES } from "../src/content/stages";
 import { packPool } from "../src/packs/open-pack";
 import type { PackPool } from "../src/packs/open-pack";
@@ -75,15 +81,18 @@ import {
   expectedGearAtLevel,
   heynstoneLedger,
   MAX_BATTLES,
+  MAX_REPLAYS,
   METRICS,
-  PACING_TARGETS,
+  pacingTarget,
   PLAY_STYLES,
+  REPLAY_METRICS,
   simulateEconomy,
 } from "../src/simulation/economy";
 import type {
   CheckpointId,
   CheckpointSnapshot,
   Metric,
+  PlayStyle,
   RangeTarget,
   Spread,
 } from "../src/simulation/economy";
@@ -100,8 +109,16 @@ import {
   simulateMatchup,
   simulateStage,
   stageTarget,
+  starTarget,
+  suggestStarTurn,
+  threeStarShare,
 } from "../src/simulation/simulate";
-import type { MatchupReport, WinRateTarget } from "../src/simulation/simulate";
+import type {
+  MatchupReport,
+  StageReport,
+  StarTarget,
+  WinRateTarget,
+} from "../src/simulation/simulate";
 import { SWAP_LIMIT, simulateSkillSwap } from "../src/simulation/skill-swap";
 
 const USAGE =
@@ -243,6 +260,56 @@ const gearText = (levels: GearLevels) =>
 
 const hasGear = (levels: GearLevels) => gearText(levels) !== gearText(NO_GEAR);
 
+/** The wins of the reports of one Gear row, as one report. */
+const pooledWins = (reports: readonly StageReport[]) => ({
+  wins: reports.reduce((sum, report) => sum + report.wins, 0),
+  highHpWinTurns: reports.flatMap((report) => report.highHpWinTurns),
+});
+
+/**
+ * The 3-Star cells of a Gear row (ADR-0047): the 3-Star share with the Star
+ * Turn of the Stage, its target, and the suggested Star Turn. When `gated`,
+ * a share that is not on target fails the check, as a win rate does.
+ */
+const starCells = (
+  stage: StageDefinition,
+  rowName: string,
+  wins: Pick<StageReport, "wins" | "highHpWinTurns">,
+  target: StarTarget,
+  suggested: number | null,
+  gated: boolean
+) => {
+  const share = threeStarShare(wins, stage.starTurn);
+  const range =
+    target.max >= 1
+      ? `≥ ${percent(target.min)}`
+      : `${percent(target.min)}–${percent(target.max)}`;
+  const onTarget = isOnTarget(share, target);
+  if (!onTarget && gated) {
+    misses.push(
+      `Stage ${stage.id}, ${rowName}: 3 Stars ${percent(share, 1)} of the wins at Star Turn ${stage.starTurn}, target ${range}`
+    );
+  }
+  return {
+    starTurn: stage.starTurn,
+    threeStars: percent(share),
+    starTarget: `${range}${onTarget ? "" : gated ? " MISS" : " review"}`,
+    // A target with only a lower limit has no suggestion.
+    suggested:
+      suggested === null || suggested === stage.starTurn
+        ? `${suggested ?? "—"}`
+        : `${suggested} (${percent(threeStarShare(wins, suggested))})`,
+  };
+};
+
+/** The 3-Star cells of the other Decks of a Gear row: empty. */
+const NO_STAR_CELLS = {
+  starTurn: "",
+  threeStars: "",
+  starTarget: "",
+  suggested: "",
+} as const;
+
 if (modes.includes("stage")) {
   const levelsAbove = level ?? 0;
   // `--level` and `--gear` measure a bonus, so they play only one Gear row.
@@ -258,28 +325,50 @@ if (modes.includes("stage")) {
         { gear: gearOf(gear), expected: false },
         ...(hasGear(stageGear) ? [{ gear: stageGear, expected: true }] : []),
       ];
-      return rows.flatMap((row) =>
-        STARTER_DECKS.map((deck) => {
-          const report = simulateStage(stage, deck, battles, {
-            levelsAbove,
-            gear: row.gear,
-          });
-          return {
-            stage: report.stageId,
-            level: stage.recommendedLevel + levelsAbove,
-            gear: `${gearText(row.gear)}${row.expected ? " expected" : ""}`,
-            deck: report.deckId,
-            winRate: percent(report.winRate),
-            avgTurn: report.averageTurn.toFixed(1),
-            avgStars: report.averageStars.toFixed(2),
-            target: judge(
-              `Stage ${report.stageId} with ${report.deckId}, Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
-              report.winRate,
-              stageTarget(stage)
-            ),
-          };
-        })
+      const played = rows.map((row) => {
+        const reports = STARTER_DECKS.map((deck) =>
+          simulateStage(stage, deck, battles, { levelsAbove, gear: row.gear })
+        );
+        return {
+          ...row,
+          name: `Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
+          reports,
+          // The 3-Star share of a row counts the wins of all starter Decks.
+          wins: pooledWins(reports),
+        };
+      });
+      const target = starTarget(stage);
+      const suggested = suggestStarTurn(
+        played.map((row) => row.wins),
+        target
       );
+      return played.flatMap((row) => {
+        const stars = starCells(
+          stage,
+          row.name,
+          row.wins,
+          target,
+          suggested,
+          // `--level` and `--gear` are not the setup of the 3-Star target.
+          expected !== null
+        );
+        return row.reports.map((report, deckIndex) => ({
+          stage: report.stageId,
+          level: stage.recommendedLevel + levelsAbove,
+          gear: `${gearText(row.gear)}${row.expected ? " expected" : ""}`,
+          deck: report.deckId,
+          winRate: percent(report.winRate),
+          avgTurn: report.averageTurn.toFixed(1),
+          avgStars: report.averageStars.toFixed(2),
+          target: judge(
+            `Stage ${report.stageId} with ${report.deckId}, ${row.name}`,
+            report.winRate,
+            stageTarget(stage)
+          ),
+          // The 3-Star cells are for the row, so they show on its first Deck.
+          ...(deckIndex === 0 ? stars : NO_STAR_CELLS),
+        }));
+      });
     })
   );
 }
@@ -514,9 +603,16 @@ const METRIC_FORMAT: Readonly<Record<Metric, (value: number) => string>> = {
   coin: (value) => value.toFixed(0),
 };
 
-/** The Economy 4 target of a metric at a checkpoint, or "" when it has none. */
-const metricTarget = (id: CheckpointId, metric: Metric): string => {
-  const target = PACING_TARGETS[id];
+/**
+ * The Economy 4 target of a metric at a checkpoint for a Play Style, or ""
+ * when it has none.
+ */
+const metricTarget = (
+  id: CheckpointId,
+  playStyle: PlayStyle,
+  metric: Metric
+): string => {
+  const target = pacingTarget(id, playStyle);
   const format = METRIC_FORMAT[metric];
   switch (metric) {
     case "level": {
@@ -544,13 +640,36 @@ const spreadWith = (format: (value: number) => string, spread: Spread) =>
 const spreadText = (metric: Metric, spread: Spread) =>
   spreadWith(METRIC_FORMAT[metric], spread);
 
-/** A cell with the value and its target: "6 (6–7) | 6". */
-const withTarget = (id: CheckpointId, metric: Metric, value: string) => {
-  const target = metricTarget(id, metric);
+/** A cell with the value and its target: "6 (6–7) → 6". */
+const withTarget = (
+  id: CheckpointId,
+  playStyle: PlayStyle,
+  metric: Metric,
+  value: string
+) => {
+  const target = metricTarget(id, playStyle, metric);
   return target === "" ? value : `${value} → ${target}`;
 };
 
-const firstTryRow = (id: CheckpointId, snap: CheckpointSnapshot | null) =>
+/**
+ * The Player level targets are for the First-try run (ADR-0046). A replaying
+ * Player has a higher level, so the medians show no level target.
+ */
+const medianCell = (
+  id: CheckpointId,
+  playStyle: PlayStyle,
+  metric: Metric,
+  spread: Spread
+) => {
+  const text = spreadText(metric, spread);
+  return metric === "level" ? text : withTarget(id, playStyle, metric, text);
+};
+
+const firstTryRow = (
+  id: CheckpointId,
+  playStyle: PlayStyle,
+  snap: CheckpointSnapshot | null
+) =>
   snap === null
     ? { checkpoint: id, reached: "no" }
     : {
@@ -558,7 +677,12 @@ const firstTryRow = (id: CheckpointId, snap: CheckpointSnapshot | null) =>
         ...Object.fromEntries(
           METRICS.map((metric) => [
             metric,
-            withTarget(id, metric, METRIC_FORMAT[metric](snap[metric])),
+            withTarget(
+              id,
+              playStyle,
+              metric,
+              METRIC_FORMAT[metric](snap[metric])
+            ),
           ])
         ),
         combines: snap.combines,
@@ -577,7 +701,7 @@ if (modes.includes("economy")) {
     console.table(
       CHECKPOINTS.map((id) => {
         const summary = report.checkpoints[id];
-        const firstCombine = PACING_TARGETS[id].firstCombine === true;
+        const firstCombine = pacingTarget(id, playStyle).firstCombine === true;
         return {
           checkpoint: id,
           reached: `${summary.reached}/${report.seeds}`,
@@ -586,11 +710,7 @@ if (modes.includes("economy")) {
               metric,
               summary.metrics === null
                 ? "—"
-                : withTarget(
-                    id,
-                    metric,
-                    spreadText(metric, summary.metrics[metric])
-                  ),
+                : medianCell(id, playStyle, metric, summary.metrics[metric]),
             ])
           ),
           combined: `${percent(summary.combinedShare)}${firstCombine ? " → 100%" : ""}`,
@@ -617,11 +737,37 @@ if (modes.includes("economy")) {
       })
     );
     console.log(
+      "Stars, replays and Sweeps. Cells: median (10th–90th percentile). capped: the Stages at the replay cap with fewer than 3 Stars. Tickets: used / not used"
+    );
+    console.table(
+      CHECKPOINTS.map((id) => {
+        const { replays } = report.checkpoints[id];
+        return {
+          checkpoint: id,
+          ...Object.fromEntries(
+            REPLAY_METRICS.map((metric) => [
+              metric,
+              replays === null
+                ? "—"
+                : spreadWith((value) => value.toFixed(0), replays[metric]),
+            ])
+          ),
+        };
+      })
+    );
+    console.log(
       `Stuck Players (below level 30 after ${MAX_BATTLES} Battles): ${report.stuck}/${report.seeds}`
     );
-    console.log(`First-try run of ${playStyle} (win chance 100%):`);
+    console.log(
+      `Players at the replay cap (${MAX_REPLAYS} replays of a Stage with fewer than 3 Stars): ${report.capped}/${report.seeds}`
+    );
+    console.log(
+      `First-try run of ${playStyle} (win chance 100%, 2 Stars for each win, no replays and no Sweeps). The level targets are on this run:`
+    );
     console.table(
-      CHECKPOINTS.map((id) => firstTryRow(id, report.firstTry.checkpoints[id]))
+      CHECKPOINTS.map((id) =>
+        firstTryRow(id, playStyle, report.firstTry.checkpoints[id])
+      )
     );
   }
   console.log(
@@ -642,7 +788,10 @@ if (modes.includes("economy")) {
     `Total: ${ledger.total} of the Bazaar catalog cost ${ledger.catalog} (estimate): ${percent(ledger.catalogShare)}`
   );
   console.log(
-    "\nNot in the sim: Achievement Coin and Essence (the results are a floor), the repeat-win card, the repeat-win and Sweep Forge Stones, Dungeon 3, the first-win cards of Dungeons, and the 30-Star chests (a win gives 2 Stars and the Player does not repeat Stages)."
+    "\nAchievements: after each Battle, the Player claims each Completed Profile goal and Tally goal at once and gets its Coin and Essence. The Achievement Heynstones are in the ledger, not in the sim."
+  );
+  console.log(
+    "Not in the sim: Feats (the sim plays no Battle, and no Feat gives Coin or Essence), Dungeon 3 (it opens at level 30, where the sim stops) and the first-win cards of Dungeons."
   );
 }
 
@@ -705,7 +854,7 @@ if (modes.includes("skill-swap")) {
 
 if (check && misses.length > 0) {
   console.error(
-    `${misses.length} win rates are not on their GDD 13 target:\n${misses.map((miss) => `- ${miss}`).join("\n")}`
+    `${misses.length} win rates or 3-Star shares are not on their GDD 13 target:\n${misses.map((miss) => `- ${miss}`).join("\n")}`
   );
   process.exit(1);
 }

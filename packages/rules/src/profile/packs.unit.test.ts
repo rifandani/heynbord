@@ -158,6 +158,7 @@ describe("buyPacks", () => {
     );
     expect(bought?.opened).toHaveLength(11);
     expect(bought?.profile.coin).toBe(4000);
+    expect(bought?.profile.tallies.packsOpened).toBe(11);
   });
 
   it("gives only cards of the Race in a Race Pack", () => {
@@ -208,6 +209,7 @@ describe("openUnopenedPack", () => {
     expect(opened?.profile.coin).toBe(0);
     expect(opened?.profile.unopenedPacks).toEqual([rewards[0]]);
     expect(opened?.opened).toHaveLength(1);
+    expect(opened?.profile.tallies.packsOpened).toBe(1);
     expect(
       opened?.opened[0]?.cards.every((card) => card.cardId.startsWith("elf."))
     ).toBe(true);

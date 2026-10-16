@@ -4,6 +4,7 @@ import { isUnlocked } from "@workspace/rules";
 import type { ContextType } from "react";
 import { useContext, useEffect } from "react";
 
+import { anyAchievementCompletedAtom } from "@/features/achievements/achievements-screen.atoms";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { heroOf } from "@/features/battle/battle-view";
 import { collectionAtom, deckSlotsAtom } from "@/features/deck/deck.atoms";
@@ -144,13 +145,18 @@ const useCloseWhenInactive = (hint: HintId, active: boolean) => {
  * Stage, which opens Heynspire. These Hints go before the Deck builder
  * Hint. The
  * Deck builder Hint shows near the Deck shortcut of the Town Bar when the
- * Player owns a card that is in no Deck.
+ * Player owns a card that is in no Deck. The Achievements Hint shows near
+ * the Achievements shortcut of the Town Bar the first time that the Town
+ * shows after the first Completed Achievement (Achievements 4), and it
+ * closes when the Town closes. It shows in the Town only, so it never takes
+ * the place of the Hint of another screen.
  */
 export const useTownHints = (active: boolean, inTown: boolean) => {
   const collection = useAtomValue(collectionAtom);
   const slots = useAtomValue(deckSlotsAtom);
   const level = useAtomValue(playerLevelAtom);
   const { heynspireOpen } = useAtomValue(townProgressAtom);
+  const anyCompleted = useAtomValue(anyAchievementCompletedAtom);
   const packs = active && inTown && isUnlocked(level, "packs");
   useAnchoredHint("packs", packs);
   useCloseWhenInactive("packs", packs);
@@ -166,6 +172,9 @@ export const useTownHints = (active: boolean, inTown: boolean) => {
   const heynspire = active && inTown && heynspireOpen;
   useAnchoredHint("heynspire", heynspire);
   useCloseWhenInactive("heynspire", heynspire);
+  const achievements = active && inTown && anyCompleted;
+  useAnchoredHint("achievements", achievements);
+  useCloseWhenInactive("achievements", achievements);
   useAnchoredHint(
     "deckBuilder",
     active &&

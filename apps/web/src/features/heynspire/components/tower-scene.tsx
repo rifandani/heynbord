@@ -6,7 +6,7 @@ import { PAINTING_IMAGE } from "@/features/town/town";
  * The part of the Town painting (1986 × 941 px) that the fallback shows: a
  * 600 × 338 px box (16:9) around x 893 and y 169, so that the castle of
  * Heynspire (11 — Town Concepts 2.2, its tower at x 667) stands in the left
- * margin, beside the Floor rail and under the title plate. The rail is the
+ * margin, beside the Floor rail. The rail is the
  * tower in front of it, so the painted spire never shows above the summit
  * cap of the rail.
  */

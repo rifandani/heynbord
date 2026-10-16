@@ -148,6 +148,62 @@ export const ResultHeynstones = ({
   );
 };
 
+/**
+ * The Achievements that a result completed (Achievements 4), under the
+ * rewards: its Feats, and the Profile goals and Tally goals that its rewards
+ * met. Each shows on the same Night Plate as the Coin, with the banner of the
+ * Hall of banners. No Achievement shows nothing.
+ */
+export const ResultAchievements = ({
+  ids,
+}: {
+  readonly ids: readonly string[];
+}) => {
+  const { tr } = useGameText();
+  if (ids.length === 0) {
+    return null;
+  }
+  return (
+    <ul
+      className="mt-2 flex flex-col gap-1.5 [@media(max-height:500px)]:mt-1.5 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:flex-wrap"
+      aria-label={tr("achievements.result.label")}
+      data-testid="result-achievements"
+    >
+      {ids.map((id) => {
+        const name = tr(`achievements.${id}.name`);
+        return (
+          <li
+            key={id}
+            className={cn(
+              REWARD_PLATE,
+              "gap-2.5 motion-safe:animate-[result-level-up_420ms_cubic-bezier(0.2,0.8,0.2,1)_1250ms_both] [@media(min-height:501px)]:w-full"
+            )}
+            data-testid="result-achievement"
+            data-achievement={id}
+          >
+            <GlyphIcon
+              glyph="banner"
+              className="size-5 shrink-0 text-[#ffd75a]"
+            />
+            <span className="sr-only">
+              {tr("achievements.notice.one", { name })}
+            </span>
+            <span
+              aria-hidden
+              className="flex min-w-0 flex-col items-start gap-0.5 text-left"
+            >
+              <span className="text-[10px] tracking-wide text-[#e9c46a] uppercase">
+                {tr("achievements.result.completed")}
+              </span>
+              <span className="truncate">{name}</span>
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+
 /** One Forge Stone tier of a result, on its Night Plate. */
 const ForgeStonePlate = ({ stones }: { readonly stones: ForgeStoneReward }) => {
   const { tr } = useGameText();

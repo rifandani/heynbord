@@ -80,7 +80,6 @@ export default {
     skip: "Skip",
     speed: "Speed",
     speedValue: "×{value}",
-    sound: "Sound",
     quit: "Leave Battle",
     deck: "Deck",
     graveyard: "Graveyard",
@@ -224,7 +223,7 @@ export default {
     next: "Next Log Entry",
     showBoard: "Show Board",
     showLog: "Show the Log",
-    banner: "Turn {number} · {side} · Battle Log",
+    banner: "Turn {number} · {side}",
     turn: "Turn {number} · {side}",
     yourHp: "You {hp} HP",
     heroHp: "{name} {hp} HP",
@@ -317,6 +316,7 @@ export default {
     levelPlate: "Level {level}",
     opensWithStage: "Win {stage} ({id}) to open",
     lockedWithStage: "{name}, win {stage} ({id}) to open",
+    shortcutBadge: "{name}, {count} to claim",
     buildings: {
       townGate: "Campaign",
       cardShop: "Packs",
@@ -324,6 +324,7 @@ export default {
       barracks: "Hero",
       cave: "Dungeons",
       heynspire: "Heynspire",
+      hall: "Achievements",
     },
     shortcuts: {
       town: "Town",
@@ -411,6 +412,12 @@ export default {
       reward: "Reward",
       firstWin: "First win: this card, Coin and XP.",
       repeatWin: "Repeat win: Coin, XP and a chance of a card from this Stage.",
+      stars: "Stars",
+      starRule: {
+        1: "Win the Battle.",
+        2: "Keep half of your Hero HP or more.",
+        3: "Also win before Turn {turn}.",
+      },
       deck: "Deck",
       fight: "Fight",
     },
@@ -480,6 +487,181 @@ export default {
       "Your saved progress did not load, so a new game started. The old save stays until you play.",
     saveFailed: "Your progress was not saved.",
   },
+  // Draft names (Achievements 2). Each ID is a Translation Key: `achievements.<id>.name` and `.goal`.
+  achievements: {
+    notice: {
+      one: "Achievement completed: {name}",
+      many: "{count} Achievements completed",
+    },
+    result: {
+      label: "Achievements that this result completed",
+      completed: "Achievement completed",
+    },
+    screen: {
+      label: "Achievements",
+      categories: {
+        label: "Achievement categories",
+        campaign: "Campaign",
+        dungeonsAndHeynspire: "Dungeons and Heynspire",
+        progress: "Progress",
+        feats: "Feats",
+      },
+      count: "{done} / {total}",
+      countLabel: "{done} of {total} done",
+      toClaim: "{count} to claim",
+      progress: "Progress",
+      notDone: "Not done",
+      progressLabel: "{current} of {target}",
+      reward: "Reward: {reward}",
+      claim: "Claim",
+      claimLabel: "Claim {name}: {reward}",
+      claimed: "Claimed",
+      claimAll: "Claim all",
+      claimAllLabel: "Claim all: {count} rewards",
+      noneToClaim: "No reward to claim",
+      rewards: {
+        heynstones: "{amount} Heynstones",
+        essence: "{amount} Essence",
+        coin: "{coin}",
+        cosmetic: "Earn-only Cosmetic",
+        cosmeticLater: "Comes in a later update",
+      },
+      said: {
+        one: "Claimed {name}: {reward}.",
+        many: "Claimed {count} rewards.",
+      },
+    },
+    campaign: {
+      hearthvale: { name: "Hearthvale Freed", goal: "Win Stage 1-10" },
+      redMesas: { name: "Over the Mesas", goal: "Win Stage 2-10" },
+      glowcapHollows: { name: "Light in the Hollows", goal: "Win Stage 3-10" },
+      thornwood: { name: "Through the Thorns", goal: "Win Stage 4-10" },
+      hollowMarches: { name: "Marrow Castle Falls", goal: "Win Stage 5-10" },
+      regionStars: { name: "Starry Road", goal: "Get 30 Stars in one Region" },
+      allStars: {
+        name: "Every Star in Heynbord",
+        goal: "Get 150 Stars: 3 Stars in all 50 Stages",
+      },
+      allChests: { name: "Chest Hunter", goal: "Claim all 15 Star chests" },
+    },
+    dungeon: {
+      rootdeepMine: {
+        name: "Into the Mine",
+        goal: "Win Dungeon 1, The Rootdeep Mine",
+      },
+      rimebarrow: {
+        name: "Cold Comfort",
+        goal: "Win Dungeon 2, The Rimebarrow",
+      },
+      brokenVault: {
+        name: "Vault Breaker",
+        goal: "Win Dungeon 3, The Broken Vault",
+      },
+    },
+    heynspire: {
+      floor25: { name: "Halfway Up", goal: "Win Floor 25 of Heynspire" },
+      floor50: { name: "Top of the Spire", goal: "Win Floor 50 of Heynspire" },
+    },
+    level: {
+      max: { name: "Veteran", goal: "Get Player level 30" },
+    },
+    collection: {
+      half: { name: "Half the Book", goal: "Discover 65 cards" },
+      all: { name: "The Full Book", goal: "Discover all 130 cards" },
+    },
+    packs: {
+      fifty: { name: "Regular Customer", goal: "Open 50 Packs" },
+    },
+    workshop: {
+      legendary: {
+        name: "Legend Made",
+        goal: "Own a Legendary copy of a card, from a Combine or a Royal Pack",
+      },
+      combines: { name: "Busy Bench", goal: "Do 25 Combines" },
+      craft: { name: "From Dust", goal: "Craft a card" },
+    },
+    gear: {
+      ten: { name: "Sharpened", goal: "Upgrade one Gear item to level 10" },
+      max: {
+        name: "Fully Forged",
+        goal: "Upgrade all 4 Gear items to level 25",
+      },
+    },
+    feat: {
+      onlyHuman: {
+        name: "Hearth and Home",
+        goal: "Win in a Boss Stage or a Dungeon with a Deck whose Creature Cards are all Human",
+      },
+      onlyElf: {
+        name: "Old Wood",
+        goal: "Win in a Boss Stage or a Dungeon with a Deck whose Creature Cards are all Elf",
+      },
+      onlyUndead: {
+        name: "Bone Army",
+        goal: "Win in a Boss Stage or a Dungeon with a Deck whose Creature Cards are all Undead",
+      },
+      onlyOrc: {
+        name: "Warband",
+        goal: "Win in a Boss Stage or a Dungeon with a Deck whose Creature Cards are all Orc",
+      },
+      onlyGoblin: {
+        name: "Mischief",
+        goal: "Win in a Boss Stage or a Dungeon with a Deck whose Creature Cards are all Goblin",
+      },
+      onlyFeral: {
+        name: "Pack Hunt",
+        goal: "Win in a Boss Stage or a Dungeon with a Deck whose Creature Cards are all Feral",
+      },
+      creaturesOnly: {
+        name: "No Tricks",
+        goal: "Win in a Boss Stage or a Dungeon with no Skill Card in the Deck",
+      },
+      commonOnly: {
+        name: "Humble Ranks",
+        goal: "Win a Boss Stage of Region 3 or later with only Common copies in the Deck",
+      },
+      untouched: {
+        name: "Not a Scratch",
+        goal: "Win a Boss Stage with your Hero at full HP",
+      },
+      swiftBoss: {
+        name: "Short Siege",
+        goal: "Win a Boss Stage before Turn 10",
+      },
+      lastStand: {
+        name: "By a Thread",
+        goal: "Win with your Hero at 3 HP or less",
+      },
+      rout: {
+        name: "Nobody Left",
+        goal: "Win because the enemy Side is Routed",
+      },
+      fullZone: {
+        name: "Packed Lines",
+        goal: "Win a Battle in which 9 of your Units are on the Board at the same time",
+      },
+      allDamageTypes: {
+        name: "Every Element",
+        goal: "Win a Battle in which your Units and Skill Cards deal damage of all 5 Damage Types",
+      },
+      fourCards: {
+        name: "Perfect Timing",
+        goal: "Win a Battle in which you play 4 cards in one Turn",
+      },
+      keywords: {
+        name: "Many Tricks",
+        goal: "Win a Battle in which 10 different Keywords of your Units activate",
+      },
+      noLosses: {
+        name: "Shield Wall",
+        goal: "Win a Dungeon and none of your Units dies",
+      },
+      untouchedVault: {
+        name: "Flawless Vault",
+        goal: "Win Dungeon 3 with your Hero at full HP",
+      },
+    },
+  },
   tutorial: {
     label: "Tutorial",
     gotIt: "Got it",
@@ -530,6 +712,8 @@ export default {
       "The Dungeons are open. In a Dungeon, you fight all its Bosses in one Battle on 4 Lanes.",
     heynspire:
       "Heynspire is open. Climb its 50 Floors one at a time. Each Floor gives its reward one time.",
+    achievements:
+      "You completed an Achievement. Open Achievements to claim its reward.",
   },
   handbook: {
     title: "Handbook",
@@ -588,7 +772,7 @@ export default {
     starsRow: {
       1: "Win the Battle.",
       2: "Also keep half of your Hero HP or more at the end.",
-      3: "Also finish before Turn {fastTurn}.",
+      3: "Also finish before the Star Turn of the Stage. Its Stage Panel shows it.",
     },
     coinDenomTable: "One balance, three coins",
     coinDenomColumn: "Coin",
@@ -744,6 +928,7 @@ export default {
       gear: "Gear",
       dungeon: "Dungeon",
       heynspire: "Heynspire",
+      achievement: "Achievement",
     },
     entries: {
       board:
@@ -841,7 +1026,7 @@ export default {
       rankGems:
         "Rank Gems are the small diamonds at the top of a card. Count them: 1 gem is Common, 5 gems is Legendary.\n\nEach Rank has a gem color, but the count is enough to read the Rank in a Battle.",
       stars:
-        "When you win a Stage, you earn 1 to 3 Stars. A loss gives 0 Stars.\n\nEach Star adds a condition on the one before it. Half of your Hero HP means your Hero has at least 50% of its maximum HP when the Battle ends.\n\nThe Campaign keeps your best Stars for each Stage. The total Stars in a Region open its chests at 10, 20 and 30 Stars.",
+        "When you win a Stage, you earn 1 to 3 Stars. A loss gives 0 Stars.\n\nEach Star adds a condition on the one before it. Half of your Hero HP means your Hero has at least 50% of its maximum HP when the Battle ends. The Star Turn is the Turn number that a 3-Star win must come before. Each Stage has its own Star Turn, and its Stage Panel shows it.\n\nThe Campaign keeps your best Stars for each Stage. The total Stars in a Region open its chests at 10, 20 and 30 Stars.",
       sweep:
         "A Sweep gives the repeat-win rewards of a Stage or a Dungeon at once. No Battle occurs, and a Sweep always wins. One Sweep uses 1 to {max} Tickets, and each Ticket gives one repeat-win reward.\n\nCampaign Sweep: when your best Stars on a Stage are 3, its Stage Panel has a Sweep button. It uses Campaign Sweep Tickets. Each Ticket gives Coin, XP, and the chances of a card and of a Forge Stone of the Stage.\n\nDungeon Sweep: when you won a Dungeon, the Dungeons screen has a Sweep button for it. It uses Dungeon Sweep Tickets. Each Ticket gives the Coin and the XP or Essence of the Dungeon, and the chances of a card and of Forge Stones.\n\nThe Class of your Active Deck sets the cards that a Sweep can give. A Sweep never changes your Stars or your Dungeon wins, and it gives no Tickets.\n\nCampaign Sweep Tickets: {campaignTickets} for each Stage win. Dungeon Sweep Tickets: {dungeonTickets} for each Dungeon win. A loss gives none. The 2 types of Ticket never change into each other, and you cannot buy them.",
       playerLevel:
@@ -855,8 +1040,12 @@ export default {
         "A Dungeon is a place outside the Campaign. The cave in the Town and the Dungeons shortcut open the Dungeons screen, from Player level {level}.\n\nIn a Dungeon, you fight all its Bosses in one Battle. The Board has {lanes} Lanes. Each Boss is an enemy Hero with its own Front, Hand and Deck. A Unit at the end of a Lane attacks the Boss of that Front.\n\nA Boss Rule activates one time, when the HP of its Boss goes to a set percent or lower. The HP bar of the Boss shows a notch at that percent.\n\nA Dungeon win gives no Stars. After a win, you can play the Dungeon again or Sweep it. Dungeon Sweep Tickets: {tickets} for each Dungeon win.",
       heynspire:
         "Heynspire is the tall tower of the Town. It opens with the first win of Stage {stage}. The tower in the Town and the Heynspire shortcut open it.\n\nHeynspire has {floors} Floors. You fight only the Current Floor: the lowest Floor that you did not win. A Floor Battle has {lanes} Lanes and 1 enemy Hero, whose Front is all the Lanes.\n\nEach {every}th Floor is a Boss Floor: a Boss of the Campaign comes back with a new Deck. A Boss Floor has no Boss Rules.\n\nEach Floor gives its reward one time, when you win it. You cannot play a won Floor again, and you cannot Sweep it. A win also gives Campaign Sweep Tickets: {tickets}. A loss gives a part of the Coin and the XP, for the HP that you took from the enemy Hero.",
+      achievement:
+        "An Achievement is a goal with a reward. The Hall of banners in the Town and the Achievements shortcut open the Achievements screen. It lists all {count} Achievements in 4 groups: Campaign, Dungeons and Heynspire, Progress, and Feats.\n\nAn Achievement is In progress, then Completed, then Claimed. The first time that you meet its goal, it becomes Completed, and it stays Completed. Then press Claim on the Achievements screen to get its reward. Claim all claims all Completed Achievements at one time. The badge on the Achievements shortcut shows the number of rewards to claim.\n\nA Feat is an Achievement that one won Battle completes: a Stage, a Dungeon or a Floor that you play. A Sweep, a Replay, Auto-play and the Tutorial never complete a Feat. A loss never completes a Feat.\n\nMost rewards are Heynstones. Some are Coin or Essence. {cosmetics} hard Achievements give an earn-only Cosmetic. Cosmetics come in a later update: the game keeps your Cosmetic until then.\n\nNo Achievement can be missed. You can always complete each Achievement later.",
     },
     aliases: {
+      achievement:
+        "trophy, trophies, quest, quests, badge, badges, challenge, milestone, feat, feats",
       heynspire: "tower, spire, endless tower, climb, abyss",
       board: "battlefield, field, map, grid, arena",
       lane: "row, path, track",
@@ -1386,10 +1575,7 @@ export default {
   // Draft names (PRD open question 1).
   heynspire: {
     label: "Heynspire",
-    title: "Heynspire",
     rail: "The Floors of Heynspire",
-    progress: "Floor {number} of {total}",
-    climbed: "Heynspire climbed",
     floor: "Floor {number}",
     floorName: "Heynspire, Floor {number}",
     winFirst: "Win Floor {number} first.",

@@ -8,13 +8,13 @@ import type {
   StageDefinition,
 } from "@workspace/rules";
 import { DUNGEONS, FLOORS, STAGES, step } from "@workspace/rules";
-import { Result, Schema } from "effect";
+import { Data, Result, Schema, Struct } from "effect";
 
 import type {
   BattleOptions,
   BattleSession,
 } from "@/features/battle/battle-session";
-import { startSession } from "@/features/battle/battle-session";
+import { isIdle, startSession } from "@/features/battle/battle-session";
 import type { BattleView } from "@/features/battle/battle-view";
 import { applyEvent } from "@/features/battle/battle-view";
 
@@ -22,10 +22,12 @@ import { applyEvent } from "@/features/battle/battle-view";
 export const RULES_HASH: string = __RULES_HASH__;
 
 /** The place of a Replay: a Campaign Stage, a Dungeon or a Heynspire Floor, by its id. */
-export type ReplayPlace =
-  | { readonly _tag: "Stage"; readonly stageId: string }
-  | { readonly _tag: "Dungeon"; readonly dungeonId: string }
-  | { readonly _tag: "Floor"; readonly floorId: string };
+export type ReplayPlace = Data.TaggedEnum<{
+  Stage: { readonly stageId: string };
+  Dungeon: { readonly dungeonId: string };
+  Floor: { readonly floorId: string };
+}>;
+const ReplayPlace = Data.taggedEnum<ReplayPlace>();
 
 /**
  * A Replay (rules glossary): the Battle seed, the Stage or the Dungeon, the
@@ -51,7 +53,9 @@ export class ReplayRefused extends Schema.TaggedError<ReplayRefused>()(
   { reason: Schema.Literals(["broken", "otherVersion"]) }
 ) {}
 
-const broken = () => new ReplayRefused({ reason: "broken" });
+/** The refusal of a `broken` Replay. */
+export const broken = (): ReplayRefused =>
+  new ReplayRefused({ reason: "broken" });
 
 /** The content that a Replay can name. The tests give other content. */
 interface ReplayContent {
@@ -66,32 +70,124 @@ const CONTENT: ReplayContent = {
   floors: FLOORS,
 };
 
+type PlaceTag = ReplayPlace["_tag"];
+type PlaceOf<Tag extends PlaceTag> = Extract<
+  ReplayPlace,
+  { readonly _tag: Tag }
+>;
+
+/** A place in the data of a Replay Link: its kind and its id, for example `["floor", "floor-10"]`. */
+export type PlaceData = readonly [Lowercase<PlaceTag>, string];
+
+/** The part of the Battle options that names the place of the Battle. */
+type PlaceOptions = Pick<BattleOptions, "stageId" | "dungeon" | "floor">;
+
+/** One kind of place: a Stage, a Dungeon or a Floor. */
+interface PlaceKind<Tag extends PlaceTag> {
+  /** The name of the kind in the data of a Replay Link. */
+  readonly data: Lowercase<Tag>;
+  readonly make: (id: string) => PlaceOf<Tag>;
+  readonly id: (place: PlaceOf<Tag>) => string;
+  /** The place options of the place with this id, or `null` when the content does not have it. */
+  readonly options: (id: string, content: ReplayContent) => PlaceOptions | null;
+}
+
+/** Each kind of place, by its tag. */
+type PlaceKinds = { readonly [Tag in PlaceTag]: PlaceKind<Tag> };
+
+/**
+ * Each kind of place, by its tag. The Replay code chooses between a Stage, a
+ * Dungeon and a Floor only here.
+ */
+const PLACE_KINDS: PlaceKinds = {
+  Stage: {
+    data: "stage",
+    make: (stageId) => ReplayPlace.Stage({ stageId }),
+    id: ({ stageId }) => stageId,
+    options: (id, { stages }) =>
+      stages.some((stage) => stage.id === id) ? { stageId: id } : null,
+  },
+  Dungeon: {
+    data: "dungeon",
+    make: (dungeonId) => ReplayPlace.Dungeon({ dungeonId }),
+    id: ({ dungeonId }) => dungeonId,
+    options: (id, { dungeons }) => {
+      const dungeon = dungeons.find((candidate) => candidate.id === id);
+      return dungeon ? { stageId: dungeon.id, dungeon } : null;
+    },
+  },
+  Floor: {
+    data: "floor",
+    make: (floorId) => ReplayPlace.Floor({ floorId }),
+    id: ({ floorId }) => floorId,
+    options: (id, { floors }) => {
+      const floor = floors.find((candidate) => candidate.id === id);
+      return floor ? { stageId: floor.id, floor } : null;
+    },
+  },
+};
+
+const kindOf = <Tag extends PlaceTag>(tag: Tag): PlaceKind<Tag> =>
+  PLACE_KINDS[tag];
+
+/** The place options of a place, or `null` when the content does not have it. */
+const placeOptionsOf = (
+  place: ReplayPlace,
+  content: ReplayContent
+): PlaceOptions | null => {
+  const kind = kindOf(place._tag);
+  return kind.options(kind.id(place), content);
+};
+
+/** A place in the data of a Replay Link. */
+export const placeToData = (place: ReplayPlace): PlaceData => {
+  const kind = kindOf(place._tag);
+  return [kind.data, kind.id(place)];
+};
+
+/** The place of the data of a Replay Link, or `null` when the kind is not known. */
+export const placeFromData = ([data, id]: PlaceData): ReplayPlace | null => {
+  const tag = Struct.keys(PLACE_KINDS).find(
+    (each) => PLACE_KINDS[each].data === data
+  );
+  return tag === undefined ? null : kindOf(tag).make(id);
+};
+
+/**
+ * The tag and the id of the place of a Battle. `BattleOptions` has no tag, so
+ * a Floor or a Dungeon in the options names the place.
+ */
+const battlePlace = (options: BattleOptions): readonly [PlaceTag, string] => {
+  if (options.floor) {
+    return ["Floor", options.floor.id];
+  }
+  if (options.dungeon) {
+    return ["Dungeon", options.dungeon.id];
+  }
+  return ["Stage", options.stageId];
+};
+
 /** The place of a Battle, or `null` for a QA Dungeon and other Battles with no Replay. */
 const placeOf = (
   options: BattleOptions,
-  { stages, dungeons, floors }: ReplayContent
+  content: ReplayContent
 ): ReplayPlace | null => {
-  if (options.floor) {
-    return floors.includes(options.floor)
-      ? { _tag: "Floor", floorId: options.floor.id }
-      : null;
-  }
-  if (options.dungeon) {
-    // A QA Dungeon can have the id of a real Dungeon with other Bosses.
-    return dungeons.includes(options.dungeon)
-      ? { _tag: "Dungeon", dungeonId: options.dungeon.id }
-      : null;
-  }
-  return stages.some((stage) => stage.id === options.stageId)
-    ? { _tag: "Stage", stageId: options.stageId }
-    : null;
+  const [tag, id] = battlePlace(options);
+  const place = kindOf(tag).make(id);
+  const found = placeOptionsOf(place, content);
+  // A QA Dungeon can have the id of a real Dungeon with other Bosses.
+  const same =
+    found !== null &&
+    (found.floor ?? found.dungeon) === (options.floor ?? options.dungeon);
+  return same ? place : null;
 };
 
 /**
  * The Replay of a Battle that the Player can share (web ADR-0012): a Stage
  * Battle, a Dungeon Battle or a Floor Battle with a win or a loss. `null` for
- * the Tutorial, an Abandon, a Battle with no result yet, a QA Dungeon, a
- * Battle that the Game Dev Panel changed, and a Replay that the Player watches.
+ * the Tutorial, an Abandon, a Battle with no result on the screen yet, a QA
+ * Dungeon, a Battle that the Game Dev Panel changed, and a Replay that the
+ * Player watches.
  */
 export const replayOf = (
   session: BattleSession,
@@ -100,7 +196,10 @@ export const replayOf = (
   const place = placeOf(session.options, content);
   if (
     place === null ||
-    session.rules.result === null ||
+    // The rules state is ahead of the animation. Share only when the result
+    // shows, as the result overlay does.
+    session.view.result === null ||
+    !isIdle(session) ||
     session.tutorial !== null ||
     session.watching ||
     session.devChanged
@@ -125,27 +224,18 @@ export const replayOf = (
 /** The options of the Battle of a Replay, or `null` when its Stage, Dungeon or Floor is not in the content. */
 const optionsOf = (
   replay: Replay,
-  { stages, dungeons, floors }: ReplayContent
+  content: ReplayContent
 ): BattleOptions | null => {
   const { place, player, seed } = replay;
-  const common = {
-    deck: { classId: player.classId, deck: player.deck },
-    player: { level: player.level, gear: player.gear },
-    seed,
-  };
-  if (place._tag === "Stage") {
-    return stages.some((stage) => stage.id === place.stageId)
-      ? { ...common, stageId: place.stageId }
-      : null;
-  }
-  if (place._tag === "Floor") {
-    const floor = floors.find((candidate) => candidate.id === place.floorId);
-    return floor ? { ...common, stageId: floor.id, floor } : null;
-  }
-  const dungeon = dungeons.find(
-    (candidate) => candidate.id === place.dungeonId
-  );
-  return dungeon ? { ...common, stageId: dungeon.id, dungeon } : null;
+  const placeOptions = placeOptionsOf(place, content);
+  return placeOptions === null
+    ? null
+    : {
+        deck: { classId: player.classId, deck: player.deck },
+        player: { level: player.level, gear: player.gear },
+        seed,
+        ...placeOptions,
+      };
 };
 
 /** A Replay that the rules ran again: the view at the start and each Battle Event. */

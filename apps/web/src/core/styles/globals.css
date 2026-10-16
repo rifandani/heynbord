@@ -1003,6 +1003,19 @@
   }
 }
 
+/* The Achievements screen: the roll of the selected flag unrolls from the
+   flag, from left to right. */
+@keyframes achievements-unroll {
+  from {
+    clip-path: inset(0 92% 0 0 round 16px);
+    opacity: 0.4;
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 16px);
+    opacity: 1;
+  }
+}
+
 /* The Workshop: a copy count that changed hops once. */
 @keyframes workshop-count {
   0%,

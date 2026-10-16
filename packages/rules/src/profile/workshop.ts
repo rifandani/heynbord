@@ -197,12 +197,16 @@ const unlocked = (profile: Pick<Profile, "xp">, feature: UnlockFeature) =>
 /**
  * Combine (GDD 7.4, Economy 3.2): 2 copies of the card in `rank` become 1 copy
  * in the next Rank, for the Coin of the next Rank. The Decks follow: they use
- * the new-Rank copy in place of the old-Rank copies that went out. `null` when
+ * the new-Rank copy in place of the old-Rank copies that went out. It adds 1
+ * to the `combines` Tally. `null` when
  * the Player level is below the unlock level, the Rank is Legendary, the
  * Player owns fewer than 2 copies in the Rank, or the Coin is not enough.
  */
 export const combine = <
-  P extends Pick<Profile, "xp" | "coin" | "collection" | "deckSlots">,
+  P extends Pick<
+    Profile,
+    "xp" | "coin" | "collection" | "deckSlots" | "tallies"
+  >,
 >(
   profile: P,
   cardId: string,
@@ -224,6 +228,7 @@ export const combine = <
     deckSlots: changeDecks(profile.deckSlots, (deck) =>
       deckAfterCombine(deck, collection, cardId, rank, next)
     ),
+    tallies: { ...profile.tallies, combines: profile.tallies.combines + 1 },
   };
 };
 
@@ -260,10 +265,12 @@ export const extract = <
 
 /**
  * Craft (GDD 7.4, Economy 3.3): Essence becomes 1 copy of the card in its Base
- * Rank. `null` when the Player level is below the unlock level, the card is
+ * Rank. It adds 1 to the `crafts` Tally. `null` when the Player level is below the unlock level, the card is
  * not Discovered, the card has no Craft cost, or the Essence is not enough.
  */
-export const craft = <P extends Pick<Profile, "xp" | "essence" | "collection">>(
+export const craft = <
+  P extends Pick<Profile, "xp" | "essence" | "collection" | "tallies">,
+>(
   profile: P,
   cardId: string
 ): P | null => {
@@ -275,5 +282,10 @@ export const craft = <P extends Pick<Profile, "xp" | "essence" | "collection">>(
   if (collection === null || profile.essence < cost) {
     return null;
   }
-  return { ...profile, essence: profile.essence - cost, collection };
+  return {
+    ...profile,
+    essence: profile.essence - cost,
+    collection,
+    tallies: { ...profile.tallies, crafts: profile.tallies.crafts + 1 },
+  };
 };

@@ -122,10 +122,13 @@ const openCount = (
 };
 
 /**
- * Opens the Packs of an order at no cost: adds the copies to the Collection
- * and moves the Pack Guarantee counter and the random state forward.
+ * Opens the Packs of an order at no cost: adds the copies to the Collection,
+ * moves the Pack Guarantee counter and the random state forward, and adds
+ * each opened Pack to the `packsOpened` Tally.
  */
-const openOrder = <P extends Pick<Profile, "collection" | "packState">>(
+const openOrder = <
+  P extends Pick<Profile, "collection" | "packState" | "tallies">,
+>(
   profile: P,
   order: PackOrder,
   classId: ClassId
@@ -154,6 +157,10 @@ const openOrder = <P extends Pick<Profile, "collection" | "packState">>(
         },
         randomState: result.randomState,
       },
+      tallies: {
+        ...profile.tallies,
+        packsOpened: profile.tallies.packsOpened + result.packs.length,
+      },
     },
     opened: markNew(result.packs, discovered),
   };
@@ -162,11 +169,11 @@ const openOrder = <P extends Pick<Profile, "collection" | "packState">>(
 /**
  * Buys an order (Economy 3.1): takes the Coin and opens the Packs. `null` when
  * the Coin is not enough. `classId` is the current Hero Class: "All cards"
- * has only its Skill Cards. It reads and changes only the Coin, the Collection
- * and the Pack state of the Profile.
+ * has only its Skill Cards. It reads and changes only the Coin, the
+ * Collection, the Pack state and the Tallies of the Profile.
  */
 export const buyPacks = <
-  P extends Pick<Profile, "coin" | "collection" | "packState">,
+  P extends Pick<Profile, "coin" | "collection" | "packState" | "tallies">,
 >(
   profile: P,
   order: PackOrder,
@@ -189,7 +196,10 @@ export type UnopenedPackPool = Extract<PackPool, { kind: "all" | "race" }>;
  * the version of the Pack.
  */
 export const openUnopenedPack = <
-  P extends Pick<Profile, "collection" | "packState" | "unopenedPacks">,
+  P extends Pick<
+    Profile,
+    "collection" | "packState" | "unopenedPacks" | "tallies"
+  >,
 >(
   profile: P,
   index: number,

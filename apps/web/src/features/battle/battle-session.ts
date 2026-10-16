@@ -3,7 +3,6 @@ import type {
   BattleSetup,
   BattleState,
   ClassId,
-  Command,
   DeckEntry,
   DungeonDefinition,
   FloorDefinition,
@@ -14,7 +13,7 @@ import type {
 } from "@workspace/rules";
 import {
   chooseCommand,
-  Command as Commands,
+  Command,
   createBattle,
   devDamageHero,
   getStage,
@@ -102,6 +101,12 @@ export interface BattleSession {
   readonly watching: boolean;
   /** True after the Game Dev Panel changed the Battle outside the Commands: it has no Replay. */
   readonly devChanged: boolean;
+  /**
+   * True after the AI played a Turn of the Player (Auto-play, GDD 4.12). Only
+   * the tests and QA use Auto-play. Such a Battle completes no Feat
+   * (Achievements 1.3).
+   */
+  readonly autoPlayed: boolean;
 }
 
 /**
@@ -161,6 +166,7 @@ export const startSession = (
     commands: [],
     watching: false,
     devChanged: false,
+    autoPlayed: false,
   };
   return tutorial ? atRest({ ...session, tutorial: startTutorial() }) : session;
 };
@@ -230,7 +236,7 @@ export const playCard = (
   handIndex: number,
   target: Target
 ): Result.Result<BattleSession, RuleViolation> => {
-  const command = Commands.PlayCard({ hero: PLAYER_HERO, handIndex, target });
+  const command = Command.PlayCard({ hero: PLAYER_HERO, handIndex, target });
   return Result.map(step(session.rules, command), (output) =>
     enqueue(session, command, output)
   );
@@ -304,7 +310,7 @@ export const devHitHero = (
 export const endTurn = (
   session: BattleSession
 ): Result.Result<BattleSession, RuleViolation> => {
-  const command = Commands.EndTurn();
+  const command = Command.EndTurn();
   return Result.map(step(session.rules, command), (output) =>
     runEnemyTurn(enqueue(session, command, output))
   );
@@ -330,7 +336,7 @@ export const autoPlayTurn = (session: BattleSession): BattleSession => {
       break;
     }
   }
-  return next;
+  return next === session ? session : { ...next, autoPlayed: true };
 };
 
 /**

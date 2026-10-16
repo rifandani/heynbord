@@ -71,6 +71,52 @@ describe("placePanel", () => {
     expect(placement?.top).toBe(bounds.bottom - size.height);
   });
 
+  describe("with boxes to avoid", () => {
+    // Above, the panel is at 560..880 x 116..316; below, at 560..880 x 374..574.
+    const anchor = { left: 600, top: 330, right: 840, bottom: 360 };
+    const sides = ["above", "below"] as const;
+
+    it("keeps the first side when the panel covers no box there", () => {
+      const avoid = [{ left: 600, top: 400, right: 700, bottom: 450 }];
+      expect(placePanel({ anchor, ...size, bounds, sides, avoid })?.side).toBe(
+        "above"
+      );
+    });
+
+    it("uses the next side when the panel covers a box on the first side", () => {
+      const avoid = [{ left: 600, top: 150, right: 700, bottom: 200 }];
+      expect(placePanel({ anchor, ...size, bounds, sides, avoid })).toEqual({
+        left: 560,
+        top: 374,
+        side: "below",
+        pointer: 160,
+      });
+    });
+
+    it("uses the side where the panel covers the least area when it covers a box on each side", () => {
+      const avoid = [
+        { left: 600, top: 300, right: 610, bottom: 310 },
+        { left: 600, top: 400, right: 700, bottom: 450 },
+      ];
+      expect(placePanel({ anchor, ...size, bounds, sides, avoid })?.side).toBe(
+        "above"
+      );
+    });
+
+    it("does not use a side with no space to avoid a box", () => {
+      const avoid = [{ left: 600, top: 150, right: 700, bottom: 200 }];
+      expect(
+        placePanel({
+          anchor: { left: 600, top: 500, right: 840, bottom: 560 },
+          ...size,
+          bounds,
+          sides,
+          avoid,
+        })?.side
+      ).toBe("above");
+    });
+  });
+
   it("has no placement when a strict panel has no space", () => {
     const anchor = { left: 100, top: 150, right: 1300, bottom: 600 };
     expect(

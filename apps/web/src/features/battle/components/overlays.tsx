@@ -1,5 +1,5 @@
 import { useAtomSet, useAtomValue } from "@effect/atom-react";
-import { starsFor } from "@workspace/rules";
+import { getStage, starsFor } from "@workspace/rules";
 import type { BattleResult, Side } from "@workspace/rules";
 import { cn } from "cn";
 import { Button } from "react-aria-components";
@@ -18,6 +18,7 @@ import {
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import {
+  ResultAchievements,
   ResultCard,
   ResultCoin,
   ResultEssence,
@@ -180,7 +181,8 @@ const ResultReason = ({ result }: { readonly result: BattleResult }) => {
  * The rewards of the result (GDD 11.4): the card won at the left, and the
  * Coin, the Essence of a Dungeon 3 result or a Boss Floor win, the
  * Heynstones of a Boss Floor win, the Sweep Tickets, the Forge Stones of a
- * win and the XP at the right. They are already in the Profile.
+ * win and the XP at the right. They are already in the Profile. The
+ * Achievements of the result show under them (`ResultAchievements`).
  */
 const ResultRewards = ({ shown }: { readonly shown: ShownRewards }) => {
   const { rewards } = shown;
@@ -292,11 +294,11 @@ const ResultDialog = ({
 }) => {
   const { tr, text } = useGameText();
   const won = result.winner === "player";
-  const stars = starsFor(session.rules);
   // A Dungeon gives no Stars, and its result goes back to the Dungeons (GDD 8.4).
   const inDungeon = session.options.dungeon !== undefined;
   // A Floor gives no Stars, and its result goes back to Heynspire (GDD 8.2).
   const { floor } = session.options;
+  const stage = inDungeon || floor ? null : getStage(session.options.stageId);
   const shown = useShownRewards(session);
   useResultHints(result, session.tutorial !== null);
   return (
@@ -311,8 +313,11 @@ const ResultDialog = ({
       >
         <ResultTitle won={won} name={text(battleNameRef(session.options))} />
         <ResultReason result={result} />
-        {won && !inDungeon && !floor ? <ResultStars stars={stars} /> : null}
+        {won && stage ? (
+          <ResultStars stars={starsFor(session.rules, stage)} />
+        ) : null}
         {shown ? <ResultRewards shown={shown} /> : null}
+        {shown ? <ResultAchievements ids={shown.achievements} /> : null}
         <div className="mt-4 grid grid-cols-2 gap-2 [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:grid-cols-[1fr_1fr_auto]">
           {floor ? (
             <FloorResultButtons

@@ -42,6 +42,7 @@ const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   cave: "[data-testid='building-cave']",
   dungeonSweepRow: "[data-hint-anchor='dungeon-sweep-row']",
   tower: "[data-testid='building-heynspire']",
+  achievementsShortcut: "[data-testid='town-shortcut-achievements']",
 };
 
 /** The Dungeons shortcut: the Dungeons Hint points at it when the screen crops the cave. */
@@ -111,6 +112,14 @@ export const hintAnchor = (place: HintPlace): string => {
   return HINT_ANCHOR[place];
 };
 
+/** The places at a Building of the Town. */
+const TOWN_BUILDING_PLACES: ReadonlySet<HintPlace> = new Set([
+  "cardShop",
+  "workshop",
+  "cave",
+  "tower",
+]);
+
 /**
  * The sides of its anchor where a Hint can show, in order of preference. The
  * Battle Log Hint goes below the Battle Log button, out of the result
@@ -121,7 +130,9 @@ export const hintAnchor = (place: HintPlace): string => {
  * goes at the left of the label of the Sweep row of the Dungeons screen,
  * over the notice board, so that it covers no control of the rail. On a
  * short screen, it goes above the Sweep button, so that it does not cover
- * Fight at the left of it.
+ * Fight at the left of it. A Hint at a Town Building can go above, below or
+ * at the left of it: it takes the side where it covers the least of the
+ * Building labels (`BUILDING_LABEL`).
  */
 const sidesFor = (place: HintPlace): readonly PanelSide[] => {
   if (place === "dungeonSweepRow" && isShortScreen()) {
@@ -133,12 +144,29 @@ const sidesFor = (place: HintPlace): readonly PanelSide[] => {
   ) {
     return ["left", "above"];
   }
+  if (TOWN_BUILDING_PLACES.has(place)) {
+    return ["above", "below", "left"];
+  }
   return place === "resultBattleLog" ||
     place === "firstGearItem" ||
     place === "sweepButton"
     ? ["below", "above"]
     : ["above", "below"];
 };
+
+/**
+ * The name labels and lock plates of the Town Buildings. The Buildings are
+ * near each other, so a Hint at one Building can cover the label of another.
+ */
+const BUILDING_LABEL = "[data-building-label]";
+
+/** The boxes that a Hint at `place` does not cover where it can. */
+const avoidFor = (place: HintPlace): readonly ScreenBox[] | undefined =>
+  TOWN_BUILDING_PLACES.has(place)
+    ? Array.from(document.querySelectorAll(BUILDING_LABEL), (label) =>
+        label.getBoundingClientRect()
+      )
+    : undefined;
 
 /** The space between the banner and the screen edge. */
 const EDGE = 8;
@@ -189,6 +217,7 @@ const usePlacement = (hint: HintId, leaving: boolean) => {
                 bottom: window.innerHeight - EDGE,
               },
               sides: sidesFor(hintPlace),
+              avoid: avoidFor(hintPlace),
             })
           : null;
       if (node && placement) {
@@ -251,7 +280,8 @@ type ShortcutHint =
   | "craft"
   | "gear"
   | "dungeons"
-  | "heynspire";
+  | "heynspire"
+  | "achievements";
 
 type SealShortcut =
   | "deck"
@@ -259,7 +289,8 @@ type SealShortcut =
   | "workshop"
   | "hero"
   | "dungeons"
-  | "heynspire";
+  | "heynspire"
+  | "achievements";
 
 const SHORTCUT_OF: Readonly<Record<ShortcutHint, SealShortcut>> = {
   deckBuilder: "deck",
@@ -270,6 +301,7 @@ const SHORTCUT_OF: Readonly<Record<ShortcutHint, SealShortcut>> = {
   gear: "hero",
   dungeons: "dungeons",
   heynspire: "heynspire",
+  achievements: "achievements",
 };
 
 /** The glyph of a shortcut while its painted icon does not exist. */
@@ -280,6 +312,7 @@ const SHORTCUT_GLYPH: Readonly<Record<SealShortcut, Glyph>> = {
   hero: "helmet",
   dungeons: "cave",
   heynspire: "tower",
+  achievements: "banner",
 };
 
 /** The subject of a Hint, with the icon that the game already shows for it. */
@@ -319,7 +352,8 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
     case "craft":
     case "gear":
     case "dungeons":
-    case "heynspire": {
+    case "heynspire":
+    case "achievements": {
       const shortcut = SHORTCUT_OF[hint];
       const painted = paintedIcon(shortcut);
       return painted ? (

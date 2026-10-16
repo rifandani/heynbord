@@ -1,5 +1,11 @@
 import { describe, expect, it } from "@effect/vitest";
-import { Command, getDungeon, getStarterDeck, Target } from "@workspace/rules";
+import {
+  Command,
+  getDungeon,
+  getStarterDeck,
+  MAX_GEAR_LEVEL,
+  Target,
+} from "@workspace/rules";
 import { Effect, Exit } from "effect";
 import { Base64Url } from "effect/encoding";
 
@@ -89,6 +95,35 @@ const dataOf = (json: string, format = REPLAY_FORMAT) =>
     return `${format}.${Base64Url.encode(bytes)}`;
   });
 
+/** Values in the JSON of a Replay Link. A newer build can give other values. */
+interface LinkValues {
+  readonly rules?: string | undefined;
+  readonly classId?: string;
+  readonly deck?: readonly { readonly cardId: string; readonly rank: string }[];
+  readonly gear?: Replay["player"]["gear"];
+}
+
+/** The JSON of `eachTarget` in a Replay Link, with some other values. */
+const jsonOf = (values: LinkValues) =>
+  JSON.stringify({
+    rules: RULES_HASH,
+    seed: eachTarget.seed,
+    place: ["dungeon", "dungeon-2"],
+    classId: eachTarget.player.classId,
+    deck: eachTarget.player.deck,
+    level: eachTarget.player.level,
+    gear: eachTarget.player.gear,
+    commands: [[]],
+    ...values,
+  });
+
+/** Values that the Schema of this build refuses, but a newer build can make. */
+const NEWER_VALUES: readonly LinkValues[] = [
+  { classId: "necromancer" },
+  { deck: [{ cardId: "a", rank: "mythic" }] },
+  { gear: { ...eachTarget.player.gear, weapon: MAX_GEAR_LEVEL + 1 } },
+];
+
 const reasonOf = (data: string) =>
   decodeReplay(data).pipe(
     Effect.exit,
@@ -153,7 +188,13 @@ describe("a broken Replay Link", () => {
       // Base64 that does not inflate.
       expect(yield* reasonOf("1.AAAA")).toBe("broken");
       expect(yield* reasonOf(yield* dataOf("not json"))).toBe("broken");
-      expect(yield* reasonOf(yield* dataOf('{"rules":"x"}'))).toBe("broken");
+      expect(yield* reasonOf(yield* dataOf('{"rules":1}'))).toBe("broken");
+      expect(yield* reasonOf(yield* dataOf(jsonOf({ rules: undefined })))).toBe(
+        "broken"
+      );
+      expect(
+        yield* reasonOf(yield* dataOf(JSON.stringify({ rules: RULES_HASH })))
+      ).toBe("broken");
     })
   );
 
@@ -177,6 +218,25 @@ describe("a broken Replay Link", () => {
       const short = json.replace("[[0,1,9]]", "[[0,1]]");
       expect(yield* reasonOf(yield* dataOf(short))).toBe("broken");
     })
+  );
+
+  it.effect("is broken when a value is out of the content of this build", () =>
+    Effect.gen(function* () {
+      for (const values of NEWER_VALUES) {
+        expect(yield* reasonOf(yield* dataOf(jsonOf(values)))).toBe("broken");
+      }
+    })
+  );
+
+  it.effect(
+    "is from another version of the game with another hash of the rules, before the other values are read",
+    () =>
+      Effect.gen(function* () {
+        for (const values of NEWER_VALUES) {
+          const json = jsonOf({ ...values, rules: "newer-rules" });
+          expect(yield* reasonOf(yield* dataOf(json))).toBe("otherVersion");
+        }
+      })
   );
 
   it.effect("is from another version of the game with another format", () =>
@@ -209,6 +269,33 @@ describe("openReplay", () => {
       );
     })
   );
+});
+
+/** The Battle after its last Command, before the result animates. */
+const lastTurn = (session: BattleSession): BattleSession => {
+  let next = autoPlayTurn(session);
+  while (next.rules.status !== "finished") {
+    next = autoPlayTurn(skip(next));
+  }
+  return next;
+};
+
+describe("Share Replay", () => {
+  it("waits for the result on the screen, as the result overlay does", () => {
+    const animating = lastTurn(
+      startSession({
+        stageId: "1-2",
+        deck: getStarterDeck("vanguard"),
+        player: NEW_PLAYER,
+        seed: 11,
+      })
+    );
+    // The rules state has the result, but the view does not show it yet.
+    expect(animating.rules.result).not.toBeNull();
+    expect(animating.view.result).toBeNull();
+    expect(replayOf(animating)).toBeNull();
+    expect(replayOf(skip(animating))).toEqual(replayFrom(stageBattle));
+  });
 });
 
 describe("replayLink and replayDataOf", () => {

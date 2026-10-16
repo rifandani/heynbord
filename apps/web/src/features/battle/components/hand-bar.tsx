@@ -3,6 +3,7 @@ import { getCard, HAND_LIMIT } from "@workspace/rules";
 import { cn } from "cn";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, Dispatch, SetStateAction } from "react";
+import { Button, DialogTrigger } from "react-aria-components";
 
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
@@ -22,7 +23,10 @@ import {
 } from "@/features/battle/components/card-back";
 import { CardDetails } from "@/features/battle/components/card-details";
 import { BRONZE, CardFrame } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
+import {
+  GameButton,
+  gameButtonStyles,
+} from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { GraveyardIcon } from "@/features/battle/components/graveyard-icon";
 import { HandCard } from "@/features/battle/components/hand-card";
@@ -39,6 +43,8 @@ import { scenePicker } from "@/features/battle/scene/scene-picker";
 import { LONG_PRESS_MS } from "@/features/battle/unit-inspect";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import { SettingsDialog } from "@/features/town/components/settings-dialog";
+import { shortcutImage } from "@/features/town/town";
 
 type Battle = ReturnType<typeof useBattle>;
 type SetInspected = Dispatch<SetStateAction<number | null>>;
@@ -408,25 +414,63 @@ const HandSlot = ({
 };
 
 /**
- * End Turn, a small gold button just above the Hand Bar.
- * Its right edge matches the outer edge of the bar (past the 0.2em border),
+ * The Settings button, at the left of End Turn. It opens the same Settings
+ * dialog as the Town Bar, but without the progress row: the Battle does not
+ * export or import the progress. The Battle does not pause while it is open.
+ */
+const SettingsButton = () => {
+  const { tr } = useGameText();
+  const button = useRef<HTMLButtonElement>(null);
+  return (
+    <DialogTrigger>
+      <Button
+        ref={button}
+        aria-label={tr("settings.title")}
+        className={gameButtonStyles({
+          intent: "wood",
+          size: "sm",
+          className: "px-1.5",
+        })}
+        data-testid="battle-settings"
+      >
+        <img
+          src={shortcutImage("settings")}
+          alt=""
+          width={128}
+          height={128}
+          draggable={false}
+          className="size-6 drop-shadow-[0_1px_0_rgba(0,0,0,0.4)] select-none"
+        />
+      </Button>
+      <SettingsDialog from={button} progress={false} />
+    </DialogTrigger>
+  );
+};
+
+/**
+ * Settings and End Turn, small buttons just above the Hand Bar.
+ * The right edge matches the outer edge of the bar (past the 0.2em border),
  * so a long label grows to the left and stays on the screen.
  */
-const EndTurnPanel = ({ battle }: { readonly battle: Battle }) => {
+const TurnPanel = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
   return (
-    <div className="pointer-events-auto absolute right-[-0.2em] bottom-full z-30 mb-3">
-      <GameButton
-        intent="gold"
-        size="sm"
-        isDisabled={!battle.canEndTurn}
-        onPress={() => battle.endTurn()}
-        data-testid="end-turn"
-        className="font-display whitespace-nowrap"
-      >
-        <GlyphIcon glyph="speed" className="size-3.5" />
-        {tr("battle.endTurn")}
-      </GameButton>
+    <div className="pointer-events-auto absolute right-[-0.2em] bottom-full z-30 mb-3 flex items-center gap-2">
+      <SettingsButton />
+      {/* The Battle Log has no End Turn: all Live input is off. */}
+      {battle.log ? null : (
+        <GameButton
+          intent="gold"
+          size="sm"
+          isDisabled={!battle.canEndTurn}
+          onPress={() => battle.endTurn()}
+          data-testid="end-turn"
+          className="font-display whitespace-nowrap"
+        >
+          <GlyphIcon glyph="speed" className="size-3.5" />
+          {tr("battle.endTurn")}
+        </GameButton>
+      )}
     </div>
   );
 };
@@ -471,7 +515,7 @@ const PileDivider = () => (
 
 /**
  * The Hand Bar (GDD 11.2): the Deck Pile, the Hand Slots, the Graveyard Pile,
- * and End Turn above the right end of the bar. A Ready card can be dragged
+ * and Settings and End Turn above the right end of the bar. A Ready card can be dragged
  * to a target, or tapped and then the target tapped.
  */
 const drawnId = (playing: PlayingEvent | null): number | null => {
@@ -605,8 +649,7 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
 
         <PileDivider />
         <GraveyardPile cards={player.graveyard} speed={battle.speed} />
-        {/* The Battle Log has no End Turn: all Live input is off. */}
-        {battle.log ? null : <EndTurnPanel battle={battle} />}
+        <TurnPanel battle={battle} />
       </div>
       <div className="min-w-0 flex-1" aria-hidden />
 

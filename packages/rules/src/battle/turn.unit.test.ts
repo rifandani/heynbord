@@ -190,7 +190,7 @@ describe("createBattle with a Dungeon (GDD 8.4)", () => {
       ...dungeon,
       closedLanes: [{ lane: 0, opensOnTurn: 4 }],
       bosses: [
-        first,
+        { ...first, startUnits: [] },
         {
           ...second,
           startUnits: [
@@ -659,11 +659,19 @@ const finished = (
 };
 
 describe("starsFor (GDD 4.11)", () => {
+  const stage = { starTurn: 15 };
+
   it("gives 0 for a loss and 1 to 3 for a win", () => {
-    expect(starsFor(finished(40, 5, "enemy"))).toBe(0);
-    expect(starsFor(finished(19, 5, "player"))).toBe(1);
-    expect(starsFor(finished(20, 15, "player"))).toBe(2);
-    expect(starsFor(finished(20, 14, "player"))).toBe(3);
+    expect(starsFor(finished(40, 5, "enemy"), stage)).toBe(0);
+    expect(starsFor(finished(19, 5, "player"), stage)).toBe(1);
+    expect(starsFor(finished(20, 15, "player"), stage)).toBe(2);
+    expect(starsFor(finished(20, 14, "player"), stage)).toBe(3);
+  });
+
+  it("gives 3 Stars only before the Star Turn of the Stage (ADR-0047)", () => {
+    const win = finished(40, 20, "player");
+    expect(starsFor(win, { starTurn: 20 })).toBe(2);
+    expect(starsFor(win, { starTurn: 21 })).toBe(3);
   });
 });
 

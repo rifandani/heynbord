@@ -1,10 +1,8 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
-import { HEYNSPIRE_FLOORS } from "@workspace/rules";
 import { cn } from "cn";
 import { useEffect, useState } from "react";
 
 import type { BattleOptions } from "@/features/battle/battle-session";
-import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { FloorPanel } from "@/features/heynspire/components/floor-panel";
 import { FloorRail } from "@/features/heynspire/components/floor-rail";
@@ -18,10 +16,6 @@ import {
 import { profileAtom } from "@/features/profile/profile.atoms";
 import { BalancePlate } from "@/features/town/components/balance-plate";
 import { balancesAtom } from "@/features/town/town.atoms";
-
-/** The HUD plate (DESIGN.md, HUD plate). */
-const PLATE =
-  "rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
 
 /** The Floor stone of `floor` on the screen, where its Floor Panel comes out. */
 const stoneOf = (floor: number) =>
@@ -49,50 +43,10 @@ const useNewWins = (floorsWon: number): NewWins => {
   return wins;
 };
 
-/** The title plate: the tower glyph, "Heynspire" and where the Player is on the climb. */
-const TitlePlate = ({ current }: { readonly current: number | null }) => {
-  const { tr } = useGameText();
-  return (
-    <header
-      className={cn(
-        PLATE,
-        "absolute top-[max(0.5rem,env(safe-area-inset-top))] left-[max(0.5rem,env(safe-area-inset-left))] z-20 flex h-14 items-center gap-2.5 pr-4 pl-2",
-        "[@media(max-height:500px)]:h-10 [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pr-3"
-      )}
-    >
-      <span
-        className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-7"
-        aria-hidden
-      >
-        <GlyphIcon
-          glyph="tower"
-          className="size-6 text-[#ffd75a] [@media(max-height:500px)]:size-4"
-        />
-      </span>
-      <div className="min-w-0">
-        <h1 className="font-display text-xl leading-none font-bold text-[#ffe08a] [text-shadow:0_2px_0_rgba(0,0,0,0.6)] [@media(max-height:500px)]:text-base">
-          {tr("heynspire.title")}
-        </h1>
-        <p
-          className="mt-1 text-xs font-semibold text-[#e8d9bb] tabular-nums [@media(max-height:500px)]:mt-0.5 [@media(max-height:500px)]:text-[11px]"
-          data-testid="heynspire-progress"
-        >
-          {current === null
-            ? tr("heynspire.climbed")
-            : tr("heynspire.progress", {
-                number: current,
-                total: HEYNSPIRE_FLOORS,
-              })}
-        </p>
-      </div>
-    </header>
-  );
-};
-
 /**
- * The Heynspire screen (GDD 8.2, 11.1): the tower. The title plate and the
- * Balance Plate are at the top. Under them, the Floor rail: 5 Flights of 10
- * Floors, with the Flight of the Current Floor open as a stair to its Boss
+ * The Heynspire screen (GDD 8.2, 11.1): the tower. The Balance Plate is at
+ * the top. Under it, the Floor rail: 5 Flights of 10 Floors, with the Flight
+ * of the Current Floor open as a stair to its Boss
  * landing. A press on the Current Floor or on a won Floor opens its Floor
  * Panel. The Current stone has the focus when the screen opens, so a climb
  * is Town, tower, Enter, Enter. "Next Floor" on a result opens the screen
@@ -120,7 +74,6 @@ export const HeynspireScreen = ({
       data-floors-won={floorsWon}
     >
       <TowerScene />
-      <TitlePlate current={shown.current} />
       <BalancePlate balances={balances} />
       <div
         className={cn(

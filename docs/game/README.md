@@ -22,6 +22,7 @@ All documents use ASD-STE100 Simplified Technical English.
 | 12 | [Region Concepts](./12-region-concepts.md) | The art brief and the positions for each Region Map of the Campaign. `bun campaign:prompts` makes the image prompts. | Art director |
 | 13 | [Battlefield Concepts](./13-battlefield-concepts.md) | The art brief and the positions for each Battle Painting. `bun campaign:prompts` makes the image prompts. | Art director |
 | 14 | [Campaign Stages](./14-campaign-stages.md) | The design of each Stage: place, enemy, new thing, enemy Deck, first-win card and win-rate target. | Game designer |
+| 15 | [Achievements](./15-achievements.md) | The rules for Achievements, Feats and Tallies, the list of Achievements with their rewards, and the Achievements screen. | Game designer |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.
 
@@ -36,7 +37,7 @@ One person (the solo developer) has all the roles. The roles show which point of
 
 A name marked **(draft)** is a proposal. You can change it without a new design review. Before release, do a trademark check on the game name, all draft names and all invented proper names (for example Heynstones, and named characters on cards and in Stages). Usual words, for example Bazaar or Militia Recruit, do not need the check.
 
-Documents 01 to 04, 06 and 07 are a baseline. A change to a rule needs a design review or an ADR. Documents 05, 08 and 10 to 14 change with the content.
+Documents 01 to 04, 06 and 07 are a baseline. A change to a rule needs a design review or an ADR. Documents 05, 08 and 10 to 15 change with the content.
 
 ## Decision record
 

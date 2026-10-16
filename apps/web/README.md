@@ -119,19 +119,18 @@ Priest:
 
 Sequence:
 
-New features:
-
-1. /grill-with-docs lets develop "Achievements" feature
+1. /grill-with-docs 105, implement issue 108
 1. then Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
 
-Mismatch to fix in the docs: the Town art brief (11 — Town Concepts, 2.2) describes a thin tower at x 400–500. The painting shows a castle on a hill at about x 540–760. The Building uses the castle in the painting, and the build updates the brief to match it.
+New features:
 
 - cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 - check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
+- https://kingsandlegends-archive.fandom.com/wiki/Seaport
 
 v2:
 
-- blender mcp + all 3D unit
+- blender mcp + all 3D unit (or maybe use sprite-gen)
 - hybrids, awakening
 - brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
 - Story scenes at the start and end of each Region (need to install some claude motion skills first)
@@ -144,7 +143,6 @@ v2:
 - save player's progress in DB
 - Enemy AI: a search-based AI (for example Monte Carlo) that uses the deterministic engine
 - Asynchronous online: an account, a server
-- https://kingsandlegends-archive.fandom.com/wiki/Seaport
 - https://kingsandlegends-archive.fandom.com/wiki/Auction_House
 - https://kingsandlegends-archive.fandom.com/wiki/Guild
 - https://kingsandlegends-archive.fandom.com/wiki/Buildings Ranking Board + Arena Real-time PvP or PvP against other players' _saved defense decks_ (the AI controls them)

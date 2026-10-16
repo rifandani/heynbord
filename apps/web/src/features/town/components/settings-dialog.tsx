@@ -224,13 +224,17 @@ const SoundRow = () => {
 /**
  * The Settings dialog (GDD 11.4): a parchment dialog at the center of the
  * screen, over the current screen. A change applies at once, so it has no
- * Save button. The last row exports and imports the progress. Esc, the close button and a click outside close it. With
- * `from`, the sheet comes up out of that button and goes back into it.
+ * Save button. The last row exports and imports the progress; without
+ * `progress` (the Battle), it does not show. Esc, the close button and a click
+ * outside close it. With `from`, the sheet comes up out of that button and
+ * goes back into it.
  */
 export const SettingsDialog = ({
   from,
+  progress = true,
 }: {
   readonly from?: RefObject<HTMLElement | null>;
+  readonly progress?: boolean;
 }) => {
   const { tr } = useGameText();
   return (
@@ -284,11 +288,13 @@ export const SettingsDialog = ({
               <div className="divide-y divide-[#c9b48c]/70">
                 <LanguageRow />
                 <SoundRow />
-                <ProfileRow
-                  className={ROW}
-                  labelClassName={ROW_LABEL}
-                  onReplaced={close}
-                />
+                {progress ? (
+                  <ProfileRow
+                    className={ROW}
+                    labelClassName={ROW_LABEL}
+                    onReplaced={close}
+                  />
+                ) : null}
               </div>
             </div>
           )}

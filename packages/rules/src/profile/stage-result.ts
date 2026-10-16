@@ -115,11 +115,31 @@ export const findStage = (
 };
 
 /**
+ * The card of a repeat win, and the reward random state after it (Economy
+ * 2.1). It rolls the chance, and on a hit selects a card of `cardPool` with
+ * equal chance, in its Base Rank. The random state moves forward also on a
+ * miss. The economy sim uses it too.
+ */
+export const repeatWinCard = (
+  cardPool: () => readonly string[],
+  randomState: number
+): readonly [DeckEntry | null, number] => {
+  const cursor = { state: randomState };
+  if (!rollBasisPoints(cursor, REPEAT_WIN_CARD_CHANCE)) {
+    return [null, cursor.state];
+  }
+  const pool = cardPool();
+  const cardId = pool[randomInt(cursor, pool.length)];
+  if (cardId === undefined) {
+    return [null, cursor.state];
+  }
+  return [{ cardId, rank: getCard(cardId).baseRank }, cursor.state];
+};
+
+/**
  * The card of a win, and the reward random state after it. A first win gives
- * the fixed `firstWinCard`. A repeat win rolls the chance, and on a hit selects
- * a card of `cardPool` with equal chance, in its Base Rank. The random state
- * moves forward on each repeat win, also on a miss. A Stage and a Dungeon use
- * it.
+ * the fixed `firstWinCard`. A repeat win uses `repeatWinCard`. A Stage and a
+ * Dungeon use it.
  */
 export const winCard = (
   firstWinCard: DeckEntry,
@@ -133,16 +153,7 @@ export const winCard = (
   if (outcome === "loss") {
     return [null, randomState];
   }
-  const cursor = { state: randomState };
-  if (!rollBasisPoints(cursor, REPEAT_WIN_CARD_CHANCE)) {
-    return [null, cursor.state];
-  }
-  const pool = cardPool();
-  const cardId = pool[randomInt(cursor, pool.length)];
-  if (cardId === undefined) {
-    return [null, cursor.state];
-  }
-  return [{ cardId, rank: getCard(cardId).baseRank }, cursor.state];
+  return repeatWinCard(cardPool, randomState);
 };
 
 /** The XP, Coin, card and Forge Stones of one outcome of a Stage. */

@@ -1,9 +1,11 @@
 /**
  * Economy simulation (Economy 7.1): simulated Players go from a new Profile to
- * Player level 30 with a win chance for each Battle. It does not play
- * Battles. Each Player has one Play Style, which sets how it spends Coin. The
- * report gives the values at each checkpoint of Economy 4. The seeds count up
- * from 1, so the same content always gives the same report.
+ * Player level 30 with a win chance and a 3-Star chance for each Battle. It
+ * does not play Battles. Each Player plays each Stage of a Region again until
+ * it has 3 Stars (ADR-0046), and uses its Sweep Tickets. Each Player has one
+ * Play Style, which sets how it spends Coin. The report gives the values at
+ * each checkpoint of Economy 4. The seeds count up from 1, so the same content
+ * always gives the same report.
  */
 import { ownedCopies } from "../collection/deck-building";
 import type { Collection } from "../collection/deck-building";
@@ -12,6 +14,7 @@ import { DECK_SLOT_PRICES, STARTING_DECK_SLOTS } from "../content/deck-slots";
 import { getStarterDeck } from "../content/decks";
 import {
   DUNGEON_REWARDS,
+  DUNGEONS,
   dungeonForgeStones,
   dungeonReward,
 } from "../content/dungeons";
@@ -66,7 +69,11 @@ import type {
 import { outcomeCoin, stageCoin } from "../content/stage-coin";
 import type { StageOutcome } from "../content/stage-coin";
 import { STAGES } from "../content/stages";
-import { CAMPAIGN_REGIONS, starChestsFor } from "../content/star-chests";
+import {
+  CAMPAIGN_REGIONS,
+  STAR_CHESTS,
+  starChestsFor,
+} from "../content/star-chests";
 import { isUnlocked } from "../content/unlocks";
 import {
   COMBINE_COPIES,
@@ -76,11 +83,29 @@ import {
 } from "../content/workshop";
 import { openPack, openTenPacks, packPool } from "../packs/open-pack";
 import type { OpenedPack, PackPool } from "../packs/open-pack";
+import {
+  claimAllAchievements,
+  recordAchievements,
+} from "../profile/achievements";
+import {
+  dungeonCardPool,
+  DUNGEON_SWEEP_TICKETS_PER_WIN,
+} from "../profile/dungeon-result";
 import { addCopies, discoveredCards } from "../profile/packs";
+import {
+  CAMPAIGN_SWEEP_TICKETS_PER_WIN,
+  repeatWinCard,
+  stageCardPool,
+} from "../profile/stage-result";
 import { combineCopies, craftCopy, extractCopy } from "../profile/workshop";
 import { randomInt } from "../random";
 import type { RandomCursor } from "../random";
-import { floorTarget, NORMAL_STAGE_TARGET, stageTarget } from "./simulate";
+import {
+  floorTarget,
+  NORMAL_STAGE_TARGET,
+  stageTarget,
+  starTarget,
+} from "./simulate";
 import type { WinRateTarget } from "./simulate";
 
 /** A fixed priority list for how a simulated Player spends (Economy 7.1). */
@@ -120,11 +145,19 @@ const GEAR_WIN_BONUS = 0.0125;
 const WIN_CHANCE_CAP = 0.95;
 
 /**
- * The Stars of a Stage win. `sim stage` on Region 1 gives about 2 Stars for
- * each win. The Player does not repeat won Stages, so the 30-Star chest does
- * not open (Economy 7.1).
+ * The Stars of a Stage win that is not a 3-Star win (Economy 7.1). A 3-Star
+ * win comes from the 3-Star chance.
  */
 const STARS_PER_WIN = 2;
+
+/** The best Stars that end the replays of a Stage, and that a Campaign Sweep needs (GDD 4.12). */
+const THREE_STARS = 3;
+
+/**
+ * A guard: the most replay Battles of one Stage. A Player at the cap goes to
+ * the next Stage (Economy 7.1).
+ */
+export const MAX_REPLAYS = 10;
 
 /** The Stages of each Region: 10, the last one is the Boss Stage (GDD 3.3). */
 const STAGES_PER_REGION = 10;
@@ -143,8 +176,8 @@ const STARTER_DECK_ID = "vanguard";
 const ALL_CARDS: PackPool = { kind: "all" };
 
 /**
- * A Campaign Stage of the sim: a real Stage, or a planned Stage of Regions 2
- * and 3, which has no first-win card yet.
+ * A Campaign Stage of the sim: a real Stage, or a planned Stage, which has no
+ * first-win card and no enemy Deck.
  */
 interface EconomyStage {
   readonly id: string;
@@ -153,6 +186,8 @@ interface EconomyStage {
   readonly boss: boolean;
   readonly recommendedLevel: number;
   readonly firstWinCard: DeckEntry | null;
+  /** The Stage card pool of a Warrior (Economy 2.1). Empty for a planned Stage. */
+  readonly cardPool: readonly string[];
 }
 
 const asEconomyStage = (stage: StageDefinition): EconomyStage => ({
@@ -162,6 +197,7 @@ const asEconomyStage = (stage: StageDefinition): EconomyStage => ({
   boss: stage.boss,
   recommendedLevel: stage.recommendedLevel,
   firstWinCard: stage.firstWinCard,
+  cardPool: stageCardPool(stage, HERO_CLASS),
 });
 
 /**
@@ -188,6 +224,7 @@ export const economyStages = (
               boss: number === STAGES_PER_REGION,
               recommendedLevel: playerLevelForXp(xp),
               firstWinCard: null,
+              cardPool: [],
             }
           : asEconomyStage(real);
       result.push(stage);
@@ -235,6 +272,7 @@ export interface RangeTarget {
 /** The targets of one checkpoint of Economy 4. A missing value has no target. */
 interface PacingTarget {
   readonly hours?: RangeTarget;
+  /** The report judges it on the First-try run, not on the medians (ADR-0046). */
   readonly level?: number;
   readonly packsOpened?: RangeTarget;
   readonly firstCombine?: boolean;
@@ -246,13 +284,25 @@ interface PacingTarget {
   readonly lowestGear?: RangeTarget;
 }
 
+/** A target of one checkpoint. */
+type PacingTargetId = keyof PacingTarget;
+
+/** The targets of one checkpoint, and the Play Styles that some targets do not apply to. */
+interface CheckpointTargets extends PacingTarget {
+  readonly notFor?: Readonly<
+    Partial<Record<PacingTargetId, readonly PlayStyle[]>>
+  >;
+}
+
 /** The pacing targets of Economy 4. "About" is ± 25%. */
-export const PACING_TARGETS: Readonly<Record<CheckpointId, PacingTarget>> = {
+const PACING_TARGETS: Readonly<Record<CheckpointId, CheckpointTargets>> = {
   region1: {
     hours: { min: 1.5, max: 2.5 },
     level: 6,
     packsOpened: { min: 3, max: 5 },
     firstCombine: true,
+    // The Collector Combines only to Epic or higher (Economy 4).
+    notFor: { firstCombine: ["collector"] },
   },
   region2: {
     hours: { min: 4.5, max: 7.5 },
@@ -280,6 +330,23 @@ export const PACING_TARGETS: Readonly<Record<CheckpointId, PacingTarget>> = {
   level30: { level: 30 },
 };
 
+/**
+ * The targets of a checkpoint for one Play Style: `PACING_TARGETS` without
+ * the targets that do not apply to `playStyle`.
+ */
+export const pacingTarget = (
+  id: CheckpointId,
+  playStyle: PlayStyle
+): PacingTarget => {
+  const { notFor = {}, ...targets } = PACING_TARGETS[id];
+  return Object.fromEntries(
+    Object.entries(targets).filter(
+      // SAFETY: the keys of `targets` are the keys of `PacingTarget`.
+      ([key]) => !notFor[key as PacingTargetId]?.includes(playStyle)
+    )
+  );
+};
+
 /** The values of a Player at a checkpoint (Economy 7.1). */
 export interface CheckpointSnapshot {
   readonly battles: number;
@@ -298,11 +365,30 @@ export interface CheckpointSnapshot {
   readonly essence: number;
   /** The Forge Stones that the Player has and did not use (ADR-0038). */
   readonly forgeStones: ForgeStones;
+  /** The best Stars of all Stages. */
+  readonly stars: number;
+  /** The Stages with 3 best Stars. */
+  readonly threeStarStages: number;
+  /** The Battles of Stages that the Player won before. */
+  readonly replays: number;
+  /** The Stages that got to the replay cap with fewer than 3 best Stars. */
+  readonly cappedStages: number;
+  /** The Campaign Sweep Tickets that the Player used and that it has. */
+  readonly campaignTicketsUsed: number;
+  readonly campaignSweepTickets: number;
+  /** The Dungeon Sweep Tickets that the Player used and that it has. */
+  readonly dungeonTicketsUsed: number;
+  readonly dungeonSweepTickets: number;
 }
 
-/** Where the Player is in the content. */
+/**
+ * Where the Player is in the content. `campaign` is the first Stage that the
+ * Player did not win, and `replay` is a won Stage with fewer than 3 best Stars,
+ * after the Boss Stage win of its Region. Both are indexes of the Stages.
+ */
 type Position =
   | { readonly kind: "campaign"; readonly stage: number }
+  | { readonly kind: "replay"; readonly stage: number }
   | { readonly kind: "heynspire"; readonly floor: number }
   | { readonly kind: "done" };
 
@@ -338,13 +424,25 @@ export interface EconomyPlayer {
   packRandomState: number;
   /** The reward random state of the Profile: the Forge Stone chances. */
   readonly rewardCursor: RandomCursor;
+  /** The best Stars of each won Campaign Stage, by Stage id, in first-win order. */
+  readonly bestStars: Map<string, number>;
   /** The Stars and the number of opened Star chests of each Region. */
   readonly stars: number[];
   readonly openedChests: number[];
-  /** The number of Campaign Stages won. */
-  stagesWon: number;
+  /** The replay Battles of each Campaign Stage, by Stage id. */
+  readonly replays: Map<string, number>;
+  campaignSweepTickets: number;
+  campaignTicketsUsed: number;
+  dungeonSweepTickets: number;
+  dungeonTicketsUsed: number;
   /** The Dungeons with a first win. */
   readonly dungeonsWon: Set<number>;
+  /** The Heynspire Floors won, from Floor 1. */
+  floorsWon: number;
+  /** The IDs of the Completed Achievements (Achievements 1.1). */
+  completedAchievements: readonly string[];
+  /** The IDs of the Claimed Achievements. The sim claims each one at once. */
+  claimedAchievements: readonly string[];
 }
 
 /** The Player level of `player`. */
@@ -376,10 +474,18 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     // The reward random state is not the Battle random state either, so that
     // a change of a Forge Stone chance does not change a Battle result.
     rewardCursor: { state: seed * 104_729 + 31 },
+    bestStars: new Map(),
     stars: Array.from({ length: CAMPAIGN_REGIONS }, () => 0),
     openedChests: Array.from({ length: CAMPAIGN_REGIONS }, () => 0),
-    stagesWon: 0,
+    replays: new Map(),
+    campaignSweepTickets: 0,
+    campaignTicketsUsed: 0,
+    dungeonSweepTickets: 0,
+    dungeonTicketsUsed: 0,
     dungeonsWon: new Set(),
+    floorsWon: 0,
+    completedAchievements: [],
+    claimedAchievements: [],
   };
   return player;
 };
@@ -419,6 +525,22 @@ const snapshot = (player: EconomyPlayer): CheckpointSnapshot => {
     coin: player.coin,
     essence: player.essence,
     forgeStones: player.forgeStones,
+    stars: player.stars.reduce((total, stars) => total + stars, 0),
+    threeStarStages: [...player.bestStars.values()].filter(
+      (stars) => stars === THREE_STARS
+    ).length,
+    replays: [...player.replays.values()].reduce(
+      (total, battles) => total + battles,
+      0
+    ),
+    cappedStages: [...player.replays].filter(
+      ([stageId, battles]) =>
+        battles >= MAX_REPLAYS && player.bestStars.get(stageId) !== THREE_STARS
+    ).length,
+    campaignTicketsUsed: player.campaignTicketsUsed,
+    campaignSweepTickets: player.campaignSweepTickets,
+    dungeonTicketsUsed: player.dungeonTicketsUsed,
+    dungeonSweepTickets: player.dungeonSweepTickets,
   };
 };
 
@@ -606,7 +728,7 @@ const craftPairs = (player: EconomyPlayer): void => {
 
 /** The Collector buys a Royal Pack after Region 2 (Economy 7.1). */
 const collectorPack = (player: EconomyPlayer): PackId =>
-  player.stagesWon >= STAGES_PER_REGION * 2 ? "royal" : "merchant";
+  player.bestStars.size >= STAGES_PER_REGION * 2 ? "royal" : "merchant";
 
 const spendCollector = (player: EconomyPlayer): void => {
   const packId = collectorPack(player);
@@ -709,17 +831,26 @@ const leastDiscoveredRace = (player: EconomyPlayer): RaceId => {
   return best;
 };
 
-/** Adds Stars to a Region and opens each Star chest that they reach (Economy 2.2). */
-const addStars = (player: EconomyPlayer, region: number, stars: number) => {
-  const index = region - 1;
-  const total = (player.stars[index] ?? 0) + stars;
+/**
+ * Keeps the best Stars of a Stage win, and opens each Star chest that the best
+ * Stars of the Region reach (Economy 2.2).
+ */
+const recordStars = (
+  player: EconomyPlayer,
+  stage: EconomyStage,
+  stars: number
+) => {
+  const best = player.bestStars.get(stage.id) ?? 0;
+  player.bestStars.set(stage.id, Math.max(best, stars));
+  const index = stage.region - 1;
+  const total = (player.stars[index] ?? 0) + Math.max(0, stars - best);
   player.stars[index] = total;
   const chests = starChestsFor(total);
   for (const chest of chests.slice(player.openedChests[index] ?? 0)) {
     player.coin += chest.coin;
     player.essence += chest.essence;
     player.forgeStones = addForgeStones(player.forgeStones, {
-      tier: regionForgeStoneTier(region),
+      tier: regionForgeStoneTier(stage.region),
       count: chest.forgeStones,
     });
     if (chest.pack !== null) {
@@ -754,9 +885,176 @@ const giveReward = (player: EconomyPlayer, reward: BattleReward) => {
   );
 };
 
+/**
+ * Rolls the repeat-win card of `cardPool` with the reward random state, and
+ * adds it to the Collection (Economy 2.1). A Stage and a Dungeon use it.
+ */
+const giveRepeatWinCard = (
+  player: EconomyPlayer,
+  cardPool: readonly string[]
+) => {
+  const [card, state] = repeatWinCard(
+    () => cardPool,
+    player.rewardCursor.state
+  );
+  player.rewardCursor.state = state;
+  if (card !== null) {
+    player.collection = addCopies(player.collection, [card]);
+  }
+};
+
+/**
+ * Gives one repeat-win reward of a Stage (Economy 2.1): a repeat win and each
+ * Campaign Sweep Ticket. It rolls the card first, then the Forge Stone, as the
+ * game does.
+ */
+const giveStageRepeatWin = (player: EconomyPlayer, stage: EconomyStage) => {
+  giveRepeatWinCard(player, stage.cardPool);
+  const stones = stageForgeStones(stage, "win", player.rewardCursor);
+  giveReward(player, {
+    coin: stageCoin(stage, "win"),
+    xp: stageXp(stage, "win"),
+    essence: 0,
+    forgeStones: stones === null ? [] : [stones],
+  });
+};
+
+/** The Dungeon card pool of a Warrior (Economy 2.4). Empty for a Dungeon with no definition. */
+const dungeonPool = (number: number): readonly string[] => {
+  const dungeon = DUNGEONS.find((candidate) => candidate.number === number);
+  return dungeon === undefined ? [] : dungeonCardPool(dungeon, HERO_CLASS);
+};
+
+/**
+ * Gives the reward of one Dungeon outcome (Economy 2.4). A repeat win and each
+ * Dungeon Sweep Ticket roll the card first, then the Forge Stones, as the game
+ * does. The first win gives no card in the sim.
+ */
+const giveDungeonReward = (
+  player: EconomyPlayer,
+  dungeon: DungeonRewardDefinition,
+  outcome: StageOutcome
+) => {
+  if (outcome === "win") {
+    giveRepeatWinCard(player, dungeonPool(dungeon.dungeon));
+  }
+  giveReward(player, {
+    ...dungeonReward(dungeon, outcome),
+    forgeStones: dungeonForgeStones(dungeon, outcome, player.rewardCursor),
+  });
+};
+
+/**
+ * The Stage of a Campaign Sweep (Economy 7.1): of the Stages with 3 best
+ * Stars, the one with the most Coin for a repeat win. On a tie, a Boss Stage
+ * first, then the highest Region and Stage number. `null` when no Stage has 3
+ * best Stars.
+ */
+const campaignSweepStage = (
+  player: EconomyPlayer,
+  stages: readonly EconomyStage[]
+): EconomyStage | null => {
+  const score = (stage: EconomyStage) =>
+    stageCoin(stage, "win") * 2 + (stage.boss ? 1 : 0);
+  let best: EconomyStage | null = null;
+  for (const stage of stages) {
+    if (
+      player.bestStars.get(stage.id) === THREE_STARS &&
+      (best === null || score(stage) >= score(best))
+    ) {
+      best = stage;
+    }
+  }
+  return best;
+};
+
+/**
+ * Uses all Campaign Sweep Tickets on the Stage of `campaignSweepStage`. Each
+ * Ticket gives one repeat-win reward. A Sweep gives no Tickets and changes no
+ * Stars. With no 3-Star Stage, the Player keeps its Tickets.
+ */
+export const campaignSweep = (
+  player: EconomyPlayer,
+  stages: readonly EconomyStage[]
+): void => {
+  const stage = campaignSweepStage(player, stages);
+  if (stage === null) {
+    return;
+  }
+  for (; player.campaignSweepTickets > 0; player.campaignSweepTickets -= 1) {
+    giveStageRepeatWin(player, stage);
+    player.campaignTicketsUsed += 1;
+  }
+};
+
+/** Uses all Dungeon Sweep Tickets on `dungeon`. Each Ticket gives one repeat-win reward. */
+export const dungeonSweep = (
+  player: EconomyPlayer,
+  dungeon: DungeonRewardDefinition
+) => {
+  for (; player.dungeonSweepTickets > 0; player.dungeonSweepTickets -= 1) {
+    giveDungeonReward(player, dungeon, "win");
+    player.dungeonTicketsUsed += 1;
+  }
+};
+
+// ─── Achievements ────────────────────────────────────────────────────────────
+
+/** The ID of the Dungeon with the number, as the Profile keeps it. */
+const dungeonId = (number: number): string => {
+  const dungeon = DUNGEONS.find((candidate) => candidate.number === number);
+  if (dungeon === undefined) {
+    throw new Error(`Unknown Dungeon: ${number}`);
+  }
+  return dungeon.id;
+};
+
+/**
+ * Records the Profile goals and the Tally goals that the Player meets, and
+ * claims each Completed Achievement at once (Achievements 1.2, Economy 7.1).
+ * The Player gets the Coin and the Essence. The Heynstones are not in the
+ * sim: the Heynstone ledger is a sum. The sim plays no Battle, so it
+ * completes no Feat.
+ */
+export const claimAchievements = (player: EconomyPlayer): void => {
+  // The Profile fields that the goals read.
+  const profile = {
+    xp: player.xp,
+    coin: player.coin,
+    essence: player.essence,
+    heynstones: 0,
+    collection: player.collection,
+    gear: player.gear,
+    stageResults: Object.fromEntries(player.bestStars),
+    dungeonResults: Object.fromEntries(
+      [...player.dungeonsWon].map((dungeon) => [dungeonId(dungeon), 1])
+    ),
+    heynspireFloorsWon: player.floorsWon,
+    claimedStarChests: Object.fromEntries(
+      player.openedChests.map((opened, index) => [
+        String(index + 1),
+        STAR_CHESTS.slice(0, opened).map((chest) => chest.stars),
+      ])
+    ),
+    tallies: {
+      packsOpened: player.packsOpened,
+      combines: player.combines,
+      crafts: player.crafts,
+    },
+    completedAchievements: player.completedAchievements,
+    claimedAchievements: player.claimedAchievements,
+  };
+  const recorded = recordAchievements(profile).profile;
+  const claimed = claimAllAchievements(recorded)?.profile ?? recorded;
+  player.coin = claimed.coin;
+  player.essence = claimed.essence;
+  player.completedAchievements = claimed.completedAchievements;
+  player.claimedAchievements = claimed.claimedAchievements;
+};
+
 // ─── Battles ─────────────────────────────────────────────────────────────────
 
-/** The middle of a win-rate target (Economy 7.1). */
+/** The middle of a win-rate target or a 3-Star target (Economy 7.1). */
 const middle = (target: WinRateTarget): number => (target.min + target.max) / 2;
 
 /**
@@ -777,8 +1075,16 @@ const winChance = (
 interface EconomyRunOptions {
   readonly playStyle: PlayStyle;
   readonly seed: number;
-  /** A fixed win chance for each Battle. 1 is the First-try run. */
+  /**
+   * The First-try run: the Player wins each Battle with 2 Stars, and never
+   * replays a Stage and never Sweeps. Thus Battle n is the first try of Stage
+   * n, as on the First-try Path. It ignores the fixed chances.
+   */
+  readonly firstTry?: boolean;
+  /** A fixed win chance for each Battle. */
   readonly fixedWinChance?: number;
+  /** A fixed 3-Star chance for each Stage win. */
+  readonly fixedThreeStarChance?: number;
   /** MAX_BATTLES by default. */
   readonly maxBattles?: number;
 }
@@ -792,6 +1098,8 @@ export interface EconomyRun {
   >;
   /** True when the Player is not at level 30 after the Battle cap. */
   readonly stuck: boolean;
+  /** True when a Stage got to the replay cap with fewer than 3 best Stars. */
+  readonly capped: boolean;
   /** The values at the end of the run. */
   readonly end: CheckpointSnapshot;
   /** The Recommended level of each Campaign Stage, in order. */
@@ -807,6 +1115,8 @@ export interface EconomyRun {
    * first Battle at that level. Index 0 is level 1.
    */
   readonly gearAtLevels: readonly GearLevels[];
+  /** The IDs of the Achievements that the Player claimed, in Claim order. */
+  readonly claimedAchievements: readonly string[];
 }
 
 /** The highest Dungeon with XP that the Player level unlocks, or `null`. */
@@ -845,14 +1155,49 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     floorFails: 0,
     dungeonUntil: null,
   };
+  const firstTry = options.firstTry === true;
 
-  /** Rolls a Battle. A chance of 1 or more never uses a random value. */
-  const wins = (chance: number): boolean => {
-    const used = options.fixedWinChance ?? chance;
-    if (used >= 1) {
-      return true;
+  /** Rolls a chance. A chance of 1 or more never uses a random value. */
+  const rolls = (chance: number): boolean =>
+    chance >= 1 || randomInt(cursor, 10_000) < Math.round(chance * 10_000);
+
+  /** Rolls a Battle. */
+  const wins = (chance: number): boolean =>
+    firstTry || rolls(options.fixedWinChance ?? chance);
+
+  /**
+   * The Stars of a Stage win: 3 with the 3-Star chance, else 2. The chance is
+   * the middle of the 3-Star target of the Stage (GDD 13, step 7).
+   */
+  const winStars = (stage: EconomyStage): number => {
+    if (firstTry) {
+      return STARS_PER_WIN;
     }
-    return randomInt(cursor, 10_000) < Math.round(used * 10_000);
+    const chance = options.fixedThreeStarChance ?? middle(starTarget(stage));
+    return rolls(chance) ? THREE_STARS : STARS_PER_WIN;
+  };
+
+  /**
+   * Where the Player goes in Region `region` after its Boss Stage win: the
+   * first Stage with fewer than 3 best Stars and below the replay cap, in
+   * Stage order. Else the next Region, or Heynspire after the last Region.
+   */
+  const afterRegion = (region: number): Position => {
+    if (!firstTry) {
+      const replay = stages.findIndex(
+        (stage) =>
+          stage.region === region &&
+          (player.bestStars.get(stage.id) ?? 0) < THREE_STARS &&
+          (player.replays.get(stage.id) ?? 0) < MAX_REPLAYS
+      );
+      if (replay !== -1) {
+        return { kind: "replay", stage: replay };
+      }
+    }
+    const next = stages.findIndex((stage) => stage.region > region);
+    return next === -1
+      ? { kind: "heynspire", floor: 1 }
+      : { kind: "campaign", stage: next };
   };
 
   const playDungeon = (dungeon: DungeonRewardDefinition) => {
@@ -864,10 +1209,14 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       outcome = player.dungeonsWon.has(dungeon.dungeon) ? "win" : "firstWin";
       player.dungeonsWon.add(dungeon.dungeon);
     }
-    giveReward(player, {
-      ...dungeonReward(dungeon, outcome),
-      forgeStones: dungeonForgeStones(dungeon, outcome, player.rewardCursor),
-    });
+    giveDungeonReward(player, dungeon, outcome);
+    if (!won) {
+      return;
+    }
+    player.dungeonSweepTickets += DUNGEON_SWEEP_TICKETS_PER_WIN;
+    if (!firstTry) {
+      dungeonSweep(player, dungeon);
+    }
   };
 
   const playStage = (index: number, stage: EconomyStage) => {
@@ -875,29 +1224,41 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       levelsAtStages.push(levelOf(player));
       gearAtStages.push({ ...player.gear });
     }
+    const replay = progress.position.kind === "replay";
+    if (replay) {
+      player.replays.set(stage.id, (player.replays.get(stage.id) ?? 0) + 1);
+    }
     const won = wins(
       winChance(middle(stageTarget(stage)), stage.recommendedLevel, player)
     );
-    const outcome: StageOutcome = won ? "firstWin" : "loss";
-    const stones = stageForgeStones(stage, outcome, player.rewardCursor);
-    giveReward(player, {
-      coin: stageCoin(stage, outcome),
-      xp: stageXp(stage, outcome),
-      essence: 0,
-      forgeStones: stones === null ? [] : [stones],
-    });
-    if (!won) {
-      return;
+    if (won && replay) {
+      giveStageRepeatWin(player, stage);
+    } else {
+      const outcome: StageOutcome = won ? "firstWin" : "loss";
+      const stones = stageForgeStones(stage, outcome, player.rewardCursor);
+      giveReward(player, {
+        coin: stageCoin(stage, outcome),
+        xp: stageXp(stage, outcome),
+        essence: 0,
+        forgeStones: stones === null ? [] : [stones],
+      });
     }
-    if (stage.firstWinCard !== null) {
-      player.collection = addCopies(player.collection, [stage.firstWinCard]);
+    if (won) {
+      if (!replay && stage.firstWinCard !== null) {
+        player.collection = addCopies(player.collection, [stage.firstWinCard]);
+      }
+      player.campaignSweepTickets += CAMPAIGN_SWEEP_TICKETS_PER_WIN;
+      recordStars(player, stage, winStars(stage));
     }
-    player.stagesWon += 1;
-    addStars(player, stage.region, STARS_PER_WIN);
-    progress.position =
-      index + 1 < stages.length
-        ? { kind: "campaign", stage: index + 1 }
-        : { kind: "heynspire", floor: 1 };
+    if (replay) {
+      progress.position = afterRegion(stage.region);
+    } else if (won) {
+      const next = stages[index + 1];
+      progress.position =
+        next?.region === stage.region
+          ? { kind: "campaign", stage: index + 1 }
+          : afterRegion(stage.region);
+    }
   };
 
   const playFloor = (floor: number) => {
@@ -926,6 +1287,8 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       return;
     }
     giveReward(player, reward);
+    player.campaignSweepTickets += CAMPAIGN_SWEEP_TICKETS_PER_WIN;
+    player.floorsWon = floor;
     progress.floorFails = 0;
     progress.position =
       floor < HEYNSPIRE_FLOORS
@@ -939,7 +1302,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       progress.dungeonUntil = null;
     }
     const { position } = progress;
-    if (position.kind === "campaign") {
+    if (position.kind === "campaign" || position.kind === "replay") {
       const stage = stages[position.stage];
       if (stage === undefined) {
         throw new Error(`No Campaign Stage at index ${position.stage}`);
@@ -968,13 +1331,27 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     }
   };
 
+  /** The number of Regions that the Player left, after their replays. */
+  const regionsLeft = (): number => {
+    const { position } = progress;
+    if (position.kind === "campaign" || position.kind === "replay") {
+      return (stages[position.stage]?.region ?? 1) - 1;
+    }
+    return CAMPAIGN_REGIONS;
+  };
+
   while (levelOf(player) < MAX_PLAYER_LEVEL && player.battles < maxBattles) {
     recordLevels();
     player.battles += 1;
     playOne();
+    // A Sweep takes no Battle and no time.
+    if (!firstTry) {
+      campaignSweep(player, stages);
+    }
     spend(player, options.playStyle);
+    claimAchievements(player);
     for (const [index, id] of REGION_CHECKPOINTS.entries()) {
-      if (player.stagesWon >= (index + 1) * STAGES_PER_REGION) {
+      if (index < regionsLeft()) {
         record(id);
       }
     }
@@ -986,17 +1363,20 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   if (levelOf(player) >= MAX_PLAYER_LEVEL) {
     record("level30");
   }
+  const end = snapshot(player);
   return {
     playStyle: options.playStyle,
     seed: options.seed,
     checkpoints,
     stuck: levelOf(player) < MAX_PLAYER_LEVEL,
-    end: snapshot(player),
+    capped: end.cappedStages > 0,
+    end,
     stageLevels: stages.map((stage) => stage.recommendedLevel),
     levelsAtStages,
     gearAtStages,
     gearAtFloors,
     gearAtLevels,
+    claimedAchievements: player.claimedAchievements,
   };
 };
 
@@ -1006,7 +1386,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
  */
 const firstTryRuns = (): readonly EconomyRun[] =>
   PLAY_STYLES.map((playStyle) =>
-    simulateEconomyRun({ playStyle, seed: 1, fixedWinChance: 1 })
+    simulateEconomyRun({ playStyle, seed: 1, firstTry: true })
   );
 
 /**
@@ -1079,10 +1459,32 @@ export const expectedGearAtLevel = (level: number): GearLevels => {
 
 // ─── Report ──────────────────────────────────────────────────────────────────
 
-/** The metrics of a checkpoint that the report shows. */
+/** The replay and Sweep metrics of a checkpoint that the report shows. */
+export type ReplayMetric =
+  | "stars"
+  | "threeStarStages"
+  | "replays"
+  | "cappedStages"
+  | "campaignTicketsUsed"
+  | "campaignSweepTickets"
+  | "dungeonTicketsUsed"
+  | "dungeonSweepTickets";
+
+export const REPLAY_METRICS: readonly ReplayMetric[] = [
+  "stars",
+  "threeStarStages",
+  "replays",
+  "cappedStages",
+  "campaignTicketsUsed",
+  "campaignSweepTickets",
+  "dungeonTicketsUsed",
+  "dungeonSweepTickets",
+];
+
+/** The metrics of a checkpoint that the report shows with the Economy 4 targets. */
 export type Metric = Exclude<
   keyof CheckpointSnapshot,
-  "combines" | "essence" | "forgeStones"
+  "combines" | "essence" | "forgeStones" | ReplayMetric
 >;
 
 export const METRICS: readonly Metric[] = [
@@ -1111,6 +1513,7 @@ interface CheckpointSummary {
   readonly metrics: Readonly<Record<Metric, Spread>> | null;
   /** The Forge Stones that the Players did not use, by tier (ADR-0038). */
   readonly forgeStones: Readonly<Record<ForgeStoneTier, Spread>> | null;
+  readonly replays: Readonly<Record<ReplayMetric, Spread>> | null;
   /** The share of the Players with a Combine done, from 0 to 1. */
   readonly combinedShare: number;
 }
@@ -1121,6 +1524,8 @@ interface PlayStyleReport {
   readonly checkpoints: Readonly<Record<CheckpointId, CheckpointSummary>>;
   /** The number of Players at the Battle cap below level 30. */
   readonly stuck: number;
+  /** The number of Players with a Stage at the replay cap. */
+  readonly capped: number;
   /** The run with a win chance of 100%: the First-try Path. */
   readonly firstTry: EconomyRun;
 }
@@ -1147,9 +1552,15 @@ const summarize = (
   snapshots: readonly CheckpointSnapshot[]
 ): CheckpointSummary => {
   if (snapshots.length === 0) {
-    return { reached: 0, metrics: null, forgeStones: null, combinedShare: 0 };
+    return {
+      reached: 0,
+      metrics: null,
+      forgeStones: null,
+      replays: null,
+      combinedShare: 0,
+    };
   }
-  const spread = (metric: Metric) =>
+  const spread = (metric: Metric | ReplayMetric) =>
     spreadOf(snapshots.map((snap) => snap[metric]));
   const stones = (tier: ForgeStoneTier) =>
     spreadOf(snapshots.map((snap) => snap.forgeStones[tier]));
@@ -1174,6 +1585,16 @@ const summarize = (
       epic: stones("epic"),
       legendary: stones("legendary"),
     },
+    replays: {
+      stars: spread("stars"),
+      threeStarStages: spread("threeStarStages"),
+      replays: spread("replays"),
+      cappedStages: spread("cappedStages"),
+      campaignTicketsUsed: spread("campaignTicketsUsed"),
+      campaignSweepTickets: spread("campaignSweepTickets"),
+      dungeonTicketsUsed: spread("dungeonTicketsUsed"),
+      dungeonSweepTickets: spread("dungeonSweepTickets"),
+    },
     combinedShare:
       snapshots.filter((snap) => snap.combines > 0).length / snapshots.length,
   };
@@ -1184,6 +1605,8 @@ interface EconomySimulationOptions {
   readonly seeds: number;
   /** MAX_BATTLES by default. */
   readonly maxBattles?: number;
+  /** A fixed 3-Star chance for each Stage win, for tests. */
+  readonly fixedThreeStarChance?: number;
 }
 
 /** Simulates `seeds` Players of one Play Style and the First-try run (Economy 7.1). */
@@ -1196,6 +1619,7 @@ export const simulateEconomy = (
       playStyle,
       seed: index + 1,
       maxBattles: options.maxBattles,
+      fixedThreeStarChance: options.fixedThreeStarChance,
     })
   );
   const at = (id: CheckpointId) =>
@@ -1218,10 +1642,11 @@ export const simulateEconomy = (
       level30: at("level30"),
     },
     stuck: runs.filter((run) => run.stuck).length,
+    capped: runs.filter((run) => run.capped).length,
     firstTry: simulateEconomyRun({
       playStyle,
       seed: 1,
-      fixedWinChance: 1,
+      firstTry: true,
       maxBattles: options.maxBattles,
     }),
   };

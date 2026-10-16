@@ -510,6 +510,25 @@ test.describe("Battle bot playtest", () => {
     await expect(page.getByTestId("key-guide")).toContainText("End the Turn");
   });
 
+  test("the Settings button left of End Turn opens the Settings without the progress row", async ({
+    page,
+  }) => {
+    await startBattle(page, "1-2", "vanguard", 9);
+    await expect(page.getByRole("button", { name: "Sound" })).toHaveCount(0);
+    const settings = page.getByTestId("battle-settings");
+    const settingsBox = await settings.boundingBox();
+    const endTurnBox = await page.getByTestId("end-turn").boundingBox();
+    expect(settingsBox?.x ?? 0).toBeLessThan(endTurnBox?.x ?? 0);
+    await settings.click();
+    await expect(page.getByTestId("settings-dialog")).toBeVisible();
+    await expect(page.getByTestId("settings-language")).toBeVisible();
+    await expect(page.getByTestId("settings-volume")).toBeVisible();
+    await expect(page.getByTestId("settings-profile")).toHaveCount(0);
+    await page.getByTestId("settings-close").press("Enter");
+    await expect(page.getByTestId("settings-dialog")).toBeHidden();
+    await expect(settings).toBeFocused();
+  });
+
   test("switches the language to Indonesian", async ({ page }) => {
     await page.goto("/play");
     // The keyboard, because the "ready to use offline" toast can cover the
@@ -808,11 +827,11 @@ test.describe("Town", () => {
     page,
   }) => {
     await page.goto("/play");
-    const achievements = page.getByRole("button", {
-      name: "Achievements, opens later",
+    const bazaar = page.getByRole("button", {
+      name: "Bazaar, opens later",
     });
-    await achievements.focus();
-    await expect(page.getByTestId("town-tooltip-achievements")).toContainText(
+    await bazaar.focus();
+    await expect(page.getByTestId("town-tooltip-bazaar")).toContainText(
       "Opens later"
     );
     await page.keyboard.press("Enter");
@@ -1056,6 +1075,10 @@ test.describe("Campaign", () => {
     await expect(panel).toContainText("Baron Brassbelly");
     await expect(page.getByTestId("stage-reward-card")).toHaveText(
       "Iron Bulwark"
+    );
+    // Each Stage has its own Star Turn (ADR-0047).
+    await expect(page.getByTestId("stage-star-rule-3")).toContainText(
+      "Also win before Turn 18."
     );
     await expect(page.getByTestId("start-battle")).toBeFocused();
     await page.keyboard.press("Escape");

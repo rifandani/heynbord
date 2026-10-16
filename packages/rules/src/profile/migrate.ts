@@ -84,6 +84,17 @@ export const PROFILE_MIGRATIONS = {
    * first win of Stage 5-10 opens Heynspire, also for an old save.
    */
   7: (profile) => ({ ...profile, heynspireFloorsWon: 0 }),
+  /**
+   * Version 9 adds the Achievements and the Tallies (Achievements 1.1 and
+   * 1.5). An old save has none. The Tallies start at 0, and the Profile goals
+   * that an old save already meets become Completed when it loads.
+   */
+  8: (profile) => ({
+    ...profile,
+    completedAchievements: [],
+    claimedAchievements: [],
+    tallies: { packsOpened: 0, combines: 0, crafts: 0 },
+  }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

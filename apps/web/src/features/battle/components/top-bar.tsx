@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue } from "@effect/atom-react";
+import { useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
 import { ToggleButton } from "react-aria-components";
 
@@ -7,7 +7,7 @@ import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
 import type { HandCardView } from "@/features/battle/battle-view";
 import { hasManyHeroes, heroOf } from "@/features/battle/battle-view";
-import { shownSessionAtom, soundOnAtom } from "@/features/battle/battle.atoms";
+import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { BossPlates } from "@/features/battle/components/boss-plates";
 import {
   GameButton,
@@ -96,14 +96,14 @@ const BattleLogButton = ({ battle }: { readonly battle: Battle }) => {
       data-testid="battle-log-button"
     >
       <GlyphIcon glyph="scroll" className="size-4" />
-      <span className="[@media(max-width:900px)]:sr-only">
-        {tr("battleLog.open")}
-      </span>
     </ToggleButton>
   );
 };
 
-/** Speed, Skip, the Battle Log, sound (BAT-11), the Handbook and the Key Guide (UI-02). */
+/**
+ * Speed, Skip, the Battle Log, the Handbook and the Key Guide (UI-02). The
+ * sound is in the Settings, next to End Turn.
+ */
 const BattleControls = ({
   battle,
   session,
@@ -112,7 +112,6 @@ const BattleControls = ({
   readonly session: BattleSession;
 }) => {
   const { tr } = useGameText();
-  const [soundOn, setSoundOn] = useAtom(soundOnAtom);
   return (
     <div className="flex items-center gap-1">
       <ToggleButton
@@ -122,6 +121,8 @@ const BattleControls = ({
         className={gameButtonStyles({
           intent: battle.speed === 2 ? "gold" : "ghost",
           size: "sm",
+          // One width for ×1 and ×2, so a toggle does not move the other controls.
+          className: "min-w-12 tabular-nums",
         })}
       >
         {tr("battle.speedValue", { value: battle.speed })}
@@ -133,19 +134,12 @@ const BattleControls = ({
           size="sm"
           isDisabled={isIdle(session) || battle.held || battle.log !== null}
           onPress={() => battle.skip()}
+          aria-label={tr("battle.skip")}
         >
-          {tr("battle.skip")}
+          <GlyphIcon glyph="step" className="size-4" />
         </GameButton>
       )}
       <BattleLogButton battle={battle} />
-      <ToggleButton
-        isSelected={soundOn}
-        onChange={setSoundOn}
-        aria-label={tr("battle.sound")}
-        className={gameButtonStyles({ intent: "ghost", size: "sm" })}
-      >
-        <GlyphIcon glyph={soundOn ? "sound" : "mute"} className="size-4" />
-      </ToggleButton>
       <HandbookButton />
       <KeyGuide />
     </div>

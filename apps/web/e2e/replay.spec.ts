@@ -8,9 +8,10 @@ test.describe("Replay Link", () => {
     page,
     context,
   }) => {
-    // Two pages load the game, and the Replay steps through each Log Entry.
-    test.setTimeout(90_000);
-    await page.goto("/play?state=victory&seed=3");
+    // Two pages load the game, and the Replay plays all of its Log Entries.
+    // Seed 37 gives a short won Battle of Stage 1-1 (7 Turns).
+    test.setTimeout(180_000);
+    await page.goto("/play?state=victory&seed=37");
     const result = page.getByTestId("battle-result");
     await expect(result).toBeVisible({ timeout: 30_000 });
     await result.getByTestId("share-replay").click();
@@ -40,17 +41,22 @@ test.describe("Replay Link", () => {
     await expect(viewer.getByTestId("back-to-live")).toHaveCount(0);
     await expect(viewer.getByTestId("battle-log-button")).toHaveCount(0);
 
-    // Pause, then step to the last Log Entry.
-    await viewer.getByTestId("log-play").click();
+    // The result does not show before the last Log Entry.
     const replayResult = viewer.getByTestId("battle-result");
-    await expect(async () => {
-      await viewer.keyboard.press("ArrowRight");
-      await expect(replayResult).toBeVisible({ timeout: 50 });
-    }).toPass({ timeout: 30_000, intervals: [0] });
+    await expect(replayResult).toHaveCount(0);
+
+    // Play continues by itself to the result. The Player can set Speed ×2
+    // during a Replay: it keeps the test short.
+    await viewer.getByRole("button", { name: "Speed ×1" }).click();
+    await expect(
+      viewer.getByRole("button", { name: "Speed ×2" })
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(replayResult).toBeVisible({ timeout: 120_000 });
     await expect(replayResult).toHaveAttribute("data-replay");
     await expect(replayResult).toContainText("Victory");
     await expect(replayResult.getByTestId("result-rewards")).toHaveCount(0);
     await expect(replayResult.getByTestId("share-replay")).toHaveCount(0);
+    await expect(replayResult.getByTestId("leave-replay-result")).toBeVisible();
 
     // "Watch again" Plays from the first Log Entry again.
     await replayResult.getByTestId("watch-again").click();

@@ -95,9 +95,6 @@ test.describe("Heynspire", () => {
     await press(page, "building-heynspire");
     const screen = page.getByTestId("heynspire");
     await expect(screen).toBeVisible();
-    await expect(page.getByTestId("heynspire-progress")).toHaveText(
-      "Floor 1 of 50"
-    );
     const floor1 = page.getByTestId("floor-1");
     await expect(floor1).toHaveAttribute("data-state", "current");
     await expect(floor1).toBeFocused();
@@ -147,9 +144,6 @@ test.describe("Heynspire", () => {
     await expect(page.getByTestId("floor-2")).toHaveAttribute(
       "data-state",
       "current"
-    );
-    await expect(page.getByTestId("heynspire-progress")).toHaveText(
-      "Floor 2 of 50"
     );
     // Without a panel, Esc goes back to the Town.
     await page.keyboard.press("Escape");
@@ -206,9 +200,9 @@ test.describe("Heynspire", () => {
     await openTown(page);
     await openHeynspire(page, 50);
     await press(page, "town-shortcut-heynspire");
-    await expect(page.getByTestId("heynspire-climbed")).toBeVisible();
-    await expect(page.getByTestId("heynspire-progress")).toHaveText(
-      "Heynspire climbed"
+    await expect(page.getByTestId("heynspire-summit")).toHaveAttribute(
+      "data-climbed",
+      "true"
     );
     await press(page, "floor-50");
     const panel = page.getByTestId("floor-panel");

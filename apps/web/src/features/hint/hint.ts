@@ -26,6 +26,7 @@ export const HINTS = [
   "dungeons",
   "dungeonSweep",
   "heynspire",
+  "achievements",
 ] as const;
 
 export type HintId = (typeof HINTS)[number];
@@ -67,6 +68,7 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
   dungeons: toEntry("dungeon"),
   dungeonSweep: toEntry("sweep"),
   heynspire: toEntry("heynspire"),
+  achievements: toEntry("achievement"),
 };
 
 /**
@@ -79,8 +81,9 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
  * Hero plate, the Sweep Hint near the Sweep button of the Stage Panel, the
  * Dungeons level Hint near the cave in the Town, or near the Dungeons
  * shortcut when the screen crops the cave, the Dungeon Sweep Hint near
- * the label of the Sweep row of the Dungeons screen, and the Heynspire Hint
- * near the tower in the Town.
+ * the label of the Sweep row of the Dungeons screen, the Heynspire Hint
+ * near the tower in the Town, and the Achievements Hint near the
+ * Achievements shortcut of the Town Bar.
  */
 export type HintPlace =
   | "hand"
@@ -93,7 +96,8 @@ export type HintPlace =
   | "sweepButton"
   | "cave"
   | "dungeonSweepRow"
-  | "tower";
+  | "tower"
+  | "achievementsShortcut";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   skillCard: "hand",
@@ -109,6 +113,7 @@ export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   dungeons: "cave",
   dungeonSweep: "dungeonSweepRow",
   heynspire: "tower",
+  achievements: "achievementsShortcut",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */

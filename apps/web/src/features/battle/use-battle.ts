@@ -5,6 +5,8 @@ import { Result } from "effect";
 import type { ContextType } from "react";
 import { useContext, useLayoutEffect } from "react";
 
+import { newlyCompleted } from "@/features/achievements/achievements";
+import { newAchievementsAtom } from "@/features/achievements/achievements.atoms";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import {
   canPlayLog,
@@ -58,7 +60,10 @@ import type { Tutorial } from "@/features/battle/tutorial";
 import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 import { nextInspectedUnit } from "@/features/battle/unit-inspect";
-import { profileAtom } from "@/features/profile/profile.atoms";
+import {
+  profileAtom,
+  profileStateAtom,
+} from "@/features/profile/profile.atoms";
 import type { ReplayRun } from "@/features/replay/replay";
 import { watchingSession } from "@/features/replay/replay";
 import { gameScreenAtom } from "@/features/town/town.atoms";
@@ -104,25 +109,39 @@ const noteSelect = (
   }
 };
 
+type Registry = ContextType<typeof RegistryContext>;
+
+/** The IDs of the Completed Achievements in the saved Profile. */
+const savedCompleted = (registry: Registry): readonly string[] => {
+  const state = registry.get(profileStateAtom);
+  return state.status === "ready" ? state.profile.completedAchievements : [];
+};
+
 /**
  * Saves the result of a finished Battle into the Profile (GDD 11.4): the
  * rewards of a win or a loss (Economy 2.1), one time for each Battle. A reload on the
  * result keeps them. An Abandon and a Battle that is not finished save
- * nothing.
+ * nothing. The result shows the Achievements that its Profile write
+ * completed, so they get no toast.
  */
-const recordResult = (
-  registry: ContextType<typeof RegistryContext>,
-  finished: BattleSession
-) => {
+const recordResult = (registry: Registry, finished: BattleSession) => {
   const recorded = recordBattleResult(
     registry.get(profileAtom),
     finished,
     registry.get(battleRewardsAtom)
   );
-  if (recorded) {
-    registry.set(battleRewardsAtom, recorded.shown);
-    registry.set(profileAtom, recorded.profile);
+  if (!recorded) {
+    return;
   }
+  const before = savedCompleted(registry);
+  registry.set(profileAtom, recorded.profile);
+  const achievements = newlyCompleted(before, savedCompleted(registry));
+  registry.set(battleRewardsAtom, { ...recorded.shown, achievements });
+  const shown = new Set(achievements);
+  registry.set(
+    newAchievementsAtom,
+    registry.get(newAchievementsAtom).filter((id) => !shown.has(id))
+  );
 };
 
 /** The Battle Log is in each Solo Battle, but not in the Tutorial (GDD 4.12). */

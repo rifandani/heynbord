@@ -3,6 +3,7 @@ import { newProfile, PLAYER_LEVEL_XP } from "@workspace/rules";
 import { AtomRegistry } from "effect/reactivity";
 import { describe, expect, it } from "vitest";
 
+import { newAchievementsAtom } from "@/features/achievements/achievements.atoms";
 import { tutorialStageWonAtom } from "@/features/battle/battle.atoms";
 import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import {
@@ -75,6 +76,86 @@ describe("profileAtom", () => {
     expect(registry.get(profileOverlayAtom)).toEqual({ coin: 49_650 });
     expect(savedProfile(registry).coin).toBe(1234);
     expect(savedProfile(registry).essence).toBe(9);
+  });
+});
+
+/** Region 1 won up to the Boss Stage: a win of Stage 1-10 completes "Hearthvale Freed". */
+const beforeBoss: Profile = {
+  ...newProfile(3),
+  stageResults: Object.fromEntries(
+    Array.from({ length: 9 }, (_, index) => [`1-${index + 1}`, 1])
+  ),
+};
+
+const winBoss = (registry: AtomRegistry.AtomRegistry) => {
+  const shown = registry.get(profileAtom);
+  registry.set(profileAtom, {
+    ...shown,
+    stageResults: { ...shown.stageResults, "1-10": 2 },
+  });
+};
+
+describe("profileStateAtom records Achievements (Achievements 1.2)", () => {
+  it("records a goal that a change meets one time, and notes it once", () => {
+    const registry = loaded(beforeBoss);
+    expect(savedProfile(registry).completedAchievements).toEqual([]);
+    winBoss(registry);
+    expect(savedProfile(registry).completedAchievements).toEqual([
+      "campaign.hearthvale",
+    ]);
+    expect(registry.get(newAchievementsAtom)).toEqual(["campaign.hearthvale"]);
+    registry.set(profileAtom, { ...registry.get(profileAtom), coin: 5 });
+    winBoss(registry);
+    expect(savedProfile(registry).completedAchievements).toEqual([
+      "campaign.hearthvale",
+    ]);
+    expect(registry.get(newAchievementsAtom)).toEqual(["campaign.hearthvale"]);
+  });
+
+  it("does not write the Profile again for a change that meets nothing", () => {
+    const registry = loaded(beforeBoss);
+    // Count the saves as `useProfileStore` does: a new saved Profile object.
+    let before = savedProfile(registry);
+    let saves = 0;
+    const unsubscribe = registry.subscribe(profileStateAtom, (state) => {
+      if (state.status === "ready" && state.profile !== before) {
+        saves += 1;
+        before = state.profile;
+      }
+    });
+    const next = { ...registry.get(profileAtom), coin: 77 };
+    registry.set(profileAtom, next);
+    unsubscribe();
+    expect(saves).toBe(1);
+    expect(savedProfile(registry)).toBe(next);
+    expect(registry.get(newAchievementsAtom)).toEqual([]);
+  });
+
+  it("records the met goals of an old save when it loads", () => {
+    const registry = loaded({
+      ...beforeBoss,
+      stageResults: { ...beforeBoss.stageResults, "1-10": 3, "2-10": 1 },
+    });
+    expect(savedProfile(registry).completedAchievements).toEqual([
+      "campaign.hearthvale",
+      "campaign.redMesas",
+    ]);
+    expect(registry.get(newAchievementsAtom)).toEqual([
+      "campaign.hearthvale",
+      "campaign.redMesas",
+    ]);
+  });
+
+  it("completes no Achievement from a value that only the dev overlay has", () => {
+    const registry = loaded(beforeBoss);
+    registry.set(profileOverlayAtom, {
+      stageResults: { ...beforeBoss.stageResults, "1-10": 3 },
+    });
+    registry.set(profileAtom, { ...registry.get(profileAtom), coin: 9 });
+    winBoss(registry);
+    expect(savedProfile(registry).completedAchievements).toEqual([]);
+    expect(registry.get(newAchievementsAtom)).toEqual([]);
+    expect(registry.get(profileAtom).completedAchievements).toEqual([]);
   });
 });
 

@@ -292,6 +292,7 @@ describe("createBattle with Boss Rules", () => {
         number: 1,
         boss: true,
         recommendedLevel: 1,
+        starTurn: 15,
         firstWinCard: { cardId: "human.militiaRecruit", rank: "common" },
         closedLanes: [],
         enemy: {

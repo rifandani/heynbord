@@ -26,6 +26,9 @@ import {
   simulateStage,
   stageTarget,
   skipRunTracker,
+  starTarget,
+  suggestStarTurn,
+  threeStarShare,
 } from "./simulate";
 
 const vanguard = getStarterDeck("vanguard");
@@ -164,6 +167,54 @@ describe("simulateStage (GDD 13, step 6)", () => {
     expect(report.winRate).toBeLessThanOrEqual(1);
     expect(report.averageStars).toBeLessThanOrEqual(report.winRate * 3);
     expect(simulateStage(getStage("1-3"), raiders, 6)).toEqual(report);
+  });
+
+  it("gives the Turn of each win with half of the Hero HP or more", () => {
+    const report = simulateStage(getStage("1-3"), raiders, 6);
+    expect(report.wins).toBe(report.winRate * 6);
+    expect(report.highHpWinTurns.length).toBeLessThanOrEqual(report.wins);
+    // A Star Turn after the last win counts each high-HP win as 3 Stars.
+    expect(threeStarShare(report, 61)).toBe(
+      report.highHpWinTurns.length / report.wins
+    );
+  });
+});
+
+describe("3-Star targets (GDD 13, step 7, ADR-0047)", () => {
+  it("gives the ramp a lower limit, and normal and Boss Stages a range", () => {
+    expect(
+      STAGES.filter((stage) => stage.region === 1).map((stage) =>
+        starTarget(stage)
+      )
+    ).toEqual([
+      ...Array.from({ length: 3 }, () => ({ min: 0.3, max: 1, aim: null })),
+      ...Array.from({ length: 6 }, () => ({ min: 0.3, max: 0.5, aim: 0.4 })),
+      { min: 0.2, max: 0.4, aim: 0.3 },
+    ]);
+  });
+
+  it("counts a win before the Star Turn as 3 Stars, from all wins", () => {
+    const wins = { wins: 4, highHpWinTurns: [10, 12, 15] };
+    expect(threeStarShare(wins, 12)).toBe(0.25);
+    expect(threeStarShare(wins, 13)).toBe(0.5);
+    expect(threeStarShare({ wins: 0, highHpWinTurns: [] }, 15)).toBe(0);
+  });
+
+  it("suggests the Turn nearest to the aim on all rows", () => {
+    const target = starTarget({ region: 2, number: 1, boss: false });
+    const rows = [
+      { wins: 10, highHpWinTurns: [5, 6, 7, 8, 9, 10] },
+      { wins: 10, highHpWinTurns: [7, 8, 9, 10, 11, 12] },
+    ];
+    // Turn 9: 40% and 20%. Turn 10: 50% and 30%. Turn 11: 60% and 40%.
+    expect(suggestStarTurn(rows, target)).toBe(10);
+  });
+
+  it("gives no suggestion for a target with only a lower limit", () => {
+    const target = starTarget({ region: 1, number: 1, boss: false });
+    expect(suggestStarTurn([{ wins: 1, highHpWinTurns: [5] }], target)).toBe(
+      null
+    );
   });
 });
 

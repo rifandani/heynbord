@@ -111,6 +111,7 @@ const NameLabel = ({
       "group-data-[pressed]:translate-y-0 group-data-[pressed]:shadow-[0_1px_0_rgba(0,0,0,0.45)]"
     )}
     style={{ height }}
+    data-building-label
   >
     {name}
   </span>
@@ -135,6 +136,7 @@ const LockPlate = ({
         "group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
       )}
       data-testid="building-lock-plate"
+      data-building-label
     >
       <span className="grid size-[1.6em] place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]">
         <GlyphIcon glyph="lock" className="size-[0.9em] text-[#e9c46a]" />

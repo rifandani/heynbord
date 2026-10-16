@@ -1,3 +1,4 @@
+import { ACHIEVEMENT_HEYNSTONES, ACHIEVEMENTS } from "./achievements";
 import {
   HEYNSPIRE_BOSS_FLOOR_EVERY,
   HEYNSPIRE_BOSS_FLOOR_REWARD,
@@ -18,15 +19,6 @@ export interface HeynstoneSource {
 }
 
 /**
- * The Heynstones of all Achievements: an ESTIMATE ("about 1,000" for about 40
- * Achievements, Economy 2.6), until the list of Achievements exists.
- */
-export const ACHIEVEMENT_HEYNSTONES_ESTIMATE = 1000;
-
-/** The number of Achievements: an ESTIMATE ("about 40", Economy 2.6). */
-export const ACHIEVEMENT_COUNT_ESTIMATE = 40;
-
-/**
  * The Heynstone cost of the full Bazaar catalog: an ESTIMATE ("about 2,400"
  * for about 22 Cosmetics, Economy 3.5), until the list of Cosmetics exists.
  */
@@ -42,9 +34,9 @@ const bossFloors = Math.floor(HEYNSPIRE_FLOORS / HEYNSPIRE_BOSS_FLOOR_EVERY);
 export const HEYNSTONE_SOURCES: readonly HeynstoneSource[] = [
   {
     id: "achievements",
-    count: ACHIEVEMENT_COUNT_ESTIMATE,
-    heynstones: ACHIEVEMENT_HEYNSTONES_ESTIMATE,
-    estimate: true,
+    count: ACHIEVEMENTS.length,
+    heynstones: ACHIEVEMENT_HEYNSTONES,
+    estimate: false,
   },
   {
     id: "heynspireFloors",
@@ -54,7 +46,7 @@ export const HEYNSTONE_SOURCES: readonly HeynstoneSource[] = [
   },
 ];
 
-/** The total Heynstones of all one-time sources: about 1,250 (Economy 2.6). */
+/** The total Heynstones of all one-time sources: 1,250 (Economy 2.6). */
 export const HEYNSTONE_SUPPLY = HEYNSTONE_SOURCES.reduce(
   (sum, source) => sum + source.heynstones,
   0

@@ -31,21 +31,23 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | --- | --- | --- |
 | Ground line | y 864 | The base of the Town Gate. The game keeps this line on the top edge of the Town Bar, on all screens. The painting below it goes under the Town Bar. Put only road and trees there. |
 | Safe area | x 374 to 1526, y 136 to 864 | Each screen shape from 4:3 to 19.5:9 shows this area above the Town Bar. The label of each selectable Building, and the part of the Building under its label, must be in it. |
-| Town Gate | x 720 to 1064, y 520 to 864 | The selectable box of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the box. |
-| Town Gate label | x 720 to 1064, y 474 to 520 | The game writes "Campaign" here, on the tips of the two tower roofs. |
+| Town Gate | x 720 to 1064, y 603 to 864 | The selectable box of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the box. With its label, the box starts at y 557, and its light goes up to y 520, the tips of the tower roofs. |
+| Town Gate label | x 720 to 1064, y 557 to 603 | The game writes "Campaign" here, between the two tower roofs, at the middle of their height. |
 | Card shop | x 1010 to 1209, y 436 to 612 | The selectable box of the Card shop: the house with the purple roof, its awnings and its stalls. The box covers the right tower of the Town Gate at its lower left, so the game cuts that corner from the selectable area, and the pointer there selects the Town Gate. |
 | Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Packs" here, above the purple roof. |
-| Workshop | x 1318 to 1745, y 480 to 705 | The selectable box of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. Its `clip` follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
-| Workshop label | x 1318 to 1526, y 434 to 480 | The game writes "Workshop" here, over the left part of the Workshop, in the safe area. |
-| Barracks | x 91 to 555, y 320 to 526 | The selectable box of the Barracks: the round tower, the long building with the blue roof, the training yard with the dummies and the fence. Its `clip` follows the roofs and the fence. Only its right part (from x 374) is in the safe area: a 4:3 screen crops the tower and the left wing. |
-| Barracks label | x 376 to 555, y 274 to 320 | The game writes "Hero" here, over the right wing of the Barracks, in the safe area. |
-| Dungeons cave | x 1480 to 1900, y 746 to 864 | The selectable box of the cave: the first ruined pillar, the rock face and the cave arch, from under its label down to the ground line. The top of the rock mound stays in the painting. Its `clip` follows the pillar. It is the one selectable Building outside the safe area: a 4:3 screen crops all of it, and a 16:10 screen crops the arch. GDD 11.4 permits it, because the Dungeons shortcut opens the screen on all screens. |
+| Workshop | x 1318 to 1745, y 551 to 705 | The selectable box of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. With its label, the box starts at y 505, and its light goes up to y 480, the top of the chimney. Its `clip` follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
+| Workshop label | x 1318 to 1526, y 505 to 551 | The game writes "Workshop" here, on the top edge of the forge roof, over the left part of the Workshop, in the safe area. It is below the Market stalls, so it does not cover them. |
+| Barracks | x 91 to 555, y 344 to 526 | The selectable box of the Barracks: the round tower, the long building with the blue roof, the training yard with the dummies and the fence. With its label, the box starts at y 298, and its light goes up to y 320. Its `clip` follows the roofs and the fence. Only its right part (from x 374) is in the safe area: a 4:3 screen crops the tower, the left wing and the label. |
+| Barracks label | x 124 to 303, y 298 to 344 | The game writes "Hero" here, over the left wing of the Barracks, right of the round tower. It is outside the safe area: a 4:3 screen crops it. GDD 11.4 permits it, because the Hero shortcut opens the screen on all screens. The name touches the top of the blue roof. |
+| Dungeons cave | x 1480 to 1900, y 746 to 864 | The selectable box of the cave: the first ruined pillar, the rock face and the cave arch, from under its label down to the ground line. The top of the rock mound stays in the painting. Its `clip` follows the pillar. It is outside the safe area, as the Barracks label is: a 4:3 screen crops all of it, and a 16:10 screen crops the arch. GDD 11.4 permits it, because the Dungeons shortcut opens the screen on all screens. |
 | Dungeons cave label | x 1500 to 1700, y 700 to 746 | The game writes "Dungeons" here, on the rock face at the left of the arch. A 16:10 screen shows it. It is under the lower edge of the Workshop, so it never takes the pointer from the Workshop. |
 | Heynspire tower | x 540 to 760, y 184 to 244 | The selectable box of Heynspire: the hill under the castle. The hover light goes up to the flag at the top of the tower (x 500 to 800, y 0 to 250). |
 | Heynspire label | x 540 to 760, y 138 to 184 | The game writes "Heynspire" here, on the walls of the castle, at the top of the safe area. |
+| Hall of banners | x 790 to 1090, y 296 to 390 | The selectable box of the Hall of banners: the front of the hall with its long banners and its arched door. It stops at the top of the Card shop label (y 390), so that label keeps the pointer. The hover light goes down over the steps and the trophies (x 770 to 1110, y 226 to 456). |
+| Hall of banners label | x 800 to 1080, y 250 to 296 | The game writes "Achievements" here, on the red roofs of the hall. It is under the Heynspire hill and right of the Heynspire box (x 540 to 760), so the two labels never touch. It is far above the Town Gate label (y 557 to 603). |
 | Balance Plate corner | x 1280 to 1900, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
 | Sky | Above the safe area | A screen wider than about 2.2:1 above the Town Bar crops it first. On a 19.5:9 phone, the top of the Heynspire is also cropped. |
-| Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here. The Dungeons cave is the one selectable Building here (see its row). |
+| Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here. The Barracks label and the Dungeons cave are the selectable parts here (see their rows). |
 
 ```text
  0                  475                 950                1425               1900
@@ -74,7 +76,7 @@ The game adds motion on separate layers over the painting. The painting must giv
 
 ## 2. Buildings
 
-Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate and the Card shop can be selected. The other Buildings are decoration in the plate until their screens exist.
+Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. The other Buildings are decoration in the plate until their screens exist.
 
 ### 2.1 Town Gate
 
@@ -94,7 +96,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 
 `Heynspire` · Selectable · Opens with the first win of Stage 5-10
 
-The tower opens the Heynspire screen ([GDD 8.2](./03-game-design.md#82-heynspire-draft-name)). Until then, a Lock Plate with "5-10" and a small crown takes the place of its label. In the current painting, Heynspire is a white castle with a tall central tower and blue roofs on the hill at the back (box in 1.2). A new export can make it taller and thinner, as this brief asks, if the label box in 1.2 stays on its walls.
+The tower opens the Heynspire screen ([GDD 8.2](./03-game-design.md#82-heynspire-draft-name)). Until then, a Lock Plate with "5-10" and a small crown takes the place of its label. In the current painting, Heynspire is a white castle with a tall central tower and blue roofs on the hill at the back (box in 1.2). A new export can make it taller and thinner, as this brief asks, if the label box in 1.2 stays on its walls. The `heynspire` Town Bar icon (7.3) shows the castle of the current painting, not the tower of this brief. If a new export paints the tower, paint the icon again.
 
 | Field | Brief |
 | --- | --- |
@@ -181,7 +183,7 @@ No screen · Decoration only
 
 ### 2.9 Hall of banners
 
-`Achievements` · Decoration in v1
+`Achievements` · Opens the Achievements screen
 
 | Field | Brief |
 | --- | --- |
@@ -189,7 +191,8 @@ No screen · Decoration only
 | Props | Trophies on the steps (cups and shields), a bell on the roof. |
 | Silhouette hook | The row of long banners. |
 | Humor note | A quiet undead bell keeper waves from the roof. |
-| Position | Behind the Town Gate. Its roof must stay low, under the Town Gate label area (y 474 to 520). |
+| Position | Behind the Town Gate, the Library and the Card shop. In the current painting, it is at x 790 to 1090 (box in 1.2). Its label is on its red roofs, and it must not touch the Heynspire label or the Town Gate label. |
+| Export | No separate export: the Hall is a part of the master painting. The Hall opens the Achievements screen ([15 — Achievements, 4](./15-achievements.md#4-achievements-screen)) at any Player level, so it has no Lock Plate. The inside of the Hall is section 15. |
 
 ## 3. Prompts
 
@@ -273,7 +276,7 @@ In the order of `TOWN_SHORTCUTS`, then the Settings button.
 | --- | --- | --- |
 | `town` | None | A small town house with a royal blue roof and a gold flag |
 | `campaign` | Town Gate (2.1) | The gatehouse with two round towers and open doors |
-| `heynspire` | Heynspire tower (2.2) | The tall white tower with a stair and floating stones |
+| `heynspire` | Heynspire tower (2.2) | The white castle of the current painting: a tall central tower and smaller turrets with blue roofs, on a rock |
 | `dungeons` | Dungeons cave (2.3) | The cave arch with a torch, a warning barrier and glowing eyes |
 | `deck` | Library (2.4) | An open book with a fan of three cards |
 | `workshop` | Workshop (2.5) | An anvil with a hammer and a glowing hot card |
@@ -296,7 +299,7 @@ In the order of `TOWN_SHORTCUTS`, then the Settings button.
 
 - [ ] Each icon is clear at 48 px and at 32 px.
 - [ ] The 12 icons have the same outline thickness, view angle, light and scale.
-- [ ] Each shortcut icon shows the same object as its Building in section 2.
+- [ ] Each shortcut icon shows the same object as its Building in section 2. The `heynspire` icon shows the castle of the current painting (2.2).
 - [ ] The Settings cogwheel does not look like the Workshop anvil.
 - [ ] The Handbook book does not look like the Deck book: it is a cloth-bound field manual with a quill and a ribbon, and it has no cards.
 - [ ] The light comes from the upper left.
@@ -701,3 +704,64 @@ The Heynspire screen ([GDD 8.2](./03-game-design.md#82-heynspire-draft-name), [G
 - [ ] The center is a calm wall: the white stair of the Floor rail and the bands are easy to read on it.
 - [ ] The image has no text and no numbers.
 - [ ] The Town Bar covers only the bottom.
+
+## 15. Hall inside
+
+The Achievements screen ([15 — Achievements, 4](./15-achievements.md#4-achievements-screen), [GDD 11.1](./03-game-design.md#111-screens)) shows the inside of the Hall of banners (2.9) behind the pole with the 4 Category Flags and the Achievement Roll. One painting covers the full screen. It makes the Hall proud, warm and a little funny, a place where the Player's work hangs on the walls. The image is `apps/web/public/town/hall-inside.webp`, and its source is `apps/web/art/town/hall-inside.webp`. If an ID is in `UNPAINTED_ACHIEVEMENTS_ART` (`apps/web/src/features/achievements/achievements-art.ts`), the Achievements screen shows a stone hall in code with two tall red banners, in the same place.
+
+### 15.1 Rules for the Hall art
+
+- **One painting, a full room.** The room fills the image to all edges. There is no frame and no border.
+- **View.** From the middle of the hall, at eye level, straight on. A long red carpet goes across the full width at the bottom.
+- **The same Hall as the Town.** The room is the inside of the Hall of banners in the Town painting: pale stone walls, timber beams, a tall arched door and long blue and gold banners.
+- **A calm center.** The flags and the roll cover most of the screen (15.2). There, the painting is a plain back wall of pale stone in soft shadow, with low contrast and no small details. Thus the flags, the parchment and the text stay easy to read. The flags are blue cloth, so the wall behind them is warm stone, not blue.
+- **No Hero and no Cosmetics.** No knight, no Hero figure, no portrait and no Card Back: these are Cosmetics that come later (GDD 10). The trophies are plain cups, shields and medals with no names.
+- **Value.** Mid-dark in total. The brightest areas are the high window and the trophies. The center is the darkest area.
+- **Light.** From the upper left, through a small high window, as in all other art.
+- **No text.** Banners and shields show only plain colors and simple shapes. No letters, numbers, runes or logo.
+- **Detail and humor.** The quiet undead bell keeper of 2.9 waves from the stair at the right, next to the bell rope. The jokes stay at the sides and at the top.
+- **Size.** Landscape 3:2. Make at 1536 × 1024 and export at the same size. The screen covers its full area with the image, as on the Hero screen (11.1).
+
+### 15.2 Positions on the painting
+
+The boxes are in percent of the 1536 × 1024 image. On a 1366 × 768 laptop screen, the flags and the roll cover about x 6 to 94 and y 10 to 86.
+
+| Area | Box (x, y) | Content |
+| --- | --- | --- |
+| Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The trophy shelves, the bell rope and the bell keeper must be in it. |
+| Calm wall | x 12 to 88, y 14 to 86 | A plain back wall of pale stone blocks in soft warm shadow. The flags and the roll stand in front of it. |
+| Ceiling | x 0 to 100, y 0 to 14 | Heavy dark timber beams, a row of long blue and gold banners with no symbols, and a small high window at the upper left. The title plate and the Balance Plate cover the top corners. |
+| Left side | x 0 to 12, y 14 to 84 | Tall wooden shelves on stone steps with gold trophy cups, small round shields and medals on ribbons. |
+| Right side | x 88 to 100, y 14 to 84 | A thick bell rope from the ceiling, a narrow stone stair, and the bell keeper on the stair. |
+| Floor | x 0 to 100, y 84 to 100 | Worn grey stone slabs and a long red carpet. The Town Bar covers its lower part. |
+
+### 15.3 Subjects
+
+| Subject | Brief |
+| --- | --- |
+| Bell keeper | A small friendly skeleton in a red cap. It stands on the stair, holds the bell rope with one hand, and waves with the other. It is not scary. |
+| Trophies | Plain gold cups, small round shields in blue and gold, and medals on red ribbons. No names and no numbers. |
+| Banners | Long hanging banners in royal blue and gold, as on the front of the Hall in the Town painting, with no symbols. |
+
+### 15.4 Prompts
+
+Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/hall/` (section 3): `layout.png` (the layout sketch, with flat shapes at the boxes of 15.2), `outside-reference.png` (the Hall cut out of the Town painting) and `prompts.md`. The messages are `HALL_SETUP_PROMPT` and `HALL_PROMPT` in `scripts/town-art/prompts.ts`: a short form of 15.1 to 15.3. When you change the brief, change the messages and the layout sketch too.
+
+### 15.5 Steps
+
+1. Run `bun town:prompts`. Make 4 to 8 images with `hall/prompts.md` and the references of 15.4, with GPT Image and high quality, at 1536 × 1024.
+2. Select one image with the checklist in 15.6.
+3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting.
+4. Put a screenshot of the Achievements screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the flags and the roll.
+5. Export as WebP with no alpha: `cwebp -q 80 hall-inside.png -o hall-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`. Then remove `hallInside` from `UNPAINTED_ACHIEVEMENTS_ART` in `apps/web/src/features/achievements/achievements-art.ts`: a unit test checks the list and the files.
+6. Write the licence record (art direction 5.5) for the image.
+
+### 15.6 Review checklist
+
+- [ ] The center behind the flags and the roll is calm and warm, and the text stays easy to read.
+- [ ] The trophy shelves, the bell rope and the bell keeper are each easy to find, and they are not in the center.
+- [ ] The room looks like the inside of the Hall of banners in the Town painting.
+- [ ] No Hero, no knight, no portrait and no Card Back.
+- [ ] The light comes from the upper left.
+- [ ] No text, letters, numbers, runes, logo or signature in the image.
+- [ ] The style matches the golden references.

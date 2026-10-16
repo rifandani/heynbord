@@ -33,6 +33,14 @@
     {
       "file": "scripts/skill-art/prompts.ts",
       "exports": ["*"]
+    },
+    {
+      "file": "apps/web/src/features/dungeons/dungeons.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "apps/web/src/features/town/town.ts",
+      "exports": ["*"]
     }
   ],
   "ignorePatterns": ["repos/**"],

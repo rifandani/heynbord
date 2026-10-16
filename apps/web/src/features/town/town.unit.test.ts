@@ -21,7 +21,11 @@ import {
   UNPAINTED_ICONS,
   townLock,
 } from "@/features/town/town";
-import type { TownProgress } from "@/features/town/town";
+import type {
+  Rect,
+  SelectableBuilding,
+  TownProgress,
+} from "@/features/town/town";
 
 /** The progress of a Player at `level`, before or after the Heynspire unlock. */
 const at = (level: number, heynspireOpen = false): TownProgress => ({
@@ -31,6 +35,20 @@ const at = (level: number, heynspireOpen = false): TownProgress => ({
 
 const publicFile = (path: string) =>
   existsSync(fileURLToPath(new URL(`../../../public${path}`, import.meta.url)));
+
+/** The box of a Building with its label above it, as the Town draws it. */
+const withLabel = (id: SelectableBuilding["id"]): Rect => {
+  const building = SELECTABLE_BUILDINGS.find((item) => item.id === id);
+  if (!building) {
+    throw new Error(`No Building ${id}`);
+  }
+  const { rect, label } = building;
+  return {
+    ...rect,
+    y: label.y,
+    height: rect.y + rect.height - label.y,
+  };
+};
 
 describe("safeArea", () => {
   it("is the part of the painting that 4:3 and 19.5:9 screens show above the Town Bar", () => {
@@ -70,15 +88,19 @@ describe("SELECTABLE_BUILDINGS", () => {
     ).toEqual(["workshop", "barracks", "cave"]);
   });
 
-  it("puts only the Dungeons cave outside the safe area: its shortcut is the sure way in (GDD 11.4)", () => {
-    expect([...EDGE_BUILDINGS]).toEqual(["cave"]);
-    const cave = SELECTABLE_BUILDINGS.find(
-      (building) => building.id === "cave"
-    );
-    expect(cave && contains(safeArea(), cave.label)).toBe(false);
-    expect(
-      TOWN_SHORTCUTS.find((shortcut) => shortcut.screen === cave?.screen)?.id
-    ).toBe("dungeons");
+  it("puts only the Barracks and the Dungeons cave outside the safe area: their shortcuts are the sure way in (GDD 11.4)", () => {
+    expect([...EDGE_BUILDINGS]).toEqual(["barracks", "cave"]);
+    for (const [id, shortcut] of [
+      ["barracks", "hero"],
+      ["cave", "dungeons"],
+    ] as const) {
+      const building = SELECTABLE_BUILDINGS.find((item) => item.id === id);
+      expect(building && contains(safeArea(), building.label), id).toBe(false);
+      expect(
+        TOWN_SHORTCUTS.find((item) => item.screen === building?.screen)?.id,
+        id
+      ).toBe(shortcut);
+    }
   });
 
   it("gives each Building a screen of a Town Bar shortcut", () => {
@@ -93,7 +115,14 @@ describe("SELECTABLE_BUILDINGS", () => {
       "hero",
       "dungeons",
       "heynspire",
+      "achievements",
     ]);
+  });
+
+  it("keeps the Hall of banners clear of the Town Gate, the Card shop and Heynspire, with their labels (Achievements 4)", () => {
+    for (const id of ["townGate", "cardShop", "heynspire"] as const) {
+      expect(overlaps(withLabel("hall"), withLabel(id)), id).toBe(false);
+    }
   });
 });
 
@@ -134,7 +163,7 @@ describe("overlaps", () => {
 });
 
 describe("TOWN_SHORTCUTS", () => {
-  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Workshop, the Packs and the Hero screen", () => {
+  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Workshop, the Packs, the Hero screen and the Achievements screen", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => shortcut.screen !== null).map(
         (shortcut) => shortcut.id
@@ -147,6 +176,7 @@ describe("TOWN_SHORTCUTS", () => {
       "workshop",
       "packs",
       "hero",
+      "achievements",
     ]);
     expect(TOWN_SHORTCUTS[0]?.id).toBe("town");
     expect(new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.id)).size).toBe(
@@ -171,7 +201,14 @@ describe("the Handbook shortcut", () => {
       TOWN_SHORTCUTS.filter((shortcut) => !isLocked(shortcut, at(2))).map(
         (shortcut) => shortcut.id
       )
-    ).toEqual(["town", "campaign", "deck", "packs", "handbook"]);
+    ).toEqual([
+      "town",
+      "campaign",
+      "deck",
+      "packs",
+      "achievements",
+      "handbook",
+    ]);
   });
 });
 
@@ -187,6 +224,19 @@ describe("level locks (GDD 11.4)", () => {
     expect(packs && isLocked(packs, at(2))).toBe(false);
     expect(packs && opensAtLevel(packs, 2)).toBeNull();
     expect(packs && opensAtLevel(packs, 30)).toBeNull();
+  });
+
+  it("never locks the Achievements screen: it opens at any Player level", () => {
+    const achievements = TOWN_SHORTCUTS.find(
+      (shortcut) => shortcut.id === "achievements"
+    );
+    const hall = SELECTABLE_BUILDINGS.find(
+      (building) => building.id === "hall"
+    );
+    for (const level of [1, 2, 30]) {
+      expect(achievements && isLocked(achievements, at(level))).toBe(false);
+      expect(hall && townLock(hall, at(level))).toBeNull();
+    }
   });
 
   it("locks the Card shop with the Packs, and never the Town Gate", () => {

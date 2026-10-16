@@ -14,7 +14,7 @@ export {
 export type { AreaSize } from "./battle/targets";
 export { devDamageHero } from "./battle/dev";
 export { enemyHeroDamage } from "./battle/enemy-hero-damage";
-export { STAR_FAST_WIN_TURN, starsFor } from "./battle/stars";
+export { starsFor } from "./battle/stars";
 export { step } from "./battle/step";
 export type { StepOutput } from "./battle/step";
 export {
@@ -155,8 +155,21 @@ export {
 } from "./content/heynspire";
 export type { FloorReward } from "./content/heynspire";
 export {
-  ACHIEVEMENT_COUNT_ESTIMATE,
-  ACHIEVEMENT_HEYNSTONES_ESTIMATE,
+  ACHIEVEMENT_CATEGORIES,
+  ACHIEVEMENT_HEYNSTONES,
+  ACHIEVEMENTS,
+  getAchievement,
+  TALLY_IDS,
+} from "./content/achievements";
+export type {
+  AchievementCategory,
+  AchievementDefinition,
+  AchievementGoal,
+  AchievementReward,
+  FeatId,
+  TallyId,
+} from "./content/achievements";
+export {
   BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
   HEYNSTONE_SOURCES,
   HEYNSTONE_SUPPLY,
@@ -259,6 +272,21 @@ export type {
   OpenTenPacksOutput,
   PackPool,
 } from "./packs/open-pack";
+export {
+  achievementProgress,
+  achievementState,
+  claimableAchievements,
+  claimAchievement,
+  claimAllAchievements,
+  recordAchievements,
+} from "./profile/achievements";
+export type {
+  AchievementChange,
+  AchievementProgress,
+  AchievementState,
+} from "./profile/achievements";
+export { recordFeats } from "./profile/feats";
+export type { FeatBattle, FeatPlace } from "./profile/feats";
 export { buyDeckSlot, INITIAL_DECK_SLOTS } from "./profile/deck-slots";
 export {
   applyDungeonResult,
@@ -289,7 +317,7 @@ export { upgradeGear } from "./profile/gear";
 export { ImportError } from "./profile/import-error";
 export { migrateProfile, PROFILE_MIGRATIONS } from "./profile/migrate";
 export type { ProfileMigration } from "./profile/migrate";
-export { newProfile } from "./profile/new-profile";
+export { newProfile, NO_TALLIES } from "./profile/new-profile";
 export {
   addCopies,
   buyPacks,
@@ -313,7 +341,12 @@ export {
   Profile,
   PROFILE_SCHEMA_VERSION,
 } from "./profile/schema";
-export type { DeckSlot, PackState, UnopenedPack } from "./profile/schema";
+export type {
+  DeckSlot,
+  PackState,
+  Tallies,
+  UnopenedPack,
+} from "./profile/schema";
 export {
   applyStageResult,
   CAMPAIGN_SWEEP_TICKETS_PER_WIN,

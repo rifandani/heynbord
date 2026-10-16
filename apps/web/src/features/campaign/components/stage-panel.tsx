@@ -216,6 +216,42 @@ const RewardRow = ({ stop }: { readonly stop: TrailStage }) => {
 };
 
 /**
+ * The 3 Star conditions of the Stage (GDD 4.11). The Star Turn is in the Stage
+ * data and differs from Stage to Stage, so the Player reads it here (ADR-0047).
+ */
+const StarsRow = ({ stop }: { readonly stop: TrailStage }) => {
+  const { tr } = useGameText();
+  return (
+    <Row label={tr("campaign.panel.stars")} className={INK[2]}>
+      <ul className="grid gap-1 text-xs leading-snug text-[#5b4632] [@media(max-height:500px)]:gap-0.5">
+        {([1, 2, 3] as const).map((count) => (
+          <li
+            key={count}
+            className="flex items-center gap-2"
+            data-testid={`stage-star-rule-${count}`}
+          >
+            <StarRow
+              stars={count}
+              className="shrink-0 gap-0.5"
+              tone="parchment"
+              starClassName="size-3.5"
+            />
+            <span className="sr-only">
+              {tr("battle.starsLabel", { count })}
+            </span>
+            <span className="min-w-0">
+              {tr(`campaign.panel.starRule.${count}`, {
+                turn: stop.stage.starTurn,
+              })}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Row>
+  );
+};
+
+/**
  * The Deck choice: the Deck slots that have cards, with the active Deck
  * selected (GDD 11.5). "Edit Decks" opens the Deck builder. A Deck that is not
  * valid cannot start a Battle, and its first reason shows (CRD-04).
@@ -497,7 +533,7 @@ const PanelActions = ({
 /**
  * The Stage Panel (GDD 11.5): a parchment dialog in the center of the screen,
  * over the dim map. It shows the Stage ID, the enemy Hero, the reward, the
- * best Stars and the Deck, and the Fight button. Esc, the close button and a
+ * best Stars, the Star conditions and the Deck, and the Fight button. Esc, the close button and a
  * click outside close it. Fight takes the focus, so Enter starts the Battle.
  * On a Stage with 3 best Stars, it also has the Sweep (GDD 4.12): the Sweep
  * row, the Sweep button, which then takes the focus, and the Sweep Result,
@@ -596,6 +632,7 @@ export const StagePanel = ({
                       <div className="divide-y divide-[#c9b48c]/70">
                         <EnemyRow stop={shown} />
                         <RewardRow stop={shown} />
+                        <StarsRow stop={shown} />
                       </div>
                       <div className="flex flex-col border-t border-[#c9b48c]/70 [@media(max-height:500px)]:border-t-0">
                         <DeckRow

@@ -73,8 +73,15 @@ export const useProfileStore = () => {
     if (saved.status === "loading") {
       removeOldProgress();
       const start = (profile = newProfile(randomSeed())) => {
-        if (!cancelled) {
-          registry.set(profileStateAtom, { status: "ready", profile });
+        if (cancelled) {
+          return;
+        }
+        registry.set(profileStateAtom, { status: "ready", profile });
+        // The load recorded the Achievements that the Profile already met
+        // (Achievements 1.2): save them, so a reload shows no second notice.
+        const state = registry.get(profileStateAtom);
+        if (state.status === "ready" && state.profile !== profile) {
+          saveQueue.save(state.profile);
         }
       };
       const load = async () => {

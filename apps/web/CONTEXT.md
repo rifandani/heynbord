@@ -78,7 +78,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town**: The hub screen of the game, and the first screen that the Player sees. It is a painted view of a town, with one Building for each screen that the Player can open. _Avoid_: Camp, city, hub, home, lobby, main menu
 
-**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave and the Heynspire tower can be selected. _Avoid_: hotspot, landmark, location, house
+**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. _Avoid_: hotspot, landmark, location, house
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
 
@@ -86,9 +86,11 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Barracks**: The Building that opens the Hero screen: a long stone barracks with a fenced training yard. It opens at Player level 5. _Avoid_: Hero Building, armory, training hall
 
-**Dungeons cave**: The Building that opens the Dungeons screen: a cave in grey rocks with ruined pillars, at the right edge of the Town. It opens at Player level 10. It is the one Building outside the safe area, so a narrow screen crops it, and the Dungeons shortcut is the sure way in. _Avoid_: dungeon entrance, cave Building, mine
+**Dungeons cave**: The Building that opens the Dungeons screen: a cave in grey rocks with ruined pillars, at the right edge of the Town. It opens at Player level 10. It is outside the safe area, so a narrow screen crops it, and the Dungeons shortcut is the sure way in. _Avoid_: dungeon entrance, cave Building, mine
 
 **Heynspire tower**: The Building that opens the Heynspire screen: the white castle with the tall tower and the blue roofs on the hill at the back of the Town. It opens with the first win of Stage 5-10, not at a Player level. Its label is on the walls of the castle, because a wide screen crops the top of the tower. _Avoid_: castle Building, spire Building, endless tower
+
+**Hall of banners**: The Building that opens the Achievements screen: a wide hall with red roofs and long blue and gold banners, behind the Library and the Card shop. It has no lock: it opens at any Player level. Its label is on the red roofs, under the Heynspire hill. _Avoid_: trophy hall, achievements Building, guild hall
 
 **Lock Plate**: The small plate with a lock that replaces the name label of a Building whose screen the Player has not unlocked. It shows the level that opens the screen, or, for the Heynspire tower, the ID of the Boss Stage to win first with a small crown. It has the same tooltip as the Town Bar shortcut: "Opens at level N", or "Win Marrow Castle (5-10) to open". _Avoid_: level badge, locked label
 
@@ -130,6 +132,18 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Hero screen**: The screen that shows the Player's Hero: its Class, its Hero HP and its 4 Gear items. The Player does Gear upgrades there. It shows the Class of the Active Deck, and it opens the Deck dialog to change it. _Avoid_: Character screen, armory, equipment screen, Gear screen, profile
 
+### Achievements screen
+
+**Achievements screen**: The screen that lists all Achievements in their 4 categories, with the progress of each, and where the Player claims their rewards. The Hall of banners and the Achievements shortcut open it. _Avoid_: trophy room, quest log, challenges screen, badges
+
+**Category Flag**: One cloth flag on the pole at the left of the Achievements screen: a tab for one category of Achievements. It shows the name of the category, its done count ("3 / 8") and the number of its rewards to claim. The selected flag goes under the edge of the Achievement Roll. _Avoid_: category tab, banner tab, filter
+
+**Achievement Roll**: The parchment list at the right of the Achievements screen with the rows of the selected category, and Claim all at its foot. Each row shows the name, the goal, the reward and the state: a progress bar ("Not done" for a Feat), Claim, or the check seal. _Avoid_: achievement list, quest list, table
+
+**Claim**: The action that adds the reward of one Completed Achievement to the Profile, on its row of the Achievement Roll. **Claim all** claims all Completed Achievements of all categories at one time. The rules term is the same for a Star chest. _Avoid_: collect, redeem, receive
+
+**Achievements badge**: The small gold count on the Achievements shortcut of the Town Bar: the number of Completed Achievements that the Player did not claim. It does not show at 0. _Avoid_: notification dot, red dot, alert
+
 ### Dungeons screen
 
 **Notice Board**: The wood board on the Dungeons screen that holds the Wanted Posters of the Bosses of one Dungeon and the Front Strip under them. _Avoid_: boss list, briefing panel, bounty board
@@ -164,7 +178,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 ## Relationships
 
-- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, and the Heynspire tower opens the Heynspire screen. Later, the Bazaar Building opens the Bazaar.
+- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, the Heynspire tower opens the Heynspire screen, and the Hall of banners opens the Achievements screen. Later, the Bazaar Building opens the Bazaar.
 - The **Handbook** and the **Card Details** show the same rule text for a Keyword, a Status or a Damage Type. The Handbook never has its own copy of a rule.
 - A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.
 - The **Battle Log** shows the Battle Events that the screen already played. It never shows a later moment than **Live**. While it is open, the Live playback pauses.

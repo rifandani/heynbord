@@ -115,6 +115,77 @@ export const stageTarget = (
   return ramp === undefined ? NORMAL_STAGE_TARGET : { min: ramp, max: 1 };
 };
 
+/**
+ * A 3-Star target (GDD 13, step 7): the share of the wins that give 3 Stars,
+ * from 0 to 1. Both ends are on target. `aim` is the middle of the target:
+ * the share that the suggested Star Turn comes nearest to. A target with only
+ * a lower limit has no aim.
+ */
+export interface StarTarget extends WinRateTarget {
+  readonly aim: number | null;
+}
+
+/**
+ * The 3-Star target of a Stage (GDD 13, step 7, ADR-0047): 30% to 50% of the
+ * wins for a normal Stage, and 20% to 40% for a Boss Stage. The ramp Stages
+ * 1-1 to 1-3 have only a lower limit: 30% or more.
+ */
+export const starTarget = (
+  stage: Pick<StageDefinition, "region" | "number" | "boss">
+): StarTarget => {
+  if (stage.boss) {
+    return { min: 0.2, max: 0.4, aim: 0.3 };
+  }
+  if (stage.region === 1 && stage.number <= 3) {
+    return { min: 0.3, max: 1, aim: null };
+  }
+  return { min: 0.3, max: 0.5, aim: 0.4 };
+};
+
+/** The share of the wins of `report` that give 3 Stars with `starTurn`, from 0 to 1. 0 with no wins. */
+export const threeStarShare = (
+  report: Pick<StageReport, "wins" | "highHpWinTurns">,
+  starTurn: number
+): number =>
+  report.wins === 0
+    ? 0
+    : report.highHpWinTurns.filter((turn) => turn < starTurn).length /
+      report.wins;
+
+/** The lowest and the highest Star Turn of the Stage data (`StageDefinition`). */
+const STAR_TURNS = { min: 2, max: 60 } as const;
+
+/**
+ * The suggested Star Turn of a Stage (ADR-0047): the whole Turn number that
+ * puts the 3-Star share of each report nearest to the aim of `target`. Each
+ * report is one Gear row, and one Star Turn must hit the target on all rows,
+ * so it takes the Turn number with the smallest largest distance from the
+ * aim, and the lower Turn number of a tie. The aim is the middle of the
+ * target, so a Turn number that puts all rows on target always comes first.
+ * `null` for a target with no aim.
+ */
+export const suggestStarTurn = (
+  reports: readonly Pick<StageReport, "wins" | "highHpWinTurns">[],
+  target: StarTarget
+): number | null => {
+  const { aim } = target;
+  if (aim === null) {
+    return null;
+  }
+  let best: number = STAR_TURNS.min;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  for (let turn = STAR_TURNS.min; turn <= STAR_TURNS.max; turn += 1) {
+    const distance = Math.max(
+      ...reports.map((report) => Math.abs(threeStarShare(report, turn) - aim))
+    );
+    if (distance < bestDistance) {
+      best = turn;
+      bestDistance = distance;
+    }
+  }
+  return best;
+};
+
 /** The first-try target of a Dungeon, the same as a Boss Stage (GDD 13, step 6). */
 export const DUNGEON_TARGET: WinRateTarget = BOSS_STAGE_TARGET;
 
@@ -144,7 +215,14 @@ export interface StageReport {
   /** The player's win rate, from 0 to 1. */
   readonly winRate: number;
   readonly averageTurn: number;
+  /** The average Stars of all Battles, with the Star Turn of the Stage. */
   readonly averageStars: number;
+  readonly wins: number;
+  /**
+   * The Turn number of each win with 50% or more of the Hero HP. A Star Turn
+   * after it makes it a 3-Star win (GDD 4.11).
+   */
+  readonly highHpWinTurns: readonly number[];
 }
 
 /**
@@ -219,6 +297,7 @@ export const simulateStage = (
   let wins = 0;
   let turns = 0;
   let stars = 0;
+  const highHpWinTurns: number[] = [];
   for (let seed = 1; seed <= battles; seed += 1) {
     const { state } = createBattle({
       seed,
@@ -226,9 +305,14 @@ export const simulateStage = (
       player: playerOf(deck, level, gear),
     });
     const end = playOut(state);
-    wins += end.result?.winner === "player" ? 1 : 0;
+    const won = end.result?.winner === "player";
+    wins += won ? 1 : 0;
     turns += end.turnNumber;
-    stars += starsFor(end);
+    // A Star Turn after the end of the Battle shows the HP condition alone.
+    if (won && starsFor(end, { starTurn: end.turnNumber + 1 }) === 3) {
+      highHpWinTurns.push(end.turnNumber);
+    }
+    stars += starsFor(end, stage);
   }
   return {
     stageId: stage.id,
@@ -237,6 +321,8 @@ export const simulateStage = (
     winRate: wins / battles,
     averageTurn: turns / battles,
     averageStars: stars / battles,
+    wins,
+    highHpWinTurns,
   };
 };
 
@@ -488,6 +574,7 @@ const matchupStage = (
   number: 1,
   boss: false,
   recommendedLevel: options.level,
+  starTurn: 15,
   firstWinCard: { cardId: "none", rank: "common" },
   closedLanes: [],
   enemy: {

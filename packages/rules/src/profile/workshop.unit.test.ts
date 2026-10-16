@@ -76,6 +76,10 @@ describe("combine (GDD 7.4)", () => {
     expect(ownedCopies(result?.collection ?? [], RECRUIT, "uncommon")).toBe(1);
   });
 
+  it("adds 1 to the combines Tally (Achievements 1.5)", () => {
+    expect(combine(profile(), RECRUIT, "common")?.tallies.combines).toBe(1);
+  });
+
   it("keeps the entry with 0 copies, so the card stays Discovered", () => {
     const result = combine(profile(), RECRUIT, "common");
     expect(result?.collection).toContainEqual({
@@ -195,12 +199,8 @@ describe("combine (GDD 7.4)", () => {
   it("changes nothing else in the Profile", () => {
     const start = profile();
     const result = combine(start, RECRUIT, "common");
-    expect({
-      ...result,
-      coin: 0,
-      collection: [],
-      deckSlots: [],
-    }).toEqual({ ...start, coin: 0, collection: [], deckSlots: [] });
+    const changed = { coin: 0, collection: [], deckSlots: [], tallies: null };
+    expect({ ...result, ...changed }).toEqual({ ...start, ...changed });
   });
 });
 
@@ -292,6 +292,7 @@ describe("craft (GDD 7.4)", () => {
     const result = craft(profile({ essence: 450 }), GUARD);
     expect(result?.essence).toBe(450 - 40);
     expect(ownedCopies(result?.collection ?? [], GUARD, "common")).toBe(4);
+    expect(result?.tallies.crafts).toBe(1);
   });
 
   it("adds a new entry when the Player owns the card only in other Ranks", () => {
@@ -306,6 +307,7 @@ describe("craft (GDD 7.4)", () => {
           ...collection,
           { cardId: COURIER, rank: "rare", copies: 1 },
         ],
+        tallies: { ...fresh.tallies, crafts: 1 },
       })
     );
   });

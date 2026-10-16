@@ -13,7 +13,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 8;
+export const PROFILE_SCHEMA_VERSION = 9;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -83,6 +83,14 @@ const StarChestStars = Schema.Natural.check(
   )
 );
 
+/** The Tallies of the Player (Achievements 1.5). Each one only goes up. */
+const Tallies = Schema.Struct({
+  packsOpened: Schema.Natural,
+  combines: Schema.Natural,
+  crafts: Schema.Natural,
+});
+export type Tallies = typeof Tallies.Type;
+
 /**
  * All the saved progress of one Player (technical design 5). Settings are not
  * in it: they belong to the device. The Player level is not in it: it comes
@@ -128,5 +136,18 @@ export const Profile = Schema.Struct({
   rewardRandomState: RandomState,
   /** The IDs of the Hints that the Player has seen. Hints are a web term. */
   seenHints: Schema.Array(Schema.String),
+  /**
+   * The IDs of the Completed Achievements, in the order that the Player
+   * completed them (Achievements 1.1). An ID stays, also when the goal is no
+   * longer met.
+   */
+  completedAchievements: Schema.Array(Schema.String),
+  /**
+   * The IDs of the Claimed Achievements. A Claimed Achievement with an
+   * earn-only Cosmetic is a Cosmetic that the Player is owed until Cosmetics
+   * exist (Achievements 1.6).
+   */
+  claimedAchievements: Schema.Array(Schema.String),
+  tallies: Tallies,
 });
 export type Profile = typeof Profile.Type;

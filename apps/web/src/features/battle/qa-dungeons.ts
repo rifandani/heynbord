@@ -23,8 +23,9 @@ export const qaTwoBossDungeon = (): DungeonDefinition =>
 
 /**
  * Dungeon 1 with weak Bosses: the same Bosses, Fronts, names and Boss Rules,
- * but the easy Deck of Stage 1-1 and low HP. A starter Deck seldom hurts the
- * real Bosses, so the QA states that wait for a Boss Rule or a Defeat use it.
+ * but the easy Deck of Stage 1-1, low HP and no start Units. A starter Deck
+ * seldom hurts the real Bosses, so the QA states that wait for a Boss Rule or
+ * a Defeat use it.
  */
 export const qaWeakTwoBossDungeon = (): DungeonDefinition => {
   const first = getDungeon("dungeon-1");
@@ -36,6 +37,7 @@ export const qaWeakTwoBossDungeon = (): DungeonDefinition => {
       heroHp: index === 0 ? 8 : 14,
       gear: easy.gear,
       deck: easy.deck,
+      startUnits: [],
     })),
   };
 };

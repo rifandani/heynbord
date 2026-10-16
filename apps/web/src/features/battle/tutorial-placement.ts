@@ -35,6 +35,12 @@ interface PlacementInput {
    * space, there is no placement.
    */
   readonly strict?: boolean;
+  /**
+   * Boxes that the panel must not cover, for example the labels of other
+   * things. Of the sides with space, the panel takes the first side where it
+   * covers none of them, or else the side where it covers the least area.
+   */
+  readonly avoid?: readonly ScreenBox[];
 }
 
 /** The pointer stays this far from a panel corner, clear of the rounded corner. */
@@ -70,34 +76,11 @@ const spare = (
   }
 };
 
-/**
- * The first side with space for the panel, or else the side with the most
- * space. A strict placement has no side when no side has space.
- */
-const chooseSide = (input: PlacementInput): PanelSide | null => {
-  const fits = input.sides.find(
-    (side) => spare(side, input) >= -SPACE_TOLERANCE
-  );
-  if (fits || input.strict) {
-    return fits ?? null;
-  }
-  const [best] = input.sides.toSorted(
-    (a, b) => spare(b, input) - spare(a, input)
-  );
-  return best ?? null;
-};
-
-/**
- * Puts the Tutorial text next to the thing that it tells about, on the first
- * side that has space for it. The panel always stays in the bounds, and its
- * pointer points to the middle of the anchor.
- */
-export const placePanel = (input: PlacementInput): PanelPlacement | null => {
-  const { anchor, width, height, bounds, align = "center", gap = 14 } = input;
-  const side = chooseSide(input);
-  if (!side) {
-    return null;
-  }
+/** Where the panel goes on `side`, in the bounds. */
+const positionOn = (
+  side: PanelSide,
+  { anchor, width, height, bounds, align = "center", gap = 14 }: PlacementInput
+) => {
   const middleX = (anchor.left + anchor.right) / 2;
   const middleY = (anchor.top + anchor.bottom) / 2;
   const vertical = side === "above" || side === "below";
@@ -113,8 +96,65 @@ export const placePanel = (input: PlacementInput): PanelPlacement | null => {
       ? anchor.top - gap - height
       : anchor.bottom + gap
     : middleY - height / 2;
-  const left = clamp(wantLeft, bounds.left, bounds.right - width);
-  const top = clamp(wantTop, bounds.top, bounds.bottom - height);
+  return {
+    left: clamp(wantLeft, bounds.left, bounds.right - width),
+    top: clamp(wantTop, bounds.top, bounds.bottom - height),
+  };
+};
+
+/** The area of the `avoid` boxes that the panel covers on `side`. */
+const coveredArea = (side: PanelSide, input: PlacementInput): number => {
+  const { left, top } = positionOn(side, input);
+  const right = left + input.width;
+  const bottom = top + input.height;
+  return (input.avoid ?? []).reduce((area, box) => {
+    const width = Math.min(right, box.right) - Math.max(left, box.left);
+    const height = Math.min(bottom, box.bottom) - Math.max(top, box.top);
+    return width > 0 && height > 0 ? area + width * height : area;
+  }, 0);
+};
+
+/**
+ * The first side with space for the panel, or else the side with the most
+ * space. With `avoid`, the side with space where the panel covers the least
+ * area of the `avoid` boxes. A strict placement has no side when no side has
+ * space.
+ */
+const chooseSide = (input: PlacementInput): PanelSide | null => {
+  const withSpace = input.sides.filter(
+    (side) => spare(side, input) >= -SPACE_TOLERANCE
+  );
+  // `toSorted` is stable: of the sides that cover the same area, the first
+  // side in the order of preference wins.
+  const [fits] = input.avoid
+    ? withSpace.toSorted(
+        (a, b) => coveredArea(a, input) - coveredArea(b, input)
+      )
+    : withSpace;
+  if (fits || input.strict) {
+    return fits ?? null;
+  }
+  const [best] = input.sides.toSorted(
+    (a, b) => spare(b, input) - spare(a, input)
+  );
+  return best ?? null;
+};
+
+/**
+ * Puts the Tutorial text next to the thing that it tells about, on the first
+ * side that has space for it. The panel always stays in the bounds, and its
+ * pointer points to the middle of the anchor.
+ */
+export const placePanel = (input: PlacementInput): PanelPlacement | null => {
+  const { anchor, width, height } = input;
+  const side = chooseSide(input);
+  if (!side) {
+    return null;
+  }
+  const middleX = (anchor.left + anchor.right) / 2;
+  const middleY = (anchor.top + anchor.bottom) / 2;
+  const vertical = side === "above" || side === "below";
+  const { left, top } = positionOn(side, input);
   const pointer = vertical
     ? clamp(middleX - left, POINTER_INSET, width - POINTER_INSET)
     : clamp(middleY - top, POINTER_INSET, height - POINTER_INSET);

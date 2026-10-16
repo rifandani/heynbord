@@ -217,6 +217,39 @@ export const BARRACKS_PROMPT = [
 ].join("\n");
 
 /**
+ * The first message of the ChatGPT conversation for the Hall inside, with
+ * the layout sketch, the style reference and the outside reference attached.
+ * The rules come from section 15.1 of the Town Concepts.
+ */
+export const HALL_SETUP_PROMPT = [
+  "In this conversation, you will paint the inside of the hall of banners of a fantasy card battle game: the background of the achievements screen, where the player reads a list of goals and claims their rewards.",
+  [
+    "Image 1 is a rough layout sketch. Keep its composition: the trophy shelves with cups and shields at the left edge, the bell rope, the stair and the small bell keeper at the right edge, the beams, the long hanging banners and the high window at the top, the red carpet on the stone floor along the bottom, and the calm wall in the center. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the same hall from the outside, in the town painting: pale stone walls, a red roof, a tall arched door and long blue and gold banners on its front. Paint the inside of this building. Do not copy its view.",
+  ].join("\n"),
+  "The game shows a tall pole with four cloth flags and a wide parchment list over the center of the painting. Thus the center stays calm, soft and a little dim, and the trophies, the bright light and the details are at the left, at the right and at the top.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for the Hall inside, after its setup message. It is a short
+ * form of the brief in section 15 of the Town Concepts. When you change the
+ * brief there, change this message too.
+ */
+export const HALL_PROMPT = [
+  "the inside of a wide fantasy stone hall of banners, seen from the middle of the hall at eye level, straight on, wide 3:2 landscape, the room fills the full image to all edges,",
+  "at the left edge tall wooden shelves on stone steps with gold trophy cups, small round shields and a few medals on ribbons, they stay inside the left sixth of the image,",
+  "at the right edge a thick bell rope that hangs from the ceiling, a narrow stone stair that goes up, and on the stair a small friendly skeleton bell keeper in a red cap who waves, they stay inside the right sixth of the image,",
+  "in the center a plain back wall of pale stone blocks in soft warm shadow, calm and dim, with no bright light, no people and no objects there,",
+  "heavy dark timber ceiling beams across the top, a row of long hanging banners in royal blue and gold with no symbols, a small high arched window at the upper left with morning light,",
+  "a long red carpet runs across the full width at the bottom, on a floor of worn grey stone slabs,",
+  "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a proud, welcoming and a little funny mood,",
+  "light from the upper left, pale stone, warm timber, royal blue and gold, deep red, cream highlights,",
+  "the center is darker and softer than the sides, no hero, no knight, no text, no letters, no numbers, no labels, no logo, no frame, no UI",
+].join("\n");
+
+/**
  * The first message of the ChatGPT conversation for the Dungeons cave inside,
  * with the layout sketch, the style reference and the outside reference
  * attached. The rules come from section 13.1 of the Town Concepts.

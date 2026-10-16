@@ -32,7 +32,7 @@ describe("newProfile", () => {
     expect(profile.activeDeckId).toBe(INITIAL_DECK_SLOTS[0]?.id);
   });
 
-  it("has no Forge Stones, Stage results, Dungeon results, won Floors, Star chests, Unopened Packs, Sweep Tickets or seen Hints", () => {
+  it("has no Forge Stones, Stage results, Dungeon results, won Floors, Star chests, Unopened Packs, Sweep Tickets, seen Hints or Achievements, and 0 Tallies", () => {
     const profile = newProfile(42);
     expect(profile.forgeStones).toEqual({
       common: 0,
@@ -49,6 +49,9 @@ describe("newProfile", () => {
     expect(profile.campaignSweepTickets).toBe(0);
     expect(profile.dungeonSweepTickets).toBe(0);
     expect(profile.seenHints).toEqual([]);
+    expect(profile.completedAchievements).toEqual([]);
+    expect(profile.claimedAchievements).toEqual([]);
+    expect(profile.tallies).toEqual({ packsOpened: 0, combines: 0, crafts: 0 });
     expect(profile.packState.guaranteeCounters).toEqual({
       peddler: 0,
       merchant: 0,

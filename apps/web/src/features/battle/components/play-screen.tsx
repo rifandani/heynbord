@@ -7,6 +7,8 @@ import {
 import { cn } from "cn";
 import { lazy, Suspense, useContext, useEffect, useMemo } from "react";
 
+import { AchievementsScreen } from "@/features/achievements/components/achievements-screen";
+import { useAchievementNotices } from "@/features/achievements/use-achievement-notices";
 import {
   setSoundEnabled,
   setSoundVolume,
@@ -434,8 +436,8 @@ const useCampaignRegion = (battle: Battle) => {
 
 /**
  * The game in one route (web ADR-0006): the Town, the Campaign (the Region
- * Map), then the Battle, Heynspire, the Dungeons, the Packs, the Workshop
- * and the Hero screen. The Town Bar shows on each screen except the Battle.
+ * Map), then the Battle, Heynspire, the Dungeons, the Packs, the Workshop,
+ * the Hero screen and the Achievements screen. The Town Bar shows on each screen except the Battle.
  * A Battle goes back to the screen that started it: the Campaign, Heynspire
  * or the Dungeons.
  */
@@ -453,6 +455,7 @@ export const PlayScreen = () => {
   const ready = useAtomValue(profileReadyAtom);
 
   useProfileStore();
+  useAchievementNotices();
   // A Replay Link opens Watching a Replay in place of the screen (web ADR-0012).
   useReplayLink({ show: battle.watch, leave: battle.leave });
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
@@ -506,6 +509,7 @@ export const PlayScreen = () => {
           {screen === "packs" ? <PacksScreen /> : null}
           {screen === "workshop" ? <WorkshopScreen /> : null}
           {screen === "hero" ? <HeroScreen /> : null}
+          {screen === "achievements" ? <AchievementsScreen /> : null}
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}

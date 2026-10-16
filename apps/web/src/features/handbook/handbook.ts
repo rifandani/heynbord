@@ -9,6 +9,7 @@ import type {
   TokenId,
 } from "@workspace/rules";
 import {
+  ACHIEVEMENTS,
   CARDS,
   CAMPAIGN_REGIONS,
   CAMPAIGN_WIN_XP,
@@ -38,7 +39,6 @@ import {
   SHARED_RANK_VALUES,
   STAGE_LANES,
   STARTING_HAND,
-  STAR_FAST_WIN_TURN,
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
   SUMMON_ZONE_DEPTH,
@@ -131,6 +131,7 @@ const PROGRESS_ENTRIES = [
   "gear",
   "dungeon",
   "heynspire",
+  "achievement",
 ] as const;
 
 const DAMAGE_TYPES: readonly DamageType[] = [
@@ -284,13 +285,7 @@ export const STARS_TABLE: readonly {
 }[] = [
   { count: 1, rule: { key: "handbook.starsRow.1" } },
   { count: 2, rule: { key: "handbook.starsRow.2" } },
-  {
-    count: 3,
-    rule: {
-      key: "handbook.starsRow.3",
-      args: { fastTurn: STAR_FAST_WIN_TURN },
-    },
-  },
+  { count: 3, rule: { key: "handbook.starsRow.3" } },
 ];
 
 /** Example Coin on the Town balance plate: 1 Gold, 54 Silver, 20 Copper (Economy 1.1). */
@@ -567,7 +562,6 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
     high: recallChance("legendary") / 100,
   },
   countdownLimit: { first: countdownLimit(1) },
-  stars: { fastTurn: STAR_FAST_WIN_TURN },
   playerLevel: { maxLevel: PLAYER_LEVEL_XP.length },
   pack: { cards: PACK_SIZE },
   workshop: { combine: UNLOCK_LEVELS.combine, craft: UNLOCK_LEVELS.craft },
@@ -588,6 +582,12 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
     lanes: FLOOR_LANES,
     every: HEYNSPIRE_BOSS_FLOOR_EVERY,
     tickets: CAMPAIGN_SWEEP_TICKETS_PER_WIN,
+  },
+  achievement: {
+    count: ACHIEVEMENTS.length,
+    cosmetics: ACHIEVEMENTS.filter(
+      (achievement) => achievement.reward.kind === "cosmetic"
+    ).length,
   },
 };
 
@@ -632,6 +632,8 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   sweep: glyph("campaignTicket"),
   dungeon: glyph("cave"),
   heynspire: glyph("tower"),
+  // The glyph of the Achievements on the Battle result.
+  achievement: glyph("banner"),
   rankGems: { kind: "rank", rank: "rare" },
 };
 
@@ -784,6 +786,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   gear: ["hero", "class", "coin", "playerLevel"],
   dungeon: ["front", "defeated", "side", "sweep", "playerLevel"],
   heynspire: ["hero", "front", "sweep", "gear", "playerLevel"],
+  achievement: ["stars", "dungeon", "heynspire", "coin"],
 };
 
 const withLinks = (entry: Entry): Entry => ({
@@ -936,6 +939,7 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "gear",
   "dungeon",
   "heynspire",
+  "achievement",
 ]);
 
 /**

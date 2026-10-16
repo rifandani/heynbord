@@ -1,4 +1,5 @@
 import {
+  CARDS,
   Command,
   getDungeon,
   getFloor,
@@ -19,6 +20,7 @@ import {
   skip,
   startSession,
 } from "@/features/battle/battle-session";
+import type { HandCardView } from "@/features/battle/battle-view";
 import {
   qaWeakTwoBossDungeon,
   startDungeon,
@@ -48,6 +50,8 @@ const STAGE: BattleOptions = {
   player: NEW_PLAYER,
   seed: 7,
 };
+
+const SKILL_ID = CARDS.find((card) => card.kind === "skill")?.id ?? "";
 
 const stageBattle = () => playOut(startSession(STAGE));
 
@@ -216,16 +220,22 @@ describe("watchingSession", () => {
   });
 
   it("writes nothing to the Profile and shows no Hint", () => {
+    // The same session, but Live: only `watching` changes.
+    const live: BattleSession = { ...watching, watching: false };
+    expect(recordBattleResult(newProfile(1), live, null)).not.toBeNull();
     expect(recordBattleResult(newProfile(1), watching, null)).toBeNull();
-    // The Live Battle of the same Replay gives its rewards.
-    expect(recordBattleResult(newProfile(1), battle, null)).not.toBeNull();
-    expect(
-      battleHints({
-        hand: [],
-        log: watching.log,
-        tutorial: false,
-        watching: watching.watching,
-      })
-    ).toEqual([]);
+    // A Ready Skill Card in the Hand meets the Skill Card Hint in a Live Battle.
+    const hand: readonly HandCardView[] = [
+      {
+        instanceId: 1,
+        cardId: SKILL_ID,
+        rank: "common",
+        countdown: 0,
+        blocked: false,
+      },
+    ];
+    const facts = { hand, log: watching.log, tutorial: false };
+    expect(battleHints({ ...facts, watching: false })).toContain("skillCard");
+    expect(battleHints({ ...facts, watching: watching.watching })).toEqual([]);
   });
 });

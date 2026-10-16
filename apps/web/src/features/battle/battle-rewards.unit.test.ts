@@ -21,6 +21,7 @@ import {
   startDungeon,
 } from "@/features/battle/qa-dungeons";
 import { buildQaState } from "@/features/battle/test-hooks";
+import { startTutorial } from "@/features/battle/tutorial";
 
 const finished = (state: "victory" | "defeat") => {
   const session = buildQaState(state, 3);
@@ -36,10 +37,19 @@ describe("stageResultOf", () => {
     expect(stageResultOf(won)).toEqual({
       stageId: "1-1",
       won: true,
-      stars: starsFor(won.rules),
+      stars: starsFor(won.rules, getStage("1-1")),
       classId: won.options.deck.classId,
       enemyHeroDamage: enemyHeroDamage(won.rules),
     });
+  });
+
+  it("gives 3 Stars only for a win before the Star Turn of the Stage", () => {
+    const won = finished("victory");
+    const { turnNumber } = won.rules;
+    const starsAt = (starTurn: number) =>
+      stageResultOf(won, [{ ...getStage("1-1"), starTurn }])?.stars;
+    expect(starsAt(turnNumber + 1)).toBe(3);
+    expect(starsAt(turnNumber)).toBe(2);
   });
 
   it("gives a loss with no Stars, and the HP that the enemy Hero lost", () => {
@@ -78,7 +88,9 @@ describe("recordBattleResult", () => {
     });
     expect(first?.shown.xp).toBe(80);
     expect(first?.profile.coin).toBe(180);
-    expect(first?.profile.stageResults["1-1"]).toBe(starsFor(won.rules));
+    expect(first?.profile.stageResults["1-1"]).toBe(
+      starsFor(won.rules, getStage("1-1"))
+    );
     // The same Battle again: the rewards are already in the Profile.
     expect(
       recordBattleResult(first?.profile ?? profile, won, first?.shown ?? null)
@@ -96,6 +108,58 @@ describe("recordBattleResult", () => {
     );
     expect(second?.shown.rewards.outcome).toBe("win");
     expect(second?.profile.coin).toBe(180 + 60);
+  });
+});
+
+/** The Feats in a Profile. */
+const feats = (profile: {
+  readonly completedAchievements: readonly string[];
+}) => profile.completedAchievements.filter((id) => id.startsWith("feat."));
+
+describe("recordBattleResult with Feats (Achievements 1.3)", () => {
+  // The QA win of seed 1 Routs the enemy Side. The Tutorial is won, so the
+  // Battle is a repeat win of Stage 1-1.
+  const tutorialWon = { ...newProfile(7), stageResults: { "1-1": 1 } };
+  const auto = buildQaState("victory", 1);
+  if (!auto) {
+    throw new Error("No victory Battle");
+  }
+  // The AI played the QA Battle. Here, it is a Battle that the Player played.
+  const played = { ...auto, autoPlayed: false };
+
+  it("records the Feats of a won Battle in the same Profile write as the rewards", () => {
+    const recorded = recordBattleResult(tutorialWon, played, null);
+    expect(feats(recorded?.profile ?? tutorialWon)).toEqual(["feat.rout"]);
+    expect(recorded?.profile.coin).toBe(60);
+    // The same Battle again records nothing more.
+    expect(
+      recordBattleResult(recorded?.profile ?? tutorialWon, played, {
+        options: played.options,
+      })
+    ).toBeNull();
+  });
+
+  it("records nothing for a Replay", () => {
+    expect(
+      recordBattleResult(tutorialWon, { ...played, watching: true }, null)
+    ).toBeNull();
+  });
+
+  it.each([
+    ["the Tutorial", { ...played, tutorial: startTutorial() }],
+    ["Auto-play", auto],
+    ["a Battle that the dev panel changed", { ...played, devChanged: true }],
+    ["a loss", { ...finished("defeat"), autoPlayed: false }],
+  ])("completes no Feat for %s", (_name, session) => {
+    const recorded = recordBattleResult(tutorialWon, session, null);
+    expect(recorded).not.toBeNull();
+    expect(feats(recorded?.profile ?? tutorialWon)).toEqual([]);
+  });
+
+  it("completes no Feat for the first win of the Tutorial Stage", () => {
+    const recorded = recordBattleResult(newProfile(7), played, null);
+    expect(recorded?.shown.rewards.outcome).toBe("firstWin");
+    expect(feats(recorded?.profile ?? newProfile(7))).toEqual([]);
   });
 });
 

@@ -14,7 +14,8 @@ export type GameScreen =
   | "workshop"
   | "hero"
   | "dungeons"
-  | "heynspire";
+  | "heynspire"
+  | "achievements";
 
 /** A box in Town painting coordinates. */
 export interface Rect {
@@ -96,7 +97,8 @@ export interface SelectableBuilding {
     | "workshop"
     | "barracks"
     | "cave"
-    | "heynspire";
+    | "heynspire"
+    | "hall";
   readonly screen: GameScreen;
   /** The Building in the painting, in painting coordinates. */
   readonly rect: Rect;
@@ -128,10 +130,15 @@ export interface SelectableBuilding {
  */
 export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
   {
+    // The Town Gate (11 — Town Concepts 2.1): the gate with the two blue
+    // tower roofs. The label is between the two tower roofs, at the middle
+    // of their height. The box starts at the label, so the light keeps the
+    // full gate and the tips of the roofs.
     id: "townGate",
     screen: "campaign",
-    rect: { x: 720, y: 520, width: 344, height: 344 },
-    label: { x: 720, y: 474, width: 344, height: 46 },
+    rect: { x: 720, y: 603, width: 344, height: 261 },
+    label: { x: 720, y: 557, width: 344, height: 46 },
+    glow: { x: 720, y: 520, width: 344, height: 344 },
   },
   {
     // The Card shop (11 — Town Concepts 2.7): the house with the purple roof
@@ -150,32 +157,40 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     // The Workshop (11 — Town Concepts 2.5): the forge with the blue roof and
     // the tall chimney, at the right of the Market. A 4:3 screen crops its
     // right part (the chimney and the house), so its label is over its left
-    // part, in the safe area. The cut follows the roofs, the chimney and the
+    // part, in the safe area. The label is low, on the top edge of the forge
+    // roof, so that it does not cover the Market stalls above the Workshop.
+    // The box starts at the label, so the light keeps the full Building and
+    // the top of the chimney. The cut follows the roofs, the chimney and the
     // wall, so the plaza and the wall around it go to the painting.
     id: "workshop",
     screen: "workshop",
     unlock: "combine",
-    rect: { x: 1318, y: 480, width: 427, height: 225 },
-    label: { x: 1318, y: 434, width: 208, height: 46 },
-    clip: "polygon(-8.5% -6%, 57.5% -6%, 57.5% 16.2%, 64.6% 16.2%, 64.6% 14.8%, 84.8% 14.8%, 85.7% 28.8%, 103.7% 39.9%, 103.7% 81.2%, 88.8% 83.8%, 54.3% 100.4%, 26.2% 105.5%, -3.3% 101.8%, -3.3% 18%, -8.5% 18%)",
+    rect: { x: 1318, y: 551, width: 427, height: 154 },
+    label: { x: 1318, y: 505, width: 208, height: 46 },
+    glow: { x: 1318, y: 480, width: 427, height: 225 },
+    clip: "polygon(-8.5% -8%, 57.5% -8%, 57.5% 0%, 84.8% 0%, 85.7% 3.5%, 103.7% 18.5%, 103.7% 74.5%, 88.8% 78%, 54.3% 100.5%, 26.2% 107.5%, -3.3% 102.5%, -3.3% 24.5%, -8.5% 24.5%)",
   },
   {
     // The Barracks (11 — Town Concepts 2.8): the long stone barracks with the
     // blue roof, the training yard and its fence, inside the wall at the far
-    // left. A 4:3 screen crops its left part (the round tower and the left
-    // wing), so its label is over its right wing, in the safe area. The cut
-    // follows the roofs and the fence, and it goes around the label.
+    // left. Its label is over its left wing, right of the round tower. The
+    // label is outside the safe area: a 4:3 screen crops it, and the Hero
+    // shortcut opens the screen on all screens (GDD 11.4). The name touches
+    // the top of the blue roof. The box starts at the label, so the light
+    // keeps the full roof. The cut follows the roofs and the fence, and it
+    // goes around the label.
     id: "barracks",
     screen: "hero",
     unlock: "gear",
-    rect: { x: 91, y: 320, width: 464, height: 206 },
-    label: { x: 376, y: 274, width: 179, height: 46 },
-    clip: "polygon(-2.5% 39.3%, 9.8% 19%, 19.6% 37.5%, 44.8% 28%, 45.1% 22.5%, 52% 18%, 52% -6%, 109.5% -6%, 109.5% 19%, 103% 19%, 103% 71%, 91.5% 82%, 55.6% 103%, 19.6% 87%, 5% 84%, -2.5% 73%)",
+    rect: { x: 91, y: 344, width: 464, height: 182 },
+    label: { x: 124, y: 298, width: 179, height: 46 },
+    glow: { x: 91, y: 320, width: 464, height: 206 },
+    clip: "polygon(-2.5% -6%, 62.3% -6%, 62.3% 9.2%, 109.5% 9.2%, 109.5% 21.1%, 103% 21.1%, 103% 67.9%, 91.5% 80.1%, 55.6% 103.3%, 19.6% 85.6%, 5% 82.3%, -2.5% 70.2%)",
   },
   {
     // The Dungeons cave (11 — Town Concepts 2.3): the rock mound with the cave
     // arch and the ruined pillars, at the right edge of the painting. It is
-    // the one selectable Building outside the safe area: a 4:3 screen crops
+    // outside the safe area, as the Barracks label is: a 4:3 screen crops
     // all of it, and a 16:10 screen crops the arch. Its label is on the rock
     // face left of the arch, which more screens show, and under the edge of
     // the Workshop, so that it never takes the pointer from the Workshop. The
@@ -205,6 +220,20 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     label: { x: 540, y: 138, width: 220, height: 46 },
     glow: { x: 500, y: 0, width: 300, height: 250 },
   },
+  {
+    // The Hall of banners (11 — Town Concepts 2.9): the wide hall with the
+    // red roofs and the long blue and gold banners, behind the Library and
+    // the Card shop. Its label is on the red roofs, under the Heynspire
+    // hill and at the right of the Heynspire box, so the two never touch.
+    // The box is the front of the hall with its banners. It stops at the top
+    // of the Card shop label, so that label keeps the pointer. The light
+    // goes down over the steps and the trophies.
+    id: "hall",
+    screen: "achievements",
+    rect: { x: 790, y: 296, width: 300, height: 94 },
+    label: { x: 800, y: 250, width: 280, height: 46 },
+    glow: { x: 770, y: 226, width: 340, height: 230 },
+  },
 ];
 
 /**
@@ -212,6 +241,7 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
  * so only their Town Bar shortcut opens their screen there.
  */
 export const EDGE_BUILDINGS: ReadonlySet<SelectableBuilding["id"]> = new Set([
+  "barracks",
   "cave",
 ]);
 
@@ -331,7 +361,7 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "workshop", screen: "workshop", unlock: "combine" },
   { id: "packs", screen: "packs", unlock: "packs" },
   { id: "hero", screen: "hero", unlock: "gear" },
-  { id: "achievements", screen: null },
+  { id: "achievements", screen: "achievements" },
   { id: "bazaar", screen: null },
   // The Handbook has no Building (GDD 11.4): it is a dialog, like the Deck builder.
   { id: "handbook", screen: null, dialog: "handbook" },

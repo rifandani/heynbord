@@ -80,7 +80,6 @@ export default {
     skip: "Lewati",
     speed: "Kecepatan",
     speedValue: "×{value}",
-    sound: "Suara",
     quit: "Tinggalkan Pertempuran",
     deck: "Dek",
     graveyard: "Kuburan",
@@ -225,7 +224,7 @@ export default {
     next: "Entri Catatan berikutnya",
     showBoard: "Lihat Papan",
     showLog: "Lihat Catatan",
-    banner: "Giliran {number} · {side} · Catatan Pertempuran",
+    banner: "Giliran {number} · {side}",
     turn: "Giliran {number} · {side}",
     yourHp: "Kamu {hp} HP",
     heroHp: "{name} {hp} HP",
@@ -318,6 +317,7 @@ export default {
     levelPlate: "Level {level}",
     opensWithStage: "Menangkan {stage} ({id}) untuk membuka",
     lockedWithStage: "{name}, menangkan {stage} ({id}) untuk membuka",
+    shortcutBadge: "{name}, {count} bisa diklaim",
     buildings: {
       townGate: "Kampanye",
       cardShop: "Paket",
@@ -325,6 +325,7 @@ export default {
       barracks: "Pahlawan",
       cave: "Dungeon",
       heynspire: "Heynspire",
+      hall: "Pencapaian",
     },
     shortcuts: {
       town: "Kota",
@@ -413,6 +414,12 @@ export default {
       firstWin: "Kemenangan pertama: kartu ini, Koin, dan XP.",
       repeatWin:
         "Kemenangan ulang: Koin, XP, dan peluang kartu dari Tahap ini.",
+      stars: "Bintang",
+      starRule: {
+        1: "Menangkan Pertempuran.",
+        2: "Pertahankan setengah HP Pahlawanmu atau lebih.",
+        3: "Juga menang sebelum Giliran {turn}.",
+      },
       deck: "Dek",
       fight: "Bertarung",
     },
@@ -482,6 +489,202 @@ export default {
       "Progres tersimpanmu gagal dimuat, jadi game baru dimulai. Simpanan lama tetap ada sampai kamu bermain.",
     saveFailed: "Progresmu tidak tersimpan.",
   },
+  // Nama draf (Pencapaian 2). Tiap ID adalah Translation Key: `achievements.<id>.name` dan `.goal`.
+  achievements: {
+    notice: {
+      one: "Pencapaian selesai: {name}",
+      many: "{count} Pencapaian selesai",
+    },
+    result: {
+      label: "Pencapaian yang diselesaikan oleh hasil ini",
+      completed: "Pencapaian selesai",
+    },
+    screen: {
+      label: "Pencapaian",
+      categories: {
+        label: "Kategori Pencapaian",
+        campaign: "Kampanye",
+        dungeonsAndHeynspire: "Dungeon dan Heynspire",
+        progress: "Kemajuan",
+        feats: "Aksi Hebat",
+      },
+      count: "{done} / {total}",
+      countLabel: "{done} dari {total} selesai",
+      toClaim: "{count} bisa diklaim",
+      progress: "Kemajuan",
+      notDone: "Belum selesai",
+      progressLabel: "{current} dari {target}",
+      reward: "Hadiah: {reward}",
+      claim: "Klaim",
+      claimLabel: "Klaim {name}: {reward}",
+      claimed: "Diklaim",
+      claimAll: "Klaim semua",
+      claimAllLabel: "Klaim semua: {count} hadiah",
+      noneToClaim: "Tidak ada hadiah untuk diklaim",
+      rewards: {
+        heynstones: "{amount} Heynstone",
+        essence: "{amount} Esensi",
+        coin: "{coin}",
+        cosmetic: "Kosmetik khusus hadiah",
+        cosmeticLater: "Hadir di pembaruan nanti",
+      },
+      said: {
+        one: "{name} diklaim: {reward}.",
+        many: "{count} hadiah diklaim.",
+      },
+    },
+    campaign: {
+      hearthvale: { name: "Hearthvale Bebas", goal: "Menangkan Tahap 1-10" },
+      redMesas: { name: "Melintasi Mesa", goal: "Menangkan Tahap 2-10" },
+      glowcapHollows: {
+        name: "Cahaya di Lembah",
+        goal: "Menangkan Tahap 3-10",
+      },
+      thornwood: { name: "Menembus Duri", goal: "Menangkan Tahap 4-10" },
+      hollowMarches: {
+        name: "Kastel Marrow Runtuh",
+        goal: "Menangkan Tahap 5-10",
+      },
+      regionStars: {
+        name: "Jalan Berbintang",
+        goal: "Dapatkan 30 Bintang di satu Wilayah",
+      },
+      allStars: {
+        name: "Semua Bintang di Heynbord",
+        goal: "Dapatkan 150 Bintang: 3 Bintang di semua 50 Tahap",
+      },
+      allChests: {
+        name: "Pemburu Peti",
+        goal: "Ambil semua 15 peti Bintang",
+      },
+    },
+    dungeon: {
+      rootdeepMine: {
+        name: "Masuk ke Tambang",
+        goal: "Menangkan Dungeon 1, Tambang Akar Dalam",
+      },
+      rimebarrow: {
+        name: "Hiburan Dingin",
+        goal: "Menangkan Dungeon 2, Gundukan Beku",
+      },
+      brokenVault: {
+        name: "Pembobol Brankas",
+        goal: "Menangkan Dungeon 3, Brankas Retak",
+      },
+    },
+    heynspire: {
+      floor25: {
+        name: "Setengah Jalan",
+        goal: "Menangkan Lantai 25 Heynspire",
+      },
+      floor50: {
+        name: "Puncak Menara",
+        goal: "Menangkan Lantai 50 Heynspire",
+      },
+    },
+    level: {
+      max: { name: "Veteran", goal: "Capai level Pemain 30" },
+    },
+    collection: {
+      half: { name: "Setengah Buku", goal: "Temukan 65 kartu" },
+      all: { name: "Buku Lengkap", goal: "Temukan semua 130 kartu" },
+    },
+    packs: {
+      fifty: { name: "Pelanggan Tetap", goal: "Buka 50 Paket" },
+    },
+    workshop: {
+      legendary: {
+        name: "Legenda Tercipta",
+        goal: "Punya 1 salinan Legendaris dari sebuah kartu, dari Gabung atau Paket Kerajaan",
+      },
+      combines: { name: "Meja Sibuk", goal: "Lakukan 25 kali Gabung" },
+      craft: { name: "Dari Debu", goal: "Buat 1 kartu" },
+    },
+    gear: {
+      ten: {
+        name: "Diasah",
+        goal: "Tingkatkan 1 Perlengkapan ke level 10",
+      },
+      max: {
+        name: "Tempaan Penuh",
+        goal: "Tingkatkan semua 4 Perlengkapan ke level 25",
+      },
+    },
+    feat: {
+      onlyHuman: {
+        name: "Rumah dan Perapian",
+        goal: "Menang di Tahap Bos atau Dungeon dengan Dek yang semua Kartu Makhluknya Manusia",
+      },
+      onlyElf: {
+        name: "Hutan Tua",
+        goal: "Menang di Tahap Bos atau Dungeon dengan Dek yang semua Kartu Makhluknya Elf",
+      },
+      onlyUndead: {
+        name: "Pasukan Tulang",
+        goal: "Menang di Tahap Bos atau Dungeon dengan Dek yang semua Kartu Makhluknya Undead",
+      },
+      onlyOrc: {
+        name: "Gerombolan Perang",
+        goal: "Menang di Tahap Bos atau Dungeon dengan Dek yang semua Kartu Makhluknya Orc",
+      },
+      onlyGoblin: {
+        name: "Kenakalan",
+        goal: "Menang di Tahap Bos atau Dungeon dengan Dek yang semua Kartu Makhluknya Goblin",
+      },
+      onlyFeral: {
+        name: "Perburuan Kawanan",
+        goal: "Menang di Tahap Bos atau Dungeon dengan Dek yang semua Kartu Makhluknya Buas",
+      },
+      creaturesOnly: {
+        name: "Tanpa Trik",
+        goal: "Menang di Tahap Bos atau Dungeon tanpa Kartu Keahlian di Dek",
+      },
+      commonOnly: {
+        name: "Barisan Sederhana",
+        goal: "Menangkan Tahap Bos Wilayah 3 atau sesudahnya dengan hanya salinan Biasa di Dek",
+      },
+      untouched: {
+        name: "Tanpa Goresan",
+        goal: "Menangkan Tahap Bos dengan HP Pahlawanmu penuh",
+      },
+      swiftBoss: {
+        name: "Pengepungan Singkat",
+        goal: "Menangkan Tahap Bos sebelum Giliran 10",
+      },
+      lastStand: {
+        name: "Di Ujung Tanduk",
+        goal: "Menang dengan HP Pahlawanmu 3 atau kurang",
+      },
+      rout: {
+        name: "Tak Tersisa",
+        goal: "Menang karena Pihak musuh Tercerai-berai",
+      },
+      fullZone: {
+        name: "Barisan Padat",
+        goal: "Menangkan Pertempuran dengan 9 Unit-mu di Papan pada saat yang sama",
+      },
+      allDamageTypes: {
+        name: "Semua Elemen",
+        goal: "Menangkan Pertempuran di mana Unit dan Kartu Keahlianmu memberi damage dari semua 5 Jenis Damage",
+      },
+      fourCards: {
+        name: "Waktu yang Tepat",
+        goal: "Menangkan Pertempuran di mana kamu memainkan 4 kartu dalam satu Giliran",
+      },
+      keywords: {
+        name: "Banyak Trik",
+        goal: "Menangkan Pertempuran di mana 10 Kata Kunci berbeda dari Unit-mu aktif",
+      },
+      noLosses: {
+        name: "Dinding Perisai",
+        goal: "Menangkan Dungeon tanpa ada Unit-mu yang mati",
+      },
+      untouchedVault: {
+        name: "Brankas Sempurna",
+        goal: "Menangkan Dungeon 3 dengan HP Pahlawanmu penuh",
+      },
+    },
+  },
   tutorial: {
     label: "Tutorial",
     gotIt: "Mengerti",
@@ -533,6 +736,8 @@ export default {
       "Dungeon sudah terbuka. Di Dungeon, kamu melawan semua Bos-nya dalam satu Pertempuran di 4 Jalur.",
     heynspire:
       "Heynspire sudah terbuka. Daki 50 Lantainya satu per satu. Tiap Lantai memberi hadiahnya satu kali.",
+    achievements:
+      "Kamu menyelesaikan satu Pencapaian. Buka Pencapaian untuk mengklaim hadiahnya.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -590,7 +795,7 @@ export default {
     starsRow: {
       1: "Menangkan Pertempuran.",
       2: "Juga pertahankan setengah HP Pahlawanmu atau lebih di akhir.",
-      3: "Juga selesaikan sebelum Giliran {fastTurn}.",
+      3: "Juga selesaikan sebelum Giliran Bintang dari Tahap itu. Panel Tahapnya menunjukkannya.",
     },
     coinDenomTable: "Satu saldo, tiga koin",
     coinDenomColumn: "Koin",
@@ -748,6 +953,7 @@ export default {
       gear: "Perlengkapan",
       dungeon: "Dungeon",
       heynspire: "Heynspire",
+      achievement: "Pencapaian",
     },
     entries: {
       board:
@@ -845,7 +1051,7 @@ export default {
       rankGems:
         "Permata Peringkat adalah berlian kecil di bagian atas kartu. Hitung jumlahnya: 1 permata adalah Biasa, 5 permata adalah Legendaris.\n\nTiap Peringkat punya warna permata, tapi jumlahnya sudah cukup untuk membaca Peringkat di Pertempuran.",
       stars:
-        "Saat menang di Tahap, kamu mendapat 1 sampai 3 Bintang. Kalah memberi 0 Bintang.\n\nTiap Bintang menambah syarat di atas yang sebelumnya. Setengah HP Pahlawan berarti Pahlawanmu punya minimal 50% dari HP maksimumnya saat Pertempuran berakhir.\n\nKampanye menyimpan Bintang terbaikmu untuk tiap Tahap. Total Bintang di satu Wilayah membuka peti pada 10, 20 dan 30 Bintang.",
+        "Saat menang di Tahap, kamu mendapat 1 sampai 3 Bintang. Kalah memberi 0 Bintang.\n\nTiap Bintang menambah syarat di atas yang sebelumnya. Setengah HP Pahlawan berarti Pahlawanmu punya minimal 50% dari HP maksimumnya saat Pertempuran berakhir. Giliran Bintang adalah nomor Giliran yang harus didahului oleh kemenangan 3 Bintang. Tiap Tahap punya Giliran Bintang sendiri, dan Panel Tahapnya menunjukkannya.\n\nKampanye menyimpan Bintang terbaikmu untuk tiap Tahap. Total Bintang di satu Wilayah membuka peti pada 10, 20 dan 30 Bintang.",
       sweep:
         "Sweep langsung memberi hadiah kemenangan ulang dari satu Tahap atau Dungeon. Tidak ada Pertempuran, dan Sweep selalu menang. Satu Sweep memakai 1 sampai {max} Tiket, dan tiap Tiket memberi satu hadiah kemenangan ulang.\n\nSweep Kampanye: saat Bintang terbaikmu di satu Tahap adalah 3, Panel Tahap-nya punya tombol Sweep. Sweep ini memakai Tiket Sweep Kampanye. Tiap Tiket memberi Koin, XP, serta peluang kartu dan Batu Tempa dari Tahap itu.\n\nSweep Dungeon: setelah kamu memenangkan satu Dungeon, layar Dungeon punya tombol Sweep untuknya. Sweep ini memakai Tiket Sweep Dungeon. Tiap Tiket memberi Koin dan XP atau Esensi dari Dungeon itu, serta peluang kartu dan Batu Tempa.\n\nKelas Dek Aktif-mu menentukan kartu yang bisa diberikan Sweep. Sweep tidak pernah mengubah Bintang atau kemenangan Dungeon-mu, dan tidak memberi Tiket.\n\nTiap kemenangan Tahap memberi {campaignTickets} Tiket Sweep Kampanye. Tiap kemenangan Dungeon memberi {dungeonTickets} Tiket Sweep Dungeon. Kekalahan tidak memberi Tiket. Kedua jenis Tiket tidak pernah berubah menjadi satu sama lain, dan kamu tidak bisa membelinya.",
       playerLevel:
@@ -859,8 +1065,12 @@ export default {
         "Dungeon adalah tempat di luar Kampanye. Gua di Kota dan pintasan Dungeon membuka layar Dungeon, mulai level Pemain {level}.\n\nDi Dungeon, kamu melawan semua Bos-nya dalam satu Pertempuran. Papan punya {lanes} Jalur. Tiap Bos adalah Pahlawan musuh dengan Lini, Tangan, dan Dek sendiri. Unit di ujung Jalur menyerang Bos dari Lini itu.\n\nAturan Bos aktif satu kali, saat HP Bos-nya turun ke persen tertentu atau lebih rendah. Bar HP Bos menunjukkan takik di persen itu.\n\nKemenangan Dungeon tidak memberi Bintang. Setelah menang, kamu bisa memainkan Dungeon itu lagi atau melakukan Sweep. Tiap kemenangan Dungeon memberi {tickets} Tiket Sweep Dungeon.",
       heynspire:
         "Heynspire adalah menara tinggi di Kota. Heynspire terbuka setelah kemenangan pertama di Tahap {stage}. Menara di Kota dan pintasan Heynspire membukanya.\n\nHeynspire punya {floors} Lantai. Kamu hanya melawan Lantai Saat Ini: Lantai terendah yang belum kamu menangkan. Pertempuran Lantai punya {lanes} Jalur dan 1 Pahlawan musuh, dengan Lini di semua Jalur.\n\nTiap Lantai ke-{every} adalah Lantai Bos: satu Bos Kampanye kembali dengan Dek baru. Lantai Bos tidak punya Aturan Bos.\n\nTiap Lantai memberi hadiahnya satu kali, saat kamu memenangkannya. Kamu tidak bisa memainkan Lantai yang sudah menang lagi, dan tidak bisa melakukan Sweep di sana. Kemenangan juga memberi {tickets} Tiket Sweep Kampanye. Kekalahan memberi sebagian Koin dan XP, sesuai HP yang kamu ambil dari Pahlawan musuh.",
+      achievement:
+        "Pencapaian adalah tujuan dengan hadiah. Balai panji di Kota dan pintasan Pencapaian membuka layar Pencapaian. Layar itu menampilkan semua {count} Pencapaian dalam 4 kelompok: Kampanye, Dungeon dan Heynspire, Kemajuan, serta Aksi Hebat.\n\nPencapaian mula-mula Sedang berjalan, lalu Selesai, lalu Diklaim. Saat kamu memenuhi tujuannya pertama kali, Pencapaian itu menjadi Selesai, dan tetap Selesai. Lalu tekan Klaim di layar Pencapaian untuk mendapat hadiahnya. Klaim semua mengklaim semua Pencapaian yang Selesai sekaligus. Lencana di pintasan Pencapaian menunjukkan jumlah hadiah yang bisa diklaim.\n\nAksi Hebat adalah Pencapaian yang diselesaikan oleh satu Pertempuran yang kamu menangkan: Tahap, Dungeon, atau Lantai yang kamu mainkan. Sweep, Replay, Auto-play, dan Tutorial tidak pernah menyelesaikan Aksi Hebat. Kekalahan juga tidak.\n\nSebagian besar hadiah adalah Heynstone. Sebagian lain adalah Koin atau Esensi. {cosmetics} Pencapaian sulit memberi Kosmetik khusus hadiah. Kosmetik hadir di pembaruan nanti: game menyimpan Kosmetikmu sampai saat itu.\n\nTidak ada Pencapaian yang bisa terlewat. Kamu selalu bisa menyelesaikan tiap Pencapaian nanti.",
     },
     aliases: {
+      achievement:
+        "trofi, piala, misi, lencana, tantangan, prestasi, achievement, trophy, quest, feat",
       heynspire: "menara, tower, spire, endless tower, panjat",
       board: "medan, arena, peta, battlefield, map",
       lane: "baris, lorong, row, path",
@@ -1401,10 +1611,7 @@ export default {
   // Draft names (PRD open question 1).
   heynspire: {
     label: "Heynspire",
-    title: "Heynspire",
     rail: "Lantai-lantai Heynspire",
-    progress: "Lantai {number} dari {total}",
-    climbed: "Heynspire sudah didaki",
     floor: "Lantai {number}",
     floorName: "Heynspire, Lantai {number}",
     winFirst: "Menangkan Lantai {number} dulu.",

@@ -373,59 +373,48 @@ const CRENELS = [
  * A phone in landscape has room only for the Flights, so it shows the cap
  * after the climb only.
  */
-const Summit = ({ climbed }: { readonly climbed: boolean }) => {
-  const { tr } = useGameText();
-  return (
-    <div
-      className={cn(
-        // It stands on the top band: its margin takes back the gap of the rail.
-        "relative -mb-2 flex flex-col items-center [@media(max-height:500px)]:-mb-1",
-        !climbed && "[@media(max-height:500px)]:hidden"
-      )}
-      data-testid="heynspire-summit"
-      data-climbed={climbed || undefined}
+const Summit = ({ climbed }: { readonly climbed: boolean }) => (
+  <div
+    className={cn(
+      // It stands on the top band: its margin takes back the gap of the rail.
+      "relative -mb-2 flex flex-col items-center [@media(max-height:500px)]:-mb-1",
+      !climbed && "[@media(max-height:500px)]:hidden"
+    )}
+    data-testid="heynspire-summit"
+    data-climbed={climbed || undefined}
+  >
+    <svg
+      viewBox="0 0 40 40"
+      className="-mb-1 h-10 w-10 shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:h-6 [@media(max-height:500px)]:w-6"
+      aria-hidden
     >
-      <svg
-        viewBox="0 0 40 40"
-        className="-mb-1 h-10 w-10 shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:h-6 [@media(max-height:500px)]:w-6"
-        aria-hidden
-      >
-        <path
-          d="M12 39 V4"
-          stroke="#2a1a0c"
-          strokeWidth={4}
-          strokeLinecap="round"
-        />
-        <path
-          d="M12 39 V4"
-          stroke={climbed ? "#e7bb6a" : "#b8bcc0"}
-          strokeWidth={2}
-          strokeLinecap="round"
-        />
-        <path
-          d="M13 5 L34 10 L13 17 Z"
-          fill={climbed ? "#ffd75a" : "#8d9297"}
-          stroke="#2a1a0c"
-          strokeWidth={2}
-          strokeLinejoin="round"
-        />
-      </svg>
-      <span
-        className="block h-7 w-full bg-[url(/heynspire/stair-stone.webp)] bg-[length:auto_120px] bg-bottom drop-shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:h-4 [@media(max-height:500px)]:bg-[length:auto_70px]"
-        style={{ mask: CRENELS, WebkitMask: CRENELS }}
-        aria-hidden
+      <path
+        d="M12 39 V4"
+        stroke="#2a1a0c"
+        strokeWidth={4}
+        strokeLinecap="round"
       />
-      {climbed ? (
-        <p
-          className="font-display absolute top-0 left-[calc(50%+1.75rem)] rounded-xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-4 py-1.5 text-xl leading-tight font-black whitespace-nowrap text-[#8a5a12] shadow-[0_3px_0_rgba(0,0,0,0.45)] motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.2,0.8,0.2,1)_200ms_both] [@media(max-height:500px)]:border-2 [@media(max-height:500px)]:py-0.5 [@media(max-height:500px)]:text-base"
-          data-testid="heynspire-climbed"
-        >
-          {tr("heynspire.climbed")}
-        </p>
-      ) : null}
-    </div>
-  );
-};
+      <path
+        d="M12 39 V4"
+        stroke={climbed ? "#e7bb6a" : "#b8bcc0"}
+        strokeWidth={2}
+        strokeLinecap="round"
+      />
+      <path
+        d="M13 5 L34 10 L13 17 Z"
+        fill={climbed ? "#ffd75a" : "#8d9297"}
+        stroke="#2a1a0c"
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
+    </svg>
+    <span
+      className="block h-7 w-full bg-[url(/heynspire/stair-stone.webp)] bg-[length:auto_120px] bg-bottom drop-shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:h-4 [@media(max-height:500px)]:bg-[length:auto_70px]"
+      style={{ mask: CRENELS, WebkitMask: CRENELS }}
+      aria-hidden
+    />
+  </div>
+);
 
 /**
  * The Floor rail (GDD 11.1): the tower as 5 Flights of 10 Floors, from

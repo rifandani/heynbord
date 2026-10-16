@@ -9,8 +9,15 @@ import {
 import { Effect, Result, Schema } from "effect";
 import { Base64Url } from "effect/encoding";
 
-import type { Replay, ReplayPlace, ReplayRun } from "@/features/replay/replay";
-import { ReplayRefused, runReplay } from "@/features/replay/replay";
+import type { Replay, ReplayRun } from "@/features/replay/replay";
+import {
+  broken,
+  placeFromData,
+  placeToData,
+  ReplayRefused,
+  RULES_HASH,
+  runReplay,
+} from "@/features/replay/replay";
 
 /**
  * The format of the data of a Replay Link. It is not the hash of the rules.
@@ -59,6 +66,15 @@ type ReplayData = typeof ReplayData.Type;
 const ReplayJson = Schema.fromJsonString(ReplayData);
 const encodeJson = Schema.encodeSync(ReplayJson);
 const decodeJson = Schema.decodeUnknownResult(ReplayJson);
+
+/**
+ * Only the hash of the rules of a Replay. A Replay of other rules can have a
+ * Class, a Rank or a Gear level that `ReplayData` of this build refuses, so
+ * the game reads the hash before all the other values.
+ */
+const decodeRules = Schema.decodeUnknownResult(
+  Schema.fromJsonString(Schema.Struct({ rules: Schema.String }))
+);
 
 /** The order of the Sides and of the Target kinds in the link. */
 const SIDES = ["player", "enemy"] as const;
@@ -112,26 +128,6 @@ const commandFromData = (data: readonly number[]): Command | null => {
     : null;
 };
 
-const placeToData = (place: ReplayPlace): ReplayData["place"] => {
-  if (place._tag === "Stage") {
-    return ["stage", place.stageId];
-  }
-  if (place._tag === "Dungeon") {
-    return ["dungeon", place.dungeonId];
-  }
-  return ["floor", place.floorId];
-};
-
-const placeFromData = ([kind, id]: ReplayData["place"]): ReplayPlace => {
-  if (kind === "stage") {
-    return { _tag: "Stage", stageId: id };
-  }
-  if (kind === "dungeon") {
-    return { _tag: "Dungeon", dungeonId: id };
-  }
-  return { _tag: "Floor", floorId: id };
-};
-
 const toData = (replay: Replay): ReplayData => ({
   rules: replay.rules,
   seed: replay.seed,
@@ -144,6 +140,10 @@ const toData = (replay: Replay): ReplayData => ({
 });
 
 const fromData = (data: ReplayData): Replay | null => {
+  const place = placeFromData(data.place);
+  if (!place) {
+    return null;
+  }
   const commands: Command[] = [];
   for (const each of data.commands) {
     const command = commandFromData(each);
@@ -155,7 +155,7 @@ const fromData = (data: ReplayData): Replay | null => {
   return {
     rules: data.rules,
     seed: data.seed,
-    place: placeFromData(data.place),
+    place,
     player: {
       classId: data.classId,
       deck: data.deck,
@@ -176,8 +176,6 @@ const transform = async (
       new Blob([bytes]).stream().pipeThrough(stream)
     ).arrayBuffer()
   );
-
-const broken = () => new ReplayRefused({ reason: "broken" });
 
 /**
  * The data of a Replay Link: the format, a dot, then the Replay as JSON,
@@ -200,8 +198,9 @@ const formatOf = (data: string): number | null => {
 };
 
 /**
- * Reads the data of a Replay Link. The data of another format is from
- * another version of the game. Data that does not decode is broken.
+ * Reads the data of a Replay Link. The data of another format, or with
+ * another hash of the rules, is from another version of the game. Data that
+ * does not decode is broken.
  */
 export const decodeReplay = (
   data: string
@@ -225,6 +224,13 @@ export const decodeReplay = (
         ).then((inflated) => new TextDecoder().decode(inflated)),
       catch: broken,
     });
+    const rules = decodeRules(json);
+    if (Result.isFailure(rules)) {
+      return yield* broken();
+    }
+    if (rules.success.rules !== RULES_HASH) {
+      return yield* new ReplayRefused({ reason: "otherVersion" });
+    }
     const decoded = decodeJson(json);
     const replay = Result.isSuccess(decoded) ? fromData(decoded.success) : null;
     return replay ?? (yield* broken());

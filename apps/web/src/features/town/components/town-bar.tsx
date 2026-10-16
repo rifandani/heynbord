@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, DialogTrigger, TooltipTrigger } from "react-aria-components";
 
+import { claimableCountAtom } from "@/features/achievements/achievements-screen.atoms";
 import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -58,7 +59,7 @@ const iconClass = (locked: boolean, current: boolean, lifted: boolean) =>
 
 const labelClass = (locked: boolean, current: boolean, lifted: boolean) =>
   cn(
-    "relative mb-px flex h-[18px] max-w-full items-center rounded-[4px] border px-1.5 text-[11px] leading-none font-bold transition-[color,transform] duration-100 max-[1199px]:px-1 max-[1199px]:text-[10px]",
+    "relative mb-px flex h-[18px] max-w-full items-center rounded-[4px] border px-1.5 text-[11px] leading-none font-bold transition-[color,transform] duration-100 max-[1199px]:px-1 max-[1199px]:text-[10px] max-[1199px]:tracking-[-0.02em]",
     "[@media(max-height:500px)]:sr-only",
     current
       ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.45)]"
@@ -91,6 +92,35 @@ const LockSeal = ({ locked }: { readonly locked: boolean }) => {
       )}
     >
       <GlyphIcon glyph="lock" className="size-2.5 text-[#e9c46a]" />
+    </span>
+  );
+};
+
+/**
+ * The count of the Achievements shortcut (Achievements 4): the Completed
+ * Achievements that the Player has not claimed, on a small gold token at the
+ * top right of the icon. It shows nothing at 0. The number hops when it
+ * changes. Decorative: the accessible name of the shortcut says the count.
+ */
+const CountBadge = ({ count }: { readonly count: number }) => {
+  if (count === 0) {
+    return null;
+  }
+  return (
+    <span
+      className={cn(
+        "absolute -top-0.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1 text-[11px] leading-none font-black text-[#2a1a05] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.5)]",
+        "[@media(max-height:500px)]:-top-1 [@media(max-height:500px)]:-right-1 [@media(max-height:500px)]:h-4 [@media(max-height:500px)]:min-w-4 [@media(max-height:500px)]:border [@media(max-height:500px)]:text-[10px]"
+      )}
+      data-testid="achievements-badge"
+      data-count={count}
+    >
+      <span
+        key={count}
+        className="inline-block motion-safe:animate-[workshop-count_420ms_cubic-bezier(0.2,0.8,0.2,1)]"
+      >
+        {count}
+      </span>
     </span>
   );
 };
@@ -130,12 +160,15 @@ const ShortcutFace = ({
   locked,
   current,
   lifted = false,
+  count = 0,
 }: {
   readonly image: string | null;
   readonly name: string;
   readonly locked: boolean;
   readonly current: boolean;
   readonly lifted?: boolean;
+  /** The count on the badge of the icon, for the Achievements shortcut. */
+  readonly count?: number;
 }) => (
   <>
     {/* The light of the current place, and the shadow under each icon. */}
@@ -160,6 +193,7 @@ const ShortcutFace = ({
         className={iconClass(locked, current, lifted)}
       />
       <LockSeal locked={locked} />
+      <CountBadge count={count} />
     </span>
     <span className={labelClass(locked, current, lifted)} aria-hidden>
       <span className="truncate">{name}</span>
@@ -189,16 +223,20 @@ const useLockText = (locked: boolean, lock: TownLock | null) => {
   return lock === null ? tr("town.opensLater") : text.reason(lock);
 };
 
-/** The accessible name of a shortcut: its name, and its lock. */
+/**
+ * The accessible name of a shortcut: its name, and its lock, or the count of
+ * its badge ("Achievements, 2 to claim").
+ */
 const useShortcutName = (
   name: string,
   locked: boolean,
-  lock: TownLock | null
+  lock: TownLock | null,
+  count: number
 ) => {
   const { tr } = useGameText();
   const text = useTownLockText();
   if (!locked) {
-    return name;
+    return count > 0 ? tr("town.shortcutBadge", { name, count }) : name;
   }
   return lock === null ? tr("town.locked", { name }) : text.named(name, lock);
 };
@@ -233,7 +271,9 @@ const Shortcut = ({
   const locked = isLocked(shortcut, progress);
   const lock = townLock(shortcut, progress);
   const lockText = useLockText(locked, lock);
-  const accessibleName = useShortcutName(name, locked, lock);
+  const claimable = useAtomValue(claimableCountAtom);
+  const count = shortcut.id === "achievements" ? claimable : 0;
+  const accessibleName = useShortcutName(name, locked, lock, count);
 
   const onPressStart = (event: PressEvent) => {
     longPressed.current = false;
@@ -302,6 +342,7 @@ const Shortcut = ({
             locked={locked}
             current={current}
             lifted={dialog === "handbook" ? handbook.isOpen : dialogOpen}
+            count={count}
           />
         </Button>
         <GameTooltip

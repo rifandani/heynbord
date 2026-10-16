@@ -292,9 +292,15 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Cosmetic**: An item that changes how something looks and never changes gameplay. _Avoid_: skin (as a general word), vanity item
 
-**Achievement**: A goal that gives a reward when the Player completes it. _Avoid_: quest, mission, trophy
+**Achievement**: A one-time goal with a reward. It is In progress, then Completed when the Player meets the goal, then Claimed when the Player takes the reward. _Avoid_: quest, mission, trophy, badge
+
+**Feat**: An Achievement that one won Battle completes, with a goal about the Deck, the Turns or the events of that Battle. _Avoid_: challenge, trial, battle achievement
+
+**Tally**: A lifetime count in the Profile that an Achievement uses, for example the number of Packs opened. It only goes up. _Avoid_: stat, statistic, counter
 
 **Play Style**: A fixed priority list that tells the economy simulation how a simulated Player spends Coin and Essence, for example Collector, Upgrader or Balanced. _Avoid_: profile, persona, spending plan
+
+**Pacing target**: A value that a Player must have at a point in the game, for example the Packs opened at the end of Region 2. It is for the median Player of a Play Style who plays each Stage again until the Stage has 3 Stars. A Pacing target can apply to only some Play Styles. _Avoid_: milestone, KPI, benchmark, goal
 
 ### Modes
 
@@ -323,6 +329,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Debut Race**: A Race that the Player fights for the first time in a Region. Region 1 has two (Human and Orc). Each later Region has one, and it also has the Debut Race of the Region before it. The Boss of a Region is of a Debut Race of that Region. A Debut Race is only about the enemies: the Player can get cards of each Race from Packs at any time. _Avoid_: new Race, featured Race, unlocked Race
 
 **Stars**: The 1 to 3 result grade of a Stage win. _Avoid_: score, rating; never use for Rank
+
+**Star Turn**: The Turn number of a Stage. A win must come before it to give 3 Stars. Each Stage has its own Star Turn. _Avoid_: Turn limit, par, time limit, fast-win Turn
 
 **Star chest**: A reward of a Region that the Player claims when the best Stars of its Stages add up to 10, 20 or 30. Each Region has 3. _Avoid_: milestone, Star reward
 
@@ -396,6 +404,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Boss** has 0 or more **Boss Rules** ([ADR-0040](../../docs/adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)). A Boss Rule activates at most one time in a Battle, and never for a **Defeated** Boss. A Boss Rule never heals a Hero ([ADR-0028](../../docs/adr/0028-nothing-heals-a-hero.md)). A Boss Rule that can still put a Unit on the Board stops its Side from being **Routed** until it activates.
 - A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**. The **Recommended level** of a Dungeon is its unlock level.
 - **Heynspire** opens with the first win of the last **Boss Stage**. The Player fights only the **Current Floor**, and a won **Floor** cannot be played again: it has no repeat-win reward and no **Sweep**. A Floor win gives no **Stars**. Each Floor hits the win-rate target of a **Stage**, and each **Boss Floor** the target of a **Boss Stage**, with no **Gear** and with the **Expected Gear** ([ADR-0042](../../docs/adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md)).
+- An **Achievement** that is Completed stays Completed, also when the Profile changes later. Its reward goes into the Profile only when the Player claims it.
+- Only a **Battle** that the Player plays can complete a **Feat**. A **Sweep**, a **Replay**, **Auto-play** and the **Tutorial** never complete a Feat, and a Sweep never adds to a **Tally**.
 - The Player has one balance of **Coin**, shown in **Gold**, **Silver** and **Copper**, and a separate balance of **Heynstones**.
 - **Coin** and **Heynstones** never change into each other or into **Essence**.
 
@@ -406,6 +416,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 ## Flagged ambiguities
 
 - The original games used "stars" for card grades. Heynbord uses **Rank** for card grades and **Stars** only for Stage results.
+- 3 **Stars** needed a win before Turn number 15 on all **Stages**. Now each Stage has its own **Star Turn**. Do not call it a "Turn limit": the Turn limit is Turn number 60, when the **Defender** wins.
 - "Fuse" in the original games was a random recipe system. Heynbord does not have it. **Combine** and **Craft** replace it.
 - **Recall** was named "Mastery" before. "Mastery" told the Rank, not the effect, so Players did not know what it did.
 - **Hero** and **Player** are different. A Player is a person. A Hero is the commander on the Board.

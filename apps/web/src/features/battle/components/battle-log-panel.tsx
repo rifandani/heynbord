@@ -962,7 +962,7 @@ export const BattleLogPanel = ({ battle }: { readonly battle: Battle }) =>
   battle.log ? <OpenBattleLog battle={battle} log={battle.log} /> : null;
 
 /**
- * "Turn 4 · Enemy · Battle Log": a parchment ribbon under the Turn badge, so
+ * "Turn 4 · Enemy": a parchment ribbon under the Turn badge, so
  * that the Player never takes a past moment for Live.
  */
 export const BattleLogBanner = ({ battle }: { readonly battle: Battle }) => {

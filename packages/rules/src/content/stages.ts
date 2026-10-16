@@ -19,6 +19,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 1,
     boss: false,
     recommendedLevel: 1,
+    starTurn: 15,
     firstWinCard: { cardId: "human.militiaRecruit", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -41,6 +42,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 2,
     boss: false,
     recommendedLevel: 1,
+    starTurn: 15,
     firstWinCard: { cardId: "orc.scrapRaider", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -64,6 +66,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 3,
     boss: false,
     recommendedLevel: 2,
+    starTurn: 15,
     firstWinCard: { cardId: "orc.emberShaman", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -89,6 +92,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 4,
     boss: false,
     recommendedLevel: 2,
+    starTurn: 13,
     firstWinCard: { cardId: "human.shieldbearer", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -112,6 +116,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 5,
     boss: false,
     recommendedLevel: 3,
+    starTurn: 16,
     firstWinCard: { cardId: "human.crossbowGuard", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -156,6 +161,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 6,
     boss: false,
     recommendedLevel: 3,
+    starTurn: 14,
     firstWinCard: { cardId: "human.dawnCleric", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -182,6 +188,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 7,
     boss: false,
     recommendedLevel: 4,
+    starTurn: 13,
     firstWinCard: { cardId: "orc.howlingCharger", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -208,6 +215,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 8,
     boss: false,
     recommendedLevel: 4,
+    starTurn: 15,
     firstWinCard: { cardId: "human.gateWarden", rank: "uncommon" },
     closedLanes: [{ lane: 0, opensOnTurn: 5 }],
     enemy: {
@@ -242,6 +250,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 9,
     boss: false,
     recommendedLevel: 5,
+    starTurn: 15,
     firstWinCard: { cardId: "human.riverKnight", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -271,6 +280,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 10,
     boss: true,
     recommendedLevel: 5,
+    starTurn: 18,
     firstWinCard: { cardId: "human.ironBulwark", rank: "epic" },
     closedLanes: [],
     enemy: {
@@ -309,6 +319,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 1,
     boss: false,
     recommendedLevel: 6,
+    starTurn: 16,
     firstWinCard: { cardId: "goblin.ankleSnatcher", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -335,6 +346,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 2,
     boss: false,
     recommendedLevel: 6,
+    starTurn: 16,
     firstWinCard: { cardId: "goblin.tunnelSaboteur", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -362,10 +374,11 @@ export const STAGES: readonly StageDefinition[] = [
     number: 3,
     boss: false,
     recommendedLevel: 7,
+    starTurn: 16,
     firstWinCard: { cardId: "goblin.fuseRunner", rank: "common" },
     closedLanes: [],
     enemy: {
-      heroHp: 42,
+      heroHp: 40,
       classId: "mage",
       gear: NO_GEAR,
       deck: [
@@ -389,6 +402,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 4,
     boss: false,
     recommendedLevel: 7,
+    starTurn: 18,
     firstWinCard: { cardId: "goblin.scrapPlateGuard", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -415,6 +429,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 5,
     boss: false,
     recommendedLevel: 7,
+    starTurn: 17,
     firstWinCard: { cardId: "goblin.junkSlinger", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -443,6 +458,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 6,
     boss: false,
     recommendedLevel: 8,
+    starTurn: 17,
     firstWinCard: { cardId: "orc.mesaPitFighter", rank: "rare" },
     closedLanes: [],
     enemy: {
@@ -469,6 +485,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 7,
     boss: false,
     recommendedLevel: 8,
+    starTurn: 17,
     firstWinCard: { cardId: "orc.warhowlerDrummer", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -497,6 +514,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 8,
     boss: false,
     recommendedLevel: 8,
+    starTurn: 18,
     firstWinCard: { cardId: "goblin.greaseTrapper", rank: "uncommon" },
     // The cave-in: the middle Lane opens on Turn 5, while the goblins dig.
     closedLanes: [{ lane: 1, opensOnTurn: 5 }],
@@ -526,6 +544,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 9,
     boss: false,
     recommendedLevel: 9,
+    starTurn: 19,
     firstWinCard: { cardId: "goblin.spyglassSniper", rank: "rare" },
     closedLanes: [],
     enemy: {
@@ -560,6 +579,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 10,
     boss: true,
     recommendedLevel: 9,
+    starTurn: 22,
     firstWinCard: { cardId: "orc.warchiefGrukka", rank: "epic" },
     closedLanes: [],
     enemy: {
@@ -612,6 +632,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 1,
     boss: false,
     recommendedLevel: 10,
+    starTurn: 20,
     firstWinCard: { cardId: "elf.rootboundGuard", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -642,6 +663,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 2,
     boss: false,
     recommendedLevel: 10,
+    starTurn: 21,
     firstWinCard: { cardId: "elf.brambleNest", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -670,6 +692,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 3,
     boss: false,
     recommendedLevel: 11,
+    starTurn: 21,
     firstWinCard: { cardId: "elf.acornTender", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -699,6 +722,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 4,
     boss: false,
     recommendedLevel: 11,
+    starTurn: 20,
     firstWinCard: { cardId: "elf.fernwingCourier", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -729,6 +753,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 5,
     boss: false,
     recommendedLevel: 12,
+    starTurn: 24,
     firstWinCard: { cardId: "elf.mosspitcherLookout", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -758,6 +783,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 6,
     boss: false,
     recommendedLevel: 12,
+    starTurn: 22,
     firstWinCard: { cardId: "goblin.sidestepShiv", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -788,6 +814,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 7,
     boss: false,
     recommendedLevel: 13,
+    starTurn: 22,
     firstWinCard: { cardId: "elf.seedwindShepherd", rank: "rare" },
     closedLanes: [],
     enemy: {
@@ -819,6 +846,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 8,
     boss: false,
     recommendedLevel: 13,
+    starTurn: 23,
     firstWinCard: { cardId: "elf.canopySkirmisher", rank: "uncommon" },
     // The glowing falls: the water covers Lane 3 for the full Battle.
     closedLanes: [{ lane: 2 }],
@@ -851,6 +879,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 9,
     boss: false,
     recommendedLevel: 13,
+    starTurn: 24,
     firstWinCard: { cardId: "elf.elderreedDartmaster", rank: "rare" },
     closedLanes: [],
     enemy: {
@@ -888,6 +917,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 10,
     boss: true,
     recommendedLevel: 14,
+    starTurn: 26,
     firstWinCard: { cardId: "elf.lethielFirstGardener", rank: "epic" },
     closedLanes: [],
     enemy: {
@@ -933,6 +963,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 1,
     boss: false,
     recommendedLevel: 15,
+    starTurn: 25,
     firstWinCard: { cardId: "feral.bristlebackBoar", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -964,6 +995,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 2,
     boss: false,
     recommendedLevel: 15,
+    starTurn: 24,
     firstWinCard: { cardId: "feral.caveBear", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -994,6 +1026,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 3,
     boss: false,
     recommendedLevel: 16,
+    starTurn: 26,
     firstWinCard: { cardId: "feral.cragLizard", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -1025,6 +1058,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 4,
     boss: false,
     recommendedLevel: 16,
+    starTurn: 25,
     firstWinCard: { cardId: "feral.cragRhino", rank: "uncommon" },
     // The rope bridge: only the middle Lane crosses the ravine until Turn 5.
     closedLanes: [
@@ -1061,6 +1095,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 5,
     boss: false,
     recommendedLevel: 17,
+    starTurn: 26,
     firstWinCard: { cardId: "feral.webSpitter", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -1092,6 +1127,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 6,
     boss: false,
     recommendedLevel: 17,
+    starTurn: 25,
     firstWinCard: { cardId: "feral.boulderTortoise", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -1124,6 +1160,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 7,
     boss: false,
     recommendedLevel: 17,
+    starTurn: 26,
     firstWinCard: { cardId: "feral.tailsweepBasilisk", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -1157,6 +1194,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 8,
     boss: false,
     recommendedLevel: 18,
+    starTurn: 24,
     firstWinCard: { cardId: "feral.caveTroll", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -1191,6 +1229,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 9,
     boss: false,
     recommendedLevel: 18,
+    starTurn: 26,
     firstWinCard: { cardId: "elf.amberwingDart", rank: "rare" },
     closedLanes: [],
     enemy: {
@@ -1228,6 +1267,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 10,
     boss: true,
     recommendedLevel: 19,
+    starTurn: 28,
     firstWinCard: { cardId: "feral.mountainColossus", rank: "epic" },
     closedLanes: [],
     enemy: {
@@ -1278,6 +1318,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 1,
     boss: false,
     recommendedLevel: 20,
+    starTurn: 29,
     firstWinCard: { cardId: "undead.rattleknife", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -1312,6 +1353,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 2,
     boss: false,
     recommendedLevel: 20,
+    starTurn: 28,
     firstWinCard: { cardId: "undead.graveBellTender", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -1345,6 +1387,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 3,
     boss: false,
     recommendedLevel: 20,
+    starTurn: 28,
     firstWinCard: { cardId: "feral.frostfangLynx", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -1379,6 +1422,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 4,
     boss: false,
     recommendedLevel: 21,
+    starTurn: 26,
     firstWinCard: { cardId: "undead.coffinLidSkater", rank: "common" },
     closedLanes: [],
     enemy: {
@@ -1412,6 +1456,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 5,
     boss: false,
     recommendedLevel: 21,
+    starTurn: 30,
     firstWinCard: { cardId: "undead.coffinLancer", rank: "rare" },
     closedLanes: [],
     enemy: {
@@ -1445,6 +1490,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 6,
     boss: false,
     recommendedLevel: 21,
+    starTurn: 26,
     firstWinCard: { cardId: "undead.rimeEyeReaper", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -1477,6 +1523,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 7,
     boss: false,
     recommendedLevel: 21,
+    starTurn: 28,
     firstWinCard: { cardId: "undead.lanternWidow", rank: "rare" },
     closedLanes: [],
     enemy: {
@@ -1509,6 +1556,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 8,
     boss: false,
     recommendedLevel: 22,
+    starTurn: 23,
     firstWinCard: { cardId: "feral.frostElkMatriarch", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -1542,6 +1590,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 9,
     boss: false,
     recommendedLevel: 22,
+    starTurn: 28,
     firstWinCard: { cardId: "undead.ossuaryPiper", rank: "uncommon" },
     closedLanes: [],
     enemy: {
@@ -1580,6 +1629,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 10,
     boss: true,
     recommendedLevel: 22,
+    starTurn: 30,
     firstWinCard: { cardId: "undead.boneRampart", rank: "epic" },
     closedLanes: [],
     enemy: {
