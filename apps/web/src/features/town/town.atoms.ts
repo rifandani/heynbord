@@ -1,7 +1,8 @@
+import { isHeynspireOpen } from "@workspace/rules";
 import { Atom } from "effect/reactivity";
 
-import { profileAtom } from "@/features/profile/profile.atoms";
-import type { Balances, GameScreen } from "@/features/town/town";
+import { playerLevelAtom, profileAtom } from "@/features/profile/profile.atoms";
+import type { Balances, GameScreen, TownProgress } from "@/features/town/town";
 
 /**
  * The game screen when no Battle is on. A page load always opens the Town
@@ -16,3 +17,9 @@ export const balancesAtom = Atom.make((get): Balances => {
   const { coin, essence, heynstones } = get(profileAtom);
   return { coin, essence, heynstones };
 });
+
+/** What unlocks the screens of the Town: the Player level and the Heynspire unlock. */
+export const townProgressAtom = Atom.make((get): TownProgress => ({
+  level: get(playerLevelAtom),
+  heynspireOpen: isHeynspireOpen(get(profileAtom)),
+}));

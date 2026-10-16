@@ -25,7 +25,6 @@ type StarChestProfile = Pick<
   Profile,
   | "coin"
   | "essence"
-  | "heynstones"
   | "forgeStones"
   | "stageResults"
   | "claimedStarChests"
@@ -41,7 +40,7 @@ export interface StarChestClaim<P> {
 
 /**
  * Claims the Star chest of `region` that opens at `stars` (Economy 2.2): adds
- * its Coin, Essence and Heynstones to the balances, its Forge Stones of the
+ * its Coin and Essence to the balances, its Forge Stones of the
  * tier of the Region (ADR-0038) and its Pack to the Unopened Packs. `null`
  * when the chest is already claimed, or when the Stars of the Region are
  * fewer than `stars`. `stars` must be the Stars of a chest.
@@ -72,7 +71,6 @@ export const claimStarChest = <P extends StarChestProfile>(
       ...profile,
       coin: profile.coin + chest.coin,
       essence: profile.essence + chest.essence,
-      heynstones: profile.heynstones + chest.heynstones,
       forgeStones: addForgeStones(profile.forgeStones, forgeStones),
       claimedStarChests: {
         ...profile.claimedStarChests,

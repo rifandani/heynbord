@@ -1,7 +1,13 @@
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { CAMPAIGN_REGIONS } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
-import { battlePaintingFor } from "@/features/battle/battle-painting";
+import {
+  battlePaintingFor,
+  DUNGEON_PAINTING,
+} from "@/features/battle/battle-painting";
 
 describe("battlePaintingFor", () => {
   it("gives each Region of the Campaign a painting of its own", () => {
@@ -31,5 +37,21 @@ describe("battlePaintingFor", () => {
   it("gives null when no painting exists, so the meadow gradient shows", () => {
     expect(battlePaintingFor(1, { 1: null })).toBeNull();
     expect(battlePaintingFor(2, {})).toBeNull();
+  });
+});
+
+describe("DUNGEON_PAINTING", () => {
+  it("is a WebP file in public/, apart from the paintings of the Regions", () => {
+    expect(
+      existsSync(
+        fileURLToPath(
+          new URL(`../../../public${DUNGEON_PAINTING}`, import.meta.url)
+        )
+      )
+    ).toBe(true);
+    const regions = Array.from({ length: CAMPAIGN_REGIONS }, (_, index) =>
+      battlePaintingFor(index + 1)
+    );
+    expect(regions).not.toContain(DUNGEON_PAINTING);
   });
 });

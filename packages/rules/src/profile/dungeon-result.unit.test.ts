@@ -10,8 +10,11 @@ import {
   getDungeonRewards,
 } from "../content/dungeons";
 import { playerLevelForXp } from "../content/player-levels";
-import type { DungeonDefinition } from "../content/schema";
-import { applyDungeonResult, dungeonCardPool } from "./dungeon-result";
+import {
+  applyDungeonResult,
+  dungeonCardPool,
+  DUNGEON_SWEEP_TICKETS_PER_WIN,
+} from "./dungeon-result";
 import type { DungeonResultInput } from "./dungeon-result";
 import { newProfile } from "./new-profile";
 import { discoveredCards } from "./packs";
@@ -20,31 +23,27 @@ import { FIRST_PACK, REPEAT_WIN_CARD_CHANCE } from "./stage-result";
 
 const fresh = newProfile(42);
 const dungeon1 = getDungeon("dungeon-1");
-/** Dungeon 1 as Dungeon `number`, so a test can use the rewards of Dungeons 2 and 3. */
-const asDungeon = (number: number): DungeonDefinition => ({
-  ...dungeon1,
-  id: `dungeon-${number}`,
-  number,
-});
-const ALL_DUNGEONS: readonly DungeonDefinition[] = [
-  ...DUNGEONS,
-  asDungeon(2),
-  asDungeon(3),
-];
+
+/** The Bosses lost all their HP: the full loss reward (ADR-0043). */
+const ALL_HP_LOST = { lost: 30, total: 30 };
 
 const win = (
   dungeonId = "dungeon-1",
   classId: DungeonResultInput["classId"] = "warrior"
-): DungeonResultInput => ({ dungeonId, won: true, autoPlay: false, classId });
-const autoPlayWin = (dungeonId = "dungeon-1"): DungeonResultInput => ({
-  ...win(dungeonId),
-  autoPlay: true,
+): DungeonResultInput => ({
+  dungeonId,
+  won: true,
+  classId,
+  enemyHeroDamage: ALL_HP_LOST,
 });
-const loss = (dungeonId = "dungeon-1"): DungeonResultInput => ({
+const loss = (
+  dungeonId = "dungeon-1",
+  enemyHeroDamage = ALL_HP_LOST
+): DungeonResultInput => ({
   dungeonId,
   won: false,
-  autoPlay: false,
   classId: "warrior",
+  enemyHeroDamage,
 });
 /** A Profile that has won `dungeonId` `wins` times. */
 const wonBefore = (
@@ -56,7 +55,7 @@ const wonBefore = (
   dungeonResults: { ...profile.dungeonResults, [dungeonId]: wins },
 });
 const apply = (profile: Profile, input: DungeonResultInput) =>
-  applyDungeonResult(profile, input, ALL_DUNGEONS);
+  applyDungeonResult(profile, input);
 const copiesOf = (profile: Profile, cardId: string) =>
   profile.collection
     .filter((entry) => entry.cardId === cardId)
@@ -93,6 +92,25 @@ describe("applyDungeonResult: Coin, XP and Essence (Economy 2.4)", () => {
       expect(profile.collection).toBe(before.collection);
       expect(profile.rewardRandomState).toBe(before.rewardRandomState);
     }
+  });
+
+  it("gives only the share of the lost Boss HP of a loss reward (ADR-0043)", () => {
+    const none = apply(fresh, loss("dungeon-1", { lost: 0, total: 60 }));
+    expect([none.rewards.coin, none.rewards.xp]).toEqual([0, 0]);
+    expect(none.profile.coin).toBe(fresh.coin);
+    expect(none.profile.xp).toBe(fresh.xp);
+    const half = apply(fresh, loss("dungeon-1", { lost: 30, total: 60 }));
+    expect([half.rewards.coin, half.rewards.xp]).toEqual([10, 17]);
+    const essence = apply(fresh, loss("dungeon-3", { lost: 20, total: 60 }));
+    expect(essence.rewards.essence).toBe(1);
+  });
+
+  it("gives the full reward of a win, also with no lost Boss HP", () => {
+    const { rewards } = apply(fresh, {
+      ...win(),
+      enemyHeroDamage: { lost: 0, total: 60 },
+    });
+    expect([rewards.coin, rewards.xp]).toEqual([600, 280]);
   });
 
   it("uses the values of Dungeon 2", () => {
@@ -148,35 +166,31 @@ describe("applyDungeonResult: Coin, XP and Essence (Economy 2.4)", () => {
 
   it("rejects an unknown Dungeon", () => {
     expect(() => apply(fresh, win("dungeon-9"))).toThrow(/Unknown Dungeon/u);
-    expect(() => applyDungeonResult(fresh, win("dungeon-3"))).toThrow(
-      /Unknown Dungeon/u
-    );
+    expect(() =>
+      applyDungeonResult(fresh, win("dungeon-3"), DUNGEONS.slice(0, 2))
+    ).toThrow(/Unknown Dungeon/u);
   });
 });
 
-describe("applyDungeonResult: Sweep Tickets (ADR-0035)", () => {
-  it("adds 2 Sweep Tickets on a first win and on a repeat win that the Player plays", () => {
-    const first = apply(fresh, win());
-    expect(first.rewards.sweepTickets).toBe(2);
-    expect(first.profile.sweepTickets).toBe(2);
+describe("applyDungeonResult: Dungeon Sweep Tickets (ADR-0041)", () => {
+  it("adds 1 Dungeon Sweep Ticket on a first win and on a repeat win, and no Campaign Sweep Tickets", () => {
+    expect(DUNGEON_SWEEP_TICKETS_PER_WIN).toBe(1);
+    const first = apply({ ...fresh, campaignSweepTickets: 3 }, win());
+    expect(first.rewards.dungeonSweepTickets).toBe(1);
+    expect(first.profile.dungeonSweepTickets).toBe(1);
     const repeat = apply(first.profile, win());
-    expect(repeat.rewards.sweepTickets).toBe(2);
-    expect(repeat.profile.sweepTickets).toBe(4);
+    expect(repeat.rewards.dungeonSweepTickets).toBe(1);
+    expect(repeat.profile.dungeonSweepTickets).toBe(2);
+    expect(repeat.profile.campaignSweepTickets).toBe(3);
   });
 
-  it("adds no Sweep Tickets on an Auto-play win, but gives the other rewards", () => {
-    const before = wonBefore("dungeon-1", 1, { ...fresh, sweepTickets: 3 });
-    const { profile, rewards } = apply(before, autoPlayWin());
-    expect(rewards.sweepTickets).toBe(0);
-    expect(profile.sweepTickets).toBe(3);
-    expect(rewards).toMatchObject({ outcome: "win", coin: 200, xp: 140 });
-    expect(profile.dungeonResults).toEqual({ "dungeon-1": 2 });
-  });
-
-  it("adds no Sweep Tickets on a loss", () => {
-    const { profile, rewards } = apply({ ...fresh, sweepTickets: 3 }, loss());
-    expect(rewards.sweepTickets).toBe(0);
-    expect(profile.sweepTickets).toBe(3);
+  it("adds no Dungeon Sweep Tickets on a loss", () => {
+    const { profile, rewards } = apply(
+      { ...fresh, dungeonSweepTickets: 3 },
+      loss()
+    );
+    expect(rewards.dungeonSweepTickets).toBe(0);
+    expect(profile.dungeonSweepTickets).toBe(3);
   });
 });
 

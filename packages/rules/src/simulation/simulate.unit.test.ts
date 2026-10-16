@@ -5,19 +5,23 @@ import { BattleEvent, STAGE_LANES } from "../battle/types";
 import { ARCHETYPES } from "../content/archetypes";
 import { deckCountdown, getStarterDeck } from "../content/decks";
 import { getDungeon } from "../content/dungeons";
+import { FLOORS, getFloor } from "../content/floors";
 import { getStage, STAGES } from "../content/stages";
 import { emptyBattle, placeUnit } from "../testing/fixtures";
 import {
   createMatchupBattle,
   DUNGEON_TARGET,
-  dungeonStage,
+  dungeonDeck,
   expectedDeck,
+  floorDeck,
+  floorTarget,
   gatesRelease,
   isOnTarget,
   MATCHUP_TARGET,
   NO_GEAR,
   playOut,
   simulateDungeon,
+  simulateFloor,
   simulateMatchup,
   simulateStage,
   stageTarget,
@@ -166,10 +170,22 @@ describe("simulateStage (GDD 13, step 6)", () => {
 describe("simulateDungeon (GDD 13, step 6)", () => {
   const dungeon = getDungeon("dungeon-1");
 
-  it("uses the Deck of the first Stage at the unlock level", () => {
-    const stage = dungeonStage(dungeon);
-    expect(stage.id).toBe("3-1");
-    expect(stage.recommendedLevel).toBe(dungeon.unlockLevel);
+  it("uses the expected Deck of the first Stage at the unlock level, when that Stage exists", () => {
+    expect(dungeonDeck(dungeon, vanguard)).toEqual(
+      expectedDeck(getStage("3-1"), vanguard)
+    );
+    expect(dungeonDeck(getDungeon("dungeon-2"), raiders)).toEqual(
+      expectedDeck(getStage("5-1"), raiders)
+    );
+  });
+
+  it("at level 30, above all Stages, takes the first-win cards of the Stages of Region 5 too, in the Deck limits", () => {
+    const deck = dungeonDeck({ ...dungeon, unlockLevel: 30 }, raiders);
+    expect(deck.length).toBeLessThanOrEqual(30);
+    expect(deckCountdown(deck)).toBeLessThanOrEqual(75);
+    expect(deck.slice(0, raiders.deck.length)).toEqual(raiders.deck);
+    // The first-win card of Stage 5-1, at Recommended level 20.
+    expect(deck.map((entry) => entry.cardId)).toContain("undead.rattleknife");
   });
 
   it("plays at the unlock level and gives the same report each time", () => {
@@ -188,6 +204,44 @@ describe("simulateDungeon (GDD 13, step 6)", () => {
 
   it("has the target of a Boss Stage", () => {
     expect(DUNGEON_TARGET).toEqual({ min: 0.3, max: 0.5 });
+  });
+});
+
+describe("simulateFloor (GDD 13, step 6, ADR-0042)", () => {
+  const floor = getFloor(1);
+
+  it("uses the starter Deck and the first-win cards of all Stages, in the Deck limits of the Recommended level", () => {
+    const deck = floorDeck(floor, raiders);
+    expect(deck.length).toBeLessThanOrEqual(30);
+    expect(deckCountdown(deck)).toBeLessThanOrEqual(75);
+    expect(deck.slice(0, raiders.deck.length)).toEqual(raiders.deck);
+    // A Floor win gives no card, so each Floor has the same expected Deck.
+    expect(floorDeck(getFloor(50), raiders)).toEqual(deck);
+    expect(floorDeck(floor, vanguard)).toEqual(
+      dungeonDeck({ ...getDungeon("dungeon-3"), unlockLevel: 23 }, vanguard)
+    );
+  });
+
+  it("plays at the Recommended level and gives the same report each time", () => {
+    const report = simulateFloor(floor, vanguard, 4);
+    expect(report).toMatchObject({
+      floorId: "floor-1",
+      deckId: "vanguard",
+      battles: 4,
+    });
+    expect(report.winRate).toBeGreaterThanOrEqual(0);
+    expect(report.winRate).toBeLessThanOrEqual(1);
+    expect(simulateFloor(floor, vanguard, 4)).toEqual(report);
+  });
+
+  it("gives a normal Floor the target of a normal Stage, and a Boss Floor the target of a Boss Stage", () => {
+    expect(FLOORS.map((candidate) => floorTarget(candidate))).toEqual(
+      FLOORS.map((candidate) =>
+        candidate.number % 10 === 0
+          ? { min: 0.3, max: 0.5 }
+          : { min: 0.6, max: 0.8 }
+      )
+    );
   });
 });
 
@@ -344,9 +398,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: NO_GEAR,
       })
     ).toMatchObject({
-      winRate: 0.7,
-      firstSideWinRate: 0.5,
-      averageTurn: 15.45,
+      winRate: 0.675,
+      firstSideWinRate: 0.425,
+      averageTurn: 14.85,
     });
     // Gear 3 rolls Crit and Block.
     expect(
@@ -356,9 +410,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: { weapon: 6, armor: 6, trinket: 6, banner: 6 },
       })
     ).toMatchObject({
-      winRate: 0.45,
-      firstSideWinRate: 0.5,
-      averageTurn: 16.3,
+      winRate: 0.525,
+      firstSideWinRate: 0.475,
+      averageTurn: 15.275,
     });
   });
 });

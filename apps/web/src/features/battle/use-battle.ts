@@ -14,9 +14,10 @@ import {
   selectLogEntry,
   setBattleLogSpeed,
   stepBattleLog,
+  watchBattleLog,
 } from "@/features/battle/battle-log-session";
 import type { BattleLogState } from "@/features/battle/battle-log-session";
-import { recordStageResult } from "@/features/battle/battle-rewards";
+import { recordBattleResult } from "@/features/battle/battle-rewards";
 import type {
   BattleOptions,
   BattleSession,
@@ -58,6 +59,9 @@ import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 import { nextInspectedUnit } from "@/features/battle/unit-inspect";
 import { profileAtom } from "@/features/profile/profile.atoms";
+import type { ReplayRun } from "@/features/replay/replay";
+import { watchingSession } from "@/features/replay/replay";
+import { gameScreenAtom } from "@/features/town/town.atoms";
 
 /** A new Battle seed. The seed is input to the rules, so this is not a rule. */
 export const randomSeed = (): number =>
@@ -110,7 +114,7 @@ const recordResult = (
   registry: ContextType<typeof RegistryContext>,
   finished: BattleSession
 ) => {
-  const recorded = recordStageResult(
+  const recorded = recordBattleResult(
     registry.get(profileAtom),
     finished,
     registry.get(battleRewardsAtom)
@@ -129,7 +133,9 @@ const hasBattleLog = (session: BattleSession | null): boolean =>
  * The Battle state and the player's actions, for the HUD. `session` is what
  * the screen shows: the selected moment of the open Battle Log, else Live.
  * `liveSession` is Live. Each Command goes to Live, and none goes while the
- * Battle Log is open.
+ * Battle Log is open. While the Player watches a Replay (web ADR-0012),
+ * `liveSession` holds the full Replay and the Battle Log is always open: there
+ * is no Live.
  */
 export const useBattle = () => {
   const registry = useContext(RegistryContext);
@@ -141,8 +147,11 @@ export const useBattle = () => {
   const focused = useAtomValue(focusedTargetAtom);
   const inspected = useAtomValue(inspectedUnitAtom);
   const detailsUnit = useAtomValue(detailsUnitAtom);
-  const speed = useAtomValue(battleSpeedAtom);
+  const storedSpeed = useAtomValue(battleSpeedAtom);
   const setStoredSpeed = useAtomSet(battleSpeedAtom);
+  const watching = liveSession?.watching ?? false;
+  // A Replay plays at its own Speed: it does not change the choice of the Player.
+  const speed = watching && log ? log.shown.speed : storedSpeed;
 
   // When the result shows (`ResultOverlay`), before the paint, so that it
   // shows with its rewards. The stored session, not the scene clock: after a
@@ -215,6 +224,20 @@ export const useBattle = () => {
     }
   };
 
+  /** Back to the screen that started the Battle, or to the Town after a Replay. */
+  const leave = () => {
+    const wasWatching = registry.get(battleSessionAtom)?.watching ?? false;
+    select(null);
+    registry.set(inspectedUnitAtom, null);
+    // The Battle Log is not saved: it goes away with the Battle.
+    registry.set(battleLogAtom, null);
+    playback.session = null;
+    commit(null);
+    if (wasWatching) {
+      registry.set(gameScreenAtom, "town");
+    }
+  };
+
   return {
     session,
     liveSession,
@@ -242,6 +265,28 @@ export const useBattle = () => {
     /** The open Battle Log, or `null`. */
     log,
     hasBattleLog: hasBattleLog(liveSession),
+    /** True while the Player watches a Replay: the Battle Log shows it, and there is no Live. */
+    watching,
+    /**
+     * Watching a Replay (web ADR-0012): the Battle Log of the Replay opens in
+     * place of the screen, and Plays at ×1 from the first Log Entry.
+     */
+    watch: (run: ReplayRun) => {
+      const replay = watchingSession(run);
+      select(null);
+      registry.set(inspectedUnitAtom, null);
+      playback.session = null;
+      commit(replay);
+      registry.set(battleLogAtom, watchBattleLog(replay));
+    },
+    /** "Watch again" at the end of a Replay: the Play starts again at the first Log Entry. */
+    watchAgain: () => {
+      const current = registry.get(battleSessionAtom);
+      if (current?.watching) {
+        registry.set(inspectedUnitAtom, null);
+        registry.set(battleLogAtom, watchBattleLog(current));
+      }
+    },
     /**
      * The L key, the Top Bar button and the result: opens the Battle Log at
      * the last Log Entry, and Live pauses at the same point.
@@ -257,9 +302,13 @@ export const useBattle = () => {
       registry.set(inspectedUnitAtom, null);
       registry.set(battleLogAtom, openBattleLog(current));
     },
-    /** Back to Live (Esc): Live continues from the same point. */
+    /** Back to Live (Esc): Live continues from the same point. A Replay has no Live: Esc leaves it. */
     closeLog: () => {
       if (!logOpen()) {
+        return;
+      }
+      if (registry.get(battleSessionAtom)?.watching) {
+        leave();
         return;
       }
       registry.set(inspectedUnitAtom, null);
@@ -290,15 +339,12 @@ export const useBattle = () => {
       );
       commit(startSession(options, speed, tutorial));
     },
-    /** Back to the Campaign. Before a result, this is an Abandon: it records nothing. */
-    leave: () => {
-      select(null);
-      registry.set(inspectedUnitAtom, null);
-      // The Battle Log is not saved: it goes away with the Battle.
-      registry.set(battleLogAtom, null);
-      playback.session = null;
-      commit(null);
-    },
+    /**
+     * Back to the screen that started the Battle: the Campaign or the
+     * Dungeons. Before a result, this is an Abandon: it records nothing. A
+     * Replay goes back to the Town.
+     */
+    leave,
     select: (handIndex: number | null) => {
       unlockAudio();
       playSelectSound(handIndex);
@@ -338,6 +384,10 @@ export const useBattle = () => {
       }
     },
     setSpeed: (value: BattleSpeed) => {
+      if (registry.get(battleSessionAtom)?.watching) {
+        changeLog((state) => setBattleLogSpeed(state, value));
+        return;
+      }
       setStoredSpeed(value);
       const current = live();
       if (current) {

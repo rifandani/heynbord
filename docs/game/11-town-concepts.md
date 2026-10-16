@@ -1,8 +1,8 @@
 # 11 — Town Concepts
 
-This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, then one cut-out layer for each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons, section 8 gives the brief for the Pack art, section 9 gives the brief for the inside of the Card shop, behind the Packs screen, and section 10 gives the brief for the inside of the Workshop, behind the Workshop screen.
+This document gives the art brief for the Town, the first screen of the game ([GDD 11.4](./03-game-design.md#114-town)). The Town is a 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)): one master painting, with one button over each Building that the Player can select. The art must agree with the Building table in GDD 11.4 and with the positions in `apps/web/src/features/town/town.ts`. Section 7 gives the brief for the Town Bar icons, section 8 gives the brief for the Pack art, section 9 gives the brief for the inside of the Card shop, behind the Packs screen, and section 10 gives the brief for the inside of the Workshop, behind the Workshop screen.
 
-Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1986 × 941). It is the 1672 × 941 original, stretched to the side: the center 400 code units keep their shape, and the stretch increases to 1.67× at the left and right edges. This lets a wide desktop screen show the full Heynspire and the full Town Gate. The Town Gate layer `town-gate.webp` and the Card shop layer `card-shop.webp` are cut out of the painting by hand. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 4000 × 1800 can replace it with no code change if it keeps the same composition.
+Now the Town uses the first master painting, `apps/web/public/town/town.webp` (1986 × 941). It is the 1672 × 941 original, stretched to the side: the center 400 code units keep their shape, and the stretch increases to 1.67× at the left and right edges. This lets a wide desktop screen show the full Heynspire and the full Town Gate. The painting does not follow all of this brief: section 1.2 gives the positions in the current painting. A new export at 4000 × 1800 can replace it with no code change if it keeps the same composition.
 
 ## 1. Rules for the Town art
 
@@ -31,17 +31,21 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | --- | --- | --- |
 | Ground line | y 864 | The base of the Town Gate. The game keeps this line on the top edge of the Town Bar, on all screens. The painting below it goes under the Town Bar. Put only road and trees there. |
 | Safe area | x 374 to 1526, y 136 to 864 | Each screen shape from 4:3 to 19.5:9 shows this area above the Town Bar. The label of each selectable Building, and the part of the Building under its label, must be in it. |
-| Town Gate | x 720 to 1064, y 520 to 864 | The cut-out layer of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the layer. |
+| Town Gate | x 720 to 1064, y 520 to 864 | The selectable box of the Town Gate: the two towers, the arch, the doors and the guards. The wall is not in the box. |
 | Town Gate label | x 720 to 1064, y 474 to 520 | The game writes "Campaign" here, on the tips of the two tower roofs. |
-| Card shop | x 1010 to 1209, y 436 to 612 | The cut-out layer of the Card shop: the house with the purple roof, its awnings and its stalls. The box covers the right tower of the Town Gate at its lower left, so the game cuts that corner from the selectable area, and the pointer there selects the Town Gate. |
+| Card shop | x 1010 to 1209, y 436 to 612 | The selectable box of the Card shop: the house with the purple roof, its awnings and its stalls. The box covers the right tower of the Town Gate at its lower left, so the game cuts that corner from the selectable area, and the pointer there selects the Town Gate. |
 | Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Packs" here, above the purple roof. |
-| Workshop | x 1318 to 1745, y 480 to 705 | The cut-out layer of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. The cut follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
+| Workshop | x 1318 to 1745, y 480 to 705 | The selectable box of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. Its `clip` follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
 | Workshop label | x 1318 to 1526, y 434 to 480 | The game writes "Workshop" here, over the left part of the Workshop, in the safe area. |
-| Barracks | x 91 to 555, y 320 to 526 | The cut-out layer of the Barracks: the round tower, the long building with the blue roof, the training yard with the dummies and the fence. The cut follows the roofs and the fence (`scripts/town-art/cut-barracks.ts`). Only its right part (from x 374) is in the safe area: a 4:3 screen crops the tower and the left wing. |
+| Barracks | x 91 to 555, y 320 to 526 | The selectable box of the Barracks: the round tower, the long building with the blue roof, the training yard with the dummies and the fence. Its `clip` follows the roofs and the fence. Only its right part (from x 374) is in the safe area: a 4:3 screen crops the tower and the left wing. |
 | Barracks label | x 376 to 555, y 274 to 320 | The game writes "Hero" here, over the right wing of the Barracks, in the safe area. |
+| Dungeons cave | x 1480 to 1900, y 746 to 864 | The selectable box of the cave: the first ruined pillar, the rock face and the cave arch, from under its label down to the ground line. The top of the rock mound stays in the painting. Its `clip` follows the pillar. It is the one selectable Building outside the safe area: a 4:3 screen crops all of it, and a 16:10 screen crops the arch. GDD 11.4 permits it, because the Dungeons shortcut opens the screen on all screens. |
+| Dungeons cave label | x 1500 to 1700, y 700 to 746 | The game writes "Dungeons" here, on the rock face at the left of the arch. A 16:10 screen shows it. It is under the lower edge of the Workshop, so it never takes the pointer from the Workshop. |
+| Heynspire tower | x 540 to 760, y 184 to 244 | The selectable box of Heynspire: the hill under the castle. The hover light goes up to the flag at the top of the tower (x 500 to 800, y 0 to 250). |
+| Heynspire label | x 540 to 760, y 138 to 184 | The game writes "Heynspire" here, on the walls of the castle, at the top of the safe area. |
 | Balance Plate corner | x 1280 to 1900, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
 | Sky | Above the safe area | A screen wider than about 2.2:1 above the Town Bar crops it first. On a 19.5:9 phone, the top of the Heynspire is also cropped. |
-| Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here, for example the Dungeons cave. |
+| Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here. The Dungeons cave is the one selectable Building here (see its row). |
 
 ```text
  0                  475                 950                1425               1900
@@ -74,7 +78,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 
 ### 2.1 Town Gate
 
-`Campaign` · Selectable in v1 · Cut-out layer
+`Campaign` · Selectable in v1
 
 | Field | Brief |
 | --- | --- |
@@ -84,11 +88,13 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 | Silhouette hook | The two tower roofs and the open arch. |
 | Humor note | A sleepy guard sits on a stool next to the gate, with a cat on his lap. |
 | Position | The center of the painting, in the town wall, on the ground line (box in 1.2). |
-| Export | Also a layer cut out of the master painting, on a transparent background (step 5 in section 4). |
+| Export | No separate export: the Building is a part of the master painting. |
 
 ### 2.2 Heynspire tower
 
-`Heynspire` · Decoration in v1
+`Heynspire` · Selectable · Opens with the first win of Stage 5-10
+
+The tower opens the Heynspire screen ([GDD 8.2](./03-game-design.md#82-heynspire-draft-name)). Until then, a Lock Plate with "5-10" and a small crown takes the place of its label. In the current painting, Heynspire is a white castle with a tall central tower and blue roofs on the hill at the back (box in 1.2). A new export can make it taller and thinner, as this brief asks, if the label box in 1.2 stays on its walls.
 
 | Field | Brief |
 | --- | --- |
@@ -96,11 +102,11 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 | Props | Small windows with light, floating stones around the top, a long stair around the tower. |
 | Silhouette hook | The tallest shape in the image. |
 | Humor note | A tired climber sits on the stair halfway up, with a water bottle. |
-| Position | On a hill at the back left (about x 400 to 500). |
+| Position | On the hill at the back, left of the center (box in 1.2). A screen wider than about 2.2:1 crops the top of the tower, so the label is on the walls of the castle. |
 
 ### 2.3 Dungeons cave
 
-`Dungeons` · Decoration in v1
+`Dungeons` · Selectable · Opens at player level 10
 
 | Field | Brief |
 | --- | --- |
@@ -109,6 +115,7 @@ Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate 
 | Silhouette hook | The black arch of the cave. |
 | Humor note | Two small glowing eyes look out from the dark. |
 | Position | The right edge (about x 1620 to 1900, y 550 to 720). A screen can crop it. |
+| Export | No separate export: the cave is a part of the master painting. The cave opens the Dungeons screen (GDD 8.4) at Player level 10; below that level, a Lock Plate replaces its label. Its inside is section 13. |
 
 ### 2.4 Library
 
@@ -124,7 +131,7 @@ No screen · Decoration only
 
 ### 2.5 Workshop
 
-`Workshop` · Selectable · Cut-out layer · Opens at player level 3
+`Workshop` · Selectable · Opens at player level 3
 
 | Field | Brief |
 | --- | --- |
@@ -148,7 +155,7 @@ No screen · Decoration only
 
 ### 2.7 Card shop
 
-`Packs` · Selectable · Cut-out layer
+`Packs` · Selectable
 
 | Field | Brief |
 | --- | --- |
@@ -157,7 +164,7 @@ No screen · Decoration only
 | Silhouette hook | The purple roof and the round window. |
 | Humor note | A child presses its face on the window. |
 | Position | Near the Town Gate, right side. In the current painting, it is at x 1010 to 1209 (box in 1.2). |
-| Export | Also a layer cut out of the master painting, on a transparent background (step 5 in section 4). |
+| Export | No separate export: the Building is a part of the master painting. |
 
 ### 2.8 Barracks
 
@@ -170,7 +177,7 @@ No screen · Decoration only
 | Silhouette hook | The fence and the dummies. |
 | Humor note | One dummy wears a cooking pot as a helmet. |
 | Position | The far left, inside the wall. In the current painting, it is at x 91 to 555 (box in 1.2). |
-| Export | A layer cut out of the master painting: run `bun scripts/town-art/cut-barracks.ts`. The Barracks opens the Hero screen (GDD 7.3) at Player level 5; below that level, a Lock Plate replaces its label. |
+| Export | No separate export: the Barracks is a part of the master painting. The Barracks opens the Hero screen (GDD 7.3) at Player level 5; below that level, a Lock Plate replaces its label. |
 
 ### 2.9 Hall of banners
 
@@ -196,6 +203,8 @@ The game docs do not keep the image prompts of the Town. Run `bun town:prompts` 
 - `workshop/`: the prompts of the Workshop inside (10.4).
 - `barracks/`: the prompts of the Barracks inside (11.4).
 - `gear/`: the prompts of the Gear icons (12.2).
+- `cave/`: the prompts of the Dungeons cave inside (13.4), then the Battle Painting of all Dungeon Battles ([13 — Battlefield Concepts, 1.6](./13-battlefield-concepts.md#16-the-dungeon-cave)), with its two references.
+- `heynspire/`: the prompts of the Heynspire inside (14.4), then the Battle Painting of all Floor Battles ([13 — Battlefield Concepts, 1.7](./13-battlefield-concepts.md#17-heynspire)), with its two references.
 
 The painting message is a short form of the briefs in sections 1 and 2. It is in `scripts/town-art/prompts.ts`. When you change a brief, change the painting message too, then run the script again.
 
@@ -205,10 +214,9 @@ The painting message is a short form of the briefs in sections 1 and 2. It is in
 2. Select one image with the checklist in 5.
 3. Fix problems by hand or with inpainting (text-like marks, strange buildings, broken roofs).
 4. Scale the image so that the Town Gate fills its box in 1.2. Crop to 2.1:1 and export at 3800 × 1800.
-5. Cut the Town Gate layer out of the master painting with an outline, at the box in 1.2, and export it as WebP with transparency. The layer is the same art as the painting, so it aligns exactly. On hover it grows from its base, so no hole shows in the painting below it.
-6. Compress the files (Technical Design, section 6). Put them in `apps/web/public/town/`, and change the file names in `town.ts` (`PAINTING_IMAGE` and `SELECTABLE_BUILDINGS`).
-7. Check the chimney points and the sea area (1.3). Change the ambient constants if necessary.
-8. Write the licence record (art direction 5.5) for the master painting and each cut-out.
+5. Compress the file (Technical Design, section 6). Put it in `apps/web/public/town/`, and change `PAINTING_IMAGE` in `town.ts`. If the Buildings move, change their boxes in `SELECTABLE_BUILDINGS`.
+6. Check the chimney points and the sea area (1.3). Change the ambient constants if necessary.
+7. Write the licence record (art direction 5.5) for the master painting.
 
 ## 5. Review checklist
 
@@ -223,7 +231,7 @@ The painting message is a short form of the briefs in sections 1 and 2. It is in
 
 ## 6. When the Town changes
 
-- When a screen comes (for example the Bazaar), cut its Building out of the same master painting into a new layer, and add the Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its label, and the part of the Building under the label, must be in the safe area.
+- When a screen comes (for example the Bazaar), add its Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its label, and the part of the Building under the label, must be in the safe area.
 - When you add a screen with no Building in section 2, add its brief here first. Then paint it into the master painting with inpainting, in the same style.
 - When you change the painting, check the ambient layers (1.3) again.
 
@@ -607,3 +615,89 @@ Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/gear/` (se
 - [ ] No item shows a Class: the Weapon is not a staff or a bow, and the Trinket is not a holy symbol.
 - [ ] The background is transparent, with clean edges on a dark plate.
 - [ ] No text, letters, runes or logo.
+
+## 13. Dungeons cave inside
+
+The Dungeons screen ([GDD 8.4](./03-game-design.md#84-dungeons)) shows the inside of the Dungeons cave (2.3) behind the notice board with the wanted posters and the rail with Fight. One painting covers the full screen. It makes the mine friendly and a little funny, not scary, so that the Player wants to come back for the repeat wins. The image is `apps/web/public/town/cave-inside.webp`, and its source is `apps/web/art/town/cave-inside.webp`. If an ID is in `UNPAINTED_DUNGEON_ART` (`apps/web/src/features/dungeons/dungeon-art.ts`), the Dungeons screen shows a mine gallery in code, in the same place.
+
+### 13.1 Rules for the cave art
+
+- **The same cave as the Town.** The room is the inside of the cave in the Town painting: grey rocks, old timber props and a beam, and the ruined stones of the entrance.
+- **Bright, not dark.** Art direction 5 binds it: warm lantern light from the upper left, a second small lantern at the right, and soft glowcap mushrooms in the shadows, from the Glowcap Hollows. No gore, no skulls on show, no noise.
+- **A calm center.** The center of the image (about 70% of the width, and the height between 8% and 88%) is a plain rock wall with little detail. The notice board and the rail stand there. Detail goes to the edges.
+- **No text and no UI.** No signs with letters, no frames, no posters: the game draws the notice board and the posters.
+- **3:2, 1536 × 1024**, the same as the Barracks inside, at the size that covers the screen.
+
+### 13.2 Positions on the painting
+
+| Area | Box (x, y in percent) | Rule |
+| --- | --- | --- |
+| Top band | y 0 to 8 | The tabs at the top left and the Balance Plate at the top right. Keep it dark and plain. |
+| Notice board and rail | x 9 to 91, y 8 to 88 | The calm rock wall. |
+| Floor | y 88 to 100 | The Town Bar covers it. Packed earth, a mine cart track, a dropped pick. |
+| Left edge | x 0 to 9 | A timber prop and the main lantern. |
+| Right edge | x 91 to 100 | A timber prop, a small lantern and the tunnel that goes down. |
+
+### 13.3 Subjects
+
+- A mine gallery with a tunnel that goes down into the dark at the right, with a soft green glow of glowcaps at its end.
+- A mine cart on a short track, with roots that come through the ceiling.
+- **Humor note:** a Goblin hard hat with a candle on top hangs on a nail, and two small glowing eyes look out of the tunnel, as in the Town.
+
+### 13.4 Steps
+
+1. Run `bun town:prompts`. Make 4 to 8 images with `cave/prompts.md` (section 3), with GPT Image and high quality, at 1536 × 1024. The script writes the layout sketch of 13.2 and the cave of the Town painting as the outside reference. The messages are `CAVE_SETUP_PROMPT` and `CAVE_PROMPT` in `scripts/town-art/prompts.ts`: when you change 13.1 to 13.3, change them too.
+2. Select the image that keeps the center calm, and check it with 13.5.
+3. Export as WebP with no alpha: `cwebp -q 80 cave-inside.png -o cave-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`. Then remove `caveInside` from `UNPAINTED_DUNGEON_ART` in `apps/web/src/features/dungeons/dungeon-art.ts`: a unit test checks the list and the files.
+4. Write the licence record (art direction 5.5) for the image.
+
+### 13.5 Review checklist
+
+- [ ] The room looks like the inside of the cave in the Town painting.
+- [ ] The light is warm and comes from the upper left. The room is not dark or scary.
+- [ ] The center is a calm rock wall: the notice board and the rail are easy to read on it.
+- [ ] The image has no text, no frames and no posters.
+- [ ] The Town Bar covers only the floor.
+
+## 14. Heynspire inside
+
+The Heynspire screen ([GDD 8.2](./03-game-design.md#82-heynspire-draft-name), [GDD 11.1](./03-game-design.md#111-screens)) shows the tower behind the Floor rail: 5 Flights of 10 Floors, from Floor 1 at the bottom to Floor 50 at the top. The image is `apps/web/public/town/heynspire-inside.webp`, and its source is `apps/web/art/town/heynspire-inside.webp`. If `towerInside` is in `UNPAINTED_HEYNSPIRE_ART` (`apps/web/src/features/heynspire/heynspire-art.ts`), the screen shows the castle of the Town painting (2.2), zoomed in and softened (`apps/web/src/features/heynspire/components/tower-scene.tsx`), in the same place.
+
+### 14.1 Rules for the Heynspire art
+
+- **The same tower as the Town.** White stone and blue roofs, as the Heynspire of the Town painting. The view is from the stair on the outside of the tower, a little above the clouds, so that the climb feels high but not scary.
+- **Bright, not dark.** Art direction 5 binds it: morning light from the upper left, soft white clouds, blue sky. No storm, no night.
+- **A calm center.** The center of the image (about 70% of the width, and the height between 10% and 88%) is a plain wall of light stone with little detail. The Floor rail stands there: its stair is white stone too, so the wall must be a little darker or warmer, so that the stair reads on it. Detail goes to the edges.
+- **No text and no UI.** No signs with letters, no numbers on doors: the game draws the Floors and their numbers.
+- **3:2, 1536 × 1024**, the same as the other inside paintings, at the size that covers the screen.
+
+### 14.2 Positions on the painting
+
+| Area | Box (x, y in percent) | Rule |
+| --- | --- | --- |
+| Top band | y 0 to 8 | The title plate at the top left and the Balance Plate at the top right. Keep it plain sky. |
+| Floor rail | x 15 to 85, y 10 to 88 | The calm wall of the tower. |
+| Bottom | y 88 to 100 | The Town Bar covers it. Clouds and the tops of far trees. |
+| Left edge | x 0 to 15 | The outside stair goes up and around the tower, with a rope rail. |
+| Right edge | x 85 to 100 | Floating stones and a far view of the Town and the sea, very small. |
+
+### 14.3 Subjects
+
+- The stair around the tower, which goes up out of the image at the top left.
+- Floating stones with small flags at the right, and a pennant at the top of the tower, out of the image.
+- **Humor note:** the tired climber of 2.2 sits on a step at the left edge, with a water bottle and a map that is too long.
+
+### 14.4 Steps
+
+1. Run `bun town:prompts`. Make 4 to 8 images with `heynspire/prompts.md` (section 3), with GPT Image and high quality, at 1536 × 1024. The script writes the layout sketch of 14.2 and the castle of the Town painting as the outside reference. The messages are `HEYNSPIRE_SETUP_PROMPT` and `HEYNSPIRE_PROMPT` in `scripts/town-art/prompts.ts`: when you change 14.1 to 14.3, change them too.
+2. Select the image that keeps the center calm, and check it with 14.5.
+3. Export as WebP with no alpha: `cwebp -q 80 heynspire-inside.png -o heynspire-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`. Then remove `towerInside` from `UNPAINTED_HEYNSPIRE_ART` in `apps/web/src/features/heynspire/heynspire-art.ts`: a unit test checks the list and the files. `TowerScene` then shows the painting above the Town Bar, as the cave inside.
+4. Write the licence record (art direction 5.5) for the image.
+
+### 14.5 Review checklist
+
+- [ ] The tower looks like the Heynspire of the Town painting.
+- [ ] The light is warm and comes from the upper left. The view is high but not scary.
+- [ ] The center is a calm wall: the white stair of the Floor rail and the bands are easy to read on it.
+- [ ] The image has no text and no numbers.
+- [ ] The Town Bar covers only the bottom.

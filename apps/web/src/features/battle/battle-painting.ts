@@ -30,10 +30,23 @@ export const battlePaintingFor = (
 ): string | null => paintings[region] ?? paintings[FALLBACK_REGION] ?? null;
 
 /**
- * The painting of a Battle: the Region of its Stage. A Dungeon is outside the
- * Campaign and has no painting of its own yet, so it uses the fallback.
+ * The Battle Painting of all Dungeons: the Dungeon cave (13 — Battlefield
+ * Concepts 1.6). All Dungeons are in the Dungeons cave of the Town.
  */
-export const battlePainting = (options: BattleOptions): string | null =>
-  battlePaintingFor(
-    options.dungeon ? FALLBACK_REGION : getStage(options.stageId).region
-  );
+export const DUNGEON_PAINTING = "/battle/dungeon-cave.webp";
+
+/**
+ * The Battle Painting of all Heynspire Floors: the terrace of the Heynspire
+ * tower (13 — Battlefield Concepts 1.7).
+ */
+const HEYNSPIRE_PAINTING = "/battle/heynspire.webp";
+
+/** The painting of a Battle: Heynspire, the Dungeon cave, or the Region of its Stage. */
+export const battlePainting = (options: BattleOptions): string | null => {
+  if (options.floor) {
+    return HEYNSPIRE_PAINTING;
+  }
+  return options.dungeon
+    ? DUNGEON_PAINTING
+    : battlePaintingFor(getStage(options.stageId).region);
+};

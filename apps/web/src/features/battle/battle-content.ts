@@ -3,10 +3,11 @@ import { DUNGEONS, getStage, STAGES } from "@workspace/rules";
 
 import type { BattleOptions } from "@/features/battle/battle-session";
 import type { TextRef } from "@/features/battle/card-text";
+import { floorEnemyKey } from "@/features/heynspire/heynspire";
 
-/** The Stage of a Battle, or `null` for a Dungeon Battle. */
+/** The Stage of a Battle, or `null` for a Dungeon Battle and a Floor Battle. */
 export const battleStage = (options: BattleOptions): StageDefinition | null =>
-  options.dungeon ? null : getStage(options.stageId);
+  options.dungeon || options.floor ? null : getStage(options.stageId);
 
 /**
  * The name of an enemy Hero: the enemy of the Stage, or a Boss of the
@@ -15,7 +16,10 @@ export const battleStage = (options: BattleOptions): StageDefinition | null =>
  * it takes the enemy name of that Stage.
  */
 export const enemyNameRef = (options: BattleOptions, hero = 0): TextRef => {
-  const { dungeon } = options;
+  const { dungeon, floor } = options;
+  if (floor) {
+    return { key: floorEnemyKey(floor.number) };
+  }
   const boss = dungeon?.bosses[hero];
   if (!dungeon || !boss) {
     return { key: `stages.${options.stageId}.enemy` };
@@ -25,9 +29,12 @@ export const enemyNameRef = (options: BattleOptions, hero = 0): TextRef => {
     : { key: `dungeons.${dungeon.id}.bosses.${boss.id}` };
 };
 
-/** The name of the place of the Battle: the Stage, or the Dungeon. */
+/** The name of the place of the Battle: the Stage, the Dungeon, or the Heynspire Floor. */
 export const battleNameRef = (options: BattleOptions): TextRef => {
-  const { dungeon } = options;
+  const { dungeon, floor } = options;
+  if (floor) {
+    return { key: "heynspire.floorName", args: { number: floor.number } };
+  }
   if (!dungeon) {
     return { key: `stages.${options.stageId}.name` };
   }

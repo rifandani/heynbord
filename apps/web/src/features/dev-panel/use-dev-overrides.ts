@@ -7,6 +7,7 @@ import { use, useEffect } from "react";
 import type { StageResults } from "@/features/campaign/region-map";
 import {
   DEV_OVERRIDES_KEY,
+  floorsWon,
   fromOverlay,
   parseOverrides,
   serializeOverrides,
@@ -23,6 +24,7 @@ import {
   profileAtom,
   profileOverlayAtom,
 } from "@/features/profile/profile.atoms";
+import type { SweepKind } from "@/features/sweep/sweep";
 import type { BalanceKind } from "@/features/town/town";
 import { balancesAtom } from "@/features/town/town.atoms";
 
@@ -98,8 +100,12 @@ export const useDevOverrides = () => {
         ...current,
         ...setBalance(registry.get(balancesAtom), kind, value),
       })),
-    setSweepTickets: (value: number) =>
-      change((current) => ({ ...current, sweepTickets: wholeBalance(value) })),
+    setSweepTickets: (kind: SweepKind, value: number) =>
+      change((current) => ({
+        ...current,
+        [kind === "campaign" ? "campaignSweepTickets" : "dungeonSweepTickets"]:
+          wholeBalance(value),
+      })),
     setForgeStones: (tier: ForgeStoneTier, value: number) =>
       change((current) => ({
         ...current,
@@ -108,6 +114,12 @@ export const useDevOverrides = () => {
           tier,
           value
         ),
+      })),
+    /** Sets the won Heynspire Floors, from Floor 1. */
+    setFloorsWon: (value: number) =>
+      change((current) => ({
+        ...current,
+        heynspireFloorsWon: floorsWon(value),
       })),
     /** Sets the XP to the start of the Player level. */
     setLevel: (level: number) =>

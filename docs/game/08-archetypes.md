@@ -17,9 +17,9 @@ C, U, R and E are the Ranks Common, Uncommon, Rare and Epic. Each Archetype obey
 | Archetype | Class | Style | Deck |
 | --- | --- | --- | --- |
 | Vanguard | Warrior | Human: hold the line. Walls and Bulwark in front, Long-range Units behind, with Warrior buffs. The style of the Vanguard Starter Deck. | 1× Town Barricade (C), 1× Militia Recruit (C), 1× Gate Warden (U), 1× Shieldbearer (C), 2× Crossbow Guard (C), 2× Halberdier (C), 1× Dawn Cleric (U), 2× River Knight (U), 1× Shield Wall (C), 1× Shield Bash (C), 1× Call to Arms (R). 14 cards, Countdown 35. |
-| Raiders | Mage | Orc: rush the enemy Hero. Charge, Flying and high attack, with Mage Fire and Frost spells. The style of the Raiders Starter Deck. | 1× Badland Runt (C), 1× Pack Stalker (U), 2× Scrap Raider (C), 2× Ember Shaman (C), 1× Howling Charger (U), 2× Skyreaver (U), 1× Cinderhorn Breaker (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Wave (U). 13 cards, Countdown 33. |
+| Raiders | Mage | Orc: rush the enemy Hero. Charge, Flying and high attack, with Mage Fire and Frost spells. The style of the Raiders Starter Deck. | 1× Badland Runt (C), 1× Pack Stalker (U), 2× Scrap Raider (C), 2× Ember Shaman (C), 1× Howling Charger (U), 2× Skyreaver (U), 1× Cinderhorn Breaker (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Shards (C). 13 cards, Countdown 32. |
 | Deathless Host | Priest | Undead: many cheap Units that grow stronger together, come back and bring more, with the Priest Skill Cards. 3 copies with Swarm, 4 with Summon, 3 with Rebirth and 2 Frost Units. | 1× Hushbow (C), 2× Grave Bell Tender (C), 2× Chattering Cohort (U), 1× Ossuary Piper (U), 1× Coffin Lancer (R), 1× Winter Maw (R), 1× Lantern Widow (R), 1× Sir Odo, the Last Taxman (E), 1× Bone Rampart (E), 1× Prayer of Healing (U), 1× Radiant Strike (C), 1× Blessing of Light (C). 14 cards, Countdown 33. |
-| Tunnel Rats | Ranger | Goblin: make the enemy plan slower. 5 copies with Sabotage, 6 with Hobble and 1 with Last Breath, with the Ranger Skill Cards that stop, push and ground a Unit. | 2× Ankle Snatcher (C), 2× Junk Slinger (C), 1× Tunnel Saboteur (C), 1× Scrap-Plate Guard (C), 1× Junk Barricade (U), 2× Grease Trapper (U), 1× Mine Sapper (R), 1× Grand Gearjammer (E), 1× Pinning Shot (C), 1× Warning Shot (C), 1× Skybreaker (U). 14 cards, Countdown 34. |
+| Tunnel Rats | Ranger | Goblin: make the enemy plan slower. 5 copies with Sabotage, 6 with Hobble and 1 with Last Breath, with the Ranger Skill Cards that stop and ground a Unit. | 2× Ankle Snatcher (C), 2× Junk Slinger (C), 1× Tunnel Saboteur (C), 1× Scrap-Plate Guard (C), 1× Junk Barricade (U), 2× Grease Trapper (U), 1× Mine Sapper (R), 1× Grand Gearjammer (E), 2× Pinning Shot (C), 1× Skybreaker (U). 14 cards, Countdown 33. |
 | Thornwatch | Ranger | Elf: control from range. 2 Long-range copies, 4 with Regenerate and 1 with Poison, with the Ranger Skill Cards that stop and push a Unit and give +1 Range. | 2× Rootbound Guard (C), 2× Bramble Duelist (C), 2× Fernwing Courier (C), 1× Mosspitcher Lookout (C), 1× Thornline Archer (U), 1× Glade Turnblade (U), 1× Bramble Nest (U), 1× Pinning Shot (C), 1× Warning Shot (C), 1× Hunter's Focus (R). 13 cards, Countdown 35. |
 | Wild Hunt | Priest | Feral: few and huge, kept alive with Priest healing. 4 copies with Trample and 3 with Regenerate, with Frost Elk Matriarch (Rally) and Frostfang Lynx (Bleed 1), and the Priest Skill Cards that heal, Ward and save a Unit. | 2× Bristleback Boar (C), 1× Frostfang Lynx (C), 1× Cave Bear (C), 1× Web Spitter (C), 1× Cave Troll (U), 2× Crag Rhino (U), 1× Frost Elk Matriarch (U), 1× Mend (C), 1× Sanctuary (U), 1× Unbroken Vow (R). 12 cards, Countdown 30. |
 
@@ -175,80 +175,101 @@ The final Main pairs (`bun scripts/simulate.ts matchup 1000 --check`, the lists 
 
 Each of the 10 pairs is in 45% to 55%, and the check passes. Only Tunnel Rats against Deathless Host is within 1 point of an edge. The scratch Thornwatch list of the promotion had its cards in another order, so its seeds dealt other Hands: it won 48.4% / 46.8% / 49.4% / 51.8%. The table uses the Deck of `archetypes.ts`.
 
+**Retune for Ranged Unit Movement (issue [#96](https://github.com/rifandani/heynbord/issues/96), 2026-10-15).** A Ranged Unit now stops in the first empty Square from which it has a target in its Range ([GDD 4.5](./03-game-design.md)). Ranged Units thus stay farther back, and Melee enemies get to them later. After this rule, 4 Main pairs were above 55% (1000 seeds): Raiders against Wild Hunt 57.5% and against Thornwatch 55.1%, and Tunnel Rats against Wild Hunt 56.1% and against Deathless Host 56.6%. Before the rule, they were 54.5%, 53.1%, 53.3% and 54.0%. The rule is not part of the tuning. The fix is lever (a): the Deck lists change, and no card value changes. Each Archetype keeps 3 Skill Cards of its Class, each at its Base Rank.
+
+| Archetype | Change | Reason for the pick |
+| --- | --- | --- |
+| Raiders | Frost Shards (C) in place of Frost Wave (U) | Frost on the blocker and the Unit behind it: a smaller Frost card that still opens the way for the rush. 13 cards, Countdown 32. |
+| Tunnel Rats | A second Pinning Shot (C) in place of Warning Shot (C) | Entangle stops an enemy Unit, so the enemy plan gets slower. The push of Warning Shot also delays a Unit, but it is the stronger card here. 14 cards, Countdown 33. |
+
+Lists that were tried (1000 seeds, win rate of the changed Deck, with the Raiders change for each Tunnel Rats list). Raiders first:
+
+- **Frost Shards in place of Frost Wave: pass.** 46.7% against Vanguard, 49.5% against Tunnel Rats (with the final Tunnel Rats list), 54.1% against Wild Hunt, 53.4% against Thornwatch and 46.0% against Deathless Host.
+- Frost Shards in place of Fireball: 58.5% against Wild Hunt. Spark in place of Frost Bolt: 59.3% against Wild Hunt. Arc Lightning in place of Frost Wave: 41.9% against Vanguard and 43.1% against Deathless Host. Spark in place of Frost Wave: 42.8% against Vanguard. Lightning is also not in the Fire and Frost style.
+- An Orc Creature Card in place of 1 Ember Shaman (Tusk Brute, Mesa Pit Fighter, Howling Charger, Cinderhorn Breaker, Warhowler Drummer, Scrap Raider, Badland Runt, Pack Stalker or Bonestake Palisade): Raiders goes down by 10 to 23 points against Vanguard, and each list fails. Warhowler Drummer in place of 1 Skyreaver: 59.7% against Wild Hunt.
+
+Tunnel Rats:
+
+- **A second Pinning Shot in place of Warning Shot: pass.** 51.0% against Vanguard, 50.4% against Raiders, 53.1% against Wild Hunt, 48.6% against Thornwatch and 53.5% against Deathless Host.
+- A second Pinning Shot in place of Skybreaker passes too (53.4% against Deathless Host), but Tunnel Rats then has no card against Flying Units. Quick Shot in place of Warning Shot passes (53.0% against Vanguard), but it is plain damage, not delay. Harrying Shot in place of Warning Shot: 42.4% against Vanguard. Barbed Arrow in place of Skybreaker: 57.0% against Deathless Host.
+- A Goblin Creature Card in place of 1 Junk Slinger, 1 Grease Trapper or the Scrap-Plate Guard (Fuse Runner, Tunnel Saboteur, Scrap-Plate Guard, Sidestep Shiv, Ankle Snatcher, Junk Barricade, Rocket Barrel Rider or Bomb Lobber): each list fails. Junk Walker in place of Mine Sapper: 58.9% against Wild Hunt.
+
+Each of the 15 Main pairs is in 45% to 55% (section 3), and the check passes. The nearest pairs to an edge are Raiders against Deathless Host (46.0%) and Raiders against Wild Hunt (54.1%). The swap report (3.3) uses Raiders as an opponent, so its values are from before this change. It was not run again.
+
 ## 3. Matchup results
 
 Player level 5 and no Gear on both Sides. 2000 Battles for each Matchup (1000 seeds, both ways). The win rate is for the Archetype in the row. **No Ready** is the average number of Turns of the Archetype in the row with no Ready card in the Hand at the start of its Play Phase. It is for review only. A pair with a diagnostic Deck shows "review" when it is outside 45% to 55%, and it does not fail the check.
 
 | Archetype | Opponent | Win rate | First-Side win rate | Average Turn | No Ready | Target |
 | --- | --- | --- | --- | --- | --- | --- |
-| Vanguard | Vanguard | 50.0% | 45.6% | 19.0 | 9.2 | Mirror |
-| Vanguard | Raiders | 50.0% | 52.3% | 14.9 | 5.0 | 45%–55% |
-| Vanguard | Tunnel Rats | 49.0% | 47.1% | 18.7 | 9.2 | 45%–55% |
-| Vanguard | Wild Hunt | 45.6% | 52.9% | 17.6 | 7.7 | 45%–55% |
-| Vanguard | Thornwatch | 50.7% | 47.3% | 19.3 | 9.3 | 45%–55% |
-| Vanguard | Deathless Host | 48.4% | 52.9% | 20.7 | 10.9 | 45%–55% |
-| Vanguard | Breakneck Company | 32.9% | 54.5% | 17.3 | 7.2 | Review |
-| Vanguard | Vanguard Full | 77.0% | 47.1% | 19.5 | 9.9 | Review |
-| Vanguard | Raiders Full | 56.6% | 51.6% | 15.6 | 5.6 | Review |
-| Vanguard | Human Heavy | 35.6% | 49.3% | 17.0 | 6.9 | Review |
-| Vanguard | Human Light | 50.6% | 49.9% | 20.1 | 10.3 | 45%–55% |
-| Raiders | Raiders | 50.0% | 42.0% | 14.0 | 4.5 | Mirror |
-| Raiders | Tunnel Rats | 50.0% | 41.1% | 15.6 | 6.7 | 45%–55% |
-| Raiders | Wild Hunt | 54.5% | 54.4% | 14.1 | 4.8 | 45%–55% |
-| Raiders | Thornwatch | 53.1% | 46.7% | 15.7 | 6.3 | 45%–55% |
-| Raiders | Deathless Host | 50.0% | 55.3% | 15.8 | 6.8 | 45%–55% |
-| Raiders | Breakneck Company | 30.9% | 48.9% | 14.4 | 4.9 | Review |
-| Raiders | Vanguard Full | 82.9% | 50.2% | 15.3 | 6.3 | Review |
-| Raiders | Raiders Full | 60.4% | 45.4% | 14.1 | 4.4 | Review |
-| Raiders | Human Heavy | 30.0% | 55.5% | 13.5 | 4.3 | Review |
-| Raiders | Human Light | 56.3% | 54.7% | 15.7 | 6.7 | Review |
-| Tunnel Rats | Tunnel Rats | 50.0% | 41.3% | 18.6 | 9.4 | Mirror |
-| Tunnel Rats | Wild Hunt | 53.3% | 51.7% | 16.9 | 7.3 | 45%–55% |
-| Tunnel Rats | Thornwatch | 51.8% | 48.4% | 19.6 | 9.8 | 45%–55% |
-| Tunnel Rats | Deathless Host | 54.0% | 48.0% | 20.3 | 10.8 | 45%–55% |
-| Tunnel Rats | Breakneck Company | 33.8% | 45.3% | 17.1 | 7.5 | Review |
-| Tunnel Rats | Vanguard Full | 84.9% | 47.6% | 19.7 | 10.2 | Review |
-| Tunnel Rats | Raiders Full | 63.0% | 45.8% | 16.0 | 6.4 | Review |
-| Tunnel Rats | Human Heavy | 30.3% | 56.3% | 15.9 | 6.2 | Review |
-| Tunnel Rats | Human Light | 50.0% | 47.9% | 20.1 | 10.5 | 45%–55% |
-| Wild Hunt | Wild Hunt | 50.0% | 55.1% | 16.9 | 8.4 | Mirror |
-| Wild Hunt | Thornwatch | 52.9% | 51.1% | 17.7 | 9.0 | 45%–55% |
-| Wild Hunt | Deathless Host | 49.9% | 57.9% | 20.0 | 11.4 | 45%–55% |
-| Wild Hunt | Breakneck Company | 35.9% | 57.1% | 17.5 | 9.0 | Review |
-| Wild Hunt | Vanguard Full | 76.4% | 52.0% | 18.3 | 9.6 | Review |
-| Wild Hunt | Raiders Full | 60.3% | 56.5% | 14.7 | 6.0 | Review |
-| Wild Hunt | Human Heavy | 41.0% | 51.7% | 15.9 | 7.2 | Review |
-| Wild Hunt | Human Light | 48.0% | 53.2% | 18.7 | 10.1 | 45%–55% |
-| Thornwatch | Thornwatch | 50.0% | 48.5% | 21.0 | 12.0 | Mirror |
-| Thornwatch | Deathless Host | 50.0% | 55.5% | 21.0 | 12.0 | 45%–55% |
-| Thornwatch | Breakneck Company | 44.4% | 48.4% | 18.5 | 9.4 | Review |
-| Thornwatch | Vanguard Full | 87.4% | 49.5% | 19.7 | 10.9 | Review |
-| Thornwatch | Raiders Full | 58.3% | 46.7% | 16.1 | 7.2 | Review |
-| Thornwatch | Human Heavy | 28.7% | 47.1% | 16.6 | 7.5 | Review |
-| Thornwatch | Human Light | 56.6% | 50.8% | 21.1 | 12.3 | Review |
-| Deathless Host | Deathless Host | 50.0% | 56.5% | 22.2 | 11.0 | Mirror |
-| Deathless Host | Breakneck Company | 39.3% | 54.4% | 19.0 | 8.6 | Review |
-| Deathless Host | Vanguard Full | 78.4% | 48.7% | 21.5 | 9.8 | Review |
-| Deathless Host | Raiders Full | 64.3% | 54.8% | 16.8 | 6.4 | Review |
-| Deathless Host | Human Heavy | 37.0% | 52.7% | 19.2 | 8.1 | Review |
-| Deathless Host | Human Light | 48.0% | 52.9% | 21.7 | 10.5 | 45%–55% |
+| Vanguard | Vanguard | 50.0% | 44.9% | 19.1 | 9.2 | Mirror |
+| Vanguard | Raiders | 53.3% | 52.6% | 15.0 | 5.1 | 45%–55% |
+| Vanguard | Tunnel Rats | 48.9% | 45.9% | 18.7 | 9.2 | 45%–55% |
+| Vanguard | Wild Hunt | 47.9% | 53.8% | 17.6 | 7.8 | 45%–55% |
+| Vanguard | Thornwatch | 51.4% | 45.1% | 19.4 | 9.4 | 45%–55% |
+| Vanguard | Deathless Host | 47.6% | 52.9% | 20.7 | 10.9 | 45%–55% |
+| Vanguard | Breakneck Company | 33.6% | 54.9% | 17.2 | 7.1 | Review |
+| Vanguard | Vanguard Full | 76.8% | 47.3% | 19.6 | 10.0 | Review |
+| Vanguard | Raiders Full | 56.0% | 51.1% | 15.8 | 5.7 | Review |
+| Vanguard | Human Heavy | 33.8% | 48.0% | 17.1 | 7.0 | Review |
+| Vanguard | Human Light | 50.5% | 48.7% | 20.3 | 10.4 | 45%–55% |
+| Raiders | Raiders | 50.0% | 42.6% | 13.9 | 4.4 | Mirror |
+| Raiders | Tunnel Rats | 49.5% | 44.5% | 15.6 | 6.7 | 45%–55% |
+| Raiders | Wild Hunt | 54.1% | 54.9% | 14.1 | 4.9 | 45%–55% |
+| Raiders | Thornwatch | 53.4% | 47.8% | 15.7 | 6.3 | 45%–55% |
+| Raiders | Deathless Host | 46.0% | 55.8% | 16.0 | 7.1 | 45%–55% |
+| Raiders | Breakneck Company | 30.8% | 50.4% | 14.3 | 4.9 | Review |
+| Raiders | Vanguard Full | 78.8% | 51.8% | 15.5 | 6.5 | Review |
+| Raiders | Raiders Full | 59.2% | 45.6% | 14.0 | 4.4 | Review |
+| Raiders | Human Heavy | 26.4% | 56.3% | 13.4 | 4.3 | Review |
+| Raiders | Human Light | 50.6% | 55.8% | 15.9 | 7.0 | 45%–55% |
+| Tunnel Rats | Tunnel Rats | 50.0% | 43.7% | 18.7 | 9.4 | Mirror |
+| Tunnel Rats | Wild Hunt | 53.1% | 52.4% | 17.1 | 7.4 | 45%–55% |
+| Tunnel Rats | Thornwatch | 48.6% | 46.9% | 19.6 | 9.7 | 45%–55% |
+| Tunnel Rats | Deathless Host | 53.5% | 49.8% | 20.3 | 10.7 | 45%–55% |
+| Tunnel Rats | Breakneck Company | 34.0% | 44.5% | 17.2 | 7.5 | Review |
+| Tunnel Rats | Vanguard Full | 85.4% | 47.5% | 19.4 | 9.8 | Review |
+| Tunnel Rats | Raiders Full | 59.0% | 46.3% | 16.2 | 6.5 | Review |
+| Tunnel Rats | Human Heavy | 28.7% | 56.0% | 16.0 | 6.1 | Review |
+| Tunnel Rats | Human Light | 50.2% | 47.4% | 20.1 | 10.4 | 45%–55% |
+| Wild Hunt | Wild Hunt | 50.0% | 54.4% | 16.9 | 8.4 | Mirror |
+| Wild Hunt | Thornwatch | 52.8% | 49.8% | 17.8 | 9.1 | 45%–55% |
+| Wild Hunt | Deathless Host | 49.9% | 56.9% | 20.1 | 11.5 | 45%–55% |
+| Wild Hunt | Breakneck Company | 36.2% | 57.0% | 17.5 | 9.0 | Review |
+| Wild Hunt | Vanguard Full | 74.8% | 52.1% | 18.4 | 9.7 | Review |
+| Wild Hunt | Raiders Full | 57.5% | 56.1% | 14.8 | 6.1 | Review |
+| Wild Hunt | Human Heavy | 39.0% | 51.9% | 16.0 | 7.3 | Review |
+| Wild Hunt | Human Light | 46.8% | 53.6% | 18.8 | 10.1 | 45%–55% |
+| Thornwatch | Thornwatch | 50.0% | 47.6% | 21.0 | 12.0 | Mirror |
+| Thornwatch | Deathless Host | 50.0% | 54.6% | 21.0 | 12.1 | 45%–55% |
+| Thornwatch | Breakneck Company | 45.4% | 49.4% | 18.5 | 9.3 | 45%–55% |
+| Thornwatch | Vanguard Full | 87.6% | 49.7% | 19.8 | 11.1 | Review |
+| Thornwatch | Raiders Full | 57.6% | 46.7% | 16.1 | 7.2 | Review |
+| Thornwatch | Human Heavy | 27.3% | 46.7% | 16.7 | 7.5 | Review |
+| Thornwatch | Human Light | 58.4% | 50.6% | 21.2 | 12.4 | Review |
+| Deathless Host | Deathless Host | 50.0% | 56.8% | 22.2 | 11.0 | Mirror |
+| Deathless Host | Breakneck Company | 39.7% | 54.6% | 19.1 | 8.7 | Review |
+| Deathless Host | Vanguard Full | 77.3% | 49.3% | 21.4 | 9.7 | Review |
+| Deathless Host | Raiders Full | 62.7% | 54.0% | 17.0 | 6.6 | Review |
+| Deathless Host | Human Heavy | 36.9% | 51.7% | 19.2 | 8.1 | Review |
+| Deathless Host | Human Light | 49.4% | 52.0% | 21.7 | 10.5 | 45%–55% |
 | Breakneck Company | Breakneck Company | 50.0% | 54.6% | 16.6 | 6.8 | Mirror |
-| Breakneck Company | Vanguard Full | 87.4% | 50.1% | 17.4 | 7.9 | Review |
-| Breakneck Company | Raiders Full | 75.7% | 52.4% | 14.4 | 4.6 | Review |
-| Breakneck Company | Human Heavy | 53.1% | 55.5% | 15.7 | 6.0 | 45%–55% |
-| Breakneck Company | Human Light | 63.0% | 52.8% | 18.7 | 9.2 | Review |
-| Vanguard Full | Vanguard Full | 50.0% | 45.7% | 22.3 | 12.7 | Mirror |
-| Vanguard Full | Raiders Full | 27.8% | 49.9% | 16.7 | 7.3 | Review |
-| Vanguard Full | Human Heavy | 14.3% | 50.0% | 17.1 | 7.5 | Review |
-| Vanguard Full | Human Light | 22.7% | 49.5% | 21.1 | 11.3 | Review |
-| Raiders Full | Raiders Full | 50.0% | 48.3% | 14.5 | 5.3 | Mirror |
-| Raiders Full | Human Heavy | 22.9% | 56.0% | 13.6 | 5.1 | Review |
-| Raiders Full | Human Light | 44.3% | 52.3% | 16.5 | 8.2 | Review |
-| Human Heavy | Human Heavy | 50.0% | 46.8% | 15.7 | 9.4 | Mirror |
-| Human Heavy | Human Light | 62.8% | 52.9% | 18.1 | 11.8 | Review |
-| Human Light | Human Light | 50.0% | 50.8% | 21.9 | 12.5 | Mirror |
+| Breakneck Company | Vanguard Full | 87.3% | 50.5% | 17.4 | 7.9 | Review |
+| Breakneck Company | Raiders Full | 74.5% | 53.0% | 14.5 | 4.7 | Review |
+| Breakneck Company | Human Heavy | 52.4% | 56.5% | 15.7 | 6.0 | 45%–55% |
+| Breakneck Company | Human Light | 62.8% | 51.9% | 18.7 | 9.2 | Review |
+| Vanguard Full | Vanguard Full | 50.0% | 45.7% | 22.4 | 12.7 | Mirror |
+| Vanguard Full | Raiders Full | 26.8% | 49.8% | 16.6 | 7.3 | Review |
+| Vanguard Full | Human Heavy | 13.5% | 49.8% | 17.0 | 7.4 | Review |
+| Vanguard Full | Human Light | 23.5% | 49.5% | 21.2 | 11.4 | Review |
+| Raiders Full | Raiders Full | 50.0% | 49.9% | 14.5 | 5.3 | Mirror |
+| Raiders Full | Human Heavy | 22.9% | 56.0% | 13.6 | 5.0 | Review |
+| Raiders Full | Human Light | 46.8% | 51.6% | 16.7 | 8.3 | 45%–55% |
+| Human Heavy | Human Heavy | 50.0% | 46.9% | 15.5 | 9.2 | Mirror |
+| Human Heavy | Human Light | 64.3% | 53.1% | 18.2 | 11.9 | Review |
+| Human Light | Human Light | 50.0% | 51.0% | 22.0 | 12.7 | Mirror |
 
-The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun scripts/simulate.ts matchup 1000 --check` in `packages/rules` on 2026-10-15, after the enemy AI started to give a value to Sabotage, Hobble and Last Breath (issue [#84](https://github.com/rifandani/heynbord/issues/84), GDD 9). Each of the 15 pairs of the 6 Main Archetypes is in 45% to 55%, and the check passes. The Main pairs without Tunnel Rats did not change. Tunnel Rats now wins 51.0% against Vanguard (50.5% before #84), 50.0% against Raiders (48.7%), 53.3% against Wild Hunt (54.0%), 51.8% against Thornwatch (49.7%) and 54.0% against Deathless Host (54.7%). Some rows of the diagnostic Decks also changed. Those rows were already out of date before #84: the AI change does not change them. 3 Main pairs are within 1 point of an edge: Wild Hunt against Vanguard and against Raiders, and Tunnel Rats against Deathless Host. The text that follows in this paragraph is from 2026-10-14, after the Feral Creature Card tuning of issue [#80](https://github.com/rifandani/heynbord/issues/80) (3.1). Then the rows without Wild Hunt did not change, and 4 pairs were within 1 point of an edge. With 3000 seeds: Wild Hunt wins 52.5% against Vanguard (54.4% with 1000 seeds), 43.7% against Raiders (45.5%) and 45.4% against Tunnel Rats (46.0%). Tunnel Rats wins 54.8% against Deathless Host (54.7%). The 3000-seed result does not decide the gate. Before #80, Wild Hunt was a diagnostic Deck, and it won 64.7% against Vanguard, 42.6% against Raiders, 59.6% against Tunnel Rats, 62.6% against Thornwatch and 46.9% against Deathless Host. The other results of this table came from the promotion of Deathless Host, Tunnel Rats and Thornwatch (issue #68, 2.3). After the re-fit of Vanguard and Raiders (issue #67), and before #68, Vanguard also won 50.0% against Raiders. With the old Skill Cards, after the Power Budget of Skill Cards (#50), Vanguard won 54.3%. Before #50, after the balance pass of [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md), it won 56.5%. Before #68, with their old Skill Cards: Thornwatch won 57.9% against Vanguard and 49.3% against Raiders. Deathless Host won 57.3% and 52.5%. Tunnel Rats won 47.4% and 44.9%. Wild Hunt won 61.7% and 50.5%. The findings below this paragraph are from before 2026-10-14, unless they give another date. Before, the results came from `bun run sim matchup 1000` on 2026-10-11, after the re-tune of the Skill Cards with the swap rule (issue #56, 3.1 and 3.3). Then Vanguard won 48.9% against Raiders.
+The table shows each pair one time. The reverse row has the other win rate (100% minus this one) and the No Ready value of the other Archetype. The table rounds each win rate to 0.1%. Thus a reverse win rate can be 0.1 percentage points different from 100% minus this one. The results come from `bun scripts/simulate.ts 1000 --check` in `packages/rules` on 2026-10-15, after the rule for Ranged Unit Movement and the Raiders and Tunnel Rats lists of issue [#96](https://github.com/rifandani/heynbord/issues/96) (2.3). Each of the 15 pairs of the 6 Main Archetypes is in 45% to 55%, and the check passes. Before, the results came from the run after the enemy AI started to give a value to Sabotage, Hobble and Last Breath (issue [#84](https://github.com/rifandani/heynbord/issues/84), GDD 9). The rest of this paragraph is about that run. Each of the 15 pairs of the 6 Main Archetypes is in 45% to 55%, and the check passes. The Main pairs without Tunnel Rats did not change. Tunnel Rats now wins 51.0% against Vanguard (50.5% before #84), 50.0% against Raiders (48.7%), 53.3% against Wild Hunt (54.0%), 51.8% against Thornwatch (49.7%) and 54.0% against Deathless Host (54.7%). Some rows of the diagnostic Decks also changed. Those rows were already out of date before #84: the AI change does not change them. 3 Main pairs are within 1 point of an edge: Wild Hunt against Vanguard and against Raiders, and Tunnel Rats against Deathless Host. The text that follows in this paragraph is from 2026-10-14, after the Feral Creature Card tuning of issue [#80](https://github.com/rifandani/heynbord/issues/80) (3.1). Then the rows without Wild Hunt did not change, and 4 pairs were within 1 point of an edge. With 3000 seeds: Wild Hunt wins 52.5% against Vanguard (54.4% with 1000 seeds), 43.7% against Raiders (45.5%) and 45.4% against Tunnel Rats (46.0%). Tunnel Rats wins 54.8% against Deathless Host (54.7%). The 3000-seed result does not decide the gate. Before #80, Wild Hunt was a diagnostic Deck, and it won 64.7% against Vanguard, 42.6% against Raiders, 59.6% against Tunnel Rats, 62.6% against Thornwatch and 46.9% against Deathless Host. The other results of this table came from the promotion of Deathless Host, Tunnel Rats and Thornwatch (issue #68, 2.3). After the re-fit of Vanguard and Raiders (issue #67), and before #68, Vanguard also won 50.0% against Raiders. With the old Skill Cards, after the Power Budget of Skill Cards (#50), Vanguard won 54.3%. Before #50, after the balance pass of [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md), it won 56.5%. Before #68, with their old Skill Cards: Thornwatch won 57.9% against Vanguard and 49.3% against Raiders. Deathless Host won 57.3% and 52.5%. Tunnel Rats won 47.4% and 44.9%. Wild Hunt won 61.7% and 50.5%. The findings below this paragraph are from before 2026-10-14, unless they give another date. Before, the results came from `bun run sim matchup 1000` on 2026-10-11, after the re-tune of the Skill Cards with the swap rule (issue #56, 3.1 and 3.3). Then Vanguard won 48.9% against Raiders.
 
 **Goblin, Feral and Undead risks (2.2).** The AI ignores Trample, Entangle, Rally, Swarm, Rebirth and Summon when it selects a play. Since issue [#84](https://github.com/rifandani/heynbord/issues/84), it gives a value to Sabotage, Hobble and Last Breath (GDD 9). Thus these results are evidence for review, not a balance approval.
 
@@ -322,6 +343,7 @@ Wild Hunt and Tunnel Rats are almost the same as before the change. Before it, W
 | 2026-10-14 | Re-fit of Vanguard and Raiders with the 40 Skill Cards (issue #67, 2.3). Vanguard: Shield Wall (C), Shield Bash (C) and Call to Arms (R) replace War Drums, Shield Wall and Spear Throw. 14 cards, Countdown 35. Raiders: Frost Bolt (C), Fireball (C) and Frost Wave (U) replace Fireball, Frost Bolt and Flame Wave. 13 cards, Countdown 33. No Skill Card or Creature Card value changes. Vanguard Full, Raiders Full and Breakneck Company keep the old Skill Cards. | Each pick is by style, with one reason for each card (2.3). 8 style lists were tried, and the selected pair is nearest to 50%: Vanguard wins 50.0% against Raiders (it was 54.3%), 1000 seeds, and 48.9% with 3000 seeds. The swap report against the new anchors (3.3, 3.4): 24 of 40 cards pass. Harrying Shot now passes, and Wildfire now fails. |
 | 2026-10-14 | Promotion of the Diagnostic Decks (issue #68, 2.3). Deathless Host: Prayer of Healing (U), Radiant Strike (C) and Blessing of Light (C) replace Mend, Smite and Sanctuary. 14 cards, Countdown 33. Tunnel Rats: Skybreaker (U) replaces Long Shot, and 1 Ankle Snatcher (C) replaces Fuse Runner. 14 cards, Countdown 34. Thornwatch: Hunter's Focus (R) replaces Long Shot, 1 Rootbound Guard (C) replaces Acorn Tender, and Glade Turnblade (U) replaces Dewkeeper. 13 cards, Countdown 35. Wild Hunt: Unbroken Vow (R) replaces Smite. 12 cards, Countdown 35. Deathless Host, Tunnel Rats and Thornwatch are Main Archetypes. Wild Hunt stays diagnostic. No Skill Card or Creature Card value changes. | Each Skill Card pick is by style, with one reason for each card (2.3). Each candidate tried the gate in the order of its worst miss. Deathless Host passed with its re-fit. Tunnel Rats and Thornwatch passed after Deck list changes (lever a). Wild Hunt failed after 21 lists (lever a) and 3 Skill Card values (lever b): the nearest list misses Raiders by 3.7 points, with Vanguard and Tunnel Rats at the top edge. Its Creature Card gap is in issue [#80](https://github.com/rifandani/heynbord/issues/80). Each list and value that was tried is in the table below. The 10 Main pairs are in 45% to 55% (3), and `sim:check` passes its Matchups. The swap report (3.3, 3.4): 24 of 40 cards pass. |
 | 2026-10-14 | Feral Creature Card tuning for Wild Hunt (issue [#80](https://github.com/rifandani/heynbord/issues/80)). Bristleback Boar 4/4 → 3/6. Frostfang Lynx 4/3 → 4/5. Cave Bear Countdown 3 → 2 and 3/12 → 3/10. Web Spitter 3/8 → 4/7. Cave Troll Countdown 4 → 3 and 3/9 → 3/7. Crag Rhino Countdown 4 → 3 and 4/8 → 4/5. Frost Elk Matriarch Countdown 4 → 3 and 3/7 → 3/5. No Keyword changes. Each card is within ±10% of its Power Budget and in the Feral Countdown band ([10 — Card Concepts, 7](./10-card-concepts.md#7-feral-creature-cards)). The Wild Hunt list does not change, and its Countdown goes from 35 to 30. Wild Hunt is a Main Archetype. No other Archetype, Starter Deck or Stage Deck has these cards. | Wild Hunt failed its promotion (issue #68, 2.3): it was too strong against Vanguard, Tunnel Rats and Thornwatch, and too weak against Raiders. Wild Hunt played its Countdown 4 cards near Turn 7, and a Battle against Raiders lasted 13.6 Turns on average (17.5 to 18.1 against Vanguard and Thornwatch). Thus these cards had about 7 Turns against Raiders and about 11 against Vanguard, and their power counted more in the long Battles. A lower Countdown with less power brings them 1 Turn earlier against the rush and takes power from the long Battles. Each change is by hand, one card at a time, with a reason (the table below). After 11 of the 15 tries, each Main pair is in 45% to 55% (1000 seeds): Wild Hunt wins 54.4% against Vanguard, 45.5% against Raiders, 49.9% against Deathless Host, 46.0% against Tunnel Rats and 52.9% against Thornwatch. `sim:check` passes. With 3000 seeds, Wild Hunt wins 52.5% against Vanguard, 43.7% against Raiders and 45.4% against Tunnel Rats. The 3000-seed result does not decide the gate. The swap report: 22 of 40 cards pass (3.3, 3.4). |
+| 2026-10-15 | Retune for Ranged Unit Movement (issue [#96](https://github.com/rifandani/heynbord/issues/96), 2.3). Raiders: Frost Shards (C) in place of Frost Wave (U), 13 cards, Countdown 32. Tunnel Rats: a second Pinning Shot (C) in place of Warning Shot (C), 14 cards, Countdown 33. No card value changes. | A Ranged Unit now stops in the first empty Square from which it has a target in its Range. Then Raiders won 57.5% against Wild Hunt and 55.1% against Thornwatch, and Tunnel Rats won 56.1% against Wild Hunt and 56.6% against Deathless Host (1000 seeds). Now each of the 15 Main pairs is in 45% to 55%. The lists that were tried are in 2.3. |
 
 **Lists and values that were tried in the promotion (issue #68).** 1000 seeds, win rate of the Deck against the Main Archetypes at the time of its try: Vanguard / Raiders, then Deathless Host and Tunnel Rats when they were Main. A change is from the re-fit list of the Deck, unless the row names another list. Each list obeys the Deck rules of level 5. A scratch list had the changed cards at the end of the Deck, so its seeds dealt other Hands than the same list in `archetypes.ts` (2.3).
 

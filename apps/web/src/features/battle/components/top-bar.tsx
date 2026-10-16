@@ -79,7 +79,8 @@ const HandbookButton = () => {
  */
 const BattleLogButton = ({ battle }: { readonly battle: Battle }) => {
   const { tr } = useGameText();
-  if (!battle.hasBattleLog) {
+  // A Replay is always in the Battle Log, and it has no Live to go back to.
+  if (!battle.hasBattleLog || battle.watching) {
     return null;
   }
   const open = battle.log !== null;
@@ -125,14 +126,17 @@ const BattleControls = ({
       >
         {tr("battle.speedValue", { value: battle.speed })}
       </ToggleButton>
-      <GameButton
-        intent="ghost"
-        size="sm"
-        isDisabled={isIdle(session) || battle.held || battle.log !== null}
-        onPress={() => battle.skip()}
-      >
-        {tr("battle.skip")}
-      </GameButton>
+      {/* A Replay has no Live to Skip. */}
+      {battle.watching ? null : (
+        <GameButton
+          intent="ghost"
+          size="sm"
+          isDisabled={isIdle(session) || battle.held || battle.log !== null}
+          onPress={() => battle.skip()}
+        >
+          {tr("battle.skip")}
+        </GameButton>
+      )}
       <BattleLogButton battle={battle} />
       <ToggleButton
         isSelected={soundOn}

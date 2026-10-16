@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 import { getCard } from "../content/cards";
 import { getStarterDeck } from "../content/decks";
 import { getDungeon } from "../content/dungeons";
-import type { DungeonDefinition } from "../content/schema";
+import { getFloor } from "../content/floors";
+import type { DungeonDefinition, FloorDefinition } from "../content/schema";
 import { getStage } from "../content/stages";
 import {
   emptyBattle,
@@ -222,6 +223,64 @@ describe("createBattle with a Dungeon (GDD 8.4)", () => {
     const first = createBattle(dungeonSetup(3, dungeon));
     const again = createBattle(dungeonSetup(3, dungeon));
     expect(again).toEqual(first);
+  });
+});
+
+const floorSetup = (seed: number, floor: FloorDefinition) => {
+  const { stage: _, ...rest } = setup(seed);
+  return { ...rest, floor };
+};
+
+describe("createBattle with a Heynspire Floor (GDD 8.2, ADR-0010)", () => {
+  it("gives a Floor 4 open Lanes and 1 enemy Hero with a Front of all 4 Lanes, its HP, Class, Gear and Deck", () => {
+    const floor = getFloor(1);
+    const { state } = createBattle(floorSetup(7, floor));
+    expect(state).toMatchObject({
+      stageId: "floor-1",
+      lanes: 4,
+      closedLanes: [],
+    });
+    expect(heroOf(state, "player").front).toEqual([0, 1, 2, 3]);
+    expect(state.sides.enemy.heroes).toHaveLength(1);
+    const hero = heroOf(state, "enemy");
+    expect(hero).toMatchObject({
+      classId: floor.enemy.classId,
+      front: [0, 1, 2, 3],
+      bossRules: [],
+    });
+    expect(hero.maxHp).toBeGreaterThanOrEqual(floor.enemy.heroHp);
+    expect(
+      [...hero.hand, ...hero.deck].map((card) => card.cardId).toSorted()
+    ).toEqual(floor.enemy.deck.map((entry) => entry.cardId).toSorted());
+    expect(state.units).toEqual([]);
+  });
+
+  it("puts the Start Units of a Boss Floor on the Board, for its 1 enemy Hero", () => {
+    const floor = getFloor(10);
+    const { state } = createBattle(floorSetup(7, floor));
+    expect(floor.enemy.startUnits.length).toBeGreaterThan(0);
+    expect(
+      state.units.map((unit) => ({
+        cardId: unit.source._tag === "Card" ? unit.source.card.cardId : null,
+        hero: unit.hero,
+        lane: unit.lane,
+        position: unit.position,
+      }))
+    ).toEqual(
+      floor.enemy.startUnits.map((unit) => ({
+        cardId: unit.cardId,
+        hero: 0,
+        lane: unit.lane,
+        position: unit.position,
+      }))
+    );
+  });
+
+  it("starts the same Floor Battle for the same seed", () => {
+    const floor = getFloor(23);
+    expect(createBattle(floorSetup(3, floor))).toEqual(
+      createBattle(floorSetup(3, floor))
+    );
   });
 });
 

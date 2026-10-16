@@ -1,5 +1,7 @@
 # A Sweep uses Sweep Tickets and always wins
 
+> Partly superseded on 2026-10-16 by [ADR-0041](./0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md): the Sweep Ticket is now the Campaign Sweep Ticket, and a Dungeon win gives 1 Dungeon Sweep Ticket in place of 2 Sweep Tickets. Dungeons have a Dungeon Sweep, and the Player cannot start watched Auto-play. The Campaign Sweep keeps the rules of this ADR.
+
 Players want to farm the repeat-win rewards of a Stage (Economy 2.1) and not play or watch the same Battle again. We decided that the Player can **Sweep** a Stage when its best Stars are 3. Each **Sweep Ticket** gives one repeat-win reward at once, with no Battle, and a Sweep always wins. Each win that the Player plays (Stage, Dungeon or Floor) gives 2 Sweep Tickets. A Sweep never changes the Stars and gives no Tickets.
 
 The 3 Stars show that the Player can win the Stage easily, so a guaranteed win is fair, and a Sweep that sometimes loses feels wrong. The 3-Star gate also keeps the Stars as a record of the Player's own play: with the old gate ("a won Stage", GDD 4.12), an Auto-play win could give more Stars, and then the AI opened Star chests (and their Heynstones) for the Player. The Tickets keep a time cost on repeat wins, so the pacing of Economy section 4 stays near its targets. Tickets limit only the Sweep: the Player can always play a Battle, so they are not Energy (Pillar 1). Sweep Tickets are earn-only. The Bazaar never sells them, because a Battle skip is not a Convenience (ADR-0008).

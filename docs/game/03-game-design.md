@@ -151,6 +151,7 @@ The Battle ends at once when all the Heroes of a Side have 0 HP, also in the mid
 - A Unit never moves past its last Column (Column 12 for the player).
 - A Unit with **Wall** never moves, also when an effect gives it Speed or Charge (see 5.4).
 - A **Ranged** Unit does not move if an enemy target is in its Range at the start of its action (see 4.6).
+- A **Ranged** Unit that moves stops in the first empty Square from which it has a target in its Range (see 4.6), also when its Speed reaches farther. It moves through a friendly Unit in that Square, to the next empty Square. For example, a Unit with Speed 2 and Range 3 in Column 3, with an enemy Unit in Column 7, moves 1 Square to Column 4 and attacks.
 - A **Pivot** Unit does not move if an enemy Unit is directly behind it or next to it at the start of its action (see 4.6).
 - A Unit with Speed 0 never moves.
 - An Entangled Unit has Speed 0 during its next action.
@@ -281,15 +282,17 @@ Each Stage win gives 1 to 3 **Stars**:
 
 The game shows the best Star result for each Stage. The word "star" is only for Stages. Ranks use gems (see 5.3).
 
-### 4.12 Speed controls and Auto-play
+### 4.12 Speed controls and Sweeps
 
 - **Speed ×1 / ×2:** The player can change the animation speed at any time.
 - **Skip:** The player can skip the animations of the current Resolution Phase. The result is the same.
-- **Auto-play:** The AI plays the player's cards. Watched Auto-play is available on Dungeons that the player has already won. The player can set a number of repeats (1 to 10). Repeats stop at the first loss.
-- **Sweep:** On a Stage with 3 best Stars, the Stage Panel has a Sweep button next to Play, and it shows the Sweep Tickets of the player. The player selects a number of Tickets (1 to 10, and not more than the player has). Each Ticket gives one repeat-win reward of the Stage at once (see 8.1), with no Battle, and the Sweep Result shows. A Sweep always wins. The Class of the Active Deck sets the Stage card pool. A Sweep never changes the Stars, gives no Sweep Tickets and does not count for an Achievement. A Hint tells the player about the Sweep (see 8.3), and the Handbook has an Entry for it ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)).
-- **Sweep Tickets:** Each win that the player plays (a Stage, a Dungeon or a Floor) gives 2 Sweep Tickets. The Battle result shows them. A loss, an Abandon and a watched Auto-play win give none. Sweep Tickets are earn-only: the Bazaar never sells them, and they never change into Coin, Essence or Heynstones. There is no maximum.
+- **Sweep:** A Sweep uses Tickets of one type on a Stage or a Dungeon. The player selects a number of Tickets (1 to 10, and not more than the player has). Each Ticket gives one repeat-win reward at once, with no Battle, and the Sweep Result shows. A Sweep always wins. The Class of the Active Deck sets the card pool. A Sweep gives no Tickets and does not count for an Achievement. The Handbook Sweep Entry tells about the 2 kinds of Sweep ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md), [ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)):
+  - **Campaign Sweep:** On a Stage with 3 best Stars, the Stage Panel has a Sweep button next to Fight, and it shows the Campaign Sweep Tickets of the player. Each Campaign Sweep Ticket gives one repeat-win reward of the Stage (see 8.1). The card pool is the Stage card pool. A Campaign Sweep never changes the Stars. A Hint tells the player about it (see 8.3).
+  - **Dungeon Sweep:** On a Dungeon with 1 or more wins, the rail of the Dungeons screen has a Sweep row and a Sweep button next to Fight. The Sweep row shows the Dungeon Sweep Tickets of the player and the Ticket control. Each Dungeon Sweep Ticket gives one repeat-win reward of the Dungeon (see 8.4 and Economy 2.4): Coin, XP (Essence in Dungeon 3), the chance of a card from the Dungeon card pool, and the Forge Stone rolls, with the Legendary roll of Dungeon 3. A Dungeon Sweep never adds to the wins of the Dungeon. A Hint tells the player about it (see 8.3).
+- **Sweep Tickets:** There are 2 types of Ticket. A Stage win and a Floor win give 2 **Campaign Sweep Tickets**. A Dungeon win gives 1 **Dungeon Sweep Ticket** and no Campaign Sweep Tickets. A loss and an Abandon give none. The Battle result shows the Tickets of the correct type. The Stage Panel shows the Campaign Sweep Tickets, and the Dungeons screen shows the Dungeon Sweep Tickets. Both types are earn-only: the Bazaar never sells them, they never change into each other, and they never change into Coin, Essence or Heynstones. There is no maximum.
+- **Auto-play:** The AI plays the player's cards with the logic of section 9. The player cannot start Auto-play. Only the tests, QA and the simulations use it. The Dungeon Sweep replaced watched Auto-play on Dungeons ([ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).
 - **Battle Log:** In a Solo Battle, the player can look back at the past moments of the current Battle (see 11.2). The Battle Log is view only. It never changes the Battle and has no undo. It shows only what the player saw at that moment: played cards and roll results, but not the enemy Hand, the enemy draws or the roll values. It goes away when the player leaves the Battle. It is not available in the Tutorial. A Replay (the seed, the Decks and the Commands, BAT-14) is a different thing.
-- Speed, Skip and Auto-play never change the result, because the rules are deterministic.
+- Speed and Skip never change the result, because the rules are deterministic.
 
 ## 5. Cards
 
@@ -462,7 +465,7 @@ The Campaign is tuned for these Decks ([14 — Campaign Stages](./14-campaign-st
 
 ### 7.1 Player level
 
-- The player gets XP from each Battle. A loss gives 25% of the XP of a win.
+- The player gets XP from each Battle. A loss gives up to 25% of the XP of a win: only the share of the total enemy Hero HP that the enemy Heroes lost (Economy 2.1, [ADR-0043](../adr/0043-a-loss-gives-only-the-share-of-the-lost-enemy-hero-hp.md)).
 - The XP that each level needs is in the XP table ([Economy 1.2](./07-economy.md#12-player-levels)).
 - The maximum player level in v1 is 30.
 - Each level gives +1 Hero HP and changes the Deck size limits.
@@ -485,7 +488,7 @@ Each unlock shows a Hint (see 8.3).
 
 - The Collection is all the card copies that the player owns. It has no screen of its own: the Deck builder shows it (see 6), with the copies of each card in each Rank.
 - A card is **Discovered** after the player owns it one time. The player can Craft only Discovered cards.
-- There is no Inventory screen. Each thing that the player owns shows on the screen where the player uses it: the cards in the Deck builder and the Workshop, the balances on the Balance Plate, the Unopened Packs on the Packs screen, the Gear and the Forge Stones on the Hero screen and the Sweep Tickets on the Stage Panel.
+- There is no Inventory screen. Each thing that the player owns shows on the screen where the player uses it: the cards in the Deck builder and the Workshop, the balances on the Balance Plate, the Unopened Packs on the Packs screen, the Gear and the Forge Stones on the Hero screen, the Campaign Sweep Tickets on the Stage Panel and the Dungeon Sweep Tickets on the Dungeons screen.
 
 ### 7.3 Gear
 
@@ -529,8 +532,8 @@ The [Economy](./07-economy.md) document gives the costs.
 - Each Stage defines: enemy Hero, enemy Deck, enemy Hero HP, Closed Lanes, Units at the start, special rules, and rewards.
 - The design of each Stage is in [14 — Campaign Stages](./14-campaign-stages.md).
 - **First win reward:** a fixed card, Coin and XP.
-- **Repeat win reward:** Coin, XP, and a chance of a card from the Stage card pool. Each Sweep Ticket (see 4.12) gives this reward.
-- **Star chests:** Each Region gives a chest at 10, 20 and 30 Stars. The player claims a chest with a tap when the Region has its Stars. Its Coin, Essence and Heynstones go to the balances at once. Its Pack becomes an Unopened Pack, which the player opens on the Packs screen. For a Race Pack, the player selects the Race there.
+- **Repeat win reward:** Coin, XP, and a chance of a card from the Stage card pool. Each Campaign Sweep Ticket (see 4.12) gives this reward.
+- **Star chests:** Each Region gives a chest at 10, 20 and 30 Stars. The player claims a chest with a tap when the Region has its Stars. Its Coin and Essence go to the balances at once. Its Pack becomes an Unopened Pack, which the player opens on the Packs screen. For a Race Pack, the player selects the Race there.
 
 The enemy Hero of a **Boss Stage** is a **Boss**: an enemy Hero with a name and special rules. Boss Stages have special rules. For example:
 
@@ -540,12 +543,31 @@ The enemy Hero of a **Boss Stage** is a **Boss**: an enemy Hero with a name and 
 
 ### 8.2 Heynspire (draft name)
 
-- Heynspire unlocks after the player wins the Region 5 Boss Stage.
-- It has 50 **Floors**. The player climbs one Floor at a time.
-- The enemies come from the Campaign card pool with higher Ranks and higher Hero HP on each Floor.
-- All Floors use 4 Lanes. Each v1 Floor has 1 enemy Hero, with a Front of all 4 Lanes.
+- Heynspire unlocks with the first win of the Region 5 Boss Stage (Stage 5-10). It does not unlock at a player level.
+- It has 50 **Floors**. The player climbs one Floor at a time: the player fights only the **Current Floor**, the lowest Floor that the player has not won. After the win of Floor 50, Heynspire has no Current Floor.
+- **No replay.** A won Floor cannot be played again. It has no repeat-win reward and no Sweep, so a Floor win is always a first win (Economy 2.3).
+- All Floors use 4 Lanes and have no Closed Lanes. Each v1 Floor has 1 enemy Hero, with a Front of all 4 Lanes.
+- A pure function makes each Floor from a **Floor template** and a **strength curve** ([ADR-0042](../adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md)). Floor *n* is always the same Floor. There is no random content at run time.
+- **Floor templates.** 9 templates make the normal Floors. Floors 1 to 9 use templates 1 to 9, Floors 11 to 19 use them again, and so on, each time with more Hero HP. Each template has an enemy name, a Race theme, a Class and a Deck of 30 Base Rank copies. The cards come from the Campaign card pool (the cards in the enemy Decks of all Stages), with no Epic Skill Card.
+
+| Template | Floors | Enemy (draft name) | Class | Race theme |
+| --- | --- | --- | --- | --- |
+| 1 | 1, 11, 21, 31, 41 | Spire Warden Holt | Warrior | Human |
+| 2 | 2, 12, 22, 32, 42 | Emberchief Razka | Mage | Orc |
+| 3 | 3, 13, 23, 33, 43 | Trapmaster Krink | Ranger | Goblin |
+| 4 | 4, 14, 24, 34, 44 | Grove Sister Myrra | Priest | Elf |
+| 5 | 5, 15, 25, 35, 45 | Beastmaster Brokk | Ranger | Feral |
+| 6 | 6, 16, 26, 36, 46 | Bonecaptain Rusk | Warrior | Undead |
+| 7 | 7, 17, 27, 37, 47 | Lightbearer Anselm | Priest | Human and Elf |
+| 8 | 8, 18, 28, 38, 48 | Warboss Gnash | Warrior | Orc and Goblin |
+| 9 | 9, 19, 29, 39, 49 | Rimecaller Isolde | Mage | Undead and Feral |
+
+- **Boss Floors.** Each 10th Floor is a **Boss Floor**. The 5 Campaign Bosses come back in Region order: Floor 10 is Baron Brassbelly, Floor 20 is Boss Snikkit, Floor 30 is Lady Glimmerbough, Floor 40 is the Old Bramble and Floor 50 is Queen Marrow. Each Boss has a new Floor Deck, and it keeps the Class and the Start Units of its Boss Stage. A Boss Floor has no Boss Rules.
+- **Strength curve.** For the Floor number, the curve gives the Rank steps, the Hero HP, the Gear and the Deck size (the largest at the Recommended level). One Rank step on all copies changes a win rate by too much, so the curve gives 1 Rank step to the first copies of a template Deck only. Each later group of 10 Floors adds Hero HP. No copy goes above Legendary.
+- **Targets.** The difficulty does not go up. A normal Floor has the target of a normal Stage (60% to 80%), and a Boss Floor has the target of a Boss Stage (30% to 50%), at its Recommended level, with no Gear and with the Expected Gear (see 13, step 6). The Recommended level and the Expected Gear come from the First-try Path: all Stages, then the earlier Floors.
 - Each Floor gives a reward for the first win. Each 10th Floor gives an earn-only Cosmetic, Essence and Heynstones.
 - v1 has no weekly reset, because a local clock is not reliable. Online versions can add a weekly reset.
+- The design of each Floor and the simulation results are in [14 — Campaign Stages, section 8](./14-campaign-stages.md#8-heynspire).
 
 ### 8.3 Tutorial and Hints
 
@@ -577,9 +599,10 @@ A **Hint** is a one-line tip. It shows one time, when the player first meets som
 | Gear | Player level 5 |
 | Craft | Player level 6 |
 | Dungeons | Player level 10 |
-| Heynspire | The win of the Region 5 Boss Stage |
+| Heynspire | The first time that the Town shows after the first win of the Region 5 Boss Stage, near the tower: "Heynspire is open. Climb its 50 Floors one at a time. Each Floor gives its reward one time." |
 | Battle Log | The first loss of a Stage after the Tutorial, on the result screen: "Open the Battle Log to see what happened." |
-| Sweep | The first time that the Stage Panel shows a Stage with 3 best Stars, near the Sweep button: "Use Sweep Tickets to get the rewards of this Stage at once." |
+| Campaign Sweep | The first time that the Stage Panel shows a Stage with 3 best Stars, near the Sweep button: "Use Campaign Sweep Tickets to get the rewards of this Stage at once." |
+| Dungeon Sweep | The first time that the Dungeons screen shows a Dungeon with 1 or more wins, near the Sweep button: "Use Dungeon Sweep Tickets to get the rewards of this Dungeon at once." |
 
 ### 8.4 Dungeons
 
@@ -590,9 +613,9 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - Each Boss needs at least 1 Lane. Dungeons always use 4 Lanes, so a Dungeon can have 1 to 4 Bosses. v1 Dungeons have 2 or 3 Bosses.
 - Each Dungeon defines: the Bosses, the Front of each Boss, the Deck, Hero HP, Class and Gear of each Boss, Closed Lanes, Units at the start, the Boss Rules of each Boss, and rewards.
 - A **Boss Rule** activates automatically, one time, when the HP of its Boss goes to or below a set percentage. Its effect is Countdown −X on the Cards with the highest Countdown in that Boss's Hand, a Summon into that Boss's Front, or a Draw. The Dungeons screen shows the Boss Rules, and the HP plate has a marker at each threshold ([ADR-0040](../adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)).
-- The player can play a Dungeon again after a win.
-- **First win reward** and **repeat win reward:** the same structure as Stages (see 8.1). The [Economy](./07-economy.md) document gives the values.
-- A Dungeon win gives no Stars.
+- The player can play a Dungeon again after a win, or do a Dungeon Sweep of it (see 4.12).
+- **First win reward** and **repeat win reward:** the same structure as Stages (see 8.1). The [Economy](./07-economy.md) document gives the values. Each Dungeon Sweep Ticket gives the repeat win reward.
+- A Dungeon win gives no Stars. It gives 1 Dungeon Sweep Ticket and no Campaign Sweep Tickets (see 4.12).
 
 | No. | Unlock | Bosses | Lanes | Fronts |
 | --- | --- | --- | --- | --- |
@@ -611,6 +634,21 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | --- | --- | --- | --- | --- |
 | Foreman Gritjaw, the Orc foreman of the mine, with his Goblin crew | Lanes 1 and 2 | Warrior | 24 | At 50% HP: Summon a Mesa Pit Fighter (Rare) in Lane 2, Column 11. |
 | Rootwarden Sylla, the Elf warden of the roots, with the Goblins that she hired | Lanes 3 and 4 | Ranger | 24 | At 50% HP: Countdown −2 on the 2 cards with the highest Countdown in her Hand. |
+
+**Dungeon 2: The Rimebarrow** (draft names). A frozen grave mound where the Hollow Marches meet the cold hills. It teaches Fronts of different sizes: the Player can hit the wide Boss in 3 Lanes, but the narrow Boss only in Lane 4. The first win gives Old Frostmaw (Epic). [14 — Campaign Stages, section 7.4](./14-campaign-stages.md#74-dungeon-2-the-rimebarrow) gives the Decks and the simulation results.
+
+| Boss | Front | Class | Hero HP | Start Units | Boss Rule |
+| --- | --- | --- | --- | --- | --- |
+| Abbot Knell, the Undead abbot of the barrow, with his choir of cheap Undead | Lanes 1, 2 and 3 | Priest | 22 | — | At 50% HP: Summon a Chattering Cohort (Uncommon) in Lane 2, Column 11. |
+| Seer Vell, the Elf frost seer who keeps the cold beasts | Lane 4 | Mage | 12 | Boulder Tortoise (Uncommon), Lane 4, Column 10 | At 50% HP: Summon an Avalanche Yeti (Rare) in Lane 4, Column 11. |
+
+**Dungeon 3: The Broken Vault** (draft names). An old Lanekeeper vault under the hills, where 3 Bosses of the Campaign join to take revenge on the Player. Each Boss keeps its Campaign bodyguard. The 3 Bosses have 3 different Classes: Baron Brassbelly is a Warrior in the Campaign, but a Ranger here. They have higher power than in the Campaign from Gear (25 on Weapon, Trinket and Banner) and Boss Rules. With 3 Hands, each Boss Deck has only 4 cards: the start Hand. The first win gives Sir Odo, the Last Taxman (Epic). [14 — Campaign Stages, section 7.5](./14-campaign-stages.md#75-dungeon-3-the-broken-vault) gives the Decks and the simulation results.
+
+| Boss | Front | Class | Hero HP | Start Units | Boss Rule |
+| --- | --- | --- | --- | --- | --- |
+| Baron Brassbelly, the bandit lord of Hearthvale | Lane 1 | Ranger | 20 | Shieldbearer (Epic), Lane 1, Column 10 | At 50% HP: Summon a Gate Warden (Epic) in Lane 1, Column 11. |
+| The Old Bramble, the forest giant of the Thornwood | Lanes 2 and 3 | Warrior | 34 | Bramble Nest (Uncommon), Lane 2, Column 9 | At 50% HP: Summon a Mountain Colossus (Epic) in Lane 2, Column 11. |
+| Queen Marrow, the ruler of the Undead | Lane 4 | Mage | 20 | Bone Rampart (Epic), Lane 4, Column 9 | At 50% HP: Summon a Winter Maw (Epic) in Lane 4, Column 11. |
 
 ## 9. Enemy AI
 
@@ -654,7 +692,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
   - The Hero damage estimate and the lethal check use the Hero whose Front holds each Lane. Thus a play that saves one Hero from lethal damage gets the bonus, also when the card comes from another Hero of the Side.
   - Sabotage uses the Hand of the enemy Hero whose Front holds the Lane of the summon. Skill Card damage to an enemy Hero uses the HP of the Hero that it hits, and damage that makes that Hero Defeated always wins.
   - The AI does not see the Hand of any Hero of the other Side. It does not plan around Boss Rule HP thresholds ([ADR-0040](../adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)).
-- Auto-play uses the same AI for the player's side.
+- Auto-play uses the same AI for the player's side. Only the tests, QA and the simulations use Auto-play (see 4.12).
 
 ## 10. Achievements, Cosmetics and the Bazaar
 
@@ -677,10 +715,10 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Screen | Content |
 | --- | --- |
 | Title | Start, Continue, Settings, Language |
-| **Town** | The first screen of the game. A layered 2D painting of a town. The Player selects a Building to open a screen. The Town Gate, the Card shop and the Workshop can be selected ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). |
+| **Town** | The first screen of the game. A 2D painting of a town. The Player selects a Building to open a screen. The Town Gate, the Card shop and the Workshop can be selected ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). |
 | **Campaign** | The Region Map of one Region, with its Stage Markers, Stars and Star chests (see 11.5) |
-| Heynspire | Floor list, current Floor, rewards |
-| Dungeons | Dungeon list, unlock levels, Bosses, rewards |
+| Heynspire | Floor rail (5 Flights of 10 Floors), Current Floor, Floor Panel with rewards |
+| Dungeons | Dungeon list, unlock levels, Bosses, rewards, the Dungeon Sweep Tickets and the Dungeon Sweep (see 4.12) |
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
 | Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons and a locked ribbon that buys the next Deck slot, all cards with filters (see 6), the Countdown curve, validation, Auto-fill |
 | Workshop | The Discovered cards with the filters of the Deck builder, and a Rank panel for the selected card: Combine, Extract, Craft and the path to Legendary (see 7.4) |
@@ -735,12 +773,12 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 
 ### 11.4 Town
 
-The Town is the first screen of the game. It is a layered 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). The art brief and the image prompts are in [11 — Town Concepts](./11-town-concepts.md). Each screen of 11.1 except Title, Settings and the Handbook has a Building:
+The Town is the first screen of the game. It is a 2D painting ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). The art brief and the image prompts are in [11 — Town Concepts](./11-town-concepts.md). Each screen of 11.1 except Title, Settings and the Handbook has a Building:
 
 | Screen | Building |
 | --- | --- |
 | Campaign | **Town Gate**: a large gate with a road that goes out of the Town to the Regions |
-| Heynspire | A tall tower on a hill at the back |
+| Heynspire | **Heynspire tower**: a white castle with a tall tower on the hill at the back |
 | Dungeons | A cave or ruin at the edge of the Town |
 | Workshop | A workshop with a chimney and smoke |
 | Bazaar | A market with colored tents |
@@ -749,11 +787,11 @@ The Town is the first screen of the game. It is a layered 2D painting ([web ADR-
 | Hero | A barracks with a training yard |
 | Achievements | A hall of banners |
 
-- All Buildings are in the painting from v1. A Building with no screen yet is only decoration: no label, no hover, and the Player cannot select it. The Town Gate (Campaign), the Card shop (Packs) and the Workshop can be selected. The Card shop opens at Player level 2, and the Workshop at level 3 (see 7.1).
-- The painting fills the screen and crops its edges. The label of each selectable Building, and the part of the Building under its label, stay in a center safe area that every landscape aspect shows. The Workshop is wider than its label: a 4:3 screen crops its right part. Decoration Buildings can be near the edges.
+- All Buildings are in the painting from v1. A Building with no screen yet is only decoration: no label, no hover, and the Player cannot select it. The Town Gate (Campaign), the Card shop (Packs), the Workshop, the Barracks (Hero), the Dungeons cave and the Heynspire tower can be selected. The Card shop opens at Player level 2, the Workshop at level 3, the Barracks at level 5 and the Dungeons cave at level 10 (see 7.1). The Heynspire tower opens with the first win of Stage 5-10, not at a level (8.2): until then, its Lock Plate shows "5-10" and a crown, and its tooltip says "Win Marrow Castle (5-10) to open".
+- The painting fills the screen and crops its edges. The label of each selectable Building, and the part of the Building under its label, stay in a center safe area that every landscape aspect shows. The Workshop is wider than its label: a 4:3 screen crops its right part. Decoration Buildings can be near the edges. The Dungeons cave is the one exception: it is at the right edge, so a narrow screen crops it and its label. The Dungeons shortcut opens the Dungeons screen on all screens, and the Dungeons Hint points at the shortcut when the screen crops the cave.
 - Small ambient motion: clouds, chimney smoke, flags and water. The Town Gate has a soft pulse of light until the end of the Tutorial (the first win of Stage 1-1). Before the Profile exists, the pulse always shows. A selection zooms a little toward the Building and fades to its screen. With reduced motion, all motion stops and the change is a plain fade.
 - The **Town Bar** is at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen of the table above, and a Town shortcut at its left end. The Deck shortcut opens the Deck builder dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. A change applies at once, so the dialog has no Save button. Esc, the close button and a click outside the dialog close it. The Deck builder is a dialog and has no Building. A shortcut to a screen that does not exist yet is disabled, with a lock and the tooltip "Opens later". A disabled shortcut can get keyboard focus, a screen reader reads its name and "opens later", and focus, hover and long press show the tooltip. A shortcut to a screen that the Player level has not unlocked yet (see 7.1) has the same lock, with the tooltip "Opens at level N", and a screen reader reads its name and "opens at level N". On the Town painting, the Building of that screen cannot be selected, and a small lock plate with the same tooltip replaces its name label. When the Player gets the level, the level Hint shows (see 8.3) and the lock goes away. On desktop, each shortcut has an icon and a label. On a phone, it has an icon only, and long press shows its name. The Handbook shortcut is the last shortcut, between the Bazaar shortcut and the Settings button. The Town, the Handbook and Settings have no Building. Like the Deck shortcut, the Handbook shortcut opens a dialog over the current screen, so it has no current state and no lock, and its icon stays lifted while the dialog is open. The Settings button is at its right end, apart from the shortcuts. It opens the Settings dialog in the center of the screen, over the current screen. The current screen stays behind it, dim. The Settings dialog has the language and the sound, and later the other options of 11.1. A change applies at once. Esc, the close button and a click outside the dialog close it, and the Player stays on the same screen. The Town Bar has no separate language and sound buttons.
-- The game is one route ([web ADR-0006](../../apps/web/docs/adr/0006-the-game-is-one-route.md)). The Town shortcut goes back to the Town, and Esc does the same. The Battle result shows the Coin of the result (Economy 2.1) and has "Play Again" and "Back to Campaign". It also shows the XP of the result on a bar, "Level up! Level N" when the Player gets a level, and the card that the Player won, with a "New" ribbon if it is not Discovered. It does not tell the unlocks of the new level: the level Hint tells them in the Town (see 8.3). The rewards go into the Profile when the result shows, so that a page load on the result does not lose them. A Battle that is not finished when the page loads again gives no result: no loss, no rewards, and it is not an Abandon. To leave a Battle is an Abandon, with a confirm dialog. The browser Back button leaves the game. A reload opens the Town.
+- The game is one route ([web ADR-0006](../../apps/web/docs/adr/0006-the-game-is-one-route.md)). The Town shortcut goes back to the Town, and Esc does the same, but not while a dialog is open: then Esc is for the dialog. The Battle result shows the Coin of the result (Economy 2.1) and has "Play Again" and "Back to Campaign". The result of a Dungeon Battle has no Stars, shows the rewards of Economy 2.4, and has "Back to Dungeons" in place of "Back to Campaign". It also shows the XP of the result on a bar, "Level up! Level N" when the Player gets a level, and the card that the Player won, with a "New" ribbon if it is not Discovered. It does not tell the unlocks of the new level: the level Hint tells them in the Town (see 8.3). The rewards go into the Profile when the result shows, so that a page load on the result does not lose them. A Battle that is not finished when the page loads again gives no result: no loss, no rewards, and it is not an Abandon. To leave a Battle is an Abandon, with a confirm dialog. The browser Back button leaves the game. A reload opens the Town.
 
 ### 11.5 Campaign
 
@@ -827,7 +865,7 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - The swap rule (±5 points, 1000 seeds) stays the true check. If the content test and the sim do not agree, the sim wins. When a card fails the sim: first check the Hold Rule, and fix the AI if it wastes the card. Then change the rate of an effect kind if many cards of that kind fail in the same direction. Change the values of one card only if it is the only one.
 4. Run headless simulations with the rules package: thousands of AI-against-AI Battles for each **Archetype** (a reference Deck for one style of play). Use `bun run sim matchup` in `packages/rules`. The Archetypes and the results are in [08 — Archetypes](./08-archetypes.md).
 5. Check each Archetype's win rate in each **Matchup**. The target is 45% to 55% against the other Archetypes.
-6. Check Stage difficulty with `bun run sim stage`, and Dungeon difficulty with `bun run sim dungeon`. The results are in [14 — Campaign Stages](./14-campaign-stages.md). The target win rate for a new player Deck on the first try is 60% to 80% for normal Stages and 30% to 50% for Boss Stages and Dungeons. The first Stages of Region 1 make a ramp: Stage 1-1 (the Tutorial) ≥ 95%, Stage 1-2 ≥ 85%, Stage 1-3 ≥ 75%. Each Stage must hit its target with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). For a Dungeon, use a Deck that is typical at its unlock level.
+6. Check Stage difficulty with `bun run sim stage`, Dungeon difficulty with `bun run sim dungeon`, and Heynspire Floor difficulty with `bun run sim floor`. The results are in [14 — Campaign Stages](./14-campaign-stages.md). The target win rate for a new player Deck on the first try is 60% to 80% for normal Stages and normal Floors, and 30% to 50% for Boss Stages, Boss Floors and Dungeons. The first Stages of Region 1 make a ramp: Stage 1-1 (the Tutorial) ≥ 95%, Stage 1-2 ≥ 85%, Stage 1-3 ≥ 75%. Each Stage and each Floor must hit its target with no Gear and with the Expected Gear ([ADR-0034](../adr/0034-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md), [ADR-0042](../adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md)). For a Dungeon, use a Deck that is typical at its unlock level.
 
 ## 14. Items for later versions
 

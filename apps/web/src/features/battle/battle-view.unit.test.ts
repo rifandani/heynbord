@@ -1301,7 +1301,20 @@ describe("the Entangled view", () => {
     expect(entangled.units[0]?.entangled).toBe(true);
   });
 
-  it("ends Entangled with the next action of the Unit: an attack or a skip", () => {
+  it("ends Entangled with its fade event or a skip of the Unit", () => {
+    const faded = applyEvent(
+      entangled,
+      BattleEvent.EntangleFaded({ unitId: 7 })
+    );
+    expect(faded.units[0]?.entangled).toBe(false);
+    const skipped = applyEvent(
+      entangled,
+      BattleEvent.UnitSkipped({ unitId: 7 })
+    );
+    expect(skipped.units[0]?.entangled).toBe(false);
+  });
+
+  it("keeps Entangled after an attack and at the end of a Turn: an Entangle from First Strike stays for the next action", () => {
     const attacked = applyEvent(
       entangled,
       BattleEvent.UnitAttacked({
@@ -1310,25 +1323,11 @@ describe("the Entangled view", () => {
         ranged: false,
       })
     );
-    expect(attacked.units[0]?.entangled).toBe(false);
-    const skipped = applyEvent(
-      entangled,
-      BattleEvent.UnitSkipped({ unitId: 7 })
-    );
-    expect(skipped.units[0]?.entangled).toBe(false);
-  });
-
-  it("ends Entangled at the end of the owner's Turn, also for a Unit with no action", () => {
-    const otherSide = applyEvent(
-      entangled,
-      BattleEvent.TurnEnded({ side: "player" })
-    );
-    expect(otherSide.units[0]?.entangled).toBe(true);
-    const ownSide = applyEvent(
-      entangled,
-      BattleEvent.TurnEnded({ side: "enemy" })
-    );
-    expect(ownSide.units[0]?.entangled).toBe(false);
+    expect(attacked.units[0]?.entangled).toBe(true);
+    for (const side of ["player", "enemy"] as const) {
+      const ended = applyEvent(entangled, BattleEvent.TurnEnded({ side }));
+      expect(ended.units[0]?.entangled).toBe(true);
+    }
   });
 });
 

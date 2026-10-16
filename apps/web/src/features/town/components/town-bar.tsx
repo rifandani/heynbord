@@ -10,16 +10,17 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import { HandbookIcon } from "@/features/handbook/components/handbook-icon";
 import { useHandbook } from "@/features/handbook/use-handbook";
-import { playerLevelAtom } from "@/features/profile/profile.atoms";
 import { SettingsDialog } from "@/features/town/components/settings-dialog";
-import type { GameScreen, TownShortcut } from "@/features/town/town";
+import { useTownLockText } from "@/features/town/components/town-lock";
+import type { GameScreen, TownLock, TownShortcut } from "@/features/town/town";
 import {
   isLocked,
-  opensAtLevel,
   paintedIcon,
   TOWN_SHORTCUTS,
   shortcutImage,
+  townLock,
 } from "@/features/town/town";
+import { townProgressAtom } from "@/features/town/town.atoms";
 
 const LONG_PRESS_MS = 450;
 
@@ -175,32 +176,31 @@ const ShortcutFace = ({
 );
 
 /**
- * The text of a lock: "Opens at level N" for a screen that the Player level
- * has not unlocked, else "Opens later". `null` for an open shortcut.
+ * The text of a lock: "Opens at level N" or "Win Marrow Castle (5-10) to
+ * open" for a screen that the Player has not unlocked, else "Opens later".
+ * `null` for an open shortcut.
  */
-const useLockText = (locked: boolean, level: number | null) => {
+const useLockText = (locked: boolean, lock: TownLock | null) => {
   const { tr } = useGameText();
+  const text = useTownLockText();
   if (!locked) {
     return null;
   }
-  return level === null
-    ? tr("town.opensLater")
-    : tr("town.opensAtLevel", { level });
+  return lock === null ? tr("town.opensLater") : text.reason(lock);
 };
 
 /** The accessible name of a shortcut: its name, and its lock. */
 const useShortcutName = (
   name: string,
   locked: boolean,
-  level: number | null
+  lock: TownLock | null
 ) => {
   const { tr } = useGameText();
+  const text = useTownLockText();
   if (!locked) {
     return name;
   }
-  return level === null
-    ? tr("town.locked", { name })
-    : tr("town.lockedAtLevel", { name, level });
+  return lock === null ? tr("town.locked", { name }) : text.named(name, lock);
 };
 
 /**
@@ -229,11 +229,11 @@ const Shortcut = ({
   const handbook = useHandbook();
   const name = tr(`town.shortcuts.${shortcut.id}`);
   const { screen, dialog } = shortcut;
-  const playerLevel = useAtomValue(playerLevelAtom);
-  const locked = isLocked(shortcut, playerLevel);
-  const opensAt = opensAtLevel(shortcut, playerLevel);
-  const lockText = useLockText(locked, opensAt);
-  const accessibleName = useShortcutName(name, locked, opensAt);
+  const progress = useAtomValue(townProgressAtom);
+  const locked = isLocked(shortcut, progress);
+  const lock = townLock(shortcut, progress);
+  const lockText = useLockText(locked, lock);
+  const accessibleName = useShortcutName(name, locked, lock);
 
   const onPressStart = (event: PressEvent) => {
     longPressed.current = false;

@@ -7,6 +7,7 @@ import {
   BALANCE_PLATE_CORNER,
   coinWords,
   contains,
+  EDGE_BUILDINGS,
   overlaps,
   GROUND_LINE,
   isLocked,
@@ -18,7 +19,15 @@ import {
   shortcutImage,
   TOWN_SHORTCUTS,
   UNPAINTED_ICONS,
+  townLock,
 } from "@/features/town/town";
+import type { TownProgress } from "@/features/town/town";
+
+/** The progress of a Player at `level`, before or after the Heynspire unlock. */
+const at = (level: number, heynspireOpen = false): TownProgress => ({
+  level,
+  heynspireOpen,
+});
 
 const publicFile = (path: string) =>
   existsSync(fileURLToPath(new URL(`../../../public${path}`, import.meta.url)));
@@ -35,7 +44,9 @@ describe("safeArea", () => {
 
 describe("SELECTABLE_BUILDINGS", () => {
   it("keeps each label, and the part of its Building under it, in the safe area", () => {
-    for (const { id, rect, label } of SELECTABLE_BUILDINGS) {
+    for (const { id, rect, label } of SELECTABLE_BUILDINGS.filter(
+      (building) => !EDGE_BUILDINGS.has(building.id)
+    )) {
       expect(contains(safeArea(), label), id).toBe(true);
       expect(
         contains(safeArea(), { ...rect, x: label.x, width: label.width }),
@@ -51,25 +62,37 @@ describe("SELECTABLE_BUILDINGS", () => {
     }
   });
 
-  it("keeps the full Town Gate and Card shop in the safe area: only the Workshop and the Barracks are wider", () => {
+  it("keeps the full Town Gate and Card shop in the safe area: only the Workshop, the Barracks and the cave are wider", () => {
     expect(
       SELECTABLE_BUILDINGS.filter(
         (building) => !contains(safeArea(), building.rect)
       ).map((building) => building.id)
-    ).toEqual(["workshop", "barracks"]);
+    ).toEqual(["workshop", "barracks", "cave"]);
   });
 
-  it("gives each Building a screen of a Town Bar shortcut, and a layer file", () => {
+  it("puts only the Dungeons cave outside the safe area: its shortcut is the sure way in (GDD 11.4)", () => {
+    expect([...EDGE_BUILDINGS]).toEqual(["cave"]);
+    const cave = SELECTABLE_BUILDINGS.find(
+      (building) => building.id === "cave"
+    );
+    expect(cave && contains(safeArea(), cave.label)).toBe(false);
+    expect(
+      TOWN_SHORTCUTS.find((shortcut) => shortcut.screen === cave?.screen)?.id
+    ).toBe("dungeons");
+  });
+
+  it("gives each Building a screen of a Town Bar shortcut", () => {
     const screens = new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.screen));
     for (const building of SELECTABLE_BUILDINGS) {
       expect(screens.has(building.screen), building.id).toBe(true);
-      expect(publicFile(building.image), building.id).toBe(true);
     }
     expect(SELECTABLE_BUILDINGS.map((building) => building.screen)).toEqual([
       "campaign",
       "packs",
       "workshop",
       "hero",
+      "dungeons",
+      "heynspire",
     ]);
   });
 });
@@ -111,12 +134,20 @@ describe("overlaps", () => {
 });
 
 describe("TOWN_SHORTCUTS", () => {
-  it("opens the Town, the Campaign, the Workshop, the Packs and the Hero screen", () => {
+  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Workshop, the Packs and the Hero screen", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => shortcut.screen !== null).map(
         (shortcut) => shortcut.id
       )
-    ).toEqual(["town", "campaign", "workshop", "packs", "hero"]);
+    ).toEqual([
+      "town",
+      "campaign",
+      "heynspire",
+      "dungeons",
+      "workshop",
+      "packs",
+      "hero",
+    ]);
     expect(TOWN_SHORTCUTS[0]?.id).toBe("town");
     expect(new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.id)).size).toBe(
       TOWN_SHORTCUTS.length
@@ -137,7 +168,7 @@ describe("the Handbook shortcut", () => {
 
   it("at level 2, locks only the shortcuts to screens that do not exist yet", () => {
     expect(
-      TOWN_SHORTCUTS.filter((shortcut) => !isLocked(shortcut, 2)).map(
+      TOWN_SHORTCUTS.filter((shortcut) => !isLocked(shortcut, at(2))).map(
         (shortcut) => shortcut.id
       )
     ).toEqual(["town", "campaign", "deck", "packs", "handbook"]);
@@ -151,9 +182,9 @@ describe("level locks (GDD 11.4)", () => {
   );
 
   it("locks the Packs at level 1, and opens them at level 2", () => {
-    expect(packs && isLocked(packs, 1)).toBe(true);
+    expect(packs && isLocked(packs, at(1))).toBe(true);
     expect(packs && opensAtLevel(packs, 1)).toBe(2);
-    expect(packs && isLocked(packs, 2)).toBe(false);
+    expect(packs && isLocked(packs, at(2))).toBe(false);
     expect(packs && opensAtLevel(packs, 2)).toBeNull();
     expect(packs && opensAtLevel(packs, 30)).toBeNull();
   });
@@ -188,14 +219,61 @@ describe("level locks (GDD 11.4)", () => {
       expect(screen && opensAtLevel(screen, 4)).toBe(5);
       expect(screen && opensAtLevel(screen, 5)).toBeNull();
     }
-    expect(hero && isLocked(hero, 4)).toBe(true);
-    expect(hero && isLocked(hero, 5)).toBe(false);
+    expect(hero && isLocked(hero, at(4))).toBe(true);
+    expect(hero && isLocked(hero, at(5))).toBe(false);
+  });
+
+  it("locks the Dungeons screen and the cave until level 10 (Dungeon 1)", () => {
+    const dungeons = TOWN_SHORTCUTS.find(
+      (shortcut) => shortcut.id === "dungeons"
+    );
+    const cave = SELECTABLE_BUILDINGS.find((item) => item.id === "cave");
+    for (const screen of [dungeons, cave]) {
+      expect(screen && opensAtLevel(screen, 9)).toBe(10);
+      expect(screen && opensAtLevel(screen, 10)).toBeNull();
+    }
+    expect(dungeons && isLocked(dungeons, at(9))).toBe(true);
+    expect(dungeons && isLocked(dungeons, at(10))).toBe(false);
   });
 
   it("gives no level to a screen that does not exist yet: it opens later", () => {
     const bazaar = TOWN_SHORTCUTS.find((shortcut) => shortcut.id === "bazaar");
-    expect(bazaar && isLocked(bazaar, 30)).toBe(true);
+    expect(bazaar && isLocked(bazaar, at(30))).toBe(true);
     expect(bazaar && opensAtLevel(bazaar, 1)).toBeNull();
+  });
+});
+
+describe("the Heynspire lock (GDD 8.2)", () => {
+  const shortcut = TOWN_SHORTCUTS.find((item) => item.id === "heynspire");
+  const tower = SELECTABLE_BUILDINGS.find((item) => item.id === "heynspire");
+
+  it("locks the shortcut and the tower until the first win of Stage 5-10, at any level", () => {
+    for (const screen of [shortcut, tower]) {
+      expect(screen && townLock(screen, at(30))).toEqual({
+        kind: "stage",
+        stageId: "5-10",
+      });
+      expect(screen && townLock(screen, at(1, true))).toBeNull();
+      // It is not a level lock, so the Lock Plate never says "Level N".
+      expect(screen && opensAtLevel(screen, 1)).toBeNull();
+    }
+    expect(shortcut && isLocked(shortcut, at(30))).toBe(true);
+    expect(shortcut && isLocked(shortcut, at(30, true))).toBe(false);
+  });
+
+  it("gives a level lock to a level unlock, and no lock to an open screen", () => {
+    const packs = TOWN_SHORTCUTS.find((item) => item.id === "packs");
+    expect(packs && townLock(packs, at(1))).toEqual({
+      kind: "level",
+      level: 2,
+    });
+    expect(packs && townLock(packs, at(2))).toBeNull();
+    expect(townLock({}, at(1))).toBeNull();
+  });
+
+  it("puts the tower label on the castle walls, in the safe area that a 19.5:9 phone shows", () => {
+    expect(tower && contains(safeArea(), tower.label)).toBe(true);
+    expect(tower?.screen).toBe("heynspire");
   });
 });
 

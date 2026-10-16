@@ -74,11 +74,13 @@ describe("claimStarChest (Economy 2.2)", () => {
     expect(claim?.profile.essence).toBe(30);
   });
 
-  it("adds 150 Heynstones and no Pack from the 30-Star chest", () => {
+  it("adds Coin, Essence and a Royal Unopened Pack from the 30-Star chest", () => {
     const claim = claimStarChest(withStars(30), 1, 30);
-    expect(claim?.profile.heynstones).toBe(150);
+    expect(claim?.profile.coin).toBe(500);
     expect(claim?.profile.essence).toBe(100);
-    expect(claim?.profile.unopenedPacks).toEqual([]);
+    expect(claim?.profile.unopenedPacks).toEqual([
+      { pack: "royal", version: "all" },
+    ]);
   });
 
   it("keeps the claims of each Region apart", () => {

@@ -6,6 +6,7 @@ import {
   autoPlayTurn,
   canAct,
   canEndTurn,
+  devHitHero,
   endTurn,
   isIdle,
   newestSession,
@@ -224,5 +225,24 @@ describe("newestSession", () => {
       )
     );
     expect(newestSession(replayed, ahead)).toBe(replayed);
+  });
+});
+
+describe("devHitHero", () => {
+  it("queues the hit, and a hit to 0 HP queues the Defeat and the result", () => {
+    const session = start();
+    const enemy = { side: "enemy", hero: 0 } as const;
+    const hit = devHitHero(session, enemy, 3);
+    expect(hit.queue.map((event) => event._tag)).toEqual(["DamageDealt"]);
+    expect(hit.view).toBe(session.view);
+    const won = skip(devHitHero(hit, enemy, 9999));
+    expect(won.rules.result?.winner).toBe("player");
+    expect(won.view.result?.winner).toBe("player");
+    expect(isIdle(won)).toBe(true);
+  });
+
+  it("gives the same session when the Battle is finished", () => {
+    const won = skip(devHitHero(start(), { side: "enemy", hero: 0 }, 9999));
+    expect(devHitHero(won, { side: "enemy", hero: 0 }, 5)).toBe(won);
   });
 });

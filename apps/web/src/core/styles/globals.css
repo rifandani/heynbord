@@ -1014,6 +1014,144 @@
   }
 }
 
+/* The Workshop: an Epic or a Legendary copy trembles before it lifts off the
+   card, as if it holds its power in. */
+@keyframes workshop-extract-tremble {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  15% {
+    rotate: -1.6deg;
+  }
+  35% {
+    rotate: 1.8deg;
+  }
+  55% {
+    rotate: -1.4deg;
+  }
+  75% {
+    rotate: 1deg;
+  }
+}
+
+/* The Workshop: the copy of an Extract lifts off the panel card. */
+@keyframes workshop-extract-lift {
+  from {
+    translate: 0 0;
+    scale: 1;
+  }
+  to {
+    translate: 0 -0.55em;
+    scale: var(--lift-scale, 1.04);
+  }
+}
+
+/* The Workshop: the panel card goes dark while the copy of an Extract is off
+   it, then comes back. */
+@keyframes workshop-extract-shade {
+  0% {
+    opacity: 0;
+  }
+  25%,
+  75% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The Workshop: the copy melts from the bottom up. The mask is twice the card
+   height with a soft line in its middle, so it starts and ends past the card. */
+@keyframes workshop-extract-melt {
+  from {
+    mask-position: 0 -12%;
+    -webkit-mask-position: 0 -12%;
+  }
+  to {
+    mask-position: 0 112%;
+    -webkit-mask-position: 0 112%;
+  }
+}
+
+/* The Workshop: the bright melt line goes up the card with the mask. */
+@keyframes workshop-extract-line {
+  0% {
+    opacity: 0;
+    translate: 0 14.1em;
+  }
+  12%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 -1.5em;
+  }
+}
+
+/* The Workshop: an Essence drop flies to the Essence balance. Its X and Y
+   move on separate layers with different easings, so its path curves: it
+   rises out of the card first, then goes across. */
+@keyframes essence-fly-x {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: var(--fly-x) 0;
+  }
+}
+
+@keyframes essence-fly-y {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 var(--fly-y);
+  }
+}
+
+/* The Workshop: an Essence drop forms out of the melt line, then gets smaller
+   as it goes into the balance. */
+@keyframes essence-drop {
+  0% {
+    opacity: 0;
+    scale: 0.2;
+    rotate: -20deg;
+  }
+  18% {
+    opacity: 1;
+    scale: 1.2;
+  }
+  80% {
+    opacity: 1;
+    scale: 0.85;
+  }
+  100% {
+    opacity: 0;
+    scale: 0.45;
+    rotate: 10deg;
+  }
+}
+
+/* The Workshop: the Essence balance takes the drops in with a light that
+   comes up and fades. */
+@keyframes essence-catch {
+  0% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  20% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  100% {
+    opacity: 0;
+    scale: 1;
+  }
+}
+
 /* The Hero screen: a short gold glow on the Gear plate of an upgrade. */
 @keyframes gear-glow {
   0% {
@@ -1380,18 +1518,18 @@
 
 /*
  * The Battle screen keeps the Board, the Hand Bar and End Turn free: toasts
- * show in a narrow column at the bottom left, above the Hand Bar.
+ * show in a narrow column at the bottom right, above End Turn.
  */
 body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
   --width: 210px !important;
-  left: max(0.5rem, env(safe-area-inset-left)) !important;
-  right: auto !important;
-  bottom: 168px !important;
+  right: max(0.5rem, env(safe-area-inset-right)) !important;
+  left: auto !important;
+  bottom: 212px !important;
   transform: none !important;
 }
 
 @media (max-height: 500px) {
   body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
-    bottom: 116px !important;
+    bottom: 168px !important;
   }
 }

@@ -16,6 +16,7 @@ import {
   dungeonReward,
 } from "../content/dungeons";
 import type { DungeonRewardDefinition } from "../content/dungeons";
+import { floorRecommendedLevels } from "../content/floors";
 import {
   addForgeStoneRewards,
   addForgeStones,
@@ -34,7 +35,11 @@ import {
   gearUpgradeForgeStone,
   MAX_GEAR_LEVEL,
 } from "../content/gear";
-import { floorFirstWinReward, HEYNSPIRE_FLOORS } from "../content/heynspire";
+import {
+  floorFirstWinReward,
+  HEYNSPIRE_FLOORS,
+  isBossFloor,
+} from "../content/heynspire";
 import {
   BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
   HEYNSTONE_SOURCES,
@@ -75,7 +80,7 @@ import { addCopies, discoveredCards } from "../profile/packs";
 import { combineCopies, craftCopy, extractCopy } from "../profile/workshop";
 import { randomInt } from "../random";
 import type { RandomCursor } from "../random";
-import { NORMAL_STAGE_TARGET, stageTarget } from "./simulate";
+import { floorTarget, NORMAL_STAGE_TARGET, stageTarget } from "./simulate";
 import type { WinRateTarget } from "./simulate";
 
 /** A fixed priority list for how a simulated Player spends (Economy 7.1). */
@@ -190,22 +195,6 @@ export const economyStages = (
     }
   }
   return result;
-};
-
-/**
- * The Recommended level of each Heynspire Floor: the First-try Path level
- * before it, after all Campaign Stages and the earlier Floors.
- */
-const floorLevels = (stages: readonly EconomyStage[]): readonly number[] => {
-  let xp = stages.reduce(
-    (total, stage) => total + stageXp(stage, "firstWin"),
-    0
-  );
-  return Array.from({ length: HEYNSPIRE_FLOORS }, (_, index) => {
-    const level = playerLevelForXp(xp);
-    xp += floorFirstWinReward(index + 1).xp;
-    return level;
-  });
 };
 
 /** The checkpoints of Economy 4, in order. */
@@ -811,6 +800,13 @@ export interface EconomyRun {
   readonly levelsAtStages: readonly number[];
   /** The Gear levels before the first try of each Campaign Stage, in order. */
   readonly gearAtStages: readonly GearLevels[];
+  /** The Gear levels before the first try of each Heynspire Floor, from Floor 1. */
+  readonly gearAtFloors: readonly GearLevels[];
+  /**
+   * The Gear levels when the Player gets to each Player level, before the
+   * first Battle at that level. Index 0 is level 1.
+   */
+  readonly gearAtLevels: readonly GearLevels[];
 }
 
 /** The highest Dungeon with XP that the Player level unlocks, or `null`. */
@@ -822,7 +818,7 @@ const unlockedDungeon = (level: number): DungeonRewardDefinition | null =>
 /** Simulates one Player from a new Profile to level 30 or the Battle cap. */
 export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   const stages = economyStages();
-  const floors = floorLevels(stages);
+  const floors = floorRecommendedLevels(stages);
   const maxBattles = options.maxBattles ?? MAX_BATTLES;
   const player = newEconomyPlayer(options.seed);
   const cursor: RandomCursor = { state: options.seed };
@@ -837,6 +833,13 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   };
   const levelsAtStages: number[] = [];
   const gearAtStages: GearLevels[] = [];
+  const gearAtFloors: GearLevels[] = [];
+  const gearAtLevels: GearLevels[] = [];
+  const recordLevels = () => {
+    while (gearAtLevels.length < levelOf(player)) {
+      gearAtLevels.push({ ...player.gear });
+    }
+  };
   const progress: RunProgress = {
     position: { kind: "campaign", stage: 0 },
     floorFails: 0,
@@ -898,12 +901,17 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   };
 
   const playFloor = (floor: number) => {
+    if (gearAtFloors.length === floor - 1) {
+      gearAtFloors.push({ ...player.gear });
+    }
     const reward = floorFirstWinReward(floor);
-    const won = wins(
-      winChance(middle(NORMAL_STAGE_TARGET), floors[floor - 1] ?? 1, player)
-    );
+    // A Boss Floor has the target of a Boss Stage (ADR-0042).
+    const target = floorTarget({ boss: isBossFloor(floor) });
+    const won = wins(winChance(middle(target), floors[floor - 1] ?? 1, player));
     if (!won) {
       // A loss gives 10% of the Coin and 25% of the XP of the win (GDD 7.1).
+      // The sim plays no Battle, so it gives the full loss reward, not the
+      // Loss share (ADR-0043): it is the most that a loss can give.
       giveReward(player, {
         coin: outcomeCoin(reward.coin, "loss"),
         xp: outcomeXp(reward.xp, "loss"),
@@ -961,6 +969,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   };
 
   while (levelOf(player) < MAX_PLAYER_LEVEL && player.battles < maxBattles) {
+    recordLevels();
     player.battles += 1;
     playOne();
     spend(player, options.playStyle);
@@ -973,6 +982,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       record("floor50");
     }
   }
+  recordLevels();
   if (levelOf(player) >= MAX_PLAYER_LEVEL) {
     record("level30");
   }
@@ -985,7 +995,36 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     stageLevels: stages.map((stage) => stage.recommendedLevel),
     levelsAtStages,
     gearAtStages,
+    gearAtFloors,
+    gearAtLevels,
   };
+};
+
+/**
+ * The First-try run of each Play Style: it wins each Battle, so Battle n is
+ * the first try of Stage n. After the Campaign, it goes on to level 30.
+ */
+const firstTryRuns = (): readonly EconomyRun[] =>
+  PLAY_STYLES.map((playStyle) =>
+    simulateEconomyRun({ playStyle, seed: 1, fixedWinChance: 1 })
+  );
+
+/**
+ * Of all First-try runs, the Gear of `pick` with the highest mean level. The
+ * first Play Style of PLAY_STYLES wins a tie. `null` when no run has it.
+ */
+const bestGear = (
+  runs: readonly EconomyRun[],
+  pick: (run: EconomyRun) => GearLevels | undefined
+): GearLevels | null => {
+  let best: GearLevels | null = null;
+  for (const run of runs) {
+    const gear = pick(run);
+    if (gear !== undefined && (best === null || meanOf(gear) > meanOf(best))) {
+      best = gear;
+    }
+  }
+  return best;
 };
 
 /**
@@ -996,33 +1035,46 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
  */
 export const expectedGear = (): ReadonlyMap<string, GearLevels> => {
   const stages = economyStages();
-  // The First-try run wins each Battle, so Battle n is the first try of Stage n.
-  const runs = PLAY_STYLES.map((playStyle) =>
-    simulateEconomyRun({
-      playStyle,
-      seed: 1,
-      fixedWinChance: 1,
-      maxBattles: stages.length,
-    })
-  );
+  const runs = firstTryRuns();
   return new Map(
     stages.map((stage, index) => {
-      let best: GearLevels | null = null;
-      for (const run of runs) {
-        const gear = run.gearAtStages[index];
-        if (
-          gear !== undefined &&
-          (best === null || meanOf(gear) > meanOf(best))
-        ) {
-          best = gear;
-        }
-      }
+      const best = bestGear(runs, (run) => run.gearAtStages[index]);
       if (best === null) {
         throw new Error(`No First-try run got to Stage ${stage.id}`);
       }
       return [stage.id, best];
     })
   );
+};
+
+/**
+ * The Expected Gear of each Heynspire Floor, from Floor 1 (ADR-0034,
+ * ADR-0042): the Gear levels before the first try of the Floor on the
+ * First-try Path, with the same choice of Play Style as `expectedGear`.
+ */
+export const expectedFloorGear = (): readonly GearLevels[] => {
+  const runs = firstTryRuns();
+  return Array.from({ length: HEYNSPIRE_FLOORS }, (_, index) => {
+    const best = bestGear(runs, (run) => run.gearAtFloors[index]);
+    if (best === null) {
+      throw new Error(`No First-try run got to Floor ${index + 1}`);
+    }
+    return best;
+  });
+};
+
+/**
+ * The Expected Gear at a Player level (ADR-0034): the Gear levels when the
+ * First-try Path gets to `level`, before its first Battle at that level. It
+ * is the Expected Gear of a Dungeon at its unlock level. After the Campaign,
+ * the First-try Path wins the Floors and then Dungeons until level 30.
+ */
+export const expectedGearAtLevel = (level: number): GearLevels => {
+  const best = bestGear(firstTryRuns(), (run) => run.gearAtLevels[level - 1]);
+  if (best === null) {
+    throw new Error(`No First-try run got to level ${level}`);
+  }
+  return best;
 };
 
 // ─── Report ──────────────────────────────────────────────────────────────────

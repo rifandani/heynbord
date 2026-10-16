@@ -429,6 +429,25 @@ describe("KeywordActivated: no effect, so no event", () => {
     expect(activations(events, "charge")).toEqual([]);
   });
 
+  it("Charge: a ranged Unit stops in Range where it stops without Charge", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "human.riverKnight",
+      owner: "player",
+      position: 0,
+      rank: "uncommon",
+      summonedTurn: 1,
+      bonusRange: 2,
+      bonusRangeTurns: 1,
+    });
+    dummy(state, "enemy", 5);
+    const events = resolve(state);
+    expect(eventsOfType(events, "UnitMoved")).toEqual([
+      expect.objectContaining({ from: 0, to: 2 }),
+    ]);
+    expect(activations(events, "charge")).toEqual([]);
+  });
+
   it("Charge: a Hobbled Unit has a maximum Speed of 1", () => {
     const state = emptyBattle();
     placeUnit(state, {

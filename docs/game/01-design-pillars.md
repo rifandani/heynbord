@@ -41,7 +41,7 @@ The player makes all decisions before the units act. Then the battle resolves by
 **This does not mean:**
 
 - The player has no skill expression. Deck building, timing and lane choice are the skill.
-- Battles must be slow. The player can use speed ×2, skip or auto-play.
+- Battles must be slow. The player can use speed ×2 or skip, and a Sweep gives the rewards of a repeat win with no Battle.
 
 **Test:** "Can the player explain why they won or lost after they watch the battle?" If no, make the rule or its presentation clearer.
 

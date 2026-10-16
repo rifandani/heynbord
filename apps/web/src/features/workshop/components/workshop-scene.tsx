@@ -1,3 +1,5 @@
+import { FittedPainting } from "@/features/town/components/fitted-painting";
+
 /** The painting of the Workshop inside (Town Concepts, section 10): 1536 × 1024. */
 const WORKSHOP_IMAGE = "/town/workshop-inside.webp";
 
@@ -16,20 +18,14 @@ const LIGHTS: readonly {
 ];
 
 /**
- * The painted Workshop, at the size that covers the screen (3:2, cropped at
- * the edges), as the Card shop of the Packs screen. The lantern and the forge
+ * The painted Workshop, in full above the Town Bar (`FittedPainting`), as
+ * the Card shop of the Packs screen. The lantern and the forge
  * breathe; with reduced motion they are still. Darker edges keep the plates
  * and the Town Bar easy to read.
  */
 export const WorkshopScene = () => (
   <div className="absolute inset-0 overflow-hidden bg-[#24170f]" aria-hidden>
-    <div className="absolute top-1/2 left-1/2 aspect-[3/2] w-[max(100vw,150dvh)] -translate-1/2">
-      <img
-        src={WORKSHOP_IMAGE}
-        alt=""
-        draggable={false}
-        className="absolute inset-0 size-full select-none"
-      />
+    <FittedPainting src={WORKSHOP_IMAGE} width={1536} height={1024}>
       {LIGHTS.map((light) => (
         <span
           key={`${light.x}:${light.y}`}
@@ -51,6 +47,6 @@ export const WorkshopScene = () => (
           ].join(", "),
         }}
       />
-    </div>
+    </FittedPainting>
   </div>
 );

@@ -109,15 +109,22 @@ export default {
     levelUp: "Naik level! Level {level}",
     cardWon: "Kartu didapat: {name}, {rank}.",
     newCardWon: "Kartu baru didapat: {name}, {rank}.",
-    sweepTicketsEarned: "+{count} Tiket Sweep",
-    sweepTicketsEarnedLabel: "Tiket Sweep didapat: {count}.",
-    forgeStonesEarned: "+{count} × Batu Tempa {tier}",
+    forgeStonesEarned: "+{count} Batu Tempa {tier}",
     forgeStonesEarnedLabel: "Batu Tempa didapat: {count} × {tier}.",
+    essenceEarned: "+{amount} Esensi",
+    essenceEarnedLabel: "Esensi didapat: {amount}.",
+    heynstonesEarned: "+{amount} Heynstone",
+    heynstonesEarnedLabel: "Heynstone didapat: {amount}.",
     retry: "Main Lagi",
     backToCampaign: "Kembali ke Kampanye",
+    backToDungeons: "Kembali ke Dungeon",
     abandon: {
       title: "Tinggalkan Pertempuran?",
       text: "Pertempuran ini tidak mencatat hasil. Kamu dapat memainkan Tahap ini lagi kapan saja.",
+      textDungeon:
+        "Pertempuran ini tidak mencatat hasil. Kamu dapat memainkan Dungeon ini lagi kapan saja.",
+      textFloor:
+        "Pertempuran ini tidak mencatat hasil. Kamu dapat melawan Lantai ini lagi kapan saja.",
       confirm: "Tinggalkan",
       stay: "Tetap",
     },
@@ -288,6 +295,19 @@ export default {
       nothing: "Tidak ada yang berubah.",
     },
   },
+  replay: {
+    badge: "Replay",
+    share: "Bagikan Replay",
+    shareTitle: "Replay Heynbord: {name}",
+    copied: "Tautan Replay disalin. Tempel untuk membagikan Pertempuran ini.",
+    copyFailed: "Tautan Replay tidak dapat disalin.",
+    banner: "Giliran {number} · {side} · Replay",
+    leave: "Keluar",
+    watchAgain: "Tonton lagi",
+    inBattle: "Tinggalkan Pertempuran untuk menonton Replay.",
+    broken: "Tautan Replay ini rusak.",
+    otherVersion: "Replay ini dari versi game yang berbeda.",
+  },
   town: {
     label: "Kota",
     bar: "Bilah Kota",
@@ -296,11 +316,15 @@ export default {
     opensAtLevel: "Dibuka pada level {level}",
     lockedAtLevel: "{name}, dibuka pada level {level}",
     levelPlate: "Level {level}",
+    opensWithStage: "Menangkan {stage} ({id}) untuk membuka",
+    lockedWithStage: "{name}, menangkan {stage} ({id}) untuk membuka",
     buildings: {
       townGate: "Kampanye",
       cardShop: "Paket",
       workshop: "Bengkel",
       barracks: "Pahlawan",
+      cave: "Dungeon",
+      heynspire: "Heynspire",
     },
     shortcuts: {
       town: "Kota",
@@ -372,7 +396,6 @@ export default {
       needed: "{count} Bintang lagi membuka peti ini.",
       claimedTitle: "Peti pada {stars} Bintang: diambil",
       essence: "+{amount} Esensi",
-      heynstones: "+{amount} Heynstone",
       pack: "1 {pack} menunggu di Toko kartu.",
       racePack:
         "1 {pack} menunggu di Toko kartu. Kamu memilih Rasnya saat membukanya.",
@@ -393,25 +416,36 @@ export default {
       deck: "Dek",
       fight: "Bertarung",
     },
-    sweep: {
-      label: "Sweep",
-      button: "Sweep ×{count}",
-      tickets: "Tiket: {count}",
-      ticketsLabel: "Kamu punya {count} Tiket Sweep.",
-      control: "Tiket Sweep yang dipakai",
-      fewer: "Pakai 1 Tiket lebih sedikit",
-      more: "Pakai 1 Tiket lebih banyak",
-      max: "Maks",
-      maxLabel: "Pakai Tiket terbanyak: {count}",
-      noTickets:
-        "Tiap kemenangan yang kamu mainkan memberi {count} Tiket Sweep.",
-      resultLabel: "Sweep {count} Tiket. Tiap Tiket adalah satu kemenangan.",
-      noCard: "Kali ini tidak ada kartu.",
-      cardCopies: "Kartu didapat: {name}, {rank}, {count} salinan.",
-      newCardCopies: "Kartu baru didapat: {name}, {rank}, {count} salinan.",
-      ticketsLeft: "Sisa Tiket Sweep: {count}",
-      again: "Sweep Lagi ×{count}",
-      close: "Tutup",
+  },
+  sweep: {
+    label: "Sweep",
+    button: "Sweep ×{count}",
+    tickets: "Tiket: {count}",
+    fewer: "Pakai 1 Tiket lebih sedikit",
+    more: "Pakai 1 Tiket lebih banyak",
+    max: "Maks",
+    maxLabel: "Pakai Tiket terbanyak: {count}",
+    resultLabel: "Sweep {count} Tiket. Tiap Tiket adalah satu kemenangan.",
+    noCard: "Kali ini tidak ada kartu.",
+    cardCopies: "Kartu didapat: {name}, {rank}, {count} salinan.",
+    newCardCopies: "Kartu baru didapat: {name}, {rank}, {count} salinan.",
+    again: "Sweep Lagi ×{count}",
+    close: "Tutup",
+    campaign: {
+      control: "Tiket Sweep Kampanye yang dipakai",
+      ticketsLabel: "Kamu punya {count} Tiket Sweep Kampanye.",
+      noTickets: "Tiap kemenangan Tahap memberi {count} Tiket Sweep Kampanye.",
+      ticketsLeft: "Sisa Tiket Sweep Kampanye: {count}",
+      earned: "+{count} Tiket Sweep Kampanye",
+      earnedLabel: "Tiket Sweep Kampanye didapat: {count}.",
+    },
+    dungeon: {
+      control: "Tiket Sweep Dungeon yang dipakai",
+      ticketsLabel: "Kamu punya {count} Tiket Sweep Dungeon.",
+      noTickets: "Tiap kemenangan Dungeon memberi {count} Tiket Sweep Dungeon.",
+      ticketsLeft: "Sisa Tiket Sweep Dungeon: {count}",
+      earned: "+{count} Tiket Sweep Dungeon",
+      earnedLabel: "Tiket Sweep Dungeon didapat: {count}.",
     },
   },
   settings: {
@@ -491,7 +525,14 @@ export default {
       "Buat sudah terbuka di Bengkel. Pakai Esensi untuk membuat salinan kartu yang sudah kamu temukan.",
     battleLog: "Buka Catatan Pertempuran untuk melihat apa yang terjadi.",
     gear: "Tiap tekan meningkatkan 1 Perlengkapan sebanyak 1 level, dengan Koin dan Batu Tempa. Level tidak pernah turun.",
-    sweep: "Pakai Tiket Sweep untuk langsung mendapat hadiah Tahap ini.",
+    sweep:
+      "Pakai Tiket Sweep Kampanye untuk langsung mendapat hadiah Tahap ini.",
+    dungeonSweep:
+      "Pakai Tiket Sweep Dungeon untuk langsung mendapat hadiah Dungeon ini.",
+    dungeons:
+      "Dungeon sudah terbuka. Di Dungeon, kamu melawan semua Bos-nya dalam satu Pertempuran di 4 Jalur.",
+    heynspire:
+      "Heynspire sudah terbuka. Daki 50 Lantainya satu per satu. Tiap Lantai memberi hadiahnya satu kali.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -533,6 +574,16 @@ export default {
       "Tidak ada kartu yang membuat Token ini pada Peringkat ini.",
     tokenFirstRank: "Lihat pada {rank}",
     rankTable: "N pada tiap Peringkat",
+    heynspireTable: {
+      title: "Hadiah tiap Lantai",
+      floorColumn: "Lantai",
+      rewardColumn: "Hadiah",
+      each: "Tiap Lantai, 1 sampai {last}",
+      to: "sampai",
+      xp: "{first} sampai {last} XP",
+      fifth: "Lantai {floors}",
+      boss: "Lantai Bos {floors}",
+    },
     starsTable: "Cara mendapat tiap Bintang",
     starsColumn: "Bintang",
     starsConditionColumn: "Syarat",
@@ -602,7 +653,7 @@ export default {
     playerXpRegionColumn: "Wilayah",
     playerXpWinColumn: "Menang ulang",
     playerXpFirstColumn: "Menang pertama (×2)",
-    playerXpLossColumn: "Kalah (25%)",
+    playerXpLossColumn: "Kalah (maks. 25%)",
     playerXpNote:
       "Menang pertama adalah kali pertama kamu menyelesaikan Tahap. Tahap Bos menggandakan semua nilai di tabel ini lagi.",
     playerGrowthLevelColumn: "Level",
@@ -695,22 +746,24 @@ export default {
       pack: "Paket",
       workshop: "Bengkel",
       gear: "Perlengkapan",
+      dungeon: "Dungeon",
+      heynspire: "Heynspire",
     },
     entries: {
       board:
-        "Papan adalah medan dari satu Pertempuran. Dalam satu Tahap, Papan punya {lanes} Jalur.\n\nPahlawanmu ada di ujung kiri Jalur, dan Pahlawan musuh ada di ujung kanan. Unit-mu bergerak dari kiri ke kanan, dan Unit musuh bergerak dari kanan ke kiri.",
+        "Papan adalah medan dari satu Pertempuran. Dalam satu Tahap, Papan punya {lanes} Jalur. Dalam satu Dungeon, Papan punya {dungeonLanes} Jalur.\n\nPahlawanmu ada di ujung kiri Jalur, dan Pahlawan musuh ada di ujung kanan. Unit-mu bergerak dari kiri ke kanan, dan Unit musuh bergerak dari kanan ke kiri.",
       lane: "Jalur adalah satu baris berisi {squares} Petak dari Pahlawanmu ke Pahlawan musuh.\n\nUnit selalu tetap di Jalurnya. Ia hanya bergerak di sepanjang Jalurnya.",
       square:
         "Petak adalah satu tempat di Jalur. Petak berisi 0 atau 1 Unit. Kamu memanggil Unit ke Petak yang kosong.",
       column:
         "Kolom adalah semua Petak dengan jarak yang sama dari satu Pahlawan, di semua Jalur.\n\nTiap Pihak menghitung Kolom dari Pahlawannya sendiri. Kolom 1-mu ada di sebelah Pahlawanmu, dan Kolom {squares}-mu ada di sebelah Pahlawan musuh.",
       front:
-        "Lini dari seorang Pahlawan adalah Jalur yang ada di depan Pahlawan itu. Dalam satu Tahap, tiap Pahlawan punya Lini berupa semua Jalur.\n\nUnit di ujung Jalurnya menyerang Pahlawan musuh dari Lini itu.",
+        "Lini dari seorang Pahlawan adalah Jalur yang ada di depan Pahlawan itu. Dalam satu Tahap, tiap Pahlawan punya Lini berupa semua Jalur. Dalam satu Dungeon, tiap Bos punya Lini berupa 1 Jalur atau lebih yang bersebelahan, dan tiap Jalur ada di satu Lini.\n\nUnit di ujung Jalurnya menyerang Pahlawan musuh dari Lini itu.",
       summonZone:
         "Zona Panggilmu adalah Kolom 1 sampai {columns}-mu, di semua Jalur. Kamu hanya bisa memanggil Unit ke Petak kosong di Zona Panggilmu.\n\nKamu juga bisa memanggil ke Petak yang ada di belakang Unit musuh. Unit jarak dekat hanya menyerang ke depan, jadi kedua Unit ini tidak bertarung.\n\nUnit dengan Tembok juga bisa masuk ke Kolom {next} dan {wall}-mu.",
       closedLane:
         "Di Jalur Tertutup, tidak ada Pihak yang bisa memanggil Unit, dan tidak ada Kartu Keahlian yang bisa menargetkan Petak.\n\nBeberapa Tahap punya Jalur Tertutup. Jalur itu terbuka pada nomor Giliran tertentu, atau tetap tertutup selama Pertempuran.",
-      side: "Pihak adalah salah satu dari dua tim dalam Pertempuran: Pihakmu dan Pihak musuh. Tiap Pihak punya Pahlawan.\n\nPihakmu ada di kiri Papan, dan Pihak musuh ada di kanan.",
+      side: "Pihak adalah salah satu dari dua tim dalam Pertempuran: Pihakmu dan Pihak musuh. Pihakmu punya 1 Pahlawan. Dalam satu Tahap, Pihak musuh punya 1 Pahlawan. Dalam satu Dungeon, Pihak musuh punya 1 Pahlawan untuk tiap Bos.\n\nPihakmu ada di kiri Papan, dan Pihak musuh ada di kanan.",
       hero: "Pahlawan adalah pemimpin dari satu Pihak. Ia berdiri di belakang Lini-nya, di luar Papan.\n\nPahlawan punya HP, Kelas, dan Dek. Saat HP-nya menjadi 0, Pahlawan itu Tumbang.",
       turn: "Dalam satu Giliran, satu Pihak memainkan kartunya, dan Unit-nya bertindak. Giliran punya 4 bagian: Fase Awal, Fase Main, Fase Resolusi, dan Fase Akhir.\n\nKamu mengambil Giliran pertama. Lalu musuh mengambil Giliran. Nomor Giliran naik 1 setelah kedua Pihak mengambil Giliran.",
       startPhase:
@@ -726,7 +779,7 @@ export default {
       routed:
         "Pihak Tercerai-berai saat tidak punya Unit di Papan dan tidak punya kartu di Tangan dan Dek. Pihak yang Tercerai-berai tidak bisa bertindak lagi, jadi ia kalah. Pemeriksaan ini terjadi di akhir setiap Giliran.\n\nAturan ini sama untukmu dan untuk musuh.",
       defeated:
-        "Pahlawan dengan 0 HP Tumbang. Saat semua Pahlawan dari satu Pihak Tumbang, Pihak itu kalah.\n\nDalam satu Tahap, tiap Pihak punya 1 Pahlawan, jadi Pahlawan dengan 0 HP mengakhiri Pertempuran.",
+        "Pahlawan dengan 0 HP Tumbang. Saat semua Pahlawan dari satu Pihak Tumbang, Pihak itu kalah.\n\nDalam satu Tahap, tiap Pihak punya 1 Pahlawan, jadi Pahlawan dengan 0 HP mengakhiri Pertempuran. Dalam satu Dungeon, Bos yang Tumbang keluar dari Pertempuran: Unit-nya meninggalkan Papan, dan Lini-nya pindah ke Bos terdekat yang belum Tumbang. Pertempuran berlanjut sampai semua Bos Tumbang, atau Pahlawanmu Tumbang.",
       creatureCard:
         "Kartu Makhluk memanggil Unit ke Papan. Kartu ini punya Ras, Serangan, dan HP. Beberapa Kartu Makhluk punya Kata Kunci.\n\nSaat Unit-nya mati, kartu itu masuk ke Kuburanmu.",
       skillCard:
@@ -794,16 +847,21 @@ export default {
       stars:
         "Saat menang di Tahap, kamu mendapat 1 sampai 3 Bintang. Kalah memberi 0 Bintang.\n\nTiap Bintang menambah syarat di atas yang sebelumnya. Setengah HP Pahlawan berarti Pahlawanmu punya minimal 50% dari HP maksimumnya saat Pertempuran berakhir.\n\nKampanye menyimpan Bintang terbaikmu untuk tiap Tahap. Total Bintang di satu Wilayah membuka peti pada 10, 20 dan 30 Bintang.",
       sweep:
-        "Saat Bintang terbaikmu di satu Tahap adalah 3, Panel Tahap-nya punya tombol Sweep. Satu Sweep memakai 1 sampai {max} Tiket Sweep. Tiap Tiket langsung memberi satu hadiah kemenangan ulang dari Tahap itu: Koin, XP, dan peluang kartu. Tidak ada Pertempuran, dan Sweep selalu menang.\n\nKelas Dek Aktif-mu menentukan kartu yang bisa diberikan Sweep. Sweep tidak pernah mengubah Bintangmu, dan tidak memberi Tiket Sweep.\n\nTiap kemenangan yang kamu mainkan memberi {tickets} Tiket Sweep. Kekalahan tidak memberi Tiket. Kamu tidak bisa membeli Tiket Sweep.",
+        "Sweep langsung memberi hadiah kemenangan ulang dari satu Tahap atau Dungeon. Tidak ada Pertempuran, dan Sweep selalu menang. Satu Sweep memakai 1 sampai {max} Tiket, dan tiap Tiket memberi satu hadiah kemenangan ulang.\n\nSweep Kampanye: saat Bintang terbaikmu di satu Tahap adalah 3, Panel Tahap-nya punya tombol Sweep. Sweep ini memakai Tiket Sweep Kampanye. Tiap Tiket memberi Koin, XP, serta peluang kartu dan Batu Tempa dari Tahap itu.\n\nSweep Dungeon: setelah kamu memenangkan satu Dungeon, layar Dungeon punya tombol Sweep untuknya. Sweep ini memakai Tiket Sweep Dungeon. Tiap Tiket memberi Koin dan XP atau Esensi dari Dungeon itu, serta peluang kartu dan Batu Tempa.\n\nKelas Dek Aktif-mu menentukan kartu yang bisa diberikan Sweep. Sweep tidak pernah mengubah Bintang atau kemenangan Dungeon-mu, dan tidak memberi Tiket.\n\nTiap kemenangan Tahap memberi {campaignTickets} Tiket Sweep Kampanye. Tiap kemenangan Dungeon memberi {dungeonTickets} Tiket Sweep Dungeon. Kekalahan tidak memberi Tiket. Kedua jenis Tiket tidak pernah berubah menjadi satu sama lain, dan kamu tidak bisa membelinya.",
       playerLevel:
-        "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah.",
+        "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah. Kekalahan memberi XP dan Koin hanya untuk HP yang kamu ambil dari Pahlawan musuh.",
       coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
       pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nDi level Pemain 2, kamu mendapat satu Paket Penjaja. Paket dari hadiah menunggu di layar Paket sampai kamu membukanya, gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
       workshop:
         "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya.",
       gear: "Pahlawanmu punya 4 Perlengkapan: Senjata, Zirah, Jimat, dan Panji. Barak di Kota dan pintasan Pahlawan membuka layar Pahlawan, mulai level Pemain {level}.\n\nTiap Perlengkapan punya level dari 0 sampai {max}. Satu peningkatan menambah 1 level, dengan Koin dan 1 Batu Tempa. Level menentukan tingkat Batu Tempa: Biasa untuk level 1 sampai 5, Tak Biasa untuk 6 sampai 10, Langka untuk 11 sampai 15, Epik untuk 16 sampai 20, dan Legendaris untuk 21 sampai 25. Batu Tempa dari tingkat lain tidak bisa menggantikannya. Peningkatan tidak pernah gagal, dan level tidak pernah turun.\n\nKemenangan Tahap, peti Bintang, Sweep, Dungeon, dan Heynspire memberi Batu Tempa. Kamu tidak bisa membelinya. Layar Pahlawan menampilkan Batu Tempa yang kamu punya.\n\nSerangan Crit memberi 2 kali damage-nya. Serangan yang di-Block memberi setengah damage-nya. Di tiap Pertempuran, Pahlawan dan Unit-mu memakai Perlengkapanmu.",
+      dungeon:
+        "Dungeon adalah tempat di luar Kampanye. Gua di Kota dan pintasan Dungeon membuka layar Dungeon, mulai level Pemain {level}.\n\nDi Dungeon, kamu melawan semua Bos-nya dalam satu Pertempuran. Papan punya {lanes} Jalur. Tiap Bos adalah Pahlawan musuh dengan Lini, Tangan, dan Dek sendiri. Unit di ujung Jalur menyerang Bos dari Lini itu.\n\nAturan Bos aktif satu kali, saat HP Bos-nya turun ke persen tertentu atau lebih rendah. Bar HP Bos menunjukkan takik di persen itu.\n\nKemenangan Dungeon tidak memberi Bintang. Setelah menang, kamu bisa memainkan Dungeon itu lagi atau melakukan Sweep. Tiap kemenangan Dungeon memberi {tickets} Tiket Sweep Dungeon.",
+      heynspire:
+        "Heynspire adalah menara tinggi di Kota. Heynspire terbuka setelah kemenangan pertama di Tahap {stage}. Menara di Kota dan pintasan Heynspire membukanya.\n\nHeynspire punya {floors} Lantai. Kamu hanya melawan Lantai Saat Ini: Lantai terendah yang belum kamu menangkan. Pertempuran Lantai punya {lanes} Jalur dan 1 Pahlawan musuh, dengan Lini di semua Jalur.\n\nTiap Lantai ke-{every} adalah Lantai Bos: satu Bos Kampanye kembali dengan Dek baru. Lantai Bos tidak punya Aturan Bos.\n\nTiap Lantai memberi hadiahnya satu kali, saat kamu memenangkannya. Kamu tidak bisa memainkan Lantai yang sudah menang lagi, dan tidak bisa melakukan Sweep di sana. Kemenangan juga memberi {tickets} Tiket Sweep Kampanye. Kekalahan memberi sebagian Koin dan XP, sesuai HP yang kamu ambil dari Pahlawan musuh.",
     },
     aliases: {
+      heynspire: "menara, tower, spire, endless tower, panjat",
       board: "medan, arena, peta, battlefield, map",
       lane: "baris, lorong, row, path",
       square: "kotak, sel, tile, cell",
@@ -860,13 +918,14 @@ export default {
       rankGems: "pip, titik",
       stars: "skor, nilai, score",
       sweep:
-        "auto battle, quick battle, auto-resolve, raid, skip ticket, raid ticket, farm, sapu, ulang, tiket",
+        "auto battle, auto-play, quick battle, auto-resolve, raid, skip ticket, raid ticket, sweep ticket, boss ticket, farm, sapu, ulang, tiket",
       playerLevel: "level akun, xp",
       coin: "emas, perak, tembaga, uang, gold",
       pack: "booster, paket kartu, loot box, peti, chest, peluang, odds",
       workshop:
         "tempa, forge, crafting, upgrade, fuse, merge, naik level, dust, disenchant, salvage",
       gear: "equipment, gear, item, senjata, zirah, gudang senjata, enchant, refine, upgrade, crit, block",
+      dungeon: "raid, boss rush, multi-bos, world boss, instance, gua",
     },
   },
   packs: {
@@ -1019,7 +1078,6 @@ export default {
   workshop: {
     label: "Bengkel",
     grid: "Kartu ditemukan",
-    count: "Kartu: {count}",
     ownership: { all: "Semua", owned: "Dimiliki", notOwned: "0 salinan" },
     empty: {
       noneFound: "Kamu belum menemukan {group}.",
@@ -1274,12 +1332,117 @@ export default {
   },
   // Draft names (PRD open question 1).
   dungeons: {
+    label: "Dungeon",
+    tabs: { label: "Dungeon", later: "Segera hadir" },
+    board: {
+      label: "Para Bos di Dungeon ini",
+    },
+    strip: {
+      label:
+        "Lini para Bos di Jalur. Jalur 1 ada di atas, dan Pahlawanmu ada di kiri.",
+      startUnit:
+        "{name} ({rank}), ada di Papan di Jalur {lane} saat Pertempuran dimulai",
+    },
+    poster: {
+      wanted: "Dicari",
+      summon: "Panggil {name} ({rank}) di Jalur {lane}",
+      rule: "{at}: {effect}.",
+      claimed: "Hadiah diklaim",
+      hp: "HP Pahlawan {hp}.",
+    },
+    rewards: {
+      firstWin: "Kemenangan pertama: kartu ini, Koin, XP, dan Batu Tempa.",
+      firstWinClaimed: "Kemenangan pertama: sudah diklaim.",
+      repeatWin: "Kemenangan ulang",
+      stoneChance: "Peluang {percent}%: 1 Batu Tempa {tier}",
+      cardChance: "Peluang {percent}%: 1 kartu dari Dungeon ini",
+      essence: "+{amount} Esensi",
+    },
+    wins: "Menang: {count}",
     "dungeon-1": {
       name: "Tambang Akar Dalam",
       bosses: {
         foremanGritjaw: "Mandor Gritjaw",
         rootwardenSylla: "Penjaga Akar Sylla",
       },
+      // Kalimat draf untuk poster buronan, dengan nama draf.
+      wanted: {
+        foremanGritjaw: "Karena menggali di bawah Lembah Jamur Cahaya.",
+        rootwardenSylla: "Karena menyewa Goblin untuk menjaga akar.",
+      },
+    },
+    "dungeon-2": {
+      name: "Gundukan Beku",
+      bosses: {
+        abbotKnell: "Kepala Biara Knell",
+        seerVell: "Peramal Vell",
+      },
+      // Kalimat draf untuk poster buronan, dengan nama draf.
+      wanted: {
+        abbotKnell: "Karena membangunkan orang mati dari kuburnya.",
+        seerVell: "Karena melepas hewan buas es ke para pengembara.",
+      },
+    },
+    "dungeon-3": {
+      name: "Brankas Retak",
+      bosses: {
+        baronBrassbelly: "Baron Brassbelly",
+        oldBramble: "Bramble Tua",
+        queenMarrow: "Ratu Marrow",
+      },
+      // Kalimat draf untuk poster buronan, dengan nama draf.
+      wanted: {
+        baronBrassbelly: "Karena memungut pajak jalan dua kali.",
+        oldBramble: "Karena bangun dengan marah.",
+        queenMarrow: "Karena tetap berkuasa setelah pemakamannya sendiri.",
+      },
+    },
+  },
+  // Draft names (PRD open question 1).
+  heynspire: {
+    label: "Heynspire",
+    title: "Heynspire",
+    rail: "Lantai-lantai Heynspire",
+    progress: "Lantai {number} dari {total}",
+    climbed: "Heynspire sudah didaki",
+    floor: "Lantai {number}",
+    floorName: "Heynspire, Lantai {number}",
+    winFirst: "Menangkan Lantai {number} dulu.",
+    state: {
+      won: "sudah menang",
+      current: "Lantai Saat Ini",
+      locked: "terkunci",
+    },
+    stone: {
+      floor: "Lantai {number}, {name}, {state}",
+      boss: "Lantai {number}, Lantai Bos, {name}, {state}",
+    },
+    flight: {
+      range: "Lantai {first}–{last}",
+      label:
+        "Lantai {first} sampai {last}, Bos {boss}, {won} dari 10 sudah menang. Tunjukkan Lantai ini.",
+    },
+    panel: {
+      won: "Sudah menang",
+      close: "Tutup",
+    },
+    result: {
+      nextFloor: "Lantai Berikutnya",
+      tryAgain: "Coba Lagi",
+      back: "Kembali ke Heynspire",
+    },
+    // Musuh dari setiap templat Lantai (`FLOOR_TEMPLATES` di packages/rules).
+    // Lantai Bos memakai nama Bos dari Tahap Bos-nya.
+    enemies: {
+      spireWardenHolt: "Penjaga Menara Holt",
+      emberchiefRazka: "Kepala Bara Razka",
+      trapmasterKrink: "Ahli Jebakan Krink",
+      groveSisterMyrra: "Suster Hutan Myrra",
+      houndmasterBrokk: "Pawang Binatang Brokk",
+      bonecaptainRusk: "Kapten Tulang Rusk",
+      lightbearerAnselm: "Pembawa Cahaya Anselm",
+      warbossGnash: "Panglima Perang Gnash",
+      rimecallerIsolde: "Pemanggil Es Isolde",
     },
   },
   classes: {

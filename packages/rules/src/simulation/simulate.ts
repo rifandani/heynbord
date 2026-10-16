@@ -27,6 +27,7 @@ import type {
   Archetype,
   DeckEntry,
   DungeonDefinition,
+  FloorDefinition,
   GearLevels,
   StageDefinition,
   StarterDeck,
@@ -117,6 +118,15 @@ export const stageTarget = (
 /** The first-try target of a Dungeon, the same as a Boss Stage (GDD 13, step 6). */
 export const DUNGEON_TARGET: WinRateTarget = BOSS_STAGE_TARGET;
 
+/**
+ * The first-try target of a Heynspire Floor (ADR-0042): the target of a
+ * normal Stage, and the target of a Boss Stage for a Boss Floor. The
+ * difficulty does not go up from Floor 1 to Floor 50.
+ */
+export const floorTarget = (
+  floor: Pick<FloorDefinition, "boss">
+): WinRateTarget => (floor.boss ? BOSS_STAGE_TARGET : NORMAL_STAGE_TARGET);
+
 /** Each Archetype against each other Archetype (GDD 13, step 5). */
 export const MATCHUP_TARGET: WinRateTarget = { min: 0.45, max: 0.55 };
 
@@ -138,23 +148,17 @@ export interface StageReport {
 }
 
 /**
- * The Deck of a new Player at a Stage: the starter Deck, then the first-win
- * cards of all Stages before it, in Stage order. It stops at the maximum Deck
- * size of the Recommended level (GDD 6). It skips a card that the Deck cannot
- * hold: a fourth copy, a Skill Card of another Class, or a card over the
- * Countdown Limit of the Recommended level (ADR-0021).
+ * The starter Deck, then each reward in order, at the Deck limits of `level`.
+ * It skips a reward that the Deck cannot hold (see `expectedDeck`).
  */
-export const expectedDeck = (
-  stage: StageDefinition,
+const deckWithRewards = (
   starter: StarterDeck,
-  stages: readonly StageDefinition[] = STAGES
+  rewards: readonly DeckEntry[],
+  level: number
 ): DeckEntry[] => {
-  const { max } = deckSizeLimits(stage.recommendedLevel);
-  const limit = countdownLimit(stage.recommendedLevel);
+  const { max } = deckSizeLimits(level);
+  const limit = countdownLimit(level);
   const deck = starter.deck.slice(0, max);
-  const rewards = stagesBefore(stage, stages).map(
-    (earlier) => earlier.firstWinCard
-  );
   for (const reward of rewards) {
     const card = getCard(reward.cardId);
     const copies = deck.filter((entry) => entry.cardId === reward.cardId);
@@ -169,6 +173,24 @@ export const expectedDeck = (
   }
   return deck;
 };
+
+/**
+ * The Deck of a new Player at a Stage: the starter Deck, then the first-win
+ * cards of all Stages before it, in Stage order. It stops at the maximum Deck
+ * size of the Recommended level (GDD 6). It skips a card that the Deck cannot
+ * hold: a fourth copy, a Skill Card of another Class, or a card over the
+ * Countdown Limit of the Recommended level (ADR-0021).
+ */
+export const expectedDeck = (
+  stage: StageDefinition,
+  starter: StarterDeck,
+  stages: readonly StageDefinition[] = STAGES
+): DeckEntry[] =>
+  deckWithRewards(
+    starter,
+    stagesBefore(stage, stages).map((earlier) => earlier.firstWinCard),
+    stage.recommendedLevel
+  );
 
 /** The Player of `simulateStage`, from the new Player on the first try. */
 export interface StagePlayerOptions {
@@ -219,22 +241,23 @@ export const simulateStage = (
 };
 
 /**
- * The first Stage at the unlock level of a Dungeon. A Player on the
- * First-try Path gets the Dungeon before this Stage, so its expected Deck and
- * its Expected Gear (ADR-0034) are typical at that level (GDD 13, step 6).
+ * The Deck of a Player on the First-try Path at the unlock level of a Dungeon:
+ * the starter Deck, then the first-win cards of all Stages below that level,
+ * in Stage order, at the Deck limits of that level. At level 30 it has the
+ * first-win cards of all Stages, as far as the Deck holds them.
  */
-export const dungeonStage = (
+export const dungeonDeck = (
   dungeon: DungeonDefinition,
+  starter: StarterDeck,
   stages: readonly StageDefinition[] = STAGES
-): StageDefinition => {
-  const stage = stages.find(
-    (candidate) => candidate.recommendedLevel >= dungeon.unlockLevel
+): DeckEntry[] =>
+  deckWithRewards(
+    starter,
+    stages.flatMap((stage) =>
+      stage.recommendedLevel < dungeon.unlockLevel ? [stage.firstWinCard] : []
+    ),
+    dungeon.unlockLevel
   );
-  if (stage === undefined) {
-    throw new Error(`No Stage at the unlock level of ${dungeon.id}`);
-  }
-  return stage;
-};
 
 export interface DungeonReport {
   readonly dungeonId: string;
@@ -248,11 +271,11 @@ export interface DungeonReport {
 }
 
 /**
- * Dungeon difficulty (GDD 13, step 6): a new Player on the first try plays the
- * Dungeon at its unlock level (its Recommended level) and with no Gear, with
- * the expected Deck of a starter Deck at the first Stage of that level
- * (`dungeonStage`). `options` changes the level and the Gear, as in
- * `simulateStage`: for the Expected Gear of that Stage (ADR-0034).
+ * Dungeon difficulty (GDD 13, step 6): a Player on the First-try Path plays
+ * the Dungeon at its unlock level (its Recommended level) and with no Gear,
+ * with the `dungeonDeck` of a starter Deck. `options` changes the level and
+ * the Gear, as in `simulateStage`: for the Expected Gear at the unlock level
+ * (ADR-0034).
  */
 export const simulateDungeon = (
   dungeon: DungeonDefinition,
@@ -264,7 +287,7 @@ export const simulateDungeon = (
   const gear = options.gear ?? NO_GEAR;
   const deck = {
     ...starter,
-    deck: expectedDeck(dungeonStage(dungeon), starter),
+    deck: dungeonDeck(dungeon, starter),
   };
   let wins = 0;
   let turns = 0;
@@ -287,6 +310,68 @@ export const simulateDungeon = (
     winRate: wins / battles,
     averageTurn: turns / battles,
     averageDefeated: defeated / battles,
+  };
+};
+
+/**
+ * The expected Deck of a Player on the First-try Path at a Floor: the
+ * starter Deck, then the first-win cards of all Stages, in Stage order, at
+ * the Deck limits of the Recommended level of the Floor. A Floor win gives no
+ * card, so the earlier Floors add nothing.
+ */
+export const floorDeck = (
+  floor: FloorDefinition,
+  starter: StarterDeck,
+  stages: readonly StageDefinition[] = STAGES
+): DeckEntry[] =>
+  deckWithRewards(
+    starter,
+    stages.map((stage) => stage.firstWinCard),
+    floor.recommendedLevel
+  );
+
+export interface FloorReport {
+  readonly floorId: string;
+  readonly deckId: string;
+  readonly battles: number;
+  /** The player's win rate, from 0 to 1. */
+  readonly winRate: number;
+  readonly averageTurn: number;
+}
+
+/**
+ * Floor difficulty (GDD 13, step 6, ADR-0042): a Player on the First-try
+ * Path plays the Floor at its Recommended level and with no Gear, with the
+ * `floorDeck` of a starter Deck. `options` changes the level and the Gear, as
+ * in `simulateStage`: for the Expected Gear of the Floor (ADR-0034).
+ */
+export const simulateFloor = (
+  floor: FloorDefinition,
+  starter: StarterDeck,
+  battles: number,
+  options: StagePlayerOptions = {}
+): FloorReport => {
+  const level = floor.recommendedLevel + (options.levelsAbove ?? 0);
+  const gear = options.gear ?? NO_GEAR;
+  const deck = { ...starter, deck: floorDeck(floor, starter) };
+  let wins = 0;
+  let turns = 0;
+  for (let seed = 1; seed <= battles; seed += 1) {
+    const { state } = createBattle({
+      seed,
+      floor,
+      player: playerOf(deck, level, gear),
+    });
+    const end = playOut(state);
+    wins += end.result?.winner === "player" ? 1 : 0;
+    turns += end.turnNumber;
+  }
+  return {
+    floorId: floor.id,
+    deckId: starter.id,
+    battles,
+    winRate: wins / battles,
+    averageTurn: turns / battles,
   };
 };
 

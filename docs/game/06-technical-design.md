@@ -70,7 +70,7 @@ The Resolution Phase runs completely inside `step()` when the rules get the `End
 A Battle replay is: the Battle seed, the two Decks, the Stage ID, and the list of Commands. When the app runs the same Commands again, it gets the same Battle Events. This supports:
 
 - Replays (BAT-14)
-- Bug reports: the player can export a replay file
+- Bug reports and shared Battles: after a Stage Battle, a Dungeon Battle or a Floor Battle, the Player shares a Replay Link (`/play#replay=…`, [web ADR-0012](../../apps/web/docs/adr/0012-a-replay-link-is-the-only-url-that-opens-a-screen.md)). The link holds the Replay and a hash of the rules and the content of the build (`apps/web/scripts/rules-hash.ts`). A build with another hash refuses it.
 - Result checks on the server in v2
 
 ### 3.4 Enemy AI
@@ -157,7 +157,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 | Rules unit tests | Vitest (Node) | Each rule in GDD section 4, each Keyword, each Workshop action, migrations. Follows [ADR-0001](../adr/0001-unit-tests-are-pure-module-logic.md). |
 | Determinism tests | Vitest | Run the same replay many times and compare the results. Property tests with random Decks and seeds. |
 | Content tests | Vitest | All card and Stage data pass the Effect `Schema` schemas. All Translation Keys exist. |
-| Balance simulations | Vitest + Bun script | Headless AI-against-AI Battles. `bun run sim` in `packages/rules` reports the win rates of each Stage and each Matchup (GDD section 13). `bun run sim economy` simulates Players to level 30 with a win chance for each Battle (Economy 7.1). `bun run sim skill-swap` measures each Skill Card against a Creature Card with the same Countdown ([08 — Archetypes, 3.3](./08-archetypes.md#33-skill-card-swap)). The logic is in `src/simulation/` and has unit tests. CI fails when a win rate is not on its target (`bun run rules:sim:check`). |
+| Balance simulations | Vitest + Bun script | Headless AI-against-AI Battles. `bun run sim` in `packages/rules` reports the win rates of each Stage, each Dungeon, each Heynspire Floor and each Matchup (GDD section 13). `bun run sim economy` simulates Players to level 30 with a win chance for each Battle (Economy 7.1). `bun run sim skill-swap` measures each Skill Card against a Creature Card with the same Countdown ([08 — Archetypes, 3.3](./08-archetypes.md#33-skill-card-swap)). The logic is in `src/simulation/` and has unit tests. CI fails when a win rate is not on its target (`bun run rules:sim:check`). |
 | Economy simulation | Bun script | Reports the pacing targets (Economy section 4). |
 | End-to-end | Playwright | Start the game, finish Stage 1-1, open a Pack, Combine, export and import the save. |
 

@@ -21,7 +21,11 @@ import path from "node:path";
 
 import sharp from "sharp";
 
-import { ROOT } from "../creature-art/concepts.ts";
+import {
+  BATTLE_SET_REFERENCE,
+  fromPublic,
+  writeBattleStyleReference,
+} from "./battle-references.ts";
 import {
   battlePromptOf,
   battleSetupPromptOf,
@@ -34,24 +38,12 @@ import type { Point, RegionArt } from "./regions.ts";
 import { RAW_DIR, readCampaign } from "./regions.ts";
 import { SCENE } from "./scenes.ts";
 
-const fromPublic = (file: string): string =>
-  path.join(ROOT, "apps/web/public", file);
-
 /** The source of each reference image. Change a path when its art moves. */
 const REFERENCES = {
   "map-style-reference.png": fromPublic("town/town.webp"),
   "map-set-reference.png": fromPublic("battle/hearthvale-region.webp"),
-  "battle-set-reference.png": fromPublic("battle/hearthvale.webp"),
+  "battle-set-reference.png": BATTLE_SET_REFERENCE,
 } as const;
-
-/** The golden references of art direction 5.1 for the Battle Paintings: ground, motion and light. */
-const BATTLE_GOLDEN_REFERENCES = [
-  "creature/human/militia-recruit.webp",
-  "creature/orc/howling-charger.webp",
-  "creature/human/dawn-cleric.webp",
-] as const;
-
-const TILE = { width: 384, height: 512 } as const;
 
 const writeReferences = async () => {
   await Promise.all(
@@ -59,27 +51,9 @@ const writeReferences = async () => {
       sharp(source).png().toFile(path.join(RAW_DIR, file))
     )
   );
-  const tiles = await Promise.all(
-    BATTLE_GOLDEN_REFERENCES.map((file) =>
-      sharp(fromPublic(file))
-        .resize(TILE.width, TILE.height, { fit: "cover" })
-        .png()
-        .toBuffer()
-    )
+  await writeBattleStyleReference(
+    path.join(RAW_DIR, "battle-style-reference.png")
   );
-  await sharp({
-    create: {
-      width: TILE.width * tiles.length,
-      height: TILE.height,
-      channels: 3,
-      background: "#000",
-    },
-  })
-    .composite(
-      tiles.map((input, index) => ({ input, left: index * TILE.width, top: 0 }))
-    )
-    .png()
-    .toFile(path.join(RAW_DIR, "battle-style-reference.png"));
 };
 
 /**

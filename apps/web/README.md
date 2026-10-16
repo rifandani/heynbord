@@ -1,8 +1,5 @@
 # @workspace/web
 
-1. /grill-with-docs lets develop the "Heynspire" feature
-1. then Achievements, Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
-
 Answers all ur questions automatically with ur best recommendations, except critical questions.
 
 ## Todo
@@ -11,7 +8,7 @@ v1:
 
 New Unit Ability:
 
-- update the Keyword "Heroic N" into "+N Attack after this Unit attacks enemy Unit", only Rare can have N=2, only Epic can have N=3, only Legendary can have N=4
+- update the Keyword "Heroic N" into "+N Attack after this Unit attacks enemy Unit", units Common/Uncommon can have N=1, Rare can have N=2, Epic can N=3, Legendary can have N=4
 - Devour N: When this Unit kills an enemy Unit, it gains +N Attack and +N HP, im thinking this Keyword is exclusive to Feral replacing Trample, but do u think its a good idea?
 - Resistance N: Reduce magic damage by N (similar to Bulwark)
 - Heal N: +N HP for the lowest HP Unit on player's friendly units for each turn
@@ -122,26 +119,22 @@ Priest:
 
 Sequence:
 
-3. #93 Battle UI. It can start when #90 is done. It does not need #89, #91 or #92, so it can run next to step 4.
-4. #91 Dungeon 1. It needs #88, #89 and #90. sim dungeon must have the multi-Boss AI and the Boss Rules before the 30–50% win-rate check means anything.
-5. #92 Profile and rewards. It needs the Dungeon definition from #91, for the fixed first-win card and the Dungeon card pool.
-6. #94 Dungeons screen. This is last. It needs #91, #92 and #93.
-
-The fastest path: #89 → #91 → #92 → #94. #90 and #93 can happen alongside it.
-
-After these 7 issues (no issues exist for these yet): Dungeon 2, watched Auto-play, and then Dungeon 3. Dungeon 3 also needs the Old Bramble (Region 4) and Queen Marrow (Region 5) to exist as Campaign Bosses.
-
 New features:
+
+1. /grill-with-docs lets develop "Achievements" feature
+1. then Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
+
+Mismatch to fix in the docs: the Town art brief (11 — Town Concepts, 2.2) describes a thin tower at x 400–500. The painting shows a castle on a hill at about x 540–760. The Building uses the castle in the painting, and the build updates the brief to match it.
 
 - cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 - check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
 v2:
 
-- brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
-- Story scenes at the start and end of each Region (need to install some claude motion skills first)
 - blender mcp + all 3D unit
 - hybrids, awakening
+- brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
+- Story scenes at the start and end of each Region (need to install some claude motion skills first)
 - standardize UI components at design system level
 - dynamic og image generation
 - add better auth + skills

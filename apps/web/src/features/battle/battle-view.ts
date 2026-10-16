@@ -105,9 +105,9 @@ export interface UnitView {
    */
   readonly paralyzed: boolean;
   /**
-   * Speed 0 in the next action, and the action ends it. The rules show no
-   * event for this, so the view ends it on the attack or the skip of the Unit,
-   * and for a Unit with no attack at the End Phase of its owner.
+   * Speed 0 in the next action, and the action ends it. `StatusApplied` sets
+   * it, and `EntangleFaded` and `UnitSkipped` of the Unit end it. An Entangle
+   * from First Strike or Retaliate during the action stays for the next action.
    */
   readonly entangled: boolean;
   /**
@@ -543,11 +543,10 @@ const applyFieldEvent = (view: BattleView, event: BattleEvent): BattleView => {
       };
     }
     case "AttackSkipped": {
-      // The action ends Paralyzed and Entangled.
+      // The action ends Paralyzed. `EntangleFaded` ends Entangled.
       return updateUnit(view, event.unitId, (unit) => ({
         ...unit,
         paralyzed: false,
-        entangled: false,
       }));
     }
     default: {
@@ -651,9 +650,7 @@ const withBonusRange = (
 /**
  * The End Phase of `side` for one Unit: it lowers the Hobbled, Bleeding,
  * Grounded and Exposed counts and the bonus Attack and bonus Range Turns of this Side, ends its Rally
- * bonus, and lowers the bonus Bulwark Turns of the other side's Units. Each
- * Unit of this Side had its action, so none of them is Entangled now: a Unit
- * with no move and no attack has no event of its own that ends Entangled.
+ * bonus, and lowers the bonus Bulwark Turns of the other side's Units.
  */
 const endPhaseOf = (current: UnitView, side: Side): UnitView => {
   if (current.owner !== side) {
@@ -672,7 +669,6 @@ const endPhaseOf = (current: UnitView, side: Side): UnitView => {
     exposedTurns,
     bonusAttackTurns: Math.max(unit.bonusAttackTurns - 1, 0),
     bonusRangeTurns: Math.max(unit.bonusRangeTurns - 1, 0),
-    entangled: false,
   };
   return next.hobbled === unit.hobbled &&
     next.bleeding === unit.bleeding &&
@@ -680,8 +676,7 @@ const endPhaseOf = (current: UnitView, side: Side): UnitView => {
     next.exposed === unit.exposed &&
     next.exposedTurns === unit.exposedTurns &&
     next.bonusAttackTurns === unit.bonusAttackTurns &&
-    next.bonusRangeTurns === unit.bonusRangeTurns &&
-    next.entangled === unit.entangled
+    next.bonusRangeTurns === unit.bonusRangeTurns
     ? unit
     : next;
 };
@@ -909,11 +904,11 @@ const applyBoardEvent = (view: BattleView, event: BattleEvent): BattleView => {
         entangled: false,
       }));
     }
-    case "UnitAttacked": {
-      // The action ends Entangled.
-      return updateUnit(view, event.unitId, (unit) =>
-        unit.entangled ? { ...unit, entangled: false } : unit
-      );
+    case "EntangleFaded": {
+      return updateUnit(view, event.unitId, (unit) => ({
+        ...unit,
+        entangled: false,
+      }));
     }
     case "TurnEnded": {
       return {

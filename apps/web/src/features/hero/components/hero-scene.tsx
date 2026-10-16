@@ -1,4 +1,5 @@
 import { heroArt } from "@/features/hero/hero-art";
+import { FittedPainting } from "@/features/town/components/fitted-painting";
 
 /**
  * The darker edges and the dim center over the painting, so that the plates
@@ -38,24 +39,18 @@ const TimberWall = () => (
 );
 
 /**
- * The inside of the Barracks (11 — Town Concepts 11), at the size that covers
- * the screen (3:2, cropped at the edges), as the Workshop. Until the painting
- * exists, a timber wall holds its place.
+ * The inside of the Barracks (11 — Town Concepts 11), in full above the Town
+ * Bar (`FittedPainting`), as the Workshop. Until the painting exists, a
+ * timber wall holds its place.
  */
 export const HeroScene = () => {
   const painting = heroArt("barracksInside");
   return (
     <div className="absolute inset-0 overflow-hidden bg-[#24170f]" aria-hidden>
       {painting ? (
-        <div className="absolute top-1/2 left-1/2 aspect-[3/2] w-[max(100vw,150dvh)] -translate-1/2">
-          <img
-            src={painting}
-            alt=""
-            draggable={false}
-            className="absolute inset-0 size-full select-none"
-          />
+        <FittedPainting src={painting} width={1536} height={1024}>
           <div className="absolute inset-0" style={{ background: SHADE }} />
-        </div>
+        </FittedPainting>
       ) : (
         <>
           <TimberWall />

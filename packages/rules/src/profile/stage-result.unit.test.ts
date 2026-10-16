@@ -12,21 +12,33 @@ import {
   FIRST_PACK,
   REPEAT_WIN_CARD_CHANCE,
   stageCardPool,
-  SWEEP_TICKETS_PER_WIN,
+  CAMPAIGN_SWEEP_TICKETS_PER_WIN,
 } from "./stage-result";
 import type { StageResultInput } from "./stage-result";
 
 const fresh = newProfile(42);
+/** The enemy Hero lost all its HP: the full loss reward (ADR-0043). */
+const ALL_HP_LOST = { lost: 30, total: 30 };
 const win = (
   stageId: string,
   stars = 3,
   classId: StageResultInput["classId"] = "warrior"
-): StageResultInput => ({ stageId, won: true, stars, classId });
-const loss = (stageId: string): StageResultInput => ({
+): StageResultInput => ({
+  stageId,
+  won: true,
+  stars,
+  classId,
+  enemyHeroDamage: ALL_HP_LOST,
+});
+const loss = (
+  stageId: string,
+  enemyHeroDamage = ALL_HP_LOST
+): StageResultInput => ({
   stageId,
   won: false,
   stars: 0,
   classId: "warrior",
+  enemyHeroDamage,
 });
 /** A Profile that has won `stageId` with `stars`. */
 const wonBefore = (
@@ -103,6 +115,23 @@ describe("applyStageResult: XP, Coin and Stars (Economy 2.1)", () => {
     expect(profile.rewardRandomState).toBe(fresh.rewardRandomState);
   });
 
+  it("gives only the share of the lost enemy Hero HP of a loss reward (ADR-0043)", () => {
+    const none = applyStageResult(fresh, loss("1-4", { lost: 0, total: 20 }));
+    expect([none.rewards.xp, none.rewards.coin]).toEqual([0, 0]);
+    expect(none.profile.xp).toBe(fresh.xp);
+    expect(none.profile.coin).toBe(fresh.coin);
+    const half = applyStageResult(fresh, loss("1-4", { lost: 10, total: 20 }));
+    expect([half.rewards.xp, half.rewards.coin]).toEqual([5, 3]);
+  });
+
+  it("gives the full reward of a win, also with no lost enemy Hero HP", () => {
+    const { rewards } = applyStageResult(fresh, {
+      ...win("1-4"),
+      enemyHeroDamage: { lost: 0, total: 20 },
+    });
+    expect([rewards.xp, rewards.coin]).toEqual([80, 180]);
+  });
+
   it("does not change the Stars of a won Stage on a loss", () => {
     const { profile, rewards } = applyStageResult(
       wonBefore("1-4", 2),
@@ -122,24 +151,25 @@ describe("applyStageResult: XP, Coin and Stars (Economy 2.1)", () => {
   });
 });
 
-describe("applyStageResult: Sweep Tickets (ADR-0035)", () => {
-  it("adds 2 Sweep Tickets on a first win and on a repeat win", () => {
-    expect(SWEEP_TICKETS_PER_WIN).toBe(2);
+describe("applyStageResult: Campaign Sweep Tickets (ADR-0035)", () => {
+  it("adds 2 Campaign Sweep Tickets on a first win and on a repeat win, and no Dungeon Sweep Tickets", () => {
+    expect(CAMPAIGN_SWEEP_TICKETS_PER_WIN).toBe(2);
     const first = applyStageResult(fresh, win("1-4"));
-    expect(first.rewards.sweepTickets).toBe(2);
-    expect(first.profile.sweepTickets).toBe(2);
+    expect(first.rewards.campaignSweepTickets).toBe(2);
+    expect(first.profile.campaignSweepTickets).toBe(2);
     const repeat = applyStageResult(first.profile, win("1-4", 1));
-    expect(repeat.rewards.sweepTickets).toBe(2);
-    expect(repeat.profile.sweepTickets).toBe(4);
+    expect(repeat.rewards.campaignSweepTickets).toBe(2);
+    expect(repeat.profile.campaignSweepTickets).toBe(4);
+    expect(repeat.profile.dungeonSweepTickets).toBe(0);
   });
 
-  it("adds no Sweep Tickets on a loss", () => {
+  it("adds no Campaign Sweep Tickets on a loss", () => {
     const { profile, rewards } = applyStageResult(
-      { ...fresh, sweepTickets: 3 },
+      { ...fresh, campaignSweepTickets: 3 },
       loss("1-4")
     );
-    expect(rewards.sweepTickets).toBe(0);
-    expect(profile.sweepTickets).toBe(3);
+    expect(rewards.campaignSweepTickets).toBe(0);
+    expect(profile.campaignSweepTickets).toBe(3);
   });
 });
 

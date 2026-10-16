@@ -1,5 +1,5 @@
 import type { Collection, DeckSlot } from "@workspace/rules";
-import { combinePath, getCard } from "@workspace/rules";
+import { combinePath, getCard, RANKS } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import { DEFAULT_POOL_FILTER } from "@/features/deck/deck";
@@ -8,8 +8,10 @@ import {
   combineFocusAfter,
   combineState,
   craftState,
+  EXTRACT_MOTION,
   emptyGridText,
   extractNeedsConfirm,
+  extractTimeline,
   legendaryPath,
   rankCopies,
   selectedTile,
@@ -277,5 +279,29 @@ describe("combineFocusAfter", () => {
     expect(combineFocusAfter(rungs, "uncommon")).toBe("uncommon");
     expect(combineFocusAfter(rungs, "common")).toBe("uncommon");
     expect(combineFocusAfter(rungs, "rare")).toBeNull();
+  });
+});
+
+describe("extractTimeline", () => {
+  it("gives a higher Rank more drops and a longer Extract", () => {
+    const timelines = RANKS.map((rank) => extractTimeline(rank));
+    for (const [index, timeline] of timelines.entries()) {
+      const before = timelines[index - 1];
+      if (before) {
+        expect(timeline.dropAt.length).toBeGreaterThan(before.dropAt.length);
+        expect(timeline.lastArrival).toBeGreaterThan(before.lastArrival);
+      }
+    }
+  });
+
+  it("melts after the tremble and the lift, and lets each drop leave in order", () => {
+    const timeline = extractTimeline("legendary");
+    expect(timeline.liftAt).toBe(EXTRACT_MOTION.legendary.trembleMs);
+    expect(timeline.dropAt[0]).toBe(timeline.meltAt);
+    expect(timeline.dropAt).toEqual(timeline.dropAt.toSorted((a, b) => a - b));
+    expect(timeline.dropAt.at(-1)).toBeLessThan(
+      timeline.meltAt + EXTRACT_MOTION.legendary.meltMs
+    );
+    expect(extractTimeline("common").liftAt).toBe(0);
   });
 });

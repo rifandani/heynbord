@@ -11,10 +11,7 @@ import type { HandCardView } from "@/features/battle/battle-view";
 import type { KeyGuideLine } from "@/features/battle/components/battle-keys";
 import type { EntryId } from "@/features/handbook/handbook";
 
-/**
- * The Hints of the features that are in the game (GDD 8.3, issue #4). The
- * Hints for Dungeons and Heynspire come with their screens.
- */
+/** The Hints of the features that are in the game (GDD 8.3, issue #4). */
 export const HINTS = [
   "skillCard",
   "recall",
@@ -26,6 +23,9 @@ export const HINTS = [
   "battleLog",
   "gear",
   "sweep",
+  "dungeons",
+  "dungeonSweep",
+  "heynspire",
 ] as const;
 
 export type HintId = (typeof HINTS)[number];
@@ -64,6 +64,9 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
   battleLog: { _tag: "KeyGuide", line: "battleLog" },
   gear: toEntry("gear"),
   sweep: toEntry("sweep"),
+  dungeons: toEntry("dungeon"),
+  dungeonSweep: toEntry("sweep"),
+  heynspire: toEntry("heynspire"),
 };
 
 /**
@@ -73,7 +76,11 @@ export const HINT_TARGET: Readonly<Record<HintId, HintTarget>> = {
  * Workshop and Craft level Hints near the Workshop in the Town, the Battle
  * Log Hint near the Battle Log button of the result screen, the Gear Hint
  * below the first upgrade of the Hero screen, so that it does not cover the
- * Hero plate, and the Sweep Hint near the Sweep button of the Stage Panel.
+ * Hero plate, the Sweep Hint near the Sweep button of the Stage Panel, the
+ * Dungeons level Hint near the cave in the Town, or near the Dungeons
+ * shortcut when the screen crops the cave, the Dungeon Sweep Hint near
+ * the label of the Sweep row of the Dungeons screen, and the Heynspire Hint
+ * near the tower in the Town.
  */
 export type HintPlace =
   | "hand"
@@ -83,7 +90,10 @@ export type HintPlace =
   | "workshop"
   | "resultBattleLog"
   | "firstGearItem"
-  | "sweepButton";
+  | "sweepButton"
+  | "cave"
+  | "dungeonSweepRow"
+  | "tower";
 
 export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   skillCard: "hand",
@@ -96,6 +106,9 @@ export const HINT_PLACE: Readonly<Record<HintId, HintPlace>> = {
   battleLog: "resultBattleLog",
   gear: "firstGearItem",
   sweep: "sweepButton",
+  dungeons: "cave",
+  dungeonSweep: "dungeonSweepRow",
+  heynspire: "tower",
 };
 
 /** A Hint closes by itself after this time, if the Player does not tap it. */
@@ -115,6 +128,8 @@ export interface BattleFacts {
   readonly hand: readonly HandCardView[];
   readonly log: readonly BattleEvent[];
   readonly tutorial: boolean;
+  /** True while the Player watches a Replay: it is not the Player's Battle. */
+  readonly watching: boolean;
 }
 
 const isPlayerRecall = (event: BattleEvent) =>
@@ -122,11 +137,11 @@ const isPlayerRecall = (event: BattleEvent) =>
 
 /**
  * The Battle Hints that the Battle meets now. No Hint shows during the
- * Tutorial. Skill Card: a Ready Skill Card is in the Hand. Recall: Recall
+ * Tutorial or while the Player watches a Replay (web ADR-0012). Skill Card: a Ready Skill Card is in the Hand. Recall: Recall
  * returned a Skill Card of the Player to the Hand.
  */
 export const battleHints = (facts: BattleFacts): readonly HintId[] => {
-  if (facts.tutorial) {
+  if (facts.tutorial || facts.watching) {
     return [];
   }
   const met: HintId[] = [];
@@ -165,6 +180,12 @@ export const isBattleLogHintMet = (facts: ResultFacts): boolean =>
  * so this Hint never shows during the Tutorial.
  */
 export const isSweepHintMet = (stars: number): boolean => stars === 3;
+
+/**
+ * The Dungeon Sweep Hint: the Dungeons screen shows a Dungeon with 1 or more
+ * wins, so it shows the Sweep (ADR-0041).
+ */
+export const isDungeonSweepHintMet = (wins: number): boolean => wins >= 1;
 
 /**
  * The Deck builder Hint: the Player owns a card (one card in one Rank) that

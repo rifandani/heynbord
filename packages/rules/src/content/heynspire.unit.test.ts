@@ -1,11 +1,23 @@
 import { describe, expect, it } from "vitest";
 
 import { addForgeStoneRewards, NO_FORGE_STONES } from "./forge-stones";
-import { floorFirstWinReward, HEYNSPIRE_FLOORS } from "./heynspire";
+import {
+  floorFirstWinReward,
+  HEYNSPIRE_FLOORS,
+  isBossFloor,
+} from "./heynspire";
 
 describe("Heynspire rewards (Economy 2.3)", () => {
   it("has 50 Floors", () => {
     expect(HEYNSPIRE_FLOORS).toBe(50);
+  });
+
+  it("makes each 10th Floor a Boss Floor", () => {
+    const bossFloors = Array.from(
+      { length: HEYNSPIRE_FLOORS },
+      (_, index) => index + 1
+    ).filter((floor) => isBossFloor(floor));
+    expect(bossFloors).toEqual([10, 20, 30, 40, 50]);
   });
 
   it("gives 100 + 10 × n Coin and 50 + 5 × n XP for the first win of Floor n", () => {

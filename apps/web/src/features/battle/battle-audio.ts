@@ -35,6 +35,8 @@ export type SoundName =
   | "revealEpic"
   | "revealLegendary"
   | "anvil"
+  | "extract"
+  | "essenceIn"
   | "gearUp"
   | "bossDefeated"
   | "frontMoved"
@@ -237,6 +239,19 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
     tone(2730, 0.32, { type: "sine", gain: 0.07 });
     tone(4410, 0.18, { type: "sine", gain: 0.04 });
     tone(240, 0.1, { type: "square", gain: 0.06 });
+  },
+  // The Workshop: an Extract. A soft hiss as the copy melts, and a pour of
+  // light that rises: the opposite of the anvil.
+  extract: () => {
+    noise(0.38, 1900, 0.09);
+    tone(330, 0.34, { type: "sine", slideTo: 990, gain: 0.13 });
+    tone(495, 0.3, { type: "sine", delay: 0.09, slideTo: 1485, gain: 0.07 });
+  },
+  // The Workshop: the Essence drops get to the Essence balance. A small glass
+  // note, as a drop in a vial.
+  essenceIn: () => {
+    tone(1568, 0.2, { type: "sine", gain: 0.08 });
+    tone(2349, 0.26, { type: "sine", delay: 0.05, gain: 0.05 });
   },
   // The Hero screen: a Gear upgrade. A lighter strike of the same iron, then a
   // second, higher ring a moment later: one level up.

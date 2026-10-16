@@ -40,6 +40,7 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   UnitSkipped: 360,
   // The Paralyzed Unit sparks where its attack would be.
   AttackSkipped: 320,
+  EntangleFaded: 80,
   UnitAttacked: 360,
   DamageDealt: 280,
   StatusApplied: 160,

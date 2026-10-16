@@ -32,19 +32,47 @@
  *   match it in outline, view angle and scale.
  * - `raw/gear/prompts.md`: the setup message, then one prompt for each Gear
  *   icon, in the order of section 12.3.
+ * - `raw/cave/layout.png`, `raw/cave/outside-reference.png` and
+ *   `raw/cave/prompts.md`: the same for the Dungeons cave inside (section 13).
+ *   `prompts.md` then has the Battle Painting of all Dungeon Battles
+ *   (Battlefield Concepts 1.6), with `raw/cave/battle-style-reference.png`
+ *   and `raw/cave/battle-set-reference.png`.
+ * - `raw/heynspire/layout.png`, `raw/heynspire/outside-reference.png` and
+ *   `raw/heynspire/prompts.md`: the same for the Heynspire inside (section
+ *   14), then the Battle Painting of all Floor Battles (Battlefield Concepts
+ *   1.7), with `raw/heynspire/battle-style-reference.png` and
+ *   `raw/heynspire/battle-set-reference.png`.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import sharp from "sharp";
 
+import {
+  BATTLE_SET_REFERENCE,
+  writeBattleStyleReference,
+} from "../campaign-art/battle-references.ts";
+import {
+  battlePromptOf,
+  battleSetupPromptOf,
+} from "../campaign-art/prompts.ts";
+import type { BattleArt } from "../campaign-art/regions.ts";
+import {
+  DUNGEON_CAVE,
+  HEYNSPIRE,
+  readBattleArt,
+} from "../campaign-art/regions.ts";
 import { cellsOf, isTableRule, ROOT } from "../creature-art/concepts.ts";
 import {
   BARRACKS_PROMPT,
   BARRACKS_SETUP_PROMPT,
+  CAVE_PROMPT,
+  CAVE_SETUP_PROMPT,
   GEAR_SETUP_PROMPT,
   GEAR_SUBJECT,
   gearIconPromptOf,
+  HEYNSPIRE_PROMPT,
+  HEYNSPIRE_SETUP_PROMPT,
   iconPromptOf,
   packPromptOf,
   packSetupPromptOf,
@@ -303,6 +331,128 @@ const writeBarracksOutside = async (file: string) => {
     .toFile(file);
 };
 
+/**
+ * The layout sketch of the Dungeons cave inside: flat shapes at the areas of
+ * the table in section 13.2. ChatGPT keeps its composition, not its colors.
+ */
+const writeCaveLayout = async (file: string) => {
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
+    // The calm rock wall in the center, with a few faint cracks.
+    `<rect width="100%" height="100%" fill="#6b6660"/>`,
+    ...[34, 58].map(
+      (y) => `<rect ${roomBox(20, 80, y, y + 0.4)} fill="#625d57"/>`
+    ),
+    // The dark plain band at the top, with roots only at the corners.
+    `<rect ${roomBox(0, 100, 0, 8)} fill="#2a2622"/>`,
+    `<rect ${roomBox(8, 9, 8, 16)} fill="#5a3a22"/>`,
+    `<rect ${roomBox(96, 97, 8, 14)} fill="#5a3a22"/>`,
+    // The timber prop, the main lantern and the hard hat at the left edge.
+    `<rect ${roomBox(2, 7, 0, 88)} fill="#7a5233"/>`,
+    `<circle cx="${0.075 * ROOM.width}" cy="${0.3 * ROOM.height}" r="30" fill="#ffd27a"/>`,
+    `<circle cx="${0.045 * ROOM.width}" cy="${0.5 * ROOM.height}" r="18" fill="#d9a441"/>`,
+    // The tunnel down, its glowcap glow and the eyes, the timber prop and the
+    // small lantern at the right edge.
+    `<rect ${roomBox(91, 100, 40, 88)} rx="40" fill="#141210"/>`,
+    `<circle cx="${0.96 * ROOM.width}" cy="${0.78 * ROOM.height}" r="26" fill="#7fd6a0"/>`,
+    `<circle cx="${0.95 * ROOM.width}" cy="${0.6 * ROOM.height}" r="5" fill="#ffe680"/>`,
+    `<circle cx="${0.965 * ROOM.width}" cy="${0.6 * ROOM.height}" r="5" fill="#ffe680"/>`,
+    `<rect ${roomBox(91, 93, 0, 88)} fill="#7a5233"/>`,
+    `<circle cx="${0.92 * ROOM.width}" cy="${0.3 * ROOM.height}" r="18" fill="#ffd27a"/>`,
+    // The floor, the cart track, the mine cart and the dropped pick.
+    `<rect ${roomBox(0, 100, 88, 100)} fill="#5a4330"/>`,
+    `<rect ${roomBox(55, 100, 94, 95)} fill="#3b2414"/>`,
+    `<rect ${roomBox(55, 100, 98, 99)} fill="#3b2414"/>`,
+    `<rect ${roomBox(78, 88, 86, 95)} fill="#4a4f57"/>`,
+    `<rect ${roomBox(10, 18, 93, 95)} fill="#8a8f96"/>`,
+    "</svg>",
+  ].join("");
+  await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/**
+ * The Dungeons cave in the Town painting, in pixels of `town.webp`: the
+ * ruined pillars, the rock face and the cave arch with its timber beam. It is
+ * larger than the box of the cave in `town.ts`, so the rocks show too.
+ */
+const CAVE_OUTSIDE = {
+  left: 1480,
+  top: 660,
+  width: 506,
+  height: 250,
+} as const;
+
+const writeCaveOutside = async (file: string) => {
+  await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
+    .extract(CAVE_OUTSIDE)
+    .resize({ width: CAVE_OUTSIDE.width * 2 })
+    .png()
+    .toFile(file);
+};
+
+/**
+ * The layout sketch of the Heynspire inside: flat shapes at the areas of the
+ * table in section 14.2. ChatGPT keeps its composition, not its colors.
+ */
+const writeHeynspireLayout = async (file: string) => {
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
+    // The calm wall of the tower in the center, with a few faint joints.
+    `<rect width="100%" height="100%" fill="#d8c8a8"/>`,
+    ...[30, 50, 70].map(
+      (y) => `<rect ${roomBox(15, 85, y, y + 0.4)} fill="#cbb995"/>`
+    ),
+    // The plain sky band at the top, with a roof edge and a flag pole at the left.
+    `<rect ${roomBox(0, 100, 0, 8)} fill="#8ec5ec"/>`,
+    `<rect ${roomBox(0, 12, 0, 4)} fill="#2f4f9a"/>`,
+    `<rect ${roomBox(9, 9.4, 0, 6)} fill="#e9c46a"/>`,
+    // The stair with its rope rail and the climber at the left edge.
+    `<rect ${roomBox(0, 15, 8, 100)} fill="#8ec5ec"/>`,
+    ...[0, 1, 2, 3, 4, 5, 6].map(
+      (step) =>
+        `<rect ${roomBox(0, 15 - step, 86 - step * 12, 90 - step * 12)} fill="#f2ead8"/>`
+    ),
+    `<rect ${roomBox(1, 14, 60, 61)} fill="#7a5233"/>`,
+    `<circle cx="${0.07 * ROOM.width}" cy="${0.66 * ROOM.height}" r="26" fill="#c0603a"/>`,
+    // The floating stones with flags and the far town and sea at the right edge.
+    `<rect ${roomBox(85, 100, 8, 100)} fill="#8ec5ec"/>`,
+    ...[
+      [92, 20],
+      [88, 38],
+      [95, 50],
+    ].map(
+      ([x, y]) =>
+        `<ellipse cx="${(x / 100) * ROOM.width}" cy="${(y / 100) * ROOM.height}" rx="34" ry="16" fill="#9a8a70"/>`
+    ),
+    `<rect ${roomBox(86, 100, 70, 80)} fill="#6fa055"/>`,
+    `<rect ${roomBox(93, 100, 72, 80)} fill="#3f7fc0"/>`,
+    // The clouds along the bottom.
+    `<rect ${roomBox(0, 100, 88, 100)} fill="#f4f6fa"/>`,
+    "</svg>",
+  ].join("");
+  await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/**
+ * The castle of Heynspire in the Town painting, in pixels of `town.webp`: the
+ * tall central tower, its blue roofs and gold flags, and the hill under it
+ * (the glow box of `heynspire` in `town.ts`, a little wider).
+ */
+const HEYNSPIRE_OUTSIDE = {
+  left: 520,
+  top: 0,
+  width: 360,
+  height: 240,
+} as const;
+
+const writeHeynspireOutside = async (file: string) => {
+  await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
+    .extract(HEYNSPIRE_OUTSIDE)
+    .resize({ width: HEYNSPIRE_OUTSIDE.width * 2 })
+    .png()
+    .toFile(file);
+};
+
 /** The three Pack sources side by side, in the order of section 8.3. */
 const writePackReference = async (file: string) => {
   const ids = ["peddler", "merchant", "royal"] as const;
@@ -390,7 +540,7 @@ const paintingFile = (): string =>
     "1. Open a new ChatGPT conversation. Attach `../style-reference.png`. Send the setup message.",
     "2. Send the painting message. Make 4 to 8 images: send the painting message again for each new image.",
     "3. Select one image with the review checklist (Town Concepts, section 5). Save it as `apps/web/art/town/raw/painting/town.png`.",
-    "4. Do steps 3 to 8 of Town Concepts, section 4.",
+    "4. Do steps 3 to 7 of Town Concepts, section 4.",
     "",
     "## Setup message",
     "",
@@ -543,6 +693,114 @@ const barracksFile = (): string =>
     "",
   ].join("\n");
 
+const CAVE_FIXES = [
+  "| Problem | Fix |",
+  "| --- | --- |",
+  '| The center is busy or bright | Select the center and send "Edit the image only in the selected area: a plain calm wall of grey rock in soft warm lantern light. Keep all else the same." |',
+  "| A lantern, the tunnel or the mine cart is in the center | Send the painting message again. |",
+  '| The cave is dark or scary | Send the painting message again with "a bright, cozy cave, warm lantern light fills the room". |',
+  "| A skull, a bone or a monster shows | Select it and ask for the rock or the timber around it. |",
+  "| Text-like marks, a sign or a poster | Select the area and ask for the material around it, for example plain rock or plain timber. |",
+].join("\n");
+
+/**
+ * The Battle Painting of a Building, from Battlefield Concepts 1: the Dungeon
+ * cave (1.6) or Heynspire (1.7). `battles` names the Battles that use it.
+ */
+const battlePart = (art: BattleArt, battles: string): string[] => {
+  if (!art.battle) {
+    throw new Error(
+      `docs/game/13-battlefield-concepts.md: no Battle Painting brief "${art.name}"`
+    );
+  }
+  return [
+    "## Battle Painting",
+    "",
+    `The ground under the Board in all ${battles}.`,
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `battle-style-reference.png`, `battle-set-reference.png`. Send the setup message.",
+    "2. Send the painting message. Make 4 to 8 images, and select one with the review checklist (Battlefield Concepts, section 4).",
+    `3. Save the image in this folder as \`battle.png\`. Do steps 3 to 8 of Battlefield Concepts, section 3: the export is \`apps/web/public/battle/${art.slug}.webp\`.`,
+    "",
+    "### Setup message",
+    "",
+    block(battleSetupPromptOf(art, false)),
+    "",
+    "### Painting",
+    "",
+    block(battlePromptOf(art.battle, art)),
+  ];
+};
+
+const caveFile = (dungeon: BattleArt): string =>
+  [
+    "# Dungeons cave art prompts",
+    "",
+    "Two ChatGPT conversations: the cave inside behind the Dungeons screen, then the Battle Painting of all Dungeon Battles.",
+    "",
+    "## Cave inside",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
+    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
+    "3. Select one image with the review checklist (Town Concepts, 13.5). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder.",
+    "4. Do steps 3 and 4 of Town Concepts, 13.4.",
+    "",
+    "### Setup message",
+    "",
+    block(CAVE_SETUP_PROMPT),
+    "",
+    "### Painting",
+    "",
+    block(CAVE_PROMPT),
+    "",
+    "### Fixes",
+    "",
+    CAVE_FIXES,
+    "",
+    ...battlePart(dungeon, "Dungeon Battles"),
+    "",
+  ].join("\n");
+
+const HEYNSPIRE_FIXES = [
+  "| Problem | Fix |",
+  "| --- | --- |",
+  '| The center is busy or bright | Select the center and send "Edit the image only in the selected area: a plain calm curved wall of warm cream stone blocks in soft shade. Keep all else the same." |',
+  "| A window, a door or the stair is in the center | Select it and ask for the plain stone wall around it. |",
+  "| The climber or the floating stones are in the center | Send the painting message again. |",
+  '| The view is scary: a deep drop, a storm or dark clouds | Send the painting message again with "a calm, bright morning, the clouds are soft and white and far below". |',
+  '| The tower does not look like the castle of image 3 | Send the painting message again with "white stone and royal blue conical roofs with gold flags, as image 3". |',
+  "| Text-like marks or numbers on the wall or the map | Select the area and ask for the material around it, for example plain stone or plain paper. |",
+].join("\n");
+
+const heynspireFile = (heynspire: BattleArt): string =>
+  [
+    "# Heynspire art prompts",
+    "",
+    "Two ChatGPT conversations: the tower behind the Heynspire screen, then the Battle Painting of all Floor Battles.",
+    "",
+    "## Heynspire inside",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
+    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
+    "3. Select one image with the review checklist (Town Concepts, 14.5). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder.",
+    "4. Do steps 3 and 4 of Town Concepts, 14.4.",
+    "",
+    "### Setup message",
+    "",
+    block(HEYNSPIRE_SETUP_PROMPT),
+    "",
+    "### Painting",
+    "",
+    block(HEYNSPIRE_PROMPT),
+    "",
+    "### Fixes",
+    "",
+    HEYNSPIRE_FIXES,
+    "",
+    ...battlePart(heynspire, "Heynspire Floor Battles"),
+    "",
+  ].join("\n");
+
 const gearFile = (): string =>
   [
     "# Gear icon prompts",
@@ -589,7 +847,11 @@ const shopDir = path.join(RAW_DIR, "shop");
 const workshopDir = path.join(RAW_DIR, "workshop");
 const barracksDir = path.join(RAW_DIR, "barracks");
 const gearDir = path.join(RAW_DIR, "gear");
+const caveDir = path.join(RAW_DIR, "cave");
+const heynspireDir = path.join(RAW_DIR, "heynspire");
 mkdirSync(barracksDir, { recursive: true });
+mkdirSync(caveDir, { recursive: true });
+mkdirSync(heynspireDir, { recursive: true });
 mkdirSync(gearDir, { recursive: true });
 mkdirSync(paintingDir, { recursive: true });
 mkdirSync(shopDir, { recursive: true });
@@ -624,6 +886,30 @@ await sharp(path.join(ROOT, SOURCE_DIR, "hero-icon.jpg"))
   .png()
   .toFile(path.join(gearDir, "set-reference.png"));
 writeFileSync(path.join(gearDir, "prompts.md"), gearFile());
+await writeCaveLayout(path.join(caveDir, "layout.png"));
+await writeCaveOutside(path.join(caveDir, "outside-reference.png"));
+await writeBattleStyleReference(
+  path.join(caveDir, "battle-style-reference.png")
+);
+await sharp(BATTLE_SET_REFERENCE)
+  .png()
+  .toFile(path.join(caveDir, "battle-set-reference.png"));
+writeFileSync(
+  path.join(caveDir, "prompts.md"),
+  caveFile(readBattleArt(DUNGEON_CAVE))
+);
+await writeHeynspireLayout(path.join(heynspireDir, "layout.png"));
+await writeHeynspireOutside(path.join(heynspireDir, "outside-reference.png"));
+await writeBattleStyleReference(
+  path.join(heynspireDir, "battle-style-reference.png")
+);
+await sharp(BATTLE_SET_REFERENCE)
+  .png()
+  .toFile(path.join(heynspireDir, "battle-set-reference.png"));
+writeFileSync(
+  path.join(heynspireDir, "prompts.md"),
+  heynspireFile(readBattleArt(HEYNSPIRE))
+);
 console.log(
   `Town Bar: ${icons.length} icons, set reference ${SET_REFERENCE ?? "none"}`
 );
@@ -631,5 +917,5 @@ console.log(
   `Packs: ${packs.length} Packs, set reference ${PACK_SET_REFERENCE}`
 );
 console.log(
-  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md and ${RAW_DIR}/gear/prompts.md`
+  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md, ${RAW_DIR}/gear/prompts.md, ${RAW_DIR}/cave/prompts.md and ${RAW_DIR}/heynspire/prompts.md`
 );

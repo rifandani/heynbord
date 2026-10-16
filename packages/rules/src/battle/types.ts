@@ -6,6 +6,7 @@ import type {
   ClosedLane,
   DamageType,
   DungeonDefinition,
+  FloorDefinition,
   RankId,
   StageDefinition,
   TokenId,
@@ -42,6 +43,12 @@ export const STAGE_LANES = 3;
  * Board smaller only with Closed Lanes.
  */
 export const DUNGEON_LANES = 4;
+
+/**
+ * The number of Lanes in a Heynspire Floor (GDD 8.2, ADR-0010). A Floor has
+ * no Closed Lanes.
+ */
+export const FLOOR_LANES = 4;
 
 /** The maximum number of cards in a Hand. A side does not draw when its Hand is full. */
 export const HAND_LIMIT = 8;
@@ -487,6 +494,13 @@ export type BattleEvent = Data.TaggedEnum<{
    * Paralyzed ended. A Unit that is also Frozen gets `UnitSkipped` instead.
    */
   AttackSkipped: { readonly unitId: number };
+  /**
+   * The action of a Unit that was Entangled when the action started ended its
+   * Entangled (GDD 4.4). An Entangle from First Strike or Retaliate during the
+   * action stays, so this event does not occur for it. A skipped action gives
+   * `UnitSkipped` instead.
+   */
+  EntangleFaded: { readonly unitId: number };
   UnitAttacked: {
     readonly unitId: number;
     readonly target: TargetRef;
@@ -641,7 +655,10 @@ export interface PlayerSetup {
   };
 }
 
-/** A Battle setup against the enemy of a Stage or against the Bosses of a Dungeon. */
+/**
+ * A Battle setup against the enemy of a Stage, against the Bosses of a
+ * Dungeon, or against the enemy of a Heynspire Floor.
+ */
 export type BattleSetup =
   | {
       readonly seed: number;
@@ -651,5 +668,10 @@ export type BattleSetup =
   | {
       readonly seed: number;
       readonly dungeon: DungeonDefinition;
+      readonly player: PlayerSetup;
+    }
+  | {
+      readonly seed: number;
+      readonly floor: FloorDefinition;
       readonly player: PlayerSetup;
     };

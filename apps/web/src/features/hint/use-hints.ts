@@ -14,12 +14,14 @@ import {
   hasCardOutOfDecks,
   HINT_PLACE,
   isBattleLogHintMet,
+  isDungeonSweepHintMet,
   isSweepHintMet,
   nextHint,
 } from "@/features/hint/hint";
 import { seenHintsAtom, shownHintAtom } from "@/features/hint/hint.atoms";
 import { unopenedPacksAtom } from "@/features/packs/packs.atoms";
 import { playerLevelAtom } from "@/features/profile/profile.atoms";
+import { townProgressAtom } from "@/features/town/town.atoms";
 
 type Registry = ContextType<typeof RegistryContext>;
 
@@ -40,14 +42,28 @@ const showNext = (registry: Registry, met: readonly HintId[]) => {
   }
 };
 
+/** Closes the Hint that shows near the Hand, if one does. */
+const closeHandHint = (registry: Registry) => {
+  const shown = registry.get(shownHintAtom);
+  if (shown && HINT_PLACE[shown] === "hand") {
+    registry.set(shownHintAtom, null);
+  }
+};
+
 /**
  * The Battle Hints (GDD 8.3): Skill Card and Recall. No Hint shows during
- * the Tutorial. A Battle Hint closes when the Battle ends.
+ * the Tutorial or a Replay. A Battle Hint closes when the Battle has a
+ * result, so that it never covers the buttons of the result, and when the
+ * Player leaves the Battle.
  */
 export const useBattleHints = (session: BattleSession | null) => {
   const registry = useContext(RegistryContext);
   useEffect(() => {
     if (!session) {
+      return;
+    }
+    if (session.view.result) {
+      closeHandHint(registry);
       return;
     }
     showNext(
@@ -56,18 +72,11 @@ export const useBattleHints = (session: BattleSession | null) => {
         hand: heroOf(session.view, "player").hand,
         log: session.log,
         tutorial: session.tutorial !== null,
+        watching: session.watching,
       })
     );
   }, [registry, session]);
-  useEffect(
-    () => () => {
-      const shown = registry.get(shownHintAtom);
-      if (shown && HINT_PLACE[shown] === "hand") {
-        registry.set(shownHintAtom, null);
-      }
-    },
-    [registry]
-  );
+  useEffect(() => () => closeHandHint(registry), [registry]);
 };
 
 /**
@@ -128,8 +137,12 @@ const useCloseWhenInactive = (hint: HintId, active: boolean) => {
  * The Town Hints (GDD 8.3). The Packs level Hint shows near the Card shop
  * the first time that the Town shows with Player level 2 or more, and it
  * closes when the Town closes. The Workshop (level 3) and Craft (level 6)
- * Hints show near the Workshop in the same way, one after the other. The
- * level Hints go before the Deck builder Hint. The
+ * Hints show near the Workshop in the same way, one after the other, and
+ * the Dungeons Hint (level 10) near the cave, or near the Dungeons shortcut
+ * when the screen crops the cave. The Heynspire Hint shows near the tower
+ * the first time that the Town shows after the first win of the last Boss
+ * Stage, which opens Heynspire. These Hints go before the Deck builder
+ * Hint. The
  * Deck builder Hint shows near the Deck shortcut of the Town Bar when the
  * Player owns a card that is in no Deck.
  */
@@ -137,6 +150,7 @@ export const useTownHints = (active: boolean, inTown: boolean) => {
   const collection = useAtomValue(collectionAtom);
   const slots = useAtomValue(deckSlotsAtom);
   const level = useAtomValue(playerLevelAtom);
+  const { heynspireOpen } = useAtomValue(townProgressAtom);
   const packs = active && inTown && isUnlocked(level, "packs");
   useAnchoredHint("packs", packs);
   useCloseWhenInactive("packs", packs);
@@ -146,6 +160,12 @@ export const useTownHints = (active: boolean, inTown: boolean) => {
   const craft = active && inTown && isUnlocked(level, "craft");
   useAnchoredHint("craft", craft);
   useCloseWhenInactive("craft", craft);
+  const dungeons = active && inTown && isUnlocked(level, "dungeon1");
+  useAnchoredHint("dungeons", dungeons);
+  useCloseWhenInactive("dungeons", dungeons);
+  const heynspire = active && inTown && heynspireOpen;
+  useAnchoredHint("heynspire", heynspire);
+  useCloseWhenInactive("heynspire", heynspire);
   useAnchoredHint(
     "deckBuilder",
     active &&
@@ -197,4 +217,16 @@ export const useStagePanelHints = (stars: number | null) => {
   const met = stars !== null && isSweepHintMet(stars);
   useAnchoredHint("sweep", met);
   useCloseWhenInactive("sweep", met);
+};
+
+/**
+ * The Dungeon Sweep Hint (GDD 8.3, ADR-0041): the first time that the
+ * Dungeons screen shows a Dungeon with 1 or more wins. It shows near the
+ * label of the Sweep row, and it closes when the Dungeon is not shown or
+ * shows the Sweep Result: its anchor goes away.
+ */
+export const useDungeonsHints = (wins: number | null) => {
+  const met = wins !== null && isDungeonSweepHintMet(wins);
+  useAnchoredHint("dungeonSweep", met);
+  useCloseWhenInactive("dungeonSweep", met);
 };

@@ -10,7 +10,7 @@ We did this so that the Board has one shape for each type of Battle. The Player 
 - **Each Stage keeps a Lane value, and a content test checks it.** Rejected. The data then has a value that can only be one number.
 - **The tutorial is an exception with 1 and 2 Lanes.** Rejected. The Board must keep one shape.
 - **The tutorial closes Lanes for the full Battle (1-1 opens only Lane 2, 1-2 and 1-3 open Lanes 1 and 2).** This was the first version of this decision. Rejected. A Board with 1 or 2 usable Lanes teaches the player that the Board shape changes from Stage to Stage, and a dead Lane can look like a bug or a locked feature. In place of Closed Lanes, the Tutorial uses arrows and highlights (GDD 8.3).
-- **Heynspire starts with 3 Lanes and uses 4 from a later Floor.** Rejected. Heynspire unlocks after the Region 3 Boss Stage, so the Player already knows Lanes. Rank and Hero HP make the Floors more difficult.
+- **Heynspire starts with 3 Lanes and uses 4 from a later Floor.** Rejected. Heynspire unlocks after the Region 5 Boss Stage ([ADR-0036](./0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)), so the Player already knows Lanes. Rank and Hero HP make the Floors more difficult.
 
 ## Consequences
 

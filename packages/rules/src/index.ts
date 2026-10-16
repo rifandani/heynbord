@@ -12,6 +12,8 @@ export {
   sameTarget,
 } from "./battle/targets";
 export type { AreaSize } from "./battle/targets";
+export { devDamageHero } from "./battle/dev";
+export { enemyHeroDamage } from "./battle/enemy-hero-damage";
 export { STAR_FAST_WIN_TURN, starsFor } from "./battle/stars";
 export { step } from "./battle/step";
 export type { StepOutput } from "./battle/step";
@@ -19,6 +21,7 @@ export {
   BattleEvent,
   Command,
   DUNGEON_LANES,
+  FLOOR_LANES,
   HAND_LIMIT,
   LANE_LENGTH,
   otherSide,
@@ -93,6 +96,18 @@ export type {
   DungeonRewardDefinition,
 } from "./content/dungeons";
 export {
+  BOSS_FLOOR_TEMPLATES,
+  FLOOR_TEMPLATES,
+  floorStrength,
+  FLOORS,
+  getFloor,
+} from "./content/floors";
+export type {
+  BossFloorTemplate,
+  FloorStrength,
+  FloorTemplate,
+} from "./content/floors";
+export {
   DECK_SLOT_PRICES,
   MAX_DECK_SLOTS,
   nextDeckSlotPrice,
@@ -131,11 +146,12 @@ export {
 export type { GearSlot, GearStat } from "./content/gear";
 export {
   floorFirstWinReward,
+  HEYNSPIRE_BOSS_FLOOR_EVERY,
+  HEYNSPIRE_BOSS_FLOOR_REWARD,
+  HEYNSPIRE_FIFTH_FLOOR_EVERY,
+  HEYNSPIRE_FIFTH_FLOOR_FORGE_STONES,
   HEYNSPIRE_FLOORS,
-  HEYNSPIRE_HALF_MILESTONE_EVERY,
-  HEYNSPIRE_HALF_MILESTONE_FORGE_STONES,
-  HEYNSPIRE_MILESTONE_EVERY,
-  HEYNSPIRE_MILESTONE_REWARD,
+  isBossFloor,
 } from "./content/heynspire";
 export type { FloorReward } from "./content/heynspire";
 export {
@@ -146,6 +162,8 @@ export {
   HEYNSTONE_SUPPLY,
 } from "./content/heynstones";
 export type { HeynstoneSource, HeynstoneSourceId } from "./content/heynstones";
+export { lossShare } from "./content/loss-reward";
+export type { EnemyHeroDamage } from "./content/loss-reward";
 export { getPack, PACK_SIZE, PACKS, TEN_PACKS } from "./content/packs";
 export type { PackDefinition, PackId, TenPackBonus } from "./content/packs";
 export {
@@ -187,6 +205,7 @@ export type {
   DamageType,
   DungeonBoss,
   DungeonDefinition,
+  FloorDefinition,
   GearLevels,
   KeywordAmount,
   Keywords,
@@ -241,13 +260,31 @@ export type {
   PackPool,
 } from "./packs/open-pack";
 export { buyDeckSlot, INITIAL_DECK_SLOTS } from "./profile/deck-slots";
-export { applyDungeonResult, dungeonCardPool } from "./profile/dungeon-result";
+export {
+  applyDungeonResult,
+  dungeonCardPool,
+  DUNGEON_SWEEP_TICKETS_PER_WIN,
+} from "./profile/dungeon-result";
 export type {
   DungeonResult,
   DungeonResultInput,
   DungeonRewards,
 } from "./profile/dungeon-result";
+export { applyDungeonSweep } from "./profile/dungeon-sweep";
+export type { DungeonSweepInput } from "./profile/dungeon-sweep";
 export { exportProfile, importProfile } from "./profile/export";
+export {
+  applyFloorResult,
+  currentFloor,
+  FLOOR_LOSS_COIN_FRACTION,
+  heynspireBossStage,
+  isHeynspireOpen,
+} from "./profile/floor-result";
+export type {
+  FloorResult,
+  FloorResultInput,
+  FloorRewards,
+} from "./profile/floor-result";
 export { upgradeGear } from "./profile/gear";
 export { ImportError } from "./profile/import-error";
 export { migrateProfile, PROFILE_MIGRATIONS } from "./profile/migrate";
@@ -279,10 +316,10 @@ export {
 export type { DeckSlot, PackState, UnopenedPack } from "./profile/schema";
 export {
   applyStageResult,
+  CAMPAIGN_SWEEP_TICKETS_PER_WIN,
   FIRST_PACK,
   REPEAT_WIN_CARD_CHANCE,
   stageCardPool,
-  SWEEP_TICKETS_PER_WIN,
 } from "./profile/stage-result";
 export type {
   StageResult,
@@ -297,8 +334,12 @@ export {
 } from "./profile/regions";
 export { claimStarChest, regionStars } from "./profile/star-chests";
 export type { StarChestClaim } from "./profile/star-chests";
-export { applySweep, MAX_SWEEP_TICKETS } from "./profile/sweep";
-export type { SweepInput, SweepResult, SweepRewards } from "./profile/sweep";
+export { applyCampaignSweep, MAX_SWEEP_TICKETS } from "./profile/sweep";
+export type {
+  CampaignSweepInput,
+  SweepResult,
+  SweepRewards,
+} from "./profile/sweep";
 export {
   combine,
   combineCopies,

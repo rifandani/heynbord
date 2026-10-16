@@ -109,15 +109,22 @@ export default {
     levelUp: "Level up! Level {level}",
     cardWon: "Card won: {name}, {rank}.",
     newCardWon: "New card won: {name}, {rank}.",
-    sweepTicketsEarned: "+{count} Sweep Tickets",
-    sweepTicketsEarnedLabel: "Sweep Tickets earned: {count}.",
-    forgeStonesEarned: "+{count} × {tier} Forge Stone",
+    forgeStonesEarned: "+{count} {tier} Forge Stone",
     forgeStonesEarnedLabel: "Forge Stones earned: {count} × {tier}.",
+    essenceEarned: "+{amount} Essence",
+    essenceEarnedLabel: "Essence earned: {amount}.",
+    heynstonesEarned: "+{amount} Heynstone",
+    heynstonesEarnedLabel: "Heynstones earned: {amount}.",
     retry: "Play Again",
     backToCampaign: "Back to Campaign",
+    backToDungeons: "Back to Dungeons",
     abandon: {
       title: "Leave the Battle?",
       text: "This Battle records no result. You can play the Stage again at any time.",
+      textDungeon:
+        "This Battle records no result. You can play the Dungeon again at any time.",
+      textFloor:
+        "This Battle records no result. You can fight the Floor again at any time.",
       confirm: "Leave",
       stay: "Stay",
     },
@@ -287,6 +294,19 @@ export default {
       nothing: "Nothing changes.",
     },
   },
+  replay: {
+    badge: "Replay",
+    share: "Share Replay",
+    shareTitle: "Heynbord Replay: {name}",
+    copied: "Replay Link copied. Paste it to share the Battle.",
+    copyFailed: "The Replay Link could not be copied.",
+    banner: "Turn {number} · {side} · Replay",
+    leave: "Leave",
+    watchAgain: "Watch again",
+    inBattle: "Leave the Battle to watch a Replay.",
+    broken: "This Replay Link is broken.",
+    otherVersion: "This Replay is from a different version of the game.",
+  },
   town: {
     label: "Town",
     bar: "Town Bar",
@@ -295,11 +315,15 @@ export default {
     opensAtLevel: "Opens at level {level}",
     lockedAtLevel: "{name}, opens at level {level}",
     levelPlate: "Level {level}",
+    opensWithStage: "Win {stage} ({id}) to open",
+    lockedWithStage: "{name}, win {stage} ({id}) to open",
     buildings: {
       townGate: "Campaign",
       cardShop: "Packs",
       workshop: "Workshop",
       barracks: "Hero",
+      cave: "Dungeons",
+      heynspire: "Heynspire",
     },
     shortcuts: {
       town: "Town",
@@ -371,7 +395,6 @@ export default {
       needed: "{count} more Stars open this chest.",
       claimedTitle: "Chest at {stars} Stars: claimed",
       essence: "+{amount} Essence",
-      heynstones: "+{amount} Heynstones",
       pack: "1 {pack} waits in the Card shop.",
       racePack:
         "1 {pack} waits in the Card shop. You select its Race when you open it.",
@@ -391,24 +414,36 @@ export default {
       deck: "Deck",
       fight: "Fight",
     },
-    sweep: {
-      label: "Sweep",
-      button: "Sweep ×{count}",
-      tickets: "Tickets: {count}",
-      ticketsLabel: "You have {count} Sweep Tickets.",
-      control: "Sweep Tickets to use",
-      fewer: "Use 1 Ticket less",
-      more: "Use 1 Ticket more",
-      max: "Max",
-      maxLabel: "Use the most Tickets: {count}",
-      noTickets: "Each win that you play gives {count} Sweep Tickets.",
-      resultLabel: "Sweep of {count} Tickets. Each Ticket is a win.",
-      noCard: "No card this time.",
-      cardCopies: "Cards won: {name}, {rank}, {count} copies.",
-      newCardCopies: "New cards won: {name}, {rank}, {count} copies.",
-      ticketsLeft: "Sweep Tickets left: {count}",
-      again: "Sweep Again ×{count}",
-      close: "Close",
+  },
+  sweep: {
+    label: "Sweep",
+    button: "Sweep ×{count}",
+    tickets: "Tickets: {count}",
+    fewer: "Use 1 Ticket less",
+    more: "Use 1 Ticket more",
+    max: "Max",
+    maxLabel: "Use the most Tickets: {count}",
+    resultLabel: "Sweep of {count} Tickets. Each Ticket is a win.",
+    noCard: "No card this time.",
+    cardCopies: "Cards won: {name}, {rank}, {count} copies.",
+    newCardCopies: "New cards won: {name}, {rank}, {count} copies.",
+    again: "Sweep Again ×{count}",
+    close: "Close",
+    campaign: {
+      control: "Campaign Sweep Tickets to use",
+      ticketsLabel: "Campaign Sweep Tickets that you have: {count}.",
+      noTickets: "Each Stage win gives you Campaign Sweep Tickets: {count}.",
+      ticketsLeft: "Campaign Sweep Tickets left: {count}",
+      earned: "+{count} Campaign Sweep Ticket",
+      earnedLabel: "Campaign Sweep Tickets earned: {count}.",
+    },
+    dungeon: {
+      control: "Dungeon Sweep Tickets to use",
+      ticketsLabel: "Dungeon Sweep Tickets that you have: {count}.",
+      noTickets: "Each Dungeon win gives you Dungeon Sweep Tickets: {count}.",
+      ticketsLeft: "Dungeon Sweep Tickets left: {count}",
+      earned: "+{count} Dungeon Sweep Ticket",
+      earnedLabel: "Dungeon Sweep Tickets earned: {count}.",
     },
   },
   settings: {
@@ -487,7 +522,14 @@ export default {
       "Craft is open in the Workshop. Use Essence to make a copy of a card that you found.",
     battleLog: "Open the Battle Log to see what happened.",
     gear: "Each press upgrades a Gear item by 1 level, for Coin and a Forge Stone. A level never goes down.",
-    sweep: "Use Sweep Tickets to get the rewards of this Stage at once.",
+    sweep:
+      "Use Campaign Sweep Tickets to get the rewards of this Stage at once.",
+    dungeonSweep:
+      "Use Dungeon Sweep Tickets to get the rewards of this Dungeon at once.",
+    dungeons:
+      "The Dungeons are open. In a Dungeon, you fight all its Bosses in one Battle on 4 Lanes.",
+    heynspire:
+      "Heynspire is open. Climb its 50 Floors one at a time. Each Floor gives its reward one time.",
   },
   handbook: {
     title: "Handbook",
@@ -530,6 +572,16 @@ export default {
     rankTable: "N at each Rank",
     rankColumn: "Rank",
     valueColumn: "N",
+    heynspireTable: {
+      title: "The reward of each Floor",
+      floorColumn: "Floors",
+      rewardColumn: "Reward",
+      each: "Each Floor, 1 to {last}",
+      to: "to",
+      xp: "{first} to {last} XP",
+      fifth: "Floors {floors}",
+      boss: "Boss Floors {floors}",
+    },
     starsTable: "How to earn each Star",
     starsColumn: "Stars",
     starsConditionColumn: "You need",
@@ -599,7 +651,7 @@ export default {
     playerXpRegionColumn: "Region",
     playerXpWinColumn: "Repeat win",
     playerXpFirstColumn: "First win (×2)",
-    playerXpLossColumn: "Loss (25%)",
+    playerXpLossColumn: "Loss (up to 25%)",
     playerXpNote:
       "First win is the first time you clear a Stage. A Boss Stage doubles all values in this table again.",
     playerGrowthLevelColumn: "Level",
@@ -690,22 +742,24 @@ export default {
       pack: "Pack",
       workshop: "Workshop",
       gear: "Gear",
+      dungeon: "Dungeon",
+      heynspire: "Heynspire",
     },
     entries: {
       board:
-        "The Board is the battlefield of one Battle. In a Stage, it has {lanes} Lanes.\n\nYour Hero is at the left end of the Lanes, and the enemy Hero is at the right end. Your Units go from left to right, and the enemy Units go from right to left.",
+        "The Board is the battlefield of one Battle. In a Stage, it has {lanes} Lanes. In a Dungeon, it has {dungeonLanes} Lanes.\n\nYour Hero is at the left end of the Lanes, and the enemy Hero is at the right end. Your Units go from left to right, and the enemy Units go from right to left.",
       lane: "A Lane is one row of {squares} Squares from your Hero to the enemy Hero.\n\nA Unit always stays in its Lane. It moves only along its Lane.",
       square:
         "A Square is one place in a Lane. It holds 0 or 1 Unit. You summon a Unit into an empty Square.",
       column:
         "A Column is all the Squares at the same distance from a Hero, in all Lanes.\n\nEach Side counts the Columns from its own Hero. Your Column 1 is next to your Hero, and your Column {squares} is next to the enemy Hero.",
       front:
-        "The Front of a Hero is the Lanes that the Hero stands behind. In a Stage, each Hero has a Front of all the Lanes.\n\nA Unit at the end of its Lane attacks the enemy Hero of that Front.",
+        "The Front of a Hero is the Lanes that the Hero stands behind. In a Stage, each Hero has a Front of all the Lanes. In a Dungeon, each Boss has a Front of 1 or more Lanes next to each other, and each Lane is in one Front.\n\nA Unit at the end of its Lane attacks the enemy Hero of that Front.",
       summonZone:
         "Your Summon Zone is your Columns 1 to {columns}, in all Lanes. You can summon a Unit only into an empty Square of your Summon Zone.\n\nYou can also summon into a Square that is past an enemy Unit. A melee Unit attacks only forward, so these two Units do not fight.\n\nA Unit with Wall can also go into your Columns {next} and {wall}.",
       closedLane:
         "In a Closed Lane, no Side can summon a Unit, and no Skill Card can target a Square.\n\nSome Stages have a Closed Lane. It opens at a set Turn number, or it stays closed for the full Battle.",
-      side: "A Side is one of the two teams in a Battle: your Side and the enemy Side. Each Side has a Hero.\n\nYour Side is at the left of the Board, and the enemy Side is at the right.",
+      side: "A Side is one of the two teams in a Battle: your Side and the enemy Side. Your Side has 1 Hero. In a Stage, the enemy Side has 1 Hero. In a Dungeon, it has 1 Hero for each Boss.\n\nYour Side is at the left of the Board, and the enemy Side is at the right.",
       hero: "A Hero is the commander of a Side. It stands behind its Front, outside the Board.\n\nA Hero has HP, a Class and a Deck. When its HP goes to 0, the Hero is Defeated.",
       turn: "In a Turn, one Side plays its cards, and its Units act. A Turn has 4 parts: the Start Phase, the Play Phase, the Resolution Phase and the End Phase.\n\nYou take the first Turn. Then the enemy takes a Turn. The Turn number goes up by 1 when both Sides took a Turn.",
       startPhase:
@@ -721,7 +775,7 @@ export default {
       routed:
         "A Side is Routed when it has no Units on the Board and no cards in its Hand and its Deck. A Routed Side cannot act again, so it loses the Battle. The check occurs at the end of each Turn.\n\nThis rule is the same for you and for the enemy.",
       defeated:
-        "A Hero with 0 HP is Defeated. When all the Heroes of a Side are Defeated, that Side loses the Battle.\n\nIn a Stage, each Side has 1 Hero, so a Hero at 0 HP ends the Battle.",
+        "A Hero with 0 HP is Defeated. When all the Heroes of a Side are Defeated, that Side loses the Battle.\n\nIn a Stage, each Side has 1 Hero, so a Hero at 0 HP ends the Battle. In a Dungeon, a Defeated Boss leaves the Battle: its Units leave the Board, and its Front goes to the nearest Boss that is not Defeated. The Battle continues until all the Bosses are Defeated, or your Hero is Defeated.",
       creatureCard:
         "A Creature Card summons a Unit onto the Board. It has a Race, Attack and HP. Some Creature Cards have Keywords.\n\nWhen the Unit dies, the card goes to your Graveyard.",
       skillCard:
@@ -789,16 +843,21 @@ export default {
       stars:
         "When you win a Stage, you earn 1 to 3 Stars. A loss gives 0 Stars.\n\nEach Star adds a condition on the one before it. Half of your Hero HP means your Hero has at least 50% of its maximum HP when the Battle ends.\n\nThe Campaign keeps your best Stars for each Stage. The total Stars in a Region open its chests at 10, 20 and 30 Stars.",
       sweep:
-        "When your best Stars on a Stage are 3, its Stage Panel has a Sweep button. A Sweep uses 1 to {max} Sweep Tickets. Each Ticket gives one repeat-win reward of the Stage at once: Coin, XP and a chance of a card. No Battle occurs, and a Sweep always wins.\n\nThe Class of your Active Deck sets the cards that a Sweep can give. A Sweep never changes your Stars, and it gives no Sweep Tickets.\n\nEach win that you play gives {tickets} Sweep Tickets. A loss gives none. You cannot buy Sweep Tickets.",
+        "A Sweep gives the repeat-win rewards of a Stage or a Dungeon at once. No Battle occurs, and a Sweep always wins. One Sweep uses 1 to {max} Tickets, and each Ticket gives one repeat-win reward.\n\nCampaign Sweep: when your best Stars on a Stage are 3, its Stage Panel has a Sweep button. It uses Campaign Sweep Tickets. Each Ticket gives Coin, XP, and the chances of a card and of a Forge Stone of the Stage.\n\nDungeon Sweep: when you won a Dungeon, the Dungeons screen has a Sweep button for it. It uses Dungeon Sweep Tickets. Each Ticket gives the Coin and the XP or Essence of the Dungeon, and the chances of a card and of Forge Stones.\n\nThe Class of your Active Deck sets the cards that a Sweep can give. A Sweep never changes your Stars or your Dungeon wins, and it gives no Tickets.\n\nCampaign Sweep Tickets: {campaignTickets} for each Stage win. Dungeon Sweep Tickets: {dungeonTickets} for each Dungeon win. A loss gives none. The 2 types of Ticket never change into each other, and you cannot buy them.",
       playerLevel:
-        "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss.",
+        "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss. A loss gives XP and Coin only for the HP that you took from the enemy Heroes.",
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
       pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
       workshop:
         "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank.",
       gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin and 1 Forge Stone. The level sets the tier of the Forge Stone: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15, Epic for 16 to 20 and Legendary for 21 to 25. A Forge Stone of a different tier cannot replace it. An upgrade never fails, and a level never goes down.\n\nStage wins, Star chests, Sweeps, Dungeons and Heynspire give Forge Stones. You cannot buy them. The Hero screen shows the Forge Stones that you have.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
+      dungeon:
+        "A Dungeon is a place outside the Campaign. The cave in the Town and the Dungeons shortcut open the Dungeons screen, from Player level {level}.\n\nIn a Dungeon, you fight all its Bosses in one Battle. The Board has {lanes} Lanes. Each Boss is an enemy Hero with its own Front, Hand and Deck. A Unit at the end of a Lane attacks the Boss of that Front.\n\nA Boss Rule activates one time, when the HP of its Boss goes to a set percent or lower. The HP bar of the Boss shows a notch at that percent.\n\nA Dungeon win gives no Stars. After a win, you can play the Dungeon again or Sweep it. Dungeon Sweep Tickets: {tickets} for each Dungeon win.",
+      heynspire:
+        "Heynspire is the tall tower of the Town. It opens with the first win of Stage {stage}. The tower in the Town and the Heynspire shortcut open it.\n\nHeynspire has {floors} Floors. You fight only the Current Floor: the lowest Floor that you did not win. A Floor Battle has {lanes} Lanes and 1 enemy Hero, whose Front is all the Lanes.\n\nEach {every}th Floor is a Boss Floor: a Boss of the Campaign comes back with a new Deck. A Boss Floor has no Boss Rules.\n\nEach Floor gives its reward one time, when you win it. You cannot play a won Floor again, and you cannot Sweep it. A win also gives Campaign Sweep Tickets: {tickets}. A loss gives a part of the Coin and the XP, for the HP that you took from the enemy Hero.",
     },
     aliases: {
+      heynspire: "tower, spire, endless tower, climb, abyss",
       board: "battlefield, field, map, grid, arena",
       lane: "row, path, track",
       square: "tile, cell, slot",
@@ -854,13 +913,14 @@ export default {
       rankGems: "pips",
       stars: "score, rating",
       sweep:
-        "auto battle, quick battle, auto-resolve, raid, skip ticket, raid ticket, farm, repeat",
+        "auto battle, auto-play, quick battle, auto-resolve, raid, skip ticket, raid ticket, sweep ticket, boss ticket, farm, repeat",
       playerLevel: "account level, xp",
       coin: "gold, silver, copper, money",
       pack: "booster, card pack, loot box, chest, drop rate, odds",
       workshop:
         "forge, crafting, upgrade, fuse, merge, level up, dust, disenchant, salvage",
       gear: "equipment, items, gear set, armory, enchant, refine, upgrade, crit, block",
+      dungeon: "raid, boss rush, multi-boss, world boss, instance, cave",
     },
   },
   packs: {
@@ -1011,7 +1071,6 @@ export default {
   workshop: {
     label: "Workshop",
     grid: "Found cards",
-    count: "Cards: {count}",
     ownership: { all: "All", owned: "Owned", notOwned: "0 copies" },
     empty: {
       noneFound: "You found no {group} yet.",
@@ -1258,12 +1317,117 @@ export default {
   },
   // Draft names (PRD open question 1).
   dungeons: {
+    label: "Dungeons",
+    tabs: { label: "Dungeons", later: "Coming later" },
+    board: {
+      label: "The Bosses of this Dungeon",
+    },
+    strip: {
+      label:
+        "The Fronts of the Bosses on the Lanes. Lane 1 is at the top, and your Hero is at the left.",
+      startUnit:
+        "{name} ({rank}), on the Board in Lane {lane} at the start of the Battle",
+    },
+    poster: {
+      wanted: "Wanted",
+      summon: "Summon {name} ({rank}) in Lane {lane}",
+      rule: "{at}: {effect}.",
+      claimed: "Bounty claimed",
+      hp: "Hero HP {hp}.",
+    },
+    rewards: {
+      firstWin: "First win: this card, Coin, XP and Forge Stones.",
+      firstWinClaimed: "First win: claimed.",
+      repeatWin: "Repeat win",
+      stoneChance: "{percent}% chance: 1 {tier} Forge Stone",
+      cardChance: "{percent}% chance: 1 card from this Dungeon",
+      essence: "+{amount} Essence",
+    },
+    wins: "Wins: {count}",
     "dungeon-1": {
       name: "The Rootdeep Mine",
       bosses: {
         foremanGritjaw: "Foreman Gritjaw",
         rootwardenSylla: "Rootwarden Sylla",
       },
+      // Draft lines of the wanted posters, with the draft names.
+      wanted: {
+        foremanGritjaw: "For digging under the Glowcap Hollows.",
+        rootwardenSylla: "For hiring Goblins to guard the roots.",
+      },
+    },
+    "dungeon-2": {
+      name: "The Rimebarrow",
+      bosses: {
+        abbotKnell: "Abbot Knell",
+        seerVell: "Seer Vell",
+      },
+      // Draft lines of the wanted posters, with the draft names.
+      wanted: {
+        abbotKnell: "For ringing the dead out of their graves.",
+        seerVell: "For setting the cold beasts on travelers.",
+      },
+    },
+    "dungeon-3": {
+      name: "The Broken Vault",
+      bosses: {
+        baronBrassbelly: "Baron Brassbelly",
+        oldBramble: "The Old Bramble",
+        queenMarrow: "Queen Marrow",
+      },
+      // Draft lines of the wanted posters, with the draft names.
+      wanted: {
+        baronBrassbelly: "For taxing the roads twice.",
+        oldBramble: "For waking up angry.",
+        queenMarrow: "For ruling past her own funeral.",
+      },
+    },
+  },
+  // Draft names (PRD open question 1).
+  heynspire: {
+    label: "Heynspire",
+    title: "Heynspire",
+    rail: "The Floors of Heynspire",
+    progress: "Floor {number} of {total}",
+    climbed: "Heynspire climbed",
+    floor: "Floor {number}",
+    floorName: "Heynspire, Floor {number}",
+    winFirst: "Win Floor {number} first.",
+    state: {
+      won: "won",
+      current: "Current Floor",
+      locked: "locked",
+    },
+    stone: {
+      floor: "Floor {number}, {name}, {state}",
+      boss: "Floor {number}, Boss Floor, {name}, {state}",
+    },
+    flight: {
+      range: "Floors {first}–{last}",
+      label:
+        "Floors {first} to {last}, Boss {boss}, {won} of 10 won. Show these Floors.",
+    },
+    panel: {
+      won: "Won",
+      close: "Close",
+    },
+    result: {
+      nextFloor: "Next Floor",
+      tryAgain: "Try Again",
+      back: "Back to Heynspire",
+    },
+    // The enemy of each Floor template (`FLOOR_TEMPLATES` in packages/rules).
+    // A Boss Floor uses the name of the Boss of its Boss Stage.
+    enemies: {
+      spireWardenHolt: "Spire Warden Holt",
+      emberchiefRazka: "Emberchief Razka",
+      trapmasterKrink: "Trapmaster Krink",
+      groveSisterMyrra: "Grove Sister Myrra",
+      houndmasterBrokk: "Beastmaster Brokk",
+      bonecaptainRusk: "Bonecaptain Rusk",
+      lightbearerAnselm: "Lightbearer Anselm",
+      warbossGnash: "Warboss Gnash",
+      rimecallerIsolde: "Rimecaller Isolde",
     },
   },
   classes: {

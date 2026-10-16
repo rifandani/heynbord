@@ -219,12 +219,11 @@ describe("the names of a Dungeon Battle", () => {
       key: "dungeons.dungeon-1.bosses.rootwardenSylla",
     });
     expect(battleNameRef(options)).toEqual({ key: "dungeons.dungeon-1.name" });
-    const qa = startDungeon(qaThreeBossDungeon(), 1).options;
-    expect(enemyNameRef(qa, 2)).toEqual({ key: "stages.5-10.enemy" });
-    expect(battleNameRef(qa)).toEqual({
-      key: "battle.dungeonName",
-      args: { number: 3 },
+    const third = startDungeon(qaThreeBossDungeon(), 1).options;
+    expect(enemyNameRef(third, 2)).toEqual({
+      key: "dungeons.dungeon-3.bosses.queenMarrow",
     });
+    expect(battleNameRef(third)).toEqual({ key: "dungeons.dungeon-3.name" });
   });
 });
 

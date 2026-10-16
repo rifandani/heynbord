@@ -1,14 +1,18 @@
 import { describe, expect, it } from "vitest";
 
 import { ownedCopies } from "../collection/deck-building";
+import { getFloor } from "../content/floors";
 import { NO_FORGE_STONES } from "../content/forge-stones";
+import { HEYNSPIRE_FLOORS } from "../content/heynspire";
 import { PLAYER_LEVEL_XP } from "../content/player-levels";
 import { STAGES } from "../content/stages";
 import { UNLOCK_LEVELS } from "../content/unlocks";
 import { EXTRACT_ESSENCE } from "../content/workshop";
 import {
   economyStages,
+  expectedFloorGear,
   expectedGear,
+  expectedGearAtLevel,
   heynstoneLedger,
   newEconomyPlayer,
   simulateEconomy,
@@ -179,6 +183,52 @@ describe("expectedGear (ADR-0034)", () => {
     const ids = economyStages().map((stage) => stage.id);
     expect([...gear.keys()]).toEqual(ids);
     expect(run.gearAtStages[ids.indexOf("1-10")]).toEqual(gear.get("1-10"));
+  });
+});
+
+describe("expectedGearAtLevel (ADR-0034)", () => {
+  const gear = expectedGear();
+
+  it("is the Expected Gear of the first Stage at that level", () => {
+    expect(expectedGearAtLevel(10)).toEqual(gear.get("3-1"));
+    expect(expectedGearAtLevel(20)).toEqual(gear.get("5-1"));
+  });
+
+  it("goes on after the Campaign to level 30, with more Gear than at the last Stage", () => {
+    const last = gear.get("5-10");
+    const top = expectedGearAtLevel(30);
+    const sum = (levels: typeof top) =>
+      levels.weapon + levels.armor + levels.trinket + levels.banner;
+    expect(last).toBeDefined();
+    expect(sum(top)).toBeGreaterThan(sum(last ?? NO_GEAR));
+  });
+});
+
+describe("expectedFloorGear (ADR-0034, ADR-0042)", () => {
+  const gear = expectedFloorGear();
+  const sum = (levels: (typeof gear)[number]) =>
+    levels.weapon + levels.armor + levels.trinket + levels.banner;
+
+  it("comes from the Gear of the First-try runs before each Floor", () => {
+    const run = simulateEconomyRun({
+      playStyle: "collector",
+      seed: 1,
+      fixedWinChance: 1,
+    });
+    expect(run.gearAtFloors).toHaveLength(HEYNSPIRE_FLOORS);
+    expect(gear).toHaveLength(HEYNSPIRE_FLOORS);
+    expect(sum(gear[0] ?? NO_GEAR)).toBeGreaterThanOrEqual(
+      sum(run.gearAtFloors[0] ?? NO_GEAR)
+    );
+  });
+
+  it("starts at the Gear of the Recommended level of Floor 1, and never goes down", () => {
+    expect(gear[0]).toEqual(expectedGearAtLevel(getFloor(1).recommendedLevel));
+    for (const [index, levels] of gear.entries()) {
+      expect(sum(levels)).toBeGreaterThanOrEqual(
+        sum(gear[index - 1] ?? NO_GEAR)
+      );
+    }
   });
 });
 

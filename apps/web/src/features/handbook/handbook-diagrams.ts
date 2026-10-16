@@ -15,7 +15,8 @@ export type DiagramId =
   | "pivot"
   | "wall"
   | "ranged"
-  | "firstStrike";
+  | "firstStrike"
+  | "dungeon";
 
 export type DiagramSide = "player" | "enemy";
 
@@ -66,6 +67,11 @@ export interface DiagramZone {
 export interface Diagram {
   readonly lanes: number;
   readonly columns: number;
+  /**
+   * The Fronts of the enemy Heroes, from Lane 0, one block of Lanes each. With
+   * none, the enemy Hero stands behind all the Lanes (a Stage).
+   */
+  readonly enemyFronts?: readonly (readonly number[])[];
   readonly zones: readonly DiagramZone[];
   readonly units: readonly DiagramUnit[];
   readonly arrows: readonly DiagramArrow[];
@@ -206,6 +212,25 @@ export const DIAGRAMS: Readonly<Record<DiagramId, Diagram>> = {
     arrows: [
       { lane: 0, from: 4, to: 5, kind: "attack", side: "player" },
       { lane: 0, from: 5, to: 4, kind: "attack", side: "enemy", faint: true },
+    ],
+  },
+  // Dungeon 1: 2 Bosses on 4 Lanes, each with a Front of 2 Lanes. A Unit at
+  // the end of Lane 3 hits the Boss of the lower Front.
+  dungeon: {
+    lanes: 4,
+    columns: SHORT,
+    enemyFronts: [
+      [0, 1],
+      [2, 3],
+    ],
+    zones: [],
+    units: [
+      { lane: 0, column: 3, side: "player", icon: "melee" },
+      { lane: 2, column: SHORT, side: "player", icon: "melee" },
+      { lane: 1, column: 6, side: "enemy", icon: "melee" },
+    ],
+    arrows: [
+      { lane: 2, from: SHORT, to: SHORT + 1, kind: "attack", side: "player" },
     ],
   },
 };

@@ -6,7 +6,7 @@ import type { PressEvent } from "react-aria-components";
 /**
  * A card whose Card Details show, and the page that it is on: a page of the
  * Deck book, the Token gallery of the Handbook, the cards of opened Packs, the
- * Workshop grid, or the reward of a Stage Panel.
+ * Workshop grid, the reward of a Stage Panel, or the card of a Battle result.
  */
 export interface Peek {
   readonly cardId: string;
@@ -17,7 +17,9 @@ export interface Peek {
     | "handbook"
     | "packs"
     | "workshop"
-    | "campaign";
+    | "campaign"
+    | "dungeons"
+    | "result";
   /** The place of the card, when the page can show two copies of it. */
   readonly place?: string;
 }

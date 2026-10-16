@@ -28,10 +28,15 @@ describe("migrateProfile", () => {
     });
   });
 
-  it("gives 0 Sweep Tickets to a version 1 Profile", () => {
-    const { sweepTickets: _, ...v1 } = { ...newProfile(3), schemaVersion: 1 };
+  it("gives 0 Sweep Tickets of the 2 types to a version 1 Profile", () => {
+    const {
+      campaignSweepTickets: _campaign,
+      dungeonSweepTickets: _dungeon,
+      ...v1
+    } = { ...newProfile(3), schemaVersion: 1 };
     const migrated = Result.getOrThrow(migrateProfile(v1));
-    expect(migrated.sweepTickets).toBe(0);
+    expect(migrated.campaignSweepTickets).toBe(0);
+    expect(migrated.dungeonSweepTickets).toBe(0);
     expect(migrated).toEqual(newProfile(3));
   });
 
@@ -102,6 +107,45 @@ describe("migrateProfile", () => {
     expect(migrated.stageResults).toEqual(v5.stageResults);
   });
 
+  it("makes the Sweep Tickets of a version 6 Profile its Campaign Sweep Tickets, with 0 Dungeon Sweep Tickets (ADR-0041)", () => {
+    const {
+      campaignSweepTickets: _campaign,
+      dungeonSweepTickets: _dungeon,
+      ...rest
+    } = newProfile(3);
+    const v6 = {
+      ...rest,
+      schemaVersion: 6,
+      sweepTickets: 7,
+      dungeonResults: { "dungeon-1": 4 },
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v6));
+    expect(migrated.campaignSweepTickets).toBe(7);
+    expect(migrated.dungeonSweepTickets).toBe(0);
+    expect(migrated).not.toHaveProperty("sweepTickets");
+    expect(migrated.dungeonResults).toEqual(v6.dungeonResults);
+  });
+
+  it("gives no won Floors to a version 7 Profile, and keeps its Stage results", () => {
+    const { heynspireFloorsWon: _, ...v7 } = {
+      ...newProfile(3),
+      schemaVersion: 7,
+      stageResults: { "5-10": 3 },
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v7));
+    expect(migrated.heynspireFloorsWon).toBe(0);
+    expect(migrated.stageResults).toEqual(v7.stageResults);
+  });
+
+  it("refuses a version 6 Profile with no Sweep Tickets", () => {
+    const {
+      campaignSweepTickets: _campaign,
+      dungeonSweepTickets: _dungeon,
+      ...v6
+    } = { ...newProfile(3), schemaVersion: 6 };
+    expect(failure(migrateProfile(v6))?._tag).toBe("InvalidProfile");
+  });
+
   it("refuses a version 2 Profile with Gear that is not levels", () => {
     const v2 = {
       ...newProfile(3),
@@ -160,7 +204,11 @@ describe("migrateProfile", () => {
       { stageResults: { "1-1": 4 } },
       { dungeonResults: { "dungeon-1": 0 } },
       { dungeonResults: { "dungeon-1": 1.5 } },
-      { sweepTickets: -1 },
+      { campaignSweepTickets: -1 },
+      { dungeonSweepTickets: 1.5 },
+      { heynspireFloorsWon: -1 },
+      { heynspireFloorsWon: 51 },
+      { heynspireFloorsWon: 2.5 },
       {
         forgeStones: {
           common: -1,
@@ -178,6 +226,11 @@ describe("migrateProfile", () => {
         failure(migrateProfile({ ...newProfile(3), ...change }))?._tag
       ).toBe("InvalidProfile");
     }
+  });
+
+  it("refuses a Profile of the current version with no won Floors", () => {
+    const { heynspireFloorsWon: _, ...noFloors } = newProfile(3);
+    expect(failure(migrateProfile(noFloors))?._tag).toBe("InvalidProfile");
   });
 
   it("refuses a Profile of the current version with no Forge Stones", () => {

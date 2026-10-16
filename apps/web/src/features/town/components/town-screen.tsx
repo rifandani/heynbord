@@ -1,6 +1,5 @@
 import { useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
-import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, TooltipTrigger } from "react-aria-components";
@@ -10,25 +9,28 @@ import { tutorialStageWonAtom } from "@/features/battle/battle.atoms";
 import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
-import {
-  playerLevelAtom,
-  profileReadyAtom,
-} from "@/features/profile/profile.atoms";
+import { profileReadyAtom } from "@/features/profile/profile.atoms";
 import { BalancePlate } from "@/features/town/components/balance-plate";
+import { FittedPainting } from "@/features/town/components/fitted-painting";
+import {
+  LockPlateText,
+  useTownLockText,
+} from "@/features/town/components/town-lock";
 import type {
   GameScreen,
   Rect,
   SelectableBuilding,
+  TownLock,
 } from "@/features/town/town";
 import {
-  GROUND_LINE,
-  opensAtLevel,
+  glowBox,
   PAINTING,
   PAINTING_IMAGE,
   percentBox,
   SELECTABLE_BUILDINGS,
+  townLock,
 } from "@/features/town/town";
-import { balancesAtom } from "@/features/town/town.atoms";
+import { balancesAtom, townProgressAtom } from "@/features/town/town.atoms";
 
 /** The zoom toward a selected Building, then the fade to its screen (GDD 11.4). */
 const LEAVE_MS = 450;
@@ -49,22 +51,6 @@ const SHIMMER = [
   { x: 1670, y: 247, width: 80 },
   { x: 1803, y: 218, width: 79 },
 ];
-
-/** The Town Bar height. The ground line of the painting stays on its top edge. */
-const TOWN_BAR =
-  "[--town-bar:80px] [@media(max-height:500px)]:[--town-bar:56px]";
-
-/**
- * The painting covers the screen with its ground line on the Town Bar. Its
- * width is the screen width, or the width that fills the height above the
- * Town Bar if that is larger. The extra crops from the sky (GDD 11.4).
- */
-const paintingFrame: CSSProperties & Record<"--town-width", string> = {
-  "--town-width": `max(100vw, calc((100dvh - var(--town-bar)) * ${PAINTING.width / GROUND_LINE}))`,
-  width: "var(--town-width)",
-  aspectRatio: `${PAINTING.width} / ${PAINTING.height}`,
-  bottom: `calc(var(--town-bar) - var(--town-width) * ${(PAINTING.height - GROUND_LINE) / PAINTING.width})`,
-};
 
 const percentX = (x: number) => `${(x / PAINTING.width) * 100}%`;
 const percentY = (y: number) => `${(y / PAINTING.height) * 100}%`;
@@ -116,10 +102,13 @@ const NameLabel = ({
 }) => (
   <span
     className={cn(
-      "font-display z-10 flex items-center rounded-full px-[0.6cqw] text-[max(16px,2cqw)] leading-none font-black text-[#ffd75a]",
+      "font-display z-10 flex items-center rounded-full px-[0.9cqw] text-[max(16px,2cqw)] leading-none font-black text-[#ffd75a]",
       "[text-shadow:0_2px_0_#3b1d08,2px_0_0_#3b1d08,-2px_0_0_#3b1d08,0_-2px_0_#3b1d08,0_4px_6px_rgba(0,0,0,0.5)]",
-      "transition-transform duration-150 group-data-[hovered]:-translate-y-0.5",
-      "group-data-[focus-visible]:bg-[#1c140e]/60 group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
+      // Under the pointer or the focus, the label lifts onto a HUD plate.
+      "border-2 border-transparent transition-[translate,background-color,border-color,box-shadow] duration-150",
+      "group-data-[hovered]:-translate-y-1 group-data-[hovered]:border-[#e9c46a]/70 group-data-[hovered]:bg-[#1c140e]/75 group-data-[hovered]:shadow-[0_3px_0_rgba(0,0,0,0.45)]",
+      "group-data-[focus-visible]:-translate-y-1 group-data-[focus-visible]:bg-[#1c140e]/75 group-data-[focus-visible]:shadow-[0_3px_0_rgba(0,0,0,0.45)] group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]",
+      "group-data-[pressed]:translate-y-0 group-data-[pressed]:shadow-[0_1px_0_rgba(0,0,0,0.45)]"
     )}
     style={{ height }}
   >
@@ -129,57 +118,56 @@ const NameLabel = ({
 
 /**
  * The lock plate in the place of the name label of a Building that the
- * Player level has not unlocked (GDD 11.4): the lock seal of the Town Bar and
- * the level, on a small HUD plate.
+ * Player has not unlocked (GDD 11.4): the lock seal of the Town Bar and the
+ * level, or the ID of the Boss Stage to win first, on a small HUD plate.
  */
 const LockPlate = ({
-  level,
+  lock,
   height,
 }: {
-  readonly level: number;
+  readonly lock: TownLock;
   readonly height: string;
-}) => {
-  const { tr } = useGameText();
-  return (
-    <span className="z-10 flex items-center" style={{ height }}>
-      <span
-        className={cn(
-          "flex items-center gap-1.5 rounded-full border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 py-0.5 pr-2.5 pl-1 text-[max(12px,1.1cqw)] leading-none font-bold whitespace-nowrap text-[#e8d9bb] shadow-[0_3px_0_rgba(0,0,0,0.45)]",
-          "group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
-        )}
-        data-testid="building-lock-plate"
-      >
-        <span className="grid size-[1.6em] place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]">
-          <GlyphIcon glyph="lock" className="size-[0.9em] text-[#e9c46a]" />
-        </span>
-        {tr("town.levelPlate", { level })}
+}) => (
+  <span className="z-10 flex items-center" style={{ height }}>
+    <span
+      className={cn(
+        "flex items-center gap-1.5 rounded-full border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 py-0.5 pr-2.5 pl-1 text-[max(12px,1.1cqw)] leading-none font-bold whitespace-nowrap text-[#e8d9bb] shadow-[0_3px_0_rgba(0,0,0,0.45)]",
+        "group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
+      )}
+      data-testid="building-lock-plate"
+    >
+      <span className="grid size-[1.6em] place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]">
+        <GlyphIcon glyph="lock" className="size-[0.9em] text-[#e9c46a]" />
       </span>
+      <LockPlateText lock={lock} />
     </span>
-  );
-};
+  </span>
+);
 
 /**
- * A Building that the Player can select: its cut-out layer and its label. A
- * Building whose screen the Player level has not unlocked (`opensAt`) cannot
- * be selected: a lock plate replaces its label, and it keeps keyboard focus,
- * so that focus, hover and a tap show its tooltip (GDD 11.4).
+ * A Building that the Player can select: a button over the painted Building,
+ * with its label. Hover and focus lift the label onto a plate and light the
+ * Building. A Building whose screen the Player has not unlocked (`lock`)
+ * cannot be selected: a lock plate replaces its label, and it keeps keyboard
+ * focus, so that focus, hover and a tap show its tooltip (GDD 11.4).
  */
 const BuildingButton = ({
   building,
   pulse,
   disabled,
-  opensAt,
+  lock,
   onSelect,
 }: {
   readonly building: SelectableBuilding;
   readonly pulse: boolean;
   /** True until the Profile loads. */
   readonly disabled: boolean;
-  /** The level that opens the screen of the Building, or `null` when it is open. */
-  readonly opensAt: number | null;
+  /** What still locks the screen of the Building, or `null` when it is open. */
+  readonly lock: TownLock | null;
   readonly onSelect: (building: SelectableBuilding) => void;
 }) => {
   const { tr } = useGameText();
+  const lockText = useTownLockText();
   const [tip, setTip] = useState(false);
   const box = buildingBox(building);
   const labelHeight = `${(building.label.height / box.height) * 100}%`;
@@ -190,8 +178,15 @@ const BuildingButton = ({
     width: `${(building.label.width / box.width) * 100}%`,
     height: labelHeight,
   };
+  const glow = glowBox(building);
+  const glowPlace = {
+    left: `${((glow.x - box.x) / box.width) * 100}%`,
+    top: `${((glow.y - box.y) / box.height) * 100}%`,
+    width: `${(glow.width / box.width) * 100}%`,
+    height: `${(glow.height / box.height) * 100}%`,
+  };
   const name = tr(`town.buildings.${building.id}`);
-  const locked = opensAt !== null;
+  const locked = lock !== null;
   const onPress = (event: PressEvent) => {
     if (!locked) {
       onSelect(building);
@@ -203,9 +198,7 @@ const BuildingButton = ({
     <Button
       onPress={onPress}
       isDisabled={disabled}
-      aria-label={
-        locked ? tr("town.lockedAtLevel", { name, level: opensAt }) : undefined
-      }
+      aria-label={lock ? lockText.named(name, lock) : undefined}
       className={cn(
         "group absolute flex flex-col items-center outline-none",
         locked && "cursor-default"
@@ -215,42 +208,29 @@ const BuildingButton = ({
       data-locked={locked || undefined}
     >
       <span className="z-10 flex justify-center self-start" style={labelPlace}>
-        {locked ? (
-          <LockPlate level={opensAt} height="100%" />
+        {lock ? (
+          <LockPlate lock={lock} height="100%" />
         ) : (
           <NameLabel name={name} height="100%" />
         )}
       </span>
-      <span className="relative w-full flex-1">
-        <span
-          className={cn(
-            "absolute inset-[-8%] rounded-full bg-[radial-gradient(closest-side,rgba(255,224,138,0.9),transparent)] opacity-0 transition-opacity",
-            pulse &&
-              "opacity-40 motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]",
-            !locked &&
-              "group-data-[focus-visible]:opacity-80 group-data-[hovered]:opacity-80"
-          )}
-          aria-hidden
-        />
-        <img
-          src={building.image}
-          alt=""
-          draggable={false}
-          className={cn(
-            // The layer is cut from the painting, so it grows from its base and
-            // does not show the painted gate below it.
-            "relative size-full origin-bottom object-contain transition-[scale,filter] duration-150",
-            !locked && [
-              "group-data-[hovered]:scale-[1.04] group-data-[hovered]:drop-shadow-[0_0_14px_rgba(255,224,138,0.95)]",
-              "group-data-[focus-visible]:scale-[1.04] group-data-[focus-visible]:drop-shadow-[0_0_14px_rgba(255,224,138,0.95)]",
-              "group-data-[pressed]:scale-[1.01]",
-            ]
-          )}
-        />
-      </span>
+      <span
+        className={cn(
+          // A soft light on the painted Building: the screen blend makes it
+          // brighter and does not cover it. It does not take the pointer:
+          // the light can go past the Building box.
+          "pointer-events-none absolute rounded-full bg-[radial-gradient(closest-side,rgba(255,224,138,0.9),transparent)] opacity-0 mix-blend-screen transition-opacity duration-150",
+          pulse &&
+            "opacity-40 motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]",
+          !locked &&
+            "group-data-[focus-visible]:opacity-50 group-data-[hovered]:opacity-50"
+        )}
+        style={glowPlace}
+        aria-hidden
+      />
     </Button>
   );
-  if (!locked) {
+  if (!lock) {
     return button;
   }
   return (
@@ -269,7 +249,7 @@ const BuildingButton = ({
       >
         {name}
         <span className="block font-normal text-[#e9c46a]">
-          {tr("town.opensAtLevel", { level: opensAt })}
+          {lockText.reason(lock)}
         </span>
       </GameTooltip>
     </TooltipTrigger>
@@ -327,10 +307,10 @@ export const useTownLeave = (
 };
 
 /**
- * The Town (GDD 11.4, web ADR-0005): the master painting with one cut-out
- * layer for each Building that the Player can select. The painting covers the
- * screen and crops its edges. `leaving` is the Building that the Town zooms
- * toward on its way out (`useTownLeave`). Until the Profile loads, the Town
+ * The Town (GDD 11.4, web ADR-0005): the master painting with one button for
+ * each Building that the Player can select. The full painting shows above
+ * the Town Bar, on a soft backdrop of itself (`FittedPainting`). `leaving` is
+ * the Building that the Town zooms toward on its way out (`useTownLeave`). Until the Profile loads, the Town
  * shows no balances and no Building opens, so that the values of a new Player
  * never show first.
  */
@@ -345,7 +325,7 @@ export const TownScreen = ({
   const ready = useAtomValue(profileReadyAtom);
   const tutorialWon = useAtomValue(tutorialStageWonAtom);
   const balances = useAtomValue(balancesAtom);
-  const level = useAtomValue(playerLevelAtom);
+  const progress = useAtomValue(townProgressAtom);
 
   useEffect(() => {
     // The Town has no Three.js, so the Battle chunk loads in the background.
@@ -361,26 +341,23 @@ export const TownScreen = ({
   return (
     <main
       aria-label={tr("town.label")}
-      className={cn(
-        "fade-in animate-in fixed inset-0 overflow-hidden bg-[#8fd0f5] duration-300 motion-reduce:animate-none",
-        TOWN_BAR
-      )}
+      className="fade-in animate-in fixed inset-0 overflow-hidden bg-[#8fd0f5] duration-300 motion-reduce:animate-none"
       data-testid="town"
     >
-      <div
+      <FittedPainting
+        src={PAINTING_IMAGE}
+        width={PAINTING.width}
+        height={PAINTING.height}
         className={cn(
-          "@container absolute left-1/2 -translate-x-1/2",
-          "transition-[scale,opacity] duration-[450ms] ease-in",
+          "@container transition-[scale,opacity] duration-[450ms] ease-in",
           leaving && "scale-[1.12] opacity-0 motion-reduce:scale-100"
         )}
-        style={{ ...paintingFrame, transformOrigin: origin }}
+        style={{ transformOrigin: origin }}
+        backdropClassName={cn(
+          "transition-opacity duration-[450ms] ease-in",
+          leaving && "opacity-0"
+        )}
       >
-        <img
-          src={PAINTING_IMAGE}
-          alt=""
-          draggable={false}
-          className="absolute inset-0 size-full select-none"
-        />
         <TownAmbient />
         {SELECTABLE_BUILDINGS.map((building) => (
           <BuildingButton
@@ -388,11 +365,11 @@ export const TownScreen = ({
             building={building}
             pulse={ready && !tutorialWon && building.id === "townGate"}
             disabled={!ready}
-            opensAt={ready ? opensAtLevel(building, level) : null}
+            lock={ready ? townLock(building, progress) : null}
             onSelect={select}
           />
         ))}
-      </div>
+      </FittedPainting>
       {ready ? (
         <BalancePlate
           balances={balances}

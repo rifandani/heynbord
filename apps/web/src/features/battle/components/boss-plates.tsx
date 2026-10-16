@@ -161,22 +161,13 @@ const Notch = ({
 const BossHp = ({
   hero,
   breaking,
-  compact,
 }: {
   readonly hero: HeroView;
   readonly breaking: number | null;
-  /** Hides the maximum HP on a narrow screen. The label of the plate has it. */
-  readonly compact: boolean;
 }) => {
   const percent = Math.max(0, Math.min(100, (hero.hp / hero.maxHp) * 100));
   return (
     <div className="flex items-center gap-1.5 [@media(max-height:500px)]:gap-1">
-      {compact ? (
-        <GlyphIcon
-          glyph={classGlyph(hero.classId)}
-          className="hidden size-4 shrink-0 text-[#f2a49c] [@media(max-width:1100px)]:block"
-        />
-      ) : null}
       <div className="relative h-2.5 min-w-6 flex-1 [@media(max-height:500px)]:h-2">
         <div className="absolute inset-0 overflow-hidden rounded-full bg-black/60 ring-1 ring-white/20">
           <div
@@ -198,12 +189,7 @@ const BossHp = ({
       </div>
       <span className="text-sm leading-none font-black whitespace-nowrap text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xs">
         {hero.hp}
-        <span
-          className={cn(
-            "text-xs font-medium text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]",
-            compact && "[@media(max-width:1100px)]:hidden"
-          )}
-        >
+        <span className="text-xs font-medium text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]">
           /{hero.maxHp}
         </span>
       </span>
@@ -364,8 +350,6 @@ interface BossPlateProps {
   /** True when the keyboard focuses the Hero target of this Boss. */
   readonly focused: boolean;
   readonly event: BattleEvent | null | undefined;
-  /** Hides the name, so that 3 plates fit a narrow screen. The name stays in the label. */
-  readonly compact: boolean;
 }
 
 /**
@@ -385,7 +369,6 @@ const BossPlate = ({
   target,
   focused,
   event,
-  compact,
 }: BossPlateProps) => {
   const { tr } = useGameText();
   const [open, setOpen] = useState(false);
@@ -441,24 +424,14 @@ const BossPlate = ({
       >
         <LaneStrip front={defeated ? [] : hero.front} lanes={lanes} />
         <span className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-          <span
-            className={cn(
-              "truncate text-right text-sm leading-tight font-semibold text-[#fff6df] [@media(max-height:500px)]:text-xs",
-              compact && "[@media(max-width:1100px)]:sr-only"
-            )}
-          >
+          <span className="truncate text-right text-sm leading-tight font-semibold text-[#fff6df] [@media(max-height:500px)]:text-xs">
             {name}
           </span>
-          {defeated ? null : (
-            <BossHp hero={hero} breaking={breaking} compact={compact} />
-          )}
+          {defeated ? null : <BossHp hero={hero} breaking={breaking} />}
           {defeated ? <DefeatedSeal /> : <BossHand hand={hero.hand} />}
         </span>
         <span
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center self-start rounded-lg text-[#fff6df] [@media(max-height:500px)]:size-7",
-            compact && "[@media(max-width:1100px)]:hidden"
-          )}
+          className="flex size-10 shrink-0 items-center justify-center self-start rounded-lg text-[#fff6df] [@media(max-height:500px)]:size-7"
           style={{
             background: `linear-gradient(180deg, ${ENEMY.light}, ${ENEMY.dark})`,
           }}
@@ -472,7 +445,7 @@ const BossPlate = ({
         {rule ? <RuleLabel rule={rule} name={name} /> : null}
       </Button>
       <GameTooltip
-        placement="bottom"
+        placement="left"
         offset={8}
         className="w-[min(18rem,80vw)] rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-3 py-2 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
         data-testid="boss-details"
@@ -522,7 +495,7 @@ export const BossPlates = ({ battle }: { readonly battle: Battle }) => {
     <div className="min-w-0" style={style}>
       <ol
         aria-label={tr("battle.bosses")}
-        className="flex min-w-0 items-start justify-end gap-1.5"
+        className="flex min-w-0 flex-col items-end gap-1"
         data-testid="boss-plates"
         data-count={heroes.length}
       >
@@ -532,7 +505,10 @@ export const BossPlates = ({ battle }: { readonly battle: Battle }) => {
             <li
               // oxlint-disable-next-line react/no-array-index-key react-doctor/no-array-index-as-key -- a Boss is its index in the Side; the list never changes order.
               key={index}
-              className="w-[clamp(7.5rem,15vw,14rem)] min-w-0 shrink [@media(max-height:500px)]:w-[clamp(6.25rem,14vw,10rem)]"
+              className="relative w-[clamp(9rem,18vw,14rem)] min-w-0 [@media(max-height:500px)]:w-[clamp(9.5rem,18vw,11rem)]"
+              // A Boss Rule label comes out of the bottom of its plate: it
+              // shows over the plates below it.
+              style={{ zIndex: heroes.length - index }}
             >
               <BossPlate
                 battle={battle}
@@ -544,7 +520,6 @@ export const BossPlates = ({ battle }: { readonly battle: Battle }) => {
                 target={target}
                 focused={target !== undefined && focusedTarget === target}
                 event={event}
-                compact={heroes.length >= 3}
               />
             </li>
           );

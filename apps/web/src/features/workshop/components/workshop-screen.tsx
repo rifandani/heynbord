@@ -2,19 +2,28 @@ import { useAtomValue } from "@effect/atom-react";
 import type { RankId } from "@workspace/rules";
 import { EXTRACT_ESSENCE, getCard } from "@workspace/rules";
 import { cn } from "cn";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { SoundName } from "@/features/battle/battle-audio";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
+import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import { PoolFilters } from "@/features/deck/components/pool-filters";
 import type { PoolFilter } from "@/features/deck/deck";
 import { DEFAULT_POOL_FILTER } from "@/features/deck/deck";
 import { deckSlotsAtom } from "@/features/deck/deck.atoms";
 import { BalancePlate } from "@/features/town/components/balance-plate";
+import type { Flight } from "@/features/workshop/components/essence-flight";
+import {
+  EssenceFlight,
+  measureFlight,
+} from "@/features/workshop/components/essence-flight";
 import type { ExtractRequest } from "@/features/workshop/components/extract-dialog";
 import { ExtractDialog } from "@/features/workshop/components/extract-dialog";
-import type { Burst } from "@/features/workshop/components/rank-panel";
+import type {
+  Burst,
+  Extraction,
+} from "@/features/workshop/components/rank-panel";
 import { RankPanel } from "@/features/workshop/components/rank-panel";
 import { WorkshopGrid } from "@/features/workshop/components/workshop-grid";
 import { WorkshopScene } from "@/features/workshop/components/workshop-scene";
@@ -23,6 +32,7 @@ import { useWorkshop } from "@/features/workshop/use-workshop";
 import {
   emptyGridText,
   extractNeedsConfirm,
+  extractTimeline,
   nextRank,
   selectedTile,
   workshopTiles,
@@ -42,8 +52,16 @@ const RANK_CHIME: Readonly<Partial<Record<RankId, SoundName>>> = {
 /** The face of the card shows at this time of its turn: the chime plays then. */
 const FACE_MS = 200;
 
-/** The sounds of a new copy: the anvil, then the chime of a Rare+ copy. */
-const useAnvilSounds = () => {
+/** At most this many Extracts fly at one time; an older one stops. */
+const MAX_FLIGHTS = 4;
+
+/**
+ * The sounds of the Workshop. A new copy: the anvil, then the chime of a
+ * Rare+ copy. An Extract: the melt, the chime of a Rare+ copy when the melt
+ * starts, and a small glass note when the first Essence drop gets to the
+ * balance. With reduced motion, they all play at the press.
+ */
+const useWorkshopSounds = () => {
   const timers = useRef<number[]>([]);
   useEffect(() => {
     const pending = timers.current;
@@ -53,15 +71,32 @@ const useAnvilSounds = () => {
       }
     };
   }, []);
-  return (rank: RankId) => {
-    unlockAudio();
-    playSound("anvil", 0);
-    const chime = RANK_CHIME[rank];
-    if (chime) {
-      timers.current.push(
-        window.setTimeout(() => playSound(chime, 0), FACE_MS)
-      );
+  const later = (ms: number, sound: SoundName) => {
+    if (ms <= 0 || prefersReducedMotion()) {
+      playSound(sound, 0);
+      return;
     }
+    timers.current.push(window.setTimeout(() => playSound(sound, 0), ms));
+  };
+  return {
+    anvil: (rank: RankId) => {
+      unlockAudio();
+      playSound("anvil", 0);
+      const chime = RANK_CHIME[rank];
+      if (chime) {
+        later(FACE_MS, chime);
+      }
+    },
+    extract: (rank: RankId) => {
+      unlockAudio();
+      playSound("extract", 0);
+      const { meltAt, firstArrival } = extractTimeline(rank);
+      const chime = RANK_CHIME[rank];
+      if (chime) {
+        later(meltAt, chime);
+      }
+      later(firstArrival, "essenceIn");
+    },
   };
 };
 
@@ -70,9 +105,11 @@ const useAnvilSounds = () => {
  * cards with the filters of the Deck builder at the left, and the Rank panel
  * of the selected card at the right. Combine, Extract and Craft are single
  * actions. A Combine or a Craft turns the panel card over to the new copy with
- * the Rank burst and the anvil sound, and the Coin counts down; an Extract
- * makes the Essence count up. An Extract of a copy that a saved Deck uses, or
- * of an Epic or Legendary copy, asks first.
+ * the Rank burst and the anvil sound, and the Coin counts down. An Extract
+ * lifts the copy off the panel card and melts it into Essence drops that fly
+ * to the Essence balance, more and brighter for a higher Rank; the Essence
+ * counts up when the first drop gets there. An Extract of a copy that a saved
+ * Deck uses, or of an Epic or Legendary copy, asks first.
  */
 export const WorkshopScreen = () => {
   const { tr, text } = useGameText();
@@ -81,11 +118,21 @@ export const WorkshopScreen = () => {
   const [filter, setFilter] = useState<PoolFilter>(DEFAULT_POOL_FILTER);
   const [selected, setSelected] = useState<string | null>(null);
   const [burst, setBurst] = useState<Burst | null>(null);
+  const [extraction, setExtraction] = useState<Extraction | null>(null);
+  const [flights, setFlights] = useState<readonly Flight[]>([]);
+  // The number of Extracts in this visit: each one has its own melt and drops.
+  const extracts = useRef(0);
+  // The Essence counts up when the first drop of an Extract gets to it, and
+  // at once after a Craft.
+  const [essenceDelay, setEssenceDelay] = useState(0);
   const [request, setRequest] = useState<ExtractRequest | null>(null);
   const [said, setSaid] = useState("");
-  const anvil = useAnvilSounds();
+  const sounds = useWorkshopSounds();
   const coin = useCountTo(workshop.coin);
-  const essence = useCountTo(workshop.essence);
+  const essence = useCountTo(workshop.essence, essenceDelay);
+  const landed = useCallback((serial: number) => {
+    setFlights((current) => current.filter((item) => item.serial !== serial));
+  }, []);
 
   const tiles = useMemo(
     () => workshopTiles(workshop.collection, filter),
@@ -96,10 +143,12 @@ export const WorkshopScreen = () => {
   const select = (cardId: string) => {
     setSelected(cardId);
     setBurst(null);
+    setExtraction(null);
   };
 
   const showNewCopy = (cardId: string, rank: RankId) => {
-    anvil(rank);
+    sounds.anvil(rank);
+    setExtraction(null);
     setBurst((current) => ({
       cardId,
       rank,
@@ -126,6 +175,7 @@ export const WorkshopScreen = () => {
   };
 
   const onCraft = (): boolean => {
+    setEssenceDelay(0);
     if (!tile || !workshop.craft(tile.cardId)) {
       return false;
     }
@@ -142,11 +192,19 @@ export const WorkshopScreen = () => {
   };
 
   const extractNow = ({ cardId, rank }: ExtractRequest) => {
+    extracts.current += 1;
+    const serial = extracts.current;
+    // Read the places of the drops before the panel changes.
+    const flight = prefersReducedMotion() ? null : measureFlight(rank, serial);
+    setEssenceDelay(flight ? extractTimeline(rank).firstArrival : 0);
     if (!workshop.extract(cardId, rank)) {
       return;
     }
-    unlockAudio();
-    playSound("select", 0);
+    sounds.extract(rank);
+    setExtraction({ cardId, rank, serial });
+    if (flight) {
+      setFlights((current) => [...current.slice(1 - MAX_FLIGHTS), flight]);
+    }
     setSelected(cardId);
     setSaid(
       tr("workshop.done.extract", {
@@ -199,17 +257,9 @@ export const WorkshopScreen = () => {
           )}
         >
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 [@media(max-height:500px)]:gap-x-2 [@media(max-height:500px)]:gap-y-1">
-            <h2
-              id="workshop-grid-title"
-              className="font-display flex items-baseline gap-2 text-base font-bold text-[#ffe08a] [@media(max-height:500px)]:sr-only"
-            >
+            {/* The title stays for screen readers: it names the section. */}
+            <h2 id="workshop-grid-title" className="sr-only">
               {tr("workshop.grid")}
-              <span
-                className="font-sans text-xs font-semibold text-[#e8d9bb] tabular-nums"
-                data-testid="workshop-count"
-              >
-                {tr("workshop.count", { count: tiles.length })}
-              </span>
             </h2>
             <PoolFilters
               filter={filter}
@@ -237,12 +287,16 @@ export const WorkshopScreen = () => {
             essence={workshop.essence}
             level={workshop.level}
             burst={burst}
+            extraction={extraction}
             onCombine={onCombine}
             onExtract={onExtract}
             onCraft={onCraft}
           />
         ) : null}
       </div>
+      {flights.map((flight) => (
+        <EssenceFlight key={flight.serial} flight={flight} onDone={landed} />
+      ))}
       <ExtractDialog
         request={request}
         slots={slots}

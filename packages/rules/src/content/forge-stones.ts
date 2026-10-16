@@ -85,7 +85,7 @@ export const regionForgeStoneTier = (region: number): ForgeStoneTier => {
 /** The Forge Stones of a Stage first win, also of a Boss Stage (Economy 2.1). */
 export const STAGE_FIRST_WIN_FORGE_STONES = 1;
 
-/** The chance of 1 Forge Stone from a repeat win or a Sweep Ticket, in basis points (Economy 2.1). */
+/** The chance of 1 Forge Stone from a Stage repeat win or a Campaign Sweep Ticket, in basis points (Economy 2.1). */
 export const REPEAT_WIN_FORGE_STONE_CHANCE = 1000;
 
 /**

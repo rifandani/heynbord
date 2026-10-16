@@ -293,16 +293,26 @@ export const GLYPHS = {
   scroll:
     "M-33 -47 H33 A7 7 0 0 1 33 -33 H-33 A7 7 0 0 1 -33 -47 Z M-28 -30 H28 V31 H-28 Z M-18 -19 H18 V-13 H-18 Z M-18 -5 H18 V1 H-18 Z M-18 9 H6 V15 H-18 Z M-33 34 H33 A7 7 0 0 1 33 48 H-33 A7 7 0 0 1 -33 34 Z",
   /**
-   * A Sweep Ticket: a ticket stub with a round notch in each end, a line of
-   * holes to tear it, and a star. Fill only: the holes and the star are cut.
+   * A Campaign Sweep Ticket: a ticket stub with a round notch in each end, a
+   * line of holes to tear it, and a star, as the Stars of a Stage. Fill only:
+   * the holes and the star are cut.
    */
-  ticket:
+  campaignTicket:
     "M-40 -28 H40 Q46 -28 46 -22 V-8 A8 8 0 0 0 46 8 V22 Q46 28 40 28 H-40 Q-46 28 -46 22 V8 A8 8 0 0 0 -46 -8 V-22 Q-46 -28 -40 -28 Z M-23 -20 H-17 V-12 H-23 Z M-23 -4 H-17 V4 H-23 Z M-23 12 H-17 V20 H-23 Z M12 -15 L15.8 -5.2 L26.3 -4.6 L18.2 2.1 L20.8 12.1 L12 6.5 L3.2 12.1 L5.8 2.1 L-2.3 -4.6 L8.2 -5.2 Z",
+  /**
+   * A Dungeon Sweep Ticket: the stub of the Campaign Sweep Ticket with the
+   * mouth of the cave glyph in place of the star. Fill only: the holes and
+   * the cave mouth are cut.
+   */
+  dungeonTicket:
+    "M-40 -28 H40 Q46 -28 46 -22 V-8 A8 8 0 0 0 46 8 V22 Q46 28 40 28 H-40 Q-46 28 -46 22 V8 A8 8 0 0 0 -46 -8 V-22 Q-46 -28 -40 -28 Z M-23 -20 H-17 V-12 H-23 Z M-23 -4 H-17 V4 H-23 Z M-23 12 H-17 V20 H-23 Z M0 13 Q0 -11 12 -15 Q24 -11 24 13 Z",
   /** Play in the Battle Log. */
   play: "M-24 -38 L38 0 L-24 38 Z",
   pause: "M-32 -38 H-10 V38 H-32 Z M10 -38 H32 V38 H10 Z",
   /** One Log Entry forward. Mirrored, one back. */
   step: "M-36 -34 L16 0 L-36 34 Z M24 -34 H34 V34 H24 Z",
+  /** Share Replay: one point that sends to two points. */
+  share: `${circle(-24, 0, 11)} ${circle(24, -26, 11)} ${circle(24, 26, 11)} M-24 0 L24 -26 M-24 0 L24 26`,
   lock: "M-0.336 -46.619c-15.83 0 -28.637 12.79 -28.637 28.595V-3.906h9.686v-13.495c0 -10.48 8.49 -18.982 18.951 -18.982c10.462 0 18.952 8.739 18.952 18.982V-3.906h9.686v-14.117c0 -15.402 -12.835 -28.595 -28.638 -28.595ZM-33.368 -0.256c-2.854 4.458 -4.462 9.599 -4.462 14.996c0 17.257 16.596 31.543 37.494 31.543c20.898 0 37.494 -14.286 37.494 -31.543c0 -5.397 -1.613 -10.537 -4.468 -14.996H-33.368ZM-0.391 4.419c4.363 0 7.983 3.504 7.983 7.867c0 3.273 -2.07 6.1 -4.907 7.3l6.391 19.165h-18.823l6.274 -19.165c-2.837 -1.2 -4.791 -4.027 -4.791 -7.3c0 -4.363 3.51 -7.867 7.873 -7.867Z",
 } as const;
 
@@ -321,7 +331,8 @@ export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
   "skillCard",
   "wall",
   "scroll",
-  "ticket",
+  "campaignTicket",
+  "dungeonTicket",
 ]);
 
 /**

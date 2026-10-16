@@ -58,7 +58,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Speed**: The maximum number of Squares that a Unit goes forward in its Movement in one Turn. Each Unit has a Base Speed of 2. Keywords, Statuses and Skill Cards change it. _Avoid_: move, pace, Movement points
 
-**Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units, but it stops before an enemy Flying Unit. A Grounded Unit moves as a ground Unit. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
+**Movement**: The part of a Unit's action in which it goes forward in its Lane, up to its Speed. A Unit moves through friendly Units, but it stops before an enemy Unit. A Flying Unit moves over all Units, but it stops before an enemy Flying Unit. A Grounded Unit moves as a ground Unit. A Ranged Unit stops in the first empty Square from which it has a target in its Range. A Unit always stops in an empty Square. _Avoid_: walk, advance, march
 
 **Sudden Death**: Damage to each Hero of the active Side that is not Defeated, in each Start Phase from a set Turn number, so that every Battle ends. _Avoid_: fatigue, overtime
 
@@ -110,9 +110,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Battle seed**: The start value of the random numbers in one Battle. The same seed and the same Commands give the same Battle. _Avoid_: random seed, RNG
 
-**Replay**: The Battle seed, the Decks, the Stage and the list of Commands of one Battle. The rules run it again and get the same Battle. _Avoid_: Battle Log, recording, demo
+**Replay**: The Battle seed, the Stage, the Dungeon or the Floor, the Class, Deck, level and Gear of the Player, and the list of Commands of one Battle. The rules run it again and get the same Battle. A Replay is correct only for the rules version that made it: after a change to the rules or the content, the same Commands can give a different Battle. _Avoid_: Battle Log, recording, demo, battle export
 
 **Abandon**: The end of a Battle when the Player leaves it before a win or a loss. An Abandoned Battle records no result. _Avoid_: quit, forfeit, surrender, retreat
+
+**Loss share**: The part of the loss reward that a loss gives: the share of the total HP of the enemy Heroes that they lost in the Battle. A loss with no lost enemy Hero HP gives nothing. _Avoid_: consolation, participation reward, pity reward
 
 ### Cards and Units
 
@@ -298,11 +300,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Stage**: One Battle in the Campaign, with a fixed enemy and rewards. _Avoid_: level, mission
 
-**Recommended level**: The Player level that the First-try Path gives before a Stage. A new Player with no Gear is expected to win the Stage on the first try at this level. The Player can see it. _Avoid_: expected level, suggested level, required level
+**Recommended level**: The Player level that the First-try Path gives before a Stage or a Floor. A new Player with no Gear is expected to win the Stage or the Floor on the first try at this level. The Player can see it. _Avoid_: expected level, suggested level, required level
 
-**First-try Path**: The first win of each earlier Stage, in Stage order, with no losses and no repeats. It gives the smallest XP that a Player can have at a Stage. _Avoid_: golden path, ideal run, expected path
+**First-try Path**: The first win of each earlier Stage, in Stage order, with no losses and no repeats. After the last Stage, it continues with the first win of each Floor and then with Dungeon wins, until Player level 30. It gives the smallest XP that a Player can have at a Stage or at a Dungeon unlock level. _Avoid_: golden path, ideal run, expected path
 
-**Expected Gear**: The highest Gear levels that a Player on the First-try Path has before a Stage, over all Play Styles. It is level 0 for each Stage before Gear unlocks. _Avoid_: typical Gear, recommended Gear
+**Expected Gear**: The highest Gear levels that a Player on the First-try Path has before a Stage or a Floor, or when it gets to the unlock level of a Dungeon, over all Play Styles. It is level 0 for each Stage before Gear unlocks. _Avoid_: typical Gear, recommended Gear
 
 **Boss Stage**: The last Stage of a Region, with special rules. Its enemy Hero is a Boss. _Avoid_: boss level, raid
 
@@ -332,11 +334,27 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Floor**: One Battle in Heynspire. _Avoid_: level, stage
 
-**Auto-play**: A mode in which the enemy AI logic plays the Player's Cards. _Avoid_: bot, auto battle
+**Boss Floor**: Each 10th Floor. Its enemy Hero is a Boss. _Avoid_: milestone Floor, guardian Floor, 10th-Floor boss
 
-**Sweep**: The use of 1 to 10 Sweep Tickets on a 3-Star Stage. Each Ticket gives one repeat-win reward of the Stage at once, with no Battle. _Avoid_: auto battle, quick battle, auto-resolve, raid, skip
+**Current Floor**: The lowest Floor that the Player has not won. It is the only Floor that the Player can fight. After the win of Floor 50, Heynspire has no Current Floor. _Avoid_: next Floor, top Floor, active Floor
 
-**Sweep Ticket**: An earn-only item that the Player uses for a Sweep. A win that the Player plays gives Sweep Tickets. _Avoid_: Skip Ticket, raid ticket, energy, stamina
+**Campaign card pool**: The Cards in the enemy Decks of all Stages. A Floor template uses only these Cards. _Avoid_: Campaign pool, Stage pool
+
+**Floor template**: The enemy of one group of Floors, written by hand: an enemy name, a Race theme, a Class and a Deck of Base Rank copies from the Campaign card pool. 9 Floor templates make the normal Floors, and each Boss Floor has its own. _Avoid_: Floor preset, Floor blueprint
+
+**Strength curve**: The rule that gives, for a Floor number, the Rank steps, the Hero HP, the Gear and the Deck size of the enemy of a Floor. With a Floor template, it makes the Floor. _Avoid_: difficulty curve, scaling, level curve
+
+**Auto-play**: A mode in which the enemy AI logic plays the Player's Cards. The Player cannot start it. _Avoid_: bot, auto battle
+
+**Sweep**: The use of 1 to 10 Tickets of one type on a Stage or a Dungeon. Each Ticket gives one repeat-win reward at once, with no Battle. A Sweep is a Campaign Sweep or a Dungeon Sweep. _Avoid_: auto battle, quick battle, auto-resolve, raid, skip
+
+**Campaign Sweep**: A Sweep of a 3-Star Stage. It uses Campaign Sweep Tickets. _Avoid_: Stage Sweep
+
+**Dungeon Sweep**: A Sweep of a Dungeon that the Player won. It uses Dungeon Sweep Tickets. _Avoid_: Boss Sweep, raid
+
+**Campaign Sweep Ticket**: An earn-only item that the Player uses for a Campaign Sweep. A Stage win and a Floor win give Campaign Sweep Tickets. _Avoid_: Sweep Ticket, Stage Ticket, Skip Ticket, raid ticket, energy, stamina
+
+**Dungeon Sweep Ticket**: An earn-only item that the Player uses for a Dungeon Sweep. A Dungeon win gives Dungeon Sweep Tickets. _Avoid_: Sweep Ticket, Boss Ticket, key, raid ticket, energy, stamina
 
 **Hold Rule**: A condition of the AI for one type of Skill Card effect. While the condition is false, the AI keeps a Ready Card with that effect in the Hand and does not play it. It is not a game rule: a Player can play the same Card at any time. _Avoid_: reserve, save, hold threshold
 
@@ -367,16 +385,17 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
 - A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
 - A **Deck** holds a **Card** and a **Rank**, not one specific **Card copy**. After a **Combine**, a Deck that used the old-Rank copies uses the new-Rank copy. After an **Extract**, the copy goes out of each Deck that used it. A Card stays **Discovered** after its last copy is Extracted.
-- Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage. A loss or a repeat win gives XP too, so a real Player is at or above the level of the **First-try Path**.
+- Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage. A loss (its **Loss share**) or a repeat win gives XP too, so a real Player is at or above the level of the **First-try Path**.
 - Each **Stage** hits its win-rate target two times: with no **Gear** and with the **Expected Gear**, both at the **Recommended level**. A Player who loses gets **Gear** sooner. That is a catch-up, not a miss.
 - A **Region** has 10 **Stages**, and the last one is a **Boss Stage**.
-- The **Tutorial** ends with the first win of Stage 1-1. A loss or an **Abandon** does not end it. A later play of Stage 1-1 is a normal **Stage**. The Tutorial has 4 **Tutorial Steps**. Auto-play is not available in the Tutorial. A **Hint** shows one time for each subject, at any time after the Tutorial.
-- The Player can **Sweep** a **Stage** only when its best **Stars** are 3. A Sweep always wins: each **Sweep Ticket** gives one repeat-win reward. A Sweep never changes the **Stars**, and it gives no Sweep Tickets.
-- A win that the Player plays gives 2 **Sweep Tickets**: in a **Stage**, a **Dungeon** or a **Floor**. A loss, an **Abandon** and an **Auto-play** win give none. The Bazaar never sells Sweep Tickets, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0035](../../docs/adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)).
+- The **Tutorial** ends with the first win of Stage 1-1. A loss or an **Abandon** does not end it. A later play of Stage 1-1 is a normal **Stage**. The Tutorial has 4 **Tutorial Steps**. A **Hint** shows one time for each subject, at any time after the Tutorial.
+- The Player can do a **Campaign Sweep** of a **Stage** only when its best **Stars** are 3, and a **Dungeon Sweep** of a **Dungeon** only when it has 1 or more wins. A Sweep always wins: each Ticket gives one repeat-win reward. A Sweep never changes the **Stars** or the wins of a Dungeon, and it gives no Tickets.
+- A **Stage** win and a **Floor** win give 2 **Campaign Sweep Tickets**. A **Dungeon** win gives 1 **Dungeon Sweep Ticket**. A loss and an **Abandon** give none. The two types of Ticket never change into each other. The Bazaar never sells them, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0035](../../docs/adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md), [ADR-0041](../../docs/adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).
 - A **Gear upgrade** to level _n_ uses 1 **Forge Stone** of the tier of level _n_. A Forge Stone of a different tier cannot replace it, and Forge Stones never combine or change into a different tier. The Bazaar never sells Forge Stones, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0038](../../docs/adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
 - A **Stage** first win, a 10-Star **Star chest**, a repeat win, a **Sweep**, a **Dungeon** win and some **Floor** first wins give **Forge Stones** (Economy 2). Only Dungeon 3 wins and the first wins of the 10th Floors give Legendary Forge Stones. The Player keeps them before **Gear** unlocks.
 - A **Boss** has 0 or more **Boss Rules** ([ADR-0040](../../docs/adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)). A Boss Rule activates at most one time in a Battle, and never for a **Defeated** Boss. A Boss Rule never heals a Hero ([ADR-0028](../../docs/adr/0028-nothing-heals-a-hero.md)). A Boss Rule that can still put a Unit on the Board stops its Side from being **Routed** until it activates.
 - A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**. The **Recommended level** of a Dungeon is its unlock level.
+- **Heynspire** opens with the first win of the last **Boss Stage**. The Player fights only the **Current Floor**, and a won **Floor** cannot be played again: it has no repeat-win reward and no **Sweep**. A Floor win gives no **Stars**. Each Floor hits the win-rate target of a **Stage**, and each **Boss Floor** the target of a **Boss Stage**, with no **Gear** and with the **Expected Gear** ([ADR-0042](../../docs/adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md)).
 - The Player has one balance of **Coin**, shown in **Gold**, **Silver** and **Copper**, and a separate balance of **Heynstones**.
 - **Coin** and **Heynstones** never change into each other or into **Essence**.
 
@@ -408,6 +427,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - **Charge** gave +2 Speed at each Rank before. Now it is **Charge N**, and N increases with the Rank from 1 to a maximum of 3. Speed does not increase with the Rank, but Charge does. Thus a higher Rank makes a Charge Unit faster only in the Turn when it is summoned.
 - GDD 4.5 said "Units never move through other Units", and a friendly Unit blocked a Lane. Now a Unit moves through friendly Units, also a friendly Wall, and only an enemy Unit stops its **Movement** ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)). A push still stops before any Unit, because a push is not Movement.
 - A Flying Unit moved over all Units before, also enemy Flying Units. Now an enemy Flying Unit stops a Flying Unit, the same as an enemy Unit stops a ground Unit ([ADR-0018](../../docs/adr/0018-a-unit-moves-through-friendly-units.md)).
+- A **Ranged Unit** that had no target in its Range at the start of its action moved up to its full Speed before, also when a target came into its Range after 1 Square. Then it stood nearer to the enemy than its Range made necessary. Now its **Movement** stops in the first empty Square from which it has a target in its Range.
 - In many games, "bleed" is damage over time. In Heynbord, **Bleeding** does no damage: it only makes heals smaller. Damage over time is **Burn** or **Poisoned** ([ADR-0019](../../docs/adr/0019-bleed-is-a-feral-keyword-on-two-cards.md)).
 - GDD 4.6 says "a Unit with Attack 0 does not attack", but a bonus could make the Attack 1. The rule uses **Base Attack**, so Rally and Swarm never make a Wall attack.
 - A **Wall** did not move or attack only because it had Speed 0 and Base Attack 0. Then a Speed or Attack buff, also Charge, could make a Wall move or attack. Now the Wall Keyword itself stops Movement, attacks, Retaliate and First Strike. The Attack 0 of a Wall Card is only a rule for the Card, so that the Power Budget does not count a stat that has no effect. A Wall Card had Speed 0 before. Now it has the Base Speed 2, the same as each Unit, and the Wall Keyword stops its Movement.
@@ -431,5 +451,5 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The Player feature that shows the past moments of the current Battle is the **Battle Log** (web), not a **Replay**. A Replay is the data that runs a full Battle again, for bug reports and for result checks in PvP.
 - **Bulwark** reduced all damage except Holy before. Then Holy was the only Damage Type that went through Bulwark. Now **Bulwark N** reduces only Physical damage, so Fire, Frost, Lightning and Holy all go through it. The new special rule of Holy is that it cannot be **Blocked**.
 - The Keyword **Bulwark N** had the name "Armor N" before. "Armor" is also the name of a Gear slot, but Armor Gear gives Hero HP and does not reduce damage. Now "Armor" is only the Gear slot. ADR-0031 and the old rows of the balance log still say "Armor".
-- GDD 4.12 had watched **Auto-play** on each won Stage. Then an Auto-play win could give more **Stars**, and the AI could open **Star chests** for the Player. Now a Stage has the **Sweep**, only at 3 Stars. A Sweep is not Auto-play: it plays no Battle. Watched Auto-play stays only on won **Dungeons**. "Skip Ticket" is not a term, because **Skip** already means to skip the animations of a Resolution Phase. The term is **Sweep Ticket**.
+- GDD 4.12 had watched **Auto-play** on each won Stage. Then an Auto-play win could give more **Stars**, and the AI could open **Star chests** for the Player. Now a Stage has the **Sweep**, only at 3 Stars. A Sweep is not Auto-play: it plays no Battle. Watched Auto-play stayed only on won **Dungeons**. Then the **Dungeon Sweep** replaced it, and now the Player cannot start Auto-play ([ADR-0041](../../docs/adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)). "Skip Ticket" is not a term, because **Skip** already means to skip the animations of a Resolution Phase. "Sweep Ticket" was the name of the **Campaign Sweep Ticket** before the **Dungeon Sweep Ticket** was added. It is not a term now: say which type.
 - The first name of **Forge Stone** was "Enchanting Gem". It is not a term: "gems" is a word to avoid for **Heynstones**, and a Player can think that money buys them. "Enchant" is a word to avoid for **Gear upgrade**. For the same reasons, the item for Gear levels 21 to 25 is not a "Legendary Gem". It is the Legendary **Forge Stone tier**.

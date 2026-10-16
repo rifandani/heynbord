@@ -64,7 +64,11 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Key Guide**: The list of the keys that play a full Battle and what each key does. It opens from the info button in the Top Bar, on hover, on keyboard focus and on press. "Read more" on a Hint for a screen control opens it at the line of its key, and marks that line. _Avoid_: keyboard help, hotkeys, shortcuts, accessibility info, controls hint
 
-**Battle Log**: The view-only mode of the Battle screen that shows the past moments of the current Battle. It has the list of Log Entries, and the Board, the Hand Bar and the Heroes show the selected Log Entry. It shows only what the Player saw at that moment. It never changes the Battle, and it goes away when the Player leaves the Battle. _Avoid_: replay, rewind, history, combat log, turn history, undo
+**Battle Log**: The view-only mode of the Battle screen that shows the past moments of the current Battle, or of a Replay that the Player watches. It has the list of Log Entries, and the Board, the Hand Bar and the Heroes show the selected Log Entry. It shows only what the Player of that Battle saw at that moment. It never changes the Battle, and it goes away when the Player leaves the Battle. _Avoid_: replay, rewind, history, combat log, turn history, undo
+
+**Watching a Replay**: The Battle Log of a Replay, not of the current Battle. It has no Live: all of the Battle is in the past. It plays from the first Log Entry, and it does not show the result until the last Log Entry. Then it shows the result with no rewards. It never sends a Command and never changes the Profile. _Avoid_: replay mode, spectate, playback, import
+
+**Replay Link**: A link that holds one full Replay. The Player shares it from the result of a Stage Battle, a Dungeon Battle or a Floor Battle. To open it starts Watching a Replay at once, in place of the Town. _Avoid_: share code, battle export, Battle Log export, replay file
 
 **Log Entry**: One past moment in the Battle Log: one card play, one Unit Action or one Phase effect, with all its results. The Log Entries are under one header for each Turn of a Side. _Avoid_: log line, event, step, history item
 
@@ -74,7 +78,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town**: The hub screen of the game, and the first screen that the Player sees. It is a painted view of a town, with one Building for each screen that the Player can open. _Avoid_: Camp, city, hub, home, lobby, main menu
 
-**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop and the Barracks can be selected. _Avoid_: hotspot, landmark, location, house
+**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave and the Heynspire tower can be selected. _Avoid_: hotspot, landmark, location, house
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
 
@@ -82,7 +86,11 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Barracks**: The Building that opens the Hero screen: a long stone barracks with a fenced training yard. It opens at Player level 5. _Avoid_: Hero Building, armory, training hall
 
-**Lock Plate**: The small plate with a lock and a level that replaces the name label of a Building whose screen the Player level has not unlocked. It has the same "Opens at level N" tooltip as the Town Bar shortcut. _Avoid_: level badge, locked label
+**Dungeons cave**: The Building that opens the Dungeons screen: a cave in grey rocks with ruined pillars, at the right edge of the Town. It opens at Player level 10. It is the one Building outside the safe area, so a narrow screen crops it, and the Dungeons shortcut is the sure way in. _Avoid_: dungeon entrance, cave Building, mine
+
+**Heynspire tower**: The Building that opens the Heynspire screen: the white castle with the tall tower and the blue roofs on the hill at the back of the Town. It opens with the first win of Stage 5-10, not at a Player level. Its label is on the walls of the castle, because a wide screen crops the top of the tower. _Avoid_: castle Building, spire Building, endless tower
+
+**Lock Plate**: The small plate with a lock that replaces the name label of a Building whose screen the Player has not unlocked. It shows the level that opens the screen, or, for the Heynspire tower, the ID of the Boss Stage to win first with a small crown. It has the same tooltip as the Town Bar shortcut: "Opens at level N", or "Win Marrow Castle (5-10) to open". _Avoid_: level badge, locked label
 
 **Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and a shortcut to the Handbook. _Avoid_: menu bar, nav bar, footer, dock
 
@@ -104,7 +112,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Stage Panel**: The dialog that opens when the Player selects a Stage Marker. It shows the Stage, its enemy Hero, its rewards, the best Stars and the Deck, and it starts the Battle. _Avoid_: stage popup, stage details, pre-battle screen, lobby
 
-**Sweep Result**: The dialog that shows the result of a Sweep: the total Coin, XP and cards of all its Tickets, and the Sweep Tickets that stay. _Avoid_: sweep report, auto-play summary, loot screen
+**Sweep Result**: The dialog that shows the result of a Campaign Sweep or a Dungeon Sweep: the total rewards of all its Tickets, and the Tickets of that type that stay. _Avoid_: sweep report, auto-play summary, loot screen
 
 ### Packs screen
 
@@ -121,6 +129,22 @@ React app on TanStack Start. The server renders and streams each page.
 ### Hero screen
 
 **Hero screen**: The screen that shows the Player's Hero: its Class, its Hero HP and its 4 Gear items. The Player does Gear upgrades there. It shows the Class of the Active Deck, and it opens the Deck dialog to change it. _Avoid_: Character screen, armory, equipment screen, Gear screen, profile
+
+### Dungeons screen
+
+**Notice Board**: The wood board on the Dungeons screen that holds the Wanted Posters of the Bosses of one Dungeon and the Front Strip under them. _Avoid_: boss list, briefing panel, bounty board
+
+**Wanted Poster**: The parchment poster of one Boss on the Notice Board: its pin, its Class seal, its name and Class, its Hero HP with a notch at each Boss Rule threshold, its Boss Rules and the Lanes of its Front. After a win of the Dungeon, the poster carries the "Bounty claimed" stamp. On a short screen, the poster is a slip with the same facts. _Avoid_: boss card, boss profile, enemy card
+
+**Front Strip**: The small Board from above under the Wanted Posters: the Lanes from Lane 1 at the top, the Player's Hero at the left, and one Front Bracket for each Boss at the right with the pin of its poster. It is not the Lane Strip of a Boss Plate. _Avoid_: lane map, board preview, mini-map
+
+### Heynspire screen
+
+**Floor rail**: The tower on the Heynspire screen: the 50 Floors from Floor 1 at the bottom to Floor 50 at the top, in 5 Flights, under the summit flag. The Flight of the Current Floor is open, and the other Flights are folded. Each Floor shows Won, Current or Locked. _Avoid_: floor list, ladder, level list, tower map
+
+**Flight**: A group of 10 Floors on the Floor rail that ends on a Boss Floor: Floors 1 to 10, 11 to 20, and so on. An open Flight shows its Floors as a stair of arched doors that climbs to the Boss landing. A folded Flight is a band with its Floors, a strip of 10 cells, its Boss and its count. It is a term of the screen only, not a rules term: the Player sees "Floors 11–20". _Avoid_: tier, chapter, section, stage group, milestone
+
+**Floor Panel**: The dialog that opens when the Player selects the Current Floor or a won Floor. Like the Stage Panel, it shows the Floor, its enemy Hero, the Recommended level and the reward. For the Current Floor it also has the Deck choice and Fight. A won Floor shows its reward with no Fight, because a won Floor cannot be played again. _Avoid_: floor popup, floor details, pre-battle screen
 
 ### Workshop screen
 
@@ -140,7 +164,9 @@ React app on TanStack Start. The server renders and streams each page.
 
 ## Relationships
 
-- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, and the Barracks opens the Hero screen. Later, the Bazaar Building opens the Bazaar.
+- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, and the Heynspire tower opens the Heynspire screen. Later, the Bazaar Building opens the Bazaar.
 - The **Handbook** and the **Card Details** show the same rule text for a Keyword, a Status or a Damage Type. The Handbook never has its own copy of a rule.
 - A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.
 - The **Battle Log** shows the Battle Events that the screen already played. It never shows a later moment than **Live**. While it is open, the Live playback pauses.
+- **Watching a Replay** uses the **Battle Log** mode, but for a **Replay**, not for the current Battle. It has no **Live**, so it has no "Back to Live". The rules run the Replay again to make its Battle Events.
+- A **Replay Link** holds a **Replay** (rules), not a **Battle Log**. The Battle Log is only a mode of the screen, and it has no data to share.

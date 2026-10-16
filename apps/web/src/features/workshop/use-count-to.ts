@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 
@@ -11,11 +11,20 @@ const easeOut = (t: number) => 1 - (1 - t) ** 3;
 /**
  * A number that counts to `value` when `value` changes: the Essence counts up
  * after an Extract, and the Coin counts down after a Combine (GDD 7.4). It
- * shows only whole numbers. With reduced motion, it changes at once.
+ * shows only whole numbers. The count starts `delay` ms after the change, so
+ * that the Essence counts up when the first Essence drop gets to it. With
+ * reduced motion, it changes at once.
  */
-export const useCountTo = (value: number): number => {
+export const useCountTo = (value: number, delay = 0): number => {
   const [shown, setShown] = useState(value);
   const from = useRef(value);
+  // The delay of the change that starts a count. A layout effect sets it
+  // before the count effect reads it; a change of the delay alone does not
+  // start a count.
+  const wait = useRef(delay);
+  useLayoutEffect(() => {
+    wait.current = delay;
+  }, [delay]);
   useEffect(() => {
     if (prefersReducedMotion() || from.current === value) {
       from.current = value;
@@ -23,10 +32,11 @@ export const useCountTo = (value: number): number => {
       return;
     }
     const start = from.current;
-    const began = performance.now();
+    // The count starts after the delay.
+    const began = performance.now() + wait.current;
     let frame = 0;
     const step = (now: number) => {
-      const t = Math.min((now - began) / COUNT_MS, 1);
+      const t = Math.min(Math.max(now - began, 0) / COUNT_MS, 1);
       const current = Math.round(start + (value - start) * easeOut(t));
       from.current = current;
       setShown(current);

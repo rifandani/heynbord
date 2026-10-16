@@ -32,7 +32,7 @@ describe("newProfile", () => {
     expect(profile.activeDeckId).toBe(INITIAL_DECK_SLOTS[0]?.id);
   });
 
-  it("has no Forge Stones, Stage results, Dungeon results, Star chests, Unopened Packs, Sweep Tickets or seen Hints", () => {
+  it("has no Forge Stones, Stage results, Dungeon results, won Floors, Star chests, Unopened Packs, Sweep Tickets or seen Hints", () => {
     const profile = newProfile(42);
     expect(profile.forgeStones).toEqual({
       common: 0,
@@ -43,9 +43,11 @@ describe("newProfile", () => {
     });
     expect(profile.stageResults).toEqual({});
     expect(profile.dungeonResults).toEqual({});
+    expect(profile.heynspireFloorsWon).toBe(0);
     expect(profile.claimedStarChests).toEqual({});
     expect(profile.unopenedPacks).toEqual([]);
-    expect(profile.sweepTickets).toBe(0);
+    expect(profile.campaignSweepTickets).toBe(0);
+    expect(profile.dungeonSweepTickets).toBe(0);
     expect(profile.seenHints).toEqual([]);
     expect(profile.packState.guaranteeCounters).toEqual({
       peddler: 0,

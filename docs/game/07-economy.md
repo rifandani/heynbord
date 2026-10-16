@@ -9,8 +9,8 @@ Pillar 1 ("Fair to the player") controls all decisions in this document.
 | Resource | Type | How the player gets it | What it is for |
 | --- | --- | --- | --- |
 | **Coin** | Soft currency | Battles, Star chests, Heynspire, Achievements | Packs, Combine, Gear upgrades, Deck slots |
-| **Heynstones** | Rare currency | 30-Star chests, 10th Heynspire Floors, Achievements (one time each) | Cosmetics and Conveniences in the Bazaar |
-| **Essence** | Craft resource | Extract, Heynspire milestones, Achievements | Craft |
+| **Heynstones** | Rare currency | 10th Heynspire Floors, Achievements (one time each) | Cosmetics and Conveniences in the Bazaar |
+| **Essence** | Craft resource | Extract, Heynspire Boss Floors, Achievements | Craft |
 | **XP** | Progress | Battles | Player level |
 | **Stars** | Progress | Stage wins | Star chests |
 | **Forge Stones** | Gear resource, 5 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire | Gear upgrades |
@@ -84,7 +84,7 @@ The jump from 160 to 340 XP at level 6 is intentional, because Region 1 is the f
 
 **First-try Path.** The First-try Path is the first win of each earlier Stage, in Stage order (Region, then Stage number), with no losses and no repeats. The **Recommended level** of a Stage is the Player level that the First-try Path gives before that Stage. A content test checks each Stage. When this table, a reward in section 2.1 or a Stage changes, update the Recommended levels. Then run `sim stage` again ([14 — Campaign Stages](./14-campaign-stages.md#11-recommended-level)).
 
-A loss gives 25% of the XP of a win, and a repeat win gives the normal XP (section 2.1). Thus a real Player is at or above the level of the First-try Path. The Recommended level is a floor.
+A loss gives up to 25% of the XP of a win (its Loss share), and a repeat win gives the normal XP (section 2.1). Thus a real Player is at or above the level of the First-try Path. The Recommended level is a floor.
 
 **Anchor check.** The first wins of a Region give 880 XP (Region 1), 1,540 XP (Region 2), 2,200 XP (Region 3), 2,860 XP (Region 4) and 3,520 XP (Region 5). On the First-try Path:
 
@@ -116,9 +116,9 @@ On the First-try Path, the Region 1 Stages get the Player levels 1, 1, 2, 2, 3, 
 
 - A Boss Stage gives ×2 of the values above.
 - A first win also gives 1 Forge Stone of the tier of the Region: Common in Regions 1 and 2, Uncommon in Regions 3 and 4, and Rare in Region 5. A Boss Stage gives the same Forge Stone.
-- A repeat win has a 10% chance to give 1 Forge Stone of the tier of the Region. A Sweep uses the same rule for each Sweep Ticket. A loss gives no Forge Stone.
-- A loss gives 10% of the Coin and 25% of the XP of a win.
-- A Sweep (GDD 4.12) gives one repeat-win reward for each Sweep Ticket, with no Battle. Each win that the player plays gives 2 Sweep Tickets.
+- A repeat win has a 10% chance to give 1 Forge Stone of the tier of the Region. A Campaign Sweep uses the same rule for each Campaign Sweep Ticket. A loss gives no Forge Stone.
+- A loss gives 10% of the Coin and 25% of the XP of a win, but only its **Loss share**: these values × the share of the total HP of the enemy Heroes that they lost in the Battle, rounded down. A loss with no lost enemy Hero HP gives nothing. Thus a Player cannot get Coin and XP from fast losses where they only end the Turns ([ADR-0043](../adr/0043-a-loss-gives-only-the-share-of-the-lost-enemy-hero-hp.md)).
+- A Campaign Sweep (GDD 4.12) gives one repeat-win reward for each Campaign Sweep Ticket, with no Battle. A Stage win and a Floor win give 2 Campaign Sweep Tickets. A loss and an Abandon give none.
 - A repeat win has a 20% chance to give one card from the Stage card pool, in its Base Rank. The Stage card pool is the different cards of the enemy Deck of the Stage, but not a Skill Card of a Class that is not the Class of the player's Deck. Each card in the pool has the same chance.
 
 ### 2.2 Star chests
@@ -129,7 +129,9 @@ Each Region has 3 Star chests.
 | --- | --- |
 | 10 | 300 Coin, 1 Merchant Pack and 2 Forge Stones of the tier of the Region |
 | 20 | 30 Essence and 1 Merchant Race Pack. The player selects the Race, as for a Race Pack bought with Coin. |
-| 30 | 150 Heynstones and 100 Essence |
+| 30 | 500 Coin, 100 Essence and 1 Royal Pack |
+
+Star chests give no Heynstones [ADR-0044](../adr/0044-star-chests-give-no-heynstones.md).
 
 The data is `STAR_CHESTS` in `packages/rules/src/content/star-chests.ts`. Keep the code and this table the same.
 
@@ -141,7 +143,12 @@ The data is `STAR_CHESTS` in `packages/rules/src/content/star-chests.ts`. Keep t
 | Each 5th Floor that is not a 10th Floor | Also 2 Rare Forge Stones |
 | Each 10th Floor | Also 1 earn-only Cosmetic, 150 Essence, 50 Heynstones, 2 Epic Forge Stones and 1 Legendary Forge Stone |
 
-The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`. Keep the code and this table the same.
+- **No replay.** The player fights only the Current Floor, and a won Floor cannot be played again. Thus a Floor win is always a first win. A Floor has no repeat-win reward and no Sweep.
+- A win also gives 2 Campaign Sweep Tickets, as a Stage win ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)). A Floor win gives no Stars and no card.
+- A loss uses the rule of a Stage loss (section 2.1): 10% of the Coin and 25% of the XP of the win, and only the Loss share of them. The Loss share uses the HP of the enemy Hero. A loss gives no Essence, no Heynstones, no Forge Stones and no Tickets. An Abandon gives nothing.
+- The game does not give the earn-only Cosmetic yet, because the list of Cosmetics does not exist. Later, a migration gives one Cosmetic for each won Boss Floor. Thus the player loses nothing.
+
+The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`, and the result action is `applyFloorResult` in `packages/rules/src/profile/floor-result.ts`. Keep the code and this table the same.
 
 ### 2.4 Dungeons
 
@@ -152,7 +159,8 @@ The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`. 
 | 3 (player level 30) | 400 | — (15 Essence) | ×3 Coin, 100 Essence, and a fixed card |
 
 - The values start at the Boss Stage values of the Region that the player usually plays at the unlock level.
-- A loss and a repeat win use the same rules as a Campaign Stage (section 2.1). The card pool is the Dungeon card pool.
+- A loss and a repeat win use the same rules as a Campaign Stage (section 2.1). The Loss share uses the HP of all the Bosses, and it also applies to the Essence of Dungeon 3. The card pool is the Dungeon card pool.
+- A win gives 1 Dungeon Sweep Ticket and no Campaign Sweep Tickets. A loss and an Abandon give none. A Dungeon Sweep (GDD 4.12) gives one repeat-win reward for each Dungeon Sweep Ticket, with no Battle: the Coin, the XP or the Essence, the card chance, and the Forge Stone rolls with the Legendary roll of Dungeon 3. The Class of the Active Deck sets the card pool. A Dungeon Sweep does not add to the wins of the Dungeon ([ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).
 - A win has a 25% chance to give 1 Forge Stone: Uncommon in Dungeon 1, Rare in Dungeon 2 and Epic in Dungeon 3. The first win gives 3 Forge Stones in place of the chance. A loss gives none.
 - Dungeon 3 also gives Legendary Forge Stones ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)): 1 for the first win, and a 10% chance of 1 for a repeat win. This roll is separate from the Epic roll.
 - Dungeons give no Heynstones, so the v1 Heynstone supply (section 2.6) does not change.
@@ -171,11 +179,10 @@ All Heynstone sources are one-time rewards. The player cannot farm Heynstones.
 | Source | Heynstones |
 | --- | --- |
 | Achievements (about 40) | About 1,000 |
-| 30-Star chests (5) | 750 |
 | 10th Heynspire Floors (5) | 250 |
-| **Total** | **About 2,000** |
+| **Total** | **About 1,250** |
 
-The total is about 83% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock. With 5 Regions, the 30-Star chests give 750 Heynstones (it was 450 with 3 Regions). Check the total again when the Bazaar is planned in M4.
+The total is about 52% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock. The 30-Star chests gave 750 Heynstones before [ADR-0044](../adr/0044-star-chests-give-no-heynstones.md). Check the total again when the Bazaar is planned in M4.
 
 The data is `HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`. The Achievements value and the Bazaar catalog cost are estimates until their lists exist. Keep the code and this table the same.
 
@@ -357,7 +364,8 @@ Use these targets to tune the numbers. Check them with an economy simulation and
 - **Priest Skill Cards of issue #61.** Unbroken Vow, Cleanse (Rare) and Aegis of Dawn (Epic) make 122 cards in `cards.ts`. The milestone does not move, for the same reason as #59: the simulated Player Discovers only the Warrior Skill Cards, and the all-cards Pack rows do not change. The Priest Class Pack pool now has 10 cards, the same as the Ranger pool, with the same results (`bun run sim packs`, 2026-10-12): 76.0 Peddler Packs for the 9 cards from Common to Rare, 9.8 Merchant Packs and 4.0 Royal Packs for all 10 cards (it was 9.3, 2.3 and 2.0).
 - **Warrior Skill Cards of issue #63.** Expose Weakness, Call to Arms (Rare) and Onslaught (Epic) make 125 cards in `cards.ts`. The simulated Player Discovers the Warrior Skill Cards, so the "Discovered" medians of the economy sim (7.1, 200 seeds) go down by 1 to 2 points. At the end of Region 3, the Player has Discovered 73% (Collector), 54% (Upgrader) and 73% (Balanced) of the cards (it was 75%, 56% and 74%). At Heynspire Floor 50, it is 95%, 61% and 89% (it was 96%, 63% and 91%, 2026-10-12). The targets do not change: they wait for the re-tune in M3. In `bun run sim packs`, the all-cards Pack of a Warrior needs 1544.3 Peddler Packs for all cards from Common to Rare (it was 1408.3), 117.5 Merchant Packs (107.7) and 38.8 Royal Packs (36.3). The Warrior Class Pack pool now has 10 cards, with the same results as the Ranger and Priest pools: 76.0 Peddler Packs for the 9 cards from Common to Rare, 9.8 Merchant Packs and 4.0 Royal Packs for all 10 cards (it was 9.3, 2.3 and 2.0).
 - **Mage Skill Cards of issue #65.** Spark (Common), Arc Lightning (Uncommon), Wildfire, Thunderstorm (Rare) and Blizzard (Epic) make 130 cards in `cards.ts`. The milestone does not move, for the same reason as #59: the simulated Player Discovers only the Warrior Skill Cards, and the all-cards Pack rows do not change. The Mage Class Pack pool now has 10 cards, with the same results as the other Class pools (`bun run sim packs`, 2026-10-12): 76.1 Peddler Packs for the 9 cards from Common to Rare, 9.4 Merchant Packs and 4.0 Royal Packs for all 10 cards (it was 6.1, 1.8 and 1.0 for the 5 Common and Uncommon cards).
-- **Sweep ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)).** With 2 Sweep Tickets for each played win, the Player can get 3 repeat-win rewards for the time of 1 Battle. The First-try Path and the targets that use its levels do not change. A Player who repeats Stages gets to the late targets (for example Player level 30) faster. The M3 re-tune must check the number of Tickets for each win and the repeat-win rewards with the Sweep. The economy sim does not use the Sweep yet.
+- **Sweep ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md), [ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).** With 2 Campaign Sweep Tickets for each Stage or Floor win, the Player can get 3 Stage repeat-win rewards for the time of 1 Battle. With 1 Dungeon Sweep Ticket for each Dungeon win, the Player can get 2 Dungeon repeat-win rewards for the time of 1 Battle. The First-try Path and the targets that use its levels do not change. A Player who repeats Stages or Dungeons gets to the late targets (for example Player level 30) faster. The M3 re-tune must check the number of Campaign Sweep Tickets for each win with the Stage repeat-win rewards, and the number of Dungeon Sweep Tickets for each win with the Dungeon 3 rewards (Essence, Epic and Legendary Forge Stones). The economy sim does not use the Sweeps yet.
+- **Boss Floors at the Boss target ([ADR-0042](../adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md), issue #97).** The economy sim (7.1, 200 seeds) gives each Boss Floor the base chance of a Boss Stage (40%), not of a normal Stage (70%). At Heynspire Floor 50, the median Battles are 129 (Collector), 128 (Upgrader) and 130 (Balanced), and the hours are 17.2, 17.1 and 17.3. It was 123, 123 and 125 Battles and 16.4, 16.4 and 16.7 hours (2026-10-16). 4, 4 and 9 of the 200 Players get to Player level 30 before they win Floor 50, so the sim stops before Floor 50 for them. The other values at Floor 50 move by 1 or less, but not the unspent Coin (222, 105 and 29 Copper; it was 207, 135 and 25). The mean Gear level is 15.8, 15.3 and 13.0. The Balanced row of "Gear mostly at level 14 or higher" still fails.
 - Total XP to level 21 (Deck size 30) is 8,380. Total XP to level 30 is 24,130.
 
 ## 5. Monetization rules after v1
@@ -392,7 +400,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 **Win chance.** Each Battle is a win or a loss from a win chance:
 
-- The base chance of a Stage is the middle of its win-rate target (GDD 13): 70% for a normal Stage, 40% for a Boss Stage, and 97.5%, 92.5% and 87.5% for Stages 1-1 to 1-3. For a Heynspire Floor and a Dungeon, it is the middle of the target of a normal Stage (70%).
+- The base chance of a Stage is the middle of its win-rate target (GDD 13): 70% for a normal Stage, 40% for a Boss Stage, and 97.5%, 92.5% and 87.5% for Stages 1-1 to 1-3. For a Heynspire Floor, it is the middle of its target: 70% for a normal Floor and 40% for a Boss Floor ([ADR-0042](../adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md)). For a Dungeon, it is the middle of the target of a normal Stage (70%).
 - The base chance is for a Player at the Recommended level with no Gear. The Recommended level of a Heynspire Floor is the First-try Path level before it (after all Stages and the earlier Floors). The Recommended level of a Dungeon is its unlock level.
 - Each Player level above the Recommended level adds **0.5 points**, and each mean Gear level adds **1.25 points**, up to a cap of **95%**. The cap does not lower a base chance above it. `sim stage --level N --gear N` measured the two bonuses one time on 2026-10-10: on Region 1 with Vanguard (600 Battles for each Stage), the mean win rate of the normal Stages 1-4 to 1-9 went from 71.8% to 74.3% at 5 levels above, and to 83.8% at Gear 10 (90.6% at Gear 20). The measurement used the old Gear scale of 0 to 10, at 2.5 points for each old level. One old level is 2 levels now ([ADR-0037](../adr/0037-gear-has-20-levels-with-the-power-of-the-old-10.md)). The Boss Stage went from 39.7% to 42.2%, 57.3% and 70.7%. The constants are in the sim. When they change, change this section too.
 - **Stars.** A Stage win gives **2 Stars**. `sim stage` on Region 1 gives about 2 Stars for each win. The Player does not repeat won Stages, so the 10-Star and the 20-Star chests open, but the 30-Star chest never opens in the sim.
@@ -425,9 +433,9 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 - Achievements give no Coin or Essence in the sim, because the list of Achievements does not exist. The results are a floor.
 - A repeat win gives no card. The Stage card pool exists in the rules (`stageCardPool`), but the sim does not use it yet.
-- The Player does not repeat Stages or Sweep, so the repeat-win and the Sweep Forge Stones are not in the sim. The Player never plays Dungeon 3, because it gives no XP, so its Epic and Legendary Forge Stones are not in the sim. The Forge Stone results are a floor.
-- The Dungeons give no first-win card in the sim. Only Dungeon 1 has one now (`DUNGEONS`), and the sim does not use it yet.
-- The 30-Star chests do not open (see **Stars**). The Heynstone ledger counts them.
+- The Player does not repeat Stages and does not use a Campaign Sweep or a Dungeon Sweep, so the Stage repeat-win and the Sweep Forge Stones are not in the sim. The sim does not count Sweep Tickets. The Player never plays Dungeon 3, because it gives no XP, so its Epic and Legendary Forge Stones are not in the sim. The Forge Stone results are a floor.
+- The Dungeons give no first-win card in the sim. Only Dungeons 1 and 2 have one now (`DUNGEONS`), and the sim does not use it yet.
+- The 30-Star chests do not open (see **Stars**).
 
 **Time.** One Battle is **8 minutes**, with the time in menus. The report shows Battles and hours. If the hour targets of section 4 do not agree with each other, change a target, not this value.
 

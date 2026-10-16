@@ -10,10 +10,13 @@ import {
   selectLogEntry,
   setBattleLogSpeed,
   stepBattleLog,
+  atLastEntry,
+  watchBattleLog,
 } from "@/features/battle/battle-log-session";
 import type { BattleSession } from "@/features/battle/battle-session";
 import {
   autoPlayTurn,
+  setSpeed,
   skip,
   startSession,
   tick,
@@ -95,5 +98,52 @@ describe("the Battle Log state", () => {
     expect(log.book.entries).toEqual([]);
     expect(stepBattleLog(log, 1, false)).toBe(log);
     expect(canPlayLog(log)).toBe(false);
+  });
+});
+
+describe("the Battle Log of a Replay", () => {
+  const replay = { ...setSpeed(played(4), 2), watching: true };
+
+  it("Plays at ×1 from before the first Log Entry, and the list shows no Log Entry yet", () => {
+    const log = watchBattleLog(replay);
+    expect(log.playing).toBe(true);
+    expect(log.selected).toBe(-1);
+    expect(log.reached).toBe(-1);
+    expect(log.shown.speed).toBe(1);
+    expect(log.shown.view).toEqual(replay.start);
+    expect(log.shown.queue).toEqual(replay.log);
+    expect(atLastEntry(log)).toBe(false);
+  });
+
+  it("shows each Log Entry that the Play reached, also after a step back", () => {
+    let log = watchBattleLog(replay);
+    for (let frame = 0; frame < 20_000 && log.playing; frame += 1) {
+      log = advanceBattleLog(log, tick(log.shown, 100));
+      expect(log.reached).toBe(Math.max(log.selected, log.reached));
+    }
+    const last = log.book.entries.length - 1;
+    expect(log.reached).toBe(last);
+    expect(atLastEntry(log)).toBe(true);
+    const back = stepBattleLog(log, -1, true);
+    expect(back.reached).toBe(last);
+    expect(atLastEntry(back)).toBe(false);
+  });
+
+  it("steps from before the first Log Entry to the first one", () => {
+    const paused = pauseBattleLog(watchBattleLog(replay));
+    expect(paused.selected).toBe(-1);
+    expect(stepBattleLog(paused, -1, false)).toBe(paused);
+    const first = stepBattleLog(paused, 1, false);
+    expect(first.selected).toBe(0);
+    expect(first.reached).toBe(0);
+  });
+
+  it("does not step or end in a Battle Log with no Log Entry", () => {
+    const empty = openBattleLog(played(0));
+    expect(empty.book.entries).toEqual([]);
+    expect(stepBattleLog(empty, 1, false)).toBe(empty);
+    expect(atLastEntry(empty)).toBe(false);
+    expect(advanceBattleLog(empty, empty.shown)).toBe(empty);
+    expect(pauseBattleLog(empty)).toBe(empty);
   });
 });

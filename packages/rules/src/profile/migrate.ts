@@ -65,6 +65,25 @@ export const PROFILE_MIGRATIONS = {
       : profile,
   /** Version 6 adds the Dungeon results. An old save has won no Dungeon. */
   5: (profile) => ({ ...profile, dungeonResults: {} }),
+  /**
+   * Version 7 has 2 types of Sweep Ticket (ADR-0041). The old Sweep Tickets
+   * are the Campaign Sweep Tickets. An old save has no Dungeon Sweep Tickets,
+   * also when it won Dungeons. A save with no Sweep Tickets stays without
+   * them, and the decode refuses it.
+   */
+  6: ({ sweepTickets, ...profile }) =>
+    sweepTickets === undefined
+      ? { ...profile, dungeonSweepTickets: 0 }
+      : {
+          ...profile,
+          campaignSweepTickets: sweepTickets,
+          dungeonSweepTickets: 0,
+        },
+  /**
+   * Version 8 adds the Heynspire progress. An old save has won no Floor. The
+   * first win of Stage 5-10 opens Heynspire, also for an old save.
+   */
+  7: (profile) => ({ ...profile, heynspireFloorsWon: 0 }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

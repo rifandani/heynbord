@@ -1,11 +1,43 @@
 import type { ClassId, Profile, SweepRewards } from "@workspace/rules";
-import { applySweep, MAX_SWEEP_TICKETS } from "@workspace/rules";
+import {
+  applyCampaignSweep,
+  applyDungeonSweep,
+  MAX_SWEEP_TICKETS,
+} from "@workspace/rules";
 
-/** The best Stars of a Stage that shows the Sweep (GDD 4.12, ADR-0035). */
-const SWEEP_STARS = 3;
+import type { Glyph } from "@/features/battle/glyphs";
 
-/** True when the Stage Panel shows the Sweep: the best Stars of the Stage are 3. */
-export const isSweepable = (stars: number): boolean => stars === SWEEP_STARS;
+/**
+ * The 2 kinds of Sweep (GDD 4.12): a Campaign Sweep of a Stage (ADR-0035)
+ * and a Dungeon Sweep of a Dungeon (ADR-0041). Each kind uses its own type
+ * of Sweep Ticket.
+ */
+export type SweepKind = "campaign" | "dungeon";
+
+/** The glyph of the Sweep Ticket of each kind: a star for a Stage, a cave mouth for a Dungeon. */
+export const TICKET_GLYPH: Readonly<Record<SweepKind, Glyph>> = {
+  campaign: "campaignTicket",
+  dungeon: "dungeonTicket",
+};
+
+/** The best Stars of a Stage that shows the Campaign Sweep (ADR-0035). */
+const CAMPAIGN_SWEEP_STARS = 3;
+
+/** True when the Stage Panel shows the Campaign Sweep: the best Stars of the Stage are 3. */
+export const isCampaignSweepable = (stars: number): boolean =>
+  stars === CAMPAIGN_SWEEP_STARS;
+
+/** True when the Dungeons screen shows the Dungeon Sweep: the Dungeon has 1 or more wins (ADR-0041). */
+export const isDungeonSweepable = (wins: number): boolean => wins >= 1;
+
+/** The Sweep Tickets of `kind` that the Player has. */
+export const ownedTickets = (
+  profile: Pick<Profile, "campaignSweepTickets" | "dungeonSweepTickets">,
+  kind: SweepKind
+): number =>
+  kind === "campaign"
+    ? profile.campaignSweepTickets
+    : profile.dungeonSweepTickets;
 
 /**
  * The most Tickets that the Ticket control permits: 10, and not more than
@@ -60,9 +92,20 @@ export const stepTickets = (
 export const canSweep = (tickets: number, owned: number): boolean =>
   tickets >= 1 && tickets <= maxTickets(owned);
 
+/** A Sweep of `tickets` Tickets of `kind`, on the Stage or the Dungeon `targetId`. */
+export interface SweepRequest {
+  readonly kind: SweepKind;
+  /** The Stage ID of a Campaign Sweep, or the Dungeon ID of a Dungeon Sweep. */
+  readonly targetId: string;
+  readonly tickets: number;
+  /** The Class of the Active Deck. It sets the card pool. */
+  readonly classId: ClassId;
+}
+
 /** What the Sweep Result shows, and the Sweep that gave it. */
 export interface ShownSweep {
-  readonly stageId: string;
+  readonly kind: SweepKind;
+  readonly targetId: string;
   /** The Tickets that the Sweep used. "Sweep Again" uses the same number. */
   readonly tickets: number;
   readonly rewards: SweepRewards;
@@ -78,23 +121,24 @@ export interface RecordedSweep<P> {
 
 /**
  * Applies a Sweep to the Profile with the rules action (ADR-0006): the web
- * never calculates a reward or checks the 3-Star gate itself. The Class of
- * the Active Deck sets the Stage card pool. It throws as `applySweep` does.
+ * never calculates a reward or checks a Sweep gate itself. It throws as
+ * `applyCampaignSweep` and `applyDungeonSweep` do.
  */
 export const recordSweep = <P extends Profile>(
   profile: P,
-  input: {
-    readonly stageId: string;
-    readonly tickets: number;
-    readonly classId: ClassId;
-  }
+  request: SweepRequest
 ): RecordedSweep<P> => {
-  const applied = applySweep(profile, input);
+  const { kind, targetId, tickets, classId } = request;
+  const applied =
+    kind === "campaign"
+      ? applyCampaignSweep(profile, { stageId: targetId, tickets, classId })
+      : applyDungeonSweep(profile, { dungeonId: targetId, tickets, classId });
   return {
     profile: applied.profile,
     shown: {
-      stageId: input.stageId,
-      tickets: input.tickets,
+      kind,
+      targetId,
+      tickets,
       rewards: applied.rewards,
       xp: applied.profile.xp,
     },

@@ -1,16 +1,20 @@
-import { useAtomValue } from "@effect/atom-react";
+import { RegistryContext, useAtomValue } from "@effect/atom-react";
 import {
   CARDS,
   coinDenominations,
+  currentFloor,
   FORGE_STONE_TIERS,
   GEAR_SLOTS,
+  HEYNSPIRE_FLOORS,
+  heynspireBossStage,
+  isHeynspireOpen,
   MAX_GEAR_LEVEL,
   PLAYER_LEVEL_XP,
   STAGES,
 } from "@workspace/rules";
-import type { StageDefinition } from "@workspace/rules";
+import type { HeroRef, Side, StageDefinition } from "@workspace/rules";
 import { cn } from "cn";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   HiArrowUturnLeft,
   HiMiniStar,
@@ -26,7 +30,14 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/core/components/ui/toggle-group";
+import type { BattleSession } from "@/features/battle/battle-session";
+import { devHitHero, newestSession } from "@/features/battle/battle-session";
+import {
+  battleLogAtom,
+  battleSessionAtom,
+} from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { playback } from "@/features/battle/scene/playback";
 import { useGameText } from "@/features/battle/use-game-text";
 import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import type { StageResults } from "@/features/campaign/region-map";
@@ -45,6 +56,8 @@ import { useDevOverrides } from "@/features/dev-panel/use-dev-overrides";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { playerLevel } from "@/features/profile/profile";
 import { profileAtom } from "@/features/profile/profile.atoms";
+import type { SweepKind } from "@/features/sweep/sweep";
+import { ownedTickets } from "@/features/sweep/sweep";
 import type { BalanceKind } from "@/features/town/town";
 import { balancesAtom } from "@/features/town/town.atoms";
 
@@ -105,10 +118,19 @@ const coinParts = (copper: number) =>
     )
     .join(" · ");
 
+/** The 2 types of Sweep Ticket (ADR-0041). */
+const SWEEP_TICKET_FIELDS: readonly {
+  readonly kind: SweepKind;
+  readonly label: string;
+}[] = [
+  { kind: "campaign", label: "Campaign Sweep Tickets" },
+  { kind: "dungeon", label: "Dungeon Sweep Tickets" },
+];
+
 const BalancesBlock = () => {
   const { setBalance, setSweepTickets } = useDevOverrides();
   const balances = useAtomValue(balancesAtom);
-  const { sweepTickets } = useAtomValue(profileAtom);
+  const profile = useAtomValue(profileAtom);
   return (
     <section
       aria-labelledby="dev-balances"
@@ -133,16 +155,19 @@ const BalancesBlock = () => {
           ) : null}
         </NumberField>
       ))}
-      <NumberField
-        value={sweepTickets}
-        minValue={0}
-        step={1}
-        formatOptions={{ maximumFractionDigits: 0 }}
-        onChange={setSweepTickets}
-      >
-        <Label>Sweep Tickets</Label>
-        <NumberInput />
-      </NumberField>
+      {SWEEP_TICKET_FIELDS.map(({ kind, label }) => (
+        <NumberField
+          key={kind}
+          value={ownedTickets(profile, kind)}
+          minValue={0}
+          step={1}
+          formatOptions={{ maximumFractionDigits: 0 }}
+          onChange={(value) => setSweepTickets(kind, value)}
+        >
+          <Label>{label}</Label>
+          <NumberInput />
+        </NumberField>
+      ))}
     </section>
   );
 };
@@ -183,6 +208,43 @@ const ForgeStonesBlock = () => {
           </NumberField>
         ))}
       </div>
+    </section>
+  );
+};
+
+/**
+ * The won Heynspire Floors (web ADR-0010). The first win of the last Boss
+ * Stage opens Heynspire, so the field stays off before that win: play cannot
+ * win a Floor before it.
+ */
+const HeynspireBlock = () => {
+  const { setFloorsWon } = useDevOverrides();
+  const profile = useAtomValue(profileAtom);
+  const open = isHeynspireOpen(profile);
+  const current = currentFloor(profile);
+  let state = `Opens with the first win of Stage ${heynspireBossStage().id}`;
+  if (open) {
+    state = current === null ? "All Floors won" : `Current Floor ${current}`;
+  }
+  return (
+    <section
+      aria-labelledby="dev-heynspire"
+      className="grid content-start gap-3"
+    >
+      <Heading id="dev-heynspire">Heynspire</Heading>
+      <NumberField
+        value={profile.heynspireFloorsWon}
+        minValue={0}
+        maxValue={HEYNSPIRE_FLOORS}
+        step={1}
+        formatOptions={{ maximumFractionDigits: 0 }}
+        isDisabled={!open}
+        onChange={setFloorsWon}
+      >
+        <Label>Floors won</Label>
+        <NumberInput />
+        <Description className="tabular-nums">{state}</Description>
+      </NumberField>
     </section>
   );
 };
@@ -234,6 +296,111 @@ const PlayerBlock = () => {
           </NumberField>
         ))}
       </div>
+    </section>
+  );
+};
+
+const SIDES: readonly Side[] = ["enemy", "player"];
+
+const SIDE_NAMES = { enemy: "Enemy", player: "Player" };
+
+/** The Heroes of the Battle, enemy first, with their HP in the rules. */
+const battleHeroes = (session: BattleSession) =>
+  SIDES.flatMap((side) => {
+    const { heroes } = session.rules.sides[side];
+    return heroes.map((hero, index) => ({
+      ref: { side, hero: index } satisfies HeroRef,
+      name:
+        heroes.length > 1
+          ? `${SIDE_NAMES[side]} Hero ${index + 1}`
+          : `${SIDE_NAMES[side]} Hero`,
+      hp: hero.hp,
+      maxHp: hero.maxHp,
+    }));
+  });
+
+/** Why the panel cannot hit a Hero now, or `null` when it can. */
+const blockedReason = (
+  session: BattleSession | null,
+  logOpen: boolean
+): string | null => {
+  if (session === null) {
+    return "No Battle on the screen";
+  }
+  if (session.rules.status === "finished") {
+    return "The Battle is finished";
+  }
+  return logOpen ? "Close the Battle Log first" : null;
+};
+
+/**
+ * Deals True Damage to a Hero of the Battle on the screen, so that a Battle
+ * ends sooner. The hit plays as a normal hit: a Defeat and the result follow.
+ */
+const BattleBlock = () => {
+  const registry = useContext(RegistryContext);
+  const session = useAtomValue(battleSessionAtom);
+  const logOpen = useAtomValue(battleLogAtom) !== null;
+  const [damage, setDamage] = useState(10);
+  const blocked = blockedReason(session, logOpen);
+  const amount = Number.isFinite(damage) ? Math.floor(damage) : 0;
+
+  const hit = (ref: HeroRef) => {
+    // The scene clock can be ahead of the atom inside one event.
+    const live = newestSession(
+      registry.get(battleSessionAtom),
+      playback.session
+    );
+    if (live === null || registry.get(battleLogAtom) !== null) {
+      return;
+    }
+    const next = devHitHero(live, ref, amount);
+    if (next !== live) {
+      registry.set(battleSessionAtom, next);
+    }
+  };
+
+  return (
+    <section aria-labelledby="dev-battle" className="grid content-start gap-3">
+      <Heading id="dev-battle">Battle</Heading>
+      <NumberField
+        value={damage}
+        minValue={1}
+        step={1}
+        formatOptions={{ maximumFractionDigits: 0 }}
+        isDisabled={blocked !== null}
+        onChange={setDamage}
+      >
+        <Label>Hero damage</Label>
+        <NumberInput />
+        <Description>
+          {blocked ?? "True Damage: no Crit. A hit to 0 HP Defeats the Hero."}
+        </Description>
+      </NumberField>
+      {session !== null && blocked === null ? (
+        <ul className="grid gap-1">
+          {battleHeroes(session).map(({ ref, name, hp, maxHp }) => (
+            <li
+              key={`${ref.side}-${ref.hero}`}
+              className="flex items-center gap-2"
+            >
+              <span className="me-auto min-w-0 truncate">{name}</span>
+              <span className="text-muted-fg tabular-nums">
+                {count.format(hp)} / {count.format(maxHp)} HP
+              </span>
+              <Button
+                size="xs"
+                intent={ref.side === "enemy" ? "primary" : "outline"}
+                isDisabled={hp <= 0 || amount < 1}
+                aria-label={`Deal ${amount} damage to the ${name}`}
+                onPress={() => hit(ref)}
+              >
+                {hp <= 0 ? "Defeated" : `Hit ${count.format(amount)}`}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </section>
   );
 };
@@ -452,8 +619,9 @@ const CampaignBlock = () => {
 
 /**
  * The Game Dev Panel: a TanStack Devtools tab that unlocks all cards, sets the
- * Player level, the Gear, the balances, the Sweep Tickets and the Forge
- * Stones, and wins Campaign Stages one by one. Its values show over the
+ * Player level, the Gear, the balances, the 2 types of Sweep Ticket, the Forge
+ * Stones and the won Heynspire Floors, wins Campaign Stages one by one, and hits the Heroes of the Battle
+ * on the screen. Its values show over the
  * Profile and are not saved into it.
  * Development only.
  */
@@ -476,10 +644,12 @@ export const GameDevPanel = ({
     >
       <div className="grid gap-x-10 gap-y-6 p-4 lg:grid-cols-[minmax(14rem,18rem)_minmax(0,40rem)]">
         <div className="grid content-start gap-6">
+          <BattleBlock />
           <CollectionBlock />
           <PlayerBlock />
           <BalancesBlock />
           <ForgeStonesBlock />
+          <HeynspireBlock />
         </div>
         <CampaignBlock />
         <footer className="border-border flex flex-wrap items-center gap-3 border-t pt-3 lg:col-span-full">

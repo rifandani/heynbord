@@ -217,6 +217,72 @@ export const BARRACKS_PROMPT = [
 ].join("\n");
 
 /**
+ * The first message of the ChatGPT conversation for the Dungeons cave inside,
+ * with the layout sketch, the style reference and the outside reference
+ * attached. The rules come from section 13.1 of the Town Concepts.
+ */
+export const CAVE_SETUP_PROMPT = [
+  "In this conversation, you will paint the inside of the dungeon cave of a fantasy card battle game: the background of the dungeons screen, where the player reads wanted posters of bosses on a notice board and starts a fight.",
+  [
+    "Image 1 is a rough layout sketch. Keep its composition: the timber prop and the main lantern at the left edge, the timber prop, the small lantern and the tunnel that goes down at the right edge, the dark plain band at the top, the floor with a mine cart track along the bottom, and the large calm rock wall in the center. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the same cave from the outside, in the town painting: grey stone blocks, a dark arch with an old timber beam, ivy and ruined stone pillars at the entrance. Paint the inside of this cave. Do not copy its view.",
+  ].join("\n"),
+  "The game shows a large notice board with posters and a side panel over the center of the painting. Thus the center stays calm, plain and a little dim, and the lanterns, the props and the details are at the left, at the right and at the bottom.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for the Dungeons cave inside, after its setup message. It is a
+ * short form of the brief in section 13 of the Town Concepts. When you change
+ * the brief there, change this message too.
+ */
+export const CAVE_PROMPT = [
+  "the inside of a friendly old fantasy mine cave, seen from just inside the entrance at eye level, straight on, wide 3:2 landscape, the cave fills the full image to all edges,",
+  "at the left edge a thick old timber prop that holds a timber beam, a large brass lantern with warm candle light hangs on it, it is the main light of the cave, a small goblin hard hat with a stub of candle on top hangs on a nail on the prop, they stay inside the left tenth of the image,",
+  "at the right edge a second timber prop with a small brass lantern, and next to it a tunnel that goes down into the dark, a soft green glow of small glowcap mushrooms at its far end, two small round glowing eyes look out of the dark tunnel, they stay inside the right tenth of the image,",
+  "in the center a large plain wall of grey rock, smooth and calm, in soft warm lantern light, a little dim, with only a few faint cracks, no objects, no bright light and no glow there,",
+  "a dark rock ceiling across the top in soft shadow, plain and calm, a few thin tree roots come through it only at the far left and the far right corners,",
+  "a floor of packed earth across the bottom, with a short mine cart track and a small wooden mine cart full of grey rocks at the right, and a dropped pick at the left, a few small glowcap mushrooms in the dark corners,",
+  "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a cozy, welcoming and a little funny mood, not scary,",
+  "light from the upper left, grey stone, warm timber, lantern gold, soft glowcap green, cream highlights,",
+  "the center is calmer and plainer than the sides, no gore, no bones, no skulls, no monsters, no people, no notice board, no posters, no signs, no text, no letters, no labels, no logo, no frame, no UI",
+].join("\n");
+
+/**
+ * The first message of the ChatGPT conversation for the Heynspire inside,
+ * with the layout sketch, the style reference and the outside reference
+ * attached. The rules come from section 14.1 of the Town Concepts.
+ */
+export const HEYNSPIRE_SETUP_PROMPT = [
+  "In this conversation, you will paint the Heynspire tower of a fantasy card battle game, seen from its outside stair high above the clouds: the background of the tower screen, where the player climbs 50 floors.",
+  [
+    "Image 1 is a rough layout sketch. Keep its composition: the plain sky band at the top, the stair with its rope rail that goes up and around the tower at the left edge, the floating stones with small flags and the far view at the right edge, the clouds along the bottom, and the large calm wall of the tower in the center. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the same tower from far away, in the town painting: a white stone castle with a tall central tower, royal blue conical roofs and gold flags. Paint this tower from up close, high on its outside stair. Do not copy its view.",
+  ].join("\n"),
+  "The game shows a large stair of 50 floors and a side panel over the center of the painting. Thus the center stays calm and plain, and the stair, the people and the details are at the left, at the right and at the bottom.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for the Heynspire inside, after its setup message. It is a
+ * short form of the brief in section 14 of the Town Concepts. When you
+ * change the brief there, change this message too.
+ */
+export const HEYNSPIRE_PROMPT = [
+  "the outside of a very tall white stone fantasy tower, seen up close from its outside stair high above the clouds, at eye level, straight on, wide 3:2 landscape, the tower fills the full image to all edges,",
+  "at the left edge a stair of pale stone steps with a thick rope rail on wooden posts goes up and around the tower and out of the image at the top left, a tired young climber with a big backpack sits on a step, drinks from a water bottle and holds a map so long that it hangs down three steps, they stay inside the left seventh of the image,",
+  "at the right edge a few small floating stones with grass on top and small blue and gold flags drift in the blue sky, and far below them a very small view of the town on a green hill and the blue sea, they stay inside the right seventh of the image,",
+  "in the center a large plain curved wall of the tower, warm cream stone blocks in soft shade, calm and a little darker than the stair, with only a few faint joints, no windows, no doors, no objects and no bright light there,",
+  "a narrow band of plain clear blue sky across the top, with the edge of a royal blue roof and a gold flag pole only in the top left corner,",
+  "soft white clouds across the bottom, with the tops of a few far green trees between them,",
+  "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a high, airy, welcoming and a little funny mood, not scary,",
+  "light from the upper left, clear morning, white and cream stone, royal blue, gold accents, sky blue, soft cloud white,",
+  "the center is calmer and plainer than the sides, no storm, no night, no monsters, no signs, no text, no letters, no numbers, no labels, no logo, no frame, no UI",
+].join("\n");
+
+/**
  * The first message of the ChatGPT conversation for the 4 Gear icons, with
  * the style reference and the `hero` Town Bar icon attached. The rules come
  * from section 12.1 of the Town Concepts.

@@ -49,9 +49,11 @@ import {
   chosenRegionAtom,
 } from "@/features/campaign/campaign.atoms";
 import { CampaignScreen } from "@/features/campaign/components/campaign-screen";
+import { DungeonsScreen } from "@/features/dungeons/components/dungeons-screen";
 import { HandbookDialog } from "@/features/handbook/components/handbook-dialog";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import { HeroScreen } from "@/features/hero/components/hero-screen";
+import { HeynspireScreen } from "@/features/heynspire/components/heynspire-screen";
 import { HintBanner } from "@/features/hint/components/hint-banner";
 import {
   useBattleHints,
@@ -62,13 +64,14 @@ import {
 import { PacksScreen } from "@/features/packs/components/packs-screen";
 import { profileReadyAtom } from "@/features/profile/profile.atoms";
 import { useProfileStore } from "@/features/profile/use-profile-store";
+import { useReplayLink } from "@/features/replay/use-replay-link";
 import { TownBar } from "@/features/town/components/town-bar";
 import {
   TownScreen,
   useTownLeave,
 } from "@/features/town/components/town-screen";
 import type { GameScreen } from "@/features/town/town";
-import { gameScreenAtom } from "@/features/town/town.atoms";
+import { gameScreenAtom, townProgressAtom } from "@/features/town/town.atoms";
 import { WorkshopScreen } from "@/features/workshop/components/workshop-screen";
 
 const BattleCanvas = lazy(
@@ -203,15 +206,15 @@ const commandFromKey = (event: KeyboardEvent) => {
 
 /**
  * The keys of the open Battle Log: ←/→ one Log Entry, Shift+←/→ one Turn, L
- * and Esc Back to Live. Inspect and the Handbook work as in Live, and the
- * other Live keys do nothing.
+ * and Esc Back to Live (in a Replay, Esc leaves). Inspect and the Handbook
+ * work as in Live, and the other Live keys do nothing.
  */
 const runLogKey = (
   keys: KeyContext,
   event: KeyboardEvent,
   command: BattleKeyCommand
 ) => {
-  const action = logKeyAction(command, event.shiftKey);
+  const action = logKeyAction(command, event.shiftKey, keys.battle.watching);
   switch (action._tag) {
     case "step": {
       event.preventDefault();
@@ -373,7 +376,16 @@ const BattleStage = ({ battle }: { readonly battle: Battle }) => {
   );
 };
 
-/** Esc on a screen other than the Town goes back to the Town (GDD 11.4). */
+/** True while a dialog is open, for example the Deck book over a screen. */
+const dialogOpen = (): boolean =>
+  document.querySelector('[role="dialog"]') !== null;
+
+/**
+ * Esc on a screen other than the Town goes back to the Town (GDD 11.4). While
+ * a dialog is open, Esc is for the dialog: also when the focus left it, for
+ * example after Auto-fill turns itself off, Esc never closes the screen under
+ * the dialog.
+ */
 const useEscToTown = (active: boolean, toTown: () => void) => {
   useEffect(() => {
     if (!active) {
@@ -383,7 +395,8 @@ const useEscToTown = (active: boolean, toTown: () => void) => {
       if (
         event.key === "Escape" &&
         !event.defaultPrevented &&
-        !isTyping(event.target)
+        !isTyping(event.target) &&
+        !dialogOpen()
       ) {
         toTown();
       }
@@ -421,8 +434,10 @@ const useCampaignRegion = (battle: Battle) => {
 
 /**
  * The game in one route (web ADR-0006): the Town, the Campaign (the Region
- * Map), then the Battle, the Packs, the Workshop and the Hero screen. The Town Bar shows on each screen
- * except the Battle.
+ * Map), then the Battle, Heynspire, the Dungeons, the Packs, the Workshop
+ * and the Hero screen. The Town Bar shows on each screen except the Battle.
+ * A Battle goes back to the screen that started it: the Campaign, Heynspire
+ * or the Dungeons.
  */
 export const PlayScreen = () => {
   const battle = useBattle();
@@ -438,7 +453,18 @@ export const PlayScreen = () => {
   const ready = useAtomValue(profileReadyAtom);
 
   useProfileStore();
+  // A Replay Link opens Watching a Replay in place of the screen (web ADR-0012).
+  useReplayLink({ show: battle.watch, leave: battle.leave });
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
+  // Heynspire opens with the first win of the last Boss Stage. When it is
+  // not open (for example after a change in the dev panel), its screen goes
+  // back to the Town.
+  const { heynspireOpen } = useAtomValue(townProgressAtom);
+  useEffect(() => {
+    if (ready && screen === "heynspire" && !heynspireOpen) {
+      setScreen("town");
+    }
+  }, [ready, screen, heynspireOpen, setScreen]);
   // A Hint waits for the Profile: the seen list is in it.
   useTownHints(ready && !battle.session, screen === "town");
   usePacksHints(ready && !battle.session && screen === "packs");
@@ -470,6 +496,12 @@ export const PlayScreen = () => {
               onRegion={(region) => campaign.setRegion(region)}
               onStart={(options) => battle.start(options)}
             />
+          ) : null}
+          {screen === "dungeons" ? (
+            <DungeonsScreen onStart={(options) => battle.start(options)} />
+          ) : null}
+          {screen === "heynspire" ? (
+            <HeynspireScreen onStart={(options) => battle.start(options)} />
           ) : null}
           {screen === "packs" ? <PacksScreen /> : null}
           {screen === "workshop" ? <WorkshopScreen /> : null}

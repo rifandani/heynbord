@@ -3,6 +3,7 @@ import { Schema } from "effect";
 import { CollectionEntry } from "../collection/deck-building";
 import { MAX_DECK_SLOTS, STARTING_DECK_SLOTS } from "../content/deck-slots";
 import { ForgeStones } from "../content/forge-stones";
+import { HEYNSPIRE_FLOORS } from "../content/heynspire";
 import { PackId } from "../content/packs";
 import { ClassId, DeckEntry, GearLevels } from "../content/schema";
 import { STAR_CHESTS } from "../content/star-chests";
@@ -12,7 +13,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 6;
+export const PROFILE_SCHEMA_VERSION = 8;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -67,6 +68,14 @@ const Stars = Schema.Int.check(Schema.isBetween({ minimum: 1, maximum: 3 }));
 /** The wins of a won Dungeon: 1 or more. */
 const DungeonWins = Schema.Int.check(Schema.isGreaterThanOrEqualTo(1));
 
+/**
+ * The Heynspire Floors that the Player won: 0 to 50. The Player wins the
+ * Floors in order, so this count gives each won Floor.
+ */
+const FloorsWon = Schema.Int.check(
+  Schema.isBetween({ minimum: 0, maximum: HEYNSPIRE_FLOORS })
+);
+
 /** The Stars that open a Star chest: the key of a chest in each Region. */
 const StarChestStars = Schema.Natural.check(
   Schema.makeFilter((stars: number) =>
@@ -99,12 +108,19 @@ export const Profile = Schema.Struct({
   stageResults: Schema.Record(Schema.String, Stars),
   /** The win count of each won Dungeon, by Dungeon ID. A Dungeon gives no Stars. */
   dungeonResults: Schema.Record(Schema.String, DungeonWins),
+  /**
+   * The Heynspire Floors that the Player won, from Floor 1. The Current Floor
+   * is the next Floor (`currentFloor`).
+   */
+  heynspireFloorsWon: FloorsWon,
   /** The Star chests that the Player claimed: their Stars, by Region number. */
   claimedStarChests: Schema.Record(Schema.String, Schema.Array(StarChestStars)),
   packState: PackState,
   unopenedPacks: Schema.Array(UnopenedPack),
-  /** The Sweep Tickets that the Player has (ADR-0035). They are earn-only. */
-  sweepTickets: Schema.Natural,
+  /** The Campaign Sweep Tickets that the Player has (ADR-0035). They are earn-only. */
+  campaignSweepTickets: Schema.Natural,
+  /** The Dungeon Sweep Tickets that the Player has (ADR-0041). They are earn-only. */
+  dungeonSweepTickets: Schema.Natural,
   /**
    * The random state of the reward rolls, for example the repeat-win card. It
    * is not the Pack random state, so a Pack does not change a reward.

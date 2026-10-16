@@ -24,6 +24,7 @@ import { CardDetails } from "@/features/battle/components/card-details";
 import { BRONZE, CardFrame } from "@/features/battle/components/card-frame";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { GraveyardIcon } from "@/features/battle/components/graveyard-icon";
 import { HandCard } from "@/features/battle/components/hand-card";
 import type { Drag } from "@/features/battle/components/hand-input";
 import {
@@ -196,7 +197,11 @@ const GraveyardPile = ({
         data-count={0}
       >
         <span className="sr-only">{label}</span>
-        <EmptyCardPlace />
+        <EmptyCardPlace
+          mark={
+            <GraveyardIcon className="w-[3.6em] text-[#e3b55a] opacity-[0.16] grayscale" />
+          }
+        />
         <PileBadge count={0} side="left" />
       </div>
     );

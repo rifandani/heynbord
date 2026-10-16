@@ -11,10 +11,12 @@ const played: Profile = {
   xp: 520,
   coin: 1234,
   essence: 30,
-  stageResults: { "1-1": 3, "1-2": 2 },
+  stageResults: { "1-1": 3, "1-2": 2, "5-10": 1 },
+  heynspireFloorsWon: 12,
   claimedStarChests: { 1: [10] },
   unopenedPacks: [{ pack: "merchant", version: "race" }],
-  sweepTickets: 4,
+  campaignSweepTickets: 4,
+  dungeonSweepTickets: 2,
   seenHints: ["stagePanel"],
 };
 

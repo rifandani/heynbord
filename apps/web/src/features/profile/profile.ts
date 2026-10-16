@@ -39,11 +39,13 @@ const OVERLAY_FIELDS = [
   "coin",
   "essence",
   "heynstones",
-  "sweepTickets",
+  "campaignSweepTickets",
+  "dungeonSweepTickets",
   "forgeStones",
   "gear",
   "collection",
   "stageResults",
+  "heynspireFloorsWon",
 ] as const satisfies readonly (keyof Profile)[];
 
 export type ProfileOverlay = Partial<

@@ -1,8 +1,8 @@
 /**
  * Headless Battle simulation (GDD 13). The AI plays both Sides.
  *
- * Usage: `bun run sim [stage | dungeon | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]`.
- * With no mode, it runs `stage`, `dungeon`, `matchup` and `packs`. `battles` is 200 by default. With
+ * Usage: `bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]`.
+ * With no mode, it runs `stage`, `dungeon`, `floor`, `matchup` and `packs`. `battles` is 200 by default. With
  * `--check`, it exits with code 1 when a win rate is not on its GDD 13 target
  * (CI uses it). The seeds are fixed, so the same content gives the same result.
  *
@@ -14,10 +14,16 @@
  *   slots to N. They measure the win-chance bonuses of `economy` (Economy
  *   7.1), so with them there are no Expected Gear rows.
  * - `dungeon`: each Dungeon with each starter Deck, at the unlock level of the
- *   Dungeon (GDD 13, step 6). The Deck is typical at that level: the expected
- *   Deck at the first Stage of that level. A second row plays the Expected
- *   Gear of that Stage (ADR-0034). `--level` and `--gear` work as in `stage`.
+ *   Dungeon (GDD 13, step 6). The Deck is typical at that level: the starter
+ *   Deck and the first-win cards of all Stages below that level. A second row
+ *   plays the Expected Gear at that level (ADR-0034). `--level` and `--gear`
+ *   work as in `stage`.
  *   `defeated` is the average number of Bosses that the Player Defeated.
+ * - `floor`: each Heynspire Floor with each starter Deck, at the Recommended
+ *   level of the Floor and with no Gear, then at the Expected Gear of the
+ *   Floor (ADR-0034, ADR-0042). The Deck is the expected Deck after all
+ *   Stages. A Boss Floor has the target of a Boss Stage. `--level` and
+ *   `--gear` work as in `stage`.
  * - `matchup`: each Archetype against each Archetype (docs/game/08-archetypes.md).
  *   `battles` is the number of seeds: each seed plays 2 Battles, one with each
  *   Side first. `--level` (5 by default) and `--gear` (0 by default, for all 4
@@ -53,6 +59,7 @@ import { skillBudgetCheck } from "../src/content/balance";
 import { CARDS, getCard } from "../src/content/cards";
 import { STARTER_DECKS } from "../src/content/decks";
 import { DUNGEONS } from "../src/content/dungeons";
+import { FLOORS } from "../src/content/floors";
 import { FORGE_STONE_TIERS } from "../src/content/forge-stones";
 import { PACK_SIZE, PACKS } from "../src/content/packs";
 import { RANKS } from "../src/content/ranks";
@@ -63,7 +70,9 @@ import { packPool } from "../src/packs/open-pack";
 import type { PackPool } from "../src/packs/open-pack";
 import {
   CHECKPOINTS,
+  expectedFloorGear,
   expectedGear,
+  expectedGearAtLevel,
   heynstoneLedger,
   MAX_BATTLES,
   METRICS,
@@ -81,12 +90,13 @@ import type {
 import { simulatePack } from "../src/simulation/packs";
 import {
   DUNGEON_TARGET,
-  dungeonStage,
+  floorTarget,
   gatesRelease,
   isOnTarget,
   MATCHUP_TARGET,
   NO_GEAR,
   simulateDungeon,
+  simulateFloor,
   simulateMatchup,
   simulateStage,
   stageTarget,
@@ -95,11 +105,12 @@ import type { MatchupReport, WinRateTarget } from "../src/simulation/simulate";
 import { SWAP_LIMIT, simulateSkillSwap } from "../src/simulation/skill-swap";
 
 const USAGE =
-  "Usage: bun run sim [stage | dungeon | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]";
+  "Usage: bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]";
 
 const MODES = [
   "stage",
   "dungeon",
+  "floor",
   "matchup",
   "packs",
   "economy",
@@ -276,14 +287,15 @@ if (modes.includes("stage")) {
 if (modes.includes("dungeon")) {
   const levelsAbove = level ?? 0;
   // `--level` and `--gear` measure a bonus, so they play only one Gear row.
-  const expected =
-    level === undefined && gear === undefined ? expectedGear() : null;
+  const expected = level === undefined && gear === undefined;
   console.log(
-    `Dungeons: ${battles} Battles each, unlock level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear of the first Stage at the unlock level (ADR-0034)"}`
+    `Dungeons: ${battles} Battles each, unlock level + ${levelsAbove}, Gear ${gear ?? 0}${expected ? ", then the Expected Gear at the unlock level (ADR-0034)" : ""}`
   );
   console.table(
     DUNGEONS.flatMap((dungeon) => {
-      const dungeonGear = expected?.get(dungeonStage(dungeon).id) ?? NO_GEAR;
+      const dungeonGear = expected
+        ? expectedGearAtLevel(dungeon.unlockLevel)
+        : NO_GEAR;
       const rows: { gear: GearLevels; expected: boolean }[] = [
         { gear: gearOf(gear), expected: false },
         ...(hasGear(dungeonGear)
@@ -308,6 +320,47 @@ if (modes.includes("dungeon")) {
               `Dungeon ${report.dungeonId} with ${report.deckId}, Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
               report.winRate,
               DUNGEON_TARGET
+            ),
+          };
+        })
+      );
+    })
+  );
+}
+
+if (modes.includes("floor")) {
+  const levelsAbove = level ?? 0;
+  // `--level` and `--gear` measure a bonus, so they play only one Gear row.
+  const expected =
+    level === undefined && gear === undefined ? expectedFloorGear() : null;
+  console.log(
+    `Floors: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear (ADR-0034)"}`
+  );
+  console.table(
+    FLOORS.flatMap((floor) => {
+      const floorGear = expected?.[floor.number - 1] ?? NO_GEAR;
+      const rows: { gear: GearLevels; expected: boolean }[] = [
+        { gear: gearOf(gear), expected: false },
+        ...(hasGear(floorGear) ? [{ gear: floorGear, expected: true }] : []),
+      ];
+      return rows.flatMap((row) =>
+        STARTER_DECKS.map((deck) => {
+          const report = simulateFloor(floor, deck, battles, {
+            levelsAbove,
+            gear: row.gear,
+          });
+          return {
+            floor: report.floorId,
+            enemy: floor.enemy.id,
+            level: floor.recommendedLevel + levelsAbove,
+            gear: `${gearText(row.gear)}${row.expected ? " expected" : ""}`,
+            deck: report.deckId,
+            winRate: percent(report.winRate),
+            avgTurn: report.averageTurn.toFixed(1),
+            target: judge(
+              `Floor ${report.floorId} with ${report.deckId}, Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
+              report.winRate,
+              floorTarget(floor)
             ),
           };
         })

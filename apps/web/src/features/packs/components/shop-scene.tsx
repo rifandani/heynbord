@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { Button } from "react-aria-components";
 
 import { useGameText } from "@/features/battle/use-game-text";
+import { FittedPainting } from "@/features/town/components/fitted-painting";
 
 /** The painting of the Card shop inside (Town Concepts, section 9): 1536 × 1024. */
 const SHOP_IMAGE = "/town/card-shop-inside.webp";
@@ -43,21 +44,15 @@ const MOTES: readonly {
 ];
 
 /**
- * The painted Card shop, at the size that covers the screen (3:2, cropped at
- * the edges), so that a point in painting percent stays on the same thing in
- * the painting at all screen sizes. Its children have positions in painting
+ * The painted Card shop, in full above the Town Bar (`FittedPainting`), so
+ * that a point in painting percent stays on the same thing in the painting
+ * at all screen sizes. Its children have positions in painting
  * percent. The lamps breathe and dust drifts in the window light; with
  * reduced motion they are still.
  */
 export const ShopScene = ({ children }: { readonly children?: ReactNode }) => (
   <div className="absolute inset-0 overflow-hidden">
-    <div className="absolute top-1/2 left-1/2 aspect-[3/2] w-[max(100vw,150dvh)] -translate-1/2">
-      <img
-        src={SHOP_IMAGE}
-        alt=""
-        draggable={false}
-        className="absolute inset-0 size-full select-none"
-      />
+    <FittedPainting src={SHOP_IMAGE} width={1536} height={1024}>
       {LAMPS.map((lamp) => (
         <span
           key={`${lamp.x}:${lamp.y}`}
@@ -103,7 +98,7 @@ export const ShopScene = ({ children }: { readonly children?: ReactNode }) => (
         aria-hidden
       />
       {children}
-    </div>
+    </FittedPainting>
   </div>
 );
 

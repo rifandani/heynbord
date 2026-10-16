@@ -24,6 +24,12 @@ export interface BattleLogState {
   readonly shown: BattleSession;
   /** The index in `book.events` of the first event of the Play queue. */
   readonly playFrom: number;
+  /**
+   * The last Log Entry that the list shows. In a Battle, it is the last Log
+   * Entry. While the Player watches a Replay, it is the newest Log Entry that
+   * the Player saw, so the list never tells the next moments.
+   */
+  readonly reached: number;
 }
 
 /** The session that shows the Battle at the end of `entry`, with no animation and no Tutorial. */
@@ -47,6 +53,7 @@ const atEntry = (state: BattleLogState, entry: number): BattleLogState => ({
   playing: false,
   shown: shownAt(state.shown, state.book, entry),
   playFrom: state.book.entries[entry]?.end ?? 0,
+  reached: Math.max(state.reached, entry),
 });
 
 /**
@@ -63,6 +70,7 @@ export const openBattleLog = (live: BattleSession): BattleLogState => {
     playing: false,
     shown: shownAt(live, book, selected),
     playFrom: live.log.length,
+    reached: selected,
   };
 };
 
@@ -73,14 +81,19 @@ export const selectLogEntry = (
 ): BattleLogState =>
   state.book.entries[entry] ? atEntry(state, entry) : state;
 
-/** ←/→ (one Log Entry) and Shift+←/→ (one Turn). Play stops. */
+/**
+ * ←/→ (one Log Entry) and Shift+←/→ (one Turn). Play stops. Before the first
+ * Log Entry (the start of a Replay), a step forward goes to the first one.
+ */
 export const stepBattleLog = (
   state: BattleLogState,
   step: 1 | -1,
   byTurn: boolean
 ): BattleLogState => {
   if (state.selected < 0) {
-    return state;
+    return step === 1 && state.book.entries.length > 0
+      ? atEntry(state, 0)
+      : state;
   }
   const entry = byTurn
     ? stepTurn(state.book, state.selected, step)
@@ -135,7 +148,13 @@ export const advanceBattleLog = (
   if (isIdle(shown)) {
     return atEntry(state, state.book.entries.length - 1);
   }
-  return { ...state, shown, selected: newest ?? state.selected };
+  const selected = newest ?? state.selected;
+  return {
+    ...state,
+    shown,
+    selected,
+    reached: Math.max(state.reached, selected),
+  };
 };
 
 /** The Speed toggle works in the Battle Log too. */
@@ -143,3 +162,24 @@ export const setBattleLogSpeed = (
   state: BattleLogState,
   speed: BattleSpeed
 ): BattleLogState => ({ ...state, shown: setSpeed(state.shown, speed) });
+
+/**
+ * Watching a Replay (web ADR-0012): the Battle Log of the full Replay, which
+ * Plays at ×1 from the first Log Entry. The list shows no Log Entry yet.
+ */
+export const watchBattleLog = (replay: BattleSession): BattleLogState => {
+  const book = buildBattleLog(replay.start, replay.log);
+  return playBattleLog({
+    book,
+    selected: -1,
+    playing: false,
+    shown: shownAt(setSpeed(replay, 1), book, -1),
+    playFrom: 0,
+    reached: -1,
+  });
+};
+
+/** True when the selected Log Entry is the last one: the end of a Replay. */
+export const atLastEntry = (state: BattleLogState): boolean =>
+  state.book.entries.length > 0 &&
+  state.selected === state.book.entries.length - 1;

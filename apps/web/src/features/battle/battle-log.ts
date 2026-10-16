@@ -88,6 +88,7 @@ const SILENT: ReadonlySet<BattleEvent["_tag"]> = new Set([
   "TurnEnded",
   "AttackFaded",
   "RangeFaded",
+  "EntangleFaded",
   "BulwarkFaded",
   "FieldEffectEnded",
 ]);

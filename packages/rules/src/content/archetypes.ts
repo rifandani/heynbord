@@ -23,7 +23,10 @@ export const MATCHUP_LEVEL = 5;
  * Class, picked by hand for its style, and passes the gate against each other
  * main Archetype. Wild Hunt failed that promotion with its re-fit Priest Skill
  * Cards. It is a main Archetype after the Feral Creature Card tuning of issue
- * #80 (Archetypes 3.1), with the same list. Breakneck Company is a diagnostic
+ * #80 (Archetypes 3.1), with the same list. After the Ranged Unit Movement
+ * rule of issue #96 (Archetypes 2.3), Raiders holds Frost Shards in place of
+ * Frost Wave, and Tunnel Rats holds a second Pinning Shot in place of Warning
+ * Shot. Breakneck Company is a diagnostic
  * Deck of mixed Undead and Orc cards with Mage Skill Cards. Vanguard
  * Full and Raiders Full are diagnostic Decks with the full Human and Orc sets,
  * so that a Matchup tests most cards. They keep the old 3 Skill Cards of their
@@ -65,7 +68,7 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "orc.cinderhornBreaker", "uncommon"),
       ...copies(1, "mage.frostBolt", "common"),
       ...copies(1, "mage.fireball", "common"),
-      ...copies(1, "mage.frostWave", "uncommon"),
+      ...copies(1, "mage.frostShards", "common"),
     ],
   },
   {
@@ -81,8 +84,7 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(2, "goblin.greaseTrapper", "uncommon"),
       ...copies(1, "goblin.mineSapper", "rare"),
       ...copies(1, "goblin.grandGearjammer", "epic"),
-      ...copies(1, "ranger.pinningShot", "common"),
-      ...copies(1, "ranger.warningShot", "common"),
+      ...copies(2, "ranger.pinningShot", "common"),
       ...copies(1, "ranger.skybreaker", "uncommon"),
     ],
   },

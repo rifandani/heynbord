@@ -13,6 +13,7 @@ interface HookWindow extends Window {
   readonly __THREE_GAME_TEST_HOOKS__?: {
     readonly setCoin: (copper: number) => void;
     readonly setXp: (xp: number) => void;
+    readonly giveCopies: (cardId: string, rank: string, count: number) => void;
     readonly profileSaved: () => Promise<void>;
   };
 }
@@ -90,7 +91,7 @@ test.describe("Workshop", () => {
     await expect(peek.getByTestId("card-details-name")).toContainText(
       "Militia Recruit"
     );
-    await page.getByTestId("workshop-count").hover();
+    await page.getByTestId("pool-filter").hover();
     await expect(peek).toBeHidden();
   });
 
@@ -176,5 +177,59 @@ test.describe("Workshop", () => {
     await expect(page.getByTestId("balance-essence")).toHaveAccessibleName(
       "Essence: 5"
     );
+  });
+
+  test("an Extract melts the copy into Essence drops that fly to the Essence balance", async ({
+    page,
+  }) => {
+    // The config asks for reduced motion; this test needs the motion.
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openWorkshop(page, 0);
+    await page.evaluate((cardId) => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.giveCopies(
+        cardId,
+        "rare",
+        1
+      );
+    }, RECRUIT);
+
+    // A Rare copy in no Deck: no dialog. The copy melts with the Rare light,
+    // and 6 drops fly, then the flight goes away.
+    await page.getByTestId("workshop-extract-rare").click();
+    await expect(page.getByTestId("workshop-extract-ghost")).toHaveAttribute(
+      "data-rank",
+      "rare"
+    );
+    await expect(page.getByTestId("essence-flight")).toHaveAttribute(
+      "data-drops",
+      "6"
+    );
+    await expect(page.getByTestId("essence-flight")).toHaveCount(0);
+    await expect(page.getByTestId("balance-essence")).toHaveAccessibleName(
+      "Essence: 50"
+    );
+  });
+
+  // The config asks for reduced motion.
+  test("with reduced motion, an Extract changes the Essence at once with no drops", async ({
+    page,
+  }) => {
+    await openWorkshop(page, 0);
+    await page.evaluate((cardId) => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.giveCopies(
+        cardId,
+        "rare",
+        1
+      );
+    }, RECRUIT);
+
+    await page.getByTestId("workshop-extract-rare").click();
+    await expect(page.getByTestId("balance-essence")).toHaveAccessibleName(
+      "Essence: 50"
+    );
+    await expect(page.getByTestId("workshop-extract-ghost")).toBeHidden();
+    await expect(page.getByTestId("essence-flight")).toHaveCount(0);
   });
 });

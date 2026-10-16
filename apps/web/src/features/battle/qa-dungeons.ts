@@ -1,14 +1,5 @@
-import type {
-  BattleEvent,
-  DungeonBoss,
-  DungeonDefinition,
-} from "@workspace/rules";
-import {
-  getCard,
-  getDungeon,
-  getStage,
-  getStarterDeck,
-} from "@workspace/rules";
+import type { BattleEvent, DungeonDefinition } from "@workspace/rules";
+import { getDungeon, getStage, getStarterDeck } from "@workspace/rules";
 
 import type { BattleSession } from "@/features/battle/battle-session";
 import {
@@ -20,61 +11,11 @@ import { applyEvent } from "@/features/battle/battle-view";
 import type { BattlePlayer } from "@/features/profile/profile";
 
 /**
- * QA Dungeons (issue #93). No Dungeon has 3 Bosses yet, so the test hooks
- * build one from the Campaign Bosses: each Boss has the id of its Boss Stage,
- * so that it takes its name from the Message Catalog. The HP is low, so that
- * a QA Battle reaches the Boss Rules and a Defeat in a few Turns.
+ * QA Dungeons (issue #93): the real Dungeons, and a weak copy of Dungeon 1 so
+ * that a QA Battle reaches the Boss Rules and a Defeat in a few Turns.
  */
 /** The easy Deck of Stage 1-1, so that a QA Battle reaches the Boss HP. */
 const EASY_STAGE = "1-1";
-
-type BossRule = DungeonBoss["bossRules"][number];
-
-const boss = (
-  stageId: string,
-  front: readonly number[],
-  heroHp: number,
-  bossRules: readonly BossRule[]
-): DungeonBoss => {
-  const { enemy } = getStage(stageId);
-  return {
-    id: stageId,
-    front: [...front],
-    heroHp,
-    classId: enemy.classId,
-    gear: getStage(EASY_STAGE).enemy.gear,
-    deck: getStage(EASY_STAGE).enemy.deck,
-    startUnits: [],
-    bossRules: [...bossRules],
-  };
-};
-
-/** The first Creature Card of a Boss Deck, for a Summon Boss Rule. */
-const firstCreature = (stageId: string): string => {
-  const entry = getStage(stageId).enemy.deck.find(
-    (candidate) => getCard(candidate.cardId).kind === "creature"
-  );
-  if (!entry) {
-    throw new Error(`Stage ${stageId} has no Creature Card`);
-  }
-  return entry.cardId;
-};
-
-const BRASSBELLY = "1-10";
-const BRAMBLE = "4-10";
-const MARROW = "5-10";
-
-const dungeon = (
-  number: number,
-  bosses: readonly DungeonBoss[]
-): DungeonDefinition => ({
-  id: `qa-dungeon-${number}`,
-  number,
-  unlockLevel: 10,
-  firstWinCard: { cardId: firstCreature(BRASSBELLY), rank: "epic" },
-  closedLanes: [],
-  bosses: [...bosses],
-});
 
 /** Dungeon 1: 2 Bosses with 2 Lanes each (GDD 8.4). */
 export const qaTwoBossDungeon = (): DungeonDefinition =>
@@ -99,19 +40,9 @@ export const qaWeakTwoBossDungeon = (): DungeonDefinition => {
   };
 };
 
-/** 3 Bosses with Fronts of 1 + 2 + 1 Lanes, as Dungeon 3 (GDD 8.4). */
+/** Dungeon 3: 3 Bosses with Fronts of 1 + 2 + 1 Lanes (GDD 8.4). */
 export const qaThreeBossDungeon = (): DungeonDefinition =>
-  dungeon(3, [
-    boss(BRASSBELLY, [0], 22, [
-      { threshold: 50, effect: { type: "draw", cards: 1 } },
-    ]),
-    boss(BRAMBLE, [1, 2], 30, [
-      { threshold: 60, effect: { type: "countdown", amount: 1, cards: 3 } },
-    ]),
-    boss(MARROW, [3], 22, [
-      { threshold: 40, effect: { type: "draw", cards: 2 } },
-    ]),
-  ]);
+  getDungeon("dungeon-3");
 
 /**
  * A Player who can open the Dungeons: Dungeon 1 opens at level 10 (GDD 8.4),

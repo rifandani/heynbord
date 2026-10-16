@@ -98,15 +98,17 @@ const heroTarget = (state: BattleState, unit: UnitState): TargetRef => ({
 
 /**
  * The target of a ranged Unit (GDD 4.6): the nearest enemy Unit in front of
- * it in its Range, else the enemy Hero if the Hero is in Range.
+ * it in its Range, else the enemy Hero if the Hero is in Range. `from` is the
+ * Square of the Unit; Movement uses another Square to find where to stop.
  */
 const rangedTarget = (
   state: BattleState,
-  unit: UnitState
+  unit: UnitState,
+  from: number = unit.position
 ): TargetRef | undefined => {
   const dir = direction(unit.owner);
   for (let distance = 1; distance <= rangeOf(unit); distance += 1) {
-    const position = unit.position + dir * distance;
+    const position = from + dir * distance;
     if (position === enemyHeroPosition(unit.owner)) {
       return heroTarget(state, unit);
     }
@@ -191,7 +193,8 @@ export const isFlying = (
  * stops before an enemy Unit. A Flying Unit moves over friendly Units, enemy
  * ground Units and enemy Walls, but it stops before an enemy Flying Unit. Of
  * the statuses, only Grounded changes this. Each Unit stops in the farthest empty Square
- * that its Speed reaches.
+ * that its Speed reaches. A ranged Unit stops in the first empty Square from
+ * which it has a target in Range.
  * A ranged Unit with a target in Range, and a Pivot Unit with an enemy Unit
  * behind it or next to it, do not move.
  */
@@ -208,6 +211,7 @@ const destination = (
 ): number => {
   const dir = direction(unit.owner);
   const from = unit.position;
+  const ranged = isRanged(unit);
   let to = from;
   for (let step = 1; step <= speed; step += 1) {
     const position = from + dir * step;
@@ -217,6 +221,9 @@ const destination = (
     const other = unitAt(state, unit.lane, position);
     if (!other) {
       to = position;
+      if (ranged && rangedTarget(state, unit, position)) {
+        break;
+      }
     } else if (
       other.owner !== unit.owner &&
       (!isFlying(unit) || isFlying(other))
@@ -605,8 +612,11 @@ const act = (ctx: StepContext, unit: UnitState): void => {
   } else {
     attack(ctx, unit);
   }
-  if (entangled) {
+  if (entangled && unit.entangled) {
     unit.entangled = false;
+    if (findUnit(ctx.state, unit.id)) {
+      ctx.events.push(BattleEvent.EntangleFaded({ unitId: unit.id }));
+    }
   }
 };
 

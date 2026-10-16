@@ -59,6 +59,7 @@ declare global {
 interface HookWindow extends Window {
   readonly __THREE_GAME_TEST_HOOKS__?: {
     readonly setCoin: (copper: number) => void;
+    readonly setXp: (xp: number) => void;
     readonly winStage: (stageId: string) => void;
     readonly profileSaved: () => Promise<void>;
   };
@@ -902,6 +903,92 @@ test.describe("Town", () => {
     await page.reload();
     await expect(page.getByTestId("town")).toBeVisible();
   });
+
+  // The `clip` of a Building cuts the pointer and the paint of its label too.
+  // A long name and its hover plate are wider than the label box, so the cut
+  // must give them space.
+  for (const locale of ["en-US", "id-ID"]) {
+    test.describe(locale, () => {
+      test.use({ locale });
+
+      test("the cut of a Building does not cut its hovered name label", async ({
+        page,
+      }) => {
+        for (const size of [
+          { width: 1440, height: 900 },
+          { width: 844, height: 390 },
+        ]) {
+          await page.setViewportSize(size);
+          await page.goto("/play");
+          await expect(page.getByTestId("town")).toBeVisible({
+            timeout: 30_000,
+          });
+          await page.waitForFunction(
+            () => "__THREE_GAME_TEST_HOOKS__" in window
+          );
+          // Player level 10 (2280 XP) opens all the Buildings.
+          await page.evaluate(() => {
+            // SAFETY: the dev and QA builds install the test hooks on `window`.
+            (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setXp(2280);
+          });
+          for (const id of [
+            "townGate",
+            "cardShop",
+            "workshop",
+            "barracks",
+            "cave",
+          ]) {
+            const building = page.getByTestId(`building-${id}`);
+            await expect(building).not.toHaveAttribute("data-locked");
+            const label = building.locator("span > span").first();
+            const box = await label.boundingBox();
+            if (!box) {
+              throw new Error(`no label box: ${id}`);
+            }
+            await page.mouse.move(
+              box.x + box.width / 2,
+              box.y + box.height / 2
+            );
+            await expect(building).toHaveAttribute("data-hovered", "true");
+            // The two round ends and the top and bottom of the plate, on the
+            // screen: each one hits the Building, not the painting. A Hint
+            // over the Town is not a cut. A miss says what it hits.
+            const cut = await building.evaluate((element) => {
+              const plate = element
+                .querySelector("span > span")
+                ?.getBoundingClientRect();
+              if (!plate) {
+                return ["no label"];
+              }
+              const middle = plate.top + plate.height / 2;
+              const center = plate.left + plate.width / 2;
+              return [
+                { x: plate.left + 3, y: middle },
+                { x: plate.right - 3, y: middle },
+                { x: center, y: plate.top + 2 },
+                { x: center, y: plate.bottom - 2 },
+              ]
+                .filter(({ x, y }) => x < innerWidth && y < innerHeight)
+                .map(({ x, y }) => ({
+                  point: `${Math.round(x)},${Math.round(y)}`,
+                  hit: document.elementFromPoint(x, y),
+                }))
+                .filter(
+                  ({ hit }) =>
+                    !element.contains(hit) &&
+                    element.parentElement?.contains(hit)
+                )
+                .map(
+                  ({ point, hit }) =>
+                    `${point}: ${hit?.closest<HTMLElement>("[data-testid]")?.dataset.testid ?? hit?.tagName}`
+                );
+            });
+            expect(cut, `${id} at ${size.width}x${size.height}`).toEqual([]);
+          }
+        }
+      });
+    });
+  }
 });
 
 test.describe("Campaign", () => {
@@ -1010,7 +1097,7 @@ test.describe("Campaign", () => {
     // And 1 Forge Stone of the tier of Region 1 (ADR-0038).
     const stones = page.getByTestId("result-forge-stones");
     await expect(stones).toHaveAttribute("data-tier", "common");
-    await expect(stones).toContainText("+1 × Common Forge Stone");
+    await expect(stones).toContainText("+1 Common Forge Stone");
     await page.getByTestId("back-to-campaign").click();
     const won = page.getByTestId("stage-1-1");
     await expect(won).toHaveAttribute("data-state", "done");
@@ -1175,7 +1262,7 @@ test.describe("Region 1 rewards (issue #54)", () => {
       "1 Merchant Pack waits in the Card shop."
     );
     await expect(page.getByTestId("chest-reward-forge-stones")).toHaveText(
-      "+2 × Common Forge Stone"
+      "+2 Common Forge Stone"
     );
     await page.getByTestId("chest-rewards-close").click();
     await expect(rewards).toBeHidden();

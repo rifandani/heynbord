@@ -84,6 +84,14 @@ describe("logKeyAction", () => {
     expect(logKeyAction(logCommand("Escape"), false)._tag).toBe("close");
   });
 
+  it("leaves a Replay only with Esc: L does nothing, because a Replay has no Live", () => {
+    expect(logKeyAction(logCommand("l"), false, true)._tag).toBe("off");
+    expect(logKeyAction(logCommand("Escape"), false, true)._tag).toBe("close");
+    expect(logKeyAction(logCommand("ArrowRight"), true, true)._tag).toBe(
+      "step"
+    );
+  });
+
   it("keeps Inspect and the Handbook, and turns off all Live input", () => {
     expect(logKeyAction(logCommand("i"), false)._tag).toBe("live");
     expect(logKeyAction(logCommand("h"), false)._tag).toBe("live");

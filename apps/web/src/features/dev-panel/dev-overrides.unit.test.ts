@@ -11,6 +11,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   canSetStars,
+  floorsWon,
   fromOverlay,
   gearLevel,
   lastWonStage,
@@ -112,6 +113,14 @@ describe("Forge Stones", () => {
   });
 });
 
+describe("Heynspire", () => {
+  it("keeps the won Floors whole, from 0 to 50", () => {
+    expect(floorsWon(12.4)).toBe(12);
+    expect(floorsWon(-3)).toBe(0);
+    expect(floorsWon(80)).toBe(50);
+  });
+});
+
 describe("Gear", () => {
   it("keeps a Gear level whole, from 0 to the maximum", () => {
     expect(gearLevel(3.4)).toBe(3);
@@ -133,8 +142,10 @@ describe("overrides over a Profile", () => {
       unlockAll: true,
       stageResults: { "1-1": 3 },
       balances: { coin: 15_400, essence: 30, heynstones: 150 },
-      sweepTickets: 12,
+      campaignSweepTickets: 12,
+      dungeonSweepTickets: 5,
       forgeStones: { common: 5, uncommon: 4, rare: 3, epic: 2, legendary: 1 },
+      heynspireFloorsWon: 7,
       xp: 640,
       gear: { weapon: 3, armor: 3, trinket: 3, banner: 3 },
     });
@@ -142,8 +153,10 @@ describe("overrides over a Profile", () => {
     expect(shown.collection).toEqual(unlockedCollection());
     expect(shown.stageResults).toEqual({ "1-1": 3 });
     expect(shown.coin).toBe(15_400);
-    expect(shown.sweepTickets).toBe(12);
+    expect(shown.campaignSweepTickets).toBe(12);
+    expect(shown.dungeonSweepTickets).toBe(5);
     expect(shown.forgeStones.legendary).toBe(1);
+    expect(shown.heynspireFloorsWon).toBe(7);
     expect(shown.xp).toBe(640);
     expect(shown.gear.weapon).toBe(3);
     // The rest is the Profile.
@@ -163,16 +176,20 @@ describe("overrides over a Profile", () => {
       coin: 1,
       essence: 2,
       heynstones: 3,
-      sweepTickets: 4,
+      campaignSweepTickets: 4,
+      dungeonSweepTickets: 6,
       forgeStones: { common: 1, uncommon: 0, rare: 0, epic: 0, legendary: 2 },
+      heynspireFloorsWon: 3,
       gear: { weapon: 0, armor: 1, trinket: 0, banner: 0 },
     };
     const overrides = fromOverlay(overlay);
     expect(overrides).toEqual({
       unlockAll: true,
       balances: { coin: 1, essence: 2, heynstones: 3 },
-      sweepTickets: 4,
+      campaignSweepTickets: 4,
+      dungeonSweepTickets: 6,
       forgeStones: { common: 1, uncommon: 0, rare: 0, epic: 0, legendary: 2 },
+      heynspireFloorsWon: 3,
       gear: { weapon: 0, armor: 1, trinket: 0, banner: 0 },
     });
     expect(overrides && toOverlay(overrides)).toEqual(overlay);

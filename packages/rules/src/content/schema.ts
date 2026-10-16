@@ -733,7 +733,12 @@ const DungeonBoss = Schema.Struct({
   heroHp: between(1, 200),
   classId: ClassId,
   gear: GearLevels,
-  deck: Schema.Array(DeckEntry).check(Schema.isMinLength(5)),
+  /**
+   * At least 4 cards: the start Hand. A Dungeon with 3 Bosses draws 3 cards
+   * in each Turn, so its Boss Decks are smaller than a Stage Deck
+   * (docs/game/14-campaign-stages.md 7.1).
+   */
+  deck: Schema.Array(DeckEntry).check(Schema.isMinLength(4)),
   /** A content test checks that each Start Unit is in the Front of its Boss. */
   startUnits: Schema.Array(startUnit(DungeonLane)),
   bossRules: Schema.Array(BossRule),
@@ -762,6 +767,35 @@ export const DungeonDefinition = Schema.Struct({
   ),
 });
 export type DungeonDefinition = typeof DungeonDefinition.Type;
+
+/**
+ * A Heynspire Floor (GDD 8.2): one Battle with 4 Lanes against 1 enemy Hero
+ * with a Front of all 4 Lanes, and no Closed Lanes (ADR-0010). A pure
+ * function makes it from a Floor template and the strength curve (ADR-0042).
+ * The rewards are in `floorFirstWinReward` (Economy 2.3).
+ */
+export const FloorDefinition = Schema.Struct({
+  id: Schema.NonEmptyString,
+  number: between(1, 50),
+  /** True for each 10th Floor: its enemy Hero is a Boss. */
+  boss: Schema.Boolean,
+  /**
+   * The Player level on the First-try Path before this Floor: all Stages,
+   * then the earlier Floors (Economy 1.2). The Player sees it.
+   */
+  recommendedLevel: between(1, 30),
+  enemy: Schema.Struct({
+    /** The key of the enemy name: a Floor template or a Boss. */
+    id: Schema.NonEmptyString,
+    heroHp: between(1, 200),
+    classId: ClassId,
+    gear: GearLevels,
+    deck: Schema.Array(DeckEntry).check(Schema.isMinLength(5)),
+    /** A Boss Floor keeps the Start Units of its Boss Stage. */
+    startUnits: Schema.Array(startUnit(DungeonLane)),
+  }),
+});
+export type FloorDefinition = typeof FloorDefinition.Type;
 
 /** A starter Deck that the Player can take into a Battle in the slice. */
 export const StarterDeck = Schema.Struct({

@@ -20,7 +20,7 @@ import type {
   HeroState,
   Side,
 } from "./types";
-import { DUNGEON_LANES, STAGE_LANES } from "./types";
+import { DUNGEON_LANES, FLOOR_LANES, STAGE_LANES } from "./types";
 import { summon } from "./units";
 
 /** Cards in each starting Hand (GDD 4.2). */
@@ -66,13 +66,16 @@ const makeHero = (
 const allLanes = (lanes: number): number[] =>
   Array.from({ length: lanes }, (_, lane) => lane);
 
-/** One enemy Hero of the content: the enemy of a Stage, or a Boss of a Dungeon. */
+/**
+ * One enemy Hero of the content: the enemy of a Stage or of a Floor, or a
+ * Boss of a Dungeon.
+ */
 type EnemyHero = Pick<
   DungeonBoss,
   "front" | "heroHp" | "classId" | "gear" | "deck" | "startUnits" | "bossRules"
 >;
 
-/** The enemy Side of a Battle, from a Stage or from a Dungeon. */
+/** The enemy Side of a Battle, from a Stage, a Dungeon or a Floor. */
 interface EnemyContent {
   readonly id: string;
   readonly lanes: number;
@@ -82,9 +85,20 @@ interface EnemyContent {
 
 /**
  * A Stage has 3 Lanes and 1 enemy Hero with a Front of all Lanes. A Dungeon
- * has 4 Lanes and 1 enemy Hero for each Boss (GDD 8.4, ADR-0010).
+ * has 4 Lanes and 1 enemy Hero for each Boss (GDD 8.4). A Floor has 4 Lanes,
+ * no Closed Lanes and 1 enemy Hero with a Front of all Lanes, with no Boss
+ * Rules (GDD 8.2, ADR-0010).
  */
 const enemyContent = (setup: BattleSetup): EnemyContent => {
+  if ("floor" in setup) {
+    const { floor } = setup;
+    return {
+      id: floor.id,
+      lanes: FLOOR_LANES,
+      closedLanes: [],
+      heroes: [{ ...floor.enemy, front: allLanes(FLOOR_LANES), bossRules: [] }],
+    };
+  }
   if ("dungeon" in setup) {
     const { dungeon } = setup;
     return {
@@ -116,9 +130,9 @@ interface BattleStart {
 
 /**
  * Starts a Battle (GDD 4.2): both sides shuffle with the Battle seed and each
- * Hero draws 4 cards, the Stage or the Dungeon puts its start Units on the
- * Board, and the player's first Start Phase runs. Returns the state in the
- * player's Play Phase and the events so far.
+ * Hero draws 4 cards, the Stage, the Dungeon or the Floor puts its start Units
+ * on the Board, and the player's first Start Phase runs. Returns the state in
+ * the player's Play Phase and the events so far.
  */
 export const createBattle = (setup: BattleSetup): BattleStart => {
   const random = { state: seedState(setup.seed) };

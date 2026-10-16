@@ -45,7 +45,7 @@ Regions 2 to 5 (M3) come after the playtest, because their tuning needs the Work
 - [x] Enemy AI scores for Sabotage, Hobble and Last Breath when it selects a card to summon (issue [#84](https://github.com/rifandani/heynbord/issues/84), GDD 9).
 - [ ] Hints for each Race and Keyword when the Player meets them for the first time.
 - [ ] Battles with 1 to 4 Heroes on a Side ([ADR-0009](../adr/0009-a-side-has-one-or-more-heroes.md)).
-- [ ] 3 Dungeons with their Bosses (GDD section 8.4). Dungeons use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)).
+- [ ] 3 Dungeons with their Bosses (GDD section 8.4). Dungeons use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)). Dungeon 1 (The Rootdeep Mine), Dungeon 2 (The Rimebarrow) and Dungeon 3 (The Broken Vault) are done, with their sim results ([14 — Campaign Stages, 7](./14-campaign-stages.md#7-dungeons)).
 - [ ] Balance simulation script. Tune cards to the targets in GDD section 13.
 - [ ] Economy simulation script. Tune rewards to the targets in the Economy document.
 - [ ] `id-id` translation of all text.
@@ -59,8 +59,8 @@ Regions 2 to 5 (M3) come after the playtest, because their tuning needs the Work
 
 - [ ] Heynspire (50 Floors). All Floors use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)). Heynspire unlocks after the Region 5 Boss Stage, so the strength of Floor 1 starts at the values of the Region 5 Boss.
 - [ ] Achievements and Cosmetics.
-- [ ] Heynstones and the Bazaar (Cosmetics). Check the Heynstone total again: the Star chests of 5 Regions give 750 Heynstones ([07 — Economy, 2.6](./07-economy.md)).
-- [ ] Auto-play, Battle Log (BAT-13: #73, #74, #76).
+- [ ] Heynstones and the Bazaar (Cosmetics). Check the Heynstone total again: Star chests give no Heynstones, so the supply is about 1,250 ([07 — Economy, 2.6](./07-economy.md)).
+- [ ] Dungeon Sweep (BAT-12, [ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)), Battle Log (BAT-13: #73, #74, #76).
 - [ ] Mobile landscape layout and touch input. Portrait warning.
 - [ ] Sound effects and music.
 - [ ] Accessibility options and keyboard play.

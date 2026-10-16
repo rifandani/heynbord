@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import type { ReactNode } from "react";
 
 import { BRONZE } from "@/features/battle/components/card-frame";
 import { HeynbordEmblem } from "@/features/battle/components/heynbord-emblem";
@@ -36,13 +37,16 @@ export const CardBack = ({ className }: { readonly className?: string }) => (
 );
 
 /**
- * An empty place for a card: a dark inset with a faint emblem. It has the
- * height of the Card Frame and the width of its parent.
+ * An empty place for a card: a dark inset with a faint mark. The mark is the
+ * Heynbord emblem if `mark` is not given. It has the height of the Card Frame
+ * and the width of its parent.
  */
 export const EmptyCardPlace = ({
   className,
+  mark,
 }: {
   readonly className?: string;
+  readonly mark?: ReactNode;
 }) => (
   <span
     className={cn(
@@ -51,6 +55,6 @@ export const EmptyCardPlace = ({
     )}
     aria-hidden
   >
-    <HeynbordEmblem className="w-[3.6em] opacity-[0.16] grayscale" />
+    {mark ?? <HeynbordEmblem className="w-[3.6em] opacity-[0.16] grayscale" />}
   </span>
 );

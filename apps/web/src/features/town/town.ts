@@ -1,8 +1,20 @@
 import type { CoinDenomination, UnlockFeature } from "@workspace/rules";
-import { coinDenominations, isUnlocked, UNLOCK_LEVELS } from "@workspace/rules";
+import {
+  coinDenominations,
+  heynspireBossStage,
+  isUnlocked,
+  UNLOCK_LEVELS,
+} from "@workspace/rules";
 
 /** The game screens in the `/play` route before a Battle (web ADR-0006). */
-export type GameScreen = "town" | "campaign" | "packs" | "workshop" | "hero";
+export type GameScreen =
+  | "town"
+  | "campaign"
+  | "packs"
+  | "workshop"
+  | "hero"
+  | "dungeons"
+  | "heynspire";
 
 /** A box in Town painting coordinates. */
 export interface Rect {
@@ -18,7 +30,7 @@ export interface Rect {
  */
 export const PAINTING = { width: 1900, height: 900 } as const;
 
-/** The master painting. Each selectable Building is a cut-out layer of it. */
+/** The master painting. Each selectable Building is a button over a part of it. */
 export const PAINTING_IMAGE = "/town/town.webp";
 
 /** The landscape aspects that the Town supports: 4:3 laptops to 19.5:9 phones. */
@@ -76,11 +88,17 @@ export const BALANCE_PLATE_CORNER: Rect = {
   height: 320,
 };
 
-/** A Building that the Player can select, with its cut-out layer and its label. */
+/** A Building that the Player can select, with its box and its label. */
 export interface SelectableBuilding {
-  readonly id: "townGate" | "cardShop" | "workshop" | "barracks";
+  readonly id:
+    | "townGate"
+    | "cardShop"
+    | "workshop"
+    | "barracks"
+    | "cave"
+    | "heynspire";
   readonly screen: GameScreen;
-  /** The cut-out layer, in painting coordinates. */
+  /** The Building in the painting, in painting coordinates. */
   readonly rect: Rect;
   /**
    * The label box above the Building, in painting coordinates. Its bottom is
@@ -88,14 +106,20 @@ export interface SelectableBuilding {
    * than `rect` when a narrow screen crops a part of the Building.
    */
   readonly label: Rect;
-  readonly image: string;
-  /** The feature of the Player level that unlocks the screen (GDD 7.1), if one does. */
-  readonly unlock?: UnlockFeature;
+  /** What unlocks the screen, if something does. */
+  readonly unlock?: TownUnlock;
   /**
-   * A CSS `clip-path` of the Building box (label and layer), where the box
+   * A CSS `clip-path` of the Building box (label and Building), where the box
    * covers another Building: the pointer then goes to the other Building.
+   * Around the label, the cut is wider than `label`: the name and its hover
+   * plate can be wider than the label box, and the cut must not cut them.
    */
   readonly clip?: string;
+  /**
+   * The box of the hover light, in painting coordinates, where the light of
+   * `rect` does not cover the painted Building.
+   */
+  readonly glow?: Rect;
 }
 
 /**
@@ -108,7 +132,6 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     screen: "campaign",
     rect: { x: 720, y: 520, width: 344, height: 344 },
     label: { x: 720, y: 474, width: 344, height: 46 },
-    image: "/town/town-gate.webp",
   },
   {
     // The Card shop (11 — Town Concepts 2.7): the house with the purple roof
@@ -119,7 +142,6 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     unlock: "packs",
     rect: { x: 1010, y: 436, width: 199, height: 176 },
     label: { x: 1010, y: 390, width: 199, height: 46 },
-    image: "/town/card-shop.webp",
     // The cut goes from (25%, 100%) to (0, 62%). The polygon goes past the
     // box, so that the hover glow is not cut.
     clip: "polygon(-10% -20%, 110% -20%, 110% 110%, 31.6% 110%, -10% 46.8%)",
@@ -135,25 +157,63 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     unlock: "combine",
     rect: { x: 1318, y: 480, width: 427, height: 225 },
     label: { x: 1318, y: 434, width: 208, height: 46 },
-    image: "/town/workshop.webp",
-    clip: "polygon(-3.3% -3.7%, 51.1% -3.7%, 51.1% 16.2%, 64.6% 16.2%, 64.6% 14.8%, 84.8% 14.8%, 85.7% 28.8%, 103.7% 39.9%, 103.7% 81.2%, 88.8% 83.8%, 54.3% 100.4%, 26.2% 105.5%, -3.3% 101.8%)",
+    clip: "polygon(-8.5% -6%, 57.5% -6%, 57.5% 16.2%, 64.6% 16.2%, 64.6% 14.8%, 84.8% 14.8%, 85.7% 28.8%, 103.7% 39.9%, 103.7% 81.2%, 88.8% 83.8%, 54.3% 100.4%, 26.2% 105.5%, -3.3% 101.8%, -3.3% 18%, -8.5% 18%)",
   },
   {
     // The Barracks (11 — Town Concepts 2.8): the long stone barracks with the
     // blue roof, the training yard and its fence, inside the wall at the far
     // left. A 4:3 screen crops its left part (the round tower and the left
     // wing), so its label is over its right wing, in the safe area. The cut
-    // follows the roofs and the fence (`scripts/town-art/cut-barracks.ts`),
-    // and it goes around the label.
+    // follows the roofs and the fence, and it goes around the label.
     id: "barracks",
     screen: "hero",
     unlock: "gear",
     rect: { x: 91, y: 320, width: 464, height: 206 },
     label: { x: 376, y: 274, width: 179, height: 46 },
-    image: "/town/barracks.webp",
-    clip: "polygon(-2.5% 39.3%, 9.8% 19%, 19.6% 37.5%, 44.8% 28%, 45.1% 22.5%, 54.6% 16.5%, 61.4% 16.5%, 61.4% -3%, 103% -3%, 103% 71%, 91.5% 82%, 55.6% 103%, 19.6% 87%, 5% 84%, -2.5% 73%)",
+    clip: "polygon(-2.5% 39.3%, 9.8% 19%, 19.6% 37.5%, 44.8% 28%, 45.1% 22.5%, 52% 18%, 52% -6%, 109.5% -6%, 109.5% 19%, 103% 19%, 103% 71%, 91.5% 82%, 55.6% 103%, 19.6% 87%, 5% 84%, -2.5% 73%)",
+  },
+  {
+    // The Dungeons cave (11 — Town Concepts 2.3): the rock mound with the cave
+    // arch and the ruined pillars, at the right edge of the painting. It is
+    // the one selectable Building outside the safe area: a 4:3 screen crops
+    // all of it, and a 16:10 screen crops the arch. Its label is on the rock
+    // face left of the arch, which more screens show, and under the edge of
+    // the Workshop, so that it never takes the pointer from the Workshop. The
+    // Dungeons shortcut opens the screen on all screens (GDD 11.4). The
+    // rock mound goes up behind the label, so the light is taller than
+    // `rect` and goes up to the top of the mound. The cut starts under the
+    // label and follows the first pillar. Above the box, it lets the light
+    // through.
+    id: "cave",
+    screen: "dungeons",
+    unlock: "dungeon1",
+    rect: { x: 1480, y: 746, width: 420, height: 118 },
+    label: { x: 1500, y: 700, width: 200, height: 46 },
+    glow: { x: 1470, y: 650, width: 520, height: 240 },
+    clip: "polygon(-4.5% -32%, 124% -32%, 124% 118%, 10% 118%, 10% 49%, 23.5% 49%, 23.5% 28%, -4.5% 28%)",
+  },
+  {
+    // Heynspire (11 — Town Concepts 2.2): the white castle with the tall
+    // tower and the blue roofs on the hill at the back. A screen wider than
+    // 2.2:1 crops the sky and the top of the tower, so the label is on the
+    // walls of the castle, at the top of the safe area, and the box is the
+    // hill under it. The light goes up to the flag at the top of the tower.
+    id: "heynspire",
+    screen: "heynspire",
+    unlock: "heynspire",
+    rect: { x: 540, y: 184, width: 220, height: 60 },
+    label: { x: 540, y: 138, width: 220, height: 46 },
+    glow: { x: 500, y: 0, width: 300, height: 250 },
   },
 ];
+
+/**
+ * The Buildings outside the safe area (GDD 11.4): a narrow screen crops them,
+ * so only their Town Bar shortcut opens their screen there.
+ */
+export const EDGE_BUILDINGS: ReadonlySet<SelectableBuilding["id"]> = new Set([
+  "cave",
+]);
 
 /**
  * One shortcut in the Town Bar. `screen` is `null` for a screen that does not
@@ -175,9 +235,30 @@ export interface TownShortcut {
   readonly screen: GameScreen | null;
   /** The dialog that the shortcut opens over the current screen. */
   readonly dialog?: "deck" | "handbook";
-  /** The feature of the Player level that unlocks the screen (GDD 7.1), if one does. */
-  readonly unlock?: UnlockFeature;
+  /** What unlocks the screen, if something does. */
+  readonly unlock?: TownUnlock;
 }
+
+/**
+ * What unlocks a screen: a feature of the Player level (GDD 7.1), or
+ * `heynspire`, the first win of the last Boss Stage (GDD 8.2).
+ */
+export type TownUnlock = UnlockFeature | "heynspire";
+
+/** What the Player did that unlocks screens. */
+export interface TownProgress {
+  readonly level: number;
+  /** True after the first win of the last Boss Stage (`isHeynspireOpen`). */
+  readonly heynspireOpen: boolean;
+}
+
+/**
+ * Why a screen is still locked: a Player level to get, or a Stage to win
+ * first (GDD 11.4). The Lock Plate and the tooltips show it.
+ */
+export type TownLock =
+  | { readonly kind: "level"; readonly level: number }
+  | { readonly kind: "stage"; readonly stageId: string };
 
 /**
  * The Player level that opens a screen, or `null` when `level` already opens
@@ -187,17 +268,36 @@ export const opensAtLevel = (
   screen: Pick<TownShortcut, "unlock">,
   level: number
 ): number | null =>
-  screen.unlock === undefined || isUnlocked(level, screen.unlock)
+  screen.unlock === undefined ||
+  screen.unlock === "heynspire" ||
+  isUnlocked(level, screen.unlock)
     ? null
     : UNLOCK_LEVELS[screen.unlock];
 
+/** The lock of a screen, or `null` when `progress` already opens it or nothing locks it. */
+export const townLock = (
+  screen: Pick<TownShortcut, "unlock">,
+  progress: TownProgress
+): TownLock | null => {
+  if (screen.unlock === "heynspire") {
+    return progress.heynspireOpen
+      ? null
+      : { kind: "stage", stageId: heynspireBossStage().id };
+  }
+  const level = opensAtLevel(screen, progress.level);
+  return level === null ? null : { kind: "level", level };
+};
+
 /**
- * True for a shortcut to a screen that does not exist yet, or that the Player
- * level has not unlocked yet.
+ * True for a shortcut to a screen that does not exist yet, or that
+ * `progress` has not unlocked yet.
  */
-export const isLocked = (shortcut: TownShortcut, level: number): boolean =>
+export const isLocked = (
+  shortcut: TownShortcut,
+  progress: TownProgress
+): boolean =>
   (shortcut.screen === null && shortcut.dialog === undefined) ||
-  opensAtLevel(shortcut, level) !== null;
+  townLock(shortcut, progress) !== null;
 
 /**
  * The painted icon of a shortcut or of the Settings button (11 — Town Concepts
@@ -224,8 +324,8 @@ export const paintedIcon = (id: TownShortcut["id"]): string | null =>
 export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "town", screen: "town" },
   { id: "campaign", screen: "campaign" },
-  { id: "heynspire", screen: null },
-  { id: "dungeons", screen: null },
+  { id: "heynspire", screen: "heynspire", unlock: "heynspire" },
+  { id: "dungeons", screen: "dungeons", unlock: "dungeon1" },
   // The Deck builder is a dialog over the current screen, not a screen.
   { id: "deck", screen: null, dialog: "deck" },
   { id: "workshop", screen: "workshop", unlock: "combine" },
@@ -236,6 +336,18 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   // The Handbook has no Building (GDD 11.4): it is a dialog, like the Deck builder.
   { id: "handbook", screen: null, dialog: "handbook" },
 ];
+
+/**
+ * The box of the hover light of a Building, in painting coordinates: `glow`,
+ * or else `rect` with 8% more on each side.
+ */
+export const glowBox = (building: SelectableBuilding): Rect =>
+  building.glow ?? {
+    x: building.rect.x - building.rect.width * 0.08,
+    y: building.rect.y - building.rect.height * 0.08,
+    width: building.rect.width * 1.16,
+    height: building.rect.height * 1.16,
+  };
 
 /** A box in painting coordinates as CSS percentages of the painting. */
 export const percentBox = (rect: Rect) => ({

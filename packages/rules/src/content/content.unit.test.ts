@@ -1385,6 +1385,13 @@ describe("Dungeons (GDD 8.4)", () => {
     expect(() =>
       decodeDungeon({ ...dungeon, closedLanes: [{ lane: 4 }] })
     ).toThrow();
+    // A Boss Deck holds at least the start Hand of 4 cards.
+    expect(() =>
+      decodeDungeon({
+        ...dungeon,
+        bosses: [{ ...boss, deck: boss?.deck.slice(0, 3) }],
+      })
+    ).toThrow();
   });
 
   it("puts each Start Unit and each Boss Rule Summon in the Front of its Boss, out of the Closed Lanes", () => {
@@ -1455,6 +1462,81 @@ describe("Dungeons (GDD 8.4)", () => {
         }
       }
     }
+  });
+
+  it("gives Dungeon 2 a wide Boss and a narrow Boss (Fronts 3 + 1), of the Races of Regions 4 and 5, the 2 Classes that Dungeon 1 does not use, and 1 Boss Rule each", () => {
+    const dungeon = getDungeon("dungeon-2");
+    expect(dungeon.unlockLevel).toBe(UNLOCK_LEVELS.dungeon2);
+    expect(dungeon.bosses.map((boss) => boss.front)).toEqual([[0, 1, 2], [3]]);
+    const [wide, narrow] = dungeon.bosses;
+    // The wide Boss is easy to hit through 3 Lanes, so it has more HP. The
+    // narrow Boss starts behind a Unit in its 1 Lane.
+    expect(wide?.heroHp).toBeGreaterThan(narrow?.heroHp ?? 0);
+    expect(narrow?.startUnits.length).toBeGreaterThan(0);
+    const dungeon1Classes = getDungeon("dungeon-1").bosses.map(
+      (boss) => boss.classId
+    );
+    expect(new Set(dungeon.bosses.map((boss) => boss.classId)).size).toBe(2);
+    for (const boss of dungeon.bosses) {
+      expect(dungeon1Classes, `${boss.id} Class`).not.toContain(boss.classId);
+      expect(boss.bossRules, `${boss.id} Boss Rules`).toHaveLength(1);
+      expect(
+        boss.deck.filter((entry) => entry.rank === "epic").length,
+        `${boss.id} Epics`
+      ).toBeLessThanOrEqual(1);
+      for (const entry of boss.deck) {
+        const card = getCard(entry.cardId);
+        if (card.kind === "creature") {
+          expect(["elf", "feral", "undead"], entry.cardId).toContain(card.race);
+        } else {
+          expect(card.class, entry.cardId).toBe(boss.classId);
+        }
+      }
+    }
+  });
+
+  it("gives Dungeon 3 the Campaign Bosses of Regions 1, 4 and 5 (Fronts 1 + 2 + 1), with 3 different Classes and 1 Boss Rule each", () => {
+    const dungeon = getDungeon("dungeon-3");
+    expect(dungeon.unlockLevel).toBe(UNLOCK_LEVELS.dungeon3);
+    expect(dungeon.bosses.map((boss) => boss.id)).toEqual([
+      "baronBrassbelly",
+      "oldBramble",
+      "queenMarrow",
+    ]);
+    expect(dungeon.bosses.map((boss) => boss.front)).toEqual([
+      [0],
+      [1, 2],
+      [3],
+    ]);
+    // Baron Brassbelly is a Warrior in Stage 1-10, but a Ranger here, so
+    // the 3 Bosses have 3 different Classes.
+    expect(dungeon.bosses.map((boss) => boss.classId)).toEqual([
+      "ranger",
+      getStage("4-10").enemy.classId,
+      getStage("5-10").enemy.classId,
+    ]);
+    expect(new Set(dungeon.bosses.map((boss) => boss.classId)).size).toBe(3);
+    const [brassbelly, bramble, marrow] = dungeon.bosses;
+    // The Old Bramble holds the 2 center Lanes, so it is the easiest to hit
+    // and has the most HP.
+    expect(bramble?.heroHp).toBeGreaterThan(brassbelly?.heroHp ?? 0);
+    expect(bramble?.heroHp).toBeGreaterThan(marrow?.heroHp ?? 0);
+    for (const boss of dungeon.bosses) {
+      expect(boss.bossRules, `${boss.id} Boss Rules`).toHaveLength(1);
+      expect(boss.startUnits.length, `${boss.id} bodyguard`).toBeGreaterThan(0);
+    }
+  });
+
+  it("gives a first-win card of each Dungeon that no Stage and no other Dungeon gives", () => {
+    const stageCards = STAGES.map((stage) => stage.firstWinCard.cardId);
+    const dungeonCards = DUNGEONS.map((dungeon) => dungeon.firstWinCard.cardId);
+    expect(new Set(dungeonCards).size).toBe(dungeonCards.length);
+    for (const cardId of dungeonCards) {
+      expect(stageCards, cardId).not.toContain(cardId);
+    }
+    expect(getDungeon("dungeon-3").firstWinCard.cardId).toBe(
+      "undead.sirOdoLastTaxman"
+    );
   });
 
   it("throws for an unknown Dungeon", () => {

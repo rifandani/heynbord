@@ -2,22 +2,26 @@ import { expect, test } from "./_base";
 import type { Page } from "./_base";
 
 /**
- * The Sweep (GDD 4.12, ADR-0035, issue #82): the Sweep button of a Stage
- * with 3 best Stars, the Ticket control, the Sweep Result in the Stage Panel,
- * the Sweep Hint, and the Sweep Tickets of a played win.
+ * The Campaign Sweep (GDD 4.12, ADR-0035, issue #82): the Sweep button of a
+ * Stage with 3 best Stars, the Ticket control, the Sweep Result in the Stage
+ * Panel, the Sweep Hint, and the Campaign Sweep Tickets of a Stage win. The
+ * Dungeon Sweep is in `dungeon.spec.ts`.
  */
 
 /** The part of `window` that the test hooks (test-hooks.ts) add. */
 interface HookWindow extends Window {
   readonly __THREE_GAME_TEST_HOOKS__?: {
-    readonly setSweepTickets: (tickets: number) => void;
+    readonly setSweepTickets: (
+      kind: "campaign" | "dungeon",
+      tickets: number
+    ) => void;
     readonly profileSaved: () => Promise<void>;
   };
 }
 
 /**
  * Opens the Campaign with Stages 1-1 to 1-9 won (1-1, 1-2, 1-4 and 1-7 with
- * 3 Stars) and `tickets` Sweep Tickets.
+ * 3 Stars), `tickets` Campaign Sweep Tickets and 9 Dungeon Sweep Tickets.
  */
 const openCampaign = async (page: Page, tickets: number) => {
   await page.goto("/play?state=campaign-progress");
@@ -25,7 +29,10 @@ const openCampaign = async (page: Page, tickets: number) => {
   await page.waitForFunction(() => "__THREE_GAME_TEST_HOOKS__" in window);
   await page.evaluate((count) => {
     // SAFETY: the dev and QA builds install the test hooks on `window`.
-    (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setSweepTickets(count);
+    const hooks = (window as HookWindow).__THREE_GAME_TEST_HOOKS__;
+    hooks?.setSweepTickets("campaign", count);
+    // The Stage Panel never shows or uses the Dungeon Sweep Tickets.
+    hooks?.setSweepTickets("dungeon", 9);
   }, tickets);
 };
 
@@ -50,6 +57,10 @@ test.describe("Sweep", () => {
       "data-tickets",
       "5"
     );
+    await expect(page.getByTestId("sweep-owned")).toHaveAttribute(
+      "data-kind",
+      "campaign"
+    );
     const control = page.getByTestId("sweep-tickets");
     await expect(control).toHaveAttribute("aria-valuenow", "5");
     await expect(control).toHaveAttribute("aria-valuemax", "5");
@@ -62,6 +73,10 @@ test.describe("Sweep", () => {
 
     const result = page.getByTestId("sweep-result");
     await expect(result).toHaveAttribute("data-tickets", "3");
+    await expect(result).toHaveAttribute("data-kind", "campaign");
+    await expect(page.getByTestId("sweep-tickets-left")).toContainText(
+      "Campaign Sweep Tickets left: 2"
+    );
     await expect(page.getByTestId("sweep-tickets-left")).toHaveAttribute(
       "data-tickets",
       "2"
@@ -141,7 +156,7 @@ test.describe("Sweep", () => {
     await page.getByTestId("stage-1-2").click();
     await expect(page.getByTestId("sweep")).toBeDisabled();
     await expect(page.getByTestId("sweep-no-tickets")).toContainText(
-      "Each win that you play gives 2 Sweep Tickets."
+      "Each Stage win gives you Campaign Sweep Tickets: 2."
     );
     await expect(page.getByTestId("sweep-tickets")).toHaveCount(0);
     await expect(page.getByTestId("start-battle")).toBeFocused();
@@ -173,7 +188,7 @@ test.describe("Sweep", () => {
     await expect(hint).toHaveCount(0);
   });
 
-  test("a played win shows +2 Sweep Tickets", async ({ page }) => {
+  test("a Stage win shows 2 Campaign Sweep Tickets", async ({ page }) => {
     await page.goto("/play?state=victory&seed=3");
     await expect(page.getByTestId("battle-result")).toBeVisible({
       timeout: 30_000,
@@ -182,8 +197,12 @@ test.describe("Sweep", () => {
       "data-tickets",
       "2"
     );
+    await expect(page.getByTestId("result-sweep-tickets")).toHaveAttribute(
+      "data-kind",
+      "campaign"
+    );
     await expect(page.getByTestId("result-sweep-tickets")).toContainText(
-      "+2 Sweep Tickets"
+      "+2 Campaign Sweep Ticket"
     );
   });
 });

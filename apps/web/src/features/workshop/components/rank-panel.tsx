@@ -6,6 +6,7 @@ import {
   RANKS,
 } from "@workspace/rules";
 import { cn } from "cn";
+import type { CSSProperties } from "react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Label, Meter } from "react-aria-components";
 
@@ -15,7 +16,7 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CoinPrice } from "@/features/packs/components/pack-art";
-import { RankBurst } from "@/features/packs/components/pack-reveal";
+import { RANK_LIGHT, RankBurst } from "@/features/packs/components/pack-reveal";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import type {
@@ -28,6 +29,8 @@ import {
   combineFocusAfter,
   combineState,
   craftState,
+  EXTRACT_MOTION,
+  extractTimeline,
   legendaryPath,
 } from "@/features/workshop/workshop";
 
@@ -43,19 +46,127 @@ export interface Burst {
   readonly serial: number;
 }
 
+/** The copy of the last Extract: it lifts off the panel card and melts into Essence. */
+export interface Extraction {
+  readonly cardId: string;
+  readonly rank: RankId;
+  /** A new number for each Extract, so that the melt starts again. */
+  readonly serial: number;
+}
+
+/** The mask of the melt: twice the card height, opaque at the top half. */
+const MELT_MASK: CSSProperties = {
+  maskImage: "linear-gradient(to top, transparent 46%, black 54%)",
+  WebkitMaskImage: "linear-gradient(to top, transparent 46%, black 54%)",
+  maskSize: "100% 200%",
+  WebkitMaskSize: "100% 200%",
+  maskRepeat: "no-repeat",
+  WebkitMaskRepeat: "no-repeat",
+  maskPosition: "0 -12%",
+  WebkitMaskPosition: "0 -12%",
+};
+
+/** The melt goes up the card slowly at the start and at the end. */
+const MELT_EASE = "cubic-bezier(0.45, 0, 0.55, 1)";
+
+/**
+ * The copy of an Extract (GDD 7.4): it lifts off the panel card, which goes
+ * dark under it, and melts from the bottom up behind a bright line in its Rank light, while the Essence
+ * drops come out of the line. An Epic or a Legendary copy trembles first. The
+ * Rank burst of the Pack reveal starts with the melt, so a higher Rank gives
+ * more light, as a Combine does. With reduced motion, it does not show.
+ */
+const ExtractGhost = ({
+  cardId,
+  rank,
+}: {
+  readonly cardId: string;
+  readonly rank: RankId;
+}) => {
+  const { meltMs, liftScale, trembleMs } = EXTRACT_MOTION[rank];
+  const { liftAt, meltAt } = extractTimeline(rank);
+  const light = RANK_LIGHT[rank];
+  const melt = `${meltMs}ms ${MELT_EASE} ${meltAt}ms both`;
+  return (
+    <>
+      {/* Behind the card. The burst starts its light 200ms after its delay, at
+          the face of a Pack flip. */}
+      <RankBurst rank={rank} delay={meltAt - 200} />
+      <span
+        className="pointer-events-none absolute inset-0 z-10 motion-reduce:hidden"
+        data-testid="workshop-extract-ghost"
+        data-rank={rank}
+        aria-hidden
+      >
+        {/* The card under the copy goes dark while the copy is off it. */}
+        <span
+          className="absolute inset-0 rounded-[0.85em] bg-[#1c140e] opacity-0"
+          style={{
+            animation: `workshop-extract-shade ${meltAt + meltMs + 240}ms ease-out both`,
+          }}
+        />
+        <span
+          className="absolute inset-0"
+          // SAFETY: a CSS custom property for the keyframes. React's
+          // `CSSProperties` does not model custom properties.
+          style={
+            {
+              "--lift-scale": liftScale,
+              animation: [
+                trembleMs > 0
+                  ? `workshop-extract-tremble ${trembleMs}ms linear both`
+                  : null,
+                `workshop-extract-lift 260ms cubic-bezier(0.16, 1, 0.3, 1) ${liftAt}ms both`,
+              ]
+                .filter(Boolean)
+                .join(", "),
+            } as CSSProperties
+          }
+        >
+          <span
+            className="absolute inset-0"
+            style={{
+              ...MELT_MASK,
+              animation: `workshop-extract-melt ${melt}`,
+              filter: `drop-shadow(0 0 0.5em ${light}66)`,
+            }}
+          >
+            <CardFrame
+              cardId={cardId}
+              rank={rank}
+              countdown={getCard(cardId).countdown}
+            />
+          </span>
+          <span
+            className="absolute inset-x-[0.2em] top-[-0.11em] h-[0.22em] rounded-full opacity-0"
+            style={{
+              animation: `workshop-extract-line ${melt}`,
+              background: `linear-gradient(90deg, transparent, ${light} 18%, #fff6df 50%, ${light} 82%, transparent)`,
+              boxShadow: `0 0 0.7em 0.2em ${light}b3`,
+            }}
+          />
+        </span>
+      </span>
+    </>
+  );
+};
+
 /**
  * The card at the top of the panel, at the Rank that the panel shows. After a
  * Combine or a Craft, it turns over to the new Rank with the Rank burst of the
- * Pack reveal. With reduced motion, it changes at once.
+ * Pack reveal. After an Extract, the copy lifts off it and melts into Essence.
+ * With reduced motion, it changes at once.
  */
 const CardPreview = ({
   cardId,
   rank,
   burst,
+  extraction,
 }: {
   readonly cardId: string;
   readonly rank: RankId;
   readonly burst: Burst | null;
+  readonly extraction: Extraction | null;
 }) => (
   // oxlint-disable-next-line react-doctor/no-tiny-text -- the font size sets the Card Frame size (em); the text in the frame has its own size
   <div
@@ -67,6 +178,14 @@ const CardPreview = ({
     data-burst={burst?.rank}
   >
     {burst ? <RankBurst rank={burst.rank} delay={0} /> : null}
+    {extraction?.cardId === cardId ? (
+      <ExtractGhost
+        // A new element for each Extract, so that the melt plays again.
+        key={extraction.serial}
+        cardId={cardId}
+        rank={extraction.rank}
+      />
+    ) : null}
     <div
       className={cn(
         burst &&
@@ -395,6 +514,7 @@ export const RankPanel = ({
   essence,
   level,
   burst,
+  extraction,
   onCombine,
   onExtract,
   onCraft,
@@ -404,6 +524,7 @@ export const RankPanel = ({
   readonly essence: number;
   readonly level: number;
   readonly burst: Burst | null;
+  readonly extraction: Extraction | null;
   /** True when the Combine changed the Profile. */
   readonly onCombine: (rank: RankId) => boolean;
   readonly onExtract: (rank: RankId) => void;
@@ -526,7 +647,12 @@ export const RankPanel = ({
       data-card={tile.cardId}
     >
       <div className="flex gap-3 [@media(max-height:500px)]:w-[118px] [@media(max-height:500px)]:shrink-0 [@media(max-height:500px)]:flex-col [@media(max-height:500px)]:gap-1">
-        <CardPreview cardId={tile.cardId} rank={shown} burst={burst} />
+        <CardPreview
+          cardId={tile.cardId}
+          rank={shown}
+          burst={burst}
+          extraction={extraction}
+        />
         <div className="flex min-w-0 flex-1 flex-col gap-1 [@media(max-height:500px)]:gap-0.5">
           <h2
             id="workshop-card-name"

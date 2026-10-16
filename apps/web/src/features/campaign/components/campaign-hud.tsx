@@ -352,16 +352,6 @@ const ChestRewards = ({
               })}
             </RewardLine>
           ) : null}
-          {chest.heynstones > 0 ? (
-            <RewardLine
-              testId="chest-reward-heynstones"
-              icon={<BalanceIcon kind="heynstones" className={ICON} />}
-            >
-              {tr("campaign.chest.heynstones", {
-                amount: format(chest.heynstones),
-              })}
-            </RewardLine>
-          ) : null}
           {forgeStones ? (
             <RewardLine
               testId="chest-reward-forge-stones"

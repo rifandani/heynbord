@@ -62,7 +62,7 @@ const FAN_STEP_MS = 90;
 const FACE_MS = 200;
 
 /** The light of each Rank. Legendary is a warm gold, so it reads as treasure. */
-const RANK_LIGHT: Readonly<Record<RankId, string>> = {
+export const RANK_LIGHT: Readonly<Record<RankId, string>> = {
   common: "#ffe6b0",
   uncommon: RANK_COLORS.uncommon,
   rare: RANK_COLORS.rare,

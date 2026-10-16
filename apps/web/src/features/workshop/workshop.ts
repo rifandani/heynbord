@@ -270,3 +270,63 @@ export const combineFocusAfter = (
   const next = rungs.find((rung) => rung.rank === up);
   return next?.ready ? next.rank : null;
 };
+
+/**
+ * How an Extract looks for each Rank (GDD 7.4): the copy lifts off the panel
+ * card and melts from the bottom up into Essence drops that fly to the Essence
+ * balance. A higher Rank has more drops and a longer melt. An Epic or a
+ * Legendary copy trembles before it lifts, and a Legendary copy lifts larger.
+ */
+export interface ExtractMotion {
+  readonly drops: number;
+  readonly trembleMs: number;
+  readonly meltMs: number;
+  /** The scale of the copy when it lifts off the card. */
+  readonly liftScale: number;
+}
+
+export const EXTRACT_MOTION: Readonly<Record<RankId, ExtractMotion>> = {
+  common: { drops: 3, trembleMs: 0, meltMs: 380, liftScale: 1.03 },
+  uncommon: { drops: 4, trembleMs: 0, meltMs: 420, liftScale: 1.04 },
+  rare: { drops: 6, trembleMs: 0, meltMs: 460, liftScale: 1.05 },
+  epic: { drops: 8, trembleMs: 220, meltMs: 540, liftScale: 1.06 },
+  legendary: { drops: 12, trembleMs: 300, meltMs: 660, liftScale: 1.1 },
+};
+
+/** The time from the lift of the copy to the start of its melt. */
+const EXTRACT_LIFT_MS = 120;
+
+/** The time that one Essence drop takes to fly to the Essence balance. */
+export const ESSENCE_FLY_MS = 520;
+
+/** The beats of an Extract, in ms from the press. */
+export interface ExtractTimeline {
+  readonly liftAt: number;
+  readonly meltAt: number;
+  /** The time at which each drop leaves the melt line. */
+  readonly dropAt: readonly number[];
+  /** The first drop gets to the Essence balance: the count starts then. */
+  readonly firstArrival: number;
+  readonly lastArrival: number;
+}
+
+/**
+ * The beats of an Extract of a copy in `rank`. The drops leave the melt line
+ * one after the other while it goes up the card, so each drop comes out of
+ * the line.
+ */
+export const extractTimeline = (rank: RankId): ExtractTimeline => {
+  const { drops, trembleMs, meltMs } = EXTRACT_MOTION[rank];
+  const meltAt = trembleMs + EXTRACT_LIFT_MS;
+  const dropAt = Array.from(
+    { length: drops },
+    (_, index) => meltAt + Math.round((meltMs * index) / drops)
+  );
+  return {
+    liftAt: trembleMs,
+    meltAt,
+    dropAt,
+    firstArrival: meltAt + ESSENCE_FLY_MS,
+    lastArrival: (dropAt.at(-1) ?? meltAt) + ESSENCE_FLY_MS,
+  };
+};

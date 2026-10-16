@@ -12,8 +12,15 @@ import {
   CARDS,
   CAMPAIGN_REGIONS,
   CAMPAIGN_WIN_XP,
+  CAMPAIGN_SWEEP_TICKETS_PER_WIN,
   countdownLimit,
+  DUNGEON_LANES,
+  DUNGEON_SWEEP_TICKETS_PER_WIN,
+  FLOOR_LANES,
   HAND_LIMIT,
+  HEYNSPIRE_BOSS_FLOOR_EVERY,
+  HEYNSPIRE_FLOORS,
+  heynspireBossStage,
   keywordValue,
   LANE_LENGTH,
   MAX_COPIES,
@@ -35,7 +42,6 @@ import {
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
   SUMMON_ZONE_DEPTH,
-  SWEEP_TICKETS_PER_WIN,
   TOKENS,
   TURN_LIMIT,
   UNLOCK_LEVELS,
@@ -123,6 +129,8 @@ const PROGRESS_ENTRIES = [
   "pack",
   "workshop",
   "gear",
+  "dungeon",
+  "heynspire",
 ] as const;
 
 const DAMAGE_TYPES: readonly DamageType[] = [
@@ -177,6 +185,7 @@ export type KeywordValueKind =
   | "packGuide"
   | "playerLevelTable"
   | "gearTable"
+  | "heynspireTable"
   | "tokenGallery"
   | "card";
 
@@ -536,7 +545,7 @@ const rankEntry = (rank: RankId): Entry => {
 
 /** The values in the text of the Entries, from the rules, so the text never differs. */
 const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
-  board: { lanes: STAGE_LANES },
+  board: { lanes: STAGE_LANES, dungeonLanes: DUNGEON_LANES },
   lane: { squares: LANE_LENGTH },
   column: { squares: LANE_LENGTH },
   summonZone: {
@@ -563,7 +572,23 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
   pack: { cards: PACK_SIZE },
   workshop: { combine: UNLOCK_LEVELS.combine, craft: UNLOCK_LEVELS.craft },
   gear: { level: UNLOCK_LEVELS.gear, max: MAX_GEAR_LEVEL },
-  sweep: { tickets: SWEEP_TICKETS_PER_WIN, max: MAX_SWEEP_TICKETS },
+  sweep: {
+    campaignTickets: CAMPAIGN_SWEEP_TICKETS_PER_WIN,
+    dungeonTickets: DUNGEON_SWEEP_TICKETS_PER_WIN,
+    max: MAX_SWEEP_TICKETS,
+  },
+  dungeon: {
+    level: UNLOCK_LEVELS.dungeon1,
+    lanes: DUNGEON_LANES,
+    tickets: DUNGEON_SWEEP_TICKETS_PER_WIN,
+  },
+  heynspire: {
+    stage: heynspireBossStage().id,
+    floors: HEYNSPIRE_FLOORS,
+    lanes: FLOOR_LANES,
+    every: HEYNSPIRE_BOSS_FLOOR_EVERY,
+    tickets: CAMPAIGN_SWEEP_TICKETS_PER_WIN,
+  },
 };
 
 const term = (id: EntryId, chapter: ChapterId) =>
@@ -604,7 +629,9 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   pack: glyph("pack"),
   workshop: glyph("anvil"),
   gear: glyph("breastplate"),
-  sweep: glyph("ticket"),
+  sweep: glyph("campaignTicket"),
+  dungeon: glyph("cave"),
+  heynspire: glyph("tower"),
   rankGems: { kind: "rank", rank: "rare" },
 };
 
@@ -627,9 +654,11 @@ const plainEntry = (id: EntryId, chapter: ChapterId): Entry => {
               ? "playerLevelTable"
               : id === "gear"
                 ? "gearTable"
-                : id === "token"
-                  ? "tokenGallery"
-                  : undefined,
+                : id === "heynspire"
+                  ? "heynspireTable"
+                  : id === "token"
+                    ? "tokenGallery"
+                    : undefined,
   };
 };
 
@@ -645,6 +674,7 @@ const DIAGRAMS: Partial<Record<EntryId, DiagramId>> = {
   keywordWall: "wall",
   ranged: "ranged",
   keywordFirstStrike: "firstStrike",
+  dungeon: "dungeon",
 };
 
 /** The related Entries that each Entry links to. */
@@ -653,7 +683,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   lane: ["square", "front", "closedLane"],
   square: ["lane", "column"],
   column: ["summonZone", "lane"],
-  front: ["hero", "lane"],
+  front: ["hero", "lane", "dungeon"],
   summonZone: ["column", "keywordWall", "creatureCard"],
   closedLane: ["lane", "summonZone"],
   side: ["hero", "routed"],
@@ -665,7 +695,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   endPhase: ["statusBurn", "statusPoison"],
   suddenDeath: ["startPhase", "defeated"],
   routed: ["side", "deck", "hand"],
-  defeated: ["hero", "routed"],
+  defeated: ["hero", "routed", "dungeon"],
   creatureCard: ["unit", "race", "range"],
   skillCard: ["recall", "class"],
   hand: ["handLimit", "countdown"],
@@ -752,6 +782,8 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   pack: ["coin", "rank"],
   workshop: ["rank", "coin", "playerLevel"],
   gear: ["hero", "class", "coin", "playerLevel"],
+  dungeon: ["front", "defeated", "side", "sweep", "playerLevel"],
+  heynspire: ["hero", "front", "sweep", "gear", "playerLevel"],
 };
 
 const withLinks = (entry: Entry): Entry => ({
@@ -902,6 +934,8 @@ export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
   "pack",
   "workshop",
   "gear",
+  "dungeon",
+  "heynspire",
 ]);
 
 /**

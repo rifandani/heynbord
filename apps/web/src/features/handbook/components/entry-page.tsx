@@ -7,6 +7,7 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { CoinGuide } from "@/features/handbook/components/coin-guide";
 import { LargeIcon } from "@/features/handbook/components/entry-icon";
 import { GearGuide } from "@/features/handbook/components/gear-guide";
+import { HeynspireGuide } from "@/features/handbook/components/heynspire-guide";
 import { LaneStrip } from "@/features/handbook/components/lane-strip";
 import { PackGuide } from "@/features/handbook/components/pack-guide";
 import { PlayerLevelGuide } from "@/features/handbook/components/player-level-guide";
@@ -99,6 +100,9 @@ const KeywordValue = ({
   }
   if (entry.value === "gearTable") {
     return <GearGuide />;
+  }
+  if (entry.value === "heynspireTable") {
+    return <HeynspireGuide />;
   }
   if (entry.value === "rankTable") {
     return <RankTable />;

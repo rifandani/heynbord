@@ -1,15 +1,11 @@
 import {
+  HEYNSPIRE_BOSS_FLOOR_EVERY,
+  HEYNSPIRE_BOSS_FLOOR_REWARD,
   HEYNSPIRE_FLOORS,
-  HEYNSPIRE_MILESTONE_EVERY,
-  HEYNSPIRE_MILESTONE_REWARD,
 } from "./heynspire";
-import { CAMPAIGN_REGIONS, STAR_CHESTS } from "./star-chests";
 
 /** A one-time Heynstone source of v1 (Economy 2.6). */
-export type HeynstoneSourceId =
-  | "achievements"
-  | "starChests"
-  | "heynspireFloors";
+export type HeynstoneSourceId = "achievements" | "heynspireFloors";
 
 export interface HeynstoneSource {
   readonly id: HeynstoneSourceId;
@@ -36,10 +32,7 @@ export const ACHIEVEMENT_COUNT_ESTIMATE = 40;
  */
 export const BAZAAR_CATALOG_HEYNSTONES_ESTIMATE = 2400;
 
-const starChestHeynstones = STAR_CHESTS.filter((chest) => chest.heynstones > 0);
-const milestoneFloors = Math.floor(
-  HEYNSPIRE_FLOORS / HEYNSPIRE_MILESTONE_EVERY
-);
+const bossFloors = Math.floor(HEYNSPIRE_FLOORS / HEYNSPIRE_BOSS_FLOOR_EVERY);
 
 /**
  * The one-time Heynstone sources of v1 (Economy 2.6). The Player cannot farm
@@ -54,22 +47,14 @@ export const HEYNSTONE_SOURCES: readonly HeynstoneSource[] = [
     estimate: true,
   },
   {
-    id: "starChests",
-    count: starChestHeynstones.length * CAMPAIGN_REGIONS,
-    heynstones:
-      starChestHeynstones.reduce((sum, chest) => sum + chest.heynstones, 0) *
-      CAMPAIGN_REGIONS,
-    estimate: false,
-  },
-  {
     id: "heynspireFloors",
-    count: milestoneFloors,
-    heynstones: milestoneFloors * HEYNSPIRE_MILESTONE_REWARD.heynstones,
+    count: bossFloors,
+    heynstones: bossFloors * HEYNSPIRE_BOSS_FLOOR_REWARD.heynstones,
     estimate: false,
   },
 ];
 
-/** The total Heynstones of all one-time sources: about 2,000 (Economy 2.6). */
+/** The total Heynstones of all one-time sources: about 1,250 (Economy 2.6). */
 export const HEYNSTONE_SUPPLY = HEYNSTONE_SOURCES.reduce(
   (sum, source) => sum + source.heynstones,
   0

@@ -12,7 +12,9 @@ import {
 } from "../content/dungeons";
 import { addForgeStoneRewards } from "../content/forge-stones";
 import type { ForgeStoneReward } from "../content/forge-stones";
-import type { ClassId, DungeonDefinition } from "../content/schema";
+import { lossShare } from "../content/loss-reward";
+import type { EnemyHeroDamage } from "../content/loss-reward";
+import type { ClassId, DeckEntry, DungeonDefinition } from "../content/schema";
 import type { StageOutcome } from "../content/stage-coin";
 import { addCopies } from "./packs";
 import type { Profile, UnopenedPack } from "./schema";
@@ -20,7 +22,6 @@ import {
   levelUp,
   repeatWinCardPool,
   rewardCard,
-  SWEEP_TICKETS_PER_WIN,
   winCard,
 } from "./stage-result";
 import type { StageRewardCard } from "./stage-result";
@@ -39,14 +40,58 @@ export const dungeonCardPool = (
     classId
   );
 
+/** The Dungeon Sweep Tickets that each Dungeon win gives (ADR-0041). The M3 re-tune can change it. */
+export const DUNGEON_SWEEP_TICKETS_PER_WIN = 1;
+
+/** The XP, Coin, Essence, card and Forge Stones of one outcome of a Dungeon. */
+export interface DungeonOutcomeRewards {
+  readonly xp: number;
+  /** In Copper. */
+  readonly coin: number;
+  readonly essence: number;
+  readonly card: DeckEntry | null;
+  /** The Forge Stones, of 0 to 2 tiers (ADR-0038, ADR-0039). */
+  readonly forgeStones: readonly ForgeStoneReward[];
+  /** The reward random state after the card and the Forge Stone rolls. */
+  readonly rewardRandomState: number;
+}
+
+/**
+ * The XP, Coin, Essence, card and Forge Stones of one outcome of `dungeon`
+ * (Economy 2.4). A Dungeon result and each Ticket of a Dungeon Sweep use it.
+ * A repeat win rolls the card first, then the Forge Stones.
+ */
+export const dungeonOutcomeRewards = (
+  dungeon: DungeonDefinition,
+  outcome: StageOutcome,
+  classId: ClassId,
+  rewardRandomState: number
+): DungeonOutcomeRewards => {
+  const rewardDefinition = getDungeonRewards(dungeon.number);
+  const [card, afterCard] = winCard(
+    dungeon.firstWinCard,
+    () => dungeonCardPool(dungeon, classId),
+    outcome,
+    rewardRandomState
+  );
+  const cursor = { state: afterCard };
+  const forgeStones = dungeonForgeStones(rewardDefinition, outcome, cursor);
+  return {
+    ...dungeonReward(rewardDefinition, outcome),
+    card,
+    forgeStones,
+    rewardRandomState: cursor.state,
+  };
+};
+
 /** A Dungeon Battle that ended in a win or a loss. An Abandon has no result. */
 export interface DungeonResultInput {
   readonly dungeonId: string;
   readonly won: boolean;
-  /** True when Auto-play played the Battle. An Auto-play win gives no Sweep Tickets. */
-  readonly autoPlay: boolean;
   /** The Class of the Deck that the Player used. */
   readonly classId: ClassId;
+  /** The HP that the Bosses lost. It sets the share of a loss reward (ADR-0043). */
+  readonly enemyHeroDamage: EnemyHeroDamage;
 }
 
 /** What the Battle result shows. */
@@ -63,8 +108,8 @@ export interface DungeonRewards {
   readonly card: StageRewardCard | null;
   /** The Unopened Packs that the result added: the First Pack at the Packs unlock. */
   readonly unopenedPacks: readonly UnopenedPack[];
-  /** The Sweep Tickets that the result added: 2 for a win that the Player played, else 0. */
-  readonly sweepTickets: number;
+  /** The Dungeon Sweep Tickets that the result added: 1 for a win, 0 for a loss. */
+  readonly dungeonSweepTickets: number;
   /** The Forge Stones of the result, of 0 to 2 tiers (ADR-0038, ADR-0039). */
   readonly forgeStones: readonly ForgeStoneReward[];
 }
@@ -83,7 +128,7 @@ type DungeonResultProfile = Pick<
   | "collection"
   | "dungeonResults"
   | "unopenedPacks"
-  | "sweepTickets"
+  | "dungeonSweepTickets"
   | "forgeStones"
   | "rewardRandomState"
 >;
@@ -91,9 +136,10 @@ type DungeonResultProfile = Pick<
 /**
  * Applies the result of a Dungeon Battle (Economy 2.4). A win of a Dungeon
  * with no result is a first win, any other win is a repeat win. It gives the
- * Coin, the XP and the Essence of the outcome, adds 1 to the wins of a win,
+ * Coin, the XP and the Essence of the outcome, only the share of the lost Boss
+ * HP of them for a loss (ADR-0043), adds 1 to the wins of a win,
  * gives the card and the Forge Stones of a win (ADR-0038, ADR-0039), and
- * gives the Sweep Tickets of a win that the Player played (ADR-0035). It adds
+ * gives the Dungeon Sweep Tickets of a win (ADR-0041). It adds
  * the First Pack when the level goes to the Packs unlock. A Dungeon gives no
  * Stars and no Heynstones. A repeat win rolls the card first, then the Forge
  * Stones. An Abandon and a Battle that is not finished never call it.
@@ -104,26 +150,28 @@ export const applyDungeonResult = <P extends DungeonResultProfile>(
   dungeons: readonly DungeonDefinition[] = DUNGEONS
 ): DungeonResult<P> => {
   const dungeon = getDungeon(input.dungeonId, dungeons);
-  const rewardDefinition = getDungeonRewards(dungeon.number);
   const wins = profile.dungeonResults[dungeon.id];
   let outcome: StageOutcome = "loss";
   if (input.won) {
     outcome = wins === undefined ? "firstWin" : "win";
   }
-  const { coin, xp, essence } = dungeonReward(rewardDefinition, outcome);
-  const [card, afterCard] = winCard(
-    dungeon.firstWinCard,
-    () => dungeonCardPool(dungeon, input.classId),
+  const rewards = dungeonOutcomeRewards(
+    dungeon,
     outcome,
+    input.classId,
     profile.rewardRandomState
   );
-  const cursor = { state: afterCard };
-  const forgeStones = dungeonForgeStones(rewardDefinition, outcome, cursor);
+  const { card, forgeStones, rewardRandomState } = rewards;
+  const share = (reward: number) =>
+    outcome === "loss" ? lossShare(reward, input.enemyHeroDamage) : reward;
+  const coin = share(rewards.coin);
+  const xp = share(rewards.xp);
+  const essence = share(rewards.essence);
   const { levelBefore, levelAfter, unopenedPacks } = levelUp(
     profile.xp,
     profile.xp + xp
   );
-  const sweepTickets = input.won && !input.autoPlay ? SWEEP_TICKETS_PER_WIN : 0;
+  const dungeonSweepTickets = input.won ? DUNGEON_SWEEP_TICKETS_PER_WIN : 0;
   const dungeonResults = input.won
     ? { ...profile.dungeonResults, [dungeon.id]: (wins ?? 0) + 1 }
     : profile.dungeonResults;
@@ -138,9 +186,9 @@ export const applyDungeonResult = <P extends DungeonResultProfile>(
         : profile.collection,
       dungeonResults,
       unopenedPacks: [...profile.unopenedPacks, ...unopenedPacks],
-      sweepTickets: profile.sweepTickets + sweepTickets,
+      dungeonSweepTickets: profile.dungeonSweepTickets + dungeonSweepTickets,
       forgeStones: addForgeStoneRewards(profile.forgeStones, forgeStones),
-      rewardRandomState: cursor.state,
+      rewardRandomState,
     },
     rewards: {
       outcome,
@@ -151,7 +199,7 @@ export const applyDungeonResult = <P extends DungeonResultProfile>(
       levelAfter,
       card: card ? rewardCard(card, profile.collection) : null,
       unopenedPacks,
-      sweepTickets,
+      dungeonSweepTickets,
       forgeStones,
     },
   };

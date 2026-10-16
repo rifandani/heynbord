@@ -9,11 +9,15 @@ import {
   getCard,
   legalTargets,
   getStarterDeck,
+  STAGES,
 } from "@workspace/rules";
 import { absurd } from "effect";
 import type { AtomRegistry } from "effect/reactivity";
 
-import type { BattleSession } from "@/features/battle/battle-session";
+import type {
+  BattleOptions,
+  BattleSession,
+} from "@/features/battle/battle-session";
 import {
   autoPlayTurn,
   skip,
@@ -41,6 +45,7 @@ import type { StageResults } from "@/features/campaign/region-map";
 import { NEW_PLAYER } from "@/features/profile/profile";
 import { profileAtom } from "@/features/profile/profile.atoms";
 import { profileSaved } from "@/features/profile/use-profile-store";
+import type { SweepKind } from "@/features/sweep/sweep";
 import { gameScreenAtom } from "@/features/town/town.atoms";
 
 /** The states that QA tools can ask for (director evidence manifest). */
@@ -179,6 +184,36 @@ const finishedBattle = (
   return session;
 };
 
+/** Plays the Battle of `options` to its end with the AI for both sides. */
+const playOutOptions = (options: BattleOptions): BattleSession => {
+  let session = startSession(options);
+  while (session.rules.status !== "finished") {
+    session = skip(autoPlayTurn(session));
+  }
+  return session;
+};
+
+/**
+ * Plays the Battle of `options` with the AI for both sides until one ends
+ * with the wanted winner: from its seed, then the next seeds, for 80 seeds
+ * at most. It keeps the Stage or the Dungeon, the Deck and the Player of the
+ * Battle, so that its result is a real result of that Battle.
+ */
+const finishedFrom = (
+  options: BattleOptions,
+  winner: "player" | "enemy"
+): BattleSession => {
+  let session = playOutOptions(options);
+  for (
+    let offset = 1;
+    offset < 80 && session.rules.result?.winner !== winner;
+    offset += 1
+  ) {
+    session = playOutOptions({ ...options, seed: options.seed + offset });
+  }
+  return session;
+};
+
 /**
  * QA: Stages 1-1 to 1-9 won with mixed Stars, so the Boss Stage is Open and
  * each Stage of Region 1 can be played.
@@ -305,11 +340,30 @@ export const installTestHooks = (
         ),
       });
     },
-    /** Sets the Sweep Tickets of the Profile, so that a test can Sweep. */
-    setSweepTickets: (sweepTickets: number) => {
+    /** Sets the Sweep Tickets of `kind` of the Profile, so that a test can Sweep. */
+    setSweepTickets: (kind: SweepKind, tickets: number) => {
       registry.set(profileAtom, {
         ...registry.get(profileAtom),
-        sweepTickets,
+        [kind === "campaign" ? "campaignSweepTickets" : "dungeonSweepTickets"]:
+          tickets,
+      });
+    },
+    /** Sets the win count of each Dungeon, so that a test can open a won Dungeon. */
+    setDungeonResults: (dungeonResults: Readonly<Record<string, number>>) => {
+      registry.set(profileAtom, {
+        ...registry.get(profileAtom),
+        dungeonResults,
+      });
+    },
+    /**
+     * Wins all Campaign Stages with 3 Stars, so Heynspire is open, and sets
+     * the won Floors (0 to 50), so that a test can climb Heynspire.
+     */
+    openHeynspire: (floorsWon: number) => {
+      registry.set(profileAtom, {
+        ...registry.get(profileAtom),
+        stageResults: Object.fromEntries(STAGES.map((stage) => [stage.id, 3])),
+        heynspireFloorsWon: floorsWon,
       });
     },
     /** Sets the Forge Stones of the Profile, so that a test can upgrade Gear. */
@@ -333,6 +387,21 @@ export const installTestHooks = (
       registry.set(inspectedUnitAtom, null);
       registry.set(battleSessionAtom, finishedBattle(seed, "player", stageId));
       registry.set(gameScreenAtom, "campaign");
+    },
+    /**
+     * Ends the Battle that shows now with `winner`, played by the AI for both
+     * sides, so that a test can reach the result of a Battle that a screen
+     * started (for example a Dungeon) in a short time. The screen stays.
+     */
+    finishBattle: (winner: "player" | "enemy") => {
+      const live = registry.get(battleSessionAtom);
+      if (!live) {
+        throw new Error("No Battle to finish");
+      }
+      playback.session = null;
+      registry.set(selectedCardAtom, null);
+      registry.set(inspectedUnitAtom, null);
+      registry.set(battleSessionAtom, finishedFrom(live.options, winner));
     },
     /** Resolves when the Profile is in IndexedDB, so that a test can reload. */
     profileSaved,

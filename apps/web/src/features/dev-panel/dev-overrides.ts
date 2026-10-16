@@ -7,6 +7,7 @@ import type {
 import {
   CARDS,
   ForgeStones,
+  HEYNSPIRE_FLOORS,
   MAX_COPIES,
   MAX_GEAR_LEVEL,
   ranksOf,
@@ -34,8 +35,10 @@ const DevOverrides = Schema.Struct({
       heynstones: Schema.Number,
     })
   ),
-  sweepTickets: Schema.optionalKey(Schema.Number),
+  campaignSweepTickets: Schema.optionalKey(Schema.Number),
+  dungeonSweepTickets: Schema.optionalKey(Schema.Number),
   forgeStones: Schema.optionalKey(ForgeStones),
+  heynspireFloorsWon: Schema.optionalKey(Schema.Number),
   xp: Schema.optionalKey(Schema.Number),
   gear: Schema.optionalKey(
     Schema.Struct({
@@ -102,6 +105,10 @@ export const setGear = (
   value: number
 ): GearLevels => ({ ...gear, [slot]: gearLevel(value) });
 
+/** A count of won Heynspire Floors that the panel can set: a whole number from 0 to 50. */
+export const floorsWon = (value: number): number =>
+  Math.min(wholeBalance(value), HEYNSPIRE_FLOORS);
+
 /**
  * The Profile overlay of stored overrides (`profile.ts`). "Unlock all cards"
  * shows the unlocked Collection. `null`: nothing to show over the Profile.
@@ -114,11 +121,17 @@ export const toOverlay = (overrides: DevOverrides): ProfileOverlay | null => {
   if (overrides.stageResults !== undefined) {
     overlay.stageResults = overrides.stageResults;
   }
-  if (overrides.sweepTickets !== undefined) {
-    overlay.sweepTickets = overrides.sweepTickets;
+  if (overrides.campaignSweepTickets !== undefined) {
+    overlay.campaignSweepTickets = overrides.campaignSweepTickets;
+  }
+  if (overrides.dungeonSweepTickets !== undefined) {
+    overlay.dungeonSweepTickets = overrides.dungeonSweepTickets;
   }
   if (overrides.forgeStones !== undefined) {
     overlay.forgeStones = overrides.forgeStones;
+  }
+  if (overrides.heynspireFloorsWon !== undefined) {
+    overlay.heynspireFloorsWon = overrides.heynspireFloorsWon;
   }
   if (overrides.xp !== undefined) {
     overlay.xp = overrides.xp;
@@ -146,11 +159,17 @@ export const fromOverlay = (
   if (coin !== undefined && essence !== undefined && heynstones !== undefined) {
     overrides.balances = { coin, essence, heynstones };
   }
-  if (overlay.sweepTickets !== undefined) {
-    overrides.sweepTickets = overlay.sweepTickets;
+  if (overlay.campaignSweepTickets !== undefined) {
+    overrides.campaignSweepTickets = overlay.campaignSweepTickets;
+  }
+  if (overlay.dungeonSweepTickets !== undefined) {
+    overrides.dungeonSweepTickets = overlay.dungeonSweepTickets;
   }
   if (overlay.forgeStones !== undefined) {
     overrides.forgeStones = overlay.forgeStones;
+  }
+  if (overlay.heynspireFloorsWon !== undefined) {
+    overrides.heynspireFloorsWon = overlay.heynspireFloorsWon;
   }
   if (overlay.xp !== undefined) {
     overrides.xp = overlay.xp;

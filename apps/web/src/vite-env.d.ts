@@ -16,3 +16,6 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+/** The hash of the rules and the content of this build (`scripts/rules-hash.ts`). */
+declare const __RULES_HASH__: string;

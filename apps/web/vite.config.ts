@@ -12,6 +12,8 @@ import type { Plugin, PluginOption } from "vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+import { rulesHash } from "./scripts/rules-hash";
+
 /**
  * Dev-only: alias /sw.js → VitePWA's /dev-sw.js?dev-sw for static checkers.
  * Production build emits sw.js into the client output and registers it via virtual:pwa-register.
@@ -32,6 +34,8 @@ const serveDevServiceWorker = (): Plugin => ({
 export default defineConfig({
   // Expose portless's worktree-aware URL to import.meta.env (see core/config/env.ts).
   envPrefix: ["VITE_", "PORTLESS_"],
+  // Each Replay Link holds the hash of the rules of its build (web ADR-0012).
+  define: { __RULES_HASH__: JSON.stringify(rulesHash()) },
   plugins: [
     tanstackDevtools({
       injectSource: {

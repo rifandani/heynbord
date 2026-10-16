@@ -1,16 +1,22 @@
 import type {
   BattleEvent,
+  BattleSetup,
   BattleState,
   ClassId,
+  Command,
   DeckEntry,
   DungeonDefinition,
+  FloorDefinition,
+  HeroRef,
   RuleViolation,
   Target,
+  StepOutput,
 } from "@workspace/rules";
 import {
   chooseCommand,
-  Command,
+  Command as Commands,
   createBattle,
+  devDamageHero,
   getStage,
   step,
 } from "@workspace/rules";
@@ -38,13 +44,21 @@ export interface BattleDeck {
 }
 
 export interface BattleOptions {
-  /** The Stage, or the id of the Dungeon when `dungeon` is set. */
+  /**
+   * The Stage, the id of the Dungeon when `dungeon` is set, or the id of the
+   * Floor when `floor` is set.
+   */
   readonly stageId: string;
   /**
-   * A Dungeon Battle (GDD 8.4): 4 Lanes and 1 enemy Hero for each Boss. No
-   * screen starts one yet: only the test hooks do (issue #93).
+   * A Dungeon Battle (GDD 8.4): 4 Lanes and 1 enemy Hero for each Boss. The
+   * Dungeons screen starts one, and the test hooks start QA Dungeons.
    */
   readonly dungeon?: DungeonDefinition;
+  /**
+   * A Heynspire Floor Battle (GDD 8.2): 4 Lanes and 1 enemy Hero with a
+   * Front of all 4 Lanes. The Heynspire screen starts one.
+   */
+  readonly floor?: FloorDefinition;
   readonly deck: BattleDeck;
   /** The Player level and the Gear, from the Profile. */
   readonly player: BattlePlayer;
@@ -78,6 +92,16 @@ export interface BattleSession {
   readonly start: BattleView;
   /** The Tutorial of this play (GDD 8.3), or `null` for a normal Stage. */
   readonly tutorial: Tutorial | null;
+  /**
+   * The Commands of the two Sides, in the order that the rules took them:
+   * the Player Commands and the Commands of the enemy AI. With the seed and
+   * the options, they are the Replay of the Battle (rules ADR-0006).
+   */
+  readonly commands: readonly Command[];
+  /** True while the Player watches a Replay (web ADR-0012): it is not a Live Battle. */
+  readonly watching: boolean;
+  /** True after the Game Dev Panel changed the Battle outside the Commands: it has no Replay. */
+  readonly devChanged: boolean;
 }
 
 /**
@@ -88,6 +112,21 @@ const atRest = (session: BattleSession): BattleSession => {
   const tutorial =
     session.tutorial && atPlayPhase(session.tutorial, session.rules);
   return tutorial === session.tutorial ? session : { ...session, tutorial };
+};
+
+/** The rules setup of a Battle: a Floor, a Dungeon or a Stage. */
+const battleSetup = (
+  options: BattleOptions,
+  player: BattleSetup["player"]
+): BattleSetup => {
+  const { seed } = options;
+  if (options.floor) {
+    return { seed, floor: options.floor, player };
+  }
+  if (options.dungeon) {
+    return { seed, dungeon: options.dungeon, player };
+  }
+  return { seed, stage: getStage(options.stageId), player };
 };
 
 /**
@@ -106,15 +145,7 @@ export const startSession = (
     level: player.level,
     gear: player.gear,
   };
-  const { state } = createBattle(
-    options.dungeon
-      ? { seed: options.seed, dungeon: options.dungeon, player: battlePlayer }
-      : {
-          seed: options.seed,
-          stage: getStage(options.stageId),
-          player: battlePlayer,
-        }
-  );
+  const { state } = createBattle(battleSetup(options, battlePlayer));
   const view = viewFromState(state);
   const session: BattleSession = {
     options,
@@ -127,6 +158,9 @@ export const startSession = (
     speed,
     log: [],
     tutorial: null,
+    commands: [],
+    watching: false,
+    devChanged: false,
   };
   return tutorial ? atRest({ ...session, tutorial: startTutorial() }) : session;
 };
@@ -164,14 +198,16 @@ export const canEndTurn = (session: BattleSession): boolean => {
   );
 };
 
+/** The rules took `command`: its events go into the queue. */
 const enqueue = (
   session: BattleSession,
-  rules: BattleState,
-  events: readonly BattleEvent[]
+  command: Command,
+  output: StepOutput
 ): BattleSession => ({
   ...session,
-  rules,
-  queue: [...session.queue, ...events],
+  rules: output.state,
+  queue: [...session.queue, ...output.events],
+  commands: [...session.commands, command],
 });
 
 /**
@@ -181,10 +217,10 @@ const enqueue = (
 const runEnemyTurn = (session: BattleSession): BattleSession => {
   let next = session;
   while (next.rules.status === "ongoing" && next.rules.activeSide === "enemy") {
-    const result = step(next.rules, chooseCommand(next.rules));
+    const command = chooseCommand(next.rules);
     // The AI chooses only legal Commands. A violation here is a defect.
-    const output = Result.getOrThrow(result);
-    next = enqueue(next, output.state, output.events);
+    const output = Result.getOrThrow(step(next.rules, command));
+    next = enqueue(next, command, output);
   }
   return next;
 };
@@ -193,14 +229,12 @@ export const playCard = (
   session: BattleSession,
   handIndex: number,
   target: Target
-): Result.Result<BattleSession, RuleViolation> =>
-  Result.map(
-    step(
-      session.rules,
-      Command.PlayCard({ hero: PLAYER_HERO, handIndex, target })
-    ),
-    (output) => enqueue(session, output.state, output.events)
+): Result.Result<BattleSession, RuleViolation> => {
+  const command = Commands.PlayCard({ hero: PLAYER_HERO, handIndex, target });
+  return Result.map(step(session.rules, command), (output) =>
+    enqueue(session, command, output)
   );
+};
 
 /**
  * Plays a card from the HUD: the new session, or `null` when the player cannot
@@ -244,13 +278,37 @@ export const changeTutorial = (
   return tutorial === session.tutorial ? session : { ...session, tutorial };
 };
 
+/**
+ * Development only (the Game Dev Panel): deals `amount` True Damage to the
+ * Hero `ref`. The events go into the queue, so the screen shows the hit, a
+ * Defeat and the result in order after the other events. Returns the same
+ * session when the rules give no events.
+ */
+export const devHitHero = (
+  session: BattleSession,
+  ref: HeroRef,
+  amount: number
+): BattleSession => {
+  const output = devDamageHero(session.rules, ref, amount);
+  return output.events.length === 0
+    ? session
+    : {
+        ...session,
+        rules: output.state,
+        queue: [...session.queue, ...output.events],
+        devChanged: true,
+      };
+};
+
 /** Ends the player's Turn. The Resolution Phase and the enemy's Turn go into the queue. */
 export const endTurn = (
   session: BattleSession
-): Result.Result<BattleSession, RuleViolation> =>
-  Result.map(step(session.rules, Command.EndTurn()), (output) =>
-    runEnemyTurn(enqueue(session, output.state, output.events))
+): Result.Result<BattleSession, RuleViolation> => {
+  const command = Commands.EndTurn();
+  return Result.map(step(session.rules, command), (output) =>
+    runEnemyTurn(enqueue(session, command, output))
   );
+};
 
 /**
  * The AI plays the player's Turn (Auto-play, GDD 4.12): Ready cards first,

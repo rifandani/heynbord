@@ -8,7 +8,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react-aria-components";
 import { Button, ToggleButton } from "react-aria-components";
 
-import { enemyNameRef } from "@/features/battle/battle-content";
+import { battleNameRef, enemyNameRef } from "@/features/battle/battle-content";
 import type {
   BattleLogBook,
   LogEntry,
@@ -49,6 +49,8 @@ import {
   statusEntryId,
 } from "@/features/handbook/handbook";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { ReplayBadge } from "@/features/replay/components/replay-badge";
+import { ShareReplay } from "@/features/replay/components/share-replay";
 
 type Battle = ReturnType<typeof useBattle>;
 
@@ -578,7 +580,10 @@ const Transport = ({
   );
 };
 
-/** Back to Live: the one gold action of the Battle Log. */
+/**
+ * Back to Live: the one gold action of the Battle Log. A Replay has no Live:
+ * its gold action is Leave, which goes to the Town (web ADR-0012).
+ */
 const BackToLive = ({
   battle,
   compact,
@@ -593,9 +598,9 @@ const BackToLive = ({
       size="sm"
       onPress={() => battle.closeLog()}
       className={cn("font-display", compact ? "px-3" : "w-full")}
-      data-testid="back-to-live"
+      data-testid={battle.watching ? "leave-replay" : "back-to-live"}
     >
-      {tr("battleLog.backToLive")}
+      {battle.watching ? tr("replay.leave") : tr("battleLog.backToLive")}
       {compact ? null : (
         <kbd className="rounded border border-[#7a5310]/60 bg-[#fff3d1]/60 px-1 font-sans text-xs leading-4 font-bold">
           Esc
@@ -722,7 +727,7 @@ const EntryList = ({
   const texts = useEntryTexts(log.book);
   const heroName = useHeroName(battle.liveSession?.options);
   const list = useRef<HTMLDivElement>(null);
-  const { book, selected } = log;
+  const { book, selected, reached } = log;
 
   // The selected entry stays in view, and keeps the focus when the list has it.
   useEffect(() => {
@@ -742,7 +747,8 @@ const EntryList = ({
     }
   }, [selected]);
 
-  if (book.entries.length === 0) {
+  // A Replay shows only the Log Entries that the Player saw.
+  if (book.entries.length === 0 || reached < 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-8 text-center">
         <GlyphIcon glyph="scroll" className="size-8 text-[#5b3a1e]/60" />
@@ -758,36 +764,42 @@ const EntryList = ({
       className="min-h-0 flex-1 [scrollbar-width:thin] [scrollbar-color:#b47f36_transparent] overflow-y-auto overscroll-contain px-1 pb-2"
       data-testid="log-entries"
     >
-      {book.turns.map((turn) => (
-        <section
-          key={turn.index}
-          aria-label={tr("battleLog.turn", {
-            number: turn.turnNumber,
-            side:
-              turn.side === "player" ? tr("battle.player") : tr("battle.enemy"),
-          })}
-        >
-          <TurnHeader turn={turn} heroName={heroName} />
-          <ol className="space-y-0.5 px-1">
-            {book.entries.slice(turn.first, turn.end).map((entry) => {
-              const text = texts[entry.index];
-              return text ? (
-                <EntryRow
-                  key={entry.index}
-                  book={book}
-                  entry={entry}
-                  text={text}
-                  selected={entry.index === selected}
-                  onSelect={() => battle.selectLogEntry(entry.index)}
-                  onStep={(step) => battle.stepLog(step, false)}
-                  links={links}
-                  heroName={heroName}
-                />
-              ) : null;
+      {book.turns.map((turn) =>
+        turn.first > reached ? null : (
+          <section
+            key={turn.index}
+            aria-label={tr("battleLog.turn", {
+              number: turn.turnNumber,
+              side:
+                turn.side === "player"
+                  ? tr("battle.player")
+                  : tr("battle.enemy"),
             })}
-          </ol>
-        </section>
-      ))}
+          >
+            <TurnHeader turn={turn} heroName={heroName} />
+            <ol className="space-y-0.5 px-1">
+              {book.entries
+                .slice(turn.first, Math.min(turn.end, reached + 1))
+                .map((entry) => {
+                  const text = texts[entry.index];
+                  return text ? (
+                    <EntryRow
+                      key={entry.index}
+                      book={book}
+                      entry={entry}
+                      text={text}
+                      selected={entry.index === selected}
+                      onSelect={() => battle.selectLogEntry(entry.index)}
+                      onStep={(step) => battle.stepLog(step, false)}
+                      links={links}
+                      heroName={heroName}
+                    />
+                  ) : null;
+                })}
+            </ol>
+          </section>
+        )
+      )}
     </div>
   );
 };
@@ -817,7 +829,7 @@ const OpenBattleLog = ({
   readonly battle: Battle;
   readonly log: BattleLogState;
 }) => {
-  const { tr } = useGameText();
+  const { tr, text } = useGameText();
   const handbook = useHandbook();
   const sheet = useMediaQuery(SHEET_SCREEN, false);
   const [boardShown, setBoardShown] = useState(false);
@@ -832,7 +844,9 @@ const OpenBattleLog = ({
       panel.current?.querySelector<HTMLElement>(
         '[data-current] [data-testid="log-entry-button"]'
       ) ??
-      panel.current?.querySelector<HTMLElement>('[data-testid="back-to-live"]');
+      panel.current?.querySelector<HTMLElement>(
+        '[data-testid="back-to-live"], [data-testid="leave-replay"]'
+      );
     target?.focus();
     return () => {
       document
@@ -871,9 +885,18 @@ const OpenBattleLog = ({
             glyph="scroll"
             className="size-5 shrink-0 text-[#5b3a1e]"
           />
-          <h2 className="font-display min-w-0 flex-1 truncate text-lg leading-tight font-bold [@media(max-height:500px)]:text-base">
-            {tr("battleLog.title")}
-          </h2>
+          {battle.watching ? (
+            <h2 className="font-display flex min-w-0 flex-1 items-center gap-2 text-lg leading-tight font-bold [@media(max-height:500px)]:text-base">
+              <span className="min-w-0 truncate" data-testid="replay-name">
+                {text(battleNameRef(log.shown.options))}
+              </span>
+              <ReplayBadge />
+            </h2>
+          ) : (
+            <h2 className="font-display min-w-0 flex-1 truncate text-lg leading-tight font-bold [@media(max-height:500px)]:text-base">
+              {tr("battleLog.title")}
+            </h2>
+          )}
           <Transport battle={battle} log={log} />
           {sheet ? (
             <>
@@ -887,6 +910,7 @@ const OpenBattleLog = ({
                   ? tr("battleLog.showLog")
                   : tr("battleLog.showBoard")}
               </ToggleButton>
+              <ShareReplay session={battle.liveSession} look="icon" />
               <BackToLive battle={battle} compact />
             </>
           ) : null}
@@ -902,7 +926,9 @@ const OpenBattleLog = ({
           </div>
         )}
         {sheet ? null : (
-          <footer className="shrink-0 border-t-2 border-[#c9b48c] bg-[#ead9b4] p-2">
+          <footer className="flex shrink-0 flex-col gap-1.5 border-t-2 border-[#c9b48c] bg-[#ead9b4] p-2">
+            {/* After the result, the Battle Log can share the Battle. */}
+            <ShareReplay session={battle.liveSession} look="wood" />
             <BackToLive battle={battle} compact={false} />
           </footer>
         )}
@@ -958,7 +984,7 @@ export const BattleLogBanner = ({ battle }: { readonly battle: Battle }) => {
           glyph={log.playing ? "play" : "scroll"}
           className="size-3.5 text-[#5b3a1e]"
         />
-        {tr("battleLog.banner", {
+        {tr(battle.watching ? "replay.banner" : "battleLog.banner", {
           number,
           side: side === "player" ? tr("battle.player") : tr("battle.enemy"),
         })}

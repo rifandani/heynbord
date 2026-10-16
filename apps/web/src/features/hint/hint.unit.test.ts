@@ -13,9 +13,11 @@ import type { BattleFacts } from "@/features/hint/hint";
 import {
   battleHints,
   hasCardOutOfDecks,
+  HINT_PLACE,
   HINT_TARGET,
   HINTS,
   isBattleLogHintMet,
+  isDungeonSweepHintMet,
   isSweepHintMet,
   nextHint,
 } from "@/features/hint/hint";
@@ -44,6 +46,7 @@ const facts = (over: Partial<BattleFacts>): BattleFacts => ({
   hand: [],
   log: [],
   tutorial: false,
+  watching: false,
   ...over,
 });
 
@@ -89,6 +92,18 @@ describe("battleHints", () => {
           hand: [handCard(skillId, 0)],
           log: [recall("player", true)],
           tutorial: true,
+        })
+      )
+    ).toEqual([]);
+  });
+
+  it("meets no Hint while the Player watches a Replay", () => {
+    expect(
+      battleHints(
+        facts({
+          hand: [handCard(skillId, 0)],
+          log: [recall("player", true)],
+          watching: true,
         })
       )
     ).toEqual([]);
@@ -146,6 +161,21 @@ describe("isSweepHintMet", () => {
     expect(HINT_TARGET.sweep).toEqual({ _tag: "Entry", entry: "sweep" });
     expect(nextHint(["sweep"], [])).toBe("sweep");
     expect(nextHint(["sweep"], ["sweep"])).toBeNull();
+  });
+});
+
+describe("the Dungeon Sweep Hint (ADR-0041)", () => {
+  it("is met when the Dungeon has 1 or more wins", () => {
+    expect(isDungeonSweepHintMet(0)).toBe(false);
+    expect(isDungeonSweepHintMet(1)).toBe(true);
+    expect(isDungeonSweepHintMet(6)).toBe(true);
+  });
+
+  it("opens the Sweep Entry, shows near the Sweep row of the Dungeons screen, and shows one time", () => {
+    expect(HINT_TARGET.dungeonSweep).toEqual({ _tag: "Entry", entry: "sweep" });
+    expect(HINT_PLACE.dungeonSweep).toBe("dungeonSweepRow");
+    expect(nextHint(["dungeonSweep"], ["sweep"])).toBe("dungeonSweep");
+    expect(nextHint(["dungeonSweep"], ["dungeonSweep"])).toBeNull();
   });
 });
 

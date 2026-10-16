@@ -14,6 +14,7 @@ import { HiXMark } from "react-icons/hi2";
 
 import { keyGuideAtom } from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import type { Glyph } from "@/features/battle/glyphs";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import type {
   PanelSide,
@@ -38,6 +39,25 @@ const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   firstGearItem: "[data-gear-upgrade='weapon']",
   // Not while the Stage Panel comes up out of its Stage Marker.
   sweepButton: "[data-testid='sweep']:not([data-entering] *)",
+  cave: "[data-testid='building-cave']",
+  dungeonSweepRow: "[data-hint-anchor='dungeon-sweep-row']",
+  tower: "[data-testid='building-heynspire']",
+};
+
+/** The Dungeons shortcut: the Dungeons Hint points at it when the screen crops the cave. */
+const DUNGEONS_SHORTCUT = "[data-testid='town-shortcut-dungeons']";
+
+/**
+ * True when the center of the cave is on the screen. The cave is at the edge
+ * of the Town painting, so a narrow screen crops it (GDD 11.4).
+ */
+const caveInView = (): boolean => {
+  const box = document.querySelector(HINT_ANCHOR.cave)?.getBoundingClientRect();
+  if (!box) {
+    return false;
+  }
+  const center = box.left + box.width / 2;
+  return center > 0 && center < window.innerWidth;
 };
 
 /** The places in a modal dialog. A Hint there shows over the scrim of the dialog. */
@@ -56,6 +76,13 @@ const isShortScreen = () => window.matchMedia(SHORT_SCREEN).matches;
 const SWEEP_ROW = "[data-hint-anchor='sweep-row']:not([data-entering] *)";
 
 /**
+ * On a short screen, the rows of the Dungeons screen rail scroll, and the
+ * Sweep row can be out of view. The Sweep button under them is always in
+ * view, so the Dungeon Sweep Hint points at it.
+ */
+const DUNGEON_SWEEP_BUTTON = "[data-testid='dungeon-sweep']";
+
+/**
  * Puts the focus on the subject of a Hint in a dialog, or else on the dialog.
  * The Handbook gives the focus back to it when it closes, because the Hint
  * and its "Read more" are then gone: so the dialog keeps the focus, and Esc
@@ -71,8 +98,18 @@ const focusDialogOf = (place: HintPlace) => {
 };
 
 /** The element that a Hint shows next to now. */
-export const hintAnchor = (place: HintPlace): string =>
-  place === "sweepButton" && isShortScreen() ? SWEEP_ROW : HINT_ANCHOR[place];
+export const hintAnchor = (place: HintPlace): string => {
+  if (place === "sweepButton" && isShortScreen()) {
+    return SWEEP_ROW;
+  }
+  if (place === "dungeonSweepRow" && isShortScreen()) {
+    return DUNGEON_SWEEP_BUTTON;
+  }
+  if (place === "cave" && !caveInView()) {
+    return DUNGEONS_SHORTCUT;
+  }
+  return HINT_ANCHOR[place];
+};
 
 /**
  * The sides of its anchor where a Hint can show, in order of preference. The
@@ -80,10 +117,20 @@ export const hintAnchor = (place: HintPlace): string =>
  * dialog, so that it does not cover Retry and Back to Campaign. The Gear Hint
  * goes below the first upgrade, so that the Hero plate stays clear on the
  * first visit. The Sweep Hint goes below the Sweep button, out of the Stage
- * Panel, so that it does not cover the Ticket control.
+ * Panel, so that it does not cover the Ticket control. The Dungeon Sweep Hint
+ * goes at the left of the label of the Sweep row of the Dungeons screen,
+ * over the notice board, so that it covers no control of the rail. On a
+ * short screen, it goes above the Sweep button, so that it does not cover
+ * Fight at the left of it.
  */
 const sidesFor = (place: HintPlace): readonly PanelSide[] => {
-  if (place === "sweepButton" && isShortScreen()) {
+  if (place === "dungeonSweepRow" && isShortScreen()) {
+    return ["above", "left"];
+  }
+  if (
+    (place === "sweepButton" && isShortScreen()) ||
+    place === "dungeonSweepRow"
+  ) {
     return ["left", "above"];
   }
   return place === "resultBattleLog" ||
@@ -195,6 +242,46 @@ const useAutoClose = (close: () => void) => {
 
 const SUBJECT_ICON = "size-6 [@media(max-height:500px)]:size-5";
 
+/** The Hints whose seal is the painted icon of a Town Bar shortcut. */
+type ShortcutHint =
+  | "deckBuilder"
+  | "unopenedPack"
+  | "packs"
+  | "workshop"
+  | "craft"
+  | "gear"
+  | "dungeons"
+  | "heynspire";
+
+type SealShortcut =
+  | "deck"
+  | "packs"
+  | "workshop"
+  | "hero"
+  | "dungeons"
+  | "heynspire";
+
+const SHORTCUT_OF: Readonly<Record<ShortcutHint, SealShortcut>> = {
+  deckBuilder: "deck",
+  unopenedPack: "packs",
+  packs: "packs",
+  workshop: "workshop",
+  craft: "workshop",
+  gear: "hero",
+  dungeons: "dungeons",
+  heynspire: "heynspire",
+};
+
+/** The glyph of a shortcut while its painted icon does not exist. */
+const SHORTCUT_GLYPH: Readonly<Record<SealShortcut, Glyph>> = {
+  deck: "cards",
+  packs: "pack",
+  workshop: "anvil",
+  hero: "helmet",
+  dungeons: "cave",
+  heynspire: "tower",
+};
+
 /** The subject of a Hint, with the icon that the game already shows for it. */
 const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
   switch (hint) {
@@ -214,11 +301,13 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
       // The glyph of the Battle Log button.
       return <GlyphIcon glyph="scroll" className={SUBJECT_ICON} />;
     }
-    case "sweep": {
-      // A Sweep Ticket in Ready Gold, turned a little as a ticket in a hand.
+    case "sweep":
+    case "dungeonSweep": {
+      // The Sweep Ticket of the Hint in Ready Gold, turned a little as a
+      // ticket in a hand.
       return (
         <GlyphIcon
-          glyph="ticket"
+          glyph={hint === "sweep" ? "campaignTicket" : "dungeonTicket"}
           className={cn(SUBJECT_ICON, "-rotate-8 text-[#ffd75a]")}
         />
       );
@@ -228,15 +317,10 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
     case "packs":
     case "workshop":
     case "craft":
-    case "gear": {
-      const shortcut =
-        hint === "deckBuilder"
-          ? "deck"
-          : hint === "workshop" || hint === "craft"
-            ? "workshop"
-            : hint === "gear"
-              ? "hero"
-              : "packs";
+    case "gear":
+    case "dungeons":
+    case "heynspire": {
+      const shortcut = SHORTCUT_OF[hint];
       const painted = paintedIcon(shortcut);
       return painted ? (
         <img
@@ -248,18 +332,7 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
           className="size-9 select-none [@media(max-height:500px)]:size-7"
         />
       ) : (
-        <GlyphIcon
-          glyph={
-            shortcut === "deck"
-              ? "cards"
-              : shortcut === "workshop"
-                ? "anvil"
-                : shortcut === "hero"
-                  ? "helmet"
-                  : "pack"
-          }
-          className={SUBJECT_ICON}
-        />
+        <GlyphIcon glyph={SHORTCUT_GLYPH[shortcut]} className={SUBJECT_ICON} />
       );
     }
     default: {

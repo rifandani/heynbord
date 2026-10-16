@@ -1,4 +1,4 @@
-import type { Landmark, RegionArt } from "./regions.ts";
+import type { BattleArt, Landmark, RegionArt } from "./regions.ts";
 import { fieldOf } from "./regions.ts";
 import type { Scene } from "./scenes.ts";
 
@@ -74,10 +74,10 @@ export const jokePromptsOf = (region: RegionArt): string[] =>
  * The first message of the ChatGPT conversation for one Battle Painting, with
  * the style reference and (after the first Region) the set reference
  * attached. The rules come from section 1 of the Battlefield Concepts. The
- * open ground is the box of 1.3, in the 3:2 image.
+ * open ground is the box of 1.7, in the 3:2 image.
  */
 export const battleSetupPromptOf = (
-  region: RegionArt,
+  region: BattleArt,
   isFirst: boolean
 ): string =>
   [
@@ -86,7 +86,7 @@ export const battleSetupPromptOf = (
       "Use image 1 only as a style reference: hand-painted fantasy illustration with soft painterly brushwork, bright warm light and rich color. Do not copy any figure, object, scene or composition from it.",
       isFirst
         ? ""
-        : "Image 2 is the Battle Painting of another Region of the same set. Match its camera, layout, scale and brushwork. Do not copy its place.",
+        : "Image 2 is another Battle Painting of the same set. Match its camera, layout, scale and brushwork. Do not copy its place.",
     ]
       .filter(Boolean)
       .join("\n"),
@@ -105,8 +105,8 @@ export const battleSetupPromptOf = (
 
 /** The message for a Battle Painting, after its setup message. */
 export const battlePromptOf = (
-  rows: NonNullable<RegionArt["battle"]>,
-  region: RegionArt
+  rows: NonNullable<BattleArt["battle"]>,
+  region: BattleArt
 ): string =>
   [
     `Paint the Battle Painting of ${region.name}.`,

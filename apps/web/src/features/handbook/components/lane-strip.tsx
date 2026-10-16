@@ -139,16 +139,22 @@ const GlyphPath = ({
   );
 };
 
-/** A Hero at the end of all Lanes: a plate in the color of its Side, with a crown. */
+/**
+ * A Hero at the end of its Lanes: a plate in the color of its Side, with a
+ * crown. `front` is its first and last Lane; with none, it stands behind all
+ * the Lanes.
+ */
 const Hero = ({
   side,
   diagram,
+  front,
 }: {
   readonly side: DiagramSide;
   readonly diagram: Diagram;
+  readonly front?: { readonly first: number; readonly last: number };
 }) => {
-  const top = laneY(0) - SQUARE / 2;
-  const height = laneY(diagram.lanes - 1) + SQUARE / 2 - top;
+  const top = laneY(front?.first ?? 0) - SQUARE / 2;
+  const height = laneY(front?.last ?? diagram.lanes - 1) + SQUARE / 2 - top;
   const x =
     side === "player"
       ? PAD
@@ -389,7 +395,18 @@ export const LaneStrip = ({ diagram }: { readonly diagram: Diagram }) => {
       <Squares diagram={diagram} />
       <Zones diagram={diagram} hatch={`${id}-extra`} />
       <Hero side="player" diagram={diagram} />
-      <Hero side="enemy" diagram={diagram} />
+      {diagram.enemyFronts ? (
+        diagram.enemyFronts.map((front) => (
+          <Hero
+            key={front.join(",")}
+            side="enemy"
+            diagram={diagram}
+            front={{ first: Math.min(...front), last: Math.max(...front) }}
+          />
+        ))
+      ) : (
+        <Hero side="enemy" diagram={diagram} />
+      )}
       {diagram.units.map((unit) => (
         <Unit key={`${unit.lane}:${unit.column}`} unit={unit} />
       ))}

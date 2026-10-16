@@ -764,6 +764,7 @@ describe("DIAGRAMS", () => {
     "wall",
     "ranged",
     "firstStrike",
+    "dungeon",
   ];
 
   it("belongs to about 10 Entries, one Entry each", () => {

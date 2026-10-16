@@ -449,6 +449,88 @@ describe("movement (GDD 4.5)", () => {
     });
   });
 
+  it("stops a ranged Unit in the first Square from which it has a target in Range", () => {
+    const state = emptyBattle();
+    const archer = placeUnit(state, {
+      cardId: "human.crossbowGuard",
+      owner: "player",
+      position: 2,
+    });
+    placeUnit(state, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 6,
+      attack: 0,
+      hp: 30,
+      maxHp: 30,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(unitById(next, archer.id)?.position).toBe(3);
+    expect(eventsOfType(events, "UnitAttacked")[0]).toMatchObject({
+      unitId: archer.id,
+      ranged: true,
+    });
+  });
+
+  it("moves a ranged Unit through a friendly Unit to the next empty Square in Range", () => {
+    const state = emptyBattle();
+    const archer = placeUnit(state, {
+      cardId: "human.crossbowGuard",
+      owner: "player",
+      position: 2,
+      speed: 3,
+    });
+    placeUnit(state, {
+      cardId: "human.shieldbearer",
+      owner: "player",
+      position: 3,
+      attack: 0,
+      speed: 0,
+    });
+    placeUnit(state, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 7,
+      attack: 0,
+      hp: 30,
+      maxHp: 30,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, archer.id)?.position).toBe(4);
+  });
+
+  it("stops a Flying ranged Unit when an enemy ground Unit comes into its Range", () => {
+    const state = emptyBattle();
+    const shepherd = placeUnit(state, {
+      cardId: "elf.seedwindShepherd",
+      owner: "player",
+      position: 0,
+    });
+    placeUnit(state, {
+      cardId: "human.shieldbearer",
+      owner: "enemy",
+      position: 3,
+      attack: 0,
+      hp: 30,
+      maxHp: 30,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, shepherd.id)?.position).toBe(1);
+  });
+
+  it("stops a ranged Unit when the enemy Hero comes into its Range", () => {
+    const state = emptyBattle();
+    const archer = placeUnit(state, {
+      cardId: "human.crossbowGuard",
+      owner: "player",
+      position: 7,
+      speed: 3,
+    });
+    const { state: next } = run(state, endTurn);
+    expect(unitById(next, archer.id)?.position).toBe(9);
+    expect(heroOf(next, "enemy").hp).toBe(26);
+  });
+
   it("gives Charge N +N Speed, with Charge 1, 2 and 3 at Uncommon, Epic and Legendary", () => {
     expect([
       chargeByRank("uncommon"),
@@ -939,6 +1021,7 @@ describe("First Strike (GDD 4.7)", () => {
       expect.objectContaining({ unitId: attacker.id, status: "entangle" }),
     ]);
     expect(unitById(next, attacker.id)?.entangled).toBe(true);
+    expect(eventsOfType(events, "EntangleFaded")).toEqual([]);
   });
 
   it("does not apply Knockback", () => {
@@ -2389,6 +2472,10 @@ describe("Entangle (GDD 4.4, 4.5, 4.7)", () => {
       }),
     ]);
     expect(eventsOfType(events, "UnitMoved")).toEqual([]);
+    expect(eventsOfType(events, "EntangleFaded")).toEqual([
+      expect.objectContaining({ unitId: stuck.id }),
+      expect.objectContaining({ unitId: runt.id }),
+    ]);
 
     // The action after has full Speed.
     const moved = run(run(next, endTurn).state, endTurn).state;

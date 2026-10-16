@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { GridList, GridListItem, Popover } from "react-aria-components";
 
 import { CardDetails } from "@/features/battle/components/card-details";
-import { CardFrame, RankGems } from "@/features/battle/components/card-frame";
+import { CardFrame } from "@/features/battle/components/card-frame";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -14,40 +14,7 @@ import {
   useCardPeek,
 } from "@/features/deck/components/use-card-peek";
 import type { PoolFilter } from "@/features/deck/deck";
-import type { RankCopies, WorkshopTile } from "@/features/workshop/workshop";
-
-/**
- * The copies of each Rank under a tile: the Rank Gems and the count, for each
- * Rank with a copy (never the color alone). "0 copies" for a card with none.
- */
-const CopyStrip = ({ copies }: { readonly copies: readonly RankCopies[] }) => {
-  const { tr } = useGameText();
-  const owned = copies.filter((row) => row.copies > 0);
-  return (
-    <span
-      className="flex min-h-5 max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-xs leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:min-h-4 [@media(max-height:500px)]:text-[10px]"
-      aria-hidden
-    >
-      {owned.length === 0 ? (
-        <span className="font-semibold text-[#e8d9bb]/75">
-          {tr("workshop.noCopies")}
-        </span>
-      ) : (
-        owned.map((row) => (
-          <span
-            key={row.rank}
-            className="flex items-center gap-1 rounded-md bg-[#1c140e]/80 px-1 py-0.5"
-          >
-            <span className="text-[8px] [@media(max-height:500px)]:text-[6px]">
-              <RankGems rank={row.rank} />
-            </span>
-            {tr("workshop.copies", { count: row.copies })}
-          </span>
-        ))
-      )}
-    </span>
-  );
-};
+import type { WorkshopTile } from "@/features/workshop/workshop";
 
 /**
  * The small anvil on a tile with a pair below Legendary: a Combine is near.
@@ -162,7 +129,6 @@ const Tile = ({
         />
         {tile.pairReady ? <PairMark /> : null}
       </span>
-      <CopyStrip copies={tile.copies} />
       {peek && isSamePeek(peek, target) ? (
         <Popover
           triggerRef={frame}
@@ -187,8 +153,8 @@ const Tile = ({
 
 /**
  * The Workshop grid (GDD 7.4): one tile for each Discovered card, at its
- * highest owned Rank, with the copies of each Rank under it. The arrow keys
- * move in the grid, and Enter or a press selects a card for the Rank panel.
+ * highest owned Rank. The Rank panel shows its copies of each Rank. The arrow
+ * keys move in the grid, and Enter or a press selects a card for the Rank panel.
  * Hover, keyboard focus or a long press shows the Card Details of a tile.
  */
 export const WorkshopGrid = ({

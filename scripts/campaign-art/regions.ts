@@ -48,6 +48,9 @@ export interface RegionArt {
   readonly battle: readonly (readonly [string, string])[] | null;
 }
 
+/** The art of one Battle Painting: a Region, or the Dungeon cave. */
+export type BattleArt = Pick<RegionArt, "slug" | "name" | "battle">;
+
 /** The Regions and the target clearing centers of the Region Maps. */
 export interface CampaignArt {
   readonly regions: readonly RegionArt[];
@@ -202,3 +205,20 @@ export const readCampaign = (): CampaignArt => {
     });
   return { regions, clearings };
 };
+
+/** The heading name of the Dungeon Battle Painting brief in 13. */
+export const DUNGEON_CAVE = "The Dungeon cave";
+
+/** The heading name of the Heynspire Battle Painting brief in 13. */
+export const HEYNSPIRE = "Heynspire";
+
+/**
+ * The Battle Painting brief with this heading name in 13 that is not a
+ * Region: the Dungeon cave (1.6) or Heynspire (1.7). The Town prompts write
+ * it next to the inside painting of its Building (`bun town:prompts`).
+ */
+export const readBattleArt = (name: string): BattleArt => ({
+  slug: slugOf(name),
+  name,
+  battle: battleBriefs().get(name) ?? null,
+});

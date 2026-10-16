@@ -6,6 +6,8 @@
 import { getCard } from "../content/cards";
 import { addForgeStones, stageForgeStones } from "../content/forge-stones";
 import type { ForgeStoneReward } from "../content/forge-stones";
+import { lossShare } from "../content/loss-reward";
+import type { EnemyHeroDamage } from "../content/loss-reward";
 import { playerLevelForXp, stageXp } from "../content/player-levels";
 import type { ClassId, DeckEntry, StageDefinition } from "../content/schema";
 import { stageCoin } from "../content/stage-coin";
@@ -19,8 +21,11 @@ import type { Profile, UnopenedPack } from "./schema";
 /** The chance of a card from a repeat win, in basis points (Economy 2.1). */
 export const REPEAT_WIN_CARD_CHANCE = 2000;
 
-/** The Sweep Tickets that each played win gives (ADR-0035). The M3 re-tune can change it. */
-export const SWEEP_TICKETS_PER_WIN = 2;
+/**
+ * The Campaign Sweep Tickets that each Stage win and Floor win gives
+ * (ADR-0035). The M3 re-tune can change it.
+ */
+export const CAMPAIGN_SWEEP_TICKETS_PER_WIN = 2;
 
 /** The First Pack: the Unopened Pack that the Packs unlock gives (Economy 3.1). */
 export const FIRST_PACK: UnopenedPack = { pack: "peddler", version: "all" };
@@ -52,6 +57,8 @@ export interface StageResultInput {
   readonly stars: number;
   /** The Class of the Deck that the Player used. */
   readonly classId: ClassId;
+  /** The HP that the enemy Heroes lost. It sets the share of a loss reward (ADR-0043). */
+  readonly enemyHeroDamage: EnemyHeroDamage;
 }
 
 /** The card that a Stage result gives. `isNew`: the Player had not Discovered it before. */
@@ -71,8 +78,8 @@ export interface StageRewards {
   readonly card: StageRewardCard | null;
   /** The Unopened Packs that the result added: the First Pack at the Packs unlock. */
   readonly unopenedPacks: readonly UnopenedPack[];
-  /** The Sweep Tickets that the result added: 2 for a win, 0 for a loss. */
-  readonly sweepTickets: number;
+  /** The Campaign Sweep Tickets that the result added: 2 for a win, 0 for a loss. */
+  readonly campaignSweepTickets: number;
   /** The Forge Stones of the result (ADR-0038), or `null`. */
   readonly forgeStones: ForgeStoneReward | null;
 }
@@ -90,7 +97,7 @@ type StageResultProfile = Pick<
   | "collection"
   | "stageResults"
   | "unopenedPacks"
-  | "sweepTickets"
+  | "campaignSweepTickets"
   | "forgeStones"
   | "rewardRandomState"
 >;
@@ -151,7 +158,7 @@ export interface OutcomeRewards {
 
 /**
  * The XP, Coin, card and Forge Stones of one outcome of `stage` (Economy
- * 2.1). A Stage result and each Ticket of a Sweep use it. A repeat win rolls
+ * 2.1). A Stage result and each Ticket of a Campaign Sweep use it. A repeat win rolls
  * the card first, then the Forge Stone.
  */
 export const outcomeRewards = (
@@ -203,8 +210,9 @@ export const rewardCard = (
 /**
  * Applies the result of a Stage Battle (Economy 2.1). A win of a Stage with no
  * result is a first win, any other win is a repeat win. It gives the XP and
- * the Coin of the outcome, keeps the best Stars of a win, gives the card, the
- * Forge Stones (ADR-0038) and the Sweep Tickets (ADR-0035) of a win, and adds
+ * the Coin of the outcome, only the share of the lost enemy Hero HP of them
+ * for a loss (ADR-0043), keeps the best Stars of a win, gives the card, the
+ * Forge Stones (ADR-0038) and the Campaign Sweep Tickets (ADR-0035) of a win, and adds
  * the First Pack when the level goes to the Packs unlock. An Abandon and a
  * Battle that is not finished never call it.
  */
@@ -225,17 +233,22 @@ export const applyStageResult = <P extends StageResultProfile>(
   if (input.won) {
     outcome = bestStars === undefined ? "firstWin" : "win";
   }
-  const { xp, coin, card, forgeStones, rewardRandomState } = outcomeRewards(
+  const rewards = outcomeRewards(
     stage,
     outcome,
     input.classId,
     profile.rewardRandomState
   );
+  const { card, forgeStones, rewardRandomState } = rewards;
+  const share = (reward: number) =>
+    outcome === "loss" ? lossShare(reward, input.enemyHeroDamage) : reward;
+  const xp = share(rewards.xp);
+  const coin = share(rewards.coin);
   const { levelBefore, levelAfter, unopenedPacks } = levelUp(
     profile.xp,
     profile.xp + xp
   );
-  const sweepTickets = input.won ? SWEEP_TICKETS_PER_WIN : 0;
+  const campaignSweepTickets = input.won ? CAMPAIGN_SWEEP_TICKETS_PER_WIN : 0;
   const stageResults = input.won
     ? {
         ...profile.stageResults,
@@ -252,7 +265,7 @@ export const applyStageResult = <P extends StageResultProfile>(
         : profile.collection,
       stageResults,
       unopenedPacks: [...profile.unopenedPacks, ...unopenedPacks],
-      sweepTickets: profile.sweepTickets + sweepTickets,
+      campaignSweepTickets: profile.campaignSweepTickets + campaignSweepTickets,
       forgeStones: addForgeStones(profile.forgeStones, forgeStones),
       rewardRandomState,
     },
@@ -264,7 +277,7 @@ export const applyStageResult = <P extends StageResultProfile>(
       levelAfter,
       card: card ? rewardCard(card, profile.collection) : null,
       unopenedPacks,
-      sweepTickets,
+      campaignSweepTickets,
       forgeStones,
     },
   };

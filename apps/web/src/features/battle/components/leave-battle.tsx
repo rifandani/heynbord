@@ -6,9 +6,20 @@ import {
   ModalOverlay,
 } from "react-aria-components";
 
+import type { BattleOptions } from "@/features/battle/battle-session";
 import { GameButton } from "@/features/battle/components/game-button";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+
+/** The line of the Leave dialog: the Player can play the Stage, the Dungeon or the Floor again. */
+const abandonTextKey = (options: BattleOptions | undefined) => {
+  if (options?.floor) {
+    return "battle.abandon.textFloor";
+  }
+  return options?.dungeon
+    ? "battle.abandon.textDungeon"
+    : "battle.abandon.text";
+};
 
 const LeaveButton = ({ onPress }: { readonly onPress?: () => void }) => {
   const { tr } = useGameText();
@@ -59,7 +70,7 @@ export const LeaveBattle = ({
                   {tr("battle.abandon.title")}
                 </Heading>
                 <p className="mt-2 text-sm text-[#5b4632]">
-                  {tr("battle.abandon.text")}
+                  {tr(abandonTextKey(battle.session?.options))}
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2 [@media(max-height:500px)]:mt-2">
                   <GameButton intent="gold" autoFocus onPress={close}>

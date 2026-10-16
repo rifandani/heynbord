@@ -10,16 +10,15 @@ describe("Heynstone supply (Economy 2.6, 3.5)", () => {
   it("has the one-time sources of the Economy table", () => {
     expect(HEYNSTONE_SOURCES).toEqual([
       { id: "achievements", count: 40, heynstones: 1000, estimate: true },
-      { id: "starChests", count: 5, heynstones: 750, estimate: false },
       { id: "heynspireFloors", count: 5, heynstones: 250, estimate: false },
     ]);
   });
 
-  it("gives about 2,000 Heynstones, about 83% of the Bazaar catalog", () => {
-    expect(HEYNSTONE_SUPPLY).toBe(2000);
+  it("gives about 1,250 Heynstones, about 52% of the Bazaar catalog", () => {
+    expect(HEYNSTONE_SUPPLY).toBe(1250);
     expect(BAZAAR_CATALOG_HEYNSTONES_ESTIMATE).toBe(2400);
     expect(
       Math.round((HEYNSTONE_SUPPLY / BAZAAR_CATALOG_HEYNSTONES_ESTIMATE) * 100)
-    ).toBe(83);
+    ).toBe(52);
   });
 });

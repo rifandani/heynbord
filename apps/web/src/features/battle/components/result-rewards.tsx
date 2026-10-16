@@ -6,13 +6,22 @@ import type {
 } from "@workspace/rules";
 import { cn } from "cn";
 import type { CSSProperties } from "react";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { Button } from "react-aria-components";
 
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import {
+  PEEK_BUTTON,
+  useRewardPeek,
+} from "@/features/campaign/components/reward-peek";
+import type { Peek } from "@/features/deck/components/use-card-peek";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { levelProgress } from "@/features/profile/profile";
+import type { SweepKind } from "@/features/sweep/sweep";
+import { TICKET_GLYPH } from "@/features/sweep/sweep";
+import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
 
@@ -36,7 +45,7 @@ export const ResultCoin = ({ coin }: { readonly coin: number }) => {
       <span className="sr-only">
         {tr("battle.coinEarned", { amount: words })}
       </span>
-      <span aria-hidden className="flex items-center gap-2">
+      <span aria-hidden className="flex items-center gap-1">
         +
         <CoinAmount parts={coinDenominations(coin)} format={format} />
       </span>
@@ -45,11 +54,19 @@ export const ResultCoin = ({ coin }: { readonly coin: number }) => {
 };
 
 /**
- * The Sweep Tickets that a played win gave (GDD 4.12, ADR-0035), on the same
- * Night Plate as the Coin: the Ticket in Ready Gold and "+2 Sweep Tickets".
- * A loss gives none, so it shows nothing.
+ * The Sweep Tickets that a win gave (GDD 4.12), on the same Night Plate as
+ * the Coin: the Ticket in Ready Gold and its type, for example "Campaign Sweep
+ * Tickets +2". A Stage win gives Campaign Sweep Tickets (ADR-0035) and a
+ * Dungeon win gives Dungeon Sweep Tickets (ADR-0041). A loss gives none, so
+ * it shows nothing.
  */
-export const ResultTickets = ({ tickets }: { readonly tickets: number }) => {
+export const ResultTickets = ({
+  kind,
+  tickets,
+}: {
+  readonly kind: SweepKind;
+  readonly tickets: number;
+}) => {
   const { tr } = useGameText();
   if (tickets === 0) {
     return null;
@@ -58,34 +75,83 @@ export const ResultTickets = ({ tickets }: { readonly tickets: number }) => {
     <p
       className={REWARD_PLATE}
       data-testid="result-sweep-tickets"
+      data-kind={kind}
       data-tickets={tickets}
     >
       <span className="sr-only">
-        {tr("battle.sweepTicketsEarnedLabel", { count: tickets })}
+        {tr(`sweep.${kind}.earnedLabel`, { count: tickets })}
       </span>
       <span aria-hidden className="flex items-center gap-1.5">
         <GlyphIcon
-          glyph="ticket"
+          glyph={TICKET_GLYPH[kind]}
           className="size-4.5 -rotate-8 text-[#ffd75a]"
         />
-        {tr("battle.sweepTicketsEarned", { count: tickets })}
+        {tr(`sweep.${kind}.earned`, { count: tickets })}
       </span>
     </p>
   );
 };
 
 /**
- * The Forge Stones of a result (ADR-0038), on the same Night Plate as the
- * Coin: the stone in its tier color and "+1 × Common Forge Stone". No Forge
- * Stone shows nothing.
+ * The Essence of a result: Dungeon 3 gives Essence in place of XP (Economy
+ * 2.4), on the same Night Plate as the Coin. No Essence shows nothing.
  */
-export const ResultForgeStones = ({
-  stones,
+export const ResultEssence = ({ essence }: { readonly essence: number }) => {
+  const { tr } = useGameText();
+  if (essence === 0) {
+    return null;
+  }
+  return (
+    <p
+      className={REWARD_PLATE}
+      data-testid="result-essence"
+      data-essence={essence}
+    >
+      <span className="sr-only">
+        {tr("battle.essenceEarnedLabel", { amount: essence })}
+      </span>
+      <span aria-hidden className="flex items-center gap-1.5">
+        <BalanceIcon kind="essence" className="size-4.5" />
+        {tr("battle.essenceEarned", { amount: essence })}
+      </span>
+    </p>
+  );
+};
+
+/**
+ * The Heynstones of a result: only a Heynspire Boss Floor win gives them
+ * (Economy 2.3), on the same Night Plate as the Coin. None shows nothing.
+ */
+export const ResultHeynstones = ({
+  heynstones,
 }: {
-  readonly stones: ForgeStoneReward | null;
+  readonly heynstones: number;
 }) => {
   const { tr } = useGameText();
-  if (stones === null || stones.count === 0) {
+  if (heynstones === 0) {
+    return null;
+  }
+  return (
+    <p
+      className={REWARD_PLATE}
+      data-testid="result-heynstones"
+      data-heynstones={heynstones}
+    >
+      <span className="sr-only">
+        {tr("battle.heynstonesEarnedLabel", { amount: heynstones })}
+      </span>
+      <span aria-hidden className="flex items-center gap-1.5">
+        <BalanceIcon kind="heynstones" className="size-4.5" />
+        {tr("battle.heynstonesEarned", { amount: heynstones })}
+      </span>
+    </p>
+  );
+};
+
+/** One Forge Stone tier of a result, on its Night Plate. */
+const ForgeStonePlate = ({ stones }: { readonly stones: ForgeStoneReward }) => {
+  const { tr } = useGameText();
+  if (stones.count === 0) {
     return null;
   }
   const tier = tr(`forgeStones.tiers.${stones.tier}`);
@@ -107,6 +173,31 @@ export const ResultForgeStones = ({
         {tr("battle.forgeStonesEarned", { count: stones.count, tier })}
       </span>
     </p>
+  );
+};
+
+/**
+ * The Forge Stones of a result (ADR-0038), on the same Night Plate as the
+ * Coin: the stone in its tier color and "+1 Common Forge Stone". A Stage
+ * gives 0 or 1 tier, and a Dungeon 0 to 2 tiers (ADR-0039): one plate for
+ * each tier. No Forge Stone shows nothing.
+ */
+export const ResultForgeStones = ({
+  stones,
+}: {
+  readonly stones: ForgeStoneReward | readonly ForgeStoneReward[] | null;
+}) => {
+  if (stones === null) {
+    return null;
+  }
+  const list: readonly ForgeStoneReward[] =
+    "tier" in stones ? [stones] : stones;
+  return (
+    <>
+      {list.map((reward) => (
+        <ForgeStonePlate key={reward.tier} stones={reward} />
+      ))}
+    </>
   );
 };
 
@@ -218,9 +309,21 @@ export const NewChip = ({
   );
 };
 
-/** The card that a result gave, as a small Card Frame, with a "New" ribbon when it is not Discovered. */
+/**
+ * The card that a result gave, as a small Card Frame, with a "New" ribbon when
+ * it is not Discovered. Hover, keyboard focus or a long press shows its Card
+ * Details at the left of the result, out of the dialog.
+ */
 export const ResultCard = ({ card }: { readonly card: StageRewardCard }) => {
   const { tr } = useGameText();
+  const { bind, details } = useRewardPeek({
+    placement: "left",
+    testId: "result-card-peek",
+    // Out past the frame of the dialog: the card is inside the reward well.
+    offset: 66,
+  });
+  const trigger = useRef<HTMLButtonElement>(null);
+  const target: Peek = { cardId: card.cardId, rank: card.rank, from: "result" };
   const name = tr(`cards.${card.cardId}.name`);
   const rank = tr(`ranks.${card.rank}`);
   return (
@@ -230,20 +333,28 @@ export const ResultCard = ({ card }: { readonly card: StageRewardCard }) => {
       data-card={card.cardId}
       data-new={card.isNew || undefined}
     >
-      <p className="sr-only">
-        {card.isNew
-          ? tr("battle.newCardWon", { name, rank })
-          : tr("battle.cardWon", { name, rank })}
-      </p>
-      <span className="relative" aria-hidden>
+      <Button
+        ref={trigger}
+        {...bind(target)}
+        aria-label={
+          card.isNew
+            ? tr("battle.newCardWon", { name, rank })
+            : tr("battle.cardWon", { name, rank })
+        }
+        className={cn(
+          "relative -rotate-2 text-[6px] motion-safe:animate-[stage-panel-deal_440ms_cubic-bezier(0.2,0.8,0.2,1)_300ms_both] [@media(max-height:500px)]:text-[4.5px]",
+          PEEK_BUTTON
+        )}
+        data-testid="result-card-frame"
+      >
         <CardFrame
           cardId={card.cardId}
           rank={card.rank}
           countdown={getCard(card.cardId).countdown}
-          className="-rotate-2 text-[6px] motion-safe:animate-[stage-panel-deal_440ms_cubic-bezier(0.2,0.8,0.2,1)_300ms_both] [@media(max-height:500px)]:text-[4.5px]"
         />
         {card.isNew ? <NewChip /> : null}
-      </span>
+      </Button>
+      {details(target, trigger)}
       <span
         className="mt-1 max-w-24 truncate text-xs font-bold text-[#2a1d12]"
         aria-hidden
