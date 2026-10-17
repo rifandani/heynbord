@@ -258,6 +258,11 @@ export const GLYPHS = {
     "M-26 -46 H26 Q34 -46 34 -38 V38 Q34 46 26 46 H-26 Q-34 46 -34 38 V-38 Q-34 -46 -26 -46 Z M-24 34 V-10 Q-24 -36 0 -36 Q24 -36 24 -10 V34 Z M0 -18 L5 -3 L16 2 L5 7 L0 22 L-5 7 L-16 2 L-5 -3 Z",
   anvil:
     "M-44 -24 H30 Q44 -24 44 -12 Q30 -6 22 -6 V10 H12 L22 30 H-22 L-12 10 H-22 V-6 Q-38 -6 -44 -24 Z M-30 30 H30 V42 H-30 Z",
+  /** A flame in the stone arch of a forge: the Craft station of the Workshop. */
+  forge:
+    "M-40 44 V-6 Q-40 -44 0 -44 Q40 -44 40 -6 V44 Z M-24 44 V-2 Q-24 -28 0 -28 Q24 -28 24 -2 V44 Z M0 34 C-14 34 -18 20 -11 9 C-7 16 -3 16 -2 12 C-4 1 3 -8 7 -14 C7 -3 16 4 14 17 C13 28 8 34 0 34 Z",
+  /** A card that melts into a drop: the Extract station of the Workshop. */
+  melt: "M-30 -40 Q-30 -46 -24 -46 H24 Q30 -46 30 -40 V0 Q30 6 24 8 Q18 10 16 18 Q14 26 10 18 Q6 8 0 10 Q-6 12 -8 22 Q-10 30 -14 22 Q-16 12 -22 10 Q-30 8 -30 2 Z M-18 -34 H18 V-6 H-18 Z M0 26 Q-9 38 -9 41 A9 9 0 0 0 9 41 Q9 38 0 26 Z",
   pack: "M-30 -40 L-20 -46 L-10 -40 L0 -46 L10 -40 L20 -46 L30 -40 V44 H-30 Z M0 -16 L6 -2 L20 -2 L9 7 L13 22 L0 13 L-13 22 L-9 7 L-20 -2 L-6 -2 Z",
   helmet: "M-36 40 V0 Q-36 -44 0 -44 Q36 -44 36 0 V40 H14 V8 H-14 V40 Z",
   // The supplied crossed swords, in the glyph box. Fill only: a stroke closes the gaps.

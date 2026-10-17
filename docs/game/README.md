@@ -57,6 +57,6 @@ These decisions come from a design review on 2026-10-03:
 | Resource system | Countdown hand, as in the original. |
 | Board | Lanes, 12 squares long. Stages use 3 lanes. Dungeons, Heynspire and multiplayer use 4. |
 | Battle control | Automatic and deterministic, with speed control and skip. A Sweep gives repeat-win rewards with no Battle. |
-| v1 card set | 4 Classes, 6 Races, 5 Ranks, 90 Creature Cards and 40 Skill Cards. |
+| v1 card set | 4 Classes, 6 Races, 5 Ranks, 96 Creature Cards and 40 Skill Cards. |
 | Progression | Combine (no failure), Extract, Craft and hero gear. No Energy and no VIP. |
 | Languages | `en-us` and `id-id` from v1. |

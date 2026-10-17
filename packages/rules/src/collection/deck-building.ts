@@ -31,7 +31,7 @@ export type Collection = readonly CollectionEntry[];
 /** A Deck and the facts that the Deck rules need (GDD 6). */
 export interface DeckInput {
   readonly deck: readonly DeckEntry[];
-  /** The Hero Class. A Deck holds Skill Cards of this Class only. */
+  /** The Hero Class. A Deck holds Skill Cards and Specialists of this Class only. */
   readonly classId: ClassId;
   /** The Player level. It sets the Deck size limits and the Countdown Limit. */
   readonly level: number;
@@ -85,7 +85,7 @@ export const copiesLeft = (
 
 /** True when a Hero of the Class can have the card in its Deck. */
 export const fitsClass = (card: CardDefinition, classId: ClassId): boolean =>
-  card.kind === "creature" || card.class === classId;
+  card.class === undefined || card.class === classId;
 
 /**
  * True when one more copy of the card in the Rank keeps the Deck within its
@@ -168,7 +168,7 @@ export const deckProblems = (input: DeckInput): readonly DeckProblem[] => [
   ),
   ...distinctCards(input.deck).flatMap((cardId) => {
     const card = getCard(cardId);
-    return card.kind === "skill" && card.class !== input.classId
+    return card.class !== undefined && card.class !== input.classId
       ? [DeckProblem.WrongClass({ cardId, classId: card.class })]
       : [];
   }),

@@ -25,9 +25,15 @@ describe("statTone", () => {
 });
 
 describe("summonAttack", () => {
-  const unit = { attack: 3, rallyBonus: 0, swarmBonus: 0, bonusAttack: 0 };
+  const unit = {
+    attack: 3,
+    rallyBonus: 0,
+    swarmBonus: 0,
+    heroicBonus: 0,
+    bonusAttack: 0,
+  };
 
-  it("is the Attack with no Rally, Swarm or bonus Attack", () => {
+  it("is the Attack with no Rally, Swarm, Heroic or bonus Attack", () => {
     expect(summonAttack({ ...unit, attack: 4, swarmBonus: 1 })).toBe(3);
     expect(summonAttack(unit)).toBe(3);
     expect(summonAttack({ ...unit, attack: 5, rallyBonus: 2 })).toBe(3);
@@ -39,6 +45,12 @@ describe("summonAttack", () => {
   it("shows the bonus Attack of Call to Arms as a higher Attack", () => {
     const called = { ...unit, attack: 6, bonusAttack: 3 };
     expect(statTone(called.attack, summonAttack(called))).toBe("up");
+  });
+
+  it("shows the Heroic bonus as a higher Attack", () => {
+    const heroic = { ...unit, attack: 5, heroicBonus: 2 };
+    expect(summonAttack(heroic)).toBe(3);
+    expect(statTone(heroic.attack, summonAttack(heroic))).toBe("up");
   });
 });
 

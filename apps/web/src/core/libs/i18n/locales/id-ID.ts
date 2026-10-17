@@ -49,6 +49,7 @@ export default {
     boss: "Bos",
     dungeonName: "Dungeon {number}",
     bosses: "Bos Musuh",
+    specialist: "Spesialis",
     bossPlate: {
       label: "{name}, {className}: HP {hp} dari {maxHp}. {lanes}.",
       labelDefeated: "{name}: Tumbang.",
@@ -268,6 +269,9 @@ export default {
       cleansed: "Semua Debuff {unit} berakhir.",
       bulwark: "{unit} mendapat Benteng +{value}.",
       attackBonus: "{unit} mendapat Serangan +{value}.",
+      heroicBonus: "Bonus Heroik {unit} sekarang Serangan +{value}.",
+      soulHarvest:
+        "{unit} mendapat Panen Jiwa: bonusnya sekarang +{value} Serangan dan +{value} HP.",
       rangeBonus: "{unit} mendapat Jangkauan +{value}.",
       fieldPlaced: "{card} tetap di Papan. Serangan: {turns}.",
       fieldStruck: "{card} mengenai areanya. Sisa serangan: {turns}.",
@@ -413,7 +417,7 @@ export default {
       reward: "Hadiah",
       firstWin: "Kemenangan pertama: kartu ini, Koin, dan XP.",
       repeatWin:
-        "Kemenangan ulang: Koin, XP, dan peluang kartu dari Tahap ini.",
+        "Kemenangan ulang: Koin dan peluang kartu dari Tahap ini. Tanpa XP.",
       stars: "Bintang",
       starRule: {
         1: "Menangkan Pertempuran.",
@@ -587,7 +591,7 @@ export default {
     },
     collection: {
       half: { name: "Setengah Buku", goal: "Temukan 65 kartu" },
-      all: { name: "Buku Lengkap", goal: "Temukan semua 130 kartu" },
+      all: { name: "Buku Lengkap", goal: "Temukan semua 136 kartu" },
     },
     packs: {
       fifty: { name: "Pelanggan Tetap", goal: "Buka 50 Paket" },
@@ -684,6 +688,56 @@ export default {
         goal: "Menangkan Dungeon 3 dengan HP Pahlawanmu penuh",
       },
     },
+  },
+  bazaar: {
+    label: "Bazar",
+    title: "Bazar",
+    note: "Bazar hanya menjual Kosmetik. Milikmu selamanya.",
+    families: {
+      cardBack: "Punggung Kartu",
+      heroPortrait: "Potret Pahlawan",
+      gearLook: "Tampilan Perlengkapan",
+      boardSkin: "Tampilan Papan",
+    },
+    items: {
+      tentStripes: "Garis Tenda",
+      goldFleur: "Bunga Emas",
+      seaChart: "Peta Laut",
+      lanternSails: "Layar Lentera",
+      goatBite: "Punggung Gigitan Kambing",
+      dawnGaze: "Pandangan Fajar",
+      verdantCrest: "Jambul Hijau",
+      mesaShade: "Naungan Mesa",
+      saltWind: "Angin Asin",
+      lanternKeeper: "Penjaga Lentera",
+      tentRings: "Cincin Tenda",
+      goldCrest: "Jambul Emas",
+      copperRim: "Pinggiran Tembaga",
+      ironVine: "Sulur Besi",
+      stagLeather: "Kulit Rusa",
+      goldInlay: "Intarsia Emas",
+      moonstone: "Batu Bulan",
+      royalPlate: "Zirah Raja",
+      meadowDawn: "Padang Fajar",
+      mesaDusk: "Mesa Senja",
+      harborNight: "Pelabuhan Malam",
+      hollowMoon: "Bulan Rongga",
+      wardenSash: "Sabuk Penjaga",
+      duneMask: "Topeng Duna",
+      hollowLantern: "Lentera Rongga",
+      thornCrown: "Mahkota Duri",
+      spireDawn: "Fajar Menara",
+      constellationSeal: "Segel Rasi Bintang",
+      archivistCrest: "Jambul Arsiparis",
+      flawlessPlate: "Zirah Sempurna",
+    },
+    price: "{amount} Heynstone",
+    buy: "Beli",
+    buyLabel: "Beli {name} seharga {amount} Heynstone",
+    owned: "Dimiliki",
+    ownedLabel: "Sudah kamu miliki",
+    bought: "Kamu membeli {name}.",
+    cannotBuy: "Kamu belum bisa membelinya.",
   },
   tutorial: {
     label: "Tutorial",
@@ -857,10 +911,10 @@ export default {
     playerXpTable: "XP Kampanye menurut hasil",
     playerXpRegionColumn: "Wilayah",
     playerXpWinColumn: "Menang ulang",
-    playerXpFirstColumn: "Menang pertama (×2)",
-    playerXpLossColumn: "Kalah (maks. 25%)",
+    playerXpFirstColumn: "Menang pertama",
+    playerXpLossColumn: "Kalah (maks.)",
     playerXpNote:
-      "Menang pertama adalah kali pertama kamu menyelesaikan Tahap. Tahap Bos menggandakan semua nilai di tabel ini lagi.",
+      "Menang pertama adalah kali pertama kamu menyelesaikan Tahap. Menang ulang dan Sweep Kampanye tidak memberi XP. Kekalahan memberi sebagian nilainya, sesuai HP yang kamu ambil dari Pahlawan musuh. Tahap Bos menggandakan semua nilai di tabel ini.",
     playerGrowthLevelColumn: "Level",
     playerGrowthHeroColumn: "HP Pahlawan",
     playerGrowthDeckColumn: "Dek maks",
@@ -1053,13 +1107,13 @@ export default {
       stars:
         "Saat menang di Tahap, kamu mendapat 1 sampai 3 Bintang. Kalah memberi 0 Bintang.\n\nTiap Bintang menambah syarat di atas yang sebelumnya. Setengah HP Pahlawan berarti Pahlawanmu punya minimal 50% dari HP maksimumnya saat Pertempuran berakhir. Giliran Bintang adalah nomor Giliran yang harus didahului oleh kemenangan 3 Bintang. Tiap Tahap punya Giliran Bintang sendiri, dan Panel Tahapnya menunjukkannya.\n\nKampanye menyimpan Bintang terbaikmu untuk tiap Tahap. Total Bintang di satu Wilayah membuka peti pada 10, 20 dan 30 Bintang.",
       sweep:
-        "Sweep langsung memberi hadiah kemenangan ulang dari satu Tahap atau Dungeon. Tidak ada Pertempuran, dan Sweep selalu menang. Satu Sweep memakai 1 sampai {max} Tiket, dan tiap Tiket memberi satu hadiah kemenangan ulang.\n\nSweep Kampanye: saat Bintang terbaikmu di satu Tahap adalah 3, Panel Tahap-nya punya tombol Sweep. Sweep ini memakai Tiket Sweep Kampanye. Tiap Tiket memberi Koin, XP, serta peluang kartu dan Batu Tempa dari Tahap itu.\n\nSweep Dungeon: setelah kamu memenangkan satu Dungeon, layar Dungeon punya tombol Sweep untuknya. Sweep ini memakai Tiket Sweep Dungeon. Tiap Tiket memberi Koin dan XP atau Esensi dari Dungeon itu, serta peluang kartu dan Batu Tempa.\n\nKelas Dek Aktif-mu menentukan kartu yang bisa diberikan Sweep. Sweep tidak pernah mengubah Bintang atau kemenangan Dungeon-mu, dan tidak memberi Tiket.\n\nTiap kemenangan Tahap memberi {campaignTickets} Tiket Sweep Kampanye. Tiap kemenangan Dungeon memberi {dungeonTickets} Tiket Sweep Dungeon. Kekalahan tidak memberi Tiket. Kedua jenis Tiket tidak pernah berubah menjadi satu sama lain, dan kamu tidak bisa membelinya.",
+        "Sweep langsung memberi hadiah kemenangan ulang dari satu Tahap atau Dungeon. Tidak ada Pertempuran, dan Sweep selalu menang. Satu Sweep memakai 1 sampai {max} Tiket, dan tiap Tiket memberi satu hadiah kemenangan ulang.\n\nSweep Kampanye: saat Bintang terbaikmu di satu Tahap adalah 3, Panel Tahap-nya punya tombol Sweep. Sweep ini memakai Tiket Sweep Kampanye. Tiap Tiket memberi Koin, serta peluang kartu dan Batu Tempa dari Tahap itu. Tiket ini tidak memberi XP.\n\nSweep Dungeon: setelah kamu memenangkan satu Dungeon, layar Dungeon punya tombol Sweep untuknya. Sweep ini memakai Tiket Sweep Dungeon. Tiap Tiket memberi Koin dan XP atau Esensi dari Dungeon itu, serta peluang kartu dan Batu Tempa.\n\nKelas Dek Aktif-mu menentukan kartu yang bisa diberikan Sweep. Sweep tidak pernah mengubah Bintang atau kemenangan Dungeon-mu, dan tidak memberi Tiket.\n\nTiap kemenangan Tahap memberi {campaignTickets} Tiket Sweep Kampanye. Tiap kemenangan Dungeon memberi {dungeonTickets} Tiket Sweep Dungeon. Kekalahan tidak memberi Tiket. Kedua jenis Tiket tidak pernah berubah menjadi satu sama lain, dan kamu tidak bisa membelinya.",
       playerLevel:
-        "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari tiap Pertempuran, juga saat kalah. Kekalahan memberi XP dan Koin hanya untuk HP yang kamu ambil dari Pahlawan musuh.",
+        "Level pemain adalah progres akun dari 1 sampai {maxLevel}. XP dari Pertempuran mengisi bilah. Kamu mendapat XP dari Pertempuran, juga saat kalah. Kekalahan memberi XP dan Koin hanya untuk HP yang kamu ambil dari Pahlawan musuh. Kemenangan ulang di Tahap dan Sweep Kampanye tidak memberi XP.",
       coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
       pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nDi level Pemain 2, kamu mendapat satu Paket Penjaja. Paket dari hadiah menunggu di layar Paket sampai kamu membukanya, gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
       workshop:
-        "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya.",
+        "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nBengkel punya 3 stasiun: Gabung, Buat, dan Ekstrak. Pilih stasiun di atas, lalu pilih kartu. Stasiun menandai kartu yang bisa ia proses sekarang, dan filternya bisa menampilkan hanya kartu itu. Salinan cadangan adalah salinan yang tidak dipakai Dek tersimpan mana pun.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya. Kartu yang ditemukan adalah kartu yang pernah kamu miliki, minimal satu kali. Kartu dengan 0 salinan tetap ditemukan, juga setelah kamu Ekstrak salinan terakhirnya, jadi kamu bisa Buat kartu itu. Kamu tidak bisa Buat kartu yang belum pernah kamu miliki. Untuk mendapat kartu baru, buka Paket: Paket Saudagar dan Paket Kerajaan memilih kartu yang belum kamu punya, jika Peringkat yang keluar mengizinkannya.",
       gear: "Pahlawanmu punya 4 Perlengkapan: Senjata, Zirah, Jimat, dan Panji. Barak di Kota dan pintasan Pahlawan membuka layar Pahlawan, mulai level Pemain {level}.\n\nTiap Perlengkapan punya level dari 0 sampai {max}. Satu peningkatan menambah 1 level, dengan Koin dan 1 Batu Tempa. Level menentukan tingkat Batu Tempa: Biasa untuk level 1 sampai 5, Tak Biasa untuk 6 sampai 10, Langka untuk 11 sampai 15, Epik untuk 16 sampai 20, dan Legendaris untuk 21 sampai 25. Batu Tempa dari tingkat lain tidak bisa menggantikannya. Peningkatan tidak pernah gagal, dan level tidak pernah turun.\n\nKemenangan Tahap, peti Bintang, Sweep, Dungeon, dan Heynspire memberi Batu Tempa. Kamu tidak bisa membelinya. Layar Pahlawan menampilkan Batu Tempa yang kamu punya.\n\nSerangan Crit memberi 2 kali damage-nya. Serangan yang di-Block memberi setengah damage-nya. Di tiap Pertempuran, Pahlawan dan Unit-mu memakai Perlengkapanmu.",
       dungeon:
         "Dungeon adalah tempat di luar Kampanye. Gua di Kota dan pintasan Dungeon membuka layar Dungeon, mulai level Pemain {level}.\n\nDi Dungeon, kamu melawan semua Bos-nya dalam satu Pertempuran. Papan punya {lanes} Jalur. Tiap Bos adalah Pahlawan musuh dengan Lini, Tangan, dan Dek sendiri. Unit di ujung Jalur menyerang Bos dari Lini itu.\n\nAturan Bos aktif satu kali, saat HP Bos-nya turun ke persen tertentu atau lebih rendah. Bar HP Bos menunjukkan takik di persen itu.\n\nKemenangan Dungeon tidak memberi Bintang. Setelah menang, kamu bisa memainkan Dungeon itu lagi atau melakukan Sweep. Tiap kemenangan Dungeon memberi {tickets} Tiket Sweep Dungeon.",
@@ -1293,12 +1347,55 @@ export default {
       noneFound: "Kamu belum menemukan {group}.",
       noneOwned: "Kamu tidak punya salinan {group} sekarang.",
       allOwned: "Kamu punya salinan semua {group} yang sudah kamu temukan.",
+      ready: {
+        combine: "Kamu tidak punya pasangan {group} sekarang.",
+        craft: "Kamu tidak bisa Buat {group} sekarang.",
+        extract: "Kamu tidak punya salinan cadangan {group}.",
+      },
+    },
+    stations: "Aksi Bengkel",
+    station: {
+      combine: {
+        name: "Gabung",
+        recipe: "2 salinan → Peringkat berikut",
+        count: "{count} kartu dengan sepasang",
+        ready: "Hanya pasangan",
+      },
+      craft: {
+        name: "Buat",
+        recipe: "Esensi → 1 salinan",
+        count: "{count} kartu yang bisa kamu Buat sekarang",
+        ready: "Bisa Buat",
+        locked: "Level {level}",
+        lockedLabel: "Buat terbuka di level {level}",
+      },
+      extract: {
+        name: "Ekstrak",
+        recipe: "1 salinan → Esensi",
+        count: "{count} salinan cadangan",
+        ready: "Hanya cadangan",
+      },
+    },
+    pairMark: "Pasangan",
+    spareMark: "{count} cadangan",
+    spareCopies: "{count} salinan cadangan",
+    craftMark: "Buat dengan {essence} Esensi",
+    craftPanel: {
+      gives: "1 salinan {rank}",
+      recipe: "{essence} Esensi membuat 1 salinan {rank} dari {name}.",
+      after: "Esensimu: {now} → {after}",
+      short: "Esensimu: {now}. Kamu perlu {missing} lagi.",
+      none: "Kartu ini tidak bisa dibuat.",
+      own: "Kamu punya",
+    },
+    extractPanel: {
+      none: "Kamu tidak punya salinan kartu ini. Buat satu, atau dapatkan dari Paket.",
+      spare: "Cadangan ×{count}",
     },
     noCopies: "0 salinan",
     copies: "×{count}",
     rankCopies: "{rank}, salinan: {count}",
     pairReady: "Sepasang siap untuk Gabung",
-    combineCount: "2 → 1",
     combineLabel:
       "Gabung 2 salinan {from} menjadi 1 salinan {to}, dengan {price}",
     combineCopiesLabel: "Gabung {from} ke {to}: kamu perlu 2 salinan {from}",
@@ -1569,6 +1666,7 @@ export default {
       essence: "+{amount} Esensi",
     },
     wins: "Menang: {count}",
+    fightLabel: "Bertarung: {name}",
     "dungeon-1": {
       name: "Tambang Akar Dalam",
       bosses: {
@@ -1682,6 +1780,7 @@ export default {
   },
   keywords: {
     bleed: "Pendarahan {value}",
+    bolt: "Sambaran {value}",
     bulwark: "Benteng {value}",
     charge: "Terjang {value}",
     entangle: "Jerat",
@@ -1691,7 +1790,9 @@ export default {
     flying: "Terbang",
     heavy: "Berat",
     heroic: "Heroik {value}",
+    herosBane: "Bencana Pahlawan",
     hobble: "Pincang {value}",
+    ironGuard: "Kawal Besi",
     knockback: "Hentakan {value}",
     lastBreath: "Nafas Terakhir {value}",
     longRange: "Jangkauan Jauh",
@@ -1703,11 +1804,14 @@ export default {
     regenerate: "Regenerasi {value}",
     retaliate: "Balas",
     sabotage: "Sabotase {value}",
+    soulHarvest: "Panen Jiwa",
+    spawnbane: "Bencana Panggilan {value}",
     summon: "Panggil {token}",
     swarm: "Gerombolan {value}",
     swift: "Gesit",
     trample: "Gilas",
     unique: "Unik",
+    vampirism: "Vampirisme",
     wall: "Tembok",
     ranged: "Jarak Jauh {value}",
     melee: "Jarak Dekat",
@@ -1715,6 +1819,7 @@ export default {
   keywordRules: {
     bleed:
       "Unit musuh yang diserangnya mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah, selama {value} Giliran. Balas tidak menerapkan Pendarahan.",
+    bolt: "Pada tiap Fase Awal-mu, Unit ini memberi {value} damage sesuai Tipe Damage-nya ke Unit musuh acak, atau ke Pahlawan musuh di depannya. Tidak menerapkan Status.",
     bulwark: "Mengurangi damage Fisik ke Unit ini sebesar {value}.",
     charge: "+{value} Kecepatan pada Giliran saat Unit ini dipanggil.",
     entangle:
@@ -1722,6 +1827,9 @@ export default {
     extremeRange: "+3 Jangkauan.",
     fleet: "+2 Kecepatan.",
     heavy: "−1 Kecepatan.",
+    herosBane:
+      "Pada tiap Fase Awal-mu, Unit ini memberi 1 damage Fisik ke Pahlawan musuh di depannya.",
+    ironGuard: "Tiap damage Fisik ke Unit ini paling banyak 4.",
     longRange: "+2 Jangkauan.",
     midRange: "+1 Jangkauan.",
     swift: "+1 Kecepatan.",
@@ -1729,7 +1837,8 @@ export default {
       "Saat Unit musuh jarak dekat menyerang Unit ini, Unit ini memberi damage lebih dulu. Jika penyerang mati, serangannya tidak terjadi.",
     flying:
       "Bergerak melewati semua Unit, tetapi berhenti sebelum Unit Terbang musuh. Berhenti di Petak kosong.",
-    heroic: "+{value} damage saat Unit ini menyerang Pahlawan.",
+    heroic:
+      "Setelah Unit ini menyerang Unit musuh, ia mendapat +{value} Serangan.",
     hobble:
       "Unit musuh yang diserangnya punya Kecepatan maksimum 1 selama {value} Giliran. Balas tidak menerapkan Pincang.",
     knockback:
@@ -1747,9 +1856,15 @@ export default {
       "Saat Unit ini selamat dari serangan jarak dekat, ia memberi damage sebesar Serangannya ke penyerang.",
     sabotage:
       "Saat Unit ini datang dari kartunya, kartu dengan Hitung mundur terendah di Tangan musuh mendapat +{value} Hitung mundur. Kartu Siap adalah yang terendah.",
+    soulHarvest:
+      "Saat Unit musuh mati, Unit ini mendapat +1 Serangan dan +1 HP. Bangkit mengakhiri bonus.",
+    spawnbane:
+      "Saat Pahlawan musuh memanggil Unit dari Kartu Makhluk, Unit ini memberi {value} damage ke Unit itu. Token bukan Unit dari Kartu Makhluk.",
     trample:
       "Saat Unit ini membunuh Unit musuh dengan serangan, sisa damage mengenai Unit musuh di Petak berikutnya di belakangnya. Tidak pernah mengenai Pahlawan.",
     unique: "Hanya satu salinan kartu ini yang boleh ada di sisi Papan-mu.",
+    vampirism:
+      "Saat Unit ini memberi damage Fisik, ia memulihkan HP sebesar damage itu.",
     wall: "Unit ini tidak bisa bergerak dan tidak bisa menyerang. Kamu bisa memanggilnya ke 5 Petak terdekat dengan Pahlawanmu. Ia menghalangi Unit musuh di Jalurnya, dan dorongan tidak pernah memindahkannya.",
     rebirth:
       "Saat Unit ini mati untuk pertama kali, ia kembali di Petak yang sama dengan 1 HP. Status-nya berakhir, dan ia kehilangan Bangkit.",
@@ -1894,6 +2009,10 @@ export default {
         name: "Marsekal Elian Voss",
         flavor: "Tahan barisan. Aku masih punya enam alasan lagi.",
       },
+      serAldricStonewall: {
+        name: "Ser Aldric Stonewall",
+        flavor: "Tahan barisan. Lalu tahan lagi.",
+      },
     },
     orc: {
       badlandRunt: {
@@ -1956,6 +2075,10 @@ export default {
         name: "Pembawa Panji Pasukan Perang",
         flavor: "Ikuti panjinya. Abaikan ke mana arahnya.",
       },
+      ashcallerGrosh: {
+        name: "Grosh Pemanggil Abu",
+        flavor: "Semua terbakar. Sebagian terbakar sesuai jadwal.",
+      },
     },
     goblin: {
       ankleSnatcher: {
@@ -2017,6 +2140,10 @@ export default {
       bossSnikkit: {
         name: "Bos Snikkit",
         flavor: '"Semua di bawah sini milikku. Itu leluconnya. Tertawalah."',
+      },
+      grixRatwhistle: {
+        name: "Grix Peluit Tikus",
+        flavor: "Ia tidak membidik kau. Ia membidik yang di belakangmu.",
       },
     },
     feral: {
@@ -2081,6 +2208,10 @@ export default {
         name: "Si Tua Rahang Beku",
         flavor:
           "Setiap desa punya cerita tentangnya. Setiap cerita terlalu kecil.",
+      },
+      gorehornRedMaw: {
+        name: "Gorehorn Mulut Merah",
+        flavor: "Ia memakan yang ia bunuh. Sisanya disimpan.",
       },
     },
     elf: {
@@ -2149,6 +2280,10 @@ export default {
         name: "Lethiel, Tukang Kebun Pertama",
         flavor: "Hutan tumbuh liar. Lethiel bilang itu cukup.",
       },
+      wardenSaelith: {
+        name: "Penjaga Saelith",
+        flavor: "Tiap gerbang punya penjaga. Yang ini menembak lebih dulu.",
+      },
     },
     undead: {
       graveyardDrudge: {
@@ -2212,6 +2347,10 @@ export default {
       boneRampart: {
         name: "Benteng Tulang",
         flavor: "Silakan pakai Jalur yang lain.",
+      },
+      paleCantorYsolde: {
+        name: "Kantor Pucat Ysolde",
+        flavor: "Ia menyanyi agar yang mati jadi lebih baik.",
       },
     },
     warrior: {

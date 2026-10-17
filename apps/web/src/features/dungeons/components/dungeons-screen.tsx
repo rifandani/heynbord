@@ -1,16 +1,17 @@
 import { useAtomValue } from "@effect/atom-react";
 import { DUNGEON_LANES } from "@workspace/rules";
 import { cn } from "cn";
-import { useState, useSyncExternalStore } from "react";
+import type { RefObject } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import type { Key } from "react-aria-components";
 import { Tab, TabList, TabPanel, Tabs } from "react-aria-components";
 
 import type { BattleOptions } from "@/features/battle/battle-session";
+import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
-import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import { CaveScene } from "@/features/dungeons/components/cave-scene";
-import { DungeonRail } from "@/features/dungeons/components/dungeon-rail";
+import { DungeonPanel } from "@/features/dungeons/components/dungeon-panel";
 import { FrontStrip } from "@/features/dungeons/components/front-strip";
 import { WantedPoster } from "@/features/dungeons/components/wanted-poster";
 import type { DungeonSlot } from "@/features/dungeons/dungeons";
@@ -108,7 +109,8 @@ const DungeonTab = ({ slot }: { readonly slot: DungeonSlot }) => {
 /**
  * The notice board of the mine (GDD 8.4): one wanted poster for each Boss in
  * Boss order, and the Front strip under them. After a win, each poster
- * carries the claimed stamp. A short screen always shows slips.
+ * carries the claimed stamp. A short screen always shows slips. The board is
+ * only as wide as its posters, so that the cave shows around it.
  */
 const NoticeBoard = ({ slot }: { readonly slot: DungeonSlot }) => {
   const { tr } = useGameText();
@@ -123,7 +125,7 @@ const NoticeBoard = ({ slot }: { readonly slot: DungeonSlot }) => {
     <section
       aria-label={tr("dungeons.board.label")}
       className={cn(
-        "flex max-h-full min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl border-4 border-[#3a2412] p-5",
+        "flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl border-4 border-[#3a2412] p-5",
         "bg-[linear-gradient(180deg,#6b4426,#553520_55%,#45291a)] shadow-[inset_0_2px_0_rgba(255,214,150,0.18),inset_0_-6px_14px_rgba(0,0,0,0.4),0_3px_0_rgba(0,0,0,0.45),0_18px_36px_rgba(0,0,0,0.45)]",
         "[@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:p-2.5"
       )}
@@ -161,11 +163,61 @@ const NoticeBoard = ({ slot }: { readonly slot: DungeonSlot }) => {
 };
 
 /**
+ * The action under the notice board. An open Dungeon has the one gold Fight
+ * across the board, which opens the Dungeon Panel (DESIGN.md, The Gold Means
+ * Act Rule). It takes the focus when the screen opens, so a repeat win is
+ * Town, cave, Enter, Enter. A locked Dungeon shows its level in its place.
+ */
+const BoardActions = ({
+  slot,
+  barRef,
+  onOpen,
+}: {
+  readonly slot: DungeonSlot;
+  /** The Fight bar: the Dungeon Panel comes up out of it. */
+  readonly barRef: RefObject<HTMLButtonElement | null>;
+  readonly onOpen: () => void;
+}) => {
+  const { tr } = useGameText();
+  const { dungeon } = slot;
+  if (dungeon === null) {
+    return null;
+  }
+  if (slot.state !== "open") {
+    return (
+      <p
+        className="flex shrink-0 items-center justify-center gap-2 rounded-xl border-2 border-[#c9b48c] bg-[#efe0bd] px-3 py-2.5 text-sm font-bold text-[#5b4632]"
+        data-testid="dungeon-locked"
+      >
+        <GlyphIcon glyph="lock" className="size-4 text-[#7a5310]" />
+        {tr("town.opensAtLevel", { level: slot.unlockLevel })}
+      </p>
+    );
+  }
+  const name = tr(`dungeons.${dungeon.id}.name`);
+  return (
+    <GameButton
+      ref={barRef}
+      intent="gold"
+      size="lg"
+      autoFocus
+      aria-label={tr("dungeons.fightLabel", { name })}
+      className="font-display w-full shrink-0 tracking-[0.04em] [@media(max-height:500px)]:min-h-11"
+      data-testid="dungeon-fight-bar"
+      onPress={onOpen}
+    >
+      {tr("campaign.panel.fight")}
+    </GameButton>
+  );
+};
+
+/**
  * The Dungeons screen (GDD 8.4, 11.1): the inside of the cave. The Dungeon
  * tabs and the Balance Plate are at the top. Under them, the notice board
- * with the wanted posters of the Bosses and the Front strip, and the rail
- * with the rewards, the Deck and Fight. Fight has the focus when the screen
- * opens, so a repeat win is Town, cave, Enter.
+ * with the wanted posters of the Bosses and the Front strip, and the one gold
+ * Fight under it, which opens the Dungeon Panel: the rewards, the Deck and
+ * the Fight of the Battle. The Fight bar has the focus when the screen opens,
+ * so a repeat win is Town, cave, Enter (the panel), Enter (Fight).
  */
 export const DungeonsScreen = ({
   onStart,
@@ -180,10 +232,13 @@ export const DungeonsScreen = ({
   const [selected, setSelected] = useState<Key>(() =>
     String(firstShownDungeon(slots))
   );
-  const [editing, setEditing] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const bar = useRef<HTMLButtonElement | null>(null);
   const disabled = slots.flatMap((slot) =>
     slot.state === "later" ? [String(slot.number)] : []
   );
+  const shown =
+    slots.find((slot) => String(slot.number) === selected) ?? undefined;
   return (
     <main
       aria-label={tr("dungeons.label")}
@@ -194,7 +249,11 @@ export const DungeonsScreen = ({
       <BalancePlate balances={balances} />
       <Tabs
         selectedKey={selected}
-        onSelectionChange={setSelected}
+        onSelectionChange={(key) => {
+          // The panel belongs to the Dungeon that opened it.
+          setPreparing(false);
+          setSelected(key);
+        }}
         disabledKeys={disabled}
       >
         <TabList
@@ -214,21 +273,29 @@ export const DungeonsScreen = ({
             key={slot.number}
             id={String(slot.number)}
             className={cn(
-              "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[92px] left-1/2 grid w-[min(calc(100vw-1.5rem),1180px)] -translate-x-1/2 grid-cols-[minmax(0,1fr)_clamp(19rem,46%,34rem)] items-center gap-4 outline-none",
-              "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:grid-cols-[minmax(0,1fr)_minmax(15rem,17rem)] [@media(max-height:500px)]:gap-2"
+              "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[92px] left-1/2 flex w-[min(calc(100vw-1.5rem),1180px)] -translate-x-1/2 flex-col items-center outline-none",
+              "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))]"
             )}
-            data-testid={`dungeon-panel-${slot.number}`}
+            data-testid={`dungeon-place-${slot.number}`}
           >
-            <NoticeBoard slot={slot} />
-            <DungeonRail
-              slot={slot}
-              onStart={onStart}
-              onEditDecks={() => setEditing(true)}
-            />
+            {/* The board and its Fight take only the width of the posters, so that the cave shows around them. */}
+            <div className="flex min-h-0 w-fit max-w-full flex-1 flex-col gap-3 [@media(max-height:500px)]:gap-2">
+              <NoticeBoard slot={slot} />
+              <BoardActions
+                slot={slot}
+                barRef={bar}
+                onOpen={() => setPreparing(true)}
+              />
+            </div>
           </TabPanel>
         ))}
       </Tabs>
-      <DeckDialog isOpen={editing} onOpenChange={setEditing} />
+      <DungeonPanel
+        slot={preparing ? (shown ?? null) : null}
+        from={bar}
+        onClose={() => setPreparing(false)}
+        onStart={onStart}
+      />
     </main>
   );
 };

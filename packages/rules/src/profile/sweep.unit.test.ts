@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { getCard } from "../content/cards";
 import { newProfile } from "./new-profile";
 import type { Profile } from "./schema";
-import { applyStageResult, FIRST_PACK } from "./stage-result";
+import { applyStageResult } from "./stage-result";
 import type { StageResultInput } from "./stage-result";
 import { applyCampaignSweep, MAX_SWEEP_TICKETS } from "./sweep";
 import type { CampaignSweepInput } from "./sweep";
@@ -195,18 +195,20 @@ describe("applyCampaignSweep: rewards (ADR-0035)", () => {
     );
   });
 
-  it("adds the First Pack when the level goes to the Packs unlock", () => {
-    // Each repeat win of Stage 1-4 gives 40 XP: 3 Tickets take 100 XP to level 2.
+  it("gives no XP, so the level does not change (ADR-0049)", () => {
     const { profile, rewards } = applyCampaignSweep(
-      { ...ready("1-4"), xp: 100 },
-      sweep("1-4", 3)
+      { ...ready("1-10"), xp: 150 },
+      sweep("1-10", MAX_SWEEP_TICKETS)
     );
-    expect(rewards.levelBefore).toBe(1);
-    expect(rewards.levelAfter).toBe(2);
-    expect(rewards.unopenedPacks).toEqual([FIRST_PACK]);
-    expect(profile.unopenedPacks).toEqual([FIRST_PACK]);
-    const again = applyCampaignSweep(profile, sweep("1-4", 1));
-    expect(again.rewards.unopenedPacks).toEqual([]);
+    expect(rewards.xp).toBe(0);
+    expect(profile.xp).toBe(150);
+    expect([rewards.levelBefore, rewards.levelAfter]).toEqual([1, 1]);
+    expect(rewards.unopenedPacks).toEqual([]);
+  });
+
+  it("gives ⅓ of the Coin of a win for each Ticket, rounded down", () => {
+    const { rewards } = applyCampaignSweep(ready("1-10"), sweep("1-10", 3));
+    expect(rewards.coin).toBe(3 * 40);
   });
 });
 

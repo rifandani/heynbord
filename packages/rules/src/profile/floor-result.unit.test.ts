@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { BOSS_FLOOR_COSMETICS } from "../content/cosmetics";
 import { floorFirstWinReward } from "../content/heynspire";
 import {
   applyFloorResult,
@@ -106,6 +107,40 @@ describe("applyFloorResult: a win (Economy 2.3)", () => {
     expect(profile.essence).toBe(before.essence + 150);
     expect(profile.heynstones).toBe(before.heynstones + 50);
     expect(profile.forgeStones).toMatchObject({ epic: 2, legendary: 1 });
+  });
+
+  it("gives the Earn-only Cosmetic of a Boss Floor win (Economy 2.3)", () => {
+    const before = opened(9);
+    const first = applyFloorResult(before, win(10));
+    expect(first.rewards.cosmetic).toBe("earnOnly.wardenSash");
+    expect(first.profile.cosmetics).toEqual(["earnOnly.wardenSash"]);
+    // The Player can only fight the Current Floor, so the Cosmetic comes
+    // with the Boss Floor on the way.
+    let player = opened(0);
+    let cosmetic: string | null = null;
+    for (let floor = 1; floor <= 50; floor += 1) {
+      const result = applyFloorResult(player, win(floor));
+      player = result.profile;
+      ({ cosmetic } = result.rewards);
+      if (floor % 10 === 0) {
+        expect(result.rewards.cosmetic, `Floor ${floor}`).not.toBeNull();
+        expect(player.cosmetics).toEqual(
+          BOSS_FLOOR_COSMETICS.slice(0, floor / 10)
+        );
+      } else {
+        expect(result.rewards.cosmetic, `Floor ${floor}`).toBeNull();
+      }
+    }
+    expect(cosmetic).toBe("earnOnly.spireDawn");
+  });
+
+  it("gives no Cosmetic on a normal Floor and on a loss", () => {
+    const normal = applyFloorResult(opened(4), win(5));
+    expect(normal.rewards.cosmetic).toBeNull();
+    expect(normal.profile.cosmetics).toEqual([]);
+    const lost = applyFloorResult(opened(9), loss(10));
+    expect(lost.rewards.cosmetic).toBeNull();
+    expect(lost.profile.cosmetics).toEqual([]);
   });
 
   it("gives the reward of Floor 50, then has no Current Floor", () => {

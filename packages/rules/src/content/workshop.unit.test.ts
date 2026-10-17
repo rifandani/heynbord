@@ -60,16 +60,16 @@ describe("Extract and Craft (Economy 3.3)", () => {
     });
   });
 
-  it("costs the Essence of the Economy table for Craft, and Legendary has no cost", () => {
+  it("costs the Essence of the Economy table for Craft, and Legendary has a cost (ADR-0050)", () => {
     expect(CRAFT_ESSENCE).toEqual({
       common: 40,
       uncommon: 120,
       rare: 400,
       epic: 1400,
-      legendary: null,
+      legendary: 4800,
     });
     expect(craftEssence({ baseRank: "uncommon" })).toBe(120);
-    expect(craftEssence({ baseRank: "legendary" })).toBeNull();
+    expect(craftEssence({ baseRank: "legendary" })).toBe(4800);
   });
 
   it("costs more to Craft a copy than Extract gives for it", () => {

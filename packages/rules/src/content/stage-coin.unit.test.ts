@@ -7,17 +7,18 @@ describe("stageCoin (Economy 2.1)", () => {
   const stage = getStage("1-2");
   const boss = getStage("1-10");
 
-  it("gives the Coin of the Region for a win", () => {
-    expect(stageCoin(stage, "win")).toBe(60);
+  it("gives ⅓ of the Coin of the Region for a Repeat win, rounded down", () => {
+    expect(stageCoin(stage, "win")).toBe(20);
+    expect(stageCoin({ ...stage, region: 2 }, "win")).toBe(33);
   });
 
   it("gives × 3 for the first win", () => {
     expect(stageCoin(stage, "firstWin")).toBe(180);
   });
 
-  it("gives × 2 for a Boss Stage, also for its first win and a loss", () => {
+  it("gives × 2 for a Boss Stage, also for its first win, a Repeat win and a loss", () => {
     expect(boss.boss).toBe(true);
-    expect(stageCoin(boss, "win")).toBe(120);
+    expect(stageCoin(boss, "win")).toBe(40);
     expect(stageCoin(boss, "firstWin")).toBe(360);
     expect(stageCoin(boss, "loss")).toBe(12);
   });
@@ -28,10 +29,10 @@ describe("stageCoin (Economy 2.1)", () => {
 
   it("uses the Coin of each Region", () => {
     expect(
-      [1, 2, 3].map((region) =>
-        stageCoin({ ...stage, region, boss: false }, "win")
+      [1, 2, 3, 4, 5].map((region) =>
+        stageCoin({ ...stage, region, boss: false }, "firstWin")
       )
-    ).toEqual([60, 100, 150]);
+    ).toEqual([180, 300, 450, 600, 750]);
   });
 });
 

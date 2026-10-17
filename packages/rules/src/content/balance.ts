@@ -27,12 +27,15 @@ const flagPoints = (on: true | undefined, points: number): number =>
 
 /**
  * Keyword points at a Rank (GDD 13). A card uses its Base Rank. Charge N = N × 1.
+ * Heroic N = N × 2 (ADR-0048).
  * Bleed N = N × 1. Hobble N = N × 1. Knockback N = N × 3. Rebirth = 5.
  * Sabotage N = N × 4. Swarm N = N × 1. Unique and Wall use 0 points. Summon
  * has its own points: `summonPoints`. The Base Speed and the Base Range are
  * free (ADR-0030): Swift = 2, Fleet = 4, Heavy = −2, Mid-range = 1,
  * Long-range = 2 and Extreme-range = 3, the old 2 points for each Square of
  * Speed and 1 point for each Square of Range.
+ * The Specialist Keywords (ADR-0050): Bolt N = N × 3, Iron Guard = 6,
+ * Soul Harvest = 5, Hero's Bane = 4, Spawnbane N = N × 2 and Vampirism = 6.
  */
 const keywordPoints = (keywords: TokenKeywords, rank: RankId): number => {
   const valueAtRank = (amount: KeywordAmount | undefined) =>
@@ -62,7 +65,13 @@ const keywordPoints = (keywords: TokenKeywords, rank: RankId): number => {
     flagPoints(keywords.retaliate, 4) +
     stackPoints(keywords.sabotage ?? 0, 4) +
     stackPoints(valueAtRank(keywords.swarm), 1) +
-    flagPoints(keywords.trample, 3)
+    flagPoints(keywords.trample, 3) +
+    stackPoints(valueAtRank(keywords.bolt), 3) +
+    flagPoints(keywords.ironGuard, 6) +
+    flagPoints(keywords.soulHarvest, 5) +
+    flagPoints(keywords.herosBane, 4) +
+    stackPoints(valueAtRank(keywords.spawnbane), 2) +
+    flagPoints(keywords.vampirism, 6)
   );
 };
 

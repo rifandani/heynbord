@@ -84,7 +84,7 @@ export type Fx =
 /** The ring of a Rebirth: the pale Undead spirit light. */
 const REBORN_RING = "#c4fbef";
 
-/** The ring of a bonus Attack (AttackGained): the war gold of Rally. */
+/** The ring of a bonus Attack (AttackGained, HeroicGained): the war gold of Rally. */
 const RALLY_RING = "#ffd75a";
 
 /** The ring of a Cleanse (DebuffsRemoved): a clean white light. */
@@ -402,11 +402,13 @@ const unitLightFx = (
           ]
         : [];
     }
-    case "DebuffsRemoved": {
+    case "DebuffsRemoved":
+    case "SoulHarvestGained": {
+      // Soul Harvest uses the war gold of Rally; a Cleanse uses a clean white light.
+      const color =
+        event._tag === "SoulHarvestGained" ? RALLY_RING : CLEANSE_RING;
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
-      return at
-        ? [{ kind: "ring", color: CLEANSE_RING, x: at.x, z: at.z, start: time }]
-        : [];
+      return at ? [{ kind: "ring", color, x: at.x, z: at.z, start: time }] : [];
     }
     case "UnitReborn": {
       // A pale ring and the heal light when the Unit gets up again.
@@ -494,9 +496,10 @@ export const fxForEvent = (
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
       return at ? [impactFx("bulwark", at, time, speed)] : [];
     }
-    case "AttackGained": {
-      // Call to Arms: a ring of the war gold of Rally. The Attack number at
-      // the feet shows the new value.
+    case "AttackGained":
+    case "HeroicGained": {
+      // Call to Arms and Heroic: a ring of the war gold of Rally. The Attack
+      // number at the feet shows the new value.
       const at = worldOf(after, { _tag: "Unit", unitId: event.unitId });
       return at
         ? [{ kind: "ring", color: RALLY_RING, x: at.x, z: at.z, start: time }]

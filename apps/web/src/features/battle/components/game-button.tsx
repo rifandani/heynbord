@@ -1,3 +1,4 @@
+import type { Ref } from "react";
 import type { ButtonProps } from "react-aria-components";
 import { Button } from "react-aria-components";
 import { tv } from "tailwind-variants";
@@ -36,6 +37,8 @@ export const GameButton = ({
   readonly intent?: "gold" | "wood" | "ghost";
   readonly size?: "sm" | "md" | "lg" | "icon";
   readonly className?: string;
+  /** The button takes a ref, so that a sheet can come up out of it (the Fight bar). */
+  readonly ref?: Ref<HTMLButtonElement>;
 }) => (
   <Button
     {...props}

@@ -14,26 +14,113 @@ import {
   useCardPeek,
 } from "@/features/deck/components/use-card-peek";
 import type { PoolFilter } from "@/features/deck/deck";
-import type { WorkshopTile } from "@/features/workshop/workshop";
+import { useCoinFormat } from "@/features/packs/use-coin-format";
+import { BalanceIcon } from "@/features/town/components/balance-icon";
+import type {
+  Station,
+  StationContext,
+  WorkshopTile,
+} from "@/features/workshop/workshop";
+import { craftState, isTileReady } from "@/features/workshop/workshop";
 
 /**
- * The small anvil on a tile with a pair below Legendary: a Combine is near.
- * It sits on the bottom edge of the frame, between Attack and HP, so that it
- * never covers the Countdown or the emblem.
+ * The gold chip of a tile that the station can act on. It sits in the strip
+ * under the frame, so that it never covers the Attack, the HP or the art.
  */
-const PairMark = () => (
-  <span
-    className="absolute -bottom-[0.5em] left-1/2 z-10 grid size-[2.2em] -translate-x-1/2 place-items-center rounded-full border-[0.16em] border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] shadow-[0_0.12em_0.25em_rgba(0,0,0,0.6)]"
-    data-testid="workshop-pair"
-    aria-hidden
-  >
-    <GlyphIcon glyph="anvil" className="size-[1.45em]" />
-  </span>
-);
+const markClassName =
+  "flex h-[1.75em] items-center gap-[0.3em] rounded-full border-[0.14em] border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-[0.6em] text-[1.05em] leading-none font-black whitespace-nowrap text-[#2a1a05] tabular-nums shadow-[0_0.12em_0.25em_rgba(0,0,0,0.6)]";
 
-/** The words that a screen reader says for a tile. */
-const useTileWords = () => {
+/** A pair below Legendary: the Combine station can act. */
+const PairMark = () => {
   const { tr } = useGameText();
+  return (
+    <span className={markClassName} data-testid="workshop-pair" aria-hidden>
+      <GlyphIcon glyph="anvil" className="size-[1.2em] shrink-0" />
+      {tr("workshop.pairMark")}
+    </span>
+  );
+};
+
+/** The Essence cost of a Craft that the Player can do now. */
+const CraftMark = ({ cost }: { readonly cost: number }) => {
+  const { format } = useCoinFormat();
+  return (
+    <span
+      className={markClassName}
+      data-testid="workshop-craft-mark"
+      aria-hidden
+    >
+      <BalanceIcon kind="essence" className="size-[1.2em] shrink-0" />
+      {format(cost)}
+    </span>
+  );
+};
+
+/** The spare copies that the Extract station can melt without a change to a Deck. */
+const SpareMark = ({ count }: { readonly count: number }) => {
+  const { tr } = useGameText();
+  return (
+    <span
+      className={markClassName}
+      data-testid="workshop-spare-mark"
+      aria-hidden
+    >
+      <GlyphIcon glyph="melt" className="size-[1.15em] shrink-0" />
+      {tr("workshop.spareMark", { count })}
+    </span>
+  );
+};
+
+/** The mark of a tile in a station, or `null` when the station cannot act on it. */
+const StationMark = ({
+  tile,
+  station,
+  context,
+}: {
+  readonly tile: WorkshopTile;
+  readonly station: Station;
+  readonly context: StationContext;
+}) => {
+  if (!isTileReady(tile, station, context)) {
+    return null;
+  }
+  if (station === "combine") {
+    return <PairMark />;
+  }
+  if (station === "extract") {
+    return <SpareMark count={tile.spare} />;
+  }
+  const craft = craftState(
+    getCard(tile.cardId),
+    context.level,
+    context.essence
+  );
+  return craft.kind === "ready" ? <CraftMark cost={craft.cost} /> : null;
+};
+
+/** The words that a screen reader says for a tile in a station. */
+const useTileWords = (station: Station, context: StationContext) => {
+  const { tr } = useGameText();
+  const { format } = useCoinFormat();
+  const stationWords = (tile: WorkshopTile): string | null => {
+    if (!isTileReady(tile, station, context)) {
+      return null;
+    }
+    if (station === "combine") {
+      return tr("workshop.pairReady");
+    }
+    if (station === "extract") {
+      return tr("workshop.spareCopies", { count: tile.spare });
+    }
+    const craft = craftState(
+      getCard(tile.cardId),
+      context.level,
+      context.essence
+    );
+    return craft.kind === "ready"
+      ? tr("workshop.craftMark", { essence: format(craft.cost) })
+      : null;
+  };
   return (tile: WorkshopTile) => {
     const owned = tile.copies.filter((row) => row.copies > 0);
     const copies =
@@ -47,11 +134,7 @@ const useTileWords = () => {
               })
             )
             .join(", ");
-    return [
-      tr(`cards.${tile.cardId}.name`),
-      copies,
-      tile.pairReady ? tr("workshop.pairReady") : null,
-    ]
+    return [tr(`cards.${tile.cardId}.name`), copies, stationWords(tile)]
       .filter((part) => part !== null)
       .join(". ");
   };
@@ -82,24 +165,31 @@ const EmptyGrid = ({
 };
 
 /**
- * One tile of the grid. Hover, keyboard focus or a long press shows its Card
- * Details at its highest owned Rank, as in the Deck builder. They open beside
- * the card, out of the grid, so that the scroll of the grid never cuts them.
+ * One tile of the grid. A tile that the station cannot act on is darker and
+ * less saturated; a tile that it can act on has the mark of the station. Hover,
+ * keyboard focus or a long press shows its Card Details at its highest owned
+ * Rank, as in the Deck builder. They open beside the card, out of the grid, so
+ * that the scroll of the grid never cuts them.
  */
 const Tile = ({
   tile,
+  station,
+  context,
   words,
   bind,
   peek,
   onHide,
 }: {
   readonly tile: WorkshopTile;
+  readonly station: Station;
+  readonly context: StationContext;
   readonly words: string;
   readonly bind: (target: Peek) => object;
   readonly peek: ShownPeek | null;
   readonly onHide: () => void;
 }) => {
   const frame = useRef<HTMLSpanElement>(null);
+  const ready = isTileReady(tile, station, context);
   const target: Peek = {
     cardId: tile.cardId,
     rank: tile.rank,
@@ -113,6 +203,7 @@ const Tile = ({
       className="group flex cursor-pointer flex-col items-center gap-1 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
       data-testid={`workshop-tile-${tile.cardId}`}
       data-rank={tile.rank}
+      data-ready={ready || undefined}
     >
       <span
         ref={frame}
@@ -123,11 +214,15 @@ const Tile = ({
           rank={tile.rank}
           countdown={getCard(tile.cardId).countdown}
           className={cn(
-            tile.copies.every((row) => row.copies === 0) &&
-              "brightness-[0.82] saturate-[0.55]"
+            "transition-[filter] duration-300",
+            !ready && "brightness-[0.82] saturate-[0.55]"
           )}
         />
-        {tile.pairReady ? <PairMark /> : null}
+      </span>
+      {/* The strip of the station mark: the same height on each tile, so
+          that the rows stay even. */}
+      <span className="flex h-[1.9em] items-center justify-center">
+        <StationMark tile={tile} station={station} context={context} />
       </span>
       {peek && isSamePeek(peek, target) ? (
         <Popover
@@ -153,12 +248,16 @@ const Tile = ({
 
 /**
  * The Workshop grid (GDD 7.4): one tile for each Discovered card, at its
- * highest owned Rank. The Rank panel shows its copies of each Rank. The arrow
- * keys move in the grid, and Enter or a press selects a card for the Rank panel.
- * Hover, keyboard focus or a long press shows the Card Details of a tile.
+ * highest owned Rank, in the same order in all the stations. The station
+ * marks the tiles that it can act on and darkens the others. The arrow keys
+ * move in the grid, and Enter or a press selects a card for the panel of the
+ * station. Hover, keyboard focus or a long press shows the Card Details of a
+ * tile.
  */
 export const WorkshopGrid = ({
   tiles,
+  station,
+  context,
   selected,
   onSelect,
   filter,
@@ -166,6 +265,8 @@ export const WorkshopGrid = ({
   onShowAll,
 }: {
   readonly tiles: readonly WorkshopTile[];
+  readonly station: Station;
+  readonly context: StationContext;
   readonly selected: string | null;
   readonly onSelect: (cardId: string) => void;
   readonly filter: PoolFilter;
@@ -173,7 +274,7 @@ export const WorkshopGrid = ({
   readonly onShowAll: () => void;
 }) => {
   const { tr } = useGameText();
-  const words = useTileWords();
+  const words = useTileWords(station, context);
   const { peek, bind, hide } = useCardPeek();
   return (
     <GridList
@@ -182,8 +283,9 @@ export const WorkshopGrid = ({
       aria-label={tr("workshop.grid")}
       layout="grid"
       items={tiles}
-      // The tiles render again when the Card Details change.
-      dependencies={[peek]}
+      // The tiles render again when the Card Details, the station or the
+      // balances change.
+      dependencies={[peek, station, context]}
       selectionMode="single"
       disallowEmptySelection
       selectedKeys={selected === null ? [] : [selected]}
@@ -211,6 +313,8 @@ export const WorkshopGrid = ({
       {(tile) => (
         <Tile
           tile={tile}
+          station={station}
+          context={context}
           words={words(tile)}
           bind={bind}
           peek={peek}

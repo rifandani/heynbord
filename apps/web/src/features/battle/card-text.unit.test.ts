@@ -202,7 +202,7 @@ describe("cardText (CRD-08)", () => {
         resolve(keyword.rule),
       ])
     ).toEqual([
-      ["Heroic 1", "+1 damage when this Unit attacks a Hero."],
+      ["Heroic 1", "After this Unit attacks an enemy Unit, it gets +1 Attack."],
       [
         "Flying",
         "Moves over all Units except enemy Flying Unit. It stops in an empty Square.",
@@ -524,7 +524,7 @@ describe("cardText (CRD-08)", () => {
     ]);
     expect(names("orc.warchiefGrukka", "epic")).toEqual([
       "Charge 2",
-      "Heroic 2",
+      "Heroic 3",
       "Swift",
       "Unique",
     ]);
@@ -610,6 +610,7 @@ describe("unitStatusText", () => {
     bonusAttackTurns: 0,
     bonusRange: 0,
     bonusRangeTurns: 0,
+    heroicBonus: 0,
     exposed: 0,
     exposedTurns: 0,
     burn: 0,

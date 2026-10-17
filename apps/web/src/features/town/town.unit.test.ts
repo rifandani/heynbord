@@ -163,7 +163,7 @@ describe("overlaps", () => {
 });
 
 describe("TOWN_SHORTCUTS", () => {
-  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Workshop, the Packs, the Hero screen and the Achievements screen", () => {
+  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Workshop, the Packs, the Hero screen, the Achievements screen and the Bazaar", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => shortcut.screen !== null).map(
         (shortcut) => shortcut.id
@@ -177,6 +177,7 @@ describe("TOWN_SHORTCUTS", () => {
       "packs",
       "hero",
       "achievements",
+      "bazaar",
     ]);
     expect(TOWN_SHORTCUTS[0]?.id).toBe("town");
     expect(new Set(TOWN_SHORTCUTS.map((shortcut) => shortcut.id)).size).toBe(
@@ -196,7 +197,7 @@ describe("the Handbook shortcut", () => {
     expect(TOWN_SHORTCUTS.at(-2)?.id).toBe("bazaar");
   });
 
-  it("at level 2, locks only the shortcuts to screens that do not exist yet", () => {
+  it("at level 2, locks only the shortcuts with a level or stage lock", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => !isLocked(shortcut, at(2))).map(
         (shortcut) => shortcut.id
@@ -207,6 +208,7 @@ describe("the Handbook shortcut", () => {
       "deck",
       "packs",
       "achievements",
+      "bazaar",
       "handbook",
     ]);
   });
@@ -286,10 +288,13 @@ describe("level locks (GDD 11.4)", () => {
     expect(dungeons && isLocked(dungeons, at(10))).toBe(false);
   });
 
-  it("gives no level to a screen that does not exist yet: it opens later", () => {
+  it("opens the Bazaar at any Player level, with no lock (11.4)", () => {
     const bazaar = TOWN_SHORTCUTS.find((shortcut) => shortcut.id === "bazaar");
-    expect(bazaar && isLocked(bazaar, at(30))).toBe(true);
+    expect(bazaar && isLocked(bazaar, at(1))).toBe(false);
+    expect(bazaar && townLock(bazaar, at(1))).toBeNull();
     expect(bazaar && opensAtLevel(bazaar, 1)).toBeNull();
+    // The screen exists in v1, so the shortcut opens it.
+    expect(bazaar?.screen).toBe("bazaar");
   });
 });
 

@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
-  HEYNSTONE_SOURCES,
-  HEYNSTONE_SUPPLY,
-} from "./heynstones";
+import { BAZAAR_CATALOG_HEYNSTONES } from "./cosmetics";
+import { HEYNSTONE_SOURCES, HEYNSTONE_SUPPLY } from "./heynstones";
 
 describe("Heynstone supply (Economy 2.6, 3.5)", () => {
   it("has the one-time sources of the Economy table", () => {
@@ -16,9 +13,9 @@ describe("Heynstone supply (Economy 2.6, 3.5)", () => {
 
   it("gives 1,250 Heynstones, about 52% of the Bazaar catalog", () => {
     expect(HEYNSTONE_SUPPLY).toBe(1250);
-    expect(BAZAAR_CATALOG_HEYNSTONES_ESTIMATE).toBe(2400);
+    expect(BAZAAR_CATALOG_HEYNSTONES).toBe(2400);
     expect(
-      Math.round((HEYNSTONE_SUPPLY / BAZAAR_CATALOG_HEYNSTONES_ESTIMATE) * 100)
+      Math.round((HEYNSTONE_SUPPLY / BAZAAR_CATALOG_HEYNSTONES) * 100)
     ).toBe(52);
   });
 });

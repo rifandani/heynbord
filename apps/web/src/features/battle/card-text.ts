@@ -52,6 +52,7 @@ export interface KeywordText {
 /** The Keywords with a value N (GDD 5.4), in the order of the Details Panel. */
 export const VALUE_KEYWORDS = [
   "bleed",
+  "bolt",
   "bulwark",
   "charge",
   "heroic",
@@ -61,6 +62,7 @@ export const VALUE_KEYWORDS = [
   "rally",
   "regenerate",
   "sabotage",
+  "spawnbane",
   "swarm",
 ] as const;
 /** The Keywords with no value (GDD 5.4). */
@@ -71,15 +73,19 @@ export const FLAG_KEYWORDS = [
   "fleet",
   "flying",
   "heavy",
+  "herosBane",
+  "ironGuard",
   "longRange",
   "midRange",
   "pivot",
   "poison",
   "rebirth",
   "retaliate",
+  "soulHarvest",
   "swift",
   "trample",
   "unique",
+  "vampirism",
   "wall",
 ] as const;
 /** The Keywords with a Token X as their value: Summon X (GDD 5.4). */

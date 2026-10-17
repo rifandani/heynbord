@@ -208,13 +208,13 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
   {
     id: "collection.half",
     category: "progress",
-    goal: { kind: "discovered", cards: 65 },
+    goal: { kind: "discovered", cards: 68 },
     reward: heynstones(20),
   },
   {
     id: "collection.all",
     category: "progress",
-    goal: { kind: "discovered", cards: 130 },
+    goal: { kind: "discovered", cards: 136 },
     reward: { kind: "cosmetic" },
   },
   {

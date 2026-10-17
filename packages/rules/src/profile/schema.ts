@@ -1,6 +1,7 @@
 import { Schema } from "effect";
 
 import { CollectionEntry } from "../collection/deck-building";
+import { CosmeticId } from "../content/cosmetics";
 import { MAX_DECK_SLOTS, STARTING_DECK_SLOTS } from "../content/deck-slots";
 import { ForgeStones } from "../content/forge-stones";
 import { HEYNSPIRE_FLOORS } from "../content/heynspire";
@@ -13,7 +14,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 9;
+export const PROFILE_SCHEMA_VERSION = 10;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -148,6 +149,12 @@ export const Profile = Schema.Struct({
    * exist (Achievements 1.6).
    */
   claimedAchievements: Schema.Array(Schema.String),
+  /**
+   * The IDs of the Cosmetics that the Player owns, bought in the Bazaar or
+   * earned from play (Economy 3.5, ADR-0008). A Cosmetic is permanent: the
+   * Player never sells or loses one.
+   */
+  cosmetics: Schema.Array(CosmeticId),
   tallies: Tallies,
 });
 export type Profile = typeof Profile.Type;

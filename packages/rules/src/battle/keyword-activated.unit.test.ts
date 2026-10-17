@@ -143,13 +143,14 @@ const SCENARIOS = {
   },
   heroic: () => {
     const state = emptyBattle();
-    const brute = attacker(state, "orc.tuskBrute", "player", 11);
+    const brute = attacker(state, "orc.tuskBrute", "player", 4);
+    dummy(state, "enemy", 5);
     return {
       events: resolve(state),
       unitId: brute.id,
       side: "player",
-      value: 2,
-      around: ["UnitAttacked", "DamageDealt"],
+      value: 1,
+      around: ["DamageDealt", "HeroicGained"],
     };
   },
   lastBreath: () => {
@@ -334,6 +335,106 @@ const SCENARIOS = {
       unitId: rhino.id,
       side: "player",
       around: ["UnitDied", "DamageDealt"],
+    };
+  },
+  bolt: () => {
+    const state = emptyBattle();
+    const grosh = placeUnit(state, {
+      cardId: "orc.ashcallerGrosh",
+      owner: "player",
+      position: 4,
+    });
+    dummy(state, "enemy", 5);
+    return {
+      events: nextPlayerStart(state),
+      unitId: grosh.id,
+      side: "player",
+      value: 2,
+      around: ["TurnStarted", "DamageDealt"],
+    };
+  },
+  ironGuard: () => {
+    const state = emptyBattle();
+    const aldric = placeUnit(state, {
+      cardId: "human.serAldricStonewall",
+      owner: "player",
+      position: 4,
+      hp: 20,
+      maxHp: 20,
+    });
+    attacker(state, "human.militiaRecruit", "enemy", 5, {
+      attack: 6,
+      hp: 20,
+      maxHp: 20,
+    });
+    // The player ends its Turn; the enemy attacks in its own Turn.
+    const enemyTurn = run(state, endTurn).state;
+    return {
+      events: run(enemyTurn, endTurn).events,
+      unitId: aldric.id,
+      side: "player",
+      around: ["UnitAttacked", "DamageDealt"],
+    };
+  },
+  soulHarvest: () => {
+    const state = emptyBattle();
+    const ysolde = placeUnit(state, {
+      cardId: "undead.paleCantorYsolde",
+      owner: "player",
+      position: 4,
+    });
+    dummy(state, "enemy", 5, { hp: 1, maxHp: 1 });
+    return {
+      events: resolve(state),
+      unitId: ysolde.id,
+      side: "player",
+      around: ["UnitDied", "SoulHarvestGained"],
+    };
+  },
+  herosBane: () => {
+    const state = emptyBattle();
+    const grix = placeUnit(state, {
+      cardId: "goblin.grixRatwhistle",
+      owner: "player",
+      position: 4,
+    });
+    return {
+      events: nextPlayerStart(state),
+      unitId: grix.id,
+      side: "player",
+      around: ["TurnStarted", "DamageDealt"],
+    };
+  },
+  spawnbane: () => {
+    const state = emptyBattle();
+    const saelith = placeUnit(state, {
+      cardId: "elf.wardenSaelith",
+      owner: "enemy",
+      position: 4,
+    });
+    giveHand(state, "player", [["human.militiaRecruit", 0]]);
+    return {
+      events: run(state, play(square(0, 1))).events,
+      unitId: saelith.id,
+      side: "enemy",
+      value: 2,
+      around: ["UnitSummoned", "DamageDealt"],
+    };
+  },
+  vampirism: () => {
+    const state = emptyBattle();
+    const gorehorn = placeUnit(state, {
+      cardId: "feral.gorehornRedMaw",
+      owner: "player",
+      position: 4,
+      hp: 3,
+    });
+    dummy(state, "enemy", 5);
+    return {
+      events: resolve(state),
+      unitId: gorehorn.id,
+      side: "player",
+      around: ["DamageDealt", "UnitHealed"],
     };
   },
 } satisfies { readonly [K in ActivatedKeyword]: () => Scenario };
@@ -541,10 +642,9 @@ describe("KeywordActivated: no effect, so no event", () => {
     expect(activations(resolve(state))).toEqual([]);
   });
 
-  it("Heroic: the Unit attacks a Unit, not a Hero", () => {
+  it("Heroic: the Unit attacks a Hero, not a Unit", () => {
     const state = emptyBattle();
-    attacker(state, "orc.tuskBrute", "player", 4);
-    dummy(state, "enemy", 5);
+    attacker(state, "orc.tuskBrute", "player", 11);
     expect(activations(resolve(state))).toEqual([]);
   });
 

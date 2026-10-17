@@ -1,5 +1,6 @@
 import type {
   CardDefinition,
+  ClassId,
   CreatureCardDefinition,
   DamageType,
   RaceId,
@@ -292,6 +293,8 @@ interface CreatureInfo {
   readonly speed: number;
   readonly attack: number;
   readonly hp: number;
+  /** The Class of a Specialist (ADR-0050). */
+  readonly classId?: ClassId;
 }
 
 const cardInfo = (
@@ -305,6 +308,7 @@ const cardInfo = (
   speed: keywordSpeed(card.keywords),
   attack: scaleForRank(card.attack, rank),
   hp: scaleForRank(card.hp, rank),
+  classId: card.class,
 });
 
 const tokenInfo = (tokenId: TokenId, rank: RankId): CreatureInfo => {
@@ -359,6 +363,12 @@ const CreatureBody = ({
             <>
               {" "}
               · <TokenName />
+            </>
+          ) : null}
+          {info.classId ? (
+            <>
+              {" "}
+              · {tr("battle.specialist")} · {tr(`classes.${info.classId}`)}
             </>
           ) : null}
         </span>

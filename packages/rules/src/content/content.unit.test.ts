@@ -24,6 +24,7 @@ import {
   STARTER_DECKS,
 } from "./decks";
 import { DUNGEON_REWARDS, DUNGEONS, getDungeon } from "./dungeons";
+import { FLOORS } from "./floors";
 import {
   isRangedRange,
   keywordRange,
@@ -246,8 +247,8 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(new Set(CARDS.map((card) => card.id)).size).toBe(CARDS.length);
   });
 
-  it("has 130 cards: 6 Races and 4 Classes", () => {
-    expect(CARDS).toHaveLength(130);
+  it("has 136 cards: 6 Races and 4 Classes", () => {
+    expect(CARDS).toHaveLength(136);
     const races = new Set(
       CARDS.flatMap((card) => (card.kind === "creature" ? [card.race] : []))
     );
@@ -822,9 +823,32 @@ describe("card content (CRD-01, technical design 3.5)", () => {
   it("gives Charge N × 1 power points at the Base Rank (GDD 13)", () => {
     // Charge 1: 3/7 is 4/8 at Uncommon. 4 × 2 + 8 + Swift 2 + 1.
     expect(power("orc.howlingCharger")).toBe(19);
-    // Charge 2 at Epic.
-    expect(power("orc.warchiefGrukka")).toBe(27);
-    expect(power("orc.warbandStandardBearer")).toBe(27);
+    // Charge 2 at Epic. Grukka: 3/5 is 5/9 at Epic. 5 × 2 + 9 + Swift 2 + 2 + Heroic 6.
+    expect(power("orc.warchiefGrukka")).toBe(29);
+    expect(power("orc.warbandStandardBearer")).toBe(29);
+  });
+
+  it("gives Heroic N with 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary (ADR-0048)", () => {
+    const heroes = creatures.filter(
+      (card) => card.keywords.heroic !== undefined
+    );
+    expect(heroes.length).toBeGreaterThan(0);
+    const expected = { common: 1, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
+    for (const card of heroes) {
+      for (const rank of RANKS.slice(RANKS.indexOf(card.baseRank))) {
+        expect(
+          keywordValue(card.keywords.heroic, rank),
+          `${card.id} ${rank}`
+        ).toBe(expected[rank]);
+      }
+    }
+  });
+
+  it("gives Heroic N × 2 power points at the Base Rank (ADR-0048)", () => {
+    // Heroic 1: 5/8 at Common. 5 × 2 + 8 + 2.
+    expect(power("orc.tuskBrute")).toBe(20);
+    // Heroic 2: 4/5 is 6/7 at Rare. 6 × 2 + 7 + Fire + 4.
+    expect(power("orc.pyreaxeRavager")).toBe(26);
   });
 
   it("gives Bleed N × 1 power points (GDD 13)", () => {
@@ -965,32 +989,33 @@ const countBy = <K extends string>(
 
 describe("Race shape (GDD 12, ADR-0013)", () => {
   it.each(FULL_RACES)(
-    "gives %s 5 Common, 5 Uncommon, 3 Rare and 2 Epic Creature Cards",
+    "gives %s 5 Common, 5 Uncommon, 3 Rare, 2 Epic and 1 Legendary Creature Cards",
     (race) => {
       expect(countBy(raceCards(race), (card) => card.baseRank)).toEqual({
         common: 5,
         uncommon: 5,
         rare: 3,
         epic: 2,
+        legendary: 1,
       });
     }
   );
 
-  it("gives Elf 11 Physical and 4 Holy cards, Goblin 11 Physical and 4 Fire cards, and Feral and Undead 11 Physical and 4 Frost cards", () => {
+  it("gives Elf 12 Physical and 4 Holy cards, Goblin 12 Physical and 4 Fire cards, and Feral and Undead 12 Physical and 4 Frost cards", () => {
     expect(countBy(raceCards("elf"), (card) => card.damageType)).toEqual({
-      physical: 11,
+      physical: 12,
       holy: 4,
     });
     expect(countBy(raceCards("goblin"), (card) => card.damageType)).toEqual({
-      physical: 11,
+      physical: 12,
       fire: 4,
     });
     expect(countBy(raceCards("feral"), (card) => card.damageType)).toEqual({
-      physical: 11,
+      physical: 12,
       frost: 4,
     });
     expect(countBy(raceCards("undead"), (card) => card.damageType)).toEqual({
-      physical: 11,
+      physical: 12,
       frost: 4,
     });
   });
@@ -1018,15 +1043,147 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
     ]);
   });
 
-  it.each(FULL_RACES)("gives %s one Unique card in its Epic pair", (race) => {
-    const epics = raceCards(race).filter((card) => card.baseRank === "epic");
-    expect(epics).toHaveLength(2);
-    expect(epics.filter((card) => card.keywords.unique)).toHaveLength(1);
+  it.each(FULL_RACES)(
+    "gives %s one Unique card in its Epic pair and one Unique Specialist (ADR-0050)",
+    (race) => {
+      const epics = raceCards(race).filter((card) => card.baseRank === "epic");
+      expect(epics).toHaveLength(2);
+      expect(epics.filter((card) => card.keywords.unique)).toHaveLength(1);
+      const legendary = raceCards(race).filter(
+        (card) => card.baseRank === "legendary"
+      );
+      expect(legendary).toHaveLength(1);
+      expect(legendary[0]?.keywords.unique).toBe(true);
+      expect(
+        creatures.filter(
+          (card) =>
+            card.keywords.unique &&
+            card.baseRank !== "epic" &&
+            card.baseRank !== "legendary"
+        )
+      ).toEqual([]);
+    }
+  );
+});
+
+describe("Specialists (ADR-0050)", () => {
+  const legendaries = creatures.filter((card) => card.baseRank === "legendary");
+
+  it("gives every Base Rank Legendary Creature Card a Class", () => {
+    expect(legendaries).toHaveLength(6);
+    for (const card of legendaries) {
+      expect(card.class).toBeDefined();
+    }
+  });
+
+  it("gives one Specialist to each Race", () => {
+    expect(legendaries.map((card) => card.race).toSorted()).toEqual(
+      FULL_RACES.toSorted()
+    );
+  });
+
+  it("has a Specialist for each Class", () => {
+    const classes = new Set(legendaries.map((card) => card.class));
+    expect(classes).toEqual(new Set(["warrior", "ranger", "mage", "priest"]));
+  });
+
+  it("gives no other Creature Card a Class", () => {
     expect(
       creatures.filter(
-        (card) => card.keywords.unique && card.baseRank !== "epic"
+        (card) => card.class !== undefined && card.baseRank !== "legendary"
       )
     ).toEqual([]);
+  });
+
+  it("is in no Starter Deck, Stage, Dungeon, Floor or main Archetype", () => {
+    const specialistIds = new Set(legendaries.map((card) => card.id));
+    const usesSpecialist = (deck: readonly { cardId: string }[]) =>
+      deck.some((entry) => specialistIds.has(entry.cardId));
+    for (const starter of STARTER_DECKS) {
+      expect(usesSpecialist(starter.deck), starter.id).toBe(false);
+    }
+    for (const stage of STAGES) {
+      expect(usesSpecialist(stage.enemy.deck), stage.id).toBe(false);
+    }
+    for (const dungeon of DUNGEONS) {
+      for (const boss of dungeon.bosses) {
+        expect(usesSpecialist(boss.deck), `${dungeon.id} ${boss.id}`).toBe(
+          false
+        );
+      }
+    }
+    for (const floor of FLOORS) {
+      expect(usesSpecialist(floor.enemy.deck), `floor ${floor.number}`).toBe(
+        false
+      );
+    }
+    // A Specialist Deck is a diagnostic Archetype, so only the main
+    // Archetypes must hold no Specialist (ADR-0050, issue #110).
+    const mains = ARCHETYPES.filter((archetype) => archetype.kind === "main");
+    for (const archetype of mains) {
+      expect(usesSpecialist(archetype.deck), archetype.id).toBe(false);
+    }
+  });
+
+  it("gives each Specialist its own diagnostic Deck (ADR-0050, issue #110)", () => {
+    const specialistIds = new Set(legendaries.map((card) => card.id));
+    const specialistDecks = ARCHETYPES.filter((archetype) =>
+      archetype.deck.some((entry) => specialistIds.has(entry.cardId))
+    );
+    expect(specialistDecks.map((archetype) => archetype.id)).toHaveLength(6);
+    for (const archetype of specialistDecks) {
+      // 1 Deck for each Specialist, valid at the Matchup level: 9 to 14 cards,
+      // a Countdown sum of at most 35, and at most 3 copies of each card.
+      expect(archetype.kind, archetype.id).toBe("diagnostic");
+      const limits = deckSizeLimits(MATCHUP_LEVEL);
+      expect(archetype.deck.length, archetype.id).toBeGreaterThanOrEqual(
+        limits.min
+      );
+      expect(archetype.deck.length, archetype.id).toBeLessThanOrEqual(
+        limits.max
+      );
+      expect(deckCountdown(archetype.deck), archetype.id).toBeLessThanOrEqual(
+        countdownLimit(MATCHUP_LEVEL)
+      );
+      checkDeck(archetype.deck);
+      // Exactly 1 copy of its Specialist, at Legendary.
+      const held = archetype.deck.filter((entry) =>
+        specialistIds.has(entry.cardId)
+      );
+      expect(held, archetype.id).toHaveLength(1);
+      const [deckEntry] = held;
+      if (!deckEntry) {
+        throw new Error(`${archetype.id}: no Specialist in the Deck`);
+      }
+      const specialist = getCard(deckEntry.cardId);
+      expect(specialist.baseRank, archetype.id).toBe("legendary");
+      expect(deckEntry.rank, archetype.id).toBe("legendary");
+      // The Deck delegate Class matches the Class of its Specialist, and it
+      // holds 2 to 5 Skill Cards of that Class (ADR-0050).
+      expect(archetype.classId, archetype.id).toBe(specialist.class);
+      const skills = archetype.deck.filter(
+        (entry) => getCard(entry.cardId).kind === "skill"
+      );
+      expect(
+        skills.length,
+        `${archetype.id} Skill Cards`
+      ).toBeGreaterThanOrEqual(2);
+      expect(skills.length, `${archetype.id} Skill Cards`).toBeLessThanOrEqual(
+        5
+      );
+      for (const entry of skills) {
+        expect(getCard(entry.cardId).class, entry.cardId).toBe(
+          archetype.classId
+        );
+      }
+    }
+    // One Deck for each Specialist, and no Specialist twice.
+    const heldIds = specialistDecks.flatMap((archetype) =>
+      archetype.deck
+        .filter((entry) => specialistIds.has(entry.cardId))
+        .map((entry) => entry.cardId)
+    );
+    expect(heldIds.toSorted()).toEqual([...specialistIds].toSorted());
   });
 });
 
@@ -1045,7 +1202,7 @@ describe("Ranks (GDD 5.3)", () => {
       "legendary",
     ]);
     expect(ranksOf(getCard("human.militiaRecruit"))).toEqual(RANKS);
-    // No v1 card has Base Rank Legendary, but a later card can.
+    // A Specialist (Base Rank Legendary) has only the Legendary Rank (ADR-0050).
     expect(ranksOf({ baseRank: "legendary" })).toEqual(["legendary"]);
   });
 });
@@ -1203,7 +1360,7 @@ describe("Decks and Stages", () => {
     }
   });
 
-  it("marks the promoted Archetypes main, and the other Archetypes diagnostic (Archetypes 2.1, 2.3)", () => {
+  it("marks the promoted Archetypes main, and the other Archetypes diagnostic (Archetypes 2.1, 2.3, 2.4)", () => {
     expect(
       ARCHETYPES.map((archetype) => [archetype.id, archetype.kind])
     ).toEqual([
@@ -1218,6 +1375,12 @@ describe("Decks and Stages", () => {
       ["raidersFull", "diagnostic"],
       ["humanHeavy", "diagnostic"],
       ["humanLight", "diagnostic"],
+      ["serAldricStonewall", "diagnostic"],
+      ["ashcallerGrosh", "diagnostic"],
+      ["grixRatwhistle", "diagnostic"],
+      ["gorehornRedMaw", "diagnostic"],
+      ["wardenSaelith", "diagnostic"],
+      ["paleCantorYsolde", "diagnostic"],
     ]);
     // One Race with the Ranger Skill Cards.
     expect(archetypeGroups("tunnelRats")).toEqual(

@@ -515,6 +515,18 @@ const effectLine = (
         value: event.attack,
       });
     }
+    case "HeroicGained": {
+      return line("heroicBonus", {
+        unit: unitArg(context, event.unitId),
+        value: event.heroicBonus,
+      });
+    }
+    case "SoulHarvestGained": {
+      return line("soulHarvest", {
+        unit: unitArg(context, event.unitId),
+        value: event.soulHarvest,
+      });
+    }
     case "RangeGained": {
       return line("rangeBonus", {
         unit: unitArg(context, event.unitId),

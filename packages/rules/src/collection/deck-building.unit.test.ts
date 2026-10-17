@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { getCard } from "../content/cards";
 import {
   copies,
   countdownLimit,
@@ -16,6 +17,7 @@ import {
   copiesLeft,
   DeckProblem,
   deckProblems,
+  fitsClass,
   isDeckValid,
   removeCopy,
   starterCollection,
@@ -136,6 +138,40 @@ describe("deckProblems", () => {
       DeckProblem.NotOwned({ cardId: "human.ironBulwark", rank: "epic" }),
     ]);
     expect(isDeckValid(input(deck))).toBe(false);
+  });
+
+  it("finds a Specialist of another Class (ADR-0050)", () => {
+    const deck = [
+      ...copies(3, "human.militiaRecruit", "common"),
+      ...copies(1, "orc.ashcallerGrosh", "legendary"),
+      ...copies(1, "human.crossbowGuard", "common"),
+    ];
+    const specialistInput = (classId: DeckInput["classId"]): DeckInput => ({
+      deck,
+      classId,
+      level: 1,
+      collection: [
+        ...COLLECTION,
+        {
+          cardId: "orc.ashcallerGrosh",
+          rank: "legendary",
+          copies: 1,
+        },
+      ],
+    });
+    expect(deckProblems(specialistInput("warrior"))).toEqual([
+      DeckProblem.WrongClass({
+        cardId: "orc.ashcallerGrosh",
+        classId: "mage",
+      }),
+    ]);
+    expect(deckProblems(specialistInput("mage"))).toEqual([]);
+  });
+
+  it("fitsClass refuses a Specialist of another Class", () => {
+    expect(fitsClass(getCard("orc.ashcallerGrosh"), "mage")).toBe(true);
+    expect(fitsClass(getCard("orc.ashcallerGrosh"), "warrior")).toBe(false);
+    expect(fitsClass(getCard("human.militiaRecruit"), "warrior")).toBe(true);
   });
 });
 

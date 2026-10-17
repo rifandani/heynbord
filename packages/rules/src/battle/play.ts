@@ -27,6 +27,7 @@ import {
   isOver,
   ownerOf,
   unitAt,
+  unitDealer,
 } from "./context";
 import { damageHero, damageUnit } from "./damage";
 import { healUnit } from "./heal";
@@ -57,6 +58,33 @@ import { createToken, summon } from "./units";
 const enemyHandOfLane = (ctx: StepContext, side: Side, lane: number) => {
   const enemy = heroOfLane(ctx.state, otherSide(side), lane);
   return { enemy, hand: heroState(ctx.state, enemy).hand };
+};
+
+/**
+ * Spawnbane N (ADR-0050): when an enemy Hero summons a Unit from a Creature
+ * Card, each Unit of the other Side with Spawnbane deals N damage to that
+ * Unit. It comes before the Sabotage and the Summon of the new Unit, so a
+ * Unit that dies does neither. The damage has the Damage Type of the
+ * Spawnbane Unit and applies no Status.
+ */
+const spawnbane = (ctx: StepContext, unit: UnitState): void => {
+  const attackers = ctx.state.units.filter(
+    (candidate) => candidate.owner !== unit.owner && candidate.spawnbane > 0
+  );
+  for (const attacker of attackers) {
+    if (isOver(ctx) || findUnit(ctx.state, unit.id) === undefined) {
+      return;
+    }
+    activateKeyword(ctx, attacker, "spawnbane", attacker.spawnbane);
+    damageUnit(ctx, unit, {
+      amount: attacker.spawnbane,
+      damageType: attacker.damageType,
+      source: "spawnbane",
+      dealer: unitDealer(attacker),
+      crit: 0,
+      noStatus: true,
+    });
+  }
 };
 
 /**
@@ -935,6 +963,7 @@ export const playCard = (
       { readonly _tag: "Square" }
     >;
     const unit = summon(ctx, caster, card, definition, lane, position);
+    spawnbane(ctx, unit);
     const amount = definition.keywords.sabotage ?? 0;
     if (amount > 0) {
       sabotage(ctx, unit, amount);

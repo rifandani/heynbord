@@ -44,7 +44,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Phase**: One of the 4 parts of a Turn. Only a part of a Turn is a Phase. A part of the Tutorial is a Tutorial Step. _Avoid_: step
 
-**Start Phase**: The first part of a Turn. Regenerate, Rally, Sudden Death, Countdown and the draw occur in it. _Avoid_: Start Step, upkeep, beginning phase
+**Start Phase**: The first part of a Turn. Regenerate, Rally, Bolt, Hero's Bane, Sudden Death, Countdown and the draw occur in it. _Avoid_: Start Step, upkeep, beginning phase
 
 **End Phase**: The last part of a Turn. Burn and Poison damage occur in it, and timed effects go down by 1. _Avoid_: End Step, cleanup, end of turn
 
@@ -120,7 +120,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Card**: A collectible item that a side can play from the Hand. A Card is a Creature Card or a Skill Card. _Avoid_: item
 
-**Creature Card**: A Card that summons a Unit. It has a Race. _Avoid_: minion card, unit card, troop card
+**Creature Card**: A Card that summons a Unit. It has a Race. A Specialist also has a Class. _Avoid_: minion card, unit card, troop card
 
 **Skill Card**: A Card with a one-time effect. It has a Class. _Avoid_: spell, ability card
 
@@ -154,6 +154,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Diagnostic Deck**: An Archetype whose Matchups are for review only and do not gate release. It becomes a Main Archetype when it passes the gate. _Avoid_: test deck, debug deck
 
+**Specialist Deck**: A Diagnostic Deck that holds one Specialist. It tests that Specialist in a Matchup, and it never becomes a Main Archetype. A Starter Deck, a Stage, a Dungeon, a Floor and a Main Archetype hold no Specialist. _Avoid_: test deck, legendary deck, debug deck
+
 **Matchup**: Many Battles between two Archetypes, with the AI on both Sides, to measure if one Archetype is stronger than the other. _Avoid_: versus, pairing, mirror test
 
 **Power Points**: The strength of one Card at its Base Rank. A Creature Card gets them from its Attack, HP, Speed, Range, Damage Type and Keywords. A Skill Card gets them from its effect, its Damage Type and its Recall. _Avoid_: power level, rating, score, value, Skill Points
@@ -171,6 +173,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Main Keyword**: A Keyword that is part of the battle identity of a Race. Other Races can borrow it. _Avoid_: core keyword, theme keyword
 
 **Bulwark N**: A Keyword. It reduces Physical damage to its Unit by N. It does not reduce Fire, Frost, Holy or Lightning damage. A Skill Card can give bonus Bulwark, with the same rule. The Armor Gear of a Hero is a different thing: it gives Hero HP. _Avoid_: armor, defense, toughness, damage reduction
+
+**Iron Guard**: A Keyword. Each Physical hit on a Unit with Iron Guard deals at most 4 damage. The cap applies after Bulwark, Crit, Block and Exposed, and before Ward. It does not change True Damage or status damage. _Avoid_: Armor, damage cap, damage reduction
+
+**Bolt N**: A Keyword. In each Start Phase of its owner, a Unit with Bolt deals N damage of its own Damage Type to one target at random: an enemy Unit, or the enemy Hero of its Front. The hit applies no Status and has no Crit, so Fire, Frost and Lightning damage do not Burn, Freeze or Paralyze. It can be Blocked, except Holy damage, and a Ward absorbs it. N is the same at each Rank. _Avoid_: Zap, Barrage, Volley
 
 **Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. Only a Ranged Unit has Entangle, because a Melee Unit attacks an enemy that cannot move closer. Its Base Rank is Epic or higher, because it can Entangle the same enemy in each Turn. It is the Elf Race Keyword. _Avoid_: Root, Snare
 
@@ -194,13 +200,23 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Swarm N**: A Keyword. A Unit with Swarm gets +N Attack while another friendly Unit or Token is in the same Lane. More friendly Units do not increase the bonus. _Avoid_: Horde, Pack
 
+**Heroic N**: A Keyword. After a Unit with Heroic attacks an enemy Unit, it gets +N Attack. This bonus is the Heroic bonus. The Rank sets N: 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary. Each attack on an enemy Unit adds more, with no limit. An attack also counts when it deals 0 damage. An attack on a Hero, Retaliate, First Strike, Trample and Last Breath do not count. It is the Orc Race Keyword. _Avoid_: Bloodlust, Frenzy, Enrage, Hero damage
+
+**Heroic bonus**: The Attack that Heroic gives to its Unit. It stays until the Unit leaves the Board, and Rebirth ends it. It applies to all attacks of the Unit, on Units and on Heroes, and to Retaliate. It is not Base Attack, not Bonus Attack and not a Buff. _Avoid_: Heroic stacks, rage, growth
+
+**Soul Harvest**: A Keyword. When an enemy Unit dies, a Unit with Soul Harvest gets +1 Attack and +1 HP, also above its maximum HP. A kill by any source counts, also a kill by a Skill Card, a Status or another Unit. A Rebirth is not a kill, and a Unit that the defeat of its Hero removes is not a kill. _Avoid_: Feed, Devour, Snowball
+
+**Soul Harvest bonus**: The Attack and HP that Soul Harvest gives to its Unit. Each kill adds +1 Attack and +1 HP. It stays until the Unit leaves the Board, and Rebirth ends it. It is not Base Attack, not Bonus Attack and not a Buff. _Avoid_: harvest stacks, growth
+
+**Hero's Bane**: A Keyword. In each Start Phase of its owner, a Unit with Hero's Bane deals 1 Physical damage to the enemy Hero of its Front. The hit has no Crit, and it is not an attack. _Avoid_: Hero killer, Siege, Backline
+
 **Retaliate**: A Keyword. When a Unit with Retaliate survives a melee attack, it deals damage equal to its Attack to the attacker, with its own Damage Type. This damage is also called Retaliate. It has no Crit, it does not apply Keywords such as Poison, Entangle, Hobble, Bleed or Knockback, and it does not cause another Retaliate. A Frozen Unit does not retaliate. _Avoid_: Retaliation, thorns, counterattack
 
 **Regenerate N**: A Keyword. In its owner's Start Phase, a Unit with Regenerate heals N HP, up to its maximum HP. _Avoid_: Regeneration, regen, heal over time
 
 **Last Breath: X**: A Keyword. X occurs when the Unit leaves the Board. In v1, X deals damage to the nearest enemy Unit ahead in the same Lane, or summons a Token in the Square that the Unit left. _Avoid_: death effect, deathrattle
 
-**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Bulwark, its bonus Attack and its Rally bonus end. A Unit that _Smite_ kills does not come back. _Avoid_: revive, resurrect
+**Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Bulwark, its bonus Attack, its bonus Range, its Rally bonus, its Heroic bonus and its Soul Harvest bonus end. A Unit that _Smite_ kills does not come back. _Avoid_: revive, resurrect
 
 **Summon X**: A Keyword. When a Unit with Summon comes onto the Board from its Creature Card, a Token X with the Rank of that Card copy appears next to it. The Token goes to the first empty Square of an open Lane in this order: the Square behind the Unit, then the same Column in the Lane with the lower number, then the same Column in the Lane with the higher number. The Square does not need to be in the Summon Zone. If no Square is empty, no Token appears. A Rebirth return and a Start Unit give no Token. _Avoid_: Spawn, Call, Raise
 
@@ -210,7 +226,11 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Sabotage N**: A Keyword. When a Unit with Sabotage comes onto the Board from its Creature Card, the Card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready Card is the lowest. If two Cards have the same Countdown, the oldest Card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. N is the same at each Rank. _Avoid_: Delay, Stall, Disrupt
 
+**Spawnbane N**: A Keyword. When an enemy Hero summons a Unit from a Creature Card, a Unit with Spawnbane deals N damage to that Unit. The damage has the Damage Type of the Spawnbane Unit and applies no Status. It comes before the Sabotage and the Summon of the new Unit, so a Unit that dies does neither. A Token does not come from a Creature Card, so Spawnbane does not hit a Token. N is the same at each Rank. _Avoid_: anti-summon, Intercept, Ambush
+
 **Trample**: A Keyword for melee Units. When a Unit with Trample kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it, in the same Lane. It never hits a Hero. This second hit is not an attack: it has no Crit and no Retaliate, and it does not apply Keywords such as Poison, Hobble, Bleed or Knockback. It does not Trample again. _Avoid_: Cleave, Overrun, Pierce
+
+**Vampirism**: A Keyword. When a Unit with Vampirism deals Physical damage, it heals HP equal to the damage that the hit dealt after Block and Ward. The heal stops at its maximum HP. It counts for an attack on a Unit or a Hero, Retaliate, First Strike, Trample and Last Breath. It does not apply to status damage. _Avoid_: Lifesteal, Drain, Leech
 
 **Unique**: A Keyword. While a Unit from a Unique Card is on a Side of the Board, no Hero of that Side can play a copy of that Card, at any Rank. Each Unit from that Card counts, also a Unit that the Stage puts on the Board. Enemy Units do not count. A Deck can still hold more than 1 copy. _Avoid_: Singleton, One-of, Legend rule
 
@@ -226,11 +246,13 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Ranged Unit**: A Unit with Range 2 or more. A Melee Unit with Bonus Range is a Ranged Unit until the bonus ends. _Avoid_: shooter, archer, caster
 
-**Class**: The type of a Hero, and of the Skill Cards that the Hero can use: Warrior, Ranger, Mage or Priest. _Avoid_: job, profession, role
+**Class**: The type of a Hero, of the Skill Cards that the Hero can use, and of a Specialist: Warrior, Ranger, Mage or Priest. _Avoid_: job, profession, role
 
 **Rank**: The power grade of one copy of a Card: Common, Uncommon, Rare, Epic or Legendary. The Rank names use usual rarity words, so that players know the order immediately. But the concept is a Rank, not a rarity: Combine can make the Rank of a copy higher. _Avoid_: rarity, tier, star, level, quality
 
-**Base Rank**: The lowest Rank in which a Card exists. _Avoid_: rarity, starting tier
+**Base Rank**: The lowest Rank in which a Card exists. A Creature Card with Base Rank Legendary is a Specialist. _Avoid_: rarity, starting tier
+
+**Specialist**: A Creature Card with Base Rank Legendary. It has one Class, and a Hero can put it in a Deck only when the Hero has that Class. Every Specialist has Unique. Only a Specialist has a Class. _Avoid_: class creature, restricted card, legendary unit
 
 ### Progression
 
@@ -292,6 +314,14 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Cosmetic**: An item that changes how something looks and never changes gameplay. _Avoid_: skin (as a general word), vanity item
 
+**Cosmetic family**: One of the 4 kinds of Cosmetic of v1: Card back, Hero portrait, Gear look and Board skin. All Bazaar items of a family share one price. _Avoid_: category, type, class of cosmetic
+
+**Earn-only Cosmetic**: A Cosmetic that play gives for free and never changes into Heynstones. The Bazaar never sells it. The first win of each Boss Floor gives one, and 3 hard Achievements give one (ADR-0008). _Avoid_: free cosmetic, reward cosmetic
+
+**Owned**: A Cosmetic in the Player's owned list. The Player buys one in the Bazaar or earns it, and owns it forever: the Player never sells or loses it, as a Deck Slot. _Avoid_: unlocked, equipped
+
+**Bazaar item**: A Bazaar Cosmetic with a Heynstone price. _Avoid_: product, offer item
+
 **Achievement**: A one-time goal with a reward. It is In progress, then Completed when the Player meets the goal, then Claimed when the Player takes the reward. _Avoid_: quest, mission, trophy, badge
 
 **Feat**: An Achievement that one won Battle completes, with a goal about the Deck, the Turns or the events of that Battle. _Avoid_: challenge, trial, battle achievement
@@ -333,6 +363,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Star Turn**: The Turn number of a Stage. A win must come before it to give 3 Stars. Each Stage has its own Star Turn. _Avoid_: Turn limit, par, time limit, fast-win Turn
 
 **Star chest**: A reward of a Region that the Player claims when the best Stars of its Stages add up to 10, 20 or 30. Each Region has 3. _Avoid_: milestone, Star reward
+
+**Repeat win**: A win of a Stage or a Dungeon that the Player won before. It gets no first-win bonus. _Avoid_: replay, farm win, re-clear
 
 **Stage card pool**: The Cards that a repeat win of a Stage can give: the different Cards of its enemy Deck, but not a Skill Card of another Class than the Player's Deck. _Avoid_: drop table, loot pool
 
@@ -393,7 +425,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
 - A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
 - A **Deck** holds a **Card** and a **Rank**, not one specific **Card copy**. After a **Combine**, a Deck that used the old-Rank copies uses the new-Rank copy. After an **Extract**, the copy goes out of each Deck that used it. A Card stays **Discovered** after its last copy is Extracted.
-- Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage. A loss (its **Loss share**) or a repeat win gives XP too, so a real Player is at or above the level of the **First-try Path**.
+- Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage. A loss (its **Loss share**) gives XP too, so a real Player is at or above the level of the **First-try Path**.
+- A **Stage** **Repeat win** and a **Campaign Sweep** give no XP. A **Dungeon** Repeat win and a **Dungeon Sweep** give XP ([ADR-0049](../../docs/adr/0049-a-stage-repeat-win-gives-no-xp.md)).
 - Each **Stage** hits its win-rate target two times: with no **Gear** and with the **Expected Gear**, both at the **Recommended level**. A Player who loses gets **Gear** sooner. That is a catch-up, not a miss.
 - A **Region** has 10 **Stages**, and the last one is a **Boss Stage**.
 - The **Tutorial** ends with the first win of Stage 1-1. A loss or an **Abandon** does not end it. A later play of Stage 1-1 is a normal **Stage**. The Tutorial has 4 **Tutorial Steps**. A **Hint** shows one time for each subject, at any time after the Tutorial.

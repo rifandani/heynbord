@@ -162,9 +162,13 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Workshop screen
 
-**Rank Panel**: The HUD plate at the right of the Workshop screen for the selected card. The card is at the top, with the Path to Legendary. Under it is a ladder of Rank rows, from Legendary at the top to the Base Rank at the bottom. A Combine sits on the rung between two rows, each row has Extract, and the Base Rank row has Craft. _Avoid_: card panel, upgrade panel, detail panel
+**Station**: One of the three places of the Workshop screen, one for each action: Combine, Craft and Extract. The Player selects a Station on its tab, then a card. A Station marks the cards that it can act on, and its Panel shows only its action. _Avoid_: mode, tab (for the concept), workbench
 
-**Path to Legendary**: The groove track in the Rank Panel that counts each copy of the card as Base Rank copies (a copy in Rank r is 2^(r − base) of them), and tells the copies and the Coin that are still needed for one Legendary copy. _Avoid_: progress bar, upgrade path
+**Station Panel**: The HUD plate at the right of the Workshop screen for the selected card in the selected Station. The Combine Panel is the ladder of Rank rows, from Legendary at the top to the Base Rank at the bottom, with a Combine on the rung between two rows and the Path to Legendary. The Craft Panel shows the Essence cost and the Base Rank copy that a Craft makes. The Extract Panel has a row for each Rank with a copy, each with its Extract. _Avoid_: Rank Panel, card panel, upgrade panel, detail panel
+
+**Spare copy**: A copy of a card that no saved Deck uses: the copies of a card and Rank less the most that one saved Deck uses. An Extract of a spare copy changes no Deck. _Avoid_: duplicate, extra, surplus
+
+**Path to Legendary**: The groove track in the Combine Panel that counts each copy of the card as Base Rank copies (a copy in Rank r is 2^(r − base) of them), and tells the copies and the Coin that are still needed for one Legendary copy. _Avoid_: progress bar, upgrade path
 
 ### Component Catalog
 

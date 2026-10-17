@@ -13,9 +13,14 @@ import {
   extractNeedsConfirm,
   extractTimeline,
   legendaryPath,
+  craftLock,
+  craftTimeline,
+  isTileReady,
   rankCopies,
   selectedTile,
   shownRank,
+  spareCopies,
+  stationCounts,
   workshopTiles,
 } from "@/features/workshop/workshop";
 
@@ -39,6 +44,8 @@ const DECK: DeckSlot = {
   deck: [],
 };
 
+const COMMON_RECRUIT = { cardId: RECRUIT, rank: "common" } as const;
+
 describe("cardRanks", () => {
   it("goes from the Base Rank to Legendary", () => {
     expect(cardRanks(getCard(RECRUIT))).toEqual([
@@ -55,12 +62,22 @@ describe("cardRanks", () => {
 describe("rankCopies and shownRank", () => {
   it("has a row for each Rank of the card, with 0 for a Rank with no entry", () => {
     expect(rankCopies(collection, RECRUIT)).toEqual([
-      { rank: "common", copies: 3 },
-      { rank: "uncommon", copies: 0 },
-      { rank: "rare", copies: 1 },
-      { rank: "epic", copies: 0 },
-      { rank: "legendary", copies: 0 },
+      { rank: "common", copies: 3, used: 0 },
+      { rank: "uncommon", copies: 0, used: 0 },
+      { rank: "rare", copies: 1, used: 0 },
+      { rank: "epic", copies: 0, used: 0 },
+      { rank: "legendary", copies: 0, used: 0 },
     ]);
+  });
+
+  it("counts the copies that the saved Decks use: the most that one Deck uses", () => {
+    const two = { ...DECK, deck: [COMMON_RECRUIT, COMMON_RECRUIT] };
+    const one = { ...DECK, id: "deck-2", deck: [COMMON_RECRUIT] };
+    const rows = rankCopies(collection, RECRUIT, [two, one]);
+    expect(rows[0]).toEqual({ rank: "common", copies: 3, used: 2 });
+    expect(spareCopies(rows[0] ?? { copies: 0, used: 0 })).toBe(1);
+    // A Deck can use more copies than the Player owns: no spare copy then.
+    expect(spareCopies({ copies: 1, used: 2 })).toBe(0);
   });
 
   it("shows the highest Rank with a copy, else the Base Rank", () => {
@@ -97,6 +114,18 @@ describe("workshopTiles", () => {
         DEFAULT_POOL_FILTER
       )[0]?.pairReady
     ).toBe(false);
+  });
+
+  it("counts the spare copies of all the Ranks", () => {
+    const deck = { ...DECK, deck: [COMMON_RECRUIT, COMMON_RECRUIT] };
+    const spare = (cardId: string) =>
+      workshopTiles(collection, DEFAULT_POOL_FILTER, [deck]).find(
+        (tile) => tile.cardId === cardId
+      )?.spare;
+    // 3 Common copies with 2 in the Deck, and 1 Rare copy.
+    expect(spare(RECRUIT)).toBe(2);
+    expect(spare(KNIGHT)).toBe(1);
+    expect(spare(RUNT)).toBe(0);
   });
 
   it("filters owned cards and cards with 0 copies", () => {
@@ -143,6 +172,12 @@ describe("emptyGridText", () => {
     );
     expect(emptyGridText(collection, { ...orc, ownership: "owned" }).key).toBe(
       "workshop.empty.noneOwned"
+    );
+    expect(emptyGridText(found, orc, "combine").key).toBe(
+      "workshop.empty.ready.combine"
+    );
+    expect(emptyGridText([], orc, "extract").key).toBe(
+      "workshop.empty.noneFound"
     );
     expect(emptyGridText(found, orc).args).toEqual({
       group: {
@@ -201,9 +236,15 @@ describe("craftState", () => {
     });
   });
 
-  it("has no Craft for a card with no Craft cost", () => {
-    expect(craftState({ baseRank: "legendary" }, 30, 10_000)).toEqual({
-      kind: "none",
+  it("crafts a Legendary Specialist for 4800 Essence (ADR-0050)", () => {
+    expect(craftState({ baseRank: "legendary" }, 30, 4800)).toEqual({
+      kind: "ready",
+      cost: 4800,
+    });
+    expect(craftState({ baseRank: "legendary" }, 30, 4799)).toEqual({
+      kind: "essence",
+      cost: 4800,
+      missing: 1,
     });
   });
 });
@@ -303,5 +344,64 @@ describe("extractTimeline", () => {
       timeline.meltAt + EXTRACT_MOTION.legendary.meltMs
     );
     expect(extractTimeline("common").liftAt).toBe(0);
+  });
+});
+
+describe("stations", () => {
+  const deck = { ...DECK, deck: [COMMON_RECRUIT, COMMON_RECRUIT] };
+  const tiles = workshopTiles(collection, DEFAULT_POOL_FILTER, [deck]);
+  const tile = (cardId: string) => {
+    const found = tiles.find((item) => item.cardId === cardId);
+    if (!found) {
+      throw new Error(`no tile for ${cardId}`);
+    }
+    return found;
+  };
+  const rich = { coin: 0, essence: 1000, level: 30 };
+
+  it("Combine acts on a card with a pair, also when the Coin is short", () => {
+    expect(isTileReady(tile(RECRUIT), "combine", rich)).toBe(true);
+    expect(isTileReady(tile(KNIGHT), "combine", rich)).toBe(false);
+  });
+
+  it("Craft acts on a card when the Craft is open and the Essence is enough", () => {
+    expect(isTileReady(tile(RUNT), "craft", rich)).toBe(true);
+    expect(isTileReady(tile(RUNT), "craft", { ...rich, essence: 10 })).toBe(
+      false
+    );
+    expect(isTileReady(tile(RUNT), "craft", { ...rich, level: 5 })).toBe(false);
+  });
+
+  it("Extract acts on a card with a spare copy", () => {
+    expect(isTileReady(tile(RECRUIT), "extract", rich)).toBe(true);
+    expect(isTileReady(tile(RUNT), "extract", rich)).toBe(false);
+  });
+
+  it("counts the cards with a pair, the cards to Craft now, and the spare copies", () => {
+    expect(stationCounts(tiles, rich)).toEqual({
+      combine: 1,
+      craft: 3,
+      extract: 3,
+    });
+    expect(stationCounts(tiles, { ...rich, essence: 0 }).craft).toBe(0);
+  });
+
+  it("locks the Craft tab below the Craft level", () => {
+    expect(craftLock(5)).toBe(6);
+    expect(craftLock(6)).toBeNull();
+  });
+});
+
+describe("craftTimeline", () => {
+  it("is the opposite of an Extract: the drops fly in, then the copy forms", () => {
+    for (const rank of RANKS) {
+      const { dropAt, formAt, formMs, formed } = craftTimeline(rank);
+      expect(dropAt).toHaveLength(EXTRACT_MOTION[rank].drops);
+      expect(dropAt[0]).toBe(0);
+      expect(formMs).toBe(EXTRACT_MOTION[rank].meltMs);
+      expect(formed).toBe(formAt + formMs);
+      // The last drop leaves before the form line gets to the top.
+      expect(dropAt.at(-1) ?? 0).toBeLessThan(formMs);
+    }
   });
 });

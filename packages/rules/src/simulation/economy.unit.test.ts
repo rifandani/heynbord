@@ -22,14 +22,24 @@ import {
   expectedGear,
   expectedGearAtLevel,
   heynstoneLedger,
-  MAX_REPLAYS,
+  judgePacing,
+  MAX_REPEAT_BATTLES,
   newEconomyPlayer,
+  PACING_TARGETS,
   pacingTarget,
+  PLAY_STYLES,
   simulateEconomy,
   simulateEconomyRun,
   spend,
 } from "./economy";
-import type { EconomyPlayer } from "./economy";
+import type {
+  CheckpointId,
+  CheckpointTargets,
+  EconomyPlayer,
+  PacingTargetId,
+  PacingTargets,
+  PacingVerdict,
+} from "./economy";
 import { NO_GEAR } from "./simulate";
 
 /** 20 Forge Stones of each tier: all that the 4 Gear items need. */
@@ -124,7 +134,7 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
     expect(run.stuck).toBe(false);
   });
 
-  it("has no replays and no Sweeps on the First-try run, and a win gives 2 Stars", () => {
+  it("has no repeat Battles and no Sweeps on the First-try run, and a win gives 2 Stars", () => {
     const run = simulateEconomyRun({
       playStyle: "balanced",
       seed: 1,
@@ -133,7 +143,7 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
     expect(run.end).toMatchObject({
       stars: 100,
       threeStarStages: 0,
-      replays: 0,
+      repeatBattles: 0,
       campaignTicketsUsed: 0,
       dungeonTicketsUsed: 0,
     });
@@ -147,20 +157,26 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
       fixedWinChance: 1,
       fixedThreeStarChance: 1,
     });
-    // With the Sweeps, the Player gets to level 30 in Region 5, and the sim
-    // stops there.
-    expect(run.checkpoints.region5).toBeNull();
-    expect(run.end).toMatchObject({ level: 30, battles: 49, stars: 147 });
-    for (const [index, id] of (
-      ["region1", "region2", "region3", "region4"] as const
+    // A Sweep gives no XP (ADR-0049), so the levels are the levels of the
+    // First-try Path.
+    for (const [index, [id, level]] of (
+      [
+        ["region1", 6],
+        ["region2", 10],
+        ["region3", 15],
+        ["region4", 20],
+        ["region5", 23],
+      ] as const
     ).entries()) {
       expect(run.checkpoints[id]).toMatchObject({
         battles: (index + 1) * 10,
+        level,
         stars: (index + 1) * 30,
         threeStarStages: (index + 1) * 10,
-        replays: 0,
+        repeatBattles: 0,
       });
     }
+    expect(run.checkpoints.floor50).toMatchObject({ battles: 100, level: 28 });
     // From the first 3-Star Stage, the Player Sweeps after each Battle: 2
     // Tickets for each of the 10 wins of Region 1.
     expect(run.checkpoints.region1).toMatchObject({
@@ -181,32 +197,32 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
     expect(snap).toMatchObject({ battles: 30, hours: 4 });
   });
 
-  it(`with a 3-Star chance of 0, stops each Stage after ${MAX_REPLAYS} replays and then leaves the Region`, () => {
+  it(`with a 3-Star chance of 0, stops each Stage after ${MAX_REPEAT_BATTLES} repeat Battles and then leaves the Region`, () => {
     const run = simulateEconomyRun({
       playStyle: "upgrader",
       seed: 1,
       fixedWinChance: 1,
       fixedThreeStarChance: 0,
     });
-    // Region 1: 10 first wins, then 10 replays of each Stage.
+    // Region 1: 10 first wins, then 10 repeat Battles of each Stage.
     expect(run.checkpoints.region1).toMatchObject({
-      battles: 10 + 10 * MAX_REPLAYS,
+      battles: 10 + 10 * MAX_REPEAT_BATTLES,
       stars: 20,
       threeStarStages: 0,
-      replays: 10 * MAX_REPLAYS,
+      repeatBattles: 10 * MAX_REPEAT_BATTLES,
       cappedStages: 10,
       // 2 Tickets for each win, and no 3-Star Stage to Sweep.
       campaignTicketsUsed: 0,
-      campaignSweepTickets: 2 * (10 + 10 * MAX_REPLAYS),
+      campaignSweepTickets: 2 * (10 + 10 * MAX_REPEAT_BATTLES),
     });
     expect(run.checkpoints.region2).toMatchObject({
-      battles: 20 * (1 + MAX_REPLAYS),
+      battles: 20 * (1 + MAX_REPEAT_BATTLES),
       cappedStages: 20,
     });
     expect(run.capped).toBe(true);
   });
 
-  it("goes on to the next Stage of the replays after a 3-Star win", () => {
+  it("goes on to the next Stage of the repeat Battles after a 3-Star win", () => {
     const run = simulateEconomyRun({
       playStyle: "balanced",
       seed: 4,
@@ -215,8 +231,8 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
     const snap = run.checkpoints.region1;
     expect(snap?.threeStarStages).toBe(10);
     expect(snap?.stars).toBe(30);
-    expect(snap?.battles).toBe(10 + (snap?.replays ?? 0));
-    expect(snap?.replays).toBeGreaterThan(0);
+    expect(snap?.battles).toBe(10 + (snap?.repeatBattles ?? 0));
+    expect(snap?.repeatBattles).toBeGreaterThan(0);
   });
 
   it("gives the loss Coin and XP, and the Player plays the Stage again", () => {
@@ -243,11 +259,28 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
     expect(run.checkpoints.level30).toBeNull();
   });
 
-  it("stops at Player level 30", () => {
+  it("stops when the Player is at level 30 and won Floor 50", () => {
     const run = simulateEconomyRun({ playStyle: "balanced", seed: 3 });
     expect(run.stuck).toBe(false);
-    expect(run.end.level).toBe(30);
-    expect(run.end.battles).toBe(run.checkpoints.level30?.battles);
+    expect(run.end).toMatchObject({ level: 30, floorsWon: HEYNSPIRE_FLOORS });
+    expect(run.end.battles).toBe(
+      Math.max(
+        run.checkpoints.level30?.battles ?? 0,
+        run.checkpoints.floor50?.battles ?? 0
+      )
+    );
+  });
+
+  it("at level 30 before Floor 50, goes on to the Floor 50 win with Dungeon detours of 3 Battles", () => {
+    // With a low win chance, the Player gets to level 30 before Floor 50.
+    const run = simulateEconomyRun({
+      playStyle: "collector",
+      seed: 1,
+      fixedWinChance: 0.45,
+    });
+    expect(run.checkpoints.level30?.floorsWon).toBeLessThan(HEYNSPIRE_FLOORS);
+    expect(run.stuck).toBe(false);
+    expect(run.end.floorsWon).toBe(HEYNSPIRE_FLOORS);
   });
 });
 
@@ -442,6 +475,44 @@ describe("spend (Economy 7.1)", () => {
   });
 });
 
+/** A Player at level 6 with an Epic pair of `cardId`, and no Forge Stones. */
+const withEpicPair = (coin: number, cardId = "human.halberdier") => {
+  const player = playerAt(6, coin, NO_FORGE_STONES);
+  player.collection = [
+    ...player.collection,
+    { cardId, rank: "epic", copies: 2 },
+  ];
+  return player;
+};
+
+describe("spend: the Legendary Combine first (Economy 7.1)", () => {
+  for (const playStyle of ["upgrader", "balanced"] as const) {
+    it(`${playStyle}: keeps its Coin for the Legendary Combine and buys no Packs`, () => {
+      const player = withEpicPair(3199);
+      spend(player, playStyle);
+      expect(player.packsOpened).toBe(0);
+      expect(
+        ownedCopies(player.collection, "human.halberdier", "legendary")
+      ).toBe(0);
+    });
+
+    it(`${playStyle}: does the Legendary Combine first, then buys Packs`, () => {
+      const player = withEpicPair(3200 + 5000);
+      spend(player, playStyle);
+      expect(
+        ownedCopies(player.collection, "human.halberdier", "legendary")
+      ).toBe(1);
+      expect(player.packsOpened).toBeGreaterThan(0);
+    });
+  }
+
+  it("collector: buys Packs first, and keeps no Coin for the Legendary Combine", () => {
+    const player = withEpicPair(3199);
+    spend(player, "collector");
+    expect(player.packsOpened).toBeGreaterThan(0);
+  });
+});
+
 describe("claimAchievements (Achievements 1.2, Economy 7.1)", () => {
   it("claims the Essence of the first Craft at once, and only one time", () => {
     const player = playerAt(6, 0);
@@ -503,7 +574,7 @@ describe("campaignSweep (Economy 2.1, 7.1)", () => {
     expect(player.campaignTicketsUsed).toBe(0);
   });
 
-  it("gives one repeat-win reward for each Ticket: Coin, XP, the Forge Stone chance and a card of the Stage card pool", () => {
+  it("gives one repeat-win reward for each Ticket: Coin, no XP, the Forge Stone chance and a card of the Stage card pool", () => {
     const player = playerAt(1, 0, {
       common: 0,
       uncommon: 0,
@@ -517,9 +588,9 @@ describe("campaignSweep (Economy 2.1, 7.1)", () => {
     campaignSweep(player, economyStages());
     expect(player.campaignSweepTickets).toBe(0);
     expect(player.campaignTicketsUsed).toBe(50);
-    // A Region 1 repeat win: 60 Coin and 40 XP.
-    expect(player.coin).toBe(50 * 60);
-    expect(player.xp).toBe((PLAYER_LEVEL_XP[0] ?? 0) + 50 * 40);
+    // A Region 1 Repeat win: ⅓ of 60 Coin, and no XP (ADR-0049).
+    expect(player.coin).toBe(50 * 20);
+    expect(player.xp).toBe(PLAYER_LEVEL_XP[0]);
     expect(player.bestStars.get("1-4")).toBe(3);
     // The fixed seed: 10% chances of 1 Common Forge Stone, 20% chances of a card.
     expect(player.forgeStones).toEqual({
@@ -539,16 +610,18 @@ describe("campaignSweep (Economy 2.1, 7.1)", () => {
   });
 
   it("Sweeps the 3-Star Stage with the most Coin, and a Boss Stage on a tie", () => {
-    const player = playerAt(1, 0);
-    // 2-10 and 4-1 both give 200 Coin; 3-1 gives 150.
+    const player = playerAt(1, 0, NO_FORGE_STONES);
+    // 2-10 and 4-1 both give 66 Coin (⅓ of 200); 3-1 gives 50.
     for (const id of ["3-1", "4-1", "2-10"]) {
       player.bestStars.set(id, 3);
     }
-    player.campaignSweepTickets = 1;
+    player.campaignSweepTickets = 50;
     campaignSweep(player, economyStages());
-    // The Boss Stage 2-10: 2 × 70 XP. Stage 4-1 gives 130 XP.
-    expect(player.coin).toBe(200);
-    expect(player.xp).toBe(140);
+    expect(player.coin).toBe(50 * 66);
+    // The Boss Stage 2-10 of Region 2 gives Common Forge Stones. Stage 4-1
+    // gives Uncommon.
+    expect(player.forgeStones.common).toBeGreaterThan(0);
+    expect(player.forgeStones.uncommon).toBe(0);
   });
 });
 
@@ -591,6 +664,18 @@ describe("dungeonSweep (Economy 2.4, 7.1)", () => {
 });
 
 describe("pacingTarget (Economy 4)", () => {
+  it('has no "All cards Discovered" target at Floor 50 for the Upgrader', () => {
+    expect(pacingTarget("floor50", "upgrader").discoveredShare).toBeUndefined();
+    expect(pacingTarget("floor50", "collector").discoveredShare).toEqual({
+      min: 1,
+      max: 1,
+    });
+  });
+
+  it("has no Packs target at Region 3", () => {
+    expect(pacingTarget("region3", "balanced").packsOpened).toBeUndefined();
+  });
+
   it("has no First Combine target for the Collector", () => {
     expect(pacingTarget("region1", "collector").firstCombine).toBeUndefined();
     expect(pacingTarget("region1", "collector").level).toBe(6);
@@ -607,18 +692,134 @@ describe("simulateEconomy (Economy 7.1)", () => {
     expect(battles?.p10).toBeLessThanOrEqual(battles?.median ?? 0);
     expect(battles?.median).toBeLessThanOrEqual(battles?.p90 ?? 0);
     expect(report.firstTry.checkpoints.region1?.battles).toBe(10);
-    expect(report.firstTry.checkpoints.region5?.replays).toBe(0);
+    expect(report.firstTry.checkpoints.region5?.repeatBattles).toBe(0);
     expect(report.stuck).toBe(0);
+    expect(report.level30BeforeFloor50).toBeLessThanOrEqual(3);
   });
 
-  it("counts the Players at the replay cap", () => {
+  it("counts the Players at the repeat cap", () => {
     const report = simulateEconomy("balanced", {
       seeds: 2,
       fixedThreeStarChance: 0,
       maxBattles: 150,
     });
     expect(report.capped).toBe(2);
-    expect(report.checkpoints.region1.replays?.cappedStages.median).toBe(10);
+    expect(report.checkpoints.region1.repeats?.cappedStages.median).toBe(10);
+  });
+});
+
+/** `PACING_TARGETS` with Region 1 replaced by `region1`. */
+const withRegion1 = (region1: CheckpointTargets): PacingTargets => ({
+  ...PACING_TARGETS,
+  region1,
+});
+
+const verdictOf = (
+  verdicts: readonly PacingVerdict[],
+  checkpoint: CheckpointId,
+  target: PacingTargetId
+) =>
+  verdicts.find(
+    (verdict) => verdict.checkpoint === checkpoint && verdict.target === target
+  );
+
+describe("judgePacing (Economy 4, 7.1)", () => {
+  const report = simulateEconomy("upgrader", { seeds: 3 });
+  const hoursMedian = report.checkpoints.region1.metrics?.hours.median;
+
+  it("fails a median outside a gated target, and names the checkpoint, the target and the Play Style", () => {
+    const verdicts = judgePacing(
+      report,
+      withRegion1({ hours: { min: 100, max: null } })
+    );
+    expect(verdictOf(verdicts, "region1", "hours")).toEqual({
+      checkpoint: "region1",
+      target: "hours",
+      playStyle: "upgrader",
+      value: hoursMedian,
+      range: { min: 100, max: null },
+      onTarget: false,
+      gated: true,
+    });
+  });
+
+  it("passes a median on its target", () => {
+    const verdicts = judgePacing(
+      report,
+      withRegion1({ hours: { min: 0, max: 100 } })
+    );
+    expect(verdictOf(verdicts, "region1", "hours")?.onTarget).toBe(true);
+  });
+
+  it("makes a miss of a draft target a review, not a fail", () => {
+    const verdicts = judgePacing(
+      report,
+      withRegion1({
+        hours: { min: 100, max: null },
+        draftFor: { hours: ["upgrader"] },
+      })
+    );
+    expect(verdictOf(verdicts, "region1", "hours")).toMatchObject({
+      onTarget: false,
+      gated: false,
+    });
+    // A draft mark for another Play Style does not change this Play Style.
+    const other = judgePacing(
+      report,
+      withRegion1({
+        hours: { min: 100, max: null },
+        draftFor: { hours: ["balanced"] },
+      })
+    );
+    expect(verdictOf(other, "region1", "hours")?.gated).toBe(true);
+  });
+
+  it("does not judge a target that does not apply to the Play Style", () => {
+    const verdicts = judgePacing(
+      report,
+      withRegion1({
+        hours: { min: 100, max: null },
+        notFor: { hours: ["upgrader"] },
+      })
+    );
+    expect(verdictOf(verdicts, "region1", "hours")).toBeUndefined();
+  });
+
+  it("judges the Player level on the First-try run, and the shares of the Players", () => {
+    const verdicts = judgePacing(
+      report,
+      withRegion1({ level: 6, firstCombine: true })
+    );
+    expect(verdictOf(verdicts, "region1", "level")).toMatchObject({
+      value: report.firstTry.checkpoints.region1?.level,
+      range: { min: 6, max: 6 },
+    });
+    expect(verdictOf(verdicts, "region1", "firstCombine")).toMatchObject({
+      value: report.checkpoints.region1.combinedShare,
+      range: { min: 1, max: 1 },
+    });
+    expect(verdictOf(verdicts, "level30", "level30BeforeFloor50")?.value).toBe(
+      report.level30BeforeFloor50 / report.seeds
+    );
+  });
+
+  it("gates each target of Economy 4, but the Discovered target of the Balanced Player at Floor 50", () => {
+    const drafts = PLAY_STYLES.flatMap((playStyle) =>
+      judgePacing({ ...report, playStyle }).filter((verdict) => !verdict.gated)
+    );
+    expect(
+      drafts.map(({ checkpoint, target, playStyle }) => ({
+        checkpoint,
+        target,
+        playStyle,
+      }))
+    ).toEqual([
+      {
+        checkpoint: "floor50",
+        target: "discoveredShare",
+        playStyle: "balanced",
+      },
+    ]);
   });
 });
 

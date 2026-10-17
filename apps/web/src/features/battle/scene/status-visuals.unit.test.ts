@@ -31,6 +31,7 @@ const quiet: UnitView = {
   bonusAttackTurns: 0,
   bonusRange: 0,
   bonusRangeTurns: 0,
+  heroicBonus: 0,
   exposed: 0,
   exposedTurns: 0,
   range: 0,

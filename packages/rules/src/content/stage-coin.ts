@@ -31,9 +31,16 @@ export const outcomeCoin = (winCoin: number, outcome: StageOutcome): number => {
 };
 
 /**
+ * A Stage Repeat win and each Campaign Sweep Ticket give the Coin of a win
+ * divided by this, rounded down (Economy 2.1). A Dungeon Repeat win keeps the
+ * full Coin.
+ */
+const STAGE_REPEAT_WIN_COIN_DIVISOR = 3;
+
+/**
  * The Coin of a Stage result, in Copper (Economy 2.1): the Coin of the Region
- * for a win, × 3 for the first win, × 2 for a Boss Stage, and 10% of a win
- * for a loss.
+ * is the Coin of a win, × 2 for a Boss Stage. The first win gives × 3 of it, a
+ * Repeat win ⅓ of it (rounded down), and a loss 10% of it.
  */
 export const stageCoin = (
   stage: Pick<StageDefinition, "region" | "boss">,
@@ -43,5 +50,8 @@ export const stageCoin = (
   if (winCoin === undefined) {
     throw new Error(`Unknown Region: ${stage.region}`);
   }
-  return outcomeCoin(winCoin * (stage.boss ? 2 : 1), outcome);
+  const coin = winCoin * (stage.boss ? 2 : 1);
+  return outcome === "win"
+    ? Math.floor(coin / STAGE_REPEAT_WIN_COIN_DIVISOR)
+    : outcomeCoin(coin, outcome);
 };

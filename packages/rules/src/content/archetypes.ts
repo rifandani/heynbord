@@ -34,6 +34,13 @@ export const MATCHUP_LEVEL = 5;
  * Light (Countdown 1 to 3) are diagnostic Decks of one Race, so that a Matchup
  * tests the Power Budget for each Countdown (ADR-0020). The results of a
  * diagnostic Deck are for review, and they do not gate release.
+ *
+ * The 6 Specialist Decks (ADR-0050, issue #110) are Diagnostic Decks, one for
+ * each Specialist: 1 copy at Legendary, in the style and with the Skill Cards
+ * of the Main Archetype of its Race and Class. A Specialist Deck never becomes
+ * a main Archetype. The 6 entries start after the other diagnostic Decks, in
+ * the order of ADR-0050: Human, Orc, Goblin, Feral, Elf and Undead.
+ * docs/game/08-archetypes.md 2.4 gives each list.
  */
 export const ARCHETYPES: readonly Archetype[] = [
   {
@@ -223,6 +230,108 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(2, "human.halberdier", "common"),
       ...copies(1, "human.bannerChaplain", "uncommon"),
       ...copies(1, "human.dawnCleric", "uncommon"),
+    ],
+  },
+  {
+    id: "serAldricStonewall",
+    kind: "diagnostic",
+    classId: "warrior",
+    deck: [
+      ...copies(1, "human.gateWarden", "uncommon"),
+      ...copies(1, "human.shieldbearer", "common"),
+      ...copies(2, "human.crossbowGuard", "common"),
+      ...copies(2, "human.halberdier", "common"),
+      ...copies(1, "human.dawnCleric", "uncommon"),
+      ...copies(1, "human.riverKnight", "uncommon"),
+      ...copies(1, "warrior.shieldWall", "common"),
+      ...copies(1, "warrior.shieldBash", "common"),
+      ...copies(1, "warrior.callToArms", "rare"),
+      ...copies(1, "human.serAldricStonewall", "legendary"),
+    ],
+  },
+  {
+    id: "ashcallerGrosh",
+    kind: "diagnostic",
+    classId: "mage",
+    deck: [
+      ...copies(1, "orc.packStalker", "uncommon"),
+      ...copies(2, "orc.scrapRaider", "common"),
+      ...copies(2, "orc.emberShaman", "common"),
+      ...copies(2, "orc.skyreaver", "uncommon"),
+      ...copies(1, "orc.cinderhornBreaker", "uncommon"),
+      ...copies(1, "mage.frostBolt", "common"),
+      ...copies(1, "mage.fireball", "common"),
+      ...copies(1, "mage.frostShards", "common"),
+      ...copies(1, "orc.ashcallerGrosh", "legendary"),
+    ],
+  },
+  {
+    id: "grixRatwhistle",
+    kind: "diagnostic",
+    classId: "ranger",
+    deck: [
+      ...copies(1, "goblin.ankleSnatcher", "common"),
+      ...copies(2, "goblin.junkSlinger", "common"),
+      ...copies(1, "goblin.tunnelSaboteur", "common"),
+      ...copies(1, "goblin.scrapPlateGuard", "common"),
+      ...copies(2, "goblin.greaseTrapper", "uncommon"),
+      ...copies(1, "goblin.mineSapper", "rare"),
+      ...copies(2, "ranger.pinningShot", "common"),
+      ...copies(1, "ranger.skybreaker", "uncommon"),
+      ...copies(1, "goblin.grixRatwhistle", "legendary"),
+    ],
+  },
+  {
+    id: "gorehornRedMaw",
+    kind: "diagnostic",
+    classId: "priest",
+    deck: [
+      ...copies(2, "feral.bristlebackBoar", "common"),
+      ...copies(1, "feral.frostfangLynx", "common"),
+      ...copies(1, "feral.caveBear", "common"),
+      ...copies(1, "feral.webSpitter", "common"),
+      ...copies(1, "feral.cragRhino", "uncommon"),
+      ...copies(1, "feral.frostElkMatriarch", "uncommon"),
+      ...copies(1, "priest.mend", "common"),
+      ...copies(1, "priest.sanctuary", "uncommon"),
+      ...copies(1, "priest.unbrokenVow", "rare"),
+      ...copies(1, "feral.gorehornRedMaw", "legendary"),
+    ],
+  },
+  {
+    id: "wardenSaelith",
+    kind: "diagnostic",
+    classId: "ranger",
+    deck: [
+      ...copies(1, "elf.rootboundGuard", "common"),
+      ...copies(2, "elf.brambleDuelist", "common"),
+      ...copies(2, "elf.fernwingCourier", "common"),
+      ...copies(1, "elf.thornlineArcher", "uncommon"),
+      ...copies(1, "elf.gladeTurnblade", "uncommon"),
+      ...copies(1, "elf.brambleNest", "uncommon"),
+      ...copies(1, "ranger.pinningShot", "common"),
+      ...copies(1, "ranger.warningShot", "common"),
+      ...copies(1, "ranger.huntersFocus", "rare"),
+      ...copies(1, "elf.wardenSaelith", "legendary"),
+    ],
+  },
+  {
+    id: "paleCantorYsolde",
+    kind: "diagnostic",
+    classId: "priest",
+    deck: [
+      ...copies(1, "undead.hushbow", "common"),
+      ...copies(1, "undead.graveBellTender", "common"),
+      ...copies(2, "undead.chatteringCohort", "uncommon"),
+      ...copies(1, "undead.ossuaryPiper", "uncommon"),
+      ...copies(1, "undead.coffinLancer", "rare"),
+      ...copies(1, "undead.lanternWidow", "rare"),
+      ...copies(1, "undead.sirOdoLastTaxman", "epic"),
+      ...copies(1, "undead.boneRampart", "epic"),
+      ...copies(1, "priest.prayerOfHealing", "uncommon"),
+      ...copies(1, "priest.radiantStrike", "common"),
+      ...copies(1, "priest.blessingOfLight", "common"),
+      ...copies(1, "undead.paleCantorYsolde", "legendary"),
     ],
   },
 ];

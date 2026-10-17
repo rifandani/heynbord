@@ -43,7 +43,7 @@ export interface UnitView {
   readonly position: number;
   /**
    * The Attack that the Unit hits with now: its Attack, the Rally bonus, the
-   * bonus Attack of a Skill Card and the Swarm bonus. The rules do not store
+   * Heroic bonus, the bonus Attack of a Skill Card and the Swarm bonus. The rules do not store
    * the Swarm bonus (GDD 5.4), so the view calculates it after each event.
    */
   readonly attack: number;
@@ -56,6 +56,11 @@ export interface UnitView {
   readonly swarm: number;
   /** The part of `attack` that comes from Swarm now: 0 or `swarm`. */
   readonly swarmBonus: number;
+  /**
+   * The part of `attack` that comes from Heroic (ADR-0048). `HeroicGained`
+   * sets it, and `UnitReborn` ends it.
+   */
+  readonly heroicBonus: number;
   /**
    * The part of `attack` that comes from a Skill Card (*Call to Arms*, GDD
    * 4.8). `AttackGained` sets it, and `AttackFaded` and `UnitReborn` end it.
@@ -270,10 +275,16 @@ const unitView = (unit: Readonly<UnitState>): UnitView => {
     rank: unitRank(unit.source),
     lane: unit.lane,
     position: unit.position,
-    attack: unit.attack + unit.rallied + unit.bonusAttack,
+    attack:
+      unit.attack +
+      unit.rallied +
+      unit.heroicBonus +
+      unit.soulHarvestBonus +
+      unit.bonusAttack,
     rallyBonus: unit.rallied,
     swarm: unit.swarm,
     swarmBonus: 0,
+    heroicBonus: unit.heroicBonus,
     bonusAttack: unit.bonusAttack,
     bonusAttackTurns: unit.bonusAttackTurns,
     bonusRange: unit.bonusRange,
@@ -428,7 +439,11 @@ const markBlockedCards = (view: BattleView): BattleView => {
  */
 const swarmBonusOf = (units: readonly UnitView[], unit: UnitView): number => {
   const attack =
-    unit.attack - unit.swarmBonus - unit.rallyBonus - unit.bonusAttack;
+    unit.attack -
+    unit.swarmBonus -
+    unit.rallyBonus -
+    unit.heroicBonus -
+    unit.bonusAttack;
   return unit.swarm > 0 &&
     attack > 0 &&
     units.some(
@@ -635,6 +650,13 @@ const withBonusAttack = (
   bonusAttackTurns,
 });
 
+/** A Unit with a new Heroic bonus (ADR-0048). The Attack changes with it. */
+const withHeroicBonus = (unit: UnitView, heroicBonus: number): UnitView => ({
+  ...unit,
+  attack: unit.attack - unit.heroicBonus + heroicBonus,
+  heroicBonus,
+});
+
 /** A Unit with a new bonus Range from a Skill Card. The Range changes with it. */
 const withBonusRange = (
   unit: UnitView,
@@ -690,10 +712,14 @@ const applyLifeEvent = (view: BattleView, event: BattleEvent): BattleView => {
     }
     case "UnitReborn": {
       // Rebirth (GDD 4.9): the Unit stays in its Square with its new HP, and
-      // all its Statuses (also Ward), its Rally bonus, its bonus Attack, its
-      // bonus Range and its bonus Bulwark end.
+      // all its Statuses (also Ward), its Rally bonus, its Heroic bonus, its
+      // bonus Attack, its bonus Range and its bonus Bulwark end.
       return updateUnit(view, event.unitId, (unit) => ({
-        ...withBonusRange(withBonusAttack(withRallyBonus(unit, 0), 0, 0), 0, 0),
+        ...withBonusRange(
+          withBonusAttack(withHeroicBonus(withRallyBonus(unit, 0), 0), 0, 0),
+          0,
+          0
+        ),
         hp: event.hp,
         reborn: true,
         burn: 0,
@@ -773,6 +799,20 @@ const applyBonusEvent = (view: BattleView, event: BattleEvent): BattleView => {
       return updateUnit(view, event.unitId, (unit) =>
         withBonusAttack(unit, 0, 0)
       );
+    }
+    case "HeroicGained": {
+      return updateUnit(view, event.unitId, (unit) =>
+        withHeroicBonus(unit, event.heroicBonus)
+      );
+    }
+    case "SoulHarvestGained": {
+      // Soul Harvest adds 1 Attack and 1 HP on top of the other bonuses.
+      return updateUnit(view, event.unitId, (unit) => ({
+        ...unit,
+        attack: unit.attack + 1,
+        hp: event.hp,
+        maxHp: unit.maxHp + 1,
+      }));
     }
     case "RangeGained": {
       return updateUnit(view, event.unitId, (unit) =>

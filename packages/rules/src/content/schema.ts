@@ -107,6 +107,11 @@ const tokenKeywordFields = {
   midRange: Schema.optionalKey(Schema.Literal(true)),
   longRange: Schema.optionalKey(Schema.Literal(true)),
   extremeRange: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * After an attack on an enemy Unit, this Unit gets +N Attack (ADR-0048). N
+   * is 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary. A
+   * content test checks the Rank table.
+   */
   heroic: Schema.optionalKey(KeywordAmount),
   /** Deals this much damage to the nearest enemy Unit ahead when this Unit leaves. */
   lastBreath: Schema.optionalKey(KeywordAmount),
@@ -164,6 +169,35 @@ const tokenKeywordFields = {
   unique: Schema.optionalKey(Schema.Literal(true)),
   /** A push never moves this Unit (GDD 4.7, 5.4). */
   wall: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * In each Start Phase of its owner, this Unit deals N damage of its own
+   * Damage Type to one target at random: an enemy Unit, or the enemy Hero of
+   * its Front (ADR-0050). It applies no Status and has no Crit.
+   */
+  bolt: Schema.optionalKey(KeywordAmount),
+  /** Each Physical hit on this Unit deals at most 4 damage (ADR-0050). */
+  ironGuard: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * When an enemy Unit is killed, this Unit gets +1 Attack and +1 HP
+   * (ADR-0050). Rebirth ends the bonus.
+   */
+  soulHarvest: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * In each Start Phase of its owner, this Unit deals 1 Physical damage to
+   * the enemy Hero of its Front (ADR-0050).
+   */
+  herosBane: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * When an enemy Hero summons a Unit from a Creature Card, this Unit deals N
+   * damage to that Unit (ADR-0050). A Token is not summoned from a Creature
+   * Card, so Spawnbane does not hit a Token.
+   */
+  spawnbane: Schema.optionalKey(KeywordAmount),
+  /**
+   * When this Unit deals Physical damage, it heals HP equal to the damage
+   * (ADR-0050). The heal stops at its maximum HP.
+   */
+  vampirism: Schema.optionalKey(Schema.Literal(true)),
 };
 
 const TokenKeywords = Schema.Struct(tokenKeywordFields);
@@ -185,6 +219,11 @@ const CreatureCardDefinition = Schema.Struct({
   kind: Schema.Literal("creature"),
   id: Schema.NonEmptyString,
   race: RaceId,
+  /**
+   * The Class of a Specialist (ADR-0050). A Deck can hold the card only when
+   * the Deck has this Class. Every creature with Base Rank Legendary has it.
+   */
+  class: Schema.optionalKey(ClassId),
   baseRank: RankId,
   countdown: between(1, 6),
   attack: between(0, 12),

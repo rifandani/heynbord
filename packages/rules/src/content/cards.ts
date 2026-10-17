@@ -5,12 +5,13 @@ import type {
 } from "./schema";
 
 /**
- * The 96 cards in the rules package: 6 Races (Human, Orc, Goblin, Feral, Elf,
- * Undead) and 2 Classes (Warrior, Mage). Each of the 6 Races has its full 15
- * cards (ADR-0013). Goblin, Feral, Elf and Undead have the provisional values
- * of card concepts 6, 7, 4 and 5. Each Race has 1 Pivot card (GDD 3.2). The values are
- * printed for Common. GDD section 13 gives the power budget that `balance.ts`
- * checks.
+ * The 136 cards in the rules package: 96 Creature Cards and 40 Skill Cards.
+ * 6 Races (Human, Orc, Goblin, Feral, Elf, Undead) and 4 Classes (Warrior,
+ * Ranger, Mage, Priest). Each of the 6 Races has its full 16 cards: 15 from
+ * ADR-0013 and 1 Base Rank Legendary Specialist (ADR-0050). Goblin, Feral, Elf
+ * and Undead have the provisional values of card concepts 6, 7, 4 and 5. Each
+ * Race has 1 Pivot card (GDD 3.2). The values are printed for Common. GDD
+ * section 13 gives the power budget that `balance.ts` checks.
  */
 const creatures: readonly CreatureCardDefinition[] = [
   // Human: hold the line.
@@ -187,6 +188,19 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "holy",
     keywords: { midRange: true, bulwark: 1, rally: 2, unique: true },
   },
+  // The Human Specialist (ADR-0050): a Warrior that holds the line.
+  {
+    kind: "creature",
+    id: "human.serAldricStonewall",
+    race: "human",
+    class: "warrior",
+    baseRank: "legendary",
+    countdown: 6,
+    attack: 3,
+    hp: 5,
+    damageType: "physical",
+    keywords: { unique: true, ironGuard: true },
+  },
   // Orc: rush the enemy Hero.
   {
     kind: "creature",
@@ -208,7 +222,11 @@ const creatures: readonly CreatureCardDefinition[] = [
     attack: 3,
     hp: 5,
     damageType: "physical",
-    keywords: { swift: true, heroic: 1, lastBreath: 1 },
+    keywords: {
+      swift: true,
+      heroic: { common: 1, rare: 2, epic: 3, legendary: 4 },
+      lastBreath: 1,
+    },
   },
   {
     kind: "creature",
@@ -241,7 +259,11 @@ const creatures: readonly CreatureCardDefinition[] = [
     attack: 3,
     hp: 3,
     damageType: "physical",
-    keywords: { swift: true, flying: true, heroic: 1 },
+    keywords: {
+      swift: true,
+      flying: true,
+      heroic: { uncommon: 1, rare: 2, epic: 3, legendary: 4 },
+    },
   },
   {
     kind: "creature",
@@ -261,9 +283,9 @@ const creatures: readonly CreatureCardDefinition[] = [
     baseRank: "common",
     countdown: 4,
     attack: 5,
-    hp: 7,
+    hp: 8,
     damageType: "physical",
-    keywords: { heroic: 2 },
+    keywords: { heroic: { common: 1, rare: 2, epic: 3, legendary: 4 } },
   },
   {
     kind: "creature",
@@ -277,7 +299,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     keywords: {
       swift: true,
       charge: { epic: 2, legendary: 3 },
-      heroic: 2,
+      heroic: { epic: 3, legendary: 4 },
       unique: true,
     },
   },
@@ -345,7 +367,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     attack: 4,
     hp: 5,
     damageType: "fire",
-    keywords: { heroic: 2 },
+    keywords: { heroic: { rare: 2, epic: 3, legendary: 4 } },
   },
   {
     kind: "creature",
@@ -356,7 +378,24 @@ const creatures: readonly CreatureCardDefinition[] = [
     attack: 2,
     hp: 4,
     damageType: "physical",
-    keywords: { charge: { epic: 2, legendary: 3 }, heroic: 2, rally: 2 },
+    keywords: {
+      charge: { epic: 2, legendary: 3 },
+      heroic: { epic: 3, legendary: 4 },
+      rally: 2,
+    },
+  },
+  // The Orc Specialist (ADR-0050): a Mage that burns at random.
+  {
+    kind: "creature",
+    id: "orc.ashcallerGrosh",
+    race: "orc",
+    class: "mage",
+    baseRank: "legendary",
+    countdown: 5,
+    attack: 2,
+    hp: 4,
+    damageType: "fire",
+    keywords: { unique: true, bolt: 2 },
   },
   // Goblin: make the enemy plan slower (provisional, card concepts 6).
   {
@@ -523,6 +562,19 @@ const creatures: readonly CreatureCardDefinition[] = [
     hp: 4,
     damageType: "fire",
     keywords: { unique: true, sabotage: 1, lastBreath: 3 },
+  },
+  // The Goblin Specialist (ADR-0050): a Ranger that chips the enemy Hero.
+  {
+    kind: "creature",
+    id: "goblin.grixRatwhistle",
+    race: "goblin",
+    class: "ranger",
+    baseRank: "legendary",
+    countdown: 6,
+    attack: 4,
+    hp: 4,
+    damageType: "physical",
+    keywords: { unique: true, herosBane: true },
   },
   // Feral: few, huge and slow (provisional, card concepts 7).
   {
@@ -693,7 +745,21 @@ const creatures: readonly CreatureCardDefinition[] = [
       trample: true,
       bleed: { epic: 2, legendary: 3 },
     },
-  }, // Elf: control from range, heal and poison.
+  },
+  // The Feral Specialist (ADR-0050): a Priest beast that heals by its bite.
+  {
+    kind: "creature",
+    id: "feral.gorehornRedMaw",
+    race: "feral",
+    class: "priest",
+    baseRank: "legendary",
+    countdown: 6,
+    attack: 2,
+    hp: 6,
+    damageType: "physical",
+    keywords: { unique: true, vampirism: true },
+  },
+  // Elf: control from range, heal and poison.
   {
     kind: "creature",
     id: "elf.rootboundGuard",
@@ -858,6 +924,19 @@ const creatures: readonly CreatureCardDefinition[] = [
     hp: 6,
     damageType: "holy",
     keywords: { midRange: true, unique: true, entangle: true, regenerate: 2 },
+  },
+  // The Elf Specialist (ADR-0050): a Ranger warden that punishes a summon.
+  {
+    kind: "creature",
+    id: "elf.wardenSaelith",
+    race: "elf",
+    class: "ranger",
+    baseRank: "legendary",
+    countdown: 5,
+    attack: 2,
+    hp: 5,
+    damageType: "physical",
+    keywords: { unique: true, longRange: true, spawnbane: 2 },
   },
   // Undead: many cheap Units that grow stronger together, come back and bring more.
   {
@@ -1028,6 +1107,19 @@ const creatures: readonly CreatureCardDefinition[] = [
     hp: 5,
     damageType: "physical",
     keywords: { wall: true, bulwark: 2, rebirth: true },
+  },
+  // The Undead Specialist (ADR-0050): a Priest that grows with each kill.
+  {
+    kind: "creature",
+    id: "undead.paleCantorYsolde",
+    race: "undead",
+    class: "priest",
+    baseRank: "legendary",
+    countdown: 5,
+    attack: 3,
+    hp: 4,
+    damageType: "physical",
+    keywords: { unique: true, soulHarvest: true },
   },
 ];
 

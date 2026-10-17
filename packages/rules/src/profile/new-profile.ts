@@ -40,5 +40,6 @@ export const newProfile = (seed: number): Profile => ({
   seenHints: [],
   completedAchievements: [],
   claimedAchievements: [],
+  cosmetics: [],
   tallies: NO_TALLIES,
 });

@@ -6,6 +6,7 @@ import {
   activeHeroes,
   activateKeyword,
   direction,
+  findUnit,
   heroState,
   isInsideLane,
   isOver,
@@ -13,6 +14,7 @@ import {
   unitAt,
   unitDealer,
 } from "./context";
+import { healedAmount, healUnit } from "./heal";
 import type {
   BattleResult,
   DamageDealer,
@@ -39,6 +41,8 @@ export interface Hit {
   readonly trueDamage?: boolean;
   /** A Unit that the hit kills does not come back with Rebirth (*Smite*). */
   readonly noRebirth?: boolean;
+  /** The hit applies no Status, also with Fire, Frost or Lightning damage (Bolt). */
+  readonly noStatus?: boolean;
 }
 
 /** Burn, Poison and Sudden Death are status damage: no Bulwark, no Crit, no Block, no new status. */
@@ -52,6 +56,52 @@ export const finishBattle = (ctx: StepContext, result: BattleResult): void => {
 };
 
 /**
+ * Vampirism (ADR-0050): the Unit heals the HP that its Physical hit dealt.
+ * Every Physical hit counts, also Retaliate and Trample. The heal stops at
+ * its maximum HP.
+ */
+const vampirism = (ctx: StepContext, hit: Hit, amount: number): void => {
+  if (
+    hit.damageType !== "physical" ||
+    isStatusDamage(hit.source) ||
+    hit.dealer?._tag !== "Unit"
+  ) {
+    return;
+  }
+  const dealer = findUnit(ctx.state, hit.dealer.unitId);
+  if (!dealer || !dealer.vampirism || healedAmount(dealer, amount) <= 0) {
+    return;
+  }
+  activateKeyword(ctx, dealer, "vampirism");
+  healUnit(ctx, dealer, amount);
+};
+
+/**
+ * Soul Harvest (ADR-0050): each Unit of the other Side gets +1 Attack and +1
+ * HP when an enemy Unit is killed. A kill by any source counts. A Rebirth is
+ * not a kill, and a Unit that a Defeated Hero removes is not a kill.
+ */
+const soulHarvest = (ctx: StepContext, dead: UnitState): void => {
+  const side = otherSide(dead.owner);
+  for (const unit of ctx.state.units) {
+    if (unit.owner !== side || !unit.soulHarvest) {
+      continue;
+    }
+    unit.soulHarvestBonus += 1;
+    unit.maxHp += 1;
+    unit.hp += 1;
+    activateKeyword(ctx, unit, "soulHarvest");
+    ctx.events.push(
+      BattleEvent.SoulHarvestGained({
+        unitId: unit.id,
+        soulHarvest: unit.soulHarvestBonus,
+        hp: unit.hp,
+      })
+    );
+  }
+};
+
+/**
  * The Unit leaves the Board. The Card of a Card Unit goes to the owner's
  * Graveyard. A Token has no Card: it just disappears (GDD 4.9).
  */
@@ -62,6 +112,7 @@ const killUnit = (ctx: StepContext, unit: UnitState): void => {
     heroState(state, ownerOf(unit)).graveyard.push(unit.source.card);
   }
   ctx.events.push(BattleEvent.UnitDied({ unitId: unit.id }));
+  soulHarvest(ctx, unit);
   if (unit.lastBreath <= 0 || isOver(ctx)) {
     return;
   }
@@ -112,6 +163,11 @@ const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
   unit.exposedTurns = 0;
   unit.ward = 0;
   unit.rallied = 0;
+  unit.heroicBonus = 0;
+  // The Soul Harvest bonus raised both the current and the maximum HP, so
+  // Rebirth takes the maximum HP back too (ADR-0050).
+  unit.maxHp -= unit.soulHarvestBonus;
+  unit.soulHarvestBonus = 0;
   unit.bonusBulwark = 0;
   unit.bonusBulwarkTurns = 0;
   unit.bonusAttack = 0;
@@ -146,6 +202,36 @@ const applyStatus = (
       BattleEvent.StatusApplied({ unitId: unit.id, status: "paralyze" })
     );
   }
+};
+
+/** Applies the Status of a hit, except for status damage and a hit with `noStatus` (Bolt). */
+const applyHitStatus = (
+  ctx: StepContext,
+  unit: UnitState,
+  hit: Hit,
+  status: boolean
+): void => {
+  if (status || hit.noStatus === true) {
+    return;
+  }
+  applyStatus(ctx, unit, hit.damageType);
+};
+
+/**
+ * Iron Guard (ADR-0050): a Physical hit deals at most 4 damage. It comes after
+ * Bulwark, Crit, Block and Exposed, and before Ward.
+ */
+const ironGuardCap = (
+  ctx: StepContext,
+  unit: UnitState,
+  physical: boolean,
+  amount: number
+): number => {
+  if (!physical || !unit.ironGuard || amount <= 4) {
+    return amount;
+  }
+  activateKeyword(ctx, unit, "ironGuard");
+  return 4;
 };
 
 interface HitResult {
@@ -197,6 +283,8 @@ export const damageUnit = (
   if (blocked) {
     amount = Math.ceil(amount / 2);
   }
+  // Iron Guard (ADR-0050): a Physical hit deals at most 4 damage.
+  amount = ironGuardCap(ctx, unit, physical, amount);
   // A Ward absorbs status damage, but not True Damage.
   const absorbed = trueDamage ? 0 : Math.min(unit.ward, amount);
   unit.ward -= absorbed;
@@ -228,6 +316,7 @@ export const damageUnit = (
   if (held) {
     ctx.events.push(BattleEvent.SteadfastHeld({ unitId: unit.id }));
   }
+  vampirism(ctx, hit, amount);
   if (unit.hp <= 0) {
     const noRebirth = hit.noRebirth ?? false;
     if (noRebirth || !rebirth(ctx, unit)) {
@@ -235,9 +324,7 @@ export const damageUnit = (
     }
     return { dealt: amount, killed: true };
   }
-  if (!status) {
-    applyStatus(ctx, unit, hit.damageType);
-  }
+  applyHitStatus(ctx, unit, hit, status);
   return { dealt: amount, killed: false };
 };
 
@@ -336,6 +423,7 @@ export const damageHero = (ctx: StepContext, ref: HeroRef, hit: Hit): void => {
       hp: hero.hp,
     })
   );
+  vampirism(ctx, hit, amount);
   // A Hero target is also a valid `ref`: keep only the Side and the index.
   const owner = { side: ref.side, hero: ref.hero };
   if (hero.hp === 0) {

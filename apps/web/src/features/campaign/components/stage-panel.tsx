@@ -277,7 +277,7 @@ export const DeckRow = ({
   readonly choice: ReturnType<typeof useDeckChoice>;
   readonly onEdit: () => void;
   /**
-   * Two columns of Decks when the row has the space (the Dungeon rail). Edit
+   * Two columns of Decks when the row has the space (the Dungeon Panel). Edit
    * Decks then takes the next cell, so an odd count of Decks adds no row.
    */
   readonly wide?: boolean;

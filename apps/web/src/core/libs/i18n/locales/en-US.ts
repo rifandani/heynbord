@@ -49,6 +49,7 @@ export default {
     boss: "Boss",
     dungeonName: "Dungeon {number}",
     bosses: "Enemy Bosses",
+    specialist: "Specialist",
     bossPlate: {
       label: "{name}, {className}: HP {hp} of {maxHp}. {lanes}.",
       labelDefeated: "{name}: Defeated.",
@@ -267,6 +268,9 @@ export default {
       cleansed: "All Debuffs of {unit} end.",
       bulwark: "{unit} gets Bulwark +{value}.",
       attackBonus: "{unit} gets Attack +{value}.",
+      heroicBonus: "{unit} now has a Heroic bonus of Attack +{value}.",
+      soulHarvest:
+        "{unit} gets Soul Harvest: the bonus is now +{value} Attack and +{value} HP.",
       rangeBonus: "{unit} gets Range +{value}.",
       fieldPlaced: "{card} stays on the Board. Hits: {turns}.",
       fieldStruck: "{card} hits its area. Hits left: {turns}.",
@@ -411,7 +415,8 @@ export default {
       notWon: "Not won yet",
       reward: "Reward",
       firstWin: "First win: this card, Coin and XP.",
-      repeatWin: "Repeat win: Coin, XP and a chance of a card from this Stage.",
+      repeatWin:
+        "Repeat win: Coin and a chance of a card from this Stage. No XP.",
       stars: "Stars",
       starRule: {
         1: "Win the Battle.",
@@ -567,7 +572,7 @@ export default {
     },
     collection: {
       half: { name: "Half the Book", goal: "Discover 65 cards" },
-      all: { name: "The Full Book", goal: "Discover all 130 cards" },
+      all: { name: "The Full Book", goal: "Discover all 136 cards" },
     },
     packs: {
       fifty: { name: "Regular Customer", goal: "Open 50 Packs" },
@@ -661,6 +666,56 @@ export default {
         goal: "Win Dungeon 3 with your Hero at full HP",
       },
     },
+  },
+  bazaar: {
+    label: "Bazaar",
+    title: "The Bazaar",
+    note: "The Bazaar sells only Cosmetics. You own each one forever.",
+    families: {
+      cardBack: "Card backs",
+      heroPortrait: "Hero portraits",
+      gearLook: "Gear looks",
+      boardSkin: "Board skins",
+    },
+    items: {
+      tentStripes: "Tent Stripes",
+      goldFleur: "Gold Fleur",
+      seaChart: "Sea Chart",
+      lanternSails: "Lantern Sails",
+      goatBite: "Goat-bitten Back",
+      dawnGaze: "Dawn Gaze",
+      verdantCrest: "Verdant Crest",
+      mesaShade: "Mesa Shade",
+      saltWind: "Salt Wind",
+      lanternKeeper: "Lantern Keeper",
+      tentRings: "Tent Rings",
+      goldCrest: "Gold Crest",
+      copperRim: "Copper Rim",
+      ironVine: "Iron Vine",
+      stagLeather: "Stag Leather",
+      goldInlay: "Gold Inlay",
+      moonstone: "Moonstone",
+      royalPlate: "Royal Plate",
+      meadowDawn: "Meadow Dawn",
+      mesaDusk: "Mesa Dusk",
+      harborNight: "Harbor Night",
+      hollowMoon: "Hollow Moon",
+      wardenSash: "Warden Sash",
+      duneMask: "Dune Mask",
+      hollowLantern: "Hollow Lantern",
+      thornCrown: "Thorn Crown",
+      spireDawn: "Spire Dawn",
+      constellationSeal: "Constellation Seal",
+      archivistCrest: "Archivist Crest",
+      flawlessPlate: "Flawless Plate",
+    },
+    price: "{amount} Heynstones",
+    buy: "Buy",
+    buyLabel: "Buy {name} for {amount} Heynstones",
+    owned: "Owned",
+    ownedLabel: "You own this",
+    bought: "You bought {name}.",
+    cannotBuy: "You cannot buy it now.",
   },
   tutorial: {
     label: "Tutorial",
@@ -834,10 +889,10 @@ export default {
     playerXpTable: "Campaign XP by result",
     playerXpRegionColumn: "Region",
     playerXpWinColumn: "Repeat win",
-    playerXpFirstColumn: "First win (×2)",
-    playerXpLossColumn: "Loss (up to 25%)",
+    playerXpFirstColumn: "First win",
+    playerXpLossColumn: "Loss (at most)",
     playerXpNote:
-      "First win is the first time you clear a Stage. A Boss Stage doubles all values in this table again.",
+      "First win is the first time you clear a Stage. A repeat win and a Campaign Sweep give no XP. A loss gives a part of its value, for the HP that you took from the enemy Heroes. A Boss Stage doubles all values in this table.",
     playerGrowthLevelColumn: "Level",
     playerGrowthHeroColumn: "Hero HP",
     playerGrowthDeckColumn: "Max Deck",
@@ -1028,13 +1083,13 @@ export default {
       stars:
         "When you win a Stage, you earn 1 to 3 Stars. A loss gives 0 Stars.\n\nEach Star adds a condition on the one before it. Half of your Hero HP means your Hero has at least 50% of its maximum HP when the Battle ends. The Star Turn is the Turn number that a 3-Star win must come before. Each Stage has its own Star Turn, and its Stage Panel shows it.\n\nThe Campaign keeps your best Stars for each Stage. The total Stars in a Region open its chests at 10, 20 and 30 Stars.",
       sweep:
-        "A Sweep gives the repeat-win rewards of a Stage or a Dungeon at once. No Battle occurs, and a Sweep always wins. One Sweep uses 1 to {max} Tickets, and each Ticket gives one repeat-win reward.\n\nCampaign Sweep: when your best Stars on a Stage are 3, its Stage Panel has a Sweep button. It uses Campaign Sweep Tickets. Each Ticket gives Coin, XP, and the chances of a card and of a Forge Stone of the Stage.\n\nDungeon Sweep: when you won a Dungeon, the Dungeons screen has a Sweep button for it. It uses Dungeon Sweep Tickets. Each Ticket gives the Coin and the XP or Essence of the Dungeon, and the chances of a card and of Forge Stones.\n\nThe Class of your Active Deck sets the cards that a Sweep can give. A Sweep never changes your Stars or your Dungeon wins, and it gives no Tickets.\n\nCampaign Sweep Tickets: {campaignTickets} for each Stage win. Dungeon Sweep Tickets: {dungeonTickets} for each Dungeon win. A loss gives none. The 2 types of Ticket never change into each other, and you cannot buy them.",
+        "A Sweep gives the repeat-win rewards of a Stage or a Dungeon at once. No Battle occurs, and a Sweep always wins. One Sweep uses 1 to {max} Tickets, and each Ticket gives one repeat-win reward.\n\nCampaign Sweep: when your best Stars on a Stage are 3, its Stage Panel has a Sweep button. It uses Campaign Sweep Tickets. Each Ticket gives Coin and the chances of a card and of a Forge Stone of the Stage. It gives no XP.\n\nDungeon Sweep: when you won a Dungeon, the Dungeons screen has a Sweep button for it. It uses Dungeon Sweep Tickets. Each Ticket gives the Coin and the XP or Essence of the Dungeon, and the chances of a card and of Forge Stones.\n\nThe Class of your Active Deck sets the cards that a Sweep can give. A Sweep never changes your Stars or your Dungeon wins, and it gives no Tickets.\n\nCampaign Sweep Tickets: {campaignTickets} for each Stage win. Dungeon Sweep Tickets: {dungeonTickets} for each Dungeon win. A loss gives none. The 2 types of Ticket never change into each other, and you cannot buy them.",
       playerLevel:
-        "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from each Battle, also from a loss. A loss gives XP and Coin only for the HP that you took from the enemy Heroes.",
+        "Your Player level is account progress from 1 to {maxLevel}. XP from Battles fills the bar. You get XP from Battles, also from a loss. A loss gives XP and Coin only for the HP that you took from the enemy Heroes. A repeat win of a Stage and a Campaign Sweep give no XP.",
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
       pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
       workshop:
-        "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank.",
+        "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nThe Workshop has 3 stations: Combine, Craft and Extract. Select a station at the top, then a card. The station marks the cards that it can act on now, and its filter can show only those cards. A spare copy is a copy that no saved Deck uses.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank. A found card is a card that you owned one time or more. A card with 0 copies stays found, also after you Extract its last copy, so you can Craft it. You cannot Craft a card that you never owned. To get a new card, open Packs: a Merchant Pack and a Royal Pack select a card that you do not have yet, if the rolled Rank permits one.",
       gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin and 1 Forge Stone. The level sets the tier of the Forge Stone: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15, Epic for 16 to 20 and Legendary for 21 to 25. A Forge Stone of a different tier cannot replace it. An upgrade never fails, and a level never goes down.\n\nStage wins, Star chests, Sweeps, Dungeons and Heynspire give Forge Stones. You cannot buy them. The Hero screen shows the Forge Stones that you have.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
       dungeon:
         "A Dungeon is a place outside the Campaign. The cave in the Town and the Dungeons shortcut open the Dungeons screen, from Player level {level}.\n\nIn a Dungeon, you fight all its Bosses in one Battle. The Board has {lanes} Lanes. Each Boss is an enemy Hero with its own Front, Hand and Deck. A Unit at the end of a Lane attacks the Boss of that Front.\n\nA Boss Rule activates one time, when the HP of its Boss goes to a set percent or lower. The HP bar of the Boss shows a notch at that percent.\n\nA Dungeon win gives no Stars. After a win, you can play the Dungeon again or Sweep it. Dungeon Sweep Tickets: {tickets} for each Dungeon win.",
@@ -1265,12 +1320,55 @@ export default {
       noneFound: "You found no {group} yet.",
       noneOwned: "You have no copies of {group} now.",
       allOwned: "You have copies of all the {group} that you found.",
+      ready: {
+        combine: "You have no pairs of {group} now.",
+        craft: "You cannot Craft {group} now.",
+        extract: "You have no spare copies of {group}.",
+      },
+    },
+    stations: "Workshop actions",
+    station: {
+      combine: {
+        name: "Combine",
+        recipe: "2 copies → next Rank",
+        count: "{count} cards with a pair",
+        ready: "Pairs only",
+      },
+      craft: {
+        name: "Craft",
+        recipe: "Essence → 1 copy",
+        count: "{count} cards that you can Craft now",
+        ready: "Can Craft",
+        locked: "Level {level}",
+        lockedLabel: "Craft opens at level {level}",
+      },
+      extract: {
+        name: "Extract",
+        recipe: "1 copy → Essence",
+        count: "{count} spare copies",
+        ready: "Spare only",
+      },
+    },
+    pairMark: "Pair",
+    spareMark: "{count} spare",
+    spareCopies: "{count} spare copies",
+    craftMark: "Craft for {essence} Essence",
+    craftPanel: {
+      gives: "1 {rank} copy",
+      recipe: "{essence} Essence makes 1 {rank} copy of {name}.",
+      after: "Your Essence: {now} → {after}",
+      short: "Your Essence: {now}. You need {missing} more.",
+      none: "You cannot Craft this card.",
+      own: "You own",
+    },
+    extractPanel: {
+      none: "You have no copies of this card. Craft one, or get one from a Pack.",
+      spare: "Spare ×{count}",
     },
     noCopies: "0 copies",
     copies: "×{count}",
     rankCopies: "{rank}, copies: {count}",
     pairReady: "A pair is ready to Combine",
-    combineCount: "2 → 1",
     combineLabel: "Combine 2 {from} copies into 1 {to} copy, for {price}",
     combineCopiesLabel: "Combine {from} to {to}: you need 2 {from} copies",
     combineCoinLabel: "Combine {from} to {to}: you need {amount} more",
@@ -1533,6 +1631,7 @@ export default {
       essence: "+{amount} Essence",
     },
     wins: "Wins: {count}",
+    fightLabel: "Fight: {name}",
     "dungeon-1": {
       name: "The Rootdeep Mine",
       bosses: {
@@ -1646,6 +1745,7 @@ export default {
   },
   keywords: {
     bleed: "Bleed {value}",
+    bolt: "Bolt {value}",
     bulwark: "Bulwark {value}",
     charge: "Charge {value}",
     entangle: "Entangle",
@@ -1655,7 +1755,9 @@ export default {
     flying: "Flying",
     heavy: "Heavy",
     heroic: "Heroic {value}",
+    herosBane: "Hero's Bane",
     hobble: "Hobble {value}",
+    ironGuard: "Iron Guard",
     knockback: "Knockback {value}",
     lastBreath: "Last Breath {value}",
     longRange: "Long-range",
@@ -1667,11 +1769,14 @@ export default {
     regenerate: "Regenerate {value}",
     retaliate: "Retaliate",
     sabotage: "Sabotage {value}",
+    soulHarvest: "Soul Harvest",
+    spawnbane: "Spawnbane {value}",
     summon: "Summon {token}",
     swarm: "Swarm {value}",
     swift: "Swift",
     trample: "Trample",
     unique: "Unique",
+    vampirism: "Vampirism",
     wall: "Wall",
     ranged: "Ranged {value}",
     melee: "Melee",
@@ -1679,6 +1784,7 @@ export default {
   keywordRules: {
     bleed:
       "The enemy Unit it hits gets half of each heal, rounded down, for {value} Turns. Retaliate does not apply Bleed.",
+    bolt: "In each of your Start Phases, this Unit deals {value} damage of its Damage Type to a random enemy Unit, or to the enemy Hero in front of it. It applies no Status.",
     bulwark: "Reduces Physical damage to this Unit by {value}.",
     charge: "+{value} Speed in the Turn when you summon this Unit.",
     entangle:
@@ -1686,6 +1792,9 @@ export default {
     extremeRange: "+3 Range.",
     fleet: "+2 Speed.",
     heavy: "−1 Speed.",
+    herosBane:
+      "In each of your Start Phases, this Unit deals 1 Physical damage to the enemy Hero in front of it.",
+    ironGuard: "Each Physical hit on this Unit deals at most 4 damage.",
     longRange: "+2 Range.",
     midRange: "+1 Range.",
     swift: "+1 Speed.",
@@ -1693,7 +1802,7 @@ export default {
       "When an enemy melee Unit attacks this Unit, this Unit deals its damage first. If the attacker dies, its attack does not occur.",
     flying:
       "Moves over all Units except enemy Flying Unit. It stops in an empty Square.",
-    heroic: "+{value} damage when this Unit attacks a Hero.",
+    heroic: "After this Unit attacks an enemy Unit, it gets +{value} Attack.",
     hobble:
       "The enemy Unit it hits has a maximum Speed of 1 for {value} Turns. Retaliate does not apply Hobble.",
     knockback:
@@ -1711,9 +1820,15 @@ export default {
       "When this Unit survives a melee attack, it deals its Attack to the attacker.",
     sabotage:
       "When this Unit comes from its card, the card with the lowest Countdown in the enemy Hand gets +{value} Countdown. A Ready card is the lowest.",
+    soulHarvest:
+      "When an enemy Unit dies, this Unit gets +1 Attack and +1 HP. Rebirth ends the bonus.",
+    spawnbane:
+      "When an enemy Hero summons a Unit from a Creature Card, this Unit deals {value} damage to it. A Token is not a Unit from a Creature Card.",
     trample:
       "When this Unit kills an enemy Unit with an attack, the damage that is left hits the enemy Unit in the next Square behind it. It never hits a Hero.",
     unique: "Only one copy of this card can be on your side of the Board.",
+    vampirism:
+      "When this Unit deals Physical damage, it heals HP equal to the damage.",
     wall: "This Unit can't move and can't attack. You can summon it into the 5 Squares nearest to your Hero. It blocks enemy Units in its Lane, and a push never moves it.",
     rebirth:
       "The first time this Unit dies, it comes back in the same Square with 1 HP. Its Statuses end, and it loses Rebirth.",
@@ -1858,6 +1973,10 @@ export default {
         name: "Marshal Elian Voss",
         flavor: "Hold the line. I have six more reasons.",
       },
+      serAldricStonewall: {
+        name: "Ser Aldric Stonewall",
+        flavor: "Hold the line. Then hold the line again.",
+      },
     },
     orc: {
       badlandRunt: {
@@ -1916,6 +2035,10 @@ export default {
       warbandStandardBearer: {
         name: "Warband Standard-Bearer",
         flavor: "Follow the banner. Ignore where it is going.",
+      },
+      ashcallerGrosh: {
+        name: "Ashcaller Grosh",
+        flavor: "Everything burns. Some things burn on a schedule.",
       },
     },
     goblin: {
@@ -1979,6 +2102,10 @@ export default {
         name: "Boss Snikkit",
         flavor: '"Everything down here is mine. That is the joke. Laugh."',
       },
+      grixRatwhistle: {
+        name: "Grix Ratwhistle",
+        flavor: "He does not aim at you. He aims at the one behind you.",
+      },
     },
     feral: {
       bristlebackBoar: {
@@ -2040,6 +2167,10 @@ export default {
       oldFrostmaw: {
         name: "Old Frostmaw",
         flavor: "Every village has a story about it. Every story is too small.",
+      },
+      gorehornRedMaw: {
+        name: "Gorehorn Red Maw",
+        flavor: "It eats what it kills. Then it keeps the leftovers.",
       },
     },
     elf: {
@@ -2103,6 +2234,10 @@ export default {
         name: "Lethiel, First Gardener",
         flavor: "The forest grew wild. Lethiel called it adequate.",
       },
+      wardenSaelith: {
+        name: "Warden Saelith",
+        flavor: "Every gate has a warden. This one shoots first.",
+      },
     },
     undead: {
       graveyardDrudge: {
@@ -2164,6 +2299,10 @@ export default {
       boneRampart: {
         name: "Bone Rampart",
         flavor: "Please use the other Lane.",
+      },
+      paleCantorYsolde: {
+        name: "Pale Cantor Ysolde",
+        flavor: "She sings the dead into a better shape.",
       },
     },
     warrior: {

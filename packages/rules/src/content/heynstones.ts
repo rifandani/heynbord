@@ -1,9 +1,11 @@
 import { ACHIEVEMENT_HEYNSTONES, ACHIEVEMENTS } from "./achievements";
 import {
+  HEYNSPIRE_FLOORS,
   HEYNSPIRE_BOSS_FLOOR_EVERY,
   HEYNSPIRE_BOSS_FLOOR_REWARD,
-  HEYNSPIRE_FLOORS,
 } from "./heynspire";
+
+const bossFloors = Math.floor(HEYNSPIRE_FLOORS / HEYNSPIRE_BOSS_FLOOR_EVERY);
 
 /** A one-time Heynstone source of v1 (Economy 2.6). */
 export type HeynstoneSourceId = "achievements" | "heynspireFloors";
@@ -17,14 +19,6 @@ export interface HeynstoneSource {
   /** True when the value is an estimate ("about" in the Economy table). */
   readonly estimate: boolean;
 }
-
-/**
- * The Heynstone cost of the full Bazaar catalog: an ESTIMATE ("about 2,400"
- * for about 22 Cosmetics, Economy 3.5), until the list of Cosmetics exists.
- */
-export const BAZAAR_CATALOG_HEYNSTONES_ESTIMATE = 2400;
-
-const bossFloors = Math.floor(HEYNSPIRE_FLOORS / HEYNSPIRE_BOSS_FLOOR_EVERY);
 
 /**
  * The one-time Heynstone sources of v1 (Economy 2.6). The Player cannot farm

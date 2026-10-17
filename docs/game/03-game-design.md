@@ -39,12 +39,12 @@ The player is a new Hero. The player travels through five Regions, wins the resp
 
 | Race | Concept | Battle identity | Main Keywords |
 | --- | --- | --- | --- |
-| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong Bulwark, Walls and support for allies. | **Knockback**, Bulwark, Rally, Retaliate, Wall, Heavy |
-| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | **Entangle**, Regenerate, Poison, Flying, Long-range |
-| **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | **Rebirth**, Swarm, Summon, Frost damage |
-| **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them. | **Heroic**, Charge, Swift, Fire damage, Last Breath |
-| **Goblin** | Goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. | Make the enemy plan slower. Cheap, fragile Units that delay enemy cards, set traps and explode. | **Sabotage**, Hobble, Last Breath, Fire damage |
-| **Feral** | Wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. | Few, huge and slow. High Countdown, high Attack and HP. They run through the enemy front, heal and bring the cold. | **Trample**, Regenerate, Flying, Frost damage |
+| **Human** | Humans and stout folk of the river towns. Proud and stubborn. They love banners and long speeches. | Hold the line. Strong Bulwark, Walls and support for allies. | **Knockback**, Bulwark, Rally, Retaliate, Wall, Heavy, Iron Guard |
+| **Elf** | Elves of the old forests, and the plant spirits that fight with them. Patient and old. | Control from range. Ranged Units, healing, and poison. | **Entangle**, Regenerate, Poison, Flying, Long-range, Spawnbane |
+| **Undead** | Old spirits that wear bones and armor. They do not like to stay dead. | Many cheap Units that grow stronger together, come back, and bring more. | **Rebirth**, Swarm, Summon, Frost damage, Soul Harvest |
+| **Orc** | Orc tribes of the badlands, and the beasts that fight with them. Fast, loud and always hungry. | Rush in and grow stronger with each fight. High attack, low HP. They still hit the Unit that kills them. | **Heroic**, Charge, Swift, Fire damage, Last Breath, Bolt |
+| **Goblin** | Goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. | Make the enemy plan slower. Cheap, fragile Units that delay enemy cards, set traps and explode. | **Sabotage**, Hobble, Last Breath, Fire damage, Hero's Bane |
+| **Feral** | Wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. | Few, huge and slow. High Countdown, high Attack and HP. They run through the enemy front, heal and bring the cold. | **Trample**, Regenerate, Flying, Frost damage, Vampirism |
 
 The **Pivot** Keyword (see 5.4) is not part of the identity of one Race. In v1, each Race has 1 Creature Card with Pivot, with Base Rank Uncommon.
 
@@ -186,12 +186,12 @@ Each attack and each damage effect has a **Damage Type**.
 | **Holy** | Normal damage. The Hero of the target cannot **Block** Holy damage ([ADR-0031](../adr/0031-armor-reduces-only-physical-damage.md)). |
 | **Lightning** | Normal damage. The target also gets **Paralyzed**: it does not attack in its next action, but it can still move (4.4). A Ranged Creature Card with Lightning needs a lock check in the simulation before it goes into the content, the same as for Frost ([ADR-0029](../adr/0029-lightning-damage-gives-paralyzed.md)). |
 
-Burn, Freeze, Paralyzed, Entangled, Poisoned, Hobbled, Bleeding, Exposed, Grounded, Ward and Steadfast are **Statuses**. Each Status is a **Buff** (it helps its Unit) or a **Debuff** (it harms its Unit). Ward and Steadfast are the Buffs. The other Statuses are Debuffs. A bonus to a stat, such as the Rally bonus, the Swarm bonus, bonus Bulwark or bonus Attack, is not a Buff. Fire, Frost and Lightning damage give Burn, Freeze and Paralyzed. Each damage source gives them: attacks, Retaliate, First Strike, Trample, Last Breath damage, Skill damage and Field Effects. The Entangle Keyword gives Entangled after attack damage. The Poison Keyword gives Poisoned after attack damage above 0. The Hobble Keyword gives Hobbled after attack damage above 0. The Bleed Keyword gives Bleeding after attack damage above 0. Fire, Frost or Lightning gives its Status also when the hit does 0 damage. Entangle, Poison, Hobble and Bleed need damage above 0. A Skill Card can give Poisoned stacks also at 0 damage (4.8). Bleeding does no damage. Burn damage and Poison damage ignore Bulwark, Crit and Block. Burn damage does not give a new Burn. Poison damage has no Damage Type, and it does not give Burn or Poison.
+Burn, Freeze, Paralyzed, Entangled, Poisoned, Hobbled, Bleeding, Exposed, Grounded, Ward and Steadfast are **Statuses**. Each Status is a **Buff** (it helps its Unit) or a **Debuff** (it harms its Unit). Ward and Steadfast are the Buffs. The other Statuses are Debuffs. A bonus to a stat, such as the Rally bonus, the Swarm bonus, the Heroic bonus, bonus Bulwark or bonus Attack, is not a Buff. Fire, Frost and Lightning damage give Burn, Freeze and Paralyzed. Each damage source gives them: attacks, Retaliate, First Strike, Trample, Last Breath damage, Skill damage and Field Effects. The Entangle Keyword gives Entangled after attack damage. The Poison Keyword gives Poisoned after attack damage above 0. The Hobble Keyword gives Hobbled after attack damage above 0. The Bleed Keyword gives Bleeding after attack damage above 0. Fire, Frost or Lightning gives its Status also when the hit does 0 damage. Entangle, Poison, Hobble and Bleed need damage above 0. A Skill Card can give Poisoned stacks also at 0 damage (4.8). Bleeding does no damage. Burn damage and Poison damage ignore Bulwark, Crit and Block. Burn damage does not give a new Burn. Poison damage has no Damage Type, and it does not give Burn or Poison.
 
 To calculate damage, do these steps in this order:
 
 1. Start with the Attack value of the attacker (or the value of the effect).
-2. Add bonuses (for example Heroic or Rally).
+2. Add bonuses (for example the Rally bonus or the Heroic bonus).
 3. Subtract the Bulwark of the target, if the Damage Type is Physical. The result is 0 or more.
 4. If the target is **Exposed** and the hit is Physical, add the Exposed value.
 5. Roll **Crit** for the attacker's Hero. A Crit multiplies the damage by 2.
@@ -254,7 +254,7 @@ To calculate damage, do these steps in this order:
 
 - When a Unit from a Creature Card has 0 HP, it leaves the Board and goes to its owner's Graveyard. A Token disappears instead.
 - Last Breath effects resolve when the Unit leaves the Board. A v1 Last Breath either deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that the Unit left.
-- **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses (also a Ward), its bonus Bulwark and its Rally bonus end. A Unit with Steadfast does not die from the hit (4.7), so it keeps its Rebirth. A Unit that *Smite* kills does not come back: it dies as a Unit without Rebirth.
+- **Rebirth:** The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses (also a Ward), its bonus Bulwark, its bonus Attack, its bonus Range, its Rally bonus, its Heroic bonus and its Soul Harvest bonus end. A Unit with Steadfast does not die from the hit (4.7), so it keeps its Rebirth. A Unit that *Smite* kills does not come back: it dies as a Unit without Rebirth.
 - **Tokens** (Units that effects create) use the Rank of the Card or effect that made them. They do not go to the Graveyard. They disappear.
 
 ### 4.10 Win, loss and Sudden Death
@@ -302,7 +302,7 @@ The game shows the best Star result for each Stage. The word "star" is only for 
 
 | Type | Description |
 | --- | --- |
-| **Creature Card** | A card that summons a Unit onto the Board. It has a Race. |
+| **Creature Card** | A card that summons a Unit onto the Board. It has a Race. A **Specialist** (Base Rank Legendary) also has one Class. |
 | **Skill Card** | A card with a one-time effect. It has a Class. Only a Hero of the same Class can use it. |
 
 A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand or in the Deck. Do not mix the two words.
@@ -315,6 +315,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | --- | --- | --- |
 | Name | Unique name of the card | — |
 | Race | Human, Elf, Undead, Orc, Goblin or Feral | — |
+| Class | Warrior, Ranger, Mage or Priest. Only a Specialist has it. | — |
 | Rank | Common to Legendary | — |
 | Countdown | Turns until Ready | 1 to 6 |
 | Attack | Damage of one attack | 0 to 12 |
@@ -351,6 +352,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 - Keyword values can also go up with the Rank. The card data defines this.
 - Stat values are integers. Round to the nearest integer.
 - Each card has a **Base Rank**. This is the lowest Rank in which the card exists. A card can go up to Legendary with Combine.
+- A Creature Card with Base Rank Legendary is a **Specialist**. It has one Class, and it has Unique. There is no Combine above Legendary, so a Specialist has no higher Rank ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
 - The UI shows each Rank with a color **and** a number of pips, so that players with color blindness can see the Rank.
 
 ### 5.4 Keywords (v1)
@@ -358,6 +360,7 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | Keyword | Rule |
 | --- | --- |
 | **Bleed N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Bleeding with a count of N. A Bleeding Unit gets half of each heal, rounded down. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Bleed keeps the higher count. Retaliate does not apply Bleed. N is 1 up to Rare, 2 at Epic and 3 at Legendary. See 4.7. |
+| **Bolt N** | In each Start Phase of its owner, this Unit deals N damage of its own Damage Type to one random enemy Unit, or to the enemy Hero of its Front. The hit applies no Status and has no Crit, so Fire, Frost and Lightning damage do not Burn, Freeze or Paralyze. It can be Blocked, except Holy damage, and a Ward absorbs it. N is the same at each Rank ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)). |
 | **Bulwark N** | Reduces Physical damage to this Unit by N. |
 | **Charge N** | +N Speed in the Turn when you summon this Unit. N is 1 up to Rare, 2 at Epic and 3 at Legendary. N is never more than 3. |
 | **Entangle** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Entangled. An Entangled Unit has Speed 0 during its next action, but it can attack. Entangled then ends. A new Entangle does not stack or extend it. Only a Ranged Unit with Base Rank Epic or higher has Entangle (ADR-0022). |
@@ -366,8 +369,10 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | **Fleet** | +2 Speed. The value is the same at each Rank. See 5.6. |
 | **Flying** | Moves over other Units, but stops before an enemy Flying Unit. See 4.5. |
 | **Heavy** | −1 Speed. The value is the same at each Rank. See 5.6. |
-| **Heroic N** | +N damage when this Unit attacks a Hero. |
+| **Heroic N** | After this Unit attacks an enemy Unit, it gets +N Attack: the Heroic bonus. Each attack on an enemy Unit adds more, with no limit. An attack also counts when it deals 0 damage. An attack on a Hero, Retaliate, First Strike, Trample and Last Breath do not count. The Heroic bonus stays until the Unit leaves the Board, and Rebirth ends it. It applies to all attacks of the Unit, also on a Hero, and to Retaliate. N is 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary ([ADR-0048](../adr/0048-heroic-gives-attack-after-each-attack-on-a-unit.md)). |
+| **Hero's Bane** | In each Start Phase of its owner, this Unit deals 1 Physical damage to the enemy Hero of its Front. The hit has no Crit, and it is not an attack ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)). |
 | **Hobble N** | After this Unit deals attack damage above 0 to an enemy Unit, that Unit becomes Hobbled with a count of N. A Hobbled Unit has a maximum Speed of 1, after all bonuses. The count goes down by 1 in each End Phase of its owner, and the Status ends at 0. A new Hobble keeps the higher count. Retaliate does not apply Hobble. |
+| **Iron Guard** | Each Physical hit on this Unit deals at most 4 damage. The cap applies after Bulwark, Crit, Block and Exposed, and before Ward. It does not change True Damage or status damage. The value is the same at each Rank ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)). |
 | **Knockback N** | Melee only. After this Unit deals attack damage above 0 to an enemy Unit, that Unit is Pushed N Squares toward its own Hero, in its own Lane. The push is not Movement. It stops before another Unit and at the pushed Unit's Column 1. A Unit with Wall is never Pushed. Retaliate does not apply Knockback. See 4.5 and 4.7. |
 | **Long-range** | +2 Range: this Unit is a Ranged Unit with Range 3. The value is the same at each Rank. See 5.6. |
 | **Last Breath: X** | X occurs when this Unit leaves the Board. In v1, X deals N damage to the nearest enemy Unit ahead in the same Lane, or summons Token X in the Square that this Unit left. |
@@ -379,18 +384,21 @@ A **Unit** is the thing on the Board. A Creature Card is the thing in the Hand o
 | **Regenerate N** | In your Start Phase, this Unit heals N HP. It cannot go above its maximum HP. |
 | **Retaliate** | See 4.7. |
 | **Sabotage N** | When this Unit comes onto the Board from its Creature Card, the card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready card (Countdown 0) is the lowest. If two cards have the same Countdown, the oldest card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. If the Hand is empty, nothing occurs. N is the same at each Rank, and it is at most 2. |
+| **Soul Harvest** | When an enemy Unit dies, this Unit gets +1 Attack and +1 HP, also above its maximum HP: the Soul Harvest bonus. A kill by any source counts. A Rebirth is not a kill, and Rebirth ends the bonus. It stays until the Unit leaves the Board ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)). |
+| **Spawnbane N** | When an enemy Hero summons a Unit from a Creature Card, this Unit deals N damage to that Unit. The damage has the Damage Type of this Unit and applies no Status. It comes before the Sabotage and the Summon of the new Unit, so a Unit that dies does neither. A Token does not trigger it. N is the same at each Rank ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)). |
 | **Summon X** | When you summon this Unit, a Token X of the same Rank also appears in an empty Square next to it (behind it, or the same Column in a next Lane). If no Square is empty, no Token appears. |
 | **Swift** | +1 Speed. The value is the same at each Rank. See 5.6. |
 | **Swarm N** | While another friendly Unit or Token is in the same Lane, this Unit has +N Attack. More friendly Units do not increase the bonus. The bonus applies to attacks and Retaliate. |
 | **Trample** | Melee only. When this Unit kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it. See 4.7. |
 | **Unique** | Only one copy of this card can be on your side of the Board. While a Unit from this card is on your Side of the Board, no Hero of your Side can play a copy of this card, at any Rank. The card stays in the Hand. A Unit that the Stage puts on the Board also counts, and enemy Units do not count. A Deck can still hold more than 1 copy. |
+| **Vampirism** | When this Unit deals Physical damage, it heals HP equal to the damage that the hit dealt after Block and Ward, up to its maximum HP. It counts for an attack on a Unit or a Hero, Retaliate, First Strike, Trample and Last Breath. It does not apply to status damage ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)). |
 | **Wall** | It can't move and can't attack, also when an effect gives it Speed or Attack. It never deals Retaliate or First Strike damage. A Wall card has Attack 0. It shows no Speed and no Range. It blocks its Lane for enemy Units. Friendly Units move through it. It can be summoned into Columns 1 to 5, not only into the Summon Zone (see 4.1). |
 
 New Keywords must go through the balance process in section 13.
 
 ### 5.5 Classes
 
-The Hero has one Class. The Class decides which Skill Cards the Deck can hold.
+The Hero has one Class. The Class decides which Skill Cards the Deck can hold. A Deck can hold a Specialist only when the Deck has its Class ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
 
 | Class | Focus | Example Skill Cards |
 | --- | --- | --- |
@@ -468,6 +476,7 @@ The Campaign is tuned for these Decks ([14 — Campaign Stages](./14-campaign-st
 ### 7.1 Player level
 
 - The player gets XP from each Battle. A loss gives up to 25% of the XP of a win: only the share of the total enemy Hero HP that the enemy Heroes lost (Economy 2.1, [ADR-0043](../adr/0043-a-loss-gives-only-the-share-of-the-lost-enemy-hero-hp.md)).
+- A Stage Repeat win and a Campaign Sweep give no XP. A Dungeon Repeat win and a Dungeon Sweep give XP (Economy 2.1, [ADR-0049](../adr/0049-a-stage-repeat-win-gives-no-xp.md)).
 - The XP that each level needs is in the XP table ([Economy 1.2](./07-economy.md#12-player-levels)).
 - The maximum player level in v1 is 30.
 - Each level gives +1 Hero HP and changes the Deck size limits.
@@ -519,9 +528,11 @@ The [Economy](./07-economy.md) document gives the costs.
 - **Combine and Decks.** After a Combine, each saved Deck that uses more copies of the old Rank than the player owns gets the new-Rank copy in place of those entries. The Deck follows the better copy.
 - **Extract and Decks.** The confirmation names each saved Deck that uses the copy. After the Extract, the copy goes out of those Decks. A Deck can then have too few cards, and the Deck builder and the Stage Panel show the problem.
 - The player can Extract any copy, also the last copy of a card. The card stays Discovered. The Workshop does not stop an Extract that leaves too few cards for a valid Deck (Pillar 4: "The player can Extract any card").
-- **Screen.** The Workshop shows a card grid with the filters of the Deck builder. The grid shows only Discovered cards, because each action needs a Discovered card. The player selects a card. A panel then shows each Rank of that card with its copies, and the Combine, Extract and Craft that the player can do. The panel also shows the path to Legendary. Below player level 6, the Craft row shows "Opens at level 6".
+- **Screen.** The Workshop has three **stations**, one for each action: Combine, Craft and Extract. The player selects a station, then a card. Each station tab shows its name, its recipe ("2 copies → next Rank", "Essence → 1 copy", "1 copy → Essence") and a number: the cards with a pair, the cards that the player can Craft now, or the **spare copies** (the copies that no saved Deck uses). The Workshop opens on Combine, or on Craft while the Craft Hint shows. Below player level 6, the Craft tab and the Craft panel show "Opens at level 6".
+- **Grid.** The Workshop shows a card grid with the filters of the Deck builder. The grid shows only Discovered cards, because each action needs a Discovered card. The grid has the same order in all stations. The station marks the cards that it can act on and makes the other cards darker. Each station also has a filter that keeps only the cards that it can act on ("Pairs only", "Can Craft", "Spare only"). The selected card stays selected when the player changes the station.
+- **Panels.** The Combine panel shows each Rank of the card with its copies, a Combine between two Ranks, and the path to Legendary. The Craft panel shows the Essence cost, the Base Rank copy that the Craft makes, and the Essence before and after the Craft. The Extract panel shows each Rank with a copy, the copies that saved Decks use, and the Essence that each Extract gives.
 - Extract also asks for confirmation for an Epic or a Legendary copy, because these copies cost much to get again.
-- After a Combine or a Craft, the new copy shows with the Rank burst of the Pack reveal, and an anvil sound plays. After an Extract, the Essence balance counts up.
+- After a Combine, the new copy shows with the Rank burst of the Pack reveal, and an anvil sound plays. A Craft is the opposite of an Extract: Essence drops fly from the Essence balance into the card, the new copy forms, and then the Rank burst and the anvil sound come. After an Extract, Essence drops fly from the card to the Essence balance, and the balance counts up.
 - The first version has only single actions. Bulk actions (for example "Combine all pairs") can come after the first external playtest.
 
 ## 8. Game modes
@@ -534,7 +545,7 @@ The [Economy](./07-economy.md) document gives the costs.
 - Each Stage defines: enemy Hero, enemy Deck, enemy Hero HP, Closed Lanes, Units at the start, special rules, and rewards.
 - The design of each Stage is in [14 — Campaign Stages](./14-campaign-stages.md).
 - **First win reward:** a fixed card, Coin and XP.
-- **Repeat win reward:** Coin, XP, and a chance of a card from the Stage card pool. Each Campaign Sweep Ticket (see 4.12) gives this reward.
+- **Repeat win reward:** ⅓ of the Coin of a win, no XP ([ADR-0049](../adr/0049-a-stage-repeat-win-gives-no-xp.md)), a chance of a Forge Stone, and a chance of a card from the Stage card pool (Economy 2.1). Each Campaign Sweep Ticket (see 4.12) gives this reward.
 - **Star chests:** Each Region gives a chest at 10, 20 and 30 Stars. The player claims a chest with a tap when the Region has its Stars. Its Coin and Essence go to the balances at once. Its Pack becomes an Unopened Pack, which the player opens on the Packs screen. For a Race Pack, the player selects the Race there.
 
 The enemy Hero of a **Boss Stage** is a **Boss**: an enemy Hero with a name and special rules. Boss Stages have special rules. For example:
@@ -723,7 +734,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Dungeons | Dungeon list, unlock levels, Bosses, rewards, the Dungeon Sweep Tickets and the Dungeon Sweep (see 4.12) |
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
 | Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons and a locked ribbon that buys the next Deck slot, all cards with filters (see 6), the Countdown curve, validation, Auto-fill |
-| Workshop | The Discovered cards with the filters of the Deck builder, and a Rank panel for the selected card: Combine, Extract, Craft and the path to Legendary (see 7.4) |
+| Workshop | Three stations, Combine, Craft and Extract: the Discovered cards with the filters of the Deck builder, and the panel of the selected station for the selected card (see 7.4) |
 | Hero | The Hero HP and its parts; the 4 Gear items with their level, their stat now and at the next level, the Gear upgrade with its Coin and Forge Stone cost, and the 5 Forge Stone counts (see 7.3). The portrait and the Gear looks are Cosmetics (see 10). |
 | Packs | The Peddler, Merchant and Royal Packs, each with a Race Pack and a Class Pack version. The Drop Rates, the Pack Guarantees, Open ×10 and the open animation (Economy 3.1) |
 | Achievements | List, progress, rewards |
@@ -822,9 +833,9 @@ The Campaign screen shows one **Region Map** at a time: a flat 2D painting of on
 
 | Content | Count |
 | --- | --- |
-| Creature Cards | 90 (15 for each of the 6 Races) |
+| Creature Cards | 96 (16 for each of the 6 Races, including 1 Specialist) |
 | Skill Cards | 40 (10 for each Class: 4 Common, 3 Uncommon, 2 Rare and 1 Epic) |
-| Total collectible cards | 130 |
+| Total collectible cards | 136 |
 | Tokens | About 8; the Creature Card draft defines 2 |
 | Campaign Stages | 50 (5 Regions, with 5 Boss Stages) |
 | Heynspire Floors | 50 |
@@ -840,13 +851,13 @@ Each Race has this exact Creature Card Base Rank mix:
 | Uncommon | 5 | 30 |
 | Rare | 3 | 18 |
 | Epic | 2 | 12 |
-| Legendary | 0 | 0 |
+| Legendary | 1 | 6 |
 
-Skill Cards use a separate Base Rank mix. In v1, no card has Base Rank Legendary. A Legendary copy comes from Combine or from a Pack. Later cards can have Base Rank Legendary.
+Skill Cards use a separate Base Rank mix. In v1, only a Specialist has Base Rank Legendary, and no Skill Card has it. A Legendary copy comes from Combine or from a Pack.
 
 A Race shows its identity through its Main Keywords and its Race Keyword (3.2), not through a profile of card types ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)).
 
-Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary Damage Type: Holy for Human and Elf, Frost for Undead and Feral, and Fire for Orc and Goblin. Feral has no card with Countdown 1. Each Race has one Uncommon melee Pivot Card. Its two Epic Cards are one named champion with Unique and one archetypal powerhouse ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)).
+Each Race has 12 Physical Creature Cards and 4 Creature Cards with its secondary Damage Type: Holy for Human and Elf, Frost for Undead and Feral, and Fire for Orc and Goblin. Feral has no card with Countdown 1. Each Race has one Uncommon melee Pivot Card. Its two Epic Cards are one named champion with Unique and one archetypal powerhouse. Its 1 Legendary Card is a Specialist: a named champion with Unique, one Class and one Main Keyword of the set ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md), [ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
 
 ## 13. Balance process
 
@@ -854,8 +865,8 @@ Each Race has 11 Physical Creature Cards and 4 Creature Cards with its secondary
    - Start formula: `power = Attack × 2 + HP + Keyword points`. The Base Speed 2 and the Base Range 1 are free. Only the Speed and Range Keywords cost points (5.6, [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)).
    - Attack, HP and the Keyword values count at the Base Rank of the Card. The card data gives the Common Attack and HP. Use them with the Rank scale of the Base Rank (5.3). For example, an Epic card with Common Attack 4 counts Attack 7 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)).
    - Add Damage Type points: Fire = 3, Frost = 3, Lightning = 3 and Holy = 1 ([ADR-0031](../adr/0031-armor-reduces-only-physical-damage.md)). The Lightning value is provisional ([ADR-0029](../adr/0029-lightning-damage-gives-paralyzed.md)): Paralyzed stops the attack, Retaliate and First Strike, the same as Freeze, and Movement alone has little value.
-   - Start Keyword points: Bleed N = N × 1, Bulwark N = N × 3, Charge N = N × 1, Entangle = 2, Extreme-range = 3, First Strike = 4, Fleet = 4, Flying = 4, Heavy = −2, Heroic N = N × 2, Hobble N = N × 1, Knockback N = N × 3, Long-range = 2, Mid-range = 1, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regenerate N = N × 2, Retaliate = 4, Sabotage N = N × 4, Swarm N = N × 1, Swift = 2 and Trample = 3.
-   - Summon and a Last Breath that summons use 50% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique and Wall use 0 points.
+   - Start Keyword points: Bleed N = N × 1, Bolt N = N × 3, Bulwark N = N × 3, Charge N = N × 1, Entangle = 2, Extreme-range = 3, First Strike = 4, Fleet = 4, Flying = 4, Heavy = −2, Heroic N = N × 2, Hero's Bane = 4, Hobble N = N × 1, Iron Guard = 6, Knockback N = N × 3, Long-range = 2, Mid-range = 1, Pivot = 3, Poison = 3, Rally N = N × 3, Rebirth = 5, Regenerate N = N × 2, Retaliate = 4, Sabotage N = N × 4, Soul Harvest = 5, Spawnbane N = N × 2, Swarm N = N × 1, Swift = 2, Trample = 3 and Vampirism = 6.
+   - Summon and a Last Breath that summons use 50% of the Token's power at the Base Rank of the Card. A Last Breath that deals N damage uses N points. Unique, the Specialist Class lock and Wall use 0 points.
    - These points are provisional until the simulation has enough Cards that use each Keyword.
    - A Unit summoned into Column 3 of the Summon Zone gets a 2-Square start. Check the Keyword points of **Charge** against this start.
    - **Charge N** uses N × 1 points, not 2 points for each Square as Swift and Fleet do. Swift and Fleet apply in each Turn, but Charge applies only in the Turn of the summon, and the Column 3 start makes it less valuable. Thus each additional Square costs 1 point.

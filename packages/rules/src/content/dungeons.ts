@@ -110,7 +110,7 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
         // Lanes, so the Player can hit him in each of them. He has more HP.
         id: "abbotKnell",
         front: [0, 1, 2],
-        heroHp: 18,
+        heroHp: 20,
         classId: "priest",
         gear: NO_GEAR,
         deck: [

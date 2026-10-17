@@ -1,9 +1,4 @@
-import {
-  CAMPAIGN_LOSS_XP_FRACTION,
-  countdownLimit,
-  deckSizeLimits,
-  playerHeroHp,
-} from "@workspace/rules";
+import { countdownLimit, deckSizeLimits, playerHeroHp } from "@workspace/rules";
 import { cn } from "cn";
 import { useMemo } from "react";
 
@@ -70,16 +65,14 @@ export const PlayerLevelGuide = () => {
           </tr>
         </thead>
         <tbody>
-          {PLAYER_LEVEL_XP_TABLE.map(({ region, win }) => {
-            const firstWin = win * 2;
-            const loss = Math.floor(win * CAMPAIGN_LOSS_XP_FRACTION);
-            return (
+          {PLAYER_LEVEL_XP_TABLE.map(
+            ({ region, repeatWin, firstWin, loss }) => (
               <tr key={region} className={ROW}>
                 <th scope="row" className="py-1.5 pr-3 text-left font-semibold">
                   {tr(`campaign.regions.${region}`)}
                 </th>
                 <td className="py-1.5 pr-2 text-right font-medium text-[#3d2e1f] tabular-nums">
-                  {format(win)}
+                  {format(repeatWin)}
                 </td>
                 <td className="py-1.5 pr-2 text-right font-medium text-[#3d2e1f] tabular-nums">
                   {format(firstWin)}
@@ -88,8 +81,8 @@ export const PlayerLevelGuide = () => {
                   {format(loss)}
                 </td>
               </tr>
-            );
-          })}
+            )
+          )}
         </tbody>
       </table>
       <p className="max-w-lg text-xs leading-snug text-[#5b4632]">

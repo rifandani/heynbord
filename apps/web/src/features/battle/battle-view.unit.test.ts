@@ -585,6 +585,7 @@ const halberdierView = (owner: "player" | "enemy", id: number): UnitView => ({
   bonusAttackTurns: 0,
   bonusRange: 0,
   bonusRangeTurns: 0,
+  heroicBonus: 0,
   reborn: false,
   hp: 6,
   maxHp: 6,
@@ -737,6 +738,29 @@ describe("the bonus Attack and Exposed view", () => {
       bonusRange: 0,
       bonusRangeTurns: 0,
     });
+  });
+
+  it("adds the Heroic bonus to the Attack at HeroicGained, keeps it at the End Phase, and ends it at UnitReborn", () => {
+    const view: BattleView = {
+      ...viewFromState(state),
+      units: [halberdierView("player", 7)],
+    };
+    const once = applyEvent(
+      view,
+      BattleEvent.HeroicGained({ unitId: 7, heroicBonus: 1 })
+    );
+    const twice = applyEvent(
+      once,
+      BattleEvent.HeroicGained({ unitId: 7, heroicBonus: 2 })
+    );
+    expect(twice.units[0]).toMatchObject({ attack: 5, heroicBonus: 2 });
+    const ended = applyEvent(twice, BattleEvent.TurnEnded({ side: "player" }));
+    expect(ended.units[0]).toMatchObject({ attack: 5, heroicBonus: 2 });
+    const reborn = applyEvent(
+      ended,
+      BattleEvent.UnitReborn({ unitId: 7, hp: 1 })
+    );
+    expect(reborn.units[0]).toMatchObject({ attack: 3, heroicBonus: 0 });
   });
 
   it("sets Exposed from StatusApplied, ends it after 2 End Phases of the owner, and Cleanse ends it", () => {
@@ -914,6 +938,7 @@ describe("the Graveyard view", () => {
           bonusAttackTurns: 0,
           bonusRange: 0,
           bonusRangeTurns: 0,
+          heroicBonus: 0,
           exposed: 0,
           exposedTurns: 0,
           range: 1,
@@ -986,6 +1011,7 @@ describe("the bonus Bulwark view", () => {
       bonusAttackTurns: 0,
       bonusRange: 0,
       bonusRangeTurns: 0,
+      heroicBonus: 0,
       exposed: 0,
       exposedTurns: 0,
       range: 1,
@@ -1066,6 +1092,7 @@ describe("the Hobbled and Bleeding view", () => {
       bonusAttackTurns: 0,
       bonusRange: 0,
       bonusRangeTurns: 0,
+      heroicBonus: 0,
       exposed: 0,
       exposedTurns: 0,
       range: 0,
@@ -1151,6 +1178,7 @@ describe("a push", () => {
       bonusAttackTurns: 0,
       bonusRange: 0,
       bonusRangeTurns: 0,
+      heroicBonus: 0,
       exposed: 0,
       exposedTurns: 0,
       range: 0,
@@ -1274,6 +1302,7 @@ describe("the Entangled view", () => {
     bonusAttackTurns: 0,
     bonusRange: 0,
     bonusRangeTurns: 0,
+    heroicBonus: 0,
     exposed: 0,
     exposedTurns: 0,
     range: 0,
@@ -1370,6 +1399,13 @@ const snapshot = (
   swarm: 0,
   trample: false,
   wall: false,
+  bolt: 0,
+  ironGuard: false,
+  soulHarvest: false,
+  soulHarvestBonus: 0,
+  herosBane: false,
+  spawnbane: 0,
+  vampirism: false,
   summonedTurn: 1,
   burn: 0,
   poisoned: 0,
@@ -1388,6 +1424,7 @@ const snapshot = (
   bonusAttackTurns: 0,
   bonusRange: 0,
   bonusRangeTurns: 0,
+  heroicBonus: 0,
   exposed: 0,
   exposedTurns: 0,
   ...extra,

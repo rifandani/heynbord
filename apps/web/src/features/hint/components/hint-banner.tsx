@@ -40,7 +40,9 @@ const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   // Not while the Stage Panel comes up out of its Stage Marker.
   sweepButton: "[data-testid='sweep']:not([data-entering] *)",
   cave: "[data-testid='building-cave']",
-  dungeonSweepRow: "[data-hint-anchor='dungeon-sweep-row']",
+  // Not while the Dungeon Panel comes up out of the Fight bar.
+  dungeonSweepRow:
+    "[data-hint-anchor='dungeon-sweep-row']:not([data-entering] *)",
   tower: "[data-testid='building-heynspire']",
   achievementsShortcut: "[data-testid='town-shortcut-achievements']",
 };
@@ -127,12 +129,11 @@ const TOWN_BUILDING_PLACES: ReadonlySet<HintPlace> = new Set([
  * goes below the first upgrade, so that the Hero plate stays clear on the
  * first visit. The Sweep Hint goes below the Sweep button, out of the Stage
  * Panel, so that it does not cover the Ticket control. The Dungeon Sweep Hint
- * goes at the left of the label of the Sweep row of the Dungeons screen,
- * over the notice board, so that it covers no control of the rail. On a
- * short screen, it goes above the Sweep button, so that it does not cover
- * Fight at the left of it. A Hint at a Town Building can go above, below or
- * at the left of it: it takes the side where it covers the least of the
- * Building labels (`BUILDING_LABEL`).
+ * goes at the left of the label of the Sweep row of the Dungeon Panel, so
+ * that it covers no control of the panel. On a short screen, it goes above
+ * the Sweep button, so that it does not cover Fight at the left of it. A Hint
+ * at a Town Building can go above, below or at the left of it: it takes the
+ * side where it covers the least of the Building labels (`BUILDING_LABEL`).
  */
 const sidesFor = (place: HintPlace): readonly PanelSide[] => {
   if (place === "dungeonSweepRow" && isShortScreen()) {

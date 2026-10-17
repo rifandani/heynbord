@@ -76,7 +76,12 @@ export const activateSwarm = (ctx: StepContext, unit: UnitState): void => {
 export const attackOf = (state: BattleState, unit: UnitState): number =>
   unit.wall
     ? 0
-    : unit.attack + unit.rallied + unit.bonusAttack + swarmBonus(state, unit);
+    : unit.attack +
+      unit.rallied +
+      unit.heroicBonus +
+      unit.soulHarvestBonus +
+      unit.bonusAttack +
+      swarmBonus(state, unit);
 
 /** Range with the bonus Range of a Skill Card (GDD 4.8). */
 export const rangeOf = (
@@ -521,9 +526,35 @@ const firstStrike = (
 };
 
 /**
+ * Heroic N (ADR-0048): after its attack on an enemy Unit, a Unit with Heroic
+ * gets +N Attack. Each attack adds more. A Unit that died in the attack, for
+ * example from Retaliate, gets nothing, also when it came back with Rebirth.
+ * `rebirth` is the Rebirth of the Unit before the attack.
+ */
+const heroic = (ctx: StepContext, unit: UnitState, rebirth: boolean): void => {
+  if (
+    unit.heroic <= 0 ||
+    isOver(ctx) ||
+    !findUnit(ctx.state, unit.id) ||
+    unit.rebirth !== rebirth
+  ) {
+    return;
+  }
+  unit.heroicBonus += unit.heroic;
+  activateKeyword(ctx, unit, "heroic", unit.heroic);
+  ctx.events.push(
+    BattleEvent.HeroicGained({
+      unitId: unit.id,
+      heroicBonus: unit.heroicBonus,
+    })
+  );
+};
+
+/**
  * The attack of `unit` (GDD 4.6, 4.7). Pivot activates when the Unit attacks
- * its Pivot target, before a First Strike of that target. Swarm and Heroic
- * activate after `UnitAttacked`, before the damage.
+ * its Pivot target, before a First Strike of that target. Swarm activates
+ * after `UnitAttacked`, before the damage. Heroic activates after an attack
+ * on an enemy Unit is complete, also with 0 damage (ADR-0048).
  */
 const attack = (ctx: StepContext, unit: UnitState): void => {
   const { state } = ctx;
@@ -554,11 +585,8 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
   }
   const crit = heroState(state, ownerOf(unit)).unitCrit;
   if (target._tag === "Hero") {
-    if (unit.heroic > 0) {
-      activateKeyword(ctx, unit, "heroic", unit.heroic);
-    }
     damageHero(ctx, target, {
-      amount: power + unit.heroic,
+      amount: power,
       damageType: unit.damageType,
       source: "attack",
       dealer: unitDealer(unit),
@@ -571,6 +599,7 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
     return;
   }
   const hpBefore = defender.hp;
+  const { rebirth } = unit;
   const { dealt, killed } = damageUnit(ctx, defender, {
     amount: power,
     damageType: unit.damageType,
@@ -580,12 +609,13 @@ const attack = (ctx: StepContext, unit: UnitState): void => {
   });
   if (killed) {
     trample(ctx, unit, defender, dealt - hpBefore);
-    return;
+  } else {
+    if (dealt > 0) {
+      applyOnHit(ctx, unit, defender, { knockback: true });
+    }
+    retaliate(ctx, defender, unit);
   }
-  if (dealt > 0) {
-    applyOnHit(ctx, unit, defender, { knockback: true });
-  }
-  retaliate(ctx, defender, unit);
+  heroic(ctx, unit, rebirth);
 };
 
 /**

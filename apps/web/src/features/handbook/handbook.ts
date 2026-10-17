@@ -12,7 +12,6 @@ import {
   ACHIEVEMENTS,
   CARDS,
   CAMPAIGN_REGIONS,
-  CAMPAIGN_WIN_XP,
   CAMPAIGN_SWEEP_TICKETS_PER_WIN,
   countdownLimit,
   DUNGEON_LANES,
@@ -38,6 +37,7 @@ import {
   scaleForRank,
   SHARED_RANK_VALUES,
   STAGE_LANES,
+  stageXp,
   STARTING_HAND,
   SUDDEN_DEATH_DOUBLE_TURN,
   SUDDEN_DEATH_TURN,
@@ -321,14 +321,25 @@ export const COIN_USES_TABLE: readonly {
   },
 ];
 
-/** Campaign win XP by Region, for the Player level Entry (Economy 2.1). */
+/**
+ * The XP of each result of a normal Stage by Region, for the Player level
+ * Entry (Economy 2.1). A Repeat win gives no XP (ADR-0049). `loss` is the most
+ * that a loss gives.
+ */
 export const PLAYER_LEVEL_XP_TABLE: readonly {
   readonly region: number;
-  readonly win: number;
-}[] = Array.from({ length: CAMPAIGN_REGIONS }, (_, index) => ({
-  region: index + 1,
-  win: CAMPAIGN_WIN_XP[index] ?? 0,
-}));
+  readonly repeatWin: number;
+  readonly firstWin: number;
+  readonly loss: number;
+}[] = Array.from({ length: CAMPAIGN_REGIONS }, (_, index) => {
+  const stage = { region: index + 1, boss: false };
+  return {
+    region: stage.region,
+    repeatWin: stageXp(stage, "win"),
+    firstWin: stageXp(stage, "firstWin"),
+    loss: stageXp(stage, "loss"),
+  };
+});
 
 /** Sample levels for Hero HP, Deck size and Countdown Limit in the Handbook. */
 export const PLAYER_LEVEL_STAT_SAMPLES = [1, 5, 10, 21, 30] as const;
@@ -726,7 +737,7 @@ const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
   keywordFleet: ["speed", "keywordSwift"],
   keywordFlying: ["movement", "statusGrounded"],
   keywordHeavy: ["speed", "statusHobble"],
-  keywordHeroic: ["hero"],
+  keywordHeroic: ["attack", "keywordSwarm"],
   keywordHobble: ["statusHobble", "speed"],
   keywordKnockback: ["keywordWall", "melee"],
   keywordLastBreath: ["defeated"],

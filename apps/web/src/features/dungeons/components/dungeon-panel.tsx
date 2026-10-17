@@ -1,9 +1,16 @@
 import { useAtomValue } from "@effect/atom-react";
 import { coinDenominations, getCard } from "@workspace/rules";
 import { cn } from "cn";
-import type { ReactNode } from "react";
-import { useMemo, useRef } from "react";
-import { Button } from "react-aria-components";
+import type { ReactNode, RefObject } from "react";
+import { useMemo, useRef, useState } from "react";
+import {
+  Button,
+  Dialog,
+  Heading,
+  Modal,
+  ModalOverlay,
+} from "react-aria-components";
+import { HiXMark } from "react-icons/hi2";
 
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
@@ -20,6 +27,7 @@ import {
   DeckRow,
   useDeckChoice,
 } from "@/features/campaign/components/stage-panel";
+import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import type {
   Balances,
@@ -40,7 +48,32 @@ import {
 import { isDungeonSweepable } from "@/features/sweep/sweep";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
+import {
+  clearSheetOrigin,
+  placeSheetOrigin,
+  SHEET_MOTION,
+  SHEET_PATH_MOTION,
+  SHEET_SCRIM_MOTION,
+} from "@/features/town/sheet-motion";
 import { coinWords } from "@/features/town/town";
+
+/**
+ * The parts of the panel ink in from the top while the sheet comes up out of
+ * the Fight bar, as in the Stage Panel: the header, the reward, the Deck, the
+ * Sweep, then the buttons.
+ */
+const INK = [
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_140ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_190ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_240ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_290ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_340ms_both]",
+  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_390ms_both]",
+] as const;
+
+/** The text goes before the sheet goes back into the Fight bar. */
+const INK_OUT =
+  "motion-safe:group-data-[exiting]/sheet:animate-[settings-sheet-ink_260ms_ease-out_reverse_both]";
 
 /** The small Night Plate of a reward, as the Battle result shows it. */
 const PLATE =
@@ -52,18 +85,25 @@ const useFormat = () => {
   return (value: number) => number.format(value);
 };
 
-/** One row of the rail: a Cinzel label at the left, its content at the right (as the Stage Panel). */
+/** One row of the panel: a Cinzel label at the left, its content at the right (as the Stage Panel). */
 const Row = ({
   label,
   children,
+  className,
   anchor,
 }: {
   readonly label: string;
   readonly children: ReactNode;
+  readonly className?: string;
   /** A Hint can point at the label (`data-hint-anchor`). */
   readonly anchor?: string;
 }) => (
-  <div className="grid grid-cols-[4.75rem_1fr] items-start gap-x-3 py-3 [@media(max-height:500px)]:grid-cols-[4rem_1fr] [@media(max-height:500px)]:py-1.5">
+  <div
+    className={cn(
+      "grid grid-cols-[4.75rem_1fr] items-start gap-x-3 py-3 [@media(max-height:500px)]:grid-cols-[4rem_1fr] [@media(max-height:500px)]:py-1.5",
+      className
+    )}
+  >
     <p
       className="font-display pt-0.5 text-sm font-bold text-[#2a1d12]"
       data-hint-anchor={anchor}
@@ -234,7 +274,7 @@ const RewardRow = ({ slot }: { readonly slot: DungeonSlot }) => {
   const won = slot.wins > 0;
   const { firstWin, win } = preview;
   return (
-    <Row label={tr("campaign.panel.reward")}>
+    <Row label={tr("campaign.panel.reward")} className={INK[1]}>
       <div className="flex flex-col gap-2 [@media(max-height:500px)]:gap-1.5">
         <FirstWinCard
           cardId={firstWin.card.cardId}
@@ -280,12 +320,53 @@ const RewardRow = ({ slot }: { readonly slot: DungeonSlot }) => {
   );
 };
 
-/** The header: the name of the Dungeon, its number, the Recommended level and the wins. */
-const RailHeader = ({ slot }: { readonly slot: DungeonSlot }) => {
+/** The Sweep row (GDD 4.12, ADR-0041): the Dungeon Sweep Tickets and the Ticket control. */
+const SweepRow = ({
+  owned,
+  value,
+  onChange,
+}: {
+  readonly owned: number;
+  readonly value: number;
+  readonly onChange: (tickets: number) => void;
+}) => {
+  const { tr } = useGameText();
+  return (
+    <Row
+      label={tr("sweep.label")}
+      className={INK[4]}
+      anchor="dungeon-sweep-row"
+    >
+      <SweepTickets
+        kind="dungeon"
+        owned={owned}
+        value={value}
+        onChange={onChange}
+      />
+    </Row>
+  );
+};
+
+/**
+ * The header of the panel: the cave seal, the name of the Dungeon, its
+ * number, the Recommended level, the wins, and the close button.
+ */
+const PanelHeader = ({
+  slot,
+  close,
+}: {
+  readonly slot: DungeonSlot;
+  readonly close: () => void;
+}) => {
   const { tr } = useGameText();
   const { dungeon } = slot;
   return (
-    <header className="flex items-start gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2">
+    <header
+      className={cn(
+        "flex items-start gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2",
+        INK[0]
+      )}
+    >
       <span
         className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-[#fff6df] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-8"
         aria-hidden
@@ -296,14 +377,14 @@ const RailHeader = ({ slot }: { readonly slot: DungeonSlot }) => {
         />
       </span>
       <div className="min-w-0">
-        <h2
-          id="dungeon-title"
+        <Heading
+          slot="title"
           className="font-display text-2xl leading-tight font-black [@media(max-height:500px)]:text-lg"
         >
           {dungeon
             ? tr(`dungeons.${dungeon.id}.name`)
             : tr("battle.dungeonName", { number: slot.number })}
-        </h2>
+        </Heading>
         <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-[#5b4632]">
           <span>
             {tr("battle.dungeonName", { number: slot.number })} ·{" "}
@@ -324,21 +405,31 @@ const RailHeader = ({ slot }: { readonly slot: DungeonSlot }) => {
           )}
         </p>
       </div>
+      <GameButton
+        intent="wood"
+        size="icon"
+        aria-label={tr("campaign.panel.close")}
+        onPress={close}
+        className="ml-auto shrink-0 self-start [@media(max-height:500px)]:size-9"
+        data-testid="dungeon-panel-close"
+      >
+        <HiXMark className="size-5" aria-hidden />
+      </GameButton>
     </header>
   );
 };
 
-/** The large buttons of the rail, in Cinzel. */
+/** The large buttons of the panel, in Cinzel. */
 const ACTION =
   "font-display w-full tracking-[0.04em] [@media(max-height:500px)]:min-h-11";
 
 /**
- * The actions of the rail. On a won Dungeon, Sweep is the gold action at the
+ * The actions of the panel. On a won Dungeon, Sweep is the gold action at the
  * right and takes the focus, and Fight is wood at its left, as in the Stage
  * Panel. When the Player cannot Sweep, Fight is gold and takes the focus.
  * Before the first win, Fight is the one gold button across the full width.
  */
-const RailActions = ({
+const PanelActions = ({
   sweepable,
   tickets,
   canFight,
@@ -354,7 +445,13 @@ const RailActions = ({
   const { tr } = useGameText();
   const sweepNow = sweepable && tickets > 0;
   return (
-    <div className={cn("grid shrink-0 gap-2 pt-2", sweepable && "grid-cols-2")}>
+    <div
+      className={cn(
+        "grid shrink-0 gap-2 pt-2",
+        INK[5],
+        sweepable && "grid-cols-2"
+      )}
+    >
       <GameButton
         intent={sweepNow ? "wood" : "gold"}
         size="lg"
@@ -390,112 +487,167 @@ const RailActions = ({
 };
 
 /**
- * The rail of the Dungeons screen: a parchment panel with the rows of the
- * Stage Panel. It has the name, the rewards, the Deck choice (the Active
- * Deck, as the Stage Panel) and Fight, which takes the focus, so Enter starts
- * the Battle. A won Dungeon also has the Dungeon Sweep (ADR-0041): the Sweep
- * row with the Dungeon Sweep Tickets, the Sweep button, which then takes the
- * focus, and the Sweep Result, which shows in the place of the rows. A locked
- * Dungeon shows its level in the place of Fight.
+ * The Dungeon Panel (GDD 8.4): the battle preparation of a Dungeon, a
+ * parchment dialog like the Stage Panel and the Floor Panel. It shows the
+ * name of the Dungeon, its Recommended level, the wins, the reward and the
+ * Deck choice (the Active Deck, as the Stage Panel). Fight is the one gold
+ * action across the full width, and it takes the focus, so Enter starts the
+ * Dungeon Battle. A won Dungeon also has the Dungeon Sweep (ADR-0041): the
+ * Sweep row with the Dungeon Sweep Tickets, the Sweep button, which then
+ * takes the focus, and the Sweep Result, which turns the page of the same
+ * sheet.
+ *
+ * It comes up out of the Fight bar (`from`) and goes back into it, as the
+ * Stage Panel does with its Stage Marker. It keeps the last Dungeon while it
+ * closes. On the way to the Deck builder and back, it only zooms and fades at
+ * the center.
  */
-export const DungeonRail = ({
+export const DungeonPanel = ({
   slot,
+  from,
+  onClose,
   onStart,
-  onEditDecks,
 }: {
-  readonly slot: DungeonSlot;
+  /** The Dungeon of the open panel, or `null` when it is closed. */
+  readonly slot: DungeonSlot | null;
+  /** The Fight bar that the panel comes out of. */
+  readonly from: RefObject<Element | null>;
+  readonly onClose: () => void;
   readonly onStart: (options: BattleOptions) => void;
-  readonly onEditDecks: () => void;
 }) => {
-  const { tr } = useGameText();
   const choice = useDeckChoice();
   const player = useAtomValue(battlePlayerAtom);
+  const [editing, setEditing] = useState(false);
+  const [last, setLast] = useState(slot);
+  if (slot !== null && slot !== last) {
+    setLast(slot);
+  }
+  const shown = slot ?? last;
+  const overlay = useRef<HTMLDivElement | null>(null);
+  // True from "Edit Decks" until the panel closes: the panel stays at the center.
+  const atCenter = useRef(false);
   const { chosen, problem } = choice;
-  const { dungeon } = slot;
-  const open = slot.state === "open" && dungeon !== null;
-  const sweep = useSweep("dungeon", open ? dungeon.id : null, open);
-  const sweepable = open && isDungeonSweepable(slot.wins);
-  useDungeonsHints(open && sweep.result === null ? slot.wins : null);
+  const dungeon = shown?.dungeon ?? null;
+  const open = shown !== null && dungeon !== null && shown.state === "open";
+  const sweep = useSweep("dungeon", open && dungeon ? dungeon.id : null, open);
+  const sweepable = open && shown !== null && isDungeonSweepable(shown.wins);
+  useDungeonsHints(
+    open && sweep.result === null && shown !== null ? shown.wins : null
+  );
   const sweepNow = (tickets: number) => {
     if (chosen) {
       sweep.sweep(tickets, chosen.classId);
     }
   };
   return (
-    <aside
-      aria-labelledby="dungeon-title"
-      className="flex max-h-full min-h-0 flex-col overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-4 text-[#2a1d12] shadow-[0_3px_0_rgba(0,0,0,0.45),0_18px_36px_rgba(0,0,0,0.45)] [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3"
-      data-testid="dungeon-rail"
-    >
-      {/* Only the rows scroll (a short screen): Fight and Sweep, or the actions of the Sweep Result, stay under them, at the bottom of the rail. */}
-      <div className="-mx-5 min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 [@media(max-height:500px)]:-mx-3 [@media(max-height:500px)]:px-3">
-        <RailHeader slot={slot} />
-        {sweep.result ? (
-          <SweepResult
-            key={sweep.resultKey}
-            shown={sweep.result}
-            owned={sweep.owned}
-            stacked
-            onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
-            onClose={sweep.handleResultClose}
-          />
-        ) : (
-          <div className="divide-y divide-[#c9b48c]/70">
-            <RewardRow slot={slot} />
-            {open ? (
-              <DeckRow choice={choice} onEdit={onEditDecks} wide />
-            ) : null}
-            {sweepable ? (
-              <Row label={tr("sweep.label")} anchor="dungeon-sweep-row">
-                <SweepTickets
-                  kind="dungeon"
-                  owned={sweep.owned}
-                  value={sweep.tickets}
-                  onChange={sweep.handleTicketsChange}
-                />
-              </Row>
-            ) : null}
-          </div>
+    <>
+      <ModalOverlay
+        isOpen={slot !== null && !editing}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            atCenter.current = false;
+            placeSheetOrigin(overlay.current, from.current);
+            onClose();
+          }
+        }}
+        isDismissable
+        // The ref runs before the first paint, so the sheet starts on the bar.
+        ref={(element) => {
+          overlay.current = element;
+          if (!atCenter.current) {
+            placeSheetOrigin(element, from.current);
+          }
+        }}
+        className={cn(
+          "fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] [@media(max-height:500px)]:p-2",
+          SHEET_SCRIM_MOTION
         )}
-      </div>
-      {sweep.result ? (
-        <SweepResultActions
-          shown={sweep.result}
-          owned={sweep.owned}
-          onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
-          onClose={sweep.handleResultClose}
-          // The rail is narrow: "Close" takes only its width, so that "Sweep Again" fits.
-          className="shrink-0 grid-cols-[auto_1fr] pt-2"
-        />
-      ) : null}
-      {open && sweep.result === null ? (
-        <RailActions
-          sweepable={sweepable}
-          tickets={chosen ? sweep.tickets : 0}
-          canFight={chosen !== undefined && problem === undefined}
-          onFight={() => {
-            if (chosen) {
-              onStart({
-                stageId: dungeon.id,
-                dungeon,
-                deck: chosen,
-                player,
-                seed: qaSeed() ?? randomSeed(),
-              });
-            }
-          }}
-          onSweep={() => sweepNow(sweep.tickets)}
-        />
-      ) : null}
-      {open ? null : (
-        <p
-          className="mt-2 flex items-center justify-center gap-2 rounded-xl border-2 border-[#c9b48c] bg-[#efe0bd] px-3 py-2.5 text-sm font-bold text-[#5b4632]"
-          data-testid="dungeon-locked"
+      >
+        <Modal
+          className={cn(
+            "group/sheet flex max-h-full w-[min(460px,94vw)] [@media(max-height:500px)]:w-[min(720px,96vw)]",
+            SHEET_PATH_MOTION
+          )}
         >
-          <GlyphIcon glyph="lock" className="size-4 text-[#7a5310]" />
-          {tr("town.opensAtLevel", { level: slot.unlockLevel })}
-        </p>
-      )}
-    </aside>
+          <Dialog
+            className={cn(
+              "flex max-h-full w-full flex-col overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-5 text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3",
+              SHEET_MOTION
+            )}
+            data-testid="dungeon-panel"
+          >
+            {({ close }) =>
+              shown !== null && dungeon !== null && open ? (
+                <div className={cn("flex min-h-0 flex-1 flex-col", INK_OUT)}>
+                  {/* Only the rows scroll: the actions stay at the bottom of the panel, as the rail did. */}
+                  <div className="-mx-5 min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 [@media(max-height:500px)]:-mx-4 [@media(max-height:500px)]:px-4">
+                    <PanelHeader slot={shown} close={close} />
+                    {sweep.result ? (
+                      <SweepResult
+                        key={sweep.resultKey}
+                        shown={sweep.result}
+                        owned={sweep.owned}
+                        stacked
+                        onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
+                        onClose={sweep.handleResultClose}
+                      />
+                    ) : (
+                      <div className="divide-y divide-[#c9b48c]/70">
+                        <RewardRow slot={shown} />
+                        <DeckRow
+                          choice={choice}
+                          onEdit={() => {
+                            atCenter.current = true;
+                            clearSheetOrigin(overlay.current);
+                            setEditing(true);
+                          }}
+                          wide
+                        />
+                        {sweepable ? (
+                          <SweepRow
+                            owned={sweep.owned}
+                            value={sweep.tickets}
+                            onChange={sweep.handleTicketsChange}
+                          />
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                  {sweep.result ? (
+                    <SweepResultActions
+                      shown={sweep.result}
+                      owned={sweep.owned}
+                      onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
+                      onClose={sweep.handleResultClose}
+                      // The panel is narrow: "Close" takes only its width, so that "Sweep Again ×10" fits.
+                      className="shrink-0 grid-cols-[auto_1fr] pt-2"
+                    />
+                  ) : (
+                    <PanelActions
+                      sweepable={sweepable}
+                      tickets={chosen ? sweep.tickets : 0}
+                      canFight={chosen !== undefined && problem === undefined}
+                      onFight={() => {
+                        if (chosen) {
+                          onStart({
+                            stageId: dungeon.id,
+                            dungeon,
+                            deck: chosen,
+                            player,
+                            seed: qaSeed() ?? randomSeed(),
+                          });
+                        }
+                      }}
+                      onSweep={() => sweepNow(sweep.tickets)}
+                    />
+                  )}
+                </div>
+              ) : null
+            }
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
+      <DeckDialog isOpen={editing} onOpenChange={setEditing} />
+    </>
   );
 };

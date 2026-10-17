@@ -1,15 +1,16 @@
 /**
  * Economy simulation (Economy 7.1): simulated Players go from a new Profile to
- * Player level 30 with a win chance and a 3-Star chance for each Battle. It
- * does not play Battles. Each Player plays each Stage of a Region again until
- * it has 3 Stars (ADR-0046), and uses its Sweep Tickets. Each Player has one
- * Play Style, which sets how it spends Coin. The report gives the values at
+ * Player level 30 and the Floor 50 win, with a win chance and a 3-Star chance
+ * for each Battle. It does not play Battles. Each Player plays each Stage of
+ * a Region again until it has 3 Stars (ADR-0046), and uses its Sweep Tickets.
+ * Each Player has one Play Style, which sets how it spends Coin. The report gives the values at
  * each checkpoint of Economy 4. The seeds count up from 1, so the same content
  * always gives the same report.
  */
 import { ownedCopies } from "../collection/deck-building";
 import type { Collection } from "../collection/deck-building";
 import { CARDS } from "../content/cards";
+import { BAZAAR_CATALOG_HEYNSTONES } from "../content/cosmetics";
 import { DECK_SLOT_PRICES, STARTING_DECK_SLOTS } from "../content/deck-slots";
 import { getStarterDeck } from "../content/decks";
 import {
@@ -43,11 +44,7 @@ import {
   HEYNSPIRE_FLOORS,
   isBossFloor,
 } from "../content/heynspire";
-import {
-  BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
-  HEYNSTONE_SOURCES,
-  HEYNSTONE_SUPPLY,
-} from "../content/heynstones";
+import { HEYNSTONE_SOURCES, HEYNSTONE_SUPPLY } from "../content/heynstones";
 import type { HeynstoneSource } from "../content/heynstones";
 import { getPack, TEN_PACKS } from "../content/packs";
 import type { PackId } from "../content/packs";
@@ -120,10 +117,13 @@ export const PLAY_STYLES: readonly PlayStyle[] = [
 /** One Battle with the time in menus, in minutes (Economy 7.1). */
 const BATTLE_MINUTES = 8;
 
-/** A Player that is not at level 30 after this many Battles is "stuck". */
+/**
+ * A Player that is not at level 30, or did not win Floor 50, after this many
+ * Battles is "stuck".
+ */
 export const MAX_BATTLES = 2000;
 
-/** The highest Player level (GDD 7.1). The sim stops there. */
+/** The highest Player level (GDD 7.1). */
 const MAX_PLAYER_LEVEL = PLAYER_LEVEL_XP.length;
 
 /**
@@ -150,20 +150,29 @@ const WIN_CHANCE_CAP = 0.95;
  */
 const STARS_PER_WIN = 2;
 
-/** The best Stars that end the replays of a Stage, and that a Campaign Sweep needs (GDD 4.12). */
+/**
+ * The best Stars that end the repeat Battles of a Stage, and that a Campaign
+ * Sweep needs (GDD 4.12).
+ */
 const THREE_STARS = 3;
 
 /**
- * A guard: the most replay Battles of one Stage. A Player at the cap goes to
+ * A guard: the most repeat Battles of one Stage. A Player at the cap goes to
  * the next Stage (Economy 7.1).
  */
-export const MAX_REPLAYS = 10;
+export const MAX_REPEAT_BATTLES = 10;
 
 /** The Stages of each Region: 10, the last one is the Boss Stage (GDD 3.3). */
 const STAGES_PER_REGION = 10;
 
 /** A Heynspire Floor that fails this many times in a row sends the Player to a Dungeon. */
 const FLOOR_FAILS_BEFORE_DUNGEON = 3;
+
+/**
+ * At level 30 there is no next level, so a Dungeon detour ends after this
+ * many Dungeon Battles (Economy 7.1).
+ */
+const LEVEL_30_DUNGEON_BATTLES = 3;
 
 /** The Player keeps this many copies of a card in one Rank. Extract takes the others. */
 const KEEP_COPIES = 2;
@@ -282,67 +291,101 @@ interface PacingTarget {
   readonly legendaryCopies?: RangeTarget;
   /** "Gear mostly at level 14 or higher": the lowest Gear item. */
   readonly lowestGear?: RangeTarget;
+  /**
+   * The share of all Players, from 0 to 1, that get to level 30 before they
+   * win Floor 50. It is not a median.
+   */
+  readonly level30BeforeFloor50?: RangeTarget;
 }
 
 /** A target of one checkpoint. */
-type PacingTargetId = keyof PacingTarget;
+export type PacingTargetId = keyof PacingTarget;
 
-/** The targets of one checkpoint, and the Play Styles that some targets do not apply to. */
-interface CheckpointTargets extends PacingTarget {
+/**
+ * The targets of one checkpoint, the Play Styles that some targets do not
+ * apply to, and the Play Styles for which a target is draft. A target is gated
+ * by default: a miss fails `--check`. A miss of a draft target is for review.
+ */
+export interface CheckpointTargets extends PacingTarget {
   readonly notFor?: Readonly<
+    Partial<Record<PacingTargetId, readonly PlayStyle[]>>
+  >;
+  readonly draftFor?: Readonly<
     Partial<Record<PacingTargetId, readonly PlayStyle[]>>
   >;
 }
 
+/** The targets of all checkpoints. */
+export type PacingTargets = Readonly<Record<CheckpointId, CheckpointTargets>>;
+
 /** The pacing targets of Economy 4. "About" is ± 25%. */
-const PACING_TARGETS: Readonly<Record<CheckpointId, CheckpointTargets>> = {
+export const PACING_TARGETS: PacingTargets = {
   region1: {
-    hours: { min: 1.5, max: 2.5 },
+    hours: { min: 3, max: 5 },
     level: 6,
-    packsOpened: { min: 3, max: 5 },
+    packsOpened: { min: 6, max: 10 },
     firstCombine: true,
     // The Collector Combines only to Epic or higher (Economy 4).
     notFor: { firstCombine: ["collector"] },
   },
   region2: {
-    hours: { min: 4.5, max: 7.5 },
+    hours: { min: 6.5, max: 11 },
     level: 10,
-    packsOpened: { min: 12, max: 18 },
+    packsOpened: { min: 15, max: 25 },
     epicCopies: { min: 1, max: null },
   },
+  // "Packs opened" has no target at Region 3 (Economy 4).
   region3: {
     hours: { min: 8, max: 15 },
     level: 15,
-    packsOpened: { min: 25, max: 35 },
-    discoveredShare: { min: 0.6, max: 0.75 },
+    discoveredShare: { min: 0.6, max: null },
   },
-  // Draft targets of ADR-0036: check them with the economy sim.
-  region4: { hours: { min: 10, max: 18 }, level: 20 },
-  region5: { hours: { min: 13, max: 22 }, level: 23 },
+  region4: { hours: { min: 13, max: 22 }, level: 20 },
+  region5: { hours: { min: 16, max: 27 }, level: 23 },
   floor50: {
-    hours: { min: 26.25, max: 43.75 },
+    // About 30 hours.
+    hours: { min: 22.5, max: 37.5 },
     level: 28,
     discoveredShare: { min: 1, max: 1 },
     legendaryCopies: { min: 3, max: 6 },
     lowestGear: { min: 14, max: null },
+    // A Peddler Pack never gives an Epic card (Economy 4).
+    notFor: { discoveredShare: ["upgrader"] },
+    // The accepted miss of the Legendary Combine rule (Economy 4).
+    draftFor: { discoveredShare: ["balanced"] },
   },
   // 1 to 2 weeks of play: Economy 4 gives no hours.
-  level30: { level: 30 },
+  level30: { level: 30, level30BeforeFloor50: { min: null, max: 0.1 } },
 };
 
+/** The targets of `PacingTarget`, in the order of the report. */
+const PACING_TARGET_IDS: readonly PacingTargetId[] = [
+  "hours",
+  "level",
+  "packsOpened",
+  "firstCombine",
+  "epicCopies",
+  "discoveredShare",
+  "legendaryCopies",
+  "lowestGear",
+  "level30BeforeFloor50",
+];
+
 /**
- * The targets of a checkpoint for one Play Style: `PACING_TARGETS` without
+ * The targets of a checkpoint for one Play Style: `pacingTargets` without
  * the targets that do not apply to `playStyle`.
  */
 export const pacingTarget = (
   id: CheckpointId,
-  playStyle: PlayStyle
+  playStyle: PlayStyle,
+  pacingTargets: PacingTargets = PACING_TARGETS
 ): PacingTarget => {
-  const { notFor = {}, ...targets } = PACING_TARGETS[id];
+  const { notFor = {}, ...targets } = pacingTargets[id];
   return Object.fromEntries(
-    Object.entries(targets).filter(
-      // SAFETY: the keys of `targets` are the keys of `PacingTarget`.
-      ([key]) => !notFor[key as PacingTargetId]?.includes(playStyle)
+    PACING_TARGET_IDS.flatMap((key) =>
+      targets[key] === undefined || notFor[key]?.includes(playStyle)
+        ? []
+        : [[key, targets[key]]]
     )
   );
 };
@@ -365,13 +408,15 @@ export interface CheckpointSnapshot {
   readonly essence: number;
   /** The Forge Stones that the Player has and did not use (ADR-0038). */
   readonly forgeStones: ForgeStones;
+  /** The Heynspire Floors won, from Floor 1. */
+  readonly floorsWon: number;
   /** The best Stars of all Stages. */
   readonly stars: number;
   /** The Stages with 3 best Stars. */
   readonly threeStarStages: number;
   /** The Battles of Stages that the Player won before. */
-  readonly replays: number;
-  /** The Stages that got to the replay cap with fewer than 3 best Stars. */
+  readonly repeatBattles: number;
+  /** The Stages that got to the repeat cap with fewer than 3 best Stars. */
   readonly cappedStages: number;
   /** The Campaign Sweep Tickets that the Player used and that it has. */
   readonly campaignTicketsUsed: number;
@@ -383,12 +428,12 @@ export interface CheckpointSnapshot {
 
 /**
  * Where the Player is in the content. `campaign` is the first Stage that the
- * Player did not win, and `replay` is a won Stage with fewer than 3 best Stars,
+ * Player did not win, and `repeat` is a won Stage with fewer than 3 best Stars,
  * after the Boss Stage win of its Region. Both are indexes of the Stages.
  */
 type Position =
   | { readonly kind: "campaign"; readonly stage: number }
-  | { readonly kind: "replay"; readonly stage: number }
+  | { readonly kind: "repeat"; readonly stage: number }
   | { readonly kind: "heynspire"; readonly floor: number }
   | { readonly kind: "done" };
 
@@ -399,6 +444,8 @@ interface RunProgress {
   floorFails: number;
   /** The Player level at which the Player goes back to the Floor. */
   dungeonUntil: number | null;
+  /** The Dungeon Battles before the Player goes back to the Floor, at level 30. */
+  dungeonBattlesLeft: number;
 }
 
 /** The mutable state of one simulated Player. Tests can set it up. */
@@ -429,8 +476,8 @@ export interface EconomyPlayer {
   /** The Stars and the number of opened Star chests of each Region. */
   readonly stars: number[];
   readonly openedChests: number[];
-  /** The replay Battles of each Campaign Stage, by Stage id. */
-  readonly replays: Map<string, number>;
+  /** The repeat Battles of each Campaign Stage, by Stage id. */
+  readonly repeatBattles: Map<string, number>;
   campaignSweepTickets: number;
   campaignTicketsUsed: number;
   dungeonSweepTickets: number;
@@ -477,7 +524,7 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     bestStars: new Map(),
     stars: Array.from({ length: CAMPAIGN_REGIONS }, () => 0),
     openedChests: Array.from({ length: CAMPAIGN_REGIONS }, () => 0),
-    replays: new Map(),
+    repeatBattles: new Map(),
     campaignSweepTickets: 0,
     campaignTicketsUsed: 0,
     dungeonSweepTickets: 0,
@@ -525,17 +572,19 @@ const snapshot = (player: EconomyPlayer): CheckpointSnapshot => {
     coin: player.coin,
     essence: player.essence,
     forgeStones: player.forgeStones,
+    floorsWon: player.floorsWon,
     stars: player.stars.reduce((total, stars) => total + stars, 0),
     threeStarStages: [...player.bestStars.values()].filter(
       (stars) => stars === THREE_STARS
     ).length,
-    replays: [...player.replays.values()].reduce(
+    repeatBattles: [...player.repeatBattles.values()].reduce(
       (total, battles) => total + battles,
       0
     ),
-    cappedStages: [...player.replays].filter(
+    cappedStages: [...player.repeatBattles].filter(
       ([stageId, battles]) =>
-        battles >= MAX_REPLAYS && player.bestStars.get(stageId) !== THREE_STARS
+        battles >= MAX_REPEAT_BATTLES &&
+        player.bestStars.get(stageId) !== THREE_STARS
     ).length,
     campaignTicketsUsed: player.campaignTicketsUsed,
     campaignSweepTickets: player.campaignSweepTickets,
@@ -726,6 +775,23 @@ const craftPairs = (player: EconomyPlayer): void => {
   }
 };
 
+/**
+ * The Legendary Combine first (Economy 7.1): Combines each Epic pair to a
+ * Legendary copy while the Player can pay for it. Returns true when an Epic
+ * pair stays. Then the Player keeps its Coin for that Combine and buys no
+ * Packs. The Upgrader and the Balanced Player use it. The Collector does not:
+ * it Combines to Epic or higher only after its Packs.
+ */
+const combineLegendary = (player: EconomyPlayer): boolean => {
+  if (!isUnlocked(levelOf(player), "combine")) {
+    return false;
+  }
+  combinePairs(player, "legendary");
+  return player.collection.some(
+    (entry) => entry.rank === "epic" && entry.copies >= COMBINE_COPIES
+  );
+};
+
 /** The Collector buys a Royal Pack after Region 2 (Economy 7.1). */
 const collectorPack = (player: EconomyPlayer): PackId =>
   player.bestStars.size >= STAGES_PER_REGION * 2 ? "royal" : "merchant";
@@ -742,10 +808,14 @@ const spendCollector = (player: EconomyPlayer): void => {
 };
 
 const spendUpgrader = (player: EconomyPlayer): void => {
+  const saving = combineLegendary(player);
   combinePairs(player);
   const gearCap = Math.floor((levelOf(player) * 2) / 3);
   while (upgradeGear(player, gearCap)) {
     // Upgrade Gear up to the Player level × 2 ÷ 3.
+  }
+  if (saving) {
+    return;
   }
   // The Pack with the most cards for each Coin: fuel for Combine.
   while (buyPack(player, "peddler")) {
@@ -754,8 +824,9 @@ const spendUpgrader = (player: EconomyPlayer): void => {
 };
 
 const spendBalanced = (player: EconomyPlayer): void => {
+  const saving = combineLegendary(player);
   for (;;) {
-    const pack = buyPack(player, "merchant");
+    const pack = !saving && buyPack(player, "merchant");
     // 2 Gear levels: one old level (ADR-0037).
     const gear = upgradeGear(player);
     const moreGear = gear && upgradeGear(player);
@@ -1023,6 +1094,7 @@ export const claimAchievements = (player: EconomyPlayer): void => {
     coin: player.coin,
     essence: player.essence,
     heynstones: 0,
+    cosmetics: [],
     collection: player.collection,
     gear: player.gear,
     stageResults: Object.fromEntries(player.bestStars),
@@ -1077,7 +1149,7 @@ interface EconomyRunOptions {
   readonly seed: number;
   /**
    * The First-try run: the Player wins each Battle with 2 Stars, and never
-   * replays a Stage and never Sweeps. Thus Battle n is the first try of Stage
+   * repeats a Stage and never Sweeps. Thus Battle n is the first try of Stage
    * n, as on the First-try Path. It ignores the fixed chances.
    */
   readonly firstTry?: boolean;
@@ -1096,9 +1168,12 @@ export interface EconomyRun {
   readonly checkpoints: Readonly<
     Record<CheckpointId, CheckpointSnapshot | null>
   >;
-  /** True when the Player is not at level 30 after the Battle cap. */
+  /**
+   * True when the Player is not at level 30, or did not win Floor 50, after
+   * the Battle cap.
+   */
   readonly stuck: boolean;
-  /** True when a Stage got to the replay cap with fewer than 3 best Stars. */
+  /** True when a Stage got to the repeat cap with fewer than 3 best Stars. */
   readonly capped: boolean;
   /** The values at the end of the run. */
   readonly end: CheckpointSnapshot;
@@ -1125,7 +1200,10 @@ const unlockedDungeon = (level: number): DungeonRewardDefinition | null =>
     (dungeon) => dungeon.unlockLevel <= level && dungeon.winXp > 0
   ) ?? null;
 
-/** Simulates one Player from a new Profile to level 30 or the Battle cap. */
+/**
+ * Simulates one Player from a new Profile to level 30 and the Floor 50 win, or
+ * to the Battle cap.
+ */
 export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   const stages = economyStages();
   const floors = floorRecommendedLevels(stages);
@@ -1154,6 +1232,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     position: { kind: "campaign", stage: 0 },
     floorFails: 0,
     dungeonUntil: null,
+    dungeonBattlesLeft: 0,
   };
   const firstTry = options.firstTry === true;
 
@@ -1179,19 +1258,19 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
 
   /**
    * Where the Player goes in Region `region` after its Boss Stage win: the
-   * first Stage with fewer than 3 best Stars and below the replay cap, in
+   * first Stage with fewer than 3 best Stars and below the repeat cap, in
    * Stage order. Else the next Region, or Heynspire after the last Region.
    */
   const afterRegion = (region: number): Position => {
     if (!firstTry) {
-      const replay = stages.findIndex(
+      const repeat = stages.findIndex(
         (stage) =>
           stage.region === region &&
           (player.bestStars.get(stage.id) ?? 0) < THREE_STARS &&
-          (player.replays.get(stage.id) ?? 0) < MAX_REPLAYS
+          (player.repeatBattles.get(stage.id) ?? 0) < MAX_REPEAT_BATTLES
       );
-      if (replay !== -1) {
-        return { kind: "replay", stage: replay };
+      if (repeat !== -1) {
+        return { kind: "repeat", stage: repeat };
       }
     }
     const next = stages.findIndex((stage) => stage.region > region);
@@ -1224,14 +1303,17 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       levelsAtStages.push(levelOf(player));
       gearAtStages.push({ ...player.gear });
     }
-    const replay = progress.position.kind === "replay";
-    if (replay) {
-      player.replays.set(stage.id, (player.replays.get(stage.id) ?? 0) + 1);
+    const repeat = progress.position.kind === "repeat";
+    if (repeat) {
+      player.repeatBattles.set(
+        stage.id,
+        (player.repeatBattles.get(stage.id) ?? 0) + 1
+      );
     }
     const won = wins(
       winChance(middle(stageTarget(stage)), stage.recommendedLevel, player)
     );
-    if (won && replay) {
+    if (won && repeat) {
       giveStageRepeatWin(player, stage);
     } else {
       const outcome: StageOutcome = won ? "firstWin" : "loss";
@@ -1244,13 +1326,13 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       });
     }
     if (won) {
-      if (!replay && stage.firstWinCard !== null) {
+      if (!repeat && stage.firstWinCard !== null) {
         player.collection = addCopies(player.collection, [stage.firstWinCard]);
       }
       player.campaignSweepTickets += CAMPAIGN_SWEEP_TICKETS_PER_WIN;
       recordStars(player, stage, winStars(stage));
     }
-    if (replay) {
+    if (repeat) {
       progress.position = afterRegion(stage.region);
     } else if (won) {
       const next = stages[index + 1];
@@ -1282,7 +1364,11 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       progress.floorFails += 1;
       if (progress.floorFails >= FLOOR_FAILS_BEFORE_DUNGEON) {
         progress.floorFails = 0;
-        progress.dungeonUntil = levelOf(player) + 1;
+        if (levelOf(player) >= MAX_PLAYER_LEVEL) {
+          progress.dungeonBattlesLeft = LEVEL_30_DUNGEON_BATTLES;
+        } else {
+          progress.dungeonUntil = levelOf(player) + 1;
+        }
       }
       return;
     }
@@ -1302,7 +1388,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       progress.dungeonUntil = null;
     }
     const { position } = progress;
-    if (position.kind === "campaign" || position.kind === "replay") {
+    if (position.kind === "campaign" || position.kind === "repeat") {
       const stage = stages[position.stage];
       if (stage === undefined) {
         throw new Error(`No Campaign Stage at index ${position.stage}`);
@@ -1311,10 +1397,13 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       return;
     }
     const dungeon = unlockedDungeon(level);
-    if (
-      dungeon !== null &&
-      (position.kind === "done" || progress.dungeonUntil !== null)
-    ) {
+    const detour =
+      progress.dungeonUntil !== null || progress.dungeonBattlesLeft > 0;
+    if (dungeon !== null && (position.kind === "done" || detour)) {
+      progress.dungeonBattlesLeft = Math.max(
+        0,
+        progress.dungeonBattlesLeft - 1
+      );
       playDungeon(dungeon);
       return;
     }
@@ -1331,16 +1420,20 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     }
   };
 
-  /** The number of Regions that the Player left, after their replays. */
+  /** The number of Regions that the Player left, after their repeat Battles. */
   const regionsLeft = (): number => {
     const { position } = progress;
-    if (position.kind === "campaign" || position.kind === "replay") {
+    if (position.kind === "campaign" || position.kind === "repeat") {
       return (stages[position.stage]?.region ?? 1) - 1;
     }
     return CAMPAIGN_REGIONS;
   };
 
-  while (levelOf(player) < MAX_PLAYER_LEVEL && player.battles < maxBattles) {
+  /** The sim stops at level 30 and the Floor 50 win (Economy 7.1). */
+  const finished = () =>
+    levelOf(player) >= MAX_PLAYER_LEVEL && player.floorsWon >= HEYNSPIRE_FLOORS;
+
+  while (!finished() && player.battles < maxBattles) {
     recordLevels();
     player.battles += 1;
     playOne();
@@ -1358,17 +1451,17 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     if (progress.position.kind === "done") {
       record("floor50");
     }
+    if (levelOf(player) >= MAX_PLAYER_LEVEL) {
+      record("level30");
+    }
   }
   recordLevels();
-  if (levelOf(player) >= MAX_PLAYER_LEVEL) {
-    record("level30");
-  }
   const end = snapshot(player);
   return {
     playStyle: options.playStyle,
     seed: options.seed,
     checkpoints,
-    stuck: levelOf(player) < MAX_PLAYER_LEVEL,
+    stuck: !finished(),
     capped: end.cappedStages > 0,
     end,
     stageLevels: stages.map((stage) => stage.recommendedLevel),
@@ -1459,21 +1552,21 @@ export const expectedGearAtLevel = (level: number): GearLevels => {
 
 // ─── Report ──────────────────────────────────────────────────────────────────
 
-/** The replay and Sweep metrics of a checkpoint that the report shows. */
-export type ReplayMetric =
+/** The repeat and Sweep metrics of a checkpoint that the report shows. */
+export type RepeatMetric =
   | "stars"
   | "threeStarStages"
-  | "replays"
+  | "repeatBattles"
   | "cappedStages"
   | "campaignTicketsUsed"
   | "campaignSweepTickets"
   | "dungeonTicketsUsed"
   | "dungeonSweepTickets";
 
-export const REPLAY_METRICS: readonly ReplayMetric[] = [
+export const REPEAT_METRICS: readonly RepeatMetric[] = [
   "stars",
   "threeStarStages",
-  "replays",
+  "repeatBattles",
   "cappedStages",
   "campaignTicketsUsed",
   "campaignSweepTickets",
@@ -1484,7 +1577,7 @@ export const REPLAY_METRICS: readonly ReplayMetric[] = [
 /** The metrics of a checkpoint that the report shows with the Economy 4 targets. */
 export type Metric = Exclude<
   keyof CheckpointSnapshot,
-  "combines" | "essence" | "forgeStones" | ReplayMetric
+  "combines" | "essence" | "forgeStones" | "floorsWon" | RepeatMetric
 >;
 
 export const METRICS: readonly Metric[] = [
@@ -1513,7 +1606,7 @@ interface CheckpointSummary {
   readonly metrics: Readonly<Record<Metric, Spread>> | null;
   /** The Forge Stones that the Players did not use, by tier (ADR-0038). */
   readonly forgeStones: Readonly<Record<ForgeStoneTier, Spread>> | null;
-  readonly replays: Readonly<Record<ReplayMetric, Spread>> | null;
+  readonly repeats: Readonly<Record<RepeatMetric, Spread>> | null;
   /** The share of the Players with a Combine done, from 0 to 1. */
   readonly combinedShare: number;
 }
@@ -1522,9 +1615,14 @@ interface PlayStyleReport {
   readonly playStyle: PlayStyle;
   readonly seeds: number;
   readonly checkpoints: Readonly<Record<CheckpointId, CheckpointSummary>>;
-  /** The number of Players at the Battle cap below level 30. */
+  /**
+   * The number of Players at the Battle cap below level 30 or without the
+   * Floor 50 win.
+   */
   readonly stuck: number;
-  /** The number of Players with a Stage at the replay cap. */
+  /** The number of Players that got to level 30 before they won Floor 50. */
+  readonly level30BeforeFloor50: number;
+  /** The number of Players with a Stage at the repeat cap. */
   readonly capped: number;
   /** The run with a win chance of 100%: the First-try Path. */
   readonly firstTry: EconomyRun;
@@ -1556,11 +1654,11 @@ const summarize = (
       reached: 0,
       metrics: null,
       forgeStones: null,
-      replays: null,
+      repeats: null,
       combinedShare: 0,
     };
   }
-  const spread = (metric: Metric | ReplayMetric) =>
+  const spread = (metric: Metric | RepeatMetric) =>
     spreadOf(snapshots.map((snap) => snap[metric]));
   const stones = (tier: ForgeStoneTier) =>
     spreadOf(snapshots.map((snap) => snap.forgeStones[tier]));
@@ -1585,10 +1683,10 @@ const summarize = (
       epic: stones("epic"),
       legendary: stones("legendary"),
     },
-    replays: {
+    repeats: {
       stars: spread("stars"),
       threeStarStages: spread("threeStarStages"),
-      replays: spread("replays"),
+      repeatBattles: spread("repeatBattles"),
       cappedStages: spread("cappedStages"),
       campaignTicketsUsed: spread("campaignTicketsUsed"),
       campaignSweepTickets: spread("campaignSweepTickets"),
@@ -1642,6 +1740,11 @@ export const simulateEconomy = (
       level30: at("level30"),
     },
     stuck: runs.filter((run) => run.stuck).length,
+    level30BeforeFloor50: runs.filter(
+      (run) =>
+        (run.checkpoints.level30?.floorsWon ?? HEYNSPIRE_FLOORS) <
+        HEYNSPIRE_FLOORS
+    ).length,
     capped: runs.filter((run) => run.capped).length,
     firstTry: simulateEconomyRun({
       playStyle,
@@ -1651,6 +1754,105 @@ export const simulateEconomy = (
     }),
   };
 };
+
+/** The judgement of one Pacing target of a Play Style (Economy 4, 7.1). */
+export interface PacingVerdict {
+  readonly checkpoint: CheckpointId;
+  readonly target: PacingTargetId;
+  readonly playStyle: PlayStyle;
+  /**
+   * The median of the Players, the level of the First-try run, or a share of
+   * the Players from 0 to 1. `null` when no Player got to the checkpoint.
+   */
+  readonly value: number | null;
+  readonly range: RangeTarget;
+  readonly onTarget: boolean;
+  /** A miss of a gated target fails `--check`. A miss of a draft target is for review. */
+  readonly gated: boolean;
+}
+
+/**
+ * A target as a range, or `undefined` when there is no target. A level is one
+ * value, and "First Combine done" is 100% of the Players.
+ */
+const targetRange = (
+  targets: PacingTarget,
+  id: PacingTargetId
+): RangeTarget | undefined => {
+  switch (id) {
+    case "level": {
+      return targets.level === undefined
+        ? undefined
+        : { min: targets.level, max: targets.level };
+    }
+    case "firstCombine": {
+      return targets.firstCombine === true ? { min: 1, max: 1 } : undefined;
+    }
+    default: {
+      return targets[id];
+    }
+  }
+};
+
+const isInRange = (value: number, range: RangeTarget) =>
+  (range.min === null || value >= range.min) &&
+  (range.max === null || value <= range.max);
+
+/** The value of a report that a target judges. */
+const pacingValue = (
+  report: PlayStyleReport,
+  id: CheckpointId,
+  target: PacingTargetId
+): number | null => {
+  const summary = report.checkpoints[id];
+  switch (target) {
+    // The Player level targets are for the First-try run (ADR-0046).
+    case "level": {
+      return report.firstTry.checkpoints[id]?.level ?? null;
+    }
+    case "firstCombine": {
+      return summary.reached === 0 ? null : summary.combinedShare;
+    }
+    case "level30BeforeFloor50": {
+      return report.level30BeforeFloor50 / report.seeds;
+    }
+    default: {
+      return summary.metrics?.[target].median ?? null;
+    }
+  }
+};
+
+/**
+ * Judges each Pacing target of `pacingTargets` that applies to the Play Style
+ * of `report`: the medians, the levels of the First-try run, and the shares of
+ * the Players (Economy 7.1).
+ */
+export const judgePacing = (
+  report: PlayStyleReport,
+  pacingTargets: PacingTargets = PACING_TARGETS
+): PacingVerdict[] =>
+  CHECKPOINTS.flatMap((checkpoint) => {
+    const targets = pacingTarget(checkpoint, report.playStyle, pacingTargets);
+    const draftFor = pacingTargets[checkpoint].draftFor ?? {};
+    return PACING_TARGET_IDS.flatMap((target) => {
+      const range = targetRange(targets, target);
+      if (range === undefined) {
+        return [];
+      }
+      const value = pacingValue(report, checkpoint, target);
+      return [
+        {
+          checkpoint,
+          target,
+          playStyle: report.playStyle,
+          value,
+          range,
+          onTarget: value !== null && isInRange(value, range),
+          gated: !draftFor[target]?.includes(report.playStyle),
+        },
+      ];
+    });
+  });
 
 interface HeynstoneLedger {
   readonly sources: readonly HeynstoneSource[];
@@ -1667,6 +1869,6 @@ interface HeynstoneLedger {
 export const heynstoneLedger = (): HeynstoneLedger => ({
   sources: HEYNSTONE_SOURCES,
   total: HEYNSTONE_SUPPLY,
-  catalog: BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
-  catalogShare: HEYNSTONE_SUPPLY / BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
+  catalog: BAZAAR_CATALOG_HEYNSTONES,
+  catalogShare: HEYNSTONE_SUPPLY / BAZAAR_CATALOG_HEYNSTONES,
 });

@@ -101,7 +101,7 @@ describe("recordAchievements (Achievements 1.2)", () => {
   });
 
   it("counts Discovered cards, also with no copies left", () => {
-    const collection = CARDS.slice(0, 65).map((card) => ({
+    const collection = CARDS.slice(0, 68).map((card) => ({
       cardId: card.id,
       rank: card.baseRank,
       copies: 0,
@@ -148,7 +148,7 @@ describe("achievementProgress", () => {
     }));
     expect(achievementProgress(profile({ collection }), HALF)).toEqual({
       current: 41,
-      target: 65,
+      target: 68,
     });
     expect(
       achievementProgress(
@@ -206,12 +206,13 @@ describe("claimAchievement (Achievements 1.1)", () => {
     );
   });
 
-  it("records a Cosmetic reward as owed and changes no balance (Achievements 1.6)", () => {
+  it("gives the Earn-only Cosmetic of the Achievement (Achievements 1.6)", () => {
     const before = completed(ALL_STARS.id);
     const claim = claimAchievement(before, ALL_STARS);
     expect(claim?.profile).toEqual({
       ...before,
       claimedAchievements: [ALL_STARS.id],
+      cosmetics: ["earnOnly.constellationSeal"],
     });
   });
 
@@ -248,5 +249,11 @@ describe("claimAllAchievements", () => {
     expect(claim?.profile.heynstones).toBe(1000);
     expect(claim?.profile.coin).toBe(500);
     expect(claim?.profile.essence).toBe(50);
+    // The 3 hard Achievements give their Earn-only Cosmetics (Achievements 1.6).
+    expect(claim?.profile.cosmetics).toEqual([
+      "earnOnly.constellationSeal",
+      "earnOnly.archivistCrest",
+      "earnOnly.flawlessPlate",
+    ]);
   });
 });

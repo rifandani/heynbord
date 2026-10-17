@@ -6,6 +6,7 @@ import {
   outcomeXp,
   PLAYER_LEVEL_XP,
   playerLevelForXp,
+  stageXp,
 } from "./player-levels";
 import { getStage, STAGES } from "./stages";
 
@@ -61,6 +62,19 @@ describe("first-win XP (Economy 2.1)", () => {
     expect(() => firstWinXp({ ...getStage("1-1"), region: 6 })).toThrow(
       "Unknown Region"
     );
+  });
+});
+
+describe("stageXp (Economy 2.1)", () => {
+  it("gives no XP for a Repeat win, also on a Boss Stage (ADR-0049)", () => {
+    expect(stageXp(getStage("1-2"), "win")).toBe(0);
+    expect(stageXp(getStage("1-10"), "win")).toBe(0);
+  });
+
+  it("gives 25% of the XP of the Region for a loss, × 2 for a Boss Stage", () => {
+    expect(stageXp(getStage("1-2"), "loss")).toBe(10);
+    expect(stageXp(getStage("1-10"), "loss")).toBe(20);
+    expect(stageXp({ ...getStage("1-2"), region: 2 }, "loss")).toBe(17);
   });
 });
 

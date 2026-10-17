@@ -2,9 +2,11 @@
  * Headless Battle simulation (GDD 13). The AI plays both Sides.
  *
  * Usage: `bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]`.
- * With no mode, it runs `stage`, `dungeon`, `floor`, `matchup` and `packs`. `battles` is 200 by default. With
- * `--check`, it exits with code 1 when a win rate is not on its GDD 13 target
- * (CI uses it). The seeds are fixed, so the same content gives the same result.
+ * With no mode, it runs `stage`, `dungeon`, `floor`, `matchup` and `packs`, and
+ * with `--check` also `economy`. `battles` is 200 by default. With `--check`,
+ * it exits with code 1 when a win rate is not on its GDD 13 target or a Pacing
+ * target is not on its Economy 4 target (CI uses it). The seeds are fixed, so
+ * the same content gives the same result.
  *
  * - `stage`: each Stage with each starter Deck, at the Recommended level of the
  *   Stage and with no Gear (docs/game/14-campaign-stages.md). A Stage with
@@ -41,12 +43,16 @@
  *   rates and the value for each Coin. 100 Players open Packs until they
  *   Discover all cards of each Base Rank. `--check` does not check the Packs.
  * - `economy`: simulated Players of each Play Style from a new Profile to
- *   Player level 30, with a win chance and a 3-Star chance for each Battle.
- *   The Players replay each Stage for 3 Stars and use their Sweep Tickets
+ *   Player level 30 and the Floor 50 win, with a win chance and a 3-Star
+ *   chance for each Battle.
+ *   The Players repeat each Stage for 3 Stars and use their Sweep Tickets
  *   (Economy 7.1, ADR-0046). `battles` is the number of seeds for each Play
- *   Style. It reports the Economy 4 checkpoints, the Stars, replays and
+ *   Style. It reports the Economy 4 checkpoints, the Stars, repeat Battles and
  *   Sweeps, and the Heynstone ledger. The Player level targets are on the
- *   First-try run only. `--check` does not check the economy yet.
+ *   First-try run only. `--check` judges each Pacing target that applies to
+ *   the Play Style: the median of the Players, the level of the First-try run,
+ *   or a share of the Players. A miss of a gated target fails the check. A
+ *   miss of a draft target (`draftFor`) shows "review".
  * - `skill-swap`: the swap rule for each Skill Card (Archetypes 3.3). In a
  *   Deck of its Class, 1 more copy of the Skill Card replaces 1 Creature Card
  *   with the same Countdown. The Deck plays Vanguard and Raiders before and
@@ -80,18 +86,21 @@ import {
   expectedGear,
   expectedGearAtLevel,
   heynstoneLedger,
+  judgePacing,
   MAX_BATTLES,
-  MAX_REPLAYS,
+  MAX_REPEAT_BATTLES,
   METRICS,
   pacingTarget,
   PLAY_STYLES,
-  REPLAY_METRICS,
+  REPEAT_METRICS,
   simulateEconomy,
 } from "../src/simulation/economy";
 import type {
   CheckpointId,
   CheckpointSnapshot,
   Metric,
+  PacingTargetId,
+  PacingVerdict,
   PlayStyle,
   RangeTarget,
   Spread,
@@ -151,11 +160,17 @@ const integer = (value: string | undefined, name: string, minimum: number) => {
   return number;
 };
 
-/** The economy sim and the swap report are slow and have no `--check`, so they run only on request. */
-const chosenModes = (modes: Mode[]): Mode[] =>
+/**
+ * The economy sim and the swap report are slow, so they run only on request.
+ * With no mode, `--check` also runs the economy sim to check the Economy 4
+ * targets. The swap report has no `--check`.
+ */
+const chosenModes = (modes: Mode[], check: boolean): Mode[] =>
   modes.length > 0
     ? modes
-    : MODES.filter((mode) => mode !== "economy" && mode !== "skill-swap");
+    : MODES.filter(
+        (mode) => mode !== "skill-swap" && (check || mode !== "economy")
+      );
 
 /** The flags of the command line. `level` and `gear` are `undefined` when they are not given. */
 interface Flags {
@@ -207,7 +222,7 @@ const parseArgs = (args: readonly string[]) => {
     parsed.battles = integer(arg, "battles", 1);
   }
   return {
-    modes: chosenModes(modes),
+    modes: chosenModes(modes, parsed.check),
     battles: parsed.battles,
     level: parsed.level,
     gear: parsed.gear,
@@ -223,7 +238,7 @@ const { modes, battles, level, gear, packs, check } = parseArgs(
   process.argv.slice(2)
 );
 
-/** The win rates that are not on target. */
+/** The win rates, 3-Star shares and Pacing targets that are not on target. */
 const misses: string[] = [];
 
 /**
@@ -603,6 +618,32 @@ const METRIC_FORMAT: Readonly<Record<Metric, (value: number) => string>> = {
   coin: (value) => value.toFixed(0),
 };
 
+/** The format of the value of each Pacing target. A share has 1 decimal. */
+const PACING_FORMAT: Readonly<
+  Record<PacingTargetId, (value: number) => string>
+> = {
+  hours: METRIC_FORMAT.hours,
+  level: METRIC_FORMAT.level,
+  packsOpened: METRIC_FORMAT.packsOpened,
+  firstCombine: (value) => percent(value, 1),
+  epicCopies: METRIC_FORMAT.epicCopies,
+  discoveredShare: (value) => percent(value, 1),
+  legendaryCopies: METRIC_FORMAT.legendaryCopies,
+  lowestGear: METRIC_FORMAT.lowestGear,
+  level30BeforeFloor50: (value) => percent(value, 1),
+};
+
+/**
+ * The line of a Pacing target miss: the checkpoint, the target, the Play
+ * Style, the value and the target.
+ */
+const pacingMiss = (verdict: PacingVerdict) => {
+  const format = PACING_FORMAT[verdict.target];
+  const run = verdict.target === "level" ? " (First-try run)" : "";
+  const value = verdict.value === null ? "not reached" : format(verdict.value);
+  return `Economy ${verdict.checkpoint}, ${verdict.target}${run}, ${verdict.playStyle}: ${value}, target ${range(verdict.range, format)}`;
+};
+
 /**
  * The Economy 4 target of a metric at a checkpoint for a Play Style, or ""
  * when it has none.
@@ -640,38 +681,60 @@ const spreadWith = (format: (value: number) => string, spread: Spread) =>
 const spreadText = (metric: Metric, spread: Spread) =>
   spreadWith(METRIC_FORMAT[metric], spread);
 
+/** " MISS" or " review" after a target that is not on target, else "". */
+const missMark = (verdict: PacingVerdict | undefined) => {
+  if (verdict === undefined || verdict.onTarget) {
+    return "";
+  }
+  return verdict.gated ? " MISS" : " review";
+};
+
 /** A cell with the value and its target: "6 (6–7) → 6". */
 const withTarget = (
   id: CheckpointId,
   playStyle: PlayStyle,
   metric: Metric,
-  value: string
+  value: string,
+  verdict?: PacingVerdict
 ) => {
   const target = metricTarget(id, playStyle, metric);
-  return target === "" ? value : `${value} → ${target}`;
+  return target === "" ? value : `${value} → ${target}${missMark(verdict)}`;
 };
 
 /**
- * The Player level targets are for the First-try run (ADR-0046). A replaying
+ * The verdict of a target at a checkpoint, or `undefined` when it is not
+ * judged. A metric with no Pacing target has no verdict.
+ */
+type VerdictOf = (
+  id: CheckpointId,
+  target: PacingTargetId | Metric
+) => PacingVerdict | undefined;
+
+/**
+ * The Player level targets are for the First-try run (ADR-0046). A repeating
  * Player has a higher level, so the medians show no level target.
  */
 const medianCell = (
   id: CheckpointId,
   playStyle: PlayStyle,
   metric: Metric,
-  spread: Spread
+  spread: Spread,
+  verdictOf: VerdictOf
 ) => {
   const text = spreadText(metric, spread);
-  return metric === "level" ? text : withTarget(id, playStyle, metric, text);
+  return metric === "level"
+    ? text
+    : withTarget(id, playStyle, metric, text, verdictOf(id, metric));
 };
 
 const firstTryRow = (
   id: CheckpointId,
   playStyle: PlayStyle,
-  snap: CheckpointSnapshot | null
+  snap: CheckpointSnapshot | null,
+  verdictOf: VerdictOf
 ) =>
   snap === null
-    ? { checkpoint: id, reached: "no" }
+    ? { checkpoint: id, reached: `no${missMark(verdictOf(id, "level"))}` }
     : {
         checkpoint: id,
         ...Object.fromEntries(
@@ -681,7 +744,9 @@ const firstTryRow = (
               id,
               playStyle,
               metric,
-              METRIC_FORMAT[metric](snap[metric])
+              METRIC_FORMAT[metric](snap[metric]),
+              // Only the level targets are judged on the First-try run.
+              metric === "level" ? verdictOf(id, metric) : undefined
             ),
           ])
         ),
@@ -693,10 +758,20 @@ const firstTryRow = (
 
 if (modes.includes("economy")) {
   console.log(
-    `Economy: ${battles} Players for each Play Style, to level 30 or ${MAX_BATTLES} Battles. Cells: median (10th–90th percentile) → target`
+    `Economy: ${battles} Players for each Play Style, to level 30 and the Floor 50 win, or ${MAX_BATTLES} Battles. Cells: median (10th–90th percentile) → target`
   );
   for (const playStyle of PLAY_STYLES) {
     const report = simulateEconomy(playStyle, { seeds: battles });
+    const verdicts = judgePacing(report);
+    for (const verdict of verdicts) {
+      if (!verdict.onTarget && verdict.gated) {
+        misses.push(pacingMiss(verdict));
+      }
+    }
+    const verdictOf: VerdictOf = (id, target) =>
+      verdicts.find(
+        (verdict) => verdict.checkpoint === id && verdict.target === target
+      );
     console.log(`\nPlay Style: ${playStyle}`);
     console.table(
       CHECKPOINTS.map((id) => {
@@ -710,10 +785,16 @@ if (modes.includes("economy")) {
               metric,
               summary.metrics === null
                 ? "—"
-                : medianCell(id, playStyle, metric, summary.metrics[metric]),
+                : medianCell(
+                    id,
+                    playStyle,
+                    metric,
+                    summary.metrics[metric],
+                    verdictOf
+                  ),
             ])
           ),
-          combined: `${percent(summary.combinedShare)}${firstCombine ? " → 100%" : ""}`,
+          combined: `${percent(summary.combinedShare)}${firstCombine ? ` → 100%${missMark(verdictOf(id, "firstCombine"))}` : ""}`,
         };
       })
     );
@@ -737,36 +818,40 @@ if (modes.includes("economy")) {
       })
     );
     console.log(
-      "Stars, replays and Sweeps. Cells: median (10th–90th percentile). capped: the Stages at the replay cap with fewer than 3 Stars. Tickets: used / not used"
+      "Stars, repeat Battles and Sweeps. Cells: median (10th–90th percentile). capped: the Stages at the repeat cap with fewer than 3 Stars. Tickets: used / not used"
     );
     console.table(
       CHECKPOINTS.map((id) => {
-        const { replays } = report.checkpoints[id];
+        const { repeats } = report.checkpoints[id];
         return {
           checkpoint: id,
           ...Object.fromEntries(
-            REPLAY_METRICS.map((metric) => [
+            REPEAT_METRICS.map((metric) => [
               metric,
-              replays === null
+              repeats === null
                 ? "—"
-                : spreadWith((value) => value.toFixed(0), replays[metric]),
+                : spreadWith((value) => value.toFixed(0), repeats[metric]),
             ])
           ),
         };
       })
     );
     console.log(
-      `Stuck Players (below level 30 after ${MAX_BATTLES} Battles): ${report.stuck}/${report.seeds}`
+      `Stuck Players (below level 30 or without the Floor 50 win after ${MAX_BATTLES} Battles): ${report.stuck}/${report.seeds}`
+    );
+    const early = pacingTarget("level30", playStyle).level30BeforeFloor50;
+    console.log(
+      `Players at level 30 before the Floor 50 win: ${report.level30BeforeFloor50}/${report.seeds} (${percent(report.level30BeforeFloor50 / report.seeds)})${early === undefined ? "" : ` → ${range(early, percent)}${missMark(verdictOf("level30", "level30BeforeFloor50"))}`}`
     );
     console.log(
-      `Players at the replay cap (${MAX_REPLAYS} replays of a Stage with fewer than 3 Stars): ${report.capped}/${report.seeds}`
+      `Players at the repeat cap (${MAX_REPEAT_BATTLES} repeat Battles of a Stage with fewer than 3 Stars): ${report.capped}/${report.seeds}`
     );
     console.log(
-      `First-try run of ${playStyle} (win chance 100%, 2 Stars for each win, no replays and no Sweeps). The level targets are on this run:`
+      `First-try run of ${playStyle} (win chance 100%, 2 Stars for each win, no repeat Battles and no Sweeps). The level targets are on this run:`
     );
     console.table(
       CHECKPOINTS.map((id) =>
-        firstTryRow(id, playStyle, report.firstTry.checkpoints[id])
+        firstTryRow(id, playStyle, report.firstTry.checkpoints[id], verdictOf)
       )
     );
   }
@@ -785,13 +870,13 @@ if (modes.includes("economy")) {
     { source: "total", count: "", heynstones: ledger.total, estimate: "" },
   ]);
   console.log(
-    `Total: ${ledger.total} of the Bazaar catalog cost ${ledger.catalog} (estimate): ${percent(ledger.catalogShare)}`
+    `Total: ${ledger.total} of the Bazaar catalog cost ${ledger.catalog}: ${percent(ledger.catalogShare)}`
   );
   console.log(
     "\nAchievements: after each Battle, the Player claims each Completed Profile goal and Tally goal at once and gets its Coin and Essence. The Achievement Heynstones are in the ledger, not in the sim."
   );
   console.log(
-    "Not in the sim: Feats (the sim plays no Battle, and no Feat gives Coin or Essence), Dungeon 3 (it opens at level 30, where the sim stops) and the first-win cards of Dungeons."
+    "Not in the sim: Feats (the sim plays no Battle, and no Feat gives Coin or Essence), Dungeon 3 (the sim plays only the Dungeons that give XP) and the first-win cards of Dungeons."
   );
 }
 
@@ -854,7 +939,7 @@ if (modes.includes("skill-swap")) {
 
 if (check && misses.length > 0) {
   console.error(
-    `${misses.length} win rates or 3-Star shares are not on their GDD 13 target:\n${misses.map((miss) => `- ${miss}`).join("\n")}`
+    `${misses.length} win rates, 3-Star shares or Pacing targets are not on their GDD 13 or Economy 4 target:\n${misses.map((miss) => `- ${miss}`).join("\n")}`
   );
   process.exit(1);
 }

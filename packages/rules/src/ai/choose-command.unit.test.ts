@@ -68,6 +68,59 @@ const spearThrowAt = (lane: number, position: number) =>
     target: Target.Square({ lane, position }),
   });
 
+/** Summons the hand Card at position 9 in the given Lane. */
+const summonAt = (lane: number) =>
+  Command.PlayCard({
+    hero: 0,
+    handIndex: 0,
+    target: Target.Square({ lane, position: 9 }),
+  });
+
+/**
+ * Two far Scrap Raiders that a Spear Throw kills. Only the Heroic bonus of the
+ * Raider in the other Lane is different.
+ */
+const heroKillChoice = ({ heroicBonus }: { heroicBonus: number }) => {
+  const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
+  giveHand(state, "enemy", [["warrior.spearThrow", 0]]);
+  placeUnit(state, {
+    cardId: "orc.scrapRaider",
+    owner: "player",
+    lane: 0,
+    position: 2,
+    hp: 2,
+  });
+  placeUnit(state, {
+    cardId: "orc.scrapRaider",
+    owner: "player",
+    lane: 1,
+    position: 2,
+    hp: 2,
+    heroicBonus,
+  });
+  return chooseCommand(state);
+};
+
+/** Two far Scrap Raiders. Only the Heroic bonus of one of them is different. */
+const farSummonChoice = ({ heroicBonus }: { heroicBonus: number }) => {
+  const state = emptyBattle({ lanes: 2, activeSide: "enemy" });
+  giveHand(state, "enemy", [["human.shieldbearer", 0]]);
+  placeUnit(state, {
+    cardId: "orc.scrapRaider",
+    owner: "player",
+    lane: 0,
+    position: 2,
+  });
+  placeUnit(state, {
+    cardId: "orc.scrapRaider",
+    owner: "player",
+    lane: 1,
+    position: 2,
+    heroicBonus,
+  });
+  return chooseCommand(state);
+};
+
 /** The enemy Hero has 3 HP. A Spear Throw kills a near Militia Recruit or a far Grukka of more value. */
 const lethalChoice = (turnNumber: number) => {
   const state = emptyBattle({
@@ -354,6 +407,18 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
         position: 9,
       })
     ).toEqual(spearThrowAt(0, 9));
+  });
+
+  it("gives a Unit with a Heroic bonus more kill value (ADR-0048)", () => {
+    // Two far Scrap Raiders that a Spear Throw kills. Only the bonus is different.
+    expect(heroKillChoice({ heroicBonus: 0 })).toEqual(spearThrowAt(0, 2));
+    expect(heroKillChoice({ heroicBonus: 3 })).toEqual(spearThrowAt(1, 2));
+  });
+
+  it("gives a Unit with a Heroic bonus more Lane threat (ADR-0048)", () => {
+    // Two far Scrap Raiders. Only the bonus is different.
+    expect(farSummonChoice({ heroicBonus: 0 })).toEqual(summonAt(0));
+    expect(farSummonChoice({ heroicBonus: 3 })).toEqual(summonAt(1));
   });
 
   it("does not count an enemy Unit that a friendly ground Unit blocks", () => {

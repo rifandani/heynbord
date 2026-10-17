@@ -18,12 +18,21 @@ export const statTone = (current: number, start: number): StatTone => {
 
 /**
  * The Attack a Unit had when it was summoned: its Attack with no Rally bonus,
- * no Swarm bonus and no bonus Attack (Call to Arms). The rules never change
- * the Attack of a Unit after its summon, so a bonus shows as a higher Attack.
+ * no Swarm bonus, no Heroic bonus and no bonus Attack (Call to Arms). The
+ * rules never change the Attack of a Unit after its summon, so a bonus shows
+ * as a higher Attack.
  */
 export const summonAttack = (
-  unit: Pick<UnitView, "attack" | "rallyBonus" | "swarmBonus" | "bonusAttack">
-): number => unit.attack - unit.rallyBonus - unit.swarmBonus - unit.bonusAttack;
+  unit: Pick<
+    UnitView,
+    "attack" | "rallyBonus" | "swarmBonus" | "heroicBonus" | "bonusAttack"
+  >
+): number =>
+  unit.attack -
+  unit.rallyBonus -
+  unit.swarmBonus -
+  unit.heroicBonus -
+  unit.bonusAttack;
 
 /**
  * The Attack number that the feet of a Unit show now. In `UnitsRallied`, the

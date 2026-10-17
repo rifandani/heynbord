@@ -290,6 +290,24 @@ Purpose: the named Human Epic and Rally capstone. Power 27, budget 28, deviation
 | Humor note | Six prepared speeches hang from his belt. |
 | Setting | A bridge under attack. |
 
+### 2.16 Ser Aldric Stonewall
+
+`human.serAldricStonewall` · Legendary · Countdown 6 · Attack 3 · HP 5 · Physical · Unique · Iron Guard · Specialist (Warrior)
+
+> Hold the line. Then hold the line again.
+
+Purpose: the Human Specialist. He is the wall that the Human identity wants: Iron Guard stops a large hit, and the Warrior Class gives him the tempo Skill Cards. Power 29, budget 28, deviation +3.6% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+
+| Field | Brief |
+| --- | --- |
+| Subject | An older Human knight with a scarred bald head and a short grey beard. |
+| Pose | He plants a tower shield in a gate and leans into it. Arrows break on the shield. |
+| Props | Blue and gold tower shield, mended plate, a broken banner behind him and a line of spent arrows. |
+| Gameplay cues | The arrows bend and fall at the shield edge to show Iron Guard. Legendary: an orange gem and a heroic last stand. |
+| Silhouette hook | The wide tower shield and the low stance. |
+| Humor note | Someone painted a small door knocker on the shield. |
+| Setting | The gate of a river town at dusk. |
+
 ## 3. Orc Creature Cards
 
 Identity: orc tribes of the badlands. Fast, loud and always hungry. They rush the enemy Hero. High attack, low HP. They still hit the Unit that kills them.
@@ -316,7 +334,7 @@ Purpose: a one-HP trade. Last Breath 1 hits the nearest enemy Unit ahead when it
 
 ### 3.2 Scrap Raider
 
-`orc.scrapRaider` · Common · Countdown 2 · Attack 3 · HP 5 · Physical · Swift · Heroic 1 · Last Breath 1
+`orc.scrapRaider` · Common · Countdown 2 · Attack 3 · HP 5 · Physical · Swift · Heroic 1 at Common and Uncommon, 2 at Rare, 3 at Epic, 4 at Legendary · Last Breath 1
 
 > Everything shiny is his now.
 
@@ -327,7 +345,7 @@ Purpose: a fast Unit that hits the Hero and still hits when he falls. Power 16, 
 | Subject | A thin, fast orc man with a big grin. |
 | Pose | He runs forward with a cleaver and carries a full sack over his shoulder. |
 | Props | A cleaver, a sack full of shiny things (spoons, pans, a small bell), many stolen rings and necklaces, scrap-metal armor. |
-| Gameplay cues | Swift: a running pose. Heroic 1: he looks ahead to the right, at a bigger prize. A hidden blade in the sack shows Last Breath. |
+| Gameplay cues | Swift: a running pose. Heroic: he looks ahead to the right, at a bigger prize. A hidden blade in the sack shows Last Breath. |
 | Silhouette hook | The large sack on his back. |
 | Humor note | He wears many stolen shiny things, also a spoon as an earring. |
 | Setting | A badland trail. |
@@ -366,7 +384,7 @@ Purpose: a fast Unit that hits the Hero and still hits when he falls. Power 16, 
 
 ### 3.5 Skyreaver
 
-`orc.skyreaver` · Uncommon · Countdown 3 · Attack 3 · HP 3 · Physical · Swift · Flying · Heroic 1
+`orc.skyreaver` · Uncommon · Countdown 3 · Attack 3 · HP 3 · Physical · Swift · Flying · Heroic 1 at Uncommon, 2 at Rare, 3 at Epic, 4 at Legendary
 
 > She steals hats from very high up.
 
@@ -375,7 +393,7 @@ Purpose: a fast Unit that hits the Hero and still hits when he falls. Power 16, 
 | Subject | A lean orc woman who flies a glider. |
 | Pose | She glides under wide glider wings of stretched hide on a bone frame, like a big kite. She holds a stolen hat on a long hook and wears a second stolen hat on her head. |
 | Props | Orange and red tribal paint on the glider wings, a long snatching hook, a fancy stolen hat with a feather, flying goggles. |
-| Gameplay cues | Flying: glider wings fully open, and no ground under her. Heroic 1: she dives toward a far target. |
+| Gameplay cues | Flying: glider wings fully open, and no ground under her. Heroic: she dives toward a far target. |
 | Silhouette hook | The wide glider wing span and the hat. |
 | Humor note | She is very proud of her stolen hats. |
 | Setting | A badland sky above mesas. |
@@ -400,7 +418,7 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 16, budget 16, d
 
 ### 3.7 Tusk Brute
 
-`orc.tuskBrute` · Common · Countdown 4 · Attack 5 · HP 7 · Physical · Heroic 2
+`orc.tuskBrute` · Common · Countdown 4 · Attack 5 · HP 8 · Physical · Heroic 1 at Common and Uncommon, 2 at Rare, 3 at Epic, 4 at Legendary
 
 > Doors are only a suggestion.
 
@@ -409,14 +427,14 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 16, budget 16, d
 | Subject | A very big, very strong orc woman with large tusks. |
 | Pose | She walks through a broken wooden door. Pieces of the door fly around her. |
 | Props | A big wooden club, rough iron shoulder plates, a fur belt. |
-| Gameplay cues | High Attack: the biggest orc body in the set after Grukka. Heroic 2: she moves forward, toward the enemy Hero. Common: rough, plain gear. |
+| Gameplay cues | High Attack: the biggest orc body in the set after Grukka. Heroic: she moves forward, ready for the next fight. Common: rough, plain gear. |
 | Silhouette hook | The large body, the tusks and the door frame around her. |
 | Humor note | The door is still on its hinges, but she is through it. |
 | Setting | A broken door of a fort. |
 
 ### 3.8 Warchief Grukka
 
-`orc.warchiefGrukka` · Epic · Countdown 6 · Attack 3 · HP 5 · Physical · Swift · Charge 2 at Epic, 3 at Legendary · Heroic 2 · Unique
+`orc.warchiefGrukka` · Epic · Countdown 6 · Attack 3 · HP 5 · Physical · Swift · Charge 2 at Epic, 3 at Legendary · Heroic 3 at Epic, 4 at Legendary · Unique
 
 > "Lunch first. Then glory."
 
@@ -425,7 +443,7 @@ Purpose: the Orc Pivot Unit, and a trade that still hits. Power 16, budget 16, d
 | Subject | Grukka, the warchief: a huge, old, happy orc woman. She is the leader of all the tribes. See the character sheet in 3.8.1. |
 | Pose | She jumps down from a high rock ledge to charge, in the air above the battle. Her lead foot points right. Her axe is high above her head. She bites a roast leg in her other hand. Her long cloak opens behind her like a banner. |
 | Props | A big double axe with gold inlay, a roast leg, a beast-skull helmet with two curved horns, a long dark red war cloak with a fur mantle, a necklace of gold-ringed trophy tusks. |
-| Gameplay cues | Charge: she jumps into battle, and dust and small rocks fall from the ledge. Heroic 2: she looks far ahead to the right, at the enemy Hero. Unique: she is the only orc with a horned skull helmet and a trophy-tusk necklace. Epic: a heroic scene. Her warband cheers on the cliff behind her, with tall tribe banners and big war drums. |
+| Gameplay cues | Charge: she jumps into battle, and dust and small rocks fall from the ledge. Heroic: she looks far ahead to the right, at the next fight. Unique: she is the only orc with a horned skull helmet and a trophy-tusk necklace. Epic: a heroic scene. Her warband cheers on the cliff behind her, with tall tribe banners and big war drums. |
 | Silhouette hook | The two horns, the high axe, the roast leg and the open cloak, in the air against the sky. |
 | Humor note | She is in the middle of a heroic charge, and she still eats her lunch. Her warriors below hold out more food for her. |
 | Setting | The top of a badland cliff at sunset, with a big orange sky. |
@@ -537,7 +555,7 @@ Purpose: an aggressive Heavy Unit that protects through threat. Power 20, budget
 
 ### 3.14 Pyreaxe Ravager
 
-`orc.pyreaxeRavager` · Rare · Countdown 5 · Attack 4 · HP 5 · Fire · Heroic 2
+`orc.pyreaxeRavager` · Rare · Countdown 5 · Attack 4 · HP 5 · Fire · Heroic 2 at Rare, 3 at Epic, 4 at Legendary
 
 > The axe is hot. Her temper is hotter.
 
@@ -555,7 +573,7 @@ Purpose: a heavy Fire finisher. Power 26, budget 25, deviation +4.0%.
 
 ### 3.15 Warband Standard-Bearer
 
-`orc.warbandStandardBearer` · Epic · Countdown 6 · Attack 2 · HP 4 · Physical · Charge 2 at Epic, 3 at Legendary · Heroic 2 · Rally 2
+`orc.warbandStandardBearer` · Epic · Countdown 6 · Attack 2 · HP 4 · Physical · Charge 2 at Epic, 3 at Legendary · Heroic 3 at Epic, 4 at Legendary · Rally 2
 
 > Follow the banner. Ignore where it is going.
 
@@ -570,6 +588,24 @@ Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero p
 | Silhouette hook | Very tall forked banner. |
 | Humor note | The banner and warband point in different directions. |
 | Setting | An Epic badland ridge assault. |
+
+### 3.16 Ashcaller Grosh
+
+`orc.ashcallerGrosh` · Legendary · Countdown 5 · Attack 2 · HP 4 · Fire · Unique · Bolt 2 · Specialist (Mage)
+
+> Everything burns. Some things burn on a schedule.
+
+Purpose: the Orc Specialist. Bolt 2 gives the Orc identity a Mage: damage that arrives in each Start Phase, without an attack. Power 25, budget 25, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+
+| Field | Brief |
+| --- | --- |
+| Subject | A tall, thin Orc shaman with white ash paint and burned hands. |
+| Pose | He holds a staff over a brass brazier and calls two fire bolts from the coals. |
+| Props | Ash-caked staff, brass brazier, hanging iron runes and a small hourglass. |
+| Gameplay cues | Two fire bolts show Bolt 2. The hourglass shows the Start Phase. Legendary: an orange gem and a heroic scene. |
+| Silhouette hook | The raised staff and the two bolts. |
+| Humor note | He keeps a list of things to burn, and the list is on fire. |
+| Setting | A red mesa camp with a cold wind. |
 
 ## 4. Elf Creature Cards
 
@@ -844,6 +880,24 @@ Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race
 | Silhouette hook | Seed crown and tall staff. |
 | Humor note | Lethiel measures a colossal tree and approves. |
 | Setting | A primeval garden. |
+
+### 4.16 Warden Saelith
+
+`elf.wardenSaelith` · Legendary · Countdown 5 · Attack 2 · HP 5 · Physical · Unique · Long-range · Spawnbane 2 · Specialist (Ranger)
+
+> Every gate has a warden. This one shoots first.
+
+Purpose: the Elf Specialist. She punishes the enemy summon: Spawnbane 2 hits each Unit from a Creature Card before it can use Sabotage or Summon, and Long-range keeps her behind the front. Power 25, budget 25, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+
+| Field | Brief |
+| --- | --- |
+| Subject | A tall Elf warden with a braided dark braid and a leaf-shaped mask on her belt. |
+| Pose | She draws a longbow on a root bridge and aims down at a summoning circle. |
+| Props | Longbow, green and amber arrow, root bridge, a broken summoning circle below. |
+| Gameplay cues | The long shot shows Long-range. The arrow splits the circle to show Spawnbane. Legendary: an orange gem and a heroic scene. |
+| Silhouette hook | The drawn longbow and the high braid. |
+| Humor note | A small sign on the bridge says "No summoning. Yes, we mean you." |
+| Setting | An ancient forest gate at first light. |
 
 ## 5. Undead Creature Cards
 
@@ -1123,6 +1177,24 @@ Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budge
 | Humor note | A blank arrow sign points around it. |
 | Setting | A narrow flooded causeway. |
 
+### 5.16 Pale Cantor Ysolde
+
+`undead.paleCantorYsolde` · Legendary · Countdown 5 · Attack 3 · HP 4 · Physical · Unique · Soul Harvest · Specialist (Priest)
+
+> She sings the dead into a better shape.
+
+Purpose: the Undead Specialist. Soul Harvest makes her grow with each kill, and the Priest Class gives her the healing and Ward that an Undead front needs. Power 25, budget 25, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+
+| Field | Brief |
+| --- | --- |
+| Subject | A pale, calm Undead cantor in a high-collared coat, with a silver hymn book. |
+| Pose | She sings with one hand raised. Pale threads leave a fallen foe and enter her chest. |
+| Props | Silver hymn book, tattered teal stole, a ring of bowed ghostly heads. |
+| Gameplay cues | The threads show Soul Harvest. Her posture is steady, not fierce. Legendary: an orange gem and a heroic scene. |
+| Silhouette hook | The raised hand and the open hymn book. |
+| Humor note | The ghostly choir is slightly off-key, and she notices. |
+| Setting | A flooded grave court with dead willows. |
+
 ## 6. Goblin Creature Cards
 
 Identity: goblins of the hill mines. Tinkers, thieves and bomb makers. Small, clever and greedy. They make the enemy plan slower with Sabotage, traps (Hobble) and bombs (Last Breath and Fire). All values in this section are **provisional**.
@@ -1399,6 +1471,24 @@ Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns 
 | Humor note | The crown is too big and falls over one eye. |
 | Setting | A mine rail in the main hall, with cheering goblins. |
 
+### 6.16 Grix Ratwhistle
+
+`goblin.grixRatwhistle` · Legendary · Countdown 6 · Attack 4 · HP 4 · Physical · Unique · Hero's Bane · Specialist (Ranger)
+
+> He does not aim at you. He aims at the one behind you.
+
+Purpose: the Goblin Specialist. Hero's Bane puts 1 Physical damage on the enemy Hero in each Start Phase, so a Goblin Deck can win without crossing the Board. Power 28, budget 28, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+
+| Field | Brief |
+| --- | --- |
+| Subject | A small, wiry Goblin ranger with a long nose, brass goggles and a whistle on a cord. |
+| Pose | He kneels on a crate and aims a long, patched rifle over the viewer, past the front line. |
+| Props | Long rifle, rat companions with tiny whistles, a range chart, a bent scope. |
+| Gameplay cues | The shot goes past the nearest Unit to a distant banner to show Hero's Bane. Legendary: an orange gem and a heroic scene. |
+| Silhouette hook | The long rifle and the tall goggles. |
+| Humor note | The range chart has one entry: "hero, far". |
+| Setting | A mine workshop with rails and hanging lamps. |
+
 ## 7. Feral Creature Cards
 
 Identity: wild creatures of the peaks and the deep caves. They serve no people. Under the Accord, a wild creature that comes onto a marked lane field fights for the Hero who called it, for that one Battle. They are few, huge and slow: high Countdown, high Attack and HP. They Trample, regenerate and bring the cold. All values in this section are **provisional**. The 7 cards of the Wild Hunt Archetype got their values in issue #80 ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
@@ -1674,6 +1764,24 @@ Purpose: the named Feral Epic: a huge Frost attacker that Tramples, and its bite
 | Silhouette hook | The long neck and the icicle crown. |
 | Humor note | The horn is the lure that called it. The hunter who blew it is gone. |
 | Setting | A great ice cave. |
+
+### 7.16 Gorehorn Red Maw
+
+`feral.gorehornRedMaw` · Legendary · Countdown 6 · Attack 2 · HP 6 · Physical · Unique · Vampirism · Specialist (Priest)
+
+> It eats what it kills. Then it keeps the leftovers.
+
+Purpose: the Feral Specialist. Vampirism turns each Physical hit into HP, so a huge Feral Unit stays on the Board without a healer. Power 27, budget 28, deviation -3.6% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+
+| Field | Brief |
+| --- | --- |
+| Subject | A huge, shaggy red-furred beast with two forward horns and a wide, stained jaw. |
+| Pose | It lowers its head and charges, and red light runs from its horns back into its chest. |
+| Props | Broken cave bones, a trampled banner, red light threads. |
+| Gameplay cues | The red threads from the wound to the beast show Vampirism. The heavy stance shows the high HP. Legendary: an orange gem and a heroic scene. |
+| Silhouette hook | The two forward horns and the huge shoulders. |
+| Humor note | It drags a very small, very bent dinner plate. |
+| Setting | A deep cave mouth at dusk. |
 
 ## 8. Tokens
 

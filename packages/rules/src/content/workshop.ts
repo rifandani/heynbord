@@ -65,7 +65,8 @@ export const EXTRACT_ESSENCE: Readonly<Record<RankId, number>> = {
 
 /**
  * The Essence that Craft costs for one copy of a card in each Base Rank
- * (Economy 3.3). Legendary has no cost: no v1 card has Base Rank Legendary.
+ * (Economy 3.3). A Legendary Base Rank card is a Specialist (ADR-0050), and
+ * its cost is 8 times the Essence that its Extract gives.
  * Keep the code and the Economy table the same.
  */
 export const CRAFT_ESSENCE: Readonly<Record<RankId, number | null>> = {
@@ -73,11 +74,11 @@ export const CRAFT_ESSENCE: Readonly<Record<RankId, number | null>> = {
   uncommon: 120,
   rare: 400,
   epic: 1400,
-  legendary: null,
+  legendary: 4800,
 };
 
 /**
- * The Essence that Craft costs for one copy of `card` in its Base Rank, or
+ * The Essence that Craft costs for one copy of `card` in its Base Rank.
  * `null` when the card has no Craft cost.
  */
 export const craftEssence = (card: {

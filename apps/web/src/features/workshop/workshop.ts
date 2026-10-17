@@ -7,6 +7,7 @@ import type {
 import {
   CARDS,
   COMBINE_COPIES,
+  copiesInDeck,
   combineCoin,
   combinePath,
   craftEssence,
@@ -32,17 +33,37 @@ export const cardRanks = (card: Pick<CardDefinition, "baseRank">) =>
 export interface RankCopies {
   readonly rank: RankId;
   readonly copies: number;
+  /**
+   * The copies that the saved Decks use: the most that one saved Deck uses.
+   * The Decks share the copies, so this is not their sum.
+   */
+  readonly used: number;
 }
 
-/** The copies of a card in each of its Ranks, from the Base Rank to Legendary. */
+/**
+ * The copies of a card in each of its Ranks, from the Base Rank to Legendary,
+ * with the copies that the saved Decks use.
+ */
 export const rankCopies = (
   collection: Collection,
-  cardId: string
+  cardId: string,
+  slots: readonly DeckSlot[] = []
 ): readonly RankCopies[] =>
   cardRanks(getCard(cardId)).map((rank) => ({
     rank,
     copies: ownedCopies(collection, cardId, rank),
+    used: Math.max(
+      0,
+      ...slots.map((slot) => copiesInDeck(slot.deck, cardId, rank))
+    ),
   }));
+
+/**
+ * The spare copies of a Rank: the copies that no saved Deck uses. An Extract
+ * of a spare copy changes no Deck.
+ */
+export const spareCopies = (row: Pick<RankCopies, "copies" | "used">): number =>
+  Math.max(0, row.copies - row.used);
 
 /**
  * The Rank that a card shows when no Rank is selected: its highest Rank with a
@@ -59,6 +80,8 @@ export interface WorkshopTile {
   readonly copies: readonly RankCopies[];
   /** True when a Rank below Legendary has a pair: the Player can Combine, if the Coin is enough. */
   readonly pairReady: boolean;
+  /** The spare copies of all the Ranks (`spareCopies`). */
+  readonly spare: number;
 }
 
 /** True when a Rank below Legendary has at least 2 copies. */
@@ -79,14 +102,15 @@ const hasCopies = (copies: readonly RankCopies[]) =>
  */
 export const workshopTiles = (
   collection: Collection,
-  filter: PoolFilter
+  filter: PoolFilter,
+  slots: readonly DeckSlot[] = []
 ): readonly WorkshopTile[] => {
   const discovered = discoveredCards(collection);
   return CARDS.flatMap((card) => {
     if (!discovered.has(card.id) || !matchesGroup(card, filter)) {
       return [];
     }
-    const copies = rankCopies(collection, card.id);
+    const copies = rankCopies(collection, card.id, slots);
     const owned = hasCopies(copies);
     if (
       (filter.ownership === "owned" && !owned) ||
@@ -100,13 +124,14 @@ export const workshopTiles = (
         rank: shownRank(copies),
         copies,
         pairReady: hasPair(copies),
+        spare: copies.reduce((total, row) => total + spareCopies(row), 0),
       },
     ];
   }).toSorted(byCountdown);
 };
 
 /**
- * The card that the Rank panel shows: the selected card while it is in the
+ * The card that the Station Panel shows: the selected card while it is in the
  * grid, else the first card of the grid, or `null` for an empty grid.
  */
 export const selectedTile = (
@@ -117,12 +142,20 @@ export const selectedTile = (
 
 /**
  * The text of a Workshop grid with no cards: the Player has Discovered no card
- * of the filters, or the Ownership filter keeps none of them.
+ * of the filters, the Ownership filter keeps none of them, or the ready filter
+ * of the station (`ready`) keeps none of them.
  */
 export const emptyGridText = (
   collection: Collection,
-  filter: PoolFilter
+  filter: PoolFilter,
+  ready: Station | null = null
 ): TextRef => {
+  if (ready !== null && workshopTiles(collection, filter).length > 0) {
+    return {
+      key: `workshop.empty.ready.${ready}`,
+      args: { group: poolGroupText(filter) },
+    };
+  }
   const found =
     workshopTiles(collection, { ...filter, ownership: "all" }).length > 0;
   const key = found
@@ -133,7 +166,7 @@ export const emptyGridText = (
   return { key, args: { group: poolGroupText(filter) } };
 };
 
-// ─── Rank panel ──────────────────────────────────────────────────────────────
+// ─── Station Panels ──────────────────────────────────────────────────────────
 
 /** The Rank after `rank`, or `null` for Legendary. */
 export const nextRank = (rank: RankId): RankId | null =>
@@ -156,7 +189,7 @@ export type CombineState =
   | (CombineCost & { readonly kind: "coin"; readonly missing: number });
 
 export const combineState = (
-  row: RankCopies,
+  row: Pick<RankCopies, "rank" | "copies">,
   coin: number
 ): CombineState | null => {
   const to = nextRank(row.rank);
@@ -230,7 +263,9 @@ export interface LegendaryPath {
   readonly complete: boolean;
 }
 
-export const legendaryPath = (copies: readonly RankCopies[]): LegendaryPath => {
+export const legendaryPath = (
+  copies: readonly Pick<RankCopies, "rank" | "copies">[]
+): LegendaryPath => {
   const base = copies[0]?.rank ?? "common";
   const target = combinePath(base, "legendary").copies;
   const owned = copies.reduce(
@@ -330,3 +365,102 @@ export const extractTimeline = (rank: RankId): ExtractTimeline => {
     lastArrival: (dropAt.at(-1) ?? meltAt) + ESSENCE_FLY_MS,
   };
 };
+
+/** The beats of a Craft, in ms from the press. */
+export interface CraftTimeline {
+  /** The time at which each drop leaves the Essence balance. */
+  readonly dropAt: readonly number[];
+  /** The first drop gets to the card: the copy starts to form from the bottom. */
+  readonly formAt: number;
+  readonly formMs: number;
+  /** The copy is complete: the anvil sounds and the Rank burst starts. */
+  readonly formed: number;
+}
+
+/**
+ * The beats of a Craft of a copy in `rank` (GDD 7.4), the opposite of an
+ * Extract: the Essence drops leave the balance one after the other and fly
+ * into the panel card, and the copy forms from the bottom up behind a bright
+ * line. Each drop gets to the line while the line goes up, so the copy forms
+ * out of the drops. A higher Rank has more drops and a longer form, as its
+ * Extract has.
+ */
+export const craftTimeline = (rank: RankId): CraftTimeline => {
+  const { drops, meltMs } = EXTRACT_MOTION[rank];
+  const dropAt = Array.from({ length: drops }, (_, index) =>
+    Math.round((meltMs * index) / drops)
+  );
+  return {
+    dropAt,
+    formAt: ESSENCE_FLY_MS,
+    formMs: meltMs,
+    formed: ESSENCE_FLY_MS + meltMs,
+  };
+};
+
+// ─── Stations ────────────────────────────────────────────────────────────────
+
+/**
+ * The three stations of the Workshop: one for each action (GDD 7.4). The
+ * Player selects a station, then a card. Each station has its own direction:
+ * a Combine goes up the Ranks, a Craft makes Essence into a copy, and an
+ * Extract makes a copy into Essence.
+ */
+export const STATIONS = ["combine", "craft", "extract"] as const;
+export type Station = (typeof STATIONS)[number];
+
+/** The balances and the Player level that tell if a station can act. */
+export interface StationContext {
+  readonly coin: number;
+  readonly essence: number;
+  readonly level: number;
+}
+
+/**
+ * True when the station can act on the card now. Combine: a pair below
+ * Legendary (the Coin can still be short, as on the anvil mark). Craft: the
+ * Craft is open and the Essence is enough. Extract: a spare copy.
+ */
+export const isTileReady = (
+  tile: WorkshopTile,
+  station: Station,
+  context: StationContext
+): boolean => {
+  if (station === "combine") {
+    return tile.pairReady;
+  }
+  if (station === "craft") {
+    return (
+      craftState(getCard(tile.cardId), context.level, context.essence).kind ===
+      "ready"
+    );
+  }
+  return tile.spare > 0;
+};
+
+/** The Craft level while the Player level is below it, else `null`: the Craft tab shows its lock. */
+export const craftLock = (level: number): number | null =>
+  isUnlocked(level, "craft") ? null : UNLOCK_LEVELS.craft;
+
+/**
+ * The number on the tab of a station. Combine: the cards with a pair. Craft:
+ * the cards that the Player can Craft now. Extract: the spare copies.
+ */
+const stationCount = (
+  tiles: readonly WorkshopTile[],
+  station: Station,
+  context: StationContext
+): number =>
+  station === "extract"
+    ? tiles.reduce((total, tile) => total + tile.spare, 0)
+    : tiles.filter((tile) => isTileReady(tile, station, context)).length;
+
+/** The number on the tab of each station (`stationCount`). */
+export const stationCounts = (
+  tiles: readonly WorkshopTile[],
+  context: StationContext
+): Readonly<Record<Station, number>> => ({
+  combine: stationCount(tiles, "combine", context),
+  craft: stationCount(tiles, "craft", context),
+  extract: stationCount(tiles, "extract", context),
+});

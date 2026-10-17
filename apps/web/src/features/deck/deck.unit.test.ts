@@ -171,7 +171,7 @@ describe("poolEntries", () => {
       collection,
       filter({ kind: "creature", race: "goblin" })
     );
-    expect(goblins).toMatchObject({ owned: [], ownedCards: 0, totalCards: 15 });
+    expect(goblins).toMatchObject({ owned: [], ownedCards: 0, totalCards: 16 });
     // A Race applies only to Creature Cards, and a Class only to Skill Cards.
     expect(
       poolEntries(collection, filter({ race: "goblin", classId: "mage" }))

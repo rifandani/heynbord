@@ -1,10 +1,12 @@
 import { Result, Schema } from "effect";
 
+import { owedCosmetics } from "./cosmetics";
 import { ImportError } from "./import-error";
 import { Profile, PROFILE_SCHEMA_VERSION } from "./schema";
 
 const isJsonObject = Schema.is(Schema.JsonObject);
 const isNumber = Schema.is(Schema.Number);
+const isStringArray = Schema.is(Schema.Array(Schema.String));
 
 /**
  * One migration step: it changes a Profile of version N into the shape of
@@ -94,6 +96,21 @@ export const PROFILE_MIGRATIONS = {
     completedAchievements: [],
     claimedAchievements: [],
     tallies: { packsOpened: 0, combines: 0, crafts: 0 },
+  }),
+  /**
+   * Version 10 adds the Cosmetics (Economy 3.5). An old Profile owns none,
+   * but it keeps what it earned: one Earn-only Cosmetic for each won Boss
+   * Floor, and one for each claimed Achievement with a Cosmetic reward, as
+   * the old Claim recorded them as owed (Achievements 1.6).
+   */
+  9: (profile) => ({
+    ...profile,
+    cosmetics: owedCosmetics(
+      isStringArray(profile.claimedAchievements)
+        ? profile.claimedAchievements
+        : [],
+      isNumber(profile.heynspireFloorsWon) ? profile.heynspireFloorsWon : 0
+    ),
   }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 

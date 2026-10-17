@@ -823,19 +823,15 @@ test.describe("Town", () => {
     await expect(page.getByTestId("town")).toBeVisible();
   });
 
-  test("a shortcut to a screen that does not exist yet keeps focus and says 'Opens later'", async ({
+  test("the Bazaar shortcut keeps focus and opens its screen on Enter", async ({
     page,
   }) => {
     await page.goto("/play");
-    const bazaar = page.getByRole("button", {
-      name: "Bazaar, opens later",
-    });
+    const bazaar = page.getByTestId("town-shortcut-bazaar");
     await bazaar.focus();
-    await expect(page.getByTestId("town-tooltip-bazaar")).toContainText(
-      "Opens later"
-    );
+    await expect(bazaar).toBeFocused();
     await page.keyboard.press("Enter");
-    await expect(page.getByTestId("town")).toBeVisible();
+    await expect(page.getByTestId("bazaar")).toBeVisible();
   });
 
   test("shows the Coin, Essence and Heynstone balances, and says what each one pays for", async ({

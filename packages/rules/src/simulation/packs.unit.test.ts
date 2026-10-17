@@ -60,7 +60,7 @@ describe("simulatePack (Economy 3.1, ADR-0027)", () => {
     const { packsToDiscover } = simulatePack("peddler", options);
     expect(packsToDiscover.common).toBeGreaterThan(0);
     expect(packsToDiscover.rare).toBeGreaterThan(packsToDiscover.common ?? 0);
-    // A Peddler Pack gives no Epic card, and no card has Base Rank Legendary.
+    // A Peddler Pack gives no Epic card and no Legendary card.
     expect(packsToDiscover.epic).toBeNull();
     expect(packsToDiscover.legendary).toBeNull();
   });

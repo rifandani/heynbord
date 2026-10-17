@@ -107,7 +107,7 @@ describe("recordBattleResult", () => {
       first?.shown ?? null
     );
     expect(second?.shown.rewards.outcome).toBe("win");
-    expect(second?.profile.coin).toBe(180 + 60);
+    expect(second?.profile.coin).toBe(180 + 20);
   });
 });
 
@@ -130,7 +130,7 @@ describe("recordBattleResult with Feats (Achievements 1.3)", () => {
   it("records the Feats of a won Battle in the same Profile write as the rewards", () => {
     const recorded = recordBattleResult(tutorialWon, played, null);
     expect(feats(recorded?.profile ?? tutorialWon)).toEqual(["feat.rout"]);
-    expect(recorded?.profile.coin).toBe(60);
+    expect(recorded?.profile.coin).toBe(20);
     // The same Battle again records nothing more.
     expect(
       recordBattleResult(recorded?.profile ?? tutorialWon, played, {

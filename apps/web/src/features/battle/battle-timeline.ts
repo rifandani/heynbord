@@ -32,6 +32,9 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   BulwarkGained: 260,
   BulwarkFaded: 80,
   AttackGained: 260,
+  // The Heroic Unit flashes, and its Attack number goes up.
+  HeroicGained: 260,
+  SoulHarvestGained: 260,
   AttackFaded: 80,
   RangeGained: 260,
   RangeFaded: 80,

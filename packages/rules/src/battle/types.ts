@@ -174,6 +174,10 @@ export interface UnitState {
   /** Deals its damage first when an enemy melee Unit attacks it (GDD 4.7). */
   readonly firstStrike: boolean;
   readonly flying: boolean;
+  /**
+   * Heroic for the Rank of this Unit: +N Attack after each attack on an enemy
+   * Unit (ADR-0048). 0 is none.
+   */
   readonly heroic: number;
   /** Damage to the nearest enemy Unit ahead when this Unit leaves. 0 is none. */
   readonly lastBreath: number;
@@ -202,6 +206,20 @@ export interface UnitState {
    * A Unit with Wall has no Movement, does not attack and is never Pushed.
    */
   wall: boolean;
+  /** Bolt N: damage to a random enemy target in each Start Phase (ADR-0050). */
+  readonly bolt: number;
+  /** Each Physical hit on this Unit deals at most 4 damage (ADR-0050). */
+  readonly ironGuard: boolean;
+  /** True when a kill gives this Unit +1 Attack and +1 HP (ADR-0050). */
+  readonly soulHarvest: boolean;
+  /** +1 Attack and +1 HP for each enemy Unit that dies (ADR-0050). */
+  soulHarvestBonus: number;
+  /** 1 Physical damage to the enemy Hero of its Front in each Start Phase. */
+  readonly herosBane: boolean;
+  /** N damage to a Unit that an enemy Hero summons (ADR-0050). */
+  readonly spawnbane: number;
+  /** Heals HP equal to the Physical damage that it deals (ADR-0050). */
+  readonly vampirism: boolean;
   /** The Turn number of the summon, also of a Token. Charge uses it. */
   readonly summonedTurn: number;
   /** End Phases of Burn that are left. */
@@ -245,6 +263,11 @@ export interface UnitState {
   steadfast: boolean;
   /** Attack from Rally until the end of the Turn of the owner. */
   rallied: number;
+  /**
+   * The Heroic bonus (ADR-0048): Attack from Heroic. It stays until the Unit
+   * leaves the Board, and Rebirth ends it.
+   */
+  heroicBonus: number;
   bonusBulwark: number;
   bonusBulwarkTurns: number;
   /** Bonus Attack from a Skill Card (*Call to Arms*, GDD 4.8). */
@@ -373,7 +396,11 @@ export type DamageSource =
   /** The hit of a Field Effect in the End Phase of its owner (GDD 4.8). */
   | "field"
   /** The damage that is left after a Trample kill. It is not an attack. */
-  | "trample";
+  | "trample"
+  /** The damage of the Bolt, Hero's Bane and Spawnbane Keywords (ADR-0050). */
+  | "bolt"
+  | "herosBane"
+  | "spawnbane";
 
 /** A snapshot of a Unit for the renderer. */
 export type UnitSnapshot = Readonly<UnitState>;
@@ -469,6 +496,22 @@ export type BattleEvent = Data.TaggedEnum<{
     readonly turns: number;
   };
   AttackFaded: { readonly unitId: number };
+  /**
+   * Heroic N (ADR-0048): the Unit attacked an enemy Unit and got +N Attack.
+   * `heroicBonus` is its total Heroic bonus after this event. No event ends
+   * the bonus: it ends at `UnitReborn` and when the Unit leaves the Board.
+   */
+  HeroicGained: { readonly unitId: number; readonly heroicBonus: number };
+  /**
+   * Soul Harvest (ADR-0050): an enemy Unit died and this Unit got +1 Attack
+   * and +1 HP. `soulHarvest` is its total bonus after this event. Rebirth ends
+   * the bonus.
+   */
+  SoulHarvestGained: {
+    readonly unitId: number;
+    readonly soulHarvest: number;
+    readonly hp: number;
+  };
   RangeGained: {
     readonly unitId: number;
     readonly range: number;

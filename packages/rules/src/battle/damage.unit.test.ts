@@ -77,6 +77,26 @@ describe("True Damage (GDD 4.7)", () => {
     expect(target.burn).toBe(2);
   });
 
+  it("applies no Status when the hit says noStatus (Bolt)", () => {
+    const state = emptyBattle();
+    const target = placeUnit(state, {
+      cardId: "human.halberdier",
+      owner: "enemy",
+      position: 5,
+    });
+    const ctx = contextOf(state);
+    damageUnit(ctx, target, {
+      amount: 2,
+      damageType: "fire",
+      source: "bolt",
+      dealer: { _tag: "Hero", hero: { side: "player", hero: 0 } },
+      crit: 0,
+      noStatus: true,
+    });
+    expect(target.burn).toBe(0);
+    expect(eventsOfType(ctx.events, "StatusApplied")).toEqual([]);
+  });
+
   it("does not go through Steadfast", () => {
     const state = emptyBattle();
     const target = placeUnit(state, {

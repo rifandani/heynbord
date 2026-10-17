@@ -709,7 +709,7 @@ const FIXTURES: readonly FeatFixture[] = [
   raceFixture("onlyGoblin", "goblin"),
   raceFixture("onlyFeral", "feral"),
   raceFixture("creaturesOnly", "elf"),
-  strong("commonOnly", stage("3-10"), threeOf("common", RACE_CARDS.human), 9),
+  strong("commonOnly", stage("3-10"), threeOf("common", RACE_CARDS.human), 54),
   raceFixture("untouched", "orc"),
   strong(
     "swiftBoss",
@@ -721,7 +721,7 @@ const FIXTURES: readonly FeatFixture[] = [
       "orc.skyreaver",
       "elf.amberwingDart",
     ]),
-    1,
+    2,
     "ranger"
   ),
   {
@@ -731,9 +731,9 @@ const FIXTURES: readonly FeatFixture[] = [
     deck: threeOf("common", RACE_CARDS.feral),
     level: 20,
     gear: NO_GEAR,
-    seed: 17,
+    seed: 203,
   },
-  strong("rout", BOSS_STAGE, threeOf("legendary", RACE_CARDS.goblin), 2),
+  strong("rout", BOSS_STAGE, threeOf("legendary", RACE_CARDS.goblin), 6),
   strong("fullZone", BOSS_STAGE, threeOf("legendary", RACE_CARDS.undead), 1),
   strong(
     "allDamageTypes",
@@ -783,7 +783,7 @@ const FIXTURES: readonly FeatFixture[] = [
         ["feral.frostfangLynx", 2],
       ] as const
     ).flatMap(([cardId, count]) => copies(count, cardId, "legendary")),
-    8
+    26
   ),
   strong(
     "noLosses",

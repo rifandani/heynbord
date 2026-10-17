@@ -84,7 +84,7 @@ The jump from 160 to 340 XP at level 6 is intentional, because Region 1 is the f
 
 **First-try Path.** The First-try Path is the first win of each earlier Stage, in Stage order (Region, then Stage number), with no losses and no repeats. The **Recommended level** of a Stage is the Player level that the First-try Path gives before that Stage. A content test checks each Stage. When this table, a reward in section 2.1 or a Stage changes, update the Recommended levels. Then run `sim stage` again ([14 — Campaign Stages](./14-campaign-stages.md#11-recommended-level)).
 
-A loss gives up to 25% of the XP of a win (its Loss share), and a repeat win gives the normal XP (section 2.1). Thus a real Player is at or above the level of the First-try Path. The Recommended level is a floor.
+A loss gives up to 25% of the XP of a win (its Loss share). A Stage Repeat win and a Campaign Sweep give no XP (section 2.1, [ADR-0049](../adr/0049-a-stage-repeat-win-gives-no-xp.md)). Thus a real Player is at or above the level of the First-try Path, and a Player who plays Stages again for 3 Stars does not get far above it. The Recommended level is a floor.
 
 **Anchor check.** The first wins of a Region give 880 XP (Region 1), 1,540 XP (Region 2), 2,200 XP (Region 3), 2,860 XP (Region 4) and 3,520 XP (Region 5). On the First-try Path:
 
@@ -106,20 +106,23 @@ On the First-try Path, the Region 1 Stages get the Player levels 1, 1, 2, 2, 3, 
 
 ### 2.1 Campaign Stages
 
-| Region | Coin per win | XP per win | First win bonus |
-| --- | --- | --- | --- |
-| 1 Hearthvale | 60 | 40 | ×3 Coin, ×2 XP, and a fixed card |
-| 2 The Red Mesas | 100 | 70 | ×3 Coin, ×2 XP, and a fixed card |
-| 3 The Glowcap Hollows | 150 | 100 | ×3 Coin, ×2 XP, and a fixed card |
-| 4 The Thornwood | 200 | 130 | ×3 Coin, ×2 XP, and a fixed card |
-| 5 The Hollow Marches | 250 | 160 | ×3 Coin, ×2 XP, and a fixed card |
+| Region | Coin of a win | XP of a win | First win | Repeat win |
+| --- | --- | --- | --- | --- |
+| 1 Hearthvale | 60 | 40 | ×3 Coin, ×2 XP, and a fixed card | 20 Coin, no XP |
+| 2 The Red Mesas | 100 | 70 | ×3 Coin, ×2 XP, and a fixed card | 33 Coin, no XP |
+| 3 The Glowcap Hollows | 150 | 100 | ×3 Coin, ×2 XP, and a fixed card | 50 Coin, no XP |
+| 4 The Thornwood | 200 | 130 | ×3 Coin, ×2 XP, and a fixed card | 66 Coin, no XP |
+| 5 The Hollow Marches | 250 | 160 | ×3 Coin, ×2 XP, and a fixed card | 83 Coin, no XP |
 
-- A Boss Stage gives ×2 of the values above.
+- A Boss Stage gives ×2 of the Coin and the XP of a win. Its first win, its Repeat win and its loss use these doubled values.
+- A **Repeat win** of a Stage gives ⅓ of the Coin of a win, rounded down, and **no XP** ([ADR-0049](../adr/0049-a-stage-repeat-win-gives-no-xp.md)). Thus XP comes from new content: first wins, losses, Floors and Dungeons. A Repeat win gives Coin, Forge Stones and cards. The ⅓ Coin is a tuning value of issue #105, not part of ADR-0049.
 - A first win also gives 1 Forge Stone of the tier of the Region: Common in Regions 1 and 2, Uncommon in Regions 3 and 4, and Rare in Region 5. A Boss Stage gives the same Forge Stone.
 - A repeat win has a 10% chance to give 1 Forge Stone of the tier of the Region. A Campaign Sweep uses the same rule for each Campaign Sweep Ticket. A loss gives no Forge Stone.
 - A loss gives 10% of the Coin and 25% of the XP of a win, but only its **Loss share**: these values × the share of the total HP of the enemy Heroes that they lost in the Battle, rounded down. A loss with no lost enemy Hero HP gives nothing. Thus a Player cannot get Coin and XP from fast losses where they only end the Turns ([ADR-0043](../adr/0043-a-loss-gives-only-the-share-of-the-lost-enemy-hero-hp.md)).
-- A Campaign Sweep (GDD 4.12) gives one repeat-win reward for each Campaign Sweep Ticket, with no Battle. A Stage win and a Floor win give 2 Campaign Sweep Tickets. A loss and an Abandon give none.
+- A Campaign Sweep (GDD 4.12) gives one repeat-win reward for each Campaign Sweep Ticket, with no Battle: the same reward as a manual Repeat win, so no XP. A Stage win and a Floor win give 2 Campaign Sweep Tickets. A loss and an Abandon give none.
 - A repeat win has a 20% chance to give one card from the Stage card pool, in its Base Rank. The Stage card pool is the different cards of the enemy Deck of the Stage, but not a Skill Card of a Class that is not the Class of the player's Deck. Each card in the pool has the same chance.
+
+The rules are `stageCoin` in `packages/rules/src/content/stage-coin.ts` and `stageXp` in `packages/rules/src/content/player-levels.ts`. Keep the code and the table above the same.
 
 ### 2.2 Star chests
 
@@ -146,7 +149,7 @@ The data is `STAR_CHESTS` in `packages/rules/src/content/star-chests.ts`. Keep t
 - **No replay.** The player fights only the Current Floor, and a won Floor cannot be played again. Thus a Floor win is always a first win. A Floor has no repeat-win reward and no Sweep.
 - A win also gives 2 Campaign Sweep Tickets, as a Stage win ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md)). A Floor win gives no Stars and no card.
 - A loss uses the rule of a Stage loss (section 2.1): 10% of the Coin and 25% of the XP of the win, and only the Loss share of them. The Loss share uses the HP of the enemy Hero. A loss gives no Essence, no Heynstones, no Forge Stones and no Tickets. An Abandon gives nothing.
-- The game does not give the earn-only Cosmetic yet, because the list of Cosmetics does not exist. Later, a migration gives one Cosmetic for each won Boss Floor. Thus the player loses nothing.
+- A Boss Floor win grants its earn-only Cosmetic at once, in Floor order (`BOSS_FLOOR_COSMETICS` in `packages/rules/src/content/cosmetics.ts`). The migration of Profile version 10 pays the Cosmetics that an old Profile won before the list existed, so the player loses nothing.
 
 The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`, and the result action is `applyFloorResult` in `packages/rules/src/profile/floor-result.ts`. Keep the code and this table the same.
 
@@ -159,7 +162,7 @@ The rule is `floorFirstWinReward` in `packages/rules/src/content/heynspire.ts`, 
 | 3 (player level 30) | 400 | — (15 Essence) | ×3 Coin, 100 Essence, and a fixed card |
 
 - The values start at the Boss Stage values of the Region that the player usually plays at the unlock level.
-- A loss and a repeat win use the same rules as a Campaign Stage (section 2.1). The Loss share uses the HP of all the Bosses, and it also applies to the Essence of Dungeon 3. The card pool is the Dungeon card pool.
+- A loss uses the same rule as a Campaign Stage (section 2.1). The Loss share uses the HP of all the Bosses, and it also applies to the Essence of Dungeon 3. A Repeat win gives the full Coin and the full XP (Essence in Dungeon 3) of a win, not the ⅓ Coin and no XP of a Stage Repeat win: Dungeon wins are the loop from Player level 23 to 30 ([ADR-0049](../adr/0049-a-stage-repeat-win-gives-no-xp.md)). Its card chance is the rule of section 2.1, with the Dungeon card pool.
 - A win gives 1 Dungeon Sweep Ticket and no Campaign Sweep Tickets. A loss and an Abandon give none. A Dungeon Sweep (GDD 4.12) gives one repeat-win reward for each Dungeon Sweep Ticket, with no Battle: the Coin, the XP or the Essence, the card chance, and the Forge Stone rolls with the Legendary roll of Dungeon 3. The Class of the Active Deck sets the card pool. A Dungeon Sweep does not add to the wins of the Dungeon ([ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).
 - A win has a 25% chance to give 1 Forge Stone: Uncommon in Dungeon 1, Rare in Dungeon 2 and Epic in Dungeon 3. The first win gives 3 Forge Stones in place of the chance. A loss gives none.
 - Dungeon 3 also gives Legendary Forge Stones ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)): 1 for the first win, and a 10% chance of 1 for a repeat win. This roll is separate from the Epic roll.
@@ -184,7 +187,7 @@ All Heynstone sources are one-time rewards. The player cannot farm Heynstones.
 
 The total is about 52% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock. The 30-Star chests gave 750 Heynstones before [ADR-0044](../adr/0044-star-chests-give-no-heynstones.md). Check the total again when the Bazaar is planned in M4.
 
-The data is `HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`. The Bazaar catalog cost is an estimate until the list of Cosmetics exists. Keep the code and this table the same.
+The data is `HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`, and the catalog cost is `BAZAAR_CATALOG_HEYNSTONES` in `packages/rules/src/content/cosmetics.ts`. Keep the code and this table the same.
 
 ### 2.7 Forge Stone supply
 
@@ -282,10 +285,11 @@ The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and 
 | Uncommon | 15 | 120 |
 | Rare | 50 | 400 |
 | Epic | 175 | 1,400 |
-| Legendary | 600 | — (no v1 card has Base Rank Legendary) |
+| Legendary | 600 | 4,800 |
 
 - Craft gives one copy in the card's Base Rank.
 - The player can Craft only Discovered cards.
+- A Specialist (Base Rank Legendary) costs 8 times its Extract value. The 6 Specialists are in the Royal Pack only, and Craft is the other way to get one ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
 - Combine and then Extract changes Coin into Essence at about 10 to 13 Coin per Essence. This is intended. It gives players with much Coin a slow path to the card that they want.
 - The data is `EXTRACT_ESSENCE` and `CRAFT_ESSENCE` in `packages/rules/src/content/workshop.ts`. Keep the code and this table the same.
 
@@ -323,7 +327,9 @@ The Bazaar sells Cosmetics and Conveniences for Heynstones. Earn-only Cosmetics 
 | Gear look | 100 |
 | Board skin | 200 |
 
-- v1 has about 22 Bazaar Cosmetics. The full catalog costs about 2,400 Heynstones.
+- v1 has 22 Bazaar Cosmetics: 5 card backs, 7 Hero portraits, 6 Gear looks and 4 Board skins. The full catalog costs exactly 2,400 Heynstones.
+- Each Bazaar item of a family has the price of the family. A purchase is permanent: the player cannot sell or lose a Cosmetic (ADR-0008).
+- The data is `BAZAAR_COSMETICS` in `packages/rules/src/content/cosmetics.ts`. Keep the code and this table the same.
 - A **Convenience** changes comfort or organization. It never changes the result of a Battle, the speed of progress or the content of the Collection. XP or Coin boosts, Battle skips, Packs, cards, Essence and Gear levels are never Conveniences.
 - Each new Convenience must pass the Pillar 1 test before it goes into the Bazaar.
 
@@ -347,26 +353,46 @@ Use these targets to tune the numbers. Check them with an economy simulation and
 
 | Point in the game | Target |
 | --- | --- |
-| End of Region 1 (about 2 hours) | Player level 6. 3 to 5 Packs opened. First Combine done. |
-| End of Region 2 (about 6 hours) | Player level 10. 12 to 18 Packs opened. 1 Epic card. |
-| End of Region 3 (8 to 15 hours) | Player level 15. 25 to 35 Packs opened. 60% to 75% of cards Discovered. |
-| End of Region 4 (10 to 18 hours) | Player level 20. Dungeon 2 opens. |
-| End of Region 5 (13 to 22 hours) | Player level 23. Heynspire opens. |
-| Heynspire Floor 50 (about 35 hours) | Player level 28. All cards Discovered. 3 to 6 Legendary cards. Gear mostly at level 14 or higher. |
-| About 22 more Dungeon 2 wins (1 to 2 weeks) | Player level 30. |
+| End of Region 1 (3 to 5 hours) | Player level 6. 6 to 10 Packs opened. First Combine done. |
+| End of Region 2 (6.5 to 11 hours) | Player level 10. 15 to 25 Packs opened. 1 Epic card. |
+| End of Region 3 (8 to 15 hours) | Player level 15. 60% or more of cards Discovered. |
+| End of Region 4 (13 to 22 hours) | Player level 20. Dungeon 2 opens. |
+| End of Region 5 (16 to 27 hours) | Player level 23. Heynspire opens. |
+| Heynspire Floor 50 (about 30 hours) | Player level 28. All cards Discovered. 3 to 6 Legendary cards. Gear mostly at level 14 or higher. |
+| About 22 more Dungeon 2 wins (1 to 2 weeks) | Player level 30. At most 10% of the Players get to level 30 before they win Floor 50. |
 
 - The targets are for the median Player of a Play Style who plays each Stage of a Region again until the Stage has 3 Stars, and who uses its Sweep Tickets ([ADR-0046](../adr/0046-pacing-targets-are-for-a-player-who-replays-for-3-stars.md)).
 - The Player levels are the First-try Path levels of section 1.2. A Player who loses or plays again is at a higher level. Thus the economy sim judges the Player level targets on its First-try run, not on the medians (7.1). A higher median level is not a miss.
 - **First Combine and the Collector.** The Collector Combines only to Epic or higher (7.1), so the "First Combine done" target of Region 1 does not apply to it. The sim report shows no target and no miss for that cell (`notFor` in `PACING_TARGETS`).
-- **5 Regions ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)).** The hours of the Region 4 and Region 5 rows and of Heynspire Floor 50 are draft targets. Check them with the economy sim.
-- **Forge Stones ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).** The Gear Coin is half, and each level needs a Forge Stone. The economy sim (7.1, 200 seeds) models Forge Stones since 2026-10-15. At Heynspire Floor 50, the mean Gear level is 15.5 (Collector), 15.3 (Upgrader) and 13.0 (Balanced). With the Coin-only cost of ADR-0037, it was 12.8, 12.0 and 9.3. The lowest Gear level is 15, 15 and 13. Thus the "Gear mostly at level 14 or higher" row passes for the Collector and the Upgrader, and it fails for the Balanced Player. The Balanced Player has about 10 Rare and 10 Epic Forge Stones that it did not use, and only 28 Coin: the Coin that it spends on Merchant Packs is its limit, not the Forge Stones. The Gear of all Play Styles stops at level 5 in Region 2 and at level 10 in Region 4, because Regions 1 and 2 give only Common and Regions 3 and 4 only Uncommon Forge Stones. The hours do not move by more than 0.5. **M3 re-tune:** the Balanced row still fails. Do not change the target. Check it again when the sim uses repeat wins and Sweeps, then change the supply of section 2.7.
-- **Re-tune needed.** The Pack counts above were set for 88 cards. v1 now has 130 cards ([ADR-0013](../adr/0013-v1-has-90-creature-cards.md)). The "Discovered" targets stay the same. Tune the Coin rewards again with the economy simulation in M3, so that the Player can reach these targets with 130 cards.
+- **All cards Discovered and the Upgrader.** The Upgrader buys only Peddler Packs (7.1), and a Peddler Pack never gives an Epic card (section 3.1). Thus the "All cards Discovered" target of Floor 50 does not apply to it (`notFor`).
+- **Gated and draft targets.** `bun run sim:check` judges each target of this table for each Play Style (7.1, issue #108). Each target is gated: a miss fails the check. The hours of Region 4, Region 5 and Floor 50 are no longer draft targets. One target is draft for one Play Style: "All cards Discovered" at Floor 50 for the Balanced Player (see the note below). A miss of a draft target shows "review" and does not fail the check (`draftFor` in `PACING_TARGETS`).
+- **Re-tune of issue #105 (2026-10-17).** The economy sim with repeat Battles for 3 Stars and Sweeps (issue #107) got the median Player to level 30 in Region 3: a Player who plays each Stage again for 3 Stars got about 4.5 × the XP and 3.3 × the Coin of the First-try Path, and the Campaign Sweeps gave more than half of it. The re-tune made these changes:
+  - A Stage Repeat win and a Campaign Sweep give no XP ([ADR-0049](../adr/0049-a-stage-repeat-win-gives-no-xp.md)) and ⅓ of the Coin of a win (section 2.1). First wins do not change. The 2 Campaign Sweep Tickets for each win stay. Dungeon Repeat wins and Dungeon Sweeps keep their full Coin and XP (ADR-0041).
+  - **Hours.** The hour targets follow the Battles (7.1: change a target, not the Battle time). The Player plays about 30 Battles in Region 1 and about 33 in each later Region, with its repeat Battles for 3 Stars. The targets are Region 1 3 to 5 hours, Region 2 6.5 to 11, Region 3 8 to 15 (no change), Region 4 13 to 22, Region 5 16 to 27, and Floor 50 about 30 (22.5 to 37.5).
+  - **Packs.** The Pack targets of Regions 1 and 2 keep the old rate of about 2 Packs for each hour, with the new hours: 6 to 10 and 15 to 25. Region 3 has no Packs target: the old pair "25 to 35 Packs, 60% to 75% Discovered" was for 88 cards and the Standard Pack, and the Merchant and Royal Packs give more new cards for each Pack. The Discovered target of Region 3 is 60% or more, with no upper limit.
+  - **Legendary Combine.** The Upgrader and the Balanced Player keep their Coin for the Legendary Combine (3,200 Coin) when they have an Epic pair (7.1). Without this rule, they had 0 Legendary copies at Floor 50. The Collector does not use the rule: with it, the Collector had 9 Legendary copies (target 3 to 6).
+  - A new target: at most 10% of the Players get to level 30 before they win Floor 50. The sim goes on to the Floor 50 win after level 30 (7.1).
+- **Result of the re-tune.** `bun run sim economy 1000` on 2026-10-17. Medians, Collector / Upgrader / Balanced:
+
+  | Checkpoint | Battles | Hours | Packs | Discovered | Legendary | Lowest Gear |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | Region 1 | 30 | 4.0 | 9 / 7 / 7 | 55% / 38% / 46% | 0 | 4 |
+  | Region 2 | 65 | 8.7 | 21 / 15 / 15 | 83% / 60% / 72% | 0 | 5 |
+  | Region 3 | 98 | 13.1 | 29 / 20 / 23 | 94% / 75% / 85% | 0 / 1 / 1 | 8 |
+  | Region 4 | 131 | 17.5 | 40 / 28 / 31 | 99% / 83% / 92% | 1 | 10 |
+  | Region 5 | 163–164 | 21.7–21.9 | 54 / 33 / 37 | 100% / 89% / 95% | 2 | 13 |
+  | Floor 50 | 223 | 29.7 | 68 / 42 / 48 | 100% / 90% / 96% | 3 / 4 / 3 | 16 / 17 / 17 |
+
+  Each target passes, with one exception (see the next note). The median Player level is 6, 11, 16, 21, 23 and 28 at these checkpoints. The First-try run does not change: levels 6, 10, 15, 20, 23, 28 and 30. The Upgrader and the Balanced Player have the "First Combine done" in Region 1 (100%), and all Play Styles have 4 to 7 Epic copies in Region 2. 51, 60 and 45 of the 1,000 Players get to level 30 before they win Floor 50 (5% to 6%). No Player is stuck. About 70% of the Players get to the repeat cap on one Stage or more.
+- **All cards Discovered and the Balanced Player.** At Floor 50, the Balanced Player has Discovered 96% of the cards (10th to 90th percentile: 94% to 100%), not 100%. This miss is accepted. The cause is the Legendary Combine rule: the Balanced Player keeps its Coin for the Legendary Combine, so it opens 48 Packs before Floor 50, not 115. Without the rule, it has 100% Discovered, but 0 Legendary copies and a lowest Gear level of 13. Thus this target is draft for the Balanced Player: `sim:check` shows "review" and does not fail (issue #108).
+- **Forge Stones ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).** At Floor 50, the lowest Gear level is 16 (Collector), 17 (Upgrader) and 17 (Balanced), so the "Gear mostly at level 14 or higher" row passes for all Play Styles. Before the re-tune, the Balanced Player had 13. Thus the supply of section 2.7 and the Gear Coin of section 3.4 do not change. The Gear of all Play Styles stops at level 5 in Region 2 and at level 10 in Region 4, because Regions 1 and 2 give only Common and Regions 3 and 4 only Uncommon Forge Stones. At Floor 50, the median Upgrader and Balanced Player have 2 Epic Forge Stones that they did not use (Collector: 5). Gear levels 16 to 20 need Epic Forge Stones, and they come mostly from Dungeon 3, which is not in the sim.
+- **Common Forge Stones that the Player does not use.** The median Player has about 20 Common Forge Stones that it cannot use at Floor 50 (16 at the end of Region 2). Gear levels 1 to 5 need 20 Common Forge Stones for the 4 items, and the repeat wins and the Sweeps of Regions 1 and 2 give more. This is accepted: they are a small part of the Forge Stones, and a Forge Stone never changes into another tier or into Coin (ADR-0038).
 - **Skill Cards of issue #57.** The 14 Common and Uncommon Skill Cards (116 cards in `cards.ts`) move no "Discovered" median of the economy sim (7.1) by more than 1 point, because the simulated Player Discovers only the Warrior Skill Cards (4 of the 14). At Heynspire Floor 50, the Player has Discovered 96% (Collector), 63% (Upgrader) and 91% (Balanced) of the cards. It was 96%, 63% and 90% (2026-10-11). The milestone does not move.
 - **Ranger Skill Cards of issue #59.** Venom Arrow, Heartseeker (Rare) and Rain of Arrows (Epic) make 119 cards in `cards.ts`. The economy sim gives the same result as before (2026-10-11), because its Player Discovers only the Warrior Skill Cards. The milestone does not move. The Ranger Class Pack pool now has 10 cards (`bun run sim packs`, mean of 100 Players). A Peddler Pack never rolls an Epic card, so it cannot give Rain of Arrows. It needs 76.0 Packs to Discover the 9 Ranger cards from Common to Rare (it was 9.3 Packs for the 7 Common and Uncommon cards), because only 4.17% of its cards are Rare. A Merchant Class Pack needs 9.8 Packs for all 10 cards (it was 2.3), and a Royal Class Pack 4.0 (it was 2.0). On 2026-10-13, Hunter's Focus (Rare) replaced Heartseeker: the pool keeps 10 cards and the same Ranks, so these results do not change.
 - **Priest Skill Cards of issue #61.** Unbroken Vow, Cleanse (Rare) and Aegis of Dawn (Epic) make 122 cards in `cards.ts`. The milestone does not move, for the same reason as #59: the simulated Player Discovers only the Warrior Skill Cards, and the all-cards Pack rows do not change. The Priest Class Pack pool now has 10 cards, the same as the Ranger pool, with the same results (`bun run sim packs`, 2026-10-12): 76.0 Peddler Packs for the 9 cards from Common to Rare, 9.8 Merchant Packs and 4.0 Royal Packs for all 10 cards (it was 9.3, 2.3 and 2.0).
 - **Warrior Skill Cards of issue #63.** Expose Weakness, Call to Arms (Rare) and Onslaught (Epic) make 125 cards in `cards.ts`. The simulated Player Discovers the Warrior Skill Cards, so the "Discovered" medians of the economy sim (7.1, 200 seeds) go down by 1 to 2 points. At the end of Region 3, the Player has Discovered 73% (Collector), 54% (Upgrader) and 73% (Balanced) of the cards (it was 75%, 56% and 74%). At Heynspire Floor 50, it is 95%, 61% and 89% (it was 96%, 63% and 91%, 2026-10-12). The targets do not change: they wait for the re-tune in M3. In `bun run sim packs`, the all-cards Pack of a Warrior needs 1544.3 Peddler Packs for all cards from Common to Rare (it was 1408.3), 117.5 Merchant Packs (107.7) and 38.8 Royal Packs (36.3). The Warrior Class Pack pool now has 10 cards, with the same results as the Ranger and Priest pools: 76.0 Peddler Packs for the 9 cards from Common to Rare, 9.8 Merchant Packs and 4.0 Royal Packs for all 10 cards (it was 9.3, 2.3 and 2.0).
 - **Mage Skill Cards of issue #65.** Spark (Common), Arc Lightning (Uncommon), Wildfire, Thunderstorm (Rare) and Blizzard (Epic) make 130 cards in `cards.ts`. The milestone does not move, for the same reason as #59: the simulated Player Discovers only the Warrior Skill Cards, and the all-cards Pack rows do not change. The Mage Class Pack pool now has 10 cards, with the same results as the other Class pools (`bun run sim packs`, 2026-10-12): 76.1 Peddler Packs for the 9 cards from Common to Rare, 9.4 Merchant Packs and 4.0 Royal Packs for all 10 cards (it was 6.1, 1.8 and 1.0 for the 5 Common and Uncommon cards).
-- **Sweep ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md), [ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).** With 2 Campaign Sweep Tickets for each Stage or Floor win, the Player can get 3 Stage repeat-win rewards for the time of 1 Battle. With 1 Dungeon Sweep Ticket for each Dungeon win, the Player can get 2 Dungeon repeat-win rewards for the time of 1 Battle. The First-try Path and the targets that use its levels do not change. A Player who repeats Stages or Dungeons gets to the late targets (for example Player level 30) faster. The M3 re-tune must check the number of Campaign Sweep Tickets for each win with the Stage repeat-win rewards, and the number of Dungeon Sweep Tickets for each win with the Dungeon 3 rewards (Essence, Epic and Legendary Forge Stones). The economy sim uses both Sweeps since issue #107 (7.1).
+- **Sweep ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md), [ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).** With 2 Campaign Sweep Tickets for each Stage or Floor win, the Player can get 3 Stage repeat-win rewards for the time of 1 Battle. With 1 Dungeon Sweep Ticket for each Dungeon win, the Player can get 2 Dungeon repeat-win rewards for the time of 1 Battle. The First-try Path and the targets that use its levels do not change. The economy sim uses both Sweeps since issue #107 (7.1). The re-tune of issue #105 kept 2 Campaign Sweep Tickets for each win: fewer Tickets did not stop the Player from getting to level 30 before Floor 50, so a Stage repeat-win reward gives no XP now (ADR-0049). The sim never plays Dungeon 3, so the Dungeon Sweep Tickets for each win are not checked with the Dungeon 3 rewards (Essence, Epic and Legendary Forge Stones) yet.
 - **Boss Floors at the Boss target ([ADR-0042](../adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md), issue #97).** The economy sim (7.1, 200 seeds) gives each Boss Floor the base chance of a Boss Stage (40%), not of a normal Stage (70%). At Heynspire Floor 50, the median Battles are 129 (Collector), 128 (Upgrader) and 130 (Balanced), and the hours are 17.2, 17.1 and 17.3. It was 123, 123 and 125 Battles and 16.4, 16.4 and 16.7 hours (2026-10-16). 4, 4 and 9 of the 200 Players get to Player level 30 before they win Floor 50, so the sim stops before Floor 50 for them. The other values at Floor 50 move by 1 or less, but not the unspent Coin (222, 105 and 29 Copper; it was 207, 135 and 25). The mean Gear level is 15.8, 15.3 and 13.0. The Balanced row of "Gear mostly at level 14 or higher" still fails.
 - Total XP to level 21 (Deck size 30) is 8,380. Total XP to level 30 is 24,130.
 
@@ -396,7 +422,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 
 ### 7.1 Economy simulation
 
-`bun run sim economy [seeds]` simulates Players from a new Profile to Player level 30. It does not play Battles. The logic is in `packages/rules/src/simulation/economy.ts`. `bun run sim` with no mode does not run it.
+`bun run sim economy [seeds]` simulates Players from a new Profile to Player level 30 and the Floor 50 win. It does not play Battles. The logic is in `packages/rules/src/simulation/economy.ts`. `bun run sim` with no mode does not run it, but `bun run sim:check` does (see **Check**).
 
 **Content.** The sim uses the reward and cost tables of sections 2 and 3 from the rules package. The sim plays the Stages of Regions 1 to 5 (`CAMPAIGN_REGIONS` is 5). All 5 Regions have their Stages. When a Stage does not exist, the sim uses a **planned Stage** in its place, with the last Stage of each Region as the Boss Stage. The Coin and XP of a Stage come only from its Region and its Boss flag, so a planned Stage gives the correct rewards.
 
@@ -410,25 +436,26 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 **Player actions.**
 
 - After a loss, the Player plays the same Stage again until a win.
-- **Replays.** The Player plays the Stages of a Region in order to the Boss Stage win. Then it plays again each Stage of the Region that has fewer than 3 best Stars, in Stage order, until the Stage has 3 Stars. Then it goes to the next Region. A guard caps the replays at **10 Battles** for each Stage (`MAX_REPLAYS`). A Player at the cap goes to the next Stage, and the report shows how many Players got to the cap. Floors are not replayed, because a won Floor cannot be played again (section 2.3).
-- **Repeat-win rewards.** A repeat win of a Stage gives the rules of section 2.1: the Coin and the XP of a win, a 10% chance of 1 Forge Stone of the tier of the Region, and a 20% chance of 1 card from the Stage card pool (`stageCardPool`), in its Base Rank. A repeat win of a Dungeon gives the rules of section 2.4, with a card from the Dungeon card pool (`dungeonCardPool`). The card can Discover a card. The card roll comes first and then the Forge Stone rolls, as in the game (`repeatWinCard`). A loss on a replay gives the same loss reward as a first-try loss.
+- **Repeat Battles.** The Player plays the Stages of a Region in order to the Boss Stage win. Then it plays again each Stage of the Region that has fewer than 3 best Stars, in Stage order, until the Stage has 3 Stars. These are its **repeat Battles**. Then it goes to the next Region. A guard, the **repeat cap**, allows **10 repeat Battles** for each Stage (`MAX_REPEAT_BATTLES`). A Player at the repeat cap goes to the next Stage, and the report shows how many Players got to the repeat cap. Floors have no repeat Battles, because a won Floor cannot be played again (section 2.3).
+- **Repeat-win rewards.** A Repeat win of a Stage gives the rules of section 2.1: ⅓ of the Coin of a win, no XP, a 10% chance of 1 Forge Stone of the tier of the Region, and a 20% chance of 1 card from the Stage card pool (`stageCardPool`), in its Base Rank. A Repeat win of a Dungeon gives the rules of section 2.4, with a card from the Dungeon card pool (`dungeonCardPool`). The card can Discover a card. The card roll comes first and then the Forge Stone rolls, as in the game (`repeatWinCard`). A loss in a repeat Battle gives the same loss reward as a first-try loss.
 - **Campaign Sweeps.** A Stage win (first or repeat) and a Floor win give 2 Campaign Sweep Tickets. After each Battle, the Player uses all its Campaign Sweep Tickets at once on the 3-Star Stage that gives the most Coin for a repeat win. On a tie, it takes a Boss Stage first, then the highest Region. Each Ticket gives one repeat-win reward of that Stage. A Sweep gives no Tickets and changes no Stars. When no Stage has 3 Stars, the Player keeps its Tickets.
 - **Dungeon Sweeps.** A Dungeon win gives 1 Dungeon Sweep Ticket. After each Dungeon win, the Player uses all its Dungeon Sweep Tickets on that Dungeon. Each Ticket gives one repeat-win reward of the Dungeon: the Coin, the XP, the Forge Stone chance and the card chance.
-- After the last Stage, the Player climbs Heynspire. When a Floor fails 3 times in a row, the Player does Dungeon wins until the next Player level, and then tries the Floor again. A Floor loss gives 10% of the Coin and 25% of the XP of its first win (GDD 7.1). After Floor 50, the Player does Dungeon wins until level 30. The Player plays the highest Dungeon that gives XP and that its level unlocks.
+- After the last Stage, the Player climbs Heynspire. When a Floor fails 3 times in a row, the Player does Dungeon wins until the next Player level, and then tries the Floor again. At level 30 there is no next level, so this Dungeon detour ends after 3 Dungeon Battles. A Floor loss gives 10% of the Coin and 25% of the XP of its first win (GDD 7.1). After Floor 50, the Player does Dungeon wins until level 30. The Player plays the highest Dungeon that gives XP and that its level unlocks.
 - The Player uses each action only from its unlock level (GDD 7.1): Packs at level 2, Combine and Extract at level 3, Gear at level 5 and Craft at level 6.
 - The simulated Player is a **Warrior** and starts with the Warrior Starter Deck cards. The Player buys only Packs with all cards. For the Race Pack from a 20-Star chest, the Player selects the Race with the fewest Discovered cards. "All cards Discovered" means all Creature Cards and the Warrior Skill Cards.
-- A Player stops at Player level 30, or after 2,000 Battles. A Player at the cap is "stuck", and the report shows it.
+- A Player stops when it is at Player level 30 and won Floor 50, or after 2,000 Battles. A Player at the Battle cap is "stuck", and the report shows it. A Player at level 30 before the Floor 50 win goes on to the Floor 50 win (section 4 has a target for this share).
 
 **Play Styles.** Each simulated Player has one Play Style. All Play Styles first open the free Peddler Pack and buy the 4th Deck slot.
 
 | Play Style | Priority |
 | --- | --- |
 | **Collector** | Merchant Pack (Royal Pack after Region 2), then Combine only to Epic or higher, then Gear |
-| **Upgrader** | Combine each pair, then Gear up to the Player level × 2 ÷ 3, then Peddler Packs with the Coin that stays |
-| **Balanced** | One Merchant Pack, then two Gear levels, and again. Then Combine each pair that it can pay for |
+| **Upgrader** | The Legendary Combine, then Combine each pair, then Gear up to the Player level × 2 ÷ 3, then Peddler Packs with the Coin that stays |
+| **Balanced** | The Legendary Combine, then one Merchant Pack, then two Gear levels, and again. Then Combine each pair that it can pay for |
 
 - Until the Player has the 4th Deck slot, it keeps its Coin for the slot.
 - The Player buys Open ×10 when it can pay for 10 Packs. Else it buys one Pack.
+- **Legendary Combine first.** The Upgrader and the Balanced Player first Combine each Epic pair to a Legendary copy (3,200 Coin, section 3.2) that they can pay for. While they have an Epic pair, they keep their Coin for that Combine and buy no Packs. Their other priorities do not change. The Collector does not use this rule: it Combines to Epic or higher after its Packs (section 4).
 - A Gear upgrade goes to the item with the lowest level. It needs the Coin and the Forge Stone. When the Forge Stone is missing, the Play Style goes to its next priority.
 - Combine, Extract and Craft use the same rules actions as the game (GDD 7.4). The sim adds only the Play Style choices.
 - Combine starts at the lowest Rank.
@@ -439,12 +466,17 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 **Not in the sim.**
 
 - The sim plays no Battle, so it completes no Feat. No Feat gives Coin or Essence now. The sim does not report the Heynstones of the Achievements, because the Heynstone ledger is a sum (see **Report**).
-- The Player never plays Dungeon 3, because it opens at level 30, where the sim stops. Thus its Epic and Legendary Forge Stones are not in the sim. The Forge Stone results are a floor.
+- The Player never plays Dungeon 3, because it plays only the Dungeons that give XP. A Player at level 30 before the Floor 50 win plays Dungeon 2 in its detours. Thus the Epic and Legendary Forge Stones of Dungeon 3 are not in the sim. The Forge Stone results are a floor.
 - The Dungeons give no first-win card in the sim. Only Dungeons 1 and 2 have one now (`DUNGEONS`), and the sim does not use it yet.
 
 **Time.** One Battle is **8 minutes**, with the time in menus. A Sweep counts as 0 Battles and 0 minutes. The report shows Battles and hours. If the hour targets of section 4 do not agree with each other, change a target, not this value.
 
-**Report.** The sim runs 200 seeds for each Play Style. "End of Region N" is the point when the Player leaves Region N, after its replays. At each checkpoint of section 4, it shows the median and the 10th to 90th percentile of: Battles, hours, Player level, Packs opened, % Discovered, Epic and Legendary copies, mean Gear level, the lowest Gear level and unspent Coin. It also shows the share of the Players with a Combine done. For an "about" target, the sim uses ± 25%. "Gear mostly at level 14 or higher" is the lowest Gear level. It shows each target next to the values, but not the Player level targets (see the First-try run) and not a target that does not apply to the Play Style. A second table shows the median and the 10th to 90th percentile of the Forge Stones of each tier that the Players did not use. A third table shows the same values of the best Stars, the 3-Star Stages, the replay Battles, the Stages at the replay cap, and the Campaign and Dungeon Sweep Tickets that the Players used and did not use. Then the report gives the number of stuck Players and of Players at the replay cap. It also shows one **First-try** run of each Play Style: it wins each Battle with 2 Stars, and it does not replay and does not Sweep. This is the floor of Battles and the First-try Path of section 1.2, and the Expected Gear (ADR-0034) comes from it. The report judges the Player level targets of section 4 on this run. Then it shows the **Heynstone ledger**: each one-time source of section 2.6, the total, and the total as a % of the Bazaar catalog cost. The Heynstone sources are all fixed, so the ledger is a sum, not a simulation.
+**Report.** The sim runs 200 seeds for each Play Style. "End of Region N" is the point when the Player leaves Region N, after its repeat Battles. At each checkpoint of section 4, it shows the median and the 10th to 90th percentile of: Battles, hours, Player level, Packs opened, % Discovered, Epic and Legendary copies, mean Gear level, the lowest Gear level and unspent Coin. It also shows the share of the Players with a Combine done. For an "about" target, the sim uses ± 25%. "Gear mostly at level 14 or higher" is the lowest Gear level. It shows each target next to the values, but not the Player level targets (see the First-try run) and not a target that does not apply to the Play Style. A second table shows the median and the 10th to 90th percentile of the Forge Stones of each tier that the Players did not use. A third table shows the same values of the best Stars, the 3-Star Stages, the repeat Battles, the Stages at the repeat cap, and the Campaign and Dungeon Sweep Tickets that the Players used and did not use. Then the report gives the number of stuck Players, of Players at level 30 before the Floor 50 win (with its target), and of Players at the repeat cap. It also shows one **First-try** run of each Play Style: it wins each Battle with 2 Stars, and it has no repeat Battles and no Sweeps. This is the floor of Battles and the First-try Path of section 1.2, and the Expected Gear (ADR-0034) comes from it. The report judges the Player level targets of section 4 on this run. Then it shows the **Heynstone ledger**: each one-time source of section 2.6, the total, and the total as a % of the Bazaar catalog cost. The Heynstone sources are all fixed, so the ledger is a sum, not a simulation.
 
-`--check` does not check the economy yet. After the first re-tune, add the section 4 targets to `--check`.
+**Check.** `bun run sim:check` (`simulate --check` with no mode) also runs the economy sim, with the same number of seeds as the win-rate check (1,000). `bun run sim` with no mode and no `--check` does not run it. For each Play Style, the check judges each target of section 4 that applies to the Play Style, with the gated and review rules of the win-rate targets (GDD 13):
+
+- It judges the **median** of the Players. The Player level targets use the level of the First-try run. "First Combine done" uses the share of the Players with a Combine done (100%). "At most 10% of the Players get to level 30 before they win Floor 50" uses the share of all Players. The check does not judge percentiles.
+- A miss of a gated target fails the check. The check gives one line for each miss: the checkpoint, the target, the Play Style, the value and the target. The report shows "MISS" after the target.
+- A miss of a draft target shows "review" after the target and does not fail the check. Section 4 gives the draft targets.
+- A target that does not apply to a Play Style (`notFor`) is not judged.
 - During playtests, the game writes a local log of rewards and spending. The player can export the log and send it to the developer. The game never sends data automatically in v1.

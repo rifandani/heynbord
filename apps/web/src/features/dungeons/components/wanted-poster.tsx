@@ -238,7 +238,7 @@ export const WantedPoster = ({
         "relative flex min-w-0 flex-1 flex-col rounded-[6px] border border-[#b89a68] bg-[linear-gradient(180deg,#fbf1da,#f1e0bb)] text-[#2a1d12] shadow-[0_3px_0_rgba(0,0,0,0.35),0_10px_18px_rgba(0,0,0,0.3)] outline-none",
         "transition-[transform,box-shadow] duration-200 motion-safe:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_both]",
         "focus-visible:ring-4 focus-visible:ring-[#fff2a8]",
-        folded ? "max-w-80 px-3 pt-2.5 pb-2" : "max-w-64 px-4 pt-5 pb-3",
+        folded ? "max-w-80 px-3 pt-2.5 pb-2" : "max-w-85 px-4 pt-5 pb-3",
         !folded && tilt,
         active &&
           "-translate-y-0.5 rotate-0 shadow-[0_0_0_3px_rgba(226,169,59,0.55),0_3px_0_rgba(0,0,0,0.35),0_12px_20px_rgba(0,0,0,0.32)] motion-reduce:translate-y-0"

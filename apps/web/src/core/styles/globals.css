@@ -988,7 +988,7 @@
   }
 }
 
-/* The Workshop: the card of the Rank panel turns over to its new Rank. */
+/* The Workshop: the card of the Combine Panel turns over to its new Rank. */
 @keyframes workshop-flip {
   0% {
     transform: perspective(60em) rotateY(90deg);
@@ -1101,6 +1101,29 @@
   100% {
     opacity: 0;
     translate: 0 -1.5em;
+  }
+}
+
+/* The Workshop: the copy of a Craft forms from the bottom up, the opposite
+   of the melt of an Extract. The bright line covers the edge of the clip. */
+@keyframes workshop-craft-form {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* The Workshop: the copy of a Craft goes into the card under it when it is
+   complete. */
+@keyframes workshop-craft-settle {
+  0%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
 

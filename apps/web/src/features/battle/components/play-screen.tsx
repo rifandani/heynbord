@@ -46,6 +46,7 @@ import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
 import { installTestHooks } from "@/features/battle/test-hooks";
 import { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import { BazaarScreen } from "@/features/bazaar/components/bazaar-screen";
 import {
   campaignRegionAtom,
   chosenRegionAtom,
@@ -510,6 +511,7 @@ export const PlayScreen = () => {
           {screen === "workshop" ? <WorkshopScreen /> : null}
           {screen === "hero" ? <HeroScreen /> : null}
           {screen === "achievements" ? <AchievementsScreen /> : null}
+          {screen === "bazaar" ? <BazaarScreen /> : null}
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}

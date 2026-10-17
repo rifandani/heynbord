@@ -81,19 +81,30 @@ export const visibleTo = (state: BattleState, side: Side): BattleState => {
 const closeness = (unit: UnitState): number =>
   unit.owner === "player" ? unit.position + 1 : LANE_LENGTH - unit.position;
 
+/**
+ * The Attack that the AI values: the Attack with the Heroic bonus, which stays
+ * until the Unit leaves the Board (ADR-0048). The Rally, Swarm and bonus
+ * Attack are short, so they do not count.
+ */
+const lastingAttack = (unit: UnitState): number =>
+  unit.attack + unit.heroicBonus;
+
 const unitValue = (unit: UnitState): number =>
-  unit.attack * 2 + unit.hp + unit.speed * 2 + unit.bulwark * 3;
+  lastingAttack(unit) * 2 + unit.hp + unit.speed * 2 + unit.bulwark * 3;
 
 /** The danger of the other side's Units in a Lane. Units near our Hero count more. */
 const laneThreat = (state: BattleState, side: Side, lane: number): number =>
   state.units
     .filter((unit) => unit.owner !== side && unit.lane === lane)
-    .reduce((sum, unit) => sum + unit.attack * 2 + closeness(unit), 0);
+    .reduce((sum, unit) => sum + lastingAttack(unit) * 2 + closeness(unit), 0);
 
 const laneDefense = (state: BattleState, side: Side, lane: number): number =>
   state.units
     .filter((unit) => unit.owner === side && unit.lane === lane)
-    .reduce((sum, unit) => sum + unit.attack + Math.trunc(unit.hp / 2), 0);
+    .reduce(
+      (sum, unit) => sum + lastingAttack(unit) + Math.trunc(unit.hp / 2),
+      0
+    );
 
 /**
  * True when a Unit in this Square meets the enemy Units of its Lane: no enemy
@@ -191,7 +202,11 @@ const heroDamage = (
       reachesHero(unit)
     ) {
       const { hero } = heroOfLane(state, side, unit.lane);
-      damage[hero] = (damage[hero] ?? 0) + unit.attack + unit.heroic;
+      damage[hero] =
+        (damage[hero] ?? 0) +
+        unit.attack +
+        unit.heroicBonus +
+        unit.soulHarvestBonus;
     }
   }
   return damage;
@@ -326,7 +341,13 @@ const scoreCreature = (
       target.lane,
       keywordValue(keywords.hobble, card.rank)
     ) +
-    keywordValue(keywords.lastBreath, card.rank) * LAST_BREATH_SCORE;
+    keywordValue(keywords.lastBreath, card.rank) * LAST_BREATH_SCORE +
+    keywordValue(keywords.bolt, card.rank) * 2 +
+    (keywords.ironGuard ? 4 : 0) +
+    (keywords.soulHarvest ? 4 : 0) +
+    (keywords.herosBane ? 3 : 0) +
+    keywordValue(keywords.spawnbane, card.rank) * 2 +
+    (keywords.vampirism ? 4 : 0);
   const pivot =
     (keywords.pivot ?? false) && !isRangedRange(keywordRange(keywords));
   const pressure = blocksLane(state, side, target.lane, target.position, pivot)

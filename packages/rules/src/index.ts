@@ -170,10 +170,17 @@ export type {
   TallyId,
 } from "./content/achievements";
 export {
-  BAZAAR_CATALOG_HEYNSTONES_ESTIMATE,
-  HEYNSTONE_SOURCES,
-  HEYNSTONE_SUPPLY,
-} from "./content/heynstones";
+  ACHIEVEMENT_COSMETICS,
+  BAZAAR_CATALOG_HEYNSTONES,
+  BAZAAR_COSMETICS,
+  BOSS_FLOOR_COSMETICS,
+  COSMETIC_FAMILIES,
+  COSMETIC_PRICES,
+  getBazaarCosmetic,
+  isCosmeticId,
+} from "./content/cosmetics";
+export type { Cosmetic, CosmeticFamily, CosmeticId } from "./content/cosmetics";
+export { HEYNSTONE_SOURCES, HEYNSTONE_SUPPLY } from "./content/heynstones";
 export type { HeynstoneSource, HeynstoneSourceId } from "./content/heynstones";
 export { lossShare } from "./content/loss-reward";
 export type { EnemyHeroDamage } from "./content/loss-reward";
@@ -187,6 +194,7 @@ export {
   outcomeXp,
   PLAYER_LEVEL_XP,
   playerLevelForXp,
+  stageXp,
 } from "./content/player-levels";
 export {
   BASE_RANGE,
@@ -288,6 +296,7 @@ export type {
 export { recordFeats } from "./profile/feats";
 export type { FeatBattle, FeatPlace } from "./profile/feats";
 export { buyDeckSlot, INITIAL_DECK_SLOTS } from "./profile/deck-slots";
+export { buyCosmetic, grantCosmetic, owedCosmetics } from "./profile/cosmetics";
 export {
   applyDungeonResult,
   dungeonCardPool,

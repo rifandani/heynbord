@@ -1,3 +1,4 @@
+import { randomInt } from "../random";
 import { hasWaitingSummon } from "./boss-rules";
 import type { StepContext } from "./context";
 import {
@@ -6,8 +7,10 @@ import {
   activeHeroes,
   findUnit,
   heroDealer,
+  heroOfLane,
   heroState,
   isOver,
+  unitDealer,
 } from "./context";
 import { damageHero, damageUnit, finishBattle } from "./damage";
 import { drawCard } from "./hand";
@@ -51,6 +54,63 @@ const regenerateUnits = (ctx: StepContext): void => {
       activateKeyword(ctx, unit, "regenerate", unit.regenerate);
       healUnit(ctx, unit, unit.regenerate);
     }
+  }
+};
+
+/**
+ * Bolt N (ADR-0050): in each Start Phase of its owner, a Unit with Bolt deals
+ * N damage of its own Damage Type to one target at random: an enemy Unit, or
+ * the enemy Hero of its Front. Bolt applies no Status and has no Crit.
+ */
+const boltUnits = (ctx: StepContext): void => {
+  const { state } = ctx;
+  for (const unit of actionOrder(state, state.activeSide)) {
+    if (unit.bolt <= 0 || isOver(ctx)) {
+      continue;
+    }
+    const enemies = actionOrder(state, otherSide(unit.owner));
+    const hit = randomInt(ctx.random, enemies.length + 1);
+    const target = enemies[hit];
+    activateKeyword(ctx, unit, "bolt", unit.bolt);
+    if (!target) {
+      damageHero(ctx, heroOfLane(state, otherSide(unit.owner), unit.lane), {
+        amount: unit.bolt,
+        damageType: unit.damageType,
+        source: "bolt",
+        dealer: unitDealer(unit),
+        crit: 0,
+      });
+      continue;
+    }
+    damageUnit(ctx, target, {
+      amount: unit.bolt,
+      damageType: unit.damageType,
+      source: "bolt",
+      dealer: unitDealer(unit),
+      crit: 0,
+      noStatus: true,
+    });
+  }
+};
+
+/**
+ * Hero's Bane (ADR-0050): in each Start Phase of its owner, the Unit deals 1
+ * Physical damage to the enemy Hero of its Front.
+ */
+const herosBaneUnits = (ctx: StepContext): void => {
+  const { state } = ctx;
+  for (const unit of actionOrder(state, state.activeSide)) {
+    if (!unit.herosBane || isOver(ctx)) {
+      continue;
+    }
+    activateKeyword(ctx, unit, "herosBane");
+    damageHero(ctx, heroOfLane(state, otherSide(unit.owner), unit.lane), {
+      amount: 1,
+      damageType: "physical",
+      source: "herosBane",
+      dealer: unitDealer(unit),
+      crit: 0,
+    });
   }
 };
 
@@ -141,8 +201,9 @@ const tickCountdowns = (ctx: StepContext, ref: HeroRef): void => {
 
 /**
  * The Start Phase (GDD 4.3). The Play Phase follows. Closed Lanes open first,
- * then Regenerate and Rally. Each Hero of the active Side that is not
- * Defeated counts down its Hand and draws, in Hero order (ADR-0009).
+ * then Regenerate, Rally, Bolt and Hero's Bane. Each Hero of the active Side
+ * that is not Defeated counts down its Hand and draws, in Hero order
+ * (ADR-0009).
  */
 export const runStartPhase = (ctx: StepContext): void => {
   ctx.events.push(
@@ -154,6 +215,8 @@ export const runStartPhase = (ctx: StepContext): void => {
   openClosedLanes(ctx);
   regenerateUnits(ctx);
   rally(ctx);
+  boltUnits(ctx);
+  herosBaneUnits(ctx);
   suddenDeath(ctx);
   if (isOver(ctx)) {
     return;

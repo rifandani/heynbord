@@ -582,7 +582,7 @@ describe("attack (GDD 4.6)", () => {
     });
   });
 
-  it("attacks the enemy Hero from the last Column, with Heroic", () => {
+  it("attacks the enemy Hero from the last Column", () => {
     const state = emptyBattle();
     placeUnit(state, {
       cardId: "orc.scrapRaider",
@@ -590,8 +590,8 @@ describe("attack (GDD 4.6)", () => {
       position: 11,
     });
     const { state: next } = run(state, endTurn);
-    // Attack 3 + Heroic 1.
-    expect(heroOf(next, "enemy").hp).toBe(26);
+    // Attack 3. Heroic adds nothing to an attack on a Hero.
+    expect(heroOf(next, "enemy").hp).toBe(27);
   });
 
   it("does not attack a friendly Unit in front", () => {
@@ -2820,6 +2820,109 @@ const swarmHit = (
   }
   return damageLog(run(state, endTurn).events);
 };
+
+/**
+ * A player Tusk Brute (Attack 5, Heroic 1 at Common) at Square 4 attacks an
+ * enemy target at Square 5. The target has Attack 0 unless `target` gives it.
+ * Returns the Tusk Brute after the Turn, the attack damage and the
+ * `HeroicGained` totals.
+ */
+const heroicHit = (
+  brute: Partial<Parameters<typeof placeUnit>[1]> = {},
+  target: Partial<Parameters<typeof placeUnit>[1]> = {}
+) => {
+  const state = emptyBattle();
+  const unit = placeUnit(state, {
+    cardId: "orc.tuskBrute",
+    owner: "player",
+    position: 4,
+    speed: 0,
+    ...brute,
+  });
+  placeUnit(state, {
+    cardId: "human.militiaRecruit",
+    owner: "enemy",
+    position: 5,
+    attack: 0,
+    hp: 40,
+    maxHp: 40,
+    speed: 0,
+    ...target,
+  });
+  preventRout(state);
+  const { state: next, events } = run(state, endTurn);
+  return {
+    unit: unitById(next, unit.id),
+    attacks: eventsOfType(events, "DamageDealt")
+      .filter((event) => event.source === "attack")
+      .map((event) => event.amount),
+    gained: eventsOfType(events, "HeroicGained").map(
+      (event) => event.heroicBonus
+    ),
+  };
+};
+
+describe("Heroic N (ADR-0048)", () => {
+  it("gives +N Attack after an attack on an enemy Unit, after the damage", () => {
+    const { unit, attacks, gained } = heroicHit();
+    expect(attacks).toEqual([5]);
+    expect(gained).toEqual([1]);
+    expect(unit?.heroicBonus).toBe(1);
+  });
+
+  it("adds the old Heroic bonus to the attack, and adds more after it", () => {
+    const { unit, attacks, gained } = heroicHit({ heroicBonus: 2 });
+    expect(attacks).toEqual([7]);
+    expect(gained).toEqual([3]);
+    expect(unit?.heroicBonus).toBe(3);
+  });
+
+  it("uses N for the Rank: 1 at Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary", () => {
+    expect(heroicHit({ rank: "uncommon" }).gained).toEqual([1]);
+    expect(heroicHit({ rank: "rare" }).gained).toEqual([2]);
+    expect(heroicHit({ rank: "epic" }).gained).toEqual([3]);
+    expect(heroicHit({ rank: "legendary" }).gained).toEqual([4]);
+  });
+
+  it("counts an attack that deals 0 damage", () => {
+    const { attacks, gained } = heroicHit({}, { ward: 20 });
+    expect(attacks).toEqual([0]);
+    expect(gained).toEqual([1]);
+  });
+
+  it("counts an attack that kills the enemy Unit", () => {
+    const { gained } = heroicHit({}, { hp: 1, maxHp: 1 });
+    expect(gained).toEqual([1]);
+  });
+
+  it("gives nothing when the Unit dies from Retaliate, also with Rebirth", () => {
+    const retaliate = { cardId: "human.halberdier", attack: 3 };
+    const died = heroicHit({ hp: 1, maxHp: 1 }, retaliate);
+    expect(died.unit).toBeUndefined();
+    expect(died.gained).toEqual([]);
+    const reborn = heroicHit(
+      { hp: 1, maxHp: 1, rebirth: true, heroicBonus: 3 },
+      retaliate
+    );
+    expect(reborn.unit?.hp).toBe(1);
+    expect(reborn.gained).toEqual([]);
+    expect(reborn.unit?.heroicBonus).toBe(0);
+  });
+
+  it("gives nothing after an attack on a Hero, but adds the bonus to it", () => {
+    const state = emptyBattle();
+    const unit = placeUnit(state, {
+      cardId: "orc.tuskBrute",
+      owner: "player",
+      position: 11,
+      heroicBonus: 2,
+    });
+    const { state: next, events } = run(state, endTurn);
+    expect(heroOf(next, "enemy").hp).toBe(23);
+    expect(eventsOfType(events, "HeroicGained")).toEqual([]);
+    expect(unitById(next, unit.id)?.heroicBonus).toBe(2);
+  });
+});
 
 describe("Swarm N (GDD 5.4)", () => {
   it("gives +N Attack with 1 other friendly Unit in the Lane, and still +N with 2", () => {

@@ -322,11 +322,29 @@ describe("craft (GDD 7.4)", () => {
     expect(craft(profile(), COURIER)).toBeNull();
   });
 
-  it("is null for a card without a Craft cost", () => {
+  it("crafts a Legendary Base Rank copy for 4800 Essence (ADR-0050)", () => {
     const collection: Collection = [
       { cardId: LEGENDARY_BASE, rank: "legendary", copies: 1 },
     ];
-    expect(craft(profile({ collection }), LEGENDARY_BASE)).toBeNull();
+    const result = craft(
+      profile({ collection, essence: 4800 }),
+      LEGENDARY_BASE
+    );
+    expect(result?.essence).toBe(0);
+    expect(result?.collection).toContainEqual({
+      cardId: LEGENDARY_BASE,
+      rank: "legendary",
+      copies: 2,
+    });
+  });
+
+  it("is null for a Legendary copy without enough Essence", () => {
+    const collection: Collection = [
+      { cardId: LEGENDARY_BASE, rank: "legendary", copies: 1 },
+    ];
+    expect(
+      craft(profile({ collection, essence: 4799 }), LEGENDARY_BASE)
+    ).toBeNull();
   });
 
   it("is null without enough Essence", () => {

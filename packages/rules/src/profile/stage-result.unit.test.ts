@@ -93,12 +93,13 @@ describe("applyStageResult: XP, Coin and Stars (Economy 2.1)", () => {
     );
   });
 
-  it("gives win XP and Coin on a repeat win and keeps the best Stars", () => {
+  it("gives no XP and ⅓ of the Coin on a Repeat win, and keeps the best Stars (ADR-0049)", () => {
     const before = wonBefore("1-4", 3);
     const { profile, rewards } = applyStageResult(before, win("1-4", 1));
     expect(rewards.outcome).toBe("win");
-    expect(rewards.xp).toBe(40);
-    expect(rewards.coin).toBe(60);
+    expect(rewards.xp).toBe(0);
+    expect(rewards.coin).toBe(20);
+    expect(profile.xp).toBe(before.xp);
     expect(profile.stageResults["1-4"]).toBe(3);
     const better = applyStageResult(wonBefore("1-4", 1), win("1-4", 2));
     expect(better.profile.stageResults["1-4"]).toBe(2);

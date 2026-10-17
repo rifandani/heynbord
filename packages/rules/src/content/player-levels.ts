@@ -45,8 +45,15 @@ export const outcomeXp = (winXp: number, outcome: StageOutcome): number => {
 };
 
 /**
- * The XP of a Stage result (Economy 2.1): the XP of the Region for a win, × 2
- * for the first win, × 2 for a Boss Stage, and 25% of a win for a loss.
+ * The XP of a Stage Repeat win and of each Campaign Sweep Ticket (Economy 2.1,
+ * ADR-0049). A Dungeon Repeat win keeps its XP.
+ */
+const STAGE_REPEAT_WIN_XP = 0;
+
+/**
+ * The XP of a Stage result (Economy 2.1): × 2 of the XP of the Region for the
+ * first win, × 2 for a Boss Stage, 25% of the XP of the Region for a loss,
+ * and no XP for a Repeat win (ADR-0049).
  */
 export const stageXp = (
   stage: Pick<StageDefinition, "region" | "boss">,
@@ -56,7 +63,9 @@ export const stageXp = (
   if (winXp === undefined) {
     throw new Error(`Unknown Region: ${stage.region}`);
   }
-  return outcomeXp(winXp * (stage.boss ? 2 : 1), outcome);
+  return outcome === "win"
+    ? STAGE_REPEAT_WIN_XP
+    : outcomeXp(winXp * (stage.boss ? 2 : 1), outcome);
 };
 
 /** The XP of the first win of a Stage: ×2, and ×2 again for a Boss Stage. */

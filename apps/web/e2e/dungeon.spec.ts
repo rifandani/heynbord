@@ -101,11 +101,31 @@ const openTown = async (page: Page, xp: number) => {
 };
 
 /**
+ * The one gold Fight under the notice board opens the Dungeon Panel, the
+ * battle preparation of the Dungeon (as the Stage Panel and the Floor Panel).
+ * A Hint that shows over the bar (the Deck Hint, on a phone) goes first.
+ */
+const openPanel = async (page: Page) => {
+  if ((await page.getByTestId("dungeon-panel").count()) === 0) {
+    if ((await page.getByTestId("hint").count()) > 0) {
+      await page
+        .getByTestId("hint-close")
+        .click({ force: true, timeout: 3000 })
+        .catch(() => false);
+      await page.waitForTimeout(200);
+    }
+    await page.getByTestId("dungeon-fight-bar").click();
+  }
+  await expect(page.getByTestId("dungeon-panel")).toBeVisible();
+};
+
+/**
  * At level 10 a Deck needs 14 cards (15 at level 20), and the starter Decks
- * have 10: "Edit Decks" on the Dungeons screen opens the Deck book, and
+ * have 10: "Edit Decks" on the Dungeon Panel opens the Deck book, and
  * Auto-fill makes the Active Deck valid. Then Fight is on.
  */
 const fillActiveDeck = async (page: Page, min = 14) => {
+  await openPanel(page);
   await expect(page.getByTestId("deck-problem")).toContainText(
     `at least ${min} cards`
   );
@@ -179,6 +199,15 @@ test.describe("Dungeons screen", () => {
       "locked"
     );
 
+    // A locked Dungeon shows its board, with its level in the place of Fight.
+    await page.getByTestId("dungeon-tab-2").click();
+    await expect(page.getByTestId("dungeon-locked")).toContainText(
+      "Opens at level 20"
+    );
+    await expect(page.getByTestId("dungeon-fight-bar")).toHaveCount(0);
+    await page.getByTestId("dungeon-tab-1").click();
+    await expect(page.getByTestId("dungeon-fight-bar")).toBeVisible();
+
     // One wanted poster for each Boss, with its Lanes, its Boss Rule and the notch.
     await expect(page.locator("article[data-testid^='poster-']")).toHaveCount(
       2
@@ -204,7 +233,8 @@ test.describe("Dungeons screen", () => {
       "true"
     );
 
-    // The first-win rewards, from the rules (Economy 2.4).
+    // The first-win rewards, from the rules (Economy 2.4), in the Dungeon Panel.
+    await openPanel(page);
     await expect(page.getByTestId("dungeon-reward-card")).toHaveText(
       "Grand Gearjammer"
     );
@@ -212,11 +242,16 @@ test.describe("Dungeons screen", () => {
       "+3 Uncommon Forge Stone"
     );
 
-    // A Deck that is not valid turns Fight off. With a valid Deck, Fight has
-    // the focus when the screen opens, so Enter starts the Dungeon Battle.
+    // A Deck that is not valid turns Fight off. With a valid Deck, the Fight
+    // bar has the focus when the screen opens, so Enter opens the panel and
+    // Enter starts the Dungeon Battle.
     await fillActiveDeck(page);
+    await page.getByTestId("dungeon-panel-close").click();
     await page.getByTestId("town-shortcut-town").click();
     await page.getByTestId("building-cave").click();
+    await expect(page.getByTestId("dungeon-fight-bar")).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("dungeon-panel")).toBeVisible();
     await expect(page.getByTestId("dungeon-fight")).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("boss-plates")).toHaveAttribute(
@@ -252,15 +287,17 @@ test.describe("Dungeons screen", () => {
 
     await result.getByTestId("back-to-dungeons").click();
     await expect(screen).toBeVisible();
-    await expect(page.getByTestId("dungeon-wins")).toHaveAttribute(
-      "data-wins",
-      "1"
-    );
     // The posters stay full after a win, with the claimed stamp.
     await expect(page.getByTestId("notice-board")).not.toHaveAttribute(
       "data-folded"
     );
     await expect(page.getByTestId("poster-claimed")).toHaveCount(2);
+    // The panel keeps the win, the repeat-win rewards and the Dungeon Sweep.
+    await openPanel(page);
+    await expect(page.getByTestId("dungeon-wins")).toHaveAttribute(
+      "data-wins",
+      "1"
+    );
     await expect(page.getByTestId("dungeon-each-win")).toContainText(
       "25% chance: 1 Uncommon Forge Stone"
     );
@@ -275,6 +312,7 @@ test.describe("Dungeons screen", () => {
     await page.reload();
     await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     await page.getByTestId("town-shortcut-dungeons").click();
+    await openPanel(page);
     await expect(page.getByTestId("dungeon-wins")).toHaveAttribute(
       "data-wins",
       "1"
@@ -300,6 +338,7 @@ test.describe("Dungeons screen", () => {
     );
     await page.getByTestId("abandon-confirm").click();
     await expect(page.getByTestId("dungeons")).toBeVisible();
+    await openPanel(page);
     await expect(page.getByTestId("dungeon-wins")).toHaveCount(0);
 
     // A loss gives 10% of the Coin and 25% of the XP of a win, but only the
@@ -325,6 +364,7 @@ test.describe("Dungeons screen", () => {
     await expect(result.getByTestId("result-forge-stones")).toHaveCount(0);
     await result.getByTestId("back-to-dungeons").click();
     await expect(page.getByTestId("dungeons")).toBeVisible();
+    await openPanel(page);
     await expect(page.getByTestId("dungeon-wins")).toHaveCount(0);
   });
 
@@ -371,6 +411,7 @@ test.describe("Dungeons screen", () => {
       });
       await finishBattle(page, "player");
       await page.getByTestId("back-to-dungeons").click();
+      await openPanel(page);
       await expect(page.getByTestId("dungeon-wins")).toBeVisible();
       await expect(page.getByTestId("dungeon-fight")).toBeInViewport();
       // The win gave 1 Dungeon Sweep Ticket, so Sweep is the gold action and has the focus.
@@ -408,6 +449,7 @@ test.describe("Dungeon 2", () => {
       "data-lanes",
       "4"
     );
+    await openPanel(page);
     await expect(page.getByTestId("dungeon-reward-card")).toHaveText(
       "Old Frostmaw"
     );
@@ -463,9 +505,11 @@ test.describe("Dungeon 3", () => {
       "data-lanes",
       "2,3"
     );
+    await openPanel(page);
     await expect(page.getByTestId("dungeon-reward-card")).toHaveText(
       "Sir Odo, the Last Taxman"
     );
+    await page.getByTestId("dungeon-panel-close").click();
     // A Unit at the start fits in its Square, and hover shows its Card Details.
     const startUnit = page.getByTestId("strip-start-unit").first();
     await expect(startUnit).toHaveAccessibleName(
@@ -531,6 +575,8 @@ test.describe("Dungeon Sweep", () => {
   test("shows no Sweep on a Dungeon with no win", async ({ page }) => {
     await openTown(page, LEVEL_10_XP);
     await page.getByTestId("town-shortcut-dungeons").click();
+    await expect(page.getByTestId("dungeon-fight-bar")).toBeVisible();
+    await openPanel(page);
     await expect(page.getByTestId("dungeon-fight")).toBeVisible();
     await expect(page.getByTestId("dungeon-sweep")).toHaveCount(0);
     await expect(page.getByTestId("sweep-owned")).toHaveCount(0);
@@ -540,6 +586,8 @@ test.describe("Dungeon Sweep", () => {
     page,
   }) => {
     await openWonDungeon(page, 3);
+    // The Sweep Hint points at the Sweep row of the Dungeon Panel.
+    await openPanel(page);
     await expect(page.getByTestId("hint")).toHaveAttribute(
       "data-hint",
       "dungeonSweep"

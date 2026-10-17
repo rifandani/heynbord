@@ -8,7 +8,6 @@ v1:
 
 New Unit Ability:
 
-- update the Keyword "Heroic N" into "+N Attack after this Unit attacks enemy Unit", units Common/Uncommon can have N=1, Rare can have N=2, Epic can N=3, Legendary can have N=4
 - Devour N: When this Unit kills an enemy Unit, it gains +N Attack and +N HP, im thinking this Keyword is exclusive to Feral replacing Trample, but do u think its a good idea?
 - Resistance N: Reduce magic damage by N (similar to Bulwark)
 - Heal N: +N HP for the lowest HP Unit on player's friendly units for each turn
@@ -117,32 +116,39 @@ Priest:
 - Haste: Decreases Countdown of a card with the highest Countdown in target friendly hero's hand by 4
 - Zeal: Decreases Countdown of each card in target friendly hero's hand by 1.
 
-Sequence:
-
-1. /grill-with-docs 105, implement issue 108
-1. then Cosmetics and the Bazaar (M4): plan their goals and the Heynstone total one time.
-
 New features:
 
-- cleanup CONTEXT.md, all game docs, redundant ADRs, etc
-- check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
-- https://kingsandlegends-archive.fandom.com/wiki/Seaport
+/grill-with-docs in Workshop, introduce "Fuse" in which players can fuse new cards (not owned cards) with Essence + their owned cards. Restriction is as follows:
+
+- they cannot put different Rank at the same time, so if they want to fuse Rare cards, they need all input cards to be Rare, also they cant put a Unit and Skill cards at the same time, it should be the same card type
+- to fuse Common/Uncommon cards, players need 2 cards
+- to fuse Rare cards, players need 3 cards
+- to fuse Epic cards, players need 4 cards
+- u cannot fuse Legendary cards
+- recipes are: 1 Human + 1 Human = 1 new Human, 1 Human + 1 Elf = 1 new Human/Elf, 1 Warrior + 1 Warrior = 1 new Warrior Skill, 1 Warrior + 1 Mage = 1 new Warrior/Mage Skill
+
+/grill-with-docs introduce Base Rank Legendary Unit for each Race with restriction that is called "Specialist" Unit: Unit can only be put in the Deck for specific chosen Class (it also has Unique Keyword), for now let's have 1 Legendary Unit for each Race with minimum 1 for each Class
+
+2. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
+3. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
+4. https://kingsandlegends-archive.fandom.com/wiki/Seaport
 
 v2:
 
 - blender mcp + all 3D unit (or maybe use sprite-gen)
 - hybrids, awakening
 - brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
-- Story scenes at the start and end of each Region (need to install some claude motion skills first)
 - standardize UI components at design system level
 - dynamic og image generation
 - add better auth + skills
-- add server side feature flag
 - add error monitoring, logs with evlog + skills
 - add alchemy + cloudflare binding
 - save player's progress in DB
 - Enemy AI: a search-based AI (for example Monte Carlo) that uses the deterministic engine
+- add server side feature flag
 - Asynchronous online: an account, a server
+- Login rewards, Daily Activity + Rewards, add limit to how many challenge can be taken daily for dungeons and heynspire then introduce entry ticket for both for extra challenge,
+- Story scenes at the start and end of each Region (need to install some claude motion skills first)
 - https://kingsandlegends-archive.fandom.com/wiki/Auction_House
 - https://kingsandlegends-archive.fandom.com/wiki/Guild
 - https://kingsandlegends-archive.fandom.com/wiki/Buildings Ranking Board + Arena Real-time PvP or PvP against other players' _saved defense decks_ (the AI controls them)

@@ -145,7 +145,7 @@ No screen · Decoration only
 
 ### 2.6 Market
 
-`Bazaar` · Decoration in v1
+`Bazaar` · Decoration in v1: the Bazaar screen opens from the Town Bar shortcut, and the Market Building stays decoration until its art gets a safe-area hit box (11.4).
 
 | Field | Brief |
 | --- | --- |
@@ -234,7 +234,7 @@ The painting message is a short form of the briefs in sections 1 and 2. It is in
 
 ## 6. When the Town changes
 
-- When a screen comes (for example the Bazaar), add its Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its label, and the part of the Building under the label, must be in the safe area.
+- When a screen comes, add its Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its label, and the part of the Building under the label, must be in the safe area. The Bazaar is an exception (2.6): its shortcut opens the screen, and the Market Building stays decoration until a safe-area hit box exists for its tents.
 - When you add a screen with no Building in section 2, add its brief here first. Then paint it into the master painting with inpainting, in the same style.
 - When you change the painting, check the ambient layers (1.3) again.
 
@@ -446,14 +446,14 @@ The licence record (art direction 5.5) of the shop art is part of the release it
 
 ## 10. Workshop inside
 
-The Workshop screen ([GDD 7.4](./03-game-design.md#74-workshop)) shows the inside of the Workshop (2.5) behind the card grid and the Rank panel. One painting covers the full screen. It makes the Workshop warm, busy and a little funny, so that the Player wants to Combine a pair. The image is `apps/web/public/town/workshop-inside.webp`.
+The Workshop screen ([GDD 7.4](./03-game-design.md#74-workshop)) shows the inside of the Workshop (2.5) behind the card grid and the Station Panel. One painting covers the full screen. It makes the Workshop warm, busy and a little funny, so that the Player wants to Combine a pair. The image is `apps/web/public/town/workshop-inside.webp`.
 
 ### 10.1 Rules for the Workshop art
 
 - **One painting, a full room.** The room fills the image to all edges. There is no frame and no border.
 - **View.** From the open door, at eye level, straight on. A work bench goes across the full width at the bottom.
 - **The same Workshop as the Town.** The room is the inside of the Workshop in the Town painting: a timber frame with heavy beams, pale stone walls and the tall pale stone chimney of the forge.
-- **A calm center.** The card grid and the Rank panel cover most of the screen (10.2). There, the painting is a plain back wall of dark smoke-stained timber planks, with low contrast and no small details. Thus the cards and the text stay easy to read. The forge, the people and the bright light are at the left, at the right and at the top.
+- **A calm center.** The card grid and the Station Panel cover most of the screen (10.2). There, the painting is a plain back wall of dark smoke-stained timber planks, with low contrast and no small details. Thus the cards and the text stay easy to read. The forge, the people and the bright light are at the left, at the right and at the top.
 - **The forge glow stays at the side.** The fire of the forge is at the left edge, low. Its glow lights the floor and the left part of the room, not the center of the back wall. No sparks, smoke or glow go across the center.
 - **Value.** Mid-dark in total. The brightest areas are the forge fire and the glowing card on the anvil. The center is the darkest area, darker than the sides, so that the Rank colors of the cards and the cream text show clearly.
 - **Light.** From the upper left, through a small high window, as in all other art. The forge adds warm orange light from the low left.
@@ -464,12 +464,12 @@ The Workshop screen ([GDD 7.4](./03-game-design.md#74-workshop)) shows the insid
 
 ### 10.2 Positions on the painting
 
-The boxes are in percent of the 1536 × 1024 image. The layout sketch of 10.4 shows them. On a 1366 × 768 laptop screen, the card grid and the Rank panel cover about x 14 to 86 and y 18 to 84: the card grid at the left and in the center, the Rank panel at the right. On a wider screen, more of the sides shows.
+The boxes are in percent of the 1536 × 1024 image. The layout sketch of 10.4 shows them. On a 1366 × 768 laptop screen, the card grid and the Station Panel cover about x 14 to 86 and y 18 to 84: the card grid at the left and in the center, the Station Panel at the right. On a wider screen, more of the sides shows.
 
 | Area | Box (x, y) | Content |
 | --- | --- | --- |
 | Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The smith, the anvil and the goblin tinker must be in it. |
-| Calm wall | x 16 to 84, y 16 to 84 | A plain back wall of dark smoke-stained timber planks, with a few iron tools that hang in shadow. The card grid and the Rank panel stand in front of it. |
+| Calm wall | x 16 to 84, y 16 to 84 | A plain back wall of dark smoke-stained timber planks, with a few iron tools that hang in shadow. The card grid and the Station Panel stand in front of it. |
 | Ceiling | x 0 to 100, y 0 to 16 | Heavy dark timber beams, a chain with a hook, hanging tongs and hammers, one brass lantern, and a small high window at the upper left. The title plate and the Balance Plate cover the top corners. |
 | Forge | x 0 to 16, y 10 to 84 | The stone forge with a pale stone hood, and the chimney that goes up to the ceiling along the left edge. The fire is low, at x 0 to 10 and y 50 to 72. A leather bellows. |
 | Anvil and smith | x 6 to 16, y 54 to 84 | The anvil in front of the forge. The small dwarf-like smith strikes a glowing card on it. |
@@ -502,14 +502,14 @@ The painting message is a short form of 10.1 to 10.3. It is in `scripts/town-art
 1. Run `bun town:prompts`. Make 4 to 8 images with `workshop/prompts.md` and the references of 10.4, with GPT Image and high quality, at 1536 × 1024.
 2. Select one image with the checklist in 10.6.
 3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting (the fixes in `prompts.md`).
-4. Put a screenshot of the Workshop screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the card grid and the Rank panel. If the Workshop screen does not exist yet, use the boxes of 10.2.
+4. Put a screenshot of the Workshop screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the card grid and the Station Panel. If the Workshop screen does not exist yet, use the boxes of 10.2.
 5. Export as WebP with no alpha: `cwebp -q 80 workshop-inside.png -o workshop-inside.webp`. If the source is already a smaller WebP, use the source. Put the file in `apps/web/public/town/` as `workshop-inside.webp`, and keep the full-size source in `apps/web/art/town/`. The Workshop screen shows it (cover, centered), with darker edges over it, as the Packs screen does.
 
 The licence record (art direction 5.5) of the Workshop art is part of the release item in the [roadmap](./09-roadmap.md), not a step of this section.
 
 ### 10.6 Review checklist
 
-- [ ] The center behind the card grid and the Rank panel is calm and dark, and the cards and the text stay easy to read.
+- [ ] The center behind the card grid and the Station Panel is calm and dark, and the cards and the text stay easy to read.
 - [ ] The forge fire is at the left edge, and its glow and its sparks do not go across the center.
 - [ ] The smith, the glowing card, the goblin tinker and the junk cart are each easy to find, and they are not in the center.
 - [ ] The room looks like the inside of the Workshop in the Town painting: timber beams, pale stone and the tall chimney.

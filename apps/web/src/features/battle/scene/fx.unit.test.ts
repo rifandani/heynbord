@@ -247,6 +247,7 @@ describe("fxForEvent for the Mage cards of #65", () => {
       bonusAttackTurns: 0,
       bonusRange: 0,
       bonusRangeTurns: 0,
+      heroicBonus: 0,
       reborn: false,
       hp: 6,
       maxHp: 6,

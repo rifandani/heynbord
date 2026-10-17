@@ -9,7 +9,7 @@ Status: **approved** (2026-10-16). The names are drafts. The data is `ACHIEVEMEN
 ### 1.1 States
 
 - An Achievement is **In progress**, then **Completed**, then **Claimed**.
-- The game records an Achievement as Completed the first time that the Player meets its goal. A Completed Achievement stays Completed, also when the Profile changes later. For example, an Extract after "Discover 65 cards" does not undo it.
+- The game records an Achievement as Completed the first time that the Player meets its goal. A Completed Achievement stays Completed, also when the Profile changes later. For example, an Extract after "Discover 68 cards" does not undo it.
 - The Player claims the reward on the Achievements screen. Then the reward goes into the Profile. A Star chest works the same way.
 - Each Achievement can be Completed and Claimed one time only.
 
@@ -52,7 +52,7 @@ v1 has 3 Tallies. Each starts at 0 and only goes up. A Sweep never adds to a Tal
 
 - Most Achievements give Heynstones. Some give Coin or Essence. 3 hard Achievements give an earn-only Cosmetic (GDD 10).
 - No Achievement gives XP, cards, Forge Stones or Tickets.
-- **Cosmetic rewards wait for Cosmetics.** Cosmetics are not in the game yet. Until they are, a hard Achievement can be Completed, and its Claim records the Cosmetic as owed. When Cosmetics exist, a Profile migration gives each owed Cosmetic. The earn-only Cosmetic of a 10th Floor uses the same plan ([Economy 2.3](./07-economy.md)).
+- **Cosmetic rewards grant at once.** The Claim grants the earn-only Cosmetic of the Achievement (`ACHIEVEMENT_COSMETICS` in `packages/rules/src/content/cosmetics.ts`). The migration of Profile version 10 pays the Cosmetics that an old Profile claimed before the list existed, so the player loses nothing ([Economy 2.3](./07-economy.md)).
 
 ### 1.7 IDs
 
@@ -92,8 +92,8 @@ Each Achievement has a fixed ID, for example `feat.onlyUndead`. The Profile keep
 | ID | Name (draft) | Goal | Kind | Reward |
 | --- | --- | --- | --- | --- |
 | `level.max` | Veteran | Get Player level 30 | Profile | 40 Heynstones |
-| `collection.half` | Half the Book | Discover 65 cards | Profile | 20 Heynstones |
-| `collection.all` | The Full Book | Discover all 130 cards | Profile | Earn-only Cosmetic (hard) |
+| `collection.half` | Half the Book | Discover 68 cards | Profile | 20 Heynstones |
+| `collection.all` | The Full Book | Discover all 136 cards | Profile | Earn-only Cosmetic (hard) |
 | `packs.fifty` | Regular Customer | Open 50 Packs | Tally | 20 Heynstones |
 | `workshop.legendary` | Legend Made | Own a Legendary copy of a card, from a Combine or a Royal Pack | Profile | 40 Heynstones |
 | `workshop.combines` | Busy Bench | Do 25 Combines | Tally | 20 Heynstones |

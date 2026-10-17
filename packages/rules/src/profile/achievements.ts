@@ -8,11 +8,12 @@ import { ACHIEVEMENTS } from "../content/achievements";
 import type {
   AchievementDefinition,
   AchievementGoal,
-  AchievementReward,
 } from "../content/achievements";
+import { ACHIEVEMENT_COSMETICS } from "../content/cosmetics";
 import { GEAR_SLOTS } from "../content/gear";
 import { playerLevelForXp } from "../content/player-levels";
 import { CAMPAIGN_REGIONS } from "../content/star-chests";
+import { grantCosmetic } from "./cosmetics";
 import { discoveredCards } from "./packs";
 import type { Profile } from "./schema";
 import { regionStars } from "./star-chests";
@@ -220,12 +221,13 @@ export const recordAchievements = <P extends AchievementProfile>(
 
 /** The Profile fields that a Claim reads and changes. */
 type ClaimProfile = StateProfile &
-  Pick<Profile, "coin" | "essence" | "heynstones">;
+  Pick<Profile, "coin" | "cosmetics" | "essence" | "heynstones">;
 
 const addReward = <P extends ClaimProfile>(
   profile: P,
-  reward: AchievementReward
+  achievement: AchievementDefinition
 ): P => {
+  const { reward } = achievement;
   switch (reward.kind) {
     case "heynstones": {
       return { ...profile, heynstones: profile.heynstones + reward.amount };
@@ -237,9 +239,15 @@ const addReward = <P extends ClaimProfile>(
       return { ...profile, essence: profile.essence + reward.amount };
     }
     case "cosmetic": {
-      // Cosmetics do not exist yet: the Claim records the Cosmetic as owed
-      // (Achievements 1.6).
-      return profile;
+      // An Earn-only Cosmetic (Achievements 1.6): the ID list maps the
+      // Achievement to its Cosmetic.
+      const cosmetic = ACHIEVEMENT_COSMETICS[achievement.id];
+      if (cosmetic === undefined) {
+        throw new Error(
+          `The Achievement ${achievement.id} has no Earn-only Cosmetic`
+        );
+      }
+      return grantCosmetic(profile, cosmetic);
     }
     default: {
       return absurd(reward);
@@ -251,7 +259,7 @@ const claim = <P extends ClaimProfile>(
   profile: P,
   achievement: AchievementDefinition
 ): P => ({
-  ...addReward(profile, achievement.reward),
+  ...addReward(profile, achievement),
   claimedAchievements: [...profile.claimedAchievements, achievement.id],
 });
 

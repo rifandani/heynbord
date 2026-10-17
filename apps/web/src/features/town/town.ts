@@ -15,7 +15,8 @@ export type GameScreen =
   | "hero"
   | "dungeons"
   | "heynspire"
-  | "achievements";
+  | "achievements"
+  | "bazaar";
 
 /** A box in Town painting coordinates. */
 export interface Rect {
@@ -362,7 +363,9 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "packs", screen: "packs", unlock: "packs" },
   { id: "hero", screen: "hero", unlock: "gear" },
   { id: "achievements", screen: "achievements" },
-  { id: "bazaar", screen: null },
+  // The Bazaar Building is decoration in v1 (Town Concepts 2.6): the
+  // shortcut is the way in.
+  { id: "bazaar", screen: "bazaar" },
   // The Handbook has no Building (GDD 11.4): it is a dialog, like the Deck builder.
   { id: "handbook", screen: null, dialog: "handbook" },
 ];

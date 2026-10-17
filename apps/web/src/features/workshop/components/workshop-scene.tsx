@@ -20,8 +20,10 @@ const LIGHTS: readonly {
 /**
  * The painted Workshop, in full above the Town Bar (`FittedPainting`), as
  * the Card shop of the Packs screen. The lantern and the forge
- * breathe; with reduced motion they are still. Darker edges keep the plates
- * and the Town Bar easy to read.
+ * breathe; with reduced motion they are still. The light of the selected
+ * station is on its panel (`StationEdge`), not on the painting: the painting
+ * is cropped on a narrow screen, and the forge already lights its left side.
+ * Darker edges keep the plates and the Town Bar easy to read.
  */
 export const WorkshopScene = () => (
   <div className="absolute inset-0 overflow-hidden bg-[#24170f]" aria-hidden>

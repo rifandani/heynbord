@@ -10,7 +10,7 @@ export const HEYNSPIRE_BOSS_FLOOR_EVERY = 10;
 export const HEYNSPIRE_BOSS_FLOOR_REWARD = {
   essence: 150,
   heynstones: 50,
-  /** Earn-only Cosmetics. The list of Cosmetics does not exist yet. */
+  /** 1 Earn-only Cosmetic (`BOSS_FLOOR_COSMETICS`, Economy 2.3). */
   cosmetics: 1,
   /** 2 Epic Forge Stones (ADR-0038) and 1 Legendary Forge Stone (ADR-0039). */
   forgeStones: [

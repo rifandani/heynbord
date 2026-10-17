@@ -1,3 +1,5 @@
+import { BOSS_FLOOR_COSMETICS } from "../content/cosmetics";
+import type { CosmeticId } from "../content/cosmetics";
 /**
  * The Heynspire progress of the Profile and the Floor result action (Economy
  * 2.3, GDD 8.2). It is pure, as the Stage result action: the same Profile and
@@ -9,12 +11,15 @@ import {
   assertFloor,
   floorFirstWinReward,
   HEYNSPIRE_FLOORS,
+  HEYNSPIRE_BOSS_FLOOR_EVERY,
+  isBossFloor,
 } from "../content/heynspire";
 import { lossShare } from "../content/loss-reward";
 import type { EnemyHeroDamage } from "../content/loss-reward";
 import { CAMPAIGN_LOSS_XP_FRACTION } from "../content/player-levels";
 import type { StageDefinition } from "../content/schema";
 import { STAGES } from "../content/stages";
+import { grantCosmetic } from "./cosmetics";
 import type { Profile, UnopenedPack } from "./schema";
 import { CAMPAIGN_SWEEP_TICKETS_PER_WIN, levelUp } from "./stage-result";
 
@@ -83,6 +88,8 @@ export interface FloorRewards {
   readonly campaignSweepTickets: number;
   /** The Forge Stones of a 5th Floor or a Boss Floor win, of 0 to 2 tiers. */
   readonly forgeStones: readonly ForgeStoneReward[];
+  /** The Earn-only Cosmetic of a Boss Floor win, or `null` (Economy 2.3). */
+  readonly cosmetic: CosmeticId | null;
 }
 
 export interface FloorResult<P> {
@@ -97,6 +104,7 @@ type FloorResultProfile = Pick<
   | "coin"
   | "essence"
   | "heynstones"
+  | "cosmetics"
   | "stageResults"
   | "heynspireFloorsWon"
   | "unopenedPacks"
@@ -110,11 +118,10 @@ type FloorResultProfile = Pick<
  * Tickets (ADR-0035), and makes the next Floor the Current Floor. A loss
  * gives 10% of the Coin and 25% of the XP of the win, and only the share of
  * the lost enemy Hero HP of them (ADR-0043). A Floor gives no Stars and no
- * card. The earn-only Cosmetic of a Boss Floor is not given yet: the list of
- * Cosmetics does not exist. It adds the First Pack when the level goes to the
- * Packs unlock. It throws when Heynspire is not open, or when `floor` is not
- * the Current Floor. An Abandon and a Battle that is not finished never call
- * it.
+ * card. A Boss Floor win gives its Earn-only Cosmetic (Economy 2.3). It adds
+ * the First Pack when the level goes to the Packs unlock. It throws when
+ * Heynspire is not open, or when `floor` is not the Current Floor. An Abandon
+ * and a Battle that is not finished never call it.
  */
 export const applyFloorResult = <P extends FloorResultProfile>(
   profile: P,
@@ -148,6 +155,11 @@ export const applyFloorResult = <P extends FloorResultProfile>(
   const heynstones = input.won ? reward.heynstones : 0;
   const forgeStones = input.won ? reward.forgeStones : [];
   const campaignSweepTickets = input.won ? CAMPAIGN_SWEEP_TICKETS_PER_WIN : 0;
+  const bossIndex = Math.floor(input.floor / HEYNSPIRE_BOSS_FLOOR_EVERY) - 1;
+  const cosmetic =
+    input.won && isBossFloor(input.floor)
+      ? (BOSS_FLOOR_COSMETICS[bossIndex] ?? null)
+      : null;
   const { levelBefore, levelAfter, unopenedPacks } = levelUp(
     profile.xp,
     profile.xp + xp
@@ -163,6 +175,9 @@ export const applyFloorResult = <P extends FloorResultProfile>(
       unopenedPacks: [...profile.unopenedPacks, ...unopenedPacks],
       campaignSweepTickets: profile.campaignSweepTickets + campaignSweepTickets,
       forgeStones: addForgeStoneRewards(profile.forgeStones, forgeStones),
+      ...(cosmetic === null
+        ? null
+        : { cosmetics: grantCosmetic(profile, cosmetic).cosmetics }),
     },
     rewards: {
       outcome: input.won ? "firstWin" : "loss",
@@ -175,6 +190,7 @@ export const applyFloorResult = <P extends FloorResultProfile>(
       unopenedPacks,
       campaignSweepTickets,
       forgeStones,
+      cosmetic,
     },
   };
 };

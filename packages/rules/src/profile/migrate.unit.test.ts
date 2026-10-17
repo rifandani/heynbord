@@ -161,6 +161,23 @@ describe("migrateProfile", () => {
     expect(migrated.heynstones).toBe(50);
   });
 
+  it("gives the owed Cosmetics to a version 9 Profile, and keeps its progress (Economy 3.5)", () => {
+    const { cosmetics: _cosmetic, ...v9 } = {
+      ...newProfile(3),
+      schemaVersion: 9,
+      heynspireFloorsWon: 25,
+      claimedAchievements: ["campaign.allStars", "feat.onlyUndead"],
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v9));
+    expect(migrated.cosmetics).toEqual([
+      "earnOnly.wardenSash",
+      "earnOnly.duneMask",
+      "earnOnly.constellationSeal",
+    ]);
+    expect(migrated.heynspireFloorsWon).toBe(25);
+    expect(migrated.claimedAchievements).toEqual(v9.claimedAchievements);
+  });
+
   it("refuses a version 6 Profile with no Sweep Tickets", () => {
     const {
       campaignSweepTickets: _campaign,
