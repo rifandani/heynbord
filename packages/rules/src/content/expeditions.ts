@@ -35,9 +35,10 @@ export interface ExpeditionDefinition {
 
 /**
  * The 4 Expeditions, from the shortest (Economy 2.8). Each later Expedition
- * adds one reward line. The rates are start values: a supplement of about one
- * hour of active play for each day away. Keep the code and the Economy table
- * the same.
+ * adds one reward line. The rates are a supplement to active play, and the
+ * economy sim checks them with its play calendar (Economy 4, 7.1). The XP is
+ * 1 for each hour: with 2, too many Players got to level 30 before the Floor
+ * 50 win. Keep the code and the Economy table the same.
  */
 export const EXPEDITIONS: readonly ExpeditionDefinition[] = [
   {
@@ -54,7 +55,7 @@ export const EXPEDITIONS: readonly ExpeditionDefinition[] = [
     unlockLevel: 12,
     hours: 12,
     coinPerHour: 40,
-    xpPerHour: 2,
+    xpPerHour: 1,
     essencePerHour: 0,
     forgeStones: null,
   },
@@ -63,7 +64,7 @@ export const EXPEDITIONS: readonly ExpeditionDefinition[] = [
     unlockLevel: 18,
     hours: 24,
     coinPerHour: 50,
-    xpPerHour: 2,
+    xpPerHour: 1,
     essencePerHour: 2,
     forgeStones: null,
   },
@@ -72,7 +73,7 @@ export const EXPEDITIONS: readonly ExpeditionDefinition[] = [
     unlockLevel: 24,
     hours: 48,
     coinPerHour: 60,
-    xpPerHour: 2,
+    xpPerHour: 1,
     essencePerHour: 3,
     forgeStones: { tier: "epic", count: 1 },
   },

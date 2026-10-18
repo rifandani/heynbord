@@ -718,7 +718,7 @@ export const PacksScreen = () => {
             row stays narrow and the shopkeeper has room to talk. */}
         <div
           className="pointer-events-auto flex max-w-full items-center gap-2 [@media(min-height:760px)]:flex-col [@media(min-height:760px)]:gap-1.5"
-          data-shop-avoid
+          data-shop-avoid="right"
         >
           <PoolPlate choice={choice} onChange={changePool} />
           <div
@@ -733,7 +733,7 @@ export const PacksScreen = () => {
         <ul
           className="pointer-events-auto flex items-end justify-center gap-[min(2rem,2.5vw)] [@media(max-height:500px)]:gap-[1.5vw]"
           data-testid="pack-list"
-          data-shop-avoid
+          data-shop-avoid="right"
         >
           {PACKS.map((pack) => (
             <PackStand

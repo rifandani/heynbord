@@ -138,9 +138,10 @@ const useCloseWhenInactive = (hint: HintId, active: boolean) => {
  * The Town Hints (GDD 8.3). The Packs level Hint shows near the Card shop
  * the first time that the Town shows with Player level 2 or more, and it
  * closes when the Town closes. The Workshop (level 3) and Craft (level 6)
- * Hints show near the Workshop in the same way, one after the other, and
- * the Dungeons Hint (level 10) near the cave, or near the Dungeons shortcut
- * when the screen crops the cave. The Heynspire Hint shows near the tower
+ * Hints show near the Workshop in the same way, one after the other, the
+ * Seaport Hint (level 8) near the Seaport quay, and the Dungeons Hint
+ * (level 10) near the cave. The Seaport and Dungeons Hints point at their
+ * shortcuts when the screen crops their Buildings. The Heynspire Hint shows near the tower
  * the first time that the Town shows after the first win of the last Boss
  * Stage, which opens Heynspire. These Hints go before the Deck builder
  * Hint. The
@@ -166,6 +167,9 @@ export const useTownHints = (active: boolean, inTown: boolean) => {
   const craft = active && inTown && isUnlocked(level, "craft");
   useAnchoredHint("craft", craft);
   useCloseWhenInactive("craft", craft);
+  const seaport = active && inTown && isUnlocked(level, "seaport");
+  useAnchoredHint("seaport", seaport);
+  useCloseWhenInactive("seaport", seaport);
   const dungeons = active && inTown && isUnlocked(level, "dungeon1");
   useAnchoredHint("dungeons", dungeons);
   useCloseWhenInactive("dungeons", dungeons);

@@ -45,17 +45,27 @@ const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
     "[data-hint-anchor='dungeon-sweep-row']:not([data-entering] *)",
   tower: "[data-testid='building-heynspire']",
   achievementsShortcut: "[data-testid='town-shortcut-achievements']",
+  quay: "[data-testid='building-seaport']",
 };
 
-/** The Dungeons shortcut: the Dungeons Hint points at it when the screen crops the cave. */
-const DUNGEONS_SHORTCUT = "[data-testid='town-shortcut-dungeons']";
+/**
+ * The shortcut of each Building at the edge of the Town painting: its Hint
+ * points at it when the screen crops the Building (GDD 11.4).
+ */
+const EDGE_SHORTCUT: Partial<Record<HintPlace, string>> = {
+  cave: "[data-testid='town-shortcut-dungeons']",
+  quay: "[data-testid='town-shortcut-seaport']",
+};
 
 /**
- * True when the center of the cave is on the screen. The cave is at the edge
- * of the Town painting, so a narrow screen crops it (GDD 11.4).
+ * True when the center of the Building at `place` is on the screen. The cave
+ * and the Seaport quay are at the edge of the Town painting, so a narrow
+ * screen crops them (GDD 11.4).
  */
-const caveInView = (): boolean => {
-  const box = document.querySelector(HINT_ANCHOR.cave)?.getBoundingClientRect();
+const buildingInView = (place: HintPlace): boolean => {
+  const box = document
+    .querySelector(HINT_ANCHOR[place])
+    ?.getBoundingClientRect();
   if (!box) {
     return false;
   }
@@ -108,8 +118,9 @@ export const hintAnchor = (place: HintPlace): string => {
   if (place === "dungeonSweepRow" && isShortScreen()) {
     return DUNGEON_SWEEP_BUTTON;
   }
-  if (place === "cave" && !caveInView()) {
-    return DUNGEONS_SHORTCUT;
+  const shortcut = EDGE_SHORTCUT[place];
+  if (shortcut !== undefined && !buildingInView(place)) {
+    return shortcut;
   }
   return HINT_ANCHOR[place];
 };
@@ -120,6 +131,7 @@ const TOWN_BUILDING_PLACES: ReadonlySet<HintPlace> = new Set([
   "workshop",
   "cave",
   "tower",
+  "quay",
 ]);
 
 /**
@@ -282,7 +294,8 @@ type ShortcutHint =
   | "gear"
   | "dungeons"
   | "heynspire"
-  | "achievements";
+  | "achievements"
+  | "seaport";
 
 type SealShortcut =
   | "deck"
@@ -291,7 +304,8 @@ type SealShortcut =
   | "hero"
   | "dungeons"
   | "heynspire"
-  | "achievements";
+  | "achievements"
+  | "seaport";
 
 const SHORTCUT_OF: Readonly<Record<ShortcutHint, SealShortcut>> = {
   deckBuilder: "deck",
@@ -303,6 +317,7 @@ const SHORTCUT_OF: Readonly<Record<ShortcutHint, SealShortcut>> = {
   dungeons: "dungeons",
   heynspire: "heynspire",
   achievements: "achievements",
+  seaport: "seaport",
 };
 
 /** The glyph of a shortcut while its painted icon does not exist. */
@@ -314,6 +329,7 @@ const SHORTCUT_GLYPH: Readonly<Record<SealShortcut, Glyph>> = {
   dungeons: "cave",
   heynspire: "tower",
   achievements: "banner",
+  seaport: "anchor",
 };
 
 /** The subject of a Hint, with the icon that the game already shows for it. */
@@ -354,7 +370,8 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
     case "gear":
     case "dungeons":
     case "heynspire":
-    case "achievements": {
+    case "achievements":
+    case "seaport": {
       const shortcut = SHORTCUT_OF[hint];
       const painted = paintedIcon(shortcut);
       return painted ? (

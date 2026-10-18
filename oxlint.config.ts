@@ -81,5 +81,7 @@ export default defineConfig({
     "**/repos",
     "**/.impeccable",
     "**/docs",
+    // Scratch scripts of a debugging session; they are not part of the app.
+    "**/.tmp-*.ts",
   ],
 });

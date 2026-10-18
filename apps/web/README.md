@@ -118,7 +118,7 @@ Priest:
 
 New features:
 
-1. implement issue 112 -> implement issue 113 and implement issue 114
+1. /impeccable shape i want to have different types of expeditions in Seaport, first is money-based, experience-based, essence-based, forge stone-based, and everything can be chosen with time 6h/12h/24h/48h
 1. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 1. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
@@ -147,7 +147,6 @@ v2:
 ## Original Gameplay Ideas
 
 - The original had 4 classes, 11 races, 7 ranks, hybrids, awakening, hero gear and more than 900 cards.
-- The original's card progression was a long chase. Combine (2 or more copies give 1 card of the next rank, and the combine can fail), Extract, Fuse with rotating recipes, Enhance, city buildings, Energy, VIP.
 - Target fight length is 3 to 6 minutes at speed ×1
 - The original had 7 damage types and an action order of 11 steps
 - The original deck had 15 to 30 cards (new players started at 5 to 10, and the limits went up by 1 each level). A deck could hold at most 3 copies of a card. Skill cards had to match your class.

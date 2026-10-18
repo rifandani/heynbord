@@ -386,7 +386,8 @@ test.describe("Dungeons screen", () => {
   }) => {
     await openTown(page, LEVEL_10_XP);
     const hint = page.getByTestId("hint");
-    // The level Hints show one after the other: Packs, Workshop, Craft, then Dungeons.
+    // The level Hints show one after the other: Packs, Workshop, Craft,
+    // Seaport, then Dungeons.
     const closeHint = async (shown: string) => {
       await expect(hint).toHaveAttribute("data-hint", shown, {
         timeout: 10_000,
@@ -396,6 +397,7 @@ test.describe("Dungeons screen", () => {
     await closeHint("packs");
     await closeHint("workshop");
     await closeHint("craft");
+    await closeHint("seaport");
     await expect(hint).toHaveAttribute("data-hint", "dungeons");
     await expect(hint).toContainText("The Dungeons are open.");
     await page.getByTestId("hint-read-more").click();

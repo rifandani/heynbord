@@ -36,7 +36,7 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Card shop | x 1010 to 1209, y 436 to 612 | The selectable box of the Card shop: the house with the purple roof, its awnings and its stalls. The box covers the right tower of the Town Gate at its lower left, so the game cuts that corner from the selectable area, and the pointer there selects the Town Gate. |
 | Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Packs" here, above the purple roof. |
 | Market (Bazaar) | x 1210 to 1526, y 366 to 505 | The selectable box of the Market: the tents, the stalls and the fountain of the market square, above the Workshop and right of the Card shop. Its box is the part of the square in the safe area: a 4:3 screen crops the blue awning and the red tent at its right (to x 1645), so the box ends at x 1526, the right edge of the Workshop label. It stops at the top of the Workshop label (y 505), so that label keeps the pointer. |
-| Market label | x 1210 to 1526, y 320 to 366 | The game writes "Bazaar" here, above the tents, under the Balance Plate corner (y 320). |
+| Market label | x 1210 to 1526, y 320 to 366 | The game writes "Bazaar" here, above the tents, under the Balance Plate corner (y 180). |
 | Workshop | x 1318 to 1745, y 551 to 705 | The selectable box of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. With its label, the box starts at y 505, and its light goes up to y 480, the top of the chimney. Its `clip` follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
 | Workshop label | x 1318 to 1526, y 505 to 551 | The game writes "Workshop" here, on the top edge of the forge roof, over the left part of the Workshop, in the safe area. It is below the Market stalls, so it does not cover them. |
 | Barracks | x 91 to 555, y 344 to 526 | The selectable box of the Barracks: the round tower, the long building with the blue roof, the training yard with the dummies and the fence. With its label, the box starts at y 298, and its light goes up to y 320. Its `clip` follows the roofs and the fence. Only its right part (from x 374) is in the safe area: a 4:3 screen crops the tower, the left wing and the label. |
@@ -47,8 +47,9 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Heynspire label | x 540 to 760, y 138 to 184 | The game writes "Heynspire" here, on the walls of the castle, at the top of the safe area. |
 | Hall of banners | x 790 to 1090, y 296 to 390 | The selectable box of the Hall of banners: the front of the hall with its long banners and its arched door. It stops at the top of the Card shop label (y 390), so that label keeps the pointer. The hover light goes down over the steps and the trophies (x 770 to 1110, y 226 to 456). |
 | Hall of banners label | x 800 to 1080, y 250 to 296 | The game writes "Achievements" here, on the red roofs of the hall. It is under the Heynspire hill and right of the Heynspire box (x 540 to 760), so the two labels never touch. It is far above the Town Gate label (y 557 to 603). |
-| Seaport quay | x 1630 to 1900, y 320 to 460 | The box of the Seaport quay (2.10): the two long piers, the lower part of the big ship, the small ship, the quay along the wall and the towers with the blue roofs. It is under the Balance Plate corner: the sails of the big ship and the top of the tall tower go up into that corner, and the box stops at y 320. It is outside the safe area, as the Dungeons cave is: a 4:3 or a 16:10 screen crops almost all of it, and a 19.5:9 phone shows all of it. GDD 11.4 permits it, because the Seaport shortcut opens the screen on all screens. The Building sets its label, its hit box and its light inside this box. |
-| Balance Plate corner | x 1280 to 1900, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
+| Seaport quay | x 1590 to 1900, y 242 to 426 | The box of the Seaport quay (2.10): the tall towers, the big ship, the two long piers, the small ship, the quay along the wall and the round tower with the blue roof. With its label, the box starts at y 196, and its light goes up to y 190, over the flag of the big ship. It is outside the safe area, as the Dungeons cave is: a 4:3 or a 16:10 screen crops almost all of it, and a 19.5:9 phone shows all of it. GDD 11.4 permits it, because the Seaport shortcut opens the screen on all screens. The Building sets its label, its hit box and its light inside this box. |
+| Seaport quay label | x 1610 to 1900, y 196 to 242 | The game writes "Seaport" here, in the sky above the big ship, under the Balance Plate corner (y 180). A 4:3 or a 16:10 screen crops it. |
+| Balance Plate corner | x 1280 to 1900, y 0 to 180 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it goes down to about y 122. This box is that area with a margin. Do not put a selectable Building or its label in it. |
 | Sky | Above the safe area | A screen wider than about 2.2:1 above the Town Bar crops it first. On a 19.5:9 phone, the top of the Heynspire is also cropped. |
 | Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here. The Barracks label and the Dungeons cave are the selectable parts here (see their rows). |
 
@@ -208,7 +209,7 @@ No screen · Decoration only
 | Props | Crates, barrels, bollards with coiled ropes, gulls. |
 | Silhouette hook | The big ship with white sails at the end of the pier. |
 | Humor note | A gull steals a fish from an open crate on the quay. |
-| Position | The upper right, under the Balance Plate corner. In the current painting, it is at x 1630 to 1900 (box in 1.2). It is outside the safe area, so a narrow screen crops it, and the Seaport shortcut is the sure way in. |
+| Position | The upper right, under the Balance Plate corner. In the current painting, it is at x 1590 to 1900 (box in 1.2). It is outside the safe area, so a narrow screen crops it, and the Seaport shortcut is the sure way in. |
 | Export | No separate export: the quay is a part of the master painting, and the current painting already has it. The quay opens the Seaport screen ([Economy 2.8](./07-economy.md#28-seaport-expeditions)) at Player level 8; below that level, a Lock Plate replaces its label. The Seaport screen is section 17. |
 
 ## 3. Prompts
@@ -289,7 +290,7 @@ Each icon prompt has the rules of 7.1 and the subject line of the icon in `scrip
 
 ### 7.3 Icon subjects
 
-In the order of `TOWN_SHORTCUTS`, then the Settings button. The `seaport` icon comes before its shortcut: the Seaport screen adds the shortcut to `TOWN_SHORTCUTS` at its place in this table.
+In the order of `TOWN_SHORTCUTS`, then the Settings button. The `seaport` shortcut comes after the `dungeons` shortcut and before the `deck` shortcut.
 
 | Shortcut | Building | Object |
 | --- | --- | --- |

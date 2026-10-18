@@ -26,9 +26,9 @@ describe("EXPEDITIONS (Economy 2.8)", () => {
       ])
     ).toEqual([
       ["coastalRun", 4, 8, 30, 0, 0, null],
-      ["tradeRoute", 12, 12, 40, 2, 0, null],
-      ["longVoyage", 24, 18, 50, 2, 2, null],
-      ["grandExpedition", 48, 24, 60, 2, 3, { tier: "epic", count: 1 }],
+      ["tradeRoute", 12, 12, 40, 1, 0, null],
+      ["longVoyage", 24, 18, 50, 1, 2, null],
+      ["grandExpedition", 48, 24, 60, 1, 3, { tier: "epic", count: 1 }],
     ]);
   });
 
@@ -52,9 +52,9 @@ describe("EXPEDITIONS (Economy 2.8)", () => {
       })
     ).toEqual([
       [720, 0, 0],
-      [960, 48, 0],
-      [1200, 48, 48],
-      [1440, 48, 72],
+      [960, 24, 0],
+      [1200, 24, 48],
+      [1440, 24, 72],
     ]);
   });
 
@@ -82,7 +82,7 @@ describe("expeditionReward (Economy 2.8)", () => {
     expect(expeditionReward(coastalRun, 2 * 60_000 - 1).coin).toBe(0);
     expect(expeditionReward(grandExpedition, 90 * 60_000)).toMatchObject({
       coin: 90,
-      xp: 3,
+      xp: 1,
       essence: 4,
     });
   });
@@ -118,7 +118,7 @@ describe("expeditionReward (Economy 2.8)", () => {
     });
     expect(expeditionReward(grandExpedition, durationMs)).toEqual({
       coin: 2880,
-      xp: 96,
+      xp: 48,
       essence: 144,
       forgeStones: { tier: "epic", count: 1 },
       complete: true,

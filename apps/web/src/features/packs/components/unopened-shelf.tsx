@@ -126,6 +126,7 @@ export const UnopenedShelf = ({
       aria-label={tr("packs.unopened.label")}
       className={cn(PLATE, "gap-1.5 p-1 pr-1.5")}
       data-testid="unopened-shelf"
+      data-shop-avoid="right"
     >
       <span className="px-1.5 text-xs leading-tight font-bold text-[#ffe08a] max-[1099px]:sr-only">
         {tr("packs.unopened.label")}

@@ -4,6 +4,7 @@ import { ownedCopies } from "../collection/deck-building";
 import type { Collection } from "../collection/deck-building";
 import { CARDS, getCard } from "../content/cards";
 import { DUNGEON_REWARDS, getDungeon } from "../content/dungeons";
+import { HOUR_MS } from "../content/expeditions";
 import { getFloor } from "../content/floors";
 import { NO_FORGE_STONES } from "../content/forge-stones";
 import { HEYNSPIRE_FLOORS } from "../content/heynspire";
@@ -13,19 +14,26 @@ import { UNLOCK_LEVELS } from "../content/unlocks";
 import { EXTRACT_ESSENCE, FUSE_ESSENCE } from "../content/workshop";
 import { dungeonCardPool } from "../profile/dungeon-result";
 import { discoveredCards } from "../profile/packs";
+import { AT_BERTH } from "../profile/seaport";
 import { findStage, stageCardPool } from "../profile/stage-result";
 import {
+  bestExpedition,
   campaignSweep,
   claimAchievements,
+  collectExpeditionAt,
+  dispatchExpeditionAt,
   dungeonSweep,
   economyStages,
+  expeditionCoinPerDay,
   expectedFloorGear,
   expectedGear,
   expectedGearAtLevel,
   heynstoneLedger,
   judgePacing,
+  INCOME_KINDS,
   MAX_REPEAT_BATTLES,
   newEconomyPlayer,
+  NO_INCOME,
   PACING_TARGETS,
   pacingTarget,
   PLAY_STYLES,
@@ -759,6 +767,131 @@ describe("dungeonSweep (Economy 2.4, 7.1)", () => {
   });
 });
 
+describe("the Seaport of the simulated Player (Economy 2.8, 7.1)", () => {
+  const DAY_MS = 24 * HOUR_MS;
+
+  it("gives the Coin for each day of each Expedition on the play calendar: a voyage of 48 hours takes 2 days", () => {
+    expect(
+      [8, 12, 18, 24].map((level) => {
+        const expedition = bestExpedition(level);
+        return [expedition?.id, expedition && expeditionCoinPerDay(expedition)];
+      })
+    ).toEqual([
+      ["coastalRun", 120],
+      ["tradeRoute", 480],
+      ["longVoyage", 1200],
+      ["grandExpedition", 1440],
+    ]);
+    expect(bestExpedition(UNLOCK_LEVELS.seaport - 1)).toBeNull();
+  });
+
+  it("Dispatches the best Expedition at the end of a session, and Collects it at the start of the next", () => {
+    const player = playerAt(18, 0);
+    const { xp } = player;
+    dispatchExpeditionAt(player, 0);
+    expect(player.seaport).toEqual({
+      expeditionId: "longVoyage",
+      startedAt: 0,
+    });
+    expect(collectExpeditionAt(player, DAY_MS)).toBe(true);
+    expect(player).toMatchObject({
+      coin: 1200,
+      xp: xp + 24,
+      essence: 48,
+      seaport: AT_BERTH,
+    });
+    const income = { coin: 1200, xp: 24, essence: 48, epicStones: 0 };
+    expect(player.seaportIncome).toEqual(income);
+    expect(player.income).toEqual(income);
+  });
+
+  it("lets a ship that is not back sail on, so the Grand Expedition gives its Epic Forge Stone", () => {
+    const player = playerAt(24, 0, NO_FORGE_STONES);
+    dispatchExpeditionAt(player, 0);
+    expect(collectExpeditionAt(player, DAY_MS + HOUR_MS)).toBe(false);
+    expect(player.coin).toBe(0);
+    expect(player.seaport.expeditionId).toBe("grandExpedition");
+    // The next session starts after 1 hour of play and 1 more day away.
+    expect(collectExpeditionAt(player, 2 * DAY_MS + 2 * HOUR_MS)).toBe(true);
+    expect(player.forgeStones.epic).toBe(1);
+    expect(player.seaportIncome).toEqual({
+      coin: 2880,
+      xp: 48,
+      essence: 144,
+      epicStones: 1,
+    });
+  });
+
+  it("loses nothing on a late Collect: the reward stops at the duration", () => {
+    const player = playerAt(UNLOCK_LEVELS.seaport, 0);
+    dispatchExpeditionAt(player, 0);
+    expect(collectExpeditionAt(player, 9 * DAY_MS)).toBe(true);
+    expect(player.coin).toBe(120);
+  });
+
+  it("Dispatches nothing below the Seaport unlock, and does not change a ship that is out", () => {
+    const below = playerAt(UNLOCK_LEVELS.seaport - 1, 0);
+    dispatchExpeditionAt(below, 0);
+    expect(below.seaport).toEqual(AT_BERTH);
+    expect(collectExpeditionAt(below, DAY_MS)).toBe(false);
+    const out = playerAt(UNLOCK_LEVELS.seaport, 0);
+    dispatchExpeditionAt(out, 0);
+    out.xp = PLAYER_LEVEL_XP.at(-1) ?? 0;
+    dispatchExpeditionAt(out, HOUR_MS);
+    expect(out.seaport).toEqual({ expeditionId: "coastalRun", startedAt: 0 });
+  });
+
+  it("stops the XP at level 30, and counts only the XP that the Player got", () => {
+    const player = playerAt(30, 0);
+    dispatchExpeditionAt(player, 0);
+    collectExpeditionAt(player, 2 * DAY_MS);
+    expect(player.xp).toBe(PLAYER_LEVEL_XP.at(-1));
+    expect(player.seaportIncome).toMatchObject({ coin: 2880, xp: 0 });
+  });
+
+  it("sends the ship between the sessions of a run from level 8, and Collects only full voyages", () => {
+    const run = simulateEconomyRun({ playStyle: "balanced", seed: 1 });
+    expect(run.checkpoints.region1?.level).toBeLessThan(UNLOCK_LEVELS.seaport);
+    expect(run.checkpoints.region1?.seaportIncome).toEqual(NO_INCOME);
+    let previous = NO_INCOME;
+    for (const id of [
+      "region2",
+      "region3",
+      "region4",
+      "region5",
+      "floor50",
+    ] as const) {
+      const snap = run.checkpoints[id];
+      if (snap === null) {
+        throw new Error(`The run did not get to ${id}`);
+      }
+      for (const kind of INCOME_KINDS) {
+        expect(snap.seaportIncome[kind]).toBeGreaterThanOrEqual(previous[kind]);
+        expect(snap.seaportIncome[kind]).toBeLessThanOrEqual(snap.income[kind]);
+      }
+      // Each full voyage gives a multiple of 120 Coin, and one session each
+      // day gives at most 1,440 Coin for each day. The hours are the days.
+      expect(snap.seaportIncome.coin % 120).toBe(0);
+      expect(snap.seaportIncome.coin).toBeLessThanOrEqual(snap.hours * 1440);
+      previous = snap.seaportIncome;
+    }
+    expect(run.end.seaportIncome.coin).toBeGreaterThan(0);
+    expect(run.end.seaportIncome.epicStones).toBeGreaterThan(0);
+    // A supplement: less than a third of the Coin.
+    expect(run.end.seaportIncome.coin * 3).toBeLessThan(run.end.income.coin);
+  });
+
+  it("sends no ship on the First-try run", () => {
+    const run = simulateEconomyRun({
+      playStyle: "balanced",
+      seed: 1,
+      firstTry: true,
+    });
+    expect(run.end.seaportIncome).toEqual(NO_INCOME);
+    expect(run.end.income.coin).toBeGreaterThan(0);
+  });
+});
+
 describe("pacingTarget (Economy 4)", () => {
   it('has no "All cards Discovered" target at Floor 50 for the Upgrader', () => {
     expect(pacingTarget("floor50", "upgrader").discoveredShare).toBeUndefined();
@@ -791,6 +924,18 @@ describe("simulateEconomy (Economy 7.1)", () => {
     expect(report.firstTry.checkpoints.region5?.repeatBattles).toBe(0);
     expect(report.stuck).toBe(0);
     expect(report.level30BeforeFloor50).toBeLessThanOrEqual(3);
+  });
+
+  it("reports the Seaport income and its share of the income from all sources", () => {
+    const report = simulateEconomy("upgrader", { seeds: 3 });
+    expect(report.checkpoints.region1.seaport?.coin.amount.median).toBe(0);
+    const coin = report.checkpoints.floor50.seaport?.coin;
+    expect(coin?.amount.median).toBeGreaterThan(0);
+    expect(coin?.share.median).toBeGreaterThan(0);
+    expect(coin?.share.median).toBeLessThan(1);
+    expect(
+      report.checkpoints.floor50.seaport?.epicStones.amount.median
+    ).toBeGreaterThan(0);
   });
 
   it("counts the Players at the repeat cap", () => {

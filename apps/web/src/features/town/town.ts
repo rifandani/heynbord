@@ -16,7 +16,8 @@ export type GameScreen =
   | "dungeons"
   | "heynspire"
   | "achievements"
-  | "bazaar";
+  | "bazaar"
+  | "seaport";
 
 /** A box in Town painting coordinates. */
 export interface Rect {
@@ -81,13 +82,14 @@ export const overlaps = (a: Rect, b: Rect): boolean =>
 
 /**
  * The part of the painting that the Balance Plate covers at the top right of a
- * 19.5:9 phone (11 — Town Concepts 1.2). No selectable Building goes here.
+ * 19.5:9 phone (11 — Town Concepts 1.2), with a margin: the plate goes down to
+ * about y 122 there. No selectable Building goes here.
  */
 export const BALANCE_PLATE_CORNER: Rect = {
   x: 1280,
   y: 0,
   width: 620,
-  height: 320,
+  height: 180,
 };
 
 /** A Building that the Player can select, with its box and its label. */
@@ -100,7 +102,8 @@ export interface SelectableBuilding {
     | "barracks"
     | "cave"
     | "heynspire"
-    | "hall";
+    | "hall"
+    | "seaport";
   readonly screen: GameScreen;
   /** The Building in the painting, in painting coordinates. */
   readonly rect: Rect;
@@ -161,7 +164,7 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     // shop. Its box is the part of the square in the safe area: a 4:3 screen
     // crops the blue awning and the red tent at its right, so the box ends at
     // x 1526, the edge of the Workshop label. Its label is above the tents
-    // and under the Balance Plate corner (y 320), so the two never touch.
+    // and under the Balance Plate corner (y 180), so the two never touch.
     // The box stops at the top of the Workshop label (y 505), so that label
     // keeps the pointer.
     id: "bazaar",
@@ -250,6 +253,21 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     label: { x: 800, y: 250, width: 280, height: 46 },
     glow: { x: 770, y: 226, width: 340, height: 230 },
   },
+  {
+    // The Seaport quay (11 — Town Concepts 2.10): the harbour at the right
+    // edge of the painting, with the tall towers, the big ship, the two piers
+    // and the small ship. It is outside the safe area, as the Dungeons cave
+    // is: a narrow screen crops it, and the Seaport shortcut opens the screen
+    // on all screens (GDD 11.4). Its label is in the sky above the big ship,
+    // below the Balance Plate corner (y 180). The light also covers the flag
+    // of the big ship and the round tower at the left of the box.
+    id: "seaport",
+    screen: "seaport",
+    unlock: "seaport",
+    rect: { x: 1590, y: 242, width: 310, height: 184 },
+    label: { x: 1610, y: 196, width: 290, height: 46 },
+    glow: { x: 1570, y: 190, width: 330, height: 250 },
+  },
 ];
 
 /**
@@ -259,6 +277,7 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
 export const EDGE_BUILDINGS: ReadonlySet<SelectableBuilding["id"]> = new Set([
   "barracks",
   "cave",
+  "seaport",
 ]);
 
 /**
@@ -271,6 +290,7 @@ export interface TownShortcut {
     | "campaign"
     | "heynspire"
     | "dungeons"
+    | "seaport"
     | "deck"
     | "workshop"
     | "packs"
@@ -372,6 +392,7 @@ export const TOWN_SHORTCUTS: readonly TownShortcut[] = [
   { id: "campaign", screen: "campaign" },
   { id: "heynspire", screen: "heynspire", unlock: "heynspire" },
   { id: "dungeons", screen: "dungeons", unlock: "dungeon1" },
+  { id: "seaport", screen: "seaport", unlock: "seaport" },
   // The Deck builder is a dialog over the current screen, not a screen.
   { id: "deck", screen: null, dialog: "deck" },
   { id: "workshop", screen: "workshop", unlock: "combine" },

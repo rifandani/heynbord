@@ -68,6 +68,7 @@ import { PacksScreen } from "@/features/packs/components/packs-screen";
 import { profileReadyAtom } from "@/features/profile/profile.atoms";
 import { useProfileStore } from "@/features/profile/use-profile-store";
 import { useReplayLink } from "@/features/replay/use-replay-link";
+import { SeaportScreen } from "@/features/seaport/components/seaport-screen";
 import { TownBar } from "@/features/town/components/town-bar";
 import {
   TownScreen,
@@ -438,7 +439,7 @@ const useCampaignRegion = (battle: Battle) => {
 /**
  * The game in one route (web ADR-0006): the Town, the Campaign (the Region
  * Map), then the Battle, Heynspire, the Dungeons, the Packs, the Workshop,
- * the Hero screen and the Achievements screen. The Town Bar shows on each screen except the Battle.
+ * the Hero screen, the Achievements screen, the Bazaar and the Seaport. The Town Bar shows on each screen except the Battle.
  * A Battle goes back to the screen that started it: the Campaign, Heynspire
  * or the Dungeons.
  */
@@ -512,6 +513,7 @@ export const PlayScreen = () => {
           {screen === "hero" ? <HeroScreen /> : null}
           {screen === "achievements" ? <AchievementsScreen /> : null}
           {screen === "bazaar" ? <BazaarScreen /> : null}
+          {screen === "seaport" ? <SeaportScreen /> : null}
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}

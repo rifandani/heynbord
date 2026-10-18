@@ -179,6 +179,22 @@ describe("the Dungeon Sweep Hint (ADR-0041)", () => {
   });
 });
 
+describe("the Seaport Hint", () => {
+  it("opens the Seaport Entry, shows near the Seaport quay, and shows one time", () => {
+    expect(HINT_TARGET.seaport).toEqual({ _tag: "Entry", entry: "seaport" });
+    expect(HINT_PLACE.seaport).toBe("quay");
+    expect(getEntry("seaport").chapter).toBe("progress");
+    expect(nextHint(["seaport"], [])).toBe("seaport");
+    expect(nextHint(["seaport"], ["seaport"])).toBeNull();
+  });
+
+  it("says what the Seaport does, in en-US", () => {
+    expect(enUS.hints.seaport).toBe(
+      "The Seaport sends ships on Expeditions. Dispatch a ship before you leave, and collect Coin, XP, Essence and Forge Stones when it is back."
+    );
+  });
+});
+
 describe("hasCardOutOfDecks", () => {
   const owned = [
     { cardId: creatureId, rank: "common", copies: 2 },

@@ -11,6 +11,7 @@ import {
   overlaps,
   GROUND_LINE,
   isLocked,
+  PAINTING,
   opensAtLevel,
   paintedIcon,
   percentBox,
@@ -80,19 +81,20 @@ describe("SELECTABLE_BUILDINGS", () => {
     }
   });
 
-  it("keeps the full Town Gate and Card shop in the safe area: only the Workshop, the Barracks and the cave are wider", () => {
+  it("keeps the full Town Gate and Card shop in the safe area: only the Workshop, the Barracks, the cave and the Seaport quay are wider", () => {
     expect(
       SELECTABLE_BUILDINGS.filter(
         (building) => !contains(safeArea(), building.rect)
       ).map((building) => building.id)
-    ).toEqual(["workshop", "barracks", "cave"]);
+    ).toEqual(["workshop", "barracks", "cave", "seaport"]);
   });
 
-  it("puts only the Barracks and the Dungeons cave outside the safe area: their shortcuts are the sure way in (GDD 11.4)", () => {
-    expect([...EDGE_BUILDINGS]).toEqual(["barracks", "cave"]);
+  it("puts only the Barracks, the Dungeons cave and the Seaport quay outside the safe area: their shortcuts are the sure way in (GDD 11.4)", () => {
+    expect([...EDGE_BUILDINGS]).toEqual(["barracks", "cave", "seaport"]);
     for (const [id, shortcut] of [
       ["barracks", "hero"],
       ["cave", "dungeons"],
+      ["seaport", "seaport"],
     ] as const) {
       const building = SELECTABLE_BUILDINGS.find((item) => item.id === id);
       expect(building && contains(safeArea(), building.label), id).toBe(false);
@@ -117,7 +119,36 @@ describe("SELECTABLE_BUILDINGS", () => {
       "dungeons",
       "heynspire",
       "achievements",
+      "seaport",
     ]);
+  });
+
+  it("keeps each Building box and its label inside the painting", () => {
+    const painting = { x: 0, y: 0, ...PAINTING };
+    for (const building of SELECTABLE_BUILDINGS) {
+      expect(contains(painting, building.rect), building.id).toBe(true);
+      expect(contains(painting, building.label), building.id).toBe(true);
+    }
+  });
+
+  it("puts the Seaport quay at the right edge, below the Balance Plate corner, with its label in the sky above the big ship (11 — Town Concepts 2.10)", () => {
+    const quay = SELECTABLE_BUILDINGS.find((item) => item.id === "seaport");
+    expect(quay).toMatchObject({
+      screen: "seaport",
+      unlock: "seaport",
+      rect: { x: 1590, y: 242, width: 310, height: 184 },
+      label: { x: 1610, y: 196, width: 290, height: 46 },
+      glow: { x: 1570, y: 190, width: 330, height: 250 },
+    });
+    expect(quay?.glow && contains({ x: 0, y: 0, ...PAINTING }, quay.glow)).toBe(
+      true
+    );
+    const corner = BALANCE_PLATE_CORNER.y + BALANCE_PLATE_CORNER.height;
+    expect(quay && quay.label.y).toBeGreaterThanOrEqual(corner);
+    expect(quay && quay.rect.x + quay.rect.width).toBe(PAINTING.width);
+    for (const id of ["workshop", "cave", "bazaar"] as const) {
+      expect(overlaps(withLabel("seaport"), withLabel(id)), id).toBe(false);
+    }
   });
 
   it("keeps the Hall of banners clear of the Town Gate, the Card shop and Heynspire, with their labels (Achievements 4)", () => {
@@ -170,7 +201,7 @@ describe("overlaps", () => {
 });
 
 describe("TOWN_SHORTCUTS", () => {
-  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Workshop, the Packs, the Hero screen, the Achievements screen and the Bazaar", () => {
+  it("opens the Town, the Campaign, Heynspire, the Dungeons, the Seaport, the Workshop, the Packs, the Hero screen, the Achievements screen and the Bazaar", () => {
     expect(
       TOWN_SHORTCUTS.filter((shortcut) => shortcut.screen !== null).map(
         (shortcut) => shortcut.id
@@ -180,6 +211,7 @@ describe("TOWN_SHORTCUTS", () => {
       "campaign",
       "heynspire",
       "dungeons",
+      "seaport",
       "workshop",
       "packs",
       "hero",
@@ -293,6 +325,23 @@ describe("level locks (GDD 11.4)", () => {
     }
     expect(dungeons && isLocked(dungeons, at(9))).toBe(true);
     expect(dungeons && isLocked(dungeons, at(10))).toBe(false);
+  });
+
+  it("locks the Seaport and its quay until level 8, and puts its shortcut between the Dungeons and the Deck", () => {
+    const seaport = TOWN_SHORTCUTS.find(
+      (shortcut) => shortcut.id === "seaport"
+    );
+    const quay = SELECTABLE_BUILDINGS.find((item) => item.id === "seaport");
+    for (const screen of [seaport, quay]) {
+      expect(screen && opensAtLevel(screen, 7)).toBe(8);
+      expect(screen && opensAtLevel(screen, 8)).toBeNull();
+    }
+    expect(seaport && isLocked(seaport, at(7))).toBe(true);
+    expect(seaport && isLocked(seaport, at(8))).toBe(false);
+    const ids = TOWN_SHORTCUTS.map((shortcut) => shortcut.id);
+    expect(ids.slice(ids.indexOf("dungeons"), ids.indexOf("deck") + 1)).toEqual(
+      ["dungeons", "seaport", "deck"]
+    );
   });
 
   it("opens the Bazaar at any Player level, with no lock, from the Market (11.4)", () => {

@@ -102,7 +102,7 @@ describe("activeExpedition", () => {
     expect(active?.returnsAt).toBe(NOW + 12 * HOUR_MS);
     expect(active?.reward).toEqual({
       coin: 40,
-      xp: 2,
+      xp: 1,
       essence: 0,
       forgeStones: null,
       complete: false,
@@ -128,7 +128,7 @@ describe("collectExpedition (Economy 2.8)", () => {
     const collect = collectExpedition(away, NOW + 6 * HOUR_MS + 59 * 60_000);
     expect(collect?.reward).toEqual({
       coin: 349,
-      xp: 13,
+      xp: 6,
       essence: 13,
       forgeStones: null,
       complete: false,
@@ -136,7 +136,7 @@ describe("collectExpedition (Economy 2.8)", () => {
     expect(collect?.profile).toEqual({
       ...away,
       coin: away.coin + 349,
-      xp: away.xp + 13,
+      xp: away.xp + 6,
       essence: away.essence + 13,
       seaport: AT_BERTH,
     });
@@ -165,7 +165,7 @@ describe("collectExpedition (Economy 2.8)", () => {
     });
     expect(full?.profile).toMatchObject({
       coin: away.coin + 2880,
-      xp: away.xp + 96,
+      xp: away.xp + 48,
       essence: away.essence + 144,
     });
   });
@@ -177,7 +177,7 @@ describe("collectExpedition (Economy 2.8)", () => {
   });
 
   it("gives the levels before and after the XP", () => {
-    // 10 XP below level 19. The full Long Voyage gives 48 XP.
+    // 10 XP below level 19. The full Long Voyage gives 24 XP.
     const xp = (PLAYER_LEVEL_XP[18] ?? 0) - 10;
     const away = startExpedition({ ...newProfile(42), xp }, "longVoyage", NOW);
     const collect = away && collectExpedition(away, NOW + 24 * HOUR_MS);

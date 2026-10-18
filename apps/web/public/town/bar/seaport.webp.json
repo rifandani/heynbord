@@ -1,0 +1,4 @@
+{
+  "prompt": "Tool: GPT Image in ChatGPT (high quality), by the project owner. Prompt: section 10 'seaport' of apps/web/art/town/raw/bar/prompts.md (bun town:prompts, 11 — Town Concepts 7.3), with style-reference.png and set-reference.png attached. Seed: not available. Licence: OpenAI terms of use; the user owns the output, commercial use is permitted. Hand changes: ChatGPT painted a grey checkerboard in place of a transparent background; a script removed it (the neutral grey pixels connected to the edge, and the closed two-tone holes in the rigging) and kept the ship as it is. Then the icon was trimmed, scaled to fit 124 x 124 and put on a 128 x 128 transparent canvas, 2 px above the bottom edge. Original: apps/web/art/town/raw/seaport/seaport-icon.webp. Source: apps/web/art/town/bar/seaport-icon.webp.\n",
+  "createdAt": "2026-10-18T13:28:17.000Z"
+}

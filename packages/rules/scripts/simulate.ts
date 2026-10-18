@@ -47,8 +47,9 @@
  *   chance for each Battle.
  *   The Players repeat each Stage for 3 Stars and use their Sweep Tickets
  *   (Economy 7.1, ADR-0046). `battles` is the number of seeds for each Play
- *   Style. It reports the Economy 4 checkpoints, the Stars, repeat Battles and
- *   Sweeps, and the Heynstone ledger. The Player level targets are on the
+ *   Style. A play calendar of 1 hour each day sends the ship of the Seaport
+ *   between the sessions. It reports the Economy 4 checkpoints, the Stars,
+ *   repeat Battles and Sweeps, the Seaport income, and the Heynstone ledger. The Player level targets are on the
  *   First-try run only. `--check` judges each Pacing target that applies to
  *   the Play Style: the median of the Players, the level of the First-try run,
  *   or a share of the Players. A miss of a gated target fails the check. A
@@ -86,11 +87,14 @@ import {
   expectedGear,
   expectedGearAtLevel,
   heynstoneLedger,
+  HOURS_AWAY,
+  INCOME_KINDS,
   judgePacing,
   MAX_BATTLES,
   MAX_REPEAT_BATTLES,
   METRICS,
   pacingTarget,
+  PLAY_MINUTES_PER_DAY,
   PLAY_STYLES,
   REPEAT_METRICS,
   simulateEconomy,
@@ -837,6 +841,25 @@ if (modes.includes("economy")) {
       })
     );
     console.log(
+      "Seaport income (Economy 2.8). Cells: median (10th–90th percentile), then the median share of the income of that kind from all sources"
+    );
+    console.table(
+      CHECKPOINTS.map((id) => {
+        const { seaport } = report.checkpoints[id];
+        return {
+          checkpoint: id,
+          ...Object.fromEntries(
+            INCOME_KINDS.map((kind) => [
+              kind,
+              seaport === null
+                ? "—"
+                : `${spreadWith((value) => value.toFixed(0), seaport[kind].amount)}, ${percent(seaport[kind].share.median)}`,
+            ])
+          ),
+        };
+      })
+    );
+    console.log(
       `Stuck Players (below level 30 or without the Floor 50 win after ${MAX_BATTLES} Battles): ${report.stuck}/${report.seeds}`
     );
     const early = pacingTarget("level30", playStyle).level30BeforeFloor50;
@@ -857,6 +880,9 @@ if (modes.includes("economy")) {
   }
   console.log(
     "\nPacks of each Play Style: collector merchant (royal after Region 2), upgrader peddler, balanced merchant."
+  );
+  console.log(
+    `Play calendar: ${PLAY_MINUTES_PER_DAY} minutes of play each day, then ${HOURS_AWAY} hours away, so the hours are also the days. Each Player Dispatches the best Expedition of its level at the end of a session and Collects it at the start of the first session after the ship is back. The First-try run sends no ship.`
   );
   const ledger = heynstoneLedger();
   console.log("\nHeynstone ledger (one-time sources, Economy 2.6)");

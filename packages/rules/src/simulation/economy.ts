@@ -3,8 +3,10 @@
  * Player level 30 and the Floor 50 win, with a win chance and a 3-Star chance
  * for each Battle. It does not play Battles. Each Player plays each Stage of
  * a Region again until it has 3 Stars (ADR-0046), and uses its Sweep Tickets.
- * Each Player has one Play Style, which sets how it spends Coin. The report gives the values at
- * each checkpoint of Economy 4. The seeds count up from 1, so the same content
+ * Each Player has one Play Style, which sets how it spends Coin. A play
+ * calendar turns the Battles into days, so the Player also sends the ship of
+ * the Seaport between its sessions. The report gives the values at each
+ * checkpoint of Economy 4. The seeds count up from 1, so the same content
  * always gives the same report.
  */
 import { ownedCopies } from "../collection/deck-building";
@@ -20,10 +22,16 @@ import {
   dungeonReward,
 } from "../content/dungeons";
 import type { DungeonRewardDefinition } from "../content/dungeons";
+import {
+  EXPEDITIONS,
+  expeditionDurationMs,
+  expeditionReward,
+  HOUR_MS,
+} from "../content/expeditions";
+import type { ExpeditionDefinition } from "../content/expeditions";
 import { floorRecommendedLevels } from "../content/floors";
 import {
   addForgeStoneRewards,
-  addForgeStones,
   NO_FORGE_STONES,
   regionForgeStoneTier,
   stageForgeStones,
@@ -93,6 +101,12 @@ import {
 } from "../profile/dungeon-result";
 import { NO_TALLIES } from "../profile/new-profile";
 import { addCopies, discoveredCards } from "../profile/packs";
+import type { SeaportState } from "../profile/schema";
+import {
+  activeExpedition,
+  AT_BERTH,
+  startExpedition,
+} from "../profile/seaport";
 import {
   CAMPAIGN_SWEEP_TICKETS_PER_WIN,
   repeatWinCard,
@@ -126,6 +140,25 @@ export const PLAY_STYLES: readonly PlayStyle[] = [
 
 /** One Battle with the time in menus, in minutes (Economy 7.1). */
 const BATTLE_MINUTES = 8;
+
+/**
+ * The play calendar (Economy 4, 7.1): the median Player plays 1 hour each
+ * day. A session ends after the Battle that gets the play time to the next
+ * full hour, so a session has 7 or 8 Battles, and the hours of play are also
+ * the days of the calendar.
+ */
+export const PLAY_MINUTES_PER_DAY = 60;
+
+/** The full play days that `battles` Battles fill. */
+const playDays = (battles: number): number =>
+  Math.floor((battles * BATTLE_MINUTES) / PLAY_MINUTES_PER_DAY);
+
+/**
+ * The time away from the end of a session to the start of the next, in hours
+ * (Economy 7.1). It is 1 full day, so a voyage of 24 hours is back at the next
+ * session and a voyage of 48 hours at the session after it.
+ */
+export const HOURS_AWAY = 24;
 
 /**
  * A Player that is not at level 30, or did not win Floor 50, after this many
@@ -400,6 +433,37 @@ export const pacingTarget = (
   );
 };
 
+/**
+ * The Coin, the XP, the Essence and the Epic Forge Stones that a Player got
+ * (Economy 7.1). The report compares the Seaport part with all sources.
+ */
+export interface Income {
+  /** In Copper. */
+  readonly coin: number;
+  readonly xp: number;
+  readonly essence: number;
+  readonly epicStones: number;
+}
+
+export const NO_INCOME: Income = { coin: 0, xp: 0, essence: 0, epicStones: 0 };
+
+/** The kinds of income, in the order of the report. */
+export type IncomeKind = keyof Income;
+
+export const INCOME_KINDS: readonly IncomeKind[] = [
+  "coin",
+  "xp",
+  "essence",
+  "epicStones",
+];
+
+const addIncome = (left: Income, right: Income): Income => ({
+  coin: left.coin + right.coin,
+  xp: left.xp + right.xp,
+  essence: left.essence + right.essence,
+  epicStones: left.epicStones + right.epicStones,
+});
+
 /** The values of a Player at a checkpoint (Economy 7.1). */
 export interface CheckpointSnapshot {
   readonly battles: number;
@@ -434,6 +498,10 @@ export interface CheckpointSnapshot {
   /** The Dungeon Sweep Tickets that the Player used and that it has. */
   readonly dungeonTicketsUsed: number;
   readonly dungeonSweepTickets: number;
+  /** All that the Player got, from all sources. The XP stops at level 30. */
+  readonly income: Income;
+  /** The part of `income` that came from the Seaport (Economy 2.8). */
+  readonly seaportIncome: Income;
 }
 
 /**
@@ -501,6 +569,12 @@ export interface EconomyPlayer {
   completedAchievements: readonly string[];
   /** The IDs of the Claimed Achievements. The sim claims each one at once. */
   claimedAchievements: readonly string[];
+  /** The ship of the Seaport (Economy 2.8). */
+  seaport: SeaportState;
+  /** All that the Player got, from all sources. */
+  income: Income;
+  /** The part of `income` that came from the Seaport. */
+  seaportIncome: Income;
 }
 
 /** The Player level of `player`. */
@@ -545,6 +619,9 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     floorsWon: 0,
     completedAchievements: [],
     claimedAchievements: [],
+    seaport: AT_BERTH,
+    income: NO_INCOME,
+    seaportIncome: NO_INCOME,
   };
   return player;
 };
@@ -602,6 +679,8 @@ const snapshot = (player: EconomyPlayer): CheckpointSnapshot => {
     campaignSweepTickets: player.campaignSweepTickets,
     dungeonTicketsUsed: player.dungeonTicketsUsed,
     dungeonSweepTickets: player.dungeonSweepTickets,
+    income: player.income,
+    seaportIncome: player.seaportIncome,
   };
 };
 
@@ -844,6 +923,10 @@ const extractExtras = (player: EconomyPlayer): void => {
       }
       player.collection = collection;
       player.essence += EXTRACT_ESSENCE[rank];
+      player.income = addIncome(player.income, {
+        ...NO_INCOME,
+        essence: EXTRACT_ESSENCE[rank],
+      });
       player.extracts += 1;
     }
   }
@@ -1012,6 +1095,44 @@ const leastDiscoveredRace = (player: EconomyPlayer): RaceId => {
   return best;
 };
 
+interface BattleReward {
+  /** In Copper. */
+  readonly coin: number;
+  readonly xp: number;
+  readonly essence: number;
+  readonly forgeStones: readonly ForgeStoneReward[];
+}
+
+/**
+ * Gives a reward and adds it to the income of the Player. The XP stops at
+ * level 30. Returns the income of the reward.
+ */
+const giveReward = (player: EconomyPlayer, reward: BattleReward): Income => {
+  const xp = Math.min(
+    player.xp + reward.xp,
+    PLAYER_LEVEL_XP.at(-1) ?? player.xp
+  );
+  const income: Income = {
+    coin: reward.coin,
+    xp: xp - player.xp,
+    essence: reward.essence,
+    epicStones: reward.forgeStones.reduce(
+      (total, stones) =>
+        stones.tier === "epic" ? total + stones.count : total,
+      0
+    ),
+  };
+  player.coin += reward.coin;
+  player.essence += reward.essence;
+  player.forgeStones = addForgeStoneRewards(
+    player.forgeStones,
+    reward.forgeStones
+  );
+  player.xp = xp;
+  player.income = addIncome(player.income, income);
+  return income;
+};
+
 /**
  * Keeps the best Stars of a Stage win, and opens each Star chest that the best
  * Stars of the Region reach (Economy 2.2).
@@ -1028,11 +1149,13 @@ const recordStars = (
   player.stars[index] = total;
   const chests = starChestsFor(total);
   for (const chest of chests.slice(player.openedChests[index] ?? 0)) {
-    player.coin += chest.coin;
-    player.essence += chest.essence;
-    player.forgeStones = addForgeStones(player.forgeStones, {
-      tier: regionForgeStoneTier(stage.region),
-      count: chest.forgeStones,
+    giveReward(player, {
+      coin: chest.coin,
+      xp: 0,
+      essence: chest.essence,
+      forgeStones: [
+        { tier: regionForgeStoneTier(stage.region), count: chest.forgeStones },
+      ],
     });
     if (chest.pack !== null) {
       const pool: PackPool =
@@ -1043,27 +1166,6 @@ const recordStars = (
     }
   }
   player.openedChests[index] = chests.length;
-};
-
-interface BattleReward {
-  /** In Copper. */
-  readonly coin: number;
-  readonly xp: number;
-  readonly essence: number;
-  readonly forgeStones: readonly ForgeStoneReward[];
-}
-
-const giveReward = (player: EconomyPlayer, reward: BattleReward) => {
-  player.coin += reward.coin;
-  player.essence += reward.essence;
-  player.forgeStones = addForgeStoneRewards(
-    player.forgeStones,
-    reward.forgeStones
-  );
-  player.xp = Math.min(
-    player.xp + reward.xp,
-    PLAYER_LEVEL_XP.at(-1) ?? player.xp
-  );
 };
 
 /**
@@ -1179,6 +1281,95 @@ export const dungeonSweep = (
   }
 };
 
+// ─── Seaport ─────────────────────────────────────────────────────────────────
+
+/**
+ * The Coin for each day of an Expedition on the play calendar (Economy 7.1):
+ * the Coin of the full voyage ÷ the days until the ship is back. The Player
+ * Collects only at the start of a session, so a voyage longer than the time
+ * away takes 2 days or more.
+ */
+export const expeditionCoinPerDay = (
+  expedition: ExpeditionDefinition
+): number => {
+  const { coin } = expeditionReward(
+    expedition,
+    expeditionDurationMs(expedition)
+  );
+  return coin / Math.max(1, Math.ceil(expedition.hours / HOURS_AWAY));
+};
+
+/**
+ * The best Expedition that `level` opens (Economy 7.1): the most Coin for each
+ * day, and the later Expedition on a tie. `null` below the Seaport unlock.
+ */
+export const bestExpedition = (
+  level: number,
+  expeditions: readonly ExpeditionDefinition[] = EXPEDITIONS
+): ExpeditionDefinition | null => {
+  if (!isUnlocked(level, "seaport")) {
+    return null;
+  }
+  let best: ExpeditionDefinition | null = null;
+  for (const expedition of expeditions) {
+    if (
+      expedition.unlockLevel <= level &&
+      (best === null ||
+        expeditionCoinPerDay(expedition) >= expeditionCoinPerDay(best))
+    ) {
+      best = expedition;
+    }
+  }
+  return best;
+};
+
+/**
+ * The start of a session (Economy 7.1): the Player Collects the Expedition at
+ * `now` when the ship is back. A ship that is not back sails on, so the Grand
+ * Expedition gives its Epic Forge Stone. The reward stops at the duration, so
+ * a late Collect loses nothing. The XP stops at level 30. Returns true when
+ * the Player Collects.
+ */
+export const collectExpeditionAt = (
+  player: EconomyPlayer,
+  now: number
+): boolean => {
+  const active = activeExpedition(player, now);
+  if (active === null || !active.reward.complete) {
+    return false;
+  }
+  const { coin, xp, essence, forgeStones } = active.reward;
+  const income = giveReward(player, {
+    coin,
+    xp,
+    essence,
+    forgeStones: forgeStones === null ? [] : [forgeStones],
+  });
+  player.seaport = AT_BERTH;
+  player.seaportIncome = addIncome(player.seaportIncome, income);
+  return true;
+};
+
+/**
+ * The end of a session (Economy 7.1): when the ship is at the berth, the
+ * Player Dispatches it at `now` on the best Expedition of its level, with the
+ * Seaport rule of the game. Below the Seaport unlock, nothing happens.
+ */
+export const dispatchExpeditionAt = (player: EconomyPlayer, now: number) => {
+  const expedition = bestExpedition(levelOf(player));
+  if (player.seaport.expeditionId !== null || expedition === null) {
+    return;
+  }
+  const started = startExpedition(
+    { xp: player.xp, seaport: player.seaport },
+    expedition.id,
+    now
+  );
+  if (started !== null) {
+    player.seaport = started.seaport;
+  }
+};
+
 // ─── Achievements ────────────────────────────────────────────────────────────
 
 /** The ID of the Dungeon with the number, as the Profile keeps it. */
@@ -1229,6 +1420,11 @@ export const claimAchievements = (player: EconomyPlayer): void => {
   };
   const recorded = recordAchievements(profile).profile;
   const claimed = claimAllAchievements(recorded)?.profile ?? recorded;
+  player.income = addIncome(player.income, {
+    ...NO_INCOME,
+    coin: claimed.coin - player.coin,
+    essence: claimed.essence - player.essence,
+  });
   player.coin = claimed.coin;
   player.essence = claimed.essence;
   player.completedAchievements = claimed.completedAchievements;
@@ -1264,6 +1460,11 @@ interface EconomyRunOptions {
    * n, as on the First-try Path. It ignores the fixed chances.
    */
   readonly firstTry?: boolean;
+  /**
+   * The Player sends the ship of the Seaport between its sessions. True by
+   * default, but false for the First-try run, which also uses no Sweep.
+   */
+  readonly seaport?: boolean;
   /** A fixed win chance for each Battle. */
   readonly fixedWinChance?: number;
   /** A fixed 3-Star chance for each Stage win. */
@@ -1346,6 +1547,9 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     dungeonBattlesLeft: 0,
   };
   const firstTry = options.firstTry === true;
+  const seaport = options.seaport ?? !firstTry;
+  /** The time of the play calendar, in milliseconds from the first Battle. */
+  let now = 0;
 
   /** Rolls a chance. A chance of 1 or more never uses a random value. */
   const rolls = (chance: number): boolean =>
@@ -1547,6 +1751,7 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   while (!finished() && player.battles < maxBattles) {
     recordLevels();
     player.battles += 1;
+    now += BATTLE_MINUTES * 60_000;
     playOne();
     // A Sweep takes no Battle and no time.
     if (!firstTry) {
@@ -1554,6 +1759,16 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     }
     spend(player, options.playStyle);
     claimAchievements(player);
+    // The end of a session, 1 day away, and the start of the next session.
+    // The Player spends the Seaport income at once.
+    if (seaport && playDays(player.battles) > playDays(player.battles - 1)) {
+      dispatchExpeditionAt(player, now);
+      now += HOURS_AWAY * HOUR_MS;
+      if (collectExpeditionAt(player, now)) {
+        spend(player, options.playStyle);
+        claimAchievements(player);
+      }
+    }
     for (const [index, id] of REGION_CHECKPOINTS.entries()) {
       if (index < regionsLeft()) {
         record(id);
@@ -1688,7 +1903,13 @@ export const REPEAT_METRICS: readonly RepeatMetric[] = [
 /** The metrics of a checkpoint that the report shows with the Economy 4 targets. */
 export type Metric = Exclude<
   keyof CheckpointSnapshot,
-  "combines" | "essence" | "forgeStones" | "floorsWon" | RepeatMetric
+  | "combines"
+  | "essence"
+  | "forgeStones"
+  | "floorsWon"
+  | "income"
+  | "seaportIncome"
+  | RepeatMetric
 >;
 
 export const METRICS: readonly Metric[] = [
@@ -1711,6 +1932,13 @@ export interface Spread {
   readonly p90: number;
 }
 
+/** The Seaport income of one kind, and its share of the income from all sources. */
+export interface SeaportSpread {
+  readonly amount: Spread;
+  /** From 0 to 1. 0 when the Player got none of this kind. */
+  readonly share: Spread;
+}
+
 interface CheckpointSummary {
   /** The number of Players that got to the checkpoint. */
   readonly reached: number;
@@ -1718,6 +1946,8 @@ interface CheckpointSummary {
   /** The Forge Stones that the Players did not use, by tier (ADR-0038). */
   readonly forgeStones: Readonly<Record<ForgeStoneTier, Spread>> | null;
   readonly repeats: Readonly<Record<RepeatMetric, Spread>> | null;
+  /** The Seaport income of each kind (Economy 2.8). */
+  readonly seaport: Readonly<Record<IncomeKind, SeaportSpread>> | null;
   /** The share of the Players with a Combine done, from 0 to 1. */
   readonly combinedShare: number;
 }
@@ -1766,6 +1996,7 @@ const summarize = (
       metrics: null,
       forgeStones: null,
       repeats: null,
+      seaport: null,
       combinedShare: 0,
     };
   }
@@ -1773,6 +2004,16 @@ const summarize = (
     spreadOf(snapshots.map((snap) => snap[metric]));
   const stones = (tier: ForgeStoneTier) =>
     spreadOf(snapshots.map((snap) => snap.forgeStones[tier]));
+  const seaport = (kind: IncomeKind): SeaportSpread => ({
+    amount: spreadOf(snapshots.map((snap) => snap.seaportIncome[kind])),
+    share: spreadOf(
+      snapshots.map((snap) =>
+        snap.income[kind] === 0
+          ? 0
+          : snap.seaportIncome[kind] / snap.income[kind]
+      )
+    ),
+  });
   return {
     reached: snapshots.length,
     metrics: {
@@ -1803,6 +2044,12 @@ const summarize = (
       campaignSweepTickets: spread("campaignSweepTickets"),
       dungeonTicketsUsed: spread("dungeonTicketsUsed"),
       dungeonSweepTickets: spread("dungeonSweepTickets"),
+    },
+    seaport: {
+      coin: seaport("coin"),
+      xp: seaport("xp"),
+      essence: seaport("essence"),
+      epicStones: seaport("epicStones"),
     },
     combinedShare:
       snapshots.filter((snap) => snap.combines > 0).length / snapshots.length,

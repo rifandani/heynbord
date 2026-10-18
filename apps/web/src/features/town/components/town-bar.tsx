@@ -11,6 +11,7 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import { HandbookIcon } from "@/features/handbook/components/handbook-icon";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import { useShipBack } from "@/features/seaport/use-seaport";
 import { SettingsDialog } from "@/features/town/components/settings-dialog";
 import { useTownLockText } from "@/features/town/components/town-lock";
 import type { GameScreen, TownLock, TownShortcut } from "@/features/town/town";
@@ -97,12 +98,20 @@ const LockSeal = ({ locked }: { readonly locked: boolean }) => {
 };
 
 /**
- * The count of the Achievements shortcut (Achievements 4): the Completed
- * Achievements that the Player has not claimed, on a small gold token at the
- * top right of the icon. It shows nothing at 0. The number hops when it
- * changes. Decorative: the accessible name of the shortcut says the count.
+ * The count of a shortcut, on a small gold token at the top right of the
+ * icon: for the Achievements shortcut, the Completed Achievements that the
+ * Player has not claimed (Achievements 4); for the Seaport shortcut, 1 while
+ * the ship is back and waits for a Collect. It shows nothing at 0. The number
+ * hops when it changes. Decorative: the accessible name of the shortcut says
+ * the count.
  */
-const CountBadge = ({ count }: { readonly count: number }) => {
+const CountBadge = ({
+  count,
+  testId,
+}: {
+  readonly count: number;
+  readonly testId?: string;
+}) => {
   if (count === 0) {
     return null;
   }
@@ -112,7 +121,7 @@ const CountBadge = ({ count }: { readonly count: number }) => {
         "absolute -top-0.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1 text-[11px] leading-none font-black text-[#2a1a05] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.5)]",
         "[@media(max-height:500px)]:-top-1 [@media(max-height:500px)]:-right-1 [@media(max-height:500px)]:h-4 [@media(max-height:500px)]:min-w-4 [@media(max-height:500px)]:border [@media(max-height:500px)]:text-[10px]"
       )}
-      data-testid="achievements-badge"
+      data-testid={testId}
       data-count={count}
     >
       <span
@@ -161,14 +170,16 @@ const ShortcutFace = ({
   current,
   lifted = false,
   count = 0,
+  badgeTestId,
 }: {
   readonly image: string | null;
   readonly name: string;
   readonly locked: boolean;
   readonly current: boolean;
   readonly lifted?: boolean;
-  /** The count on the badge of the icon, for the Achievements shortcut. */
+  /** The count on the badge of the icon, for the Achievements and Seaport shortcuts. */
   readonly count?: number;
+  readonly badgeTestId?: string;
 }) => (
   <>
     {/* The light of the current place, and the shadow under each icon. */}
@@ -193,7 +204,7 @@ const ShortcutFace = ({
         className={iconClass(locked, current, lifted)}
       />
       <LockSeal locked={locked} />
-      <CountBadge count={count} />
+      <CountBadge count={count} testId={badgeTestId} />
     </span>
     <span className={labelClass(locked, current, lifted)} aria-hidden>
       <span className="truncate">{name}</span>
@@ -224,10 +235,11 @@ const useLockText = (locked: boolean, lock: TownLock | null) => {
 };
 
 /**
- * The accessible name of a shortcut: its name, and its lock, or the count of
- * its badge ("Achievements, 2 to claim").
+ * The accessible name of a shortcut: its name, and its lock, or what its
+ * badge says ("Achievements, 2 to claim", "Seaport, the ship is back").
  */
 const useShortcutName = (
+  shortcut: TownShortcut["id"],
   name: string,
   locked: boolean,
   lock: TownLock | null,
@@ -236,7 +248,12 @@ const useShortcutName = (
   const { tr } = useGameText();
   const text = useTownLockText();
   if (!locked) {
-    return count > 0 ? tr("town.shortcutBadge", { name, count }) : name;
+    if (count === 0) {
+      return name;
+    }
+    return shortcut === "seaport"
+      ? tr("town.shipBack", { name })
+      : tr("town.shortcutBadge", { name, count });
   }
   return lock === null ? tr("town.locked", { name }) : text.named(name, lock);
 };
@@ -272,8 +289,20 @@ const Shortcut = ({
   const lock = townLock(shortcut, progress);
   const lockText = useLockText(locked, lock);
   const claimable = useAtomValue(claimableCountAtom);
-  const count = shortcut.id === "achievements" ? claimable : 0;
-  const accessibleName = useShortcutName(name, locked, lock, count);
+  const shipBack = useShipBack();
+  let count = 0;
+  if (shortcut.id === "achievements") {
+    count = claimable;
+  } else if (shortcut.id === "seaport" && !locked && shipBack) {
+    count = 1;
+  }
+  const accessibleName = useShortcutName(
+    shortcut.id,
+    name,
+    locked,
+    lock,
+    count
+  );
 
   const onPressStart = (event: PressEvent) => {
     longPressed.current = false;
@@ -343,6 +372,7 @@ const Shortcut = ({
             current={current}
             lifted={dialog === "handbook" ? handbook.isOpen : dialogOpen}
             count={count}
+            badgeTestId={`${shortcut.id}-badge`}
           />
         </Button>
         <GameTooltip

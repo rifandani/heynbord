@@ -322,6 +322,7 @@ export default {
     opensWithStage: "Menangkan {stage} ({id}) untuk membuka",
     lockedWithStage: "{name}, menangkan {stage} ({id}) untuk membuka",
     shortcutBadge: "{name}, {count} bisa diklaim",
+    shipBack: "{name}, kapal sudah kembali",
     buildings: {
       townGate: "Kampanye",
       cardShop: "Paket",
@@ -331,12 +332,14 @@ export default {
       cave: "Dungeon",
       heynspire: "Heynspire",
       hall: "Pencapaian",
+      seaport: "Pelabuhan",
     },
     shortcuts: {
       town: "Kota",
       campaign: "Kampanye",
       heynspire: "Heynspire",
       dungeons: "Dungeon",
+      seaport: "Pelabuhan",
       deck: "Dek",
       workshop: "Bengkel",
       packs: "Paket",
@@ -739,6 +742,45 @@ export default {
     bought: "Kamu membeli {name}.",
     cannotBuy: "Kamu belum bisa membelinya.",
   },
+  seaport: {
+    label: "Pelabuhan",
+    title: "Pelabuhan",
+    destinations: "Tujuan",
+    // Nama draf (Ekonomi 2.8).
+    expeditions: {
+      coastalRun: "Pelayaran Pesisir",
+      tradeRoute: "Jalur Dagang",
+      longVoyage: "Pelayaran Panjang",
+      grandExpedition: "Ekspedisi Agung",
+    },
+    hours: "{hours} j",
+    hoursLabel: "{hours} jam",
+    atSea: "Berlayar",
+    essence: "+{amount} Esensi",
+    stonesLater: "saat kapal kembali",
+    dispatch: "Berangkatkan",
+    dispatchLabel: "Berangkatkan kapal: {name}",
+    dispatched: "Kapal berlayar ke {name}. Kapal kembali dalam {hours} jam.",
+    cannotDispatch: "Kapal tidak bisa berlayar sekarang.",
+    cannotCollect: "Belum ada yang bisa diambil sekarang.",
+    berth: {
+      label: "Dermaga",
+      atBerth: "Kapal ada di dermaga",
+      atBerthHint:
+        "Pilih Tujuan, lalu berangkatkan kapal sebelum kamu pergi. Kapal mengumpulkan hadiahnya selama kamu pergi.",
+      away: "Berlayar: {name}",
+      back: "Kapal sudah kembali: {name}",
+      timeLeft: "Kembali dalam",
+      timeLeftLabel: "{hours} jam {minutes} menit",
+      collectNow: "Ambil sekarang memberi",
+      fullReward: "Kapal membawa",
+      clockBack:
+        "Jam perangkat ini lebih awal dari waktu keberangkatan. Ambil berhenti sampai jamnya benar.",
+      collect: "Ambil",
+      collectLabel: "Ambil hadiah {name}",
+      collected: "Kamu mengambil hadiah {name}.",
+    },
+  },
   tutorial: {
     label: "Tutorial",
     gotIt: "Mengerti",
@@ -792,6 +834,8 @@ export default {
       "Heynspire sudah terbuka. Daki 50 Lantainya satu per satu. Tiap Lantai memberi hadiahnya satu kali.",
     achievements:
       "Kamu menyelesaikan satu Pencapaian. Buka Pencapaian untuk mengklaim hadiahnya.",
+    seaport:
+      "Pelabuhan mengirim kapal untuk Ekspedisi. Berangkatkan kapal sebelum kamu pergi, lalu ambil Koin, XP, Esensi, dan Batu Tempa saat kapal kembali.",
   },
   handbook: {
     title: "Buku Panduan",
@@ -929,6 +973,7 @@ export default {
       workshop: "Bengkel: Gabung dan Ekstrak.",
       gear: "Perlengkapan di Pahlawanmu.",
       craft: "Bengkel: Buat dan Lebur.",
+      seaport: "Pelabuhan: Ekspedisi.",
       dungeon1: "Dungeon 1.",
       dungeon2: "Dungeon 2.",
       dungeon3: "Dungeon 3.",
@@ -1005,6 +1050,7 @@ export default {
       pack: "Paket",
       workshop: "Bengkel",
       gear: "Perlengkapan",
+      seaport: "Pelabuhan",
       dungeon: "Dungeon",
       heynspire: "Heynspire",
       achievement: "Pencapaian",
@@ -1115,6 +1161,8 @@ export default {
       workshop:
         "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nBengkel punya 4 stasiun: Gabung, Buat, Lebur, dan Ekstrak. Pilih stasiun di atas, lalu pilih kartu. Stasiun menandai kartu yang bisa ia proses sekarang, dan filternya bisa menampilkan hanya kartu itu. Salinan cadangan adalah salinan yang tidak dipakai Dek tersimpan mana pun.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya. Hanya kartu dengan Peringkat dasar Biasa, Tak Biasa, atau Langka yang bisa dibuat: kartu Epik atau Legendaris tidak bisa dibuat. Kartu yang ditemukan adalah kartu yang pernah kamu miliki, minimal satu kali. Kartu dengan 0 salinan tetap ditemukan, juga setelah kamu Ekstrak salinan terakhirnya, jadi kamu bisa Buat kartu itu. Kamu tidak bisa Buat kartu yang belum pernah kamu miliki. Untuk mendapat kartu baru, buka Paket: Paket Saudagar dan Paket Kerajaan memilih kartu yang belum kamu punya, jika Peringkat yang keluar mengizinkannya. Atau pakai Lebur.\n\nLebur: mulai level Pemain {fuse}, 2 sampai 4 salinan dan Esensi menjadi 1 salinan kartu yang belum kamu temukan. Semua salinan punya Peringkat yang sama, dan semuanya Kartu Makhluk atau semuanya Kartu Keahlian. Biasa dan Tak Biasa memakai 2 salinan, Langka memakai 3, dan Epik memakai 4. Salinan Legendaris tidak bisa masuk. Kartu baru punya Peringkat dasar yang sama dengan Peringkat salinan, dan punya Ras atau Kelas dari salah satu salinan. Setiap salinan memberi Ras atau Kelasnya satu bagian peluang yang sama: Manusia + Manusia + Elf memberi Manusia 2 dari 3 dan Elf 1 dari 3. Ras atau Kelas yang tidak punya kartu tersisa untuk ditemukan tidak mendapat bagian. Panel menampilkan setiap peluang dan setiap kartu yang bisa keluar. Jika kamu sudah menemukan semua kartu yang bisa diberikan salinan itu, kamu tidak bisa meleburnya. Biaya Esensi: Biasa {common}, Tak Biasa {uncommon}, Langka {rare}, Epik {epic}. Bengkel bertanya dulu jika Dek tersimpan memakai salah satu salinan.",
       gear: "Pahlawanmu punya 4 Perlengkapan: Senjata, Zirah, Jimat, dan Panji. Barak di Kota dan pintasan Pahlawan membuka layar Pahlawan, mulai level Pemain {level}.\n\nTiap Perlengkapan punya level dari 0 sampai {max}. Satu peningkatan menambah 1 level, dengan Koin dan 1 Batu Tempa. Level menentukan tingkat Batu Tempa: Biasa untuk level 1 sampai 5, Tak Biasa untuk 6 sampai 10, Langka untuk 11 sampai 15, Epik untuk 16 sampai 20, dan Legendaris untuk 21 sampai 25. Batu Tempa dari tingkat lain tidak bisa menggantikannya. Peningkatan tidak pernah gagal, dan level tidak pernah turun.\n\nKemenangan Tahap, peti Bintang, Sweep, Dungeon, dan Heynspire memberi Batu Tempa. Kamu tidak bisa membelinya. Layar Pahlawan menampilkan Batu Tempa yang kamu punya.\n\nSerangan Crit memberi 2 kali damage-nya. Serangan yang di-Block memberi setengah damage-nya. Di tiap Pertempuran, Pahlawan dan Unit-mu memakai Perlengkapanmu.",
+      seaport:
+        "Pelabuhan mengirim kapal Kota untuk Ekspedisi. Dermaga Pelabuhan di Kota dan pintasan Pelabuhan membukanya, mulai level Pemain {level}.\n\nPelabuhan punya 1 kapal, jadi kapal pergi ke 1 Ekspedisi pada satu waktu. Pilih Tujuan, lalu berangkatkan kapal. Setelah itu kamu bisa menutup permainan. Ada {count} Ekspedisi, dari {shortest} jam sampai {longest} jam. Ekspedisi yang lebih lama terbuka pada level Pemain yang lebih tinggi dan menambah satu jenis hadiah.\n\nHadiahnya bertambah untuk tiap jam kapal pergi: Koin, dan di Ekspedisi yang lebih lama juga XP dan Esensi. Hadiahnya berhenti pada durasi penuh Ekspedisi, dan kapal menunggumu. Kamu bisa mengambil hadiah kapan saja. Ambil lebih awal memberi bagian dari waktu kapal pergi, lalu kapal kembali ke dermaga.\n\nBatu Tempa dari Ekspedisi Agung hanya datang setelah pelayaran penuh. Ambil lebih awal tidak memberi Batu Tempa.\n\nKamu tidak pernah kehilangan apa pun: tidak ada waktu minimum dan tidak ada hukuman saat kamu pergi lama. Pelabuhan memakai jam perangkatmu. Saat jamnya mundur, Ambil berhenti sampai jamnya benar lagi.",
       dungeon:
         "Dungeon adalah tempat di luar Kampanye. Gua di Kota dan pintasan Dungeon membuka layar Dungeon, mulai level Pemain {level}.\n\nDi Dungeon, kamu melawan semua Bos-nya dalam satu Pertempuran. Papan punya {lanes} Jalur. Tiap Bos adalah Pahlawan musuh dengan Lini, Tangan, dan Dek sendiri. Unit di ujung Jalur menyerang Bos dari Lini itu.\n\nAturan Bos aktif satu kali, saat HP Bos-nya turun ke persen tertentu atau lebih rendah. Bar HP Bos menunjukkan takik di persen itu.\n\nKemenangan Dungeon tidak memberi Bintang. Setelah menang, kamu bisa memainkan Dungeon itu lagi atau melakukan Sweep. Tiap kemenangan Dungeon memberi {tickets} Tiket Sweep Dungeon.",
       heynspire:
@@ -1189,6 +1237,8 @@ export default {
       workshop:
         "tempa, forge, crafting, upgrade, fuse, merge, naik level, dust, disenchant, salvage",
       gear: "equipment, gear, item, senjata, zirah, gudang senjata, enchant, refine, upgrade, crit, block",
+      seaport:
+        "idle, afk, offline, ekspedisi, pelayaran, kapal, pelabuhan, dermaga, port, harbor, expedition",
       dungeon: "raid, boss rush, multi-bos, world boss, instance, gua",
     },
   },

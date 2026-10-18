@@ -342,6 +342,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Play Style**: A fixed priority list that tells the economy simulation how a simulated Player spends Coin and Essence, for example Collector, Upgrader or Balanced. _Avoid_: profile, persona, spending plan
 
+**Play calendar**: The assumption that turns the Battles of the economy simulation into days: 1 hour of play each day, then 1 day away. The Seaport income of the simulation comes from it. _Avoid_: schedule, daily login, session plan
+
 **Pacing target**: A value that a Player must have at a point in the game, for example the Packs opened at the end of Region 2. It is for the median Player of a Play Style who plays each Stage again until the Stage has 3 Stars. A Pacing target can apply to only some Play Styles. _Avoid_: milestone, KPI, benchmark, goal
 
 ### Modes

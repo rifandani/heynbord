@@ -294,3 +294,58 @@ test.describe("Packs with reduced motion", () => {
     await expect(peek).toBeHidden();
   });
 });
+
+/**
+ * The shopkeeper bubble on a screen where the Balance Plate is over his head
+ * (issue: the bubble lay on the Coin): it hangs under the plate, it stays on
+ * the screen, and a press on the shopkeeper gives a new line. The bubble is
+ * quiet on a screen where his head is under the top band, and a narrow screen
+ * has no bubble at all.
+ */
+test.describe("Packs bubble", () => {
+  for (const size of [
+    { height: 768, width: 1440 },
+    { height: 900, width: 1920 },
+  ]) {
+    test(`hangs under the Balance Plate at ${size.width} × ${size.height}, and talks`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(size);
+      await openPacks(page);
+      // The Profile, and with it the width of the Balance Plate, arrives
+      // after the screen opens: a Player with Coin, as the issue shows.
+      await setCoin(page, 99_999_300);
+      await expect(page.getByTestId("balance-coin")).toHaveAttribute(
+        "aria-label",
+        /\d{1,3}(?:[.,]\d{3})+/u
+      );
+
+      const bubble = page.getByTestId("shopkeeper-line");
+      await expect(bubble).toBeVisible();
+      const box = await bubble.boundingBox();
+      const plate = await page.getByTestId("town-balances").boundingBox();
+      if (!(box && plate)) {
+        throw new Error("no box for the bubble or the plate");
+      }
+      // The bubble is under the plate, and inside the screen.
+      expect(box.y).toBeGreaterThanOrEqual(plate.y + plate.height);
+      expect(box.y).toBeGreaterThanOrEqual(0);
+      expect(box.y + box.height).toBeLessThanOrEqual(size.height);
+
+      const said = await bubble.textContent();
+      await page.getByTestId("shopkeeper").click();
+      await expect(bubble).not.toHaveText(said ?? "");
+    });
+  }
+
+  for (const size of [
+    { height: 640, width: 1280 },
+    { height: 768, width: 1024 },
+  ]) {
+    test(`is quiet at ${size.width} × ${size.height}`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await openPacks(page);
+      await expect(page.getByTestId("shopkeeper-line")).toBeHidden();
+    });
+  }
+});

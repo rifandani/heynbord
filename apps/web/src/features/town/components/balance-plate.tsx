@@ -123,6 +123,7 @@ export const CoinAmount = ({
 /**
  * The Balance Plate (GDD 11.4): the Coin, Essence and Heynstone balances of
  * the Player, in the top-right corner of the Town. It shows information only.
+ * The shopkeeper bubble of the Packs screen hangs under it (`data-shop-avoid`).
  */
 export const BalancePlate = ({
   balances,
@@ -147,6 +148,7 @@ export const BalancePlate = ({
         "flex items-center rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]",
         className
       )}
+      data-shop-avoid="down"
       data-testid="town-balances"
     >
       <Balance kind="coin" spoken={coinSpoken}>

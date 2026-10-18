@@ -78,7 +78,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town**: The hub screen of the game, and the first screen that the Player sees. It is a painted view of a town, with one Building for each screen that the Player can open. _Avoid_: Camp, city, hub, home, lobby, main menu
 
-**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Market, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. _Avoid_: hotspot, landmark, location, house
+**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Market, the Barracks, the Dungeons cave, the Heynspire tower, the Hall of banners and the Seaport quay can be selected. _Avoid_: hotspot, landmark, location, house
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
 
@@ -178,6 +178,10 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Seaport screen**: The screen of the Seaport: the harbour seen from the water, with the Expedition plaques and the berth plate over the calm water at its left. The Player Dispatches the ship and Collects its reward there. The rules own the reward math; the screen sends the device time `now` with each Command. _Avoid_: port screen, harbour screen, idle screen
 
+**Destination plaque**: One plaque of the Destination list on the Seaport screen: one Expedition with its name, its duration and the reward of the full voyage. An Expedition that the Player level has not opened shows a Lock Plate with "Opens at level N". The Player selects one plaque, then Dispatches the ship on it. _Avoid_: expedition card, route button, offer
+
+**Berth plate**: The parchment plate under the Destination list that shows the ship: at the berth, away with the time left and the reward that a Collect gives now, or back with the full reward. Collect is on it. _Avoid_: ship panel, timer panel, status box
+
 ### Component Catalog
 
 **Component Catalog**: The single page at `/master-design` that displays every core UI component for visual inspection by developers and designers. It is available in development. A production build answers 404. _Avoid_: master design, styleguide, storybook, docs site
@@ -190,7 +194,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 ## Relationships
 
-- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Market opens the Bazaar, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, the Heynspire tower opens the Heynspire screen, and the Hall of banners opens the Achievements screen. The Seaport quay opens the Seaport screen when that screen exists.
+- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Market opens the Bazaar, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, the Heynspire tower opens the Heynspire screen, and the Hall of banners opens the Achievements screen. The Seaport quay opens the Seaport screen.
 - The **Handbook** and the **Card Details** show the same rule text for a Keyword and a Status. The **Card Details** show the name of a **Damage Type** only; its rule is in the Handbook. The Handbook never has its own copy of a rule.
 - A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.
 - The **Battle Log** shows the Battle Events that the screen already played. It never shows a later moment than **Live**. While it is open, the Live playback pauses.

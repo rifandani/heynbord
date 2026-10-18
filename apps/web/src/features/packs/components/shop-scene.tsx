@@ -105,50 +105,96 @@ export const ShopScene = ({ children }: { readonly children?: ReactNode }) => (
 /** The shopkeeper's head in the painting, in painting percent. */
 const SHOPKEEPER = { x: 84, y: 26 } as const;
 
+/**
+ * The top of his face in the painting, in painting percent: the bubble may
+ * hang down over his hair to keep clear of the top HUD pieces, but never on
+ * his face.
+ */
+const SHOPKEEPER_FACE = 36;
+
 /** The space between the speech bubble and a HUD piece or the screen edge. */
 const BUBBLE_MARGIN = 12;
 
 /** The bubble gets no smaller than this; with less room, the shopkeeper is quiet. */
 const BUBBLE_MIN_WIDTH = 200;
 
-/** Where the bubble goes: a move to the right, a smaller width, or no room. */
+/** The way the bubble keeps clear of a HUD piece: under it, or right of it. */
+const UNDER = "down";
+const RIGHT = "right";
+
+/** Where the bubble goes: a move down, a move right, a smaller width, or no room. */
 interface BubbleFit {
+  /** The move down, under a top HUD piece. */
+  readonly drop: number;
+  /** The move right, clear of a HUD piece. */
   readonly shift: number;
   readonly width: number | null;
   readonly hidden: boolean;
 }
 
-const FREE: BubbleFit = { shift: 0, width: null, hidden: false };
+/** The place of the bubble before the first measure, and with no HUD piece over it. */
+const FREE: BubbleFit = { drop: 0, shift: 0, width: null, hidden: false };
+
+/** No room for the bubble: the shopkeeper is quiet. */
+const QUIET: BubbleFit = { drop: 0, shift: 0, width: null, hidden: true };
 
 /**
- * Keeps the bubble clear of the HUD pieces (`data-shop-avoid`): when it goes
- * over one, it moves right of it, and gets narrower if the screen edge is
- * near. If it still has no room, it hides.
+ * The pieces of a `data-shop-avoid` mark, each with the way the bubble keeps
+ * clear of it: `down` hangs the bubble under it (the Balance Plate), and
+ * `right` moves the bubble right of it (the pool plate, the Unopened Packs,
+ * the Pack Stands).
  */
-const fitBubble = (bubble: DOMRect): BubbleFit => {
+const avoidPieces = (): readonly HTMLElement[] => [
+  ...document.querySelectorAll<HTMLElement>("[data-shop-avoid]"),
+];
+
+/**
+ * Keeps the bubble clear of the HUD pieces (`data-shop-avoid`): under the top
+ * ones, and right of the others. It stays on the screen and above the
+ * shopkeeper's face (`face`), and it gets narrower near the screen edge. With
+ * no room left, it hides.
+ */
+const fitBubble = (bubble: DOMRect, face: number): BubbleFit => {
   const edge = window.innerWidth - BUBBLE_MARGIN;
+  const pieces = avoidPieces();
+  const across = (box: DOMRect, left: number) =>
+    left < box.right && left + bubble.width > box.left;
+  // Under each top piece that the bubble is across.
+  let top = Math.max(bubble.top, BUBBLE_MARGIN);
+  for (const piece of pieces) {
+    const box =
+      piece.dataset.shopAvoid === UNDER ? piece.getBoundingClientRect() : null;
+    if (box && across(box, bubble.left)) {
+      top = Math.max(top, box.bottom + BUBBLE_MARGIN);
+    }
+  }
+  const drop = top - bubble.top;
+  const bottom = bubble.bottom + drop;
+  // There is no room for the bubble on his face: he is quiet.
+  if (bottom > face) {
+    return QUIET;
+  }
+  // Right of each piece that the bubble is still over.
   let { left } = bubble;
-  for (const piece of document.querySelectorAll("[data-shop-avoid]")) {
-    const box = piece.getBoundingClientRect();
-    const across = left < box.right && left + bubble.width > box.left;
-    const over = bubble.top < box.bottom && bubble.bottom > box.top;
-    if (across && over) {
+  for (const piece of pieces) {
+    const box =
+      piece.dataset.shopAvoid === RIGHT ? piece.getBoundingClientRect() : null;
+    const over = top < (box?.bottom ?? 0) && bottom > (box?.top ?? 0);
+    if (box && across(box, left) && over) {
       left = Math.max(left, box.right + BUBBLE_MARGIN);
     }
   }
   const width = Math.min(bubble.width, edge - left);
   if (width < BUBBLE_MIN_WIDTH) {
-    return { shift: 0, width: null, hidden: true };
+    return QUIET;
   }
-  return left === bubble.left
-    ? FREE
-    : { shift: left - bubble.left, width, hidden: false };
+  return { drop, shift: left - bubble.left, width, hidden: false };
 };
 
 /**
  * What the shopkeeper says: a parchment speech bubble over his head, which
- * grows out of its tail at each new line. The tail keeps pointing at him when
- * the bubble moves clear of the HUD. A press on the shopkeeper gives a new
+ * grows out of its tail at each new line. The bubble hangs under the top HUD
+ * pieces and keeps its tail on him. A press on the shopkeeper gives a new
  * line. He has no room on a short or narrow screen, where the Packs cover
  * him, so there he is quiet.
  */
@@ -165,24 +211,26 @@ export const ShopkeeperBubble = ({
 }) => {
   const { tr } = useGameText();
   const anchor = useRef<HTMLDivElement>(null);
+  const face = useRef<HTMLSpanElement>(null);
   const [fit, setFit] = useState<BubbleFit>(FREE);
 
   useLayoutEffect(() => {
     const measure = () => {
       const box = anchor.current?.getBoundingClientRect();
-      if (box && box.width > 0) {
-        setFit(fitBubble(box));
+      const faceBox = face.current?.getBoundingClientRect();
+      if (box && faceBox && box.width > 0) {
+        setFit(fitBubble(box, faceBox.top));
       }
     };
     measure();
     // A new line changes the size of the bubble; a new screen size moves it.
     // The pool plate gets wider or narrower when its second group opens or
-    // closes, after the new line.
+    // closes, after the new line, and the Balance Plate follows the Coin.
     const observer = new ResizeObserver(measure);
     if (anchor.current) {
       observer.observe(anchor.current);
     }
-    for (const piece of document.querySelectorAll("[data-shop-avoid]")) {
+    for (const piece of avoidPieces()) {
       observer.observe(piece);
     }
     window.addEventListener("resize", measure);
@@ -201,17 +249,25 @@ export const ShopkeeperBubble = ({
         className="absolute top-[28%] left-[80%] h-[24%] w-[17%] cursor-pointer rounded-[40%] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
         data-testid="shopkeeper"
       />
-      {/* The measured place of the bubble, before a move. */}
+      {/* The measured place of the bubble, before a move. It has the border of
+          the bubble, so that it measures the same box. */}
       <div
         ref={anchor}
         className="pointer-events-none invisible absolute w-[min(270px,21vw)] -translate-x-[70%] -translate-y-full"
         style={{ left: `${SHOPKEEPER.x}%`, top: `${SHOPKEEPER.y}%` }}
         aria-hidden
       >
-        <span className="block px-3.5 py-2.5 text-sm leading-snug font-semibold">
+        <span className="block border-2 border-transparent px-3.5 py-2.5 text-sm leading-snug font-semibold">
           {line}
         </span>
       </div>
+      {/* The top of his face: the bubble never hangs under this line. */}
+      <span
+        ref={face}
+        className="pointer-events-none invisible absolute size-0"
+        style={{ left: 0, top: `${SHOPKEEPER_FACE}%` }}
+        aria-hidden
+      />
       <div
         className={cn(
           "pointer-events-none absolute w-[min(270px,21vw)] -translate-x-[70%] -translate-y-full",
@@ -219,7 +275,7 @@ export const ShopkeeperBubble = ({
         )}
         style={{
           left: `calc(${SHOPKEEPER.x}% + ${fit.shift}px)`,
-          top: `${SHOPKEEPER.y}%`,
+          top: `calc(${SHOPKEEPER.y}% + ${fit.drop}px)`,
           width: fit.width ?? undefined,
         }}
       >
