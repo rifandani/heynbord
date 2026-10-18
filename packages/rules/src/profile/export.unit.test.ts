@@ -18,6 +18,7 @@ const played: Profile = {
   campaignSweepTickets: 4,
   dungeonSweepTickets: 2,
   seenHints: ["stagePanel"],
+  seaport: { expeditionId: "tradeRoute", startedAt: 1_792_314_000_000 },
 };
 
 const reason = (text: string) => {
@@ -77,5 +78,16 @@ describe("exportProfile and importProfile", () => {
     expect(reason(exportProfile({ ...played, coin: -5 }))).toBe(
       "InvalidProfile"
     );
+  });
+
+  it("puts the Seaport ship of a version 11 file at the berth (ADR-0053)", () => {
+    const { seaport: _, ...v11 } = { ...played, schemaVersion: 11 };
+    // SAFETY: the checksum reads only the JSON of the Profile, so the file of
+    // an old build has a correct checksum too.
+    const text = exportProfile(v11 as Profile);
+    expect(Result.getOrThrow(importProfile(text))).toEqual({
+      ...played,
+      seaport: { expeditionId: null, startedAt: null },
+    });
   });
 });

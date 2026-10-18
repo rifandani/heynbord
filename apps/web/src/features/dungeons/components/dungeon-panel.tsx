@@ -447,7 +447,8 @@ const PanelActions = ({
   return (
     <div
       className={cn(
-        "grid shrink-0 gap-2 pt-2",
+        // With the bottom padding of the rows, 8px over the buttons.
+        "grid shrink-0 gap-2 pt-0.5",
         INK[5],
         sweepable && "grid-cols-2"
       )}
@@ -579,8 +580,12 @@ export const DungeonPanel = ({
             {({ close }) =>
               shown !== null && dungeon !== null && open ? (
                 <div className={cn("flex min-h-0 flex-1 flex-col", INK_OUT)}>
-                  {/* Only the rows scroll: the actions stay at the bottom of the panel, as the rail did. */}
-                  <div className="-mx-5 min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 [@media(max-height:500px)]:-mx-4 [@media(max-height:500px)]:px-4">
+                  {/*
+                   * Only the rows scroll: the actions stay at the bottom of the panel, as the rail did.
+                   * The rows ink in 6px from below. The bottom padding holds that move, so that no
+                   * scrollbar shows for a moment and the rows do not wrap again (a layout shift).
+                   */}
+                  <div className="-mx-5 min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-1.5 [@media(max-height:500px)]:-mx-4 [@media(max-height:500px)]:px-4">
                     <PanelHeader slot={shown} close={close} />
                     {sweep.result ? (
                       <SweepResult
@@ -620,7 +625,7 @@ export const DungeonPanel = ({
                       onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
                       onClose={sweep.handleResultClose}
                       // The panel is narrow: "Close" takes only its width, so that "Sweep Again ×10" fits.
-                      className="shrink-0 grid-cols-[auto_1fr] pt-2"
+                      className="shrink-0 grid-cols-[auto_1fr] pt-0.5"
                     />
                   ) : (
                     <PanelActions

@@ -142,6 +142,7 @@ const DropRatesTable = () => {
           <CoinPrice
             parts={coinDenominations(pack.price)}
             format={format}
+            tone="light"
             className="justify-end font-bold"
           />
         ))}
@@ -149,6 +150,7 @@ const DropRatesTable = () => {
           <CoinPrice
             parts={coinDenominations(pack.versionPrice)}
             format={format}
+            tone="light"
             className="justify-end font-bold"
           />
         ))}

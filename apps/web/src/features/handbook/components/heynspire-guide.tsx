@@ -76,10 +76,18 @@ export const HeynspireGuide = () => {
       reward: (
         <>
           <Amount icon={null}>
-            <CoinAmount parts={coinDenominations(first.coin)} format={format} />
+            <CoinAmount
+              parts={coinDenominations(first.coin)}
+              format={format}
+              tone="light"
+            />
             <span aria-hidden>–</span>
             <span className="sr-only">{tr("handbook.heynspireTable.to")}</span>
-            <CoinAmount parts={coinDenominations(last.coin)} format={format} />
+            <CoinAmount
+              parts={coinDenominations(last.coin)}
+              format={format}
+              tone="light"
+            />
           </Amount>
           <Amount icon={null}>
             <span className="text-[#0e6f86]">

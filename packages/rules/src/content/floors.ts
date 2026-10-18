@@ -409,8 +409,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
     ],
     deck: [
       ...cards(1, "orc.mesaPitFighter"),
-      ...cards(1, "human.gateWarden"),
-      ...cards(1, "orc.howlingCharger"),
+      ...cards(2, "orc.howlingCharger"),
       ...cards(1, "human.halberdier"),
       ...cards(1, "human.shieldbearer"),
       ...cards(1, "orc.badlandRunt"),
@@ -434,7 +433,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
       ...cards(1, "human.militiaRecruit"),
       ...cards(1, "orc.scrapRaider"),
       ...cards(1, "human.crossbowGuard"),
-      ...cards(1, "orc.howlingCharger"),
+      ...cards(1, "human.gateWarden"),
       ...cards(1, "orc.tuskBrute"),
       ...cards(1, "human.ironBulwark"),
     ],
@@ -518,8 +517,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
       ...cards(1, "elf.mosspitcherLookout"),
       ...cards(1, "goblin.junkSlinger"),
       ...cards(1, "priest.cleanse"),
-      ...cards(1, "priest.radiantStrike"),
-      ...cards(1, "priest.prayerOfHealing"),
+      ...cards(2, "priest.radiantStrike"),
       ...cards(1, "elf.acornTender"),
       ...cards(1, "elf.dewkeeper"),
       ...cards(1, "goblin.junkWalker"),
@@ -536,7 +534,7 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
       ...cards(1, "goblin.fuseRunner"),
       ...cards(1, "elf.gladeTurnblade"),
       ...cards(1, "elf.fernwingCourier"),
-      ...cards(1, "elf.seedwindShepherd"),
+      ...cards(1, "elf.canopySkirmisher"),
       ...cards(1, "priest.penance"),
     ],
   },
@@ -664,7 +662,7 @@ const BOSS_FLOOR_STRENGTH: readonly TierStrength[] = [
   { rankSteps: 0, extraStepCopies: 15, heroHp: 62, gear: NO_GEAR },
   // Floor 30: Lady Glimmerbough. Her Epic Canopy Vinewarden behind a Bramble
   // Nest is her power, so she has less HP.
-  { rankSteps: 0, extraStepCopies: 9, heroHp: 42, gear: NO_GEAR },
+  { rankSteps: 0, extraStepCopies: 10, heroHp: 41, gear: NO_GEAR },
   // Floor 40: the Old Bramble.
   { rankSteps: 0, extraStepCopies: 13, heroHp: 58, gear: NO_GEAR },
   // Floor 50: Queen Marrow.

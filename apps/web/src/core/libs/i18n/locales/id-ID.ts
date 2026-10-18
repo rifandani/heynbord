@@ -325,6 +325,7 @@ export default {
     buildings: {
       townGate: "Kampanye",
       cardShop: "Paket",
+      bazaar: "Bazar",
       workshop: "Bengkel",
       barracks: "Pahlawan",
       cave: "Dungeon",
@@ -353,7 +354,7 @@ export default {
       },
       essence: {
         name: "Esensi",
-        use: "Untuk Membuat kartu di Bengkel.",
+        use: "Untuk Buat dan Lebur di Bengkel.",
       },
       heynstones: {
         name: "Heynstone",
@@ -692,7 +693,6 @@ export default {
   bazaar: {
     label: "Bazar",
     title: "Bazar",
-    note: "Bazar hanya menjual Kosmetik. Milikmu selamanya.",
     families: {
       cardBack: "Punggung Kartu",
       heroPortrait: "Potret Pahlawan",
@@ -928,7 +928,7 @@ export default {
       packs: "Paket di Town.",
       workshop: "Bengkel: Gabung dan Ekstrak.",
       gear: "Perlengkapan di Pahlawanmu.",
-      craft: "Bengkel: Buat.",
+      craft: "Bengkel: Buat dan Lebur.",
       dungeon1: "Dungeon 1.",
       dungeon2: "Dungeon 2.",
       dungeon3: "Dungeon 3.",
@@ -1113,7 +1113,7 @@ export default {
       coin: "Koin adalah satu saldo. Piring saldo Town, kanan atas, menampilkannya sebagai Emas, Perak, dan Tembaga. Hanya denominasi yang bukan nol yang muncul.\n\nGunakan tabel di bawah untuk konversi dan untuk pemakaian Koin saat ini.",
       pack: "Paket berisi {cards} kartu acak. Kamu membelinya dengan Koin di layar Paket. Toko kartu di Kota dan pintasan Paket membukanya.\n\nDi level Pemain 2, kamu mendapat satu Paket Penjaja. Paket dari hadiah menunggu di layar Paket sampai kamu membukanya, gratis. Tombol Peluang Muncul di layar Paket menunjukkan semua angka dan aturannya.",
       workshop:
-        "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nBengkel punya 3 stasiun: Gabung, Buat, dan Ekstrak. Pilih stasiun di atas, lalu pilih kartu. Stasiun menandai kartu yang bisa ia proses sekarang, dan filternya bisa menampilkan hanya kartu itu. Salinan cadangan adalah salinan yang tidak dipakai Dek tersimpan mana pun.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya. Kartu yang ditemukan adalah kartu yang pernah kamu miliki, minimal satu kali. Kartu dengan 0 salinan tetap ditemukan, juga setelah kamu Ekstrak salinan terakhirnya, jadi kamu bisa Buat kartu itu. Kamu tidak bisa Buat kartu yang belum pernah kamu miliki. Untuk mendapat kartu baru, buka Paket: Paket Saudagar dan Paket Kerajaan memilih kartu yang belum kamu punya, jika Peringkat yang keluar mengizinkannya.",
+        "Bengkel membuat kartumu lebih kuat. Bengkel di Kota dan pintasan Bengkel membukanya, mulai level Pemain {combine}.\n\nBengkel punya 4 stasiun: Gabung, Buat, Lebur, dan Ekstrak. Pilih stasiun di atas, lalu pilih kartu. Stasiun menandai kartu yang bisa ia proses sekarang, dan filternya bisa menampilkan hanya kartu itu. Salinan cadangan adalah salinan yang tidak dipakai Dek tersimpan mana pun.\n\nGabung: 2 salinan kartu di satu Peringkat menjadi 1 salinan di Peringkat berikutnya, dengan Koin. Gabung tidak pernah gagal. Dek tersimpan yang memakai salinan lama mendapat salinan baru.\n\nEkstrak: 1 salinan menjadi Esensi. Kamu bisa Ekstrak salinan mana pun, juga salinan terakhir, dan kartu itu tetap ditemukan. Bengkel bertanya dulu jika Dek tersimpan memakai salinan itu, atau jika salinan itu Epik atau Legendaris.\n\nBuat: mulai level Pemain {craft}, Esensi menjadi 1 salinan kartu yang sudah kamu temukan, di Peringkat dasarnya. Hanya kartu dengan Peringkat dasar Biasa, Tak Biasa, atau Langka yang bisa dibuat: kartu Epik atau Legendaris tidak bisa dibuat. Kartu yang ditemukan adalah kartu yang pernah kamu miliki, minimal satu kali. Kartu dengan 0 salinan tetap ditemukan, juga setelah kamu Ekstrak salinan terakhirnya, jadi kamu bisa Buat kartu itu. Kamu tidak bisa Buat kartu yang belum pernah kamu miliki. Untuk mendapat kartu baru, buka Paket: Paket Saudagar dan Paket Kerajaan memilih kartu yang belum kamu punya, jika Peringkat yang keluar mengizinkannya. Atau pakai Lebur.\n\nLebur: mulai level Pemain {fuse}, 2 sampai 4 salinan dan Esensi menjadi 1 salinan kartu yang belum kamu temukan. Semua salinan punya Peringkat yang sama, dan semuanya Kartu Makhluk atau semuanya Kartu Keahlian. Biasa dan Tak Biasa memakai 2 salinan, Langka memakai 3, dan Epik memakai 4. Salinan Legendaris tidak bisa masuk. Kartu baru punya Peringkat dasar yang sama dengan Peringkat salinan, dan punya Ras atau Kelas dari salah satu salinan. Setiap salinan memberi Ras atau Kelasnya satu bagian peluang yang sama: Manusia + Manusia + Elf memberi Manusia 2 dari 3 dan Elf 1 dari 3. Ras atau Kelas yang tidak punya kartu tersisa untuk ditemukan tidak mendapat bagian. Panel menampilkan setiap peluang dan setiap kartu yang bisa keluar. Jika kamu sudah menemukan semua kartu yang bisa diberikan salinan itu, kamu tidak bisa meleburnya. Biaya Esensi: Biasa {common}, Tak Biasa {uncommon}, Langka {rare}, Epik {epic}. Bengkel bertanya dulu jika Dek tersimpan memakai salah satu salinan.",
       gear: "Pahlawanmu punya 4 Perlengkapan: Senjata, Zirah, Jimat, dan Panji. Barak di Kota dan pintasan Pahlawan membuka layar Pahlawan, mulai level Pemain {level}.\n\nTiap Perlengkapan punya level dari 0 sampai {max}. Satu peningkatan menambah 1 level, dengan Koin dan 1 Batu Tempa. Level menentukan tingkat Batu Tempa: Biasa untuk level 1 sampai 5, Tak Biasa untuk 6 sampai 10, Langka untuk 11 sampai 15, Epik untuk 16 sampai 20, dan Legendaris untuk 21 sampai 25. Batu Tempa dari tingkat lain tidak bisa menggantikannya. Peningkatan tidak pernah gagal, dan level tidak pernah turun.\n\nKemenangan Tahap, peti Bintang, Sweep, Dungeon, dan Heynspire memberi Batu Tempa. Kamu tidak bisa membelinya. Layar Pahlawan menampilkan Batu Tempa yang kamu punya.\n\nSerangan Crit memberi 2 kali damage-nya. Serangan yang di-Block memberi setengah damage-nya. Di tiap Pertempuran, Pahlawan dan Unit-mu memakai Perlengkapanmu.",
       dungeon:
         "Dungeon adalah tempat di luar Kampanye. Gua di Kota dan pintasan Dungeon membuka layar Dungeon, mulai level Pemain {level}.\n\nDi Dungeon, kamu melawan semua Bos-nya dalam satu Pertempuran. Papan punya {lanes} Jalur. Tiap Bos adalah Pahlawan musuh dengan Lini, Tangan, dan Dek sendiri. Unit di ujung Jalur menyerang Bos dari Lini itu.\n\nAturan Bos aktif satu kali, saat HP Bos-nya turun ke persen tertentu atau lebih rendah. Bar HP Bos menunjukkan takik di persen itu.\n\nKemenangan Dungeon tidak memberi Bintang. Setelah menang, kamu bisa memainkan Dungeon itu lagi atau melakukan Sweep. Tiap kemenangan Dungeon memberi {tickets} Tiket Sweep Dungeon.",
@@ -1347,9 +1347,16 @@ export default {
       noneFound: "Kamu belum menemukan {group}.",
       noneOwned: "Kamu tidak punya salinan {group} sekarang.",
       allOwned: "Kamu punya salinan semua {group} yang sudah kamu temukan.",
+      noCombine:
+        "Kamu tidak bisa Gabung {group}: kartu Legendaris tidak punya Peringkat berikutnya.",
+      noCraft:
+        "Kamu tidak bisa Buat {group}: kartu Epik dan Legendaris tidak bisa dibuat.",
+      noFuse:
+        "Kamu tidak bisa Lebur {group}: kartu Legendaris tidak bisa masuk ke Lebur.",
       ready: {
         combine: "Kamu tidak punya pasangan {group} sekarang.",
         craft: "Kamu tidak bisa Buat {group} sekarang.",
+        fuse: "Tidak ada salinan {group} yang bisa masuk ke Lebur sekarang.",
         extract: "Kamu tidak punya salinan cadangan {group}.",
       },
     },
@@ -1369,6 +1376,14 @@ export default {
         locked: "Level {level}",
         lockedLabel: "Buat terbuka di level {level}",
       },
+      fuse: {
+        name: "Lebur",
+        recipe: "2–4 salinan + Esensi → kartu baru",
+        count: "{count} kartu yang bisa masuk ke Lebur sekarang",
+        ready: "Bisa Lebur",
+        locked: "Level {level}",
+        lockedLabel: "Lebur terbuka di level {level}",
+      },
       extract: {
         name: "Ekstrak",
         recipe: "1 salinan → Esensi",
@@ -1379,17 +1394,62 @@ export default {
     pairMark: "Pasangan",
     spareMark: "{count} cadangan",
     spareCopies: "{count} salinan cadangan",
+    spareInDecks: "{spare} salinan cadangan · {used} di Dek",
     craftMark: "Buat dengan {essence} Esensi",
+    fuseMark: "{count} salinan bisa masuk ke Lebur",
+    fusePanel: {
+      title: "Lebur",
+      empty:
+        "Masukkan salinan dari kisi. Semua salinan punya Peringkat yang sama. Salinan pertama menentukan Peringkat dan jumlah slot.",
+      slotsGuide: "Biasa dan Tak Biasa: 2\nLangka: 3\nEpik: 4",
+      recipe: {
+        creature: "{count} salinan Kartu Makhluk {rank}",
+        skill: "{count} salinan Kartu Keahlian {rank}",
+      },
+      slots: "Slot Lebur",
+      freeSlot: "Slot kosong",
+      slotLabel: "{name}, {rank}. Tekan untuk mengeluarkannya.",
+      clear: "Keluarkan semua",
+      chances: "Peluang",
+      chance: "{shares} dari {total} · {percent}%",
+      chanceLabel: "{group}: {shares} dari {total}, {percent}%.",
+      allFound: "Semua ditemukan",
+      noShareLabel:
+        "{group}: tanpa bagian. Kamu sudah menemukan semua kartu {group} {rank}.",
+      poolLabel: "Kartu {group} yang bisa diberikan Lebur",
+      moreOne: "Masukkan 1 salinan {rank} lagi.",
+      moreOther: "Masukkan {count} salinan {rank} lagi.",
+      poolOne: "Kamu sudah menemukan semua kartu {group} {rank}.",
+      poolMany: "Kamu sudah menemukan semua kartu {rank} dari {groups}.",
+      after: "Esensimu: {now} → {after}",
+      short: "Esensimu: {now}. Kamu perlu {missing} lagi.",
+      newCard: "Kartu baru",
+      discovered:
+        "{name} sekarang ditemukan. Masukkan salinan baru untuk Lebur lagi.",
+    },
+    chooser: {
+      title: "Masukkan salinan yang mana?",
+      label: "Masukkan 1 salinan {rank} dari {name}",
+    },
+    refusal: {
+      full: "Semua slot sudah penuh. Lebur, atau keluarkan satu salinan.",
+      creature: "Slot sekarang hanya menerima Kartu Makhluk.",
+      skill: "Slot sekarang hanya menerima Kartu Keahlian.",
+      rank: "{name} tidak punya salinan {rank}.",
+      copies: "{name} tidak punya salinan yang bisa masuk ke Lebur.",
+      locked: "Lebur terbuka di level {level}.",
+    },
     craftPanel: {
       gives: "1 salinan {rank}",
       recipe: "{essence} Esensi membuat 1 salinan {rank} dari {name}.",
-      after: "Esensimu: {now} → {after}",
-      short: "Esensimu: {now}. Kamu perlu {missing} lagi.",
-      none: "Kartu ini tidak bisa dibuat.",
       own: "Kamu punya",
     },
     extractPanel: {
       none: "Kamu tidak punya salinan kartu ini. Buat satu, atau dapatkan dari Paket.",
+      excludedEpic:
+        "Kamu tidak punya salinan kartu ini. Dapatkan dari Paket Saudagar atau Kerajaan, atau dari Lebur.",
+      excludedLegendary:
+        "Kamu tidak punya salinan kartu ini. Dapatkan dari Paket Kerajaan.",
       spare: "Cadangan ×{count}",
     },
     noCopies: "0 salinan",
@@ -1407,6 +1467,11 @@ export default {
     need: "Perlu",
     craftLabel: "Buat 1 salinan {rank} dengan {essence} Esensi",
     craftNeedLabel: "Buat 1 salinan {rank}: kamu perlu {essence} Esensi lagi",
+    fuse: "Lebur",
+    fuseLabel: "Lebur {count} salinan {rank} dengan {essence} Esensi",
+    fuseNeedLabel:
+      "Lebur {count} salinan {rank}: kamu perlu {essence} Esensi lagi",
+    fuseNotReadyLabel: "Lebur: belum siap. {reason}",
     path: {
       label: "Jalan ke Legendaris",
       value: "{value}/{target}",
@@ -1419,13 +1484,23 @@ export default {
       combine: "Digabung: {name} sekarang {rank}.",
       craft: "Dibuat: 1 salinan {rank} dari {name}.",
       extract: "Diekstrak: 1 salinan {rank} dari {name}, +{essence} Esensi.",
+      fuse: "Dilebur: {name}, {rank}. Ini kartu baru.",
+      fuseIn: "{name}, {rank}, ada di slot: {count} dari {total}.",
+      fuseOut: "{name} keluar dari slot.",
+      fuseClear: "Slot kosong.",
     },
     extractDialog: {
       title: "Ekstrak salinan ini?",
-      text: "{name}, {rank}. Ekstrak tidak bisa dibatalkan.",
+      text: "Ekstrak tidak bisa dibatalkan.",
       gain: "+{essence} Esensi",
       decks: "Dek ini memakai salinan ini. Salinan itu keluar dari Dek:",
       rank: "Salinan {rank} mahal untuk didapat lagi.",
+      keep: "Simpan",
+    },
+    fuseDialog: {
+      title: "Lebur salinan ini?",
+      text: "Lebur tidak bisa dibatalkan.",
+      decks: "Dek ini memakai salinan ini. Salinan itu keluar dari Dek:",
       keep: "Simpan",
     },
   },
@@ -1519,11 +1594,6 @@ export default {
     },
     showAll: "Tampilkan semua",
     heroClass: "Kelas Pahlawan",
-    curve: "Kurva Hitung mundur",
-    curveColumn:
-      "Hitung mundur {countdown}: {creatures} Kartu Makhluk, {skills} Kartu Keahlian",
-    creature: "Makhluk",
-    skill: "Keahlian",
     thisDeck: "Kartu di Dek ini",
     empty:
       "Dek ini tidak berisi kartu. Pilih kartu di halaman kiri untuk menambahkannya, atau pakai Isi Otomatis.",
@@ -1548,10 +1618,8 @@ export default {
     buySlot: {
       ribbon: "Beli Slot Dek {number} seharga {price}",
       title: "Beli Slot Dek {number}?",
-      text: "Kamu mendapat satu tempat lagi untuk menyimpan Dek. Slot ini milikmu selamanya.",
       price: "Harga",
       balance: "Koinmu",
-      after: "Setelah membeli",
       short: "Kamu butuh {amount} lagi.",
       buy: "Beli",
       cancel: "Batal",

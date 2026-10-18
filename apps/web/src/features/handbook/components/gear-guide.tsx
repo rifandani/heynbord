@@ -116,6 +116,7 @@ export const GearGuide = () => {
                 <CoinPrice
                   parts={coinDenominations(gearUpgradeCoin(level))}
                   format={format}
+                  tone="light"
                   className="font-black text-[#2a1a05]"
                 />
                 <span className="sr-only">

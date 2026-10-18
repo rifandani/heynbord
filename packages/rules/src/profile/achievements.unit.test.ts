@@ -66,7 +66,7 @@ describe("recordAchievements (Achievements 1.2)", () => {
   });
 
   it("completes a Tally goal at its count", () => {
-    const tallies = { packsOpened: 49, combines: 25, crafts: 0 };
+    const tallies = { packsOpened: 49, combines: 25, crafts: 0, fuses: 0 };
     expect(completedBy(profile({ tallies }))).toEqual(["workshop.combines"]);
     expect(
       completedBy(profile({ tallies: { ...tallies, packsOpened: 50 } }))
@@ -152,7 +152,9 @@ describe("achievementProgress", () => {
     });
     expect(
       achievementProgress(
-        profile({ tallies: { packsOpened: 0, combines: 0, crafts: 3 } }),
+        profile({
+          tallies: { packsOpened: 0, combines: 0, crafts: 3, fuses: 0 },
+        }),
         CRAFT
       )
     ).toEqual({ current: 1, target: 1 });

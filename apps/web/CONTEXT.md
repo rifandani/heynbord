@@ -78,11 +78,13 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town**: The hub screen of the game, and the first screen that the Player sees. It is a painted view of a town, with one Building for each screen that the Player can open. _Avoid_: Camp, city, hub, home, lobby, main menu
 
-**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. _Avoid_: hotspot, landmark, location, house
+**Building**: One place in the Town that opens one screen when the Player selects it. A Building that has no screen yet is only decoration: it has no label and the Player cannot select it. The Town Gate, the Card shop, the Workshop, the Market, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. _Avoid_: hotspot, landmark, location, house
 
 **Town Gate**: The Building that opens the Campaign: a large gate with a road that goes out of the Town. _Avoid_: Campaign Building, map house, exit
 
 **Card shop**: The Building that opens the Packs screen: a small house with a purple roof. It opens at Player level 2. _Avoid_: Pack shop, store
+
+**Market**: The Building that opens the Bazaar screen: an open market square with colored tents around a fountain, above the Workshop and right of the Card shop. It has no lock: it opens at any Player level. Its label is above the tents, in the safe area. _Avoid_: Bazaar Building, market square, bazaar stalls
 
 **Barracks**: The Building that opens the Hero screen: a long stone barracks with a fenced training yard. It opens at Player level 5. _Avoid_: Hero Building, armory, training hall
 
@@ -91,6 +93,8 @@ React app on TanStack Start. The server renders and streams each page.
 **Heynspire tower**: The Building that opens the Heynspire screen: the white castle with the tall tower and the blue roofs on the hill at the back of the Town. It opens with the first win of Stage 5-10, not at a Player level. Its label is on the walls of the castle, because a wide screen crops the top of the tower. _Avoid_: castle Building, spire Building, endless tower
 
 **Hall of banners**: The Building that opens the Achievements screen: a wide hall with red roofs and long blue and gold banners, behind the Library and the Card shop. It has no lock: it opens at any Player level. Its label is on the red roofs, under the Heynspire hill. _Avoid_: trophy hall, achievements Building, guild hall
+
+**Seaport quay**: The Building that opens the Seaport screen: the harbour by the sea at the right edge of the Town, with the long piers, the moored ships and the towers with blue roofs, under the Balance Plate corner. It opens at Player level 8. It is outside the safe area, so a narrow screen crops it, and the Seaport shortcut is the sure way in. The current Town painting already has it. _Avoid_: harbour Building, port, dock, pier
 
 **Lock Plate**: The small plate with a lock that replaces the name label of a Building whose screen the Player has not unlocked. It shows the level that opens the screen, or, for the Heynspire tower, the ID of the Boss Stage to win first with a small crown. It has the same tooltip as the Town Bar shortcut: "Opens at level N", or "Win Marrow Castle (5-10) to open". _Avoid_: level badge, locked label
 
@@ -140,7 +144,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Achievement Roll**: The parchment list at the right of the Achievements screen with the rows of the selected category, and Claim all at its foot. Each row shows the name, the goal, the reward and the state: a progress bar ("Not done" for a Feat), Claim, or the check seal. _Avoid_: achievement list, quest list, table
 
-**Claim**: The action that adds the reward of one Completed Achievement to the Profile, on its row of the Achievement Roll. **Claim all** claims all Completed Achievements of all categories at one time. The rules term is the same for a Star chest. _Avoid_: collect, redeem, receive
+**Claim**: The action that adds the reward of one Completed Achievement to the Profile, on its row of the Achievement Roll. **Claim all** claims all Completed Achievements of all categories at one time. The rules term is the same for a Star chest. _Avoid_: collect (a Collect is for an Expedition of the Seaport), redeem, receive
 
 **Achievements badge**: The small gold count on the Achievements shortcut of the Town Bar: the number of Completed Achievements that the Player did not claim. It does not show at 0. _Avoid_: notification dot, red dot, alert
 
@@ -162,13 +166,17 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Workshop screen
 
-**Station**: One of the three places of the Workshop screen, one for each action: Combine, Craft and Extract. The Player selects a Station on its tab, then a card. A Station marks the cards that it can act on, and its Panel shows only its action. _Avoid_: mode, tab (for the concept), workbench
+**Station**: One of the four places of the Workshop screen, one for each action: Combine, Craft, Fuse and Extract. The Player selects a Station on its tab, then a card. A Station marks the cards that it can act on, and its Panel shows only its action. _Avoid_: mode, tab (for the concept), workbench
 
-**Station Panel**: The HUD plate at the right of the Workshop screen for the selected card in the selected Station. The Combine Panel is the ladder of Rank rows, from Legendary at the top to the Base Rank at the bottom, with a Combine on the rung between two rows and the Path to Legendary. The Craft Panel shows the Essence cost and the Base Rank copy that a Craft makes. The Extract Panel has a row for each Rank with a copy, each with its Extract. _Avoid_: Rank Panel, card panel, upgrade panel, detail panel
+**Station Panel**: The HUD plate at the right of the Workshop screen for the selected card in the selected Station. The Combine Panel is the ladder of Rank rows, from Legendary at the top to the Base Rank at the bottom, with a Combine on the rung between two rows and the Path to Legendary. The Craft Panel shows the Essence cost and the Base Rank copy that a Craft makes. An Epic or a Legendary card has no Craft, so it is not in the Craft grid. The Extract Panel has a row for each Rank with a copy, each with its Extract. _Avoid_: Rank Panel, card panel, upgrade panel, detail panel
 
 **Spare copy**: A copy of a card that no saved Deck uses: the copies of a card and Rank less the most that one saved Deck uses. An Extract of a spare copy changes no Deck. _Avoid_: duplicate, extra, surplus
 
 **Path to Legendary**: The groove track in the Combine Panel that counts each copy of the card as Base Rank copies (a copy in Rank r is 2^(r − base) of them), and tells the copies and the Coin that are still needed for one Legendary copy. _Avoid_: progress bar, upgrade path
+
+### Seaport screen
+
+**Seaport screen**: The screen of the Seaport: the harbour seen from the water, with the Expedition plaques and the berth plate over the calm water at its left. The Player Dispatches the ship and Collects its reward there. The rules own the reward math; the screen sends the device time `now` with each Command. _Avoid_: port screen, harbour screen, idle screen
 
 ### Component Catalog
 
@@ -182,8 +190,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 ## Relationships
 
-- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, the Heynspire tower opens the Heynspire screen, and the Hall of banners opens the Achievements screen. Later, the Bazaar Building opens the Bazaar.
-- The **Handbook** and the **Card Details** show the same rule text for a Keyword, a Status or a Damage Type. The Handbook never has its own copy of a rule.
+- Each selectable **Building** opens one screen for a rules term. The Town Gate opens the Campaign, the Card shop opens the Packs screen, the Workshop Building opens the Workshop, the Market opens the Bazaar, the Barracks opens the Hero screen, the Dungeons cave opens the Dungeons screen, the Heynspire tower opens the Heynspire screen, and the Hall of banners opens the Achievements screen. The Seaport quay opens the Seaport screen when that screen exists.
+- The **Handbook** and the **Card Details** show the same rule text for a Keyword and a Status. The **Card Details** show the name of a **Damage Type** only; its rule is in the Handbook. The Handbook never has its own copy of a rule.
 - A **Creature Card** painting has one **Facing**. The Board mirrors that painting for an enemy **Unit**.
 - The **Battle Log** shows the Battle Events that the screen already played. It never shows a later moment than **Live**. While it is open, the Live playback pauses.
 - **Watching a Replay** uses the **Battle Log** mode, but for a **Replay**, not for the current Battle. It has no **Live**, so it has no "Back to Live". The rules run the Replay again to make its Battle Events.

@@ -12,6 +12,8 @@ describe("Level unlocks (GDD 7.1)", () => {
       extract: 3,
       gear: 5,
       craft: 6,
+      fuse: 6,
+      seaport: 8,
       dungeon1: 10,
       dungeon2: 20,
       dungeon3: 30,

@@ -30,6 +30,10 @@
  *   `raw/barracks/prompts.md`: the same for the Barracks inside (section 11).
  * - `raw/hall/layout.png`, `raw/hall/outside-reference.png` and
  *   `raw/hall/prompts.md`: the same for the Hall inside (section 15).
+ * - `raw/bazaar/layout.png`, `raw/bazaar/outside-reference.png` and
+ *   `raw/bazaar/prompts.md`: the same for the Bazaar inside (section 16).
+ * - `raw/seaport/layout.png`, `raw/seaport/outside-reference.png` and
+ *   `raw/seaport/prompts.md`: the same for the Seaport screen (section 17).
  * - `raw/gear/set-reference.png`: the `hero` Town Bar icon. The 4 Gear icons
  *   match it in outline, view angle and scale.
  * - `raw/gear/prompts.md`: the setup message, then one prompt for each Gear
@@ -66,6 +70,8 @@ import {
 } from "../campaign-art/regions.ts";
 import { cellsOf, isTableRule, ROOT } from "../creature-art/concepts.ts";
 import {
+  BAZAAR_PROMPT,
+  BAZAAR_SETUP_PROMPT,
   BARRACKS_PROMPT,
   BARRACKS_SETUP_PROMPT,
   HALL_PROMPT,
@@ -82,6 +88,8 @@ import {
   packSetupPromptOf,
   PAINTING_PROMPT,
   PAINTING_SETUP_PROMPT,
+  SEAPORT_PROMPT,
+  SEAPORT_SETUP_PROMPT,
   setupPromptOf,
   SHOP_PROMPT,
   SHOP_SETUP_PROMPT,
@@ -388,6 +396,163 @@ const writeHallOutside = async (file: string) => {
   await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
     .extract(HALL_OUTSIDE)
     .resize({ width: HALL_OUTSIDE.width * 2 })
+    .png()
+    .toFile(file);
+};
+
+/** A point in percent of a room image, for an SVG polygon. */
+const roomPoint = (x: number, y: number) =>
+  `${(x * ROOM.width) / 100},${(y * ROOM.height) / 100}`;
+
+/** A tent with a pointed top in percent of a room image, in two colors. */
+const tentTop = (
+  x0: number,
+  x1: number,
+  y0: number,
+  y1: number,
+  fill: string,
+  stripe: string
+): string => {
+  const mid = (x0 + x1) / 2;
+  return [
+    `<polygon points="${roomPoint(mid, y0)} ${roomPoint(x0, y1)} ${roomPoint(x1, y1)}" fill="${fill}"/>`,
+    `<polygon points="${roomPoint(mid, y0)} ${roomPoint(mid - (x1 - x0) / 8, y1)} ${roomPoint(mid + (x1 - x0) / 8, y1)}" fill="${stripe}"/>`,
+  ].join("");
+};
+
+/**
+ * The layout sketch of the Bazaar inside: flat shapes at the areas of the
+ * table in section 16.2. ChatGPT keeps its composition, not its colors.
+ */
+const writeBazaarLayout = async (file: string) => {
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
+    // The calm house fronts at the far side of the square, in soft shade.
+    `<rect width="100%" height="100%" fill="#6a5a4a"/>`,
+    ...[30, 44, 58].map(
+      (x) => `<rect ${roomBox(x, x + 5, 34, 50)} fill="#5e4e40"/>`
+    ),
+    // The shaded stone paving of the square.
+    `<rect ${roomBox(0, 100, 72, 88)} fill="#8a7b68"/>`,
+    // The striped awning, the lanterns and the pennant strings.
+    `<rect ${roomBox(0, 100, 0, 12)} fill="#3f6fb0"/>`,
+    ...[8, 24, 40, 56, 72, 88].map(
+      (x) => `<rect ${roomBox(x, x + 8, 0, 12)} fill="#efe6d2"/>`
+    ),
+    ...[26, 50, 74].map(
+      (x) =>
+        `<circle cx="${(x * ROOM.width) / 100}" cy="${0.17 * ROOM.height}" r="22" fill="#ffd27a"/>`
+    ),
+    // The orange tent with the fruit stall, the goat and the fountain at the left edge.
+    `<ellipse cx="${0.19 * ROOM.width}" cy="${0.7 * ROOM.height}" rx="70" ry="26" fill="#5b9bd5"/>`,
+    tentTop(0, 22, 14, 32, "#e07b39", "#efe6d2"),
+    `<rect ${roomBox(0, 20, 32, 84)} fill="#8a5a2c"/>`,
+    `<circle cx="${0.14 * ROOM.width}" cy="${0.44 * ROOM.height}" r="30" fill="#d9b49a"/>`,
+    `<circle cx="${0.09 * ROOM.width}" cy="${0.72 * ROOM.height}" r="24" fill="#efe6d2"/>`,
+    // The red tent with the orc food stall, and the yellow fortune teller tent, at the right edge.
+    tentTop(78, 96, 14, 30, "#c0392b", "#efe6d2"),
+    `<rect ${roomBox(80, 100, 30, 84)} fill="#8a5a2c"/>`,
+    `<circle cx="${0.88 * ROOM.width}" cy="${0.6 * ROOM.height}" r="34" fill="#5a8a4a"/>`,
+    tentTop(90, 100, 22, 36, "#e9c46a", "#efe6d2"),
+    `<circle cx="${0.95 * ROOM.width}" cy="${0.42 * ROOM.height}" r="20" fill="#e9c46a"/>`,
+    // The market counter, with the coin scale and the coin purse.
+    `<rect ${roomBox(0, 100, 84, 100)} fill="#9a6838"/>`,
+    `<rect ${roomBox(0, 100, 88, 100)} fill="#7a4e28"/>`,
+    `<rect ${roomBox(72, 78, 80, 84)} fill="#e9c46a"/>`,
+    "</svg>",
+  ].join("");
+  await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/**
+ * The Market in the Town painting, in pixels of `town.webp`: the market
+ * square with its five tents, its stalls and its fountain (section 2.6).
+ */
+const BAZAAR_OUTSIDE = {
+  left: 1256,
+  top: 372,
+  width: 464,
+  height: 169,
+} as const;
+
+const writeBazaarOutside = async (file: string) => {
+  await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
+    .extract(BAZAAR_OUTSIDE)
+    .resize({ width: BAZAAR_OUTSIDE.width * 2 })
+    .png()
+    .toFile(file);
+};
+
+/**
+ * The layout sketch of the Seaport screen: flat shapes at the areas of the
+ * table in section 17.2. ChatGPT keeps its composition, not its colors.
+ */
+const writeSeaportLayout = async (file: string) => {
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
+    // The calm open water, from the left third to the bottom.
+    `<rect width="100%" height="100%" fill="#3f7fc0"/>`,
+    ...[30, 48, 66].map(
+      (y) => `<rect ${roomBox(4, 30, y, y + 0.4)} fill="#4a8ac8"/>`
+    ),
+    // The plain sky band and its clouds, and the gulls at the right.
+    `<rect ${roomBox(0, 100, 0, 14)} fill="#8ec5ec"/>`,
+    `<ellipse cx="${0.2 * ROOM.width}" cy="${0.07 * ROOM.height}" rx="120" ry="30" fill="#f4f6fa"/>`,
+    ...[
+      [80, 8],
+      [88, 11],
+    ].map(
+      ([x, y]) => `<rect ${roomBox(x, x + 2.4, y, y + 0.8)} fill="#f4f6fa"/>`
+    ),
+    // The town wall with the blue roofs and the square towers at the right.
+    `<rect ${roomBox(66, 100, 22, 52)} fill="#d8c8a8"/>`,
+    `<rect ${roomBox(66, 100, 14, 24)} fill="#2f4f9a"/>`,
+    `<rect ${roomBox(70, 76, 10, 52)} fill="#cbb995"/>`,
+    `<polygon points="${roomPoint(69, 10)} ${roomPoint(73, 3)} ${roomPoint(77, 10)}" fill="#2f4f9a"/>`,
+    // The big cargo ship with its two sails, and the small ship behind it.
+    `<rect ${roomBox(44, 70, 52, 62)} rx="20" fill="#7a5233"/>`,
+    `<rect ${roomBox(48, 56, 18, 50)} fill="#f2ead8"/>`,
+    `<rect ${roomBox(58, 66, 24, 50)} fill="#f2ead8"/>`,
+    `<rect ${roomBox(56, 56.6, 14, 18)} fill="#e9c46a"/>`,
+    `<rect ${roomBox(62, 72, 44, 50)} rx="12" fill="#6b4a2e"/>`,
+    `<rect ${roomBox(65, 70, 30, 44)} fill="#e8dfcc"/>`,
+    // The long pier on its posts, from the quay into the water.
+    `<rect ${roomBox(36, 70, 62, 66)} fill="#9a6838"/>`,
+    ...[38, 46, 54, 62].map(
+      (x) => `<rect ${roomBox(x, x + 1, 66, 76)} fill="#5a3a22"/>`
+    ),
+    // The stone quay with the crates, the barrels, the dock workers and the cat.
+    `<rect ${roomBox(66, 100, 52, 88)} fill="#bfae8e"/>`,
+    `<rect ${roomBox(72, 80, 60, 70)} fill="#a0703a"/>`,
+    `<rect ${roomBox(90, 96, 62, 72)} fill="#8a5a2c"/>`,
+    `<circle cx="${0.84 * ROOM.width}" cy="${0.6 * ROOM.height}" r="26" fill="#d9b49a"/>`,
+    `<circle cx="${0.88 * ROOM.width}" cy="${0.6 * ROOM.height}" r="30" fill="#6fa055"/>`,
+    `<circle cx="${0.93 * ROOM.width}" cy="${0.6 * ROOM.height}" r="14" fill="#e08a3a"/>`,
+    // The water front with the reflections of the ships.
+    `<rect ${roomBox(0, 100, 88, 100)} fill="#2f6aa8"/>`,
+    `<rect ${roomBox(46, 68, 88, 92)} fill="#3a5f8a"/>`,
+    "</svg>",
+  ].join("");
+  await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/**
+ * The harbour in the Town painting, in pixels of `town.webp`: the piers, the
+ * big ship and the small ship, the quay and its towers with the blue roofs
+ * (the box of the Seaport quay in section 1.2, a little higher, so the sails
+ * show too).
+ */
+const SEAPORT_OUTSIDE = {
+  left: 1660,
+  top: 220,
+  width: 326,
+  height: 280,
+} as const;
+
+const writeSeaportOutside = async (file: string) => {
+  await sharp(path.join(ROOT, "apps/web/public/town/town.webp"))
+    .extract(SEAPORT_OUTSIDE)
+    .resize({ width: SEAPORT_OUTSIDE.width * 2 })
     .png()
     .toFile(file);
 };
@@ -774,6 +939,72 @@ const hallFile = (): string =>
     "",
   ].join("\n");
 
+const BAZAAR_FIXES = [
+  "| Problem | Fix |",
+  "| --- | --- |",
+  '| The center is busy or bright | Select the center and send "Edit the image only in the selected area: plain warm stone house fronts with closed shutters in soft shade. Keep all else the same." |',
+  "| A tent, the goat, the cook or the fountain is in the center | Send the painting message again. |",
+  '| The scene is indoors, under a roof of timber beams | Send the painting message again, and add: "open-air market square, sky light, no roof". |',
+  "| A card, a pack, a portrait or a board shows | Select it and ask for the market goods around it, for example fruit, bread or cloth. |",
+  "| Text-like marks on a sign or a crate | Select the area and ask for the material around it, for example plain wood or plain cloth. |",
+].join("\n");
+
+const bazaarFile = (): string =>
+  [
+    "# Bazaar inside prompts",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
+    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
+    "3. Select one image with the review checklist (Town Concepts, 16.6). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder.",
+    "4. Do steps 3 to 6 of Town Concepts, 16.5.",
+    "",
+    "## Setup message",
+    "",
+    block(BAZAAR_SETUP_PROMPT),
+    "",
+    "## Painting",
+    "",
+    block(BAZAAR_PROMPT),
+    "",
+    "## Fixes",
+    "",
+    BAZAAR_FIXES,
+    "",
+  ].join("\n");
+
+const SEAPORT_FIXES = [
+  "| Problem | Fix |",
+  "| --- | --- |",
+  '| The left third is busy or bright | Select the left third and send "Edit the image only in the selected area: calm open sea, soft blue water with small gentle waves, low contrast. Keep all else the same." |',
+  "| A ship, a boat, a rock or the pier is in the left third | Send the painting message again. |",
+  '| The view is from the quay, not from the water | Send the painting message again, and add: "seen from a small boat on the water, the quay is across the water at the right". |',
+  "| A card, a pack, a cannon or a pirate flag shows | Select it and ask for the cargo around it, for example crates, barrels or sacks. |",
+  "| Text-like marks on a crate, a sail or a sign | Select the area and ask for the material around it, for example plain wood or plain sail cloth. |",
+].join("\n");
+
+const seaportFile = (): string =>
+  [
+    "# Seaport prompts",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
+    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
+    "3. Select one image with the review checklist (Town Concepts, 17.6). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder.",
+    "4. Do steps 3 to 6 of Town Concepts, 17.5.",
+    "",
+    "## Setup message",
+    "",
+    block(SEAPORT_SETUP_PROMPT),
+    "",
+    "## Painting",
+    "",
+    block(SEAPORT_PROMPT),
+    "",
+    "## Fixes",
+    "",
+    SEAPORT_FIXES,
+    "",
+  ].join("\n");
+
 const CAVE_FIXES = [
   "| Problem | Fix |",
   "| --- | --- |",
@@ -928,11 +1159,15 @@ const shopDir = path.join(RAW_DIR, "shop");
 const workshopDir = path.join(RAW_DIR, "workshop");
 const barracksDir = path.join(RAW_DIR, "barracks");
 const hallDir = path.join(RAW_DIR, "hall");
+const bazaarDir = path.join(RAW_DIR, "bazaar");
+const seaportDir = path.join(RAW_DIR, "seaport");
 const gearDir = path.join(RAW_DIR, "gear");
 const caveDir = path.join(RAW_DIR, "cave");
 const heynspireDir = path.join(RAW_DIR, "heynspire");
 mkdirSync(barracksDir, { recursive: true });
 mkdirSync(hallDir, { recursive: true });
+mkdirSync(bazaarDir, { recursive: true });
+mkdirSync(seaportDir, { recursive: true });
 mkdirSync(caveDir, { recursive: true });
 mkdirSync(heynspireDir, { recursive: true });
 mkdirSync(gearDir, { recursive: true });
@@ -968,6 +1203,12 @@ writeFileSync(path.join(barracksDir, "prompts.md"), barracksFile());
 await writeHallLayout(path.join(hallDir, "layout.png"));
 await writeHallOutside(path.join(hallDir, "outside-reference.png"));
 writeFileSync(path.join(hallDir, "prompts.md"), hallFile());
+await writeBazaarLayout(path.join(bazaarDir, "layout.png"));
+await writeBazaarOutside(path.join(bazaarDir, "outside-reference.png"));
+writeFileSync(path.join(bazaarDir, "prompts.md"), bazaarFile());
+await writeSeaportLayout(path.join(seaportDir, "layout.png"));
+await writeSeaportOutside(path.join(seaportDir, "outside-reference.png"));
+writeFileSync(path.join(seaportDir, "prompts.md"), seaportFile());
 await sharp(path.join(ROOT, SOURCE_DIR, "hero-icon.jpg"))
   .png()
   .toFile(path.join(gearDir, "set-reference.png"));
@@ -1003,5 +1244,5 @@ console.log(
   `Packs: ${packs.length} Packs, set reference ${PACK_SET_REFERENCE}`
 );
 console.log(
-  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md, ${RAW_DIR}/hall/prompts.md, ${RAW_DIR}/gear/prompts.md, ${RAW_DIR}/cave/prompts.md and ${RAW_DIR}/heynspire/prompts.md`
+  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md, ${RAW_DIR}/hall/prompts.md, ${RAW_DIR}/bazaar/prompts.md, ${RAW_DIR}/seaport/prompts.md, ${RAW_DIR}/gear/prompts.md, ${RAW_DIR}/cave/prompts.md and ${RAW_DIR}/heynspire/prompts.md`
 );

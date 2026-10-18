@@ -12,7 +12,7 @@ import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 
-/** The width of the state slot at the right of each row: the bar, Claim or the seal. */
+/** The width of the state slot at the right of each row: the bar, Claim or the Claimed badge. */
 const SLOT =
   "w-40 [@media(max-height:500px)]:w-[7.5rem] max-[720px]:w-[7.5rem]";
 
@@ -143,22 +143,22 @@ const ProgressBar = ({
 };
 
 /**
- * The check seal of a Claimed row: a gold seal with the check mark, and
- * "Claimed". It stamps onto the parchment when the Player claims the row on
- * this visit (`stamp` is its wait in ms), and it is still when the row was
- * Claimed before. With reduced motion, it shows at once.
+ * The Claimed badge of a Claimed row: a parchment pill with the shape of the
+ * Claim token, with the gold check seal where the token has its star, and
+ * "Claimed". It is parchment and pressed into the roll, because it is not an
+ * action (The Gold Means Act Rule). It stamps onto the parchment when the
+ * Player claims the row on this visit (`stamp` is its wait in ms), and it is
+ * still when the row was Claimed before. With reduced motion, it shows at
+ * once.
  */
 const ClaimedSeal = ({ stamp }: { readonly stamp: number | null }) => {
   const { tr } = useGameText();
   return (
-    <span
-      className={cn("flex items-center gap-2", SLOT)}
-      data-testid="achievement-claimed"
-    >
+    <span className={cn("flex", SLOT)}>
       <span
-        aria-hidden
         className={cn(
-          "grid size-8 shrink-0 place-items-center rounded-full border-2 border-[#7a5310] bg-[radial-gradient(circle_at_35%_30%,#ffe08a,#e2a93b_70%)] text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:size-6",
+          "flex h-8 items-center gap-1.5 rounded-full border-2 border-[#c9b48c] bg-[#ead9b4] py-0 pr-3.5 pl-1 text-[13px] font-bold text-[#5b4632] shadow-[inset_0_1px_2px_rgba(0,0,0,0.18)]",
+          "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:pr-2.5 [@media(max-height:500px)]:text-xs",
           stamp !== null &&
             "motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
         )}
@@ -167,13 +167,17 @@ const ClaimedSeal = ({ stamp }: { readonly stamp: number | null }) => {
             ? undefined
             : ({ animationDelay: `${stamp}ms` } satisfies CSSProperties)
         }
+        data-testid="achievement-claimed"
       >
-        <GlyphIcon
-          glyph="check"
-          className="size-4 [@media(max-height:500px)]:size-3"
-        />
-      </span>
-      <span className="text-[13px] font-bold text-[#5b4632] [@media(max-height:500px)]:text-[11px]">
+        <span
+          aria-hidden
+          className="grid size-6 shrink-0 place-items-center rounded-full border border-[#7a5310] bg-[radial-gradient(circle_at_35%_30%,#ffe08a,#e2a93b_70%)] text-[#2a1a05] shadow-[0_1px_0_rgba(0,0,0,0.3)] [@media(max-height:500px)]:size-5"
+        >
+          <GlyphIcon
+            glyph="check"
+            className="size-3.5 [@media(max-height:500px)]:size-3"
+          />
+        </span>
         {tr("achievements.screen.claimed")}
       </span>
     </span>
@@ -183,8 +187,9 @@ const ClaimedSeal = ({ stamp }: { readonly stamp: number | null }) => {
 /**
  * One row of the roll (Achievements 4): the name and the goal, the reward,
  * and the state: the progress bar ("Not done" for a Feat), Claim, or the
- * check seal. A Completed row is lit, so the rewards to claim stand out on
- * the roll. `stamp` is the wait of the seal of a row that this visit claimed.
+ * Claimed badge. A Completed row is lit, so the rewards to claim stand out
+ * on the roll. `stamp` is the wait of the badge of a row that this visit
+ * claimed.
  */
 export const AchievementRow = ({
   row,

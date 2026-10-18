@@ -260,13 +260,17 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Discovered**: The state of a Card that the Player has owned at least one time. _Avoid_: unlocked, known, seen
 
-**Combine**: The action that changes two copies of the same Card in the same Rank into one copy in the next Rank. _Avoid_: fuse, merge, upgrade, evolve
+**Combine**: The action that changes two copies of the same Card in the same Rank into one copy in the next Rank. _Avoid_: merge, upgrade, evolve
 
 **Extract**: The action that changes one Card copy into Essence. _Avoid_: dismantle, disenchant, salvage, sell
 
-**Craft**: The action that changes Essence into one copy of a Discovered Card in its Base Rank. _Avoid_: forge, make, fuse
+**Craft**: The action that changes Essence into one copy of a Discovered Card in its Base Rank. Only a Card with Base Rank Common, Uncommon or Rare can be Crafted ([ADR-0052](../../docs/adr/0052-craft-gives-no-epic-or-legendary-card.md)). _Avoid_: forge, make
 
-**Essence**: The resource from Extract that pays for Craft. _Avoid_: dust, material, shards
+**Fuse**: The action that changes 2 to 4 Card copies and Essence into one copy of a Card that the Player has not Discovered. All the input copies have the same Rank, and they are all Creature Cards or all Skill Cards. The new Card comes from the Fuse pool, in its Base Rank. _Avoid_: merge, synthesize, transmute, recipe
+
+**Fuse pool**: The Cards that one Fuse can give: the Cards that the Player has not Discovered, with a Base Rank that is the Rank of the input copies, and with the Race (or the Class) of an input copy. _Avoid_: recipe pool, fuse table, drop table
+
+**Essence**: The resource from Extract that pays for Craft and Fuse. _Avoid_: dust, material, shards
 
 **Coin**: The currency that the Player earns in Battles and other play. It pays for Packs, Combine, Gear upgrades (with a Forge Stone) and Deck Slots. _Avoid_: Marks, money, gold (as a name for all of the currency)
 
@@ -310,7 +314,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Player level**: The level of the Player from XP. It sets the Hero HP and the Deck size limits. _Avoid_: account level, Hero level
 
-**Workshop**: The set of actions that change Card copies and Essence: Combine, Extract and Craft. _Avoid_: alchemy lab, forge
+**Workshop**: The set of actions that change Card copies and Essence: Combine, Extract, Craft and Fuse. _Avoid_: alchemy lab, forge
 
 **Cosmetic**: An item that changes how something looks and never changes gameplay. _Avoid_: skin (as a general word), vanity item
 
@@ -327,6 +331,14 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Feat**: An Achievement that one won Battle completes, with a goal about the Deck, the Turns or the events of that Battle. _Avoid_: challenge, trial, battle achievement
 
 **Tally**: A lifetime count in the Profile that an Achievement uses, for example the number of Packs opened. It only goes up. _Avoid_: stat, statistic, counter
+
+**Seaport**: The feature that gives a reward while the Player is away: one ship, one berth and the Expeditions. It opens at Player level 8. _Avoid_: harbor, port, idle mode, AFK reward, offline reward
+
+**Expedition**: One voyage of the Seaport ship: a duration, an unlock level and a reward for each hour away. There are 4: the Coastal Run, the Trade Route, the Long Voyage and the Grand Expedition. _Avoid_: voyage (as a term), trip, mission, quest, sailing
+
+**Dispatch**: The action that sends the ship on one Expedition at the device time `now`. It costs nothing. _Avoid_: send, launch, sail, start (in player-facing text)
+
+**Collect**: The action that takes the reward of the Expedition at `now` and brings the ship back to the berth. An early Collect gives the share of the time away. _Avoid_: claim, harvest, loot, redeem
 
 **Play Style**: A fixed priority list that tells the economy simulation how a simulated Player spends Coin and Essence, for example Collector, Upgrader or Balanced. _Avoid_: profile, persona, spending plan
 
@@ -424,7 +436,9 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Starter Deck** can also be an **Archetype**. An Archetype does not have to be a Starter Deck. A **Matchup** of an Archetype against itself is a mirror.
 - A **Card copy** has one **Rank**. **Combine** raises the Rank. The **Countdown** does not change with the Rank.
 - A **Card copy** is never below its **Base Rank**: in a **Deck**, in a **Collection** and as a **Start Unit**.
-- A **Deck** holds a **Card** and a **Rank**, not one specific **Card copy**. After a **Combine**, a Deck that used the old-Rank copies uses the new-Rank copy. After an **Extract**, the copy goes out of each Deck that used it. A Card stays **Discovered** after its last copy is Extracted.
+- A **Deck** holds a **Card** and a **Rank**, not one specific **Card copy**. After a **Combine**, a Deck that used the old-Rank copies uses the new-Rank copy. After an **Extract** or a **Fuse**, the copy goes out of each Deck that used it. A Card stays **Discovered** after its last copy is Extracted or Fused.
+- A **Fuse** uses 2 copies in the **Rank** Common or Uncommon, 3 copies in the Rank Rare, or 4 copies in the Rank Epic. A Legendary copy is never an input, and a **Specialist** is never a result. The Rank is the Rank of each copy, not its **Base Rank**: a Common Card at Rare Rank is a Rare input ([ADR-0051](../../docs/adr/0051-fuse-gives-a-card-that-is-not-discovered.md)).
+- Each input copy of a **Fuse** gives its **Race** (or its **Class**) one equal share of the chance. A Race or a Class with no Card in the **Fuse pool** has no share. A Fuse always gives a new **Discovered** Card: when the Fuse pool is empty, the Player cannot Fuse.
 - Each **Stage** has one **Recommended level**. It is a guide, not a lock: a Player below it can still play the Stage. A loss (its **Loss share**) gives XP too, so a real Player is at or above the level of the **First-try Path**.
 - A **Stage** **Repeat win** and a **Campaign Sweep** give no XP. A **Dungeon** Repeat win and a **Dungeon Sweep** give XP ([ADR-0049](../../docs/adr/0049-a-stage-repeat-win-gives-no-xp.md)).
 - Each **Stage** hits its win-rate target two times: with no **Gear** and with the **Expected Gear**, both at the **Recommended level**. A Player who loses gets **Gear** sooner. That is a catch-up, not a miss.
@@ -433,7 +447,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The Player can do a **Campaign Sweep** of a **Stage** only when its best **Stars** are 3, and a **Dungeon Sweep** of a **Dungeon** only when it has 1 or more wins. A Sweep always wins: each Ticket gives one repeat-win reward. A Sweep never changes the **Stars** or the wins of a Dungeon, and it gives no Tickets.
 - A **Stage** win and a **Floor** win give 2 **Campaign Sweep Tickets**. A **Dungeon** win gives 1 **Dungeon Sweep Ticket**. A loss and an **Abandon** give none. The two types of Ticket never change into each other. The Bazaar never sells them, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0035](../../docs/adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md), [ADR-0041](../../docs/adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).
 - A **Gear upgrade** to level _n_ uses 1 **Forge Stone** of the tier of level _n_. A Forge Stone of a different tier cannot replace it, and Forge Stones never combine or change into a different tier. The Bazaar never sells Forge Stones, and they never change into **Coin**, **Essence** or **Heynstones** ([ADR-0038](../../docs/adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
-- A **Stage** first win, a 10-Star **Star chest**, a repeat win, a **Sweep**, a **Dungeon** win and some **Floor** first wins give **Forge Stones** (Economy 2). Only Dungeon 3 wins and the first wins of the 10th Floors give Legendary Forge Stones. The Player keeps them before **Gear** unlocks.
+- A **Stage** first win, a 10-Star **Star chest**, a repeat win, a **Sweep**, a **Dungeon** win, some **Floor** first wins and a full Grand **Expedition** give **Forge Stones** (Economy 2). Only Dungeon 3 wins and the first wins of the 10th Floors give Legendary Forge Stones. The Player keeps them before **Gear** unlocks.
+- The **Seaport** has one ship. The ship is at the berth or on one **Expedition**. A **Dispatch** needs the ship at the berth and a **Player level** at or above the unlock level of the Expedition. A **Collect** brings the ship back to the berth.
+- The rules own the reward of an **Expedition**: each rate × the time away, up to its duration, in whole units rounded down (`expeditionReward`). The web sends `now`, the device time, with each Command, so the same **Profile** and the same `now` give the same reward. When `now` is before the **Dispatch**, the reward is 0, and a **Collect** does nothing ([ADR-0053](../../docs/adr/0053-the-seaport-gathers-coin-on-the-device-clock.md)).
+- An **Expedition** gives **Coin**, XP and **Essence**, never **Heynstones**. Only a full Grand Expedition gives a **Forge Stone**: an early **Collect** gives none.
 - A **Boss** has 0 or more **Boss Rules** ([ADR-0040](../../docs/adr/0040-a-boss-rule-is-a-one-time-hp-threshold-with-a-fixed-effect-list.md)). A Boss Rule activates at most one time in a Battle, and never for a **Defeated** Boss. A Boss Rule never heals a Hero ([ADR-0028](../../docs/adr/0028-nothing-heals-a-hero.md)). A Boss Rule that can still put a Unit on the Board stops its Side from being **Routed** until it activates.
 - A **Dungeon** has 1 or more **Bosses**. All of them are on the enemy Side of one **Battle**. Each Dungeon unlocks at a **Player level**. A Dungeon win gives no **Stars**. The **Recommended level** of a Dungeon is its unlock level.
 - **Heynspire** opens with the first win of the last **Boss Stage**. The Player fights only the **Current Floor**, and a won **Floor** cannot be played again: it has no repeat-win reward and no **Sweep**. A Floor win gives no **Stars**. Each Floor hits the win-rate target of a **Stage**, and each **Boss Floor** the target of a **Boss Stage**, with no **Gear** and with the **Expected Gear** ([ADR-0042](../../docs/adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md)).
@@ -450,7 +467,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 - The original games used "stars" for card grades. Heynbord uses **Rank** for card grades and **Stars** only for Stage results.
 - 3 **Stars** needed a win before Turn number 15 on all **Stages**. Now each Stage has its own **Star Turn**. Do not call it a "Turn limit": the Turn limit is Turn number 60, when the **Defender** wins.
-- "Fuse" in the original games was a random recipe system. Heynbord does not have it. **Combine** and **Craft** replace it.
+- "Fuse" in the original games was a random recipe system. Heynbord did not have it before, and **Combine** and **Craft** replaced it. Now Heynbord has **Fuse**, but it is not the old system: it always gives a Card that the Player has not **Discovered**, and the inputs set the **Rank** and the **Races** or **Classes** of the result ([ADR-0051](../../docs/adr/0051-fuse-gives-a-card-that-is-not-discovered.md)). Combine still makes a higher Rank of the same Card, and Craft still makes a Discovered Card that the Player selects.
+- "Unit card" is not a term. A Card that summons a **Unit** is a **Creature Card**. A Fuse of "Units" is a Fuse of Creature Cards.
 - **Recall** was named "Mastery" before. "Mastery" told the Rank, not the effect, so Players did not know what it did.
 - **Hero** and **Player** are different. A Player is a person. A Hero is the commander on the Board.
 - GDD 5.5 and an early code note put the **Class** on the **Hero**, and moved it there when the Hero screen came. The Class stays on the **Deck Slot**, and the Hero has the Class of the **Active Deck**. Thus a change of Class never makes a Deck invalid.
@@ -460,6 +478,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - The tutorial was 6 steps before: Stages 1-1 to 1-3, the Deck builder, the first Pack and Combine. Now the **Tutorial** is one session in Stage 1-1, and the other lessons are **Hints**.
 - GDD 8.3 says "a quit". The term is **Abandon**: it records no result, and it is not a loss.
 - A **Deck Slot** cost Heynstones in the **Bazaar** before, and a new Player had 5. Now a new Player has 3, and the Player buys more with **Coin**. A Deck Slot is still a **Convenience**, because it gives no power.
+- **Collect** and **Claim** are different. A Claim takes the reward of an **Achievement** or a **Star chest**: a fixed reward, one time. A Collect takes the reward of an **Expedition**: its size comes from the time away, and the Player can Collect again after each **Dispatch**.
 - **Coin** was named "Marks" before. Gold, Silver and Copper are its denominations, not separate currencies.
 - The **Summon Column** was a Side's Column 1 only. Now the **Summon Zone** is Columns 1 to 3, so a Unit can be summoned past an enemy Unit in the zone ([ADR-0011](../../docs/adr/0011-the-summon-zone-is-3-columns-deep.md)). A Unit with **Wall** can also be summoned into Columns 4 and 5. Those Squares are not part of the Summon Zone ([ADR-0023](../../docs/adr/0023-a-wall-can-be-summoned-up-to-column-5.md)).
 - The **Races** were named Hearthkin, Thornwild, Hollowborn and Wildmaw before. Those names did not tell Players what the people are. Now they are **Human**, **Elf**, **Undead** and **Orc**, with the same battle identities. Region names such as Hearthvale stay, because they are place names, not Race names.
@@ -477,7 +496,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Wall** did not move or attack only because it had Speed 0 and Base Attack 0. Then a Speed or Attack buff, also Charge, could make a Wall move or attack. Now the Wall Keyword itself stops Movement, attacks, Retaliate and First Strike. The Attack 0 of a Wall Card is only a rule for the Card, so that the Power Budget does not count a stat that has no effect. A Wall Card had Speed 0 before. Now it has the Base Speed 2, the same as each Unit, and the Wall Keyword stops its Movement.
 - An early plan said that the **Rally N** bonus "applies to attacks and to Retaliate", as for **Swarm N**. But the Rally bonus ends at the end of its owner's **Turn**, and Retaliate and First Strike occur only in the enemy's Turn. Thus Rally never adds to Retaliate or First Strike. Swarm does, because the Swarm bonus has no duration.
 - Each **Starter Deck** had one Epic card before (Iron Bulwark and Warchief Grukka). Now a Starter Deck has only Common and Uncommon copies. "Epic card" is not exact: the limit is on the **Rank** of each copy, so a Common card at Rare Rank is also not permitted.
-- The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft**.
+- The Collection hid the cards that are not **Discovered** before. Now the Player sees all cards, also the cards that the Player does not own. Discovered controls only **Craft** and **Fuse**.
 - The GDD had a Collection screen before, next to the Deck builder. The two screens showed almost the same cards, so the Collection screen was removed. The **Collection** is the data that the Player owns, not a screen: the Deck builder shows it. "Inventory" is not a term: each thing that the Player owns shows on the screen where the Player uses it.
 - All Cards in a Hand counted down at the same time before. Then the Deck size, not the Countdown, limited the cards that a Hero played. For a short time (issue #21), only 3 "Ticking Cards" counted down, and the other Cards were "Waiting Cards". Players found this slow and hard to track, so it was removed: all Cards in the Hand count down again. Now only the **Countdown Limit** of a Deck makes a long Countdown a real cost ([ADR-0021](../../docs/adr/0021-countdown-is-a-real-cost.md)). The Countdown Limit is not a cost: "cost" stays on the _Avoid_ list of **Countdown**, because a Card is never paid for in a Battle.
 - Melee and Common Units had **Entangle** before. On a Melee Unit it did almost nothing, and on a Ranged Unit it kept one enemy at Speed 0 in each Turn (issue #23). Now only a Ranged Unit with Base Rank Epic or higher has Entangle.

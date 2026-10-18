@@ -4,6 +4,7 @@ import type { ReactElement } from "react";
 
 import { RankGems } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { GraveyardIcon } from "@/features/battle/components/graveyard-icon";
 import { StatusIcon } from "@/features/battle/components/status-icon";
 import { DAMAGE_GLYPH } from "@/features/battle/glyphs";
 import { DAMAGE_COLORS, RANK_COLORS } from "@/features/battle/palette";
@@ -73,6 +74,13 @@ export const SmallIcon = ({
         </span>
       );
     }
+    case "graveyard": {
+      return (
+        <span className={box} aria-hidden>
+          <GraveyardIcon className="size-full" />
+        </span>
+      );
+    }
     default: {
       return absurd(icon);
     }
@@ -107,6 +115,9 @@ const LargeFace = ({ icon }: { readonly icon: EntryIcon }): ReactElement => {
     }
     case "coin": {
       return <BalanceIcon kind="coin" className={size} />;
+    }
+    case "graveyard": {
+      return <GraveyardIcon className={size} />;
     }
     default: {
       return absurd(icon);

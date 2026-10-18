@@ -94,7 +94,11 @@ const CombineRung = ({
             <span className="font-display font-bold">
               {tr("workshop.station.combine.name")}
             </span>
-            <CoinPrice parts={coinDenominations(state.coin)} format={format} />
+            <CoinPrice
+              parts={coinDenominations(state.coin)}
+              format={format}
+              tone="light"
+            />
           </>
         ) : (
           <span className="font-semibold">

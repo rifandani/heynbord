@@ -51,11 +51,23 @@ describe("newProfile", () => {
     expect(profile.seenHints).toEqual([]);
     expect(profile.completedAchievements).toEqual([]);
     expect(profile.claimedAchievements).toEqual([]);
-    expect(profile.tallies).toEqual({ packsOpened: 0, combines: 0, crafts: 0 });
+    expect(profile.tallies).toEqual({
+      packsOpened: 0,
+      combines: 0,
+      crafts: 0,
+      fuses: 0,
+    });
     expect(profile.packState.guaranteeCounters).toEqual({
       peddler: 0,
       merchant: 0,
       royal: 0,
+    });
+  });
+
+  it("has the Seaport ship at the berth", () => {
+    expect(newProfile(42).seaport).toEqual({
+      expeditionId: null,
+      startedAt: null,
     });
   });
 

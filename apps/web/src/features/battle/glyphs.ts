@@ -261,6 +261,12 @@ export const GLYPHS = {
   /** A flame in the stone arch of a forge: the Craft station of the Workshop. */
   forge:
     "M-40 44 V-6 Q-40 -44 0 -44 Q40 -44 40 -6 V44 Z M-24 44 V-2 Q-24 -28 0 -28 Q24 -28 24 -2 V44 Z M0 34 C-14 34 -18 20 -11 9 C-7 16 -3 16 -2 12 C-4 1 3 -8 7 -14 C7 -3 16 4 14 17 C13 28 8 34 0 34 Z",
+  /**
+   * A crucible on two legs with the Heynbord star in it and bubbles over it:
+   * the Fuse station of the Workshop, where copies go in and a new card comes
+   * out. Fill only: the star is cut out of the bowl.
+   */
+  crucible: `M-36 -26 H36 Q40 -26 40 -22 V-17 Q40 -13 36 -13 H-36 Q-40 -13 -40 -17 V-22 Q-40 -26 -36 -26 Z M-31 -9 H31 Q32 21 0 27 Q-32 21 -31 -9 Z M0 -1 L4 7 L12 11 L4 15 L0 23 L-4 15 L-12 11 L-4 7 Z M-20 31 L-25 46 H-15 L-11 32 Z M20 31 L25 46 H15 L11 32 Z ${circle(-12, -37, 5)} ${circle(7, -45, 4)} ${circle(17, -34, 3)}`,
   /** A card that melts into a drop: the Extract station of the Workshop. */
   melt: "M-30 -40 Q-30 -46 -24 -46 H24 Q30 -46 30 -40 V0 Q30 6 24 8 Q18 10 16 18 Q14 26 10 18 Q6 8 0 10 Q-6 12 -8 22 Q-10 30 -14 22 Q-16 12 -22 10 Q-30 8 -30 2 Z M-18 -34 H18 V-6 H-18 Z M0 26 Q-9 38 -9 41 A9 9 0 0 0 9 41 Q9 38 0 26 Z",
   pack: "M-30 -40 L-20 -46 L-10 -40 L0 -46 L10 -40 L20 -46 L30 -40 V44 H-30 Z M0 -16 L6 -2 L20 -2 L9 7 L13 22 L0 13 L-13 22 L-9 7 L-20 -2 L-6 -2 Z",
@@ -338,6 +344,7 @@ export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
   "scroll",
   "campaignTicket",
   "dungeonTicket",
+  "crucible",
 ]);
 
 /**

@@ -208,6 +208,19 @@ test.describe("Dungeons screen", () => {
     await page.getByTestId("dungeon-tab-1").click();
     await expect(page.getByTestId("dungeon-fight-bar")).toBeVisible();
 
+    // The arrow keys stay in the Dungeon tabs: a tab change must not move the
+    // focus to the Fight bar of the new tab.
+    await page.getByTestId("dungeon-tab-1").focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.getByTestId("dungeon-tab-2")).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await expect(page.getByTestId("dungeon-tab-2")).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    await expect(page.getByTestId("dungeon-tab-1")).toBeFocused();
+    await expect(page.getByTestId("dungeon-fight-bar")).toBeVisible();
+
     // One wanted poster for each Boss, with its Lanes, its Boss Rule and the notch.
     await expect(page.locator("article[data-testid^='poster-']")).toHaveCount(
       2

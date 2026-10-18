@@ -12,7 +12,11 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
 import { RACE_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
-import { BalanceIcon } from "@/features/town/components/balance-icon";
+import type { CoinTone } from "@/features/town/components/balance-icon";
+import {
+  BalanceIcon,
+  DENOMINATION_TEXT,
+} from "@/features/town/components/balance-icon";
 
 /** The painted Pack (11 — Town Concepts 8): 512 × 768 WebP with alpha. */
 const packImage = (pack: PackId) => `/packs/${pack}.webp`;
@@ -130,16 +134,24 @@ export const PackArt = ({
 
 /**
  * A Coin price on any face: each denomination with its coin and its short
- * letter. The text takes the color of its parent, so it reads on a gold or a
- * wood button. Decorative: the button names the price in words.
+ * letter, the letter in the metal color of its coin. The amount takes the
+ * color of its parent, so it reads on a gold or a wood button. Decorative: the
+ * button names the price in words.
  */
 export const CoinPrice = ({
   parts,
   format,
+  tone = "dark",
   className,
 }: {
   readonly parts: readonly CoinPart[];
   readonly format: (value: number) => string;
+  /**
+   * The surface under the letters: `light` for a gold button or parchment,
+   * `dark` for a wood button or a Night Plate. `null` leaves the letters in
+   * the text color, as a requirement that is missing.
+   */
+  readonly tone?: CoinTone | null;
   readonly className?: string;
 }) => {
   const { tr } = useGameText();
@@ -158,8 +170,19 @@ export const CoinPrice = ({
             denomination={part.denomination}
             className="size-[1.15em] shrink-0"
           />
-          {format(part.amount)}
-          {tr(`town.balances.denominations.${part.denomination}.short`)}
+          {/* The trim centers the coin on the number, not on the letter. */}
+          <span className="[text-box:trim-both_cap_alphabetic]">
+            {format(part.amount)}
+            <span
+              style={
+                tone === null
+                  ? undefined
+                  : { color: DENOMINATION_TEXT[tone][part.denomination] }
+              }
+            >
+              {tr(`town.balances.denominations.${part.denomination}.short`)}
+            </span>
+          </span>
         </span>
       ))}
     </span>

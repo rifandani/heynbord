@@ -15,11 +15,20 @@ const METALS: Readonly<
 const ESSENCE = { face: "#ff8fb8", rim: "#8f2a55", mark: "#fff6df" };
 const HEYNSTONE = { face: "#8c8cff", rim: "#2f2f8f", mark: "#fff6df" };
 
-/** The text color of each denomination letter on a dark plate (AA contrast). */
-export const DENOMINATION_TEXT: Readonly<Record<CoinDenomination, string>> = {
-  gold: "#f2c14e",
-  silver: "#d9dee6",
-  copper: "#e9965c",
+/** The surface under a denomination letter. */
+export type CoinTone = "dark" | "light";
+
+/**
+ * The text color of each denomination letter (AA contrast): the bright metal
+ * on a dark surface (a wood button, a Night Plate, the engraved plate of an
+ * upgrade that is off), and the dark metal of the coin on a light surface (a
+ * gold button, parchment).
+ */
+export const DENOMINATION_TEXT: Readonly<
+  Record<CoinTone, Readonly<Record<CoinDenomination, string>>>
+> = {
+  dark: { gold: "#ffd75a", silver: "#d9dee6", copper: "#f8c49c" },
+  light: { gold: "#7a5310", silver: "#3f454f", copper: "#7a3a17" },
 };
 
 /** A four-point star, the mark of the Heynbord emblem, at (x, y). */

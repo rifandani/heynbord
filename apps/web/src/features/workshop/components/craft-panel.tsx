@@ -104,17 +104,15 @@ const CraftRecipe = ({
 };
 
 /**
- * The action part of the Craft panel: the Essence now and after the Craft, and
- * the gold Craft, or the lock chip below the Craft level.
+ * The action part of the Craft panel: the gold Craft, or the lock chip below
+ * the Craft level.
  */
 const CraftAction = ({
   state,
-  essence,
   rankName,
   onCraft,
 }: {
   readonly state: CraftState;
-  readonly essence: number;
   readonly rankName: string;
   readonly onCraft: () => void;
 }) => {
@@ -125,22 +123,6 @@ const CraftAction = ({
   }
   return (
     <>
-      {state.kind === "ready" || state.kind === "essence" ? (
-        <p
-          className="text-xs font-semibold text-[#e8d9bb] tabular-nums [@media(max-height:500px)]:text-[10px]"
-          data-testid="workshop-craft-balance"
-        >
-          {state.kind === "ready"
-            ? tr("workshop.craftPanel.after", {
-                now: format(essence),
-                after: format(essence - state.cost),
-              })
-            : tr("workshop.craftPanel.short", {
-                now: format(essence),
-                missing: format(state.missing),
-              })}
-        </p>
-      ) : null}
       {state.kind === "locked" ? (
         <span
           className="flex items-center justify-center gap-1.5 rounded-lg border-2 border-[#e9c46a]/50 bg-[#1c140e] px-3 py-2 text-sm font-bold text-[#e8d9bb] [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[11px]"
@@ -210,10 +192,11 @@ const useStillForming = (forming: Forming | null): boolean => {
 /**
  * The Craft station panel (GDD 7.4): the card at its Base Rank, the copies
  * that the Player owns of it, and the recipe: the Essence, the direction, and
- * the 1 Base Rank copy that it makes. Under it, the Essence now and after the
- * Craft, and the one gold Craft. Below the Craft level, the recipe shows and
- * a lock chip takes the place of the Craft. A Craft sends the Essence drops
- * from the balance into the card, where the copy forms (`Forming`).
+ * the 1 Base Rank copy that it makes. Under it, the one gold Craft. Below the
+ * Craft level, the recipe shows and a lock chip takes the place of the Craft.
+ * An Epic or a Legendary card has no Craft (ADR-0052), so it is not in the
+ * Craft grid (`stationTiles`). A Craft sends the Essence drops from the
+ * balance into the card, where the copy forms (`Forming`).
  */
 export const CraftPanel = ({
   tile,
@@ -290,32 +273,21 @@ export const CraftPanel = ({
         </p>
       </PanelHeader>
       <div className="flex min-w-0 flex-col gap-2 [@media(max-height:500px)]:flex-1 [@media(max-height:500px)]:justify-center [@media(max-height:500px)]:gap-1">
-        {cost === null && state.kind !== "locked" ? (
-          <p className="text-sm font-semibold text-[#e8d9bb]">
-            {tr("workshop.craftPanel.none")}
-          </p>
-        ) : (
-          <CraftRecipe
-            cost={cost}
-            rank={base}
-            lit={state.kind === "ready"}
-            label={
-              cost === null
-                ? null
-                : tr("workshop.craftPanel.recipe", {
-                    essence: format(cost),
-                    rank: rankName,
-                    name: tr(`cards.${tile.cardId}.name`),
-                  })
-            }
-          />
-        )}
-        <CraftAction
-          state={state}
-          essence={essence}
-          rankName={rankName}
-          onCraft={onCraft}
+        <CraftRecipe
+          cost={cost}
+          rank={base}
+          lit={state.kind === "ready"}
+          label={
+            cost === null
+              ? null
+              : tr("workshop.craftPanel.recipe", {
+                  essence: format(cost),
+                  rank: rankName,
+                  name: tr(`cards.${tile.cardId}.name`),
+                })
+          }
         />
+        <CraftAction state={state} rankName={rankName} onCraft={onCraft} />
       </div>
     </section>
   );

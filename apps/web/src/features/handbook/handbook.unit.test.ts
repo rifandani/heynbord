@@ -276,20 +276,16 @@ describe("Entries of Keywords, Statuses and Damage Types", () => {
     }
   });
 
-  it("gives Fire, Frost and Holy the rule of the Details Panel, and Physical a text of its own", () => {
+  it("gives each Damage Type a rule in its Entry, and Physical a text of its own", () => {
     for (const card of CARDS) {
-      const text = cardText(card.id, card.baseRank);
-      if (card.kind === "creature" && text.kind === "creature") {
-        expect(
-          getEntry(damageEntryId(card.damageType)).body.map((ref) => ref.key)
-        ).toEqual(
-          text.damageRule
-            ? [text.damageRule.key]
-            : ["handbook.entries.damagePhysical"]
-        );
+      if (card.kind !== "creature") {
+        continue;
       }
+      const entry = getEntry(damageEntryId(card.damageType));
+      expect(entry.chapter, card.id).toBe("statuses");
+      expect(entry.body, card.id).toHaveLength(1);
     }
-    for (const damageType of ["fire", "frost", "holy"] as const) {
+    for (const damageType of ["fire", "frost", "holy", "lightning"] as const) {
       expect(getEntry(damageEntryId(damageType)).body).toEqual([
         { key: `keywordRules.${damageType}` },
       ]);

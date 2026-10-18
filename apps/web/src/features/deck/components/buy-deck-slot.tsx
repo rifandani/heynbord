@@ -26,6 +26,28 @@ import { coinWords } from "@/features/town/town";
 import { balancesAtom } from "@/features/town/town.atoms";
 
 /**
+ * A Coin amount on the small Night Plate of a Battle reward: each
+ * denomination with its coin and its letter, and the words for a screen
+ * reader.
+ */
+const CoinPlate = ({
+  copper,
+  format,
+  words,
+}: {
+  readonly copper: number;
+  readonly format: (value: number) => string;
+  readonly words: (copper: number) => string;
+}) => (
+  <span className="flex w-fit items-center rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-2.5 py-1 text-sm leading-none font-black whitespace-nowrap text-[#fff6df] tabular-nums shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:py-0.5 [@media(max-height:500px)]:text-xs">
+    <span className="sr-only">{words(copper)}</span>
+    <span aria-hidden>
+      <CoinAmount parts={coinDenominations(copper)} format={format} />
+    </span>
+  </span>
+);
+
+/**
  * The next Deck Slot that the Player can buy (GDD 6, Economy 3.5): a locked
  * ribbon after the last slot, with its Coin price. It opens a confirm dialog.
  * At the maximum it is not there. `onBought` gets the ID of the new slot.
@@ -103,30 +125,26 @@ export const BuyDeckSlot = ({
                 >
                   {tr("deckBuilder.buySlot.title", { number: slotNumber })}
                 </Heading>
-                <p className="mt-2 text-sm text-[#5b4632]">
-                  {tr("deckBuilder.buySlot.text")}
-                </p>
-                <dl className="mx-auto mt-3 grid w-fit grid-cols-[auto_auto] gap-x-4 gap-y-1 text-left text-sm">
+                <dl className="mx-auto mt-3 grid w-fit grid-cols-[auto_auto] items-center gap-x-4 gap-y-2 text-left text-sm">
                   <dt className="text-[#5b4632]">
                     {tr("deckBuilder.buySlot.price")}
                   </dt>
-                  <dd className="font-bold">{words(price)}</dd>
+                  <dd className="flex justify-end">
+                    <CoinPlate copper={price} format={format} words={words} />
+                  </dd>
                   <dt className="text-[#5b4632]">
                     {tr("deckBuilder.buySlot.balance")}
                   </dt>
-                  <dd className="font-bold" data-testid="buy-slot-balance">
-                    {words(balances.coin)}
+                  <dd
+                    className="flex justify-end"
+                    data-testid="buy-slot-balance"
+                  >
+                    <CoinPlate
+                      copper={balances.coin}
+                      format={format}
+                      words={words}
+                    />
                   </dd>
-                  {canBuy ? (
-                    <>
-                      <dt className="text-[#5b4632]">
-                        {tr("deckBuilder.buySlot.after")}
-                      </dt>
-                      <dd className="font-bold">
-                        {words(balances.coin - price)}
-                      </dd>
-                    </>
-                  ) : null}
                 </dl>
                 {canBuy ? null : (
                   <p

@@ -22,6 +22,15 @@ interface HookWindow extends Window {
 /** The Starter Collection has 2 Common copies of it, both in Human Vanguard. */
 const RECRUIT = "human.militiaRecruit";
 
+/** The Starter Collection has 3 Common copies of it, all in Human Vanguard. */
+const GUARD = "human.crossbowGuard";
+
+/** Base Rank Epic: it has no Craft cost (ADR-0052). */
+const EPIC = "human.ironBulwark";
+
+/** Base Rank Legendary: the Human Specialist (ADR-0050), with no Craft cost (ADR-0052). */
+const SPECIALIST = "human.serAldricStonewall";
+
 /** Opens the Workshop from its Building at Player level 3 (320 XP), with `coin` Copper. */
 const openWorkshop = async (page: Page, coin: number) => {
   await page.goto("/play");
@@ -49,7 +58,7 @@ const openWorkshop = async (page: Page, coin: number) => {
 /** Selects a station tab: its panel shows for the selected card. */
 const openStation = async (
   page: Page,
-  station: "combine" | "craft" | "extract"
+  station: "combine" | "craft" | "fuse" | "extract"
 ) => {
   await page.getByTestId(`workshop-station-${station}`).click();
   await expect(page.getByTestId("workshop-panel")).toHaveAttribute(
@@ -163,7 +172,7 @@ test.describe("Workshop", () => {
     ).toBeVisible();
   });
 
-  test("the stations: Combine first, each tab with its number, and the Craft lock below level 6", async ({
+  test("the stations: Combine first, each tab with its number, and the Craft and Fuse locks below level 6", async ({
     page,
   }) => {
     await openWorkshop(page, 0);
@@ -186,6 +195,10 @@ test.describe("Workshop", () => {
     await expect(page.getByTestId("workshop-station-craft")).toContainText(
       "Level 6"
     );
+    await expect(page.getByTestId("workshop-station-fuse")).toHaveAttribute(
+      "data-locked",
+      "true"
+    );
     // The Combine panel has no Extract and no Craft.
     await expect(page.getByTestId("workshop-extract-common")).toHaveCount(0);
     // The lit edge of the panel faces the station in the painting: the smith
@@ -202,8 +215,17 @@ test.describe("Workshop", () => {
     await expect(page.getByTestId("workshop-craft")).toHaveCount(0);
 
     // The arrow keys move between the stations; the card stays selected.
+    // Fuse is next to Craft, and below level 6 its panel shows the lock.
     await page.getByTestId("workshop-station-craft").focus();
-    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByTestId("workshop-panel")).toHaveAttribute(
+      "data-station",
+      "fuse"
+    );
+    await expect(page.getByTestId("workshop-fuse-locked")).toHaveText(
+      "Opens at level 6"
+    );
+    await page.keyboard.press("ArrowDown");
     await expect(page.getByTestId("workshop-panel")).toHaveAttribute(
       "data-station",
       "extract"
@@ -258,9 +280,6 @@ test.describe("Workshop", () => {
     ).toHaveAccessibleName(
       "40 Essence makes 1 Common copy of Militia Recruit."
     );
-    await expect(page.getByTestId("workshop-craft-balance")).toHaveText(
-      "Your Essence: 100 → 60"
-    );
     await expect(page.getByTestId("workshop-copies-craft")).toHaveText("×2");
 
     await page.getByTestId("workshop-craft").click();
@@ -280,6 +299,146 @@ test.describe("Workshop", () => {
       "Essence: 60"
     );
     await expect(page.getByTestId("essence-flight")).toHaveCount(0);
+  });
+
+  test("the Craft grid has no Epic or Legendary card (ADR-0052)", async ({
+    page,
+  }) => {
+    await openWorkshop(page, 0);
+    await page.evaluate(
+      ({ epic, specialist }) => {
+        // SAFETY: the dev and QA builds install the test hooks on `window`.
+        const hooks = (window as HookWindow).__THREE_GAME_TEST_HOOKS__;
+        hooks?.setXp(800);
+        hooks?.setEssence(100);
+        hooks?.giveCopies(epic, "epic", 1);
+        hooks?.giveCopies(specialist, "legendary", 1);
+      },
+      { epic: EPIC, specialist: SPECIALIST }
+    );
+    await expect(page.getByTestId(`workshop-tile-${EPIC}`)).toBeVisible();
+    await expect(page.getByTestId(`workshop-tile-${SPECIALIST}`)).toBeVisible();
+
+    await openStation(page, "craft");
+    await expect(page.getByTestId(`workshop-tile-${EPIC}`)).toHaveCount(0);
+    await expect(page.getByTestId(`workshop-tile-${SPECIALIST}`)).toHaveCount(
+      0
+    );
+    await expect(page.getByTestId("workshop-panel")).not.toHaveAttribute(
+      "data-card",
+      EPIC
+    );
+  });
+
+  test("a Fuse changes 2 spare Common copies and Essence into a Human card that is not Discovered", async ({
+    page,
+  }) => {
+    await openWorkshop(page, 0);
+    await page.evaluate((cardId) => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      const hooks = (window as HookWindow).__THREE_GAME_TEST_HOOKS__;
+      hooks?.setXp(800);
+      hooks?.setEssence(100);
+      // 5 Crossbow Guards: Human Vanguard uses 3, so 2 are spare.
+      hooks?.giveCopies(cardId, "common", 2);
+    }, GUARD);
+    await openStation(page, "fuse");
+    await expect(page.getByTestId("workshop-fuse-empty")).toBeVisible();
+    await expect(page.getByTestId("workshop-fuse")).toBeDisabled();
+
+    // The Guard has only Common copies: a press puts one in at once. The
+    // first copy sets the Rank and 2 slots.
+    const guard = page.getByTestId(`workshop-tile-${GUARD}`);
+    await guard.click();
+    await expect(page.getByTestId("workshop-fuse-slots")).toHaveAttribute(
+      "data-count",
+      "2"
+    );
+    await expect(page.getByTestId("workshop-fuse-status")).toHaveText(
+      "Put in 1 more Common copy."
+    );
+    await guard.click();
+    await expect(page.getByTestId("workshop-fuse-slot")).toHaveCount(2);
+
+    // The chances: all the shares go to Human, and the pool shows the Human
+    // Common cards that are not Discovered.
+    const chance = page.getByTestId("workshop-fuse-chance");
+    await expect(chance).toHaveAttribute("data-group", "human");
+    await expect(chance).toContainText("2 in 2 · 100%");
+    const pool = page.getByTestId("workshop-fuse-pool-card");
+    await expect(pool).toHaveCount(2);
+    const poolIds = await pool.evaluateAll((cards) =>
+      cards.map((card) => card.dataset.card)
+    );
+    expect(poolIds).toEqual(["human.shieldbearer", "human.townBarricade"]);
+    await expect(page.getByTestId("workshop-fuse-status")).toHaveText(
+      "Your Essence: 100 → 80"
+    );
+
+    // The slots are full: one more press shakes them and says why.
+    await guard.click();
+    await expect(page.getByTestId("workshop-said")).toHaveText(
+      "All the slots are full. Fuse, or take a copy out."
+    );
+
+    await page.getByTestId("workshop-fuse").click();
+    await expect(page.getByTestId("fuse-dialog")).toHaveCount(0);
+    const preview = page.getByTestId("workshop-preview");
+    await expect(preview).toHaveAttribute("data-card", /^human\./u);
+    const cardId = (await preview.getAttribute("data-card")) ?? "";
+    expect(poolIds).toContain(cardId);
+    await expect(preview.getByTestId("card-new")).toBeVisible();
+    await expect(page.getByTestId("workshop-said")).toContainText("Fused: ");
+    await expect(page.getByTestId("balance-essence")).toHaveAccessibleName(
+      "Essence: 80"
+    );
+    // The new card is Discovered: it has a tile in the grid now.
+    await expect(page.getByTestId(`workshop-tile-${cardId}`)).toBeVisible();
+    await expect(page.getByTestId("workshop-fuse-slot")).toHaveCount(0);
+  });
+
+  test("a Fuse asks for the Rank of a card with copies in two Ranks, and asks first for copies in a saved Deck", async ({
+    page,
+  }) => {
+    await openWorkshop(page, 0);
+    await page.evaluate((cardId) => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      const hooks = (window as HookWindow).__THREE_GAME_TEST_HOOKS__;
+      hooks?.setXp(800);
+      hooks?.setEssence(100);
+      hooks?.giveCopies(cardId, "rare", 1);
+    }, RECRUIT);
+    await openStation(page, "fuse");
+
+    // 2 Common and 1 Rare Recruit: the Rank chooser opens.
+    await page.getByTestId(`workshop-tile-${RECRUIT}`).click();
+    const chooser = page.getByTestId("workshop-fuse-chooser");
+    await expect(chooser).toBeVisible();
+    await expect(chooser.getByRole("menuitem")).toHaveCount(2);
+    await chooser.getByTestId("workshop-fuse-choice-common").click();
+    await expect(chooser).toBeHidden();
+
+    // After the first copy, the Rank is set: no chooser. Both Common copies
+    // are in Human Vanguard.
+    await page.getByTestId(`workshop-tile-${RECRUIT}`).click();
+    await expect(chooser).toBeHidden();
+
+    await page.getByTestId("workshop-fuse").click();
+    const dialog = page.getByTestId("fuse-dialog");
+    await expect(dialog.getByTestId("fuse-dialog-decks")).toContainText(
+      "Human Vanguard"
+    );
+    await expect(dialog.getByTestId("fuse-dialog-keep")).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(dialog).toBeHidden();
+    await expect(page.getByTestId("workshop-fuse-slot")).toHaveCount(2);
+
+    await page.getByTestId("workshop-fuse").click();
+    await page.getByTestId("fuse-dialog-confirm").click();
+    await expect(page.getByTestId("workshop-said")).toContainText("Fused: ");
+    await expect(page.getByTestId("balance-essence")).toHaveAccessibleName(
+      "Essence: 80"
+    );
   });
 
   test("an Extract of a copy in a saved Deck names the Deck, and Keep changes nothing", async ({

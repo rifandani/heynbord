@@ -324,6 +324,7 @@ export default {
     buildings: {
       townGate: "Campaign",
       cardShop: "Packs",
+      bazaar: "Bazaar",
       workshop: "Workshop",
       barracks: "Hero",
       cave: "Dungeons",
@@ -352,7 +353,7 @@ export default {
       },
       essence: {
         name: "Essence",
-        use: "Pays for Craft in the Workshop.",
+        use: "Pays for Craft and Fuse in the Workshop.",
       },
       heynstones: {
         name: "Heynstones",
@@ -670,7 +671,6 @@ export default {
   bazaar: {
     label: "Bazaar",
     title: "The Bazaar",
-    note: "The Bazaar sells only Cosmetics. You own each one forever.",
     families: {
       cardBack: "Card backs",
       heroPortrait: "Hero portraits",
@@ -906,7 +906,7 @@ export default {
       packs: "Packs in Town.",
       workshop: "Workshop: Combine and Extract.",
       gear: "Gear on your Hero.",
-      craft: "Workshop: Craft.",
+      craft: "Workshop: Craft and Fuse.",
       dungeon1: "Dungeon 1.",
       dungeon2: "Dungeon 2.",
       dungeon3: "Dungeon 3.",
@@ -1089,7 +1089,7 @@ export default {
       coin: "Coin is one balance. The Town balance plate, top right, shows it as Gold, Silver and Copper. Only denominations that are not zero appear.\n\nUse the tables below for conversion and for what Coin pays for today.",
       pack: "A Pack is {cards} random cards. You buy it with Coin on the Packs screen. The Card shop in the Town and the Packs shortcut open it.\n\nAt Player level 2, you get one Peddler Pack. A Pack from a reward waits on the Packs screen until you open it, for free. The Drop Rates button on the Packs screen shows all the numbers and rules.",
       workshop:
-        "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nThe Workshop has 3 stations: Combine, Craft and Extract. Select a station at the top, then a card. The station marks the cards that it can act on now, and its filter can show only those cards. A spare copy is a copy that no saved Deck uses.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank. A found card is a card that you owned one time or more. A card with 0 copies stays found, also after you Extract its last copy, so you can Craft it. You cannot Craft a card that you never owned. To get a new card, open Packs: a Merchant Pack and a Royal Pack select a card that you do not have yet, if the rolled Rank permits one.",
+        "The Workshop makes your cards stronger. The Workshop in the Town and the Workshop shortcut open it, from Player level {combine}.\n\nThe Workshop has 4 stations: Combine, Craft, Fuse and Extract. Select a station at the top, then a card. The station marks the cards that it can act on now, and its filter can show only those cards. A spare copy is a copy that no saved Deck uses.\n\nCombine: 2 copies of a card in one Rank become 1 copy in the next Rank, for Coin. It never fails. A saved Deck that uses the old copies gets the new copy.\n\nExtract: 1 copy becomes Essence. You can Extract any copy, also the last one, and the card stays found. The Workshop asks first when a saved Deck uses the copy, or when the copy is Epic or Legendary.\n\nCraft: from Player level {craft}, Essence becomes 1 copy of a card that you found, in its Base Rank. Only a card with Base Rank Common, Uncommon or Rare can be Crafted: an Epic or a Legendary card has no Craft. A found card is a card that you owned one time or more. A card with 0 copies stays found, also after you Extract its last copy, so you can Craft it. You cannot Craft a card that you never owned. To get a new card, open Packs: a Merchant Pack and a Royal Pack select a card that you do not have yet, if the rolled Rank permits one. Or use Fuse.\n\nFuse: from Player level {fuse}, 2 to 4 copies and Essence become 1 copy of a card that you have not found yet. All the copies have the same Rank, and they are all Creature Cards or all Skill Cards. Common and Uncommon use 2 copies, Rare uses 3 and Epic uses 4. A Legendary copy cannot go in. The new card has a Base Rank that is the Rank of the copies, and it has the Race or the Class of one of the copies. Each copy gives its Race or Class one equal share of the chance: Human + Human + Elf gives Human 2 in 3 and Elf 1 in 3. A Race or Class with no card left to find has no share. The panel shows each chance and each card that can come. When you have found all the cards that the copies can give, you cannot Fuse them. The Essence cost: Common {common}, Uncommon {uncommon}, Rare {rare}, Epic {epic}. The Workshop asks first when a saved Deck uses a copy.",
       gear: "Your Hero has 4 Gear items: the Weapon, the Armor, the Trinket and the Banner. The Barracks in the Town and the Hero shortcut open the Hero screen, from Player level {level}.\n\nEach item has a level from 0 to {max}. One upgrade adds 1 level, for Coin and 1 Forge Stone. The level sets the tier of the Forge Stone: Common for levels 1 to 5, Uncommon for 6 to 10, Rare for 11 to 15, Epic for 16 to 20 and Legendary for 21 to 25. A Forge Stone of a different tier cannot replace it. An upgrade never fails, and a level never goes down.\n\nStage wins, Star chests, Sweeps, Dungeons and Heynspire give Forge Stones. You cannot buy them. The Hero screen shows the Forge Stones that you have.\n\nA Crit hit deals 2 times its damage. A Blocked hit deals half of its damage. In each Battle, your Hero and your Units use your Gear.",
       dungeon:
         "A Dungeon is a place outside the Campaign. The cave in the Town and the Dungeons shortcut open the Dungeons screen, from Player level {level}.\n\nIn a Dungeon, you fight all its Bosses in one Battle. The Board has {lanes} Lanes. Each Boss is an enemy Hero with its own Front, Hand and Deck. A Unit at the end of a Lane attacks the Boss of that Front.\n\nA Boss Rule activates one time, when the HP of its Boss goes to a set percent or lower. The HP bar of the Boss shows a notch at that percent.\n\nA Dungeon win gives no Stars. After a win, you can play the Dungeon again or Sweep it. Dungeon Sweep Tickets: {tickets} for each Dungeon win.",
@@ -1320,9 +1320,15 @@ export default {
       noneFound: "You found no {group} yet.",
       noneOwned: "You have no copies of {group} now.",
       allOwned: "You have copies of all the {group} that you found.",
+      noCombine:
+        "You cannot Combine {group}: Legendary cards have no Rank to Combine to.",
+      noCraft:
+        "You cannot Craft {group}: Epic and Legendary cards have no Craft.",
+      noFuse: "You cannot Fuse {group}: Legendary cards cannot go into a Fuse.",
       ready: {
         combine: "You have no pairs of {group} now.",
         craft: "You cannot Craft {group} now.",
+        fuse: "No copy of {group} can go into a Fuse now.",
         extract: "You have no spare copies of {group}.",
       },
     },
@@ -1342,6 +1348,14 @@ export default {
         locked: "Level {level}",
         lockedLabel: "Craft opens at level {level}",
       },
+      fuse: {
+        name: "Fuse",
+        recipe: "2–4 copies + Essence → new card",
+        count: "{count} cards that can go into a Fuse now",
+        ready: "Can Fuse",
+        locked: "Level {level}",
+        lockedLabel: "Fuse opens at level {level}",
+      },
       extract: {
         name: "Extract",
         recipe: "1 copy → Essence",
@@ -1352,17 +1366,61 @@ export default {
     pairMark: "Pair",
     spareMark: "{count} spare",
     spareCopies: "{count} spare copies",
+    spareInDecks: "{spare} spare copies · {used} in Decks",
     craftMark: "Craft for {essence} Essence",
+    fuseMark: "{count} copies can go into a Fuse",
+    fusePanel: {
+      title: "Fuse",
+      empty:
+        "Put in copies from the grid. All the copies have the same Rank. The first copy sets the Rank and the slots.",
+      slotsGuide: "Common and Uncommon: 2\nRare: 3\nEpic: 4",
+      recipe: {
+        creature: "{count} {rank} Creature Card copies",
+        skill: "{count} {rank} Skill Card copies",
+      },
+      slots: "Fuse slots",
+      freeSlot: "Free slot",
+      slotLabel: "{name}, {rank}. Press to take it out.",
+      clear: "Take all out",
+      chances: "Chances",
+      chance: "{shares} in {total} · {percent}%",
+      chanceLabel: "{group}: {shares} in {total}, {percent}%.",
+      allFound: "All Discovered",
+      noShareLabel:
+        "{group}: no share. You have Discovered all the {rank} {group} cards.",
+      poolLabel: "{group} cards that the Fuse can give",
+      moreOne: "Put in 1 more {rank} copy.",
+      moreOther: "Put in {count} more {rank} copies.",
+      poolOne: "You have Discovered all the {rank} {group} cards.",
+      poolMany: "You have Discovered all the {rank} cards of {groups}.",
+      after: "Your Essence: {now} → {after}",
+      short: "Your Essence: {now}. You need {missing} more.",
+      newCard: "New card",
+      discovered: "{name} is Discovered now. Put in new copies to Fuse again.",
+    },
+    chooser: {
+      title: "Put in which copy?",
+      label: "Put in 1 {rank} copy of {name}",
+    },
+    refusal: {
+      full: "All the slots are full. Fuse, or take a copy out.",
+      creature: "The slots take only Creature Cards now.",
+      skill: "The slots take only Skill Cards now.",
+      rank: "{name} has no {rank} copy.",
+      copies: "{name} has no copy that can go into a Fuse.",
+      locked: "Fuse opens at level {level}.",
+    },
     craftPanel: {
       gives: "1 {rank} copy",
       recipe: "{essence} Essence makes 1 {rank} copy of {name}.",
-      after: "Your Essence: {now} → {after}",
-      short: "Your Essence: {now}. You need {missing} more.",
-      none: "You cannot Craft this card.",
       own: "You own",
     },
     extractPanel: {
       none: "You have no copies of this card. Craft one, or get one from a Pack.",
+      excludedEpic:
+        "You have no copies of this card. Get one from a Merchant or Royal Pack, or from a Fuse.",
+      excludedLegendary:
+        "You have no copies of this card. Get one from a Royal Pack.",
       spare: "Spare ×{count}",
     },
     noCopies: "0 copies",
@@ -1379,6 +1437,11 @@ export default {
     need: "Need",
     craftLabel: "Craft 1 {rank} copy for {essence} Essence",
     craftNeedLabel: "Craft 1 {rank} copy: you need {essence} more Essence",
+    fuse: "Fuse",
+    fuseLabel: "Fuse {count} {rank} copies for {essence} Essence",
+    fuseNeedLabel:
+      "Fuse {count} {rank} copies: you need {essence} more Essence",
+    fuseNotReadyLabel: "Fuse: not ready. {reason}",
     path: {
       label: "Path to Legendary",
       value: "{value}/{target}",
@@ -1391,13 +1454,23 @@ export default {
       combine: "Combined: {name} is now {rank}.",
       craft: "Crafted: 1 {rank} copy of {name}.",
       extract: "Extracted: 1 {rank} copy of {name}, +{essence} Essence.",
+      fuse: "Fused: {name}, {rank}. It is a new card.",
+      fuseIn: "{name}, {rank}, is in the slots: {count} of {total}.",
+      fuseOut: "{name} is out of the slots.",
+      fuseClear: "The slots are empty.",
     },
     extractDialog: {
       title: "Extract this copy?",
-      text: "{name}, {rank}. You cannot undo an Extract.",
+      text: "You cannot undo an Extract.",
       gain: "+{essence} Essence",
       decks: "These Decks use this copy. It goes out of them:",
       rank: "{rank} copies cost much to get again.",
+      keep: "Keep",
+    },
+    fuseDialog: {
+      title: "Fuse these copies?",
+      text: "You cannot undo a Fuse.",
+      decks: "These Decks use these copies. The copies go out of them:",
       keep: "Keep",
     },
   },
@@ -1491,11 +1564,6 @@ export default {
     },
     showAll: "Show all",
     heroClass: "Hero Class",
-    curve: "Countdown curve",
-    curveColumn:
-      "Countdown {countdown}: {creatures} Creature Cards, {skills} Skill Cards",
-    creature: "Creature",
-    skill: "Skill",
     thisDeck: "Cards in this Deck",
     empty:
       "This Deck has no cards. Select a card on the left page to add it, or use Auto-fill.",
@@ -1520,10 +1588,8 @@ export default {
     buySlot: {
       ribbon: "Buy Deck Slot {number} for {price}",
       title: "Buy Deck Slot {number}?",
-      text: "You get one more place to save a Deck. You keep it for all time.",
       price: "Price",
       balance: "Your Coin",
-      after: "After you buy",
       short: "You need {amount} more.",
       buy: "Buy",
       cancel: "Cancel",

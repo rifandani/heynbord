@@ -20,7 +20,7 @@ The Classes come from the 6 Main Archetypes ([08 — Archetypes](../game/08-arch
 - **A Specialist is a Keyword.** Rejected. The Class is a property of the Card, not a rule that occurs in a Battle. A Keyword has a rule and can occur in the Battle Log. The Card Details show "Specialist · Warrior" next to the Race.
 - **A Deck can hold a Specialist of another Class if the Deck has a card of that Class.** Rejected. The Class lock must be clear before the Player builds the Deck, and the Deck builder must give one reason: "Warrior only".
 - **The Specialist is Legendary but has no Unique.** Rejected. A Specialist is a named figure, and the Board must hold one copy of it. Unique also keeps the Board clear for the second copy of a deck slot.
-- **A Specialist can be in a Starter Deck, a Stage enemy Deck, a Dungeon, a Floor or a Main Archetype.** Rejected for v1. A Specialist is in its own Specialist Deck only (Consequences). The Player must find the Specialist in a Royal Pack, or Craft it. A Stage that puts a Specialist on the Board would show a Card that the Player may not own.
+- **A Specialist can be in a Starter Deck, a Stage enemy Deck, a Dungeon, a Floor or a Main Archetype.** Rejected for v1. A Specialist is in its own Specialist Deck only (Consequences). The Player must find the Specialist in a Royal Pack ([ADR-0052](0052-craft-gives-no-epic-or-legendary-card.md) gives it no Craft). A Stage that puts a Specialist on the Board would show a Card that the Player may not own.
 - **A Legendary Base Rank card combines, and has a higher Rank.** Rejected. Base Rank Legendary is the top Rank. The card has no Combine path and no higher copy. This is why it is at its Power Budget exactly, and why the UI hides Combine for it.
 - **Each Specialist has its own new Keyword, and no other Keyword.** Rejected. The set uses 6 of the Player's 29 Keyword ideas, and 2 of them (Warband N and Blood Price N) are ready for a later card. The other ideas need engine hooks that v1 does not have.
 
@@ -40,7 +40,7 @@ The Power Points of the new Keywords are: Bolt N = N × 3, Iron Guard = 6, Soul 
 ## Consequences
 
 - A Specialist is in the Royal Pack only. Pack rule 2 selects a Card with Base Rank at or below the rolled Rank, so only a Legendary roll can give it. Pack rule 3 (New Card First) makes it Discovered on the first eligible roll.
-- A Specialist costs 4,800 Essence to Craft: 8 times its Extract value of 600. It has no Combine, and it is not in a Starter Deck, a Stage, a Dungeon, a Floor or a Main Archetype. It is in its own Specialist Deck only.
+- A Specialist cannot be Crafted: it comes from a Royal Pack only ([ADR-0052](0052-craft-gives-no-epic-or-legendary-card.md)). It has no Combine, and it is not in a Starter Deck, a Stage, a Dungeon, a Floor or a Main Archetype. It is in its own Specialist Deck only.
 - `MAX_COPIES` stays 3. Unique already limits the Board, and a Deck with 2 or 3 copies of a Specialist has no extra rule.
 - The Deck builder greys a Specialist of another Class, with the reason "that Class only". A Deck with one is invalid, the same as a Skill Card of another Class.
 - The Handbook has 34 Keywords, up from 28.

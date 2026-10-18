@@ -9,7 +9,7 @@
  */
 import { ownedCopies } from "../collection/deck-building";
 import type { Collection } from "../collection/deck-building";
-import { CARDS } from "../content/cards";
+import { CARDS, getCard } from "../content/cards";
 import { BAZAAR_CATALOG_HEYNSTONES } from "../content/cosmetics";
 import { DECK_SLOT_PRICES, STARTING_DECK_SLOTS } from "../content/deck-slots";
 import { getStarterDeck } from "../content/decks";
@@ -77,6 +77,9 @@ import {
   combineCoin,
   craftEssence,
   EXTRACT_ESSENCE,
+  FUSE_COPIES,
+  FUSE_ESSENCE,
+  isFuseRank,
 } from "../content/workshop";
 import { openPack, openTenPacks, packPool } from "../packs/open-pack";
 import type { OpenedPack, PackPool } from "../packs/open-pack";
@@ -88,13 +91,20 @@ import {
   dungeonCardPool,
   DUNGEON_SWEEP_TICKETS_PER_WIN,
 } from "../profile/dungeon-result";
+import { NO_TALLIES } from "../profile/new-profile";
 import { addCopies, discoveredCards } from "../profile/packs";
 import {
   CAMPAIGN_SWEEP_TICKETS_PER_WIN,
   repeatWinCard,
   stageCardPool,
 } from "../profile/stage-result";
-import { combineCopies, craftCopy, extractCopy } from "../profile/workshop";
+import {
+  combineCopies,
+  craftCopy,
+  extractCopy,
+  fuse,
+  fusePool,
+} from "../profile/workshop";
 import { randomInt } from "../random";
 import type { RandomCursor } from "../random";
 import {
@@ -465,11 +475,12 @@ export interface EconomyPlayer {
   packsOpened: number;
   combines: number;
   crafts: number;
+  fuses: number;
   extracts: number;
   readonly guaranteeCounters: Record<PackId, number>;
   /** The Pack random state of the Profile (Economy 3.1, rule 7). */
   packRandomState: number;
-  /** The reward random state of the Profile: the Forge Stone chances. */
+  /** The reward random state of the Profile: the Forge Stone chances and the Fuse. */
   readonly rewardCursor: RandomCursor;
   /** The best Stars of each won Campaign Stage, by Stage id, in first-win order. */
   readonly bestStars: Map<string, number>;
@@ -513,6 +524,7 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     packsOpened: 0,
     combines: 0,
     crafts: 0,
+    fuses: 0,
     extracts: 0,
     guaranteeCounters: { peddler: 0, merchant: 0, royal: 0 },
     // The Pack random state is not the Battle random state, so that a change
@@ -720,13 +732,112 @@ const combinePairs = (
   }
 };
 
-/** Extracts each copy above 2 of a card in the same Rank (Economy 3.3). */
+/**
+ * True when a copy of the entry can go into a Fuse with a share (Economy 3.7):
+ * its Rank is below Legendary and its Race or Class has a card in the Fuse
+ * pool of that Rank.
+ */
+const isFuseInput = (player: EconomyPlayer, entry: DeckEntry): boolean =>
+  isFuseRank(entry.rank) && fusePool(player.collection, [entry]).length > 0;
+
+/** The key of the Fuse recipe of a copy: its Rank and its card type. */
+const recipeKey = ({ cardId, rank }: DeckEntry): string =>
+  `${rank}:${getCard(cardId).kind}`;
+
+/**
+ * The input copies of the next Fuse (Economy 3.7, 7.1): copies above 2 of the
+ * cards in one Rank and of one card type, the lowest Rank first, with the
+ * Essence for the Fuse. A copy goes in only when it can go into a Fuse with a
+ * share (`isFuseInput`). `null` when no Fuse is possible.
+ */
+const fuseInputs = (player: EconomyPlayer): readonly DeckEntry[] | null => {
+  const extras = player.collection.filter(
+    (entry) => entry.copies > KEEP_COPIES && isFuseInput(player, entry)
+  );
+  for (const rank of RANKS.filter(isFuseRank)) {
+    if (player.essence < FUSE_ESSENCE[rank]) {
+      continue;
+    }
+    for (const kind of ["creature", "skill"] as const) {
+      const inputs = extras.flatMap(({ cardId, rank: entryRank, copies }) =>
+        entryRank === rank && getCard(cardId).kind === kind
+          ? Array.from({ length: copies - KEEP_COPIES }, () => ({
+              cardId,
+              rank,
+            }))
+          : []
+      );
+      if (inputs.length >= FUSE_COPIES[rank]) {
+        return inputs.slice(0, FUSE_COPIES[rank]);
+      }
+    }
+  }
+  return null;
+};
+
+/**
+ * Fuses copies above 2 in place of their Extract (Economy 3.7, 7.1), with the
+ * real Fuse rule, while a Fuse is possible. The Fuse uses the reward random
+ * state, as in the Profile. The Extract keeps some copies for the next Fuse
+ * (`extractExtras`) and takes the others.
+ */
+const fuseExtras = (player: EconomyPlayer): void => {
+  if (!isUnlocked(levelOf(player), "fuse")) {
+    return;
+  }
+  for (;;) {
+    const inputs = fuseInputs(player);
+    const result =
+      inputs &&
+      fuse(
+        {
+          xp: player.xp,
+          essence: player.essence,
+          collection: player.collection,
+          // The copies above 2 are in no Deck of the sim.
+          deckSlots: [],
+          rewardRandomState: player.rewardCursor.state,
+          tallies: NO_TALLIES,
+        },
+        inputs
+      );
+    if (!result) {
+      return;
+    }
+    player.essence = result.profile.essence;
+    player.collection = result.profile.collection;
+    player.rewardCursor.state = result.profile.rewardRandomState;
+    player.fuses += 1;
+  }
+};
+
+/**
+ * Extracts each copy above 2 of a card in the same Rank (Economy 3.3). From
+ * the Fuse level, it keeps the copies above 2 that can go into a Fuse
+ * (`isFuseInput`), up to 1 fewer than a Fuse of their Rank uses, for each Rank
+ * and card type (Economy 3.7, 7.1). The next such copy then makes a Fuse. The
+ * copies come one by one, so without this, the Extract takes each one before
+ * a Fuse can use it.
+ */
 const extractExtras = (player: EconomyPlayer): void => {
   if (!isUnlocked(levelOf(player), "extract")) {
     return;
   }
-  for (const { cardId, rank, copies } of player.collection) {
-    for (let extra = copies - KEEP_COPIES; extra > 0; extra -= 1) {
+  const fuses = isUnlocked(levelOf(player), "fuse");
+  const kept = new Map<string, number>();
+  for (const entry of player.collection) {
+    const { cardId, rank, copies } = entry;
+    let extras = copies - KEEP_COPIES;
+    if (fuses && extras > 0 && isFuseRank(rank) && isFuseInput(player, entry)) {
+      const key = recipeKey(entry);
+      const keep = Math.min(
+        extras,
+        FUSE_COPIES[rank] - 1 - (kept.get(key) ?? 0)
+      );
+      kept.set(key, (kept.get(key) ?? 0) + keep);
+      extras -= keep;
+    }
+    for (let extra = extras; extra > 0; extra -= 1) {
       const collection = extractCopy(player.collection, cardId, rank);
       if (collection === null) {
         break;
@@ -740,22 +851,19 @@ const extractExtras = (player: EconomyPlayer): void => {
 
 /**
  * The Craft candidates (Economy 3.3, 7.1): the Discovered cards with Base
- * Rank Rare or Epic that have 1 copy in the Base Rank. A Craft makes a
- * Combine pair toward an Epic or a Legendary copy. The cheapest first.
+ * Rank Rare that have 1 copy in the Base Rank. A Craft makes a Combine pair
+ * toward an Epic copy. Only a Rare card can make such a pair: a card with
+ * Base Rank Epic or Legendary has no Craft cost (ADR-0052).
  */
 const craftCandidates = (player: EconomyPlayer): readonly CardDefinition[] =>
-  poolCards()
-    .filter(
-      (card) =>
-        (card.baseRank === "rare" || card.baseRank === "epic") &&
-        // A copy in the Collection: the card is Discovered.
-        ownedCopies(player.collection, card.id, card.baseRank) === 1
-    )
-    .toSorted(
-      (left, right) => (craftEssence(left) ?? 0) - (craftEssence(right) ?? 0)
-    );
+  poolCards().filter(
+    (card) =>
+      card.baseRank === "rare" &&
+      // A copy in the Collection: the card is Discovered.
+      ownedCopies(player.collection, card.id, card.baseRank) === 1
+  );
 
-/** Crafts the cheapest candidate while the Essence is enough. */
+/** Crafts one copy of each candidate while the Essence is enough. */
 const craftPairs = (player: EconomyPlayer): void => {
   if (!isUnlocked(levelOf(player), "craft")) {
     return;
@@ -840,7 +948,8 @@ const spendBalanced = (player: EconomyPlayer): void => {
 /**
  * Spends Coin and Essence with the priorities of the Play Style (Economy
  * 7.1). All Play Styles first open the free Peddler Pack and buy the 4th Deck
- * slot. Then they Extract each copy above 2 and Craft.
+ * slot. Then they Fuse copies above 2, Extract the copies above 2 that stay,
+ * and Craft.
  */
 export const spend = (player: EconomyPlayer, playStyle: PlayStyle): void => {
   if (!player.freePackOpened && isUnlocked(levelOf(player), "packs")) {
@@ -874,6 +983,7 @@ export const spend = (player: EconomyPlayer, playStyle: PlayStyle): void => {
       }
     }
   }
+  fuseExtras(player);
   extractExtras(player);
   craftPairs(player);
 };
@@ -1112,6 +1222,7 @@ export const claimAchievements = (player: EconomyPlayer): void => {
       packsOpened: player.packsOpened,
       combines: player.combines,
       crafts: player.crafts,
+      fuses: player.fuses,
     },
     completedAchievements: player.completedAchievements,
     claimedAchievements: player.claimedAchievements,

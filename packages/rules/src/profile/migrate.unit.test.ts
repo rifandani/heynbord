@@ -156,9 +156,38 @@ describe("migrateProfile", () => {
       packsOpened: 0,
       combines: 0,
       crafts: 0,
+      fuses: 0,
     });
     expect(migrated.stageResults).toEqual(v8.stageResults);
     expect(migrated.heynstones).toBe(50);
+  });
+
+  it("gives a 0 fuses Tally to a version 10 Profile, and keeps its other Tallies (ADR-0051)", () => {
+    const v10 = {
+      ...newProfile(3),
+      schemaVersion: 10,
+      tallies: { packsOpened: 4, combines: 2, crafts: 1 },
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v10));
+    expect(migrated.tallies).toEqual({
+      packsOpened: 4,
+      combines: 2,
+      crafts: 1,
+      fuses: 0,
+    });
+  });
+
+  it("puts the Seaport ship of a version 11 Profile at the berth, and keeps its progress (ADR-0053)", () => {
+    const { seaport: _, ...v11 } = {
+      ...newProfile(3),
+      schemaVersion: 11,
+      xp: 3140,
+      coin: 900,
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v11));
+    expect(migrated.seaport).toEqual({ expeditionId: null, startedAt: null });
+    expect(migrated.xp).toBe(3140);
+    expect(migrated.coin).toBe(900);
   });
 
   it("gives the owed Cosmetics to a version 9 Profile, and keeps its progress (Economy 3.5)", () => {
@@ -261,14 +290,38 @@ describe("migrateProfile", () => {
       },
       { gear: { weapon: 26, armor: 0, trinket: 0, banner: 0 } },
       { claimedStarChests: { 1: [15] } },
-      { tallies: { packsOpened: -1, combines: 0, crafts: 0 } },
+      { tallies: { packsOpened: -1, combines: 0, crafts: 0, fuses: 0 } },
       { completedAchievements: [1] },
       { unopenedPacks: [{ pack: "royal", version: "class" }] },
+      { seaport: { expeditionId: "pirateRaid", startedAt: 0 } },
+      { seaport: { expeditionId: "coastalRun", startedAt: null } },
+      { seaport: { expeditionId: null, startedAt: 1000 } },
+      { seaport: { expeditionId: "coastalRun", startedAt: 1.5 } },
     ]) {
       expect(
         failure(migrateProfile({ ...newProfile(3), ...change }))?._tag
       ).toBe("InvalidProfile");
     }
+  });
+
+  it("refuses a Profile of the current version with no fuses Tally", () => {
+    const { fuses: _, ...tallies } = newProfile(3).tallies;
+    expect(failure(migrateProfile({ ...newProfile(3), tallies }))?._tag).toBe(
+      "InvalidProfile"
+    );
+  });
+
+  it("refuses a Profile of the current version with no Seaport", () => {
+    const { seaport: _, ...noSeaport } = newProfile(3);
+    expect(failure(migrateProfile(noSeaport))?._tag).toBe("InvalidProfile");
+  });
+
+  it("accepts a Seaport ship on an Expedition", () => {
+    const profile = {
+      ...newProfile(3),
+      seaport: { expeditionId: "longVoyage", startedAt: 1_792_314_000_000 },
+    };
+    expect(Result.getOrThrow(migrateProfile(profile))).toEqual(profile);
   });
 
   it("refuses a Profile of the current version with no won Floors", () => {

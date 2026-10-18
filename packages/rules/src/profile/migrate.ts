@@ -3,6 +3,7 @@ import { Result, Schema } from "effect";
 import { owedCosmetics } from "./cosmetics";
 import { ImportError } from "./import-error";
 import { Profile, PROFILE_SCHEMA_VERSION } from "./schema";
+import { AT_BERTH } from "./seaport";
 
 const isJsonObject = Schema.is(Schema.JsonObject);
 const isNumber = Schema.is(Schema.Number);
@@ -29,6 +30,12 @@ const doubledGear = (gear: Schema.JsonObject): Schema.JsonObject =>
 const withLegendaryForgeStones = (
   forgeStones: Schema.JsonObject
 ): Schema.JsonObject => ({ ...forgeStones, legendary: 0 });
+
+/** The Tallies with a `fuses` Tally of 0 added (ADR-0051). */
+const withNoFuses = (tallies: Schema.JsonObject): Schema.JsonObject => ({
+  ...tallies,
+  fuses: 0,
+});
 
 /**
  * The migration steps, by the version that each step starts from. A change to
@@ -112,6 +119,16 @@ export const PROFILE_MIGRATIONS = {
       isNumber(profile.heynspireFloorsWon) ? profile.heynspireFloorsWon : 0
     ),
   }),
+  /** Version 11 adds the `fuses` Tally (ADR-0051). An old save has done no Fuse. */
+  10: (profile) =>
+    isJsonObject(profile.tallies)
+      ? { ...profile, tallies: withNoFuses(profile.tallies) }
+      : profile,
+  /**
+   * Version 12 adds the Seaport (ADR-0053). An old save has its ship at the
+   * berth: no Expedition, and no reward for the time before.
+   */
+  11: (profile) => ({ ...profile, seaport: AT_BERTH }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

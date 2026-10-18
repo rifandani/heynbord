@@ -2,9 +2,15 @@ import { useAtomValue } from "@effect/atom-react";
 import { DUNGEON_LANES } from "@workspace/rules";
 import { cn } from "cn";
 import type { RefObject } from "react";
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Key } from "react-aria-components";
-import { Tab, TabList, TabPanel, Tabs } from "react-aria-components";
+import {
+  SelectionIndicator,
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
+} from "react-aria-components";
 
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { GameButton } from "@/features/battle/components/game-button";
@@ -42,9 +48,17 @@ const PLATE =
   "rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
 
 /**
+ * The gold plate of the selected Dungeon, as the plate of the station tabs.
+ * It is one piece: when the Dungeon changes, it slides to the new tab.
+ */
+const SELECTED =
+  "absolute inset-0 -z-10 rounded-lg border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[0_2px_0_rgba(0,0,0,0.35)] motion-safe:transition-[translate,width,height] motion-safe:duration-[240ms] motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]";
+
+/**
  * One Dungeon tab: the number on a small socket, then the name of an open
  * Dungeon, the lock and the level of a locked one, or "Coming later". The
- * selected tab is the gold plate of the current place, as the Town Bar.
+ * selected tab is the gold plate of the current place, as the Town Bar; the
+ * plate is one piece and slides to the new tab, as the station tabs do.
  */
 const DungeonTab = ({ slot }: { readonly slot: DungeonSlot }) => {
   const { tr } = useGameText();
@@ -60,12 +74,12 @@ const DungeonTab = ({ slot }: { readonly slot: DungeonSlot }) => {
       id={String(slot.number)}
       className={({ isSelected, isDisabled }) =>
         cn(
-          "flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border-2 py-1 pr-3 pl-1.5 text-sm font-bold whitespace-nowrap outline-none",
-          "transition-[background-color,filter] duration-150 data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+          "relative isolate flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border-2 border-transparent py-1 pr-3 pl-1.5 text-sm font-bold whitespace-nowrap outline-none",
+          "transition-[background-color,color] duration-150 data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
           "[@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:py-0.5 [@media(max-height:500px)]:pr-2 [@media(max-height:500px)]:text-xs",
           isSelected
-            ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.35)]"
-            : "border-transparent text-[#fff6df] data-[hovered]:bg-[#fff6df]/10",
+            ? "text-[#2a1a05]"
+            : "text-[#fff6df] data-[hovered]:bg-[#fff6df]/10",
           isDisabled && "cursor-default text-[#e8d9bb]/75"
         )
       }
@@ -100,6 +114,7 @@ const DungeonTab = ({ slot }: { readonly slot: DungeonSlot }) => {
           >
             {label}
           </span>
+          <SelectionIndicator isSelected={isSelected} className={SELECTED} />
         </>
       )}
     </Tab>
@@ -110,7 +125,9 @@ const DungeonTab = ({ slot }: { readonly slot: DungeonSlot }) => {
  * The notice board of the mine (GDD 8.4): one wanted poster for each Boss in
  * Boss order, and the Front strip under them. After a win, each poster
  * carries the claimed stamp. A short screen always shows slips. The board is
- * only as wide as its posters, so that the cave shows around it.
+ * only as wide as its posters and as tall as its content, so that the cave
+ * shows around it and the Fight bar follows right under it. When the content
+ * is taller than the band, the board shrinks and scrolls.
  */
 const NoticeBoard = ({ slot }: { readonly slot: DungeonSlot }) => {
   const { tr } = useGameText();
@@ -125,7 +142,7 @@ const NoticeBoard = ({ slot }: { readonly slot: DungeonSlot }) => {
     <section
       aria-label={tr("dungeons.board.label")}
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl border-4 border-[#3a2412] p-5",
+        "flex min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl border-4 border-[#3a2412] p-5",
         "bg-[linear-gradient(180deg,#6b4426,#553520_55%,#45291a)] shadow-[inset_0_2px_0_rgba(255,214,150,0.18),inset_0_-6px_14px_rgba(0,0,0,0.4),0_3px_0_rgba(0,0,0,0.45),0_18px_36px_rgba(0,0,0,0.45)]",
         "[@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:p-2.5"
       )}
@@ -163,10 +180,12 @@ const NoticeBoard = ({ slot }: { readonly slot: DungeonSlot }) => {
 };
 
 /**
- * The action under the notice board. An open Dungeon has the one gold Fight
- * across the board, which opens the Dungeon Panel (DESIGN.md, The Gold Means
- * Act Rule). It takes the focus when the screen opens, so a repeat win is
- * Town, cave, Enter, Enter. A locked Dungeon shows its level in its place.
+ * The action under the notice board. An open Dungeon has the one gold Fight,
+ * only as wide as its label, at the center under the board, which opens the
+ * Dungeon Panel (DESIGN.md, The Gold Means Act Rule). It takes the focus when
+ * the screen opens (the screen focuses it once), so a repeat win is Town,
+ * cave, Enter, Enter. It does not take the focus itself, so the arrow keys
+ * stay in the Dungeon tabs. A locked Dungeon shows its level in its place.
  */
 const BoardActions = ({
   slot,
@@ -200,9 +219,8 @@ const BoardActions = ({
       ref={barRef}
       intent="gold"
       size="lg"
-      autoFocus
       aria-label={tr("dungeons.fightLabel", { name })}
-      className="font-display w-full shrink-0 tracking-[0.04em] [@media(max-height:500px)]:min-h-11"
+      className="font-display w-fit shrink-0 self-center px-10 tracking-[0.04em] [@media(max-height:500px)]:min-h-11"
       data-testid="dungeon-fight-bar"
       onPress={onOpen}
     >
@@ -212,10 +230,10 @@ const BoardActions = ({
 };
 
 /**
- * The Dungeons screen (GDD 8.4, 11.1): the inside of the cave. The Dungeon
- * tabs and the Balance Plate are at the top. Under them, the notice board
- * with the wanted posters of the Bosses and the Front strip, and the one gold
- * Fight under it, which opens the Dungeon Panel: the rewards, the Deck and
+ * The Dungeons screen (GDD 8.4, 11.1): the inside of the cave. The Balance
+ * Plate is at the top. At the middle, the Dungeon tabs, the notice board
+ * with the wanted posters of the Bosses and the Front strip under them, and
+ * the one gold Fight under it, which opens the Dungeon Panel: the rewards, the Deck and
  * the Fight of the Battle. The Fight bar has the focus when the screen opens,
  * so a repeat win is Town, cave, Enter (the panel), Enter (Fight).
  */
@@ -234,6 +252,12 @@ export const DungeonsScreen = ({
   );
   const [preparing, setPreparing] = useState(false);
   const bar = useRef<HTMLButtonElement | null>(null);
+  // Focus the Fight bar once, when the screen opens. The Fight bar must not
+  // claim the focus again on a tab change, so that the arrow keys stay in the
+  // Dungeon tabs.
+  useEffect(() => {
+    bar.current?.focus();
+  }, []);
   const disabled = slots.flatMap((slot) =>
     slot.state === "later" ? [String(slot.number)] : []
   );
@@ -256,39 +280,44 @@ export const DungeonsScreen = ({
         }}
         disabledKeys={disabled}
       >
-        <TabList
-          aria-label={tr("dungeons.tabs.label")}
+        {/*
+         * The Dungeon tabs, the board and its Fight are one group at the vertical middle of the band,
+         * under the row of the Balance Plate. The group takes only the width of the posters, so that
+         * the cave shows around it.
+         */}
+        <div
           className={cn(
-            PLATE,
-            "absolute top-[max(0.5rem,env(safe-area-inset-top))] left-[max(0.5rem,env(safe-area-inset-left))] z-20 flex gap-1 p-1",
-            "max-w-[calc(100vw-1rem-env(safe-area-inset-left)-env(safe-area-inset-right)-15rem)] overflow-x-auto"
+            "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[92px] left-1/2 flex w-[min(calc(100vw-1.5rem),1180px)] -translate-x-1/2 flex-col items-center justify-center gap-3",
+            "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2"
           )}
         >
-          {slots.map((slot) => (
-            <DungeonTab key={slot.number} slot={slot} />
-          ))}
-        </TabList>
-        {slots.map((slot) => (
-          <TabPanel
-            key={slot.number}
-            id={String(slot.number)}
+          <TabList
+            aria-label={tr("dungeons.tabs.label")}
             className={cn(
-              "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[92px] left-1/2 flex w-[min(calc(100vw-1.5rem),1180px)] -translate-x-1/2 flex-col items-center outline-none",
-              "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))]"
+              PLATE,
+              "z-20 flex max-w-full shrink-0 gap-1 overflow-x-auto p-1"
             )}
-            data-testid={`dungeon-place-${slot.number}`}
           >
-            {/* The board and its Fight take only the width of the posters, so that the cave shows around them. */}
-            <div className="flex min-h-0 w-fit max-w-full flex-1 flex-col gap-3 [@media(max-height:500px)]:gap-2">
+            {slots.map((slot) => (
+              <DungeonTab key={slot.number} slot={slot} />
+            ))}
+          </TabList>
+          {slots.map((slot) => (
+            <TabPanel
+              key={slot.number}
+              id={String(slot.number)}
+              className="flex min-h-0 w-fit max-w-full flex-col gap-3 outline-none [@media(max-height:500px)]:gap-2"
+              data-testid={`dungeon-place-${slot.number}`}
+            >
               <NoticeBoard slot={slot} />
               <BoardActions
                 slot={slot}
                 barRef={bar}
                 onOpen={() => setPreparing(true)}
               />
-            </div>
-          </TabPanel>
-        ))}
+            </TabPanel>
+          ))}
+        </div>
       </Tabs>
       <DungeonPanel
         slot={preparing ? (shown ?? null) : null}

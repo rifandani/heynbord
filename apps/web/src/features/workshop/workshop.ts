@@ -1,7 +1,10 @@
 import type {
   CardDefinition,
   Collection,
+  DeckEntry,
   DeckSlot,
+  FuseGroup,
+  FuseRecipe,
   RankId,
 } from "@workspace/rules";
 import {
@@ -12,7 +15,12 @@ import {
   combinePath,
   craftEssence,
   discoveredCards,
+  FUSE_ESSENCE,
+  fuseChances,
+  fusePool,
+  fuseRecipe,
   getCard,
+  isFuseRank,
   isUnlocked,
   ownedCopies,
   RANKS,
@@ -82,6 +90,12 @@ export interface WorkshopTile {
   readonly pairReady: boolean;
   /** The spare copies of all the Ranks (`spareCopies`). */
   readonly spare: number;
+  /**
+   * The Ranks of the card with a copy that can go into a Fuse that gives a
+   * card (ADR-0051): below Legendary, with a copy, and its Race or Class has
+   * a card in the Fuse pool of that Rank.
+   */
+  readonly fuseRanks: readonly RankId[];
 }
 
 /** True when a Rank below Legendary has at least 2 copies. */
@@ -92,6 +106,20 @@ const hasPair = (copies: readonly RankCopies[]): boolean =>
 
 const hasCopies = (copies: readonly RankCopies[]) =>
   copies.some((row) => row.copies > 0);
+
+/** The Ranks of `fuseRanks` on a tile. */
+const fuseRanksOf = (
+  collection: Collection,
+  cardId: string,
+  copies: readonly RankCopies[]
+): readonly RankId[] =>
+  copies.flatMap(({ rank, copies: owned }) =>
+    owned > 0 &&
+    isFuseRank(rank) &&
+    fusePool(collection, [{ cardId, rank }]).length > 0
+      ? [rank]
+      : []
+  );
 
 /**
  * The Workshop grid (GDD 7.4): one tile for each Discovered card that agrees
@@ -125,6 +153,7 @@ export const workshopTiles = (
         copies,
         pairReady: hasPair(copies),
         spare: copies.reduce((total, row) => total + spareCopies(row), 0),
+        fuseRanks: fuseRanksOf(collection, card.id, copies),
       },
     ];
   }).toSorted(byCountdown);
@@ -140,37 +169,72 @@ export const selectedTile = (
 ): WorkshopTile | null =>
   tiles.find((tile) => tile.cardId === selected) ?? tiles[0] ?? null;
 
+/** The Rank after `rank`, or `null` for Legendary. */
+export const nextRank = (rank: RankId): RankId | null =>
+  RANKS[rankIndex(rank) + 1] ?? null;
+
+/**
+ * The tiles that a station shows. Craft: only the cards with a Craft cost, so
+ * not an Epic or a Legendary Base Rank card (ADR-0052). Combine and Fuse: not
+ * a Legendary Base Rank card, because it has no Rank to Combine to and no copy
+ * below Legendary to Fuse. Extract shows all the tiles.
+ */
+export const stationTiles = (
+  tiles: readonly WorkshopTile[],
+  station: Station
+): readonly WorkshopTile[] => {
+  if (station === "craft") {
+    return tiles.filter((tile) => craftEssence(getCard(tile.cardId)) !== null);
+  }
+  if (station === "combine" || station === "fuse") {
+    return tiles.filter(
+      (tile) => nextRank(getCard(tile.cardId).baseRank) !== null
+    );
+  }
+  return tiles;
+};
+
 /**
  * The text of a Workshop grid with no cards: the Player has Discovered no card
- * of the filters, the Ownership filter keeps none of them, or the ready filter
- * of the station (`ready`) keeps none of them.
+ * of the filters, Craft, Combine or Fuse shows none of them (`stationTiles`),
+ * the Ownership filter keeps none of them, or the ready filter of the station
+ * (`ready`) keeps none of them.
  */
 export const emptyGridText = (
   collection: Collection,
   filter: PoolFilter,
-  ready: Station | null = null
+  station: Station,
+  ready = false
 ): TextRef => {
-  if (ready !== null && workshopTiles(collection, filter).length > 0) {
-    return {
-      key: `workshop.empty.ready.${ready}`,
-      args: { group: poolGroupText(filter) },
-    };
+  const group = { group: poolGroupText(filter) };
+  if (
+    ready &&
+    stationTiles(workshopTiles(collection, filter), station).length > 0
+  ) {
+    return { key: `workshop.empty.ready.${station}`, args: group };
   }
-  const found =
-    workshopTiles(collection, { ...filter, ownership: "all" }).length > 0;
+  const all = workshopTiles(collection, { ...filter, ownership: "all" });
+  // Only Craft, Combine and Fuse hide cards: all the cards of the filters
+  // have no Craft, or all of them are Legendary Base Rank cards.
+  if (all.length > 0 && stationTiles(all, station).length === 0) {
+    const key =
+      station === "combine"
+        ? "workshop.empty.noCombine"
+        : station === "fuse"
+          ? "workshop.empty.noFuse"
+          : "workshop.empty.noCraft";
+    return { key, args: group };
+  }
+  const found = all.length > 0;
   const key = found
     ? filter.ownership === "notOwned"
       ? "workshop.empty.allOwned"
       : "workshop.empty.noneOwned"
     : "workshop.empty.noneFound";
-  return { key, args: { group: poolGroupText(filter) } };
+  return { key, args: group };
 };
 
 // ─── Station Panels ──────────────────────────────────────────────────────────
-
-/** The Rank after `rank`, or `null` for Legendary. */
-export const nextRank = (rank: RankId): RankId | null =>
-  RANKS[rankIndex(rank) + 1] ?? null;
 
 /**
  * The Combine of one Rank (Economy 3.2): its target Rank and its Coin, and
@@ -206,9 +270,10 @@ export const combineState = (
 };
 
 /**
- * The Craft of a card (Economy 3.3). `none`: the card has no Craft cost.
- * `locked`: the Player level is below the Craft level. `essence`: not enough
- * Essence, `missing` is the Essence still needed. `ready`: the Player can.
+ * The Craft of a card (Economy 3.3). `none`: the card has no Craft cost: its
+ * Base Rank is Epic or Legendary (ADR-0052). `locked`: the Player level is
+ * below the Craft level. `essence`: not enough Essence, `missing` is the
+ * Essence still needed. `ready`: the Player can.
  */
 export type CraftState =
   | { readonly kind: "none" }
@@ -401,12 +466,13 @@ export const craftTimeline = (rank: RankId): CraftTimeline => {
 // ─── Stations ────────────────────────────────────────────────────────────────
 
 /**
- * The three stations of the Workshop: one for each action (GDD 7.4). The
+ * The four stations of the Workshop: one for each action (GDD 7.4). The
  * Player selects a station, then a card. Each station has its own direction:
- * a Combine goes up the Ranks, a Craft makes Essence into a copy, and an
- * Extract makes a copy into Essence.
+ * a Combine goes up the Ranks, a Craft makes Essence into a copy, a Fuse
+ * makes copies and Essence into a new card, and an Extract makes a copy into
+ * Essence. Fuse is next to Craft: the two stations that make a card.
  */
-export const STATIONS = ["combine", "craft", "extract"] as const;
+export const STATIONS = ["combine", "craft", "fuse", "extract"] as const;
 export type Station = (typeof STATIONS)[number];
 
 /** The balances and the Player level that tell if a station can act. */
@@ -419,7 +485,9 @@ export interface StationContext {
 /**
  * True when the station can act on the card now. Combine: a pair below
  * Legendary (the Coin can still be short, as on the anvil mark). Craft: the
- * Craft is open and the Essence is enough. Extract: a spare copy.
+ * Craft is open and the Essence is enough. Fuse: the Fuse is open and a copy
+ * can go into a Fuse that gives a card (`fuseRanks`; the Essence can still be
+ * short). Extract: a spare copy.
  */
 export const isTileReady = (
   tile: WorkshopTile,
@@ -435,16 +503,26 @@ export const isTileReady = (
       "ready"
     );
   }
+  if (station === "fuse") {
+    return isUnlocked(context.level, "fuse") && tile.fuseRanks.length > 0;
+  }
   return tile.spare > 0;
 };
 
-/** The Craft level while the Player level is below it, else `null`: the Craft tab shows its lock. */
-export const craftLock = (level: number): number | null =>
-  isUnlocked(level, "craft") ? null : UNLOCK_LEVELS.craft;
+/**
+ * The level of a station while the Player level is below it, else `null`:
+ * the tab shows its lock. Only Craft and Fuse have a level above the
+ * Workshop level.
+ */
+export const stationLock = (station: Station, level: number): number | null =>
+  (station === "craft" || station === "fuse") && !isUnlocked(level, station)
+    ? UNLOCK_LEVELS[station]
+    : null;
 
 /**
  * The number on the tab of a station. Combine: the cards with a pair. Craft:
- * the cards that the Player can Craft now. Extract: the spare copies.
+ * the cards that the Player can Craft now. Fuse: the cards that can go into a
+ * Fuse now. Extract: the spare copies.
  */
 const stationCount = (
   tiles: readonly WorkshopTile[],
@@ -462,5 +540,234 @@ export const stationCounts = (
 ): Readonly<Record<Station, number>> => ({
   combine: stationCount(tiles, "combine", context),
   craft: stationCount(tiles, "craft", context),
+  fuse: stationCount(tiles, "fuse", context),
   extract: stationCount(tiles, "extract", context),
 });
+
+// ─── Fuse ────────────────────────────────────────────────────────────────────
+
+/** The copies of the card in the Rank that are in the Fuse slots. */
+const inSlots = (
+  inputs: readonly DeckEntry[],
+  cardId: string,
+  rank: RankId
+): number =>
+  inputs.filter((input) => input.cardId === cardId && input.rank === rank)
+    .length;
+
+/** The copies of the card in the Rank that are not in a Fuse slot yet. */
+const copiesLeft = (
+  collection: Collection,
+  inputs: readonly DeckEntry[],
+  cardId: string,
+  rank: RankId
+): number =>
+  ownedCopies(collection, cardId, rank) - inSlots(inputs, cardId, rank);
+
+/**
+ * The Ranks of the card that a press on its tile can put in a Fuse slot now
+ * (GDD 7.4). Before the first copy: each Rank below Legendary with a copy that
+ * is not in a slot. When the Rank chooser has more than one Rank, the Player
+ * selects. After the first copy: only its Rank, for a card of its card type,
+ * while a slot is free.
+ */
+export const fuseOptions = (
+  tile: Pick<WorkshopTile, "cardId" | "copies">,
+  collection: Collection,
+  inputs: readonly DeckEntry[]
+): readonly RankId[] => {
+  const recipe = fuseRecipe(inputs);
+  const left = (rank: RankId) =>
+    copiesLeft(collection, inputs, tile.cardId, rank) > 0;
+  if (recipe === null) {
+    return tile.copies.flatMap(({ rank }) =>
+      isFuseRank(rank) && left(rank) ? [rank] : []
+    );
+  }
+  return inputs.length < recipe.copies &&
+    getCard(tile.cardId).kind === recipe.kind &&
+    left(recipe.rank)
+    ? [recipe.rank]
+    : [];
+};
+
+/**
+ * Why a press on a tile puts no copy in a Fuse slot: the slots are `full`,
+ * the card is of the other card `kind`, it has no copy of the `rank` of the
+ * slots, or it has no `copies` left that can go in.
+ */
+export type FuseRefusal = "full" | "kind" | "rank" | "copies";
+
+export const fuseRefusal = (
+  tile: Pick<WorkshopTile, "cardId" | "copies">,
+  collection: Collection,
+  inputs: readonly DeckEntry[]
+): FuseRefusal | null => {
+  if (fuseOptions(tile, collection, inputs).length > 0) {
+    return null;
+  }
+  const recipe = fuseRecipe(inputs);
+  if (recipe === null) {
+    return "copies";
+  }
+  if (inputs.length >= recipe.copies) {
+    return "full";
+  }
+  if (getCard(tile.cardId).kind !== recipe.kind) {
+    return "kind";
+  }
+  return ownedCopies(collection, tile.cardId, recipe.rank) > 0
+    ? "copies"
+    : "rank";
+};
+
+/**
+ * The number on the Fuse mark of a tile: the copies that can go in now.
+ * Before the first copy, only the Ranks that give a card count (`fuseRanks`).
+ * 0: the tile is darker.
+ */
+export const fuseMark = (
+  tile: Pick<WorkshopTile, "cardId" | "copies" | "fuseRanks">,
+  collection: Collection,
+  inputs: readonly DeckEntry[]
+): number => {
+  const recipe = fuseRecipe(inputs);
+  const ranks =
+    recipe === null ? tile.fuseRanks : fuseOptions(tile, collection, inputs);
+  return ranks.reduce(
+    (total, rank) =>
+      total + Math.max(0, copiesLeft(collection, inputs, tile.cardId, rank)),
+    0
+  );
+};
+
+/**
+ * The Fuse slots without the copies that the Player does not own any more,
+ * for example after an Extract at another station, and without the copies
+ * that do not fit the first copy. The order stays.
+ */
+export const pruneInputs = (
+  inputs: readonly DeckEntry[],
+  collection: Collection
+): readonly DeckEntry[] => {
+  const kept: DeckEntry[] = [];
+  for (const input of inputs) {
+    const recipe = fuseRecipe([...kept, input]);
+    if (
+      recipe !== null &&
+      kept.length < recipe.copies &&
+      inSlots(kept, input.cardId, input.rank) <
+        ownedCopies(collection, input.cardId, input.rank)
+    ) {
+      kept.push(input);
+    }
+  }
+  return kept;
+};
+
+/**
+ * The Fuse panel (GDD 7.4). `locked`: the Player level is below the Fuse
+ * level. `empty`: no copy in a slot. `filling`: `missing` slots are still
+ * free. `pool`: the slots are full, but the Player has Discovered all the
+ * cards of the Rank in the `groups` of the copies. `essence`: not enough
+ * Essence, `missing` is the Essence still needed. `ready`: the Player can.
+ */
+export type FuseState =
+  | { readonly kind: "locked"; readonly level: number }
+  | { readonly kind: "empty" }
+  | (FuseCost & { readonly kind: "filling"; readonly missing: number })
+  | (FuseCost & {
+      readonly kind: "pool";
+      readonly groups: readonly FuseGroup[];
+    })
+  | (FuseCost & { readonly kind: "essence"; readonly missing: number })
+  | (FuseCost & { readonly kind: "ready" });
+
+interface FuseCost {
+  readonly recipe: FuseRecipe;
+  readonly cost: number;
+}
+
+export const fuseState = (
+  collection: Collection,
+  inputs: readonly DeckEntry[],
+  context: Pick<StationContext, "level" | "essence">
+): FuseState => {
+  if (!isUnlocked(context.level, "fuse")) {
+    return { kind: "locked", level: UNLOCK_LEVELS.fuse };
+  }
+  const recipe = fuseRecipe(inputs);
+  if (recipe === null) {
+    return { kind: "empty" };
+  }
+  const cost = FUSE_ESSENCE[recipe.rank];
+  if (inputs.length < recipe.copies) {
+    return {
+      kind: "filling",
+      recipe,
+      cost,
+      missing: recipe.copies - inputs.length,
+    };
+  }
+  const chances = fuseChances(collection, inputs);
+  if ((chances[0]?.total ?? 0) === 0) {
+    return {
+      kind: "pool",
+      recipe,
+      cost,
+      groups: chances.map((chance) => chance.group),
+    };
+  }
+  return context.essence < cost
+    ? { kind: "essence", recipe, cost, missing: cost - context.essence }
+    : { kind: "ready", recipe, cost };
+};
+
+/** The time that one copy takes to go from its slot into the Card Back. */
+const FUSE_GATHER_MS = 380;
+
+/** The time between two copies that leave their slots. */
+const FUSE_GATHER_STEP_MS = 70;
+
+/** The Card Back turns over to the new card in this time. */
+const FUSE_TURN_MS = 420;
+
+/** The beats of a Fuse, in ms from the press. */
+export interface FuseTimeline {
+  /** The time at which each copy leaves its slot. */
+  readonly gatherAt: readonly number[];
+  readonly gatherMs: number;
+  /** The time at which each Essence drop leaves the balance, as in a Craft. */
+  readonly dropAt: readonly number[];
+  /** An Epic Card Back trembles for this time before it turns. */
+  readonly trembleMs: number;
+  /** The Card Back starts to turn over. */
+  readonly turnAt: number;
+  readonly turnMs: number;
+  /** The face of the new card shows: the Rank burst, the chime and the "New" ribbon. */
+  readonly faceAt: number;
+}
+
+/**
+ * The beats of a Fuse of `copies` copies in `rank` (GDD 7.4). The copies leave
+ * their slots one after the other and go into the Card Back. The Essence drops
+ * fly from the balance into it, as in a Craft. When the last drop is in, an
+ * Epic Card Back trembles, then the Card Back turns over to the new card.
+ */
+export const fuseTimeline = (rank: RankId, copies: number): FuseTimeline => {
+  const craft = craftTimeline(rank);
+  const { trembleMs } = EXTRACT_MOTION[rank];
+  const turnAt = craft.formed + trembleMs;
+  return {
+    gatherAt: Array.from(
+      { length: copies },
+      (_, index) => index * FUSE_GATHER_STEP_MS
+    ),
+    gatherMs: FUSE_GATHER_MS,
+    dropAt: craft.dropAt,
+    trembleMs,
+    turnAt,
+    turnMs: FUSE_TURN_MS,
+    faceAt: turnAt + Math.round(FUSE_TURN_MS / 2),
+  };
+};

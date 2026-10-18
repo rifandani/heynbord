@@ -62,7 +62,6 @@ const cardTextRefs = (text: CardText): TextRef[] =>
         text.flavor,
         text.attackType,
         ...text.keywords.flatMap((keyword) => [keyword.name, keyword.rule]),
-        ...(text.damageRule ? [text.damageRule] : []),
       ]
     : [text.name, text.flavor, text.effect, text.recall];
 
@@ -209,13 +208,8 @@ describe("cardText (CRD-08)", () => {
       ],
       ["Swift", "+1 Speed."],
     ]);
-    expect(text.damageRule).toBeUndefined();
     expect(resolve(creature("human.dawnCleric", "uncommon").attackType)).toBe(
       "Ranged 2"
-    );
-    const shaman = creature("orc.emberShaman", "common").damageRule;
-    expect(shaman && resolve(shaman)).toBe(
-      "Fire: the target burns for 1 damage in its next 2 End Phases."
     );
   });
 
@@ -503,7 +497,7 @@ describe("cardText (CRD-08)", () => {
     ]);
   });
 
-  it("shows Wall, Rally and Unique from the card data (GDD 5.4)", () => {
+  it("shows Wall, Rally and Unique from the card data (GDD 5.4), with Unique first", () => {
     const names = (cardId: string, rank: RankId) =>
       creature(cardId, rank).keywords.map((keyword) => resolve(keyword.name));
     expect(names("human.townBarricade", "common")).toEqual(["Wall"]);
@@ -517,16 +511,21 @@ describe("cardText (CRD-08)", () => {
       "Wall",
     ]);
     expect(names("human.marshalElianVoss", "epic")).toEqual([
+      "Unique",
       "Bulwark 1",
       "Rally 2",
       "Mid-range",
-      "Unique",
     ]);
     expect(names("orc.warchiefGrukka", "epic")).toEqual([
+      "Unique",
       "Charge 2",
       "Heroic 3",
       "Swift",
+    ]);
+    expect(names("feral.oldFrostmaw", "epic")).toEqual([
       "Unique",
+      "Bleed 2",
+      "Trample",
     ]);
     const [rally] = creature("orc.warhowlerDrummer", "uncommon").keywords;
     expect(rally && resolve(rally.rule)).toBe(
@@ -579,7 +578,6 @@ describe("tokenText", () => {
     expect(skeleton.keywords.map((keyword) => resolve(keyword.name))).toEqual([
       "Swarm 1",
     ]);
-    expect(skeleton.damageRule).toBeUndefined();
     expect(resolve(skeleton.flavor)).toBe(
       "A Token is not a card. When it dies, it disappears. It does not go to the Graveyard."
     );
@@ -588,9 +586,6 @@ describe("tokenText", () => {
     expect(wisp.keywords.map((keyword) => resolve(keyword.name))).toEqual([
       "Flying",
     ]);
-    expect(wisp.damageRule && resolve(wisp.damageRule)).toBe(
-      "Frost: the target skips its next action."
-    );
   });
 });
 

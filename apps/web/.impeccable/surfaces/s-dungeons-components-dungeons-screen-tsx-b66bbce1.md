@@ -23,7 +23,7 @@ OWN-WORLD: Inherited Painted Tabletop. Parchment posters with bronze tacks on a 
 
 STORY: The Player reads the posters (name, Class, HP, Boss Rule, Lanes), sees on the strip where each Boss stands, and opens the Fight bar. The Dungeon Panel has the rewards, the Deck choice with Edit Decks, and its own gold Fight. After a win, the posters stay full with the "Bounty claimed" stamp (not "Defeated": a Routed win does not take each Boss to 0 HP, and the Profile keeps only the win count); the rewards, the repeat-win chances, the Dungeon Sweep and Fight lead.
 
-FIRST VIEWPORT: Code scene covers the screen. Top left: Dungeon tabs (1 open, 2 and 3 locked with their level). Top right: Balance Plate. Body, one column centered above the Town Bar and only as wide as its posters: the notice board with one poster per Boss in a row and the Front strip under them, and directly under the board, across its full width, the gold Fight, which has the focus. The board takes the height that is left and scrolls; the bar keeps its place.
+FIRST VIEWPORT: Code scene covers the screen. Top left: Dungeon tabs (1 open, 2 and 3 locked with their level). Top right: Balance Plate. Body, one column centered above the Town Bar and only as wide as its posters: the notice board with one poster per Boss in a row and the Front strip under them, and directly under the board, centered and only as wide as its label, the gold Fight, which has the focus. The board takes the height that is left and scrolls.
 
 FORM: Wanted Board, position 6 of 7 on the shape round (dealt lead). Seed key: 4b0fb0f4.
 

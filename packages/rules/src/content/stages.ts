@@ -634,7 +634,7 @@ export const STAGES: readonly StageDefinition[] = [
     number: 1,
     boss: false,
     recommendedLevel: 10,
-    starTurn: 20,
+    starTurn: 21,
     firstWinCard: { cardId: "elf.rootboundGuard", rank: "common" },
     closedLanes: [],
     enemy: {

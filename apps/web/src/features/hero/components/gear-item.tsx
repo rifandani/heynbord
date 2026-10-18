@@ -293,11 +293,18 @@ const UpgradeCost = ({
 }) => {
   const { format } = useCoinFormat();
   const short = upgrade.kind === "short";
+  /**
+   * The surface under the Coin letter: the gold button of a Ready upgrade is
+   * light and the engraved plate of one that is off is dark. A Coin that is
+   * missing keeps the warm red of the requirement, so the price reads as one.
+   */
+  const tone = short ? (upgrade.missingCoin > 0 ? null : "dark") : "light";
   return (
     <>
       <CoinPrice
         parts={coinDenominations(upgrade.coin)}
         format={format}
+        tone={tone}
         className={cn("font-bold", short && upgrade.missingCoin > 0 && MISSING)}
       />
       <span

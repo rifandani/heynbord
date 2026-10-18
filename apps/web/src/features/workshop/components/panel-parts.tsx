@@ -41,10 +41,17 @@ export type Extraction = Burst;
 export type Forming = Burst;
 
 /** An Essence amount with its icon. */
-export const Essence = ({ amount }: { readonly amount: string }) => (
+export const Essence = ({
+  amount,
+  amountClassName,
+}: {
+  readonly amount: string;
+  /** The width and the alignment of the number, so that a column of amounts lines up. */
+  readonly amountClassName?: string;
+}) => (
   <span className="inline-flex items-center gap-0.5 tabular-nums">
     <BalanceIcon kind="essence" className="size-[1.15em] shrink-0" />
-    {amount}
+    <span className={amountClassName}>{amount}</span>
   </span>
 );
 
@@ -450,15 +457,17 @@ export const usePanelPeek = (panel: RefObject<HTMLElement | null>) => {
 /**
  * The light of each station on its panel: the side of the panel that faces
  * the station in the painting (Town Concepts 10.2), and its color. The smith
- * (Combine) and the forge (Craft) are at the left of the painting, the junk
- * cart of the goblin tinker (Extract) at the right. Combine is a cool white
- * gold, Craft a hot orange, Extract a warm amber.
+ * (Combine) and the forge (Craft) are at the left of the painting, the goblin
+ * tinker (Fuse) and his junk cart (Extract) at the right. Combine is a cool
+ * white gold, Craft a hot orange, Fuse the green of the tinker's bubbling
+ * brew, Extract a warm amber.
  */
 const STATION_EDGES: Readonly<
   Record<Station, { readonly side: "left" | "right"; readonly color: string }>
 > = {
   combine: { side: "left", color: "255,240,190" },
   craft: { side: "left", color: "255,100,30" },
+  fuse: { side: "right", color: "150,230,120" },
   extract: { side: "right", color: "255,170,70" },
 };
 

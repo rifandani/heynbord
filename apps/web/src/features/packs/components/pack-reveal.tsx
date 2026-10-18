@@ -187,7 +187,7 @@ const Glow = ({ rank }: { readonly rank: RankId }) => {
 };
 
 /** The NEW chip. After a flip, it stamps onto the card (`stamp` is its delay). */
-const NewBadge = ({ stamp }: { readonly stamp?: number }) => {
+export const NewBadge = ({ stamp }: { readonly stamp?: number }) => {
   const { tr } = useGameText();
   return (
     <span
@@ -536,6 +536,7 @@ const RevealEnd = ({
           <CoinPrice
             parts={coinDenominations(again.price)}
             format={format}
+            tone="dark"
             className="text-sm font-bold"
           />
         </GameButton>

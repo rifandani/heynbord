@@ -55,8 +55,10 @@ export const ExtractDialog = ({
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]"
     >
       <Modal className="fade-in zoom-in-95 animate-in w-[min(420px,94vw)] rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] p-5 text-center text-[#2a1d12] shadow-2xl duration-200 motion-reduce:animate-none [@media(max-height:500px)]:p-3">
+        {/* A pressed button goes down 1px. The bottom padding keeps it in
+            the scroll box, so no scrollbar comes and moves the buttons. */}
         <Dialog
-          className="max-h-[calc(100dvh-3rem)] overflow-y-auto outline-none"
+          className="-mb-1 max-h-[calc(100dvh-3rem)] overflow-y-auto pb-1 outline-none"
           data-testid="extract-dialog"
         >
           {request ? (
@@ -68,10 +70,7 @@ export const ExtractDialog = ({
                 {tr("workshop.extractDialog.title")}
               </Heading>
               <p className="mt-2 text-sm text-[#5b4632] [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:text-xs">
-                {tr("workshop.extractDialog.text", {
-                  name: tr(`cards.${request.cardId}.name`),
-                  rank: tr(`ranks.${request.rank}`),
-                })}
+                {tr("workshop.extractDialog.text")}
               </p>
               <p className="mt-2 flex items-center justify-center gap-1.5 text-base font-black [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:text-sm">
                 <BalanceIcon kind="essence" className="size-5 shrink-0" />

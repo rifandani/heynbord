@@ -95,6 +95,7 @@ export interface SelectableBuilding {
   readonly id:
     | "townGate"
     | "cardShop"
+    | "bazaar"
     | "workshop"
     | "barracks"
     | "cave"
@@ -153,6 +154,20 @@ export const SELECTABLE_BUILDINGS: readonly SelectableBuilding[] = [
     // The cut goes from (25%, 100%) to (0, 62%). The polygon goes past the
     // box, so that the hover glow is not cut.
     clip: "polygon(-10% -20%, 110% -20%, 110% 110%, 31.6% 110%, -10% 46.8%)",
+  },
+  {
+    // The Market (11 — Town Concepts 2.6): the market square with its tents,
+    // its stalls and its fountain, above the Workshop and right of the Card
+    // shop. Its box is the part of the square in the safe area: a 4:3 screen
+    // crops the blue awning and the red tent at its right, so the box ends at
+    // x 1526, the edge of the Workshop label. Its label is above the tents
+    // and under the Balance Plate corner (y 320), so the two never touch.
+    // The box stops at the top of the Workshop label (y 505), so that label
+    // keeps the pointer.
+    id: "bazaar",
+    screen: "bazaar",
+    rect: { x: 1210, y: 366, width: 316, height: 139 },
+    label: { x: 1210, y: 320, width: 316, height: 46 },
   },
   {
     // The Workshop (11 — Town Concepts 2.5): the forge with the blue roof and

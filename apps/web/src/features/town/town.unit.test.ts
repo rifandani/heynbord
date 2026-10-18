@@ -111,6 +111,7 @@ describe("SELECTABLE_BUILDINGS", () => {
     expect(SELECTABLE_BUILDINGS.map((building) => building.screen)).toEqual([
       "campaign",
       "packs",
+      "bazaar",
       "workshop",
       "hero",
       "dungeons",
@@ -122,6 +123,12 @@ describe("SELECTABLE_BUILDINGS", () => {
   it("keeps the Hall of banners clear of the Town Gate, the Card shop and Heynspire, with their labels (Achievements 4)", () => {
     for (const id of ["townGate", "cardShop", "heynspire"] as const) {
       expect(overlaps(withLabel("hall"), withLabel(id)), id).toBe(false);
+    }
+  });
+
+  it("keeps the Market clear of the Card shop and of the Workshop, with their labels (11 — Town Concepts 2.6)", () => {
+    for (const id of ["cardShop", "workshop"] as const) {
+      expect(overlaps(withLabel("bazaar"), withLabel(id)), id).toBe(false);
     }
   });
 });
@@ -288,13 +295,20 @@ describe("level locks (GDD 11.4)", () => {
     expect(dungeons && isLocked(dungeons, at(10))).toBe(false);
   });
 
-  it("opens the Bazaar at any Player level, with no lock (11.4)", () => {
+  it("opens the Bazaar at any Player level, with no lock, from the Market (11.4)", () => {
     const bazaar = TOWN_SHORTCUTS.find((shortcut) => shortcut.id === "bazaar");
-    expect(bazaar && isLocked(bazaar, at(1))).toBe(false);
-    expect(bazaar && townLock(bazaar, at(1))).toBeNull();
+    const market = SELECTABLE_BUILDINGS.find(
+      (building) => building.id === "bazaar"
+    );
+    for (const level of [1, 2, 30]) {
+      expect(bazaar && isLocked(bazaar, at(level))).toBe(false);
+      expect(bazaar && townLock(bazaar, at(level))).toBeNull();
+      expect(market && townLock(market, at(level))).toBeNull();
+    }
     expect(bazaar && opensAtLevel(bazaar, 1)).toBeNull();
-    // The screen exists in v1, so the shortcut opens it.
+    // The screen exists in v1, so the shortcut and the Market open it.
     expect(bazaar?.screen).toBe("bazaar");
+    expect(market?.screen).toBe("bazaar");
   });
 });
 

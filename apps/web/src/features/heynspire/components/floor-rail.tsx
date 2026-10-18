@@ -205,10 +205,21 @@ const FlightBoss = ({
 };
 
 /** "Floors 11–20" and the Boss of the Flight. */
-const FlightRange = ({ flight }: { readonly flight: Flight }) => {
+const FlightRange = ({
+  flight,
+  className,
+}: {
+  readonly flight: Flight;
+  readonly className?: string;
+}) => {
   const { tr } = useGameText();
   return (
-    <span className="text-xs font-bold whitespace-nowrap text-[#e8d9bb]">
+    <span
+      className={cn(
+        "text-xs font-bold whitespace-nowrap text-[#e8d9bb] tabular-nums",
+        className
+      )}
+    >
       {tr("heynspire.flight.range", { first: flight.first, last: flight.last })}
     </span>
   );
@@ -236,7 +247,7 @@ const OpenFlight = ({
   readonly onOpen: (floor: number, from: Element) => void;
 }) => (
   <div
-    className="relative rounded-2xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/80 px-4 pt-3 shadow-[0_3px_0_rgba(0,0,0,0.45),0_18px_36px_rgba(0,0,0,0.45)] [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:pt-1.5"
+    className="relative mb-[3px] rounded-2xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/80 px-4 pt-3 shadow-[0_3px_0_rgba(0,0,0,0.45),0_18px_36px_rgba(0,0,0,0.45)] [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:pt-1.5"
     data-testid={`flight-stair-${flight.index}`}
     data-open="true"
   >
@@ -296,13 +307,16 @@ const cellClass = (stop: FloorStop) =>
 /**
  * A folded Flight: a slim Night Plate band with its Floors, a strip of 10
  * cells in the state of each Floor, its Boss and its count. A press unfolds
- * it, and the open Flight folds.
+ * it, and the open Flight folds. The Floors of the widest Flight hold the
+ * width of the first column, so the strips of all bands align.
  */
 const FlightBand = ({
   flight,
+  widest,
   onUnfold,
 }: {
   readonly flight: Flight;
+  readonly widest: Flight;
   readonly onUnfold: () => void;
 }) => {
   const { tr } = useGameText();
@@ -317,7 +331,7 @@ const FlightBand = ({
         won: flight.won,
       })}
       className={cn(
-        "grid min-h-11 w-full cursor-pointer grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 px-3 py-1 text-left text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] outline-none",
+        "mb-[3px] grid min-h-11 w-full cursor-pointer grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 px-3 py-1 text-left text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] outline-none",
         "transition-[translate,background-color,box-shadow] duration-100 data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#2b1f15]/90 data-[pressed]:translate-y-px data-[pressed]:shadow-[0_1px_0_rgba(0,0,0,0.45)]",
         "[@media(max-height:500px)]:min-h-[26px] [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:rounded-lg [@media(max-height:500px)]:py-0",
         flight.state === "locked" && "bg-[#1c140e]/75"
@@ -326,7 +340,10 @@ const FlightBand = ({
       data-testid={`flight-band-${flight.index}`}
       data-state={flight.state}
     >
-      <FlightRange flight={flight} />
+      <span className="grid">
+        <FlightRange flight={flight} className="[grid-area:1/1]" />
+        <FlightRange flight={widest} className="invisible [grid-area:1/1]" />
+      </span>
       <span className="flex items-end gap-1" aria-hidden>
         {flight.floors.map((stop) => (
           <span key={stop.number} className={cellClass(stop)} />
@@ -520,9 +537,11 @@ export const FloorRail = ({
               )}
               inert={isOpen}
             >
+              {/* Each Flight keeps a 3px margin, so that the clip of the fold does not cut its drop shadow. */}
               <div className="min-h-0 overflow-hidden">
                 <FlightBand
                   flight={flight}
+                  widest={climb.flights.at(-1) ?? flight}
                   onUnfold={() => unfold(flight.index)}
                 />
               </div>

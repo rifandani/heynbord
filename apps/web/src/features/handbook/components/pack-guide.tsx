@@ -83,6 +83,7 @@ const PackTab = ({ pack }: { readonly pack: PackDefinition }) => {
           <CoinPrice
             parts={coinDenominations(pack.price)}
             format={format}
+            tone="light"
             className="mt-0.5 text-xs font-bold text-[#5b4632]"
           />
           <span className="sr-only">{words(pack.price)}</span>

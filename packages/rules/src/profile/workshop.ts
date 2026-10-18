@@ -1,14 +1,21 @@
 /**
- * The Workshop actions of the Profile (GDD 7.4): Combine, Extract and Craft.
+ * The Workshop actions of the Profile (GDD 7.4): Combine, Extract, Craft and
+ * Fuse.
  * The Collection rules are separate, so that the economy simulation uses the
  * same rules as the game (Economy 7.1).
  */
 import { copiesInDeck, ownedCopies } from "../collection/deck-building";
 import type { Collection } from "../collection/deck-building";
-import { getCard } from "../content/cards";
+import { CARDS, getCard } from "../content/cards";
 import { playerLevelForXp } from "../content/player-levels";
 import { RANKS } from "../content/ranks";
-import type { DeckEntry, RankId } from "../content/schema";
+import type {
+  CardDefinition,
+  ClassId,
+  DeckEntry,
+  RaceId,
+  RankId,
+} from "../content/schema";
 import { isUnlocked } from "../content/unlocks";
 import type { UnlockFeature } from "../content/unlocks";
 import {
@@ -16,8 +23,13 @@ import {
   combineCoin,
   craftEssence,
   EXTRACT_ESSENCE,
+  FUSE_COPIES,
+  FUSE_ESSENCE,
+  isFuseRank,
 } from "../content/workshop";
-import { addCopies } from "./packs";
+import type { FuseRank } from "../content/workshop";
+import { randomInt } from "../random";
+import { addCopies, discoveredCards } from "./packs";
 import type { DeckSlot, Profile } from "./schema";
 
 // ─── Collection rules ────────────────────────────────────────────────────────
@@ -265,8 +277,11 @@ export const extract = <
 
 /**
  * Craft (GDD 7.4, Economy 3.3): Essence becomes 1 copy of the card in its Base
- * Rank. It adds 1 to the `crafts` Tally. `null` when the Player level is below the unlock level, the card is
- * not Discovered, the card has no Craft cost, or the Essence is not enough.
+ * Rank. Only a Common, Uncommon or Rare card can be Crafted: a card with Base
+ * Rank Epic or Legendary has no Craft cost (ADR-0052). It adds 1 to the
+ * `crafts` Tally. `null` when the Player level is below the unlock level, the
+ * card is not Discovered, the card has no Craft cost, or the Essence is not
+ * enough.
  */
 export const craft = <
   P extends Pick<Profile, "xp" | "essence" | "collection" | "tallies">,
@@ -287,5 +302,271 @@ export const craft = <
     essence: profile.essence - cost,
     collection,
     tallies: { ...profile.tallies, crafts: profile.tallies.crafts + 1 },
+  };
+};
+
+// ─── Fuse ────────────────────────────────────────────────────────────────────
+
+/** The Race of a Creature Card or the Class of a Skill Card: its share of a Fuse. */
+export type FuseGroup = RaceId | ClassId;
+
+/** The group of a card in a Fuse: the Race of a Creature Card, the Class of a Skill Card. */
+export const fuseGroup = (card: CardDefinition): FuseGroup =>
+  card.kind === "creature" ? card.race : card.class;
+
+/** What the input copies of a Fuse set: their Rank, their card type and the copies that the Fuse uses. */
+export interface FuseRecipe {
+  readonly rank: FuseRank;
+  readonly kind: CardDefinition["kind"];
+  readonly copies: number;
+}
+
+/**
+ * The recipe of some input copies (ADR-0051): the Rank and the card type of
+ * the first copy. `null` when there is no copy, a copy is Legendary, or the
+ * copies do not all have the same Rank and card type. The number of copies is
+ * not checked here: the Workshop fills the slots one by one.
+ */
+export const fuseRecipe = (inputs: readonly DeckEntry[]): FuseRecipe | null => {
+  const [first] = inputs;
+  if (first === undefined || !isFuseRank(first.rank)) {
+    return null;
+  }
+  const { kind } = getCard(first.cardId);
+  const same = inputs.every(
+    (input) => input.rank === first.rank && getCard(input.cardId).kind === kind
+  );
+  return same
+    ? { rank: first.rank, kind, copies: FUSE_COPIES[first.rank] }
+    : null;
+};
+
+/** The groups of the input copies, in the order of their first copy, with the copies of each. */
+const inputGroups = (
+  inputs: readonly DeckEntry[]
+): ReadonlyMap<FuseGroup, number> => {
+  const groups = new Map<FuseGroup, number>();
+  for (const input of inputs) {
+    const group = fuseGroup(getCard(input.cardId));
+    groups.set(group, (groups.get(group) ?? 0) + 1);
+  }
+  return groups;
+};
+
+/** The cards of one group that a Fuse with `recipe` can give, in card order. */
+const groupPool = (
+  discovered: ReadonlySet<string>,
+  recipe: FuseRecipe,
+  group: FuseGroup
+): readonly string[] =>
+  CARDS.flatMap((card) =>
+    card.kind === recipe.kind &&
+    card.baseRank === recipe.rank &&
+    fuseGroup(card) === group &&
+    !discovered.has(card.id)
+      ? [card.id]
+      : []
+  );
+
+/**
+ * The chance of one group in a Fuse (ADR-0051). Each input copy gives its
+ * group one share. A group with no card in the Fuse pool has no share
+ * (`shares` is 0), and the other shares grow. The chance is `shares / total`.
+ */
+export interface FuseChance {
+  readonly group: FuseGroup;
+  /** The input copies of the group. */
+  readonly inputs: number;
+  readonly shares: number;
+  /** The shares of all the groups. 0 when the Fuse pool is empty. */
+  readonly total: number;
+  /** The cards of the group that the Fuse can give, in card order. */
+  readonly cards: readonly string[];
+}
+
+/**
+ * The chance of each group of the input copies, in the order of their first
+ * copy (ADR-0051). Empty when the input copies have no recipe (`fuseRecipe`).
+ * The game shows these chances before the Fuse (Pillar 1).
+ */
+export const fuseChances = (
+  collection: Collection,
+  inputs: readonly DeckEntry[]
+): readonly FuseChance[] => {
+  const recipe = fuseRecipe(inputs);
+  if (recipe === null) {
+    return [];
+  }
+  const discovered = discoveredCards(collection);
+  const groups = [...inputGroups(inputs)].map(([group, count]) => {
+    const cards = groupPool(discovered, recipe, group);
+    return {
+      group,
+      inputs: count,
+      shares: cards.length > 0 ? count : 0,
+      cards,
+    };
+  });
+  const total = groups.reduce((sum, group) => sum + group.shares, 0);
+  return groups.map((group) => ({ ...group, total }));
+};
+
+/**
+ * The Fuse pool of the input copies (rules CONTEXT): the cards that the Player
+ * has not Discovered, with a Base Rank that is the Rank of the input copies,
+ * and with the Race or the Class of an input copy. Empty when the input copies
+ * have no recipe.
+ */
+export const fusePool = (
+  collection: Collection,
+  inputs: readonly DeckEntry[]
+): readonly string[] =>
+  fuseChances(collection, inputs).flatMap((chance) => chance.cards);
+
+/** The input copies of each card and Rank. */
+const inputCounts = (
+  inputs: readonly DeckEntry[]
+): ReadonlyMap<string, DeckEntry & { readonly count: number }> => {
+  const counts = new Map<string, DeckEntry & { readonly count: number }>();
+  for (const input of inputs) {
+    const key = `${input.cardId}:${input.rank}`;
+    counts.set(key, { ...input, count: (counts.get(key)?.count ?? 0) + 1 });
+  }
+  return counts;
+};
+
+/** The Collection without the input copies, or `null` when the Player owns fewer copies. */
+const removeInputs = (
+  collection: Collection,
+  inputs: readonly DeckEntry[]
+): Collection | null => {
+  let after = collection;
+  for (const { cardId, rank, count } of inputCounts(inputs).values()) {
+    if (ownedCopies(after, cardId, rank) < count) {
+      return null;
+    }
+    after = removeCopies(after, cardId, rank, count);
+  }
+  return after;
+};
+
+/** The Decks after the input copies go out of the Collection: as after an Extract of each copy. */
+const decksAfterInputs = (
+  slots: readonly DeckSlot[],
+  collection: Collection,
+  inputs: readonly DeckEntry[]
+): readonly DeckSlot[] => {
+  let after = slots;
+  for (const { cardId, rank } of inputCounts(inputs).values()) {
+    after = changeDecks(after, (deck) =>
+      deckAfterExtract(deck, collection, cardId, rank)
+    );
+  }
+  return after;
+};
+
+/**
+ * The Deck Slots that use the input copies of a Fuse: after the Fuse, they
+ * use more copies than the Player owns. The Workshop names them in its
+ * confirmation, as for an Extract (GDD 7.4). None when the Player does not own
+ * the input copies.
+ */
+export const decksUsingInputs = (
+  profile: Pick<Profile, "collection" | "deckSlots">,
+  inputs: readonly DeckEntry[]
+): readonly DeckSlot[] => {
+  const after = removeInputs(profile.collection, inputs);
+  if (after === null) {
+    return [];
+  }
+  const changed = decksAfterInputs(profile.deckSlots, after, inputs);
+  return profile.deckSlots.filter((slot, index) => changed[index] !== slot);
+};
+
+/** A Profile after a Fuse, and the card that the Fuse gave. */
+export interface FuseResult<P> {
+  readonly profile: P;
+  readonly cardId: string;
+}
+
+/** Selects the group by its shares, then one card of the group, from the random state. */
+const rollFuse = (
+  chances: readonly FuseChance[],
+  state: number
+): readonly [string | null, number] => {
+  const cursor = { state };
+  const total = chances[0]?.total ?? 0;
+  let roll = randomInt(cursor, total);
+  const chance = chances.find((item) => {
+    roll -= item.shares;
+    return roll < 0;
+  });
+  if (chance === undefined) {
+    return [null, cursor.state];
+  }
+  const cardId = chance.cards[randomInt(cursor, chance.cards.length)] ?? null;
+  return [cardId, cursor.state];
+};
+
+/**
+ * Fuse (GDD 7.4, Economy 3.7, ADR-0051): 2 to 4 copies of one Rank and
+ * Essence become 1 copy of a card from the Fuse pool, in its Base Rank. The
+ * card is then Discovered. The random state of the reward rolls selects the
+ * card, so the same Profile always gives the same card. The input copies go
+ * out of each Deck that used them (`decksUsingInputs`), and the last copy of a
+ * card can be an input: the card stays Discovered. It adds 1 to the `fuses`
+ * Tally. `null` when the Player level is below the unlock level, the copies
+ * have no recipe (`fuseRecipe`), the number of copies is not the number of
+ * the Rank, the Player owns fewer copies, the Fuse pool is empty, or the
+ * Essence is not enough.
+ */
+export const fuse = <
+  P extends Pick<
+    Profile,
+    | "xp"
+    | "essence"
+    | "collection"
+    | "deckSlots"
+    | "rewardRandomState"
+    | "tallies"
+  >,
+>(
+  profile: P,
+  inputs: readonly DeckEntry[]
+): FuseResult<P> | null => {
+  const recipe = fuseRecipe(inputs);
+  if (
+    recipe === null ||
+    inputs.length !== recipe.copies ||
+    !unlocked(profile, "fuse")
+  ) {
+    return null;
+  }
+  const cost = FUSE_ESSENCE[recipe.rank];
+  const removed = removeInputs(profile.collection, inputs);
+  if (removed === null || profile.essence < cost) {
+    return null;
+  }
+  const chances = fuseChances(profile.collection, inputs);
+  if ((chances[0]?.total ?? 0) === 0) {
+    return null;
+  }
+  const [cardId, rewardRandomState] = rollFuse(
+    chances,
+    profile.rewardRandomState
+  );
+  if (cardId === null) {
+    return null;
+  }
+  return {
+    cardId,
+    profile: {
+      ...profile,
+      essence: profile.essence - cost,
+      collection: addCopies(removed, [{ cardId, rank: recipe.rank }]),
+      deckSlots: decksAfterInputs(profile.deckSlots, removed, inputs),
+      rewardRandomState,
+      tallies: { ...profile.tallies, fuses: profile.tallies.fuses + 1 },
+    },
   };
 };

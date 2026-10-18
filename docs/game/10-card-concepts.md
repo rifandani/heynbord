@@ -7,7 +7,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 ## 1. Rules for all cards
 
 - **One image for each card.** Rank belongs to one card copy, and the card frame shows it. The image does not change with Rank.
-- **Base Rank sets the detail.** Common: plain, worn gear and a simple scene. Uncommon: some trim and one extra detail. Rare: ornate gear with gold or metal trim. Epic: a heroic scene with dramatic composition and more detail. The style and the light do not change.
+- **Base Rank sets the detail.** Common: plain, worn gear and a simple scene. Uncommon: some trim and one extra detail. Rare: ornate gear with gold or metal trim. Epic: a heroic scene with dramatic composition and more detail. Legendary: a heroic scene with dramatic composition, the most detail and an orange gem. The style and the light do not change.
 - **Light.** From the upper left in all images.
 - **Facing.** A Creature Card and a Token advance to the right of the image, in a three-quarter view. The chest and the lead foot point right. The face and the weapon may turn. A fortification shows its blocking face to the right. Forward in a pose means this direction. The card art and the Unit cut-out share it. See [ADR-0014](../adr/0014-creature-card-paintings-advance-to-the-right.md). A Skill Card has no Unit. When it shows travel, a throw, or a back view, that travel still goes to the right.
 - **Size.** Portrait 3:4 (card art is 600 × 800).

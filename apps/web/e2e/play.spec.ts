@@ -834,6 +834,17 @@ test.describe("Town", () => {
     await expect(page.getByTestId("bazaar")).toBeVisible();
   });
 
+  test("the Market Building opens the Bazaar screen (11 — Town Concepts 2.6)", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+    const market = page.getByTestId("building-bazaar");
+    await expect(market).toHaveText("Bazaar");
+    await market.click();
+    await expect(page.getByTestId("bazaar")).toBeVisible();
+  });
+
   test("shows the Coin, Essence and Heynstone balances, and says what each one pays for", async ({
     page,
   }) => {

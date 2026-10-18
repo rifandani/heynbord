@@ -15,12 +15,13 @@ export const ACHIEVEMENT_CATEGORIES: readonly AchievementCategory[] = [
 ];
 
 /** A lifetime count in the Profile that an Achievement uses (Achievements 1.5). */
-export type TallyId = "packsOpened" | "combines" | "crafts";
+export type TallyId = "packsOpened" | "combines" | "crafts" | "fuses";
 
 export const TALLY_IDS: readonly TallyId[] = [
   "packsOpened",
   "combines",
   "crafts",
+  "fuses",
 ];
 
 /** A Feat: an Achievement that one won Battle completes (Achievements 2.4). */

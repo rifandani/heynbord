@@ -73,7 +73,7 @@ export const CoinGuide = () => {
         <figcaption className={cn(LABEL, "pb-1.5")}>
           {tr("handbook.coinExampleCaption")}
         </figcaption>
-        <CoinAmount parts={exampleParts} format={format} />
+        <CoinAmount parts={exampleParts} format={format} tone="light" />
         <p className="mt-1.5 text-xs leading-snug text-[#5b4632]">
           {tr("handbook.coinExampleNote", {
             copper: format(COIN_EXAMPLE_COPPER),

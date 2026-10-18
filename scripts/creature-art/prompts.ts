@@ -46,6 +46,8 @@ export const RANK_DETAIL = new Map(
     Uncommon: "some trim and one extra detail.",
     Rare: "ornate gear with gold or metal trim.",
     Epic: "a heroic scene with a dramatic composition and more detail.",
+    Legendary:
+      "a heroic scene with a dramatic composition, the most detail and an orange gem.",
   })
 );
 

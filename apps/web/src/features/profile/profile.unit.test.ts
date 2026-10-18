@@ -51,6 +51,18 @@ describe("splitOverlay", () => {
     expect(next.saved.coin).toBe(saved.coin);
     expect(next.saved.stageResults).toEqual({ "1-1": 3 });
   });
+
+  it("saves a Dispatch of the Seaport ship under an overlay of the Game Dev Panel", () => {
+    const overlay = { xp: 24_130, coin: 9000 };
+    const seaport = {
+      expeditionId: "grandExpedition",
+      startedAt: 1000,
+    } as const;
+    const shown = { ...applyOverlay(saved, overlay), seaport };
+    const next = splitOverlay(shown, saved, overlay);
+    expect(next.saved.seaport).toEqual(seaport);
+    expect(next.overlay).toEqual(overlay);
+  });
 });
 
 describe("readRecord", () => {

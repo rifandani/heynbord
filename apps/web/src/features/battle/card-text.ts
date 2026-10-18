@@ -104,12 +104,25 @@ export const KEYWORDS: readonly Keyword[] = [
   ...FLAG_KEYWORDS,
 ];
 
+/** The text of one flag Keyword (GDD 5.4). */
+const flagKeywordText = (
+  name: (typeof FLAG_KEYWORDS)[number]
+): KeywordText => ({
+  keyword: name,
+  name: { key: `keywords.${name}` },
+  rule: { key: `keywordRules.${name}` },
+});
+
 /**
  * Each Keyword of a Creature Card or a Token, with its rule (GDD 5.4). The
- * text of Summon names its Token.
+ * text of Summon names its Token. Unique comes first: it limits the Deck, so
+ * the Player must see it before the rules of the battle.
  */
 const unitKeywords = (keywords: Keywords, rank: RankId): KeywordText[] => {
   const refs: KeywordText[] = [];
+  if (keywords.unique) {
+    refs.push(flagKeywordText("unique"));
+  }
   for (const name of VALUE_KEYWORDS) {
     const value = keywordValue(keywords[name], rank);
     if (value) {
@@ -129,12 +142,8 @@ const unitKeywords = (keywords: Keywords, rank: RankId): KeywordText[] => {
     });
   }
   for (const name of FLAG_KEYWORDS) {
-    if (keywords[name]) {
-      refs.push({
-        keyword: name,
-        name: { key: `keywords.${name}` },
-        rule: { key: `keywordRules.${name}` },
-      });
+    if (name !== "unique" && keywords[name]) {
+      refs.push(flagKeywordText(name));
     }
   }
   return refs;
@@ -423,8 +432,6 @@ export interface CreatureCardText {
   /** Melee, or Ranged with the Range. */
   readonly attackType: TextRef;
   readonly keywords: readonly KeywordText[];
-  /** The rule of a Damage Type that is not Physical. */
-  readonly damageRule: TextRef | undefined;
 }
 
 export interface SkillCardText {
@@ -685,12 +692,12 @@ export const unitStatusText = (unit: StatusCounts): StatusText[] => [
     : []),
 ];
 
-/** The rules text of a Creature Card or a Token: attack type, Keywords and Damage Type. */
+/**
+ * The rules text of a Creature Card or a Token: attack type and Keywords. The
+ * rule of its Damage Type is not on the card: it is in the Handbook.
+ */
 const creatureBody = (
-  body: {
-    readonly damageType: DamageType;
-    readonly keywords: Keywords;
-  },
+  body: { readonly keywords: Keywords },
   rank: RankId
 ): Omit<CreatureCardText, "name" | "flavor"> => ({
   kind: "creature",
@@ -698,10 +705,6 @@ const creatureBody = (
     ? { key: "keywords.ranged", args: { value: keywordRange(body.keywords) } }
     : { key: "keywords.melee" },
   keywords: unitKeywords(body.keywords, rank),
-  damageRule:
-    body.damageType === "physical"
-      ? undefined
-      : { key: `keywordRules.${body.damageType}` },
 });
 
 /**

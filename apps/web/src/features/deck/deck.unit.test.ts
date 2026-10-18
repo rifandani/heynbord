@@ -12,7 +12,6 @@ import { describe, expect, it } from "vitest";
 import type { PoolFilter } from "@/features/deck/deck";
 import {
   CLASSES_WITH_CARDS,
-  countdownCurve,
   DEFAULT_POOL_FILTER,
   deckRows,
   defaultSlotName,
@@ -46,19 +45,6 @@ describe("INITIAL_DECK_SLOTS", () => {
       key: "deckBuilder.slotName",
       args: { number: 3 },
     });
-  });
-});
-
-describe("countdownCurve", () => {
-  it("counts Creature Cards and Skill Cards for each Countdown 1 to 6", () => {
-    const curve = countdownCurve(getStarterDeck("vanguard").deck);
-    expect(curve.map((column) => column.countdown)).toEqual([1, 2, 3, 4, 5, 6]);
-    const total = curve.reduce(
-      (sum, column) => sum + column.creatures + column.skills,
-      0
-    );
-    expect(total).toBe(10);
-    expect(curve.reduce((sum, column) => sum + column.skills, 0)).toBe(1);
   });
 });
 

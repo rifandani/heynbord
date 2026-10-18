@@ -1,5 +1,5 @@
 import type { RankId } from "@workspace/rules";
-import { EXTRACT_ESSENCE } from "@workspace/rules";
+import { EXTRACT_ESSENCE, getCard, isCraftRank } from "@workspace/rules";
 import { cn } from "cn";
 import { useLayoutEffect, useRef } from "react";
 
@@ -83,7 +83,7 @@ const ExtractRow = ({
       >
         <GlyphIcon glyph="melt" className="size-3.5 shrink-0" />
         <span className="font-bold">{tr("workshop.extract")}</span>
-        <Essence amount={`+${essence}`} />
+        <Essence amount={`+${essence}`} amountClassName="w-[4ch] text-right" />
       </GameButton>
     </div>
   );
@@ -111,7 +111,11 @@ export const ExtractPanel = ({
   const pendingFocus = useRef<RankId | null>(null);
   const { peeked, focusQuietly, peek } = usePanelPeek(panel);
   const rows = tile.copies.filter((row) => row.copies > 0).toReversed();
+  const owned = rows.reduce((total, row) => total + row.copies, 0);
+  // The copies that a saved Deck uses: the copies that are not spare.
+  const inDecks = owned - tile.spare;
   const shown = peeked ?? tile.rank;
+  const base = getCard(tile.cardId).baseRank;
 
   useLayoutEffect(() => {
     const from = pendingFocus.current;
@@ -157,12 +161,17 @@ export const ExtractPanel = ({
           />
         }
       >
-        {tile.spare > 0 ? (
+        {owned > 0 ? (
           <p
             className="text-xs font-semibold text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]"
             data-testid="workshop-spare"
           >
-            {tr("workshop.spareCopies", { count: tile.spare })}
+            {inDecks > 0
+              ? tr("workshop.spareInDecks", {
+                  spare: tile.spare,
+                  used: inDecks,
+                })
+              : tr("workshop.spareCopies", { count: tile.spare })}
           </p>
         ) : null}
       </PanelHeader>
@@ -185,7 +194,13 @@ export const ExtractPanel = ({
           className="text-sm font-semibold text-balance text-[#e8d9bb] [@media(max-height:500px)]:text-[11px]"
           data-testid="workshop-extract-none"
         >
-          {tr("workshop.extractPanel.none")}
+          {tr(
+            isCraftRank(base)
+              ? "workshop.extractPanel.none"
+              : base === "epic"
+                ? "workshop.extractPanel.excludedEpic"
+                : "workshop.extractPanel.excludedLegendary"
+          )}
         </p>
       )}
     </section>

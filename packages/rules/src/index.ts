@@ -96,6 +96,18 @@ export type {
   DungeonRewardDefinition,
 } from "./content/dungeons";
 export {
+  EXPEDITIONS,
+  expeditionDurationMs,
+  ExpeditionId,
+  expeditionReward,
+  getExpedition,
+  HOUR_MS,
+} from "./content/expeditions";
+export type {
+  ExpeditionDefinition,
+  ExpeditionReward,
+} from "./content/expeditions";
+export {
   BOSS_FLOOR_TEMPLATES,
   FLOOR_TEMPLATES,
   floorStrength,
@@ -268,8 +280,12 @@ export {
   CRAFT_ESSENCE,
   craftEssence,
   EXTRACT_ESSENCE,
+  FUSE_COPIES,
+  FUSE_ESSENCE,
+  isCraftRank,
+  isFuseRank,
 } from "./content/workshop";
-export type { CombineCost } from "./content/workshop";
+export type { CombineCost, CraftRank, FuseRank } from "./content/workshop";
 export { isTutorial, TUTORIAL_STAGE_ID } from "./modes/tutorial";
 export { openPack, openTenPacks, packPool } from "./packs/open-pack";
 export type {
@@ -353,6 +369,7 @@ export {
 export type {
   DeckSlot,
   PackState,
+  SeaportState,
   Tallies,
   UnopenedPack,
 } from "./profile/schema";
@@ -374,6 +391,13 @@ export {
   newestUnlockedRegion,
   unlockingBossStage,
 } from "./profile/regions";
+export {
+  activeExpedition,
+  AT_BERTH,
+  collectExpedition,
+  startExpedition,
+} from "./profile/seaport";
+export type { ActiveExpedition, ExpeditionCollect } from "./profile/seaport";
 export { claimStarChest, regionStars } from "./profile/star-chests";
 export type { StarChestClaim } from "./profile/star-chests";
 export { applyCampaignSweep, MAX_SWEEP_TICKETS } from "./profile/sweep";
@@ -388,6 +412,18 @@ export {
   craft,
   craftCopy,
   decksUsingCopy,
+  decksUsingInputs,
   extract,
   extractCopy,
+  fuse,
+  fuseChances,
+  fuseGroup,
+  fusePool,
+  fuseRecipe,
+} from "./profile/workshop";
+export type {
+  FuseChance,
+  FuseGroup,
+  FuseRecipe,
+  FuseResult,
 } from "./profile/workshop";

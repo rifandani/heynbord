@@ -46,10 +46,6 @@ test.describe("Deck dialog", () => {
     );
     await expect(dialog.getByTestId("deck-size")).toHaveText("10 / 10 cards");
     await expect(dialog.getByTestId("deck-active")).toBeVisible();
-    await expect(dialog.getByTestId("curve-2")).toHaveAttribute(
-      "data-count",
-      "3"
-    );
 
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();

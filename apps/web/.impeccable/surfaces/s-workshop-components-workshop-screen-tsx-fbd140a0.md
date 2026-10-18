@@ -24,7 +24,7 @@ OWN-WORLD: Inherited Painted Tabletop. Night Plate HUD plates with gold-trim bor
 
 STORY: The Player reads the three stations and what each one costs and gives, picks the one that matches the goal, sees which cards it can act on (bright, with a gold chip) and which it cannot (dark), selects a card, and acts in the panel of that station.
 
-FIRST VIEWPORT: Painting covers the screen. Top left of the work area: the station tabs (Combine selected, gold); top right: the Balance Plate. Under them, the grid plate (filters, the station ready filter, the tiles with a mark strip under each frame) at the left, and the station panel (380px) at the right: the Anvil Ladder for Combine, the recipe strip and one gold Craft for Craft, the Rank rows with gold Extract +Essence for Extract.
+FIRST VIEWPORT: Painting covers the screen. Left column of the work area: the vertical station rail (Combine selected, gold), with the ready filter at its foot; top right, alone: the Balance Plate. Beside the rail, the grid plate (filters, the tiles with a mark strip under each frame), then the station panel (380px) at the right: the Anvil Ladder for Combine, the recipe strip and one gold Craft for Craft, the Rank rows with gold Extract +Essence for Extract.
 
 FORM: Three stations (station tabs over a shared grid), position 1 of 3 in the shape round (the recommended option, selected by the user). Seed key: none; no concept-seed roll ran, because this extends an established surface and the user locked the form in the shape round.
 

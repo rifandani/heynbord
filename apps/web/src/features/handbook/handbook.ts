@@ -17,6 +17,7 @@ import {
   DUNGEON_LANES,
   DUNGEON_SWEEP_TICKETS_PER_WIN,
   FLOOR_LANES,
+  FUSE_ESSENCE,
   HAND_LIMIT,
   HEYNSPIRE_BOSS_FLOOR_EVERY,
   HEYNSPIRE_FLOORS,
@@ -171,7 +172,8 @@ export type EntryIcon =
   | { readonly kind: "status"; readonly status: Status }
   | { readonly kind: "rank"; readonly rank: RankId }
   | { readonly kind: "star" }
-  | { readonly kind: "coin" };
+  | { readonly kind: "coin" }
+  | { readonly kind: "graveyard" };
 
 /**
  * How an Entry of a value Keyword shows N: a table for each Rank, or a line
@@ -449,7 +451,11 @@ const statusEntry = (status: Status): Entry => ({
   group: isBuff(status) ? "buff" : "debuff",
 });
 
-/** Physical damage has no rule on a card, so its Entry has its own text. */
+/**
+ * The rule text of a Damage Type: the Handbook Entry is the only screen that
+ * shows it. Physical damage has no rule on a card, so its Entry has a text of
+ * its own.
+ */
 const damageRule = (damageType: DamageType): TextRef =>
   damageType === "physical"
     ? { key: "handbook.entries.damagePhysical" }
@@ -575,7 +581,12 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
   countdownLimit: { first: countdownLimit(1) },
   playerLevel: { maxLevel: PLAYER_LEVEL_XP.length },
   pack: { cards: PACK_SIZE },
-  workshop: { combine: UNLOCK_LEVELS.combine, craft: UNLOCK_LEVELS.craft },
+  workshop: {
+    combine: UNLOCK_LEVELS.combine,
+    craft: UNLOCK_LEVELS.craft,
+    fuse: UNLOCK_LEVELS.fuse,
+    ...FUSE_ESSENCE,
+  },
   gear: { level: UNLOCK_LEVELS.gear, max: MAX_GEAR_LEVEL },
   sweep: {
     campaignTickets: CAMPAIGN_SWEEP_TICKETS_PER_WIN,
@@ -628,6 +639,7 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   closedLane: glyph("lock"),
   hero: glyph("helmet"),
   deck: glyph("cards"),
+  graveyard: { kind: "graveyard" },
   countdown: glyph("hourglass"),
   recall: glyph("recall"),
   attack: glyph("sword"),

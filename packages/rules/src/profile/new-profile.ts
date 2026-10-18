@@ -5,15 +5,22 @@ import { INITIAL_DECK_SLOTS } from "./deck-slots";
 import { newPackState } from "./packs";
 import { PROFILE_SCHEMA_VERSION } from "./schema";
 import type { Profile, Tallies } from "./schema";
+import { AT_BERTH } from "./seaport";
 
 /** The Tallies of a new Player: all 0. */
-export const NO_TALLIES: Tallies = { packsOpened: 0, combines: 0, crafts: 0 };
+export const NO_TALLIES: Tallies = {
+  packsOpened: 0,
+  combines: 0,
+  crafts: 0,
+  fuses: 0,
+};
 
 /**
  * The Profile of a new Player: XP 0, no balances, the Starter Collection and
  * the Starter Decks, Gear 0, and no Forge Stones, Stage results, Dungeon
  * results, won Floors, Star chests, Unopened Packs, Sweep Tickets of the 2
- * types or Achievements, and all Tallies at 0. Both
+ * types or Achievements, all Tallies at 0, and the Seaport ship at its
+ * berth. Both
  * random states come from the seed, so the same seed gives the same Profile.
  */
 export const newProfile = (seed: number): Profile => ({
@@ -42,4 +49,5 @@ export const newProfile = (seed: number): Profile => ({
   claimedAchievements: [],
   cosmetics: [],
   tallies: NO_TALLIES,
+  seaport: AT_BERTH,
 });

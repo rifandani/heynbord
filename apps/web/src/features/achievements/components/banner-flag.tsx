@@ -25,9 +25,9 @@ const CATEGORY_GLYPH: Readonly<Record<AchievementCategory, Glyph>> = {
 const HALL_BLUE = { cloth: "#1c2f6e", selected: "#24418f" } as const;
 
 /**
- * The cloth of a flag: a rectangle with a swallowtail at its free end, and
- * the hem along all its edges. The SVG stretches to the flag, and the hem
- * keeps its width.
+ * The cloth of a flag: a rectangle with a swallowtail at its free end (the
+ * right, because the pole is at the left), and the hem along all its edges.
+ * The SVG stretches to the flag, and the hem keeps its width.
  */
 const Cloth = ({ selected }: { readonly selected: boolean }) => (
   <svg
@@ -58,10 +58,10 @@ const Cloth = ({ selected }: { readonly selected: boolean }) => (
  * One flag on the pole of the Hall (Banner Tabs): a tab for one category. It
  * shows the glyph of the category on a seal, its name, its done count
  * ("3 / 8") and, when the category has rewards to claim, their count on a
- * gold token. The selected flag flies longer and goes under the edge of the
- * roll, so the roll is its cloth; the others hang shorter. On a short
- * screen, the flag shows the seal and the count only, and its name is for
- * the screen reader.
+ * gold token. The flags hang from the pole at the right of the roll and fly
+ * to the right, so the seal is next to the pole. The selected flag flies
+ * longer; the others hang shorter. On a short screen, the flag shows the seal and the count only, and
+ * its name is for the screen reader.
  */
 export const BannerFlag = ({ group }: { readonly group: AchievementGroup }) => {
   const { tr } = useGameText();
@@ -76,10 +76,10 @@ export const BannerFlag = ({ group }: { readonly group: AchievementGroup }) => {
           "transition-[width,translate,filter] duration-200 ease-out motion-reduce:transition-none",
           "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
           "[@media(max-height:500px)]:min-h-11 [@media(max-height:500px)]:gap-0 [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:pl-1.5",
-          // The selected flag goes 1.5rem under the roll: its padding keeps
-          // the content out of that part.
+          // The selected flag flies 1.5rem past the list, into the space at
+          // the right of the pole column.
           isSelected
-            ? "w-[calc(100%+1.5rem)] -translate-y-0.5 pr-[3.25rem] [@media(max-height:500px)]:pr-8"
+            ? "w-[calc(100%+1.5rem)] -translate-y-0.5 pr-7 [@media(max-height:500px)]:pr-2"
             : "w-[calc(100%-0.75rem)] pr-6 data-[hovered]:brightness-115 [@media(max-height:500px)]:pr-3"
         )
       }

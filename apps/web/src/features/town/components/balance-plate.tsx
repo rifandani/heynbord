@@ -8,6 +8,7 @@ import { Button, TooltipTrigger } from "react-aria-components";
 
 import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { useGameText } from "@/features/battle/use-game-text";
+import type { CoinTone } from "@/features/town/components/balance-icon";
 import {
   BalanceIcon,
   DENOMINATION_TEXT,
@@ -86,9 +87,12 @@ const Balance = ({
 export const CoinAmount = ({
   parts,
   format,
+  tone = "dark",
 }: {
   readonly parts: readonly CoinPart[];
   readonly format: (value: number) => string;
+  /** The surface under the letters: a dark plate, or a light one (parchment). */
+  readonly tone?: CoinTone;
 }) => {
   const { tr } = useGameText();
   return (
@@ -100,11 +104,12 @@ export const CoinAmount = ({
             denomination={part.denomination}
             className={ICON}
           />
-          <span>
+          {/* The trim centers the coin on the number, not on the letter. */}
+          <span className="[text-box:trim-both_cap_alphabetic]">
             {format(part.amount)}
             <span
               className="ml-px text-[0.875em] font-bold"
-              style={{ color: DENOMINATION_TEXT[part.denomination] }}
+              style={{ color: DENOMINATION_TEXT[tone][part.denomination] }}
             >
               {tr(`town.balances.denominations.${part.denomination}.short`)}
             </span>

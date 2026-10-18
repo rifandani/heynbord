@@ -90,7 +90,7 @@ describe("achievementGroups", () => {
 
   it("shows a progress bar with the count for an In progress goal", () => {
     const player = profile({
-      tallies: { packsOpened: 41, combines: 0, crafts: 0 },
+      tallies: { packsOpened: 41, combines: 0, crafts: 0, fuses: 0 },
     });
     expect(rowOf(player, "packs.fifty")).toMatchObject({
       state: "inProgress",

@@ -37,6 +37,8 @@ export const SUBJECT = new Map(
       "large armored roadside reliquary standing across a stone lane like a sealed gate, thick oak doors with ornate steel bands, round gold sun emblem, blue prayer cloths and candles, cracks releasing holy light, one candle perfectly upright",
     "human.marshalElianVoss":
       "Marshal Elian Voss, tall older human officer with a close grey beard, blue officer coat over fitted plate with ornate gold trim, raising a command sword that sends a holy arc forward, planting a forked sun-banner, six rolled speeches at his belt, soldiers reforming behind him",
+    "human.serAldricStonewall":
+      "Ser Aldric Stonewall, older human knight with a scarred bald head and a short grey beard, mended plate armor over a blue coat with gold trim, leaning into an ornate blue and gold tower shield planted across a town gate, spent arrows snapped against the shield and a small door knocker painted on it, a broken banner and a line of fallen arrows behind him",
     "orc.badlandRunt":
       "small young orc boy with big ears and small new tusks, adult iron helmet too big for him falling over one eye, orange war paint stripes, short bone knife, jumping forward with his mouth open in a war cry, no animals",
     "orc.scrapRaider":
@@ -67,6 +69,8 @@ export const SUBJECT = new Map(
       "fierce orc woman with a high dark-red hair crest, ornate rough-iron gear and scorched cloak, raising a large two-handed axe with ember-filled grooves and a burning blade, one roasted mushroom on a small attached skewer",
     "orc.warbandStandardBearer":
       "huge confident orc man with braided black hair, ornate rough-iron armor and dark-red fur cloak, carrying a monumental hide war standard with horned crossbar and trophy shields, charging downhill to the right while the warband follows to the right, the banner cloth points back the other way",
+    "orc.ashcallerGrosh":
+      "tall thin orc shaman with white ash paint on his face, burned hands and a calm tired look, ash-caked staff held over a glowing brass brazier, two fire bolts rising from the coals, hanging iron runes and a small hourglass, his list of things to burn catching fire, no animals",
     "elf.rootboundGuard":
       "broad old plant guardian rooted across a forest path, bark cuirass, large leaf shield and short branch spear, roots around a boot-shaped training post, snail on one shoulder",
     "elf.brambleDuelist":
@@ -97,6 +101,8 @@ export const SUBJECT = new Map(
       "heroic elegant elf woman vinewarden standing on a colossal living canopy gate, no bow, one open hand thrust forward, a huge braid of thorned vines as thick as a tree trunk lashing down to the right in an S-curve and coiling around a startled attacker below before he can lift his axe, ornate layered leaf armor with silver trim, broken warning bell hanging in a knot of vine",
     "elf.lethielFirstGardener":
       "Lethiel the First Gardener, ancient elegant elf, luminous living staff, ceremonial leaf mantle, seed crown and silver pruning hook, holy light closing a split in the bark beside him, measuring a colossal tree with a tiny ruler and showing restrained approval",
+    "elf.wardenSaelith":
+      "elegant elf woman warden with a long dark braid and a leaf-shaped mask on her belt, green coat with amber trim, drawing a longbow on a high root bridge and aiming down at a broken summoning circle below, a green and amber arrow leaving the string, a small blank sign on the bridge, heroic dramatic composition",
     "undead.graveyardDrudge":
       "broad skeleton graveyard laborer in a patched burial coat, bracing behind a blunt shovel, smaller skeleton helper behind him, rusted shoulder plate and rope belt, friendly macabre humor",
     "undead.rattleknife":
@@ -127,6 +133,8 @@ export const SUBJECT = new Map(
       "Sir Odo the skeletal tax knight charging down ruined courthouse steps, severe false mustache fixed to his helmet, quill-shaped lance, square ledger shield with blank pages, ornate rusted plate and coin chain, spectral second form rising, offering a blank receipt, friendly macabre humor",
     "undead.boneRampart":
       "towering undead rampart made from interlocked rusted shields, coffin planks and chains, orderly skeleton workers repairing the top, pale teal pennants, spectral rebuilt outline behind it, blank arrow sign pointing around the wall, friendly macabre humor",
+    "undead.paleCantorYsolde":
+      "pale calm undead cantor in a high-collared coat with a tattered teal stole, silver hymn book open in one raised hand, pale threads leaving a fallen foe and entering her chest, a ring of bowed ghostly heads around her, the ghostly choir slightly off-key and she notices, friendly macabre humor",
     "goblin.ankleSnatcher":
       "tiny eager goblin girl with ash-grey blue-tinted skin, huge shining amber eyes and long soft ears streaming back as she runs low, hooking forward at ankle height with a long bent-pipe hook, a single caught boot hanging from the hook, coil of rope, patched brass goggles on her forehead, bare feet, no tusks",
     "goblin.fuseRunner":
@@ -157,6 +165,8 @@ export const SUBJECT = new Map(
       "big goblin war cart rolling forward, gear cannon firing brass gears, springs and broken clocks, three tiny ash-grey goblin crew with long ears and brass goggles pulling levers, one loading the cannon with an alarm clock, large brass gear on top, acid-green lamp jars, heroic dramatic composition",
     "goblin.bossSnikkit":
       "Boss Snikkit the goblin mine king, small old goblin man with ash-grey wrinkled skin, a long white beard tucked into his belt, very long ears hanging past his shoulders and huge amber eyes, a large bucket crown set with glass gems slipping over one eye, riding a mine cart throne full of bombs down the rails, pointing forward with a lit torch scepter, stolen hourglass on a chain, cheering tiny goblins behind, heroic dramatic composition, no tusks",
+    "goblin.grixRatwhistle":
+      "small wiry goblin man with ash-grey skin, huge shining amber eyes, long soft ears hanging to his shoulders and white hair tufts, brass goggles pushed up and a whistle on a cord, kneeling on a crate and aiming a long patched rifle over the viewer at a distant banner, two tame rats with tiny whistles beside him, a range chart with a single drawn mark and no letters, a bent scope, clever proud look, no tusks",
     "feral.bristlebackBoar":
       "wild mountain boar with a ridge of stiff bristles charging forward head down, boards of a broken fence flying around it, an apple stuck on one tusk, dust behind it",
     "feral.cragLizard":
@@ -187,6 +197,8 @@ export const SUBJECT = new Map(
       "wild old giant of living rock and moss taking a huge step forward with one fist down, rubble flying, new stone growing over cracks, a small village of bird nests on its shoulder, heroic dramatic composition",
     "feral.oldFrostmaw":
       "Old Frostmaw, huge old white cave wyrm with no wings and a crown of icicles, coming out of a great ice cave with jaws open and icy breath, broken ice pillars around it, a very small hunting horn hanging from one tooth, heroic dramatic composition",
+    "feral.gorehornRedMaw":
+      "huge shaggy red-furred beast with two forward horns and a wide stained jaw, charging with its head low, red light threads running from its horns back into its chest, broken cave bones and a trampled banner underfoot, dragging a very small bent dinner plate, heroic dramatic composition",
     "token.skeleton":
       "small eager skeleton soldier with a bucket helmet over one eye socket, chipped sword held too high, round wooden lid as a shield and a pale teal neck cloth, looking back toward an ally for courage, friendly macabre humor",
     "token.restlessWisp":

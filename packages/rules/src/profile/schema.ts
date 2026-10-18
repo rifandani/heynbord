@@ -3,6 +3,7 @@ import { Schema } from "effect";
 import { CollectionEntry } from "../collection/deck-building";
 import { CosmeticId } from "../content/cosmetics";
 import { MAX_DECK_SLOTS, STARTING_DECK_SLOTS } from "../content/deck-slots";
+import { ExpeditionId } from "../content/expeditions";
 import { ForgeStones } from "../content/forge-stones";
 import { HEYNSPIRE_FLOORS } from "../content/heynspire";
 import { PackId } from "../content/packs";
@@ -14,7 +15,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 10;
+export const PROFILE_SCHEMA_VERSION = 12;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -89,8 +90,20 @@ const Tallies = Schema.Struct({
   packsOpened: Schema.Natural,
   combines: Schema.Natural,
   crafts: Schema.Natural,
+  fuses: Schema.Natural,
 });
 export type Tallies = typeof Tallies.Type;
+
+/**
+ * The berth of the Seaport ship (Economy 2.8, ADR-0053): the Expedition that
+ * the ship is on and the device time of its Dispatch, in milliseconds since
+ * the epoch, or both `null` when the ship is at the berth.
+ */
+const SeaportState = Schema.Union([
+  Schema.Struct({ expeditionId: Schema.Null, startedAt: Schema.Null }),
+  Schema.Struct({ expeditionId: ExpeditionId, startedAt: Schema.Int }),
+]);
+export type SeaportState = typeof SeaportState.Type;
 
 /**
  * All the saved progress of one Player (technical design 5). Settings are not
@@ -156,5 +169,7 @@ export const Profile = Schema.Struct({
    */
   cosmetics: Schema.Array(CosmeticId),
   tallies: Tallies,
+  /** The Seaport ship: at the berth, or on an Expedition since its Dispatch. */
+  seaport: SeaportState,
 });
 export type Profile = typeof Profile.Type;

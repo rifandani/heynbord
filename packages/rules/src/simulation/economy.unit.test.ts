@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { ownedCopies } from "../collection/deck-building";
 import type { Collection } from "../collection/deck-building";
-import { getCard } from "../content/cards";
+import { CARDS, getCard } from "../content/cards";
 import { DUNGEON_REWARDS, getDungeon } from "../content/dungeons";
 import { getFloor } from "../content/floors";
 import { NO_FORGE_STONES } from "../content/forge-stones";
@@ -10,8 +10,9 @@ import { HEYNSPIRE_FLOORS } from "../content/heynspire";
 import { PLAYER_LEVEL_XP } from "../content/player-levels";
 import { STAGES } from "../content/stages";
 import { UNLOCK_LEVELS } from "../content/unlocks";
-import { EXTRACT_ESSENCE } from "../content/workshop";
+import { EXTRACT_ESSENCE, FUSE_ESSENCE } from "../content/workshop";
 import { dungeonCardPool } from "../profile/dungeon-result";
+import { discoveredCards } from "../profile/packs";
 import { findStage, stageCardPool } from "../profile/stage-result";
 import {
   campaignSweep,
@@ -472,6 +473,101 @@ describe("spend (Economy 7.1)", () => {
       ownedCopies(player.collection, "human.crossbowGuard", "common")
     ).toBe(2);
     expect(player.essence).toBe(EXTRACT_ESSENCE.common);
+  });
+});
+
+/** A Player at `level` with 3 Common Crossbow Guards and 3 Common Halberdiers. */
+const withExtras = (level: number, essence: number, seed = 1) => {
+  const player = playerAt(level, 0);
+  player.rewardCursor.state = seed;
+  player.essence = essence;
+  player.collection = player.collection.map((entry) =>
+    entry.cardId === "human.halberdier" ? { ...entry, copies: 3 } : entry
+  );
+  return player;
+};
+
+describe("spend: Fuse (Economy 3.7, 7.1)", () => {
+  it("Fuses 2 Common copies above 2 in place of their Extract", () => {
+    const player = withExtras(UNLOCK_LEVELS.fuse, FUSE_ESSENCE.common);
+    const before = discoveredCards(player.collection);
+    spend(player, "collector");
+    expect(player.fuses).toBe(1);
+    expect(player.extracts).toBe(0);
+    expect(player.essence).toBe(0);
+    expect(
+      ownedCopies(player.collection, "human.crossbowGuard", "common")
+    ).toBe(2);
+    expect(ownedCopies(player.collection, "human.halberdier", "common")).toBe(
+      2
+    );
+    const found = [...discoveredCards(player.collection)].filter(
+      (cardId) => !before.has(cardId)
+    );
+    expect(found).toHaveLength(1);
+    const card = getCard(found[0] ?? "");
+    expect(card.kind === "creature" && card.race).toBe("human");
+    expect(card.baseRank).toBe("common");
+  });
+
+  it("keeps 1 fewer copy than a Fuse uses for the next Fuse, and Extracts the others", () => {
+    const player = withExtras(UNLOCK_LEVELS.fuse, FUSE_ESSENCE.common - 1);
+    spend(player, "collector");
+    expect(player.fuses).toBe(0);
+    // 2 Common Human copies above 2: 1 stays for the next Fuse.
+    expect(player.extracts).toBe(1);
+    expect(player.essence).toBe(
+      FUSE_ESSENCE.common - 1 + EXTRACT_ESSENCE.common
+    );
+    // The next copy above 2 makes a Fuse with the copy that stayed.
+    player.essence = FUSE_ESSENCE.common;
+    player.collection = player.collection.map((entry) =>
+      entry.cardId === "human.militiaRecruit" ? { ...entry, copies: 3 } : entry
+    );
+    spend(player, "collector");
+    expect(player.fuses).toBe(1);
+    expect(player.extracts).toBe(1);
+  });
+
+  it("Extracts the copies of a Race with no card in the Fuse pool", () => {
+    const player = withExtras(UNLOCK_LEVELS.fuse, 0);
+    const humanCommons = CARDS.filter(
+      (card) =>
+        card.kind === "creature" &&
+        card.race === "human" &&
+        card.baseRank === "common"
+    );
+    player.collection = [
+      ...player.collection,
+      ...humanCommons
+        .filter(
+          (card) => ownedCopies(player.collection, card.id, "common") === 0
+        )
+        .map((card) => ({
+          cardId: card.id,
+          rank: "common" as const,
+          copies: 0,
+        })),
+    ];
+    spend(player, "collector");
+    expect(player.fuses).toBe(0);
+    expect(player.extracts).toBe(2);
+  });
+
+  it("does not Fuse below the unlock level", () => {
+    const player = withExtras(UNLOCK_LEVELS.fuse - 1, 1000);
+    spend(player, "collector");
+    expect(player.fuses).toBe(0);
+    expect(player.extracts).toBe(2);
+  });
+
+  it("gives the same card for the same reward random state, and moves it forward", () => {
+    const first = withExtras(UNLOCK_LEVELS.fuse, FUSE_ESSENCE.common, 7);
+    const second = withExtras(UNLOCK_LEVELS.fuse, FUSE_ESSENCE.common, 7);
+    spend(first, "collector");
+    spend(second, "collector");
+    expect(second.collection).toEqual(first.collection);
+    expect(first.rewardCursor.state).not.toBe(7);
   });
 });
 

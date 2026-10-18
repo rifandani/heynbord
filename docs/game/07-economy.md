@@ -8,12 +8,12 @@ Pillar 1 ("Fair to the player") controls all decisions in this document.
 
 | Resource | Type | How the player gets it | What it is for |
 | --- | --- | --- | --- |
-| **Coin** | Soft currency | Battles, Star chests, Heynspire, Achievements | Packs, Combine, Gear upgrades, Deck slots |
+| **Coin** | Soft currency | Battles, Star chests, Heynspire, Achievements, Seaport Expeditions | Packs, Combine, Gear upgrades, Deck slots |
 | **Heynstones** | Rare currency | 10th Heynspire Floors, Achievements (one time each) | Cosmetics and Conveniences in the Bazaar |
-| **Essence** | Craft resource | Extract, Heynspire Boss Floors, Achievements | Craft |
-| **XP** | Progress | Battles | Player level |
+| **Essence** | Craft resource | Extract, Heynspire Boss Floors, Achievements, Seaport Expeditions | Craft and Fuse |
+| **XP** | Progress | Battles, Seaport Expeditions | Player level |
 | **Stars** | Progress | Stage wins | Star chests |
-| **Forge Stones** | Gear resource, 5 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire | Gear upgrades |
+| **Forge Stones** | Gear resource, 5 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire, the Grand Expedition | Gear upgrades |
 
 - Coin, Heynstones and Essence never change into each other. See [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md).
 - Forge Stones are earn-only. The Bazaar never sells them, and they never change into Coin, Heynstones or Essence. See [ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md).
@@ -203,7 +203,33 @@ A Gear upgrade uses 1 Forge Stone of the tier of the new level (section 3.4). Al
 
 The repeat wins, the Sweeps and the Dungeon wins give the rest. The Epic Forge Stones come mostly from Dungeon 3, so Gear levels 16 to 20 are the endgame. The Legendary Forge Stones come only from Dungeon 3 and the 10th Heynspire Floors, so Gear levels 21 to 25 are the last goal of the endgame ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)). These numbers are a start: the economy sim tunes them ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
 
+The Grand Expedition of the Seaport (section 2.8) also gives 1 Epic Forge Stone for each full voyage: 3 to 4 for each week. It is not in this table, because it is not a one-time source, and it is outside the economy sim until the sim knows a play calendar.
+
 The rules are `stageForgeStones` and `regionForgeStoneTier` in `packages/rules/src/content/forge-stones.ts`, `STAR_CHESTS`, `floorFirstWinReward` and `dungeonForgeStones` with `DUNGEON_REWARDS`. Keep the code and these tables the same.
+
+### 2.8 Seaport Expeditions
+
+The Seaport gives a reward while the Player is away ([ADR-0053](../adr/0053-the-seaport-gathers-coin-on-the-device-clock.md)). The Player Dispatches the ship on one Expedition, closes the game, and Collects the reward later. One ship, one berth: the ship is on one Expedition at a time. The Seaport opens at Player level 8 (GDD 7.1), and each Expedition has its own unlock level, as a Dungeon does.
+
+| Expedition | Duration | Opens at | Coin for each hour | XP for each hour | Essence for each hour | Forge Stone | Most for one day |
+| --- | --- | --- | ---: | ---: | ---: | --- | --- |
+| `coastalRun` — Coastal Run | 4 h | level 8 | 30 | — | — | — | 720 Coin |
+| `tradeRoute` — Trade Route | 12 h | level 12 | 40 | 2 | — | — | 960 Coin, 48 XP |
+| `longVoyage` — Long Voyage | 24 h | level 18 | 50 | 2 | 2 | — | 1,200 Coin, 48 XP, 48 Essence |
+| `grandExpedition` — Grand Expedition | 48 h | level 24 | 60 | 2 | 3 | 1 Epic, when the ship is back | 1,440 Coin, 48 XP, 72 Essence, 3 to 4 Forge Stones for each week |
+
+- **The reward is pro rata.** `reward = rate × min(elapsed, duration)`, in whole units, rounded down, where `elapsed = now − startedAt` and `startedAt` is the time of the Dispatch. The reward stops at the duration. The ship then waits, and the Player never loses anything.
+- **No minimum time away.** The Player can Collect at any time. An early Collect gives only the share of the time away, and the ship is at the berth again.
+- **The Forge Stone needs the full voyage.** An early Collect gives the share of the Coin, the XP and the Essence only. Thus a Forge Stone is a whole number: one for each full Grand Expedition.
+- **The clock is the device clock.** The rules stay pure: the web sends `now` with each Command, so the same Profile and the same `now` always give the same reward, and a page load never rolls a reward again. When `now` is before `startedAt` (the clock moved back), the reward is 0 and the ship stays.
+- **The rates are a supplement.** One day of Expeditions gives about one hour of active play: the pacing target of section 4 is about 2 Packs for each hour, and a Peddler Pack is 350 Coin (section 3.1). The Seaport is never the best Coin source. A longer voyage pays a little more for each day, so patience pays without a punishment for a short time away.
+- **Pillar 1.** No Energy, no daily cap and no punishment for time away.
+- **What stays out.** No Heynstones ([ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md), [ADR-0044](../adr/0044-star-chests-give-no-heynstones.md)). No exchange of one resource for another (ADR-0008). No Seaport levels and no VIP: no Building has levels. No scale with the Power of the Deck.
+- **Not in the sim.** The economy sim has no calendar: it counts play hours and Battles, not days (7.1). Thus the Seaport income is outside `sim:check` until the sim learns a play calendar. The rates stay low: 48 XP for each day is 2% to 5% of a level from level 20 (1,000 to 2,350 XP for each level, section 1.2). Dungeon 3 and the Sweeps had the same treatment before.
+- Coin is in Copper (section 1.1). The names of the Expeditions are in the Message Catalogs, so a rename changes no rule. Each later Expedition adds one reward line. Epic is the Forge Stone tier of the Grand Expedition: it opens at level 24, where Gear levels 16 to 20 need Epic Forge Stones, 6 levels before Dungeon 3.
+- The rates are start values. Tune them with the economy sim when it knows the calendar.
+
+The data is `EXPEDITIONS` and `expeditionReward` in `packages/rules/src/content/expeditions.ts`, and the actions are `startExpedition`, `activeExpedition` and `collectExpedition` in `packages/rules/src/profile/seaport.ts`. Keep the code and this table the same.
 
 ## 3. Sinks
 
@@ -284,13 +310,13 @@ The data is `PACKS` in `packages/rules/src/content/packs.ts`. Keep the code and 
 | Common | 5 | 40 |
 | Uncommon | 15 | 120 |
 | Rare | 50 | 400 |
-| Epic | 175 | 1,400 |
-| Legendary | 600 | 4,800 |
+| Epic | 175 | — |
+| Legendary | 600 | — |
 
-- Craft gives one copy in the card's Base Rank.
+- Craft gives one copy in the card's Base Rank. Only a card with Base Rank Common, Uncommon or Rare can be Crafted: an Epic or a Legendary card has no Craft ([ADR-0052](../adr/0052-craft-gives-no-epic-or-legendary-card.md)).
 - The player can Craft only Discovered cards.
-- A Specialist (Base Rank Legendary) costs 8 times its Extract value. The 6 Specialists are in the Royal Pack only, and Craft is the other way to get one ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
-- Combine and then Extract changes Coin into Essence at about 10 to 13 Coin per Essence. This is intended. It gives players with much Coin a slow path to the card that they want.
+- An Epic card comes from a Merchant or a Royal Pack, or from a Fuse (section 3.7). A Specialist (Base Rank Legendary) comes from a Royal Pack only ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+- Combine and then Extract changes Coin into Essence at about 10 to 13 Coin per Essence. This is intended. It gives players with much Coin a slow path to the Common, Uncommon and Rare cards that they want.
 - The data is `EXTRACT_ESSENCE` and `CRAFT_ESSENCE` in `packages/rules/src/content/workshop.ts`. Keep the code and this table the same.
 
 ### 3.4 Gear upgrades
@@ -347,6 +373,27 @@ A new player has 3 Deck slots: one for each Starter Deck and one empty. The play
 - A purchase is permanent. The player cannot sell or remove a Deck slot.
 - The data is `DECK_SLOT_PRICES` in `packages/rules/src/content/deck-slots.ts`. Keep the code and this table the same.
 
+### 3.7 Fuse
+
+A Fuse changes 2 to 4 copies of one Rank and Essence into one copy of a card that the player has not Discovered ([ADR-0051](../adr/0051-fuse-gives-a-card-that-is-not-discovered.md), GDD 7.4).
+
+| Rank of the copies | Copies | Essence cost | New card |
+| --- | --- | --- | --- |
+| Common | 2 | 20 | 1 copy of a Common card |
+| Uncommon | 2 | 60 | 1 copy of an Uncommon card |
+| Rare | 3 | 200 | 1 copy of a Rare card |
+| Epic | 4 | 700 | 1 copy of an Epic card |
+
+- The Essence cost is 20, 60 and 200 Essence for Common, Uncommon and Rare, half of the Craft cost of the Rank (section 3.3), and 700 Essence for Epic. The Epic Fuse is the only Essence path to a new Epic card ([ADR-0052](../adr/0052-craft-gives-no-epic-or-legendary-card.md)).
+- The Rank is the Rank of each copy, not its Base Rank. A Common card at Rank Rare is a Rare copy.
+- A Legendary copy is never an input. Thus a Fuse never gives a Specialist.
+- All copies are Creature Cards, or all are Skill Cards. The new card has the Race (or the Class) of an input copy. Each input copy gives its Race or Class one equal share of the chance. A Race or Class with no card that is not Discovered has no share.
+- When no card can be given, the player cannot Fuse. A Fuse always gives a new card, so luck never takes copies or Essence for nothing (Pillar 1).
+- The Fuse uses the random state of the reward rolls of the Profile, so the same Profile always gives the same card.
+- A Fuse unlocks at player level 6, the same as Craft (GDD 7.1).
+- Craft is the path to the card that the player selects. Fuse is the Workshop path to a card that the player does not have yet. It is a use for spare copies other than Extract (Pillar 4).
+- The data is `FUSE_COPIES` and `FUSE_ESSENCE` in `packages/rules/src/content/workshop.ts`. Keep the code and this table the same.
+
 ## 4. Pacing targets
 
 Use these targets to tune the numbers. Check them with an economy simulation and with playtests.
@@ -394,6 +441,7 @@ Use these targets to tune the numbers. Check them with an economy simulation and
 - **Mage Skill Cards of issue #65.** Spark (Common), Arc Lightning (Uncommon), Wildfire, Thunderstorm (Rare) and Blizzard (Epic) make 130 cards in `cards.ts`. The milestone does not move, for the same reason as #59: the simulated Player Discovers only the Warrior Skill Cards, and the all-cards Pack rows do not change. The Mage Class Pack pool now has 10 cards, with the same results as the other Class pools (`bun run sim packs`, 2026-10-12): 76.1 Peddler Packs for the 9 cards from Common to Rare, 9.4 Merchant Packs and 4.0 Royal Packs for all 10 cards (it was 6.1, 1.8 and 1.0 for the 5 Common and Uncommon cards).
 - **Sweep ([ADR-0035](../adr/0035-a-sweep-uses-sweep-tickets-and-always-wins.md), [ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)).** With 2 Campaign Sweep Tickets for each Stage or Floor win, the Player can get 3 Stage repeat-win rewards for the time of 1 Battle. With 1 Dungeon Sweep Ticket for each Dungeon win, the Player can get 2 Dungeon repeat-win rewards for the time of 1 Battle. The First-try Path and the targets that use its levels do not change. The economy sim uses both Sweeps since issue #107 (7.1). The re-tune of issue #105 kept 2 Campaign Sweep Tickets for each win: fewer Tickets did not stop the Player from getting to level 30 before Floor 50, so a Stage repeat-win reward gives no XP now (ADR-0049). The sim never plays Dungeon 3, so the Dungeon Sweep Tickets for each win are not checked with the Dungeon 3 rewards (Essence, Epic and Legendary Forge Stones) yet.
 - **Boss Floors at the Boss target ([ADR-0042](../adr/0042-heynspire-floors-come-from-templates-and-a-strength-curve.md), issue #97).** The economy sim (7.1, 200 seeds) gives each Boss Floor the base chance of a Boss Stage (40%), not of a normal Stage (70%). At Heynspire Floor 50, the median Battles are 129 (Collector), 128 (Upgrader) and 130 (Balanced), and the hours are 17.2, 17.1 and 17.3. It was 123, 123 and 125 Battles and 16.4, 16.4 and 16.7 hours (2026-10-16). 4, 4 and 9 of the 200 Players get to Player level 30 before they win Floor 50, so the sim stops before Floor 50 for them. The other values at Floor 50 move by 1 or less, but not the unspent Coin (222, 105 and 29 Copper; it was 207, 135 and 25). The mean Gear level is 15.8, 15.3 and 13.0. The Balanced row of "Gear mostly at level 14 or higher" still fails.
+- **Fuse of issue #111 ([ADR-0051](../adr/0051-fuse-gives-a-card-that-is-not-discovered.md)).** The economy sim Fuses copies above 2 in place of some Extracts (7.1). `bun run sim economy 1000` on 2026-10-18: the "All cards Discovered" milestone does not move. At Floor 50, the median Player has Discovered 96% (Collector), 85% (Upgrader) and 91% (Balanced) of the cards, the same as before. The Legendary copies are 3 / 4 / 4 (it was 3 / 4 / 3), and the other medians move by 1 or less. The cause: the Upgrader and the Balanced Player Combine each pair, so they almost never have a copy above 2. The Collector has copies above 2, but at Floor 50 the cards that it has not Discovered are only Specialists (Base Rank Legendary), and a Fuse never gives a Specialist (section 3.7). Thus the Collector miss of "All cards Discovered" at Floor 50 stays (96.2%, target 100%). Fuse is not a fix for it.
 - Total XP to level 21 (Deck size 30) is 8,380. Total XP to level 30 is 24,130.
 
 ## 5. Monetization rules after v1
@@ -441,7 +489,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 - **Campaign Sweeps.** A Stage win (first or repeat) and a Floor win give 2 Campaign Sweep Tickets. After each Battle, the Player uses all its Campaign Sweep Tickets at once on the 3-Star Stage that gives the most Coin for a repeat win. On a tie, it takes a Boss Stage first, then the highest Region. Each Ticket gives one repeat-win reward of that Stage. A Sweep gives no Tickets and changes no Stars. When no Stage has 3 Stars, the Player keeps its Tickets.
 - **Dungeon Sweeps.** A Dungeon win gives 1 Dungeon Sweep Ticket. After each Dungeon win, the Player uses all its Dungeon Sweep Tickets on that Dungeon. Each Ticket gives one repeat-win reward of the Dungeon: the Coin, the XP, the Forge Stone chance and the card chance.
 - After the last Stage, the Player climbs Heynspire. When a Floor fails 3 times in a row, the Player does Dungeon wins until the next Player level, and then tries the Floor again. At level 30 there is no next level, so this Dungeon detour ends after 3 Dungeon Battles. A Floor loss gives 10% of the Coin and 25% of the XP of its first win (GDD 7.1). After Floor 50, the Player does Dungeon wins until level 30. The Player plays the highest Dungeon that gives XP and that its level unlocks.
-- The Player uses each action only from its unlock level (GDD 7.1): Packs at level 2, Combine and Extract at level 3, Gear at level 5 and Craft at level 6.
+- The Player uses each action only from its unlock level (GDD 7.1): Packs at level 2, Combine and Extract at level 3, Gear at level 5, and Craft and Fuse at level 6.
 - The simulated Player is a **Warrior** and starts with the Warrior Starter Deck cards. The Player buys only Packs with all cards. For the Race Pack from a 20-Star chest, the Player selects the Race with the fewest Discovered cards. "All cards Discovered" means all Creature Cards and the Warrior Skill Cards.
 - A Player stops when it is at Player level 30 and won Floor 50, or after 2,000 Battles. A Player at the Battle cap is "stuck", and the report shows it. A Player at level 30 before the Floor 50 win goes on to the Floor 50 win (section 4 has a target for this share).
 
@@ -457,10 +505,11 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 - The Player buys Open ×10 when it can pay for 10 Packs. Else it buys one Pack.
 - **Legendary Combine first.** The Upgrader and the Balanced Player first Combine each Epic pair to a Legendary copy (3,200 Coin, section 3.2) that they can pay for. While they have an Epic pair, they keep their Coin for that Combine and buy no Packs. Their other priorities do not change. The Collector does not use this rule: it Combines to Epic or higher after its Packs (section 4).
 - A Gear upgrade goes to the item with the lowest level. It needs the Coin and the Forge Stone. When the Forge Stone is missing, the Play Style goes to its next priority.
-- Combine, Extract and Craft use the same rules actions as the game (GDD 7.4). The sim adds only the Play Style choices.
+- Combine, Extract, Craft and Fuse use the same rules actions as the game (GDD 7.4). The sim adds only the Play Style choices.
 - Combine starts at the lowest Rank.
-- All Play Styles Extract each copy above 2 of a card in the same Rank.
-- When the Essence is enough, they Craft one copy of the cheapest Discovered card with Base Rank Rare or Epic that has 1 copy in its Base Rank. The copy makes a Combine pair toward an Epic or a Legendary copy. Craft never Discovers a card, because the player can Craft only Discovered cards (section 3.3).
+- **Fuse.** All Play Styles first Fuse the copies above 2 of a card in the same Rank (section 3.7). The Player takes the copies of one Rank and one card type, from the lowest Rank, when the Essence is enough. A copy goes in only when its Race or Class has a card that is not Discovered, so each input copy has a share. The Player Fuses again while it can. The Fuse uses the reward random state, as in the game. The copies above 2 are in no Deck of the sim.
+- Then all Play Styles Extract each copy above 2 that stays. From level 6, the Extract keeps the copies above 2 that can go into a Fuse, up to 1 fewer than a Fuse of their Rank uses, for each Rank and card type. The next such copy then makes a Fuse. The copies come one by one, so without this rule the Extract takes each copy before a Fuse can use it.
+- When the Essence is enough, they Craft one copy of the cheapest Discovered card with Base Rank Rare that has 1 copy in its Base Rank. The copy makes a Combine pair toward an Epic copy. A card with Base Rank Epic or Legendary has no Craft (section 3.3). Craft never Discovers a card, because the player can Craft only Discovered cards (section 3.3). Fuse is the only Workshop action that Discovers a card.
 - **Achievements.** After each Battle and the spending, the Player records the Profile goals and the Tally goals that it meets (`recordAchievements`), and claims each Completed Achievement at once ([15 — Achievements, 1.2](./15-achievements.md)). The Player gets the Coin and the Essence of the Achievement. Only 2 Achievements give Coin or Essence. All Star chests gives 500 Coin when the 15 Star chests are open. The first Craft gives 50 Essence. A run with 1,000 seeds on 2026-10-16 showed that this Essence changes only the unspent Coin of the Collector at Floor 50 and at level 30, by less than 2%.
 
 **Not in the sim.**
@@ -468,6 +517,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 - The sim plays no Battle, so it completes no Feat. No Feat gives Coin or Essence now. The sim does not report the Heynstones of the Achievements, because the Heynstone ledger is a sum (see **Report**).
 - The Player never plays Dungeon 3, because it plays only the Dungeons that give XP. A Player at level 30 before the Floor 50 win plays Dungeon 2 in its detours. Thus the Epic and Legendary Forge Stones of Dungeon 3 are not in the sim. The Forge Stone results are a floor.
 - The Dungeons give no first-win card in the sim. Only Dungeons 1 and 2 have one now (`DUNGEONS`), and the sim does not use it yet.
+- The sim has no calendar, so it sends no Seaport Expedition (section 2.8). Its Coin, XP, Essence and Epic Forge Stones are not in the sim until it learns a play calendar.
 
 **Time.** One Battle is **8 minutes**, with the time in menus. A Sweep counts as 0 Battles and 0 minutes. The report shows Battles and hours. If the hour targets of section 4 do not agree with each other, change a target, not this value.
 

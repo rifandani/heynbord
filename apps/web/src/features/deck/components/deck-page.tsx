@@ -31,7 +31,6 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
-import { CountdownCurve } from "@/features/deck/components/countdown-curve";
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import type { DeckRow } from "@/features/deck/deck";
 import {
@@ -304,9 +303,8 @@ const SizeMeter = ({ input }: { readonly input: DeckInput }) => {
           style={{ left: `${(min / max) * 100}%` }}
         />
       </MeterGroove>
-      <span className="text-xs whitespace-nowrap text-[#5b4632]">
-        {tr("deckBuilder.sizeMin", { min })}
-      </span>
+      {/* The minimum stays for screen readers: the notch shows it on the screen. */}
+      <span className="sr-only">{tr("deckBuilder.sizeMin", { min })}</span>
     </div>
   );
 };
@@ -357,8 +355,8 @@ const Problems = ({
 };
 
 /**
- * The right page: the Deck name and Hero Class, the Countdown curve, the Deck
- * list, then the size, the reasons and the actions.
+ * The right page: the Deck name and Hero Class, the Deck list, then the
+ * Countdown and size meters, the reasons and the actions.
  */
 export const DeckPage = ({
   slot,
@@ -405,9 +403,6 @@ export const DeckPage = ({
         <ClassChoice classId={slot.classId} onChange={onClass} />
       </header>
 
-      <CountdownCurve deck={slot.deck} />
-      <CountdownMeter input={input} />
-
       <div className="flex min-h-0 flex-1 flex-col">
         <h4 className="font-display mb-1 text-base font-bold [@media(max-height:500px)]:sr-only">
           {tr("deckBuilder.thisDeck")}
@@ -436,6 +431,7 @@ export const DeckPage = ({
       </div>
 
       <footer className="flex flex-col gap-2.5 border-t-2 border-[#c9b48c] pt-3 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:pt-1.5">
+        <CountdownMeter input={input} />
         <SizeMeter input={input} />
         <Problems problems={problems} />
         <div className="flex items-center gap-2">

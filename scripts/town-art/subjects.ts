@@ -22,6 +22,8 @@ export const SUBJECT = new Map<string, string>(
     hero: "a polished steel knight helmet with a gold crest band and a tall royal blue plume, set on a small round wooden shield",
     achievements:
       "a gold trophy cup with two handles, in front of a long hanging banner in royal blue and gold with a swallow-tail end; small sparkles on the cup",
+    seaport:
+      "a small moored cargo ship of warm wood with two masts and full white sails, a small gold flag on the tallest mast, and a short wooden bollard with a coiled rope at its bow; the flat bottom of the hull stands level, with no water and no waves",
     bazaar:
       "a small market tent with orange, yellow and blue stripes and a pointed top with a little pennant, and a fat coin purse in front with gold coins that spill out",
     handbook:

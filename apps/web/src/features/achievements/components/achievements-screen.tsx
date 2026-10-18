@@ -136,7 +136,10 @@ const useCountedBalances = (balances: {
 /**
  * One wooden roller of the roll: frame wood with the grain of the Town Bar,
  * a little wider than the parchment, with a bronze cap at each end. The
- * parchment hangs from the top roller and rolls onto the bottom one.
+ * parchment hangs from the top roller and rolls onto the bottom one. When the
+ * roll opens, the bottom roller drops from the top roller to its place. Its
+ * drop has the time and curve of the unroll of the roll, so the parchment
+ * ends at the roller.
  */
 const Roller = ({ edge }: { readonly edge: "top" | "bottom" }) => (
   <span
@@ -145,7 +148,7 @@ const Roller = ({ edge }: { readonly edge: "top" | "bottom" }) => (
       "pointer-events-none absolute -inset-x-3.5 z-10 h-4 rounded-full border-2 border-[#2a1a0c] shadow-[inset_0_2px_0_rgba(255,214,150,0.3),0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:-inset-x-2.5 [@media(max-height:500px)]:h-3",
       edge === "top"
         ? "-top-2.5 [@media(max-height:500px)]:-top-2"
-        : "-bottom-2.5 [@media(max-height:500px)]:-bottom-2"
+        : "-bottom-2.5 motion-safe:animate-[achievements-roller-drop_420ms_cubic-bezier(0.2,0.8,0.2,1)] [@media(max-height:500px)]:-bottom-2"
     )}
     style={{
       background: [
@@ -189,11 +192,16 @@ const Roll = ({
       id={group.category}
       className={cn(
         // The roll keeps one height for each category, so the flags do not
-        // move when the Player selects another one.
-        "relative z-10 my-2.5 flex h-[calc(100%-1.25rem)] max-h-[46rem] min-h-0 flex-col self-center rounded-sm border-x-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] outline-none",
+        // move when the Player selects another one. It is at the left of the
+        // pole.
+        "relative z-10 col-start-1 row-start-1 my-2.5 flex h-[calc(100%-1.25rem)] max-h-[46rem] min-h-0 flex-col self-center rounded-sm border-x-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] outline-none",
         "shadow-[inset_0_2px_0_rgba(255,255,255,0.45),0_3px_0_rgba(0,0,0,0.45),0_18px_36px_rgba(0,0,0,0.45)]",
         "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
-        "motion-safe:animate-[achievements-unroll_260ms_cubic-bezier(0.2,0.8,0.2,1)]"
+        "motion-safe:animate-[achievements-unroll_420ms_cubic-bezier(0.2,0.8,0.2,1)]",
+        // React Aria keeps a deselected roll while its unroll still runs. It
+        // then is a second roll in the grid and pushes the open roll. Hidden,
+        // its unroll stops and it goes at once.
+        "data-[exiting]:hidden"
       )}
       data-testid={`achievements-roll-${group.category}`}
     >
@@ -276,8 +284,8 @@ const Roll = ({
 /**
  * The Achievements screen (Achievements 4, issue #103, "Banner Tabs"): the
  * inside of the Hall of banners and the Balance Plate. One
- * flag for each category hangs on the pole at the left; the selected flag
- * joins the roll of its rows at the right. The screen opens on the first
+ * flag for each category hangs on the pole at the right of the roll of the
+ * selected category, and flies to the right. The screen opens on the first
  * category with a reward to claim. A Claim adds the reward at once: its icon
  * flies into its balance, the balance counts up and the row stamps its
  * check seal. After a Claim, the focus goes to the next Claim, else to Claim
@@ -383,31 +391,35 @@ export const AchievementsScreen = () => {
         selectedKey={selected}
         onSelectionChange={setSelected}
         className={cn(
-          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[92px] left-1/2 grid w-[min(calc(100vw-1.5rem),1080px)] -translate-x-1/2 grid-cols-[18rem_minmax(0,1fr)] grid-rows-[minmax(0,1fr)]",
-          "max-[860px]:grid-cols-[12.5rem_minmax(0,1fr)]",
-          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:grid-cols-[4.75rem_minmax(0,1fr)]"
+          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[92px] left-1/2 grid w-[min(calc(100vw-1.5rem),1080px)] -translate-x-1/2 grid-cols-[minmax(0,1fr)_19.5rem] grid-rows-[minmax(0,1fr)] gap-x-3",
+          "max-[860px]:grid-cols-[minmax(0,1fr)_14rem]",
+          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:grid-cols-[minmax(0,1fr)_6.25rem] [@media(max-height:500px)]:gap-x-2"
         )}
       >
-        {/* The pole of the Hall: frame wood with a bronze finial at each end. */}
-        <div className="relative self-center py-6 pl-7 [@media(max-height:500px)]:py-4 [@media(max-height:500px)]:pl-5">
+        {/* The pole of the Hall, at the right of the roll: frame wood with a
+            bronze finial at each end. The flags hang from it and fly to the
+            right, and the space at the right of the list is for the selected
+            flag, which flies longer. It is first in the DOM, so the flags
+            come before the roll in the tab order. */}
+        <div className="relative col-start-2 row-start-1 self-center py-6 pr-6 pl-7 [@media(max-height:500px)]:py-4 [@media(max-height:500px)]:pl-5">
           <span
             aria-hidden
-            className="absolute top-0 bottom-0 left-0.5 w-5 rounded-full border-2 border-[#2a1a0c] shadow-[inset_2px_0_0_rgba(255,214,150,0.25),3px_3px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:w-3.5"
+            className="absolute top-0 bottom-0 left-0.5 w-5 rounded-full border-2 border-[#2a1a0c] shadow-[0_3px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:w-3.5"
             style={{
               background: [
                 "repeating-linear-gradient(180deg, rgba(0,0,0,0.1) 0 2px, transparent 2px 19px)",
-                "linear-gradient(90deg, #7a5233, #563720 55%, #2a1a0c)",
+                "linear-gradient(90deg, #2a1a0c, #563720 25%, #7a5233 50%, #563720 75%, #2a1a0c)",
               ].join(", "),
             }}
-          />
-          <span
-            aria-hidden
-            className="absolute -top-3 -left-1 size-7 rounded-full border-2 border-[#8a5a20] bg-[radial-gradient(circle_at_35%_30%,#f7dc9c,#b47f36_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-5"
-          />
-          <span
-            aria-hidden
-            className="absolute -bottom-3 -left-1 size-7 rounded-full border-2 border-[#8a5a20] bg-[radial-gradient(circle_at_35%_30%,#f7dc9c,#b47f36_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-5"
-          />
+          >
+            {/* The finials are in the pole, so they stay on its center line
+                at each size of the pole. The 2px of the pole border is in
+                their top and bottom. The pole is lit at its center and its
+                drop is straight down, so its center line is also where the
+                eye sees it. */}
+            <span className="absolute -top-3.5 left-1/2 size-7 -translate-x-1/2 rounded-full border-2 border-[#8a5a20] bg-[radial-gradient(circle_at_35%_30%,#f7dc9c,#b47f36_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-5" />
+            <span className="absolute -bottom-3.5 left-1/2 size-7 -translate-x-1/2 rounded-full border-2 border-[#8a5a20] bg-[radial-gradient(circle_at_35%_30%,#f7dc9c,#b47f36_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-5" />
+          </span>
           <TabList
             aria-label={tr("achievements.screen.categories.label")}
             className="flex flex-col gap-2.5 [@media(max-height:500px)]:gap-1.5"

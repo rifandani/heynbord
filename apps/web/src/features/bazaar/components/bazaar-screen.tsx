@@ -17,6 +17,7 @@ import {
   canBuyCosmetic,
   cosmeticItemKey,
 } from "@/features/bazaar/bazaar";
+import { BazaarScene } from "@/features/bazaar/components/bazaar-scene";
 import { useBazaar } from "@/features/bazaar/use-bazaar";
 import { BalancePlate } from "@/features/town/components/balance-plate";
 import { useCountTo } from "@/features/workshop/use-count-to";
@@ -28,14 +29,6 @@ const FAMILY_GLYPH: Readonly<Record<CosmeticFamily, Glyph>> = {
   gearLook: "breastplate",
   boardSkin: "banner",
 };
-
-/** The warm wall of the market hall, with no Building inside in v1. */
-const MarketScene = () => (
-  <div
-    aria-hidden
-    className="absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_0%,#6a3f2a_0%,#4a2a1c_55%,#2a1824_100%)]"
-  />
-);
 
 const ItemPlate = ({
   item,
@@ -55,7 +48,7 @@ const ItemPlate = ({
     <li
       className={cn(
         "flex items-center gap-3 rounded-xl p-2.5",
-        "border-2 border-[#e9c46a]/50 bg-[#1c140e]/75 text-[#fff6df]",
+        "border-2 border-[#e9c46a]/50 bg-[#1c140e]/85 text-[#fff6df]",
         "shadow-[0_3px_0_rgba(0,0,0,0.45)]",
         owned && "opacity-90",
         !affordable && !owned && "opacity-60"
@@ -129,14 +122,11 @@ export const BazaarScreen = () => {
       className="fade-in animate-in fixed inset-0 overflow-hidden text-[#fff6df] duration-300 motion-reduce:animate-none"
       data-testid="bazaar"
     >
-      <MarketScene />
+      <BazaarScene />
       <BalancePlate balances={{ ...balances, coin }} />
       {/* The page heading stays for screen readers only. */}
       <h1 className="sr-only">{tr("bazaar.title")}</h1>
       <div className="absolute inset-x-0 top-[calc(max(0.75rem,env(safe-area-inset-top))+5.25rem)] bottom-[80px] flex flex-col items-center gap-3 overflow-y-auto px-2 pb-4 [@media(max-height:500px)]:bottom-[56px]">
-        <p className="text-center text-sm text-[#e9c46a]">
-          {tr("bazaar.note")}
-        </p>
         {groups.map((group) => (
           <section
             key={group.family}
@@ -145,7 +135,7 @@ export const BazaarScreen = () => {
             data-testid="bazaar-group"
             data-family={group.family}
           >
-            <h2 className="mb-1.5 px-1 text-center text-base font-bold">
+            <h2 className="mb-1.5 px-1 text-center text-base font-bold [text-shadow:0_1px_4px_rgba(0,0,0,0.8)]">
               {tr(`bazaar.families.${group.family}`)}
             </h2>
             <ul className="grid gap-2 sm:grid-cols-2">

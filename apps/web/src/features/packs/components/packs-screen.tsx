@@ -480,6 +480,8 @@ const OpenButton = ({
         <CoinPrice
           parts={coinDenominations(price)}
           format={format}
+          // Open is the gold button, Open ×10 the wood one.
+          tone={ten ? "dark" : "light"}
           className="text-xs font-bold [@media(max-height:500px)]:text-[10px]"
         />
       )}

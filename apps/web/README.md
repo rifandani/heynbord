@@ -118,20 +118,11 @@ Priest:
 
 New features:
 
-/grill-with-docs in Workshop, introduce "Fuse" in which players can fuse new cards (not owned cards) with Essence + their owned cards. Restriction is as follows:
+1. implement issue 112 -> implement issue 113 and implement issue 114
+1. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
+1. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
-- they cannot put different Rank at the same time, so if they want to fuse Rare cards, they need all input cards to be Rare, also they cant put a Unit and Skill cards at the same time, it should be the same card type
-- to fuse Common/Uncommon cards, players need 2 cards
-- to fuse Rare cards, players need 3 cards
-- to fuse Epic cards, players need 4 cards
-- u cannot fuse Legendary cards
-- recipes are: 1 Human + 1 Human = 1 new Human, 1 Human + 1 Elf = 1 new Human/Elf, 1 Warrior + 1 Warrior = 1 new Warrior Skill, 1 Warrior + 1 Mage = 1 new Warrior/Mage Skill
-
-/grill-with-docs introduce Base Rank Legendary Unit for each Race with restriction that is called "Specialist" Unit: Unit can only be put in the Deck for specific chosen Class (it also has Unique Keyword), for now let's have 1 Legendary Unit for each Race with minimum 1 for each Class
-
-2. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
-3. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
-4. https://kingsandlegends-archive.fandom.com/wiki/Seaport
+Answers all ur questions automatically with ur best recommendations, except critical questions.
 
 v2:
 

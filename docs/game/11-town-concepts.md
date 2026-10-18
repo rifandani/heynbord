@@ -35,6 +35,8 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Town Gate label | x 720 to 1064, y 557 to 603 | The game writes "Campaign" here, between the two tower roofs, at the middle of their height. |
 | Card shop | x 1010 to 1209, y 436 to 612 | The selectable box of the Card shop: the house with the purple roof, its awnings and its stalls. The box covers the right tower of the Town Gate at its lower left, so the game cuts that corner from the selectable area, and the pointer there selects the Town Gate. |
 | Card shop label | x 1010 to 1209, y 390 to 436 | The game writes "Packs" here, above the purple roof. |
+| Market (Bazaar) | x 1210 to 1526, y 366 to 505 | The selectable box of the Market: the tents, the stalls and the fountain of the market square, above the Workshop and right of the Card shop. Its box is the part of the square in the safe area: a 4:3 screen crops the blue awning and the red tent at its right (to x 1645), so the box ends at x 1526, the right edge of the Workshop label. It stops at the top of the Workshop label (y 505), so that label keeps the pointer. |
+| Market label | x 1210 to 1526, y 320 to 366 | The game writes "Bazaar" here, above the tents, under the Balance Plate corner (y 320). |
 | Workshop | x 1318 to 1745, y 551 to 705 | The selectable box of the Workshop: the open forge with the blue roof, the tall chimney and the house at its right. With its label, the box starts at y 505, and its light goes up to y 480, the top of the chimney. Its `clip` follows the roofs, the chimney and the wall, so the plaza and the wall go to the painting. Only its left part (to x 1526) is in the safe area: a 4:3 screen crops the chimney and the house. |
 | Workshop label | x 1318 to 1526, y 505 to 551 | The game writes "Workshop" here, on the top edge of the forge roof, over the left part of the Workshop, in the safe area. It is below the Market stalls, so it does not cover them. |
 | Barracks | x 91 to 555, y 344 to 526 | The selectable box of the Barracks: the round tower, the long building with the blue roof, the training yard with the dummies and the fence. With its label, the box starts at y 298, and its light goes up to y 320. Its `clip` follows the roofs and the fence. Only its right part (from x 374) is in the safe area: a 4:3 screen crops the tower, the left wing and the label. |
@@ -45,6 +47,7 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
 | Heynspire label | x 540 to 760, y 138 to 184 | The game writes "Heynspire" here, on the walls of the castle, at the top of the safe area. |
 | Hall of banners | x 790 to 1090, y 296 to 390 | The selectable box of the Hall of banners: the front of the hall with its long banners and its arched door. It stops at the top of the Card shop label (y 390), so that label keeps the pointer. The hover light goes down over the steps and the trophies (x 770 to 1110, y 226 to 456). |
 | Hall of banners label | x 800 to 1080, y 250 to 296 | The game writes "Achievements" here, on the red roofs of the hall. It is under the Heynspire hill and right of the Heynspire box (x 540 to 760), so the two labels never touch. It is far above the Town Gate label (y 557 to 603). |
+| Seaport quay | x 1630 to 1900, y 320 to 460 | The box of the Seaport quay (2.10): the two long piers, the lower part of the big ship, the small ship, the quay along the wall and the towers with the blue roofs. It is under the Balance Plate corner: the sails of the big ship and the top of the tall tower go up into that corner, and the box stops at y 320. It is outside the safe area, as the Dungeons cave is: a 4:3 or a 16:10 screen crops almost all of it, and a 19.5:9 phone shows all of it. GDD 11.4 permits it, because the Seaport shortcut opens the screen on all screens. The Building sets its label, its hit box and its light inside this box. |
 | Balance Plate corner | x 1280 to 1900, y 0 to 320 | The game shows the Balance Plate at the top right of the screen. On a 19.5:9 phone it covers about this box. Do not put a selectable Building or its label in it. |
 | Sky | Above the safe area | A screen wider than about 2.2:1 above the Town Bar crops it first. On a 19.5:9 phone, the top of the Heynspire is also cropped. |
 | Edges | Outside the safe area | A screen can crop them. Decoration Buildings can be here. The Barracks label and the Dungeons cave are the selectable parts here (see their rows). |
@@ -53,9 +56,10 @@ The painting covers the screen and crops its edges (GDD 11.4). The positions are
  0                  475                 950                1425               1900
  ┌───────────────────────────────────────────────────────────────────────────────┐ 0
  │ sky, clouds      [Heynspire castle on the hill]                               │
- │                                                          sea, ships, piers    │
+ │                                                          [Seaport quay, ships]│
  │   [Barracks, yard]          [Hall of banners]                                 │
  │                 [Library]          [Card shop]        [Market, fountain]      │
+ │                                                    "Bazaar"                  │ 366
  │                          "Campaign"                 [Workshop, forge smoke]   │ 474
  │  ═══════ town wall ════════╗ [ TOWN GATE ] ╔══════════ town wall ═══ [Cave] ◄─│ 520
  │     trees                  ║  x 720-1064   ║                          (edge)   │
@@ -145,15 +149,15 @@ No screen · Decoration only
 
 ### 2.6 Market
 
-`Bazaar` · Decoration in v1: the Bazaar screen opens from the Town Bar shortcut, and the Market Building stays decoration until its art gets a safe-area hit box (11.4).
+`Bazaar` · Selectable: the Market Building and the Town Bar shortcut open the Bazaar screen. The Market box is the tents, the stalls and the fountain of the square, in the safe area (1.2). The inside of the Market is section 16.
 
 | Field | Brief |
 | --- | --- |
-| Shape | A market square with tents in orange, yellow and blue. |
-| Props | Fruit, cloth, a fortune teller tent, an orc food stall with a big pot. |
-| Silhouette hook | The group of pointed tent tops. |
+| Shape | An open market square of pale stone paving between warm stone houses, with five tents: a small white tent with blue trim, an orange and cream striped tent with a pointed top, a long yellow and cream striped awning, a long blue and white striped awning, and a red tent with a pointed top. A round stone fountain with blue water is in the middle of the square. |
+| Props | Crates, sacks and baskets on the stalls, fruit, cloth, a fortune teller tent, an orc food stall with a big pot. Townsfolk in plain robes walk between the stalls. |
+| Silhouette hook | The group of colored tent tops around the fountain. |
 | Humor note | A goat eats the cloth on one stall. A wild boulder tortoise sleeps on the road to the Market, and the townsfolk walk around it. |
-| Position | The right side, near the sea (about x 1120 to 1320). |
+| Position | The right side, near the sea, above the Workshop. In the current painting, it is at about x 1200 to 1645 and y 356 to 518. The Bazaar art (section 16) uses this part of the painting as its outside reference: `BAZAAR_OUTSIDE` in `scripts/town-art/write-prompts.ts` (x 1256, y 372, 464 × 169 in the pixels of `town.webp`). |
 
 ### 2.7 Card shop
 
@@ -194,6 +198,19 @@ No screen · Decoration only
 | Position | Behind the Town Gate, the Library and the Card shop. In the current painting, it is at x 790 to 1090 (box in 1.2). Its label is on its red roofs, and it must not touch the Heynspire label or the Town Gate label. |
 | Export | No separate export: the Hall is a part of the master painting. The Hall opens the Achievements screen ([15 — Achievements, 4](./15-achievements.md#4-achievements-screen)) at any Player level, so it has no Lock Plate. The inside of the Hall is section 15. |
 
+### 2.10 Seaport quay
+
+`Seaport` · Opens the Seaport screen
+
+| Field | Brief |
+| --- | --- |
+| Shape | The harbour at the right edge of the Town, by the sea: a stone quay along the Town wall, two long wooden piers on posts, a big ship with white sails and a small ship moored at the piers, and square towers with blue roofs along the quay. |
+| Props | Crates, barrels, bollards with coiled ropes, gulls. |
+| Silhouette hook | The big ship with white sails at the end of the pier. |
+| Humor note | A gull steals a fish from an open crate on the quay. |
+| Position | The upper right, under the Balance Plate corner. In the current painting, it is at x 1630 to 1900 (box in 1.2). It is outside the safe area, so a narrow screen crops it, and the Seaport shortcut is the sure way in. |
+| Export | No separate export: the quay is a part of the master painting, and the current painting already has it. The quay opens the Seaport screen ([Economy 2.8](./07-economy.md#28-seaport-expeditions)) at Player level 8; below that level, a Lock Plate replaces its label. The Seaport screen is section 17. |
+
 ## 3. Prompts
 
 The game docs do not keep the image prompts of the Town. Run `bun town:prompts` to write them to `apps/web/art/town/raw/`. Git ignores this folder.
@@ -208,6 +225,8 @@ The game docs do not keep the image prompts of the Town. Run `bun town:prompts` 
 - `gear/`: the prompts of the Gear icons (12.2).
 - `cave/`: the prompts of the Dungeons cave inside (13.4), then the Battle Painting of all Dungeon Battles ([13 — Battlefield Concepts, 1.6](./13-battlefield-concepts.md#16-the-dungeon-cave)), with its two references.
 - `heynspire/`: the prompts of the Heynspire inside (14.4), then the Battle Painting of all Floor Battles ([13 — Battlefield Concepts, 1.7](./13-battlefield-concepts.md#17-heynspire)), with its two references.
+- `bazaar/`: the prompts of the Bazaar inside (16.4).
+- `seaport/`: the prompts of the Seaport screen (17.4).
 
 The painting message is a short form of the briefs in sections 1 and 2. It is in `scripts/town-art/prompts.ts`. When you change a brief, change the painting message too, then run the script again.
 
@@ -223,7 +242,7 @@ The painting message is a short form of the briefs in sections 1 and 2. It is in
 
 ## 5. Review checklist
 
-- [ ] All 9 Buildings of section 2 are in the image, and each is easy to find.
+- [ ] All 10 Buildings of section 2 are in the image, and each is easy to find.
 - [ ] The base of the Town Gate is on the ground line, and the label area above it is readable.
 - [ ] The label of each selectable Building, and the part of the Building under it, are in the safe area.
 - [ ] Below the ground line, there is only road and trees.
@@ -234,7 +253,7 @@ The painting message is a short form of the briefs in sections 1 and 2. It is in
 
 ## 6. When the Town changes
 
-- When a screen comes, add its Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its label, and the part of the Building under the label, must be in the safe area. The Bazaar is an exception (2.6): its shortcut opens the screen, and the Market Building stays decoration until a safe-area hit box exists for its tents.
+- When a screen comes, add its Building to `SELECTABLE_BUILDINGS` in `town.ts`. Its label, and the part of the Building under the label, must be in the safe area. The Market (2.6) is the last Building: its box is the part of the market square in the safe area, and its label is under the Balance Plate corner.
 - When you add a screen with no Building in section 2, add its brief here first. Then paint it into the master painting with inpainting, in the same style.
 - When you change the painting, check the ambient layers (1.3) again.
 
@@ -270,7 +289,7 @@ Each icon prompt has the rules of 7.1 and the subject line of the icon in `scrip
 
 ### 7.3 Icon subjects
 
-In the order of `TOWN_SHORTCUTS`, then the Settings button.
+In the order of `TOWN_SHORTCUTS`, then the Settings button. The `seaport` icon comes before its shortcut: the Seaport screen adds the shortcut to `TOWN_SHORTCUTS` at its place in this table.
 
 | Shortcut | Building | Object |
 | --- | --- | --- |
@@ -283,6 +302,7 @@ In the order of `TOWN_SHORTCUTS`, then the Settings button.
 | `packs` | Card shop (2.7) | A sealed card pack in purple foil |
 | `hero` | Barracks (2.8) | A knight helmet with a blue plume, on a round shield |
 | `achievements` | Hall of banners (2.9) | A gold trophy cup in front of a blue and gold banner |
+| `seaport` | Seaport quay (2.10) | A moored cargo ship: a small two-masted ship with white sails, a wooden hull, a gold flag, and a wooden bollard with a coiled rope at its bow. The bottom of the hull is flat, so the ship stands on the bar. No other icon is a ship. |
 | `bazaar` | Market (2.6) | A striped market tent and a coin purse |
 | `handbook` | None | An open book with a quill and a ribbon |
 | `settings` | None | A bronze cogwheel with a blue gem, upright in a wooden block |
@@ -298,9 +318,10 @@ In the order of `TOWN_SHORTCUTS`, then the Settings button.
 ### 7.5 Review checklist
 
 - [ ] Each icon is clear at 48 px and at 32 px.
-- [ ] The 12 icons have the same outline thickness, view angle, light and scale.
+- [ ] The 13 icons have the same outline thickness, view angle, light and scale.
 - [ ] Each shortcut icon shows the same object as its Building in section 2. The `heynspire` icon shows the castle of the current painting (2.2).
 - [ ] The Settings cogwheel does not look like the Workshop anvil.
+- [ ] The `seaport` ship is clear at 48 px, and it stands on the flat bottom of its hull with no water.
 - [ ] The Handbook book does not look like the Deck book: it is a cloth-bound field manual with a quill and a ribbon, and it has no cards.
 - [ ] The light comes from the upper left.
 - [ ] The background is transparent, and the bottom edge of the object is flat.
@@ -763,5 +784,137 @@ Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/hall/` (se
 - [ ] The room looks like the inside of the Hall of banners in the Town painting.
 - [ ] No Hero, no knight, no portrait and no Card Back.
 - [ ] The light comes from the upper left.
+- [ ] No text, letters, numbers, runes, logo or signature in the image.
+- [ ] The style matches the golden references.
+
+## 16. Bazaar inside
+
+The Bazaar screen ([GDD 10](./03-game-design.md#10-achievements-cosmetics-and-the-bazaar), [Economy 3.5](./07-economy.md#35-bazaar)) shows the view from inside the Market (2.6) behind the list of Cosmetics: the Player stands in the open-air market square, under the awning of a stall. One painting covers the full screen. It makes the Bazaar warm, rich and a little funny, so that the Player wants to spend Heynstones. The image is `apps/web/public/town/bazaar-inside.webp`.
+
+### 16.1 Rules for the Bazaar art
+
+- **One painting, a full scene.** The market square fills the image to all edges. There is no frame and no border.
+- **View.** From under the awning of a stall in the market square, at eye level, straight on. The front edge of the awning goes across the top. A long market counter goes across the full width at the bottom.
+- **The same Market as the Town.** The scene is the Market of the Town painting (2.6), at eye level: an open-air square of pale stone paving between warm stone houses with terracotta roofs, the striped tents, the stalls, the fountain and the people who trade there. It is not a hall: there is no roof over the square. The tents keep their colors of the Town painting: orange and cream, yellow and cream, blue and white, red, and white with blue trim.
+- **A calm center.** The list of Cosmetics covers most of the screen (16.2). There, the painting is the far side of the square in soft shade: plain stone house fronts with closed shutters and the stone paving, with low contrast and no small details. Thus the item plates, the Heynstone prices and the text stay easy to read. The stalls, the people and the bright light are at the left, at the right and at the top.
+- **No Cosmetics.** No Card Back, no Hero portrait, no Gear look and no Board skin shows. These are the items that the Player buys here. The market shows plain goods only: fruit, bread, cloth and pots.
+- **Value.** Medium in total. The brightest areas are the sunlit tents at the sides and the lanterns under the awning. The center is the darkest area, darker than the sides, so that the gold of the item plates and the cream text show clearly.
+- **Light.** From the upper left, as in all other art. It is a clear morning, as in the Town painting. The sun lights the tents at the sides, the awning shades the top, and warm lanterns add small pools of light.
+- **No text.** Signs and labels show only simple shapes: a coin, a fruit or a star. No letters, numbers, runes or logo.
+- **Detail and humor.** Bright, warm and a little funny (art direction 1). The people and the jokes stay at the sides and at the top. The goat of 2.6 eats the cloth on the fruit stall. The orc cook of 2.6 stirs the big pot of his food stall. The fortune teller waves from the fortune teller tent.
+- **Size.** Landscape 3:2. Make at 1536 × 1024 and export at the same size. The screen covers its full area with the image, as on the Packs screen (9.1), so a wide screen crops the top and the bottom, and a 4:3 screen crops the sides.
+
+### 16.2 Positions on the painting
+
+The boxes are in percent of the 1536 × 1024 image. The layout sketch of 16.4 shows them. On a 1366 × 768 laptop screen, the list of Cosmetics covers about x 24 to 76 and y 14 to 88. On a wider screen, more of the sides shows.
+
+| Area | Box (x, y) | Content |
+| --- | --- | --- |
+| Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The stall people, the goat, the fountain and the lanterns must be in it. |
+| Calm center | x 24 to 76, y 14 to 88 | The far side of the square in soft shade: plain warm stone house fronts with closed wooden shutters, and the stone paving. No tent, no person and no fountain. The list of Cosmetics stands in front of it. |
+| Awning | x 0 to 100, y 0 to 14 | The front edge of a long blue and white striped awning with a scalloped edge, hanging brass lanterns and strings of small colored pennants. The title plate and the Balance Plate cover the top corners. |
+| Left side | x 0 to 24, y 14 to 88 | The orange and cream striped tent with a pointed top over a fruit stall with stacked crates of fruit and loaves of bread, and the goat that eats the cloth of the stall. Behind them, a part of the round stone fountain with blue water. |
+| Right side | x 76 to 100, y 14 to 88 | The red tent with a pointed top over the orc food stall with the big pot, and the small yellow and cream striped fortune teller tent with a sign that shows only a gold star. |
+| Counter | x 0 to 100, y 88 to 100 | A long worn market counter with woven baskets, a brass coin scale with small weights and a fat coin purse. The Town Bar covers its lower part. |
+
+### 16.3 Subjects
+
+| Subject | Brief |
+| --- | --- |
+| Fruit seller | A cheerful human fruit seller behind the left stall, under the orange and cream tent. She holds up an apple and calls to the Player. |
+| Goat | A small white goat that pulls and eats the cloth of the left stall, as in the humor note of 2.6. The fruit seller does not look at it yet. |
+| Orc cook | A big friendly cook of the Orc people at the right stall, under the red tent, with a striped apron. He stirs the big pot of his food stall with a long wooden spoon and tastes the food. |
+| Fortune teller | A robed figure in the small yellow and cream striped fortune teller tent at the right, behind a small table with a glass ball. The tent has a sign with a gold star only. |
+| Market goods | Woven baskets of fruit, loaves of bread, bolts of cloth, sacks, crates and clay pots on the stalls. They show that the Player trades here. |
+| Fountain | The round pale stone fountain of the Town painting, with blue water. Only a part of it shows at the left, behind the fruit stall. It connects the scene to the Town. |
+
+### 16.4 Prompts
+
+Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/bazaar/` (section 3): `layout.png` (the layout sketch, with flat shapes at the boxes of 16.2), `outside-reference.png` (the Market cut out of the Town painting: the square with its five tents and its fountain, see 2.6) and `prompts.md` (the setup message, the painting message and a list of fixes). The messages are `BAZAAR_SETUP_PROMPT` and `BAZAAR_PROMPT` in `scripts/town-art/prompts.ts`: a short form of 16.1 to 16.3. When you change the brief, change the messages and the layout sketch too, then run the script again.
+
+### 16.5 Steps
+
+1. Run `bun town:prompts`. Make 4 to 8 images with `bazaar/prompts.md` and the references of 16.4, with GPT Image and high quality, at 1536 × 1024.
+2. Select one image with the checklist in 16.6.
+3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting (the fixes in `prompts.md`).
+4. Put a screenshot of the Bazaar screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the list of Cosmetics.
+5. Export as WebP with no alpha: `cwebp -q 80 bazaar-inside.png -o bazaar-inside.webp`. Put the file in `apps/web/public/town/` as `bazaar-inside.webp`, and keep the full-size source in `apps/web/art/town/`. `bazaar-screen.tsx` shows it (cover, centered) in the place of `MarketScene`, with darker edges over it, as the Packs screen does.
+6. Write the licence record (art direction 5.5) for the image.
+
+### 16.6 Review checklist
+
+- [ ] The center behind the list of Cosmetics is calm and dark, and the item plates and the text stay easy to read.
+- [ ] The fruit seller, the goat, the orc cook and the fortune teller are each easy to find, and they and the fountain are not in the center.
+- [ ] The scene looks like the Market of the Town painting at eye level: an open-air square with no roof, pale stone paving, warm stone houses, the striped tents in their Town colors and a part of the fountain.
+- [ ] No Card Back, no Hero portrait, no Gear look and no Board skin shows.
+- [ ] The light comes from the upper left.
+- [ ] No text, letters, numbers, runes, logo or signature in the image.
+- [ ] The style matches the golden references.
+
+## 17. Seaport
+
+The Seaport screen ([Economy 2.8](./07-economy.md#28-seaport-expeditions), [ADR-0053](../adr/0053-the-seaport-gathers-coin-on-the-device-clock.md)) shows the harbour of the Seaport quay (2.10), seen from the water, behind the Expedition plaques and the berth plate. One painting covers the full screen. It makes the Seaport busy, sunny and a little funny: the ship goes out while the Player is away, and the cargo waits on the quay. The image is `apps/web/public/town/seaport-inside.webp`, and its source is `apps/web/art/town/seaport-inside.webp`.
+
+### 17.1 Rules for the Seaport art
+
+- **One painting, a full scene.** The harbour fills the image to all edges. There is no frame and no border.
+- **View.** From the calm water in front of the quay, at a low height, straight on. The quay is at the right, and the open sea is at the left.
+- **The same harbour as the Town.** The scene is the Seaport quay of the Town painting (2.10), from the water: the stone quay along the Town wall, the long wooden piers on posts, the big ship with white sails, the small ship, the square towers with blue roofs and the warm stone houses with blue and terracotta roofs behind.
+- **A calm left third.** The code draws the Expedition plaques and the berth plate over the left third of the screen (17.2). There, the painting is calm open sea: soft blue water with small gentle waves, low contrast and no small details. Thus the plaques, the rewards and the text stay easy to read. The ships, the people and the details are in the right two thirds.
+- **The ship of the icon.** The big ship is the ship of the `seaport` Town Bar icon (7.3): two masts, white sails, a wooden hull and a gold flag.
+- **No Cosmetics and no cards.** The cargo is plain: crates, barrels, sacks and fish. No card, no Pack, no Hero portrait and no Card Back shows.
+- **Value.** Medium-light in total, a clear morning. The brightest areas are the white sails and the sky. The left third is a calm mid blue, darker than the sky, so that the wood and the parchment of the plaques show clearly.
+- **Light.** From the upper left, the same morning light as the Town painting.
+- **No text.** Crates, sails and flags show no letters, numbers, runes or logo.
+- **Detail and humor.** Bright, warm and a little funny (art direction 1). The gull of 2.10 steals a fish from an open crate, and a cat on a barrel watches it. The people and the jokes stay in the right two thirds.
+- **Size.** Landscape 3:2. Make at 1536 × 1024 and export at the same size, with the same morning light as the Town painting. The screen covers its full area with the image, as on the Bazaar screen (16.1).
+
+### 17.2 Positions on the painting
+
+The boxes are in percent of the 1536 × 1024 image. The layout sketch of 17.4 shows them.
+
+| Area | Box (x, y) | Content |
+| --- | --- | --- |
+| Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The ships, the dock workers, the cat and the gull must be in it. |
+| Calm water | x 0 to 36, y 14 to 88 | Calm open sea: soft blue water with small gentle waves and a low, plain horizon. No ship, no boat, no rock, no bird and no pier. The Expedition plaques and the berth plate stand in front of it. |
+| Sky | x 0 to 100, y 0 to 14 | A narrow band of clear sky with soft white clouds, and a few gulls only at the right. The title plate and the Balance Plate cover the top corners. |
+| Ships | x 40 to 72, y 14 to 62 | The big two-masted cargo ship with white sails, moored along the pier, and the small one-masted ship behind it. |
+| Pier | x 36 to 70, y 60 to 76 | The long wooden pier on thick posts. It goes from the quay into the water toward the left, and it stops at the edge of the calm water. |
+| Town wall | x 66 to 100, y 14 to 52 | The Town wall of warm stone, the houses with blue and terracotta roofs, and the square towers with blue roofs along the quay. |
+| Quay | x 66 to 100, y 52 to 88 | The stone quay with crates, barrels, sacks, a small wooden crane and bollards with coiled ropes, the dock workers, the cat and the gull. |
+| Water front | x 0 to 100, y 88 to 100 | Calm water with soft reflections of the ships. The Town Bar covers its lower part. |
+
+### 17.3 Subjects
+
+| Subject | Brief |
+| --- | --- |
+| Cargo ship | The ship of the `seaport` icon: two masts, full white sails, a warm wooden hull and a small gold flag on the tallest mast. It is moored along the pier. |
+| Small ship | A small one-masted ship with a white sail, moored behind the cargo ship. |
+| Dock workers | A cheerful human dock worker and a big friendly orc dock worker carry one crate together on the quay. |
+| Gull and cat | A gull steals a fish from an open crate (the humor note of 2.10). A cat sits on a barrel and watches it. |
+| Cargo | Plain wooden crates, barrels, sacks and coiled ropes, with no marks. They show that the ship brings goods back. |
+| Towers | The square stone towers with blue pyramid roofs of the Town painting, along the quay. They connect the scene to the Town. |
+
+### 17.4 Prompts
+
+Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/seaport/` (section 3): `layout.png` (the layout sketch, with flat shapes at the boxes of 17.2), `outside-reference.png` (the Seaport quay cut out of the Town painting at its box in 1.2, a little higher, so the sails show too) and `prompts.md` (the setup message, the painting message and a list of fixes). The messages are `SEAPORT_SETUP_PROMPT` and `SEAPORT_PROMPT` in `scripts/town-art/prompts.ts`: a short form of 17.1 to 17.3. When you change the brief, change the messages and the layout sketch too, then run the script again.
+
+### 17.5 Steps
+
+1. Run `bun town:prompts`. Make 4 to 8 images with `seaport/prompts.md` and the references of 17.4, with GPT Image and high quality, at 1536 × 1024.
+2. Select one image with the checklist in 17.6.
+3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting (the fixes in `prompts.md`).
+4. When the Seaport screen exists, put a screenshot of it over the image at 1366 × 768 and at 1920 × 1080, and check that the left third is calm behind the plaques.
+5. Export as WebP with no alpha: `cwebp -q 80 seaport-inside.png -o seaport-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`.
+6. Write the licence record (art direction 5.5) for the image.
+
+### 17.6 Review checklist
+
+- [ ] The left third is calm open water, and the plaques and the text stay easy to read over it.
+- [ ] The big ship, the small ship, the dock workers, the gull and the cat are each easy to find, and they are not in the left third.
+- [ ] The scene looks like the Seaport quay of the Town painting, seen from the water: the stone quay, the long piers, the white sails and the square towers with blue roofs.
+- [ ] The big ship is the ship of the `seaport` icon.
+- [ ] No card, no Pack, no Hero portrait and no Card Back shows.
+- [ ] The light comes from the upper left, in the same morning light as the Town painting.
 - [ ] No text, letters, numbers, runes, logo or signature in the image.
 - [ ] The style matches the golden references.

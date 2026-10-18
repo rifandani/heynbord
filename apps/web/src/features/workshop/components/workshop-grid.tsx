@@ -1,6 +1,7 @@
+import type { RankId } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 import { cn } from "cn";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { GridList, GridListItem, Popover } from "react-aria-components";
 
 import { CardDetails } from "@/features/battle/components/card-details";
@@ -71,18 +72,68 @@ const SpareMark = ({ count }: { readonly count: number }) => {
   );
 };
 
+/** The copies of a card that can go into a Fuse now. */
+const FuseMark = ({ count }: { readonly count: number }) => (
+  <span className={markClassName} data-testid="workshop-fuse-mark" aria-hidden>
+    <GlyphIcon glyph="crucible" className="size-[1.2em] shrink-0" />×{count}
+  </span>
+);
+
+/**
+ * The Fuse state that the grid shows: the copies of each card that can go in
+ * now (`fuseMark`), the Rank of the slots, and the press that puts a copy in.
+ */
+export interface GridFuse {
+  readonly marks: ReadonlyMap<string, number>;
+  /** The Rank of the copies in the slots, or `null` before the first copy. */
+  readonly rank: RankId | null;
+  /** A press on a tile, with the tile frame for the Rank chooser. */
+  readonly onPut: (cardId: string, anchor: HTMLElement | null) => void;
+}
+
+/** True when the station can act on the tile: in Fuse, when a copy can go in now. */
+const tileReady = (
+  tile: WorkshopTile,
+  station: Station,
+  context: StationContext,
+  fuse: GridFuse | null
+): boolean =>
+  station === "fuse" && fuse
+    ? (fuse.marks.get(tile.cardId) ?? 0) > 0
+    : isTileReady(tile, station, context);
+
+/**
+ * The Rank that a tile shows. In Fuse after the first copy: the Rank of the
+ * slots, when the card has a copy of it. Else its highest owned Rank.
+ */
+const tileRank = (
+  tile: WorkshopTile,
+  station: Station,
+  fuse: GridFuse | null
+): RankId => {
+  const rank = station === "fuse" ? fuse?.rank : null;
+  return rank && tile.copies.some((row) => row.rank === rank && row.copies > 0)
+    ? rank
+    : tile.rank;
+};
+
 /** The mark of a tile in a station, or `null` when the station cannot act on it. */
 const StationMark = ({
   tile,
   station,
   context,
+  fuse,
 }: {
   readonly tile: WorkshopTile;
   readonly station: Station;
   readonly context: StationContext;
+  readonly fuse: GridFuse | null;
 }) => {
-  if (!isTileReady(tile, station, context)) {
+  if (!tileReady(tile, station, context, fuse)) {
     return null;
+  }
+  if (station === "fuse") {
+    return <FuseMark count={fuse?.marks.get(tile.cardId) ?? 0} />;
   }
   if (station === "combine") {
     return <PairMark />;
@@ -99,12 +150,21 @@ const StationMark = ({
 };
 
 /** The words that a screen reader says for a tile in a station. */
-const useTileWords = (station: Station, context: StationContext) => {
+const useTileWords = (
+  station: Station,
+  context: StationContext,
+  fuse: GridFuse | null
+) => {
   const { tr } = useGameText();
   const { format } = useCoinFormat();
   const stationWords = (tile: WorkshopTile): string | null => {
-    if (!isTileReady(tile, station, context)) {
+    if (!tileReady(tile, station, context, fuse)) {
       return null;
+    }
+    if (station === "fuse") {
+      return tr("workshop.fuseMark", {
+        count: fuse?.marks.get(tile.cardId) ?? 0,
+      });
     }
     if (station === "combine") {
       return tr("workshop.pairReady");
@@ -169,30 +229,36 @@ const EmptyGrid = ({
  * less saturated; a tile that it can act on has the mark of the station. Hover,
  * keyboard focus or a long press shows its Card Details at its highest owned
  * Rank, as in the Deck builder. They open beside the card, out of the grid, so
- * that the scroll of the grid never cuts them.
+ * that the scroll of the grid never cuts them. In Fuse, a press puts a copy
+ * in a slot; a long press only shows the Card Details.
  */
 const Tile = ({
   tile,
   station,
   context,
+  fuse,
   words,
   bind,
+  wasLongPress,
   peek,
   onHide,
 }: {
   readonly tile: WorkshopTile;
   readonly station: Station;
   readonly context: StationContext;
+  readonly fuse: GridFuse | null;
   readonly words: string;
   readonly bind: (target: Peek) => object;
+  readonly wasLongPress: () => boolean;
   readonly peek: ShownPeek | null;
   readonly onHide: () => void;
 }) => {
   const frame = useRef<HTMLSpanElement>(null);
-  const ready = isTileReady(tile, station, context);
+  const ready = tileReady(tile, station, context, fuse);
+  const rank = tileRank(tile, station, fuse);
   const target: Peek = {
     cardId: tile.cardId,
-    rank: tile.rank,
+    rank,
     from: "workshop",
   };
   return (
@@ -200,9 +266,19 @@ const Tile = ({
       id={tile.cardId}
       textValue={words}
       {...bind(target)}
+      onAction={
+        station === "fuse" && fuse
+          ? () => {
+              if (!wasLongPress()) {
+                onHide();
+                fuse.onPut(tile.cardId, frame.current);
+              }
+            }
+          : undefined
+      }
       className="group flex cursor-pointer flex-col items-center gap-1 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
       data-testid={`workshop-tile-${tile.cardId}`}
-      data-rank={tile.rank}
+      data-rank={rank}
       data-ready={ready || undefined}
     >
       <span
@@ -211,7 +287,7 @@ const Tile = ({
       >
         <CardFrame
           cardId={tile.cardId}
-          rank={tile.rank}
+          rank={rank}
           countdown={getCard(tile.cardId).countdown}
           className={cn(
             "transition-[filter] duration-300",
@@ -222,7 +298,12 @@ const Tile = ({
       {/* The strip of the station mark: the same height on each tile, so
           that the rows stay even. */}
       <span className="flex h-[1.9em] items-center justify-center">
-        <StationMark tile={tile} station={station} context={context} />
+        <StationMark
+          tile={tile}
+          station={station}
+          context={context}
+          fuse={fuse}
+        />
       </span>
       {peek && isSamePeek(peek, target) ? (
         <Popover
@@ -239,7 +320,7 @@ const Tile = ({
           className="fade-in animate-in pointer-events-none duration-150 motion-reduce:animate-none"
           data-testid="workshop-peek"
         >
-          <CardDetails cardId={tile.cardId} rank={tile.rank} />
+          <CardDetails cardId={tile.cardId} rank={rank} />
         </Popover>
       ) : null}
     </GridListItem>
@@ -251,13 +332,14 @@ const Tile = ({
  * highest owned Rank, in the same order in all the stations. The station
  * marks the tiles that it can act on and darkens the others. The arrow keys
  * move in the grid, and Enter or a press selects a card for the panel of the
- * station. Hover, keyboard focus or a long press shows the Card Details of a
- * tile.
+ * station; in Fuse, Enter or a press puts a copy in a Fuse slot. Hover,
+ * keyboard focus or a long press shows the Card Details of a tile.
  */
 export const WorkshopGrid = ({
   tiles,
   station,
   context,
+  fuse = null,
   selected,
   onSelect,
   filter,
@@ -267,6 +349,8 @@ export const WorkshopGrid = ({
   readonly tiles: readonly WorkshopTile[];
   readonly station: Station;
   readonly context: StationContext;
+  /** The Fuse state, in the Fuse station. */
+  readonly fuse?: GridFuse | null;
   readonly selected: string | null;
   readonly onSelect: (cardId: string) => void;
   readonly filter: PoolFilter;
@@ -274,21 +358,29 @@ export const WorkshopGrid = ({
   readonly onShowAll: () => void;
 }) => {
   const { tr } = useGameText();
-  const words = useTileWords(station, context);
-  const { peek, bind, hide } = useCardPeek();
+  const fusing = station === "fuse" && fuse !== null;
+  const words = useTileWords(station, context, fuse);
+  const { peek, bind, hide, wasLongPress } = useCardPeek();
+  // Each item has its card as its `id`, so React Aria keeps each tile when a
+  // tile comes in between: a Fuse adds the tile of a new card.
+  const items = useMemo(
+    () => tiles.map((tile) => ({ ...tile, id: tile.cardId })),
+    [tiles]
+  );
   return (
     <GridList
       // A new key for each filter, so that the list starts at the top.
       key={`${filter.ownership}:${filter.kind}:${filter.race}:${filter.classId}`}
       aria-label={tr("workshop.grid")}
       layout="grid"
-      items={tiles}
+      items={items}
       // The tiles render again when the Card Details, the station or the
       // balances change.
-      dependencies={[peek, station, context]}
-      selectionMode="single"
-      disallowEmptySelection
-      selectedKeys={selected === null ? [] : [selected]}
+      dependencies={[peek, station, context, fuse]}
+      // In Fuse a press puts a copy in a slot (`onAction`): no card is selected.
+      selectionMode={fusing ? "none" : "single"}
+      disallowEmptySelection={!fusing}
+      selectedKeys={selected === null || fusing ? [] : [selected]}
       onSelectionChange={(keys) => {
         if (keys === "all") {
           return;
@@ -315,8 +407,10 @@ export const WorkshopGrid = ({
           tile={tile}
           station={station}
           context={context}
+          fuse={fuse}
           words={words(tile)}
           bind={bind}
+          wasLongPress={wasLongPress}
           peek={peek}
           onHide={hide}
         />

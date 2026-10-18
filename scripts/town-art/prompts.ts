@@ -24,7 +24,7 @@ export const PAINTING_PROMPT = [
   "in the center foreground a large stone town gate with two round towers, blue conical roofs and small gold flags, open wooden doors, a sleepy guard on a stool with a cat on his lap,",
   "a sandy road leaves the gate and winds down to the bottom left toward far green meadows,",
   "a curved stone town wall with small towers runs from left to right behind the gate,",
-  "inside the wall: a long stone barracks with a fenced training yard and straw dummies at the far left, a stone library with a blue roof and tall arched windows left of the gate, a wide hall with long blue and gold banners and a low red roof behind the gate, a small narrow card shop with a purple roof and a round window right of the gate, a timber workshop with a tall stone chimney, an anvil outside and a small goblin tinker's junk cart on the right, a market square with orange, yellow and blue tents near the sea on the right, a giant mossy boulder tortoise asleep on the road to the market with townsfolk walking around it,",
+  "inside the wall: a long stone barracks with a fenced training yard and straw dummies at the far left, a stone library with a blue roof and tall arched windows left of the gate, a wide hall with long blue and gold banners and a low red roof behind the gate, a small narrow card shop with a purple roof and a round window right of the gate, a timber workshop with a tall stone chimney, an anvil outside and a small goblin tinker's junk cart on the right, a market square with striped tents in orange, yellow, blue, red and white around a round stone fountain near the sea on the right, a giant mossy boulder tortoise asleep on the road to the market with townsfolk walking around it,",
   "a very tall thin white stone tower with blue roofs on a hill at the back left, its top lost in the clouds,",
   "a dark cave with old ruined pillars in grey rocks at the right edge,",
   "a calm blue sea with a far island and small sail boats at the back right, soft white clouds in a clear morning sky,",
@@ -247,6 +247,72 @@ export const HALL_PROMPT = [
   "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a proud, welcoming and a little funny mood,",
   "light from the upper left, pale stone, warm timber, royal blue and gold, deep red, cream highlights,",
   "the center is darker and softer than the sides, no hero, no knight, no text, no letters, no numbers, no labels, no logo, no frame, no UI",
+].join("\n");
+
+/**
+ * The first message of the ChatGPT conversation for the Bazaar inside, with
+ * the layout sketch, the style reference and the outside reference attached.
+ * The rules come from section 16.1 of the Town Concepts.
+ */
+export const BAZAAR_SETUP_PROMPT = [
+  "In this conversation, you will paint the view from inside the open-air market square of a fantasy card battle game: the background of the bazaar screen, where the player buys cosmetics with Heynstones.",
+  [
+    "Image 1 is a rough layout sketch. Keep its composition: the edge of a striped awning with lanterns at the top, the orange tent with the fruit stall, the goat and a part of the fountain at the left edge, the red tent with the food stall and the small yellow fortune teller tent at the right edge, the long market counter along the bottom, and the calm, shaded house fronts in the center. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the same market from above, in the town painting: an open square of pale stone paving between warm stone houses with terracotta roofs, with a round stone fountain with blue water, townsfolk in plain robes, and five market tents: a small white tent with blue trim, an orange and cream striped tent with a pointed top, a long yellow and cream striped awning, a long blue and white striped awning and a red tent with a pointed top. Their stalls have crates, sacks and baskets. Paint this market at eye level, with the same tents, colors and stone. Do not copy its view.",
+  ].join("\n"),
+  "The game shows a long list of item plates with gold prices over the center of the painting. Thus the center stays calm, soft and in shade, and the people, the bright light and the details are at the left, at the right and at the top.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for the Bazaar inside, after its setup message. It is a short
+ * form of the brief in section 16 of the Town Concepts. When you change the
+ * brief there, change this message too.
+ */
+export const BAZAAR_PROMPT = [
+  "the view from inside a busy open-air fantasy market square on a clear morning, seen at eye level from under the awning of a market stall, straight on, wide 3:2 landscape, the scene fills the full image to all edges,",
+  "across the top the front edge of a long blue and white striped canvas awning with a scalloped edge, hanging brass lanterns with warm candle light and strings of small colored pennants,",
+  "at the left edge an orange and cream striped market tent with a pointed top over a wooden fruit stall with stacked crates of fruit and loaves of bread, a cheerful human fruit seller behind it holds up an apple, a small white goat pulls and eats the cloth of the stall, and behind them a part of a round pale stone fountain with blue water, they stay inside the left sixth of the image,",
+  "at the right edge a red market tent with a pointed top over an orc food stall with a big steaming pot on a low fire, a big friendly orc cook with a striped apron stirs the pot with a long wooden spoon and tastes the food, and next to it a small yellow and cream striped fortune teller tent with a little table, a glass ball and a hanging sign that shows only a gold star, they stay inside the right sixth of the image,",
+  "in the center the far side of the square in soft cool shade: plain warm stone house fronts with closed wooden shutters and pale stone paving, calm and dim, no tents, no people, no fountain, no bright light and no small details there,",
+  "a long worn wooden market counter runs across the full width at the bottom, with woven baskets, a brass coin scale with small weights, a fat coin purse and a few loose gold coins,",
+  "Heynbord, painterly fantasy game background, bright warm morning light, soft brush texture, clean readable silhouettes, a rich, welcoming and a little funny mood,",
+  "light from the upper left, pale warm stone, terracotta, timber and wicker, market cloth in orange, yellow, blue, red and cream, gold and brass accents, cream highlights,",
+  "the center is darker and softer than the sides, no cards, no packs, no portraits, no board, signs show only a coin or a star, no text, no letters, no numbers, no labels, no logo, no frame, no UI",
+].join("\n");
+
+/**
+ * The first message of the ChatGPT conversation for the Seaport screen, with
+ * the layout sketch, the style reference and the outside reference attached.
+ * The rules come from section 17.1 of the Town Concepts.
+ */
+export const SEAPORT_SETUP_PROMPT = [
+  "In this conversation, you will paint the harbour of a fantasy card battle game, seen from the water: the background of the seaport screen, where the player sends a cargo ship on a voyage and collects its cargo later.",
+  [
+    "Image 1 is a rough layout sketch. Keep its composition: the calm open water in the left third, the plain sky band at the top, the long wooden pier that goes into the water from the right, the big cargo ship and the small ship moored at the pier, the stone quay with crates and the town wall with blue roofs and the square stone towers at the right, and the water along the bottom. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the same harbour from above, in the town painting: a stone quay along the town wall, long wooden piers on posts, a big ship with white sails and a small ship, warm stone houses with blue and terracotta roofs, and square stone towers with blue pyramid roofs along the quay. Paint this harbour from the water, at a low height, with the same stone, roofs and ships. Do not copy its view.",
+  ].join("\n"),
+  "The game shows a column of voyage plaques and a berth plate over the left third of the painting. Thus the left third stays calm open water, plain and soft, and the ships, the people and the details are in the right two thirds.",
+  READY,
+].join("\n\n");
+
+/**
+ * The message for the Seaport screen, after its setup message. It is a short
+ * form of the brief in section 17 of the Town Concepts. When you change the
+ * brief there, change this message too.
+ */
+export const SEAPORT_PROMPT = [
+  "a busy fantasy harbour on a clear morning, seen from the calm water in front of the quay, at a low height, straight on, wide 3:2 landscape, the scene fills the full image to all edges,",
+  "the left third of the image is calm open sea: soft blue water with small gentle waves and a few soft glints, low contrast, no ships, no boats, no rocks, no birds and no small details there, and the far horizon is low and plain,",
+  "from the right, a long wooden pier on thick posts goes out into the water toward the left and stops before the left third, a big two-masted cargo ship of warm wood with full white sails and a small gold flag is moored along the pier, and a small one-masted ship with a white sail is moored behind it,",
+  "at the right, a stone quay of warm pale stone with stacked wooden crates, barrels, sacks, a small wooden crane and short wooden bollards with coiled ropes, a cheerful human dock worker and a big friendly orc dock worker carry a crate together, a cat sits on a barrel and watches a gull that steals a fish from an open crate,",
+  "behind the quay, the town wall of warm stone and the town houses with royal blue and terracotta roofs, and square stone towers with blue pyramid roofs along the quay, as image 3, a few gulls fly over the right part of the sky,",
+  "a narrow band of clear blue sky with soft white clouds across the top, plain and calm, calm water with soft reflections of the ships along the bottom,",
+  "Heynbord, painterly fantasy game background, bright warm morning light, soft brush texture, clean readable silhouettes, a busy, welcoming and a little funny mood,",
+  "light from the upper left, warm pale stone, timber, royal blue and terracotta roofs, white sails, gold accents, sea blue, cream highlights,",
+  "the left third is calmer and plainer than the right, no storm, no pirates, no cannons, no flags with symbols, crates and sails show no marks, no text, no letters, no numbers, no labels, no logo, no frame, no UI",
 ].join("\n");
 
 /**

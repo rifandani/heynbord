@@ -25,9 +25,6 @@ import {
 
 import type { TextRef } from "@/features/battle/card-text";
 
-/** The Countdowns that a card can have (GDD 5.1), the columns of the Countdown curve. */
-const COUNTDOWNS = [1, 2, 3, 4, 5, 6] as const;
-
 const isStarterSlot = (slot: DeckSlot) =>
   STARTER_DECKS.some((starter) => starter.id === slot.id);
 
@@ -51,32 +48,6 @@ export const slotInput = (
   level,
   collection,
 });
-
-/** One column of the Countdown curve (CRD-07). */
-export interface CurveColumn {
-  readonly countdown: number;
-  readonly creatures: number;
-  readonly skills: number;
-}
-
-/** The number of Creature Cards and Skill Cards in the Deck for each Countdown. */
-export const countdownCurve = (
-  deck: readonly DeckEntry[]
-): readonly CurveColumn[] =>
-  COUNTDOWNS.map((countdown) => {
-    const column = { countdown, creatures: 0, skills: 0 };
-    for (const entry of deck) {
-      const card = getCard(entry.cardId);
-      if (card.countdown === countdown) {
-        if (card.kind === "creature") {
-          column.creatures += 1;
-        } else {
-          column.skills += 1;
-        }
-      }
-    }
-    return column;
-  });
 
 /** One row of the Deck list: a card in one Rank and its number of copies. */
 export interface DeckRow {

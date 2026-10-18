@@ -13,14 +13,22 @@ import {
   extractNeedsConfirm,
   extractTimeline,
   legendaryPath,
-  craftLock,
   craftTimeline,
+  fuseMark,
+  fuseOptions,
+  fuseRefusal,
+  fuseState,
+  fuseTimeline,
   isTileReady,
+  pruneInputs,
   rankCopies,
   selectedTile,
   shownRank,
   spareCopies,
   stationCounts,
+  stationLock,
+  STATIONS,
+  stationTiles,
   workshopTiles,
 } from "@/features/workshop/workshop";
 
@@ -28,6 +36,7 @@ const RECRUIT = "human.militiaRecruit";
 const KNIGHT = "human.riverKnight";
 const BULWARK = "human.ironBulwark";
 const RUNT = "orc.badlandRunt";
+const ALDRIC = "human.serAldricStonewall";
 
 const collection: Collection = [
   { cardId: RECRUIT, rank: "common", copies: 3 },
@@ -166,25 +175,54 @@ describe("emptyGridText", () => {
       race: "orc" as const,
     };
     const found: Collection = [{ cardId: RUNT, rank: "common", copies: 2 }];
-    expect(emptyGridText([], orc).key).toBe("workshop.empty.noneFound");
-    expect(emptyGridText(found, { ...orc, ownership: "notOwned" }).key).toBe(
-      "workshop.empty.allOwned"
-    );
-    expect(emptyGridText(collection, { ...orc, ownership: "owned" }).key).toBe(
-      "workshop.empty.noneOwned"
-    );
-    expect(emptyGridText(found, orc, "combine").key).toBe(
-      "workshop.empty.ready.combine"
-    );
-    expect(emptyGridText([], orc, "extract").key).toBe(
+    expect(emptyGridText([], orc, "combine").key).toBe(
       "workshop.empty.noneFound"
     );
-    expect(emptyGridText(found, orc).args).toEqual({
+    expect(
+      emptyGridText(found, { ...orc, ownership: "notOwned" }, "combine").key
+    ).toBe("workshop.empty.allOwned");
+    expect(
+      emptyGridText(collection, { ...orc, ownership: "owned" }, "combine").key
+    ).toBe("workshop.empty.noneOwned");
+    expect(emptyGridText(found, orc, "combine", true).key).toBe(
+      "workshop.empty.ready.combine"
+    );
+    expect(emptyGridText([], orc, "extract", true).key).toBe(
+      "workshop.empty.noneFound"
+    );
+    expect(emptyGridText(found, orc, "combine").args).toEqual({
       group: {
         key: "deckBuilder.groups.race",
         args: { race: { key: "races.orc" } },
       },
     });
+  });
+
+  it("tells when Craft hides all the cards of the filters: Epic and Legendary cards have no Craft", () => {
+    const epic: Collection = [{ cardId: BULWARK, rank: "epic", copies: 1 }];
+    const human = {
+      ...DEFAULT_POOL_FILTER,
+      kind: "creature" as const,
+      race: "human" as const,
+    };
+    expect(emptyGridText(epic, human, "craft").key).toBe(
+      "workshop.empty.noCraft"
+    );
+    expect(emptyGridText(epic, human, "craft", true).key).toBe(
+      "workshop.empty.noCraft"
+    );
+    expect(emptyGridText(epic, human, "extract", true).key).toBe(
+      "workshop.empty.ready.extract"
+    );
+    const legendary: Collection = [
+      { cardId: ALDRIC, rank: "legendary", copies: 1 },
+    ];
+    expect(emptyGridText(legendary, human, "combine").key).toBe(
+      "workshop.empty.noCombine"
+    );
+    expect(emptyGridText(legendary, human, "fuse").key).toBe(
+      "workshop.empty.noFuse"
+    );
   });
 });
 
@@ -230,22 +268,15 @@ describe("craftState", () => {
       missing: 15,
     });
     expect(craftState(common, 6, 40)).toEqual({ kind: "ready", cost: 40 });
-    expect(craftState(getCard(BULWARK), 30, 5000)).toEqual({
-      kind: "ready",
-      cost: 1400,
-    });
   });
 
-  it("crafts a Legendary Specialist for 4800 Essence (ADR-0050)", () => {
-    expect(craftState({ baseRank: "legendary" }, 30, 4800)).toEqual({
-      kind: "ready",
-      cost: 4800,
+  it("has no Craft for an Epic or a Legendary Base Rank card (ADR-0052)", () => {
+    expect(craftState(getCard(BULWARK), 30, 5000)).toEqual({ kind: "none" });
+    expect(craftState({ baseRank: "legendary" }, 30, 5000)).toEqual({
+      kind: "none",
     });
-    expect(craftState({ baseRank: "legendary" }, 30, 4799)).toEqual({
-      kind: "essence",
-      cost: 4800,
-      missing: 1,
-    });
+    // The rank reason comes before the level lock: the card has no Craft at any level.
+    expect(craftState(getCard(BULWARK), 5, 5000)).toEqual({ kind: "none" });
   });
 });
 
@@ -372,6 +403,37 @@ describe("stations", () => {
     expect(isTileReady(tile(RUNT), "craft", { ...rich, level: 5 })).toBe(false);
   });
 
+  it("Craft shows no Epic or Legendary Base Rank card (ADR-0052)", () => {
+    const withEpic = workshopTiles(
+      [...collection, { cardId: BULWARK, rank: "epic", copies: 1 }],
+      DEFAULT_POOL_FILTER
+    );
+    const craft = stationTiles(withEpic, "craft").map((item) => item.cardId);
+    expect(withEpic.map((item) => item.cardId)).toContain(BULWARK);
+    expect(craft).not.toContain(BULWARK);
+    expect(craft).toContain(RECRUIT);
+    expect(stationTiles(withEpic, "combine")).toEqual(withEpic);
+  });
+
+  it("Combine and Fuse show no Legendary Base Rank card", () => {
+    const withLegendary = workshopTiles(
+      [...collection, { cardId: ALDRIC, rank: "legendary", copies: 1 }],
+      DEFAULT_POOL_FILTER
+    );
+    const combine = stationTiles(withLegendary, "combine").map(
+      (item) => item.cardId
+    );
+    expect(withLegendary.map((item) => item.cardId)).toContain(ALDRIC);
+    expect(combine).not.toContain(ALDRIC);
+    expect(combine).toContain(RECRUIT);
+    const fuse = stationTiles(withLegendary, "fuse").map((item) => item.cardId);
+    expect(fuse).not.toContain(ALDRIC);
+    expect(fuse).toContain(RECRUIT);
+    expect(
+      stationTiles(withLegendary, "extract").map((item) => item.cardId)
+    ).toContain(ALDRIC);
+  });
+
   it("Extract acts on a card with a spare copy", () => {
     expect(isTileReady(tile(RECRUIT), "extract", rich)).toBe(true);
     expect(isTileReady(tile(RUNT), "extract", rich)).toBe(false);
@@ -381,14 +443,35 @@ describe("stations", () => {
     expect(stationCounts(tiles, rich)).toEqual({
       combine: 1,
       craft: 3,
+      fuse: 2,
       extract: 3,
     });
     expect(stationCounts(tiles, { ...rich, essence: 0 }).craft).toBe(0);
   });
 
-  it("locks the Craft tab below the Craft level", () => {
-    expect(craftLock(5)).toBe(6);
-    expect(craftLock(6)).toBeNull();
+  it("Fuse acts on a card with a copy below Legendary whose Race has a card to give, from level 6", () => {
+    // Recruit: Common and Rare copies, and Human cards of both Ranks are not
+    // Discovered. Runt: no copy.
+    expect(tile(RECRUIT).fuseRanks).toEqual(["common", "rare"]);
+    expect(tile(KNIGHT).fuseRanks).toEqual(["uncommon"]);
+    expect(tile(RUNT).fuseRanks).toEqual([]);
+    expect(isTileReady(tile(RECRUIT), "fuse", rich)).toBe(true);
+    expect(isTileReady(tile(RUNT), "fuse", rich)).toBe(false);
+    expect(isTileReady(tile(RECRUIT), "fuse", { ...rich, level: 5 })).toBe(
+      false
+    );
+  });
+
+  it("has the Fuse tab next to Craft", () => {
+    expect(STATIONS).toEqual(["combine", "craft", "fuse", "extract"]);
+  });
+
+  it("locks the Craft and the Fuse tabs below level 6", () => {
+    expect(stationLock("craft", 5)).toBe(6);
+    expect(stationLock("fuse", 5)).toBe(6);
+    expect(stationLock("craft", 6)).toBeNull();
+    expect(stationLock("fuse", 6)).toBeNull();
+    expect(stationLock("combine", 1)).toBeNull();
   });
 });
 
@@ -403,5 +486,131 @@ describe("craftTimeline", () => {
       // The last drop leaves before the form line gets to the top.
       expect(dropAt.at(-1) ?? 0).toBeLessThan(formMs);
     }
+  });
+});
+
+/** A Common copy of the card, as a Fuse input. */
+const common = (cardId: string) => ({ cardId, rank: "common" }) as const;
+
+describe("Fuse slots", () => {
+  const tiles = workshopTiles(collection, DEFAULT_POOL_FILTER);
+  const tile = (cardId: string) => {
+    const found = tiles.find((item) => item.cardId === cardId);
+    if (!found) {
+      throw new Error(`no tile for ${cardId}`);
+    }
+    return found;
+  };
+
+  it("offers each Rank below Legendary with a copy that is not in a slot, before the first copy", () => {
+    expect(fuseOptions(tile(RECRUIT), collection, [])).toEqual([
+      "common",
+      "rare",
+    ]);
+    expect(fuseOptions(tile(RUNT), collection, [])).toEqual([]);
+    const legendary: Collection = [
+      { cardId: BULWARK, rank: "legendary", copies: 2 },
+    ];
+    expect(
+      fuseOptions(
+        workshopTiles(legendary, DEFAULT_POOL_FILTER)[0] ?? tile(RUNT),
+        legendary,
+        []
+      )
+    ).toEqual([]);
+  });
+
+  it("offers only the Rank of the first copy after it, while a copy is left and a slot is free", () => {
+    const one = [common(RECRUIT)];
+    expect(fuseOptions(tile(RECRUIT), collection, one)).toEqual(["common"]);
+    expect(fuseOptions(tile(KNIGHT), collection, one)).toEqual([]);
+    expect(fuseRefusal(tile(KNIGHT), collection, one)).toBe("rank");
+    const full = [common(RECRUIT), common(RECRUIT)];
+    expect(fuseOptions(tile(RECRUIT), collection, full)).toEqual([]);
+    expect(fuseRefusal(tile(RECRUIT), collection, full)).toBe("full");
+    const rare = [{ cardId: RECRUIT, rank: "rare" } as const];
+    expect(fuseOptions(tile(RECRUIT), collection, rare)).toEqual([]);
+    expect(fuseRefusal(tile(RECRUIT), collection, rare)).toBe("copies");
+    expect(fuseRefusal(tile(RUNT), collection, [])).toBe("copies");
+  });
+
+  it("refuses a Skill Card after a Creature Card", () => {
+    const skills: Collection = [
+      ...collection,
+      { cardId: "mage.fireball", rank: "common", copies: 2 },
+    ];
+    const skill = workshopTiles(skills, DEFAULT_POOL_FILTER).find(
+      (item) => item.cardId === "mage.fireball"
+    );
+    expect(skill && fuseRefusal(skill, skills, [common(RECRUIT)])).toBe("kind");
+  });
+
+  it("marks the copies that can go in now", () => {
+    expect(fuseMark(tile(RECRUIT), collection, [])).toBe(4);
+    expect(fuseMark(tile(RECRUIT), collection, [common(RECRUIT)])).toBe(2);
+    expect(fuseMark(tile(KNIGHT), collection, [common(RECRUIT)])).toBe(0);
+    expect(fuseMark(tile(RUNT), collection, [])).toBe(0);
+  });
+
+  it("takes out the copies that the Player does not own any more, and the copies that do not fit", () => {
+    const after: Collection = [{ cardId: RECRUIT, rank: "common", copies: 1 }];
+    expect(pruneInputs([common(RECRUIT), common(RECRUIT)], after)).toEqual([
+      common(RECRUIT),
+    ]);
+    expect(pruneInputs([common(RECRUIT)], [])).toEqual([]);
+  });
+
+  it("tells the state of the Fuse panel", () => {
+    const rich = { level: 30, essence: 1000 };
+    expect(fuseState(collection, [], { ...rich, level: 5 })).toEqual({
+      kind: "locked",
+      level: 6,
+    });
+    expect(fuseState(collection, [], rich)).toEqual({ kind: "empty" });
+    expect(fuseState(collection, [common(RECRUIT)], rich)).toMatchObject({
+      kind: "filling",
+      missing: 1,
+      cost: 20,
+    });
+    const full = [common(RECRUIT), common(RECRUIT)];
+    expect(fuseState(collection, full, rich)).toMatchObject({
+      kind: "ready",
+      cost: 20,
+    });
+    expect(fuseState(collection, full, { ...rich, essence: 5 })).toMatchObject({
+      kind: "essence",
+      cost: 20,
+      missing: 15,
+    });
+    const found: Collection = [
+      ...collection,
+      ...[
+        "human.shieldbearer",
+        "human.crossbowGuard",
+        "human.halberdier",
+        "human.townBarricade",
+      ].map((cardId) => ({ cardId, rank: "common" as const, copies: 0 })),
+    ];
+    expect(fuseState(found, full, rich)).toMatchObject({
+      kind: "pool",
+      groups: ["human"],
+    });
+  });
+});
+
+describe("fuseTimeline", () => {
+  it("gathers the copies, sends the Essence in, then turns the card over", () => {
+    for (const rank of ["common", "rare", "epic"] as const) {
+      const timeline = fuseTimeline(rank, 4);
+      expect(timeline.dropAt).toEqual(craftTimeline(rank).dropAt);
+      // The last copy gets to the card before the card turns.
+      expect(timeline.gatherAt.at(-1) ?? 0).toBeLessThan(timeline.turnAt);
+      expect(timeline.turnAt).toBeGreaterThanOrEqual(
+        craftTimeline(rank).formed
+      );
+      expect(timeline.faceAt).toBeGreaterThan(timeline.turnAt);
+    }
+    expect(fuseTimeline("epic", 4).trembleMs).toBeGreaterThan(0);
+    expect(fuseTimeline("common", 2).trembleMs).toBe(0);
   });
 });

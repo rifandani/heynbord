@@ -9,6 +9,10 @@ import {
   CRAFT_ESSENCE,
   craftEssence,
   EXTRACT_ESSENCE,
+  FUSE_COPIES,
+  FUSE_ESSENCE,
+  isCraftRank,
+  isFuseRank,
 } from "./workshop";
 
 describe("Combine (Economy 3.2)", () => {
@@ -60,24 +64,52 @@ describe("Extract and Craft (Economy 3.3)", () => {
     });
   });
 
-  it("costs the Essence of the Economy table for Craft, and Legendary has a cost (ADR-0050)", () => {
+  it("costs the Essence of the Economy table for Craft", () => {
     expect(CRAFT_ESSENCE).toEqual({
       common: 40,
       uncommon: 120,
       rare: 400,
-      epic: 1400,
-      legendary: 4800,
     });
     expect(craftEssence({ baseRank: "uncommon" })).toBe(120);
-    expect(craftEssence({ baseRank: "legendary" })).toBe(4800);
+  });
+
+  it("gives an Epic or a Legendary Base Rank card no Craft cost (ADR-0052)", () => {
+    expect(RANKS.filter(isCraftRank)).toEqual(["common", "uncommon", "rare"]);
+    expect(craftEssence({ baseRank: "epic" })).toBeNull();
+    expect(craftEssence({ baseRank: "legendary" })).toBeNull();
   });
 
   it("costs more to Craft a copy than Extract gives for it", () => {
-    for (const rank of RANKS) {
-      const cost = CRAFT_ESSENCE[rank];
-      if (cost !== null) {
-        expect(cost, rank).toBeGreaterThan(EXTRACT_ESSENCE[rank]);
-      }
+    for (const rank of RANKS.filter(isCraftRank)) {
+      expect(CRAFT_ESSENCE[rank], rank).toBeGreaterThan(EXTRACT_ESSENCE[rank]);
     }
+  });
+});
+
+describe("Fuse (Economy 3.7)", () => {
+  it("needs 2 Common or Uncommon copies, 3 Rare copies or 4 Epic copies", () => {
+    expect(FUSE_COPIES).toEqual({ common: 2, uncommon: 2, rare: 3, epic: 4 });
+  });
+
+  it("costs half of the Craft cost of the input Rank, and 700 for Epic (ADR-0052)", () => {
+    expect(FUSE_ESSENCE).toEqual({
+      common: 20,
+      uncommon: 60,
+      rare: 200,
+      epic: 700,
+    });
+    for (const rank of RANKS.filter(isCraftRank)) {
+      expect(FUSE_ESSENCE[rank] * 2, rank).toBe(CRAFT_ESSENCE[rank]);
+    }
+    expect(FUSE_ESSENCE.epic).toBe(700);
+  });
+
+  it("never uses a Legendary copy", () => {
+    expect(RANKS.filter(isFuseRank)).toEqual([
+      "common",
+      "uncommon",
+      "rare",
+      "epic",
+    ]);
   });
 });

@@ -1,6 +1,13 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
-import type { Profile, RankId } from "@workspace/rules";
-import { combine, craft, decksUsingCopy, extract } from "@workspace/rules";
+import type { DeckEntry, Profile, RankId } from "@workspace/rules";
+import {
+  combine,
+  craft,
+  decksUsingCopy,
+  decksUsingInputs,
+  extract,
+  fuse,
+} from "@workspace/rules";
 import { useContext } from "react";
 
 import { playerLevelAtom, profileAtom } from "@/features/profile/profile.atoms";
@@ -44,5 +51,20 @@ export const useWorkshop = () => {
     extract: (cardId: string, rank: RankId) =>
       act((current) => extract(current, cardId, rank)),
     craft: (cardId: string) => act((current) => craft(current, cardId)),
+    /** The saved Decks that a Fuse of the copies changes (GDD 7.4). */
+    decksUsingInputs: (inputs: readonly DeckEntry[]) =>
+      decksUsingInputs(profile, inputs),
+    /**
+     * Fuse (ADR-0051): the ID of the new card, or `null` when the rules said
+     * no. The random state of the Profile selects the card.
+     */
+    fuse: (inputs: readonly DeckEntry[]): string | null => {
+      const result = fuse(registry.get(profileAtom), inputs);
+      if (!result) {
+        return null;
+      }
+      registry.set(profileAtom, result.profile);
+      return result.cardId;
+    },
   };
 };

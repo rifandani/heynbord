@@ -255,14 +255,14 @@ const UnitStatus = ({ unit }: { readonly unit: UnitView }) => {
 
 const unitOwner = (unit: UnitView | undefined) => unit?.owner;
 
-const hasKeywordRules = (content: CreatureCardText) =>
-  content.keywords.length > 0 || content.damageRule;
-
 const KeywordRules = ({ content }: { readonly content: CreatureCardText }) => {
   const { text } = useGameText();
+  if (content.keywords.length === 0) {
+    return null;
+  }
   return (
     <>
-      {hasKeywordRules(content) ? <Divider /> : null}
+      <Divider />
       <ul className="space-y-1.5">
         {content.keywords.map((keyword) => (
           <li key={keyword.name.key}>
@@ -275,7 +275,6 @@ const KeywordRules = ({ content }: { readonly content: CreatureCardText }) => {
             {text(keyword.rule)}
           </li>
         ))}
-        {content.damageRule ? <li>{text(content.damageRule)}</li> : null}
       </ul>
     </>
   );
@@ -368,7 +367,7 @@ const CreatureBody = ({
           {info.classId ? (
             <>
               {" "}
-              · {tr("battle.specialist")} · {tr(`classes.${info.classId}`)}
+              · {tr("battle.specialist")} ({tr(`classes.${info.classId}`)})
             </>
           ) : null}
         </span>
