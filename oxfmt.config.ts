@@ -16,7 +16,5 @@ export default defineConfig({
     "**/docs",
     // QA output (reports and captures) that the Battle bot playtest writes.
     "**/apps/web/artifacts",
-    // Scratch scripts of a debugging session; they are not part of the app.
-    "**/.tmp-*.ts",
   ],
 });
