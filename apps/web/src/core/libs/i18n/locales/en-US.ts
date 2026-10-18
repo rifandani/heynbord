@@ -1548,7 +1548,11 @@ export default {
   hero: {
     label: "Hero",
     hp: "Hero HP",
-    hpSum: "= {base} base + {level} level + {armorLevel} × {perLevel} Armor",
+    hpParts: {
+      base: "Base",
+      level: "Player",
+      armor: "Armor",
+    },
     hpLabel:
       "Hero HP {total}: {base} base, {level} from your Player level, {armor} from your Armor.",
     gear: "Gear",
@@ -1760,9 +1764,13 @@ export default {
       hp: "Hero HP {hp}.",
     },
     rewards: {
-      firstWin: "First win: this card, Coin, XP and Forge Stones.",
-      firstWinClaimed: "First win: claimed.",
-      repeatWin: "Repeat win",
+      firstWin: "First win",
+      claimed: "Claimed",
+      eachWin: "Each win",
+      stones: "+{count} {tier}",
+      maybe: "Maybe:",
+      chance: "{percent}% {tier}",
+      cardChanceShort: "{percent}% Card",
       stoneChance: "{percent}% chance: 1 {tier} Forge Stone",
       cardChance: "{percent}% chance: 1 card from this Dungeon",
       essence: "+{amount} Essence",

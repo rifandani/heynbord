@@ -896,7 +896,7 @@ These items are not in v1. The [Roadmap](./09-roadmap.md) shows when they can co
 
 - Asynchronous PvP against defense Decks, leaderboards, seasons
 - Guilds, guild bosses, co-op Battles with 4 Lanes
-- More Races, Hybrid Units, a sixth Rank
+- More Races, a sixth Rank
 - More Keywords and Damage Types. Poison is already in v1.
 - Weekly Heynspire reset and events
 - Heynstones for real money in the Bazaar

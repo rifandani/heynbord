@@ -267,12 +267,8 @@ const GearLevel = ({
   );
 };
 
-/**
- * A requirement of the upgrade that is missing: a warm red with a dashed line
- * under it, so the color is not the only cue (DESIGN.md, The Never Color
- * Alone Rule).
- */
-const MISSING = "border-b-[1.5px] border-dashed border-current text-[#ff9b85]";
+/** A requirement of the upgrade that is missing: a warm red. */
+const MISSING = "text-[#ff9b85]";
 
 /**
  * All that the next level needs, in the upgrade: its Coin, and 1 Forge Stone

@@ -118,7 +118,6 @@ Priest:
 
 New features:
 
-1. /impeccable shape i want to have different types of expeditions in Seaport, first is money-based, experience-based, essence-based, forge stone-based, and everything can be chosen with time 6h/12h/24h/48h
 1. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 1. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
@@ -127,7 +126,6 @@ Answers all ur questions automatically with ur best recommendations, except crit
 v2:
 
 - blender mcp + all 3D unit (or maybe use sprite-gen)
-- hybrids, awakening
 - brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
 - standardize UI components at design system level
 - dynamic og image generation
@@ -143,13 +141,4 @@ v2:
 - https://kingsandlegends-archive.fandom.com/wiki/Auction_House
 - https://kingsandlegends-archive.fandom.com/wiki/Guild
 - https://kingsandlegends-archive.fandom.com/wiki/Buildings Ranking Board + Arena Real-time PvP or PvP against other players' _saved defense decks_ (the AI controls them)
-
-## Original Gameplay Ideas
-
-- The original had 4 classes, 11 races, 7 ranks, hybrids, awakening, hero gear and more than 900 cards.
-- Target fight length is 3 to 6 minutes at speed ×1
-- The original had 7 damage types and an action order of 11 steps
-- The original deck had 15 to 30 cards (new players started at 5 to 10, and the limits went up by 1 each level). A deck could hold at most 3 copies of a card. Skill cards had to match your class.
-- The original had 10 slots (with mounts and runes) and 4 stats: Hero HP, Hero Crit, Unit Crit, Unit Block.
-- https://kingsandlegends-archive.fandom.com/wiki/Alchemy_Lab
 - https://kingsandlegends-archive.fandom.com/wiki/Blacksmith

@@ -3,18 +3,21 @@ import { coinDenominations, getCard } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode, RefObject } from "react";
 import { useMemo, useRef, useState } from "react";
+import type { PressEvent } from "react-aria-components";
 import {
   Button,
   Dialog,
   Heading,
   Modal,
   ModalOverlay,
+  TooltipTrigger,
 } from "react-aria-components";
 import { HiXMark } from "react-icons/hi2";
 
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GameButton } from "@/features/battle/components/game-button";
+import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { qaSeed } from "@/features/battle/qa";
 import { randomSeed } from "@/features/battle/use-battle";
@@ -32,7 +35,6 @@ import type { Peek } from "@/features/deck/components/use-card-peek";
 import type {
   Balances,
   DungeonSlot,
-  StoneChance,
   StoneCount,
 } from "@/features/dungeons/dungeons";
 import { dungeonRewardPreview } from "@/features/dungeons/dungeons";
@@ -153,43 +155,69 @@ const XpPlate = ({ balances }: { readonly balances: Balances }) => {
   );
 };
 
+/** "+3 Epic" on its plate, with the full words for a screen reader. */
 const StonePlate = ({ stones }: { readonly stones: StoneCount }) => {
   const { tr } = useGameText();
   const tier = tr(`forgeStones.tiers.${stones.tier}`);
   return (
-    <p
-      className={cn(PLATE, "max-w-full whitespace-normal")}
-      data-testid="dungeon-reward-stones"
-    >
+    <p className={PLATE} data-testid="dungeon-reward-stones">
+      <span className="sr-only">
+        {tr("battle.forgeStonesEarned", { count: stones.count, tier })}
+      </span>
       <ForgeStoneIcon tier={stones.tier} className="size-4" />
-      {tr("battle.forgeStonesEarned", { count: stones.count, tier })}
+      <span aria-hidden>
+        {tr("dungeons.rewards.stones", { count: stones.count, tier })}
+      </span>
     </p>
   );
 };
 
-/** "25% chance: 1 Uncommon Forge Stone", in ink on the page. */
-const ChanceLine = ({
+/**
+ * One chance of a repeat win, short in ink: "25% Epic". Hover, keyboard focus
+ * or a tap shows the full words in a tooltip, and a screen reader reads them.
+ */
+const Chance = ({
   icon,
-  children,
+  label,
+  words,
 }: {
   readonly icon: ReactNode;
-  readonly children: ReactNode;
-}) => (
-  <li className="flex items-center gap-1.5 text-xs leading-snug font-semibold text-[#2a1d12]">
-    <span className="grid size-4 shrink-0 place-items-center">{icon}</span>
-    {children}
-  </li>
-);
-
-const StoneChanceLine = ({ chance }: { readonly chance: StoneChance }) => {
-  const { tr } = useGameText();
+  readonly label: string;
+  readonly words: string;
+}) => {
+  const [open, setOpen] = useState(false);
+  const onPress = (event: PressEvent) => {
+    if (event.pointerType !== "mouse") {
+      setOpen((value) => !value);
+    }
+  };
   return (
-    <ChanceLine icon={<ForgeStoneIcon tier={chance.tier} className="size-4" />}>
-      {tr("dungeons.rewards.stoneChance", {
-        percent: chance.percent,
-        tier: tr(`forgeStones.tiers.${chance.tier}`),
-      })}
-    </ChanceLine>
+    <li>
+      <TooltipTrigger
+        isOpen={open}
+        onOpenChange={setOpen}
+        delay={200}
+        shouldCloseOnPress={false}
+      >
+        <Button
+          onPress={onPress}
+          className="-mx-1 flex cursor-default items-center gap-1 rounded-md px-1 py-0.5 text-xs leading-none font-bold text-[#2a1d12] tabular-nums outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#2a1d12]/8"
+        >
+          <span className="sr-only">{words}</span>
+          <span aria-hidden className="grid size-4 shrink-0 place-items-center">
+            {icon}
+          </span>
+          <span aria-hidden>{label}</span>
+        </Button>
+        <GameTooltip
+          placement="top"
+          offset={6}
+          className="max-w-56 rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1.5 text-xs text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+        >
+          {words}
+        </GameTooltip>
+      </TooltipTrigger>
+    </li>
   );
 };
 
@@ -197,7 +225,7 @@ const StoneChanceLine = ({ chance }: { readonly chance: StoneChance }) => {
  * The first-win card as a small Card Frame, turned 2° and dealt onto the
  * page, as in the Stage Panel. Hover, keyboard focus or a long press shows
  * its Card Details. After the first win it is dim: it was claimed. The
- * other first-win plates (`children`) go under its words.
+ * reward of the next win (`children`) goes under its words.
  */
 const FirstWinCard = ({
   cardId,
@@ -249,9 +277,9 @@ const FirstWinCard = ({
             {tr(`ranks.${rank}`)}
           </span>
         </p>
-        <p className="mt-1 text-xs leading-snug text-[#5b4632]">
+        <p className="mt-0.5 text-xs leading-snug font-bold text-[#5b4632]">
           {claimed
-            ? tr("dungeons.rewards.firstWinClaimed")
+            ? `${tr("dungeons.rewards.claimed")} · ${tr("dungeons.rewards.eachWin")}`
             : tr("dungeons.rewards.firstWin")}
         </p>
         {children}
@@ -261,9 +289,10 @@ const FirstWinCard = ({
 };
 
 /**
- * The rewards of the Dungeon (Economy 2.4). Before the first win, the first
- * win leads: its card, Coin, XP and Forge Stones. After it, the repeat win
- * leads: its Coin and XP, and the chances of a Forge Stone and of a card.
+ * The rewards of the Dungeon (Economy 2.4). The row shows only what the next
+ * win gives, as the Stage Panel does. Before the first win: the first-win
+ * card, Coin, XP and Forge Stones. After it: the dim card, the Coin and XP of
+ * each win, and one line with the chances of a Forge Stone and of a card.
  */
 const RewardRow = ({ slot }: { readonly slot: DungeonSlot }) => {
   const { tr } = useGameText();
@@ -275,47 +304,71 @@ const RewardRow = ({ slot }: { readonly slot: DungeonSlot }) => {
   const { firstWin, win } = preview;
   return (
     <Row label={tr("campaign.panel.reward")} className={INK[1]}>
-      <div className="flex flex-col gap-2 [@media(max-height:500px)]:gap-1.5">
-        <FirstWinCard
-          cardId={firstWin.card.cardId}
-          rank={firstWin.card.rank}
-          claimed={won}
-        >
-          {won ? null : (
-            <div
-              className="mt-2 flex flex-wrap gap-1.5"
-              data-testid="dungeon-first-win"
-            >
-              <CoinPlate coin={firstWin.coin} />
-              <XpPlate balances={firstWin} />
-              {firstWin.stones.map((stones) => (
-                <StonePlate key={stones.tier} stones={stones} />
-              ))}
+      <FirstWinCard
+        cardId={firstWin.card.cardId}
+        rank={firstWin.card.rank}
+        claimed={won}
+      >
+        {won ? (
+          <div data-testid="dungeon-each-win">
+            <div className="mt-2 flex flex-wrap gap-1.5 [@media(max-height:500px)]:mt-1.5">
+              <CoinPlate coin={win.coin} />
+              <XpPlate balances={win} />
             </div>
-          )}
-        </FirstWinCard>
-        <div data-testid="dungeon-each-win">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <p className="mr-1 text-xs font-bold text-[#5b4632]">
-              {tr("dungeons.rewards.repeatWin")}
-            </p>
-            <CoinPlate coin={win.coin} />
-            <XpPlate balances={win} />
+            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 [@media(max-height:500px)]:mt-1">
+              <p className="text-xs font-bold text-[#5b4632]">
+                {tr("dungeons.rewards.maybe")}
+              </p>
+              <ul className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                {win.stones.map((chance) => {
+                  const tier = tr(`forgeStones.tiers.${chance.tier}`);
+                  return (
+                    <Chance
+                      key={chance.tier}
+                      icon={
+                        <ForgeStoneIcon tier={chance.tier} className="size-4" />
+                      }
+                      label={tr("dungeons.rewards.chance", {
+                        percent: chance.percent,
+                        tier,
+                      })}
+                      words={tr("dungeons.rewards.stoneChance", {
+                        percent: chance.percent,
+                        tier,
+                      })}
+                    />
+                  );
+                })}
+                <Chance
+                  icon={
+                    <GlyphIcon
+                      glyph="cards"
+                      className="size-3.5 text-[#7a5310]"
+                    />
+                  }
+                  label={tr("dungeons.rewards.cardChanceShort", {
+                    percent: win.cardPercent,
+                  })}
+                  words={tr("dungeons.rewards.cardChance", {
+                    percent: win.cardPercent,
+                  })}
+                />
+              </ul>
+            </div>
           </div>
-          <ul className="mt-1.5 flex flex-col gap-1">
-            {win.stones.map((chance) => (
-              <StoneChanceLine key={chance.tier} chance={chance} />
+        ) : (
+          <div
+            className="mt-2 flex flex-wrap gap-1.5 [@media(max-height:500px)]:mt-1.5"
+            data-testid="dungeon-first-win"
+          >
+            <CoinPlate coin={firstWin.coin} />
+            <XpPlate balances={firstWin} />
+            {firstWin.stones.map((stones) => (
+              <StonePlate key={stones.tier} stones={stones} />
             ))}
-            <ChanceLine
-              icon={
-                <GlyphIcon glyph="cards" className="size-3.5 text-[#7a5310]" />
-              }
-            >
-              {tr("dungeons.rewards.cardChance", { percent: win.cardPercent })}
-            </ChanceLine>
-          </ul>
-        </div>
-      </div>
+          </div>
+        )}
+      </FirstWinCard>
     </Row>
   );
 };

@@ -1579,7 +1579,11 @@ export default {
   hero: {
     label: "Pahlawan",
     hp: "HP Pahlawan",
-    hpSum: "= {base} dasar + {level} level + {armorLevel} × {perLevel} Zirah",
+    hpParts: {
+      base: "Dasar",
+      level: "Pemain",
+      armor: "Zirah",
+    },
     hpLabel:
       "HP Pahlawan {total}: {base} dasar, {level} dari level Pemain, {armor} dari Zirah.",
     gear: "Perlengkapan",
@@ -1798,9 +1802,13 @@ export default {
       hp: "HP Pahlawan {hp}.",
     },
     rewards: {
-      firstWin: "Kemenangan pertama: kartu ini, Koin, XP, dan Batu Tempa.",
-      firstWinClaimed: "Kemenangan pertama: sudah diklaim.",
-      repeatWin: "Kemenangan ulang",
+      firstWin: "Kemenangan pertama",
+      claimed: "Sudah diklaim",
+      eachWin: "Tiap menang",
+      stones: "+{count} {tier}",
+      maybe: "Mungkin:",
+      chance: "{percent}% {tier}",
+      cardChanceShort: "{percent}% Kartu",
       stoneChance: "Peluang {percent}%: 1 Batu Tempa {tier}",
       cardChance: "Peluang {percent}%: 1 kartu dari Dungeon ini",
       essence: "+{amount} Esensi",

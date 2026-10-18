@@ -110,7 +110,6 @@ v1 does not include:
 - Online play, accounts, PvP, guilds or chat.
 - Real-money payments or ads.
 - Trading between players.
-- Hybrids, or awakening.
 
 ## What Heynbord is not
 

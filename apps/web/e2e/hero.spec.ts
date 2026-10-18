@@ -89,9 +89,9 @@ test.describe("Hero screen", () => {
       "aria-current",
       "page"
     );
-    await expect(page.getByTestId("hero-hp-sum")).toHaveText(
-      "= 30 base + 5 level + 0 × 1 Armor"
-    );
+    await expect(page.getByTestId("hero-hp-base")).toHaveText("30");
+    await expect(page.getByTestId("hero-hp-level")).toHaveText("5");
+    await expect(page.getByTestId("hero-hp-armor")).toHaveText("0");
 
     const hint = page.getByTestId("hint");
     await expect(hint).toHaveAttribute("data-hint", "gear");
@@ -168,9 +168,9 @@ test.describe("Hero screen", () => {
       "data-total",
       "36"
     );
-    await expect(page.getByTestId("hero-hp-sum")).toHaveText(
-      "= 30 base + 5 level + 1 × 1 Armor"
-    );
+    await expect(page.getByTestId("hero-hp-base")).toHaveText("30");
+    await expect(page.getByTestId("hero-hp-level")).toHaveText("5");
+    await expect(page.getByTestId("hero-hp-armor")).toHaveText("1");
     await expect(common).toHaveAttribute("data-count", "0");
 
     // No Common Forge Stone: the upgrade is off, also with the Coin. The Rare

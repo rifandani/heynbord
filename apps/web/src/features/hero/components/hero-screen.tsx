@@ -16,6 +16,7 @@ import {
 import { HeroScene } from "@/features/hero/components/hero-scene";
 import type { ForgeStoneCount, HeroHpParts } from "@/features/hero/hero";
 import { upgradeFocusAfter } from "@/features/hero/hero";
+import { GEAR_GLYPH } from "@/features/hero/hero-art";
 import { useHero } from "@/features/hero/use-hero";
 import { useStatFormat } from "@/features/hero/use-stat-format";
 import { BalancePlate } from "@/features/town/components/balance-plate";
@@ -28,68 +29,135 @@ const PLATE =
 /** The chime of a Gear item at level 25 comes this long after the strike. */
 const MAX_CHIME_MS = 180;
 
+/** A label of the Status Bar: Inter 700, small capitals, `cream-dim`. */
+const BAR_LABEL =
+  "text-[11px] leading-none font-bold tracking-[0.06em] text-[#e8d9bb] uppercase [@media(max-height:500px)]:text-[9px]";
+
+/**
+ * One part of the Hero HP: its label above its number. The Armor part has the
+ * breastplate glyph, so it points to the Armor plate of the Gear Rack.
+ */
+const HpPart = ({
+  label,
+  value,
+  testId,
+  armor = false,
+}: {
+  readonly label: string;
+  readonly value: number;
+  readonly testId: string;
+  readonly armor?: boolean;
+}) => (
+  <div className="flex flex-col items-start gap-1.5 [@media(max-height:500px)]:gap-1">
+    <dt className={cn(BAR_LABEL, "flex items-center gap-1")}>
+      {armor ? (
+        <GlyphIcon
+          glyph={GEAR_GLYPH.armor}
+          className="size-3 text-[#e9c46a] [@media(max-height:500px)]:size-2.5"
+        />
+      ) : null}
+      {label}
+    </dt>
+    <dd
+      className="text-lg leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-[13px]"
+      data-testid={testId}
+    >
+      {value}
+    </dd>
+  </div>
+);
+
+/** The "+" between two parts of the Hero HP, on the line of the numbers. */
+const Plus = () => (
+  <span className="self-end pb-px text-sm leading-none font-bold text-[#e9c46a]/80 [@media(max-height:500px)]:text-[11px]">
+    +
+  </span>
+);
+
 /**
  * The Hero HP and its parts (GDD 4.10, 7.3): the total as the big number, and
- * the sum next to it, "= 30 base + 6 level + 10 × 1 Armor". The total counts to
- * its new value after an Armor upgrade.
+ * after it the 3 parts, each with its label: Base, Player (the Player level)
+ * and Armor. The total and the Armor part count to their new values after an
+ * Armor upgrade.
  */
 const HeroHp = ({ hp }: { readonly hp: HeroHpParts }) => {
   const { tr } = useGameText();
   const total = useCountTo(hp.total);
+  const armor = useCountTo(hp.armor);
   return (
     <div
-      className="flex items-center gap-3 [@media(max-height:500px)]:gap-2"
+      className="flex min-w-0 flex-1 flex-col gap-1.5"
       data-testid="hero-hp"
       data-total={hp.total}
     >
+      {/* On the line of the "Forge Stones" heading. */}
       <span
-        className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-7"
+        className={cn(BAR_LABEL, "[@media(max-height:500px)]:hidden")}
         aria-hidden
       >
-        <GlyphIcon
-          glyph="heart"
-          className="size-5 text-[#ff6b6b] [@media(max-height:500px)]:size-3.5"
-        />
+        {tr("hero.hp")}
       </span>
-      <div className="flex min-w-0 flex-col">
-        <span className="text-xs font-bold text-[#e8d9bb] [@media(max-height:500px)]:sr-only">
-          {tr("hero.hp")}
+      <div className="flex min-w-0 flex-1 items-center gap-3 [@media(max-height:500px)]:gap-2">
+        <span
+          className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-7"
+          aria-hidden
+        >
+          <GlyphIcon
+            glyph="heart"
+            className="size-5 text-[#ff6b6b] [@media(max-height:500px)]:size-3.5"
+          />
         </span>
-        <span className="flex items-baseline gap-2" aria-hidden>
-          <span className="text-[28px] leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-lg">
-            {total}
-          </span>
-          <span
-            className="text-[13px] font-semibold whitespace-nowrap text-[#e8d9bb] tabular-nums [@media(max-height:500px)]:text-[11px]"
-            data-testid="hero-hp-sum"
-          >
-            {tr("hero.hpSum", {
-              base: hp.base,
-              level: hp.level,
-              armorLevel: hp.armorLevel,
-              perLevel: hp.armorPerLevel,
-            })}
-          </span>
+        <span
+          className="shrink-0 text-[32px] leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-lg"
+          aria-hidden
+        >
+          {total}
         </span>
-        <span className="sr-only">
-          {tr("hero.hpLabel", {
-            total: hp.total,
-            base: hp.base,
-            level: hp.level,
-            armor: hp.armor,
-          })}
-        </span>
+        {/* The parts stand after a dotted rule, as the terms of a sum. */}
+        <dl
+          className="ml-1 flex min-w-0 items-stretch gap-2.5 border-l-2 border-dotted border-[#e7bb6a]/45 pl-4 [@media(max-height:500px)]:ml-0 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:pl-2.5"
+          aria-hidden
+          data-testid="hero-hp-parts"
+        >
+          <HpPart
+            label={tr("hero.hpParts.base")}
+            value={hp.base}
+            testId="hero-hp-base"
+          />
+          <Plus />
+          <HpPart
+            label={tr("hero.hpParts.level")}
+            value={hp.level}
+            testId="hero-hp-level"
+          />
+          <Plus />
+          <HpPart
+            label={tr("hero.hpParts.armor")}
+            value={armor}
+            testId="hero-hp-armor"
+            armor
+          />
+        </dl>
       </div>
+      <span className="sr-only">
+        {tr("hero.hpLabel", {
+          total: hp.total,
+          base: hp.base,
+          level: hp.level,
+          armor: hp.armor,
+        })}
+      </span>
     </div>
   );
 };
 
 /**
- * The 5 Forge Stone counts (GDD 7.2, ADR-0038, ADR-0039) on a slim HUD
- * plate: each tier with its stone in the Card Rank color, its name and its
- * count. A count of 0 is dimmer. The Forge Stones show only here: there is no Inventory screen.
+ * The 5 Forge Stone counts (GDD 7.2, ADR-0038, ADR-0039) in a tray: each tier
+ * in its own cell, with its stone in the Card Rank color, its count and its
+ * name. A count of 0 is dimmer. The Forge Stones show only here: there is no
+ * Inventory screen.
  */
-const ForgeStonePlate = ({
+const ForgeStoneTray = ({
   counts,
   spent,
 }: {
@@ -101,51 +169,53 @@ const ForgeStonePlate = ({
   return (
     <section
       aria-labelledby="hero-forge-stones"
-      className={cn(
-        PLATE,
-        "w-fit max-w-full flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 [@media(max-height:500px)]:gap-x-3 [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:py-1"
-      )}
+      className="flex min-w-0 flex-col gap-1.5 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:items-center [@media(max-height:500px)]:gap-2"
       data-testid="hero-forge-stones"
     >
       <h2
         id="hero-forge-stones"
-        className="text-xs font-bold text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]"
+        className={cn(BAR_LABEL, "[@media(max-height:500px)]:shrink-0")}
       >
         {tr("hero.forgeStones")}
       </h2>
-      <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 [@media(max-height:500px)]:gap-x-3">
+      <ul className="grid min-w-0 flex-1 grid-cols-5 divide-x divide-[#e9c46a]/15 rounded-lg border-2 border-[#e9c46a]/35 bg-[#3a2a1c] shadow-[inset_0_2px_4px_rgba(0,0,0,0.55)] [@media(max-height:500px)]:rounded-md">
         {counts.map(({ tier, count }) => {
           const name = tr(`forgeStones.tiers.${tier}`);
           return (
             <li
               key={tier}
               className={cn(
-                "flex items-center gap-1.5 text-[13px] whitespace-nowrap [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:text-[11px]",
+                "flex min-w-0 flex-col items-center gap-0.5 px-1 py-1.5 [@media(max-height:500px)]:py-0.5",
                 count === 0 && "opacity-60"
               )}
               data-testid={`hero-forge-stone-${tier}`}
               data-count={count}
             >
-              <ForgeStoneIcon
-                tier={tier}
-                className="size-5 shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-3.5"
-              />
               <span className="sr-only">
                 {tr("hero.forgeStoneCount", { tier: name, count })}
               </span>
-              <span aria-hidden className="flex items-baseline gap-1">
-                <span className="font-semibold text-[#e8d9bb]">{name}</span>
+              <span aria-hidden className="flex items-center gap-1.5">
+                <ForgeStoneIcon
+                  tier={tier}
+                  className="size-5 shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-3.5"
+                />
                 {/* The count hops when an upgrade takes a stone of this tier. */}
                 <span
                   key={spent[tier] ?? 0}
                   className={cn(
-                    "inline-block text-base font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xs",
+                    "inline-block text-base leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xs",
                     spent[tier] !== undefined &&
                       "motion-safe:animate-[workshop-count_420ms_cubic-bezier(0.2,0.8,0.2,1)]"
                   )}
                 >
                   {count}
                 </span>
+              </span>
+              <span
+                aria-hidden
+                className="max-w-full truncate text-[11px] leading-tight font-semibold text-[#e8d9bb] [@media(max-height:500px)]:text-[9px]"
+              >
+                {name}
               </span>
             </li>
           );
@@ -154,6 +224,47 @@ const ForgeStonePlate = ({
     </section>
   );
 };
+
+/**
+ * The Status Bar: one HUD plate as wide as the Gear Rack, on the same 4
+ * columns. The Hero HP fills the left 2 columns, and the Forge Stone tray the
+ * right 2. When the bar is too narrow for one row, the tray goes under the Hero
+ * HP, with a groove between them.
+ */
+const StatusBar = ({
+  hp,
+  counts,
+  spent,
+}: {
+  readonly hp: HeroHpParts;
+  readonly counts: readonly ForgeStoneCount[];
+  readonly spent: Readonly<Partial<Record<ForgeStoneTier, number>>>;
+}) => (
+  <div className="@container" data-testid="hero-plate">
+    <div
+      className={cn(
+        PLATE,
+        "grid grid-cols-4 gap-3 px-3 py-3 @max-[44rem]:grid-cols-1 @max-[44rem]:gap-2.5",
+        "[@media(max-height:500px)]:items-center [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1.5"
+      )}
+    >
+      <div className="col-span-2 flex min-w-0 flex-col @max-[44rem]:col-span-1">
+        <HeroHp hp={hp} />
+      </div>
+      <div
+        className={cn(
+          "relative col-span-2 min-w-0 @max-[44rem]:col-span-1",
+          // The groove over the tray when it goes under the Hero HP: a dark cut
+          // with a lit edge.
+          "@max-[44rem]:pt-2.5 @max-[44rem]:before:absolute @max-[44rem]:before:inset-x-0 @max-[44rem]:before:top-0 @max-[44rem]:before:h-0.5 @max-[44rem]:before:rounded-full @max-[44rem]:before:bg-[#0c0805]/70 @max-[44rem]:before:shadow-[0_1px_0_rgba(231,187,106,0.3)]",
+          "[@media(max-height:500px)]:@max-[44rem]:pt-2"
+        )}
+      >
+        <ForgeStoneTray counts={counts} spent={spent} />
+      </div>
+    </div>
+  </div>
+);
 
 /**
  * The sounds of a Gear upgrade: the strike, and at level 25 the chime of a
@@ -190,7 +301,7 @@ const useUpgradeSounds = () => {
 
 /**
  * The Hero screen (GDD 7.3, issue #77, "Gear Rack"): the inside of the
- * Barracks, the Hero plate with the Hero HP and its parts, the 5 Forge Stone
+ * Barracks, the Status Bar with the Hero HP and its parts and the 5 Forge Stone
  * counts (ADR-0038), and the 4 Gear items side by side.
  * Each press of an upgrade adds 1 level at once: its Forge Stone leaps from
  * the upgrade into the item and strikes it, the level hops, the stat rolls to
@@ -285,7 +396,7 @@ export const HeroScreen = () => {
           heynstones: hero.balances.heynstones,
         }}
       />
-      {/* The Hero plate and the Gear Rack stand in front of the calm wall of
+      {/* The Status Bar and the Gear Rack stand in front of the calm wall of
           the Barracks (Town Concepts 11.2), centered in the height between
           the top plates and the Town Bar. */}
       <div
@@ -294,16 +405,7 @@ export const HeroScreen = () => {
           "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2"
         )}
       >
-        <section
-          className={cn(
-            PLATE,
-            "w-fit max-w-full items-center px-4 py-3 [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:py-1.5"
-          )}
-          data-testid="hero-plate"
-        >
-          <HeroHp hp={hero.hp} />
-        </section>
-        <ForgeStonePlate counts={hero.forgeStones} spent={spent} />
+        <StatusBar hp={hero.hp} counts={hero.forgeStones} spent={spent} />
         <ul
           ref={rack}
           tabIndex={-1}

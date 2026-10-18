@@ -281,19 +281,20 @@ export const ShopkeeperBubble = ({
       >
         <output
           key={serial}
-          className="relative block origin-bottom rounded-xl border-2 border-[#5b3a1e] bg-[#f6ead0] px-3.5 py-2.5 text-sm leading-snug font-semibold text-[#2a1d12] shadow-[0_3px_0_rgba(0,0,0,0.35),0_10px_24px_rgba(0,0,0,0.35)] motion-safe:animate-[shopkeeper-say_340ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+          className="relative block origin-bottom rounded-xl border-2 border-[#5b3a1e] bg-[#f6ead0] px-3.5 py-2.5 text-sm leading-snug font-semibold text-[#2a1d12] [filter:drop-shadow(0_3px_0_rgba(0,0,0,0.35))_drop-shadow(0_10px_24px_rgba(0,0,0,0.35))] motion-safe:animate-[shopkeeper-say_340ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
           data-testid="shopkeeper-line"
         >
           <span className="sr-only">{tr("packs.shopkeeper.label")}: </span>
           {line}
-          {/* The tail points down at the shopkeeper. */}
+          {/* The tail points down at the shopkeeper: a turned square with the
+              border and the fill of the bubble. Its side corners touch the
+              outer edge of the bottom border, and its top half covers that
+              border, so the two outlines join. */}
           <span
-            className="absolute top-full -mt-px size-0 -translate-x-1/2 border-x-[9px] border-t-[12px] border-x-transparent border-t-[#5b3a1e]"
+            className="absolute top-[calc(100%+2px)] size-[13px] -translate-x-1/2 -translate-y-1/2 rotate-45 border-r-2 border-b-2 border-[#5b3a1e] bg-[#f6ead0]"
             style={{ left: `max(22px, calc(70% - ${fit.shift}px))` }}
             aria-hidden
-          >
-            <span className="absolute -top-[14px] -left-[6.5px] size-0 border-x-[6.5px] border-t-[9px] border-x-transparent border-t-[#f6ead0]" />
-          </span>
+          />
         </output>
       </div>
     </div>

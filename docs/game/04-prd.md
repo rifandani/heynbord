@@ -31,7 +31,7 @@ Heynbord v1 is a single-player web game. It is a fantasy collectible card game w
 - Trading between players
 - Native mobile apps
 - Portrait layout on phones
-- Hybrids, awakening, more than 6 Races, more than 5 Ranks
+- More than 6 Races, more than 5 Ranks
 
 ## 5. Users
 

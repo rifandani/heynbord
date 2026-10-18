@@ -92,9 +92,7 @@ const RankLine = ({
  * The copy of an Extract (GDD 7.4): it lifts off the panel card, which goes
  * dark under it, and melts from the bottom up behind a bright line in its Rank
  * light, while the Essence drops come out of the line. An Epic or a Legendary
- * copy trembles first. The Rank burst of the Pack reveal starts with the melt,
- * so a higher Rank gives more light, as a Combine does. With reduced motion,
- * it does not show.
+ * copy trembles first. With reduced motion, it does not show.
  */
 const ExtractGhost = ({
   cardId,
@@ -108,59 +106,54 @@ const ExtractGhost = ({
   const light = RANK_LIGHT[rank];
   const melt = `${meltMs}ms ${MELT_EASE} ${meltAt}ms both`;
   return (
-    <>
-      {/* Behind the card. The burst starts its light 200ms after its delay, at
-          the face of a Pack flip. */}
-      <RankBurst rank={rank} delay={meltAt - 200} />
+    <span
+      className="pointer-events-none absolute inset-0 z-10 motion-reduce:hidden"
+      data-testid="workshop-extract-ghost"
+      data-rank={rank}
+      aria-hidden
+    >
+      {/* The card under the copy goes dark while the copy is off it. */}
       <span
-        className="pointer-events-none absolute inset-0 z-10 motion-reduce:hidden"
-        data-testid="workshop-extract-ghost"
-        data-rank={rank}
-        aria-hidden
+        className="absolute inset-0 rounded-[0.85em] bg-[#1c140e] opacity-0"
+        style={{
+          animation: `workshop-extract-shade ${meltAt + meltMs + 240}ms ease-out both`,
+        }}
+      />
+      <span
+        className="absolute inset-0"
+        // SAFETY: a CSS custom property for the keyframes. React's
+        // `CSSProperties` does not model custom properties.
+        style={
+          {
+            "--lift-scale": liftScale,
+            animation: [
+              trembleMs > 0
+                ? `workshop-extract-tremble ${trembleMs}ms linear both`
+                : null,
+              `workshop-extract-lift 260ms cubic-bezier(0.16, 1, 0.3, 1) ${liftAt}ms both`,
+            ]
+              .filter(Boolean)
+              .join(", "),
+          } as CSSProperties
+        }
       >
-        {/* The card under the copy goes dark while the copy is off it. */}
-        <span
-          className="absolute inset-0 rounded-[0.85em] bg-[#1c140e] opacity-0"
-          style={{
-            animation: `workshop-extract-shade ${meltAt + meltMs + 240}ms ease-out both`,
-          }}
-        />
         <span
           className="absolute inset-0"
-          // SAFETY: a CSS custom property for the keyframes. React's
-          // `CSSProperties` does not model custom properties.
-          style={
-            {
-              "--lift-scale": liftScale,
-              animation: [
-                trembleMs > 0
-                  ? `workshop-extract-tremble ${trembleMs}ms linear both`
-                  : null,
-                `workshop-extract-lift 260ms cubic-bezier(0.16, 1, 0.3, 1) ${liftAt}ms both`,
-              ]
-                .filter(Boolean)
-                .join(", "),
-            } as CSSProperties
-          }
+          style={{
+            ...MELT_MASK,
+            animation: `workshop-extract-melt ${melt}`,
+            filter: `drop-shadow(0 0 0.5em ${light}66)`,
+          }}
         >
-          <span
-            className="absolute inset-0"
-            style={{
-              ...MELT_MASK,
-              animation: `workshop-extract-melt ${melt}`,
-              filter: `drop-shadow(0 0 0.5em ${light}66)`,
-            }}
-          >
-            <CardFrame
-              cardId={cardId}
-              rank={rank}
-              countdown={getCard(cardId).countdown}
-            />
-          </span>
-          <RankLine light={light} animation={melt} />
+          <CardFrame
+            cardId={cardId}
+            rank={rank}
+            countdown={getCard(cardId).countdown}
+          />
         </span>
+        <RankLine light={light} animation={melt} />
       </span>
-    </>
+    </span>
   );
 };
 
