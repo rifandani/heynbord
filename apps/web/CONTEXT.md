@@ -176,11 +176,15 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Seaport screen
 
-**Seaport screen**: The screen of the Seaport: the harbour seen from the water, with the Expedition plaques and the berth plate over the calm water at its left. The Player Dispatches the ship and Collects its reward there. The rules own the reward math; the screen sends the device time `now` with each Command. _Avoid_: port screen, harbour screen, idle screen
+**Seaport screen**: The screen of the Seaport: the harbour seen from the water, with the Cargo plaques, the duration row, the Manifest and the berth plate over the calm water at its left. The Player Dispatches the ship and Collects its reward there. The rules own the reward math; the screen sends the device time `now` with each Command. _Avoid_: port screen, harbour screen, idle screen
 
-**Destination plaque**: One plaque of the Destination list on the Seaport screen: one Expedition with its name, its duration and the reward of the full voyage. An Expedition that the Player level has not opened shows a Lock Plate with "Opens at level N". The Player selects one plaque, then Dispatches the ship on it. _Avoid_: expedition card, route button, offer
+**Cargo plaque**: One plaque of the Cargo list on the Seaport screen: the icon and the name of one Cargo. A Cargo that the Player level has not opened shows a Lock Plate with "Lv N". _Avoid_: expedition card, destination, route button, offer
 
-**Berth plate**: The parchment plate under the Destination list that shows the ship: at the berth, away with the time left and the reward that a Collect gives now, or back with the full reward. Collect is on it. _Avoid_: ship panel, timer panel, status box
+**Duration chip**: One chip of the duration row on the Seaport screen: the hours of a voyage and its bonus for each hour, or its Lock Plate. _Avoid_: time button, timer option
+
+**Manifest**: The plate under the duration row that shows what the selected Cargo and duration bring: the full reward as one big number, the device time when the ship is back, and the bonus. The Dispatch is under it. _Avoid_: preview, summary, reward box
+
+**Berth plate**: The parchment plate under the Dispatch that shows the ship: at the berth, away with the time left and the reward that a Collect gives now, or back with the full reward. Collect is on it. _Avoid_: ship panel, timer panel, status box
 
 ### Component Catalog
 

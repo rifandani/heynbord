@@ -2,11 +2,12 @@ import { Schema } from "effect";
 import { describe, expect, it } from "vitest";
 
 import {
-  EXPEDITIONS,
+  EXPEDITION_CARGOES,
+  EXPEDITION_DURATIONS,
   expeditionDurationMs,
   HOUR_MS,
 } from "../content/expeditions";
-import type { ExpeditionId } from "../content/expeditions";
+import type { Expedition } from "../content/expeditions";
 import { PLAYER_LEVEL_XP } from "../content/player-levels";
 import { UNLOCK_LEVELS } from "../content/unlocks";
 import { newProfile } from "./new-profile";
@@ -27,64 +28,74 @@ const atLevel = (level: number): Profile => ({
 /** A device time: 2026-10-18 09:00 UTC. */
 const NOW = Date.UTC(2026, 9, 18, 9);
 
-/** A Profile at level 30 with its ship on `id` since `NOW`. */
-const dispatched = (id: ExpeditionId): Profile => {
-  const profile = startExpedition(atLevel(30), id, NOW);
+const coin6: Expedition = { cargo: "coin", hours: 6 };
+const xp12: Expedition = { cargo: "xp", hours: 12 };
+const essence24: Expedition = { cargo: "essence", hours: 24 };
+const stones48: Expedition = { cargo: "forgeStones", hours: 48 };
+
+/** A Profile at level 30 with its ship on `expedition` since `NOW`. */
+const dispatched = (expedition: Expedition): Profile => {
+  const profile = startExpedition(atLevel(30), expedition, NOW);
   if (profile === null) {
-    throw new Error(`no Dispatch of ${id}`);
+    throw new Error(`no Dispatch of ${expedition.cargo}`);
   }
   return profile;
 };
 
 describe("startExpedition (Economy 2.8)", () => {
-  it("puts the ship on the Expedition at `now`, and changes nothing else", () => {
+  it("puts the ship on the Cargo and the duration at `now`, and changes nothing else", () => {
     const profile = atLevel(UNLOCK_LEVELS.seaport);
-    expect(startExpedition(profile, "coastalRun", NOW)).toEqual({
+    expect(startExpedition(profile, coin6, NOW)).toEqual({
       ...profile,
-      seaport: { expeditionId: "coastalRun", startedAt: NOW },
+      seaport: { cargo: "coin", hours: 6, startedAt: NOW },
     });
   });
 
   it("gives a Profile that the Schema decodes", () => {
-    const profile = dispatched("grandExpedition");
+    const profile = dispatched(stones48);
     expect(Schema.decodeUnknownSync(Profile)(profile)).toEqual(profile);
   });
 
-  it("opens no Expedition below the Seaport unlock level", () => {
+  it("opens no Cargo below the Seaport unlock level", () => {
     expect(
-      startExpedition(atLevel(UNLOCK_LEVELS.seaport - 1), "coastalRun", NOW)
+      startExpedition(atLevel(UNLOCK_LEVELS.seaport - 1), coin6, NOW)
     ).toBeNull();
   });
 
-  it("opens each Expedition at its unlock level, and not one level before", () => {
-    for (const expedition of EXPEDITIONS) {
-      const level = expedition.unlockLevel;
-      expect(
-        startExpedition(atLevel(level - 1), expedition.id, NOW),
-        `${expedition.id} at ${level - 1}`
-      ).toBeNull();
-      expect(
-        startExpedition(atLevel(level), expedition.id, NOW)?.seaport,
-        `${expedition.id} at ${level}`
-      ).toEqual({ expeditionId: expedition.id, startedAt: NOW });
+  it("opens each Cargo and each duration at the higher of their unlock levels, and not one level before", () => {
+    for (const cargo of EXPEDITION_CARGOES) {
+      for (const duration of EXPEDITION_DURATIONS) {
+        const { hours } = duration;
+        const level = Math.max(cargo.unlockLevel, duration.unlockLevel);
+        const expedition = { cargo: cargo.id, hours };
+        expect(
+          startExpedition(atLevel(level - 1), expedition, NOW),
+          `${cargo.id} ${hours} h at ${level - 1}`
+        ).toBeNull();
+        expect(
+          startExpedition(atLevel(level), expedition, NOW)?.seaport,
+          `${cargo.id} ${hours} h at ${level}`
+        ).toEqual({ cargo: cargo.id, hours, startedAt: NOW });
+      }
     }
   });
 
   it("refuses a second Dispatch while the ship is away", () => {
-    const away = dispatched("coastalRun");
-    expect(startExpedition(away, "tradeRoute", NOW + HOUR_MS)).toBeNull();
-    expect(
-      startExpedition(away, "coastalRun", NOW + 30 * 24 * HOUR_MS)
-    ).toBeNull();
+    const away = dispatched(coin6);
+    expect(startExpedition(away, xp12, NOW + HOUR_MS)).toBeNull();
+    expect(startExpedition(away, coin6, NOW + 30 * 24 * HOUR_MS)).toBeNull();
   });
 
-  it("rejects an unknown ID, and a time that is not whole milliseconds", () => {
-    // SAFETY: the test gives an ID that is not an Expedition on purpose.
-    const unknown = "pirateRaid" as ExpeditionId;
-    expect(() => startExpedition(atLevel(30), unknown, NOW)).toThrow(
+  it("rejects an unknown Cargo or duration, and a time that is not whole milliseconds", () => {
+    // SAFETY: the test gives a Cargo that does not exist on purpose.
+    const spices: Expedition = { cargo: "spices" as "coin", hours: 6 };
+    // SAFETY: the test gives a duration that does not exist on purpose.
+    const eightHours: Expedition = { cargo: "coin", hours: 8 as 6 };
+    expect(() => startExpedition(atLevel(30), spices, NOW)).toThrow(RangeError);
+    expect(() => startExpedition(atLevel(30), eightHours, NOW)).toThrow(
       RangeError
     );
-    expect(() => startExpedition(atLevel(30), "coastalRun", NOW + 0.5)).toThrow(
+    expect(() => startExpedition(atLevel(30), coin6, NOW + 0.5)).toThrow(
       RangeError
     );
   });
@@ -96,13 +107,14 @@ describe("activeExpedition", () => {
   });
 
   it("gives the Expedition, its return time and the reward at `now`", () => {
-    const active = activeExpedition(dispatched("tradeRoute"), NOW + HOUR_MS);
-    expect(active?.expedition.id).toBe("tradeRoute");
+    const active = activeExpedition(dispatched(xp12), NOW + 4 * HOUR_MS);
+    expect(active?.expedition).toEqual(xp12);
     expect(active?.startedAt).toBe(NOW);
     expect(active?.returnsAt).toBe(NOW + 12 * HOUR_MS);
+    // 3 XP × 105% for each hour.
     expect(active?.reward).toEqual({
-      coin: 40,
-      xp: 1,
+      coin: 0,
+      xp: 12,
       essence: 0,
       forgeStones: null,
       complete: false,
@@ -111,7 +123,7 @@ describe("activeExpedition", () => {
 
   it("gives a reward of 0 when the clock moved back", () => {
     expect(
-      activeExpedition(dispatched("longVoyage"), NOW - HOUR_MS)?.reward
+      activeExpedition(dispatched(essence24), NOW - HOUR_MS)?.reward
     ).toEqual({
       coin: 0,
       xp: 0,
@@ -124,63 +136,69 @@ describe("activeExpedition", () => {
 
 describe("collectExpedition (Economy 2.8)", () => {
   it("adds the pro-rata reward of an early Collect, and the ship is at the berth again", () => {
-    const away = dispatched("longVoyage");
+    const away = dispatched(essence24);
     const collect = collectExpedition(away, NOW + 6 * HOUR_MS + 59 * 60_000);
     expect(collect?.reward).toEqual({
-      coin: 349,
-      xp: 6,
-      essence: 13,
+      coin: 0,
+      xp: 0,
+      essence: 46,
       forgeStones: null,
       complete: false,
     });
+    expect(collect?.expedition).toEqual(essence24);
     expect(collect?.profile).toEqual({
       ...away,
-      coin: away.coin + 349,
-      xp: away.xp + 6,
-      essence: away.essence + 13,
+      essence: away.essence + 46,
       seaport: AT_BERTH,
     });
   });
 
   it("stops the reward at the duration: a late Collect gives the full voyage", () => {
-    const away = dispatched("coastalRun");
-    const onTime = collectExpedition(away, NOW + 4 * HOUR_MS);
+    const away = dispatched(coin6);
+    const onTime = collectExpedition(away, NOW + 6 * HOUR_MS);
     const late = collectExpedition(away, NOW + 9 * 24 * HOUR_MS);
-    expect(onTime?.reward.coin).toBe(120);
+    expect(onTime?.reward.coin).toBe(360);
     expect(late?.reward).toEqual(onTime?.reward);
     expect(late?.profile).toEqual(onTime?.profile);
   });
 
-  it("adds the Epic Forge Stone of the Grand Expedition only after the full voyage", () => {
-    const away = dispatched("grandExpedition");
-    const durationMs = expeditionDurationMs({ hours: 48 });
+  it("adds the Forge Stones of the Forge Stone Cargo only after the full voyage", () => {
+    const away = dispatched(stones48);
+    const durationMs = expeditionDurationMs(stones48);
     const early = collectExpedition(away, NOW + durationMs - 1);
-    expect(early?.reward.forgeStones).toBeNull();
-    expect(early?.profile.forgeStones).toEqual(away.forgeStones);
+    expect(early?.reward).toEqual({
+      coin: 0,
+      xp: 0,
+      essence: 0,
+      forgeStones: null,
+      complete: false,
+    });
+    expect(early?.profile).toEqual({ ...away, seaport: AT_BERTH });
     const full = collectExpedition(away, NOW + durationMs);
     expect(full?.reward.forgeStones).toEqual({ tier: "epic", count: 1 });
-    expect(full?.profile.forgeStones).toEqual({
-      ...away.forgeStones,
-      epic: away.forgeStones.epic + 1,
-    });
-    expect(full?.profile).toMatchObject({
-      coin: away.coin + 2880,
-      xp: away.xp + 48,
-      essence: away.essence + 144,
+    expect(full?.profile).toEqual({
+      ...away,
+      forgeStones: { ...away.forgeStones, epic: away.forgeStones.epic + 1 },
+      seaport: AT_BERTH,
     });
   });
 
   it("gives the same reward for the same Profile and the same `now`", () => {
-    const away = dispatched("tradeRoute");
+    const away = dispatched(xp12);
     const at = NOW + 5 * HOUR_MS + 17_000;
     expect(collectExpedition(away, at)).toEqual(collectExpedition(away, at));
   });
 
   it("gives the levels before and after the XP", () => {
-    // 10 XP below level 19. The full Long Voyage gives 24 XP.
+    // 10 XP below level 19. The full XP voyage of 24 hours gives 79 XP.
     const xp = (PLAYER_LEVEL_XP[18] ?? 0) - 10;
-    const away = startExpedition({ ...newProfile(42), xp }, "longVoyage", NOW);
+    const away = startExpedition(
+      { ...newProfile(42), xp },
+      { cargo: "xp", hours: 24 },
+      NOW
+    );
     const collect = away && collectExpedition(away, NOW + 24 * HOUR_MS);
+    expect(collect?.reward.xp).toBe(79);
     expect(collect?.levelBefore).toBe(18);
     expect(collect?.levelAfter).toBe(19);
   });
@@ -190,7 +208,7 @@ describe("collectExpedition (Economy 2.8)", () => {
   });
 
   it("gives null when the clock moved back: the reward is 0 and the ship stays", () => {
-    const away = dispatched("grandExpedition");
+    const away = dispatched(coin6);
     expect(collectExpedition(away, NOW - 1)).toBeNull();
     expect(collectExpedition(away, NOW)?.reward.coin).toBe(0);
   });

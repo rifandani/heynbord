@@ -22,8 +22,9 @@ const TONE: Readonly<
  * The reward of an Expedition on one line that can wrap: the Coin in its
  * denominations, the XP, the Essence and the Forge Stones, each with the
  * icon that the Balance Plate and the Hero screen show. A part that is 0
- * does not show, but the Coin always shows. With `stonesLater`, the Forge
- * Stone row says that it comes only when the ship is back.
+ * does not show, but a reward with no other part shows its Coin, also 0.
+ * With `stonesLater`, the Forge Stone row says that it comes only when the
+ * ship is back.
  */
 export const RewardLines = ({
   reward,
@@ -47,6 +48,9 @@ export const RewardLines = ({
   const format = (value: number) => number.format(value);
   const colors = TONE[tone];
   const shownStones = stones === undefined ? reward.forgeStones : stones;
+  const showCoin =
+    reward.coin > 0 ||
+    (reward.xp === 0 && reward.essence === 0 && !shownStones);
   return (
     <ul
       className={cn(
@@ -56,24 +60,26 @@ export const RewardLines = ({
       )}
       data-testid="expedition-reward"
     >
-      <li
-        className="flex items-center"
-        data-testid="reward-coin"
-        data-copper={reward.coin}
-      >
-        <span className="sr-only">
-          {coinWords(reward.coin, format, (denomination) =>
-            tr(`town.balances.denominations.${denomination}.name`)
-          )}
-        </span>
-        <span aria-hidden className="flex items-center">
-          <CoinAmount
-            parts={coinDenominations(reward.coin)}
-            format={format}
-            tone={tone}
-          />
-        </span>
-      </li>
+      {showCoin ? (
+        <li
+          className="flex items-center"
+          data-testid="reward-coin"
+          data-copper={reward.coin}
+        >
+          <span className="sr-only">
+            {coinWords(reward.coin, format, (denomination) =>
+              tr(`town.balances.denominations.${denomination}.name`)
+            )}
+          </span>
+          <span aria-hidden className="flex items-center">
+            <CoinAmount
+              parts={coinDenominations(reward.coin)}
+              format={format}
+              tone={tone}
+            />
+          </span>
+        </li>
+      ) : null}
       {reward.xp > 0 ? (
         <li className={colors.xp} data-testid="reward-xp" data-xp={reward.xp}>
           {tr("battle.xpEarned", { amount: format(reward.xp) })}

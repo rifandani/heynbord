@@ -28,3 +28,13 @@ The rules of the decision:
 ## Update: the economy sim has a play calendar
 
 The economy sim now has a play calendar: 1 hour of play each day, then 1 day away ([Economy 4 and 7.1](../game/07-economy.md#71-economy-simulation), issue #114). Its Players send the ship between their sessions, so `sim:check` judges the Seaport income with the other sources. The check found one rate too high: with 2 XP for each hour, too many Players got to level 30 before the Floor 50 win. Thus the Trade Route, the Long Voyage and the Grand Expedition give 1 XP for each hour now, and 24 XP for each day is 1% to 2.4% of a level from level 20. The Coin, the Essence and the Forge Stone do not change. At Floor 50, the Seaport gives the median Player about 21% of its Coin, 2% of its XP and about a third of its Epic Forge Stones. The decision above does not change: the Seaport is a supplement.
+
+## Update: the Player selects a Cargo and a duration
+
+The 4 fixed Expeditions (each later one added a reward line) became 4 **Cargoes** × 4 durations ([Economy 2.8](../game/07-economy.md#28-seaport-expeditions)). The Player selects what it needs: Coin, XP, Essence or Forge Stones, for 6, 12, 24 or 48 hours. Each Cargo gives only its own resource, and a longer voyage gives a small bonus for each hour (+5%, +10%, +15%). The Forge Stone Cargo gives a higher tier for a longer voyage, only after the full voyage. Each Cargo and each duration opens at its own Player level (8, 12, 18 and 24).
+
+- **The decision above does not change.** One ship, one berth, the pro-rata reward, the device clock, the pure rules and no Heynstones stay.
+- **The durations open by level.** With all durations open at level 8, the economy sim gave the Collector 28 Packs by the end of Region 2 (target 15 to 25). With the durations open by level, it gives 23.
+- **An early Collect of the Forge Stone Cargo gives nothing.** This is the one voyage where the time away gives no share, because a Forge Stone is whole. The screen calls the early Collect "Call back early" and asks again first.
+- **Profile version 13** changes the `seaport` field to `{ cargo, hours, startedAt }`. The migration from version 12 keeps a ship at sea and its Dispatch time, on the nearest new voyage: the Coastal Run, the Trade Route and the Long Voyage become Coin for 6, 12 and 24 hours, and the Grand Expedition becomes Forge Stones for 48 hours.
+- **Considered and rejected:** all durations open with lower rates (the Seaport gave only about 7% of the Coin), and an accepted miss of the Region 2 Pack target.

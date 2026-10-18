@@ -1,14 +1,10 @@
 import {
-  EXPEDITIONS,
   expeditionDurationMs,
   expeditionReward,
-  getExpedition,
+  getCargo,
+  getDuration,
 } from "../content/expeditions";
-import type {
-  ExpeditionDefinition,
-  ExpeditionId,
-  ExpeditionReward,
-} from "../content/expeditions";
+import type { Expedition, ExpeditionReward } from "../content/expeditions";
 /**
  * The Seaport actions of the Profile (Economy 2.8, ADR-0053): Dispatch the
  * ship on an Expedition, then Collect its reward. They are pure, as the other
@@ -22,11 +18,15 @@ import { isUnlocked } from "../content/unlocks";
 import type { Profile, SeaportState } from "./schema";
 
 /** The Seaport of a new Player: the ship is at the berth. */
-export const AT_BERTH: SeaportState = { expeditionId: null, startedAt: null };
+export const AT_BERTH: SeaportState = {
+  cargo: null,
+  hours: null,
+  startedAt: null,
+};
 
 /** The Expedition that the ship is on, at `now`. */
 export interface ActiveExpedition {
-  readonly expedition: ExpeditionDefinition;
+  readonly expedition: Expedition;
   /** The device time of the Dispatch. */
   readonly startedAt: number;
   /** The device time when the voyage is full. */
@@ -42,14 +42,13 @@ export interface ActiveExpedition {
  */
 export const activeExpedition = (
   profile: Pick<Profile, "seaport">,
-  now: number,
-  expeditions: readonly ExpeditionDefinition[] = EXPEDITIONS
+  now: number
 ): ActiveExpedition | null => {
-  const { expeditionId, startedAt } = profile.seaport;
-  if (expeditionId === null) {
+  const { cargo, hours, startedAt } = profile.seaport;
+  if (cargo === null) {
     return null;
   }
-  const expedition = getExpedition(expeditionId, expeditions);
+  const expedition = { cargo, hours };
   return {
     expedition,
     startedAt,
@@ -59,31 +58,35 @@ export const activeExpedition = (
 };
 
 /**
- * Dispatches the ship on the Expedition `id` at `now` (Economy 2.8). `null`
- * when the ship is not at the berth, or when the Player level is below the
- * Seaport unlock or the unlock level of the Expedition. It throws for an
- * unknown ID, and when `now` is not a whole number of milliseconds. It costs
- * nothing.
+ * Dispatches the ship on `expedition` at `now` (Economy 2.8). `null` when
+ * the ship is not at the berth, or when the Player level is below the
+ * Seaport unlock, or below the unlock level of the Cargo or of the duration.
+ * It throws for an unknown Cargo or duration, and when `now`
+ * is not a whole number of milliseconds. It costs nothing.
  */
 export const startExpedition = <P extends Pick<Profile, "xp" | "seaport">>(
   profile: P,
-  id: ExpeditionId,
-  now: number,
-  expeditions: readonly ExpeditionDefinition[] = EXPEDITIONS
+  expedition: Expedition,
+  now: number
 ): P | null => {
-  const expedition = getExpedition(id, expeditions);
+  const cargo = getCargo(expedition.cargo);
+  const duration = getDuration(expedition.hours);
   if (!Number.isSafeInteger(now)) {
     throw new RangeError(`A Dispatch time is whole milliseconds, not ${now}`);
   }
   const level = playerLevelForXp(profile.xp);
   if (
-    profile.seaport.expeditionId !== null ||
+    profile.seaport.cargo !== null ||
     !isUnlocked(level, "seaport") ||
-    level < expedition.unlockLevel
+    level < cargo.unlockLevel ||
+    level < duration.unlockLevel
   ) {
     return null;
   }
-  return { ...profile, seaport: { expeditionId: id, startedAt: now } };
+  return {
+    ...profile,
+    seaport: { cargo: cargo.id, hours: duration.hours, startedAt: now },
+  };
 };
 
 /** The Profile fields that `collectExpedition` reads and changes. */
@@ -94,7 +97,7 @@ type CollectProfile = Pick<
 
 export interface ExpeditionCollect<P> {
   readonly profile: P;
-  readonly expedition: ExpeditionDefinition;
+  readonly expedition: Expedition;
   readonly reward: ExpeditionReward;
   readonly levelBefore: number;
   readonly levelAfter: number;
@@ -102,18 +105,18 @@ export interface ExpeditionCollect<P> {
 
 /**
  * Collects the reward of the Expedition at `now` (Economy 2.8): its Coin, XP
- * and Essence for the time away, up to the duration, and its Forge Stones
- * only after the full voyage. The ship is then at the berth again. An early
- * Collect gives the share of the time away. `null` when the ship is at the
- * berth, or when `now` is before the Dispatch: the clock moved back, so the
- * reward is 0 and the ship stays.
+ * or Essence for the time away, up to the duration, or its Forge Stones only
+ * after the full voyage. The ship is then at the berth again. An early
+ * Collect gives the share of the time away, and an early Collect of the
+ * Forge Stone Cargo gives nothing. `null` when the ship is at the berth, or
+ * when `now` is before the Dispatch: the clock moved back, so the reward is
+ * 0 and the ship stays.
  */
 export const collectExpedition = <P extends CollectProfile>(
   profile: P,
-  now: number,
-  expeditions: readonly ExpeditionDefinition[] = EXPEDITIONS
+  now: number
 ): ExpeditionCollect<P> | null => {
-  const active = activeExpedition(profile, now, expeditions);
+  const active = activeExpedition(profile, now);
   if (active === null || now < active.startedAt) {
     return null;
   }

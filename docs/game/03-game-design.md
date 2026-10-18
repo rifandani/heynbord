@@ -488,7 +488,7 @@ The Campaign is tuned for these Decks ([14 — Campaign Stages](./14-campaign-st
 | 3 | Workshop: Combine and Extract |
 | 5 | Gear |
 | 6 | Workshop: Craft and Fuse |
-| 8 | Seaport (Economy 2.8). Its later Expeditions open at levels 12, 18 and 24. |
+| 8 | Seaport (Economy 2.8), with the Coin Cargo for 6 hours. The XP Cargo and 12 hours open at level 12, Essence and 24 hours at level 18, and Forge Stones and 48 hours at level 24. |
 | 10 | Dungeon 1 |
 | 20 | Dungeon 2 |
 | 30 | Dungeon 3 |
@@ -738,7 +738,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | **Campaign** | The Region Map of one Region, with its Stage Markers, Stars and Star chests (see 11.5) |
 | Heynspire | Floor rail (5 Flights of 10 Floors), Current Floor, Floor Panel with rewards |
 | Dungeons | Dungeon list, unlock levels, Bosses, rewards, the Dungeon Sweep Tickets and the Dungeon Sweep (see 4.12) |
-| Seaport | The harbour, seen from the water. The Expedition plaques, each with its duration, its unlock level and its reward for each hour, and the berth plate: the ship at the berth with Dispatch, or the Expedition of the ship, its return time, the reward of a Collect now and Collect (Economy 2.8) |
+| Seaport | The harbour, seen from the water. The Cargo plaques and the duration row, each with its unlock level, the Manifest with the full reward and the return time, Dispatch, and the berth plate: the ship at the berth, or the Expedition of the ship, its return time, the reward of a Collect now and Collect (Economy 2.8) |
 | Battle | Board, Hand, Heroes, controls (see 11.2) |
 | Deck builder | A modal dialog in the center of the screen, not a separate screen (see 11.4): a book with the Deck slots as ribbons and a locked ribbon that buys the next Deck slot, all cards with filters (see 6), the Countdown curve, validation, Auto-fill |
 | Workshop | Four stations, Combine, Craft, Fuse and Extract: the Discovered cards with the filters of the Deck builder, and the panel of the selected station for the selected card (see 7.4) |

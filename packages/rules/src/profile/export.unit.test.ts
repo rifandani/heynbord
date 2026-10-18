@@ -18,7 +18,7 @@ const played: Profile = {
   campaignSweepTickets: 4,
   dungeonSweepTickets: 2,
   seenHints: ["stagePanel"],
-  seaport: { expeditionId: "tradeRoute", startedAt: 1_792_314_000_000 },
+  seaport: { cargo: "xp", hours: 12, startedAt: 1_792_314_000_000 },
 };
 
 const reason = (text: string) => {
@@ -87,7 +87,7 @@ describe("exportProfile and importProfile", () => {
     const text = exportProfile(v11 as Profile);
     expect(Result.getOrThrow(importProfile(text))).toEqual({
       ...played,
-      seaport: { expeditionId: null, startedAt: null },
+      seaport: { cargo: null, hours: null, startedAt: null },
     });
   });
 });

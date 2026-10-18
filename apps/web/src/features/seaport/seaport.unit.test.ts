@@ -4,72 +4,101 @@ import { describe, expect, it } from "vitest";
 
 import {
   berthAt,
+  cargoOptions,
   clockParts,
   clockText,
-  destinations,
-  firstDestination,
+  durationOptions,
+  firstVisitVoyage,
+  firstVoyage,
   returnsAt,
+  sameVoyage,
+  shipVoyage,
+  voyageLock,
   voyageShare,
 } from "@/features/seaport/seaport";
 
-const AT_BERTH: SeaportState = { expeditionId: null, startedAt: null };
+const AT_BERTH: SeaportState = { cargo: null, hours: null, startedAt: null };
 
-/** The ship on the Grand Expedition since `startedAt`. */
-const grand = (startedAt: number) => ({
-  seaport: { expeditionId: "grandExpedition", startedAt } as const,
+/** The ship on the Essence Cargo for 48 hours since `startedAt`. */
+const essence48 = (startedAt: number) => ({
+  seaport: { cargo: "essence", hours: 48, startedAt } as const,
 });
 
-/** The IDs of the Expeditions that `level` opens. */
-const open = (level: number) =>
-  destinations(level)
+/** The IDs of the Cargoes that `level` opens. */
+const openCargoes = (level: number) =>
+  cargoOptions(level)
     .filter((item) => item.open)
-    .map((item) => item.expedition.id);
+    .map((item) => item.cargo.id);
 
-describe("destinations", () => {
-  it("lists the 4 Expeditions from the shortest, each with its full reward", () => {
-    const list = destinations(30);
-    expect(list.map((item) => item.expedition.id)).toEqual([
-      "coastalRun",
-      "tradeRoute",
-      "longVoyage",
-      "grandExpedition",
-    ]);
-    expect(list.at(-1)?.reward).toEqual({
-      coin: 2880,
-      xp: 48,
-      essence: 144,
-      forgeStones: { tier: "epic", count: 1 },
-      complete: true,
-    });
-    expect(list[0]?.reward).toMatchObject({ coin: 120, xp: 0, essence: 0 });
-  });
+/** The hours that `level` opens. */
+const openHours = (level: number) =>
+  durationOptions(level)
+    .filter((item) => item.open)
+    .map((item) => item.duration.hours);
 
-  it("opens each Expedition at its unlock level", () => {
-    expect(open(8)).toEqual(["coastalRun"]);
-    expect(open(17)).toEqual(["coastalRun", "tradeRoute"]);
-    expect(open(24)).toEqual([
-      "coastalRun",
-      "tradeRoute",
-      "longVoyage",
-      "grandExpedition",
+describe("cargoOptions and durationOptions", () => {
+  it("lists the 4 Cargoes and the 4 durations, each open at its unlock level", () => {
+    expect(cargoOptions(30).map((item) => item.cargo.id)).toEqual([
+      "coin",
+      "xp",
+      "essence",
+      "forgeStones",
     ]);
+    expect(openCargoes(8)).toEqual(["coin"]);
+    expect(openCargoes(17)).toEqual(["coin", "xp"]);
+    expect(openCargoes(24)).toEqual(["coin", "xp", "essence", "forgeStones"]);
+    expect(openHours(8)).toEqual([6]);
+    expect(openHours(18)).toEqual([6, 12, 24]);
+    expect(openHours(24)).toEqual([6, 12, 24, 48]);
   });
 });
 
-describe("firstDestination", () => {
-  it("selects the Expedition of the ship while it is away", () => {
-    expect(
-      firstDestination(destinations(30), {
-        expeditionId: "coastalRun",
-        startedAt: 0,
-      })
-    ).toBe("coastalRun");
+describe("voyageLock", () => {
+  it("is the higher unlock level of the Cargo and the duration, or null when both are open", () => {
+    expect(voyageLock(8, { cargo: "coin", hours: 6 })).toBeNull();
+    expect(voyageLock(8, { cargo: "coin", hours: 48 })).toBe(24);
+    expect(voyageLock(12, { cargo: "essence", hours: 12 })).toBe(18);
+    expect(voyageLock(30, { cargo: "forgeStones", hours: 48 })).toBeNull();
+  });
+});
+
+describe("firstVoyage", () => {
+  it("selects the voyage of the ship while it is away", () => {
+    expect(firstVoyage(30, essence48(0).seaport, null)).toEqual({
+      cargo: "essence",
+      hours: 48,
+    });
   });
 
-  it("selects the longest open Expedition at the berth, or the first one when none is open", () => {
-    expect(firstDestination(destinations(18), AT_BERTH)).toBe("longVoyage");
-    expect(firstDestination(destinations(1), AT_BERTH)).toBe("coastalRun");
-    expect(firstDestination([], AT_BERTH)).toBeNull();
+  it("selects the last Dispatch at the berth, or else Coin on the longest open duration up to 24 hours", () => {
+    expect(firstVoyage(30, AT_BERTH, { cargo: "xp", hours: 12 })).toEqual({
+      cargo: "xp",
+      hours: 12,
+    });
+    expect([8, 12, 18, 30].map((level) => firstVisitVoyage(level))).toEqual([
+      { cargo: "coin", hours: 6 },
+      { cargo: "coin", hours: 12 },
+      { cargo: "coin", hours: 24 },
+      { cargo: "coin", hours: 24 },
+    ]);
+    expect(firstVoyage(1, AT_BERTH, null)).toEqual({ cargo: "coin", hours: 6 });
+  });
+
+  it("compares voyages, and reads the voyage of the ship", () => {
+    expect(shipVoyage(AT_BERTH)).toBeNull();
+    expect(
+      sameVoyage(shipVoyage(essence48(0).seaport), {
+        cargo: "essence",
+        hours: 48,
+      })
+    ).toBe(true);
+    expect(
+      sameVoyage(
+        { cargo: "essence", hours: 24 },
+        { cargo: "essence", hours: 48 }
+      )
+    ).toBe(false);
+    expect(sameVoyage(null, null)).toBe(false);
   });
 });
 
@@ -79,45 +108,43 @@ describe("berthAt", () => {
   });
 
   it("is away with the time left and the reward that a Collect gives now (pro rata)", () => {
-    const berth = berthAt(grand(1000), 1000 + 12 * HOUR_MS);
+    const berth = berthAt(essence48(1000), 1000 + 10 * HOUR_MS);
     expect(berth.kind).toBe("away");
     if (berth.kind !== "away") {
       return;
     }
-    expect(berth.leftMs).toBe(36 * HOUR_MS);
+    expect(berth.leftMs).toBe(38 * HOUR_MS);
     expect(berth.canCollect).toBe(true);
+    // 6 Essence × 115% for each hour.
     expect(berth.active.reward).toEqual({
-      coin: 720,
-      xp: 12,
-      essence: 36,
+      coin: 0,
+      xp: 0,
+      essence: 69,
       forgeStones: null,
       complete: false,
     });
   });
 
-  it("is back with the full reward and the Forge Stone after the full voyage", () => {
-    const berth = berthAt(grand(0), 50 * HOUR_MS);
+  it("is back with the full reward after the full voyage", () => {
+    const berth = berthAt(essence48(0), 50 * HOUR_MS);
     expect(berth.kind).toBe("back");
     if (berth.kind === "back") {
-      expect(berth.active.reward.forgeStones).toEqual({
-        tier: "epic",
-        count: 1,
-      });
+      expect(berth.active.reward.essence).toBe(331);
     }
   });
 
   it("gives nothing to collect when the clock moved back before the Dispatch", () => {
-    const berth = berthAt(grand(10 * HOUR_MS), HOUR_MS);
+    const berth = berthAt(essence48(10 * HOUR_MS), HOUR_MS);
     expect(berth).toMatchObject({ kind: "away", canCollect: false });
     if (berth.kind === "away") {
-      expect(berth.active.reward.coin).toBe(0);
+      expect(berth.active.reward.essence).toBe(0);
     }
   });
 });
 
 describe("returnsAt", () => {
   it("is the Dispatch time and the duration, or null at the berth", () => {
-    expect(returnsAt(grand(1000).seaport)).toBe(1000 + 48 * HOUR_MS);
+    expect(returnsAt(essence48(1000).seaport)).toBe(1000 + 48 * HOUR_MS);
     expect(returnsAt(AT_BERTH)).toBeNull();
   });
 });
@@ -131,7 +158,7 @@ describe("the clock of the berth plate", () => {
   });
 
   it("gives the part of the voyage that is done", () => {
-    const active = berthAt(grand(0), 12 * HOUR_MS);
+    const active = berthAt(essence48(0), 12 * HOUR_MS);
     if (active.kind !== "away") {
       throw new Error("The ship is away");
     }

@@ -66,7 +66,8 @@ describe("newProfile", () => {
 
   it("has the Seaport ship at the berth", () => {
     expect(newProfile(42).seaport).toEqual({
-      expeditionId: null,
+      cargo: null,
+      hours: null,
       startedAt: null,
     });
   });

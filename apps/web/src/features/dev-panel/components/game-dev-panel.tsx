@@ -44,6 +44,7 @@ import type { StageResults } from "@/features/campaign/region-map";
 import { collectionAtom } from "@/features/deck/deck.atoms";
 import {
   canSetStars,
+  finishVoyage,
   lastWonStage,
   nextStage,
   setStageStars,
@@ -56,13 +57,16 @@ import { useDevOverrides } from "@/features/dev-panel/use-dev-overrides";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { playerLevel } from "@/features/profile/profile";
 import { profileAtom } from "@/features/profile/profile.atoms";
+import { shipVoyage } from "@/features/seaport/seaport";
+import { seaportAtom } from "@/features/seaport/seaport.atoms";
+import { useVoyageName } from "@/features/seaport/use-voyage-name";
 import type { SweepKind } from "@/features/sweep/sweep";
 import { ownedTickets } from "@/features/sweep/sweep";
 import type { BalanceKind } from "@/features/town/town";
 import { balancesAtom } from "@/features/town/town.atoms";
 
 // Developer tool: its text is not player text, so it is not in the Message
-// Catalogs. Stage names still come from the game text.
+// Catalogs. Stage names and voyage names still come from the game text.
 const count = new Intl.NumberFormat("en-US");
 const STAR_OPTIONS = [1, 2, 3] as const;
 
@@ -245,6 +249,39 @@ const HeynspireBlock = () => {
         <NumberInput />
         <Description className="tabular-nums">{state}</Description>
       </NumberField>
+    </section>
+  );
+};
+
+/**
+ * Finishes the voyage of the Seaport ship at once: the Dispatch time moves
+ * back by the full duration, so a Collect gives the full reward. Unlike the
+ * other values of the panel, this changes the saved Profile, as play does.
+ */
+const SeaportBlock = () => {
+  const registry = useContext(RegistryContext);
+  const voyage = shipVoyage(useAtomValue(seaportAtom));
+  const voyageName = useVoyageName();
+
+  const finish = () => {
+    const profile = registry.get(profileAtom);
+    const seaport = finishVoyage(profile.seaport, Date.now());
+    if (seaport !== profile.seaport) {
+      registry.set(profileAtom, { ...profile, seaport });
+    }
+  };
+
+  return (
+    <section aria-labelledby="dev-seaport" className="grid content-start gap-3">
+      <Heading id="dev-seaport">Seaport</Heading>
+      <div className="flex items-center gap-2">
+        <p className="text-muted-fg me-auto min-w-0 truncate">
+          {voyage === null ? "Ship at the berth" : voyageName(voyage)}
+        </p>
+        <Button size="xs" isDisabled={voyage === null} onPress={finish}>
+          Finish voyage
+        </Button>
+      </div>
     </section>
   );
 };
@@ -620,9 +657,10 @@ const CampaignBlock = () => {
 /**
  * The Game Dev Panel: a TanStack Devtools tab that unlocks all cards, sets the
  * Player level, the Gear, the balances, the 2 types of Sweep Ticket, the Forge
- * Stones and the won Heynspire Floors, wins Campaign Stages one by one, and hits the Heroes of the Battle
- * on the screen. Its values show over the
- * Profile and are not saved into it.
+ * Stones and the won Heynspire Floors, wins Campaign Stages one by one, hits
+ * the Heroes of the Battle on the screen, and finishes the Seaport voyage.
+ * Its values show over the Profile and are not saved into it, except the
+ * finished voyage.
  * Development only.
  */
 export const GameDevPanel = ({
@@ -650,6 +688,7 @@ export const GameDevPanel = ({
           <BalancesBlock />
           <ForgeStonesBlock />
           <HeynspireBlock />
+          <SeaportBlock />
         </div>
         <CampaignBlock />
         <footer className="border-border flex flex-wrap items-center gap-3 border-t pt-3 lg:col-span-full">

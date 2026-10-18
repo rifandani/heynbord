@@ -16,7 +16,8 @@ import {
   countdownLimit,
   DUNGEON_LANES,
   DUNGEON_SWEEP_TICKETS_PER_WIN,
-  EXPEDITIONS,
+  EXPEDITION_CARGOES,
+  EXPEDITION_DURATIONS,
   FLOOR_LANES,
   FUSE_ESSENCE,
   HAND_LIMIT,
@@ -596,9 +597,9 @@ const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
   gear: { level: UNLOCK_LEVELS.gear, max: MAX_GEAR_LEVEL },
   seaport: {
     level: UNLOCK_LEVELS.seaport,
-    count: EXPEDITIONS.length,
-    shortest: EXPEDITIONS[0]?.hours ?? 0,
-    longest: EXPEDITIONS.at(-1)?.hours ?? 0,
+    count: EXPEDITION_CARGOES.length,
+    shortest: EXPEDITION_DURATIONS[0]?.hours ?? 0,
+    longest: EXPEDITION_DURATIONS.at(-1)?.hours ?? 0,
   },
   sweep: {
     campaignTickets: CAMPAIGN_SWEEP_TICKETS_PER_WIN,

@@ -7,6 +7,7 @@ import { AT_BERTH } from "./seaport";
 
 const isJsonObject = Schema.is(Schema.JsonObject);
 const isNumber = Schema.is(Schema.Number);
+const isString = Schema.is(Schema.String);
 const isStringArray = Schema.is(Schema.Array(Schema.String));
 
 /**
@@ -30,6 +31,39 @@ const doubledGear = (gear: Schema.JsonObject): Schema.JsonObject =>
 const withLegendaryForgeStones = (
   forgeStones: Schema.JsonObject
 ): Schema.JsonObject => ({ ...forgeStones, legendary: 0 });
+
+/**
+ * The Cargo and the duration of each Expedition of version 12, from its main
+ * reward line. The Grand Expedition was the one with the Epic Forge Stone.
+ */
+const CARGO_OF_EXPEDITION = new Map([
+  ["coastalRun", { cargo: "coin", hours: 6 }],
+  ["tradeRoute", { cargo: "coin", hours: 12 }],
+  ["longVoyage", { cargo: "coin", hours: 24 }],
+  ["grandExpedition", { cargo: "forgeStones", hours: 48 }],
+]);
+
+/**
+ * The Seaport of version 12 in the shape of version 13. A ship at the berth
+ * stays there. A value that is not an old Expedition stays, and the decode
+ * refuses it.
+ */
+const withCargo = (seaport: Schema.JsonObject): Schema.JsonObject => {
+  const { expeditionId, startedAt } = seaport;
+  if (expeditionId === null) {
+    return AT_BERTH;
+  }
+  const voyage = isString(expeditionId)
+    ? CARGO_OF_EXPEDITION.get(expeditionId)
+    : undefined;
+  return voyage === undefined
+    ? seaport
+    : {
+        cargo: voyage.cargo,
+        hours: voyage.hours,
+        startedAt: startedAt ?? null,
+      };
+};
 
 /** The Tallies with a `fuses` Tally of 0 added (ADR-0051). */
 const withNoFuses = (tallies: Schema.JsonObject): Schema.JsonObject => ({
@@ -129,6 +163,15 @@ export const PROFILE_MIGRATIONS = {
    * berth: no Expedition, and no reward for the time before.
    */
   11: (profile) => ({ ...profile, seaport: AT_BERTH }),
+  /**
+   * Version 13 gives the Seaport its Cargoes (Economy 2.8): the ship sails
+   * with a Cargo and a duration, not on one of 4 fixed Expeditions. A ship
+   * at sea keeps its Dispatch time on the nearest new voyage (ADR-0053).
+   */
+  12: (profile) =>
+    isJsonObject(profile.seaport)
+      ? { ...profile, seaport: withCargo(profile.seaport) }
+      : profile,
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

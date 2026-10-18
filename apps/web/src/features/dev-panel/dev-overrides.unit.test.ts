@@ -1,16 +1,20 @@
 import type { StageDefinition } from "@workspace/rules";
 import {
+  activeExpedition,
   CARDS,
   MAX_COPIES,
   MAX_GEAR_LEVEL,
   newProfile,
+  PLAYER_LEVEL_XP,
   ranksOf,
   STAGES,
+  startExpedition,
 } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
   canSetStars,
+  finishVoyage,
   floorsWon,
   fromOverlay,
   gearLevel,
@@ -31,7 +35,7 @@ import {
   winNext,
   withUnlockAll,
 } from "@/features/dev-panel/dev-overrides";
-import { applyOverlay } from "@/features/profile/profile";
+import { applyOverlay, levelStartXp } from "@/features/profile/profile";
 
 // SAFETY: a fixture Stage: only `id`, `region` and `number` matter to the
 // Stage order, and the rest comes from a real Stage.
@@ -131,6 +135,32 @@ describe("Gear", () => {
   it("sets one slot and keeps the others", () => {
     const gear = { weapon: 1, armor: 2, trinket: 3, banner: 4 };
     expect(setGear(gear, "armor", 7)).toEqual({ ...gear, armor: 7 });
+  });
+});
+
+describe("finishVoyage", () => {
+  const now = 1_800_000_000_000;
+
+  it("moves the Dispatch back by the full duration, so the full reward is ready", () => {
+    const away = startExpedition(
+      { ...newProfile(42), xp: levelStartXp(PLAYER_LEVEL_XP.length) },
+      { cargo: "coin", hours: 6 },
+      now - 1000
+    );
+    if (away === null) {
+      throw new Error("The ship did not go");
+    }
+    const seaport = finishVoyage(away.seaport, now);
+    expect(seaport).toEqual({
+      ...away.seaport,
+      startedAt: now - 6 * 3_600_000,
+    });
+    expect(activeExpedition({ seaport }, now)?.reward.complete).toBe(true);
+  });
+
+  it("changes nothing while the ship is at the berth", () => {
+    const { seaport } = newProfile(42);
+    expect(finishVoyage(seaport, now)).toBe(seaport);
   });
 });
 

@@ -13,7 +13,7 @@ Pillar 1 ("Fair to the player") controls all decisions in this document.
 | **Essence** | Craft resource | Extract, Heynspire Boss Floors, Achievements, Seaport Expeditions | Craft and Fuse |
 | **XP** | Progress | Battles, Seaport Expeditions | Player level |
 | **Stars** | Progress | Stage wins | Star chests |
-| **Forge Stones** | Gear resource, 5 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire, the Grand Expedition | Gear upgrades |
+| **Forge Stones** | Gear resource, 5 tiers | Stage wins, 10-Star chests, Sweeps, Dungeons, Heynspire, the Forge Stone Cargo of the Seaport | Gear upgrades |
 
 - Coin, Heynstones and Essence never change into each other. See [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md).
 - Forge Stones are earn-only. The Bazaar never sells them, and they never change into Coin, Heynstones or Essence. See [ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md).
@@ -200,37 +200,52 @@ A Gear upgrade uses 1 Forge Stone of the tier of the new level (section 3.4). Al
 | Dungeon first wins (3) | — | 3 | 3 | 3 | 1 |
 | Heynspire Floors (5th and 10th) | — | — | 10 | 10 | 5 |
 | **Total** | **24** | **27** | **25** | **13** | **6** |
-| Grand Expeditions to Floor 50 (not one-time: the median of the economy sim) | — | — | — | 4 to 5 | — |
+| Forge Stone Cargoes to Floor 50 (not one-time: the median of the economy sim) | — | — | — | 1 | — |
 
-The total is of the one-time sources only. The repeat wins, the Sweeps and the Dungeon wins give the rest. The Epic Forge Stones come mostly from Dungeon 3 and the Grand Expedition, so Gear levels 16 to 20 are the endgame. The Legendary Forge Stones come only from Dungeon 3 and the 10th Heynspire Floors, so Gear levels 21 to 25 are the last goal of the endgame ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)). These numbers are a start: the economy sim tunes them ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
+The total is of the one-time sources only. The repeat wins, the Sweeps and the Dungeon wins give the rest. The Epic Forge Stones come mostly from Dungeon 3, so Gear levels 16 to 20 are the endgame. The Legendary Forge Stones come only from Dungeon 3 and the 10th Heynspire Floors, so Gear levels 21 to 25 are the last goal of the endgame ([ADR-0039](../adr/0039-gear-has-25-levels-and-a-legendary-forge-stone-tier.md)). These numbers are a start: the economy sim tunes them ([ADR-0038](../adr/0038-gear-upgrades-need-earn-only-forge-stones.md)).
 
-The Grand Expedition of the Seaport (section 2.8) gives 1 Epic Forge Stone for each full voyage: 3 to 4 for each week. The economy sim counts it with its play calendar (7.1). The Grand Expedition opens at level 24, at about the end of Region 5, so the median Player gets 4 to 5 Epic Forge Stones from it before the Floor 50 win: 29% to 33% of its Epic Forge Stones at that point (section 4, issue #114). With them, the "Gear mostly at level 14 or higher" target of Floor 50 passes for all Play Styles.
+The Forge Stone Cargo of the Seaport (section 2.8) gives 1 Epic Forge Stone for each full 48-hour voyage. The economy sim counts it with its play calendar (7.1). It opens at level 24, at about the end of Region 5, and the median Player of the sim sends it 1 time in 4, so it gets 1 Epic Forge Stone (1 to 2) from it before the Floor 50 win: 9% of its Epic Forge Stones at that point (section 4). A Player who sends only the Forge Stone Cargo gets up to 3 to 4 for each week. The "Gear mostly at level 14 or higher" target of Floor 50 passes for all Play Styles.
 
 The rules are `stageForgeStones` and `regionForgeStoneTier` in `packages/rules/src/content/forge-stones.ts`, `STAR_CHESTS`, `floorFirstWinReward` and `dungeonForgeStones` with `DUNGEON_REWARDS`. Keep the code and these tables the same.
 
 ### 2.8 Seaport Expeditions
 
-The Seaport gives a reward while the Player is away ([ADR-0053](../adr/0053-the-seaport-gathers-coin-on-the-device-clock.md)). The Player Dispatches the ship on one Expedition, closes the game, and Collects the reward later. One ship, one berth: the ship is on one Expedition at a time. The Seaport opens at Player level 8 (GDD 7.1), and each Expedition has its own unlock level, as a Dungeon does.
+The Seaport gives a reward while the Player is away ([ADR-0053](../adr/0053-the-seaport-gathers-coin-on-the-device-clock.md)). The Player selects a **Cargo** and a duration, Dispatches the ship, closes the game, and Collects the reward later. One ship, one berth: the ship is on one Expedition at a time. The Seaport opens at Player level 8 (GDD 7.1). Each Cargo and each duration has its own unlock level, as a Dungeon does. An Expedition is open when the Player level opens both its Cargo and its duration.
 
-| Expedition | Duration | Opens at | Coin for each hour | XP for each hour | Essence for each hour | Forge Stone | Most for one day |
-| --- | --- | --- | ---: | ---: | ---: | --- | --- |
-| `coastalRun` — Coastal Run | 4 h | level 8 | 30 | — | — | — | 720 Coin |
-| `tradeRoute` — Trade Route | 12 h | level 12 | 40 | 1 | — | — | 960 Coin, 24 XP |
-| `longVoyage` — Long Voyage | 24 h | level 18 | 50 | 1 | 2 | — | 1,200 Coin, 24 XP, 48 Essence |
-| `grandExpedition` — Grand Expedition | 48 h | level 24 | 60 | 1 | 3 | 1 Epic, when the ship is back | 1,440 Coin, 24 XP, 72 Essence, 3 to 4 Forge Stones for each week |
+Each Cargo gives only its own resource:
 
-- **The reward is pro rata.** `reward = rate × min(elapsed, duration)`, in whole units, rounded down, where `elapsed = now − startedAt` and `startedAt` is the time of the Dispatch. The reward stops at the duration. The ship then waits, and the Player never loses anything.
+| Cargo | Opens at | For each hour, before the bonus | 6 h | 12 h | 24 h | 48 h |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `coin` — Coin | level 8 | 60 Coin | 360 | 756 | 1,584 | 3,312 |
+| `xp` — XP | level 12 | 3 XP | 18 | 37 | 79 | 165 |
+| `essence` — Essence | level 18 | 6 Essence | 36 | 75 | 158 | 331 |
+| `forgeStones` — Forge Stones | level 24 | — | 1 Uncommon | 1 Rare | 2 Rare | 1 Epic |
+
+The durations:
+
+| Duration | Opens at | Bonus for each hour |
+| --- | --- | ---: |
+| 6 h | level 8 | — |
+| 12 h | level 12 | +5% |
+| 24 h | level 18 | +10% |
+| 48 h | level 24 | +15% |
+
+The cells of the first table are the full voyage: `rate × (100% + bonus) × hours`, rounded down. Thus the Seaport opens with Coin for 6 hours only, and each later level opens a Cargo and a longer voyage together (levels 12, 18 and 24).
+
+- **The reward is pro rata.** `reward = rate × (100% + bonus) × min(elapsed, duration)`, in whole units, rounded down, where `elapsed = now − startedAt` and `startedAt` is the time of the Dispatch. The reward stops at the duration. The ship then waits, and the Player never loses anything.
 - **No minimum time away.** The Player can Collect at any time. An early Collect gives only the share of the time away, and the ship is at the berth again.
-- **The Forge Stone needs the full voyage.** An early Collect gives the share of the Coin, the XP and the Essence only. Thus a Forge Stone is a whole number: one for each full Grand Expedition.
+- **The Forge Stones need the full voyage.** A longer voyage gives a higher tier, or more stones of the same tier. An early Collect of the Forge Stone Cargo gives nothing, so a Forge Stone is always a whole number. The screen calls it "Call back early" and asks again before it gives nothing.
 - **The clock is the device clock.** The rules stay pure: the web sends `now` with each Command, so the same Profile and the same `now` always give the same reward, and a page load never rolls a reward again. When `now` is before `startedAt` (the clock moved back), the reward is 0 and the ship stays.
-- **The rates are a supplement.** One day of Expeditions gives about one hour of active play: the pacing target of section 4 is about 2 Packs for each hour, and a Peddler Pack is 350 Coin (section 3.1). The Seaport is never the best Coin source. A longer voyage pays a little more for each day, so patience pays without a punishment for a short time away.
+- **The rates are a supplement.** The Seaport is never the best source of a resource: at Floor 50, it gives the median Player 10% of its Coin and 2% of its XP (see "In the sim" below). The economy sim checks each rate with the targets of section 4. A longer voyage pays a little more for each hour, so patience pays without a punishment for a short time away.
+- **The durations open by level.** With all durations open at level 8, a 48-hour Coin voyage gave 1,656 Coin for each day of the play calendar, and the Collector opened 28 Packs by the end of Region 2 (target 15 to 25, section 4). The Seaport income grows with the Player, as the other sources do.
 - **Pillar 1.** No Energy, no daily cap and no punishment for time away.
 - **What stays out.** No Heynstones ([ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md), [ADR-0044](../adr/0044-star-chests-give-no-heynstones.md)). No exchange of one resource for another (ADR-0008). No Seaport levels and no VIP: no Building has levels. No scale with the Power of the Deck.
-- **In the sim.** The economy sim sends the ship with its play calendar: 1 hour of play each day, then 1 day away (7.1). Thus `sim:check` judges the targets of section 4 with the Seaport income. At Heynspire Floor 50, the Seaport gives the median Player about 21% of its Coin, 2% of its XP, 14% to 39% of its Essence and 29% to 33% of its Epic Forge Stones (section 4). The Seaport stays a supplement: Battles give the rest. 24 XP for each day is 1% to 2.4% of a level from level 20 (1,000 to 2,350 XP for each level, section 1.2).
-- Coin is in Copper (section 1.1). The names of the Expeditions are in the Message Catalogs, so a rename changes no rule. Each later Expedition adds one reward line. Epic is the Forge Stone tier of the Grand Expedition: it opens at level 24, where Gear levels 16 to 20 need Epic Forge Stones, 6 levels before Dungeon 3.
-- **Re-tune of issue #114 (2026-10-18).** The economy sim checked the start values with its play calendar. With 2 XP for each hour, 11% to 13% of the Players got to level 30 before they won Floor 50 (target: at most 10%, section 4). Thus the XP is 1 for each hour now, and 7% to 8% of the Players get there. The Coin, the Essence and the Forge Stone do not change: each target of section 4 with them passes, or misses as before the Seaport (section 4).
+- **In the sim.** The economy sim sends the ship with its play calendar: 1 hour of play each day, then 1 day away (7.1). The median Player needs all the resources, so it takes each open Cargo in turn, on the longest open duration. Thus `sim:check` judges the targets of section 4 with the Seaport income. At Heynspire Floor 50, the Seaport gives the median Player about 10,000 Coin (10% of its Coin), 430 XP (2%), 650 Essence (12% Collector, 31% Upgrader, 23% Balanced) and 1 Epic Forge Stone (9%). The Seaport stays a supplement: Battles give the rest.
+- Coin is in Copper (section 1.1). The names of the Cargoes are in the Message Catalogs, so a rename changes no rule. Epic is the Forge Stone tier of the 48-hour voyage: it opens at level 24, where Gear levels 16 to 20 need Epic Forge Stones, 6 levels before Dungeon 3.
+- **Re-tune of issue #114 (2026-10-18).** The economy sim checked the first values with its play calendar. With 2 XP for each hour on 3 of the 4 Expeditions, 11% to 13% of the Players got to level 30 before they won Floor 50 (target: at most 10%, section 4). Thus the XP was 1 for each hour.
+- **Cargoes (2026-10-18).** The 4 fixed Expeditions (the Coastal Run, the Trade Route, the Long Voyage and the Grand Expedition, each with more reward lines) became 4 Cargoes × 4 durations, so that the Player selects what it needs. An XP Cargo gives only XP, so its rate is 3 for each hour: the XP for each day of the median Player is the same as before (2% of its XP at Floor 50), and 8% to 9% of the Players get to level 30 before Floor 50. The Coin and the Epic Forge Stones of the Seaport are less than before, because the median Player now sends each Cargo in turn (section 4).
 
-The data is `EXPEDITIONS` and `expeditionReward` in `packages/rules/src/content/expeditions.ts`, and the actions are `startExpedition`, `activeExpedition` and `collectExpedition` in `packages/rules/src/profile/seaport.ts`. Keep the code and this table the same.
+The data is `EXPEDITION_CARGOES`, `EXPEDITION_DURATIONS` and `expeditionReward` in `packages/rules/src/content/expeditions.ts`, and the actions are `startExpedition`, `activeExpedition` and `collectExpedition` in `packages/rules/src/profile/seaport.ts`. Keep the code and these tables the same.
 
 ## 3. Sinks
 
@@ -410,7 +425,7 @@ Use these targets to tune the numbers. Check them with an economy simulation and
 | About 22 more Dungeon 2 wins (1 to 2 weeks) | Player level 30. At most 10% of the Players get to level 30 before they win Floor 50. |
 
 - The targets are for the median Player of a Play Style who plays each Stage of a Region again until the Stage has 3 Stars, and who uses its Sweep Tickets ([ADR-0046](../adr/0046-pacing-targets-are-for-a-player-who-replays-for-3-stars.md)). The Player also sends the ship of the Seaport (section 2.8) between its sessions.
-- **Play calendar.** The hours of this table are hours of play. The median Player plays **1 hour each day**, so an hour of play is also a day of the calendar: Floor 50 is about 30 days. Between two sessions, the Player is away **1 day** (24 hours). The economy sim uses this calendar for the Seaport income (7.1). It is generous: the ship of a 24-hour or a 48-hour Expedition is always back at the next session or at the session after it. Thus the sim gives the most Seaport income that a daily Player gets, and a pass of the targets with it is safe. A change of the calendar is a change of this note and of `PLAY_MINUTES_PER_DAY` and `HOURS_AWAY` in `packages/rules/src/simulation/economy.ts` together.
+- **Play calendar.** The hours of this table are hours of play. The median Player plays **1 hour each day**, so an hour of play is also a day of the calendar: Floor 50 is about 30 days. Between two sessions, the Player is away **1 day** (24 hours). The economy sim uses this calendar for the Seaport income (7.1). It is generous: the ship of a 24-hour or a 48-hour voyage is always back at the next session or at the session after it. Thus the sim gives the most Seaport income that a daily Player gets, and a pass of the targets with it is safe. A change of the calendar is a change of this note and of `PLAY_MINUTES_PER_DAY` and `HOURS_AWAY` in `packages/rules/src/simulation/economy.ts` together.
 - The Player levels are the First-try Path levels of section 1.2. A Player who loses or plays again is at a higher level. Thus the economy sim judges the Player level targets on its First-try run, not on the medians (7.1). A higher median level is not a miss.
 - **First Combine and the Collector.** The Collector Combines only to Epic or higher (7.1), so the "First Combine done" target of Region 1 does not apply to it. The sim report shows no target and no miss for that cell (`notFor` in `PACING_TARGETS`).
 - **All cards Discovered and the Upgrader.** The Upgrader buys only Peddler Packs (7.1), and a Peddler Pack never gives an Epic card (section 3.1). Thus the "All cards Discovered" target of Floor 50 does not apply to it (`notFor`).
@@ -459,6 +474,17 @@ Use these targets to tune the numbers. Check them with an economy simulation and
   - **The Battles and the levels.** The Battles and the hours do not move by more than 1 Battle. The median Player level is 6, 11, 16, 21, 24 and 29 at the checkpoints (it was 6, 11, 16, 21, 23 and 28). The First-try run sends no ship, so the First-try Path and its level targets do not change.
   - **Level 30 before Floor 50.** With 2 XP for each hour, 129, 112 and 120 of the 1,000 Players got to level 30 before they won Floor 50 (11% to 13%, target at most 10%). With 1 XP for each hour, it is 78, 76 and 67 (7% to 8%). Without the Seaport, it was 53, 56 and 48.
   - **The other targets.** The Pack targets of Regions 1 and 2 pass: the Seaport gives only 480 Coin in Region 2. The Legendary copies at Floor 50 (4 / 5 / 4, it was 3 / 4 / 4) and the lowest Gear (16 / 18 / 18, it was 16 / 17 / 17) pass. At Floor 50, the median Player has 9 / 3 / 2 Epic Forge Stones that it did not use (it was 5 / 2 / 2). "All cards Discovered" at Floor 50 goes from 96% to 98% (Collector) and from 91% to 94% (Balanced), but the miss of the Collector (see the note of issue #111) and the review of the Balanced Player stay.
+- **Seaport Cargoes (2026-10-18).** The 4 fixed Expeditions became 4 Cargoes × 4 durations (section 2.8). The sim Player takes each open Cargo in turn, on the longest open duration. `bun run sim:check` on 2026-10-18. Medians, Collector / Upgrader / Balanced:
+
+  | Checkpoint | Packs | Discovered | Legendary | Lowest Gear |
+  | --- | --- | --- | --- | --- |
+  | Region 2 | 23 / 16 / 16 | 81% / 58% / 70% | 0 | 5 |
+  | Floor 50 | 77 / 47 / 57 | 97% / 85% / 92% | 4 / 4 / 4 | 16 / 17 / 17 |
+
+  - **The first try with all durations open at level 8** gave the Collector 28 Packs by the end of Region 2 (target 15 to 25): 6,624 Coin from the Seaport in Region 2, not 480. With the durations open by level, it is 1,440 Coin and 23 Packs.
+  - **The share of the Seaport.** At Floor 50, the median Player has Collected about 10,150 Coin, 430 XP, 650 Essence and 1 Epic Forge Stone: 10% of all its Coin, 2% of its XP, 12% / 31% / 23% of its Essence and 9% of its Epic Forge Stones. Before, it was 21% of the Coin and 29% to 33% of the Epic Forge Stones.
+  - **Level 30 before Floor 50.** 80, 84 and 87 of the 1,000 Players (8% to 9%, target at most 10%). Before, it was 78, 76 and 67.
+  - **The other targets.** Each target of section 4 passes, or misses as before: the Collector miss of "All cards Discovered" at Floor 50 (97%, see the note of issue #111) and the review of the Balanced Player stay. The 5 other misses of `sim:check` are Battle rows (Floor 10 and 2 Matchups, [08 — Archetypes](./08-archetypes.md)), and the Seaport does not change them.
 - Total XP to level 21 (Deck size 30) is 8,380. Total XP to level 30 is 24,130.
 
 ## 5. Monetization rules after v1
@@ -505,7 +531,7 @@ Trading between players is a risk for Pillar 1. People can sell cards for real m
 - **Repeat-win rewards.** A Repeat win of a Stage gives the rules of section 2.1: ⅓ of the Coin of a win, no XP, a 10% chance of 1 Forge Stone of the tier of the Region, and a 20% chance of 1 card from the Stage card pool (`stageCardPool`), in its Base Rank. A Repeat win of a Dungeon gives the rules of section 2.4, with a card from the Dungeon card pool (`dungeonCardPool`). The card can Discover a card. The card roll comes first and then the Forge Stone rolls, as in the game (`repeatWinCard`). A loss in a repeat Battle gives the same loss reward as a first-try loss.
 - **Campaign Sweeps.** A Stage win (first or repeat) and a Floor win give 2 Campaign Sweep Tickets. After each Battle, the Player uses all its Campaign Sweep Tickets at once on the 3-Star Stage that gives the most Coin for a repeat win. On a tie, it takes a Boss Stage first, then the highest Region. Each Ticket gives one repeat-win reward of that Stage. A Sweep gives no Tickets and changes no Stars. When no Stage has 3 Stars, the Player keeps its Tickets.
 - **Dungeon Sweeps.** A Dungeon win gives 1 Dungeon Sweep Ticket. After each Dungeon win, the Player uses all its Dungeon Sweep Tickets on that Dungeon. Each Ticket gives one repeat-win reward of the Dungeon: the Coin, the XP, the Forge Stone chance and the card chance.
-- **Seaport.** All Play Styles use the Seaport (section 2.8), because it costs nothing. The Player has one ship and follows the rules of the game (`activeExpedition`, `startExpedition`). At the end of each session of the play calendar, when the ship is at the berth, the Player Dispatches it on the best Expedition that its level opens: the most Coin for each day of the calendar (`bestExpedition`). With 1 day away, that is the last Expedition that the level opens: 120 Coin for each day for the Coastal Run, 480 for the Trade Route, 1,200 for the Long Voyage and 1,440 for the Grand Expedition (2,880 Coin each 2 days). At the start of the next session, the Player Collects the Expedition when the ship is back. A ship that is not back sails on, so the Grand Expedition takes 2 days and always gives its Epic Forge Stone. The reward stops at the duration, so a late Collect loses nothing. The reward comes from `expeditionReward`, and its XP stops at level 30, as the XP of a Battle. The Player spends the Seaport income at once, and claims the Achievements.
+- **Seaport.** All Play Styles use the Seaport (section 2.8), because it costs nothing. The Player has one ship and follows the rules of the game (`activeExpedition`, `startExpedition`). At the end of each session of the play calendar, when the ship is at the berth, the Player Dispatches it (`nextExpedition`): the median Player needs all the resources, so it takes each open Cargo in turn (Coin, XP, Essence, Forge Stones), on the longest duration that its level opens. With the bonus of a long voyage, that duration gives the most for each day of the calendar (`expeditionPerDay`): 360 Coin for each day at 6 hours, 756 at 12 hours, 1,584 at 24 hours and 1,656 at 48 hours (3,312 Coin each 2 days). At the start of the next session, the Player Collects the Expedition when the ship is back. A ship that is not back sails on, so a 48-hour voyage takes 2 days and the Forge Stone Cargo always gives its Epic Forge Stone. The reward stops at the duration, so a late Collect loses nothing. The reward comes from `expeditionReward`, and its XP stops at level 30, as the XP of a Battle. The Player spends the Seaport income at once, and claims the Achievements.
 - **The First-try run sends no ship**, as it uses no Sweep. Thus the First-try Path of section 1.2 and the Expected Gear (ADR-0034) come only from Battles.
 - After the last Stage, the Player climbs Heynspire. When a Floor fails 3 times in a row, the Player does Dungeon wins until the next Player level, and then tries the Floor again. At level 30 there is no next level, so this Dungeon detour ends after 3 Dungeon Battles. A Floor loss gives 10% of the Coin and 25% of the XP of its first win (GDD 7.1). After Floor 50, the Player does Dungeon wins until level 30. The Player plays the highest Dungeon that gives XP and that its level unlocks.
 - The Player uses each action only from its unlock level (GDD 7.1): Packs at level 2, Combine and Extract at level 3, Gear at level 5, and Craft and Fuse at level 6.

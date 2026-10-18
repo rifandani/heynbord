@@ -33,10 +33,13 @@ const Divider = () => (
 const Balance = ({
   kind,
   spoken,
+  bump = 0,
   children,
 }: {
   readonly kind: BalanceKind;
   readonly spoken: string;
+  /** The count of bumps; each new value plays one bump. */
+  readonly bump?: number;
   readonly children: ReactNode;
 }) => {
   const { tr } = useGameText();
@@ -58,15 +61,26 @@ const Balance = ({
         aria-label={tr("town.balances.balance", { name, amount: spoken })}
         onPress={onPress}
         className={cn(
-          "flex h-10 cursor-default items-center gap-1.5 rounded-[10px] px-3 outline-none",
+          "flex h-10 cursor-default items-center rounded-[10px] px-3 outline-none",
           "text-base leading-none font-black tabular-nums",
           "transition-colors duration-100 data-[hovered]:bg-[#fff6df]/10",
           "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
-          "[@media(max-height:500px)]:h-8 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-sm"
+          "[@media(max-height:500px)]:h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-sm"
         )}
         data-testid={`balance-${kind}`}
       >
-        {children}
+        {/* A new key plays the bump again. */}
+        <span
+          key={bump}
+          className={cn(
+            "flex items-center gap-1.5 [@media(max-height:500px)]:gap-1",
+            bump > 0 &&
+              "motion-safe:animate-[pack-pop_560ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+          )}
+          data-bump={bump > 0 ? bump : undefined}
+        >
+          {children}
+        </span>
       </Button>
       <GameTooltip
         placement="bottom end"
@@ -124,12 +138,16 @@ export const CoinAmount = ({
  * The Balance Plate (GDD 11.4): the Coin, Essence and Heynstone balances of
  * the Player, in the top-right corner of the Town. It shows information only.
  * The shopkeeper bubble of the Packs screen hangs under it (`data-shop-avoid`).
+ * A balance in `bumps` plays one short bump each time its count goes up, for
+ * example after a Collect at the Seaport; with reduced motion, it does not.
  */
 export const BalancePlate = ({
   balances,
+  bumps,
   className,
 }: {
   readonly balances: Balances;
+  readonly bumps?: Readonly<Partial<Record<BalanceKind, number>>>;
   readonly className?: string;
 }) => {
   const { tr, locale } = useGameText();
@@ -151,11 +169,15 @@ export const BalancePlate = ({
       data-shop-avoid="down"
       data-testid="town-balances"
     >
-      <Balance kind="coin" spoken={coinSpoken}>
+      <Balance kind="coin" spoken={coinSpoken} bump={bumps?.coin}>
         <CoinAmount parts={coin} format={format} />
       </Balance>
       <Divider />
-      <Balance kind="essence" spoken={format(balances.essence)}>
+      <Balance
+        kind="essence"
+        spoken={format(balances.essence)}
+        bump={bumps?.essence}
+      >
         <BalanceIcon kind="essence" className={ICON} />
         {format(balances.essence)}
       </Balance>

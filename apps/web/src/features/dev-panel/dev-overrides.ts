@@ -2,10 +2,12 @@ import type {
   Collection,
   ForgeStoneTier,
   GearLevels,
+  SeaportState,
   StageDefinition,
 } from "@workspace/rules";
 import {
   CARDS,
+  expeditionDurationMs,
   ForgeStones,
   HEYNSPIRE_FLOORS,
   MAX_COPIES,
@@ -108,6 +110,19 @@ export const setGear = (
 /** A count of won Heynspire Floors that the panel can set: a whole number from 0 to 50. */
 export const floorsWon = (value: number): number =>
   Math.min(wholeBalance(value), HEYNSPIRE_FLOORS);
+
+/**
+ * The Seaport with the voyage of the ship done at `now`: the Dispatch time
+ * moves back by the full duration, so a Collect gives the full reward. The
+ * same state when the ship is at the berth.
+ */
+export const finishVoyage = (
+  seaport: SeaportState,
+  now: number
+): SeaportState =>
+  seaport.cargo === null
+    ? seaport
+    : { ...seaport, startedAt: now - expeditionDurationMs(seaport) };
 
 /**
  * The Profile overlay of stored overrides (`profile.ts`). "Unlock all cards"

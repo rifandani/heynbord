@@ -861,7 +861,7 @@ The Seaport screen ([Economy 2.8](./07-economy.md#28-seaport-expeditions), [ADR-
 - **One painting, a full scene.** The harbour fills the image to all edges. There is no frame and no border.
 - **View.** From the calm water in front of the quay, at a low height, straight on. The quay is at the right, and the open sea is at the left.
 - **The same harbour as the Town.** The scene is the Seaport quay of the Town painting (2.10), from the water: the stone quay along the Town wall, the long wooden piers on posts, the big ship with white sails, the small ship, the square towers with blue roofs and the warm stone houses with blue and terracotta roofs behind.
-- **A calm left third.** The code draws the Expedition plaques and the berth plate over the left third of the screen (17.2). There, the painting is calm open sea: soft blue water with small gentle waves, low contrast and no small details. Thus the plaques, the rewards and the text stay easy to read. The ships, the people and the details are in the right two thirds.
+- **A calm left third.** The code draws the voyage chooser and the berth plate over the left third of the screen (17.2). There, the painting is calm open sea: soft blue water with small gentle waves, low contrast and no small details. Thus the plaques, the rewards and the text stay easy to read. The ships, the people and the details are in the right two thirds.
 - **The ship of the icon.** The big ship is the ship of the `seaport` Town Bar icon (7.3): two masts, white sails, a wooden hull and a gold flag.
 - **No Cosmetics and no cards.** The cargo is plain: crates, barrels, sacks and fish. No card, no Pack, no Hero portrait and no Card Back shows.
 - **Value.** Medium-light in total, a clear morning. The brightest areas are the white sails and the sky. The left third is a calm mid blue, darker than the sky, so that the wood and the parchment of the plaques show clearly.
@@ -877,7 +877,7 @@ The boxes are in percent of the 1536 × 1024 image. The layout sketch of 17.4 sh
 | Area | Box (x, y) | Content |
 | --- | --- | --- |
 | Safe area | x 6 to 94, y 12 to 86 | Each screen shape from 4:3 to 19.5:9 shows this area. The ships, the dock workers, the cat and the gull must be in it. |
-| Calm water | x 0 to 36, y 14 to 88 | Calm open sea: soft blue water with small gentle waves and a low, plain horizon. No ship, no boat, no rock, no bird and no pier. The Expedition plaques and the berth plate stand in front of it. |
+| Calm water | x 0 to 36, y 14 to 88 | Calm open sea: soft blue water with small gentle waves and a low, plain horizon. No ship, no boat, no rock, no bird and no pier. The voyage chooser and the berth plate stand in front of it. |
 | Sky | x 0 to 100, y 0 to 14 | A narrow band of clear sky with soft white clouds, and a few gulls only at the right. The title plate and the Balance Plate cover the top corners. |
 | Ships | x 40 to 72, y 14 to 62 | The big two-masted cargo ship with white sails, moored along the pier, and the small one-masted ship behind it. |
 | Pier | x 36 to 70, y 60 to 76 | The long wooden pier on thick posts. It goes from the quay into the water toward the left, and it stops at the edge of the calm water. |

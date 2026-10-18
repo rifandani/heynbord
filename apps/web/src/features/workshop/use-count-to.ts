@@ -13,11 +13,13 @@ const easeOut = (t: number) => 1 - (1 - t) ** 3;
  * after an Extract, and the Coin counts down after a Combine (GDD 7.4). It
  * shows only whole numbers. The count starts `delay` ms after the change, so
  * that the Essence counts up when the first Essence drop gets to it. With
- * reduced motion, it changes at once.
+ * `start`, the first render shows `start` and counts to `value`, for example
+ * from 0 when the cargo of a ship comes onto the quay. With reduced motion,
+ * it changes at once.
  */
-export const useCountTo = (value: number, delay = 0): number => {
-  const [shown, setShown] = useState(value);
-  const from = useRef(value);
+export const useCountTo = (value: number, delay = 0, start = value): number => {
+  const [shown, setShown] = useState(start);
+  const from = useRef(start);
   // The delay of the change that starts a count. A layout effect sets it
   // before the count effect reads it; a change of the delay alone does not
   // start a count.
@@ -31,13 +33,13 @@ export const useCountTo = (value: number, delay = 0): number => {
       setShown(value);
       return;
     }
-    const start = from.current;
+    const origin = from.current;
     // The count starts after the delay.
     const began = performance.now() + wait.current;
     let frame = 0;
     const step = (now: number) => {
       const t = Math.min(Math.max(now - began, 0) / COUNT_MS, 1);
-      const current = Math.round(start + (value - start) * easeOut(t));
+      const current = Math.round(origin + (value - origin) * easeOut(t));
       from.current = current;
       setShown(current);
       if (t < 1) {

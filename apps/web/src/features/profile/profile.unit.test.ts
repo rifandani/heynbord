@@ -55,7 +55,8 @@ describe("splitOverlay", () => {
   it("saves a Dispatch of the Seaport ship under an overlay of the Game Dev Panel", () => {
     const overlay = { xp: 24_130, coin: 9000 };
     const seaport = {
-      expeditionId: "grandExpedition",
+      cargo: "coin",
+      hours: 48,
       startedAt: 1000,
     } as const;
     const shown = { ...applyOverlay(saved, overlay), seaport };

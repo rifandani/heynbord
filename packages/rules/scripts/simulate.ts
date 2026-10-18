@@ -882,7 +882,7 @@ if (modes.includes("economy")) {
     "\nPacks of each Play Style: collector merchant (royal after Region 2), upgrader peddler, balanced merchant."
   );
   console.log(
-    `Play calendar: ${PLAY_MINUTES_PER_DAY} minutes of play each day, then ${HOURS_AWAY} hours away, so the hours are also the days. Each Player Dispatches the best Expedition of its level at the end of a session and Collects it at the start of the first session after the ship is back. The First-try run sends no ship.`
+    `Play calendar: ${PLAY_MINUTES_PER_DAY} minutes of play each day, then ${HOURS_AWAY} hours away, so the hours are also the days. Each Player Dispatches the ship at the end of a session, with each open Cargo in turn on the longest open duration, and Collects it at the start of the first session after the ship is back. The First-try run sends no ship.`
   );
   const ledger = heynstoneLedger();
   console.log("\nHeynstone ledger (one-time sources, Economy 2.6)");

@@ -23,12 +23,12 @@ import {
 } from "../content/dungeons";
 import type { DungeonRewardDefinition } from "../content/dungeons";
 import {
-  EXPEDITIONS,
-  expeditionDurationMs,
-  expeditionReward,
+  EXPEDITION_CARGOES,
+  EXPEDITION_DURATIONS,
+  fullExpeditionReward,
   HOUR_MS,
 } from "../content/expeditions";
-import type { ExpeditionDefinition } from "../content/expeditions";
+import type { CargoDefinition, Expedition } from "../content/expeditions";
 import { floorRecommendedLevels } from "../content/floors";
 import {
   addForgeStoneRewards,
@@ -571,6 +571,8 @@ export interface EconomyPlayer {
   claimedAchievements: readonly string[];
   /** The ship of the Seaport (Economy 2.8). */
   seaport: SeaportState;
+  /** The Dispatches of the ship. The next one takes the next Cargo. */
+  voyages: number;
   /** All that the Player got, from all sources. */
   income: Income;
   /** The part of `income` that came from the Seaport. */
@@ -620,6 +622,7 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
     completedAchievements: [],
     claimedAchievements: [],
     seaport: AT_BERTH,
+    voyages: 0,
     income: NO_INCOME,
     seaportIncome: NO_INCOME,
   };
@@ -1284,49 +1287,50 @@ export const dungeonSweep = (
 // ─── Seaport ─────────────────────────────────────────────────────────────────
 
 /**
- * The Coin for each day of an Expedition on the play calendar (Economy 7.1):
- * the Coin of the full voyage ÷ the days until the ship is back. The Player
- * Collects only at the start of a session, so a voyage longer than the time
- * away takes 2 days or more.
+ * The resource of the full voyage for each day on the play calendar (Economy
+ * 7.1): the Coin, the XP or the Essence ÷ the days until the ship is back.
+ * The Player Collects only at the start of a session, so a voyage longer
+ * than the time away takes 2 days or more.
  */
-export const expeditionCoinPerDay = (
-  expedition: ExpeditionDefinition
-): number => {
-  const { coin } = expeditionReward(
-    expedition,
-    expeditionDurationMs(expedition)
+export const expeditionPerDay = (expedition: Expedition): number => {
+  const { coin, xp, essence } = fullExpeditionReward(expedition);
+  return (
+    (coin + xp + essence) /
+    Math.max(1, Math.ceil(expedition.hours / HOURS_AWAY))
   );
-  return coin / Math.max(1, Math.ceil(expedition.hours / HOURS_AWAY));
 };
 
+/** The Cargoes that `level` opens, in the order of their unlock levels. */
+export const openCargoes = (level: number): readonly CargoDefinition[] =>
+  isUnlocked(level, "seaport")
+    ? EXPEDITION_CARGOES.filter((cargo) => cargo.unlockLevel <= level)
+    : [];
+
 /**
- * The best Expedition that `level` opens (Economy 7.1): the most Coin for each
- * day, and the later Expedition on a tie. `null` below the Seaport unlock.
+ * The Expedition of the next Dispatch (Economy 7.1): the median Player needs
+ * all the resources, so it takes each open Cargo in turn, on the longest
+ * duration that `level` opens. With the bonus of a long voyage, that duration
+ * gives the most for each day of the play calendar, and the highest Forge
+ * Stone tier. `null` below the Seaport unlock.
  */
-export const bestExpedition = (
+export const nextExpedition = (
   level: number,
-  expeditions: readonly ExpeditionDefinition[] = EXPEDITIONS
-): ExpeditionDefinition | null => {
-  if (!isUnlocked(level, "seaport")) {
-    return null;
-  }
-  let best: ExpeditionDefinition | null = null;
-  for (const expedition of expeditions) {
-    if (
-      expedition.unlockLevel <= level &&
-      (best === null ||
-        expeditionCoinPerDay(expedition) >= expeditionCoinPerDay(best))
-    ) {
-      best = expedition;
-    }
-  }
-  return best;
+  voyages: number
+): Expedition | null => {
+  const cargoes = openCargoes(level);
+  const cargo = cargoes[voyages % Math.max(cargoes.length, 1)];
+  const duration = EXPEDITION_DURATIONS.findLast(
+    (candidate) => candidate.unlockLevel <= level
+  );
+  return cargo === undefined || duration === undefined
+    ? null
+    : { cargo: cargo.id, hours: duration.hours };
 };
 
 /**
  * The start of a session (Economy 7.1): the Player Collects the Expedition at
- * `now` when the ship is back. A ship that is not back sails on, so the Grand
- * Expedition gives its Epic Forge Stone. The reward stops at the duration, so
+ * `now` when the ship is back. A ship that is not back sails on, so the Forge
+ * Stone Cargo gives its Forge Stones. The reward stops at the duration, so
  * a late Collect loses nothing. The XP stops at level 30. Returns true when
  * the Player Collects.
  */
@@ -1352,21 +1356,22 @@ export const collectExpeditionAt = (
 
 /**
  * The end of a session (Economy 7.1): when the ship is at the berth, the
- * Player Dispatches it at `now` on the best Expedition of its level, with the
- * Seaport rule of the game. Below the Seaport unlock, nothing happens.
+ * Player Dispatches it at `now` on the next Expedition of its level
+ * (`nextExpedition`), with the Seaport rule of the game. Below the Seaport unlock, nothing happens.
  */
 export const dispatchExpeditionAt = (player: EconomyPlayer, now: number) => {
-  const expedition = bestExpedition(levelOf(player));
-  if (player.seaport.expeditionId !== null || expedition === null) {
+  const expedition = nextExpedition(levelOf(player), player.voyages);
+  if (player.seaport.cargo !== null || expedition === null) {
     return;
   }
   const started = startExpedition(
     { xp: player.xp, seaport: player.seaport },
-    expedition.id,
+    expedition,
     now
   );
   if (started !== null) {
     player.seaport = started.seaport;
+    player.voyages += 1;
   }
 };
 

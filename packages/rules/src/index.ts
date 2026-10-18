@@ -96,15 +96,21 @@ export type {
   DungeonRewardDefinition,
 } from "./content/dungeons";
 export {
-  EXPEDITIONS,
+  EXPEDITION_CARGOES,
+  EXPEDITION_DURATIONS,
+  ExpeditionCargo,
   expeditionDurationMs,
-  ExpeditionId,
+  ExpeditionHours,
   expeditionReward,
-  getExpedition,
+  fullExpeditionReward,
+  getCargo,
+  getDuration,
   HOUR_MS,
 } from "./content/expeditions";
 export type {
-  ExpeditionDefinition,
+  CargoDefinition,
+  DurationDefinition,
+  Expedition,
   ExpeditionReward,
 } from "./content/expeditions";
 export {

@@ -1,3 +1,4 @@
+import type { Schema } from "effect";
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
@@ -8,6 +9,13 @@ import { PROFILE_SCHEMA_VERSION } from "./schema";
 
 const failure = (result: ReturnType<typeof migrateProfile>) =>
   Result.isFailure(result) ? result.failure : null;
+
+/** A version 12 Profile with the Seaport of version 12. */
+const v12 = (seaport: Schema.JsonObject) => ({
+  ...newProfile(3),
+  schemaVersion: 12,
+  seaport,
+});
 
 describe("migrateProfile", () => {
   it("decodes a Profile of the current version with no step", () => {
@@ -185,9 +193,38 @@ describe("migrateProfile", () => {
       coin: 900,
     };
     const migrated = Result.getOrThrow(migrateProfile(v11));
-    expect(migrated.seaport).toEqual({ expeditionId: null, startedAt: null });
+    expect(migrated.seaport).toEqual({
+      cargo: null,
+      hours: null,
+      startedAt: null,
+    });
     expect(migrated.xp).toBe(3140);
     expect(migrated.coin).toBe(900);
+  });
+
+  it("puts the ship of a version 12 Profile on the nearest Cargo and duration, and keeps its Dispatch time (Economy 2.8)", () => {
+    const startedAt = 1_792_314_000_000;
+    for (const [expeditionId, cargo, hours] of [
+      ["coastalRun", "coin", 6],
+      ["tradeRoute", "coin", 12],
+      ["longVoyage", "coin", 24],
+      ["grandExpedition", "forgeStones", 48],
+    ] as const) {
+      expect(
+        Result.getOrThrow(migrateProfile(v12({ expeditionId, startedAt })))
+          .seaport,
+        expeditionId
+      ).toEqual({ cargo, hours, startedAt });
+    }
+    expect(
+      Result.getOrThrow(
+        migrateProfile(v12({ expeditionId: null, startedAt: null }))
+      ).seaport
+    ).toEqual({ cargo: null, hours: null, startedAt: null });
+    expect(
+      failure(migrateProfile(v12({ expeditionId: "toString", startedAt })))
+        ?._tag
+    ).toBe("InvalidProfile");
   });
 
   it("gives the owed Cosmetics to a version 9 Profile, and keeps its progress (Economy 3.5)", () => {
@@ -293,10 +330,12 @@ describe("migrateProfile", () => {
       { tallies: { packsOpened: -1, combines: 0, crafts: 0, fuses: 0 } },
       { completedAchievements: [1] },
       { unopenedPacks: [{ pack: "royal", version: "class" }] },
-      { seaport: { expeditionId: "pirateRaid", startedAt: 0 } },
-      { seaport: { expeditionId: "coastalRun", startedAt: null } },
-      { seaport: { expeditionId: null, startedAt: 1000 } },
-      { seaport: { expeditionId: "coastalRun", startedAt: 1.5 } },
+      { seaport: { cargo: "spices", hours: 6, startedAt: 0 } },
+      { seaport: { cargo: "coin", hours: 8, startedAt: 0 } },
+      { seaport: { cargo: "coin", hours: null, startedAt: 0 } },
+      { seaport: { cargo: "coin", hours: 6, startedAt: null } },
+      { seaport: { cargo: null, hours: null, startedAt: 1000 } },
+      { seaport: { cargo: "coin", hours: 6, startedAt: 1.5 } },
     ]) {
       expect(
         failure(migrateProfile({ ...newProfile(3), ...change }))?._tag
@@ -319,7 +358,7 @@ describe("migrateProfile", () => {
   it("accepts a Seaport ship on an Expedition", () => {
     const profile = {
       ...newProfile(3),
-      seaport: { expeditionId: "longVoyage", startedAt: 1_792_314_000_000 },
+      seaport: { cargo: "essence", hours: 24, startedAt: 1_792_314_000_000 },
     };
     expect(Result.getOrThrow(migrateProfile(profile))).toEqual(profile);
   });

@@ -1,9 +1,5 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
-import type {
-  ExpeditionCollect,
-  ExpeditionId,
-  Profile,
-} from "@workspace/rules";
+import type { Expedition, ExpeditionCollect, Profile } from "@workspace/rules";
 import { collectExpedition, startExpedition } from "@workspace/rules";
 import { useContext, useEffect, useState } from "react";
 
@@ -39,9 +35,9 @@ export const useNow = () => {
 export const useSeaport = () => {
   const registry = useContext(RegistryContext);
 
-  const dispatch = (id: ExpeditionId): number | null => {
+  const dispatch = (expedition: Expedition): number | null => {
     const now = Date.now();
-    const next = startExpedition(registry.get(profileAtom), id, now);
+    const next = startExpedition(registry.get(profileAtom), expedition, now);
     if (next === null) {
       return null;
     }
