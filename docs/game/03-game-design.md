@@ -736,7 +736,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Title | Start, Continue, Settings, Language |
 | **Town** | The first screen of the game. A 2D painting of a town. The Player selects a Building to open a screen. The Town Gate, the Card shop and the Workshop can be selected ([web ADR-0005](../../apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md)). |
 | **Campaign** | The Region Map of one Region, with its Stage Markers, Stars and Star chests (see 11.5) |
-| Heynspire | Floor rail (5 Flights of 10 Floors), Current Floor, Floor Panel with rewards |
+| Heynspire | Tower column (50 storeys, Floor 1 at the bottom), Current Floor, docked Floor Panel with rewards |
 | Dungeons | Dungeon list, unlock levels, Bosses, rewards, the Dungeon Sweep Tickets and the Dungeon Sweep (see 4.12) |
 | Seaport | The harbour, seen from the water. The Cargo plaques and the duration row, each with its unlock level, the Manifest with the full reward and the return time, Dispatch, and the berth plate: the ship at the berth, or the Expedition of the ship, its return time, the reward of a Collect now and Collect (Economy 2.8) |
 | Battle | Board, Hand, Heroes, controls (see 11.2) |

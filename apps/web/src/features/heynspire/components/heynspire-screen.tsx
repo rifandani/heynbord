@@ -1,11 +1,12 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
+import { HEYNSPIRE_FLOORS } from "@workspace/rules";
 import { cn } from "cn";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { useGameText } from "@/features/battle/use-game-text";
 import { FloorPanel } from "@/features/heynspire/components/floor-panel";
-import { FloorRail } from "@/features/heynspire/components/floor-rail";
+import { TowerColumn } from "@/features/heynspire/components/tower-column";
 import { TowerScene } from "@/features/heynspire/components/tower-scene";
 import type { NewWins } from "@/features/heynspire/heynspire";
 import { climb, floorState, newWins } from "@/features/heynspire/heynspire";
@@ -17,15 +18,9 @@ import { profileAtom } from "@/features/profile/profile.atoms";
 import { BalancePlate } from "@/features/town/components/balance-plate";
 import { balancesAtom } from "@/features/town/town.atoms";
 
-/** The Floor stone of `floor` on the screen, where its Floor Panel comes out. */
-const stoneOf = (floor: number) =>
-  document.querySelector(
-    `[data-flight] [data-open='true'] [data-floor='${floor}']`
-  );
-
 /**
  * The wins that came since the screen last showed (`newWins`). They are
- * found in the render, so the stones stamp and wake on their first paint.
+ * found in the render, so the storeys stamp and wake on their first paint.
  * They change with the won Floors, not with the seen count.
  */
 const useNewWins = (floorsWon: number): NewWins => {
@@ -44,13 +39,31 @@ const useNewWins = (floorsWon: number): NewWins => {
 };
 
 /**
- * The Heynspire screen (GDD 8.2, 11.1): the tower. The Balance Plate is at
- * the top. Under it, the Floor rail: 5 Flights of 10 Floors, with the Flight
- * of the Current Floor open as a stair to its Boss
- * landing. A press on the Current Floor or on a won Floor opens its Floor
- * Panel. The Current stone has the focus when the screen opens, so a climb
- * is Town, tower, Enter, Enter. "Next Floor" on a result opens the screen
- * with the Floor Panel of the next Floor.
+ * The selected Floor: the Floor that "Next Floor" asked for, else the
+ * Current Floor, else Floor 50 after the climb. The request is read one
+ * time, so the next visit opens on the Current Floor again.
+ */
+const useSelectedFloor = (current: number | null) => {
+  const [asked, setAsked] = useAtom(floorPanelAtom);
+  const [selected, setSelected] = useState(
+    () => asked ?? current ?? HEYNSPIRE_FLOORS
+  );
+  useEffect(() => {
+    if (asked !== null) {
+      setAsked(null);
+    }
+  }, [asked, setAsked]);
+  return [selected, setSelected] as const;
+};
+
+/**
+ * The Heynspire screen (GDD 8.2, 11.1): the tower. At the left, the tower
+ * column: 50 storeys from Floor 1 over the clouds to the summit, each with
+ * its door and its status ribbon. At the right, the Floor Panel, docked and
+ * open at all times, shows the selected Floor. The Current storey has the
+ * focus when the screen opens, and Enter on it goes to Fight, so a climb is
+ * Town, tower, Enter, Enter. "Next Floor" on a result opens the screen on
+ * the next Floor.
  */
 export const HeynspireScreen = ({
   onStart,
@@ -60,45 +73,56 @@ export const HeynspireScreen = ({
   const { tr } = useGameText();
   const floorsWon = useAtomValue(profileAtom).heynspireFloorsWon;
   const balances = useAtomValue(balancesAtom);
-  const [panel, setPanel] = useAtom(floorPanelAtom);
   const shown = climb(floorsWon);
   const wins = useNewWins(floorsWon);
-  // A locked Floor has no panel.
-  const open =
-    panel !== null && floorState(panel, floorsWon) !== "locked" ? panel : null;
+  const [selected, setSelected] = useSelectedFloor(shown.current);
+  const screen = useRef<HTMLElement>(null);
   return (
     <main
+      ref={screen}
       aria-label={tr("heynspire.label")}
       className="fade-in animate-in fixed inset-0 overflow-hidden text-[#fff6df] duration-300 motion-reduce:animate-none"
       data-testid="heynspire"
       data-floors-won={floorsWon}
     >
       <TowerScene />
-      <BalancePlate balances={balances} />
       <div
         className={cn(
-          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+4.25rem)] bottom-[88px] left-1/2 flex w-[min(calc(100vw-1.5rem),960px)] -translate-x-1/2 flex-col justify-center",
-          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[60px] [@media(max-height:500px)]:w-[calc(100vw-max(0.75rem,env(safe-area-inset-left))-max(0.75rem,env(safe-area-inset-right)))]"
+          "absolute top-0 right-[calc(min(440px,38vw)+max(1rem,env(safe-area-inset-right))+1rem)] bottom-[88px] left-0",
+          "[--ribbon-h:clamp(28px,calc(var(--tower-w)*0.15),40px)] [--ribbon-w:clamp(124px,calc(var(--tower-w)*0.72),196px)] [--spine-w:36px] [--storey-h:calc(var(--tower-w)*2/3)] [--tower-w:clamp(120px,min(19vw,30vh),280px)]",
+          "[@media(max-height:500px)]:right-[calc(min(460px,54vw)+max(0.5rem,env(safe-area-inset-right))+0.5rem)] [@media(max-height:500px)]:bottom-[60px] [@media(max-height:500px)]:[--spine-w:30px]"
         )}
       >
-        <FloorRail
+        <TowerColumn
           climb={shown}
+          selected={selected}
           awaken={wins.awaken}
           stamped={wins.stamped}
-          selected={open}
-          focusCurrent={open === null}
-          onOpen={(floor) => setPanel(floor)}
+          onSelect={setSelected}
+          onEnterCurrent={() => {
+            // Fight, or Edit Decks while the Deck cannot fight.
+            const fight = screen.current?.querySelector<HTMLElement>(
+              "[data-testid='floor-fight']:not([disabled])"
+            );
+            (
+              fight ??
+              screen.current?.querySelector<HTMLElement>(
+                "[data-testid='edit-decks']"
+              )
+            )?.focus();
+          }}
         />
       </div>
+      {/* The plate keeps the right edge of the Floor Panel under it. */}
+      <BalancePlate
+        balances={balances}
+        className="right-[max(1rem,env(safe-area-inset-right))] [@media(max-height:500px)]:right-[max(0.5rem,env(safe-area-inset-right))]"
+      />
       <FloorPanel
-        floor={open}
-        state={(floor) => floorState(floor, floorsWon)}
-        from={stoneOf}
-        onClose={() => setPanel(null)}
-        onStart={(options) => {
-          setPanel(null);
-          onStart(options);
-        }}
+        floor={selected}
+        state={floorState(selected, floorsWon)}
+        climbed={shown.climbed}
+        onStart={onStart}
       />
     </main>
   );

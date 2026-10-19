@@ -102,10 +102,19 @@ test.describe("Heynspire", () => {
       "data-state",
       "locked"
     );
-    // The Current stone opens the Floor Panel; Edit Decks and Auto-fill make the Deck valid at level 20.
-    await page.keyboard.press("Enter");
+    // The docked Floor Panel shows the Current Floor at once.
     const panel = page.getByTestId("floor-panel");
-    await expect(panel).toBeVisible();
+    await expect(panel.getByRole("heading")).toHaveText("Floor 1");
+    // A locked Floor shows a preview, with the Floor to win first and no Fight.
+    await page.getByTestId("floor-2").click();
+    await expect(panel.getByRole("heading")).toHaveText("Floor 2");
+    await expect(panel.getByTestId("floor-panel-note")).toContainText(
+      "Win Floor 1 first."
+    );
+    await expect(panel.getByTestId("floor-fight")).toHaveCount(0);
+    // Enter on the Current storey selects it and goes to Fight; Edit Decks and Auto-fill make the Deck valid at level 20.
+    await press(page, "floor-1");
+    await expect(panel.getByRole("heading")).toHaveText("Floor 1");
     await expect(panel.getByTestId("floor-enemy")).toContainText(
       "Spire Warden Holt"
     );
@@ -131,12 +140,10 @@ test.describe("Heynspire", () => {
     );
     await expect(result.getByTestId("back-to-heynspire")).toBeVisible();
     await press(page, "next-floor");
-    // "Next Floor" opens the Floor Panel of Floor 2 on the Heynspire screen.
+    // "Next Floor" opens the Heynspire screen on Floor 2.
     await expect(screen).toHaveAttribute("data-floors-won", "1");
-    await expect(panel).toBeVisible();
     await expect(panel.getByRole("heading")).toHaveText("Floor 2");
-    await page.keyboard.press("Escape");
-    await expect(panel).toBeHidden();
+    await expect(page.getByTestId("floor-2")).toBeFocused();
     await expect(page.getByTestId("floor-1")).toHaveAttribute(
       "data-state",
       "won"
@@ -145,7 +152,7 @@ test.describe("Heynspire", () => {
       "data-state",
       "current"
     );
-    // Without a panel, Esc goes back to the Town.
+    // The panel is not a dialog: Esc goes back to the Town.
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("town")).toBeVisible();
   });
@@ -204,8 +211,12 @@ test.describe("Heynspire", () => {
       "data-climbed",
       "true"
     );
-    await press(page, "floor-50");
+    // After the climb, the screen opens on Floor 50.
     const panel = page.getByTestId("floor-panel");
+    await expect(panel.getByRole("heading")).toHaveText(/Floor 50/u);
+    await expect(panel.getByTestId("floor-panel-note")).toContainText(
+      "Heynspire climbed."
+    );
     await expect(panel.getByTestId("floor-panel-state")).toHaveAttribute(
       "data-state",
       "won"

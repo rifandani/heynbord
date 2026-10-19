@@ -686,46 +686,59 @@ The Dungeons screen ([GDD 8.4](./03-game-design.md#84-dungeons)) shows the insid
 
 ## 14. Heynspire inside
 
-The Heynspire screen ([GDD 8.2](./03-game-design.md#82-heynspire-draft-name), [GDD 11.1](./03-game-design.md#111-screens)) shows the tower behind the Floor rail: 5 Flights of 10 Floors, from Floor 1 at the bottom to Floor 50 at the top. The image is `apps/web/public/town/heynspire-inside.webp`, and its source is `apps/web/art/town/heynspire-inside.webp`. If `towerInside` is in `UNPAINTED_HEYNSPIRE_ART` (`apps/web/src/features/heynspire/heynspire-art.ts`), the screen shows the castle of the Town painting (2.2), zoomed in and softened (`apps/web/src/features/heynspire/components/tower-scene.tsx`), in the same place.
+The Heynspire screen ([GDD 8.2](./03-game-design.md#82-heynspire-draft-name), [GDD 11.1](./03-game-design.md#111-screens)) shows the tower as one column of 50 storeys, from Floor 1 at the bottom over the clouds to Floor 50 under the summit, on a sky. The Floor Panel is docked at the right. The game stacks 5 painted parts: the **base**, a **storey** (the 45 Floors that are not Boss Floors), a **Boss storey** (Floors 10, 20, 30, 40 and 50), the **summit**, and the **sky** behind them. The images are in `apps/web/public/heynspire/`, and their sources are in `apps/web/art/town/heynspire/`. If an ID is in `UNPAINTED_HEYNSPIRE_ART` (`apps/web/src/features/heynspire/heynspire-art.ts`), the screen shows a fallback in the same box: storeys of cream stone drawn in CSS (with `tower-stone.webp`, a patch of the old Heynspire inside painting), an SVG summit, and the old Heynspire inside painting (`apps/web/public/town/heynspire-inside.webp`), softened, as the sky.
 
 ### 14.1 Rules for the Heynspire art
 
-- **The same tower as the Town.** White stone and blue roofs, as the Heynspire of the Town painting. The view is from the stair on the outside of the tower, a little above the clouds, so that the climb feels high but not scary.
+- **The same tower as the Town.** Cream and white stone blocks, royal blue conical roofs and gold accents, as the Heynspire of the Town painting.
+- **Parts that stack.** All parts are seen straight on, at eye level, with no perspective tilt. The top and bottom edges of a storey are straight and level, so that the same storey stacks on itself with no seam. The base, the storeys, the Boss storeys and the summit have the same wall width.
+- **One outline.** A Boss storey has the same wall and the same cornice as a storey, so that the outline of the tower does not change at a Boss Floor. Only the summit has merlons: merlons tell the eye that the tower stops. The base has no door: its stair leads into the door of Floor 1, so that the climb starts at Floor 1.
+- **An empty door.** The doorway of a storey and of a Boss storey is plain and dark, with no door, no light and no objects: the game paints the door of the Floor state (gold light, wood or dark oak) and the Floor number in it.
 - **Bright, not dark.** Art direction 5 binds it: morning light from the upper left, soft white clouds, blue sky. No storm, no night.
-- **A calm center.** The center of the image (about 70% of the width, and the height between 10% and 88%) is a plain wall of light stone with little detail. The Floor rail stands there: its stair is white stone too, so the wall must be a little darker or warmer, so that the stair reads on it. Detail goes to the edges.
-- **No text and no UI.** No signs with letters, no numbers on doors: the game draws the Floors and their numbers.
-- **3:2, 1536 × 1024**, the same as the other inside paintings, at the size that covers the screen.
+- **A calm sky.** The sky has no tower and no wall. Its left half (behind the column) and its right third (behind the Floor Panel) are plain sky and soft cloud. Detail goes to the middle and to the bottom.
+- **No text and no UI.** No signs with letters, no numbers on doors, no symbols on the Boss banners: the game draws the Floors, their numbers and the Class seals.
+- **Transparent cut-outs.** The base, the storey, the Boss storey and the summit have a transparent background. The sky fills its image.
 
-### 14.2 Positions on the painting
+### 14.2 Parts and positions
 
-| Area | Box (x, y in percent) | Rule |
-| --- | --- | --- |
-| Top band | y 0 to 8 | The title plate at the top left and the Balance Plate at the top right. Keep it plain sky. |
-| Floor rail | x 15 to 85, y 10 to 88 | The calm wall of the tower. |
-| Bottom | y 88 to 100 | The Town Bar covers it. Clouds and the tops of far trees. |
-| Left edge | x 0 to 15 | The outside stair goes up and around the tower, with a rope rail. |
-| Right edge | x 85 to 100 | Floating stones and a far view of the Town and the sea, very small. |
+The table gives the brief for a new image. The last column gives the boxes of the art in `public/` (x, y in percent of the exported file). The storey, the Boss storey and the summit are trimmed to their stone (14.4), so the exported size is smaller than the size to make. The game shows each part at the width of `PAINTED_PART_WIDTH` (in storey widths), so that the walls align.
+
+| Part | File | Make at | Brief (x, y in percent of the image) | The art in `public/` |
+| --- | --- | --- | --- | --- |
+| Storey | `storey.webp` | 1536 × 1024 | Wall x 10 to 90. Cornice x 5 to 95, y 0 to 10, with corbels under it. Door x 37 to 63, y 22 to 100. Arrow slits at x 22 and x 78. | 1536 × 944. Wall x 10 to 90. Door x 39 to 61, y 32 to 100 (`STOREY_DOOR.storey`). Width 1. |
+| Boss storey | `boss-storey.webp` | 1536 × 1024 | Wall x 10 to 90. Cornice x 5 to 95, y 0 to 10, with corbels under it and a gold trim, as the storey. No merlons. Door x 39 to 61, y 30 to 100, with a carved frame, columns and a gold keystone. Two red banners at x 29 and x 71. | 1536 × 932. Wall x 10 to 90. Door x 41 to 59, y 37 to 100 (`STOREY_DOOR.bossStorey`). Red banners at x 27.3 and x 72.1: the game puts the Class seal of the Boss on them, and the crown on the gold keystone. Width 1, the same as a storey. |
+| Summit | `summit.webp` | 1024 × 1536 | Straight on, with level edges. A short wall x 10 to 90 at the bottom, its bottom edge level. Corbels and a ring of merlons x 2 to 98 over it. The roof and a pole with no flag at x 50, its top at y 0: the game draws the flag. | 1008 × 1505. The ring fills the width. The wall at the bottom is x 8.5 to 91.5. The pole is at x 50, its top at y 0. Width 0.96. |
+| Base | `base.webp` | 1536 × 1024 | Straight on. A low plinth, its top edge level at x 20 to 80 and y 0, with no door, no windows and no banners. A broad stair climbs to the top edge at x 40 to 60, into the door of Floor 1. Clouds in the bottom third. | 1536 × 769. The plinth is x 15.4 to 84.6. The top step is x 40.2 to 59.2 at y 25.4 (`BASE_STAIR`): Floor 1 stands on it, behind the plinth, and the game cuts the plinth wall away above the stair. Width 1.3. |
+| Sky | `sky.webp` | 1536 × 1024 | Plain sky at x 0 to 50 and x 66 to 100. Floating stones with flags and the far Town in the middle. Clouds in the bottom fifth. | 1536 × 1024. |
 
 ### 14.3 Subjects
 
-- The stair around the tower, which goes up out of the image at the top left.
-- Floating stones with small flags at the right, and a pennant at the top of the tower, out of the image.
-- **Humor note:** the tired climber of 2.2 sits on a step at the left edge, with a water bottle and a map that is too long.
+- The cream stone wall of the round tower, with a cornice and corbels, an arched doorway and two arrow slits; a few ivy leaves at one corner only.
+- A Boss storey is the same wall as a storey, made grand: a gold trim on the cornice, a carved door frame with columns and a gold keystone, and two plain deep red banners. It has no merlons.
+- The summit: a short wall, corbels and a ring of merlons, under the royal blue cone roof with slate tiles and a gold eave trim.
+- The tower foot: a low plain plinth with no door, and a broad stair that climbs into the door of Floor 1, in soft white clouds.
+- The sky: floating stones with grass on top and small blue and gold flags, and far below them the town on its green hill and the blue sea, very small.
 
 ### 14.4 Steps
 
-1. Run `bun town:prompts`. Make 4 to 8 images with `heynspire/prompts.md` (section 3), with GPT Image and high quality, at 1536 × 1024. The script writes the layout sketch of 14.2 and the castle of the Town painting as the outside reference. The messages are `HEYNSPIRE_SETUP_PROMPT` and `HEYNSPIRE_PROMPT` in `scripts/town-art/prompts.ts`: when you change 14.1 to 14.3, change them too.
-2. Select the image that keeps the center calm, and check it with 14.5.
-3. Export as WebP with no alpha: `cwebp -q 80 heynspire-inside.png -o heynspire-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`. Then remove `towerInside` from `UNPAINTED_HEYNSPIRE_ART` in `apps/web/src/features/heynspire/heynspire-art.ts`: a unit test checks the list and the files. `TowerScene` then shows the painting above the Town Bar, as the cave inside.
-4. Write the licence record (art direction 5.5) for the image.
+1. Run `bun town:prompts`. Make the parts with `heynspire/prompts.md` (section "Heynspire tower"), with GPT Image and high quality, at the size of each part. The script writes the layout sketch of one storey (14.2) and the castle of the Town painting as the outside reference. The messages are `HEYNSPIRE_SETUP_PROMPT` and `HEYNSPIRE_PART_PROMPTS` in `scripts/town-art/prompts.ts`: when you change 14.1 to 14.3, change them too.
+2. Select one image of each part, and check it with 14.5.
+3. Trim the storey, the Boss storey and the summit to their stone: remove the empty rows at the top and the bottom (and the empty columns at the sides of the summit), so that the parts stack with no gap. Export the cut-outs as WebP with alpha, and the sky with no alpha: `cwebp -q 80 -alpha_q 90 storey.png -o storey.webp`, and `cwebp -q 80 sky.png -o sky.webp`. If ChatGPT gives a WebP and the part needs no trim, use it as-is. Put the files in `apps/web/public/heynspire/`, and keep the full-size sources in `apps/web/art/town/heynspire/`. Write the size of each file in `HEYNSPIRE_ART_SIZE` (`heynspire-art.ts`).
+4. Measure the doorway of the storey and of the Boss storey, the walls, and the banners of the Boss storey. If they are not at the boxes of 14.2, change `STOREY_DOOR` and `PAINTED_PART_WIDTH` in `heynspire-art.ts`, and the wall and the seal positions in `tower-storey.tsx`, so that the door light, the Floor number and the seals fit the painted storey and the walls align.
+5. Remove the ID of each new part from `UNPAINTED_HEYNSPIRE_ART`: a unit test checks the list and the files. Write the licence record (art direction 5.5) of each image in a `.webp.json` file next to it.
 
 ### 14.5 Review checklist
 
-- [ ] The tower looks like the Heynspire of the Town painting.
+- [ ] The parts look like the Heynspire of the Town painting.
 - [ ] The light is warm and comes from the upper left. The view is high but not scary.
-- [ ] The center is a calm wall: the white stair of the Floor rail and the bands are easy to read on it.
-- [ ] The image has no text and no numbers.
-- [ ] The Town Bar covers only the bottom.
+- [ ] A storey stacks on itself with no seam, and the base, the storeys, the Boss storeys and the summit have the same wall width.
+- [ ] A Boss storey stacks on a storey, and a storey stacks on it, with no step in the outline and no merlons.
+- [ ] Floor 1 stands on the base with no gap, and the stair of the base leads into its door. The base has no door.
+- [ ] The summit stands on Floor 50 with no gap, and its bottom edge is straight.
+- [ ] The doorways are empty and plain, at the boxes of 14.2 (or `STOREY_DOOR` is changed).
+- [ ] The cut-outs have a transparent background.
+- [ ] The sky has no tower and no wall, and its left half and right third are calm.
+- [ ] The images have no text and no numbers.
 
 ## 15. Hall inside
 

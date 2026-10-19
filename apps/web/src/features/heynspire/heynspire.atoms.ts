@@ -1,9 +1,10 @@
 import { Atom } from "effect/reactivity";
 
 /**
- * The Floor whose Floor Panel is open on the Heynspire screen, or `null`.
- * "Next Floor" on a Battle result sets it before the Battle closes, so the
- * screen opens with the panel of the next Floor. App state, so kept alive.
+ * The Floor that the Heynspire screen selects when it opens, or `null` for
+ * the Current Floor. "Next Floor" on a Battle result sets it before the
+ * Battle closes, so the screen opens on the next Floor. The screen reads it
+ * one time. App state, so kept alive.
  */
 export const floorPanelAtom = Atom.make<number | null>(null).pipe(
   Atom.keepAlive

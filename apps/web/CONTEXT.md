@@ -158,11 +158,13 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Heynspire screen
 
-**Floor rail**: The tower on the Heynspire screen: the 50 Floors from Floor 1 at the bottom to Floor 50 at the top, in 5 Flights, under the summit flag. The Flight of the Current Floor is open, and the other Flights are folded. Each Floor shows Won, Current or Locked. _Avoid_: floor list, ladder, level list, tower map
+**Tower column**: The tower on the Heynspire screen: one column of 50 storeys, from Floor 1 at the bottom over the clouds to Floor 50 under the summit. It is a list of Floors that the Player selects; the Floor Panel shows the selected Floor. _Avoid_: floor list, ladder, level list, tower map, Floor rail
 
-**Flight**: A group of 10 Floors on the Floor rail that ends on a Boss Floor: Floors 1 to 10, 11 to 20, and so on. An open Flight shows its Floors as a stair of arched doors that climbs to the Boss landing. A folded Flight is a band with its Floors, a strip of 10 cells, its Boss and its count. It is a term of the screen only, not a rules term: the Player sees "Floors 11–20". _Avoid_: tier, chapter, section, stage group, milestone
+**Storey**: One Floor in the tower column: its stone, its door with "Floor" and the Floor number, and its status ribbon (Won, Current Floor or Locked). A Boss Floor is a Boss storey: a grander storey with a crown and the banners of its Boss. _Avoid_: floor tile, floor stone, step
 
-**Floor Panel**: The dialog that opens when the Player selects the Current Floor or a won Floor. Like the Stage Panel, it shows the Floor, its enemy Hero, the Recommended level and the reward. For the Current Floor it also has the Deck choice and Fight. A won Floor shows its reward with no Fight, because a won Floor cannot be played again. _Avoid_: floor popup, floor details, pre-battle screen
+**Flight**: A group of 10 Floors that ends on a Boss Floor: Floors 1 to 10, 11 to 20, and so on. The spine of the tower column shows one crown for each Flight. It is a term of the code and the screen only, not a rules term. _Avoid_: tier, chapter, section, stage group, milestone
+
+**Floor Panel**: The parchment sheet docked at the right of the Heynspire screen, open at all times. It shows the selected Floor: its enemy Hero, its first win reward and the Recommended level. For the Current Floor it also has the Deck choice and Fight. A won Floor shows its reward as received, with no Fight, because a won Floor cannot be played again. A locked Floor shows which Floor to win first. _Avoid_: floor popup, floor details, pre-battle screen
 
 ### Workshop screen
 

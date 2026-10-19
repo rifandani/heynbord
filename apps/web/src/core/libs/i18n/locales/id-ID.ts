@@ -1870,14 +1870,20 @@ export default {
       floor: "Lantai {number}, {name}, {state}",
       boss: "Lantai {number}, Lantai Bos, {name}, {state}",
     },
-    flight: {
-      range: "Lantai {first}–{last}",
-      label:
-        "Lantai {first} sampai {last}, Bos {boss}, {won} dari 10 sudah menang. Tunjukkan Lantai ini.",
+    climbed: "Heynspire sudah didaki. Kamu memenangkan semua 50 Lantai.",
+    spine: "Pendakian: {won} dari {count} Lantai sudah menang",
+    toCurrent: "Pergi ke Lantai {number}, Lantai Saat Ini",
+    storey: {
+      floor: "Lantai",
     },
     panel: {
       won: "Sudah menang",
-      close: "Tutup",
+      current: "Lantai Saat Ini",
+      locked: "Terkunci",
+      received: "Sudah diterima",
+      wonNote:
+        "Kamu sudah memenangkan Lantai ini. Setiap Lantai memberi hadiahnya satu kali.",
+      yourLevel: "Level kamu {level}",
     },
     result: {
       nextFloor: "Lantai Berikutnya",

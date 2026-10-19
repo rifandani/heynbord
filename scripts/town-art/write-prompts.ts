@@ -81,7 +81,7 @@ import {
   GEAR_SETUP_PROMPT,
   GEAR_SUBJECT,
   gearIconPromptOf,
-  HEYNSPIRE_PROMPT,
+  HEYNSPIRE_PART_PROMPTS,
   HEYNSPIRE_SETUP_PROMPT,
   iconPromptOf,
   packPromptOf,
@@ -617,43 +617,31 @@ const writeCaveOutside = async (file: string) => {
 };
 
 /**
- * The layout sketch of the Heynspire inside: flat shapes at the areas of the
- * table in section 14.2. ChatGPT keeps its composition, not its colors.
+ * The layout sketch of one Heynspire storey: flat shapes at the boxes of the
+ * table in section 14.2, on a pale grey that stands for the transparent
+ * background. The door box is `STOREY_DOOR.storey` of `heynspire-art.ts`.
+ * ChatGPT keeps its boxes, not its colors.
  */
 const writeHeynspireLayout = async (file: string) => {
+  const door = { left: 37, right: 63, top: 22 } as const;
+  const arch = ((door.right - door.left) / 2 / 100) * ROOM.width;
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
-    // The calm wall of the tower in the center, with a few faint joints.
-    `<rect width="100%" height="100%" fill="#d8c8a8"/>`,
-    ...[30, 50, 70].map(
-      (y) => `<rect ${roomBox(15, 85, y, y + 0.4)} fill="#cbb995"/>`
+    `<rect width="100%" height="100%" fill="#ececec"/>`,
+    // The round wall of the storey, lit at the left.
+    `<rect ${roomBox(10, 90, 0, 100)} fill="#d8c8a8"/>`,
+    `<rect ${roomBox(70, 90, 0, 100)} fill="#c4b18e"/>`,
+    // The cornice and its corbels across the top.
+    `<rect ${roomBox(5, 95, 0, 10)} fill="#efe4cc"/>`,
+    ...[14, 22, 30, 38, 46, 54, 62, 70, 78, 86].map(
+      (x) => `<rect ${roomBox(x - 2, x + 2, 10, 15)} fill="#bba982"/>`
     ),
-    // The plain sky band at the top, with a roof edge and a flag pole at the left.
-    `<rect ${roomBox(0, 100, 0, 8)} fill="#8ec5ec"/>`,
-    `<rect ${roomBox(0, 12, 0, 4)} fill="#2f4f9a"/>`,
-    `<rect ${roomBox(9, 9.4, 0, 6)} fill="#e9c46a"/>`,
-    // The stair with its rope rail and the climber at the left edge.
-    `<rect ${roomBox(0, 15, 8, 100)} fill="#8ec5ec"/>`,
-    ...[0, 1, 2, 3, 4, 5, 6].map(
-      (step) =>
-        `<rect ${roomBox(0, 15 - step, 86 - step * 12, 90 - step * 12)} fill="#f2ead8"/>`
-    ),
-    `<rect ${roomBox(1, 14, 60, 61)} fill="#7a5233"/>`,
-    `<circle cx="${0.07 * ROOM.width}" cy="${0.66 * ROOM.height}" r="26" fill="#c0603a"/>`,
-    // The floating stones with flags and the far town and sea at the right edge.
-    `<rect ${roomBox(85, 100, 8, 100)} fill="#8ec5ec"/>`,
-    ...[
-      [92, 20],
-      [88, 38],
-      [95, 50],
-    ].map(
-      ([x, y]) =>
-        `<ellipse cx="${(x / 100) * ROOM.width}" cy="${(y / 100) * ROOM.height}" rx="34" ry="16" fill="#9a8a70"/>`
-    ),
-    `<rect ${roomBox(86, 100, 70, 80)} fill="#6fa055"/>`,
-    `<rect ${roomBox(93, 100, 72, 80)} fill="#3f7fc0"/>`,
-    // The clouds along the bottom.
-    `<rect ${roomBox(0, 100, 88, 100)} fill="#f4f6fa"/>`,
+    // The empty doorway: an arch over a rectangle, down to the bottom edge.
+    `<rect ${roomBox(door.left, door.right, door.top + 13, 100)} fill="#3a3530"/>`,
+    `<ellipse cx="${0.5 * ROOM.width}" cy="${((door.top + 13) / 100) * ROOM.height}" rx="${arch}" ry="${0.13 * ROOM.height}" fill="#3a3530"/>`,
+    // The arrow slits at the sides of the door.
+    `<rect ${roomBox(21, 23, 40, 70)} fill="#3c4654"/>`,
+    `<rect ${roomBox(77, 79, 40, 70)} fill="#3c4654"/>`,
     "</svg>",
   ].join("");
   await sharp(Buffer.from(svg)).png().toFile(file);
@@ -1076,35 +1064,50 @@ const caveFile = (dungeon: BattleArt): string =>
 const HEYNSPIRE_FIXES = [
   "| Problem | Fix |",
   "| --- | --- |",
-  '| The center is busy or bright | Select the center and send "Edit the image only in the selected area: a plain calm curved wall of warm cream stone blocks in soft shade. Keep all else the same." |',
-  "| A window, a door or the stair is in the center | Select it and ask for the plain stone wall around it. |",
-  "| The climber or the floating stones are in the center | Send the painting message again. |",
-  '| The view is scary: a deep drop, a storm or dark clouds | Send the painting message again with "a calm, bright morning, the clouds are soft and white and far below". |',
-  '| The tower does not look like the castle of image 3 | Send the painting message again with "white stone and royal blue conical roofs with gold flags, as image 3". |',
-  "| Text-like marks or numbers on the wall or the map | Select the area and ask for the material around it, for example plain stone or plain paper. |",
+  '| The background is not transparent | Send the part message again with "transparent background, only the stone shows". |',
+  '| The storey is seen from below or from the side | Send the part message again with "straight on, at eye level, no perspective". |',
+  '| A door, a light or an object is in the doorway | Select the doorway and send "Edit the image only in the selected area: a plain dark empty doorway. Keep all else the same." |',
+  "| The top or bottom edge of a storey is not level | Send the part message again: the storeys must stack with no seam. |",
+  '| The Boss storey has merlons, or its wall or cornice is wider than the storey | Attach `storey.png` and send the Boss storey message again with "the same wall width, cornice and corbels as the attached storey, no merlons". |',
+  '| The base has a door, windows or banners | Send the base message again with "a plain plinth with no door, no windows and no banners, the stair leads into the door of the first storey". |',
+  '| The summit is seen from below, or its bottom edge curves | Send the summit message again with "straight on, at eye level, its bottom edge straight and level". |',
+  '| The tower does not look like the castle of image 3 | Send the part message again with "cream and white stone, royal blue conical roofs with gold flags, as image 3". |',
+  '| The sky has a tower or a wall in it | Send the sky message again with "no tower and no wall, only sky, clouds and small floating stones". |',
+  "| Text-like marks or numbers | Select the area and ask for the material around it, for example plain stone. |",
 ].join("\n");
+
+/** The parts of the tower in the order to paint them, with their file and size. */
+const HEYNSPIRE_PARTS = [
+  ["storey", "storey.png", "1536 × 1024, transparent"],
+  ["bossStorey", "boss-storey.png", "1536 × 1024, transparent"],
+  ["summit", "summit.png", "1024 × 1536, transparent"],
+  ["base", "base.png", "1536 × 1024, transparent"],
+  ["sky", "sky.png", "1536 × 1024"],
+] as const;
 
 const heynspireFile = (heynspire: BattleArt): string =>
   [
     "# Heynspire art prompts",
     "",
-    "Two ChatGPT conversations: the tower behind the Heynspire screen, then the Battle Painting of all Floor Battles.",
+    "Two ChatGPT conversations: the 5 parts of the tower on the Heynspire screen, then the Battle Painting of all Floor Battles.",
     "",
-    "## Heynspire inside",
+    "## Heynspire tower",
     "",
     "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
-    "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
-    "3. Select one image with the review checklist (Town Concepts, 14.5). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder.",
-    "4. Do steps 3 and 4 of Town Concepts, 14.4.",
+    "2. Send the message of each part, in this order. Use high quality, at the size of the part. Make 3 to 6 images of each part: send its message again for each new image.",
+    "3. Select one image of each part with the review checklist (Town Concepts, 14.5). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder with the file name of the part.",
+    "4. Do steps 3 to 5 of Town Concepts, 14.4.",
     "",
     "### Setup message",
     "",
     block(HEYNSPIRE_SETUP_PROMPT),
     "",
-    "### Painting",
-    "",
-    block(HEYNSPIRE_PROMPT),
-    "",
+    ...HEYNSPIRE_PARTS.flatMap(([part, name, size]) => [
+      `### ${part} (\`${name}\`, ${size})`,
+      "",
+      block(HEYNSPIRE_PART_PROMPTS[part]),
+      "",
+    ]),
     "### Fixes",
     "",
     HEYNSPIRE_FIXES,

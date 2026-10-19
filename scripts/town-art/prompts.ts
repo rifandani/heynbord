@@ -349,37 +349,93 @@ export const CAVE_PROMPT = [
 ].join("\n");
 
 /**
- * The first message of the ChatGPT conversation for the Heynspire inside,
- * with the layout sketch, the style reference and the outside reference
+ * The first message of the ChatGPT conversation for the Heynspire tower, with
+ * the storey layout sketch, the style reference and the outside reference
  * attached. The rules come from section 14.1 of the Town Concepts.
  */
 export const HEYNSPIRE_SETUP_PROMPT = [
-  "In this conversation, you will paint the Heynspire tower of a fantasy card battle game, seen from its outside stair high above the clouds: the background of the tower screen, where the player climbs 50 floors.",
+  "In this conversation, you will paint the parts of the Heynspire tower of a fantasy card battle game: the screen where the player climbs 50 floors. The game stacks the parts into one tall tower: the base, 50 storeys, and the summit roof. It also paints a sky behind the tower.",
   [
-    "Image 1 is a rough layout sketch. Keep its composition: the plain sky band at the top, the stair with its rope rail that goes up and around the tower at the left edge, the floating stones with small flags and the far view at the right edge, the clouds along the bottom, and the large calm wall of the tower in the center. Do not copy its flat colors.",
+    "Image 1 is a rough layout sketch of one storey. Keep its boxes: the wall between 10% and 90% of the width, the stone cornice across the top 10%, and the empty arched doorway in the center. Do not copy its flat colors.",
     "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
-    "Image 3 shows the same tower from far away, in the town painting: a white stone castle with a tall central tower, royal blue conical roofs and gold flags. Paint this tower from up close, high on its outside stair. Do not copy its view.",
+    "Image 3 shows the same tower from far away, in the town painting: a white stone castle with a tall central tower, royal blue conical roofs and gold flags. Paint this tower from up close. Do not copy its view.",
   ].join("\n"),
-  "The game shows a large stair of 50 floors and a side panel over the center of the painting. Thus the center stays calm and plain, and the stair, the people and the details are at the left, at the right and at the bottom.",
+  [
+    "Rules for each part:",
+    "- The same tower in all parts: cream and white stone blocks, royal blue roofs, gold accents.",
+    "- Seen straight on, at eye level, with no perspective tilt, so that the parts stack with no seam.",
+    "- Light from the upper left: the left side of the round tower is lit, the right side is in soft shade.",
+    "- The storey parts have a transparent background: only the stone shows.",
+    "- The doorway of a storey is empty and plain: the game puts the light and the floor number in it.",
+    "- No text, no letters, no numbers, no signs, no logo, no frame and no UI.",
+  ].join("\n"),
+  "Each message names one part and gives its prompt.",
   READY,
 ].join("\n\n");
 
 /**
- * The message for the Heynspire inside, after its setup message. It is a
- * short form of the brief in section 14 of the Town Concepts. When you
- * change the brief there, change this message too.
+ * The message for each part of the Heynspire tower, after its setup message.
+ * It is a short form of the brief in section 14 of the Town Concepts. When
+ * you change the brief there, change these messages too.
  */
-export const HEYNSPIRE_PROMPT = [
-  "the outside of a very tall white stone fantasy tower, seen up close from its outside stair high above the clouds, at eye level, straight on, wide 3:2 landscape, the tower fills the full image to all edges,",
-  "at the left edge a stair of pale stone steps with a thick rope rail on wooden posts goes up and around the tower and out of the image at the top left, a tired young climber with a big backpack sits on a step, drinks from a water bottle and holds a map so long that it hangs down three steps, they stay inside the left seventh of the image,",
-  "at the right edge a few small floating stones with grass on top and small blue and gold flags drift in the blue sky, and far below them a very small view of the town on a green hill and the blue sea, they stay inside the right seventh of the image,",
-  "in the center a large plain curved wall of the tower, warm cream stone blocks in soft shade, calm and a little darker than the stair, with only a few faint joints, no windows, no doors, no objects and no bright light there,",
-  "a narrow band of plain clear blue sky across the top, with the edge of a royal blue roof and a gold flag pole only in the top left corner,",
-  "soft white clouds across the bottom, with the tops of a few far green trees between them,",
-  "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a high, airy, welcoming and a little funny mood, not scary,",
-  "light from the upper left, clear morning, white and cream stone, royal blue, gold accents, sky blue, soft cloud white,",
-  "the center is calmer and plainer than the sides, no storm, no night, no monsters, no signs, no text, no letters, no numbers, no labels, no logo, no frame, no UI",
-].join("\n");
+export const HEYNSPIRE_PART_PROMPTS = {
+  storey: [
+    "Part: one storey of the tower, wide 3:2 landscape, transparent background.",
+    "a straight section of a round tower wall of cream stone blocks between 10% and 90% of the width, the full height of the image, its top and bottom edges straight and level so that the same storey can stack on itself with no seam,",
+    "a stone cornice across the top 10%, a little wider than the wall, with a row of small corbel blocks under it,",
+    "an arched doorway in the center (from 37% to 63% of the width, and from 22% of the height to the bottom), with a stone frame and a keystone, the inside of the doorway plain and dark, with no door, no light and no objects,",
+    "a narrow arrow slit window at each side of the doorway, and a few small green ivy leaves at one corner only,",
+    "Heynbord, painterly fantasy game asset, bright warm light, soft brush texture, clean readable silhouette,",
+    "light from the upper left, cream and white stone, warm shade at the right side,",
+    "no people, no flags, no text, no letters, no numbers, no frame, no UI",
+  ].join("\n"),
+  bossStorey: [
+    "Part: the storey of a boss floor, wide 3:2 landscape, transparent background.",
+    "the same straight section of round tower wall as the storey part, cream stone blocks between 10% and 90% of the width, the full height of the image, its top and bottom edges straight and level, so that it stacks on a storey and a storey stacks on it with no seam,",
+    "the same stone cornice across the top 10% as the storey part, from 5% to 95% of the width, with the same row of corbels under it, and a thin gold trim along the cornice,",
+    "no merlons, no battlement and no balcony on the top: only the summit has merlons,",
+    "an arched doorway in the center (from 39% to 61% of the width, and from 30% of the height to the bottom), richer than the storey door, with a carved stone frame, a stone column at each side and a gold keystone, the inside of the doorway plain and dark, with no door, no light and no objects,",
+    "two long plain deep red banners with a gold top rod hang under the cornice at 29% and 71% of the width, with no symbols on them,",
+    "a narrow arrow slit window near each side edge of the wall,",
+    "Heynbord, painterly fantasy game asset, bright warm light, soft brush texture, clean readable silhouette, proud and a little grand,",
+    "the same light and the same stone color as the storey part: light from the upper left, cream and white stone, warm shade at the right side, deep red, gold accents,",
+    "no people, no crown, no merlons, no text, no letters, no numbers, no frame, no UI",
+  ].join("\n"),
+  summit: [
+    "Part: the summit of the tower, tall 2:3 portrait, transparent background.",
+    "the top of the same round tower, seen straight on, at eye level, with no perspective tilt: all its horizontal edges are straight and level, as the storey part,",
+    "at the bottom, a short plain section of the tower wall of cream stone blocks between 10% and 90% of the width, its bottom edge straight and level, so that it stands on the cornice of the storey under it,",
+    "over the wall, a row of corbels and a ring of square cream stone merlons from 2% to 98% of the width, a little wider than the wall,",
+    "a tall royal blue conical roof of slate tiles with a gold eave trim behind the merlons, as the roofs of image 3,",
+    "a gold ball on the top of the roof and a thin pole with no flag on it, in the center, its top at the top edge of the image, the game draws the flag,",
+    "Heynbord, painterly fantasy game asset, bright warm light, soft brush texture, clean readable silhouette,",
+    "the same light and the same stone color as the storey part: light from the upper left, royal blue, cream stone, gold accents,",
+    "no people, no text, no letters, no numbers, no frame, no UI",
+  ].join("\n"),
+  base: [
+    "Part: the foot of the tower, wide 3:2 landscape, transparent background.",
+    "a low round plinth of cream stone blocks, the foot of the same tower, seen straight on, at eye level, with no perspective tilt, as the storey part,",
+    "the top edge of the plinth is straight and level from 20% to 80% of the width, at the top of the image, so that the first storey stands on it, and the plinth grows a little wider to the bottom,",
+    "the plinth has no door, no windows, no banners and no gold band: the door of the first storey is the door of the tower,",
+    "a broad stone stair in the center climbs to the top edge of the plinth between 40% and 60% of the width, so that it leads straight into the door of the first storey, and its steps grow wider to the bottom,",
+    "a low stone balustrade with square posts and small gold caps at each side of the stair, and a few small green ivy leaves,",
+    "soft white clouds around the plinth that fill the bottom third of the image and fade out to the sides,",
+    "Heynbord, painterly fantasy game asset, bright warm light, soft brush texture, high and airy, not scary,",
+    "the same light and the same stone color as the storey part: light from the upper left, cream stone, soft cloud white,",
+    "no people, no ground, no door, no banners, no text, no letters, no numbers, no frame, no UI",
+  ].join("\n"),
+  sky: [
+    "Part: the sky behind the tower, wide 3:2 landscape, the sky fills the full image to all edges, no transparency.",
+    "a bright clear morning sky high above the clouds, light blue at the top to a soft warm haze near the clouds,",
+    "the left half of the image is plain calm sky with soft light clouds, because the tower stands there,",
+    "a few small floating stones with grass on top and small blue and gold flags drift in the middle of the image, and far below them a very small view of the town on a green hill and the blue sea,",
+    "the right third of the image is plain calm sky and soft cloud, because a panel covers it,",
+    "a sea of soft white clouds across the bottom fifth,",
+    "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, a high, airy, welcoming mood, not scary,",
+    "light from the upper left, sky blue, soft cloud white, small green and gold accents,",
+    "no tower, no wall, no storm, no night, no people, no text, no letters, no numbers, no logo, no frame, no UI",
+  ].join("\n"),
+} as const;
 
 /**
  * The first message of the ChatGPT conversation for the 4 Gear icons, with

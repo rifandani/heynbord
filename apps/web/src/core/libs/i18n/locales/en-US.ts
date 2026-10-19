@@ -1832,14 +1832,19 @@ export default {
       floor: "Floor {number}, {name}, {state}",
       boss: "Floor {number}, Boss Floor, {name}, {state}",
     },
-    flight: {
-      range: "Floors {first}–{last}",
-      label:
-        "Floors {first} to {last}, Boss {boss}, {won} of 10 won. Show these Floors.",
+    climbed: "Heynspire climbed. You won all 50 Floors.",
+    spine: "The climb: {won} of {count} Floors won",
+    toCurrent: "Go to Floor {number}, the Current Floor",
+    storey: {
+      floor: "Floor",
     },
     panel: {
       won: "Won",
-      close: "Close",
+      current: "Current Floor",
+      locked: "Locked",
+      received: "Received",
+      wonNote: "You won this Floor. Each Floor gives its reward one time.",
+      yourLevel: "Your level {level}",
     },
     result: {
       nextFloor: "Next Floor",
