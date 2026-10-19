@@ -193,10 +193,13 @@ const ClaimedSeal = ({ stamp }: { readonly stamp: number | null }) => {
  */
 export const AchievementRow = ({
   row,
+  index,
   stamp,
   onClaim,
 }: {
   readonly row: Row;
+  /** The place of the row in the roll: it inks in 18ms after the row above. */
+  readonly index: number;
   readonly stamp: number | null;
   readonly onClaim: (id: string) => void;
 }) => {
@@ -211,8 +214,11 @@ export const AchievementRow = ({
         "grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 border-b border-[#c9b48c]/70 px-5 py-2.5 last:border-b-0",
         "[@media(max-height:500px)]:gap-x-2.5 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-1.5",
         // A Completed row is a lit band across the roll.
-        state === "completed" && "bg-[#fff3d1]"
+        state === "completed" && "bg-[#fff3d1]",
+        // The row inks in as the paper unrolls over it.
+        "motion-safe:animate-[achievements-row-ink_260ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
       )}
+      style={{ animationDelay: `${Math.min(index, 12) * 18}ms` }}
       data-testid="achievement-row"
       data-achievement={id}
       data-state={state}

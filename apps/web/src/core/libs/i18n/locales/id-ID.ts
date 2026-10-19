@@ -404,11 +404,11 @@ export default {
       claimed: "Sudah diambil.",
       needed: "{count} Bintang lagi membuka peti ini.",
       claimedTitle: "Peti pada {stars} Bintang: diambil",
+      viewRewards: "Lihat hadiah.",
       essence: "+{amount} Esensi",
-      pack: "1 {pack} menunggu di Toko kartu.",
-      racePack:
-        "1 {pack} menunggu di Toko kartu. Kamu memilih Rasnya saat membukanya.",
-      ok: "OK",
+      pack: "+1 {pack}",
+      racePack: "+1 {pack} (Ras)",
+      ok: "Lanjutkan",
     },
     panel: {
       close: "Tutup",

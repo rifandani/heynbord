@@ -4,18 +4,20 @@ import {
   CAMPAIGN_REGIONS,
   claimStarChest,
   coinDenominations,
+  regionForgeStoneTier,
   STAGES,
   STAR_CHESTS,
 } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactElement, ReactNode, RefObject } from "react";
-import { useContext, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import {
   Button,
   Dialog,
   Heading,
-  Popover,
+  Modal,
+  ModalOverlay,
   TooltipTrigger,
 } from "react-aria-components";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
@@ -262,133 +264,186 @@ export const RegionBanner = ({
 /** What a claimed chest gave: its rewards and its Forge Stones of the Region. */
 type ChestClaim = Pick<StarChestClaim<unknown>, "reward" | "forgeStones">;
 
-/** One line of the chest rewards: an icon, then its text. */
+/** One reward in the chest, with its icon and text. */
 const RewardLine = ({
   icon,
   children,
   testId,
+  index,
+  revealed,
 }: {
   readonly icon: ReactNode;
   readonly children: ReactNode;
   readonly testId: string;
+  readonly index: number;
+  readonly revealed: boolean;
 }) => (
-  <li className="flex items-center gap-2" data-testid={testId}>
-    <span className="grid size-6 shrink-0 place-items-center" aria-hidden>
+  <li
+    className={cn(
+      "grid min-h-16 translate-y-2 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-xl border border-[#c9b48c] bg-[#fff3d1] px-3 py-2 text-left text-sm font-semibold text-[#2a1d12] opacity-0 transition-[opacity,translate] duration-300 ease-out motion-reduce:transition-none [@media(max-height:500px)]:min-h-14 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1",
+      revealed && "translate-y-0 opacity-100"
+    )}
+    style={{ transitionDelay: revealed ? `${index * 90}ms` : "0ms" }}
+    data-testid={testId}
+  >
+    <span className="grid size-8 shrink-0 place-items-center" aria-hidden>
       {icon}
     </span>
-    <span className="min-w-0">{children}</span>
+    <span className="min-w-0 leading-snug">{children}</span>
   </li>
 );
 
 /**
- * The rewards of a claimed Star chest (GDD 11.5): a small panel under the
- * chest with its Coin, Essence, Heynstones, Forge Stones and Pack. The
- * rewards are already in the Profile. Esc, OK and a click outside close it.
+ * The rewards of a Star chest (GDD 11.5). The chest opens first, then its
+ * Coin, Essence, Forge Stones and Pack appear. The rewards are already in the
+ * Profile when this dialog opens. Esc, OK and a click outside close it.
  */
 const ChestRewards = ({
   claim,
-  anchor,
+  revealed,
   onClose,
 }: {
   readonly claim: ChestClaim;
-  readonly anchor: RefObject<HTMLElement | null>;
+  readonly revealed: boolean;
   readonly onClose: () => void;
 }) => {
   const { tr, locale } = useGameText();
   const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const format = (value: number) => number.format(value);
-  const ICON = "size-5";
+  const ICON = "size-6";
   const { reward: chest, forgeStones } = claim;
+  const lines: ReactElement[] = [];
+  const addLine = (
+    key: string,
+    testId: string,
+    icon: ReactNode,
+    children: ReactNode
+  ) => {
+    lines.push(
+      <RewardLine
+        key={key}
+        index={lines.length}
+        revealed={revealed}
+        testId={testId}
+        icon={icon}
+      >
+        {children}
+      </RewardLine>
+    );
+  };
+  if (chest.coin > 0) {
+    addLine(
+      "coin",
+      "chest-reward-coin",
+      <BalanceIcon kind="coin" className={ICON} />,
+      <>
+        <span className="sr-only">
+          {tr("battle.coinEarned", {
+            amount: coinWords(chest.coin, format, (denomination) =>
+              tr(`town.balances.denominations.${denomination}.name`)
+            ),
+          })}
+        </span>
+        <span className="flex items-center gap-1" aria-hidden>
+          +
+          <CoinAmount parts={coinDenominations(chest.coin)} format={format} />
+        </span>
+      </>
+    );
+  }
+  if (chest.essence > 0) {
+    addLine(
+      "essence",
+      "chest-reward-essence",
+      <BalanceIcon kind="essence" className={ICON} />,
+      tr("campaign.chest.essence", { amount: format(chest.essence) })
+    );
+  }
+  if (forgeStones) {
+    addLine(
+      "forge-stones",
+      "chest-reward-forge-stones",
+      <ForgeStoneIcon tier={forgeStones.tier} className={ICON} />,
+      tr("battle.forgeStonesEarned", {
+        count: forgeStones.count,
+        tier: tr(`forgeStones.tiers.${forgeStones.tier}`),
+      })
+    );
+  }
+  if (chest.pack) {
+    addLine(
+      "pack",
+      "chest-reward-pack",
+      <GlyphIcon glyph="pack" className={ICON} />,
+      tr(
+        chest.pack.version === "race"
+          ? "campaign.chest.racePack"
+          : "campaign.chest.pack",
+        { pack: tr(`packs.names.${chest.pack.pack}`) }
+      )
+    );
+  }
+
   return (
-    <Popover
-      triggerRef={anchor}
+    <ModalOverlay
       isOpen
       onOpenChange={(open) => {
         if (!open) {
           onClose();
         }
       }}
-      placement="bottom end"
-      offset={10}
-      className="fade-in zoom-in-95 animate-in w-64 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 p-3 text-[#fff6df] shadow-[0_6px_0_rgba(0,0,0,0.45)] duration-200 motion-reduce:animate-none"
+      isDismissable
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-[2px] [@media(max-height:500px)]:p-2"
       data-testid="chest-rewards"
     >
-      <Dialog className="outline-none">
-        <Heading
-          slot="title"
-          className="font-display text-base font-black text-[#ffe08a]"
-        >
-          {tr("campaign.chest.claimedTitle", { stars: chest.stars })}
-        </Heading>
-        <ul className="mt-2 grid gap-1.5 text-sm font-semibold">
-          {chest.coin > 0 ? (
-            <RewardLine
-              testId="chest-reward-coin"
-              icon={<BalanceIcon kind="coin" className={ICON} />}
-            >
-              <span className="sr-only">
-                {tr("battle.coinEarned", {
-                  amount: coinWords(chest.coin, format, (denomination) =>
-                    tr(`town.balances.denominations.${denomination}.name`)
-                  ),
-                })}
-              </span>
-              <span className="flex items-center gap-1" aria-hidden>
-                +
-                <CoinAmount
-                  parts={coinDenominations(chest.coin)}
-                  format={format}
-                />
-              </span>
-            </RewardLine>
-          ) : null}
-          {chest.essence > 0 ? (
-            <RewardLine
-              testId="chest-reward-essence"
-              icon={<BalanceIcon kind="essence" className={ICON} />}
-            >
-              {tr("campaign.chest.essence", {
-                amount: format(chest.essence),
-              })}
-            </RewardLine>
-          ) : null}
-          {forgeStones ? (
-            <RewardLine
-              testId="chest-reward-forge-stones"
-              icon={<ForgeStoneIcon tier={forgeStones.tier} className={ICON} />}
-            >
-              {tr("battle.forgeStonesEarned", {
-                count: forgeStones.count,
-                tier: tr(`forgeStones.tiers.${forgeStones.tier}`),
-              })}
-            </RewardLine>
-          ) : null}
-          {chest.pack ? (
-            <RewardLine
-              testId="chest-reward-pack"
-              icon={<GlyphIcon glyph="pack" className="size-5" />}
-            >
-              {tr(
-                chest.pack.version === "race"
-                  ? "campaign.chest.racePack"
-                  : "campaign.chest.pack",
-                { pack: tr(`packs.names.${chest.pack.pack}`) }
+      <Modal className="fade-in zoom-in-95 animate-in w-[min(560px,96vw)] overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] shadow-[0_24px_48px_rgba(0,0,0,0.55)] duration-200 motion-reduce:animate-none">
+        <Dialog className="max-h-[92dvh] overflow-y-auto px-5 pt-4 pb-5 outline-none [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3">
+          <Heading
+            slot="title"
+            className="font-display text-center text-xl leading-tight font-black text-[#2a1d12] [@media(max-height:500px)]:text-lg"
+          >
+            {tr("campaign.chest.claimedTitle", { stars: chest.stars })}
+          </Heading>
+          <div
+            className="relative mx-auto mt-3 grid size-24 place-items-center rounded-full border-2 border-[#b47f36] bg-[#ead9b4] shadow-[0_4px_0_rgba(42,26,12,0.25)] [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:size-16"
+            aria-hidden
+          >
+            <span
+              className={cn(
+                "absolute inset-0 scale-50 rounded-full bg-[radial-gradient(circle,rgba(255,215,90,0.8)_0%,rgba(255,215,90,0)_72%)] opacity-0 transition-[opacity,scale] duration-500 ease-out motion-reduce:transition-none",
+                revealed && "scale-100 opacity-100"
               )}
-            </RewardLine>
+            />
+            <ChestIcon
+              earned={revealed}
+              unlocked
+              className={cn(
+                "relative size-16 drop-shadow-[0_4px_2px_rgba(42,26,12,0.35)] transition-transform duration-500 ease-out motion-reduce:transition-none [@media(max-height:500px)]:size-12",
+                revealed ? "scale-110" : "scale-90"
+              )}
+            />
+          </div>
+          <ul
+            className="mt-4 grid grid-cols-1 gap-2 min-[520px]:grid-cols-2 [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:gap-1.5"
+            aria-hidden={!revealed}
+          >
+            {lines}
+          </ul>
+          {revealed ? (
+            <GameButton
+              intent="gold"
+              size="sm"
+              autoFocus
+              onPress={onClose}
+              className="mt-4 w-full [@media(max-height:500px)]:mt-2"
+              data-testid="chest-rewards-close"
+            >
+              {tr("campaign.chest.ok")}
+            </GameButton>
           ) : null}
-        </ul>
-        <GameButton
-          intent="gold"
-          size="sm"
-          autoFocus
-          onPress={onClose}
-          className="mt-3 w-full"
-          data-testid="chest-rewards-close"
-        >
-          {tr("campaign.chest.ok")}
-        </GameButton>
-      </Dialog>
-    </Popover>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 };
 
@@ -403,17 +458,40 @@ const useChestTip = (stars: number, count: number, state: ChestState) => {
   return `${tr("campaign.chest.label", { stars })}. ${status}`;
 };
 
+/** The fixed reward contents of a chest that the Player has already claimed. */
+const chestRewardDetails = (
+  region: number,
+  stars: number
+): ChestClaim | null => {
+  const reward = STAR_CHESTS.find((chest) => chest.stars === stars);
+  if (!reward) {
+    return null;
+  }
+  return {
+    reward,
+    forgeStones:
+      reward.forgeStones > 0
+        ? {
+            tier: regionForgeStoneTier(region),
+            count: reward.forgeStones,
+          }
+        : null,
+  };
+};
+
 /**
  * One chest on the Star track, at its Star count (GDD 11.5). A closed chest
- * says how many Stars it still needs. A claimable chest glows, and a tap or
- * Enter claims it and shows its rewards. A claimed chest stays open.
+ * says how many Stars it still needs. A ready chest glows. A claimed chest
+ * opens to show its rewards again.
  */
 const Chest = ({
   stars,
   count,
   state,
   rewards,
+  revealed,
   onClaim,
+  onInspect,
   onCloseRewards,
 }: {
   readonly stars: number;
@@ -421,27 +499,34 @@ const Chest = ({
   readonly state: ChestState;
   /** The claim whose rewards panel shows now, or `null`. */
   readonly rewards: ChestClaim | null;
+  readonly revealed: boolean;
   readonly onClaim: () => void;
+  readonly onInspect: () => void;
   readonly onCloseRewards: () => void;
 }) => {
   const tip = useChestTip(stars, count, state);
+  const { tr } = useGameText();
+  const name =
+    state === "claimed" ? `${tip} ${tr("campaign.chest.viewRewards")}` : tip;
   const button = useRef<HTMLButtonElement>(null);
   const claimable = state === "claimable";
   const claimed = state === "claimed";
   return (
     <>
-      <TipPiece tip={tip}>
+      <TipPiece tip={name}>
         {(onPress) => (
           <Button
             ref={button}
-            onPress={(event) => (claimable ? onClaim() : onPress(event))}
-            aria-label={tip}
+            onPress={(event) =>
+              claimable ? onClaim() : claimed ? onInspect() : onPress(event)
+            }
+            aria-label={name}
             className={cn(
               "group relative grid size-10 shrink-0 place-items-center rounded-lg outline-none",
               "transition-colors duration-100 data-[hovered]:bg-[#fff6df]/10",
               "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
               "[@media(max-height:500px)]:size-8",
-              claimable ? "cursor-pointer" : "cursor-default"
+              claimable || claimed ? "cursor-pointer" : "cursor-default"
             )}
             data-testid={`star-chest-${stars}`}
             data-state={state}
@@ -454,10 +539,11 @@ const Chest = ({
             ) : null}
             <ChestIcon
               earned={claimed}
+              unlocked={claimable}
               className={cn(
                 "relative size-9 drop-shadow-[0_2px_0_rgba(0,0,0,0.55)] transition-transform duration-150 [@media(max-height:500px)]:size-7",
                 state === "closed" && "brightness-90 saturate-[0.7]",
-                claimable &&
+                (claimable || claimed) &&
                   "group-data-[hovered]:-translate-y-0.5 group-data-[pressed]:translate-y-0"
               )}
             />
@@ -479,7 +565,7 @@ const Chest = ({
       {rewards ? (
         <ChestRewards
           claim={rewards}
-          anchor={button}
+          revealed={revealed}
           onClose={onCloseRewards}
         />
       ) : null}
@@ -504,18 +590,63 @@ export const StarChests = ({
   const { tr, locale } = useGameText();
   const registry = useContext(RegistryContext);
   const profile = useAtomValue(profileAtom);
-  const [opened, setOpened] = useState<ChestClaim | null>(null);
+  const [opened, setOpened] = useState<{
+    readonly region: number;
+    readonly claim: ChestClaim;
+  } | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const revealTimer = useRef<number | null>(null);
   const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   // A Region with no Stages yet keeps its chests on a full track.
   const track = Math.max(total, STAR_CHESTS.at(-1)?.stars ?? 1);
   const share = Math.min(1, count / track);
+  const openRewards = (claim: ChestClaim) => {
+    if (revealTimer.current !== null) {
+      window.clearTimeout(revealTimer.current);
+      revealTimer.current = null;
+    }
+    setOpened({ region, claim });
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setRevealed(true);
+      return;
+    }
+    setRevealed(false);
+    revealTimer.current = window.setTimeout(() => {
+      setRevealed(true);
+      revealTimer.current = null;
+    }, 480);
+  };
+  const closeRewards = () => {
+    if (revealTimer.current !== null) {
+      window.clearTimeout(revealTimer.current);
+      revealTimer.current = null;
+    }
+    setOpened(null);
+    setRevealed(false);
+  };
+  useEffect(
+    () => () => {
+      if (revealTimer.current !== null) {
+        window.clearTimeout(revealTimer.current);
+      }
+    },
+    []
+  );
   const claim = (stars: number) => {
     const claimed = claimStarChest(registry.get(profileAtom), region, stars);
     if (claimed) {
       unlockAudio();
       playSound("revealRare");
       registry.set(profileAtom, claimed.profile);
-      setOpened(claimed);
+      openRewards(claimed);
+    }
+  };
+  const inspect = (stars: number) => {
+    const details = chestRewardDetails(region, stars);
+    if (details) {
+      unlockAudio();
+      playSound("select");
+      openRewards(details);
     }
   };
   return (
@@ -558,22 +689,30 @@ export const StarChests = ({
             style={{ width: `${share * 100}%` }}
           />
         </span>
-        {STAR_CHESTS.map((chest) => (
-          <span
-            key={chest.stars}
-            className="absolute top-0 -translate-x-1/2"
-            style={{ left: `${(chest.stars / track) * 100}%` }}
-          >
-            <Chest
-              stars={chest.stars}
-              count={count}
-              state={chestState(profile, region, chest.stars)}
-              rewards={opened?.reward.stars === chest.stars ? opened : null}
-              onClaim={() => claim(chest.stars)}
-              onCloseRewards={() => setOpened(null)}
-            />
-          </span>
-        ))}
+        {STAR_CHESTS.map((chest) => {
+          const state = chestState(profile, region, chest.stars);
+          const isOpen =
+            opened?.region === region &&
+            opened.claim.reward.stars === chest.stars;
+          return (
+            <span
+              key={chest.stars}
+              className="absolute top-0 -translate-x-1/2"
+              style={{ left: `${(chest.stars / track) * 100}%` }}
+            >
+              <Chest
+                stars={chest.stars}
+                count={count}
+                state={state}
+                rewards={isOpen && opened ? opened.claim : null}
+                revealed={revealed}
+                onClaim={() => claim(chest.stars)}
+                onInspect={() => inspect(chest.stars)}
+                onCloseRewards={closeRewards}
+              />
+            </span>
+          );
+        })}
       </div>
     </section>
   );

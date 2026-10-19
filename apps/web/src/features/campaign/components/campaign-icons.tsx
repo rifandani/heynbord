@@ -63,14 +63,17 @@ export const StarRow = ({
 );
 
 /**
- * A treasure chest for the Star chest plate. Closed: a domed lid with a lock.
- * Open (its Stars are earned): the lid stands back and gold light comes out.
+ * A treasure chest for the Star chest plate. A locked chest has a lock. A
+ * ready chest has an unlocked clasp. A claimed chest stands open with gold.
  */
 export const ChestIcon = ({
   earned,
+  unlocked = false,
   className,
 }: {
   readonly earned: boolean;
+  /** An open chest that is ready to claim, but not yet claimed. */
+  readonly unlocked?: boolean;
   readonly className?: string;
 }) => (
   <svg viewBox="0 0 32 32" className={className} aria-hidden>
@@ -153,7 +156,7 @@ export const ChestIcon = ({
       strokeWidth={1.8}
       fill="none"
     />
-    {earned ? null : (
+    {!earned && !unlocked ? (
       <rect
         x={13.5}
         y={13.5}
@@ -163,6 +166,14 @@ export const ChestIcon = ({
         fill="#e7bb6a"
         stroke="#2a1a0c"
         strokeWidth={1.2}
+      />
+    ) : earned ? null : (
+      <path
+        d="M13.5 16v4.5h5V16"
+        fill="#e2a93b"
+        stroke="#7a5310"
+        strokeWidth={1}
+        strokeLinejoin="round"
       />
     )}
   </svg>

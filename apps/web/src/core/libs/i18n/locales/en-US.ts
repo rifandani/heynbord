@@ -403,11 +403,11 @@ export default {
       claimed: "Claimed.",
       needed: "{count} more Stars open this chest.",
       claimedTitle: "Chest at {stars} Stars: claimed",
+      viewRewards: "View rewards.",
       essence: "+{amount} Essence",
-      pack: "1 {pack} waits in the Card shop.",
-      racePack:
-        "1 {pack} waits in the Card shop. You select its Race when you open it.",
-      ok: "OK",
+      pack: "+1 {pack}",
+      racePack: "+1 {pack} (Race)",
+      ok: "Continue",
     },
     panel: {
       close: "Close",
