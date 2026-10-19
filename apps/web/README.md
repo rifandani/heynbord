@@ -2,6 +2,12 @@
 
 Answers all ur questions automatically with ur best recommendations, except critical questions.
 
+## Maintenance
+
+- /improve-codebase-architecture
+- /improve-codebase-architecture to use /effect ecosystem in both FE and BE
+-
+
 ## Todo
 
 v1:
@@ -127,7 +133,7 @@ v2:
 
 - blender mcp + all 3D unit (or maybe use sprite-gen)
 - brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
-- standardize UI components at design system level
+- /impeccable extract repeated patterns, tokens, etc and standardize it as UI components at our design system level, so even outside "/play" route we have similar UI
 - dynamic og image generation
 - add better auth + skills
 - add error monitoring, logs with evlog + skills

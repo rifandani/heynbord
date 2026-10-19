@@ -150,11 +150,15 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Dungeons screen
 
-**Notice Board**: The wood board on the Dungeons screen that holds the Wanted Posters of the Bosses of one Dungeon and the Front Strip under them. _Avoid_: boss list, briefing panel, bounty board
+**Mine**: The Dungeons screen as one mine that goes down into the earth: one Stop for each Dungeon, deeper with each number, in a column of shaft rock. When the Player selects another Dungeon, the lift stays in its well and the world moves, so the old Stop slides away, the rock goes past and the new Stop comes in. _Avoid_: dungeon list, level select, tabs, shaft section
 
-**Wanted Poster**: The parchment poster of one Boss on the Notice Board: its pin, its Class seal, its name and Class, its Hero HP with a notch at each Boss Rule threshold, its Boss Rules and the Lanes of its Front. After a win of the Dungeon, the poster carries the "Bounty claimed" stamp. On a short screen, the poster is a slip with the same facts. _Avoid_: boss card, boss profile, enemy card
+**Stop**: One Dungeon on the Dungeons screen: the painted lair of that Dungeon, with the empty lift well at its left, the level floor line, the Bosses in the middle and calm rock at the right, under the Dungeon Panel. The Mine puts the same lift cut-out over the well of the selected Stop: the open lift, or the locked lift (gate shut, with a padlock) while the Dungeon is locked, over a dim Stop. _Avoid_: chamber, room, floor, stage
 
-**Front Strip**: The small Board from above under the Wanted Posters: the Lanes from Lane 1 at the top, the Player's Hero at the left, and one Front Bracket for each Boss at the right with the pin of its poster. It is not the Lane Strip of a Boss Plate. _Avoid_: lane map, board preview, mini-map
+**Boss Mark**: The box of one Boss on a painted Stop, measured on the painting: its center and its top and its bottom, in percent of the Stop. The game lights it when the Player hovers or focuses the Boss Dossier. _Avoid_: boss hit box, boss region, boss glow
+
+**Boss Dossier**: The entry of one Boss in the Dungeon Panel: its pin, its Class seal, its name, Class and wanted line, its Hero HP with a notch at each Boss Rule threshold, its Boss Rules, the Lanes of its Front and its Units at the start. Focus or hover on it lights the Boss on the painting. _Avoid_: boss profile, enemy card
+
+**Depth Gauge**: The rope at the left of the Mine, with one marker for each Stop and the lift cage around the marker of the selected Stop. A press on a marker goes to that Stop. _Avoid_: spine, scrollbar, mini-map
 
 ### Heynspire screen
 

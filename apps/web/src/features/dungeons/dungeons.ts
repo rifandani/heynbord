@@ -154,15 +154,48 @@ export const dungeonRewardPreview = (
   };
 };
 
+/** What the Dungeons screen saw at its last show: the state and the wins of each Dungeon, by number. */
+export type SeenDungeons = Readonly<
+  Record<number, { readonly state: DungeonState; readonly wins: number }>
+>;
+
+/** What the Dungeons screen saw now, to keep for its next show. */
+export const seenDungeons = (slots: readonly DungeonSlot[]): SeenDungeons =>
+  Object.fromEntries(
+    slots.map((slot) => [slot.number, { state: slot.state, wins: slot.wins }])
+  );
+
 /**
- * The Lane of each Front Bracket on the Front strip: the first and the last
- * Lane of the Front of each Boss, in Boss order. A Front is a block of Lanes
- * next to each other (content test, 14 — Campaign Stages 7.1).
+ * What changed since the Dungeons screen last showed `seen`: the Dungeons
+ * that opened (their stop wakes and its light comes up one time), and the
+ * Dungeons with a new win (their stamps land one time). `null` before the
+ * first show in the session, which shows no motion.
  */
-export const frontSpans = (
-  dungeon: Pick<DungeonDefinition, "bosses">
-): readonly { readonly first: number; readonly last: number }[] =>
-  dungeon.bosses.map((boss) => ({
-    first: Math.min(...boss.front),
-    last: Math.max(...boss.front),
-  }));
+export interface DungeonNews {
+  readonly opened: readonly number[];
+  readonly won: readonly number[];
+}
+
+export const dungeonNews = (
+  slots: readonly DungeonSlot[],
+  seen: SeenDungeons | null
+): DungeonNews => {
+  if (seen === null) {
+    return { opened: [], won: [] };
+  }
+  const opened: number[] = [];
+  const won: number[] = [];
+  for (const slot of slots) {
+    const before = seen[slot.number];
+    if (before === undefined || slot.state !== "open") {
+      continue;
+    }
+    if (before.state !== "open") {
+      opened.push(slot.number);
+    }
+    if (slot.wins > before.wins) {
+      won.push(slot.number);
+    }
+  }
+  return { opened, won };
+};

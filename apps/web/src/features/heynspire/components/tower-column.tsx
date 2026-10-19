@@ -240,7 +240,9 @@ const Base = () => {
 /**
  * The climb at a glance, at the left of the column: a slim rail with the
  * won Floors in bronze from the bottom, the Current Floor as a gold mark, and
- * a crown for each Boss Floor. A press on a crown shows that Boss Floor.
+ * a crown for each Boss Floor. A press on a crown shows that Boss Floor. The
+ * rail is centered in a box as wide as `--spine-w`, so that the crowns keep the
+ * same gap from the screen edge as the Depth Gauge markers of the Dungeons.
  */
 const Spine = ({
   climb,
@@ -257,7 +259,7 @@ const Spine = ({
   return (
     <nav
       aria-label={tr("heynspire.spine", { won, count: floors.length })}
-      className="absolute top-1/2 left-[max(1rem,env(safe-area-inset-left))] flex h-[min(64%,440px)] -translate-y-1/2 flex-col items-center [@media(max-height:500px)]:left-[max(0.5rem,env(safe-area-inset-left))] [@media(max-height:500px)]:h-[78%]"
+      className="absolute top-1/2 left-[max(1rem,env(safe-area-inset-left))] flex h-[min(64%,440px)] w-[var(--spine-w)] -translate-y-1/2 flex-col items-center [@media(max-height:500px)]:left-[max(0.5rem,env(safe-area-inset-left))] [@media(max-height:500px)]:h-[78%]"
       data-testid="heynspire-spine"
     >
       <div className="relative w-2 flex-1 rounded-full border-2 border-[#2a1a0c]/80 bg-[#1c140e]/75 shadow-[inset_0_1px_3px_rgba(0,0,0,0.6)]">

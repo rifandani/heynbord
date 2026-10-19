@@ -1784,18 +1784,27 @@ export default {
   // Draft names (PRD open question 1).
   dungeons: {
     label: "Dungeon",
-    tabs: { label: "Dungeon", later: "Segera hadir" },
-    board: {
-      label: "Para Bos di Dungeon ini",
+    shaft: {
+      label: "Tambang",
+      stop: "Dungeon {number}: {name}, {state}",
+      gauge: "Kedalaman tambang dan Dungeon di dalamnya",
+      later: "Segera hadir",
+      state: {
+        open: "belum dimenangkan",
+        won: "menang: {count}",
+        locked: "terbuka di level {level}",
+        later: "segera hadir",
+      },
     },
-    strip: {
-      label:
-        "Lini para Bos di Jalur. Jalur 1 ada di atas, dan Pahlawanmu ada di kiri.",
-      startUnit:
+    chip: { locked: "Terkunci" },
+    dossier: {
+      bosses: "Para Bos",
+      atStart: "Saat mulai:",
+      startUnit: "{name} ({rank}), Jalur {lane}",
+      startUnitLabel:
         "{name} ({rank}), ada di Papan di Jalur {lane} saat Pertempuran dimulai",
     },
-    poster: {
-      wanted: "Dicari",
+    boss: {
       summon: "Panggil {name} ({rank}) di Jalur {lane}",
       rule: "{at}: {effect}.",
       claimed: "Hadiah diklaim",
@@ -1821,7 +1830,7 @@ export default {
         foremanGritjaw: "Mandor Gritjaw",
         rootwardenSylla: "Penjaga Akar Sylla",
       },
-      // Kalimat draf untuk poster buronan, dengan nama draf.
+      // Kalimat "dicari" draf tiap Bos, dengan nama draf.
       wanted: {
         foremanGritjaw: "Karena menggali di bawah Lembah Jamur Cahaya.",
         rootwardenSylla: "Karena menyewa Goblin untuk menjaga akar.",
@@ -1833,7 +1842,7 @@ export default {
         abbotKnell: "Kepala Biara Knell",
         seerVell: "Peramal Vell",
       },
-      // Kalimat draf untuk poster buronan, dengan nama draf.
+      // Kalimat "dicari" draf tiap Bos, dengan nama draf.
       wanted: {
         abbotKnell: "Karena membangunkan orang mati dari kuburnya.",
         seerVell: "Karena melepas hewan buas es ke para pengembara.",
@@ -1846,7 +1855,7 @@ export default {
         oldBramble: "Bramble Tua",
         queenMarrow: "Ratu Marrow",
       },
-      // Kalimat draf untuk poster buronan, dengan nama draf.
+      // Kalimat "dicari" draf tiap Bos, dengan nama draf.
       wanted: {
         baronBrassbelly: "Karena memungut pajak jalan dua kali.",
         oldBramble: "Karena bangun dengan marah.",
@@ -1881,8 +1890,7 @@ export default {
       current: "Lantai Saat Ini",
       locked: "Terkunci",
       received: "Sudah diterima",
-      wonNote:
-        "Kamu sudah memenangkan Lantai ini. Setiap Lantai memberi hadiahnya satu kali.",
+      wonNote: "Selesai",
       yourLevel: "Level kamu {level}",
     },
     result: {

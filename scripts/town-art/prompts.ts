@@ -349,6 +349,116 @@ export const CAVE_PROMPT = [
 ].join("\n");
 
 /**
+ * The first message of the ChatGPT conversation for the Dungeons mine, with
+ * the stop layout sketch, the style reference and the cave inside painting
+ * attached. The rules come from section 13.1 of the Town Concepts.
+ */
+export const DUNGEON_SETUP_PROMPT = [
+  "In this conversation, you will paint the parts of the dungeon mine of a fantasy card battle game: the screen where the player rides a wooden lift down into the earth to fight the bosses of 3 dungeons. The deeper the stop, the stronger the bosses. The game shows one stop at a time as a full-screen painting. It puts the same lift over each stop and moves it between the stops.",
+  [
+    "Image 1 is a rough layout sketch of one stop. Keep its boxes: the empty lift well at the left, the level floor line, the lair with the bosses in the middle, and the calm rock wall at the right. The two figure shapes show the size and the place of the bosses: each stop message gives the number and the places of its bosses. Do not copy its flat colors.",
+    "Image 2 shows the art style: hand-painted fantasy illustration with soft painterly brushwork, bright warm light, rich color and clean silhouettes. Do not copy any figure, object or scene from it.",
+    "Image 3 shows the same cave at the surface: grey rock, old timber props, warm brass lanterns and soft glowcap green. The mine goes down from this cave. Do not copy its view.",
+  ].join("\n"),
+  [
+    "Rules for each part:",
+    "- The same mine in all parts: grey rock, old timber with iron brackets, brass lanterns with warm candle light.",
+    "- Seen straight on, at eye level, with no perspective tilt.",
+    "- Light from the upper left in all parts. Bright and warm, never dark or scary, also at the deepest stop.",
+    "- The game puts a panel over the right part of each stop. There, the painting is plain rock in soft shade.",
+    "- No gore, no blood, no loose bones or skulls on the ground.",
+    "- No text, no letters, no numbers, no signs, no logo, no frame and no UI.",
+  ].join("\n"),
+  "Each message names one part and gives its prompt.",
+  READY,
+].join("\n\n");
+
+/** The empty lift well and the floor of each stop (13.2), the same in all stops. */
+const stopFrame = (rails: string, floor: string): string =>
+  [
+    `at the left, from 2% to 30% of the width, the empty well of the lift from the top edge down to the floor: two straight timber guide rails at 4% and 28%${rails}, plain dark rock between them, no lift, no rope and no cage, because the game puts the lift there,`,
+    `a level floor across the full width, its top edge straight at 76% of the height: ${floor}, plain and calm under 80%,`,
+  ].join("\n");
+
+/**
+ * The message for each part of the Dungeons mine, after its setup message.
+ * It is a short form of the brief in section 13 of the Town Concepts. When
+ * you change the brief there, change these messages too.
+ */
+export const DUNGEON_PART_PROMPTS = {
+  lift: [
+    "Part: the lift, tall 2:3 portrait, transparent background.",
+    "a sturdy old wooden mine lift seen straight on, at eye level, with no perspective tilt: an open cage of thick timber beams with iron brackets and big round rivets,",
+    "the cage fills the bottom 60% of the image, from 14% to 86% of the width, its plank floor straight and level at 96% of the height, so that it stands on the floor line of each stop,",
+    "two corner posts and a top crossbeam, a waist-high timber rail at the back and the sides, a folding lattice gate of thin timber pushed open to the left side,",
+    "a big wooden gear wheel with brass teeth and a crank handle at the right side, a small brass lantern with warm candle light on a hook at the left post, a coil of spare rope in a corner,",
+    "from an iron hook on the middle of the top crossbeam, one thick hemp rope goes straight up at 50% of the width to the top edge of the image,",
+    "a small cheerful goblin liftkeeper stands on the floor at the right and turns the crank: brass goggles up on the forehead, a dented hard hat with a candle stub on top, a canvas apron, soot-grey skin with a touch of acid green, a proud grin,",
+    "the middle of the lift floor is empty,",
+    "Heynbord, painterly fantasy game asset, bright warm light, soft brush texture, clean readable silhouette, a little funny,",
+    "light from the upper left, warm timber, brass, hemp, soot grey and acid green accents,",
+    "no other people, no shaft, no rock, no text, no letters, no numbers, no frame, no UI",
+  ].join("\n"),
+  liftLocked: [
+    "Part: the locked lift. Change only these things in the lift image above. Keep the size, the position of the cage, the light and the transparent background the same:",
+    "the folding lattice gate is pulled shut across the front of the lift, and a big iron padlock hangs on its latch,",
+    "the goblin liftkeeper stands behind the gate with arms crossed and shakes the head, a little sorry and a little funny,",
+    "no text, no letters, no numbers",
+  ].join("\n"),
+  stop1: [
+    "Part: stop 1, the Rootdeep Mine, the first and shallowest stop, wide 3:2 landscape, the painting fills the full image to all edges, no transparency.",
+    stopFrame(
+      ", a soft beam of daylight comes down the well from above",
+      "plank boards under the lift well, packed earth after it"
+    ),
+    "in the middle, from 30% to 62% of the width, a friendly goblin dig under the roots of a glowing mushroom forest: thick tree roots come through the rock ceiling, timber props, small wooden scaffolds, a rail track with an ore cart full of glittering grey rock, picks and shovels, brass lanterns,",
+    "two bosses stand side by side on the floor line, facing the viewer, each about 40% of the image height tall, in clear warm light:",
+    "at 40% of the width, Foreman Gritjaw, a broad orc foreman in burnt orange leather and rough iron, a hard hat with a lamp, a huge sledgehammer on his shoulder, a big confident grin,",
+    "at 55% of the width, Rootwarden Sylla, a tall elf warden of the roots in leaf green and warm brown, a longbow of living root wood, calm sharp eyes,",
+    "two small goblin diggers with picks peek out from behind them,",
+    "two small round glowing eyes look out of a dark side tunnel,",
+    "from 62% of the width to the right edge, a plain wall of grey rock in soft shade, smooth and calm, with low contrast and no objects, because a panel covers it,",
+    "the top tenth is plain rock ceiling in soft shadow,",
+    "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, a cozy, welcoming and a little funny mood, not scary,",
+    "light from the upper left, grey rock, warm timber, lantern gold, root brown, soft glowcap green,",
+    "no gore, no bones, no skulls, no text, no letters, no numbers, no signs, no logo, no frame, no UI",
+  ].join("\n"),
+  stop2: [
+    "Part: stop 2, the Rimebarrow, deeper than stop 1, wide 3:2 landscape, the painting fills the full image to all edges, no transparency.",
+    stopFrame(
+      ", the same as in stop 1, now with frost on the timber",
+      "frosty plank boards under the lift well, old flagstones after it"
+    ),
+    "in the middle, from 30% to 62% of the width, a larger cavern with an old grave mound in the frost: a low stone barrow with a round dark doorway, old standing stones, small icicles, frost on the rock, cold blue light far inside the barrow, warm brass lanterns at the landing,",
+    "two bosses stand on the floor line, facing the viewer, each about 40% of the image height tall:",
+    "at 41% of the width, Abbot Knell, a tall undead abbot in old pale teal robes, bone-white face with friendly hollow eyes, a big bronze hand bell, a small choir of cheerful little undead singers in robes around his feet,",
+    "at 56% of the width, Seer Vell, a slim elf frost seer in white and ice blue, a staff with a glowing ice crystal, a shaggy white snow yeti cub at her side,",
+    "from 62% of the width to the right edge, a plain wall of frosty grey rock in soft shade, smooth and calm, with low contrast and no objects, because a panel covers it,",
+    "the top tenth is plain rock ceiling in soft shadow,",
+    "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, cold and mysterious but friendly and a little funny, not scary,",
+    "light from the upper left, warm lantern gold at the landing, ice blue and pale teal in the barrow, grey rock, bone white,",
+    "no gore, no loose bones, no skulls on the ground, no text, no letters, no numbers, no runes, no signs, no logo, no frame, no UI",
+  ].join("\n"),
+  stop3: [
+    "Part: stop 3, the Broken Vault, the deepest stop, wide 3:2 landscape, the painting fills the full image to all edges, no transparency.",
+    stopFrame(
+      ", the same as in stop 1, now with brass bands on the timber",
+      "plank boards under the lift well, cracked marble floor after it"
+    ),
+    "in the middle, from 30% to 62% of the width, a huge ancient royal vault under the hills: tall cracked stone columns, a giant broken round brass vault door, thorny bramble roots through the cracks, a few small piles of spilled gold coins, warm golden treasure light, soft glowcap green in the dark corners, the largest and grandest place of the mine,",
+    "three bosses stand on the floor line, facing the viewer:",
+    "at 47% of the width, behind the others, the Old Bramble, a forest giant like a huge old tree with a face in the bark, one eye half open, moss and brambles on the shoulders, its head reaches up to 15% of the image height, grumpy,",
+    "at 37% of the width, in front, Baron Brassbelly, a round bandit lord with a very large hat with a feather, a brass breastplate on a big belly, a heavy crossbow, a smug smile, about 40% of the image height tall,",
+    "at 57% of the width, in front, Queen Marrow, the undead queen, tall and thin in violet robes, a pale bone-white crown, soft green light in her eyes and in her staff, cold and proud, about 40% of the image height tall,",
+    "from 62% of the width to the right edge, a plain wall of grey rock and old stone blocks in soft shade, smooth and calm, with low contrast and no objects, because a panel covers it,",
+    "the top tenth is plain vault ceiling in soft shadow,",
+    "Heynbord, painterly fantasy game background, bright warm light, soft brush texture, clean readable silhouettes, grand and dramatic but bright and a little funny, not scary,",
+    "light from the upper left, warm gold, brass, violet, bramble green, grey stone,",
+    "no gore, no loose bones, no skulls on the ground, no text, no letters, no numbers, no runes, no signs, no logo, no frame, no UI",
+  ].join("\n"),
+} as const;
+
+/**
  * The first message of the ChatGPT conversation for the Heynspire tower, with
  * the storey layout sketch, the style reference and the outside reference
  * attached. The rules come from section 14.1 of the Town Concepts.

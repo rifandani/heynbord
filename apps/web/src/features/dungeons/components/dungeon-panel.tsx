@@ -1,18 +1,10 @@
 import { useAtomValue } from "@effect/atom-react";
 import { coinDenominations, getCard } from "@workspace/rules";
 import { cn } from "cn";
-import type { ReactNode, RefObject } from "react";
-import { useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
-import {
-  Button,
-  Dialog,
-  Heading,
-  Modal,
-  ModalOverlay,
-  TooltipTrigger,
-} from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
+import { Button, TooltipTrigger } from "react-aria-components";
 
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
@@ -32,6 +24,8 @@ import {
 } from "@/features/campaign/components/stage-panel";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import type { Peek } from "@/features/deck/components/use-card-peek";
+import { problemText } from "@/features/deck/deck";
+import { BossDossier } from "@/features/dungeons/components/boss-dossier";
 import type {
   Balances,
   DungeonSlot,
@@ -50,32 +44,7 @@ import {
 import { isDungeonSweepable } from "@/features/sweep/sweep";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
-import {
-  clearSheetOrigin,
-  placeSheetOrigin,
-  SHEET_MOTION,
-  SHEET_PATH_MOTION,
-  SHEET_SCRIM_MOTION,
-} from "@/features/town/sheet-motion";
 import { coinWords } from "@/features/town/town";
-
-/**
- * The parts of the panel ink in from the top while the sheet comes up out of
- * the Fight bar, as in the Stage Panel: the header, the reward, the Deck, the
- * Sweep, then the buttons.
- */
-const INK = [
-  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_140ms_both]",
-  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_190ms_both]",
-  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_240ms_both]",
-  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_290ms_both]",
-  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_340ms_both]",
-  "motion-safe:group-data-[entering]/sheet:animate-[stage-panel-ink_320ms_cubic-bezier(0.2,0.8,0.2,1)_390ms_both]",
-] as const;
-
-/** The text goes before the sheet goes back into the Fight bar. */
-const INK_OUT =
-  "motion-safe:group-data-[exiting]/sheet:animate-[settings-sheet-ink_260ms_ease-out_reverse_both]";
 
 /** The small Night Plate of a reward, as the Battle result shows it. */
 const PLATE =
@@ -303,7 +272,7 @@ const RewardRow = ({ slot }: { readonly slot: DungeonSlot }) => {
   const won = slot.wins > 0;
   const { firstWin, win } = preview;
   return (
-    <Row label={tr("campaign.panel.reward")} className={INK[1]}>
+    <Row label={tr("campaign.panel.reward")}>
       <FirstWinCard
         cardId={firstWin.card.cardId}
         rank={firstWin.card.rank}
@@ -385,11 +354,7 @@ const SweepRow = ({
 }) => {
   const { tr } = useGameText();
   return (
-    <Row
-      label={tr("sweep.label")}
-      className={INK[4]}
-      anchor="dungeon-sweep-row"
-    >
+    <Row label={tr("sweep.label")} anchor="dungeon-sweep-row">
       <SweepTickets
         kind="dungeon"
         owned={owned}
@@ -400,26 +365,26 @@ const SweepRow = ({
   );
 };
 
+/** A small state chip in the header: never the color alone, its icon and its words say the state. */
+const CHIP =
+  "inline-flex items-center gap-1 rounded-[4px] px-1.5 py-0.5 text-[11px] leading-none font-bold tracking-[0.04em] uppercase";
+
 /**
  * The header of the panel: the cave seal, the name of the Dungeon, its
- * number, the Recommended level, the wins, and the close button.
+ * number and its Recommended level, and its state: open and not won yet, the
+ * wins, or locked.
  */
 const PanelHeader = ({
   slot,
-  close,
+  titleId,
 }: {
   readonly slot: DungeonSlot;
-  readonly close: () => void;
+  readonly titleId: string;
 }) => {
   const { tr } = useGameText();
   const { dungeon } = slot;
   return (
-    <header
-      className={cn(
-        "flex items-start gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2",
-        INK[0]
-      )}
-    >
+    <header className="flex items-start gap-3 border-b-2 border-[#c9b48c] px-5 pt-4 pb-3 [@media(max-height:500px)]:items-center [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1.5">
       <span
         className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-[#fff6df] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-8"
         aria-hidden
@@ -430,57 +395,115 @@ const PanelHeader = ({
         />
       </span>
       <div className="min-w-0">
-        <Heading
-          slot="title"
-          className="font-display text-2xl leading-tight font-black [@media(max-height:500px)]:text-lg"
+        <h2
+          id={titleId}
+          className="font-display text-2xl leading-tight font-black tracking-[0.02em] [@media(max-height:500px)]:text-lg"
         >
           {dungeon
             ? tr(`dungeons.${dungeon.id}.name`)
             : tr("battle.dungeonName", { number: slot.number })}
-        </Heading>
-        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-[#5b4632]">
+        </h2>
+        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-[#5b4632] [@media(max-height:500px)]:mt-0.5">
           <span>
             {tr("battle.dungeonName", { number: slot.number })} ·{" "}
             {tr("campaign.panel.level", { level: slot.unlockLevel })}
           </span>
-          {slot.wins > 0 ? (
+          {slot.state === "open" && slot.wins > 0 ? (
             <span
-              className="rounded-[4px] border-2 border-[#e2a93b] bg-[#fff3d1] px-1.5 py-px font-black text-[#7a5310] tabular-nums"
+              className={cn(
+                CHIP,
+                "bg-[#7a5310] text-[#fff6df] tabular-nums shadow-[inset_0_0_0_1px_#e7bb6a]"
+              )}
               data-testid="dungeon-wins"
               data-wins={slot.wins}
             >
+              <GlyphIcon glyph="check" className="size-3 text-[#ffd75a]" />
               {tr("dungeons.wins", { count: slot.wins })}
             </span>
-          ) : (
-            <span className="font-semibold text-[#6b5238]">
+          ) : null}
+          {slot.state === "open" && slot.wins === 0 ? (
+            <span
+              className={cn(
+                CHIP,
+                "bg-[#ffd75a]/45 text-[#2a1a05] shadow-[inset_0_0_0_1px_#7a5310]"
+              )}
+              data-testid="dungeon-state"
+            >
+              <GlyphIcon glyph="crossedSwords" className="size-3" />
               {tr("campaign.panel.notWon")}
+            </span>
+          ) : null}
+          {slot.state === "open" ? null : (
+            <span
+              className={cn(
+                CHIP,
+                "bg-[#5d6166] text-[#fff6df] shadow-[inset_0_0_0_1px_#a9aeb3]"
+              )}
+              data-testid="dungeon-state"
+            >
+              <GlyphIcon glyph="lock" className="size-3" />
+              {tr("dungeons.chip.locked")}
             </span>
           )}
         </p>
       </div>
-      <GameButton
-        intent="wood"
-        size="icon"
-        aria-label={tr("campaign.panel.close")}
-        onPress={close}
-        className="ml-auto shrink-0 self-start [@media(max-height:500px)]:size-9"
-        data-testid="dungeon-panel-close"
-      >
-        <HiXMark className="size-5" aria-hidden />
-      </GameButton>
     </header>
+  );
+};
+
+/**
+ * The Bosses of the Dungeon: one dossier for each Boss, in Boss order. The
+ * dossier under the pointer or the focus lights its Boss on the painting.
+ */
+const BossesRow = ({
+  slot,
+  active,
+  onActive,
+}: {
+  readonly slot: DungeonSlot;
+  readonly active: number | null;
+  readonly onActive: (boss: number | null) => void;
+}) => {
+  const { tr } = useGameText();
+  const { dungeon } = slot;
+  if (dungeon === null) {
+    return null;
+  }
+  return (
+    <Row label={tr("dungeons.dossier.bosses")}>
+      <ul className="flex flex-col gap-1" data-testid="dungeon-bosses">
+        {dungeon.bosses.map((boss, index) => (
+          <li key={boss.id}>
+            <BossDossier
+              dungeonId={dungeon.id}
+              boss={boss}
+              index={index}
+              active={active === index}
+              onActive={(on) => {
+                if (on) {
+                  onActive(index);
+                } else if (active === index) {
+                  onActive(null);
+                }
+              }}
+            />
+          </li>
+        ))}
+      </ul>
+    </Row>
   );
 };
 
 /** The large buttons of the panel, in Cinzel. */
 const ACTION =
-  "font-display w-full tracking-[0.04em] [@media(max-height:500px)]:min-h-11";
+  "font-display w-full tracking-[0.04em] [@media(max-height:500px)]:min-h-10";
 
 /**
  * The actions of the panel. On a won Dungeon, Sweep is the gold action at the
- * right and takes the focus, and Fight is wood at its left, as in the Stage
- * Panel. When the Player cannot Sweep, Fight is gold and takes the focus.
- * Before the first win, Fight is the one gold button across the full width.
+ * right, and Fight is wood at its left, as in the Stage Panel. When the
+ * Player cannot Sweep, Fight is gold. Before the first win, Fight is the one
+ * gold button across the full width. The gold action carries
+ * `data-primary`: Enter on the stop gives it the focus.
  */
 const PanelActions = ({
   sweepable,
@@ -498,20 +521,13 @@ const PanelActions = ({
   const { tr } = useGameText();
   const sweepNow = sweepable && tickets > 0;
   return (
-    <div
-      className={cn(
-        // With the bottom padding of the rows, 8px over the buttons.
-        "grid shrink-0 gap-2 pt-0.5",
-        INK[5],
-        sweepable && "grid-cols-2"
-      )}
-    >
+    <div className={cn("grid shrink-0 gap-2", sweepable && "grid-cols-2")}>
       <GameButton
         intent={sweepNow ? "wood" : "gold"}
         size="lg"
-        autoFocus={!sweepNow}
         className={ACTION}
         data-testid="dungeon-fight"
+        data-primary={sweepNow ? undefined : true}
         isDisabled={!canFight}
         onPress={onFight}
       >
@@ -521,9 +537,9 @@ const PanelActions = ({
         <GameButton
           intent={sweepNow ? "gold" : "wood"}
           size="lg"
-          autoFocus={sweepNow}
           className={cn(ACTION, "px-3 whitespace-nowrap")}
           data-testid="dungeon-sweep"
+          data-primary={sweepNow || undefined}
           isDisabled={!sweepNow}
           onPress={onSweep}
         >
@@ -541,171 +557,152 @@ const PanelActions = ({
 };
 
 /**
- * The Dungeon Panel (GDD 8.4): the battle preparation of a Dungeon, a
- * parchment dialog like the Stage Panel and the Floor Panel. It shows the
- * name of the Dungeon, its Recommended level, the wins, the reward and the
- * Deck choice (the Active Deck, as the Stage Panel). Fight is the one gold
- * action across the full width, and it takes the focus, so Enter starts the
- * Dungeon Battle. A won Dungeon also has the Dungeon Sweep (ADR-0041): the
- * Sweep row with the Dungeon Sweep Tickets, the Sweep button, which then
- * takes the focus, and the Sweep Result, which turns the page of the same
- * sheet.
- *
- * It comes up out of the Fight bar (`from`) and goes back into it, as the
- * Stage Panel does with its Stage Marker. It keeps the last Dungeon while it
- * closes. On the way to the Deck builder and back, it only zooms and fades at
- * the center.
+ * The Dungeon Panel (GDD 8.4, 11.1): a parchment sheet docked at the right of
+ * the Dungeons screen, open at all times, as the Floor Panel. It shows the
+ * selected Dungeon: its name, Recommended level and state, the dossier of
+ * each Boss, and the reward. An open Dungeon also has the Deck choice and the
+ * gold Fight; a won Dungeon also has the Dungeon Sweep (ADR-0041): the Sweep
+ * row, the Sweep button (gold when the Player has Tickets) and the Sweep
+ * Result, which turns the page of the same sheet. A locked Dungeon shows the
+ * level that opens it in the place of the actions. When the selection
+ * changes, the sheet inks in the new Dungeon.
  */
 export const DungeonPanel = ({
   slot,
-  from,
-  onClose,
+  active,
+  onActive,
   onStart,
 }: {
-  /** The Dungeon of the open panel, or `null` when it is closed. */
-  readonly slot: DungeonSlot | null;
-  /** The Fight bar that the panel comes out of. */
-  readonly from: RefObject<Element | null>;
-  readonly onClose: () => void;
+  /** The selected Dungeon. */
+  readonly slot: DungeonSlot;
+  /** The Boss whose dossier has the pointer or the focus. */
+  readonly active: number | null;
+  readonly onActive: (boss: number | null) => void;
   readonly onStart: (options: BattleOptions) => void;
 }) => {
+  const { tr, text } = useGameText();
+  const titleId = useId();
   const choice = useDeckChoice();
   const player = useAtomValue(battlePlayerAtom);
   const [editing, setEditing] = useState(false);
-  const [last, setLast] = useState(slot);
-  if (slot !== null && slot !== last) {
-    setLast(slot);
-  }
-  const shown = slot ?? last;
-  const overlay = useRef<HTMLDivElement | null>(null);
-  // True from "Edit Decks" until the panel closes: the panel stays at the center.
-  const atCenter = useRef(false);
   const { chosen, problem } = choice;
-  const dungeon = shown?.dungeon ?? null;
-  const open = shown !== null && dungeon !== null && shown.state === "open";
-  const sweep = useSweep("dungeon", open && dungeon ? dungeon.id : null, open);
-  const sweepable = open && shown !== null && isDungeonSweepable(shown.wins);
-  useDungeonsHints(
-    open && sweep.result === null && shown !== null ? shown.wins : null
-  );
+  const { dungeon } = slot;
+  const open = dungeon !== null && slot.state === "open";
+  const sweep = useSweep("dungeon", open ? dungeon.id : null, open);
+  const sweepable = open && isDungeonSweepable(slot.wins);
+  useDungeonsHints(open && sweep.result === null ? slot.wins : null);
   const sweepNow = (tickets: number) => {
     if (chosen) {
       sweep.sweep(tickets, chosen.classId);
     }
   };
   return (
-    <>
-      <ModalOverlay
-        isOpen={slot !== null && !editing}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) {
-            atCenter.current = false;
-            placeSheetOrigin(overlay.current, from.current);
-            onClose();
-          }
-        }}
-        isDismissable
-        // The ref runs before the first paint, so the sheet starts on the bar.
-        ref={(element) => {
-          overlay.current = element;
-          if (!atCenter.current) {
-            placeSheetOrigin(element, from.current);
-          }
-        }}
-        className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] [@media(max-height:500px)]:p-2",
-          SHEET_SCRIM_MOTION
-        )}
+    <aside
+      aria-labelledby={titleId}
+      className={cn(
+        "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+4.25rem)] right-[max(1rem,env(safe-area-inset-right))] bottom-[88px] flex w-[min(440px,38vw)] flex-col overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.45)]",
+        "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:right-[max(0.5rem,env(safe-area-inset-right))] [@media(max-height:500px)]:bottom-[60px] [@media(max-height:500px)]:w-[min(460px,54vw)] [@media(max-height:500px)]:rounded-xl [@media(max-height:500px)]:border-[3px]"
+      )}
+      data-testid="dungeon-panel"
+      data-dungeon={slot.number}
+    >
+      <div
+        key={slot.number}
+        className="flex min-h-0 flex-1 flex-col motion-safe:animate-[stage-panel-ink_220ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
       >
-        <Modal
-          className={cn(
-            "group/sheet flex max-h-full w-[min(460px,94vw)] [@media(max-height:500px)]:w-[min(720px,96vw)]",
-            SHEET_PATH_MOTION
+        <PanelHeader slot={slot} titleId={titleId} />
+        {/* Only the rows scroll: the actions stay at the foot of the sheet. */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 [@media(max-height:500px)]:px-3.5">
+          {sweep.result ? (
+            <SweepResult
+              key={sweep.resultKey}
+              shown={sweep.result}
+              owned={sweep.owned}
+              stacked
+              onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
+              onClose={sweep.handleResultClose}
+            />
+          ) : (
+            <div className="divide-y divide-[#c9b48c]/70">
+              <BossesRow slot={slot} active={active} onActive={onActive} />
+              <RewardRow slot={slot} />
+              {open ? (
+                <DeckRow choice={choice} onEdit={() => setEditing(true)} wide />
+              ) : null}
+              {sweepable ? (
+                <SweepRow
+                  owned={sweep.owned}
+                  value={sweep.tickets}
+                  onChange={sweep.handleTicketsChange}
+                />
+              ) : null}
+            </div>
           )}
+        </div>
+        <footer
+          className="flex flex-col gap-2 border-t-2 border-[#c9b48c] bg-[#ead9b4]/60 px-5 pt-3 pb-4 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-2"
+          data-testid="dungeon-panel-footer"
         >
-          <Dialog
-            className={cn(
-              "flex max-h-full w-full flex-col overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-5 text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3",
-              SHEET_MOTION
-            )}
-            data-testid="dungeon-panel"
-          >
-            {({ close }) =>
-              shown !== null && dungeon !== null && open ? (
-                <div className={cn("flex min-h-0 flex-1 flex-col", INK_OUT)}>
-                  {/*
-                   * Only the rows scroll: the actions stay at the bottom of the panel, as the rail did.
-                   * The rows ink in 6px from below. The bottom padding holds that move, so that no
-                   * scrollbar shows for a moment and the rows do not wrap again (a layout shift).
-                   */}
-                  <div className="-mx-5 min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-1.5 [@media(max-height:500px)]:-mx-4 [@media(max-height:500px)]:px-4">
-                    <PanelHeader slot={shown} close={close} />
-                    {sweep.result ? (
-                      <SweepResult
-                        key={sweep.resultKey}
-                        shown={sweep.result}
-                        owned={sweep.owned}
-                        stacked
-                        onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
-                        onClose={sweep.handleResultClose}
-                      />
-                    ) : (
-                      <div className="divide-y divide-[#c9b48c]/70">
-                        <RewardRow slot={shown} />
-                        <DeckRow
-                          choice={choice}
-                          onEdit={() => {
-                            atCenter.current = true;
-                            clearSheetOrigin(overlay.current);
-                            setEditing(true);
-                          }}
-                          wide
-                        />
-                        {sweepable ? (
-                          <SweepRow
-                            owned={sweep.owned}
-                            value={sweep.tickets}
-                            onChange={sweep.handleTicketsChange}
-                          />
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                  {sweep.result ? (
-                    <SweepResultActions
-                      shown={sweep.result}
-                      owned={sweep.owned}
-                      onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
-                      onClose={sweep.handleResultClose}
-                      // The panel is narrow: "Close" takes only its width, so that "Sweep Again ×10" fits.
-                      className="shrink-0 grid-cols-[auto_1fr] pt-0.5"
+          {open && dungeon ? (
+            sweep.result ? (
+              <SweepResultActions
+                shown={sweep.result}
+                owned={sweep.owned}
+                onAgain={() => sweepNow(sweep.result?.tickets ?? 0)}
+                onClose={sweep.handleResultClose}
+                // The panel is narrow: "Close" takes only its width, so that "Sweep Again ×10" fits.
+                className="shrink-0 grid-cols-[auto_1fr]"
+              />
+            ) : (
+              <>
+                {problem && chosen ? (
+                  <p
+                    className="flex items-start justify-center gap-2 text-center text-xs leading-snug font-semibold text-[#5b2a0c]"
+                    data-testid="dungeon-fight-problem"
+                  >
+                    <span
+                      className="mt-[0.4em] size-2 shrink-0 rotate-45 border border-[#5b2a0c] bg-[#b4521a]"
+                      aria-hidden
                     />
-                  ) : (
-                    <PanelActions
-                      sweepable={sweepable}
-                      tickets={chosen ? sweep.tickets : 0}
-                      canFight={chosen !== undefined && problem === undefined}
-                      onFight={() => {
-                        if (chosen) {
-                          onStart({
-                            stageId: dungeon.id,
-                            dungeon,
-                            deck: chosen,
-                            player,
-                            seed: qaSeed() ?? randomSeed(),
-                          });
-                        }
-                      }}
-                      onSweep={() => sweepNow(sweep.tickets)}
-                    />
-                  )}
-                </div>
-              ) : null
-            }
-          </Dialog>
-        </Modal>
-      </ModalOverlay>
+                    {text(problemText(problem))}
+                  </p>
+                ) : null}
+                <PanelActions
+                  sweepable={sweepable}
+                  tickets={chosen ? sweep.tickets : 0}
+                  canFight={chosen !== undefined && problem === undefined}
+                  onFight={() => {
+                    if (chosen) {
+                      onStart({
+                        stageId: dungeon.id,
+                        dungeon,
+                        deck: chosen,
+                        player,
+                        seed: qaSeed() ?? randomSeed(),
+                      });
+                    }
+                  }}
+                  onSweep={() => sweepNow(sweep.tickets)}
+                />
+              </>
+            )
+          ) : (
+            <p
+              className="flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-[#c9b48c] bg-[#ead9b4] px-3 py-2 text-center text-sm font-bold text-[#5b4632] [@media(max-height:500px)]:min-h-10 [@media(max-height:500px)]:text-xs"
+              data-testid="dungeon-locked"
+            >
+              <GlyphIcon
+                glyph="lock"
+                className="size-4 shrink-0 text-[#5d6166]"
+              />
+              {slot.state === "locked"
+                ? tr("town.opensAtLevel", { level: slot.unlockLevel })
+                : tr("dungeons.shaft.later")}
+            </p>
+          )}
+        </footer>
+      </div>
       <DeckDialog isOpen={editing} onOpenChange={setEditing} />
-    </>
+    </aside>
   );
 };

@@ -226,6 +226,7 @@ The game docs do not keep the image prompts of the Town. Run `bun town:prompts` 
 - `gear/`: the prompts of the Gear icons (12.2).
 - `cave/`: the prompts of the Dungeons cave inside (13.4), then the Battle Painting of all Dungeon Battles ([13 — Battlefield Concepts, 1.6](./13-battlefield-concepts.md#16-the-dungeon-cave)), with its two references.
 - `heynspire/`: the prompts of the Heynspire inside (14.4), then the Battle Painting of all Floor Battles ([13 — Battlefield Concepts, 1.7](./13-battlefield-concepts.md#17-heynspire)), with its two references.
+- `dungeons/`: the prompts of the Dungeons mine (13.4): the lift and the 3 stops, with the layout sketch of one stop and the cave reference.
 - `bazaar/`: the prompts of the Bazaar inside (16.4).
 - `seaport/`: the prompts of the Seaport screen (17.4).
 
@@ -641,48 +642,64 @@ Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/gear/` (se
 - [ ] The background is transparent, with clean edges on a dark plate.
 - [ ] No text, letters, runes or logo.
 
-## 13. Dungeons cave inside
+## 13. Dungeons mine
 
-The Dungeons screen ([GDD 8.4](./03-game-design.md#84-dungeons)) shows the inside of the Dungeons cave (2.3) behind the notice board with the wanted posters and the rail with Fight. One painting covers the full screen. It makes the mine friendly and a little funny, not scary, so that the Player wants to come back for the repeat wins. The image is `apps/web/public/town/cave-inside.webp`, and its source is `apps/web/art/town/cave-inside.webp`. If an ID is in `UNPAINTED_DUNGEON_ART` (`apps/web/src/features/dungeons/dungeon-art.ts`), the Dungeons screen shows a mine gallery in code, in the same place.
+The Dungeons screen ([GDD 8.4](./03-game-design.md#84-dungeons), [GDD 11.1](./03-game-design.md#111-screens)) shows a mine under the floor of the Dungeons cave (2.3). The Player rides a wooden **lift** down to one **stop** for each Dungeon. The deeper the stop, the stronger the Bosses. Each stop is one painting that fills the screen: the empty lift well at the left, the lair with its Bosses in the middle, and calm rock at the right, under the docked Dungeon Panel. The game puts the same lift cut-out over each stop. When the Player selects another Dungeon, the lift stays in its place and the world moves: the stop slides away, the shaft rock goes past, and the new stop comes in. A ride to a deeper stop takes more time. The mine is friendly and a little funny, not scary, so that the Player wants to come back for the repeat wins.
 
-### 13.1 Rules for the cave art
+The paintings show the Bosses. The Bosses of a stop stand from left to right in the order of their Fronts, so that Boss 1 holds the Lanes at the left. The Dungeon Panel gives the Lanes, the Boss Rules and the rewards: the paintings have no tunnels, slips or Lane plates. A locked stop shows the locked lift (gate shut, with a padlock) and a dim lair.
 
-- **The same cave as the Town.** The room is the inside of the cave in the Town painting: grey rocks, old timber props and a beam, and the ruined stones of the entrance.
-- **Bright, not dark.** Art direction 5 binds it: warm lantern light from the upper left, a second small lantern at the right, and soft glowcap mushrooms in the shadows, from the Glowcap Hollows. No gore, no skulls on show, no noise.
-- **A calm center.** The center of the image (about 70% of the width, and the height between 8% and 88%) is a plain rock wall with little detail. The notice board and the rail stand there. Detail goes to the edges.
-- **No text and no UI.** No signs with letters, no frames, no posters: the game draws the notice board and the posters.
-- **3:2, 1536 × 1024**, the same as the Barracks inside, at the size that covers the screen.
+The cave inside painting (`apps/web/public/town/cave-inside.webp`, source `apps/web/art/town/cave-inside.webp`) stays: the screen shows it, softened, while a stop is not painted. The shaft rock (`apps/web/public/dungeons/shaft-rock.webp`) is a seamless 1280 × 840 tile, mirrored from a 640 × 420 patch of it: it goes past during a ride. The other parts are in `apps/web/public/dungeons/`, and their sources are in `apps/web/art/town/dungeons/`. The screen uses this design.
 
-### 13.2 Positions on the painting
+### 13.1 Rules for the mine art
 
-| Area | Box (x, y in percent) | Rule |
-| --- | --- | --- |
-| Top band | y 0 to 8 | The tabs at the top left and the Balance Plate at the top right. Keep it dark and plain. |
-| Notice board and rail | x 9 to 91, y 8 to 88 | The calm rock wall. |
-| Floor | y 88 to 100 | The Town Bar covers it. Packed earth, a mine cart track, a dropped pick. |
-| Left edge | x 0 to 9 | A timber prop and the main lantern. |
-| Right edge | x 91 to 100 | A timber prop, a small lantern and the tunnel that goes down. |
+- **The same cave as the Town.** Grey rock, old timber with iron brackets and brass lanterns, as in the cave of the Town painting and the cave inside painting.
+- **Bright, not dark.** Art direction 5 binds it: warm light from the upper left, also at the deepest stop. No gore, no blood, no loose bones or skulls on the ground.
+- **Deeper is grander.** Stop 1 is a small, warm dig. Stop 2 is a larger, cold cavern. Stop 3 is the largest and grandest place, with the tallest Boss.
+- **Straight on.** Each part is seen straight on, at eye level, with no perspective tilt, so that the lift stands on the floor of each stop.
+- **One lift.** The lift is a separate cut-out, the same at each stop. A stop has an empty lift well: two timber guide rails and dark rock, with no lift, no rope and no cage.
+- **One floor line.** The floor of each stop is level, with its top edge at y 76, so that the lift and the Bosses stand on the same line, above the Town Bar.
+- **A calm right part.** From x 62 to the right edge, plain rock in soft shade, with low contrast and no objects: the Dungeon Panel covers it.
+- **No text and no UI.** No signs with letters, no numbers, no runes, no posters.
+
+### 13.2 Parts and positions
+
+Boxes are x, y in percent of the image. After you select an image, measure the floor line, the cage of the lift and the center of each Boss. The game uses these values to put the lift on the floor and to light a Boss when the Player hovers or focuses its dossier.
+
+| Part | File | Make at | Positions |
+| --- | --- | --- | --- |
+| Lift | `lift.webp` | 1024 × 1536, transparent | The cage x 14 to 86, from y 38 to its plank floor at y 96. The gear wheel and the crank at the right side, the folding gate open at the left. The rope from the middle of the top crossbeam straight up at x 50 to the top edge. The goblin liftkeeper at the right of the floor; the middle of the floor is empty. |
+| Locked lift | `lift-locked.webp` | An edit of the lift, transparent | The same lift. The gate is shut, with a padlock, and the liftkeeper stands behind it with arms crossed. |
+| Stop 1, 2, 3 | `stop-1.webp`, `stop-2.webp`, `stop-3.webp` | 1536 × 1024, opaque | The empty lift well x 2 to 30, from the top edge to the floor line, with guide rails at x 4 and x 28. The floor line at y 76, level across the full width. The lair x 30 to 62. The Bosses stand on the floor line, each about 40% of the image tall (13.3). Plain rock x 62 to 100. A plain ceiling band y 0 to 10. Plain floor under y 80. |
+| Shaft rock | `shaft-rock.webp` | 1280 × 840 | A seamless tile, mirrored from a patch of the cave inside painting (done). It goes past during a ride. |
+
+The brief asks for the boxes above; the paintings put them a little to the side. The values that the game uses are measured on the files and kept in `apps/web/src/features/dungeons/dungeon-art.ts`: the guide rails of a stop are at x 4 and x 26.2 and its floor line at y 77; the cage of the lift is x 12.7 to 77.5, its plank floor at y 74.5, and its rope at x 49.8; the Bosses stand on the floor line, from the left: Dungeon 1 at x 39.5 from y 32 and at x 54.5 from y 33, to y 78; Dungeon 2 at x 38 from y 30 and at x 57 from y 36, to y 78; Dungeon 3 at x 40 from y 32 and at x 56 from y 36, to y 78, with the Old Bramble behind them at x 50 from y 12 to y 78.
 
 ### 13.3 Subjects
 
-- A mine gallery with a tunnel that goes down into the dark at the right, with a soft green glow of glowcaps at its end.
-- A mine cart on a short track, with roots that come through the ceiling.
-- **Humor note:** a Goblin hard hat with a candle on top hangs on a nail, and two small glowing eyes look out of the tunnel, as in the Town.
+- **Lift:** a sturdy old wooden mine lift, an open timber cage with iron brackets and rivets, a waist-high rail, a folding lattice gate, a big wooden gear wheel with brass teeth and a crank, a small brass lantern and one thick hemp rope. **Humor note:** a small cheerful Goblin liftkeeper with brass goggles and a hard hat with a candle stub turns the crank. On the locked lift, the liftkeeper shakes the head behind the shut gate.
+- **Stop 1, The Rootdeep Mine:** a Goblin dig under the roots of the Glowcap Hollows: roots through the ceiling, timber props, scaffolds, an ore cart, picks, and daylight down the lift well. Foreman Gritjaw (Orc, burnt orange leather, a sledgehammer) at x 40, and Rootwarden Sylla (Elf, leaf green, a root-wood longbow) at x 55. Two small Goblin diggers behind them. **Humor note:** two small glowing eyes look out of a side tunnel, as in the Town.
+- **Stop 2, The Rimebarrow:** a frozen grave mound in a larger cavern: a low stone barrow, standing stones, icicles, cold blue light inside the barrow and warm lanterns at the landing. Abbot Knell (Undead, pale teal robes, a bronze hand bell, a small choir of cheerful Undead singers) at x 41, and Seer Vell (Elf, white and ice blue, a staff with an ice crystal, a snow yeti cub) at x 56.
+- **Stop 3, The Broken Vault:** a huge cracked royal vault: tall columns, a giant broken round brass door, bramble roots, a few piles of spilled coins, gold treasure light. The Old Bramble (a forest giant like a huge old tree with a face in the bark, one eye half open) behind the others at x 47, its head at y 15. Baron Brassbelly (a very large hat with a feather, a brass breastplate, a crossbow) in front at x 37, and Queen Marrow (Undead, violet robes, a bone-white crown, soft green light) in front at x 57. The looks of the 3 Campaign Bosses agree with [12 — Region Concepts](./12-region-concepts.md).
 
 ### 13.4 Steps
 
-1. Run `bun town:prompts`. Make 4 to 8 images with `cave/prompts.md` (section 3), with GPT Image and high quality, at 1536 × 1024. The script writes the layout sketch of 13.2 and the cave of the Town painting as the outside reference. The messages are `CAVE_SETUP_PROMPT` and `CAVE_PROMPT` in `scripts/town-art/prompts.ts`: when you change 13.1 to 13.3, change them too.
-2. Select the image that keeps the center calm, and check it with 13.5.
-3. Export as WebP with no alpha: `cwebp -q 80 cave-inside.png -o cave-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`. Then remove `caveInside` from `UNPAINTED_DUNGEON_ART` in `apps/web/src/features/dungeons/dungeon-art.ts`: a unit test checks the list and the files.
-4. Write the licence record (art direction 5.5) for the image.
+1. Run `bun town:prompts`. Make the parts with `dungeons/prompts.md`, with GPT Image and high quality, at the size of each part: the lift first, then the locked lift as an edit of the lift, then the 3 stops. The script writes the layout sketch of one stop (13.2) and the cave inside painting as the cave reference. The messages are `DUNGEON_SETUP_PROMPT` and `DUNGEON_PART_PROMPTS` in `scripts/town-art/prompts.ts`: when you change 13.1 to 13.3, change them too.
+2. Select one image of each part, and check it with 13.5.
+3. Export the lift and the locked lift as WebP with alpha, and the stops with no alpha: `cwebp -q 80 -alpha_q 90 lift.png -o lift.webp`, and `cwebp -q 80 stop-1.png -o stop-1.webp`. Put the files in `apps/web/public/dungeons/`, and keep the full-size sources in `apps/web/art/town/dungeons/`.
+4. Measure the floor line of each stop, the cage of the lift, and the center and the height of each Boss (13.2). Write them in `apps/web/src/features/dungeons/dungeon-art.ts`.
+5. Remove the ID of each new part from `UNPAINTED_DUNGEON_ART`: a unit test checks the list and the files. Write the licence record (art direction 5.5) of each image in a `.webp.json` file next to it.
 
 ### 13.5 Review checklist
 
-- [ ] The room looks like the inside of the cave in the Town painting.
-- [ ] The light is warm and comes from the upper left. The room is not dark or scary.
-- [ ] The center is a calm rock wall: the notice board and the rail are easy to read on it.
-- [ ] The image has no text, no frames and no posters.
-- [ ] The Town Bar covers only the floor.
+- [ ] The mine looks like the cave of the Town painting: grey rock, old timber and brass lanterns.
+- [ ] The light is warm and comes from the upper left. No stop is dark or scary.
+- [ ] Each stop is grander than the stop above it.
+- [ ] The lift well of each stop is empty, and its floor line is level at about y 76.
+- [ ] The lift and the locked lift are the same lift, with a transparent background.
+- [ ] The Bosses of each stop are at their places of 13.3, from left to right in Front order, and none is right of x 62.
+- [ ] Each Boss agrees with its Race colors (art direction 4.1), and the Campaign Bosses agree with their Region Concepts.
+- [ ] The right part (x 62 to 100) is plain and calm.
+- [ ] The images have no text, no numbers, no runes and no gore.
 
 ## 14. Heynspire inside
 

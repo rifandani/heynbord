@@ -48,6 +48,10 @@
  *   14), then the Battle Painting of all Floor Battles (Battlefield Concepts
  *   1.7), with `raw/heynspire/battle-style-reference.png` and
  *   `raw/heynspire/battle-set-reference.png`.
+ * - `raw/dungeons/layout.png`, `raw/dungeons/cave-reference.png` and
+ *   `raw/dungeons/prompts.md`: the layout sketch of one stop, the cave inside
+ *   painting, and the prompts of the lift and the 3 stops of the Dungeons
+ *   mine (section 13).
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -78,6 +82,8 @@ import {
   HALL_SETUP_PROMPT,
   CAVE_PROMPT,
   CAVE_SETUP_PROMPT,
+  DUNGEON_PART_PROMPTS,
+  DUNGEON_SETUP_PROMPT,
   GEAR_SETUP_PROMPT,
   GEAR_SUBJECT,
   gearIconPromptOf,
@@ -617,6 +623,44 @@ const writeCaveOutside = async (file: string) => {
 };
 
 /**
+ * The layout sketch of one stop of the Dungeons mine: flat shapes at the
+ * boxes of the table in section 13.2. The two figures show the size and the
+ * place of the Bosses of a stop with 2 Bosses. ChatGPT keeps its boxes, not
+ * its colors.
+ */
+const writeDungeonLayout = async (file: string) => {
+  const figure = (x: number) =>
+    [
+      `<rect ${roomBox(x - 4, x + 4, 46, 76)} rx="40" fill="#c9b48c"/>`,
+      `<circle cx="${(x / 100) * ROOM.width}" cy="${0.41 * ROOM.height}" r="${0.05 * ROOM.height}" fill="#c9b48c"/>`,
+    ].join("");
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM.width}" height="${ROOM.height}">`,
+    // The calm rock wall under the panel, at the right.
+    `<rect width="100%" height="100%" fill="#5f5a55"/>`,
+    // The lair, a little brighter, with its lanterns.
+    `<rect ${roomBox(30, 62, 10, 76)} fill="#7d7268"/>`,
+    `<circle cx="${0.33 * ROOM.width}" cy="${0.3 * ROOM.height}" r="16" fill="#ffd27a"/>`,
+    `<circle cx="${0.6 * ROOM.width}" cy="${0.3 * ROOM.height}" r="16" fill="#ffd27a"/>`,
+    // The plain ceiling band at the top.
+    `<rect ${roomBox(0, 100, 0, 10)} fill="#2a2622"/>`,
+    // The empty lift well and its two guide rails, at the left.
+    `<rect ${roomBox(2, 30, 0, 76)} fill="#1c1916"/>`,
+    `<rect ${roomBox(3.4, 4.6, 0, 76)} fill="#7a5233"/>`,
+    `<rect ${roomBox(27.4, 28.6, 0, 76)} fill="#7a5233"/>`,
+    // The Bosses, standing on the floor line.
+    figure(40),
+    figure(55),
+    // The floor: planks under the well, earth after it, and the floor line.
+    `<rect ${roomBox(0, 100, 76, 100)} fill="#5a4330"/>`,
+    `<rect ${roomBox(0, 30, 76, 100)} fill="#7a5233"/>`,
+    `<rect ${roomBox(0, 100, 75.6, 76.4)} fill="#e7bb6a"/>`,
+    "</svg>",
+  ].join("");
+  await sharp(Buffer.from(svg)).png().toFile(file);
+};
+
+/**
  * The layout sketch of one Heynspire storey: flat shapes at the boxes of the
  * table in section 14.2, on a pale grey that stands for the transparent
  * background. The door box is `STOREY_DOOR.storey` of `heynspire-art.ts`.
@@ -1043,7 +1087,7 @@ const caveFile = (dungeon: BattleArt): string =>
     "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `outside-reference.png`. Send the setup message.",
     "2. Send the painting message. Use high quality, at 1536 × 1024. Make 4 to 8 images: send the painting message again for each new image.",
     "3. Select one image with the review checklist (Town Concepts, 13.5). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder.",
-    "4. Do steps 3 and 4 of Town Concepts, 13.4.",
+    "4. Export it as WebP: `cwebp -q 80 cave-inside.png -o cave-inside.webp`. Put it in `apps/web/public/town/`, keep the full-size source in `apps/web/art/town/`, and write its licence record (art direction 5.5).",
     "",
     "### Setup message",
     "",
@@ -1058,6 +1102,57 @@ const caveFile = (dungeon: BattleArt): string =>
     CAVE_FIXES,
     "",
     ...battlePart(dungeon, "Dungeon Battles"),
+    "",
+  ].join("\n");
+
+const DUNGEON_FIXES = [
+  "| Problem | Fix |",
+  "| --- | --- |",
+  '| The lift background is not transparent | Send the lift message again with "transparent background, only the lift and its rope show". |',
+  '| The locked lift is not the same lift | Attach `lift.png` and send the locked lift message again with "the same lift as the attached image, only the gate and the liftkeeper change". |',
+  '| A lift, a cage or a rope is in the lift well of a stop | Select the well and send "Edit the image only in the selected area: an empty dark lift well between two timber guide rails. Keep all else the same." |',
+  "| The floor line is not straight and level, or not at 76% of the height | Send the stop message again: the lift stands on this line in each stop. |",
+  "| A boss is under the panel (right of 62% of the width), or a boss is missing | Send the stop message again with the boss names and places. |",
+  '| The right part is busy or bright | Select it and send "Edit the image only in the selected area: a plain calm wall of grey rock in soft shade. Keep all else the same." |',
+  '| The stop is dark or scary | Send the stop message again with "bright, warm lantern light fills the lair, friendly and a little funny". |',
+  "| A boss is gory or scary, or a skull or a loose bone shows on the ground | Select it and ask for the same figure, friendly and a little funny, or for plain floor. |",
+  "| Text-like marks, runes or a sign | Select the area and ask for the material around it, for example plain rock or plain timber. |",
+].join("\n");
+
+/** The parts of the mine in the order to paint them, with their file and size. */
+const DUNGEON_PARTS = [
+  ["lift", "lift.png", "1024 × 1536, transparent"],
+  ["liftLocked", "lift-locked.png", "an edit of `lift.png`, transparent"],
+  ["stop1", "stop-1.png", "1536 × 1024"],
+  ["stop2", "stop-2.png", "1536 × 1024"],
+  ["stop3", "stop-3.png", "1536 × 1024"],
+] as const;
+
+const dungeonsFile = (): string =>
+  [
+    "# Dungeons mine art prompts",
+    "",
+    "One ChatGPT conversation: the lift, the locked lift, then the 3 stops of the Dungeons screen.",
+    "",
+    "1. Open a new ChatGPT conversation. Attach, in this order: `layout.png`, `../style-reference.png`, `cave-reference.png`. Send the setup message.",
+    "2. Send the lift message. Use high quality, at 1024 × 1536. Make 3 to 6 images and select one. Then send the locked lift message as an edit of the selected lift.",
+    "3. Send the message of each stop. Use high quality, at 1536 × 1024. Make 4 to 8 images of each stop: send its message again for each new image.",
+    "4. Select one image of each part with the review checklist (Town Concepts, 13.5). Fix small problems with the edit tool of ChatGPT (see below). Save it in this folder with the file name of the part.",
+    "5. Do steps 3 to 5 of Town Concepts, 13.4.",
+    "",
+    "## Setup message",
+    "",
+    block(DUNGEON_SETUP_PROMPT),
+    "",
+    ...DUNGEON_PARTS.flatMap(([part, name, size]) => [
+      `## ${part} (\`${name}\`, ${size})`,
+      "",
+      block(DUNGEON_PART_PROMPTS[part]),
+      "",
+    ]),
+    "## Fixes",
+    "",
+    DUNGEON_FIXES,
     "",
   ].join("\n");
 
@@ -1167,6 +1262,8 @@ const seaportDir = path.join(RAW_DIR, "seaport");
 const gearDir = path.join(RAW_DIR, "gear");
 const caveDir = path.join(RAW_DIR, "cave");
 const heynspireDir = path.join(RAW_DIR, "heynspire");
+const dungeonsDir = path.join(RAW_DIR, "dungeons");
+mkdirSync(dungeonsDir, { recursive: true });
 mkdirSync(barracksDir, { recursive: true });
 mkdirSync(hallDir, { recursive: true });
 mkdirSync(bazaarDir, { recursive: true });
@@ -1240,6 +1337,11 @@ writeFileSync(
   path.join(heynspireDir, "prompts.md"),
   heynspireFile(readBattleArt(HEYNSPIRE))
 );
+await writeDungeonLayout(path.join(dungeonsDir, "layout.png"));
+await sharp(path.join(ROOT, "apps/web/art/town/cave-inside.webp"))
+  .png()
+  .toFile(path.join(dungeonsDir, "cave-reference.png"));
+writeFileSync(path.join(dungeonsDir, "prompts.md"), dungeonsFile());
 console.log(
   `Town Bar: ${icons.length} icons, set reference ${SET_REFERENCE ?? "none"}`
 );
@@ -1247,5 +1349,5 @@ console.log(
   `Packs: ${packs.length} Packs, set reference ${PACK_SET_REFERENCE}`
 );
 console.log(
-  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md, ${RAW_DIR}/hall/prompts.md, ${RAW_DIR}/bazaar/prompts.md, ${RAW_DIR}/seaport/prompts.md, ${RAW_DIR}/gear/prompts.md, ${RAW_DIR}/cave/prompts.md and ${RAW_DIR}/heynspire/prompts.md`
+  `References: ${RAW_DIR}\nPrompts: ${RAW_DIR}/painting/prompts.md, ${RAW_DIR}/bar/prompts.md, ${RAW_DIR}/packs/prompts.md, ${RAW_DIR}/shop/prompts.md, ${RAW_DIR}/workshop/prompts.md, ${RAW_DIR}/barracks/prompts.md, ${RAW_DIR}/hall/prompts.md, ${RAW_DIR}/bazaar/prompts.md, ${RAW_DIR}/seaport/prompts.md, ${RAW_DIR}/gear/prompts.md, ${RAW_DIR}/cave/prompts.md, ${RAW_DIR}/heynspire/prompts.md and ${RAW_DIR}/dungeons/prompts.md`
 );

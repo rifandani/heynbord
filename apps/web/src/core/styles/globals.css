@@ -715,6 +715,14 @@
   }
 }
 
+/* The Dungeons mine: a level-up opened this stop of the shaft, so its light
+   comes up once, and the lift over it unlocks. */
+@keyframes mine-wake {
+  from {
+    filter: brightness(0.45) saturate(0.5);
+  }
+}
+
 /*
  * The Stage Panel comes up out of its Stage Marker on the `settings-sheet-*`
  * path. Its parts ink in from the top, one after the other.

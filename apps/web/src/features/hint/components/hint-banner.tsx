@@ -40,9 +40,8 @@ const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
   // Not while the Stage Panel comes up out of its Stage Marker.
   sweepButton: "[data-testid='sweep']:not([data-entering] *)",
   cave: "[data-testid='building-cave']",
-  // Not while the Dungeon Panel comes up out of the Fight bar.
-  dungeonSweepRow:
-    "[data-hint-anchor='dungeon-sweep-row']:not([data-entering] *)",
+  // The Sweep row of the docked Dungeon Panel (the Hint goes at its foot, `hintAnchor`).
+  dungeonSweepRow: "[data-hint-anchor='dungeon-sweep-row']",
   tower: "[data-testid='building-heynspire']",
   achievementsShortcut: "[data-testid='town-shortcut-achievements']",
   quay: "[data-testid='building-seaport']",
@@ -89,11 +88,11 @@ const isShortScreen = () => window.matchMedia(SHORT_SCREEN).matches;
 const SWEEP_ROW = "[data-hint-anchor='sweep-row']:not([data-entering] *)";
 
 /**
- * On a short screen, the rows of the Dungeons screen rail scroll, and the
- * Sweep row can be out of view. The Sweep button under them is always in
- * view, so the Dungeon Sweep Hint points at it.
+ * The rows of the docked Dungeon Panel scroll, and the Sweep row can be out
+ * of view. The foot of the panel, with the Sweep button and the Deck problem,
+ * is always in view, so the Dungeon Sweep Hint points at it.
  */
-const DUNGEON_SWEEP_BUTTON = "[data-testid='dungeon-sweep']";
+const DUNGEON_PANEL_FOOTER = "[data-testid='dungeon-panel-footer']";
 
 /**
  * Puts the focus on the subject of a Hint in a dialog, or else on the dialog.
@@ -115,8 +114,8 @@ export const hintAnchor = (place: HintPlace): string => {
   if (place === "sweepButton" && isShortScreen()) {
     return SWEEP_ROW;
   }
-  if (place === "dungeonSweepRow" && isShortScreen()) {
-    return DUNGEON_SWEEP_BUTTON;
+  if (place === "dungeonSweepRow") {
+    return DUNGEON_PANEL_FOOTER;
   }
   const shortcut = EDGE_SHORTCUT[place];
   if (shortcut !== undefined && !buildingInView(place)) {
@@ -141,20 +140,16 @@ const TOWN_BUILDING_PLACES: ReadonlySet<HintPlace> = new Set([
  * goes below the first upgrade, so that the Hero plate stays clear on the
  * first visit. The Sweep Hint goes below the Sweep button, out of the Stage
  * Panel, so that it does not cover the Ticket control. The Dungeon Sweep Hint
- * goes at the left of the label of the Sweep row of the Dungeon Panel, so
- * that it covers no control of the panel. On a short screen, it goes above
- * the Sweep button, so that it does not cover Fight at the left of it. A Hint
+ * goes above the foot of the docked Dungeon Panel, so that it covers neither
+ * Fight and Sweep nor the Deck problem over them. A Hint
  * at a Town Building can go above, below or at the left of it: it takes the
  * side where it covers the least of the Building labels (`BUILDING_LABEL`).
  */
 const sidesFor = (place: HintPlace): readonly PanelSide[] => {
-  if (place === "dungeonSweepRow" && isShortScreen()) {
+  if (place === "dungeonSweepRow") {
     return ["above", "left"];
   }
-  if (
-    (place === "sweepButton" && isShortScreen()) ||
-    place === "dungeonSweepRow"
-  ) {
+  if (place === "sweepButton" && isShortScreen()) {
     return ["left", "above"];
   }
   if (TOWN_BUILDING_PLACES.has(place)) {

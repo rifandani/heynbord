@@ -2,10 +2,11 @@ import { DUNGEONS, getDungeon } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
+  dungeonNews,
   dungeonRewardPreview,
   dungeonSlots,
   firstShownDungeon,
-  frontSpans,
+  seenDungeons,
 } from "@/features/dungeons/dungeons";
 
 describe("dungeonSlots", () => {
@@ -107,16 +108,27 @@ describe("dungeonRewardPreview", () => {
   });
 });
 
-describe("frontSpans", () => {
-  it("gives the first and the last Lane of each Front", () => {
-    expect(frontSpans(getDungeon("dungeon-1"))).toEqual([
-      { first: 0, last: 1 },
-      { first: 2, last: 3 },
-    ]);
-    // Dungeon 2: Fronts of different sizes, 3 + 1 (GDD 8.4).
-    expect(frontSpans(getDungeon("dungeon-2"))).toEqual([
-      { first: 0, last: 2 },
-      { first: 3, last: 3 },
-    ]);
+describe("dungeonNews", () => {
+  it("shows no news on the first show of the session", () => {
+    expect(dungeonNews(dungeonSlots(20, { "dungeon-1": 1 }), null)).toEqual({
+      opened: [],
+      won: [],
+    });
+  });
+
+  it("finds the Dungeons that opened and the Dungeons with a new win", () => {
+    const seen = seenDungeons(dungeonSlots(19, { "dungeon-1": 1 }));
+    expect(dungeonNews(dungeonSlots(20, { "dungeon-1": 2 }), seen)).toEqual({
+      opened: [2],
+      won: [1],
+    });
+  });
+
+  it("shows no news when nothing changed", () => {
+    const slots = dungeonSlots(20, { "dungeon-2": 3 });
+    expect(dungeonNews(slots, seenDungeons(slots))).toEqual({
+      opened: [],
+      won: [],
+    });
   });
 });

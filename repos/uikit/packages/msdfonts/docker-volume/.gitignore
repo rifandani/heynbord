@@ -1,6 +1,0 @@
-*.json
-!package.json
-*.ttf
-*.png
-*.webp
-*.ts

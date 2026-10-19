@@ -101,20 +101,17 @@ const openTown = async (page: Page, xp: number) => {
 };
 
 /**
- * The one gold Fight under the notice board opens the Dungeon Panel, the
- * battle preparation of the Dungeon (as the Stage Panel and the Floor Panel).
- * A Hint that shows over the bar (the Deck Hint, on a phone) goes first.
+ * The Dungeon Panel, the battle preparation of the selected Dungeon, is
+ * docked at the right of the mine and open at all times (as the Floor Panel).
+ * A Hint that shows over it (the Deck Hint, on a phone) goes first.
  */
 const openPanel = async (page: Page) => {
-  if ((await page.getByTestId("dungeon-panel").count()) === 0) {
-    if ((await page.getByTestId("hint").count()) > 0) {
-      await page
-        .getByTestId("hint-close")
-        .click({ force: true, timeout: 3000 })
-        .catch(() => false);
-      await page.waitForTimeout(200);
-    }
-    await page.getByTestId("dungeon-fight-bar").click();
+  if ((await page.getByTestId("hint").count()) > 0) {
+    await page
+      .getByTestId("hint-close")
+      .click({ force: true, timeout: 3000 })
+      .catch(() => false);
+    await page.waitForTimeout(200);
   }
   await expect(page.getByTestId("dungeon-panel")).toBeVisible();
 };
@@ -184,67 +181,73 @@ test.describe("Dungeons screen", () => {
       "aria-current",
       "page"
     );
-    await expect(page.getByTestId("dungeon-tab-1")).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
-    await expect(page.getByTestId("dungeon-tab-2")).toContainText("Level 20");
-    await expect(page.getByTestId("dungeon-tab-2")).toHaveAttribute(
-      "data-state",
-      "locked"
-    );
-    await expect(page.getByTestId("dungeon-tab-3")).toContainText("Level 30");
-    await expect(page.getByTestId("dungeon-tab-3")).toHaveAttribute(
-      "data-state",
-      "locked"
-    );
+    // The mine opens on the stop of Dungeon 1, with the open lift in its
+    // well. Dungeons 2 and 3 are deeper down, with the locked lift.
+    const gauge = (number: number) =>
+      page.getByTestId(`gauge-dungeon-${number}`);
+    const stop = (number: number) => page.getByTestId(`dungeon-stop-${number}`);
+    const mine = page.getByTestId("mine-shaft");
+    const lift = page.getByTestId("mine-lift");
+    await expect(gauge(1)).toHaveAttribute("aria-selected", "true");
+    await expect(gauge(1)).toBeFocused();
+    await expect(mine).toHaveAttribute("data-stop", "1");
+    await expect(lift).not.toHaveAttribute("data-locked");
+    await expect(stop(1)).toHaveAttribute("data-state", "open");
+    // All 3 stops of the mine are in the shaft, deeper with each number.
+    await expect(page.locator("[data-testid^='dungeon-stop-']")).toHaveCount(3);
+    await expect(gauge(2)).toHaveAttribute("data-state", "locked");
+    await expect(gauge(2)).toHaveAccessibleName(/opens at level 20/u);
+    await expect(gauge(3)).toHaveAttribute("data-state", "locked");
+    await expect(gauge(3)).toHaveAccessibleName(/opens at level 30/u);
 
-    // A locked Dungeon shows its board, with its level in the place of Fight.
-    await page.getByTestId("dungeon-tab-2").click();
+    // A locked Dungeon shows its Bosses in the panel, its level in the place
+    // of Fight, and the locked lift over its dim stop.
+    await gauge(2).click();
     await expect(page.getByTestId("dungeon-locked")).toContainText(
       "Opens at level 20"
     );
-    await expect(page.getByTestId("dungeon-fight-bar")).toHaveCount(0);
-    await page.getByTestId("dungeon-tab-1").click();
-    await expect(page.getByTestId("dungeon-fight-bar")).toBeVisible();
+    await expect(page.getByTestId("dungeon-fight")).toHaveCount(0);
+    await expect(page.getByTestId("mine-gauge")).toBeVisible();
+    await expect(mine).toHaveAttribute("data-stop", "2");
+    await expect(lift).toHaveAttribute("data-locked", "true");
+    await gauge(1).click();
+    await expect(mine).toHaveAttribute("data-stop", "1");
+    await expect(lift).not.toHaveAttribute("data-locked");
+    await expect(page.getByTestId("dungeon-fight")).toBeVisible();
 
-    // The arrow keys stay in the Dungeon tabs: a tab change must not move the
-    // focus to the Fight bar of the new tab.
-    await page.getByTestId("dungeon-tab-1").focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(page.getByTestId("dungeon-tab-2")).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
-    await expect(page.getByTestId("dungeon-tab-2")).toBeFocused();
-    await page.keyboard.press("ArrowLeft");
-    await expect(page.getByTestId("dungeon-tab-1")).toBeFocused();
-    await expect(page.getByTestId("dungeon-fight-bar")).toBeVisible();
+    // The arrow keys ride up and down the shaft.
+    await gauge(1).focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(gauge(2)).toHaveAttribute("aria-selected", "true");
+    await expect(gauge(2)).toBeFocused();
+    await page.keyboard.press("ArrowUp");
+    await expect(gauge(1)).toBeFocused();
+    await expect(page.getByTestId("dungeon-fight")).toBeVisible();
 
-    // One wanted poster for each Boss, with its Lanes, its Boss Rule and the notch.
-    await expect(page.locator("article[data-testid^='poster-']")).toHaveCount(
+    // One dossier for each Boss, with its Lanes, its Boss Rule and the notch.
+    await expect(page.locator("article[data-testid^='dossier-']")).toHaveCount(
       2
     );
-    await expect(page.getByTestId("poster-0")).toContainText("Foreman Gritjaw");
-    await expect(page.getByTestId("poster-0")).toContainText(
+    await expect(page.getByTestId("dossier-0")).toContainText(
+      "Foreman Gritjaw"
+    );
+    await expect(page.getByTestId("dossier-0")).toContainText(
       "At 50% HP: Summon Mesa Pit-Fighter (Rare) in Lane 2."
     );
-    await expect(page.getByTestId("poster-1")).toContainText(
+    await expect(page.getByTestId("dossier-1")).toContainText(
       "Holds Lanes 3, 4"
     );
     await expect(
-      page.getByTestId("poster-0").getByTestId("poster-notch")
+      page.getByTestId("dossier-0").getByTestId("dossier-notch")
     ).toHaveCount(1);
-    await expect(page.getByTestId("strip-bracket-0")).toHaveAttribute(
+    // The dossier of a Boss lights that Boss on the painting, and no other.
+    await expect(page.getByTestId("dossier-0")).toHaveAttribute(
       "data-lanes",
       "1,2"
     );
-    // The poster lights its Front Bracket on the strip.
-    await page.getByTestId("poster-1").hover();
-    await expect(page.getByTestId("strip-bracket-1")).toHaveAttribute(
-      "data-active",
-      "true"
-    );
+    await page.getByTestId("dossier-1").hover();
+    await expect(stop(1).getByTestId("boss-light-1")).toHaveCount(1);
+    await expect(stop(1).getByTestId("boss-light-0")).toHaveCount(0);
 
     // The first-win rewards, from the rules (Economy 2.4), in the Dungeon Panel.
     await openPanel(page);
@@ -255,16 +258,14 @@ test.describe("Dungeons screen", () => {
       "+3 Uncommon Forge Stone"
     );
 
-    // A Deck that is not valid turns Fight off. With a valid Deck, the Fight
-    // bar has the focus when the screen opens, so Enter opens the panel and
+    // A Deck that is not valid turns Fight off. With a valid Deck, the stop
+    // has the focus when the screen opens, so Enter goes to Fight and
     // Enter starts the Dungeon Battle.
     await fillActiveDeck(page);
-    await page.getByTestId("dungeon-panel-close").click();
     await page.getByTestId("town-shortcut-town").click();
     await page.getByTestId("building-cave").click();
-    await expect(page.getByTestId("dungeon-fight-bar")).toBeFocused();
+    await expect(gauge(1)).toBeFocused();
     await page.keyboard.press("Enter");
-    await expect(page.getByTestId("dungeon-panel")).toBeVisible();
     await expect(page.getByTestId("dungeon-fight")).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("boss-plates")).toHaveAttribute(
@@ -300,11 +301,11 @@ test.describe("Dungeons screen", () => {
 
     await result.getByTestId("back-to-dungeons").click();
     await expect(screen).toBeVisible();
-    // The posters stay full after a win, with the claimed stamp.
-    await expect(page.getByTestId("notice-board")).not.toHaveAttribute(
-      "data-folded"
-    );
-    await expect(page.getByTestId("poster-claimed")).toHaveCount(2);
+    // The stamps land at the feet of the Bosses of the won Dungeon.
+    await expect(stop(1).getByTestId("boss-claimed")).toHaveCount(2);
+    // The gauge marks the won Dungeon as cleared, and the deeper ones as not.
+    await expect(gauge(1)).toHaveAttribute("data-cleared", "true");
+    await expect(gauge(2)).not.toHaveAttribute("data-cleared", "true");
     // The panel keeps the win, the repeat-win rewards and the Dungeon Sweep.
     await openPanel(page);
     await expect(page.getByTestId("dungeon-wins")).toHaveAttribute(
@@ -329,6 +330,10 @@ test.describe("Dungeons screen", () => {
     await expect(page.getByTestId("dungeon-wins")).toHaveAttribute(
       "data-wins",
       "1"
+    );
+    await expect(page.getByTestId("gauge-dungeon-1")).toHaveAttribute(
+      "data-cleared",
+      "true"
     );
   });
 
@@ -410,15 +415,14 @@ test.describe("Dungeons screen", () => {
   test.describe("on a phone in landscape", () => {
     test.use({ viewport: { width: 844, height: 390 } });
 
-    test("the posters are slips, and Fight and Sweep stay in view after a win", async ({
+    test("the stop and the panel share the screen, and Fight and Sweep stay in view after a win", async ({
       page,
     }) => {
       await openTown(page, LEVEL_10_XP);
       await page.getByTestId("town-shortcut-dungeons").click();
-      await expect(page.getByTestId("notice-board")).toHaveAttribute(
-        "data-folded",
-        "true"
-      );
+      // The stop of the Dungeon and the lift over its well are in view.
+      await expect(page.getByTestId("dungeon-stop-1")).toBeInViewport();
+      await expect(page.getByTestId("mine-lift")).toBeInViewport();
       await fillActiveDeck(page);
       await page.getByTestId("dungeon-fight").click();
       await expect(page.getByTestId("boss-plates")).toBeVisible({
@@ -429,8 +433,10 @@ test.describe("Dungeons screen", () => {
       await openPanel(page);
       await expect(page.getByTestId("dungeon-wins")).toBeVisible();
       await expect(page.getByTestId("dungeon-fight")).toBeInViewport();
-      // The win gave 1 Dungeon Sweep Ticket, so Sweep is the gold action and has the focus.
+      // The win gave 1 Dungeon Sweep Ticket, so Sweep is the gold action: Enter on the stop goes to it.
       await expect(page.getByTestId("dungeon-sweep")).toBeInViewport();
+      await page.getByTestId("gauge-dungeon-1").focus();
+      await page.keyboard.press("Enter");
       await expect(page.getByTestId("dungeon-sweep")).toBeFocused();
       await page.keyboard.press("Enter");
       await expect(page.getByTestId("sweep-result")).toBeVisible();
@@ -450,17 +456,21 @@ test.describe("Dungeon 2", () => {
     await openTown(page, LEVEL_20_XP);
     await page.getByTestId("town-shortcut-dungeons").click();
     await expect(page.getByTestId("dungeons")).toBeVisible();
-    await expect(page.getByTestId("dungeon-tab-2")).toHaveAttribute(
+    await expect(page.getByTestId("gauge-dungeon-2")).toHaveAttribute(
       "aria-selected",
       "true"
     );
-    await expect(page.getByTestId("poster-0")).toContainText("Abbot Knell");
-    await expect(page.getByTestId("poster-0")).toContainText(
+    await expect(page.getByTestId("dungeon-stop-2")).toHaveAttribute(
+      "data-state",
+      "open"
+    );
+    await expect(page.getByTestId("dossier-0")).toContainText("Abbot Knell");
+    await expect(page.getByTestId("dossier-0")).toContainText(
       "Holds Lanes 1, 2, 3"
     );
-    await expect(page.getByTestId("poster-1")).toContainText("Seer Vell");
-    await expect(page.getByTestId("poster-1")).toContainText("Holds Lane 4");
-    await expect(page.getByTestId("strip-bracket-1")).toHaveAttribute(
+    await expect(page.getByTestId("dossier-1")).toContainText("Seer Vell");
+    await expect(page.getByTestId("dossier-1")).toContainText("Holds Lane 4");
+    await expect(page.getByTestId("dossier-1")).toHaveAttribute(
       "data-lanes",
       "4"
     );
@@ -501,43 +511,36 @@ test.describe("Dungeon 3", () => {
     await openTown(page, LEVEL_30_XP);
     await page.getByTestId("town-shortcut-dungeons").click();
     await expect(page.getByTestId("dungeons")).toBeVisible();
-    await expect(page.getByTestId("dungeon-tab-3")).toHaveAttribute(
+    await expect(page.getByTestId("gauge-dungeon-3")).toHaveAttribute(
       "aria-selected",
       "true"
     );
-    await expect(page.locator("article[data-testid^='poster-']")).toHaveCount(
+    await expect(page.locator("article[data-testid^='dossier-']")).toHaveCount(
       3
     );
-    await expect(page.getByTestId("poster-0")).toContainText(
+    await expect(page.getByTestId("dossier-0")).toContainText(
       "Baron Brassbelly"
     );
-    await expect(page.getByTestId("poster-1")).toContainText("The Old Bramble");
-    await expect(page.getByTestId("poster-1")).toContainText(
+    await expect(page.getByTestId("dossier-1")).toContainText(
+      "The Old Bramble"
+    );
+    await expect(page.getByTestId("dossier-1")).toContainText(
       "Holds Lanes 2, 3"
     );
-    await expect(page.getByTestId("poster-2")).toContainText("Queen Marrow");
-    await expect(page.getByTestId("strip-bracket-1")).toHaveAttribute(
-      "data-lanes",
-      "2,3"
-    );
+    await expect(page.getByTestId("dossier-2")).toContainText("Queen Marrow");
     await openPanel(page);
     await expect(page.getByTestId("dungeon-reward-card")).toHaveText(
       "Sir Odo, the Last Taxman"
     );
-    await page.getByTestId("dungeon-panel-close").click();
-    // A Unit at the start fits in its Square, and hover shows its Card Details.
-    const startUnit = page.getByTestId("strip-start-unit").first();
+    // A Unit at the start is in the dossier of its Boss, and hover shows its Card Details.
+    const startUnit = page.getByTestId("dossier-start-unit").first();
     await expect(startUnit).toHaveAccessibleName(
       /\(Epic\), on the Board in Lane 1 at the start of the Battle$/u
     );
-    const token = await startUnit.boundingBox();
-    const square = await startUnit.locator("..").boundingBox();
-    expect(token?.width).toBeLessThanOrEqual(square?.width ?? 0);
-    expect(token?.height).toBeLessThanOrEqual(square?.height ?? 0);
     await startUnit.hover();
-    const unitPeek = page.getByTestId("strip-unit-peek");
+    const unitPeek = page.getByTestId("dossier-unit-peek");
     await expect(unitPeek.getByTestId("card-details-name")).toBeVisible();
-    await page.screenshot({ path: test.info().outputPath("strip-peek.png") });
+    await page.screenshot({ path: test.info().outputPath("dossier-peek.png") });
     await page.mouse.move(0, 0);
     await expect(unitPeek).toHaveCount(0);
 
@@ -590,7 +593,6 @@ test.describe("Dungeon Sweep", () => {
   test("shows no Sweep on a Dungeon with no win", async ({ page }) => {
     await openTown(page, LEVEL_10_XP);
     await page.getByTestId("town-shortcut-dungeons").click();
-    await expect(page.getByTestId("dungeon-fight-bar")).toBeVisible();
     await openPanel(page);
     await expect(page.getByTestId("dungeon-fight")).toBeVisible();
     await expect(page.getByTestId("dungeon-sweep")).toHaveCount(0);
@@ -601,12 +603,17 @@ test.describe("Dungeon Sweep", () => {
     page,
   }) => {
     await openWonDungeon(page, 3);
-    // The Sweep Hint points at the Sweep row of the Dungeon Panel.
-    await openPanel(page);
-    await expect(page.getByTestId("hint")).toHaveAttribute(
-      "data-hint",
-      "dungeonSweep"
-    );
+    // The Sweep Hint points at the Sweep button of the docked Dungeon Panel.
+    // Other Hints of level 10 can show first: they close one after the other.
+    const hint = page.getByTestId("hint");
+    await expect(async () => {
+      if ((await hint.getAttribute("data-hint")) !== "dungeonSweep") {
+        await page.getByTestId("hint-close").click({ timeout: 1000 });
+      }
+      await expect(hint).toHaveAttribute("data-hint", "dungeonSweep", {
+        timeout: 1000,
+      });
+    }).toPass();
     await fillActiveDeck(page);
     const owned = page.getByTestId("sweep-owned");
     await expect(owned).toHaveAttribute("data-kind", "dungeon");

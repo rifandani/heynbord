@@ -1746,18 +1746,27 @@ export default {
   // Draft names (PRD open question 1).
   dungeons: {
     label: "Dungeons",
-    tabs: { label: "Dungeons", later: "Coming later" },
-    board: {
-      label: "The Bosses of this Dungeon",
+    shaft: {
+      label: "The mine",
+      stop: "Dungeon {number}: {name}, {state}",
+      gauge: "The depth of the mine and its Dungeons",
+      later: "Coming later",
+      state: {
+        open: "not won yet",
+        won: "wins: {count}",
+        locked: "opens at level {level}",
+        later: "coming later",
+      },
     },
-    strip: {
-      label:
-        "The Fronts of the Bosses on the Lanes. Lane 1 is at the top, and your Hero is at the left.",
-      startUnit:
+    chip: { locked: "Locked" },
+    dossier: {
+      bosses: "Bosses",
+      atStart: "At the start:",
+      startUnit: "{name} ({rank}), Lane {lane}",
+      startUnitLabel:
         "{name} ({rank}), on the Board in Lane {lane} at the start of the Battle",
     },
-    poster: {
-      wanted: "Wanted",
+    boss: {
       summon: "Summon {name} ({rank}) in Lane {lane}",
       rule: "{at}: {effect}.",
       claimed: "Bounty claimed",
@@ -1783,7 +1792,7 @@ export default {
         foremanGritjaw: "Foreman Gritjaw",
         rootwardenSylla: "Rootwarden Sylla",
       },
-      // Draft lines of the wanted posters, with the draft names.
+      // The draft wanted line of each Boss, with the draft name.
       wanted: {
         foremanGritjaw: "For digging under the Glowcap Hollows.",
         rootwardenSylla: "For hiring Goblins to guard the roots.",
@@ -1795,7 +1804,7 @@ export default {
         abbotKnell: "Abbot Knell",
         seerVell: "Seer Vell",
       },
-      // Draft lines of the wanted posters, with the draft names.
+      // The draft wanted line of each Boss, with the draft name.
       wanted: {
         abbotKnell: "For ringing the dead out of their graves.",
         seerVell: "For setting the cold beasts on travelers.",
@@ -1808,7 +1817,7 @@ export default {
         oldBramble: "The Old Bramble",
         queenMarrow: "Queen Marrow",
       },
-      // Draft lines of the wanted posters, with the draft names.
+      // The draft wanted line of each Boss, with the draft name.
       wanted: {
         baronBrassbelly: "For taxing the roads twice.",
         oldBramble: "For waking up angry.",
@@ -1843,7 +1852,7 @@ export default {
       current: "Current Floor",
       locked: "Locked",
       received: "Received",
-      wonNote: "You won this Floor. Each Floor gives its reward one time.",
+      wonNote: "Completed",
       yourLevel: "Your level {level}",
     },
     result: {
