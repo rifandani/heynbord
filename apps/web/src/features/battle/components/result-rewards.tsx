@@ -11,6 +11,7 @@ import { Button } from "react-aria-components";
 
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { REWARD_PLATE } from "@/features/battle/components/reward-plate";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
   PEEK_BUTTON,
@@ -24,10 +25,6 @@ import { TICKET_GLYPH } from "@/features/sweep/sweep";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
-
-/** The small Night Plate of a reward balance, as the Balance Plate shows Coin. */
-const REWARD_PLATE =
-  "flex w-fit items-center gap-2 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-3 py-1.5 text-sm leading-none font-black text-[#fff6df] tabular-nums shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:py-1";
 
 /** The Coin of a result (Economy 2.1), on a small Night Plate, as the Balance Plate shows Coin. */
 export const ResultCoin = ({ coin }: { readonly coin: number }) => {
@@ -176,7 +173,7 @@ export const ResultAchievements = ({
             key={id}
             className={cn(
               REWARD_PLATE,
-              "gap-2.5 motion-safe:animate-[result-level-up_420ms_cubic-bezier(0.2,0.8,0.2,1)_1250ms_both] [@media(min-height:501px)]:w-full"
+              "max-w-full gap-2.5 motion-safe:animate-[result-level-up_420ms_cubic-bezier(0.2,0.8,0.2,1)_1250ms_both]"
             )}
             data-testid="result-achievement"
             data-achievement={id}

@@ -701,6 +701,33 @@ html[data-town-bar="collapsed"] {
   }
 }
 
+/* A claimable Star chest rocks on its base, so that the Player sees it waits (GDD 11.5). */
+@keyframes chest-wiggle {
+  0%,
+  52%,
+  100% {
+    rotate: 0deg;
+  }
+  8% {
+    rotate: -7deg;
+  }
+  16% {
+    rotate: 6deg;
+  }
+  24% {
+    rotate: -5deg;
+  }
+  32% {
+    rotate: 3.5deg;
+  }
+  40% {
+    rotate: -2deg;
+  }
+  46% {
+    rotate: 0deg;
+  }
+}
+
 /* The Campaign (GDD 11.5): the Stage Markers rise onto their clearings in Trail order. */
 @keyframes campaign-marker-in {
   from {
@@ -779,6 +806,15 @@ html[data-town-bar="collapsed"] {
   from {
     opacity: 0;
     translate: 0 6px;
+  }
+}
+
+/* The Star chest rewards plaque drops out from under its chest (GDD 11.5). */
+@keyframes chest-panel-in {
+  from {
+    opacity: 0;
+    translate: 0 -6px;
+    scale: 0.96;
   }
 }
 
@@ -1002,6 +1038,25 @@ html[data-town-bar="collapsed"] {
   100% {
     opacity: 0;
     translate: var(--mote-x, 24px) -90px;
+  }
+}
+
+/* The Player's Packs settle onto the gift shelf, one after the other. */
+@keyframes gift-shelf-in {
+  from {
+    opacity: 0;
+    translate: 0 -10px;
+    scale: 0.94;
+  }
+}
+
+/* The warm lamp light on the gift shelf comes up one time. */
+@keyframes gift-shelf-glow {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 
@@ -1716,7 +1771,9 @@ html[data-town-bar="collapsed"] {
 
 /*
  * The Battle screen keeps the Board, the Hand Bar and End Turn free: toasts
- * show in a narrow column at the bottom right, above End Turn.
+ * show in a narrow column at the bottom right, above End Turn. A wide screen
+ * gives the column room to the right of the 1008px Hand Bar, so the toast
+ * sits in the true bottom right corner there.
  */
 body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
   --width: 210px !important;
@@ -1724,6 +1781,13 @@ body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
   left: auto !important;
   bottom: 212px !important;
   transform: none !important;
+}
+
+/* 1440px: the 210px column and its margin clear the Hand Bar. */
+@media (min-width: 1440px) {
+  body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
+    bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+  }
 }
 
 @media (max-height: 500px) {

@@ -36,7 +36,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Hand Slot**: One of the places for a Hand Card in the Hand Bar, one for each Card up to the Hand Limit. An empty Hand Slot shows that the Hand has room for one more card. _Avoid_: card socket, placeholder
 
-**Card Back**: The face-down side of a card. All cards share one Card Back. _Avoid_: sleeve, card cover
+**Card Back**: The face-down side of a card. All cards share one Card Back: the Active Cosmetic of the `cardBack` family, or the Standard Back. _Avoid_: sleeve, card cover
 
 **Deck Pile**: The stack of Card Backs in the Hand Bar, with the number of cards in the Deck. It never shows which cards are in the Deck. _Avoid_: draw pile, library
 
@@ -73,6 +73,12 @@ React app on TanStack Start. The server renders and streams each page.
 **Log Entry**: One past moment in the Battle Log: one card play, one Unit Action or one Phase effect, with all its results. The Log Entries are under one header for each Turn of a Side. _Avoid_: log line, event, step, history item
 
 **Live**: The current moment of the Battle, as opposed to a Log Entry. "Back to Live" closes the Battle Log. _Avoid_: present, now, current turn
+
+### Cosmetics
+
+**Hero portrait**: A painting of the face of the Player's Hero, and a Cosmetic of the `heroPortrait` family. It does not change with the Class of the Active Deck: the Player's Hero keeps one face for all Classes, and the Class stays on its own name and glyph. It shows on the Hero screen, in the player panel of the Top Bar, and on the banner of the Player's Hero on the Board. The enemy Side never shows it. _Avoid_: avatar, hero skin, portrait card, face
+
+**Standard portrait**: The free look of the Hero portrait family, which every Player has: the Hero banner in code, in the color of its Side, with the Class glyph. _Avoid_: default portrait, base portrait
 
 ### Town
 
@@ -181,6 +187,16 @@ React app on TanStack Start. The server renders and streams each page.
 **Spare copy**: A copy of a card that no saved Deck uses: the copies of a card and Rank less the most that one saved Deck uses. An Extract of a spare copy changes no Deck. _Avoid_: duplicate, extra, surplus
 
 **Path to Legendary**: The groove track in the Combine Panel that counts each copy of the card as Base Rank copies (a copy in Rank r is 2^(r − base) of them), and tells the copies and the Coin that are still needed for one Legendary copy. _Avoid_: progress bar, upgrade path
+
+### Bazaar screen
+
+**Bazaar screen**: The screen that the Market opens: the offers that the Player buys with Heynstones, one section for each Cosmetic family, behind the inside of the Market. A Card Back that the Player owns can be made the Active Cosmetic there. _Avoid_: shop screen, store screen, market screen
+
+**Item plate**: One offer on the Bazaar screen: the painted face of a Card Back or the glyph of its family, the name, and the price, "Owned" or "In use", with **Buy** or **Use**. _Avoid_: offer card, product tile, row
+
+**Card Back shelf**: The plate above the Card Backs that shows the look at the size of a card, with its name and its state. The pointer, the keyboard focus or a press on a plate puts that look on the shelf. _Avoid_: preview pane, try-on window, mirror
+
+**Standard Back**: The Card Back that every Player has, for free, when no Card Back is Active. It is not a Bazaar item and not a Cosmetic. _Avoid_: default skin, basic back
 
 ### Seaport screen
 

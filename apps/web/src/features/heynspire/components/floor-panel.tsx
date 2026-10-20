@@ -12,6 +12,7 @@ import { useId, useMemo, useState } from "react";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { REWARD_PLATE_COMPACT as PLATE } from "@/features/battle/components/reward-plate";
 import { classGlyph } from "@/features/battle/glyphs";
 import { qaSeed } from "@/features/battle/qa";
 import { randomSeed } from "@/features/battle/use-battle";
@@ -35,10 +36,6 @@ import {
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
-
-/** The small Night Plate of a reward, as the Battle result shows it. */
-const PLATE =
-  "flex w-fit items-center gap-1.5 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-2.5 py-1 text-sm leading-none font-black whitespace-nowrap text-[#fff6df] tabular-nums shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:py-0.5 [@media(max-height:500px)]:text-xs";
 
 /** A small state chip in the header: never the color alone, its icon and its words say the state. */
 const CHIP =

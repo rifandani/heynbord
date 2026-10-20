@@ -324,6 +324,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Owned**: A Cosmetic in the Player's owned list. The Player buys one in the Bazaar or earns it, and owns it forever: the Player never sells or loses it, as a Deck Slot. _Avoid_: unlocked, equipped
 
+**Active Cosmetic**: The one Cosmetic of a family that the Player uses now. The Player selects it from the Cosmetics that they own, and it changes only how the game looks. _Avoid_: equipped Cosmetic, worn look, applied Cosmetic
+
+**Standard look**: The look of a Cosmetic family that the game uses when the Player has selected no Cosmetic of that family. It costs nothing, and every Player has it. The Standard look of the Card Back family is the Standard Back, and the Standard look of the Hero portrait family is the Standard portrait. _Avoid_: default Cosmetic, free Cosmetic, base look
+
 **Bazaar item**: A Bazaar Cosmetic with a Heynstone price. _Avoid_: product, offer item
 
 **Achievement**: A one-time goal with a reward. It is In progress, then Completed when the Player meets the goal, then Claimed when the Player takes the reward. _Avoid_: quest, mission, trophy, badge
@@ -462,6 +466,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - Only a **Battle** that the Player plays can complete a **Feat**. A **Sweep**, a **Replay**, **Auto-play** and the **Tutorial** never complete a Feat, and a Sweep never adds to a **Tally**.
 - The Player has one balance of **Coin**, shown in **Gold**, **Silver** and **Copper**, and a separate balance of **Heynstones**.
 - **Coin** and **Heynstones** never change into each other or into **Essence**.
+- A **Player** has at most one **Active Cosmetic** of each family, and it is always a **Cosmetic** that the Player **Owns**. A family with no Active Cosmetic shows its **Standard look**, which needs no Cosmetic.
 
 ## Example dialogue
 

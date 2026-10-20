@@ -172,6 +172,11 @@ export const PROFILE_MIGRATIONS = {
     isJsonObject(profile.seaport)
       ? { ...profile, seaport: withCargo(profile.seaport) }
       : profile,
+  /**
+   * Version 14 adds the Active Cosmetics (Economy 3.5). An old Profile has
+   * selected none: each family shows its Standard look.
+   */
+  13: (profile) => ({ ...profile, activeCosmetics: {} }),
 } satisfies Readonly<Record<number, ProfileMigration>>;
 
 const isVersion = Schema.is(Schema.Int);

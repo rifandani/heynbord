@@ -15,7 +15,6 @@ import {
   CardPreview,
   PanelHeader,
   panelClassName,
-  StationEdge,
   PathTrack,
   rowsClassName,
   SMALL,
@@ -238,7 +237,6 @@ export const CombinePanel = ({
       data-station="combine"
       data-card={tile.cardId}
     >
-      <StationEdge station="combine" />
       <PanelHeader
         cardId={tile.cardId}
         rank={shown}

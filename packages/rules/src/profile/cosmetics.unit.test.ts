@@ -6,7 +6,14 @@ import {
   BOSS_FLOOR_COSMETICS,
 } from "../content/cosmetics";
 import type { CosmeticId } from "../content/cosmetics";
-import { buyCosmetic, grantCosmetic, owedCosmetics } from "./cosmetics";
+import {
+  activeCosmetic,
+  buyCosmetic,
+  grantCosmetic,
+  owedCosmetics,
+  selectCosmetic,
+  selectStandardLook,
+} from "./cosmetics";
 import { newProfile } from "./new-profile";
 import type { Profile } from "./schema";
 
@@ -81,6 +88,111 @@ describe("grantCosmetic (Economy 3.5)", () => {
     expect(once.cosmetics).toEqual([id]);
     const twice = grantCosmetic(once, id);
     expect(twice).toBe(once);
+  });
+});
+
+describe("selectCosmetic (Economy 3.5)", () => {
+  const [firstCardBack] = BAZAAR_COSMETICS;
+  const firstPortrait = BAZAAR_COSMETICS.find(
+    (item) => item.family === "heroPortrait"
+  );
+
+  it("sets the Active Cosmetic of its family", () => {
+    if (!firstCardBack) {
+      throw new Error("The catalog has no first card back");
+    }
+    const owner = grantCosmetic(fresh, firstCardBack.id);
+    const selected = selectCosmetic(owner, firstCardBack.id);
+    expect(selected?.activeCosmetics).toEqual({
+      cardBack: firstCardBack.id,
+    });
+    expect(activeCosmetic(owner, "cardBack")).toBeNull();
+    expect(
+      selected === null ? null : activeCosmetic(selected, "cardBack")
+    ).toBe(firstCardBack.id);
+  });
+
+  it("keeps the Active Cosmetic of the other families", () => {
+    if (!firstCardBack || !firstPortrait) {
+      throw new Error("The catalog has too few items");
+    }
+    const owner = grantCosmetic(
+      grantCosmetic(fresh, firstCardBack.id),
+      firstPortrait.id
+    );
+    const withBack = selectCosmetic(owner, firstCardBack.id);
+    const withBoth =
+      withBack === null ? null : selectCosmetic(withBack, firstPortrait.id);
+    expect(withBoth?.activeCosmetics).toEqual({
+      cardBack: firstCardBack.id,
+      heroPortrait: firstPortrait.id,
+    });
+  });
+
+  it("gives null when the Player does not own the Cosmetic", () => {
+    expect(firstCardBack && selectCosmetic(fresh, firstCardBack.id)).toBeNull();
+  });
+
+  it("gives null for an Earn-only Cosmetic or an unknown ID", () => {
+    const [id] = BOSS_FLOOR_COSMETICS;
+    if (!id) {
+      throw new Error("The list has no first Boss Floor Cosmetic");
+    }
+    const owner = grantCosmetic(fresh, id);
+    expect(selectCosmetic(owner, id)).toBeNull();
+    expect(
+      selectCosmetic(grantCosmetic(owner, id), wrongId("cardBack.other"))
+    ).toBeNull();
+  });
+
+  it("is idempotent", () => {
+    if (!firstCardBack) {
+      throw new Error("The catalog has no first card back");
+    }
+    const owner = grantCosmetic(fresh, firstCardBack.id);
+    const once = selectCosmetic(owner, firstCardBack.id);
+    const twice = once === null ? null : selectCosmetic(once, firstCardBack.id);
+    expect(twice).toEqual(once);
+  });
+});
+
+describe("selectStandardLook (Economy 3.5)", () => {
+  it("clears the Active Cosmetic of the family", () => {
+    const [item] = BAZAAR_COSMETICS;
+    if (!item) {
+      throw new Error("The catalog has no first card back");
+    }
+    const selected = selectCosmetic(grantCosmetic(fresh, item.id), item.id);
+    expect(selected).not.toBeNull();
+    const cleared =
+      selected === null ? null : selectStandardLook(selected, "cardBack");
+    expect(cleared?.activeCosmetics).toEqual({});
+    expect(cleared && activeCosmetic(cleared, "cardBack")).toBeNull();
+  });
+
+  it("keeps the other families, and returns the same Profile when it is already standard", () => {
+    const [firstCardBack] = BAZAAR_COSMETICS;
+    const firstPortrait = BAZAAR_COSMETICS.find(
+      (item) => item.family === "heroPortrait"
+    );
+    if (!firstCardBack || !firstPortrait) {
+      throw new Error("The catalog has too few items");
+    }
+    const owner = grantCosmetic(
+      grantCosmetic(fresh, firstCardBack.id),
+      firstPortrait.id
+    );
+    const back = selectCosmetic(owner, firstCardBack.id);
+    const both = back === null ? null : selectCosmetic(back, firstPortrait.id);
+    if (both === null) {
+      throw new Error("The select action failed");
+    }
+    const cleared = selectStandardLook(both, "cardBack");
+    expect(cleared.activeCosmetics).toEqual({
+      heroPortrait: firstPortrait.id,
+    });
+    expect(selectStandardLook(cleared, "cardBack")).toBe(cleared);
+    expect(selectStandardLook(fresh, "cardBack")).toBe(fresh);
   });
 });
 

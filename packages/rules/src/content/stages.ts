@@ -1304,15 +1304,17 @@ export const STAGES: readonly StageDefinition[] = [
         ...copies(1, "elf.acornTender", "uncommon"),
       ],
       // Boss rule (GDD 8.1): the bodyguard of the Old Bramble, a Mountain
-      // Colossus with Trample, holds the middle Lane behind a Bramble Nest.
+      // Colossus with Trample, holds Lane 3, next to the Bramble Nest in
+      // Lane 1. The Colossus is Heavy (Speed 1), so it must not start behind
+      // a Wall: a Wall never moves, so the Colossus could never pass it.
       startUnits: [
         {
           cardId: "feral.mountainColossus",
           rank: "epic",
-          lane: 1,
+          lane: 2,
           position: 10,
         },
-        { cardId: "elf.brambleNest", rank: "uncommon", lane: 1, position: 9 },
+        { cardId: "elf.brambleNest", rank: "uncommon", lane: 0, position: 9 },
       ],
     },
   },

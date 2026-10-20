@@ -1,4 +1,4 @@
-import type { Collection, DeckSlot } from "@workspace/rules";
+import type { ClassId, Collection, DeckSlot } from "@workspace/rules";
 import { Atom } from "effect/reactivity";
 
 import { profileAtom } from "@/features/profile/profile.atoms";
@@ -21,3 +21,15 @@ export const activeDeckIdAtom = Atom.writable(
   (ctx, activeDeckId: string) =>
     ctx.set(profileAtom, { ...ctx.get(profileAtom), activeDeckId })
 );
+
+/**
+ * The Class of the Active Deck, which is the Class of the Hero (GDD 4.1).
+ * The Hero screen and the Standard portrait show it.
+ */
+export const activeDeckClassAtom = Atom.make((get): ClassId => {
+  const profile = get(profileAtom);
+  const slot =
+    profile.deckSlots.find((entry) => entry.id === profile.activeDeckId) ??
+    profile.deckSlots[0];
+  return slot?.classId ?? "warrior";
+});

@@ -6,6 +6,7 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { SIDE_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
+import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 
 /** The HP bar turns red at 30% HP or less. */
 const HpBar = ({
@@ -64,18 +65,25 @@ export const HeroPanel = ({
       style={{ borderColor: SIDE_COLORS[side].main }}
       data-testid={`hero-${side}`}
     >
-      <span
-        className="flex size-10 shrink-0 items-center justify-center rounded-lg text-[#fff6df] [@media(max-height:500px)]:size-8"
-        style={{
-          background: `linear-gradient(180deg, ${SIDE_COLORS[side].light}, ${SIDE_COLORS[side].dark})`,
-        }}
-        aria-hidden
-      >
-        <GlyphIcon
-          glyph={classGlyph(hero.classId)}
-          className="size-6 [@media(max-height:500px)]:size-5"
+      {side === "player" ? (
+        <HeroPortrait
+          classId={hero.classId}
+          className="w-10 shrink-0 [@media(max-height:500px)]:w-8"
         />
-      </span>
+      ) : (
+        <span
+          className="flex size-10 shrink-0 items-center justify-center rounded-lg text-[#fff6df] [@media(max-height:500px)]:size-8"
+          style={{
+            background: `linear-gradient(180deg, ${SIDE_COLORS[side].light}, ${SIDE_COLORS[side].dark})`,
+          }}
+          aria-hidden
+        >
+          <GlyphIcon
+            glyph={classGlyph(hero.classId)}
+            className="size-6 [@media(max-height:500px)]:size-5"
+          />
+        </span>
+      )}
       <div className={cn("min-w-0 flex-1", side === "enemy" && "text-right")}>
         <p className="truncate text-sm leading-tight font-semibold text-[#fff6df] [@media(max-height:500px)]:text-xs">
           {name}{" "}

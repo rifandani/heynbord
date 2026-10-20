@@ -249,7 +249,8 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
           { cardId: "elf.brambleNest", rank: "uncommon", lane: 1, position: 8 },
         ],
         // Boss Rule: at half HP, the giant wakes up angry, and its Mountain
-        // Colossus comes out of the roots.
+        // Colossus comes out of the roots. It comes in Lane 3, not behind the
+        // Bramble Nest: the Colossus is Heavy, and a Wall never moves.
         bossRules: [
           {
             threshold: 50,
@@ -257,7 +258,7 @@ export const DUNGEONS: readonly DungeonDefinition[] = [
               type: "summon",
               cardId: "feral.mountainColossus",
               rank: "epic",
-              lane: 1,
+              lane: 2,
               position: 10,
             },
           },

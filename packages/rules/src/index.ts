@@ -196,6 +196,8 @@ export {
   COSMETIC_PRICES,
   getBazaarCosmetic,
   isCosmeticId,
+  PREMIUM_CARD_BACK_FACTOR,
+  PREMIUM_CARD_BACKS,
 } from "./content/cosmetics";
 export type { Cosmetic, CosmeticFamily, CosmeticId } from "./content/cosmetics";
 export { HEYNSTONE_SOURCES, HEYNSTONE_SUPPLY } from "./content/heynstones";
@@ -318,7 +320,14 @@ export type {
 export { recordFeats } from "./profile/feats";
 export type { FeatBattle, FeatPlace } from "./profile/feats";
 export { buyDeckSlot, INITIAL_DECK_SLOTS } from "./profile/deck-slots";
-export { buyCosmetic, grantCosmetic, owedCosmetics } from "./profile/cosmetics";
+export {
+  activeCosmetic,
+  buyCosmetic,
+  grantCosmetic,
+  owedCosmetics,
+  selectCosmetic,
+  selectStandardLook,
+} from "./profile/cosmetics";
 export {
   applyDungeonResult,
   dungeonCardPool,
@@ -373,6 +382,7 @@ export {
   PROFILE_SCHEMA_VERSION,
 } from "./profile/schema";
 export type {
+  ActiveCosmetics,
   DeckSlot,
   PackState,
   SeaportState,

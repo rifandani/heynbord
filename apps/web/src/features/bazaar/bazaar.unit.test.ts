@@ -4,11 +4,15 @@ import { describe, expect, it } from "vitest";
 import { initI18n } from "@/core/libs/i18n/init";
 import enUS from "@/core/libs/i18n/locales/en-US";
 import idID from "@/core/libs/i18n/locales/id-ID";
+import { hasCardBackArt } from "@/features/battle/card-back-art";
 import {
   bazaarGroups,
   canBuyCosmetic,
   cosmeticItemKey,
+  isLookFamily,
+  LOOK_FAMILIES,
 } from "@/features/bazaar/bazaar";
+import { hasHeroPortraitArt } from "@/features/hero/hero-portrait-art";
 
 const { t } = initI18n({
   locale: "en-us",
@@ -26,11 +30,42 @@ describe("bazaarGroups", () => {
       COSMETIC_FAMILIES
     );
     expect(bazaarGroups().map((group) => group.items.length)).toEqual([
-      5, 7, 6, 4,
+      BAZAAR_COSMETICS.filter(
+        (item) => item.family === "cardBack" && hasCardBackArt(item.id)
+      ).length,
+      BAZAAR_COSMETICS.filter(
+        (item) => item.family === "heroPortrait" && hasHeroPortraitArt(item.id)
+      ).length,
+      6,
+      4,
     ]);
-    expect(bazaarGroups().flatMap((group) => group.items)).toEqual(
-      BAZAAR_COSMETICS
+  });
+
+  it("shows only the Card Backs that have their face painted", () => {
+    const shown = BAZAAR_COSMETICS.filter(
+      (item) => item.family === "cardBack" && hasCardBackArt(item.id)
     );
+    const cardBacks = bazaarGroups()[0]?.items ?? [];
+    expect(cardBacks).toEqual(shown);
+    expect(cardBacks.every((item) => hasCardBackArt(item.id))).toBe(true);
+  });
+
+  it("shows only the Hero portraits that have their face painted", () => {
+    const shown = BAZAAR_COSMETICS.filter(
+      (item) => item.family === "heroPortrait" && hasHeroPortraitArt(item.id)
+    );
+    const portraits = bazaarGroups()[1]?.items ?? [];
+    expect(portraits).toEqual(shown);
+    expect(portraits.every((item) => hasHeroPortraitArt(item.id))).toBe(true);
+  });
+});
+
+describe("isLookFamily", () => {
+  it("is true for the families that the game draws", () => {
+    expect(COSMETIC_FAMILIES.filter(isLookFamily)).toEqual([
+      "cardBack",
+      "heroPortrait",
+    ]);
   });
 });
 
@@ -49,6 +84,21 @@ describe("cosmeticItemKey", () => {
     for (const family of COSMETIC_FAMILIES) {
       expect(english(`bazaar.families.${family}`)).not.toBe(family);
       expect(idID.bazaar.families[family]).toBeTruthy();
+    }
+  });
+
+  it("has the shelf, Standard and Use text of each look family", () => {
+    for (const family of LOOK_FAMILIES) {
+      for (const key of [
+        `bazaar.shelf.${family}`,
+        `bazaar.standard.${family}`,
+        `bazaar.useStandard.${family}`,
+      ]) {
+        expect(english(key), key).not.toBe(key);
+      }
+      expect(idID.bazaar.shelf[family]).toBeTruthy();
+      expect(idID.bazaar.standard[family]).toBeTruthy();
+      expect(idID.bazaar.useStandard[family]).toBeTruthy();
     }
   });
 });

@@ -548,10 +548,10 @@ export const BOSS_FLOOR_TEMPLATES: readonly BossFloorTemplate[] = [
       {
         cardId: "feral.mountainColossus",
         rank: "epic",
-        lane: 1,
+        lane: 2,
         position: 10,
       },
-      { cardId: "elf.brambleNest", rank: "uncommon", lane: 1, position: 9 },
+      { cardId: "elf.brambleNest", rank: "uncommon", lane: 0, position: 9 },
     ],
     deck: [
       ...cards(1, "feral.woollyMammoth"),

@@ -101,6 +101,23 @@ export const playerLevelAtom = Atom.make((get) =>
   playerLevel(get(profileAtom))
 );
 
+/**
+ * The Active Cosmetic of the `cardBack` family, or `null` for the Standard
+ * Back (Economy 3.5). Every face-down card of the Player shows it.
+ */
+export const activeCardBackAtom = Atom.make(
+  (get) => get(profileAtom).activeCosmetics.cardBack ?? null
+);
+
+/**
+ * The Active Cosmetic of the `heroPortrait` family, or `null` for the
+ * Standard portrait (Economy 3.5). The Hero screen, the Top Bar and the
+ * Player Hero banner on the Board show it.
+ */
+export const activeHeroPortraitAtom = Atom.make(
+  (get) => get(profileAtom).activeCosmetics.heroPortrait ?? null
+);
+
 /** The Player level and the Gear that a Battle uses. */
 export const battlePlayerAtom = Atom.make((get): BattlePlayer =>
   battlePlayer(get(profileAtom))

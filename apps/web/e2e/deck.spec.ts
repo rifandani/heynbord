@@ -27,7 +27,7 @@ const openDecks = async (page: Page) => {
 test.describe("Deck dialog", () => {
   test("a Deck edit stays after a reload", async ({ page }) => {
     const dialog = await openDecks(page);
-    await dialog.getByTestId("deck-row-human.militiaRecruit-common").click();
+    await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
     await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
     await page.evaluate(async () => {
       // SAFETY: the dev and QA builds install the test hooks on `window`.
@@ -36,6 +36,24 @@ test.describe("Deck dialog", () => {
     await page.reload();
     const again = await openDecks(page);
     await expect(again.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+  });
+
+  test("a press removes one copy, and hover shows the Card Details", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    const card = dialog.getByTestId("deck-row-human.militiaRecruit-common");
+    // The Card Details show under the pointer, and the card stays.
+    await card.hover();
+    await expect(dialog.getByTestId("deck-peek")).toContainText(
+      "Militia Recruit"
+    );
+    await page.mouse.move(8, 8);
+    await expect(dialog.getByTestId("deck-peek")).toHaveCount(0);
+
+    await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(card).toContainText("×1");
   });
 
   test("opens on the active Deck, and Esc closes it", async ({ page }) => {
@@ -62,7 +80,7 @@ test.describe("Deck dialog", () => {
       "Countdown 25 / 25"
     );
     // Without one Militia Recruit (Countdown 1), the Deck has room for 1 card.
-    await dialog.getByTestId("deck-row-human.militiaRecruit-common").click();
+    await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
     await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
     await expect(dialog.getByTestId("deck-countdown")).toHaveText(
       "Countdown 24 / 25"
@@ -105,7 +123,7 @@ test.describe("Deck dialog", () => {
       "at least 5 cards"
     );
 
-    await dialog.getByTestId("deck-row-human.crossbowGuard-common").click();
+    await dialog.getByTestId("deck-remove-human.crossbowGuard-common").click();
     await expect(
       dialog.getByTestId("deck-row-human.crossbowGuard-common")
     ).toContainText("×2");

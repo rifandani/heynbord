@@ -51,6 +51,8 @@ describe("newProfile", () => {
     expect(profile.seenHints).toEqual([]);
     expect(profile.completedAchievements).toEqual([]);
     expect(profile.claimedAchievements).toEqual([]);
+    expect(profile.cosmetics).toEqual([]);
+    expect(profile.activeCosmetics).toEqual({});
     expect(profile.tallies).toEqual({
       packsOpened: 0,
       combines: 0,

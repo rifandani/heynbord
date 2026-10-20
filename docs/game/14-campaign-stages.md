@@ -366,7 +366,7 @@ A deep, old forest of giant trees and thorn hedges (GDD 3.3). The Elves of the T
 | 4-7 | The Treetop Village | Elder Hawthorn (Warrior) | An elf village of tree houses | **Call to Arms** for the first time: all enemy Units in a Lane get +4 Attack for one Turn. |
 | 4-8 | The Still Pool | Poolkeeper Willow (Priest) | A waterfall and a pool | **Penance** for the first time: Holy damage to a Unit, equal to the Attack of that Unit. A Unit with a high Attack is a target. |
 | 4-9 | The Broken Hedge | The Old Bramble's Hedgekeeper (Ranger) | A thorn hedge wall with a hole broken in it | **The final test:** Trample, the cave beasts, Web Spitters and Pivot together, with Ranger Skill Cards. |
-| 4-10 | The Bramble Hill | The Old Bramble (Warrior) — **Boss** | The Old Bramble: a forest giant that sleeps on a hill of brambles. It looks like a huge old tree with a face in the bark. One eye is half open. | **The bodyguard and Cleave:** a Mountain Colossus (Epic, Heavy, Regenerate 2, Trample) is a Start Unit in the middle Lane, behind a Bramble Nest Start Unit. The Old Bramble plays Cleave for the first time. |
+| 4-10 | The Bramble Hill | The Old Bramble (Warrior) — **Boss** | The Old Bramble: a forest giant that sleeps on a hill of brambles. It looks like a huge old tree with a face in the bark. One eye is half open. | **The bodyguard and Cleave:** a Mountain Colossus (Epic, Heavy, Regenerate 2, Trample) is a Start Unit in Lane 3, next to a Bramble Nest Start Unit in Lane 1. A Heavy Unit does not start behind a Wall, because a Wall never moves and the Heavy Unit could never pass it. The Old Bramble plays Cleave for the first time. |
 
 ### 5.2 Numbers
 
@@ -383,9 +383,11 @@ The columns are the same as in 2.2.
 | 4-7 | 62 | 0 / 0 / 0 / 0 | 25 | — | — | Tailsweep Basilisk (Uncommon) | 17 | 66% / 66% | 10 / 10 / 10 / 10 | 79% / 79% | 26 | 38% / 42% |
 | 4-8 | 50 | 0 / 0 / 0 / 2 | 27 | — | — | Cave Troll (Uncommon) | 18 | 61% / 71% | 10 / 10 / 10 / 10 | 72% / 79% | 24 | 40% / 43% |
 | 4-9 | 54 | 0 / 0 / 0 / 0 | 26 | — | — | Amberwing Dart (Rare) | 18 | 64% / 69% | 10 / 10 / 10 / 10 | 76% / 79% | 26 | 38% / 43% |
-| 4-10 | 66 | 2 / 0 / 0 / 0 | 28 | — | Mountain Colossus (Epic), Lane 2, Column 11 · Bramble Nest (Uncommon), Lane 2, Column 10 | Mountain Colossus (Epic) | 19 | 31% / 37% | 10 / 10 / 10 / 10 | 42% / 48% | 28 | 31% / 33% |
+| 4-10 | 66 | 2 / 0 / 0 / 0 | 28 | — | Mountain Colossus (Epic), Lane 3, Column 11 · Bramble Nest (Uncommon), Lane 1, Column 10 | Mountain Colossus (Epic) | 19 | 28% / 36% | 10 / 10 / 10 / 10 | 36% / 50% | 28 | 20% / 26% |
 
-On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0048](../adr/0048-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). The win rates in the table come from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target. The next paragraphs tell the earlier runs.
+On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0048](../adr/0048-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). The win rates in the table come from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target, except the Vanguard row of 4-10 with no Gear after the Heavy bodyguard fix (see below). The next paragraphs tell the earlier runs.
+
+**The Heavy bodyguard (2026-10-20).** A Heavy Unit has Speed 1, so it cannot pass a friendly Wall: a Wall never moves, and the Unit needs 2 steps to pass its Square. The Mountain Colossus of 4-10 started behind the Bramble Nest, so it could not move until the Player killed the Wall. The Colossus now starts in Lane 3, and the Bramble Nest is in Lane 1. The Colossus is active from the first Turn, so the Stage is harder: Vanguard with no Gear wins 27.5% (target 30%), and the other 3 rows are on target. A retune or a decision is open for this row. A content test now checks every Start Unit of every Stage, Floor and Dungeon against this rule.
 
 **Issue #109 (2026-10-17).** The AI now counts the Heroic bonus in the value of a Unit and in the threat and the defense of a Lane (GDD 9). The AI plays both Sides in the sim, so this change moved all rows. The values "before" are after the AI change and before the content changes (1000 Battles). Vanguard and Raiders, with no Gear and then with the Expected Gear. Each change is to the enemy only.
 
@@ -413,7 +415,7 @@ Notes from the first tuning:
 - **More cards make a Stage harder.** A copy that goes into a Deck to reach the Deck size can move the win rate more than a Rank change. 4-5 had 23 cards. A third Crag Lizard and a Mosspitcher Lookout took Vanguard from 64% to 45% (200 Battles). Thus weak cards (Fernwing Couriers and Ranger Skill Cards) filled the Deck.
 - **4-8 (The Still Pool).** Raiders won about 6 points more than Vanguard. With Mend, Raiders won 80% with the Expected Gear (2000 Battles). Sanctuary in place of Mend gave 77% (1000 Battles).
 - **4-10 (Boss).** The Boss target is 20 points wide. Gear added 10 to 16 points to the Boss Stage, and Raiders won about 7 points more than Vanguard in most tests. Thus the first Boss Decks could not hit the target with both Decks. Three changes closed the gap:
-  - The Bramble Nest Start Unit is in the middle Lane in front of the Colossus, as in Region 3. With Bramble Nests in Lanes 1 and 3, Raiders won 5 to 7 points more than Vanguard. With the Nest in the middle Lane, Raiders won 3 to 4 points more (3000 Battles).
+  - The Bramble Nest Start Unit is in the middle Lane in front of the Colossus, as in Region 3. With Bramble Nests in Lanes 1 and 3, Raiders won 5 to 7 points more than Vanguard. With the Nest in the middle Lane, Raiders won 3 to 4 points more (3000 Battles). (The Colossus moved out from behind the Nest on 2026-10-20; see 5.2.)
   - 2 Acorn Tenders (Holy damage) replace the Mosspitcher Lookouts. Then the Expected Gear added 12 points to Vanguard (it was 14), and 13 points to Raiders (3000 Battles). A possible reason: a Unit cannot Block Holy damage, so the Banner Gear adds less.
   - Shield Bash replaces Ground Slam. Ground Slam hit Vanguard more than Raiders: without it, Vanguard won 6 points more and Raiders 3 points more (1000 Battles).
   
@@ -602,7 +604,7 @@ An old Lanekeeper vault under the hills, where 3 Bosses of the Campaign join to 
 | Boss | Front | Class | Hero HP | Gear | Deck size | Start Units | Boss Rule |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baron Brassbelly (Human) | Lane 1 | Ranger | 20 | 25 / 0 / 25 / 25 | 4 | Shieldbearer (Epic), Lane 1, Column 10 | At 50% HP: Summon a Gate Warden (Epic) in Lane 1, Column 11. |
-| The Old Bramble, the wide Boss | Lanes 2 and 3 | Warrior | 34 | 25 / 0 / 25 / 25 | 4 | Bramble Nest (Uncommon), Lane 2, Column 9 | At 50% HP: Summon a Mountain Colossus (Epic) in Lane 2, Column 11. |
+| The Old Bramble, the wide Boss | Lanes 2 and 3 | Warrior | 34 | 25 / 0 / 25 / 25 | 4 | Bramble Nest (Uncommon), Lane 2, Column 9 | At 50% HP: Summon a Mountain Colossus (Epic) in Lane 3, Column 11. |
 | Queen Marrow (Undead) | Lane 4 | Mage | 20 | 25 / 0 / 25 / 25 | 4 | Bone Rampart (Epic), Lane 4, Column 9 | At 50% HP: Summon a Winter Maw (Epic) in Lane 4, Column 11. |
 
 | Boss | Deck |
@@ -614,14 +616,14 @@ An old Lanekeeper vault under the hills, where 3 Bosses of the Campaign join to 
 - **Higher power than in the Campaign.** Each Boss Deck is only its start Hand of 4 cards, because 3 Hands fill the Board fast. The power comes from Gear 25 on Weapon, Trinket and Banner, the Epic bodyguards and the Epic Boss Rule Summons. The first draft had Boss Decks of 10 cards at Uncommon and Rare, with Gear 10, and it won 0%.
 - **The Gear gap.** The Expected Gear at level 30 (16) adds about 13 to 21 points to the win rate, and the target is 20 points wide. With 5 cards in each Boss Deck, the Vanguard row with Expected Gear was always about 21 points above the Raiders row with no Gear, so no setting was on target. Thus a Dungeon Boss Deck can have 4 cards. The Pinning Shot of Baron Brassbelly makes the gap smaller in the sim.
 - **The Ranger card of the Baron.** The Warrior draft of the Baron had a Spear Throw (U). In the sim, each other Ranger card made the Raiders row with no Gear go below 30%: Quick Shot (U and C), Harrying Shot, Warning Shot, Long Shot and Barbed Arrow. Hunter's Focus made the Vanguard row with Expected Gear go above 50%. A lower Hero HP (18) did not help, because the Player loses when its Hero falls, not when the Baron lives. Pinning Shot (C) keeps all 4 rows on target.
-- **The Bramble Nest blocks the Old Bramble too.** A Wall in front of the enemy Summon Zone stops the Units of its own Boss in that Lane. A Bramble Nest in both center Lanes made the Battle much easier, so only Lane 2 has one.
+- **The Bramble Nest holds Lane 2.** A Wall in front of the enemy Summon Zone stops the Units of its own Boss in that Lane, and a Heavy Unit cannot pass a Wall, because a Wall never moves. A Bramble Nest in both center Lanes made the Battle much easier, so only Lane 2 has one. The Mountain Colossus comes in Lane 3, next to the Wall, so it can move.
 - **First-win card:** Sir Odo, the Last Taxman (Epic), the Undead Epic. No Stage gives it. Canopy Vinewarden is in the Deck of the Old Bramble, but it is not a reward.
 - **Results** (`bun run sim dungeon 1000`, level 30, no Closed Lanes):
 
 | Gear | Win rate (Vanguard / Raiders) | Average Turn (Vanguard / Raiders) | Bosses Defeated (Vanguard / Raiders) |
 | --- | --- | --- | --- |
-| 0 / 0 / 0 / 0 | 33% / 32% | 18.8 / 17.5 | 0.94 / 0.94 |
-| 16 / 16 / 16 / 16 (Expected Gear at level 30) | 49% / 46% | 20.8 / 19.2 | 1.46 / 1.35 |
+| 0 / 0 / 0 / 0 | 33% / 32% | 18.8 / 17.5 | 0.96 / 0.96 |
+| 16 / 16 / 16 / 16 (Expected Gear at level 30) | 49% / 47% | 20.8 / 19.3 | 1.47 / 1.38 |
 
 The Deck at level 30 has 29 cards: the Countdown Limit (75) stops it before 30. Most of its cards are the first-win cards of Regions 1 and 2, because the Deck is full before the later Stages. A real Player at level 30 has better cards, so the Dungeon is easier for that Player than the target. That is the same floor as for the Stages (1.1).
 
@@ -702,7 +704,7 @@ The Deck of each template is in its order. The first 12 copies (in **bold**) get
 | 10 | Baron Brassbelly (Warrior) | 1-10 | Shieldbearer (Epic), Lane 2, Column 11 | 64 | 13 |
 | 20 | Boss Snikkit (Ranger) | 2-10 | Warchief Grukka (Epic), Lane 2, Column 11 · Junk Barricade (Uncommon), Lane 1, Column 11 · Junk Barricade (Uncommon), Lane 3, Column 11 | 62 | 15 |
 | 30 | Lady Glimmerbough (Priest) | 3-10 | Canopy Vinewarden (Epic), Lane 2, Column 11 · Bramble Nest (Uncommon), Lane 2, Column 10 | 41 | 10 |
-| 40 | The Old Bramble (Warrior) | 4-10 | Mountain Colossus (Epic), Lane 2, Column 11 · Bramble Nest (Uncommon), Lane 2, Column 10 | 58 | 13 |
+| 40 | The Old Bramble (Warrior) | 4-10 | Mountain Colossus (Epic), Lane 3, Column 11 · Bramble Nest (Uncommon), Lane 1, Column 10 | 58 | 13 |
 | 50 | Queen Marrow (Mage) | 5-10 | Bone Rampart (Epic), Lane 2, Column 10 · Hushbow (Common), Lane 2, Column 11 | 56 | 12 |
 
 - **The Start Units are the power of a Boss.** Lady Glimmerbough has an Epic Canopy Vinewarden behind a Bramble Nest. With Hero HP 60 and 12 stepped copies, she won 3% to 10% of Battles. Thus she has the lowest Hero HP and the fewest stepped copies of the Boss Floors. A Boss Floor can have less Hero HP than the normal Floors of its tier.
@@ -759,7 +761,7 @@ The Deck of each template is in its order. The first 12 copies (in **bold**) get
 | 37 | Lightbearer Anselm | 26 | 56 | 62% / 64% | 15 / 15 / 14 / 14 | 76% / 78% |
 | 38 | Warboss Gnash | 26 | 56 | 62% / 64% | 15 / 15 / 14 / 14 | 78% / 78% |
 | 39 | Rimecaller Isolde | 26 | 56 | 61% / 67% | 15 / 15 / 14 / 14 | 73% / 77% |
-| 40 | The Old Bramble (Boss) | 26 | 58 | 30% / 32% | 15 / 15 / 14 / 14 | 48% / 50% |
+| 40 | The Old Bramble (Boss) | 26 | 58 | 22% / 29% | 15 / 15 / 14 / 14 | 43% / 47% |
 | 41 | Spire Warden Holt | 26 | 58 | 61% / 67% | 15 / 15 / 15 / 14 | 76% / 80% |
 | 42 | Emberchief Razka | 26 | 58 | 60% / 61% | 15 / 15 / 15 / 14 | 76% / 79% |
 | 43 | Trapmaster Krink | 27 | 58 | 60% / 64% | 15 / 15 / 15 / 14 | 80% / 78% |
@@ -771,7 +773,7 @@ The Deck of each template is in its order. The first 12 copies (in **bold**) get
 | 49 | Rimecaller Isolde | 27 | 58 | 60% / 66% | 16 / 15 / 15 / 15 | 74% / 77% |
 | 50 | Queen Marrow (Boss) | 27 | 56 | 30% / 33% | 16 / 16 / 15 / 15 | 46% / 50% |
 
-On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0048](../adr/0048-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). The win rates in the table come from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target, except Floor 10 (see below). The next paragraphs tell the earlier runs. The first retune for Heroic changed these templates. Template 2 (Emberchief Razka): a Pack Stalker and a Howling Charger replace 2 Scrap Raiders, a Mesa Pit-Fighter replaces the first Tusk Brute, and a Bonestake Palisade replaces 1 of the next 2 Tusk Brutes. Template 8 (Warboss Gnash): a Badland Runt replaces 1 Scrap Raider, a Pack Stalker replaces the Skyreaver, and an Ankle Snatcher replaces the first Tusk Brute. Floor 10: a Shieldbearer replaces the first Tusk Brute. Floor 20: a Mine Sapper replaces the Grukka copy, and 2 Sidestep Shivs replace the Skyreaver and the Pyreaxe Ravager.
+On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0048](../adr/0048-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). The win rates in the table come from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target, except Floor 10 and the no-Gear rows of Floor 40 (see below). The next paragraphs tell the earlier runs. The first retune for Heroic changed these templates. Template 2 (Emberchief Razka): a Pack Stalker and a Howling Charger replace 2 Scrap Raiders, a Mesa Pit-Fighter replaces the first Tusk Brute, and a Bonestake Palisade replaces 1 of the next 2 Tusk Brutes. Template 8 (Warboss Gnash): a Badland Runt replaces 1 Scrap Raider, a Pack Stalker replaces the Skyreaver, and an Ankle Snatcher replaces the first Tusk Brute. Floor 10: a Shieldbearer replaces the first Tusk Brute. Floor 20: a Mine Sapper replaces the Grukka copy, and 2 Sidestep Shivs replace the Skyreaver and the Pyreaxe Ravager.
 
 **Issue #109 (2026-10-17).** The AI now counts the Heroic bonus in the value of a Unit and in the threat and the defense of a Lane (GDD 9). The AI plays both Sides in the sim, so this change moved all rows. After the AI change and before the content changes (1000 Battles), Raiders with the Expected Gear won 80.2% to 85.4% of 32 normal Floors, and Vanguard with the Expected Gear won 80.1% to 80.7% of Floors 18, 28, 38 and 48 (template 8). Raiders with the Expected Gear won 51.2% to 61.0% of the 5 Boss Floors, and Vanguard with the Expected Gear won 52.9% of Floor 10 and 50.3% of Floor 20. Each change is to the enemy only.
 
@@ -791,9 +793,10 @@ On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N At
   - Floor 30: Hero HP 41 (it was 44), 10 stepped copies (it was 9). 10: Fernwing Courier → Cleanse. 12: Prayer of Healing → Radiant Strike. 23: Mend → Glade Turnblade. 28: Cleanse → Fernwing Courier. 29: Seedwind Shepherd → Canopy Skirmisher. Now 30% / 33%, then 45% / 48% (2000 Battles: 30.4% / 33.5%, then 45.2% / 49.9%).
   - Floor 40: Hero HP 58 (it was 52). 4: Crag Rhino → Amberwing Dart. 13: Crag Lizard → Shield Wall. 27: Shield Wall → Crag Rhino.
   - Floor 50: Hero HP 56 (it was 52). 28: Grave Bell Tender → Rattleknife.
+- **Floor 40 is not on its target after the Heavy bodyguard fix.** The Mountain Colossus now starts in Lane 3, next to the Bramble Nest instead of behind it (Stage 4-10, 5.2). It is active from the first Turn. At 1000 Battles, Vanguard and Raiders with no Gear win 21.6% and 29.3%, then 42.7% and 47.3% with the Expected Gear. The 2 no-Gear rows are under the target. The old layout blocked the Heavy Colossus, and that block was part of the tuned difficulty. A retune or a decision is open for this Floor.
 - **Floor 10 is not on its target.** At 1000 Battles, Vanguard with no Gear wins 28.2% (1.8 points under the target), and Raiders with the Expected Gear wins 49.5%. At 2000 Battles, they win 28.3% and 51.3% (1.7 and 1.3 points outside the target). The gap between these two rows is about 21 to 23 points, and the Boss window is 20 points. The search put the rows in the middle at 2000 Battles. The Deck before the last change (copies 2 and 28 in the other order) won 29.6% and 50.0% at 1000 Battles, but 30.1% and 52.5% at 2000 Battles. A wider Boss window, or Boss Floors that check only the Expected Gear rows, is a change to ADR-0042, and it needs its own issue and ADR. The maintainer decides (issue #109).
 
-All win rates come from one run of `bun scripts/simulate.ts floor 1000 --check` in `packages/rules` on 2026-10-16 (issue [#97](https://github.com/rifandani/heynbord/issues/97)). All 200 rows are on their target, with no Gear and with the Expected Gear. The margins are small. On the normal Floors, the lowest row is 61.0% (Floor 47, Vanguard with no Gear) and the highest row is 79.5% (Floors 29 and 39, Raiders with the Expected Gear). On the Boss Floors, the lowest row is 30.2% and the highest row is 49.3% (both on Floor 40, Raiders).
+All win rates come from one run of `bun scripts/simulate.ts floor 1000 --check` in `packages/rules` on 2026-10-16 (issue [#97](https://github.com/rifandani/heynbord/issues/97)), before the Heavy bodyguard fix of 2026-10-20. All 200 rows are on their target, with no Gear and with the Expected Gear. The margins are small. On the normal Floors, the lowest row is 61.0% (Floor 47, Vanguard with no Gear) and the highest row is 79.5% (Floors 29 and 39, Raiders with the Expected Gear). On the Boss Floors, the lowest row is 30.2% and the highest row is 49.3% (both on Floor 40, Raiders).
 
 ## 9. When a Stage changes
 

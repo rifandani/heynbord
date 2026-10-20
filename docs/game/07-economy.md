@@ -185,7 +185,7 @@ All Heynstone sources are one-time rewards. The player cannot farm Heynstones.
 | 10th Heynspire Floors (5) | 250 |
 | **Total** | **1,250** |
 
-The total is about 52% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock. The 30-Star chests gave 750 Heynstones before [ADR-0044](../adr/0044-star-chests-give-no-heynstones.md). Check the total again when the Bazaar is planned in M4.
+The total is about 45% of the Bazaar catalog cost (section 3.5). The player must choose what to unlock. The 30-Star chests gave 750 Heynstones before [ADR-0044](../adr/0044-star-chests-give-no-heynstones.md). Check the total again when the Bazaar is planned in M4.
 
 The data is `HEYNSTONE_SOURCES` in `packages/rules/src/content/heynstones.ts`, and the catalog cost is `BAZAAR_CATALOG_HEYNSTONES` in `packages/rules/src/content/cosmetics.ts`. Keep the code and this table the same.
 
@@ -365,12 +365,15 @@ The Bazaar sells Cosmetics and Conveniences for Heynstones. Earn-only Cosmetics 
 | Item | Price (Heynstones) |
 | --- | --- |
 | Card back | 60 |
+| Premium card back | 120 |
 | Hero portrait | 100 |
 | Gear look | 100 |
 | Board skin | 200 |
 
-- v1 has 22 Bazaar Cosmetics: 5 card backs, 7 Hero portraits, 6 Gear looks and 4 Board skins. The full catalog costs exactly 2,400 Heynstones.
-- Each Bazaar item of a family has the price of the family. A purchase is permanent: the player cannot sell or lose a Cosmetic (ADR-0008).
+- v1 has 25 Bazaar Cosmetics: 8 card backs, 7 Hero portraits, 6 Gear looks and 4 Board skins. The full catalog costs exactly 2,760 Heynstones.
+- A **Premium card back** costs twice a normal card back: 120 Heynstones. 3 card backs are Premium: Duel Monster, Duel Monster V2 and Vanguard. Each other Bazaar item of a family has the price of the family. A purchase is permanent: the player cannot sell or lose a Cosmetic (ADR-0008).
+- The player uses one **Active Cosmetic** of each family at a time, and selects it from the Cosmetics that the player owns ([ADR-0054](../adr/0054-a-player-uses-one-cosmetic-for-each-family.md)). The **Standard look** of a family costs nothing and is not a Cosmetic, so a player can always go back to it. The Standard look of the card backs is the **Standard Back**.
+- The Bazaar shows the Card Backs with a preview: a shelf with the look at the size of a card, and a thumbnail on each item. The player sees a look before the purchase and before the Use.
 - The data is `BAZAAR_COSMETICS` in `packages/rules/src/content/cosmetics.ts`. Keep the code and this table the same.
 - A **Convenience** changes comfort or organization. It never changes the result of a Battle, the speed of progress or the content of the Collection. XP or Coin boosts, Battle skips, Packs, cards, Essence and Gear levels are never Conveniences.
 - Each new Convenience must pass the Pillar 1 test before it goes into the Bazaar.

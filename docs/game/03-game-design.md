@@ -665,7 +665,7 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 | Boss | Front | Class | Hero HP | Start Units | Boss Rule |
 | --- | --- | --- | --- | --- | --- |
 | Baron Brassbelly, the bandit lord of Hearthvale | Lane 1 | Ranger | 20 | Shieldbearer (Epic), Lane 1, Column 10 | At 50% HP: Summon a Gate Warden (Epic) in Lane 1, Column 11. |
-| The Old Bramble, the forest giant of the Thornwood | Lanes 2 and 3 | Warrior | 34 | Bramble Nest (Uncommon), Lane 2, Column 9 | At 50% HP: Summon a Mountain Colossus (Epic) in Lane 2, Column 11. |
+| The Old Bramble, the forest giant of the Thornwood | Lanes 2 and 3 | Warrior | 34 | Bramble Nest (Uncommon), Lane 2, Column 9 | At 50% HP: Summon a Mountain Colossus (Epic) in Lane 3, Column 11. |
 | Queen Marrow, the ruler of the Undead | Lane 4 | Mage | 20 | Bone Rampart (Epic), Lane 4, Column 9 | At 50% HP: Summon a Winter Maw (Epic) in Lane 4, Column 11. |
 
 ## 9. Enemy AI
@@ -722,6 +722,8 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
   - **Board skins** (Lane and Square look)
   - **Hero portraits**
   - **Gear looks**
+- The player uses one Cosmetic of each family at a time: the **Active Cosmetic** ([ADR-0054](../adr/0054-a-player-uses-one-cosmetic-for-each-family.md)). The player selects it from the Cosmetics that they own, in the Bazaar. Each family also has a free **Standard look**, so the player can always go back: the Standard look of the card backs is the Standard Back, and the Standard look of the Hero portraits is the Standard portrait.
+- The Bazaar shows a Card Back on a shelf at the size of a card and a Hero portrait on a shelf at the size of the portrait, so the player sees the look before the purchase. All face-down cards of the player show the Active Card Back. The player's Hero shows the Active Hero portrait on the Hero screen, in the Top Bar and on the Board. The Hero is the player, not its Class: one face serves all 4 Classes.
 - Cosmetics never change gameplay.
 - **Earn-only Cosmetics** come only from play: one for each 10th Heynspire Floor, and one for each of 3 hard Achievements. They are never in the Bazaar.
 - The **Bazaar** sells all other Cosmetics and the Conveniences for Heynstones. A Convenience changes comfort or organization. It never changes the result of a Battle, the speed of progress or the content of the Collection. In v1 the Bazaar has no Convenience. A Deck slot is a Convenience, but it costs Coin, not Heynstones (section 6).

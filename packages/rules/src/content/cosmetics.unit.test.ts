@@ -10,6 +10,8 @@ import {
   COSMETIC_PRICES,
   getBazaarCosmetic,
   isCosmeticId,
+  PREMIUM_CARD_BACK_FACTOR,
+  PREMIUM_CARD_BACKS,
 } from "./cosmetics";
 import { HEYNSPIRE_BOSS_FLOOR_EVERY, HEYNSPIRE_FLOORS } from "./heynspire";
 
@@ -19,25 +21,50 @@ const itemKey = (id: string): string => id.split(".")[1] ?? id;
 const family = (id: string): string => id.split(".")[0] ?? id;
 
 describe("BAZAAR_COSMETICS (Economy 3.5)", () => {
-  it("has 22 Bazaar items: 5 card backs, 7 Hero portraits, 6 Gear looks, 4 Board skins", () => {
-    expect(BAZAAR_COSMETICS).toHaveLength(22);
+  it("has 25 Bazaar items: 8 card backs, 7 Hero portraits, 6 Gear looks, 4 Board skins", () => {
+    expect(BAZAAR_COSMETICS).toHaveLength(25);
     expect(
       COSMETIC_FAMILIES.map((name) => [
         name,
         BAZAAR_COSMETICS.filter((item) => family(item.id) === name).length,
       ])
     ).toEqual([
-      ["cardBack", 5],
+      ["cardBack", 8],
       ["heroPortrait", 7],
       ["gearLook", 6],
       ["boardSkin", 4],
     ]);
   });
 
-  it("asks the price of the family of each item, and no other price", () => {
+  it("asks the price of the family, or double for a Premium card back", () => {
     for (const item of BAZAAR_COSMETICS) {
-      expect(item.price, item.id).toBe(COSMETIC_PRICES[item.family]);
+      const price = COSMETIC_PRICES[item.family];
+      expect(item.price, item.id).toBe(
+        item.premium ? price * PREMIUM_CARD_BACK_FACTOR : price
+      );
     }
+  });
+
+  it("sells 3 Premium card backs at double the price: 120 Heynstones (Economy 3.5)", () => {
+    expect(PREMIUM_CARD_BACKS).toEqual([
+      "cardBack.duelMonster",
+      "cardBack.duelMonsterV2",
+      "cardBack.vanguard",
+    ]);
+    for (const id of PREMIUM_CARD_BACKS) {
+      expect(getBazaarCosmetic(id), id).toMatchObject({
+        id,
+        premium: true,
+        price: 120,
+      });
+    }
+    expect(COSMETIC_PRICES.cardBack).toBe(60);
+    expect(COSMETIC_PRICES.cardBack * PREMIUM_CARD_BACK_FACTOR).toBe(120);
+  });
+
+  it("marks no other Cosmetic as Premium", () => {
+    const premium = BAZAAR_COSMETICS.filter((item) => item.premium);
+    expect(premium.map((item) => item.id)).toEqual([...PREMIUM_CARD_BACKS]);
   });
 
   it("keeps each item in its family: the ID starts with the family", () => {
@@ -51,8 +78,8 @@ describe("BAZAAR_COSMETICS (Economy 3.5)", () => {
     expect(new Set(keys).size).toBe(keys.length);
   });
 
-  it("costs 2,400 Heynstones for the full catalog (Economy 3.5)", () => {
-    expect(BAZAAR_CATALOG_HEYNSTONES).toBe(2400);
+  it("costs 2,760 Heynstones for the full catalog (Economy 3.5)", () => {
+    expect(BAZAAR_CATALOG_HEYNSTONES).toBe(2760);
     expect(
       BAZAAR_COSMETICS.reduce((sum, item) => sum + (item.price ?? 0), 0)
     ).toBe(BAZAAR_CATALOG_HEYNSTONES);

@@ -15,7 +15,6 @@ import {
   Essence,
   PanelHeader,
   panelClassName,
-  StationEdge,
   rowsClassName,
   SMALL,
   usePanelPeek,
@@ -149,7 +148,6 @@ export const ExtractPanel = ({
       data-station="extract"
       data-card={tile.cardId}
     >
-      <StationEdge station="extract" />
       <PanelHeader
         cardId={tile.cardId}
         rank={shown}

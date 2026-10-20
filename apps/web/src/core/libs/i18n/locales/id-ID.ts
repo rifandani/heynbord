@@ -710,6 +710,9 @@ export default {
       seaChart: "Peta Laut",
       lanternSails: "Layar Lentera",
       goatBite: "Punggung Gigitan Kambing",
+      duelMonster: "Duel Monster",
+      duelMonsterV2: "Duel Monster V2",
+      vanguard: "Vanguard",
       dawnGaze: "Pandangan Fajar",
       verdantCrest: "Jambul Hijau",
       mesaShade: "Naungan Mesa",
@@ -743,6 +746,25 @@ export default {
     ownedLabel: "Sudah kamu miliki",
     bought: "Kamu membeli {name}.",
     cannotBuy: "Kamu belum bisa membelinya.",
+    standard: {
+      cardBack: "Punggung Standar",
+      heroPortrait: "Potret Standar",
+    },
+    alwaysYours: "Selalu milikmu",
+    use: "Pakai",
+    useLabel: "Pakai {name}",
+    useStandard: {
+      cardBack: "Pakai Punggung Standar",
+      heroPortrait: "Pakai Potret Standar",
+    },
+    inUse: "Sedang dipakai",
+    used: "Kamu sekarang memakai {name}.",
+    cannotUse: "Kamu belum bisa memakainya.",
+    shelf: {
+      cardBack: "Pratinjau punggung kartu",
+      heroPortrait: "Pratinjau potret Pahlawan",
+    },
+    previewLabel: "Pratinjau {name}",
   },
   seaport: {
     label: "Pelabuhan",
@@ -1306,6 +1328,8 @@ export default {
       label: "Paketmu",
       openRaceLabel: "Buka satu {pack}, gratis. Pilih Ras dulu.",
       count: "×{count}",
+      free: "Gratis",
+      left: "Sisa {count}",
       raceTitle: "Pilih Ras",
       raceText: "{pack}-mu memberi Kartu Makhluk dari satu Ras.",
       raceClose: "Tutup",
@@ -1580,6 +1604,7 @@ export default {
   },
   hero: {
     label: "Pahlawan",
+    portrait: "Potret Pahlawan",
     hp: "HP Pahlawan",
     hpParts: {
       base: "Dasar",
@@ -1681,6 +1706,7 @@ export default {
     moreProblems: "Dan {count} lagi.",
     add: "Tambah {name}, {rank}, Hitung mundur {countdown}. Salinan dimiliki: {owned}. Sisa salinan: {left}.",
     remove: "Buang satu {name}, {rank}. Di Dek ini: {count}.",
+    removeAction: "Buang",
     left: "{owned} dimiliki · {left} sisa",
     blocked: {
       none: "Semua di Dek",

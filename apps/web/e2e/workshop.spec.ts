@@ -201,12 +201,6 @@ test.describe("Workshop", () => {
     );
     // The Combine panel has no Extract and no Craft.
     await expect(page.getByTestId("workshop-extract-common")).toHaveCount(0);
-    // The lit edge of the panel faces the station in the painting: the smith
-    // at the left.
-    const edge = page
-      .getByTestId("workshop-panel")
-      .locator("[data-station-edge]");
-    await expect(edge).toHaveAttribute("data-station-edge", "left");
 
     await openStation(page, "craft");
     await expect(page.getByTestId("workshop-craft-locked")).toHaveText(
@@ -234,8 +228,6 @@ test.describe("Workshop", () => {
       "data-card",
       RECRUIT
     );
-    // The cart of the goblin tinker is at the right.
-    await expect(edge).toHaveAttribute("data-station-edge", "right");
   });
 
   test("the ready filter keeps only the cards that the station can act on", async ({

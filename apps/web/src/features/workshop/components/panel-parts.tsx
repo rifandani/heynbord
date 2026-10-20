@@ -11,7 +11,7 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { RANK_LIGHT, RankBurst } from "@/features/packs/components/pack-reveal";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
-import type { LegendaryPath, Station } from "@/features/workshop/workshop";
+import type { LegendaryPath } from "@/features/workshop/workshop";
 import {
   craftTimeline,
   EXTRACT_MOTION,
@@ -447,69 +447,10 @@ export const usePanelPeek = (panel: RefObject<HTMLElement | null>) => {
   };
 };
 
-/**
- * The light of each station on its panel: the side of the panel that faces
- * the station in the painting (Town Concepts 10.2), and its color. The smith
- * (Combine) and the forge (Craft) are at the left of the painting, the goblin
- * tinker (Fuse) and his junk cart (Extract) at the right. Combine is a cool
- * white gold, Craft a hot orange, Fuse the green of the tinker's bubbling
- * brew, Extract a warm amber.
- */
-const STATION_EDGES: Readonly<
-  Record<Station, { readonly side: "left" | "right"; readonly color: string }>
-> = {
-  combine: { side: "left", color: "255,240,190" },
-  craft: { side: "left", color: "255,100,30" },
-  fuse: { side: "right", color: "150,230,120" },
-  extract: { side: "right", color: "255,170,70" },
-};
-
-/**
- * The lit edge of the panel on the side that faces the station, with a soft
- * wash of its light into the panel behind the content. It breathes, as a
- * flame does; with reduced motion it is still. It does not depend on how the
- * painting is cropped, so it shows at all screen sizes. It is extra and never
- * the only cue.
- */
-export const StationEdge = ({ station }: { readonly station: Station }) => {
-  const { side, color } = STATION_EDGES[station];
-  const left = side === "left";
-  // A lighter core, so the edge stands out from the gold border.
-  const core = `color-mix(in srgb, rgb(${color}) 55%, #fff8e8)`;
-  return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute inset-0 -z-10 motion-safe:animate-[shop-lamp_4s_ease-in-out_infinite]"
-      data-station-edge={side}
-    >
-      <span
-        className={cn(
-          "absolute inset-y-0 w-[45%]",
-          left ? "left-0 rounded-l-[10px]" : "right-0 rounded-r-[10px]"
-        )}
-        style={{
-          background: `linear-gradient(to ${left ? "right" : "left"}, rgba(${color},0.28), rgba(${color},0.07) 55%, transparent)`,
-        }}
-      />
-      <span
-        className={cn(
-          "absolute inset-y-2 w-[3px] rounded-full",
-          left ? "-left-[2.5px]" : "-right-[2.5px]"
-        )}
-        style={{
-          background: `linear-gradient(180deg, transparent, ${core} 12%, ${core} 88%, transparent)`,
-          boxShadow: `0 0 14px 3px rgba(${color},0.8), 0 0 4px 1px rgba(${color},0.9)`,
-        }}
-      />
-    </span>
-  );
-};
-
 /** The panel of a station: a HUD plate, a column on a tall screen and a row on a short one. */
 export const panelClassName = cn(
   PLATE,
-  // The station edge stands behind the content (`isolate`, `-z-10`).
-  "relative isolate flex max-h-full min-h-0 w-[min(380px,40vw)] shrink-0 flex-col gap-3 p-3 outline-none",
+  "relative flex max-h-full min-h-0 w-[min(380px,40vw)] shrink-0 flex-col gap-3 p-3 outline-none",
   // On a short screen, the card and its text are a column at the left of the
   // rows, so that all the rows show.
   "[@media(max-height:500px)]:w-[min(400px,47vw)] [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:p-1.5"

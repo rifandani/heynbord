@@ -1,3 +1,4 @@
+import { useMediaQuery } from "@reactuses/core";
 import type {
   ClassId,
   DeckInput,
@@ -13,6 +14,7 @@ import {
 } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   Input,
@@ -21,15 +23,12 @@ import {
   RadioGroup,
   TextField,
 } from "react-aria-components";
-import { HiMinus } from "react-icons/hi2";
 
-import { cardIllustration } from "@/features/battle/card-art";
 import type { TextRef } from "@/features/battle/card-text";
-import { RankGems } from "@/features/battle/components/card-frame";
+import { CardFrame } from "@/features/battle/components/card-frame";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
-import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import type { DeckRow } from "@/features/deck/deck";
@@ -130,18 +129,38 @@ const ClassChoice = ({
               className="size-[18px] [@media(max-height:500px)]:size-3.5"
             />
           </span>
-          {tr(`classes.${id}`)}
+          <span className="[@media(max-height:500px)]:sr-only">
+            {tr(`classes.${id}`)}
+          </span>
         </Radio>
       ))}
     </RadioGroup>
   );
 };
 
+/** How long the last copy of a card takes to leave the grid. */
+const REMOVE_MS = 110;
+
 /**
- * One line of the Deck list, ruled as a ledger: the Countdown, a strip of the
- * card art, the name, the Rank Gems and the copies. A press removes one copy.
+ * The Night Plate under a Deck card: the copies in the Deck, as on the
+ * copies chip of the card pool. Under the pointer or the focus, it shows the
+ * minus glyph that the press does, so the count and the action never need
+ * two controls.
  */
-const DeckLine = ({
+const copiesPlate = cn(
+  "relative flex h-6 max-w-full min-w-[3.75rem] items-center justify-center rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-2 text-xs leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.35)]",
+  "transition-[border-color,background-color] duration-100",
+  "group-data-[hovered]:border-[#2a1a0c] group-data-[hovered]:bg-gradient-to-b group-data-[hovered]:from-[#7a5233] group-data-[hovered]:to-[#563720] group-data-[hovered]:shadow-[0_2px_0_rgba(0,0,0,0.45)]",
+  "group-data-[focus-visible]:border-[#2a1a0c] group-data-[focus-visible]:bg-gradient-to-b group-data-[focus-visible]:from-[#7a5233] group-data-[focus-visible]:to-[#563720] group-data-[focus-visible]:shadow-[0_2px_0_rgba(0,0,0,0.45)]",
+  "[@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]"
+);
+
+/**
+ * One card of the Deck grid: the card and its copies. A press removes one
+ * copy; the last copy takes the card out of the Deck. A press that stays down
+ * on a touch device shows the Card Details instead, as on the card pool.
+ */
+const DeckCard = ({
   row,
   onRemove,
   bind,
@@ -155,75 +174,94 @@ const DeckLine = ({
   readonly peekAt: PeekAt;
 }) => {
   const { tr } = useGameText();
+  const still = useMediaQuery("(prefers-reduced-motion: reduce)", false);
   const card = getCard(row.cardId);
   const name = tr(`cards.${row.cardId}.name`);
+  const rank = tr(`ranks.${row.rank}`);
+  const [leaving, setLeaving] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+    },
+    []
+  );
+  const remove = () => {
+    if (leaving) {
+      return;
+    }
+    if (still || row.count > 1) {
+      onRemove(row);
+      return;
+    }
+    setLeaving(true);
+    timer.current = setTimeout(() => onRemove(row), REMOVE_MS);
+  };
+
   return (
-    <li className="border-b border-[#c9b48c]/80 last:border-b-0">
+    <li
+      className={cn(
+        "flex justify-center transition-[transform,opacity] duration-100 ease-out motion-reduce:transition-none",
+        leaving && "pointer-events-none scale-90 opacity-0"
+      )}
+      data-testid={`deck-row-${row.cardId}-${row.rank}`}
+      data-leaving={leaving || undefined}
+    >
       <Button
         {...bind({ cardId: row.cardId, rank: row.rank, from: "deck" })}
         onPress={() => {
           if (!wasLongPress()) {
-            onRemove(row);
+            remove();
           }
         }}
         aria-label={tr("deckBuilder.remove", {
           name,
-          rank: tr(`ranks.${row.rank}`),
+          rank,
           count: row.count,
         })}
-        className={cn(
-          "group grid h-11 w-full cursor-pointer grid-cols-[1.75rem_3rem_minmax(0,1fr)_auto_2.25rem] items-center gap-2.5 rounded-lg px-1.5 text-left outline-none select-none",
-          "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#fff3d1] data-[pressed]:translate-y-px",
-          "[@media(max-height:500px)]:h-8 [@media(max-height:500px)]:grid-cols-[1.25rem_2.25rem_minmax(0,1fr)_auto_1.75rem] [@media(max-height:500px)]:gap-1.5"
-        )}
-        data-testid={`deck-row-${row.cardId}-${row.rank}`}
+        className="group flex w-full cursor-pointer flex-col items-center gap-1.5 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+        data-testid={`deck-remove-${row.cardId}-${row.rank}`}
       >
-        <span
-          className="grid size-7 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-sm leading-none font-black text-[#fff6df] tabular-nums shadow-[0_1px_2px_rgba(0,0,0,0.5)] [@media(max-height:500px)]:size-5 [@media(max-height:500px)]:border [@media(max-height:500px)]:text-xs"
-          aria-hidden
-        >
-          {card.countdown}
-        </span>
-        <span
-          className="h-7 overflow-hidden rounded-md border-2 bg-[#1f140b] [@media(max-height:500px)]:h-5"
-          style={{ borderColor: RANK_COLORS[row.rank] }}
-          aria-hidden
-        >
-          <img
-            src={cardIllustration(row.cardId)}
-            alt=""
-            draggable={false}
-            loading="lazy"
-            decoding="async"
-            className="size-full object-cover object-[50%_30%]"
-          />
-        </span>
-        <span className="truncate text-sm font-semibold text-[#2a1d12] [@media(max-height:500px)]:text-xs">
-          {name}
-        </span>
-        <span className="text-[11px]" aria-hidden>
-          <RankGems rank={row.rank} />
-        </span>
-        <span className="relative flex h-full items-center justify-end">
+        <CardFrame
+          cardId={row.cardId}
+          rank={row.rank}
+          countdown={card.countdown}
+          className="transition-transform duration-150 ease-out group-data-[hovered]:-translate-y-1.5 group-data-[pressed]:translate-y-0 motion-reduce:transition-none"
+        />
+        <span className={copiesPlate} aria-hidden>
           <span
-            className="text-base leading-none font-black text-[#2a1d12] tabular-nums transition-opacity group-data-[hovered]:opacity-0 [@media(max-height:500px)]:text-xs"
-            aria-hidden
+            key={row.count}
+            className={cn(
+              "transition-opacity duration-100 motion-safe:animate-[pack-pop_320ms_cubic-bezier(0.2,0.8,0.2,1)]",
+              "group-data-[focus-visible]:opacity-0 group-data-[hovered]:opacity-0"
+            )}
           >
             ×{row.count}
           </span>
-          {/* Under the pointer, the copy count shows what a press does. */}
-          <span
-            className="absolute inset-y-0 right-0 grid place-items-center opacity-0 transition-opacity group-data-[focus-visible]:opacity-100 group-data-[hovered]:opacity-100"
-            aria-hidden
-          >
-            <span className="grid size-6 place-items-center rounded-md border-2 border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] text-[#fff6df] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-5">
-              <HiMinus className="size-3.5" />
-            </span>
+          <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-100 group-data-[focus-visible]:opacity-100 group-data-[hovered]:opacity-100">
+            {tr("deckBuilder.removeAction")}
           </span>
         </span>
       </Button>
       {peekAt({ cardId: row.cardId, rank: row.rank, from: "deck" })}
     </li>
+  );
+};
+
+/**
+ * The Deck grid with no cards: it keeps the place of the cards, so that the
+ * footer and the card pool stay where they are.
+ */
+const EmptyDeck = () => {
+  const { tr } = useGameText();
+  return (
+    <div className="flex min-h-0 flex-1 items-center justify-center">
+      <p className="max-w-[32ch] rounded-xl border-2 border-dashed border-[#c9b48c] px-4 py-3 text-center text-sm text-balance text-[#5b4632] [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-2 [@media(max-height:500px)]:text-xs">
+        {tr("deckBuilder.empty")}
+      </p>
+    </div>
   );
 };
 
@@ -355,8 +393,8 @@ const Problems = ({
 };
 
 /**
- * The right page: the Deck name and Hero Class, the Deck list, then the
- * Countdown and size meters, the reasons and the actions.
+ * The right page: the Deck name and Hero Class, the grid of the Deck cards,
+ * then the Countdown and size meters, the reasons and the actions.
  */
 export const DeckPage = ({
   slot,
@@ -404,20 +442,17 @@ export const DeckPage = ({
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <h4 className="font-display mb-1 text-base font-bold [@media(max-height:500px)]:sr-only">
-          {tr("deckBuilder.thisDeck")}
-        </h4>
         {rows.length === 0 ? (
-          <p className="m-auto max-w-[34ch] text-center text-sm text-balance text-[#5b4632] [@media(max-height:500px)]:text-xs">
-            {tr("deckBuilder.empty")}
-          </p>
+          <EmptyDeck />
         ) : (
+          // oxlint-disable-next-line react-doctor/no-tiny-text -- the font size sets the Card Frame size (em); the text in the frame has its own size
           <ul
-            className="-mx-1.5 min-h-0 flex-1 [scrollbar-width:thin] [scrollbar-color:#b9a175_transparent] overflow-y-auto overscroll-contain px-1.5"
-            data-testid="deck-list"
+            aria-label={tr("deckBuilder.thisDeck")}
+            className="-mx-2 grid min-h-0 flex-1 [scrollbar-width:thin] [scrollbar-color:#b9a175_transparent] auto-rows-max grid-cols-[repeat(auto-fill,minmax(10em,1fr))] items-start gap-x-1 gap-y-3 overflow-y-auto overscroll-contain px-2 pt-2 pb-4 text-[11px] max-[1100px]:text-[10px] [@media(max-height:500px)]:gap-y-1.5 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:text-[7px]"
+            data-testid="deck-grid"
           >
             {rows.map((row) => (
-              <DeckLine
+              <DeckCard
                 key={`${row.cardId}:${row.rank}`}
                 row={row}
                 onRemove={onRemove}
@@ -443,6 +478,10 @@ export const DeckPage = ({
             className="[@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-xs"
             data-testid="deck-clear"
           >
+            <GlyphIcon
+              glyph="broom"
+              className="size-4 shrink-0 [@media(max-height:500px)]:size-3"
+            />
             {tr("deckBuilder.clear")}
           </GameButton>
           <GameButton
@@ -453,6 +492,10 @@ export const DeckPage = ({
             className="[@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-xs"
             data-testid="deck-autofill"
           >
+            <GlyphIcon
+              glyph="sparkles"
+              className="size-4 shrink-0 [@media(max-height:500px)]:size-3"
+            />
             {tr("deckBuilder.autoFill")}
           </GameButton>
           <span className="flex-1" />

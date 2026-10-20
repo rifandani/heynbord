@@ -11,11 +11,11 @@ describe("Heynstone supply (Economy 2.6, 3.5)", () => {
     ]);
   });
 
-  it("gives 1,250 Heynstones, about 52% of the Bazaar catalog", () => {
+  it("gives 1,250 Heynstones, about 45% of the Bazaar catalog", () => {
     expect(HEYNSTONE_SUPPLY).toBe(1250);
-    expect(BAZAAR_CATALOG_HEYNSTONES).toBe(2400);
+    expect(BAZAAR_CATALOG_HEYNSTONES).toBe(2760);
     expect(
       Math.round((HEYNSTONE_SUPPLY / BAZAAR_CATALOG_HEYNSTONES) * 100)
-    ).toBe(52);
+    ).toBe(45);
   });
 });

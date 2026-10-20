@@ -65,6 +65,8 @@ export const useCardPeek = () => {
   const [peek, setPeek] = useState<ShownPeek | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
+  /** The Card Details stay after the pointer goes away, until the next press. */
+  const pinned = useRef(false);
 
   const stop = () => {
     if (timer.current) {
@@ -74,6 +76,7 @@ export const useCardPeek = () => {
   };
   const later = (target: Peek, ms: number, onShow?: () => void) => {
     stop();
+    pinned.current = false;
     timer.current = setTimeout(() => {
       onShow?.();
       setPeek({ ...target, byKeyboard: false });
@@ -81,6 +84,7 @@ export const useCardPeek = () => {
   };
   const hide = () => {
     stop();
+    pinned.current = false;
     setPeek(null);
   };
 
@@ -91,13 +95,14 @@ export const useCardPeek = () => {
       }
     },
     onHoverEnd: () => {
-      if (!focusInPanel()) {
+      if (!focusInPanel() && !pinned.current) {
         hide();
       }
     },
     onFocus: (event: FocusEvent<Element>) => {
       if (event.target.matches(":focus-visible")) {
         stop();
+        pinned.current = false;
         setPeek({ ...target, byKeyboard: true });
       }
     },

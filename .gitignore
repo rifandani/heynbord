@@ -104,3 +104,9 @@ apps/web/art/campaign/raw/
 
 # Town painting and Town Bar icon art: images from ChatGPT, the references and the prompts
 apps/web/art/town/raw/
+
+# Card Back art: images from ChatGPT, the style reference and the prompts
+apps/web/art/card-backs/raw/
+
+# Hero portrait art: images from ChatGPT, the style reference and the prompts
+apps/web/art/hero-portraits/raw/

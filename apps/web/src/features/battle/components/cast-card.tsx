@@ -124,7 +124,10 @@ const CastPiece = ({
             className="[backface-visibility:hidden]"
           />
           {enemy ? (
-            <CardBack className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]" />
+            <CardBack
+              back={null}
+              className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]"
+            />
           ) : null}
         </div>
         {cast.phase === "settle" && cast.recalled !== null ? (

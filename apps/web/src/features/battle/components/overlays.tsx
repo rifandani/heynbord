@@ -195,7 +195,7 @@ const ResultRewards = ({ shown }: { readonly shown: ShownRewards }) => {
         <ResultCard card={rewards.card} />
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col items-start gap-3 [@media(max-height:500px)]:gap-2">
-        <div className="flex w-full flex-col gap-1.5 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:flex-wrap [@media(min-height:501px)]:[&>*]:w-full">
+        <div className="flex flex-wrap items-center gap-1.5">
           <ResultCoin coin={rewards.coin} />
           {"essence" in rewards ? (
             <ResultEssence essence={rewards.essence} />

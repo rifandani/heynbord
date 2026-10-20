@@ -244,6 +244,17 @@ describe("migrateProfile", () => {
     expect(migrated.claimedAchievements).toEqual(v9.claimedAchievements);
   });
 
+  it("gives no Active Cosmetic to a version 13 Profile, and keeps its owned Cosmetics (Economy 3.5)", () => {
+    const { activeCosmetics: _active, ...v13 } = {
+      ...newProfile(3),
+      schemaVersion: 13,
+      cosmetics: ["cardBack.tentStripes" as const],
+    };
+    const migrated = Result.getOrThrow(migrateProfile(v13));
+    expect(migrated.activeCosmetics).toEqual({});
+    expect(migrated.cosmetics).toEqual(["cardBack.tentStripes"]);
+  });
+
   it("refuses a version 6 Profile with no Sweep Tickets", () => {
     const {
       campaignSweepTickets: _campaign,

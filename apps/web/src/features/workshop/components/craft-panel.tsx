@@ -16,7 +16,6 @@ import {
   Essence,
   PanelHeader,
   panelClassName,
-  StationEdge,
 } from "@/features/workshop/components/panel-parts";
 import type { CraftState, WorkshopTile } from "@/features/workshop/workshop";
 import { craftState, craftTimeline } from "@/features/workshop/workshop";
@@ -233,7 +232,6 @@ export const CraftPanel = ({
       data-station="craft"
       data-card={tile.cardId}
     >
-      <StationEdge station="craft" />
       <PanelHeader
         cardId={tile.cardId}
         rank={base}

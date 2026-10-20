@@ -1247,6 +1247,50 @@ describe("Decks and Stages", () => {
     }
   });
 
+  it("never puts a Heavy Start Unit behind a Wall in its Lane: a Wall never moves", () => {
+    const layouts = [
+      ...STAGES.map((stage) => ({
+        where: `Stage ${stage.id}`,
+        units: stage.enemy.startUnits,
+      })),
+      ...FLOORS.map((floor) => ({
+        where: `Floor ${floor.number}`,
+        units: floor.enemy.startUnits,
+      })),
+      ...DUNGEONS.flatMap((dungeon) =>
+        dungeon.bosses.map((boss) => ({
+          where: `${dungeon.id} ${boss.id}`,
+          units: boss.startUnits,
+        }))
+      ),
+    ];
+    for (const { where, units } of layouts) {
+      for (const unit of units) {
+        const card = getCard(unit.cardId);
+        if (card.kind !== "creature" || keywordSpeed(card.keywords) > 1) {
+          continue;
+        }
+        for (const other of units) {
+          if (other === unit || other.lane !== unit.lane) {
+            continue;
+          }
+          const wall = getCard(other.cardId);
+          if (wall.kind !== "creature" || !wall.keywords.wall) {
+            continue;
+          }
+          // The enemy Units move to the lower Columns. A Heavy Unit has
+          // Speed 1, so it can never pass a friendly Wall: the Wall stays in
+          // its Square, and the Unit needs 2 steps to pass it. So the Wall
+          // must not be in front of the Heavy Unit.
+          expect(
+            other.position,
+            `${where}: ${unit.cardId} (Heavy) is behind ${other.cardId}`
+          ).toBeGreaterThan(unit.position);
+        }
+      }
+    }
+  });
+
   it("gives each copy in each Starter Deck the Rank Common or Uncommon", () => {
     for (const deck of STARTER_DECKS) {
       for (const entry of deck.deck) {

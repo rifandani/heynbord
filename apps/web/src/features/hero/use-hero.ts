@@ -3,6 +3,7 @@ import type { GearSlot } from "@workspace/rules";
 import { upgradeGear } from "@workspace/rules";
 import { useContext } from "react";
 
+import { activeDeckClassAtom } from "@/features/deck/deck.atoms";
 import { forgeStoneCounts, gearItems, heroHpParts } from "@/features/hero/hero";
 import { playerLevelAtom, profileAtom } from "@/features/profile/profile.atoms";
 
@@ -16,9 +17,11 @@ export const useHero = () => {
   const registry = useContext(RegistryContext);
   const profile = useAtomValue(profileAtom);
   const level = useAtomValue(playerLevelAtom);
+  const classId = useAtomValue(activeDeckClassAtom);
 
   return {
     level,
+    classId,
     coin: profile.coin,
     balances: {
       coin: profile.coin,

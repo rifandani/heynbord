@@ -688,6 +688,9 @@ export default {
       seaChart: "Sea Chart",
       lanternSails: "Lantern Sails",
       goatBite: "Goat-bitten Back",
+      duelMonster: "Duel Monster",
+      duelMonsterV2: "Duel Monster V2",
+      vanguard: "Vanguard",
       dawnGaze: "Dawn Gaze",
       verdantCrest: "Verdant Crest",
       mesaShade: "Mesa Shade",
@@ -721,6 +724,25 @@ export default {
     ownedLabel: "You own this",
     bought: "You bought {name}.",
     cannotBuy: "You cannot buy it now.",
+    standard: {
+      cardBack: "Standard Back",
+      heroPortrait: "Standard Portrait",
+    },
+    alwaysYours: "Always yours",
+    use: "Use",
+    useLabel: "Use {name}",
+    useStandard: {
+      cardBack: "Use the Standard Back",
+      heroPortrait: "Use the Standard Portrait",
+    },
+    inUse: "In use",
+    used: "You now use {name}.",
+    cannotUse: "You cannot use it now.",
+    shelf: {
+      cardBack: "Card back preview",
+      heroPortrait: "Hero portrait preview",
+    },
+    previewLabel: "Preview {name}",
   },
   seaport: {
     label: "Seaport",
@@ -1279,6 +1301,8 @@ export default {
       label: "Your Packs",
       openRaceLabel: "Open one {pack}, free. Select a Race first.",
       count: "×{count}",
+      free: "Free",
+      left: "{count} left",
       raceTitle: "Select a Race",
       raceText: "Your {pack} gives Creature Cards of one Race.",
       raceClose: "Close",
@@ -1549,6 +1573,7 @@ export default {
   },
   hero: {
     label: "Hero",
+    portrait: "Hero portrait",
     hp: "Hero HP",
     hpParts: {
       base: "Base",
@@ -1650,6 +1675,7 @@ export default {
     moreProblems: "And {count} more.",
     add: "Add {name}, {rank}, Countdown {countdown}. Copies owned: {owned}. Copies left: {left}.",
     remove: "Remove one {name}, {rank}. In this Deck: {count}.",
+    removeAction: "Remove",
     left: "{owned} owned · {left} left",
     blocked: {
       none: "All in Deck",

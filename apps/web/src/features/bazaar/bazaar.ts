@@ -5,17 +5,56 @@
 import type { Cosmetic, CosmeticFamily, CosmeticId } from "@workspace/rules";
 import { BAZAAR_COSMETICS, COSMETIC_FAMILIES } from "@workspace/rules";
 
+import { hasCardBackArt } from "@/features/battle/card-back-art";
+import { hasHeroPortraitArt } from "@/features/hero/hero-portrait-art";
+
 /** One group of Bazaar items of one family. */
 export interface BazaarGroup {
   readonly family: CosmeticFamily;
   readonly items: readonly Cosmetic[];
 }
 
-/** The groups of the catalog, in the order of the families (Economy 3.5). */
+/** The families whose look the game can draw, so the Player can select one. */
+export type LookFamily = "cardBack" | "heroPortrait";
+
+/** The families with a painted face and a Use. */
+export const LOOK_FAMILIES: readonly LookFamily[] = [
+  "cardBack",
+  "heroPortrait",
+];
+
+const LOOK_FAMILY_SET: ReadonlySet<CosmeticFamily> = new Set(LOOK_FAMILIES);
+
+/** True when the game draws a look of this family, so the Bazaar offers a Use. */
+export const isLookFamily = (family: CosmeticFamily): family is LookFamily =>
+  LOOK_FAMILY_SET.has(family);
+
+/**
+ * True when the game can draw the Cosmetic: a Card Back with a painted face,
+ * or a Hero portrait with a painted face. The other families draw their
+ * family glyph, so they show now.
+ */
+const showsCosmetic = (item: Cosmetic): boolean => {
+  if (item.family === "cardBack") {
+    return hasCardBackArt(item.id);
+  }
+  if (item.family === "heroPortrait") {
+    return hasHeroPortraitArt(item.id);
+  }
+  return true;
+};
+
+/**
+ * The groups of the catalog, in the order of the families (Economy 3.5). A
+ * Card Back or a Hero portrait shows only when its face is painted: the
+ * Bazaar never offers a look that the Player cannot see.
+ */
 export const bazaarGroups = (): readonly BazaarGroup[] =>
   COSMETIC_FAMILIES.map((family) => ({
     family,
-    items: BAZAAR_COSMETICS.filter((item) => item.family === family),
+    items: BAZAAR_COSMETICS.filter(
+      (item) => item.family === family && showsCosmetic(item)
+    ),
   }));
 
 /**

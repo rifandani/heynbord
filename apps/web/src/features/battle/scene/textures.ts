@@ -1,5 +1,6 @@
 import type {
   ClassId,
+  CosmeticId,
   DamageType,
   RaceId,
   RankId,
@@ -32,6 +33,7 @@ import {
 import type { FxCell, FxSlotName } from "@/features/battle/scene/fx-atlas";
 import type { StatusBadge } from "@/features/battle/scene/status-visuals";
 import { statTone } from "@/features/battle/scene/unit-stats";
+import { heroPortraitArt } from "@/features/hero/hero-portrait-art";
 
 /**
  * Procedural art for the slice (art direction 2): each texture is drawn once
@@ -272,6 +274,78 @@ export const heroFigureTexture = (
     drawGlyph(context, classGlyph(classId));
     context.restore();
   });
+
+/** The Hero portrait on its banner: the face, inside the gold rim of the standee. */
+const heroPortraitKey = (side: Side, id: CosmeticId): string =>
+  `hero-portrait:${side}:${id}`;
+
+const loadingHeroPortrait = new Map<
+  string,
+  Promise<CanvasTexture | undefined>
+>();
+
+const loadHeroPortrait = async (
+  side: Side,
+  id: CosmeticId
+): Promise<CanvasTexture | undefined> => {
+  const art = heroPortraitArt(id);
+  if (art === null) {
+    return undefined;
+  }
+  const image = new Image();
+  image.decoding = "async";
+  image.src = art;
+  try {
+    await image.decode();
+  } catch {
+    // A failed load can try again on the next Battle.
+    loadingHeroPortrait.delete(heroPortraitKey(side, id));
+    return undefined;
+  }
+  return cached(heroPortraitKey(side, id), 320, 448, (context) => {
+    const standee = standeePath(320, 448, 12);
+    const scale = Math.max(320 / image.naturalWidth, 448 / image.naturalHeight);
+    const width = image.naturalWidth * scale;
+    const height = image.naturalHeight * scale;
+    context.save();
+    context.clip(standee);
+    context.drawImage(
+      image,
+      (320 - width) / 2,
+      (448 - height) / 2,
+      width,
+      height
+    );
+    context.restore();
+    context.lineWidth = 18;
+    context.strokeStyle = "#e9c46a";
+    context.stroke(standee);
+    context.lineWidth = 4;
+    context.strokeStyle = "rgba(20, 14, 10, 0.7)";
+    context.stroke(standeePath(320, 448, 3));
+  });
+};
+
+/** The Hero portrait of a Side on its banner, if its image is loaded. */
+export const loadedHeroPortrait = (
+  side: Side,
+  id: CosmeticId
+): CanvasTexture | undefined => cache.get(heroPortraitKey(side, id));
+
+/**
+ * The Hero portrait of a Side on its banner (Hero Portrait Concepts). The
+ * Player Hero shows it while the image loads, and if the file is missing the
+ * banner keeps the Class glyph.
+ */
+export const heroPortraitTexture = (
+  side: Side,
+  id: CosmeticId
+): Promise<CanvasTexture | undefined> => {
+  const key = heroPortraitKey(side, id);
+  const loading = loadingHeroPortrait.get(key) ?? loadHeroPortrait(side, id);
+  loadingHeroPortrait.set(key, loading);
+  return loading;
+};
 
 const STAT_WIDTH = 512;
 const STAT_HEIGHT = 160;

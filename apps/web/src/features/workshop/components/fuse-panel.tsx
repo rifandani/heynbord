@@ -39,7 +39,6 @@ import {
   Essence,
   panelClassName,
   rowsClassName,
-  StationEdge,
 } from "@/features/workshop/components/panel-parts";
 import type { FuseState } from "@/features/workshop/workshop";
 import { ESSENCE_FLY_MS, fuseTimeline } from "@/features/workshop/workshop";
@@ -1013,7 +1012,6 @@ export const FusePanel = ({
       data-station="fuse"
       data-state={state.kind}
     >
-      <StationEdge station="fuse" />
       <div ref={preview} className="self-start [grid-area:preview]">
         <FusePreview
           result={shown}

@@ -16,8 +16,7 @@ import {
   Button,
   Dialog,
   Heading,
-  Modal,
-  ModalOverlay,
+  Popover,
   TooltipTrigger,
 } from "react-aria-components";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
@@ -26,6 +25,7 @@ import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GameButton } from "@/features/battle/components/game-button";
 import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { REWARD_PLATE_COMPACT } from "@/features/battle/components/reward-plate";
 import { useGameText } from "@/features/battle/use-game-text";
 import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import {
@@ -53,9 +53,12 @@ const TOOLTIP =
  */
 const TipPiece = ({
   tip,
+  suppress = false,
   children,
 }: {
   readonly tip: string;
+  /** Keeps the tooltip shut, for a piece whose own panel shows over it. */
+  readonly suppress?: boolean;
   readonly children: (onPress: (event: PressEvent) => void) => ReactElement;
 }) => {
   const [open, setOpen] = useState(false);
@@ -66,7 +69,7 @@ const TipPiece = ({
   };
   return (
     <TooltipTrigger
-      isOpen={open}
+      isOpen={open && !suppress}
       onOpenChange={setOpen}
       delay={200}
       shouldCloseOnPress={false}
@@ -264,15 +267,13 @@ export const RegionBanner = ({
 /** What a claimed chest gave: its rewards and its Forge Stones of the Region. */
 type ChestClaim = Pick<StarChestClaim<unknown>, "reward" | "forgeStones">;
 
-/** One reward in the chest, with its icon and text. */
+/** One reward of the chest, on the compact Night Plate of the reward rows. */
 const RewardLine = ({
-  icon,
   children,
   testId,
   index,
   revealed,
 }: {
-  readonly icon: ReactNode;
   readonly children: ReactNode;
   readonly testId: string;
   readonly index: number;
@@ -280,52 +281,48 @@ const RewardLine = ({
 }) => (
   <li
     className={cn(
-      "grid min-h-16 translate-y-2 grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 rounded-xl border border-[#c9b48c] bg-[#fff3d1] px-3 py-2 text-left text-sm font-semibold text-[#2a1d12] opacity-0 transition-[opacity,translate] duration-300 ease-out motion-reduce:transition-none [@media(max-height:500px)]:min-h-14 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1",
+      REWARD_PLATE_COMPACT,
+      "translate-y-1 opacity-0 transition-[opacity,translate] duration-300 ease-out motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none",
       revealed && "translate-y-0 opacity-100"
     )}
-    style={{ transitionDelay: revealed ? `${index * 90}ms` : "0ms" }}
+    style={{ transitionDelay: revealed ? `${90 + index * 70}ms` : "0ms" }}
     data-testid={testId}
   >
-    <span className="grid size-8 shrink-0 place-items-center" aria-hidden>
-      {icon}
-    </span>
-    <span className="min-w-0 leading-snug">{children}</span>
+    {children}
   </li>
 );
 
 /**
- * The rewards of a Star chest (GDD 11.5). The chest opens first, then its
- * Coin, Essence, Forge Stones and Pack appear. The rewards are already in the
- * Profile when this dialog opens. Esc, OK and a click outside close it.
+ * The rewards of a Star chest (GDD 11.5): a small parchment plaque that hangs
+ * under its chest. Its title names the Stars, and each reward sits on the
+ * compact Night Plate of the Floor Panel and the Dungeon Panel. The rewards
+ * are already in the Profile when it opens. Esc, the one gold button and a
+ * press outside close it.
  */
 const ChestRewards = ({
   claim,
   revealed,
+  triggerRef,
   onClose,
 }: {
   readonly claim: ChestClaim;
   readonly revealed: boolean;
+  readonly triggerRef: RefObject<HTMLButtonElement | null>;
   readonly onClose: () => void;
 }) => {
   const { tr, locale } = useGameText();
   const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const format = (value: number) => number.format(value);
-  const ICON = "size-6";
+  const ICON = "size-4";
   const { reward: chest, forgeStones } = claim;
   const lines: ReactElement[] = [];
-  const addLine = (
-    key: string,
-    testId: string,
-    icon: ReactNode,
-    children: ReactNode
-  ) => {
+  const addLine = (key: string, testId: string, children: ReactNode) => {
     lines.push(
       <RewardLine
         key={key}
         index={lines.length}
         revealed={revealed}
         testId={testId}
-        icon={icon}
       >
         {children}
       </RewardLine>
@@ -335,7 +332,6 @@ const ChestRewards = ({
     addLine(
       "coin",
       "chest-reward-coin",
-      <BalanceIcon kind="coin" className={ICON} />,
       <>
         <span className="sr-only">
           {tr("battle.coinEarned", {
@@ -344,8 +340,7 @@ const ChestRewards = ({
             ),
           })}
         </span>
-        <span className="flex items-center gap-1" aria-hidden>
-          +
+        <span aria-hidden className="flex items-center gap-1.5">
           <CoinAmount parts={coinDenominations(chest.coin)} format={format} />
         </span>
       </>
@@ -355,95 +350,84 @@ const ChestRewards = ({
     addLine(
       "essence",
       "chest-reward-essence",
-      <BalanceIcon kind="essence" className={ICON} />,
-      tr("campaign.chest.essence", { amount: format(chest.essence) })
+      <>
+        <BalanceIcon kind="essence" className={ICON} />
+        {tr("campaign.chest.essence", { amount: format(chest.essence) })}
+      </>
     );
   }
   if (forgeStones) {
     addLine(
       "forge-stones",
       "chest-reward-forge-stones",
-      <ForgeStoneIcon tier={forgeStones.tier} className={ICON} />,
-      tr("battle.forgeStonesEarned", {
-        count: forgeStones.count,
-        tier: tr(`forgeStones.tiers.${forgeStones.tier}`),
-      })
+      <>
+        <ForgeStoneIcon tier={forgeStones.tier} className={ICON} />
+        {tr("battle.forgeStonesEarned", {
+          count: forgeStones.count,
+          tier: tr(`forgeStones.tiers.${forgeStones.tier}`),
+        })}
+      </>
     );
   }
   if (chest.pack) {
     addLine(
       "pack",
       "chest-reward-pack",
-      <GlyphIcon glyph="pack" className={ICON} />,
-      tr(
-        chest.pack.version === "race"
-          ? "campaign.chest.racePack"
-          : "campaign.chest.pack",
-        { pack: tr(`packs.names.${chest.pack.pack}`) }
-      )
+      <>
+        <GlyphIcon glyph="pack" className={cn(ICON, "text-[#ffd75a]")} />
+        {tr(
+          chest.pack.version === "race"
+            ? "campaign.chest.racePack"
+            : "campaign.chest.pack",
+          { pack: tr(`packs.names.${chest.pack.pack}`) }
+        )}
+      </>
     );
   }
 
   return (
-    <ModalOverlay
+    <Popover
       isOpen
       onOpenChange={(open) => {
         if (!open) {
           onClose();
         }
       }}
-      isDismissable
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-[2px] [@media(max-height:500px)]:p-2"
-      data-testid="chest-rewards"
+      triggerRef={triggerRef}
+      placement="bottom end"
+      offset={10}
+      className="z-[70]"
     >
-      <Modal className="fade-in zoom-in-95 animate-in w-[min(560px,96vw)] overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] shadow-[0_24px_48px_rgba(0,0,0,0.55)] duration-200 motion-reduce:animate-none">
-        <Dialog className="max-h-[92dvh] overflow-y-auto px-5 pt-4 pb-5 outline-none [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3">
-          <Heading
-            slot="title"
-            className="font-display text-center text-xl leading-tight font-black text-[#2a1d12] [@media(max-height:500px)]:text-lg"
+      <Dialog
+        className="w-72 overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] p-4 text-[#2a1d12] shadow-[0_16px_36px_rgba(0,0,0,0.5)] outline-none motion-safe:origin-top motion-safe:animate-[chest-panel-in_200ms_cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:animate-none"
+        data-testid="chest-rewards"
+      >
+        <Heading
+          slot="title"
+          className="font-display text-center text-base leading-tight font-black text-balance [@media(max-height:500px)]:text-sm"
+        >
+          {tr("campaign.chest.claimedTitle", { stars: chest.stars })}
+        </Heading>
+        <span className="mt-2 flex items-center gap-2" aria-hidden>
+          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c9b48c]" />
+          <span className="size-1 rotate-45 bg-[#b47f36]" />
+          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c9b48c]" />
+        </span>
+        <ul className="mt-3 flex flex-wrap gap-1.5">{lines}</ul>
+        <div className="mt-4 border-t border-[#c9b48c]/70 pt-3">
+          <GameButton
+            intent="gold"
+            size="sm"
+            autoFocus
+            onPress={onClose}
+            className="w-full text-[13px] [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-xs"
+            data-testid="chest-rewards-close"
           >
-            {tr("campaign.chest.claimedTitle", { stars: chest.stars })}
-          </Heading>
-          <div
-            className="relative mx-auto mt-3 grid size-24 place-items-center rounded-full border-2 border-[#b47f36] bg-[#ead9b4] shadow-[0_4px_0_rgba(42,26,12,0.25)] [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:size-16"
-            aria-hidden
-          >
-            <span
-              className={cn(
-                "absolute inset-0 scale-50 rounded-full bg-[radial-gradient(circle,rgba(255,215,90,0.8)_0%,rgba(255,215,90,0)_72%)] opacity-0 transition-[opacity,scale] duration-500 ease-out motion-reduce:transition-none",
-                revealed && "scale-100 opacity-100"
-              )}
-            />
-            <ChestIcon
-              earned={revealed}
-              unlocked
-              className={cn(
-                "relative size-16 drop-shadow-[0_4px_2px_rgba(42,26,12,0.35)] transition-transform duration-500 ease-out motion-reduce:transition-none [@media(max-height:500px)]:size-12",
-                revealed ? "scale-110" : "scale-90"
-              )}
-            />
-          </div>
-          <ul
-            className="mt-4 grid grid-cols-1 gap-2 min-[520px]:grid-cols-2 [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:gap-1.5"
-            aria-hidden={!revealed}
-          >
-            {lines}
-          </ul>
-          {revealed ? (
-            <GameButton
-              intent="gold"
-              size="sm"
-              autoFocus
-              onPress={onClose}
-              className="mt-4 w-full [@media(max-height:500px)]:mt-2"
-              data-testid="chest-rewards-close"
-            >
-              {tr("campaign.chest.ok")}
-            </GameButton>
-          ) : null}
-        </Dialog>
-      </Modal>
-    </ModalOverlay>
+            {tr("campaign.chest.ok")}
+          </GameButton>
+        </div>
+      </Dialog>
+    </Popover>
   );
 };
 
@@ -511,9 +495,21 @@ const Chest = ({
   const button = useRef<HTMLButtonElement>(null);
   const claimable = state === "claimable";
   const claimed = state === "claimed";
+  /** Closes the plaque and gives the focus back to its chest, as a popover does. */
+  const closeRewards = () => {
+    const active = document.activeElement;
+    const inside =
+      active === document.body ||
+      (active instanceof Element &&
+        active.closest('[data-testid="chest-rewards"]') !== null);
+    onCloseRewards();
+    if (inside) {
+      button.current?.focus({ preventScroll: true });
+    }
+  };
   return (
     <>
-      <TipPiece tip={name}>
+      <TipPiece tip={name} suppress={rewards !== null}>
         {(onPress) => (
           <Button
             ref={button}
@@ -543,6 +539,8 @@ const Chest = ({
               className={cn(
                 "relative size-9 drop-shadow-[0_2px_0_rgba(0,0,0,0.55)] transition-transform duration-150 [@media(max-height:500px)]:size-7",
                 state === "closed" && "brightness-90 saturate-[0.7]",
+                claimable &&
+                  "[transform-origin:50%_100%] group-data-[hovered]:animate-none motion-safe:animate-[chest-wiggle_3.4s_ease-in-out_infinite]",
                 (claimable || claimed) &&
                   "group-data-[hovered]:-translate-y-0.5 group-data-[pressed]:translate-y-0"
               )}
@@ -566,7 +564,8 @@ const Chest = ({
         <ChestRewards
           claim={rewards}
           revealed={revealed}
-          onClose={onCloseRewards}
+          triggerRef={button}
+          onClose={closeRewards}
         />
       ) : null}
     </>
@@ -614,7 +613,7 @@ export const StarChests = ({
     revealTimer.current = window.setTimeout(() => {
       setRevealed(true);
       revealTimer.current = null;
-    }, 480);
+    }, 240);
   };
   const closeRewards = () => {
     if (revealTimer.current !== null) {

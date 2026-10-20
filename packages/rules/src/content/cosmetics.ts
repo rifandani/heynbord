@@ -2,8 +2,8 @@
  * The Cosmetics of v1 (Economy 3.5, ADR-0008). A Cosmetic changes how
  * something looks and never changes gameplay. A Bazaar item is a Cosmetic
  * that the Bazaar sells for Heynstones; an Earn-only Cosmetic comes from
- * play and is never in the Bazaar. v1 has 22 Bazaar items, and the full
- * catalog costs 2,400 Heynstones.
+ * play and is never in the Bazaar. v1 has 25 Bazaar items, and the full
+ * catalog costs 2,760 Heynstones.
  */
 import { Schema } from "effect";
 
@@ -42,6 +42,9 @@ export const CosmeticId = Schema.Literals([
   "cardBack.seaChart",
   "cardBack.lanternSails",
   "cardBack.goatBite",
+  "cardBack.duelMonster",
+  "cardBack.duelMonsterV2",
+  "cardBack.vanguard",
   // Bazaar Hero portraits
   "heroPortrait.dawnGaze",
   "heroPortrait.verdantCrest",
@@ -78,6 +81,24 @@ export type CosmeticId = typeof CosmeticId.Type;
 /** True when the string is a Cosmetic ID of the v1 lists. */
 export const isCosmeticId = Schema.is(CosmeticId);
 
+/**
+ * The **Premium card backs** (Economy 3.5). A Premium card back costs twice
+ * the price of a normal card back, because its face has more detail: 120
+ * Heynstones when a normal card back costs 60.
+ */
+export const PREMIUM_CARD_BACKS: readonly CosmeticId[] = [
+  "cardBack.duelMonster",
+  "cardBack.duelMonsterV2",
+  "cardBack.vanguard",
+];
+
+/** A Premium card back costs this many times a normal card back. */
+export const PREMIUM_CARD_BACK_FACTOR = 2;
+
+/** True when the Card Back is Premium, so its price is double. */
+const isPremiumCardBack = (id: CosmeticId): boolean =>
+  PREMIUM_CARD_BACKS.includes(id);
+
 export interface Cosmetic {
   readonly id: CosmeticId;
   readonly family: CosmeticFamily;
@@ -86,6 +107,8 @@ export interface Cosmetic {
    * is never in the Bazaar (ADR-0008).
    */
   readonly price?: number;
+  /** True for a Premium card back, whose price is double. */
+  readonly premium?: boolean;
 }
 
 const catalog = (
@@ -93,11 +116,19 @@ const catalog = (
   ids: readonly CosmeticId[]
 ): readonly Cosmetic[] => {
   const price = COSMETIC_PRICES[family];
-  return ids.map((id) => ({ id, family, price }));
+  return ids.map((id) => {
+    const premium = family === "cardBack" && isPremiumCardBack(id);
+    const item = {
+      id,
+      family,
+      price: premium ? price * PREMIUM_CARD_BACK_FACTOR : price,
+    };
+    return premium ? { ...item, premium: true } : item;
+  });
 };
 
 /**
- * The Bazaar Cosmetics of v1 (Economy 3.5), in screen order: 5 card backs,
+ * The Bazaar Cosmetics of v1 (Economy 3.5), in screen order: 8 card backs,
  * 7 Hero portraits, 6 Gear looks and 4 Board skins. Keep the code and the
  * Economy table the same.
  */
@@ -108,6 +139,9 @@ export const BAZAAR_COSMETICS: readonly Cosmetic[] = [
     "cardBack.seaChart",
     "cardBack.lanternSails",
     "cardBack.goatBite",
+    "cardBack.duelMonster",
+    "cardBack.duelMonsterV2",
+    "cardBack.vanguard",
   ]),
   ...catalog("heroPortrait", [
     "heroPortrait.dawnGaze",
@@ -171,7 +205,7 @@ const COSMETIC_ITEM_BY_ID: ReadonlyMap<string, Cosmetic> = new Map(
 export const getBazaarCosmetic = (id: string): Cosmetic | undefined =>
   COSMETIC_ITEM_BY_ID.get(id);
 
-/** The sum of the prices of the full Bazaar catalog: 2,400 (Economy 3.5). */
+/** The sum of the prices of the full Bazaar catalog: 2,760 (Economy 3.5). */
 export const BAZAAR_CATALOG_HEYNSTONES = BAZAAR_COSMETICS.reduce(
   (sum, item) => sum + (item.price ?? 0),
   0

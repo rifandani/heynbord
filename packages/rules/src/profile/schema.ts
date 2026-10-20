@@ -15,7 +15,7 @@ import { STAR_CHESTS } from "../content/star-chests";
  * shape, or to the meaning of a saved value, adds 1 and a migration step from
  * the old version.
  */
-export const PROFILE_SCHEMA_VERSION = 13;
+export const PROFILE_SCHEMA_VERSION = 14;
 
 /** The longest name that the Player can give a Deck. */
 export const DECK_NAME_MAX = 24;
@@ -115,6 +115,19 @@ const SeaportState = Schema.Union([
 export type SeaportState = typeof SeaportState.Type;
 
 /**
+ * The Active Cosmetic of each family (Economy 3.5): the Cosmetic that the
+ * Player uses now. A family with no ID shows its Standard look. The action
+ * `selectCosmetic` writes it, and only for a Cosmetic that the Player owns.
+ */
+const ActiveCosmetics = Schema.Struct({
+  cardBack: Schema.optionalKey(CosmeticId),
+  heroPortrait: Schema.optionalKey(CosmeticId),
+  gearLook: Schema.optionalKey(CosmeticId),
+  boardSkin: Schema.optionalKey(CosmeticId),
+});
+export type ActiveCosmetics = typeof ActiveCosmetics.Type;
+
+/**
  * All the saved progress of one Player (technical design 5). Settings are not
  * in it: they belong to the device. The Player level is not in it: it comes
  * from the XP (`playerLevelForXp`).
@@ -177,6 +190,8 @@ export const Profile = Schema.Struct({
    * Player never sells or loses one.
    */
   cosmetics: Schema.Array(CosmeticId),
+  /** The Active Cosmetic of each family. A missing family shows its Standard look. */
+  activeCosmetics: ActiveCosmetics,
   tallies: Tallies,
   /** The Seaport ship: at the berth, or on an Expedition since its Dispatch. */
   seaport: SeaportState,

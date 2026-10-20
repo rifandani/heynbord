@@ -1,8 +1,8 @@
 import { useAtomValue } from "@effect/atom-react";
 import { useFrame } from "@react-three/fiber";
-import type { HeroRef, Side } from "@workspace/rules";
-import { useMemo, useRef } from "react";
-import type { Group, Mesh, MeshBasicMaterial } from "three";
+import type { CosmeticId, HeroRef, Side } from "@workspace/rules";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { CanvasTexture, Group, Mesh, MeshBasicMaterial } from "three";
 import { Color, ShaderMaterial } from "three";
 
 import { hasManyHeroes } from "@/features/battle/battle-view";
@@ -24,7 +24,10 @@ import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import {
   blobShadowTexture,
   heroFigureTexture,
+  heroPortraitTexture,
+  loadedHeroPortrait,
 } from "@/features/battle/scene/textures";
+import { activeHeroPortraitAtom } from "@/features/profile/profile.atoms";
 
 const WHITE = new Color("#ffffff");
 const HIT = new Color("#ff5a4a");
@@ -91,10 +94,44 @@ const tintHero = (parts: FigureParts, pose: HeroPose) => {
 const HeroFigure = ({ side, hero }: HeroRef) => {
   const session = useAtomValue(shownSessionAtom);
   const classId = session?.view.sides[side].heroes[hero]?.classId ?? "warrior";
-  const texture = useMemo(
+  const portrait = useAtomValue(activeHeroPortraitAtom);
+  // Only the Player Hero shows the Player's portrait; the enemy keeps its Class glyph.
+  const shownPortrait = side === "player" ? portrait : null;
+  const standee = useMemo(
     () => heroFigureTexture(side, classId),
     [side, classId]
   );
+  const [art, setArt] = useState<{
+    readonly id: CosmeticId;
+    readonly texture: CanvasTexture;
+  } | null>(() => {
+    const loaded =
+      shownPortrait === null
+        ? undefined
+        : loadedHeroPortrait(side, shownPortrait);
+    return shownPortrait === null || !loaded
+      ? null
+      : { id: shownPortrait, texture: loaded };
+  });
+  useEffect(() => {
+    const id = shownPortrait;
+    if (id === null || art?.id === id) {
+      return;
+    }
+    let mounted = true;
+    const load = async () => {
+      const texture = await heroPortraitTexture(side, id);
+      if (mounted && texture) {
+        setArt({ id, texture });
+      }
+    };
+    void load();
+    return () => {
+      mounted = false;
+    };
+  }, [side, shownPortrait, art]);
+  const texture =
+    art === null || art.id !== shownPortrait ? undefined : art.texture;
   const shadowTexture = useMemo(() => blobShadowTexture(), []);
   const stand = useRef<Group>(null);
   const pivot = useRef<Group>(null);
@@ -162,7 +199,7 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
           <planeGeometry args={[1.45, 2.03]} />
           <meshBasicMaterial
             ref={figure}
-            map={texture}
+            map={texture ?? standee}
             transparent
             alphaTest={0.05}
             toneMapped={false}
