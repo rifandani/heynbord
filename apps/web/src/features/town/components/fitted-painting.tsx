@@ -3,10 +3,6 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { FIT_STRETCH, MAX_STRETCH } from "@/features/campaign/region-map";
 
-/** The Town Bar height. The bottom edge of the painting stays on its top edge. */
-const TOWN_BAR =
-  "[--town-bar:80px] [@media(max-height:500px)]:[--town-bar:56px]";
-
 /** The top edge of the painting fades into the backdrop when it is below the screen top. */
 const FADE_MASK =
   "linear-gradient(to bottom, transparent, black var(--fade-top))";
@@ -74,7 +70,7 @@ export const FittedPainting = ({
       aria-hidden
     />
     <div
-      className={cn("absolute inset-x-0", TOWN_BAR, className)}
+      className={cn("absolute inset-x-0", className)}
       style={{ ...frameStyle(width / height), ...style }}
     >
       <img

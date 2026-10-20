@@ -619,6 +619,7 @@ test.describe("Handbook (issue #25)", () => {
     page,
   }) => {
     await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     await page.getByTestId("town-shortcut-handbook").press("Enter");
     await page.getByRole("tab", { name: "Progress" }).click();
     await page.getByRole("option", { name: "Pack" }).click();
@@ -645,6 +646,7 @@ test.describe("Handbook (issue #25)", () => {
     page,
   }) => {
     await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     const shortcut = page.getByTestId("town-shortcut-handbook");
     await expect(shortcut).toHaveAccessibleName("Handbook");
     await shortcut.press("Enter");
@@ -678,6 +680,7 @@ test.describe("Handbook (issue #25)", () => {
     page,
   }) => {
     await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     await page.getByTestId("town-shortcut-handbook").press("Enter");
     const search = page.getByRole("searchbox", {
       name: "Search the Handbook",
@@ -813,6 +816,7 @@ test.describe("Town", () => {
     page,
   }) => {
     await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
     await page.getByTestId("town-shortcut-campaign").click();
     await expect(page.getByTestId("campaign")).toBeVisible();
     await page.keyboard.press("Escape");
@@ -821,6 +825,66 @@ test.describe("Town", () => {
     await expect(page.getByTestId("campaign")).toBeVisible();
     await page.getByTestId("town-shortcut-town").click();
     await expect(page.getByTestId("town")).toBeVisible();
+  });
+
+  test("stows the Town Bar out of the screen, keeps the names, and remembers the choice", async ({
+    page,
+  }) => {
+    // The test loads the page twice.
+    test.setTimeout(60_000);
+    await page.goto("/play");
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+    const bar = page.getByTestId("town-bar");
+    const pull = page.getByTestId("town-bar-pull");
+    const barHeight = async (): Promise<number> => {
+      const box = await bar.boundingBox();
+      return box?.height ?? -1;
+    };
+    await expect(pull).toHaveAttribute("aria-expanded", "true");
+    const expanded = await bar.boundingBox();
+
+    // The name of a shortcut sits on the front lip of the shelf.
+    const name = page.getByTestId("town-shortcut-name-campaign");
+    await expect(name).toBeVisible();
+    const nameBox = await name.boundingBox();
+    expect(
+      nameBox &&
+        expanded &&
+        nameBox.y + nameBox.height <= expanded.y + expanded.height
+    ).toBe(true);
+
+    await pull.focus();
+    await page.keyboard.press("Enter");
+    await expect(pull).toHaveAttribute("aria-expanded", "false");
+    await expect(pull).toHaveAccessibleName("Show the Town Bar");
+    // The bar is gone for good: no wood, no rail, no room. Only the pull stays.
+    await expect.poll(barHeight).toBe(0);
+    await expect(pull).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.querySelector<HTMLElement>("#town-bar-content")?.inert
+      )
+    ).toBe(true);
+    expect(
+      await page.evaluate(() =>
+        localStorage.getItem("heynbord.town-bar-collapsed")
+      )
+    ).toBe("true");
+
+    await page.reload();
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+    const reloadedPull = page.getByTestId("town-bar-pull");
+    await expect(reloadedPull).toHaveAttribute("aria-expanded", "false");
+    await expect.poll(barHeight).toBe(0);
+    await reloadedPull.focus();
+    await page.keyboard.press("Enter");
+    await expect(reloadedPull).toHaveAttribute("aria-expanded", "true");
+    await expect.poll(barHeight).toBe(expanded?.height ?? 0);
+    expect(
+      await page.evaluate(
+        () => document.querySelector<HTMLElement>("#town-bar-content")?.inert
+      )
+    ).toBe(false);
   });
 
   test("the Bazaar shortcut keeps focus and opens its screen on Enter", async ({

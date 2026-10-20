@@ -313,6 +313,8 @@ export default {
   town: {
     label: "Town",
     bar: "Town Bar",
+    hideBar: "Hide the Town Bar",
+    showBar: "Show the Town Bar",
     opensLater: "Opens later",
     locked: "{name}, opens later",
     opensAtLevel: "Opens at level {level}",

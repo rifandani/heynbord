@@ -545,14 +545,14 @@ export const AchievementsScreen = () => {
           // width at its left: `--mirror`. The grid is the width of the
           // content box (1080px) plus that mirror and one gap, so the scroll
           // keeps the width it had (1080px, less the flag rail and one gap).
-          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[92px] left-1/2 grid -translate-x-1/2",
+          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[calc(var(--town-bar)+12px)] left-1/2 grid -translate-x-1/2",
           "[--flag:19.5rem] [--gap:0.75rem] [--mirror:19.5rem]",
           "w-[min(calc(100vw-1.5rem),calc(1080px+var(--mirror)+var(--gap)))] grid-cols-[var(--mirror)_minmax(0,1fr)_var(--flag)] grid-rows-[minmax(0,1fr)] gap-x-[var(--gap)]",
           // A screen that is too narrow for a mirror at the left of the
           // scroll has none: the scroll goes back to the left of the pole.
           "[@media(max-width:1240px)_and_(min-height:501px)]:[--mirror:0rem]",
           "max-[860px]:[--flag:14rem]",
-          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[min(calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right))),calc(1080px+var(--mirror)+var(--gap)))] [@media(max-height:500px)]:[--flag:6.25rem] [@media(max-height:500px)]:[--gap:0.5rem] [@media(max-height:500px)]:[--mirror:6.25rem]"
+          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+6px)] [@media(max-height:500px)]:w-[min(calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right))),calc(1080px+var(--mirror)+var(--gap)))] [@media(max-height:500px)]:[--flag:6.25rem] [@media(max-height:500px)]:[--gap:0.5rem] [@media(max-height:500px)]:[--mirror:6.25rem]"
         )}
       >
         {/* The pole of the Hall, at the right of the scroll: frame wood with a

@@ -1,16 +1,21 @@
-import { useAtomValue } from "@effect/atom-react";
+import { useAtom, useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
-import { useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { FocusEvent, RefObject } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, DialogTrigger, TooltipTrigger } from "react-aria-components";
 
 import { claimableCountAtom } from "@/features/achievements/achievements-screen.atoms";
+import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import { HandbookIcon } from "@/features/handbook/components/handbook-icon";
 import { useHandbook } from "@/features/handbook/use-handbook";
+import type { HintId } from "@/features/hint/hint";
+import { HINT_PLACE } from "@/features/hint/hint";
+import { shownHintAtom } from "@/features/hint/hint.atoms";
 import { useShipBack } from "@/features/seaport/use-seaport";
 import { SettingsDialog } from "@/features/town/components/settings-dialog";
 import { useTownLockText } from "@/features/town/components/town-lock";
@@ -22,7 +27,10 @@ import {
   shortcutImage,
   townLock,
 } from "@/features/town/town";
-import { townProgressAtom } from "@/features/town/town.atoms";
+import {
+  townBarCollapsedAtom,
+  townProgressAtom,
+} from "@/features/town/town.atoms";
 
 const LONG_PRESS_MS = 450;
 
@@ -159,6 +167,103 @@ const ShortcutIcon = ({
     <HandbookIcon className={cn(className, "p-2")} />
   );
 
+/** The small gold token of a reward that waits behind the stowed bar. */
+const PULL_BADGE =
+  "grid h-4 min-w-4 place-items-center rounded-full border border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1 text-[10px] leading-none font-black text-[#2a1a05] tabular-nums shadow-[0_1px_0_rgba(0,0,0,0.5)]";
+
+/**
+ * The brass pull on the front lip of the shelf. It is the one control of the
+ * stowed bar: it opens and closes the shelf, and it carries the gold tokens of
+ * the rewards that wait behind it (Achievements, Seaport). The drawing is a
+ * drawer pull, not a web toggle: brass, a hard drop and a 1px press.
+ *
+ * When the bar stows, the pull leaves the lip and floats at the right corner
+ * of the screen, because the bar itself is gone.
+ */
+const BarPull = ({
+  collapsed,
+  label,
+  tooltip,
+  claimable,
+  shipBack,
+  onPress,
+  buttonRef,
+}: {
+  readonly collapsed: boolean;
+  readonly label: string;
+  readonly tooltip: string;
+  readonly claimable: number;
+  readonly shipBack: boolean;
+  readonly onPress: () => void;
+  readonly buttonRef: RefObject<HTMLButtonElement | null>;
+}) => (
+  <TooltipTrigger delay={200}>
+    <Button
+      ref={buttonRef}
+      aria-label={label}
+      aria-expanded={!collapsed}
+      aria-controls="town-bar-content"
+      onPress={onPress}
+      data-testid="town-bar-pull"
+      className={cn(
+        "group/bar-pull absolute bottom-[max(4px,env(safe-area-inset-bottom))] z-40 flex h-11 min-w-7 items-end justify-end gap-1 rounded-lg pr-px outline-none select-none",
+        collapsed
+          ? "right-[max(0.5rem,env(safe-area-inset-right))]"
+          : "right-[calc(max(0.5rem,env(safe-area-inset-right))+var(--town-bar-settings-w)-0.75rem)]",
+        // The pull slides to the corner of the screen with the shelf.
+        "transition-[right] duration-300 ease-out motion-reduce:transition-none",
+        "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+      )}
+    >
+      {collapsed && (claimable > 0 || shipBack) ? (
+        <span className="mb-[3px] flex items-center gap-1" aria-hidden>
+          {claimable > 0 ? (
+            <span className={PULL_BADGE}>{claimable}</span>
+          ) : null}
+          {shipBack ? (
+            <span className={cn(PULL_BADGE, "w-4 px-0")}>
+              <GlyphIcon glyph="anchor" className="size-2.5" />
+            </span>
+          ) : null}
+        </span>
+      ) : null}
+      <span
+        className={cn(
+          "relative flex h-[22px] w-[22px] flex-col items-center justify-center gap-px rounded-[3px] border border-[#5b3a1e]",
+          "bg-[linear-gradient(180deg,#f7dc9c_0%,#c08b3e_55%,#8a5a20_100%)]",
+          "shadow-[0_2px_0_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,243,210,0.7)]",
+          "transition-[filter,transform,box-shadow] duration-100 group-hover/bar-pull:brightness-110",
+          "group-data-[pressed]/bar-pull:translate-y-px group-data-[pressed]/bar-pull:shadow-[0_1px_0_rgba(0,0,0,0.45)]",
+          "motion-reduce:transition-none"
+        )}
+      >
+        <span className="flex flex-col gap-px" aria-hidden>
+          {[0, 1, 2].map((line) => (
+            <span
+              key={line}
+              className="h-px w-2 bg-[#5b3a1e]/50 shadow-[0_1px_0_rgba(255,243,210,0.45)]"
+            />
+          ))}
+        </span>
+        <GlyphIcon
+          glyph="chevron"
+          className={cn(
+            "size-2.5 text-[#2a1a05] transition-transform duration-200 motion-reduce:transition-none",
+            collapsed && "rotate-180"
+          )}
+        />
+      </span>
+    </Button>
+    <GameTooltip
+      placement="top"
+      offset={12}
+      className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1 text-center text-xs font-semibold text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+    >
+      {tooltip}
+    </GameTooltip>
+  </TooltipTrigger>
+);
+
 /**
  * The face of a shortcut: its light, its contact shadow, its painted icon and
  * its name on the lip of the shelf.
@@ -171,6 +276,7 @@ const ShortcutFace = ({
   lifted = false,
   count = 0,
   badgeTestId,
+  labelTestId,
 }: {
   readonly image: string | null;
   readonly name: string;
@@ -180,6 +286,8 @@ const ShortcutFace = ({
   /** The count on the badge of the icon, for the Achievements and Seaport shortcuts. */
   readonly count?: number;
   readonly badgeTestId?: string;
+  /** The name on the lip of the shelf. */
+  readonly labelTestId?: string;
 }) => (
   <>
     {/* The light of the current place, and the shadow under each icon. */}
@@ -207,7 +315,9 @@ const ShortcutFace = ({
       <CountBadge count={count} testId={badgeTestId} />
     </span>
     <span className={labelClass(locked, current, lifted)} aria-hidden>
-      <span className="truncate">{name}</span>
+      <span className="truncate" data-testid={labelTestId}>
+        {name}
+      </span>
     </span>
     {/* On a phone the name is hidden, so a gold mark under the icon shows the current place. */}
     <span
@@ -373,6 +483,7 @@ const Shortcut = ({
             lifted={dialog === "handbook" ? handbook.isOpen : dialogOpen}
             count={count}
             badgeTestId={`${shortcut.id}-badge`}
+            labelTestId={`town-shortcut-name-${shortcut.id}`}
           />
         </Button>
         <GameTooltip
@@ -407,8 +518,7 @@ const SettingsButton = () => {
   return (
     <div
       className={cn(
-        "relative w-24 shrink-0 border-l-2 border-l-[#1f130a] pl-1.5 shadow-[inset_2px_0_0_rgba(255,226,170,0.1)] max-[1199px]:w-20",
-        "[@media(max-height:500px)]:w-[52px]"
+        "relative w-[calc(var(--town-bar-settings-w)-0.5rem)] shrink-0 border-l-2 border-l-[#1f130a] pl-1.5 shadow-[inset_2px_0_0_rgba(255,226,170,0.1)]"
       )}
     >
       <DialogTrigger isOpen={open} onOpenChange={setOpen}>
@@ -424,6 +534,7 @@ const SettingsButton = () => {
             locked={false}
             current={false}
             lifted={open}
+            labelTestId="town-settings-name"
           />
         </Button>
         <SettingsDialog from={button} />
@@ -436,6 +547,14 @@ const SettingsButton = () => {
  * The Town Bar (GDD 11.4): a wood shelf with the shortcuts to the game
  * screens, then the Settings button. The names sit on the flat front lip of
  * the shelf. It shows on each screen except the Battle.
+ *
+ * The shelf can stow away from any screen. The choice is saved per device. A
+ * small brass pull is the only control that stays: it opens the shelf, carries
+ * the tokens of the rewards that wait behind it, and takes the focus when the
+ * shortcuts go away. A stowed bar is gone for good: it has no wood and no
+ * rail, so the scene fills the screen and only the pull floats at the corner.
+ * The painting and the docked panels follow the live `--town-bar` height, so
+ * the scene grows as the wood moves down.
  */
 export const TownBar = ({
   screen,
@@ -445,43 +564,185 @@ export const TownBar = ({
   readonly onOpen: (screen: GameScreen) => void;
 }) => {
   const { tr } = useGameText();
+  const [savedCollapsed, setSavedCollapsed] = useAtom(townBarCollapsedAtom);
+  const [dismissedHint, setDismissedHint] = useState<HintId | null>(null);
+  const shownHint = useAtomValue(shownHintAtom);
+  const claimable = useAtomValue(claimableCountAtom);
+  const progress = useAtomValue(townProgressAtom);
+  const shipBack = useShipBack();
+  const pull = useRef<HTMLButtonElement>(null);
+  const focusInBar = useRef(false);
+  const seaport = TOWN_SHORTCUTS.find((shortcut) => shortcut.id === "seaport");
+  const seaportBack =
+    shipBack && seaport !== undefined && !isLocked(seaport, progress);
+
+  // The Hints that point at a Town Bar shortcut. A stowed shelf cannot show
+  // it, so the shelf comes back for the Hint, unless the Player put it away
+  // again while the same Hint was open.
+  const hintPlace = shownHint === null ? null : HINT_PLACE[shownHint];
+  const hintWantsBar =
+    hintPlace === "deckShortcut" ||
+    hintPlace === "achievementsShortcut" ||
+    hintPlace === "cave" ||
+    hintPlace === "quay";
+  const effectiveCollapsed =
+    savedCollapsed && !(hintWantsBar && dismissedHint !== shownHint);
+
+  // One source of truth for every screen's floor. `--town-bar` transitions
+  // from this attribute (globals.css), so the painting and the panels follow.
+  // The ready flag waits one frame: a saved stowed rail appears at once, and
+  // only later toggles animate.
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.dataset.townBar = effectiveCollapsed ? "collapsed" : "expanded";
+    const frame = requestAnimationFrame(() => {
+      root.dataset.townBarReady = "";
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [effectiveCollapsed]);
+
+  // The shortcuts are about to leave the focus order. Move the focus to the
+  // pull when the Player was using them, also when a Hint closes the shelf.
+  useLayoutEffect(() => {
+    if (!effectiveCollapsed || !focusInBar.current) {
+      return;
+    }
+    focusInBar.current = false;
+    pull.current?.focus();
+  }, [effectiveCollapsed]);
+
+  useEffect(
+    () => () => {
+      delete document.documentElement.dataset.townBar;
+      delete document.documentElement.dataset.townBarReady;
+    },
+    []
+  );
+
+  const onContentFocus = () => {
+    focusInBar.current = true;
+  };
+  const onContentBlur = (event: FocusEvent<HTMLDivElement>) => {
+    const next = event.relatedTarget;
+    if (!(next instanceof Node) || !event.currentTarget.contains(next)) {
+      focusInBar.current = false;
+    }
+  };
+
+  const toggle = () => {
+    if (effectiveCollapsed) {
+      setSavedCollapsed(false);
+    } else {
+      if (shownHint !== null) {
+        setDismissedHint(shownHint);
+      }
+      setSavedCollapsed(true);
+    }
+    unlockAudio();
+    playSound("select");
+  };
+
+  const baseLabel = effectiveCollapsed
+    ? tr("town.showBar")
+    : tr("town.hideBar");
+  const attention = [
+    claimable > 0
+      ? tr("town.shortcutBadge", {
+          name: tr("town.shortcuts.achievements"),
+          count: claimable,
+        })
+      : null,
+    seaportBack
+      ? tr("town.shipBack", { name: tr("town.shortcuts.seaport") })
+      : null,
+  ]
+    .filter((line): line is string => line !== null)
+    .join(". ");
+  const pullLabel = attention === "" ? baseLabel : `${baseLabel}. ${attention}`;
+
   return (
     <nav
       aria-label={tr("town.bar")}
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-30 flex h-[calc(76px+max(4px,env(safe-area-inset-bottom)))] items-end justify-between gap-3 border-t-4 border-[#2a1a0c] px-2 pt-1.5",
-        "shadow-[inset_0_2px_0_rgba(231,187,106,0.3),0_-4px_12px_rgba(0,0,0,0.35)]",
-        "pr-[max(0.5rem,env(safe-area-inset-right))] pb-[max(4px,env(safe-area-inset-bottom))] pl-[max(0.5rem,env(safe-area-inset-left))]",
-        "[@media(max-height:500px)]:h-[calc(52px+max(4px,env(safe-area-inset-bottom)))] [@media(max-height:500px)]:border-t-[3px] [@media(max-height:500px)]:pt-1"
-      )}
-      style={{
-        // Dark wood with a faint grain, as the Hand Bar.
-        background: [
-          "repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 2px, transparent 2px 15px)",
-          "linear-gradient(180deg, #5a3a20 0%, #4a2f1b 40%, #2e1d10 100%)",
-        ].join(", "),
-      }}
+      className="fixed inset-x-0 bottom-0 z-30 h-[var(--town-bar)]"
       data-testid="town-bar"
+      data-collapsed={effectiveCollapsed || undefined}
     >
-      {/* The flat front lip of the shelf, under the names. */}
+      {/* The shelf of wood. It slides down and out of the screen when the bar
+          stows, so no wood and no rail stay: only the pull remains. */}
       <div
         className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-0 h-[calc(22px+max(4px,env(safe-area-inset-bottom)))] border-t border-[#e7bb6a]/20 bg-[#24170c] shadow-[0_-1px_0_rgba(0,0,0,0.45)]",
-          "[@media(max-height:500px)]:hidden"
+          "absolute inset-0 border-t-4 border-[#2a1a0c]",
+          "shadow-[inset_0_2px_0_rgba(231,187,106,0.3),0_-4px_12px_rgba(0,0,0,0.35)]",
+          "[@media(max-height:500px)]:border-t-[3px]",
+          "transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
+          effectiveCollapsed
+            ? "-translate-y-full opacity-0"
+            : "translate-y-0 opacity-100"
         )}
-        aria-hidden
+        style={{
+          // Dark wood with a faint grain, as the Hand Bar.
+          background: [
+            "repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 2px, transparent 2px 15px)",
+            "linear-gradient(180deg, #5a3a20 0%, #4a2f1b 40%, #2e1d10 100%)",
+          ].join(", "),
+        }}
+      >
+        {/* The flat front lip of the shelf. It holds the names, so it sits
+            behind them. */}
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-x-0 bottom-0 h-[calc(22px+max(4px,env(safe-area-inset-bottom)))] border-t border-[#e7bb6a]/20 bg-[#24170c] shadow-[0_-1px_0_rgba(0,0,0,0.45)]",
+            "[@media(max-height:500px)]:hidden"
+          )}
+          aria-hidden
+        />
+        <div
+          id="town-bar-content"
+          inert={effectiveCollapsed}
+          onFocus={onContentFocus}
+          onBlur={onContentBlur}
+          className={cn(
+            "absolute inset-x-0 bottom-0 overflow-hidden",
+            // The icons stand out of the top edge of the shelf. A stowed bar
+            // has no room for them, so the box holds nothing.
+            effectiveCollapsed ? "top-0" : "-top-8",
+            effectiveCollapsed && "pointer-events-none"
+          )}
+        >
+          <div
+            className={cn(
+              "absolute inset-x-0 bottom-[max(4px,env(safe-area-inset-bottom))] flex h-[66px] items-end justify-between gap-3",
+              "pr-[max(0.5rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))]",
+              "transition-[opacity,transform] ease-out motion-reduce:transition-none",
+              "[@media(max-height:500px)]:h-11",
+              effectiveCollapsed
+                ? "translate-y-2.5 opacity-0 duration-150"
+                : "translate-y-0 opacity-100 delay-100 duration-200"
+            )}
+          >
+            <ul className="relative flex min-w-0 flex-1 items-end gap-1">
+              {TOWN_SHORTCUTS.map((shortcut) => (
+                <Shortcut
+                  key={shortcut.id}
+                  shortcut={shortcut}
+                  current={shortcut.screen === screen}
+                  onOpen={onOpen}
+                />
+              ))}
+            </ul>
+            <SettingsButton />
+          </div>
+        </div>
+      </div>
+      <BarPull
+        collapsed={effectiveCollapsed}
+        label={pullLabel}
+        tooltip={baseLabel}
+        claimable={claimable}
+        shipBack={seaportBack}
+        onPress={toggle}
+        buttonRef={pull}
       />
-      <ul className="relative flex min-w-0 flex-1 items-end gap-1">
-        {TOWN_SHORTCUTS.map((shortcut) => (
-          <Shortcut
-            key={shortcut.id}
-            shortcut={shortcut}
-            current={shortcut.screen === screen}
-            onOpen={onOpen}
-          />
-        ))}
-      </ul>
-      <SettingsButton />
     </nav>
   );
 };

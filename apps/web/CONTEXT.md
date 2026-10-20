@@ -100,6 +100,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Town Bar**: The panel at the bottom of the Town and of each screen except the Battle. It has one shortcut for each screen that has a Building, the screens that do not exist yet too, a shortcut back to the Town, and a shortcut to the Handbook. _Avoid_: menu bar, nav bar, footer, dock
 
+**Stowed Town Bar**: The Town Bar when the Player puts it away. It has no wood and takes no room, so the screen fills the space. Only the brass pull stays, at the corner of the screen. _Avoid_: collapsed bar, hidden bar, minimized bar, rail
+
 **Handbook**: The dialog that tells how the game works: the rules, the terms and the icons that the Player meets. It opens over the current screen, from the Town Bar and from the Top Bar of the Battle. It has no Building. It explains concepts and does not list cards: the Deck builder lists cards. It has an entry only for a feature that is in the game, and the Player can read all its entries from the start. _Avoid_: Wiki, codex, help, encyclopedia, rulebook, guide
 
 **Chapter**: One group of Entries in the Handbook, for example Battle, Cards, Keywords or Statuses. _Avoid_: category, section, tab

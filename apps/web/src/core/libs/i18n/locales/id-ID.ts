@@ -314,6 +314,8 @@ export default {
   town: {
     label: "Kota",
     bar: "Bilah Kota",
+    hideBar: "Sembunyikan Bilah Kota",
+    showBar: "Tampilkan Bilah Kota",
     opensLater: "Dibuka nanti",
     locked: "{name}, dibuka nanti",
     opensAtLevel: "Dibuka pada level {level}",

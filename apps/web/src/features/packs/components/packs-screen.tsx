@@ -713,7 +713,7 @@ export const PacksScreen = () => {
         />
       </div>
       <BalancePlate balances={balances} />
-      <div className="pointer-events-none absolute inset-x-0 top-[calc(max(0.5rem,env(safe-area-inset-top))+4.5rem)] bottom-[80px] flex flex-col items-center justify-center gap-6 px-2 pb-4 [@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[56px] [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-2">
+      <div className="pointer-events-none absolute inset-x-0 top-[calc(max(0.5rem,env(safe-area-inset-top))+4.5rem)] bottom-[var(--town-bar)] flex flex-col items-center justify-center gap-6 px-2 pb-4 [@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-2">
         {/* On a tall screen, "Cards found" is under the pool plate, so the
             row stays narrow and the shopkeeper has room to talk. */}
         <div

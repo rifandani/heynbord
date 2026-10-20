@@ -43,12 +43,10 @@ import {
   walkedLegs,
   wakeUpStage,
 } from "@/features/campaign/region-map";
+import { useTownBarHeight } from "@/features/town/use-town-bar-height";
 
 /** The phone-in-landscape layout (DESIGN.md, The Short Screen Rule). */
 const SHORT_SCREEN = "(max-height: 500px)";
-
-/** The Town Bar height in pixels (DESIGN.md, Town Bar). */
-const TOWN_BAR = { regular: 80, short: 56 } as const;
 
 /** The space between a Stage Marker and the top edge of the screen. */
 const TOP_EDGE = 8;
@@ -77,6 +75,7 @@ const toBox = (element: Element): Box => {
  */
 const useViewport = (root: RefObject<HTMLElement | null>): Viewport => {
   const key = useSyncExternalStore(subscribe, readViewport);
+  const bar = useTownBarHeight();
   const [obstacles, setObstacles] = useState<readonly Box[]>([]);
   useLayoutEffect(() => {
     const pieces = [
@@ -96,10 +95,9 @@ const useViewport = (root: RefObject<HTMLElement | null>): Viewport => {
     };
   }, [root]);
   return useMemo(() => {
-    const [width = 0, height = 0, short = 0] = key.split("x").map(Number);
-    const bottom = short ? TOWN_BAR.short : TOWN_BAR.regular;
-    return { width, height, top: TOP_EDGE, bottom, obstacles };
-  }, [key, obstacles]);
+    const [width = 0, height = 0] = key.split("x").map(Number);
+    return { width, height, top: TOP_EDGE, bottom: bar, obstacles };
+  }, [key, bar, obstacles]);
 };
 
 /**

@@ -302,8 +302,8 @@ export const SeaportScreen = () => {
       <h1 className="sr-only">{tr("seaport.title")}</h1>
       <div
         className={cn(
-          "absolute top-[max(0.75rem,env(safe-area-inset-top))] bottom-[92px] left-1/2 flex w-[min(30rem,calc(100vw-2rem))] -translate-x-1/2 flex-col justify-center-safe gap-2.5 overflow-y-auto overscroll-contain",
-          "[@media(max-height:500px)]:top-[max(0.5rem,env(safe-area-inset-top))] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:grid [@media(max-height:500px)]:w-[min(calc(100vw-1rem),40rem)] [@media(max-height:500px)]:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:[&>:last-child]:mt-10"
+          "absolute top-[max(0.75rem,env(safe-area-inset-top))] bottom-[calc(var(--town-bar)+12px)] left-1/2 flex w-[min(30rem,calc(100vw-2rem))] -translate-x-1/2 flex-col justify-center-safe gap-2.5 overflow-y-auto overscroll-contain",
+          "[@media(max-height:500px)]:top-[max(0.5rem,env(safe-area-inset-top))] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+6px)] [@media(max-height:500px)]:grid [@media(max-height:500px)]:w-[min(calc(100vw-1rem),40rem)] [@media(max-height:500px)]:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:[&>:last-child]:mt-10"
         )}
       >
         {berthLeads ? [berthPlate, chooser] : [chooser, berthPlate]}

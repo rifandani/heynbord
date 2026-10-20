@@ -44,6 +44,17 @@ const WIDEST_ASPECT = 19.5 / 9;
 const TOWN_BAR_SHARE = 0.17;
 
 /**
+ * The Town Bar heights in pixels, without the safe-area inset. They mirror the
+ * `--town-bar` values in `globals.css`: the shelf, the phone shelf, and the
+ * stowed bar, which has no wood and no rail, so it takes no room at all.
+ */
+export const TOWN_BAR_HEIGHT = {
+  expanded: 76,
+  expandedShort: 52,
+  collapsed: 0,
+} as const;
+
+/**
  * The line of the painting that stays on the top edge of the Town Bar: the
  * base of the Town Gate. The road below it goes under the Town Bar.
  */

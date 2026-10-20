@@ -126,7 +126,7 @@ export const BazaarScreen = () => {
       <BalancePlate balances={{ ...balances, coin }} />
       {/* The page heading stays for screen readers only. */}
       <h1 className="sr-only">{tr("bazaar.title")}</h1>
-      <div className="absolute inset-x-0 top-[calc(max(0.75rem,env(safe-area-inset-top))+5.25rem)] bottom-[80px] flex flex-col items-center gap-3 overflow-y-auto px-2 pb-4 [@media(max-height:500px)]:bottom-[56px]">
+      <div className="absolute inset-x-0 top-[calc(max(0.75rem,env(safe-area-inset-top))+5.25rem)] bottom-[var(--town-bar)] flex flex-col items-center gap-3 overflow-y-auto px-2 pb-4">
         {groups.map((group) => (
           <section
             key={group.family}

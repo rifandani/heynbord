@@ -562,9 +562,9 @@ export const WorkshopScreen = () => {
           }
         }}
         className={cn(
-          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[92px] flex items-start gap-3",
+          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.75rem)] bottom-[calc(var(--town-bar)+12px)] flex items-start gap-3",
           WORK_WIDTH,
-          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:gap-2"
+          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+6px)] [@media(max-height:500px)]:gap-2"
         )}
       >
         <StationRail

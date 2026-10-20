@@ -88,9 +88,9 @@ export const HeynspireScreen = ({
       <TowerScene />
       <div
         className={cn(
-          "absolute top-0 right-[calc(min(440px,38vw)+max(1rem,env(safe-area-inset-right))+1rem)] bottom-[88px] left-0",
+          "absolute top-0 right-[calc(min(440px,38vw)+max(1rem,env(safe-area-inset-right))+1rem)] bottom-[calc(var(--town-bar)+8px)] left-0",
           "[--ribbon-h:clamp(28px,calc(var(--tower-w)*0.15),40px)] [--ribbon-w:clamp(124px,calc(var(--tower-w)*0.72),196px)] [--spine-w:36px] [--storey-h:calc(var(--tower-w)*2/3)] [--tower-w:clamp(120px,min(19vw,30vh),280px)]",
-          "[@media(max-height:500px)]:right-[calc(min(460px,54vw)+max(0.5rem,env(safe-area-inset-right))+0.5rem)] [@media(max-height:500px)]:bottom-[60px] [@media(max-height:500px)]:[--spine-w:30px]"
+          "[@media(max-height:500px)]:right-[calc(min(460px,54vw)+max(0.5rem,env(safe-area-inset-right))+0.5rem)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+4px)] [@media(max-height:500px)]:[--spine-w:30px]"
         )}
       >
         <TowerColumn

@@ -9,6 +9,54 @@
 
 @variant dark (&:is(.dark *));
 
+/*
+ * The Town Bar is a wood shelf that can stow away. `--town-bar` is the live
+ * height, registered so every screen's floor follows one motion. The values
+ * mirror `TOWN_BAR_HEIGHT` in `features/town/town.ts`.
+ */
+@property --town-bar {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 80px;
+}
+
+:root {
+  --town-bar: calc(76px + max(4px, env(safe-area-inset-bottom)));
+  --town-bar-settings-w: 6.5rem;
+}
+
+/* The transition waits for the first frame, so a saved stowed bar shows at
+   once and never animates from the full shelf on load. */
+html[data-town-bar-ready] {
+  transition: --town-bar 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (max-width: 1199px) {
+  :root {
+    --town-bar-settings-w: 5.5rem;
+  }
+}
+
+@media (max-height: 500px) {
+  :root {
+    --town-bar: calc(52px + max(4px, env(safe-area-inset-bottom)));
+    --town-bar-settings-w: 3.75rem;
+  }
+}
+
+/* A stowed bar has no wood and no rail: it takes no room, so the scene fills
+   the screen. Only the safe-area inset stays, so the content never goes under
+   the home indicator of a phone. */
+html[data-town-bar="collapsed"] {
+  --town-bar: env(safe-area-inset-bottom);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-town-bar-ready] {
+    transition: none;
+  }
+}
+
 @theme inline {
   --font-sans:
     "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",

@@ -124,7 +124,6 @@ Priest:
 
 New features:
 
-1. /impeccable shape refactor town bottom bar so that it can be collapsed whenever they're shown (including in town itself), with this player can see the whole image more clearly and helps to hide excessive UI for mobile users, apply the best animation/transition
 1. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 1. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 

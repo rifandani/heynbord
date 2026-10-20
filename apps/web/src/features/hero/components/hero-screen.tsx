@@ -401,8 +401,8 @@ export const HeroScreen = () => {
           the top plates and the Town Bar. */}
       <div
         className={cn(
-          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.5rem)] bottom-[92px] left-1/2 flex w-[min(calc(100vw-1.5rem),1080px)] -translate-x-1/2 flex-col justify-center gap-3",
-          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[62px] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2"
+          "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+3.5rem)] bottom-[calc(var(--town-bar)+12px)] left-1/2 flex w-[min(calc(100vw-1.5rem),1080px)] -translate-x-1/2 flex-col justify-center gap-3",
+          "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+6px)] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2"
         )}
       >
         <StatusBar hp={hero.hp} counts={hero.forgeStones} spent={spent} />
