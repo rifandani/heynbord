@@ -301,10 +301,10 @@ Purpose: the Human Specialist. He is the wall that the Human identity wants: Iro
 | Field | Brief |
 | --- | --- |
 | Subject | An older Human knight with a scarred bald head and a short grey beard. |
-| Pose | He plants a tower shield in a gate and leans into it. Arrows break on the shield. |
-| Props | Blue and gold tower shield, mended plate, a broken banner behind him and a line of spent arrows. |
-| Gameplay cues | The arrows bend and fall at the shield edge to show Iron Guard. A second banner in his Lane shows Rally 2, and a cracked wall behind him shows Wallbreaker. Legendary: an orange gem and a heroic last stand. |
-| Silhouette hook | The wide tower shield and the low stance. |
+| Pose | He plants a tower shield in a gate and leans into it. He holds a short sword low in his free hand. Arrows break on the shield. |
+| Props | Blue and gold tower shield, short steel sword with a blue grip and gold cross-guard, mended plate, a broken banner behind him and a line of spent arrows. |
+| Gameplay cues | The arrows bend and fall at the shield edge to show Iron Guard. The low sword is ready for a counterattack. A second banner in his Lane shows Rally 2, and a cracked wall behind him shows Wallbreaker. Legendary: an orange gem and a heroic last stand. |
+| Silhouette hook | The wide tower shield and low stance stay dominant; the short sword is visible beside the shield. |
 | Humor note | Someone painted a small door knocker on the shield. |
 | Setting | The gate of a river town at dusk. |
 
@@ -1767,7 +1767,7 @@ Purpose: the named Feral Epic: a huge Frost attacker that Tramples, and its bite
 
 ### 7.16 Gorehorn Red Maw
 
-`feral.gorehornRedMaw` · Legendary · Countdown 6 · Attack 2 · HP 5 · Physical · Unique · Vampirism · Bleed 2 · Piercing · Specialist (Priest)
+`feral.gorehornRedMaw` · Legendary · Countdown 6 · Attack 2 · HP 5 · Physical · Unique · Vampirism · Bleed 2 · Piercing · Specialist (Warrior)
 
 > It eats what it kills. Then it keeps the leftovers.
 

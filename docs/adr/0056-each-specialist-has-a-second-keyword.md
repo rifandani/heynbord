@@ -22,7 +22,7 @@ Each Specialist also gets 1 more Keyword of the set of ADR-0050: Ser Aldric Ston
 | Ser Aldric Stonewall | Human | Warrior | 6 | 2 / 4 | Physical | Unique, Iron Guard, Rally 2, Wallbreaker | 30 | 28 (+7.1%) |
 | Ashcaller Grosh | Orc | Mage | 6 | 2 / 4 | Fire | Unique, Bolt 2, Mid-range, Resistance 2 | 30 | 28 (+7.1%) |
 | Grix Ratwhistle | Goblin | Ranger | 6 | 3 / 4 | Physical | Unique, Hero's Bane, Mid-range, Quick Study | 28 | 28 (0%) |
-| Gorehorn Red Maw | Feral | Priest | 6 | 2 / 5 | Physical | Unique, Vampirism, Bleed 2, Piercing | 30 | 28 (+7.1%) |
+| Gorehorn Red Maw | Feral | Warrior | 6 | 2 / 5 | Physical | Unique, Vampirism, Bleed 2, Piercing | 30 | 28 (+7.1%) |
 | Warden Saelith | Elf | Ranger | 5 | 2 / 4 | Physical | Unique, Long-range, Spawnbane 2, Heal 2 | 26 | 25 (+4%) |
 | Pale Cantor Ysolde | Undead | Priest | 6 | 2 / 4 | Physical | Unique, Soul Harvest, Rebirth, Dispel | 29 | 28 (+3.6%) |
 
@@ -68,3 +68,7 @@ The Keyword points are provisional, like the other points of GDD 13: Wallbreaker
 - The list of the Player used "magic damage" for Resistance. Heynbord has no magic damage, so the Keyword names the 4 Damage Types that Bulwark does not reduce.
 - The list of the Player used "Heal N" for a heal of the lowest HP friendly Unit. Heal N is not Regenerate N: Regenerate heals its own Unit, and Heal N heals another Unit.
 - The list of the Player used "Piercing" for damage that cannot be reduced. That is the rule of this ADR.
+
+## Amendment
+
+- **2026-10-21: Gorehorn Red Maw is a Warrior Specialist.** Its Specialist Deck keeps the Wild Hunt creature style and uses Shield Wall, War Drums and Call to Arms. It has 11 Cards and Countdown 30.

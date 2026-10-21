@@ -756,12 +756,12 @@ const creatures: readonly CreatureCardDefinition[] = [
       bleed: { epic: 2, legendary: 3 },
     },
   },
-  // The Feral Specialist (ADR-0050): a Priest beast that heals by its bite and pierces.
+  // The Feral Specialist (ADR-0050): a Warrior beast that heals by its bite and pierces.
   {
     kind: "creature",
     id: "feral.gorehornRedMaw",
     race: "feral",
-    class: "priest",
+    class: "warrior",
     baseRank: "legendary",
     countdown: 6,
     attack: 2,

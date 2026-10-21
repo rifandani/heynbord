@@ -58,6 +58,21 @@ describe("unlockedCollection", () => {
     expect(totalCopies(collection)).toBe(pairs * MAX_COPIES);
   });
 
+  it("includes each Base Rank Legendary card at Legendary", () => {
+    const cards = CARDS.filter((card) => card.baseRank === "legendary");
+    const collection = unlockedCollection();
+
+    expect(
+      cards.map((card) => collection.find((entry) => entry.cardId === card.id))
+    ).toEqual(
+      cards.map((card) => ({
+        cardId: card.id,
+        rank: "legendary",
+        copies: MAX_COPIES,
+      }))
+    );
+  });
+
   it("gives no copy below the Base Rank of its card", () => {
     const voss = unlockedCollection()
       .filter((entry) => entry.cardId === "human.marshalElianVoss")

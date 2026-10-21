@@ -38,7 +38,7 @@ export const SUBJECT = new Map(
     "human.marshalElianVoss":
       "Marshal Elian Voss, tall older human officer with a close grey beard, blue officer coat over fitted plate with ornate gold trim, raising a command sword that sends a holy arc forward, planting a forked sun-banner, six rolled speeches at his belt, soldiers reforming behind him",
     "human.serAldricStonewall":
-      "Ser Aldric Stonewall, older human knight with a scarred bald head and a short grey beard, mended plate armor over a blue coat with gold trim, leaning into an ornate blue and gold tower shield planted across a town gate, spent arrows snapped against the shield and a small door knocker painted on it, a broken banner and a line of fallen arrows behind him",
+      "Ser Aldric Stonewall, older human knight with a scarred bald head and a short grey beard, mended plate armor over a blue coat with gold trim, leaning into an ornate blue and gold tower shield planted across a town gate, a short steel sword with a blue grip and gold cross-guard held low in his free hand beside the shield, spent arrows snapped against the shield and a small door knocker painted on it, a broken banner and a line of fallen arrows behind him",
     "orc.badlandRunt":
       "small young orc boy with big ears and small new tusks, adult iron helmet too big for him falling over one eye, orange war paint stripes, short bone knife, jumping forward with his mouth open in a war cry, no animals",
     "orc.scrapRaider":

@@ -11,11 +11,11 @@ The v1 set grows from 90 to 96 Creature Cards, and from 130 to 136 Cards. The 6 
 | Ser Aldric Stonewall | Human | Warrior | 6 | 3 / 5 | Physical | Unique, Iron Guard |
 | Ashcaller Grosh | Orc | Mage | 5 | 2 / 4 | Fire | Unique, Bolt 2 |
 | Grix Ratwhistle | Goblin | Ranger | 6 | 4 / 4 | Physical | Unique, Hero's Bane |
-| Gorehorn Red Maw | Feral | Priest | 6 | 2 / 6 | Physical | Unique, Vampirism |
+| Gorehorn Red Maw | Feral | Warrior | 6 | 2 / 6 | Physical | Unique, Vampirism |
 | Warden Saelith | Elf | Ranger | 5 | 2 / 5 | Physical | Unique, Long-range, Spawnbane 2 |
 | Pale Cantor Ysolde | Undead | Priest | 5 | 3 / 4 | Physical | Unique, Soul Harvest |
 
-The Classes come from the 6 Main Archetypes ([08 — Archetypes](../game/08-archetypes.md)): Vanguard Warrior, Raiders Mage, Deathless Host Priest, Tunnel Rats Ranger, Thornwatch Ranger and Wild Hunt Priest. Each Class has at least one Specialist, and no Race has two. Warrior and Mage have one; Priest and Ranger have two.
+The original Class choices came from the 6 Main Archetypes ([08 — Archetypes](../game/08-archetypes.md)): Vanguard Warrior, Raiders Mage, Deathless Host Priest, Tunnel Rats Ranger, Thornwatch Ranger and Wild Hunt Priest. A later change makes Gorehorn Red Maw a Warrior Specialist (Amendments). Each Class has at least one Specialist, and no Race has two. Warrior and Ranger have two; Mage and Priest have one.
 
 ## Considered Options
 
@@ -69,3 +69,4 @@ These ideas need an engine hook that v1 does not have, so they wait: hand and Gr
 ## Amendments
 
 - **2026-10-21: each Specialist has 2 more Keywords and lower stats.** [ADR-0056](0056-each-specialist-has-a-second-keyword.md) gives each Specialist 1 more Keyword of the set of this ADR and 1 new Keyword, and its stats go down, because the Power Points stay within 10% of the Power Budget. The table of the 6 Specialists above is the state of that day. The Handbook has 40 Keywords now, and each Specialist has more Power Points than the 2 Epic cards of its Race.
+- **2026-10-21: Gorehorn Red Maw is a Warrior Specialist.** The first Class choice came from Wild Hunt. Gorehorn keeps the Wild Hunt creature style and uses Warrior Skill Cards, because Feral has no Warrior Main Archetype. See [08 — Archetypes](../game/08-archetypes.md#24-specialist-decks) for its Deck and Matchup results.

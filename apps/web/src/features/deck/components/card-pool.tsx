@@ -92,7 +92,8 @@ const PoolCard = ({
   const block = poolBlock(input, tile.cardId, tile.rank);
   const owned = ownedCopies(input.collection, tile.cardId, tile.rank);
   const left = copiesLeft(input, tile.cardId, tile.rank);
-  const classLabel = card.kind === "skill" ? text(classText(card.class)) : "";
+  const classLabel =
+    card.class === undefined ? "" : text(classText(card.class));
   const label = {
     name: tr(`cards.${tile.cardId}.name`),
     rank: tr(`ranks.${tile.rank}`),

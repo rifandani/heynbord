@@ -36,10 +36,10 @@ export const MATCHUP_LEVEL = 5;
  * diagnostic Deck are for review, and they do not gate release.
  *
  * The 6 Specialist Decks (ADR-0050, issue #110) are Diagnostic Decks, one for
- * each Specialist: 1 copy at Legendary, in the style and with the Skill Cards
- * of the Main Archetype of its Race and Class. A Specialist Deck never becomes
- * a main Archetype. The 6 entries start after the other diagnostic Decks, in
- * the order of ADR-0050: Human, Orc, Goblin, Feral, Elf and Undead.
+ * each Specialist: 1 copy at Legendary, with the creature style of the Main
+ * Archetype of its Race and Skill Cards of its Class. A Specialist Deck never
+ * becomes a main Archetype. The 6 entries start after the other diagnostic
+ * Decks, in the order of ADR-0050: Human, Orc, Goblin, Feral, Elf and Undead.
  * docs/game/08-archetypes.md 2.4 gives each list.
  */
 export const ARCHETYPES: readonly Archetype[] = [
@@ -284,7 +284,7 @@ export const ARCHETYPES: readonly Archetype[] = [
   {
     id: "gorehornRedMaw",
     kind: "diagnostic",
-    classId: "priest",
+    classId: "warrior",
     deck: [
       ...copies(2, "feral.bristlebackBoar", "common"),
       ...copies(1, "feral.frostfangLynx", "common"),
@@ -292,9 +292,9 @@ export const ARCHETYPES: readonly Archetype[] = [
       ...copies(1, "feral.webSpitter", "common"),
       ...copies(1, "feral.cragRhino", "uncommon"),
       ...copies(1, "feral.frostElkMatriarch", "uncommon"),
-      ...copies(1, "priest.mend", "common"),
-      ...copies(1, "priest.sanctuary", "uncommon"),
-      ...copies(1, "priest.unbrokenVow", "rare"),
+      ...copies(1, "warrior.shieldWall", "common"),
+      ...copies(1, "warrior.warDrums", "uncommon"),
+      ...copies(1, "warrior.callToArms", "rare"),
       ...copies(1, "feral.gorehornRedMaw", "legendary"),
     ],
   },
