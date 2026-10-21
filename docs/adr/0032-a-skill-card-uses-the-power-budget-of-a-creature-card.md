@@ -18,7 +18,7 @@ A Creature Card has a Power Budget ([ADR-0020](./0020-the-power-budget-measures-
 
 ## Consequences
 
-- `packages/rules/CONTEXT.md`: Power Points and Power Budget apply to all Cards. There is no separate "Skill Power Budget" term.
+- `packages/rules/GLOSSARY.md`: Power Points and Power Budget apply to all Cards. There is no separate "Skill Power Budget" term.
 - The first fit (issue #50, 2026-10-14) gives Recall weight 0: the sim shows no extra value from Recall. The fit error grows from 2.06 Power Points at weight 0 to 2.36 at weight 3. The multiplier stays in the formula, so that a later fit can raise it. The push, Grounded and Cleanse parts also fit to 0 points.
 - The sim finds that a Skill Card is often worth 2 to 4 Power Points less than a Creature Card with the same Countdown. The swap rule passes at about ±2 to ±4.5 Power Points (1 Power Point is 1 to 2.9 win-rate points in the swap Decks), but the nearest step is about ±1 to ±2. Thus a card can pass the sim and miss its nearest step. Such a card has a written reason in the content test, and the sim wins.
 - One damage rate holds all Classes. In the Warrior Deck a damage point is worth more than in the Ranger Deck, so Spear Throw and Shoulder Charge are far from their points in the test.

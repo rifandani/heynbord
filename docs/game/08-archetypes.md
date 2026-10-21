@@ -214,7 +214,7 @@ Each of the 15 Main pairs is in 45% to 55% (section 3), and the check passes. Th
 
 [ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md) gives each Race one **Specialist**: a Base Rank Legendary Creature Card, locked to one Class, with Unique. Issue [#110](https://github.com/rifandani/heynbord/issues/110) adds one **Specialist Deck** for each Specialist: a `diagnostic` Archetype that holds exactly 1 copy of its Specialist, at Legendary. A Specialist Deck never becomes a `main` Archetype, and no Starter Deck, Stage, Dungeon, Floor or `main` Archetype holds a Specialist. The 6 Decks are in `archetypes.ts` after the other diagnostic Decks.
 
-Each Specialist Deck starts from the Main Archetype of its Race and Class, keeps its 3 Skill Cards of that Class at their Base Rank, and swaps 2 or 3 Creature Cards for the Specialist. The Class of the Deck thus matches the Class of its Specialist. Each Deck obeys the level-5 Deck rules (GDD 6): 11 to 13 cards, a Countdown sum of 30 to 35, and 3 Skill Cards of its Class. The core rules of a Specialist are in ADR-0050 and in `packages/rules/CONTEXT.md`.
+Each Specialist Deck starts from the Main Archetype of its Race and Class, keeps its 3 Skill Cards of that Class at their Base Rank, and swaps 2 or 3 Creature Cards for the Specialist. The Class of the Deck thus matches the Class of its Specialist. Each Deck obeys the level-5 Deck rules (GDD 6): 11 to 13 cards, a Countdown sum of 30 to 35, and 3 Skill Cards of its Class. The core rules of a Specialist are in ADR-0050 and in `packages/rules/GLOSSARY.md`.
 
 | Specialist (Race, Class) | Deck | From | Cards | Countdown |
 | --- | --- | --- | --- | --- |

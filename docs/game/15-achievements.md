@@ -1,6 +1,6 @@
 # 15 — Achievements
 
-This document gives the list of Achievements in v1: the goal, the kind and the reward of each. The rules for all Achievements are in section 1. The terms **Achievement**, **Feat** and **Tally** are in the [glossary](../../packages/rules/CONTEXT.md).
+This document gives the list of Achievements in v1: the goal, the kind and the reward of each. The rules for all Achievements are in section 1. The terms **Achievement**, **Feat** and **Tally** are in the [glossary](../../packages/rules/GLOSSARY.md).
 
 Status: **approved** (2026-10-16). The names are drafts. The data is `ACHIEVEMENTS` in `packages/rules/src/content/achievements.ts`. Keep the code and this list the same. The rewards follow [Economy 2.5](./07-economy.md#25-achievements).
 

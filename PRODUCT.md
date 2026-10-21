@@ -48,7 +48,7 @@ _A collectible card game crossed with lane tower defense, where timing replaces 
 
 ## Capabilities and Constraints
 
-- Terminology: use the glossary in [`packages/rules/CONTEXT.md`](packages/rules/CONTEXT.md) (for example **Rank**, not rarity; **Countdown**, not mana; **Stars** only for Stage results). The web glossary is [`apps/web/CONTEXT.md`](apps/web/CONTEXT.md).
+- Terminology: use the glossary in [`packages/rules/GLOSSARY.md`](packages/rules/GLOSSARY.md) (for example **Rank**, not rarity; **Countdown**, not mana; **Stars** only for Stage results). The web glossary is [`apps/web/GLOSSARY.md`](apps/web/GLOSSARY.md).
 - Languages: `en-us` and `id-id` from v1. All text comes from Message Catalogs. Fonts must support Indonesian characters.
 - Save: local only (IndexedDB), with export and import. v1 sends no player data to a server.
 - Performance: Title screen interactive in less than 3 seconds on 4G. Battle assets load only when needed. WebGL 2 is necessary, with a clear message when it is not available. PWA with offline play.

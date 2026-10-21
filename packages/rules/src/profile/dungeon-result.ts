@@ -27,7 +27,7 @@ import {
 import type { StageRewardCard } from "./stage-result";
 
 /**
- * The Dungeon card pool (`CONTEXT.md`): the different cards of the enemy
+ * The Dungeon card pool (`GLOSSARY.md`): the different cards of the enemy
  * Decks of all its Bosses, in Boss order and Deck order, but not a Skill Card
  * of a Class that is not `classId`.
  */

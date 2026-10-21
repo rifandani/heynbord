@@ -1,6 +1,6 @@
 # 03 — Game Design Document (GDD)
 
-This document gives the full rules of Heynbord v1. It uses the terms in [`packages/rules/CONTEXT.md`](../../packages/rules/CONTEXT.md). All numbers are start values for tests and tuning. The [Economy](./07-economy.md) document gives the currency numbers.
+This document gives the full rules of Heynbord v1. It uses the terms in [`packages/rules/GLOSSARY.md`](../../packages/rules/GLOSSARY.md). All numbers are start values for tests and tuning. The [Economy](./07-economy.md) document gives the currency numbers.
 
 ## 1. Overview
 

@@ -30,7 +30,7 @@ One person (the solo developer) has all the roles. The roles show which point of
 
 ## Related files
 
-- [`packages/rules/CONTEXT.md`](../../packages/rules/CONTEXT.md): the game glossary. All documents use its terms.
+- [`packages/rules/GLOSSARY.md`](../../packages/rules/GLOSSARY.md): the game glossary. All documents use its terms.
 - [ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md): why the game rules are a separate deterministic package.
 - [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md): why Heynstones buy only Cosmetics and Conveniences.
 - [ADR-0013](../adr/0013-v1-has-90-creature-cards.md): why v1 has 15 Creature Cards for each Race.

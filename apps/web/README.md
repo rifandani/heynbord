@@ -112,7 +112,7 @@ New features:
 
 1. rebalance, then generate image for legendary units
 2. lets
-3. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
+3. cleanup GLOSSARY.md, all game docs, redundant ADRs, etc
 4. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
 Answers all ur questions automatically with ur best recommendations, except critical questions.
