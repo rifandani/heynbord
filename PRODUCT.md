@@ -62,7 +62,7 @@ Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-require
 ## Brand Commitments
 
 - **Name:** Heynbord. It is also the name of the world. A trademark check must occur before release.
-- **Logo:** the gold H-shaped mark with a four-point star in [`apps/web/brand/`](apps/web/brand/) (`logo-transparent.jpg`, `logo-black.jpg`, `logo-white.jpg`). It is final. Keep it.
+- **Logo:** the gold H-shaped mark with a four-point star in [`apps/web/public/logo.png`](apps/web/public/logo.png). It is final. Keep it.
 - **World and tone:** bright high fantasy with some humor, like a classic adventure story. Colorful and heroic. No gore. Not dark, realistic, noisy or neon.
 - **Art direction:** [05 — Art and Audio Direction](docs/game/05-art-direction.md) is binding for all visual and audio work.
 - **Voice:**
@@ -73,7 +73,7 @@ Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-require
 
 ## Evidence on Hand
 
-- Logo files in `apps/web/brand/` and PWA icons in `apps/web/public/`.
+- Logo (`logo.png`) and PWA icons in `apps/web/public/`.
 - Complete design documents in `docs/game/` (pillars, vision, GDD, PRD, art direction, technical design, economy, roadmap).
 - Card art: 22 final card illustrations in `apps/web/public/creature/{race}/` (Creature Cards) and `apps/web/public/skills/{class}/` (Skill Cards), made with GPT Image (one 3:4 portrait for each card, with its background). Ten of them are the golden references ([art direction 5.1](docs/game/05-art-direction.md)).
 - Town art: the first master painting (`apps/web/public/town/town.webp`, 1672 × 941) A 3200 × 1800 export is still to make. The 11 Town Bar icons (10 shortcuts and Settings): the 1254 × 1254 JPG sources on black in `apps/web/art/town/bar/`, and the 128 × 128 WebP cut-outs that the game uses in `apps/web/public/town/bar/`. The brief is [11 — Town Concepts](docs/game/11-town-concepts.md).
