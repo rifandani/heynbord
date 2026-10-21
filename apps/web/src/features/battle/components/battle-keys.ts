@@ -73,7 +73,7 @@ export type LogKeyAction =
 /**
  * The action of a key in the open Battle Log (GDD 11.2): ←/→ one Log Entry,
  * Shift+←/→ one Turn, L and Esc Back to Live. A Replay has no Live: only Esc
- * closes it, and the Player goes to the Town (web ADR-0012).
+ * closes it, and the Player goes to the Town (web ADR-0011).
  */
 export const logKeyAction = (
   command: BattleKeyCommand,

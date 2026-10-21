@@ -20,7 +20,7 @@ export interface FxCell {
 }
 
 /**
- * One key image in the effects atlas (web ADR-0009).
+ * One key image in the effects atlas (web ADR-0008).
  * - `additive` images are light only. `alpha` images can have dark lines.
  * - `code` images are white or light grey, and the code gives the color.
  *   `fixed` images are in full color, with their middle tone on `anchor`.

@@ -3,7 +3,7 @@ import { getStage } from "@workspace/rules";
 import type { BattleOptions } from "@/features/battle/battle-session";
 
 /**
- * The Battle Painting of each Region (web ADR-0007), or `null` while its art
+ * The Battle Painting of each Region (web ADR-0006), or `null` while its art
  * does not exist. To add one, put the WebP file in `public/battle/` and add
  * its path here (docs/game/13-battlefield-concepts.md, step 6).
  */

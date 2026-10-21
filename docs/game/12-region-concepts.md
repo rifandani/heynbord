@@ -1,6 +1,6 @@
 # 12 — Region Concepts
 
-This document gives the art brief for the Region Maps: the painted map of each Region that the Campaign screen shows ([GDD 11.5](./03-game-design.md#115-campaign)). A Region Map is a flat 2D painting ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The painting shows the land and the Trail. The game draws the Stage Markers, the progress line and all text on top of it.
+This document gives the art brief for the Region Maps: the painted map of each Region that the Campaign screen shows ([GDD 11.5](./03-game-design.md#115-campaign)). A Region Map is a flat 2D painting ([web ADR-0007](../../apps/web/docs/adr/0007-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)). The painting shows the land and the Trail. The game draws the Stage Markers, the progress line and all text on top of it.
 
 Each Region has 2 paintings, and no more:
 
@@ -11,7 +11,7 @@ Each Region has 2 paintings, and no more:
 
 A Stage has no painting of its own. Its landmark is a small part of the Region Map, and its Battle uses the Battle Painting of its Region.
 
-All 5 Region Maps exist in `apps/web/public/battle/`: `hearthvale-region.webp` (1672 × 941), and `red-mesas-region.webp`, `glowcap-hollows-region.webp`, `thornwood-region.webp` and `hollow-marches-region.webp` (1536 × 864). The Campaign screen shows them (`apps/web/src/features/campaign/`). Their clearings are not at the positions of 1.1: they are measured on each painting (see 1.3). A Region with no Stages in the data shows only a soft copy of its painting, with no Trail. If a Region has no entry in `REGION_MAPS`, the Campaign screen shows a placeholder: a plain ground and a soft road with the Hearthvale positions of 1.3, and no landmarks ([web ADR-0008](../../apps/web/docs/adr/0008-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)).
+All 5 Region Maps exist in `apps/web/public/battle/`: `hearthvale-region.webp` (1672 × 941), and `red-mesas-region.webp`, `glowcap-hollows-region.webp`, `thornwood-region.webp` and `hollow-marches-region.webp` (1536 × 864). The Campaign screen shows them (`apps/web/src/features/campaign/`). Their clearings are not at the positions of 1.1: they are measured on each painting (see 1.3). A Region with no Stages in the data shows only a soft copy of its painting, with no Trail. If a Region has no entry in `REGION_MAPS`, the Campaign screen shows a placeholder: a plain ground and a soft road with the Hearthvale positions of 1.3, and no landmarks ([web ADR-0007](../../apps/web/docs/adr/0007-the-region-map-is-a-16-9-painting-with-code-drawn-stage-markers.md)).
 
 The Stages of Regions 3, 4 and 5 use the painted landmarks (section 2), so their paintings did not change. If a later Stage change moves a landmark, edit the painting again.
 
@@ -96,7 +96,7 @@ Each Region Map has its own measured positions in `REGION_MAPS`. Hearthvale, mea
 | 4 | 575, 360 | 9 | 1375, 447 |
 | 5 | 800, 428 | 10 (Boss) | 1115, 250 |
 
-The Boss clearing is in the top band, in front of Brassbelly Hall. Clearings 1 and 2 are 144 units apart. The screen does not use the safe area of 1.1: it places the painting so that each Stage Marker stays on the screen, above the Town Bar and clear of the Region banner and the Star chest plate (web ADR-0008). Unit tests in `region-map.unit.test.ts` check this for each screen shape, and check that no two Stage Markers touch.
+The Boss clearing is in the top band, in front of Brassbelly Hall. Clearings 1 and 2 are 144 units apart. The screen does not use the safe area of 1.1: it places the painting so that each Stage Marker stays on the screen, above the Town Bar and clear of the Region banner and the Star chest plate (web ADR-0007). Unit tests in `region-map.unit.test.ts` check this for each screen shape, and check that no two Stage Markers touch.
 
 ## 2. Regions
 

@@ -12,7 +12,7 @@ const canShareNatively = (link: string): boolean =>
   (navigator.canShare?.({ url: link }) ?? true);
 
 /**
- * "Share Replay" (web ADR-0012): makes the Replay Link of a finished Battle.
+ * "Share Replay" (web ADR-0011): makes the Replay Link of a finished Battle.
  * On mobile, the native share sheet opens. Else, the link goes to the
  * clipboard and a toast tells the Player.
  */

@@ -55,7 +55,7 @@ const spotOf = (plate: KeywordPlate): Spot => {
 };
 
 /**
- * The Keyword Plates over the Units in Live (web ADR-0009), from a fixed
+ * The Keyword Plates over the Units in Live (web ADR-0008), from a fixed
  * sprite pool. The playback driver adds them to the effects list, and the
  * effects layer removes them when they end.
  */

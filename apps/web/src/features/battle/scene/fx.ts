@@ -63,7 +63,7 @@ export type Fx =
       /**
        * A particle burst when a Status starts or deals damage, when an
        * attack hits, when a Unit moves or is Pushed, is healed or gets
-       * Bulwark, or when a Hero casts a Skill Card (web ADR-0009).
+       * Bulwark, or when a Hero casts a Skill Card (web ADR-0008).
        */
       readonly kind: "particles";
       readonly burst: BurstName;
@@ -642,7 +642,7 @@ const TRAIL_SPAN = 0.12;
 const PITCH = (CAMERA_PITCH * Math.PI) / 180;
 
 /**
- * The atlas quads of a projectile (web ADR-0009): a glow head at `head`, and a
+ * The atlas quads of a projectile (web ADR-0008): a glow head at `head`, and a
  * trail streak from `tail` to the head. With no `tail`, only the head flies.
  * The `size` of the projectile scales the images of the ranged preset.
  */

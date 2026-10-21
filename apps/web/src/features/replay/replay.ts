@@ -183,7 +183,7 @@ const placeOf = (
 };
 
 /**
- * The Replay of a Battle that the Player can share (web ADR-0012): a Stage
+ * The Replay of a Battle that the Player can share (web ADR-0011): a Stage
  * Battle, a Dungeon Battle or a Floor Battle with a win or a loss. `null` for
  * the Tutorial, an Abandon, a Battle with no result on the screen yet, a QA
  * Dungeon, a Battle that the Game Dev Panel changed, and a Replay that the

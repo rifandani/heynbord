@@ -50,7 +50,7 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Lane Strip**: The column of cells on a Boss Plate, one for each Lane from Lane 1 at the top. The cells of the Front of the Boss are full. _Avoid_: lane map, mini-map, lane pips
 
-**Front Bracket**: The rounded mark on the ground under a Boss across the Lanes of its Front (web ADR-0011). It grows when a Front moves to that Boss. _Avoid_: front zone, territory, lane highlight
+**Front Bracket**: The rounded mark on the ground under a Boss across the Lanes of its Front (web ADR-0010). It grows when a Front moves to that Boss. _Avoid_: front zone, territory, lane highlight
 
 **Battle Painting**: The painted ground and background behind the Board, one for each Region. It is a flat 2D image, not a 3D scene. The Squares are not drawn on it. _Avoid_: stage background, backdrop, arena, battlefield map, Board skin
 

@@ -17,7 +17,7 @@ const isRulesFile = (file: string): boolean =>
     .some((part) => [".claude", "simulation", "testing"].includes(part));
 
 /**
- * The hash of the rules and the content, for the Replay Links (web ADR-0012).
+ * The hash of the rules and the content, for the Replay Links (web ADR-0011).
  * Each Replay holds it. It is not the git commit, so a deploy that changes
  * only the UI does not change it. 12 hex characters.
  */

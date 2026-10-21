@@ -11,7 +11,7 @@ export interface Point {
   readonly y: number;
 }
 
-/** The Region Map painting coordinates: a 16:9 box (web ADR-0008). */
+/** The Region Map painting coordinates: a 16:9 box (web ADR-0007). */
 export const MAP = { width: 1600, height: 900 } as const;
 
 /**

@@ -39,7 +39,7 @@ export type ImpactPresetKey = "heal" | "bulwark";
 
 /**
  * The attack, hit, movement and cast effects, with keys from the rules data
- * (web ADR-0009).
+ * (web ADR-0008).
  */
 export type FxPresetKey =
   | "melee"

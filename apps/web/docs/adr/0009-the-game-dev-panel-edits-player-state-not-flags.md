@@ -2,7 +2,7 @@
 
 In development, the TanStack Devtools have a "Game Dev Panel" tab (`src/features/dev-panel`). It unlocks all cards, sets the Player level, the Gear and the balances, and wins Campaign Stages one by one. Since the Profile (#52), it writes an overlay (`profileOverlayAtom`) that shows over the Profile, so the screens read the panel values through the same atoms that play uses. The game code does not know that the panel exists.
 
-The panel does not bring back the Feature Flags of ADR-0001. It does not change how the game behaves. It only puts the Player into a state that play can also reach, so a developer does not have to play Battles to test a later screen.
+The panel does not bring back the Feature Flags that the web app used to have. It does not change how the game behaves. It only puts the Player into a state that play can also reach, so a developer does not have to play Battles to test a later screen.
 
 ## Considered Options
 

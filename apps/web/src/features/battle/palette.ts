@@ -104,7 +104,7 @@ export const SIDE_COLORS: Readonly<
 };
 
 /**
- * The color anchors of the effects atlas (web ADR-0009). A `fixed` atlas
+ * The color anchors of the effects atlas (web ADR-0008). A `fixed` atlas
  * image has its middle tone on its anchor. The icon anchors are lighter than
  * the slot colors of the same Status, because the icons are on a dark plate.
  */

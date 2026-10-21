@@ -5,7 +5,7 @@ import type { BattleView, HandCardView } from "@/features/battle/battle-view";
 import { PLAYER_HERO, playerHand } from "@/features/battle/player-hero";
 
 /**
- * The 4 Tutorial Steps (GDD 8.3, ADR-0004), in the order of the GDD table:
+ * The 4 Tutorial Steps (GDD 8.3, web ADR-0003), in the order of the GDD table:
  * Countdown and Ready, the Summon Zone, the Resolution Phase, and the Lane
  * choice.
  */

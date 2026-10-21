@@ -1,6 +1,6 @@
 import { expect, test } from "./_base";
 
-/** Replay Links (issue #100, web ADR-0012): share a finished Battle and watch it. */
+/** Replay Links (issue #100, web ADR-0011): share a finished Battle and watch it. */
 test.describe("Replay Link", () => {
   test.use({ permissions: ["clipboard-read", "clipboard-write"] });
 

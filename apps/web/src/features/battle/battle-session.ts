@@ -97,7 +97,7 @@ export interface BattleSession {
    * the options, they are the Replay of the Battle (rules ADR-0006).
    */
   readonly commands: readonly Command[];
-  /** True while the Player watches a Replay (web ADR-0012): it is not a Live Battle. */
+  /** True while the Player watches a Replay (web ADR-0011): it is not a Live Battle. */
   readonly watching: boolean;
   /** True after the Game Dev Panel changed the Battle outside the Commands: it has no Replay. */
   readonly devChanged: boolean;

@@ -5,7 +5,7 @@ import { laneZ } from "@/features/battle/scene/layout";
 import { closedLaneTexture } from "@/features/battle/scene/textures";
 
 /**
- * The Board on the Battle Painting (web ADR-0007). The Squares are not drawn:
+ * The Board on the Battle Painting (web ADR-0006). The Squares are not drawn:
  * the target markers show the legal Squares when the Player selects a card. A
  * Closed Lane (GDD 4.1) shows as a dark band with soft ends along the Lane.
  */

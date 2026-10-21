@@ -51,7 +51,7 @@ const BattleCanvas = ({
     >
       <Canvas
         dpr={dpr}
-        // Transparent: the Battle Painting shows behind the scene (web ADR-0007).
+        // Transparent: the Battle Painting shows behind the scene (web ADR-0006).
         gl={{
           alpha: true,
           antialias: true,

@@ -4,7 +4,7 @@ The Campaign screen shows one Region Map at a time: a flat 2D painting in landsc
 
 A Region with no painting yet shows a placeholder Region Map, so that the Player can play its Stages before the art exists (ADR-0036). The placeholder is a calm sage ground with a soft road under the Trail, and no landmarks. It uses the clearing positions and the road path of Hearthvale (`shownRegionMap`). A Region with no Stages in the data shows only the ground, with no Trail and no Stage Markers, and its Region banner says that it comes later (`regionStatus`). The placeholder of a Region goes away when that Region gets its entry in `REGION_MAPS`.
 
-We did this because the game is landscape, desktop first and also on phones in landscape, and the Town and the Battle Painting already use a 16:9 painting with a 1600 × 900 code box (web ADR-0005, ADR-0007). 10 Stage Markers fit on one screen. The state of a Stage (Done, Open, Locked, best Stars) changes with the progress of the Player, and the labels need text in each language, so the art cannot contain them.
+We did this because the game is landscape, desktop first and also on phones in landscape, and the Town and the Battle Painting already use a 16:9 painting with a 1600 × 900 code box (web ADR-0004, web ADR-0006). 10 Stage Markers fit on one screen. The state of a Stage (Done, Open, Locked, best Stars) changes with the progress of the Player, and the labels need text in each language, so the art cannot contain them.
 
 ## Considered Options
 

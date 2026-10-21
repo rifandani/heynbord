@@ -22,7 +22,7 @@ import {
 /**
  * The format of the data of a Replay Link. It is not the hash of the rules.
  * Each shared link is a public contract: a new format must still read the
- * old links, or refuse them clearly (web ADR-0012). The "floor" place came
+ * old links, or refuse them clearly (web ADR-0011). The "floor" place came
  * later in format 1: it only adds to what format 1 reads.
  */
 export const REPLAY_FORMAT = 1;

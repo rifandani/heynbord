@@ -160,7 +160,7 @@ test.describe("Heynspire", () => {
   test.describe("Replay Link", () => {
     test.use({ permissions: ["clipboard-read", "clipboard-write"] });
 
-    test("a won Floor gives a Replay Link that opens the Floor Battle (web ADR-0012)", async ({
+    test("a won Floor gives a Replay Link that opens the Floor Battle (web ADR-0011)", async ({
       page,
       context,
     }) => {

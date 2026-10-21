@@ -47,7 +47,7 @@ const firstPlay = (session: BattleSession) => {
 };
 
 /**
- * The e2e bot policy (ADR-0004): play each Ready card at its first legal
+ * The e2e bot policy (web ADR-0003): play each Ready card at its first legal
  * target, then end the Turn. It selects each card before it plays it, as the
  * HUD does.
  */

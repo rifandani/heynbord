@@ -200,7 +200,7 @@ const applyResult = <P extends Profile>(
  * also gives `null` when the Battle has no result (`stageResultOf`,
  * `dungeonResultOf`, `floorResultOf`). An Abandon has no result. A Replay
  * that the Player watches is not the Player's Battle, so it gives `null` too
- * (web ADR-0012).
+ * (web ADR-0011).
  */
 export const recordBattleResult = <P extends Profile>(
   profile: P,

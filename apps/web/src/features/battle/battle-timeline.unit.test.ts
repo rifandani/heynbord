@@ -68,7 +68,7 @@ describe("eventDuration (technical design 4.3)", () => {
     );
   });
 
-  it("makes an attack or a hit as long as its effect needs (web ADR-0009)", () => {
+  it("makes an attack or a hit as long as its effect needs (web ADR-0008)", () => {
     const melee = { ...shot, ranged: false } as const;
     expect(eventDuration(melee, 1, view)).toBe(FX_PRESETS.melee.time);
     expect(eventDuration({ ...hit, damageType: "holy" }, 1, view)).toBe(

@@ -42,9 +42,9 @@ _A collectible card game crossed with lane tower defense, where timing replaces 
 - Desktop browser first, with mouse and keyboard. The game also works on a phone in landscape with touch. On a phone in portrait, the game asks the Player to turn the phone.
 - Session loop: 3 to 6 Battles in 10 to 30 minutes, then Workshop and Deck changes. A Battle takes 3 to 6 minutes at speed ×1.
 - Screens: Title, Town (hub), Campaign map, Heynspire, Battle, Deck builder, Collection, Workshop, Hero, Packs, Achievements, Settings. See [GDD 11.1](docs/game/03-game-design.md#111-screens).
-- The full game is one route, `/play`. The Town, the Campaign and the Battle are states of that route, not separate URLs. Each screen has its own in-game control to go back. See [web ADR-0006](apps/web/docs/adr/0006-the-game-is-one-route.md).
-- The Battle is a 3D scene (React Three Fiber) on a 2D Battle Painting for each Region. The Squares are not drawn. See [web ADR-0007](apps/web/docs/adr/0007-the-battlefield-is-a-2d-painting.md) and [13 — Battlefield Concepts](docs/game/13-battlefield-concepts.md). The Hand, HUD and all menus are 2D React UI on React Aria components, so text stays sharp.
-- The Town is a 2D painting, not a 3D scene: one painted plate. Each selectable Building is a React Aria button over its part of the painting. See [web ADR-0005](apps/web/docs/adr/0005-the-town-is-a-layered-2d-painting.md) and [11 — Town Concepts](docs/game/11-town-concepts.md).
+- The full game is one route, `/play`. The Town, the Campaign and the Battle are states of that route, not separate URLs. Each screen has its own in-game control to go back. See [web ADR-0005](apps/web/docs/adr/0005-the-game-is-one-route.md).
+- The Battle is a 3D scene (React Three Fiber) on a 2D Battle Painting for each Region. The Squares are not drawn. See [web ADR-0006](apps/web/docs/adr/0006-the-battlefield-is-a-2d-painting.md) and [13 — Battlefield Concepts](docs/game/13-battlefield-concepts.md). The Hand, HUD and all menus are 2D React UI on React Aria components, so text stays sharp.
+- The Town is a 2D painting, not a 3D scene: one painted plate. Each selectable Building is a React Aria button over its part of the painting. See [web ADR-0004](apps/web/docs/adr/0004-the-town-is-a-layered-2d-painting.md) and [11 — Town Concepts](docs/game/11-town-concepts.md).
 
 ## Capabilities and Constraints
 

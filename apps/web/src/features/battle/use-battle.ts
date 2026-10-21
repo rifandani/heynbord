@@ -152,7 +152,7 @@ const hasBattleLog = (session: BattleSession | null): boolean =>
  * The Battle state and the player's actions, for the HUD. `session` is what
  * the screen shows: the selected moment of the open Battle Log, else Live.
  * `liveSession` is Live. Each Command goes to Live, and none goes while the
- * Battle Log is open. While the Player watches a Replay (web ADR-0012),
+ * Battle Log is open. While the Player watches a Replay (web ADR-0011),
  * `liveSession` holds the full Replay and the Battle Log is always open: there
  * is no Live.
  */
@@ -287,7 +287,7 @@ export const useBattle = () => {
     /** True while the Player watches a Replay: the Battle Log shows it, and there is no Live. */
     watching,
     /**
-     * Watching a Replay (web ADR-0012): the Battle Log of the Replay opens in
+     * Watching a Replay (web ADR-0011): the Battle Log of the Replay opens in
      * place of the screen, and Plays at ×1 from the first Log Entry.
      */
     watch: (run: ReplayRun) => {

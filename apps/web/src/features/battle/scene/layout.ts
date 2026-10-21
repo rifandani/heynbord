@@ -40,7 +40,7 @@ export const frontZ = (front: readonly number[], lanes: number): number => {
 export const heroZ = (view: BattleView, side: Side, hero: number): number =>
   frontZ(view.sides[side].heroes[hero]?.front ?? [], view.lanes);
 
-/** The height of the center of a Hero figure. The Hero stands on the ground, with no pedestal (web ADR-0007). */
+/** The height of the center of a Hero figure. The Hero stands on the ground, with no pedestal (web ADR-0006). */
 export const HERO_FIGURE_Y = 1.2;
 
 /**

@@ -70,7 +70,7 @@ The Resolution Phase runs completely inside `step()` when the rules get the `End
 A Battle replay is: the Battle seed, the two Decks, the Stage ID, and the list of Commands. When the app runs the same Commands again, it gets the same Battle Events. This supports:
 
 - Replays (BAT-14)
-- Bug reports and shared Battles: after a Stage Battle, a Dungeon Battle or a Floor Battle, the Player shares a Replay Link (`/play#replay=…`, [web ADR-0012](../../apps/web/docs/adr/0012-a-replay-link-is-the-only-url-that-opens-a-screen.md)). The link holds the Replay and a hash of the rules and the content of the build (`apps/web/scripts/rules-hash.ts`). A build with another hash refuses it.
+- Bug reports and shared Battles: after a Stage Battle, a Dungeon Battle or a Floor Battle, the Player shares a Replay Link (`/play#replay=…`, [web ADR-0011](../../apps/web/docs/adr/0011-a-replay-link-is-the-only-url-that-opens-a-screen.md)). The link holds the Replay and a hash of the rules and the content of the build (`apps/web/scripts/rules-hash.ts`). A build with another hash refuses it.
 - Result checks on the server in v2
 
 ### 3.4 Enemy AI

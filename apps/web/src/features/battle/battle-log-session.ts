@@ -164,7 +164,7 @@ export const setBattleLogSpeed = (
 ): BattleLogState => ({ ...state, shown: setSpeed(state.shown, speed) });
 
 /**
- * Watching a Replay (web ADR-0012): the Battle Log of the full Replay, which
+ * Watching a Replay (web ADR-0011): the Battle Log of the full Replay, which
  * Plays at ×1 from the first Log Entry. The list shows no Log Entry yet.
  */
 export const watchBattleLog = (replay: BattleSession): BattleLogState => {

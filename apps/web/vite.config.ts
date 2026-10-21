@@ -34,7 +34,7 @@ const serveDevServiceWorker = (): Plugin => ({
 export default defineConfig({
   // Expose portless's worktree-aware URL to import.meta.env (see core/config/env.ts).
   envPrefix: ["VITE_", "PORTLESS_"],
-  // Each Replay Link holds the hash of the rules of its build (web ADR-0012).
+  // Each Replay Link holds the hash of the rules of its build (web ADR-0011).
   define: { __RULES_HASH__: JSON.stringify(rulesHash()) },
   plugins: [
     tanstackDevtools({

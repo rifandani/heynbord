@@ -398,7 +398,7 @@ const EVENT_POSES: Readonly<Partial<Record<BattleEvent["_tag"], EventPose>>> = {
  * without rigs). `time` is in scene seconds, for the idle motion. `passing`
  * is true when the event walks the Unit through a friendly Unit: a ground
  * Unit then steps toward the camera, so that it shows in front.
- * `reducedMotion` gives the Statuses a static tint (web ADR-0009). `origin`
+ * `reducedMotion` gives the Statuses a static tint (web ADR-0008). `origin`
  * is where a summoned Token starts.
  */
 export const poseFor = (

@@ -1165,7 +1165,7 @@ const keywordPlatePath = (width: number): Path2D => {
 };
 
 /**
- * A Keyword Plate (web ADR-0009): a Night Plate with a border in the Side
+ * A Keyword Plate (web ADR-0008): a Night Plate with a border in the Side
  * color, and the Keyword name with its value in Inter 700 `cream`, for
  * example "Swarm 2". The plate is as wide as its text. The canvas is wide
  * enough for the longest label in id-ID; a longer label gets a smaller font.

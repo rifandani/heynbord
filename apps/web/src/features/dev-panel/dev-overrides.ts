@@ -68,7 +68,7 @@ export const serializeOverrides = (overrides: DevOverrides): string =>
 
 /**
  * Every card in each Rank from its Base Rank, at the maximum copies that a
- * Deck can hold. Play never gives a copy below its Base Rank (ADR-0010).
+ * Deck can hold. Play never gives a copy below its Base Rank (web ADR-0009).
  */
 export const unlockedCollection = (): Collection =>
   CARDS.flatMap((card) =>

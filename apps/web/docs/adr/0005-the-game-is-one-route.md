@@ -14,4 +14,4 @@ We did this so that the game feels like one app, as the original Flash games did
 - A reload always opens the Town. The game does not remember the last screen. A Battle in progress has no save, so a reload loses it.
 - The e2e tests and the QA hooks must open a screen through the game state, not through a URL.
 
-**2026-10-16 — a Replay Link opens a screen ([ADR-0012](./0012-a-replay-link-is-the-only-url-that-opens-a-screen.md)).** A link with `#replay=…` starts Watching a Replay in place of the Town. It is the only exception. The game removes the fragment after it reads it, so a reload still opens the Town.
+**2026-10-16 — a Replay Link opens a screen ([ADR-0011](./0011-a-replay-link-is-the-only-url-that-opens-a-screen.md)).** A link with `#replay=…` starts Watching a Replay in place of the Town. It is the only exception. The game removes the fragment after it reads it, so a reload still opens the Town.

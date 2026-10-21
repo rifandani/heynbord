@@ -13,7 +13,7 @@ Not: dark, realistic, gory, noisy, neon.
 | Element | How it looks |
 | --- | --- |
 | **Units** | A rigged 3D model, when the card has one (see 2.2). Other cards show the card art cut out (transparent background) on a flat plane. The plane always faces the camera on the vertical axis (billboard). The painting advances to the right, and the enemy figure is a mirror image, so each Side meets the other. That mirror is the only difference between the two Sides. See [ADR-0014](../adr/0014-creature-card-paintings-advance-to-the-right.md). At the feet, a line shows the current Attack and the current HP as `2 \| 10`. A number is white when it equals the value at summon, red when it is lower, and green when it is higher. The line has a dark outline. Until a card has its cut-out, the plane shows the card art with its background, in an arched shape, with no frame and no Rank Gems. |
-| **Board** | Not drawn. The ground is the Battle Painting, and the Squares are invisible. The legal Squares glow only when the Player selects a card. A Closed Lane shows as a dark band. See [web ADR-0007](../../apps/web/docs/adr/0007-the-battlefield-is-a-2d-painting.md). |
+| **Board** | Not drawn. The ground is the Battle Painting, and the Squares are invisible. The legal Squares glow only when the Player selects a card. A Closed Lane shows as a dark band. See [web ADR-0006](../../apps/web/docs/adr/0006-the-battlefield-is-a-2d-painting.md). |
 | **Heroes** | A larger cut-out figure at the end of the Lanes, with a 3D frame and an HP bar. It stands on the ground with a ring in its Side color. |
 | **Cards in the Hand** | 2D UI (React), not in the 3D scene. This keeps text sharp. |
 | **Effects** | 3D particles, simple shaders and light flashes. |

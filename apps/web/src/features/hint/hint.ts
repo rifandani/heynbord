@@ -148,7 +148,7 @@ const isPlayerRecall = (event: BattleEvent) =>
 
 /**
  * The Battle Hints that the Battle meets now. No Hint shows during the
- * Tutorial or while the Player watches a Replay (web ADR-0012). Skill Card: a Ready Skill Card is in the Hand. Recall: Recall
+ * Tutorial or while the Player watches a Replay (web ADR-0011). Skill Card: a Ready Skill Card is in the Hand. Recall: Recall
  * returned a Skill Card of the Player to the Hand.
  */
 export const battleHints = (facts: BattleFacts): readonly HintId[] => {

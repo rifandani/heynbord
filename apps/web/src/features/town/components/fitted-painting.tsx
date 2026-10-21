@@ -17,7 +17,7 @@ const paintingMask: CSSProperties = {
  * sides and the bottom are never cropped. The painting fills the height
  * above the Town Bar if it can, and stretches on the x axis by at most
  * `FIT_STRETCH`, or squashes by at most `MAX_STRETCH`, to fill the width
- * (as the Region Map, web ADR-0008). On a screen that is wider than that,
+ * (as the Region Map, web ADR-0007). On a screen that is wider than that,
  * the painting gets taller than the space above the Town Bar, and the screen
  * crops its top. On a screen that is narrower, the backdrop shows above it.
  */

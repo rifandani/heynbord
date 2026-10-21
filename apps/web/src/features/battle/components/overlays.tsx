@@ -373,7 +373,7 @@ const ResultDialog = ({
 };
 
 /**
- * The end of a Replay (web ADR-0012): Victory or Defeat with no rewards, as
+ * The end of a Replay (web ADR-0011): Victory or Defeat with no rewards, as
  * the exporting Player saw it, then "Watch again" or "Leave" to the Town.
  */
 const ReplayResultDialog = ({

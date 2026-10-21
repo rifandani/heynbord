@@ -97,7 +97,7 @@ const dynamic = (size: number) =>
 
 /**
  * One mesh for one blend mode. The effects test the depth but do not write
- * it, so a front-Lane Unit hides an effect behind it (web ADR-0009).
+ * it, so a front-Lane Unit hides an effect behind it (web ADR-0008).
  */
 const makeBatch = (blending: Blending): Batch => {
   const geometry = new BufferGeometry();
@@ -272,7 +272,7 @@ const singlesNow = (reducedMotion: boolean): Particle[] => {
 /**
  * The Status loops on the Units, the Status, hit, dust, heal and Bulwark
  * bursts, the cast wind-ups, the melee slashes, the ranged projectiles, the
- * spell bolts and the Field Effect ground, from one particle pool with the effects atlas (web ADR-0009).
+ * spell bolts and the Field Effect ground, from one particle pool with the effects atlas (web ADR-0008).
  * All motion uses `playback.time`.
  */
 export const ParticleLayer = () => {

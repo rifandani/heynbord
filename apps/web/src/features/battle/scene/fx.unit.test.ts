@@ -376,7 +376,7 @@ describe("fxForEvent for Statuses", () => {
 const durationOf = (fx: Fx | undefined) =>
   fx && "duration" in fx ? fx.duration : Number.NaN;
 
-describe("fxForEvent for attacks and hits (web ADR-0009)", () => {
+describe("fxForEvent for attacks and hits (web ADR-0008)", () => {
   // The view has one Unit: it attacks the player Hero, and it takes the hits.
   const [attacker] = view.units;
   const attack = {
@@ -558,7 +558,7 @@ const played = (cardId: string, side: Side = "enemy") =>
     target: { _tag: "Square", lane: 0, position: 4 },
   }) as const;
 
-describe("fxForEvent for Skill Card casts (web ADR-0009)", () => {
+describe("fxForEvent for Skill Card casts (web ADR-0008)", () => {
   it.each(["warrior", "ranger", "mage", "priest"] as const)(
     "starts a %s cast with the same wind-up at the feet of the caster",
     (classId) => {

@@ -137,7 +137,7 @@ const fireSize = (scale: number) =>
     .map((particle) => particle.size)
     .reduce((total, value) => total + value, 0);
 
-describe("hit bursts (web ADR-0009)", () => {
+describe("hit bursts (web ADR-0008)", () => {
   it("makes a Crit hit larger", () => {
     expect(fireSize(1.4)).toBeCloseTo(fireSize(1) * 1.4);
   });
@@ -201,7 +201,7 @@ const windup = (): Emitter => ({
   duration: 0.5,
 });
 
-describe("wind-up bursts (web ADR-0009)", () => {
+describe("wind-up bursts (web ADR-0008)", () => {
   it("lays the rune ring flat on the ground, and turns it", () => {
     const [ring] = spawnParticles([windup()], 1.2, 200);
     const [later] = spawnParticles([windup()], 1.3, 200);

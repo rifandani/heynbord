@@ -9,7 +9,7 @@ import { TOWN_BAR_COLLAPSED_KEY } from "@/features/town/town-bar-preference";
 
 /**
  * The game screen when no Battle is on. A page load always opens the Town
- * (web ADR-0006). App state, so kept alive.
+ * (web ADR-0005). App state, so kept alive.
  */
 export const gameScreenAtom = Atom.make<GameScreen>("town").pipe(
   Atom.keepAlive

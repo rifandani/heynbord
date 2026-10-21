@@ -19,9 +19,9 @@ interface ReplayLinkActions {
 }
 
 /**
- * Opens a Replay Link (web ADR-0012). The game reads the URL fragment at the
+ * Opens a Replay Link (web ADR-0011). The game reads the URL fragment at the
  * start and on each fragment change, then removes it, so a reload opens the
- * Town (web ADR-0006). A Live Battle has no save, so during a Live Battle the
+ * Town (web ADR-0005). A Live Battle has no save, so during a Live Battle the
  * game ignores the link and shows a toast. A broken link, or a link of other
  * rules, opens the Town with a toast.
  */

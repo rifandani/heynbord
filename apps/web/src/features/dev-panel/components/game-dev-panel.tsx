@@ -217,7 +217,7 @@ const ForgeStonesBlock = () => {
 };
 
 /**
- * The won Heynspire Floors (web ADR-0010). The first win of the last Boss
+ * The won Heynspire Floors (web ADR-0009). The first win of the last Boss
  * Stage opens Heynspire, so the field stays off before that win: play cannot
  * win a Floor before it.
  */

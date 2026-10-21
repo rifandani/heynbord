@@ -96,14 +96,14 @@ export const pushArrival = (distance: number): number =>
 /**
  * A Skill Card cast shows the card, the target, the wind-up of the Class and
  * a spell bolt before its effect. This is also the limit of the cast (web
- * ADR-0009): the wind-up and the bolt fit inside it, and do not make it
+ * ADR-0008): the wind-up and the bolt fit inside it, and do not make it
  * longer. The enemy's cast is longer: the Player has not seen that card yet.
  */
 const CAST_DURATION = { player: 700, enemy: 1050 } as const;
 
 /**
  * The longest time that an effect can give an event at speed ×1, in
- * milliseconds (web ADR-0009). A far shot or a large hit stops here.
+ * milliseconds (web ADR-0008). A far shot or a large hit stops here.
  */
 export const EFFECT_LIMIT = { UnitAttacked: 900, DamageDealt: 520 } as const;
 

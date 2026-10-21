@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { FX_SLOTS } from "@/features/battle/scene/fx-atlas";
 import { FX_PRESETS, presetSlots } from "@/features/battle/scene/fx-presets";
 
-describe("the attack and hit presets (web ADR-0009)", () => {
+describe("the attack and hit presets (web ADR-0008)", () => {
   it("has a hit preset for each Damage Type and for a Blocked hit, and the cast presets", () => {
     expect(Object.keys(FX_PRESETS).toSorted()).toEqual([
       "bulwark",

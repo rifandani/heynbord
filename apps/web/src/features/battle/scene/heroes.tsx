@@ -173,7 +173,7 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
 
   return (
     <group ref={stand} name={`hero-${side}-${hero}`} position={[x, 0, 0]}>
-      {/* The Hero stands on the Battle Painting: a shadow and a ring in its Side color (web ADR-0007). */}
+      {/* The Hero stands on the Battle Painting: a shadow and a ring in its Side color (web ADR-0006). */}
       <mesh rotation-x={-Math.PI / 2} position={[0, 0.01, 0]} renderOrder={1}>
         <circleGeometry args={[1.05, 24]} />
         <meshBasicMaterial
@@ -258,7 +258,7 @@ const bracketMaterial = (color: string) =>
 /**
  * The Front Bracket of one Boss: a mark on the ground under the Boss across
  * the Lanes that it holds (GDD 11.2). It is drawn in code, as the Stage
- * Markers are (web ADR-0008), and it does not cover a Square.
+ * Markers are (web ADR-0007), and it does not cover a Square.
  */
 const FrontBracket = ({ side, hero }: HeroRef) => {
   const mesh = useRef<Mesh>(null);

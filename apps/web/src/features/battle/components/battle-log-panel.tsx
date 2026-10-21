@@ -582,7 +582,7 @@ const Transport = ({
 
 /**
  * Back to Live: the one gold action of the Battle Log. A Replay has no Live:
- * its gold action is Leave, which goes to the Town (web ADR-0012).
+ * its gold action is Leave, which goes to the Town (web ADR-0011).
  */
 const BackToLive = ({
   battle,

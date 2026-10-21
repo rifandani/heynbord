@@ -10,7 +10,7 @@ const MEADOW = [
 ];
 
 /**
- * The Battle Painting behind the transparent 3D canvas (web ADR-0007). It
+ * The Battle Painting behind the transparent 3D canvas (web ADR-0006). It
  * covers the screen and crops its edges. It is decoration, so screen readers
  * skip it.
  */

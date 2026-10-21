@@ -293,7 +293,7 @@ const RegionCanvas = ({
 };
 
 /**
- * The Campaign screen (GDD 11.5, web ADR-0008): the Region Map painting with
+ * The Campaign screen (GDD 11.5, web ADR-0007): the Region Map painting with
  * the Trail, a Stage Marker on each clearing, the Region name and the Star
  * chests. A Done or Open Stage Marker opens the Stage Panel. The Region
  * arrows open the other Regions.

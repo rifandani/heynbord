@@ -355,7 +355,7 @@ const BattleStage = ({ battle }: { readonly battle: Battle }) => {
         data-testid="battle-board-layer"
         data-past={battle.log ? true : undefined}
       >
-        {/* The painting loads before the 3D chunk, so it shows at once (web ADR-0007). */}
+        {/* The painting loads before the 3D chunk, so it shows at once (web ADR-0006). */}
         <BattlePainting src={painting} />
         <BoardLayer battle={battle} webgl2={webgl2} />
       </div>
@@ -437,7 +437,7 @@ const useCampaignRegion = (battle: Battle) => {
 };
 
 /**
- * The game in one route (web ADR-0006): the Town, the Campaign (the Region
+ * The game in one route (web ADR-0005): the Town, the Campaign (the Region
  * Map), then the Battle, Heynspire, the Dungeons, the Packs, the Workshop,
  * the Hero screen, the Achievements screen, the Bazaar and the Seaport. The Town Bar shows on each screen except the Battle.
  * A Battle goes back to the screen that started it: the Campaign, Heynspire
@@ -458,7 +458,7 @@ export const PlayScreen = () => {
 
   useProfileStore();
   useAchievementNotices();
-  // A Replay Link opens Watching a Replay in place of the screen (web ADR-0012).
+  // A Replay Link opens Watching a Replay in place of the screen (web ADR-0011).
   useReplayLink({ show: battle.watch, leave: battle.leave });
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
   // Heynspire opens with the first win of the last Boss Stage. When it is

@@ -13,7 +13,7 @@ We did this because the game has no database server to keep a Replay and give a 
 
 ## Consequences
 
-- This is an exception to ADR-0006. The game reads the fragment at the start and on a fragment change, and then removes it. A reload still opens the Town.
+- This is an exception to web ADR-0005. The game reads the fragment at the start and on a fragment change, and then removes it. A reload still opens the Town.
 - During a Live Battle, the game ignores a Replay Link and shows a toast. A Battle in progress has no save, so the game must never lose it silently.
 - Each link holds a hash of the rules and the content, made at build time. When the hash is not the same as the hash of this build, the game refuses the Replay, opens the Town and shows a toast. The same Commands can give a different Battle after a balance change, and a wrong Battle that looks correct is worse than no Battle. A UI-only deploy does not change the hash.
 - A broken link also opens the Town with a toast, with a different message.

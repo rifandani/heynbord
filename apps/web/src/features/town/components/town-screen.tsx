@@ -309,7 +309,7 @@ export const useTownLeave = (
 };
 
 /**
- * The Town (GDD 11.4, web ADR-0005): the master painting with one button for
+ * The Town (GDD 11.4, web ADR-0004): the master painting with one button for
  * each Building that the Player can select. The full painting shows above
  * the Town Bar, on a soft backdrop of itself (`FittedPainting`). `leaving` is
  * the Building that the Town zooms toward on its way out (`useTownLeave`). Until the Profile loads, the Town

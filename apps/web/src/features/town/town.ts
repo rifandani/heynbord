@@ -6,7 +6,7 @@ import {
   UNLOCK_LEVELS,
 } from "@workspace/rules";
 
-/** The game screens in the `/play` route before a Battle (web ADR-0006). */
+/** The game screens in the `/play` route before a Battle (web ADR-0005). */
 export type GameScreen =
   | "town"
   | "campaign"
@@ -28,7 +28,7 @@ export interface Rect {
 }
 
 /**
- * The Town painting coordinates (web ADR-0005). The box is wider than 16:9, so
+ * The Town painting coordinates (web ADR-0004). The box is wider than 16:9, so
  * a wide screen shows the full Heynspire and the full Town Gate.
  */
 export const PAINTING = { width: 1900, height: 900 } as const;

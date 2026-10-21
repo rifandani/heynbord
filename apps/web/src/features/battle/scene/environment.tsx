@@ -1,6 +1,6 @@
 /**
  * The light of the Battle scene. The ground and the scenery are the Battle
- * Painting behind the canvas (web ADR-0007), so the scene has only lights. They
+ * Painting behind the canvas (web ADR-0006), so the scene has only lights. They
  * match the painting: warm light from the upper left (art direction 5.4).
  */
 export const Environment = () => (

@@ -10,7 +10,7 @@ import { replayOf } from "@/features/replay/replay";
 import { useShareReplay } from "@/features/replay/use-share-replay";
 
 /**
- * "Share Replay" (web ADR-0012), for a Stage Battle, a Dungeon Battle or a
+ * "Share Replay" (web ADR-0011), for a Stage Battle, a Dungeon Battle or a
  * Floor Battle with a win or a loss. Nothing shows for a Battle that has no Replay.
  * `text`: a text button on the parchment of the result. `wood`: a wood
  * button in the Battle Log. `icon`: a square wood button with only the glyph.
