@@ -69,6 +69,25 @@ export const heroOfLane = (
 };
 
 /**
+ * Sends `KeywordActivated` for a Unit that is not on the Board anymore, for
+ * example the Unit that deals its Last Breath damage (ADR-0056).
+ */
+export const activateKeywordFor = (
+  ctx: StepContext,
+  unitId: number,
+  hero: HeroRef,
+  keyword: ActivatedKeyword,
+  value?: number
+): void => {
+  const activation = { unitId, keyword, hero };
+  ctx.events.push(
+    BattleEvent.KeywordActivated(
+      value === undefined ? activation : { ...activation, value }
+    )
+  );
+};
+
+/**
  * Sends `KeywordActivated` for the Keyword `keyword` of `unit`. The caller
  * sends it only when the Keyword changes the Battle, and before the events of
  * its result. `value` is the value of a value Keyword.
@@ -79,12 +98,7 @@ export const activateKeyword = (
   keyword: ActivatedKeyword,
   value?: number
 ): void => {
-  const activation = { unitId: unit.id, keyword, hero: ownerOf(unit) };
-  ctx.events.push(
-    BattleEvent.KeywordActivated(
-      value === undefined ? activation : { ...activation, value }
-    )
-  );
+  activateKeywordFor(ctx, unit.id, ownerOf(unit), keyword, value);
 };
 
 /** `unit` deals the damage. */
@@ -92,6 +106,8 @@ export const unitDealer = (unit: UnitState): DamageDealer => ({
   _tag: "Unit",
   unitId: unit.id,
   hero: ownerOf(unit),
+  piercing: unit.piercing,
+  wallbreaker: unit.wallbreaker,
 });
 
 /** The Hero `hero` deals the damage, with a Skill Card or a Field Effect. */

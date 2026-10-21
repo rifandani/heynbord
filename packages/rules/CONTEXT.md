@@ -174,6 +174,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Bulwark N**: A Keyword. It reduces Physical damage to its Unit by N. It does not reduce Fire, Frost, Holy or Lightning damage. A Skill Card can give bonus Bulwark, with the same rule. The Armor Gear of a Hero is a different thing: it gives Hero HP. _Avoid_: armor, defense, toughness, damage reduction
 
+**Resistance N**: A Keyword. It reduces Fire, Frost, Holy and Lightning damage to its Unit by N. It does not reduce Physical damage: Bulwark does that. A Skill Card can give bonus Bulwark, with the same rule. _Avoid_: magic resistance, magic damage, damage reduction
+
+**Piercing**: A Keyword. The damage that its Unit deals cannot be reduced: it ignores Bulwark, Resistance, Ward, Block and the Iron Guard cap. It keeps its Crit and its Exposed bonus. It is not True Damage: a True hit also has no Crit and no Exposed. _Avoid_: True Damage, armor pierce, unshred
+
 **Iron Guard**: A Keyword. Each Physical hit on a Unit with Iron Guard deals at most 4 damage. The cap applies after Bulwark, Crit, Block and Exposed, and before Ward. It does not change True Damage or status damage. _Avoid_: Armor, damage cap, damage reduction
 
 **Bolt N**: A Keyword. In each Start Phase of its owner, a Unit with Bolt deals N damage of its own Damage Type to one target at random: an enemy Unit, or a random enemy Hero. The Hero can be any Hero of the other Side that is not Defeated, not only the Hero of its Front (ADR-0055). The hit applies no Status and has no Crit, so Fire, Frost and Lightning damage do not Burn, Freeze or Paralyze. A hit on a Unit can be Blocked, except Holy damage, and a Ward absorbs it. N is the same at each Rank. _Avoid_: Zap, Barrage, Volley
@@ -214,6 +218,10 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Regenerate N**: A Keyword. In its owner's Start Phase, a Unit with Regenerate heals N HP, up to its maximum HP. _Avoid_: Regeneration, regen, heal over time
 
+**Heal N**: A Keyword. In its owner's Start Phase, a Unit with Heal heals N HP to the friendly Unit with the lowest HP that is not at its maximum HP. A Bleeding Unit gets half of the heal, rounded down. A friendly Unit at its maximum HP gets no heal, so the Keyword does not occur. _Avoid_: Regenerate, mending, heal over time
+
+**Dispel**: A Keyword. In its owner's Start Phase, a Unit with Dispel has a 20% chance to remove 1 Debuff from a random friendly Unit. The Battle seed sets the chance and the Unit. The other Debuffs of that Unit stay. _Avoid_: Cleanse, purge, remove buff
+
 **Last Breath: X**: A Keyword. X occurs when the Unit leaves the Board. In v1, X deals damage to the nearest enemy Unit ahead in the same Lane, or summons a Token in the Square that the Unit left. _Avoid_: death effect, deathrattle
 
 **Rebirth**: A Keyword. The first time a Unit with Rebirth dies, it comes back in the same Square with 1 HP and without Rebirth. Its Statuses, its bonus Bulwark, its bonus Attack, its bonus Range, its Rally bonus, its Heroic bonus and its Soul Harvest bonus end. A Unit that _Smite_ kills does not come back. _Avoid_: revive, resurrect
@@ -226,6 +234,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Sabotage N**: A Keyword. When a Unit with Sabotage comes onto the Board from its Creature Card, the Card with the lowest Countdown in the Hand of the enemy Hero of that Front gets +N Countdown. A Ready Card is the lowest. If two Cards have the same Countdown, the oldest Card in the Hand gets it. Rebirth and Tokens do not apply Sabotage. N is the same at each Rank. _Avoid_: Delay, Stall, Disrupt
 
+**Quick Study**: A Keyword. When an enemy Hero plays a Skill Card, the Card with the highest Countdown in the Hand of the Hero of a Unit with Quick Study goes down by 1. On a tie, the oldest Card in the Hand goes first. A Card that is Ready has a Countdown of 0: nothing changes, so the Keyword does not occur. _Avoid_: Inspiration, study, draw
+
 **Spawnbane N**: A Keyword. When an enemy Hero summons a Unit from a Creature Card, a Unit with Spawnbane deals N damage to that Unit. The damage has the Damage Type of the Spawnbane Unit and applies no Status. It comes before the Sabotage and the Summon of the new Unit, so a Unit that dies does neither. A Token does not come from a Creature Card, so Spawnbane does not hit a Token. N is the same at each Rank. _Avoid_: anti-summon, Intercept, Ambush
 
 **Trample**: A Keyword for melee Units. When a Unit with Trample kills an enemy Unit with attack damage, the damage above that Unit's HP hits the enemy Unit in the next Square behind it, in the same Lane. It never hits a Hero. This second hit is not an attack: it has no Crit and no Retaliate, and it does not apply Keywords such as Poison, Hobble, Bleed or Knockback. It does not Trample again. _Avoid_: Cleave, Overrun, Pierce
@@ -235,6 +245,8 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 **Unique**: A Keyword. While a Unit from a Unique Card is on a Side of the Board, no Hero of that Side can play a copy of that Card, at any Rank. Each Unit from that Card counts, also a Unit that the Stage puts on the Board. Enemy Units do not count. A Deck can still hold more than 1 copy. _Avoid_: Singleton, One-of, Legend rule
 
 **Wall**: A Keyword. A Unit with Wall has no Movement and does not attack, also when an effect gives it Speed or Attack. It never deals Retaliate or First Strike damage. It blocks enemy Units in its Lane, and it is never Pushed. Its Hero can summon it into the Summon Zone and also into Columns 4 and 5 of an open Lane, also past an enemy Unit. Each Card with Wall has Attack 0. _Avoid_: Barricade, Blocker, Taunt
+
+**Wallbreaker**: A Keyword. The damage that a Unit with Wallbreaker deals to a Unit with Wall is doubled. The doubling comes before Bulwark, Exposed, Crit, Block and Ward, so those rules apply to the doubled damage. The damage to a Unit without Wall does not change. _Avoid_: siege, wall smash, sunder
 
 **Race**: The people that a Creature Card belongs to: Human, Elf, Undead, Orc or Goblin, or the Feral host. A Race also includes the beasts and spirits that fight with that people, so a grave hound that fights for the Undead is an Undead card. Orc cards show only orcs, so that no Orc card looks like a Feral card. The Race tells the side that a card fights for, not the species of the figure. _Avoid_: faction, tribe, kingdom, species
 
@@ -434,6 +446,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 - A **Unit** belongs to the Hero that summoned it, and uses that Hero's **Gear**.
 - A **Creature Card** has at most 1 of the Speed Keywords **Swift**, **Fleet** and **Heavy**, and at most 1 of the Range Keywords **Mid-range**, **Long-range** and **Extreme-range**. It can have one of each.
 - A **Skill Card** or a **Keyword** can heal a **Unit**. Nothing heals a **Hero**: in a Battle, Hero HP only goes down ([ADR-0028](../../docs/adr/0028-nothing-heals-a-hero.md)).
+- **Bulwark N** reduces only Physical damage, and **Resistance N** reduces only the other Damage Types. A **Unit** with **Piercing** deals damage that neither of them reduces, and that no **Ward** and no **Block** reduces. **Piercing** does not change **True Damage**.
 - When a Hero is **Defeated**, its Units and **Field Effects** are removed, and its **Front** goes to the nearest Hero of its Side that is not Defeated.
 - A **Side** that is **Routed** loses, also when its Heroes still have HP. The rule is the same for the Player's Side and the enemy Side. A Side is not Routed while one of its Heroes has a rule that can still put a Unit on the Board.
 - A **Deck Slot** belongs to the **Player**, not to a **Hero**. Each Deck Slot keeps one **Deck** and its Hero **Class**. The **Starter Decks** are in the first Deck Slots of a new Player.

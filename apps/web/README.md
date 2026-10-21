@@ -15,30 +15,25 @@ v1:
 New Unit Ability:
 
 - Devour N: When this Unit kills an enemy Unit, it gains +N Attack and +N HP, im thinking this Keyword is exclusive to Feral replacing Trample, but do u think its a good idea?
-- Heal N: +N HP for the lowest HP Unit on player's friendly units for each turn
 - Retreat N — After this Unit attacks, it moves up to N Squares backward
 - Ambush: When regular attacking for the first time, Attack is doubled
 - Arctic Barrier: Cannot be affected by buffs or debuffs
 - Unrestrained: Cannot be affected by movement restrictions
-- Dragon Slayer: Deals double damage to Units whose Countdown is 5 or more
+- Monster Slayer: Deals double damage to Units whose Countdown is 5 or more
 - Sunder: Deals double damage to Units with the Keyword Bulwark
 - Sunder Magic: Deals double damage to Units with the Keyword Resistance
-- Piercing: Damage dealt cannot be reduced
 - Skybane: Deals double damage to Flying Units
-- Piercing: Damage dealt by this Unit cannot be reduced
 - Faith N: When this Unit cures another Unit it gains +1 Life and +1 Attack (combo for Healing Unit)
 - Accursed N: Damaged Unit will take extra +N damage from all units magical attacks (all except physical attack)
 - Heavy Draw: Range +1. This Unit cannot attack after moving. Shooter only.
 - Stationary: This Unit cannot attack after moving
 - Inspired: Summoning hero has 50% chance of drawing extra card when summoned
-- Inspiration: Reduces the Countdown of a card with the highest Countdown in its summoner's hand by 1.
+- Inspiration: Reduces the Countdown of a card with the highest Countdown in its summoner's hand by 1 when summoned
 - Stun: Damaged Unit have a 20% chance of skipping their next turn
-- Quick Study: When enemy hero uses a Skill, a card with highest countdown in summoner’s hand will reduce by 1
 - Iron Guardian: Takes all physical damage that would be dealt to adjacent ally Units
 - Spell Guardian: Takes all magic damage that would be dealt to adjacent ally Units
 - Disrupt: When this Unit deals damage to enemy hero, the Countdown of 1 lowest countdown card in this enemy’s hero hand is increased by 1
-- Purge: Has a 20% chance to remove 1 buff from a random enemy Unit
-- Dispel: Has a 20% chance to remove 1 buff from a random player's Unit
+- Purge: Has a 20% chance to remove 1 buff from a random enemy Units every turn
 - Vengeance N: Upon dying, deals N damage to enemy hero
 - Bloodfeed N: Whenever this Unit takes Physical damage, it gains +N Attack and +N HP
 - Spellfeed N: Whenever this Unit takes Magic damage, it gains +N Attack and +N HP
@@ -116,8 +111,9 @@ Priest:
 New features:
 
 1. rebalance, then generate image for legendary units
-1. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
-1. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
+2. lets
+3. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
+4. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
 Answers all ur questions automatically with ur best recommendations, except critical questions.
 

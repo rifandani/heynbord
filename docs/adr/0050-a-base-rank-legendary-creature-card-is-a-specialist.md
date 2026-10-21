@@ -1,5 +1,7 @@
 # A Base Rank Legendary Creature Card is a Specialist for one Class
 
+> Each Specialist has 2 more Keywords and lower stats since 2026-10-21 — see [ADR-0056](0056-each-specialist-has-a-second-keyword.md) and [Amendments](#amendments).
+
 Before, no v1 Creature Card had Base Rank Legendary. [ADR-0013](0013-v1-has-90-creature-cards.md) set 15 Creature Cards for each Race, and GDD 12 said that a later Card could have this Base Rank. Now each Race has one Base Rank Legendary Creature Card, the **Specialist**. It has one Class, and a Hero can put it in a Deck only when the Hero has that Class. Every Specialist has Unique. A Creature Card with Base Rank Legendary is always a Specialist, and only a Specialist has a Class.
 
 The v1 set grows from 90 to 96 Creature Cards, and from 130 to 136 Cards. The 6 Specialists are:
@@ -63,3 +65,7 @@ These ideas need an engine hook that v1 does not have, so they wait: hand and Gr
 - The list used "magic damage". Heynbord has no magic damage: only Physical, Fire, Frost, Holy and Lightning. A Keyword that says "magic damage" must name one of these.
 - The list put "Primal Instinct" on Goblins. It belongs to the Feral host, not to the Goblins.
 - The list used "Frostbolt". The Skill Card *Frost Bolt* already has this name, so a Keyword with that name would confuse the two. Bolt N replaces the 4 bolt ideas.
+
+## Amendments
+
+- **2026-10-21: each Specialist has 2 more Keywords and lower stats.** [ADR-0056](0056-each-specialist-has-a-second-keyword.md) gives each Specialist 1 more Keyword of the set of this ADR and 1 new Keyword, and its stats go down, because the Power Points stay within 10% of the Power Budget. The table of the 6 Specialists above is the state of that day. The Handbook has 40 Keywords now, and each Specialist has more Power Points than the 2 Epic cards of its Race.

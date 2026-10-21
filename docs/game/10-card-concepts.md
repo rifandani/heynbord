@@ -292,18 +292,18 @@ Purpose: the named Human Epic and Rally capstone. Power 27, budget 28, deviation
 
 ### 2.16 Ser Aldric Stonewall
 
-`human.serAldricStonewall` · Legendary · Countdown 6 · Attack 3 · HP 5 · Physical · Unique · Iron Guard · Specialist (Warrior)
+`human.serAldricStonewall` · Legendary · Countdown 6 · Attack 2 · HP 4 · Physical · Unique · Iron Guard · Rally 2 · Wallbreaker · Specialist (Warrior)
 
 > Hold the line. Then hold the line again.
 
-Purpose: the Human Specialist. He is the wall that the Human identity wants: Iron Guard stops a large hit, and the Warrior Class gives him the tempo Skill Cards. Power 29, budget 28, deviation +3.6% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+Purpose: the Human Specialist. He is the wall that the Human identity wants: Iron Guard stops a large hit, and the Warrior Class gives him the tempo Skill Cards. Rally 2 lifts the Units of his Lane, and Wallbreaker breaks a Wall in half the hits. Power 30, budget 28, deviation +7.1% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
 | Subject | An older Human knight with a scarred bald head and a short grey beard. |
 | Pose | He plants a tower shield in a gate and leans into it. Arrows break on the shield. |
 | Props | Blue and gold tower shield, mended plate, a broken banner behind him and a line of spent arrows. |
-| Gameplay cues | The arrows bend and fall at the shield edge to show Iron Guard. Legendary: an orange gem and a heroic last stand. |
+| Gameplay cues | The arrows bend and fall at the shield edge to show Iron Guard. A second banner in his Lane shows Rally 2, and a cracked wall behind him shows Wallbreaker. Legendary: an orange gem and a heroic last stand. |
 | Silhouette hook | The wide tower shield and the low stance. |
 | Humor note | Someone painted a small door knocker on the shield. |
 | Setting | The gate of a river town at dusk. |
@@ -591,18 +591,18 @@ Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero p
 
 ### 3.16 Ashcaller Grosh
 
-`orc.ashcallerGrosh` · Legendary · Countdown 5 · Attack 2 · HP 4 · Fire · Unique · Bolt 2 · Specialist (Mage)
+`orc.ashcallerGrosh` · Legendary · Countdown 6 · Attack 2 · HP 4 · Fire · Unique · Bolt 2 · Mid-range · Resistance 2 · Specialist (Mage)
 
 > Everything burns. Some things burn on a schedule.
 
-Purpose: the Orc Specialist. Bolt 2 gives the Orc identity a Mage: damage that arrives in each Start Phase, without an attack. Power 25, budget 25, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+Purpose: the Orc Specialist. Bolt 2 gives the Orc identity a Mage: damage that arrives in each Start Phase, without an attack. Mid-range lets him burn from the second Square, and Resistance 2 keeps him alive against the Fire and Frost of a Mage. Power 30, budget 28, deviation +7.1% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
 | Subject | A tall, thin Orc shaman with white ash paint and burned hands. |
 | Pose | He holds a staff over a brass brazier and calls two fire bolts from the coals. |
 | Props | Ash-caked staff, brass brazier, hanging iron runes and a small hourglass. |
-| Gameplay cues | Two fire bolts show Bolt 2. The hourglass shows the Start Phase. Legendary: an orange gem and a heroic scene. |
+| Gameplay cues | Two fire bolts show Bolt 2. The hourglass shows the Start Phase. A charred cloak that no flame can burn shows Resistance 2. Legendary: an orange gem and a heroic scene. |
 | Silhouette hook | The raised staff and the two bolts. |
 | Humor note | He keeps a list of things to burn, and the list is on fire. |
 | Setting | A red mesa camp with a cold wind. |
@@ -883,18 +883,18 @@ Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race
 
 ### 4.16 Warden Saelith
 
-`elf.wardenSaelith` · Legendary · Countdown 5 · Attack 2 · HP 5 · Physical · Unique · Long-range · Spawnbane 2 · Specialist (Ranger)
+`elf.wardenSaelith` · Legendary · Countdown 5 · Attack 2 · HP 4 · Physical · Unique · Long-range · Spawnbane 2 · Heal 2 · Specialist (Ranger)
 
 > Every gate has a warden. This one shoots first.
 
-Purpose: the Elf Specialist. She punishes the enemy summon: Spawnbane 2 hits each Unit from a Creature Card before it can use Sabotage or Summon, and Long-range keeps her behind the front. Power 25, budget 25, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+Purpose: the Elf Specialist. She punishes the enemy summon: Spawnbane 2 hits each Unit from a Creature Card before it can use Sabotage or Summon, and Long-range keeps her behind the front. Heal 2 mends the most hurt Unit of her Side in each Start Phase. Power 26, budget 25, deviation +4% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
 | Subject | A tall Elf warden with a braided dark braid and a leaf-shaped mask on her belt. |
 | Pose | She draws a longbow on a root bridge and aims down at a summoning circle. |
 | Props | Longbow, green and amber arrow, root bridge, a broken summoning circle below. |
-| Gameplay cues | The long shot shows Long-range. The arrow splits the circle to show Spawnbane. Legendary: an orange gem and a heroic scene. |
+| Gameplay cues | The long shot shows Long-range. The arrow splits the circle to show Spawnbane. A green glow around a hurt ally shows Heal 2. Legendary: an orange gem and a heroic scene. |
 | Silhouette hook | The drawn longbow and the high braid. |
 | Humor note | A small sign on the bridge says "No summoning. Yes, we mean you." |
 | Setting | An ancient forest gate at first light. |
@@ -1179,18 +1179,18 @@ Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budge
 
 ### 5.16 Pale Cantor Ysolde
 
-`undead.paleCantorYsolde` · Legendary · Countdown 5 · Attack 3 · HP 4 · Physical · Unique · Soul Harvest · Specialist (Priest)
+`undead.paleCantorYsolde` · Legendary · Countdown 6 · Attack 2 · HP 4 · Physical · Unique · Soul Harvest · Rebirth · Dispel · Specialist (Priest)
 
 > She sings the dead into a better shape.
 
-Purpose: the Undead Specialist. Soul Harvest makes her grow with each kill, and the Priest Class gives her the healing and Ward that an Undead front needs. Power 25, budget 25, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+Purpose: the Undead Specialist. Soul Harvest makes her grow with each kill, and the Priest Class gives her the healing and Ward that an Undead front needs. Rebirth brings her back one time, and Dispel clears 1 Debuff from a friendly Unit in each Start Phase. Power 29, budget 28, deviation +3.6% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
 | Subject | A pale, calm Undead cantor in a high-collared coat, with a silver hymn book. |
 | Pose | She sings with one hand raised. Pale threads leave a fallen foe and enter her chest. |
 | Props | Silver hymn book, tattered teal stole, a ring of bowed ghostly heads. |
-| Gameplay cues | The threads show Soul Harvest. Her posture is steady, not fierce. Legendary: an orange gem and a heroic scene. |
+| Gameplay cues | The threads show Soul Harvest. A shadow that takes her place shows Rebirth, and a black wisp that leaves an ally shows Dispel. Legendary: an orange gem and a heroic scene. |
 | Silhouette hook | The raised hand and the open hymn book. |
 | Humor note | The ghostly choir is slightly off-key, and she notices. |
 | Setting | A flooded grave court with dead willows. |
@@ -1473,18 +1473,18 @@ Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns 
 
 ### 6.16 Grix Ratwhistle
 
-`goblin.grixRatwhistle` · Legendary · Countdown 6 · Attack 4 · HP 4 · Physical · Unique · Hero's Bane · Specialist (Ranger)
+`goblin.grixRatwhistle` · Legendary · Countdown 6 · Attack 3 · HP 4 · Physical · Unique · Hero's Bane · Mid-range · Quick Study · Specialist (Ranger)
 
 > He does not aim at you. He aims at the one behind you.
 
-Purpose: the Goblin Specialist. Hero's Bane puts 1 Physical damage on the enemy Hero in each Start Phase, so a Goblin Deck can win without crossing the Board. Power 28, budget 28, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+Purpose: the Goblin Specialist. Hero's Bane puts 1 Physical damage on the enemy Hero in each Start Phase, so a Goblin Deck can win without crossing the Board. Mid-range lets him shoot from the second Square, and Quick Study takes 1 Countdown from the slowest card of his Hand each time an enemy Hero plays a Skill Card. Power 28, budget 28, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
 | Subject | A small, wiry Goblin ranger with a long nose, brass goggles and a whistle on a cord. |
 | Pose | He kneels on a crate and aims a long, patched rifle over the viewer, past the front line. |
 | Props | Long rifle, rat companions with tiny whistles, a range chart, a bent scope. |
-| Gameplay cues | The shot goes past the nearest Unit to a distant banner to show Hero's Bane. Legendary: an orange gem and a heroic scene. |
+| Gameplay cues | The shot goes past the nearest Unit to a distant banner to show Hero's Bane. A second step back from the front shows Mid-range, and a card that ticks down in his hand shows Quick Study. Legendary: an orange gem and a heroic scene. |
 | Silhouette hook | The long rifle and the tall goggles. |
 | Humor note | The range chart has one entry: "hero, far". |
 | Setting | A mine workshop with rails and hanging lamps. |
@@ -1767,18 +1767,18 @@ Purpose: the named Feral Epic: a huge Frost attacker that Tramples, and its bite
 
 ### 7.16 Gorehorn Red Maw
 
-`feral.gorehornRedMaw` · Legendary · Countdown 6 · Attack 2 · HP 6 · Physical · Unique · Vampirism · Specialist (Priest)
+`feral.gorehornRedMaw` · Legendary · Countdown 6 · Attack 2 · HP 5 · Physical · Unique · Vampirism · Bleed 2 · Piercing · Specialist (Priest)
 
 > It eats what it kills. Then it keeps the leftovers.
 
-Purpose: the Feral Specialist. Vampirism turns each Physical hit into HP, so a huge Feral Unit stays on the Board without a healer. Power 27, budget 28, deviation -3.6% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md)).
+Purpose: the Feral Specialist. Vampirism turns each Physical hit into HP, so a huge Feral Unit stays on the Board without a healer. Bleed 2 takes half of each heal of the Unit it hits, and Piercing makes its damage too strong to be reduced. Power 30, budget 28, deviation +7.1% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
 | Subject | A huge, shaggy red-furred beast with two forward horns and a wide, stained jaw. |
 | Pose | It lowers its head and charges, and red light runs from its horns back into its chest. |
 | Props | Broken cave bones, a trampled banner, red light threads. |
-| Gameplay cues | The red threads from the wound to the beast show Vampirism. The heavy stance shows the high HP. Legendary: an orange gem and a heroic scene. |
+| Gameplay cues | The red threads from the wound to the beast show Vampirism. A dripping wound on its foe shows Bleed 2, and a shield that does not stop it shows Piercing. Legendary: an orange gem and a heroic scene. |
 | Silhouette hook | The two forward horns and the huge shoulders. |
 | Humor note | It drags a very small, very bent dinner plate. |
 | Setting | A deep cave mouth at dusk. |

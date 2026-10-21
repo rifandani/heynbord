@@ -70,6 +70,7 @@ const vampire = () => {
     owner: "player",
     position: 4,
     hp: 3,
+    maxHp: 6,
   });
   const target = dummy(state, "enemy", 5);
   return { ctx: contextOf(state), gorehorn, target };
@@ -268,7 +269,7 @@ describe("Specialist Keywords (ADR-0050)", () => {
       expect(grown.soulHarvestBonus).toBe(1);
       expect(grown.maxHp).toBe(5);
       expect(grown.hp).toBe(5);
-      expect(attackOf(after, grown)).toBe(4);
+      expect(attackOf(after, grown)).toBe(3);
       expect(eventsOfType(events, "SoulHarvestGained")).toEqual([
         expect.objectContaining({ unitId: ysolde.id, soulHarvest: 1, hp: 5 }),
       ]);
@@ -418,6 +419,188 @@ describe("Specialist Keywords (ADR-0050)", () => {
         crit: 0,
       });
       expect(gorehorn.hp).toBe(3);
+    });
+  });
+});
+
+describe("The second Specialist Keywords (ADR-0056)", () => {
+  describe("Wallbreaker", () => {
+    it("doubles the damage to a Unit with Wall", () => {
+      const state = emptyBattle();
+      const aldric = placeUnit(state, {
+        cardId: "human.serAldricStonewall",
+        owner: "player",
+        position: 4,
+      });
+      const wall = dummy(state, "enemy", 5, { wall: true });
+      damageUnit(contextOf(state), wall, {
+        amount: 2,
+        damageType: "physical",
+        source: "attack",
+        dealer: unitDealer(aldric),
+        crit: 0,
+      });
+      expect(wall.hp).toBe(16);
+    });
+
+    it("does not change the damage to a Unit without Wall", () => {
+      const state = emptyBattle();
+      const aldric = placeUnit(state, {
+        cardId: "human.serAldricStonewall",
+        owner: "player",
+        position: 4,
+      });
+      const target = dummy(state, "enemy", 5);
+      damageUnit(contextOf(state), target, {
+        amount: 2,
+        damageType: "physical",
+        source: "attack",
+        dealer: unitDealer(aldric),
+        crit: 0,
+      });
+      expect(target.hp).toBe(18);
+    });
+  });
+
+  describe("Resistance N", () => {
+    it("reduces Fire damage by N, and not Physical damage", () => {
+      const state = emptyBattle();
+      const grosh = placeUnit(state, {
+        cardId: "orc.ashcallerGrosh",
+        owner: "player",
+        position: 4,
+        hp: 10,
+        maxHp: 10,
+      });
+      const ctx = contextOf(state);
+      damageUnit(ctx, grosh, {
+        amount: 5,
+        damageType: "fire",
+        source: "skill",
+        dealer: skillDealer,
+        crit: 0,
+      });
+      expect(grosh.hp).toBe(7);
+      damageUnit(ctx, grosh, {
+        amount: 5,
+        damageType: "physical",
+        source: "skill",
+        dealer: skillDealer,
+        crit: 0,
+      });
+      expect(grosh.hp).toBe(2);
+    });
+  });
+
+  describe("Piercing", () => {
+    it("ignores Bulwark and the Ward of the target", () => {
+      const state = emptyBattle();
+      const gorehorn = placeUnit(state, {
+        cardId: "feral.gorehornRedMaw",
+        owner: "player",
+        position: 4,
+      });
+      const target = dummy(state, "enemy", 5, { bulwark: 2, ward: 5 });
+      damageUnit(contextOf(state), target, {
+        amount: 4,
+        damageType: "physical",
+        source: "attack",
+        dealer: unitDealer(gorehorn),
+        crit: 0,
+      });
+      expect(target.hp).toBe(16);
+      expect(target.ward).toBe(5);
+    });
+  });
+
+  describe("Quick Study", () => {
+    it("takes the Countdown of the card with the highest Countdown in the Hand", () => {
+      const state = emptyBattle({ activeSide: "enemy" });
+      placeUnit(state, {
+        cardId: "goblin.grixRatwhistle",
+        owner: "player",
+        position: 4,
+      });
+      giveHand(state, "player", [
+        ["human.militiaRecruit", 2],
+        ["human.shieldbearer", 5],
+      ]);
+      giveHand(state, "enemy", [["mage.spark", 0]]);
+      const { state: after } = run(state, play(square(0, 4)));
+      const hand = after.sides.player.heroes[0]?.hand ?? [];
+      expect(hand.map((card) => card.countdown)).toEqual([2, 4]);
+    });
+
+    it("does nothing when the enemy plays a Creature Card", () => {
+      const state = emptyBattle({ activeSide: "enemy" });
+      placeUnit(state, {
+        cardId: "goblin.grixRatwhistle",
+        owner: "player",
+        position: 4,
+      });
+      giveHand(state, "player", [["human.militiaRecruit", 2]]);
+      giveHand(state, "enemy", [["human.militiaRecruit", 0]]);
+      const { state: after } = run(state, play(square(0, 9)));
+      const hand = after.sides.player.heroes[0]?.hand ?? [];
+      expect(hand.map((card) => card.countdown)).toEqual([2]);
+    });
+  });
+
+  describe("Heal N", () => {
+    it("heals the friendly Unit with the lowest HP", () => {
+      const state = emptyBattle();
+      placeUnit(state, {
+        cardId: "elf.wardenSaelith",
+        owner: "player",
+        position: 0,
+      });
+      const hurt = dummy(state, "player", 1, { hp: 3, maxHp: 8 });
+      const other = dummy(state, "player", 2, { hp: 5, maxHp: 8 });
+      const { state: after } = nextPlayerStart(state);
+      expect(unitById(after, hurt.id)?.hp).toBe(5);
+      expect(unitById(after, other.id)?.hp).toBe(5);
+    });
+
+    it("does not heal a friendly Unit at its maximum HP", () => {
+      const state = emptyBattle();
+      placeUnit(state, {
+        cardId: "elf.wardenSaelith",
+        owner: "player",
+        position: 0,
+      });
+      const full = dummy(state, "player", 1, { hp: 8, maxHp: 8 });
+      const { state: after } = nextPlayerStart(state);
+      expect(unitById(after, full.id)?.hp).toBe(8);
+    });
+  });
+
+  describe("Dispel", () => {
+    it("removes 1 Debuff from a friendly Unit", () => {
+      // The random state 3 makes the 20% roll succeed.
+      const state = emptyBattle({ random: 3 });
+      placeUnit(state, {
+        cardId: "undead.paleCantorYsolde",
+        owner: "player",
+        position: 0,
+      });
+      const bleeding = dummy(state, "player", 1, { bleeding: 3 });
+      const { state: after, events } = nextPlayerStart(state);
+      expect(unitById(after, bleeding.id)?.bleeding).toBe(0);
+      expect(eventsOfType(events, "DebuffRemoved")).toHaveLength(1);
+    });
+
+    it("keeps the Debuff when the roll fails", () => {
+      // The random state 1 makes the 20% roll fail.
+      const state = emptyBattle({ random: 1 });
+      placeUnit(state, {
+        cardId: "undead.paleCantorYsolde",
+        owner: "player",
+        position: 0,
+      });
+      const bleeding = dummy(state, "player", 1, { bleeding: 3 });
+      const { state: after, events } = nextPlayerStart(state);
+      expect(unitById(after, bleeding.id)?.bleeding).toBe(3);
+      expect(eventsOfType(events, "DebuffRemoved")).toEqual([]);
     });
   });
 });

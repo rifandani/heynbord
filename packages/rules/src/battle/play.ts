@@ -30,6 +30,7 @@ import {
   unitDealer,
 } from "./context";
 import { damageHero, damageUnit } from "./damage";
+import { removeDebuffs } from "./debuffs";
 import { healUnit } from "./heal";
 import {
   activateSwarm,
@@ -328,39 +329,6 @@ const giveBonusRange = (
   );
 };
 
-/** True when `unit` has a Debuff (rules CONTEXT: Debuff). */
-const hasDebuff = (unit: UnitState): boolean =>
-  unit.burn > 0 ||
-  unit.frozen ||
-  unit.paralyzed ||
-  unit.entangled ||
-  unit.poisoned > 0 ||
-  unit.hobbled > 0 ||
-  unit.bleeding > 0 ||
-  unit.grounded > 0 ||
-  unit.exposed > 0;
-
-/**
- * Cleanse (GDD 5.5): all Debuffs of the Unit end. Its Buffs (Ward and
- * Steadfast) stay. A Unit with no Debuff gets no event.
- */
-const removeDebuffs = (ctx: StepContext, unit: UnitState): void => {
-  if (!hasDebuff(unit)) {
-    return;
-  }
-  unit.burn = 0;
-  unit.frozen = false;
-  unit.paralyzed = false;
-  unit.entangled = false;
-  unit.poisoned = 0;
-  unit.hobbled = 0;
-  unit.bleeding = 0;
-  unit.grounded = 0;
-  unit.exposed = 0;
-  unit.exposedTurns = 0;
-  ctx.events.push(BattleEvent.DebuffsRemoved({ unitId: unit.id }));
-};
-
 /**
  * Bonus Bulwark from a Skill Card (GDD 4.8). The Unit keeps the higher bonus,
  * and for the same bonus, the longer duration. A bonus that changes nothing
@@ -383,6 +351,46 @@ const giveBonusBulwark = (
   ctx.events.push(
     BattleEvent.BulwarkGained({ unitId: unit.id, bulwark, turns })
   );
+};
+
+/**
+ * Quick Study (ADR-0056): when an enemy Hero plays a Skill Card, the card with
+ * the highest Countdown in the Hand of the Hero of each Unit with Quick Study
+ * goes down by 1. On a tie, the oldest card in the Hand goes first. A card
+ * that is Ready has a Countdown of 0: nothing changes, so the Keyword does
+ * not activate.
+ */
+const quickStudy = (ctx: StepContext, caster: HeroRef): void => {
+  const enemy = otherSide(caster.side);
+  for (const unit of ctx.state.units) {
+    if (unit.owner !== enemy || !unit.quickStudy) {
+      continue;
+    }
+    const owner = ownerOf(unit);
+    const { hand } = heroState(ctx.state, owner);
+    let target: HandCard | undefined;
+    for (const card of hand) {
+      if (
+        card.countdown > 0 &&
+        (!target || card.countdown > target.countdown)
+      ) {
+        target = card;
+      }
+    }
+    if (!target) {
+      continue;
+    }
+    activateKeyword(ctx, unit, "quickStudy");
+    target.countdown = Math.max(0, target.countdown - 1);
+    ctx.events.push(
+      BattleEvent.CountdownChanged({
+        side: owner.side,
+        hero: owner.hero,
+        instanceId: target.instanceId,
+        countdown: target.countdown,
+      })
+    );
+  }
 };
 
 /** The Skill Card effect types that damage enemy Units, then control the Units that survive. */
@@ -973,5 +981,6 @@ export const playCard = (
     }
     return;
   }
+  quickStudy(ctx, caster);
   castSkill(ctx, caster, card, definition, target);
 };

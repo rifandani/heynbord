@@ -36,6 +36,8 @@ const flagPoints = (on: true | undefined, points: number): number =>
  * Speed and 1 point for each Square of Range.
  * The Specialist Keywords (ADR-0050): Bolt N = N × 3, Iron Guard = 6,
  * Soul Harvest = 5, Hero's Bane = 4, Spawnbane N = N × 2 and Vampirism = 6.
+ * The second Specialist Keywords (ADR-0056): Wallbreaker = 4, Resistance
+ * N = N × 3, Quick Study = 4, Piercing = 4, Heal N = N × 2 and Dispel = 4.
  */
 const keywordPoints = (keywords: TokenKeywords, rank: RankId): number => {
   const valueAtRank = (amount: KeywordAmount | undefined) =>
@@ -71,7 +73,13 @@ const keywordPoints = (keywords: TokenKeywords, rank: RankId): number => {
     flagPoints(keywords.soulHarvest, 5) +
     flagPoints(keywords.herosBane, 4) +
     stackPoints(valueAtRank(keywords.spawnbane), 2) +
-    flagPoints(keywords.vampirism, 6)
+    flagPoints(keywords.vampirism, 6) +
+    flagPoints(keywords.wallbreaker, 2) +
+    stackPoints(valueAtRank(keywords.resistance), 2) +
+    flagPoints(keywords.quickStudy, 3) +
+    flagPoints(keywords.piercing, 3) +
+    stackPoints(valueAtRank(keywords.heal), 2) +
+    flagPoints(keywords.dispel, 3)
   );
 };
 

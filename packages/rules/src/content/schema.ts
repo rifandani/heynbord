@@ -198,6 +198,38 @@ const tokenKeywordFields = {
    * (ADR-0050). The heal stops at its maximum HP.
    */
   vampirism: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * The damage that this Unit deals to a Unit with Wall is doubled
+   * (ADR-0056). The hit is doubled before Bulwark, Exposed, Crit, Block and
+   * Ward, so those rules still apply.
+   */
+  wallbreaker: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * Reduces Fire, Frost, Holy and Lightning damage to this Unit by N
+   * (ADR-0056). It does not reduce Physical damage: Bulwark does that.
+   */
+  resistance: Schema.optionalKey(KeywordAmount),
+  /**
+   * When an enemy Hero plays a Skill Card, the card with the highest Countdown
+   * in the Hand of the Hero of this Unit goes down by 1 (ADR-0056).
+   */
+  quickStudy: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * The damage that this Unit deals cannot be reduced (ADR-0056): it ignores
+   * Bulwark, Resistance, Ward, Block and the Iron Guard cap. It keeps its Crit
+   * and its Exposed bonus.
+   */
+  piercing: Schema.optionalKey(Schema.Literal(true)),
+  /**
+   * In each Start Phase of its owner, the friendly Unit with the lowest HP
+   * heals N HP (ADR-0056).
+   */
+  heal: Schema.optionalKey(KeywordAmount),
+  /**
+   * In each Start Phase of its owner, this Unit has a 20% chance to remove 1
+   * Debuff from a random friendly Unit (ADR-0056).
+   */
+  dispel: Schema.optionalKey(Schema.Literal(true)),
 };
 
 const TokenKeywords = Schema.Struct(tokenKeywordFields);

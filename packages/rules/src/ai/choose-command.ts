@@ -90,7 +90,13 @@ const lastingAttack = (unit: UnitState): number =>
   unit.attack + unit.heroicBonus;
 
 const unitValue = (unit: UnitState): number =>
-  lastingAttack(unit) * 2 + unit.hp + unit.speed * 2 + unit.bulwark * 3;
+  lastingAttack(unit) * 2 +
+  unit.hp +
+  unit.speed * 2 +
+  unit.bulwark * 3 +
+  // The Resistance of a Unit (ADR-0056) is worth less than its Bulwark: it
+  // reduces only the Damage Types that are not Physical.
+  unit.resistance * 2;
 
 /** The danger of the other side's Units in a Lane. Units near our Hero count more. */
 const laneThreat = (state: BattleState, side: Side, lane: number): number =>
@@ -347,7 +353,12 @@ const scoreCreature = (
     (keywords.soulHarvest ? 4 : 0) +
     (keywords.herosBane ? 3 : 0) +
     keywordValue(keywords.spawnbane, card.rank) * 2 +
-    (keywords.vampirism ? 4 : 0);
+    (keywords.vampirism ? 4 : 0) +
+    (keywords.wallbreaker ? 3 : 0) +
+    (keywords.quickStudy ? 2 : 0) +
+    (keywords.piercing ? 3 : 0) +
+    keywordValue(keywords.heal, card.rank) * 2 +
+    (keywords.dispel ? 2 : 0);
   const pivot =
     (keywords.pivot ?? false) && !isRangedRange(keywordRange(keywords));
   const pressure = blocksLane(state, side, target.lane, target.position, pivot)
@@ -433,7 +444,7 @@ const mageUnits = (
   });
 };
 
-/** The damage of a hit of `value` on `unit`, after Bulwark, Exposed and Ward. */
+/** The damage of a hit of `value` on `unit`, after Bulwark, Resistance, Exposed and Ward. */
 const hitOn = (
   unit: UnitState,
   value: number,
@@ -442,12 +453,17 @@ const hitOn = (
   const physical = damageType === "physical";
   // Bulwark reduces only Physical damage (ADR-0031).
   const bulwark = physical ? unit.bulwark + unit.bonusBulwark : 0;
+  // Resistance reduces the other Damage Types (ADR-0056).
+  const resistance = physical ? 0 : unit.resistance;
   // Exposed adds to a Physical hit after Bulwark (GDD 4.7, step 4).
   const exposed = physical ? unit.exposed : 0;
   // A Ward absorbs the damage after Bulwark (GDD 4.7, step 8).
   return {
     unit,
-    damage: Math.max(0, Math.max(0, value - bulwark) + exposed - unit.ward),
+    damage: Math.max(
+      0,
+      Math.max(0, value - bulwark - resistance) + exposed - unit.ward
+    ),
   };
 };
 

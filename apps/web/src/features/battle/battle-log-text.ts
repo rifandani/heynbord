@@ -503,6 +503,9 @@ const effectLine = (
     case "DebuffsRemoved": {
       return line("cleansed", { unit: unitArg(context, event.unitId) });
     }
+    case "DebuffRemoved": {
+      return line("dispelled", { unit: unitArg(context, event.unitId) });
+    }
     case "BulwarkGained": {
       return line("bulwark", {
         unit: unitArg(context, event.unitId),

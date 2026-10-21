@@ -268,6 +268,8 @@ export const placeUnit = (
       readonly swarm?: number;
       /** Test setup: gives the Unit the Retaliate Keyword. */
       readonly retaliate?: boolean;
+      /** Test setup: replaces the printed Bulwark. */
+      readonly bulwark?: number;
       /** Test setup: replaces the printed Damage Type. */
       readonly damageType?: UnitState["damageType"];
     }
@@ -319,6 +321,7 @@ export const placeUnit = (
     firstStrike: options.firstStrike ?? unit.firstStrike,
     swarm: options.swarm ?? unit.swarm,
     retaliate: options.retaliate ?? unit.retaliate,
+    bulwark: options.bulwark ?? unit.bulwark,
     damageType: options.damageType ?? unit.damageType,
   };
   state.nextId += 1;

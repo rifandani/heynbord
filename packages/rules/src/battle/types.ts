@@ -220,6 +220,21 @@ export interface UnitState {
   readonly spawnbane: number;
   /** Heals HP equal to the Physical damage that it deals (ADR-0050). */
   readonly vampirism: boolean;
+  /** The damage that it deals to a Unit with Wall is doubled (ADR-0056). */
+  readonly wallbreaker: boolean;
+  /** Reduces Fire, Frost, Holy and Lightning damage to this Unit by N. */
+  readonly resistance: number;
+  /**
+   * When an enemy Hero plays a Skill Card, the card with the highest Countdown
+   * in the Hand of the Hero of this Unit goes down by 1 (ADR-0056).
+   */
+  readonly quickStudy: boolean;
+  /** The damage that it deals cannot be reduced (ADR-0056). */
+  readonly piercing: boolean;
+  /** In each Start Phase of its owner, the friendly Unit with the lowest HP heals N HP. */
+  readonly heal: number;
+  /** In each Start Phase of its owner, a 20% chance to remove 1 Debuff from a random friendly Unit. */
+  readonly dispel: boolean;
   /** The Turn number of the summon, also of a Token. Charge uses it. */
   readonly summonedTurn: number;
   /** End Phases of Burn that are left. */
@@ -380,6 +395,15 @@ export type DamageDealer =
       readonly _tag: "Unit";
       readonly unitId: number;
       readonly hero: HeroRef;
+      /**
+       * The damage of this Unit cannot be reduced (Piercing, ADR-0056).
+       */
+      readonly piercing?: boolean;
+      /**
+       * The damage of this Unit to a Unit with Wall is doubled (Wallbreaker,
+       * ADR-0056).
+       */
+      readonly wallbreaker?: boolean;
     }
   | { readonly _tag: "Hero"; readonly hero: HeroRef };
 
@@ -605,6 +629,11 @@ export type BattleEvent = Data.TaggedEnum<{
    * Debuff gets no event.
    */
   DebuffsRemoved: { readonly unitId: number };
+  /**
+   * The Dispel Keyword (ADR-0056) ended 1 Debuff of the Unit: the one that
+   * the Battle seed picked. The other Debuffs stay.
+   */
+  DebuffRemoved: { readonly unitId: number };
   /** A Skill Card put a Field Effect on the Board (GDD 4.8). */
   FieldEffectPlaced: { readonly field: Readonly<FieldEffect> };
   /**

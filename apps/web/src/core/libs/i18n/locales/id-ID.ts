@@ -267,6 +267,7 @@ export default {
       status: "{unit} mendapat {status}.",
       steadfast: "{unit} tetap pada 1 HP.",
       cleansed: "Semua Debuff {unit} berakhir.",
+      dispelled: "1 Debuff dari {unit} berakhir.",
       bulwark: "{unit} mendapat Benteng +{value}.",
       attackBonus: "{unit} mendapat Serangan +{value}.",
       heroicBonus: "Bonus Heroik {unit} sekarang Serangan +{value}.",
@@ -1973,12 +1974,14 @@ export default {
     bolt: "Sambaran {value}",
     bulwark: "Benteng {value}",
     charge: "Terjang {value}",
+    dispel: "Singkirkan",
     entangle: "Jerat",
     extremeRange: "Jangkauan Ekstrem",
     firstStrike: "Serang Duluan",
     fleet: "Lesat",
     flying: "Terbang",
     heavy: "Berat",
+    heal: "Pulihkan {value}",
     heroic: "Heroik {value}",
     herosBane: "Bencana Pahlawan",
     hobble: "Pincang {value}",
@@ -1987,11 +1990,14 @@ export default {
     lastBreath: "Nafas Terakhir {value}",
     longRange: "Jangkauan Jauh",
     midRange: "Jangkauan Sedang",
+    piercing: "Tembus",
     pivot: "Berbalik",
     poison: "Racun",
+    quickStudy: "Pelajaran Cepat",
     rebirth: "Bangkit",
     rally: "Semangat {value}",
     regenerate: "Regenerasi {value}",
+    resistance: "Ketahanan {value}",
     retaliate: "Balas",
     sabotage: "Sabotase {value}",
     soulHarvest: "Panen Jiwa",
@@ -2003,6 +2009,7 @@ export default {
     unique: "Unik",
     vampirism: "Vampirisme",
     wall: "Tembok",
+    wallbreaker: "Pemecah Tembok",
     ranged: "Jarak Jauh {value}",
     melee: "Jarak Dekat",
   },
@@ -2012,16 +2019,21 @@ export default {
     bolt: "Pada tiap Fase Awal-mu, Unit ini memberi {value} damage sesuai Tipe Damage-nya ke Unit musuh acak atau Pahlawan musuh.",
     bulwark: "Mengurangi damage Fisik ke Unit ini sebesar {value}.",
     charge: "+{value} Kecepatan pada Giliran saat Unit ini dipanggil.",
+    dispel:
+      "Pada Fase Awal-mu, Unit ini punya peluang 20% untuk menghapus 1 Debuff dari Unit kawan acak.",
     entangle:
       "Unit musuh yang diserangnya punya Kecepatan 0 pada aksi berikutnya. Unit itu masih dapat menyerang.",
     extremeRange: "+3 Jangkauan.",
     fleet: "+2 Kecepatan.",
     heavy: "−1 Kecepatan.",
+    heal: "Pada Fase Awal-mu, Unit kawan dengan HP terendah memulihkan {value} HP.",
     herosBane:
       "Pada tiap Fase Awal-mu, Unit ini memberi 1 damage Fisik ke Pahlawan musuh di depannya.",
     ironGuard: "Tiap damage Fisik ke Unit ini paling banyak 4.",
     longRange: "+2 Jangkauan.",
     midRange: "+1 Jangkauan.",
+    piercing:
+      "Damage yang diberikan Unit ini tidak dapat dikurangi: ia mengabaikan Benteng, Ketahanan, Ward, dan Block.",
     swift: "+1 Kecepatan.",
     firstStrike:
       "Saat Unit musuh jarak dekat menyerang Unit ini, Unit ini memberi damage lebih dulu. Jika penyerang mati, serangannya tidak terjadi.",
@@ -2039,9 +2051,13 @@ export default {
       "Unit ini dapat menyerang Unit musuh tepat di belakangnya atau di sebelahnya, sebelum Unit di depannya. Lalu ia tidak bergerak.",
     poison:
       "Setelah Unit ini memberi damage serangan di atas 0, Unit itu mendapat 1 tumpukan Racun. Pada tiap Fase Akhir pemiliknya, ia menerima 1 damage per tumpukan, lalu kehilangan 1 tumpukan.",
+    quickStudy:
+      "Saat Pahlawan musuh plays Kartu Skill, kartu dengan Hitung mundur tertinggi di Tangan-mu turun 1.",
     rally:
       "Pada Fase Awal-mu, Unit kawan lain dalam Jalur yang sama mendapat +{value} Serangan sampai akhir Giliran. Unit dengan Serangan Dasar 0 tidak mendapat bonus.",
     regenerate: "Pada Fase Awal-mu, Unit ini memulihkan {value} HP.",
+    resistance:
+      "Mengurangi damage Api, Es, Suci, dan Petir ke Unit ini sebesar {value}.",
     retaliate:
       "Saat Unit ini selamat dari serangan jarak dekat, ia memberi damage sebesar Serangannya ke penyerang.",
     sabotage:
@@ -2056,6 +2072,8 @@ export default {
     vampirism:
       "Saat Unit ini memberi damage Fisik, ia memulihkan HP sebesar damage itu.",
     wall: "Unit ini tidak bisa bergerak dan tidak bisa menyerang. Kamu bisa memanggilnya ke 5 Petak terdekat dengan Pahlawanmu. Ia menghalangi Unit musuh di Jalurnya, dan dorongan tidak pernah memindahkannya.",
+    wallbreaker:
+      "Damage yang diberikan Unit ini ke Unit dengan Tembok berlipat ganda.",
     rebirth:
       "Saat Unit ini mati untuk pertama kali, ia kembali di Petak yang sama dengan 1 HP. Status-nya berakhir, dan ia kehilangan Bangkit.",
     summon:

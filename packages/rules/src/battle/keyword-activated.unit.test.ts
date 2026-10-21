@@ -427,7 +427,7 @@ const SCENARIOS = {
       cardId: "feral.gorehornRedMaw",
       owner: "player",
       position: 4,
-      hp: 3,
+      hp: 1,
     });
     dummy(state, "enemy", 5);
     return {
@@ -435,6 +435,80 @@ const SCENARIOS = {
       unitId: gorehorn.id,
       side: "player",
       around: ["DamageDealt", "UnitHealed"],
+    };
+  },
+  wallbreaker: () => {
+    const state = emptyBattle();
+    const aldric = attacker(state, "human.serAldricStonewall", "player", 4);
+    dummy(state, "enemy", 5, { wall: true });
+    return {
+      events: resolve(state),
+      unitId: aldric.id,
+      side: "player",
+      around: ["UnitAttacked", "DamageDealt"],
+    };
+  },
+  piercing: () => {
+    const state = emptyBattle();
+    const gorehorn = attacker(state, "feral.gorehornRedMaw", "player", 4);
+    dummy(state, "enemy", 5, { bulwark: 2 });
+    return {
+      events: resolve(state),
+      unitId: gorehorn.id,
+      side: "player",
+      around: ["UnitAttacked", "DamageDealt"],
+    };
+  },
+  quickStudy: () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    const grix = placeUnit(state, {
+      cardId: "goblin.grixRatwhistle",
+      owner: "player",
+      position: 4,
+    });
+    giveHand(state, "player", [
+      ["human.militiaRecruit", 3],
+      ["human.shieldbearer", 5],
+    ]);
+    giveHand(state, "enemy", [["mage.spark", 0]]);
+    const { events } = run(state, play(square(0, 4)));
+    return {
+      events,
+      unitId: grix.id,
+      side: "player",
+      around: ["CardPlayed", "CountdownChanged"],
+    };
+  },
+  heal: () => {
+    const state = emptyBattle();
+    const saelith = placeUnit(state, {
+      cardId: "elf.wardenSaelith",
+      owner: "player",
+      position: 0,
+    });
+    dummy(state, "player", 1, { hp: 3, maxHp: 8 });
+    return {
+      events: nextPlayerStart(state),
+      unitId: saelith.id,
+      side: "player",
+      value: 2,
+      around: ["TurnStarted", "UnitHealed"],
+    };
+  },
+  dispel: () => {
+    // The random state 3 makes the 20% roll of the Dispel succeed.
+    const state = emptyBattle({ random: 3 });
+    const ysolde = placeUnit(state, {
+      cardId: "undead.paleCantorYsolde",
+      owner: "player",
+      position: 0,
+    });
+    dummy(state, "player", 1, { bleeding: 3 });
+    return {
+      events: nextPlayerStart(state),
+      unitId: ysolde.id,
+      side: "player",
+      around: ["TurnStarted", "DebuffRemoved"],
     };
   },
 } satisfies { readonly [K in ActivatedKeyword]: () => Scenario };
@@ -464,6 +538,7 @@ describe("KeywordActivated (GDD 5.4)", () => {
       "heavy",
       "longRange",
       "midRange",
+      "resistance",
       "swift",
       "unique",
       "wall",
@@ -717,6 +792,38 @@ describe("KeywordActivated: no effect, so no event", () => {
     expect(eventsOfType(events, "TokenSummoned")).toEqual([]);
     expect(activations(events)).toEqual([]);
   });
+
+  it("Quick Study: the Hand of the Hero of the Unit is empty", () => {
+    const state = emptyBattle({ activeSide: "enemy" });
+    placeUnit(state, {
+      cardId: "goblin.grixRatwhistle",
+      owner: "player",
+      position: 4,
+    });
+    giveHand(state, "enemy", [["mage.spark", 0]]);
+    const { events } = run(state, play(square(0, 4)));
+    expect(activations(events, "quickStudy")).toEqual([]);
+  });
+
+  it("Heal: no friendly Unit is below its maximum HP", () => {
+    const state = emptyBattle();
+    placeUnit(state, {
+      cardId: "elf.wardenSaelith",
+      owner: "player",
+      position: 0,
+    });
+    expect(activations(nextPlayerStart(state), "heal")).toEqual([]);
+  });
+
+  it("Dispel: no friendly Unit has a Debuff", () => {
+    const state = emptyBattle({ random: 3 });
+    placeUnit(state, {
+      cardId: "undead.paleCantorYsolde",
+      owner: "player",
+      position: 0,
+    });
+    expect(activations(nextPlayerStart(state), "dispel")).toEqual([]);
+  });
 });
 
 describe("KeywordActivated: hidden information", () => {
@@ -742,11 +849,15 @@ describe("The source of DamageDealt and the Hero of CardPlayed", () => {
       _tag: "Unit",
       unitId: expect.any(Number),
       hero: { side: "player", hero: 0 },
+      piercing: false,
+      wallbreaker: false,
     });
     expect(back?.dealer).toEqual({
       _tag: "Unit",
       unitId: SCENARIOS.retaliate().unitId,
       hero: { side: "enemy", hero: 0 },
+      piercing: false,
+      wallbreaker: false,
     });
     const lastBreath = SCENARIOS.lastBreath();
     expect(
@@ -757,6 +868,8 @@ describe("The source of DamageDealt and the Hero of CardPlayed", () => {
       _tag: "Unit",
       unitId: lastBreath.unitId,
       hero: { side: "enemy", hero: 0 },
+      piercing: false,
+      wallbreaker: false,
     });
   });
 

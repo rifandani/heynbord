@@ -266,6 +266,7 @@ export default {
       status: "{unit} gets {status}.",
       steadfast: "{unit} stays at 1 HP.",
       cleansed: "All Debuffs of {unit} end.",
+      dispelled: "1 Debuff of {unit} ends.",
       bulwark: "{unit} gets Bulwark +{value}.",
       attackBonus: "{unit} gets Attack +{value}.",
       heroicBonus: "{unit} now has a Heroic bonus of Attack +{value}.",
@@ -1935,12 +1936,14 @@ export default {
     bolt: "Bolt {value}",
     bulwark: "Bulwark {value}",
     charge: "Charge {value}",
+    dispel: "Dispel",
     entangle: "Entangle",
     extremeRange: "Extreme-range",
     firstStrike: "First Strike",
     fleet: "Fleet",
     flying: "Flying",
     heavy: "Heavy",
+    heal: "Heal {value}",
     heroic: "Heroic {value}",
     herosBane: "Hero's Bane",
     hobble: "Hobble {value}",
@@ -1949,11 +1952,14 @@ export default {
     lastBreath: "Last Breath {value}",
     longRange: "Long-range",
     midRange: "Mid-range",
+    piercing: "Piercing",
     pivot: "Pivot",
     poison: "Poison",
+    quickStudy: "Quick Study",
     rebirth: "Rebirth",
     rally: "Rally {value}",
     regenerate: "Regenerate {value}",
+    resistance: "Resistance {value}",
     retaliate: "Retaliate",
     sabotage: "Sabotage {value}",
     soulHarvest: "Soul Harvest",
@@ -1965,6 +1971,7 @@ export default {
     unique: "Unique",
     vampirism: "Vampirism",
     wall: "Wall",
+    wallbreaker: "Wallbreaker",
     ranged: "Ranged {value}",
     melee: "Melee",
   },
@@ -1974,16 +1981,21 @@ export default {
     bolt: "In each of your Start Phases, this Unit deals {value} damage of its Damage Type to a random enemy Unit or Hero.",
     bulwark: "Reduces Physical damage to this Unit by {value}.",
     charge: "+{value} Speed in the Turn when you summon this Unit.",
+    dispel:
+      "In your Start Phase, this Unit has a 20% chance to remove 1 Debuff from a random friendly Unit.",
     entangle:
       "The enemy Unit it hits has Speed 0 in its next action. That Unit can still attack.",
     extremeRange: "+3 Range.",
     fleet: "+2 Speed.",
     heavy: "−1 Speed.",
+    heal: "In your Start Phase, the friendly Unit with the lowest HP heals {value} HP.",
     herosBane:
       "In each of your Start Phases, this Unit deals 1 Physical damage to the enemy Hero in front of it.",
     ironGuard: "Each Physical hit on this Unit deals at most 4 damage.",
     longRange: "+2 Range.",
     midRange: "+1 Range.",
+    piercing:
+      "The damage that this Unit deals cannot be reduced: it ignores Bulwark, Resistance, Ward and Block.",
     swift: "+1 Speed.",
     firstStrike:
       "When an enemy melee Unit attacks this Unit, this Unit deals its damage first. If the attacker dies, its attack does not occur.",
@@ -2000,9 +2012,13 @@ export default {
       "This Unit can attack an enemy Unit directly behind it or next to it, before the Unit in front. Then it does not move.",
     poison:
       "After this Unit deals attack damage above 0, that Unit gains 1 Poison stack. In each End Phase of its owner, it takes 1 damage per stack, then loses 1 stack.",
+    quickStudy:
+      "When an enemy Hero plays a Skill Card, the card with the highest Countdown in your Hand goes down by 1.",
     rally:
       "In your Start Phase, other friendly Units in the same Lane get +{value} Attack until the end of the Turn. A Unit with Base Attack 0 gets no bonus.",
     regenerate: "In your Start Phase, this Unit heals {value} HP.",
+    resistance:
+      "Reduces Fire, Frost, Holy and Lightning damage to this Unit by {value}.",
     retaliate:
       "When this Unit survives a melee attack, it deals its Attack to the attacker.",
     sabotage:
@@ -2017,6 +2033,8 @@ export default {
     vampirism:
       "When this Unit deals Physical damage, it heals HP equal to the damage.",
     wall: "This Unit can't move and can't attack. You can summon it into the 5 Squares nearest to your Hero. It blocks enemy Units in its Lane, and a push never moves it.",
+    wallbreaker:
+      "The damage that this Unit deals to a Unit with Wall is doubled.",
     rebirth:
       "The first time this Unit dies, it comes back in the same Square with 1 HP. Its Statuses end, and it loses Rebirth.",
     summon:

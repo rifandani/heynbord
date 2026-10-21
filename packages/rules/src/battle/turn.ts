@@ -1,4 +1,4 @@
-import { randomInt } from "../random";
+import { randomInt, rollBasisPoints } from "../random";
 import { hasWaitingSummon } from "./boss-rules";
 import type { StepContext } from "./context";
 import {
@@ -14,6 +14,7 @@ import {
   unitDealer,
 } from "./context";
 import { damageHero, damageUnit, finishBattle } from "./damage";
+import { hasDebuff, removeOneDebuff } from "./debuffs";
 import { drawCard } from "./hand";
 import { healedAmount, healUnit } from "./heal";
 import { runResolutionPhase } from "./resolution";
@@ -55,6 +56,63 @@ const regenerateUnits = (ctx: StepContext): void => {
       activateKeyword(ctx, unit, "regenerate", unit.regenerate);
       healUnit(ctx, unit, unit.regenerate);
     }
+  }
+};
+
+/**
+ * Heal N (ADR-0056): in each Start Phase of its owner, the friendly Unit with
+ * the lowest HP that is not at its maximum HP heals N HP. A Unit at its
+ * maximum HP gets no heal, so the Keyword does not activate. A Bleeding Unit
+ * gets half of the heal, rounded down (ADR-0019).
+ */
+const healUnits = (ctx: StepContext): void => {
+  const { state } = ctx;
+  for (const unit of actionOrder(state, state.activeSide)) {
+    if (unit.heal <= 0) {
+      continue;
+    }
+    const [target] = actionOrder(state, unit.owner)
+      .filter((candidate) => candidate.hp < candidate.maxHp)
+      .toSorted((a, b) => a.hp - b.hp);
+    if (!target || healedAmount(target, unit.heal) <= 0) {
+      continue;
+    }
+    activateKeyword(ctx, unit, "heal", unit.heal);
+    healUnit(ctx, target, unit.heal);
+  }
+};
+
+/**
+ * The chance that the Dispel Keyword (ADR-0056) removes a Debuff, in basis
+ * points: 20%.
+ */
+const DISPEL_CHANCE = 2000;
+
+/**
+ * Dispel (ADR-0056): in each Start Phase of its owner, a Unit with Dispel has
+ * a 20% chance to remove 1 Debuff from a random friendly Unit. The Battle seed
+ * sets the chance and the Unit. A Unit with no Debuff changes nothing.
+ */
+const dispelUnits = (ctx: StepContext): void => {
+  const { state } = ctx;
+  for (const unit of actionOrder(state, state.activeSide)) {
+    if (!unit.dispel) {
+      continue;
+    }
+    const targets = actionOrder(state, unit.owner).filter((candidate) =>
+      hasDebuff(candidate)
+    );
+    if (targets.length === 0) {
+      continue;
+    }
+    if (!rollBasisPoints(ctx.random, DISPEL_CHANCE)) {
+      continue;
+    }
+    // SAFETY: `targets` has at least 1 Unit, and `randomInt` returns a value
+    // in `[0, targets.length)`.
+    const target = targets[randomInt(ctx.random, targets.length)] as UnitState;
+    activateKeyword(ctx, unit, "dispel");
+    removeOneDebuff(ctx, target);
   }
 };
 
@@ -220,8 +278,8 @@ const tickCountdowns = (ctx: StepContext, ref: HeroRef): void => {
 
 /**
  * The Start Phase (GDD 4.3). The Play Phase follows. Closed Lanes open first,
- * then Regenerate, Rally, Bolt and Hero's Bane. Each Hero of the active Side
- * that is not Defeated counts down its Hand and draws, in Hero order
+ * then Regenerate, Heal, Dispel, Rally, Bolt and Hero's Bane. Each Hero of the
+ * active Side that is not Defeated counts down its Hand and draws, in Hero order
  * (ADR-0009).
  */
 export const runStartPhase = (ctx: StepContext): void => {
@@ -233,6 +291,8 @@ export const runStartPhase = (ctx: StepContext): void => {
   );
   openClosedLanes(ctx);
   regenerateUnits(ctx);
+  healUnits(ctx);
+  dispelUnits(ctx);
   rally(ctx);
   boltUnits(ctx);
   herosBaneUnits(ctx);

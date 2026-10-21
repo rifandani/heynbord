@@ -51,6 +51,12 @@ export const KEYWORD_ACTIVATES = {
   unique: false,
   wall: false,
   summon: true,
+  wallbreaker: true,
+  resistance: false,
+  quickStudy: true,
+  piercing: true,
+  heal: true,
+  dispel: true,
 } as const satisfies Readonly<Record<keyof Keywords, boolean>>;
 
 /** A Keyword that activates (`KEYWORD_ACTIVATES`). */

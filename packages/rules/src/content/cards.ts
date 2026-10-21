@@ -188,7 +188,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "holy",
     keywords: { midRange: true, bulwark: 1, rally: 2, unique: true },
   },
-  // The Human Specialist (ADR-0050): a Warrior that holds the line.
+  // The Human Specialist (ADR-0050): a Warrior that holds the line and rallies it.
   {
     kind: "creature",
     id: "human.serAldricStonewall",
@@ -196,10 +196,10 @@ const creatures: readonly CreatureCardDefinition[] = [
     class: "warrior",
     baseRank: "legendary",
     countdown: 6,
-    attack: 3,
-    hp: 5,
+    attack: 2,
+    hp: 4,
     damageType: "physical",
-    keywords: { unique: true, ironGuard: true },
+    keywords: { unique: true, ironGuard: true, rally: 2, wallbreaker: true },
   },
   // Orc: rush the enemy Hero.
   {
@@ -384,18 +384,23 @@ const creatures: readonly CreatureCardDefinition[] = [
       rally: 2,
     },
   },
-  // The Orc Specialist (ADR-0050): a Mage that burns at random.
+  // The Orc Specialist (ADR-0050): a Mage that burns at random and resists.
   {
     kind: "creature",
     id: "orc.ashcallerGrosh",
     race: "orc",
     class: "mage",
     baseRank: "legendary",
-    countdown: 5,
+    countdown: 6,
     attack: 2,
     hp: 4,
     damageType: "fire",
-    keywords: { unique: true, bolt: 2 },
+    keywords: {
+      unique: true,
+      bolt: 2,
+      midRange: true,
+      resistance: 2,
+    },
   },
   // Goblin: make the enemy plan slower (provisional, card concepts 6).
   {
@@ -563,7 +568,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "fire",
     keywords: { unique: true, sabotage: 1, lastBreath: 3 },
   },
-  // The Goblin Specialist (ADR-0050): a Ranger that chips the enemy Hero.
+  // The Goblin Specialist (ADR-0050): a Ranger that chips the Hero and reads the Hand.
   {
     kind: "creature",
     id: "goblin.grixRatwhistle",
@@ -571,10 +576,15 @@ const creatures: readonly CreatureCardDefinition[] = [
     class: "ranger",
     baseRank: "legendary",
     countdown: 6,
-    attack: 4,
+    attack: 3,
     hp: 4,
     damageType: "physical",
-    keywords: { unique: true, herosBane: true },
+    keywords: {
+      unique: true,
+      herosBane: true,
+      midRange: true,
+      quickStudy: true,
+    },
   },
   // Feral: few, huge and slow (provisional, card concepts 7).
   {
@@ -746,7 +756,7 @@ const creatures: readonly CreatureCardDefinition[] = [
       bleed: { epic: 2, legendary: 3 },
     },
   },
-  // The Feral Specialist (ADR-0050): a Priest beast that heals by its bite.
+  // The Feral Specialist (ADR-0050): a Priest beast that heals by its bite and pierces.
   {
     kind: "creature",
     id: "feral.gorehornRedMaw",
@@ -755,9 +765,14 @@ const creatures: readonly CreatureCardDefinition[] = [
     baseRank: "legendary",
     countdown: 6,
     attack: 2,
-    hp: 6,
+    hp: 5,
     damageType: "physical",
-    keywords: { unique: true, vampirism: true },
+    keywords: {
+      unique: true,
+      vampirism: true,
+      bleed: 2,
+      piercing: true,
+    },
   },
   // Elf: control from range, heal and poison.
   {
@@ -925,7 +940,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "holy",
     keywords: { midRange: true, unique: true, entangle: true, regenerate: 2 },
   },
-  // The Elf Specialist (ADR-0050): a Ranger warden that punishes a summon.
+  // The Elf Specialist (ADR-0050): a Ranger warden that punishes a summon and mends.
   {
     kind: "creature",
     id: "elf.wardenSaelith",
@@ -934,9 +949,14 @@ const creatures: readonly CreatureCardDefinition[] = [
     baseRank: "legendary",
     countdown: 5,
     attack: 2,
-    hp: 5,
+    hp: 4,
     damageType: "physical",
-    keywords: { unique: true, longRange: true, spawnbane: 2 },
+    keywords: {
+      unique: true,
+      longRange: true,
+      spawnbane: 2,
+      heal: 2,
+    },
   },
   // Undead: many cheap Units that grow stronger together, come back and bring more.
   {
@@ -1108,18 +1128,23 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "physical",
     keywords: { wall: true, bulwark: 2, rebirth: true },
   },
-  // The Undead Specialist (ADR-0050): a Priest that grows with each kill.
+  // The Undead Specialist (ADR-0050): a Priest that grows with each kill and cleanses.
   {
     kind: "creature",
     id: "undead.paleCantorYsolde",
     race: "undead",
     class: "priest",
     baseRank: "legendary",
-    countdown: 5,
-    attack: 3,
+    countdown: 6,
+    attack: 2,
     hp: 4,
     damageType: "physical",
-    keywords: { unique: true, soulHarvest: true },
+    keywords: {
+      unique: true,
+      soulHarvest: true,
+      rebirth: true,
+      dispel: true,
+    },
   },
 ];
 

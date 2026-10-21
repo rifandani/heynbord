@@ -773,16 +773,22 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(power("goblin.junkBarricade")).toBe(17);
   });
 
-  it("puts Bleed only on the Frostfang Lynx and Old Frostmaw, with 1 up to Rare, 2 at Epic and 3 at Legendary (ADR-0019)", () => {
+  it("puts Bleed only on the Feral cards, with 1 up to Rare, 2 at Epic and 3 at Legendary (ADR-0019)", () => {
     const bleeders = creatures.filter(
       (card) => card.keywords.bleed !== undefined
     );
     expect(bleeders.map((card) => card.id)).toEqual([
       "feral.frostfangLynx",
       "feral.oldFrostmaw",
+      "feral.gorehornRedMaw",
     ]);
     for (const card of bleeders) {
       expect(card.race, card.id).toBe("feral");
+    }
+    // The 2 cards that scale with the Rank: 1 up to Rare, 2 at Epic, 3 at Legendary.
+    for (const card of bleeders.filter(
+      (each) => each.id !== "feral.gorehornRedMaw"
+    )) {
       for (const rank of RANKS.slice(RANKS.indexOf(card.baseRank))) {
         const expected = rank === "legendary" ? 3 : rank === "epic" ? 2 : 1;
         expect(
@@ -791,6 +797,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         ).toBe(expected);
       }
     }
+    // Gorehorn Red Maw has a fixed Bleed 2 (ADR-0056): its only Rank is Legendary.
+    const redMaw = bleeders.find((card) => card.id === "feral.gorehornRedMaw");
+    expect(redMaw && keywordValue(redMaw.keywords.bleed, "legendary")).toBe(2);
   });
 
   it("gives Charge N with 1 up to Rare, 2 at Epic and 3 at Legendary (GDD 5.4)", () => {
@@ -1093,6 +1102,23 @@ describe("Specialists (ADR-0050)", () => {
         (card) => card.class !== undefined && card.baseRank !== "legendary"
       )
     ).toEqual([]);
+  });
+
+  it("gives each Specialist more Power Points than the Epic cards of its Race (ADR-0056)", () => {
+    // The Power Points of a card count at its Base Rank (ADR-0020), so a
+    // Specialist at Legendary is compared with an Epic card at Epic.
+    for (const card of legendaries) {
+      const epics = creatures.filter(
+        (other) => other.race === card.race && other.baseRank === "epic"
+      );
+      expect(epics.length, card.id).toBe(2);
+      for (const epic of epics) {
+        expect(
+          creaturePower(card),
+          `${card.id} against ${epic.id}`
+        ).toBeGreaterThan(creaturePower(epic));
+      }
+    }
   });
 
   it("is in no Starter Deck, Stage, Dungeon, Floor or main Archetype", () => {

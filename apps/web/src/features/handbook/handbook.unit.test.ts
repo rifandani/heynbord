@@ -212,7 +212,7 @@ describe("ENTRIES", () => {
 
 describe("Entries of Keywords, Statuses and Damage Types", () => {
   it("has an Entry for each Keyword, with the rule key of the Details Panel", () => {
-    expect(KEYWORDS).toHaveLength(34);
+    expect(KEYWORDS).toHaveLength(40);
     for (const card of CARDS) {
       const text = cardText(card.id, card.baseRank);
       if (text.kind !== "creature") {
@@ -317,7 +317,7 @@ describe("the Keyword Plate line (#75)", () => {
   );
 
   it("says in each Keyword that occurs in a Battle that its name shows over the Unit", () => {
-    expect(activated.size).toBe(24);
+    expect(activated.size).toBe(29);
     for (const keyword of KEYWORDS) {
       const keys = getEntry(keywordEntryId(keyword)).body.map((ref) => ref.key);
       expect(keys).toEqual(
@@ -424,7 +424,6 @@ describe("the Token gallery", () => {
 describe("rankTableKeywords", () => {
   it("finds the Keywords that follow the shared Rank table in the card data", () => {
     expect([...rankTableKeywords(CARDS)].toSorted()).toEqual([
-      "bleed",
       "charge",
       "knockback",
     ]);
@@ -573,7 +572,7 @@ describe("chapterEntries", () => {
       const names = chapterEntries("keywords", nameIn(locale), locale).map(
         nameIn(locale)
       );
-      expect(names).toHaveLength(34);
+      expect(names).toHaveLength(40);
       expect(names).toEqual(
         names.toSorted((a, b) => a.localeCompare(b, locale))
       );

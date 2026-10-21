@@ -55,18 +55,21 @@ export const VALUE_KEYWORDS = [
   "bolt",
   "bulwark",
   "charge",
+  "heal",
   "heroic",
   "hobble",
   "knockback",
   "lastBreath",
   "rally",
   "regenerate",
+  "resistance",
   "sabotage",
   "spawnbane",
   "swarm",
 ] as const;
 /** The Keywords with no value (GDD 5.4). */
 export const FLAG_KEYWORDS = [
+  "dispel",
   "entangle",
   "extremeRange",
   "firstStrike",
@@ -77,8 +80,10 @@ export const FLAG_KEYWORDS = [
   "ironGuard",
   "longRange",
   "midRange",
+  "piercing",
   "pivot",
   "poison",
+  "quickStudy",
   "rebirth",
   "retaliate",
   "soulHarvest",
@@ -87,6 +92,7 @@ export const FLAG_KEYWORDS = [
   "unique",
   "vampirism",
   "wall",
+  "wallbreaker",
 ] as const;
 /** The Keywords with a Token X as their value: Summon X (GDD 5.4). */
 export const TOKEN_KEYWORDS = ["summon"] as const;

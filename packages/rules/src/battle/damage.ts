@@ -5,6 +5,7 @@ import type { StepContext } from "./context";
 import {
   activeHeroes,
   activateKeyword,
+  activateKeywordFor,
   direction,
   findUnit,
   heroState,
@@ -246,6 +247,127 @@ interface HitResult {
 }
 
 /**
+ * The rules of a hit that the Damage calculation uses: which steps of GDD 4.7
+ * apply, and the 2 new Keywords of ADR-0056.
+ */
+interface HitRules {
+  /** The hit is status damage or True Damage: no Bulwark, Exposed, Crit or Block. */
+  readonly fixed: boolean;
+  /** The hit is True Damage: no Ward, no Bulwark, no Exposed, no Crit and no Block. */
+  readonly trueDamage: boolean;
+  /** The hit is Physical, so Bulwark and Exposed apply. */
+  readonly physical: boolean;
+  /** The damage cannot be reduced: Piercing (ADR-0056). */
+  readonly piercing: boolean;
+  /** The value of the hit is doubled against a Unit with Wall: Wallbreaker. */
+  readonly wallbreaker: boolean;
+}
+
+/** The damage of a hit before the Ward (GDD 4.7, steps 1 to 7). */
+interface HitAmount {
+  /** The damage of the hit. */
+  readonly amount: number;
+  /** True when the hit rolled a Crit. */
+  readonly crit: boolean;
+  /** True when the hit rolled a Block. */
+  readonly blocked: boolean;
+}
+
+/** The damage of a hit after the Ward (GDD 4.7, step 8). */
+interface WardAmount {
+  /** The damage that the Unit takes. */
+  readonly amount: number;
+  /** The damage that the Ward absorbed. */
+  readonly absorbed: number;
+}
+
+/**
+ * The damage of a hit before the Ward (GDD 4.7, steps 1 to 7): the value, minus
+ * Bulwark for a Physical hit and Resistance for the other Damage Types, plus
+ * Exposed for a Physical hit, then Crit ×2 and Block ÷2 rounded up (not for
+ * Holy), then the Iron Guard cap. The minimum damage is 0.
+ */
+const hitAmount = (
+  ctx: StepContext,
+  unit: UnitState,
+  hit: Hit,
+  rules: HitRules
+): HitAmount => {
+  const value = rules.wallbreaker ? hit.amount * 2 : hit.amount;
+  // Bulwark (step 3) reduces only Physical damage (ADR-0031).
+  const bulwark =
+    rules.physical && !rules.piercing ? unit.bulwark + unit.bonusBulwark : 0;
+  // Resistance (ADR-0056) reduces the other Damage Types, like Bulwark does
+  // for Physical damage.
+  const resistance =
+    !rules.fixed && !rules.physical && !rules.piercing ? unit.resistance : 0;
+  // Exposed (step 4): after Bulwark, so it also hurts a Unit with high Bulwark.
+  // Poison damage is Physical, but it is status damage: no Exposed.
+  const exposed = rules.physical ? unit.exposed : 0;
+  let amount = Math.max(0, value - bulwark - resistance) + exposed;
+  const crit = !rules.fixed && rollBasisPoints(ctx.random, hit.crit);
+  if (crit) {
+    amount *= 2;
+  }
+  const blockChance = heroState(ctx.state, ownerOf(unit)).unitBlock;
+  // Holy damage cannot be Blocked (ADR-0031).
+  const blocked =
+    !rules.fixed &&
+    !rules.piercing &&
+    hit.damageType !== "holy" &&
+    rollBasisPoints(ctx.random, blockChance);
+  if (blocked) {
+    amount = Math.ceil(amount / 2);
+  }
+  // Iron Guard (ADR-0050): a Physical hit deals at most 4 damage.
+  return {
+    amount: rules.piercing
+      ? amount
+      : ironGuardCap(ctx, unit, rules.physical, amount),
+    crit,
+    blocked,
+  };
+};
+
+/**
+ * The Ward of the target (GDD 4.7, step 8): it absorbs the damage, up to its
+ * value. The damage that it absorbs is not dealt. True Damage and Piercing
+ * ignore the Ward.
+ */
+const applyWard = (
+  unit: UnitState,
+  amount: number,
+  rules: HitRules
+): WardAmount => {
+  if (rules.trueDamage || rules.piercing) {
+    return { amount, absorbed: 0 };
+  }
+  const absorbed = Math.min(unit.ward, amount);
+  unit.ward -= absorbed;
+  return { amount: amount - absorbed, absorbed };
+};
+
+/**
+ * Sends the Keyword events of a hit: Wallbreaker and Piercing (ADR-0056). Each
+ * event comes before the event of its result.
+ */
+const activateHitKeywords = (
+  ctx: StepContext,
+  dealer: DamageDealer | null,
+  rules: HitRules
+): void => {
+  if (dealer?._tag !== "Unit") {
+    return;
+  }
+  if (rules.wallbreaker) {
+    activateKeywordFor(ctx, dealer.unitId, dealer.hero, "wallbreaker");
+  }
+  if (rules.piercing) {
+    activateKeywordFor(ctx, dealer.unitId, dealer.hero, "piercing");
+  }
+};
+
+/**
  * Damage calculation (GDD 4.7): the value, minus Bulwark for a Physical hit, plus
  * Exposed for a Physical hit, Crit ×2, Block ÷2 rounded up (not for Holy),
  * minimum 0 (ADR-0031). Then a
@@ -253,6 +375,10 @@ interface HitResult {
  * the Ward. True Damage skips all of these steps. Then Steadfast keeps the
  * Unit at 1 HP. A `noRebirth` hit that kills stops Rebirth. Fire gives Burn,
  * Frost gives Freeze and Lightning gives Paralyzed, also at 0 damage.
+ *
+ * The new Keywords of ADR-0056 change the steps: Wallbreaker doubles the value
+ * of the hit against a Unit with Wall, Resistance reduces the damage of the
+ * other Damage Types, and Piercing skips every step that reduces the damage.
  */
 export const damageUnit = (
   ctx: StepContext,
@@ -264,31 +390,25 @@ export const damageUnit = (
   // Status damage and True Damage get no Bulwark, Exposed, Crit or Block.
   const fixed = status || trueDamage;
   const physical = !fixed && hit.damageType === "physical";
-  // Bulwark (step 3) reduces only Physical damage (ADR-0031).
-  const bulwark = physical ? unit.bulwark + unit.bonusBulwark : 0;
-  // Exposed (step 4): after Bulwark, so it also hurts a Unit with high Bulwark.
-  // Poison damage is Physical, but it is status damage: no Exposed.
-  const exposed = physical ? unit.exposed : 0;
-  let amount = Math.max(0, hit.amount - bulwark) + exposed;
-  const crit = !fixed && rollBasisPoints(ctx.random, hit.crit);
-  if (crit) {
-    amount *= 2;
-  }
-  const blockChance = heroState(ctx.state, ownerOf(unit)).unitBlock;
-  // Holy damage cannot be Blocked (ADR-0031).
-  const blocked =
-    !fixed &&
-    hit.damageType !== "holy" &&
-    rollBasisPoints(ctx.random, blockChance);
-  if (blocked) {
-    amount = Math.ceil(amount / 2);
-  }
-  // Iron Guard (ADR-0050): a Physical hit deals at most 4 damage.
-  amount = ironGuardCap(ctx, unit, physical, amount);
-  // A Ward absorbs status damage, but not True Damage.
-  const absorbed = trueDamage ? 0 : Math.min(unit.ward, amount);
-  unit.ward -= absorbed;
-  amount -= absorbed;
+  const dealer = hit.dealer?._tag === "Unit" ? hit.dealer : undefined;
+  // Piercing (ADR-0056): the damage cannot be reduced, so it skips Bulwark,
+  // Resistance, Block, the Iron Guard cap and the Ward.
+  const piercing = !fixed && (dealer?.piercing ?? false);
+  // Wallbreaker (ADR-0056): the hit is doubled against a Unit with Wall. The
+  // doubling comes first, so Bulwark, Exposed, Crit, Block and the Ward apply
+  // to the doubled damage.
+  const wallbreaker = (dealer?.wallbreaker ?? false) && unit.wall;
+  const rules: HitRules = {
+    fixed,
+    trueDamage,
+    physical,
+    piercing,
+    wallbreaker,
+  };
+  activateHitKeywords(ctx, hit.dealer, rules);
+  const hit1 = hitAmount(ctx, unit, hit, rules);
+  const ward = applyWard(unit, hit1.amount, rules);
+  const { amount } = ward;
   unit.hp -= amount;
   // Steadfast (step 9): it comes before Rebirth, so a Unit with Rebirth keeps
   // its Rebirth.
@@ -305,10 +425,10 @@ export const damageUnit = (
       damageType: hit.damageType,
       source: hit.source,
       dealer: hit.dealer,
-      crit,
-      blocked,
+      crit: hit1.crit,
+      blocked: hit1.blocked,
       trueDamage,
-      absorbed,
+      absorbed: ward.absorbed,
       ward: unit.ward,
       hp: Math.max(0, unit.hp),
     })
