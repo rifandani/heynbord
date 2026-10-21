@@ -124,6 +124,7 @@ Priest:
 
 New features:
 
+1. rebalance, then generate image for legendary units
 1. cleanup CONTEXT.md, all game docs, redundant ADRs, etc
 1. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 

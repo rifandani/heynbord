@@ -483,6 +483,51 @@ html[data-town-bar="collapsed"] {
 }
 
 /*
+ * A card comes into the Deck grid: it lands on the page as if dealt from the
+ * card pool, small and a little turned, and settles level with a warm light
+ * that goes away. The other cards slide to their new places (see
+ * `use-deck-flip`), so the grid never jumps.
+ */
+@keyframes deck-card-land {
+  0% {
+    opacity: 0;
+    translate: -0.6em 0.9em;
+    rotate: -4deg;
+    scale: 0.86;
+    filter: brightness(1.4) saturate(1.1);
+  }
+  55% {
+    opacity: 1;
+    rotate: 0deg;
+    scale: 1.03;
+    filter: brightness(1.06);
+  }
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+    filter: none;
+  }
+}
+
+/* The last copy of a card lifts off the page and is gone. */
+@keyframes deck-card-lift {
+  to {
+    opacity: 0;
+    translate: 0 -0.7em;
+    rotate: 2deg;
+    scale: 0.9;
+  }
+}
+
+/* A copies plate ticks to its new count, as the count of a ledger. */
+@keyframes deck-count-tick {
+  from {
+    translate: 0 0.8em;
+  }
+}
+
+/*
  * In the Battle, the Handbook comes in at the right edge of the screen as a
  * closed book, then its cover swings open on the spine toward the Board. The
  * cover goes edge-on and is gone, so it never lies on the Board. The close

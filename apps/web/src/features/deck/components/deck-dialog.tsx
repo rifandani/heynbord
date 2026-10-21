@@ -34,6 +34,8 @@ import {
 import type { ClassPick, PoolFilter, PoolTile } from "@/features/deck/deck";
 import {
   DEFAULT_POOL_FILTER,
+  deckKey,
+  deckRows,
   defaultSlotName,
   poolClass,
   slotInput,
@@ -166,6 +168,15 @@ interface PoolFilterState {
   readonly setClassPick: (pick: ClassPick) => void;
 }
 
+/** No card just came into the Deck. */
+const NO_LANDING: ReadonlyMap<string, number> = new Map();
+
+/** Auto-fill deals its cards onto the page one after the other. */
+const FILL_STAGGER_MS = 26;
+
+/** The last card of a big Auto-fill never waits more than this. */
+const FILL_STAGGER_MAX_MS = 260;
+
 /** The open book: the two pages of one Deck slot. */
 const DeckSpread = ({
   slot,
@@ -179,6 +190,8 @@ const DeckSpread = ({
   const { text } = useGameText();
   const [slots, setSlots] = useAtom(deckSlotsAtom);
   const [activeId, setActiveId] = useAtom(activeDeckIdAtom);
+  const [landing, setLanding] =
+    useState<ReadonlyMap<string, number>>(NO_LANDING);
   const collection = useAtomValue(collectionAtom);
   const level = useAtomValue(playerLevelAtom);
   const { peek, bind, hide, wasLongPress, onPanelBlur } = useCardPeek();
@@ -207,7 +220,11 @@ const DeckSpread = ({
   };
 
   const onAdd = (tile: PoolTile) => {
+    const key = deckKey(tile);
+    const fresh = !slot.deck.some((entry) => deckKey(entry) === key);
     setDeck(addCopy(slot.deck, tile.cardId, tile.rank));
+    // A new card lands on the page; one more copy only ticks its plate.
+    setLanding(fresh ? new Map([[key, 0]]) : NO_LANDING);
     unlockAudio();
     playSound("select", 0);
   };
@@ -235,14 +252,34 @@ const DeckSpread = ({
         problems={problems}
         active={slot.id === activeId}
         canFill={filled.length > slot.deck.length}
+        landing={landing}
         onRename={(name) => change((current) => ({ ...current, name }))}
         onClass={(classId) => change((current) => ({ ...current, classId }))}
         onRemove={(row) => setDeck(removeCopy(slot.deck, row.cardId, row.rank))}
         onClear={() => {
           hide();
+          setLanding(NO_LANDING);
           setDeck([]);
         }}
-        onFill={() => setDeck(filled)}
+        onFill={() => {
+          // The cards that the Deck already has stay; the new ones land in
+          // the order of the grid, one after the other.
+          const held = new Set(slot.deck.map((entry) => deckKey(entry)));
+          const land = new Map<string, number>();
+          let order = 0;
+          for (const row of deckRows(filled)) {
+            const key = deckKey(row);
+            if (!held.has(key)) {
+              land.set(
+                key,
+                Math.min(order * FILL_STAGGER_MS, FILL_STAGGER_MAX_MS)
+              );
+              order += 1;
+            }
+          }
+          setDeck(filled);
+          setLanding(land);
+        }}
         onUse={() => setActiveId(slot.id)}
         bind={bind}
         wasLongPress={wasLongPress}

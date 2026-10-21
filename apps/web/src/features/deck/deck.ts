@@ -71,12 +71,18 @@ export const byCountdown = (
   cardOrder(a.cardId) - cardOrder(b.cardId) ||
   RANKS.indexOf(b.rank) - RANKS.indexOf(a.rank);
 
+/** The key of one row of the Deck list: one card in one Rank. */
+export const deckKey = (entry: {
+  readonly cardId: string;
+  readonly rank: RankId;
+}): string => `${entry.cardId}:${entry.rank}`;
+
 /** The Deck list: one row for each card and Rank, in Countdown order. */
 export const deckRows = (deck: readonly DeckEntry[]): readonly DeckRow[] => {
   const rows = new Map<string, DeckRow>();
-  for (const { cardId, rank } of deck) {
-    const key = `${cardId}:${rank}`;
-    rows.set(key, { cardId, rank, count: (rows.get(key)?.count ?? 0) + 1 });
+  for (const entry of deck) {
+    const key = deckKey(entry);
+    rows.set(key, { ...entry, count: (rows.get(key)?.count ?? 0) + 1 });
   }
   return [...rows.values()].toSorted(byCountdown);
 };

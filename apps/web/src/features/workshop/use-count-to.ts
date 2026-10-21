@@ -14,19 +14,27 @@ const easeOut = (t: number) => 1 - (1 - t) ** 3;
  * shows only whole numbers. The count starts `delay` ms after the change, so
  * that the Essence counts up when the first Essence drop gets to it. With
  * `start`, the first render shows `start` and counts to `value`, for example
- * from 0 when the cargo of a ship comes onto the quay. With reduced motion,
- * it changes at once.
+ * from 0 when the cargo of a ship comes onto the quay. `ms` sets the time of
+ * the count, for a number that must keep up with a quick change. With reduced
+ * motion, it changes at once.
  */
-export const useCountTo = (value: number, delay = 0, start = value): number => {
+export const useCountTo = (
+  value: number,
+  delay = 0,
+  start = value,
+  ms = COUNT_MS
+): number => {
   const [shown, setShown] = useState(start);
   const from = useRef(start);
-  // The delay of the change that starts a count. A layout effect sets it
-  // before the count effect reads it; a change of the delay alone does not
-  // start a count.
+  // The delay and the time of the change that starts a count. A layout effect
+  // sets them before the count effect reads them; a change of the delay or the
+  // time alone does not start a count.
   const wait = useRef(delay);
+  const time = useRef(ms);
   useLayoutEffect(() => {
     wait.current = delay;
-  }, [delay]);
+    time.current = ms;
+  }, [delay, ms]);
   useEffect(() => {
     if (prefersReducedMotion() || from.current === value) {
       from.current = value;
@@ -38,7 +46,7 @@ export const useCountTo = (value: number, delay = 0, start = value): number => {
     const began = performance.now() + wait.current;
     let frame = 0;
     const step = (now: number) => {
-      const t = Math.min(Math.max(now - began, 0) / COUNT_MS, 1);
+      const t = Math.min(Math.max(now - began, 0) / time.current, 1);
       const current = Math.round(origin + (value - origin) * easeOut(t));
       from.current = current;
       setShown(current);

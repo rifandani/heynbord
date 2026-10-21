@@ -31,12 +31,15 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { Peek } from "@/features/deck/components/use-card-peek";
+import { useDeckFlip } from "@/features/deck/components/use-deck-flip";
 import type { DeckRow } from "@/features/deck/deck";
 import {
   CLASSES_WITH_CARDS,
+  deckKey,
   deckRows,
   problemText,
 } from "@/features/deck/deck";
+import { useCountTo } from "@/features/workshop/use-count-to";
 
 type PeekBind = (target: Peek) => object;
 
@@ -138,8 +141,11 @@ const ClassChoice = ({
   );
 };
 
-/** How long the last copy of a card takes to leave the grid. */
-const REMOVE_MS = 110;
+/**
+ * How long the last copy of a card takes to leave the grid. It is the time of
+ * `deck-card-lift`, so the other cards close the gap as it goes.
+ */
+const REMOVE_MS = 160;
 
 /**
  * The Night Plate under a Deck card: the copies in the Deck, as on the
@@ -157,17 +163,22 @@ const copiesPlate = cn(
 
 /**
  * One card of the Deck grid: the card and its copies. A press removes one
- * copy; the last copy takes the card out of the Deck. A press that stays down
- * on a touch device shows the Card Details instead, as on the card pool.
+ * copy; the last copy lifts off the page and is gone. A press that stays down
+ * on a touch device shows the Card Details instead, as on the card pool. A
+ * card that just came into the Deck lands on the page, and its copies plate
+ * ticks to the new count.
  */
 const DeckCard = ({
   row,
+  landDelay,
   onRemove,
   bind,
   wasLongPress,
   peekAt,
 }: {
   readonly row: DeckRow;
+  /** The wait before the card lands, when it just came into the Deck. */
+  readonly landDelay: number | undefined;
   readonly onRemove: (row: DeckRow) => void;
   readonly bind: PeekBind;
   readonly wasLongPress: () => boolean;
@@ -202,11 +213,9 @@ const DeckCard = ({
 
   return (
     <li
-      className={cn(
-        "flex justify-center transition-[transform,opacity] duration-100 ease-out motion-reduce:transition-none",
-        leaving && "pointer-events-none scale-90 opacity-0"
-      )}
+      className={cn("flex justify-center", leaving && "pointer-events-none")}
       data-testid={`deck-row-${row.cardId}-${row.rank}`}
+      data-deck-place={deckKey(row)}
       data-leaving={leaving || undefined}
     >
       <Button
@@ -221,7 +230,19 @@ const DeckCard = ({
           rank,
           count: row.count,
         })}
-        className="group flex w-full cursor-pointer flex-col items-center gap-1.5 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+        className={cn(
+          "group flex w-full cursor-pointer flex-col items-center gap-1.5 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+          landDelay !== undefined &&
+            !leaving &&
+            "motion-safe:animate-[deck-card-land_360ms_cubic-bezier(0.2,0.8,0.2,1)_both]",
+          leaving &&
+            "motion-safe:animate-[deck-card-lift_160ms_cubic-bezier(0.4,0,1,1)_both]"
+        )}
+        style={
+          landDelay === undefined || leaving
+            ? undefined
+            : { animationDelay: `${landDelay}ms` }
+        }
         data-testid={`deck-remove-${row.cardId}-${row.rank}`}
       >
         <CardFrame
@@ -231,14 +252,16 @@ const DeckCard = ({
           className="transition-transform duration-150 ease-out group-data-[hovered]:-translate-y-1.5 group-data-[pressed]:translate-y-0 motion-reduce:transition-none"
         />
         <span className={copiesPlate} aria-hidden>
-          <span
-            key={row.count}
-            className={cn(
-              "transition-opacity duration-100 motion-safe:animate-[pack-pop_320ms_cubic-bezier(0.2,0.8,0.2,1)]",
-              "group-data-[focus-visible]:opacity-0 group-data-[hovered]:opacity-0"
-            )}
-          >
-            ×{row.count}
+          <span className="block overflow-hidden">
+            <span
+              key={row.count}
+              className={cn(
+                "block transition-opacity duration-100 motion-safe:animate-[deck-count-tick_180ms_cubic-bezier(0.2,0.8,0.2,1)]",
+                "group-data-[focus-visible]:opacity-0 group-data-[hovered]:opacity-0"
+              )}
+            >
+              ×{row.count}
+            </span>
           </span>
           <span className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-100 group-data-[focus-visible]:opacity-100 group-data-[hovered]:opacity-100">
             {tr("deckBuilder.removeAction")}
@@ -268,6 +291,9 @@ const EmptyDeck = () => {
 const meterValue =
   "text-base font-black whitespace-nowrap text-[#2a1d12] tabular-nums [@media(max-height:500px)]:text-xs";
 
+/** The time of a meter: the number counts and the groove fills in step. */
+const METER_MS = 260;
+
 const GOLD_FILL =
   "bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]";
 
@@ -287,7 +313,7 @@ const MeterGroove = ({
   >
     <span
       className={cn(
-        "absolute inset-y-0 left-0 rounded-full transition-[width] duration-200 ease-out motion-reduce:transition-none",
+        "absolute inset-y-0 left-0 rounded-full transition-[width] duration-[260ms] ease-out motion-reduce:transition-none",
         fill
       )}
       style={{ width: `${Math.min(share, 1) * 100}%` }}
@@ -298,12 +324,14 @@ const MeterGroove = ({
 
 /**
  * The sum of the Countdowns against the Countdown Limit (ADR-0021). A Deck
- * over the limit is red, at the full width.
+ * over the limit is red, at the full width. The sum counts to its new value,
+ * as the Coin on the Balance Plate does.
  */
 const CountdownMeter = ({ input }: { readonly input: DeckInput }) => {
   const { tr } = useGameText();
   const limit = countdownLimit(input.level);
   const sum = deckCountdown(input.deck);
+  const shown = useCountTo(sum, 0, sum, METER_MS);
   const over = sum > limit;
   return (
     <div
@@ -311,7 +339,7 @@ const CountdownMeter = ({ input }: { readonly input: DeckInput }) => {
       data-over={over || undefined}
     >
       <span className={meterValue} data-testid="deck-countdown">
-        {tr("deckBuilder.countdownSum", { sum, limit })}
+        {tr("deckBuilder.countdownSum", { sum: shown, limit })}
       </span>
       <MeterGroove
         share={sum / limit}
@@ -326,11 +354,12 @@ const SizeMeter = ({ input }: { readonly input: DeckInput }) => {
   const { tr } = useGameText();
   const { min, max } = deckSizeLimits(input.level);
   const count = input.deck.length;
+  const shown = useCountTo(count, 0, count, METER_MS);
   const enough = count >= min && count <= max;
   return (
     <div className="flex items-center gap-3 [@media(max-height:500px)]:gap-2">
       <span className={meterValue} data-testid="deck-size">
-        {tr("deckBuilder.size", { count, max })}
+        {tr("deckBuilder.size", { count: shown, max })}
       </span>
       <MeterGroove
         share={count / max}
@@ -403,6 +432,7 @@ export const DeckPage = ({
   problems,
   active,
   canFill,
+  landing,
   onRename,
   onClass,
   onRemove,
@@ -419,6 +449,8 @@ export const DeckPage = ({
   readonly problems: readonly DeckProblem[];
   readonly active: boolean;
   readonly canFill: boolean;
+  /** The cards that just came into the Deck, and the wait before each lands. */
+  readonly landing: ReadonlyMap<string, number>;
   readonly onRename: (name: string) => void;
   readonly onClass: (classId: ClassId) => void;
   readonly onRemove: (row: DeckRow) => void;
@@ -431,6 +463,8 @@ export const DeckPage = ({
 }) => {
   const { tr } = useGameText();
   const rows = deckRows(slot.deck);
+  // The other cards slide to their new places as the cards come and go.
+  const grid = useDeckFlip();
   return (
     <section
       aria-label={slot.name || fallbackName}
@@ -447,14 +481,16 @@ export const DeckPage = ({
         ) : (
           // oxlint-disable-next-line react-doctor/no-tiny-text -- the font size sets the Card Frame size (em); the text in the frame has its own size
           <ul
+            ref={grid}
             aria-label={tr("deckBuilder.thisDeck")}
             className="-mx-2 grid min-h-0 flex-1 [scrollbar-width:thin] [scrollbar-color:#b9a175_transparent] auto-rows-max grid-cols-[repeat(auto-fill,minmax(10em,1fr))] items-start gap-x-1 gap-y-3 overflow-y-auto overscroll-contain px-2 pt-2 pb-4 text-[11px] max-[1100px]:text-[10px] [@media(max-height:500px)]:gap-y-1.5 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:text-[7px]"
             data-testid="deck-grid"
           >
             {rows.map((row) => (
               <DeckCard
-                key={`${row.cardId}:${row.rank}`}
+                key={deckKey(row)}
                 row={row}
+                landDelay={landing.get(deckKey(row))}
                 onRemove={onRemove}
                 bind={bind}
                 wasLongPress={wasLongPress}
