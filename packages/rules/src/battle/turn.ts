@@ -9,6 +9,7 @@ import {
   heroDealer,
   heroOfLane,
   heroState,
+  isDefeated,
   isOver,
   unitDealer,
 } from "./context";
@@ -58,9 +59,11 @@ const regenerateUnits = (ctx: StepContext): void => {
 };
 
 /**
- * Bolt N (ADR-0050): in each Start Phase of its owner, a Unit with Bolt deals
- * N damage of its own Damage Type to one target at random: an enemy Unit, or
- * the enemy Hero of its Front. Bolt applies no Status and has no Crit.
+ * Bolt N (ADR-0050, ADR-0055): in each Start Phase of its owner, a Unit with
+ * Bolt deals N damage of its own Damage Type to one target at random: an enemy
+ * Unit or an enemy Hero. The Hero is any Hero of the other Side that is not
+ * Defeated, not only the Hero of the Lane of the Unit. Bolt applies no Status
+ * and has no Crit.
  */
 const boltUnits = (ctx: StepContext): void => {
   const { state } = ctx;
@@ -68,28 +71,44 @@ const boltUnits = (ctx: StepContext): void => {
     if (unit.bolt <= 0 || isOver(ctx)) {
       continue;
     }
-    const enemies = actionOrder(state, otherSide(unit.owner));
-    const hit = randomInt(ctx.random, enemies.length + 1);
-    const target = enemies[hit];
+    const enemySide = otherSide(unit.owner);
+    const enemies = actionOrder(state, enemySide);
+    // A Hero target is an enemy Hero that is not Defeated (GDD 4.8).
+    const heroIndexes = state.sides[enemySide].heroes.flatMap((hero, index) =>
+      isDefeated(hero) ? [] : [index]
+    );
+    if (enemies.length + heroIndexes.length === 0) {
+      continue;
+    }
+    const hit = randomInt(ctx.random, enemies.length + heroIndexes.length);
     activateKeyword(ctx, unit, "bolt", unit.bolt);
-    if (!target) {
-      damageHero(ctx, heroOfLane(state, otherSide(unit.owner), unit.lane), {
+    const target = enemies[hit];
+    if (target) {
+      damageUnit(ctx, target, {
         amount: unit.bolt,
         damageType: unit.damageType,
         source: "bolt",
         dealer: unitDealer(unit),
         crit: 0,
+        noStatus: true,
       });
       continue;
     }
-    damageUnit(ctx, target, {
-      amount: unit.bolt,
-      damageType: unit.damageType,
-      source: "bolt",
-      dealer: unitDealer(unit),
-      crit: 0,
-      noStatus: true,
-    });
+    const heroIndex = heroIndexes[hit - enemies.length];
+    if (heroIndex === undefined) {
+      continue;
+    }
+    damageHero(
+      ctx,
+      { side: enemySide, hero: heroIndex },
+      {
+        amount: unit.bolt,
+        damageType: unit.damageType,
+        source: "bolt",
+        dealer: unitDealer(unit),
+        crit: 0,
+      }
+    );
   }
 };
 

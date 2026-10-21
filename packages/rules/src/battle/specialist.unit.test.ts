@@ -95,7 +95,7 @@ const boltHits = (events: readonly BattleEvent[]) =>
 
 describe("Specialist Keywords (ADR-0050)", () => {
   describe("Bolt N", () => {
-    it("deals its Damage Type to the enemy Hero when no enemy Unit is there", () => {
+    it("deals its Damage Type to an enemy Hero when no enemy Unit is there", () => {
       const state = emptyBattle();
       placeUnit(state, {
         cardId: "orc.ashcallerGrosh",
@@ -111,6 +111,75 @@ describe("Specialist Keywords (ADR-0050)", () => {
         crit: false,
         blocked: false,
       });
+    });
+
+    it("hits any enemy Hero, not only the Hero of its Front (ADR-0055)", () => {
+      const hitHeroes = new Set<number>();
+      for (let random = 0; random < 60; random += 1) {
+        const state = emptyBattle({
+          lanes: 3,
+          random,
+          enemyHeroes: [{ front: [0] }, { front: [1] }, { front: [2] }],
+        });
+        placeUnit(state, {
+          cardId: "orc.ashcallerGrosh",
+          owner: "player",
+          lane: 0,
+          position: 4,
+        });
+        const { events } = nextPlayerStart(state);
+        const hits = boltHits(events);
+        expect(hits).toHaveLength(1);
+        const target = hits[0]?.target;
+        expect(target?._tag).toBe("Hero");
+        if (target?._tag === "Hero") {
+          hitHeroes.add(target.hero);
+        }
+      }
+      expect(hitHeroes).toEqual(new Set([0, 1, 2]));
+    });
+
+    it("never hits a Defeated Hero (ADR-0055)", () => {
+      const hitHeroes = new Set<number>();
+      for (let random = 0; random < 60; random += 1) {
+        const state = emptyBattle({
+          lanes: 2,
+          random,
+          enemyHeroes: [{ front: [0], hp: 0 }, { front: [1] }],
+        });
+        placeUnit(state, {
+          cardId: "orc.ashcallerGrosh",
+          owner: "player",
+          lane: 1,
+          position: 4,
+        });
+        const { events } = nextPlayerStart(state);
+        const hits = boltHits(events);
+        expect(hits).toHaveLength(1);
+        const target = hits[0]?.target;
+        if (target?._tag === "Hero") {
+          hitHeroes.add(target.hero);
+        }
+      }
+      expect(hitHeroes).toEqual(new Set([1]));
+    });
+
+    it("hits a random enemy Unit or Hero, and applies no Status", () => {
+      const state = emptyBattle({ lanes: 2, random: 3 });
+      placeUnit(state, {
+        cardId: "orc.ashcallerGrosh",
+        owner: "player",
+        lane: 0,
+        position: 4,
+      });
+      const target = dummy(state, "enemy", 5, { lane: 0 });
+      const { events } = nextPlayerStart(state);
+      const hits = boltHits(events);
+      expect(hits).toHaveLength(1);
+      expect(hits[0]?.target).toEqual({ _tag: "Unit", unitId: target.id });
+      // Bolt applies no Status, so Fire damage does not Burn (ADR-0050).
+      expect(target.burn).toBe(0);
+      expect(eventsOfType(events, "StatusApplied")).toHaveLength(0);
     });
   });
 

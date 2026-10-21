@@ -1971,7 +1971,7 @@ export default {
   keywordRules: {
     bleed:
       "The enemy Unit it hits gets half of each heal, rounded down, for {value} Turns. Retaliate does not apply Bleed.",
-    bolt: "In each of your Start Phases, this Unit deals {value} damage of its Damage Type to a random enemy Unit, or to the enemy Hero in front of it. It applies no Status.",
+    bolt: "In each of your Start Phases, this Unit deals {value} damage of its Damage Type to a random enemy Unit or Hero.",
     bulwark: "Reduces Physical damage to this Unit by {value}.",
     charge: "+{value} Speed in the Turn when you summon this Unit.",
     entangle:

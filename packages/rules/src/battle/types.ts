@@ -206,7 +206,7 @@ export interface UnitState {
    * A Unit with Wall has no Movement, does not attack and is never Pushed.
    */
   wall: boolean;
-  /** Bolt N: damage to a random enemy target in each Start Phase (ADR-0050). */
+  /** Bolt N: damage to a random enemy Unit or Hero in each Start Phase (ADR-0050, ADR-0055). */
   readonly bolt: number;
   /** Each Physical hit on this Unit deals at most 4 damage (ADR-0050). */
   readonly ironGuard: boolean;

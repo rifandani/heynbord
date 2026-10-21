@@ -2009,7 +2009,7 @@ export default {
   keywordRules: {
     bleed:
       "Unit musuh yang diserangnya mendapat setengah dari tiap penyembuhan, dibulatkan ke bawah, selama {value} Giliran. Balas tidak menerapkan Pendarahan.",
-    bolt: "Pada tiap Fase Awal-mu, Unit ini memberi {value} damage sesuai Tipe Damage-nya ke Unit musuh acak, atau ke Pahlawan musuh di depannya. Tidak menerapkan Status.",
+    bolt: "Pada tiap Fase Awal-mu, Unit ini memberi {value} damage sesuai Tipe Damage-nya ke Unit musuh acak atau Pahlawan musuh.",
     bulwark: "Mengurangi damage Fisik ke Unit ini sebesar {value}.",
     charge: "+{value} Kecepatan pada Giliran saat Unit ini dipanggil.",
     entangle:

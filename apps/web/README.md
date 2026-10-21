@@ -15,15 +15,14 @@ v1:
 New Unit Ability:
 
 - Devour N: When this Unit kills an enemy Unit, it gains +N Attack and +N HP, im thinking this Keyword is exclusive to Feral replacing Trample, but do u think its a good idea?
-- Resistance N: Reduce magic damage by N (similar to Bulwark)
 - Heal N: +N HP for the lowest HP Unit on player's friendly units for each turn
 - Retreat N — After this Unit attacks, it moves up to N Squares backward
 - Ambush: When regular attacking for the first time, Attack is doubled
 - Arctic Barrier: Cannot be affected by buffs or debuffs
 - Unrestrained: Cannot be affected by movement restrictions
-- Wallbreaker: Deals double damage to Wall Unit
 - Dragon Slayer: Deals double damage to Units whose Countdown is 5 or more
 - Sunder: Deals double damage to Units with the Keyword Bulwark
+- Sunder Magic: Deals double damage to Units with the Keyword Resistance
 - Piercing: Damage dealt cannot be reduced
 - Skybane: Deals double damage to Flying Units
 - Piercing: Damage dealt by this Unit cannot be reduced
@@ -52,31 +51,23 @@ New Unit Ability:
 
 For Unique Unit:
 
-- Thunderbolt N: Deals N Lightning damage to a random enemy Unit or hero
-- Frostbolt N: Deals N Frost damage to a random enemy Unit or hero
-- Firebolt N: Deals N Fire damage to a random enemy Unit or hero
-- Holy Bolt N: Deals N Holy damage to a random enemy Unit or hero
 - Unravel: Unit has 25% chance of removing a buff from a random enemy unit each turn
-- Soul Harvest: Whenever an enemy Units is killed, it gains +1 Attack, +1 Life
 - Soulbound: Upon dying, has a 25% chance of returning to its summoner's hand
 - Elusive: Cannot be targeted by single-target Skills
 - Shrouded: Cannot be targeted by multi-target or area damage Skills
 - Blood Price N: Deals N damage to the player's summoning this Unit when summoned
-- Hero's Bane: Deals 1 damage to an enemy hero each turn
 - Double Strike: Attack 2 times in a single strike
 - Dishearten: Any Unit attacking this Unit gain -1 Attack stackable permanently
 - Backstab: When possible, will attack enemy Unit directly behind with a double Attack (combined with Flying would be crazy)
 - Undead King: When an enemy Units is killed, it will be rebirth by this Keyword as a Skeleton (treated as player's Unit)
 - Frighten: Has a 25% chance of returning a random enemy Unit within range to its summoner's hand
-- Spawnbane N: Deals N damage to Units summoned by enemy heroes
-- Iron Guard: Reduces physical damage taken to 4
 - Spell Guard: Reduces magic damage taken to 4
 - Brotherhood N: All other friendly Human Units gain +N Attack and +N HP
 - Bloodlust N: All other friendly Orc Units gain +N Attack and +N HP
 - Wildsong N: All other friendly Elf Units gain +N Attack and +N HP
 - Gravebound N: All other friendly Undead Units gain +N Attack and +N HP
 - Mob Mentality N: All other friendly Goblin Units gain +N Attack and +N HP
-- Primal Instinct N: All other friendly Goblin Units gain +N Attack and +N HP
+- Primal Instinct N: All other friendly Feral Units gain +N Attack and +N HP
 - Summon Familiar: When this Unit deals damage to hero, summon 1 Elfin (1/1) in an adjacent square
 - Whirlwind: Attacks all enemy Units or heroes in adjacent squares
 - Vampirism: Absorb all Physical damage dealt to HP

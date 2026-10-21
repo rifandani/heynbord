@@ -176,7 +176,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Iron Guard**: A Keyword. Each Physical hit on a Unit with Iron Guard deals at most 4 damage. The cap applies after Bulwark, Crit, Block and Exposed, and before Ward. It does not change True Damage or status damage. _Avoid_: Armor, damage cap, damage reduction
 
-**Bolt N**: A Keyword. In each Start Phase of its owner, a Unit with Bolt deals N damage of its own Damage Type to one target at random: an enemy Unit, or the enemy Hero of its Front. The hit applies no Status and has no Crit, so Fire, Frost and Lightning damage do not Burn, Freeze or Paralyze. It can be Blocked, except Holy damage, and a Ward absorbs it. N is the same at each Rank. _Avoid_: Zap, Barrage, Volley
+**Bolt N**: A Keyword. In each Start Phase of its owner, a Unit with Bolt deals N damage of its own Damage Type to one target at random: an enemy Unit, or a random enemy Hero. The Hero can be any Hero of the other Side that is not Defeated, not only the Hero of its Front (ADR-0055). The hit applies no Status and has no Crit, so Fire, Frost and Lightning damage do not Burn, Freeze or Paralyze. A hit on a Unit can be Blocked, except Holy damage, and a Ward absorbs it. N is the same at each Rank. _Avoid_: Zap, Barrage, Volley
 
 **Entangle**: A Keyword. After a Unit with Entangle deals attack damage above 0 to an enemy Unit, the enemy becomes Entangled. Only a Ranged Unit has Entangle, because a Melee Unit attacks an enemy that cannot move closer. Its Base Rank is Epic or higher, because it can Entangle the same enemy in each Turn. It is the Elf Race Keyword. _Avoid_: Root, Snare
 
