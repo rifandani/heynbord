@@ -21,8 +21,8 @@ const itemKey = (id: string): string => id.split(".")[1] ?? id;
 const family = (id: string): string => id.split(".")[0] ?? id;
 
 describe("BAZAAR_COSMETICS (Economy 3.5)", () => {
-  it("has 25 Bazaar items: 8 card backs, 7 Hero portraits, 6 Gear looks, 4 Board skins", () => {
-    expect(BAZAAR_COSMETICS).toHaveLength(25);
+  it("has 27 Bazaar items: 8 card backs, 7 Hero portraits, 6 Gear looks, 6 Board skins", () => {
+    expect(BAZAAR_COSMETICS).toHaveLength(27);
     expect(
       COSMETIC_FAMILIES.map((name) => [
         name,
@@ -32,7 +32,7 @@ describe("BAZAAR_COSMETICS (Economy 3.5)", () => {
       ["cardBack", 8],
       ["heroPortrait", 7],
       ["gearLook", 6],
-      ["boardSkin", 4],
+      ["boardSkin", 6],
     ]);
   });
 
@@ -78,8 +78,8 @@ describe("BAZAAR_COSMETICS (Economy 3.5)", () => {
     expect(new Set(keys).size).toBe(keys.length);
   });
 
-  it("costs 2,760 Heynstones for the full catalog (Economy 3.5)", () => {
-    expect(BAZAAR_CATALOG_HEYNSTONES).toBe(2760);
+  it("costs 3,160 Heynstones for the full catalog (Economy 3.5)", () => {
+    expect(BAZAAR_CATALOG_HEYNSTONES).toBe(3160);
     expect(
       BAZAAR_COSMETICS.reduce((sum, item) => sum + (item.price ?? 0), 0)
     ).toBe(BAZAAR_CATALOG_HEYNSTONES);

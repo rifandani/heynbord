@@ -1,9 +1,9 @@
 /**
  * The Bazaar screen (Economy 3.5): the offers that the Player buys with
  * Heynstones. v1 sells only Cosmetics (ADR-0008), grouped by their family,
- * and the Player owns each one forever. A Card Back or a Hero portrait that
- * the Player owns is a look that they can use: the section shows it on the
- * shelf and makes it the Active Cosmetic of its family.
+ * and the Player owns each one forever. A Card Back, a Hero portrait or a
+ * Board skin that the Player owns is a look that they can use: the section
+ * shows it on the shelf and makes it the Active Cosmetic of its family.
  */
 import type {
   ClassId,
@@ -30,6 +30,7 @@ import {
   isLookFamily,
 } from "@/features/bazaar/bazaar";
 import { BazaarScene } from "@/features/bazaar/components/bazaar-scene";
+import { BoardSkinThumb } from "@/features/bazaar/components/board-skin-look";
 import { CosmeticShelf } from "@/features/bazaar/components/cosmetic-shelf";
 import { useBazaar } from "@/features/bazaar/use-bazaar";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
@@ -42,6 +43,43 @@ const FAMILY_GLYPH: Readonly<Record<CosmeticFamily, Glyph>> = {
   heroPortrait: "helmet",
   gearLook: "breastplate",
   boardSkin: "banner",
+};
+
+/** The look of a family at the size of a plate thumbnail. */
+const PlateLook = ({
+  family,
+  look,
+  classId,
+}: {
+  readonly family: LookFamily;
+  readonly look: CosmeticId | null;
+  readonly classId: ClassId;
+}) => {
+  if (family === "cardBack") {
+    return (
+      <span
+        className="block [font-size:4.4px] [@media(max-height:500px)]:[font-size:3.6px]"
+        aria-hidden
+      >
+        <CardBack back={look} />
+      </span>
+    );
+  }
+  if (family === "boardSkin") {
+    return (
+      <BoardSkinThumb
+        skin={look}
+        className="w-10 [@media(max-height:500px)]:w-8"
+      />
+    );
+  }
+  return (
+    <HeroPortrait
+      id={look}
+      classId={classId}
+      className="w-10 [@media(max-height:500px)]:w-8"
+    />
+  );
 };
 
 /**
@@ -72,20 +110,7 @@ const LookThumb = ({
       className="shrink-0 rounded-lg outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
       data-testid="bazaar-preview"
     >
-      {family === "cardBack" ? (
-        <span
-          className="block [font-size:4.4px] [@media(max-height:500px)]:[font-size:3.6px]"
-          aria-hidden
-        >
-          <CardBack back={look} />
-        </span>
-      ) : (
-        <HeroPortrait
-          id={look}
-          classId={classId}
-          className="w-10 [@media(max-height:500px)]:w-8"
-        />
-      )}
+      <PlateLook family={family} look={look} classId={classId} />
     </Button>
   );
 };
@@ -218,20 +243,7 @@ const StandardPlate = ({
         className="shrink-0 rounded-lg outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
         data-testid="bazaar-preview"
       >
-        {family === "cardBack" ? (
-          <span
-            className="block [font-size:4.4px] [@media(max-height:500px)]:[font-size:3.6px]"
-            aria-hidden
-          >
-            <CardBack back={null} />
-          </span>
-        ) : (
-          <HeroPortrait
-            id={null}
-            classId={classId}
-            className="w-10 [@media(max-height:500px)]:w-8"
-          />
-        )}
+        <PlateLook family={family} look={null} classId={classId} />
       </Button>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{name}</p>
@@ -268,9 +280,9 @@ interface Preview {
 /**
  * The Bazaar screen: one section for each family, in the order of the Economy
  * table. The Balance Plate shows the Heynstones next to the Coin and the
- * Essence, so the Player sees what the items cost. The Card Backs and the Hero
- * portraits have the shelf that shows the look, so the Player sees it before
- * the purchase and before the Use.
+ * Essence, so the Player sees what the items cost. The Card Backs, the Hero
+ * portraits and the Board skins have the shelf that shows the look, so the
+ * Player sees it before the purchase and before the Use.
  */
 export const BazaarScreen = () => {
   const { tr } = useGameText();
@@ -279,8 +291,7 @@ export const BazaarScreen = () => {
     heynstones,
     owned,
     classId,
-    activeCardBack,
-    activeHeroPortrait,
+    activeLooks,
     buy,
     select,
     selectStandard,
@@ -338,12 +349,7 @@ export const BazaarScreen = () => {
       <div className="absolute inset-x-0 top-[calc(max(0.75rem,env(safe-area-inset-top))+5.25rem)] bottom-[var(--town-bar)] flex flex-col items-center gap-3 overflow-y-auto px-2 pb-4">
         {groups.map(({ family, items }) => {
           const lookFamily = isLookFamily(family) ? family : null;
-          const activeId =
-            lookFamily === null
-              ? null
-              : lookFamily === "cardBack"
-                ? activeCardBack
-                : activeHeroPortrait;
+          const activeId = lookFamily === null ? null : activeLooks[lookFamily];
           const shownId =
             lookFamily !== null && preview?.family === lookFamily
               ? preview.look

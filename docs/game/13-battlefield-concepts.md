@@ -13,7 +13,7 @@ All 6 Battle Paintings exist in `apps/web/public/battle/`: `hearthvale.webp` (16
 - **Light.** From the upper left, warm, as in all other art.
 - **Size.** Landscape 16:9. Make the master at 3200 × 1800. The game uses a WebP export at 2560 × 1440, less than about 400 KB. The positions in 1.8 use a 1600 × 900 box, so 1 code unit is 2 pixels of the master.
 - **No text, no people, no animals** in the open ground. The image has no labels, letters, logo or UI.
-- **No Lanes and no Squares.** The open ground has no lines, paths, rows, fences or tiles. The Player must never think that the painting shows a Lane or a Square.
+- **No Lanes and no Squares.** The open ground has no lines, paths, rows, fences or tiles. The Player must never think that the painting shows a Lane or a Square. A Board skin draws its Lane runners on top of the painting in code ([Board Skin Concepts](./18-board-skin-concepts.md)), so the painting stays the same for all Board skins.
 - **Units first.** The open ground is soft and has low contrast, so that each Unit and its Attack and HP line are easy to read on it (Pillar 5). The detail, the dark colors and the humor go to the edges.
 
 ### 1.1 Hearthvale

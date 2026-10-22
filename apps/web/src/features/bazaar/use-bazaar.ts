@@ -11,7 +11,7 @@ import { activeDeckClassAtom } from "@/features/deck/deck.atoms";
 import { profileAtom } from "@/features/profile/profile.atoms";
 
 import { canBuyCosmetic } from "./bazaar";
-import type { BazaarGroup } from "./bazaar";
+import type { BazaarGroup, LookFamily } from "./bazaar";
 
 /**
  * The Bazaar screen state from the Profile: the Heynstone balance, the owned
@@ -24,8 +24,12 @@ export const useBazaar = () => {
   const profile = useAtomValue(profileAtom);
   const classId = useAtomValue(activeDeckClassAtom);
   const owned = profile.cosmetics;
-  const activeCardBack = profile.activeCosmetics.cardBack ?? null;
-  const activeHeroPortrait = profile.activeCosmetics.heroPortrait ?? null;
+  // The Active look of each look family, or `null` for its Standard look.
+  const activeLooks: Readonly<Record<LookFamily, CosmeticId | null>> = {
+    cardBack: profile.activeCosmetics.cardBack ?? null,
+    heroPortrait: profile.activeCosmetics.heroPortrait ?? null,
+    boardSkin: profile.activeCosmetics.boardSkin ?? null,
+  };
 
   // The actions read the registry, not a render: two fast presses act two times.
   const buy = (id: CosmeticId, groups: readonly BazaarGroup[]): boolean => {
@@ -77,8 +81,7 @@ export const useBazaar = () => {
     heynstones: profile.heynstones,
     owned,
     classId,
-    activeCardBack,
-    activeHeroPortrait,
+    activeLooks,
     buy,
     select,
     selectStandard,

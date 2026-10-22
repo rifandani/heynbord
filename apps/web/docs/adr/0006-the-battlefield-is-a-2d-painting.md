@@ -2,6 +2,8 @@
 
 The ground and the background of a Battle are one Battle Painting for each Region: a flat 2D image behind a transparent Three.js canvas. The scene has no 3D Board model, no tiles, no rim and no 3D scenery. The Squares are not drawn. The Units, the Heroes, the effects and the target markers stay 3D, on an invisible ground plane that has the same position as the old Board.
 
+> Changed in part on 2026-10-22 by [web ADR-0012](./0012-a-board-skin-draws-lane-runners.md): an Active Board skin puts a painted Lane runner under each Lane, so the Squares show at rest. With the Standard ground, this ADR stays as it is.
+
 We did this because the target look is the painted battlefield of the original Flash games, where the figures stand directly on the grass. One painting from the AI image tool gets that look for one developer, with the same process as the Town (web ADR-0004). A 3D Board and low-poly scenery look like a toy beside the painted card art.
 
 This changes art direction 2 ("Board: a real 3D model: a table-land with Lanes of stone or wood tiles") and the diorama in DESIGN.md.

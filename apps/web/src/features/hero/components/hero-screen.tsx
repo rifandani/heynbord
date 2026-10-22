@@ -13,7 +13,6 @@ import {
   GEAR_STRIKE_MS,
   GearPlate,
 } from "@/features/hero/components/gear-item";
-import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 import { HeroScene } from "@/features/hero/components/hero-scene";
 import type { ForgeStoneCount, HeroHpParts } from "@/features/hero/hero";
 import { upgradeFocusAfter } from "@/features/hero/hero";
@@ -406,22 +405,7 @@ export const HeroScreen = () => {
           "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+6px)] [@media(max-height:500px)]:w-[calc(100vw-max(0.5rem,env(safe-area-inset-left))-max(0.5rem,env(safe-area-inset-right)))] [@media(max-height:500px)]:gap-2"
         )}
       >
-        <div className="flex min-h-0 items-start gap-3 [@media(max-height:500px)]:gap-2">
-          {/* The portrait: the face of the Player's Hero (Economy 3.5). */}
-          <figure
-            aria-label={tr("hero.portrait")}
-            className="relative w-[92px] shrink-0 [@media(max-height:500px)]:w-[60px]"
-            data-testid="hero-portrait"
-          >
-            <HeroPortrait classId={hero.classId} />
-            <figcaption className="absolute inset-x-[3px] bottom-[3px] rounded-b-[9%] bg-[#120c08]/80 px-1 pt-1 pb-1.5 text-center text-[10px] leading-none font-bold tracking-[0.04em] text-[#ffe08a] uppercase [@media(max-height:500px)]:text-[8px]">
-              {tr(`classes.${hero.classId}`)}
-            </figcaption>
-          </figure>
-          <div className="min-w-0 flex-1">
-            <StatusBar hp={hero.hp} counts={hero.forgeStones} spent={spent} />
-          </div>
-        </div>
+        <StatusBar hp={hero.hp} counts={hero.forgeStones} spent={spent} />
         <ul
           ref={rack}
           tabIndex={-1}

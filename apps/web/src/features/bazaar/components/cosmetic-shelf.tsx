@@ -4,6 +4,7 @@ import { CardBack } from "@/features/battle/components/card-back";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { LookFamily } from "@/features/bazaar/bazaar";
+import { BoardSkinShelfLook } from "@/features/bazaar/components/board-skin-look";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 
 /** The look of the family on the shelf, at the size of the section. */
@@ -15,18 +16,25 @@ const ShelfLook = ({
   readonly family: LookFamily;
   readonly look: CosmeticId | null;
   readonly classId: ClassId;
-}) =>
-  family === "cardBack" ? (
-    <span className="block [font-size:9.5px] [@media(max-height:500px)]:[font-size:6.5px]">
-      <CardBack back={look} />
-    </span>
-  ) : (
+}) => {
+  if (family === "cardBack") {
+    return (
+      <span className="block [font-size:9.5px] [@media(max-height:500px)]:[font-size:6.5px]">
+        <CardBack back={look} />
+      </span>
+    );
+  }
+  if (family === "boardSkin") {
+    return <BoardSkinShelfLook skin={look} />;
+  }
+  return (
     <HeroPortrait
       id={look}
       classId={classId}
       className="w-[90px] [@media(max-height:500px)]:w-[62px]"
     />
   );
+};
 
 /**
  * The shelf of a Cosmetic section (DESIGN.md, Bazaar): the look that the

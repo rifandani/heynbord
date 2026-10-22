@@ -5,6 +5,7 @@
 import type { Cosmetic, CosmeticFamily, CosmeticId } from "@workspace/rules";
 import { BAZAAR_COSMETICS, COSMETIC_FAMILIES } from "@workspace/rules";
 
+import { hasBoardSkinArt } from "@/features/battle/board-skin-art";
 import { hasCardBackArt } from "@/features/battle/card-back-art";
 import { hasHeroPortraitArt } from "@/features/hero/hero-portrait-art";
 
@@ -15,12 +16,13 @@ export interface BazaarGroup {
 }
 
 /** The families whose look the game can draw, so the Player can select one. */
-export type LookFamily = "cardBack" | "heroPortrait";
+export type LookFamily = "cardBack" | "heroPortrait" | "boardSkin";
 
-/** The families with a painted face and a Use. */
+/** The families with a painted look and a Use. */
 export const LOOK_FAMILIES: readonly LookFamily[] = [
   "cardBack",
   "heroPortrait",
+  "boardSkin",
 ];
 
 const LOOK_FAMILY_SET: ReadonlySet<CosmeticFamily> = new Set(LOOK_FAMILIES);
@@ -30,9 +32,9 @@ export const isLookFamily = (family: CosmeticFamily): family is LookFamily =>
   LOOK_FAMILY_SET.has(family);
 
 /**
- * True when the game can draw the Cosmetic: a Card Back with a painted face,
- * or a Hero portrait with a painted face. The other families draw their
- * family glyph, so they show now.
+ * True when the game can draw the Cosmetic: a Card Back or a Hero portrait
+ * with a painted face, or a Board skin with a painted Square sheet. The
+ * Gear looks draw their family glyph, so they show now.
  */
 const showsCosmetic = (item: Cosmetic): boolean => {
   if (item.family === "cardBack") {
@@ -41,13 +43,16 @@ const showsCosmetic = (item: Cosmetic): boolean => {
   if (item.family === "heroPortrait") {
     return hasHeroPortraitArt(item.id);
   }
+  if (item.family === "boardSkin") {
+    return hasBoardSkinArt(item.id);
+  }
   return true;
 };
 
 /**
  * The groups of the catalog, in the order of the families (Economy 3.5). A
- * Card Back or a Hero portrait shows only when its face is painted: the
- * Bazaar never offers a look that the Player cannot see.
+ * Card Back, a Hero portrait or a Board skin shows only when its art is
+ * painted: the Bazaar never offers a look that the Player cannot see.
  */
 export const bazaarGroups = (): readonly BazaarGroup[] =>
   COSMETIC_FAMILIES.map((family) => ({

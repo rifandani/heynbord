@@ -76,9 +76,15 @@ React app on TanStack Start. The server renders and streams each page.
 
 ### Cosmetics
 
-**Hero portrait**: A painting of the face of the Player's Hero, and a Cosmetic of the `heroPortrait` family. It does not change with the Class of the Active Deck: the Player's Hero keeps one face for all Classes, and the Class stays on its own name and glyph. It shows on the Hero screen, in the player panel of the Top Bar, and on the banner of the Player's Hero on the Board. The enemy Side never shows it. _Avoid_: avatar, hero skin, portrait card, face
+**Hero portrait**: A painting of the face of the Player's Hero, and a Cosmetic of the `heroPortrait` family. It does not change with the Class of the Active Deck: the Player's Hero keeps one face for all Classes, and the Class stays on its own name and glyph. It shows in the player panel of the Top Bar and on the banner of the Player's Hero on the Board. The enemy Side never shows it. _Avoid_: avatar, hero skin, portrait card, face
 
 **Standard portrait**: The free look of the Hero portrait family, which every Player has: the Hero banner in code, in the color of its Side, with the Class glyph. _Avoid_: default portrait, base portrait
+
+**Board skin**: A Cosmetic of the `boardSkin` family that puts a Lane runner under each Lane of the Board. The Battle Painting stays around the Board. The whole Board shows the Player's Board skin, also the half of the enemy Side. _Avoid_: battlefield skin, arena skin, Battle Painting, board theme
+
+**Lane runner**: The painted strip on the ground under one Lane, with one tile for each Square and a joint between two Squares. Only a Board skin draws it. _Avoid_: lane mat, lane carpet, tile row, lane texture
+
+**Standard ground**: The free look of the Board skin family, which every Player has: the bare Battle Painting with no Lane runner and no drawn Square. _Avoid_: default board, empty skin, no skin
 
 ### Town
 

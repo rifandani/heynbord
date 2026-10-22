@@ -59,6 +59,7 @@
     "campaign:prompts": "bun scripts/campaign-art/write-prompts.ts",
     "card-back:prompts": "bun scripts/card-back-art/write-prompts.ts",
     "hero-portrait:prompts": "bun scripts/hero-portrait-art/write-prompts.ts",
+    "board-skin:prompts": "bun scripts/board-skin-art/write-prompts.ts",
     "town:prompts": "bun scripts/town-art/write-prompts.ts"
   },
   "devDependencies": {

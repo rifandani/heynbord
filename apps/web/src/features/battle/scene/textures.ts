@@ -6,10 +6,16 @@ import type {
   RankId,
   Side,
 } from "@workspace/rules";
-import { getCard, getToken, rankPips } from "@workspace/rules";
+import { getCard, getToken, LANE_LENGTH, rankPips } from "@workspace/rules";
 import { CanvasTexture, SRGBColorSpace } from "three";
 
 import type { UnitSourceView } from "@/features/battle/battle-view";
+import {
+  boardSkinArt,
+  laneRunnerTiles,
+  SQUARE_SHEET,
+  sheetTile,
+} from "@/features/battle/board-skin-art";
 import { sourceId, unitIllustration } from "@/features/battle/card-art";
 import type { Glyph } from "@/features/battle/glyphs";
 import {
@@ -505,6 +511,151 @@ export const closedLaneTexture = (): CanvasTexture =>
     context.fillStyle = across;
     context.fillRect(0, 0, 256, 64);
   });
+
+/** The size of one Square on a Lane runner texture, in pixels. */
+export const RUNNER_SQUARE_PX = 128;
+
+/** The empty margin around a Lane runner for its contact shade, in pixels. */
+export const RUNNER_MARGIN_PX = 16;
+
+/** The width of the soft edge of a Lane runner, in pixels. */
+const RUNNER_FEATHER_PX = 5;
+
+const runnerKey = (id: CosmeticId, lane: number): string =>
+  `lane-runner:${id}:${lane}`;
+
+const loadingSheet = new Map<CosmeticId, Promise<HTMLImageElement | null>>();
+
+const loadSquareSheet = (id: CosmeticId): Promise<HTMLImageElement | null> => {
+  const loading =
+    loadingSheet.get(id) ??
+    (async () => {
+      const art = boardSkinArt(id);
+      if (art === null) {
+        return null;
+      }
+      const image = new Image();
+      image.decoding = "async";
+      image.src = art;
+      try {
+        await image.decode();
+      } catch {
+        // A failed load can try again on the next Battle.
+        loadingSheet.delete(id);
+        return null;
+      }
+      return image;
+    })();
+  loadingSheet.set(id, loading);
+  return loading;
+};
+
+/** Makes 2 opposite edges of the canvas soft, along the direction of `gradient`. */
+const featherMask = (
+  context: CanvasRenderingContext2D,
+  gradient: CanvasGradient,
+  length: number
+) => {
+  const edge = RUNNER_FEATHER_PX / length;
+  gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+  gradient.addColorStop(edge, "rgba(0, 0, 0, 1)");
+  gradient.addColorStop(1 - edge, "rgba(0, 0, 0, 1)");
+  gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+  context.globalCompositeOperation = "destination-in";
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+  context.globalCompositeOperation = "source-over";
+};
+
+/**
+ * The Lane runner of one Lane (web ADR-0012): one tile of the Square sheet on
+ * each Square, in the order of `laneRunnerTiles`, with a soft edge and a
+ * contact shade in the margin around it.
+ */
+const drawLaneRunner = (
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  lane: number
+) => {
+  const tiles = laneRunnerTiles(lane);
+  const width = tiles.length * RUNNER_SQUARE_PX;
+  const strip = document.createElement("canvas");
+  strip.width = width;
+  strip.height = RUNNER_SQUARE_PX;
+  const stripContext = strip.getContext("2d");
+  if (!stripContext) {
+    return;
+  }
+  // The sheet can be a little larger or smaller than 1536 × 1024: a cell is a
+  // share of the image, not a fixed pixel size.
+  const cellWidth = image.naturalWidth / SQUARE_SHEET.columns;
+  const cellHeight = image.naturalHeight / SQUARE_SHEET.rows;
+  for (const [position, tile] of tiles.entries()) {
+    const { column, row } = sheetTile(tile);
+    stripContext.drawImage(
+      image,
+      column * cellWidth,
+      row * cellHeight,
+      cellWidth,
+      cellHeight,
+      position * RUNNER_SQUARE_PX,
+      0,
+      RUNNER_SQUARE_PX,
+      RUNNER_SQUARE_PX
+    );
+  }
+  featherMask(
+    stripContext,
+    stripContext.createLinearGradient(0, 0, width, 0),
+    width
+  );
+  featherMask(
+    stripContext,
+    stripContext.createLinearGradient(0, 0, 0, RUNNER_SQUARE_PX),
+    RUNNER_SQUARE_PX
+  );
+  // The contact shade: the runner lies on the ground of the Battle Painting.
+  context.save();
+  context.shadowColor = "rgba(18, 12, 6, 0.55)";
+  context.shadowBlur = 10;
+  context.shadowOffsetY = 3;
+  context.fillStyle = "rgba(18, 12, 6, 0.35)";
+  context.fillRect(
+    RUNNER_MARGIN_PX + RUNNER_FEATHER_PX,
+    RUNNER_MARGIN_PX + RUNNER_FEATHER_PX,
+    width - RUNNER_FEATHER_PX * 2,
+    RUNNER_SQUARE_PX - RUNNER_FEATHER_PX * 2
+  );
+  context.restore();
+  context.drawImage(strip, RUNNER_MARGIN_PX, RUNNER_MARGIN_PX);
+};
+
+/** The Lane runner of a Board skin on one Lane, if its Square sheet is loaded. */
+export const loadedLaneRunner = (
+  id: CosmeticId,
+  lane: number
+): CanvasTexture | undefined => cache.get(runnerKey(id, lane));
+
+/**
+ * The Lane runner of a Board skin on one Lane (Board Skin Concepts 2). It is
+ * `undefined` if the Square sheet does not exist or does not load: then the
+ * Lane keeps the Standard ground.
+ */
+export const laneRunnerTexture = async (
+  id: CosmeticId,
+  lane: number
+): Promise<CanvasTexture | undefined> => {
+  const image = await loadSquareSheet(id);
+  if (image === null) {
+    return undefined;
+  }
+  return cached(
+    runnerKey(id, lane),
+    LANE_LENGTH * RUNNER_SQUARE_PX + RUNNER_MARGIN_PX * 2,
+    RUNNER_SQUARE_PX + RUNNER_MARGIN_PX * 2,
+    (context) => drawLaneRunner(context, image, lane)
+  );
+};
 
 /** Draws one placeholder key image in a `width` × `height` box at (0, 0). */
 type FxDraw = (

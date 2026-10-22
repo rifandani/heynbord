@@ -731,6 +731,8 @@ export default {
       mesaDusk: "Mesa Senja",
       harborNight: "Pelabuhan Malam",
       hollowMoon: "Bulan Rongga",
+      spireNoon: "Siang Menara",
+      deepCrystal: "Kristal Dalam",
       wardenSash: "Sabuk Penjaga",
       duneMask: "Topeng Duna",
       hollowLantern: "Lentera Rongga",
@@ -750,6 +752,7 @@ export default {
     standard: {
       cardBack: "Punggung Standar",
       heroPortrait: "Potret Standar",
+      boardSkin: "Tanah Standar",
     },
     alwaysYours: "Selalu milikmu",
     use: "Pakai",
@@ -757,6 +760,7 @@ export default {
     useStandard: {
       cardBack: "Pakai Punggung Standar",
       heroPortrait: "Pakai Potret Standar",
+      boardSkin: "Pakai Tanah Standar",
     },
     inUse: "Sedang dipakai",
     used: "Kamu sekarang memakai {name}.",
@@ -764,6 +768,7 @@ export default {
     shelf: {
       cardBack: "Pratinjau punggung kartu",
       heroPortrait: "Pratinjau potret Pahlawan",
+      boardSkin: "Pratinjau tampilan papan",
     },
     previewLabel: "Pratinjau {name}",
   },
@@ -1605,7 +1610,6 @@ export default {
   },
   hero: {
     label: "Pahlawan",
-    portrait: "Potret Pahlawan",
     hp: "HP Pahlawan",
     hpParts: {
       base: "Dasar",

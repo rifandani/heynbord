@@ -2,8 +2,8 @@
  * The Cosmetics of v1 (Economy 3.5, ADR-0008). A Cosmetic changes how
  * something looks and never changes gameplay. A Bazaar item is a Cosmetic
  * that the Bazaar sells for Heynstones; an Earn-only Cosmetic comes from
- * play and is never in the Bazaar. v1 has 25 Bazaar items, and the full
- * catalog costs 2,760 Heynstones.
+ * play and is never in the Bazaar. v1 has 27 Bazaar items, and the full
+ * catalog costs 3,160 Heynstones.
  */
 import { Schema } from "effect";
 
@@ -65,6 +65,8 @@ export const CosmeticId = Schema.Literals([
   "boardSkin.mesaDusk",
   "boardSkin.harborNight",
   "boardSkin.hollowMoon",
+  "boardSkin.spireNoon",
+  "boardSkin.deepCrystal",
   // The Earn-only Cosmetics of the Boss Floors (Economy 2.3), in Floor order
   "earnOnly.wardenSash",
   "earnOnly.duneMask",
@@ -129,7 +131,7 @@ const catalog = (
 
 /**
  * The Bazaar Cosmetics of v1 (Economy 3.5), in screen order: 8 card backs,
- * 7 Hero portraits, 6 Gear looks and 4 Board skins. Keep the code and the
+ * 7 Hero portraits, 6 Gear looks and 6 Board skins. Keep the code and the
  * Economy table the same.
  */
 export const BAZAAR_COSMETICS: readonly Cosmetic[] = [
@@ -165,6 +167,8 @@ export const BAZAAR_COSMETICS: readonly Cosmetic[] = [
     "boardSkin.mesaDusk",
     "boardSkin.harborNight",
     "boardSkin.hollowMoon",
+    "boardSkin.spireNoon",
+    "boardSkin.deepCrystal",
   ]),
 ];
 
@@ -205,7 +209,7 @@ const COSMETIC_ITEM_BY_ID: ReadonlyMap<string, Cosmetic> = new Map(
 export const getBazaarCosmetic = (id: string): Cosmetic | undefined =>
   COSMETIC_ITEM_BY_ID.get(id);
 
-/** The sum of the prices of the full Bazaar catalog: 2,760 (Economy 3.5). */
+/** The sum of the prices of the full Bazaar catalog: 3,160 (Economy 3.5). */
 export const BAZAAR_CATALOG_HEYNSTONES = BAZAAR_COSMETICS.reduce(
   (sum, item) => sum + (item.price ?? 0),
   0

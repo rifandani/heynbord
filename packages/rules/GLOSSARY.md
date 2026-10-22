@@ -338,7 +338,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Active Cosmetic**: The one Cosmetic of a family that the Player uses now. The Player selects it from the Cosmetics that they own, and it changes only how the game looks. _Avoid_: equipped Cosmetic, worn look, applied Cosmetic
 
-**Standard look**: The look of a Cosmetic family that the game uses when the Player has selected no Cosmetic of that family. It costs nothing, and every Player has it. The Standard look of the Card Back family is the Standard Back, and the Standard look of the Hero portrait family is the Standard portrait. _Avoid_: default Cosmetic, free Cosmetic, base look
+**Standard look**: The look of a Cosmetic family that the game uses when the Player has selected no Cosmetic of that family. It costs nothing, and every Player has it. The Standard look of the Card Back family is the Standard Back, the Standard look of the Hero portrait family is the Standard portrait, and the Standard look of the Board skin family is the Standard ground. _Avoid_: default Cosmetic, free Cosmetic, base look
 
 **Bazaar item**: A Bazaar Cosmetic with a Heynstone price. _Avoid_: product, offer item
 

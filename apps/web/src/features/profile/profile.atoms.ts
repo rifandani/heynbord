@@ -118,6 +118,14 @@ export const activeHeroPortraitAtom = Atom.make(
   (get) => get(profileAtom).activeCosmetics.heroPortrait ?? null
 );
 
+/**
+ * The Active Cosmetic of the `boardSkin` family, or `null` for the Standard
+ * ground (web ADR-0012). The Lane runners of every Battle show it.
+ */
+export const activeBoardSkinAtom = Atom.make(
+  (get) => get(profileAtom).activeCosmetics.boardSkin ?? null
+);
+
 /** The Player level and the Gear that a Battle uses. */
 export const battlePlayerAtom = Atom.make((get): BattlePlayer =>
   battlePlayer(get(profileAtom))

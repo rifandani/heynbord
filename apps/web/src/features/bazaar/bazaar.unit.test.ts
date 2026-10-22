@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { initI18n } from "@/core/libs/i18n/init";
 import enUS from "@/core/libs/i18n/locales/en-US";
 import idID from "@/core/libs/i18n/locales/id-ID";
+import { hasBoardSkinArt } from "@/features/battle/board-skin-art";
 import { hasCardBackArt } from "@/features/battle/card-back-art";
 import {
   bazaarGroups,
@@ -37,7 +38,9 @@ describe("bazaarGroups", () => {
         (item) => item.family === "heroPortrait" && hasHeroPortraitArt(item.id)
       ).length,
       6,
-      4,
+      BAZAAR_COSMETICS.filter(
+        (item) => item.family === "boardSkin" && hasBoardSkinArt(item.id)
+      ).length,
     ]);
   });
 
@@ -58,6 +61,15 @@ describe("bazaarGroups", () => {
     expect(portraits).toEqual(shown);
     expect(portraits.every((item) => hasHeroPortraitArt(item.id))).toBe(true);
   });
+
+  it("shows only the Board skins that have their Square sheet painted", () => {
+    const shown = BAZAAR_COSMETICS.filter(
+      (item) => item.family === "boardSkin" && hasBoardSkinArt(item.id)
+    );
+    const boardSkins = bazaarGroups()[3]?.items ?? [];
+    expect(boardSkins).toEqual(shown);
+    expect(boardSkins.every((item) => hasBoardSkinArt(item.id))).toBe(true);
+  });
 });
 
 describe("isLookFamily", () => {
@@ -65,6 +77,7 @@ describe("isLookFamily", () => {
     expect(COSMETIC_FAMILIES.filter(isLookFamily)).toEqual([
       "cardBack",
       "heroPortrait",
+      "boardSkin",
     ]);
   });
 });

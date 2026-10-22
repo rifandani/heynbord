@@ -142,7 +142,7 @@ Notes:
 | Feats | 18 | 420 | 1 Cosmetic |
 | **Total** | **40** | **1,000** | **500 Coin, 50 Essence, 3 Cosmetics** |
 
-With the 250 Heynstones of the 10th Floors, the v1 supply is 1,250 Heynstones. That is about 45% of the Bazaar catalog cost (Economy 2.6), so the Player must still choose.
+With the 250 Heynstones of the 10th Floors, the v1 supply is 1,250 Heynstones. That is about 40% of the Bazaar catalog cost (Economy 2.6), so the Player must still choose.
 
 ## 3. Checks before release
 

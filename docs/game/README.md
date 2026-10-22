@@ -25,6 +25,7 @@ All documents use ASD-STE100 Simplified Technical English.
 | 15 | [Achievements](./15-achievements.md) | The rules for Achievements, Feats and Tallies, the list of Achievements with their rewards, and the Achievements screen. | Game designer |
 | 16 | [Cosmetic Concepts](./16-cosmetic-concepts.md) | The art brief and the image prompts for the Card Backs. `bun card-back:prompts` makes the prompts. | Art director |
 | 17 | [Hero Portrait Concepts](./17-hero-portrait-concepts.md) | The art brief and the image prompts for the Hero portraits. `bun hero-portrait:prompts` makes the prompts. | Art director |
+| 18 | [Board Skin Concepts](./18-board-skin-concepts.md) | The art brief and the image prompts for the Square sheets of the Board skins. `bun board-skin:prompts` makes the prompts. | Art director |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.
 

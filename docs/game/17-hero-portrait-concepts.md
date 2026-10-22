@@ -18,7 +18,7 @@ The game keeps the bronze frame, the gold line and the plate in code. A painting
 | Tent Rings | `tentRings` | `tent-rings.webp` | A market trader with gold hoops, rings and a bright headscarf. |
 | Gold Crest | `goldCrest` | `gold-crest.webp` | A noble veteran with a short silver beard and a gold circlet. |
 
-The 7 faces must be easy to tell apart at **40 px wide**, because the Top Bar shows the portrait as a 40 px square. They must also look right on the Hero screen, at about 92 px wide.
+The 7 faces must be easy to tell apart at **40 px wide**, because the Top Bar shows the portrait as a 40 px square.
 
 ## 2. Rules for a Hero portrait painting
 

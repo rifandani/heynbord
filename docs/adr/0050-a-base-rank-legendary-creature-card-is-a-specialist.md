@@ -15,7 +15,7 @@ The v1 set grows from 90 to 96 Creature Cards, and from 130 to 136 Cards. The 6 
 | Warden Saelith | Elf | Ranger | 5 | 2 / 5 | Physical | Unique, Long-range, Spawnbane 2 |
 | Pale Cantor Ysolde | Undead | Priest | 5 | 3 / 4 | Physical | Unique, Soul Harvest |
 
-The original Class choices came from the 6 Main Archetypes ([08 — Archetypes](../game/08-archetypes.md)): Vanguard Warrior, Raiders Mage, Deathless Host Priest, Tunnel Rats Ranger, Thornwatch Ranger and Wild Hunt Priest. A later change makes Gorehorn Red Maw a Warrior Specialist (Amendments). Each Class has at least one Specialist, and no Race has two. Warrior and Ranger have two; Mage and Priest have one.
+5 Class choices come from the Main Archetypes ([08 — Archetypes](../game/08-archetypes.md)): Vanguard Warrior, Raiders Mage, Deathless Host Priest, Tunnel Rats Ranger and Thornwatch Ranger. Gorehorn Red Maw is a Warrior Specialist with the Wild Hunt creature style (Amendments). Each Class has at least one Specialist, and no Race has two. Warrior and Ranger have two; Mage and Priest have one.
 
 ## Considered Options
 

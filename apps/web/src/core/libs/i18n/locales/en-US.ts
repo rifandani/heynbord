@@ -709,6 +709,8 @@ export default {
       mesaDusk: "Mesa Dusk",
       harborNight: "Harbor Night",
       hollowMoon: "Hollow Moon",
+      spireNoon: "Spire Noon",
+      deepCrystal: "Deep Crystal",
       wardenSash: "Warden Sash",
       duneMask: "Dune Mask",
       hollowLantern: "Hollow Lantern",
@@ -728,6 +730,7 @@ export default {
     standard: {
       cardBack: "Standard Back",
       heroPortrait: "Standard Portrait",
+      boardSkin: "Standard Ground",
     },
     alwaysYours: "Always yours",
     use: "Use",
@@ -735,6 +738,7 @@ export default {
     useStandard: {
       cardBack: "Use the Standard Back",
       heroPortrait: "Use the Standard Portrait",
+      boardSkin: "Use the Standard Ground",
     },
     inUse: "In use",
     used: "You now use {name}.",
@@ -742,6 +746,7 @@ export default {
     shelf: {
       cardBack: "Card back preview",
       heroPortrait: "Hero portrait preview",
+      boardSkin: "Board skin preview",
     },
     previewLabel: "Preview {name}",
   },
@@ -1574,7 +1579,6 @@ export default {
   },
   hero: {
     label: "Hero",
-    portrait: "Hero portrait",
     hp: "Hero HP",
     hpParts: {
       base: "Base",
