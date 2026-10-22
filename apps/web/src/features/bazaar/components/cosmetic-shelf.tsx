@@ -5,6 +5,7 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { LookFamily } from "@/features/bazaar/bazaar";
 import { BoardSkinShelfLook } from "@/features/bazaar/components/board-skin-look";
+import { GearLookShelfLook } from "@/features/bazaar/components/gear-look-icons";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 
 /** The look of the family on the shelf, at the size of the section. */
@@ -24,6 +25,9 @@ const ShelfLook = ({
       </span>
     );
   }
+  if (family === "gearLook") {
+    return <GearLookShelfLook look={look} />;
+  }
   if (family === "boardSkin") {
     return <BoardSkinShelfLook skin={look} />;
   }
@@ -38,9 +42,8 @@ const ShelfLook = ({
 
 /**
  * The shelf of a Cosmetic section (DESIGN.md, Bazaar): the look that the
- * Player previews, at the size of the surface that shows it, on the wood
- * ledge of the stall. The gold chip says when the look is the Active Cosmetic
- * of the family.
+ * Player previews, at the size of the surface that shows it. The gold chip
+ * says when the look is the Active Cosmetic of the family.
  */
 export const CosmeticShelf = ({
   family,
@@ -67,10 +70,8 @@ export const CosmeticShelf = ({
       data-look={look ?? "standard"}
       data-in-use={inUse || undefined}
     >
-      <span className="relative shrink-0" aria-hidden>
+      <span className="shrink-0" aria-hidden>
         <ShelfLook family={family} look={look} classId={classId} />
-        {/* The wood ledge of the stall, under the look. */}
-        <span className="absolute -inset-x-2 -bottom-1.5 h-2 rounded-[3px] border-t border-[#e7bb6a]/40 bg-[linear-gradient(180deg,#5a3a20,#2e1d10)] shadow-[0_3px_4px_rgba(0,0,0,0.45)]" />
       </span>
       <div className="min-w-0 flex-1">
         {inUse ? (

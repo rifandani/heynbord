@@ -113,3 +113,6 @@ apps/web/art/hero-portraits/raw/
 
 # Board skin art: images from ChatGPT, the style reference and the prompts
 apps/web/art/board-skins/raw/
+
+# Gear look art: images from ChatGPT, the set reference and the prompts
+apps/web/art/gear-looks/raw/

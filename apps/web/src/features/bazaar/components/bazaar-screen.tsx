@@ -1,8 +1,8 @@
 /**
  * The Bazaar screen (Economy 3.5): the offers that the Player buys with
  * Heynstones. v1 sells only Cosmetics (ADR-0008), grouped by their family,
- * and the Player owns each one forever. A Card Back, a Hero portrait or a
- * Board skin that the Player owns is a look that they can use: the section
+ * and the Player owns each one forever. A Card Back, a Hero portrait, a Gear
+ * look or a Board skin that the Player owns is a look that they can use: the section
  * shows it on the shelf and makes it the Active Cosmetic of its family.
  */
 import type {
@@ -32,6 +32,7 @@ import {
 import { BazaarScene } from "@/features/bazaar/components/bazaar-scene";
 import { BoardSkinThumb } from "@/features/bazaar/components/board-skin-look";
 import { CosmeticShelf } from "@/features/bazaar/components/cosmetic-shelf";
+import { GearLookThumb } from "@/features/bazaar/components/gear-look-icons";
 import { useBazaar } from "@/features/bazaar/use-bazaar";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 import { BalancePlate } from "@/features/town/components/balance-plate";
@@ -63,6 +64,14 @@ const PlateLook = ({
       >
         <CardBack back={look} />
       </span>
+    );
+  }
+  if (family === "gearLook") {
+    return (
+      <GearLookThumb
+        look={look}
+        className="w-10 [@media(max-height:500px)]:w-8"
+      />
     );
   }
   if (family === "boardSkin") {
@@ -280,8 +289,8 @@ interface Preview {
 /**
  * The Bazaar screen: one section for each family, in the order of the Economy
  * table. The Balance Plate shows the Heynstones next to the Coin and the
- * Essence, so the Player sees what the items cost. The Card Backs, the Hero
- * portraits and the Board skins have the shelf that shows the look, so the
+ * Essence, so the Player sees what the items cost. Each look family has the
+ * shelf that shows the look, so the
  * Player sees it before the purchase and before the Use.
  */
 export const BazaarScreen = () => {

@@ -86,6 +86,10 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Standard ground**: The free look of the Board skin family, which every Player has: the bare Battle Painting with no Lane runner and no drawn Square. _Avoid_: default board, empty skin, no skin
 
+**Gear look**: A Cosmetic of the `gearLook` family: one painted icon for each of the 4 Gear items, all in one material. It shows on the Gear plates of the Hero screen. It changes no Gear level and no stat. _Avoid_: Gear skin, armor skin, equipment look, outfit
+
+**Standard kit**: The free look of the Gear look family, which every Player has: the 4 Gear icons in royal blue, gold and steel. _Avoid_: default Gear, standard Gear, base Gear look
+
 ### Town
 
 **Town**: The hub screen of the game, and the first screen that the Player sees. It is a painted view of a town, with one Building for each screen that the Player can open. _Avoid_: Camp, city, hub, home, lobby, main menu

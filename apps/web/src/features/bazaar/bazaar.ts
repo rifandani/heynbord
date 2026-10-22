@@ -7,6 +7,7 @@ import { BAZAAR_COSMETICS, COSMETIC_FAMILIES } from "@workspace/rules";
 
 import { hasBoardSkinArt } from "@/features/battle/board-skin-art";
 import { hasCardBackArt } from "@/features/battle/card-back-art";
+import { hasGearLookArt } from "@/features/hero/gear-look-art";
 import { hasHeroPortraitArt } from "@/features/hero/hero-portrait-art";
 
 /** One group of Bazaar items of one family. */
@@ -16,12 +17,13 @@ export interface BazaarGroup {
 }
 
 /** The families whose look the game can draw, so the Player can select one. */
-export type LookFamily = "cardBack" | "heroPortrait" | "boardSkin";
+export type LookFamily = "cardBack" | "heroPortrait" | "gearLook" | "boardSkin";
 
 /** The families with a painted look and a Use. */
 export const LOOK_FAMILIES: readonly LookFamily[] = [
   "cardBack",
   "heroPortrait",
+  "gearLook",
   "boardSkin",
 ];
 
@@ -33,8 +35,8 @@ export const isLookFamily = (family: CosmeticFamily): family is LookFamily =>
 
 /**
  * True when the game can draw the Cosmetic: a Card Back or a Hero portrait
- * with a painted face, or a Board skin with a painted Square sheet. The
- * Gear looks draw their family glyph, so they show now.
+ * with a painted face, a Gear look with its 4 painted icons, or a Board skin
+ * with a painted Square sheet.
  */
 const showsCosmetic = (item: Cosmetic): boolean => {
   if (item.family === "cardBack") {
@@ -42,6 +44,9 @@ const showsCosmetic = (item: Cosmetic): boolean => {
   }
   if (item.family === "heroPortrait") {
     return hasHeroPortraitArt(item.id);
+  }
+  if (item.family === "gearLook") {
+    return hasGearLookArt(item.id);
   }
   if (item.family === "boardSkin") {
     return hasBoardSkinArt(item.id);
@@ -51,8 +56,7 @@ const showsCosmetic = (item: Cosmetic): boolean => {
 
 /**
  * The groups of the catalog, in the order of the families (Economy 3.5). A
- * Card Back, a Hero portrait or a Board skin shows only when its art is
- * painted: the Bazaar never offers a look that the Player cannot see.
+ * Cosmetic shows only when its art is painted: the Bazaar never offers a look that the Player cannot see.
  */
 export const bazaarGroups = (): readonly BazaarGroup[] =>
   COSMETIC_FAMILIES.map((family) => ({

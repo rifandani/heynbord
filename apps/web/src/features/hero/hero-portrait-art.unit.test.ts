@@ -11,7 +11,7 @@ import {
   UNPAINTED_HERO_PORTRAIT_ART,
 } from "./hero-portrait-art";
 
-const PORTRAITS = new URL("../../public/hero-portraits/", import.meta.url);
+const PORTRAITS = new URL("../../../public/hero-portraits/", import.meta.url);
 
 /** The Hero portraits of the Bazaar, in catalog order (Economy 3.5). */
 const portraits = BAZAAR_COSMETICS.filter(

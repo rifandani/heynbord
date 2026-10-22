@@ -13,6 +13,7 @@ import {
   isLookFamily,
   LOOK_FAMILIES,
 } from "@/features/bazaar/bazaar";
+import { hasGearLookArt } from "@/features/hero/gear-look-art";
 import { hasHeroPortraitArt } from "@/features/hero/hero-portrait-art";
 
 const { t } = initI18n({
@@ -37,7 +38,9 @@ describe("bazaarGroups", () => {
       BAZAAR_COSMETICS.filter(
         (item) => item.family === "heroPortrait" && hasHeroPortraitArt(item.id)
       ).length,
-      6,
+      BAZAAR_COSMETICS.filter(
+        (item) => item.family === "gearLook" && hasGearLookArt(item.id)
+      ).length,
       BAZAAR_COSMETICS.filter(
         (item) => item.family === "boardSkin" && hasBoardSkinArt(item.id)
       ).length,
@@ -62,6 +65,15 @@ describe("bazaarGroups", () => {
     expect(portraits.every((item) => hasHeroPortraitArt(item.id))).toBe(true);
   });
 
+  it("shows only the Gear looks that have their 4 icons painted", () => {
+    const shown = BAZAAR_COSMETICS.filter(
+      (item) => item.family === "gearLook" && hasGearLookArt(item.id)
+    );
+    const gearLooks = bazaarGroups()[2]?.items ?? [];
+    expect(gearLooks).toEqual(shown);
+    expect(gearLooks.every((item) => hasGearLookArt(item.id))).toBe(true);
+  });
+
   it("shows only the Board skins that have their Square sheet painted", () => {
     const shown = BAZAAR_COSMETICS.filter(
       (item) => item.family === "boardSkin" && hasBoardSkinArt(item.id)
@@ -77,6 +89,7 @@ describe("isLookFamily", () => {
     expect(COSMETIC_FAMILIES.filter(isLookFamily)).toEqual([
       "cardBack",
       "heroPortrait",
+      "gearLook",
       "boardSkin",
     ]);
   });

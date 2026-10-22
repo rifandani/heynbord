@@ -752,6 +752,7 @@ export default {
     standard: {
       cardBack: "Punggung Standar",
       heroPortrait: "Potret Standar",
+      gearLook: "Perlengkapan Standar",
       boardSkin: "Tanah Standar",
     },
     alwaysYours: "Selalu milikmu",
@@ -760,6 +761,7 @@ export default {
     useStandard: {
       cardBack: "Pakai Punggung Standar",
       heroPortrait: "Pakai Potret Standar",
+      gearLook: "Pakai Perlengkapan Standar",
       boardSkin: "Pakai Tanah Standar",
     },
     inUse: "Sedang dipakai",
@@ -768,6 +770,7 @@ export default {
     shelf: {
       cardBack: "Pratinjau punggung kartu",
       heroPortrait: "Pratinjau potret Pahlawan",
+      gearLook: "Pratinjau tampilan perlengkapan",
       boardSkin: "Pratinjau tampilan papan",
     },
     previewLabel: "Pratinjau {name}",

@@ -730,6 +730,7 @@ export default {
     standard: {
       cardBack: "Standard Back",
       heroPortrait: "Standard Portrait",
+      gearLook: "Standard Kit",
       boardSkin: "Standard Ground",
     },
     alwaysYours: "Always yours",
@@ -738,6 +739,7 @@ export default {
     useStandard: {
       cardBack: "Use the Standard Back",
       heroPortrait: "Use the Standard Portrait",
+      gearLook: "Use the Standard Kit",
       boardSkin: "Use the Standard Ground",
     },
     inUse: "In use",
@@ -746,6 +748,7 @@ export default {
     shelf: {
       cardBack: "Card back preview",
       heroPortrait: "Hero portrait preview",
+      gearLook: "Gear look preview",
       boardSkin: "Board skin preview",
     },
     previewLabel: "Preview {name}",

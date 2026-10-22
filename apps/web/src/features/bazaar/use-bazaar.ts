@@ -28,6 +28,7 @@ export const useBazaar = () => {
   const activeLooks: Readonly<Record<LookFamily, CosmeticId | null>> = {
     cardBack: profile.activeCosmetics.cardBack ?? null,
     heroPortrait: profile.activeCosmetics.heroPortrait ?? null,
+    gearLook: profile.activeCosmetics.gearLook ?? null,
     boardSkin: profile.activeCosmetics.boardSkin ?? null,
   };
 

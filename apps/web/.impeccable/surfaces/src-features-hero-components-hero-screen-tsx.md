@@ -12,7 +12,7 @@ Scope: the Hero state of `/play` (GDD 7.3, 11.1, issue #77, ADR-0033). Mode: Ope
 - Audience: the returning fan and the strategy card player at Player level 5 or higher, between Battles, often with spare Coin after a Region 1 run. Desktop first, phone in landscape.
 - Task: see the Class of the Active Deck and the Hero HP sum, compare the 4 Gear items, press an upgrade, see the stat rise and the Coin fall, press again. "Change Deck" opens the Deck dialog.
 - Content: 4 Gear slots (Weapon, Armor, Trinket, Banner), levels 0 to 10, cost 40 × n² Copper (40c to 40s), stats from `content/gear.ts`. Class from the Active Deck slot.
-- Constraints: no Hero figure, no Gear looks, no Class-specific item names, no Deck or Class selector here. Art (Barracks inside painting, 4 Gear icons) comes from the user; until each file exists, a code fallback holds its box.
+- Constraints: no Hero figure, no Class-specific item names, no Deck or Class selector here. Art (Barracks inside painting, 4 Gear icons) comes from the user; until each file exists, a code fallback holds its box. The Gear icons show the Active Gear look, or the Standard kit (web ADR-0013).
 - Unresolved: the painted Barracks inside and the 4 painted Gear icons (briefs in 11 — Town Concepts 11 and 12).
 
 ## Direction contract

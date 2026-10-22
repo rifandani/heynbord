@@ -1,3 +1,4 @@
+import { useAtomValue } from "@effect/atom-react";
 import type { ForgeStoneTier } from "@workspace/rules";
 import { coinDenominations, MAX_GEAR_LEVEL } from "@workspace/rules";
 import { cn } from "cn";
@@ -10,11 +11,13 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
+import { gearIconArt } from "@/features/hero/gear-look-art";
 import type { GearItem, GearUpgrade } from "@/features/hero/hero";
-import { GEAR_GLYPH, GEAR_GLYPH_TURN, heroArt } from "@/features/hero/hero-art";
+import { GEAR_GLYPH, GEAR_GLYPH_TURN } from "@/features/hero/hero-art";
 import { useStatFormat } from "@/features/hero/use-stat-format";
 import { CoinPrice } from "@/features/packs/components/pack-art";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
+import { activeGearLookAtom } from "@/features/profile/profile.atoms";
 
 /** The HUD plate (DESIGN.md, HUD plate). */
 const PLATE =
@@ -137,8 +140,9 @@ const GearSheen = ({
 );
 
 /**
- * The icon of a Gear item: its painted icon, or its glyph on a round dark
- * badge with a bronze rim until a person paints it (11 — Town Concepts 12).
+ * The icon of a Gear item: its icon in the Active Gear look or the Standard
+ * kit (web ADR-0013), or its glyph on a round dark badge with a bronze rim
+ * until a person paints it (11 — Town Concepts 12).
  * When its upgrade is ready and under the pointer or the focus, the item lifts
  * off the plate and the light goes across it. A strike makes it give a little
  * and throws sparks in the tier color. At level 25 the "Max" seal sits on its
@@ -154,7 +158,8 @@ const GearIcon = ({
   readonly ref: RefObject<HTMLSpanElement | null>;
 }) => {
   const { tr } = useGameText();
-  const painted = heroArt(item.slot);
+  const look = useAtomValue(activeGearLookAtom);
+  const painted = gearIconArt(look, item.slot);
   const maxed = item.upgrade.kind === "max";
   return (
     <span

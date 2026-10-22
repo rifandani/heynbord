@@ -126,6 +126,14 @@ export const activeBoardSkinAtom = Atom.make(
   (get) => get(profileAtom).activeCosmetics.boardSkin ?? null
 );
 
+/**
+ * The Active Cosmetic of the `gearLook` family, or `null` for the Standard
+ * kit (web ADR-0013). The Gear plates of the Hero screen show its icons.
+ */
+export const activeGearLookAtom = Atom.make(
+  (get) => get(profileAtom).activeCosmetics.gearLook ?? null
+);
+
 /** The Player level and the Gear that a Battle uses. */
 export const battlePlayerAtom = Atom.make((get): BattlePlayer =>
   battlePlayer(get(profileAtom))

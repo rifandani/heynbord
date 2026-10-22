@@ -2,7 +2,7 @@
 
 This document gives the art brief of the Cosmetics of v1: the items that change how the game looks ([GDD 10](./03-game-design.md#10-achievements-cosmetics-and-the-bazaar), [Economy 3.5](./07-economy.md#35-bazaar)). A Cosmetic never changes gameplay.
 
-v1 has 4 families: Card Back, Hero portrait, Gear look and Board skin. This document has the brief of the **Card Back** family. The Hero portrait family is in [Hero Portrait Concepts](./17-hero-portrait-concepts.md), and the Board skin family is in [Board Skin Concepts](./18-board-skin-concepts.md). The Gear look family comes with the game screen that can show it.
+v1 has 4 families: Card Back, Hero portrait, Gear look and Board skin. This document has the brief of the **Card Back** family. The Hero portrait family is in [Hero Portrait Concepts](./17-hero-portrait-concepts.md), the Board skin family is in [Board Skin Concepts](./18-board-skin-concepts.md), and the Gear look family is in [Gear Look Concepts](./19-gear-look-concepts.md).
 
 The game keeps the bronze frame, the bevel, the inner gold line and the Heynbord emblem in code. A painting is the **face** of a Card Back, inside that frame. The face of the Standard Back is in code: dark leather with a gold diamond tooling.
 
