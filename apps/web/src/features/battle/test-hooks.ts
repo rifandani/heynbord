@@ -31,6 +31,7 @@ import {
   legalTargetsAtom,
   selectedCardAtom,
 } from "@/features/battle/battle.atoms";
+import { sourceId } from "@/features/battle/card-art";
 import { PLAYER_HERO, playerHand } from "@/features/battle/player-hero";
 import {
   dungeonBefore,
@@ -63,6 +64,7 @@ export const QA_STATES = [
   "dungeon-three",
   "dungeon-boss-rule",
   "dungeon-defeat",
+  "unit-model",
 ] as const;
 export type QaState = (typeof QA_STATES)[number];
 
@@ -214,6 +216,69 @@ const finishedFrom = (
   return session;
 };
 
+const WARDEN_SAELITH = "elf.wardenSaelith";
+
+/**
+ * QA: a Ranger Deck around Warden Saelith, the first card with a Unit Model
+ * (art direction 2.2), so a capture shows her on the Board.
+ */
+const UNIT_MODEL_DECK: BattleOptions["deck"] = {
+  classId: "ranger",
+  deck: [
+    ...Array.from({ length: 3 }, () => ({
+      cardId: WARDEN_SAELITH,
+      rank: "legendary" as const,
+    })),
+    ...Array.from({ length: 3 }, () => ({
+      cardId: "elf.brambleDuelist",
+      rank: "common" as const,
+    })),
+    ...Array.from({ length: 3 }, () => ({
+      cardId: "elf.fernwingCourier",
+      rank: "common" as const,
+    })),
+    { cardId: "elf.rootboundGuard", rank: "common" },
+  ],
+};
+
+const hasSaelith = (session: BattleSession): boolean =>
+  session.view.units.some(
+    (unit) =>
+      unit.owner === "player" && sourceId(unit.source) === WARDEN_SAELITH
+  );
+
+/**
+ * Plays Turns with the AI for both sides until Warden Saelith is on the
+ * Board, for 14 Turns at most, from the seed and then the next seeds.
+ */
+const unitModelBattle = (seed: number): BattleSession => {
+  let session = startSession({
+    stageId: "1-2",
+    deck: UNIT_MODEL_DECK,
+    player: NEW_PLAYER,
+    seed,
+  });
+  for (let offset = 0; offset < 20; offset += 1) {
+    session = startSession({
+      stageId: "1-2",
+      deck: UNIT_MODEL_DECK,
+      player: NEW_PLAYER,
+      seed: seed + offset,
+    });
+    for (
+      let turn = 0;
+      turn < 14 && session.rules.status !== "finished";
+      turn += 1
+    ) {
+      if (hasSaelith(session)) {
+        return session;
+      }
+      session = playTurns(session, 1);
+    }
+  }
+  return session;
+};
+
 /**
  * QA: Stages 1-1 to 1-9 won with mixed Stars, so the Boss Stage is Open and
  * each Stage of Region 1 can be played.
@@ -288,6 +353,9 @@ export const buildQaState = (
     }
     case "defeat": {
       return finishedBattle(seed, "enemy");
+    }
+    case "unit-model": {
+      return unitModelBattle(seed);
     }
     default: {
       return absurd(state);

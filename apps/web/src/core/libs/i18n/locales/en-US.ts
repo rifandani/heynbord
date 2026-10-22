@@ -1998,7 +1998,7 @@ export default {
     heal: "In your Start Phase, the friendly Unit with the lowest HP heals {value} HP.",
     herosBane:
       "In each of your Start Phases, this Unit deals 1 Physical damage to the enemy Hero in front of it.",
-    ironGuard: "Each Physical hit on this Unit deals at most 4 damage.",
+    ironGuard: "Each Physical hit on this Unit deals at most 3 damage.",
     longRange: "+2 Range.",
     midRange: "+1 Range.",
     piercing:

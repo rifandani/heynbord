@@ -1,11 +1,31 @@
-import type { AnimationAction, AnimationClip, Material, Object3D } from "three";
-import { AnimationMixer, Box3, Group, Mesh, Vector3 } from "three";
+import type {
+  AnimationAction,
+  AnimationClip,
+  Material,
+  Object3D,
+  WebGLProgramParametersWithUniforms,
+} from "three";
+import {
+  AnimationMixer,
+  BackSide,
+  Box3,
+  DataTexture,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  MeshToonMaterial,
+  NearestFilter,
+  RedFormat,
+  SkinnedMesh,
+  Vector3,
+} from "three";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
 
-import type {
-  UnitClip,
-  UnitClipName,
-} from "@/features/battle/scene/unit-models";
+import type { UnitClipName } from "@/features/battle/scene/unit-clips";
+import { UNIT_CLIP_NAMES } from "@/features/battle/scene/unit-clips";
+import type { UnitClip } from "@/features/battle/scene/unit-models";
+import { fallbackClip } from "@/features/battle/scene/unit-models";
 import type { Pose } from "@/features/battle/scene/unit-pose";
 
 /** The feet of a Unit sit just above the ground. */
@@ -20,15 +40,32 @@ const TURN = Math.PI / 2 - 0.4;
 /** Seconds of the blend from one clip to the next. */
 const BLEND_SECONDS = 0.15;
 
-const CLIP_NAMES: ReadonlySet<string> = new Set<UnitClipName>([
-  "idle",
-  "walk",
-  "attack",
-  "hurt",
-  "death",
-]);
+const isClipName = (name: string): name is UnitClipName =>
+  UNIT_CLIP_NAMES.some((clip) => clip === name);
 
-const isClipName = (name: string): name is UnitClipName => CLIP_NAMES.has(name);
+/** The ink outline of a Unit Model, in world units, so it matches the Cut-out Figures. */
+const OUTLINE_WIDTH = 0.008;
+
+/** The ink of the outline: the dark brown of the card art lines. */
+const OUTLINE_COLOR = "#24170f";
+
+/**
+ * The light bands of the toon shading: shade, half light and full light. A
+ * Unit Model looks painted, not like a plastic toy (art direction 2.2).
+ */
+const toonRamp = (() => {
+  let ramp: DataTexture | null = null;
+  return (): DataTexture => {
+    if (!ramp) {
+      ramp = new DataTexture(new Uint8Array([150, 210, 255]), 3, 1, RedFormat);
+      ramp.minFilter = NearestFilter;
+      ramp.magFilter = NearestFilter;
+      ramp.generateMipmaps = false;
+      ramp.needsUpdate = true;
+    }
+    return ramp;
+  };
+})();
 
 /** The play position stays before the end, so a clip that ends does not loop to frame 0. */
 const LAST_PHASE = 0.999;
@@ -61,7 +98,22 @@ const applyTint = (material: Material, pose: Pose) => {
   );
 };
 
-/** A copy of the materials of `model`, so a tint or a fade changes only one Unit. */
+/** The toon copy of a material of the model: its colors, with the light bands. */
+const toonMaterial = (source: Material): MeshToonMaterial => {
+  const standard = source instanceof MeshStandardMaterial ? source : null;
+  return new MeshToonMaterial({
+    color: standard?.color ?? 0xff_ff_ff,
+    map: standard?.map ?? null,
+    vertexColors: source.vertexColors,
+    side: source.side,
+    gradientMap: toonRamp(),
+  });
+};
+
+/**
+ * Own toon materials for the meshes of `model`, so a tint or a fade changes
+ * only one Unit.
+ */
 const ownMaterials = (model: Object3D): Material[] => {
   const materials: Material[] = [];
   model.traverse((node) => {
@@ -69,8 +121,8 @@ const ownMaterials = (model: Object3D): Material[] => {
       return;
     }
     const own = Array.isArray(node.material)
-      ? node.material.map((material: Material) => material.clone())
-      : node.material.clone();
+      ? node.material.map((material: Material) => toonMaterial(material))
+      : toonMaterial(node.material);
     node.material = own;
     node.frustumCulled = false;
     materials.push(...(Array.isArray(own) ? own : [own]));
@@ -78,11 +130,50 @@ const ownMaterials = (model: Object3D): Material[] => {
   return materials;
 };
 
+/**
+ * The ink outline: a copy of each skinned mesh that draws only its back
+ * faces, pushed out along the normals after the skinning. `width` is in model
+ * units.
+ */
+const addOutline = (model: Object3D, width: number): Material => {
+  const material = new MeshBasicMaterial({
+    color: OUTLINE_COLOR,
+    side: BackSide,
+  });
+  material.onBeforeCompile = (shader: WebGLProgramParametersWithUniforms) => {
+    shader.uniforms.outlineWidth = { value: width };
+    shader.vertexShader = shader.vertexShader
+      .replace("void main() {", "uniform float outlineWidth;\nvoid main() {")
+      .replace(
+        "#include <skinning_vertex>",
+        "#include <skinning_vertex>\n\ttransformed += normalize( objectNormal ) * outlineWidth;"
+      );
+  };
+  material.customProgramCacheKey = () => `unit-outline-${width.toFixed(5)}`;
+  const skinned: SkinnedMesh[] = [];
+  model.traverse((node) => {
+    if (node instanceof SkinnedMesh) {
+      skinned.push(node);
+    }
+  });
+  for (const mesh of skinned) {
+    const outline = new SkinnedMesh(mesh.geometry, material);
+    outline.bind(mesh.skeleton, mesh.bindMatrix);
+    outline.frustumCulled = false;
+    outline.position.copy(mesh.position);
+    outline.quaternion.copy(mesh.quaternion);
+    outline.scale.copy(mesh.scale);
+    mesh.parent?.add(outline);
+  }
+  return material;
+};
+
 /** One Unit's copy of a rigged model, and the clip that it plays now. */
 export interface UnitRig {
   /** The node to add to the scene. */
   readonly root: Group;
-  readonly idleSeconds: number;
+  /** The length of each loop clip, in seconds. */
+  readonly loops: Readonly<Record<"idle" | "lowHp", number>>;
   /** Writes the pose and the clip of one frame. `time` is in scene seconds. */
   readonly update: (pose: Pose, clip: UnitClip, time: number) => void;
   readonly dispose: () => void;
@@ -105,6 +196,7 @@ export const buildRig = (
   const box = new Box3().setFromObject(model);
   const size = box.getSize(new Vector3());
   const scale = height / Math.max(size.y, 1e-3);
+  materials.push(addOutline(model, OUTLINE_WIDTH / scale));
   model.scale.setScalar(scale);
   model.position.set(
     -((box.min.x + box.max.x) / 2) * scale,
@@ -133,12 +225,7 @@ export const buildRig = (
   let previous: AnimationAction | undefined;
   let switchedAt = Number.NEGATIVE_INFINITY;
 
-  // A clip that the model does not have shows the idle clip with the cut-out pose.
-  const clipAction = (clip: UnitClip) =>
-    actions.get(clip.name) ?? actions.get("idle");
-
-  const clipTilt = (clip: UnitClip, pose: Pose) =>
-    actions.has(clip.name) ? 0 : pose.tilt;
+  const has = (name: UnitClipName) => actions.has(name);
 
   const rememberClip = (action: AnimationAction | undefined, time: number) => {
     if (action !== current) {
@@ -158,8 +245,8 @@ export const buildRig = (
     if (!current) {
       return;
     }
-    const phase = actions.has(clip.name) ? clip.phase : 0;
-    current.time = Math.min(phase, LAST_PHASE) * current.getClip().duration;
+    current.time =
+      Math.min(clip.phase, LAST_PHASE) * current.getClip().duration;
     current.setEffectiveWeight(previous ? blend : 1);
   };
 
@@ -177,29 +264,36 @@ export const buildRig = (
   };
 
   const update = (pose: Pose, clip: UnitClip, time: number) => {
+    // A clip that the model does not have shows a clip that it has.
+    const shown = fallbackClip(clip, has);
     root.position.y = pose.y + FOOT_Y;
     root.scale.setScalar(pose.scale);
-    root.rotation.x = clipTilt(clip, pose);
-    rememberClip(clipAction(clip), time);
+    root.rotation.x = shown.cutOutPose ? pose.tilt : 0;
+    rememberClip(actions.get(shown.name) ?? actions.get("idle"), time);
     const blend = Math.min(1, (time - switchedAt) / BLEND_SECONDS);
     clearWeights();
-    playCurrent(clip, blend);
+    playCurrent(shown, blend);
     playPrevious(blend);
     mixer.update(0);
     paintMaterials(pose);
   };
 
+  // It frees only the GPU side. The mixer and its actions stay usable, because
+  // React (StrictMode) can run the cleanup and then use the same rig again. A
+  // disposed material compiles again when it draws again.
   const dispose = () => {
-    mixer.stopAllAction();
-    mixer.uncacheRoot(model);
     for (const material of materials) {
       material.dispose();
     }
   };
 
+  const idleSeconds = actions.get("idle")?.getClip().duration ?? 2;
   return {
     root,
-    idleSeconds: actions.get("idle")?.getClip().duration ?? 2,
+    loops: {
+      idle: idleSeconds,
+      lowHp: actions.get("lowHp")?.getClip().duration ?? idleSeconds,
+    },
     update,
     dispose,
   };

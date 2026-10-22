@@ -173,7 +173,7 @@ export const ResultAchievements = ({
             key={id}
             className={cn(
               REWARD_PLATE,
-              "max-w-full gap-2.5 motion-safe:animate-[result-level-up_420ms_cubic-bezier(0.2,0.8,0.2,1)_1250ms_both]"
+              "w-full max-w-full gap-2.5 motion-safe:animate-[result-level-up_420ms_cubic-bezier(0.2,0.8,0.2,1)_1250ms_both] [@media(max-height:500px)]:w-auto"
             )}
             data-testid="result-achievement"
             data-achievement={id}

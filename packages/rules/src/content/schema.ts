@@ -175,7 +175,7 @@ const tokenKeywordFields = {
    * its Front (ADR-0050). It applies no Status and has no Crit.
    */
   bolt: Schema.optionalKey(KeywordAmount),
-  /** Each Physical hit on this Unit deals at most 4 damage (ADR-0050). */
+  /** Each Physical hit on this Unit deals at most 3 damage (ADR-0050). */
   ironGuard: Schema.optionalKey(Schema.Literal(true)),
   /**
    * When an enemy Unit is killed, this Unit gets +1 Attack and +1 HP

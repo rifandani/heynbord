@@ -37,11 +37,30 @@ A cut-out Unit is a flat image, so the game shows actions with movement of the p
 
 ### 2.2 Rigged Unit models
 
-A card can have a rigged 3D model instead of the cut-out. The model plays a clip for each action: idle, walk (Move), attack (melee and ranged), hurt (Hit) and death. The clip follows the event progress, so it keeps time with the Battle speed. The movement, tint and fade of 2.1 still apply to the model, and the Summon rise and the projectiles stay the same.
+A card can have a **Unit Model** instead of its Cut-out Figure: a rigged 3D model that plays a clip for each action. The clip follows the event progress, so it keeps time with the Battle speed. The movement, tint and fade of 2.1 still apply to the model, and the Summon ring and the projectiles stay the same. Each Specialist (the Base Rank Legendary Creature Cards) has a Unit Model: Warden Saelith (the first, an experiment), Ser Aldric Stonewall, Ashcaller Grosh, Grix Ratwhistle, Gorehorn Red Maw and Pale Cantor Ysolde.
 
-- Source: Tripo text-to-3D in a T-pose, with the subject, props and Race colors of the card concept ([10 — Card Concepts](./10-card-concepts.md)). Then auto-rig, and retarget the preset clips.
-- Each model is one GLB in `apps/web/public/models/units/`, with the clips named `idle`, `walk`, `attack`, `hurt` and `death`. The list of cards with a model is in `apps/web/src/features/battle/scene/unit-models.ts`.
-- Write the licence record (5.5) for each model, with the Tripo task IDs.
+| Clip | When it plays | When the model does not have it |
+| --- | --- | --- |
+| `idle` | At rest | (always there) |
+| `lowHp` | At rest, with Low HP (HP at 1/3 of the Max HP or less) | `idle` |
+| `walk` | Move: one cycle for each Square | (always there) |
+| `attack` | Attack, melee or ranged. A ranged attack releases at 20% of the clip, when the projectile leaves | (always there) |
+| `cast` | A Keyword that the Unit uses by its own action (Heal, Spawnbane, Rally, Regenerate, Summon, Bolt, Dispel), for the life of its Keyword Plate | `idle` |
+| `hurt` | Hit | (always there) |
+| `death` | Death | (always there) |
+| `rebirth` | Rebirth: the fall and the rise | `death`, then `death` back |
+| `summon` | Summon, during the rise | `idle` |
+
+With reduced motion, `idle` and `lowHp` stop on their first frame. The event clips still play, because they give information.
+
+- **Look:** a tabletop miniature: the head is about 1/5 of the height, the shapes are large and clear, and the colors are flat paint from the card painting. The game draws it with toon shading (3 light bands) and a dark ink outline, so it does not look like a plastic toy next to the painted cards.
+- **Source:** a Python build script in Blender, `scripts/unit-model/<name>.py`, with the helpers in `scripts/unit-model/unit_model_kit.py`. The script makes the parts, the armature, the IK and bow controls and the clips, bakes the clips to plain keys and exports `apps/web/art/units/raw/<name>.glb` (not in git). The script is the source: run it again to change the model.
+- **Pack:** `bun unit-model:pack <name>` checks the clip names and the budget, and writes `apps/web/public/models/units/<name>.glb`. Budget for each model: at most 8,000 triangles, 30 bones, 1 texture of 1024² (vertex colors need none) and 1.5 MB.
+- **Register:** add the card to `UNIT_MODELS` in `apps/web/src/features/battle/scene/unit-models.ts`.
+- **Pose for the camera:** the Battle camera sees the right side of a player Unit (the enemy's left side). Ser Aldric turns to his right at rest, so his shield faces the camera. Ashcaller Grosh holds his flame and Pale Cantor Ysolde holds her book in the right hand, on the camera side. Gorehorn Red Maw falls on its right side, so the camera sees its legs.
+- **Height:** the game scales the bounding box of the rest pose to `height`, so a prop that goes above the head (the staff of Ashcaller Grosh) needs a larger height. A long beast (Gorehorn Red Maw) gets a smaller height, so that it stays on its Square.
+- **Rig controls:** the kit bakes IK and constraints to plain keys. Warden Saelith aims her bow with IK, Grix Ratwhistle keeps his left hand on the rifle with IK to a bone of the rifle, and the flame of Ashcaller Grosh always points up with a Damped Track.
+- **Check:** the Unit Model page of the Component Catalog (`/master-design#unit-model`) plays each clip of each Unit Model next to its Cut-out Figure. The QA state `?state=unit-model` opens a Battle with Warden Saelith on the Board.
 
 ## 3. Camera
 

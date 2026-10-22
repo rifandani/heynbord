@@ -56,6 +56,12 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Status Badge**: The row of Status icons above a Unit on the Board, each with its count when the Status has one. It shows at most 3 Statuses, then "+N". The Details Panel shows the full list and the rules text. _Avoid_: debuff bar, buff icons, status bar, status icons
 
+**Cut-out Figure**: The flat figure of a Unit on the Board: the card painting, cut out, on a plane that turns to the camera. Until a card has its cut-out, the plane shows the card painting with its background in an arched shape. _Avoid_: standee, billboard, sprite, card on the board
+
+**Unit Model**: The animated 3D figure of a Unit on the Board. A card with a Unit Model shows it in place of its Cut-out Figure. _Avoid_: 3D unit, rig, mesh, avatar, living card
+
+**Low HP**: The state of a Unit with HP at 1/3 of its Max HP or less. Its Unit Model shows a tired pose at rest. It is presentation only and does not change the Battle. _Avoid_: wounded (that word is avoided for Bleeding), badly damaged, critical, dying
+
 **Keyword Plate**: The small Night Plate with a Keyword name and its value that shows over a Unit in Live when that Keyword occurs, for example "Swarm 2". It shows each time a Keyword changes the Battle, for all Keywords that can occur. _Avoid_: keyword flash, keyword popup, keyword toast, activation
 
 **Wind-up**: The rune ring and the particles at the caster Hero at the start of a Skill Card cast. It looks the same for all Classes: the position of the Hero shows who casts. _Avoid_: charge-up, cast circle, Class aura

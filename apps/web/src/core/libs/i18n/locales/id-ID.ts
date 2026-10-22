@@ -2036,7 +2036,7 @@ export default {
     heal: "Pada Fase Awal-mu, Unit kawan dengan HP terendah memulihkan {value} HP.",
     herosBane:
       "Pada tiap Fase Awal-mu, Unit ini memberi 1 damage Fisik ke Pahlawan musuh di depannya.",
-    ironGuard: "Tiap damage Fisik ke Unit ini paling banyak 4.",
+    ironGuard: "Tiap damage Fisik ke Unit ini paling banyak 3.",
     longRange: "+2 Jangkauan.",
     midRange: "+1 Jangkauan.",
     piercing:

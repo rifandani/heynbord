@@ -547,7 +547,7 @@ const BlockedLine = ({
   const { tr } = useGameText();
   return blocked ? (
     <p
-      className="mb-1.5 text-xs font-semibold text-[#5b4632]"
+      className="mb-1.5 text-xs font-semibold text-[#5b4632] italic"
       data-testid="card-details-blocked"
     >
       {tr("battle.uniqueBlocked", { name })}

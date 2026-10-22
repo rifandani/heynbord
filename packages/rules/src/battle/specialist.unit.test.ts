@@ -185,7 +185,7 @@ describe("Specialist Keywords (ADR-0050)", () => {
   });
 
   describe("Iron Guard", () => {
-    it("caps a Physical hit at 4 damage", () => {
+    it("caps a Physical hit at 3 damage", () => {
       const { ctx, aldric } = guarded();
       damageUnit(ctx, aldric, {
         amount: 10,
@@ -194,7 +194,7 @@ describe("Specialist Keywords (ADR-0050)", () => {
         dealer: skillDealer,
         crit: 0,
       });
-      expect(aldric.hp).toBe(26);
+      expect(aldric.hp).toBe(27);
       expect(eventsOfType(ctx.events, "KeywordActivated")).toHaveLength(1);
     });
 
@@ -214,7 +214,7 @@ describe("Specialist Keywords (ADR-0050)", () => {
 
     it("comes before Ward, which absorbs the capped damage", () => {
       const { ctx, aldric } = guarded();
-      aldric.ward = 3;
+      aldric.ward = 2;
       damageUnit(ctx, aldric, {
         amount: 10,
         damageType: "physical",

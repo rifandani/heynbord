@@ -86,6 +86,7 @@ import { ToolbarShowcase } from "./showcases/toolbar";
 import { TooltipShowcase } from "./showcases/tooltip";
 import { TrackerShowcase } from "./showcases/tracker";
 import { TreeShowcase } from "./showcases/tree";
+import { UnitModelShowcase } from "./showcases/unit-model";
 import { VisuallyHiddenShowcase } from "./showcases/visually-hidden";
 import type { Category } from "./types";
 
@@ -335,6 +336,7 @@ export const categories: Category[] = [
         name: "Balance Plate",
         Showcase: BalancePlateShowcase,
       },
+      { id: "unit-model", name: "Unit Model", Showcase: UnitModelShowcase },
     ],
   },
 ];

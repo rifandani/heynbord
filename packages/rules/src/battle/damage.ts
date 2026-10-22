@@ -219,7 +219,7 @@ const applyHitStatus = (
 };
 
 /**
- * Iron Guard (ADR-0050): a Physical hit deals at most 4 damage. It comes after
+ * Iron Guard (ADR-0050): a Physical hit deals at most 3 damage. It comes after
  * Bulwark, Crit, Block and Exposed, and before Ward.
  */
 const ironGuardCap = (
@@ -228,11 +228,11 @@ const ironGuardCap = (
   physical: boolean,
   amount: number
 ): number => {
-  if (!physical || !unit.ironGuard || amount <= 4) {
+  if (!physical || !unit.ironGuard || amount <= 3) {
     return amount;
   }
   activateKeyword(ctx, unit, "ironGuard");
-  return 4;
+  return 3;
 };
 
 interface HitResult {
@@ -319,7 +319,7 @@ const hitAmount = (
   if (blocked) {
     amount = Math.ceil(amount / 2);
   }
-  // Iron Guard (ADR-0050): a Physical hit deals at most 4 damage.
+  // Iron Guard (ADR-0050): a Physical hit deals at most 3 damage.
   return {
     amount: rules.piercing
       ? amount

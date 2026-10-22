@@ -178,7 +178,7 @@ The game rules of Heynbord: Battles, cards, Decks, progression and rewards. This
 
 **Piercing**: A Keyword. The damage that its Unit deals cannot be reduced: it ignores Bulwark, Resistance, Ward, Block and the Iron Guard cap. It keeps its Crit and its Exposed bonus. It is not True Damage: a True hit also has no Crit and no Exposed. _Avoid_: True Damage, armor pierce, unshred
 
-**Iron Guard**: A Keyword. Each Physical hit on a Unit with Iron Guard deals at most 4 damage. The cap applies after Bulwark, Crit, Block and Exposed, and before Ward. It does not change True Damage or status damage. _Avoid_: Armor, damage cap, damage reduction
+**Iron Guard**: A Keyword. Each Physical hit on a Unit with Iron Guard deals at most 3 damage. The cap applies after Bulwark, Crit, Block and Exposed, and before Ward. It does not change True Damage or status damage. _Avoid_: Armor, damage cap, damage reduction
 
 **Bolt N**: A Keyword. In each Start Phase of its owner, a Unit with Bolt deals N damage of its own Damage Type to one target at random: an enemy Unit, or a random enemy Hero. The Hero can be any Hero of the other Side that is not Defeated, not only the Hero of its Front (ADR-0055). The hit applies no Status and has no Crit, so Fire, Frost and Lightning damage do not Burn, Freeze or Paralyze. A hit on a Unit can be Blocked, except Holy damage, and a Ward absorbs it. N is the same at each Rank. _Avoid_: Zap, Barrage, Volley
 

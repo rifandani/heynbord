@@ -39,6 +39,7 @@ import {
 } from "@/features/battle/battle.atoms";
 import { battleUnitSources, sourceId } from "@/features/battle/card-art";
 import { SIDE_COLORS } from "@/features/battle/palette";
+import { fxList } from "@/features/battle/scene/fx";
 import {
   fxAtlas,
   fxSlotIcon,
@@ -64,6 +65,7 @@ import type { UnitModelSpec } from "@/features/battle/scene/unit-models";
 import {
   allUnitModels,
   badgeHeight,
+  castPhase,
   unitClipFor,
   unitModelOf,
 } from "@/features/battle/scene/unit-models";
@@ -261,13 +263,17 @@ const CutOutBody = ({ unit, facing, ref }: BodyProps) => {
   );
 };
 
-/** A rigged 3D model that plays a clip for each event. */
+/** A Unit Model: a rigged 3D model that plays a clip for each event. */
 const ModelBody = ({
   unit,
   facing,
   ref,
   spec,
-}: BodyProps & { readonly spec: UnitModelSpec }) => {
+  reducedMotion,
+}: BodyProps & {
+  readonly spec: UnitModelSpec;
+  readonly reducedMotion: boolean;
+}) => {
   const { scene, animations } = useGLTF(spec.url);
   const rig = useMemo(
     () => buildRig(scene, animations, spec.height, facing),
@@ -280,18 +286,19 @@ const ModelBody = ({
       update: (pose) => {
         rig.update(
           pose,
-          unitClipFor(
-            unit,
-            currentEvent(playback.session?.current),
-            playback.progress,
-            playback.time,
-            rig.idleSeconds
-          ),
+          unitClipFor(unit, {
+            event: currentEvent(playback.session?.current),
+            progress: playback.progress,
+            time: playback.time,
+            loops: rig.loops,
+            cast: castPhase(unit.id, fxList, playback.time),
+            reducedMotion,
+          }),
           playback.time
         );
       },
     }),
-    [rig, unit]
+    [rig, unit, reducedMotion]
   );
   return <primitive object={rig.root} />;
 };
@@ -300,8 +307,12 @@ const ModelBody = ({
 const FocusRing = ({ owner }: { readonly owner: UnitView["owner"] }) => (
   <group rotation-x={-Math.PI / 2} position-y={0.12}>
     <mesh geometry={FOCUS_RING} renderOrder={3}>
+      {/* Transparent, so it draws after the Lane runner of a Board skin:
+          three.js draws all opaque meshes before the transparent ones, and
+          renderOrder sorts only within one pass. */}
       <meshBasicMaterial
         color={SIDE_COLORS[owner].main}
+        transparent
         depthWrite={false}
         toneMapped={false}
       />
@@ -315,6 +326,7 @@ const LogRing = () => (
     <mesh geometry={LOG_RING} renderOrder={2}>
       <meshBasicMaterial
         color="#fff3d1"
+        transparent
         depthWrite={false}
         toneMapped={false}
       />
@@ -366,16 +378,24 @@ const FigureBody = ({
   facing,
   body,
   cutOut,
+  reducedMotion,
 }: {
   readonly model: UnitModelSpec | undefined;
   readonly unit: UnitView;
   readonly facing: 1 | -1;
   readonly body: Ref<BodyHandle>;
   readonly cutOut: ReactNode;
+  readonly reducedMotion: boolean;
 }) =>
   model ? (
     <Suspense fallback={cutOut}>
-      <ModelBody unit={unit} facing={facing} ref={body} spec={model} />
+      <ModelBody
+        unit={unit}
+        facing={facing}
+        ref={body}
+        spec={model}
+        reducedMotion={reducedMotion}
+      />
     </Suspense>
   ) : (
     cutOut
@@ -485,6 +505,7 @@ const UnitFigure = ({
         facing={facing}
         body={body}
         cutOut={cutOut}
+        reducedMotion={reducedMotion}
       />
       <sprite ref={stat} scale={[1.05, 0.33, 1]} renderOrder={5}>
         <spriteMaterial
