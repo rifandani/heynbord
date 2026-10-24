@@ -148,6 +148,18 @@ const recordResult = (registry: Registry, finished: BattleSession) => {
 const hasBattleLog = (session: BattleSession | null): boolean =>
   session !== null && session.tutorial === null;
 
+/** The atom values of the Battle view and the Player's selection. */
+const useBattleState = () => ({
+  liveSession: useAtomValue(battleSessionAtom),
+  session: useAtomValue(shownSessionAtom),
+  log: useAtomValue(battleLogAtom),
+  selected: useAtomValue(selectedCardAtom),
+  targets: useAtomValue(legalTargetsAtom),
+  focused: useAtomValue(focusedTargetAtom),
+  inspected: useAtomValue(inspectedUnitAtom),
+  detailsUnit: useAtomValue(detailsUnitAtom),
+});
+
 /**
  * The Battle state and the player's actions, for the HUD. `session` is what
  * the screen shows: the selected moment of the open Battle Log, else Live.
@@ -158,14 +170,16 @@ const hasBattleLog = (session: BattleSession | null): boolean =>
  */
 export const useBattle = () => {
   const registry = useContext(RegistryContext);
-  const liveSession = useAtomValue(battleSessionAtom);
-  const session = useAtomValue(shownSessionAtom);
-  const log = useAtomValue(battleLogAtom);
-  const selected = useAtomValue(selectedCardAtom);
-  const targets = useAtomValue(legalTargetsAtom);
-  const focused = useAtomValue(focusedTargetAtom);
-  const inspected = useAtomValue(inspectedUnitAtom);
-  const detailsUnit = useAtomValue(detailsUnitAtom);
+  const {
+    liveSession,
+    session,
+    log,
+    selected,
+    targets,
+    focused,
+    inspected,
+    detailsUnit,
+  } = useBattleState();
   const storedSpeed = useAtomValue(battleSpeedAtom);
   const setStoredSpeed = useAtomSet(battleSpeedAtom);
   const watching = liveSession?.watching ?? false;

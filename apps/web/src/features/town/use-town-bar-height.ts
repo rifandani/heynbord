@@ -20,6 +20,21 @@ interface BarViewport {
 let probe: HTMLDivElement | null = null;
 let safeInset: number | null = null;
 
+/** Adds the hidden element that reports the bottom safe-area inset. */
+const createProbe = (): HTMLDivElement => {
+  const element = document.createElement("div");
+  element.style.cssText =
+    "position:fixed;bottom:0;left:0;height:0;width:0;visibility:hidden;pointer-events:none;padding-bottom:env(safe-area-inset-bottom)";
+  document.body.append(element);
+  return element;
+};
+
+/** The inset that the probe reports, or 0 when it is not a number. */
+const insetOf = (element: HTMLDivElement): number => {
+  const value = Number(getComputedStyle(element).paddingBottom);
+  return Number.isFinite(value) ? Math.max(0, value) : 0;
+};
+
 /** The safe-area inset at the bottom, as the CSS shelf reserves it. */
 const readSafeInset = (): number => {
   if (safeInset !== null) {
@@ -28,15 +43,8 @@ const readSafeInset = (): number => {
   if (typeof document === "undefined") {
     return 0;
   }
-  probe ??= (() => {
-    const element = document.createElement("div");
-    element.style.cssText =
-      "position:fixed;bottom:0;left:0;height:0;width:0;visibility:hidden;pointer-events:none;padding-bottom:env(safe-area-inset-bottom)";
-    document.body.append(element);
-    return element;
-  })();
-  const value = Number(getComputedStyle(probe).paddingBottom);
-  safeInset = Number.isFinite(value) ? Math.max(0, value) : 0;
+  probe ??= createProbe();
+  safeInset = insetOf(probe);
   return safeInset;
 };
 

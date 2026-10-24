@@ -13,6 +13,9 @@ import { profileAtom } from "@/features/profile/profile.atoms";
 import { canBuyCosmetic } from "./bazaar";
 import type { BazaarGroup, LookFamily } from "./bazaar";
 
+/** The Active Cosmetic of a family, or `null` for its Standard look. */
+const orNull = (id: CosmeticId | undefined): CosmeticId | null => id ?? null;
+
 /**
  * The Bazaar screen state from the Profile: the Heynstone balance, the owned
  * Cosmetics and the Active looks. `buy` buys one Bazaar item; `select` makes
@@ -26,10 +29,10 @@ export const useBazaar = () => {
   const owned = profile.cosmetics;
   // The Active look of each look family, or `null` for its Standard look.
   const activeLooks: Readonly<Record<LookFamily, CosmeticId | null>> = {
-    cardBack: profile.activeCosmetics.cardBack ?? null,
-    heroPortrait: profile.activeCosmetics.heroPortrait ?? null,
-    gearLook: profile.activeCosmetics.gearLook ?? null,
-    boardSkin: profile.activeCosmetics.boardSkin ?? null,
+    cardBack: orNull(profile.activeCosmetics.cardBack),
+    heroPortrait: orNull(profile.activeCosmetics.heroPortrait),
+    gearLook: orNull(profile.activeCosmetics.gearLook),
+    boardSkin: orNull(profile.activeCosmetics.boardSkin),
   };
 
   // The actions read the registry, not a render: two fast presses act two times.

@@ -263,6 +263,20 @@ interface Grouping {
   readonly turns: readonly TurnDraft[];
 }
 
+/**
+ * The Casting state after `event`: a Skill Card starts it, a Recall roll ends
+ * it, and any other event keeps it.
+ */
+const castingAfter = (event: BattleEvent, casting: boolean): boolean => {
+  if (event._tag === "CardPlayed") {
+    return getCard(event.card.cardId).kind === "skill";
+  }
+  if (event._tag === "RecallRolled") {
+    return false;
+  }
+  return casting;
+};
+
 /** Groups the events into Log Entries and Turn headers (GDD 11.2). */
 const groupEvents = (
   start: BattleView,
@@ -292,11 +306,7 @@ const groupEvents = (
       continue;
     }
     const opening = openingOf(event, current, phase, casting);
-    if (event._tag === "CardPlayed") {
-      casting = getCard(event.card.cardId).kind === "skill";
-    } else if (event._tag === "RecallRolled") {
-      casting = false;
-    }
+    casting = castingAfter(event, casting);
     if (opening || drafts.length === 0) {
       const next = opening ?? { kind: "action", actor: null };
       drafts.push({

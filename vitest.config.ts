@@ -20,7 +20,13 @@ export default defineConfig({
       // Opt-in only. Enabling by default would tax every watch run and every focused `--project` run; the `unit` CI job opts in via `--coverage`.
       enabled: false,
       reportOnFailure: true,
-      reporter: ["text", ["text-summary", { file: "summary.txt" }], "html"],
+      reporter: [
+        "text",
+        ["text-summary", { file: "summary.txt" }],
+        "html",
+        // CRAP input for `fallow check:all` (see `health.coverage` in `.fallowrc.json`).
+        "json",
+      ],
       // Deliberately not `./coverage` itself, whose root is reserved for fallow's
       // runtime sidecar traces. Feeding fallow test coverage would make it report the
       // ADR-sanctioned untested layers as dead code. Test reports live in named

@@ -675,6 +675,17 @@ const ICONS: Partial<Record<EntryId, EntryIcon>> = {
   rankGems: { kind: "rank", rank: "rare" },
 };
 
+/** The value table that an Entry shows, when it shows one. */
+const VALUE_KINDS: Partial<Record<EntryId, KeywordValueKind>> = {
+  stars: "starsTable",
+  coin: "coinTable",
+  pack: "packGuide",
+  playerLevel: "playerLevelTable",
+  gear: "gearTable",
+  heynspire: "heynspireTable",
+  token: "tokenGallery",
+};
+
 /** An Entry of the Battle, Cards, Units or Progress Chapters. */
 const plainEntry = (id: EntryId, chapter: ChapterId): Entry => {
   const entry = term(id, chapter);
@@ -683,22 +694,7 @@ const plainEntry = (id: EntryId, chapter: ChapterId): Entry => {
     ...entry,
     name: name ? { key: name } : entry.name,
     icon: ICONS[id],
-    value:
-      id === "stars"
-        ? "starsTable"
-        : id === "coin"
-          ? "coinTable"
-          : id === "pack"
-            ? "packGuide"
-            : id === "playerLevel"
-              ? "playerLevelTable"
-              : id === "gear"
-                ? "gearTable"
-                : id === "heynspire"
-                  ? "heynspireTable"
-                  : id === "token"
-                    ? "tokenGallery"
-                    : undefined,
+    value: VALUE_KINDS[id],
   };
 };
 

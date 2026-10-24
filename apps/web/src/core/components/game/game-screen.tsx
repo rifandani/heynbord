@@ -69,6 +69,3 @@ export const GameScreenTitle = ({
   readonly className?: string;
   readonly children: ReactNode;
 }) => <h1 className={cn("sr-only", className)}>{children}</h1>;
-
-/** The ref of a screen, for a scene that measures its box. */
-export type GameScreenRef = Ref<HTMLElement>;

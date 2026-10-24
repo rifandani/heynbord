@@ -14,7 +14,6 @@ export type {
   FxCell,
   FxSlot,
   FxSlotName,
-  FxUv,
 } from "@/features/battle/scene/fx-slots";
 export {
   FX_ATLAS_SIZE,

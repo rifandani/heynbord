@@ -54,6 +54,7 @@ jobs:
   # PR-scoped dead code / complexity / duplication / styling gate (new-only).
   # https://docs.fallow.tools/cli/audit · https://docs.fallow.tools/integrations/ci
   fallow:
+    needs: unit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
@@ -74,12 +75,20 @@ jobs:
       - name: Install deps and disallow changes to lockfile
         run: bun ci
 
+      # CRAP scores need the real per-function coverage of the unit job.
+      - name: Download unit coverage report
+        uses: actions/download-artifact@v7
+        with:
+          name: unit-coverage-report
+          path: coverage/vitest
+
       - name: Fallow all checks
         uses: fallow-rs/fallow@v3
         with:
           # command: audit
           # gate: new-only
           dupes-mode: semantic
+          coverage: coverage/vitest/coverage-final.json
 
   lint-typecheck:
     runs-on: ubuntu-latest
@@ -154,6 +163,7 @@ jobs:
   # Single gate for the web Vitest project
   unit:
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - name: Checkout branch
         uses: actions/checkout@v7
@@ -170,6 +180,20 @@ jobs:
 
       - name: Install deps and disallow changes to lockfile
         run: bun ci
+
+      # Vitest loads `apps/web/.env.local` (see `apps/web/vitest.config.ts`).
+      # Without this file, modules that read `import.meta.env.VITE_*` at load
+      # time fail `APP_CONFIG` validation. Keep the secret in sync with the
+      # local `apps/web/.env.local` via `gh secret set WEB_ENV_FILE -e dev`.
+      - name: Prepare env file
+        env:
+          WEB_ENV_FILE: ${{ secrets.WEB_ENV_FILE }}
+        run: |
+          if [ -n "$WEB_ENV_FILE" ]; then
+            echo "$WEB_ENV_FILE" > apps/web/.env.local
+          else
+            cp apps/web/.env.example apps/web/.env.local
+          fi
 
       - name: Run unit tests with coverage
         run: bun run test:unit:cov

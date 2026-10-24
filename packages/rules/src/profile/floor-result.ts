@@ -1,10 +1,5 @@
 import { BOSS_FLOOR_COSMETICS } from "../content/cosmetics";
 import type { CosmeticId } from "../content/cosmetics";
-/**
- * The Heynspire progress of the Profile and the Floor result action (Economy
- * 2.3, GDD 8.2). It is pure, as the Stage result action: the same Profile and
- * result always give the same rewards.
- */
 import { addForgeStoneRewards } from "../content/forge-stones";
 import type { ForgeStoneReward } from "../content/forge-stones";
 import {
@@ -22,6 +17,12 @@ import { STAGES } from "../content/stages";
 import { grantCosmetic } from "./cosmetics";
 import type { Profile, UnopenedPack } from "./schema";
 import { CAMPAIGN_SWEEP_TICKETS_PER_WIN, levelUp } from "./stage-result";
+
+/**
+ * The Heynspire progress of the Profile and the Floor result action (Economy
+ * 2.3, GDD 8.2). It is pure, as the Stage result action: the same Profile and
+ * result always give the same rewards.
+ */
 
 /** A Floor loss gives this fraction of the Coin of the win, as a Stage loss (Economy 2.3). */
 export const FLOOR_LOSS_COIN_FRACTION = 0.1;
@@ -112,17 +113,59 @@ type FloorResultProfile = Pick<
   | "forgeStones"
 >;
 
-/**
- * Applies the result of a Floor Battle (Economy 2.3). A win gives the
- * first-win reward of the Floor (`floorFirstWinReward`) and 2 Campaign Sweep
- * Tickets (ADR-0039), and makes the next Floor the Current Floor. A loss
- * gives 10% of the Coin and 25% of the XP of the win, and only the share of
- * the lost enemy Hero HP of them (ADR-0041). A Floor gives no Stars and no
- * card. A Boss Floor win gives its Earn-only Cosmetic (Economy 2.3). It adds
- * the First Pack when the level goes to the Packs unlock. It throws when
- * Heynspire is not open, or when `floor` is not the Current Floor. An Abandon
- * and a Battle that is not finished never call it.
- */
+/** The reward of a Floor win, or the share that a loss gives (ADR-0041). */
+interface FloorReward {
+  readonly coin: number;
+  readonly xp: number;
+  readonly essence: number;
+  readonly heynstones: number;
+  readonly forgeStones: readonly ForgeStoneReward[];
+  readonly campaignSweepTickets: number;
+  readonly cosmetic: CosmeticId | null;
+}
+
+/** The Earn-only Cosmetic of a Boss Floor, or `null` for another Floor. */
+const bossFloorCosmetic = (floor: number): CosmeticId | null => {
+  if (!isBossFloor(floor)) {
+    return null;
+  }
+  const index = Math.floor(floor / HEYNSPIRE_BOSS_FLOOR_EVERY) - 1;
+  return BOSS_FLOOR_COSMETICS[index] ?? null;
+};
+
+/** The reward of the Floor Battle: the win reward, or the loss share of it. */
+const floorRewardOf = (input: FloorResultInput): FloorReward => {
+  const reward = floorFirstWinReward(input.floor);
+  if (input.won) {
+    return {
+      coin: reward.coin,
+      xp: reward.xp,
+      essence: reward.essence,
+      heynstones: reward.heynstones,
+      forgeStones: reward.forgeStones,
+      campaignSweepTickets: CAMPAIGN_SWEEP_TICKETS_PER_WIN,
+      cosmetic: bossFloorCosmetic(input.floor),
+    };
+  }
+  const lossReward = (winReward: number, fraction: number) =>
+    lossShare(Math.floor(winReward * fraction), input.enemyHeroDamage);
+  return {
+    coin: lossReward(reward.coin, FLOOR_LOSS_COIN_FRACTION),
+    xp: lossReward(reward.xp, CAMPAIGN_LOSS_XP_FRACTION),
+    essence: 0,
+    heynstones: 0,
+    forgeStones: [],
+    campaignSweepTickets: 0,
+    cosmetic: null,
+  };
+};
+
+/** The error when the Floor is not the Current Floor. */
+const floorOrderError = (current: number | null, floor: number): string =>
+  current === null
+    ? `All ${HEYNSPIRE_FLOORS} Floors are won: Floor ${floor} cannot be played again`
+    : `Only the Current Floor ${current} can be fought, not Floor ${floor}`;
+
 export const applyFloorResult = <P extends FloorResultProfile>(
   profile: P,
   input: FloorResultInput,
@@ -136,30 +179,17 @@ export const applyFloorResult = <P extends FloorResultProfile>(
   }
   const current = currentFloor(profile);
   if (input.floor !== current) {
-    throw new Error(
-      current === null
-        ? `All ${HEYNSPIRE_FLOORS} Floors are won: Floor ${input.floor} cannot be played again`
-        : `Only the Current Floor ${current} can be fought, not Floor ${input.floor}`
-    );
+    throw new Error(floorOrderError(current, input.floor));
   }
-  const reward = floorFirstWinReward(input.floor);
-  const lossReward = (winReward: number, fraction: number) =>
-    lossShare(Math.floor(winReward * fraction), input.enemyHeroDamage);
-  const coin = input.won
-    ? reward.coin
-    : lossReward(reward.coin, FLOOR_LOSS_COIN_FRACTION);
-  const xp = input.won
-    ? reward.xp
-    : lossReward(reward.xp, CAMPAIGN_LOSS_XP_FRACTION);
-  const essence = input.won ? reward.essence : 0;
-  const heynstones = input.won ? reward.heynstones : 0;
-  const forgeStones = input.won ? reward.forgeStones : [];
-  const campaignSweepTickets = input.won ? CAMPAIGN_SWEEP_TICKETS_PER_WIN : 0;
-  const bossIndex = Math.floor(input.floor / HEYNSPIRE_BOSS_FLOOR_EVERY) - 1;
-  const cosmetic =
-    input.won && isBossFloor(input.floor)
-      ? (BOSS_FLOOR_COSMETICS[bossIndex] ?? null)
-      : null;
+  const {
+    coin,
+    xp,
+    essence,
+    heynstones,
+    forgeStones,
+    campaignSweepTickets,
+    cosmetic,
+  } = floorRewardOf(input);
   const { levelBefore, levelAfter, unopenedPacks } = levelUp(
     profile.xp,
     profile.xp + xp
@@ -171,7 +201,7 @@ export const applyFloorResult = <P extends FloorResultProfile>(
       coin: profile.coin + coin,
       essence: profile.essence + essence,
       heynstones: profile.heynstones + heynstones,
-      heynspireFloorsWon: profile.heynspireFloorsWon + (input.won ? 1 : 0),
+      heynspireFloorsWon: profile.heynspireFloorsWon + Number(input.won),
       unopenedPacks: [...profile.unopenedPacks, ...unopenedPacks],
       campaignSweepTickets: profile.campaignSweepTickets + campaignSweepTickets,
       forgeStones: addForgeStoneRewards(profile.forgeStones, forgeStones),

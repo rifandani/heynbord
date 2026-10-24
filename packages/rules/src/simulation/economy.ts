@@ -788,6 +788,42 @@ const upgradeGear = (player: EconomyPlayer, upTo = MAX_GEAR_LEVEL): boolean => {
  * Combines each pair of copies whose target Rank is `lowestTarget` or higher,
  * from the lowest Rank, while the Player can pay for it (Economy 3.2).
  */
+/** The cards with enough copies in `from` Rank to Combine. */
+const combinableCards = (
+  collection: Collection,
+  from: RankId
+): ReadonlySet<string> => {
+  const pairs = new Set<string>();
+  for (const entry of collection) {
+    if (entry.rank === from && entry.copies >= COMBINE_COPIES) {
+      pairs.add(entry.cardId);
+    }
+  }
+  return pairs;
+};
+
+/** Combines the pairs of one card, while the Player can pay and a pair is left. */
+const combineWhileAble = (
+  player: EconomyPlayer,
+  cardId: string,
+  from: RankId,
+  cost: number,
+  hasPair: boolean
+): void => {
+  if (!hasPair) {
+    return;
+  }
+  while (player.coin >= cost) {
+    const collection = combineCopies(player.collection, cardId, from);
+    if (collection === null) {
+      break;
+    }
+    player.coin -= cost;
+    player.collection = collection;
+    player.combines += 1;
+  }
+};
+
 const combinePairs = (
   player: EconomyPlayer,
   lowestTarget: RankId = "uncommon"
@@ -806,22 +842,9 @@ const combinePairs = (
       continue;
     }
     const cost = combineCoin(to);
-    const pairs = new Set<string>();
-    for (const entry of player.collection) {
-      if (entry.rank === from && entry.copies >= COMBINE_COPIES) {
-        pairs.add(entry.cardId);
-      }
-    }
+    const pairs = combinableCards(player.collection, from);
     for (const cardId of cards) {
-      while (pairs.has(cardId) && player.coin >= cost) {
-        const collection = combineCopies(player.collection, cardId, from);
-        if (collection === null) {
-          break;
-        }
-        player.coin -= cost;
-        player.collection = collection;
-        player.combines += 1;
-      }
+      combineWhileAble(player, cardId, from, cost, pairs.has(cardId));
     }
   }
 };
@@ -1529,6 +1552,109 @@ const unlockedDungeon = (level: number): DungeonRewardDefinition | null =>
     (dungeon) => dungeon.unlockLevel <= level && dungeon.winXp > 0
   ) ?? null;
 
+/** Gives the reward of a Stage Battle, for its outcome and its repeat. */
+const giveStageResult = (
+  player: EconomyPlayer,
+  stage: EconomyStage,
+  won: boolean,
+  repeat: boolean
+): void => {
+  if (won && repeat) {
+    giveStageRepeatWin(player, stage);
+    return;
+  }
+  const outcome: StageOutcome = won ? "firstWin" : "loss";
+  const stones = stageForgeStones(stage, outcome, player.rewardCursor);
+  giveReward(player, {
+    coin: stageCoin(stage, outcome),
+    xp: stageXp(stage, outcome),
+    essence: 0,
+    forgeStones: stones === null ? [] : [stones],
+  });
+};
+
+/**
+ * Where the Player goes in Region `region` after its Boss Stage win: the first
+ * Stage with fewer than 3 best Stars and below the repeat cap, in Stage order.
+ * Else the next Region, or Heynspire after the last Region.
+ */
+const afterRegion = (
+  stages: readonly EconomyStage[],
+  player: EconomyPlayer,
+  region: number,
+  firstTry: boolean
+): Position => {
+  if (!firstTry) {
+    const repeat = stages.findIndex(
+      (stage) =>
+        stage.region === region &&
+        (player.bestStars.get(stage.id) ?? 0) < THREE_STARS &&
+        (player.repeatBattles.get(stage.id) ?? 0) < MAX_REPEAT_BATTLES
+    );
+    if (repeat !== -1) {
+      return { kind: "repeat", stage: repeat };
+    }
+  }
+  const next = stages.findIndex((stage) => stage.region > region);
+  return next === -1
+    ? { kind: "heynspire", floor: 1 }
+    : { kind: "campaign", stage: next };
+};
+
+/** Where the Player goes after a Stage Battle: the next Stage, or the Region. */
+const advanceAfterStage = (
+  progress: RunProgress,
+  stages: readonly EconomyStage[],
+  index: number,
+  stage: EconomyStage,
+  won: boolean,
+  repeat: boolean,
+  firstTry: boolean,
+  player: EconomyPlayer
+): void => {
+  if (repeat) {
+    progress.position = afterRegion(stages, player, stage.region, firstTry);
+    return;
+  }
+  if (!won) {
+    return;
+  }
+  const next = stages[index + 1];
+  progress.position =
+    next?.region === stage.region
+      ? { kind: "campaign", stage: index + 1 }
+      : afterRegion(stages, player, stage.region, firstTry);
+};
+
+/**
+ * The Stars of a Stage win: 3 with the 3-Star chance, else 2. The chance is
+ * the middle of the 3-Star target of the Stage (GDD 13, step 7).
+ */
+const stageWinStars = (
+  stage: EconomyStage,
+  firstTry: boolean,
+  options: EconomyRunOptions,
+  rolls: (chance: number) => boolean
+): number => {
+  if (firstTry) {
+    return STARS_PER_WIN;
+  }
+  const chance = options.fixedThreeStarChance ?? middle(starTarget(stage));
+  return rolls(chance) ? THREE_STARS : STARS_PER_WIN;
+};
+
+/** The number of Regions that the Player left, after their repeat Battles. */
+const regionsLeft = (
+  progress: RunProgress,
+  stages: readonly EconomyStage[]
+): number => {
+  const { position } = progress;
+  if (position.kind === "campaign" || position.kind === "repeat") {
+    return (stages[position.stage]?.region ?? 1) - 1;
+  }
+  return CAMPAIGN_REGIONS;
+};
+
 /**
  * Simulates one Player from a new Profile to level 30 and the Floor 50 win, or
  * to the Battle cap.
@@ -1576,41 +1702,6 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
   const wins = (chance: number): boolean =>
     firstTry || rolls(options.fixedWinChance ?? chance);
 
-  /**
-   * The Stars of a Stage win: 3 with the 3-Star chance, else 2. The chance is
-   * the middle of the 3-Star target of the Stage (GDD 13, step 7).
-   */
-  const winStars = (stage: EconomyStage): number => {
-    if (firstTry) {
-      return STARS_PER_WIN;
-    }
-    const chance = options.fixedThreeStarChance ?? middle(starTarget(stage));
-    return rolls(chance) ? THREE_STARS : STARS_PER_WIN;
-  };
-
-  /**
-   * Where the Player goes in Region `region` after its Boss Stage win: the
-   * first Stage with fewer than 3 best Stars and below the repeat cap, in
-   * Stage order. Else the next Region, or Heynspire after the last Region.
-   */
-  const afterRegion = (region: number): Position => {
-    if (!firstTry) {
-      const repeat = stages.findIndex(
-        (stage) =>
-          stage.region === region &&
-          (player.bestStars.get(stage.id) ?? 0) < THREE_STARS &&
-          (player.repeatBattles.get(stage.id) ?? 0) < MAX_REPEAT_BATTLES
-      );
-      if (repeat !== -1) {
-        return { kind: "repeat", stage: repeat };
-      }
-    }
-    const next = stages.findIndex((stage) => stage.region > region);
-    return next === -1
-      ? { kind: "heynspire", floor: 1 }
-      : { kind: "campaign", stage: next };
-  };
-
   const playDungeon = (dungeon: DungeonRewardDefinition) => {
     const won = wins(
       winChance(middle(NORMAL_STAGE_TARGET), dungeon.unlockLevel, player)
@@ -1645,34 +1736,28 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     const won = wins(
       winChance(middle(stageTarget(stage)), stage.recommendedLevel, player)
     );
-    if (won && repeat) {
-      giveStageRepeatWin(player, stage);
-    } else {
-      const outcome: StageOutcome = won ? "firstWin" : "loss";
-      const stones = stageForgeStones(stage, outcome, player.rewardCursor);
-      giveReward(player, {
-        coin: stageCoin(stage, outcome),
-        xp: stageXp(stage, outcome),
-        essence: 0,
-        forgeStones: stones === null ? [] : [stones],
-      });
-    }
+    giveStageResult(player, stage, won, repeat);
     if (won) {
       if (!repeat && stage.firstWinCard !== null) {
         player.collection = addCopies(player.collection, [stage.firstWinCard]);
       }
       player.campaignSweepTickets += CAMPAIGN_SWEEP_TICKETS_PER_WIN;
-      recordStars(player, stage, winStars(stage));
+      recordStars(
+        player,
+        stage,
+        stageWinStars(stage, firstTry, options, rolls)
+      );
     }
-    if (repeat) {
-      progress.position = afterRegion(stage.region);
-    } else if (won) {
-      const next = stages[index + 1];
-      progress.position =
-        next?.region === stage.region
-          ? { kind: "campaign", stage: index + 1 }
-          : afterRegion(stage.region);
-    }
+    advanceAfterStage(
+      progress,
+      stages,
+      index,
+      stage,
+      won,
+      repeat,
+      firstTry,
+      player
+    );
   };
 
   const playFloor = (floor: number) => {
@@ -1752,18 +1837,35 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     }
   };
 
-  /** The number of Regions that the Player left, after their repeat Battles. */
-  const regionsLeft = (): number => {
-    const { position } = progress;
-    if (position.kind === "campaign" || position.kind === "repeat") {
-      return (stages[position.stage]?.region ?? 1) - 1;
-    }
-    return CAMPAIGN_REGIONS;
-  };
-
   /** The sim stops at level 30 and the Floor 50 win (Economy 7.1). */
   const finished = () =>
     levelOf(player) >= MAX_PLAYER_LEVEL && player.floorsWon >= HEYNSPIRE_FLOORS;
+
+  // The end of a session, 1 day away, and the start of the next session.
+  // The Player spends the Seaport income at once.
+  const restDay = () => {
+    dispatchExpeditionAt(player, now);
+    now += HOURS_AWAY * HOUR_MS;
+    if (collectExpeditionAt(player, now)) {
+      spend(player, options.playStyle);
+      claimAchievements(player);
+    }
+  };
+
+  /** Records the checkpoints that the Player passed. */
+  const recordCheckpoints = () => {
+    for (const [index, id] of REGION_CHECKPOINTS.entries()) {
+      if (index < regionsLeft(progress, stages)) {
+        record(id);
+      }
+    }
+    if (progress.position.kind === "done") {
+      record("floor50");
+    }
+    if (levelOf(player) >= MAX_PLAYER_LEVEL) {
+      record("level30");
+    }
+  };
 
   while (!finished() && player.battles < maxBattles) {
     recordLevels();
@@ -1776,27 +1878,10 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
     }
     spend(player, options.playStyle);
     claimAchievements(player);
-    // The end of a session, 1 day away, and the start of the next session.
-    // The Player spends the Seaport income at once.
     if (seaport && playDays(player.battles) > playDays(player.battles - 1)) {
-      dispatchExpeditionAt(player, now);
-      now += HOURS_AWAY * HOUR_MS;
-      if (collectExpeditionAt(player, now)) {
-        spend(player, options.playStyle);
-        claimAchievements(player);
-      }
+      restDay();
     }
-    for (const [index, id] of REGION_CHECKPOINTS.entries()) {
-      if (index < regionsLeft()) {
-        record(id);
-      }
-    }
-    if (progress.position.kind === "done") {
-      record("floor50");
-    }
-    if (levelOf(player) >= MAX_PLAYER_LEVEL) {
-      record("level30");
-    }
+    recordCheckpoints();
   }
   recordLevels();
   const end = snapshot(player);
@@ -1950,7 +2035,7 @@ export interface Spread {
 }
 
 /** The Seaport income of one kind, and its share of the income from all sources. */
-export interface SeaportSpread {
+interface SeaportSpread {
   readonly amount: Spread;
   /** From 0 to 1. 0 when the Player got none of this kind. */
   readonly share: Spread;

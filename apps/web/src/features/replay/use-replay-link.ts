@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useLatest } from "@/core/hooks/use-latest";
 import { battleSessionAtom } from "@/features/battle/battle.atoms";
 import { useGameText } from "@/features/battle/use-game-text";
-import type { ReplayRun } from "@/features/replay/replay";
+import type { ReplayRefused, ReplayRun } from "@/features/replay/replay";
 import { openReplay, replayDataOf } from "@/features/replay/replay-link";
 import { gameScreenAtom } from "@/features/town/town.atoms";
 
@@ -40,13 +40,26 @@ export const useReplayLink = (actions: ReplayLinkActions) => {
       }
       return false;
     };
+    /** Leaves the Replay that shows, and opens the Town with a toast. */
+    const refuse = (reason: ReplayRefused["reason"]) => {
+      if (registry.get(battleSessionAtom)?.watching) {
+        latest.current.actions.leave();
+      }
+      registry.set(gameScreenAtom, "town");
+      toast.error(
+        latest.current.tr(
+          reason === "otherVersion" ? "replay.otherVersion" : "replay.broken"
+        ),
+        { id: "replay-link" }
+      );
+    };
     /** Opens the Replay, or the Town with a toast when the game cannot show it. */
     const open = async (data: string) => {
       const opened = await Effect.runPromise(
         openReplay(data).pipe(
           Effect.match({
             onSuccess: (run) => ({ _tag: "Run", run }) as const,
-            onFailure: ({ reason }) => ({ _tag: "Refused", reason }) as const,
+            onFailure: (failure) => ({ _tag: "Refused", failure }) as const,
           })
         )
       );
@@ -59,18 +72,7 @@ export const useReplayLink = (actions: ReplayLinkActions) => {
         latest.current.actions.show(opened.run);
         return;
       }
-      if (registry.get(battleSessionAtom)?.watching) {
-        latest.current.actions.leave();
-      }
-      registry.set(gameScreenAtom, "town");
-      toast.error(
-        latest.current.tr(
-          opened.reason === "otherVersion"
-            ? "replay.otherVersion"
-            : "replay.broken"
-        ),
-        { id: "replay-link" }
-      );
+      refuse(opened.failure.reason);
     };
     const read = () => {
       const data = replayDataOf(location.hash);

@@ -1,5 +1,5 @@
 import { RegistryContext, useAtomValue } from "@effect/atom-react";
-import type { BattleResult } from "@workspace/rules";
+import type { BattleResult, UnlockFeature } from "@workspace/rules";
 import { isUnlocked } from "@workspace/rules";
 import type { ContextType } from "react";
 import { useContext, useEffect } from "react";
@@ -134,6 +134,32 @@ const useCloseWhenInactive = (hint: HintId, active: boolean) => {
   }, [registry, hint, active]);
 };
 
+/** True when the Town shows, `active`, and the Player level unlocks `feature`. */
+const townHintOpen = (
+  active: boolean,
+  level: number,
+  feature: UnlockFeature
+): boolean => active && isUnlocked(level, feature);
+
+/** `value` when the Town shows, else false. */
+const whenTown = (town: boolean, value: boolean): boolean => town && value;
+
+/** The atom values that the Town Hints read. */
+const useTownHintState = () => {
+  const collection = useAtomValue(collectionAtom);
+  const slots = useAtomValue(deckSlotsAtom);
+  const level = useAtomValue(playerLevelAtom);
+  const { heynspireOpen } = useAtomValue(townProgressAtom);
+  const anyCompleted = useAtomValue(anyAchievementCompletedAtom);
+  return { collection, slots, level, heynspireOpen, anyCompleted };
+};
+
+/** Shows the Town Hint `hint` while `open`, and closes it when `open` goes false. */
+const useTownHint = (hint: HintId, open: boolean) => {
+  useAnchoredHint(hint, open);
+  useCloseWhenInactive(hint, open);
+};
+
 /**
  * The Town Hints (GDD 8.3). The Packs level Hint shows near the Card shop
  * the first time that the Town shows with Player level 2 or more, and it
@@ -153,39 +179,25 @@ const useCloseWhenInactive = (hint: HintId, active: boolean) => {
  * the place of the Hint of another screen.
  */
 export const useTownHints = (active: boolean, inTown: boolean) => {
-  const collection = useAtomValue(collectionAtom);
-  const slots = useAtomValue(deckSlotsAtom);
-  const level = useAtomValue(playerLevelAtom);
-  const { heynspireOpen } = useAtomValue(townProgressAtom);
-  const anyCompleted = useAtomValue(anyAchievementCompletedAtom);
-  const packs = active && inTown && isUnlocked(level, "packs");
-  useAnchoredHint("packs", packs);
-  useCloseWhenInactive("packs", packs);
-  const workshop = active && inTown && isUnlocked(level, "combine");
-  useAnchoredHint("workshop", workshop);
-  useCloseWhenInactive("workshop", workshop);
-  const craft = active && inTown && isUnlocked(level, "craft");
-  useAnchoredHint("craft", craft);
-  useCloseWhenInactive("craft", craft);
-  const seaport = active && inTown && isUnlocked(level, "seaport");
-  useAnchoredHint("seaport", seaport);
-  useCloseWhenInactive("seaport", seaport);
-  const dungeons = active && inTown && isUnlocked(level, "dungeon1");
-  useAnchoredHint("dungeons", dungeons);
-  useCloseWhenInactive("dungeons", dungeons);
-  const heynspire = active && inTown && heynspireOpen;
-  useAnchoredHint("heynspire", heynspire);
-  useCloseWhenInactive("heynspire", heynspire);
-  const achievements = active && inTown && anyCompleted;
-  useAnchoredHint("achievements", achievements);
-  useCloseWhenInactive("achievements", achievements);
+  const { collection, slots, level, heynspireOpen, anyCompleted } =
+    useTownHintState();
+  const town = whenTown(active, inTown);
+  useTownHint("packs", townHintOpen(town, level, "packs"));
+  useTownHint("workshop", townHintOpen(town, level, "combine"));
+  useTownHint("craft", townHintOpen(town, level, "craft"));
+  useTownHint("seaport", townHintOpen(town, level, "seaport"));
+  useTownHint("dungeons", townHintOpen(town, level, "dungeon1"));
+  useTownHint("heynspire", whenTown(town, heynspireOpen));
+  useTownHint("achievements", whenTown(town, anyCompleted));
   useAnchoredHint(
     "deckBuilder",
-    active &&
+    whenTown(
+      town,
       hasCardOutOfDecks(
         collection,
         slots.map((slot) => slot.deck)
       )
+    )
   );
 };
 

@@ -320,7 +320,7 @@ const SkillReduction = Schema.Union([
     legendary: between(1, 3),
   }),
 ]);
-export type SkillReduction = typeof SkillReduction.Type;
+type SkillReduction = typeof SkillReduction.Type;
 
 /** Bonus Bulwark is 1 to 5, including when its value changes with the Rank. */
 const SkillBulwark = Schema.Union([

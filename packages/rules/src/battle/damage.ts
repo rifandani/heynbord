@@ -368,6 +368,37 @@ const activateHitKeywords = (
 };
 
 /**
+ * The rules that the steps of one hit use (GDD 4.7, ADR-0054). Status damage
+ * and True Damage get no Bulwark, Exposed, Crit or Block. Piercing skips every
+ * step that reduces the damage. Wallbreaker doubles a hit against a Unit with
+ * Wall, before the steps that reduce it.
+ */
+const hitRulesOf = (unit: UnitState, hit: Hit): HitRules => {
+  const status = isStatusDamage(hit.source);
+  const trueDamage = hit.trueDamage === true;
+  const fixed = status || trueDamage;
+  const dealer = hit.dealer?._tag === "Unit" ? hit.dealer : undefined;
+  return {
+    fixed,
+    trueDamage,
+    physical: !fixed && hit.damageType === "physical",
+    piercing: !fixed && dealer?.piercing === true,
+    wallbreaker: dealer?.wallbreaker === true && unit.wall,
+  };
+};
+
+/**
+ * The Rebirth of a Unit that the hit killed, or its death. A `noRebirth` hit
+ * stops Rebirth.
+ */
+const resolveDeath = (ctx: StepContext, unit: UnitState, hit: Hit): void => {
+  const saved = hit.noRebirth !== true && rebirth(ctx, unit);
+  if (!saved) {
+    killUnit(ctx, unit);
+  }
+};
+
+/**
  * Damage calculation (GDD 4.7): the value, minus Bulwark for a Physical hit, plus
  * Exposed for a Physical hit, Crit ×2, Block ÷2 rounded up (not for Holy),
  * minimum 0 (ADR-0030). Then a
@@ -386,25 +417,8 @@ export const damageUnit = (
   hit: Hit
 ): HitResult => {
   const status = isStatusDamage(hit.source);
-  const trueDamage = hit.trueDamage ?? false;
-  // Status damage and True Damage get no Bulwark, Exposed, Crit or Block.
-  const fixed = status || trueDamage;
-  const physical = !fixed && hit.damageType === "physical";
-  const dealer = hit.dealer?._tag === "Unit" ? hit.dealer : undefined;
-  // Piercing (ADR-0054): the damage cannot be reduced, so it skips Bulwark,
-  // Resistance, Block, the Iron Guard cap and the Ward.
-  const piercing = !fixed && (dealer?.piercing ?? false);
-  // Wallbreaker (ADR-0054): the hit is doubled against a Unit with Wall. The
-  // doubling comes first, so Bulwark, Exposed, Crit, Block and the Ward apply
-  // to the doubled damage.
-  const wallbreaker = (dealer?.wallbreaker ?? false) && unit.wall;
-  const rules: HitRules = {
-    fixed,
-    trueDamage,
-    physical,
-    piercing,
-    wallbreaker,
-  };
+  const rules = hitRulesOf(unit, hit);
+  const { trueDamage } = rules;
   activateHitKeywords(ctx, hit.dealer, rules);
   const hit1 = hitAmount(ctx, unit, hit, rules);
   const ward = applyWard(unit, hit1.amount, rules);
@@ -438,10 +452,7 @@ export const damageUnit = (
   }
   vampirism(ctx, hit, amount);
   if (unit.hp <= 0) {
-    const noRebirth = hit.noRebirth ?? false;
-    if (noRebirth || !rebirth(ctx, unit)) {
-      killUnit(ctx, unit);
-    }
+    resolveDeath(ctx, unit, hit);
     return { dealt: amount, killed: true };
   }
   applyHitStatus(ctx, unit, hit, status);
@@ -459,8 +470,8 @@ const frontDistance = (a: readonly number[], b: readonly number[]): number =>
  */
 const moveFront = (ctx: StepContext, ref: HeroRef): void => {
   const { state } = ctx;
-  const defeated = heroState(state, ref);
-  const lanes = defeated.front;
+  const fallen = heroState(state, ref);
+  const lanes = fallen.front;
   let nearest: HeroRef | undefined;
   for (const candidate of activeHeroes(state, ref.side)) {
     if (!nearest) {
@@ -483,7 +494,7 @@ const moveFront = (ctx: StepContext, ref: HeroRef): void => {
   }
   const receiver = heroState(state, nearest);
   receiver.front = [...receiver.front, ...lanes].toSorted((a, b) => a - b);
-  defeated.front = [];
+  fallen.front = [];
   ctx.events.push(BattleEvent.FrontMoved({ from: ref, to: nearest, lanes }));
 };
 

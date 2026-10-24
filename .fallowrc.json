@@ -77,6 +77,7 @@
     "ignore": []
   },
   "health": {
+    "coverage": "coverage/vitest/coverage-final.json",
     "ignore": [
       "oxlint.config.ts",
       "**/pwa-assets.config.ts",
@@ -86,7 +87,11 @@
       "apps/web/src/master-design/**",
       "**/*.{test,spec}.{ts,tsx}",
       "**/e2e/**",
-      "scripts/security/**"
+      "apps/web/src/**/components/**",
+      "apps/web/src/features/battle/scene/**",
+      "scripts/**",
+      "packages/*/scripts/**",
+      "packages/*/src/testing/**"
     ],
     "thresholdOverrides": []
   },

@@ -909,6 +909,44 @@ const apart = (map: FramedMap, { scale, stretch }: Size) => {
   );
 };
 
+/** The smallest `scale` in [`low`, `high`] where `apartAt` holds, and `high` else. */
+const smallestApartScale = (
+  low: number,
+  high: number,
+  apartAt: (scale: number) => boolean
+): number => {
+  let lo = low;
+  let hi = high;
+  for (let step = 0; step < 24; step += 1) {
+    const middle = (lo + hi) / 2;
+    if (apartAt(middle)) {
+      hi = middle;
+    } else {
+      lo = middle;
+    }
+  }
+  return hi;
+};
+
+/** The largest `scale` in [`low`, `high`] where `fitsAt` holds, and `low` else. */
+const largestFittingScale = (
+  low: number,
+  high: number,
+  fitsAt: (scale: number) => boolean
+): number => {
+  let lo = low;
+  let hi = high;
+  for (let step = 0; step < 24; step += 1) {
+    const middle = (lo + hi) / 2;
+    if (fitsAt(middle)) {
+      lo = middle;
+    } else {
+      hi = middle;
+    }
+  }
+  return lo;
+};
+
 /**
  * Places the painting on the screen. The full height of the painting fits
  * above the Town Bar, so the screen does not cut its top or its bottom. To
@@ -938,30 +976,14 @@ export const mapFrame = (map: FramedMap, viewport: Viewport): MapFrame => {
   // fills the width of a screen that is wider than the painting.
   let scale = down;
   if (!apart(map, sizeAt(scale)) && apart(map, sizeAt(cover))) {
-    let low = scale;
-    let high = cover;
-    for (let step = 0; step < 24; step += 1) {
-      const middle = (low + high) / 2;
-      if (apart(map, sizeAt(middle))) {
-        high = middle;
-      } else {
-        low = middle;
-      }
-    }
-    scale = high;
+    scale = smallestApartScale(scale, cover, (middle) =>
+      apart(map, sizeAt(middle))
+    );
   }
   if (!fits(map, viewport, sizeAt(scale))) {
-    let low = 0.05;
-    let high = scale;
-    for (let step = 0; step < 24; step += 1) {
-      const middle = (low + high) / 2;
-      if (fits(map, viewport, sizeAt(middle))) {
-        low = middle;
-      } else {
-        high = middle;
-      }
-    }
-    scale = low;
+    scale = largestFittingScale(0.05, scale, (middle) =>
+      fits(map, viewport, sizeAt(middle))
+    );
   }
   for (let step = 0; step < 40; step += 1) {
     const frame = place(map, viewport, sizeAt(scale));

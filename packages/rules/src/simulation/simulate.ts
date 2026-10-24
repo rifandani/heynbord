@@ -533,6 +533,28 @@ export const skipRunTracker = () => {
   const owners = new Map<number, Side>();
   const locked = new Set<Side>();
   let skipped = new Set<number>();
+
+  /** Adds one skipped action of `unitId`; its run can lock its Side. */
+  const addSkip = (unitId: number) => {
+    const run = (runs.get(unitId) ?? 0) + 1;
+    runs.set(unitId, run);
+    skipped.add(unitId);
+    const owner = owners.get(unitId);
+    if (run >= LOCK_RUN && owner !== undefined) {
+      locked.add(owner);
+    }
+  };
+
+  /** Ends the runs of the Units of `side` that did not skip in its Turn. */
+  const endTurn = (side: Side): Set<number> => {
+    for (const [unitId, owner] of owners) {
+      if (owner === side && !skipped.has(unitId)) {
+        runs.delete(unitId);
+      }
+    }
+    return new Set();
+  };
+
   const observe = (events: readonly BattleEvent[], state: BattleState) => {
     for (const unit of state.units) {
       owners.set(unit.id, unit.owner);
@@ -541,20 +563,9 @@ export const skipRunTracker = () => {
       if (event._tag === "UnitSummoned" || event._tag === "TokenSummoned") {
         owners.set(event.unit.id, event.unit.owner);
       } else if (event._tag === "UnitSkipped") {
-        const run = (runs.get(event.unitId) ?? 0) + 1;
-        runs.set(event.unitId, run);
-        skipped.add(event.unitId);
-        const owner = owners.get(event.unitId);
-        if (run >= LOCK_RUN && owner !== undefined) {
-          locked.add(owner);
-        }
+        addSkip(event.unitId);
       } else if (event._tag === "TurnEnded") {
-        for (const [unitId, owner] of owners) {
-          if (owner === event.side && !skipped.has(unitId)) {
-            runs.delete(unitId);
-          }
-        }
-        skipped = new Set();
+        skipped = endTurn(event.side);
       }
     }
   };
