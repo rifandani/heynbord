@@ -85,8 +85,8 @@ jobs:
       - name: Fallow all checks
         uses: fallow-rs/fallow@v3
         with:
-          # command: audit
-          # gate: new-only
+          command: audit
+          gate: new-only
           dupes-mode: semantic
           coverage: coverage/vitest/coverage-final.json
 
