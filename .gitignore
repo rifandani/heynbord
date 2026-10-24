@@ -90,3 +90,6 @@ prisma/_sqlite/migrations
 
 # OWASP ZAP writes DAST reports here. They are rebuilt on demand.
 .zap-reports/
+
+# ChatGPT output and reference sheets. `public/` holds the exported art.
+apps/web/art/*/raw/
