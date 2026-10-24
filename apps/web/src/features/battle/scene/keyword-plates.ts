@@ -124,8 +124,6 @@ export interface ShownPlate {
   readonly opacity: number;
 }
 
-const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
-
 const easeOut = (progress: number): number => 1 - (1 - progress) ** 3;
 
 /** How far a plate has grown in, 0 to 1. With reduced motion, it shows at full size at once. */
@@ -134,7 +132,11 @@ const grownIn = (
   time: number,
   reducedMotion: boolean
 ): number =>
-  reducedMotion ? 1 : easeOut(clamp01((time - plate.start) / GROW_SECONDS));
+  reducedMotion
+    ? 1
+    : easeOut(
+        Math.max(0, Math.min(GROW_SECONDS, time - plate.start)) / GROW_SECONDS
+      );
 
 /** The plates that show at `time`, with at most `MAX_PLATES` newest plates for each Unit. */
 const livePlates = (

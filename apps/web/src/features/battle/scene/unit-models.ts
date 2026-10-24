@@ -498,10 +498,8 @@ const walkClip = (
     return null;
   }
   const squares = Math.max(1, Math.abs(event.to - event.from));
-  return {
-    name: "walk",
-    phase: fraction(progress * squares * STEPS_PER_SQUARE),
-  };
+  const steps = progress * squares * STEPS_PER_SQUARE;
+  return { name: "walk", phase: Number.isFinite(steps) ? fraction(steps) : 0 };
 };
 
 const ownClip = (
