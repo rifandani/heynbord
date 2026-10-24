@@ -2,7 +2,7 @@ import type { ClassId, Side } from "@workspace/rules";
 import { getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
-import { DAMAGE_COLORS } from "@/core/components/game/tokens";
+import { CAST_COLOR, DAMAGE_COLORS } from "@/core/components/game/tokens";
 import { startSession } from "@/features/battle/battle-session";
 import { eventDuration } from "@/features/battle/battle-timeline";
 import { heroOf } from "@/features/battle/battle-view";
@@ -953,7 +953,8 @@ describe("spellBoltAt", () => {
     const end = spellBoltAt(cast("ranger.longShot"), view, 0.92);
     expect(end?.x).toBeCloseTo(heroX("player"));
     expect(end?.z).toBeCloseTo(0);
-    expect(end?.color).toBe(DAMAGE_COLORS.physical);
+    // A Hero damage Skill shows the neutral cast color, not its Damage Type.
+    expect(end?.color).toBe(CAST_COLOR);
   });
 
   it("does not fly for a cast with no target, or outside the reveal", () => {

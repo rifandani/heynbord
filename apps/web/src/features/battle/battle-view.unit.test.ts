@@ -102,27 +102,27 @@ const goblinAndFeralStage = (): StageDefinition => {
 };
 
 describe("applyEvent with Sabotage, Trample, Entangle and Rally", () => {
-  it.each([1, 2, 3])(
-    "rebuilds the view of the next state from the events (seed %i)",
-    (seed) => {
-      const all = steps(seed, "1-4", "vanguard", goblinAndFeralStage());
+  const battles = [1, 2, 3].map((seed) =>
+    steps(seed, "1-4", "vanguard", goblinAndFeralStage())
+  );
+
+  it("rebuilds the view of the next state from the events", () => {
+    for (const all of battles) {
       for (const { before, after, events } of all) {
         expect(events.reduce(applyEvent, viewFromState(before))).toEqual(
           viewFromState(after)
         );
       }
-      expect(
-        all.some(({ events }) =>
-          events.some((event) => event._tag === "CardSabotaged")
-        )
-      ).toBe(true);
-      expect(
-        all.some(({ events }) =>
-          events.some((event) => event._tag === "UnitsRallied")
-        )
-      ).toBe(true);
     }
-  );
+  });
+
+  it("has a Sabotage and a Rally in these Battles", () => {
+    const tags = new Set(
+      battles.flat().flatMap(({ events }) => events.map((event) => event._tag))
+    );
+    expect(tags.has("CardSabotaged")).toBe(true);
+    expect(tags.has("UnitsRallied")).toBe(true);
+  });
 });
 
 /** Stage 1-4 with an enemy Deck of Undead cards: Swarm, Rebirth and Summon. */

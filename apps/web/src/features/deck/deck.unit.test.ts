@@ -196,15 +196,15 @@ describe("poolBlock", () => {
     if (!vanguard) {
       throw new Error("Missing slot");
     }
-    // The Vanguard is at the limit of level 1 (25). Without one Militia
-    // Recruit (Countdown 1), it has 9 cards and a sum of 24.
+    // The limit of level 1 is 25. Without one Militia Recruit (Countdown 1),
+    // the Vanguard has 9 cards and a sum of 23.
     const input = slotInput(
       { ...vanguard, deck: vanguard.deck.slice(1) },
       collection,
       1
     );
-    expect(poolBlock(input, "orc.scrapRaider", "common")).toBe("countdown");
-    expect(poolBlock(input, "orc.badlandRunt", "common")).toBeNull();
+    expect(poolBlock(input, "orc.emberShaman", "common")).toBe("countdown");
+    expect(poolBlock(input, "orc.scrapRaider", "common")).toBeNull();
   });
 });
 

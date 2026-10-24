@@ -63,8 +63,10 @@ describe("Card Back art (Cosmetic Concepts 2)", () => {
         .filter((art): art is string => art !== null)
         .map((art) => art.replace("/card-backs/", ""))
     );
-    expect(readdirSync(CARD_BACKS).filter((file) => !used.has(file))).toEqual(
-      []
+    // A `.webp.json` file is the licence record of its WebP (art direction 5.5).
+    const unused = readdirSync(CARD_BACKS).filter(
+      (file) => !(used.has(file) || used.has(file.replace(/\.json$/u, "")))
     );
+    expect(unused).toEqual([]);
   });
 });
