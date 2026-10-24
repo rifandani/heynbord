@@ -211,6 +211,8 @@ export const getBazaarCosmetic = (id: string): Cosmetic | undefined =>
 
 /** The sum of the prices of the full Bazaar catalog: 3,160 (Economy 3.5). */
 export const BAZAAR_CATALOG_HEYNSTONES = BAZAAR_COSMETICS.reduce(
+  // Each Bazaar item has a price.
+  /* v8 ignore next -- @preserve */
   (sum, item) => sum + (item.price ?? 0),
   0
 );

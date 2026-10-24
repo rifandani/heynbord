@@ -1,13 +1,22 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 
-import { CARDS, getCard, getStarterDeck, TOKENS } from "@workspace/rules";
-import type { TokenId } from "@workspace/rules";
+import {
+  CARDS,
+  chooseCommand,
+  getCard,
+  getStarterDeck,
+  step,
+  TOKENS,
+} from "@workspace/rules";
+import type { BattleState, TokenId } from "@workspace/rules";
+import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
 import { startSession } from "@/features/battle/battle-session";
 import {
   battleUnitSources,
   cardIllustration,
+  sourceId,
   hasCardArt,
   hasTokenArt,
   tokenIllustration,
@@ -161,6 +170,10 @@ describe("card art files", () => {
   });
 });
 
+/** True when a Token Unit is on the Board. */
+const hasToken = (current: BattleState) =>
+  current.units.some((unit) => unit.source._tag === "Token");
+
 describe("battleUnitSources", () => {
   it("lists each Creature Card of both Sides one time, and no Skill Card", () => {
     const { rules } = startSession({
@@ -198,5 +211,67 @@ describe("battleUnitSources", () => {
       source._tag === "Token" ? [source.tokenId] : []
     );
     expect(tokens.toSorted()).toEqual(["token.restlessWisp", "token.skeleton"]);
+  });
+
+  it("adds the Card and the Token of each Unit on the Board", () => {
+    let state: BattleState = startSession({
+      stageId: "1-1",
+      player: NEW_PLAYER,
+      deck: {
+        classId: "warrior",
+        deck: Array.from({ length: 4 }, () => [
+          { cardId: "undead.hushbow", rank: "common" as const },
+          { cardId: "undead.graveBellTender", rank: "common" as const },
+        ]).flat(),
+      },
+      seed: 7,
+    }).rules;
+    while (state.status !== "finished" && !hasToken(state)) {
+      ({ state } = Result.getOrThrow(step(state, chooseCommand(state))));
+    }
+    expect(hasToken(state)).toBe(true);
+    // The Hand, the Deck and the Graveyard do not have the cards of the Units.
+    const onBoard = state.units.map((unit) =>
+      unit.source._tag === "Card"
+        ? unit.source.card.cardId
+        : unit.source.tokenId
+    );
+    const listed = battleUnitSources({
+      ...state,
+      sides: {
+        player: {
+          ...state.sides.player,
+          heroes: state.sides.player.heroes.map((hero) => ({
+            ...hero,
+            hand: [],
+            deck: [],
+            graveyard: [],
+          })),
+        },
+        enemy: {
+          ...state.sides.enemy,
+          heroes: state.sides.enemy.heroes.map((hero) => ({
+            ...hero,
+            hand: [],
+            deck: [],
+            graveyard: [],
+          })),
+        },
+      },
+    }).map(sourceId);
+    for (const id of onBoard) {
+      expect(listed).toContain(id);
+    }
+  });
+});
+
+describe("sourceId", () => {
+  it("gives the card ID of a Card Unit and the Token ID of a Token Unit", () => {
+    expect(sourceId({ _tag: "Card", cardId: "undead.hushbow" })).toBe(
+      "undead.hushbow"
+    );
+    expect(sourceId({ _tag: "Token", tokenId: "token.skeleton" })).toBe(
+      "token.skeleton"
+    );
   });
 });

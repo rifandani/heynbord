@@ -8,6 +8,7 @@ import {
   coinWords,
   contains,
   EDGE_BUILDINGS,
+  glowBox,
   overlaps,
   GROUND_LINE,
   isLocked,
@@ -26,6 +27,7 @@ import type {
   Rect,
   SelectableBuilding,
   TownProgress,
+  TownShortcut,
 } from "@/features/town/town";
 
 /** The progress of a Player at `level`, before or after the Heynspire unlock. */
@@ -403,6 +405,46 @@ describe("paintedIcon", () => {
       expect(publicFile(shortcutImage(id)), id).toBe(icon !== null);
     }
     expect(publicFile(shortcutImage("settings"))).toBe(true);
+  });
+});
+
+describe("paintedIcon of an unpainted shortcut", () => {
+  it("shows a temporary icon while the shortcut is marked unpainted", () => {
+    // SAFETY: the set is a `Set` at run time. The test removes its entry again.
+    const unpainted = UNPAINTED_ICONS as Set<TownShortcut["id"]>;
+    unpainted.add("bazaar");
+    try {
+      expect(paintedIcon("bazaar")).toBeNull();
+    } finally {
+      unpainted.delete("bazaar");
+    }
+    expect(paintedIcon("bazaar")).toBe(shortcutImage("bazaar"));
+  });
+});
+
+describe("glowBox", () => {
+  it("uses the glow box of a Building that has one", () => {
+    const gate = SELECTABLE_BUILDINGS.find((item) => item.id === "townGate");
+    expect(gate && glowBox(gate)).toEqual({
+      x: 720,
+      y: 520,
+      width: 344,
+      height: 344,
+    });
+  });
+
+  it("adds 8% on each side of the Building box when it has no glow box", () => {
+    const building: SelectableBuilding = {
+      id: "hall",
+      screen: "achievements",
+      rect: { x: 100, y: 200, width: 50, height: 100 },
+      label: { x: 100, y: 180, width: 50, height: 20 },
+    };
+    const box = glowBox(building);
+    expect(box.x).toBeCloseTo(96);
+    expect(box.y).toBeCloseTo(192);
+    expect(box.width).toBeCloseTo(58);
+    expect(box.height).toBeCloseTo(116);
   });
 });
 

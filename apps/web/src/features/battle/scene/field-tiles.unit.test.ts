@@ -131,3 +131,22 @@ describe("fieldParticles", () => {
     ).toEqual([]);
   });
 });
+
+describe("a Field Effect with no Square on the Board", () => {
+  const outside: FieldEffectView = { ...blizzard, lane: 5 };
+
+  it("gives no tile, no area and no label", () => {
+    expect(fieldTiles([outside], 3)).toEqual([]);
+    expect(fieldAreas([outside], 3)).toEqual([]);
+    expect(fieldLabels([outside], 3)).toEqual([]);
+  });
+
+  it("does not change the area and the label of another Field Effect", () => {
+    expect(fieldAreas([outside, blizzard], 3)).toEqual(
+      fieldAreas([blizzard], 3)
+    );
+    expect(fieldLabels([outside, blizzard], 3)).toEqual(
+      fieldLabels([blizzard], 3)
+    );
+  });
+});

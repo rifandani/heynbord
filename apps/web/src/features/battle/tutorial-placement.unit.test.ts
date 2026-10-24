@@ -46,6 +46,28 @@ describe("placePanel", () => {
     });
   });
 
+  it("shows the panel left of the anchor, centered on its middle", () => {
+    const anchor = { left: 900, top: 300, right: 1000, bottom: 400 };
+    expect(placePanel({ anchor, ...size, bounds, sides: ["left"] })).toEqual({
+      left: 566,
+      top: 250,
+      side: "left",
+      pointer: 100,
+    });
+  });
+
+  it("uses the next side when the left side has no space", () => {
+    const anchor = { left: 100, top: 300, right: 200, bottom: 400 };
+    expect(
+      placePanel({ anchor, ...size, bounds, sides: ["left", "right"] })?.side
+    ).toBe("right");
+  });
+
+  it("has no placement with no side to try", () => {
+    const anchor = { left: 600, top: 500, right: 840, bottom: 560 };
+    expect(placePanel({ anchor, ...size, bounds, sides: [] })).toBeNull();
+  });
+
   it("uses the side with the most space when no side has space, and stays in the bounds", () => {
     const anchor = { left: 100, top: 150, right: 1300, bottom: 600 };
     const placement = placePanel({

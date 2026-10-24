@@ -39,6 +39,18 @@ describe("dungeonArt", () => {
       );
     }
   });
+
+  it("shows the fallback for an art that is marked unpainted", () => {
+    // SAFETY: the set is a `Set` at run time. The test removes its entry again.
+    const unpainted = UNPAINTED_DUNGEON_ART as Set<DungeonArt>;
+    unpainted.add("stop-1");
+    try {
+      expect(dungeonArt("stop-1")).toBeNull();
+    } finally {
+      unpainted.delete("stop-1");
+    }
+    expect(dungeonArt("stop-1")).toBe(DUNGEON_ART_FILE["stop-1"]);
+  });
 });
 
 describe("LIFT_ROPE_FILE", () => {

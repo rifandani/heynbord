@@ -36,6 +36,14 @@ describe("stageCoin (Economy 2.1)", () => {
   });
 });
 
+describe("stageCoin for an unknown Region", () => {
+  it("refuses a Region with no Coin", () => {
+    expect(() => stageCoin({ region: 6, boss: false }, "win")).toThrow(
+      "Unknown Region: 6"
+    );
+  });
+});
+
 describe("outcomeCoin (Economy 2.1, 2.4)", () => {
   it("gives × 3 for the first win, the Coin for a win and 10% for a loss", () => {
     expect(outcomeCoin(200, "firstWin")).toBe(600);

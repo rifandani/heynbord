@@ -25,4 +25,17 @@ describe("heynspireArt", () => {
       );
     }
   });
+
+  it("shows the fallback for an art that is marked unpainted", () => {
+    // SAFETY: the set is a `Set` at run time. The test removes its entry again.
+    const unpainted = UNPAINTED_HEYNSPIRE_ART as Set<HeynspireArt>;
+    unpainted.add("sky");
+    try {
+      expect(heynspireArt("sky")).toBeNull();
+      expect(heynspireArt("storey")).toBe(HEYNSPIRE_ART_FILE.storey);
+    } finally {
+      unpainted.delete("sky");
+    }
+    expect(heynspireArt("sky")).toBe(HEYNSPIRE_ART_FILE.sky);
+  });
 });

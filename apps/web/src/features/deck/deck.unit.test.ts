@@ -19,6 +19,7 @@ import {
   poolBlock,
   poolClass,
   poolEntries,
+  poolGroupText,
   problemText,
   RACES_WITH_CARDS,
   slotInput,
@@ -66,6 +67,19 @@ describe("deckRows", () => {
       rank: "uncommon",
       count: 2,
     });
+  });
+
+  it("puts the higher Rank first for two Ranks of the same card", () => {
+    expect(
+      deckRows([
+        { cardId: "human.crossbowGuard", rank: "common" },
+        { cardId: "human.crossbowGuard", rank: "rare" },
+        { cardId: "human.crossbowGuard", rank: "common" },
+      ])
+    ).toEqual([
+      { cardId: "human.crossbowGuard", rank: "rare", count: 1 },
+      { cardId: "human.crossbowGuard", rank: "common", count: 2 },
+    ]);
   });
 });
 
@@ -164,6 +178,19 @@ describe("poolEntries", () => {
         .totalCards
     ).toBe(CARDS.length);
   });
+
+  it("shows a card with no copies left as not owned", () => {
+    const pool = poolEntries(
+      [{ cardId: "goblin.ankleSnatcher", rank: "common", copies: 0 }],
+      DEFAULT_POOL_FILTER
+    );
+    expect(pool.owned).toEqual([]);
+    expect(pool.ownedCards).toBe(0);
+    expect(pool.notOwned).toContainEqual({
+      cardId: "goblin.ankleSnatcher",
+      rank: getCard("goblin.ankleSnatcher").baseRank,
+    });
+  });
 });
 
 describe("poolBlock", () => {
@@ -180,6 +207,22 @@ describe("poolBlock", () => {
     expect(poolBlock(input, "human.crossbowGuard", "common")).toBe("none");
     const smaller = slotInput({ ...vanguard, deck: [] }, collection, 1);
     expect(poolBlock(smaller, "orc.scrapRaider", "common")).toBeNull();
+  });
+
+  it("blocks a card in a second Rank when the Deck has the most copies of the card", () => {
+    if (!vanguard) {
+      throw new Error("Missing slot");
+    }
+    // The Vanguard holds 3 Crossbow Guards in the Common Rank.
+    const input = slotInput(
+      vanguard,
+      [
+        ...collection,
+        { cardId: "human.crossbowGuard", rank: "rare", copies: 1 },
+      ],
+      10
+    );
+    expect(poolBlock(input, "human.crossbowGuard", "rare")).toBe("copies");
   });
 
   it("uses the Player level for the Deck size limits", () => {
@@ -263,6 +306,20 @@ describe("emptyPoolText", () => {
   });
 });
 
+describe("poolGroupText", () => {
+  it("names the kind of the filtered cards when no Race or Class applies", () => {
+    expect(poolGroupText(DEFAULT_POOL_FILTER)).toEqual({
+      key: "deckBuilder.groups.all",
+    });
+    expect(poolGroupText(filter({ kind: "creature" }))).toEqual({
+      key: "deckBuilder.groups.creature",
+    });
+    expect(poolGroupText(filter({ kind: "skill" }))).toEqual({
+      key: "deckBuilder.groups.skill",
+    });
+  });
+});
+
 describe("problemText", () => {
   it("names the card and the Class in the reason", () => {
     expect(
@@ -276,6 +333,36 @@ describe("problemText", () => {
         className: { key: "classes.mage" },
       },
     });
+  });
+
+  it("gives the numbers of each Deck problem", () => {
+    expect(
+      [
+        DeckProblem.TooFewCards({ min: 10, count: 8 }),
+        DeckProblem.TooManyCards({ max: 20, count: 21 }),
+        DeckProblem.OverCountdownLimit({ limit: 25, countdown: 27 }),
+        DeckProblem.TooManyCopies({ cardId: "orc.scrapRaider", max: 3 }),
+        DeckProblem.NotOwned({ cardId: "orc.scrapRaider", rank: "rare" }),
+      ].map(problemText)
+    ).toEqual([
+      { key: "deckBuilder.problems.tooFew", args: { min: 10, count: 8 } },
+      { key: "deckBuilder.problems.tooMany", args: { max: 20, count: 21 } },
+      {
+        key: "deckBuilder.problems.overCountdownLimit",
+        args: { limit: 25, countdown: 27 },
+      },
+      {
+        key: "deckBuilder.problems.tooManyCopies",
+        args: { name: { key: "cards.orc.scrapRaider.name" }, max: 3 },
+      },
+      {
+        key: "deckBuilder.problems.notOwned",
+        args: {
+          name: { key: "cards.orc.scrapRaider.name" },
+          rank: { key: "ranks.rare" },
+        },
+      },
+    ]);
   });
 });
 

@@ -14,6 +14,10 @@ import {
 import { seenHintsAtom } from "@/features/hint/hint.atoms";
 import { packStateAtom, unopenedPacksAtom } from "@/features/packs/packs.atoms";
 import {
+  activeBoardSkinAtom,
+  activeCardBackAtom,
+  activeGearLookAtom,
+  activeHeroPortraitAtom,
   battlePlayerAtom,
   playerLevelAtom,
   profileAtom,
@@ -61,6 +65,14 @@ describe("profileAtom", () => {
     registry.set(profileAtom, { ...registry.get(profileAtom), coin: 99 });
     expect(registry.get(balancesAtom).coin).toBe(0);
     expect(registry.get(profileStateAtom)).toEqual({ status: "loading" });
+  });
+
+  it("goes back to loading and records nothing when the store loads again", () => {
+    const registry = loaded(profile);
+    registry.set(profileStateAtom, { status: "loading" });
+    expect(registry.get(profileReadyAtom)).toBe(false);
+    expect(registry.get(profileStateAtom)).toEqual({ status: "loading" });
+    expect(registry.get(newAchievementsAtom)).toEqual([]);
   });
 
   it("saves a write, and keeps an overlay field in the overlay", () => {
@@ -204,5 +216,31 @@ describe("Profile views", () => {
     expect(saved.activeDeckId).toBe("raiders");
     // A write adds Hints and keeps the IDs that this build does not know.
     expect(saved.seenHints).toEqual(["recall", "someLaterHint", "skillCard"]);
+  });
+});
+
+describe("Active Cosmetic views (Economy 3.5)", () => {
+  it("show the Standard look of each family with no Active Cosmetic", () => {
+    const registry = loaded(newProfile(1));
+    expect(registry.get(activeCardBackAtom)).toBeNull();
+    expect(registry.get(activeHeroPortraitAtom)).toBeNull();
+    expect(registry.get(activeBoardSkinAtom)).toBeNull();
+    expect(registry.get(activeGearLookAtom)).toBeNull();
+  });
+
+  it("show the Active Cosmetic of each family", () => {
+    const registry = loaded({
+      ...newProfile(1),
+      activeCosmetics: {
+        cardBack: "cardBack.seaChart",
+        heroPortrait: "heroPortrait.saltWind",
+        boardSkin: "boardSkin.mesaDusk",
+        gearLook: "gearLook.ironVine",
+      },
+    });
+    expect(registry.get(activeCardBackAtom)).toBe("cardBack.seaChart");
+    expect(registry.get(activeHeroPortraitAtom)).toBe("heroPortrait.saltWind");
+    expect(registry.get(activeBoardSkinAtom)).toBe("boardSkin.mesaDusk");
+    expect(registry.get(activeGearLookAtom)).toBe("gearLook.ironVine");
   });
 });

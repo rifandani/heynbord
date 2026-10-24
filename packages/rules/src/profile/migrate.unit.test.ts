@@ -273,6 +273,37 @@ describe("migrateProfile", () => {
     expect(failure(migrateProfile(v2))?._tag).toBe("InvalidProfile");
   });
 
+  it("keeps an old value that is not in the old shape, and the decode refuses it", () => {
+    for (const [schemaVersion, broken] of [
+      [2, { gear: "none" }],
+      [4, { forgeStones: null }],
+      [9, { claimedAchievements: "none", heynspireFloorsWon: "none" }],
+      [10, { tallies: null }],
+      [12, { seaport: null }],
+    ] as const) {
+      const old = { ...newProfile(3), schemaVersion, ...broken };
+      expect(failure(migrateProfile(old))?._tag, `${schemaVersion}`).toBe(
+        "InvalidProfile"
+      );
+    }
+  });
+
+  it("gives no Owed Cosmetic to a version 9 Profile with no valid progress", () => {
+    expect(
+      PROFILE_MIGRATIONS[9]({
+        claimedAchievements: "none",
+        heynspireFloorsWon: "none",
+      }).cosmetics
+    ).toEqual([]);
+  });
+
+  it("gives no Dispatch time to a version 12 ship at sea with none saved", () => {
+    expect(
+      PROFILE_MIGRATIONS[12]({ seaport: { expeditionId: "coastalRun" } })
+        .seaport
+    ).toEqual({ cargo: "coin", hours: 6, startedAt: null });
+  });
+
   it("refuses a version with no step to the current version", () => {
     const old = { ...newProfile(3), schemaVersion: 0 };
     expect(failure(migrateProfile(old))?._tag).toBe("UnknownVersion");

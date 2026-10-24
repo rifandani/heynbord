@@ -6,6 +6,7 @@ import {
   BURST_DURATION,
   burstParticleCount,
   loopParticleCount,
+  slotParticle,
   spawnParticles,
 } from "@/features/battle/scene/particles";
 import type { Status } from "@/features/battle/scene/status-visuals";
@@ -291,5 +292,75 @@ describe("billboardParticle", () => {
       rotation: early?.rotation,
     });
     expect(late?.opacity).toBeLessThan(early?.opacity ?? 0);
+  });
+});
+
+describe("Status bursts", () => {
+  it("grows the Entangle vines at the feet, below the burst point", () => {
+    const vines = spawnParticles([burst(1, "entangle")], 1.2, 200).filter(
+      (particle) => particle.slot === "vine"
+    );
+    expect(vines).toHaveLength(3);
+    for (const vine of vines) {
+      expect(vine.y).toBeCloseTo(0.7 - 0.5);
+    }
+  });
+
+  it("shows one still vine in the middle of the feet with reduced motion", () => {
+    const [vine, ...rest] = spawnParticles(
+      [burst(1, "entangle")],
+      1.1,
+      200,
+      true
+    );
+    expect(rest).toEqual([]);
+    expect(vine).toMatchObject({ slot: "vine", x: 2, y: 0.7 - 0.5 });
+  });
+
+  it("lays the Steadfast seal on the ground, and sends gold motes up around it", () => {
+    const [seal, ...motes] = spawnParticles([burst(1, "steadfast")], 1.2, 200);
+    expect(seal).toMatchObject({ slot: "steadfast", ground: true });
+    expect(motes).toHaveLength(8);
+    for (const mote of motes) {
+      expect(mote.slot).toBe("spark");
+      expect(mote.ground).toBe(false);
+      expect(mote.y).toBeGreaterThan(0.7);
+    }
+  });
+});
+
+describe("slotParticle", () => {
+  const place = {
+    x: 1,
+    y: 2,
+    z: 3,
+    size: 0.5,
+    stretch: 1,
+    rotation: 0,
+    opacity: 0.5,
+    burst: false,
+  };
+
+  it("colors a code slot with the given color, or white with no color", () => {
+    expect(slotParticle("glow", { ...place, color: "#ff0000" }).color).toBe(
+      "#ff0000"
+    );
+    expect(slotParticle("glow", place).color).toBe("#ffffff");
+  });
+
+  it("keeps the painted color of a fixed slot", () => {
+    expect(slotParticle("flame", { ...place, color: "#ff0000" }).color).toBe(
+      "#ffffff"
+    );
+  });
+
+  it("gives the blend of the slot, keeps the opacity at 0 or more, and is not on the ground by default", () => {
+    expect(slotParticle("glow", { ...place, opacity: -0.3 })).toMatchObject({
+      slot: "glow",
+      blend: "additive",
+      opacity: 0,
+      ground: false,
+    });
+    expect(slotParticle("glow", { ...place, ground: true }).ground).toBe(true);
   });
 });

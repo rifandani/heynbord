@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { CARDS } from "./cards";
 import { getPack, PACKS } from "./packs";
+import type { PackId } from "./packs";
 import { isRankAtLeast, RANKS } from "./ranks";
 import { ClassId } from "./schema";
 
@@ -99,5 +100,10 @@ describe("Packs (Economy 3.1, ADR-0026)", () => {
         ).toBe(true);
       }
     }
+  });
+
+  it("refuses an unknown Pack", () => {
+    // SAFETY: the test gives an ID that is not a Pack ID on purpose.
+    expect(() => getPack("missing" as PackId)).toThrow("Unknown Pack: missing");
   });
 });

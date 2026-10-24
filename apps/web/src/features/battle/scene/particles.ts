@@ -710,6 +710,7 @@ const burstParticles = (
   }
   if (reducedMotion) {
     const [key] = parts;
+    /* v8 ignore next -- @preserve */
     if (!key) {
       return [];
     }

@@ -1,13 +1,17 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { CAMPAIGN_REGIONS } from "@workspace/rules";
+import { CAMPAIGN_REGIONS, getFloor, getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
+  battlePainting,
   battlePaintingFor,
   DUNGEON_PAINTING,
 } from "@/features/battle/battle-painting";
+import type { BattleOptions } from "@/features/battle/battle-session";
+import { qaTwoBossDungeon } from "@/features/battle/qa-dungeons";
+import { NEW_PLAYER } from "@/features/profile/profile";
 
 describe("battlePaintingFor", () => {
   it("gives each Region of the Campaign a painting of its own", () => {
@@ -53,5 +57,35 @@ describe("DUNGEON_PAINTING", () => {
       battlePaintingFor(index + 1)
     );
     expect(regions).not.toContain(DUNGEON_PAINTING);
+  });
+});
+
+describe("battlePainting", () => {
+  const stage: BattleOptions = {
+    stageId: "2-1",
+    deck: getStarterDeck("vanguard"),
+    player: NEW_PLAYER,
+    seed: 1,
+  };
+
+  it("gives the painting of the Region of the Stage", () => {
+    expect(battlePainting(stage)).toBe(battlePaintingFor(2));
+    expect(battlePainting({ ...stage, stageId: "1-1" })).toBe(
+      battlePaintingFor(1)
+    );
+  });
+
+  it("gives the Dungeon cave to a Dungeon Battle", () => {
+    expect(battlePainting({ ...stage, dungeon: qaTwoBossDungeon() })).toBe(
+      DUNGEON_PAINTING
+    );
+  });
+
+  it("gives the Heynspire terrace to a Floor Battle, also with a Dungeon", () => {
+    const floor = getFloor(1);
+    expect(battlePainting({ ...stage, floor })).toBe("/battle/heynspire.webp");
+    expect(
+      battlePainting({ ...stage, floor, dungeon: qaTwoBossDungeon() })
+    ).toBe("/battle/heynspire.webp");
   });
 });

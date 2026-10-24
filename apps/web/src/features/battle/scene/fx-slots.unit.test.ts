@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import type { FxSlotName } from "@/features/battle/scene/fx-atlas";
+import type { FxSlotName } from "@/features/battle/scene/fx-slots";
 import {
   FX_ATLAS_SIZE,
   FX_SLOTS,
+  fxSlotIcon,
   fxSlotNames,
   fxSlotUv,
-} from "@/features/battle/scene/fx-atlas";
+} from "@/features/battle/scene/fx-slots";
 
 const isPowerOfTwo = (value: number) => Number.isInteger(Math.log2(value));
 
@@ -83,6 +84,24 @@ describe("fxSlotUv", () => {
       v: 1 - (1024 + 128) / 2048,
       width: 0.25,
       height: 128 / 2048,
+    });
+  });
+});
+
+describe("fxSlotIcon", () => {
+  it("gives the cell of a slot in px of the atlas image that shows now", () => {
+    const image = { width: 1024 };
+    expect(fxSlotIcon({ image }, "glow")).toEqual({
+      image,
+      x: 0,
+      y: 0,
+      size: 256,
+    });
+    expect(fxSlotIcon({ image: { width: FX_ATLAS_SIZE } }, "trail")).toEqual({
+      image: { width: FX_ATLAS_SIZE },
+      x: 1536,
+      y: 1024,
+      size: 512,
     });
   });
 });

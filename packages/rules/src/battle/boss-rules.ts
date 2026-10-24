@@ -92,6 +92,7 @@ const applyEffect = (
       }
       return;
     }
+    /* v8 ignore next -- @preserve */
     default: {
       effect satisfies never;
     }

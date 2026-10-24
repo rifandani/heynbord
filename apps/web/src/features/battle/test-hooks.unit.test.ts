@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { canAct } from "@/features/battle/battle-session";
+import { sourceId } from "@/features/battle/card-art";
 import { buildQaState, QA_STATES } from "@/features/battle/test-hooks";
 
 describe("buildQaState", () => {
@@ -17,5 +18,18 @@ describe("buildQaState", () => {
     expect(cast?._tag === "CardPlayed" && cast.side).toBe("enemy");
     expect(buildQaState("victory", 42)?.rules.result?.winner).toBe("player");
     expect(buildQaState("defeat", 42)?.rules.result?.winner).toBe("enemy");
+  });
+});
+
+describe("buildQaState for a Unit Model", () => {
+  it("has Warden Saelith of the player on the Board", () => {
+    const session = buildQaState("unit-model", 42);
+    expect(
+      session?.view.units.some(
+        (unit) =>
+          unit.owner === "player" &&
+          sourceId(unit.source) === "elf.wardenSaelith"
+      )
+    ).toBe(true);
   });
 });

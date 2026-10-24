@@ -242,6 +242,12 @@ describe("overrides over a Profile", () => {
     expect(fromOverlay({})).toBeNull();
   });
 
+  it("stores the Stars and the XP, and no balances while one balance is missing", () => {
+    expect(
+      fromOverlay({ stageResults: { "1-1": 2 }, xp: 160, coin: 5, essence: 1 })
+    ).toEqual({ unlockAll: false, stageResults: { "1-1": 2 }, xp: 160 });
+  });
+
   it("removes the unlocked Collection", () => {
     expect(withUnlockAll({ coin: 5 }, true).collection).toEqual(
       unlockedCollection()

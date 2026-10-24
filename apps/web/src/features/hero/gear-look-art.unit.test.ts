@@ -1,6 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
+import type { CosmeticId } from "@workspace/rules";
 import { BAZAAR_COSMETICS, GEAR_SLOTS } from "@workspace/rules";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
@@ -88,5 +89,28 @@ describe("gearIconArt (web ADR-0013)", () => {
         );
       }
     }
+  });
+
+  it("shows the Standard kit for a look that is marked unpainted", () => {
+    // SAFETY: the set is a `Set` at run time. The test removes its entry again.
+    const unpainted = UNPAINTED_GEAR_LOOK_ART as Set<CosmeticId>;
+    unpainted.add("gearLook.copperRim");
+    try {
+      expect(gearLookArt("gearLook.copperRim", "armor")).toBeNull();
+      expect(hasGearLookArt("gearLook.copperRim")).toBe(false);
+      expect(gearIconArt("gearLook.copperRim", "armor")).toBe(heroArt("armor"));
+    } finally {
+      unpainted.delete("gearLook.copperRim");
+    }
+    expect(gearLookArt("gearLook.copperRim", "armor")).toBe(
+      "/gear-looks/copper-rim/armor.webp"
+    );
+  });
+
+  it("has no icons for a Cosmetic that is not a Gear look", () => {
+    expect(gearLookArt("heroPortrait.dawnGaze", "weapon")).toBeNull();
+    expect(gearIconArt("heroPortrait.dawnGaze", "weapon")).toBe(
+      heroArt("weapon")
+    );
   });
 });

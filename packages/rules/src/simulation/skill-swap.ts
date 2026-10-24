@@ -39,6 +39,7 @@ export const SWAP_LIMIT = 0.05;
 
 const archetypeOf = (id: string): Archetype => {
   const archetype = ARCHETYPES.find((each) => each.id === id);
+  /* v8 ignore next -- @preserve */
   if (!archetype) {
     throw new Error(`Unknown Archetype: ${id}`);
   }

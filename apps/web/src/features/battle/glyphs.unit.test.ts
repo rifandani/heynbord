@@ -1,4 +1,4 @@
-import { getCard } from "@workspace/rules";
+import { getCard, getToken } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -7,6 +7,7 @@ import {
   DAMAGE_GLYPH,
   raceGlyph,
   iconGlyph,
+  tokenGlyph,
   unitIcon,
 } from "@/features/battle/glyphs";
 
@@ -41,6 +42,8 @@ describe("cardGlyph", () => {
     expect(cardGlyph(getCard("mage.thunderstorm"))).toBe("bolt");
     expect(cardGlyph(getCard("mage.wildfire"))).toBe("flame");
     expect(cardGlyph(getCard("mage.blizzard"))).toBe("snow");
+    expect(cardGlyph(getCard("ranger.longShot"))).toBe("crossedSwords");
+    expect(cardGlyph(getCard("ranger.huntersFocus"))).toBe("range");
     expect(classGlyph("priest")).toBe("wand");
     expect(classGlyph("warrior")).toBe("warhelm");
     expect(classGlyph("mage")).toBe("hat");
@@ -70,5 +73,12 @@ describe("unitIcon, iconGlyph and DAMAGE_GLYPH", () => {
       holy: "sun",
       lightning: "bolt",
     });
+  });
+});
+
+describe("tokenGlyph", () => {
+  it("shows wings for a Flying Token, else the icon of its Race", () => {
+    expect(tokenGlyph(getToken("token.restlessWisp"))).toBe("wings");
+    expect(tokenGlyph(getToken("token.skeleton"))).toBe("skull");
   });
 });

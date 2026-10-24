@@ -72,6 +72,7 @@ describe("firstShownDungeon", () => {
     expect(firstShownDungeon(dungeonSlots(20, {}))).toBe(2);
     expect(firstShownDungeon(dungeonSlots(30, {}))).toBe(3);
     expect(firstShownDungeon(dungeonSlots(1, {}))).toBe(1);
+    expect(firstShownDungeon([])).toBe(1);
   });
 });
 
@@ -105,6 +106,24 @@ describe("dungeonRewardPreview", () => {
       stones: [{ tier: "rare", count: 3 }],
     });
     expect(preview.win.stones).toEqual([{ tier: "rare", percent: 25 }]);
+  });
+
+  it("adds the Legendary Forge Stones of Dungeon 3 (Economy 2.4)", () => {
+    const preview = dungeonRewardPreview(getDungeon("dungeon-3"));
+    expect(preview.firstWin.stones).toEqual([
+      { tier: "epic", count: 3 },
+      { tier: "legendary", count: 1 },
+    ]);
+    expect(preview.win.stones).toEqual([
+      { tier: "epic", percent: 25 },
+      { tier: "legendary", percent: 10 },
+    ]);
+  });
+
+  it("throws for a Dungeon with no rewards", () => {
+    expect(() => dungeonRewardPreview(getDungeon("dungeon-1"), [])).toThrow(
+      "Unknown Dungeon: 1"
+    );
   });
 });
 

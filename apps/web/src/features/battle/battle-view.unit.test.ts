@@ -20,6 +20,7 @@ import { describe, expect, it } from "vitest";
 import {
   heroOf,
   applyEvent,
+  isDefeated,
   viewFromState,
 } from "@/features/battle/battle-view";
 import type { BattleView, UnitView } from "@/features/battle/battle-view";
@@ -1665,5 +1666,160 @@ describe("the Rally view", () => {
       attack: 5,
       rallyBonus: 2,
     });
+  });
+});
+
+/** The Unit with ID 4 in the view. */
+const unitOf = (view: BattleView) => view.units.find((unit) => unit.id === 4);
+
+describe("the Hero, Lane and status view", () => {
+  const { state } = createBattle({
+    seed: 2,
+    stage: getStage("1-1"),
+    player: {
+      classId: "warrior",
+      deck: getStarterDeck("vanguard").deck,
+      level: 1,
+      gear: { weapon: 0, armor: 0, trinket: 0, banner: 0 },
+    },
+  });
+  const base: BattleView = {
+    ...viewFromState(state),
+    units: [halberdierView("enemy", 4)],
+    fieldEffects: [],
+  };
+
+  it("tells when a Hero is Defeated", () => {
+    const hero = heroOf(base, "enemy");
+    expect(isDefeated(hero)).toBe(false);
+    expect(isDefeated({ ...hero, hp: 0 })).toBe(true);
+  });
+
+  it("throws for a Hero that the view does not have", () => {
+    expect(() => heroOf(base, "enemy", 3)).toThrow(
+      "The enemy Side has no Hero 3"
+    );
+  });
+
+  it("throws for a rules state with a Side that has no Hero", () => {
+    expect(() =>
+      viewFromState({
+        ...state,
+        sides: { ...state.sides, enemy: { ...state.sides.enemy, heroes: [] } },
+      })
+    ).toThrow("The enemy Side has no Hero");
+  });
+
+  it("shows the Closed Lanes, and opens a Lane at LaneOpened", () => {
+    const view = viewFromState({
+      ...state,
+      closedLanes: [
+        { lane: 0, opensOnTurn: 3 },
+        { lane: 2, opensOnTurn: 5 },
+      ],
+    });
+    expect(view.closedLanes).toEqual([0, 2]);
+    expect(
+      applyEvent(view, BattleEvent.LaneOpened({ lane: 0 })).closedLanes
+    ).toEqual([2]);
+  });
+
+  it("adds 1 Attack and 1 maximum HP at SoulHarvestGained", () => {
+    const view = applyEvent(
+      base,
+      BattleEvent.SoulHarvestGained({ unitId: 4, soulHarvest: 1, hp: 7 })
+    );
+    expect(unitOf(view)).toMatchObject({ attack: 4, hp: 7, maxHp: 7 });
+  });
+
+  it("removes the bonus Range at RangeFaded", () => {
+    const gained = applyEvent(
+      base,
+      BattleEvent.RangeGained({ unitId: 4, range: 2, turns: 1 })
+    );
+    expect(unitOf(gained)).toMatchObject({
+      range: 2,
+      bonusRange: 2,
+      bonusRangeTurns: 1,
+    });
+    const faded = applyEvent(gained, BattleEvent.RangeFaded({ unitId: 4 }));
+    expect(unitOf(faded)).toMatchObject({
+      range: 0,
+      bonusRange: 0,
+      bonusRangeTurns: 0,
+    });
+  });
+
+  it("sets the count of a status from StatusApplied, and keeps it when the event has no count", () => {
+    const counted = [
+      BattleEvent.StatusApplied({ unitId: 4, status: "poison", count: 3 }),
+      BattleEvent.StatusApplied({ unitId: 4, status: "hobble", count: 2 }),
+      BattleEvent.StatusApplied({ unitId: 4, status: "bleed", count: 2 }),
+      BattleEvent.StatusApplied({ unitId: 4, status: "grounded", count: 1 }),
+      BattleEvent.StatusApplied({ unitId: 4, status: "ward", count: 4 }),
+      BattleEvent.StatusApplied({ unitId: 4, status: "exposed", count: 2 }),
+    ].reduce(applyEvent, base);
+    const expected = {
+      poisoned: 3,
+      hobbled: 2,
+      bleeding: 2,
+      grounded: 1,
+      ward: 4,
+      exposed: 2,
+      exposedTurns: 2,
+    };
+    expect(unitOf(counted)).toMatchObject(expected);
+    const noCount = (
+      ["hobble", "bleed", "grounded", "ward", "exposed"] as const
+    ).reduce(
+      (view, status) =>
+        applyEvent(view, BattleEvent.StatusApplied({ unitId: 4, status })),
+      counted
+    );
+    expect(unitOf(noCount)).toMatchObject(expected);
+    // A Poison with no count adds 1.
+    expect(
+      unitOf(
+        applyEvent(
+          noCount,
+          BattleEvent.StatusApplied({ unitId: 4, status: "poison" })
+        )
+      )?.poisoned
+    ).toBe(4);
+  });
+
+  it("keeps the view when an unknown Unit dies", () => {
+    expect(applyEvent(base, BattleEvent.UnitDied({ unitId: 99 }))).toEqual(
+      base
+    );
+  });
+
+  it("activates only the Boss Rule of BossRuleActivated", () => {
+    const rule = {
+      threshold: 50,
+      effect: { type: "countdown", amount: 1, cards: 1 },
+      activated: false,
+    } as const;
+    const enemy = heroOf(base, "enemy");
+    const view: BattleView = {
+      ...base,
+      sides: {
+        ...base.sides,
+        enemy: {
+          heroes: [{ ...enemy, bossRules: [rule, { ...rule, threshold: 25 }] }],
+        },
+      },
+    };
+    const activated = applyEvent(
+      view,
+      BattleEvent.BossRuleActivated({
+        hero: { side: "enemy", hero: 0 },
+        rule: 1,
+        threshold: 25,
+      })
+    );
+    expect(
+      heroOf(activated, "enemy").bossRules.map((current) => current.activated)
+    ).toEqual([false, true]);
   });
 });

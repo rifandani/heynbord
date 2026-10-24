@@ -2,6 +2,7 @@ import { existsSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { BAZAAR_COSMETICS, LANE_LENGTH } from "@workspace/rules";
+import type { CosmeticId } from "@workspace/rules";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
@@ -42,6 +43,21 @@ describe("Board skin art (Board Skin Concepts 2)", () => {
 
   it("has no art for a Cosmetic of another family", () => {
     expect(boardSkinArt("cardBack.tentStripes")).toBeNull();
+  });
+
+  it("shows the Standard ground for a Board skin that is not painted yet", () => {
+    // SAFETY: the list is a Set. The test adds an ID and removes it again.
+    const unpainted = UNPAINTED_BOARD_SKIN_ART as Set<CosmeticId>;
+    expect(boardSkinArt("boardSkin.spireNoon")).toBe(
+      "/board-skins/spire-noon.webp"
+    );
+    unpainted.add("boardSkin.spireNoon");
+    try {
+      expect(boardSkinArt("boardSkin.spireNoon")).toBeNull();
+      expect(hasBoardSkinArt("boardSkin.spireNoon")).toBe(false);
+    } finally {
+      unpainted.delete("boardSkin.spireNoon");
+    }
   });
 
   it("has a 1536 × 1024 WebP file for each painted Board skin", async () => {

@@ -25,4 +25,18 @@ describe("achievementsArt", () => {
       );
     }
   });
+
+  it("shows the code fallback for an art that is marked unpainted", () => {
+    // SAFETY: the set is a `Set` at run time. The test removes its entry again.
+    const unpainted = UNPAINTED_ACHIEVEMENTS_ART as Set<AchievementsArt>;
+    unpainted.add("hallInside");
+    try {
+      expect(achievementsArt("hallInside")).toBeNull();
+    } finally {
+      unpainted.delete("hallInside");
+    }
+    expect(achievementsArt("hallInside")).toBe(
+      ACHIEVEMENTS_ART_FILE.hallInside
+    );
+  });
 });

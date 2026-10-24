@@ -2,6 +2,7 @@ import { existsSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { BAZAAR_COSMETICS } from "@workspace/rules";
+import type { CosmeticId } from "@workspace/rules";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
@@ -30,6 +31,26 @@ describe("Card Back art (Cosmetic Concepts 2)", () => {
     const ids = new Set(cardBacks.map((item) => item.id));
     for (const id of UNPAINTED_CARD_BACK_ART) {
       expect(ids.has(id), id).toBe(true);
+    }
+  });
+
+  it("has no art for a Cosmetic of another family", () => {
+    expect(cardBackArt("boardSkin.spireNoon")).toBeNull();
+    expect(hasCardBackArt("boardSkin.spireNoon")).toBe(false);
+  });
+
+  it("shows the Standard Back for a Card Back that is not painted yet", () => {
+    // SAFETY: the list is a Set. The test adds an ID and removes it again.
+    const unpainted = UNPAINTED_CARD_BACK_ART as Set<CosmeticId>;
+    expect(cardBackArt("cardBack.goldFleur")).toBe(
+      "/card-backs/gold-fleur.webp"
+    );
+    unpainted.add("cardBack.goldFleur");
+    try {
+      expect(cardBackArt("cardBack.goldFleur")).toBeNull();
+      expect(hasCardBackArt("cardBack.goldFleur")).toBe(false);
+    } finally {
+      unpainted.delete("cardBack.goldFleur");
     }
   });
 

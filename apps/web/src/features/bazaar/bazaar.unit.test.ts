@@ -143,4 +143,14 @@ describe("canBuyCosmetic (Economy 3.5)", () => {
     expect(canBuyCosmetic(item, [item.id], 2400)).toBe(false);
     expect(canBuyCosmetic(item, [], (item.price ?? 0) - 1)).toBe(false);
   });
+
+  it("is false for an Earn-only item, which has no price", () => {
+    expect(
+      canBuyCosmetic(
+        { id: "earnOnly.wardenSash", family: "cardBack" },
+        [],
+        Number.MAX_SAFE_INTEGER
+      )
+    ).toBe(false);
+  });
 });

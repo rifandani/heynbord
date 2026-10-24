@@ -2,7 +2,11 @@ import type { ClassId, Side } from "@workspace/rules";
 import { getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
-import { CAST_COLOR, DAMAGE_COLORS } from "@/core/components/game/tokens";
+import {
+  CAST_COLOR,
+  DAMAGE_COLORS,
+  FX_ANCHORS,
+} from "@/core/components/game/tokens";
 import { startSession } from "@/features/battle/battle-session";
 import { eventDuration } from "@/features/battle/battle-timeline";
 import { heroOf } from "@/features/battle/battle-view";
@@ -12,6 +16,7 @@ import type { Fx } from "@/features/battle/scene/fx";
 import {
   fxByKind,
   fxForEvent,
+  fxLifetime,
   projectileAt,
   projectileParticles,
   spellBoltAt,
@@ -984,5 +989,146 @@ describe("spellBoltParticles", () => {
     expect(spellBoltParticles(fireball, view, 0.75, true)).toEqual([]);
     expect(spellBoltParticles(fireball, view, 0.3)).toEqual([]);
     expect(spellBoltParticles(fireball, view, 0.95)).toEqual([]);
+  });
+});
+
+describe("fxForEvent for a Unit that holds or comes back", () => {
+  const [unit] = view.units;
+  const unitId = unit?.id ?? 0;
+  const at = worldOf(view, { _tag: "Unit", unitId });
+
+  it("flashes a gold ring and the Steadfast seal when Steadfast holds a Unit", () => {
+    expect(
+      fxForEvent({ _tag: "SteadfastHeld", unitId }, view, view, 2, 2)
+    ).toEqual([
+      {
+        kind: "ring",
+        color: FX_ANCHORS.iconSteadfast,
+        x: at?.x,
+        z: at?.z,
+        start: 2,
+      },
+      expect.objectContaining({
+        kind: "particles",
+        burst: "steadfast",
+        x: at?.x,
+        z: at?.z,
+        start: 2,
+        duration: BURST_DURATION / 2,
+      }),
+    ]);
+  });
+
+  it("shows a white ring for a Cleanse and a gold ring for Soul Harvest", () => {
+    expect(
+      fxForEvent({ _tag: "DebuffsRemoved", unitId }, view, view, 1, 1)
+    ).toEqual([
+      { kind: "ring", color: "#fff6df", x: at?.x, z: at?.z, start: 1 },
+    ]);
+    expect(
+      fxForEvent(
+        { _tag: "SoulHarvestGained", unitId, soulHarvest: 1, hp: 3 },
+        view,
+        view,
+        1,
+        1
+      )
+    ).toEqual([
+      { kind: "ring", color: "#ffd75a", x: at?.x, z: at?.z, start: 1 },
+    ]);
+  });
+
+  it("shows a pale ring and the heal light in the middle of a Rebirth", () => {
+    const event = { _tag: "UnitReborn", unitId, hp: 1 } as const;
+    const half = eventDuration(event, 1, view) / 1000 / 2;
+    expect(fxForEvent(event, view, view, 3, 1)).toEqual([
+      { kind: "ring", color: "#c4fbef", x: at?.x, z: at?.z, start: 3 },
+      expect.objectContaining({
+        kind: "particles",
+        burst: "heal",
+        start: 3 + half,
+      }),
+    ]);
+  });
+
+  it("shows a gold ring when a Unit gets a bonus Attack or Heroic", () => {
+    const goldRing = [
+      { kind: "ring", color: "#ffd75a", x: at?.x, z: at?.z, start: 4 },
+    ];
+    expect(
+      fxForEvent(
+        { _tag: "AttackGained", unitId, attack: 1, turns: 1 },
+        view,
+        view,
+        4,
+        1
+      )
+    ).toEqual(goldRing);
+    expect(
+      fxForEvent(
+        { _tag: "HeroicGained", unitId, heroicBonus: 1 },
+        view,
+        view,
+        4,
+        1
+      )
+    ).toEqual(goldRing);
+  });
+
+  it("gives no effect for a Unit that is not on the Board", () => {
+    const gone = 999;
+    const events = [
+      { _tag: "SteadfastHeld", unitId: gone },
+      { _tag: "DebuffsRemoved", unitId: gone },
+      { _tag: "UnitReborn", unitId: gone, hp: 1 },
+      { _tag: "AttackGained", unitId: gone, attack: 1, turns: 1 },
+      { _tag: "BulwarkGained", unitId: gone, bulwark: 1, turns: 1 },
+      { _tag: "AttackSkipped", unitId: gone },
+    ] as const;
+    for (const event of events) {
+      expect(fxForEvent(event, view, view, 0, 1), event._tag).toEqual([]);
+    }
+  });
+
+  it("gives no rings for a Field Effect that is not on the Board", () => {
+    expect(
+      fxForEvent(
+        { _tag: "FieldEffectStruck", fieldId: 404, turns: 1 },
+        view,
+        view,
+        0,
+        1
+      )
+    ).toEqual([]);
+  });
+});
+
+describe("fxLifetime", () => {
+  it("gives a number and a ring a fixed life, and a burst its own duration", () => {
+    expect(
+      fxLifetime({
+        kind: "number",
+        text: "-1",
+        damageType: "fire",
+        crit: false,
+        x: 0,
+        z: 0,
+        height: 1,
+        start: 0,
+      })
+    ).toBe(1.1);
+    expect(fxLifetime(ring(0))).toBe(0.7);
+    expect(
+      fxLifetime({
+        kind: "particles",
+        burst: "heal",
+        scale: 1,
+        x: 0,
+        z: 0,
+        height: 1,
+        start: 0,
+        duration: 0.25,
+      })
+    ).toBe(0.25);
   });
 });

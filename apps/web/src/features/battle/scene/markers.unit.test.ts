@@ -80,6 +80,22 @@ describe("markerSpot", () => {
       markerSpot(Target.Hero({ side: "enemy", hero: 2 }), dungeon)
     ).toMatchObject({ z: laneZ(3, 4), depth: 0.98 });
   });
+
+  it("marks all Lanes for a Hero with no Front, or a Hero that is not on the Board", () => {
+    const allLanes = {
+      x: heroX("enemy"),
+      z: 0,
+      width: 1.3,
+      depth: laneZ(3, 4) - laneZ(0, 4) + 0.98,
+    };
+    const defeated = board(4, [[], [0, 1, 2, 3]]);
+    expect(
+      markerSpot(Target.Hero({ side: "enemy", hero: 0 }), defeated)
+    ).toEqual(allLanes);
+    expect(
+      markerSpot(Target.Hero({ side: "enemy", hero: 5 }), defeated)
+    ).toEqual(allLanes);
+  });
 });
 
 describe("targetAt", () => {

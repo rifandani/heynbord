@@ -15,6 +15,7 @@ export const starsFor = (
   }
   // The Player's Side always has 1 Hero.
   const [hero] = state.sides.player.heroes;
+  /* v8 ignore next -- @preserve */
   if (!hero) {
     return 0;
   }

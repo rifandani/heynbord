@@ -1,7 +1,6 @@
 import type { Texture } from "three";
 import { CanvasTexture, SRGBColorSpace } from "three";
 
-import type { FxSlotName } from "@/features/battle/scene/fx-slots";
 import {
   FX_ATLAS_SIZE,
   FX_ATLAS_URL,
@@ -9,18 +8,20 @@ import {
   fxSlotNames,
   UNPAINTED_SLOTS,
 } from "@/features/battle/scene/fx-slots";
-import type { BadgeIcon } from "@/features/battle/scene/textures";
 import { fxPlaceholderAtlas } from "@/features/battle/scene/textures";
 
 export type {
   FxCell,
   FxSlot,
   FxSlotName,
+  FxUv,
 } from "@/features/battle/scene/fx-slots";
 export {
   FX_ATLAS_SIZE,
   FX_SLOTS,
+  fxSlotIcon,
   fxSlotNames,
+  fxSlotUv,
 } from "@/features/battle/scene/fx-slots";
 
 /**
@@ -28,25 +29,6 @@ export {
  * canvas placeholders, with no request for the missing file.
  */
 const FX_ATLAS_PAINTED = true;
-
-/** A rectangle in texture space: 0 to 1, with V up from the bottom (`flipY`). */
-export interface FxUv {
-  readonly u: number;
-  readonly v: number;
-  readonly width: number;
-  readonly height: number;
-}
-
-/** The UV rectangle of a slot in the atlas texture. */
-export const fxSlotUv = (name: FxSlotName): FxUv => {
-  const { x, y, w, h } = FX_SLOTS[name].cell;
-  return {
-    u: x / FX_ATLAS_SIZE,
-    v: 1 - (y + h) / FX_ATLAS_SIZE,
-    width: w / FX_ATLAS_SIZE,
-    height: h / FX_ATLAS_SIZE,
-  };
-};
 
 /** The atlas that the effects use now: the placeholders, then the painted atlas. */
 export interface FxAtlas {
@@ -147,11 +129,4 @@ export const fxAtlas = (): FxAtlas => {
     void loadPainted(image);
   }
   return atlas;
-};
-
-/** The image and the cell of a slot in the atlas now, in px of that image. */
-export const fxSlotIcon = (current: FxAtlas, name: FxSlotName): BadgeIcon => {
-  const { x, y, w } = FX_SLOTS[name].cell;
-  const scale = current.image.width / FX_ATLAS_SIZE;
-  return { image: current.image, x: x * scale, y: y * scale, size: w * scale };
 };

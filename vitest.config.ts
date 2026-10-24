@@ -75,9 +75,21 @@ export default defineConfig({
         "apps/web/src/core/config/env.ts",
         "apps/web/src/core/runtime/client.ts",
         "apps/web/src/features/**/use-*.ts",
-        // Rendering seam: draws the procedural art on a 2D canvas. The canvas
-        // inspector captures and the E2E bot playtest cover it (ADR-0001).
+        // Rendering seams: they draw the procedural art on a 2D canvas, or load
+        // the painted effects atlas into a texture. The canvas inspector
+        // captures and the E2E bot playtest cover them (ADR-0001). The slot
+        // math of the atlas is in its tested sibling `fx-slots.ts`.
         "apps/web/src/features/battle/scene/textures.ts",
+        "apps/web/src/features/battle/scene/fx-atlas.ts",
+        // Browser seam: it only reads `window.matchMedia`.
+        "apps/web/src/features/battle/scene/reduced-motion.ts",
+        // Declaration-only modules: no function and no branch, so an import
+        // gives them a free 100% (the 2026-10-24 amendment of ADR-0001): Tailwind
+        // class strings, an empty registry, and atoms that only hold a value.
+        "apps/web/src/features/battle/components/reward-plate.ts",
+        "apps/web/src/features/battle/scene/unit-anchors.ts",
+        "apps/web/src/features/dungeons/dungeons.atoms.ts",
+        "apps/web/src/features/heynspire/heynspire.atoms.ts",
       ],
     },
   },

@@ -1,6 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
+import type { CosmeticId } from "@workspace/rules";
 import { BAZAAR_COSMETICS } from "@workspace/rules";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
@@ -68,5 +69,25 @@ describe("Hero portrait art (Hero Portrait Concepts 2)", () => {
     expect(readdirSync(PORTRAITS).filter((file) => !used.has(file))).toEqual(
       []
     );
+  });
+
+  it("shows the Standard portrait for a portrait that is marked unpainted", () => {
+    // SAFETY: the set is a `Set` at run time. The test removes its entry again.
+    const unpainted = UNPAINTED_HERO_PORTRAIT_ART as Set<CosmeticId>;
+    unpainted.add("heroPortrait.dawnGaze");
+    try {
+      expect(heroPortraitArt("heroPortrait.dawnGaze")).toBeNull();
+      expect(hasHeroPortraitArt("heroPortrait.dawnGaze")).toBe(false);
+    } finally {
+      unpainted.delete("heroPortrait.dawnGaze");
+    }
+    expect(heroPortraitArt("heroPortrait.dawnGaze")).toBe(
+      "/hero-portraits/dawn-gaze.webp"
+    );
+  });
+
+  it("has no face for a Cosmetic that is not a Hero portrait", () => {
+    expect(heroPortraitArt("cardBack.tentStripes")).toBeNull();
+    expect(hasHeroPortraitArt("earnOnly.wardenSash")).toBe(false);
   });
 });

@@ -7,6 +7,7 @@ We run Vitest projects (`core`, `web`) for Unit tests: utils, libs, registries, 
 > "Targeted mocks" was narrowed on 2026-07-30: API-layer tests now fake at the network boundary via MSW, not at the module boundary. Scope above is unchanged — see [ADR-0002](./0002-network-boundary-mocking-with-msw.md).
 > A second tool now watches the same `coverage.include` allowlist from the other side: [ADR-0003](./0003-mutation-testing-is-advisory.md) derives its mutation scope from it. Coverage asks *did a test execute this line* (a floor, enforced); mutation asks *would a test notice if this line were wrong* (a ceiling, advisory).
 > Its first report then revised the allowlist itself on 2026-08-03 — pure Zod schema modules were scoring a free 100% — see [Amendments](#amendments).
+> The same rule was made wider on 2026-10-24: all declaration-only modules leave the allowlist, not only schema modules — same section.
 
 ## Considered Options
 
@@ -51,3 +52,11 @@ Neither clause is reversed here. **Pre-merge UI coverage is accepted as zero**, 
 - Effects and services are tested with `@effect/vitest` (`it.effect`, `it.live`) and test layers or `Effect.provideService` fakes.
 
 The allowlist adds the new logic folders (`config`, `http`, `runtime`, and `features/**/*.ts`). It excludes the new framework seams by the Logic Seam convention: `*.functions.ts` (`createServerFn` transports), `*.server.ts` (the runtime that reads TanStack's request), `core/config/env.ts` (the startup binding of `import.meta.env`) and `use-*.ts` hooks. Each one delegates to a tested sibling.
+
+**2026-10-24 — declaration-only modules leave the `include` allowlist, and the battle slice gets its seams.** The 2026-08-03 rule removed pure schema modules because an import gives them a free 100%. The same is true for every module that has no function and no branch. The battle slice added such modules under `features/**/*.ts`: Tailwind class strings (`battle/components/reward-plate.ts`), an empty registry (`battle/scene/unit-anchors.ts`) and atoms that only hold a value (`dungeons/dungeons.atoms.ts`, `heynspire/heynspire.atoms.ts`). A test of them can only assert the initial value, which is padding. They leave the allowlist by name.
+
+The rule stays structural and narrow. A module with one function or one branch stays in: a registry with stub functions (`scene-picker.ts`, `unit-picker.ts`) and an atom that derives a value (`seaport.atoms.ts`) are tested.
+
+Two seams leave by the Logic Seam convention. `battle/scene/fx-atlas.ts` loads the painted atlas and draws it on a canvas, as `textures.ts` does. Its slot math (`fxSlotUv`, `fxSlotIcon`) moved to the tested sibling `fx-slots.ts`. `battle/scene/reduced-motion.ts` only reads `window.matchMedia`.
+
+A defensive guard that the types or the content make unreachable (a `default` case after `satisfies never`, a lookup in a constant table) gets `/* v8 ignore next -- @preserve */`, as the 2026-07-28 amendment permits. A guard that a caller can reach with bad input (an unknown Pack, an unknown Region, a malformed old save) gets a test.

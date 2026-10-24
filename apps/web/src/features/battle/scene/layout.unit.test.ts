@@ -2,12 +2,18 @@ import { LANE_LENGTH } from "@workspace/rules";
 import { PerspectiveCamera, Vector3 } from "three";
 import { describe, expect, it } from "vitest";
 
+import { qaTwoBossDungeon, startDungeon } from "@/features/battle/qa-dungeons";
 import {
   CAMERA_PITCH,
   cameraFrame,
+  frontZ,
+  HERO_FIGURE_Y,
+  heroScale,
   heroX,
+  heroZ,
   laneZ,
   squareX,
+  worldOf,
 } from "@/features/battle/scene/layout";
 
 describe("layout", () => {
@@ -57,5 +63,31 @@ describe("layout", () => {
       const pitch = (Math.atan2(y, z - frame.target[2]) * 180) / Math.PI;
       expect(pitch).toBeCloseTo(CAMERA_PITCH, 5);
     }
+  });
+});
+
+describe("the place of a Hero", () => {
+  const { view } = startDungeon(qaTwoBossDungeon(), 1);
+
+  it("puts a Hero at the middle of the Lanes of its Front", () => {
+    expect(frontZ([0, 1, 2, 3], 4)).toBe(0);
+    expect(frontZ([2, 3], 4)).toBeCloseTo((laneZ(2, 4) + laneZ(3, 4)) / 2);
+    expect(heroZ(view, "enemy", 0)).toBeCloseTo(frontZ([0, 1], 4));
+    expect(heroZ(view, "enemy", 1)).toBeCloseTo(frontZ([2, 3], 4));
+  });
+
+  it("puts a Hero with an empty Front, or a Hero that is not there, at z 0", () => {
+    expect(frontZ([], 4)).toBe(0);
+    expect(heroZ(view, "enemy", 7)).toBe(0);
+  });
+
+  it("makes the Bosses of a Dungeon smaller than a single Hero", () => {
+    expect(heroScale(view, "player")).toBe(1);
+    expect(heroScale(view, "enemy")).toBe(0.7);
+    expect(worldOf(view, { _tag: "Hero", side: "enemy", hero: 1 })).toEqual({
+      x: heroX("enemy"),
+      z: heroZ(view, "enemy", 1),
+      height: (HERO_FIGURE_Y + 0.85) * 0.7,
+    });
   });
 });

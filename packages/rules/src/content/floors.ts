@@ -699,6 +699,7 @@ export const floorStrength = (floor: number): FloorStrength => {
   const tier = Math.floor((floor - 1) / HEYNSPIRE_BOSS_FLOOR_EVERY);
   const level = RECOMMENDED_LEVELS[floor - 1];
   const boss = BOSS_FLOOR_STRENGTH[tier];
+  /* v8 ignore next -- @preserve */
   if (level === undefined || boss === undefined) {
     throw new RangeError(`No strength for Floor ${floor}`);
   }
@@ -721,6 +722,7 @@ const floorTemplate = (floor: number): FloorTemplate | BossFloorTemplate => {
   const template = isBossFloor(floor)
     ? BOSS_FLOOR_TEMPLATES[floor / HEYNSPIRE_BOSS_FLOOR_EVERY - 1]
     : FLOOR_TEMPLATES[(floor % HEYNSPIRE_BOSS_FLOOR_EVERY) - 1];
+  /* v8 ignore next -- @preserve */
   if (template === undefined) {
     throw new RangeError(`No template for Floor ${floor}`);
   }
@@ -746,6 +748,7 @@ const makeFloor = (floor: number): FloorDefinition => {
     id: `floor-${floor}`,
     number: floor,
     boss: isBossFloor(floor),
+    /* v8 ignore next -- @preserve */
     recommendedLevel: RECOMMENDED_LEVELS[floor - 1] ?? 1,
     enemy: {
       id: template.id,

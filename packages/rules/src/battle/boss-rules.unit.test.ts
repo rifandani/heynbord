@@ -9,6 +9,7 @@ import {
   preventRout,
   run,
 } from "../testing/fixtures";
+import { activateBossRules } from "./boss-rules";
 import { createBattle } from "./create-battle";
 import type {
   BattleEvent,
@@ -161,6 +162,35 @@ describe("Boss Rules (ADR-0038)", () => {
     expect(eventsOfType(events, "BossRuleActivated")).toHaveLength(1);
     expect(eventsOfType(events, "UnitSummoned")).toEqual([]);
     expect(heroOf(after, "enemy").bossRules[0]?.activated).toBe(true);
+  });
+
+  it("Summon refuses a card that is not a Creature Card", () => {
+    const state = bossBattle(30, [
+      rule(50, {
+        type: "summon",
+        card: { instanceId: 500, cardId: "warrior.warDrums", rank: "rare" },
+        lane: 0,
+        position: 10,
+      }),
+    ]);
+    preventRout(state);
+    attackerAtEnd(state, 15);
+    expect(() => run(state, Command.EndTurn())).toThrow(
+      "A Boss Rule Summon needs a Creature Card: warrior.warDrums"
+    );
+  });
+
+  it("does not activate for a Defeated Hero, or after the Battle ends", () => {
+    const enemy = { side: "enemy", hero: 0 } as const;
+    const defeated = bossBattle(0, [rule(50, { type: "draw", cards: 1 })]);
+    const finished = bossBattle(10, [rule(50, { type: "draw", cards: 1 })]);
+    finished.status = "finished";
+    for (const state of [defeated, finished]) {
+      const ctx = { state, events: [], random: { state: 1 } };
+      activateBossRules(ctx, enemy);
+      expect(ctx.events).toEqual([]);
+      expect(heroOf(state, "enemy").bossRules[0]?.activated).toBe(false);
+    }
   });
 
   it("Draw N draws N cards for the Boss of the rule", () => {

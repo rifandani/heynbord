@@ -2,7 +2,12 @@ import type { StageDefinition } from "@workspace/rules";
 import { CAMPAIGN_REGIONS, STAGES } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
-import type { Box, RegionMap, Viewport } from "@/features/campaign/region-map";
+import type {
+  Box,
+  MapFrame,
+  RegionMap,
+  Viewport,
+} from "@/features/campaign/region-map";
 import {
   boxesOverlap,
   chestState,
@@ -211,6 +216,11 @@ describe("regionStatus", () => {
     expect(status.kind === "locked" && status.boss.id).toBe("1-2");
   });
 
+  it("is later for a Region whose Region before it has no Boss Stage", () => {
+    const regionTwo = twoRegions.filter((stage) => stage.region === 2);
+    expect(regionStatus(regionTwo, 2, {})).toEqual({ kind: "later" });
+  });
+
   it("is later for a Region with no Stages yet", () => {
     expect(regionStatus(twoRegions, 3, { "1-2": 1, "2-2": 1 })).toEqual({
       kind: "later",
@@ -296,6 +306,15 @@ const MAP_SCREENS = MAPS.flatMap(([name, map]) =>
     ([screen, width, height]) => [name, screen, map, width, height] as const
   )
 );
+
+/** The boxes of the Stage Markers of Hearthvale on the screen. */
+const screenBoxes = (frame: MapFrame) =>
+  markerBoxes(hearthvale.stops, frame.scale, frame.stretch).map((box) => ({
+    left: box.left + frame.x,
+    right: box.right + frame.x,
+    top: box.top + frame.y,
+    bottom: box.bottom + frame.y,
+  }));
 
 describe("mapFrame", () => {
   it.each(MAP_SCREENS)(
@@ -401,5 +420,46 @@ describe("mapFrame", () => {
     expect(frame.y).toBeCloseTo(0);
     expect(MAP.width * frame.scale * frame.stretch).toBeCloseTo(1920);
     expect(MAP.height * frame.scale).toBeCloseTo(1000);
+  });
+
+  it("makes the painting smaller than the screen height when the Stage Markers do not fit", () => {
+    const viewport: Viewport = {
+      width: 320,
+      height: 200,
+      top: 8,
+      bottom: 56,
+      obstacles: [],
+    };
+    const frame = mapFrame(hearthvale, viewport);
+    expect(MAP.height * frame.scale).toBeLessThan(200 - 56);
+    for (const box of screenBoxes(frame)) {
+      expect(box.left).toBeGreaterThanOrEqual(-0.5);
+      expect(box.right).toBeLessThanOrEqual(320.5);
+      expect(box.top).toBeGreaterThanOrEqual(7.5);
+      expect(box.bottom).toBeLessThanOrEqual(200 - 56 + 0.5);
+    }
+  });
+
+  it("keeps the Stage Markers on the screen when the HUD covers all of it", () => {
+    const viewport: Viewport = {
+      width: 1920,
+      height: 1080,
+      top: 8,
+      bottom: 80,
+      obstacles: [],
+    };
+    const free = mapFrame(hearthvale, viewport);
+    const covered = mapFrame(hearthvale, {
+      ...viewport,
+      obstacles: [{ left: 0, top: 0, right: 1920, bottom: 1080 }],
+    });
+    // The painting gets smaller step by step, and then ignores the HUD.
+    expect(covered.scale).toBeLessThan(free.scale);
+    for (const box of screenBoxes(covered)) {
+      expect(box.left).toBeGreaterThanOrEqual(-0.5);
+      expect(box.right).toBeLessThanOrEqual(1920.5);
+      expect(box.top).toBeGreaterThanOrEqual(7.5);
+      expect(box.bottom).toBeLessThanOrEqual(1080 - 80 + 0.5);
+    }
   });
 });

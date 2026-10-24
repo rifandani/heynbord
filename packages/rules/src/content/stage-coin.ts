@@ -24,6 +24,7 @@ export const outcomeCoin = (winCoin: number, outcome: StageOutcome): number => {
     case "loss": {
       return Math.floor(winCoin / 10);
     }
+    /* v8 ignore next -- @preserve */
     default: {
       return absurd(outcome);
     }
