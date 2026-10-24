@@ -2,7 +2,7 @@
 
 ## 1. Summary
 
-Heynbord v1 is a single-player web game. It is a fantasy collectible card game with automatic lane battles and a countdown hand. The player plays a Campaign of 30 Stages and a tower of 50 Floors. The player collects about 100 cards and makes them stronger without real money. The game saves in the browser.
+Heynbord v1 is a single-player web game. It is a fantasy collectible card game with automatic lane battles and a countdown hand. The player plays a Campaign of 50 Stages and a tower of 50 Floors. The player collects 136 cards and makes them stronger without real money. The game saves in the browser.
 
 - Vision: [02 — Game Vision](./02-game-vision.md)
 - Rules: [03 — Game Design](./03-game-design.md)
@@ -27,11 +27,11 @@ Heynbord v1 is a single-player web game. It is a fantasy collectible card game w
 ## 4. Non-goals for v1
 
 - Online play, accounts, PvP, guilds, chat, leaderboards
-- A shop, payments or ads
+- Real-money payments or ads. The Bazaar in v1 uses only earned Heynstones.
 - Trading between players
 - Native mobile apps
 - Portrait layout on phones
-- Hybrids, awakening, more than 4 Races, more than 5 Ranks
+- More than 6 Races, more than 5 Ranks
 
 ## 5. Users
 
@@ -48,30 +48,31 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| BAT-01 | The Board must support 1 to 4 Lanes with 12 Squares in each Lane. | M |
-| BAT-02 | Each card in the Hand must show its Countdown. The Countdown must go down by 1 in each Start Step of its owner. | M |
+| BAT-01 | The Board must have 3 Lanes in a Stage and 4 Lanes in a Dungeon or a Heynspire Floor, with 12 Squares in each Lane. Content must not set the number of Lanes. A Stage or a Dungeon can close Lanes (GDD section 4.1). | M |
+| BAT-02 | Each card in the Hand must show its Countdown. The Countdown must go down by 1 in each Start Phase of its owner. | M |
 | BAT-03 | The player must be able to play all Ready cards in one Play Phase. | M |
-| BAT-04 | Creature Cards must go only into empty Squares of the Summon Column. | M |
+| BAT-04 | Creature Cards must go only into empty Squares of the Summon Zone (Columns 1 to 3 of each open Lane). | M |
 | BAT-05 | Units must move and attack automatically by the rules in GDD section 4. | M |
 | BAT-06 | The same seed, Decks and player actions must always give the same Battle result. | M |
-| BAT-07 | The game must support the Damage Types Physical, Fire, Frost and Holy, and Crit and Block. | M |
+| BAT-07 | The game must support the Damage Types Physical, Fire, Frost, Holy and Lightning, and Crit and Block. | M |
 | BAT-08 | The game must support all v1 Keywords in GDD section 5.4. | M |
-| BAT-09 | Skill Cards must support Mastery and Field Effects. | M |
+| BAT-09 | Skill Cards must support Recall and Field Effects. | M |
 | BAT-10 | Sudden Death must start at Turn number 20, and the Turn limit must be Turn number 60. | M |
 | BAT-11 | The player must be able to change speed (×1, ×2) and skip the Resolution Phase animation. | M |
-| BAT-12 | Auto-play with 1 to 10 repeats must be available on won Stages. | S |
-| BAT-13 | The player must be able to see a log of all actions in the current Battle. | S |
+| BAT-12 | On Stages with 3 best Stars, a Campaign Sweep must give 1 to 10 repeat-win rewards at once for 1 Campaign Sweep Ticket each, with no Battle. On Dungeons with 1 or more wins, a Dungeon Sweep must give 1 to 10 repeat-win rewards at once for 1 Dungeon Sweep Ticket each, with no Battle. A Stage win and a Floor win must give 2 Campaign Sweep Tickets, and a Dungeon win must give 1 Dungeon Sweep Ticket. The player must not be able to start Auto-play (GDD 4.12, ADR-0039). | S |
+| BAT-13 | The player must be able to see a log of all actions in the current Battle, and see the Board at each past moment, in the Battle Log (GDD sections 4.12 and 11.2). It shows each card play and each Keyword that occurred, and only what the player saw at that moment. | S |
 | BAT-14 | The player must be able to watch a replay of the last Battle. | C |
+| BAT-15 | A Side must support 1 to 4 Heroes, each with its own Front, Deck, Hand and Gear. A Side must lose only when all its Heroes are Defeated (GDD sections 4.1 and 4.10). | S |
 
 ### 6.2 Cards and Decks (CRD)
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| CRD-01 | The game must have 100 collectible cards: 72 Creature Cards (18 for each Race) and 28 Skill Cards (7 for each Class). | M |
-| CRD-02 | Each card must exist in all Ranks from its Base Rank to Sunstone. | M |
+| CRD-01 | The game must have 136 collectible Cards: 96 Creature Cards (16 for each of the 6 Races, including 1 Specialist) and 40 Skill Cards (10 for each Class: 4 Common, 3 Uncommon, 2 Rare and 1 Epic). | M |
+| CRD-02 | Each card must exist in all Ranks from its Base Rank to Legendary, except a Specialist, which exists only at Legendary. | M |
 | CRD-03 | The UI must show Rank with a color and a number of pips. | M |
 | CRD-04 | The Deck builder must check all Deck rules in GDD section 6 and show the reason when a Deck is not valid. | M |
-| CRD-05 | The player must have 5 Deck slots. | M |
+| CRD-05 | A new player must have 3 Deck slots. The player must be able to buy more with Coin, up to 10, with the prices in the Economy document. | M |
 | CRD-06 | The Deck builder must have Auto-fill. | S |
 | CRD-07 | The Deck builder must show the Countdown curve. | S |
 | CRD-08 | Card text must come from Keyword and effect templates with values, not from free text. | M |
@@ -81,24 +82,29 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | ID | Requirement | Priority |
 | --- | --- | --- |
 | PRG-01 | The player must get XP and levels up to level 30, with the unlocks in GDD section 7.1. | M |
-| PRG-02 | The Collection must show all cards with filters, and hide cards that are not Discovered. | M |
+| PRG-02 | The Deck builder must show all cards with filters, also the cards that the player does not own, and the copies of each owned card in each Rank. There is no separate Collection screen. | M |
 | PRG-03 | The Workshop must support Combine, Extract and Craft with the costs in the Economy document. | M |
 | PRG-04 | Combine and Gear upgrades must never fail and never cause a downgrade. | M |
-| PRG-05 | The Hero must have 4 Gear slots with levels 0 to 10. | M |
+| PRG-05 | The Hero must have 4 Gear slots with levels 0 to 25. | M |
 | PRG-06 | The player must be able to change the Hero Class outside a Battle at no cost. | M |
 | PRG-07 | Packs must use the drop rates and rules in the Economy document, and the game must show them before the player opens a Pack. | M |
+| PRG-08 | The game must show Coin in Gold, Silver and Copper with the display rule in the Economy document. | M |
+| PRG-09 | Coin, Heynstones and Essence must never change into each other. | M |
 
 ### 6.4 Modes and content (MOD)
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| MOD-01 | The Campaign must have 3 Regions with 10 Stages each, and Stage 10 of each Region must be a Boss Stage. | M |
+| MOD-01 | The Campaign must have 5 Regions with 10 Stages each, and Stage 10 of each Region must be a Boss Stage. | M |
 | MOD-02 | Each Stage must give 1 to 3 Stars and the rewards in the Economy document. | M |
-| MOD-03 | The tutorial must teach the lessons in GDD section 8.3. | M |
-| MOD-04 | Heynspire must have 50 Floors and unlock after the Region 3 Boss Stage. | S |
+| MOD-03 | The Tutorial and the Hints must follow GDD section 8.3. | M |
+| MOD-04 | Heynspire must have 50 Floors and unlock after the Region 5 Boss Stage. | S |
 | MOD-05 | The enemy AI must use the score method in GDD section 9 and must not see the player's Hand. | M |
 | MOD-06 | The game must have about 40 Achievements and about 30 Cosmetics. | S |
+| MOD-08 | The Bazaar must sell Cosmetics for Heynstones, with the prices in the Economy document. Earn-only Cosmetics must not be in the Bazaar. | S |
+| MOD-09 | Heynstones must come only from the one-time sources in the Economy document. | S |
 | MOD-07 | The story must have short scenes at the start and end of each Region. | S |
+| MOD-10 | The game must have 3 Dungeons that unlock at player level 10, 20 and 30. Each Dungeon must be one Battle against 2 or 3 Bosses, with the rules in GDD section 8.4. | S |
 
 ### 6.5 User interface (UI)
 
@@ -110,12 +116,13 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | UI-04 | The Battle screen must show the Attack and HP of each Unit at all times. | M |
 | UI-05 | Hover or long press must show the full card details. | M |
 | UI-06 | Settings must include text size, reduced motion, high-contrast Board, audio volume and language. | S |
+| UI-07 | The game must have a Handbook that explains each rule, term and icon that the Player meets, with search, in each language. It opens from the Town Bar and from the Battle, and its rule text is the same as the text on the cards (GDD section 11.1). | S |
 
 ### 6.6 Save data (SAV)
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
-| SAV-01 | The game must save progress in IndexedDB after each Battle and each Workshop action. | M |
+| SAV-01 | The game must save progress in IndexedDB after each Battle, each Workshop action and each Bazaar purchase. | M |
 | SAV-02 | The save must have a schema version. The game must migrate old saves to the new version. | M |
 | SAV-03 | The player must be able to export the save to a file and import it from a file. | M |
 | SAV-04 | The game must check an imported file and refuse it if it is not valid. It must not change the current save in this case. | M |
@@ -160,7 +167,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 3. Goals G2, G3 and G4 pass in the playtest.
 4. Balance simulations show archetype win rates of 45% to 55%.
 5. All text is complete in `en-us` and `id-id`.
-6. A trademark check of the name "Heynbord" and the draft names is done.
+6. A trademark check of the name "Heynbord", the draft names and the invented proper names is done (see the [README](./README.md#status-of-names)).
 7. The art and audio licence record is complete.
 
 ## 8. Assumptions
@@ -176,7 +183,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | --- | --- | --- |
 | AI art is not consistent | The game looks cheap | Use a strict style guide, reference sheets and a review checklist (see Art Direction). |
 | The scope is too large for one person | Late release | Keep v1 small. Cut **C** and then **S** requirements first. Use the milestones in the Roadmap. |
-| Balance is hard with 100 cards | Some Decks are too strong | Use headless simulations from the start. |
+| Balance is hard with 136 Cards | Some Decks are too strong | Use headless simulations from the start. |
 | 3D performance on phones | Low frame rate | Use performance budgets (see Technical Design). Test on a real phone from Milestone 1. |
 | Legal claims about similarity to the original games | Forced changes | Use new names, art, text and numbers. Do not copy assets or card text. |
 | AI tool licence changes | Art cannot be used | Keep the licence record. Use tools whose terms permit commercial use. |
@@ -186,6 +193,6 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 
 | No. | Question | Owner | Due |
 | --- | --- | --- | --- |
-| 1 | Final names for Races, Ranks, currency, Regions and Heynspire | Game director | Milestone 3 |
-| 2 | Which AI image tool and which audio sources | Art director | Milestone 1 |
+| 1 | Final names for Regions, Bosses, Dungeons and the 4 new Dungeon Bosses, Heynspire and the lore names | Game director | Milestone 3 |
+| 2 | Which audio sources | Art director | Milestone 1 |
 | 3 | Domain name and hosting for the public release | Product owner | Milestone 4 |

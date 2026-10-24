@@ -1,0 +1,424 @@
+import { Result } from "effect";
+
+import { step } from "../battle/step";
+import type { StepOutput } from "../battle/step";
+import type {
+  BattleEvent,
+  BattleState,
+  CardInstance,
+  Command,
+  HeroState,
+  Side,
+  UnitState,
+} from "../battle/types";
+import { createToken, createUnit } from "../battle/units";
+import { getCard } from "../content/cards";
+import type { RankId, TokenId } from "../content/schema";
+import { getToken } from "../content/tokens";
+
+/** A Hero with empty Hand, Deck and Graveyard. The default Front is each Lane of the Board. */
+const makeHero = (
+  lanes: number,
+  overrides: Partial<HeroState> = {}
+): HeroState => ({
+  hp: 30,
+  maxHp: 30,
+  classId: "warrior",
+  unitCrit: 0,
+  skillCrit: 0,
+  unitBlock: 0,
+  front: Array.from({ length: lanes }, (_, lane) => lane),
+  hand: [],
+  deck: [],
+  graveyard: [],
+  bossRules: [],
+  ...overrides,
+});
+
+/**
+ * A Battle in the player's Play Phase with empty Hands, Decks and Board. Each
+ * Side has 1 Hero with a Front of each Lane, or the enemy Side has one Hero
+ * for each item of `enemyHeroes` (ADR-0009), which then must give each Front.
+ */
+export const emptyBattle = (
+  overrides: Partial<
+    Pick<
+      BattleState,
+      "lanes" | "closedLanes" | "turnNumber" | "activeSide" | "random"
+    >
+  > & {
+    readonly player?: Partial<HeroState>;
+    readonly enemy?: Partial<HeroState>;
+    readonly enemyHeroes?: readonly (Partial<HeroState> &
+      Pick<HeroState, "front">)[];
+  } = {}
+): BattleState => {
+  const lanes = overrides.lanes ?? 1;
+  return {
+    stageId: "test",
+    seed: 1,
+    random: overrides.random ?? 1,
+    lanes,
+    closedLanes: overrides.closedLanes ?? [],
+    turnNumber: overrides.turnNumber ?? 1,
+    activeSide: overrides.activeSide ?? "player",
+    status: "ongoing",
+    sides: {
+      player: { heroes: [makeHero(lanes, overrides.player)] },
+      enemy: {
+        heroes: overrides.enemyHeroes?.map((enemy) =>
+          makeHero(lanes, enemy)
+        ) ?? [makeHero(lanes, overrides.enemy)],
+      },
+    },
+    units: [],
+    fieldEffects: [],
+    nextId: 1,
+    result: null,
+  };
+};
+
+let nextInstance = 1000;
+
+/**
+ * Puts 1 card in the Deck of each Side with no Hand and no Deck, so that the
+ * Routed check (ADR-0012) does not end a test about another rule. Units do not
+ * count, because a Unit can die in the test. Changes `state` (test setup only).
+ */
+export const preventRout = (state: BattleState): void => {
+  for (const side of ["player", "enemy"] as const) {
+    const heroes = state.sides[side].heroes.filter((each) => each.hp > 0);
+    if (
+      heroes.every((each) => each.hand.length === 0 && each.deck.length === 0)
+    ) {
+      nextInstance += 1;
+      heroes[0]?.deck.push({
+        instanceId: nextInstance,
+        cardId: "human.militiaRecruit",
+        rank: "common",
+      });
+    }
+  }
+};
+
+/** Test setup: replaces Burn, Freeze, Entangled, Paralyzed and Poisoned of a Unit. */
+const setStatuses = (
+  unit: UnitState,
+  options: Partial<
+    Pick<UnitState, "burn" | "frozen" | "entangled" | "paralyzed" | "poisoned">
+  >
+): void => {
+  if (options.burn !== undefined) {
+    unit.burn = options.burn;
+  }
+  if (options.frozen !== undefined) {
+    unit.frozen = options.frozen;
+  }
+  if (options.entangled !== undefined) {
+    unit.entangled = options.entangled;
+  }
+  if (options.paralyzed !== undefined) {
+    unit.paralyzed = options.paralyzed;
+  }
+  if (options.poisoned !== undefined) {
+    unit.poisoned = options.poisoned;
+  }
+};
+
+/** Test setup: replaces the Hobble and Bleed values and counts, and the Grounded count, of a Unit. */
+const setCounts = (
+  unit: UnitState,
+  options: Partial<
+    Pick<UnitState, "hobble" | "hobbled" | "bleed" | "bleeding" | "grounded">
+  >
+): void => {
+  if (options.hobble !== undefined) {
+    unit.hobble = options.hobble;
+  }
+  if (options.hobbled !== undefined) {
+    unit.hobbled = options.hobbled;
+  }
+  if (options.bleed !== undefined) {
+    unit.bleed = options.bleed;
+  }
+  if (options.bleeding !== undefined) {
+    unit.bleeding = options.bleeding;
+  }
+  if (options.grounded !== undefined) {
+    unit.grounded = options.grounded;
+  }
+};
+
+/**
+ * Test setup: replaces Rebirth, the Rally bonus, the Heroic bonus, the bonus
+ * Bulwark, the bonus Attack, the bonus Range, Exposed and the Buffs of a Unit.
+ */
+const setRebirthAndBonuses = (
+  unit: UnitState,
+  options: Partial<
+    Pick<
+      UnitState,
+      | "rebirth"
+      | "rallied"
+      | "heroicBonus"
+      | "bonusBulwark"
+      | "bonusBulwarkTurns"
+      | "bonusAttack"
+      | "bonusAttackTurns"
+      | "bonusRange"
+      | "bonusRangeTurns"
+      | "exposed"
+      | "exposedTurns"
+      | "ward"
+      | "steadfast"
+    >
+  >
+): void => {
+  if (options.ward !== undefined) {
+    unit.ward = options.ward;
+  }
+  if (options.steadfast !== undefined) {
+    unit.steadfast = options.steadfast;
+  }
+  if (options.rebirth !== undefined) {
+    unit.rebirth = options.rebirth;
+  }
+  if (options.rallied !== undefined) {
+    unit.rallied = options.rallied;
+  }
+  if (options.heroicBonus !== undefined) {
+    unit.heroicBonus = options.heroicBonus;
+  }
+  if (options.bonusBulwark !== undefined) {
+    unit.bonusBulwark = options.bonusBulwark;
+  }
+  if (options.bonusBulwarkTurns !== undefined) {
+    unit.bonusBulwarkTurns = options.bonusBulwarkTurns;
+  }
+  if (options.bonusAttack !== undefined) {
+    unit.bonusAttack = options.bonusAttack;
+    unit.bonusAttackTurns = options.bonusAttackTurns ?? 2;
+  }
+  if (options.bonusRange !== undefined) {
+    unit.bonusRange = options.bonusRange;
+    unit.bonusRangeTurns = options.bonusRangeTurns ?? 2;
+  }
+  if (options.exposed !== undefined) {
+    unit.exposed = options.exposed;
+    unit.exposedTurns = options.exposedTurns ?? 2;
+  }
+};
+
+/** Puts a Unit on the Board. Changes `state` (test setup only). */
+export const placeUnit = (
+  state: BattleState,
+  options: {
+    readonly cardId: string;
+    readonly owner: Side;
+    /** The index of the Hero of `owner`. The default is 0. */
+    readonly hero?: number;
+    readonly lane?: number;
+    readonly position: number;
+    readonly rank?: RankId;
+    readonly summonedTurn?: number;
+  } & Partial<
+    Pick<
+      UnitState,
+      | "attack"
+      | "hp"
+      | "maxHp"
+      | "burn"
+      | "frozen"
+      | "paralyzed"
+      | "entangled"
+      | "poisoned"
+      | "hobble"
+      | "hobbled"
+      | "bleed"
+      | "bleeding"
+      | "grounded"
+      | "knockback"
+      | "wall"
+      | "rebirth"
+      | "rallied"
+      | "heroicBonus"
+      | "bonusBulwark"
+      | "bonusBulwarkTurns"
+      | "bonusAttack"
+      | "bonusAttackTurns"
+      | "bonusRange"
+      | "bonusRangeTurns"
+      | "exposed"
+      | "exposedTurns"
+      | "ward"
+      | "steadfast"
+    >
+  > & {
+      /** Test setup: gives the Unit the Poison Keyword. */
+      readonly poison?: boolean;
+      /** Test setup: replaces the printed Speed. */
+      readonly speed?: number;
+      /** Test setup: gives the Unit the Entangle Keyword. */
+      readonly entangle?: boolean;
+      /** Test setup: gives the Unit the Trample Keyword. */
+      readonly trample?: boolean;
+      /** Test setup: gives the Unit the First Strike Keyword. */
+      readonly firstStrike?: boolean;
+      /** Test setup: gives the Unit the Swarm Keyword with this value. */
+      readonly swarm?: number;
+      /** Test setup: gives the Unit the Retaliate Keyword. */
+      readonly retaliate?: boolean;
+      /** Test setup: replaces the printed Bulwark. */
+      readonly bulwark?: number;
+      /** Test setup: replaces the printed Damage Type. */
+      readonly damageType?: UnitState["damageType"];
+    }
+): UnitState => {
+  const definition = getCard(options.cardId);
+  if (definition.kind !== "creature") {
+    throw new Error("placeUnit needs a Creature Card");
+  }
+  nextInstance += 1;
+  const unit: UnitState = createUnit({
+    id: state.nextId,
+    owner: { side: options.owner, hero: options.hero ?? 0 },
+    card: {
+      instanceId: nextInstance,
+      cardId: options.cardId,
+      rank: options.rank ?? "common",
+    },
+    definition,
+    lane: options.lane ?? 0,
+    position: options.position,
+    turnNumber: options.summonedTurn ?? 0,
+  });
+  if (options.attack !== undefined) {
+    unit.attack = options.attack;
+  }
+  if (options.hp !== undefined) {
+    unit.hp = options.hp;
+  }
+  if (options.maxHp !== undefined) {
+    unit.maxHp = options.maxHp;
+  }
+  setStatuses(unit, options);
+  if (options.poison) {
+    unit.poison = true;
+  }
+  setCounts(unit, options);
+  if (options.knockback !== undefined) {
+    unit.knockback = options.knockback;
+  }
+  if (options.wall !== undefined) {
+    unit.wall = options.wall;
+  }
+  setRebirthAndBonuses(unit, options);
+  const placed: UnitState = {
+    ...unit,
+    speed: options.speed ?? unit.speed,
+    entangle: options.entangle ?? unit.entangle,
+    trample: options.trample ?? unit.trample,
+    firstStrike: options.firstStrike ?? unit.firstStrike,
+    swarm: options.swarm ?? unit.swarm,
+    retaliate: options.retaliate ?? unit.retaliate,
+    bulwark: options.bulwark ?? unit.bulwark,
+    damageType: options.damageType ?? unit.damageType,
+  };
+  state.nextId += 1;
+  state.units.push(placed);
+  return placed;
+};
+
+/** Puts a Token Unit on the Board. Changes `state` (test setup only). */
+export const placeToken = (
+  state: BattleState,
+  options: {
+    readonly tokenId: TokenId;
+    readonly owner: Side;
+    /** The index of the Hero of `owner`. The default is 0. */
+    readonly hero?: number;
+    readonly lane?: number;
+    readonly position: number;
+    readonly rank?: RankId;
+  } & Partial<Pick<UnitState, "hp">>
+): UnitState => {
+  const unit = createToken({
+    id: state.nextId,
+    owner: { side: options.owner, hero: options.hero ?? 0 },
+    token: getToken(options.tokenId),
+    rank: options.rank ?? "common",
+    lane: options.lane ?? 0,
+    position: options.position,
+    turnNumber: 0,
+  });
+  if (options.hp !== undefined) {
+    unit.hp = options.hp;
+  }
+  state.nextId += 1;
+  state.units.push(unit);
+  return unit;
+};
+
+/** The Hero `index` of `side`. Fails the test when the Side has no such Hero. */
+export const heroOf = (
+  state: BattleState,
+  side: Side,
+  index = 0
+): HeroState => {
+  const found = state.sides[side].heroes[index];
+  if (!found) {
+    throw new Error(`No Hero ${index} on the ${side} Side`);
+  }
+  return found;
+};
+
+/** Puts cards into the Hand of the Hero `index` of `side`. Changes `state` (test setup only). */
+export const giveHand = (
+  state: BattleState,
+  side: Side,
+  cards: readonly (readonly [
+    cardId: string,
+    countdown: number,
+    rank?: RankId,
+  ])[],
+  index = 0
+): void => {
+  for (const [cardId, countdown, rank] of cards) {
+    nextInstance += 1;
+    heroOf(state, side, index).hand.push({
+      instanceId: nextInstance,
+      cardId,
+      rank: rank ?? "common",
+      countdown,
+    });
+  }
+};
+
+/** Runs one Command and fails the test on a RuleViolation. */
+export const run = (state: BattleState, command: Command): StepOutput => {
+  const result = step(state, command);
+  if (Result.isFailure(result)) {
+    throw new Error(`Unexpected RuleViolation: ${result.failure._tag}`);
+  }
+  return result.success;
+};
+
+export const eventsOfType = <T extends BattleEvent["_tag"]>(
+  events: readonly BattleEvent[],
+  tag: T
+): Extract<BattleEvent, { readonly _tag: T }>[] =>
+  events.filter(
+    (event): event is Extract<BattleEvent, { readonly _tag: T }> =>
+      event._tag === tag
+  );
+
+export const unitById = (state: BattleState, unitId: number) =>
+  state.units.find((unit) => unit.id === unitId);
+
+/** The Card copy of a Card Unit. Throws for a Token Unit. */
+export const cardOf = (unit: UnitState): CardInstance => {
+  if (unit.source._tag !== "Card") {
+    throw new Error(`Unit ${unit.id} is a Token`);
+  }
+  return unit.source.card;
+};

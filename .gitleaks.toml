@@ -20,3 +20,26 @@ paths = ['''(?i).*e2e/\.auth/.*''', '''(?i).*playwright/\.auth/.*''']
 [[allowlists]]
 description = "gitleaks ignore file"
 paths = ['''^\.gitleaksignore$''', '''^repos/''']
+
+# A Message Catalog key or a content id (`key: "stages.dungeon-1.enemy"`) is a
+# dotted lowercase identifier, not a credential. The generic-api-key rule reads
+# the `key:` prefix and the high-entropy value as an API key. These findings sit
+# in history, so allowlist the shape for the files that only ever hold ids.
+[[allowlists]]
+description = "i18n Message Catalog keys and content ids"
+condition = "AND"
+paths = [
+  '''^apps/web/src/.*\.unit\.test\.ts$''',
+  '''^scripts/card-back-art/.*\.ts$''',
+]
+regexTarget = "line"
+regexes = ['''\bkey:\s*"[a-z][\w.$-]*"''']
+
+# The Workers skill shows this line as the anti-pattern to avoid, so the value
+# is a placeholder. Allowlist that one example; a real key would still fail.
+[[allowlists]]
+description = "Workers skill API_KEY anti-pattern example"
+condition = "AND"
+paths = ['''^\.agents/skills/workers-best-practices/.*\.md$''']
+regexTarget = "line"
+regexes = ['''"API_KEY":\s*"sk-live-abc123\.\.\."''']

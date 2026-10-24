@@ -13,6 +13,34 @@
     {
       "file": "apps/web/src/master-design/**",
       "exports": ["*"]
+    },
+    {
+      "file": "scripts/campaign-art/regions.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "scripts/creature-art/concepts.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "scripts/skill-art/concepts.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "scripts/creature-art/prompts.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "scripts/skill-art/prompts.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "apps/web/src/features/dungeons/dungeons.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "apps/web/src/features/town/town.ts",
+      "exports": ["*"]
     }
   ],
   "ignorePatterns": ["repos/**"],
@@ -49,6 +77,7 @@
     "ignore": []
   },
   "health": {
+    "coverage": "coverage/vitest/coverage-final.json",
     "ignore": [
       "oxlint.config.ts",
       "**/pwa-assets.config.ts",
@@ -58,7 +87,11 @@
       "apps/web/src/master-design/**",
       "**/*.{test,spec}.{ts,tsx}",
       "**/e2e/**",
-      "scripts/security/**"
+      "apps/web/src/**/components/**",
+      "apps/web/src/features/battle/scene/**",
+      "scripts/**",
+      "packages/*/scripts/**",
+      "packages/*/src/testing/**"
     ],
     "thresholdOverrides": []
   },

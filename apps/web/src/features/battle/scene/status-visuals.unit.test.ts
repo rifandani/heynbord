@@ -1,0 +1,198 @@
+import { describe, expect, it } from "vitest";
+
+import type { UnitView } from "@/features/battle/battle-view";
+import {
+  badgeStatuses,
+  isBuff,
+  loopStatuses,
+  STATUS_ORDER,
+  statusesOf,
+} from "@/features/battle/scene/status-visuals";
+
+const quiet: UnitView = {
+  id: 1,
+  owner: "player",
+  hero: 0,
+  source: { _tag: "Card", cardId: "human.militiaRecruit" },
+  rank: "common",
+  lane: 0,
+  position: 2,
+  attack: 2,
+  rallyBonus: 0,
+  swarm: 0,
+  swarmBonus: 0,
+  reborn: false,
+  hp: 4,
+  maxHp: 4,
+  bulwark: 0,
+  bonusBulwark: 0,
+  bonusBulwarkTurns: 0,
+  bonusAttack: 0,
+  bonusAttackTurns: 0,
+  bonusRange: 0,
+  bonusRangeTurns: 0,
+  heroicBonus: 0,
+  exposed: 0,
+  exposedTurns: 0,
+  range: 0,
+  flying: false,
+  damageType: "physical",
+  burn: 0,
+  poisoned: 0,
+  hobbled: 0,
+  bleeding: 0,
+  grounded: 0,
+  frozen: false,
+  paralyzed: false,
+  entangled: false,
+  ward: 0,
+  steadfast: false,
+  wall: false,
+};
+
+const allStatuses: UnitView = {
+  ...quiet,
+  burn: 2,
+  poisoned: 3,
+  hobbled: 1,
+  bleeding: 2,
+  grounded: 2,
+  frozen: true,
+  paralyzed: true,
+  entangled: true,
+  ward: 5,
+  steadfast: true,
+  exposed: 2,
+  exposedTurns: 2,
+};
+
+describe("statusesOf", () => {
+  it("gives no Status for a quiet Unit", () => {
+    expect(statusesOf(quiet)).toEqual([]);
+  });
+
+  it("gives the Statuses in the fixed priority order, with the Buffs Ward and Steadfast first", () => {
+    expect(STATUS_ORDER).toEqual([
+      "ward",
+      "steadfast",
+      "freeze",
+      "paralyze",
+      "burn",
+      "poison",
+      "entangle",
+      "bleed",
+      "hobble",
+      "grounded",
+      "exposed",
+    ]);
+    expect(statusesOf(allStatuses)).toEqual(STATUS_ORDER);
+    expect(statusesOf({ ...quiet, hobbled: 1, poisoned: 1 })).toEqual([
+      "poison",
+      "hobble",
+    ]);
+  });
+});
+
+describe("loopStatuses", () => {
+  it("gives at most 2 Statuses, with the highest priority first", () => {
+    expect(loopStatuses(quiet)).toEqual([]);
+    expect(loopStatuses({ ...quiet, bleeding: 1 })).toEqual(["bleed"]);
+    expect(loopStatuses(allStatuses)).toEqual(["ward", "steadfast"]);
+    expect(
+      loopStatuses({ ...quiet, hobbled: 2, bleeding: 1, entangled: true })
+    ).toEqual(["entangle", "bleed"]);
+  });
+});
+
+describe("badgeStatuses", () => {
+  it("gives the Poisoned stack count and the Hobbled and Bleeding counts", () => {
+    expect(
+      badgeStatuses({ ...quiet, poisoned: 3, hobbled: 1, bleeding: 2 })
+    ).toEqual({
+      badges: [
+        { status: "poison", count: 3, buff: false },
+        { status: "bleed", count: 2, buff: false },
+        { status: "hobble", count: 1, buff: false },
+      ],
+      more: 0,
+    });
+  });
+
+  it("gives the Grounded count after Hobbled", () => {
+    expect(
+      badgeStatuses({ ...quiet, flying: true, grounded: 2, hobbled: 1 })
+    ).toEqual({
+      badges: [
+        { status: "hobble", count: 1, buff: false },
+        { status: "grounded", count: 2, buff: false },
+      ],
+      more: 0,
+    });
+  });
+
+  it("shows Paralyzed after Frozen, with no count", () => {
+    expect(badgeStatuses({ ...quiet, paralyzed: true, burn: 1 })).toEqual({
+      badges: [
+        { status: "paralyze", count: null, buff: false },
+        { status: "burn", count: null, buff: false },
+      ],
+      more: 0,
+    });
+  });
+
+  it("gives no count for Burn, Frozen and Entangled", () => {
+    expect(
+      badgeStatuses({ ...quiet, burn: 2, frozen: true, entangled: true })
+    ).toEqual({
+      badges: [
+        { status: "freeze", count: null, buff: false },
+        { status: "burn", count: null, buff: false },
+        { status: "entangle", count: null, buff: false },
+      ],
+      more: 0,
+    });
+  });
+
+  it("shows at most 3 badges, then the number of the other Statuses", () => {
+    const { badges, more } = badgeStatuses(allStatuses);
+    expect(badges.map((badge) => badge.status)).toEqual([
+      "ward",
+      "steadfast",
+      "freeze",
+    ]);
+    expect(more).toBe(8);
+  });
+
+  it("shows the Ward first, with its value as the count and the gold ring of a Buff", () => {
+    expect(badgeStatuses({ ...quiet, ward: 6, poisoned: 1 })).toEqual({
+      badges: [
+        { status: "ward", count: 6, buff: true },
+        { status: "poison", count: 1, buff: false },
+      ],
+      more: 0,
+    });
+    expect(isBuff("ward")).toBe(true);
+    expect(
+      STATUS_ORDER.filter(
+        (status) => status !== "ward" && status !== "steadfast"
+      ).some(isBuff)
+    ).toBe(false);
+  });
+
+  it("shows Steadfast after the Ward, with no count and the gold ring of a Buff", () => {
+    expect(
+      badgeStatuses({ ...quiet, steadfast: true, ward: 3, frozen: true })
+    ).toEqual({
+      badges: [
+        { status: "ward", count: 3, buff: true },
+        { status: "steadfast", count: null, buff: true },
+        { status: "freeze", count: null, buff: false },
+      ],
+      more: 0,
+    });
+  });
+
+  it("gives an empty badge for a quiet Unit", () => {
+    expect(badgeStatuses(quiet)).toEqual({ badges: [], more: 0 });
+  });
+});

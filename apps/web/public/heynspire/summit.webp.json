@@ -1,0 +1,4 @@
+{
+  "prompt": "Tool: GPT Image in ChatGPT (high quality, 1024 x 1536), by the project owner. Prompt: the setup message and the 'summit' message of 'Heynspire tower' in apps/web/art/town/raw/heynspire/prompts.md (bun town:prompts, 11 — Town Concepts 14), with layout.png, style-reference.png, outside-reference.png and storey.png attached. Seed: not available. Licence: OpenAI terms of use; the user owns the output, commercial use is permitted. Hand changes: trimmed to the stone with sharp (crop x 8 to 1015, y 10 to 1514, 1008 x 1505) so that the ring of merlons fills the width, and exported as WebP q 85, alpha q 90 (apps/web/art/town/raw/heynspire/heynspire-summit.webp). Source: apps/web/art/town/heynspire/summit.webp.\n",
+  "createdAt": "2026-10-19T04:06:22.000Z"
+}

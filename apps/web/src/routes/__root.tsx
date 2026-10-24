@@ -9,6 +9,7 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
+  ScriptOnce,
   Scripts,
   useRouter,
 } from "@tanstack/react-router";
@@ -28,6 +29,7 @@ import { AppI18nProvider } from "@/features/i18n/components/i18n-provider";
 import { DEFAULT_LOCALE } from "@/features/i18n/locale";
 import { requestLocale } from "@/features/i18n/locale.functions";
 import { AppToaster } from "@/features/toast/components/app-toaster";
+import { TOWN_BAR_COLLAPSED_KEY } from "@/features/town/town-bar-preference";
 
 // Side-effect import: Start links it from the client build manifest. A `?url`
 // import would take its hash from the SSR build, whose Tailwind output differs.
@@ -73,6 +75,12 @@ const RootDocument = ({ children }: { children: ReactNode }) => {
           content="#020203"
         />
         <ColorModeScript />
+        {/* The Town Bar is stowed before the first paint, so a saved rail
+            never flashes the full shelf. The live transition starts after the
+            first frame (see the ready attribute in TownBar). */}
+        <ScriptOnce>
+          {`try{if(JSON.parse(localStorage.getItem(${JSON.stringify(TOWN_BAR_COLLAPSED_KEY)}))===true){document.documentElement.dataset.townBar="collapsed"}}catch(e){}`}
+        </ScriptOnce>
       </head>
       <body>
         <main id="root" className="min-h-svh">

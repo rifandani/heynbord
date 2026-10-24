@@ -14,19 +14,34 @@ All documents use ASD-STE100 Simplified Technical English.
 | 04 | [Product Requirements](./04-prd.md) | Requirements with IDs and priorities for v1, and release criteria. | Product owner |
 | 05 | [Art and Audio Direction](./05-art-direction.md) | Visual style, AI art workflow, camera, UI and audio. | Art director |
 | 06 | [Technical Design](./06-technical-design.md) | Architecture, the rules package, rendering, save data and tests. | Lead engineer |
-| 07 | [Economy](./07-economy.md) | Currencies, sources and sinks, packs, costs and future monetization rules. | Game designer |
-| 08 | [Roadmap](./08-roadmap.md) | Milestones for v1 and the plan after v1. | Product owner |
+| 07 | [Economy](./07-economy.md) | Currencies (Coin and Heynstones), sources and sinks, packs, the Bazaar, costs and future monetization rules. | Game designer |
+| 08 | [Archetypes](./08-archetypes.md) | The Archetypes (reference Decks for balance) and the results of their Matchups. | Game designer |
+| 09 | [Roadmap](./09-roadmap.md) | Milestones for v1 and the plan after v1. | Product owner |
+| 10 | [Card Concepts](./10-card-concepts.md) | The gameplay draft and art brief for each Card and Token, and the image prompt for each Skill Card and Token. | Game designer and art director |
+| 11 | [Town Concepts](./11-town-concepts.md) | The art brief, the positions and the image prompts for the Town. | Art director |
+| 12 | [Region Concepts](./12-region-concepts.md) | The art brief and the positions for each Region Map of the Campaign. `bun campaign:prompts` makes the image prompts. | Art director |
+| 13 | [Battlefield Concepts](./13-battlefield-concepts.md) | The art brief and the positions for each Battle Painting. `bun campaign:prompts` makes the image prompts. | Art director |
+| 14 | [Campaign Stages](./14-campaign-stages.md) | The design of each Stage: place, enemy, new thing, enemy Deck, first-win card and win-rate target. | Game designer |
+| 15 | [Achievements](./15-achievements.md) | The rules for Achievements, Feats and Tallies, the list of Achievements with their rewards, and the Achievements screen. | Game designer |
+| 16 | [Cosmetic Concepts](./16-cosmetic-concepts.md) | The art brief and the image prompts for the Card Backs. `bun card-back:prompts` makes the prompts. | Art director |
+| 17 | [Hero Portrait Concepts](./17-hero-portrait-concepts.md) | The art brief and the image prompts for the Hero portraits. `bun hero-portrait:prompts` makes the prompts. | Art director |
+| 18 | [Board Skin Concepts](./18-board-skin-concepts.md) | The art brief and the image prompts for the Square sheets of the Board skins. `bun board-skin:prompts` makes the prompts. | Art director |
+| 19 | [Gear Look Concepts](./19-gear-look-concepts.md) | The art brief and the image prompts for the 4 Gear icons of each Gear look. `bun gear-look:prompts` makes the prompts. | Art director |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.
 
 ## Related files
 
-- [`packages/rules/CONTEXT.md`](../../packages/rules/CONTEXT.md): the game glossary. All documents use its terms.
+- [`packages/rules/GLOSSARY.md`](../../packages/rules/GLOSSARY.md): the game glossary. All documents use its terms.
 - [ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md): why the game rules are a separate deterministic package.
+- [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md): why Heynstones buy only Cosmetics and Conveniences.
+- [ADR-0013](../adr/0013-v1-has-90-creature-cards.md): why v1 has 15 Creature Cards for each Race.
 
 ## Status of names
 
-A name marked **(draft)** is a proposal. You can change it without a new design review. Before release, do a trademark check on the game name and all draft names.
+A name marked **(draft)** is a proposal. You can change it without a new design review. Before release, do a trademark check on the game name, all draft names and all invented proper names (for example Heynstones, and named characters on cards and in Stages). Usual words, for example Bazaar or Militia Recruit, do not need the check.
+
+Documents 01 to 04, 06 and 07 are a baseline. A change to a rule needs a design review or an ADR. Documents 05, 08 and 10 to 17 change with the content.
 
 ## Decision record
 
@@ -36,7 +51,7 @@ These decisions come from a design review on 2026-10-03:
 | --- | --- |
 | Product type | Spiritual successor. All names, lore, units and art are new. |
 | Online scope | v1 is single player with a local save. v2 adds asynchronous online play. |
-| Business model | Free-to-play with cosmetics only. v1 has no shop. |
+| Business model | Free-to-play with cosmetics only. v1 has no real-money payments. The Bazaar uses only earned Heynstones. |
 | Visual style | 2.5D: card art on planes in a 3D scene. |
 | Team | One developer. AI tools make the art. |
 | Schedule | Playable alpha in about 3 months. v1.0 in about 6 months. |
@@ -44,8 +59,8 @@ These decisions come from a design review on 2026-10-03:
 | App structure | The game is in `apps/web` with React Three Fiber. The rules are in `packages/rules`. |
 | World and tone | Heynbord is the name of the world. Bright high fantasy with some humor. |
 | Resource system | Countdown hand, as in the original. |
-| Board | Lanes, 12 squares long. v1 stages use 1 to 3 lanes. Co-op later uses 4. |
-| Battle control | Automatic and deterministic, with speed control and auto-play. |
-| v1 card set | 4 classes, 4 races, 5 ranks, about 100 cards. |
+| Board | Lanes, 12 squares long. Stages use 3 lanes. Dungeons, Heynspire and multiplayer use 4. |
+| Battle control | Automatic and deterministic, with speed control and skip. A Sweep gives repeat-win rewards with no Battle. |
+| v1 card set | 4 Classes, 6 Races, 5 Ranks, 96 Creature Cards and 40 Skill Cards. |
 | Progression | Combine (no failure), Extract, Craft and hero gear. No Energy and no VIP. |
 | Languages | `en-us` and `id-id` from v1. |

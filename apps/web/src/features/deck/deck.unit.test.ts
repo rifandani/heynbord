@@ -1,0 +1,387 @@
+import {
+  CARDS,
+  DeckProblem,
+  deckProblems,
+  getCard,
+  getStarterDeck,
+  INITIAL_DECK_SLOTS,
+  starterCollection,
+} from "@workspace/rules";
+import { describe, expect, it } from "vitest";
+
+import type { PoolFilter } from "@/features/deck/deck";
+import {
+  CLASSES_WITH_CARDS,
+  DEFAULT_POOL_FILTER,
+  deckRows,
+  defaultSlotName,
+  emptyPoolText,
+  poolBlock,
+  poolClass,
+  poolEntries,
+  poolGroupText,
+  problemText,
+  RACES_WITH_CARDS,
+  slotInput,
+  updateSlot,
+} from "@/features/deck/deck";
+
+const [vanguard] = INITIAL_DECK_SLOTS;
+const collection = starterCollection();
+
+describe("INITIAL_DECK_SLOTS", () => {
+  it("gives each Starter Deck slot a valid Deck at the Deck level", () => {
+    for (const slot of INITIAL_DECK_SLOTS.slice(0, 2)) {
+      expect(deckProblems(slotInput(slot, collection, 1))).toEqual([]);
+    }
+  });
+
+  it("names a slot by its Starter Deck, else by its number", () => {
+    const [first, , third] = INITIAL_DECK_SLOTS;
+    if (!first || !third) {
+      throw new Error("Missing slot");
+    }
+    expect(defaultSlotName(first, 0)).toEqual({ key: "decks.vanguard.name" });
+    expect(defaultSlotName(third, 2)).toEqual({
+      key: "deckBuilder.slotName",
+      args: { number: 3 },
+    });
+  });
+});
+
+describe("deckRows", () => {
+  it("groups the copies of a card and Rank, in Countdown order", () => {
+    const rows = deckRows(getStarterDeck("vanguard").deck);
+    expect(rows[0]).toEqual({
+      cardId: "human.militiaRecruit",
+      rank: "common",
+      count: 2,
+    });
+    expect(rows).toContainEqual({
+      cardId: "human.crossbowGuard",
+      rank: "common",
+      count: 3,
+    });
+    expect(rows.at(-1)).toEqual({
+      cardId: "human.riverKnight",
+      rank: "uncommon",
+      count: 2,
+    });
+  });
+
+  it("puts the higher Rank first for two Ranks of the same card", () => {
+    expect(
+      deckRows([
+        { cardId: "human.crossbowGuard", rank: "common" },
+        { cardId: "human.crossbowGuard", rank: "rare" },
+        { cardId: "human.crossbowGuard", rank: "common" },
+      ])
+    ).toEqual([
+      { cardId: "human.crossbowGuard", rank: "rare", count: 1 },
+      { cardId: "human.crossbowGuard", rank: "common", count: 2 },
+    ]);
+  });
+});
+
+const filter = (change: Partial<PoolFilter>): PoolFilter => ({
+  ...DEFAULT_POOL_FILTER,
+  ...change,
+});
+
+describe("poolEntries", () => {
+  it("shows all the cards: the owned copies, then each other card in its Base Rank", () => {
+    const pool = poolEntries(collection, DEFAULT_POOL_FILTER);
+    expect(pool.owned).toHaveLength(collection.length);
+    expect(pool.totalCards).toBe(CARDS.length);
+    expect(pool.owned.length + pool.notOwned.length).toBeGreaterThanOrEqual(
+      CARDS.length
+    );
+    const ownedIds = new Set(collection.map((entry) => entry.cardId));
+    expect(pool.ownedCards).toBe(ownedIds.size);
+    for (const tile of pool.notOwned) {
+      expect(ownedIds.has(tile.cardId)).toBe(false);
+      expect(tile.rank).toBe(getCard(tile.cardId).baseRank);
+    }
+    const countdowns = pool.notOwned.map(
+      (tile) => getCard(tile.cardId).countdown
+    );
+    expect(countdowns).toEqual(countdowns.toSorted((a, b) => a - b));
+  });
+
+  it("applies the Ownership filter to the groups, but not to the count", () => {
+    const owned = poolEntries(collection, filter({ ownership: "owned" }));
+    expect(owned.notOwned).toEqual([]);
+    expect(owned.owned).toHaveLength(collection.length);
+    const notOwned = poolEntries(collection, filter({ ownership: "notOwned" }));
+    expect(notOwned.owned).toEqual([]);
+    expect(notOwned.ownedCards).toBe(owned.ownedCards);
+    expect(notOwned.totalCards).toBe(CARDS.length);
+  });
+
+  it("filters Creature Cards by Race and Skill Cards by Class", () => {
+    const skills = poolEntries(collection, filter({ kind: "skill" }));
+    expect(skills.owned.map((tile) => tile.cardId)).toEqual([
+      "warrior.spearThrow",
+      "mage.fireball",
+    ]);
+    expect(skills.totalCards).toBe(40);
+    const mage = poolEntries(
+      collection,
+      filter({ kind: "skill", classId: "mage" })
+    );
+    expect(
+      [...mage.owned, ...mage.notOwned].every((tile) =>
+        tile.cardId.startsWith("mage.")
+      )
+    ).toBe(true);
+    expect(mage).toMatchObject({ ownedCards: 1, totalCards: 10 });
+    const ranger = poolEntries(
+      collection,
+      filter({ kind: "skill", classId: "ranger" })
+    );
+    expect(ranger.notOwned.map((tile) => [tile.cardId, tile.rank])).toEqual([
+      ["ranger.quickShot", "common"],
+      ["ranger.pinningShot", "common"],
+      ["ranger.harryingShot", "common"],
+      ["ranger.warningShot", "common"],
+      ["ranger.barbedArrow", "uncommon"],
+      ["ranger.skybreaker", "uncommon"],
+      ["ranger.longShot", "uncommon"],
+      ["ranger.venomArrow", "rare"],
+      ["ranger.huntersFocus", "rare"],
+      ["ranger.rainOfArrows", "epic"],
+    ]);
+    const priest = poolEntries(
+      collection,
+      filter({ kind: "skill", classId: "priest" })
+    );
+    expect(priest.notOwned.map((tile) => [tile.cardId, tile.rank])).toEqual([
+      ["priest.blessingOfLight", "common"],
+      ["priest.mend", "common"],
+      ["priest.smite", "common"],
+      ["priest.radiantStrike", "common"],
+      ["priest.penance", "uncommon"],
+      ["priest.unbrokenVow", "rare"],
+      ["priest.sanctuary", "uncommon"],
+      ["priest.prayerOfHealing", "uncommon"],
+      ["priest.cleanse", "rare"],
+      ["priest.aegisOfDawn", "epic"],
+    ]);
+    const goblins = poolEntries(
+      collection,
+      filter({ kind: "creature", race: "goblin" })
+    );
+    expect(goblins).toMatchObject({ owned: [], ownedCards: 0, totalCards: 16 });
+    // A Race applies only to Creature Cards, and a Class only to Skill Cards.
+    expect(
+      poolEntries(collection, filter({ race: "goblin", classId: "mage" }))
+        .totalCards
+    ).toBe(CARDS.length);
+  });
+
+  it("shows a card with no copies left as not owned", () => {
+    const pool = poolEntries(
+      [{ cardId: "goblin.ankleSnatcher", rank: "common", copies: 0 }],
+      DEFAULT_POOL_FILTER
+    );
+    expect(pool.owned).toEqual([]);
+    expect(pool.ownedCards).toBe(0);
+    expect(pool.notOwned).toContainEqual({
+      cardId: "goblin.ankleSnatcher",
+      rank: getCard("goblin.ankleSnatcher").baseRank,
+    });
+  });
+});
+
+describe("poolBlock", () => {
+  it("gives why a card cannot go into the Deck now", () => {
+    if (!vanguard) {
+      throw new Error("Missing slot");
+    }
+    const input = slotInput(vanguard, collection, 1);
+    // A card with no copy in any Rank.
+    expect(poolBlock(input, "goblin.ankleSnatcher", "common")).toBe("notOwned");
+    expect(poolBlock(input, "mage.fireball", "common")).toBe("class");
+    // The Vanguard holds 10 cards, the maximum at the Deck level.
+    expect(poolBlock(input, "orc.scrapRaider", "common")).toBe("full");
+    expect(poolBlock(input, "human.crossbowGuard", "common")).toBe("none");
+    const smaller = slotInput({ ...vanguard, deck: [] }, collection, 1);
+    expect(poolBlock(smaller, "orc.scrapRaider", "common")).toBeNull();
+  });
+
+  it("blocks a card in a second Rank when the Deck has the most copies of the card", () => {
+    if (!vanguard) {
+      throw new Error("Missing slot");
+    }
+    // The Vanguard holds 3 Crossbow Guards in the Common Rank.
+    const input = slotInput(
+      vanguard,
+      [
+        ...collection,
+        { cardId: "human.crossbowGuard", rank: "rare", copies: 1 },
+      ],
+      10
+    );
+    expect(poolBlock(input, "human.crossbowGuard", "rare")).toBe("copies");
+  });
+
+  it("uses the Player level for the Deck size limits", () => {
+    if (!vanguard) {
+      throw new Error("Missing slot");
+    }
+    // A higher level has room for more cards than the 10 of level 1.
+    const input = slotInput(vanguard, collection, 10);
+    expect(input.level).toBe(10);
+    expect(poolBlock(input, "orc.scrapRaider", "common")).not.toBe("full");
+  });
+
+  it("blocks a card that puts the Deck over the Countdown Limit (ADR-0021)", () => {
+    if (!vanguard) {
+      throw new Error("Missing slot");
+    }
+    // The limit of level 1 is 25. Without one Militia Recruit (Countdown 1),
+    // the Vanguard has 9 cards and a sum of 23.
+    const input = slotInput(
+      { ...vanguard, deck: vanguard.deck.slice(1) },
+      collection,
+      1
+    );
+    expect(poolBlock(input, "orc.emberShaman", "common")).toBe("countdown");
+    expect(poolBlock(input, "orc.scrapRaider", "common")).toBeNull();
+  });
+});
+
+describe("poolClass", () => {
+  it("starts on the Hero Class, and goes back to it for another slot or Class", () => {
+    if (!vanguard) {
+      throw new Error("Missing slot");
+    }
+    expect(poolClass(null, vanguard)).toBe("warrior");
+    const pick = {
+      classId: "mage",
+      slotId: "vanguard",
+      heroClass: "warrior",
+    } as const;
+    expect(poolClass(pick, vanguard)).toBe("mage");
+    expect(poolClass({ ...pick, classId: "all" }, vanguard)).toBe("all");
+    expect(poolClass(pick, { ...vanguard, classId: "mage" })).toBe("mage");
+    expect(poolClass({ ...pick, slotId: "raiders" }, vanguard)).toBe("warrior");
+  });
+});
+
+describe("emptyPoolText", () => {
+  it("says that the Player owns all, or none, of the filtered cards", () => {
+    expect(
+      emptyPoolText({
+        ownership: "notOwned",
+        kind: "skill",
+        race: "all",
+        classId: "warrior",
+      })
+    ).toEqual({
+      key: "deckBuilder.emptyPool.ownAll",
+      args: {
+        group: {
+          key: "deckBuilder.groups.class",
+          args: { className: { key: "classes.warrior" } },
+        },
+      },
+    });
+    expect(
+      emptyPoolText({
+        ownership: "owned",
+        kind: "creature",
+        race: "feral",
+        classId: "all",
+      })
+    ).toEqual({
+      key: "deckBuilder.emptyPool.ownNone",
+      args: {
+        group: {
+          key: "deckBuilder.groups.race",
+          args: { race: { key: "races.feral" } },
+        },
+      },
+    });
+  });
+});
+
+describe("poolGroupText", () => {
+  it("names the kind of the filtered cards when no Race or Class applies", () => {
+    expect(poolGroupText(DEFAULT_POOL_FILTER)).toEqual({
+      key: "deckBuilder.groups.all",
+    });
+    expect(poolGroupText(filter({ kind: "creature" }))).toEqual({
+      key: "deckBuilder.groups.creature",
+    });
+    expect(poolGroupText(filter({ kind: "skill" }))).toEqual({
+      key: "deckBuilder.groups.skill",
+    });
+  });
+});
+
+describe("problemText", () => {
+  it("names the card and the Class in the reason", () => {
+    expect(
+      problemText(
+        DeckProblem.WrongClass({ cardId: "mage.fireball", classId: "mage" })
+      )
+    ).toEqual({
+      key: "deckBuilder.problems.wrongClass",
+      args: {
+        name: { key: "cards.mage.fireball.name" },
+        className: { key: "classes.mage" },
+      },
+    });
+  });
+
+  it("gives the numbers of each Deck problem", () => {
+    expect(
+      [
+        DeckProblem.TooFewCards({ min: 10, count: 8 }),
+        DeckProblem.TooManyCards({ max: 20, count: 21 }),
+        DeckProblem.OverCountdownLimit({ limit: 25, countdown: 27 }),
+        DeckProblem.TooManyCopies({ cardId: "orc.scrapRaider", max: 3 }),
+        DeckProblem.NotOwned({ cardId: "orc.scrapRaider", rank: "rare" }),
+      ].map(problemText)
+    ).toEqual([
+      { key: "deckBuilder.problems.tooFew", args: { min: 10, count: 8 } },
+      { key: "deckBuilder.problems.tooMany", args: { max: 20, count: 21 } },
+      {
+        key: "deckBuilder.problems.overCountdownLimit",
+        args: { limit: 25, countdown: 27 },
+      },
+      {
+        key: "deckBuilder.problems.tooManyCopies",
+        args: { name: { key: "cards.orc.scrapRaider.name" }, max: 3 },
+      },
+      {
+        key: "deckBuilder.problems.notOwned",
+        args: {
+          name: { key: "cards.orc.scrapRaider.name" },
+          rank: { key: "ranks.rare" },
+        },
+      },
+    ]);
+  });
+});
+
+describe("CLASSES_WITH_CARDS, RACES_WITH_CARDS and updateSlot", () => {
+  it("offers the Classes and Races with cards, and changes one slot only", () => {
+    expect(CLASSES_WITH_CARDS).toEqual(["warrior", "ranger", "mage", "priest"]);
+    expect(RACES_WITH_CARDS.toSorted()).toEqual([
+      "elf",
+      "feral",
+      "goblin",
+      "human",
+      "orc",
+      "undead",
+    ]);
+    const next = updateSlot(INITIAL_DECK_SLOTS, "raiders", (slot) => ({
+      ...slot,
+      name: "Fire",
+    }));
+    expect(next[1]?.name).toBe("Fire");
+    expect(next[0]).toBe(INITIAL_DECK_SLOTS[0]);
+  });
+});

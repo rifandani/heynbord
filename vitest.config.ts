@@ -10,7 +10,7 @@ export default defineConfig({
     fileParallelism: true,
     css: false,
     passWithNoTests: false,
-    projects: ["apps/web"],
+    projects: ["apps/web", "packages/rules"],
     // `coverage` is root-only (it sits in Vitest's `NonProjectOptions`), so it cannot be split across the `defineProject` configs.
     // Consequence: `--project <name> --coverage` measures this global `include` list against a partial run and reports every other project at 0%. Always run the whole suite (`bun test:unit:cov`).
     //
@@ -20,7 +20,13 @@ export default defineConfig({
       // Opt-in only. Enabling by default would tax every watch run and every focused `--project` run; the `unit` CI job opts in via `--coverage`.
       enabled: false,
       reportOnFailure: true,
-      reporter: ["text", ["text-summary", { file: "summary.txt" }], "html"],
+      reporter: [
+        "text",
+        ["text-summary", { file: "summary.txt" }],
+        "html",
+        // CRAP input for `fallow check:all` (see `health.coverage` in `.fallowrc.json`).
+        "json",
+      ],
       // Deliberately not `./coverage` itself, whose root is reserved for fallow's
       // runtime sidecar traces. Feeding fallow test coverage would make it report the
       // ADR-sanctioned untested layers as dead code. Test reports live in named
@@ -44,11 +50,15 @@ export default defineConfig({
         // Feature modules: pure domain functions, Effect services and atoms.
         // Components (`.tsx`) are E2E territory.
         "apps/web/src/features/**/*.ts",
+        // The game rules are pure module logic (ADR-0006).
+        "packages/rules/src/**/*.ts",
       ],
       exclude: [
         "**/*.unit.test.ts",
         "**/*.d.ts",
         "**/types.ts",
+        // Test setup helpers for the rules package.
+        "packages/rules/src/testing/**",
         // all constants
         "apps/*/src/**/constants/**",
         "packages/*/src/**/constants/**",
@@ -71,6 +81,21 @@ export default defineConfig({
         "apps/web/src/core/config/env.ts",
         "apps/web/src/core/runtime/client.ts",
         "apps/web/src/features/**/use-*.ts",
+        // Rendering seams: they draw the procedural art on a 2D canvas, or load
+        // the painted effects atlas into a texture. The canvas inspector
+        // captures and the E2E bot playtest cover them (ADR-0001). The slot
+        // math of the atlas is in its tested sibling `fx-slots.ts`.
+        "apps/web/src/features/battle/scene/textures.ts",
+        "apps/web/src/features/battle/scene/fx-atlas.ts",
+        // Browser seam: it only reads `window.matchMedia`.
+        "apps/web/src/features/battle/scene/reduced-motion.ts",
+        // Declaration-only modules: no function and no branch, so an import
+        // gives them a free 100% (the 2026-10-24 amendment of ADR-0001): Tailwind
+        // class strings, an empty registry, and atoms that only hold a value.
+        "apps/web/src/features/battle/components/reward-plate.ts",
+        "apps/web/src/features/battle/scene/unit-anchors.ts",
+        "apps/web/src/features/dungeons/dungeons.atoms.ts",
+        "apps/web/src/features/heynspire/heynspire.atoms.ts",
       ],
     },
   },

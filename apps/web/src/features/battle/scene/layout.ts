@@ -1,0 +1,125 @@
+import type { Side } from "@workspace/rules";
+import { LANE_LENGTH } from "@workspace/rules";
+
+import type { BattleView } from "@/features/battle/battle-view";
+
+/** The size of one Square in world units. */
+const SQUARE_SIZE = 1;
+
+/** The distance between the centers of two Lanes. */
+const LANE_SPACING = 1.45;
+
+/** The Lanes go from left (player) to right (enemy) along x (art direction 3). */
+export const squareX = (position: number): number =>
+  (position - (LANE_LENGTH - 1) / 2) * SQUARE_SIZE;
+
+/** Lane 1 is the far Lane (top of the screen). */
+export const laneZ = (lane: number, lanes: number): number =>
+  (lane - (lanes - 1) / 2) * LANE_SPACING;
+
+/** Each Hero stands 1 Square past the last Column of the other side. */
+export const heroX = (side: Side): number =>
+  side === "player" ? squareX(-1) - 0.35 : squareX(LANE_LENGTH) + 0.35;
+
+/**
+ * The z of the middle of a Front: a Hero stands at the middle of the Lanes
+ * that it holds (GDD 11.2). A Front of all Lanes is the middle of the Board,
+ * so a Stage Hero stands at z 0. An empty Front (a Defeated Hero after its
+ * Front moved) gives 0.
+ */
+export const frontZ = (front: readonly number[], lanes: number): number => {
+  if (front.length === 0) {
+    return 0;
+  }
+  return (
+    (laneZ(Math.min(...front), lanes) + laneZ(Math.max(...front), lanes)) / 2
+  );
+};
+
+/** The z of a Hero in a view: the middle of its Front. */
+export const heroZ = (view: BattleView, side: Side, hero: number): number =>
+  frontZ(view.sides[side].heroes[hero]?.front ?? [], view.lanes);
+
+/** The height of the center of a Hero figure. The Hero stands on the ground, with no pedestal (web ADR-0006). */
+export const HERO_FIGURE_Y = 1.2;
+
+/**
+ * The size of the Hero figures of a Side. A Front can be 1 Lane, and a full
+ * figure is wider than a Lane, so the Bosses of a Dungeon are smaller: then
+ * they do not cover each other.
+ */
+export const heroScale = (
+  view: Pick<BattleView, "sides">,
+  side: Side
+): number => (view.sides[side].heroes.length > 1 ? 0.7 : 1);
+
+/** The world position of a Unit or a Hero in a view, or `null` if it is not on the Board. */
+export const worldOf = (
+  view: BattleView,
+  target:
+    | { readonly _tag: "Unit"; readonly unitId: number }
+    | { readonly _tag: "Hero"; readonly side: Side; readonly hero: number }
+): {
+  readonly x: number;
+  readonly z: number;
+  readonly height: number;
+} | null => {
+  if (target._tag === "Hero") {
+    return {
+      x: heroX(target.side),
+      z: heroZ(view, target.side, target.hero),
+      height: (HERO_FIGURE_Y + 0.85) * heroScale(view, target.side),
+    };
+  }
+  const unit = view.units.find((candidate) => candidate.id === target.unitId);
+  return unit
+    ? {
+        x: squareX(unit.position),
+        z: laneZ(unit.lane, view.lanes),
+        height: 1.45,
+      }
+    : null;
+};
+
+/** The half width of what the camera must always show: both Heroes and a margin. */
+const HALF_WIDTH = heroX("enemy") + 0.9;
+
+const toRadians = (degrees: number): number => (degrees * Math.PI) / 180;
+
+/** The camera looks down at this angle (art direction 3: 35° to 45°). 45° gives the Lanes the most depth. */
+export const CAMERA_PITCH = 45;
+
+export interface CameraFrame {
+  readonly position: readonly [number, number, number];
+  readonly target: readonly [number, number, number];
+  readonly fov: number;
+}
+
+/**
+ * A camera that shows every Square and both Heroes for a viewport aspect
+ * (art direction 3: "The camera never hides any Square"). The HUD covers the
+ * top and the bottom of the screen, so the target moves toward the camera and
+ * the Board shows a little above the center.
+ */
+export const cameraFrame = (aspect: number, lanes: number): CameraFrame => {
+  const fov = 30;
+  const halfVertical = toRadians(fov / 2);
+  const halfHorizontal = Math.atan(Math.tan(halfVertical) * aspect);
+  const halfDepth = (lanes * LANE_SPACING) / 2 + 1.4;
+  const fitWidth = HALF_WIDTH / Math.tan(halfHorizontal);
+  const fitDepth =
+    halfDepth / Math.tan(halfVertical) / Math.sin(toRadians(CAMERA_PITCH));
+  // The HUD takes about 40% of the height, so the Board gets a larger margin.
+  const distance = Math.max(fitWidth, fitDepth) * 1.08;
+  const pitch = toRadians(CAMERA_PITCH);
+  const targetZ = 0.35 + lanes * 0.1;
+  return {
+    fov,
+    position: [
+      0,
+      Math.sin(pitch) * distance,
+      targetZ + Math.cos(pitch) * distance,
+    ],
+    target: [0, 0, targetZ],
+  };
+};

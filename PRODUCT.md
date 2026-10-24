@@ -19,7 +19,7 @@ Details: [02 — Game Vision](docs/game/02-game-vision.md#target-players), [04 �
 
 Heynbord is a fantasy collectible card game for the web browser. The Player collects cards, builds a Deck, plays Ready cards into Lanes, and then watches the Units move and fight automatically. It is a spiritual successor to _Kings and Legends_ (2013) and _Rise of Mythos_ (2013–2019). Those games shut down, and Flash stopped in 2020. The 2023 revival is pay-to-win. No modern, fair browser game gives this experience.
 
-v1 is single player (PvE) with a local save: a Campaign of 3 Regions (30 Stages, 3 Boss Stages), the Heynspire tower (50 Floors), and about 100 cards.
+v1 is single player (PvE) with a local save: a Campaign of 3 Regions (30 Stages, 3 Boss Stages), the Heynspire tower (50 Floors), and 118 Cards.
 
 Success for v1.0:
 
@@ -41,26 +41,28 @@ _A collectible card game crossed with lane tower defense, where timing replaces 
 
 - Desktop browser first, with mouse and keyboard. The game also works on a phone in landscape with touch. On a phone in portrait, the game asks the Player to turn the phone.
 - Session loop: 3 to 6 Battles in 10 to 30 minutes, then Workshop and Deck changes. A Battle takes 3 to 6 minutes at speed ×1.
-- Screens: Title, Camp (hub), Campaign map, Heynspire, Battle, Deck builder, Collection, Workshop, Hero, Packs, Achievements, Settings. See [GDD 11.1](docs/game/03-game-design.md#111-screens).
-- The Battle is a 3D scene (React Three Fiber). The Hand, HUD and all menus are 2D React UI on React Aria components, so text stays sharp.
+- Screens: Title, Town (hub), Campaign map, Heynspire, Battle, Deck builder, Collection, Workshop, Hero, Packs, Achievements, Settings. See [GDD 11.1](docs/game/03-game-design.md#111-screens).
+- The full game is one route, `/play`. The Town, the Campaign and the Battle are states of that route, not separate URLs. Each screen has its own in-game control to go back. See [web ADR-0005](apps/web/docs/adr/0005-the-game-is-one-route.md).
+- The Battle is a 3D scene (React Three Fiber) on a 2D Battle Painting for each Region. The Squares are not drawn. See [web ADR-0006](apps/web/docs/adr/0006-the-battlefield-is-a-2d-painting.md) and [13 — Battlefield Concepts](docs/game/13-battlefield-concepts.md). The Hand, HUD and all menus are 2D React UI on React Aria components, so text stays sharp.
+- The Town is a 2D painting, not a 3D scene: one painted plate. Each selectable Building is a React Aria button over its part of the painting. See [web ADR-0004](apps/web/docs/adr/0004-the-town-is-a-layered-2d-painting.md) and [11 — Town Concepts](docs/game/11-town-concepts.md).
 
 ## Capabilities and Constraints
 
-- Terminology: use the glossary in [`packages/rules/CONTEXT.md`](packages/rules/CONTEXT.md) (for example **Rank**, not rarity; **Countdown**, not mana; **Stars** only for Stage results). The web glossary is [`apps/web/CONTEXT.md`](apps/web/CONTEXT.md).
+- Terminology: use the glossary in [`packages/rules/GLOSSARY.md`](packages/rules/GLOSSARY.md) (for example **Rank**, not rarity; **Countdown**, not mana; **Stars** only for Stage results). The web glossary is [`apps/web/GLOSSARY.md`](apps/web/GLOSSARY.md).
 - Languages: `en-us` and `id-id` from v1. All text comes from Message Catalogs. Fonts must support Indonesian characters.
 - Save: local only (IndexedDB), with export and import. v1 sends no player data to a server.
 - Performance: Title screen interactive in less than 3 seconds on 4G. Battle assets load only when needed. WebGL 2 is necessary, with a clear message when it is not available. PWA with offline play.
 - Business model: free-to-play with Cosmetics only. v1 has no shop, payments or ads.
 - Not in v1: online play, accounts, PvP, guilds, chat, trading, native apps, portrait phone layout.
 - Team: one developer. AI tools make the art and music. Each asset needs a licence record.
-- Undecided: final names for Races, Ranks, currency, Regions and Heynspire (marked **(draft)** in the docs); the AI image tool; the domain and hosting.
+- Undecided: final names for currency, Regions and Heynspire (marked **(draft)** in the docs); the audio sources; the domain and hosting.
 
 Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-requirements).
 
 ## Brand Commitments
 
 - **Name:** Heynbord. It is also the name of the world. A trademark check must occur before release.
-- **Logo:** the gold H-shaped mark with a four-point star in [`apps/web/brand/`](apps/web/brand/) (`logo-transparent.jpg`, `logo-black.jpg`, `logo-white.jpg`). It is final. Keep it.
+- **Logo:** the gold H-shaped mark with a four-point star in [`apps/web/public/logo.png`](apps/web/public/logo.png). It is final. Keep it.
 - **World and tone:** bright high fantasy with some humor, like a classic adventure story. Colorful and heroic. No gore. Not dark, realistic, noisy or neon.
 - **Art direction:** [05 — Art and Audio Direction](docs/game/05-art-direction.md) is binding for all visual and audio work.
 - **Voice:**
@@ -71,9 +73,14 @@ Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-require
 
 ## Evidence on Hand
 
-- Logo files in `apps/web/brand/` and PWA icons in `apps/web/public/`.
+- Logo (`logo.png`) and PWA icons in `apps/web/public/`.
 - Complete design documents in `docs/game/` (pillars, vision, GDD, PRD, art direction, technical design, economy, roadmap).
-- No card art, Board models, music or sound effects exist yet. The golden reference images are a Milestone 0 task.
+- Card art: 22 final card illustrations in `apps/web/public/creature/{race}/` (Creature Cards) and `apps/web/public/skills/{class}/` (Skill Cards), made with GPT Image (one 3:4 portrait for each card, with its background). Ten of them are the golden references ([art direction 5.1](docs/game/05-art-direction.md)).
+- Town art: the first master painting (`apps/web/public/town/town.webp`, 1672 × 941) A 3200 × 1800 export is still to make. The 11 Town Bar icons (10 shortcuts and Settings): the 1254 × 1254 JPG sources on black in `apps/web/art/town/bar/`, and the 128 × 128 WebP cut-outs that the game uses in `apps/web/public/town/bar/`. The brief is [11 — Town Concepts](docs/game/11-town-concepts.md).
+- Pack art: the Peddler, Merchant and Royal Packs, made with GPT Image. The 1024 × 1536 WebP sources are in `apps/web/art/packs/`, and the 512 × 768 WebP files that the game uses are in `apps/web/public/packs/`. The brief is [11 — Town Concepts, 8](docs/game/11-town-concepts.md#8-pack-art). The Merchant Pack is the `packs` Town Bar icon, upright.
+- Sound: the Battle sounds are made with Web Audio in code (`apps/web/src/features/battle/battle-audio.ts`). No audio files and no music exist yet.
+- Campaign art: the Hearthvale Region Map (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen measures its clearings and road in `apps/web/src/features/campaign/region-map.ts`. The brief is [12 — Region Concepts](docs/game/12-region-concepts.md).
+- No Battle Painting exists yet. Until the Hearthvale painting exists, the Battle shows a meadow gradient. The brief is [13 — Battlefield Concepts](docs/game/13-battlefield-concepts.md).
 - No playtests, players, reviews, testimonials or press exist yet. Do not invent them.
 
 ## Product Principles

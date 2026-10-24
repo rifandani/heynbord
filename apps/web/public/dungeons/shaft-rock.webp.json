@@ -1,0 +1,4 @@
+{
+  "prompt": "Origin: a 640 x 420 px patch of apps/web/public/town/cave-inside.webp (the Dungeons cave inside painting, made with GPT Image; licence record per art direction 5.5), crop x 330 y 340, mirrored into a seamless 2 x 2 tile (the patch, its horizontal mirror at the right, and the mirror of that row below), 1280 x 840, with ffmpeg hflip/vflip, exported with cwebp -q 82. Hand changes: none. The rock of the mine shaft and its chambers on the Dungeons screen, until the shaft and chamber art exists (11 — Town Concepts 13).\n",
+  "createdAt": "2026-10-19T00:00:00.000Z"
+}

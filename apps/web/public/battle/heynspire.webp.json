@@ -1,0 +1,4 @@
+{
+  "prompt": "Tool: GPT Image in ChatGPT (high quality, 1536 x 1024), by the project owner. Prompt: the setup and painting messages of 'Battle Painting' in apps/web/art/town/raw/heynspire/prompts.md (bun town:prompts, brief 13 — Battlefield Concepts 1.7), with battle-style-reference.png and battle-set-reference.png attached. Seed: not available. Licence: OpenAI terms of use; the user owns the output, commercial use is permitted. Hand changes: none in the image; cropped to the 16:9 band 1536 x 864 from y 40 (not the middle band, so that the climber at the top left stays in the image) and exported with cwebp -q 80. Full 3:2 source: apps/web/art/town/heynspire-battle.webp.\n",
+  "createdAt": "2026-10-16T09:55:32.000Z"
+}

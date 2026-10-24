@@ -41,7 +41,6 @@ dist-ssr
 *.local
 *.pem
 .npm-cache
-.tmp-skills
 
 # debug
 npm-debug.log*
@@ -93,3 +92,6 @@ prisma/_sqlite/migrations
 
 # ChatGPT output and reference sheets. `public/` holds the exported art.
 apps/web/art/*/raw/
+
+# Python bytecode cache (the Blender build scripts make it)
+__pycache__/

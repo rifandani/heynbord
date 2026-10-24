@@ -169,7 +169,7 @@ const substitutePlural = ({
     throw new Error("Missing replacement value");
   }
   const numberFormatter = new Intl.NumberFormat(locale, pluralMap?.formatter);
-  return result.replace(
+  return result.replaceAll(
     replaceKey,
     replacement.replace(`{?}`, numberFormatter.format(argValue))
   );
@@ -189,7 +189,7 @@ const substituteEnum = ({
   if (!replacement) {
     throw new Error("Missing replacement value");
   }
-  return result.replace(replaceKey, replacement);
+  return result.replaceAll(replaceKey, replacement);
 };
 
 type Formatable = number | string[] | Date;
@@ -208,7 +208,7 @@ const substituteWithFormatter =
     if (!isValid(ctx.argValue)) {
       throw new TypeError("Invalid argument");
     }
-    return ctx.result.replace(ctx.replaceKey, format(ctx, ctx.argValue));
+    return ctx.result.replaceAll(ctx.replaceKey, format(ctx, ctx.argValue));
   };
 
 /** Maps the `{arg:type}` annotation to the substituter handling it. */
@@ -257,7 +257,7 @@ const performSubstitution = (
     const [replaceKey, argType] = match || [`{${argKey}}`, undefined];
     const substitute = argType ? substituters[argType] : undefined;
     if (!substitute) {
-      return result.replace(replaceKey, String(argValue));
+      return result.replaceAll(replaceKey, String(argValue));
     }
     return substitute({
       argKey,
