@@ -327,8 +327,9 @@ describe("chooseCommand: Hold Rules (GDD 9)", () => {
 
   it("keeps War Drums until 2 other cards are not Ready", () => {
     const state = emptyBattle();
+    // At Rare, War Drums lowers 2 cards, so it waits for 2 cards that are not Ready.
     giveHand(state, "player", [
-      ["warrior.warDrums", 0],
+      ["warrior.warDrums", 0, "rare"],
       ["human.militiaRecruit", 3],
     ]);
     expect(chooseCommand(state)).toEqual(Command.EndTurn());
@@ -339,10 +340,11 @@ describe("chooseCommand: Hold Rules (GDD 9)", () => {
   });
 
   it("keeps Spear Throw until it kills the target Unit", () => {
-    expect(skillChoice("warrior.spearThrow", [[5, 5]])).toEqual(
+    // Spear Throw deals 5 damage at Common.
+    expect(skillChoice("warrior.spearThrow", [[5, 6]])).toEqual(
       Command.EndTurn()
     );
-    expect(skillChoice("warrior.spearThrow", [[5, 4]])).toEqual(playAt(5));
+    expect(skillChoice("warrior.spearThrow", [[5, 5]])).toEqual(playAt(5));
   });
 
   it("keeps Fireball until it kills a Unit or hits 2 Units", () => {

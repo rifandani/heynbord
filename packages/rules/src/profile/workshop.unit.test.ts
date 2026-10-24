@@ -268,25 +268,25 @@ describe("extract (GDD 7.4)", () => {
 
   it("can take the last copy: the Deck gets too few cards and the card stays Discovered", () => {
     const start = profile({ essence: 0 });
-    const result = extract(start, "warrior.spearThrow", "uncommon");
+    const result = extract(start, "warrior.spearThrow", "common");
     expect(slotDeck(result, "vanguard")).toEqual(VANGUARD.slice(0, -1));
     expect(result?.collection).toContainEqual({
       cardId: "warrior.spearThrow",
-      rank: "uncommon",
+      rank: "common",
       copies: 0,
     });
     expect(discoveredCards(result?.collection ?? [])).toContain(
       "warrior.spearThrow"
     );
-    // 15 Essence: not enough for a Craft yet.
+    // 5 Essence: not enough for a Craft yet.
     expect(craft(result ?? start, "warrior.spearThrow")).toBeNull();
     const crafted = craft(
-      { ...(result ?? start), essence: CRAFT_ESSENCE.uncommon ?? 0 },
+      { ...(result ?? start), essence: CRAFT_ESSENCE.common ?? 0 },
       "warrior.spearThrow"
     );
     expect(crafted?.essence).toBe(0);
     expect(
-      ownedCopies(crafted?.collection ?? [], "warrior.spearThrow", "uncommon")
+      ownedCopies(crafted?.collection ?? [], "warrior.spearThrow", "common")
     ).toBe(1);
   });
 

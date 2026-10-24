@@ -357,8 +357,9 @@ describe("Skill Cards (GDD 4.8)", () => {
 
   it("lowers the Countdown of own cards that are not Ready", () => {
     const state = emptyBattle();
+    // At Rare, War Drums lowers 2 random cards: here, the only 2 that are not Ready.
     giveHand(state, "player", [
-      ["warrior.warDrums", 0],
+      ["warrior.warDrums", 0, "rare"],
       ["human.militiaRecruit", 0],
       ["human.halberdier", 3],
       ["human.ironBulwark", 5],

@@ -347,7 +347,7 @@ describe("Start Phase (GDD 4.3)", () => {
     for (let random = 0; random < 60 && !recalled; random += 1) {
       const state = emptyBattle({ random });
       giveHand(state, "player", [
-        ["warrior.warDrums", 0, "legendary"],
+        ["warrior.warDrums", 0, "rare"],
         ["human.halberdier", 6],
         ["human.halberdier", 6],
         ["human.halberdier", 6],
@@ -366,7 +366,7 @@ describe("Start Phase (GDD 4.3)", () => {
         cardId: "warrior.warDrums",
         countdown: 2,
       });
-      // War Drums lowered 2 of the 3 Halberdiers to 4. The enemy Turn, then the player Start Phase.
+      // At Rare, War Drums lowered 2 of the 3 Halberdiers to 4. The enemy Turn, then the player Start Phase.
       const enemyTurn = run(played.state, endTurn).state;
       const { state: next } = run(enemyTurn, endTurn);
       expect(countdownsOf(next).toSorted()).toEqual([1, 3, 3, 5]);
