@@ -332,19 +332,19 @@ def build_clips(rig):
 
     def fallen(base, bounce=0.0):
         """
-        On its right side, the legs stiff and out. The Battle camera sees the
-        right side of a player Unit, so it sees the legs and the belly.
+        On its left side, the legs stiff and out. The Battle camera sees the
+        right side of a player Unit (-X), so it sees the legs and the belly.
         """
         return pose(
             base,
-            root=t("root", (Y, -84 + bounce)),
-            root_at_loc=at("root", (-0.22, 0, 0.14)),
+            root=t("root", (Y, 84 - bounce)),
+            root_at_loc=at("root", (-0.32, 0, 0.21)),
             hips_at_loc=at("hips", (0, 0, -0.02)),
-            neck=t("neck", (X, 10), (Y, -10)),
-            head=t("head", (X, -6), (Y, -14)),
+            neck=t("neck", (X, 10), (Y, 10)),
+            head=t("head", (X, -6), (Y, 14)),
             jaw=t("jaw", (X, -24)),
-            tail=t("tail", (X, 20), (Y, -30)),
-            **legs(FL=(-24, 10, -10), FR=(-16, 14, -10), BL=(10, 10, 0), BR=(18, 6, 0)),
+            tail=t("tail", (X, 20), (Y, 30)),
+            **legs(FL=(-16, 14, -10), FR=(-24, 10, -10), BL=(18, 6, 0), BR=(10, 10, 0)),
         )
 
     def low(base):

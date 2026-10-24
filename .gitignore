@@ -119,3 +119,6 @@ apps/web/art/units/raw/
 
 # Gear look art: images from ChatGPT, the set reference and the prompts
 apps/web/art/gear-looks/raw/
+
+# Python bytecode cache (the Blender build scripts make it)
+__pycache__/

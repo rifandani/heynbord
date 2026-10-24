@@ -46,6 +46,363 @@ const UNIT_MODELS = new Map<string, UnitModelSpec>([
     "undead.paleCantorYsolde",
     { url: "/models/units/pale-cantor-ysolde.glb", height: 1.05 },
   ],
+  [
+    "human.ironBulwark",
+    { url: "/models/units/iron-bulwark.glb", height: 1.05 },
+  ],
+  // The banner stands above his head, and the height includes it.
+  [
+    "human.marshalElianVoss",
+    { url: "/models/units/marshal-elian-voss.glb", height: 1.38 },
+  ],
+  // A big orc: a little taller than a Human.
+  [
+    "orc.warchiefGrukka",
+    { url: "/models/units/warchief-grukka.glb", height: 1.12 },
+  ],
+  // The war standard stands above his head, and the height includes it.
+  [
+    "orc.warbandStandardBearer",
+    { url: "/models/units/warband-standard-bearer.glb", height: 1.4 },
+  ],
+  // A long war cart: lower, so that it stays on its Square.
+  [
+    "goblin.grandGearjammer",
+    { url: "/models/units/grand-gearjammer.glb", height: 1 },
+  ],
+  // The burning torch stands above his crown, and the height includes it.
+  ["goblin.bossSnikkit", { url: "/models/units/boss-snikkit.glb", height: 1 }],
+  // A stone giant: the pine trees on its back are in the height.
+  [
+    "feral.mountainColossus",
+    { url: "/models/units/mountain-colossus.glb", height: 1.3 },
+  ],
+  // A long beast: lower, so that it stays on its Square.
+  [
+    "feral.oldFrostmaw",
+    { url: "/models/units/old-frostmaw.glb", height: 0.85 },
+  ],
+  [
+    "elf.canopyVinewarden",
+    { url: "/models/units/canopy-vinewarden.glb", height: 1.05 },
+  ],
+  // The orb of the staff is above his head, and the height includes it.
+  [
+    "elf.lethielFirstGardener",
+    { url: "/models/units/lethiel-first-gardener.glb", height: 1.26 },
+  ],
+  [
+    "undead.sirOdoLastTaxman",
+    { url: "/models/units/sir-odo-last-taxman.glb", height: 1.05 },
+  ],
+  // A Wall: the banner stands above the shields, and the height includes it.
+  [
+    "undead.boneRampart",
+    { url: "/models/units/bone-rampart.glb", height: 1.2 },
+  ],
+  [
+    "human.kingsCourier",
+    { url: "/models/units/kings-courier.glb", height: 1.05 },
+  ],
+  // He kneels behind his pavise at rest, so he looks lower than a Human who stands.
+  [
+    "human.paviseArbalist",
+    { url: "/models/units/pavise-arbalist.glb", height: 1.05 },
+  ],
+  // A Wall: a large shrine, a little taller than a Human.
+  [
+    "human.dawnReliquary",
+    { url: "/models/units/dawn-reliquary.glb", height: 1.1 },
+  ],
+  // The sun disc of the staff is above her head, and the height includes it.
+  ["human.dawnCleric", { url: "/models/units/dawn-cleric.glb", height: 1.25 }],
+  // A knight on a horse: the horse with the lance is about as long as Gorehorn Red Maw.
+  [
+    "human.riverKnight",
+    { url: "/models/units/river-knight.glb", height: 1.15 },
+  ],
+  // A tall woman: a little taller than a Human.
+  ["human.gateWarden", { url: "/models/units/gate-warden.glb", height: 1.08 }],
+  [
+    "human.bridgePikeman",
+    { url: "/models/units/bridge-pikeman.glb", height: 1.05 },
+  ],
+  // The banner-staff stands above his head, and the height includes it.
+  [
+    "human.bannerChaplain",
+    { url: "/models/units/banner-chaplain.glb", height: 1.46 },
+  ],
+  // The pitchfork stands above his pot helmet, and the height includes it.
+  [
+    "human.militiaRecruit",
+    { url: "/models/units/militia-recruit.glb", height: 1.22 },
+  ],
+  [
+    "human.shieldbearer",
+    { url: "/models/units/shieldbearer.glb", height: 1.05 },
+  ],
+  [
+    "human.crossbowGuard",
+    { url: "/models/units/crossbow-guard.glb", height: 1.05 },
+  ],
+  // The halberd stands above his head, and the height includes it.
+  ["human.halberdier", { url: "/models/units/halberdier.glb", height: 1.26 }],
+  // A Wall: a heap of beams and sandbags, a little lower than a Human. The pot on the top beam is in the height.
+  [
+    "human.townBarricade",
+    { url: "/models/units/town-barricade.glb", height: 0.9 },
+  ],
+  [
+    "orc.ashspitHunter",
+    { url: "/models/units/ashspit-hunter.glb", height: 1.05 },
+  ],
+  // A tall orc woman: a little taller than a Human.
+  [
+    "orc.mesaPitFighter",
+    { url: "/models/units/mesa-pit-fighter.glb", height: 1.1 },
+  ],
+  // The flames of the axe go above her crest, and the height includes them.
+  [
+    "orc.pyreaxeRavager",
+    { url: "/models/units/pyreaxe-ravager.glb", height: 1.22 },
+  ],
+  // A small flier: its vines reach the ground, and the wings go above its body.
+  [
+    "elf.amberwingDart",
+    { url: "/models/units/amberwing-dart.glb", height: 0.85 },
+  ],
+  [
+    "elf.elderreedDartmaster",
+    { url: "/models/units/elderreed-dartmaster.glb", height: 1.05 },
+  ],
+  // The seed sail is above his head, and the height includes it.
+  [
+    "elf.seedwindShepherd",
+    { url: "/models/units/seedwind-shepherd.glb", height: 1.4 },
+  ],
+  // A goblin: the stack of kegs on his back is above his head, and the height includes it.
+  ["goblin.mineSapper", { url: "/models/units/mine-sapper.glb", height: 1.15 }],
+  // A goblin is small.
+  [
+    "goblin.spyglassSniper",
+    { url: "/models/units/spyglass-sniper.glb", height: 0.85 },
+  ],
+  // A walking machine with its driver on top: a little taller than a Human.
+  ["goblin.junkWalker", { url: "/models/units/junk-walker.glb", height: 1.12 }],
+  // A big yeti: taller than a Human.
+  [
+    "feral.avalancheYeti",
+    { url: "/models/units/avalanche-yeti.glb", height: 1.15 },
+  ],
+  // A long beast: lower, so that it stays on its Square. The nest on its head is in the height.
+  [
+    "feral.woollyMammoth",
+    { url: "/models/units/woolly-mammoth.glb", height: 1 },
+  ],
+  // A flier: its column of mist reaches the ground, and the height includes it.
+  [
+    "feral.rimebreathDrake",
+    { url: "/models/units/rimebreath-drake.glb", height: 1.05 },
+  ],
+  // He kneels behind his coffin at rest, so he looks lower than a Human who stands.
+  [
+    "undead.coffinLancer",
+    { url: "/models/units/coffin-lancer.glb", height: 1.05 },
+  ],
+  // A long hound with a pup behind it: lower, so that the pack stays on its Square.
+  ["undead.winterMaw", { url: "/models/units/winter-maw.glb", height: 0.8 }],
+  // The tall veil stands above her skull, and the height includes it.
+  [
+    "undead.lanternWidow",
+    { url: "/models/units/lantern-widow.glb", height: 1.1 },
+  ],
+  // A big orc: the banner on his back stands above his head, and the height includes it.
+  [
+    "orc.howlingCharger",
+    { url: "/models/units/howling-charger.glb", height: 1.52 },
+  ],
+  // A flier: the glider is above her head, and the height includes it.
+  ["orc.skyreaver", { url: "/models/units/skyreaver.glb", height: 1.26 }],
+  ["orc.packStalker", { url: "/models/units/pack-stalker.glb", height: 1.05 }],
+  [
+    "orc.cinderhornBreaker",
+    { url: "/models/units/cinderhorn-breaker.glb", height: 1.05 },
+  ],
+  [
+    "orc.warhowlerDrummer",
+    { url: "/models/units/warhowler-drummer.glb", height: 1.05 },
+  ],
+  // A small orc boy: the big helmet and its spikes are in the height.
+  ["orc.badlandRunt", { url: "/models/units/badland-runt.glb", height: 0.85 }],
+  ["orc.scrapRaider", { url: "/models/units/scrap-raider.glb", height: 1.05 }],
+  // A big orc woman: the fire of the ladle is above her head, and the height includes it.
+  ["orc.emberShaman", { url: "/models/units/ember-shaman.glb", height: 1.2 }],
+  // A very big orc woman: a little lower than Warchief Grukka.
+  ["orc.tuskBrute", { url: "/models/units/tusk-brute.glb", height: 1.1 }],
+  // A Wall: the horned totem stands above the stakes, and the height includes it.
+  [
+    "orc.bonestakePalisade",
+    { url: "/models/units/bonestake-palisade.glb", height: 1.15 },
+  ],
+  // A goblin is small.
+  [
+    "goblin.sidestepShiv",
+    { url: "/models/units/sidestep-shiv.glb", height: 0.85 },
+  ],
+  // A Wall: a heap of junk with a goblin on top. The sitting goblin has the size of the other goblins.
+  [
+    "goblin.junkBarricade",
+    { url: "/models/units/junk-barricade.glb", height: 0.95 },
+  ],
+  ["goblin.bombLobber", { url: "/models/units/bomb-lobber.glb", height: 0.85 }],
+  [
+    "goblin.greaseTrapper",
+    { url: "/models/units/grease-trapper.glb", height: 0.85 },
+  ],
+  // She sits on her barrel, so she is lower than a goblin who stands.
+  [
+    "goblin.rocketBarrelRider",
+    { url: "/models/units/rocket-barrel-rider.glb", height: 0.76 },
+  ],
+  // A goblin is small.
+  [
+    "goblin.ankleSnatcher",
+    { url: "/models/units/ankle-snatcher.glb", height: 0.85 },
+  ],
+  ["goblin.fuseRunner", { url: "/models/units/fuse-runner.glb", height: 0.85 }],
+  [
+    "goblin.junkSlinger",
+    { url: "/models/units/junk-slinger.glb", height: 0.85 },
+  ],
+  // A goblin: the big helmet and the hourglass in his raised hand are in the height.
+  [
+    "goblin.tunnelSaboteur",
+    { url: "/models/units/tunnel-saboteur.glb", height: 0.88 },
+  ],
+  // A goblin: the stove pipe on her helmet and its smoke are above her head, and the height includes them.
+  [
+    "goblin.scrapPlateGuard",
+    { url: "/models/units/scrap-plate-guard.glb", height: 1.07 },
+  ],
+  // A Wall: a long tortoise, with a goat and pine trees on its shell. Lower, so that it stays on its Square.
+  [
+    "feral.boulderTortoise",
+    { url: "/models/units/boulder-tortoise.glb", height: 0.88 },
+  ],
+  // A long, low lizard: its club tail curls up above its back, and the height includes it.
+  [
+    "feral.tailsweepBasilisk",
+    { url: "/models/units/tailsweep-basilisk.glb", height: 0.68 },
+  ],
+  // A big troll, bent over: a little taller than a Human.
+  ["feral.caveTroll", { url: "/models/units/cave-troll.glb", height: 1.08 }],
+  // A long beast: lower, so that it stays on its Square. The horn is in the height.
+  ["feral.cragRhino", { url: "/models/units/crag-rhino.glb", height: 0.75 }],
+  // A tall elk: the ice antlers are above her head, and the height includes them.
+  [
+    "feral.frostElkMatriarch",
+    { url: "/models/units/frost-elk-matriarch.glb", height: 1.4 },
+  ],
+  // A long beast: lower, so that it stays on its Square. The bristle ridge is in the height.
+  [
+    "feral.bristlebackBoar",
+    { url: "/models/units/bristleback-boar.glb", height: 0.72 },
+  ],
+  // A long, low, wide lizard: the bird on its back is in the height.
+  ["feral.cragLizard", { url: "/models/units/crag-lizard.glb", height: 0.5 }],
+  // A long cat: lower, so that it stays on its Square. The ear tufts are in the height.
+  [
+    "feral.frostfangLynx",
+    { url: "/models/units/frostfang-lynx.glb", height: 0.7 },
+  ],
+  // A huge bear on all fours: the hump is in the height.
+  ["feral.caveBear", { url: "/models/units/cave-bear.glb", height: 0.85 }],
+  // A wide spider: lower, so that its legs stay on its Square. The helmet on its back is in the height.
+  ["feral.webSpitter", { url: "/models/units/web-spitter.glb", height: 0.6 }],
+  [
+    "elf.gladeTurnblade",
+    { url: "/models/units/glade-turnblade.glb", height: 1.05 },
+  ],
+  // A flier: the leaf wings rise above her head, and the height includes them.
+  [
+    "elf.canopySkirmisher",
+    { url: "/models/units/canopy-skirmisher.glb", height: 1.29 },
+  ],
+  [
+    "elf.thornlineArcher",
+    { url: "/models/units/thornline-archer.glb", height: 1.05 },
+  ],
+  // The curled top of the reed staff is above her head, and the height includes it.
+  ["elf.dewkeeper", { url: "/models/units/dewkeeper.glb", height: 1.16 }],
+  // A Wall: the arch of bramble is about as tall as a Human.
+  ["elf.brambleNest", { url: "/models/units/bramble-nest.glb", height: 1.05 }],
+  // The branch spear stands above his head, and the height includes it.
+  [
+    "elf.rootboundGuard",
+    { url: "/models/units/rootbound-guard.glb", height: 1.2 },
+  ],
+  [
+    "elf.brambleDuelist",
+    { url: "/models/units/bramble-duelist.glb", height: 1.05 },
+  ],
+  // A small flier: the fern wings rise above her head, and the height includes them.
+  [
+    "elf.fernwingCourier",
+    { url: "/models/units/fernwing-courier.glb", height: 1.18 },
+  ],
+  // A squat plant spirit: the bird on its leaf lid is in the height.
+  [
+    "elf.mosspitcherLookout",
+    { url: "/models/units/mosspitcher-lookout.glb", height: 0.9 },
+  ],
+  // The raised acorn is above her head, and the height includes it.
+  ["elf.acornTender", { url: "/models/units/acorn-tender.glb", height: 1.16 }],
+  // A tall skeleton: a little taller than a Human.
+  [
+    "undead.backwatchBailiff",
+    { url: "/models/units/backwatch-bailiff.glb", height: 1.08 },
+  ],
+  // Three skeletons in a line with a long sword: each is a little smaller than a Human.
+  [
+    "undead.chatteringCohort",
+    { url: "/models/units/chattering-cohort.glb", height: 0.8 },
+  ],
+  // A small rider on a pony: lower than River Knight.
+  [
+    "undead.paleGalloper",
+    { url: "/models/units/pale-galloper.glb", height: 1 },
+  ],
+  [
+    "undead.rimeEyeReaper",
+    { url: "/models/units/rime-eye-reaper.glb", height: 1.05 },
+  ],
+  // The fan of pipes is above his head, and the height includes it.
+  [
+    "undead.ossuaryPiper",
+    { url: "/models/units/ossuary-piper.glb", height: 1.18 },
+  ],
+  // A big, broad skeleton (Heavy): a little taller than a Human.
+  [
+    "undead.graveyardDrudge",
+    { url: "/models/units/graveyard-drudge.glb", height: 1.1 },
+  ],
+  // A wiry skeleton in a low lunge: the raised knife is above his head, and the height includes it.
+  [
+    "undead.rattleknife",
+    { url: "/models/units/rattleknife.glb", height: 0.95 },
+  ],
+  // A skeleton that crouches low on a long coffin lid: lower than Pale Galloper.
+  [
+    "undead.coffinLidSkater",
+    { url: "/models/units/coffin-lid-skater.glb", height: 0.88 },
+  ],
+  // The point of the hood and the bones in the quiver are above his skull, and the height includes them.
+  ["undead.hushbow", { url: "/models/units/hushbow.glb", height: 1.08 }],
+  // The bell in his raised right hand is above his head, and the height includes it.
+  [
+    "undead.graveBellTender",
+    { url: "/models/units/grave-bell-tender.glb", height: 1.25 },
+  ],
 ]);
 
 /** The Unit Model of a card, or `undefined` if the card has only a Cut-out Figure. */

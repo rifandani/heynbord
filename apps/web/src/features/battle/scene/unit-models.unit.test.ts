@@ -132,27 +132,112 @@ const all = () => true;
 const base = (name: UnitClipName) =>
   ["idle", "walk", "attack", "hurt", "death"].includes(name);
 
+/** Each card with a Unit Model, and the path of its model. */
+const MODEL_URLS: readonly (readonly [string, string])[] = [
+  ["elf.wardenSaelith", "/models/units/warden-saelith.glb"],
+  ["human.serAldricStonewall", "/models/units/ser-aldric-stonewall.glb"],
+  ["orc.ashcallerGrosh", "/models/units/ashcaller-grosh.glb"],
+  ["goblin.grixRatwhistle", "/models/units/grix-ratwhistle.glb"],
+  ["feral.gorehornRedMaw", "/models/units/gorehorn-red-maw.glb"],
+  ["undead.paleCantorYsolde", "/models/units/pale-cantor-ysolde.glb"],
+  ["human.ironBulwark", "/models/units/iron-bulwark.glb"],
+  ["human.marshalElianVoss", "/models/units/marshal-elian-voss.glb"],
+  ["orc.warchiefGrukka", "/models/units/warchief-grukka.glb"],
+  ["orc.warbandStandardBearer", "/models/units/warband-standard-bearer.glb"],
+  ["goblin.grandGearjammer", "/models/units/grand-gearjammer.glb"],
+  ["goblin.bossSnikkit", "/models/units/boss-snikkit.glb"],
+  ["feral.mountainColossus", "/models/units/mountain-colossus.glb"],
+  ["feral.oldFrostmaw", "/models/units/old-frostmaw.glb"],
+  ["elf.canopyVinewarden", "/models/units/canopy-vinewarden.glb"],
+  ["elf.lethielFirstGardener", "/models/units/lethiel-first-gardener.glb"],
+  ["undead.sirOdoLastTaxman", "/models/units/sir-odo-last-taxman.glb"],
+  ["undead.boneRampart", "/models/units/bone-rampart.glb"],
+  ["human.kingsCourier", "/models/units/kings-courier.glb"],
+  ["human.paviseArbalist", "/models/units/pavise-arbalist.glb"],
+  ["human.dawnReliquary", "/models/units/dawn-reliquary.glb"],
+  ["human.dawnCleric", "/models/units/dawn-cleric.glb"],
+  ["human.riverKnight", "/models/units/river-knight.glb"],
+  ["human.gateWarden", "/models/units/gate-warden.glb"],
+  ["human.bridgePikeman", "/models/units/bridge-pikeman.glb"],
+  ["human.bannerChaplain", "/models/units/banner-chaplain.glb"],
+  ["human.militiaRecruit", "/models/units/militia-recruit.glb"],
+  ["human.shieldbearer", "/models/units/shieldbearer.glb"],
+  ["human.crossbowGuard", "/models/units/crossbow-guard.glb"],
+  ["human.halberdier", "/models/units/halberdier.glb"],
+  ["human.townBarricade", "/models/units/town-barricade.glb"],
+  ["orc.ashspitHunter", "/models/units/ashspit-hunter.glb"],
+  ["orc.mesaPitFighter", "/models/units/mesa-pit-fighter.glb"],
+  ["orc.pyreaxeRavager", "/models/units/pyreaxe-ravager.glb"],
+  ["elf.amberwingDart", "/models/units/amberwing-dart.glb"],
+  ["elf.elderreedDartmaster", "/models/units/elderreed-dartmaster.glb"],
+  ["elf.seedwindShepherd", "/models/units/seedwind-shepherd.glb"],
+  ["goblin.mineSapper", "/models/units/mine-sapper.glb"],
+  ["goblin.spyglassSniper", "/models/units/spyglass-sniper.glb"],
+  ["goblin.junkWalker", "/models/units/junk-walker.glb"],
+  ["feral.avalancheYeti", "/models/units/avalanche-yeti.glb"],
+  ["feral.woollyMammoth", "/models/units/woolly-mammoth.glb"],
+  ["feral.rimebreathDrake", "/models/units/rimebreath-drake.glb"],
+  ["undead.coffinLancer", "/models/units/coffin-lancer.glb"],
+  ["undead.winterMaw", "/models/units/winter-maw.glb"],
+  ["undead.lanternWidow", "/models/units/lantern-widow.glb"],
+  ["orc.howlingCharger", "/models/units/howling-charger.glb"],
+  ["orc.skyreaver", "/models/units/skyreaver.glb"],
+  ["orc.packStalker", "/models/units/pack-stalker.glb"],
+  ["orc.cinderhornBreaker", "/models/units/cinderhorn-breaker.glb"],
+  ["orc.warhowlerDrummer", "/models/units/warhowler-drummer.glb"],
+  ["orc.badlandRunt", "/models/units/badland-runt.glb"],
+  ["orc.scrapRaider", "/models/units/scrap-raider.glb"],
+  ["orc.emberShaman", "/models/units/ember-shaman.glb"],
+  ["orc.tuskBrute", "/models/units/tusk-brute.glb"],
+  ["orc.bonestakePalisade", "/models/units/bonestake-palisade.glb"],
+  ["goblin.sidestepShiv", "/models/units/sidestep-shiv.glb"],
+  ["goblin.junkBarricade", "/models/units/junk-barricade.glb"],
+  ["goblin.bombLobber", "/models/units/bomb-lobber.glb"],
+  ["goblin.greaseTrapper", "/models/units/grease-trapper.glb"],
+  ["goblin.rocketBarrelRider", "/models/units/rocket-barrel-rider.glb"],
+  ["goblin.ankleSnatcher", "/models/units/ankle-snatcher.glb"],
+  ["goblin.fuseRunner", "/models/units/fuse-runner.glb"],
+  ["goblin.junkSlinger", "/models/units/junk-slinger.glb"],
+  ["goblin.tunnelSaboteur", "/models/units/tunnel-saboteur.glb"],
+  ["goblin.scrapPlateGuard", "/models/units/scrap-plate-guard.glb"],
+  ["feral.boulderTortoise", "/models/units/boulder-tortoise.glb"],
+  ["feral.tailsweepBasilisk", "/models/units/tailsweep-basilisk.glb"],
+  ["feral.caveTroll", "/models/units/cave-troll.glb"],
+  ["feral.cragRhino", "/models/units/crag-rhino.glb"],
+  ["feral.frostElkMatriarch", "/models/units/frost-elk-matriarch.glb"],
+  ["feral.bristlebackBoar", "/models/units/bristleback-boar.glb"],
+  ["feral.cragLizard", "/models/units/crag-lizard.glb"],
+  ["feral.frostfangLynx", "/models/units/frostfang-lynx.glb"],
+  ["feral.caveBear", "/models/units/cave-bear.glb"],
+  ["feral.webSpitter", "/models/units/web-spitter.glb"],
+  ["elf.gladeTurnblade", "/models/units/glade-turnblade.glb"],
+  ["elf.canopySkirmisher", "/models/units/canopy-skirmisher.glb"],
+  ["elf.thornlineArcher", "/models/units/thornline-archer.glb"],
+  ["elf.dewkeeper", "/models/units/dewkeeper.glb"],
+  ["elf.brambleNest", "/models/units/bramble-nest.glb"],
+  ["elf.rootboundGuard", "/models/units/rootbound-guard.glb"],
+  ["elf.brambleDuelist", "/models/units/bramble-duelist.glb"],
+  ["elf.fernwingCourier", "/models/units/fernwing-courier.glb"],
+  ["elf.mosspitcherLookout", "/models/units/mosspitcher-lookout.glb"],
+  ["elf.acornTender", "/models/units/acorn-tender.glb"],
+  ["undead.backwatchBailiff", "/models/units/backwatch-bailiff.glb"],
+  ["undead.chatteringCohort", "/models/units/chattering-cohort.glb"],
+  ["undead.paleGalloper", "/models/units/pale-galloper.glb"],
+  ["undead.rimeEyeReaper", "/models/units/rime-eye-reaper.glb"],
+  ["undead.ossuaryPiper", "/models/units/ossuary-piper.glb"],
+  ["undead.graveyardDrudge", "/models/units/graveyard-drudge.glb"],
+  ["undead.rattleknife", "/models/units/rattleknife.glb"],
+  ["undead.coffinLidSkater", "/models/units/coffin-lid-skater.glb"],
+  ["undead.hushbow", "/models/units/hushbow.glb"],
+  ["undead.graveBellTender", "/models/units/grave-bell-tender.glb"],
+];
+
 describe("unitModelOf", () => {
   it("gives each card with a Unit Model its model, and other cards none", () => {
-    expect(unitModelOf("elf.wardenSaelith")?.url).toBe(
-      "/models/units/warden-saelith.glb"
-    );
-    expect(unitModelOf("human.serAldricStonewall")?.url).toBe(
-      "/models/units/ser-aldric-stonewall.glb"
-    );
-    expect(unitModelOf("orc.ashcallerGrosh")?.url).toBe(
-      "/models/units/ashcaller-grosh.glb"
-    );
-    expect(unitModelOf("goblin.grixRatwhistle")?.url).toBe(
-      "/models/units/grix-ratwhistle.glb"
-    );
-    expect(unitModelOf("feral.gorehornRedMaw")?.url).toBe(
-      "/models/units/gorehorn-red-maw.glb"
-    );
-    expect(unitModelOf("undead.paleCantorYsolde")?.url).toBe(
-      "/models/units/pale-cantor-ysolde.glb"
-    );
-    expect(unitModelOf("human.militiaRecruit")).toBeUndefined();
+    for (const [card, url] of MODEL_URLS) {
+      expect(unitModelOf(card)?.url).toBe(url);
+    }
+    expect(unitModelOf("mage.fireball")).toBeUndefined();
   });
 });
 
