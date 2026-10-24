@@ -1,6 +1,5 @@
 import type { CoinPart } from "@workspace/rules";
 import { coinDenominations } from "@workspace/rules";
-import { useMemo } from "react";
 
 import {
   RESOURCE_ICON_CLASS,
@@ -8,6 +7,7 @@ import {
 } from "@/core/components/game/resource-plate";
 import type { ResourceItem } from "@/core/components/game/resource-plate";
 import { useGameText } from "@/features/battle/use-game-text";
+import { useNumberFormat } from "@/features/i18n/use-number-format";
 import type { CoinTone } from "@/features/town/components/balance-icon";
 import {
   BalanceIcon,
@@ -74,9 +74,8 @@ export const BalancePlate = ({
   readonly bumps?: Readonly<Partial<Record<BalanceKind, number>>>;
   readonly className?: string;
 }) => {
-  const { tr, locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const format = (value: number) => number.format(value);
+  const { tr } = useGameText();
+  const format = useNumberFormat();
   const coin = coinDenominations(balances.coin);
   const coinSpoken = coinWords(balances.coin, format, (denomination) =>
     tr(`town.balances.denominations.${denomination}.name`)

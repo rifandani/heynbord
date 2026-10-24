@@ -14,8 +14,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import sharp from "sharp";
-
+import { promptBlock, writeImageGrid } from "../art-helpers";
 import type { CreatureConcept, RaceArt, TokenConcept } from "./concepts.ts";
 import { fileOf, RAW_DIR, readConcepts, ROOT } from "./concepts.ts";
 import {
@@ -59,34 +58,17 @@ const writeStyleReference = async (group: string, file: string) => {
   const references = GOLDEN_REFERENCES.filter(
     (reference) => !hidden || !reference.startsWith(hidden)
   );
-  const tiles = await Promise.all(
-    references.map((reference) =>
-      sharp(path.join(ROOT, `apps/web/public/creature/${reference}.webp`))
-        .resize(TILE.width, TILE.height, { fit: "cover" })
-        .png()
-        .toBuffer()
-    )
-  );
-  await sharp({
-    create: {
-      width: TILE.width * COLUMNS,
-      height: TILE.height * Math.ceil(tiles.length / COLUMNS),
-      channels: 3,
-      background: "#000",
-    },
-  })
-    .composite(
-      tiles.map((input, index) => ({
-        input,
-        left: (index % COLUMNS) * TILE.width,
-        top: Math.floor(index / COLUMNS) * TILE.height,
-      }))
-    )
-    .png()
-    .toFile(file);
+  await writeImageGrid({
+    root: ROOT,
+    images: references.map(
+      (reference) => `apps/web/public/creature/${reference}.webp`
+    ),
+    output: file,
+    tile: TILE,
+    columns: COLUMNS,
+  });
 };
-
-const block = (text: string): string => `\`\`\`text\n${text}\n\`\`\``;
+const block = promptBlock;
 
 const promptsFile = (
   race: RaceArt,

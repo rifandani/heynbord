@@ -10,7 +10,7 @@ import {
 } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactElement, ReactNode, RefObject } from "react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import {
   Button,
@@ -35,6 +35,7 @@ import {
 import type { ChestState, RegionStatus } from "@/features/campaign/region-map";
 import { chestState, regionStatus } from "@/features/campaign/region-map";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
+import { useNumberFormat } from "@/features/i18n/use-number-format";
 import { profileAtom } from "@/features/profile/profile.atoms";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
@@ -310,9 +311,8 @@ const ChestRewards = ({
   readonly triggerRef: RefObject<HTMLButtonElement | null>;
   readonly onClose: () => void;
 }) => {
-  const { tr, locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const format = (value: number) => number.format(value);
+  const { tr } = useGameText();
+  const format = useNumberFormat();
   const ICON = "size-4";
   const { reward: chest, forgeStones } = claim;
   const lines: ReactElement[] = [];
@@ -586,7 +586,7 @@ export const StarChests = ({
   readonly count: number;
   readonly total: number;
 }) => {
-  const { tr, locale } = useGameText();
+  const { tr } = useGameText();
   const registry = useContext(RegistryContext);
   const profile = useAtomValue(profileAtom);
   const [opened, setOpened] = useState<{
@@ -595,7 +595,7 @@ export const StarChests = ({
   } | null>(null);
   const [revealed, setRevealed] = useState(false);
   const revealTimer = useRef<number | null>(null);
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  const format = useNumberFormat();
   // A Region with no Stages yet keeps its chests on a full track.
   const track = Math.max(total, STAR_CHESTS.at(-1)?.stars ?? 1);
   const share = Math.min(1, count / track);
@@ -670,10 +670,10 @@ export const StarChests = ({
         </span>
         <StarIcon earned className="size-6 [@media(max-height:500px)]:size-5" />
         <span aria-hidden>
-          {number.format(count)}
+          {format(count)}
           <span className="text-sm font-bold text-[#e8d9bb]">
             {" "}
-            / {number.format(total)}
+            / {format(total)}
           </span>
         </span>
       </p>

@@ -1,18 +1,13 @@
 import type { AchievementDefinition } from "@workspace/rules";
 import { cn } from "cn";
 import type { RefObject } from "react";
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import type { Key } from "react-aria-components";
 import { Button, TabList, TabPanel, Tabs } from "react-aria-components";
 
 import { gameButtonStyles } from "@/core/components/game/game-button";
 import { GameScreen } from "@/core/components/game/game-screen";
+import { useTimeouts } from "@/core/hooks/use-timeouts";
 import type { AchievementGroup } from "@/features/achievements/achievements";
 import {
   claimFocusAfter,
@@ -49,24 +44,14 @@ const FLIGHT_STAGGER_MS = 90;
  * screen closes.
  */
 const useClaimSound = () => {
-  const timers = useRef<number[]>([]);
-  useEffect(() => {
-    const pending = timers.current;
-    return () => {
-      for (const timer of pending) {
-        window.clearTimeout(timer);
-      }
-    };
-  }, []);
+  const schedule = useTimeouts();
   return (delay: number) => {
     unlockAudio();
     if (prefersReducedMotion()) {
       playSound("claim", 0);
       return;
     }
-    timers.current.push(
-      window.setTimeout(() => playSound("claim", 0), delay + REWARD_FLY_MS)
-    );
+    schedule(() => playSound("claim", 0), delay + REWARD_FLY_MS);
   };
 };
 

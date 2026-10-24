@@ -1,10 +1,10 @@
 import type { ExpeditionReward, ForgeStoneReward } from "@workspace/rules";
 import { coinDenominations } from "@workspace/rules";
 import { cn } from "cn";
-import { useMemo } from "react";
 
 import { useGameText } from "@/features/battle/use-game-text";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
+import { useNumberFormat } from "@/features/i18n/use-number-format";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import type { CoinTone } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
@@ -43,9 +43,8 @@ export const RewardLines = ({
   readonly tone?: CoinTone;
   readonly className?: string;
 }) => {
-  const { tr, locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const format = (value: number) => number.format(value);
+  const { tr } = useGameText();
+  const format = useNumberFormat();
   const colors = TONE[tone];
   const shownStones = stones === undefined ? reward.forgeStones : stones;
   const showCoin =

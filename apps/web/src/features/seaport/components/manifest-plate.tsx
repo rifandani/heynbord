@@ -9,6 +9,7 @@ import { useMemo, useState } from "react";
 
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import { useNumberFormat } from "@/features/i18n/use-number-format";
 import { CargoIcon } from "@/features/seaport/components/cargo-icon";
 import { useNow } from "@/features/seaport/use-seaport";
 import { CoinAmount } from "@/features/town/components/balance-plate";
@@ -31,9 +32,8 @@ const Amount = ({
   readonly voyage: Expedition;
   readonly amount: number;
 }) => {
-  const { tr, locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const format = (value: number) => number.format(value);
+  const { tr } = useGameText();
+  const format = useNumberFormat();
   const shown = useCountTo(amount);
   if (voyage.cargo === "coin") {
     return (

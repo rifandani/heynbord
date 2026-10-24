@@ -13,8 +13,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import sharp from "sharp";
-
+import { promptBlock, writeImageGrid } from "../art-helpers";
 import { fileOf, ROOT } from "../creature-art/concepts.ts";
 import type { ClassArt, SkillConcept } from "./concepts.ts";
 import { RAW_DIR, readSkills } from "./concepts.ts";
@@ -35,35 +34,17 @@ const STYLE_REFERENCES = [
 
 const TILE = { width: 384, height: 512 } as const;
 
-const writeStyleReference = async (file: string) => {
-  const tiles = await Promise.all(
-    STYLE_REFERENCES.map((reference) =>
-      sharp(path.join(ROOT, `apps/web/public/${reference}.webp`))
-        .resize(TILE.width, TILE.height, { fit: "cover" })
-        .png()
-        .toBuffer()
-    )
-  );
-  await sharp({
-    create: {
-      width: TILE.width * tiles.length,
-      height: TILE.height,
-      channels: 3,
-      background: "#000",
-    },
-  })
-    .composite(
-      tiles.map((input, index) => ({
-        input,
-        left: index * TILE.width,
-        top: 0,
-      }))
-    )
-    .png()
-    .toFile(file);
-};
+const writeStyleReference = (file: string) =>
+  writeImageGrid({
+    root: ROOT,
+    images: STYLE_REFERENCES.map(
+      (reference) => `apps/web/public/${reference}.webp`
+    ),
+    output: file,
+    tile: TILE,
+  });
 
-const block = (text: string): string => `\`\`\`text\n${text}\n\`\`\``;
+const block = promptBlock;
 
 const promptsFile = (
   skillClass: ClassArt,

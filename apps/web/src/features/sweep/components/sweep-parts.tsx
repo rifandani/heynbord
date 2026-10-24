@@ -8,7 +8,7 @@ import {
 import type { ClassId } from "@workspace/rules";
 import { cn } from "cn";
 import type { CSSProperties, KeyboardEvent } from "react";
-import { useContext, useMemo, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Button } from "react-aria-components";
 import { HiMinus, HiPlus } from "react-icons/hi2";
 
@@ -29,6 +29,7 @@ import {
   useRewardPeek,
 } from "@/features/campaign/components/reward-peek";
 import type { Peek } from "@/features/deck/components/use-card-peek";
+import { useNumberFormat as useCount } from "@/features/i18n/use-number-format";
 import type { GridCard } from "@/features/packs/packs";
 import { cardPlaces } from "@/features/packs/packs";
 import { profileAtom } from "@/features/profile/profile.atoms";
@@ -53,13 +54,6 @@ const TICKETS_PER_WIN: Readonly<Record<SweepKind, number>> = {
 const PEEK_FROM: Readonly<Record<SweepKind, Peek["from"]>> = {
   campaign: "campaign",
   dungeon: "dungeons",
-};
-
-/** Formats a count in the Locale of the Player. */
-const useCount = () => {
-  const { locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  return (value: number) => number.format(value);
 };
 
 /** A Sweep Ticket of `kind` in Ready Gold on a small Frame Wood tile, as the Class icon of a Deck. */

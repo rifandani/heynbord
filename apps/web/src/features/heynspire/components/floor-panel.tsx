@@ -7,7 +7,7 @@ import {
 import type { ForgeStoneReward } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
-import { useId, useMemo, useState } from "react";
+import { useId, useState } from "react";
 
 import { GameButton } from "@/core/components/game/game-button";
 import type { BattleOptions } from "@/features/battle/battle-session";
@@ -17,6 +17,7 @@ import { classGlyph } from "@/features/battle/glyphs";
 import { qaSeed } from "@/features/battle/qa";
 import { randomSeed } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import { PanelRow as Row } from "@/features/campaign/components/panel-row";
 import {
   DeckRow,
   useDeckChoice,
@@ -29,6 +30,7 @@ import {
   floorEnemyKey,
   floorRewardPreview,
 } from "@/features/heynspire/heynspire";
+import { useNumberFormat } from "@/features/i18n/use-number-format";
 import {
   battlePlayerAtom,
   playerLevelAtom,
@@ -40,28 +42,6 @@ import { coinWords } from "@/features/town/town";
 /** A small state chip in the header: never the color alone, its icon and its words say the state. */
 const CHIP =
   "inline-flex items-center gap-1 rounded-[4px] px-1.5 py-0.5 text-[11px] leading-none font-bold tracking-[0.04em] uppercase";
-
-const useFormat = () => {
-  const { locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  return (value: number) => number.format(value);
-};
-
-/** One row of the panel: a Cinzel label at the left, its content at the right (as the Stage Panel). */
-const Row = ({
-  label,
-  children,
-}: {
-  readonly label: string;
-  readonly children: ReactNode;
-}) => (
-  <div className="grid grid-cols-[4.75rem_1fr] items-start gap-x-3 py-3 [@media(max-height:500px)]:py-1.5">
-    <p className="font-display pt-0.5 text-sm font-bold text-[#2a1d12]">
-      {label}
-    </p>
-    <div className="min-w-0">{children}</div>
-  </div>
-);
 
 /** The enemy Hero of the Floor: its Class seal, its name, its Class and its HP. */
 const EnemyRow = ({ floor }: { readonly floor: number }) => {
@@ -124,7 +104,7 @@ const RewardRow = ({
   readonly won: boolean;
 }) => {
   const { tr } = useGameText();
-  const format = useFormat();
+  const format = useNumberFormat();
   const { win } = floorRewardPreview(floor);
   const words = (copper: number) =>
     coinWords(copper, format, (denomination) =>

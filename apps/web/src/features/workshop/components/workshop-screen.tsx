@@ -2,17 +2,11 @@ import { RegistryContext, useAtomValue } from "@effect/atom-react";
 import type { RankId } from "@workspace/rules";
 import { EXTRACT_ESSENCE, getCard } from "@workspace/rules";
 import { cn } from "cn";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { TabPanel, Tabs } from "react-aria-components";
 
 import { GameScreen } from "@/core/components/game/game-screen";
+import { useTimeouts } from "@/core/hooks/use-timeouts";
 import type { SoundName } from "@/features/battle/battle-audio";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
@@ -96,21 +90,13 @@ const MAX_FLIGHTS = 4;
  * motion, they all play at the press.
  */
 const useWorkshopSounds = () => {
-  const timers = useRef<number[]>([]);
-  useEffect(() => {
-    const pending = timers.current;
-    return () => {
-      for (const timer of pending) {
-        window.clearTimeout(timer);
-      }
-    };
-  }, []);
+  const schedule = useTimeouts();
   const later = (ms: number, sound: SoundName) => {
     if (ms <= 0 || prefersReducedMotion()) {
       playSound(sound, 0);
       return;
     }
-    timers.current.push(window.setTimeout(() => playSound(sound, 0), ms));
+    schedule(() => playSound(sound, 0), ms);
   };
   return {
     anvil: (rank: RankId) => {

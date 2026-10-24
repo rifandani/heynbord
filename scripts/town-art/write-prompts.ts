@@ -58,6 +58,7 @@ import path from "node:path";
 
 import sharp from "sharp";
 
+import { promptBlock, writeImageGrid } from "../art-helpers";
 import {
   BATTLE_SET_REFERENCE,
   writeBattleStyleReference,
@@ -146,29 +147,15 @@ const GOLDEN_REFERENCES = [
 
 const TILE = { width: 384, height: 512 } as const;
 
-const writeStyleReference = async (file: string) => {
-  const tiles = await Promise.all(
-    GOLDEN_REFERENCES.map((reference) =>
-      sharp(path.join(ROOT, `apps/web/public/${reference}.webp`))
-        .resize(TILE.width, TILE.height, { fit: "cover" })
-        .png()
-        .toBuffer()
-    )
-  );
-  await sharp({
-    create: {
-      width: TILE.width * tiles.length,
-      height: TILE.height,
-      channels: 3,
-      background: "#000",
-    },
-  })
-    .composite(
-      tiles.map((input, index) => ({ input, left: index * TILE.width, top: 0 }))
-    )
-    .png()
-    .toFile(file);
-};
+const writeStyleReference = (file: string) =>
+  writeImageGrid({
+    root: ROOT,
+    images: GOLDEN_REFERENCES.map(
+      (reference) => `apps/web/public/${reference}.webp`
+    ),
+    output: file,
+    tile: TILE,
+  });
 
 /**
  * The Card shop inside and the Workshop inside: the size of the ChatGPT
@@ -771,7 +758,7 @@ const readRows = (section: string): Icon[] => {
   return rows;
 };
 
-const block = (text: string): string => `\`\`\`text\n${text}\n\`\`\``;
+const block = promptBlock;
 
 const subjectOf = (icon: Icon): string => {
   const subject = SUBJECT.get(icon.id);

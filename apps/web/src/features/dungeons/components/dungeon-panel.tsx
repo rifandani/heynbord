@@ -2,7 +2,7 @@ import { useAtomValue } from "@effect/atom-react";
 import { coinDenominations, getCard } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, TooltipTrigger } from "react-aria-components";
 
@@ -15,6 +15,7 @@ import { REWARD_PLATE_COMPACT as PLATE } from "@/features/battle/components/rewa
 import { qaSeed } from "@/features/battle/qa";
 import { randomSeed } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
+import { PanelRow as Row } from "@/features/campaign/components/panel-row";
 import {
   PEEK_BUTTON,
   useRewardPeek,
@@ -35,6 +36,7 @@ import type {
 import { dungeonRewardPreview } from "@/features/dungeons/dungeons";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { useDungeonsHints } from "@/features/hint/use-hints";
+import { useNumberFormat } from "@/features/i18n/use-number-format";
 import { battlePlayerAtom } from "@/features/profile/profile.atoms";
 import {
   SweepResult,
@@ -47,45 +49,10 @@ import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
 
-const useFormat = () => {
-  const { locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  return (value: number) => number.format(value);
-};
-
-/** One row of the panel: a Cinzel label at the left, its content at the right (as the Stage Panel). */
-const Row = ({
-  label,
-  children,
-  className,
-  anchor,
-}: {
-  readonly label: string;
-  readonly children: ReactNode;
-  readonly className?: string;
-  /** A Hint can point at the label (`data-hint-anchor`). */
-  readonly anchor?: string;
-}) => (
-  <div
-    className={cn(
-      "grid grid-cols-[4.75rem_1fr] items-start gap-x-3 py-3 [@media(max-height:500px)]:grid-cols-[4rem_1fr] [@media(max-height:500px)]:py-1.5",
-      className
-    )}
-  >
-    <p
-      className="font-display pt-0.5 text-sm font-bold text-[#2a1d12]"
-      data-hint-anchor={anchor}
-    >
-      {label}
-    </p>
-    <div className="min-w-0">{children}</div>
-  </div>
-);
-
 /** Coin on its Night Plate, with the full words for a screen reader. */
 const CoinPlate = ({ coin }: { readonly coin: number }) => {
   const { tr } = useGameText();
-  const format = useFormat();
+  const format = useNumberFormat();
   const words = coinWords(coin, format, (denomination) =>
     tr(`town.balances.denominations.${denomination}.name`)
   );

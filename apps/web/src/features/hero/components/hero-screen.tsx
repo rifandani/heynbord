@@ -1,9 +1,10 @@
 import type { ForgeStoneTier, GearSlot } from "@workspace/rules";
 import { gearUpgradeForgeStone, MAX_GEAR_LEVEL } from "@workspace/rules";
 import { cn } from "cn";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import { GameScreen } from "@/core/components/game/game-screen";
+import { useTimeouts } from "@/core/hooks/use-timeouts";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
@@ -274,28 +275,17 @@ const StatusBar = ({
  * timers stop when the screen closes.
  */
 const useUpgradeSounds = () => {
-  const timers = useRef<number[]>([]);
-  useEffect(() => {
-    const pending = timers.current;
-    return () => {
-      for (const timer of pending) {
-        window.clearTimeout(timer);
-      }
-    };
-  }, []);
-  const later = (ms: number, play: () => void) => {
-    timers.current.push(window.setTimeout(play, ms));
-  };
+  const later = useTimeouts();
   return (maxed: boolean) => {
     unlockAudio();
     const strike = prefersReducedMotion() ? 0 : GEAR_STRIKE_MS;
     if (strike === 0) {
       playSound("gearUp", 0);
     } else {
-      later(strike, () => playSound("gearUp", 0));
+      later(() => playSound("gearUp", 0), strike);
     }
     if (maxed) {
-      later(strike + MAX_CHIME_MS, () => playSound("revealRare", 0));
+      later(() => playSound("revealRare", 0), strike + MAX_CHIME_MS);
     }
   };
 };

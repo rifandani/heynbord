@@ -23,6 +23,7 @@ import {
 
 import { GameButton } from "@/core/components/game/game-button";
 import { RANK_COLORS } from "@/core/components/game/tokens";
+import { useTimeouts } from "@/core/hooks/use-timeouts";
 import type { SoundName } from "@/features/battle/battle-audio";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { CardBack } from "@/features/battle/components/card-back";
@@ -100,24 +101,13 @@ const tearLight = (rank: RankId): string =>
  * sounds follow the Sound setting.
  */
 const useFlipSounds = () => {
-  const timers = useRef<number[]>([]);
-  useEffect(() => {
-    const pending = timers.current;
-    return () => {
-      for (const timer of pending) {
-        window.clearTimeout(timer);
-      }
-    };
-  }, []);
-  const later = (ms: number, sound: SoundName) => {
-    timers.current.push(window.setTimeout(() => playSound(sound, 0), ms));
-  };
+  const schedule = useTimeouts();
   return (rank: RankId, delay: number) => {
     unlockAudio();
-    later(delay, "cardFlip");
+    schedule(() => playSound("cardFlip", 0), delay);
     const chime = RANK_CHIME[rank];
     if (chime) {
-      later(delay + FACE_MS, chime);
+      schedule(() => playSound(chime, 0), delay + FACE_MS);
     }
   };
 };

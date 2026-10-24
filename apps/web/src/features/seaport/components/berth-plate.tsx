@@ -10,13 +10,14 @@ import type {
 import { coinDenominations, getCargo } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { RANK_COLORS } from "@/core/components/game/tokens";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import { useNumberFormat } from "@/features/i18n/use-number-format";
 import { CargoIcon } from "@/features/seaport/components/cargo-icon";
 import { RewardLines } from "@/features/seaport/components/reward-lines";
 import type { Berth } from "@/features/seaport/seaport";
@@ -145,9 +146,8 @@ const CargoHaul = ({
   >;
   readonly countIn?: boolean;
 }) => {
-  const { tr, locale } = useGameText();
-  const number = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const format = (value: number) => number.format(value);
+  const { tr } = useGameText();
+  const format = useNumberFormat();
   const stones = reward.forgeStones;
   let cargo: ExpeditionCargo = "coin";
   if (stones) {
