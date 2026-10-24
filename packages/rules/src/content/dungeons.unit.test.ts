@@ -90,7 +90,7 @@ describe("Dungeon rewards (Economy 2.4)", () => {
   });
 });
 
-describe("Dungeon Forge Stones (Economy 2.4, ADR-0038)", () => {
+describe("Dungeon Forge Stones (Economy 2.4, ADR-0036)", () => {
   it("gives Uncommon Forge Stones in Dungeon 1, Rare in Dungeon 2 and Epic in Dungeon 3", () => {
     expect(DUNGEON_REWARDS.map((dungeon) => dungeon.forgeStoneTier)).toEqual([
       "uncommon",
@@ -109,7 +109,7 @@ describe("Dungeon Forge Stones (Economy 2.4, ADR-0038)", () => {
     }
   });
 
-  it("gives Legendary Forge Stones only in Dungeon 3 (ADR-0039)", () => {
+  it("gives Legendary Forge Stones only in Dungeon 3 (ADR-0037)", () => {
     expect(
       DUNGEON_REWARDS.map((dungeon) => dungeon.legendaryForgeStones)
     ).toEqual([false, false, true]);

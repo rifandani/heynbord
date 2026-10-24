@@ -10,7 +10,7 @@ const options = {
   classId: "warrior",
 } as const;
 
-describe("simulatePack (Economy 3.1, ADR-0027)", () => {
+describe("simulatePack (Economy 3.1, ADR-0026)", () => {
   it("gives the same report for the same content", () => {
     expect(simulatePack("merchant", options)).toEqual(
       simulatePack("merchant", options)

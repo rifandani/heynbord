@@ -93,7 +93,7 @@ const creatures = CARDS.flatMap((card) =>
   card.kind === "creature" ? [card] : []
 );
 
-/** Range 2 or more from the Range Keywords (ADR-0030). */
+/** Range 2 or more from the Range Keywords (ADR-0029). */
 const isRanged = (card: CreatureCardDefinition): boolean =>
   isRangedRange(keywordRange(card.keywords));
 
@@ -184,7 +184,7 @@ const skill = (id: string) => {
 
 /**
  * The Skill Cards that miss their nearest step or the hard cap, with the
- * reason (GDD 13, ADR-0032). The swap change is against Vanguard / Raiders
+ * reason (GDD 13, ADR-0031). The swap change is against Vanguard / Raiders
  * (1000 seeds, Archetypes 3.4). The sim wins over the content test. A card
  * leaves the list when a tuning pass brings it to its budget.
  */
@@ -492,7 +492,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         );
       }
     }
-    // `19 + s × (Countdown − 3)` with s = 3 (ADR-0021, ADR-0030): 19 at
+    // `19 + s × (Countdown − 3)` with s = 3 (ADR-0021, ADR-0029): 19 at
     // Countdown 3, and Countdown 6 is 1.75 × Countdown 2.
     expect(powerBudget(3)).toBe(19);
     expect(powerBudget(2)).toBe(16);
@@ -506,7 +506,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(recruit.kind === "creature" && budgetDeviation(recruit)).toBe(-769);
   });
 
-  it("keeps each Skill Card at its Power Budget with the nearest-step rule and the hard cap (ADR-0032)", () => {
+  it("keeps each Skill Card at its Power Budget with the nearest-step rule and the hard cap (ADR-0031)", () => {
     for (const card of CARDS) {
       if (card.kind !== "skill") {
         continue;
@@ -522,7 +522,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
-  it("measures a Skill Card at its Base Rank, with each effect and no Crit (ADR-0032)", () => {
+  it("measures a Skill Card at its Base Rank, with each effect and no Crit (ADR-0031)", () => {
     const quickShot = skill("ranger.quickShot");
     const rate = SKILL_RATES.unitDamage;
     // 5 Physical damage to one Unit at Common.
@@ -606,7 +606,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     ]);
   });
 
-  it("gives each Wall card Attack 0 and no Speed or Range Keyword (ADR-0023, ADR-0030)", () => {
+  it("gives each Wall card Attack 0 and no Speed or Range Keyword (ADR-0023, ADR-0029)", () => {
     const walls = creatures.filter((card) => card.keywords.wall);
     expect(walls.length).toBeGreaterThan(0);
     for (const card of walls) {
@@ -616,7 +616,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
-  it("gives each Unit Base Speed 2 and Base Range 1, and the Keywords change them (ADR-0030)", () => {
+  it("gives each Unit Base Speed 2 and Base Range 1, and the Keywords change them (ADR-0029)", () => {
     expect(keywordSpeed({})).toBe(2);
     expect(keywordSpeed({ swift: true })).toBe(3);
     expect(keywordSpeed({ fleet: true })).toBe(4);
@@ -629,7 +629,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(isRangedRange(2)).toBe(true);
   });
 
-  it("gives a card or a Token at most 1 Speed Keyword and at most 1 Range Keyword (ADR-0030)", () => {
+  it("gives a card or a Token at most 1 Speed Keyword and at most 1 Range Keyword (ADR-0029)", () => {
     const speedKeywords = ["swift", "fleet", "heavy"] as const;
     const rangeKeywords = ["midRange", "longRange", "extremeRange"] as const;
     const bodies = [
@@ -646,7 +646,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
-  it("puts Extreme-range only on a card with Base Rank Epic or higher (ADR-0030)", () => {
+  it("puts Extreme-range only on a card with Base Rank Epic or higher (ADR-0029)", () => {
     for (const card of creatures) {
       if (card.keywords.extremeRange) {
         expect(isRankAtLeast(card.baseRank, "epic"), card.id).toBe(true);
@@ -663,7 +663,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
-  it("gives no Ranged Creature Card Frost damage (ADR-0025)", () => {
+  it("gives no Ranged Creature Card Frost damage (ADR-0024)", () => {
     const frostCards = creatures.filter((card) => card.damageType === "frost");
     expect(frostCards.length).toBeGreaterThan(0);
     for (const card of frostCards) {
@@ -671,9 +671,9 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
-  it("gives no Ranged Creature Card Lightning damage before a lock check (ADR-0029)", () => {
+  it("gives no Ranged Creature Card Lightning damage before a lock check (ADR-0028)", () => {
     // A Ranged Unit Paralyzes the same enemy before each of its actions, the
-    // same as the Frost lock of ADR-0025. A sim lock check comes first.
+    // same as the Frost lock of ADR-0024. A sim lock check comes first.
     for (const card of creatures) {
       if (card.damageType === "lightning") {
         expect(isRanged(card), card.id).toBe(false);
@@ -681,7 +681,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
-  it("gives Lightning 3 Damage Type points, the same as Frost (GDD 13, ADR-0029)", () => {
+  it("gives Lightning 3 Damage Type points, the same as Frost (GDD 13, ADR-0028)", () => {
     const card = getCard("human.militiaRecruit");
     if (card.kind !== "creature") {
       throw new Error("Militia Recruit is a Creature Card");
@@ -797,7 +797,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
         ).toBe(expected);
       }
     }
-    // Gorehorn Red Maw has a fixed Bleed 2 (ADR-0056): its only Rank is Legendary.
+    // Gorehorn Red Maw has a fixed Bleed 2 (ADR-0054): its only Rank is Legendary.
     const redMaw = bleeders.find((card) => card.id === "feral.gorehornRedMaw");
     expect(redMaw && keywordValue(redMaw.keywords.bleed, "legendary")).toBe(2);
   });
@@ -837,7 +837,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(power("orc.warbandStandardBearer")).toBe(29);
   });
 
-  it("gives Heroic N with 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary (ADR-0048)", () => {
+  it("gives Heroic N with 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary (ADR-0046)", () => {
     const heroes = creatures.filter(
       (card) => card.keywords.heroic !== undefined
     );
@@ -853,7 +853,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     }
   });
 
-  it("gives Heroic N × 2 power points at the Base Rank (ADR-0048)", () => {
+  it("gives Heroic N × 2 power points at the Base Rank (ADR-0046)", () => {
     // Heroic 1: 5/8 at Common. 5 × 2 + 8 + 2.
     expect(power("orc.tuskBrute")).toBe(20);
     // Heroic 2: 4/5 is 6/7 at Rare. 6 × 2 + 7 + Fire + 4.
@@ -870,7 +870,7 @@ describe("card content (CRD-01, technical design 3.5)", () => {
     expect(power("elf.canopyVinewarden")).toBe(23);
   });
 
-  it("fits Lethiel with Entangle to the budget of Countdown 5 (ADR-0026)", () => {
+  it("fits Lethiel with Entangle to the budget of Countdown 5 (ADR-0025)", () => {
     // 1/6 is 2/11 at Epic: 2 × 2 + 11 + Mid-range 1 + Holy 1, with
     // Regenerate 2 × 2 and Entangle 2.
     const card = getCard("elf.lethielFirstGardener");
@@ -970,7 +970,7 @@ const raceCards = (race: RaceId) =>
   creatures.filter((card) => card.race === race);
 
 /**
- * The Race Keywords of a Unit that are not of its Race (ADR-0026), as
+ * The Race Keywords of a Unit that are not of its Race (ADR-0025), as
  * "<id>: <keyword>". An empty list is correct.
  */
 const foreignRaceKeywords = (
@@ -1035,7 +1035,7 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
     );
   });
 
-  it("gives each Race exactly one Race Keyword, and no two Races the same (ADR-0026)", () => {
+  it("gives each Race exactly one Race Keyword, and no two Races the same (ADR-0025)", () => {
     expect(Object.keys(RACE_KEYWORDS).toSorted()).toEqual(
       FULL_RACES.toSorted()
     );
@@ -1043,7 +1043,7 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
     expect(new Set(keywords).size).toBe(keywords.length);
   });
 
-  it("gives a Race Keyword only to a Card or a Token of its Race (ADR-0026)", () => {
+  it("gives a Race Keyword only to a Card or a Token of its Race (ADR-0025)", () => {
     expect(foreignRaceKeywords(creatures)).toEqual([]);
     expect(foreignRaceKeywords(Object.values(TOKENS))).toEqual([]);
     // A Human card with the Elf Race Keyword fails the check.
@@ -1053,7 +1053,7 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
   });
 
   it.each(FULL_RACES)(
-    "gives %s one Unique card in its Epic pair and one Unique Specialist (ADR-0050)",
+    "gives %s one Unique card in its Epic pair and one Unique Specialist (ADR-0048)",
     (race) => {
       const epics = raceCards(race).filter((card) => card.baseRank === "epic");
       expect(epics).toHaveLength(2);
@@ -1075,7 +1075,7 @@ describe("Race shape (GDD 12, ADR-0013)", () => {
   );
 });
 
-describe("Specialists (ADR-0050)", () => {
+describe("Specialists (ADR-0048)", () => {
   const legendaries = creatures.filter((card) => card.baseRank === "legendary");
 
   it("gives every Base Rank Legendary Creature Card a Class", () => {
@@ -1104,7 +1104,7 @@ describe("Specialists (ADR-0050)", () => {
     ).toEqual([]);
   });
 
-  it("gives each Specialist more Power Points than the Epic cards of its Race (ADR-0056)", () => {
+  it("gives each Specialist more Power Points than the Epic cards of its Race (ADR-0054)", () => {
     // The Power Points of a card count at its Base Rank (ADR-0020), so a
     // Specialist at Legendary is compared with an Epic card at Epic.
     for (const card of legendaries) {
@@ -1144,14 +1144,14 @@ describe("Specialists (ADR-0050)", () => {
       );
     }
     // A Specialist Deck is a diagnostic Archetype, so only the main
-    // Archetypes must hold no Specialist (ADR-0050, issue #110).
+    // Archetypes must hold no Specialist (ADR-0048, issue #110).
     const mains = ARCHETYPES.filter((archetype) => archetype.kind === "main");
     for (const archetype of mains) {
       expect(usesSpecialist(archetype.deck), archetype.id).toBe(false);
     }
   });
 
-  it("gives each Specialist its own diagnostic Deck (ADR-0050, issue #110)", () => {
+  it("gives each Specialist its own diagnostic Deck (ADR-0048, issue #110)", () => {
     const specialistIds = new Set(legendaries.map((card) => card.id));
     const specialistDecks = ARCHETYPES.filter((archetype) =>
       archetype.deck.some((entry) => specialistIds.has(entry.cardId))
@@ -1185,7 +1185,7 @@ describe("Specialists (ADR-0050)", () => {
       expect(specialist.baseRank, archetype.id).toBe("legendary");
       expect(deckEntry.rank, archetype.id).toBe("legendary");
       // The Deck delegate Class matches the Class of its Specialist, and it
-      // holds 2 to 5 Skill Cards of that Class (ADR-0050).
+      // holds 2 to 5 Skill Cards of that Class (ADR-0048).
       expect(archetype.classId, archetype.id).toBe(specialist.class);
       const skills = archetype.deck.filter(
         (entry) => getCard(entry.cardId).kind === "skill"
@@ -1228,7 +1228,7 @@ describe("Ranks (GDD 5.3)", () => {
       "legendary",
     ]);
     expect(ranksOf(getCard("human.militiaRecruit"))).toEqual(RANKS);
-    // A Specialist (Base Rank Legendary) has only the Legendary Rank (ADR-0050).
+    // A Specialist (Base Rank Legendary) has only the Legendary Rank (ADR-0048).
     expect(ranksOf({ baseRank: "legendary" })).toEqual(["legendary"]);
   });
 });
@@ -1508,7 +1508,7 @@ describe("Decks and Stages", () => {
   });
 });
 
-describe("Boss Rules (ADR-0040)", () => {
+describe("Boss Rules (ADR-0038)", () => {
   it("gives no Campaign Stage a Boss Rule", () => {
     for (const stage of STAGES) {
       expect(stage.enemy.bossRules, `${stage.id} Boss Rules`).toBeUndefined();
@@ -1554,7 +1554,7 @@ describe("Boss Rules (ADR-0040)", () => {
       { threshold: 50, effect: { ...summon, position: 12 } },
       { threshold: 50, effect: { ...summon, rank: "mythic" } },
       { threshold: 50, effect: { ...summon, cardId: "" } },
-      // No effect heals a Hero (ADR-0028).
+      // No effect heals a Hero (ADR-0027).
       { threshold: 50, effect: { type: "heal", amount: 5 } },
     ]) {
       expect(() => decodeBossRule(rule), JSON.stringify(rule)).toThrow();
@@ -1790,7 +1790,7 @@ describe("Tokens (Card Concepts 8)", () => {
   });
 
   it("gives the Token power of Card Concepts 8 at each Rank", () => {
-    // Swarm 1 is 1 point. The Base Speed 2 is free (ADR-0030).
+    // Swarm 1 is 1 point. The Base Speed 2 is free (ADR-0029).
     expect(powers("token.skeleton")).toEqual([4, 5, 7, 8, 11]);
     expect(powers("token.restlessWisp")).toEqual([10, 11, 13, 14, 17]);
   });

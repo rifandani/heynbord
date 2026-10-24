@@ -8,7 +8,7 @@ import type {
  * The 136 cards in the rules package: 96 Creature Cards and 40 Skill Cards.
  * 6 Races (Human, Orc, Goblin, Feral, Elf, Undead) and 4 Classes (Warrior,
  * Ranger, Mage, Priest). Each of the 6 Races has its full 16 cards: 15 from
- * ADR-0013 and 1 Base Rank Legendary Specialist (ADR-0050). Goblin, Feral, Elf
+ * ADR-0013 and 1 Base Rank Legendary Specialist (ADR-0048). Goblin, Feral, Elf
  * and Undead have the provisional values of card concepts 6, 7, 4 and 5. Each
  * Race has 1 Pivot card (GDD 3.2). The values are printed for Common. GDD
  * section 13 gives the power budget that `balance.ts` checks.
@@ -188,7 +188,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "holy",
     keywords: { midRange: true, bulwark: 1, rally: 2, unique: true },
   },
-  // The Human Specialist (ADR-0050): a Warrior that holds the line and rallies it.
+  // The Human Specialist (ADR-0048): a Warrior that holds the line and rallies it.
   {
     kind: "creature",
     id: "human.serAldricStonewall",
@@ -384,7 +384,7 @@ const creatures: readonly CreatureCardDefinition[] = [
       rally: 2,
     },
   },
-  // The Orc Specialist (ADR-0050): a Mage that burns at random and resists.
+  // The Orc Specialist (ADR-0048): a Mage that burns at random and resists.
   {
     kind: "creature",
     id: "orc.ashcallerGrosh",
@@ -568,7 +568,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "fire",
     keywords: { unique: true, sabotage: 1, lastBreath: 3 },
   },
-  // The Goblin Specialist (ADR-0050): a Ranger that chips the Hero and reads the Hand.
+  // The Goblin Specialist (ADR-0048): a Ranger that chips the Hero and reads the Hand.
   {
     kind: "creature",
     id: "goblin.grixRatwhistle",
@@ -756,7 +756,7 @@ const creatures: readonly CreatureCardDefinition[] = [
       bleed: { epic: 2, legendary: 3 },
     },
   },
-  // The Feral Specialist (ADR-0050): a Warrior beast that heals by its bite and pierces.
+  // The Feral Specialist (ADR-0048): a Warrior beast that heals by its bite and pierces.
   {
     kind: "creature",
     id: "feral.gorehornRedMaw",
@@ -940,7 +940,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "holy",
     keywords: { midRange: true, unique: true, entangle: true, regenerate: 2 },
   },
-  // The Elf Specialist (ADR-0050): a Ranger warden that punishes a summon and mends.
+  // The Elf Specialist (ADR-0048): a Ranger warden that punishes a summon and mends.
   {
     kind: "creature",
     id: "elf.wardenSaelith",
@@ -1128,7 +1128,7 @@ const creatures: readonly CreatureCardDefinition[] = [
     damageType: "physical",
     keywords: { wall: true, bulwark: 2, rebirth: true },
   },
-  // The Undead Specialist (ADR-0050): a Priest that grows with each kill and cleanses.
+  // The Undead Specialist (ADR-0048): a Priest that grows with each kill and cleanses.
   {
     kind: "creature",
     id: "undead.paleCantorYsolde",

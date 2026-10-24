@@ -60,7 +60,7 @@ const regenerateUnits = (ctx: StepContext): void => {
 };
 
 /**
- * Heal N (ADR-0056): in each Start Phase of its owner, the friendly Unit with
+ * Heal N (ADR-0054): in each Start Phase of its owner, the friendly Unit with
  * the lowest HP that is not at its maximum HP heals N HP. A Unit at its
  * maximum HP gets no heal, so the Keyword does not activate. A Bleeding Unit
  * gets half of the heal, rounded down (ADR-0019).
@@ -83,13 +83,13 @@ const healUnits = (ctx: StepContext): void => {
 };
 
 /**
- * The chance that the Dispel Keyword (ADR-0056) removes a Debuff, in basis
+ * The chance that the Dispel Keyword (ADR-0054) removes a Debuff, in basis
  * points: 20%.
  */
 const DISPEL_CHANCE = 2000;
 
 /**
- * Dispel (ADR-0056): in each Start Phase of its owner, a Unit with Dispel has
+ * Dispel (ADR-0054): in each Start Phase of its owner, a Unit with Dispel has
  * a 20% chance to remove 1 Debuff from a random friendly Unit. The Battle seed
  * sets the chance and the Unit. A Unit with no Debuff changes nothing.
  */
@@ -117,7 +117,7 @@ const dispelUnits = (ctx: StepContext): void => {
 };
 
 /**
- * Bolt N (ADR-0050, ADR-0055): in each Start Phase of its owner, a Unit with
+ * Bolt N (ADR-0048, ADR-0053): in each Start Phase of its owner, a Unit with
  * Bolt deals N damage of its own Damage Type to one target at random: an enemy
  * Unit or an enemy Hero. The Hero is any Hero of the other Side that is not
  * Defeated, not only the Hero of the Lane of the Unit. Bolt applies no Status
@@ -171,7 +171,7 @@ const boltUnits = (ctx: StepContext): void => {
 };
 
 /**
- * Hero's Bane (ADR-0050): in each Start Phase of its owner, the Unit deals 1
+ * Hero's Bane (ADR-0048): in each Start Phase of its owner, the Unit deals 1
  * Physical damage to the enemy Hero of its Front.
  */
 const herosBaneUnits = (ctx: StepContext): void => {
@@ -528,7 +528,7 @@ const runEndPhase = (ctx: StepContext): void => {
  * Routed (ADR-0012): no Units on the Board and no Cards in the Hands and the
  * Decks of the Heroes that are not Defeated. A Card that is not Ready or that
  * has no legal target still counts. A Summon Boss Rule that has not activated
- * also counts (ADR-0040).
+ * also counts (ADR-0038).
  */
 const isRouted = (state: BattleState, side: Side): boolean =>
   state.units.every((unit) => unit.owner !== side) &&

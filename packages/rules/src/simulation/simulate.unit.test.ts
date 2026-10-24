@@ -55,7 +55,7 @@ describe("playOut (GDD 13)", () => {
   });
 });
 
-describe("skipRunTracker (ADR-0025)", () => {
+describe("skipRunTracker (ADR-0024)", () => {
   const state = emptyBattle();
   placeUnit(state, {
     cardId: "human.militiaRecruit",
@@ -180,7 +180,7 @@ describe("simulateStage (GDD 13, step 6)", () => {
   });
 });
 
-describe("3-Star targets (GDD 13, step 7, ADR-0047)", () => {
+describe("3-Star targets (GDD 13, step 7, ADR-0045)", () => {
   it("gives the ramp a lower limit, and normal and Boss Stages a range", () => {
     expect(
       STAGES.filter((stage) => stage.region === 1).map((stage) =>
@@ -258,7 +258,7 @@ describe("simulateDungeon (GDD 13, step 6)", () => {
   });
 });
 
-describe("simulateFloor (GDD 13, step 6, ADR-0042)", () => {
+describe("simulateFloor (GDD 13, step 6, ADR-0040)", () => {
   const floor = getFloor(1);
 
   it("uses the starter Deck and the first-win cards of all Stages, in the Deck limits of the Recommended level", () => {

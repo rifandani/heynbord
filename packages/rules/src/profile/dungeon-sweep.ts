@@ -1,5 +1,5 @@
 /**
- * The Dungeon Sweep action of the Profile (GDD 4.12, ADR-0041). It is pure:
+ * The Dungeon Sweep action of the Profile (GDD 4.12, ADR-0039). It is pure:
  * each Dungeon Sweep Ticket gives one repeat-win reward of the Dungeon, with
  * no Battle.
  */
@@ -23,9 +23,9 @@ export interface DungeonSweepInput {
 type DungeonSweepProfile = SweepProfile & Pick<Profile, "dungeonResults">;
 
 /**
- * Applies a Dungeon Sweep (ADR-0041). Each Dungeon Sweep Ticket gives the
+ * Applies a Dungeon Sweep (ADR-0039). Each Dungeon Sweep Ticket gives the
  * rewards of one repeat win of the Dungeon: its Coin, XP and Essence, its card
- * chance, and its Forge Stone chances (ADR-0038, ADR-0039). A Dungeon Sweep
+ * chance, and its Forge Stone chances (ADR-0036, ADR-0037). A Dungeon Sweep
  * always wins, plays no Battle and never adds to the wins of the Dungeon. It
  * throws when the Dungeon has no win, or when the Tickets are not 1 to
  * `MAX_SWEEP_TICKETS`, or are more than the Player has.

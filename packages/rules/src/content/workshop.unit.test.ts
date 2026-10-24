@@ -73,7 +73,7 @@ describe("Extract and Craft (Economy 3.3)", () => {
     expect(craftEssence({ baseRank: "uncommon" })).toBe(120);
   });
 
-  it("gives an Epic or a Legendary Base Rank card no Craft cost (ADR-0052)", () => {
+  it("gives an Epic or a Legendary Base Rank card no Craft cost (ADR-0050)", () => {
     expect(RANKS.filter(isCraftRank)).toEqual(["common", "uncommon", "rare"]);
     expect(craftEssence({ baseRank: "epic" })).toBeNull();
     expect(craftEssence({ baseRank: "legendary" })).toBeNull();
@@ -91,7 +91,7 @@ describe("Fuse (Economy 3.7)", () => {
     expect(FUSE_COPIES).toEqual({ common: 2, uncommon: 2, rare: 3, epic: 4 });
   });
 
-  it("costs half of the Craft cost of the input Rank, and 700 for Epic (ADR-0052)", () => {
+  it("costs half of the Craft cost of the input Rank, and 700 for Epic (ADR-0050)", () => {
     expect(FUSE_ESSENCE).toEqual({
       common: 20,
       uncommon: 60,

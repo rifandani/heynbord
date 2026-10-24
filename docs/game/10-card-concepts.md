@@ -15,7 +15,7 @@ The provisional set is budget-valid and simulation-ready. It is not balance-appr
 - **Creature Cards and Tokens** use the prompts of 5.2. They make 2 exports: card art and a Unit cut-out. The silhouette must be clear at 128 px tall.
 - **Skill Cards** use the prompts of 5.2.1. They show the effect with a partial figure that has no Race. They have no Unit cut-out.
 - **Provisional power.** A Summon or a Last Breath that summons uses 50% of the Token power at the Base Rank of its Card. All provisional Cards must stay within 10% of their Countdown budget.
-- **Power Budget `19 + 3 × (Countdown − 3)`** (the same as `10 + 3 × Countdown`). The base was 21 before [ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md): the Base Speed 2 is now free. The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget.
+- **Power Budget `19 + 3 × (Countdown − 3)`** (the same as `10 + 3 × Countdown`). The base was 21 before [ADR-0029](../adr/0029-keywords-set-speed-and-range-and-there-are-no-roles.md): the Base Speed 2 is now free. The Human, Orc, Goblin, Feral, Elf and Undead values are the fit of `packages/rules/scripts/fit-budget.ts` to this budget ([ADR-0021](../adr/0021-countdown-is-a-real-cost.md), [08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). The Undead values use `--hp-per-attack 2`: the fit selects 1 Attack for each 2 HP at the Base Rank, not the shape of the old line. The old Undead shapes (for example 4/3 and 5/3) lost almost all Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). A Token has no budget of its own. Only the cards that summon it have a budget.
 - **Common values and Power Points.** The Attack and HP on each line are Common values. The Power on each line measures Attack and HP at the Base Rank of the card, with the Rank scale of GDD 5.3 ([ADR-0020](../adr/0020-the-power-budget-measures-a-card-at-its-base-rank.md)). Thus an Uncommon, Rare or Epic card has lower Common Attack and HP than a Common card of the same power.
 
 ### 1.1 Settings
@@ -296,7 +296,7 @@ Purpose: the named Human Epic and Rally capstone. Power 27, budget 28, deviation
 
 > Hold the line. Then hold the line again.
 
-Purpose: the Human Specialist. He is the wall that the Human identity wants: Iron Guard stops a large hit, and the Warrior Class gives him the tempo Skill Cards. Rally 2 lifts the Units of his Lane, and Wallbreaker breaks a Wall in half the hits. Power 30, budget 28, deviation +7.1% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
+Purpose: the Human Specialist. He is the wall that the Human identity wants: Iron Guard stops a large hit, and the Warrior Class gives him the tempo Skill Cards. Rally 2 lifts the Units of his Lane, and Wallbreaker breaks a Wall in half the hits. Power 30, budget 28, deviation +7.1% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -595,7 +595,7 @@ Purpose: the archetypal Orc Epic: immediate movement, stronger allies and Hero p
 
 > Everything burns. Some things burn on a schedule.
 
-Purpose: the Orc Specialist. Bolt 2 gives the Orc identity a Mage: damage that arrives in each Start Phase, without an attack. Mid-range lets him burn from the second Square, and Resistance 2 keeps him alive against the Fire and Frost of a Mage. Power 30, budget 28, deviation +7.1% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
+Purpose: the Orc Specialist. Bolt 2 gives the Orc identity a Mage: damage that arrives in each Start Phase, without an attack. Mid-range lets him burn from the second Square, and Resistance 2 keeps him alive against the Fire and Frost of a Mage. Power 30, budget 28, deviation +7.1% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -851,7 +851,7 @@ Purpose: a durable Flying healer. Power 21, budget 22, deviation -4.5%.
 
 > The warning was yesterday.
 
-Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards with Entangle (ADR-0022, ADR-0026). Power 23, budget 25, deviation -8.0%.
+Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards with Entangle (ADR-0022, ADR-0025). Power 23, budget 25, deviation -8.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -869,7 +869,7 @@ Purpose: the archetypal Elf Epic: approach denial, and one of the 2 Elf cards wi
 
 > The forest grew wild. Lethiel called it adequate.
 
-Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race Keyword (ADR-0026). Power 24, budget 25, deviation -4.0%.
+Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race Keyword (ADR-0025). Power 24, budget 25, deviation -4.0%.
 
 | Field | Brief |
 | --- | --- |
@@ -887,7 +887,7 @@ Purpose: the named Elf Epic and a durable healer. She has Entangle, the Elf Race
 
 > Every gate has a warden. This one shoots first.
 
-Purpose: the Elf Specialist. She punishes the enemy summon: Spawnbane 2 hits each Unit from a Creature Card before it can use Sabotage or Summon, and Long-range keeps her behind the front. Heal 2 mends the most hurt Unit of her Side in each Start Phase. Power 26, budget 25, deviation +4% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
+Purpose: the Elf Specialist. She punishes the enemy summon: Spawnbane 2 hits each Unit from a Creature Card before it can use Sabotage or Summon, and Long-range keeps her behind the front. Heal 2 mends the most hurt Unit of her Side in each Start Phase. Power 26, budget 25, deviation +4% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1055,7 +1055,7 @@ Purpose: fast Frost tempo and Hero pressure. Power 15, budget 16, deviation -6.3
 
 Purpose: cheap melee Frost control. Its high Attack kills a Frozen target fast, so the Freeze lock ends fast. Power 17, budget 16, deviation +6.3%.
 
-This card was a Ranged Frost Unit with Range 3, Rime-Eye Archer. No Ranged Unit has Frost damage ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md), issue #28).
+This card was a Ranged Frost Unit with Range 3, Rime-Eye Archer. No Ranged Unit has Frost damage ([ADR-0024](../adr/0024-no-ranged-unit-has-frost-damage.md), issue #28).
 
 | Field | Brief |
 | --- | --- |
@@ -1147,7 +1147,7 @@ Purpose: Frost support that creates a mobile second threat. Power 17.5, budget 1
 
 Purpose: the named Undead Epic and a large finisher that comes back slowly. Charge gives him a fast first Turn. Rebirth brings him back at 1 HP, and the reborn Odo does not get Charge again. Power 22, budget 22, deviation 0%.
 
-He had Speed 2 before, and then Speed 1 ([ADR-0024](../adr/0024-speed-1-is-the-default.md), issue #35). Now he has the Base Speed 2 and no Speed Keyword, the same as most Units ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)).
+He had Speed 2 before, and then Speed 1 (issue #35). Now he has the Base Speed 2 and no Speed Keyword, the same as most Units ([ADR-0029](../adr/0029-keywords-set-speed-and-range-and-there-are-no-roles.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1183,7 +1183,7 @@ Purpose: the archetypal Undead Epic and persistent Swarm shield. Power 20, budge
 
 > She sings the dead into a better shape.
 
-Purpose: the Undead Specialist. Soul Harvest makes her grow with each kill, and the Priest Class gives her the healing and Ward that an Undead front needs. Rebirth brings her back one time, and Dispel clears 1 Debuff from a friendly Unit in each Start Phase. Power 29, budget 28, deviation +3.6% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
+Purpose: the Undead Specialist. Soul Harvest makes her grow with each kill, and the Priest Class gives her the healing and Ward that an Undead front needs. Rebirth brings her back one time, and Dispel clears 1 Debuff from a friendly Unit in each Start Phase. Power 29, budget 28, deviation +3.6% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1477,7 +1477,7 @@ Purpose: the named Goblin Epic. He delays an enemy card when he comes in, Burns 
 
 > He does not aim at you. He aims at the one behind you.
 
-Purpose: the Goblin Specialist. Hero's Bane puts 1 Physical damage on the enemy Hero in each Start Phase, so a Goblin Deck can win without crossing the Board. Mid-range lets him shoot from the second Square, and Quick Study takes 1 Countdown from the slowest card of his Hand each time an enemy Hero plays a Skill Card. Power 28, budget 28, deviation 0% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
+Purpose: the Goblin Specialist. Hero's Bane puts 1 Physical damage on the enemy Hero in each Start Phase, so a Goblin Deck can win without crossing the Board. Mid-range lets him shoot from the second Square, and Quick Study takes 1 Countdown from the slowest card of his Hand each time an enemy Hero plays a Skill Card. Power 28, budget 28, deviation 0% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1717,7 +1717,7 @@ Purpose: a Rare front that also Tramples. Power 24, budget 25, deviation -4.0%.
 
 > Its breath is the weather.
 
-Purpose: a Flying Frost attacker. Power 24, budget 25, deviation -4.0%. No Ranged Unit has Frost ([ADR-0025](../adr/0025-no-ranged-unit-has-frost-damage.md)).
+Purpose: a Flying Frost attacker. Power 24, budget 25, deviation -4.0%. No Ranged Unit has Frost ([ADR-0024](../adr/0024-no-ranged-unit-has-frost-damage.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1771,7 +1771,7 @@ Purpose: the named Feral Epic: a huge Frost attacker that Tramples, and its bite
 
 > It eats what it kills. Then it keeps the leftovers.
 
-Purpose: the Feral Specialist. Vampirism turns each Physical hit into HP, so a huge Feral Unit stays on the Board without a healer. Bleed 2 takes half of each heal of the Unit it hits, and Piercing makes its damage too strong to be reduced. Power 30, budget 28, deviation +7.1% ([ADR-0050](../adr/0050-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0056](../adr/0056-each-specialist-has-a-second-keyword.md)).
+Purpose: the Feral Specialist. Vampirism turns each Physical hit into HP, so a huge Feral Unit stays on the Board without a healer. Bleed 2 takes half of each heal of the Unit it hits, and Piercing makes its damage too strong to be reduced. Power 30, budget 28, deviation +7.1% ([ADR-0048](../adr/0048-a-base-rank-legendary-creature-card-is-a-specialist.md), [ADR-0054](../adr/0054-each-specialist-has-a-second-keyword.md)).
 
 | Field | Brief |
 | --- | --- |
@@ -1785,7 +1785,7 @@ Purpose: the Feral Specialist. Vampirism turns each Physical hit into HP, so a h
 
 ## 8. Tokens
 
-Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**. The ID line of a Token gives its Race, so that its art uses the setting and the palette of that Race (1.1). A Token has no Base Rank: its art uses the Common detail, because it is cheap Lane mass. Each Token has the Base Speed 2 and no Speed Keyword, the same as each Unit ([ADR-0030](../adr/0030-keywords-set-speed-and-range-and-there-are-no-roles.md)): it appears behind the Unit that summons it, and it must get to the front.
+Tokens are not collectible Cards. They use the Rank of the Card or effect that makes them, and disappear when they die. Their Rank profiles and power values are **provisional**. The ID line of a Token gives its Race, so that its art uses the setting and the palette of that Race (1.1). A Token has no Base Rank: its art uses the Common detail, because it is cheap Lane mass. Each Token has the Base Speed 2 and no Speed Keyword, the same as each Unit ([ADR-0029](../adr/0029-keywords-set-speed-and-range-and-there-are-no-roles.md)): it appears behind the Unit that summons it, and it must get to the front.
 
 ### 8.1 Skeleton
 

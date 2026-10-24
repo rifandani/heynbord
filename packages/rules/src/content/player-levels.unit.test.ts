@@ -66,7 +66,7 @@ describe("first-win XP (Economy 2.1)", () => {
 });
 
 describe("stageXp (Economy 2.1)", () => {
-  it("gives no XP for a Repeat win, also on a Boss Stage (ADR-0049)", () => {
+  it("gives no XP for a Repeat win, also on a Boss Stage (ADR-0047)", () => {
     expect(stageXp(getStage("1-2"), "win")).toBe(0);
     expect(stageXp(getStage("1-10"), "win")).toBe(0);
   });

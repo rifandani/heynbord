@@ -41,7 +41,7 @@ export interface StarChestClaim<P> {
 /**
  * Claims the Star chest of `region` that opens at `stars` (Economy 2.2): adds
  * its Coin and Essence to the balances, its Forge Stones of the
- * tier of the Region (ADR-0038) and its Pack to the Unopened Packs. `null`
+ * tier of the Region (ADR-0036) and its Pack to the Unopened Packs. `null`
  * when the chest is already claimed, or when the Stars of the Region are
  * fewer than `stars`. `stars` must be the Stars of a chest.
  */

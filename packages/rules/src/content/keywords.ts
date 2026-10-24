@@ -67,7 +67,7 @@ export type ActivatedKeyword = {
 }[keyof typeof KEYWORD_ACTIVATES];
 
 /**
- * The Race Keyword of each Race (ADR-0026). Only a Unit of that Race can have
+ * The Race Keyword of each Race (ADR-0025). Only a Unit of that Race can have
  * it, from a Card, a Token or any other effect. A content test checks the
  * cards and the Tokens. An effect that gives a Keyword in a Battle must also
  * check this table. Only the Keyword is locked, not its effect: a Skill Card
@@ -125,13 +125,13 @@ export const keywordValue = (
   return 0;
 };
 
-/** The Speed of each Unit before Keywords and bonuses (ADR-0030). */
+/** The Speed of each Unit before Keywords and bonuses (ADR-0029). */
 export const BASE_SPEED = 2;
 
-/** The Range of each Unit before Keywords and bonuses (ADR-0030). A Melee Unit has it. */
+/** The Range of each Unit before Keywords and bonuses (ADR-0029). A Melee Unit has it. */
 export const BASE_RANGE = 1;
 
-/** The Speed of a card or a Token: the Base Speed and its Speed Keyword (ADR-0030). */
+/** The Speed of a card or a Token: the Base Speed and its Speed Keyword (ADR-0029). */
 export const keywordSpeed = (keywords: TokenKeywords): number => {
   if (keywords.swift) {
     return BASE_SPEED + 1;
@@ -145,7 +145,7 @@ export const keywordSpeed = (keywords: TokenKeywords): number => {
   return BASE_SPEED;
 };
 
-/** The Range of a card or a Token: the Base Range and its Range Keyword (ADR-0030). */
+/** The Range of a card or a Token: the Base Range and its Range Keyword (ADR-0029). */
 export const keywordRange = (keywords: TokenKeywords): number => {
   if (keywords.midRange) {
     return BASE_RANGE + 1;
@@ -159,5 +159,5 @@ export const keywordRange = (keywords: TokenKeywords): number => {
   return BASE_RANGE;
 };
 
-/** A Unit with Range 2 or more is a Ranged Unit. Range 1 is a Melee Unit (ADR-0030). */
+/** A Unit with Range 2 or more is a Ranged Unit. Range 1 is a Melee Unit (ADR-0029). */
 export const isRangedRange = (range: number): boolean => range > BASE_RANGE;

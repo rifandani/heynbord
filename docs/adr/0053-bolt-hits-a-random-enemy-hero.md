@@ -1,6 +1,6 @@
 # Bolt hits a random enemy Unit or Hero
 
-**Bolt N** was made by [ADR-0050](0050-a-base-rank-legendary-creature-card-is-a-specialist.md). It deals N damage of the Damage Type of its Unit in each Start Phase of its owner, to one random enemy Unit, or to the enemy Hero of its Front. The Player wanted the shorter Card text "In each Start Phase, this Unit deals {value} damage of its Damage Type to a random enemy Unit or Hero." That text has no Hero of the Front, so the rule now changes: the Hero target is a random Hero of the other Side. A Hero that is Defeated is not a target (GDD 4.8).
+**Bolt N** was made by [ADR-0048](0048-a-base-rank-legendary-creature-card-is-a-specialist.md). It deals N damage of the Damage Type of its Unit in each Start Phase of its owner, to one random enemy Unit, or to the enemy Hero of its Front. The Player wanted the shorter Card text "In each Start Phase, this Unit deals {value} damage of its Damage Type to a random enemy Unit or Hero." That text has no Hero of the Front, so the rule now changes: the Hero target is a random Hero of the other Side. A Hero that is Defeated is not a target (GDD 4.8).
 
 The rest of the rule stays. The hit applies no Status, so Fire, Frost and Lightning damage do not Burn, Freeze or Paralyze, and it has no Crit. Hero's Bane keeps its Hero of the Front, because its text says so.
 
@@ -18,4 +18,4 @@ The rest of the rule stays. The hit applies no Status, so Fire, Frost and Lightn
 - A Unit with Bolt is stronger in a Dungeon, where the other Side has a Hero for each Boss: the hit can go to any Boss, and not only to the Boss of the Lane of the Unit. Only Ashcaller Grosh has Bolt in v1, and no starter Deck has it. The matchup sim and the Dungeon sim with 30 seeds give the same results before and after the change, because a Stage, a Floor and a matchup have 1 enemy Hero. A balance sim must check the Orc Specialist Deck in a Dungeon before the next release.
 - The Card text and the Handbook Entry of Bolt no longer say that the hit applies no Status, and no longer name the Hero of the Front. The rule stays, and GDD 5.4 and the CONTEXT file of the rules package hold the full rule.
 - The AI scores a Unit with Bolt at N × 2 in the value of a Card. That score was made for the old rule, and it is low for the new rule.
-- ADR-0050 keeps its other decisions: Bolt N costs N × 3 Power Points, and Bolt is a Main Keyword of the Orc Race.
+- ADR-0048 keeps its other decisions: Bolt N costs N × 3 Power Points, and Bolt is a Main Keyword of the Orc Race.

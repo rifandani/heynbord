@@ -167,7 +167,7 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
       fixedWinChance: 1,
       fixedThreeStarChance: 1,
     });
-    // A Sweep gives no XP (ADR-0049), so the levels are the levels of the
+    // A Sweep gives no XP (ADR-0047), so the levels are the levels of the
     // First-try Path.
     for (const [index, [id, level]] of (
       [
@@ -294,7 +294,7 @@ describe("simulateEconomyRun (Economy 7.1)", () => {
   });
 });
 
-describe("expectedGear (ADR-0034)", () => {
+describe("expectedGear (ADR-0033)", () => {
   const gear = expectedGear();
 
   it("gives no Gear before the Gear unlock level", () => {
@@ -307,7 +307,7 @@ describe("expectedGear (ADR-0034)", () => {
     }
   });
 
-  it("gives 10 levels before Stage 1-9 and 11 before 1-10: 1 Common Forge Stone for each first win and 2 from the 10-Star chest (ADR-0038)", () => {
+  it("gives 10 levels before Stage 1-9 and 11 before 1-10: 1 Common Forge Stone for each first win and 2 from the 10-Star chest (ADR-0036)", () => {
     expect(gear.get("1-9")).toEqual({
       weapon: 3,
       armor: 3,
@@ -344,7 +344,7 @@ describe("expectedGear (ADR-0034)", () => {
   });
 });
 
-describe("expectedGearAtLevel (ADR-0034)", () => {
+describe("expectedGearAtLevel (ADR-0033)", () => {
   const gear = expectedGear();
 
   it("is the Expected Gear of the first Stage at that level", () => {
@@ -362,7 +362,7 @@ describe("expectedGearAtLevel (ADR-0034)", () => {
   });
 });
 
-describe("expectedFloorGear (ADR-0034, ADR-0042)", () => {
+describe("expectedFloorGear (ADR-0033, ADR-0040)", () => {
   const gear = expectedFloorGear();
   const sum = (levels: (typeof gear)[number]) =>
     levels.weapon + levels.armor + levels.trinket + levels.banner;
@@ -443,7 +443,7 @@ describe("spend (Economy 7.1)", () => {
     expect(player.coin).toBe(0);
   });
 
-  it("needs a Forge Stone of the tier of the new level for each Gear level (ADR-0038)", () => {
+  it("needs a Forge Stone of the tier of the new level for each Gear level (ADR-0036)", () => {
     const player = playerAt(6, 900, {
       common: 3,
       uncommon: 20,
@@ -693,7 +693,7 @@ describe("campaignSweep (Economy 2.1, 7.1)", () => {
     campaignSweep(player, economyStages());
     expect(player.campaignSweepTickets).toBe(0);
     expect(player.campaignTicketsUsed).toBe(50);
-    // A Region 1 Repeat win: ⅓ of 60 Coin, and no XP (ADR-0049).
+    // A Region 1 Repeat win: ⅓ of 60 Coin, and no XP (ADR-0047).
     expect(player.coin).toBe(50 * 20);
     expect(player.xp).toBe(PLAYER_LEVEL_XP[0]);
     expect(player.bestStars.get("1-4")).toBe(3);

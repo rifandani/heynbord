@@ -1943,7 +1943,7 @@ describe("the Rare and Epic Warrior Skill Cards of #63 (GDD 5.5)", () => {
       const first = run(state, play(0, square(0, 6)));
       // Spear Throw 5 − Bulwark 3 + Exposed 2.
       expect(unitById(first.state, speared.id)?.hp).toBe(16);
-      // Smite 3 and Frost Bolt 3: no Bulwark and no Exposed (ADR-0031).
+      // Smite 3 and Frost Bolt 3: no Bulwark and no Exposed (ADR-0030).
       const second = run(first.state, play(0, square(1, 6)));
       expect(unitById(second.state, smitten.id)?.hp).toBe(17);
       const third = run(second.state, play(0, square(2, 6)));

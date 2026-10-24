@@ -9,7 +9,7 @@ The Bazaar sells Board skins for 200 Heynstones each, the highest price of a fam
 - **The art is a Square sheet.** Each Board skin is one top-view painting at 1536 × 1024: 6 × 4 separate tiles of 256 px, one Square each. The game selects one of the 24 tiles for each Square with a fixed hash, and 2 Squares next to each other never get the same tile. Code adds the soft Lane edge and the contact shade.
 - **The whole Board shows the Player's Board skin.** The Board is shared, so the enemy half shows it too. The enemy Side has no Board skin. Every Battle shows it: a Stage, a Dungeon, a Heynspire Floor, the tutorial, the Battle Log and Watching a Replay. A Replay shows the Board skin of the viewer.
 - **Units first.** There is no tint over the screen. The time of day of a skin (dawn, dusk, night, moon) stays in its tiles. The Closed Lane band, the Field Effect tiles, the Front Brackets and the target markers draw on top of the runners.
-- **A skin with no painted sheet is not in the Bazaar,** the same as a Hero portrait with no face (ADR-0054).
+- **A skin with no painted sheet is not in the Bazaar,** the same as a Hero portrait with no face (ADR-0052).
 
 ## Considered Options
 

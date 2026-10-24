@@ -1,7 +1,7 @@
 import type { PackId } from "./packs";
 
 /**
- * The number of Campaign Regions in v1 (GDD 3.3, ADR-0036). Each Region has
+ * The number of Campaign Regions in v1 (GDD 3.3, ADR-0034). Each Region has
  * the 3 Star chests.
  */
 export const CAMPAIGN_REGIONS = 5;
@@ -23,7 +23,7 @@ export interface StarChestDefinition {
   readonly coin: number;
   readonly essence: number;
   readonly pack: StarChestPack | null;
-  /** The Forge Stones of the tier of the Region (Economy 2.2, ADR-0038). */
+  /** The Forge Stones of the tier of the Region (Economy 2.2, ADR-0036). */
   readonly forgeStones: number;
 }
 

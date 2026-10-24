@@ -3,7 +3,7 @@ import type { BattleState } from "./types";
 
 /**
  * The HP that the enemy Heroes lost in a Battle, of their total maximum HP
- * (ADR-0043). A Defeated Hero lost all its HP. All damage counts: from the
+ * (ADR-0041). A Defeated Hero lost all its HP. All damage counts: from the
  * Player, Burn, Poison and Sudden Death.
  */
 export const enemyHeroDamage = (state: BattleState): EnemyHeroDamage => {

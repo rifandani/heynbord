@@ -126,7 +126,7 @@ export interface StarTarget extends WinRateTarget {
 }
 
 /**
- * The 3-Star target of a Stage (GDD 13, step 7, ADR-0047): 30% to 50% of the
+ * The 3-Star target of a Stage (GDD 13, step 7, ADR-0045): 30% to 50% of the
  * wins for a normal Stage, and 20% to 40% for a Boss Stage. The ramp Stages
  * 1-1 to 1-3 have only a lower limit: 30% or more.
  */
@@ -156,7 +156,7 @@ export const threeStarShare = (
 const STAR_TURNS = { min: 2, max: 60 } as const;
 
 /**
- * The suggested Star Turn of a Stage (ADR-0047): the whole Turn number that
+ * The suggested Star Turn of a Stage (ADR-0045): the whole Turn number that
  * puts the 3-Star share of each report nearest to the aim of `target`. Each
  * report is one Gear row, and one Star Turn must hit the target on all rows,
  * so it takes the Turn number with the smallest largest distance from the
@@ -190,7 +190,7 @@ export const suggestStarTurn = (
 export const DUNGEON_TARGET: WinRateTarget = BOSS_STAGE_TARGET;
 
 /**
- * The first-try target of a Heynspire Floor (ADR-0042): the target of a
+ * The first-try target of a Heynspire Floor (ADR-0040): the target of a
  * normal Stage, and the target of a Boss Stage for a Boss Floor. The
  * difficulty does not go up from Floor 1 to Floor 50.
  */
@@ -283,7 +283,7 @@ export interface StagePlayerOptions {
  * Stage with the expected Deck of a starter Deck, at the Recommended level and
  * with no Gear. Gear unlocks at player level 5 (GDD 7.1). `options` changes the
  * level and the Gear, but not the Deck: for the Expected Gear of the Stage
- * (ADR-0034), or to measure their effect on the win rate (Economy 7.1).
+ * (ADR-0033), or to measure their effect on the win rate (Economy 7.1).
  */
 export const simulateStage = (
   stage: StageDefinition,
@@ -361,7 +361,7 @@ export interface DungeonReport {
  * the Dungeon at its unlock level (its Recommended level) and with no Gear,
  * with the `dungeonDeck` of a starter Deck. `options` changes the level and
  * the Gear, as in `simulateStage`: for the Expected Gear at the unlock level
- * (ADR-0034).
+ * (ADR-0033).
  */
 export const simulateDungeon = (
   dungeon: DungeonDefinition,
@@ -426,10 +426,10 @@ export interface FloorReport {
 }
 
 /**
- * Floor difficulty (GDD 13, step 6, ADR-0042): a Player on the First-try
+ * Floor difficulty (GDD 13, step 6, ADR-0040): a Player on the First-try
  * Path plays the Floor at its Recommended level and with no Gear, with the
  * `floorDeck` of a starter Deck. `options` changes the level and the Gear, as
- * in `simulateStage`: for the Expected Gear of the Floor (ADR-0034).
+ * in `simulateStage`: for the Expected Gear of the Floor (ADR-0033).
  */
 export const simulateFloor = (
   floor: FloorDefinition,
@@ -487,13 +487,13 @@ export interface MatchupReport {
   readonly noReadyTurns: number;
   /**
    * The share of Battles, from 0 to 1, in which a Unit of the opponent
-   * skipped `LOCK_RUN` or more actions in a row (the Freeze lock of ADR-0025).
+   * skipped `LOCK_RUN` or more actions in a row (the Freeze lock of ADR-0024).
    * It is for review only.
    */
   readonly lockRate: number;
 }
 
-/** A run of this many skipped actions in a row is a lock (ADR-0025). */
+/** A run of this many skipped actions in a row is a lock (ADR-0024). */
 const LOCK_RUN = 3;
 
 /**

@@ -1,6 +1,6 @@
 /**
- * The Campaign Sweep action of the Profile (GDD 4.12, ADR-0035), and the parts
- * that it shares with the Dungeon Sweep (ADR-0041). It is pure: each Ticket
+ * The Campaign Sweep action of the Profile (GDD 4.12, ADR-0039), and the parts
+ * that it shares with the Dungeon Sweep (ADR-0039). It is pure: each Ticket
  * gives one repeat-win reward, with no Battle.
  */
 import {
@@ -41,7 +41,7 @@ export interface SweepRewards {
   readonly levelAfter: number;
   /** The repeat-win cards, in Ticket order. */
   readonly cards: readonly StageRewardCard[];
-  /** The Forge Stones of all Tickets (ADR-0038), one total for each tier, in tier order. */
+  /** The Forge Stones of all Tickets (ADR-0036), one total for each tier, in tier order. */
   readonly forgeStones: readonly ForgeStoneReward[];
   /** The Unopened Packs that the Sweep added: the First Pack at the Packs unlock. */
   readonly unopenedPacks: readonly UnopenedPack[];
@@ -180,9 +180,9 @@ export const applySweepTickets = <P extends SweepProfile>(
 type CampaignSweepProfile = SweepProfile & Pick<Profile, "stageResults">;
 
 /**
- * Applies a Campaign Sweep (ADR-0035). Each Campaign Sweep Ticket gives the
+ * Applies a Campaign Sweep (ADR-0039). Each Campaign Sweep Ticket gives the
  * rewards of one repeat win of the Stage, with its Forge Stone chance
- * (ADR-0038). A Campaign Sweep always wins, plays no Battle and never changes
+ * (ADR-0036). A Campaign Sweep always wins, plays no Battle and never changes
  * the Stars. It throws when the best Stars of the Stage are not 3, or when
  * the Tickets are not 1 to `MAX_SWEEP_TICKETS`, or are more than the Player
  * has.

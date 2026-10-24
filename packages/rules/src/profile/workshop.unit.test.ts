@@ -32,7 +32,7 @@ import {
 
 /**
  * A test card with Base Rank Legendary: it has no Craft cost, as each Epic or
- * Legendary Base Rank card (ADR-0052).
+ * Legendary Base Rank card (ADR-0050).
  */
 const LEGENDARY_BASE = "test.legendaryBase";
 
@@ -57,7 +57,7 @@ const GUARD = "human.crossbowGuard";
 const KNIGHT = "human.riverKnight";
 /** Base Rank Rare. */
 const COURIER = "human.kingsCourier";
-/** Base Rank Epic: like each Epic or Legendary Base Rank card, it has no Craft cost (ADR-0052). */
+/** Base Rank Epic: like each Epic or Legendary Base Rank card, it has no Craft cost (ADR-0050). */
 const BULWARK = "human.ironBulwark";
 
 /** The XP at the start of a Player level. */
@@ -337,7 +337,7 @@ describe("craft (GDD 7.4)", () => {
     expect(craft(profile(), COURIER)).toBeNull();
   });
 
-  it("is null for an Epic or a Legendary Base Rank card: they have no Craft cost (ADR-0052)", () => {
+  it("is null for an Epic or a Legendary Base Rank card: they have no Craft cost (ADR-0050)", () => {
     const collection: Collection = [
       { cardId: BULWARK, rank: "epic", copies: 1 },
       { cardId: LEGENDARY_BASE, rank: "legendary", copies: 1 },
@@ -409,7 +409,7 @@ const fuseProfile = (
 ): Profile =>
   profile({ collection, deckSlots: [slot("empty", [])], ...overrides });
 
-describe("fuse (GDD 7.4, ADR-0051)", () => {
+describe("fuse (GDD 7.4, ADR-0049)", () => {
   const SHIELDBEARER = "human.shieldbearer";
   const BARRICADE = "human.townBarricade";
   const ELF_GUARD = "elf.rootboundGuard";

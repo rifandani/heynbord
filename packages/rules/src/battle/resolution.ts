@@ -89,7 +89,7 @@ export const rangeOf = (
 ): number => unit.range + unit.bonusRange;
 
 /**
- * A Unit with Range 2 or more is a Ranged Unit for all rules (ADR-0030), so a
+ * A Unit with Range 2 or more is a Ranged Unit for all rules (ADR-0029), so a
  * Melee Unit with bonus Range attacks as a Ranged Unit until the bonus ends.
  */
 const isRanged = (unit: Pick<UnitState, "range" | "bonusRange">): boolean =>
@@ -526,7 +526,7 @@ const firstStrike = (
 };
 
 /**
- * Heroic N (ADR-0048): after its attack on an enemy Unit, a Unit with Heroic
+ * Heroic N (ADR-0046): after its attack on an enemy Unit, a Unit with Heroic
  * gets +N Attack. Each attack adds more. A Unit that died in the attack, for
  * example from Retaliate, gets nothing, also when it came back with Rebirth.
  * `rebirth` is the Rebirth of the Unit before the attack.
@@ -554,7 +554,7 @@ const heroic = (ctx: StepContext, unit: UnitState, rebirth: boolean): void => {
  * The attack of `unit` (GDD 4.6, 4.7). Pivot activates when the Unit attacks
  * its Pivot target, before a First Strike of that target. Swarm activates
  * after `UnitAttacked`, before the damage. Heroic activates after an attack
- * on an enemy Unit is complete, also with 0 damage (ADR-0048).
+ * on an enemy Unit is complete, also with 0 damage (ADR-0046).
  */
 const attack = (ctx: StepContext, unit: UnitState): void => {
   const { state } = ctx;

@@ -8,11 +8,11 @@ We decided:
 - **Only a Ranged Unit with Base Rank Epic or higher has Entangle.** The Common and Rare cards with Entangle get a different Keyword of their Race.
 - **Entangle is not an Elf Main Keyword.** It stays an Elf Keyword on few cards, as Bleed is for Feral ([ADR-0019](0019-bleed-is-a-feral-keyword-on-two-cards.md)). The Elf Main Keywords are Regeneration, Poison and Flying.
 
-> Changed on 2026-10-09 by [ADR-0026](0026-each-race-has-one-race-keyword.md): Entangle is now the Elf Race Keyword, and thus an Elf Main Keyword. It is still only on Ranged Units with Base Rank Epic or higher.
+> Changed on 2026-10-09 by [ADR-0025](0025-each-race-has-one-race-keyword.md): Entangle is now the Elf Race Keyword, and thus an Elf Main Keyword. It is still only on Ranged Units with Base Rank Epic or higher.
 
 > Changed on 2026-10-13 by the Ranger Skill Card *Hunter's Focus* ([GDD 4.8](../game/03-game-design.md#48-skill-cards-and-recall)): the limit is for the printed Range of a Creature Card. A bonus Range from a Skill Card can give 1 Unit Range 4 until the end of the caster's next Turn. The Range 4 Shooters of issue #23 had Range 4 for the full Battle. Hunter's Focus passes the swap rule ([Archetypes 3.3](../game/08-archetypes.md#33-skill-card-swap)).
 
-> Changed on 2026-10-14 by [ADR-0030](./0030-keywords-set-speed-and-range-and-there-are-no-roles.md): the Range limit is removed, and there are no Roles. Each Unit has Base Range 1, and a Melee Unit has Range 1. The Keywords Mid-range, Long-range and Extreme-range give Range 2, 3 and 4. Only a card with Base Rank Epic or higher has Extreme-range. The Entangle limit of this ADR stays.
+> Changed on 2026-10-14 by [ADR-0029](./0029-keywords-set-speed-and-range-and-there-are-no-roles.md): the Range limit is removed, and there are no Roles. Each Unit has Base Range 1, and a Melee Unit has Range 1. The Keywords Mid-range, Long-range and Extreme-range give Range 2, 3 and 4. Only a card with Base Rank Epic or higher has Extreme-range. The Entangle limit of this ADR stays.
 
 ## Considered Options
 

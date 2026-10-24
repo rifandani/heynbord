@@ -50,7 +50,7 @@ const rankSteps = (deck: readonly DeckEntry[]) =>
     0
   );
 
-describe("Heynspire Floors (GDD 8.2, ADR-0042)", () => {
+describe("Heynspire Floors (GDD 8.2, ADR-0040)", () => {
   it("has 50 Floors that pass the schema, with Floor n at index n − 1", () => {
     expect(FLOORS).toHaveLength(HEYNSPIRE_FLOORS);
     for (const [index, floor] of FLOORS.entries()) {
@@ -136,7 +136,7 @@ describe("Heynspire Floors (GDD 8.2, ADR-0042)", () => {
   });
 });
 
-describe("Floor templates and the strength curve (ADR-0042)", () => {
+describe("Floor templates and the strength curve (ADR-0040)", () => {
   it("uses Floor templates 1 to 9 again on each 10 Floors, and a Boss on each 10th Floor", () => {
     for (const floor of FLOORS) {
       const boss = floor.number % 10 === 0;

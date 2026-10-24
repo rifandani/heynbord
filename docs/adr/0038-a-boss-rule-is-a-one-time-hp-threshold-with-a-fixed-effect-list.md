@@ -21,6 +21,6 @@ We did this because a Dungeon Battle against 2 or 3 Bosses needs a change in the
 - A hit that puts the Boss at 0 HP Defeats it, and its Boss Rules do not activate. A hit that crosses two thresholds activates both, the higher threshold first.
 - A Battle Event tells the app when a Boss Rule activates. The Dungeons screen lists the Boss Rules, and the HP plate shows a marker at each threshold.
 - A Summon Boss Rule that has not activated stops its Side from being Routed (ADR-0012).
-- No effect heals a Hero (ADR-0028). An effect that heals a Hero must replace both ADRs.
+- No effect heals a Hero (ADR-0027). An effect that heals a Hero must replace both ADRs.
 - The AI does not plan around a threshold on either Side.
 - Any Boss can have Boss Rules, but in v1 only Dungeon Bosses use them. The Campaign Boss Stages and their simulation results do not change.

@@ -7,7 +7,7 @@ const NO_GEAR = { weapon: 0, armor: 0, trinket: 0, banner: 0 };
  * The Stages of Region 1 (Hearthvale), Region 2 (The Red Mesas), Region 3
  * (The Glowcap Hollows), Region 4 (The Thornwood) and Region 5 (The Hollow
  * Marches), each with its Boss Stage
- * (GDD 3.3, 8.1, ADR-0036). docs/game/14-campaign-stages.md
+ * (GDD 3.3, 8.1, ADR-0034). docs/game/14-campaign-stages.md
  * gives the design of each Stage. All Stages have 3 Lanes (ADR-0010). The
  * first Stages 1-1 to 1-3 have all 3 Lanes open (GDD 8.3). Stage 1-1 is the
  * Tutorial.
@@ -312,7 +312,7 @@ export const STAGES: readonly StageDefinition[] = [
     },
   },
   // Region 2 (The Red Mesas): the Orc tribes of the mesas and the Goblin mines
-  // under them (ADR-0036). Goblin is the Debut Race: Sabotage and Hobble are
+  // under them (ADR-0034). Goblin is the Debut Race: Sabotage and Hobble are
   // new. docs/game/14-campaign-stages.md, section 3.
   {
     id: "2-1",
@@ -625,7 +625,7 @@ export const STAGES: readonly StageDefinition[] = [
     },
   },
   // Region 3 (The Glowcap Hollows): the Goblin diggers that Lady Glimmerbough
-  // hired, and the Elves of her grove (ADR-0036). Elf is the Debut Race:
+  // hired, and the Elves of her grove (ADR-0034). Elf is the Debut Race:
   // Regenerate, Poison and Entangle are new. docs/game/14-campaign-stages.md,
   // section 4.
   {
@@ -960,7 +960,7 @@ export const STAGES: readonly StageDefinition[] = [
     },
   },
   // Region 4 (The Thornwood): the Elves of the Thornwood and the Feral creatures of
-  // the forest caves (ADR-0036). Feral is the Debut Race: Trample is new.
+  // the forest caves (ADR-0034). Feral is the Debut Race: Trample is new.
   // docs/game/14-campaign-stages.md, section 5.
   {
     id: "4-1",
@@ -1319,7 +1319,7 @@ export const STAGES: readonly StageDefinition[] = [
     },
   },
   // Region 5 (The Hollow Marches): the Undead court of Queen Marrow and the
-  // Feral beasts of the frozen bogs (ADR-0036). Undead is the Debut Race:
+  // Feral beasts of the frozen bogs (ADR-0034). Undead is the Debut Race:
   // Swarm, Summon, Rebirth and Bleed are new. docs/game/14-campaign-stages.md,
   // section 6.
   {

@@ -140,7 +140,7 @@ describe("deckProblems", () => {
     expect(isDeckValid(input(deck))).toBe(false);
   });
 
-  it("finds a Specialist of another Class (ADR-0050)", () => {
+  it("finds a Specialist of another Class (ADR-0048)", () => {
     const deck = [
       ...copies(3, "human.militiaRecruit", "common"),
       ...copies(1, "orc.ashcallerGrosh", "legendary"),

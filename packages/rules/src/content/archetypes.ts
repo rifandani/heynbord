@@ -35,11 +35,11 @@ export const MATCHUP_LEVEL = 5;
  * tests the Power Budget for each Countdown (ADR-0020). The results of a
  * diagnostic Deck are for review, and they do not gate release.
  *
- * The 6 Specialist Decks (ADR-0050, issue #110) are Diagnostic Decks, one for
+ * The 6 Specialist Decks (ADR-0048, issue #110) are Diagnostic Decks, one for
  * each Specialist: 1 copy at Legendary, with the creature style of the Main
  * Archetype of its Race and Skill Cards of its Class. A Specialist Deck never
  * becomes a main Archetype. The 6 entries start after the other diagnostic
- * Decks, in the order of ADR-0050: Human, Orc, Goblin, Feral, Elf and Undead.
+ * Decks, in the order of ADR-0048: Human, Orc, Goblin, Feral, Elf and Undead.
  * docs/game/08-archetypes.md 2.4 gives each list.
  */
 export const ARCHETYPES: readonly Archetype[] = [

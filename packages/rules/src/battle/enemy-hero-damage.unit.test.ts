@@ -11,7 +11,7 @@ import { step } from "./step";
 import { Command } from "./types";
 import type { BattleState } from "./types";
 
-describe("enemyHeroDamage (ADR-0043)", () => {
+describe("enemyHeroDamage (ADR-0041)", () => {
   it("gives the HP that the enemy Hero lost, of its maximum HP", () => {
     const state = emptyBattle({ enemy: { hp: 18, maxHp: 30 } });
     expect(enemyHeroDamage(state)).toEqual({ lost: 12, total: 30 });

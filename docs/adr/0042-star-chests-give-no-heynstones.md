@@ -9,7 +9,7 @@ The 30-Star chest of each Region gave 150 Heynstones and 100 Essence (Economy 2.
 
 ## Consequences
 
-- The v1 Heynstone supply is about 1,250, not about 2,000: about 52% of the Bazaar catalog cost, not 83% (Economy 2.6). Check the total again when the Bazaar is planned in M4. This replaces the Heynstone note of ADR-0036.
+- The v1 Heynstone supply is about 1,250, not about 2,000: about 52% of the Bazaar catalog cost, not 83% (Economy 2.6). Check the total again when the Bazaar is planned in M4. This replaces the Heynstone note of ADR-0034.
 - `StarChestDefinition` has no `heynstones` field, and `HEYNSTONE_SOURCES` has no `starChests` source.
 - The economy sim does not change: the 30-Star chests do not open in the sim.
 - The game does not give Heynstones from a chest that was claimed before this change back, and it does not take them back.

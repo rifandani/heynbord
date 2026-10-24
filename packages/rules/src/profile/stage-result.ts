@@ -23,7 +23,7 @@ export const REPEAT_WIN_CARD_CHANCE = 2000;
 
 /**
  * The Campaign Sweep Tickets that each Stage win and Floor win gives
- * (ADR-0035). The M3 re-tune can change it.
+ * (ADR-0039). The M3 re-tune can change it.
  */
 export const CAMPAIGN_SWEEP_TICKETS_PER_WIN = 2;
 
@@ -57,7 +57,7 @@ export interface StageResultInput {
   readonly stars: number;
   /** The Class of the Deck that the Player used. */
   readonly classId: ClassId;
-  /** The HP that the enemy Heroes lost. It sets the share of a loss reward (ADR-0043). */
+  /** The HP that the enemy Heroes lost. It sets the share of a loss reward (ADR-0041). */
   readonly enemyHeroDamage: EnemyHeroDamage;
 }
 
@@ -80,7 +80,7 @@ export interface StageRewards {
   readonly unopenedPacks: readonly UnopenedPack[];
   /** The Campaign Sweep Tickets that the result added: 2 for a win, 0 for a loss. */
   readonly campaignSweepTickets: number;
-  /** The Forge Stones of the result (ADR-0038), or `null`. */
+  /** The Forge Stones of the result (ADR-0036), or `null`. */
   readonly forgeStones: ForgeStoneReward | null;
 }
 
@@ -222,8 +222,8 @@ export const rewardCard = (
  * Applies the result of a Stage Battle (Economy 2.1). A win of a Stage with no
  * result is a first win, any other win is a repeat win. It gives the XP and
  * the Coin of the outcome, only the share of the lost enemy Hero HP of them
- * for a loss (ADR-0043), keeps the best Stars of a win, gives the card, the
- * Forge Stones (ADR-0038) and the Campaign Sweep Tickets (ADR-0035) of a win, and adds
+ * for a loss (ADR-0041), keeps the best Stars of a win, gives the card, the
+ * Forge Stones (ADR-0036) and the Campaign Sweep Tickets (ADR-0039) of a win, and adds
  * the First Pack when the level goes to the Packs unlock. An Abandon and a
  * Battle that is not finished never call it.
  */

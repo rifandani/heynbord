@@ -10,24 +10,24 @@
  *
  * - `stage`: each Stage with each starter Deck, at the Recommended level of the
  *   Stage and with no Gear (docs/game/14-campaign-stages.md). A Stage with
- *   Expected Gear (ADR-0034) also plays a second row at that Gear. The
+ *   Expected Gear (ADR-0033) also plays a second row at that Gear. The
  *   Expected Gear comes from the First-try runs of `economy`. `--level N`
  *   plays N levels above the Recommended level, and `--gear N` sets all 4 Gear
  *   slots to N. They measure the win-chance bonuses of `economy` (Economy
  *   7.1), so with them there are no Expected Gear rows.
  *   The first row of each Gear row also shows the 3-Star share of the wins
  *   of all starter Decks with the Star Turn of the Stage, its GDD 13 target,
- *   and the suggested Star Turn (ADR-0047). `--check` fails a share that is
+ *   and the suggested Star Turn (ADR-0045). `--check` fails a share that is
  *   not on target, but not with `--level` or `--gear`.
  * - `dungeon`: each Dungeon with each starter Deck, at the unlock level of the
  *   Dungeon (GDD 13, step 6). The Deck is typical at that level: the starter
  *   Deck and the first-win cards of all Stages below that level. A second row
- *   plays the Expected Gear at that level (ADR-0034). `--level` and `--gear`
+ *   plays the Expected Gear at that level (ADR-0033). `--level` and `--gear`
  *   work as in `stage`.
  *   `defeated` is the average number of Bosses that the Player Defeated.
  * - `floor`: each Heynspire Floor with each starter Deck, at the Recommended
  *   level of the Floor and with no Gear, then at the Expected Gear of the
- *   Floor (ADR-0034, ADR-0042). The Deck is the expected Deck after all
+ *   Floor (ADR-0033, ADR-0040). The Deck is the expected Deck after all
  *   Stages. A Boss Floor has the target of a Boss Stage. `--level` and
  *   `--gear` work as in `stage`.
  * - `matchup`: each Archetype against each Archetype (docs/game/08-archetypes.md).
@@ -38,7 +38,7 @@
  *   `noReadyTurns` is the average number of the Archetype's Turns with no Ready
  *   card in the Hand (the Sabotage lock risk, Archetypes 2.2).
  * - `packs`: each Pack, with all cards (Warrior), as a Human Race Pack and as
- *   a Class Pack of each Class with Skill Cards (Economy 3.1, ADR-0027).
+ *   a Class Pack of each Class with Skill Cards (Economy 3.1, ADR-0026).
  *   `--packs` (10,000 by default) is the number of single Packs for the Rank
  *   rates and the value for each Coin. 100 Players open Packs until they
  *   Discover all cards of each Base Rank. `--check` does not check the Packs.
@@ -46,7 +46,7 @@
  *   Player level 30 and the Floor 50 win, with a win chance and a 3-Star
  *   chance for each Battle.
  *   The Players repeat each Stage for 3 Stars and use their Sweep Tickets
- *   (Economy 7.1, ADR-0046). `battles` is the number of seeds for each Play
+ *   (Economy 7.1, ADR-0044). `battles` is the number of seeds for each Play
  *   Style. A play calendar of 1 hour each day sends the ship of the Seaport
  *   between the sessions. It reports the Economy 4 checkpoints, the Stars,
  *   repeat Battles and Sweeps, the Seaport income, and the Heynstone ledger. The Player level targets are on the
@@ -61,9 +61,9 @@
  *   `matchup`. A card passes when each win rate changes by 5 points or less.
  *   `reverse` is the win rate with the Skill Card copy of the Deck replaced by
  *   the Creature Card. `lock` is the share of Battles in which an opponent
- *   Unit skipped 3 or more actions in a row (ADR-0025), before → after.
+ *   Unit skipped 3 or more actions in a row (ADR-0024), before → after.
  *   `points` is the Power Points of the Skill Card against its Power Budget
- *   (ADR-0032), and the `creature` column gives the Power Points of the
+ *   (ADR-0031), and the `creature` column gives the Power Points of the
  *   Creature Card minus its budget. Like `economy`, it runs only on request,
  *   and `--check` does not check it.
  */
@@ -286,7 +286,7 @@ const pooledWins = (reports: readonly StageReport[]) => ({
 });
 
 /**
- * The 3-Star cells of a Gear row (ADR-0047): the 3-Star share with the Star
+ * The 3-Star cells of a Gear row (ADR-0045): the 3-Star share with the Star
  * Turn of the Stage, its target, and the suggested Star Turn. When `gated`,
  * a share that is not on target fails the check, as a win rate does.
  */
@@ -335,7 +335,7 @@ if (modes.includes("stage")) {
   const expected =
     level === undefined && gear === undefined ? expectedGear() : null;
   console.log(
-    `Stages: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear (ADR-0034)"}`
+    `Stages: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear (ADR-0033)"}`
   );
   console.table(
     STAGES.flatMap((stage) => {
@@ -397,7 +397,7 @@ if (modes.includes("dungeon")) {
   // `--level` and `--gear` measure a bonus, so they play only one Gear row.
   const expected = level === undefined && gear === undefined;
   console.log(
-    `Dungeons: ${battles} Battles each, unlock level + ${levelsAbove}, Gear ${gear ?? 0}${expected ? ", then the Expected Gear at the unlock level (ADR-0034)" : ""}`
+    `Dungeons: ${battles} Battles each, unlock level + ${levelsAbove}, Gear ${gear ?? 0}${expected ? ", then the Expected Gear at the unlock level (ADR-0033)" : ""}`
   );
   console.table(
     DUNGEONS.flatMap((dungeon) => {
@@ -442,7 +442,7 @@ if (modes.includes("floor")) {
   const expected =
     level === undefined && gear === undefined ? expectedFloorGear() : null;
   console.log(
-    `Floors: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear (ADR-0034)"}`
+    `Floors: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear (ADR-0033)"}`
   );
   console.table(
     FLOORS.flatMap((floor) => {
@@ -715,7 +715,7 @@ type VerdictOf = (
 ) => PacingVerdict | undefined;
 
 /**
- * The Player level targets are for the First-try run (ADR-0046). A repeating
+ * The Player level targets are for the First-try run (ADR-0044). A repeating
  * Player has a higher level, so the medians show no level target.
  */
 const medianCell = (
@@ -803,7 +803,7 @@ if (modes.includes("economy")) {
       })
     );
     console.log(
-      "Forge Stones that the Players did not use (ADR-0038). Cells: median (10th–90th percentile)"
+      "Forge Stones that the Players did not use (ADR-0036). Cells: median (10th–90th percentile)"
     );
     console.table(
       CHECKPOINTS.map((id) => {
@@ -912,7 +912,7 @@ const points = (change: number) => {
   return change > 0 ? `+${text}` : text;
 };
 
-/** The Power Points of a Skill Card against its budget (ADR-0032). */
+/** The Power Points of a Skill Card against its budget (ADR-0031). */
 const pointsOf = (skillId: string) => {
   const card = getCard(skillId);
   if (card.kind !== "skill") {

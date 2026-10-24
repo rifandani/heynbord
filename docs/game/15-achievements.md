@@ -33,7 +33,7 @@ Status: **approved** (2026-10-16). The names are drafts. The data is `ACHIEVEMEN
 
 ### 1.4 No Achievement can be missed
 
-The Player must always be able to complete each Achievement later (Pillar 1, [ADR-0045](../adr/0045-no-achievement-can-be-missed.md)). Thus:
+The Player must always be able to complete each Achievement later (Pillar 1, [ADR-0043](../adr/0043-no-achievement-can-be-missed.md)). Thus:
 
 - A Feat never needs a Battle that the Player cannot play again. A Floor cannot be played again, so no Feat needs a specific Floor. A Feat that counts "in a Boss Stage or a Dungeon" is permitted, because the Player can play both again.
 - A goal never needs a value that only goes one way and can pass the goal, for example "Win while you are below the Recommended level" or "Win with Gear at level 0".
@@ -130,7 +130,7 @@ Notes:
 - A Race Feat needs at least 1 Creature Card in the Deck. A Deck of only Skill Cards completes no Race Feat.
 - "Dies" includes a Unit that dies and then comes back with Rebirth (the `UnitReborn` event). A Token is a Unit. A Unit that leaves the Board because its Hero is Defeated (`UnitRemoved`) does not die.
 - For "Every Element", only damage above 0 counts. Burn and Poison damage has no dealer, so it does not count.
-- Nothing heals a Hero ([ADR-0028](../adr/0028-nothing-heals-a-hero.md)), so "full HP" means that the enemy never damaged the Hero.
+- Nothing heals a Hero ([ADR-0027](../adr/0027-nothing-heals-a-hero.md)), so "full HP" means that the enemy never damaged the Hero.
 
 ### 2.5 Totals
 

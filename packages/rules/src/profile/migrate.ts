@@ -27,7 +27,7 @@ const doubledGear = (gear: Schema.JsonObject): Schema.JsonObject =>
     ])
   );
 
-/** The Forge Stones with 0 of the Legendary tier added (ADR-0039). */
+/** The Forge Stones with 0 of the Legendary tier added (ADR-0037). */
 const withLegendaryForgeStones = (
   forgeStones: Schema.JsonObject
 ): Schema.JsonObject => ({ ...forgeStones, legendary: 0 });
@@ -65,7 +65,7 @@ const withCargo = (seaport: Schema.JsonObject): Schema.JsonObject => {
       };
 };
 
-/** The Tallies with a `fuses` Tally of 0 added (ADR-0051). */
+/** The Tallies with a `fuses` Tally of 0 added (ADR-0049). */
 const withNoFuses = (tallies: Schema.JsonObject): Schema.JsonObject => ({
   ...tallies,
   fuses: 0,
@@ -77,10 +77,10 @@ const withNoFuses = (tallies: Schema.JsonObject): Schema.JsonObject => ({
  * old saves still load.
  */
 export const PROFILE_MIGRATIONS = {
-  /** Version 2 adds the Sweep Tickets (ADR-0035). An old save has none. */
+  /** Version 2 adds the Sweep Tickets (ADR-0039). An old save has none. */
   1: (profile) => ({ ...profile, sweepTickets: 0 }),
   /**
-   * Version 3 has 20 Gear levels with the stats of the old 10 (ADR-0037), so
+   * Version 3 has 20 Gear levels with the stats of the old 10 (ADR-0035), so
    * each saved level doubles and the stats stay the same.
    */
   2: (profile) =>
@@ -88,7 +88,7 @@ export const PROFILE_MIGRATIONS = {
       ? { ...profile, gear: doubledGear(profile.gear) }
       : profile,
   /**
-   * Version 4 adds the Forge Stones (ADR-0038). An old save has none. Its
+   * Version 4 adds the Forge Stones (ADR-0036). An old save has none. Its
    * Gear levels stay: it gets no Coin back and pays no Forge Stones for them.
    */
   3: (profile) => ({
@@ -96,7 +96,7 @@ export const PROFILE_MIGRATIONS = {
     forgeStones: { common: 0, uncommon: 0, rare: 0, epic: 0 },
   }),
   /**
-   * Version 5 adds the Legendary Forge Stone tier (ADR-0039). An old save has
+   * Version 5 adds the Legendary Forge Stone tier (ADR-0037). An old save has
    * none. Its Gear levels stay.
    */
   4: (profile) =>
@@ -109,7 +109,7 @@ export const PROFILE_MIGRATIONS = {
   /** Version 6 adds the Dungeon results. An old save has won no Dungeon. */
   5: (profile) => ({ ...profile, dungeonResults: {} }),
   /**
-   * Version 7 has 2 types of Sweep Ticket (ADR-0041). The old Sweep Tickets
+   * Version 7 has 2 types of Sweep Ticket (ADR-0039). The old Sweep Tickets
    * are the Campaign Sweep Tickets. An old save has no Dungeon Sweep Tickets,
    * also when it won Dungeons. A save with no Sweep Tickets stays without
    * them, and the decode refuses it.
@@ -153,20 +153,20 @@ export const PROFILE_MIGRATIONS = {
       isNumber(profile.heynspireFloorsWon) ? profile.heynspireFloorsWon : 0
     ),
   }),
-  /** Version 11 adds the `fuses` Tally (ADR-0051). An old save has done no Fuse. */
+  /** Version 11 adds the `fuses` Tally (ADR-0049). An old save has done no Fuse. */
   10: (profile) =>
     isJsonObject(profile.tallies)
       ? { ...profile, tallies: withNoFuses(profile.tallies) }
       : profile,
   /**
-   * Version 12 adds the Seaport (ADR-0053). An old save has its ship at the
+   * Version 12 adds the Seaport (ADR-0051). An old save has its ship at the
    * berth: no Expedition, and no reward for the time before.
    */
   11: (profile) => ({ ...profile, seaport: AT_BERTH }),
   /**
    * Version 13 gives the Seaport its Cargoes (Economy 2.8): the ship sails
    * with a Cargo and a duration, not on one of 4 fixed Expeditions. A ship
-   * at sea keeps its Dispatch time on the nearest new voyage (ADR-0053).
+   * at sea keeps its Dispatch time on the nearest new voyage (ADR-0051).
    */
   12: (profile) =>
     isJsonObject(profile.seaport)

@@ -46,14 +46,14 @@ export const outcomeXp = (winXp: number, outcome: StageOutcome): number => {
 
 /**
  * The XP of a Stage Repeat win and of each Campaign Sweep Ticket (Economy 2.1,
- * ADR-0049). A Dungeon Repeat win keeps its XP.
+ * ADR-0047). A Dungeon Repeat win keeps its XP.
  */
 const STAGE_REPEAT_WIN_XP = 0;
 
 /**
  * The XP of a Stage result (Economy 2.1): × 2 of the XP of the Region for the
  * first win, × 2 for a Boss Stage, 25% of the XP of the Region for a loss,
- * and no XP for a Repeat win (ADR-0049).
+ * and no XP for a Repeat win (ADR-0047).
  */
 export const stageXp = (
   stage: Pick<StageDefinition, "region" | "boss">,

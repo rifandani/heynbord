@@ -57,7 +57,7 @@ describe("Heynspire rewards (Economy 2.3)", () => {
     });
   });
 
-  it("also gives 2 Rare Forge Stones on each 5th Floor that is not a 10th Floor (ADR-0038)", () => {
+  it("also gives 2 Rare Forge Stones on each 5th Floor that is not a 10th Floor (ADR-0036)", () => {
     expect(floorFirstWinReward(5)).toEqual({
       coin: 150,
       xp: 75,

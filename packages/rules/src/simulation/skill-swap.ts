@@ -158,7 +158,7 @@ export interface SwapResult {
   /** True when `after` is within `SWAP_LIMIT` of `before`. */
   readonly pass: boolean;
   /**
-   * The lock rate of the Deck before and after the swap (ADR-0025): the share
+   * The lock rate of the Deck before and after the swap (ADR-0024): the share
    * of Battles in which an opponent Unit skipped 3 or more actions in a row.
    */
   readonly lockBefore: number;

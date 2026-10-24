@@ -1,6 +1,6 @@
 # Keywords set Speed and Range, and there are no Roles
 
-Each Creature Card had a **Role** before: Frontliner, Striker, Runner, Shooter, Support or Wall. No Battle rule used it, but the Role set the Speed and the Range of a card ([ADR-0024](./0024-speed-1-is-the-default.md), [ADR-0022](./0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md)). Thus a Player had to learn the Roles and then remember which number each Role gave. Many cards also broke the Role pattern with a written reason. Now there are no Roles. Six Keywords tell the Speed and the Range of a card. This ADR replaces ADR-0024 and the Range limit of ADR-0022. The Entangle limit of ADR-0022 stays.
+Each Creature Card had a **Role** before: Frontliner, Striker, Runner, Shooter, Support or Wall. No Battle rule used it, but the Role set the Speed and the Range of a card ([ADR-0022](./0022-no-range-above-3-and-entangle-only-on-epic-ranged-units.md)). A Unit had Speed 1 unless its Role or a written reason gave more. Thus a Player had to learn the Roles and then remember which number each Role gave. Many cards also broke the Role pattern with a written reason. Now there are no Roles. Six Keywords tell the Speed and the Range of a card. This ADR replaces the Role rule of Speed and the Range limit of ADR-0022. The Entangle limit of ADR-0022 stays.
 
 We decided:
 
@@ -47,7 +47,7 @@ The 90 cards change as follows. The balance pass then changes the cards one at a
 - **One value Keyword, as Charge N: Swift N and Ranged N.** Rejected. "Ranged 2" means Range 3, which confuses a Player. Three fixed names for each type are easier to read.
 - **Values that increase with the Rank, as Charge N and Knockback N.** Rejected. Combine would make the Ranks hard to balance, for the reason above.
 - **Keep "No Unit has a Range of more than 3".** Rejected. Skill Cards already give Range 4, and the Epic guard on Extreme-range keeps the known risk small.
-- **Guards on fast Ranged Units and fast Flying Units (the old ADR-0024 rules).** Rejected. The Keywords must be the only card rule for Speed and Range. The simulator and the Power Budget find a card that is too strong.
+- **Guards on fast Ranged Units and fast Flying Units (the old Role-era guards).** Rejected. The Keywords must be the only card rule for Speed and Range. The simulator and the Power Budget find a card that is too strong.
 - **Count the base Speed from 0 in the Power Points.** Rejected. Base Speed 2 then costs 4 points on each card, and each card that had Speed 1 loses 1 Attack or 2 HP. The speed-up is the same for all cards, so it is not a cost for one card.
 - **"Sprint", "Cavalry" and "Hindered" as names.** Rejected. "Sprint" is on the _Avoid_ list of Charge. "Hindered" sounds like Hobbled. "Cavalry" is a type of soldier, not a trait, and a Feral or Goblin card with it reads strangely.
 

@@ -337,7 +337,7 @@ The Packs screen shows the three Packs side by side ([Economy 3.1](./07-economy.
 
 ### 8.1 Rules for the Pack art
 
-- **Material, not size.** The three Packs have the same body size and the same position on the canvas. The material shows the job of each Pack, from cheap to rich: matte paper, shiny foil, then velvet and gold. A more expensive Pack is not a better deal ([ADR-0027](../adr/0027-the-three-packs-give-equal-value-for-each-coin.md)), so the Royal Pack is not larger or brighter. No glow, no light rays and no extra sparkles.
+- **Material, not size.** The three Packs have the same body size and the same position on the canvas. The material shows the job of each Pack, from cheap to rich: matte paper, shiny foil, then velvet and gold. A more expensive Pack is not a better deal ([ADR-0026](../adr/0026-the-three-packs-give-equal-value-for-each-coin.md)), so the Royal Pack is not larger or brighter. No glow, no light rays and no extra sparkles.
 - **Value, from light to dark.** In greyscale, the bodies go from light to dark: the Peddler Pack is light kraft, the Merchant Pack is a mid-dark purple with a bright band, and the Royal Pack is the darkest. The gold of the Royal Pack is only on the corners, the edges and the seal, on less than about 15% of the front face. Thus the three Packs are easy to tell apart, and the Royal Pack is not brighter.
 - **View.** Upright, from the front, with a little depth. The bottom edge is flat and level, so that the three Packs stand on one line.
 - **Light.** From the upper left, as in all other art.
@@ -884,7 +884,7 @@ Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/bazaar/` (
 
 ## 17. Seaport
 
-The Seaport screen ([Economy 2.8](./07-economy.md#28-seaport-expeditions), [ADR-0053](../adr/0053-the-seaport-gathers-coin-on-the-device-clock.md)) shows the harbour of the Seaport quay (2.10), seen from the water, behind the Expedition plaques and the berth plate. One painting covers the full screen. It makes the Seaport busy, sunny and a little funny: the ship goes out while the Player is away, and the cargo waits on the quay. The image is `apps/web/public/town/seaport-inside.webp`, and its source is `apps/web/art/town/seaport-inside.webp`.
+The Seaport screen ([Economy 2.8](./07-economy.md#28-seaport-expeditions), [ADR-0051](../adr/0051-the-seaport-gathers-coin-on-the-device-clock.md)) shows the harbour of the Seaport quay (2.10), seen from the water, behind the Expedition plaques and the berth plate. One painting covers the full screen. It makes the Seaport busy, sunny and a little funny: the ship goes out while the Player is away, and the cargo waits on the quay. The image is `apps/web/public/town/seaport-inside.webp`, and its source is `apps/web/art/town/seaport-inside.webp`.
 
 ### 17.1 Rules for the Seaport art
 

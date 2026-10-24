@@ -6,7 +6,7 @@ import {
 } from "../content/expeditions";
 import type { Expedition, ExpeditionReward } from "../content/expeditions";
 /**
- * The Seaport actions of the Profile (Economy 2.8, ADR-0053): Dispatch the
+ * The Seaport actions of the Profile (Economy 2.8, ADR-0051): Dispatch the
  * ship on an Expedition, then Collect its reward. They are pure, as the other
  * Profile actions: the web sends `now`, the device time in milliseconds since
  * the epoch, so the same Profile and the same `now` always give the same

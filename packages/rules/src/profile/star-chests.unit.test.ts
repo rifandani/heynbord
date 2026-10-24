@@ -43,7 +43,7 @@ describe("claimStarChest (Economy 2.2)", () => {
     expect(claim?.profile.claimedStarChests).toEqual({ "1": [10] });
   });
 
-  it("adds 2 Forge Stones of the tier of the Region from the 10-Star chest (ADR-0038)", () => {
+  it("adds 2 Forge Stones of the tier of the Region from the 10-Star chest (ADR-0036)", () => {
     const claim = claimStarChest(withStars(10), 1, 10);
     expect(claim?.forgeStones).toEqual({ tier: "common", count: 2 });
     expect(claim?.profile.forgeStones).toEqual({

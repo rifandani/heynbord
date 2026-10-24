@@ -34,7 +34,7 @@ const withGear = (
   gear: { ...NO_GEAR, ...gear },
 });
 
-describe("upgradeGear (GDD 7.3, Economy 3.4, ADR-0038)", () => {
+describe("upgradeGear (GDD 7.3, Economy 3.4, ADR-0036)", () => {
   it("upgrades level 0 to 1 for 5 Coin and 1 Common Forge Stone, and changes only that slot", () => {
     const upgraded = upgradeGear(withGear(100), "weapon");
     expect(upgraded?.coin).toBe(95);
@@ -49,7 +49,7 @@ describe("upgradeGear (GDD 7.3, Economy 3.4, ADR-0038)", () => {
     expect(upgraded?.gear.banner).toBe(20);
   });
 
-  it("upgrades level 20 to 21 with a Legendary Forge Stone, and an Epic Forge Stone cannot replace it (ADR-0039)", () => {
+  it("upgrades level 20 to 21 with a Legendary Forge Stone, and an Epic Forge Stone cannot replace it (ADR-0037)", () => {
     const upgraded = upgradeGear(withGear(1155, { weapon: 20 }), "weapon");
     expect(upgraded?.coin).toBe(0);
     expect(upgraded?.forgeStones).toEqual({ ...ONE_OF_EACH, legendary: 0 });

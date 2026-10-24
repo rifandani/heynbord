@@ -1,6 +1,6 @@
 # Heroic gives Attack after each attack on a Unit
 
-Before, **Heroic N** gave +N damage when its Unit attacked a Hero. Now, after a Unit with Heroic attacks an enemy Unit, it gets +N Attack, the **Heroic bonus**. Each attack on an enemy Unit adds more, with no limit. The bonus stays until the Unit leaves the Board, and Rebirth ends it. The Rank sets N: 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary. A card does not set its own N. Heroic stays the Orc Race Keyword ([ADR-0026](0026-each-race-has-one-race-keyword.md)).
+Before, **Heroic N** gave +N damage when its Unit attacked a Hero. Now, after a Unit with Heroic attacks an enemy Unit, it gets +N Attack, the **Heroic bonus**. Each attack on an enemy Unit adds more, with no limit. The bonus stays until the Unit leaves the Board, and Rebirth ends it. The Rank sets N: 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary. A card does not set its own N. Heroic stays the Orc Race Keyword ([ADR-0025](0025-each-race-has-one-race-keyword.md)).
 
 The name stays "Heroic", although the Keyword no longer has a connection to Heroes. Orcs become strong in the fight, and the fight makes heroes of them.
 

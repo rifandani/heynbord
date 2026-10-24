@@ -13,5 +13,5 @@ We did this because the three control Statuses then each stop a different part o
 ## Consequences
 
 - The Power Budget needs a Lightning point value in GDD 5.2 (now Fire = 3, Frost = 3, Holy = 2). #65 sets a provisional value: Lightning = 3, the same as Frost ([GDD 13](../game/03-game-design.md#13-balance-process)).
-- A Ranged Unit with a Status on each hit can lock one enemy ([ADR-0025](./0025-no-ranged-unit-has-frost-damage.md)). A Paralyzed Unit can still move, but it does not attack and does not Retaliate. Thus a Ranged Creature Card with Lightning needs a lock check in the sim, the same as ADR-0025, before it goes into the content.
+- A Ranged Unit with a Status on each hit can lock one enemy ([ADR-0024](./0024-no-ranged-unit-has-frost-damage.md)). A Paralyzed Unit can still move, but it does not attack and does not Retaliate. Thus a Ranged Creature Card with Lightning needs a lock check in the sim, the same as ADR-0024, before it goes into the content.
 - Lightning needs a Damage Type color and an icon that fit all Races, and a row in the Damage Type table of the GDD.

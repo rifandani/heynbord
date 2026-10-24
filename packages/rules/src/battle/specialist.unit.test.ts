@@ -94,7 +94,7 @@ const boltHits = (events: readonly BattleEvent[]) =>
     (event) => event.source === "bolt"
   );
 
-describe("Specialist Keywords (ADR-0050)", () => {
+describe("Specialist Keywords (ADR-0048)", () => {
   describe("Bolt N", () => {
     it("deals its Damage Type to an enemy Hero when no enemy Unit is there", () => {
       const state = emptyBattle();
@@ -114,7 +114,7 @@ describe("Specialist Keywords (ADR-0050)", () => {
       });
     });
 
-    it("hits any enemy Hero, not only the Hero of its Front (ADR-0055)", () => {
+    it("hits any enemy Hero, not only the Hero of its Front (ADR-0053)", () => {
       const hitHeroes = new Set<number>();
       for (let random = 0; random < 60; random += 1) {
         const state = emptyBattle({
@@ -140,7 +140,7 @@ describe("Specialist Keywords (ADR-0050)", () => {
       expect(hitHeroes).toEqual(new Set([0, 1, 2]));
     });
 
-    it("never hits a Defeated Hero (ADR-0055)", () => {
+    it("never hits a Defeated Hero (ADR-0053)", () => {
       const hitHeroes = new Set<number>();
       for (let random = 0; random < 60; random += 1) {
         const state = emptyBattle({
@@ -178,7 +178,7 @@ describe("Specialist Keywords (ADR-0050)", () => {
       const hits = boltHits(events);
       expect(hits).toHaveLength(1);
       expect(hits[0]?.target).toEqual({ _tag: "Unit", unitId: target.id });
-      // Bolt applies no Status, so Fire damage does not Burn (ADR-0050).
+      // Bolt applies no Status, so Fire damage does not Burn (ADR-0048).
       expect(target.burn).toBe(0);
       expect(eventsOfType(events, "StatusApplied")).toHaveLength(0);
     });
@@ -423,7 +423,7 @@ describe("Specialist Keywords (ADR-0050)", () => {
   });
 });
 
-describe("The second Specialist Keywords (ADR-0056)", () => {
+describe("The second Specialist Keywords (ADR-0054)", () => {
   describe("Wallbreaker", () => {
     it("doubles the damage to a Unit with Wall", () => {
       const state = emptyBattle();

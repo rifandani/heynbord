@@ -278,7 +278,7 @@ export const extract = <
 /**
  * Craft (GDD 7.4, Economy 3.3): Essence becomes 1 copy of the card in its Base
  * Rank. Only a Common, Uncommon or Rare card can be Crafted: a card with Base
- * Rank Epic or Legendary has no Craft cost (ADR-0052). It adds 1 to the
+ * Rank Epic or Legendary has no Craft cost (ADR-0050). It adds 1 to the
  * `crafts` Tally. `null` when the Player level is below the unlock level, the
  * card is not Discovered, the card has no Craft cost, or the Essence is not
  * enough.
@@ -322,7 +322,7 @@ export interface FuseRecipe {
 }
 
 /**
- * The recipe of some input copies (ADR-0051): the Rank and the card type of
+ * The recipe of some input copies (ADR-0049): the Rank and the card type of
  * the first copy. `null` when there is no copy, a copy is Legendary, or the
  * copies do not all have the same Rank and card type. The number of copies is
  * not checked here: the Workshop fills the slots one by one.
@@ -369,7 +369,7 @@ const groupPool = (
   );
 
 /**
- * The chance of one group in a Fuse (ADR-0051). Each input copy gives its
+ * The chance of one group in a Fuse (ADR-0049). Each input copy gives its
  * group one share. A group with no card in the Fuse pool has no share
  * (`shares` is 0), and the other shares grow. The chance is `shares / total`.
  */
@@ -386,7 +386,7 @@ export interface FuseChance {
 
 /**
  * The chance of each group of the input copies, in the order of their first
- * copy (ADR-0051). Empty when the input copies have no recipe (`fuseRecipe`).
+ * copy (ADR-0049). Empty when the input copies have no recipe (`fuseRecipe`).
  * The game shows these chances before the Fuse (Pillar 1).
  */
 export const fuseChances = (
@@ -509,7 +509,7 @@ const rollFuse = (
 };
 
 /**
- * Fuse (GDD 7.4, Economy 3.7, ADR-0051): 2 to 4 copies of one Rank and
+ * Fuse (GDD 7.4, Economy 3.7, ADR-0049): 2 to 4 copies of one Rank and
  * Essence become 1 copy of a card from the Fuse pool, in its Base Rank. The
  * card is then Discovered. The random state of the reward rolls selects the
  * card, so the same Profile always gives the same card. The input copies go

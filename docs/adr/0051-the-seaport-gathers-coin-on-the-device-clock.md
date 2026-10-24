@@ -8,14 +8,14 @@ The rules of the decision:
 - **The reward is pro rata.** `reward = rate × min(now − startedAt, duration)`, in whole units, rounded down. The reward stops at the duration, and the ship waits. The Player never loses anything, so there is no minimum time away: an early Collect gives only the share of the time away. The Forge Stone of the Grand Expedition needs the full voyage, so a Forge Stone is always whole.
 - **The rules stay pure.** The web sends `now` with each Command (`startExpedition`, `activeExpedition`, `collectExpedition`). The same Profile and the same `now` always give the same reward, and a page load never rolls a reward again (ADR-0006). The reward uses no random value.
 - **The clock can move back.** When `now` is before the Dispatch, the reward is 0, and a Collect does nothing: the ship stays on its Expedition until the clock is correct again.
-- **The Seaport is a supplement.** One day of Expeditions gives about one hour of active play, and the Seaport is never the best Coin source. It gives no Heynstones ([ADR-0008](0008-heynstones-buy-only-cosmetics-and-conveniences.md), [ADR-0044](0044-star-chests-give-no-heynstones.md)), no exchange of one resource for another, no Seaport levels, no VIP and no scale with the Power of the Deck. There is no Energy, no daily cap and no punishment for time away (Pillar 1).
+- **The Seaport is a supplement.** One day of Expeditions gives about one hour of active play, and the Seaport is never the best Coin source. It gives no Heynstones ([ADR-0008](0008-heynstones-buy-only-cosmetics-and-conveniences.md), [ADR-0042](0042-star-chests-give-no-heynstones.md)), no exchange of one resource for another, no Seaport levels, no VIP and no scale with the Power of the Deck. There is no Energy, no daily cap and no punishment for time away (Pillar 1).
 
 ## Considered Options
 
 - **A fixed reward with a minimum time away, as in the original game (10 minutes).** Rejected. With the pro-rata rule, a minimum time has no use: an early Collect gives only a small share. A minimum time only adds a wait that the Player cannot see.
 - **A reward that the web rolls at each page load.** Rejected. A reload could give a different reward, and the rules package would read the clock. The rules take `now` as an input, as they take a seed.
 - **A server timestamp in v1.** Rejected. v1 has no server (technical design 5). A server for one clock adds a network dependency to an offline game.
-- **Copy the original rewards: Heynstones, an exchange of resources, Seaport levels, VIP and Power scaling.** Rejected. Heynstones are one-time only (ADR-0008), Forge Stones come from a fixed source list ([ADR-0038](0038-gear-upgrades-need-earn-only-forge-stones.md)), no Building has levels, and Power scaling gives more to the Players who already have more (Pillar 1).
+- **Copy the original rewards: Heynstones, an exchange of resources, Seaport levels, VIP and Power scaling.** Rejected. Heynstones are one-time only (ADR-0008), Forge Stones come from a fixed source list ([ADR-0036](0036-gear-upgrades-need-earn-only-forge-stones.md)), no Building has levels, and Power scaling gives more to the Players who already have more (Pillar 1).
 
 ## Consequences
 

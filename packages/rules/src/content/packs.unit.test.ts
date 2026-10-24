@@ -5,7 +5,7 @@ import { getPack, PACKS } from "./packs";
 import { isRankAtLeast, RANKS } from "./ranks";
 import { ClassId } from "./schema";
 
-describe("Packs (Economy 3.1, ADR-0027)", () => {
+describe("Packs (Economy 3.1, ADR-0026)", () => {
   it("has the prices, Drop Rates and rules of the Economy tables", () => {
     expect(PACKS).toEqual([
       {

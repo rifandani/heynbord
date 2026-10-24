@@ -668,7 +668,7 @@ describe("starsFor (GDD 4.11)", () => {
     expect(starsFor(finished(20, 14, "player"), stage)).toBe(3);
   });
 
-  it("gives 3 Stars only before the Star Turn of the Stage (ADR-0047)", () => {
+  it("gives 3 Stars only before the Star Turn of the Stage (ADR-0045)", () => {
     const win = finished(40, 20, "player");
     expect(starsFor(win, { starTurn: 20 })).toBe(2);
     expect(starsFor(win, { starTurn: 21 })).toBe(3);

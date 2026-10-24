@@ -65,7 +65,7 @@ export interface FloorResultInput {
   /** The Floor number, 1 to 50. */
   readonly floor: number;
   readonly won: boolean;
-  /** The HP that the enemy Hero lost. It sets the share of a loss reward (ADR-0043). */
+  /** The HP that the enemy Hero lost. It sets the share of a loss reward (ADR-0041). */
   readonly enemyHeroDamage: EnemyHeroDamage;
 }
 
@@ -115,9 +115,9 @@ type FloorResultProfile = Pick<
 /**
  * Applies the result of a Floor Battle (Economy 2.3). A win gives the
  * first-win reward of the Floor (`floorFirstWinReward`) and 2 Campaign Sweep
- * Tickets (ADR-0035), and makes the next Floor the Current Floor. A loss
+ * Tickets (ADR-0039), and makes the next Floor the Current Floor. A loss
  * gives 10% of the Coin and 25% of the XP of the win, and only the share of
- * the lost enemy Hero HP of them (ADR-0043). A Floor gives no Stars and no
+ * the lost enemy Hero HP of them (ADR-0041). A Floor gives no Stars and no
  * card. A Boss Floor win gives its Earn-only Cosmetic (Economy 2.3). It adds
  * the First Pack when the level goes to the Packs unlock. It throws when
  * Heynspire is not open, or when `floor` is not the Current Floor. An Abandon

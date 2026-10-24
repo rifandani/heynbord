@@ -1,5 +1,5 @@
 /**
- * Fits the Skill Card rates to the swap rule (issue #50, ADR-0032). It
+ * Fits the Skill Card rates to the swap rule (issue #50, ADR-0031). It
  * prints the rates, the Damage Type points and the Recall weight, and the
  * value of each card. It does not change `balance.ts`.
  *

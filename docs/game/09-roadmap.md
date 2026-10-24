@@ -40,7 +40,7 @@ Regions 2 to 5 (M3) come after the playtest, because their tuning needs the Work
 ### M3 — Content (weeks 13–19)
 
 - [ ] All 136 cards: 96 Creature Cards and 40 Skill Cards. Final art is ready for 130; the 6 Specialists show their emblem until their art is done.
-- [ ] Regions 2 to 5 (40 Stages), with bosses and story scenes ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)). Region 2 (The Red Mesas): the Stage design is done ([14 — Campaign Stages, 3](./14-campaign-stages.md#3-region-2-the-red-mesas)), and its Stage data and tuning are in progress. Region 3 (The Glowcap Hollows): the Stage design, the Stage data and the tuning are done ([14 — Campaign Stages, 4](./14-campaign-stages.md#4-region-3-the-glowcap-hollows)).
+- [ ] Regions 2 to 5 (40 Stages), with bosses and story scenes ([ADR-0034](../adr/0034-the-campaign-has-5-regions-and-each-region-adds-one-race.md)). Region 2 (The Red Mesas): the Stage design is done ([14 — Campaign Stages, 3](./14-campaign-stages.md#3-region-2-the-red-mesas)), and its Stage data and tuning are in progress. Region 3 (The Glowcap Hollows): the Stage design, the Stage data and the tuning are done ([14 — Campaign Stages, 4](./14-campaign-stages.md#4-region-3-the-glowcap-hollows)).
 - [ ] Region Map and Battle Painting images for Regions 2, 3 and 5 ([12 — Region Concepts](./12-region-concepts.md), [13 — Battlefield Concepts](./13-battlefield-concepts.md)). Until a Region has its Battle Painting, it uses the Hearthvale painting.
 - [x] Enemy AI scores for Sabotage, Hobble and Last Breath when it selects a card to summon (issue [#84](https://github.com/rifandani/heynbord/issues/84), GDD 9).
 - [ ] Hints for each Race and Keyword when the Player meets them for the first time.
@@ -51,7 +51,7 @@ Regions 2 to 5 (M3) come after the playtest, because their tuning needs the Work
 - [ ] `id-id` translation of all text.
 - [ ] Final names for Regions, Bosses, Dungeons and the 4 new Dungeon Bosses, Heynspire and the lore names.
 
-**Schedule risk.** The Campaign has 50 Stages, so M3 has 40 new Stages ([ADR-0036](../adr/0036-the-campaign-has-5-regions-and-each-region-adds-one-race.md)). If M3 is late, apply the cut rule of section 1. Do not cut a Region: each Region adds one Debut Race.
+**Schedule risk.** The Campaign has 50 Stages, so M3 has 40 new Stages ([ADR-0034](../adr/0034-the-campaign-has-5-regions-and-each-region-adds-one-race.md)). If M3 is late, apply the cut rule of section 1. Do not cut a Region: each Region adds one Debut Race.
 
 **Exit:** A player can finish the full Campaign. Balance and economy reports meet their targets. Dungeon 1 (4 Lanes) is easy to read on a phone in landscape (screenshot check).
 
@@ -60,7 +60,7 @@ Regions 2 to 5 (M3) come after the playtest, because their tuning needs the Work
 - [ ] Heynspire (50 Floors). All Floors use 4 Lanes ([ADR-0010](../adr/0010-the-type-of-battle-sets-the-number-of-lanes.md)). Heynspire unlocks after the Region 5 Boss Stage, so the strength of Floor 1 starts at the values of the Region 5 Boss.
 - [ ] Achievements and Cosmetics.
 - [ ] Heynstones and the Bazaar (Cosmetics). Check the Heynstone total again: Star chests give no Heynstones, so the supply is about 1,250 ([07 — Economy, 2.6](./07-economy.md)).
-- [ ] Dungeon Sweep (BAT-12, [ADR-0041](../adr/0041-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)), Battle Log (BAT-13: #73, #74, #76).
+- [ ] Dungeon Sweep (BAT-12, [ADR-0039](../adr/0039-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)), Battle Log (BAT-13: #73, #74, #76).
 - [ ] Mobile landscape layout and touch input. Portrait warning.
 - [ ] Sound effects and music.
 - [ ] Accessibility options and keyboard play.

@@ -40,7 +40,7 @@ const ECONOMY_COSTS = [
   [1625, "legendary"],
 ] as const;
 
-describe("Gear upgrades (Economy 3.4, ADR-0038, ADR-0039)", () => {
+describe("Gear upgrades (Economy 3.4, ADR-0036, ADR-0037)", () => {
   it("costs 2.5 × n × (n + 1) Coin and 1 Forge Stone of the tier of level n, as in the Economy table", () => {
     expect(MAX_GEAR_LEVEL).toBe(ECONOMY_COSTS.length);
     for (const [index, [coin, tier]] of ECONOMY_COSTS.entries()) {
@@ -68,7 +68,7 @@ describe("Gear upgrades (Economy 3.4, ADR-0038, ADR-0039)", () => {
     });
   });
 
-  it("costs 7,700 Coin for levels 0 to 20 and 6,925 Coin for levels 21 to 25 (ADR-0039)", () => {
+  it("costs 7,700 Coin for levels 0 to 20 and 6,925 Coin for levels 21 to 25 (ADR-0037)", () => {
     expect(gearUpgradePathCoin(0, 20)).toBe(7700);
     expect(gearUpgradePathCoin(20, MAX_GEAR_LEVEL)).toBe(6925);
   });
@@ -80,7 +80,7 @@ describe("Gear upgrades (Economy 3.4, ADR-0038, ADR-0039)", () => {
     );
   });
 
-  it("costs half of the ADR-0037 Coin: 20 × n² for levels 2n − 1 and 2n", () => {
+  it("costs half of the ADR-0035 Coin: 20 × n² for levels 2n − 1 and 2n", () => {
     for (let pair = 1; pair <= 20 / 2; pair += 1) {
       expect(gearUpgradePathCoin(pair * 2 - 2, pair * 2), `pair ${pair}`).toBe(
         20 * pair * pair
@@ -125,7 +125,7 @@ describe("Gear stats (GDD 7.3)", () => {
     ]);
   });
 
-  it("gives at level 2n the stats of the old level n, so a migrated Profile keeps its stats (ADR-0037)", () => {
+  it("gives at level 2n the stats of the old level n, so a migrated Profile keeps its stats (ADR-0035)", () => {
     expect(GEAR_SLOTS.map((slot) => gearStatValue(slot, 6))).toEqual([
       300, 6, 450, 300,
     ]);

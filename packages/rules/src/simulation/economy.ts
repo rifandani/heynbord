@@ -2,7 +2,7 @@
  * Economy simulation (Economy 7.1): simulated Players go from a new Profile to
  * Player level 30 and the Floor 50 win, with a win chance and a 3-Star chance
  * for each Battle. It does not play Battles. Each Player plays each Stage of
- * a Region again until it has 3 Stars (ADR-0046), and uses its Sweep Tickets.
+ * a Region again until it has 3 Stars (ADR-0044), and uses its Sweep Tickets.
  * Each Player has one Play Style, which sets how it spends Coin. A play
  * calendar turns the Battles into days, so the Player also sends the ship of
  * the Seaport between its sessions. The report gives the values at each
@@ -179,7 +179,7 @@ const LEVEL_WIN_BONUS = 0.005;
 /**
  * The win chance that each mean Gear level adds. Measured one time with
  * `sim stage --gear N` on Region 1 with Vanguard: about +2.5 points for each
- * old level, and a level is half of an old level (ADR-0037), so +1.25 points
+ * old level, and a level is half of an old level (ADR-0035), so +1.25 points
  * (Economy 7.1).
  */
 const GEAR_WIN_BONUS = 0.0125;
@@ -324,7 +324,7 @@ export interface RangeTarget {
 /** The targets of one checkpoint of Economy 4. A missing value has no target. */
 interface PacingTarget {
   readonly hours?: RangeTarget;
-  /** The report judges it on the First-try run, not on the medians (ADR-0046). */
+  /** The report judges it on the First-try run, not on the medians (ADR-0044). */
   readonly level?: number;
   readonly packsOpened?: RangeTarget;
   readonly firstCombine?: boolean;
@@ -480,7 +480,7 @@ export interface CheckpointSnapshot {
   /** In Copper. */
   readonly coin: number;
   readonly essence: number;
-  /** The Forge Stones that the Player has and did not use (ADR-0038). */
+  /** The Forge Stones that the Player has and did not use (ADR-0036). */
   readonly forgeStones: ForgeStones;
   /** The Heynspire Floors won, from Floor 1. */
   readonly floorsWon: number;
@@ -536,7 +536,7 @@ export interface EconomyPlayer {
   /** The Collection rules of the game change it (GDD 7.4). */
   collection: Collection;
   readonly gear: Record<keyof GearLevels, number>;
-  /** The Forge Stones that the Player has (ADR-0038). */
+  /** The Forge Stones that the Player has (ADR-0036). */
   forgeStones: ForgeStones;
   deckSlots: number;
   freePackOpened: boolean;
@@ -744,7 +744,7 @@ const buyPack = (player: EconomyPlayer, packId: PackId): boolean => {
 
 /**
  * Upgrades the lowest Gear item by one level, for the Coin and the Forge Stone
- * of the new level (ADR-0038). Returns false when it cannot, so the Play Style
+ * of the new level (ADR-0036). Returns false when it cannot, so the Play Style
  * goes to its next priority.
  */
 const upgradeGear = (player: EconomyPlayer, upTo = MAX_GEAR_LEVEL): boolean => {
@@ -939,7 +939,7 @@ const extractExtras = (player: EconomyPlayer): void => {
  * The Craft candidates (Economy 3.3, 7.1): the Discovered cards with Base
  * Rank Rare that have 1 copy in the Base Rank. A Craft makes a Combine pair
  * toward an Epic copy. Only a Rare card can make such a pair: a card with
- * Base Rank Epic or Legendary has no Craft cost (ADR-0052).
+ * Base Rank Epic or Legendary has no Craft cost (ADR-0050).
  */
 const craftCandidates = (player: EconomyPlayer): readonly CardDefinition[] =>
   poolCards().filter(
@@ -1021,7 +1021,7 @@ const spendBalanced = (player: EconomyPlayer): void => {
   const saving = combineLegendary(player);
   for (;;) {
     const pack = !saving && buyPack(player, "merchant");
-    // 2 Gear levels: one old level (ADR-0037).
+    // 2 Gear levels: one old level (ADR-0035).
     const gear = upgradeGear(player);
     const moreGear = gear && upgradeGear(player);
     if (!pack && !gear && !moreGear) {
@@ -1668,13 +1668,13 @@ export const simulateEconomyRun = (options: EconomyRunOptions): EconomyRun => {
       gearAtFloors.push({ ...player.gear });
     }
     const reward = floorFirstWinReward(floor);
-    // A Boss Floor has the target of a Boss Stage (ADR-0042).
+    // A Boss Floor has the target of a Boss Stage (ADR-0040).
     const target = floorTarget({ boss: isBossFloor(floor) });
     const won = wins(winChance(middle(target), floors[floor - 1] ?? 1, player));
     if (!won) {
       // A loss gives 10% of the Coin and 25% of the XP of the win (GDD 7.1).
       // The sim plays no Battle, so it gives the full loss reward, not the
-      // Loss share (ADR-0043): it is the most that a loss can give.
+      // Loss share (ADR-0041): it is the most that a loss can give.
       giveReward(player, {
         coin: outcomeCoin(reward.coin, "loss"),
         xp: outcomeXp(reward.xp, "loss"),
@@ -1832,7 +1832,7 @@ const bestGear = (
 };
 
 /**
- * The Expected Gear of each Campaign Stage, by Stage id (ADR-0034): the Gear
+ * The Expected Gear of each Campaign Stage, by Stage id (ADR-0033): the Gear
  * levels of each slot before the first try of the Stage on the First-try
  * Path. Of all Play Styles, it takes the one with the highest mean Gear level
  * before that Stage. The first Play Style of PLAY_STYLES wins a tie.
@@ -1852,8 +1852,8 @@ export const expectedGear = (): ReadonlyMap<string, GearLevels> => {
 };
 
 /**
- * The Expected Gear of each Heynspire Floor, from Floor 1 (ADR-0034,
- * ADR-0042): the Gear levels before the first try of the Floor on the
+ * The Expected Gear of each Heynspire Floor, from Floor 1 (ADR-0033,
+ * ADR-0040): the Gear levels before the first try of the Floor on the
  * First-try Path, with the same choice of Play Style as `expectedGear`.
  */
 export const expectedFloorGear = (): readonly GearLevels[] => {
@@ -1868,7 +1868,7 @@ export const expectedFloorGear = (): readonly GearLevels[] => {
 };
 
 /**
- * The Expected Gear at a Player level (ADR-0034): the Gear levels when the
+ * The Expected Gear at a Player level (ADR-0033): the Gear levels when the
  * First-try Path gets to `level`, before its first Battle at that level. It
  * is the Expected Gear of a Dungeon at its unlock level. After the Campaign,
  * the First-try Path wins the Floors and then Dungeons until level 30.
@@ -1948,7 +1948,7 @@ interface CheckpointSummary {
   /** The number of Players that got to the checkpoint. */
   readonly reached: number;
   readonly metrics: Readonly<Record<Metric, Spread>> | null;
-  /** The Forge Stones that the Players did not use, by tier (ADR-0038). */
+  /** The Forge Stones that the Players did not use, by tier (ADR-0036). */
   readonly forgeStones: Readonly<Record<ForgeStoneTier, Spread>> | null;
   readonly repeats: Readonly<Record<RepeatMetric, Spread>> | null;
   /** The Seaport income of each kind (Economy 2.8). */
@@ -2169,7 +2169,7 @@ const pacingValue = (
 ): number | null => {
   const summary = report.checkpoints[id];
   switch (target) {
-    // The Player level targets are for the First-try run (ADR-0046).
+    // The Player level targets are for the First-try run (ADR-0044).
     case "level": {
       return report.firstTry.checkpoints[id]?.level ?? null;
     }

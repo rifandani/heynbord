@@ -57,7 +57,7 @@ export const finishBattle = (ctx: StepContext, result: BattleResult): void => {
 };
 
 /**
- * Vampirism (ADR-0050): the Unit heals the HP that its Physical hit dealt.
+ * Vampirism (ADR-0048): the Unit heals the HP that its Physical hit dealt.
  * Every Physical hit counts, also Retaliate and Trample. The heal stops at
  * its maximum HP.
  */
@@ -78,7 +78,7 @@ const vampirism = (ctx: StepContext, hit: Hit, amount: number): void => {
 };
 
 /**
- * Soul Harvest (ADR-0050): each Unit of the other Side gets +1 Attack and +1
+ * Soul Harvest (ADR-0048): each Unit of the other Side gets +1 Attack and +1
  * HP when an enemy Unit is killed. A kill by any source counts. A Rebirth is
  * not a kill, and a Unit that a Defeated Hero removes is not a kill.
  */
@@ -166,7 +166,7 @@ const rebirth = (ctx: StepContext, unit: UnitState): boolean => {
   unit.rallied = 0;
   unit.heroicBonus = 0;
   // The Soul Harvest bonus raised both the current and the maximum HP, so
-  // Rebirth takes the maximum HP back too (ADR-0050).
+  // Rebirth takes the maximum HP back too (ADR-0048).
   unit.maxHp -= unit.soulHarvestBonus;
   unit.soulHarvestBonus = 0;
   unit.bonusBulwark = 0;
@@ -219,7 +219,7 @@ const applyHitStatus = (
 };
 
 /**
- * Iron Guard (ADR-0050): a Physical hit deals at most 3 damage. It comes after
+ * Iron Guard (ADR-0048): a Physical hit deals at most 3 damage. It comes after
  * Bulwark, Crit, Block and Exposed, and before Ward.
  */
 const ironGuardCap = (
@@ -248,7 +248,7 @@ interface HitResult {
 
 /**
  * The rules of a hit that the Damage calculation uses: which steps of GDD 4.7
- * apply, and the 2 new Keywords of ADR-0056.
+ * apply, and the 2 new Keywords of ADR-0054.
  */
 interface HitRules {
   /** The hit is status damage or True Damage: no Bulwark, Exposed, Crit or Block. */
@@ -257,7 +257,7 @@ interface HitRules {
   readonly trueDamage: boolean;
   /** The hit is Physical, so Bulwark and Exposed apply. */
   readonly physical: boolean;
-  /** The damage cannot be reduced: Piercing (ADR-0056). */
+  /** The damage cannot be reduced: Piercing (ADR-0054). */
   readonly piercing: boolean;
   /** The value of the hit is doubled against a Unit with Wall: Wallbreaker. */
   readonly wallbreaker: boolean;
@@ -294,10 +294,10 @@ const hitAmount = (
   rules: HitRules
 ): HitAmount => {
   const value = rules.wallbreaker ? hit.amount * 2 : hit.amount;
-  // Bulwark (step 3) reduces only Physical damage (ADR-0031).
+  // Bulwark (step 3) reduces only Physical damage (ADR-0030).
   const bulwark =
     rules.physical && !rules.piercing ? unit.bulwark + unit.bonusBulwark : 0;
-  // Resistance (ADR-0056) reduces the other Damage Types, like Bulwark does
+  // Resistance (ADR-0054) reduces the other Damage Types, like Bulwark does
   // for Physical damage.
   const resistance =
     !rules.fixed && !rules.physical && !rules.piercing ? unit.resistance : 0;
@@ -310,7 +310,7 @@ const hitAmount = (
     amount *= 2;
   }
   const blockChance = heroState(ctx.state, ownerOf(unit)).unitBlock;
-  // Holy damage cannot be Blocked (ADR-0031).
+  // Holy damage cannot be Blocked (ADR-0030).
   const blocked =
     !rules.fixed &&
     !rules.piercing &&
@@ -319,7 +319,7 @@ const hitAmount = (
   if (blocked) {
     amount = Math.ceil(amount / 2);
   }
-  // Iron Guard (ADR-0050): a Physical hit deals at most 3 damage.
+  // Iron Guard (ADR-0048): a Physical hit deals at most 3 damage.
   return {
     amount: rules.piercing
       ? amount
@@ -348,7 +348,7 @@ const applyWard = (
 };
 
 /**
- * Sends the Keyword events of a hit: Wallbreaker and Piercing (ADR-0056). Each
+ * Sends the Keyword events of a hit: Wallbreaker and Piercing (ADR-0054). Each
  * event comes before the event of its result.
  */
 const activateHitKeywords = (
@@ -370,13 +370,13 @@ const activateHitKeywords = (
 /**
  * Damage calculation (GDD 4.7): the value, minus Bulwark for a Physical hit, plus
  * Exposed for a Physical hit, Crit ×2, Block ÷2 rounded up (not for Holy),
- * minimum 0 (ADR-0031). Then a
+ * minimum 0 (ADR-0030). Then a
  * Ward absorbs damage, also status damage. Absorbed damage is not dealt: `dealt` is the damage after
  * the Ward. True Damage skips all of these steps. Then Steadfast keeps the
  * Unit at 1 HP. A `noRebirth` hit that kills stops Rebirth. Fire gives Burn,
  * Frost gives Freeze and Lightning gives Paralyzed, also at 0 damage.
  *
- * The new Keywords of ADR-0056 change the steps: Wallbreaker doubles the value
+ * The new Keywords of ADR-0054 change the steps: Wallbreaker doubles the value
  * of the hit against a Unit with Wall, Resistance reduces the damage of the
  * other Damage Types, and Piercing skips every step that reduces the damage.
  */
@@ -391,10 +391,10 @@ export const damageUnit = (
   const fixed = status || trueDamage;
   const physical = !fixed && hit.damageType === "physical";
   const dealer = hit.dealer?._tag === "Unit" ? hit.dealer : undefined;
-  // Piercing (ADR-0056): the damage cannot be reduced, so it skips Bulwark,
+  // Piercing (ADR-0054): the damage cannot be reduced, so it skips Bulwark,
   // Resistance, Block, the Iron Guard cap and the Ward.
   const piercing = !fixed && (dealer?.piercing ?? false);
-  // Wallbreaker (ADR-0056): the hit is doubled against a Unit with Wall. The
+  // Wallbreaker (ADR-0054): the hit is doubled against a Unit with Wall. The
   // doubling comes first, so Bulwark, Exposed, Crit, Block and the Ward apply
   // to the doubled damage.
   const wallbreaker = (dealer?.wallbreaker ?? false) && unit.wall;
@@ -514,7 +514,7 @@ const defeatHero = (ctx: StepContext, ref: HeroRef): void => {
 
 /**
  * Heroes have no Bulwark and cannot Block (GDD 4.7). True Damage has no Crit.
- * The Hero is Defeated at 0 HP. Else its Boss Rules can activate (ADR-0040).
+ * The Hero is Defeated at 0 HP. Else its Boss Rules can activate (ADR-0038).
  */
 export const damageHero = (ctx: StepContext, ref: HeroRef, hit: Hit): void => {
   if (isOver(ctx)) {
@@ -547,7 +547,7 @@ export const damageHero = (ctx: StepContext, ref: HeroRef, hit: Hit): void => {
   // A Hero target is also a valid `ref`: keep only the Side and the index.
   const owner = { side: ref.side, hero: ref.hero };
   if (hero.hp === 0) {
-    // A Defeated Boss gets no Boss Rules (ADR-0040).
+    // A Defeated Boss gets no Boss Rules (ADR-0038).
     defeatHero(ctx, owner);
     return;
   }

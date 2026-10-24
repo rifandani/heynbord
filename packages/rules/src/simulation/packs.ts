@@ -1,5 +1,5 @@
 /**
- * Pack simulation (Economy 3.1, ADR-0027): the real rate of each Rank, how
+ * Pack simulation (Economy 3.1, ADR-0026): the real rate of each Rank, how
  * often the Pack Guarantee gives a card, the value for each Coin and the
  * number of Packs to Discover all cards of each Base Rank, for each version of
  * a Pack: all cards, a Race Pack or a Class Pack. The seeds count up
@@ -12,7 +12,7 @@ import type { ClassId, DeckEntry, RankId } from "../content/schema";
 import { openPack, openTenPacks, packPool } from "../packs/open-pack";
 import type { OpenPackInput, PackPool } from "../packs/open-pack";
 
-/** The value of a copy of each Rank on the Combine scale (ADR-0027). */
+/** The value of a copy of each Rank on the Combine scale (ADR-0026). */
 const COMBINE_VALUE: Readonly<Record<RankId, number>> = {
   common: 1,
   uncommon: 2,

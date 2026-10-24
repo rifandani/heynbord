@@ -21,7 +21,7 @@ import type {
 import { STAGES } from "./stages";
 
 /**
- * A Floor template (ADR-0042): the enemy of the normal Floors with the same
+ * A Floor template (ADR-0040): the enemy of the normal Floors with the same
  * last digit. It is written by hand. The strength curve gives the Ranks, the
  * Hero HP, the Gear and the Deck size for each Floor number.
  */
@@ -50,7 +50,7 @@ interface FloorStartUnit {
 /**
  * A Boss Floor template: a Campaign Boss with a new Floor Deck. It keeps the
  * Class and the Start Units of its Boss Stage, and it has no Boss Rules
- * (ADR-0040).
+ * (ADR-0038).
  */
 export interface BossFloorTemplate extends FloorTemplate {
   /** The Boss Stage of the Boss. */
@@ -64,7 +64,7 @@ const cards = (count: number, cardId: string): string[] =>
 
 /**
  * The 9 Floor templates. Floors 1 to 9 use templates 1 to 9, Floors 11 to
- * 19 use them again, and so on (ADR-0042). The enemy names are drafts (PRD
+ * 19 use them again, and so on (ADR-0040). The enemy names are drafts (PRD
  * open question 1). A search with the sim tuned the cards and the order of
  * each Deck (docs/game/14-campaign-stages.md 8.3). A new order changes the
  * Rank steps and the shuffle, so run `bun run sim floor 1000` after it.
@@ -633,7 +633,7 @@ interface TierStrength {
 const NO_GEAR: GearLevels = { weapon: 0, armor: 0, trinket: 0, banner: 0 };
 
 /**
- * The strength curve of the normal Floors (ADR-0042), on Floors 1 to 9. One
+ * The strength curve of the normal Floors (ADR-0040), on Floors 1 to 9. One
  * Rank step on all copies changes a win rate by 40 to 80 points, so the curve
  * gives 1 Rank step to the first copies of the template Deck only. The
  * difficulty does not go up: from Floors 1 to 9 to Floors 41 to 49, the
@@ -687,7 +687,7 @@ export const floorRecommendedLevels = (
 
 const RECOMMENDED_LEVELS = floorRecommendedLevels();
 
-/** The strength of a Floor, from the strength curve (ADR-0042). */
+/** The strength of a Floor, from the strength curve (ADR-0040). */
 export interface FloorStrength extends TierStrength {
   /** The Deck size: the largest that the Recommended level allows (GDD 6). */
   readonly deckSize: number;
@@ -728,7 +728,7 @@ const floorTemplate = (floor: number): FloorTemplate | BossFloorTemplate => {
 };
 
 /**
- * Makes Floor `floor` from its template and the strength curve (ADR-0042):
+ * Makes Floor `floor` from its template and the strength curve (ADR-0040):
  * the first `deckSize` copies of the template Deck, each `rankSteps` Ranks
  * above its Base Rank, and the first `extraStepCopies` copies 1 Rank more.
  */

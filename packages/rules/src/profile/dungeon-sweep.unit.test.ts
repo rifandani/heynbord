@@ -82,7 +82,7 @@ const findStart = (
   throw new Error(`No seed for ${dungeonId}`);
 };
 
-describe("applyDungeonSweep: rewards (ADR-0041)", () => {
+describe("applyDungeonSweep: rewards (ADR-0039)", () => {
   it("gives the same rewards and random state as the same number of repeat wins", () => {
     const start = findStart(
       "dungeon-1",
@@ -163,7 +163,7 @@ describe("applyDungeonSweep: rewards (ADR-0041)", () => {
   });
 });
 
-describe("applyDungeonSweep: refusals (ADR-0041)", () => {
+describe("applyDungeonSweep: refusals (ADR-0039)", () => {
   it("rejects a Dungeon with no win", () => {
     expect(() =>
       applyDungeonSweep(

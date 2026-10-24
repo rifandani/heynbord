@@ -38,11 +38,11 @@ Scope is narrow and structural: **modules that contain only schema declarations*
 
 `coverage` is root-only (Vitest's `NonProjectOptions`), so `--project <name> --coverage` measures the global include list against a partial run and reports the other projects at 0%. There is deliberately no per-project `*:test:unit:cov`-style script despite the symmetry with the per-project ones: coverage is whole-suite only, via `bun test:unit:cov`.
 
-**2026-08-30 — the E2E this ADR defers UI behavior to no longer runs before a merge.** [ADR-0004](./0004-e2e-is-manual.md) moved Playwright out of `ci.yml` into a `workflow_dispatch` workflow that also runs on push to `main`. It runs on no pull request.
+**2026-08-30 — the E2E this ADR defers UI behavior to no longer runs before a merge.** Playwright moved out of `ci.yml` into the separate [E2E workflow](../../.github/workflows/e2e.yml), a `workflow_dispatch` workflow that also runs on push to `main`. It runs on no pull request.
 
 Two clauses above now rest on something weaker than they did. The scope rule — "React components/hooks (RTL, hook harnesses) … are out of scope — UI behavior belongs in Playwright E2E" — still names the right home for UI behavior, but that home is no longer visited before code lands. And the rejected option "React Testing Library for components/hooks — rejected; duplicates E2E cost and slows the suite" was an argument about *duplication*: RTL was redundant because E2E already covered that ground on every PR. It no longer does, so the redundancy argument is spent. The rejection stands on its remaining leg only — wall-clock cost, and the preference for `environment: 'node'` over a DOM shim — which is a thinner leg than the one it was written on.
 
-Neither clause is reversed here. **Pre-merge UI coverage is accepted as zero**, deliberately and with the alternatives enumerated in ADR-0004. This note exists so that a future reader who finds a UI regression on `main` does not conclude the scope rule failed: the scope rule assumed a gate that was removed on purpose.
+Neither clause is reversed here. **Pre-merge UI coverage is accepted as zero**, deliberately, with the reasons recorded in the comments of the [E2E workflow](../../.github/workflows/e2e.yml). This note exists so that a future reader who finds a UI regression on `main` does not conclude the scope rule failed: the scope rule assumed a gate that was removed on purpose.
 
 **2026-10-03 — Effect replaces Zod and Zustand-style stores ([ADR-0007](./0007-effect-is-the-application-runtime.md)).** The scope rule does not change. Only the names of the things in scope change:
 

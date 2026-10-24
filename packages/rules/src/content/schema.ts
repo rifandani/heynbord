@@ -30,9 +30,9 @@ export const ClassId = Schema.Literals(["warrior", "ranger", "mage", "priest"]);
 export type ClassId = typeof ClassId.Type;
 
 /**
- * Lightning gives Paralyzed (ADR-0029). It is open to each Race and Class. A
+ * Lightning gives Paralyzed (ADR-0028). It is open to each Race and Class. A
  * Ranged Creature Card with Lightning needs a lock check before it goes into
- * the content, the same as Frost (ADR-0025): a content test stops it.
+ * the content, the same as Frost (ADR-0024): a content test stops it.
  */
 const DamageType = Schema.Literals([
   "physical",
@@ -93,14 +93,14 @@ const tokenKeywordFields = {
   firstStrike: Schema.optionalKey(Schema.Literal(true)),
   flying: Schema.optionalKey(Schema.Literal(true)),
   /**
-   * The Speed Keywords (ADR-0030): +1, +2 or −1 Speed from the Base Speed 2,
+   * The Speed Keywords (ADR-0029): +1, +2 or −1 Speed from the Base Speed 2,
    * the same at each Rank. A content test checks that a card has at most 1.
    */
   swift: Schema.optionalKey(Schema.Literal(true)),
   fleet: Schema.optionalKey(Schema.Literal(true)),
   heavy: Schema.optionalKey(Schema.Literal(true)),
   /**
-   * The Range Keywords (ADR-0030): +1, +2 or +3 Range from the Base Range 1,
+   * The Range Keywords (ADR-0029): +1, +2 or +3 Range from the Base Range 1,
    * the same at each Rank. A content test checks that a card has at most 1,
    * and that Extreme-range is only at Base Rank Epic or higher.
    */
@@ -108,7 +108,7 @@ const tokenKeywordFields = {
   longRange: Schema.optionalKey(Schema.Literal(true)),
   extremeRange: Schema.optionalKey(Schema.Literal(true)),
   /**
-   * After an attack on an enemy Unit, this Unit gets +N Attack (ADR-0048). N
+   * After an attack on an enemy Unit, this Unit gets +N Attack (ADR-0046). N
    * is 1 at Common and Uncommon, 2 at Rare, 3 at Epic and 4 at Legendary. A
    * content test checks the Rank table.
    */
@@ -172,62 +172,62 @@ const tokenKeywordFields = {
   /**
    * In each Start Phase of its owner, this Unit deals N damage of its own
    * Damage Type to one target at random: an enemy Unit, or the enemy Hero of
-   * its Front (ADR-0050). It applies no Status and has no Crit.
+   * its Front (ADR-0048). It applies no Status and has no Crit.
    */
   bolt: Schema.optionalKey(KeywordAmount),
-  /** Each Physical hit on this Unit deals at most 3 damage (ADR-0050). */
+  /** Each Physical hit on this Unit deals at most 3 damage (ADR-0048). */
   ironGuard: Schema.optionalKey(Schema.Literal(true)),
   /**
    * When an enemy Unit is killed, this Unit gets +1 Attack and +1 HP
-   * (ADR-0050). Rebirth ends the bonus.
+   * (ADR-0048). Rebirth ends the bonus.
    */
   soulHarvest: Schema.optionalKey(Schema.Literal(true)),
   /**
    * In each Start Phase of its owner, this Unit deals 1 Physical damage to
-   * the enemy Hero of its Front (ADR-0050).
+   * the enemy Hero of its Front (ADR-0048).
    */
   herosBane: Schema.optionalKey(Schema.Literal(true)),
   /**
    * When an enemy Hero summons a Unit from a Creature Card, this Unit deals N
-   * damage to that Unit (ADR-0050). A Token is not summoned from a Creature
+   * damage to that Unit (ADR-0048). A Token is not summoned from a Creature
    * Card, so Spawnbane does not hit a Token.
    */
   spawnbane: Schema.optionalKey(KeywordAmount),
   /**
    * When this Unit deals Physical damage, it heals HP equal to the damage
-   * (ADR-0050). The heal stops at its maximum HP.
+   * (ADR-0048). The heal stops at its maximum HP.
    */
   vampirism: Schema.optionalKey(Schema.Literal(true)),
   /**
    * The damage that this Unit deals to a Unit with Wall is doubled
-   * (ADR-0056). The hit is doubled before Bulwark, Exposed, Crit, Block and
+   * (ADR-0054). The hit is doubled before Bulwark, Exposed, Crit, Block and
    * Ward, so those rules still apply.
    */
   wallbreaker: Schema.optionalKey(Schema.Literal(true)),
   /**
    * Reduces Fire, Frost, Holy and Lightning damage to this Unit by N
-   * (ADR-0056). It does not reduce Physical damage: Bulwark does that.
+   * (ADR-0054). It does not reduce Physical damage: Bulwark does that.
    */
   resistance: Schema.optionalKey(KeywordAmount),
   /**
    * When an enemy Hero plays a Skill Card, the card with the highest Countdown
-   * in the Hand of the Hero of this Unit goes down by 1 (ADR-0056).
+   * in the Hand of the Hero of this Unit goes down by 1 (ADR-0054).
    */
   quickStudy: Schema.optionalKey(Schema.Literal(true)),
   /**
-   * The damage that this Unit deals cannot be reduced (ADR-0056): it ignores
+   * The damage that this Unit deals cannot be reduced (ADR-0054): it ignores
    * Bulwark, Resistance, Ward, Block and the Iron Guard cap. It keeps its Crit
    * and its Exposed bonus.
    */
   piercing: Schema.optionalKey(Schema.Literal(true)),
   /**
    * In each Start Phase of its owner, the friendly Unit with the lowest HP
-   * heals N HP (ADR-0056).
+   * heals N HP (ADR-0054).
    */
   heal: Schema.optionalKey(KeywordAmount),
   /**
    * In each Start Phase of its owner, this Unit has a 20% chance to remove 1
-   * Debuff from a random friendly Unit (ADR-0056).
+   * Debuff from a random friendly Unit (ADR-0054).
    */
   dispel: Schema.optionalKey(Schema.Literal(true)),
 };
@@ -252,7 +252,7 @@ const CreatureCardDefinition = Schema.Struct({
   id: Schema.NonEmptyString,
   race: RaceId,
   /**
-   * The Class of a Specialist (ADR-0050). A Deck can hold the card only when
+   * The Class of a Specialist (ADR-0048). A Deck can hold the card only when
    * the Deck has this Class. Every creature with Base Rank Legendary has it.
    */
   class: Schema.optionalKey(ClassId),
@@ -513,7 +513,7 @@ const SkillEffect = Schema.Union([
   Schema.Struct({
     /**
      * Heals one friendly Unit, up to its maximum HP. A Bleeding Unit gets half
-     * of the heal (ADR-0019). Nothing heals a Hero (ADR-0028).
+     * of the heal (ADR-0019). Nothing heals a Hero (ADR-0027).
      */
     type: Schema.Literal("healUnit"),
     heal: SkillAmount,
@@ -677,7 +677,7 @@ export const DeckEntry = Schema.Struct({
 });
 export type DeckEntry = typeof DeckEntry.Type;
 
-/** Gear levels 0 to 25 for the 4 slots (GDD 7.3, ADR-0039). */
+/** Gear levels 0 to 25 for the 4 slots (GDD 7.3, ADR-0037). */
 export const GearLevels = Schema.Struct({
   weapon: between(0, 25),
   armor: between(0, 25),
@@ -715,8 +715,8 @@ const ClosedLane = closedLane(StageLane);
 export type ClosedLane = typeof ClosedLane.Type;
 
 /**
- * The effect of a Boss Rule (ADR-0040). Each effect acts for the Boss of the
- * rule. No effect heals a Hero (ADR-0028).
+ * The effect of a Boss Rule (ADR-0038). Each effect acts for the Boss of the
+ * rule. No effect heals a Hero (ADR-0027).
  */
 const BossRuleEffect = Schema.Union([
   Schema.Struct({
@@ -749,7 +749,7 @@ const BossRuleEffect = Schema.Union([
 ]);
 
 /**
- * A Boss Rule (ADR-0040): it activates one time, when damage puts the HP of
+ * A Boss Rule (ADR-0038): it activates one time, when damage puts the HP of
  * the Boss at or below `threshold` percent of its maximum HP.
  */
 export const BossRule = Schema.Struct({
@@ -771,7 +771,7 @@ export const StageDefinition = Schema.Struct({
    */
   recommendedLevel: between(1, 30),
   /**
-   * The Star Turn (GDD 4.11, ADR-0047): a win with 50% or more of the Hero HP
+   * The Star Turn (GDD 4.11, ADR-0045): a win with 50% or more of the Hero HP
    * before this Turn number gives 3 Stars. `bun run sim stage --check` checks
    * it against the 3-Star target of GDD 13. The Stage Panel shows it.
    */
@@ -788,7 +788,7 @@ export const StageDefinition = Schema.Struct({
     gear: GearLevels,
     deck: Schema.Array(DeckEntry).check(Schema.isMinLength(5)),
     startUnits: Schema.Array(startUnit(StageLane)),
-    /** The Boss Rules of the enemy Hero (ADR-0040). Campaign Stages have none. */
+    /** The Boss Rules of the enemy Hero (ADR-0038). Campaign Stages have none. */
     bossRules: Schema.optionalKey(Schema.Array(BossRule)),
   }),
 });
@@ -848,7 +848,7 @@ export type DungeonDefinition = typeof DungeonDefinition.Type;
 /**
  * A Heynspire Floor (GDD 8.2): one Battle with 4 Lanes against 1 enemy Hero
  * with a Front of all 4 Lanes, and no Closed Lanes (ADR-0010). A pure
- * function makes it from a Floor template and the strength curve (ADR-0042).
+ * function makes it from a Floor template and the strength curve (ADR-0040).
  * The rewards are in `floorFirstWinReward` (Economy 2.3).
  */
 export const FloorDefinition = Schema.Struct({

@@ -22,7 +22,7 @@ export const DECK_NAME_MAX = 24;
 
 /**
  * One saved Deck, with its Hero Class (GDD 5.5). The Player's Hero has the
- * Class of the Active Deck: the Class stays on the slot (ADR-0033).
+ * Class of the Active Deck: the Class stays on the slot (ADR-0032).
  */
 const DeckSlot = Schema.Struct({
   id: Schema.NonEmptyString,
@@ -95,7 +95,7 @@ const Tallies = Schema.Struct({
 export type Tallies = typeof Tallies.Type;
 
 /**
- * The berth of the Seaport ship (Economy 2.8, ADR-0053): the Cargo and the
+ * The berth of the Seaport ship (Economy 2.8, ADR-0051): the Cargo and the
  * duration of the Expedition that the ship is on, and the device time of its
  * Dispatch, in milliseconds since the epoch, or all `null` when the ship is
  * at the berth.
@@ -146,7 +146,7 @@ export const Profile = Schema.Struct({
   /** The ID of the Deck Slot that the Stage Panel selects first. */
   activeDeckId: Schema.NonEmptyString,
   gear: GearLevels,
-  /** The Forge Stones of each tier that the Player has (ADR-0038). They are earn-only. */
+  /** The Forge Stones of each tier that the Player has (ADR-0036). They are earn-only. */
   forgeStones: ForgeStones,
   /** The best Stars of each won Stage, by Stage ID. Stage 1-1 here: the Tutorial is won. */
   stageResults: Schema.Record(Schema.String, Stars),
@@ -161,9 +161,9 @@ export const Profile = Schema.Struct({
   claimedStarChests: Schema.Record(Schema.String, Schema.Array(StarChestStars)),
   packState: PackState,
   unopenedPacks: Schema.Array(UnopenedPack),
-  /** The Campaign Sweep Tickets that the Player has (ADR-0035). They are earn-only. */
+  /** The Campaign Sweep Tickets that the Player has (ADR-0039). They are earn-only. */
   campaignSweepTickets: Schema.Natural,
-  /** The Dungeon Sweep Tickets that the Player has (ADR-0041). They are earn-only. */
+  /** The Dungeon Sweep Tickets that the Player has (ADR-0039). They are earn-only. */
   dungeonSweepTickets: Schema.Natural,
   /**
    * The random state of the reward rolls, for example the repeat-win card. It

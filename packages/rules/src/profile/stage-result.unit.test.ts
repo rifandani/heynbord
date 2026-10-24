@@ -17,7 +17,7 @@ import {
 import type { StageResultInput } from "./stage-result";
 
 const fresh = newProfile(42);
-/** The enemy Hero lost all its HP: the full loss reward (ADR-0043). */
+/** The enemy Hero lost all its HP: the full loss reward (ADR-0041). */
 const ALL_HP_LOST = { lost: 30, total: 30 };
 const win = (
   stageId: string,
@@ -93,7 +93,7 @@ describe("applyStageResult: XP, Coin and Stars (Economy 2.1)", () => {
     );
   });
 
-  it("gives no XP and ⅓ of the Coin on a Repeat win, and keeps the best Stars (ADR-0049)", () => {
+  it("gives no XP and ⅓ of the Coin on a Repeat win, and keeps the best Stars (ADR-0047)", () => {
     const before = wonBefore("1-4", 3);
     const { profile, rewards } = applyStageResult(before, win("1-4", 1));
     expect(rewards.outcome).toBe("win");
@@ -116,7 +116,7 @@ describe("applyStageResult: XP, Coin and Stars (Economy 2.1)", () => {
     expect(profile.rewardRandomState).toBe(fresh.rewardRandomState);
   });
 
-  it("gives only the share of the lost enemy Hero HP of a loss reward (ADR-0043)", () => {
+  it("gives only the share of the lost enemy Hero HP of a loss reward (ADR-0041)", () => {
     const none = applyStageResult(fresh, loss("1-4", { lost: 0, total: 20 }));
     expect([none.rewards.xp, none.rewards.coin]).toEqual([0, 0]);
     expect(none.profile.xp).toBe(fresh.xp);
@@ -152,7 +152,7 @@ describe("applyStageResult: XP, Coin and Stars (Economy 2.1)", () => {
   });
 });
 
-describe("applyStageResult: Campaign Sweep Tickets (ADR-0035)", () => {
+describe("applyStageResult: Campaign Sweep Tickets (ADR-0039)", () => {
   it("adds 2 Campaign Sweep Tickets on a first win and on a repeat win, and no Dungeon Sweep Tickets", () => {
     expect(CAMPAIGN_SWEEP_TICKETS_PER_WIN).toBe(2);
     const first = applyStageResult(fresh, win("1-4"));
@@ -180,7 +180,7 @@ const inRegion = (region: number): readonly StageDefinition[] => [
   { ...getStage("1-10"), id: `${region}-10`, region },
 ];
 
-describe("applyStageResult: Forge Stones (Economy 2.1, ADR-0038)", () => {
+describe("applyStageResult: Forge Stones (Economy 2.1, ADR-0036)", () => {
   it("gives 1 Forge Stone of the tier of the Region on a first win, also on a Boss Stage", () => {
     for (const [region, tier] of [
       [1, "common"],

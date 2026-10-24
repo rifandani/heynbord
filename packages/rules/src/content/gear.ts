@@ -13,7 +13,7 @@ export const GEAR_SLOTS: readonly (keyof GearLevels)[] = [
 /** One Gear slot: the Weapon, the Armor, the Trinket or the Banner. */
 export type GearSlot = keyof GearLevels;
 
-/** The highest level of a Gear item (GDD 7.3, ADR-0039). A new item is level 0. */
+/** The highest level of a Gear item (GDD 7.3, ADR-0037). A new item is level 0. */
 export const MAX_GEAR_LEVEL = 25;
 
 /**
@@ -26,7 +26,7 @@ export type GearStat = "unitCrit" | "heroHp" | "skillCrit" | "unitBlock";
 /**
  * The stat of each Gear slot and what one level adds: basis points (100 =
  * 1%) for a chance, HP for the Armor. Level 25 is the right column of the
- * GDD 7.3 table: 12.5%, +25 HP, 18.75% and 12.5% (ADR-0037, ADR-0039).
+ * GDD 7.3 table: 12.5%, +25 HP, 18.75% and 12.5% (ADR-0035, ADR-0037).
  */
 export const GEAR_STATS: Readonly<
   Record<GearSlot, { readonly stat: GearStat; readonly perLevel: number }>
@@ -46,13 +46,13 @@ export const gearStatValue = (slot: GearSlot, level: number): number =>
 
 /**
  * The Gear upgrade Coin is this number × level × (level + 1) ÷ 2, in Copper
- * (Economy 3.4). It is half of the cost of ADR-0037, because each level also
- * needs a Forge Stone (ADR-0038). level × (level + 1) is always even, so the
+ * (Economy 3.4). It is half of the cost of ADR-0035, because each level also
+ * needs a Forge Stone (ADR-0036). level × (level + 1) is always even, so the
  * Coin is a whole number.
  */
 const GEAR_COIN_PER_LEVEL_STEP = 5;
 
-/** Each Forge Stone tier upgrades this many Gear levels, from level 1 (ADR-0038, ADR-0039). */
+/** Each Forge Stone tier upgrades this many Gear levels, from level 1 (ADR-0036, ADR-0037). */
 const GEAR_LEVELS_PER_FORGE_STONE_TIER = 5;
 
 const checkUpgradeLevel = (level: number): void => {
@@ -71,7 +71,7 @@ export const gearUpgradeCoin = (level: number): number => {
 
 /**
  * The tier of the 1 Forge Stone that an upgrade to `level` (1 to 25) uses
- * (Economy 3.4, ADR-0038, ADR-0039): Common for levels 1 to 5, Uncommon for
+ * (Economy 3.4, ADR-0036, ADR-0037): Common for levels 1 to 5, Uncommon for
  * 6 to 10, Rare for 11 to 15, Epic for 16 to 20 and Legendary for 21 to 25.
  */
 export const gearUpgradeForgeStone = (level: number): ForgeStoneTier => {

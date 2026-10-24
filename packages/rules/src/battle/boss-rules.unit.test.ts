@@ -55,7 +55,7 @@ const tagsFromActivation = (events: readonly BattleEvent[]): string[] =>
     .slice(events.findIndex((event) => event._tag === "BossRuleActivated"))
     .map((event) => event._tag);
 
-describe("Boss Rules (ADR-0040)", () => {
+describe("Boss Rules (ADR-0038)", () => {
   it("activates when a hit puts the Boss at its threshold, with integer math", () => {
     const state = bossBattle(30, [rule(50, { type: "draw", cards: 1 })]);
     preventRout(state);

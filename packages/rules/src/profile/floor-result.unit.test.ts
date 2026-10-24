@@ -13,7 +13,7 @@ import { newProfile } from "./new-profile";
 import type { Profile } from "./schema";
 import { CAMPAIGN_SWEEP_TICKETS_PER_WIN, FIRST_PACK } from "./stage-result";
 
-/** The enemy Hero lost all its HP: the full loss reward (ADR-0043). */
+/** The enemy Hero lost all its HP: the full loss reward (ADR-0041). */
 const ALL_HP_LOST = { lost: 40, total: 40 };
 
 /** A Profile that won Stage 5-10 and the first `floorsWon` Floors. */
@@ -187,7 +187,7 @@ describe("applyFloorResult: a loss (Economy 2.3)", () => {
     expect(profile.essence).toBe(before.essence);
   });
 
-  it("gives only the share of the lost enemy Hero HP (ADR-0043)", () => {
+  it("gives only the share of the lost enemy Hero HP (ADR-0041)", () => {
     const half = applyFloorResult(opened(), loss(1, { lost: 20, total: 40 }));
     expect([half.rewards.coin, half.rewards.xp]).toEqual([5, 6]);
     const none = applyFloorResult(opened(), loss(1, { lost: 0, total: 40 }));

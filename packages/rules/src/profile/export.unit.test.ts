@@ -80,7 +80,7 @@ describe("exportProfile and importProfile", () => {
     );
   });
 
-  it("puts the Seaport ship of a version 11 file at the berth (ADR-0053)", () => {
+  it("puts the Seaport ship of a version 11 file at the berth (ADR-0051)", () => {
     const { seaport: _, ...v11 } = { ...played, schemaVersion: 11 };
     // SAFETY: the checksum reads only the JSON of the Profile, so the file of
     // an old build has a correct checksum too.

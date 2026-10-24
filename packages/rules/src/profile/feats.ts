@@ -144,7 +144,7 @@ const playerHero = (state: BattleState): HeroState => {
   return hero;
 };
 
-/** Nothing heals a Hero (ADR-0028): full HP means no damage to the Hero. */
+/** Nothing heals a Hero (ADR-0027): full HP means no damage to the Hero. */
 const isFullHp = (state: BattleState): boolean => {
   const hero = playerHero(state);
   return hero.hp === hero.maxHp;

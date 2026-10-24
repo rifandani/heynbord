@@ -48,7 +48,7 @@ describe("migrateProfile", () => {
     expect(migrated).toEqual(newProfile(3));
   });
 
-  it("doubles each Gear level of a version 2 Profile, so the stats stay the same (ADR-0037)", () => {
+  it("doubles each Gear level of a version 2 Profile, so the stats stay the same (ADR-0035)", () => {
     const v2 = {
       ...newProfile(3),
       schemaVersion: 2,
@@ -62,7 +62,7 @@ describe("migrateProfile", () => {
     });
   });
 
-  it("gives 0 Forge Stones to a version 3 Profile, and keeps its Gear levels and Coin (ADR-0038)", () => {
+  it("gives 0 Forge Stones to a version 3 Profile, and keeps its Gear levels and Coin (ADR-0036)", () => {
     const { forgeStones: _, ...v3 } = {
       ...newProfile(3),
       schemaVersion: 3,
@@ -86,7 +86,7 @@ describe("migrateProfile", () => {
     expect(migrated.coin).toBe(1234);
   });
 
-  it("gives 0 Legendary Forge Stones to a version 4 Profile, and keeps its other Forge Stones and Gear levels (ADR-0039)", () => {
+  it("gives 0 Legendary Forge Stones to a version 4 Profile, and keeps its other Forge Stones and Gear levels (ADR-0037)", () => {
     const v4 = {
       ...newProfile(3),
       schemaVersion: 4,
@@ -115,7 +115,7 @@ describe("migrateProfile", () => {
     expect(migrated.stageResults).toEqual(v5.stageResults);
   });
 
-  it("makes the Sweep Tickets of a version 6 Profile its Campaign Sweep Tickets, with 0 Dungeon Sweep Tickets (ADR-0041)", () => {
+  it("makes the Sweep Tickets of a version 6 Profile its Campaign Sweep Tickets, with 0 Dungeon Sweep Tickets (ADR-0039)", () => {
     const {
       campaignSweepTickets: _campaign,
       dungeonSweepTickets: _dungeon,
@@ -170,7 +170,7 @@ describe("migrateProfile", () => {
     expect(migrated.heynstones).toBe(50);
   });
 
-  it("gives a 0 fuses Tally to a version 10 Profile, and keeps its other Tallies (ADR-0051)", () => {
+  it("gives a 0 fuses Tally to a version 10 Profile, and keeps its other Tallies (ADR-0049)", () => {
     const v10 = {
       ...newProfile(3),
       schemaVersion: 10,
@@ -185,7 +185,7 @@ describe("migrateProfile", () => {
     });
   });
 
-  it("puts the Seaport ship of a version 11 Profile at the berth, and keeps its progress (ADR-0053)", () => {
+  it("puts the Seaport ship of a version 11 Profile at the berth, and keeps its progress (ADR-0051)", () => {
     const { seaport: _, ...v11 } = {
       ...newProfile(3),
       schemaVersion: 11,

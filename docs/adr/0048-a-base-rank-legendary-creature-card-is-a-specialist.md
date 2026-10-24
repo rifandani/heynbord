@@ -1,6 +1,6 @@
 # A Base Rank Legendary Creature Card is a Specialist for one Class
 
-> Each Specialist has 2 more Keywords and lower stats since 2026-10-21 — see [ADR-0056](0056-each-specialist-has-a-second-keyword.md) and [Amendments](#amendments).
+> Each Specialist has 2 more Keywords and lower stats since 2026-10-21 — see [ADR-0054](0054-each-specialist-has-a-second-keyword.md) and [Amendments](#amendments).
 
 Before, no v1 Creature Card had Base Rank Legendary. [ADR-0013](0013-v1-has-90-creature-cards.md) set 15 Creature Cards for each Race, and GDD 12 said that a later Card could have this Base Rank. Now each Race has one Base Rank Legendary Creature Card, the **Specialist**. It has one Class, and a Hero can put it in a Deck only when the Hero has that Class. Every Specialist has Unique. A Creature Card with Base Rank Legendary is always a Specialist, and only a Specialist has a Class.
 
@@ -22,13 +22,13 @@ The v1 set grows from 90 to 96 Creature Cards, and from 130 to 136 Cards. The 6 
 - **A Specialist is a Keyword.** Rejected. The Class is a property of the Card, not a rule that occurs in a Battle. A Keyword has a rule and can occur in the Battle Log. The Card Details show "Specialist · Warrior" next to the Race.
 - **A Deck can hold a Specialist of another Class if the Deck has a card of that Class.** Rejected. The Class lock must be clear before the Player builds the Deck, and the Deck builder must give one reason: "Warrior only".
 - **The Specialist is Legendary but has no Unique.** Rejected. A Specialist is a named figure, and the Board must hold one copy of it. Unique also keeps the Board clear for the second copy of a deck slot.
-- **A Specialist can be in a Starter Deck, a Stage enemy Deck, a Dungeon, a Floor or a Main Archetype.** Rejected for v1. A Specialist is in its own Specialist Deck only (Consequences). The Player must find the Specialist in a Royal Pack ([ADR-0052](0052-craft-gives-no-epic-or-legendary-card.md) gives it no Craft). A Stage that puts a Specialist on the Board would show a Card that the Player may not own.
+- **A Specialist can be in a Starter Deck, a Stage enemy Deck, a Dungeon, a Floor or a Main Archetype.** Rejected for v1. A Specialist is in its own Specialist Deck only (Consequences). The Player must find the Specialist in a Royal Pack ([ADR-0050](0050-craft-gives-no-epic-or-legendary-card.md) gives it no Craft). A Stage that puts a Specialist on the Board would show a Card that the Player may not own.
 - **A Legendary Base Rank card combines, and has a higher Rank.** Rejected. Base Rank Legendary is the top Rank. The card has no Combine path and no higher copy. This is why it is at its Power Budget exactly, and why the UI hides Combine for it.
 - **Each Specialist has its own new Keyword, and no other Keyword.** Rejected. The set uses 6 of the Player's 29 Keyword ideas, and 2 of them (Warband N and Blood Price N) are ready for a later card. The other ideas need engine hooks that v1 does not have.
 
 ## The new Keywords
 
-Each Keyword below is a Main Keyword of its Race, not a Race Keyword ([ADR-0026](0026-each-race-has-one-race-keyword.md)). The full rules are in GDD 5.4 and in the CONTEXT file of the rules package.
+Each Keyword below is a Main Keyword of its Race, not a Race Keyword ([ADR-0025](0025-each-race-has-one-race-keyword.md)). The full rules are in GDD 5.4 and in the CONTEXT file of the rules package.
 
 - **Bolt N**: in each Start Phase of its owner, N damage of the Unit's own Damage Type to one random enemy Unit, or to the enemy Hero of its Front. It applies no Status and has no Crit. A Ward absorbs it.
 - **Iron Guard**: each Physical hit on the Unit deals at most 4 damage. The cap applies after Bulwark, Crit, Block and Exposed, and before Ward. True Damage and status damage do not change.
@@ -42,7 +42,7 @@ The Power Points of the new Keywords are: Bolt N = N × 3, Iron Guard = 6, Soul 
 ## Consequences
 
 - A Specialist is in the Royal Pack only. Pack rule 2 selects a Card with Base Rank at or below the rolled Rank, so only a Legendary roll can give it. Pack rule 3 (New Card First) makes it Discovered on the first eligible roll.
-- A Specialist cannot be Crafted: it comes from a Royal Pack only ([ADR-0052](0052-craft-gives-no-epic-or-legendary-card.md)). It has no Combine, and it is not in a Starter Deck, a Stage, a Dungeon, a Floor or a Main Archetype. It is in its own Specialist Deck only.
+- A Specialist cannot be Crafted: it comes from a Royal Pack only ([ADR-0050](0050-craft-gives-no-epic-or-legendary-card.md)). It has no Combine, and it is not in a Starter Deck, a Stage, a Dungeon, a Floor or a Main Archetype. It is in its own Specialist Deck only.
 - `MAX_COPIES` stays 3. Unique already limits the Board, and a Deck with 2 or 3 copies of a Specialist has no extra rule.
 - The Deck builder greys a Specialist of another Class, with the reason "that Class only". A Deck with one is invalid, the same as a Skill Card of another Class.
 - The Handbook has 34 Keywords, up from 28.
@@ -61,13 +61,13 @@ These ideas need an engine hook that v1 does not have, so they wait: hand and Gr
 
 ## Glossary conflicts
 
-- The Player's list used "Bloodlust" for a Goblins Keyword. Heroic already lists "Bloodlust" as a word to avoid ([ADR-0048](0048-heroic-gives-attack-after-each-attack-on-a-unit.md)). The idea is deferred, and it needs a different name.
+- The Player's list used "Bloodlust" for a Goblins Keyword. Heroic already lists "Bloodlust" as a word to avoid ([ADR-0046](0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). The idea is deferred, and it needs a different name.
 - The list used "magic damage". Heynbord has no magic damage: only Physical, Fire, Frost, Holy and Lightning. A Keyword that says "magic damage" must name one of these.
 - The list put "Primal Instinct" on Goblins. It belongs to the Feral host, not to the Goblins.
 - The list used "Frostbolt". The Skill Card *Frost Bolt* already has this name, so a Keyword with that name would confuse the two. Bolt N replaces the 4 bolt ideas.
 
 ## Amendments
 
-- **2026-10-21: each Specialist has 2 more Keywords and lower stats.** [ADR-0056](0056-each-specialist-has-a-second-keyword.md) gives each Specialist 1 more Keyword of the set of this ADR and 1 new Keyword, and its stats go down, because the Power Points stay within 10% of the Power Budget. The table of the 6 Specialists above is the state of that day. The Handbook has 40 Keywords now, and each Specialist has more Power Points than the 2 Epic cards of its Race.
+- **2026-10-21: each Specialist has 2 more Keywords and lower stats.** [ADR-0054](0054-each-specialist-has-a-second-keyword.md) gives each Specialist 1 more Keyword of the set of this ADR and 1 new Keyword, and its stats go down, because the Power Points stay within 10% of the Power Budget. The table of the 6 Specialists above is the state of that day. The Handbook has 40 Keywords now, and each Specialist has more Power Points than the 2 Epic cards of its Race.
 - **2026-10-21: Gorehorn Red Maw is a Warrior Specialist.** The first Class choice came from Wild Hunt. Gorehorn keeps the Wild Hunt creature style and uses Warrior Skill Cards, because Feral has no Warrior Main Archetype. See [08 — Archetypes](../game/08-archetypes.md#24-specialist-decks) for its Deck and Matchup results.
 - **2026-10-22: Iron Guard caps a Physical hit at 3 damage.** It was 4. The cap keeps its place in the damage steps, and it is the same at each Rank.

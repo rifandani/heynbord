@@ -2,7 +2,7 @@ import { Schema } from "effect";
 
 import type { RankId } from "./schema";
 
-/** The three Packs (Economy 3.1, ADR-0027). */
+/** The three Packs (Economy 3.1, ADR-0026). */
 export const PackId = Schema.Literals(["peddler", "merchant", "royal"]);
 export type PackId = typeof PackId.Type;
 

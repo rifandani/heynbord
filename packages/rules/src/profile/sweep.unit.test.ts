@@ -61,7 +61,7 @@ const repeatWins = (
   return { profile, xp, coin, forgeStones, cards };
 };
 
-describe("applyCampaignSweep: rewards (ADR-0035)", () => {
+describe("applyCampaignSweep: rewards (ADR-0039)", () => {
   it("gives the same rewards and random state as the same number of repeat wins", () => {
     let start = ready("1-9");
     // Find a start with a card, so that the test also compares the cards.
@@ -88,7 +88,7 @@ describe("applyCampaignSweep: rewards (ADR-0035)", () => {
     expect(profile.forgeStones).toEqual(repeats.profile.forgeStones);
   });
 
-  it("gives the Forge Stones of each Ticket, of the tier of the Region (ADR-0038)", () => {
+  it("gives the Forge Stones of each Ticket, of the tier of the Region (ADR-0036)", () => {
     // Find a start where the 10 Tickets give at least 1 Forge Stone.
     let start = ready("1-9");
     for (let seed = 0; seed < 200; seed += 1) {
@@ -195,7 +195,7 @@ describe("applyCampaignSweep: rewards (ADR-0035)", () => {
     );
   });
 
-  it("gives no XP, so the level does not change (ADR-0049)", () => {
+  it("gives no XP, so the level does not change (ADR-0047)", () => {
     const { profile, rewards } = applyCampaignSweep(
       { ...ready("1-10"), xp: 150 },
       sweep("1-10", MAX_SWEEP_TICKETS)
@@ -212,7 +212,7 @@ describe("applyCampaignSweep: rewards (ADR-0035)", () => {
   });
 });
 
-describe("applyCampaignSweep: refusals (ADR-0035)", () => {
+describe("applyCampaignSweep: refusals (ADR-0039)", () => {
   it("rejects a Stage without 3 best Stars", () => {
     expect(() => applyCampaignSweep(ready("1-4", 1), sweep("1-4", 1))).toThrow(
       /3 Stars/u

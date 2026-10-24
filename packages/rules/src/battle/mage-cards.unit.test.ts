@@ -30,7 +30,7 @@ const unitAt = (
 ) =>
   placeUnit(state, { cardId: "human.halberdier", owner, position, ...options });
 
-describe("Lightning and Paralyzed (GDD 4.4, 4.7, ADR-0029)", () => {
+describe("Lightning and Paralyzed (GDD 4.4, 4.7, ADR-0028)", () => {
   it("Spark deals 2 Lightning damage, and the Unit becomes Paralyzed", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["mage.spark", 0]]);
@@ -46,7 +46,7 @@ describe("Lightning and Paralyzed (GDD 4.4, 4.7, ADR-0029)", () => {
     ]);
   });
 
-  it("Bulwark does not reduce it (ADR-0031)", () => {
+  it("Bulwark does not reduce it (ADR-0030)", () => {
     const state = emptyBattle();
     giveHand(state, "player", [["mage.spark", 0]]);
     const enemy = unitAt(state, "enemy", 6, { bonusBulwark: 2 });

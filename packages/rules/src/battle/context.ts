@@ -70,7 +70,7 @@ export const heroOfLane = (
 
 /**
  * Sends `KeywordActivated` for a Unit that is not on the Board anymore, for
- * example the Unit that deals its Last Breath damage (ADR-0056).
+ * example the Unit that deals its Last Breath damage (ADR-0054).
  */
 export const activateKeywordFor = (
   ctx: StepContext,

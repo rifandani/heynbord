@@ -1,5 +1,5 @@
 /**
- * The share of the loss reward that a loss gives (Economy 2.1, ADR-0043). A
+ * The share of the loss reward that a loss gives (Economy 2.1, ADR-0041). A
  * loss gives its Coin, XP and Essence only for the HP that the enemy Heroes
  * lost. Thus a Player who only ends the Turns until a loss gets about nothing.
  */
@@ -12,7 +12,7 @@ export interface EnemyHeroDamage {
 }
 
 /**
- * The part of `lossReward` that a loss gives (ADR-0043): `lossReward` × the
+ * The part of `lossReward` that a loss gives (ADR-0041): `lossReward` × the
  * share of the enemy Hero HP that was lost, rounded down. Stages and Dungeons
  * use it for Coin, XP and Essence.
  */

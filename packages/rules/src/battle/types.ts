@@ -75,7 +75,7 @@ export interface HandCard extends CardInstance {
 }
 
 /**
- * The effect of a Boss Rule in a Battle (ADR-0040). A Summon has its Card copy
+ * The effect of a Boss Rule in a Battle (ADR-0038). A Summon has its Card copy
  * from the Battle setup, so the activation needs no new instance ID.
  */
 export type BossRuleEffect =
@@ -92,7 +92,7 @@ export type BossRuleEffect =
     }
   | { readonly type: "draw"; readonly cards: number };
 
-/** A Boss Rule of a Hero in a Battle (ADR-0040). */
+/** A Boss Rule of a Hero in a Battle (ADR-0038). */
 export interface BossRuleState {
   /** A percentage of the maximum HP of the Hero: 1 to 99. */
   readonly threshold: number;
@@ -120,7 +120,7 @@ export interface HeroState {
   hand: HandCard[];
   deck: CardInstance[];
   graveyard: CardInstance[];
-  /** The Boss Rules of a Boss, in content order (ADR-0040). Other Heroes have none. */
+  /** The Boss Rules of a Boss, in content order (ADR-0038). Other Heroes have none. */
   bossRules: BossRuleState[];
 }
 
@@ -163,7 +163,7 @@ export interface UnitState {
   hp: number;
   maxHp: number;
   readonly speed: number;
-  /** 1 is a Melee Unit. 2 or more is a Ranged Unit (ADR-0030). */
+  /** 1 is a Melee Unit. 2 or more is a Ranged Unit (ADR-0029). */
   readonly range: number;
   readonly damageType: DamageType;
   readonly bulwark: number;
@@ -176,7 +176,7 @@ export interface UnitState {
   readonly flying: boolean;
   /**
    * Heroic for the Rank of this Unit: +N Attack after each attack on an enemy
-   * Unit (ADR-0048). 0 is none.
+   * Unit (ADR-0046). 0 is none.
    */
   readonly heroic: number;
   /** Damage to the nearest enemy Unit ahead when this Unit leaves. 0 is none. */
@@ -206,30 +206,30 @@ export interface UnitState {
    * A Unit with Wall has no Movement, does not attack and is never Pushed.
    */
   wall: boolean;
-  /** Bolt N: damage to a random enemy Unit or Hero in each Start Phase (ADR-0050, ADR-0055). */
+  /** Bolt N: damage to a random enemy Unit or Hero in each Start Phase (ADR-0048, ADR-0053). */
   readonly bolt: number;
-  /** Each Physical hit on this Unit deals at most 4 damage (ADR-0050). */
+  /** Each Physical hit on this Unit deals at most 4 damage (ADR-0048). */
   readonly ironGuard: boolean;
-  /** True when a kill gives this Unit +1 Attack and +1 HP (ADR-0050). */
+  /** True when a kill gives this Unit +1 Attack and +1 HP (ADR-0048). */
   readonly soulHarvest: boolean;
-  /** +1 Attack and +1 HP for each enemy Unit that dies (ADR-0050). */
+  /** +1 Attack and +1 HP for each enemy Unit that dies (ADR-0048). */
   soulHarvestBonus: number;
   /** 1 Physical damage to the enemy Hero of its Front in each Start Phase. */
   readonly herosBane: boolean;
-  /** N damage to a Unit that an enemy Hero summons (ADR-0050). */
+  /** N damage to a Unit that an enemy Hero summons (ADR-0048). */
   readonly spawnbane: number;
-  /** Heals HP equal to the Physical damage that it deals (ADR-0050). */
+  /** Heals HP equal to the Physical damage that it deals (ADR-0048). */
   readonly vampirism: boolean;
-  /** The damage that it deals to a Unit with Wall is doubled (ADR-0056). */
+  /** The damage that it deals to a Unit with Wall is doubled (ADR-0054). */
   readonly wallbreaker: boolean;
   /** Reduces Fire, Frost, Holy and Lightning damage to this Unit by N. */
   readonly resistance: number;
   /**
    * When an enemy Hero plays a Skill Card, the card with the highest Countdown
-   * in the Hand of the Hero of this Unit goes down by 1 (ADR-0056).
+   * in the Hand of the Hero of this Unit goes down by 1 (ADR-0054).
    */
   readonly quickStudy: boolean;
-  /** The damage that it deals cannot be reduced (ADR-0056). */
+  /** The damage that it deals cannot be reduced (ADR-0054). */
   readonly piercing: boolean;
   /** In each Start Phase of its owner, the friendly Unit with the lowest HP heals N HP. */
   readonly heal: number;
@@ -259,7 +259,7 @@ export interface UnitState {
   exposedTurns: number;
   frozen: boolean;
   /**
-   * Paralyzed (GDD 4.4, ADR-0029): no attack in the next action, but the Unit
+   * Paralyzed (GDD 4.4, ADR-0028): no attack in the next action, but the Unit
    * can move. The action then ends it. Until then, no Retaliate and no First
    * Strike.
    */
@@ -279,7 +279,7 @@ export interface UnitState {
   /** Attack from Rally until the end of the Turn of the owner. */
   rallied: number;
   /**
-   * The Heroic bonus (ADR-0048): Attack from Heroic. It stays until the Unit
+   * The Heroic bonus (ADR-0046): Attack from Heroic. It stays until the Unit
    * leaves the Board, and Rebirth ends it.
    */
   heroicBonus: number;
@@ -396,12 +396,12 @@ export type DamageDealer =
       readonly unitId: number;
       readonly hero: HeroRef;
       /**
-       * The damage of this Unit cannot be reduced (Piercing, ADR-0056).
+       * The damage of this Unit cannot be reduced (Piercing, ADR-0054).
        */
       readonly piercing?: boolean;
       /**
        * The damage of this Unit to a Unit with Wall is doubled (Wallbreaker,
-       * ADR-0056).
+       * ADR-0054).
        */
       readonly wallbreaker?: boolean;
     }
@@ -421,7 +421,7 @@ export type DamageSource =
   | "field"
   /** The damage that is left after a Trample kill. It is not an attack. */
   | "trample"
-  /** The damage of the Bolt, Hero's Bane and Spawnbane Keywords (ADR-0050). */
+  /** The damage of the Bolt, Hero's Bane and Spawnbane Keywords (ADR-0048). */
   | "bolt"
   | "herosBane"
   | "spawnbane";
@@ -521,13 +521,13 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   AttackFaded: { readonly unitId: number };
   /**
-   * Heroic N (ADR-0048): the Unit attacked an enemy Unit and got +N Attack.
+   * Heroic N (ADR-0046): the Unit attacked an enemy Unit and got +N Attack.
    * `heroicBonus` is its total Heroic bonus after this event. No event ends
    * the bonus: it ends at `UnitReborn` and when the Unit leaves the Board.
    */
   HeroicGained: { readonly unitId: number; readonly heroicBonus: number };
   /**
-   * Soul Harvest (ADR-0050): an enemy Unit died and this Unit got +1 Attack
+   * Soul Harvest (ADR-0048): an enemy Unit died and this Unit got +1 Attack
    * and +1 HP. `soulHarvest` is its total bonus after this event. Rebirth ends
    * the bonus.
    */
@@ -630,7 +630,7 @@ export type BattleEvent = Data.TaggedEnum<{
    */
   DebuffsRemoved: { readonly unitId: number };
   /**
-   * The Dispel Keyword (ADR-0056) ended 1 Debuff of the Unit: the one that
+   * The Dispel Keyword (ADR-0054) ended 1 Debuff of the Unit: the one that
    * the Battle seed picked. The other Debuffs stay.
    */
   DebuffRemoved: { readonly unitId: number };
@@ -685,7 +685,7 @@ export type BattleEvent = Data.TaggedEnum<{
   };
   /**
    * The Boss Rule `rule` (its index in the Boss Rules of `hero`) activated
-   * (ADR-0040). The events of its effect come next: `CountdownChanged`,
+   * (ADR-0038). The events of its effect come next: `CountdownChanged`,
    * `UnitSummoned` or `CardDrawn`. An effect that changes nothing sends no
    * more events.
    */

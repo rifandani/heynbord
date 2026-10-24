@@ -27,16 +27,16 @@ const flagPoints = (on: true | undefined, points: number): number =>
 
 /**
  * Keyword points at a Rank (GDD 13). A card uses its Base Rank. Charge N = N × 1.
- * Heroic N = N × 2 (ADR-0048).
+ * Heroic N = N × 2 (ADR-0046).
  * Bleed N = N × 1. Hobble N = N × 1. Knockback N = N × 3. Rebirth = 5.
  * Sabotage N = N × 4. Swarm N = N × 1. Unique and Wall use 0 points. Summon
  * has its own points: `summonPoints`. The Base Speed and the Base Range are
- * free (ADR-0030): Swift = 2, Fleet = 4, Heavy = −2, Mid-range = 1,
+ * free (ADR-0029): Swift = 2, Fleet = 4, Heavy = −2, Mid-range = 1,
  * Long-range = 2 and Extreme-range = 3, the old 2 points for each Square of
  * Speed and 1 point for each Square of Range.
- * The Specialist Keywords (ADR-0050): Bolt N = N × 3, Iron Guard = 6,
+ * The Specialist Keywords (ADR-0048): Bolt N = N × 3, Iron Guard = 6,
  * Soul Harvest = 5, Hero's Bane = 4, Spawnbane N = N × 2 and Vampirism = 6.
- * The second Specialist Keywords (ADR-0056): Wallbreaker = 4, Resistance
+ * The second Specialist Keywords (ADR-0054): Wallbreaker = 4, Resistance
  * N = N × 3, Quick Study = 4, Piercing = 4, Heal N = N × 2 and Dispel = 4.
  */
 const keywordPoints = (keywords: TokenKeywords, rank: RankId): number => {
@@ -84,10 +84,10 @@ const keywordPoints = (keywords: TokenKeywords, rank: RankId): number => {
 };
 
 /**
- * Damage Type points (GDD 13). Lightning is provisional (ADR-0029): Paralyzed
+ * Damage Type points (GDD 13). Lightning is provisional (ADR-0028): Paralyzed
  * stops the attack, Retaliate and First Strike, the same as Freeze. The Unit
  * can still move, but Movement alone has little value, so it has the Frost
- * value. Holy is 1: its only rule is that it cannot be Blocked (ADR-0031).
+ * value. Holy is 1: its only rule is that it cannot be Blocked (ADR-0030).
  */
 const DAMAGE_TYPE_POINTS: Record<DamageType, number> = {
   physical: 0,
@@ -121,7 +121,7 @@ const summonPoints = (summon: TokenId | undefined, rank: RankId): number =>
 /**
  * `power = Attack × 2 + HP + Keyword points`, plus Damage Type points. Attack
  * and HP are at the Base Rank, as the Keyword points are (ADR-0020). The Speed
- * and Range Keywords are Keyword points (ADR-0030).
+ * and Range Keywords are Keyword points (ADR-0029).
  */
 export const creaturePower = (card: CreatureCardDefinition): number =>
   scaleForRank(card.attack, card.baseRank) * 2 +
@@ -133,13 +133,13 @@ export const creaturePower = (card: CreatureCardDefinition): number =>
 /**
  * The slope `s` of the Power Budget (ADR-0021): the steepest slope that passes
  * the Matchup criteria of the ADR. The floor is `budget(6) ≥ 1.3 × budget(2)`,
- * thus `s ≥ 1.33` with the intercept 19 (ADR-0030). It was 1.47 with 21.
+ * thus `s ≥ 1.33` with the intercept 19 (ADR-0029). It was 1.47 with 21.
  */
 export const POWER_BUDGET_SLOPE = 3;
 
 /**
  * `budget = 19 + s × (Countdown − 3)` (GDD 13, ADR-0021). It was 21: the 2
- * points of Speed 1 left it when the Base Speed became free (ADR-0030).
+ * points of Speed 1 left it when the Base Speed became free (ADR-0029).
  */
 export const powerBudget = (countdown: number): number =>
   19 + POWER_BUDGET_SLOPE * (countdown - 3);
@@ -151,7 +151,7 @@ export const budgetDeviation = (card: CreatureCardDefinition): number => {
 };
 
 /**
- * The rate of each Skill effect kind (ADR-0032): the Power Points for each
+ * The rate of each Skill effect kind (ADR-0031): the Power Points for each
  * point of its main amount at the Base Rank. A rate with no amount (Steadfast,
  * Cleanse, the extra action, the damage that copies Attack and Grounded) is
  * the points of the effect. The rates are a fit of the swap rule on all 40
@@ -185,7 +185,7 @@ export const SKILL_RATES = {
 export type SkillRate = keyof typeof SKILL_RATES;
 
 /**
- * The Damage Type points of a Skill Card (ADR-0032). They are not the Creature
+ * The Damage Type points of a Skill Card (ADR-0031). They are not the Creature
  * Card values: a Skill Card hits one time, and a Unit hits in each action.
  */
 export const SKILL_DAMAGE_TYPE_POINTS: Record<DamageType, number> = {
@@ -386,7 +386,7 @@ export const skillPowerTerms = (
 };
 
 /**
- * The weight of Recall in the Power Points (ADR-0032): `1 + w × Recall`. A
+ * The weight of Recall in the Power Points (ADR-0031): `1 + w × Recall`. A
  * Recalled card plays again, so the same budget buys more at a higher Base
  * Rank. The fit sets `w`, not the formula `1 / (1 − Recall)`.
  */
@@ -405,7 +405,7 @@ const termPoints = (parts: SkillPowerTerms): number =>
   parts.flat;
 
 /**
- * The Power Points of a Skill Card at its Base Rank (ADR-0032), with the same
+ * The Power Points of a Skill Card at its Base Rank (ADR-0031), with the same
  * Power Budget as a Creature Card. Crit does not count: it comes from the
  * Hero, not from the Card.
  */
@@ -519,7 +519,7 @@ export interface SkillBudgetCheck {
   readonly steps: readonly number[];
   /**
    * True when no other whole-number value of the main amount comes nearer to
-   * the budget (ADR-0032). True for an effect with no main amount.
+   * the budget (ADR-0031). True for an effect with no main amount.
    */
   readonly nearestStep: boolean;
 }
@@ -551,7 +551,7 @@ const stepPowers = (card: SkillCardDefinition): number[] => {
 };
 
 /**
- * The Power Budget check of a Skill Card (ADR-0032): the same budget as a
+ * The Power Budget check of a Skill Card (ADR-0031): the same budget as a
  * Creature Card, with the nearest-step rule and the hard cap in place of the
  * ±10% band.
  */

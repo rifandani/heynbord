@@ -63,7 +63,7 @@ export const EXTRACT_ESSENCE: Readonly<Record<RankId, number>> = {
   legendary: 600,
 };
 
-/** A Base Rank in which a card can be Crafted: Common, Uncommon or Rare (ADR-0052). */
+/** A Base Rank in which a card can be Crafted: Common, Uncommon or Rare (ADR-0050). */
 export type CraftRank = Exclude<RankId, "epic" | "legendary">;
 
 /** True when a card with Base Rank `rank` can be Crafted: it is not Epic or Legendary. */
@@ -73,7 +73,7 @@ export const isCraftRank = (rank: RankId): rank is CraftRank =>
 /**
  * The Essence that Craft costs for one copy of a card in each Base Rank that
  * can be Crafted (Economy 3.3). A card with Base Rank Epic or Legendary has
- * no Craft cost (ADR-0052): it comes from Packs, and from a Fuse for Epic.
+ * no Craft cost (ADR-0050): it comes from Packs, and from a Fuse for Epic.
  * Keep the code and the Economy table the same.
  */
 export const CRAFT_ESSENCE: Readonly<Record<CraftRank, number>> = {
@@ -91,7 +91,7 @@ export const craftEssence = (card: {
 }): number | null =>
   isCraftRank(card.baseRank) ? CRAFT_ESSENCE[card.baseRank] : null;
 
-/** A Rank that a Fuse can use: all Ranks but Legendary (ADR-0051). */
+/** A Rank that a Fuse can use: all Ranks but Legendary (ADR-0049). */
 export type FuseRank = Exclude<RankId, "legendary">;
 
 /** True when a copy in `rank` can go into a Fuse: a Legendary copy is never an input. */
@@ -112,7 +112,7 @@ export const FUSE_COPIES: Readonly<Record<FuseRank, number>> = {
 /**
  * The Essence that one Fuse costs, by the Rank of the copies (Economy 3.7):
  * half of the Craft cost of that Rank for Common, Uncommon and Rare, and 700
- * for Epic, which has no Craft cost (ADR-0052). Keep the code and the Economy
+ * for Epic, which has no Craft cost (ADR-0050). Keep the code and the Economy
  * table the same.
  */
 export const FUSE_ESSENCE: Readonly<Record<FuseRank, number>> = {

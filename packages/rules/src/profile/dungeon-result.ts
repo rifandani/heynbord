@@ -40,7 +40,7 @@ export const dungeonCardPool = (
     classId
   );
 
-/** The Dungeon Sweep Tickets that each Dungeon win gives (ADR-0041). The M3 re-tune can change it. */
+/** The Dungeon Sweep Tickets that each Dungeon win gives (ADR-0039). The M3 re-tune can change it. */
 export const DUNGEON_SWEEP_TICKETS_PER_WIN = 1;
 
 /** The XP, Coin, Essence, card and Forge Stones of one outcome of a Dungeon. */
@@ -50,7 +50,7 @@ export interface DungeonOutcomeRewards {
   readonly coin: number;
   readonly essence: number;
   readonly card: DeckEntry | null;
-  /** The Forge Stones, of 0 to 2 tiers (ADR-0038, ADR-0039). */
+  /** The Forge Stones, of 0 to 2 tiers (ADR-0036, ADR-0037). */
   readonly forgeStones: readonly ForgeStoneReward[];
   /** The reward random state after the card and the Forge Stone rolls. */
   readonly rewardRandomState: number;
@@ -90,7 +90,7 @@ export interface DungeonResultInput {
   readonly won: boolean;
   /** The Class of the Deck that the Player used. */
   readonly classId: ClassId;
-  /** The HP that the Bosses lost. It sets the share of a loss reward (ADR-0043). */
+  /** The HP that the Bosses lost. It sets the share of a loss reward (ADR-0041). */
   readonly enemyHeroDamage: EnemyHeroDamage;
 }
 
@@ -110,7 +110,7 @@ export interface DungeonRewards {
   readonly unopenedPacks: readonly UnopenedPack[];
   /** The Dungeon Sweep Tickets that the result added: 1 for a win, 0 for a loss. */
   readonly dungeonSweepTickets: number;
-  /** The Forge Stones of the result, of 0 to 2 tiers (ADR-0038, ADR-0039). */
+  /** The Forge Stones of the result, of 0 to 2 tiers (ADR-0036, ADR-0037). */
   readonly forgeStones: readonly ForgeStoneReward[];
 }
 
@@ -137,9 +137,9 @@ type DungeonResultProfile = Pick<
  * Applies the result of a Dungeon Battle (Economy 2.4). A win of a Dungeon
  * with no result is a first win, any other win is a repeat win. It gives the
  * Coin, the XP and the Essence of the outcome, only the share of the lost Boss
- * HP of them for a loss (ADR-0043), adds 1 to the wins of a win,
- * gives the card and the Forge Stones of a win (ADR-0038, ADR-0039), and
- * gives the Dungeon Sweep Tickets of a win (ADR-0041). It adds
+ * HP of them for a loss (ADR-0041), adds 1 to the wins of a win,
+ * gives the card and the Forge Stones of a win (ADR-0036, ADR-0037), and
+ * gives the Dungeon Sweep Tickets of a win (ADR-0039). It adds
  * the First Pack when the level goes to the Packs unlock. A Dungeon gives no
  * Stars and no Heynstones. A repeat win rolls the card first, then the Forge
  * Stones. An Abandon and a Battle that is not finished never call it.

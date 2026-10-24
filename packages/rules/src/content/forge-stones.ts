@@ -6,7 +6,7 @@ import type { StageDefinition } from "./schema";
 import type { StageOutcome } from "./stage-coin";
 
 /**
- * The 5 Forge Stone tiers (ADR-0038, ADR-0039). They use the names of the
+ * The 5 Forge Stone tiers (ADR-0036, ADR-0037). They use the names of the
  * Ranks, but a Forge Stone tier is not a Rank.
  */
 const ForgeStoneTier = Schema.Literals([

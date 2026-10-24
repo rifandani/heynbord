@@ -150,7 +150,7 @@ const hit = (overrides: Partial<Hit> = {}): Hit => ({
   ...overrides,
 });
 
-describe("Bulwark and Block by Damage Type (GDD 4.7, ADR-0031)", () => {
+describe("Bulwark and Block by Damage Type (GDD 4.7, ADR-0030)", () => {
   it("Bulwark reduces Physical damage", () => {
     const { ctx, target } = bulwarkedTarget();
     expect(damageUnit(ctx, target, hit()).dealt).toBe(4);

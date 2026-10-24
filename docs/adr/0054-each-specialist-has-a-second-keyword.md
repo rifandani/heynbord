@@ -1,10 +1,10 @@
 # Each Specialist has a second Keyword, and more Power Points than the Epic cards of its Race
 
-[ADR-0050](0050-a-base-rank-legendary-creature-card-is-a-specialist.md) gave each Race 1 **Specialist**: a Base Rank Legendary Creature Card with Unique, one Class and 1 new Keyword. The 6 Specialists were weak in the Battle: each one had 1 Keyword and 2 or 3 stats, and the Specialist Decks of [08 — Archetypes](../game/08-archetypes.md) 2.4 had 1 to 3 Matchups outside the 45% to 55% band. Now each Specialist has 2 more Keywords, and each Specialist has more Power Points than the 2 Epic cards of its Race.
+[ADR-0048](0048-a-base-rank-legendary-creature-card-is-a-specialist.md) gave each Race 1 **Specialist**: a Base Rank Legendary Creature Card with Unique, one Class and 1 new Keyword. The 6 Specialists were weak in the Battle: each one had 1 Keyword and 2 or 3 stats, and the Specialist Decks of [08 — Archetypes](../game/08-archetypes.md) 2.4 had 1 to 3 Matchups outside the 45% to 55% band. Now each Specialist has 2 more Keywords, and each Specialist has more Power Points than the 2 Epic cards of its Race.
 
 ## The new Keywords
 
-Each new Keyword is a Main Keyword of its Race, not a Race Keyword ([ADR-0026](0026-each-race-has-one-race-keyword.md)). The full rules are in GDD 5.4 and in the CONTEXT file of the rules package.
+Each new Keyword is a Main Keyword of its Race, not a Race Keyword ([ADR-0025](0025-each-race-has-one-race-keyword.md)). The full rules are in GDD 5.4 and in the CONTEXT file of the rules package.
 
 - **Wallbreaker** (Human): the damage that the Unit deals to a Unit with Wall is doubled. The doubling comes before Bulwark, Exposed, Crit, Block and Ward. A Wall is a small part of the Card pool, so the Keyword is strong in a few Matchups only.
 - **Resistance N** (Orc): reduces Fire, Frost, Holy and Lightning damage to the Unit by N. It is the twin of Bulwark N, which reduces only Physical damage.
@@ -15,7 +15,7 @@ Each new Keyword is a Main Keyword of its Race, not a Race Keyword ([ADR-0026](0
 
 ## The Specialists
 
-Each Specialist also gets 1 more Keyword of the set of ADR-0050: Ser Aldric Stonewall gets Rally 2, Ashcaller Grosh and Grix Ratwhistle get Mid-range, Gorehorn Red Maw gets Bleed 2 and Pale Cantor Ysolde gets Rebirth. The stats go down, because the Power Points of a card stay within 10% of its Power Budget.
+Each Specialist also gets 1 more Keyword of the set of ADR-0048: Ser Aldric Stonewall gets Rally 2, Ashcaller Grosh and Grix Ratwhistle get Mid-range, Gorehorn Red Maw gets Bleed 2 and Pale Cantor Ysolde gets Rebirth. The stats go down, because the Power Points of a card stay within 10% of its Power Budget.
 
 | Card | Race | Class | Countdown | Attack / HP | Damage Type | Keywords | Power | Budget |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -61,7 +61,7 @@ The Keyword points are provisional, like the other points of GDD 13: Wallbreaker
 - The Battle Log shows the Keyword Plate of each new Keyword, and a new line for the Debuff that Dispel ends.
 - The 6 Specialist Decks of [08 — Archetypes](../game/08-archetypes.md) 2.4 change. The Decks are `diagnostic`, so a Matchup outside the 45% to 55% band is a result for review, and it does not gate release.
 - The 15 Matchups between the Main Archetypes do not move: no Main Archetype holds a Specialist.
-- The deferred Keyword ideas of ADR-0050 stay deferred. The list of the Player has other ideas, for example Sunder (double damage to a Unit with Bulwark) and Devour N.
+- The deferred Keyword ideas of ADR-0048 stay deferred. The list of the Player has other ideas, for example Sunder (double damage to a Unit with Bulwark) and Devour N.
 
 ## Glossary conflicts
 

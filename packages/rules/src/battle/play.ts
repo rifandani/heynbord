@@ -62,7 +62,7 @@ const enemyHandOfLane = (ctx: StepContext, side: Side, lane: number) => {
 };
 
 /**
- * Spawnbane N (ADR-0050): when an enemy Hero summons a Unit from a Creature
+ * Spawnbane N (ADR-0048): when an enemy Hero summons a Unit from a Creature
  * Card, each Unit of the other Side with Spawnbane deals N damage to that
  * Unit. It comes before the Sabotage and the Summon of the new Unit, so a
  * Unit that dies does neither. The damage has the Damage Type of the
@@ -354,7 +354,7 @@ const giveBonusBulwark = (
 };
 
 /**
- * Quick Study (ADR-0056): when an enemy Hero plays a Skill Card, the card with
+ * Quick Study (ADR-0054): when an enemy Hero plays a Skill Card, the card with
  * the highest Countdown in the Hand of the Hero of each Unit with Quick Study
  * goes down by 1. On a tie, the oldest card in the Hand goes first. A card
  * that is Ready has a Countdown of 0: nothing changes, so the Keyword does

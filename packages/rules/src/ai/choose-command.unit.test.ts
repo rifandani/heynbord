@@ -409,13 +409,13 @@ describe("chooseCommand: damage that the AI's Hero will take (GDD 9)", () => {
     ).toEqual(spearThrowAt(0, 9));
   });
 
-  it("gives a Unit with a Heroic bonus more kill value (ADR-0048)", () => {
+  it("gives a Unit with a Heroic bonus more kill value (ADR-0046)", () => {
     // Two far Scrap Raiders that a Spear Throw kills. Only the bonus is different.
     expect(heroKillChoice({ heroicBonus: 0 })).toEqual(spearThrowAt(0, 2));
     expect(heroKillChoice({ heroicBonus: 3 })).toEqual(spearThrowAt(1, 2));
   });
 
-  it("gives a Unit with a Heroic bonus more Lane threat (ADR-0048)", () => {
+  it("gives a Unit with a Heroic bonus more Lane threat (ADR-0046)", () => {
     // Two far Scrap Raiders. Only the bonus is different.
     expect(farSummonChoice({ heroicBonus: 0 })).toEqual(summonAt(0));
     expect(farSummonChoice({ heroicBonus: 3 })).toEqual(summonAt(1));

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { lossShare } from "./loss-reward";
 
-describe("lossShare (ADR-0043)", () => {
+describe("lossShare (ADR-0041)", () => {
   it("gives nothing when the enemy Heroes lost no HP", () => {
     expect(lossShare(10, { lost: 0, total: 30 })).toBe(0);
   });

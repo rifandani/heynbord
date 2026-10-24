@@ -13,7 +13,7 @@ import { summon } from "./units";
 
 /**
  * The HP of the Hero is at or below the threshold of `rule`. Integer math, so
- * the result is the same on each machine (ADR-0040).
+ * the result is the same on each machine (ADR-0038).
  */
 const isReached = (hero: HeroState, rule: BossRuleState): boolean =>
   hero.hp * 100 <= hero.maxHp * rule.threshold;
@@ -100,7 +100,7 @@ const applyEffect = (
 
 /**
  * Activates each Boss Rule of the Hero `ref` whose threshold the HP reached
- * (ADR-0040). The higher threshold goes first, and on a tie the content order.
+ * (ADR-0038). The higher threshold goes first, and on a tie the content order.
  * A rule activates at most one time in a Battle, and never for a Defeated
  * Hero. The damage calls it after each hit on a Hero.
  */
@@ -132,7 +132,7 @@ export const activateBossRules = (ctx: StepContext, ref: HeroRef): void => {
 
 /**
  * The Hero has a Summon Boss Rule that has not activated. It can still put a
- * Unit on the Board, so its Side is not Routed (ADR-0012, ADR-0040).
+ * Unit on the Board, so its Side is not Routed (ADR-0012, ADR-0038).
  */
 export const hasWaitingSummon = (hero: HeroState): boolean =>
   hero.bossRules.some(

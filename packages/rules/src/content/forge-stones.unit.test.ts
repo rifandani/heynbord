@@ -10,8 +10,8 @@ import {
 } from "./forge-stones";
 import { CAMPAIGN_REGIONS } from "./star-chests";
 
-describe("Forge Stones (ADR-0038)", () => {
-  it("has 5 tiers, from the lowest Gear levels (ADR-0039)", () => {
+describe("Forge Stones (ADR-0036)", () => {
+  it("has 5 tiers, from the lowest Gear levels (ADR-0037)", () => {
     expect(FORGE_STONE_TIERS).toEqual([
       "common",
       "uncommon",

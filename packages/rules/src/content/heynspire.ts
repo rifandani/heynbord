@@ -12,7 +12,7 @@ export const HEYNSPIRE_BOSS_FLOOR_REWARD = {
   heynstones: 50,
   /** 1 Earn-only Cosmetic (`BOSS_FLOOR_COSMETICS`, Economy 2.3). */
   cosmetics: 1,
-  /** 2 Epic Forge Stones (ADR-0038) and 1 Legendary Forge Stone (ADR-0039). */
+  /** 2 Epic Forge Stones (ADR-0036) and 1 Legendary Forge Stone (ADR-0037). */
   forgeStones: [
     { tier: "epic", count: 2 },
     { tier: "legendary", count: 1 },
@@ -25,7 +25,7 @@ export const HEYNSPIRE_BOSS_FLOOR_REWARD = {
  */
 export const HEYNSPIRE_FIFTH_FLOOR_EVERY = 5;
 
-/** The Forge Stones of the first win of each 5th Floor that is not a Boss Floor (ADR-0038). */
+/** The Forge Stones of the first win of each 5th Floor that is not a Boss Floor (ADR-0036). */
 export const HEYNSPIRE_FIFTH_FLOOR_FORGE_STONES = {
   tier: "rare",
   count: 2,

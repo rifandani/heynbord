@@ -790,7 +790,7 @@ describe("damage (GDD 4.7)", () => {
       maxHp: 20,
     });
     const first = run(state, endTurn);
-    // 4 Fire: Bulwark 1 does not reduce it (ADR-0031).
+    // 4 Fire: Bulwark 1 does not reduce it (ADR-0030).
     expect(unitById(first.state, target.id)).toMatchObject({ hp: 16, burn: 2 });
     const second = run(first.state, endTurn);
     // The enemy's End Phase: Burn ignores Bulwark.
@@ -2862,7 +2862,7 @@ const heroicHit = (
   };
 };
 
-describe("Heroic N (ADR-0048)", () => {
+describe("Heroic N (ADR-0046)", () => {
   it("gives +N Attack after an attack on an enemy Unit, after the damage", () => {
     const { unit, attacks, gained } = heroicHit();
     expect(attacks).toEqual([5]);

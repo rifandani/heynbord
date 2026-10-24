@@ -2,7 +2,7 @@
 
 Heynspire has 50 Floors (GDD 8.2). A Stage is written by hand: its Deck, Hero HP, Gear and Start Units, and the sim tunes each Stage alone. For 50 Floors, that is the work of 5 Regions. We decided that a pure function makes each Floor from a **Floor template** and a **strength curve**. A template is written by hand: an enemy name, a Class and a Deck of Base Rank copies from the Campaign card pool. The curve gives the Rank steps, the Hero HP, the Gear and the Deck size for the Floor number. Floor *n* is always the same Floor. The sim tunes the few curve values, not 50 Decks.
 
-The difficulty does not go up from Floor 1 to Floor 50, as in the Regions. Each Floor has the target of a normal Stage (60% to 80%), and each 10th Floor (a **Boss Floor**) has the target of a Boss Stage (30% to 50%). Each Floor must hit its target at its Recommended level, with no Gear and with the Expected Gear (ADR-0034). Thus the climb stays open to a Player on the First-try Path, and the Legendary Forge Stones of the Boss Floors (ADR-0039) stay reachable.
+The difficulty does not go up from Floor 1 to Floor 50, as in the Regions. Each Floor has the target of a normal Stage (60% to 80%), and each 10th Floor (a **Boss Floor**) has the target of a Boss Stage (30% to 50%). Each Floor must hit its target at its Recommended level, with no Gear and with the Expected Gear (ADR-0033). Thus the climb stays open to a Player on the First-try Path, and the Legendary Forge Stones of the Boss Floors (ADR-0037) stay reachable.
 
 ## Considered Options
 

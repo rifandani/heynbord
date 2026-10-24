@@ -7,7 +7,7 @@
  *
  * Usage: `bun scripts/fit-budget.ts <intercept> <slope> [--hp-per-attack <hp>]`.
  * It prints the fit of each card. It does not change `cards.ts`. For the
- * ADR-0021 budget `19 + s × (Countdown − 3)` (ADR-0030), the intercept is
+ * ADR-0021 budget `19 + s × (Countdown − 3)` (ADR-0029), the intercept is
  * `19 − 3s` and the slope is `s`.
  *
  * The fit selects the Attack and HP with the power nearest to the budget. All

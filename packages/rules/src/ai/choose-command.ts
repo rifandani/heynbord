@@ -83,7 +83,7 @@ const closeness = (unit: UnitState): number =>
 
 /**
  * The Attack that the AI values: the Attack with the Heroic bonus, which stays
- * until the Unit leaves the Board (ADR-0048). The Rally, Swarm and bonus
+ * until the Unit leaves the Board (ADR-0046). The Rally, Swarm and bonus
  * Attack are short, so they do not count.
  */
 const lastingAttack = (unit: UnitState): number =>
@@ -94,7 +94,7 @@ const unitValue = (unit: UnitState): number =>
   unit.hp +
   unit.speed * 2 +
   unit.bulwark * 3 +
-  // The Resistance of a Unit (ADR-0056) is worth less than its Bulwark: it
+  // The Resistance of a Unit (ADR-0054) is worth less than its Bulwark: it
   // reduces only the Damage Types that are not Physical.
   unit.resistance * 2;
 
@@ -451,9 +451,9 @@ const hitOn = (
   damageType: DamageType
 ): SkillHit => {
   const physical = damageType === "physical";
-  // Bulwark reduces only Physical damage (ADR-0031).
+  // Bulwark reduces only Physical damage (ADR-0030).
   const bulwark = physical ? unit.bulwark + unit.bonusBulwark : 0;
-  // Resistance reduces the other Damage Types (ADR-0056).
+  // Resistance reduces the other Damage Types (ADR-0054).
   const resistance = physical ? 0 : unit.resistance;
   // Exposed adds to a Physical hit after Bulwark (GDD 4.7, step 4).
   const exposed = physical ? unit.exposed : 0;

@@ -4,7 +4,7 @@ import type { BattleState } from "./types";
 /**
  * The Stars of a finished Stage Battle for the player: 0 for a loss, else 1
  * to 3. 3 Stars need a win before the Star Turn of the Stage (GDD 4.11,
- * ADR-0047).
+ * ADR-0045).
  */
 export const starsFor = (
   state: BattleState,

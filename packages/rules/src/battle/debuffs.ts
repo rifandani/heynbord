@@ -69,7 +69,7 @@ export const removeDebuffs = (ctx: StepContext, unit: UnitState): void => {
 };
 
 /**
- * Dispel (ADR-0056): 1 Debuff of the Unit ends, at random among the Debuffs
+ * Dispel (ADR-0054): 1 Debuff of the Unit ends, at random among the Debuffs
  * that it has. A Unit with no Debuff gets no event.
  */
 export const removeOneDebuff = (ctx: StepContext, unit: UnitState): boolean => {

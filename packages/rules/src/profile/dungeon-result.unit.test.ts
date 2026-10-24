@@ -24,7 +24,7 @@ import { FIRST_PACK, REPEAT_WIN_CARD_CHANCE } from "./stage-result";
 const fresh = newProfile(42);
 const dungeon1 = getDungeon("dungeon-1");
 
-/** The Bosses lost all their HP: the full loss reward (ADR-0043). */
+/** The Bosses lost all their HP: the full loss reward (ADR-0041). */
 const ALL_HP_LOST = { lost: 30, total: 30 };
 
 const win = (
@@ -94,7 +94,7 @@ describe("applyDungeonResult: Coin, XP and Essence (Economy 2.4)", () => {
     }
   });
 
-  it("gives only the share of the lost Boss HP of a loss reward (ADR-0043)", () => {
+  it("gives only the share of the lost Boss HP of a loss reward (ADR-0041)", () => {
     const none = apply(fresh, loss("dungeon-1", { lost: 0, total: 60 }));
     expect([none.rewards.coin, none.rewards.xp]).toEqual([0, 0]);
     expect(none.profile.coin).toBe(fresh.coin);
@@ -172,7 +172,7 @@ describe("applyDungeonResult: Coin, XP and Essence (Economy 2.4)", () => {
   });
 });
 
-describe("applyDungeonResult: Dungeon Sweep Tickets (ADR-0041)", () => {
+describe("applyDungeonResult: Dungeon Sweep Tickets (ADR-0039)", () => {
   it("adds 1 Dungeon Sweep Ticket on a first win and on a repeat win, and no Campaign Sweep Tickets", () => {
     expect(DUNGEON_SWEEP_TICKETS_PER_WIN).toBe(1);
     const first = apply({ ...fresh, campaignSweepTickets: 3 }, win());
@@ -210,7 +210,7 @@ const repeatWins = (
   return { rewards: all, profile };
 };
 
-describe("applyDungeonResult: Forge Stones (Economy 2.4, ADR-0038, ADR-0039)", () => {
+describe("applyDungeonResult: Forge Stones (Economy 2.4, ADR-0036, ADR-0037)", () => {
   it("gives 3 Forge Stones of the tier of the Dungeon on a first win", () => {
     for (const [number, tier] of [
       [1, "uncommon"],
