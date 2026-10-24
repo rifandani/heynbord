@@ -67,12 +67,15 @@ The Star Turn is the Turn number that a 3-Star win must come before (GDD 4.11, [
 | 1-4 | 38 | 0 / 0 / 0 / 0 | 10 | — | — | Shieldbearer (Common) | 2 | 65% / 73% | 0 / 0 / 0 / 0 | — | 13 | 40% / — |
 | 1-5 | 42 | 6 / 0 / 6 / 6 | 11 | — | Militia Recruit (Common), Lane 1, Column 10 · Shieldbearer (Common), Lane 2, Column 10 · Crossbow Guard (Common), Lane 3, Column 11 | Crossbow Guard (Common) | 3 | 71% / 78% | 0 / 0 / 0 / 0 | — | 16 | 41% / — |
 | 1-6 | 42 | 2 / 0 / 2 / 2 | 11 | — | — | Dawn Cleric (Uncommon) | 3 | 66% / 77% | 0 / 0 / 0 / 0 | — | 14 | 45% / — |
-| 1-7 | 32 | 2 / 0 / 2 / 2 | 12 | — | — | Howling Charger (Uncommon) | 4 | 73% / 65% | 0 / 0 / 0 / 0 | — | 13 | 40% / — |
+| 1-7 | 32 | 2 / 0 / 2 / 2 | 12 | — | — | Howling Charger (Uncommon) | 4 | 74% / 66% | 0 / 0 / 0 / 0 | — | 13 | 40% / — |
 | 1-8 | 40 | 2 / 0 / 2 / 2 | 12 | Lane 1, opens on Turn 5 | Militia Recruit (Common), Lane 2, Column 11 | Gate Warden (Uncommon) | 4 | 68% / 63% | 0 / 0 / 0 / 0 | — | 15 | 46% / — |
 | 1-9 | 32 | 0 / 0 / 0 / 0 | 13 | — | — | River Knight (Uncommon) | 5 | 63% / 74% | 3 / 3 / 2 / 2 | 68% / 76% | 15 | 45% / 47% |
 | 1-10 | 48 | 6 / 0 / 0 / 4 | 14 | — | Shieldbearer (Epic), Lane 2, Column 11 | Iron Bulwark (Epic) | 5 | 32% / 45% | 3 / 3 / 3 / 2 | 37% / 48% | 18 | 34% / 35% |
 
-On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). The win rates in the table come from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target. The next paragraphs tell the earlier runs. Stage 1-7: the Tusk Brute is Common (it was Uncommon).
+
+**Retune of 2026-10-24.** The 1-7 row comes from a run of `bun rules:sim:check` on 2026-10-24. Pack Stalker has 4 HP (it had 5) and Thornline Archer has 5 HP (it had 4), for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). Stage 1-7 has a Pack Stalker, and its rows moved by 1 point or less. No Region 1 Deck changes.
+
+On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). Before the retune of 2026-10-24, the win rates in the table came from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target. The next paragraphs tell the earlier runs. Stage 1-7: the Tusk Brute is Common (it was Uncommon).
 
 **Issue #109 (2026-10-17).** The AI now counts the Heroic bonus in the value of a Unit and in the threat and the defense of a Lane (GDD 9). The AI plays both Sides in the sim, so this change moved all rows. The values "before" are after the AI change and before the content changes (1000 Battles). Vanguard and Raiders, with no Gear and then with the Expected Gear. Each change is to the enemy only. No first-win card, Start Unit or Closed Lane changes.
 
@@ -278,7 +281,7 @@ The Goblin tunnels from the Red Mesas break out into an old Elf grove of giant g
 | --- | --- | --- | --- | --- |
 | 3-1 | The Tunnel Exit | Mossfoot Sentry (Warrior) | A goblin tunnel exit with a broken mine cart | **Regenerate:** Rootbound Guards and Dewkeepers heal in each Start Phase. Kill a Unit in one Turn, or it heals. |
 | 3-2 | The Stuck Drill | Drillboss Nub (Warrior) | A goblin drill stuck in the stem of a giant mushroom | **Walls that heal:** Bramble Nests (Wall, Regenerate) with Dewkeepers behind them. |
-| 3-3 | The Glowing Pool | Dewdrop Alchemist (Mage) | A pool that glows, with stepping stones | **Poison:** Acorn Tenders and Thornline Archers. Each hit adds a stack, and the stacks hurt in each End Phase. |
+| 3-3 | The Glowing Pool | Dewdrop Alchemist (Mage) | A pool that glows, with stepping stones | **Poison:** Acorn Tenders, with Mosspitcher Lookouts behind them. Each hit adds a stack, and the stacks hurt in each End Phase. |
 | 3-4 | The Rope Bridge | Bridgewarden Fennick (Ranger) | A rope bridge between two giant mushroom caps | **Elf Flying:** Fernwing Couriers, Canopy Skirmishers and an Amberwing Dart (Flying and Poison). |
 | 3-5 | The Lantern Post | Lantern Lookout (Ranger) | An elf watch post on a mushroom cap, with lanterns | **Elf Long-range:** Mosspitcher Lookouts (Regenerate) and Thornline Archers behind Bramble Nests, with Venom Arrow. |
 | 3-6 | The Goblin Camp | Gig the Hired (Warrior) | A goblin camp with scrap tents under the mushrooms | **Pivot:** Sidestep Shivs and Glade Turnblades hit the Unit behind or next to them first. |
@@ -295,16 +298,22 @@ The columns are the same as in 2.2.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 3-1 | 48 | 0 / 0 / 0 / 0 | 18 | — | — | Rootbound Guard (Common) | 10 | 64% / 74% | 5 / 5 / 5 / 5 | 72% / 78% | 21 | 43% / 47% |
 | 3-2 | 48 | 0 / 0 / 0 / 0 | 18 | — | — | Bramble Nest (Uncommon) | 10 | 65% / 73% | 6 / 5 / 5 / 5 | 69% / 79% | 21 | 42% / 45% |
-| 3-3 | 48 | 0 / 0 / 0 / 0 | 19 | — | — | Acorn Tender (Common) | 11 | 62% / 72% | 6 / 6 / 5 / 5 | 69% / 79% | 21 | 44% / 46% |
+| 3-3 | 48 | 0 / 0 / 0 / 0 | 19 | — | — | Acorn Tender (Common) | 11 | 62% / 74% | 6 / 6 / 5 / 5 | 69% / 80% | 21 | 42% / 44% |
 | 3-4 | 50 | 0 / 0 / 0 / 0 | 20 | — | — | Fernwing Courier (Common) | 11 | 62% / 71% | 6 / 6 / 6 / 5 | 68% / 77% | 20 | 37% / 38% |
-| 3-5 | 48 | 0 / 0 / 0 / 0 | 20 | — | — | Mosspitcher Lookout (Common) | 12 | 64% / 71% | 6 / 6 / 6 / 6 | 73% / 78% | 24 | 43% / 47% |
+| 3-5 | 48 | 0 / 0 / 0 / 0 | 20 | — | — | Mosspitcher Lookout (Common) | 12 | 62% / 69% | 6 / 6 / 6 / 6 | 70% / 77% | 24 | 42% / 46% |
 | 3-6 | 52 | 0 / 0 / 0 / 0 | 20 | — | — | Sidestep Shiv (Uncommon) | 12 | 70% / 70% | 7 / 7 / 7 / 6 | 74% / 78% | 22 | 48% / 49% |
 | 3-7 | 54 | 0 / 0 / 0 / 0 | 21 | — | — | Seedwind Shepherd (Rare) | 13 | 65% / 71% | 7 / 7 / 7 / 7 | 72% / 78% | 22 | 35% / 38% |
-| 3-8 | 54 | 0 / 0 / 0 / 0 | 21 | Lane 3, closed for the full Battle | — | Canopy Skirmisher (Uncommon) | 13 | 67% / 72% | 8 / 7 / 7 / 7 | 75% / 78% | 23 | 44% / 48% |
-| 3-9 | 56 | 0 / 0 / 0 / 0 | 22 | — | — | Elderreed Dartmaster (Rare) | 13 | 64% / 68% | 8 / 8 / 7 / 7 | 73% / 77% | 24 | 38% / 40% |
+| 3-8 | 54 | 0 / 0 / 0 / 0 | 21 | Lane 3, closed for the full Battle | — | Canopy Skirmisher (Uncommon) | 13 | 62% / 68% | 8 / 7 / 7 / 7 | 69% / 75% | 23 | 42% / 45% |
+| 3-9 | 56 | 0 / 0 / 0 / 0 | 22 | — | — | Elderreed Dartmaster (Rare) | 13 | 60% / 66% | 8 / 8 / 7 / 7 | 70% / 76% | 24 | 37% / 39% |
 | 3-10 | 60 | 0 / 0 / 0 / 0 | 23 | — | Canopy Vinewarden (Epic), Lane 2, Column 11 · Bramble Nest (Uncommon), Lane 2, Column 10 | Lethiel, First Gardener (Epic) | 14 | 32% / 36% | 8 / 8 / 8 / 7 | 41% / 49% | 26 | 32% / 32% |
 
-On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). The win rates in the table come from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target. The next paragraphs tell the earlier runs.
+
+**Retune of 2026-10-24.** The win rates in the table come from a run of `bun rules:sim:check` on 2026-10-24. All rows are on their target. Pack Stalker has 4 HP (it had 5) and Thornline Archer has 5 HP (it had 4), for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). Thornline Archer is in the enemy Decks of 3-3 and 3-5. Changes, Vanguard and Raiders with no Gear, then with the Expected Gear (1000 Battles):
+
+- **3-3:** 2 Mosspitcher Lookouts (C) replace the 2 Thornline Archers. The 3 Acorn Tenders still teach Poison. Before: 54.9% / 69%, then 64% / 77% (a gap of 22 points). Now: 62% / 74%, then 69% / 80%. A Deck may hold only 3 copies of a card, and Dewkeeper cannot be Common (its Base Rank is Uncommon), so other single changes were not possible. Hero HP and Banner tries did not make the gap smaller.
+- **3-5:** an Acorn Tender (C) replaces 1 Thornline Archer. Before: 57.7% / 69.1%, then 65.5% / 75.6%. Now: 62% / 69%, then 70% / 77%.
+
+On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). Before the retune of 2026-10-24, the win rates in the table came from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target. The next paragraphs tell the earlier runs.
 
 **Issue #109 (2026-10-17).** The AI now counts the Heroic bonus in the value of a Unit and in the threat and the defense of a Lane (GDD 9). The AI plays both Sides in the sim, so this change moved all rows. The values "before" are after the AI change and before the content changes (1000 Battles). Vanguard and Raiders, with no Gear and then with the Expected Gear. Each change is to the enemy only.
 
@@ -333,9 +342,9 @@ Notes from the first tuning:
 | --- | --- |
 | 3-1 | 3× Rootbound Guard (U), 2× Dewkeeper (U), 1× Bramble Duelist (R), 1× Bramble Duelist (U), 1× Ankle Snatcher (U), 1× Ankle Snatcher (C), 2× Tunnel Saboteur (C), 1× Scrap Plate Guard (R), 1× Scrap Plate Guard (U), 1× Junk Slinger (U), 1× Junk Slinger (C), 1× Fuse Runner (C), 1× Shield Bash (C), 1× War Drums (R) |
 | 3-2 | 2× Bramble Nest (U), 2× Rootbound Guard (U), 2× Junk Slinger (U), 2× Bomb Lobber (U), 2× Tunnel Saboteur (C), 1× Bramble Duelist (U), 1× Bramble Duelist (C), 1× Junk Barricade (U), 2× Dewkeeper (U), 2× Ankle Snatcher (C), 1× Shield Wall (C) |
-| 3-3 | 3× Acorn Tender (C), 2× Thornline Archer (U), 2× Rootbound Guard (C), 1× Bramble Duelist (U), 1× Bramble Duelist (C), 2× Scrap Plate Guard (C), 2× Ankle Snatcher (U), 1× Tunnel Saboteur (C), 1× Fuse Runner (C), 1× Dewkeeper (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Shards (C) |
+| 3-3 | 3× Acorn Tender (C), 2× Mosspitcher Lookout (C), 2× Rootbound Guard (C), 1× Bramble Duelist (U), 1× Bramble Duelist (C), 2× Scrap Plate Guard (C), 2× Ankle Snatcher (U), 1× Tunnel Saboteur (C), 1× Fuse Runner (C), 1× Dewkeeper (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Shards (C) |
 | 3-4 | 3× Fernwing Courier (U), 2× Canopy Skirmisher (U), 1× Amberwing Dart (R), 2× Rootbound Guard (C), 2× Bramble Duelist (C), 2× Acorn Tender (U), 2× Ankle Snatcher (C), 1× Junk Slinger (U), 1× Junk Slinger (C), 1× Scrap Plate Guard (U), 1× Warning Shot (C), 1× Harrying Shot (C), 1× Pinning Shot (C) |
-| 3-5 | 3× Mosspitcher Lookout (C), 3× Bramble Duelist (C), 2× Thornline Archer (U), 2× Bramble Nest (U), 2× Rootbound Guard (C), 2× Scrap Plate Guard (C), 1× Ankle Snatcher (C), 1× Tunnel Saboteur (C), 1× Venom Arrow (R), 1× Pinning Shot (C), 1× Warning Shot (C), 1× Quick Shot (C) |
+| 3-5 | 3× Mosspitcher Lookout (C), 3× Bramble Duelist (C), 1× Thornline Archer (U), 1× Acorn Tender (C), 2× Bramble Nest (U), 2× Rootbound Guard (C), 2× Scrap Plate Guard (C), 1× Ankle Snatcher (C), 1× Tunnel Saboteur (C), 1× Venom Arrow (R), 1× Pinning Shot (C), 1× Warning Shot (C), 1× Quick Shot (C) |
 | 3-6 | 3× Sidestep Shiv (R), 2× Glade Turnblade (R), 2× Scrap Plate Guard (U), 2× Ankle Snatcher (U), 2× Tunnel Saboteur (U), 1× Fuse Runner (R), 1× Fuse Runner (U), 1× Grease Trapper (U), 1× Junk Walker (R), 1× Bomb Lobber (U), 1× Rocket Barrel Rider (U), 1× Mosspitcher Lookout (C), 1× Spear Throw (C), 1× War Drums (U) |
 | 3-7 | 1× Seedwind Shepherd (R), 2× Dewkeeper (U), 2× Rootbound Guard (U), 1× Rootbound Guard (C), 2× Mosspitcher Lookout (C), 2× Bramble Duelist (C), 2× Acorn Tender (C), 1× Bramble Nest (U), 2× Scrap Plate Guard (C), 1× Junk Slinger (C), 1× Prayer of Healing (U), 1× Cleanse (R), 2× Mend (C), 1× Smite (C) |
 | 3-8 | 2× Canopy Skirmisher (U), 2× Fernwing Courier (U), 2× Thornline Archer (U), 2× Rootbound Guard (U), 2× Bramble Duelist (U), 1× Glade Turnblade (U), 2× Scrap Plate Guard (C), 2× Tunnel Saboteur (C), 1× Grease Trapper (U), 1× Bomb Lobber (U), 1× Junk Walker (R), 1× Frost Bolt (C), 1× Arc Lightning (U), 1× Spark (C) |
@@ -374,18 +383,25 @@ The columns are the same as in 2.2.
 
 | Stage | Hero HP | Gear | Deck size | Closed Lanes | Start Units | First-win card | Recommended level | Win rate (Vanguard / Raiders) | Expected Gear | Win rate at Expected Gear (Vanguard / Raiders) | Star Turn | 3★ share (no Gear / Expected Gear) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 4-1 | 58 | 0 / 0 / 0 / 0 | 23 | — | — | Bristleback Boar (Common) | 15 | 65% / 66% | 8 / 8 / 8 / 8 | 74% / 75% | 25 | 44% / 49% |
-| 4-2 | 52 | 0 / 0 / 0 / 0 | 23 | — | — | Cave Bear (Common) | 15 | 70% / 69% | 9 / 8 / 8 / 8 | 77% / 78% | 24 | 39% / 43% |
+| 4-1 | 58 | 0 / 0 / 0 / 0 | 23 | — | — | Bristleback Boar (Common) | 15 | 63% / 65% | 8 / 8 / 8 / 8 | 73% / 74% | 25 | 43% / 47% |
+| 4-2 | 52 | 0 / 0 / 0 / 0 | 23 | — | — | Cave Bear (Common) | 15 | 63% / 64% | 9 / 8 / 8 / 8 | 71% / 76% | 24 | 39% / 43% |
 | 4-3 | 60 | 0 / 0 / 0 / 0 | 24 | — | — | Crag Lizard (Common) | 16 | 65% / 66% | 9 / 9 / 8 / 8 | 75% / 77% | 26 | 40% / 45% |
-| 4-4 | 64 | 0 / 0 / 0 / 0 | 24 | Lane 1, opens on Turn 5 · Lane 3, opens on Turn 5 | — | Crag Rhino (Uncommon) | 16 | 67% / 69% | 9 / 9 / 9 / 8 | 77% / 79% | 25 | 35% / 40% |
-| 4-5 | 62 | 0 / 0 / 0 / 0 | 25 | — | — | Web Spitter (Common) | 17 | 61% / 62% | 9 / 9 / 9 / 9 | 74% / 74% | 26 | 43% / 48% |
-| 4-6 | 50 | 0 / 0 / 0 / 0 | 25 | — | — | Boulder Tortoise (Uncommon) | 17 | 63% / 65% | 10 / 10 / 10 / 9 | 73% / 77% | 25 | 39% / 43% |
+| 4-4 | 64 | 0 / 0 / 0 / 0 | 24 | Lane 1, opens on Turn 5 · Lane 3, opens on Turn 5 | — | Crag Rhino (Uncommon) | 16 | 60% / 66% | 9 / 9 / 9 / 8 | 73% / 76% | 25 | 33% / 38% |
+| 4-5 | 62 | 0 / 0 / 0 / 0 | 25 | — | — | Web Spitter (Common) | 17 | 62% / 62% | 9 / 9 / 9 / 9 | 74% / 75% | 26 | 45% / 44% |
+| 4-6 | 46 | 0 / 0 / 0 / 0 | 25 | — | — | Boulder Tortoise (Uncommon) | 17 | 62% / 66% | 10 / 10 / 10 / 9 | 75% / 78% | 25 | 42% / 45% |
 | 4-7 | 62 | 0 / 0 / 0 / 0 | 25 | — | — | Tailsweep Basilisk (Uncommon) | 17 | 66% / 66% | 10 / 10 / 10 / 10 | 79% / 79% | 26 | 38% / 42% |
 | 4-8 | 50 | 0 / 0 / 0 / 2 | 27 | — | — | Cave Troll (Uncommon) | 18 | 61% / 71% | 10 / 10 / 10 / 10 | 72% / 79% | 24 | 40% / 43% |
-| 4-9 | 54 | 0 / 0 / 0 / 0 | 26 | — | — | Amberwing Dart (Rare) | 18 | 64% / 69% | 10 / 10 / 10 / 10 | 76% / 79% | 26 | 38% / 43% |
-| 4-10 | 66 | 2 / 0 / 0 / 0 | 28 | — | Mountain Colossus (Epic), Lane 3, Column 11 · Bramble Nest (Uncommon), Lane 1, Column 10 | Mountain Colossus (Epic) | 19 | 28% / 36% | 10 / 10 / 10 / 10 | 36% / 50% | 28 | 20% / 26% |
+| 4-9 | 54 | 0 / 0 / 0 / 0 | 26 | — | — | Amberwing Dart (Rare) | 18 | 62% / 68% | 10 / 10 / 10 / 10 | 73% / 78% | 26 | 36% / 42% |
+| 4-10 | 66 | 2 / 0 / 0 / 0 | 28 | — | Mountain Colossus (Epic), Lane 3, Column 11 · Bramble Nest (Uncommon), Lane 1, Column 10 | Mountain Colossus (Epic) | 19 | 29% / 41% | 10 / 10 / 10 / 10 | 42% / 54% | 28 | 24% / 26% |
 
-On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). The win rates in the table come from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target, except the Vanguard row of 4-10 with no Gear after the Heavy bodyguard fix (see below). The next paragraphs tell the earlier runs.
+
+**Retune of 2026-10-24.** The win rates in the table come from a run of `bun rules:sim:check` on 2026-10-24. All rows are on their target. Pack Stalker has 4 HP (it had 5) and Thornline Archer has 5 HP (it had 4), for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). Thornline Archer is in the enemy Decks of 4-5, 4-6 and 4-10, and a Boss Stage now has a window for each Gear row: 25% to 50% with no Gear, and 30% to 55% with the Expected Gear ([ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). Changes, Vanguard and Raiders with no Gear, then with the Expected Gear (1000 Battles):
+
+- **4-5:** an Acorn Tender (C) and a Mosspitcher Lookout (C) replace the 2 Thornline Archers. Before: 58.0% / 57.1%, then 70.2% / 70.1%. Now: 62% / 62%, then 74% / 75%. A lower Hero HP alone put the 3-Star share above 50%.
+- **4-6:** an Acorn Tender (C) replaces 1 Thornline Archer, and Hero HP 46 (it was 50). Before: 56.8% / 63.4%, then 68.7% / 73.9%. Now: 62% / 66%, then 75% / 78%.
+- **4-10 (Boss):** the 2 Cave Bears are Common (they were Uncommon). Before: 22.7% / 33.1%, then 33.8% / 46.1%. Now: 29% / 41%, then 42% / 54%. The Boss must keep the largest Hero HP of the Region (64 on 4-4), so the Hero HP cannot go down. A Common Boulder Tortoise pair, a Rare Colossus, or Weapon 0 did not put all rows on target. This closes the open row of the Heavy bodyguard fix.
+
+On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). Before the retune of 2026-10-24, the win rates in the table came from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target, except the Vanguard row of 4-10 with no Gear after the Heavy bodyguard fix (see below). The next paragraphs tell the earlier runs.
 
 **The Heavy bodyguard (2026-10-20).** A Heavy Unit has Speed 1, so it cannot pass a friendly Wall: a Wall never moves, and the Unit needs 2 steps to pass its Square. The Mountain Colossus of 4-10 started behind the Bramble Nest, so it could not move until the Player killed the Wall. The Colossus now starts in Lane 3, and the Bramble Nest is in Lane 1. The Colossus is active from the first Turn, so the Stage is harder: Vanguard with no Gear wins 27.5% (target 30%), and the other 3 rows are on target. A retune or a decision is open for this row. A content test now checks every Start Unit of every Stage, Floor and Dungeon against this rule.
 
@@ -429,12 +445,12 @@ Notes from the first tuning:
 | 4-2 | 3× Cave Bear (C), 2× Cave Troll (U), 1× Crag Lizard (U), 1× Crag Lizard (C), 1× Bristleback Boar (C), 2× Mosspitcher Lookout (C), 2× Thornline Archer (U), 2× Dewkeeper (U), 2× Bramble Duelist (C), 2× Acorn Tender (C), 2× Mend (C), 1× Blessing of Light (C), 1× Radiant Strike (C), 1× Smite (C) |
 | 4-3 | 2× Expose Weakness (R), 1× Crag Lizard (R), 2× Crag Lizard (U), 2× Bristleback Boar (U), 2× Crag Rhino (U), 2× Cave Bear (C), 3× Bramble Duelist (U), 1× Glade Turnblade (U), 1× Glade Turnblade (R), 2× Rootbound Guard (C), 2× Acorn Tender (C), 2× Mosspitcher Lookout (C), 1× Shield Bash (C), 1× Shoulder Charge (C) |
 | 4-4 | 2× Crag Rhino (U), 1× Crag Rhino (R), 2× Bristleback Boar (C), 2× Cave Troll (U), 2× Crag Lizard (C), 2× Canopy Skirmisher (U), 2× Fernwing Courier (C), 2× Thornline Archer (U), 2× Mosspitcher Lookout (C), 1× Rootbound Guard (C), 1× Quick Shot (C), 1× Warning Shot (C), 1× Harrying Shot (C), 1× Skybreaker (U), 2× Bramble Duelist (U) |
-| 4-5 | 3× Web Spitter (C), 1× Tailsweep Basilisk (U), 2× Bristleback Boar (C), 1× Crag Rhino (U), 2× Thornline Archer (U), 1× Dewkeeper (U), 1× Pinning Shot (C), 2× Quick Shot (C), 3× Bramble Duelist (C), 1× Rootbound Guard (C), 3× Fernwing Courier (C), 2× Warning Shot (C), 1× Crag Lizard (C), 2× Harrying Shot (C) |
-| 4-6 | 3× Boulder Tortoise (U), 2× Crag Rhino (U), 2× Bristleback Boar (C), 2× Mosspitcher Lookout (C), 2× Thornline Archer (U), 2× Acorn Tender (C), 1× Dewkeeper (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Shards (C), 1× Arc Lightning (U), 1× Frost Wave (U), 1× Web Spitter (C), 3× Bramble Duelist (C), 2× Fernwing Courier (C) |
+| 4-5 | 3× Web Spitter (C), 1× Tailsweep Basilisk (U), 2× Bristleback Boar (C), 1× Crag Rhino (U), 1× Acorn Tender (C), 1× Mosspitcher Lookout (C), 1× Dewkeeper (U), 1× Pinning Shot (C), 2× Quick Shot (C), 3× Bramble Duelist (C), 1× Rootbound Guard (C), 3× Fernwing Courier (C), 2× Warning Shot (C), 1× Crag Lizard (C), 2× Harrying Shot (C) |
+| 4-6 | 3× Boulder Tortoise (U), 2× Crag Rhino (U), 2× Bristleback Boar (C), 2× Mosspitcher Lookout (C), 1× Thornline Archer (U), 3× Acorn Tender (C), 1× Dewkeeper (U), 1× Frost Bolt (C), 1× Fireball (C), 1× Frost Shards (C), 1× Arc Lightning (U), 1× Frost Wave (U), 1× Web Spitter (C), 3× Bramble Duelist (C), 2× Fernwing Courier (C) |
 | 4-7 | 2× Call to Arms (R), 2× Tailsweep Basilisk (U), 1× Tailsweep Basilisk (R), 2× Bristleback Boar (U), 2× Crag Rhino (U), 2× Cave Bear (U), 2× Glade Turnblade (U), 2× Canopy Skirmisher (U), 2× Rootbound Guard (C), 2× Mosspitcher Lookout (C), 1× Seedwind Shepherd (R), 1× Shield Bash (C), 1× War Drums (U), 1× Spear Throw (C), 1× Bramble Duelist (C), 1× Bramble Duelist (U) |
 | 4-8 | 2× Penance (U), 2× Cave Bear (C), 2× Crag Rhino (U), 2× Dewkeeper (U), 2× Acorn Tender (C), 2× Mosspitcher Lookout (C), 1× Rootbound Guard (U), 2× Rootbound Guard (C), 1× Seedwind Shepherd (R), 1× Prayer of Healing (U), 1× Smite (C), 1× Boulder Tortoise (U), 2× Bramble Duelist (C), 1× Cave Troll (U), 1× Web Spitter (C), 1× Fernwing Courier (U), 2× Fernwing Courier (C), 1× Sanctuary (U) |
 | 4-9 | 2× Bristleback Boar (C), 2× Crag Rhino (U), 1× Cave Bear (C), 1× Cave Troll (U), 1× Crag Lizard (C), 1× Tailsweep Basilisk (U), 1× Amberwing Dart (R), 2× Mosspitcher Lookout (C), 1× Rootbound Guard (C), 1× Canopy Skirmisher (U), 1× Glade Turnblade (U), 1× Dewkeeper (U), 1× Pinning Shot (C), 1× Quick Shot (C), 1× Harrying Shot (C), 1× Warning Shot (C), 1× Web Spitter (C), 3× Bramble Duelist (C), 1× Thornline Archer (U), 2× Fernwing Courier (C) |
-| 4-10 | 1× Mountain Colossus (E), 2× Crag Rhino (U), 1× Crag Rhino (R), 1× Bristleback Boar (U), 2× Bristleback Boar (C), 2× Cave Bear (U), 2× Boulder Tortoise (U), 2× Crag Lizard (C), 1× Tailsweep Basilisk (U), 2× Thornline Archer (U), 1× Rootbound Guard (C), 3× Bramble Duelist (C), 1× Fernwing Courier (C), 1× Cleave (U), 1× Call to Arms (R), 1× Expose Weakness (R), 1× Shield Wall (C), 1× Shield Bash (C), 1× Acorn Tender (C), 1× Acorn Tender (U) |
+| 4-10 | 1× Mountain Colossus (E), 2× Crag Rhino (U), 1× Crag Rhino (R), 1× Bristleback Boar (U), 2× Bristleback Boar (C), 2× Cave Bear (C), 2× Boulder Tortoise (U), 2× Crag Lizard (C), 1× Tailsweep Basilisk (U), 2× Thornline Archer (U), 1× Rootbound Guard (C), 3× Bramble Duelist (C), 1× Fernwing Courier (C), 1× Cleave (U), 1× Call to Arms (R), 1× Expose Weakness (R), 1× Shield Wall (C), 1× Shield Bash (C), 1× Acorn Tender (C), 1× Acorn Tender (U) |
 
 ## 6. Region 5: The Hollow Marches
 
@@ -641,7 +657,7 @@ Heynspire is not a part of the Campaign ([GDD 8.2](./03-game-design.md#82-heynsp
 - **The order of a template Deck.** The curve gives 1 Rank step to the first copies of the Deck. The Battle seed shuffles the Deck in its order. Thus the order changes the win rates, and the order is part of the template.
 - **Content tests.** A content test checks each generated Floor: each copy is at its Base Rank or higher and never above Legendary, each card is in the Campaign card pool, there is no Epic Skill Card, a Deck has at most 3 copies of a card, the Deck size is the largest at the Recommended level, and each Start Unit is in the Front.
 - **Recommended level and Expected Gear.** They come from the First-try Path: all Stages, then the earlier Floors (`floorRecommendedLevels`). Floors 1 to 15 have Recommended level 23, and Floors 43 to 50 have level 27. The maximum Deck size is 30 at all these levels, so each Floor Deck has 30 cards. The Expected Gear goes from 13 / 13 / 13 / 13 before Floor 1 to 16 / 16 / 15 / 15 before Floor 50.
-- **Win-rate target.** The difficulty does not go up. A normal Floor has the target of a normal Stage (60% to 80%), and a Boss Floor has the target of a Boss Stage (30% to 50%). Each Floor must hit its target at its Recommended level, with no Gear and with the Expected Gear ([ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)).
+- **Win-rate target.** The difficulty does not go up. A normal Floor has the target of a normal Stage (60% to 80%), and a Boss Floor has the target of a Boss Stage (30% to 50%; in `sim:check`, 25% to 50% with no Gear and 30% to 55% with the Expected Gear, [ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). Each Floor must hit its target at its Recommended level, with no Gear and with the Expected Gear ([ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)).
 
 ### 8.2 Simulation
 
@@ -676,10 +692,10 @@ Notes from the first tuning (Vanguard and Raiders, 200 to 1000 Battles):
 | 1 | 1, 11, 21, 31, 41 | Spire Warden Holt | Warrior | Human | 4 Orc, 15 Human, 11 Skill Cards |
 | 2 | 2, 12, 22, 32, 42 | Emberchief Razka | Mage | Orc | 23 Orc, 7 Skill Cards |
 | 3 | 3, 13, 23, 33, 43 | Trapmaster Krink | Ranger | Goblin | 24 Goblin, 6 Skill Cards |
-| 4 | 4, 14, 24, 34, 44 | Grove Sister Myrra | Priest | Elf | 22 Elf, 8 Skill Cards |
+| 4 | 4, 14, 24, 34, 44 | Grove Sister Myrra | Priest | Elf | 23 Elf, 7 Skill Cards |
 | 5 | 5, 15, 25, 35, 45 | Beastmaster Brokk | Ranger | Feral | 19 Feral, 11 Skill Cards |
 | 6 | 6, 16, 26, 36, 46 | Bonecaptain Rusk | Warrior | Undead | 24 Undead, 6 Skill Cards |
-| 7 | 7, 17, 27, 37, 47 | Lightbearer Anselm | Priest | Human | 13 Elf, 9 Human, 8 Skill Cards |
+| 7 | 7, 17, 27, 37, 47 | Lightbearer Anselm | Priest | Human | 12 Elf, 10 Human, 8 Skill Cards |
 | 8 | 8, 18, 28, 38, 48 | Warboss Gnash | Warrior | Orc | 12 Orc, 12 Goblin, 6 Skill Cards |
 | 9 | 9, 19, 29, 39, 49 | Rimecaller Isolde | Mage | Undead | 14 Undead, 7 Feral, 9 Skill Cards |
 
@@ -688,12 +704,12 @@ The Deck of each template is in its order. The first 12 copies (in **bold**) get
 | Template | Deck |
 | --- | --- |
 | 1. Spire Warden Holt | **1× Shoulder Charge (C)**, **2× River Knight (U)**, **1× Call to Arms (R)**, **1× Dawn Cleric (U)**, **1× Gate Warden (U)**, **1× Howling Charger (U)**, **1× Call to Arms (R)**, **1× Halberdier (C)**, **1× Crossbow Guard (C)**, **1× War Drums (U)**, **1× Crossbow Guard (C)**, 3× Militia Recruit (C), 1× Ground Slam (U), 2× Dawn Cleric (U), 2× Scrap Raider (C), 1× River Knight (U), 1× Ground Slam (U), 1× Spear Throw (C), 1× Shoulder Charge (C), 1× Howling Charger (U), 1× Expose Weakness (R), 1× War Drums (U), 1× Cleave (U), 1× Halberdier (C), 1× Gate Warden (U) |
-| 2. Emberchief Razka | **1× Scrap Raider (C)**, **1× Pack Stalker (U)**, **1× Howling Charger (U)**, **3× Ember Shaman (C)**, **1× Cinderhorn Breaker (U)**, **1× Spark (C)**, **1× Howling Charger (U)**, **1× Bonestake Palisade (C)**, **2× Skyreaver (U)**, 1× Mesa Pit-Fighter (R), 1× Fireball (C), 1× Tusk Brute (C), 1× Bonestake Palisade (C), 1× Cinderhorn Breaker (U), 1× Badland Runt (C), 2× Warhowler Drummer (U), 1× Mesa Pit-Fighter (R), 1× Howling Charger (U), 2× Fireball (C), 1× Spark (C), 1× Badland Runt (C), 1× Pack Stalker (U), 1× Wildfire (R), 1× Pack Stalker (U), 1× Frost Bolt (C) |
+| 2. Emberchief Razka | **1× Scrap Raider (C)**, **1× Warhowler Drummer (U)**, **1× Howling Charger (U)**, **3× Ember Shaman (C)**, **1× Cinderhorn Breaker (U)**, **1× Spark (C)**, **1× Howling Charger (U)**, **1× Bonestake Palisade (C)**, **2× Skyreaver (U)**, 1× Mesa Pit-Fighter (R), 1× Fireball (C), 1× Tusk Brute (C), 1× Bonestake Palisade (C), 1× Cinderhorn Breaker (U), 1× Badland Runt (C), 1× Pack Stalker (U), 1× Warhowler Drummer (U), 1× Mesa Pit-Fighter (R), 1× Howling Charger (U), 2× Fireball (C), 1× Spark (C), 1× Badland Runt (C), 1× Pack Stalker (U), 1× Wildfire (R), 1× Pack Stalker (U), 1× Frost Bolt (C) |
 | 3. Trapmaster Krink | **3× Ankle Snatcher (C)**, **1× Sidestep Shiv (U)**, **1× Junk Slinger (C)**, **1× Scrap-Plate Guard (C)**, **2× Tunnel Saboteur (C)**, **1× Grease Trapper (U)**, **1× Bomb Lobber (U)**, **1× Fuse Runner (C)**, **1× Grease Trapper (U)**, 1× Tunnel Saboteur (C), 1× Rocket Barrel Rider (U), 1× Harrying Shot (C), 1× Pinning Shot (C), 1× Bomb Lobber (U), 1× Fuse Runner (C), 1× Grease Trapper (U), 1× Spyglass Sniper (R), 1× Junk Slinger (C), 2× Sidestep Shiv (U), 1× Rocket Barrel Rider (U), 1× Quick Shot (C), 1× Barbed Arrow (U), 1× Harrying Shot (C), 1× Mine Sapper (R), 1× Rocket Barrel Rider (U), 1× Venom Arrow (R) |
-| 4. Grove Sister Myrra | **2× Bramble Duelist (C)**, **1× Fernwing Courier (C)**, **2× Acorn Tender (C)**, **1× Thornline Archer (U)**, **1× Blessing of Light (C)**, **1× Bramble Duelist (C)**, **1× Smite (C)**, **3× Canopy Skirmisher (U)**, 1× Mosspitcher Lookout (C), 1× Amberwing Dart (R), 1× Glade Turnblade (U), 1× Mosspitcher Lookout (C), 1× Glade Turnblade (U), 1× Fernwing Courier (C), 1× Rootbound Guard (C), 1× Elderreed Dartmaster (R), 1× Dewkeeper (U), 1× Thornline Archer (U), 1× Penance (U), 1× Bramble Nest (U), 1× Prayer of Healing (U), 1× Cleanse (R), 1× Radiant Strike (C), 1× Dewkeeper (U), 1× Radiant Strike (C), 1× Prayer of Healing (U) |
+| 4. Grove Sister Myrra | **2× Bramble Duelist (C)**, **1× Fernwing Courier (C)**, **2× Acorn Tender (C)**, **1× Thornline Archer (U)**, **1× Blessing of Light (C)**, **1× Bramble Duelist (C)**, **1× Smite (C)**, **3× Canopy Skirmisher (U)**, 1× Mosspitcher Lookout (C), 1× Amberwing Dart (R), 1× Glade Turnblade (U), 1× Mosspitcher Lookout (C), 1× Glade Turnblade (U), 1× Fernwing Courier (C), 1× Rootbound Guard (C), 1× Elderreed Dartmaster (R), 1× Dewkeeper (U), 1× Mosspitcher Lookout (C), 1× Penance (U), 1× Bramble Nest (U), 1× Prayer of Healing (U), 1× Cleanse (R), 1× Fernwing Courier (C), 1× Dewkeeper (U), 1× Radiant Strike (C), 1× Prayer of Healing (U) |
 | 5. Beastmaster Brokk | **1× Long Shot (U)**, **2× Bristleback Boar (C)**, **1× Cave Troll (U)**, **1× Crag Rhino (U)**, **1× Warning Shot (C)**, **1× Frostfang Lynx (C)**, **1× Bristleback Boar (C)**, **1× Crag Lizard (C)**, **1× Hunter's Focus (R)**, **1× Frost Elk Matriarch (U)**, **1× Warning Shot (C)**, 2× Crag Lizard (C), 1× Cave Bear (C), 1× Frostfang Lynx (C), 1× Cave Bear (C), 1× Frostfang Lynx (C), 1× Hunter's Focus (R), 1× Avalanche Yeti (R), 1× Boulder Tortoise (U), 1× Skybreaker (U), 1× Crag Rhino (U), 1× Cave Bear (C), 1× Barbed Arrow (U), 1× Venom Arrow (R), 1× Barbed Arrow (U), 1× Frost Elk Matriarch (U), 1× Skybreaker (U), 1× Hunter's Focus (R) |
 | 6. Bonecaptain Rusk | **1× Rattleknife (C)**, **1× Winter Maw (R)**, **1× Chattering Cohort (U)**, **2× Graveyard Drudge (C)**, **1× Spear Throw (C)**, **1× Rattleknife (C)**, **1× Rime-Eye Reaper (U)**, **1× Spear Throw (C)**, **1× Chattering Cohort (U)**, **1× Ossuary Piper (U)**, **1× Grave Bell Tender (C)**, 1× Backwatch Bailiff (U), 1× Chattering Cohort (U), 1× Hushbow (C), 1× Ossuary Piper (U), 1× Graveyard Drudge (C), 1× Rime-Eye Reaper (U), 1× Coffin-Lid Skater (C), 1× Shield Bash (C), 1× Hushbow (C), 1× Coffin Lancer (R), 1× Grave Bell Tender (C), 2× Pale Galloper (U), 1× Ground Slam (U), 1× War Drums (U), 1× Rattleknife (C), 1× Call to Arms (R), 1× Hushbow (C) |
-| 7. Lightbearer Anselm | **1× Seedwind Shepherd (R)**, **1× Bramble Nest (U)**, **1× Seedwind Shepherd (R)**, **1× Halberdier (C)**, **1× Dawn Cleric (U)**, **1× Gate Warden (U)**, **1× Dawn Cleric (U)**, **1× Amberwing Dart (R)**, **1× Militia Recruit (C)**, **1× Bramble Duelist (C)**, **1× Blessing of Light (C)**, **1× Glade Turnblade (U)**, 1× Crossbow Guard (C), 1× Bramble Nest (U), 1× Mosspitcher Lookout (C), 1× Sanctuary (U), 1× Acorn Tender (C), 1× Blessing of Light (C), 1× Thornline Archer (U), 1× Sanctuary (U), 1× Halberdier (C), 1× Militia Recruit (C), 1× Radiant Strike (C), 1× Smite (C), 1× Bramble Duelist (C), 1× Radiant Strike (C), 1× Smite (C), 1× Dewkeeper (U), 1× Militia Recruit (C), 1× Thornline Archer (U) |
+| 7. Lightbearer Anselm | **1× Seedwind Shepherd (R)**, **1× Bramble Nest (U)**, **1× Seedwind Shepherd (R)**, **1× Halberdier (C)**, **1× Dawn Cleric (U)**, **1× Gate Warden (U)**, **1× Dawn Cleric (U)**, **1× Amberwing Dart (R)**, **1× Militia Recruit (C)**, **1× Bramble Duelist (C)**, **1× Blessing of Light (C)**, **1× Glade Turnblade (U)**, 1× Crossbow Guard (C), 1× Bramble Nest (U), 1× Mosspitcher Lookout (C), 1× Sanctuary (U), 1× Acorn Tender (C), 1× Blessing of Light (C), 1× Mosspitcher Lookout (C), 1× Sanctuary (U), 1× Halberdier (C), 1× Militia Recruit (C), 1× Radiant Strike (C), 1× Smite (C), 1× Bramble Duelist (C), 1× Radiant Strike (C), 1× Smite (C), 1× Crossbow Guard (C), 1× Militia Recruit (C), 1× Acorn Tender (C) |
 | 8. Warboss Gnash | **1× Scrap Raider (C)**, **1× Scrap-Plate Guard (C)**, **1× Badland Runt (C)**, **1× Scrap-Plate Guard (C)**, **1× Badland Runt (C)**, **1× Pack Stalker (U)**, **1× Spear Throw (C)**, **1× Mine Sapper (R)**, **1× Howling Charger (U)**, **1× Bomb Lobber (U)**, **1× Mine Sapper (R)**, **1× Howling Charger (U)**, 1× Ankle Snatcher (C), 1× Pack Stalker (U), 1× Ground Slam (U), 1× Mesa Pit-Fighter (R), 1× Scrap-Plate Guard (C), 1× Badland Runt (C), 1× Bomb Lobber (U), 1× Shield Bash (C), 1× Warhowler Drummer (U), 1× Mine Sapper (R), 1× Spear Throw (C), 1× Tusk Brute (C), 1× Warhowler Drummer (U), 1× Shoulder Charge (C), 1× Shield Bash (C), 1× Rocket Barrel Rider (U), 2× Junk Slinger (C) |
 | 9. Rimecaller Isolde | **1× Frost Bolt (C)**, **1× Rime-Eye Reaper (U)**, **1× Crag Lizard (C)**, **1× Lantern Widow (R)**, **1× Winter Maw (R)**, **1× Frost Shards (C)**, **1× Rattleknife (C)**, **1× Thunderstorm (R)**, **1× Chattering Cohort (U)**, **1× Graveyard Drudge (C)**, **1× Bristleback Boar (C)**, **1× Spark (C)**, 1× Rattleknife (C), 1× Chattering Cohort (U), 1× Pale Galloper (U), 1× Arc Lightning (U), 1× Hushbow (C), 1× Spark (C), 1× Wildfire (R), 1× Rimebreath Drake (R), 1× Coffin-Lid Skater (C), 1× Spark (C), 1× Frost Bolt (C), 1× Frost Elk Matriarch (U), 1× Ossuary Piper (U), 1× Boulder Tortoise (U), 1× Rattleknife (C), 1× Frostfang Lynx (C), 1× Backwatch Bailiff (U), 1× Rimebreath Drake (R) |
 
@@ -704,8 +720,10 @@ The Deck of each template is in its order. The first 12 copies (in **bold**) get
 | 10 | Baron Brassbelly (Warrior) | 1-10 | Shieldbearer (Epic), Lane 2, Column 11 | 64 | 13 |
 | 20 | Boss Snikkit (Ranger) | 2-10 | Warchief Grukka (Epic), Lane 2, Column 11 · Junk Barricade (Uncommon), Lane 1, Column 11 · Junk Barricade (Uncommon), Lane 3, Column 11 | 62 | 15 |
 | 30 | Lady Glimmerbough (Priest) | 3-10 | Canopy Vinewarden (Epic), Lane 2, Column 11 · Bramble Nest (Uncommon), Lane 2, Column 10 | 41 | 10 |
-| 40 | The Old Bramble (Warrior) | 4-10 | Mountain Colossus (Epic), Lane 3, Column 11 · Bramble Nest (Uncommon), Lane 1, Column 10 | 58 | 13 |
+| 40 | The Old Bramble (Warrior) | 4-10 | Mountain Colossus (Epic), Lane 3, Column 11 · Bramble Nest (Uncommon), Lane 1, Column 10 | 50 | 6 |
 | 50 | Queen Marrow (Mage) | 5-10 | Bone Rampart (Epic), Lane 2, Column 10 · Hushbow (Common), Lane 2, Column 11 | 56 | 12 |
+
+- **Gear on a Boss Floor.** The Old Bramble of Floor 40 has Gear 0 / 0 / 0 / 10 (Banner 10: Unit Block chance 5%). The other Boss Floors have no Gear. Her Mountain Colossus in Lane 3 is strong against Vanguard, so fewer stepped copies alone made a gap of about 30 points between Vanguard with no Gear and Raiders with the Expected Gear. The Banner makes the gap smaller (2026-10-24, 8.6).
 
 - **The Start Units are the power of a Boss.** Lady Glimmerbough has an Epic Canopy Vinewarden behind a Bramble Nest. With Hero HP 60 and 12 stepped copies, she won 3% to 10% of Battles. Thus she has the lowest Hero HP and the fewest stepped copies of the Boss Floors. A Boss Floor can have less Hero HP than the normal Floors of its tier.
 - **Rank steps on Epic cards.** The first copies of a Boss Deck can be Epic cards. A step makes them Legendary. Since issue [#109](https://github.com/rifandani/heynbord/issues/109), the Iron Bulwark of Floor 10 is the last copy of its Deck, so it stays Epic, and a Mesa Pit-Fighter (Rare) is the first copy. Warchief Grukka is only a Start Unit on Floor 20: since Heroic gives Attack after each attack on a Unit ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)), a Mine Sapper replaces the Grukka copy of the Deck.
@@ -723,57 +741,66 @@ The Deck of each template is in its order. The first 12 copies (in **bold**) get
 | Floor | Enemy | Recommended level | Hero HP | Win rate (Vanguard / Raiders) | Expected Gear | Win rate at Expected Gear (Vanguard / Raiders) |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Spire Warden Holt | 23 | 50 | 62% / 68% | 13 / 13 / 13 / 13 | 76% / 79% |
-| 2 | Emberchief Razka | 23 | 50 | 62% / 64% | 13 / 13 / 13 / 13 | 76% / 78% |
+| 2 | Emberchief Razka | 23 | 50 | 63% / 65% | 13 / 13 / 13 / 13 | 76% / 78% |
 | 3 | Trapmaster Krink | 23 | 50 | 61% / 65% | 13 / 13 / 13 / 13 | 78% / 77% |
-| 4 | Grove Sister Myrra | 23 | 50 | 63% / 68% | 13 / 13 / 13 / 13 | 76% / 80% |
+| 4 | Grove Sister Myrra | 23 | 50 | 63% / 67% | 13 / 13 / 13 / 13 | 76% / 78% |
 | 5 | Beastmaster Brokk | 23 | 50 | 63% / 65% | 13 / 13 / 13 / 13 | 76% / 78% |
 | 6 | Bonecaptain Rusk | 23 | 50 | 63% / 67% | 13 / 13 / 13 / 13 | 77% / 78% |
-| 7 | Lightbearer Anselm | 23 | 50 | 62% / 66% | 13 / 13 / 13 / 13 | 76% / 78% |
-| 8 | Warboss Gnash | 23 | 50 | 63% / 64% | 13 / 13 / 13 / 13 | 77% / 76% |
+| 7 | Lightbearer Anselm | 23 | 50 | 61% / 66% | 13 / 13 / 13 / 13 | 75% / 78% |
+| 8 | Warboss Gnash | 23 | 50 | 64% / 64% | 13 / 13 / 13 / 13 | 78% / 79% |
 | 9 | Rimecaller Isolde | 23 | 50 | 61% / 68% | 13 / 13 / 13 / 13 | 73% / 77% |
 | 10 | Baron Brassbelly (Boss) | 23 | 64 | 28% / 34% | 13 / 13 / 13 / 13 | 45% / 50% |
 | 11 | Spire Warden Holt | 23 | 52 | 62% / 67% | 13 / 13 / 13 / 13 | 75% / 79% |
-| 12 | Emberchief Razka | 23 | 52 | 61% / 63% | 13 / 13 / 13 / 13 | 75% / 77% |
+| 12 | Emberchief Razka | 23 | 52 | 62% / 64% | 13 / 13 / 13 / 13 | 76% / 77% |
 | 13 | Trapmaster Krink | 23 | 52 | 61% / 64% | 13 / 13 / 13 / 13 | 78% / 77% |
-| 14 | Grove Sister Myrra | 23 | 52 | 63% / 68% | 13 / 13 / 13 / 13 | 75% / 79% |
+| 14 | Grove Sister Myrra | 23 | 52 | 62% / 66% | 13 / 13 / 13 / 13 | 76% / 77% |
 | 15 | Beastmaster Brokk | 23 | 52 | 62% / 65% | 13 / 13 / 13 / 13 | 76% / 78% |
 | 16 | Bonecaptain Rusk | 24 | 52 | 63% / 66% | 14 / 13 / 13 / 13 | 77% / 78% |
-| 17 | Lightbearer Anselm | 24 | 52 | 62% / 65% | 14 / 13 / 13 / 13 | 76% / 78% |
-| 18 | Warboss Gnash | 24 | 52 | 62% / 64% | 14 / 14 / 13 / 13 | 77% / 76% |
+| 17 | Lightbearer Anselm | 24 | 52 | 61% / 65% | 14 / 13 / 13 / 13 | 76% / 79% |
+| 18 | Warboss Gnash | 24 | 52 | 64% / 64% | 14 / 14 / 13 / 13 | 78% / 79% |
 | 19 | Rimecaller Isolde | 24 | 52 | 60% / 67% | 14 / 14 / 13 / 13 | 74% / 77% |
-| 20 | Boss Snikkit (Boss) | 24 | 62 | 30% / 32% | 14 / 14 / 14 / 13 | 49% / 50% |
+| 20 | Boss Snikkit (Boss) | 24 | 62 | 31% / 33% | 14 / 14 / 14 / 13 | 50% / 51% |
 | 21 | Spire Warden Holt | 24 | 54 | 61% / 67% | 14 / 14 / 14 / 13 | 76% / 79% |
-| 22 | Emberchief Razka | 24 | 54 | 61% / 63% | 14 / 14 / 14 / 13 | 76% / 77% |
+| 22 | Emberchief Razka | 24 | 54 | 62% / 64% | 14 / 14 / 14 / 13 | 76% / 77% |
 | 23 | Trapmaster Krink | 24 | 54 | 60% / 64% | 14 / 14 / 14 / 13 | 78% / 77% |
-| 24 | Grove Sister Myrra | 24 | 54 | 62% / 68% | 14 / 14 / 14 / 14 | 76% / 80% |
+| 24 | Grove Sister Myrra | 24 | 54 | 62% / 66% | 14 / 14 / 14 / 14 | 76% / 79% |
 | 25 | Beastmaster Brokk | 24 | 54 | 62% / 64% | 14 / 14 / 14 / 14 | 77% / 78% |
 | 26 | Bonecaptain Rusk | 24 | 54 | 62% / 66% | 15 / 14 / 14 / 14 | 77% / 78% |
-| 27 | Lightbearer Anselm | 25 | 54 | 62% / 65% | 15 / 14 / 14 / 14 | 76% / 79% |
-| 28 | Warboss Gnash | 25 | 54 | 62% / 64% | 15 / 15 / 14 / 14 | 78% / 78% |
+| 27 | Lightbearer Anselm | 25 | 54 | 61% / 65% | 15 / 14 / 14 / 14 | 76% / 79% |
+| 28 | Warboss Gnash | 25 | 54 | 64% / 64% | 15 / 15 / 14 / 14 | 79% / 80% |
 | 29 | Rimecaller Isolde | 25 | 54 | 61% / 67% | 15 / 15 / 14 / 14 | 74% / 77% |
 | 30 | Lady Glimmerbough (Boss) | 25 | 41 | 30% / 33% | 15 / 15 / 14 / 14 | 45% / 48% |
 | 31 | Spire Warden Holt | 25 | 56 | 61% / 67% | 15 / 15 / 14 / 14 | 77% / 80% |
-| 32 | Emberchief Razka | 25 | 56 | 61% / 62% | 15 / 15 / 14 / 14 | 76% / 79% |
+| 32 | Emberchief Razka | 25 | 56 | 62% / 64% | 15 / 15 / 14 / 14 | 77% / 79% |
 | 33 | Trapmaster Krink | 25 | 56 | 60% / 64% | 15 / 15 / 14 / 14 | 79% / 78% |
-| 34 | Grove Sister Myrra | 25 | 56 | 62% / 67% | 15 / 15 / 14 / 14 | 77% / 79% |
+| 34 | Grove Sister Myrra | 25 | 56 | 61% / 65% | 15 / 15 / 14 / 14 | 76% / 78% |
 | 35 | Beastmaster Brokk | 26 | 56 | 62% / 64% | 15 / 15 / 14 / 14 | 78% / 78% |
 | 36 | Bonecaptain Rusk | 26 | 56 | 62% / 67% | 15 / 15 / 14 / 14 | 78% / 78% |
-| 37 | Lightbearer Anselm | 26 | 56 | 62% / 64% | 15 / 15 / 14 / 14 | 76% / 78% |
-| 38 | Warboss Gnash | 26 | 56 | 62% / 64% | 15 / 15 / 14 / 14 | 78% / 78% |
+| 37 | Lightbearer Anselm | 26 | 56 | 60% / 64% | 15 / 15 / 14 / 14 | 76% / 79% |
+| 38 | Warboss Gnash | 26 | 56 | 64% / 63% | 15 / 15 / 14 / 14 | 79% / 80% |
 | 39 | Rimecaller Isolde | 26 | 56 | 61% / 67% | 15 / 15 / 14 / 14 | 73% / 77% |
-| 40 | The Old Bramble (Boss) | 26 | 58 | 22% / 29% | 15 / 15 / 14 / 14 | 43% / 47% |
+| 40 | The Old Bramble (Boss) | 26 | 50 | 27% / 36% | 15 / 15 / 14 / 14 | 49% / 54% |
 | 41 | Spire Warden Holt | 26 | 58 | 61% / 67% | 15 / 15 / 15 / 14 | 76% / 80% |
-| 42 | Emberchief Razka | 26 | 58 | 60% / 61% | 15 / 15 / 15 / 14 | 76% / 79% |
+| 42 | Emberchief Razka | 26 | 58 | 61% / 64% | 15 / 15 / 15 / 14 | 77% / 79% |
 | 43 | Trapmaster Krink | 27 | 58 | 60% / 64% | 15 / 15 / 15 / 14 | 80% / 78% |
-| 44 | Grove Sister Myrra | 27 | 58 | 62% / 67% | 15 / 15 / 15 / 15 | 77% / 79% |
+| 44 | Grove Sister Myrra | 27 | 58 | 61% / 65% | 15 / 15 / 15 / 15 | 76% / 79% |
 | 45 | Beastmaster Brokk | 27 | 58 | 61% / 64% | 15 / 15 / 15 / 15 | 78% / 79% |
 | 46 | Bonecaptain Rusk | 27 | 58 | 62% / 67% | 15 / 15 / 15 / 15 | 78% / 79% |
-| 47 | Lightbearer Anselm | 27 | 58 | 61% / 64% | 16 / 15 / 15 / 15 | 76% / 79% |
-| 48 | Warboss Gnash | 27 | 58 | 62% / 63% | 16 / 15 / 15 / 15 | 79% / 78% |
+| 47 | Lightbearer Anselm | 27 | 58 | 60% / 63% | 16 / 15 / 15 / 15 | 76% / 80% |
+| 48 | Warboss Gnash | 27 | 58 | 64% / 63% | 16 / 15 / 15 / 15 | 79% / 80% |
 | 49 | Rimecaller Isolde | 27 | 58 | 60% / 66% | 16 / 15 / 15 / 15 | 74% / 77% |
 | 50 | Queen Marrow (Boss) | 27 | 56 | 30% / 33% | 16 / 16 / 15 / 15 | 46% / 50% |
 
-On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). The win rates in the table come from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target, except Floor 10 and the no-Gear rows of Floor 40 (see below). The next paragraphs tell the earlier runs. The first retune for Heroic changed these templates. Template 2 (Emberchief Razka): a Pack Stalker and a Howling Charger replace 2 Scrap Raiders, a Mesa Pit-Fighter replaces the first Tusk Brute, and a Bonestake Palisade replaces 1 of the next 2 Tusk Brutes. Template 8 (Warboss Gnash): a Badland Runt replaces 1 Scrap Raider, a Pack Stalker replaces the Skyreaver, and an Ankle Snatcher replaces the first Tusk Brute. Floor 10: a Shieldbearer replaces the first Tusk Brute. Floor 20: a Mine Sapper replaces the Grukka copy, and 2 Sidestep Shivs replace the Skyreaver and the Pyreaxe Ravager.
+
+**Retune of 2026-10-24.** The win rates in the table come from a run of `bun rules:sim:check` on 2026-10-24. All 200 rows are on their target. Pack Stalker has 4 HP (it had 5) and Thornline Archer has 5 HP (it had 4), for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)). These cards are in the Decks of templates 2, 4, 7 and 8 and of Floors 20 and 40. After the card change, templates 4 and 7 had Vanguard with no Gear at 55.7% to 59.7%, and template 2 had Raiders with the Expected Gear at 80.5% to 80.8% (Floors 32 and 42). A Boss Floor now has a window for each Gear row: 25% to 50% with no Gear, and 30% to 55% with the Expected Gear ([ADR-0033](../adr/0033-a-stage-hits-its-target-with-no-gear-and-with-the-expected-gear.md)). A search with the sim (1000 Battles for each row) found these changes, by the copy number in the Deck:
+
+- Template 2: copies 2 (Pack Stalker) and 19 (Warhowler Drummer) change places. 61.2% to 79.2% on its 5 Floors.
+- Template 4: 22: Thornline Archer → Mosspitcher Lookout. 27: Radiant Strike → Fernwing Courier. 61.3% to 78.9%.
+- Template 7: 19: Thornline Archer → Mosspitcher Lookout. 28: Dewkeeper → Crossbow Guard. 30: Thornline Archer → Acorn Tender. 60.2% to 79.5%. This is the only change of 120 tries that put all 20 rows on target, and its margins are small (0.2 and 0.5 points). The last copies of a Deck change which Hands the seeds deal, so one card can move a row by 5 points.
+- Floor 40: Hero HP 50 (it was 58), 6 stepped copies (it was 13), and Banner 10 (8.5). Vanguard and Raiders win 26.9% / 35.8%, then 48.7% / 53.5% with the Expected Gear. With the Banner, other mixes gave a gap of 28 to 31 points.
+- Floor 10 does not change. Its rows (28.2% / 34.3%, then 45.0% / 49.5%) are on the new windows.
+
+On 2026-10-17, Heroic changed: after a Unit attacks an enemy Unit, it gets +N Attack ([ADR-0046](../adr/0046-heroic-gives-attack-after-each-attack-on-a-unit.md)). Then the AI started to count the Heroic bonus (issue [#109](https://github.com/rifandani/heynbord/issues/109)). Before the retune of 2026-10-24, the win rates in the table came from a new run of `bun scripts/simulate.ts 1000 --check` in `packages/rules` after issue #109. All rows are on their target, except Floor 10 and the no-Gear rows of Floor 40 (see below). The next paragraphs tell the earlier runs. The first retune for Heroic changed these templates. Template 2 (Emberchief Razka): a Pack Stalker and a Howling Charger replace 2 Scrap Raiders, a Mesa Pit-Fighter replaces the first Tusk Brute, and a Bonestake Palisade replaces 1 of the next 2 Tusk Brutes. Template 8 (Warboss Gnash): a Badland Runt replaces 1 Scrap Raider, a Pack Stalker replaces the Skyreaver, and an Ankle Snatcher replaces the first Tusk Brute. Floor 10: a Shieldbearer replaces the first Tusk Brute. Floor 20: a Mine Sapper replaces the Grukka copy, and 2 Sidestep Shivs replace the Skyreaver and the Pyreaxe Ravager.
 
 **Issue #109 (2026-10-17).** The AI now counts the Heroic bonus in the value of a Unit and in the threat and the defense of a Lane (GDD 9). The AI plays both Sides in the sim, so this change moved all rows. After the AI change and before the content changes (1000 Battles), Raiders with the Expected Gear won 80.2% to 85.4% of 32 normal Floors, and Vanguard with the Expected Gear won 80.1% to 80.7% of Floors 18, 28, 38 and 48 (template 8). Raiders with the Expected Gear won 51.2% to 61.0% of the 5 Boss Floors, and Vanguard with the Expected Gear won 52.9% of Floor 10 and 50.3% of Floor 20. Each change is to the enemy only.
 

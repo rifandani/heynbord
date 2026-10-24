@@ -224,7 +224,7 @@ const KEEP_COPIES = 2;
 const HERO_CLASS = "warrior";
 const STARTER_DECK_ID = "vanguard";
 
-/** The Pack pool of "all cards" for a Warrior: the cards that "Discovered" counts. */
+/** The Pack pool of "all cards" for a Warrior. */
 const ALL_CARDS: PackPool = { kind: "all" };
 
 /**
@@ -471,7 +471,10 @@ export interface CheckpointSnapshot {
   readonly level: number;
   readonly packsOpened: number;
   readonly combines: number;
-  /** From 0 to 1, of all Creature Cards and the Warrior Skill Cards. */
+  /**
+   * From 0 to 1, of all Creature Cards and the Warrior Skill Cards with Base
+   * Rank Epic or lower (`discoveredShare`).
+   */
   readonly discoveredShare: number;
   readonly epicCopies: number;
   readonly legendaryCopies: number;
@@ -632,6 +635,20 @@ export const newEconomyPlayer = (seed: number): EconomyPlayer => {
 const poolCards = (): readonly CardDefinition[] =>
   packPool(ALL_CARDS, HERO_CLASS);
 
+/**
+ * The share of the cards that "Discovered" counts (Economy 4), from 0 to 1:
+ * the cards of the "all cards" Pack with Base Rank Epic or lower. A
+ * Specialist (Base Rank Legendary) comes only from a Legendary roll of a
+ * Royal Pack (ADR-0048), so it does not count.
+ */
+export const discoveredShare = (
+  collection: EconomyPlayer["collection"]
+): number => {
+  const pool = poolCards().filter((card) => card.baseRank !== "legendary");
+  const discovered = discoveredCards(collection);
+  return pool.filter((card) => discovered.has(card.id)).length / pool.length;
+};
+
 const meanOf = (gear: GearLevels): number =>
   GEAR_SLOTS.reduce((total, slot) => total + gear[slot], 0) / GEAR_SLOTS.length;
 
@@ -646,46 +663,41 @@ const countRank = (player: EconomyPlayer, rank: RankId): number =>
     0
   );
 
-const snapshot = (player: EconomyPlayer): CheckpointSnapshot => {
-  const pool = poolCards();
-  const discovered = discoveredCards(player.collection);
-  return {
-    battles: player.battles,
-    hours: (player.battles * BATTLE_MINUTES) / 60,
-    level: levelOf(player),
-    packsOpened: player.packsOpened,
-    combines: player.combines,
-    discoveredShare:
-      pool.filter((card) => discovered.has(card.id)).length / pool.length,
-    epicCopies: countRank(player, "epic"),
-    legendaryCopies: countRank(player, "legendary"),
-    meanGear: meanGear(player),
-    lowestGear: lowestGear(player),
-    coin: player.coin,
-    essence: player.essence,
-    forgeStones: player.forgeStones,
-    floorsWon: player.floorsWon,
-    stars: player.stars.reduce((total, stars) => total + stars, 0),
-    threeStarStages: [...player.bestStars.values()].filter(
-      (stars) => stars === THREE_STARS
-    ).length,
-    repeatBattles: [...player.repeatBattles.values()].reduce(
-      (total, battles) => total + battles,
-      0
-    ),
-    cappedStages: [...player.repeatBattles].filter(
-      ([stageId, battles]) =>
-        battles >= MAX_REPEAT_BATTLES &&
-        player.bestStars.get(stageId) !== THREE_STARS
-    ).length,
-    campaignTicketsUsed: player.campaignTicketsUsed,
-    campaignSweepTickets: player.campaignSweepTickets,
-    dungeonTicketsUsed: player.dungeonTicketsUsed,
-    dungeonSweepTickets: player.dungeonSweepTickets,
-    income: player.income,
-    seaportIncome: player.seaportIncome,
-  };
-};
+const snapshot = (player: EconomyPlayer): CheckpointSnapshot => ({
+  battles: player.battles,
+  hours: (player.battles * BATTLE_MINUTES) / 60,
+  level: levelOf(player),
+  packsOpened: player.packsOpened,
+  combines: player.combines,
+  discoveredShare: discoveredShare(player.collection),
+  epicCopies: countRank(player, "epic"),
+  legendaryCopies: countRank(player, "legendary"),
+  meanGear: meanGear(player),
+  lowestGear: lowestGear(player),
+  coin: player.coin,
+  essence: player.essence,
+  forgeStones: player.forgeStones,
+  floorsWon: player.floorsWon,
+  stars: player.stars.reduce((total, stars) => total + stars, 0),
+  threeStarStages: [...player.bestStars.values()].filter(
+    (stars) => stars === THREE_STARS
+  ).length,
+  repeatBattles: [...player.repeatBattles.values()].reduce(
+    (total, battles) => total + battles,
+    0
+  ),
+  cappedStages: [...player.repeatBattles].filter(
+    ([stageId, battles]) =>
+      battles >= MAX_REPEAT_BATTLES &&
+      player.bestStars.get(stageId) !== THREE_STARS
+  ).length,
+  campaignTicketsUsed: player.campaignTicketsUsed,
+  campaignSweepTickets: player.campaignSweepTickets,
+  dungeonTicketsUsed: player.dungeonTicketsUsed,
+  dungeonSweepTickets: player.dungeonSweepTickets,
+  income: player.income,
+  seaportIncome: player.seaportIncome,
+});
 
 // ─── Player actions ──────────────────────────────────────────────────────────
 

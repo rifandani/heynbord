@@ -110,7 +110,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
     classId: "mage",
     deck: [
       ...cards(1, "orc.scrapRaider"),
-      ...cards(1, "orc.packStalker"),
+      ...cards(1, "orc.warhowlerDrummer"),
       ...cards(1, "orc.howlingCharger"),
       ...cards(3, "orc.emberShaman"),
       ...cards(1, "orc.cinderhornBreaker"),
@@ -124,7 +124,8 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
       ...cards(1, "orc.bonestakePalisade"),
       ...cards(1, "orc.cinderhornBreaker"),
       ...cards(1, "orc.badlandRunt"),
-      ...cards(2, "orc.warhowlerDrummer"),
+      ...cards(1, "orc.packStalker"),
+      ...cards(1, "orc.warhowlerDrummer"),
       ...cards(1, "orc.mesaPitFighter"),
       ...cards(1, "orc.howlingCharger"),
       ...cards(2, "mage.fireball"),
@@ -193,12 +194,12 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
       ...cards(1, "elf.rootboundGuard"),
       ...cards(1, "elf.elderreedDartmaster"),
       ...cards(1, "elf.dewkeeper"),
-      ...cards(1, "elf.thornlineArcher"),
+      ...cards(1, "elf.mosspitcherLookout"),
       ...cards(1, "priest.penance"),
       ...cards(1, "elf.brambleNest"),
       ...cards(1, "priest.prayerOfHealing"),
       ...cards(1, "priest.cleanse"),
-      ...cards(1, "priest.radiantStrike"),
+      ...cards(1, "elf.fernwingCourier"),
       ...cards(1, "elf.dewkeeper"),
       ...cards(1, "priest.radiantStrike"),
       ...cards(1, "priest.prayerOfHealing"),
@@ -300,7 +301,7 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
       ...cards(1, "priest.sanctuary"),
       ...cards(1, "elf.acornTender"),
       ...cards(1, "priest.blessingOfLight"),
-      ...cards(1, "elf.thornlineArcher"),
+      ...cards(1, "elf.mosspitcherLookout"),
       ...cards(1, "priest.sanctuary"),
       ...cards(1, "human.halberdier"),
       ...cards(1, "human.militiaRecruit"),
@@ -309,9 +310,9 @@ export const FLOOR_TEMPLATES: readonly FloorTemplate[] = [
       ...cards(1, "elf.brambleDuelist"),
       ...cards(1, "priest.radiantStrike"),
       ...cards(1, "priest.smite"),
-      ...cards(1, "elf.dewkeeper"),
+      ...cards(1, "human.crossbowGuard"),
       ...cards(1, "human.militiaRecruit"),
-      ...cards(1, "elf.thornlineArcher"),
+      ...cards(1, "elf.acornTender"),
     ],
   },
   // Floor 8: an Orc war boss with a Goblin crew.
@@ -663,8 +664,15 @@ const BOSS_FLOOR_STRENGTH: readonly TierStrength[] = [
   // Floor 30: Lady Glimmerbough. Her Epic Canopy Vinewarden behind a Bramble
   // Nest is her power, so she has less HP.
   { rankSteps: 0, extraStepCopies: 10, heroHp: 41, gear: NO_GEAR },
-  // Floor 40: the Old Bramble.
-  { rankSteps: 0, extraStepCopies: 13, heroHp: 58, gear: NO_GEAR },
+  // Floor 40: the Old Bramble. The Colossus in Lane 3 is strong against a
+  // slow Deck, so the Rank steps alone give a gap of 30 points between the
+  // Gear rows. Her Banner (Unit Block chance) makes the gap smaller.
+  {
+    rankSteps: 0,
+    extraStepCopies: 6,
+    heroHp: 50,
+    gear: { weapon: 0, armor: 0, trinket: 0, banner: 10 },
+  },
   // Floor 50: Queen Marrow.
   { rankSteps: 0, extraStepCopies: 12, heroHp: 56, gear: NO_GEAR },
 ];

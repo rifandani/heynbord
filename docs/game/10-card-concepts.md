@@ -400,11 +400,11 @@ Purpose: a fast Unit that hits the Hero and still hits when he falls. Power 16, 
 
 ### 3.6 Pack Stalker
 
-`orc.packStalker` · Uncommon · Countdown 2 · Attack 2 · HP 5 · Physical · Swift · Pivot · Last Breath 1
+`orc.packStalker` · Uncommon · Countdown 2 · Attack 2 · HP 4 · Physical · Swift · Pivot · Last Breath 1
 
 > He always knows where you are. Mostly behind you.
 
-Purpose: the Orc Pivot Unit, and a trade that still hits. Power 16, budget 16, deviation 0%.
+Purpose: the Orc Pivot Unit, and a trade that still hits. Power 15, budget 16, deviation -6.3%. HP 5 → 4 on 2026-10-24 for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
 
 | Field | Brief |
 | --- | --- |
@@ -739,11 +739,11 @@ Purpose: mobile pressure with fragile stats. Power 18, budget 19, deviation -5.3
 
 ### 4.8 Thornline Archer
 
-`elf.thornlineArcher` · Uncommon · Countdown 3 · Attack 3 · HP 4 · Physical · Long-range · Poison
+`elf.thornlineArcher` · Uncommon · Countdown 3 · Attack 3 · HP 5 · Physical · Long-range · Poison
 
 > The arrow leaves. The ache stays.
 
-Purpose: reliable ranged Poison. Power 18, budget 19, deviation -5.3%.
+Purpose: reliable ranged Poison. Power 19, budget 19, deviation 0%. HP 4 → 5 on 2026-10-24 for the Raiders Matchups ([08 — Archetypes, 3.1](./08-archetypes.md#31-balance-changes)).
 
 | Field | Brief |
 | --- | --- |

@@ -10,7 +10,7 @@ import { getStage, STAGES } from "../content/stages";
 import { emptyBattle, placeUnit } from "../testing/fixtures";
 import {
   createMatchupBattle,
-  DUNGEON_TARGET,
+  dungeonTarget,
   dungeonDeck,
   expectedDeck,
   floorDeck,
@@ -253,8 +253,10 @@ describe("simulateDungeon (GDD 13, step 6)", () => {
     expect(simulateDungeon(dungeon, vanguard, 4)).toEqual(report);
   });
 
-  it("has the target of a Boss Stage", () => {
-    expect(DUNGEON_TARGET).toEqual({ min: 0.3, max: 0.5 });
+  it("has the target of a Boss Stage, also for each Gear row (ADR-0033)", () => {
+    expect(dungeonTarget()).toEqual({ min: 0.3, max: 0.5 });
+    expect(dungeonTarget("noGear")).toEqual({ min: 0.25, max: 0.5 });
+    expect(dungeonTarget("gear")).toEqual({ min: 0.3, max: 0.55 });
   });
 });
 
@@ -293,6 +295,16 @@ describe("simulateFloor (GDD 13, step 6, ADR-0040)", () => {
           : { min: 0.6, max: 0.8 }
       )
     );
+  });
+
+  it("gives a Boss Floor the target of each Gear row, and a normal Floor no change (ADR-0033)", () => {
+    expect(floorTarget(getFloor(40), "noGear")).toEqual({
+      min: 0.25,
+      max: 0.5,
+    });
+    expect(floorTarget(getFloor(40), "gear")).toEqual({ min: 0.3, max: 0.55 });
+    expect(floorTarget(floor, "noGear")).toEqual({ min: 0.6, max: 0.8 });
+    expect(floorTarget(floor, "gear")).toEqual({ min: 0.6, max: 0.8 });
   });
 });
 
@@ -451,7 +463,7 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
     ).toMatchObject({
       winRate: 0.525,
       firstSideWinRate: 0.425,
-      averageTurn: 15.15,
+      averageTurn: 15.125,
     });
     // Gear 3 rolls Crit and Block.
     expect(
@@ -461,9 +473,9 @@ describe("diagnostic Archetypes (Archetypes 2.1, 2.2)", () => {
         gear: { weapon: 6, armor: 6, trinket: 6, banner: 6 },
       })
     ).toMatchObject({
-      winRate: 0.525,
-      firstSideWinRate: 0.475,
-      averageTurn: 15.2,
+      winRate: 0.5,
+      firstSideWinRate: 0.5,
+      averageTurn: 15.475,
     });
   });
 });
@@ -492,6 +504,14 @@ describe("win-rate targets (GDD 13)", () => {
       ...Array.from({ length: 9 }, () => ({ min: 0.6, max: 0.8 })),
       { min: 0.3, max: 0.5 },
     ]);
+  });
+
+  it("gives a Boss Stage a target for each Gear row, and a normal Stage no change (ADR-0033)", () => {
+    const boss = { region: 4, number: 10, boss: true };
+    const normal = { region: 2, number: 1, boss: false };
+    expect(stageTarget(boss, "noGear")).toEqual({ min: 0.25, max: 0.5 });
+    expect(stageTarget(boss, "gear")).toEqual({ min: 0.3, max: 0.55 });
+    expect(stageTarget(normal, "gear")).toEqual({ min: 0.6, max: 0.8 });
   });
 
   it("includes both ends of a target", () => {

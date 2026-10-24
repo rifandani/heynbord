@@ -20,6 +20,7 @@ import {
   campaignSweep,
   claimAchievements,
   collectExpeditionAt,
+  discoveredShare,
   dispatchExpeditionAt,
   dungeonSweep,
   economyStages,
@@ -908,6 +909,36 @@ describe("the Seaport of the simulated Player (Economy 2.8, 7.1)", () => {
     });
     expect(run.end.seaportIncome).toEqual(NO_INCOME);
     expect(run.end.income.coin).toBeGreaterThan(0);
+  });
+});
+
+describe("discoveredShare (Economy 4)", () => {
+  // The "all cards" Pack of a Warrior: all Creature Cards and the Warrior
+  // Skill Cards.
+  const pool = CARDS.filter(
+    (card) => card.kind === "creature" || card.class === "warrior"
+  );
+  const collectionOf = (cards: typeof pool): Collection =>
+    cards.map((card) => ({ cardId: card.id, rank: card.baseRank, copies: 1 }));
+
+  it("does not count the Specialists (Base Rank Legendary, ADR-0048)", () => {
+    const withoutSpecialists = pool.filter(
+      (card) => card.baseRank !== "legendary"
+    );
+    expect(withoutSpecialists.length).toBeLessThan(pool.length);
+    expect(discoveredShare(collectionOf(withoutSpecialists))).toBe(1);
+    expect(discoveredShare(collectionOf(pool))).toBe(1);
+  });
+
+  it("counts each other card of the Pack pool", () => {
+    const [first, ...rest] = pool.filter(
+      (card) => card.baseRank !== "legendary"
+    );
+    expect(first).toBeDefined();
+    expect(discoveredShare(collectionOf(rest))).toBeCloseTo(
+      rest.length / (rest.length + 1)
+    );
+    expect(discoveredShare([])).toBe(0);
   });
 });
 

@@ -100,15 +100,36 @@ export const NORMAL_STAGE_TARGET: WinRateTarget = { min: 0.6, max: 0.8 };
 const BOSS_STAGE_TARGET: WinRateTarget = { min: 0.3, max: 0.5 };
 
 /**
+ * A Gear row of the sim check (ADR-0033): the row with no Gear, or a row with
+ * Gear (the Expected Gear, or the Gear of `--gear`).
+ */
+export type GearRow = "noGear" | "gear";
+
+/**
+ * The target of a Boss row in the sim check (ADR-0033): the row with no Gear
+ * can be 5 points below the Boss target, and a row with Gear 5 points above
+ * it. The economy sim uses the Boss target with no row.
+ */
+const BOSS_ROW_TARGETS: Readonly<Record<GearRow, WinRateTarget>> = {
+  noGear: { min: 0.25, max: 0.5 },
+  gear: { min: 0.3, max: 0.55 },
+};
+
+const bossTarget = (row: GearRow | undefined): WinRateTarget =>
+  row === undefined ? BOSS_STAGE_TARGET : BOSS_ROW_TARGETS[row];
+
+/**
  * The target for a new player Deck on the first try (GDD 13, step 6): 30% to
  * 50% for a Boss Stage, 60% to 80% for a normal Stage. The first Stages of
- * Region 1 make a ramp: 1-1 (the Tutorial) ≥ 95%, 1-2 ≥ 85%, 1-3 ≥ 75%.
+ * Region 1 make a ramp: 1-1 (the Tutorial) ≥ 95%, 1-2 ≥ 85%, 1-3 ≥ 75%. With
+ * a Gear `row`, a Boss Stage has the target of that row (ADR-0033).
  */
 export const stageTarget = (
-  stage: Pick<StageDefinition, "region" | "number" | "boss">
+  stage: Pick<StageDefinition, "region" | "number" | "boss">,
+  row?: GearRow
 ): WinRateTarget => {
   if (stage.boss) {
-    return BOSS_STAGE_TARGET;
+    return bossTarget(row);
   }
   const ramp =
     stage.region === 1 ? [0.95, 0.85, 0.75][stage.number - 1] : undefined;
@@ -186,17 +207,22 @@ export const suggestStarTurn = (
   return best;
 };
 
-/** The first-try target of a Dungeon, the same as a Boss Stage (GDD 13, step 6). */
-export const DUNGEON_TARGET: WinRateTarget = BOSS_STAGE_TARGET;
+/**
+ * The first-try target of a Dungeon, the same as a Boss Stage (GDD 13, step
+ * 6), also for a Gear `row` (ADR-0033).
+ */
+export const dungeonTarget = (row?: GearRow): WinRateTarget => bossTarget(row);
 
 /**
  * The first-try target of a Heynspire Floor (ADR-0040): the target of a
- * normal Stage, and the target of a Boss Stage for a Boss Floor. The
- * difficulty does not go up from Floor 1 to Floor 50.
+ * normal Stage, and the target of a Boss Stage for a Boss Floor, also for a
+ * Gear `row` (ADR-0033). The difficulty does not go up from Floor 1 to Floor
+ * 50.
  */
 export const floorTarget = (
-  floor: Pick<FloorDefinition, "boss">
-): WinRateTarget => (floor.boss ? BOSS_STAGE_TARGET : NORMAL_STAGE_TARGET);
+  floor: Pick<FloorDefinition, "boss">,
+  row?: GearRow
+): WinRateTarget => (floor.boss ? bossTarget(row) : NORMAL_STAGE_TARGET);
 
 /** Each Archetype against each other Archetype (GDD 13, step 5). */
 export const MATCHUP_TARGET: WinRateTarget = { min: 0.45, max: 0.55 };

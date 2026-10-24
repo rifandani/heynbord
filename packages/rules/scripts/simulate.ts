@@ -11,7 +11,9 @@
  * - `stage`: each Stage with each starter Deck, at the Recommended level of the
  *   Stage and with no Gear (docs/game/14-campaign-stages.md). A Stage with
  *   Expected Gear (ADR-0033) also plays a second row at that Gear. The
- *   Expected Gear comes from the First-try runs of `economy`. `--level N`
+ *   Expected Gear comes from the First-try runs of `economy`. A Boss row has
+ *   the target of its Gear row (ADR-0033): 25% to 50% with no Gear, and 30% to
+ *   55% with Gear. A Dungeon and a Boss Floor use the same rows. `--level N`
  *   plays N levels above the Recommended level, and `--gear N` sets all 4 Gear
  *   slots to N. They measure the win-chance bonuses of `economy` (Economy
  *   7.1), so with them there are no Expected Gear rows.
@@ -111,7 +113,7 @@ import type {
 } from "../src/simulation/economy";
 import { simulatePack } from "../src/simulation/packs";
 import {
-  DUNGEON_TARGET,
+  dungeonTarget,
   floorTarget,
   gatesRelease,
   isOnTarget,
@@ -127,6 +129,7 @@ import {
   threeStarShare,
 } from "../src/simulation/simulate";
 import type {
+  GearRow,
   MatchupReport,
   StageReport,
   StarTarget,
@@ -279,6 +282,10 @@ const gearText = (levels: GearLevels) =>
 
 const hasGear = (levels: GearLevels) => gearText(levels) !== gearText(NO_GEAR);
 
+/** The Gear row of `levels` for a Boss target (ADR-0033). */
+const gearRow = (levels: GearLevels): GearRow =>
+  hasGear(levels) ? "gear" : "noGear";
+
 /** The wins of the reports of one Gear row, as one report. */
 const pooledWins = (reports: readonly StageReport[]) => ({
   wins: reports.reduce((sum, report) => sum + report.wins, 0),
@@ -382,7 +389,7 @@ if (modes.includes("stage")) {
           target: judge(
             `Stage ${report.stageId} with ${report.deckId}, ${row.name}`,
             report.winRate,
-            stageTarget(stage)
+            stageTarget(stage, gearRow(row.gear))
           ),
           // The 3-Star cells are for the row, so they show on its first Deck.
           ...(deckIndex === 0 ? stars : NO_STAR_CELLS),
@@ -427,7 +434,7 @@ if (modes.includes("dungeon")) {
             target: judge(
               `Dungeon ${report.dungeonId} with ${report.deckId}, Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
               report.winRate,
-              DUNGEON_TARGET
+              dungeonTarget(gearRow(row.gear))
             ),
           };
         })
@@ -468,7 +475,7 @@ if (modes.includes("floor")) {
             target: judge(
               `Floor ${report.floorId} with ${report.deckId}, Gear ${gearText(row.gear)}${row.expected ? " (Expected Gear)" : ""}`,
               report.winRate,
-              floorTarget(floor)
+              floorTarget(floor, gearRow(row.gear))
             ),
           };
         })
