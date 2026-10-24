@@ -2,10 +2,10 @@ import { useAtomValue } from "@effect/atom-react";
 import type { ClassId, CosmeticId } from "@workspace/rules";
 import { cn } from "cn";
 
+import { SIDE_COLORS } from "@/core/components/game/tokens";
 import { BRONZE } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
-import { SIDE_COLORS } from "@/features/battle/palette";
 import { heroPortraitArt } from "@/features/hero/hero-portrait-art";
 import { activeHeroPortraitAtom } from "@/features/profile/profile.atoms";
 

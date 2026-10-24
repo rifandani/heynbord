@@ -292,7 +292,7 @@ interface CreatureInfo {
   readonly speed: number;
   readonly attack: number;
   readonly hp: number;
-  /** The Class of a Specialist (ADR-0050). */
+  /** The Class of a Specialist (ADR-0048). */
   readonly classId?: ClassId;
 }
 

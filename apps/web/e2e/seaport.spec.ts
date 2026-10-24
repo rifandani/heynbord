@@ -2,7 +2,7 @@ import { expect, test } from "./_base";
 import type { Page } from "./_base";
 
 /**
- * The Seaport screen (Economy 2.8, ADR-0053, issue #113): the Player
+ * The Seaport screen (Economy 2.8, ADR-0051, issue #113): the Player
  * Dispatches the ship, the device clock goes forward, and a Collect adds the
  * reward to the Profile. The clock of the page is a fake clock, so the test
  * does not wait 48 hours.

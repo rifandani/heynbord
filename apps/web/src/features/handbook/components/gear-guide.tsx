@@ -44,7 +44,7 @@ const TIER_BANDS = LEVELS.reduce<
 /**
  * The Gear Entry (GDD 7.3, Economy 3.4): what each of the 4 items gives at
  * the highest level, and the Coin and the Forge Stone tier of each level
- * (ADR-0038). The numbers come from the rules, so the Entry follows a balance
+ * (ADR-0036). The numbers come from the rules, so the Entry follows a balance
  * change.
  */
 export const GearGuide = () => {

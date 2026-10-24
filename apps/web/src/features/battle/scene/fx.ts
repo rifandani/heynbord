@@ -1,6 +1,7 @@
 import type { BattleEvent, DamageType } from "@workspace/rules";
 import { getCard } from "@workspace/rules";
 
+import { DAMAGE_COLORS, FX_ANCHORS } from "@/core/components/game/tokens";
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import { eventDuration, pushArrival } from "@/features/battle/battle-timeline";
@@ -8,7 +9,6 @@ import type { BattleView } from "@/features/battle/battle-view";
 import { fliesNow } from "@/features/battle/battle-view";
 import type { Cast } from "@/features/battle/cast";
 import { castSquares, effectColor } from "@/features/battle/cast";
-import { DAMAGE_COLORS, FX_ANCHORS } from "@/features/battle/palette";
 import { fieldTiles } from "@/features/battle/scene/field-tiles";
 import type {
   FxPresetKey,

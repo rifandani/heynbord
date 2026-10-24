@@ -6,10 +6,10 @@ import { useId, useMemo, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, TooltipTrigger } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GameTooltip } from "@/core/components/game/game-tooltip";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { REWARD_PLATE_COMPACT as PLATE } from "@/features/battle/components/reward-plate";
 import { qaSeed } from "@/features/battle/qa";
@@ -339,7 +339,7 @@ const RewardRow = ({ slot }: { readonly slot: DungeonSlot }) => {
   );
 };
 
-/** The Sweep row (GDD 4.12, ADR-0041): the Dungeon Sweep Tickets and the Ticket control. */
+/** The Sweep row (GDD 4.12, ADR-0039): the Dungeon Sweep Tickets and the Ticket control. */
 const SweepRow = ({
   owned,
   value,
@@ -558,7 +558,7 @@ const PanelActions = ({
  * the Dungeons screen, open at all times, as the Floor Panel. It shows the
  * selected Dungeon: its name, Recommended level and state, the dossier of
  * each Boss, and the reward. An open Dungeon also has the Deck choice and the
- * gold Fight; a won Dungeon also has the Dungeon Sweep (ADR-0041): the Sweep
+ * gold Fight; a won Dungeon also has the Dungeon Sweep (ADR-0039): the Sweep
  * row, the Sweep button (gold when the Player has Tickets) and the Sweep
  * Result, which turns the page of the same sheet. A locked Dungeon shows the
  * level that opens it in the place of the actions. When the selection

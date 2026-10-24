@@ -120,7 +120,7 @@ const LaneCells = ({ front }: { readonly front: readonly number[] }) => (
 
 /**
  * The HP of a Boss at the start, with a notch at each Boss Rule threshold, as
- * the Boss plate of the Battle shows it (ADR-0040). The Player learns the
+ * the Boss plate of the Battle shows it (ADR-0038). The Player learns the
  * notch here and sees it again in the Battle.
  */
 const HpBar = ({ boss }: { readonly boss: DungeonBoss }) => {

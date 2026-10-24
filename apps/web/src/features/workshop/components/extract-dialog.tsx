@@ -1,8 +1,8 @@
 import type { DeckSlot, RankId } from "@workspace/rules";
 import { EXTRACT_ESSENCE } from "@workspace/rules";
-import { Dialog, Heading, Modal, ModalOverlay } from "react-aria-components";
 
-import { GameButton } from "@/features/battle/components/game-button";
+import { GameButton } from "@/core/components/game/game-button";
+import { GameDialog, GameDialogText } from "@/core/components/game/game-dialog";
 import { useGameText } from "@/features/battle/use-game-text";
 import { defaultSlotName } from "@/features/deck/deck";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
@@ -44,86 +44,75 @@ export const ExtractDialog = ({
       )
     );
   return (
-    <ModalOverlay
+    <GameDialog
       isOpen={request !== null}
       onOpenChange={(open) => {
         if (!open) {
           onKeep();
         }
       }}
-      isDismissable
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]"
+      title={tr("workshop.extractDialog.title")}
+      testId="extract-dialog"
+      footer={
+        request ? (
+          <>
+            <GameButton
+              intent="wood"
+              autoFocus
+              onPress={onKeep}
+              data-testid="extract-dialog-keep"
+            >
+              {tr("workshop.extractDialog.keep")}
+            </GameButton>
+            <GameButton
+              intent="gold"
+              onPress={() => onExtract(request)}
+              data-testid="extract-dialog-confirm"
+            >
+              {tr("workshop.extract")}
+            </GameButton>
+          </>
+        ) : null
+      }
     >
-      <Modal className="fade-in zoom-in-95 animate-in w-[min(420px,94vw)] rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] p-5 text-center text-[#2a1d12] shadow-2xl duration-200 motion-reduce:animate-none [@media(max-height:500px)]:p-3">
-        {/* A pressed button goes down 1px. The bottom padding keeps it in
-            the scroll box, so no scrollbar comes and moves the buttons. */}
-        <Dialog
-          className="-mb-1 max-h-[calc(100dvh-3rem)] overflow-y-auto pb-1 outline-none"
-          data-testid="extract-dialog"
-        >
-          {request ? (
-            <>
-              <Heading
-                slot="title"
-                className="font-display text-2xl font-black [@media(max-height:500px)]:text-xl"
-              >
-                {tr("workshop.extractDialog.title")}
-              </Heading>
-              <p className="mt-2 text-sm text-[#5b4632] [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:text-xs">
-                {tr("workshop.extractDialog.text")}
+      {request ? (
+        <>
+          <GameDialogText className="mt-2 [@media(max-height:500px)]:mt-1">
+            {tr("workshop.extractDialog.text")}
+          </GameDialogText>
+          <p className="mt-2 flex items-center justify-center gap-1.5 text-base font-black [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:text-sm">
+            <BalanceIcon kind="essence" className="size-5 shrink-0" />
+            {tr("workshop.extractDialog.gain", {
+              essence: format(EXTRACT_ESSENCE[request.rank]),
+            })}
+          </p>
+          {request.decks.length > 0 ? (
+            <div
+              className="border-parchment-rule bg-parchment-deep mt-3 rounded-lg border-2 px-3 py-2 text-left text-sm [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:py-1.5 [@media(max-height:500px)]:text-xs"
+              data-testid="extract-dialog-decks"
+            >
+              <p className="text-ink-soft font-semibold">
+                {tr("workshop.extractDialog.decks")}
               </p>
-              <p className="mt-2 flex items-center justify-center gap-1.5 text-base font-black [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:text-sm">
-                <BalanceIcon kind="essence" className="size-5 shrink-0" />
-                {tr("workshop.extractDialog.gain", {
-                  essence: format(EXTRACT_ESSENCE[request.rank]),
-                })}
-              </p>
-              {request.decks.length > 0 ? (
-                <div
-                  className="mt-3 rounded-lg border-2 border-[#c9b48c] bg-[#ead9b4] px-3 py-2 text-left text-sm [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:py-1.5 [@media(max-height:500px)]:text-xs"
-                  data-testid="extract-dialog-decks"
-                >
-                  <p className="font-semibold text-[#5b4632]">
-                    {tr("workshop.extractDialog.decks")}
-                  </p>
-                  <ul className="mt-1 list-disc pl-5 font-bold">
-                    {request.decks.map((slot) => (
-                      <li key={slot.id}>{deckName(slot)}</li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {request.rank === "epic" || request.rank === "legendary" ? (
-                <p
-                  className="mt-3 text-sm font-bold text-[#8f2a1e] [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs"
-                  data-testid="extract-dialog-rank"
-                >
-                  {tr("workshop.extractDialog.rank", {
-                    rank: tr(`ranks.${request.rank}`),
-                  })}
-                </p>
-              ) : null}
-              <div className="mt-4 flex flex-wrap justify-center gap-2 [@media(max-height:500px)]:mt-2">
-                <GameButton
-                  intent="wood"
-                  autoFocus
-                  onPress={onKeep}
-                  data-testid="extract-dialog-keep"
-                >
-                  {tr("workshop.extractDialog.keep")}
-                </GameButton>
-                <GameButton
-                  intent="gold"
-                  onPress={() => onExtract(request)}
-                  data-testid="extract-dialog-confirm"
-                >
-                  {tr("workshop.extract")}
-                </GameButton>
-              </div>
-            </>
+              <ul className="mt-1 list-disc pl-5 font-bold">
+                {request.decks.map((slot) => (
+                  <li key={slot.id}>{deckName(slot)}</li>
+                ))}
+              </ul>
+            </div>
           ) : null}
-        </Dialog>
-      </Modal>
-    </ModalOverlay>
+          {request.rank === "epic" || request.rank === "legendary" ? (
+            <p
+              className="mt-3 text-sm font-bold text-[#8f2a1e] [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs"
+              data-testid="extract-dialog-rank"
+            >
+              {tr("workshop.extractDialog.rank", {
+                rank: tr(`ranks.${request.rank}`),
+              })}
+            </p>
+          ) : null}
+        </>
+      ) : null}
+    </GameDialog>
   );
 };

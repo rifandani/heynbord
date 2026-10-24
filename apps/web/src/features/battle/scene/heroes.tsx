@@ -5,9 +5,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CanvasTexture, Group, Mesh, MeshBasicMaterial } from "three";
 import { Color, ShaderMaterial } from "three";
 
+import { SIDE_COLORS } from "@/core/components/game/tokens";
 import { hasManyHeroes } from "@/features/battle/battle-view";
 import { shownSessionAtom } from "@/features/battle/battle.atoms";
-import { SIDE_COLORS } from "@/features/battle/palette";
 import {
   BRACKET_WIDTH,
   bracketSpot,

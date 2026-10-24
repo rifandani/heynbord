@@ -6,7 +6,7 @@ import {
   DAMAGE_COLORS,
   FX_ANCHORS,
   HEAL_COLOR,
-} from "@/features/battle/palette";
+} from "@/core/components/game/tokens";
 import type { FxSlotName } from "@/features/battle/scene/fx-atlas";
 
 /**

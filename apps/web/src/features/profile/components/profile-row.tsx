@@ -3,15 +3,10 @@ import type { ImportError, Profile } from "@workspace/rules";
 import { exportProfile, importProfile } from "@workspace/rules";
 import { Result } from "effect";
 import { useContext, useState } from "react";
-import {
-  Dialog,
-  FileTrigger,
-  Heading,
-  Modal,
-  ModalOverlay,
-} from "react-aria-components";
+import { FileTrigger } from "react-aria-components";
 
-import { GameButton } from "@/features/battle/components/game-button";
+import { GameButton } from "@/core/components/game/game-button";
+import { GameDialog, GameDialogText } from "@/core/components/game/game-dialog";
 import { useGameText } from "@/features/battle/use-game-text";
 import { exportFileName } from "@/features/profile/profile";
 import { profileStateAtom } from "@/features/profile/profile.atoms";
@@ -45,57 +40,47 @@ const ReplaceDialog = ({
 }) => {
   const { tr } = useGameText();
   return (
-    <ModalOverlay
+    <GameDialog
       isOpen={profile !== null}
       onOpenChange={(open) => {
         if (!open) {
           onCancel();
         }
       }}
-      isDismissable
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]"
-    >
-      <Modal className="fade-in zoom-in-95 animate-in w-[min(400px,92vw)] rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] duration-200 motion-reduce:animate-none">
-        <Dialog
-          role="alertdialog"
-          className="px-5 pt-4 pb-5 outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-3 [@media(max-height:500px)]:pb-3"
-          data-testid="import-confirm-dialog"
-        >
-          <Heading
-            slot="title"
-            className="font-display text-xl font-black [@media(max-height:500px)]:text-lg"
+      title={tr("settings.profile.confirmTitle")}
+      role="alertdialog"
+      testId="import-confirm-dialog"
+      className="text-left"
+      footer={
+        <div className="flex w-full justify-end gap-2">
+          <GameButton
+            intent="wood"
+            size="sm"
+            autoFocus
+            onPress={onCancel}
+            data-testid="import-cancel"
           >
-            {tr("settings.profile.confirmTitle")}
-          </Heading>
-          <p className="mt-2 text-sm leading-snug">
-            {tr("settings.profile.confirmText")}
-          </p>
-          <div className="mt-4 flex justify-end gap-2 [@media(max-height:500px)]:mt-3">
-            <GameButton
-              intent="wood"
-              size="sm"
-              autoFocus
-              onPress={onCancel}
-              data-testid="import-cancel"
-            >
-              {tr("settings.profile.cancel")}
-            </GameButton>
-            <GameButton
-              intent="gold"
-              size="sm"
-              onPress={() => {
-                if (profile) {
-                  onReplace(profile);
-                }
-              }}
-              data-testid="import-confirm"
-            >
-              {tr("settings.profile.replace")}
-            </GameButton>
-          </div>
-        </Dialog>
-      </Modal>
-    </ModalOverlay>
+            {tr("settings.profile.cancel")}
+          </GameButton>
+          <GameButton
+            intent="gold"
+            size="sm"
+            onPress={() => {
+              if (profile) {
+                onReplace(profile);
+              }
+            }}
+            data-testid="import-confirm"
+          >
+            {tr("settings.profile.replace")}
+          </GameButton>
+        </div>
+      }
+    >
+      <GameDialogText className="mt-2 leading-snug">
+        {tr("settings.profile.confirmText")}
+      </GameDialogText>
+    </GameDialog>
   );
 };
 

@@ -50,7 +50,7 @@ const BASE_DURATION: Readonly<Record<BattleEvent["_tag"], number>> = {
   // The hit holds on the Unit at 1 HP for a beat, so the Player sees it.
   SteadfastHeld: 420,
   DebuffsRemoved: 300,
-  // The Dispel Keyword ends 1 Debuff of a Unit (ADR-0056).
+  // The Dispel Keyword ends 1 Debuff of a Unit (ADR-0054).
   DebuffRemoved: 300,
   // The area fades in on the Board.
   FieldEffectPlaced: 420,

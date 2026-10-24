@@ -1,6 +1,7 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
 import { useEffect, useRef, useState } from "react";
 
+import { GameScreen } from "@/core/components/game/game-screen";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { useGameText } from "@/features/battle/use-game-text";
 import { DungeonPanel } from "@/features/dungeons/components/dungeon-panel";
@@ -73,10 +74,10 @@ export const DungeonsScreen = ({
   const shown =
     slots.find((slot) => slot.number === selected) ?? slots[0] ?? null;
   return (
-    <main
+    <GameScreen
       ref={screen}
-      aria-label={tr("dungeons.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden bg-[#241d18] text-[#fff6df] duration-300 motion-reduce:animate-none"
+      tone="crypt"
+      label={tr("dungeons.label")}
       data-testid="dungeons"
     >
       <div className="[container-type:size] absolute inset-0">
@@ -118,6 +119,6 @@ export const DungeonsScreen = ({
           onStart={onStart}
         />
       ) : null}
-    </main>
+    </GameScreen>
   );
 };

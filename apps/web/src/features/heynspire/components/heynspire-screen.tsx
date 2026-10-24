@@ -3,6 +3,7 @@ import { HEYNSPIRE_FLOORS } from "@workspace/rules";
 import { cn } from "cn";
 import { useEffect, useRef, useState } from "react";
 
+import { GameScreen } from "@/core/components/game/game-screen";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { useGameText } from "@/features/battle/use-game-text";
 import { FloorPanel } from "@/features/heynspire/components/floor-panel";
@@ -78,10 +79,9 @@ export const HeynspireScreen = ({
   const [selected, setSelected] = useSelectedFloor(shown.current);
   const screen = useRef<HTMLElement>(null);
   return (
-    <main
+    <GameScreen
       ref={screen}
-      aria-label={tr("heynspire.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden text-[#fff6df] duration-300 motion-reduce:animate-none"
+      label={tr("heynspire.label")}
       data-testid="heynspire"
       data-floors-won={floorsWon}
     >
@@ -124,6 +124,6 @@ export const HeynspireScreen = ({
         climbed={shown.climbed}
         onStart={onStart}
       />
-    </main>
+    </GameScreen>
   );
 };

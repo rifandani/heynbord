@@ -15,9 +15,10 @@ import {
 } from "react-aria-components";
 import { HiXMark } from "react-icons/hi2";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GAME_SCRIM } from "@/core/components/game/game-dialog";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { qaSeed } from "@/features/battle/qa";
@@ -217,7 +218,7 @@ const RewardRow = ({ stop }: { readonly stop: TrailStage }) => {
 
 /**
  * The 3 Star conditions of the Stage (GDD 4.11). The Star Turn is in the Stage
- * data and differs from Stage to Stage, so the Player reads it here (ADR-0047).
+ * data and differs from Stage to Stage, so the Player reads it here (ADR-0045).
  */
 const StarsRow = ({ stop }: { readonly stop: TrailStage }) => {
   const { tr } = useGameText();
@@ -597,10 +598,7 @@ export const StagePanel = ({
             placeSheetOrigin(element, from?.current ?? null);
           }
         }}
-        className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] [@media(max-height:500px)]:p-2",
-          SHEET_SCRIM_MOTION
-        )}
+        className={cn(GAME_SCRIM, "z-50", SHEET_SCRIM_MOTION)}
       >
         <Modal
           className={cn(

@@ -188,7 +188,7 @@ describe("ENTRIES", () => {
     );
   });
 
-  it("names the Race Keyword of each Race in its Entry and links to it (ADR-0026)", () => {
+  it("names the Race Keyword of each Race in its Entry and links to it (ADR-0025)", () => {
     for (const race of RACES_WITH_CARDS) {
       // SAFETY: the first letter in upper case is the definition of `Capitalize`.
       const name = (race.charAt(0).toUpperCase() +

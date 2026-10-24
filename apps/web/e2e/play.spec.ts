@@ -1147,7 +1147,7 @@ test.describe("Campaign", () => {
     await expect(page.getByTestId("stage-reward-card")).toHaveText(
       "Iron Bulwark"
     );
-    // Each Stage has its own Star Turn (ADR-0047).
+    // Each Stage has its own Star Turn (ADR-0045).
     await expect(page.getByTestId("stage-star-rule-3")).toContainText(
       "Also win before Turn 18."
     );
@@ -1188,7 +1188,7 @@ test.describe("Campaign", () => {
       "data-copper",
       "180"
     );
-    // And 1 Forge Stone of the tier of Region 1 (ADR-0038).
+    // And 1 Forge Stone of the tier of Region 1 (ADR-0036).
     const stones = page.getByTestId("result-forge-stones");
     await expect(stones).toHaveAttribute("data-tier", "common");
     await expect(stones).toContainText("+1 Common Forge Stone");

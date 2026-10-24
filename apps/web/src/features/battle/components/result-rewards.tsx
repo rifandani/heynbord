@@ -53,8 +53,8 @@ export const ResultCoin = ({ coin }: { readonly coin: number }) => {
 /**
  * The Sweep Tickets that a win gave (GDD 4.12), on the same Night Plate as
  * the Coin: the Ticket in Ready Gold and its type, for example "Campaign Sweep
- * Tickets +2". A Stage win gives Campaign Sweep Tickets (ADR-0035) and a
- * Dungeon win gives Dungeon Sweep Tickets (ADR-0041). A loss gives none, so
+ * Tickets +2". A Stage win gives Campaign Sweep Tickets (ADR-0039) and a
+ * Dungeon win gives Dungeon Sweep Tickets (ADR-0039). A loss gives none, so
  * it shows nothing.
  */
 export const ResultTickets = ({
@@ -230,9 +230,9 @@ const ForgeStonePlate = ({ stones }: { readonly stones: ForgeStoneReward }) => {
 };
 
 /**
- * The Forge Stones of a result (ADR-0038), on the same Night Plate as the
+ * The Forge Stones of a result (ADR-0036), on the same Night Plate as the
  * Coin: the stone in its tier color and "+1 Common Forge Stone". A Stage
- * gives 0 or 1 tier, and a Dungeon 0 to 2 tiers (ADR-0039): one plate for
+ * gives 0 or 1 tier, and a Dungeon 0 to 2 tiers (ADR-0037): one plate for
  * each tier. No Forge Stone shows nothing.
  */
 export const ResultForgeStones = ({

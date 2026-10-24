@@ -11,6 +11,8 @@ import {
 import type { Key } from "react-aria-components";
 import { Button, TabList, TabPanel, Tabs } from "react-aria-components";
 
+import { gameButtonStyles } from "@/core/components/game/game-button";
+import { GameScreen } from "@/core/components/game/game-screen";
 import type { AchievementGroup } from "@/features/achievements/achievements";
 import {
   claimFocusAfter,
@@ -29,7 +31,6 @@ import {
 } from "@/features/achievements/components/reward-flight";
 import { useAchievements } from "@/features/achievements/use-achievements";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { gameButtonStyles } from "@/features/battle/components/game-button";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
@@ -257,7 +258,7 @@ const PAPER_TONE = [
 /**
  * The roll of one category: its name and count, its rows, and Claim all.
  * Claim all claims the Completed Achievements of all categories, so its
- * count and the text next to it are for all of them.
+ * count is for all of them.
  */
 const Roll = ({
   group,
@@ -381,19 +382,14 @@ const Roll = ({
             />
           ))}
         </ul>
-        <footer className="relative flex items-center justify-between gap-3 bg-[#ead9b4] px-5 pt-2.5 pb-4 shadow-[inset_0_2px_0_#c9b48c] [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:pb-3.5">
+        {/* The bottom roller covers 13px of the roll (12px of the footer, past
+            its 1px paper border), so the footer keeps that much more below the
+            Claim all button: the gap above and the gap below it stay the same. */}
+        <footer className="relative flex items-center justify-end gap-3 bg-[#ead9b4] px-5 pt-2.5 pb-[calc(0.625rem+12px)] shadow-[inset_0_2px_0_#c9b48c] [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:pb-[calc(0.25rem+9px)]">
           <span
             aria-hidden
             className="pointer-events-none absolute inset-x-5 top-[3px] h-px bg-[#e2a93b]/35 [@media(max-height:500px)]:hidden"
           />
-          <p
-            className="text-[13px] font-semibold text-[#5b4632] [@media(max-height:500px)]:text-[11px]"
-            aria-hidden
-          >
-            {claimable > 0
-              ? tr("achievements.screen.toClaim", { count: claimable })
-              : tr("achievements.screen.noneToClaim")}
-          </p>
           <Button
             ref={claimAll}
             isDisabled={claimable === 0}
@@ -526,9 +522,8 @@ export const AchievementsScreen = () => {
   };
 
   return (
-    <main
-      aria-label={tr("achievements.screen.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden text-[#fff6df] duration-300 motion-reduce:animate-none"
+    <GameScreen
+      label={tr("achievements.screen.label")}
       data-testid="achievements"
     >
       {/* The Hall inside (Town Concepts 15). */}
@@ -614,6 +609,6 @@ export const AchievementsScreen = () => {
       <p className="sr-only" aria-live="polite" data-testid="achievements-said">
         {said}
       </p>
-    </main>
+    </GameScreen>
   );
 };

@@ -57,7 +57,7 @@ export interface UnitView {
   /** The part of `attack` that comes from Swarm now: 0 or `swarm`. */
   readonly swarmBonus: number;
   /**
-   * The part of `attack` that comes from Heroic (ADR-0048). `HeroicGained`
+   * The part of `attack` that comes from Heroic (ADR-0046). `HeroicGained`
    * sets it, and `UnitReborn` ends it.
    */
   readonly heroicBonus: number;
@@ -153,7 +153,7 @@ export interface GraveyardCardView {
 }
 
 /**
- * The effect of a Boss Rule, as the Player sees it (ADR-0040). The Boss Rules
+ * The effect of a Boss Rule, as the Player sees it (ADR-0038). The Boss Rules
  * are open information: the Dungeons screen also shows them.
  */
 export type BossRuleEffectView =
@@ -650,7 +650,7 @@ const withBonusAttack = (
   bonusAttackTurns,
 });
 
-/** A Unit with a new Heroic bonus (ADR-0048). The Attack changes with it. */
+/** A Unit with a new Heroic bonus (ADR-0046). The Attack changes with it. */
 const withHeroicBonus = (unit: UnitView, heroicBonus: number): UnitView => ({
   ...unit,
   attack: unit.attack - unit.heroicBonus + heroicBonus,

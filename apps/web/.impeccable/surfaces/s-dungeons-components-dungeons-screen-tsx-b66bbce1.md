@@ -12,7 +12,7 @@ Scope: the Dungeons state of `/play` (GDD 8.4, 11.4, issue #94). Mode: Operate. 
 - Audience: the returning fan and the strategy card player at Player level 10 or more, between Battles. Desktop first, phone in landscape.
 - Task: before the first win, learn which Boss holds which Lanes and what each Boss Rule does, then Fight. After a win: Town, cave or shortcut, Enter (the stop), Enter (Fight, or Sweep when the Player has Dungeon Sweep Tickets).
 - Content: `DUNGEONS` and `DUNGEON_REWARDS` from the rules; `dungeonResults` (win count only) from the Profile. 1 to 4 Bosses on 4 Lanes. Dungeon 1 (2 + 2) opens at Player level 10, Dungeon 2 (3 + 1) at level 20, Dungeon 3 (1 + 2 + 1) at level 30.
-- Constraints: no Auto-play, no Boss portraits (Class sigils only). The Dungeon Sweep (ADR-0041) uses Dungeon Sweep Tickets only and comes with a win. Below level 10, the cave and the shortcut are locked; the screen does not open. No close button: the Town Bar closes the screen.
+- Constraints: no Auto-play, no Boss portraits (Class sigils only). The Dungeon Sweep (ADR-0039) uses Dungeon Sweep Tickets only and comes with a win. Below level 10, the cave and the shortcut are locked; the screen does not open. No close button: the Town Bar closes the screen.
 - Adaptations: a locked stop can be selected; the panel shows a preview with "Opens at level N", the lift over it is locked (gate shut, with a padlock) and the lair is dim. The 3 stops, the lift, the locked lift and the shaft rock are painted (11 — Town Concepts 13); a Dungeon whose stop is not painted shows the softened cave inside.
 - Unresolved: Boss portraits; draft names and the draft "Wanted" lines.
 

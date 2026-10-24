@@ -1,8 +1,8 @@
 import { cn } from "cn";
 
+import { FX_ANCHORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
-import { FX_ANCHORS } from "@/features/battle/palette";
 import {
   FX_ATLAS_SIZE,
   FX_ATLAS_URL,

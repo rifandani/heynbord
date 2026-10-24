@@ -5,6 +5,8 @@ import type { CSSProperties } from "react";
 import { useState } from "react";
 import { Button, TooltipTrigger } from "react-aria-components";
 
+import { GameTooltip } from "@/core/components/game/game-tooltip";
+import { SIDE_COLORS } from "@/core/components/game/tokens";
 import { enemyNameRef } from "@/features/battle/battle-content";
 import type {
   BossRuleEffectView,
@@ -15,11 +17,9 @@ import type {
 import { isDefeated } from "@/features/battle/battle-view";
 import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { cardText } from "@/features/battle/card-text";
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { countdownLabel } from "@/features/battle/components/hand-card";
 import { classGlyph } from "@/features/battle/glyphs";
-import { SIDE_COLORS } from "@/features/battle/palette";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 
@@ -157,7 +157,7 @@ const Notch = ({
   );
 };
 
-/** The HP bar of a Boss, with a notch at each Boss Rule threshold (ADR-0040). */
+/** The HP bar of a Boss, with a notch at each Boss Rule threshold (ADR-0038). */
 const BossHp = ({
   hero,
   breaking,

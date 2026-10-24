@@ -19,7 +19,8 @@ import {
 } from "react-aria-components";
 import { HiArrowLeft, HiMagnifyingGlass, HiXMark } from "react-icons/hi2";
 
-import { GameButton } from "@/features/battle/components/game-button";
+import { GameButton } from "@/core/components/game/game-button";
+import { GAME_SCRIM } from "@/core/components/game/game-dialog";
 import { useGameText } from "@/features/battle/use-game-text";
 import { SmallIcon } from "@/features/handbook/components/entry-icon";
 import {
@@ -468,12 +469,15 @@ const HandbookBody = ({
 };
 
 const overlayClass = (form: Form) =>
-  cn(
-    "fixed inset-0 z-50 flex p-4 duration-200 motion-reduce:animate-none [@media(max-height:500px)]:p-2",
-    form === "side"
-      ? "items-stretch justify-end pt-[max(0.5rem,env(safe-area-inset-top))] pr-[max(0.5rem,env(safe-area-inset-right))] pb-[max(0.5rem,env(safe-area-inset-bottom))]"
-      : "fade-in animate-in items-center justify-center bg-black/55 backdrop-blur-[2px] motion-safe:data-[exiting]:animate-[deck-scrim-out_500ms_linear_both]"
-  );
+  form === "side"
+    ? cn(
+        "fixed inset-0 z-50 flex p-4 duration-200 motion-reduce:animate-none [@media(max-height:500px)]:p-2",
+        "items-stretch justify-end pt-[max(0.5rem,env(safe-area-inset-top))] pr-[max(0.5rem,env(safe-area-inset-right))] pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+      )
+    : cn(
+        GAME_SCRIM,
+        "fade-in animate-in z-50 duration-200 motion-safe:data-[exiting]:animate-[deck-scrim-out_500ms_linear_both] motion-reduce:animate-none"
+      );
 
 /** Out of the Battle, the Handbook opens and closes on its spine, as the Deck book does. */
 const BOOK_MOTION =

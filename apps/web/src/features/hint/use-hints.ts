@@ -233,7 +233,7 @@ export const useStagePanelHints = (stars: number | null) => {
 };
 
 /**
- * The Dungeon Sweep Hint (GDD 8.3, ADR-0041): the first time that the
+ * The Dungeon Sweep Hint (GDD 8.3, ADR-0039): the first time that the
  * Dungeons screen shows a Dungeon with 1 or more wins. It shows near the
  * label of the Sweep row, and it closes when the Dungeon is not shown or
  * shows the Sweep Result: its anchor goes away.

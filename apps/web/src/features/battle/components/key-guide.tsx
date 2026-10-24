@@ -3,10 +3,10 @@ import { cn } from "cn";
 import { useEffect } from "react";
 import { TooltipTrigger } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { keyGuideAtom } from "@/features/battle/battle.atoms";
 import { KEY_GUIDE } from "@/features/battle/components/battle-keys";
-import { GameButton } from "@/features/battle/components/game-button";
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 

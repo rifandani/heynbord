@@ -328,7 +328,7 @@ export const COIN_USES_TABLE: readonly {
 
 /**
  * The XP of each result of a normal Stage by Region, for the Player level
- * Entry (Economy 2.1). A Repeat win gives no XP (ADR-0049). `loss` is the most
+ * Entry (Economy 2.1). A Repeat win gives no XP (ADR-0047). `loss` is the most
  * that a loss gives.
  */
 export const PLAYER_LEVEL_XP_TABLE: readonly {
@@ -506,7 +506,7 @@ const namedEntry = (
 const glyph = (name: Glyph): EntryIcon => ({ kind: "glyph", glyph: name });
 
 /**
- * The Entry of a Race: its style, then its Race Keyword (ADR-0026) with a link
+ * The Entry of a Race: its style, then its Race Keyword (ADR-0025) with a link
  * to the Keyword Entry. The Keyword comes from the rules table, not the copy.
  */
 const raceEntry = (race: RaceId): Entry => {

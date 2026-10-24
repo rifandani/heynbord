@@ -16,10 +16,11 @@ import {
 } from "react-aria-components";
 import { HiXMark } from "react-icons/hi2";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GAME_SCRIM } from "@/core/components/game/game-dialog";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { CardDetails } from "@/features/battle/components/card-details";
 import { BRONZE } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -438,7 +439,10 @@ export const DeckDialog = ({
     isOpen={isOpen}
     onOpenChange={onOpenChange}
     isDismissable
-    className="fade-in animate-in fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] duration-200 motion-safe:data-[exiting]:animate-[deck-scrim-out_500ms_linear_both] motion-reduce:animate-none [@media(max-height:500px)]:p-2"
+    className={cn(
+      GAME_SCRIM,
+      "fade-in animate-in z-50 duration-200 motion-safe:data-[exiting]:animate-[deck-scrim-out_500ms_linear_both] motion-reduce:animate-none"
+    )}
   >
     <Modal className="group/book relative h-[min(780px,100%)] w-[min(1200px,100%)] [perspective:3200px] motion-safe:data-[entering]:animate-[deck-book_720ms_linear_both] motion-safe:data-[exiting]:animate-[deck-book_500ms_linear_reverse_both]">
       <div

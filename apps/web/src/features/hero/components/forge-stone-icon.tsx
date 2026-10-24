@@ -1,10 +1,10 @@
 import type { ForgeStoneTier } from "@workspace/rules";
 import type { CSSProperties, Ref } from "react";
 
-import { RANK_COLORS } from "@/features/battle/palette";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 
 /**
- * A Forge Stone (ADR-0038): a cut stone with 3 lit faces, in the Card Rank
+ * A Forge Stone (ADR-0036): a cut stone with 3 lit faces, in the Card Rank
  * color of its tier. The text next to it, or the accessible name of its
  * control, always gives the tier, never only the color.
  */

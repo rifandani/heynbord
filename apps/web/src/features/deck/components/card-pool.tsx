@@ -4,8 +4,8 @@ import { cn } from "cn";
 import type { ReactNode } from "react";
 import { Button } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
 import { CardFrame } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { PoolFilters } from "@/features/deck/components/pool-filters";

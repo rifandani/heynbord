@@ -240,7 +240,7 @@ export const GLYPHS = {
   /** A curled vine with a leaf: Entangled. */
   vine: "M-40 44 C-40 10 -4 22 -4 -4 C-4 -30 -32 -30 -32 -12 C-32 0 -16 0 -16 -10 M-4 -4 C6 -28 26 -36 40 -40 M14 -22 Q36 -18 38 2 Q16 0 14 -22 Z",
   info: `${circle(0, 0, 44)} ${circle(0, 0, 34)} ${circle(0, -20, 6)} M-6 -6 H6 V26 H-6 Z`,
-  /** A zigzag bolt: Lightning (ADR-0029) and Paralyzed. */
+  /** A zigzag bolt: Lightning (ADR-0028) and Paralyzed. */
   bolt: "M10 -46 L-28 6 H-4 L-14 46 L28 -10 H4 L18 -46 Z",
   snow: "M0 -44 V44 M-38 -22 L38 22 M-38 22 L38 -22 M-10 -34 L0 -24 L10 -34 M-10 34 L0 24 L10 34",
   // The Town Bar shortcuts (GDD 11.4).
@@ -356,7 +356,7 @@ export const FILLED_GLYPHS: ReadonlySet<Glyph> = new Set([
 ]);
 
 /**
- * How a Unit fights, for the icon on its card and its Board token (ADR-0030):
+ * How a Unit fights, for the icon on its card and its Board token (ADR-0029):
  * Flying, Wall, Ranged (Range 2 or more) or Melee.
  */
 export type UnitIcon = "melee" | "ranged" | "wall" | "flying";

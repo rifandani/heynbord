@@ -1,4 +1,4 @@
-import { FX_ANCHORS } from "@/features/battle/palette";
+import { FX_ANCHORS } from "@/core/components/game/tokens";
 
 /**
  * The slot table of the effects atlas, with no `three` import, so the DOM

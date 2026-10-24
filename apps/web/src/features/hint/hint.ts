@@ -194,7 +194,7 @@ export const isSweepHintMet = (stars: number): boolean => stars === 3;
 
 /**
  * The Dungeon Sweep Hint: the Dungeons screen shows a Dungeon with 1 or more
- * wins, so it shows the Sweep (ADR-0041).
+ * wins, so it shows the Sweep (ADR-0039).
  */
 export const isDungeonSweepHintMet = (wins: number): boolean => wins >= 1;
 

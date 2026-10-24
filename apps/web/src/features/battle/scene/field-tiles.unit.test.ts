@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { DAMAGE_COLORS } from "@/core/components/game/tokens";
 import type { FieldEffectView } from "@/features/battle/battle-view";
-import { DAMAGE_COLORS } from "@/features/battle/palette";
 import {
   fieldAreas,
   fieldLabels,

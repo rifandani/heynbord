@@ -133,7 +133,7 @@ export const floorEnemyKey = (floor: number): string => {
  */
 export interface FloorRewardPreview {
   readonly win: FloorReward & {
-    /** The Campaign Sweep Tickets of a win (ADR-0035). */
+    /** The Campaign Sweep Tickets of a win (ADR-0039). */
     readonly campaignSweepTickets: number;
   };
   /** The Coin and the XP of a loss when the enemy Hero lost all its HP: the most that a loss gives. */

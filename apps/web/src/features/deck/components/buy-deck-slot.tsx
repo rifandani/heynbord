@@ -6,17 +6,11 @@ import {
 } from "@workspace/rules";
 import { cn } from "cn";
 import { useContext, useMemo } from "react";
-import {
-  Button,
-  Dialog,
-  DialogTrigger,
-  Heading,
-  Modal,
-  ModalOverlay,
-} from "react-aria-components";
+import { Button, DialogTrigger } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GameDialog } from "@/core/components/game/game-dialog";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { deckSlotsAtom } from "@/features/deck/deck.atoms";
@@ -111,73 +105,50 @@ export const BuyDeckSlot = ({
           <CoinAmount parts={coinDenominations(price)} format={format} />
         </span>
       </Button>
-      <ModalOverlay
-        isDismissable
-        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]"
+      <GameDialog
+        title={tr("deckBuilder.buySlot.title", { number: slotNumber })}
+        testId="buy-slot-dialog"
+        footer={
+          <>
+            <GameButton intent="wood" slot="close">
+              {tr("deckBuilder.buySlot.cancel")}
+            </GameButton>
+            <GameButton
+              intent="gold"
+              slot="close"
+              autoFocus={canBuy}
+              isDisabled={!canBuy}
+              onPress={buy}
+              data-testid="buy-slot-confirm"
+            >
+              {tr("deckBuilder.buySlot.buy")}
+            </GameButton>
+          </>
+        }
       >
-        <Modal className="fade-in zoom-in-95 animate-in w-[min(400px,94vw)] rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] p-5 text-center text-[#2a1d12] shadow-2xl duration-200 motion-reduce:animate-none [@media(max-height:500px)]:p-3">
-          <Dialog className="outline-none" data-testid="buy-slot-dialog">
-            {({ close }) => (
-              <>
-                <Heading
-                  slot="title"
-                  className="font-display text-2xl font-black [@media(max-height:500px)]:text-xl"
-                >
-                  {tr("deckBuilder.buySlot.title", { number: slotNumber })}
-                </Heading>
-                <dl className="mx-auto mt-3 grid w-fit grid-cols-[auto_auto] items-center gap-x-4 gap-y-2 text-left text-sm">
-                  <dt className="text-[#5b4632]">
-                    {tr("deckBuilder.buySlot.price")}
-                  </dt>
-                  <dd className="flex justify-end">
-                    <CoinPlate copper={price} format={format} words={words} />
-                  </dd>
-                  <dt className="text-[#5b4632]">
-                    {tr("deckBuilder.buySlot.balance")}
-                  </dt>
-                  <dd
-                    className="flex justify-end"
-                    data-testid="buy-slot-balance"
-                  >
-                    <CoinPlate
-                      copper={balances.coin}
-                      format={format}
-                      words={words}
-                    />
-                  </dd>
-                </dl>
-                {canBuy ? null : (
-                  <p
-                    className="mt-3 text-sm font-bold text-[#8f2a1e]"
-                    data-testid="buy-slot-short"
-                  >
-                    {tr("deckBuilder.buySlot.short", {
-                      amount: words(price - balances.coin),
-                    })}
-                  </p>
-                )}
-                <div className="mt-4 flex flex-wrap justify-center gap-2 [@media(max-height:500px)]:mt-2">
-                  <GameButton intent="wood" onPress={close}>
-                    {tr("deckBuilder.buySlot.cancel")}
-                  </GameButton>
-                  <GameButton
-                    intent="gold"
-                    autoFocus={canBuy}
-                    isDisabled={!canBuy}
-                    onPress={() => {
-                      close();
-                      buy();
-                    }}
-                    data-testid="buy-slot-confirm"
-                  >
-                    {tr("deckBuilder.buySlot.buy")}
-                  </GameButton>
-                </div>
-              </>
-            )}
-          </Dialog>
-        </Modal>
-      </ModalOverlay>
+        <dl className="mx-auto mt-3 grid w-fit grid-cols-[auto_auto] items-center gap-x-4 gap-y-2 text-left text-sm">
+          <dt className="text-[#5b4632]">{tr("deckBuilder.buySlot.price")}</dt>
+          <dd className="flex justify-end">
+            <CoinPlate copper={price} format={format} words={words} />
+          </dd>
+          <dt className="text-[#5b4632]">
+            {tr("deckBuilder.buySlot.balance")}
+          </dt>
+          <dd className="flex justify-end" data-testid="buy-slot-balance">
+            <CoinPlate copper={balances.coin} format={format} words={words} />
+          </dd>
+        </dl>
+        {canBuy ? null : (
+          <p
+            className="mt-3 text-sm font-bold text-[#8f2a1e]"
+            data-testid="buy-slot-short"
+          >
+            {tr("deckBuilder.buySlot.short", {
+              amount: words(price - balances.coin),
+            })}
+          </p>
+        )}
+      </GameDialog>
     </DialogTrigger>
   );
 };

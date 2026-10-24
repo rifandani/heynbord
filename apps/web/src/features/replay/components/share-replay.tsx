@@ -1,9 +1,9 @@
 import { cn } from "cn";
 import { Button } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
 import { battleNameRef } from "@/features/battle/battle-content";
 import type { BattleSession } from "@/features/battle/battle-session";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { replayOf } from "@/features/replay/replay";

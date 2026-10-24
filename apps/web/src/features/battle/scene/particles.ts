@@ -1,4 +1,4 @@
-import { FX_ANCHORS } from "@/features/battle/palette";
+import { FX_ANCHORS } from "@/core/components/game/tokens";
 import type { FxSlot, FxSlotName } from "@/features/battle/scene/fx-atlas";
 import { FX_SLOTS } from "@/features/battle/scene/fx-atlas";
 import type {

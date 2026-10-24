@@ -54,7 +54,7 @@ describe("cardGlyph", () => {
 });
 
 describe("unitIcon, iconGlyph and DAMAGE_GLYPH", () => {
-  it("give each Unit icon and each Damage Type its icon (ADR-0030)", () => {
+  it("give each Unit icon and each Damage Type its icon (ADR-0029)", () => {
     expect(unitIcon({})).toBe("melee");
     expect(unitIcon({ midRange: true })).toBe("ranged");
     expect(unitIcon({ wall: true })).toBe("wall");

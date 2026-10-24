@@ -2,7 +2,7 @@ import { cn } from "cn";
 import { useEffect, useRef } from "react";
 import { Link } from "react-aria-components";
 
-import { RankGems } from "@/features/battle/components/card-frame";
+import { RankGems } from "@/core/components/game/rank-gems";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CoinGuide } from "@/features/handbook/components/coin-guide";
 import { LargeIcon } from "@/features/handbook/components/entry-icon";

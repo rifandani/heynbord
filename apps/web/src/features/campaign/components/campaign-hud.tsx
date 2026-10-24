@@ -21,9 +21,9 @@ import {
 } from "react-aria-components";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { GameButton } from "@/features/battle/components/game-button";
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { REWARD_PLATE_COMPACT } from "@/features/battle/components/reward-plate";
 import { useGameText } from "@/features/battle/use-game-text";

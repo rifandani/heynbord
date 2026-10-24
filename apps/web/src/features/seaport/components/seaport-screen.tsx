@@ -1,5 +1,5 @@
 /**
- * The Seaport screen (Economy 2.8, ADR-0053): the harbour seen from the
+ * The Seaport screen (Economy 2.8, ADR-0051): the harbour seen from the
  * water, with the voyage chooser and the berth plate in the middle of the
  * screen. The Player selects a Cargo and a duration, reads the Manifest,
  * Dispatches the ship, and Collects its reward there. The rules own the
@@ -20,8 +20,9 @@ import {
   RadioGroup,
 } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GameScreen } from "@/core/components/game/game-screen";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -291,11 +292,7 @@ export const SeaportScreen = () => {
   );
 
   return (
-    <main
-      aria-label={tr("seaport.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden text-[#fff6df] duration-300 motion-reduce:animate-none"
-      data-testid="seaport"
-    >
+    <GameScreen label={tr("seaport.label")} data-testid="seaport">
       <HarbourScene />
       <BalancePlate balances={{ ...balances, coin, essence }} bumps={bumps} />
       {/* The page heading stays for screen readers only. */}
@@ -311,6 +308,6 @@ export const SeaportScreen = () => {
       <p className="sr-only" aria-live="polite" data-testid="seaport-said">
         {said}
       </p>
-    </main>
+    </GameScreen>
   );
 };

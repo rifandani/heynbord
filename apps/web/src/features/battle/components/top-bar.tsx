@@ -2,6 +2,10 @@ import { useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
 import { ToggleButton } from "react-aria-components";
 
+import {
+  GameButton,
+  gameButtonStyles,
+} from "@/core/components/game/game-button";
 import { enemyNameRef } from "@/features/battle/battle-content";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { isIdle } from "@/features/battle/battle-session";
@@ -9,10 +13,6 @@ import type { HandCardView } from "@/features/battle/battle-view";
 import { hasManyHeroes, heroOf } from "@/features/battle/battle-view";
 import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { BossPlates } from "@/features/battle/components/boss-plates";
-import {
-  GameButton,
-  gameButtonStyles,
-} from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { countdownLabel } from "@/features/battle/components/hand-card";
 import { HeroPanel } from "@/features/battle/components/hero-panel";

@@ -5,8 +5,9 @@ import type { CSSProperties, ReactNode, RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Label, Meter } from "react-aria-components";
 
-import { CardFrame, RankGems } from "@/features/battle/components/card-frame";
-import { RANK_COLORS } from "@/features/battle/palette";
+import { RankGems } from "@/core/components/game/rank-gems";
+import { RANK_COLORS } from "@/core/components/game/tokens";
+import { CardFrame } from "@/features/battle/components/card-frame";
 import { useGameText } from "@/features/battle/use-game-text";
 import { RANK_LIGHT, RankBurst } from "@/features/packs/components/pack-reveal";
 import { useCoinFormat } from "@/features/packs/use-coin-format";

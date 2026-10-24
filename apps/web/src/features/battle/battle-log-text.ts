@@ -438,7 +438,7 @@ const lanesArg = (lanes: readonly number[]): LogArg => ({
         },
 });
 
-/** The lines of a Defeated Hero, its Front, and a Boss Rule (ADR-0009, ADR-0040). */
+/** The lines of a Defeated Hero, its Front, and a Boss Rule (ADR-0009, ADR-0038). */
 const heroLine = (
   event: Extract<
     BattleEvent,

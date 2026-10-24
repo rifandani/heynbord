@@ -270,7 +270,7 @@ describe("craftState", () => {
     expect(craftState(common, 6, 40)).toEqual({ kind: "ready", cost: 40 });
   });
 
-  it("has no Craft for an Epic or a Legendary Base Rank card (ADR-0052)", () => {
+  it("has no Craft for an Epic or a Legendary Base Rank card (ADR-0050)", () => {
     expect(craftState(getCard(BULWARK), 30, 5000)).toEqual({ kind: "none" });
     expect(craftState({ baseRank: "legendary" }, 30, 5000)).toEqual({
       kind: "none",
@@ -403,7 +403,7 @@ describe("stations", () => {
     expect(isTileReady(tile(RUNT), "craft", { ...rich, level: 5 })).toBe(false);
   });
 
-  it("Craft shows no Epic or Legendary Base Rank card (ADR-0052)", () => {
+  it("Craft shows no Epic or Legendary Base Rank card (ADR-0050)", () => {
     const withEpic = workshopTiles(
       [...collection, { cardId: BULWARK, rank: "epic", copies: 1 }],
       DEFAULT_POOL_FILTER

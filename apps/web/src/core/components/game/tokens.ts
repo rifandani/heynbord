@@ -1,6 +1,16 @@
 import type { DamageType, RaceId, RankId, Side } from "@workspace/rules";
 
-/** Race colors (art direction 4.1). `light` and `dark` are shades of `main`. */
+/**
+ * The Heynbord Design System game palette (DESIGN.md, Game colors).
+ *
+ * This module is the source of truth for the colors that come from game data:
+ * Race, Rank, Damage Type, Side, Status and stat deltas. The Tailwind names in
+ * `globals.css` mirror the fixed ones, so a component outside the Battle can
+ * use `text-rank-rare` or `bg-damage-fire` without importing this file. The
+ * 3D scene needs the raw strings, so it reads them here.
+ *
+ * Race colors (art direction 4.1). `light` and `dark` are shades of `main`.
+ */
 export const RACE_COLORS: Readonly<
   Record<
     RaceId,
@@ -136,3 +146,44 @@ export const FX_ANCHORS = {
  * flash use the Holy gold.
  */
 export const WARD_COLOR = "#ffd75a";
+
+/** The metal of each Coin denomination: face, rim and mark (light from the upper left). */
+export const COIN_METALS: Readonly<
+  Record<
+    "gold" | "silver" | "copper",
+    { readonly face: string; readonly rim: string; readonly mark: string }
+  >
+> = {
+  gold: { face: "#f2c14e", rim: "#8a5a20", mark: "#fff1b8" },
+  silver: { face: "#d9dee6", rim: "#5e6672", mark: "#ffffff" },
+  copper: { face: "#d9844a", rim: "#7a3a17", mark: "#f8c49c" },
+};
+
+/** The Essence drop and the Heynstone gem, in the same face/rim/mark metals. */
+export const ESSENCE_METAL = {
+  face: "#ff8fb8",
+  rim: "#8f2a55",
+  mark: "#fff6df",
+} as const;
+
+export const HEYNSTONE_METAL = {
+  face: "#8c8cff",
+  rim: "#2f2f8f",
+  mark: "#fff6df",
+} as const;
+
+/** The surface under a denomination letter. */
+export type CoinTone = "dark" | "light";
+
+/**
+ * The text color of each denomination letter (AA contrast): the bright metal
+ * on a dark surface (a wood button, a Night Plate, the engraved plate of an
+ * upgrade that is off), and the dark metal of the coin on a light surface (a
+ * gold button, parchment).
+ */
+export const DENOMINATION_TEXT: Readonly<
+  Record<CoinTone, Readonly<Record<"gold" | "silver" | "copper", string>>>
+> = {
+  dark: { gold: "#ffd75a", silver: "#d9dee6", copper: "#f8c49c" },
+  light: { gold: "#7a5310", silver: "#3f454f", copper: "#7a3a17" },
+};

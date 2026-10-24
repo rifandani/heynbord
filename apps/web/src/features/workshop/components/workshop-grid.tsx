@@ -4,9 +4,9 @@ import { cn } from "cn";
 import { useMemo, useRef } from "react";
 import { GridList, GridListItem, Popover } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
 import { CardDetails } from "@/features/battle/components/card-details";
 import { CardFrame } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { Peek, ShownPeek } from "@/features/deck/components/use-card-peek";

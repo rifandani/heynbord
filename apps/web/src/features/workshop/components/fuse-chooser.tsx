@@ -9,8 +9,8 @@ import {
   Popover,
 } from "react-aria-components";
 
-import { RankGems } from "@/features/battle/components/card-frame";
-import { RANK_COLORS } from "@/features/battle/palette";
+import { RankGems } from "@/core/components/game/rank-gems";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import { useGameText } from "@/features/battle/use-game-text";
 
 /** A card with copies in more than one Rank that can go into a Fuse. */

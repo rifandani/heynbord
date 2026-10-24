@@ -47,7 +47,7 @@ export const heroHpParts = (
 };
 
 /**
- * What the upgrade button of a Gear item does (Economy 3.4, ADR-0038):
+ * What the upgrade button of a Gear item does (Economy 3.4, ADR-0036):
  * upgrade for `coin` and 1 Forge Stone of `tier`, wait for `missingCoin` more
  * Coin or for the Forge Stone (`hasStone` false), or nothing, because the item
  * is at level 25. `stones` is the count of `tier` that the Player has.
@@ -124,7 +124,7 @@ export const gearItems = (
 ): readonly GearItem[] =>
   GEAR_SLOTS.map((slot) => gearItem(slot, gear[slot], coin, forgeStones));
 
-/** One Forge Stone count of the Hero screen (GDD 7.2, ADR-0038). */
+/** One Forge Stone count of the Hero screen (GDD 7.2, ADR-0036). */
 export interface ForgeStoneCount {
   readonly tier: ForgeStoneTier;
   readonly count: number;

@@ -9,8 +9,8 @@ import { cn } from "cn";
 import type { ReactNode } from "react";
 import { useId, useMemo, useState } from "react";
 
+import { GameButton } from "@/core/components/game/game-button";
 import type { BattleOptions } from "@/features/battle/battle-session";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { REWARD_PLATE_COMPACT as PLATE } from "@/features/battle/components/reward-plate";
 import { classGlyph } from "@/features/battle/glyphs";

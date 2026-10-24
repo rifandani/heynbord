@@ -12,6 +12,7 @@ import {
 } from "react";
 import { TabPanel, Tabs } from "react-aria-components";
 
+import { GameScreen } from "@/core/components/game/game-screen";
 import type { SoundName } from "@/features/battle/battle-audio";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
@@ -536,9 +537,8 @@ export const WorkshopScreen = () => {
   };
 
   return (
-    <main
-      aria-label={tr("workshop.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden text-[#fff6df] duration-300 motion-reduce:animate-none"
+    <GameScreen
+      label={tr("workshop.label")}
       data-testid="workshop"
       data-station={station}
     >
@@ -635,6 +635,6 @@ export const WorkshopScreen = () => {
       <p className="sr-only" aria-live="polite" data-testid="workshop-said">
         {said}
       </p>
-    </main>
+    </GameScreen>
   );
 };

@@ -11,8 +11,9 @@
 
 /*
  * The Town Bar is a wood shelf that can stow away. `--town-bar` is the live
- * height, registered so every screen's floor follows one motion. The values
- * mirror `TOWN_BAR_HEIGHT` in `features/town/town.ts`.
+ * height, registered so every screen's floor follows one motion.
+ * `--town-bar-shelf` is the height of the full shelf, also when it is stowed.
+ * The values mirror `TOWN_BAR_HEIGHT` in `features/town/town.ts`.
  */
 @property --town-bar {
   syntax: "<length>";
@@ -21,7 +22,8 @@
 }
 
 :root {
-  --town-bar: calc(76px + max(4px, env(safe-area-inset-bottom)));
+  --town-bar-shelf: calc(76px + max(4px, env(safe-area-inset-bottom)));
+  --town-bar: var(--town-bar-shelf);
   --town-bar-settings-w: 6.5rem;
 }
 
@@ -39,7 +41,8 @@ html[data-town-bar-ready] {
 
 @media (max-height: 500px) {
   :root {
-    --town-bar: calc(52px + max(4px, env(safe-area-inset-bottom)));
+    --town-bar-shelf: calc(52px + max(4px, env(safe-area-inset-bottom)));
+    --town-bar: var(--town-bar-shelf);
     --town-bar-settings-w: 3.75rem;
   }
 }
@@ -132,6 +135,131 @@ html[data-town-bar="collapsed"] {
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+}
+
+/*
+ * The Heynbord Design System tokens (DESIGN.md).
+ *
+ * These are the only colors, shadows, type sizes and shapes that a Heynbord
+ * surface uses. `core/components/game/*` reads them through Tailwind utilities
+ * (`bg-night-plate`, `shadow-piece`, `text-headline`), so the game screens and
+ * the pages outside `/play` share one material language. A new hex value does
+ * not belong in a component: add a token here and name it in DESIGN.md.
+ */
+@theme {
+  /* Materials: gold, bronze, wood, leather. */
+  --color-gold: #e2a93b;
+  --color-gold-light: #ffe08a;
+  --color-gold-deep: #7a5310;
+  --color-ready-gold: #ffd75a;
+  --color-focus-cream: #fff2a8;
+  --color-gold-trim: #e9c46a;
+  --color-bronze: #b47f36;
+  --color-bronze-rim: #e7bb6a;
+  --color-wood: #563720;
+  --color-wood-light: #7a5233;
+  --color-wood-edge: #2a1a0c;
+  --color-frame-wood: #5b3a1e;
+  --color-tray: #4a2d16;
+  --color-tray-light: #6b4423;
+
+  /* Paper and ink. */
+  --color-parchment: #f6ead0;
+  --color-parchment-deep: #ead9b4;
+  --color-parchment-lit: #fff3d1;
+  --color-parchment-rule: #c9b48c;
+  --color-ink: #2a1d12;
+  --color-ink-soft: #5b4632;
+  --color-ink-faded: #6b5238;
+  --color-ink-on-gold: #2a1a05;
+
+  /* Night plates and cream text. */
+  --color-night-plate: #1c140e;
+  --color-plate-ember: #4a3524;
+  --color-plate-socket: #3a2a1c;
+  --color-cream: #fff6df;
+  --color-cream-dim: #e8d9bb;
+
+  /* Game states and accents. */
+  --color-enemy-red: #d9463b;
+  --color-enemy-deep: #6b1610;
+  --color-blood-banner: #8e1f1f;
+  --color-keyword-rust: #b4521a;
+  --color-victory-amber: #8a5a12;
+  --color-tutorial-teal: #0e6f86;
+  --color-tutorial-glow: #7fe3ff;
+  --color-hp-full: #4ade80;
+  --color-hp-low: #ef4444;
+  --color-heart-red: #ff6b6b;
+
+  /* Scenes behind a painting that is still loading. */
+  --color-town-sky: #8fd0f5;
+  --color-battle-meadow: #44772c;
+  --color-region-sky: #9fcbe8;
+  --color-crypt: #241d18;
+  --color-shop: #2a1824;
+
+  /* Ranks (a Rank always shows its gems too). */
+  --color-rank-common: #a3a8ae;
+  --color-rank-uncommon: #34c27a;
+  --color-rank-rare: #3d7df0;
+  --color-rank-epic: #a45ee5;
+  --color-rank-legendary: #f59331;
+
+  /* Damage Types (a Damage Type always shows its icon too). */
+  --color-damage-physical: #ffffff;
+  --color-damage-fire: #ff6a33;
+  --color-damage-frost: #8fd8ff;
+  --color-damage-holy: #ffd75a;
+  --color-rank-edge: #2a1a08;
+
+  /* Races. */
+  --color-human-blue: #2f5bd3;
+  --color-elf-green: #4c9a3b;
+  --color-undead-teal: #5fb3a8;
+  --color-orc-orange: #d9661f;
+
+  /* Elevation: a piece sits on the table, it does not float. */
+  --shadow-piece: 0 3px 0 rgb(0 0 0 / 45%);
+  --shadow-piece-press: 0 1px 0 rgb(0 0 0 / 45%);
+  --shadow-bevel:
+    inset 0 0.1em 0 rgb(255 243 210 / 85%),
+    inset 0 -0.12em 0 rgb(60 30 5 / 75%), 0 0.3em 0.7em rgb(0 0 0 / 55%);
+  --shadow-well:
+    inset 0 0.35em 0.8em rgb(0 0 0 / 70%), 0 0.08em 0 rgb(255 226 170 / 18%);
+  --shadow-badge: 0 0.12em 0.25em rgb(0 0 0 / 60%);
+  --shadow-inset-paper: inset 0 2px 5px rgb(90 60 25 / 28%);
+  --shadow-gem-facet: inset 0.08em 0.08em 0 rgb(255 255 255 / 60%);
+  --shadow-lift: 0 10px 24px rgb(0 0 0 / 55%);
+  --shadow-ready: 0 0 18px 4px rgb(255 210 90 / 75%);
+  --shadow-active: 0 0 14px 2px rgb(255 215 90 / 60%);
+  --shadow-selected: 0 0 0 3px rgb(226 169 59 / 45%);
+  --shadow-bar-lift: 0 -4px 12px rgb(0 0 0 / 35%);
+  --drop-shadow-icon: 0 2px 0 rgb(0 0 0 / 50%);
+  --drop-shadow-building: 0 0 14px rgb(255 224 138 / 95%);
+
+  /* The type ramp (DESIGN.md, Typography). */
+  --text-display: 2.25rem;
+  --text-display--line-height: 1.1;
+  --text-display--font-weight: 900;
+  --text-headline: 1.875rem;
+  --text-headline--line-height: 1.2;
+  --text-headline--letter-spacing: 0.025em;
+  --text-headline--font-weight: 900;
+  --text-title: 1.125rem;
+  --text-title--line-height: 1.25;
+  --text-title--font-weight: 700;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.025em;
+  --text-label--font-weight: 700;
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 1;
+  --text-micro--font-weight: 700;
+
+  /* The card scales with its own font size. */
+  --radius-card: 0.85em;
+  --radius-card-window: 0.55em;
 }
 
 /* The Hand Bar motion: a drawn card flies from the Deck Pile to its Hand Slot. */
@@ -280,7 +408,7 @@ html[data-town-bar="collapsed"] {
 }
 
 /*
- * A Boss Rule activates (ADR-0040): its notch on the Boss HP bar flashes
+ * A Boss Rule activates (ADR-0038): its notch on the Boss HP bar flashes
  * gold and breaks, the plate glows, and a label comes out of the bottom of
  * the plate and goes before the effect plays. They take the time of the event.
  */

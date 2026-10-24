@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import { useLayoutEffect, useRef } from "react";
 
-import { GameButton } from "@/features/battle/components/game-button";
+import { GameButton } from "@/core/components/game/game-button";
 import { tutorialAnchor } from "@/features/battle/scene/tutorial-anchor";
 import { openText } from "@/features/battle/tutorial";
 import type { TutorialStep } from "@/features/battle/tutorial";

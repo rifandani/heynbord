@@ -4,7 +4,7 @@ import { Atom } from "effect/reactivity";
 import { playerLevelAtom, profileAtom } from "@/features/profile/profile.atoms";
 import { cargoOptions } from "@/features/seaport/seaport";
 
-/** The berth of the Seaport ship in the Profile (ADR-0053). */
+/** The berth of the Seaport ship in the Profile (ADR-0051). */
 export const seaportAtom = Atom.make((get) => get(profileAtom).seaport);
 
 /** The Cargo list for the Player level. */

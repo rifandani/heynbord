@@ -8,6 +8,8 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react-aria-components";
 import { Button, ToggleButton } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { SIDE_COLORS } from "@/core/components/game/tokens";
 import { battleNameRef, enemyNameRef } from "@/features/battle/battle-content";
 import type {
   BattleLogBook,
@@ -35,11 +37,9 @@ import {
   CardDetails,
   TokenDetails,
 } from "@/features/battle/components/card-details";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { cardGlyph, DAMAGE_GLYPH } from "@/features/battle/glyphs";
-import { SIDE_COLORS } from "@/features/battle/palette";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { EntryId } from "@/features/handbook/handbook";

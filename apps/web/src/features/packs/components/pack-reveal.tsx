@@ -21,13 +21,13 @@ import {
   Popover,
 } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import type { SoundName } from "@/features/battle/battle-audio";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { CardBack } from "@/features/battle/components/card-back";
 import { CardDetails } from "@/features/battle/components/card-details";
 import { CardFrame } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
-import { RANK_COLORS } from "@/features/battle/palette";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { Peek } from "@/features/deck/components/use-card-peek";

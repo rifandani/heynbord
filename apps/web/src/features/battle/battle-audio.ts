@@ -204,7 +204,7 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
     noise(0.07, 420, 0.16);
     tone(196, 0.12, { delay: 0.14, type: "square", gain: 0.07 });
   },
-  // A Boss Rule activates (ADR-0040): a war horn rises.
+  // A Boss Rule activates (ADR-0038): a war horn rises.
   bossRule: () => {
     tone(196, 0.32, { type: "sawtooth", slideTo: 294, gain: 0.1 });
     tone(392, 0.24, { delay: 0.12, type: "square", gain: 0.06 });

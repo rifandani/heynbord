@@ -102,7 +102,7 @@ describe("gearItem: the stat now and next (GDD 7.3)", () => {
   });
 });
 
-describe("gearItem: the upgrade (Economy 3.4, ADR-0038)", () => {
+describe("gearItem: the upgrade (Economy 3.4, ADR-0036)", () => {
   it("costs the Coin and the Forge Stone of the next level when both are enough", () => {
     expect(gearItem("weapon", 0, 5, ONE_OF_EACH).upgrade).toEqual({
       kind: "ready",
@@ -156,7 +156,7 @@ describe("gearItem: the upgrade (Economy 3.4, ADR-0038)", () => {
     });
   });
 
-  it("needs a Legendary Forge Stone after level 20 (ADR-0039)", () => {
+  it("needs a Legendary Forge Stone after level 20 (ADR-0037)", () => {
     expect(
       gearItem("weapon", 20, 1155, { ...NO_STONES, legendary: 2 }).upgrade
     ).toEqual({
@@ -185,7 +185,7 @@ describe("gearItem: the upgrade (Economy 3.4, ADR-0038)", () => {
   });
 });
 
-describe("forgeStoneCounts (GDD 7.2, ADR-0038, ADR-0039)", () => {
+describe("forgeStoneCounts (GDD 7.2, ADR-0036, ADR-0037)", () => {
   it("lists the 5 tiers from the lowest Gear levels, with their counts", () => {
     expect(
       forgeStoneCounts({

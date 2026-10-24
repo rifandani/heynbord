@@ -2,7 +2,7 @@ import { expect, test } from "./_base";
 import type { Page } from "./_base";
 
 /**
- * The Campaign Sweep (GDD 4.12, ADR-0035, issue #82): the Sweep button of a
+ * The Campaign Sweep (GDD 4.12, ADR-0039, issue #82): the Sweep button of a
  * Stage with 3 best Stars, the Ticket control, the Sweep Result in the Stage
  * Panel, the Sweep Hint, and the Campaign Sweep Tickets of a Stage win. The
  * Dungeon Sweep is in `dungeon.spec.ts`.

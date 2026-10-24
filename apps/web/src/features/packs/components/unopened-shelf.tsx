@@ -1,18 +1,11 @@
 import type { RaceId, UnopenedPackPool } from "@workspace/rules";
 import { cn } from "cn";
 import { useMemo, useState } from "react";
-import {
-  Button,
-  Dialog,
-  Heading,
-  Modal,
-  ModalOverlay,
-  TooltipTrigger,
-} from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
+import { Button, TooltipTrigger } from "react-aria-components";
 
-import { GameButton } from "@/features/battle/components/game-button";
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
+import { GameButton } from "@/core/components/game/game-button";
+import { GameDialog } from "@/core/components/game/game-dialog";
+import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { raceGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -58,67 +51,45 @@ const RaceDialog = ({
 }) => {
   const { tr } = useGameText();
   return (
-    <ModalOverlay
+    <GameDialog
       isOpen={group !== null}
       onOpenChange={(open) => {
         if (!open) {
           onClose();
         }
       }}
-      isDismissable
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] [@media(max-height:500px)]:p-2"
+      title={tr("packs.unopened.raceTitle")}
+      closeLabel={tr("packs.unopened.raceClose")}
+      className="text-left"
+      testId="unopened-race-dialog"
     >
-      <Modal className="fade-in zoom-in-95 animate-in w-[min(440px,94vw)] rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] duration-200 motion-reduce:animate-none">
-        <Dialog
-          className="px-5 pt-4 pb-5 outline-none [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3"
-          data-testid="unopened-race-dialog"
-        >
-          {({ close }) =>
-            group ? (
-              <>
-                <div className="flex items-center gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2">
-                  <Heading
-                    slot="title"
-                    className="font-display flex-1 text-2xl font-black [@media(max-height:500px)]:text-lg"
-                  >
-                    {tr("packs.unopened.raceTitle")}
-                  </Heading>
-                  <Button
-                    onPress={close}
-                    aria-label={tr("packs.unopened.raceClose")}
-                    className="grid size-10 shrink-0 cursor-pointer place-items-center rounded-lg border-2 border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:brightness-110 data-[pressed]:translate-y-px [@media(max-height:500px)]:size-8"
-                  >
-                    <HiXMark className="size-5" aria-hidden />
-                  </Button>
-                </div>
-                <p className="mt-3 text-sm leading-snug text-[#5b4632] [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs">
-                  {tr("packs.unopened.raceText", {
-                    pack: tr(`packs.names.${group.pack}`),
-                  })}
-                </p>
-                <ul className="mt-3 grid grid-cols-3 gap-2 [@media(max-height:500px)]:mt-2">
-                  {RACES_WITH_CARDS.map((race) => (
-                    <li key={race}>
-                      <GameButton
-                        intent="wood"
-                        className="w-full flex-col gap-1 py-2 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:py-1"
-                        onPress={() => onRace(group, race)}
-                        data-testid={`unopened-race-${race}`}
-                      >
-                        <GlyphIcon glyph={raceGlyph(race)} className="size-5" />
-                        <span className="text-sm font-bold">
-                          {tr(`races.${race}`)}
-                        </span>
-                      </GameButton>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : null
-          }
-        </Dialog>
-      </Modal>
-    </ModalOverlay>
+      {group ? (
+        <>
+          <p className="mt-3 text-sm leading-snug text-[#5b4632] [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs">
+            {tr("packs.unopened.raceText", {
+              pack: tr(`packs.names.${group.pack}`),
+            })}
+          </p>
+          <ul className="mt-3 grid grid-cols-3 gap-2 [@media(max-height:500px)]:mt-2">
+            {RACES_WITH_CARDS.map((race) => (
+              <li key={race}>
+                <GameButton
+                  intent="wood"
+                  className="w-full flex-col gap-1 py-2 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:py-1"
+                  onPress={() => onRace(group, race)}
+                  data-testid={`unopened-race-${race}`}
+                >
+                  <GlyphIcon glyph={raceGlyph(race)} className="size-5" />
+                  <span className="text-sm font-bold">
+                    {tr(`races.${race}`)}
+                  </span>
+                </GameButton>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+    </GameDialog>
   );
 };
 

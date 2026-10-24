@@ -13,7 +13,7 @@ import {
   CAST_COLOR,
   DAMAGE_COLORS,
   FX_ANCHORS,
-} from "@/features/battle/palette";
+} from "@/core/components/game/tokens";
 
 /**
  * The 3 beats of a Skill Card cast on the screen. `reveal` is its CardPlayed

@@ -5,9 +5,9 @@ import type { FocusEvent, RefObject } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, DialogTrigger, TooltipTrigger } from "react-aria-components";
 
+import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { claimableCountAtom } from "@/features/achievements/achievements-screen.atoms";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";

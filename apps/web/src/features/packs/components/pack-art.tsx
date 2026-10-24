@@ -7,10 +7,10 @@ import type {
 } from "@workspace/rules";
 import { cn } from "cn";
 
+import { RACE_COLORS } from "@/core/components/game/tokens";
 import { PARCHMENT } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
-import { RACE_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { CoinTone } from "@/features/town/components/balance-icon";
 import {

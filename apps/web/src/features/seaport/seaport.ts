@@ -1,5 +1,5 @@
 /**
- * The Seaport feature data (Economy 2.8, ADR-0053): the Cargo list, the voyage
+ * The Seaport feature data (Economy 2.8, ADR-0051): the Cargo list, the voyage
  * that the screen selects, the state of the berth at a device time, and the
  * time left of a voyage. The rules own the reward math; this module only
  * reads it.

@@ -12,10 +12,10 @@ import { cn } from "cn";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CargoIcon } from "@/features/seaport/components/cargo-icon";
 import { RewardLines } from "@/features/seaport/components/reward-lines";

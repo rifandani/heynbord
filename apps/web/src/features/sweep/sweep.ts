@@ -8,8 +8,8 @@ import {
 import type { Glyph } from "@/features/battle/glyphs";
 
 /**
- * The 2 kinds of Sweep (GDD 4.12): a Campaign Sweep of a Stage (ADR-0035)
- * and a Dungeon Sweep of a Dungeon (ADR-0041). Each kind uses its own type
+ * The 2 kinds of Sweep (GDD 4.12): a Campaign Sweep of a Stage (ADR-0039)
+ * and a Dungeon Sweep of a Dungeon (ADR-0039). Each kind uses its own type
  * of Sweep Ticket.
  */
 export type SweepKind = "campaign" | "dungeon";
@@ -20,14 +20,14 @@ export const TICKET_GLYPH: Readonly<Record<SweepKind, Glyph>> = {
   dungeon: "dungeonTicket",
 };
 
-/** The best Stars of a Stage that shows the Campaign Sweep (ADR-0035). */
+/** The best Stars of a Stage that shows the Campaign Sweep (ADR-0039). */
 const CAMPAIGN_SWEEP_STARS = 3;
 
 /** True when the Stage Panel shows the Campaign Sweep: the best Stars of the Stage are 3. */
 export const isCampaignSweepable = (stars: number): boolean =>
   stars === CAMPAIGN_SWEEP_STARS;
 
-/** True when the Dungeons screen shows the Dungeon Sweep: the Dungeon has 1 or more wins (ADR-0041). */
+/** True when the Dungeons screen shows the Dungeon Sweep: the Dungeon has 1 or more wins (ADR-0039). */
 export const isDungeonSweepable = (wins: number): boolean => wins >= 1;
 
 /** The Sweep Tickets of `kind` that the Player has. */

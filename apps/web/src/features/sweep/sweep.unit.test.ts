@@ -131,7 +131,7 @@ describe("recordSweep", () => {
       xp: after.xp,
     });
     expect(shown.rewards.ticketsLeft).toBe(2);
-    // A Campaign Sweep gives no XP (ADR-0049), but it gives Coin.
+    // A Campaign Sweep gives no XP (ADR-0047), but it gives Coin.
     expect(shown.rewards.xp).toBe(0);
     expect(shown.rewards.coin).toBeGreaterThan(0);
     expect(shown.rewards.cards.length).toBeLessThanOrEqual(3);

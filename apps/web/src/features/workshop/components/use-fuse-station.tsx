@@ -42,7 +42,7 @@ interface FuseStationInput {
 }
 
 /**
- * The Fuse station of the Workshop (GDD 7.4, ADR-0051): the slots, the Rank
+ * The Fuse station of the Workshop (GDD 7.4, ADR-0049): the slots, the Rank
  * chooser, the confirmation for copies in saved Decks, and the reveal. The
  * slots stay while the Player changes the station in one visit, and they lose
  * the copies that the Player does not own any more. It gives the Fuse state

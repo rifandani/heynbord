@@ -5,6 +5,8 @@ export interface ComponentEntry {
   /** Slug used for the section anchor id and the URL hash. */
   id: string;
   name: string;
+  /** One short line that says when to use the component. */
+  description?: string;
   Showcase: ComponentType;
 }
 

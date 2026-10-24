@@ -55,7 +55,7 @@ export const useWorkshop = () => {
     decksUsingInputs: (inputs: readonly DeckEntry[]) =>
       decksUsingInputs(profile, inputs),
     /**
-     * Fuse (ADR-0051): the ID of the new card, or `null` when the rules said
+     * Fuse (ADR-0049): the ID of the new card, or `null` when the rules said
      * no. The random state of the Profile selects the card.
      */
     fuse: (inputs: readonly DeckEntry[]): string | null => {

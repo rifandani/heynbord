@@ -12,9 +12,9 @@ import {
   Tabs,
 } from "react-aria-components";
 
-import { RankGems } from "@/features/battle/components/card-frame";
+import { RankGems } from "@/core/components/game/rank-gems";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CLASSES_WITH_CARDS, RACES_WITH_CARDS } from "@/features/deck/deck";
 import { CoinPrice, PackArt } from "@/features/packs/components/pack-art";
@@ -339,7 +339,7 @@ const PackVersions = ({ pack }: { readonly pack: PackDefinition }) => {
 };
 
 /**
- * The Pack Entry (Economy 3.1, ADR-0027): the three Packs on a shelf. The
+ * The Pack Entry (Economy 3.1, ADR-0026): the three Packs on a shelf. The
  * Player selects one and reads what it does: its job, the chance of each Rank,
  * the Pack Guarantee with the Player's own count, New Card First, the Open ×10
  * bonus, and its Race and Class versions.

@@ -3,10 +3,10 @@ import { EXTRACT_ESSENCE, getCard, isCraftRank } from "@workspace/rules";
 import { cn } from "cn";
 import { useLayoutEffect, useRef } from "react";
 
-import { RankGems } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
+import { GameButton } from "@/core/components/game/game-button";
+import { RankGems } from "@/core/components/game/rank-gems";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import type { Extraction } from "@/features/workshop/components/panel-parts";

@@ -3,6 +3,7 @@ import { gearUpgradeForgeStone, MAX_GEAR_LEVEL } from "@workspace/rules";
 import { cn } from "cn";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { GameScreen } from "@/core/components/game/game-screen";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
@@ -152,7 +153,7 @@ const HeroHp = ({ hp }: { readonly hp: HeroHpParts }) => {
 };
 
 /**
- * The 5 Forge Stone counts (GDD 7.2, ADR-0038, ADR-0039) in a tray: each tier
+ * The 5 Forge Stone counts (GDD 7.2, ADR-0036, ADR-0037) in a tray: each tier
  * in its own cell, with its stone in the Card Rank color, its count and its
  * name. A count of 0 is dimmer. The Forge Stones show only here: there is no
  * Inventory screen.
@@ -302,7 +303,7 @@ const useUpgradeSounds = () => {
 /**
  * The Hero screen (GDD 7.3, issue #77, "Gear Rack"): the inside of the
  * Barracks, the Status Bar with the Hero HP and its parts and the 5 Forge Stone
- * counts (ADR-0038), and the 4 Gear items side by side.
+ * counts (ADR-0036), and the 4 Gear items side by side.
  * Each press of an upgrade adds 1 level at once: its Forge Stone leaps from
  * the upgrade into the item and strikes it, the level hops, the stat rolls to
  * its new value, a sound plays and the Coin counts down. After an
@@ -382,11 +383,7 @@ export const HeroScreen = () => {
   };
 
   return (
-    <main
-      aria-label={tr("hero.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden text-[#fff6df] duration-300 motion-reduce:animate-none"
-      data-testid="hero"
-    >
+    <GameScreen label={tr("hero.label")} data-testid="hero">
       {/* The Barracks inside (Town Concepts 11). */}
       <HeroScene />
       <BalancePlate
@@ -426,6 +423,6 @@ export const HeroScreen = () => {
       <p className="sr-only" aria-live="polite" data-testid="hero-said">
         {said}
       </p>
-    </main>
+    </GameScreen>
   );
 };

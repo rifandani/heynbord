@@ -9,6 +9,17 @@ import type {
 import { getCard, getToken, LANE_LENGTH, rankPips } from "@workspace/rules";
 import { CanvasTexture, SRGBColorSpace } from "three";
 
+import {
+  DAMAGE_COLORS,
+  FX_ANCHORS,
+  HEAL_COLOR,
+  RACE_COLORS,
+  RANK_COLORS,
+  SIDE_COLORS,
+  STAT_DELTA,
+  STAT_PIPE,
+  WARD_COLOR,
+} from "@/core/components/game/tokens";
 import type { UnitSourceView } from "@/features/battle/battle-view";
 import {
   boardSkinArt,
@@ -25,17 +36,6 @@ import {
   GLYPHS,
   tokenGlyph,
 } from "@/features/battle/glyphs";
-import {
-  DAMAGE_COLORS,
-  FX_ANCHORS,
-  HEAL_COLOR,
-  RACE_COLORS,
-  RANK_COLORS,
-  SIDE_COLORS,
-  STAT_DELTA,
-  STAT_PIPE,
-  WARD_COLOR,
-} from "@/features/battle/palette";
 import type { FxCell, FxSlotName } from "@/features/battle/scene/fx-atlas";
 import type { StatusBadge } from "@/features/battle/scene/status-visuals";
 import { statTone } from "@/features/battle/scene/unit-stats";

@@ -36,6 +36,16 @@ import { DropZoneShowcase } from "./showcases/drop-zone";
 import { DropdownShowcase } from "./showcases/dropdown";
 import { FieldShowcase } from "./showcases/field";
 import { FileTriggerShowcase } from "./showcases/file-trigger";
+import { GameBadgesShowcase } from "./showcases/game-badges";
+import { GameButtonsShowcase } from "./showcases/game-buttons";
+import { GameDialogShowcase } from "./showcases/game-dialog";
+import { GameFoundationShowcase } from "./showcases/game-foundation";
+import { GamePlatesShowcase } from "./showcases/game-plates";
+import { GameRankGemsShowcase } from "./showcases/game-rank-gems";
+import { GameResourcePlateShowcase } from "./showcases/game-resource-plate";
+import { GameScreenShowcase } from "./showcases/game-screen";
+import { GameScrimShowcase } from "./showcases/game-scrim";
+import { GameStatPlatesShowcase } from "./showcases/game-stat-plates";
 import { GridListShowcase } from "./showcases/grid-list";
 import { HeadingShowcase } from "./showcases/heading";
 import { InputShowcase } from "./showcases/input";
@@ -332,11 +342,89 @@ export const categories: Category[] = [
     name: "Game",
     entries: [
       {
+        id: "game-foundation",
+        name: "Game Foundation",
+        description:
+          "Use these tokens for every Heynbord surface. A component names a token; it never writes a hex value.",
+        Showcase: GameFoundationShowcase,
+      },
+      {
+        id: "game-screen",
+        name: "Game Screen",
+        description:
+          "Use it for a full-screen game screen, or with `contained` to frame a screen inside a page.",
+        Showcase: GameScreenShowcase,
+      },
+      {
+        id: "game-plates",
+        name: "Game Plates",
+        description:
+          "Use a Night Plate over a painted scene, and parchment for rules, choices and dialogs.",
+        Showcase: GamePlatesShowcase,
+      },
+      {
+        id: "game-buttons",
+        name: "Game Buttons",
+        description:
+          "Use gold for the main action of a panel, wood for other actions, and ghost for HUD controls.",
+        Showcase: GameButtonsShowcase,
+      },
+      {
+        id: "game-badges",
+        name: "Game Badges",
+        description:
+          "Use a Count Token for a count and a Resource Icon for Coin, Essence or Heynstones.",
+        Showcase: GameBadgesShowcase,
+      },
+      {
+        id: "game-rank-gems",
+        name: "Game Rank Gems",
+        description:
+          "Use it for the Rank of a card: the gems count the Rank, and the color names it.",
+        Showcase: GameRankGemsShowcase,
+      },
+      {
+        id: "game-resource-plate",
+        name: "Game Resource Plate",
+        description:
+          "Use it to show a balance or a price of Coin, Essence or Heynstones.",
+        Showcase: GameResourcePlateShowcase,
+      },
+      {
+        id: "game-stat-plates",
+        name: "Stat Plates",
+        description:
+          "Use them for Attack and HP on a card frame, or for the same Attack number alone.",
+        Showcase: GameStatPlatesShowcase,
+      },
+      {
+        id: "game-dialog",
+        name: "Game Dialog",
+        description:
+          "Use it for a confirm, rules or a choice: one scrim, one frame, one pair of actions.",
+        Showcase: GameDialogShowcase,
+      },
+      {
+        id: "game-scrim",
+        name: "Game Scrim",
+        description:
+          "Use it behind every dialog and sheet: a 55% black wash with a 2px blur. It is the only scrim in the game.",
+        Showcase: GameScrimShowcase,
+      },
+      {
         id: "balance-plate",
         name: "Balance Plate",
+        description:
+          "Use the Town adapter for the three balances; use Resource Plate for any other combination.",
         Showcase: BalancePlateShowcase,
       },
-      { id: "unit-model", name: "Unit Model", Showcase: UnitModelShowcase },
+      {
+        id: "unit-model",
+        name: "Unit Model",
+        description:
+          "Use it to inspect a 3D unit model and play its clips outside a Battle.",
+        Showcase: UnitModelShowcase,
+      },
     ],
   },
 ];

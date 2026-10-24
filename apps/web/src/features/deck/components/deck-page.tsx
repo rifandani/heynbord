@@ -24,9 +24,9 @@ import {
   TextField,
 } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
 import type { TextRef } from "@/features/battle/card-text";
 import { CardFrame } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -91,7 +91,7 @@ const DeckName = ({
 
 /**
  * The Hero Class of the slot (GDD 5.5). The Deck builder is the only place
- * that sets it: the Class stays on the Deck Slot (ADR-0033).
+ * that sets it: the Class stays on the Deck Slot (ADR-0032).
  */
 const ClassChoice = ({
   classId,

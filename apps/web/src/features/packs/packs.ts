@@ -135,7 +135,7 @@ export const tenPackGrid = (
 ): readonly GridCard[] => cardPlaces(packs.flatMap((pack) => pack.cards));
 
 /**
- * The current Hero Class: the Class of the Active Deck (GDD 5.5, ADR-0033).
+ * The current Hero Class: the Class of the Active Deck (GDD 5.5, ADR-0032).
  */
 export const heroClass = (
   slots: readonly DeckSlot[],

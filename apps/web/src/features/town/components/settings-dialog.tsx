@@ -20,16 +20,17 @@ import {
 import { HiXMark } from "react-icons/hi2";
 
 import {
+  GameButton,
+  gameButtonStyles,
+} from "@/core/components/game/game-button";
+import { GAME_SCRIM } from "@/core/components/game/game-dialog";
+import {
   playSound,
   setSoundEnabled,
   setSoundVolume,
   unlockAudio,
 } from "@/features/battle/battle-audio";
 import { soundOnAtom, soundVolumeAtom } from "@/features/battle/battle.atoms";
-import {
-  GameButton,
-  gameButtonStyles,
-} from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { LOCALE_LABELS } from "@/features/i18n/components/language-toggle";
@@ -242,10 +243,7 @@ export const SettingsDialog = ({
       isDismissable
       // The ref runs before the first paint, so the sheet starts on the button.
       ref={(overlay) => placeSheetOrigin(overlay, from?.current ?? null)}
-      className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]",
-        SHEET_SCRIM_MOTION
-      )}
+      className={cn(GAME_SCRIM, "z-50", SHEET_SCRIM_MOTION)}
     >
       <Modal
         className={cn("group/sheet w-[min(480px,94vw)]", SHEET_PATH_MOTION)}

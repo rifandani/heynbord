@@ -2,12 +2,12 @@ import type { ClassId, Side } from "@workspace/rules";
 import { getStarterDeck } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
+import { DAMAGE_COLORS } from "@/core/components/game/tokens";
 import { startSession } from "@/features/battle/battle-session";
 import { eventDuration } from "@/features/battle/battle-timeline";
 import { heroOf } from "@/features/battle/battle-view";
 import type { BattleView, UnitView } from "@/features/battle/battle-view";
 import { currentCast } from "@/features/battle/cast";
-import { DAMAGE_COLORS } from "@/features/battle/palette";
 import type { Fx } from "@/features/battle/scene/fx";
 import {
   fxByKind,

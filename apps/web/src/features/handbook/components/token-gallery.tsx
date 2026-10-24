@@ -20,9 +20,10 @@ import {
   SelectionIndicator,
 } from "react-aria-components";
 
+import { RankGems } from "@/core/components/game/rank-gems";
 import { cardText, tokenText } from "@/features/battle/card-text";
 import { CardDetails } from "@/features/battle/components/card-details";
-import { RankGems, TokenFrame } from "@/features/battle/components/card-frame";
+import { TokenFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { DAMAGE_GLYPH, raceGlyph } from "@/features/battle/glyphs";

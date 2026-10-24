@@ -26,6 +26,7 @@ import {
   RingGeometry,
 } from "three";
 
+import { SIDE_COLORS } from "@/core/components/game/tokens";
 import type { FallenUnit } from "@/features/battle/battle-log";
 import type {
   BattleSession,
@@ -38,7 +39,6 @@ import {
   detailsUnitAtom,
 } from "@/features/battle/battle.atoms";
 import { battleUnitSources, sourceId } from "@/features/battle/card-art";
-import { SIDE_COLORS } from "@/features/battle/palette";
 import { fxList } from "@/features/battle/scene/fx";
 import {
   fxAtlas,

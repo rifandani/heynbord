@@ -4,6 +4,8 @@ import type { BattleResult, Side } from "@workspace/rules";
 import { cn } from "cn";
 import { Button } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GAME_SCRIM } from "@/core/components/game/game-dialog";
 import { battleNameRef } from "@/features/battle/battle-content";
 import type { BattleLogState } from "@/features/battle/battle-log-session";
 import { atLastEntry } from "@/features/battle/battle-log-session";
@@ -15,7 +17,6 @@ import {
   battleRewardsAtom,
   battleSessionAtom,
 } from "@/features/battle/battle.atoms";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import {
   ResultAchievements,
@@ -302,7 +303,7 @@ const ResultDialog = ({
   const shown = useShownRewards(session);
   useResultHints(result, session.tutorial !== null);
   return (
-    <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]">
+    <div className={cn(GAME_SCRIM, "absolute z-40")}>
       <section
         // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role react-doctor/prefer-html-dialog -- a native modal `<dialog>` changes Escape and top-layer behavior; the Retry button takes focus on open
         role="dialog"
@@ -387,7 +388,7 @@ const ReplayResultDialog = ({
 }) => {
   const { tr, text } = useGameText();
   return (
-    <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]">
+    <div className={cn(GAME_SCRIM, "absolute z-40")}>
       <section
         // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role react-doctor/prefer-html-dialog -- a native modal `<dialog>` changes Escape and top-layer behavior; "Watch again" takes focus on open
         role="dialog"

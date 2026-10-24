@@ -1,8 +1,8 @@
 import type { DamageType } from "@workspace/rules";
 import { areaSquares, LANE_LENGTH } from "@workspace/rules";
 
+import { DAMAGE_COLORS } from "@/core/components/game/tokens";
 import type { FieldEffectView } from "@/features/battle/battle-view";
-import { DAMAGE_COLORS } from "@/features/battle/palette";
 import type { FxSlotName } from "@/features/battle/scene/fx-slots";
 import { laneZ, squareX } from "@/features/battle/scene/layout";
 import type { Particle } from "@/features/battle/scene/particles";

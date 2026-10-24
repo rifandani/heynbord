@@ -1,10 +1,10 @@
 import type { Side } from "@workspace/rules";
 import { cn } from "cn";
 
+import { SIDE_COLORS } from "@/core/components/game/tokens";
 import type { HeroView } from "@/features/battle/battle-view";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
-import { SIDE_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 

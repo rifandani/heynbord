@@ -6,9 +6,9 @@ import type { CSSProperties, RefObject } from "react";
 import { useLayoutEffect, useRef } from "react";
 import { Label, Meter } from "react-aria-components";
 
-import { GameButton } from "@/features/battle/components/game-button";
+import { GameButton } from "@/core/components/game/game-button";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { gearIconArt } from "@/features/hero/gear-look-art";
@@ -277,7 +277,7 @@ const MISSING = "text-[#ff9b85]";
 
 /**
  * All that the next level needs, in the upgrade: its Coin, and 1 Forge Stone
- * in its tier color (ADR-0038). When the upgrade is off, each requirement that
+ * in its tier color (ADR-0036). When the upgrade is off, each requirement that
  * is missing shows in a warm red. The accessible name of the upgrade gives the
  * tier. When an upgrade makes the next level need a new tier (`turn`), the
  * stone turns over into its new color after the strike.

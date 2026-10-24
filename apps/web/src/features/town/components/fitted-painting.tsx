@@ -20,11 +20,14 @@ const paintingMask: CSSProperties = {
  * (as the Region Map, web ADR-0007). On a screen that is wider than that,
  * the painting gets taller than the space above the Town Bar, and the screen
  * crops its top. On a screen that is narrower, the backdrop shows above it.
+ * A stowed Town Bar gives back the room of its shelf, and the painting
+ * stretches on the y axis into that room, so a painting that fills the
+ * screen above the full shelf also fills it when the shelf is stowed.
  */
 const frameStyle = (
   aspect: number
 ): CSSProperties & Record<"--frame-height" | "--fade-top", string> => ({
-  "--frame-height": `max(min(100dvh - var(--town-bar), 100vw * ${(1 + MAX_STRETCH) / aspect}), 100vw / ${aspect * (1 + FIT_STRETCH)})`,
+  "--frame-height": `max(min(100dvh - var(--town-bar), 100vw * ${(1 + MAX_STRETCH) / aspect} + var(--town-bar-shelf) - var(--town-bar)), 100vw / ${aspect * (1 + FIT_STRETCH)})`,
   "--fade-top":
     "clamp(0px, 100dvh - var(--town-bar) - var(--frame-height), var(--frame-height) * 0.06)",
   height: "var(--frame-height)",

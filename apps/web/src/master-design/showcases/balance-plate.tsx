@@ -25,7 +25,7 @@ export const BalancePlateShowcase = () => (
   <VariantGrid>
     {RANGES.map(({ label, balances }) => (
       <Variant key={label} label={label} className="w-full">
-        <div className="relative h-16 w-full max-w-xl rounded-lg bg-[#8fd0f5]">
+        <div className="bg-town-sky relative h-16 w-full max-w-xl rounded-lg">
           <BalancePlate balances={balances} />
         </div>
       </Variant>

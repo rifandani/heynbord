@@ -5,6 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, Dispatch, SetStateAction } from "react";
 import { Button, DialogTrigger } from "react-aria-components";
 
+import {
+  GameButton,
+  gameButtonStyles,
+} from "@/core/components/game/game-button";
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import type {
@@ -23,10 +27,6 @@ import {
 } from "@/features/battle/components/card-back";
 import { CardDetails } from "@/features/battle/components/card-details";
 import { BRONZE, CardFrame } from "@/features/battle/components/card-frame";
-import {
-  GameButton,
-  gameButtonStyles,
-} from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { GraveyardIcon } from "@/features/battle/components/graveyard-icon";
 import { HandCard } from "@/features/battle/components/hand-card";

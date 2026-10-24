@@ -12,9 +12,9 @@ import { useContext, useMemo, useRef, useState } from "react";
 import { Button } from "react-aria-components";
 import { HiMinus, HiPlus } from "react-icons/hi2";
 
+import { GameButton } from "@/core/components/game/game-button";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { CardFrame } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import {
   NewChip,
@@ -43,7 +43,7 @@ import {
   TICKET_GLYPH,
 } from "@/features/sweep/sweep";
 
-/** The Sweep Tickets of `kind` that each win gives (ADR-0035, ADR-0041). */
+/** The Sweep Tickets of `kind` that each win gives (ADR-0039). */
 const TICKETS_PER_WIN: Readonly<Record<SweepKind, number>> = {
   campaign: CAMPAIGN_SWEEP_TICKETS_PER_WIN,
   dungeon: DUNGEON_SWEEP_TICKETS_PER_WIN,

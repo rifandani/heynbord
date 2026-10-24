@@ -25,10 +25,10 @@ const RECRUIT = "human.militiaRecruit";
 /** The Starter Collection has 3 Common copies of it, all in Human Vanguard. */
 const GUARD = "human.crossbowGuard";
 
-/** Base Rank Epic: it has no Craft cost (ADR-0052). */
+/** Base Rank Epic: it has no Craft cost (ADR-0050). */
 const EPIC = "human.ironBulwark";
 
-/** Base Rank Legendary: the Human Specialist (ADR-0050), with no Craft cost (ADR-0052). */
+/** Base Rank Legendary: the Human Specialist (ADR-0048), with no Craft cost (ADR-0050). */
 const SPECIALIST = "human.serAldricStonewall";
 
 /** Opens the Workshop from its Building at Player level 3 (320 XP), with `coin` Copper. */
@@ -293,7 +293,7 @@ test.describe("Workshop", () => {
     await expect(page.getByTestId("essence-flight")).toHaveCount(0);
   });
 
-  test("the Craft grid has no Epic or Legendary card (ADR-0052)", async ({
+  test("the Craft grid has no Epic or Legendary card (ADR-0050)", async ({
     page,
   }) => {
     await openWorkshop(page, 0);

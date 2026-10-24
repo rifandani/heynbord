@@ -2,10 +2,10 @@ import { getCard } from "@workspace/rules";
 import { cn } from "cn";
 import { useEffect, useState } from "react";
 
-import { RankGems } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
+import { GameButton } from "@/core/components/game/game-button";
+import { RankGems } from "@/core/components/game/rank-gems";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { RANK_COLORS } from "@/features/battle/palette";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
@@ -193,7 +193,7 @@ const useStillForming = (forming: Forming | null): boolean => {
  * that the Player owns of it, and the recipe: the Essence, the direction, and
  * the 1 Base Rank copy that it makes. Under it, the one gold Craft. Below the
  * Craft level, the recipe shows and a lock chip takes the place of the Craft.
- * An Epic or a Legendary card has no Craft (ADR-0052), so it is not in the
+ * An Epic or a Legendary card has no Craft (ADR-0050), so it is not in the
  * Craft grid (`stationTiles`). A Craft sends the Essence drops from the
  * balance into the card, where the copy forms (`Forming`).
  */

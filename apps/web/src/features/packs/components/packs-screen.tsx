@@ -27,12 +27,13 @@ import {
   SelectionIndicator,
 } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GameScreen } from "@/core/components/game/game-screen";
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
-import { RANK_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CLASSES_WITH_CARDS, RACES_WITH_CARDS } from "@/features/deck/deck";
 import { shownHintAtom } from "@/features/hint/hint.atoms";
@@ -686,11 +687,7 @@ export const PacksScreen = () => {
   };
 
   return (
-    <main
-      aria-label={tr("packs.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden bg-[#2a1824] text-[#fff6df] duration-300 motion-reduce:animate-none"
-      data-testid="packs"
-    >
+    <GameScreen label={tr("packs.label")} tone="shop" data-testid="packs">
       {/* The Card shop inside (Town Concepts, section 9). */}
       <ShopScene>
         {opened ? null : (
@@ -761,6 +758,6 @@ export const PacksScreen = () => {
           onClose={close}
         />
       ) : null}
-    </main>
+    </GameScreen>
   );
 };

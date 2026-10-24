@@ -2,12 +2,12 @@ import { cn } from "cn";
 import { absurd } from "effect";
 import type { ReactElement } from "react";
 
-import { RankGems } from "@/features/battle/components/card-frame";
+import { RankGems } from "@/core/components/game/rank-gems";
+import { DAMAGE_COLORS, RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { GraveyardIcon } from "@/features/battle/components/graveyard-icon";
 import { StatusIcon } from "@/features/battle/components/status-icon";
 import { DAMAGE_GLYPH } from "@/features/battle/glyphs";
-import { DAMAGE_COLORS, RANK_COLORS } from "@/features/battle/palette";
 import { StarIcon } from "@/features/campaign/components/campaign-icons";
 import type { EntryIcon } from "@/features/handbook/handbook";
 import { BalanceIcon } from "@/features/town/components/balance-icon";

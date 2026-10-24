@@ -3,18 +3,11 @@ import { coinDenominations, PACKS, RANKS } from "@workspace/rules";
 import { cn } from "cn";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
-import {
-  Button,
-  Dialog,
-  DialogTrigger,
-  Heading,
-  Modal,
-  ModalOverlay,
-} from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
+import { DialogTrigger } from "react-aria-components";
 
-import { RankGems } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
+import { GameButton } from "@/core/components/game/game-button";
+import { GameDialog } from "@/core/components/game/game-dialog";
+import { RankGems } from "@/core/components/game/rank-gems";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CoinPrice } from "@/features/packs/components/pack-art";
@@ -182,65 +175,42 @@ export const DropRatesDialog = ({
         <GlyphIcon glyph="info" className="size-4" />
         {tr("packs.rates.button")}
       </GameButton>
-      <ModalOverlay
-        isDismissable
-        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px] [@media(max-height:500px)]:p-2"
+      <GameDialog
+        title={tr("packs.rates.title")}
+        closeLabel={tr("packs.rates.close")}
+        closeTestId="drop-rates-close"
+        size="lg"
+        className="w-[min(720px,96vw)] text-left"
+        testId="drop-rates-dialog"
       >
-        <Modal className="fade-in zoom-in-95 animate-in flex max-h-full w-[min(720px,96vw)] rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] duration-200 motion-reduce:animate-none">
-          <Dialog
-            className="flex min-h-0 w-full flex-col outline-none"
-            data-testid="drop-rates-dialog"
-          >
-            {({ close }) => (
-              <>
-                <div className="flex items-center gap-3 border-b-2 border-[#c9b48c] px-5 pt-4 pb-3 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-2">
-                  <Heading
-                    slot="title"
-                    className="font-display flex-1 text-2xl font-black [@media(max-height:500px)]:text-lg"
-                  >
-                    {tr("packs.rates.title")}
-                  </Heading>
-                  <Button
-                    onPress={close}
-                    aria-label={tr("packs.rates.close")}
-                    className="grid size-10 shrink-0 cursor-pointer place-items-center rounded-lg border-2 border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:brightness-110 data-[pressed]:translate-y-px [@media(max-height:500px)]:size-8"
-                    data-testid="drop-rates-close"
-                  >
-                    <HiXMark className="size-5" aria-hidden />
-                  </Button>
-                </div>
-                <div className="min-h-0 overflow-y-auto px-5 pt-2 pb-5 [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-[1.1fr_1fr] [@media(max-height:500px)]:gap-4 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pb-3">
-                  <div>
-                    <p className="mb-1 text-xs text-[#5b4632]">
-                      {tr("packs.rates.each")}
-                    </p>
-                    <DropRatesTable />
-                  </div>
-                  <div>
-                    <h3 className="font-display mt-4 text-base font-bold [@media(max-height:500px)]:mt-0">
-                      {tr("packs.rates.rulesTitle")}
-                    </h3>
-                    <ol className="mt-1 list-decimal space-y-1 pl-5 text-sm leading-snug [@media(max-height:500px)]:text-xs">
-                      {RULES.map((rule) => (
-                        <li key={rule}>{tr(`packs.rates.rules.${rule}`)}</li>
-                      ))}
-                    </ol>
-                    <h3 className="font-display mt-3 text-base font-bold">
-                      {tr("packs.rates.newCardFirst")}
-                    </h3>
-                    <p
-                      className="mt-1 text-sm leading-snug [@media(max-height:500px)]:text-xs"
-                      data-testid="new-card-first-rule"
-                    >
-                      {tr("packs.rates.newCardFirstRule")}
-                    </p>
-                  </div>
-                </div>
-              </>
-            )}
-          </Dialog>
-        </Modal>
-      </ModalOverlay>
+        <div className="mt-3 [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-[1.1fr_1fr] [@media(max-height:500px)]:gap-4">
+          <div>
+            <p className="mb-1 text-xs text-[#5b4632]">
+              {tr("packs.rates.each")}
+            </p>
+            <DropRatesTable />
+          </div>
+          <div>
+            <h3 className="font-display mt-4 text-base font-bold [@media(max-height:500px)]:mt-0">
+              {tr("packs.rates.rulesTitle")}
+            </h3>
+            <ol className="mt-1 list-decimal space-y-1 pl-5 text-sm leading-snug [@media(max-height:500px)]:text-xs">
+              {RULES.map((rule) => (
+                <li key={rule}>{tr(`packs.rates.rules.${rule}`)}</li>
+              ))}
+            </ol>
+            <h3 className="font-display mt-3 text-base font-bold">
+              {tr("packs.rates.newCardFirst")}
+            </h3>
+            <p
+              className="mt-1 text-sm leading-snug [@media(max-height:500px)]:text-xs"
+              data-testid="new-card-first-rule"
+            >
+              {tr("packs.rates.newCardFirstRule")}
+            </p>
+          </div>
+        </div>
+      </GameDialog>
     </DialogTrigger>
   );
 };

@@ -7,7 +7,7 @@ related_targets: ["src/features/hero/components/gear-item.tsx","src/features/tow
 
 # Hero screen (Barracks)
 
-Scope: the Hero state of `/play` (GDD 7.3, 11.1, issue #77, ADR-0033). Mode: Operate. The Player reads the Hero (Class, Hero HP and its parts) and does Gear upgrades for Coin, one level for each press.
+Scope: the Hero state of `/play` (GDD 7.3, 11.1, issue #77, ADR-0032). Mode: Operate. The Player reads the Hero (Class, Hero HP and its parts) and does Gear upgrades for Coin, one level for each press.
 
 - Audience: the returning fan and the strategy card player at Player level 5 or higher, between Battles, often with spare Coin after a Region 1 run. Desktop first, phone in landscape.
 - Task: see the Class of the Active Deck and the Hero HP sum, compare the 4 Gear items, press an upgrade, see the stat rise and the Coin fall, press again. "Change Deck" opens the Deck dialog.

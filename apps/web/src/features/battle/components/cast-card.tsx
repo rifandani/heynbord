@@ -2,13 +2,13 @@ import { useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
 import type { CSSProperties } from "react";
 
+import { SIDE_COLORS } from "@/core/components/game/tokens";
 import { shownSessionAtom } from "@/features/battle/battle.atoms";
 import { cardText } from "@/features/battle/card-text";
 import type { Cast } from "@/features/battle/cast";
 import { currentCast, effectColor } from "@/features/battle/cast";
 import { CardBack } from "@/features/battle/components/card-back";
 import { CardFrame } from "@/features/battle/components/card-frame";
-import { SIDE_COLORS } from "@/features/battle/palette";
 import { useGameText } from "@/features/battle/use-game-text";
 
 /**

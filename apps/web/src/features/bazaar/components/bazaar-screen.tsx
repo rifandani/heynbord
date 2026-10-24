@@ -16,9 +16,10 @@ import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { Button } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GameScreen } from "@/core/components/game/game-screen";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { CardBack } from "@/features/battle/components/card-back";
-import { GameButton } from "@/features/battle/components/game-button";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -346,11 +347,7 @@ export const BazaarScreen = () => {
   };
 
   return (
-    <main
-      aria-label={tr("bazaar.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden text-[#fff6df] duration-300 motion-reduce:animate-none"
-      data-testid="bazaar"
-    >
+    <GameScreen label={tr("bazaar.label")} data-testid="bazaar">
       <BazaarScene />
       <BalancePlate balances={{ ...balances, coin }} />
       {/* The page heading stays for screen readers only. */}
@@ -457,6 +454,6 @@ export const BazaarScreen = () => {
       <p className="sr-only" aria-live="polite" data-testid="bazaar-said">
         {said}
       </p>
-    </main>
+    </GameScreen>
   );
 };

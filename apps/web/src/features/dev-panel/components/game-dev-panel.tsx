@@ -122,7 +122,7 @@ const coinParts = (copper: number) =>
     )
     .join(" · ");
 
-/** The 2 types of Sweep Ticket (ADR-0041). */
+/** The 2 types of Sweep Ticket (ADR-0039). */
 const SWEEP_TICKET_FIELDS: readonly {
   readonly kind: SweepKind;
   readonly label: string;

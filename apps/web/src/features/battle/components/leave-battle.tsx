@@ -1,13 +1,8 @@
-import {
-  Dialog,
-  DialogTrigger,
-  Heading,
-  Modal,
-  ModalOverlay,
-} from "react-aria-components";
+import { DialogTrigger } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { GameDialog, GameDialogText } from "@/core/components/game/game-dialog";
 import type { BattleOptions } from "@/features/battle/battle-session";
-import { GameButton } from "@/features/battle/components/game-button";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 
@@ -55,43 +50,29 @@ export const LeaveBattle = ({
   return (
     <DialogTrigger>
       <LeaveButton />
-      <ModalOverlay
-        isDismissable
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4 backdrop-blur-[2px]"
+      <GameDialog
+        title={tr("battle.abandon.title")}
+        testId="abandon-dialog"
+        footer={
+          <>
+            <GameButton intent="gold" slot="close" autoFocus>
+              {tr("battle.abandon.stay")}
+            </GameButton>
+            <GameButton
+              intent="wood"
+              slot="close"
+              onPress={() => battle.leave()}
+              data-testid="abandon-confirm"
+            >
+              {tr("battle.abandon.confirm")}
+            </GameButton>
+          </>
+        }
       >
-        <Modal className="fade-in zoom-in-95 animate-in w-[min(400px,94vw)] rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] p-5 text-center text-[#2a1d12] shadow-2xl duration-200 motion-reduce:animate-none [@media(max-height:500px)]:p-3">
-          <Dialog className="outline-none" data-testid="abandon-dialog">
-            {({ close }) => (
-              <>
-                <Heading
-                  slot="title"
-                  className="font-display text-2xl font-black [@media(max-height:500px)]:text-xl"
-                >
-                  {tr("battle.abandon.title")}
-                </Heading>
-                <p className="mt-2 text-sm text-[#5b4632]">
-                  {tr(abandonTextKey(battle.session?.options))}
-                </p>
-                <div className="mt-4 flex flex-wrap justify-center gap-2 [@media(max-height:500px)]:mt-2">
-                  <GameButton intent="gold" autoFocus onPress={close}>
-                    {tr("battle.abandon.stay")}
-                  </GameButton>
-                  <GameButton
-                    intent="wood"
-                    onPress={() => {
-                      close();
-                      battle.leave();
-                    }}
-                    data-testid="abandon-confirm"
-                  >
-                    {tr("battle.abandon.confirm")}
-                  </GameButton>
-                </div>
-              </>
-            )}
-          </Dialog>
-        </Modal>
-      </ModalOverlay>
+        <GameDialogText className="mt-2">
+          {tr(abandonTextKey(battle.session?.options))}
+        </GameDialogText>
+      </GameDialog>
     </DialogTrigger>
   );
 };

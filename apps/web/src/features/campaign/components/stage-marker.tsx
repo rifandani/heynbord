@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, TooltipTrigger } from "react-aria-components";
 
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
+import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
   BossCrown,

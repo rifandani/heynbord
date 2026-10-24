@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, TooltipTrigger } from "react-aria-components";
 
+import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { tutorialStageWonAtom } from "@/features/battle/battle.atoms";
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { profileReadyAtom } from "@/features/profile/profile.atoms";

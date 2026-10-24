@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { RankGems } from "@/features/battle/components/card-frame";
+import { RankGems } from "@/core/components/game/rank-gems";
 import { useGameText } from "@/features/battle/use-game-text";
 import { RANK_GUIDE_TABLE } from "@/features/handbook/handbook";
 

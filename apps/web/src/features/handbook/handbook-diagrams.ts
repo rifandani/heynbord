@@ -20,7 +20,7 @@ export type DiagramId =
 
 export type DiagramSide = "player" | "enemy";
 
-/** A Unit on the strip, drawn with the icon of its card (ADR-0030). */
+/** A Unit on the strip, drawn with the icon of its card (ADR-0029). */
 export interface DiagramUnit {
   readonly lane: number;
   readonly column: number;

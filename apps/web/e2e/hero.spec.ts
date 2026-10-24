@@ -4,7 +4,7 @@ import type { Page } from "./_base";
 /**
  * The Hero screen (GDD 7.3, issue #77): the Barracks and the Hero shortcut
  * open it at Player level 5, a Gear upgrade adds 1 level for Coin and a
- * Forge Stone (ADR-0038) and the Profile keeps it.
+ * Forge Stone (ADR-0036) and the Profile keeps it.
  */
 
 /** The part of `window` that the test hooks (test-hooks.ts) add. */

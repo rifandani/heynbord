@@ -164,7 +164,7 @@ describe("isSweepHintMet", () => {
   });
 });
 
-describe("the Dungeon Sweep Hint (ADR-0041)", () => {
+describe("the Dungeon Sweep Hint (ADR-0039)", () => {
   it("is met when the Dungeon has 1 or more wins", () => {
     expect(isDungeonSweepHintMet(0)).toBe(false);
     expect(isDungeonSweepHintMet(1)).toBe(true);

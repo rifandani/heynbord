@@ -92,7 +92,7 @@ export interface WorkshopTile {
   readonly spare: number;
   /**
    * The Ranks of the card with a copy that can go into a Fuse that gives a
-   * card (ADR-0051): below Legendary, with a copy, and its Race or Class has
+   * card (ADR-0049): below Legendary, with a copy, and its Race or Class has
    * a card in the Fuse pool of that Rank.
    */
   readonly fuseRanks: readonly RankId[];
@@ -175,7 +175,7 @@ export const nextRank = (rank: RankId): RankId | null =>
 
 /**
  * The tiles that a station shows. Craft: only the cards with a Craft cost, so
- * not an Epic or a Legendary Base Rank card (ADR-0052). Combine and Fuse: not
+ * not an Epic or a Legendary Base Rank card (ADR-0050). Combine and Fuse: not
  * a Legendary Base Rank card, because it has no Rank to Combine to and no copy
  * below Legendary to Fuse. Extract shows all the tiles.
  */
@@ -271,7 +271,7 @@ export const combineState = (
 
 /**
  * The Craft of a card (Economy 3.3). `none`: the card has no Craft cost: its
- * Base Rank is Epic or Legendary (ADR-0052). `locked`: the Player level is
+ * Base Rank is Epic or Legendary (ADR-0050). `locked`: the Player level is
  * below the Craft level. `essence`: not enough Essence, `missing` is the
  * Essence still needed. `ready`: the Player can.
  */

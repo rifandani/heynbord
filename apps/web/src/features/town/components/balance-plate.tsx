@@ -1,12 +1,12 @@
 import type { CoinPart } from "@workspace/rules";
 import { coinDenominations } from "@workspace/rules";
-import { cn } from "cn";
-import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
-import type { PressEvent } from "react-aria-components";
-import { Button, TooltipTrigger } from "react-aria-components";
+import { useMemo } from "react";
 
-import { GameTooltip } from "@/features/battle/components/game-tooltip";
+import {
+  RESOURCE_ICON_CLASS,
+  ResourcePlate,
+} from "@/core/components/game/resource-plate";
+import type { ResourceItem } from "@/core/components/game/resource-plate";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { CoinTone } from "@/features/town/components/balance-icon";
 import {
@@ -16,86 +16,7 @@ import {
 import type { BalanceKind, Balances } from "@/features/town/town";
 import { coinWords } from "@/features/town/town";
 
-const ICON = "size-5 shrink-0 [@media(max-height:500px)]:size-4";
-
-const Divider = () => (
-  <span
-    className="h-5 w-0.5 shrink-0 rounded-full bg-[#e9c46a]/25"
-    aria-hidden
-  />
-);
-
-/**
- * One balance on the plate. Hover and focus show what it pays for; on touch,
- * a tap shows it. The accessible name says the amount in words. It has no
- * action, so it has no drop and no press (DESIGN.md, Balance Plate).
- */
-const Balance = ({
-  kind,
-  spoken,
-  bump = 0,
-  children,
-}: {
-  readonly kind: BalanceKind;
-  readonly spoken: string;
-  /** The count of bumps; each new value plays one bump. */
-  readonly bump?: number;
-  readonly children: ReactNode;
-}) => {
-  const { tr } = useGameText();
-  const [open, setOpen] = useState(false);
-  const name = tr(`town.balances.${kind}.name`);
-  const onPress = (event: PressEvent) => {
-    if (event.pointerType !== "mouse") {
-      setOpen((value) => !value);
-    }
-  };
-  return (
-    <TooltipTrigger
-      isOpen={open}
-      onOpenChange={setOpen}
-      delay={200}
-      shouldCloseOnPress={false}
-    >
-      <Button
-        aria-label={tr("town.balances.balance", { name, amount: spoken })}
-        onPress={onPress}
-        className={cn(
-          "flex h-10 cursor-default items-center rounded-[10px] px-3 outline-none",
-          "text-base leading-none font-black tabular-nums",
-          "transition-colors duration-100 data-[hovered]:bg-[#fff6df]/10",
-          "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
-          "[@media(max-height:500px)]:h-8 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-sm"
-        )}
-        data-testid={`balance-${kind}`}
-      >
-        {/* A new key plays the bump again. */}
-        <span
-          key={bump}
-          className={cn(
-            "flex items-center gap-1.5 [@media(max-height:500px)]:gap-1",
-            bump > 0 &&
-              "motion-safe:animate-[pack-pop_560ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
-          )}
-          data-bump={bump > 0 ? bump : undefined}
-        >
-          {children}
-        </span>
-      </Button>
-      <GameTooltip
-        placement="bottom end"
-        offset={8}
-        className="max-w-56 rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1.5 text-xs text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
-        data-testid={`balance-tooltip-${kind}`}
-      >
-        <span className="block font-bold">{name}</span>
-        <span className="block text-[#fff6df]/85">
-          {tr(`town.balances.${kind}.use`)}
-        </span>
-      </GameTooltip>
-    </TooltipTrigger>
-  );
-};
+const ICON = RESOURCE_ICON_CLASS;
 
 /** A Coin balance: each denomination that is not zero, with its coin and letter. */
 export const CoinAmount = ({
@@ -140,6 +61,9 @@ export const CoinAmount = ({
  * The shopkeeper bubble of the Packs screen hangs under it (`data-shop-avoid`).
  * A balance in `bumps` plays one short bump each time its count goes up, for
  * example after a Collect at the Seaport; with reduced motion, it does not.
+ *
+ * The plate itself is the design-system `ResourcePlate`; this adapter maps the
+ * game resources and their text onto it.
  */
 export const BalancePlate = ({
   balances,
@@ -158,34 +82,51 @@ export const BalancePlate = ({
     tr(`town.balances.denominations.${denomination}.name`)
   );
 
+  const resource = (
+    kind: BalanceKind,
+    spoken: string,
+    icon: ResourceItem["icon"] | undefined,
+    content: ResourceItem["value"]
+  ): ResourceItem => {
+    const name = tr(`town.balances.${kind}.name`);
+    return {
+      id: kind,
+      name,
+      use: tr(`town.balances.${kind}.use`),
+      icon,
+      value: content,
+      spoken: tr("town.balances.balance", { name, amount: spoken }),
+      bump: bumps?.[kind],
+      testId: `balance-${kind}`,
+      tooltipTestId: `balance-tooltip-${kind}`,
+    };
+  };
+
   return (
-    <fieldset
-      aria-label={tr("town.balances.label")}
-      className={cn(
-        "absolute top-[max(0.5rem,env(safe-area-inset-top))] right-[max(0.5rem,env(safe-area-inset-right))] z-20 m-0 min-w-0 p-0",
-        "flex items-center rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]",
-        className
-      )}
-      data-shop-avoid="down"
-      data-testid="town-balances"
-    >
-      <Balance kind="coin" spoken={coinSpoken} bump={bumps?.coin}>
-        <CoinAmount parts={coin} format={format} />
-      </Balance>
-      <Divider />
-      <Balance
-        kind="essence"
-        spoken={format(balances.essence)}
-        bump={bumps?.essence}
-      >
-        <BalanceIcon kind="essence" className={ICON} />
-        {format(balances.essence)}
-      </Balance>
-      <Divider />
-      <Balance kind="heynstones" spoken={format(balances.heynstones)}>
-        <BalanceIcon kind="heynstones" className={ICON} />
-        {format(balances.heynstones)}
-      </Balance>
-    </fieldset>
+    <ResourcePlate
+      label={tr("town.balances.label")}
+      className={className}
+      testId="town-balances"
+      items={[
+        resource(
+          "coin",
+          coinSpoken,
+          undefined,
+          <CoinAmount parts={coin} format={format} />
+        ),
+        resource(
+          "essence",
+          format(balances.essence),
+          <BalanceIcon kind="essence" className={ICON} />,
+          format(balances.essence)
+        ),
+        resource(
+          "heynstones",
+          format(balances.heynstones),
+          <BalanceIcon kind="heynstones" className={ICON} />,
+          format(balances.heynstones)
+        ),
+      ]}
+    />
   );
 };

@@ -292,7 +292,7 @@ test.describe("Dungeons screen", () => {
       "data-count",
       "3"
     );
-    // A Dungeon win gives 1 Dungeon Sweep Ticket (ADR-0041).
+    // A Dungeon win gives 1 Dungeon Sweep Ticket (ADR-0039).
     const tickets = result.getByTestId("result-sweep-tickets");
     await expect(tickets).toHaveAttribute("data-kind", "dungeon");
     await expect(tickets).toHaveAttribute("data-tickets", "1");
@@ -360,7 +360,7 @@ test.describe("Dungeons screen", () => {
     await expect(page.getByTestId("dungeon-wins")).toHaveCount(0);
 
     // A loss gives 10% of the Coin and 25% of the XP of a win, but only the
-    // share of the HP that the Bosses lost (ADR-0043): up to 20 Copper and 35 XP.
+    // share of the HP that the Bosses lost (ADR-0041): up to 20 Copper and 35 XP.
     await page.getByTestId("dungeon-fight").click();
     await expect(page.getByTestId("boss-plates")).toBeVisible({
       timeout: 30_000,
@@ -586,7 +586,7 @@ const openWonDungeon = async (page: Page, tickets: number) => {
   await expect(page.getByTestId("dungeons")).toBeVisible();
 };
 
-/** The Dungeon Sweep of a won Dungeon (GDD 4.12, ADR-0041). */
+/** The Dungeon Sweep of a won Dungeon (GDD 4.12, ADR-0039). */
 test.describe("Dungeon Sweep", () => {
   test.use({ viewport: { width: 1600, height: 720 } });
 

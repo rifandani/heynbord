@@ -11,17 +11,18 @@ import type { KeyboardEvent, RefObject } from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button, Label, Meter, Popover } from "react-aria-components";
 
+import { GameButton } from "@/core/components/game/game-button";
+import { RankGems } from "@/core/components/game/rank-gems";
+import { RACE_COLORS, RANK_COLORS } from "@/core/components/game/tokens";
 import { cardIllustration, hasCardArt } from "@/features/battle/card-art";
 import {
   CardBack,
   EmptyCardPlace,
 } from "@/features/battle/components/card-back";
 import { CardDetails } from "@/features/battle/components/card-details";
-import { CardFrame, RankGems } from "@/features/battle/components/card-frame";
-import { GameButton } from "@/features/battle/components/game-button";
+import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
-import { RACE_COLORS, RANK_COLORS } from "@/features/battle/palette";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { Peek } from "@/features/deck/components/use-card-peek";
@@ -960,7 +961,7 @@ const usePanelPhase = (
 };
 
 /**
- * The Fuse station panel (GDD 7.4, ADR-0051). It is a crucible, not a card:
+ * The Fuse station panel (GDD 7.4, ADR-0049). It is a crucible, not a card:
  * the Card Back of the card that is to come, the slots, and the chances. A
  * press on a grid tile puts a copy in a slot; the first copy sets the Rank,
  * the card type and the number of slots. A press on a slot takes its copy
