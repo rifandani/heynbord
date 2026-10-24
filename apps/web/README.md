@@ -110,16 +110,15 @@ Priest:
 
 New features:
 
+2. #120 & #119, #121
 3. cleanup GLOSSARY.md, all game docs, etc
 4. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
-Answers all ur questions automatically with ur best recommendations, except critical questions.
+Answers all ur questions automatically with ur best recommendations, except critical questions. Optimize your work to be faster, maybe use subagents or dynamic workflows or parallelize tasks.
 
 v2:
 
-- blender mcp + all 3D unit
 - brainstorm with me what should be the story/content for region 6 and the next because we already introduce all races in region 1 to 5, and also can we have a deterministic script to automatically generate new Campaign Map with all the stages and rewards, of course the battle and economy itself should be balanced as well
-- /impeccable extract repeated patterns, tokens, etc and standardize it as UI components at our design system level and showcase it in mastre design page, so even outside "/play" route we have similar UI because in the future we will build the landing/marketing page for this game
 - dynamic og image generation
 - add better auth + skills
 - add error monitoring, logs with evlog + skills
