@@ -44,6 +44,16 @@ const translations = {
     lastLogin: defineTranslation("Last login {at:date}", {
       date: { at: { dateStyle: "short", timeZone: "UTC" } },
     }),
+    echo: defineTranslation("{name} calls {name}", {}),
+    echoPlural: defineTranslation("{count:plural}, then {count:plural}", {
+      plural: { count: { one: "{?} card", other: "{?} cards" } },
+    }),
+    echoEnum: defineTranslation("{state:enum} or {state:enum}", {
+      enum: { state: { active: "Active", archived: "Archived" } },
+    }),
+    echoNumber: defineTranslation("{amount:number} + {amount:number}", {
+      number: { amount: { currency: "USD", style: "currency" } },
+    }),
     nested: {
       deep: {
         label: "Deep label",
@@ -185,6 +195,14 @@ describe("initI18n substitutions", () => {
     expect(() => t("status", { state: "deleted" })).toThrow(
       "Missing replacement value"
     );
+  });
+
+  it("fills every copy of a placeholder that a string repeats", () => {
+    const t = setup();
+    expect(t("echo", { name: "Ada" })).toBe("Ada calls Ada");
+    expect(t("echoPlural", { count: 2 })).toBe("2 cards, then 2 cards");
+    expect(t("echoEnum", { state: "active" })).toBe("Active or Active");
+    expect(t("echoNumber", { amount: 1 })).toBe("$1.00 + $1.00");
   });
 
   it("leaves the raw key in place when the arg has no placeholder", () => {

@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "runId": "pass-1",
+  "captures": [
+    {
+      "mode": "desktop",
+      "state": "active-play",
+      "report": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/desktop-active-play.json"
+    },
+    {
+      "mode": "desktop",
+      "state": "targeting",
+      "report": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/desktop-targeting.json"
+    },
+    {
+      "mode": "desktop",
+      "state": "resolution",
+      "report": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/desktop-resolution.json"
+    },
+    {
+      "mode": "desktop",
+      "state": "victory",
+      "report": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/desktop-victory.json"
+    },
+    {
+      "mode": "desktop",
+      "state": "defeat",
+      "report": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/desktop-defeat.json"
+    },
+    {
+      "mode": "mobile",
+      "state": "active-play",
+      "report": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/mobile-active-play.json"
+    },
+    {
+      "mode": "mobile",
+      "state": "targeting",
+      "report": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/mobile-targeting.json"
+    },
+    {
+      "mode": "mobile",
+      "state": "resolution",
+      "report": "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/mobile-resolution.json"
+    }
+  ],
+  "artifacts": [
+    "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/bot-playtest.json",
+    "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/design-brief.md",
+    "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/landscape/resolution-motion.webm",
+    "/Users/rizeki.rifandani/Desktop/dev/projects/heynbord/apps/web/artifacts/pass-1/landscape/report.json"
+  ]
+}

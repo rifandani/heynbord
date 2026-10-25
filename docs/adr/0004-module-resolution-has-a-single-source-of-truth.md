@@ -47,7 +47,7 @@ The two Vitest configs (`packages/core`, `apps/web`) kept an `@workspace/core` a
 
 `.node-version` pins `26.8.1`, and all workflows read it via `node-version-file`.
 
-The two numbers say different things, and the split is deliberate: **`engines.node` (`>=26.0.0`) is a support policy — what will run. `.node-version` is a pin — what we check.** `engines` is on the root. `apps/web` ships static assets. Asserting a Node floor on the app would state a constraint its artifacts do not have. Bun does not enforce `engines` on install in any case — the floor is enforced by CI reading `.node-version`, not by the package manager. `packageManager: bun@1.3.14` pins Bun.
+The two numbers say different things, and the split is deliberate: **`engines.node` (`>=26.0.0`) is a support policy — what will run. `.node-version` is a pin — what we check.** `engines` is on the root. `apps/web` ships static assets. Asserting a Node floor on the app would state a constraint its artifacts do not have. Bun does not enforce `engines` on install in any case — the floor is enforced by CI reading `.node-version`, not by the package manager. `packageManager: bun@1.4.2` pins Bun.
 
 An exact pin means CI no longer picks up 26.x patch releases on its own. The version lives in `.node-version`; `bump:deps` is an `npm-check-updates` invocation that does not touch it.
 

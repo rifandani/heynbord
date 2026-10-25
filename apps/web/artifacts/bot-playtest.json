@@ -1,0 +1,42 @@
+{
+  "seed": 4,
+  "stage": "1-1",
+  "deck": "raiders",
+  "turns": 10,
+  "cardsPlayed": 11,
+  "firstPlayTurn": 1,
+  "fps": [
+    30,
+    29,
+    21,
+    33,
+    18,
+    20,
+    25,
+    26,
+    28,
+    25
+  ],
+  "drawCalls": [
+    7,
+    16,
+    22,
+    18,
+    25,
+    27,
+    25,
+    28,
+    31,
+    29
+  ],
+  "result": {
+    "winner": "player",
+    "reason": "routed"
+  },
+  "finalTurnNumber": 10,
+  "playerHp": 31,
+  "enemyHp": [
+    6
+  ],
+  "consoleErrors": []
+}

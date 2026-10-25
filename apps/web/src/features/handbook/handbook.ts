@@ -1,0 +1,1118 @@
+import type {
+  CardDefinition,
+  ClassId,
+  CoinDenomination,
+  CreatureCardDefinition,
+  DamageType,
+  RaceId,
+  RankId,
+  TokenId,
+} from "@workspace/rules";
+import {
+  ACHIEVEMENTS,
+  CARDS,
+  CAMPAIGN_REGIONS,
+  CAMPAIGN_SWEEP_TICKETS_PER_WIN,
+  countdownLimit,
+  DUNGEON_LANES,
+  DUNGEON_SWEEP_TICKETS_PER_WIN,
+  EXPEDITION_CARGOES,
+  EXPEDITION_DURATIONS,
+  FLOOR_LANES,
+  FUSE_ESSENCE,
+  HAND_LIMIT,
+  HEYNSPIRE_BOSS_FLOOR_EVERY,
+  HEYNSPIRE_FLOORS,
+  heynspireBossStage,
+  keywordValue,
+  LANE_LENGTH,
+  MAX_COPIES,
+  MAX_GEAR_LEVEL,
+  MAX_SWEEP_TICKETS,
+  PACK_SIZE,
+  PLAYER_LEVEL_XP,
+  KEYWORD_ACTIVATES,
+  RACE_KEYWORDS,
+  RANKS,
+  rankPips,
+  ranksOf,
+  recallChance,
+  scaleForRank,
+  SHARED_RANK_VALUES,
+  STAGE_LANES,
+  stageXp,
+  STARTING_HAND,
+  SUDDEN_DEATH_DOUBLE_TURN,
+  SUDDEN_DEATH_TURN,
+  SUMMON_ZONE_DEPTH,
+  TOKENS,
+  TURN_LIMIT,
+  UNLOCK_LEVELS,
+  WALL_SUMMON_DEPTH,
+} from "@workspace/rules";
+
+import type { Keyword, TextRef } from "@/features/battle/card-text";
+import {
+  FLAG_KEYWORDS,
+  STATUS_TEXT,
+  TOKEN_KEYWORDS,
+  tokenNameKey,
+  VALUE_KEYWORDS,
+} from "@/features/battle/card-text";
+import type { Glyph } from "@/features/battle/glyphs";
+import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
+import type { Status } from "@/features/battle/scene/status-visuals";
+import { isBuff, STATUS_ORDER } from "@/features/battle/scene/status-visuals";
+import { CLASSES_WITH_CARDS, RACES_WITH_CARDS } from "@/features/deck/deck";
+import type { DiagramId } from "@/features/handbook/handbook-diagrams";
+
+/** The Chapters of the Handbook, in the order that a new Player learns them. */
+export const CHAPTERS = [
+  "battle",
+  "cards",
+  "units",
+  "keywords",
+  "statuses",
+  "kinds",
+  "ranks",
+  "progress",
+] as const;
+export type ChapterId = (typeof CHAPTERS)[number];
+
+const BATTLE_ENTRIES = [
+  "board",
+  "lane",
+  "square",
+  "column",
+  "front",
+  "summonZone",
+  "closedLane",
+  "side",
+  "hero",
+  "turn",
+  "startPhase",
+  "playPhase",
+  "resolutionPhase",
+  "endPhase",
+  "suddenDeath",
+  "routed",
+  "defeated",
+] as const;
+
+const CARD_ENTRIES = [
+  "creatureCard",
+  "skillCard",
+  "hand",
+  "handLimit",
+  "deck",
+  "graveyard",
+  "countdown",
+  "ready",
+  "recall",
+  "countdownLimit",
+] as const;
+
+const UNIT_ENTRIES = [
+  "unit",
+  "attack",
+  "hp",
+  "speed",
+  "range",
+  "melee",
+  "ranged",
+  "movement",
+  "token",
+] as const;
+
+const PROGRESS_ENTRIES = [
+  "stars",
+  "sweep",
+  "playerLevel",
+  "coin",
+  "pack",
+  "workshop",
+  "gear",
+  "seaport",
+  "dungeon",
+  "heynspire",
+  "achievement",
+] as const;
+
+const DAMAGE_TYPES: readonly DamageType[] = [
+  "physical",
+  "fire",
+  "frost",
+  "holy",
+  "lightning",
+];
+
+/**
+ * One Entry of the Handbook. Each ID is one word, so that its Translation
+ * Keys never nest in other keys (`handbook.entries.<id>`).
+ */
+export type EntryId =
+  | (typeof BATTLE_ENTRIES)[number]
+  | (typeof CARD_ENTRIES)[number]
+  | (typeof UNIT_ENTRIES)[number]
+  | (typeof PROGRESS_ENTRIES)[number]
+  | `keyword${Capitalize<Keyword>}`
+  | "status"
+  | `status${Capitalize<Status>}`
+  | "damageType"
+  | `damage${Capitalize<DamageType>}`
+  | "race"
+  | `race${Capitalize<RaceId>}`
+  | "class"
+  | `class${Capitalize<ClassId>}`
+  | "rank"
+  | `rank${Capitalize<RankId>}`
+  | "rankGems";
+
+/** The icon of an Entry or a Chapter. Each one is an icon that the game already shows. */
+export type EntryIcon =
+  | { readonly kind: "glyph"; readonly glyph: Glyph }
+  | { readonly kind: "damage"; readonly damageType: DamageType }
+  | { readonly kind: "status"; readonly status: Status }
+  | { readonly kind: "rank"; readonly rank: RankId }
+  | { readonly kind: "star" }
+  | { readonly kind: "coin" }
+  | { readonly kind: "graveyard" };
+
+/**
+ * How an Entry of a value Keyword shows N: a table for each Rank, or a line
+ * that sends the Player to the card.
+ */
+export type KeywordValueKind =
+  | "rankTable"
+  | "rankGuideTable"
+  | "commonRankGuide"
+  | "starsTable"
+  | "coinTable"
+  | "packGuide"
+  | "playerLevelTable"
+  | "gearTable"
+  | "heynspireTable"
+  | "tokenGallery"
+  | "card";
+
+export interface Entry {
+  readonly id: EntryId;
+  readonly chapter: ChapterId;
+  readonly name: TextRef;
+  /** The rule text, one paragraph for each item. */
+  readonly body: readonly TextRef[];
+  readonly icon?: EntryIcon;
+  readonly value?: KeywordValueKind;
+  readonly diagram?: DiagramId;
+  readonly seeAlso: readonly EntryId[];
+  /**
+   * The group of an Entry in its Chapter list, with a heading: a Buff or a
+   * Debuff (rules CONTEXT: Buff, Debuff), or a Damage Type.
+   */
+  readonly group?: EntryGroup;
+}
+
+/** A group of Entries with a heading in the Chapter list. */
+export type EntryGroup = "buff" | "debuff" | "damageType";
+
+const capitalize = <S extends string>(word: S): Capitalize<S> =>
+  // SAFETY: the first letter in upper case is the definition of `Capitalize`.
+  (word.charAt(0).toUpperCase() + word.slice(1)) as Capitalize<S>;
+
+/** The Entry of a Keyword, for a link from the Details Panel. */
+export const keywordEntryId = (keyword: Keyword): EntryId =>
+  `keyword${capitalize(keyword)}`;
+
+/** The Entry of a Status, for a link from the Details Panel. */
+export const statusEntryId = (status: Status): EntryId =>
+  `status${capitalize(status)}`;
+
+/** The Entry of a Damage Type, for a link from the Details Panel. */
+export const damageEntryId = (damageType: DamageType): EntryId =>
+  `damage${capitalize(damageType)}`;
+
+/** The letter for the value of a value Keyword in its Entry, for example "Charge N". */
+const N = { key: "handbook.n" } as const;
+
+/**
+ * The Token of a Token Keyword in its Entry: "Summon X" in the name, and
+ * "Token X" in the rule, where a card names its Token.
+ */
+const X = { name: { key: "handbook.x" }, rule: { key: "handbook.tokenX" } };
+
+/** The value Keywords whose value on each card follows the shared Rank table. */
+export const rankTableKeywords = (
+  cards: readonly CardDefinition[]
+): ReadonlySet<Keyword> =>
+  new Set(
+    VALUE_KEYWORDS.filter((keyword) => {
+      const users = cards.flatMap((card) =>
+        card.kind === "creature" && card.keywords[keyword] !== undefined
+          ? [card]
+          : []
+      );
+      return (
+        users.length > 0 &&
+        users.every((card) =>
+          ranksOf(card).every(
+            (rank) =>
+              keywordValue(card.keywords[keyword], rank) ===
+              SHARED_RANK_VALUES[rank]
+          )
+        )
+      );
+    })
+  );
+
+/** The rows of the shared Rank table: N at each Rank. */
+export const RANK_TABLE: readonly {
+  readonly rank: RankId;
+  readonly value: number;
+}[] = RANKS.map((rank) => ({ rank, value: SHARED_RANK_VALUES[rank] }));
+
+/** Stat scale, Recall and shared Keyword N for the Ranks chapter guide (GDD 5.3–5.4). */
+export const RANK_GUIDE_TABLE: readonly {
+  readonly rank: RankId;
+  readonly scale: number;
+  readonly recall: number;
+  readonly keywordN: number;
+}[] = RANKS.map((rank) => ({
+  rank,
+  scale: scaleForRank(100, rank) / 100,
+  recall: recallChance(rank) / 100,
+  keywordN: SHARED_RANK_VALUES[rank],
+}));
+
+/** Each Star count and the Translation Key of its win condition (GDD 4.11). */
+export const STARS_TABLE: readonly {
+  readonly count: 1 | 2 | 3;
+  readonly rule: TextRef;
+}[] = [
+  { count: 1, rule: { key: "handbook.starsRow.1" } },
+  { count: 2, rule: { key: "handbook.starsRow.2" } },
+  { count: 3, rule: { key: "handbook.starsRow.3" } },
+];
+
+/** Example Coin on the Town balance plate: 1 Gold, 54 Silver, 20 Copper (Economy 1.1). */
+export const COIN_EXAMPLE_COPPER = 15_420;
+
+/** Each Coin denomination and how it converts (Economy 1.1). */
+export const COIN_DENOM_TABLE: readonly {
+  readonly denomination: CoinDenomination;
+  readonly rule: TextRef;
+}[] = [
+  { denomination: "gold", rule: { key: "handbook.coinRow.gold" } },
+  { denomination: "silver", rule: { key: "handbook.coinRow.silver" } },
+  { denomination: "copper", rule: { key: "handbook.coinRow.copper" } },
+];
+
+/** What Coin pays for in the Handbook Coin Entry. */
+export const COIN_USES_TABLE: readonly {
+  readonly id: "deckSlots" | "packs" | "combine" | "gear";
+  readonly rule: TextRef;
+}[] = [
+  { id: "deckSlots", rule: { key: "handbook.coinUse.deckSlots" } },
+  { id: "packs", rule: { key: "handbook.coinUse.packs" } },
+  {
+    id: "combine",
+    rule: {
+      key: "handbook.coinUse.combine",
+      args: { level: UNLOCK_LEVELS.combine },
+    },
+  },
+  {
+    id: "gear",
+    rule: { key: "handbook.coinUse.gear", args: { level: UNLOCK_LEVELS.gear } },
+  },
+];
+
+/**
+ * The XP of each result of a normal Stage by Region, for the Player level
+ * Entry (Economy 2.1). A Repeat win gives no XP (ADR-0047). `loss` is the most
+ * that a loss gives.
+ */
+export const PLAYER_LEVEL_XP_TABLE: readonly {
+  readonly region: number;
+  readonly repeatWin: number;
+  readonly firstWin: number;
+  readonly loss: number;
+}[] = Array.from({ length: CAMPAIGN_REGIONS }, (_, index) => {
+  const stage = { region: index + 1, boss: false };
+  return {
+    region: stage.region,
+    repeatWin: stageXp(stage, "win"),
+    firstWin: stageXp(stage, "firstWin"),
+    loss: stageXp(stage, "loss"),
+  };
+});
+
+/** Sample levels for Hero HP, Deck size and Countdown Limit in the Handbook. */
+export const PLAYER_LEVEL_STAT_SAMPLES = [1, 5, 10, 21, 30] as const;
+
+/** Town and mode unlocks that a Player level opens (GDD 7.1). */
+export const PLAYER_LEVEL_UNLOCK_TABLE: readonly {
+  readonly level: number;
+  readonly rule: TextRef;
+}[] = [
+  { level: 2, rule: { key: "handbook.playerUnlock.packs" } },
+  { level: 3, rule: { key: "handbook.playerUnlock.workshop" } },
+  { level: 5, rule: { key: "handbook.playerUnlock.gear" } },
+  { level: 6, rule: { key: "handbook.playerUnlock.craft" } },
+  {
+    level: UNLOCK_LEVELS.seaport,
+    rule: { key: "handbook.playerUnlock.seaport" },
+  },
+  { level: 10, rule: { key: "handbook.playerUnlock.dungeon1" } },
+  { level: 20, rule: { key: "handbook.playerUnlock.dungeon2" } },
+  { level: 30, rule: { key: "handbook.playerUnlock.dungeon3" } },
+];
+
+/** A Token that a card in the game summons, and the cards that summon it. */
+export interface GalleryToken {
+  readonly tokenId: TokenId;
+  readonly summoners: readonly CreatureCardDefinition[];
+}
+
+/**
+ * The Tokens of the Token Entry: each Token that a Creature Card summons, in
+ * the order of the Token data, with its summoners in the order of the cards.
+ * A Token that no card summons is not in the game, so it is not in the list.
+ */
+export const tokenGallery = (
+  cards: readonly CardDefinition[]
+): readonly GalleryToken[] =>
+  Object.values(TOKENS).flatMap((token) => {
+    const summoners = cards.filter(
+      (card): card is CreatureCardDefinition =>
+        card.kind === "creature" && card.keywords.summon === token.id
+    );
+    return summoners.length > 0 ? [{ tokenId: token.id, summoners }] : [];
+  });
+
+export const TOKEN_GALLERY = tokenGallery(CARDS);
+
+/**
+ * The cards that summon the Token at a Rank. A card exists only from its Base
+ * Rank up, and its Token has the Rank of the card.
+ */
+export const summonersAt = (
+  token: GalleryToken,
+  rank: RankId
+): readonly CreatureCardDefinition[] =>
+  token.summoners.filter(
+    (card) => RANKS.indexOf(card.baseRank) <= RANKS.indexOf(rank)
+  );
+
+/** The lowest Rank at which a card summons the Token. */
+export const firstTokenRank = (token: GalleryToken): RankId =>
+  RANKS.find((rank) => summonersAt(token, rank).length > 0) ?? "legendary";
+
+const RANK_TABLE_KEYWORDS = rankTableKeywords(CARDS);
+
+/** True for a Keyword that occurs in a Battle: a Keyword Plate shows it (`KEYWORD_ACTIVATES`). */
+const activates = (keyword: Keyword): boolean =>
+  Object.entries(KEYWORD_ACTIVATES).some(
+    ([name, active]) => active && name === keyword
+  );
+
+/** The line of a Keyword that occurs in a Battle: its name shows over the Unit. */
+const plateLine = (keyword: Keyword): TextRef[] =>
+  activates(keyword) ? [{ key: "handbook.keywordPlate" }] : [];
+
+const keywordEntry = (keyword: Keyword): Entry => {
+  if (TOKEN_KEYWORDS.some((name) => name === keyword)) {
+    return {
+      id: keywordEntryId(keyword),
+      chapter: "keywords",
+      name: { key: `keywords.${keyword}`, args: { token: X.name } },
+      body: [
+        { key: `keywordRules.${keyword}`, args: { token: X.rule } },
+        ...plateLine(keyword),
+      ],
+      seeAlso: [],
+    };
+  }
+  const valued = VALUE_KEYWORDS.some((name) => name === keyword);
+  const args = valued ? { value: N } : undefined;
+  return {
+    id: keywordEntryId(keyword),
+    chapter: "keywords",
+    name: { key: `keywords.${keyword}`, args },
+    body: [{ key: `keywordRules.${keyword}`, args }, ...plateLine(keyword)],
+    value: valued
+      ? RANK_TABLE_KEYWORDS.has(keyword)
+        ? "rankTable"
+        : "card"
+      : undefined,
+    seeAlso: [],
+  };
+};
+
+const statusEntry = (status: Status): Entry => ({
+  id: statusEntryId(status),
+  chapter: "statuses",
+  name: { key: STATUS_TEXT[status].name, args: { value: N } },
+  body: [{ key: STATUS_TEXT[status].rule }],
+  icon: { kind: "status", status },
+  seeAlso: [],
+  group: isBuff(status) ? "buff" : "debuff",
+});
+
+/**
+ * The rule text of a Damage Type: the Handbook Entry is the only screen that
+ * shows it. Physical damage has no rule on a card, so its Entry has a text of
+ * its own.
+ */
+const damageRule = (damageType: DamageType): TextRef =>
+  damageType === "physical"
+    ? { key: "handbook.entries.damagePhysical" }
+    : { key: `keywordRules.${damageType}` };
+
+const damageEntry = (damageType: DamageType): Entry => ({
+  id: damageEntryId(damageType),
+  chapter: "statuses",
+  name: { key: `damageTypes.${damageType}` },
+  body: [damageRule(damageType)],
+  icon: { kind: "damage", damageType },
+  seeAlso: [],
+  group: "damageType",
+});
+
+/** An Entry with a name and a text of its own in the `handbook` keys. */
+const termEntry = (
+  id: EntryId,
+  chapter: ChapterId,
+  args?: TextRef["args"]
+): Entry => ({
+  id,
+  chapter,
+  name: { key: `handbook.names.${id}` },
+  body: [{ key: `handbook.entries.${id}`, args }],
+  seeAlso: [],
+});
+
+/** An Entry whose name is a term that the game shows already, for example `races.elf`. */
+const namedEntry = (
+  id: EntryId,
+  chapter: ChapterId,
+  name: string,
+  icon?: EntryIcon
+): Entry => ({
+  ...termEntry(id, chapter),
+  name: { key: name },
+  icon,
+});
+
+const glyph = (name: Glyph): EntryIcon => ({ kind: "glyph", glyph: name });
+
+/**
+ * The Entry of a Race: its style, then its Race Keyword (ADR-0025) with a link
+ * to the Keyword Entry. The Keyword comes from the rules table, not the copy.
+ */
+const raceEntry = (race: RaceId): Entry => {
+  const entry = namedEntry(
+    `race${capitalize(race)}`,
+    "kinds",
+    `races.${race}`,
+    {
+      kind: "glyph",
+      glyph: raceGlyph(race),
+    }
+  );
+  const keyword = RACE_KEYWORDS[race];
+  return {
+    ...entry,
+    body: [
+      ...entry.body,
+      {
+        key: "handbook.raceKeyword",
+        args: { keyword: keywordEntry(keyword).name },
+      },
+    ],
+    seeAlso: [keywordEntryId(keyword)],
+  };
+};
+
+const rankEntry = (rank: RankId): Entry => {
+  const entry: Entry = {
+    id: `rank${capitalize(rank)}`,
+    chapter: "ranks",
+    name: { key: `ranks.${rank}` },
+    body: [
+      { key: `handbook.rankTierIntro.${rank}` },
+      {
+        key: "handbook.rankTierStats",
+        args: {
+          gems: rankPips(rank),
+          scale: scaleForRank(100, rank) / 100,
+          recall: recallChance(rank) / 100,
+        },
+      },
+    ],
+    icon: { kind: "rank", rank },
+    seeAlso: [],
+  };
+  if (rank === "common") {
+    return {
+      ...entry,
+      value: "commonRankGuide",
+      seeAlso: ["rank", "rankGems", "recall"],
+    };
+  }
+  return entry;
+};
+
+/** The values in the text of the Entries, from the rules, so the text never differs. */
+const TEXT_ARGS: Partial<Record<EntryId, TextRef["args"]>> = {
+  board: { lanes: STAGE_LANES, dungeonLanes: DUNGEON_LANES },
+  lane: { squares: LANE_LENGTH },
+  column: { squares: LANE_LENGTH },
+  summonZone: {
+    columns: SUMMON_ZONE_DEPTH,
+    next: SUMMON_ZONE_DEPTH + 1,
+    wall: WALL_SUMMON_DEPTH,
+  },
+  startPhase: { turn: SUDDEN_DEATH_TURN, limit: HAND_LIMIT },
+  suddenDeath: {
+    turn: SUDDEN_DEATH_TURN,
+    double: SUDDEN_DEATH_DOUBLE_TURN,
+    limit: TURN_LIMIT,
+  },
+  hand: { start: STARTING_HAND },
+  handLimit: { limit: HAND_LIMIT },
+  deck: { copies: MAX_COPIES },
+  recall: {
+    low: recallChance("common") / 100,
+    high: recallChance("legendary") / 100,
+  },
+  countdownLimit: { first: countdownLimit(1) },
+  playerLevel: { maxLevel: PLAYER_LEVEL_XP.length },
+  pack: { cards: PACK_SIZE },
+  workshop: {
+    combine: UNLOCK_LEVELS.combine,
+    craft: UNLOCK_LEVELS.craft,
+    fuse: UNLOCK_LEVELS.fuse,
+    ...FUSE_ESSENCE,
+  },
+  gear: { level: UNLOCK_LEVELS.gear, max: MAX_GEAR_LEVEL },
+  seaport: {
+    level: UNLOCK_LEVELS.seaport,
+    count: EXPEDITION_CARGOES.length,
+    shortest: EXPEDITION_DURATIONS[0]?.hours ?? 0,
+    longest: EXPEDITION_DURATIONS.at(-1)?.hours ?? 0,
+  },
+  sweep: {
+    campaignTickets: CAMPAIGN_SWEEP_TICKETS_PER_WIN,
+    dungeonTickets: DUNGEON_SWEEP_TICKETS_PER_WIN,
+    max: MAX_SWEEP_TICKETS,
+  },
+  dungeon: {
+    level: UNLOCK_LEVELS.dungeon1,
+    lanes: DUNGEON_LANES,
+    tickets: DUNGEON_SWEEP_TICKETS_PER_WIN,
+  },
+  heynspire: {
+    stage: heynspireBossStage().id,
+    floors: HEYNSPIRE_FLOORS,
+    lanes: FLOOR_LANES,
+    every: HEYNSPIRE_BOSS_FLOOR_EVERY,
+    tickets: CAMPAIGN_SWEEP_TICKETS_PER_WIN,
+  },
+  achievement: {
+    count: ACHIEVEMENTS.length,
+    cosmetics: ACHIEVEMENTS.filter(
+      (achievement) => achievement.reward.kind === "cosmetic"
+    ).length,
+  },
+};
+
+const term = (id: EntryId, chapter: ChapterId) =>
+  termEntry(id, chapter, TEXT_ARGS[id]);
+
+const rankOverviewEntry = (): Entry => ({
+  ...term("rank", "ranks"),
+  value: "rankGuideTable",
+});
+
+/** The terms that the game already names, with their Translation Key. */
+const SHOWN_NAMES: Partial<Record<EntryId, string>> = {
+  hand: "battle.hand",
+  deck: "battle.deck",
+  graveyard: "battle.graveyard",
+  ready: "battle.ready",
+  attack: "battle.attack",
+  hp: "battle.hp",
+  speed: "battle.speedStat",
+  range: "battle.range",
+  melee: "keywords.melee",
+  coin: "town.balances.coin.name",
+};
+
+const ICONS: Partial<Record<EntryId, EntryIcon>> = {
+  closedLane: glyph("lock"),
+  hero: glyph("helmet"),
+  deck: glyph("cards"),
+  graveyard: { kind: "graveyard" },
+  countdown: glyph("hourglass"),
+  recall: glyph("recall"),
+  attack: glyph("sword"),
+  hp: glyph("heart"),
+  speed: glyph("speed"),
+  range: glyph("range"),
+  ranged: glyph("bow"),
+  stars: { kind: "star" },
+  coin: { kind: "coin" },
+  pack: glyph("pack"),
+  workshop: glyph("anvil"),
+  gear: glyph("breastplate"),
+  sweep: glyph("campaignTicket"),
+  // The anchor of the berth plate of the Seaport screen.
+  seaport: glyph("anchor"),
+  dungeon: glyph("cave"),
+  heynspire: glyph("tower"),
+  // The glyph of the Achievements on the Battle result.
+  achievement: glyph("banner"),
+  rankGems: { kind: "rank", rank: "rare" },
+};
+
+/** The value table that an Entry shows, when it shows one. */
+const VALUE_KINDS: Partial<Record<EntryId, KeywordValueKind>> = {
+  stars: "starsTable",
+  coin: "coinTable",
+  pack: "packGuide",
+  playerLevel: "playerLevelTable",
+  gear: "gearTable",
+  heynspire: "heynspireTable",
+  token: "tokenGallery",
+};
+
+/** An Entry of the Battle, Cards, Units or Progress Chapters. */
+const plainEntry = (id: EntryId, chapter: ChapterId): Entry => {
+  const entry = term(id, chapter);
+  const name = SHOWN_NAMES[id];
+  return {
+    ...entry,
+    name: name ? { key: name } : entry.name,
+    icon: ICONS[id],
+    value: VALUE_KINDS[id],
+  };
+};
+
+/** The Lane strip diagrams (issue #25): about 10 Entries. */
+const DIAGRAMS: Partial<Record<EntryId, DiagramId>> = {
+  summonZone: "summonZone",
+  front: "front",
+  movement: "movement",
+  keywordFlying: "flying",
+  keywordKnockback: "knockback",
+  keywordTrample: "trample",
+  keywordPivot: "pivot",
+  keywordWall: "wall",
+  ranged: "ranged",
+  keywordFirstStrike: "firstStrike",
+  dungeon: "dungeon",
+};
+
+/** The related Entries that each Entry links to. */
+const SEE_ALSO: Partial<Record<EntryId, readonly EntryId[]>> = {
+  board: ["lane", "square", "column", "side"],
+  lane: ["square", "front", "closedLane"],
+  square: ["lane", "column"],
+  column: ["summonZone", "lane"],
+  front: ["hero", "lane", "dungeon"],
+  summonZone: ["column", "keywordWall", "creatureCard"],
+  closedLane: ["lane", "summonZone"],
+  side: ["hero", "routed"],
+  hero: ["front", "defeated", "class", "gear"],
+  turn: ["startPhase", "playPhase", "resolutionPhase", "endPhase"],
+  startPhase: ["countdown", "suddenDeath", "keywordRegenerate"],
+  playPhase: ["ready", "summonZone", "skillCard"],
+  resolutionPhase: ["movement", "attack", "keywordRetaliate"],
+  endPhase: ["statusBurn", "statusPoison"],
+  suddenDeath: ["startPhase", "defeated"],
+  routed: ["side", "deck", "hand"],
+  defeated: ["hero", "routed", "dungeon"],
+  creatureCard: ["unit", "race", "range"],
+  skillCard: ["recall", "class"],
+  hand: ["handLimit", "countdown"],
+  handLimit: ["hand", "deck"],
+  deck: ["countdownLimit", "graveyard", "class"],
+  graveyard: ["deck", "recall"],
+  countdown: ["ready", "countdownLimit"],
+  ready: ["countdown", "playPhase"],
+  recall: ["skillCard", "rank", "graveyard"],
+  countdownLimit: ["countdown", "deck", "playerLevel"],
+  unit: ["creatureCard", "token", "attack", "hp", "movement"],
+  attack: ["damageType", "keywordBulwark", "melee", "ranged"],
+  hp: ["attack", "defeated"],
+  speed: ["movement", "keywordSwift", "keywordHeavy", "keywordCharge"],
+  range: ["melee", "ranged", "keywordLongRange"],
+  melee: ["ranged", "range", "attack"],
+  ranged: ["range", "melee", "keywordMidRange"],
+  movement: ["speed", "keywordFlying", "statusEntangle"],
+  token: ["unit", "keywordSummon", "graveyard"],
+  keywordBulwark: ["damagePhysical"],
+  keywordBleed: ["statusBleed", "keywordRegenerate"],
+  keywordCharge: ["speed"],
+  keywordEntangle: ["statusEntangle", "ranged"],
+  keywordExtremeRange: ["range", "ranged", "rank"],
+  keywordFirstStrike: ["keywordRetaliate", "melee"],
+  keywordFleet: ["speed", "keywordSwift"],
+  keywordFlying: ["movement", "statusGrounded"],
+  keywordHeavy: ["speed", "statusHobble"],
+  keywordHeroic: ["attack", "keywordSwarm"],
+  keywordHobble: ["statusHobble", "speed"],
+  keywordKnockback: ["keywordWall", "melee"],
+  keywordLastBreath: ["defeated"],
+  keywordLongRange: ["range", "ranged", "keywordExtremeRange"],
+  keywordMidRange: ["range", "ranged", "keywordLongRange"],
+  keywordPivot: ["melee"],
+  keywordPoison: ["statusPoison", "endPhase"],
+  keywordRebirth: ["hp", "status", "keywordLastBreath"],
+  keywordRally: ["startPhase", "attack"],
+  keywordRegenerate: ["startPhase", "statusBleed"],
+  keywordRetaliate: ["keywordFirstStrike", "melee"],
+  keywordSabotage: ["countdown"],
+  keywordSummon: ["token", "square"],
+  keywordSwarm: ["lane", "attack", "token"],
+  keywordSwift: ["speed", "keywordFleet", "keywordHeavy"],
+  keywordTrample: ["melee"],
+  keywordUnique: ["creatureCard"],
+  keywordWall: ["summonZone", "movement"],
+  status: ["damageType", "statusBurn", "statusFreeze"],
+  statusBurn: ["damageFire", "endPhase"],
+  statusFreeze: ["damageFrost"],
+  statusParalyze: ["damageLightning", "statusFreeze", "keywordRetaliate"],
+  statusPoison: ["keywordPoison", "endPhase"],
+  statusEntangle: ["keywordEntangle", "movement"],
+  statusBleed: ["keywordBleed", "keywordRegenerate"],
+  statusHobble: ["keywordHobble", "speed"],
+  statusGrounded: ["keywordFlying", "movement"],
+  statusWard: ["damageHoly", "keywordTrample", "keywordRebirth"],
+  statusSteadfast: [
+    "statusWard",
+    "keywordRebirth",
+    "keywordLastBreath",
+    "keywordTrample",
+  ],
+  statusExposed: [
+    "keywordBulwark",
+    "damagePhysical",
+    "keywordRetaliate",
+    "keywordTrample",
+  ],
+  damageType: ["status", "attack"],
+  damagePhysical: ["keywordBulwark"],
+  damageFire: ["statusBurn"],
+  damageFrost: ["statusFreeze"],
+  damageHoly: ["damageType"],
+  damageLightning: ["statusParalyze"],
+  race: ["creatureCard"],
+  class: ["skillCard", "hero"],
+  rank: ["rankGems", "recall"],
+  rankGems: ["rank"],
+  stars: ["hp", "turn", "sweep"],
+  sweep: ["stars", "coin", "playerLevel", "class"],
+  playerLevel: ["countdownLimit", "hero"],
+  coin: ["deck", "pack", "workshop", "gear"],
+  pack: ["coin", "rank"],
+  workshop: ["rank", "coin", "playerLevel"],
+  gear: ["hero", "class", "coin", "playerLevel"],
+  seaport: ["coin", "playerLevel", "gear"],
+  dungeon: ["front", "defeated", "side", "sweep", "playerLevel"],
+  heynspire: ["hero", "front", "sweep", "gear", "playerLevel"],
+  achievement: ["stars", "dungeon", "heynspire", "coin"],
+};
+
+const withLinks = (entry: Entry): Entry => ({
+  ...entry,
+  diagram: DIAGRAMS[entry.id],
+  seeAlso: [...entry.seeAlso, ...(SEE_ALSO[entry.id] ?? [])],
+});
+
+/**
+ * All Entries, in Chapter order. An Entry exists only for a feature that is in
+ * the game: the Races and the Classes are those that have cards, as in the
+ * Deck builder. The Player can read all Entries from the start.
+ */
+export const ENTRIES: readonly Entry[] = [
+  ...BATTLE_ENTRIES.map((id) => plainEntry(id, "battle")),
+  ...CARD_ENTRIES.map((id) => plainEntry(id, "cards")),
+  ...UNIT_ENTRIES.map((id) => plainEntry(id, "units")),
+  ...[...VALUE_KEYWORDS, ...TOKEN_KEYWORDS, ...FLAG_KEYWORDS].map(keywordEntry),
+  term("status", "statuses"),
+  // The Buffs (Ward, Steadfast) are first in `STATUS_ORDER`, so they come
+  // before the Debuffs, and each group is one run in the list.
+  ...STATUS_ORDER.map(statusEntry),
+  { ...term("damageType", "statuses"), group: "damageType" as const },
+  ...DAMAGE_TYPES.map(damageEntry),
+  term("race", "kinds"),
+  ...RACES_WITH_CARDS.map(raceEntry),
+  term("class", "kinds"),
+  ...CLASSES_WITH_CARDS.map((classId) =>
+    namedEntry(`class${capitalize(classId)}`, "kinds", `classes.${classId}`, {
+      kind: "glyph",
+      glyph: classGlyph(classId),
+    })
+  ),
+  rankOverviewEntry(),
+  ...RANKS.map(rankEntry),
+  plainEntry("rankGems", "ranks"),
+  ...PROGRESS_ENTRIES.map((id) => plainEntry(id, "progress")),
+].map(withLinks);
+
+const ENTRY_BY_ID: ReadonlyMap<EntryId, Entry> = new Map(
+  ENTRIES.map((entry) => [entry.id, entry])
+);
+
+export const getEntry = (id: EntryId): Entry => {
+  const entry = ENTRY_BY_ID.get(id);
+  if (!entry) {
+    throw new Error(`Unknown Handbook Entry: ${id}`);
+  }
+  return entry;
+};
+
+/** The Entry ID of a list item key, or `null` for a key that is not an Entry. */
+export const toEntryId = (key: string | number): EntryId | null =>
+  ENTRIES.find((entry) => entry.id === String(key))?.id ?? null;
+
+/** The icon of each Chapter tab. */
+export const CHAPTER_ICONS: Readonly<Record<ChapterId, EntryIcon>> = {
+  battle: glyph("horn"),
+  cards: glyph("cards"),
+  units: glyph("shield"),
+  keywords: glyph("banner"),
+  statuses: glyph("flame"),
+  kinds: glyph("crown"),
+  ranks: { kind: "rank", rank: "epic" },
+  progress: { kind: "star" },
+};
+
+/**
+ * The Entries of a Chapter, in their list order. The Keywords are an index in
+ * the order of their names in the current Locale; the other Chapters keep the
+ * order in which a new Player learns them.
+ */
+export const chapterEntries = (
+  chapter: ChapterId,
+  nameOf: (entry: Entry) => string,
+  locale: string
+): readonly Entry[] => {
+  const entries = ENTRIES.filter((entry) => entry.chapter === chapter);
+  if (chapter !== "keywords") {
+    return entries;
+  }
+  const { compare } = new Intl.Collator(locale, { sensitivity: "base" });
+  return entries.toSorted((a, b) => compare(nameOf(a), nameOf(b)));
+};
+
+/** The Entry that the Handbook opens the first time: Chapter Battle, Entry Board. */
+export const FIRST_ENTRY: EntryId = "board";
+
+/** The Entries that players can also find by words from other games. */
+export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([
+  "board",
+  "lane",
+  "square",
+  "side",
+  "hero",
+  "turn",
+  "resolutionPhase",
+  "suddenDeath",
+  "routed",
+  "defeated",
+  "creatureCard",
+  "skillCard",
+  "handLimit",
+  "deck",
+  "graveyard",
+  "countdown",
+  "ready",
+  "recall",
+  "countdownLimit",
+  "unit",
+  "hp",
+  "range",
+  "movement",
+  "token",
+  "keywordCharge",
+  "keywordKnockback",
+  "keywordLastBreath",
+  "keywordTrample",
+  "keywordWall",
+  "keywordEntangle",
+  "keywordPoison",
+  "keywordSabotage",
+  "keywordRebirth",
+  "keywordSummon",
+  "keywordSwarm",
+  "keywordUnique",
+  "keywordRegenerate",
+  "keywordRetaliate",
+  "keywordBulwark",
+  "status",
+  "statusFreeze",
+  "statusParalyze",
+  "statusBleed",
+  "statusHobble",
+  "statusGrounded",
+  "statusWard",
+  "statusSteadfast",
+  "statusExposed",
+  "damageType",
+  "race",
+  "class",
+  "rank",
+  "rankGems",
+  "stars",
+  "sweep",
+  "playerLevel",
+  "coin",
+  "pack",
+  "workshop",
+  "gear",
+  "seaport",
+  "dungeon",
+  "heynspire",
+  "achievement",
+]);
+
+/**
+ * The Translation Keys of the names that also find an Entry in the search: a
+ * Token name finds the Token Entry, for example "Skeleton → Token".
+ */
+export const nameAliasKeys = (id: EntryId): readonly string[] =>
+  id === "token"
+    ? TOKEN_GALLERY.map((token) => tokenNameKey(token.tokenId))
+    : [];
+
+/** The Translation Key of the aliases of an Entry: a list with commas. */
+export const aliasKey = (id: EntryId): string => `handbook.aliases.${id}`;
+
+/** The aliases in one Message Catalog string: "mana, cost" is two aliases. */
+export const splitAliases = (text: string): readonly string[] =>
+  text
+    .split(",")
+    .map((alias) => alias.trim())
+    .filter((alias) => alias.length > 0);
+
+/** One Entry as the search sees it, in the current Locale. */
+export interface SearchItem {
+  readonly id: EntryId;
+  readonly name: string;
+  readonly aliases: readonly string[];
+}
+
+/** One search result. `alias` is the alias that matched, for "mana → Countdown". */
+export interface SearchHit {
+  readonly id: EntryId;
+  readonly alias: string | null;
+}
+
+/** Lower case, with no accents and single spaces, so that "Énergie" finds "energie". */
+const fold = (text: string): string =>
+  text
+    .normalize("NFD")
+    .replaceAll(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replaceAll(/\s+/gu, " ")
+    .trim();
+
+/** 0 for a match at the start of a word, 1 for a match in a word, `null` for none. */
+const matchRank = (text: string, query: string): number | null => {
+  const folded = fold(text);
+  const at = folded.indexOf(query);
+  if (at === -1) {
+    return null;
+  }
+  return at === 0 || folded.charAt(at - 1) === " " ? 0 : 1;
+};
+
+interface Scored {
+  readonly hit: SearchHit;
+  readonly score: number;
+  readonly order: number;
+}
+
+const scoreItem = (
+  item: SearchItem,
+  order: number,
+  query: string
+): Scored | null => {
+  const byName = matchRank(item.name, query);
+  if (byName !== null) {
+    return { hit: { id: item.id, alias: null }, score: byName, order };
+  }
+  for (const rank of [0, 1]) {
+    const alias = item.aliases.find((word) => matchRank(word, query) === rank);
+    if (alias !== undefined) {
+      return { hit: { id: item.id, alias }, score: 2 + rank, order };
+    }
+  }
+  return null;
+};
+
+/**
+ * The Entries that match a search, by name or by alias, in the current Locale.
+ * A name match comes before an alias match, and a match at the start of a
+ * word before a match in a word. Then the Entries keep the Handbook order.
+ */
+export const searchEntries = (
+  query: string,
+  items: readonly SearchItem[]
+): readonly SearchHit[] => {
+  const folded = fold(query);
+  if (folded.length === 0) {
+    return [];
+  }
+  return items
+    .flatMap((item, order) => scoreItem(item, order, folded) ?? [])
+    .toSorted((a, b) => a.score - b.score || a.order - b.order)
+    .map((scored) => scored.hit);
+};
+
+/** Where an opened Handbook starts: the last Entry that the Player read, or a linked Entry. */
+export interface HandbookRequest {
+  readonly entry: EntryId;
+  /** `link` opens the Entry page. `bar` opens the list on a single page. */
+  readonly from: "bar" | "link";
+}
+
+/** The page that shows when the Handbook has room for only one page. */
+export type HandbookPage = "list" | "entry";
+
+/** The place in an open Handbook. */
+export interface HandbookPlace {
+  readonly chapter: ChapterId;
+  readonly entry: EntryId;
+  readonly page: HandbookPage;
+}
+
+/** The place where a Handbook opens. */
+export const openPlace = (request: HandbookRequest): HandbookPlace => ({
+  chapter: getEntry(request.entry).chapter,
+  entry: request.entry,
+  page: request.from === "link" ? "entry" : "list",
+});
+
+/** An Entry from the list, a search result or a "See also" link opens its page. */
+export const showEntry = (id: EntryId): HandbookPlace => ({
+  chapter: getEntry(id).chapter,
+  entry: id,
+  page: "entry",
+});
+
+/**
+ * A Chapter tab shows the list of the Chapter. The open Entry stays when it is
+ * in the Chapter. Else the first Entry of the list opens on the second page.
+ */
+export const showChapter = (
+  place: HandbookPlace,
+  chapter: ChapterId,
+  first: EntryId
+): HandbookPlace => ({
+  chapter,
+  entry: getEntry(place.entry).chapter === chapter ? place.entry : first,
+  page: "list",
+});

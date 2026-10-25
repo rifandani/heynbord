@@ -1,0 +1,227 @@
+import { expect, test } from "./_base";
+import type { Page } from "./_base";
+
+/**
+ * The Deck dialog (GDD 6): the Town Bar Deck shortcut opens it over the
+ * Town. The Profile keeps the Deck slots in IndexedDB. Each test has a new
+ * browser context, so it starts as a new Player.
+ */
+
+/** The part of `window` that the test hooks (test-hooks.ts) add. */
+interface HookWindow extends Window {
+  readonly __THREE_GAME_TEST_HOOKS__?: {
+    readonly profileSaved: () => Promise<void>;
+  };
+}
+
+const openDecks = async (page: Page) => {
+  await page.goto("/play");
+  // The Town opens its Buildings when the Profile is loaded.
+  await expect(page.getByTestId("building-townGate")).toBeEnabled();
+  await page.getByTestId("town-shortcut-deck").click();
+  const dialog = page.getByTestId("deck-dialog");
+  await expect(dialog).toBeVisible();
+  return dialog;
+};
+
+test.describe("Deck dialog", () => {
+  test("a Deck edit stays after a reload", async ({ page }) => {
+    const dialog = await openDecks(page);
+    await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await page.evaluate(async () => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      await (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.profileSaved();
+    });
+    await page.reload();
+    const again = await openDecks(page);
+    await expect(again.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+  });
+
+  test("a press removes one copy, and hover shows the Card Details", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    const card = dialog.getByTestId("deck-row-human.militiaRecruit-common");
+    // The Card Details show under the pointer, and the card stays.
+    await card.hover();
+    await expect(dialog.getByTestId("deck-peek")).toContainText(
+      "Militia Recruit"
+    );
+    await page.mouse.move(8, 8);
+    await expect(dialog.getByTestId("deck-peek")).toHaveCount(0);
+
+    await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(card).toContainText("×1");
+  });
+
+  test("opens on the active Deck, and Esc closes it", async ({ page }) => {
+    const dialog = await openDecks(page);
+    await expect(page.getByTestId("deck-slot-vanguard")).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await expect(dialog.getByTestId("deck-size")).toHaveText("10 / 10 cards");
+    await expect(dialog.getByTestId("deck-active")).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    // The Town Bar stays: Esc closes the dialog only.
+    await expect(page.getByTestId("town-bar")).toBeVisible();
+  });
+
+  test("shows the Countdown sum and blocks a card over the Countdown Limit (ADR-0021)", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    // The Vanguard is at the limit of level 1.
+    await expect(dialog.getByTestId("deck-countdown")).toHaveText(
+      "Countdown 25 / 25"
+    );
+    // Without one Militia Recruit (Countdown 1), the Deck has room for 1 card.
+    await dialog.getByTestId("deck-remove-human.militiaRecruit-common").click();
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+    await expect(dialog.getByTestId("deck-countdown")).toHaveText(
+      "Countdown 24 / 25"
+    );
+
+    // A Scrap Raider (Countdown 2) puts the Deck over the limit.
+    const raider = dialog.getByTestId("pool-orc.scrapRaider-common");
+    await expect(raider).toHaveAttribute("data-blocked", "countdown");
+    await expect(raider).toContainText("Countdown Limit");
+    await raider.click({ force: true });
+    await expect(dialog.getByTestId("deck-size")).toHaveText("9 / 10 cards");
+
+    // A Badland Runt (Countdown 1) fits.
+    await dialog.getByTestId("pool-orc.badlandRunt-common").click();
+    await expect(dialog.getByTestId("deck-countdown")).toHaveText(
+      "Countdown 25 / 25"
+    );
+    await expect(dialog.getByTestId("deck-problems")).toHaveCount(0);
+  });
+
+  test("builds a Deck in an empty slot and makes it the active Deck", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    await page.getByTestId("deck-slot-slot-3").click();
+    await expect(dialog.getByTestId("deck-size")).toHaveText("0 / 10 cards");
+    await expect(dialog.getByTestId("deck-use")).toBeDisabled();
+
+    await dialog.getByTestId("pool-human.crossbowGuard-common").click();
+    await dialog.getByTestId("pool-human.crossbowGuard-common").click();
+    await dialog.getByTestId("pool-human.crossbowGuard-common").click();
+    await expect(
+      dialog.getByTestId("deck-row-human.crossbowGuard-common")
+    ).toContainText("×3");
+    // The three owned copies are in the Deck now.
+    await expect(
+      dialog.getByTestId("pool-human.crossbowGuard-common")
+    ).toHaveAttribute("data-blocked", "none");
+    await expect(dialog.getByTestId("deck-problems")).toContainText(
+      "at least 5 cards"
+    );
+
+    await dialog.getByTestId("deck-remove-human.crossbowGuard-common").click();
+    await expect(
+      dialog.getByTestId("deck-row-human.crossbowGuard-common")
+    ).toContainText("×2");
+
+    await dialog.getByTestId("deck-autofill").click();
+    await expect(dialog.getByTestId("deck-size")).toHaveText("10 / 10 cards");
+    await expect(dialog.getByTestId("deck-problems")).toHaveCount(0);
+
+    await dialog.getByTestId("deck-name").fill("Crossbow Line");
+    // The keyboard, so that a toast at the bottom right cannot take the click.
+    await dialog.getByTestId("deck-use").press("Enter");
+    await expect(dialog.getByTestId("deck-active")).toBeVisible();
+
+    // The slots and the active Deck stay after a reload.
+    await page.reload();
+    await page.getByTestId("town-shortcut-deck").click();
+    await expect(page.getByTestId("deck-slot-slot-3")).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await expect(page.getByTestId("deck-slot-slot-3")).toContainText(
+      "Crossbow Line"
+    );
+  });
+
+  test("offers the next Deck Slot for Coin, and cannot buy it with no Coin", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    await expect(dialog.getByRole("tab")).toHaveCount(3);
+    const locked = dialog.getByTestId("deck-buy-slot");
+    await expect(locked).toHaveAccessibleName("Buy Deck Slot 4 for 5 Silver");
+
+    await locked.click();
+    const buy = page.getByTestId("buy-slot-dialog");
+    await expect(buy).toContainText("Buy Deck Slot 4?");
+    await expect(buy.getByTestId("buy-slot-short")).toHaveText(
+      "You need 5 Silver more."
+    );
+    await expect(buy.getByTestId("buy-slot-confirm")).toBeDisabled();
+
+    // Esc closes the confirm dialog only, and the Deck dialog stays.
+    await page.keyboard.press("Escape");
+    await expect(buy).toBeHidden();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("tab")).toHaveCount(3);
+  });
+
+  test("shows why a Skill Card of another Class is not valid", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    await page.getByTestId("deck-slot-raiders").click();
+    await dialog.getByTestId("deck-class-warrior").click();
+    await expect(dialog.getByTestId("deck-problems")).toContainText(
+      "Fireball is a Mage card"
+    );
+    await expect(
+      dialog.getByTestId("pool-mage.fireball-common")
+    ).toHaveAttribute("data-blocked", "class");
+  });
+
+  test("shows all the cards, and filters them by Ownership, Race and Class", async ({
+    page,
+  }) => {
+    const dialog = await openDecks(page);
+    await expect(dialog.getByTestId("pool-count")).toHaveText(/ \/ 66 owned$/u);
+    // A card that the Player does not own is in the pool, but a press does not add it.
+    const snatcher = dialog.getByTestId("pool-goblin.ankleSnatcher-common");
+    await expect(snatcher).toHaveAttribute("data-blocked", "notOwned");
+    await page.getByTestId("deck-slot-slot-3").click();
+    // The button is aria-disabled, so the click must be forced.
+    await snatcher.click({ force: true });
+    await expect(dialog.getByTestId("deck-size")).toHaveText("0 / 10 cards");
+
+    await dialog.getByTestId("pool-own-owned").click();
+    await expect(dialog.getByTestId("pool-not-owned")).toHaveCount(0);
+    await dialog.getByTestId("pool-filter-creature").click();
+    await dialog.getByTestId("pool-race-goblin").click();
+    await expect(dialog.getByTestId("pool-count")).toHaveText("0 / 15 owned");
+    await expect(dialog.getByTestId("pool-empty")).toContainText(
+      "You own no Goblin Creature Cards yet."
+    );
+    await dialog.getByTestId("pool-show-all").click();
+    await expect(dialog.getByTestId("pool-empty")).toHaveCount(0);
+    await expect(dialog.getByTestId("pool-count")).toHaveText(/ \/ 66 owned$/u);
+
+    // The Class filter starts on the Hero Class of the Deck, and follows the slot.
+    await dialog.getByTestId("pool-filter-skill").click();
+    await expect(dialog.getByTestId("pool-class-warrior")).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
+    await page.getByTestId("deck-slot-raiders").click();
+    await expect(dialog.getByTestId("pool-class-mage")).toHaveAttribute(
+      "data-selected",
+      "true"
+    );
+    await expect(dialog.getByTestId("pool-count")).toHaveText("1 / 3 owned");
+  });
+});

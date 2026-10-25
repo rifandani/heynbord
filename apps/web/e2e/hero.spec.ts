@@ -1,0 +1,251 @@
+import { expect, test } from "./_base";
+import type { Page } from "./_base";
+
+/**
+ * The Hero screen (GDD 7.3, issue #77): the Barracks and the Hero shortcut
+ * open it at Player level 5, a Gear upgrade adds 1 level for Coin and a
+ * Forge Stone (ADR-0036) and the Profile keeps it.
+ */
+
+/** The part of `window` that the test hooks (test-hooks.ts) add. */
+interface HookWindow extends Window {
+  readonly __THREE_GAME_TEST_HOOKS__?: {
+    readonly setCoin: (copper: number) => void;
+    readonly setForgeStones: (stones: ForgeStones) => void;
+    readonly setXp: (xp: number) => void;
+    readonly profileSaved: () => Promise<void>;
+  };
+}
+
+/** The Forge Stones of each tier. */
+interface ForgeStones {
+  readonly common: number;
+  readonly uncommon: number;
+  readonly rare: number;
+  readonly epic: number;
+  readonly legendary: number;
+}
+
+const NO_STONES: ForgeStones = {
+  common: 0,
+  uncommon: 0,
+  rare: 0,
+  epic: 0,
+  legendary: 0,
+};
+
+/** Sets the Forge Stones of the Profile with the test hook. */
+const setForgeStones = (page: Page, stones: ForgeStones) =>
+  page.evaluate((value) => {
+    // SAFETY: the dev and QA builds install the test hooks on `window`.
+    (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setForgeStones(value);
+  }, stones);
+
+/** The total XP of Player level 5 (Economy 1.2). */
+const LEVEL_5_XP = 640;
+
+/** Opens the Town with `xp` and `coin` Copper. */
+const openTown = async (page: Page, xp: number, coin: number) => {
+  await page.goto("/play");
+  await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+  await page.waitForFunction(() => "__THREE_GAME_TEST_HOOKS__" in window);
+  await page.evaluate(
+    ([total, copper]) => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      const hooks = (window as HookWindow).__THREE_GAME_TEST_HOOKS__;
+      hooks?.setXp(total);
+      hooks?.setCoin(copper);
+    },
+    [xp, coin] as const
+  );
+};
+
+test.describe("Hero screen", () => {
+  test("locks the Barracks and the Hero shortcut below level 5", async ({
+    page,
+  }) => {
+    await openTown(page, 480, 0);
+    const barracks = page.getByTestId("building-barracks");
+    await expect(barracks).toHaveAttribute("data-locked", "true");
+    await expect(barracks).toHaveAccessibleName("Hero, opens at level 5");
+    await expect(barracks.getByTestId("building-lock-plate")).toHaveText(
+      "Level 5"
+    );
+    const shortcut = page.getByTestId("town-shortcut-hero");
+    await expect(shortcut).toHaveAttribute("data-locked", "true");
+    await expect(shortcut).toHaveAccessibleName("Hero, opens at level 5");
+    await shortcut.click();
+    await expect(page.getByTestId("town")).toBeVisible();
+    await expect(page.getByTestId("hero")).toHaveCount(0);
+  });
+
+  test("level 5: the Barracks opens the Hero screen, and the Gear Hint shows one time", async ({
+    page,
+  }) => {
+    await openTown(page, LEVEL_5_XP, 0);
+    await page.getByTestId("building-barracks").click();
+    await expect(page.getByTestId("hero")).toBeVisible();
+    await expect(page.getByTestId("town-shortcut-hero")).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
+    await expect(page.getByTestId("hero-hp-base")).toHaveText("30");
+    await expect(page.getByTestId("hero-hp-level")).toHaveText("5");
+    await expect(page.getByTestId("hero-hp-armor")).toHaveText("0");
+
+    const hint = page.getByTestId("hint");
+    await expect(hint).toHaveAttribute("data-hint", "gear");
+    await expect(hint).toContainText("A level never goes down.");
+    await page.getByTestId("hint-read-more").click();
+    await expect(page.getByTestId("handbook-entry")).toHaveAttribute(
+      "data-entry",
+      "gear"
+    );
+    await expect(page.getByTestId("handbook-gear-guide")).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    // The Hint was seen: it does not show again.
+    await page.getByTestId("town-shortcut-town").click();
+    await page.getByTestId("town-shortcut-hero").click();
+    await expect(page.getByTestId("hero")).toBeVisible();
+    await expect(page.getByTestId("gear-rack")).toBeVisible();
+    await expect(page.getByTestId("hint")).toHaveCount(0);
+  });
+
+  test("a Gear upgrade takes its Coin and its Forge Stone, and the Profile keeps the new level", async ({
+    page,
+  }) => {
+    await openTown(page, LEVEL_5_XP, 1000);
+    await setForgeStones(page, { ...NO_STONES, common: 2, rare: 1 });
+    await page.getByTestId("town-shortcut-hero").click();
+    await expect(page.getByTestId("hero")).toBeVisible();
+
+    // The 5 Forge Stone counts.
+    await expect(
+      page.getByTestId("hero-forge-stones").locator("li")
+    ).toHaveCount(5);
+    await expect(
+      page.getByTestId("hero-forge-stone-legendary")
+    ).toHaveAttribute("data-count", "0");
+    const common = page.getByTestId("hero-forge-stone-common");
+    await expect(common).toHaveAttribute("data-count", "2");
+    await expect(common).toContainText("Common Forge Stones: 2");
+    await expect(page.getByTestId("hero-forge-stone-rare")).toHaveAttribute(
+      "data-count",
+      "1"
+    );
+
+    const weapon = page.getByTestId("gear-weapon");
+    const upgrade = page.getByTestId("gear-upgrade-weapon");
+    await expect(weapon).toHaveAttribute("data-level", "0");
+    await expect(weapon.getByTestId("gear-stat")).toHaveText("0%→0.5%");
+    // The upgrade shows all its requirements: the Coin and 1 Forge Stone.
+    await expect(upgrade).toHaveText("Upgrade5c×1");
+    await expect(weapon.getByTestId("gear-upgrade-stone")).toHaveAttribute(
+      "data-tier",
+      "common"
+    );
+    await expect(upgrade).toHaveAccessibleName(
+      "Upgrade Weapon to level 1, for 5 Copper and 1 Common Forge Stone"
+    );
+
+    await upgrade.click();
+    await expect(weapon).toHaveAttribute("data-level", "1");
+    await expect(weapon.getByTestId("gear-stat")).toHaveText("0.5%→1%");
+    await expect(page.getByTestId("hero-said")).toHaveText(
+      "Weapon is now level 1. Unit Crit: 0.5%."
+    );
+    await expect(page.getByTestId("balance-coin")).toHaveAccessibleName(
+      "Coin: 9 Silver, 95 Copper"
+    );
+    await expect(common).toHaveAttribute("data-count", "1");
+    // The focus stays on the upgrade, so Enter upgrades again.
+    await expect(upgrade).toBeFocused();
+
+    // An Armor upgrade adds 1 to the Hero HP and uses the last Common Forge Stone.
+    await page.getByTestId("gear-upgrade-armor").click();
+    await expect(page.getByTestId("hero-hp")).toHaveAttribute(
+      "data-total",
+      "36"
+    );
+    await expect(page.getByTestId("hero-hp-base")).toHaveText("30");
+    await expect(page.getByTestId("hero-hp-level")).toHaveText("5");
+    await expect(page.getByTestId("hero-hp-armor")).toHaveText("1");
+    await expect(common).toHaveAttribute("data-count", "0");
+
+    // No Common Forge Stone: the upgrade is off, also with the Coin. The Rare
+    // Forge Stone cannot replace it.
+    await expect(upgrade).toBeDisabled();
+    await expect(upgrade).toHaveText("Upgrade15c×1");
+    await expect(upgrade).toHaveAccessibleName(
+      "Upgrade Weapon: you need 1 Common Forge Stone"
+    );
+
+    // Level 2 costs 15 Copper. With a Forge Stone and 10 Copper, the Coin is
+    // the requirement that is missing.
+    await setForgeStones(page, { ...NO_STONES, common: 1, rare: 1 });
+    await page.evaluate(() => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.setCoin(10);
+    });
+    await expect(upgrade).toBeDisabled();
+    await expect(upgrade).toHaveText("Upgrade15c×1");
+    await expect(upgrade).toHaveAccessibleName(
+      "Upgrade Weapon: you need 5 Copper more"
+    );
+
+    await page.evaluate(async () => {
+      // SAFETY: the dev and QA builds install the test hooks on `window`.
+      await (window as HookWindow).__THREE_GAME_TEST_HOOKS__?.profileSaved();
+    });
+    await page.reload();
+    await expect(page.getByTestId("town")).toBeVisible({ timeout: 30_000 });
+    await page.getByTestId("town-shortcut-hero").click();
+    await expect(page.getByTestId("gear-weapon")).toHaveAttribute(
+      "data-level",
+      "1"
+    );
+    await expect(page.getByTestId("gear-armor")).toHaveAttribute(
+      "data-level",
+      "1"
+    );
+    await expect(page.getByTestId("hero-forge-stone-common")).toHaveAttribute(
+      "data-count",
+      "1"
+    );
+  });
+
+  test("the upgrade to level 5 says that the next levels need Uncommon Forge Stones", async ({
+    page,
+  }) => {
+    await openTown(page, LEVEL_5_XP, 1000);
+    await setForgeStones(page, { ...NO_STONES, common: 5, uncommon: 1 });
+    await page.getByTestId("town-shortcut-hero").click();
+    await expect(page.getByTestId("hero")).toBeVisible();
+    const upgrade = page.getByTestId("gear-upgrade-weapon");
+    const stone = page
+      .getByTestId("gear-weapon")
+      .getByTestId("gear-upgrade-stone");
+
+    for (const level of [1, 2, 3, 4]) {
+      // oxlint-disable-next-line no-await-in-loop -- each upgrade waits for the one before it.
+      await upgrade.click();
+      // oxlint-disable-next-line no-await-in-loop -- as above.
+      await expect(page.getByTestId("gear-weapon")).toHaveAttribute(
+        "data-level",
+        String(level)
+      );
+    }
+    await expect(page.getByTestId("hero-said")).toHaveText(
+      "Weapon is now level 4. Unit Crit: 2%."
+    );
+    await expect(stone).toHaveAttribute("data-tier", "common");
+
+    await upgrade.click();
+    await expect(page.getByTestId("hero-said")).toHaveText(
+      "Weapon is now level 5. Unit Crit: 2.5%. The next levels need Uncommon Forge Stones."
+    );
+    await expect(stone).toHaveAttribute("data-tier", "uncommon");
+    await expect(upgrade).toHaveAccessibleName(/1 Uncommon Forge Stone$/u);
+  });
+});

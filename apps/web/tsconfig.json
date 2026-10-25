@@ -20,6 +20,7 @@
     "dev-dist",
     "dist",
     "vite.config.*",
+    "scripts/rules-hash.ts",
     "playwright.config.*",
     "pwa-assets.config.*"
   ]

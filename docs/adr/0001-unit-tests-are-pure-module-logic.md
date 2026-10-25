@@ -7,6 +7,7 @@ We run Vitest projects (`core`, `web`) for Unit tests: utils, libs, registries, 
 > "Targeted mocks" was narrowed on 2026-07-30: API-layer tests now fake at the network boundary via MSW, not at the module boundary. Scope above is unchanged — see [ADR-0002](./0002-network-boundary-mocking-with-msw.md).
 > A second tool now watches the same `coverage.include` allowlist from the other side: [ADR-0003](./0003-mutation-testing-is-advisory.md) derives its mutation scope from it. Coverage asks *did a test execute this line* (a floor, enforced); mutation asks *would a test notice if this line were wrong* (a ceiling, advisory).
 > Its first report then revised the allowlist itself on 2026-08-03 — pure Zod schema modules were scoring a free 100% — see [Amendments](#amendments).
+> The same rule was made wider on 2026-10-24: all declaration-only modules leave the allowlist, not only schema modules — same section.
 
 ## Considered Options
 
@@ -38,11 +39,11 @@ Scope is narrow and structural: **modules that contain only schema declarations*
 
 `coverage` is root-only (Vitest's `NonProjectOptions`), so `--project <name> --coverage` measures the global include list against a partial run and reports the other projects at 0%. There is deliberately no per-project `*:test:unit:cov`-style script despite the symmetry with the per-project ones: coverage is whole-suite only, via `bun test:unit:cov`.
 
-**2026-08-30 — the E2E this ADR defers UI behavior to no longer runs before a merge.** [ADR-0004](./0004-e2e-is-manual.md) moved Playwright out of `ci.yml` into a `workflow_dispatch` workflow that also runs on push to `main`. It runs on no pull request.
+**2026-08-30 — the E2E this ADR defers UI behavior to no longer runs before a merge.** Playwright moved out of `ci.yml` into the separate [E2E workflow](../../.github/workflows/e2e.yml), a `workflow_dispatch` workflow that also runs on push to `main`. It runs on no pull request.
 
 Two clauses above now rest on something weaker than they did. The scope rule — "React components/hooks (RTL, hook harnesses) … are out of scope — UI behavior belongs in Playwright E2E" — still names the right home for UI behavior, but that home is no longer visited before code lands. And the rejected option "React Testing Library for components/hooks — rejected; duplicates E2E cost and slows the suite" was an argument about *duplication*: RTL was redundant because E2E already covered that ground on every PR. It no longer does, so the redundancy argument is spent. The rejection stands on its remaining leg only — wall-clock cost, and the preference for `environment: 'node'` over a DOM shim — which is a thinner leg than the one it was written on.
 
-Neither clause is reversed here. **Pre-merge UI coverage is accepted as zero**, deliberately and with the alternatives enumerated in ADR-0004. This note exists so that a future reader who finds a UI regression on `main` does not conclude the scope rule failed: the scope rule assumed a gate that was removed on purpose.
+Neither clause is reversed here. **Pre-merge UI coverage is accepted as zero**, deliberately, with the reasons recorded in the comments of the [E2E workflow](../../.github/workflows/e2e.yml). This note exists so that a future reader who finds a UI regression on `main` does not conclude the scope rule failed: the scope rule assumed a gate that was removed on purpose.
 
 **2026-10-03 — Effect replaces Zod and Zustand-style stores ([ADR-0007](./0007-effect-is-the-application-runtime.md)).** The scope rule does not change. Only the names of the things in scope change:
 
@@ -51,3 +52,11 @@ Neither clause is reversed here. **Pre-merge UI coverage is accepted as zero**, 
 - Effects and services are tested with `@effect/vitest` (`it.effect`, `it.live`) and test layers or `Effect.provideService` fakes.
 
 The allowlist adds the new logic folders (`config`, `http`, `runtime`, and `features/**/*.ts`). It excludes the new framework seams by the Logic Seam convention: `*.functions.ts` (`createServerFn` transports), `*.server.ts` (the runtime that reads TanStack's request), `core/config/env.ts` (the startup binding of `import.meta.env`) and `use-*.ts` hooks. Each one delegates to a tested sibling.
+
+**2026-10-24 — declaration-only modules leave the `include` allowlist, and the battle slice gets its seams.** The 2026-08-03 rule removed pure schema modules because an import gives them a free 100%. The same is true for every module that has no function and no branch. The battle slice added such modules under `features/**/*.ts`: Tailwind class strings (`battle/components/reward-plate.ts`), an empty registry (`battle/scene/unit-anchors.ts`) and atoms that only hold a value (`dungeons/dungeons.atoms.ts`, `heynspire/heynspire.atoms.ts`). A test of them can only assert the initial value, which is padding. They leave the allowlist by name.
+
+The rule stays structural and narrow. A module with one function or one branch stays in: a registry with stub functions (`scene-picker.ts`, `unit-picker.ts`) and an atom that derives a value (`seaport.atoms.ts`) are tested.
+
+Two seams leave by the Logic Seam convention. `battle/scene/fx-atlas.ts` loads the painted atlas and draws it on a canvas, as `textures.ts` does. Its slot math (`fxSlotUv`, `fxSlotIcon`) moved to the tested sibling `fx-slots.ts`. `battle/scene/reduced-motion.ts` only reads `window.matchMedia`.
+
+A defensive guard that the types or the content make unreachable (a `default` case after `satisfies never`, a lookup in a constant table) gets `/* v8 ignore next -- @preserve */`, as the 2026-07-28 amendment permits. A guard that a caller can reach with bad input (an unknown Pack, an unknown Region, a malformed old save) gets a test.

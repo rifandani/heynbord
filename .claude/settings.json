@@ -1,5 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "enabledMcpjsonServers": [
+    "cloudflare"
+  ],
+  "enableAllProjectMcpServers": true,
   "permissions": {
     "allow": [
       "Bash(cd:*)",
@@ -91,7 +95,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/worktree-create.sh"
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/worktree-create.sh\""
           }
         ]
       }
@@ -101,7 +105,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/worktree-remove.sh"
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/worktree-remove.sh\""
           }
         ]
       }
@@ -111,12 +115,31 @@
         "matcher": "Write|Edit",
         "hooks": [
           {
-            "command": "bun lint:fix",
+            "command": "bash -c 'cd \"$CLAUDE_PROJECT_DIR\" && bun lint:fix >&2; status=$?; if [ \"$status\" -ne 0 ]; then exit 2; fi'",
             "type": "command"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
           {
-            "command": "bun check:fix",
-            "type": "command"
+            "type": "command",
+            "command": "[ ! -f \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs\" ] || node \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs\"",
+            "timeout": 5,
+            "statusMessage": "Checking UI changes"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -f \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs\" ] || node \"${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs\"",
+            "timeout": 30,
+            "statusMessage": "Design deep pass"
           }
         ]
       }
@@ -135,14 +158,28 @@
   },
   "outputStyle": "default",
   "sandbox": {
-    "enabled": true,
+    "enabled": false,
     "autoAllowBashIfSandboxed": true,
+    "excludedCommands": ["gh", "gh *", "rtk gh", "rtk gh *"],
     "network": {
       "allowLocalBinding": true
     }
   },
+  "skillOverrides": {
+    "anthropic-skills:docx": "off",
+    "anthropic-skills:docs": "off",
+    "anthropic-skills:google-workspace": "off",
+    "anthropic-skills:morning": "off",
+    "anthropic-skills:pdf": "off",
+    "anthropic-skills:pptx": "off",
+    "anthropic-skills:skill-creator": "off",
+    "anthropic-skills:xlsx": "off"
+  },
   "statusLine": {
     "type": "command",
     "command": "bun x ccusage statusline"
-  }
+  },
+  "syncClaudeAiSkills": false,
+  "disableBundledSkills": true,
+  "autoMemoryEnabled": false
 }

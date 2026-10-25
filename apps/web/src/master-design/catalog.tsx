@@ -78,7 +78,14 @@ export const MasterDesignCatalog = () => {
                     id={entry.id}
                     key={entry.id}
                   >
-                    <h3 className="mb-4 text-xl font-semibold">{entry.name}</h3>
+                    <div className="mb-4">
+                      <h3 className="text-xl font-semibold">{entry.name}</h3>
+                      {entry.description ? (
+                        <p className="text-muted-fg mt-1 text-sm">
+                          {entry.description}
+                        </p>
+                      ) : null}
+                    </div>
                     <entry.Showcase />
                   </section>
                 ))}

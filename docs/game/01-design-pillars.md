@@ -12,7 +12,9 @@ The player never pays for power. The player never loses progress because of luck
 
 **This means:**
 
-- No real money buys cards, currency, gear or any gameplay advantage.
+- No real money buys cards, Coin, Essence, gear or any gameplay advantage.
+- Real money buys only Heynstones. Heynstones buy only Cosmetics and Conveniences. A Convenience changes comfort or organization. It never changes the result of a battle, the speed of progress or the content of the collection.
+- XP boosts, Coin boosts and battle skips are not Conveniences, because they make progress faster.
 - Combine and gear upgrades never fail and never cause a downgrade.
 - The game shows the drop rates of all packs.
 - There is no Energy and no other limit on how many battles a player can do.
@@ -39,7 +41,7 @@ The player makes all decisions before the units act. Then the battle resolves by
 **This does not mean:**
 
 - The player has no skill expression. Deck building, timing and lane choice are the skill.
-- Battles must be slow. The player can use speed ×2, skip or auto-play.
+- Battles must be slow. The player can use speed ×2 or skip, and a Sweep gives the rewards of a repeat win with no Battle.
 
 **Test:** "Can the player explain why they won or lost after they watch the battle?" If no, make the rule or its presentation clearer.
 
@@ -55,7 +57,7 @@ The countdown is the core mechanic. Each card becomes ready after a number of tu
 
 **This does not mean:**
 
-- Countdown is the only limit. The hand limit, the summon column and the lanes are also limits.
+- Countdown is the only limit. The hand limit, the Summon Zone and the lanes are also limits.
 
 **Test:** "Does this card or rule make the player think about timing?" Prefer designs that do.
 

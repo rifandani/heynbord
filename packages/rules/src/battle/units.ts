@@ -1,0 +1,184 @@
+import { keywordRange, keywordSpeed, keywordValue } from "../content/keywords";
+import { scaleForRank } from "../content/ranks";
+import type {
+  CreatureCardDefinition,
+  DamageType,
+  RankId,
+  TokenDefinition,
+  TokenKeywords,
+} from "../content/schema";
+import type { StepContext } from "./context";
+import type { CardInstance, HeroRef, UnitSource, UnitState } from "./types";
+import { BattleEvent } from "./types";
+
+/** The values of a Unit at its Rank, from a card or from a Token. */
+interface UnitBody {
+  readonly attack: number;
+  readonly hp: number;
+  readonly damageType: DamageType;
+  readonly keywords: TokenKeywords;
+}
+
+/** The boolean Keywords of a Unit, from a card or from a Token. */
+const keywordFlags = (keywords: TokenKeywords) => ({
+  entangle: keywords.entangle === true,
+  firstStrike: keywords.firstStrike === true,
+  flying: keywords.flying === true,
+  pivot: keywords.pivot === true,
+  poison: keywords.poison === true,
+  rebirth: keywords.rebirth === true,
+  retaliate: keywords.retaliate === true,
+  trample: keywords.trample === true,
+  wall: keywords.wall === true,
+  ironGuard: keywords.ironGuard === true,
+  soulHarvest: keywords.soulHarvest === true,
+  herosBane: keywords.herosBane === true,
+  vampirism: keywords.vampirism === true,
+  wallbreaker: keywords.wallbreaker === true,
+  quickStudy: keywords.quickStudy === true,
+  piercing: keywords.piercing === true,
+  dispel: keywords.dispel === true,
+});
+
+/** The numeric Keywords of a Unit, at its Rank, from a card or from a Token. */
+const keywordStats = (keywords: TokenKeywords, rank: RankId) => ({
+  speed: keywordSpeed(keywords),
+  range: keywordRange(keywords),
+  bulwark: keywordValue(keywords.bulwark, rank),
+  charge: keywordValue(keywords.charge, rank),
+  heroic: keywordValue(keywords.heroic, rank),
+  lastBreath: keywordValue(keywords.lastBreath, rank),
+  hobble: keywordValue(keywords.hobble, rank),
+  bleed: keywordValue(keywords.bleed, rank),
+  knockback: keywordValue(keywords.knockback, rank),
+  rally: keywordValue(keywords.rally, rank),
+  regenerate: keywordValue(keywords.regenerate, rank),
+  swarm: keywordValue(keywords.swarm, rank),
+  bolt: keywordValue(keywords.bolt, rank),
+  spawnbane: keywordValue(keywords.spawnbane, rank),
+  resistance: keywordValue(keywords.resistance, rank),
+  heal: keywordValue(keywords.heal, rank),
+});
+
+const makeUnit = (options: {
+  readonly id: number;
+  readonly owner: HeroRef;
+  readonly source: UnitSource;
+  readonly rank: RankId;
+  readonly body: UnitBody;
+  readonly lane: number;
+  readonly position: number;
+  readonly turnNumber: number;
+}): UnitState => {
+  const { body, rank } = options;
+  const { keywords } = body;
+  return {
+    id: options.id,
+    owner: options.owner.side,
+    hero: options.owner.hero,
+    source: options.source,
+    lane: options.lane,
+    position: options.position,
+    attack: body.attack,
+    hp: body.hp,
+    maxHp: body.hp,
+    damageType: body.damageType,
+    ...keywordStats(keywords, rank),
+    ...keywordFlags(keywords),
+    soulHarvestBonus: 0,
+    summonedTurn: options.turnNumber,
+    burn: 0,
+    poisoned: 0,
+    hobbled: 0,
+    bleeding: 0,
+    grounded: 0,
+    exposed: 0,
+    exposedTurns: 0,
+    frozen: false,
+    paralyzed: false,
+    entangled: false,
+    ward: 0,
+    steadfast: false,
+    rallied: 0,
+    heroicBonus: 0,
+    bonusBulwark: 0,
+    bonusBulwarkTurns: 0,
+    bonusAttack: 0,
+    bonusAttackTurns: 0,
+    bonusRange: 0,
+    bonusRangeTurns: 0,
+  };
+};
+
+/** Makes a Unit of the Hero `owner` from a Creature Card copy. Attack and HP scale with the Rank (GDD 5.3). */
+export const createUnit = (options: {
+  readonly id: number;
+  readonly owner: HeroRef;
+  readonly card: CardInstance;
+  readonly definition: CreatureCardDefinition;
+  readonly lane: number;
+  readonly position: number;
+  readonly turnNumber: number;
+}): UnitState => {
+  const { definition, card } = options;
+  return makeUnit({
+    ...options,
+    source: { _tag: "Card", card },
+    rank: card.rank,
+    body: {
+      ...definition,
+      attack: scaleForRank(definition.attack, card.rank),
+      hp: scaleForRank(definition.hp, card.rank),
+    },
+  });
+};
+
+/**
+ * Makes a Token Unit (GDD 4.9). Its Rank table gives Attack and HP:
+ * they do not scale (Card Concepts 8).
+ */
+export const createToken = (options: {
+  readonly id: number;
+  readonly owner: HeroRef;
+  readonly token: TokenDefinition;
+  readonly rank: RankId;
+  readonly lane: number;
+  readonly position: number;
+  readonly turnNumber: number;
+}): UnitState => {
+  const { token, rank } = options;
+  return makeUnit({
+    ...options,
+    source: { _tag: "Token", tokenId: token.id, rank },
+    body: { ...token, ...token.ranks[rank] },
+  });
+};
+
+/**
+ * Puts a Unit on the Board. Only `playCard` applies the effects of a Unit that
+ * comes from its Creature Card, such as Sabotage and Summon: a Start Unit and
+ * the Unit of a Boss Rule do not.
+ */
+export const summon = (
+  ctx: StepContext,
+  owner: HeroRef,
+  card: CardInstance,
+  definition: CreatureCardDefinition,
+  lane: number,
+  position: number
+): UnitState => {
+  const { state } = ctx;
+  const unit = createUnit({
+    id: state.nextId,
+    owner,
+    card,
+    definition,
+    lane,
+    position,
+    turnNumber: state.turnNumber,
+  });
+  state.nextId += 1;
+  state.units.push(unit);
+  ctx.events.push(BattleEvent.UnitSummoned({ unit: { ...unit } }));
+  return unit;
+};

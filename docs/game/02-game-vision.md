@@ -18,7 +18,7 @@ Heynbord is a fantasy card game for the web browser. You collect heroes, beasts 
 | Technology | React, Three.js (React Three Fiber), TypeScript |
 | Mode in v1 | Single player (PvE) with a local save |
 | Mode after v1 | Asynchronous online PvP, guilds and co-op |
-| Business model | Free-to-play with cosmetics only. v1 has no shop. |
+| Business model | Free-to-play. Money buys only cosmetics and conveniences. v1 has no real-money payments. |
 | Languages | English (`en-us`) and Indonesian (`id-id`) |
 | Team | One developer. AI tools make the art. |
 | Target for v1.0 | About 6 months after the start of development |
@@ -76,17 +76,19 @@ When a player plays Heynbord, they must feel:
 | --- | --- | --- |
 | *Kings and Legends* / *Rise of Mythos* | Countdown hand, lanes, auto-combat, ranks, Combine | Fair economy, modern 3D web presentation, smaller and clearer rule set |
 | *Hearthstone* | Polish, readable board, card feel | No mana. Units move in lanes. |
-| *Plants vs. Zombies* | Lane readability, unit roles | Both sides are players with decks. |
+| *Plants vs. Zombies* | Lane readability, clear unit jobs | Both sides are players with decks. |
 | *Teamfight Tactics* | Watch-the-battle satisfaction | Turn-based with a hand of cards, not a shop and a bench |
 
 ## World and tone
 
-Heynbord is the name of the world. It is a bright high-fantasy world with some humor. Four peoples live in it (the race names are drafts):
+Heynbord is the name of the world. It is a bright high-fantasy world with some humor. Six Races live in it. Five Races are peoples, and each people also has beasts or spirits that fight with it. The sixth Race, Feral, is the wild creatures that serve no people:
 
-- **Hearthkin:** Humans and stout folk of the river towns. Shields, horses and banners.
-- **Thornwild:** Forest folk and plant spirits. Archers, vines and poison.
-- **Hollowborn:** Old spirits that wear bones and armor. They return after death.
-- **Wildmaw:** Beast tribes of the badlands. Fast, loud and strong.
+- **Human:** Humans and stout folk of the river towns. Shields, horses and banners.
+- **Elf:** Elves of the old forests, and plant spirits. Ranged Units, healing and poison.
+- **Undead:** Old spirits that wear bones and armor. They come back and bring more.
+- **Orc:** Orc tribes of the badlands, and their beasts. Fast and loud. They still hit the Unit that kills them.
+- **Goblin:** Goblins of the hill mines. Tinkers, thieves and bomb makers. They make the enemy plan slower with traps and bombs.
+- **Feral:** Wild creatures of the peaks and the deep caves. Few, huge and slow. They run through the enemy front and bring the cold.
 
 The tone is like a classic adventure story. It is colorful and heroic, and characters sometimes make jokes. There is no gore.
 
@@ -94,26 +96,26 @@ The tone is like a classic adventure story. It is colorful and heroic, and chara
 
 v1 includes:
 
-- A campaign of 3 regions with about 30 stages and 3 bosses.
+- A campaign of 5 regions with 50 stages and 5 bosses.
 - **Heynspire** (draft name): a tower of 50 floors for the endgame.
-- About 100 cards: 4 races, 4 classes, 5 ranks.
+- 3 **Dungeons**: Battles against 2 or 3 bosses at the same time, which unlock at player level 10, 20 and 30.
+- 136 Cards: 96 Creature Cards across 6 Races, 40 Skill Cards across 4 Classes, and 5 Ranks.
 - Collection, deck builder, packs, Combine, Extract, Craft and hero gear.
-- Achievements that unlock cosmetics.
+- Achievements that unlock cosmetics, and Heynstones that the player earns and spends on cosmetics in the Bazaar.
 - A local save with export and import.
 - English and Indonesian.
 
 v1 does not include:
 
 - Online play, accounts, PvP, guilds or chat.
-- A shop or real-money payments.
+- Real-money payments or ads.
 - Trading between players.
-- Hybrids, awakening, or more than 4 races.
 
 ## What Heynbord is not
 
 - It is **not** a copy of the original games. All names, lore, art and numbers are new.
 - It is **not** a real-time action game. The player has time to think.
-- It is **not** a game about money. Monetization never touches game power.
+- It is **not** a game about money. Monetization never touches game power or the speed of progress.
 
 ## Definition of success
 
