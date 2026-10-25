@@ -210,7 +210,7 @@ const CargoHaul = ({
       >
         <span aria-hidden>{format(shown)}</span>
         <span className="sr-only">{format(amount)}</span>
-        <Unit className={cargo === "xp" ? "text-[#0e6f86]" : "text-[#8f2a55]"}>
+        <Unit className={cargo === "xp" ? "text-xp-ink" : "text-[#8f2a55]"}>
           {tr(`seaport.units.${cargo}`)}
         </Unit>
       </span>

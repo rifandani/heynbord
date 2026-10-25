@@ -189,7 +189,7 @@ const RewardRow = ({ stop }: { readonly stop: TrailStage }) => {
             countdown={card.countdown}
             className={cn(
               "-rotate-2 text-[6px] [@media(max-height:500px)]:text-[4.5px]",
-              won && "opacity-70 saturate-[0.7]",
+              won && "saturate-[0.7]",
               DEAL
             )}
           />

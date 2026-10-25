@@ -39,7 +39,7 @@ One person (the solo developer) has all the roles. The roles show which point of
 
 ## Status of names
 
-A name marked **(draft)** is a proposal. You can change it without a new design review. Before release, do a trademark check on the game name, all draft names and all invented proper names (for example Heynstones, and named characters on cards and in Stages). Usual words, for example Bazaar or Militia Recruit, do not need the check.
+A name marked **(draft)** is a proposal. You can change it without a new design review. Usual words, for example Bazaar or Militia Recruit, are not names that need a design review.
 
 Documents 01 to 04, 06 and 07 are a baseline. A change to a rule needs a design review or an ADR. Documents 05, 08 and 10 to 17 change with the content.
 

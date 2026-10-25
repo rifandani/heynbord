@@ -11,6 +11,7 @@ const EFFECTS_VOLUME_STORAGE_KEY = "heynbord.effects-volume";
 
 /** The storage key of the music volume. */
 const MUSIC_VOLUME_STORAGE_KEY = "heynbord.music-volume";
+const MUSIC_ON_STORAGE_KEY = "heynbord.music-on";
 
 /** A volume from 0 to 100. */
 const Volume = Schema.Int.check(Schema.isBetween({ maximum: 100, minimum: 0 }));
@@ -27,8 +28,17 @@ export const effectsVolumeAtom = Atom.kvs({
 }).pipe(Atom.withServerValue(() => 100));
 
 /**
- * The music volume, 0 to 100, from the Settings dialog. The game has no music
- * track yet, so this value waits for one.
+ * True when the Player wants music.
+ */
+export const musicOnAtom = Atom.kvs({
+  defaultValue: () => true,
+  key: MUSIC_ON_STORAGE_KEY,
+  runtime: storageRuntime,
+  schema: Schema.Boolean,
+}).pipe(Atom.withServerValue(() => true));
+
+/**
+ * The music volume, 0 to 100, from the Settings dialog.
  */
 export const musicVolumeAtom = Atom.kvs({
   defaultValue: () => 100,

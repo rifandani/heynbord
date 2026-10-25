@@ -133,8 +133,7 @@ const PoolCard = ({
             "transition-[transform,filter,opacity] duration-150 ease-out",
             block === null &&
               "group-data-[hovered]:-translate-y-1.5 group-data-[pressed]:translate-y-0 motion-reduce:group-data-[hovered]:translate-y-0",
-            block === "notOwned" &&
-              "opacity-60 grayscale group-data-[hovered]:opacity-80",
+            block === "notOwned" && "grayscale",
             block !== null &&
               block !== "notOwned" &&
               "brightness-[0.82] saturate-[0.55]"

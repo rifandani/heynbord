@@ -141,7 +141,6 @@ The script makes a Battle Painting prompt for each Region that has a brief in se
 5. Export a WebP at 2560 × 1440, or at the size of the crop if the image is smaller, less than about 400 KB (Technical Design, section 6). Name it after the Region, for example `red-mesas.webp`. The Dungeon cave painting is `dungeon-cave.webp`, and the Heynspire painting is `heynspire.webp`.
 6. Put it in `apps/web/public/battle/`, and set its path for the Region in `BATTLE_PAINTINGS` in `apps/web/src/features/battle/battle-painting.ts`. For the Dungeon cave, the path is `DUNGEON_PAINTING` in the same file. For Heynspire, replace the file of `HEYNSPIRE_PAINTING`, and keep the full 3:2 source as `apps/web/art/town/heynspire-battle.webp`.
 7. Open a Battle at 4:3, 16:9 and a phone in landscape. Check that the Board and the Heroes stand on the open meadow, and that each Unit and its Attack and HP line are easy to read.
-8. Write the licence record (art direction 5.5).
 
 ## 4. Review checklist
 

@@ -339,7 +339,7 @@ const drawStyle = (
   } as CSSProperties;
 };
 
-const dimmedCard = (dimmed: boolean) => dimmed && "opacity-40";
+const dimmedCard = (dimmed: boolean) => dimmed && "saturate-0";
 
 const HandSlot = ({
   card,

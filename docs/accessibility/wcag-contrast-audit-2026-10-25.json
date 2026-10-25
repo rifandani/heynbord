@@ -1,0 +1,2075 @@
+{
+  "date": "2026-10-25",
+  "issue": "https://github.com/rifandani/heynbord/issues/133",
+  "engine": "Chromium (Playwright 1.63.0)",
+  "command": "PW_PORT=4133 bun web test contrast.spec.ts --workers=2 --reporter=line",
+  "checkpoints": 328,
+  "textRuns": 9289,
+  "failures": 0,
+  "cases": [
+    {
+      "locale": "en-us",
+      "appliedMode": "dark",
+      "display": "desktop",
+      "checkpoints": 40,
+      "textRuns": 1362,
+      "minimumNormalText": 4.72792,
+      "minimumLargeText": 4.95474,
+      "failures": 0,
+      "states": [
+        {
+          "name": "home",
+          "textRuns": 5,
+          "minimumNormalText": 5.2457,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "home-hover",
+          "textRuns": 5,
+          "minimumNormalText": 6.57443,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "theme-menu",
+          "textRuns": 5,
+          "minimumNormalText": 14.27006,
+          "minimumLargeText": null
+        },
+        {
+          "name": "language-menu",
+          "textRuns": 4,
+          "minimumNormalText": 14.27006,
+          "minimumLargeText": null
+        },
+        {
+          "name": "town-locked",
+          "textRuns": 26,
+          "minimumNormalText": 9.19795,
+          "minimumLargeText": 10.74559
+        },
+        {
+          "name": "settings",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-focus",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-muted",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "campaign",
+          "textRuns": 32,
+          "minimumNormalText": 8.09436,
+          "minimumLargeText": 9.17164
+        },
+        {
+          "name": "stage-panel",
+          "textRuns": 33,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "packs",
+          "textRuns": 58,
+          "minimumNormalText": 7.11779,
+          "minimumLargeText": null
+        },
+        {
+          "name": "drop-rates",
+          "textRuns": 75,
+          "minimumNormalText": 7.19743,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "pack-reveal",
+          "textRuns": 18,
+          "minimumNormalText": 9.3643,
+          "minimumLargeText": 10.91241
+        },
+        {
+          "name": "card-details",
+          "textRuns": 13,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop",
+          "textRuns": 61,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-craft",
+          "textRuns": 45,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": 12.76283
+        },
+        {
+          "name": "workshop-fuse",
+          "textRuns": 63,
+          "minimumNormalText": 5.65264,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-extract",
+          "textRuns": 48,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-combine",
+          "textRuns": 61,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": null
+        },
+        {
+          "name": "hero",
+          "textRuns": 102,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 13.89978
+        },
+        {
+          "name": "dungeons",
+          "textRuns": 61,
+          "minimumNormalText": 6.09117,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "heynspire",
+          "textRuns": 49,
+          "minimumNormalText": 4.73171,
+          "minimumLargeText": 9.9072
+        },
+        {
+          "name": "heynspire-locked",
+          "textRuns": 42,
+          "minimumNormalText": 4.73171,
+          "minimumLargeText": 9.9072
+        },
+        {
+          "name": "achievements",
+          "textRuns": 65,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": 14.80424
+        },
+        {
+          "name": "bazaar",
+          "textRuns": 48,
+          "minimumNormalText": 8.27503,
+          "minimumLargeText": null
+        },
+        {
+          "name": "seaport",
+          "textRuns": 42,
+          "minimumNormalText": 4.72792,
+          "minimumLargeText": 9.31761
+        },
+        {
+          "name": "deck",
+          "textRuns": 38,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": 10.69096
+        },
+        {
+          "name": "buy-deck-slot-disabled",
+          "textRuns": 10,
+          "minimumNormalText": 6.98947,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "handbook",
+          "textRuns": 38,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": 7.76983
+        },
+        {
+          "name": "battle",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-hover",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-pressed",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "unit-focus-and-details",
+          "textRuns": 13,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "board-targeting",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-log",
+          "textRuns": 61,
+          "minimumNormalText": 6.3722,
+          "minimumLargeText": null
+        },
+        {
+          "name": "victory",
+          "textRuns": 13,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "replay-notification",
+          "textRuns": 16,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "watching-replay",
+          "textRuns": 30,
+          "minimumNormalText": 7.33483,
+          "minimumLargeText": null
+        },
+        {
+          "name": "defeat",
+          "textRuns": 12,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 7.43828
+        },
+        {
+          "name": "dungeon-boss-overlays",
+          "textRuns": 27,
+          "minimumNormalText": 8.85028,
+          "minimumLargeText": null
+        }
+      ]
+    },
+    {
+      "locale": "en-us",
+      "appliedMode": "dark",
+      "display": "mobile",
+      "checkpoints": 42,
+      "textRuns": 941,
+      "minimumNormalText": 4.65886,
+      "minimumLargeText": 4.95474,
+      "failures": 0,
+      "states": [
+        {
+          "name": "home",
+          "textRuns": 5,
+          "minimumNormalText": 5.2457,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "home-hover",
+          "textRuns": 5,
+          "minimumNormalText": 5.2457,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "theme-menu",
+          "textRuns": 5,
+          "minimumNormalText": 14.27006,
+          "minimumLargeText": null
+        },
+        {
+          "name": "language-menu",
+          "textRuns": 4,
+          "minimumNormalText": 14.27006,
+          "minimumLargeText": null
+        },
+        {
+          "name": "home-mobile-portrait",
+          "textRuns": 6,
+          "minimumNormalText": 5.2457,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "game-mobile-portrait",
+          "textRuns": 3,
+          "minimumNormalText": 16.87161,
+          "minimumLargeText": 16.87161
+        },
+        {
+          "name": "town-locked",
+          "textRuns": 13,
+          "minimumNormalText": 8.95574,
+          "minimumLargeText": null
+        },
+        {
+          "name": "settings",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-focus",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-muted",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "campaign",
+          "textRuns": 18,
+          "minimumNormalText": 8.09436,
+          "minimumLargeText": 9.17164
+        },
+        {
+          "name": "stage-panel",
+          "textRuns": 28,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "packs",
+          "textRuns": 39,
+          "minimumNormalText": 7.3476,
+          "minimumLargeText": null
+        },
+        {
+          "name": "drop-rates",
+          "textRuns": 60,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "pack-reveal",
+          "textRuns": 22,
+          "minimumNormalText": 8.09436,
+          "minimumLargeText": null
+        },
+        {
+          "name": "card-details",
+          "textRuns": 16,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop",
+          "textRuns": 44,
+          "minimumNormalText": 8.38635,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-craft",
+          "textRuns": 28,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-fuse",
+          "textRuns": 37,
+          "minimumNormalText": 8.38635,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-extract",
+          "textRuns": 28,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-combine",
+          "textRuns": 45,
+          "minimumNormalText": 8.38635,
+          "minimumLargeText": null
+        },
+        {
+          "name": "hero",
+          "textRuns": 81,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": null
+        },
+        {
+          "name": "dungeons",
+          "textRuns": 24,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "heynspire",
+          "textRuns": 29,
+          "minimumNormalText": 5.15066,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "heynspire-locked",
+          "textRuns": 27,
+          "minimumNormalText": 5.15066,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "achievements",
+          "textRuns": 22,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "bazaar",
+          "textRuns": 14,
+          "minimumNormalText": 7.77264,
+          "minimumLargeText": null
+        },
+        {
+          "name": "seaport",
+          "textRuns": 24,
+          "minimumNormalText": 4.65886,
+          "minimumLargeText": 14.82931
+        },
+        {
+          "name": "deck",
+          "textRuns": 33,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": null
+        },
+        {
+          "name": "buy-deck-slot-disabled",
+          "textRuns": 10,
+          "minimumNormalText": 6.98947,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "handbook",
+          "textRuns": 9,
+          "minimumNormalText": 7.9055,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-hover",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-pressed",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "unit-focus-and-details",
+          "textRuns": 12,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "board-targeting",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-log",
+          "textRuns": 26,
+          "minimumNormalText": 6.3722,
+          "minimumLargeText": null
+        },
+        {
+          "name": "victory",
+          "textRuns": 13,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "replay-notification",
+          "textRuns": 16,
+          "minimumNormalText": 4.94045,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "watching-replay",
+          "textRuns": 28,
+          "minimumNormalText": 7.3476,
+          "minimumLargeText": null
+        },
+        {
+          "name": "defeat",
+          "textRuns": 12,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 7.43828
+        },
+        {
+          "name": "dungeon-boss-overlays",
+          "textRuns": 27,
+          "minimumNormalText": 7.96812,
+          "minimumLargeText": null
+        }
+      ]
+    },
+    {
+      "locale": "en-us",
+      "appliedMode": "light",
+      "display": "desktop",
+      "checkpoints": 40,
+      "textRuns": 1365,
+      "minimumNormalText": 4.72792,
+      "minimumLargeText": 4.95474,
+      "failures": 0,
+      "states": [
+        {
+          "name": "home",
+          "textRuns": 5,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "home-hover",
+          "textRuns": 6,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "theme-menu",
+          "textRuns": 5,
+          "minimumNormalText": 15.67949,
+          "minimumLargeText": null
+        },
+        {
+          "name": "language-menu",
+          "textRuns": 4,
+          "minimumNormalText": 15.67949,
+          "minimumLargeText": null
+        },
+        {
+          "name": "town-locked",
+          "textRuns": 26,
+          "minimumNormalText": 9.19795,
+          "minimumLargeText": 10.74559
+        },
+        {
+          "name": "settings",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-focus",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-muted",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "campaign",
+          "textRuns": 32,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 9.17164
+        },
+        {
+          "name": "stage-panel",
+          "textRuns": 33,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "packs",
+          "textRuns": 58,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": null
+        },
+        {
+          "name": "drop-rates",
+          "textRuns": 75,
+          "minimumNormalText": 7.19743,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "pack-reveal",
+          "textRuns": 20,
+          "minimumNormalText": 9.3643,
+          "minimumLargeText": 10.91241
+        },
+        {
+          "name": "card-details",
+          "textRuns": 14,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop",
+          "textRuns": 60,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-craft",
+          "textRuns": 45,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": 12.76283
+        },
+        {
+          "name": "workshop-fuse",
+          "textRuns": 63,
+          "minimumNormalText": 5.65264,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-extract",
+          "textRuns": 49,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-combine",
+          "textRuns": 60,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": null
+        },
+        {
+          "name": "hero",
+          "textRuns": 102,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 13.89978
+        },
+        {
+          "name": "dungeons",
+          "textRuns": 61,
+          "minimumNormalText": 6.09117,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "heynspire",
+          "textRuns": 49,
+          "minimumNormalText": 4.73171,
+          "minimumLargeText": 9.9072
+        },
+        {
+          "name": "heynspire-locked",
+          "textRuns": 42,
+          "minimumNormalText": 4.73171,
+          "minimumLargeText": 9.9072
+        },
+        {
+          "name": "achievements",
+          "textRuns": 65,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": 14.80424
+        },
+        {
+          "name": "bazaar",
+          "textRuns": 48,
+          "minimumNormalText": 8.27503,
+          "minimumLargeText": null
+        },
+        {
+          "name": "seaport",
+          "textRuns": 42,
+          "minimumNormalText": 4.72792,
+          "minimumLargeText": 9.31761
+        },
+        {
+          "name": "deck",
+          "textRuns": 38,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": 10.69096
+        },
+        {
+          "name": "buy-deck-slot-disabled",
+          "textRuns": 10,
+          "minimumNormalText": 6.98947,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "handbook",
+          "textRuns": 38,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": 7.76983
+        },
+        {
+          "name": "battle",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-hover",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-pressed",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "unit-focus-and-details",
+          "textRuns": 13,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "board-targeting",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-log",
+          "textRuns": 61,
+          "minimumNormalText": 6.3722,
+          "minimumLargeText": null
+        },
+        {
+          "name": "victory",
+          "textRuns": 13,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "replay-notification",
+          "textRuns": 16,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "watching-replay",
+          "textRuns": 30,
+          "minimumNormalText": 7.33483,
+          "minimumLargeText": null
+        },
+        {
+          "name": "defeat",
+          "textRuns": 12,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 7.43828
+        },
+        {
+          "name": "dungeon-boss-overlays",
+          "textRuns": 27,
+          "minimumNormalText": 8.85028,
+          "minimumLargeText": null
+        }
+      ]
+    },
+    {
+      "locale": "en-us",
+      "appliedMode": "light",
+      "display": "mobile",
+      "checkpoints": 42,
+      "textRuns": 940,
+      "minimumNormalText": 4.65886,
+      "minimumLargeText": 4.95474,
+      "failures": 0,
+      "states": [
+        {
+          "name": "home",
+          "textRuns": 5,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "home-hover",
+          "textRuns": 5,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "theme-menu",
+          "textRuns": 5,
+          "minimumNormalText": 15.67949,
+          "minimumLargeText": null
+        },
+        {
+          "name": "language-menu",
+          "textRuns": 4,
+          "minimumNormalText": 15.67949,
+          "minimumLargeText": null
+        },
+        {
+          "name": "home-mobile-portrait",
+          "textRuns": 6,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "game-mobile-portrait",
+          "textRuns": 3,
+          "minimumNormalText": 16.87161,
+          "minimumLargeText": 16.87161
+        },
+        {
+          "name": "town-locked",
+          "textRuns": 13,
+          "minimumNormalText": 8.95574,
+          "minimumLargeText": null
+        },
+        {
+          "name": "settings",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-focus",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-muted",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "campaign",
+          "textRuns": 18,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 9.17164
+        },
+        {
+          "name": "stage-panel",
+          "textRuns": 28,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "packs",
+          "textRuns": 39,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": null
+        },
+        {
+          "name": "drop-rates",
+          "textRuns": 60,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "pack-reveal",
+          "textRuns": 20,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": null
+        },
+        {
+          "name": "card-details",
+          "textRuns": 17,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop",
+          "textRuns": 44,
+          "minimumNormalText": 8.38635,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-craft",
+          "textRuns": 28,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-fuse",
+          "textRuns": 37,
+          "minimumNormalText": 8.38635,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-extract",
+          "textRuns": 28,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-combine",
+          "textRuns": 45,
+          "minimumNormalText": 8.38635,
+          "minimumLargeText": null
+        },
+        {
+          "name": "hero",
+          "textRuns": 81,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": null
+        },
+        {
+          "name": "dungeons",
+          "textRuns": 24,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "heynspire",
+          "textRuns": 29,
+          "minimumNormalText": 5.15066,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "heynspire-locked",
+          "textRuns": 27,
+          "minimumNormalText": 5.15066,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "achievements",
+          "textRuns": 22,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "bazaar",
+          "textRuns": 14,
+          "minimumNormalText": 7.77264,
+          "minimumLargeText": null
+        },
+        {
+          "name": "seaport",
+          "textRuns": 24,
+          "minimumNormalText": 4.65886,
+          "minimumLargeText": 14.82931
+        },
+        {
+          "name": "deck",
+          "textRuns": 33,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": null
+        },
+        {
+          "name": "buy-deck-slot-disabled",
+          "textRuns": 10,
+          "minimumNormalText": 6.98947,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "handbook",
+          "textRuns": 9,
+          "minimumNormalText": 7.9055,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-hover",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-pressed",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "unit-focus-and-details",
+          "textRuns": 12,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "board-targeting",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-log",
+          "textRuns": 26,
+          "minimumNormalText": 6.3722,
+          "minimumLargeText": null
+        },
+        {
+          "name": "victory",
+          "textRuns": 13,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "replay-notification",
+          "textRuns": 16,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "watching-replay",
+          "textRuns": 28,
+          "minimumNormalText": 7.3476,
+          "minimumLargeText": null
+        },
+        {
+          "name": "defeat",
+          "textRuns": 12,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 7.43828
+        },
+        {
+          "name": "dungeon-boss-overlays",
+          "textRuns": 27,
+          "minimumNormalText": 7.96812,
+          "minimumLargeText": null
+        }
+      ]
+    },
+    {
+      "locale": "id-id",
+      "appliedMode": "dark",
+      "display": "desktop",
+      "checkpoints": 40,
+      "textRuns": 1376,
+      "minimumNormalText": 4.72792,
+      "minimumLargeText": 4.95474,
+      "failures": 0,
+      "states": [
+        {
+          "name": "home",
+          "textRuns": 5,
+          "minimumNormalText": 5.2457,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "home-hover",
+          "textRuns": 5,
+          "minimumNormalText": 6.57443,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "theme-menu",
+          "textRuns": 5,
+          "minimumNormalText": 14.27006,
+          "minimumLargeText": null
+        },
+        {
+          "name": "language-menu",
+          "textRuns": 4,
+          "minimumNormalText": 14.27006,
+          "minimumLargeText": null
+        },
+        {
+          "name": "town-locked",
+          "textRuns": 26,
+          "minimumNormalText": 9.19795,
+          "minimumLargeText": 10.53917
+        },
+        {
+          "name": "settings",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-focus",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-muted",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "campaign",
+          "textRuns": 32,
+          "minimumNormalText": 8.09436,
+          "minimumLargeText": 9.17164
+        },
+        {
+          "name": "stage-panel",
+          "textRuns": 35,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "packs",
+          "textRuns": 58,
+          "minimumNormalText": 7.11779,
+          "minimumLargeText": null
+        },
+        {
+          "name": "drop-rates",
+          "textRuns": 76,
+          "minimumNormalText": 7.19743,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "pack-reveal",
+          "textRuns": 20,
+          "minimumNormalText": 9.19546,
+          "minimumLargeText": 10.97007
+        },
+        {
+          "name": "card-details",
+          "textRuns": 10,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop",
+          "textRuns": 62,
+          "minimumNormalText": 5.60957,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-craft",
+          "textRuns": 46,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": 12.76283
+        },
+        {
+          "name": "workshop-fuse",
+          "textRuns": 64,
+          "minimumNormalText": 5.60858,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-extract",
+          "textRuns": 49,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-combine",
+          "textRuns": 62,
+          "minimumNormalText": 5.60957,
+          "minimumLargeText": null
+        },
+        {
+          "name": "hero",
+          "textRuns": 103,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 13.89978
+        },
+        {
+          "name": "dungeons",
+          "textRuns": 61,
+          "minimumNormalText": 6.09117,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "heynspire",
+          "textRuns": 49,
+          "minimumNormalText": 4.73171,
+          "minimumLargeText": 9.9072
+        },
+        {
+          "name": "heynspire-locked",
+          "textRuns": 42,
+          "minimumNormalText": 4.73171,
+          "minimumLargeText": 9.9072
+        },
+        {
+          "name": "achievements",
+          "textRuns": 66,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": 14.80424
+        },
+        {
+          "name": "bazaar",
+          "textRuns": 49,
+          "minimumNormalText": 8.27503,
+          "minimumLargeText": null
+        },
+        {
+          "name": "seaport",
+          "textRuns": 42,
+          "minimumNormalText": 4.72792,
+          "minimumLargeText": 9.47945
+        },
+        {
+          "name": "deck",
+          "textRuns": 39,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": 10.69096
+        },
+        {
+          "name": "buy-deck-slot-disabled",
+          "textRuns": 10,
+          "minimumNormalText": 6.98947,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "handbook",
+          "textRuns": 38,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": 7.87736
+        },
+        {
+          "name": "battle",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-hover",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-pressed",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "unit-focus-and-details",
+          "textRuns": 13,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "board-targeting",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-log",
+          "textRuns": 61,
+          "minimumNormalText": 6.3722,
+          "minimumLargeText": null
+        },
+        {
+          "name": "victory",
+          "textRuns": 13,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "replay-notification",
+          "textRuns": 17,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "watching-replay",
+          "textRuns": 31,
+          "minimumNormalText": 7.33483,
+          "minimumLargeText": null
+        },
+        {
+          "name": "defeat",
+          "textRuns": 13,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 7.43828
+        },
+        {
+          "name": "dungeon-boss-overlays",
+          "textRuns": 27,
+          "minimumNormalText": 8.85028,
+          "minimumLargeText": null
+        }
+      ]
+    },
+    {
+      "locale": "id-id",
+      "appliedMode": "dark",
+      "display": "mobile",
+      "checkpoints": 42,
+      "textRuns": 962,
+      "minimumNormalText": 4.65886,
+      "minimumLargeText": 4.95474,
+      "failures": 0,
+      "states": [
+        {
+          "name": "home",
+          "textRuns": 5,
+          "minimumNormalText": 5.2457,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "home-hover",
+          "textRuns": 5,
+          "minimumNormalText": 5.2457,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "theme-menu",
+          "textRuns": 5,
+          "minimumNormalText": 14.27006,
+          "minimumLargeText": null
+        },
+        {
+          "name": "language-menu",
+          "textRuns": 4,
+          "minimumNormalText": 14.27006,
+          "minimumLargeText": null
+        },
+        {
+          "name": "home-mobile-portrait",
+          "textRuns": 6,
+          "minimumNormalText": 5.2457,
+          "minimumLargeText": 18.0587
+        },
+        {
+          "name": "game-mobile-portrait",
+          "textRuns": 3,
+          "minimumNormalText": 16.87161,
+          "minimumLargeText": 16.87161
+        },
+        {
+          "name": "town-locked",
+          "textRuns": 13,
+          "minimumNormalText": 8.95574,
+          "minimumLargeText": null
+        },
+        {
+          "name": "settings",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-focus",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-muted",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "campaign",
+          "textRuns": 18,
+          "minimumNormalText": 8.09436,
+          "minimumLargeText": 9.17164
+        },
+        {
+          "name": "stage-panel",
+          "textRuns": 32,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "packs",
+          "textRuns": 42,
+          "minimumNormalText": 7.31205,
+          "minimumLargeText": null
+        },
+        {
+          "name": "drop-rates",
+          "textRuns": 60,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "pack-reveal",
+          "textRuns": 23,
+          "minimumNormalText": 8.09436,
+          "minimumLargeText": null
+        },
+        {
+          "name": "card-details",
+          "textRuns": 14,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop",
+          "textRuns": 44,
+          "minimumNormalText": 8.38635,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-craft",
+          "textRuns": 28,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-fuse",
+          "textRuns": 36,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-extract",
+          "textRuns": 30,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-combine",
+          "textRuns": 45,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "hero",
+          "textRuns": 82,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": null
+        },
+        {
+          "name": "dungeons",
+          "textRuns": 25,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "heynspire",
+          "textRuns": 29,
+          "minimumNormalText": 5.36266,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "heynspire-locked",
+          "textRuns": 27,
+          "minimumNormalText": 5.36266,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "achievements",
+          "textRuns": 22,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "bazaar",
+          "textRuns": 14,
+          "minimumNormalText": 7.87872,
+          "minimumLargeText": null
+        },
+        {
+          "name": "seaport",
+          "textRuns": 24,
+          "minimumNormalText": 4.65886,
+          "minimumLargeText": 14.71123
+        },
+        {
+          "name": "deck",
+          "textRuns": 29,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": null
+        },
+        {
+          "name": "buy-deck-slot-disabled",
+          "textRuns": 10,
+          "minimumNormalText": 6.98947,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "handbook",
+          "textRuns": 9,
+          "minimumNormalText": 7.87736,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-hover",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-pressed",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "unit-focus-and-details",
+          "textRuns": 12,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "board-targeting",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-log",
+          "textRuns": 27,
+          "minimumNormalText": 6.3722,
+          "minimumLargeText": null
+        },
+        {
+          "name": "victory",
+          "textRuns": 17,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "replay-notification",
+          "textRuns": 21,
+          "minimumNormalText": 4.92599,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "watching-replay",
+          "textRuns": 29,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "defeat",
+          "textRuns": 17,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 7.43828
+        },
+        {
+          "name": "dungeon-boss-overlays",
+          "textRuns": 27,
+          "minimumNormalText": 7.96812,
+          "minimumLargeText": null
+        }
+      ]
+    },
+    {
+      "locale": "id-id",
+      "appliedMode": "light",
+      "display": "desktop",
+      "checkpoints": 40,
+      "textRuns": 1377,
+      "minimumNormalText": 4.72792,
+      "minimumLargeText": 4.95474,
+      "failures": 0,
+      "states": [
+        {
+          "name": "home",
+          "textRuns": 5,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "home-hover",
+          "textRuns": 5,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "theme-menu",
+          "textRuns": 5,
+          "minimumNormalText": 15.67949,
+          "minimumLargeText": null
+        },
+        {
+          "name": "language-menu",
+          "textRuns": 4,
+          "minimumNormalText": 15.67949,
+          "minimumLargeText": null
+        },
+        {
+          "name": "town-locked",
+          "textRuns": 26,
+          "minimumNormalText": 9.19795,
+          "minimumLargeText": 10.53917
+        },
+        {
+          "name": "settings",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-focus",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-muted",
+          "textRuns": 21,
+          "minimumNormalText": 7.46104,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "campaign",
+          "textRuns": 32,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 9.17164
+        },
+        {
+          "name": "stage-panel",
+          "textRuns": 35,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "packs",
+          "textRuns": 59,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": null
+        },
+        {
+          "name": "drop-rates",
+          "textRuns": 76,
+          "minimumNormalText": 7.19743,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "pack-reveal",
+          "textRuns": 22,
+          "minimumNormalText": 9.19546,
+          "minimumLargeText": 10.97007
+        },
+        {
+          "name": "card-details",
+          "textRuns": 15,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop",
+          "textRuns": 62,
+          "minimumNormalText": 5.60957,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-craft",
+          "textRuns": 46,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": 12.76283
+        },
+        {
+          "name": "workshop-fuse",
+          "textRuns": 58,
+          "minimumNormalText": 5.60858,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-extract",
+          "textRuns": 48,
+          "minimumNormalText": 5.68466,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-combine",
+          "textRuns": 62,
+          "minimumNormalText": 5.60957,
+          "minimumLargeText": null
+        },
+        {
+          "name": "hero",
+          "textRuns": 103,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 13.89978
+        },
+        {
+          "name": "dungeons",
+          "textRuns": 61,
+          "minimumNormalText": 6.09117,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "heynspire",
+          "textRuns": 49,
+          "minimumNormalText": 4.73171,
+          "minimumLargeText": 9.9072
+        },
+        {
+          "name": "heynspire-locked",
+          "textRuns": 42,
+          "minimumNormalText": 4.73171,
+          "minimumLargeText": 9.9072
+        },
+        {
+          "name": "achievements",
+          "textRuns": 66,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": 14.80424
+        },
+        {
+          "name": "bazaar",
+          "textRuns": 49,
+          "minimumNormalText": 8.27503,
+          "minimumLargeText": null
+        },
+        {
+          "name": "seaport",
+          "textRuns": 42,
+          "minimumNormalText": 4.72792,
+          "minimumLargeText": 9.47945
+        },
+        {
+          "name": "deck",
+          "textRuns": 39,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": 10.69096
+        },
+        {
+          "name": "buy-deck-slot-disabled",
+          "textRuns": 10,
+          "minimumNormalText": 6.98947,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "handbook",
+          "textRuns": 38,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": 7.87736
+        },
+        {
+          "name": "battle",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-hover",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-pressed",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "unit-focus-and-details",
+          "textRuns": 13,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "board-targeting",
+          "textRuns": 20,
+          "minimumNormalText": 7.12637,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-log",
+          "textRuns": 61,
+          "minimumNormalText": 6.3722,
+          "minimumLargeText": null
+        },
+        {
+          "name": "victory",
+          "textRuns": 13,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "replay-notification",
+          "textRuns": 17,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "watching-replay",
+          "textRuns": 31,
+          "minimumNormalText": 7.33483,
+          "minimumLargeText": null
+        },
+        {
+          "name": "defeat",
+          "textRuns": 13,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 7.43828
+        },
+        {
+          "name": "dungeon-boss-overlays",
+          "textRuns": 27,
+          "minimumNormalText": 8.85028,
+          "minimumLargeText": null
+        }
+      ]
+    },
+    {
+      "locale": "id-id",
+      "appliedMode": "light",
+      "display": "mobile",
+      "checkpoints": 42,
+      "textRuns": 966,
+      "minimumNormalText": 4.65886,
+      "minimumLargeText": 4.95474,
+      "failures": 0,
+      "states": [
+        {
+          "name": "home",
+          "textRuns": 5,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "home-hover",
+          "textRuns": 5,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "theme-menu",
+          "textRuns": 5,
+          "minimumNormalText": 15.67949,
+          "minimumLargeText": null
+        },
+        {
+          "name": "language-menu",
+          "textRuns": 4,
+          "minimumNormalText": 15.67949,
+          "minimumLargeText": null
+        },
+        {
+          "name": "home-mobile-portrait",
+          "textRuns": 6,
+          "minimumNormalText": 4.82736,
+          "minimumLargeText": 17.71677
+        },
+        {
+          "name": "game-mobile-portrait",
+          "textRuns": 3,
+          "minimumNormalText": 16.87161,
+          "minimumLargeText": 16.87161
+        },
+        {
+          "name": "town-locked",
+          "textRuns": 13,
+          "minimumNormalText": 8.95574,
+          "minimumLargeText": null
+        },
+        {
+          "name": "settings",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-focus",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "settings-muted",
+          "textRuns": 16,
+          "minimumNormalText": 13.71745,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "campaign",
+          "textRuns": 18,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 9.17164
+        },
+        {
+          "name": "stage-panel",
+          "textRuns": 32,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "packs",
+          "textRuns": 42,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": null
+        },
+        {
+          "name": "drop-rates",
+          "textRuns": 60,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "pack-reveal",
+          "textRuns": 24,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": null
+        },
+        {
+          "name": "card-details",
+          "textRuns": 16,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop",
+          "textRuns": 45,
+          "minimumNormalText": 8.38635,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-craft",
+          "textRuns": 28,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-fuse",
+          "textRuns": 36,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-extract",
+          "textRuns": 29,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "workshop-combine",
+          "textRuns": 46,
+          "minimumNormalText": 8.36007,
+          "minimumLargeText": null
+        },
+        {
+          "name": "hero",
+          "textRuns": 82,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": null
+        },
+        {
+          "name": "dungeons",
+          "textRuns": 25,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "heynspire",
+          "textRuns": 29,
+          "minimumNormalText": 5.36266,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "heynspire-locked",
+          "textRuns": 27,
+          "minimumNormalText": 5.36266,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "achievements",
+          "textRuns": 22,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "bazaar",
+          "textRuns": 14,
+          "minimumNormalText": 7.87872,
+          "minimumLargeText": null
+        },
+        {
+          "name": "seaport",
+          "textRuns": 24,
+          "minimumNormalText": 4.65886,
+          "minimumLargeText": 14.71123
+        },
+        {
+          "name": "deck",
+          "textRuns": 29,
+          "minimumNormalText": 6.18199,
+          "minimumLargeText": null
+        },
+        {
+          "name": "buy-deck-slot-disabled",
+          "textRuns": 10,
+          "minimumNormalText": 6.98947,
+          "minimumLargeText": 13.71745
+        },
+        {
+          "name": "handbook",
+          "textRuns": 9,
+          "minimumNormalText": 7.87736,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-hover",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-button-pressed",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "unit-focus-and-details",
+          "textRuns": 12,
+          "minimumNormalText": 5.71905,
+          "minimumLargeText": null
+        },
+        {
+          "name": "board-targeting",
+          "textRuns": 20,
+          "minimumNormalText": 7.47171,
+          "minimumLargeText": null
+        },
+        {
+          "name": "battle-log",
+          "textRuns": 27,
+          "minimumNormalText": 6.3722,
+          "minimumLargeText": null
+        },
+        {
+          "name": "victory",
+          "textRuns": 17,
+          "minimumNormalText": 5.67635,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "replay-notification",
+          "textRuns": 21,
+          "minimumNormalText": 4.79314,
+          "minimumLargeText": 4.95474
+        },
+        {
+          "name": "watching-replay",
+          "textRuns": 29,
+          "minimumNormalText": 7.4351,
+          "minimumLargeText": null
+        },
+        {
+          "name": "defeat",
+          "textRuns": 17,
+          "minimumNormalText": 4.83915,
+          "minimumLargeText": 7.43828
+        },
+        {
+          "name": "dungeon-boss-overlays",
+          "textRuns": 27,
+          "minimumNormalText": 7.96812,
+          "minimumLargeText": null
+        }
+      ]
+    }
+  ]
+}

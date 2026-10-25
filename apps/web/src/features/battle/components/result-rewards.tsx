@@ -312,7 +312,7 @@ export const ResultXp = ({
         aria-hidden
       >
         <span>{tr("battle.levelShort", { level: rewards.levelAfter })}</span>
-        <span className="font-black text-[#0e6f86] tabular-nums">
+        <span className="text-xp-ink font-black tabular-nums">
           {tr("battle.xpEarned", { amount: rewards.xp })}
         </span>
       </div>

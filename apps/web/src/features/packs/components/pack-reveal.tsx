@@ -440,10 +440,7 @@ const CardName = ({
       <span className="font-display text-[max(12px,1.05em)] font-bold text-[#fff6df]">
         {tr(`cards.${card.cardId}.name`)}
       </span>
-      <span
-        className="text-[max(10px,0.85em)] font-bold"
-        style={{ color: RANK_COLORS[card.rank] }}
-      >
+      <span className="text-cream text-[max(10px,0.85em)] font-bold">
         {tr(`ranks.${card.rank}`)}
       </span>
     </span>

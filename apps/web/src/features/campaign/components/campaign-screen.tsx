@@ -167,9 +167,6 @@ const useAwakenedStage = (region: number, results: StageResults) => {
   return wake.awaken;
 };
 
-const preloadBattleCanvas = () =>
-  import("@/features/battle/scene/battle-canvas");
-
 /** The calm ground of a Region with no painting yet: no landmarks, only light. */
 const PLACEHOLDER_GROUND =
   "bg-[radial-gradient(ellipse_at_50%_40%,#8a9a74,#5d6c51_60%,#3f4a38)]";
@@ -320,11 +317,6 @@ export const CampaignScreen = ({
   const marker = useRef<Element | null>(null);
   const map = shownRegionMap(region);
   const panelStop = trail.find((stop) => stop.stage.id === selected) ?? null;
-
-  useEffect(() => {
-    // The Battle scene chunk loads in the background, so a Battle starts fast (NFR-03).
-    void preloadBattleCanvas();
-  }, []);
 
   const open = (stop: TrailStage, from: Element) => {
     unlockAudio();

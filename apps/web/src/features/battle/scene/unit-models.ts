@@ -425,11 +425,6 @@ export const badgeHeight = (source: UnitSourceView): number =>
 /** The cards that have a Unit Model, for the Component Catalog. */
 export const unitModelCards = (): readonly string[] => [...UNIT_MODELS.keys()];
 
-/** All Unit Models, to load them before the first Unit is summoned. */
-export const allUnitModels = (): readonly UnitModelSpec[] => [
-  ...UNIT_MODELS.values(),
-];
-
 /** The clip that a Unit plays in one frame. */
 export interface UnitClip {
   readonly name: UnitClipName;

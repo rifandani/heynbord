@@ -102,7 +102,7 @@ const Ribbon = ({
         <span
           className={cn(
             "font-display truncate text-sm font-bold [@media(max-height:500px)]:font-sans [@media(max-height:500px)]:text-[11px]",
-            slot.deck.length === 0 && "opacity-75"
+            slot.deck.length === 0 && "saturate-50"
           )}
         >
           {name}

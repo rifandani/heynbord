@@ -5,15 +5,17 @@ import {
   useAtomValue,
 } from "@effect/atom-react";
 import { cn } from "cn";
-import { lazy, Suspense, useContext, useEffect, useMemo } from "react";
+import { lazy, Suspense, useContext, useEffect, useMemo, useRef } from "react";
 
 import { AchievementsScreen } from "@/features/achievements/components/achievements-screen";
 import { useAchievementNotices } from "@/features/achievements/use-achievement-notices";
 import {
   setEffectsVolume,
+  setMusicEnabled,
   setMusicVolume,
   setSoundEnabled,
   setSoundVolume,
+  unlockAudio,
 } from "@/features/battle/battle-audio";
 import { battleStage } from "@/features/battle/battle-content";
 import { battlePainting } from "@/features/battle/battle-painting";
@@ -44,6 +46,9 @@ import {
 import { TopBar } from "@/features/battle/components/top-bar";
 import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
 import { UnitDetails } from "@/features/battle/components/unit-details";
+import { musicTrackFor } from "@/features/battle/music-catalog";
+import type { MusicFeature } from "@/features/battle/music-catalog";
+import { playMusicSting, playMusicTrack } from "@/features/battle/music-player";
 import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
 import {
   setReducedMotionPreference,
@@ -77,6 +82,7 @@ import { useReplayLink } from "@/features/replay/use-replay-link";
 import { SeaportScreen } from "@/features/seaport/components/seaport-screen";
 import {
   effectsVolumeAtom,
+  musicOnAtom,
   musicVolumeAtom,
 } from "@/features/settings/settings.atoms";
 import { TownBar } from "@/features/town/components/town-bar";
@@ -91,6 +97,17 @@ import { WorkshopScreen } from "@/features/workshop/components/workshop-screen";
 const BattleCanvas = lazy(
   () => import("@/features/battle/scene/battle-canvas")
 );
+
+const SCREEN_MUSIC: Partial<Record<GameScreen, MusicFeature>> = {
+  heynspire: "heynspire",
+  dungeons: "dungeons",
+  workshop: "workshop",
+  packs: "packs",
+  bazaar: "bazaar",
+  seaport: "seaport",
+  hero: "hero",
+  achievements: "achievements",
+};
 
 /** NFR-05: the game needs WebGL 2. */
 const hasWebgl2 = (): boolean => {
@@ -446,6 +463,65 @@ const useCampaignRegion = (battle: Battle) => {
   return { region, setRegion, withRegion };
 };
 
+/** Unlocks the Web Audio context on the first Player gesture. */
+const useAudioUnlock = () => {
+  useEffect(() => {
+    const unlock = () => {
+      unlockAudio();
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("touchstart", unlock);
+    };
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+    window.addEventListener("touchstart", unlock, {
+      once: true,
+      passive: true,
+    });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+      window.removeEventListener("touchstart", unlock);
+    };
+  }, []);
+};
+
+/** Picks the music loop for the screen and plays the result sting. */
+const useBattleMusic = (
+  battle: ReturnType<typeof useBattle>,
+  screen: GameScreen
+) => {
+  const playedResult = useRef<string | null>(null);
+  const options = battle.session?.options ?? null;
+  const musicFeature = options?.floor
+    ? "heynspire"
+    : options?.dungeon
+      ? "dungeons"
+      : (SCREEN_MUSIC[screen] ?? null);
+  const track = musicTrackFor(
+    options ? battleStage(options) : null,
+    battle.session !== null,
+    musicFeature
+  );
+  useEffect(() => playMusicTrack(track), [track]);
+  const result = battle.session?.view.result;
+  const resultKey =
+    result && options
+      ? `${options.seed}:${options.stageId}:${result.winner}`
+      : null;
+  useEffect(() => {
+    if (
+      result &&
+      resultKey &&
+      !battle.session?.watching &&
+      resultKey !== playedResult.current
+    ) {
+      playedResult.current = resultKey;
+      playMusicSting(result.winner === "player" ? "victory" : "defeat");
+    }
+  }, [battle.session?.watching, result, resultKey]);
+};
+
 /**
  * The game in one route (web ADR-0005): the Town, the Campaign (the Region
  * Map), then the Battle, Heynspire, the Dungeons, the Packs, the Workshop,
@@ -459,6 +535,7 @@ export const PlayScreen = () => {
   const soundOn = useAtomValue(soundOnAtom);
   const soundVolume = useAtomValue(soundVolumeAtom);
   const effectsVolume = useAtomValue(effectsVolumeAtom);
+  const musicOn = useAtomValue(musicOnAtom);
   const musicVolume = useAtomValue(musicVolumeAtom);
   const reducedMotion = useReducedMotion();
   const [screen, setScreen] = useAtom(gameScreenAtom);
@@ -491,7 +568,10 @@ export const PlayScreen = () => {
   useEffect(() => setSoundEnabled(soundOn), [soundOn]);
   useEffect(() => setSoundVolume(soundVolume), [soundVolume]);
   useEffect(() => setEffectsVolume(effectsVolume), [effectsVolume]);
+  useEffect(() => setMusicEnabled(musicOn), [musicOn]);
   useEffect(() => setMusicVolume(musicVolume), [musicVolume]);
+  useAudioUnlock();
+  useBattleMusic(battle, screen);
   // The modules outside React, and the CSS, follow the same choice.
   useEffect(() => {
     setReducedMotionPreference(reducedMotion);
@@ -521,14 +601,14 @@ export const PlayScreen = () => {
             <CampaignScreen
               region={campaign.region}
               onRegion={(region) => campaign.setRegion(region)}
-              onStart={(options) => battle.start(options)}
+              onStart={(next) => battle.start(next)}
             />
           ) : null}
           {screen === "dungeons" ? (
-            <DungeonsScreen onStart={(options) => battle.start(options)} />
+            <DungeonsScreen onStart={(next) => battle.start(next)} />
           ) : null}
           {screen === "heynspire" ? (
-            <HeynspireScreen onStart={(options) => battle.start(options)} />
+            <HeynspireScreen onStart={(next) => battle.start(next)} />
           ) : null}
           {screen === "packs" ? <PacksScreen /> : null}
           {screen === "workshop" ? <WorkshopScreen /> : null}

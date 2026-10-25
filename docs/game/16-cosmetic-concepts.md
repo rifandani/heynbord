@@ -126,7 +126,6 @@ Paint **Tent Stripes** first, and use it as the set reference for the other 7. U
 6. Compress: `cwebp -q 80 -resize 600 800 <file>.png -o <file>.webp`. The file must be 600 × 800.
 7. Put the file in `apps/web/public/card-backs/` with the name of 1, and keep the full-size source in `apps/web/art/card-backs/`.
 8. Remove the item key from `UNPAINTED_CARD_BACK_ART` in `apps/web/src/features/battle/card-back-art.ts`. A unit test then checks the file and its size.
-9. Write the licence record (art direction 5.5).
 
 ## 7. Review checklist
 

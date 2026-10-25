@@ -28,6 +28,8 @@ import { GAME_SCRIM } from "@/core/components/game/game-dialog";
 import {
   playSound,
   setEffectsVolume,
+  setMusicEnabled,
+  setMusicVolume,
   setSoundEnabled,
   setSoundVolume,
   unlockAudio,
@@ -44,6 +46,7 @@ import { Locale } from "@/features/i18n/locale";
 import { ProfileRow } from "@/features/profile/components/profile-row";
 import {
   effectsVolumeAtom,
+  musicOnAtom,
   musicVolumeAtom,
   reducedMotionAtom,
 } from "@/features/settings/settings.atoms";
@@ -79,15 +82,15 @@ const languageOption = ({ isSelected }: { readonly isSelected: boolean }) =>
     "group flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-xl border-2 px-3 py-2 text-sm font-bold text-[#2a1d12] transition-[transform,box-shadow] outline-none",
     "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:-translate-y-0.5 motion-reduce:data-[hovered]:translate-y-0",
     isSelected
-      ? "border-[#e2a93b] bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
-      : "border-[#c9b48c] bg-[#f6ead0]"
+      ? "border-gold-deep bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
+      : "border-ink-faded bg-[#f6ead0]"
   );
 
 /** The radio mark: the selected option shows it full, not only in gold. */
 const ChoiceMark = () => (
   <span
     className={cn(
-      "grid size-[18px] shrink-0 place-items-center rounded-full border-2 border-[#c9b48c] bg-[#fff6df]",
+      "border-ink-faded grid size-[18px] shrink-0 place-items-center rounded-full border-2 bg-[#fff6df]",
       "group-data-[selected]:border-[#7a5310] group-data-[selected]:bg-gradient-to-b group-data-[selected]:from-[#ffe08a] group-data-[selected]:to-[#e2a93b]"
     )}
     aria-hidden
@@ -183,7 +186,7 @@ const VolumeRow = ({
           <SliderFill
             className={cn(
               "rounded-full bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-1px_0_rgba(122,83,16,0.6)] transition-[filter,opacity] duration-200",
-              muted && "opacity-60 grayscale"
+              muted && "grayscale"
             )}
           />
         </div>
@@ -214,10 +217,7 @@ const VolumeRow = ({
         </SliderThumb>
       </SliderTrack>
       <SliderOutput
-        className={cn(
-          "w-9 shrink-0 text-right text-lg leading-none font-black text-[#2a1d12] tabular-nums transition-opacity",
-          muted && "opacity-60"
-        )}
+        className="w-9 shrink-0 text-right text-lg leading-none font-black text-[#2a1d12] tabular-nums"
         data-testid={valueTestId}
       />
     </div>
@@ -307,22 +307,54 @@ const EffectsRow = () => {
   );
 };
 
-/** The music volume: it waits for the first music track. */
+/** The music switch and volume are independent from sound effects. */
 const MusicRow = () => {
   const { tr } = useGameText();
   const [soundOn] = useAtom(soundOnAtom);
   const [soundVolume] = useAtom(soundVolumeAtom);
+  const [musicOn, setMusicOn] = useAtom(musicOnAtom);
   const [volume, setVolume] = useAtom(musicVolumeAtom);
-  const muted = !soundOn || soundVolume === 0 || volume === 0;
+  const audible = soundOn && soundVolume > 0 && musicOn && volume > 0;
+  const onSwitch = (on: boolean) => {
+    setMusicOn(on);
+    setMusicEnabled(on);
+    if (on) {
+      unlockAudio();
+    }
+  };
   return (
     <VolumeRow
       label={tr("settings.musicVolume")}
       value={volume}
-      onChange={setVolume}
+      onChange={(value) => {
+        setVolume(value);
+        setMusicVolume(value);
+      }}
+      onChangeEnd={(value) => {
+        setMusicVolume(value);
+        if (musicOn) {
+          unlockAudio();
+        }
+      }}
       testId="settings-music-volume"
       valueTestId="settings-music-volume-value"
       thumbLabel={tr("settings.musicVolume")}
-      muted={muted}
+      muted={!audible}
+      leading={
+        <ToggleButton
+          isSelected={musicOn}
+          onChange={onSwitch}
+          aria-label={tr("settings.musicOn")}
+          className={gameButtonStyles({
+            intent: "wood",
+            size: "icon",
+            className: "shrink-0 [@media(max-height:500px)]:size-9",
+          })}
+          data-testid="settings-music-switch"
+        >
+          <GlyphIcon glyph={musicOn ? "sound" : "mute"} className="size-5" />
+        </ToggleButton>
+      }
     />
   );
 };

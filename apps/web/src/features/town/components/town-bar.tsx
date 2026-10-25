@@ -73,7 +73,7 @@ const labelClass = (locked: boolean, current: boolean, lifted: boolean) =>
     current
       ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.45)]"
       : "border-transparent",
-    !current && locked && "font-semibold text-[#d9c7a3]/70",
+    !current && locked && "text-cream-dim font-semibold",
     !current &&
       !locked &&
       "text-[#fff6df] group-data-[hovered]:text-[#ffe08a] group-data-[pressed]:translate-y-px",

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { RankGems } from "@/core/components/game/rank-gems";
-import { RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -29,7 +28,7 @@ const Flow = ({ lit }: { readonly lit: boolean }) => (
     viewBox="0 0 36 16"
     className={cn(
       "h-4 w-9 shrink-0 [@media(max-height:500px)]:h-3 [@media(max-height:500px)]:w-6",
-      lit ? "text-[#ffe08a]" : "text-[#e8d9bb]/40"
+      lit ? "text-[#ffe08a]" : "text-cream-dim"
     )}
     aria-hidden
   >
@@ -74,7 +73,7 @@ const CraftRecipe = ({
       aria-hidden={label === null}
       className={cn(
         "flex items-center gap-2 rounded-lg border-2 border-[#e9c46a]/35 bg-[#3a2a1c] px-3 py-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.55)] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:py-1",
-        !lit && "opacity-80"
+        !lit && "border-dashed"
       )}
       data-testid="workshop-craft-recipe"
     >
@@ -91,10 +90,7 @@ const CraftRecipe = ({
         <span className="text-[10px] [@media(max-height:500px)]:text-[7px]">
           <RankGems rank={rank} />
         </span>
-        <span
-          className="text-sm leading-tight font-bold [@media(max-height:500px)]:text-[10px]"
-          style={{ color: RANK_COLORS[rank] }}
-        >
+        <span className="text-cream text-sm leading-tight font-bold [@media(max-height:500px)]:text-[10px]">
           {tr("workshop.craftPanel.gives", { rank: tr(`ranks.${rank}`) })}
         </span>
       </span>
@@ -260,7 +256,7 @@ export const CraftPanel = ({
             key={shownOwned}
             className={cn(
               "font-black tabular-nums",
-              shownOwned > 0 ? "text-[#fff6df]" : "text-[#e8d9bb]/55",
+              shownOwned > 0 ? "text-[#fff6df]" : "text-cream-dim",
               "motion-safe:animate-[workshop-count_320ms_cubic-bezier(0.2,0.8,0.2,1)]"
             )}
             aria-hidden

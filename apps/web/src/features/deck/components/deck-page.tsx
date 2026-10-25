@@ -52,8 +52,8 @@ const classOption = ({ isSelected }: { readonly isSelected: boolean }) =>
     "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:-translate-y-px motion-reduce:data-[hovered]:translate-y-0",
     "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:pr-2 [@media(max-height:500px)]:text-xs",
     isSelected
-      ? "border-[#e2a93b] bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
-      : "border-[#c9b48c] bg-[#f6ead0]"
+      ? "border-gold-deep bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
+      : "border-ink-faded bg-[#f6ead0]"
   );
 
 /** The name of the Deck: it reads as the page title, and the Player can change it. */
@@ -537,7 +537,7 @@ export const DeckPage = ({
           <span className="flex-1" />
           {active ? (
             <span
-              className="font-display inline-flex min-h-11 items-center gap-2 rounded-lg border-2 border-[#e2a93b] bg-[#fff3d1] px-3 font-bold text-[#7a5310] [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-sm"
+              className="font-display border-gold-deep inline-flex min-h-11 items-center gap-2 rounded-lg border-2 bg-[#fff3d1] px-3 font-bold text-[#7a5310] [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-sm"
               data-testid="deck-active"
             >
               <GlyphIcon glyph="check" className="size-4" />

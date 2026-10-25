@@ -193,7 +193,7 @@ const FirstWinCard = ({
           countdown={getCard(cardId).countdown}
           className={cn(
             "-rotate-2 text-[6px] motion-safe:animate-[stage-panel-deal_440ms_cubic-bezier(0.2,0.8,0.2,1)_300ms_both] [@media(max-height:500px)]:text-[4.5px]",
-            claimed && "opacity-70 saturate-[0.7]"
+            claimed && "saturate-[0.7]"
           )}
         />
       </Button>

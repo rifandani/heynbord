@@ -94,7 +94,7 @@ const LINK =
   "pointer-events-auto cursor-pointer rounded-sm font-semibold text-[#2a1d12] underline decoration-[#5b3a1e]/45 underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-[#5b3a1e]";
 
 const TERM =
-  "pointer-events-auto cursor-pointer rounded-sm font-bold text-[#b4521a] underline decoration-[#b4521a]/50 decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid";
+  "pointer-events-auto cursor-pointer rounded-sm font-bold text-keyword-rust underline decoration-keyword-rust/50 decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid";
 
 /** One value of a line, as text or as a link. */
 const ArgNode = ({
@@ -181,7 +181,7 @@ const ArgNode = ({
           {name}
         </Button>
       ) : (
-        <span className="font-bold text-[#b4521a]">{name}</span>
+        <span className="text-keyword-rust font-bold">{name}</span>
       );
     }
     case "Damage": {
@@ -481,7 +481,7 @@ const SideChip = ({ side }: { readonly side: Side }) => {
         "rounded px-1.5 py-0.5 font-sans text-xs leading-none font-semibold",
         side === "player"
           ? "bg-[#ffd75a] text-[#2a1a05]"
-          : "bg-[#d9463b] text-white"
+          : "bg-blood-banner text-white"
       )}
     >
       {side === "player" ? tr("battle.player") : tr("battle.enemy")}

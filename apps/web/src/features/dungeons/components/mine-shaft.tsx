@@ -413,7 +413,7 @@ export const MineShaft = ({
                     slot.state === "later" && "cursor-default",
                     cleared
                       ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] data-[hovered]:brightness-110"
-                      : "border-[#e9c46a]/70 bg-[#1c140e] text-[#fff6df] data-[disabled]:opacity-60 data-[hovered]:border-[#ffe08a]",
+                      : "border-[#e9c46a]/70 bg-[#1c140e] text-[#fff6df] data-[disabled]:border-dashed data-[hovered]:border-[#ffe08a]",
                     current && "ring-2 ring-[#fff2a8]"
                   )}
                   data-dungeon={slot.number}

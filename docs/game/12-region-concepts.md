@@ -200,7 +200,6 @@ The prompts are short. A long list of rules, counts and "no" words gives bad res
 5. Export a WebP at 2560 × 1440, or at the size of the crop if the image is smaller, less than about 400 KB (Technical Design, section 6). Name it `<region>-region.webp`, for example `red-mesas-region.webp`. Put it in `apps/web/public/battle/`, next to the Battle Paintings. `bun campaign:prompts` reads the Hearthvale Region Map from there.
 6. Measure the center of each clearing, and trace the center line of the painted road from the Trail entry to clearing 10, as lists of points in the 1600 × 900 box (1.3). The game draws the Stage Markers and the progress line on these points. Put them and the file name in `REGION_MAPS` in `apps/web/src/features/campaign/region-map.ts`, and run its unit tests.
 7. Open the Campaign screen at 4:3, 16:9, 21:9 and a phone in landscape. Check that all 10 Stage Markers are on their clearings, and that the Region name, the arrows and the Star chest panel do not cover a Stage Marker or the Boss landmark.
-8. Write the licence record (art direction 5.5).
 9. If the Region has no Battle Painting, make it with [13 — Battlefield Concepts](./13-battlefield-concepts.md). Do not make a painting for each Stage.
 
 ## 5. Review checklist

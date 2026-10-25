@@ -52,7 +52,7 @@ export const CargoPlaque = ({
         tier={tier}
         className={cn(
           "size-7 shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-6",
-          !open && "opacity-55 grayscale-[0.6]"
+          !open && "grayscale-[0.6]"
         )}
       />
       <span

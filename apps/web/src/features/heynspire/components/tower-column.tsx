@@ -290,7 +290,7 @@ const Spine = ({
                   <BossCrown
                     className={cn(
                       "size-4 [@media(max-height:500px)]:size-3.5",
-                      stop.state === "locked" && "opacity-70 grayscale"
+                      stop.state === "locked" && "grayscale"
                     )}
                   />
                 </Button>,

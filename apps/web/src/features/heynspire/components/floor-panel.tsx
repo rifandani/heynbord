@@ -122,10 +122,7 @@ const RewardRow = ({
         </p>
       ) : null}
       <div
-        className={cn(
-          "flex flex-wrap gap-1.5",
-          won && "opacity-70 saturate-[0.7]"
-        )}
+        className={cn("flex flex-wrap gap-1.5", won && "saturate-[0.7]")}
         data-testid="floor-reward"
       >
         <p

@@ -159,7 +159,7 @@ const ItemPlate = ({
         "shadow-[0_3px_0_rgba(0,0,0,0.45)]",
         active &&
           "border-[#ffd75a] shadow-[0_0_0_1px_#ffd75a,0_3px_0_rgba(0,0,0,0.45)]",
-        !affordable && !owned && "opacity-60"
+        !affordable && !owned && "border-dashed"
       )}
       data-testid="bazaar-item"
       data-cosmetic-id={item.id}
@@ -386,7 +386,7 @@ export const BazaarScreen = () => {
               data-testid="bazaar-group"
               data-family={family}
             >
-              <h2 className="mb-1.5 px-1 text-center text-base font-bold [text-shadow:0_1px_4px_rgba(0,0,0,0.8)]">
+              <h2 className="bg-night-plate/90 mx-auto mb-1.5 w-fit rounded-lg px-3 py-1 text-center text-base font-bold">
                 {tr(`bazaar.families.${family}`)}
               </h2>
               {lookFamily === null ? null : (

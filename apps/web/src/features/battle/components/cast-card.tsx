@@ -105,7 +105,7 @@ const CastPiece = ({
             "absolute -inset-[2em] rounded-full",
             revealMs > 0
               ? "animate-[cast-flare_var(--reveal-ms)_ease-out_both]"
-              : "opacity-50"
+              : "saturate-0"
           )}
           style={{
             background: `radial-gradient(closest-side, ${color} 0%, ${color}99 35%, transparent 100%)`,

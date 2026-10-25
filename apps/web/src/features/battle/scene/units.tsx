@@ -63,7 +63,6 @@ import {
 import { unitAnchors } from "@/features/battle/scene/unit-anchors";
 import type { UnitModelSpec } from "@/features/battle/scene/unit-models";
 import {
-  allUnitModels,
   badgeHeight,
   castPhase,
   unitClipFor,
@@ -81,11 +80,6 @@ import {
 import { buildRig } from "@/features/battle/scene/unit-rig";
 import { shownAttack, summonAttack } from "@/features/battle/scene/unit-stats";
 
-// Load the 3D models with the scene chunk, before the first summon.
-for (const spec of allUnitModels()) {
-  useGLTF.preload(spec.url);
-}
-
 // Shared geometry for all Units: fewer GPU uploads.
 const FIGURE = new PlaneGeometry(0.82, 1.03);
 FIGURE.translate(0, 0.515, 0);
@@ -95,6 +89,8 @@ const HIT = new BoxGeometry(0.8, 1.75, 0.8);
 HIT.translate(0, 0.675, 0);
 // The focus ring of an inspected Unit uses its Side color.
 const FOCUS_RING = new RingGeometry(0.43, 0.52, 40);
+const FOCUS_RING_EDGE = new RingGeometry(0.4, 0.56, 40);
+const FOCUS_RING_HALO = new RingGeometry(0.56, 0.61, 40);
 // The Battle Log ring of a Unit that the selected Log Entry changed: a light
 // parchment band with an ink edge, so that it stays clear on the grey Board.
 const LOG_RING = new RingGeometry(0.54, 0.66, 48);
@@ -306,6 +302,22 @@ const ModelBody = ({
 /** The Side-colored ring on the ground under the inspected Unit. */
 const FocusRing = ({ owner }: { readonly owner: UnitView["owner"] }) => (
   <group rotation-x={-Math.PI / 2} position-y={0.12}>
+    <mesh geometry={FOCUS_RING_HALO} renderOrder={3}>
+      <meshBasicMaterial
+        color="#fff2a8"
+        transparent
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </mesh>
+    <mesh geometry={FOCUS_RING_EDGE} renderOrder={3}>
+      <meshBasicMaterial
+        color="#1c140e"
+        transparent
+        depthWrite={false}
+        toneMapped={false}
+      />
+    </mesh>
     <mesh geometry={FOCUS_RING} renderOrder={3}>
       {/* Transparent, so it draws after the Lane runner of a Board skin:
           three.js draws all opaque meshes before the transparent ones, and
@@ -335,7 +347,6 @@ const LogRing = () => (
       <meshBasicMaterial
         color="#2a1d12"
         transparent
-        opacity={0.75}
         depthWrite={false}
         toneMapped={false}
       />
@@ -534,10 +545,12 @@ const inspectedUnitId = (unit: UnitView | null) => unit?.id ?? null;
 const NO_UNITS: readonly number[] = [];
 const NO_FALLEN: readonly FallenUnit[] = [];
 
-// The mark of a Square where a Unit died in the selected Log Entry: a faint
-// ink ring with a cross, so the Player sees where the Unit was.
+// The mark of a Square where a Unit died in the selected Log Entry: an ink
+// ring and cross with a light edge, visible on both light and dark ground.
 const FALLEN_RING = new RingGeometry(0.36, 0.44, 40);
+const FALLEN_RING_EDGE = new RingGeometry(0.32, 0.48, 40);
 const FALLEN_BAR = new PlaneGeometry(0.66, 0.08);
+const FALLEN_BAR_EDGE = new PlaneGeometry(0.74, 0.16);
 
 /** The Squares of the Units that died in the selected Log Entry (GDD 11.2). */
 export const FallenMarks = () => {
@@ -553,30 +566,41 @@ export const FallenMarks = () => {
           position={[squareX(unit.position), 0.1, laneZ(unit.lane, lanes)]}
           name={`fallen-${unit.unitId}`}
         >
+          <mesh geometry={FALLEN_RING_EDGE} renderOrder={2}>
+            <meshBasicMaterial
+              color="#fff2a8"
+              transparent
+              depthWrite={false}
+              toneMapped={false}
+            />
+          </mesh>
           <mesh geometry={FALLEN_RING} renderOrder={2}>
             <meshBasicMaterial
               color="#2a1d12"
               transparent
-              opacity={0.55}
               depthWrite={false}
               toneMapped={false}
             />
           </mesh>
           {[Math.PI / 4, -Math.PI / 4].map((angle) => (
-            <mesh
-              key={angle}
-              geometry={FALLEN_BAR}
-              rotation-z={angle}
-              renderOrder={2}
-            >
-              <meshBasicMaterial
-                color="#2a1d12"
-                transparent
-                opacity={0.55}
-                depthWrite={false}
-                toneMapped={false}
-              />
-            </mesh>
+            <group key={angle} rotation-z={angle}>
+              <mesh geometry={FALLEN_BAR_EDGE} renderOrder={2}>
+                <meshBasicMaterial
+                  color="#fff2a8"
+                  transparent
+                  depthWrite={false}
+                  toneMapped={false}
+                />
+              </mesh>
+              <mesh geometry={FALLEN_BAR} renderOrder={2}>
+                <meshBasicMaterial
+                  color="#2a1d12"
+                  transparent
+                  depthWrite={false}
+                  toneMapped={false}
+                />
+              </mesh>
+            </group>
           ))}
         </group>
       ))}

@@ -120,7 +120,6 @@ Paint **Meadow Dawn** first, and use it as the set reference for the other 5. Us
 6. Put the file in `apps/web/public/board-skins/` with the name of 1, and keep the full-size source in `apps/web/art/board-skins/`.
 7. Remove the item key from `UNPAINTED_BOARD_SKIN_ART` in `apps/web/src/features/battle/board-skin-art.ts`. A unit test then checks the file and its size.
 8. Look at the skin in a Stage Battle and a Dungeon Battle: the Units, the target markers and the Field Effect tiles must read on it.
-9. Write the licence record (art direction 5.5).
 
 ## 7. Review checklist
 

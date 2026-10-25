@@ -140,7 +140,7 @@ const SeeAlso = ({
           <li key={id}>
             <Link
               onPress={() => onOpen(id)}
-              className="inline-flex min-h-8 cursor-pointer items-center rounded-sm text-sm font-bold text-[#b4521a] underline decoration-[#b4521a]/45 underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-[#b4521a]"
+              className="text-keyword-rust decoration-keyword-rust/45 data-[hovered]:decoration-keyword-rust inline-flex min-h-8 cursor-pointer items-center rounded-sm text-sm font-bold underline underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
               data-entry={id}
             >
               {text(getEntry(id).name)}

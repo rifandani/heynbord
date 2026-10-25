@@ -165,7 +165,6 @@ A Skill Card has a Class, not a Race. Its image must not show a Race, because a 
 5. Remove the background, for the Unit cut-out.
 6. Make 2 exports: card art (600 × 800 portrait, with background) and Unit cut-out (transparent).
 7. Compress the textures (see Technical Design, section 6). For the card art, use `cwebp -q 80 -resize 600 800 <file>.png -o <file>.webp`. A unit test fails if a card art file is not 600 × 800.
-8. Write the record (5.5).
 
 ### 5.4 Review checklist
 
@@ -178,10 +177,6 @@ A Skill Card has a Class, not a Race. Its image must not show a Race, because a 
 - [ ] The image does not look like a known character from another game.
 - [ ] The style matches the golden references.
 
-### 5.5 Licence record
-
-For each asset, record: the file name, the tool and version, the date, the prompt, the seed (if available), the licence terms of the tool, and the hand changes. Keep the record in the repository. Use only tools whose terms permit commercial use.
-
 ## 6. User interface style
 
 - The UI uses the existing React Aria component library in `apps/web`, with a Heynbord theme.
@@ -192,20 +187,14 @@ For each asset, record: the file name, the tool and version, the date, the promp
 
 ## 7. Audio direction
 
-### 7.1 Music
-
-- Style: light orchestral folk. Flutes, strings, small drums. Each Region has its own theme.
-- Tracks for v1: Town, 3 Region Battle themes, 1 Boss theme, Victory sting, Defeat sting.
-- Source: AI music tools, with the same licence record as the art. Music has low priority. The game must be complete without music.
-
-### 7.2 Sound effects
+### 7.1 Sound effects
 
 - Source: sound effect packs with a free licence that permits commercial use (for example CC0).
 - Each Battle action has a sound: summon, move, each attack type, each Damage Type, Crit, Block, death, Countdown "tick" when a card becomes Ready, End Turn.
 - Each UI action has a short, soft sound.
 - Races have small sound differences (for example metal for Human, wood for Elf).
 
-### 7.3 Mix
+### 7.2 Mix
 
-- Separate volume controls: master, music, effects.
+- Separate volume controls: master and effects.
 - At speed ×2, the game plays fewer sounds at the same time, so that the sound stays clear.

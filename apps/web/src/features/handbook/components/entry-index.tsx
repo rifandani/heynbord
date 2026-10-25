@@ -171,7 +171,7 @@ const NoResult = ({
       <p className="text-[0.9375rem]">{tr("handbook.noResult", { query })}</p>
       <Link
         onPress={onToBattle}
-        className="cursor-pointer text-sm font-bold text-[#b4521a] underline decoration-[#b4521a]/45 underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+        className="text-keyword-rust decoration-keyword-rust/45 cursor-pointer text-sm font-bold underline underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
       >
         {tr("handbook.toBattle")}
       </Link>

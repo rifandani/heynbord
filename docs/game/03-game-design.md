@@ -546,7 +546,7 @@ The [Economy](./07-economy.md) document gives the costs.
 - **Panels.** The Combine panel shows each Rank of the card with its copies, a Combine between two Ranks, and the path to Legendary. The Craft panel shows the Essence cost, the Base Rank copy that the Craft makes, and the Essence before and after the Craft. The Extract panel shows each Rank with a copy, the copies that saved Decks use, and the Essence that each Extract gives. The Fuse panel shows the slots, the chance of each Race or Class of the inputs with the cards of the Fuse pool (name and art; on a short screen, art only, and the card details give the name), and the Essence before and after the Fuse. A Race or Class with no share stays in the list, with "All Discovered". When the Fuse pool is empty, the Fuse button is disabled with the reason, for example "You have Discovered all Rare Human cards".
 - Extract also asks for confirmation for an Epic or a Legendary copy, because these copies cost much to get again.
 - After a Combine, the new copy shows with the Rank burst of the Pack reveal, and an anvil sound plays. A Craft is the opposite of an Extract: Essence drops fly from the Essence balance into the card, the new copy forms, and then the Rank burst and the anvil sound come. After an Extract, Essence drops fly from the card to the Essence balance, and the balance counts up. A Fuse of a copy that a saved Deck uses asks for confirmation first, as an Extract. Then the input copies go into one face-down Card Back, the Essence drops fly in from the Essence balance, and the card turns over with the Rank burst and the "New" ribbon.
-- The first version has only single actions. Bulk actions (for example "Combine all pairs" or a bulk Fuse) can come after the first external playtest.
+- The first version has only single actions. Bulk actions (for example "Combine all pairs" or a bulk Fuse) can come in a later version.
 
 ## 8. Game modes
 
@@ -799,7 +799,6 @@ A **Dungeon** is a named place outside the Campaign. In a Dungeon, the player fi
 - Damage Types use color and an icon.
 - Options: reduced motion and speed.
 - The player can play a full Battle with the keyboard only.
-- UI text follows WCAG 2.2 AA contrast.
 
 ### 11.4 Town
 
@@ -844,7 +843,7 @@ The Campaign screen shows one **Region Map** at a time: a flat 2D painting of on
 - **Stage Panel.** A modal dialog in the center of the screen. The map is dim behind it. It shows the Stage ID, the enemy Hero, the first-win reward or the repeat-win reward, the best Stars, the 3 Star conditions with the Star Turn of the Stage (see 4.11), the Deck and a **Fight** button. The Deck is a choice of the Deck slots that have cards, with the active Deck selected: the last Deck that the Player used. "Edit Decks" opens the Deck builder. A Deck that is not valid cannot start a Battle, and the panel shows the first reason. Fight takes the focus when the panel opens. Esc, a close button and a click outside close the panel.
 - **Keyboard.** Focus moves through the Stage Markers in the order of the Trail. Esc closes the Stage Panel. When no panel is open, Esc goes back to the Town (see 11.4).
 - **Motion.** The Stage Markers rise onto their clearings in Trail order, and the solid part of the progress line draws in from the Trail entry. The Open Stage Marker pulses. After a win opens a Stage, its marker wakes up once. With reduced motion, all of this stops.
-- Story scenes (MOD-07) and Stage names are not part of this screen now.
+- Story scenes (MOD-07) are a v2 feature, and Stage names are not part of this screen now.
 
 ## 12. Content for v1
 

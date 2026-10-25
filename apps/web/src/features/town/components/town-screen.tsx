@@ -105,7 +105,7 @@ const NameLabel = ({
       "font-display z-10 flex items-center rounded-full px-[0.9cqw] text-[max(16px,2cqw)] leading-none font-black text-[#ffd75a]",
       "[text-shadow:0_2px_0_#3b1d08,2px_0_0_#3b1d08,-2px_0_0_#3b1d08,0_-2px_0_#3b1d08,0_4px_6px_rgba(0,0,0,0.5)]",
       // Under the pointer or the focus, the label lifts onto a HUD plate.
-      "border-2 border-transparent transition-[translate,background-color,border-color,box-shadow] duration-150",
+      "border-gold-trim/70 bg-night-plate/90 border-2 transition-[translate,background-color,border-color,box-shadow] duration-150",
       "group-data-[hovered]:-translate-y-1 group-data-[hovered]:border-[#e9c46a]/70 group-data-[hovered]:bg-[#1c140e]/75 group-data-[hovered]:shadow-[0_3px_0_rgba(0,0,0,0.45)]",
       "group-data-[focus-visible]:-translate-y-1 group-data-[focus-visible]:bg-[#1c140e]/75 group-data-[focus-visible]:shadow-[0_3px_0_rgba(0,0,0,0.45)] group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]",
       "group-data-[pressed]:translate-y-0 group-data-[pressed]:shadow-[0_1px_0_rgba(0,0,0,0.45)]"
@@ -258,9 +258,6 @@ const BuildingButton = ({
   );
 };
 
-const preloadBattleCanvas = () =>
-  import("@/features/battle/scene/battle-canvas");
-
 /**
  * The way out of the Town to a game screen. A screen that a selectable
  * Building opens plays the zoom toward that Building, then the fade (GDD
@@ -328,11 +325,6 @@ export const TownScreen = ({
   const tutorialWon = useAtomValue(tutorialStageWonAtom);
   const balances = useAtomValue(balancesAtom);
   const progress = useAtomValue(townProgressAtom);
-
-  useEffect(() => {
-    // The Town has no Three.js, so the Battle chunk loads in the background.
-    void preloadBattleCanvas();
-  }, []);
 
   const select = (building: SelectableBuilding) => onOpen(building.screen);
 

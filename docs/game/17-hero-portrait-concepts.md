@@ -117,7 +117,6 @@ Paint **Dawn Gaze** first, and use it as the set reference for the other 6. Use 
 6. Compress: `cwebp -q 80 -resize 600 800 <file>.png -o <file>.webp`. The file must be 600 × 800.
 7. Put the file in `apps/web/public/hero-portraits/` with the name of 1, and keep the full-size source in `apps/web/art/hero-portraits/`.
 8. Remove the item key from `UNPAINTED_HERO_PORTRAIT_ART` in `apps/web/src/features/hero/hero-portrait-art.ts`. A unit test then checks the file and its size.
-9. Write the licence record (art direction 5.5).
 
 ## 7. Review checklist
 

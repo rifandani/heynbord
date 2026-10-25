@@ -56,6 +56,8 @@ let volume = 1;
 let effectsVolume = 1;
 /** The music volume as a part of 1. */
 let musicVolume = 1;
+let musicEnabled = true;
+const unlockListeners = new Set<() => void>();
 const lastPlayed = new Map<SoundName, number>();
 
 /** The master gain at volume 100. */
@@ -90,20 +92,38 @@ export const unlockAudio = (): void => {
     master = context.createGain();
     effects = context.createGain();
     music = context.createGain();
-    master.gain.value = masterGain();
+    master.gain.value = enabled ? masterGain() : 0;
     effects.gain.value = gainOf(effectsVolume);
-    music.gain.value = gainOf(musicVolume);
+    music.gain.value = musicEnabled ? gainOf(musicVolume) : 0;
     effects.connect(master);
     music.connect(master);
     master.connect(context.destination);
   }
   if (context.state === "suspended") {
-    void context.resume();
+    const audio = context;
+    const resumeAndNotify = async (): Promise<void> => {
+      await audio.resume();
+      for (const listener of unlockListeners) {
+        listener();
+      }
+    };
+    void resumeAndNotify();
+  } else {
+    for (const listener of unlockListeners) {
+      listener();
+    }
   }
+};
+
+/** Registers music work that must start after the Player unlocks audio. */
+export const onAudioUnlocked = (listener: () => void): (() => void) => {
+  unlockListeners.add(listener);
+  return () => unlockListeners.delete(listener);
 };
 
 export const setSoundEnabled = (on: boolean): void => {
   enabled = on;
+  setChannel(master, enabled ? masterGain() : 0);
 };
 
 /** Sets the master volume, 0 to 100. A change applies to the sounds that play now too. */
@@ -119,13 +139,24 @@ export const setEffectsVolume = (percent: number): void => {
 };
 
 /**
- * Sets the music volume, 0 to 100. The game has no music track yet, so the
- * value waits for one.
+ * Sets the music volume, 0 to 100.
  */
 export const setMusicVolume = (percent: number): void => {
   musicVolume = partOf(percent);
-  setChannel(music, gainOf(musicVolume));
+  setChannel(music, musicEnabled ? gainOf(musicVolume) : 0);
 };
+
+/** Sets the separate music switch. */
+export const setMusicEnabled = (on: boolean): void => {
+  musicEnabled = on;
+  setChannel(music, musicEnabled ? gainOf(musicVolume) : 0);
+};
+
+/** The shared Web Audio context and the music channel, or null before unlock. */
+export const musicOutput = (): {
+  readonly context: AudioContext;
+  readonly destination: GainNode;
+} | null => (context && music ? { context, destination: music } : null);
 
 const tone = (
   frequency: number,

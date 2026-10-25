@@ -5,7 +5,6 @@ import { useLayoutEffect, useRef } from "react";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { RankGems } from "@/core/components/game/rank-gems";
-import { RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
@@ -57,8 +56,7 @@ const ExtractRow = ({
         <RankGems rank={row.rank} />
       </span>
       <span
-        className="shrink-0 text-sm font-bold [@media(max-height:500px)]:text-[11px]"
-        style={{ color: RANK_COLORS[row.rank] }}
+        className="text-cream shrink-0 text-sm font-bold [@media(max-height:500px)]:text-[11px]"
         aria-hidden
       >
         {name}
