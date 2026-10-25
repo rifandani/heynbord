@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "web in node for vite & playwright",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "composite": true,
     "module": "esnext",
     "moduleResolution": "bundler",

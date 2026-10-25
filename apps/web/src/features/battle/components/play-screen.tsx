@@ -10,6 +10,8 @@ import { lazy, Suspense, useContext, useEffect, useMemo } from "react";
 import { AchievementsScreen } from "@/features/achievements/components/achievements-screen";
 import { useAchievementNotices } from "@/features/achievements/use-achievement-notices";
 import {
+  setEffectsVolume,
+  setMusicVolume,
   setSoundEnabled,
   setSoundVolume,
 } from "@/features/battle/battle-audio";
@@ -43,6 +45,10 @@ import { TopBar } from "@/features/battle/components/top-bar";
 import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
 import { UnitDetails } from "@/features/battle/components/unit-details";
 import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
+import {
+  setReducedMotionPreference,
+  useReducedMotion,
+} from "@/features/battle/scene/reduced-motion";
 import { installTestHooks } from "@/features/battle/test-hooks";
 import { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -69,6 +75,10 @@ import { profileReadyAtom } from "@/features/profile/profile.atoms";
 import { useProfileStore } from "@/features/profile/use-profile-store";
 import { useReplayLink } from "@/features/replay/use-replay-link";
 import { SeaportScreen } from "@/features/seaport/components/seaport-screen";
+import {
+  effectsVolumeAtom,
+  musicVolumeAtom,
+} from "@/features/settings/settings.atoms";
 import { TownBar } from "@/features/town/components/town-bar";
 import {
   TownScreen,
@@ -448,6 +458,9 @@ export const PlayScreen = () => {
   const registry = useContext(RegistryContext);
   const soundOn = useAtomValue(soundOnAtom);
   const soundVolume = useAtomValue(soundVolumeAtom);
+  const effectsVolume = useAtomValue(effectsVolumeAtom);
+  const musicVolume = useAtomValue(musicVolumeAtom);
+  const reducedMotion = useReducedMotion();
   const [screen, setScreen] = useAtom(gameScreenAtom);
   const campaign = useCampaignRegion(battle);
   const { leaving, open: handleOpen } = useTownLeave(
@@ -477,6 +490,15 @@ export const PlayScreen = () => {
 
   useEffect(() => setSoundEnabled(soundOn), [soundOn]);
   useEffect(() => setSoundVolume(soundVolume), [soundVolume]);
+  useEffect(() => setEffectsVolume(effectsVolume), [effectsVolume]);
+  useEffect(() => setMusicVolume(musicVolume), [musicVolume]);
+  // The modules outside React, and the CSS, follow the same choice.
+  useEffect(() => {
+    setReducedMotionPreference(reducedMotion);
+    document.documentElement.dataset.reducedMotion = reducedMotion
+      ? "true"
+      : "false";
+  }, [reducedMotion]);
   // The QA states change the Profile, so the hooks wait for it to load.
   useEffect(
     () =>

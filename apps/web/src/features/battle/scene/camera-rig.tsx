@@ -1,14 +1,10 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { Predicate } from "effect";
 import { useLayoutEffect, useMemo } from "react";
 import { PerspectiveCamera, Vector3 } from "three";
 
 import { cameraFrame } from "@/features/battle/scene/layout";
 import { playback } from "@/features/battle/scene/playback";
-
-const prefersReducedMotion = (): boolean =>
-  Predicate.isFunction(globalThis.matchMedia) &&
-  matchMedia("(prefers-reduced-motion: reduce)").matches;
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 
 /**
  * The 3/4 camera from the player's side (art direction 3). It fits the Board
@@ -17,7 +13,7 @@ const prefersReducedMotion = (): boolean =>
 export const CameraRig = ({ lanes }: { readonly lanes: number }) => {
   const camera = useThree((state) => state.camera);
   const size = useThree((state) => state.size);
-  const reduced = useMemo(() => prefersReducedMotion(), []);
+  const reduced = useReducedMotion();
   const frame = useMemo(
     () => cameraFrame(size.width / Math.max(1, size.height), lanes),
     [size.width, size.height, lanes]

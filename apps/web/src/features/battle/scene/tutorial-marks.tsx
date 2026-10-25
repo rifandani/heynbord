@@ -1,6 +1,6 @@
 import { useAtomValue } from "@effect/atom-react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { Group, MeshBasicMaterial } from "three";
 import { Vector3 } from "three";
 
@@ -10,6 +10,7 @@ import {
 } from "@/features/battle/battle.atoms";
 import { toScreen } from "@/features/battle/scene/markers";
 import { playback } from "@/features/battle/scene/playback";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { tutorialAnchor } from "@/features/battle/scene/tutorial-anchor";
 import {
   tutorialArea,
@@ -24,9 +25,6 @@ const TUTORIAL_COLOR = "#7fe3ff";
 /** Step 4 tells the Player about an enemy Unit, so its highlight is red. */
 const BLOCK_COLOR = "#ff5a3c";
 
-const prefersReducedMotion = (): boolean =>
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 /**
  * Tutorial arrows and highlights on the Board (GDD 8.3): the Step 2 arrow and
  * Summon Zone highlight, and the Step 4 Lane highlight. They lie under the
@@ -35,7 +33,7 @@ const prefersReducedMotion = (): boolean =>
 export const TutorialMarks = () => {
   const session = useAtomValue(battleSessionAtom);
   const marks = useAtomValue(tutorialMarksAtom);
-  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const reducedMotion = useReducedMotion();
   const arrow = useRef<Group>(null);
   const materials = useRef<(MeshBasicMaterial | null)[]>([]);
   const lanes = session?.view.lanes ?? 1;

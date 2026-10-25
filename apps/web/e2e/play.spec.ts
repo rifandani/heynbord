@@ -523,6 +523,10 @@ test.describe("Battle bot playtest", () => {
     await expect(page.getByTestId("settings-dialog")).toBeVisible();
     await expect(page.getByTestId("settings-language")).toBeVisible();
     await expect(page.getByTestId("settings-volume")).toBeVisible();
+    await expect(page.getByTestId("settings-effects-volume")).toBeVisible();
+    await expect(page.getByTestId("settings-music-volume")).toBeVisible();
+    await expect(page.getByTestId("settings-battle-speed")).toBeVisible();
+    await expect(page.getByTestId("settings-reduced-motion")).toBeVisible();
     await expect(page.getByTestId("settings-profile")).toHaveCount(0);
     await page.getByTestId("settings-close").press("Enter");
     await expect(page.getByTestId("settings-dialog")).toBeHidden();
@@ -984,6 +988,66 @@ test.describe("Town", () => {
     await page.reload();
     await page.getByTestId("town-settings").press("Enter");
     await expect(page.getByRole("slider", { name: "Sound" })).toHaveValue("50");
+  });
+
+  test("keeps the Settings options, and the Battle follows them", async ({
+    page,
+  }) => {
+    await page.goto("/play");
+    await openSettings(page);
+    // Effects volume: 10, with the arrow keys of the keyboard.
+    const effects = page.getByRole("slider", { name: "Effects volume" });
+    await effects.focus();
+    await page.keyboard.press("Home");
+    for (let step = 0; step < 10; step += 1) {
+      await page.keyboard.press("ArrowRight");
+    }
+    await expect(page.getByTestId("settings-effects-volume-value")).toHaveText(
+      "10"
+    );
+    // Music volume: 20.
+    const music = page.getByRole("slider", { name: "Music volume" });
+    await music.focus();
+    await page.keyboard.press("Home");
+    for (let step = 0; step < 20; step += 1) {
+      await page.keyboard.press("ArrowRight");
+    }
+    await expect(page.getByTestId("settings-music-volume-value")).toHaveText(
+      "20"
+    );
+    // The Battle speed takes the arrow keys, as the language choice does.
+    await page.getByRole("radio", { name: "×1" }).focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.getByRole("radio", { name: "×2" })).toBeChecked();
+    // The reduced motion choice takes the keyboard.
+    const reduced = page.getByRole("switch", { name: "Reduced motion" });
+    await reduced.focus();
+    await page.keyboard.press("Space");
+    await expect(reduced).toBeChecked();
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-reduced-motion",
+      "true"
+    );
+    await page.getByTestId("settings-close").press("Enter");
+    await page.reload();
+    await openSettings(page);
+    await expect(
+      page.getByRole("slider", { name: "Effects volume" })
+    ).toHaveValue("10");
+    await expect(
+      page.getByRole("slider", { name: "Music volume" })
+    ).toHaveValue("20");
+    await expect(page.getByRole("radio", { name: "×2" })).toBeChecked();
+    await expect(
+      page.getByRole("switch", { name: "Reduced motion" })
+    ).toBeChecked();
+    await page.getByTestId("settings-close").press("Enter");
+    // The HUD uses ×2.
+    await page.goto("/play?seed=9&state=active-play");
+    await expect(page.locator("[data-battle-canvas] canvas")).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.getByRole("button", { name: "Speed ×2" })).toBeVisible();
   });
 
   test("a reload opens the Town", async ({ page }) => {

@@ -17,5 +17,5 @@ This changes art direction 2 ("Board: a real 3D model: a table-land with Lanes o
 ## Consequences
 
 - The painting is a DOM image with a "cover" fit, so it does not move with the camera. The artist paints it for the Battle camera (45° down, 16:9). The open ground must be larger than a 4-Lane Board, so that the Board fits on it at other screen sizes and with 3 or 4 Lanes.
-- The Player sees no Square at rest. The legal Squares show only when a card is selected. A Closed Lane shows as a dark band. The high-contrast Board setting will draw outlines on all Squares.
+- The Player sees no Square at rest. The legal Squares show only when a card is selected. A Closed Lane shows as a dark band.
 - A camera shake does not move the painting.

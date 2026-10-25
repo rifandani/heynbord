@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import type { Sprite } from "three";
 
 import { fxList } from "@/features/battle/scene/fx";
@@ -9,7 +9,7 @@ import {
   shownPlates,
 } from "@/features/battle/scene/keyword-plates";
 import { playback } from "@/features/battle/scene/playback";
-import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { keywordPlateTexture } from "@/features/battle/scene/textures";
 import { unitAnchors } from "@/features/battle/scene/unit-anchors";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -61,7 +61,7 @@ const spotOf = (plate: KeywordPlate): Spot => {
  */
 export const KeywordPlateLayer = () => {
   const sprites = useRef<(Sprite | null)[]>([]);
-  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const reducedMotion = useReducedMotion();
   const { text } = useGameText();
 
   useFrame(() => {

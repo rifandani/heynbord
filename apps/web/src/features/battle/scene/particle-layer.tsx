@@ -29,7 +29,7 @@ import {
   spawnParticles,
 } from "@/features/battle/scene/particles";
 import { playback } from "@/features/battle/scene/playback";
-import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { loopStatuses } from "@/features/battle/scene/status-visuals";
 import { unitAnchors } from "@/features/battle/scene/unit-anchors";
 
@@ -276,7 +276,7 @@ const singlesNow = (reducedMotion: boolean): Particle[] => {
  * All motion uses `playback.time`.
  */
 export const ParticleLayer = () => {
-  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const reducedMotion = useReducedMotion();
   const additive = useMemo(() => makeBatch(AdditiveBlending), []);
   const alpha = useMemo(() => makeBatch(NormalBlending), []);
 

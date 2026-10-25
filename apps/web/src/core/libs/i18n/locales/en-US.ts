@@ -29,6 +29,12 @@ export default {
   notFound: "Not Found",
   gone: "Sorry, we can't find the page you're looking for",
   welcome: "Welcome Back",
+  errorPage: {
+    code: "4xx",
+    title: "Oops!",
+    text: "Something went wrong",
+    retry: "Try again",
+  },
   // #endregion COMMON
   // #region HOME
   title: "Home",
@@ -40,6 +46,7 @@ export default {
   },
   battle: {
     title: "Battle",
+    boardLabel: "Battle Board",
     chooseStage: "Choose a Stage",
     chooseDeck: "Choose a Deck",
     editDecks: "Edit Decks",
@@ -472,6 +479,10 @@ export default {
     sound: "Sound",
     volume: "Sound volume",
     soundOn: "Sound on",
+    effectsVolume: "Effects volume",
+    musicVolume: "Music volume",
+    battleSpeed: "Battle speed",
+    reducedMotion: "Reduced motion",
     profile: {
       label: "Progress",
       export: "Export",

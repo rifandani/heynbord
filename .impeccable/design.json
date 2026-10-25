@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-19T14:16:48Z",
+  "generatedAt": "2026-10-25T07:44:20Z",
   "title": "Design System: Heynbord",
   "extensions": {
     "colorMeta": {
@@ -844,6 +844,96 @@
           "oklch(84% 0.143 91.3)",
           "oklch(95% 0.090 91.3)"
         ]
+      },
+      "crypt": {
+        "role": "neutral",
+        "displayName": "Crypt Shadow",
+        "canonical": "oklch(23.7% 0.014 57.5)",
+        "tonalRamp": [
+          "oklch(15% 0.014 57.5)",
+          "oklch(26% 0.014 57.5)",
+          "oklch(37% 0.014 57.5)",
+          "oklch(48% 0.014 57.5)",
+          "oklch(60% 0.014 57.5)",
+          "oklch(72% 0.014 57.5)",
+          "oklch(84% 0.014 57.5)",
+          "oklch(95% 0.014 57.5)"
+        ]
+      },
+      "shop": {
+        "role": "neutral",
+        "displayName": "Shop Plum",
+        "canonical": "oklch(23.8% 0.035 340.0)",
+        "tonalRamp": [
+          "oklch(15% 0.035 340.0)",
+          "oklch(26% 0.035 340.0)",
+          "oklch(37% 0.035 340.0)",
+          "oklch(48% 0.035 340.0)",
+          "oklch(60% 0.035 340.0)",
+          "oklch(72% 0.035 340.0)",
+          "oklch(84% 0.035 340.0)",
+          "oklch(95% 0.034 340.0)"
+        ]
+      },
+      "goblin-brass": {
+        "role": "game",
+        "displayName": "Goblin Brass",
+        "canonical": "oklch(66.1% 0.111 77.5)",
+        "tonalRamp": [
+          "oklch(15% 0.031 77.5)",
+          "oklch(26% 0.054 77.5)",
+          "oklch(37% 0.077 77.5)",
+          "oklch(48% 0.100 77.5)",
+          "oklch(60% 0.111 77.5)",
+          "oklch(72% 0.111 77.5)",
+          "oklch(84% 0.111 77.5)",
+          "oklch(95% 0.043 77.5)"
+        ]
+      },
+      "feral-violet": {
+        "role": "game",
+        "displayName": "Feral Slate Violet",
+        "canonical": "oklch(51.6% 0.083 294.6)",
+        "tonalRamp": [
+          "oklch(15% 0.083 294.6)",
+          "oklch(26% 0.083 294.6)",
+          "oklch(37% 0.083 294.6)",
+          "oklch(48% 0.083 294.6)",
+          "oklch(60% 0.083 294.6)",
+          "oklch(72% 0.083 294.6)",
+          "oklch(84% 0.083 294.6)",
+          "oklch(95% 0.026 294.6)"
+        ]
+      },
+      "rank-edge": {
+        "role": "game",
+        "displayName": "Rank Edge",
+        "canonical": "oklch(23.4% 0.039 67.2)",
+        "tonalRamp": [
+          "oklch(15% 0.033 67.2)",
+          "oklch(26% 0.039 67.2)",
+          "oklch(37% 0.039 67.2)",
+          "oklch(48% 0.039 67.2)",
+          "oklch(60% 0.039 67.2)",
+          "oklch(72% 0.039 67.2)",
+          "oklch(84% 0.039 67.2)",
+          "oklch(95% 0.035 67.2)"
+        ]
+      },
+      "damage-lightning": {
+        "role": "game",
+        "displayName": "Lightning Cyan",
+        "canonical": "oklch(87.0% 0.141 184.8)",
+        "tonalRamp": [
+          "oklch(15% 0.026 184.8)",
+          "oklch(26% 0.046 184.8)",
+          "oklch(37% 0.065 184.8)",
+          "oklch(48% 0.085 184.8)",
+          "oklch(60% 0.106 184.8)",
+          "oklch(72% 0.127 184.8)",
+          "oklch(84% 0.141 184.8)",
+          "oklch(95% 0.072 184.8)"
+        ]
       }
     },
     "typographyMeta": {
@@ -874,6 +964,10 @@
       "number": {
         "displayName": "Number",
         "purpose": "Countdowns, Attack, HP, pile counts and the Turn number, in tabular figures. On a card, 1.2em to 1.3em of the card font size, with a small dark text shadow."
+      },
+      "micro": {
+        "displayName": "Micro",
+        "purpose": "The number on a small count token, and the compact labels of a short screen. It is the one size below Label."
       }
     },
     "shadows": [

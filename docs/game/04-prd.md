@@ -74,7 +74,6 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | CRD-04 | The Deck builder must check all Deck rules in GDD section 6 and show the reason when a Deck is not valid. | M |
 | CRD-05 | A new player must have 3 Deck slots. The player must be able to buy more with Coin, up to 10, with the prices in the Economy document. | M |
 | CRD-06 | The Deck builder must have Auto-fill. | S |
-| CRD-07 | The Deck builder must show the Countdown curve. | S |
 | CRD-08 | Card text must come from Keyword and effect templates with values, not from free text. | M |
 
 ### 6.3 Progression (PRG)
@@ -115,7 +114,6 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | UI-03 | On a phone in portrait, the game must ask the player to turn the phone to landscape. | M |
 | UI-04 | The Battle screen must show the Attack and HP of each Unit at all times. | M |
 | UI-05 | Hover or long press must show the full card details. | M |
-| UI-06 | Settings must include text size, reduced motion, high-contrast Board, audio volume and language. | S |
 | UI-07 | The game must have a Handbook that explains each rule, term and icon that the Player meets, with search, in each language. It opens from the Town Bar and from the Battle, and its rule text is the same as the text on the cards (GDD section 11.1). | S |
 
 ### 6.6 Save data (SAV)
@@ -133,8 +131,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | ID | Requirement | Priority |
 | --- | --- | --- |
 | LOC-01 | All text must be available in `en-us` and `id-id`. | M |
-| LOC-02 | All text must use Translation Keys in the Message Catalogs. No text is written directly in components. | M |
-| LOC-03 | The player must be able to change the language in Settings and on the Title screen. | M |
+| LOC-03 | The player must be able to change the language in Settings. | M |
 
 ### 6.8 Art and audio (ART)
 
@@ -151,7 +148,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | ID | Requirement | Priority |
 | --- | --- | --- |
 | NFR-01 | Frame rate: 60 fps on a 2022 laptop with integrated graphics. 30 fps or more on a 2022 mid-range Android phone. | M |
-| NFR-02 | First load: the Title screen is interactive in less than 3 seconds on a 4G connection. | M |
+| NFR-02 | First load: the Town is interactive in less than 3 seconds on a 4G connection. | M |
 | NFR-03 | Battle assets load only when needed. The first Battle must start in less than 5 seconds after the player selects it. | M |
 | NFR-04 | Browsers: the last 2 versions of Chrome, Edge, Firefox and Safari (desktop and mobile). | M |
 | NFR-05 | Graphics: WebGL 2. The game must show a clear message if WebGL 2 is not available. | M |

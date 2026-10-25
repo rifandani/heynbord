@@ -1,4 +1,3 @@
-import { useMediaQuery } from "@reactuses/core";
 import type {
   ClassId,
   DeckInput,
@@ -29,6 +28,7 @@ import type { TextRef } from "@/features/battle/card-text";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import { useDeckFlip } from "@/features/deck/components/use-deck-flip";
@@ -185,7 +185,7 @@ const DeckCard = ({
   readonly peekAt: PeekAt;
 }) => {
   const { tr } = useGameText();
-  const still = useMediaQuery("(prefers-reduced-motion: reduce)", false);
+  const still = useReducedMotion();
   const card = getCard(row.cardId);
   const name = tr(`cards.${row.cardId}.name`);
   const rank = tr(`ranks.${row.rank}`);

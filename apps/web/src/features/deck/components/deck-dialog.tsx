@@ -421,7 +421,7 @@ const Cover = () => {
 };
 
 /**
- * The Deck dialog (GDD 6, CRD-04 to CRD-07): a big book at the center of the
+ * The Deck dialog (GDD 6, CRD-04 to CRD-06): a big book at the center of the
  * screen, over the current screen. The ribbons are the Deck slots. The left
  * page holds all the cards of the game, the right page the open Deck. A
  * change applies at once, so it has no Save button. Esc, the close button and

@@ -12,7 +12,7 @@ import type { Plugin, PluginOption } from "vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-import { rulesHash } from "./scripts/rules-hash";
+import { rulesHash } from "./scripts/rules-hash.ts";
 
 /**
  * Dev-only: alias /sw.js → VitePWA's /dev-sw.js?dev-sw for static checkers.

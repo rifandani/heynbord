@@ -3,6 +3,8 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { SoundName } from "@/features/battle/battle-audio";
 import {
   playSound,
+  setEffectsVolume,
+  setMusicVolume,
   setSoundEnabled,
   setSoundVolume,
   unlockAudio,
@@ -166,6 +168,8 @@ describe("playSound", () => {
     }
     setSoundEnabled(true);
     setSoundVolume(100);
+    setEffectsVolume(100);
+    setMusicVolume(100);
     vi.unstubAllGlobals();
   });
 
@@ -177,13 +181,15 @@ describe("playSound", () => {
     expect(made.noises).toBe(0);
   });
 
-  it("makes one context, with the master gain on the square of the volume", () => {
+  it("makes one context, with the master and channel gains", () => {
     unlockAudio();
     unlockAudio();
     expect(contexts).toHaveLength(1);
     expect(created().state).toBe("running");
-    const [master] = gains;
+    const [master, effects, music] = gains;
     expect(master?.gain.value).toBeCloseTo(0.35 * 0.5 ** 2);
+    expect(effects?.gain.value).toBe(1);
+    expect(music?.gain.value).toBe(1);
     setSoundVolume(150);
     expect(master?.gain.setTargetAtTime).toHaveBeenLastCalledWith(
       0.35,
@@ -193,6 +199,28 @@ describe("playSound", () => {
     setSoundVolume(-10);
     expect(master?.gain.setTargetAtTime).toHaveBeenLastCalledWith(0, 0, 0.02);
     setSoundVolume(100);
+  });
+
+  it("keeps the effects and the music volume apart, on their own curves", () => {
+    const [, effects, music] = gains;
+    setEffectsVolume(50);
+    expect(effects?.gain.setTargetAtTime).toHaveBeenLastCalledWith(
+      0.25,
+      0,
+      0.02
+    );
+    setMusicVolume(25);
+    expect(music?.gain.setTargetAtTime).toHaveBeenLastCalledWith(
+      0.0625,
+      0,
+      0.02
+    );
+    setEffectsVolume(150);
+    expect(effects?.gain.setTargetAtTime).toHaveBeenLastCalledWith(1, 0, 0.02);
+    setEffectsVolume(-10);
+    expect(effects?.gain.setTargetAtTime).toHaveBeenLastCalledWith(0, 0, 0.02);
+    setEffectsVolume(100);
+    setMusicVolume(100);
   });
 
   it("makes the tones and the noises of each sound", () => {
@@ -242,6 +270,18 @@ describe("playSound", () => {
     playSound("victory", 0);
     expect(made.oscillators).toBeGreaterThan(played);
     setSoundVolume(100);
+  });
+
+  it("is quiet at effects volume 0, but the music volume does not stop the effects", () => {
+    const played = made.oscillators;
+    setMusicVolume(0);
+    playSound("ready", 0);
+    expect(made.oscillators).toBe(played + 1);
+    setMusicVolume(100);
+    setEffectsVolume(0);
+    playSound("select", 0);
+    expect(made.oscillators).toBe(played + 1);
+    setEffectsVolume(100);
   });
 
   it("is quiet when the context does not run", () => {

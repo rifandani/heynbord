@@ -51,7 +51,7 @@ _A collectible card game crossed with lane tower defense, where timing replaces 
 - Terminology: use the glossary in [`packages/rules/GLOSSARY.md`](packages/rules/GLOSSARY.md) (for example **Rank**, not rarity; **Countdown**, not mana; **Stars** only for Stage results). The web glossary is [`apps/web/GLOSSARY.md`](apps/web/GLOSSARY.md).
 - Languages: `en-us` and `id-id` from v1. All text comes from Message Catalogs. Fonts must support Indonesian characters.
 - Save: local only (IndexedDB), with export and import. v1 sends no player data to a server.
-- Performance: Title screen interactive in less than 3 seconds on 4G. Battle assets load only when needed. WebGL 2 is necessary, with a clear message when it is not available. PWA with offline play.
+- Performance: Town screen interactive in less than 3 seconds on 4G. Battle assets load only when needed. WebGL 2 is necessary, with a clear message when it is not available. PWA with offline play.
 - Business model: free-to-play with Cosmetics only. v1 has no shop, payments or ads.
 - Not in v1: online play, accounts, PvP, guilds, chat, trading, native apps, portrait phone layout.
 - Team: one developer. AI tools make the art and music. Each asset needs a licence record.
@@ -98,5 +98,5 @@ The pillars have an order. When two pillars disagree, the lower number wins. Ful
 - UI text contrast meets WCAG 2.2 AA.
 - The Player can play a full Battle with the keyboard only, and with touch only.
 - Never use color alone: Rank uses color and pips. Damage Type uses color and an icon.
-- Settings: text size, reduced motion (no camera movement or shake), high-contrast Board, Battle speed, separate audio volumes, language.
+- Settings: reduced motion (no camera movement or shake), Battle speed, separate audio volumes, language.
 - The Battle shows the Attack and HP of each Unit at all times. Hover or long press shows the full card details.

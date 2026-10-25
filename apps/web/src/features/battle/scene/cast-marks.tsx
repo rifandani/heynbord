@@ -8,7 +8,7 @@ import { castSquares, currentCast, effectColor } from "@/features/battle/cast";
 import { tileLight } from "@/features/battle/scene/cast-tiles";
 import { laneZ, squareX } from "@/features/battle/scene/layout";
 import { playback } from "@/features/battle/scene/playback";
-import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { castTileTexture } from "@/features/battle/scene/textures";
 
 const hideFrom = (tiles: readonly (Mesh | null)[], start: number) => {
@@ -27,7 +27,7 @@ const hideFrom = (tiles: readonly (Mesh | null)[], start: number) => {
  */
 export const CastMarks = () => {
   const texture = useMemo(() => castTileTexture(), []);
-  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const reducedMotion = useReducedMotion();
   const tiles = useRef<(Mesh | null)[]>([]);
 
   useFrame(() => {

@@ -81,7 +81,7 @@ The game adds motion on separate layers over the painting. The painting must giv
 
 ## 2. Buildings
 
-Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. The other Buildings are decoration in the plate until their screens exist.
+Each screen of GDD 11.1 except the Town and Settings has a Building. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. The other Buildings are decoration in the plate until their screens exist.
 
 ### 2.1 Town Gate
 

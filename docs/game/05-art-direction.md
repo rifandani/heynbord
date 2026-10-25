@@ -195,7 +195,7 @@ For each asset, record: the file name, the tool and version, the date, the promp
 ### 7.1 Music
 
 - Style: light orchestral folk. Flutes, strings, small drums. Each Region has its own theme.
-- Tracks for v1: Title, Town, 3 Region Battle themes, 1 Boss theme, Victory sting, Defeat sting.
+- Tracks for v1: Town, 3 Region Battle themes, 1 Boss theme, Victory sting, Defeat sting.
 - Source: AI music tools, with the same licence record as the art. Music has low priority. The game must be complete without music.
 
 ### 7.2 Sound effects

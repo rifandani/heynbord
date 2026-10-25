@@ -26,6 +26,7 @@ import { GameTooltip } from "@/core/components/game/game-tooltip";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { REWARD_PLATE_COMPACT } from "@/features/battle/components/reward-plate";
+import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import {
@@ -605,7 +606,7 @@ export const StarChests = ({
       revealTimer.current = null;
     }
     setOpened({ region, claim });
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (prefersReducedMotion()) {
       setRevealed(true);
       return;
     }

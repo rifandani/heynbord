@@ -47,7 +47,7 @@ import {
 } from "@/features/battle/scene/fx-atlas";
 import { laneZ, squareX } from "@/features/battle/scene/layout";
 import { playback } from "@/features/battle/scene/playback";
-import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import {
   badgeStatuses,
   STATUS_ICON,
@@ -604,7 +604,7 @@ export const Units = () => {
   const log = useAtomValue(battleLogAtom);
   const changed = new Set(log?.book.entries[log.selected]?.changed ?? NO_UNITS);
   const options = battleOptions(session);
-  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const reducedMotion = useReducedMotion();
   // Load the card art of both Sides at the Battle start, before the first summon.
   useEffect(() => {
     if (!session) {

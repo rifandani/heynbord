@@ -22,7 +22,6 @@ The schedule is for one developer. If a Milestone is late, cut **C** requirement
 - [ ] Player level, unlocks, Gear.
 - [ ] Region 1 (10 Stages) with the tutorial and the first boss.
 - [ ] The Town is the first screen of the game. The player selects a Building to open a screen. The Town Gate and the Card shop can be selected.
-- [ ] Message Catalog structure for game text (`en-us` first).
 - [ ] Style bible and first 30 final card art images.
 
 **Exit (Playable alpha):** A new player can play Region 1 from the tutorial to the boss, and can open Packs and change the Deck. Do the first external playtest.
@@ -63,7 +62,6 @@ Regions 2 to 5 (M3) come after the playtest, because their tuning needs the Work
 - [ ] Dungeon Sweep (BAT-12, [ADR-0039](../adr/0039-dungeons-have-a-dungeon-sweep-with-their-own-tickets.md)), Battle Log (BAT-13: #73, #74, #76).
 - [ ] Mobile landscape layout and touch input. Portrait warning.
 - [ ] Sound effects and music.
-- [ ] Accessibility options and keyboard play.
 - [ ] Performance work to meet the budgets.
 - [ ] PWA offline mode.
 - [ ] Playtest with 5 to 10 people through the full Campaign.
