@@ -8,6 +8,7 @@ import {
 } from "react-aria-components/DateField"
 import { twJoin } from "cn"
 import { cx } from "@/core/utils/primitive"
+import { wellFace } from "@/core/components/game/surfaces"
 import { fieldStyles } from "./field"
 
 export function DateField<T extends DateValue>({ className, ...props }: DateFieldProps<T>) {
@@ -25,15 +26,14 @@ export function DateInput({ className, ...props }: Omit<DateInputProps, "childre
     <span data-slot="control" className="relative block">
       <DateInputPrimitive
         className={cx(
-          "relative block appearance-none rounded-lg px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)]",
-          "text-base/6 text-fg placeholder:text-muted-fg sm:text-sm/6",
-          "bg-(--control-bg,transparent)",
-          "border border-input enabled:hover:border-muted-fg/30",
-          "focus-within:border-ring/70 focus-within:bg-primary-subtle/5 focus-within:outline-hidden focus-within:ring-3 focus-within:ring-ring/20 focus-within:hover:border-ring/80",
-          "group-open:border-ring/70 group-open:bg-primary-subtle/5 group-open:outline-hidden group-open:ring-3 group-open:ring-ring/20 group-open:enabled:hover:border-ring/80",
+          wellFace,
+          "relative block appearance-none px-3 py-2.5 text-base/6 sm:py-2 sm:text-sm/6",
+          "placeholder:text-muted-fg",
+          "enabled:hover:border-bronze-rim",
+          "focus-within:border-ring focus-within:ring-4 focus-within:ring-(--ring)",
+          "group-open:border-ring group-open:ring-4 group-open:ring-(--ring)",
           "invalid:border-danger-subtle-fg/70 invalid:bg-danger-subtle/5 focus-within:invalid:border-danger-subtle-fg/70 focus-within:invalid:bg-danger-subtle/5 focus-within:invalid:ring-danger-subtle-fg/20 focus-within:invalid:hover:border-danger-subtle-fg/80 invalid:enabled:hover:border-danger-subtle-fg/80",
-          "in-disabled:bg-muted disabled:bg-muted forced-colors:in-disabled:text-[GrayText] forced-colors:disabled:text-[GrayText]",
-          "dark:scheme-dark",
+          "in-disabled:bg-muted in-disabled:opacity-70 disabled:bg-muted disabled:opacity-70 forced-colors:in-disabled:text-[GrayText] forced-colors:disabled:text-[GrayText]",
           className
         )}
         {...props}

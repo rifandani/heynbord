@@ -18,9 +18,9 @@ export const FieldShowcase = () => (
         <Legend>Profile</Legend>
         <Description>Public details for your account.</Description>
         <FieldGroup>
-          <TextField>
+          <TextField defaultValue="Ava Thompson">
             <Label>Name</Label>
-            <Input defaultValue="Ava Thompson" />
+            <Input />
             <Description>Shown on your profile.</Description>
           </TextField>
         </FieldGroup>
@@ -28,9 +28,9 @@ export const FieldShowcase = () => (
     </Variant>
 
     <Variant label="FieldError">
-      <TextField className="w-64" isInvalid>
+      <TextField className="w-64" defaultValue="not-an-email" isInvalid>
         <Label>Email</Label>
-        <Input defaultValue="not-an-email" />
+        <Input />
         <FieldError>Please enter a valid email.</FieldError>
       </TextField>
     </Variant>

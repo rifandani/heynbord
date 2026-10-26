@@ -30,8 +30,8 @@ export function SearchInput(props: InputProps) {
       <Input {...props} />
       <Button
         className={twJoin(
-          "touch-target grid place-content-center pressed:text-fg text-muted-fg hover:text-fg group-empty/search-field:invisible",
-          "px-3 py-2 sm:px-2.5 sm:py-1.5 sm:text-sm/5"
+          "touch-target grid place-content-center rounded-sm text-muted-fg outline-none hover:text-fg pressed:translate-y-px pressed:text-fg focus-visible:ring-4 focus-visible:ring-(--ring) group-empty/search-field:invisible",
+          "px-3 py-2 sm:px-2.5 sm:py-1.5"
         )}
       >
         <HiXMark className="size-5 sm:size-4" />

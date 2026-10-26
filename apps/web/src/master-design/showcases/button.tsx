@@ -34,6 +34,26 @@ export const ButtonShowcase = () => (
       ))}
     </VariantGrid>
 
+    <div className="paper-surface bg-overlay text-overlay-fg border-frame-wood shadow-lift flex flex-col gap-4 rounded-2xl border-4 p-5">
+      <p className="text-muted-fg font-mono text-xs">
+        on parchment (paper-surface)
+      </p>
+      <VariantGrid>
+        <Variant label="primary">
+          <Button intent="primary">Claim</Button>
+        </Variant>
+        <Variant label="secondary">
+          <Button intent="secondary">Cancel</Button>
+        </Variant>
+        <Variant label="outline">
+          <Button intent="outline">Back</Button>
+        </Variant>
+        <Variant label="plain">
+          <Button intent="plain">Read more</Button>
+        </Variant>
+      </VariantGrid>
+    </div>
+
     <VariantGrid>
       <Variant label="with icon">
         <Button>

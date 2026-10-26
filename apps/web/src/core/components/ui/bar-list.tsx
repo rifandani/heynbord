@@ -67,7 +67,7 @@ export function BarList<T>({
               className={twJoin(
                 "flex items-center rounded-sm bg-primary/30",
                 rowHeight,
-                onValueChange ? "group-hover:bg-primary/40 dark:group-hover:bg-primary/40" : "",
+                onValueChange ? "group-hover:bg-primary/40" : "",
                 index === sortedData.length - 1 && "mb-0"
               )}
               style={{ width: `${widths[index]}%` }}

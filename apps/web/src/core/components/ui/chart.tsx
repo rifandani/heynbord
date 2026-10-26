@@ -234,7 +234,7 @@ const Chart = ({
   )
 }
 
-const THEMES = { light: "", dark: ".dark" } as const
+const THEMES = { light: "" } as const
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(([_, config]) => config.theme || config.color)
 

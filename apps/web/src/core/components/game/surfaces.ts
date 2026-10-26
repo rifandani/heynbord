@@ -8,9 +8,13 @@ import { tv } from "tailwind-variants";
  * Depth, Shapes).
  */
 
-/** The 4px focus ring of every interactive piece. Nothing else uses it. */
-export const focusRing =
-  "outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-focus-cream";
+/**
+ * The 4px focus ring of every interactive piece. The ring token is
+ * `focus-cream` on the night plate and `gold-deep` on parchment, so the one
+ * ring stays visible on both materials.
+ */
+const focusRing =
+  "outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-(--ring)";
 
 /** The face of a gold piece: the one main action of a panel. */
 export const goldFace =
@@ -27,8 +31,31 @@ export const ghostFace = "border-cream/30 bg-night-plate/70 text-cream";
  * A piece sits on the table: a hard drop with no blur, and a 1px press. The
  * soft `shadow-lift` is only for a thing that floats over the Board.
  */
-export const piece =
+const piece =
   "shadow-piece data-[pressed]:translate-y-px data-[pressed]:shadow-piece-press";
+
+/**
+ * The shared face of a raised control (a button, a toggle, a tab): a thick
+ * border, the hard Piece Drop and the 1px press. An intent adds its material.
+ */
+export const controlFace = [
+  "relative inline-flex items-center justify-center gap-2 rounded-lg border-2 font-semibold select-none",
+  "transition-[transform,filter,background-color,border-color] duration-100",
+  piece,
+  focusRing,
+  "data-[hovered]:brightness-110 data-[disabled]:cursor-not-allowed data-[disabled]:border-dashed data-[disabled]:grayscale",
+].join(" ");
+
+/**
+ * The face of a control in a groove (an input, a select, a well): a thick
+ * bronze edge and the inner shadow that makes the surface look cut in.
+ */
+export const wellFace =
+  "rounded-lg border-2 border-input bg-(--control-bg,var(--color-plate-socket)) text-fg shadow-well";
+
+/** The focus ring of a well: the edge turns gold, then the 4px ring shows. */
+export const wellFocusRing =
+  "outline-none focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-(--ring)";
 
 /** The dark HUD surface. Text on it is cream, never gold. */
 export const nightPlateStyles = tv({
@@ -75,27 +102,37 @@ export const parchmentStyles = tv({
  * The type ramp (DESIGN.md, Typography). `role` sets the size and the family;
  * `tone` sets the color of the surface that the text sits on.
  */
-export const gameText = tv({
-  base: "",
-  variants: {
-    role: {
-      display: "font-display text-display",
-      headline: "font-display text-headline",
-      title: "font-display text-title",
-      body: "text-sm",
-      small: "text-xs",
-      label: "text-label uppercase",
-      number: "leading-none font-black tabular-nums",
+export const gameText = tv(
+  {
+    base: "",
+    variants: {
+      role: {
+        display:
+          "font-display text-[length:var(--text-display)] leading-[1.1] font-black",
+        headline:
+          "font-display text-[length:var(--text-headline)] leading-[1.2] font-black tracking-[0.025em]",
+        title:
+          "font-display text-[length:var(--text-title)] leading-[1.25] font-bold",
+        body: "text-sm",
+        small: "text-xs",
+        label:
+          "text-[length:var(--text-label)] leading-none font-bold tracking-[0.025em] uppercase",
+        number: "leading-none font-black tabular-nums",
+      },
+      tone: {
+        inherit: "",
+        ink: "text-ink",
+        soft: "text-ink-soft",
+        faded: "text-ink-faded",
+        cream: "text-cream",
+        dim: "text-cream-dim",
+        gold: "text-gold",
+        rust: "text-keyword-rust",
+      },
     },
-    tone: {
-      ink: "text-ink",
-      soft: "text-ink-soft",
-      faded: "text-ink-faded",
-      cream: "text-cream",
-      dim: "text-cream-dim",
-      gold: "text-gold",
-      rust: "text-keyword-rust",
-    },
+    defaultVariants: { role: "body", tone: "ink" },
   },
-  defaultVariants: { role: "body", tone: "ink" },
-});
+  // A role is a font size and a tone is a color. Tailwind Merge reads both as
+  // `text-*`, so without this it drops the size and keeps only the color.
+  { twMerge: false }
+);

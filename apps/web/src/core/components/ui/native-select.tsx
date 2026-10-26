@@ -34,7 +34,6 @@ export function NativeSelectContent({ className, isInvalid, ...props }: NativeSe
           "aria-invalid:border-danger-subtle-fg/70 focus:aria-invalid:border-danger-subtle-fg/70 focus:aria-invalid:ring-danger-subtle-fg/20 aria-invalid:enabled:hover:border-danger-subtle-fg/80 focus:aria-invalid:enabled:hover:border-danger-subtle-fg/80",
           "disabled:bg-muted forced-colors:in-disabled:text-[GrayText]",
           "in-disabled:bg-muted forced-colors:in-disabled:text-[GrayText]",
-          "dark:scheme-dark",
           className
         )}
         {...props}

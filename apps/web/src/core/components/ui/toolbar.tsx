@@ -10,6 +10,7 @@ import {
 } from "react-aria-components/Toolbar"
 import { cn } from "cn"
 import { cx } from "@/core/utils/primitive"
+import { nightPlateStyles } from "@/core/components/game/surfaces"
 import { Separator } from "./separator"
 import { Toggle, type ToggleProps } from "./toggle"
 
@@ -30,10 +31,11 @@ const Toolbar = ({ orientation = "horizontal", isCircle, className, ...props }: 
         {...props}
         className={composeRenderProps(className, (className, { orientation }) =>
           cn(
-            "paper-surface group scrollbar-none inset-ring inset-ring-border inline-flex flex-row gap-1.5 bg-overlay p-1.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
+            nightPlateStyles({ kind: "plate", padding: "sm" }),
+            "group scrollbar-none inline-flex gap-1.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
             isCircle ? "rounded-full" : "rounded-lg",
             orientation === "horizontal"
-              ? "scrollbar-none flex-row items-center [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              ? "flex-row items-center"
               : "flex-col items-start",
             className
           )

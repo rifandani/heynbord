@@ -9,6 +9,7 @@ import {
   TagList as PrimitiveTagList,
 } from "react-aria-components/TagGroup"
 import { cn } from "cn"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 
 export function TagGroup({ className, ...props }: TagGroupProps) {
@@ -32,13 +33,13 @@ export function Tag({ children, className, ...props }: TagProps) {
     <PrimitiveTag
       textValue={textValue}
       className={cx(
-        "inset-ring inset-ring-input outline-hidden dark:bg-input/30",
-        "inline-flex items-center gap-x-1.5 py-0.5 font-medium text-xs/5 forced-colors:outline",
+        gameText({ role: "small", tone: "inherit" }),
+        "inline-flex items-center gap-x-1.5 rounded-sm border-2 border-input bg-(--control-bg) px-2 py-0.5 font-semibold text-fg shadow-piece forced-colors:outline",
         "*:[svg]:size-3 *:[svg]:shrink-0",
-        "cursor-default rounded-full px-2",
-        "selected:inset-ring-ring/70 selected:bg-primary-subtle selected:text-primary-subtle-fg",
-        "disabled:opacity-50 disabled:forced-colors:text-[GrayText]",
-        props.href && "cursor-pointer hover:inset-ring-muted-fg",
+        "cursor-default data-[pressed]:translate-y-px data-[pressed]:shadow-piece-press",
+        "selected:border-gold-deep selected:bg-gradient-to-b selected:from-gold-light selected:to-gold selected:text-ink-on-gold",
+        "disabled:border-dashed disabled:opacity-70 disabled:grayscale disabled:forced-colors:text-[GrayText]",
+        props.href && "cursor-pointer hover:border-bronze-rim hover:brightness-110",
         className
       )}
       {...props}

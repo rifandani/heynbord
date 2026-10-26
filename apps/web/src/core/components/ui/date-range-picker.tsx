@@ -13,6 +13,7 @@ import { twJoin } from "cn"
 import { cx } from "@/core/utils/primitive"
 import { DateInput as PrimitiveDateInput } from "./date-field"
 import { DatePickerOverlay } from "./date-picker"
+import { wellFace } from "@/core/components/game/surfaces"
 import { fieldStyles } from "./field"
 import { InputGroup } from "./input"
 
@@ -54,12 +55,13 @@ export function DateRangePickerTrigger({
   return (
     <InputGroup
       className={cx(
-        "flex items-center overflow-hidden rounded-lg pe-6",
-        "border border-input hover:enabled:border-muted-fg/30",
-        "group-open/date-range-picker:border-ring/70 group-open/date-range-picker:bg-primary-subtle/5 group-open/date-range-picker:outline-hidden group-open/date-range-picker:ring-3 group-open/date-range-picker:ring-ring/20 group-open/date-range-picker:hover:border-ring/80",
-        "focus-within:border-ring/70 focus-within:bg-primary-subtle/5 focus-within:outline-hidden focus-within:ring-3 focus-within:ring-ring/20 focus-within:enabled:hover:border-ring/80",
+        wellFace,
+        "flex items-center overflow-hidden pe-6",
+        "hover:enabled:border-bronze-rim",
+        "group-open/date-range-picker:border-ring group-open/date-range-picker:ring-4 group-open/date-range-picker:ring-(--ring)",
+        "focus-within:border-ring focus-within:ring-4 focus-within:ring-(--ring)",
         "invalid:border-danger-subtle-fg/70 invalid:bg-danger-subtle/5 focus-within:invalid:border-danger-subtle-fg/70 focus-within:invalid:bg-danger-subtle/5 focus-within:invalid:ring-danger-subtle-fg/20 invalid:hover:border-danger-subtle-fg/80 focus-within:invalid:hover:border-danger-subtle-fg/80",
-        "disabled:bg-muted",
+        "disabled:bg-muted disabled:opacity-70",
         className
       )}
       {...props}
@@ -88,7 +90,10 @@ export function DateRangePickerTrigger({
 function DateInput({ className, ...props }: React.ComponentProps<typeof PrimitiveDateInput>) {
   return (
     <PrimitiveDateInput
-      className={cx("rounded-none border-none focus-within:ring-0", className)}
+      className={cx(
+        "rounded-none border-none bg-transparent shadow-none focus-within:ring-0",
+        className
+      )}
       {...props}
     />
   )

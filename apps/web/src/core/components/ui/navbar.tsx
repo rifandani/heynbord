@@ -81,7 +81,7 @@ const NavbarProvider = ({
       <div
         className={cn(
           "peer/navbar group/navbar relative isolate z-10 flex w-full flex-col",
-          "has-data-navbar-inset:min-h-svh has-data-navbar-inset:bg-navbar dark:has-data-navbar-inset:bg-bg",
+          "has-data-navbar-inset:min-h-svh has-data-navbar-inset:bg-navbar",
           className
         )}
         {...props}
@@ -299,10 +299,10 @@ const NavbarInset = ({ className, ref, children, ...props }: React.ComponentProp
     <div
       ref={ref}
       data-navbar-inset={true}
-      className={cn("flex flex-1 flex-col bg-navbar pb-2 md:px-2 dark:bg-bg", className)}
+      className={cn("flex flex-1 flex-col bg-navbar pb-2 md:px-2", className)}
       {...props}
     >
-      <div className="grow bg-bg p-6 md:rounded-lg md:p-16 md:shadow-xs md:ring-1 md:ring-fg/15 md:dark:bg-navbar md:dark:ring-border md:dark:group-has-data-navbar-inset/navbar:bg-muted">
+      <div className="grow bg-bg p-6 md:rounded-lg md:p-16 md:shadow-xs md:ring-1 md:ring-fg/15">
         <div className="mx-auto max-w-7xl">{children}</div>
       </div>
     </div>
