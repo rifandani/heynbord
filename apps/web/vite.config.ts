@@ -123,6 +123,7 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart(),
     nitro({
+      compressPublicAssets: { gzip: true, brotli: true },
       routeRules: {
         "/assets/**": {
           headers: { "cache-control": "public, max-age=31536000, immutable" },

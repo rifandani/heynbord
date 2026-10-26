@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "measuredAt": "2026-10-26T08:10:01.232Z",
+    "device": "macbook-pro-m2",
+    "host": {
+      "model": "Mac14,7",
+      "cpu": "Apple M2",
+      "os": "darwin 25.5.0",
+      "arch": "arm64",
+      "powerSource": "AC power",
+      "lowPowerMode": false,
+      "powerMode": "lowpowermode         0",
+      "cores": 8,
+      "memoryGb": 16,
+      "loadAverage": [
+        5.09,
+        4.62,
+        4.92
+      ]
+    },
+    "build": {
+      "head": "de44db791bb2419ca1b7cf7d6a0f79a03d5945c8",
+      "dirty": "M .github/workflows/ci.yml\n M apps/web/GLOSSARY.md\n M apps/web/package.json\n M apps/web/vite.config.ts\n M docs/game/performance.md\n M packages/rules/package.json\n M packages/rules/scripts/simulate.ts\n?? apps/web/artifacts/performance/\n?? apps/web/scripts/measure-first-load.ts\n?? apps/web/scripts/measure-frame-rate.ts"
+    },
+    "browser": {
+      "version": "155.0.8059.85",
+      "channel": "chrome",
+      "headed": true
+    },
+    "scene": {
+      "scenario": "baseline",
+      "stage": "1-1",
+      "seed": 4,
+      "deck": "raiders",
+      "speed": 1,
+      "skip": false,
+      "input": "real mouse input",
+      "warmUpDiscardedMs": 3000
+    },
+    "viewport": {
+      "width": 1224,
+      "height": 783,
+      "dpr": 2
+    },
+    "measuredDurationMs": 87184,
+    "turns": 10,
+    "result": {
+      "winner": "player",
+      "reason": "routed"
+    },
+    "page": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "hardwareConcurrency": 8,
+      "visibility": "visible"
+    },
+    "consoleErrors": []
+  },
+  "snapshot": {
+    "frames": {
+      "fps": 60,
+      "frameMs": 16.67,
+      "meanFps": 59,
+      "p50": 16.7,
+      "p95": 17.6,
+      "p99": 18.8,
+      "worst": 258.2,
+      "samples": 5108,
+      "total": 5108,
+      "cap": 72000,
+      "wrapped": false
+    },
+    "drawCalls": {
+      "current": 30,
+      "max": 50
+    },
+    "dpr": {
+      "native": 2,
+      "current": 2,
+      "changes": []
+    }
+  }
+}

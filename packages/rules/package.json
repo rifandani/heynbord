@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run --project rules",
     "sim": "bun scripts/simulate.ts",
-    "sim:check": "bun scripts/simulate.ts 1000 --check",
+    "sim:check": "bun scripts/simulate.ts 1000 --check --parallel",
     "fit:budget": "bun scripts/fit-budget.ts",
     "fit:skill-budget": "bun scripts/fit-skill-budget.ts"
   },

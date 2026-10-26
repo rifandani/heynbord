@@ -21,6 +21,8 @@
     "check-site-meta": "bunx check-site-meta 3001 -p 3051",
     "dev": "portless run --name web.heynbord vite dev",
     "build": "vite build",
+    "measure:first-load": "bun scripts/measure-first-load.ts",
+    "measure:frame-rate": "bun scripts/measure-frame-rate.ts",
     "preview": "vite preview",
     "start": "node .output/server/index.mjs",
     "build-and-preview": "bun run --sequential build preview"

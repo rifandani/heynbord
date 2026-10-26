@@ -27,6 +27,7 @@ All documents use ASD-STE100 Simplified Technical English.
 | 17 | [Hero Portrait Concepts](./17-hero-portrait-concepts.md) | The art brief and the image prompts for the Hero portraits. `bun hero-portrait:prompts` makes the prompts. | Art director |
 | 18 | [Board Skin Concepts](./18-board-skin-concepts.md) | The art brief and the image prompts for the Square sheets of the Board skins. `bun board-skin:prompts` makes the prompts. | Art director |
 | 19 | [Gear Look Concepts](./19-gear-look-concepts.md) | The art brief and the image prompts for the 4 Gear icons of each Gear look. `bun gear-look:prompts` makes the prompts. | Art director |
+| 20 | [Performance Records](./performance.md) | The dated measurements of the game: frame rate, First Load, bundle size and the pass or fail of each requirement. | Lead engineer |
 
 One person (the solo developer) has all the roles. The roles show which point of view each document has.
 

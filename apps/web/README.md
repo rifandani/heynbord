@@ -111,8 +111,10 @@ Priest:
 
 New features:
 
-3. cleanup GLOSSARY.md, all game docs, etc
-4. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
+2. check pwa against https://github.com/pwa-today/pwa-check
+3. make sure our game support web-native controller (maybe use library?)
+4. cleanup GLOSSARY.md, all game docs, etc
+5. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
 Answers all ur questions automatically with ur best recommendations, except critical questions. Optimize your work to be faster, maybe use subagents or dynamic workflows or parallelize tasks.
 

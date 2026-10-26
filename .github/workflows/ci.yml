@@ -115,9 +115,25 @@ jobs:
 
   # GDD 13: each Stage and each Matchup must be on its win-rate target.
   # The seeds are fixed, so the result changes only when content or rules change.
+  # Each mode is its own job: a mode is CPU-bound, and a separate job gives it
+  # all 4 cores of the runner. `--parallel` splits the mode over those cores.
+  # One job for all modes took about 30 minutes on one core.
   balance:
-    name: Balance simulation
+    name: Balance simulation (${{ matrix.mode }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mode:
+          - stage
+          - dungeon
+          - floor
+          - matchup
+          - packs
+          - economy
+    env:
+      # The public ubuntu-latest runner has 4 vCPUs.
+      SIM_SHARDS: 4
     steps:
       - name: Checkout branch
         uses: actions/checkout@v7
@@ -136,7 +152,7 @@ jobs:
         run: bun ci
 
       - name: Balance simulation
-        run: bun rules:sim:check
+        run: bun rules sim ${{ matrix.mode }} 1000 --check --parallel
 
   typerange:
     runs-on: ubuntu-latest

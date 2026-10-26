@@ -4,6 +4,12 @@ React app on TanStack Start. The server renders and streams each page.
 
 ## Language
 
+### Load performance
+
+**First Load**: A direct visit to the Town with no saved browser cache and no active Service Worker. It ends at the first tap on Settings that opens the Settings dialog within 50 ms. _Avoid_: cold start, first paint, landing page load
+
+**Warm Load**: A repeat visit to the Town with browser cache or Service Worker cache from an earlier visit. It uses the same Settings tap as First Load, but is extra context for the performance record. _Avoid_: hot load, cached start
+
 ### Internationalization
 
 **Locale**: A lowercase BCP-47 language tag that selects which Message Catalog to use (`en-us`, `id-id`). The server picks it for each request: the `app-locale` cookie, then `Accept-Language`. _Avoid_: language, languageCode, lng, resolvedLanguage
