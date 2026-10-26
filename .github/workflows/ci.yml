@@ -263,3 +263,41 @@ jobs:
 
       - name: Build
         run: bun web build
+
+  pwa:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - name: Install deps and disallow changes to lockfile
+        run: bun ci
+
+      # The build reads `VITE_*` values, so use the same env file as the
+      # other web jobs.
+      - name: Prepare env file
+        env:
+          WEB_ENV_FILE: ${{ secrets.WEB_ENV_FILE }}
+        run: |
+          if [ -n "$WEB_ENV_FILE" ]; then
+            echo "$WEB_ENV_FILE" > apps/web/.env.local
+          else
+            cp apps/web/.env.example apps/web/.env.local
+          fi
+
+      - name: Build web app
+        run: bun web build
+
+      - name: Check PWA
+        run: bun check:pwa

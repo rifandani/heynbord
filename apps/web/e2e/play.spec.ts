@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 
 import { expect, test } from "./_base";
 import type { Page } from "./_base";
+import type { UnitPoint } from "./_diagnostics";
 
 /**
  * Bot playtests for the Battle slice (threejs-qa-release, playtest-bot). They
@@ -10,50 +11,6 @@ import type { Page } from "./_base";
  * markers, drag and drop, touch taps and the keyboard. The diagnostics hook
  * only reads state and the screen points of the target markers.
  */
-
-interface Diagnostics {
-  readonly state: {
-    readonly mode: string;
-    readonly turnNumber?: number;
-    readonly units?: number;
-    readonly playerHp?: number;
-    readonly enemyHp?: number;
-    readonly queued?: number;
-    readonly current?: string | null;
-    readonly result?: {
-      readonly winner: string;
-      readonly reason: string;
-    } | null;
-    readonly eventsPlayed?: number;
-    readonly hand?: readonly number[];
-    readonly tutorial?: {
-      readonly shown: readonly string[];
-      readonly done: readonly string[];
-    } | null;
-  };
-  readonly renderer: {
-    readonly render: { readonly calls: number; readonly triangles: number };
-  };
-  readonly frames: { readonly fps: number; readonly frameMs: number };
-  readonly targetPoints: () => readonly {
-    readonly x: number;
-    readonly y: number;
-  }[];
-  readonly unitPoints: () => readonly UnitPoint[];
-}
-
-interface UnitPoint {
-  readonly id: number;
-  readonly owner: "player" | "enemy";
-  readonly x: number;
-  readonly y: number;
-}
-
-declare global {
-  interface Window {
-    __THREE_GAME_DIAGNOSTICS__?: Diagnostics;
-  }
-}
 
 /** The part of `window` that the test hooks (test-hooks.ts) add. */
 interface HookWindow extends Window {

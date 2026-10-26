@@ -97,6 +97,7 @@
     "thresholdOverrides": []
   },
   "ignoreDependencies": [
+    "@pwa-today/pwa-check",
     "@stryker-mutator/core",
     "@stryker-mutator/vitest-runner",
     "msw",
