@@ -6,6 +6,7 @@ import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { TabPanel, Tabs } from "react-aria-components";
 
 import { GameScreen } from "@/core/components/game/game-screen";
+import { nightPlateStyles } from "@/core/components/game/surfaces";
 import { useTimeouts } from "@/core/hooks/use-timeouts";
 import type { SoundName } from "@/features/battle/battle-audio";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
@@ -63,8 +64,7 @@ import {
 } from "@/features/workshop/workshop";
 
 /** The HUD plate (DESIGN.md, HUD plate). */
-const PLATE =
-  "flex rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+const PLATE = cn(nightPlateStyles({ padding: "none" }), "flex");
 
 /** The chime of a new Rare, Epic or Legendary copy, as in the Pack reveal. */
 const RANK_CHIME: Readonly<Partial<Record<RankId, SoundName>>> = {
@@ -192,14 +192,14 @@ const StationRail = ({
   <div
     className={cn(
       PLATE,
-      "max-h-full min-h-0 w-[12.5rem] shrink-0 [scrollbar-width:thin] [scrollbar-color:#7a5233_transparent] flex-col gap-1 overflow-y-auto p-1",
+      "max-h-full min-h-0 w-[12.5rem] shrink-0 [scrollbar-width:thin] [scrollbar-color:var(--color-wood-light)_transparent] flex-col gap-1 overflow-y-auto p-1",
       "[@media(max-height:500px)]:w-[4.5rem] [@media(max-height:500px)]:gap-0.5 [@media(max-height:500px)]:rounded-lg [@media(max-height:500px)]:p-0.5"
     )}
   >
     <StationTabs counts={counts} level={level} />
     <span
       aria-hidden
-      className="mx-2 my-1 h-0.5 shrink-0 rounded-full bg-[#e9c46a]/25 [@media(max-height:500px)]:mx-1 [@media(max-height:500px)]:my-0.5"
+      className="bg-gold-trim/25 mx-2 my-1 h-0.5 shrink-0 rounded-full [@media(max-height:500px)]:mx-1 [@media(max-height:500px)]:my-0.5"
     />
     <ReadyToggle station={station} isSelected={ready} onChange={onReady} />
   </div>

@@ -43,7 +43,7 @@ const ExtractRow = ({
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- a fieldset cannot be a flex row in all browsers
       role="group"
       aria-label={tr("workshop.rankCopies", { rank: name, count: row.copies })}
-      className="flex h-11 shrink-0 items-center gap-1.5 rounded-lg border-2 border-[#e9c46a]/35 bg-[#3a2a1c]/80 px-2 [@media(max-height:500px)]:h-[26px] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1"
+      className="border-gold-trim/35 bg-plate-socket/80 flex h-11 shrink-0 items-center gap-1.5 rounded-lg border-2 px-2 [@media(max-height:500px)]:h-[26px] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1"
       onPointerEnter={() => onPeek(row.rank)}
       onPointerLeave={() => onPeek(null)}
       data-peek={row.rank}
@@ -64,7 +64,7 @@ const ExtractRow = ({
       <span
         // A new element for each count, so that a change hops once.
         key={row.copies}
-        className="text-sm font-black text-[#fff6df] tabular-nums motion-safe:animate-[workshop-count_320ms_cubic-bezier(0.2,0.8,0.2,1)] [@media(max-height:500px)]:text-[11px]"
+        className="text-cream text-sm font-black tabular-nums motion-safe:animate-[workshop-count_320ms_cubic-bezier(0.2,0.8,0.2,1)] [@media(max-height:500px)]:text-[11px]"
         aria-hidden
         data-testid={`workshop-copies-${row.rank}`}
       >
@@ -159,7 +159,7 @@ export const ExtractPanel = ({
       >
         {owned > 0 ? (
           <p
-            className="text-xs font-semibold text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]"
+            className="text-cream-dim text-xs font-semibold [@media(max-height:500px)]:text-[10px]"
             data-testid="workshop-spare"
           >
             {inDecks > 0
@@ -187,7 +187,7 @@ export const ExtractPanel = ({
         </div>
       ) : (
         <p
-          className="text-sm font-semibold text-balance text-[#e8d9bb] [@media(max-height:500px)]:text-[11px]"
+          className="text-cream-dim text-sm font-semibold text-balance [@media(max-height:500px)]:text-[11px]"
           data-testid="workshop-extract-none"
         >
           {tr(

@@ -6,11 +6,17 @@ import { useEffect, useRef, useState } from "react";
 import { Label, Meter } from "react-aria-components";
 
 import { RankGems } from "@/core/components/game/rank-gems";
+import { nightPlateStyles } from "@/core/components/game/surfaces";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { useGameText } from "@/features/battle/use-game-text";
-import { RANK_LIGHT, RankBurst } from "@/features/packs/components/pack-reveal";
+import { RankBurst } from "@/features/packs/components/pack-reveal";
+import { RANK_LIGHT } from "@/features/packs/tokens";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
+import {
+  WORKSHOP_SMALL_DROP,
+  WORKSHOP_WELL_DROP,
+} from "@/features/workshop/tokens";
 import type { LegendaryPath } from "@/features/workshop/workshop";
 import {
   craftTimeline,
@@ -19,12 +25,13 @@ import {
 } from "@/features/workshop/workshop";
 
 /** The HUD plate (DESIGN.md, HUD plate). */
-const PLATE =
-  "rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+const PLATE = nightPlateStyles({ padding: "none" });
 
 /** Compact sizes of a panel button on a short screen (The Short Screen Rule). */
-export const SMALL =
-  "min-h-8 gap-1 px-2 text-xs [@media(max-height:500px)]:min-h-5 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:border [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px] [@media(max-height:500px)]:shadow-[0_2px_0_rgba(0,0,0,0.45)]";
+export const SMALL = cn(
+  "min-h-8 gap-1 px-2 text-xs [@media(max-height:500px)]:min-h-5 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:border [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]",
+  WORKSHOP_SMALL_DROP
+);
 
 /** The new copy of the last Combine: the panel card turns over to it with the Rank burst. */
 export interface Burst {
@@ -82,7 +89,7 @@ const RankLine = ({
     className="absolute inset-x-[0.2em] top-[-0.11em] h-[0.22em] rounded-full opacity-0"
     style={{
       animation: `workshop-extract-line ${animation}`,
-      background: `linear-gradient(90deg, transparent, ${light} 18%, #fff6df 50%, ${light} 82%, transparent)`,
+      background: `linear-gradient(90deg, transparent, ${light} 18%, var(--color-cream) 50%, ${light} 82%, transparent)`,
       boxShadow: `0 0 0.7em 0.2em ${light}b3`,
     }}
   />
@@ -114,7 +121,7 @@ const ExtractGhost = ({
     >
       {/* The card under the copy goes dark while the copy is off it. */}
       <span
-        className="absolute inset-0 rounded-[0.85em] bg-[#1c140e] opacity-0"
+        className="bg-night-plate absolute inset-0 rounded-[0.85em] opacity-0"
         style={{
           animation: `workshop-extract-shade ${meltAt + meltMs + 240}ms ease-out both`,
         }}
@@ -187,7 +194,7 @@ const CraftGhost = ({
         aria-hidden
       >
         <span
-          className="absolute inset-0 rounded-[0.85em] bg-[#1c140e] opacity-0"
+          className="bg-night-plate absolute inset-0 rounded-[0.85em] opacity-0"
           style={{
             animation: `workshop-extract-shade ${formed + 240}ms ease-out both`,
           }}
@@ -296,7 +303,7 @@ export const PanelHeader = ({
       <div className="flex min-w-0 flex-1 flex-col gap-1 [@media(max-height:500px)]:gap-0.5">
         <h2
           id="workshop-card-name"
-          className="font-display text-lg leading-tight font-bold text-[#ffe08a] [@media(max-height:500px)]:text-sm"
+          className="font-display text-gold-light text-lg leading-tight font-bold [@media(max-height:500px)]:text-sm"
         >
           {tr(`cards.${cardId}.name`)}
         </h2>
@@ -355,24 +362,29 @@ export const PathTrack = ({ path }: { readonly path: LegendaryPath }) => {
       {({ percentage }) => (
         <>
           <span className="flex items-baseline justify-between gap-2">
-            <Label className="text-xs font-bold text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]">
+            <Label className="text-cream-dim text-xs font-bold [@media(max-height:500px)]:text-[10px]">
               {tr("workshop.path.label")}
             </Label>
-            <span className="text-xs font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-[10px]">
+            <span className="text-cream text-xs font-black tabular-nums [@media(max-height:500px)]:text-[10px]">
               {tr("workshop.path.value", {
                 value: path.value,
                 target: path.target,
               })}
             </span>
           </span>
-          <span className="relative h-2 w-full overflow-hidden rounded-full bg-[#3a2a1c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.75),0_1px_0_rgba(255,226,170,0.18)] [@media(max-height:500px)]:h-1.5">
+          <span
+            className={cn(
+              "bg-plate-socket relative h-2 w-full overflow-hidden rounded-full [@media(max-height:500px)]:h-1.5",
+              WORKSHOP_WELL_DROP
+            )}
+          >
             <span
-              className="absolute inset-0 origin-left rounded-full bg-gradient-to-r from-[#ffe08a] to-[#e2a93b] motion-safe:transition-[scale] motion-safe:duration-700 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+              className="from-gold-light to-gold absolute inset-0 origin-left rounded-full bg-gradient-to-r motion-safe:transition-[scale] motion-safe:duration-700 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
               style={{ scale: `${percentage / 100} 1` }}
             />
           </span>
           <span
-            className="text-xs leading-snug font-semibold text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]"
+            className="text-cream-dim text-xs leading-snug font-semibold [@media(max-height:500px)]:text-[10px]"
             aria-hidden
             data-testid="workshop-path-left"
           >
@@ -457,4 +469,4 @@ export const panelClassName = cn(
 
 /** The scroll column of the rows of a panel. */
 export const rowsClassName =
-  "-mx-1 flex min-h-0 min-w-0 [scrollbar-width:thin] [scrollbar-color:#7a5233_transparent] flex-col overflow-y-auto overscroll-contain px-1 [@media(max-height:500px)]:flex-1";
+  "-mx-1 flex min-h-0 min-w-0 [scrollbar-width:thin] [scrollbar-color:var(--color-wood-light)_transparent] flex-col overflow-y-auto overscroll-contain px-1 [@media(max-height:500px)]:flex-1";

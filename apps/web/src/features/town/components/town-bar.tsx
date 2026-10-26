@@ -13,6 +13,7 @@ import type { PressEvent } from "react-aria-components";
 import { Button, DialogTrigger, TooltipTrigger } from "react-aria-components";
 
 import { GameTooltip } from "@/core/components/game/game-tooltip";
+import { goldFace } from "@/core/components/game/surfaces";
 import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { claimableCountAtom } from "@/features/achievements/achievements-screen.atoms";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
@@ -26,6 +27,22 @@ import { shownHintAtom } from "@/features/hint/hint.atoms";
 import { useShipBack } from "@/features/seaport/use-seaport";
 import { SettingsDialog } from "@/features/town/components/settings-dialog";
 import { useTownLockText } from "@/features/town/components/town-lock";
+import {
+  TOWN_BADGE_DROP,
+  TOWN_BAR_LIP,
+  TOWN_BAR_LIP_SHADOW,
+  TOWN_BAR_SHELF,
+  TOWN_BAR_SHELF_SHADOW,
+  TOWN_COUNT_DROP,
+  TOWN_CURRENT_GLOW,
+  TOWN_CURRENT_MARK_DROP,
+  TOWN_FIRST_GROOVE,
+  TOWN_ICON_CONTACT,
+  TOWN_LAST_GROOVE,
+  TOWN_PULL_DROP,
+  TOWN_PULL_LINE_DROP,
+  TOWN_SEAL_DROP,
+} from "@/features/town/tokens";
 import type { GameScreen, TownLock, TownShortcut } from "@/features/town/town";
 import {
   isLocked,
@@ -41,7 +58,7 @@ import {
 
 const LONG_PRESS_MS = 450;
 
-/** The Deck builder loads in its own chunk at the first open (issue #139). */
+/** The Deck builder loads in its own chunk at the first open (issue 139). */
 const DeckDialog = lazy(async () => {
   const module = await import("@/features/deck/components/deck-dialog");
   return { default: module.DeckDialog };
@@ -69,7 +86,7 @@ const iconStandClass = (locked: boolean, current: boolean, lifted: boolean) =>
 
 const iconClass = (locked: boolean, current: boolean, lifted: boolean) =>
   cn(
-    "relative size-full object-contain drop-shadow-[0_2px_0_rgba(0,0,0,0.5)] transition-[filter] duration-200 select-none",
+    "drop-shadow-icon relative size-full object-contain transition-[filter] duration-200 select-none",
     // A locked screen shows its icon with less color, warmed toward the wood.
     // Under the pointer the color comes back: a look at what comes later.
     locked &&
@@ -83,20 +100,18 @@ const labelClass = (locked: boolean, current: boolean, lifted: boolean) =>
   cn(
     "relative mb-px flex h-[18px] max-w-full items-center rounded-[4px] border px-1.5 text-[11px] leading-none font-bold transition-[color,transform] duration-100 max-[1199px]:px-1 max-[1199px]:text-[10px] max-[1199px]:tracking-[-0.02em]",
     "[@media(max-height:500px)]:sr-only",
-    current
-      ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.45)]"
-      : "border-transparent",
+    current ? cn(goldFace, TOWN_BADGE_DROP) : "border-transparent",
     !current && locked && "text-cream-dim font-semibold",
     !current &&
       !locked &&
-      "text-[#fff6df] group-data-[hovered]:text-[#ffe08a] group-data-[pressed]:translate-y-px",
-    lifted && "text-[#ffe08a]"
+      "text-cream group-data-[hovered]:text-gold-light group-data-[pressed]:translate-y-px",
+    lifted && "text-gold-light"
   );
 
 /** The button of a shortcut: no fill, because the painted icon is the piece. */
 const shortcutButtonClass = (locked: boolean) =>
   cn(
-    "group relative flex h-[66px] w-full flex-col items-center justify-end rounded-lg outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+    "group data-[focus-visible]:ring-focus-cream relative flex h-[66px] w-full flex-col items-center justify-end rounded-lg outline-none select-none data-[focus-visible]:ring-4",
     "[@media(max-height:500px)]:h-11",
     locked && "cursor-default"
   );
@@ -109,11 +124,12 @@ const LockSeal = ({ locked }: { readonly locked: boolean }) => {
   return (
     <span
       className={cn(
-        "absolute right-0.5 bottom-0.5 grid size-[18px] place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]/90 shadow-[0_1px_0_rgba(0,0,0,0.5)]",
+        "border-gold-trim/70 bg-night-plate/90 absolute right-0.5 bottom-0.5 grid size-[18px] place-items-center rounded-full border",
+        TOWN_SEAL_DROP,
         "[@media(max-height:500px)]:right-0 [@media(max-height:500px)]:bottom-0 [@media(max-height:500px)]:size-4"
       )}
     >
-      <GlyphIcon glyph="lock" className="size-2.5 text-[#e9c46a]" />
+      <GlyphIcon glyph="lock" className="text-gold-trim size-2.5" />
     </span>
   );
 };
@@ -139,7 +155,9 @@ const CountBadge = ({
   return (
     <span
       className={cn(
-        "absolute -top-0.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1 text-[11px] leading-none font-black text-[#2a1a05] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.5)]",
+        "absolute -top-0.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 px-1 text-[11px] leading-none font-black tabular-nums",
+        goldFace,
+        TOWN_COUNT_DROP,
         "[@media(max-height:500px)]:-top-1 [@media(max-height:500px)]:-right-1 [@media(max-height:500px)]:h-4 [@media(max-height:500px)]:min-w-4 [@media(max-height:500px)]:border [@media(max-height:500px)]:text-[10px]"
       )}
       data-testid={testId}
@@ -181,8 +199,11 @@ const ShortcutIcon = ({
   );
 
 /** The small gold token of a reward that waits behind the stowed bar. */
-const PULL_BADGE =
-  "grid h-4 min-w-4 place-items-center rounded-full border border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1 text-[10px] leading-none font-black text-[#2a1a05] tabular-nums shadow-[0_1px_0_rgba(0,0,0,0.5)]";
+const PULL_BADGE = cn(
+  "grid h-4 min-w-4 place-items-center rounded-full border px-1 text-[10px] leading-none font-black tabular-nums",
+  goldFace,
+  TOWN_SEAL_DROP
+);
 
 /**
  * The brass pull on the front lip of the shelf. It is the one control of the
@@ -225,7 +246,7 @@ const BarPull = ({
           : "right-[calc(max(0.5rem,env(safe-area-inset-right))+var(--town-bar-settings-w)-0.75rem)]",
         // The pull slides to the corner of the screen with the shelf.
         "transition-[right] duration-300 ease-out motion-reduce:transition-none",
-        "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+        "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4"
       )}
     >
       {collapsed && (claimable > 0 || shipBack) ? (
@@ -242,11 +263,11 @@ const BarPull = ({
       ) : null}
       <span
         className={cn(
-          "relative flex h-[22px] w-[22px] flex-col items-center justify-center gap-px rounded-[3px] border border-[#5b3a1e]",
-          "bg-[linear-gradient(180deg,#f7dc9c_0%,#c08b3e_55%,#8a5a20_100%)]",
-          "shadow-[0_2px_0_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,243,210,0.7)]",
+          "border-frame-wood relative flex h-[22px] w-[22px] flex-col items-center justify-center gap-px rounded-[3px] border",
+          "from-bronze-light via-bronze-mid to-bronze-deep bg-gradient-to-b",
+          TOWN_PULL_DROP,
           "transition-[filter,transform,box-shadow] duration-100 group-hover/bar-pull:brightness-110",
-          "group-data-[pressed]/bar-pull:translate-y-px group-data-[pressed]/bar-pull:shadow-[0_1px_0_rgba(0,0,0,0.45)]",
+          "group-data-[pressed]/bar-pull:shadow-piece-press group-data-[pressed]/bar-pull:translate-y-px",
           "motion-reduce:transition-none"
         )}
       >
@@ -254,14 +275,14 @@ const BarPull = ({
           {[0, 1, 2].map((line) => (
             <span
               key={line}
-              className="h-px w-2 bg-[#5b3a1e]/50 shadow-[0_1px_0_rgba(255,243,210,0.45)]"
+              className={cn("bg-frame-wood/50 h-px w-2", TOWN_PULL_LINE_DROP)}
             />
           ))}
         </span>
         <GlyphIcon
           glyph="chevron"
           className={cn(
-            "size-2.5 text-[#2a1a05] transition-transform duration-200 motion-reduce:transition-none",
+            "text-ink-on-gold size-2.5 transition-transform duration-200 motion-reduce:transition-none",
             collapsed && "rotate-180"
           )}
         />
@@ -270,7 +291,7 @@ const BarPull = ({
     <GameTooltip
       placement="top"
       offset={12}
-      className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1 text-center text-xs font-semibold text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+      className="border-gold-trim/70 bg-night-plate/95 text-cream shadow-piece rounded-lg border-2 px-2.5 py-1 text-center text-xs font-semibold"
     >
       {tooltip}
     </GameTooltip>
@@ -306,17 +327,19 @@ const ShortcutFace = ({
     {/* The light of the current place, and the shadow under each icon. */}
     <span
       className={cn(
-        "pointer-events-none absolute inset-x-0 bottom-3 mx-auto h-[70px] w-[76px] bg-[radial-gradient(closest-side,rgba(255,215,90,0.5),rgba(255,215,90,0))] opacity-0 transition-opacity duration-300",
+        "pointer-events-none absolute inset-x-0 bottom-3 mx-auto h-[70px] w-[76px] opacity-0 transition-opacity duration-300",
         "[@media(max-height:500px)]:-bottom-2 [@media(max-height:500px)]:h-14 [@media(max-height:500px)]:w-14",
         current && "opacity-100"
       )}
+      style={{ background: TOWN_CURRENT_GLOW }}
       aria-hidden
     />
     <span
       className={cn(
-        "pointer-events-none absolute inset-x-0 bottom-[17px] mx-auto h-2 w-12 bg-[radial-gradient(closest-side,rgba(0,0,0,0.55),rgba(0,0,0,0))]",
+        "pointer-events-none absolute inset-x-0 bottom-[17px] mx-auto h-2 w-12",
         "[@media(max-height:500px)]:-bottom-1 [@media(max-height:500px)]:w-9"
       )}
+      style={{ background: TOWN_ICON_CONTACT }}
       aria-hidden
     />
     <span className={iconStandClass(locked, current, lifted)} aria-hidden>
@@ -335,7 +358,8 @@ const ShortcutFace = ({
     {/* On a phone the name is hidden, so a gold mark under the icon shows the current place. */}
     <span
       className={cn(
-        "pointer-events-none absolute -bottom-0.5 hidden h-[3px] w-5 rounded-full bg-[#ffd75a] shadow-[0_0_6px_rgba(255,215,90,0.8)]",
+        "bg-ready-gold pointer-events-none absolute -bottom-0.5 hidden h-[3px] w-5 rounded-full",
+        TOWN_CURRENT_MARK_DROP,
         current && "[@media(max-height:500px)]:block"
       )}
       aria-hidden
@@ -469,7 +493,7 @@ const Shortcut = ({
       className={cn(
         "max-w-24 min-w-0 flex-1 basis-0",
         "[@media(max-height:500px)]:max-w-11",
-        "first:mr-1.5 first:border-r-2 first:border-r-[#1f130a] first:pr-1.5 first:shadow-[2px_0_0_rgba(255,226,170,0.1)]"
+        TOWN_FIRST_GROOVE
       )}
     >
       <TooltipTrigger
@@ -505,12 +529,12 @@ const Shortcut = ({
         <GameTooltip
           placement="top"
           offset={14}
-          className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1 text-center text-xs font-semibold text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+          className="border-gold-trim/70 bg-night-plate/95 text-cream shadow-piece rounded-lg border-2 px-2.5 py-1 text-center text-xs font-semibold"
           data-testid={`town-tooltip-${shortcut.id}`}
         >
           {name}
           {lockText === null ? null : (
-            <span className="block font-normal text-[#e9c46a]">{lockText}</span>
+            <span className="text-gold-trim block font-normal">{lockText}</span>
           )}
         </GameTooltip>
       </TooltipTrigger>
@@ -536,7 +560,8 @@ const SettingsButton = () => {
   return (
     <div
       className={cn(
-        "relative w-[calc(var(--town-bar-settings-w)-0.5rem)] shrink-0 border-l-2 border-l-[#1f130a] pl-1.5 shadow-[inset_2px_0_0_rgba(255,226,170,0.1)]"
+        "relative w-[calc(var(--town-bar-settings-w)-0.5rem)] shrink-0",
+        TOWN_LAST_GROOVE
       )}
     >
       <DialogTrigger isOpen={open} onOpenChange={setOpen}>
@@ -689,8 +714,8 @@ export const TownBar = ({
           stows, so no wood and no rail stay: only the pull remains. */}
       <div
         className={cn(
-          "absolute inset-0 border-t-4 border-[#2a1a0c]",
-          "shadow-[inset_0_2px_0_rgba(231,187,106,0.3),0_-4px_12px_rgba(0,0,0,0.35)]",
+          "border-wood-edge absolute inset-0 border-t-4",
+          TOWN_BAR_SHELF_SHADOW,
           "[@media(max-height:500px)]:border-t-[3px]",
           "transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
           effectiveCollapsed
@@ -699,19 +724,20 @@ export const TownBar = ({
         )}
         style={{
           // Dark wood with a faint grain, as the Hand Bar.
-          background: [
-            "repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 2px, transparent 2px 15px)",
-            "linear-gradient(180deg, #5a3a20 0%, #4a2f1b 40%, #2e1d10 100%)",
-          ].join(", "),
+          background: TOWN_BAR_SHELF,
         }}
       >
         {/* The flat front lip of the shelf. It holds the names, so it sits
             behind them. */}
         <div
           className={cn(
-            "pointer-events-none absolute inset-x-0 bottom-0 h-[calc(22px+max(4px,env(safe-area-inset-bottom)))] border-t border-[#e7bb6a]/20 bg-[#24170c] shadow-[0_-1px_0_rgba(0,0,0,0.45)]",
+            "border-bronze-rim/20 pointer-events-none absolute inset-x-0 bottom-0 h-[calc(22px+max(4px,env(safe-area-inset-bottom)))] border-t",
             "[@media(max-height:500px)]:hidden"
           )}
+          style={{
+            backgroundColor: TOWN_BAR_LIP,
+            boxShadow: TOWN_BAR_LIP_SHADOW,
+          }}
           aria-hidden
         />
         <div

@@ -16,6 +16,7 @@ import {
   PanelHeader,
   panelClassName,
 } from "@/features/workshop/components/panel-parts";
+import { WORKSHOP_RECIPE_DROP } from "@/features/workshop/tokens";
 import type { CraftState, WorkshopTile } from "@/features/workshop/workshop";
 import { craftState, craftTimeline } from "@/features/workshop/workshop";
 
@@ -28,7 +29,7 @@ const Flow = ({ lit }: { readonly lit: boolean }) => (
     viewBox="0 0 36 16"
     className={cn(
       "h-4 w-9 shrink-0 [@media(max-height:500px)]:h-3 [@media(max-height:500px)]:w-6",
-      lit ? "text-[#ffe08a]" : "text-cream-dim"
+      lit ? "text-gold-light" : "text-cream-dim"
     )}
     aria-hidden
   >
@@ -72,12 +73,13 @@ const CraftRecipe = ({
       aria-label={label ?? undefined}
       aria-hidden={label === null}
       className={cn(
-        "flex items-center gap-2 rounded-lg border-2 border-[#e9c46a]/35 bg-[#3a2a1c] px-3 py-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.55)] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:py-1",
+        "border-gold-trim/35 bg-plate-socket flex items-center gap-2 rounded-lg border-2 px-3 py-2 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:py-1",
+        WORKSHOP_RECIPE_DROP,
         !lit && "border-dashed"
       )}
       data-testid="workshop-craft-recipe"
     >
-      <span className="flex items-center gap-1 text-2xl leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-sm">
+      <span className="text-cream flex items-center gap-1 text-2xl leading-none font-black tabular-nums [@media(max-height:500px)]:text-sm">
         <BalanceIcon
           kind="essence"
           className="size-7 shrink-0 [@media(max-height:500px)]:size-4"
@@ -120,10 +122,10 @@ const CraftAction = ({
     <>
       {state.kind === "locked" ? (
         <span
-          className="flex items-center justify-center gap-1.5 rounded-lg border-2 border-[#e9c46a]/50 bg-[#1c140e] px-3 py-2 text-sm font-bold text-[#e8d9bb] [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[11px]"
+          className="border-gold-trim/50 bg-night-plate text-cream-dim flex items-center justify-center gap-1.5 rounded-lg border-2 px-3 py-2 text-sm font-bold [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[11px]"
           data-testid="workshop-craft-locked"
         >
-          <GlyphIcon glyph="lock" className="size-4 text-[#e9c46a]" />
+          <GlyphIcon glyph="lock" className="text-gold-trim size-4" />
           {tr("town.opensAtLevel", { level: state.level })}
         </span>
       ) : null}
@@ -236,14 +238,14 @@ export const CraftPanel = ({
         }
       >
         <p
-          className="flex items-center gap-1.5 rounded-lg border-2 border-[#e9c46a]/35 bg-[#3a2a1c]/80 px-2 py-1.5 text-sm font-bold [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:py-0.5 [@media(max-height:500px)]:text-[11px]"
+          className="border-gold-trim/35 bg-plate-socket/80 flex items-center gap-1.5 rounded-lg border-2 px-2 py-1.5 text-sm font-bold [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:py-0.5 [@media(max-height:500px)]:text-[11px]"
           aria-label={tr("workshop.rankCopies", {
             rank: rankName,
             count: owned,
           })}
           data-testid="workshop-craft-owned"
         >
-          <span className="font-semibold text-[#e8d9bb]" aria-hidden>
+          <span className="text-cream-dim font-semibold" aria-hidden>
             {tr("workshop.craftPanel.own")}
           </span>
           {/* oxlint-disable-next-line react-doctor/no-tiny-text -- the font size sets the gem size (em); the gems have no text */}
@@ -256,7 +258,7 @@ export const CraftPanel = ({
             key={shownOwned}
             className={cn(
               "font-black tabular-nums",
-              shownOwned > 0 ? "text-[#fff6df]" : "text-cream-dim",
+              shownOwned > 0 ? "text-cream" : "text-cream-dim",
               "motion-safe:animate-[workshop-count_320ms_cubic-bezier(0.2,0.8,0.2,1)]"
             )}
             aria-hidden

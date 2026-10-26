@@ -6,34 +6,47 @@ import { Button, TooltipTrigger } from "react-aria-components";
 import { GameButton } from "@/core/components/game/game-button";
 import { GameDialog } from "@/core/components/game/game-dialog";
 import { GameTooltip } from "@/core/components/game/game-tooltip";
+import { nightPlateStyles } from "@/core/components/game/surfaces";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { raceGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
 import { RACES_WITH_CARDS } from "@/features/deck/deck";
 import { PackArt } from "@/features/packs/components/pack-art";
 import type { UnopenedGroup } from "@/features/packs/packs";
+import {
+  SHELF_FREE_SHADOW,
+  SHELF_LAMP,
+  SHELF_LAMP_ARRIVAL,
+  SHELF_LIP_SHADOW,
+  SHELF_TAG_SHADOW,
+} from "@/features/packs/tokens";
 
 /** The HUD plate of the top band (DESIGN.md, HUD plate). */
-const PLATE =
-  "flex items-end rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+const PLATE = cn(nightPlateStyles({ padding: "none" }), "flex items-end");
 
 /**
  * The tag of the shelf: a parchment label that names the gift. It hangs at
  * the left of the packs, turned a little, with the total in the gift.
  */
-const TAG =
-  "relative z-10 mb-1.5 flex shrink-0 -rotate-2 flex-col items-start rounded-[6px] border-2 border-[#5b3a1e] bg-[#f6ead0] px-2 py-1 text-[#2a1d12] shadow-[0_2px_0_rgba(0,0,0,0.35)] max-[1099px]:sr-only [@media(max-height:699px)]:flex-row [@media(max-height:699px)]:items-baseline [@media(max-height:699px)]:gap-1 [@media(max-height:699px)]:px-1.5 [@media(max-height:699px)]:py-0.5";
+const TAG = cn(
+  "border-frame-wood bg-parchment text-ink relative z-10 mb-1.5 flex shrink-0 -rotate-2 flex-col items-start rounded-[6px] border-2 px-2 py-1 max-[1099px]:sr-only [@media(max-height:699px)]:flex-row [@media(max-height:699px)]:items-baseline [@media(max-height:699px)]:gap-1 [@media(max-height:699px)]:px-1.5 [@media(max-height:699px)]:py-0.5",
+  SHELF_TAG_SHADOW
+);
 
 /**
  * The gold Free tag that hangs on the corner of an owned Pack. A Race version
  * Pack adds its kind under the price, so the two labels never fight for room.
  */
-const FREE_TAG =
-  "absolute -top-1 right-0 z-20 -rotate-6 rounded-[3px] border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1.5 py-0.5 text-[9px] leading-none font-black tracking-[0.02em] text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.4)] [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:text-[8px]";
+const FREE_TAG = cn(
+  "border-gold-deep from-gold-light to-gold text-ink-on-gold absolute -top-1 right-0 z-20 -rotate-6 rounded-[3px] border-2 bg-gradient-to-b px-1.5 py-0.5 text-[9px] leading-none font-black tracking-[0.02em] [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:text-[8px]",
+  SHELF_FREE_SHADOW
+);
 
 /** The Night Plate of the count, as the `×N` plate of the Open ×10 grid. */
-const COUNT =
-  "absolute right-0 bottom-0 z-20 rounded-[4px] border border-[#e9c46a]/70 bg-[#1c140e]/95 px-1 py-0.5 text-[10px] leading-none font-black text-[#ffe08a] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:text-[9px] [@media(max-height:500px)]:px-0.5";
+const COUNT = cn(
+  "border-gold-trim/70 bg-night-plate/95 text-gold-light absolute right-0 bottom-0 z-20 rounded-[4px] border px-1 py-0.5 text-[10px] leading-none font-black tabular-nums [@media(max-height:500px)]:px-0.5 [@media(max-height:500px)]:text-[9px]",
+  SHELF_TAG_SHADOW
+);
 
 /**
  * The Race choice of a `race` Unopened Pack: a parchment dialog with one
@@ -65,7 +78,7 @@ const RaceDialog = ({
     >
       {group ? (
         <>
-          <p className="mt-3 text-sm leading-snug text-[#5b4632] [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs">
+          <p className="text-ink-soft mt-3 text-sm leading-snug [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs">
             {tr("packs.unopened.raceText", {
               pack: tr(`packs.names.${group.pack}`),
             })}
@@ -127,11 +140,13 @@ export const UnopenedShelf = ({
     >
       {/* The warm lamp light of the shelf: a soft tint, and one glow on arrival. */}
       <span
-        className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(ellipse_at_20%_85%,rgba(255,206,130,0.1),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 rounded-xl"
+        style={{ background: SHELF_LAMP }}
         aria-hidden
       />
       <span
-        className="pointer-events-none absolute inset-0 rounded-xl bg-[radial-gradient(ellipse_at_20%_85%,rgba(255,206,130,0.22),transparent_58%)] motion-safe:animate-[gift-shelf-glow_1500ms_ease-out_both] motion-reduce:opacity-0"
+        className="pointer-events-none absolute inset-0 rounded-xl motion-safe:animate-[gift-shelf-glow_1500ms_ease-out_both] motion-reduce:opacity-0"
+        style={{ background: SHELF_LAMP_ARRIVAL }}
         aria-hidden
       />
       <span className={TAG} aria-hidden>
@@ -174,7 +189,7 @@ export const UnopenedShelf = ({
                         onOpen(group.firstIndex, { kind: "all" });
                       }
                     }}
-                    className="group/pack group/stand relative flex cursor-pointer flex-col items-center rounded-lg outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:-translate-y-0.5 data-[pressed]:translate-y-0 data-[pressed]:brightness-95 motion-safe:transition-transform motion-safe:duration-150"
+                    className="group/pack group/stand data-[focus-visible]:ring-focus-cream relative flex cursor-pointer flex-col items-center rounded-lg outline-none select-none data-[focus-visible]:ring-4 data-[hovered]:-translate-y-0.5 data-[pressed]:translate-y-0 data-[pressed]:brightness-95 motion-safe:transition-transform motion-safe:duration-150"
                     data-testid={`unopened-open-${group.pack}-${group.version}`}
                     data-count={group.count}
                   >
@@ -209,7 +224,7 @@ export const UnopenedShelf = ({
                           {tr("packs.unopened.free")}
                         </span>
                         {group.version === "race" ? (
-                          <span className="mt-0.5 block border-t border-[#7a5310]/35 pt-0.5 text-[8px] leading-none tracking-[0.02em] [@media(max-height:699px)]:mt-0 [@media(max-height:699px)]:pt-0.5 [@media(max-height:699px)]:text-[6px]">
+                          <span className="border-gold-deep/35 mt-0.5 block border-t pt-0.5 text-[8px] leading-none tracking-[0.02em] [@media(max-height:699px)]:mt-0 [@media(max-height:699px)]:pt-0.5 [@media(max-height:699px)]:text-[6px]">
                             {tr("packs.pool.race")}
                           </span>
                         ) : null}
@@ -226,15 +241,15 @@ export const UnopenedShelf = ({
                   <GameTooltip
                     placement="bottom"
                     offset={10}
-                    className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1 text-xs font-semibold text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+                    className="border-gold-trim/70 bg-night-plate/95 text-cream shadow-piece rounded-lg border-2 px-2.5 py-1 text-xs font-semibold"
                   >
                     {name}
-                    <span className="text-[#ffe08a]">
+                    <span className="text-gold-light">
                       {" · "}
                       {tr("packs.unopened.free")}
                     </span>
                     {group.count > 1 ? (
-                      <span className="text-[#e8d9bb]">
+                      <span className="text-cream-dim">
                         {" · "}
                         {tr("packs.unopened.count", {
                           count: count.format(group.count),
@@ -254,7 +269,8 @@ export const UnopenedShelf = ({
         </ul>
         {/* The wood lip that the Packs stand on. */}
         <span
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-2 rounded-[3px] border-2 border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] shadow-[0_2px_0_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,243,210,0.35)]"
+          className="border-wood-edge from-wood-light to-wood pointer-events-none absolute inset-x-0 bottom-0 h-2 rounded-[3px] border-2 bg-gradient-to-b"
+          style={{ boxShadow: SHELF_LIP_SHADOW }}
           aria-hidden
         />
       </div>

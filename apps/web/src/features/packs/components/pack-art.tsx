@@ -12,6 +12,12 @@ import { PARCHMENT } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph, raceGlyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
+import {
+  PACK_CLASS_STAMP,
+  PACK_CONTACT_SHADOW,
+  PACK_SHEEN,
+  PACK_STAMP_SHADOW,
+} from "@/features/packs/tokens";
 import type { CoinTone } from "@/features/town/components/balance-icon";
 import {
   BalanceIcon,
@@ -26,8 +32,10 @@ const packImage = (pack: PackId) => `/packs/${pack}.webp`;
  * (Town Concepts 8.1): the center of the lower-right quarter of the Pack
  * face. The art keeps that corner plain.
  */
-const STAMP =
-  "absolute top-[72%] left-[70%] grid aspect-square w-[24%] -translate-1/2 place-items-center rounded-full border-[0.18em] border-[#e7bb6a] shadow-[0_0.12em_0.25em_rgba(0,0,0,0.6),inset_0_0.1em_0_rgba(255,255,255,0.3)]";
+const STAMP = cn(
+  "border-bronze-rim absolute top-[72%] left-[70%] grid aspect-square w-[24%] -translate-1/2 place-items-center rounded-full border-[0.18em]",
+  PACK_STAMP_SHADOW
+);
 
 /** The Race Stamp of a Race Pack: the Race emblem of the Card Frame. */
 const RaceStamp = ({ race }: { readonly race: RaceId }) => (
@@ -38,7 +46,7 @@ const RaceStamp = ({ race }: { readonly race: RaceId }) => (
     }}
     data-testid="race-stamp"
   >
-    <GlyphIcon glyph={raceGlyph(race)} className="size-[55%] text-[#fff6df]" />
+    <GlyphIcon glyph={raceGlyph(race)} className="text-cream size-[55%]" />
   </span>
 );
 
@@ -49,10 +57,7 @@ const RaceStamp = ({ race }: { readonly race: RaceId }) => (
 const ClassStamp = ({ classId }: { readonly classId: ClassId }) => (
   <span
     className={STAMP}
-    style={{
-      background: `radial-gradient(circle at 35% 30%, #fffaf0, ${PARCHMENT.main} 55%, #d8c494)`,
-      color: PARCHMENT.ink,
-    }}
+    style={{ background: PACK_CLASS_STAMP, color: PARCHMENT.ink }}
     data-testid="class-stamp"
   >
     <GlyphIcon glyph={classGlyph(classId)} className="size-[55%]" />
@@ -103,7 +108,10 @@ export const PackArt = ({
     className={cn("relative block aspect-[2/3] text-[10px]", className)}
     aria-hidden
   >
-    <span className="absolute inset-x-[8%] bottom-[3%] h-[7%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(0,0,0,0.6),transparent)]" />
+    <span
+      className="absolute inset-x-[8%] bottom-[3%] h-[7%] rounded-[50%]"
+      style={{ background: PACK_CONTACT_SHADOW }}
+    />
     <img
       src={packImage(pack)}
       alt=""
@@ -125,7 +133,10 @@ export const PackArt = ({
           maskPosition: "center",
         }}
       >
-        <span className="absolute inset-y-0 left-0 w-1/2 translate-x-[-130%] bg-[linear-gradient(105deg,transparent_15%,rgba(255,246,220,0.5)_50%,transparent_85%)] motion-safe:group-hover/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-has-[[data-focus-visible]]/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)]" />
+        <span
+          className="absolute inset-y-0 left-0 w-1/2 translate-x-[-130%] motion-safe:group-hover/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-has-[[data-focus-visible]]/stand:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)]"
+          style={{ background: PACK_SHEEN }}
+        />
       </span>
     ) : null}
     <PoolStamp pool={pool} />

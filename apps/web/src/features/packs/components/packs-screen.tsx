@@ -29,6 +29,7 @@ import {
 
 import { GameButton } from "@/core/components/game/game-button";
 import { GameScreen } from "@/core/components/game/game-screen";
+import { nightPlateStyles } from "@/core/components/game/surfaces";
 import { RANK_COLORS } from "@/core/components/game/tokens";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
@@ -56,6 +57,7 @@ import {
   startClass,
   unopenedGroups,
 } from "@/features/packs/packs";
+import { PACKS_SEGMENT_SHADOW } from "@/features/packs/tokens";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { useGuaranteeText } from "@/features/packs/use-guarantee-text";
 import { usePacks } from "@/features/packs/use-packs";
@@ -93,8 +95,7 @@ const choicePool = (choice: PoolChoice): PackPool => {
 };
 
 /** The HUD plate of the top band (DESIGN.md, HUD plate). */
-const PLATE =
-  "flex items-center rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+const PLATE = cn(nightPlateStyles({ padding: "none" }), "flex items-center");
 
 /** The welcome lines of the shopkeeper, one after the other. */
 const WELCOMES = ["a", "b", "c"] as const;
@@ -163,15 +164,17 @@ const useShopLineText = () => {
 const segment = ({ isSelected }: { readonly isSelected: boolean }) =>
   cn(
     "relative isolate flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-bold whitespace-nowrap transition-colors duration-200 outline-none select-none",
-    "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+    "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
     "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs",
     isSelected
-      ? "text-[#2a1a05]"
-      : "text-[#fff6df]/85 data-[hovered]:bg-[#fff6df]/10 data-[hovered]:text-[#fff6df]"
+      ? "text-ink-on-gold"
+      : "text-cream/85 data-[hovered]:bg-cream/10 data-[hovered]:text-cream"
   );
 
-const SELECTED =
-  "absolute inset-0 -z-10 rounded-lg bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[0_1px_2px_rgba(60,30,5,0.45)] motion-safe:transition-[translate,width] motion-safe:duration-[220ms] motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]";
+const SELECTED = cn(
+  "from-gold-light to-gold absolute inset-0 -z-10 rounded-lg bg-gradient-to-b motion-safe:transition-[translate,width] motion-safe:duration-[220ms] motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]",
+  PACKS_SEGMENT_SHADOW
+);
 
 /** One segment of a pool group: a glyph, and its name on a wide screen. */
 const GlyphSegment = ({
@@ -271,7 +274,7 @@ const PoolPlate = ({
       >
         <div className="flex min-w-0 items-center overflow-hidden">
           <span
-            className="mx-1 h-6 w-0.5 shrink-0 rounded-full bg-[#e9c46a]/25 [@media(max-height:500px)]:h-5"
+            className="bg-gold-trim/25 mx-1 h-6 w-0.5 shrink-0 rounded-full [@media(max-height:500px)]:h-5"
             aria-hidden
           />
           {choice.group === "creature" ? (
@@ -342,7 +345,7 @@ const MiniGems = ({ rank }: { readonly rank: RankId }) => (
     {Array.from({ length: rankPips(rank) }, (_, index) => (
       <span
         key={index}
-        className="size-[5px] rotate-45 border border-[#2a1a08]"
+        className="border-rank-edge size-[5px] rotate-45 border"
         style={{ backgroundColor: RANK_COLORS[rank] }}
       />
     ))}
@@ -389,7 +392,7 @@ const RankBar = ({ pack }: { readonly pack: PackDefinition }) => {
           />
         ))}
       </div>
-      <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-xs leading-none font-bold text-[#e8d9bb] tabular-nums [@media(max-height:500px)]:text-[10px]">
+      <div className="text-cream-dim mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-xs leading-none font-bold tabular-nums [@media(max-height:500px)]:text-[10px]">
         {segments.map((part) => (
           <span key={part.rank} className="flex items-center gap-1">
             <MiniGems rank={part.rank} />
@@ -414,7 +417,7 @@ const GuaranteeLine = ({
   const left = packsToGuarantee(pack, counter);
   return (
     <p
-      className="flex items-start gap-1.5 text-xs leading-snug font-semibold text-[#fff6df] [@media(max-height:500px)]:text-[11px]"
+      className="text-cream flex items-start gap-1.5 text-xs leading-snug font-semibold [@media(max-height:500px)]:text-[11px]"
       data-testid={`pack-guarantee-${pack.id}`}
       data-left={left}
     >
@@ -536,17 +539,17 @@ const PackStand = ({
       >
         {/* The wood ledge that the Pack stands on. */}
         <span
-          className="absolute inset-x-2 -top-1.5 h-3 rounded-md border-2 border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:hidden"
+          className="border-wood-edge from-wood-light to-wood shadow-piece absolute inset-x-2 -top-1.5 h-3 rounded-md border-2 bg-gradient-to-b [@media(max-height:500px)]:hidden"
           aria-hidden
         />
         <div className="text-center [@media(max-height:500px)]:text-left">
           <h2
             id={`pack-name-${pack.id}`}
-            className="font-display text-lg leading-tight font-bold text-[#ffe08a] [@media(max-height:500px)]:text-sm"
+            className="font-display text-gold-light text-lg leading-tight font-bold [@media(max-height:500px)]:text-sm"
           >
             {tr(`packs.names.${pack.id}`)}
           </h2>
-          <p className="mt-0.5 min-h-[2lh] text-xs leading-snug text-[#e8d9bb] [@media(max-height:500px)]:sr-only">
+          <p className="text-cream-dim mt-0.5 min-h-[2lh] text-xs leading-snug [@media(max-height:500px)]:sr-only">
             {tr(`packs.jobs.${pack.id}`)}
           </p>
         </div>

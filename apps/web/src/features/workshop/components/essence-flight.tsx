@@ -2,7 +2,7 @@ import type { RankId } from "@workspace/rules";
 import type { CSSProperties } from "react";
 import { useEffect } from "react";
 
-import { RANK_LIGHT } from "@/features/packs/components/pack-reveal";
+import { RANK_LIGHT } from "@/features/packs/tokens";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import {
   craftTimeline,
@@ -199,7 +199,7 @@ export const EssenceFlight = ({
           top: target.y,
           animationDuration: `${lightMs}ms`,
           animationDelay: `${lightAt}ms`,
-          background: `radial-gradient(closest-side, #fff6df, ${light}cc 45%, transparent)`,
+          background: `radial-gradient(closest-side, var(--color-cream), ${light}cc 45%, transparent)`,
         }}
       />
       {direction === "out" && (rank === "epic" || rank === "legendary") ? (
@@ -228,7 +228,7 @@ export const EssenceFlight = ({
               className="block size-5 -translate-1/2 [@media(max-height:500px)]:size-4"
               style={{
                 animation: `essence-drop ${ESSENCE_FLY_MS}ms linear ${at}ms both`,
-                filter: `drop-shadow(0 0 4px ${light}) drop-shadow(0 0 1px #fff6df)`,
+                filter: `drop-shadow(0 0 4px ${light}) drop-shadow(0 0 1px var(--color-cream))`,
               }}
             >
               <BalanceIcon kind="essence" className="size-full" />

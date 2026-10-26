@@ -69,11 +69,11 @@ const CombineRung = ({
     >
       {/* The ladder rails: the rung joins the two rows. */}
       <span
-        className="absolute inset-y-0 left-[18%] w-1 rounded-full bg-gradient-to-b from-[#7a5233] to-[#563720]"
+        className="from-wood-light to-wood absolute inset-y-0 left-[18%] w-1 rounded-full bg-gradient-to-b"
         aria-hidden
       />
       <span
-        className="absolute inset-y-0 right-[18%] w-1 rounded-full bg-gradient-to-b from-[#7a5233] to-[#563720]"
+        className="from-wood-light to-wood absolute inset-y-0 right-[18%] w-1 rounded-full bg-gradient-to-b"
         aria-hidden
       />
       <GameButton
@@ -128,8 +128,8 @@ const RankRow = ({
       className={cn(
         "flex h-10 shrink-0 items-center gap-1.5 rounded-lg border-2 px-2 transition-colors duration-150 [@media(max-height:500px)]:h-[26px] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1",
         row.copies > 0
-          ? "border-[#e9c46a]/35 bg-[#3a2a1c]/80"
-          : "border-[#e9c46a]/15 bg-[#3a2a1c]/35"
+          ? "border-gold-trim/35 bg-plate-socket/80"
+          : "border-gold-trim/15 bg-plate-socket/35"
       )}
       onPointerEnter={() => onPeek(row.rank)}
       onPointerLeave={() => onPeek(null)}
@@ -151,7 +151,7 @@ const RankRow = ({
         key={row.copies}
         className={cn(
           "ml-auto text-sm font-black tabular-nums [@media(max-height:500px)]:text-[11px]",
-          row.copies > 0 ? "text-[#fff6df]" : "text-cream-dim",
+          row.copies > 0 ? "text-cream" : "text-cream-dim",
           "motion-safe:animate-[workshop-count_320ms_cubic-bezier(0.2,0.8,0.2,1)]"
         )}
         aria-hidden

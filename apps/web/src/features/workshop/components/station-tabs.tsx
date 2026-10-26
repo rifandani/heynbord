@@ -9,6 +9,7 @@ import {
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { useGameText } from "@/features/battle/use-game-text";
+import { WORKSHOP_PLATE_DROP } from "@/features/workshop/tokens";
 import type { Station } from "@/features/workshop/workshop";
 import { STATIONS, stationLock } from "@/features/workshop/workshop";
 
@@ -30,7 +31,8 @@ const STATION_GLYPH: Readonly<Record<Station, Glyph>> = {
  * It is one piece: when the station changes, it slides to the new tab.
  */
 const PLATE = cn(
-  "absolute inset-0 -z-10 rounded-lg border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[0_2px_0_rgba(60,30,5,0.55)]",
+  "border-gold-deep from-gold-light to-gold absolute inset-0 -z-10 rounded-lg border-2 bg-gradient-to-b",
+  WORKSHOP_PLATE_DROP,
   "motion-safe:transition-[translate,width,height] motion-safe:duration-[240ms] motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
 );
 
@@ -52,8 +54,8 @@ const CountChip = ({
       className={cn(
         "flex h-6 min-w-6 shrink-0 items-center justify-center gap-0.5 justify-self-end rounded-full border px-1.5 text-xs leading-none font-black tabular-nums [grid-area:chip] [@media(max-height:500px)]:h-[18px] [@media(max-height:500px)]:min-w-[18px] [@media(max-height:500px)]:justify-self-start [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:text-[10px]",
         selected
-          ? "border-[#7a5310] bg-[#2a1a05]/85 text-[#ffe08a]"
-          : "border-[#e9c46a]/40 bg-[#3a2a1c] text-[#fff6df]",
+          ? "border-gold-deep bg-ink-on-gold/85 text-gold-light"
+          : "border-gold-trim/40 bg-plate-socket text-cream",
         !selected && count === 0 && lock === null && "text-cream-dim"
       )}
       aria-hidden
@@ -114,11 +116,11 @@ export const StationTabs = ({
             className={({ isSelected }) =>
               cn(
                 "relative isolate grid cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2.5 gap-y-1 rounded-lg px-2.5 py-2 transition-colors duration-200 outline-none select-none [grid-template-areas:'glyph_name_chip'_'glyph_recipe_recipe']",
-                "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+                "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
                 "[@media(max-height:500px)]:grid-cols-[auto_auto] [@media(max-height:500px)]:justify-center [@media(max-height:500px)]:gap-x-1 [@media(max-height:500px)]:gap-y-0.5 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:[grid-template-areas:'glyph_chip'_'name_name']",
                 isSelected
-                  ? "text-[#2a1a05]"
-                  : "text-[#fff6df] data-[hovered]:bg-[#fff6df]/10"
+                  ? "text-ink-on-gold"
+                  : "text-cream data-[hovered]:bg-cream/10"
               )
             }
             data-testid={`workshop-station-${station}`}
@@ -131,7 +133,7 @@ export const StationTabs = ({
                   glyph={STATION_GLYPH[station]}
                   className={cn(
                     "size-6 shrink-0 self-start [grid-area:glyph] [@media(max-height:500px)]:size-5 [@media(max-height:500px)]:self-center",
-                    !isSelected && "text-[#e9c46a]"
+                    !isSelected && "text-gold-trim"
                   )}
                 />
                 <span className="font-display truncate text-[15px] leading-tight font-bold [grid-area:name] [@media(max-height:500px)]:justify-self-center [@media(max-height:500px)]:font-sans [@media(max-height:500px)]:text-[10px] [@media(max-height:500px)]:leading-none">
@@ -140,7 +142,7 @@ export const StationTabs = ({
                 <span
                   className={cn(
                     "text-[11px] leading-snug font-semibold text-balance [grid-area:recipe] [@media(max-height:500px)]:hidden",
-                    isSelected ? "text-[#2a1a05]/80" : "text-[#e8d9bb]"
+                    isSelected ? "text-ink-on-gold/80" : "text-cream-dim"
                   )}
                 >
                   {tr(`workshop.station.${station}.recipe`)}
@@ -195,11 +197,14 @@ export const ReadyToggle = ({
       className={({ isSelected: on }) =>
         cn(
           "flex min-h-9 cursor-pointer items-center gap-2 rounded-lg border-2 px-2.5 py-1.5 text-left text-xs leading-tight font-bold transition-colors duration-200 outline-none select-none",
-          "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+          "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
           "[@media(max-height:500px)]:min-h-0 [@media(max-height:500px)]:flex-col [@media(max-height:500px)]:gap-0.5 [@media(max-height:500px)]:rounded-md [@media(max-height:500px)]:px-0.5 [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-center [@media(max-height:500px)]:text-[10px] [@media(max-height:500px)]:leading-none",
           on
-            ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] shadow-[0_2px_0_rgba(60,30,5,0.55)]"
-            : "border-[#e9c46a]/45 bg-[#1c140e]/70 text-[#fff6df]/85 data-[hovered]:bg-[#fff6df]/10 data-[hovered]:text-[#fff6df]"
+            ? cn(
+                "border-gold-deep from-gold-light to-gold text-ink-on-gold bg-gradient-to-b",
+                WORKSHOP_PLATE_DROP
+              )
+            : "border-gold-trim/45 bg-night-plate/70 text-cream/85 data-[hovered]:bg-cream/10 data-[hovered]:text-cream"
         )
       }
       data-testid="workshop-ready"
