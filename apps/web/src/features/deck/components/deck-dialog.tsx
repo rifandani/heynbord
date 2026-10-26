@@ -14,10 +14,10 @@ import {
   TabPanel,
   Tabs,
 } from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { GAME_SCRIM } from "@/core/components/game/game-dialog";
+import { CloseIcon } from "@/core/components/game/icons";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { CardDetails } from "@/features/battle/components/card-details";
 import { BRONZE } from "@/features/battle/components/card-frame";
@@ -352,7 +352,7 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
           className="shrink-0 self-center [@media(max-height:500px)]:size-8"
           data-testid="deck-close"
         >
-          <HiXMark className="size-5" aria-hidden />
+          <CloseIcon className="size-5" />
         </GameButton>
       </header>
       {slots.map((slot, index) => (

@@ -19,10 +19,13 @@ import {
   Popover,
   TooltipTrigger,
 } from "react-aria-components";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { GameTooltip } from "@/core/components/game/game-tooltip";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@/core/components/game/icons";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { REWARD_PLATE_COMPACT } from "@/features/battle/components/reward-plate";
@@ -130,7 +133,7 @@ const RegionArrow = ({
   );
   const status = regionStatus(STAGES, region, results);
   const why = line(region, status);
-  const Chevron = direction === "next" ? HiChevronRight : HiChevronLeft;
+  const Chevron = direction === "next" ? ChevronRightIcon : ChevronLeftIcon;
   return (
     <TipPiece tip={why ? `${label}. ${why}` : label}>
       {() => (

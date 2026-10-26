@@ -4,10 +4,9 @@ import {
   useAtomSet,
   useAtomValue,
 } from "@effect/atom-react";
-import { cn } from "cn";
-import { lazy, Suspense, useContext, useEffect, useMemo, useRef } from "react";
+import { lazy, Suspense, useContext, useEffect, useRef } from "react";
 
-import { AchievementsScreen } from "@/features/achievements/components/achievements-screen";
+import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { useAchievementNotices } from "@/features/achievements/use-achievement-notices";
 import {
   setEffectsVolume,
@@ -18,68 +17,37 @@ import {
   unlockAudio,
 } from "@/features/battle/battle-audio";
 import { battleStage } from "@/features/battle/battle-content";
-import { battlePainting } from "@/features/battle/battle-painting";
-import { heroOf } from "@/features/battle/battle-view";
 import { soundOnAtom, soundVolumeAtom } from "@/features/battle/battle.atoms";
-import type {
-  BattleKeyAction,
-  BattleKeyCommand,
-} from "@/features/battle/components/battle-keys";
 import {
-  inspectDirection,
-  keyCommand,
-  logKeyAction,
-  nextReadyCard,
-} from "@/features/battle/components/battle-keys";
-import {
-  BattleLogBanner,
-  BattleLogPanel,
-} from "@/features/battle/components/battle-log-panel";
-import { BattlePainting } from "@/features/battle/components/battle-painting";
-import { CastCard } from "@/features/battle/components/cast-card";
-import { HandBar } from "@/features/battle/components/hand-bar";
-import {
-  PortraitGuard,
-  ResultOverlay,
-  TurnBanner,
-} from "@/features/battle/components/overlays";
-import { TopBar } from "@/features/battle/components/top-bar";
-import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
-import { UnitDetails } from "@/features/battle/components/unit-details";
+  dialogOpen,
+  isTyping,
+} from "@/features/battle/components/battle-input";
+import { PortraitGuard } from "@/features/battle/components/portrait-guard";
 import { musicTrackFor } from "@/features/battle/music-catalog";
 import type { MusicFeature } from "@/features/battle/music-catalog";
 import { playMusicSting, playMusicTrack } from "@/features/battle/music-player";
 import { qaEnabled, stateFromSearch } from "@/features/battle/qa";
+import { installQaHooks } from "@/features/battle/qa-hooks";
 import {
   setReducedMotionPreference,
   useReducedMotion,
 } from "@/features/battle/scene/reduced-motion";
-import { installTestHooks } from "@/features/battle/test-hooks";
 import { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
-import { BazaarScreen } from "@/features/bazaar/components/bazaar-screen";
 import {
   campaignRegionAtom,
   chosenRegionAtom,
 } from "@/features/campaign/campaign.atoms";
-import { CampaignScreen } from "@/features/campaign/components/campaign-screen";
-import { DungeonsScreen } from "@/features/dungeons/components/dungeons-screen";
-import { HandbookDialog } from "@/features/handbook/components/handbook-dialog";
 import { useHandbook } from "@/features/handbook/use-handbook";
-import { HeroScreen } from "@/features/hero/components/hero-screen";
-import { HeynspireScreen } from "@/features/heynspire/components/heynspire-screen";
 import { HintBanner } from "@/features/hint/components/hint-banner";
 import {
-  useBattleHints,
   useHeroHints,
   usePacksHints,
   useTownHints,
 } from "@/features/hint/use-hints";
-import { PacksScreen } from "@/features/packs/components/packs-screen";
 import { profileReadyAtom } from "@/features/profile/profile.atoms";
 import { useProfileStore } from "@/features/profile/use-profile-store";
 import { useReplayLink } from "@/features/replay/use-replay-link";
-import { SeaportScreen } from "@/features/seaport/components/seaport-screen";
 import {
   effectsVolumeAtom,
   musicOnAtom,
@@ -92,11 +60,57 @@ import {
 } from "@/features/town/components/town-screen";
 import type { GameScreen } from "@/features/town/town";
 import { gameScreenAtom, townProgressAtom } from "@/features/town/town.atoms";
-import { WorkshopScreen } from "@/features/workshop/components/workshop-screen";
 
-const BattleCanvas = lazy(
-  () => import("@/features/battle/scene/battle-canvas")
-);
+/*
+ * Every screen except the Town loads in its own chunk on first open. The Town,
+ * the Town Bar and the Settings dialog stay in the first bundle (issue #139).
+ */
+const AchievementsScreen = lazy(async () => {
+  const module =
+    await import("@/features/achievements/components/achievements-screen");
+  return { default: module.AchievementsScreen };
+});
+const BazaarScreen = lazy(async () => {
+  const module = await import("@/features/bazaar/components/bazaar-screen");
+  return { default: module.BazaarScreen };
+});
+const CampaignScreen = lazy(async () => {
+  const module = await import("@/features/campaign/components/campaign-screen");
+  return { default: module.CampaignScreen };
+});
+const DungeonsScreen = lazy(async () => {
+  const module = await import("@/features/dungeons/components/dungeons-screen");
+  return { default: module.DungeonsScreen };
+});
+const HeroScreen = lazy(async () => {
+  const module = await import("@/features/hero/components/hero-screen");
+  return { default: module.HeroScreen };
+});
+const HeynspireScreen = lazy(async () => {
+  const module =
+    await import("@/features/heynspire/components/heynspire-screen");
+  return { default: module.HeynspireScreen };
+});
+const PacksScreen = lazy(async () => {
+  const module = await import("@/features/packs/components/packs-screen");
+  return { default: module.PacksScreen };
+});
+const SeaportScreen = lazy(async () => {
+  const module = await import("@/features/seaport/components/seaport-screen");
+  return { default: module.SeaportScreen };
+});
+const WorkshopScreen = lazy(async () => {
+  const module = await import("@/features/workshop/components/workshop-screen");
+  return { default: module.WorkshopScreen };
+});
+const BattleStage = lazy(async () => {
+  const module = await import("@/features/battle/components/battle-stage");
+  return { default: module.BattleStage };
+});
+const HandbookDialog = lazy(async () => {
+  const module = await import("@/features/handbook/components/handbook-dialog");
+  return { default: module.HandbookDialog };
+});
 
 const SCREEN_MUSIC: Partial<Record<GameScreen, MusicFeature>> = {
   heynspire: "heynspire",
@@ -109,307 +123,24 @@ const SCREEN_MUSIC: Partial<Record<GameScreen, MusicFeature>> = {
   achievements: "achievements",
 };
 
-/** NFR-05: the game needs WebGL 2. */
-const hasWebgl2 = (): boolean => {
-  try {
-    return document.createElement("canvas").getContext("webgl2") !== null;
-  } catch {
-    return false;
-  }
-};
+/** The backdrop while a screen chunk loads. The Town Bar stays on top. */
+const ScreenLoading = () => (
+  <div
+    aria-hidden
+    className="fixed inset-0 bg-[#1c140e]"
+    data-testid="screen-loading"
+  />
+);
 
-const isTyping = (target: EventTarget | null): boolean =>
-  target instanceof HTMLElement &&
-  (target.isContentEditable ||
-    ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
-
-/** A key in an open dialog (the Abandon confirm, the result) is for that dialog. */
-const inDialog = (target: EventTarget | null): boolean =>
-  target instanceof Element && target.closest('[role="dialog"]') !== null;
-
-type Battle = ReturnType<typeof useBattle>;
-
-/** What a Battle key can act on: the Battle, and the Handbook over it. */
-interface KeyContext {
-  readonly battle: Battle;
-  readonly openHandbook: () => void;
-}
-
-/** ArrowLeft and ArrowRight move the selection over the Ready cards. */
-const moveSelection = (battle: Battle, event: KeyboardEvent, step: 1 | -1) => {
-  const hand = battle.session ? heroOf(battle.session.view, "player").hand : [];
-  const next = nextReadyCard(hand, battle.selected, step);
-  if (next === null) {
-    return;
-  }
-  event.preventDefault();
-  battle.select(next);
-  document
-    .querySelector<HTMLButtonElement>(`[data-testid="hand-card-${next}"]`)
-    ?.focus();
-};
-
-/** Enter plays the selected card on the focused target, but not on a focused button. */
-const playFocusedTarget = (battle: Battle, event: KeyboardEvent) => {
-  const onButton = event.target instanceof HTMLButtonElement;
-  const target = battle.targets[battle.focused];
-  if (!onButton && target) {
-    event.preventDefault();
-    battle.play(target);
-  }
-};
-
-const KEY_HANDLERS: Readonly<
-  Record<
-    BattleKeyAction,
-    (keys: KeyContext, event: KeyboardEvent, step: 1 | -1) => void
-  >
-> = {
-  moveSelection: ({ battle }, event, step) =>
-    moveSelection(battle, event, step),
-  focusTarget: ({ battle }, event, step) => {
-    event.preventDefault();
-    battle.focusTarget(step);
-  },
-  play: ({ battle }, event) => playFocusedTarget(battle, event),
-  endTurn: ({ battle }) => battle.endTurn(),
-  skip: ({ battle }) => battle.skip(),
-  inspect: ({ battle }, event) => {
-    event.preventDefault();
-    battle.toggleInspect();
-  },
-  // The Battle does not pause: the Handbook opens at one side of the Board.
-  handbook: ({ openHandbook }, event) => {
-    event.preventDefault();
-    openHandbook();
-  },
-  // Live pauses while the Battle Log is open (GDD 11.2).
-  battleLog: ({ battle }, event) => {
-    event.preventDefault();
-    battle.openLog();
-  },
-  cancel: ({ battle }) => battle.select(null),
-};
-
-/**
- * The keyboard Inspect mode takes the arrow keys and Esc. Returns true when it
- * used the key.
- */
-const inspectKey = (
-  battle: Battle,
-  event: KeyboardEvent,
-  command: BattleKeyCommand
-): boolean => {
-  if (!battle.inspecting) {
-    return false;
-  }
-  const direction = inspectDirection(command);
-  if (direction) {
-    event.preventDefault();
-    battle.inspectNext(direction);
-    return true;
-  }
-  if (command.action === "cancel") {
-    event.preventDefault();
-    battle.stopInspect();
-    return true;
-  }
-  return false;
-};
-
-/** The result dialog takes its own keys, but L opens the Battle Log from it. */
-const inResult = (target: EventTarget | null): boolean =>
-  target instanceof Element &&
-  target.closest('[data-testid="battle-result"]') !== null;
-
-const commandFromKey = (event: KeyboardEvent) => {
-  if (isTyping(event.target)) {
-    return null;
-  }
-  const command = keyCommand(event);
-  if (!inDialog(event.target)) {
-    return command;
-  }
-  return command?.action === "battleLog" && inResult(event.target)
-    ? command
-    : null;
-};
-
-/**
- * The keys of the open Battle Log: ←/→ one Log Entry, Shift+←/→ one Turn, L
- * and Esc Back to Live (in a Replay, Esc leaves). Inspect and the Handbook
- * work as in Live, and the other Live keys do nothing.
- */
-const runLogKey = (
-  keys: KeyContext,
-  event: KeyboardEvent,
-  command: BattleKeyCommand
-) => {
-  const action = logKeyAction(command, event.shiftKey, keys.battle.watching);
-  switch (action._tag) {
-    case "step": {
-      event.preventDefault();
-      keys.battle.stepLog(action.step, action.byTurn);
-      return;
-    }
-    case "close": {
-      event.preventDefault();
-      keys.battle.closeLog();
-      return;
-    }
-    case "live": {
-      KEY_HANDLERS[command.action](keys, event, command.step);
-      break;
-    }
-    case "off": {
-      // All Live input is off in the Battle Log.
-      break;
-    }
-    default: {
-      return action satisfies never;
-    }
-  }
-};
-
-const runKey = (
-  keys: KeyContext,
-  event: KeyboardEvent,
-  command: BattleKeyCommand
-) => {
-  if (inspectKey(keys.battle, event, command)) {
-    return;
-  }
-  if (keys.battle.log) {
-    runLogKey(keys, event, command);
-    return;
-  }
-  KEY_HANDLERS[command.action](keys, event, command.step);
-};
-
-const DETAILS = '[data-testid="unit-details"]';
-
-/**
- * In the keyboard Inspect mode, Tab goes into the Card Details, to the links
- * of the Keyword, Status and Damage Type names (issue #25). Returns true when
- * it used the key.
- */
-const tabIntoDetails = (battle: Battle, event: KeyboardEvent): boolean => {
-  if (!battle.inspecting || event.key !== "Tab" || event.shiftKey) {
-    return false;
-  }
-  const panel = document.querySelector(DETAILS);
-  const inPanel = event.target instanceof Node && panel?.contains(event.target);
-  const link = panel?.querySelector<HTMLElement>(
-    '[data-testid="details-entry-link"]'
-  );
-  if (inPanel || inDialog(event.target) || !link) {
-    return false;
-  }
-  event.preventDefault();
-  link.focus();
-  return true;
-};
-
-/** UI-02: a full Battle with only a keyboard. */
-const useBattleKeys = (battle: Battle, openHandbook: () => void) => {
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (tabIntoDetails(battle, event)) {
-        return;
-      }
-      const command = commandFromKey(event);
-      if (command) {
-        runKey({ battle, openHandbook }, event, command);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [battle, openHandbook]);
-};
-
-/** The 3D Board, which loads in its own chunk. */
-const BoardLayer = ({
-  battle,
-  webgl2,
-}: {
-  readonly battle: Battle;
-  readonly webgl2: boolean;
-}) => {
+/** The backdrop while the Battle UI chunk loads. */
+const BattleLoading = () => {
   const { tr } = useGameText();
-  if (!webgl2) {
-    return null;
-  }
   return (
-    <Suspense
-      fallback={
-        <div className="absolute inset-0 flex items-center justify-center">
-          <p className="font-display rounded-xl bg-[#1c140e]/85 px-6 py-3 text-xl">
-            {tr("battle.loading")}
-          </p>
-        </div>
-      }
-    >
-      <BattleCanvas onPick={(target) => battle.play(target)} />
-    </Suspense>
-  );
-};
-
-const BattleStage = ({ battle }: { readonly battle: Battle }) => {
-  const { tr } = useGameText();
-  const webgl2 = useMemo(() => hasWebgl2(), []);
-  const options = battle.session?.options;
-  const painting = useMemo(
-    () => (options ? battlePainting(options) : null),
-    [options]
-  );
-  const handbook = useHandbook();
-  useBattleKeys(battle, handbook.open);
-  useBattleHints(battle.liveSession);
-  return (
-    <div
-      className="fixed inset-0 overflow-hidden overscroll-none text-[#fff6df]"
-      data-testid="battle-stage"
-    >
-      {/*
-       * In the Battle Log, the painting and the Board are grey and a little
-       * warm, like an old picture, so that a past moment never looks like Live.
-       */}
-      <div
-        className={cn(
-          "absolute inset-0 transition-[filter] duration-300 ease-out motion-reduce:transition-none",
-          battle.log && "[filter:saturate(0.28)_sepia(0.2)_brightness(0.95)]"
-        )}
-        data-testid="battle-board-layer"
-        data-past={battle.log ? true : undefined}
-      >
-        {/* The painting loads before the 3D chunk, so it shows at once (web ADR-0006). */}
-        <BattlePainting src={painting} />
-        <BoardLayer battle={battle} webgl2={webgl2} />
-      </div>
-      {webgl2 ? null : (
-        <div
-          role="alert"
-          className="absolute inset-0 flex items-center justify-center bg-[#1c140e] p-8 text-center text-lg"
-        >
-          {tr("battle.noWebgl")}
-        </div>
-      )}
-      <CastCard />
-      <TutorialPanel battle={battle} />
-      <UnitDetails battle={battle} />
-      <TopBar battle={battle} />
-      <TurnBanner />
-      <BattleLogBanner battle={battle} />
-      <HandBar battle={battle} />
-      <BattleLogPanel battle={battle} />
-      <ResultOverlay battle={battle} />
+    <div className="fixed inset-0 grid place-items-center bg-[#1c140e] text-[#fff6df]">
+      <p className="font-display text-xl">{tr("battle.loading")}</p>
     </div>
   );
 };
-
-/** True while a dialog is open, for example the Deck book over a screen. */
-const dialogOpen = (): boolean =>
-  document.querySelector('[role="dialog"]') !== null;
 
 /**
  * Esc on a screen other than the Town goes back to the Town (GDD 11.4). While
@@ -442,7 +173,7 @@ const useEscToTown = (active: boolean, toTown: () => void) => {
  * Battle, so "Back to Campaign" opens it, and the newest unlocked Region when
  * the Player opens the Campaign from another screen.
  */
-const useCampaignRegion = (battle: Battle) => {
+const useCampaignRegion = (battle: ReturnType<typeof useBattle>) => {
   const region = useAtomValue(campaignRegionAtom);
   const setRegion = useAtomSet(chosenRegionAtom);
   const options = battle.session?.options;
@@ -545,6 +276,10 @@ export const PlayScreen = () => {
     campaign.withRegion(setScreen)
   );
   const ready = useAtomValue(profileReadyAtom);
+  const handbook = useHandbook();
+  // A dialog that the Player opened stays in the page, so it can close on its
+  // spine. Its chunk loads at the first open.
+  const handbookShown = useEverOpened(handbook.isOpen);
 
   useProfileStore();
   useAchievementNotices();
@@ -579,48 +314,77 @@ export const PlayScreen = () => {
       ? "true"
       : "false";
   }, [reducedMotion]);
-  // The QA states change the Profile, so the hooks wait for it to load.
-  useEffect(
-    () =>
-      ready && qaEnabled()
-        ? installTestHooks(registry, stateFromSearch(location.search))
-        : undefined,
-    [registry, ready]
-  );
+  // The QA states change the Profile, so the hooks wait for it to load. The
+  // chunk starts at once, when this module loads, so a test can press a
+  // control as soon as the Town opens.
+  useEffect(() => {
+    if (!(ready && qaEnabled())) {
+      return;
+    }
+    let cancelled = false;
+    let uninstall: (() => void) | undefined;
+    const install = async () => {
+      const cleanup = await installQaHooks(
+        registry,
+        stateFromSearch(location.search)
+      );
+      if (cleanup) {
+        if (cancelled) {
+          cleanup();
+        } else {
+          uninstall = cleanup;
+        }
+      }
+    };
+    void install();
+    return () => {
+      cancelled = true;
+      uninstall?.();
+    };
+  }, [registry, ready]);
 
   return (
     <>
       {battle.session ? (
-        <BattleStage battle={battle} />
+        <Suspense fallback={<BattleLoading />}>
+          <BattleStage battle={battle} />
+        </Suspense>
       ) : (
         <>
           {screen === "town" ? (
             <TownScreen leaving={leaving} onOpen={handleOpen} />
-          ) : null}
-          {screen === "campaign" ? (
-            <CampaignScreen
-              region={campaign.region}
-              onRegion={(region) => campaign.setRegion(region)}
-              onStart={(next) => battle.start(next)}
-            />
-          ) : null}
-          {screen === "dungeons" ? (
-            <DungeonsScreen onStart={(next) => battle.start(next)} />
-          ) : null}
-          {screen === "heynspire" ? (
-            <HeynspireScreen onStart={(next) => battle.start(next)} />
-          ) : null}
-          {screen === "packs" ? <PacksScreen /> : null}
-          {screen === "workshop" ? <WorkshopScreen /> : null}
-          {screen === "hero" ? <HeroScreen /> : null}
-          {screen === "achievements" ? <AchievementsScreen /> : null}
-          {screen === "bazaar" ? <BazaarScreen /> : null}
-          {screen === "seaport" ? <SeaportScreen /> : null}
+          ) : (
+            <Suspense fallback={<ScreenLoading />}>
+              {screen === "campaign" ? (
+                <CampaignScreen
+                  region={campaign.region}
+                  onRegion={(region) => campaign.setRegion(region)}
+                  onStart={(next) => battle.start(next)}
+                />
+              ) : null}
+              {screen === "dungeons" ? (
+                <DungeonsScreen onStart={(next) => battle.start(next)} />
+              ) : null}
+              {screen === "heynspire" ? (
+                <HeynspireScreen onStart={(next) => battle.start(next)} />
+              ) : null}
+              {screen === "packs" ? <PacksScreen /> : null}
+              {screen === "workshop" ? <WorkshopScreen /> : null}
+              {screen === "hero" ? <HeroScreen /> : null}
+              {screen === "achievements" ? <AchievementsScreen /> : null}
+              {screen === "bazaar" ? <BazaarScreen /> : null}
+              {screen === "seaport" ? <SeaportScreen /> : null}
+            </Suspense>
+          )}
           <TownBar screen={screen} onOpen={handleOpen} />
         </>
       )}
       <HintBanner />
-      <HandbookDialog inBattle={battle.session !== null} />
+      {handbookShown ? (
+        <Suspense fallback={null}>
+          <HandbookDialog inBattle={battle.session !== null} />
+        </Suspense>
+      ) : null}
       <PortraitGuard />
     </>
   );

@@ -2,11 +2,11 @@ import { RegistryContext, useAtomValue } from "@effect/atom-react";
 import type { ImportError, Profile } from "@workspace/rules";
 import { exportProfile, importProfile } from "@workspace/rules";
 import { Result } from "effect";
-import { useContext, useState } from "react";
+import { lazy, Suspense, useContext, useState } from "react";
 import { FileTrigger } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
-import { GameDialog, GameDialogText } from "@/core/components/game/game-dialog";
+import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { useGameText } from "@/features/battle/use-game-text";
 import { exportFileName } from "@/features/profile/profile";
 import { profileStateAtom } from "@/features/profile/profile.atoms";
@@ -25,64 +25,11 @@ const download = (name: string, text: string) => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 
-/**
- * The replace confirmation of an import: a small parchment dialog over the
- * Settings dialog. Cancel keeps the progress.
- */
-const ReplaceDialog = ({
-  profile,
-  onCancel,
-  onReplace,
-}: {
-  readonly profile: Profile | null;
-  readonly onCancel: () => void;
-  readonly onReplace: (profile: Profile) => void;
-}) => {
-  const { tr } = useGameText();
-  return (
-    <GameDialog
-      isOpen={profile !== null}
-      onOpenChange={(open) => {
-        if (!open) {
-          onCancel();
-        }
-      }}
-      title={tr("settings.profile.confirmTitle")}
-      role="alertdialog"
-      testId="import-confirm-dialog"
-      className="text-left"
-      footer={
-        <div className="flex w-full justify-end gap-2">
-          <GameButton
-            intent="wood"
-            size="sm"
-            autoFocus
-            onPress={onCancel}
-            data-testid="import-cancel"
-          >
-            {tr("settings.profile.cancel")}
-          </GameButton>
-          <GameButton
-            intent="gold"
-            size="sm"
-            onPress={() => {
-              if (profile) {
-                onReplace(profile);
-              }
-            }}
-            data-testid="import-confirm"
-          >
-            {tr("settings.profile.replace")}
-          </GameButton>
-        </div>
-      }
-    >
-      <GameDialogText className="mt-2 leading-snug">
-        {tr("settings.profile.confirmText")}
-      </GameDialogText>
-    </GameDialog>
-  );
-};
+const ReplaceProfileDialog = lazy(async () => {
+  const module =
+    await import("@/features/profile/components/replace-profile-dialog");
+  return { default: module.ReplaceProfileDialog };
+});
 
 /**
  * Export and Import of the Profile (technical design 5), a row of the
@@ -106,6 +53,9 @@ export const ProfileRow = ({
   const state = useAtomValue(profileStateAtom);
   const [refused, setRefused] = useState<ImportError | null>(null);
   const [pending, setPending] = useState<Profile | null>(null);
+  // The confirmation stays after its first open, so it can close on its
+  // parchment. Its chunk loads at that first open.
+  const confirmShown = useEverOpened(pending !== null);
   const saved = state.status === "ready" ? state.profile : null;
 
   const read = async (files: FileList | null) => {
@@ -176,11 +126,15 @@ export const ProfileRow = ({
           </p>
         ) : null}
       </div>
-      <ReplaceDialog
-        profile={pending}
-        onCancel={() => setPending(null)}
-        onReplace={replace}
-      />
+      {confirmShown ? (
+        <Suspense fallback={null}>
+          <ReplaceProfileDialog
+            profile={pending}
+            onCancel={() => setPending(null)}
+            onReplace={replace}
+          />
+        </Suspense>
+      ) : null}
     </div>
   );
 };

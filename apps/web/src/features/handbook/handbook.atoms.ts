@@ -1,7 +1,7 @@
 import { Atom } from "effect/reactivity";
 
+import { FIRST_ENTRY } from "@/features/handbook/first-entry";
 import type { EntryId, HandbookRequest } from "@/features/handbook/handbook";
-import { FIRST_ENTRY } from "@/features/handbook/handbook";
 
 /**
  * The open Handbook and where it opened, or `null` when it is closed. One

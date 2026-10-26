@@ -12,7 +12,82 @@ import type { Plugin, PluginOption } from "vite";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-import { rulesHash } from "./scripts/rules-hash.ts";
+import { rulesHash } from "./scripts/rules-hash";
+
+/**
+ * The files of the app shell: the entry chunk and its static imports, plus the
+ * route chunks that the entry imports (they are the first paint of `/`, `/play`
+ * and the Master Design catalog). The screens that a route imports lazily are
+ * not in this set, so the service worker does not precache them (issue #139).
+ */
+const shellFiles = new Set<string>();
+
+/**
+ * Reads the client bundle and keeps the app shell in `shellFiles`. The PWA
+ * plugin runs its `injectManifest` step after the build, so the set is ready
+ * when `manifestTransforms` filters the precache.
+ */
+const collectShellChunks = (): Plugin => ({
+  name: "collect-shell-chunks",
+  apply: "build",
+  generateBundle(_options, bundle) {
+    if (this.environment?.name !== "client") {
+      return;
+    }
+    const chunks = new Map(
+      Object.values(bundle)
+        .filter((item) => item.type === "chunk")
+        .map((chunk) => [chunk.fileName, chunk])
+    );
+    const seen = new Set<string>();
+    const add = (fileName: string) => {
+      if (seen.has(fileName)) {
+        return;
+      }
+      seen.add(fileName);
+      const chunk = chunks.get(fileName);
+      if (!chunk) {
+        return;
+      }
+      shellFiles.add(chunk.fileName);
+      for (const css of chunk.viteMetadata?.importedCss ?? []) {
+        shellFiles.add(css);
+      }
+      for (const imported of chunk.imports) {
+        add(imported);
+      }
+    };
+    for (const chunk of chunks.values()) {
+      if (!chunk.isEntry) {
+        continue;
+      }
+      add(chunk.fileName);
+      // A route chunk is a direct dynamic import of the entry. Its own
+      // dynamic imports are the lazy screens and dialogs: not the shell.
+      for (const route of chunk.dynamicImports) {
+        add(route);
+      }
+    }
+    // The service worker registration imports workbox on every load.
+    for (const name of chunks.keys()) {
+      if (name.startsWith("assets/workbox-window.")) {
+        shellFiles.add(name);
+      }
+    }
+  },
+});
+
+/**
+ * Drops every lazy JavaScript chunk from the precache. The hashed CSS, fonts
+ * and images under `assets/`, `offline.html` and the icons stay: they are the
+ * app shell. Art and music are never matched by `globPatterns`.
+ */
+const shellOnly = <T extends { readonly url: string }>(entries: T[]) => ({
+  manifest: entries.filter(
+    (entry) => !entry.url.endsWith(".js") || shellFiles.has(entry.url)
+  ),
+  warnings: [],
+});
 
 /**
  * Dev-only: alias /sw.js → VitePWA's /dev-sw.js?dev-sw for static checkers.
@@ -74,6 +149,7 @@ export default defineConfig({
     visualizer({
       filename: "html/visualizer-stats.html",
     }) satisfies PluginOption,
+    collectShellChunks(),
     serveDevServiceWorker(),
     VitePWA({
       strategies: "injectManifest",
@@ -211,6 +287,9 @@ export default defineConfig({
           "favicon.{ico,svg}",
           "apple-touch-icon-180x180.png",
         ],
+        // The glob above matches every hashed chunk, including the lazy
+        // screens and dialogs. `shellOnly` keeps the app shell only.
+        manifestTransforms: [shellOnly],
       },
       devOptions: {
         enabled: process.env.NODE_ENV === "development",
@@ -219,6 +298,22 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Keep the React runtime in one file. Split at a lazy boundary, its
+        // few small chunks cost more gzip headers than the code they hold.
+        manualChunks(id) {
+          if (
+            id.includes("node_modules/react/") ||
+            id.includes("node_modules/react-dom/")
+          ) {
+            return "react";
+          }
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),

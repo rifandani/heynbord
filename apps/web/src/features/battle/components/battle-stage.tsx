@@ -1,0 +1,332 @@
+import { cn } from "cn";
+import { lazy, Suspense, useEffect, useMemo } from "react";
+
+import { battlePainting } from "@/features/battle/battle-painting";
+import { heroOf } from "@/features/battle/battle-view";
+import { inDialog, isTyping } from "@/features/battle/components/battle-input";
+import type {
+  BattleKeyAction,
+  BattleKeyCommand,
+} from "@/features/battle/components/battle-keys";
+import {
+  inspectDirection,
+  keyCommand,
+  logKeyAction,
+  nextReadyCard,
+} from "@/features/battle/components/battle-keys";
+import {
+  BattleLogBanner,
+  BattleLogPanel,
+} from "@/features/battle/components/battle-log-panel";
+import { BattlePainting } from "@/features/battle/components/battle-painting";
+import { CastCard } from "@/features/battle/components/cast-card";
+import { HandBar } from "@/features/battle/components/hand-bar";
+import {
+  ResultOverlay,
+  TurnBanner,
+} from "@/features/battle/components/overlays";
+import { TopBar } from "@/features/battle/components/top-bar";
+import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
+import { UnitDetails } from "@/features/battle/components/unit-details";
+import type { useBattle } from "@/features/battle/use-battle";
+import { useGameText } from "@/features/battle/use-game-text";
+import { useHandbook } from "@/features/handbook/use-handbook";
+import { useBattleHints } from "@/features/hint/use-hints";
+
+const BattleCanvas = lazy(
+  () => import("@/features/battle/scene/battle-canvas")
+);
+
+type Battle = ReturnType<typeof useBattle>;
+
+/** NFR-05: the game needs WebGL 2. */
+const hasWebgl2 = (): boolean => {
+  try {
+    return document.createElement("canvas").getContext("webgl2") !== null;
+  } catch {
+    return false;
+  }
+};
+
+/** What a Battle key can act on: the Battle, and the Handbook over it. */
+interface KeyContext {
+  readonly battle: Battle;
+  readonly openHandbook: () => void;
+}
+
+/** ArrowLeft and ArrowRight move the selection over the Ready cards. */
+const moveSelection = (battle: Battle, event: KeyboardEvent, step: 1 | -1) => {
+  const hand = battle.session ? heroOf(battle.session.view, "player").hand : [];
+  const next = nextReadyCard(hand, battle.selected, step);
+  if (next === null) {
+    return;
+  }
+  event.preventDefault();
+  battle.select(next);
+  document
+    .querySelector<HTMLButtonElement>(`[data-testid="hand-card-${next}"]`)
+    ?.focus();
+};
+
+/** Enter plays the selected card on the focused target, but not on a focused button. */
+const playFocusedTarget = (battle: Battle, event: KeyboardEvent) => {
+  const onButton = event.target instanceof HTMLButtonElement;
+  const target = battle.targets[battle.focused];
+  if (!onButton && target) {
+    event.preventDefault();
+    battle.play(target);
+  }
+};
+
+const KEY_HANDLERS: Readonly<
+  Record<
+    BattleKeyAction,
+    (keys: KeyContext, event: KeyboardEvent, step: 1 | -1) => void
+  >
+> = {
+  moveSelection: ({ battle }, event, step) =>
+    moveSelection(battle, event, step),
+  focusTarget: ({ battle }, event, step) => {
+    event.preventDefault();
+    battle.focusTarget(step);
+  },
+  play: ({ battle }, event) => playFocusedTarget(battle, event),
+  endTurn: ({ battle }) => battle.endTurn(),
+  skip: ({ battle }) => battle.skip(),
+  inspect: ({ battle }, event) => {
+    event.preventDefault();
+    battle.toggleInspect();
+  },
+  // The Battle does not pause: the Handbook opens at one side of the Board.
+  handbook: ({ openHandbook }, event) => {
+    event.preventDefault();
+    openHandbook();
+  },
+  // Live pauses while the Battle Log is open (GDD 11.2).
+  battleLog: ({ battle }, event) => {
+    event.preventDefault();
+    battle.openLog();
+  },
+  cancel: ({ battle }) => battle.select(null),
+};
+
+/**
+ * The keyboard Inspect mode takes the arrow keys and Esc. Returns true when it
+ * used the key.
+ */
+const inspectKey = (
+  battle: Battle,
+  event: KeyboardEvent,
+  command: BattleKeyCommand
+): boolean => {
+  if (!battle.inspecting) {
+    return false;
+  }
+  const direction = inspectDirection(command);
+  if (direction) {
+    event.preventDefault();
+    battle.inspectNext(direction);
+    return true;
+  }
+  if (command.action === "cancel") {
+    event.preventDefault();
+    battle.stopInspect();
+    return true;
+  }
+  return false;
+};
+
+/** The result dialog takes its own keys, but L opens the Battle Log from it. */
+const inResult = (target: EventTarget | null): boolean =>
+  target instanceof Element &&
+  target.closest('[data-testid="battle-result"]') !== null;
+
+const commandFromKey = (event: KeyboardEvent) => {
+  if (isTyping(event.target)) {
+    return null;
+  }
+  const command = keyCommand(event);
+  if (!inDialog(event.target)) {
+    return command;
+  }
+  return command?.action === "battleLog" && inResult(event.target)
+    ? command
+    : null;
+};
+
+/**
+ * The keys of the open Battle Log: ←/→ one Log Entry, Shift+←/→ one Turn, L
+ * and Esc Back to Live (in a Replay, Esc leaves). Inspect and the Handbook
+ * work as in Live, and the other Live keys do nothing.
+ */
+const runLogKey = (
+  keys: KeyContext,
+  event: KeyboardEvent,
+  command: BattleKeyCommand
+) => {
+  const action = logKeyAction(command, event.shiftKey, keys.battle.watching);
+  switch (action._tag) {
+    case "step": {
+      event.preventDefault();
+      keys.battle.stepLog(action.step, action.byTurn);
+      return;
+    }
+    case "close": {
+      event.preventDefault();
+      keys.battle.closeLog();
+      return;
+    }
+    case "live": {
+      KEY_HANDLERS[command.action](keys, event, command.step);
+      break;
+    }
+    case "off": {
+      // All Live input is off in the Battle Log.
+      break;
+    }
+    default: {
+      return action satisfies never;
+    }
+  }
+};
+
+const runKey = (
+  keys: KeyContext,
+  event: KeyboardEvent,
+  command: BattleKeyCommand
+) => {
+  if (inspectKey(keys.battle, event, command)) {
+    return;
+  }
+  if (keys.battle.log) {
+    runLogKey(keys, event, command);
+    return;
+  }
+  KEY_HANDLERS[command.action](keys, event, command.step);
+};
+
+const DETAILS = '[data-testid="unit-details"]';
+
+/**
+ * In the keyboard Inspect mode, Tab goes into the Card Details, to the links
+ * of the Keyword, Status and Damage Type names (issue #25). Returns true when
+ * it used the key.
+ */
+const tabIntoDetails = (battle: Battle, event: KeyboardEvent): boolean => {
+  if (!battle.inspecting || event.key !== "Tab" || event.shiftKey) {
+    return false;
+  }
+  const panel = document.querySelector(DETAILS);
+  const inPanel = event.target instanceof Node && panel?.contains(event.target);
+  const link = panel?.querySelector<HTMLElement>(
+    '[data-testid="details-entry-link"]'
+  );
+  if (inPanel || inDialog(event.target) || !link) {
+    return false;
+  }
+  event.preventDefault();
+  link.focus();
+  return true;
+};
+
+/** UI-02: a full Battle with only a keyboard. */
+const useBattleKeys = (battle: Battle, openHandbook: () => void) => {
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (tabIntoDetails(battle, event)) {
+        return;
+      }
+      const command = commandFromKey(event);
+      if (command) {
+        runKey({ battle, openHandbook }, event, command);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [battle, openHandbook]);
+};
+
+/** The 3D Board, which loads in its own chunk. */
+const BoardLayer = ({
+  battle,
+  webgl2,
+}: {
+  readonly battle: Battle;
+  readonly webgl2: boolean;
+}) => {
+  const { tr } = useGameText();
+  if (!webgl2) {
+    return null;
+  }
+  return (
+    <Suspense
+      fallback={
+        <div className="absolute inset-0 flex items-center justify-center">
+          <p className="font-display rounded-xl bg-[#1c140e]/85 px-6 py-3 text-xl">
+            {tr("battle.loading")}
+          </p>
+        </div>
+      }
+    >
+      <BattleCanvas onPick={(target) => battle.play(target)} />
+    </Suspense>
+  );
+};
+
+/**
+ * The Battle in front of the Play screen: the Board, the Top Bar, the Hand
+ * Bar, the Battle Log and the result. It loads in its own chunk when a Battle
+ * starts.
+ */
+export const BattleStage = ({ battle }: { readonly battle: Battle }) => {
+  const { tr } = useGameText();
+  const webgl2 = useMemo(() => hasWebgl2(), []);
+  const options = battle.session?.options;
+  const painting = useMemo(
+    () => (options ? battlePainting(options) : null),
+    [options]
+  );
+  const handbook = useHandbook();
+  useBattleKeys(battle, handbook.open);
+  useBattleHints(battle.liveSession);
+  return (
+    <div
+      className="fixed inset-0 overflow-hidden overscroll-none text-[#fff6df]"
+      data-testid="battle-stage"
+    >
+      {/*
+       * In the Battle Log, the painting and the Board are grey and a little
+       * warm, like an old picture, so that a past moment never looks like Live.
+       */}
+      <div
+        className={cn(
+          "absolute inset-0 transition-[filter] duration-300 ease-out motion-reduce:transition-none",
+          battle.log && "[filter:saturate(0.28)_sepia(0.2)_brightness(0.95)]"
+        )}
+        data-testid="battle-board-layer"
+        data-past={battle.log ? true : undefined}
+      >
+        {/* The painting loads before the 3D chunk, so it shows at once (web ADR-0006). */}
+        <BattlePainting src={painting} />
+        <BoardLayer battle={battle} webgl2={webgl2} />
+      </div>
+      {webgl2 ? null : (
+        <div
+          role="alert"
+          className="absolute inset-0 flex items-center justify-center bg-[#1c140e] p-8 text-center text-lg"
+        >
+          {tr("battle.noWebgl")}
+        </div>
+      )}
+      <CastCard />
+      <TutorialPanel battle={battle} />
+      <UnitDetails battle={battle} />
+      <TopBar battle={battle} />
+      <TurnBanner />
+      <BattleLogBanner battle={battle} />
+      <HandBar battle={battle} />
+      <BattleLogPanel battle={battle} />
+      <ResultOverlay battle={battle} />
+    </div>
+  );
+};

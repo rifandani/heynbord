@@ -1,28 +1,14 @@
 import { cn } from "cn";
 import type { ReactNode } from "react";
 import { Dialog, Heading, Modal, ModalOverlay } from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
 
 import { GameCloseButton } from "./game-button";
+import { GAME_SCRIM } from "./game-scrim";
+import { CloseIcon } from "./icons";
 import { gameText, parchmentStyles } from "./surfaces";
 
-/**
- * The color and the blur of every Heynbord scrim: a 55% black wash with a 2px
- * blur (DESIGN.md, Parchment dialog). The placement is separate, so the
- * catalog can show the scrim of a scene without opening a dialog.
- */
-export const GAME_SCRIM_TINT = "bg-black/55 backdrop-blur-[2px]";
-
-/**
- * The scrim of every Heynbord overlay: the one place that says how the game
- * darkens what is behind a dialog. The Deck book, the Handbook, the Settings
- * dialog and the Stage Panel use it too, so only one scrim exists in the game.
- * A consumer that needs another layer or no scrim changes the class with `cn`.
- */
-export const GAME_SCRIM = cn(
-  "fixed inset-0 z-[60] flex items-center justify-center p-4 [@media(max-height:500px)]:p-2",
-  GAME_SCRIM_TINT
-);
+// Keep the scroll-free import path for the screens that already use it.
+export { GAME_SCRIM, GAME_SCRIM_TINT } from "./game-scrim";
 
 export type GameDialogSize = "sm" | "lg";
 
@@ -73,7 +59,7 @@ const Close = ({
     className="ml-auto [@media(max-height:500px)]:size-8"
     data-testid={testId}
   >
-    <HiXMark className="size-5" aria-hidden />
+    <CloseIcon className="size-5" />
   </GameCloseButton>
 );
 

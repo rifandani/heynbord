@@ -443,18 +443,3 @@ export const ResultOverlay = ({
     />
   );
 };
-
-/** UI-03: on a phone in portrait, ask the player to turn the phone. */
-export const PortraitGuard = () => {
-  const { tr } = useGameText();
-  return (
-    <div className="pointer-events-auto fixed inset-0 z-[60] hidden items-center justify-center bg-[#1c140e] p-8 text-center text-[#fff6df] [@media(orientation:portrait)_and_(pointer:coarse)]:flex">
-      <p className="font-display max-w-xs text-xl">
-        <span className="mb-4 block text-5xl" aria-hidden>
-          ⟳
-        </span>
-        {tr("battle.rotate")}
-      </p>
-    </div>
-  );
-};

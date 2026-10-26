@@ -13,10 +13,10 @@ import {
   Radio,
   RadioGroup,
 } from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { GAME_SCRIM } from "@/core/components/game/game-dialog";
+import { CloseIcon } from "@/core/components/game/icons";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
@@ -458,7 +458,7 @@ const PanelHeader = ({
         className="ml-auto shrink-0 self-start [@media(max-height:500px)]:size-9"
         data-testid="stage-panel-close"
       >
-        <HiXMark className="size-5" aria-hidden />
+        <CloseIcon className="size-5" />
       </GameButton>
     </header>
   );

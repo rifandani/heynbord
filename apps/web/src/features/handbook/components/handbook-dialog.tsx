@@ -17,10 +17,14 @@ import {
   TabPanel,
   Tabs,
 } from "react-aria-components";
-import { HiArrowLeft, HiMagnifyingGlass, HiXMark } from "react-icons/hi2";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { GAME_SCRIM } from "@/core/components/game/game-dialog";
+import {
+  ArrowLeftIcon,
+  CloseIcon,
+  SearchIcon,
+} from "@/core/components/game/icons";
 import { useGameText } from "@/features/battle/use-game-text";
 import { SmallIcon } from "@/features/handbook/components/entry-icon";
 import {
@@ -107,10 +111,7 @@ const SearchBox = ({
       className="group relative flex min-w-0 items-center"
       data-testid="handbook-search"
     >
-      <HiMagnifyingGlass
-        className="pointer-events-none absolute left-2.5 size-4 text-[#6b5238]"
-        aria-hidden
-      />
+      <SearchIcon className="pointer-events-none absolute left-2.5 size-4 text-[#6b5238]" />
       <Input
         placeholder={tr("handbook.searchPlaceholder")}
         className={cn(
@@ -123,7 +124,7 @@ const SearchBox = ({
         aria-label={tr("handbook.clearSearch")}
         className="absolute right-1 grid size-8 cursor-pointer place-items-center rounded-md text-[#5b4632] outline-none group-data-[empty]:hidden data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#ead9b4] [@media(max-height:500px)]:size-7"
       >
-        <HiXMark className="size-4" aria-hidden />
+        <CloseIcon className="size-4" />
       </Button>
     </SearchField>
   );
@@ -163,7 +164,7 @@ const CoverBand = ({
           className="shrink-0 [@media(max-height:500px)]:size-8"
           data-testid="handbook-back"
         >
-          <HiArrowLeft className="size-5" aria-hidden />
+          <ArrowLeftIcon className="size-5" />
         </GameButton>
       ) : (
         <HandbookIcon className="size-9 shrink-0 [@media(max-height:500px)]:size-7" />
@@ -190,7 +191,7 @@ const CoverBand = ({
         className="shrink-0 [@media(max-height:500px)]:size-8"
         data-testid="handbook-close"
       >
-        <HiXMark className="size-5" aria-hidden />
+        <CloseIcon className="size-5" />
       </GameButton>
     </header>
   );

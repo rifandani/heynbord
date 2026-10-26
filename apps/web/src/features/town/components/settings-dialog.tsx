@@ -18,13 +18,12 @@ import {
   Switch,
   ToggleButton,
 } from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
 
 import {
   GameButton,
   gameButtonStyles,
 } from "@/core/components/game/game-button";
-import { GAME_SCRIM } from "@/core/components/game/game-dialog";
+import { GAME_SCRIM } from "@/core/components/game/game-scrim";
 import {
   playSound,
   setEffectsVolume,
@@ -85,6 +84,24 @@ const languageOption = ({ isSelected }: { readonly isSelected: boolean }) =>
       ? "border-gold-deep bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
       : "border-ink-faded bg-[#f6ead0]"
   );
+
+/**
+ * The close mark of the dialog: a plain X in the current color. It stays a
+ * local SVG, so the Settings dialog does not load an icon library.
+ */
+const CloseIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    className="size-5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    aria-hidden
+  >
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
 
 /** The radio mark: the selected option shows it full, not only in gold. */
 const ChoiceMark = () => (
@@ -493,7 +510,7 @@ export const SettingsDialog = ({
                   className="ml-auto [@media(max-height:500px)]:size-9"
                   data-testid="settings-close"
                 >
-                  <HiXMark className="size-5" aria-hidden />
+                  <CloseIcon />
                 </GameButton>
               </header>
               <div className="min-h-0 flex-1 divide-y divide-[#c9b48c]/70 overflow-y-auto overscroll-contain">

@@ -10,9 +10,9 @@ import { cn } from "cn";
 import type { CSSProperties, KeyboardEvent } from "react";
 import { useContext, useRef, useState } from "react";
 import { Button } from "react-aria-components";
-import { HiMinus, HiPlus } from "react-icons/hi2";
 
 import { GameButton } from "@/core/components/game/game-button";
+import { MinusIcon, PlusIcon } from "@/core/components/game/icons";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
@@ -109,7 +109,7 @@ const TicketControl = ({
         className={STEP_KEY}
         data-testid="sweep-fewer"
       >
-        <HiMinus className="size-4" aria-hidden />
+        <MinusIcon className="size-4" />
       </GameButton>
       <span
         // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- a text input opens the phone keyboard over the landscape screen; the − and + keys and the arrow keys set the number (WAI-ARIA spinbutton)
@@ -136,7 +136,7 @@ const TicketControl = ({
         className={STEP_KEY}
         data-testid="sweep-more"
       >
-        <HiPlus className="size-4" aria-hidden />
+        <PlusIcon className="size-4" />
       </GameButton>
       <GameButton
         intent="wood"

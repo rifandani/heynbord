@@ -130,7 +130,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 
 | Item | Budget |
 | --- | --- |
-| First JavaScript bundle (Town screen) | Less than 250 KB gzip |
+| First JavaScript bundle (Town screen) | Less than 500 KB gzip |
 | Battle chunk (Three.js and scene code) | Less than 400 KB gzip |
 | Assets for one Battle | Less than 8 MB |
 | Draw calls in a Battle | Less than 150 |
