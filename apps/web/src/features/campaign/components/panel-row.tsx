@@ -20,7 +20,7 @@ export const PanelRow = ({
     )}
   >
     <p
-      className="font-display pt-0.5 text-sm font-bold text-[#2a1d12]"
+      className="font-display text-ink pt-0.5 text-sm font-bold"
       data-hint-anchor={anchor}
     >
       {label}

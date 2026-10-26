@@ -18,10 +18,7 @@ export const HandbookIcon = ({ className }: { readonly className: string }) => {
   ) : (
     <GlyphIcon
       glyph="book"
-      className={cn(
-        "text-[#fff6df] drop-shadow-[0_2px_0_rgba(0,0,0,0.5)]",
-        className
-      )}
+      className={cn("text-cream drop-shadow-icon", className)}
     />
   );
 };

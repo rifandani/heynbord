@@ -15,12 +15,16 @@ import { useMemo } from "react";
 
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import {
+  HANDBOOK_VALUE_INK,
+  HANDBOOK_TICKET,
+} from "@/features/handbook/tokens";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
 /** One reward in a row of the table: its icon and its amount in Inter 900. */
 const Amount = ({
@@ -30,7 +34,7 @@ const Amount = ({
   readonly icon: ReactNode;
   readonly children: ReactNode;
 }) => (
-  <span className="inline-flex items-center gap-1 font-black whitespace-nowrap text-[#2a1d12] tabular-nums">
+  <span className="text-ink inline-flex items-center gap-1 font-black whitespace-nowrap tabular-nums">
     {icon}
     {children}
   </span>
@@ -99,10 +103,12 @@ export const HeynspireGuide = () => {
           </Amount>
           <Amount
             icon={
-              <GlyphIcon
-                glyph="campaignTicket"
-                className="size-3.5 -rotate-8 text-[#b9801f]"
-              />
+              <span className="contents" style={{ color: HANDBOOK_TICKET }}>
+                <GlyphIcon
+                  glyph="campaignTicket"
+                  className="size-3.5 -rotate-8"
+                />
+              </span>
             }
           >
             {tr("sweep.campaign.earned", {
@@ -158,10 +164,11 @@ export const HeynspireGuide = () => {
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr key={row.id} className="border-t border-[#c9b48c]/70">
+          <tr key={row.id} className="border-parchment-rule/70 border-t">
             <th
               scope="row"
-              className="w-[38%] py-1.5 pr-3 text-left align-top leading-snug font-bold text-[#3d2e1f]"
+              className="w-[38%] py-1.5 pr-3 text-left align-top leading-snug font-bold"
+              style={{ color: HANDBOOK_VALUE_INK }}
             >
               {row.kind}
             </th>

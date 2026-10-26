@@ -1,6 +1,16 @@
 import { cn } from "cn";
 
 import { achievementsArt } from "@/features/achievements/achievements-art";
+import {
+  ACHIEVEMENTS_BANNER_CLOTH,
+  ACHIEVEMENTS_BANNER_ROD,
+  ACHIEVEMENTS_HALL_BG,
+  ACHIEVEMENTS_JOINT_DARK,
+  ACHIEVEMENTS_JOINT_LIGHT,
+  ACHIEVEMENTS_ROD_SHADOW,
+  ACHIEVEMENTS_SHADE,
+  ACHIEVEMENTS_STONE,
+} from "@/features/achievements/tokens";
 import { FittedPainting } from "@/features/town/components/fitted-painting";
 
 /**
@@ -8,10 +18,7 @@ import { FittedPainting } from "@/features/town/components/fitted-painting";
  * the roll, the plates and the Town Bar stay easy to read (as the Hero
  * screen).
  */
-const SHADE = [
-  "radial-gradient(ellipse 62% 56% at 50% 52%, rgba(18,12,8,0.32), transparent 75%)",
-  "linear-gradient(180deg, rgba(18,12,8,0.42) 0%, transparent 18%, transparent 80%, rgba(18,12,8,0.55) 100%)",
-].join(", ");
+const SHADE = ACHIEVEMENTS_SHADE;
 
 /** The swallowtail of a hanging banner: the cut at its bottom edge. */
 const SWALLOWTAIL = "polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%)";
@@ -29,18 +36,24 @@ const WallBanner = ({ className }: { readonly className: string }) => (
     )}
   >
     {/* The rod: dark timber with bronze ends. */}
-    <div className="absolute -top-[1.2vw] -right-[0.9vw] -left-[0.9vw] h-[1.1vw] min-h-2 rounded-full bg-[linear-gradient(180deg,#7a5233,#3b2616)] shadow-[0_2px_0_rgba(0,0,0,0.4)]" />
     <div
-      className="absolute inset-0 bg-[#c99442]"
+      className="absolute -top-[1.2vw] -right-[0.9vw] -left-[0.9vw] h-[1.1vw] min-h-2 rounded-full"
+      style={{
+        background: ACHIEVEMENTS_BANNER_ROD,
+        boxShadow: ACHIEVEMENTS_ROD_SHADOW,
+      }}
+    />
+    <div
+      className="bg-bronze-mid absolute inset-0"
       style={{ clipPath: SWALLOWTAIL }}
     />
     <div
-      className="absolute inset-[0.35vw] bg-[linear-gradient(90deg,#6f1717,#8e1f1f_30%,#8e1f1f_70%,#6a1515)]"
-      style={{ clipPath: SWALLOWTAIL }}
+      className="absolute inset-[0.35vw]"
+      style={{ clipPath: SWALLOWTAIL, background: ACHIEVEMENTS_BANNER_CLOTH }}
     />
     <svg
       viewBox="-10 -10 20 20"
-      className="absolute top-[22%] left-1/2 w-[58%] -translate-x-1/2 text-[#e9c46a]"
+      className="text-gold-trim absolute top-[22%] left-1/2 w-[58%] -translate-x-1/2"
     >
       <path
         d="M0 -9L2.5 -2.5L9 0L2.5 2.5L0 9L-2.5 2.5L-9 0L-2.5 -2.5Z"
@@ -66,12 +79,12 @@ const StoneJoints = () => (
       >
         <path
           d="M0 1H168M0 57H168M1 0V56M85 56V112"
-          stroke="rgba(0,0,0,0.24)"
+          stroke={ACHIEVEMENTS_JOINT_DARK}
           strokeWidth="2"
         />
         <path
           d="M0 3H168M0 59H168M3 2V56M87 58V112"
-          stroke="rgba(255,236,206,0.07)"
+          stroke={ACHIEVEMENTS_JOINT_LIGHT}
           strokeWidth="2"
         />
       </pattern>
@@ -91,22 +104,7 @@ const StoneJoints = () => (
 const StoneHall = () => (
   <div
     className="absolute inset-0"
-    style={{
-      background: [
-        // The light from the high windows at the upper left.
-        "radial-gradient(ellipse 60% 55% at 16% 6%, rgba(255,204,140,0.3), transparent 70%)",
-        "radial-gradient(ellipse 26% 30% at 86% 14%, rgba(255,204,140,0.12), transparent 70%)",
-        // The beam across the top: dark timber with a lit top edge.
-        "linear-gradient(180deg, transparent 0 4%, rgba(255,214,150,0.14) 4% 4.4%, #2c1b0f 4.4% 7.2%, rgba(0,0,0,0.38) 7.2% 8%, transparent 8%)",
-        // The stone floor in shadow.
-        "linear-gradient(0deg, #1f1a16 0 12%, #4a4038 12% 12.5%, transparent 12.5%)",
-        // Soft stones of light and shadow.
-        "radial-gradient(ellipse 24% 18% at 30% 40%, rgba(190,176,156,0.2), transparent 70%)",
-        "radial-gradient(ellipse 20% 16% at 72% 34%, rgba(190,176,156,0.16), transparent 70%)",
-        "radial-gradient(ellipse 18% 14% at 58% 70%, rgba(10,8,6,0.22), transparent 70%)",
-        "linear-gradient(180deg, #7d7165 0%, #675d53 50%, #4c443d 100%)",
-      ].join(", "),
-    }}
+    style={{ background: ACHIEVEMENTS_STONE }}
     data-testid="hall-scene-fallback"
   >
     {/* Each banner hangs at the middle of the gutter beside the 1080px
@@ -125,7 +123,11 @@ const StoneHall = () => (
 export const HallScene = () => {
   const painting = achievementsArt("hallInside");
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#3a332d]" aria-hidden>
+    <div
+      className="absolute inset-0 overflow-hidden"
+      style={{ background: ACHIEVEMENTS_HALL_BG }}
+      aria-hidden
+    >
       {painting ? (
         <FittedPainting src={painting} width={1536} height={1024}>
           <div className="absolute inset-0" style={{ background: SHADE }} />

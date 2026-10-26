@@ -6,6 +6,15 @@ import { Button, Meter } from "react-aria-components";
 
 import type { AchievementRow as Row } from "@/features/achievements/achievements";
 import { rewardText } from "@/features/achievements/achievements";
+import {
+  ACHIEVEMENTS_CHIP_SHADOW,
+  ACHIEVEMENTS_CLAIM_PRESS_SHADOW,
+  ACHIEVEMENTS_CLAIM_SHADOW,
+  ACHIEVEMENTS_CLAIMED_SHADOW,
+  ACHIEVEMENTS_PROGRESS_TRACK_SHADOW,
+  ACHIEVEMENTS_SEAL_FACE,
+  ACHIEVEMENTS_SEAL_SHADOW,
+} from "@/features/achievements/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
@@ -45,7 +54,7 @@ const RewardChip = ({
       <span
         className={cn(
           "flex items-center gap-1.5 text-[13px] leading-tight font-semibold [@media(max-height:500px)]:text-[11px]",
-          state === "claimed" ? "text-[#6b5238]" : "text-[#7a5310]"
+          state === "claimed" ? "text-ink-faded" : "text-gold-deep"
         )}
         data-reward-of={id}
         data-reward="cosmetic"
@@ -67,10 +76,11 @@ const RewardChip = ({
   return (
     <span
       className={cn(
-        "flex h-8 shrink-0 items-center gap-1 rounded-full border border-[#e9c46a]/50 bg-[#1c140e]/90 px-2.5 text-[14px] leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.3)]",
+        "border-gold-trim/50 bg-night-plate/90 text-cream flex h-8 shrink-0 items-center gap-1 rounded-full border px-2.5 text-[14px] leading-none font-black tabular-nums",
         "[@media(max-height:500px)]:h-6 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-xs",
-        state === "claimed" && "bg-[#1c140e]/70"
+        state === "claimed" && "bg-night-plate/70"
       )}
+      style={{ boxShadow: ACHIEVEMENTS_CHIP_SHADOW }}
       data-reward-of={id}
       data-reward={reward.kind}
     >
@@ -121,15 +131,18 @@ const ProgressBar = ({
     >
       {({ percentage }) => (
         <>
-          <span className="relative h-2.5 min-w-0 flex-1 overflow-hidden rounded-full bg-[#3a2a1c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.6)] [@media(max-height:500px)]:h-2">
+          <span
+            className="bg-plate-socket relative h-2.5 min-w-0 flex-1 overflow-hidden rounded-full [@media(max-height:500px)]:h-2"
+            style={{ boxShadow: ACHIEVEMENTS_PROGRESS_TRACK_SHADOW }}
+          >
             <span
-              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#e2a93b] to-[#ffe08a]"
+              className="from-gold to-gold-light absolute inset-y-0 left-0 rounded-full bg-gradient-to-r"
               style={{ width: `${percentage}%` }}
             />
           </span>
           <span
             aria-hidden
-            className="shrink-0 text-[13px] font-black whitespace-nowrap text-[#2a1d12] tabular-nums [@media(max-height:500px)]:text-[11px]"
+            className="text-ink shrink-0 text-[13px] font-black whitespace-nowrap tabular-nums [@media(max-height:500px)]:text-[11px]"
           >
             {tr("achievements.screen.count", {
               done: format(current),
@@ -157,21 +170,28 @@ const ClaimedSeal = ({ stamp }: { readonly stamp: number | null }) => {
     <span className={cn("flex", SLOT)}>
       <span
         className={cn(
-          "flex h-8 items-center gap-1.5 rounded-full border-2 border-[#c9b48c] bg-[#ead9b4] py-0 pr-3.5 pl-1 text-[13px] font-bold text-[#5b4632] shadow-[inset_0_1px_2px_rgba(0,0,0,0.18)]",
+          "border-parchment-rule bg-parchment-deep text-ink-soft flex h-8 items-center gap-1.5 rounded-full border-2 py-0 pr-3.5 pl-1 text-[13px] font-bold",
           "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:pr-2.5 [@media(max-height:500px)]:text-xs",
           stamp !== null &&
             "motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
         )}
         style={
           stamp === null
-            ? undefined
-            : ({ animationDelay: `${stamp}ms` } satisfies CSSProperties)
+            ? { boxShadow: ACHIEVEMENTS_CLAIMED_SHADOW }
+            : ({
+                animationDelay: `${stamp}ms`,
+                boxShadow: ACHIEVEMENTS_CLAIMED_SHADOW,
+              } satisfies CSSProperties)
         }
         data-testid="achievement-claimed"
       >
         <span
           aria-hidden
-          className="grid size-6 shrink-0 place-items-center rounded-full border border-[#7a5310] bg-[radial-gradient(circle_at_35%_30%,#ffe08a,#e2a93b_70%)] text-[#2a1a05] shadow-[0_1px_0_rgba(0,0,0,0.3)] [@media(max-height:500px)]:size-5"
+          className="border-gold-deep text-ink-on-gold grid size-6 shrink-0 place-items-center rounded-full border [@media(max-height:500px)]:size-5"
+          style={{
+            background: ACHIEVEMENTS_SEAL_FACE,
+            boxShadow: ACHIEVEMENTS_SEAL_SHADOW,
+          }}
         >
           <GlyphIcon
             glyph="check"
@@ -211,10 +231,10 @@ export const AchievementRow = ({
   return (
     <li
       className={cn(
-        "grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 border-b border-[#c9b48c]/70 px-5 py-2.5 last:border-b-0",
+        "border-parchment-rule/70 grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 border-b px-5 py-2.5 last:border-b-0",
         "[@media(max-height:500px)]:gap-x-2.5 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-1.5",
         // A Completed row is a lit band across the roll.
-        state === "completed" && "bg-[#fff3d1]",
+        state === "completed" && "bg-parchment-lit",
         // The row inks in as the paper unrolls over it.
         "motion-safe:animate-[achievements-row-ink_260ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
       )}
@@ -227,7 +247,7 @@ export const AchievementRow = ({
         <p
           className={cn(
             "font-display text-[15px] leading-tight font-bold [@media(max-height:500px)]:text-[13px]",
-            state === "claimed" ? "text-[#5b4632]" : "text-[#2a1d12]"
+            state === "claimed" ? "text-ink-soft" : "text-ink"
           )}
         >
           {name}
@@ -235,7 +255,7 @@ export const AchievementRow = ({
         <p
           className={cn(
             "mt-0.5 text-[13px] leading-snug text-pretty [@media(max-height:500px)]:line-clamp-2 [@media(max-height:500px)]:text-[11px] [@media(max-height:500px)]:leading-tight",
-            state === "claimed" ? "text-[#6b5238]" : "text-[#5b4632]"
+            state === "claimed" ? "text-ink-faded" : "text-ink-soft"
           )}
         >
           {tr(`achievements.${id}.goal`)}
@@ -248,7 +268,7 @@ export const AchievementRow = ({
       {state === "inProgress" && progress === null ? (
         <span
           className={cn(
-            "flex items-center gap-1.5 text-[13px] font-semibold text-[#6b5238] [@media(max-height:500px)]:text-[11px]",
+            "text-ink-faded flex items-center gap-1.5 text-[13px] font-semibold [@media(max-height:500px)]:text-[11px]",
             SLOT
           )}
           data-testid="achievement-not-done"
@@ -266,18 +286,26 @@ export const AchievementRow = ({
               reward: text(rewardText(achievement.reward, state, coin.words)),
             })}
             className={cn(
-              "flex h-8 cursor-pointer items-center gap-1.5 rounded-full border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] py-0 pr-3.5 pl-1.5 text-[13px] font-bold text-[#2a1a05] outline-none select-none",
-              "shadow-[0_2px_0_rgba(0,0,0,0.4)] transition-[transform,filter] duration-100",
-              "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:brightness-110 data-[pressed]:translate-y-px data-[pressed]:shadow-[0_1px_0_rgba(0,0,0,0.4)]",
+              "border-gold-deep from-gold-light to-gold text-ink-on-gold flex h-8 cursor-pointer items-center gap-1.5 rounded-full border-2 bg-gradient-to-b py-0 pr-3.5 pl-1.5 text-[13px] font-bold outline-none select-none",
+              "shadow-[var(--claim-shadow)] transition-[transform,filter] duration-100",
+              "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4 data-[hovered]:brightness-110 data-[pressed]:translate-y-px data-[pressed]:shadow-[var(--claim-press-shadow)]",
               "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:pr-2.5 [@media(max-height:500px)]:text-xs"
             )}
+            // SAFETY: two CSS custom properties for the drop of the Claim
+            // button. React's `CSSProperties` does not model custom properties.
+            style={
+              {
+                "--claim-shadow": ACHIEVEMENTS_CLAIM_SHADOW,
+                "--claim-press-shadow": ACHIEVEMENTS_CLAIM_PRESS_SHADOW,
+              } as CSSProperties
+            }
             data-testid="achievement-claim"
             data-claim={id}
           >
             {/* The four-point star of the Heynbord emblem, struck on the token. */}
             <span
               aria-hidden
-              className="grid size-5 place-items-center rounded-full bg-[#2a1a05] text-[#ffe08a] [@media(max-height:500px)]:size-4"
+              className="bg-ink-on-gold text-gold-light grid size-5 place-items-center rounded-full [@media(max-height:500px)]:size-4"
             >
               <svg
                 viewBox="-10 -10 20 20"

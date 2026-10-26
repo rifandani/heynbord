@@ -1,6 +1,12 @@
 import type { CSSProperties } from "react";
 import { useEffect } from "react";
 
+import {
+  CAST_COLOR,
+  ESSENCE_METAL,
+  HEYNSTONE_METAL,
+  SIDE_COLORS,
+} from "@/core/components/game/tokens";
 import type { RewardBalance } from "@/features/achievements/achievements";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 
@@ -74,9 +80,9 @@ const CATCH_MS = 420;
 
 /** The light of each balance when it takes a reward in. */
 const CATCH_LIGHT: Readonly<Record<RewardBalance, string>> = {
-  heynstones: "#8c8cff",
-  coin: "#f2c14e",
-  essence: "#ff8fb8",
+  heynstones: HEYNSTONE_METAL.face,
+  coin: SIDE_COLORS.player.main,
+  essence: ESSENCE_METAL.face,
 };
 
 /**
@@ -118,7 +124,7 @@ export const RewardFlight = ({
           top: target.y,
           animationDuration: `${CATCH_MS + 160}ms`,
           animationDelay: `${delay + REWARD_FLY_MS - 80}ms`,
-          background: `radial-gradient(closest-side, #fff6df, ${CATCH_LIGHT[kind]}cc 45%, transparent)`,
+          background: `radial-gradient(closest-side, ${CAST_COLOR}, ${CATCH_LIGHT[kind]}cc 45%, transparent)`,
         }}
       />
       <span
@@ -137,7 +143,7 @@ export const RewardFlight = ({
             className="block size-7 -translate-1/2 [@media(max-height:500px)]:size-5"
             style={{
               animation: `essence-drop ${REWARD_FLY_MS}ms linear ${delay}ms both`,
-              filter: `drop-shadow(0 0 5px ${CATCH_LIGHT[kind]}) drop-shadow(0 0 1px #fff6df)`,
+              filter: `drop-shadow(0 0 5px ${CATCH_LIGHT[kind]}) drop-shadow(0 0 1px ${CAST_COLOR})`,
             }}
           >
             <BalanceIcon kind={kind} className="size-full" />

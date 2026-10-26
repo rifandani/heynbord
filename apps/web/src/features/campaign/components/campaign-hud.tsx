@@ -38,6 +38,15 @@ import {
 } from "@/features/campaign/components/campaign-icons";
 import type { ChestState, RegionStatus } from "@/features/campaign/region-map";
 import { chestState, regionStatus } from "@/features/campaign/region-map";
+import {
+  CAMPAIGN_BADGE_SHADOW,
+  CAMPAIGN_CHEST_FILTER,
+  CAMPAIGN_CHEST_FILTER_DIM,
+  CAMPAIGN_CHEST_PANEL_SHADOW,
+  CAMPAIGN_GATE_GLOW,
+  CAMPAIGN_TITLE_SHADOW,
+  CAMPAIGN_TRACK_SHADOW,
+} from "@/features/campaign/tokens";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { useNumberFormat } from "@/features/i18n/use-number-format";
 import { profileAtom } from "@/features/profile/profile.atoms";
@@ -47,10 +56,10 @@ import { coinWords } from "@/features/town/town";
 
 /** The HUD plate of the top band (DESIGN.md, HUD plate). */
 const PLATE =
-  "flex h-16 items-center rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:h-10";
+  "flex h-16 items-center rounded-xl border-2 border-gold-trim/70 bg-night-plate/85 text-cream shadow-piece [@media(max-height:500px)]:h-10";
 
 const TOOLTIP =
-  "max-w-60 rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1.5 text-xs text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+  "max-w-60 rounded-lg border-2 border-gold-trim/70 bg-night-plate/95 px-2.5 py-1.5 text-xs text-cream shadow-piece";
 
 /**
  * A piece with a tooltip on hover and focus. With touch, a tap shows it, as on
@@ -146,9 +155,9 @@ const RegionArrow = ({
           }}
           aria-label={label}
           className={cn(
-            "relative grid size-10 shrink-0 cursor-pointer place-items-center rounded-lg text-[#fff6df]/70 outline-none",
-            "transition-colors duration-100 data-[hovered]:bg-[#fff6df]/10 data-[hovered]:text-[#fff6df]",
-            "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+            "text-cream/70 relative grid size-10 shrink-0 cursor-pointer place-items-center rounded-lg outline-none",
+            "data-[hovered]:bg-cream/10 data-[hovered]:text-cream transition-colors duration-100",
+            "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
             "[@media(max-height:500px)]:size-8"
           )}
           data-testid={`${direction}-region`}
@@ -158,11 +167,11 @@ const RegionArrow = ({
           {status.kind === "open" ? null : (
             <span
               className={cn(
-                "absolute bottom-0 grid size-4 place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]",
+                "border-gold-trim/70 bg-night-plate absolute bottom-0 grid size-4 place-items-center rounded-full border",
                 direction === "next" ? "right-0" : "left-0"
               )}
             >
-              <GlyphIcon glyph="lock" className="size-2.5 text-[#e9c46a]" />
+              <GlyphIcon glyph="lock" className="text-gold-trim size-2.5" />
             </span>
           )}
         </Button>
@@ -220,7 +229,7 @@ export const RegionBanner = ({
             onRegion={go}
           />
           <span
-            className="h-7 w-0.5 rounded-full bg-[#e9c46a]/25"
+            className="bg-gold-trim/25 h-7 w-0.5 rounded-full"
             aria-hidden
           />
         </>
@@ -231,16 +240,19 @@ export const RegionBanner = ({
           region > 1 && "pl-2"
         )}
       >
-        <h1 className="font-display truncate text-3xl leading-none font-black tracking-[0.025em] text-[#ffe08a] [text-shadow:0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:text-2xl">
+        <h1
+          className="font-display text-gold-light truncate text-3xl leading-none font-black tracking-[0.025em] [@media(max-height:500px)]:text-2xl"
+          style={{ textShadow: CAMPAIGN_TITLE_SHADOW }}
+        >
           {name}
         </h1>
         <p
-          className="mt-1.5 flex items-center gap-1 text-xs leading-none font-semibold text-[#e8d9bb] [@media(max-height:500px)]:sr-only"
+          className="text-cream-dim mt-1.5 flex items-center gap-1 text-xs leading-none font-semibold [@media(max-height:500px)]:sr-only"
           data-testid="region-line"
         >
           {why ? (
             <>
-              <GlyphIcon glyph="lock" className="size-3 text-[#e9c46a]" />
+              <GlyphIcon glyph="lock" className="text-gold-trim size-3" />
               {why}
             </>
           ) : (
@@ -254,7 +266,7 @@ export const RegionBanner = ({
       {region < CAMPAIGN_REGIONS ? (
         <>
           <span
-            className="h-7 w-0.5 rounded-full bg-[#e9c46a]/25"
+            className="bg-gold-trim/25 h-7 w-0.5 rounded-full"
             aria-hidden
           />
           <RegionArrow
@@ -378,7 +390,7 @@ const ChestRewards = ({
       "pack",
       "chest-reward-pack",
       <>
-        <GlyphIcon glyph="pack" className={cn(ICON, "text-[#ffd75a]")} />
+        <GlyphIcon glyph="pack" className={cn(ICON, "text-ready-gold")} />
         {tr(
           chest.pack.version === "race"
             ? "campaign.chest.racePack"
@@ -403,7 +415,8 @@ const ChestRewards = ({
       className="z-[70]"
     >
       <Dialog
-        className="w-72 overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] p-4 text-[#2a1d12] shadow-[0_16px_36px_rgba(0,0,0,0.5)] outline-none motion-safe:origin-top motion-safe:animate-[chest-panel-in_200ms_cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:animate-none"
+        className="border-frame-wood bg-parchment text-ink w-72 overflow-hidden rounded-2xl border-4 p-4 outline-none motion-safe:origin-top motion-safe:animate-[chest-panel-in_200ms_cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:animate-none"
+        style={{ boxShadow: CAMPAIGN_CHEST_PANEL_SHADOW }}
         data-testid="chest-rewards"
       >
         <Heading
@@ -413,12 +426,12 @@ const ChestRewards = ({
           {tr("campaign.chest.claimedTitle", { stars: chest.stars })}
         </Heading>
         <span className="mt-2 flex items-center gap-2" aria-hidden>
-          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#c9b48c]" />
-          <span className="size-1 rotate-45 bg-[#b47f36]" />
-          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#c9b48c]" />
+          <span className="to-parchment-rule h-px flex-1 bg-gradient-to-r from-transparent" />
+          <span className="bg-bronze size-1 rotate-45" />
+          <span className="to-parchment-rule h-px flex-1 bg-gradient-to-l from-transparent" />
         </span>
         <ul className="mt-3 flex flex-wrap gap-1.5">{lines}</ul>
-        <div className="mt-4 border-t border-[#c9b48c]/70 pt-3">
+        <div className="border-parchment-rule/70 mt-4 border-t pt-3">
           <GameButton
             intent="gold"
             size="sm"
@@ -523,8 +536,8 @@ const Chest = ({
             aria-label={name}
             className={cn(
               "group relative grid size-10 shrink-0 place-items-center rounded-lg outline-none",
-              "transition-colors duration-100 data-[hovered]:bg-[#fff6df]/10",
-              "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+              "data-[hovered]:bg-cream/10 transition-colors duration-100",
+              "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
               "[@media(max-height:500px)]:size-8",
               claimable || claimed ? "cursor-pointer" : "cursor-default"
             )}
@@ -533,7 +546,8 @@ const Chest = ({
           >
             {claimable ? (
               <span
-                className="absolute inset-[-6px] rounded-full bg-[radial-gradient(closest-side,rgba(255,215,90,0.85),rgba(255,215,90,0))] motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]"
+                className="absolute inset-[-6px] rounded-full motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]"
+                style={{ background: CAMPAIGN_GATE_GLOW }}
                 aria-hidden
               />
             ) : null}
@@ -541,22 +555,28 @@ const Chest = ({
               earned={claimed}
               unlocked={claimable}
               className={cn(
-                "relative size-9 drop-shadow-[0_2px_0_rgba(0,0,0,0.55)] transition-transform duration-150 [@media(max-height:500px)]:size-7",
-                state === "closed" && "brightness-90 saturate-[0.7]",
+                "relative size-9 transition-transform duration-150 [@media(max-height:500px)]:size-7",
                 claimable &&
                   "[transform-origin:50%_100%] group-data-[hovered]:animate-none motion-safe:animate-[chest-wiggle_3.4s_ease-in-out_infinite]",
                 (claimable || claimed) &&
                   "group-data-[hovered]:-translate-y-0.5 group-data-[pressed]:translate-y-0"
               )}
+              style={{
+                filter:
+                  state === "closed"
+                    ? CAMPAIGN_CHEST_FILTER_DIM
+                    : CAMPAIGN_CHEST_FILTER,
+              }}
             />
             <span
               className={cn(
-                "absolute -right-1 -bottom-1 min-w-4 rounded-[4px] border px-0.5 text-center text-xs leading-3.5 font-black tabular-nums shadow-[0_1px_0_rgba(0,0,0,0.5)]",
+                "absolute -right-1 -bottom-1 min-w-4 rounded-[4px] border px-0.5 text-center text-xs leading-3.5 font-black tabular-nums",
                 state === "closed"
-                  ? "border-[#e9c46a]/50 bg-[#1c140e] text-[#e8d9bb]"
-                  : "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05]",
+                  ? "border-gold-trim/50 bg-night-plate text-cream-dim"
+                  : "border-gold-deep from-gold-light to-gold text-ink-on-gold bg-gradient-to-b",
                 "[@media(max-height:500px)]:-right-1.5 [@media(max-height:500px)]:-bottom-1.5"
               )}
+              style={{ boxShadow: CAMPAIGN_BADGE_SHADOW }}
               aria-hidden
             >
               {stars}
@@ -675,7 +695,7 @@ export const StarChests = ({
         <StarIcon earned className="size-6 [@media(max-height:500px)]:size-5" />
         <span aria-hidden>
           {format(count)}
-          <span className="text-sm font-bold text-[#e8d9bb]">
+          <span className="text-cream-dim text-sm font-bold">
             {" "}
             / {format(total)}
           </span>
@@ -684,11 +704,12 @@ export const StarChests = ({
       {/* The track: a groove in the plate, gold to the Stars, a chest at each step. */}
       <div className="relative mr-5 ml-1 h-10 w-44 [@media(max-height:500px)]:mr-4 [@media(max-height:500px)]:ml-0 [@media(max-height:500px)]:h-8 [@media(max-height:500px)]:w-24">
         <span
-          className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 overflow-hidden rounded-full bg-[#3a2a1c] shadow-[inset_0_2px_3px_rgba(0,0,0,0.7),0_1px_0_rgba(255,226,170,0.18)] [@media(max-height:500px)]:h-1.5"
+          className="bg-plate-socket absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 overflow-hidden rounded-full [@media(max-height:500px)]:h-1.5"
+          style={{ boxShadow: CAMPAIGN_TRACK_SHADOW }}
           aria-hidden
         >
           <span
-            className="block h-full rounded-full bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] transition-[width] duration-700 ease-out motion-reduce:transition-none"
+            className="from-gold-light to-gold block h-full rounded-full bg-gradient-to-b transition-[width] duration-700 ease-out motion-reduce:transition-none"
             style={{ width: `${share * 100}%` }}
           />
         </span>

@@ -4,16 +4,22 @@ import { useId } from "react";
 
 import { GLYPHS } from "@/features/battle/glyphs";
 import type { StageState } from "@/features/campaign/region-map";
+import {
+  CAMPAIGN_COIN_EDGE,
+  CAMPAIGN_CROWN_EDGE,
+  CAMPAIGN_LOCK_MARK,
+  CAMPAIGN_SHIELD_EDGE,
+  CAMPAIGN_SHIELD_LIGHT,
+  CAMPAIGN_SHIELD_PAINT,
+  CAMPAIGN_STAR,
+} from "@/features/campaign/tokens";
 
 /** A five-point Star in a 24 × 24 box. */
 const STAR =
   "M12 2.2l2.95 6.07 6.68.86-4.88 4.63 1.24 6.62L12 17.15l-5.99 3.23 1.24-6.62-4.88-4.63 6.68-.86z";
 
 /** The empty Star socket on a dark plate and on parchment. */
-const EMPTY_STAR = {
-  plate: { fill: "rgba(255,246,223,0.16)", stroke: "rgba(255,246,223,0.45)" },
-  parchment: { fill: "#e3d6b8", stroke: "#a8987a" },
-} as const;
+const EMPTY_STAR = CAMPAIGN_STAR;
 
 type StarTone = keyof typeof EMPTY_STAR;
 
@@ -30,8 +36,8 @@ export const StarIcon = ({
   <svg viewBox="0 0 24 24" className={className} aria-hidden>
     <path
       d={STAR}
-      fill={earned ? "#ffd75a" : EMPTY_STAR[tone].fill}
-      stroke={earned ? "#7a5310" : EMPTY_STAR[tone].stroke}
+      fill={earned ? "var(--color-ready-gold)" : EMPTY_STAR[tone].fill}
+      stroke={earned ? "var(--color-gold-deep)" : EMPTY_STAR[tone].stroke}
       strokeWidth={1.6}
       strokeLinejoin="round"
     />
@@ -70,35 +76,40 @@ export const ChestIcon = ({
   earned,
   unlocked = false,
   className,
+  style,
 }: {
   readonly earned: boolean;
   /** An open chest that is ready to claim, but not yet claimed. */
   readonly unlocked?: boolean;
   readonly className?: string;
+  readonly style?: CSSProperties;
 }) => (
-  <svg viewBox="0 0 32 32" className={className} aria-hidden>
+  <svg viewBox="0 0 32 32" className={className} style={style} aria-hidden>
     {earned ? (
       <>
         {/* The lid stands open behind the box: its dark inside and its bronze rim. */}
         <path
           d="M5.5 16 Q5.5 3.5 16 3.5 Q26.5 3.5 26.5 16 Z"
-          fill="#7a5233"
-          stroke="#2a1a0c"
+          fill="var(--color-wood-light)"
+          stroke="var(--color-wood-edge)"
           strokeWidth={1.4}
           strokeLinejoin="round"
         />
-        <path d="M8.5 16 Q8.5 6.5 16 6.5 Q23.5 6.5 23.5 16 Z" fill="#2a1a0c" />
+        <path
+          d="M8.5 16 Q8.5 6.5 16 6.5 Q23.5 6.5 23.5 16 Z"
+          fill="var(--color-wood-edge)"
+        />
         <path
           d="M6.4 15 Q6.4 4.5 16 4.5 Q25.6 4.5 25.6 15"
           fill="none"
-          stroke="#e7bb6a"
+          stroke="var(--color-bronze-rim)"
           strokeWidth={1.2}
         />
         {/* A mound of gold above the rim of the box. */}
         <path
           d="M6.5 17 Q8.5 9.5 16 9.5 Q23.5 9.5 25.5 17 Z"
-          fill="#ffd75a"
-          stroke="#7a5310"
+          fill="var(--color-ready-gold)"
+          stroke="var(--color-gold-deep)"
           strokeWidth={1.1}
           strokeLinejoin="round"
         />
@@ -106,32 +117,32 @@ export const ChestIcon = ({
           cx={11.8}
           cy={13.6}
           r={1.9}
-          fill="#fff2a8"
-          stroke="#b9801f"
+          fill="var(--color-focus-cream)"
+          stroke={CAMPAIGN_COIN_EDGE}
           strokeWidth={0.8}
         />
         <circle
           cx={16.2}
           cy={11.9}
           r={1.9}
-          fill="#fff2a8"
-          stroke="#b9801f"
+          fill="var(--color-focus-cream)"
+          stroke={CAMPAIGN_COIN_EDGE}
           strokeWidth={0.8}
         />
         <circle
           cx={20.4}
           cy={13.8}
           r={1.9}
-          fill="#fff2a8"
-          stroke="#b9801f"
+          fill="var(--color-focus-cream)"
+          stroke={CAMPAIGN_COIN_EDGE}
           strokeWidth={0.8}
         />
       </>
     ) : (
       <path
         d="M5 16 Q5 7.5 16 7.5 Q27 7.5 27 16 Z"
-        fill="#7a5233"
-        stroke="#2a1a0c"
+        fill="var(--color-wood-light)"
+        stroke="var(--color-wood-edge)"
         strokeWidth={1.5}
         strokeLinejoin="round"
       />
@@ -142,8 +153,8 @@ export const ChestIcon = ({
       width={22}
       height={11.5}
       rx={1.5}
-      fill="#563720"
-      stroke="#2a1a0c"
+      fill="var(--color-wood)"
+      stroke="var(--color-wood-edge)"
       strokeWidth={1.5}
     />
     <path
@@ -152,7 +163,7 @@ export const ChestIcon = ({
           ? "M11 16 V27.5 M21 16 V27.5"
           : "M11 8.6 V27.5 M21 8.6 V27.5 M5 16 H27"
       }
-      stroke="#e7bb6a"
+      stroke="var(--color-bronze-rim)"
       strokeWidth={1.8}
       fill="none"
     />
@@ -163,15 +174,15 @@ export const ChestIcon = ({
         width={5}
         height={6}
         rx={1}
-        fill="#e7bb6a"
-        stroke="#2a1a0c"
+        fill="var(--color-bronze-rim)"
+        stroke="var(--color-wood-edge)"
         strokeWidth={1.2}
       />
     ) : earned ? null : (
       <path
         d="M13.5 16v4.5h5V16"
-        fill="#e2a93b"
-        stroke="#7a5310"
+        fill="var(--color-gold)"
+        stroke="var(--color-gold-deep)"
         strokeWidth={1}
         strokeLinejoin="round"
       />
@@ -191,27 +202,11 @@ const SHIELD_PAINT: Readonly<
     StageState,
     { readonly rim: readonly string[]; readonly face: readonly string[] }
   >
-> = {
-  // The card metal (DESIGN.md, Warm Bronze) and a gold face: the one place to act.
-  open: {
-    rim: ["#f7dc9c", "#d9a85a", "#b47f36", "#8a5a20"],
-    face: ["#fff3c4", "#ffd75a", "#e2a93b", "#b9801f"],
-  },
-  // A won Stage: bronze around Tavern Wood.
-  done: {
-    rim: ["#f0d08c", "#c99a4f", "#a3722f", "#7a4f1b"],
-    face: ["#8a5d38", "#6b4423", "#4a2d16", "#3a2412"],
-  },
-  // A locked Stage: cold pewter around stone.
-  locked: {
-    rim: ["#e6e8ea", "#b8bcc0", "#8d9297", "#62676c"],
-    face: ["#a9aeb3", "#8e9399", "#757a80", "#5d6166"],
-  },
-};
+> = CAMPAIGN_SHIELD_PAINT;
 
 /** Crossed swords: the next fight. Two shared sword glyphs, scaled into the face. */
 const OpenMark = () => (
-  <g fill="#2a1a05">
+  <g fill="var(--color-ink-on-gold)">
     <path d={GLYPHS.sword} transform="translate(50 56) rotate(38) scale(0.5)" />
     <path
       d={GLYPHS.sword}
@@ -224,7 +219,7 @@ const DoneMark = () => (
   <path
     d="M31 57 L45 71 L71 41"
     fill="none"
-    stroke="#fff6df"
+    stroke="var(--color-cream)"
     strokeWidth={11}
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -235,7 +230,7 @@ const LockedMark = () => (
   <path
     d={GLYPHS.lock}
     transform="translate(50 56) scale(0.42)"
-    fill="#2b2e31"
+    fill={CAMPAIGN_LOCK_MARK}
     fillRule="evenodd"
     opacity={0.85}
   />
@@ -255,9 +250,11 @@ const MARKS: Readonly<Record<StageState, () => React.JSX.Element>> = {
 export const StageShield = ({
   state,
   className,
+  style,
 }: {
   readonly state: StageState;
   readonly className?: string;
+  readonly style?: CSSProperties;
 }) => {
   const id = useId();
   const paint = SHIELD_PAINT[state];
@@ -266,6 +263,7 @@ export const StageShield = ({
     <svg
       viewBox="-8 -8 116 132"
       className={cn("overflow-visible", className)}
+      style={style}
       aria-hidden
     >
       <defs>
@@ -292,7 +290,7 @@ export const StageShield = ({
       <path
         d={SHIELD}
         fill="none"
-        stroke="#1c140e"
+        stroke="var(--color-night-plate)"
         strokeWidth={17}
         strokeLinejoin="round"
         className="opacity-0 group-data-[focus-visible]:opacity-100"
@@ -300,7 +298,7 @@ export const StageShield = ({
       <path
         d={SHIELD}
         fill="none"
-        stroke="#fff2a8"
+        stroke="var(--color-focus-cream)"
         strokeWidth={10}
         strokeLinejoin="round"
         className="opacity-0 group-data-[focus-visible]:opacity-100"
@@ -308,21 +306,21 @@ export const StageShield = ({
       <path
         d={SHIELD}
         fill={`url(#${id}-rim)`}
-        stroke="#2a1a0c"
+        stroke="var(--color-wood-edge)"
         strokeWidth={3}
         strokeLinejoin="round"
       />
       <path
         d={FACE}
         fill={`url(#${id}-face)`}
-        stroke="rgba(42,26,12,0.55)"
+        stroke={CAMPAIGN_SHIELD_EDGE}
         strokeWidth={2}
       />
       {/* The light on the upper-left facet of the rim. */}
       <path
         d="M9 13 C22 15 37 13 50 7"
         fill="none"
-        stroke="rgba(255,250,230,0.8)"
+        stroke={CAMPAIGN_SHIELD_LIGHT}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
@@ -347,8 +345,8 @@ export const BossCrown = ({
   >
     <path
       d={GLYPHS.crown}
-      fill="#ffd75a"
-      stroke="#5b3a0c"
+      fill="var(--color-ready-gold)"
+      stroke={CAMPAIGN_CROWN_EDGE}
       strokeWidth={7}
       strokeLinejoin="round"
       paintOrder="stroke"

@@ -1,6 +1,5 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
 import { regionStars, STAGES } from "@workspace/rules";
-import { cn } from "cn";
 import type { CSSProperties, RefObject } from "react";
 import {
   useEffect,
@@ -43,6 +42,7 @@ import {
   walkedLegs,
   wakeUpStage,
 } from "@/features/campaign/region-map";
+import { CAMPAIGN_GROUND, CAMPAIGN_ROAD } from "@/features/campaign/tokens";
 import { useTownBarHeight } from "@/features/town/use-town-bar-height";
 
 /** The phone-in-landscape layout (DESIGN.md, The Short Screen Rule). */
@@ -167,10 +167,6 @@ const useAwakenedStage = (region: number, results: StageResults) => {
   return wake.awaken;
 };
 
-/** The calm ground of a Region with no painting yet: no landmarks, only light. */
-const PLACEHOLDER_GROUND =
-  "bg-[radial-gradient(ellipse_at_50%_40%,#8a9a74,#5d6c51_60%,#3f4a38)]";
-
 /**
  * The placeholder of a Region Map with no painting: a soft road under the
  * Trail, so that the progress line does not float on the plain ground.
@@ -185,7 +181,7 @@ const PlaceholderRoad = ({ map }: { readonly map: RegionMap }) => (
     <path
       d={map.legs.map((leg) => smoothPath(leg)).join(" ")}
       fill="none"
-      stroke="rgba(226,204,156,0.3)"
+      stroke={CAMPAIGN_ROAD}
       strokeWidth={44}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -222,7 +218,8 @@ const RegionCanvas = ({
   const backdrop =
     map.image === null ? (
       <div
-        className={cn("absolute inset-0", PLACEHOLDER_GROUND)}
+        className="absolute inset-0"
+        style={{ background: CAMPAIGN_GROUND }}
         data-testid="region-placeholder"
         aria-hidden
       />
@@ -329,7 +326,7 @@ export const CampaignScreen = ({
     <main
       ref={root}
       aria-label={tr("campaign.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden bg-[#9fcbe8] duration-300 motion-reduce:animate-none"
+      className="fade-in animate-in bg-region-sky fixed inset-0 overflow-hidden duration-300 motion-reduce:animate-none"
       data-testid="campaign"
     >
       {/* A new Region mounts a new canvas, so its Stage Markers rise again. */}

@@ -48,4 +48,4 @@ export const useRewardPeek = ({
 
 /** The ring of a reward card button with keyboard focus. */
 export const PEEK_BUTTON =
-  "cursor-default rounded-[0.85em] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]";
+  "cursor-default rounded-[0.85em] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-focus-cream";

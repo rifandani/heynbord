@@ -17,9 +17,10 @@ import { TokenGallery } from "@/features/handbook/components/token-gallery";
 import type { Entry, EntryId } from "@/features/handbook/handbook";
 import { getEntry, RANK_TABLE } from "@/features/handbook/handbook";
 import { DIAGRAMS } from "@/features/handbook/handbook-diagrams";
+import { HANDBOOK_WELL_SHADOW } from "@/features/handbook/tokens";
 
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
 /** Each paragraph of a rule text: the Message Catalog keeps them apart with an empty line. */
 const paragraphs = (text: string) => text.split("\n\n");
@@ -56,7 +57,7 @@ const RankTable = () => {
       </thead>
       <tbody>
         {RANK_TABLE.map(({ rank, value }) => (
-          <tr key={rank} className="border-t border-[#c9b48c]/70">
+          <tr key={rank} className="border-parchment-rule/70 border-t">
             <th
               scope="row"
               className="flex items-center gap-2 py-1 text-left font-semibold"
@@ -115,7 +116,10 @@ const KeywordValue = ({
 
 const Diagram = ({ entry }: { readonly entry: Entry }) =>
   entry.diagram ? (
-    <figure className="rounded-xl border-2 border-[#c9b48c] bg-[#f1e2c2] p-2 shadow-[inset_0_2px_4px_rgba(91,58,30,0.18)]">
+    <figure
+      className="border-parchment-rule bg-parchment-well rounded-xl border-2 p-2"
+      style={{ boxShadow: HANDBOOK_WELL_SHADOW }}
+    >
       <LaneStrip diagram={DIAGRAMS[entry.diagram]} />
     </figure>
   ) : null;
@@ -140,7 +144,7 @@ const SeeAlso = ({
           <li key={id}>
             <Link
               onPress={() => onOpen(id)}
-              className="text-keyword-rust decoration-keyword-rust/45 data-[hovered]:decoration-keyword-rust inline-flex min-h-8 cursor-pointer items-center rounded-sm text-sm font-bold underline underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+              className="text-keyword-rust decoration-keyword-rust/45 data-[hovered]:decoration-keyword-rust data-[focus-visible]:ring-focus-cream inline-flex min-h-8 cursor-pointer items-center rounded-sm text-sm font-bold underline underline-offset-[3px] outline-none data-[focus-visible]:ring-4"
               data-entry={id}
             >
               {text(getEntry(id).name)}

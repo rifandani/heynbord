@@ -3,8 +3,9 @@ import { useMemo } from "react";
 import { RankGems } from "@/core/components/game/rank-gems";
 import { useGameText } from "@/features/battle/use-game-text";
 import { RANK_GUIDE_TABLE } from "@/features/handbook/handbook";
+import { HANDBOOK_VALUE_INK } from "@/features/handbook/tokens";
 
-const ROW = "border-t border-[#c9b48c]/70";
+const ROW = "border-t border-parchment-rule/70";
 
 /** All five Ranks on one page: gems, stat scale, Recall and shared Keyword N (GDD 5.3–5.4). */
 export const RankGuide = () => {
@@ -33,7 +34,7 @@ export const RankGuide = () => {
           <col className="w-[22%]" />
         </colgroup>
         <thead>
-          <tr className="border-b border-[#c9b48c]/70 text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase">
+          <tr className="border-parchment-rule/70 text-ink-soft border-b text-[0.6875rem] font-bold tracking-[0.04em] uppercase">
             <th scope="col" className="py-1 pr-2 text-left font-bold">
               {tr("handbook.rankGuideRankColumn")}
             </th>
@@ -66,23 +67,32 @@ export const RankGuide = () => {
                   <span className="min-w-0">{tr(`ranks.${rank}`)}</span>
                 </span>
               </th>
-              <td className="py-1.5 pr-2 text-right font-medium text-[#3d2e1f] tabular-nums">
+              <td
+                className="py-1.5 pr-2 text-right font-medium tabular-nums"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {formatScale(scale)}
               </td>
-              <td className="py-1.5 pr-2 text-right font-medium text-[#3d2e1f] tabular-nums">
+              <td
+                className="py-1.5 pr-2 text-right font-medium tabular-nums"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {formatRecall(recall)}
               </td>
-              <td className="py-1.5 text-right font-medium text-[#3d2e1f] tabular-nums">
+              <td
+                className="py-1.5 text-right font-medium tabular-nums"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {keywordN}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="max-w-xl text-xs leading-snug text-[#5b4632]">
+      <p className="text-ink-soft max-w-xl text-xs leading-snug">
         {tr("handbook.rankGuideScaleNote")}
       </p>
-      <p className="max-w-xl text-xs leading-snug text-[#5b4632]">
+      <p className="text-ink-soft max-w-xl text-xs leading-snug">
         {tr("handbook.rankGuideKeywordNote")}
       </p>
     </div>

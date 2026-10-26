@@ -14,6 +14,10 @@ import { cn } from "cn";
 
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
+import {
+  HANDBOOK_VALUE_INK,
+  HANDBOOK_WELL_SHADOW,
+} from "@/features/handbook/tokens";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { GEAR_GLYPH, GEAR_GLYPH_TURN } from "@/features/hero/hero-art";
 import { useStatFormat } from "@/features/hero/use-stat-format";
@@ -21,9 +25,9 @@ import { CoinPrice } from "@/features/packs/components/pack-art";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
-const ROW = "border-t border-[#c9b48c]/70";
+const ROW = "border-t border-parchment-rule/70";
 
 const LEVELS = Array.from({ length: MAX_GEAR_LEVEL }, (_, index) => index + 1);
 
@@ -58,7 +62,7 @@ export const GearGuide = () => {
           {tr("handbook.gearItemsTable")}
         </caption>
         <thead>
-          <tr className="text-left text-xs text-[#5b4632]">
+          <tr className="text-ink-soft text-left text-xs">
             <th scope="col" className="pb-1 font-semibold">
               {tr("handbook.gearItemColumn")}
             </th>
@@ -80,13 +84,16 @@ export const GearGuide = () => {
                 <GlyphIcon
                   glyph={GEAR_GLYPH[slot]}
                   className={cn(
-                    "size-4 shrink-0 text-[#5b3a1e]",
+                    "text-frame-wood size-4 shrink-0",
                     GEAR_GLYPH_TURN[slot]
                   )}
                 />
                 {tr(`hero.slots.${slot}`)}
               </th>
-              <td className="py-1.5 pr-3 font-medium text-[#3d2e1f]">
+              <td
+                className="py-1.5 pr-3 font-medium"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {tr(`hero.stats.${GEAR_STATS[slot].stat}`)}
               </td>
               <td className="py-1.5 text-right font-black tabular-nums">
@@ -100,7 +107,10 @@ export const GearGuide = () => {
         </tbody>
       </table>
 
-      <figure className="max-w-md rounded-xl border-2 border-[#c9b48c] bg-[#f1e2c2] px-3 py-2.5 shadow-[inset_0_2px_4px_rgba(91,58,30,0.18)]">
+      <figure
+        className="border-parchment-rule bg-parchment-well max-w-md rounded-xl border-2 px-3 py-2.5"
+        style={{ boxShadow: HANDBOOK_WELL_SHADOW }}
+      >
         <figcaption className={cn(LABEL, "pb-1.5")}>
           {tr("handbook.gearCostTable")}
         </figcaption>
@@ -109,7 +119,7 @@ export const GearGuide = () => {
             const tier = gearUpgradeForgeStone(level);
             return (
               <li key={level} className="flex flex-col" data-tier={tier}>
-                <span className="flex items-center gap-1 font-semibold text-[#5b4632]">
+                <span className="text-ink-soft flex items-center gap-1 font-semibold">
                   <ForgeStoneIcon tier={tier} className="size-3 shrink-0" />
                   {tr("handbook.gearCostLevel", { level })}
                 </span>
@@ -117,7 +127,7 @@ export const GearGuide = () => {
                   parts={coinDenominations(gearUpgradeCoin(level))}
                   format={format}
                   tone="light"
-                  className="font-black text-[#2a1a05]"
+                  className="text-ink-on-gold font-black"
                 />
                 <span className="sr-only">
                   {words(gearUpgradeCoin(level))},{" "}
@@ -130,7 +140,7 @@ export const GearGuide = () => {
           })}
         </ol>
         <ul
-          className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-[#5b4632]"
+          className="text-ink-soft mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold"
           data-testid="handbook-gear-stone-tiers"
         >
           {TIER_BANDS.map(({ tier, from, to }) => (
@@ -144,7 +154,7 @@ export const GearGuide = () => {
             </li>
           ))}
         </ul>
-        <p className="mt-2 text-xs leading-snug text-[#5b4632]">
+        <p className="text-ink-soft mt-2 text-xs leading-snug">
           {tr("handbook.gearCostTotal", {
             max: MAX_GEAR_LEVEL,
             coin: words(gearUpgradePathCoin(0, MAX_GEAR_LEVEL)),
