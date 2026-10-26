@@ -8,11 +8,12 @@ import {
   PLAYER_LEVEL_UNLOCK_TABLE,
   PLAYER_LEVEL_XP_TABLE,
 } from "@/features/handbook/handbook";
+import { HANDBOOK_VALUE_INK } from "@/features/handbook/tokens";
 
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
-const ROW = "border-t border-[#c9b48c]/70";
+const ROW = "border-t border-parchment-rule/70";
 
 /** XP, growth samples and unlocks for the Player level Entry (GDD 7.1, Economy 2.1). */
 export const PlayerLevelGuide = () => {
@@ -49,7 +50,7 @@ export const PlayerLevelGuide = () => {
           <col className="w-[20%]" />
         </colgroup>
         <thead>
-          <tr className="border-b border-[#c9b48c]/70 text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase">
+          <tr className="border-parchment-rule/70 text-ink-soft border-b text-[0.6875rem] font-bold tracking-[0.04em] uppercase">
             <th scope="col" className="py-1 pr-2 text-left font-bold">
               {tr("handbook.playerXpRegionColumn")}
             </th>
@@ -71,13 +72,22 @@ export const PlayerLevelGuide = () => {
                 <th scope="row" className="py-1.5 pr-3 text-left font-semibold">
                   {tr(`campaign.regions.${region}`)}
                 </th>
-                <td className="py-1.5 pr-2 text-right font-medium text-[#3d2e1f] tabular-nums">
+                <td
+                  className="py-1.5 pr-2 text-right font-medium tabular-nums"
+                  style={{ color: HANDBOOK_VALUE_INK }}
+                >
                   {format(repeatWin)}
                 </td>
-                <td className="py-1.5 pr-2 text-right font-medium text-[#3d2e1f] tabular-nums">
+                <td
+                  className="py-1.5 pr-2 text-right font-medium tabular-nums"
+                  style={{ color: HANDBOOK_VALUE_INK }}
+                >
                   {format(firstWin)}
                 </td>
-                <td className="py-1.5 text-right font-medium text-[#3d2e1f] tabular-nums">
+                <td
+                  className="py-1.5 text-right font-medium tabular-nums"
+                  style={{ color: HANDBOOK_VALUE_INK }}
+                >
                   {format(loss)}
                 </td>
               </tr>
@@ -85,7 +95,7 @@ export const PlayerLevelGuide = () => {
           )}
         </tbody>
       </table>
-      <p className="max-w-lg text-xs leading-snug text-[#5b4632]">
+      <p className="text-ink-soft max-w-lg text-xs leading-snug">
         {tr("handbook.playerXpNote")}
       </p>
 
@@ -97,7 +107,7 @@ export const PlayerLevelGuide = () => {
           <col className="w-[38%]" />
         </colgroup>
         <thead>
-          <tr className="border-b border-[#c9b48c]/70 text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase">
+          <tr className="border-parchment-rule/70 text-ink-soft border-b text-[0.6875rem] font-bold tracking-[0.04em] uppercase">
             <th scope="col" className="py-1 pr-2 text-left font-bold">
               {tr("handbook.playerGrowthLevelColumn")}
             </th>
@@ -121,20 +131,29 @@ export const PlayerLevelGuide = () => {
               >
                 {format(level)}
               </th>
-              <td className="py-1.5 pr-2 text-right font-medium text-[#3d2e1f] tabular-nums">
+              <td
+                className="py-1.5 pr-2 text-right font-medium tabular-nums"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {format(heroHp)}
               </td>
-              <td className="py-1.5 pr-2 text-right font-medium text-[#3d2e1f] tabular-nums">
+              <td
+                className="py-1.5 pr-2 text-right font-medium tabular-nums"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {format(deckMax)}
               </td>
-              <td className="py-1.5 text-right font-medium text-[#3d2e1f] tabular-nums">
+              <td
+                className="py-1.5 text-right font-medium tabular-nums"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {format(countdown)}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="max-w-lg text-xs leading-snug text-[#5b4632]">
+      <p className="text-ink-soft max-w-lg text-xs leading-snug">
         {tr("handbook.playerGrowthNote")}
       </p>
 
@@ -157,7 +176,10 @@ export const PlayerLevelGuide = () => {
               >
                 {format(level)}
               </th>
-              <td className="py-1.5 leading-snug font-medium text-[#3d2e1f]">
+              <td
+                className="py-1.5 leading-snug font-medium"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {text(rule)}
               </td>
             </tr>

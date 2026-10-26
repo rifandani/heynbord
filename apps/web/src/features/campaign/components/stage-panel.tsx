@@ -33,6 +33,12 @@ import {
   useRewardPeek,
 } from "@/features/campaign/components/reward-peek";
 import type { TrailStage } from "@/features/campaign/region-map";
+import {
+  CAMPAIGN_DROP_SMALL,
+  CAMPAIGN_PANEL_SHADOW,
+  CAMPAIGN_PROBLEM_EDGE,
+  CAMPAIGN_PROBLEM_FACE,
+} from "@/features/campaign/tokens";
 import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import {
@@ -107,7 +113,7 @@ const Row = ({
     )}
   >
     <p
-      className="font-display pt-0.5 text-sm font-bold text-[#2a1d12]"
+      className="font-display text-ink pt-0.5 text-sm font-bold"
       data-hint-anchor={anchor}
     >
       {label}
@@ -119,11 +125,11 @@ const Row = ({
 const deckOption = ({ isSelected }: { readonly isSelected: boolean }) =>
   cn(
     "flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border-2 px-2.5 py-1.5 text-left transition-[transform,box-shadow] outline-none",
-    "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:-translate-y-0.5 motion-reduce:data-[hovered]:translate-y-0",
+    "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4 data-[hovered]:-translate-y-0.5 motion-reduce:data-[hovered]:translate-y-0",
     "[@media(max-height:500px)]:min-h-9 [@media(max-height:500px)]:py-1",
     isSelected
-      ? "border-[#e2a93b] bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
-      : "border-[#c9b48c] bg-[#f6ead0]"
+      ? "border-gold bg-parchment-lit shadow-selected"
+      : "border-parchment-rule bg-parchment"
   );
 
 /** The enemy Hero of the Stage, its HP and the Recommended level. */
@@ -134,7 +140,7 @@ const EnemyRow = ({ stop }: { readonly stop: TrailStage }) => {
     <Row label={tr("campaign.panel.enemy")} className={INK[1]}>
       <p className="flex items-center gap-2 font-bold">
         <span
-          className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#6b1610] text-[#fff6df] [@media(max-height:500px)]:size-6"
+          className="bg-enemy-deep text-cream grid size-7 shrink-0 place-items-center rounded-lg [@media(max-height:500px)]:size-6"
           aria-hidden
         >
           <GlyphIcon
@@ -149,7 +155,7 @@ const EnemyRow = ({ stop }: { readonly stop: TrailStage }) => {
           })}
         </span>
       </p>
-      <p className="mt-1 text-xs text-[#5b4632]">
+      <p className="text-ink-soft mt-1 text-xs">
         {tr("campaign.panel.heroHp", { hp: stage.enemy.heroHp })} ·{" "}
         {tr("campaign.panel.level", { level: stage.recommendedLevel })}
       </p>
@@ -202,10 +208,10 @@ const RewardRow = ({ stop }: { readonly stop: TrailStage }) => {
           >
             {tr(`cards.${cardId}.name`)}
           </p>
-          <p className="text-xs font-bold text-[#6b5238]">
+          <p className="text-ink-faded text-xs font-bold">
             {tr(`ranks.${rank}`)}
           </p>
-          <p className="mt-1 text-xs leading-snug text-[#5b4632]">
+          <p className="text-ink-soft mt-1 text-xs leading-snug">
             {won
               ? tr("campaign.panel.repeatWin")
               : tr("campaign.panel.firstWin")}
@@ -224,7 +230,7 @@ const StarsRow = ({ stop }: { readonly stop: TrailStage }) => {
   const { tr } = useGameText();
   return (
     <Row label={tr("campaign.panel.stars")} className={INK[2]}>
-      <ul className="grid gap-1 text-xs leading-snug text-[#5b4632] [@media(max-height:500px)]:gap-0.5">
+      <ul className="text-ink-soft grid gap-1 text-xs leading-snug [@media(max-height:500px)]:gap-0.5">
         {([1, 2, 3] as const).map((count) => (
           <li
             key={count}
@@ -308,7 +314,7 @@ export const DeckRow = ({
         INK[3]
       )}
     >
-      <Label className="font-display pt-0.5 text-sm font-bold text-[#2a1d12]">
+      <Label className="font-display text-ink pt-0.5 text-sm font-bold">
         {tr("campaign.panel.deck")}
       </Label>
       <div className="@container flex min-w-0 flex-col gap-1.5">
@@ -321,7 +327,7 @@ export const DeckRow = ({
               data-testid={`deck-${slot.id}`}
             >
               <span
-                className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#5b3a1e] text-[#fff6df]"
+                className="bg-frame-wood text-cream grid size-7 shrink-0 place-items-center rounded-lg"
                 aria-hidden
               >
                 <GlyphIcon
@@ -334,7 +340,7 @@ export const DeckRow = ({
                   {slot.name ||
                     text(defaultSlotName(slot, slots.indexOf(slot)))}
                 </span>
-                <span className="block truncate text-xs text-[#5b4632] [@media(max-height:500px)]:sr-only">
+                <span className="text-ink-soft block truncate text-xs [@media(max-height:500px)]:sr-only">
                   {tr("battle.deckLine", {
                     className: text(classText(slot.classId)),
                     count: slot.deck.length,
@@ -352,7 +358,11 @@ export const DeckRow = ({
             data-testid="deck-problem"
           >
             <span
-              className="mt-[0.4em] size-2 shrink-0 rotate-45 border border-[#5b2a0c] bg-[#b4521a]"
+              className="mt-[0.4em] size-2 shrink-0 rotate-45 border"
+              style={{
+                borderColor: CAMPAIGN_PROBLEM_EDGE,
+                background: CAMPAIGN_PROBLEM_FACE,
+              }}
               aria-hidden
             />
             {text(problemText(problem))}
@@ -380,7 +390,7 @@ const SweepRow = ({
   return (
     <Row
       label={tr("sweep.label")}
-      className={cn("border-t border-[#c9b48c]/70", INK[4])}
+      className={cn("border-parchment-rule/70 border-t", INK[4])}
       anchor="sweep-row"
     >
       <SweepTickets
@@ -405,13 +415,14 @@ const PanelHeader = ({
   return (
     <header
       className={cn(
-        "flex items-center gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2",
+        "border-parchment-rule flex items-center gap-3 border-b-2 pb-3 [@media(max-height:500px)]:pb-2",
         INK[0]
       )}
     >
       <StageShield
         state={shown.state}
-        className="-my-1 h-12 w-[42px] shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.3)] [@media(max-height:500px)]:h-9 [@media(max-height:500px)]:w-8"
+        className="-my-1 h-12 w-[42px] shrink-0 [@media(max-height:500px)]:h-9 [@media(max-height:500px)]:w-8"
+        style={{ filter: CAMPAIGN_DROP_SMALL }}
       />
       <div className="min-w-0">
         <Heading
@@ -420,13 +431,13 @@ const PanelHeader = ({
         >
           {tr("battle.stageLabel", { id: shown.stage.id })}
           {shown.stage.boss ? (
-            <span className="rounded-[4px] bg-[#8e1f1f] px-1.5 py-0.5 font-sans text-[10px] font-bold tracking-[0.04em] text-white uppercase">
+            <span className="bg-blood-banner rounded-[4px] px-1.5 py-0.5 font-sans text-[10px] font-bold tracking-[0.04em] text-white uppercase">
               {tr("battle.boss")}
             </span>
           ) : null}
         </Heading>
         <p
-          className="mt-1.5 flex items-center gap-1.5 text-xs font-bold text-[#5b4632]"
+          className="text-ink-soft mt-1.5 flex items-center gap-1.5 text-xs font-bold"
           data-testid="stage-best-stars"
           data-stars={shown.stars}
         >
@@ -444,7 +455,7 @@ const PanelHeader = ({
               </span>
             </>
           ) : (
-            <span className="font-semibold text-[#6b5238]">
+            <span className="text-ink-faded font-semibold">
               {tr("campaign.panel.notWon")}
             </span>
           )}
@@ -608,9 +619,10 @@ export const StagePanel = ({
         >
           <Dialog
             className={cn(
-              "max-h-full w-full overflow-y-auto overscroll-contain rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-5 text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3",
+              "border-frame-wood bg-parchment text-ink max-h-full w-full overflow-y-auto overscroll-contain rounded-2xl border-4 px-5 pt-4 pb-5 outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-3",
               SHEET_MOTION
             )}
+            style={{ boxShadow: CAMPAIGN_PANEL_SHADOW }}
             data-testid="stage-panel"
           >
             {({ close }) =>
@@ -627,12 +639,12 @@ export const StagePanel = ({
                     />
                   ) : (
                     <div className="[@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:gap-x-5">
-                      <div className="divide-y divide-[#c9b48c]/70">
+                      <div className="divide-parchment-rule/70 divide-y">
                         <EnemyRow stop={shown} />
                         <RewardRow stop={shown} />
                         <StarsRow stop={shown} />
                       </div>
-                      <div className="flex flex-col border-t border-[#c9b48c]/70 [@media(max-height:500px)]:border-t-0">
+                      <div className="border-parchment-rule/70 flex flex-col border-t [@media(max-height:500px)]:border-t-0">
                         <DeckRow
                           choice={choice}
                           onEdit={() => {

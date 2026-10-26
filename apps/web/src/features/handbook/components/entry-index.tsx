@@ -23,6 +23,7 @@ import {
   getEntry,
   toEntryId,
 } from "@/features/handbook/handbook";
+import { HANDBOOK_BRONZE_INK } from "@/features/handbook/tokens";
 
 /**
  * A row of the index, ruled like the index of a book. The open Entry is the
@@ -30,11 +31,11 @@ import {
  */
 const rowClass = (current: boolean) =>
   cn(
-    "relative flex min-h-10 cursor-pointer items-center gap-2.5 border-b border-[#c9b48c]/70 py-1.5 pr-2 pl-3 text-[0.9375rem] text-[#2a1d12] outline-none",
-    "data-[focus-visible]:z-10 data-[focus-visible]:rounded-md data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#fff3d1]",
+    "border-parchment-rule/70 text-ink relative flex min-h-10 cursor-pointer items-center gap-2.5 border-b py-1.5 pr-2 pl-3 text-[0.9375rem] outline-none",
+    "data-[focus-visible]:ring-focus-cream data-[hovered]:bg-parchment-lit data-[focus-visible]:z-10 data-[focus-visible]:rounded-md data-[focus-visible]:ring-4",
     "[@media(max-height:500px)]:min-h-9 [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-sm",
     current &&
-      "bg-[#ffe08a]/45 font-bold before:absolute before:inset-y-1 before:left-0 before:w-1 before:rounded-full before:bg-[#e2a93b]"
+      "bg-gold-light/45 before:bg-gold font-bold before:absolute before:inset-y-1 before:left-0 before:w-1 before:rounded-full"
   );
 
 /**
@@ -118,7 +119,11 @@ export const ChapterIndex = ({
       data-current={entry.id === current || undefined}
     >
       {entry.icon ? (
-        <SmallIcon icon={entry.icon} className="size-[18px] text-[#7a4c1a]" />
+        <SmallIcon
+          icon={entry.icon}
+          className="size-[18px]"
+          style={{ color: HANDBOOK_BRONZE_INK }}
+        />
       ) : (
         <span className="size-[18px] shrink-0" aria-hidden />
       )}
@@ -144,7 +149,7 @@ export const ChapterIndex = ({
             id={`group-${run.group}`}
             data-testid={`handbook-group-${run.group}`}
           >
-            <Header className="px-3 pt-3 pb-1 text-xs font-bold tracking-wider text-[#7a4c1a] uppercase">
+            <Header className="text-ink-soft px-3 pt-3 pb-1 text-xs font-bold tracking-wider uppercase">
               {tr(`handbook.groups.${run.group}`)}
             </Header>
             {run.entries.map(item)}
@@ -171,7 +176,7 @@ const NoResult = ({
       <p className="text-[0.9375rem]">{tr("handbook.noResult", { query })}</p>
       <Link
         onPress={onToBattle}
-        className="text-keyword-rust decoration-keyword-rust/45 cursor-pointer text-sm font-bold underline underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+        className="text-keyword-rust decoration-keyword-rust/45 data-[focus-visible]:ring-focus-cream cursor-pointer text-sm font-bold underline underline-offset-[3px] outline-none data-[focus-visible]:ring-4"
       >
         {tr("handbook.toBattle")}
       </Link>
@@ -242,14 +247,15 @@ export const SearchResults = ({
               {entry.icon ? (
                 <SmallIcon
                   icon={entry.icon}
-                  className="size-[18px] text-[#7a4c1a]"
+                  className="size-[18px]"
+                  style={{ color: HANDBOOK_BRONZE_INK }}
                 />
               ) : (
                 <span className="size-[18px] shrink-0" aria-hidden />
               )}
               <span className="flex min-w-0 flex-col leading-tight">
                 <span className="truncate">{title}</span>
-                <span className="truncate text-xs font-normal text-[#5b4632]">
+                <span className="text-ink-soft truncate text-xs font-normal">
                   {tr(`handbook.chapter.${entry.chapter}.name`)}
                 </span>
               </span>

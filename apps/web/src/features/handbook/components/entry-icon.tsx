@@ -1,6 +1,6 @@
 import { cn } from "cn";
 import { absurd } from "effect";
-import type { ReactElement } from "react";
+import type { CSSProperties, ReactElement } from "react";
 
 import { RankGems } from "@/core/components/game/rank-gems";
 import { DAMAGE_COLORS, RANK_COLORS } from "@/core/components/game/tokens";
@@ -15,7 +15,7 @@ import { BalanceIcon } from "@/features/town/components/balance-icon";
 /** One Rank Gem: the small form of a Rank, for a list row or a tab. */
 const Gem = ({ rank }: { readonly rank: keyof typeof RANK_COLORS }) => (
   <span
-    className="block size-[0.62em] rotate-45 border-[0.08em] border-[#2a1a08] shadow-[inset_0.08em_0.08em_0_rgba(255,255,255,0.6)]"
+    className="border-rank-edge shadow-gem-facet block size-[0.62em] rotate-45 border-[0.08em]"
     style={{ backgroundColor: RANK_COLORS[rank] }}
   />
 );
@@ -27,22 +27,24 @@ const Gem = ({ rank }: { readonly rank: keyof typeof RANK_COLORS }) => (
 export const SmallIcon = ({
   icon,
   className,
+  style,
 }: {
   readonly icon: EntryIcon;
   readonly className?: string;
+  readonly style?: CSSProperties;
 }): ReactElement => {
   const box = cn("grid shrink-0 place-items-center", className);
   switch (icon.kind) {
     case "glyph": {
       return (
-        <span className={box} aria-hidden>
+        <span className={box} style={style} aria-hidden>
           <GlyphIcon glyph={icon.glyph} className="size-full" />
         </span>
       );
     }
     case "damage": {
       return (
-        <span className={box} aria-hidden>
+        <span className={box} style={style} aria-hidden>
           <GlyphIcon
             glyph={DAMAGE_GLYPH[icon.damageType]}
             className="size-full"
@@ -51,32 +53,36 @@ export const SmallIcon = ({
       );
     }
     case "status": {
-      return <StatusIcon status={icon.status} className={box} />;
+      return (
+        <span className={box} style={style} aria-hidden>
+          <StatusIcon status={icon.status} className="size-full" />
+        </span>
+      );
     }
     case "rank": {
       return (
-        <span className={cn(box, "text-[1.4em]")} aria-hidden>
+        <span className={cn(box, "text-[1.4em]")} style={style} aria-hidden>
           <Gem rank={icon.rank} />
         </span>
       );
     }
     case "star": {
       return (
-        <span className={box} aria-hidden>
+        <span className={box} style={style} aria-hidden>
           <StarIcon earned className="size-full" />
         </span>
       );
     }
     case "coin": {
       return (
-        <span className={box} aria-hidden>
+        <span className={box} style={style} aria-hidden>
           <BalanceIcon kind="coin" className="size-full" />
         </span>
       );
     }
     case "graveyard": {
       return (
-        <span className={box} aria-hidden>
+        <span className={box} style={style} aria-hidden>
           <GraveyardIcon className="size-full" />
         </span>
       );
@@ -132,7 +138,7 @@ const LargeFace = ({ icon }: { readonly icon: EntryIcon }): ReactElement => {
  */
 export const LargeIcon = ({ icon }: { readonly icon: EntryIcon }) => (
   <span
-    className="grid size-16 shrink-0 place-items-center rounded-full border-[3px] border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-11 [@media(max-height:500px)]:border-2"
+    className="border-bronze-rim text-cream shadow-piece grid size-16 shrink-0 place-items-center rounded-full border-[3px] bg-[radial-gradient(circle_at_35%_30%,var(--color-plate-ember),var(--color-night-plate)_70%)] [@media(max-height:500px)]:size-11 [@media(max-height:500px)]:border-2"
     aria-hidden
     data-testid="handbook-entry-icon"
   >

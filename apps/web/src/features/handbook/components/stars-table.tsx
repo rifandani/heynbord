@@ -3,9 +3,10 @@ import { cn } from "cn";
 import { useGameText } from "@/features/battle/use-game-text";
 import { StarRow } from "@/features/campaign/components/campaign-icons";
 import { STARS_TABLE } from "@/features/handbook/handbook";
+import { HANDBOOK_VALUE_INK } from "@/features/handbook/tokens";
 
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
 /** Each Star count and its win condition (GDD 4.11). */
 export const StarsTable = () => {
@@ -26,14 +27,17 @@ export const StarsTable = () => {
       </thead>
       <tbody>
         {STARS_TABLE.map(({ count, rule }) => (
-          <tr key={count} className="border-t border-[#c9b48c]/70">
+          <tr key={count} className="border-parchment-rule/70 border-t">
             <th scope="row" className="py-1.5 pr-3 align-top">
               <StarRow stars={count} tone="parchment" starClassName="size-4" />
               <span className="sr-only">
                 {tr("battle.starsLabel", { count })}
               </span>
             </th>
-            <td className="py-1.5 leading-snug font-medium text-[#3d2e1f]">
+            <td
+              className="py-1.5 leading-snug font-medium"
+              style={{ color: HANDBOOK_VALUE_INK }}
+            >
               {text(rule)}
             </td>
           </tr>

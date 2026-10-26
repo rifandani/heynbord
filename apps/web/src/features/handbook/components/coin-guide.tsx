@@ -8,14 +8,18 @@ import {
   COIN_EXAMPLE_COPPER,
   COIN_USES_TABLE,
 } from "@/features/handbook/handbook";
+import {
+  HANDBOOK_VALUE_INK,
+  HANDBOOK_WELL_SHADOW,
+} from "@/features/handbook/tokens";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
 
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
-const ROW = "border-t border-[#c9b48c]/70";
+const ROW = "border-t border-parchment-rule/70";
 
 /** Gold, Silver and Copper: one balance, with a Town-plate example (Economy 1.1). */
 export const CoinGuide = () => {
@@ -58,7 +62,10 @@ export const CoinGuide = () => {
                 />
                 {tr(`town.balances.denominations.${denomination}.name`)}
               </th>
-              <td className="py-1.5 leading-snug font-medium text-[#3d2e1f]">
+              <td
+                className="py-1.5 leading-snug font-medium"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {text(rule)}
               </td>
             </tr>
@@ -67,14 +74,15 @@ export const CoinGuide = () => {
       </table>
 
       <figure
-        className="max-w-md rounded-xl border-2 border-[#c9b48c] bg-[#f1e2c2] px-3 py-2.5 shadow-[inset_0_2px_4px_rgba(91,58,30,0.18)]"
+        className="border-parchment-rule bg-parchment-well max-w-md rounded-xl border-2 px-3 py-2.5"
+        style={{ boxShadow: HANDBOOK_WELL_SHADOW }}
         data-testid="handbook-coin-example"
       >
         <figcaption className={cn(LABEL, "pb-1.5")}>
           {tr("handbook.coinExampleCaption")}
         </figcaption>
         <CoinAmount parts={exampleParts} format={format} tone="light" />
-        <p className="mt-1.5 text-xs leading-snug text-[#5b4632]">
+        <p className="text-ink-soft mt-1.5 text-xs leading-snug">
           {tr("handbook.coinExampleNote", {
             copper: format(COIN_EXAMPLE_COPPER),
           })}
@@ -94,7 +102,10 @@ export const CoinGuide = () => {
         <tbody>
           {COIN_USES_TABLE.map(({ id, rule }) => (
             <tr key={id} className={ROW}>
-              <td className="py-1.5 leading-snug font-medium text-[#3d2e1f]">
+              <td
+                className="py-1.5 leading-snug font-medium"
+                style={{ color: HANDBOOK_VALUE_INK }}
+              >
                 {text(rule)}
               </td>
             </tr>

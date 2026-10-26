@@ -9,6 +9,7 @@ import type {
   DiagramUnit,
   DiagramZone,
 } from "@/features/handbook/handbook-diagrams";
+import { HANDBOOK_LANE } from "@/features/handbook/tokens";
 
 /** The size of a Square, the space between Squares, and the place of each Hero. */
 const SQUARE = 40;
@@ -19,8 +20,8 @@ const PAD = 6;
 /** The space above the top Lane for the arcs of Flying and of a hit. */
 const SKY = 26;
 
-const INK = "#2a1d12";
-/** The token colors of a Side: the player gold and the enemy red (DESIGN.md, Side). */
+const INK = HANDBOOK_LANE.ink;
+/** The colors of a Side: the player gold and the enemy red (DESIGN.md, Side). */
 interface SideColors {
   readonly face: string;
   readonly rim: string;
@@ -28,8 +29,8 @@ interface SideColors {
 }
 
 const SIDE: Readonly<Record<DiagramSide, SideColors>> = {
-  player: { face: "#f2c14e", rim: "#7a5310", mark: "#2a1a05" },
-  enemy: { face: "#d9463b", rim: "#6b1610", mark: "#fff6df" },
+  player: HANDBOOK_LANE.player,
+  enemy: HANDBOOK_LANE.enemy,
 };
 
 /** The tint of a zone. Columns that only a Wall can use have a hatch. */
@@ -38,11 +39,11 @@ const zoneFill = (zone: DiagramZone, hatch: string): string => {
     return `url(#${hatch})`;
   }
   if (zone.kind === "range") {
-    return "rgba(255,243,209,0.95)";
+    return HANDBOOK_LANE.range;
   }
   return zone.side === "player"
-    ? "rgba(255,215,90,0.55)"
-    : "rgba(217,70,59,0.3)";
+    ? HANDBOOK_LANE.playerZone
+    : HANDBOOK_LANE.enemyZone;
 };
 
 const columnX = (column: number) =>
@@ -72,8 +73,8 @@ const Squares = ({ diagram }: { readonly diagram: Diagram }) => (
           width={SQUARE}
           height={SQUARE}
           rx={5}
-          fill="#ead9b4"
-          stroke="#c9b48c"
+          fill={HANDBOOK_LANE.square}
+          stroke={HANDBOOK_LANE.squareEdge}
           strokeWidth={1.5}
         />
       ))
@@ -192,7 +193,7 @@ const Unit = ({ unit }: { readonly unit: DiagramUnit }) => {
   const colors = SIDE[unit.side];
   return (
     <g opacity={unit.falls ? 0.55 : 1}>
-      <circle cx={cx} cy={cy + 2} r={15} fill="rgba(0,0,0,0.3)" />
+      <circle cx={cx} cy={cy + 2} r={15} fill={HANDBOOK_LANE.unitShadow} />
       <circle
         cx={cx}
         cy={cy}
@@ -211,7 +212,7 @@ const Unit = ({ unit }: { readonly unit: DiagramUnit }) => {
       {unit.falls ? (
         <path
           d={`M${cx - 11} ${cy - 11} L${cx + 11} ${cy + 11} M${cx + 11} ${cy - 11} L${cx - 11} ${cy + 11}`}
-          stroke="#6b1610"
+          stroke={HANDBOOK_LANE.enemy.rim}
           strokeWidth={4}
           strokeLinecap="round"
         />
@@ -388,8 +389,8 @@ export const LaneStrip = ({ diagram }: { readonly diagram: Diagram }) => {
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(45)"
         >
-          <rect width={8} height={8} fill="rgba(255,215,90,0.22)" />
-          <rect width={3} height={8} fill="rgba(226,169,59,0.55)" />
+          <rect width={8} height={8} fill={HANDBOOK_LANE.hatchLight} />
+          <rect width={3} height={8} fill={HANDBOOK_LANE.hatchDark} />
         </pattern>
       </defs>
       <Squares diagram={diagram} />

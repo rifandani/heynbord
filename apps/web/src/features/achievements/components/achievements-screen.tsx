@@ -24,6 +24,26 @@ import {
   REWARD_FLY_MS,
   RewardFlight,
 } from "@/features/achievements/components/reward-flight";
+import {
+  ACHIEVEMENTS_BOTTOM_SHADE,
+  ACHIEVEMENTS_CAP,
+  ACHIEVEMENTS_CAP_SHADOW,
+  ACHIEVEMENTS_COLLAR,
+  ACHIEVEMENTS_CURL,
+  ACHIEVEMENTS_FOOTER_SHADOW,
+  ACHIEVEMENTS_PAPER_EDGE,
+  ACHIEVEMENTS_PAPER_LIGHT_60,
+  ACHIEVEMENTS_PAPER_LIGHT_80,
+  ACHIEVEMENTS_PAPER_SHADOW,
+  ACHIEVEMENTS_PAPER_TONE,
+  ACHIEVEMENTS_POLE,
+  ACHIEVEMENTS_POLE_SHADOW,
+  ACHIEVEMENTS_ROLLER,
+  ACHIEVEMENTS_ROLLER_SHADOW,
+  ACHIEVEMENTS_SCROLLBAR,
+  ACHIEVEMENTS_TOP_SHADE,
+  ACHIEVEMENTS_WAX,
+} from "@/features/achievements/tokens";
 import { useAchievements } from "@/features/achievements/use-achievements";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
@@ -133,10 +153,10 @@ const useCountedBalances = (balances: {
  * category pulls away, so two bottom rollers never show at once.
  */
 const COLLAR =
-  "absolute inset-y-[3px] w-[3px] rounded-full bg-[linear-gradient(90deg,#8a5a20,#f7dc9c)] opacity-80 [@media(max-height:500px)]:inset-y-0.5";
+  "absolute inset-y-[3px] w-[3px] rounded-full opacity-80 [@media(max-height:500px)]:inset-y-0.5";
 
 const CAP =
-  "absolute top-1/2 size-[30px] -translate-y-1/2 rounded-full border-2 border-[#8a5a20] bg-[radial-gradient(circle_at_35%_30%,#f7dc9c,#b47f36_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-[22px]";
+  "absolute top-1/2 size-[30px] -translate-y-1/2 rounded-full border-2 border-bronze-deep [@media(max-height:500px)]:size-[22px]";
 
 const Roller = ({ edge }: { readonly edge: "top" | "bottom" }) => (
   <span
@@ -149,22 +169,33 @@ const Roller = ({ edge }: { readonly edge: "top" | "bottom" }) => (
     )}
   >
     <span
-      className="absolute inset-0 rounded-full border-2 border-[#2a1a0c] shadow-[0_3px_0_rgba(0,0,0,0.45),inset_0_2px_0_rgba(255,214,150,0.45),inset_0_-4px_0_rgba(0,0,0,0.5)]"
+      className="border-wood-edge absolute inset-0 rounded-full border-2"
       style={{
-        background: [
-          "repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0 2px, transparent 2px 17px)",
-          "linear-gradient(90deg, #2a1a0c, #563720 14%, #7a5233 50%, #563720 86%, #2a1a0c)",
-          "linear-gradient(180deg, rgba(255,224,170,0.6) 0%, rgba(255,255,255,0) 30%, rgba(0,0,0,0.12) 62%, rgba(0,0,0,0.6) 100%)",
-        ].join(", "),
+        background: ACHIEVEMENTS_ROLLER,
+        boxShadow: ACHIEVEMENTS_ROLLER_SHADOW,
       }}
     />
-    <span className={cn(COLLAR, "left-[20%]")} />
-    <span className={cn(COLLAR, "right-[20%]")} />
+    <span
+      className={cn(COLLAR, "left-[20%]")}
+      style={{ background: ACHIEVEMENTS_COLLAR }}
+    />
+    <span
+      className={cn(COLLAR, "right-[20%]")}
+      style={{ background: ACHIEVEMENTS_COLLAR }}
+    />
     <span
       className={cn(CAP, "-left-[13px] [@media(max-height:500px)]:-left-2.5")}
+      style={{
+        background: ACHIEVEMENTS_CAP,
+        boxShadow: ACHIEVEMENTS_CAP_SHADOW,
+      }}
     />
     <span
       className={cn(CAP, "-right-[13px] [@media(max-height:500px)]:-right-2.5")}
+      style={{
+        background: ACHIEVEMENTS_CAP,
+        boxShadow: ACHIEVEMENTS_CAP_SHADOW,
+      }}
     />
   </span>
 );
@@ -201,15 +232,15 @@ const WaxSeal = ({
       >
         <defs>
           <radialGradient id={wax} cx="35%" cy="28%" r="80%">
-            <stop offset="0%" stopColor="#c9483d" />
-            <stop offset="55%" stopColor="#9c2320" />
-            <stop offset="100%" stopColor="#571010" />
+            <stop offset="0%" stopColor={ACHIEVEMENTS_WAX.light} />
+            <stop offset="55%" stopColor={ACHIEVEMENTS_WAX.mid} />
+            <stop offset="100%" stopColor={ACHIEVEMENTS_WAX.deep} />
           </radialGradient>
         </defs>
         <path
           d={SEAL_BLOB}
           fill={`url(#${wax})`}
-          stroke="#4a0d0d"
+          stroke={ACHIEVEMENTS_WAX.edge}
           strokeWidth="1.2"
         />
         <circle
@@ -217,14 +248,14 @@ const WaxSeal = ({
           cy="20"
           r="14.2"
           fill="none"
-          stroke="#ffd9a0"
+          stroke={ACHIEVEMENTS_WAX.ring}
           strokeOpacity="0.32"
           strokeWidth="1"
         />
         <path
           d="M0 -9L2.5 -2.5L9 0L2.5 2.5L0 9L-2.5 2.5L-9 0L-2.5 -2.5Z"
           transform="translate(20 20) scale(0.8)"
-          fill="#ffd9a0"
+          fill={ACHIEVEMENTS_WAX.ring}
         />
       </svg>
     </span>
@@ -235,10 +266,7 @@ const WaxSeal = ({
  * The uneven warm tone of the parchment: a light from the upper left and a
  * soft shadow at the lower right, so the paper does not read as a flat fill.
  */
-const PAPER_TONE = [
-  "radial-gradient(ellipse 70% 55% at 14% 0%, rgba(255,248,226,0.85), transparent 68%)",
-  "radial-gradient(ellipse 55% 45% at 92% 100%, rgba(190,158,104,0.24), transparent 70%)",
-].join(", ");
+const PAPER_TONE = ACHIEVEMENTS_PAPER_TONE;
 
 /**
  * The roll of one category: its name and count, its rows, and Claim all.
@@ -276,7 +304,7 @@ const Roll = ({
         // move when the Player selects another one. It is at the left of the
         // pole, in the column between the mirror and the flag rail.
         "group/roll relative z-10 col-start-2 row-start-1 my-4 flex h-[calc(100%-2rem)] max-h-[46rem] min-h-0 flex-col self-center rounded-[3px] outline-none",
-        "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+        "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
         "motion-safe:animate-[achievements-unroll_460ms_cubic-bezier(0.33,0.9,0.28,1)_both]",
         // The old decree pulls away to the top under the new one, and its
         // bottom roller goes with it, so two rollers never show at once.
@@ -287,10 +315,11 @@ const Roll = ({
       {/* The parchment. The scroll clips it, so it unrolls down from the top
           roller while the bottom roller drops with the reveal edge. */}
       <div
-        className={cn(
-          "relative isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-[3px] border border-[#d9c39a] bg-[#f6ead0] text-[#2a1d12]",
-          "shadow-[inset_0_3px_0_rgba(255,250,235,0.75),inset_0_2px_0_rgba(255,255,255,0.55),0_3px_0_rgba(0,0,0,0.4),0_20px_42px_rgba(0,0,0,0.5)]"
-        )}
+        className="bg-parchment text-ink relative isolate flex min-h-0 flex-1 flex-col overflow-hidden rounded-[3px] border"
+        style={{
+          borderColor: ACHIEVEMENTS_PAPER_EDGE,
+          boxShadow: ACHIEVEMENTS_PAPER_SHADOW,
+        }}
       >
         <span
           aria-hidden
@@ -303,32 +332,37 @@ const Roll = ({
             Neither reaches the text. */}
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-6 bg-[linear-gradient(180deg,rgba(107,74,38,0.62)_0,rgba(107,74,38,0.3)_38%,transparent_100%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-6"
+          style={{ background: ACHIEVEMENTS_TOP_SHADE }}
         />
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[#fffaf0]/80"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px"
+          style={{ background: ACHIEVEMENTS_PAPER_LIGHT_80 }}
         />
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-[linear-gradient(0deg,rgba(107,74,38,0.55)_0,rgba(107,74,38,0.26)_38%,transparent_100%)]"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-6"
+          style={{ background: ACHIEVEMENTS_BOTTOM_SHADE }}
         />
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-[#fffaf0]/60"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-px"
+          style={{ background: ACHIEVEMENTS_PAPER_LIGHT_60 }}
         />
         {/* The line of light at the lower edge of the unrolling paper. */}
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-10 h-6 bg-[linear-gradient(180deg,transparent,rgba(255,246,214,0.8),transparent)] motion-safe:animate-[achievements-curl_460ms_cubic-bezier(0.33,0.9,0.28,1)_both]"
+          className="pointer-events-none absolute inset-x-0 top-0 z-10 h-6 motion-safe:animate-[achievements-curl_460ms_cubic-bezier(0.33,0.9,0.28,1)_both]"
+          style={{ background: ACHIEVEMENTS_CURL }}
         />
-        <header className="relative flex items-center gap-3 border-b-2 border-[#c9b48c] px-5 pt-5 pb-2.5 [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-4 [@media(max-height:500px)]:pb-1">
+        <header className="border-parchment-rule relative flex items-center gap-3 border-b-2 px-5 pt-5 pb-2.5 [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-4 [@media(max-height:500px)]:pb-1">
           <WaxSeal tick={seal} category={group.category} />
           <h2 className="font-display min-w-0 flex-1 text-[22px] leading-tight font-black [@media(max-height:500px)]:text-base">
             {name}
           </h2>
           <p
-            className="shrink-0 text-[13px] font-semibold text-[#5b4632] tabular-nums [@media(max-height:500px)]:text-[11px]"
+            className="text-ink-soft shrink-0 text-[13px] font-semibold tabular-nums [@media(max-height:500px)]:text-[11px]"
             data-testid="achievements-roll-count"
           >
             {tr("achievements.screen.countLabel", {
@@ -340,21 +374,19 @@ const Roll = ({
               small gold diamond at its center. */}
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-x-5 -bottom-px h-px bg-[#e2a93b]/45 [@media(max-height:500px)]:hidden"
+            className="bg-gold/45 pointer-events-none absolute inset-x-5 -bottom-px h-px [@media(max-height:500px)]:hidden"
           />
           <span
             aria-hidden
-            className="pointer-events-none absolute -bottom-[3px] left-1/2 size-1.5 -translate-x-1/2 rotate-45 border border-[#7a5310] bg-[#e2a93b] [@media(max-height:500px)]:hidden"
+            className="border-gold-deep bg-gold pointer-events-none absolute -bottom-[3px] left-1/2 size-1.5 -translate-x-1/2 rotate-45 border [@media(max-height:500px)]:hidden"
           />
         </header>
         <ul
           ref={list}
           tabIndex={-1}
           aria-label={name}
-          className={cn(
-            "m-0 min-h-0 flex-1 list-none overflow-y-auto overscroll-contain py-0.5 outline-none",
-            "[scrollbar-width:thin] [scrollbar-color:#b39a70_transparent]"
-          )}
+          className="m-0 min-h-0 flex-1 [scrollbar-width:thin] list-none overflow-y-auto overscroll-contain py-0.5 outline-none"
+          style={{ scrollbarColor: `${ACHIEVEMENTS_SCROLLBAR} transparent` }}
           data-testid="achievements-list"
         >
           {group.rows.map((row, index) => (
@@ -370,10 +402,13 @@ const Roll = ({
         {/* The bottom roller covers 13px of the roll (12px of the footer, past
             its 1px paper border), so the footer keeps that much more below the
             Claim all button: the gap above and the gap below it stay the same. */}
-        <footer className="relative flex items-center justify-end gap-3 bg-[#ead9b4] px-5 pt-2.5 pb-[calc(0.625rem+12px)] shadow-[inset_0_2px_0_#c9b48c] [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:pb-[calc(0.25rem+9px)]">
+        <footer
+          className="bg-parchment-deep relative flex items-center justify-end gap-3 px-5 pt-2.5 pb-[calc(0.625rem+12px)] [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:pb-[calc(0.25rem+9px)]"
+          style={{ boxShadow: ACHIEVEMENTS_FOOTER_SHADOW }}
+        >
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-x-5 top-[3px] h-px bg-[#e2a93b]/35 [@media(max-height:500px)]:hidden"
+            className="bg-gold/35 pointer-events-none absolute inset-x-5 top-[3px] h-px [@media(max-height:500px)]:hidden"
           />
           <Button
             ref={claimAll}
@@ -396,7 +431,7 @@ const Roll = ({
             {claimable > 0 ? (
               <span
                 aria-hidden
-                className="grid h-6 min-w-6 place-items-center rounded-full bg-[#2a1a05] px-1 font-sans text-xs font-black text-[#ffe08a] tabular-nums [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:min-w-5"
+                className="bg-ink-on-gold text-gold-light grid h-6 min-w-6 place-items-center rounded-full px-1 font-sans text-xs font-black tabular-nums [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:min-w-5"
               >
                 {claimable}
               </span>
@@ -411,7 +446,7 @@ const Roll = ({
 };
 
 /**
- * The Achievements screen (Achievements 4, issue #103, "Banner Tabs"): the
+ * The Achievements screen (Achievements 4, issue 103, "Banner Tabs"): the
  * inside of the Hall of banners and the Balance Plate. One
  * flag for each category hangs on the pole at the right of the roll of the
  * selected category, and flies to the right. The screen opens on the first
@@ -545,12 +580,10 @@ export const AchievementsScreen = () => {
         <div className="relative col-start-3 row-start-1 self-center py-6 pr-6 pl-7 [@media(max-height:500px)]:py-4 [@media(max-height:500px)]:pl-5">
           <span
             aria-hidden
-            className="absolute top-0 bottom-0 left-0.5 w-5 rounded-full border-2 border-[#2a1a0c] shadow-[0_3px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:w-3.5"
+            className="border-wood-edge absolute top-0 bottom-0 left-0.5 w-5 rounded-full border-2 [@media(max-height:500px)]:w-3.5"
             style={{
-              background: [
-                "repeating-linear-gradient(180deg, rgba(0,0,0,0.1) 0 2px, transparent 2px 19px)",
-                "linear-gradient(90deg, #2a1a0c, #563720 25%, #7a5233 50%, #563720 75%, #2a1a0c)",
-              ].join(", "),
+              background: ACHIEVEMENTS_POLE,
+              boxShadow: ACHIEVEMENTS_POLE_SHADOW,
             }}
           >
             {/* The finials are in the pole, so they stay on its center line
@@ -558,8 +591,20 @@ export const AchievementsScreen = () => {
                 their top and bottom. The pole is lit at its center and its
                 drop is straight down, so its center line is also where the
                 eye sees it. */}
-            <span className="absolute -top-3.5 left-1/2 size-7 -translate-x-1/2 rounded-full border-2 border-[#8a5a20] bg-[radial-gradient(circle_at_35%_30%,#f7dc9c,#b47f36_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-5" />
-            <span className="absolute -bottom-3.5 left-1/2 size-7 -translate-x-1/2 rounded-full border-2 border-[#8a5a20] bg-[radial-gradient(circle_at_35%_30%,#f7dc9c,#b47f36_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-5" />
+            <span
+              className="border-bronze-deep absolute -top-3.5 left-1/2 size-7 -translate-x-1/2 rounded-full border-2 [@media(max-height:500px)]:size-5"
+              style={{
+                background: ACHIEVEMENTS_CAP,
+                boxShadow: ACHIEVEMENTS_CAP_SHADOW,
+              }}
+            />
+            <span
+              className="border-bronze-deep absolute -bottom-3.5 left-1/2 size-7 -translate-x-1/2 rounded-full border-2 [@media(max-height:500px)]:size-5"
+              style={{
+                background: ACHIEVEMENTS_CAP,
+                boxShadow: ACHIEVEMENTS_CAP_SHADOW,
+              }}
+            />
           </span>
           <TabList
             aria-label={tr("achievements.screen.categories.label")}

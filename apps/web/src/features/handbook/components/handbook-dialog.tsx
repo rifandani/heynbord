@@ -57,6 +57,26 @@ import {
   handbookAtom,
   lastEntryAtom,
 } from "@/features/handbook/handbook.atoms";
+import {
+  HANDBOOK_CLOTH,
+  HANDBOOK_BRONZE_INK,
+  HANDBOOK_COVER_EDGE,
+  HANDBOOK_COVER_WELL,
+  HANDBOOK_HINGE_BG,
+  HANDBOOK_HINGE_LIGHT,
+  HANDBOOK_INNER_SPINE_SHADOW,
+  HANDBOOK_MODAL_SHADOW,
+  HANDBOOK_PAGE_SHADE,
+  HANDBOOK_PAGE_STACK,
+  HANDBOOK_SEARCH_SHADOW,
+  HANDBOOK_SIDE_SHADE,
+  HANDBOOK_SPINE_SHADOW,
+  HANDBOOK_TAB_SELECTED_SHADOW,
+  HANDBOOK_TAB_SELECTED_TOP_SHADOW,
+  HANDBOOK_TAB_SHADOW,
+  HANDBOOK_THUMB,
+  HANDBOOK_TITLE_SHADOW,
+} from "@/features/handbook/tokens";
 
 /**
  * The three forms of the Handbook (issue #25). `book`: two pages on desktop,
@@ -67,13 +87,7 @@ import {
 type Form = "book" | "page" | "side";
 
 /** The cloth of the cover: a fine weave on a deep blue, not the leather of the Deck book. */
-const CLOTH = {
-  background: [
-    "repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 4px)",
-    "repeating-linear-gradient(-45deg, rgba(0,0,0,0.14) 0 1px, transparent 1px 4px)",
-    "linear-gradient(180deg, #33476b 0%, #283a5c 55%, #1d2b47 100%)",
-  ].join(", "),
-} as const;
+const CLOTH = { background: HANDBOOK_CLOTH } as const;
 
 const SHORT_SCREEN = "(max-height: 500px)";
 
@@ -111,18 +125,22 @@ const SearchBox = ({
       className="group relative flex min-w-0 items-center"
       data-testid="handbook-search"
     >
-      <SearchIcon className="pointer-events-none absolute left-2.5 size-4 text-[#6b5238]" />
+      <SearchIcon className="text-ink-faded pointer-events-none absolute left-2.5 size-4" />
       <Input
         placeholder={tr("handbook.searchPlaceholder")}
         className={cn(
-          "h-10 w-full min-w-0 rounded-lg border-2 border-[#121c30] bg-[#fff3d1] pr-9 pl-8 text-sm text-[#2a1d12] shadow-[inset_0_2px_3px_rgba(0,0,0,0.25)] outline-none placeholder:text-[#6b5238]",
-          "data-[focused]:ring-4 data-[focused]:ring-[#fff2a8] [&::-webkit-search-cancel-button]:hidden",
+          "bg-parchment-lit text-ink placeholder:text-ink-faded h-10 w-full min-w-0 rounded-lg border-2 pr-9 pl-8 text-sm outline-none",
+          "data-[focused]:ring-focus-cream data-[focused]:ring-4 [&::-webkit-search-cancel-button]:hidden",
           "[@media(max-height:500px)]:h-8"
         )}
+        style={{
+          borderColor: HANDBOOK_COVER_EDGE,
+          boxShadow: HANDBOOK_SEARCH_SHADOW,
+        }}
       />
       <Button
         aria-label={tr("handbook.clearSearch")}
-        className="absolute right-1 grid size-8 cursor-pointer place-items-center rounded-md text-[#5b4632] outline-none group-data-[empty]:hidden data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#ead9b4] [@media(max-height:500px)]:size-7"
+        className="text-ink-soft data-[focus-visible]:ring-focus-cream data-[hovered]:bg-parchment-deep absolute right-1 grid size-8 cursor-pointer place-items-center rounded-md outline-none group-data-[empty]:hidden data-[focus-visible]:ring-4 [@media(max-height:500px)]:size-7"
       >
         <CloseIcon className="size-4" />
       </Button>
@@ -172,11 +190,12 @@ const CoverBand = ({
       <Heading
         slot="title"
         className={cn(
-          "font-display shrink-0 font-black text-[#fff6df] [text-shadow:0_2px_0_rgba(0,0,0,0.45)]",
+          "font-display text-cream shrink-0 font-black",
           book ? "text-2xl" : "text-xl",
           "[@media(max-height:500px)]:text-base",
           !book && "max-[700px]:sr-only"
         )}
+        style={{ textShadow: HANDBOOK_TITLE_SHADOW }}
       >
         {tr("handbook.title")}
       </Heading>
@@ -220,17 +239,29 @@ const ThumbTab = ({
       id={chapter}
       aria-label={tr(`handbook.chapter.${chapter}.name`)}
       className={cn(
-        "group relative flex cursor-pointer items-center bg-[#d9c39a] font-bold text-[#4a3524] transition-[background-color,translate] duration-150 outline-none motion-reduce:transition-none",
-        "data-[focus-visible]:z-10 data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#ead9b4] data-[selected]:bg-[#f6ead0] data-[selected]:text-[#2a1d12]",
+        "group text-plate-ember relative flex cursor-pointer items-center bg-(--hb-thumb) font-bold transition-[background-color,translate] duration-150 outline-none motion-reduce:transition-none",
+        "data-[focus-visible]:ring-focus-cream data-[hovered]:bg-parchment-deep data-[selected]:bg-parchment data-[selected]:text-ink data-[focus-visible]:z-10 data-[focus-visible]:ring-4",
         book
-          ? "min-h-11 gap-2 rounded-r-lg py-1.5 pr-2 pl-6 text-xs shadow-[2px_2px_0_rgba(0,0,0,0.35)] data-[selected]:translate-x-1.5 data-[selected]:shadow-[inset_-4px_0_0_#e2a93b,2px_2px_0_rgba(0,0,0,0.35)]"
-          : "min-h-10 min-w-0 flex-1 justify-center rounded-t-lg px-1 pt-1 data-[selected]:shadow-[inset_0_4px_0_#e2a93b] [@media(max-height:500px)]:min-h-9"
+          ? "min-h-11 gap-2 rounded-r-lg py-1.5 pr-2 pl-6 text-xs shadow-[var(--hb-tab-shadow)] data-[selected]:translate-x-1.5 data-[selected]:shadow-[var(--hb-tab-selected-shadow)]"
+          : "min-h-10 min-w-0 flex-1 justify-center rounded-t-lg px-1 pt-1 data-[selected]:shadow-[var(--hb-tab-selected-top-shadow)] [@media(max-height:500px)]:min-h-9"
       )}
+      // SAFETY: four CSS custom properties for the drops and the cloth of the
+      // thumb-index tabs. React's `CSSProperties` does not model custom
+      // properties.
+      style={
+        {
+          "--hb-thumb": HANDBOOK_THUMB,
+          "--hb-tab-shadow": HANDBOOK_TAB_SHADOW,
+          "--hb-tab-selected-shadow": HANDBOOK_TAB_SELECTED_SHADOW,
+          "--hb-tab-selected-top-shadow": HANDBOOK_TAB_SELECTED_TOP_SHADOW,
+        } as CSSProperties
+      }
       data-testid={`handbook-chapter-${chapter}`}
     >
       <SmallIcon
         icon={CHAPTER_ICONS[chapter]}
-        className="size-5 text-[#7a4c1a] [@media(max-height:500px)]:size-[18px]"
+        className="size-5 [@media(max-height:500px)]:size-[18px]"
+        style={{ color: HANDBOOK_BRONZE_INK }}
       />
       {/* A single page has a strip of icons only. The tab label has the full name. */}
       {book ? (
@@ -288,8 +319,7 @@ const IndexPage = ({
   );
 };
 
-const PAGE =
-  "min-h-0 overflow-y-auto overscroll-contain bg-[#f6ead0] text-[#2a1d12]";
+const PAGE = "min-h-0 overflow-y-auto overscroll-contain bg-parchment text-ink";
 
 /** Two pages: the index at the left, the Entry at the right, with a spine between them. */
 const Spread = ({
@@ -301,7 +331,8 @@ const Spread = ({
 }) => (
   <>
     <span
-      className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-16 -translate-x-1/2 bg-[linear-gradient(90deg,rgba(91,58,30,0)_0%,rgba(91,58,30,0.1)_35%,rgba(91,58,30,0.3)_50%,rgba(91,58,30,0.1)_65%,rgba(91,58,30,0)_100%)]"
+      className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-16 -translate-x-1/2"
+      style={{ background: HANDBOOK_SPINE_SHADOW }}
       aria-hidden
     />
     <div
@@ -449,8 +480,9 @@ const HandbookBody = ({
                     PAGE,
                     "rounded-[10px] p-4 [@media(max-height:500px)]:p-2.5"
                   )
-                : "grid grid-cols-2 rounded-[10px] bg-[#f6ead0] shadow-[0_2px_0_#e6d6b0,0_4px_0_#cfba8f,0_5px_0_#8a6a40]"
+                : "bg-parchment grid grid-cols-2 rounded-[10px]"
             )}
+            style={single ? undefined : { boxShadow: HANDBOOK_PAGE_STACK }}
             data-testid="handbook-page"
           >
             {single ? (
@@ -510,18 +542,27 @@ const CoverFace = ({ className }: { readonly className: string }) => {
   return (
     <div
       className={cn(
-        "grid place-items-center overflow-hidden rounded-l-[4px] rounded-r-[16px] border-2 border-l-0 border-[#121c30] [backface-visibility:hidden] [@media(max-height:500px)]:rounded-r-xl",
+        "grid place-items-center overflow-hidden rounded-l-[4px] rounded-r-[16px] border-2 border-l-0 [backface-visibility:hidden] [@media(max-height:500px)]:rounded-r-xl",
         className
       )}
-      style={CLOTH}
+      style={{ ...CLOTH, borderColor: HANDBOOK_COVER_EDGE }}
       aria-hidden
     >
-      <span className="absolute inset-1 left-0 rounded-r-[12px] border border-l-0 border-dashed border-[#e7bb6a]/35 [@media(max-height:500px)]:rounded-r-lg" />
+      <span className="border-bronze-rim/35 absolute inset-1 left-0 rounded-r-[12px] border border-l-0 border-dashed [@media(max-height:500px)]:rounded-r-lg" />
       {/* The hinge groove next to the spine. */}
-      <span className="absolute inset-y-0 left-3 w-[3px] bg-[#121c30]/70 shadow-[1px_0_0_rgba(200,220,255,0.12)] [@media(max-height:500px)]:left-2" />
-      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[#e7bb6a]/40 px-8 py-6 shadow-[inset_0_2px_6px_rgba(0,0,0,0.35)] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:py-3">
+      <span
+        className="absolute inset-y-0 left-3 w-[3px] [@media(max-height:500px)]:left-2"
+        style={{
+          background: HANDBOOK_HINGE_BG,
+          boxShadow: HANDBOOK_HINGE_LIGHT,
+        }}
+      />
+      <div
+        className="border-bronze-rim/40 flex flex-col items-center gap-3 rounded-xl border border-dashed px-8 py-6 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:py-3"
+        style={{ boxShadow: HANDBOOK_COVER_WELL }}
+      >
         <HandbookIcon className="size-32 [@media(max-height:500px)]:size-16" />
-        <span className="font-display text-center text-3xl font-black tracking-wide text-[#fff6df] [@media(max-height:500px)]:text-lg">
+        <span className="font-display text-cream text-center text-3xl font-black tracking-wide [@media(max-height:500px)]:text-lg">
           {tr("handbook.title")}
         </span>
       </div>
@@ -538,7 +579,8 @@ const CoverFace = ({ className }: { readonly className: string }) => {
 const SideCover = () => (
   <>
     <span
-      className="pointer-events-none absolute inset-0 z-10 rounded-[16px] bg-[linear-gradient(90deg,rgba(8,12,24,0.75),rgba(8,12,24,0.4)_45%,rgba(8,12,24,0.15))] opacity-0 motion-safe:group-data-[entering]/book:animate-[handbook-side-shadow_440ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[handbook-side-shadow_280ms_linear_reverse_both] [@media(max-height:500px)]:rounded-xl"
+      className="pointer-events-none absolute inset-0 z-10 rounded-[16px] opacity-0 motion-safe:group-data-[entering]/book:animate-[handbook-side-shadow_440ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[handbook-side-shadow_280ms_linear_reverse_both] [@media(max-height:500px)]:rounded-xl"
+      style={{ background: HANDBOOK_SIDE_SHADE }}
       aria-hidden
     />
     {/* A child of the Modal, so that the perspective of the Modal applies. */}
@@ -562,19 +604,21 @@ const Cover = ({ form }: { readonly form: Form }) => {
       <CoverFace className="absolute inset-0 motion-safe:group-data-[entering]/book:animate-[deck-cover-front_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-cover-front_500ms_linear_reverse_both]" />
       {/* The inside of the cover: the left half of the open book, with a blank page. */}
       <div
-        className="absolute inset-0 [transform:rotateY(180deg)] overflow-hidden rounded-l-[16px] rounded-r-[4px] border-2 border-r-0 border-[#121c30] [backface-visibility:hidden] motion-safe:group-data-[entering]/book:animate-[deck-cover-back_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-cover-back_500ms_linear_reverse_both] [@media(max-height:500px)]:rounded-l-xl"
-        style={CLOTH}
+        className="absolute inset-0 [transform:rotateY(180deg)] overflow-hidden rounded-l-[16px] rounded-r-[4px] border-2 border-r-0 [backface-visibility:hidden] motion-safe:group-data-[entering]/book:animate-[deck-cover-back_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-cover-back_500ms_linear_reverse_both] [@media(max-height:500px)]:rounded-l-xl"
+        style={{ ...CLOTH, borderColor: HANDBOOK_COVER_EDGE }}
       >
-        <span className="absolute inset-1 right-0 rounded-l-[12px] border border-r-0 border-dashed border-[#e7bb6a]/35 [@media(max-height:500px)]:rounded-l-lg" />
+        <span className="border-bronze-rim/35 absolute inset-1 right-0 rounded-l-[12px] border border-r-0 border-dashed [@media(max-height:500px)]:rounded-l-lg" />
         <span
           className={cn(
-            "absolute right-0 rounded-l-[10px] bg-[#f6ead0] bg-[linear-gradient(90deg,rgba(91,58,30,0)_calc(100%-40px),rgba(91,58,30,0.1)_calc(100%-26px),rgba(91,58,30,0.3)_100%)]",
+            "bg-parchment absolute right-0 rounded-l-[10px]",
             // The page sits under the band of the cover, and on a single page under the strip of tabs too.
-            book
-              ? "top-16 bottom-2.5 left-2.5 shadow-[0_2px_0_#e6d6b0,0_4px_0_#cfba8f,0_5px_0_#8a6a40]"
-              : "top-24 bottom-1.5 left-1.5",
+            book ? "top-16 bottom-2.5 left-2.5" : "top-24 bottom-1.5 left-1.5",
             "[@media(max-height:500px)]:top-20 [@media(max-height:500px)]:bottom-1.5 [@media(max-height:500px)]:left-1.5"
           )}
+          style={{
+            backgroundImage: HANDBOOK_INNER_SPINE_SHADOW,
+            boxShadow: book ? HANDBOOK_PAGE_STACK : undefined,
+          }}
         />
       </div>
     </div>
@@ -623,17 +667,21 @@ export const HandbookDialog = ({
       >
         <div
           className={cn(
-            "absolute inset-0 rounded-[16px] border-2 border-[#121c30] p-2.5 pt-0 shadow-[0_24px_48px_rgba(0,0,0,0.55)]",
+            "absolute inset-0 rounded-[16px] border-2 p-2.5 pt-0",
             form !== "book" && "p-1.5 pt-0",
             form !== "side" &&
               "motion-safe:group-data-[entering]/book:animate-[deck-book-body_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-book-body_500ms_linear_reverse_both]",
             "[@media(max-height:500px)]:rounded-xl"
           )}
-          style={CLOTH}
+          style={{
+            ...CLOTH,
+            borderColor: HANDBOOK_COVER_EDGE,
+            boxShadow: HANDBOOK_MODAL_SHADOW,
+          }}
         >
           {/* The stitches along the edge of the cloth. */}
           <span
-            className="pointer-events-none absolute inset-1 rounded-[12px] border border-dashed border-[#e7bb6a]/35 [@media(max-height:500px)]:rounded-lg"
+            className="border-bronze-rim/35 pointer-events-none absolute inset-1 rounded-[12px] border border-dashed [@media(max-height:500px)]:rounded-lg"
             aria-hidden
           />
           <Dialog
@@ -654,7 +702,8 @@ export const HandbookDialog = ({
           <>
             {/* The shadow of the cover on the right page while the cover moves. */}
             <span
-              className="pointer-events-none absolute inset-y-0 right-0 left-1/2 z-10 rounded-r-[16px] bg-[linear-gradient(90deg,rgba(8,12,24,0.7),rgba(8,12,24,0.35)_55%,rgba(8,12,24,0.15))] opacity-0 motion-safe:group-data-[entering]/book:animate-[deck-page-shadow_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-page-shadow_500ms_linear_reverse_both] [@media(max-height:500px)]:rounded-r-xl"
+              className="pointer-events-none absolute inset-y-0 right-0 left-1/2 z-10 rounded-r-[16px] opacity-0 motion-safe:group-data-[entering]/book:animate-[deck-page-shadow_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-page-shadow_500ms_linear_reverse_both] [@media(max-height:500px)]:rounded-r-xl"
+              style={{ background: HANDBOOK_PAGE_SHADE }}
               aria-hidden
             />
             <Cover form={form} />

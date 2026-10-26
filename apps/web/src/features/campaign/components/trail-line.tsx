@@ -2,6 +2,11 @@ import { useId } from "react";
 
 import type { RegionMap } from "@/features/campaign/region-map";
 import { MAP, smoothPath } from "@/features/campaign/region-map";
+import {
+  CAMPAIGN_TRAIL_AHEAD_DARK,
+  CAMPAIGN_TRAIL_AHEAD_LIGHT,
+  CAMPAIGN_TRAIL_DONE_DARK,
+} from "@/features/campaign/tokens";
 
 /**
  * The progress line on the center of the painted road (GDD 11.5): solid
@@ -45,13 +50,13 @@ export const TrailLine = ({
         <g fill="none" strokeLinecap="round">
           <path
             d={ahead}
-            stroke="rgba(42,26,12,0.35)"
+            stroke={CAMPAIGN_TRAIL_AHEAD_DARK}
             strokeWidth={9}
             strokeDasharray="0.1 18"
           />
           <path
             d={ahead}
-            stroke="rgba(255,246,223,0.8)"
+            stroke={CAMPAIGN_TRAIL_AHEAD_LIGHT}
             strokeWidth={5.5}
             strokeDasharray="0.1 18"
           />
@@ -66,13 +71,13 @@ export const TrailLine = ({
         >
           <path
             d={done}
-            stroke="rgba(42,26,12,0.55)"
+            stroke={CAMPAIGN_TRAIL_DONE_DARK}
             strokeWidth={13}
             strokeDasharray="16 13"
           />
           <path
             d={done}
-            stroke="#fff6df"
+            stroke="var(--color-cream)"
             strokeWidth={7.5}
             strokeDasharray="16 13"
           />

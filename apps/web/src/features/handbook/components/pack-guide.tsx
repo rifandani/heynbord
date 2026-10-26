@@ -2,6 +2,7 @@ import { useAtomValue } from "@effect/atom-react";
 import type { PackDefinition, PackId } from "@workspace/rules";
 import { coinDenominations, PACK_SIZE, PACKS, RANKS } from "@workspace/rules";
 import { cn } from "cn";
+import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
 import type { Key } from "react-aria-components";
 import {
@@ -17,6 +18,20 @@ import { RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CLASSES_WITH_CARDS, RACES_WITH_CARDS } from "@/features/deck/deck";
+import {
+  HANDBOOK_GUARANTEE_ARROW,
+  HANDBOOK_GUARANTEE_NEXT,
+  HANDBOOK_INDICATOR_SHADOW,
+  HANDBOOK_LAMP,
+  HANDBOOK_PACK_CLOSED,
+  HANDBOOK_PACK_OPEN,
+  HANDBOOK_SEAL_EDGE,
+  HANDBOOK_SEAL_SHADOW,
+  HANDBOOK_SHELF_SHADOW,
+  HANDBOOK_TRACK_SHADOW,
+  HANDBOOK_VALUE_INK,
+  HANDBOOK_WELL_SHADOW,
+} from "@/features/handbook/tokens";
 import { CoinPrice, PackArt } from "@/features/packs/components/pack-art";
 import { dropRateBar, packsToGuarantee } from "@/features/packs/packs";
 import { packStateAtom } from "@/features/packs/packs.atoms";
@@ -24,12 +39,11 @@ import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { useGuaranteeText } from "@/features/packs/use-guarantee-text";
 
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
-const ROW = "border-t border-[#c9b48c]/70";
+const ROW = "border-t border-parchment-rule/70";
 
-const WELL =
-  "rounded-xl border-2 border-[#c9b48c] bg-[#f1e2c2] shadow-[inset_0_2px_4px_rgba(91,58,30,0.18)]";
+const WELL = "rounded-xl border-2 border-parchment-rule bg-parchment-well";
 
 /** The delay between two cells of the Pack Guarantee track, in ms. */
 const TICK_MS = 22;
@@ -48,7 +62,12 @@ const PackTab = ({ pack }: { readonly pack: PackDefinition }) => {
   return (
     <Tab
       id={pack.id}
-      className="group/stand relative flex w-[30%] max-w-32 cursor-pointer flex-col items-center rounded-lg pb-1.5 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+      className="group/stand data-[focus-visible]:ring-focus-cream relative flex w-[30%] max-w-32 cursor-pointer flex-col items-center rounded-lg pb-1.5 outline-none data-[focus-visible]:ring-4"
+      // SAFETY: a CSS custom property for the drop of the selected Pack. React's
+      // `CSSProperties` does not model custom properties.
+      style={
+        { "--hb-indicator-shadow": HANDBOOK_INDICATOR_SHADOW } as CSSProperties
+      }
       data-testid={`handbook-pack-tab-${pack.id}`}
     >
       {({ isSelected }) => (
@@ -56,9 +75,10 @@ const PackTab = ({ pack }: { readonly pack: PackDefinition }) => {
           {/* The lamp light on the shelf under the selected Pack. */}
           <span
             className={cn(
-              "pointer-events-none absolute top-[calc(var(--pack-h)-1.75rem)] left-1/2 h-10 w-[140%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(255,214,120,0.75),transparent)] transition-opacity duration-300",
+              "pointer-events-none absolute top-[calc(var(--pack-h)-1.75rem)] left-1/2 h-10 w-[140%] -translate-x-1/2 rounded-[50%] transition-opacity duration-300",
               isSelected ? "opacity-100" : "opacity-0"
             )}
+            style={{ background: HANDBOOK_LAMP }}
             aria-hidden
           />
           <PackArt
@@ -75,7 +95,7 @@ const PackTab = ({ pack }: { readonly pack: PackDefinition }) => {
           <span
             className={cn(
               "font-display relative mt-2.5 text-center text-[0.8125rem] leading-tight font-bold text-balance transition-colors duration-200 [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs",
-              isSelected ? "text-[#2a1a0c]" : "text-[#5b4632]"
+              isSelected ? "text-wood-edge" : "text-ink-soft"
             )}
           >
             {tr(`packs.names.${pack.id}`)}
@@ -84,12 +104,12 @@ const PackTab = ({ pack }: { readonly pack: PackDefinition }) => {
             parts={coinDenominations(pack.price)}
             format={format}
             tone="light"
-            className="mt-0.5 text-xs font-bold text-[#5b4632]"
+            className="text-ink-soft mt-0.5 text-xs font-bold"
           />
           <span className="sr-only">{words(pack.price)}</span>
           <SelectionIndicator
             isSelected={isSelected}
-            className="absolute -bottom-1 left-1/2 h-1 w-10 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#e2a93b] to-[#ffe08a] shadow-[0_1px_2px_rgba(60,30,5,0.45)] motion-safe:transition-[translate] motion-safe:duration-[260ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)]"
+            className="from-gold to-gold-light absolute -bottom-1 left-1/2 h-1 w-10 -translate-x-1/2 rounded-full bg-gradient-to-r [box-shadow:var(--hb-indicator-shadow)] motion-safe:transition-[translate] motion-safe:duration-[260ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)]"
           />
         </>
       )}
@@ -115,7 +135,8 @@ const RankRoll = ({ pack }: { readonly pack: PackDefinition }) => {
         {tr("handbook.packGuide.rollTitle")}
       </h4>
       <div
-        className="flex h-3 w-full overflow-hidden rounded-full border border-[#5b4632]/60 bg-[#5b4632]/30 shadow-[inset_0_1px_2px_rgba(0,0,0,0.25)]"
+        className="border-ink-soft/60 bg-ink-soft/30 flex h-3 w-full overflow-hidden rounded-full border"
+        style={{ boxShadow: HANDBOOK_TRACK_SHADOW }}
         aria-hidden
       >
         {segments.map((part) => (
@@ -129,7 +150,10 @@ const RankRoll = ({ pack }: { readonly pack: PackDefinition }) => {
           />
         ))}
       </div>
-      <ul className="flex flex-wrap gap-x-3.5 gap-y-1 text-[0.8125rem] leading-tight font-semibold text-[#3d2e1f]">
+      <ul
+        className="flex flex-wrap gap-x-3.5 gap-y-1 text-[0.8125rem] leading-tight font-semibold"
+        style={{ color: HANDBOOK_VALUE_INK }}
+      >
         {segments.map((part) => (
           <li key={part.rank} className="flex items-center gap-1.5">
             <span className="text-[11px]" aria-hidden>
@@ -142,7 +166,7 @@ const RankRoll = ({ pack }: { readonly pack: PackDefinition }) => {
           </li>
         ))}
       </ul>
-      <p className="text-xs leading-snug text-[#5b4632]">
+      <p className="text-ink-soft text-xs leading-snug">
         {tr("handbook.packGuide.rollNote", { cards: PACK_SIZE })}
       </p>
     </section>
@@ -187,6 +211,7 @@ const GuaranteeTrack = ({
           WELL,
           "flex items-end justify-center gap-1 px-2.5 pt-2.5 pb-1"
         )}
+        style={{ boxShadow: HANDBOOK_WELL_SHADOW }}
         data-testid="handbook-pack-track"
         data-left={left}
       >
@@ -200,20 +225,30 @@ const GuaranteeTrack = ({
             >
               <span
                 className={cn(
-                  "motion-safe:animate-in motion-safe:fill-mode-backwards motion-safe:fade-in motion-safe:slide-in-from-bottom-1 aspect-[2/3] w-full rounded-[3px] border motion-safe:duration-200",
-                  opened
-                    ? "border-[#3d2e1f] bg-[#7a5d3e]"
-                    : "border-[#c9b48c] bg-[#e6d3ab]",
+                  "border-parchment-rule motion-safe:animate-in motion-safe:fill-mode-backwards motion-safe:fade-in motion-safe:slide-in-from-bottom-1 aspect-[2/3] w-full rounded-[3px] border motion-safe:duration-200",
                   next &&
-                    "border-[#b4781a] bg-[#fff2c4] ring-2 ring-[#e2a93b] ring-offset-1 ring-offset-[#f1e2c2]"
+                    "ring-gold ring-offset-parchment-well ring-2 ring-offset-1"
                 )}
-                style={{ animationDelay: `${index * TICK_MS}ms` }}
+                style={{
+                  animationDelay: `${index * TICK_MS}ms`,
+                  backgroundColor: next
+                    ? HANDBOOK_GUARANTEE_NEXT
+                    : opened
+                      ? HANDBOOK_PACK_OPEN
+                      : HANDBOOK_PACK_CLOSED,
+                  borderColor: next
+                    ? HANDBOOK_GUARANTEE_ARROW
+                    : opened
+                      ? HANDBOOK_VALUE_INK
+                      : undefined,
+                }}
               />
               <span
                 className={cn(
-                  "h-1.5 w-0 border-x-[4px] border-b-[5px] border-x-transparent border-b-[#b4781a]",
+                  "h-1.5 w-0 border-x-[4px] border-b-[5px] border-x-transparent",
                   !next && "invisible"
                 )}
+                style={{ borderBottomColor: HANDBOOK_GUARANTEE_ARROW }}
               />
             </span>
           );
@@ -221,26 +256,29 @@ const GuaranteeTrack = ({
         <span className="ml-1 flex shrink-0 flex-col items-center gap-0.5">
           <span
             className={cn(
-              "bg-night-plate grid size-7 place-items-center rounded-full border-2 border-[#8a6a3c] shadow-[0_2px_3px_rgba(40,20,5,0.45)] motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.16,1,0.3,1)_both]",
-              left === 1 && "ring-2 ring-[#e2a93b] ring-offset-1"
+              "bg-night-plate grid size-7 place-items-center rounded-full border-2 motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.16,1,0.3,1)_both]",
+              left === 1 && "ring-gold ring-2 ring-offset-1"
             )}
             style={{
               color: RANK_COLORS[rank],
               animationDelay: `${before * TICK_MS + 80}ms`,
+              borderColor: HANDBOOK_SEAL_EDGE,
+              boxShadow: HANDBOOK_SEAL_SHADOW,
             }}
           >
             <GlyphIcon glyph="shield" className="size-4" />
           </span>
           <span
             className={cn(
-              "h-1.5 w-0 border-x-[4px] border-b-[5px] border-x-transparent border-b-[#b4781a]",
+              "h-1.5 w-0 border-x-[4px] border-b-[5px] border-x-transparent",
               left !== 1 && "invisible"
             )}
+            style={{ borderBottomColor: HANDBOOK_GUARANTEE_ARROW }}
           />
         </span>
       </div>
       <p
-        className="flex items-center gap-1.5 text-[0.8125rem] leading-snug font-bold text-[#2a1a0c]"
+        className="text-wood-edge flex items-center gap-1.5 text-[0.8125rem] leading-snug font-bold"
         data-testid="handbook-pack-guarantee-now"
       >
         <span
@@ -251,7 +289,7 @@ const GuaranteeTrack = ({
         </span>
         {tr("handbook.packGuide.guaranteeNow", { guarantee: now })}
       </p>
-      <p className="text-xs leading-snug text-[#5b4632]">
+      <p className="text-ink-soft text-xs leading-snug">
         {tr(
           top
             ? "handbook.packGuide.guaranteeRuleTop"
@@ -272,7 +310,10 @@ const PackFacts = ({ pack }: { readonly pack: PackDefinition }) => {
         <dt className="flex items-center gap-1.5 font-semibold">
           {tr("handbook.packGuide.newCardFirst")}
         </dt>
-        <dd className="leading-snug font-medium text-[#3d2e1f]">
+        <dd
+          className="leading-snug font-medium"
+          style={{ color: HANDBOOK_VALUE_INK }}
+        >
           {tr(
             pack.newCardFirst
               ? "handbook.packGuide.newCardFirstYes"
@@ -282,7 +323,10 @@ const PackFacts = ({ pack }: { readonly pack: PackDefinition }) => {
       </div>
       <div className={cn(ROW, "grid grid-cols-[7.5rem_1fr] gap-x-3 py-1.5")}>
         <dt className="font-semibold">{tr("packs.openTen")}</dt>
-        <dd className="leading-snug font-medium text-[#3d2e1f]">
+        <dd
+          className="leading-snug font-medium"
+          style={{ color: HANDBOOK_VALUE_INK }}
+        >
           {pack.tenPackBonus === "extraPack"
             ? tr("handbook.packGuide.tenExtra")
             : tr("handbook.packGuide.tenGuarantee", {
@@ -326,13 +370,16 @@ const PackVersions = ({ pack }: { readonly pack: PackDefinition }) => {
           ) : null}
         </div>
         <div className="min-w-0 space-y-1.5">
-          <p className="text-sm leading-snug font-medium text-[#3d2e1f]">
+          <p
+            className="text-sm leading-snug font-medium"
+            style={{ color: HANDBOOK_VALUE_INK }}
+          >
             {tr("handbook.packGuide.versions", {
               price: words(pack.versionPrice),
               pack: tr(`packs.names.${pack.id}`),
             })}
           </p>
-          <p className="text-xs leading-snug text-[#5b4632]">
+          <p className="text-ink-soft text-xs leading-snug">
             {tr("handbook.packGuide.allCards")}
           </p>
         </div>
@@ -368,11 +415,13 @@ export const PackGuide = () => {
             WELL,
             "overflow-hidden px-2 pt-3 pb-2.5 [--pack-h:6.5rem] [@media(max-height:500px)]:[--pack-h:4.75rem]"
           )}
+          style={{ boxShadow: HANDBOOK_WELL_SHADOW }}
         >
           <div className="relative">
             {/* The wood ledge that the Packs stand on. A Tab list holds only Tabs, so it is outside. */}
             <span
-              className="absolute inset-x-0 top-[calc(var(--pack-h)-0.75rem)] h-3 rounded-md border-2 border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] shadow-[0_3px_0_rgba(0,0,0,0.3)]"
+              className="border-wood-edge from-wood-light to-wood absolute inset-x-0 top-[calc(var(--pack-h)-0.75rem)] h-3 rounded-md border-2 bg-gradient-to-b"
+              style={{ boxShadow: HANDBOOK_SHELF_SHADOW }}
               aria-hidden
             />
             <TabList
@@ -384,7 +433,7 @@ export const PackGuide = () => {
               ))}
             </TabList>
           </div>
-          <figcaption className="mt-2 text-center text-xs leading-snug text-[#5b4632]">
+          <figcaption className="text-ink-soft mt-2 text-center text-xs leading-snug">
             {tr("handbook.packGuide.notBetter")}
           </figcaption>
         </figure>
@@ -392,10 +441,10 @@ export const PackGuide = () => {
           <TabPanel
             key={pack.id}
             id={pack.id}
-            className="space-y-4 rounded-sm outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+            className="data-[focus-visible]:ring-focus-cream space-y-4 rounded-sm outline-none data-[focus-visible]:ring-4"
             data-testid={`handbook-pack-panel-${pack.id}`}
           >
-            <p className="font-display text-lg leading-snug font-bold text-balance text-[#2a1a0c]">
+            <p className="font-display text-wood-edge text-lg leading-snug font-bold text-balance">
               {tr(`packs.jobs.${pack.id}`)}
             </p>
             <RankRoll pack={pack} />

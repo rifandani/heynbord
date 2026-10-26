@@ -41,11 +41,16 @@ import {
   summonersAt,
   TOKEN_GALLERY,
 } from "@/features/handbook/handbook";
+import {
+  HANDBOOK_BRONZE_INK,
+  HANDBOOK_INDICATOR_SHADOW,
+  HANDBOOK_WELL_SHADOW,
+} from "@/features/handbook/tokens";
 
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
-const INK_MUTED = "text-[#5b4632]";
+const INK_MUTED = "text-ink-soft";
 
 const SHORT_SCREEN = "(max-height: 500px)";
 
@@ -60,7 +65,7 @@ type ShowDetails = (target: Peek, name: Anchor, row: Anchor) => ReactNode;
 
 /** A link to an Entry in the text of a Token, as the "See also" links. */
 const TERM_LINK =
-  "cursor-pointer rounded-sm font-bold text-keyword-rust underline decoration-keyword-rust/45 underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-keyword-rust";
+  "cursor-pointer rounded-sm font-bold text-keyword-rust underline decoration-keyword-rust/45 underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-focus-cream data-[hovered]:decoration-keyword-rust";
 
 /**
  * A Rank segment. The selected one is gold, as the filters of the Deck
@@ -69,13 +74,13 @@ const TERM_LINK =
 const segment = ({ isSelected }: { readonly isSelected: boolean }) =>
   cn(
     "relative isolate flex h-8 min-w-9 cursor-pointer items-center justify-center rounded-md px-2 text-[13px] transition-colors duration-200 outline-none select-none",
-    "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+    "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
     "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[11px]",
-    isSelected ? "" : "data-[hovered]:bg-[#f6ead0]"
+    isSelected ? "" : "data-[hovered]:bg-parchment"
   );
 
 const segmentPlate = cn(
-  "absolute top-0 left-0 -z-10 size-full rounded-md bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[0_1px_2px_rgba(60,30,5,0.45)]",
+  "from-gold-light to-gold absolute top-0 left-0 -z-10 size-full rounded-md bg-gradient-to-b",
   "motion-safe:transition-[translate,width,height] motion-safe:duration-[220ms] motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
 );
 
@@ -105,7 +110,7 @@ const RankSwitch = ({
       data-testid="token-gallery-rank"
     >
       <Label className={LABEL}>{tr("handbook.tokenRank")}</Label>
-      <div className="flex items-center gap-0.5 rounded-lg border-2 border-[#c9b48c] bg-[#ead9b4] p-0.5">
+      <div className="border-parchment-rule bg-parchment-deep flex items-center gap-0.5 rounded-lg border-2 p-0.5">
         {RANKS.map((id) => (
           <Radio
             key={id}
@@ -120,6 +125,7 @@ const RankSwitch = ({
                 <SelectionIndicator
                   isSelected={isSelected}
                   className={segmentPlate}
+                  style={{ boxShadow: HANDBOOK_INDICATOR_SHADOW }}
                 />
               </>
             )}
@@ -153,7 +159,9 @@ const Stat = ({
   readonly value: number;
 }) => (
   <li className="flex items-center gap-1 whitespace-nowrap">
-    <GlyphIcon glyph={glyph} className="size-3.5 text-[#7a4c1a]" />
+    <span className="contents" style={{ color: HANDBOOK_BRONZE_INK }}>
+      <GlyphIcon glyph={glyph} className="size-3.5" />
+    </span>
     <span className="font-semibold">{label}</span>
     <RankValue value={value} />
   </li>
@@ -181,7 +189,7 @@ const Summoner = ({
       <Button
         ref={trigger}
         {...bind(target)}
-        className="decoration-keyword-rust/50 cursor-default rounded-sm font-semibold text-[#2a1d12] underline decoration-dotted underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid"
+        className="decoration-keyword-rust/50 text-ink data-[focus-visible]:ring-focus-cream cursor-default rounded-sm font-semibold underline decoration-dotted underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[hovered]:decoration-solid"
         data-testid="token-summoner"
         data-card={card.id}
       >
@@ -230,7 +238,9 @@ const Traits = ({
       {links.map((link) => (
         <li key={link.id} className="flex items-center gap-1">
           {link.glyph ? (
-            <GlyphIcon glyph={link.glyph} className="size-3.5 text-[#7a4c1a]" />
+            <span className="contents" style={{ color: HANDBOOK_BRONZE_INK }}>
+              <GlyphIcon glyph={link.glyph} className="size-3.5" />
+            </span>
           ) : null}
           <Link
             onPress={() => onOpen(link.id)}
@@ -271,7 +281,7 @@ const TokenRow = ({
   return (
     <li
       ref={row}
-      className="flex gap-4 border-t border-[#c9b48c]/70 py-3.5 first:border-t-0 first:pt-1 [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:py-2"
+      className="border-parchment-rule/70 flex gap-4 border-t py-3.5 first:border-t-0 first:pt-1 [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:py-2"
       data-testid="token-gallery-row"
       data-token={token.tokenId}
       data-absent={absent || undefined}
@@ -388,7 +398,8 @@ export const TokenGallery = ({
   return (
     <section
       aria-labelledby="token-gallery-title"
-      className="space-y-2.5 rounded-xl border-2 border-[#c9b48c] bg-[#f1e2c2] px-3.5 pt-3 pb-1.5 shadow-[inset_0_2px_4px_rgba(91,58,30,0.18)] [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:pt-2"
+      className="border-parchment-rule bg-parchment-well space-y-2.5 rounded-xl border-2 px-3.5 pt-3 pb-1.5 [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:pt-2"
+      style={{ boxShadow: HANDBOOK_WELL_SHADOW }}
       data-testid="token-gallery"
     >
       <div className="flex items-baseline justify-between gap-3">
@@ -400,7 +411,8 @@ export const TokenGallery = ({
         </h4>
         {/* The name of the selected Rank. Each Rank segment has its name for a screen reader. */}
         <span
-          className="font-display shrink-0 text-sm font-bold text-[#7a4c1a]"
+          className="font-display shrink-0 text-sm font-bold"
+          style={{ color: HANDBOOK_BRONZE_INK }}
           aria-hidden
           data-testid="token-gallery-rank-name"
         >
