@@ -162,7 +162,7 @@ const SidebarProvider = ({
         className={cn(
           "@container **:[svg]:shrink-0",
           "flex w-full text-sidebar-fg",
-          "group/sidebar-root peer/sidebar-root has-data-[intent=inset]:bg-sidebar dark:has-data-[intent=inset]:bg-bg",
+          "group/sidebar-root peer/sidebar-root has-data-[intent=inset]:bg-sidebar",
           className
         )}
         ref={ref}
@@ -262,7 +262,7 @@ const Sidebar = ({
           intent === "float" &&
             "bg-bg p-2 group-data-[collapsible=dock]:w-[calc(--spacing(4)+2px)]",
           intent === "inset" &&
-            "group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+(--spacing(2))+2px)] dark:bg-bg",
+            "group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+(--spacing(2))+2px)]",
           intent === "default" && [
             "group-data-[collapsible=dock]:w-(--sidebar-width-dock)",
             "border-sidebar-border group-data-[side=left]:border-r group-data-[side=right]:border-l",

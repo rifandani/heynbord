@@ -5,6 +5,7 @@ import {
   Input as InputPrimitive,
   type InputProps as InputPrimitiveProps,
 } from "react-aria-components/Input"
+import { wellFace, wellFocusRing } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 
 interface InputProps extends InputPrimitiveProps {
@@ -15,15 +16,15 @@ export function Input({ className, ref, ...props }: InputProps) {
     <span data-slot="control" className="relative block w-full">
       <InputPrimitive
         className={cx(
-          "relative block w-full appearance-none rounded-lg bg-(--control-bg,transparent) px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)]",
-          "text-base/6 text-fg placeholder:text-muted-fg sm:text-sm/6",
-          "border border-input enabled:hover:border-muted-fg/30",
-          "outline-hidden focus:border-ring/70 focus:ring-3 focus:ring-ring/20 focus:enabled:hover:border-ring/80",
+          wellFace,
+          wellFocusRing,
+          "relative block w-full appearance-none px-3 py-2.5 text-base/6 sm:py-2 sm:text-sm/6",
+          "placeholder:text-muted-fg",
+          "enabled:hover:border-bronze-rim",
           "invalid:border-danger-subtle-fg/70 focus:invalid:border-danger-subtle-fg/70 focus:invalid:ring-danger-subtle-fg/20 invalid:enabled:hover:border-danger-subtle-fg/80 focus:invalid:enabled:hover:border-danger-subtle-fg/80",
           "[&::-ms-reveal]:hidden [&::-webkit-search-cancel-button]:hidden",
-          "disabled:bg-muted forced-colors:in-disabled:text-[GrayText]",
-          "in-disabled:bg-muted forced-colors:in-disabled:text-[GrayText]",
-          "dark:scheme-dark",
+          "disabled:bg-muted disabled:opacity-70 forced-colors:in-disabled:text-[GrayText]",
+          "in-disabled:bg-muted in-disabled:opacity-70 forced-colors:in-disabled:text-[GrayText]",
           className
         )}
         ref={ref}

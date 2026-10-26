@@ -26,12 +26,10 @@ export function Switch({ children, className, ...props }: SwitchButtonProps) {
   return (
     <SwitchButton
       className={cx(
-        "[--switch-bg-ring:var(--color-blue-700)]/90 [--switch-bg:var(--color-blue-600)] dark:[--switch-bg-ring:transparent]",
-        "[--switch-ring:var(--color-blue-700)]/90 [--switch-shadow:var(--color-blue-900)]/20 [--switch:white]",
         "group relative grid cursor-default gap-x-6 gap-y-1 ltr:grid-cols-[1fr_auto] rtl:grid-cols-[auto_1fr]",
         "*:data-[slot=control-label]:row-start-1 ltr:*:data-[slot=control-label]:col-start-1 rtl:*:data-[slot=control-label]:col-start-2",
         "*:[[slot=description]]:row-start-2 ltr:*:[[slot=description]]:col-start-1 rtl:*:[[slot=description]]:col-start-2",
-        "disabled:opacity-50",
+        "disabled:opacity-70 disabled:grayscale forced-colors:disabled:text-[GrayText]",
         className
       )}
       {...props}
@@ -41,25 +39,21 @@ export function Switch({ children, className, ...props }: SwitchButtonProps) {
           <span
             data-slot="indicator"
             className={cn(
-              "relative isolate inline-flex h-6 w-10 cursor-default self-start rounded-full p-0.75 sm:mt-0.5 sm:h-5 sm:w-8 ltr:col-start-2 rtl:col-start-1",
-              "transition duration-200 ease-in-out",
-              "inset-ring inset-ring-input bg-input/30",
-              "forced-colors:outline forced-colors:[--switch-bg:Highlight]",
-              values.isHovered && "inset-ring-muted-fg/30",
+              "relative isolate inline-flex h-6 w-11 cursor-default self-start rounded-full border-2 border-input bg-(--control-bg) p-0.5 shadow-well transition duration-200 ease-in-out sm:mt-0.5",
+              values.isHovered && "border-bronze-rim",
               values.isFocusVisible &&
-                "inset-ring-ring/70 selected:inset-ring-(--switch-bg)/30 bg-(--switch-bg)/20 ring-(--switch-bg)/20 ring-2 dark:inset-ring-(--switch-bg)/70",
-              values.isSelected &&
-                "inset-ring-(--switch-shadow) bg-(--switch-bg) dark:inset-ring-(--switch-bg-ring) dark:bg-(--switch-bg)",
-              values.isDisabled &&
-                "dark:group-disabled:bg-muted-fg/30 dark:group-disabled:group-selected:inset-ring-muted-fg/30 dark:group-disabled:group-selected:bg-(--switch-bg)"
+                "border-ring ring-4 ring-(--ring)",
+              values.isSelected && "border-gold-deep bg-gold/35",
+              values.isPressed && "translate-y-px",
+              values.isDisabled && "opacity-70 grayscale"
             )}
           >
             <span
               aria-hidden="true"
               className={twJoin(
-                "pointer-events-none relative inline-block size-4.5 translate-x-0 rounded-full border border-transparent bg-white shadow-sm ring ring-fg/5 transition duration-200 ease-in-out sm:size-3.5",
+                "pointer-events-none relative inline-block size-4 rounded-full border-2 border-wood-edge bg-cream shadow-piece transition duration-200 ease-in-out",
                 values.isSelected &&
-                  "bg-(--switch) shadow-(--switch-shadow) ring-(--switch-ring) group-disabled:shadow-sm group-disabled:ring-secondary-fg/5 ltr:translate-x-4 ltr:sm:translate-x-3 rtl:-translate-x-4 rtl:sm:-translate-x-3"
+                  "bg-gradient-to-b from-gold-light to-gold ltr:translate-x-5 rtl:-translate-x-5"
               )}
             />
           </span>

@@ -14,7 +14,7 @@ import { tv } from "tailwind-variants"
 
 const tooltipStyles = tv({
   base: [
-    "group max-w-sm origin-(--trigger-anchor-point) rounded-lg border border-(--tooltip-border) px-2.5 py-1.5 text-sm/6 will-change-transform [--tooltip-border:var(--color-muted-fg)]/30 dark:shadow-none *:[strong]:font-medium",
+    "group max-w-sm origin-(--trigger-anchor-point) rounded-lg border border-(--tooltip-border) px-2.5 py-1.5 text-sm/6 will-change-transform [--tooltip-border:var(--color-muted-fg)]/30 *:[strong]:font-medium",
   ],
   variants: {
     inverse: {

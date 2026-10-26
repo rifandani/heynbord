@@ -10,6 +10,7 @@ import {
   SliderTrack as PrimitiveSliderTrack,
 } from "react-aria-components/Slider"
 import { cn } from "cn"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 
 export function SliderGroup({ className, ...props }: React.ComponentProps<"div">) {
@@ -28,7 +29,7 @@ export function Slider({ className, ...props }: ComponentProps<typeof PrimitiveS
       className={cx(
         "group relative flex touch-none select-none flex-col disabled:opacity-50",
         "orientation-horizontal:w-full orientation-horizontal:min-w-fit orientation-horizontal:gap-y-2",
-        "orientation-vertical:h-full orientation-vertical:min-h-fit orientation-vertical:w-1.5 orientation-vertical:items-center orientation-vertical:gap-y-2",
+        "orientation-vertical:h-full orientation-vertical:min-h-fit orientation-vertical:w-3 orientation-vertical:items-center orientation-vertical:gap-y-2",
         className
       )}
       {...props}
@@ -42,7 +43,11 @@ export function SliderOutput({
 }: ComponentProps<typeof PrimitiveSliderOutput>) {
   return (
     <PrimitiveSliderOutput
-      className={cx("font-medium text-base/6 sm:text-sm/6", className)}
+      className={cx(
+        gameText({ role: "number", tone: "inherit" }),
+        "text-sm",
+        className
+      )}
       {...props}
     />
   )
@@ -52,7 +57,7 @@ export function SliderThumb({ className, ...props }: ComponentProps<typeof Primi
   return (
     <PrimitiveSliderThumb
       className={cx(
-        "top-[50%] left-[50%] size-5 rounded-full bg-white outline-hidden ring ring-muted-fg/30 transition-[width,height] dark:ring-white",
+        "top-[50%] left-[50%] size-5 rounded-full border-2 border-wood-edge bg-gradient-to-b from-bronze-rim to-bronze shadow-piece outline-none transition-[transform,filter] duration-100 data-[pressed]:translate-y-px data-[focus-visible]:ring-4 data-[focus-visible]:ring-(--ring) data-[hovered]:brightness-110",
         className
       )}
       {...props}
@@ -68,9 +73,9 @@ export function SliderTrack({
   return (
     <PrimitiveSliderTrack
       className={cx(
-        "bg-(--slider-track-bg,var(--color-secondary))",
+        "border-2 border-input bg-(--control-bg) shadow-well",
         "group/track relative cursor-default rounded-full",
-        "grow group-orientation-horizontal:h-1.5 group-orientation-horizontal:w-full group-orientation-vertical:w-1.5 group-orientation-vertical:flex-1",
+        "grow group-orientation-horizontal:h-3 group-orientation-horizontal:w-full group-orientation-vertical:w-3 group-orientation-vertical:flex-1",
         "disabled:cursor-default disabled:opacity-60",
         className
       )}
@@ -95,7 +100,10 @@ export function SliderTrack({
 export function SliderFill({ className, ...props }: SliderFillProps) {
   return (
     <PrimitiveSliderFill
-      className={cx("pointer-events-none rounded-full bg-primary disabled:opacity-60", className)}
+      className={cx(
+        "pointer-events-none rounded-full bg-gradient-to-r from-gold-light to-gold disabled:opacity-60",
+        className
+      )}
       {...props}
     />
   )

@@ -8,22 +8,31 @@ import { LabelContext, Label as LabelPrimitive, type LabelProps } from "react-ar
 import { Text, type TextProps } from "react-aria-components/Text"
 import { cn } from "cn"
 import { tv } from "tailwind-variants"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 
 export const labelStyles = tv({
   base: [
-    "select-none text-base/6 text-fg in-data-required:not-data-[slot='control-label']:after:ml-1.5 sm:text-sm/6",
+    gameText({ role: "label", tone: "inherit" }),
+    "block select-none text-fg",
+    "in-data-required:not-data-[slot='control-label']:after:ml-1.5",
     "in-data-required:not-data-[slot='control-label']:after:text-danger-subtle-fg in-data-required:not-data-[slot='control-label']:after:content-['*']",
     "in-disabled:pointer-events-none in-disabled:opacity-50 group-disabled:opacity-50",
   ],
 })
 
 export const descriptionStyles = tv({
-  base: "block text-muted-fg text-sm/6 in-disabled:opacity-50 group-disabled:opacity-50",
+  base: [
+    gameText({ role: "small", tone: "inherit" }),
+    "block text-muted-fg in-disabled:opacity-50 group-disabled:opacity-50",
+  ],
 })
 
 export const fieldErrorStyles = tv({
-  base: "block text-danger-subtle-fg text-sm/6 in-disabled:opacity-50 group-disabled:opacity-50 forced-colors:text-[Mark]",
+  base: [
+    gameText({ role: "small", tone: "inherit" }),
+    "block text-danger-subtle-fg in-disabled:opacity-50 group-disabled:opacity-50 forced-colors:text-[Mark]",
+  ],
 })
 
 export const fieldStyles = tv({
@@ -35,7 +44,6 @@ export const fieldStyles = tv({
     "[&>[slot=description]+[data-slot=control]]:mt-2",
     "[&>[data-slot=control]+[slot=description]]:mt-2",
     "[&>[data-slot=control]+[slot=errorMessage]]:mt-2",
-    "*:data-[slot=label]:font-medium",
     "in-disabled:opacity-50 disabled:opacity-50",
   ],
 })
@@ -84,7 +92,12 @@ export function Legend({ className, ...props }: React.ComponentProps<"legend">) 
     <legend
       data-slot="legend"
       {...props}
-      className={cn("font-semibold text-base/6 data-disabled:opacity-50", className)}
+      className={cn(
+        gameText({ role: "title", tone: "inherit" }),
+        "text-fg",
+        "data-disabled:opacity-50",
+        className
+      )}
     />
   )
 }

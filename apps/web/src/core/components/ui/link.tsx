@@ -15,9 +15,10 @@ export function Link({ className, ref, ...props }: LinkProps) {
     <LinkPrimitive
       ref={ref}
       className={cx(
-        "font-medium text-(--text)",
-        "outline-0 outline-offset-2 focus-visible:outline-2 focus-visible:outline-ring forced-colors:outline-[Highlight]",
-        "disabled:cursor-default disabled:opacity-50 forced-colors:disabled:text-[GrayText]",
+        "font-semibold text-(--link) underline-offset-4",
+        "outline-none focus-visible:ring-4 focus-visible:ring-(--ring) forced-colors:outline-[Highlight]",
+        "hover:underline hover:decoration-2",
+        "disabled:cursor-default disabled:opacity-50 disabled:no-underline forced-colors:disabled:text-[GrayText]",
         "href" in props && "cursor-pointer",
         className
       )}

@@ -8,13 +8,6 @@
 @plugin "tailwindcss-react-aria-components";
 
 /*
- * Dark mode is retired (DESIGN.md, "One Theme Rule"). This variant stays so
- * that the old `dark:` utilities in `core/components/ui` cannot follow the
- * operating system preference. They never match, and Part 2 removes them.
- */
-@variant dark (&:is(.dark *));
-
-/*
  * The Town Bar is a wood shelf that can stow away. `--town-bar` is the live
  * height, registered so every screen's floor follows one motion.
  * `--town-bar-shelf` is the height of the full shelf, also when it is stowed.
@@ -1779,6 +1772,8 @@ html[data-reduced-motion="true"] {
   --border: var(--color-plate-ember);
   --input: var(--color-bronze);
   --ring: var(--color-focus-cream);
+  --control-bg: var(--color-plate-socket);
+  --link: var(--color-gold-light);
 
   --navbar: var(--color-night-plate);
   --navbar-fg: var(--color-cream);
@@ -1810,8 +1805,14 @@ html[data-reduced-motion="true"] {
   --muted-fg: var(--color-ink-soft);
   --border: var(--color-parchment-rule);
   --input: var(--color-parchment-rule);
+  --control-bg: var(--color-parchment-lit);
+  --link: var(--color-gold-deep);
+  --primary-subtle-fg: var(--color-gold-deep);
   --accent: var(--color-parchment-deep);
   --accent-fg: var(--color-ink);
+  --danger-subtle-fg: var(--color-enemy-deep);
+  --warning-subtle-fg: var(--color-victory-amber);
+  --info-subtle-fg: var(--color-tutorial-teal);
   --ring: var(--color-gold-deep);
 }
 

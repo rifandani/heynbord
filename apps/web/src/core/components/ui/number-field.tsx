@@ -29,7 +29,7 @@ function NumberInput({ className, ...props }: InputProps) {
         data-slot="text"
         className="in-disabled:pointer-events-none pointer-events-auto end-0 p-px in-disabled:opacity-50"
       >
-        <div className="flex h-full items-center divide-x overflow-hidden rounded-e-[calc(var(--radius-lg)-1px)] border-s">
+        <div className="flex h-full items-center divide-x divide-input overflow-hidden rounded-e-lg border-s-2 border-input">
           <StepperButton slot="decrement" />
           <StepperButton slot="increment" />
         </div>
@@ -47,10 +47,11 @@ const StepperButton = ({ slot, className, ...props }: StepperButtonProps) => {
   return (
     <Button
       className={cx(
-        "inline-grid place-content-center pressed:text-fg text-muted-fg enabled:hover:text-fg",
-        "size-full min-w-11 grow bg-input/20 pressed:bg-input/60 sm:min-w-8.5",
+        "inline-grid place-content-center bg-plate-ember text-cream outline-none",
+        "size-full min-w-11 grow enabled:hover:bg-wood-light pressed:translate-y-px pressed:brightness-90",
+        "focus-visible:ring-4 focus-visible:ring-(--ring)",
         "*:data-[slot=stepper-icon]:size-5 sm:*:data-[slot=stepper-icon]:size-4",
-        "disabled:pointer-events-none disabled:opacity-50",
+        "disabled:pointer-events-none disabled:opacity-70",
         className
       )}
       slot={slot}

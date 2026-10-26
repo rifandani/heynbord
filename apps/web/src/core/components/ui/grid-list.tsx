@@ -17,7 +17,7 @@ const GridList = <T extends object>({ className, ...props }: GridListProps<T>) =
   <GridListPrimitive
     data-slot="grid-list"
     className={cx(
-      "relative divide-y overflow-hidden rounded-lg border bg-bg *:drop-target:border-accent sm:text-sm/6 dark:bg-muted",
+      "relative divide-y overflow-hidden rounded-lg border bg-bg *:drop-target:border-accent sm:text-sm/6",
       className
     )}
     {...props}

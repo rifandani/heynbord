@@ -25,10 +25,19 @@ export const InputShowcase = () => (
       </TextField>
     </Variant>
 
+    <Variant label="on parchment">
+      <div className="paper-surface bg-overlay text-overlay-fg border-frame-wood shadow-lift w-64 rounded-2xl border-4 p-4">
+        <TextField defaultValue="Marrow Castle">
+          <Label>Deck name</Label>
+          <Input />
+        </TextField>
+      </div>
+    </Variant>
+
     <Variant label="isDisabled">
-      <TextField className="w-64" isDisabled>
+      <TextField className="w-64" defaultValue="you@example.com" isDisabled>
         <Label>Email</Label>
-        <Input defaultValue="you@example.com" />
+        <Input />
       </TextField>
     </Variant>
   </VariantGrid>

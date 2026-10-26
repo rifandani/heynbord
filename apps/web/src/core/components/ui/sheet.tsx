@@ -63,10 +63,10 @@ const SheetContent = ({
       <Modal
         data-float={isFloat}
         className={cx(
-          "paper-surface fixed z-50 grid gap-4 border-muted-fg/20 bg-overlay text-overlay-fg shadow-lg dark:border-border",
+          "paper-surface fixed z-50 grid gap-4 border-muted-fg/20 bg-overlay text-overlay-fg shadow-lg",
           "transform-gpu transition ease-in-out will-change-transform [--visual-viewport-vertical-padding:16px]",
-          "data-[float=true]:rounded-lg data-[float=true]:ring data-[float=true]:ring-fg/5 dark:data-[float=true]:ring-border",
-          "border-fg/20 dark:border-border",
+          "data-[float=true]:rounded-lg data-[float=true]:ring data-[float=true]:ring-fg/5",
+          "border-fg/20",
           "entering:fade-in entering:animate-in entering:duration-500",
           "exiting:fade-in exiting:animate-out exiting:duration-300",
           sideVariants[side],

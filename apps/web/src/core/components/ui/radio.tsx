@@ -31,8 +31,8 @@ export function RadioField({ className, ...props }: RadioFieldProps) {
     <RadioFieldPrimitive
       {...props}
       className={cx(
-        "grid grid-cols-[1.125rem_1fr] gap-x-3 gap-y-1 sm:grid-cols-[1rem_1fr]",
-        "*:data-[slot=control]:col-start-1 *:data-[slot=control]:row-start-1 *:data-[slot=control]:mt-0.75 sm:*:data-[slot=control]:mt-1",
+        "grid grid-cols-[1.25rem_1fr] gap-x-3 gap-y-1",
+        "*:data-[slot=control]:col-start-1 *:data-[slot=control]:row-start-1 *:data-[slot=control]:mt-0.5",
         "**:data-[slot=control-label]:col-start-2 **:data-[slot=control-label]:row-start-1",
         "*:[[slot=description]]:col-start-2 *:[[slot=description]]:row-start-2",
         "has-[[slot=description]]:**:data-[slot=control-label]:font-medium",
@@ -56,14 +56,16 @@ export function Radio({ className, children, ...props }: RadioButtonProps) {
             <span
               data-slot="indicator"
               className={cn([
-                "relative col-start-1 row-start-1 mt-0.75 sm:mt-1 inset-ring inset-ring-input isolate flex size-4.5 shrink-0 items-center justify-center rounded-full bg-(--control-bg,transparent) text-bg transition before:absolute before:inset-auto before:size-2 before:shrink-0 before:rounded-full before:content-[''] hover:before:bg-muted-fg/20 sm:size-4 sm:before:size-1.7",
-                "in-disabled:bg-muted",
+                "relative col-start-1 row-start-1 mt-0.5 isolate flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-input bg-(--control-bg) text-transparent shadow-well transition-[transform,filter,background-color,border-color] duration-100 before:absolute before:size-2 before:shrink-0 before:rounded-full before:content-[''] group-hover:border-bronze-rim",
+                "group-focus-visible:border-ring group-focus-visible:ring-4 group-focus-visible:ring-(--ring)",
+                "data-[pressed]:translate-y-px",
+                "in-disabled:bg-muted in-disabled:opacity-70",
                 isSelected && [
-                  "inset-ring-(--radio-ring,var(--color-ring)) bg-(--radio-bg,var(--color-primary)) text-(--radio-fg,var(--color-primary-fg)) before:bg-bg hover:before:bg-muted/90",
-                  "group-invalid:inset-ring-danger-subtle-fg/70 group-invalid:bg-danger group-invalid:text-danger-fg",
+                  "border-gold-deep bg-gradient-to-b from-gold-light to-gold text-ink-on-gold shadow-piece before:bg-ink-on-gold",
+                  "group-invalid:border-danger-subtle-fg/70 group-invalid:bg-danger group-invalid:text-danger-fg",
                 ],
                 isInvalid &&
-                  "inset-ring-danger-subtle-fg/70 bg-danger-subtle/5 text-danger-fg ring-danger-subtle-fg/20",
+                  "border-danger-subtle-fg/70 bg-danger-subtle/5 text-danger-fg group-hover:border-danger-subtle-fg/70",
               ])}
             />
             <Label data-slot="control-label" elementType="span">

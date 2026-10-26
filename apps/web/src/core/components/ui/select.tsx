@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "react-aria-components/Select"
 import { twJoin } from "cn"
+import { wellFace, wellFocusRing } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 import {
   DropdownDescription,
@@ -88,17 +89,17 @@ const SelectTrigger = ({ children, className, ...props }: SelectTriggerProps) =>
     <span data-slot="control" className="relative block w-full">
       <Button
         className={cx(
-          "group/select-trigger flex w-full min-w-0 cursor-default items-center gap-x-2 rounded-lg border border-input bg-(--control-bg,transparent) px-[calc(--spacing(3.5)-1px)] py-[calc(--spacing(2.5)-1px)] text-start text-fg outline-hidden sm:px-[calc(--spacing(3)-1px)] sm:py-[calc(--spacing(1.5)-1px)] sm:text-sm/6 sm:*:text-sm/6 dark:shadow-none",
-          "focus:border-ring/70 focus:ring-3 focus:ring-ring/20 focus:enabled:hover:border-ring/80",
-          "enabled:hover:border-muted-fg/30",
-          "group-open/select:border-ring/70 group-open/select:ring-3 group-open/select:ring-ring/20",
-          "group-open/select:invalid:border-danger-subtle-fg/70 group-open/select:invalid:ring-3 group-open/select:invalid:ring-danger-subtle-fg/20 group-invalid/select:border-danger-subtle-fg/70 group-invalid/select:ring-danger-subtle-fg/20 group-invalid/select:enabled:hover:border-danger-subtle-fg/80 group-focus/select:group-invalid/select:border-danger-subtle-fg/70 group-focus/select:group-invalid/select:ring-danger-subtle-fg/20 group-focus/select:group-invalid/select:enabled:hover:border-danger-subtle-fg/80",
-          "forced-colors:[--btn-icon:ButtonText] forced-colors:hover:[--btn-icon:ButtonText] *:[svg]:size-5 *:[svg]:shrink-0 *:[svg]:self-center *:[svg]:text-(--btn-icon) pressed:*:[svg]:text-(--btn-icon-active) focus-visible:*:[svg]:text-(--btn-icon-active)/80 enabled:hover:*:[svg]:text-(--btn-icon-active)/90 sm:*:[svg]:size-4",
-          "*:data-[slot=loader]:size-5 *:data-[slot=loader]:shrink-0 *:data-[slot=loader]:self-center *:data-[slot=loader]:text-(--btn-icon) sm:*:data-[slot=loader]:size-4",
+          wellFace,
+          wellFocusRing,
+          "group/select-trigger flex w-full min-w-0 cursor-default items-center gap-x-2 px-3 py-2.5 text-start text-base/6 sm:py-2 sm:text-sm/6 sm:*:text-sm/6",
+          "enabled:hover:border-bronze-rim",
+          "group-open/select:border-ring group-open/select:ring-4 group-open/select:ring-(--ring)",
+          "group-open/select:invalid:border-danger-subtle-fg/70 group-open/select:invalid:ring-danger-subtle-fg/20 group-invalid/select:border-danger-subtle-fg/70 group-invalid/select:ring-danger-subtle-fg/20 group-invalid/select:enabled:hover:border-danger-subtle-fg/80 group-focus/select:group-invalid/select:border-danger-subtle-fg/70 group-focus/select:group-invalid/select:ring-danger-subtle-fg/20 group-focus/select:group-invalid/select:enabled:hover:border-danger-subtle-fg/80",
+          "forced-colors:border-[ButtonBorder] forced-colors:text-[ButtonText] *:[svg]:size-5 *:[svg]:shrink-0 *:[svg]:self-center *:[svg]:text-muted-fg sm:*:[svg]:size-4",
+          "*:data-[slot=loader]:size-5 *:data-[slot=loader]:shrink-0 *:data-[slot=loader]:self-center *:data-[slot=loader]:text-muted-fg sm:*:data-[slot=loader]:size-4",
           "forced-colors:group-focus/select:border-[Highlight] forced-colors:group-invalid/select:border-[Mark] forced-colors:group-focus/select:group-invalid/select:border-[Mark]",
-          "group-disabled/select:bg-muted group-disabled/select:opacity-50 forced-colors:group-disabled/select:border-[GrayText] forced-colors:group-disabled/select:text-[GrayText]",
-          "in-disabled:bg-muted in-disabled:opacity-50 forced-colors:in-disabled:border-[GrayText] forced-colors:in-disabled:text-[GrayText]",
-          "dark:scheme-dark",
+          "group-disabled/select:bg-muted group-disabled/select:opacity-70 forced-colors:group-disabled/select:border-[GrayText] forced-colors:group-disabled/select:text-[GrayText]",
+          "in-disabled:bg-muted in-disabled:opacity-70 forced-colors:in-disabled:border-[GrayText] forced-colors:in-disabled:text-[GrayText]",
           className
         )}
       >

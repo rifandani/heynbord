@@ -3,7 +3,7 @@ import type { ButtonProps } from "react-aria-components";
 import { Button } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { focusRing, ghostFace, goldFace, piece, woodFace } from "./surfaces";
+import { controlFace, ghostFace, goldFace, woodFace } from "./surfaces";
 
 /**
  * The Heynbord button (DESIGN.md, Buttons): a chunky wood or gold game token,
@@ -14,14 +14,7 @@ import { focusRing, ghostFace, goldFace, piece, woodFace } from "./surfaces";
  * landing page) builds its buttons from the same piece as the game.
  */
 export const gameButtonStyles = tv({
-  base: [
-    "relative inline-flex items-center justify-center gap-2 rounded-lg border-2 font-semibold select-none",
-    "transition-[transform,filter] duration-100",
-    piece,
-    focusRing,
-    "data-[hovered]:brightness-110",
-    "data-[disabled]:cursor-not-allowed data-[disabled]:border-dashed data-[disabled]:grayscale",
-  ],
+  base: controlFace,
   variants: {
     intent: {
       gold: goldFace,
