@@ -18,6 +18,7 @@ import {
   poolBlock,
   poolEntries,
 } from "@/features/deck/deck";
+import { DECK_COLORS, DECK_CSS } from "@/features/deck/tokens";
 
 type PeekBind = (target: Peek) => object;
 
@@ -42,7 +43,10 @@ const CopiesPlate = ({
   const { tr } = useGameText();
   if (block === null) {
     return (
-      <span className="flex h-6 max-w-full min-w-9 items-center justify-center rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-2 text-xs leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]">
+      <span
+        className="border-gold-trim/70 bg-night-plate/90 text-cream flex h-6 max-w-full min-w-9 items-center justify-center rounded-lg border-2 px-2 text-xs leading-none font-black tabular-nums [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]"
+        style={{ boxShadow: DECK_CSS.copyPlate }}
+      >
         <span className="truncate">
           {tr("deckBuilder.left", { owned, left })}
         </span>
@@ -52,17 +56,20 @@ const CopiesPlate = ({
   if (block === "notOwned") {
     return (
       <span
-        className={cn(
-          plate,
-          "border-dashed border-[#a8916a] bg-transparent text-[#5b4632]"
-        )}
+        className={cn(plate, "text-ink-soft border-dashed bg-transparent")}
+        style={{ borderColor: DECK_COLORS.dashedInk }}
       >
         <span className="truncate">{tr("deckBuilder.notOwned")}</span>
       </span>
     );
   }
   return (
-    <span className={cn(plate, "border-[#c9b48c] bg-[#ead9b4] text-[#5b4632]")}>
+    <span
+      className={cn(
+        plate,
+        "border-parchment-rule bg-parchment-deep text-ink-soft"
+      )}
+    >
       <span className="truncate">
         {block === "class"
           ? tr("deckBuilder.blocked.class", { className: classLabel })
@@ -119,7 +126,7 @@ const PoolCard = ({
         }
         aria-disabled={block === null ? undefined : true}
         className={cn(
-          "group flex flex-col items-center gap-1.5 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+          "group data-[focus-visible]:ring-focus-cream flex flex-col items-center gap-1.5 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4",
           block === null ? "cursor-pointer" : "cursor-default"
         )}
         data-testid={`pool-${tile.cardId}-${tile.rank}`}
@@ -173,7 +180,7 @@ const EmptyPool = ({
     >
       {ownsAll ? (
         <span
-          className="grid size-10 place-items-center rounded-full border-2 border-[#e9c46a]/80 bg-[#1c140e]/90 text-[#ffd75a] [@media(max-height:500px)]:size-7"
+          className="border-gold-trim/80 bg-night-plate/90 text-ready-gold grid size-10 place-items-center rounded-full border-2 [@media(max-height:500px)]:size-7"
           aria-hidden
         >
           <GlyphIcon
@@ -182,7 +189,7 @@ const EmptyPool = ({
           />
         </span>
       ) : null}
-      <p className="max-w-[32ch] text-sm font-semibold text-balance text-[#2a1d12] [@media(max-height:500px)]:text-xs">
+      <p className="text-ink max-w-[32ch] text-sm font-semibold text-balance [@media(max-height:500px)]:text-xs">
         {text(emptyPoolText(filter))}
       </p>
       <GameButton
@@ -245,7 +252,7 @@ export const CardPool = ({
         >
           {tr("deckBuilder.cards")}
           <span
-            className="font-sans text-xs font-semibold text-[#5b4632] tabular-nums"
+            className="text-ink-soft font-sans text-xs font-semibold tabular-nums"
             data-testid="pool-count"
           >
             {tr("deckBuilder.ownedOf", {
@@ -261,9 +268,10 @@ export const CardPool = ({
         key={`${filter.ownership}:${filter.kind}:${filter.race}:${filter.classId}`}
         className={cn(
           "-mx-2 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain px-2 pt-2 pb-4 text-[11px]",
-          "[scrollbar-width:thin] [scrollbar-color:#b9a175_transparent]",
+          "[scrollbar-width:thin]",
           "max-[1100px]:text-[10px] [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:text-[7px]"
         )}
+        style={{ scrollbarColor: DECK_CSS.scrollbar }}
         data-testid="deck-pool"
       >
         {pool.owned.length > 0 ? (
@@ -278,11 +286,11 @@ export const CardPool = ({
         {both ? (
           <h4
             id="deck-pool-not-owned"
-            className="flex items-center gap-3 pt-1 font-sans text-xs font-bold text-[#5b4632] [@media(max-height:500px)]:text-[10px]"
+            className="text-ink-soft flex items-center gap-3 pt-1 font-sans text-xs font-bold [@media(max-height:500px)]:text-[10px]"
           >
-            <span className="h-px flex-1 bg-[#c9b48c]" aria-hidden />
+            <span className="bg-parchment-rule h-px flex-1" aria-hidden />
             {tr("deckBuilder.notOwnedGroup", { count: pool.notOwned.length })}
-            <span className="h-px flex-1 bg-[#c9b48c]" aria-hidden />
+            <span className="bg-parchment-rule h-px flex-1" aria-hidden />
           </h4>
         ) : null}
         {pool.notOwned.length > 0 ? (

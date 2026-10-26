@@ -13,6 +13,13 @@ import {
   PAINTED_PART_WIDTH,
   STOREY_DOOR,
 } from "@/features/heynspire/heynspire-art";
+import {
+  cssVars,
+  HEYNSPIRE_COLORS as C,
+  HEYNSPIRE_CSS as CSS,
+  HEYNSPIRE_DOOR,
+  HEYNSPIRE_RIBBON,
+} from "@/features/heynspire/tokens";
 
 /** The side of the tower that the ribbon of a storey hangs on. */
 export type RibbonSide = "left" | "right";
@@ -53,21 +60,16 @@ const paintedBox = (kind: StoreyKind) => {
 };
 
 /** The light of the stone from the upper left (art direction 5): the round tower is lit at the left. */
-const ROUND =
-  "linear-gradient(90deg, rgba(255,250,235,0.32) 0%, rgba(255,250,235,0.06) 30%, transparent 55%, rgba(74,52,30,0.18) 78%, rgba(60,40,22,0.42) 100%)";
+const ROUND = CSS.round;
 
 /**
  * The merlons of a Boss balcony: a solid band of stone at the bottom, and
  * merlons with gaps above it. A mask, so the painted stone shows through.
  */
-const CRENELS = [
-  "linear-gradient(#000 0 0) bottom / 100% 55% no-repeat",
-  "repeating-linear-gradient(90deg, #000 0 11%, transparent 11% 16.5%) top left / 100% 45% no-repeat",
-].join(", ");
+const CRENELS = CSS.crenels;
 
 /** The stone blocks under a cornice. */
-const CORBELS =
-  "repeating-linear-gradient(90deg, #000 0 5%, transparent 5% 10%)";
+const CORBELS = CSS.corbels;
 
 /** The cream stone of the tower, a patch of the tower inside painting. */
 const STONE = "bg-[url(/heynspire/tower-stone.webp)] bg-cover bg-center";
@@ -75,8 +77,13 @@ const STONE = "bg-[url(/heynspire/tower-stone.webp)] bg-cover bg-center";
 /** The arrow slits at the sides of the door. */
 const Slit = ({ left }: { readonly left: string }) => (
   <span
-    className="absolute top-[40%] h-[30%] w-[4%] -translate-x-1/2 rounded-t-full border-2 border-[#d9c9a6] bg-gradient-to-b from-[#28303b] to-[#3c4654] shadow-[inset_1px_2px_3px_rgba(0,0,0,0.6)]"
-    style={{ left }}
+    className="absolute top-[40%] h-[30%] w-[4%] -translate-x-1/2 rounded-t-full border-2"
+    style={{
+      left,
+      borderColor: C.slitEdge,
+      backgroundImage: `linear-gradient(to bottom, ${C.slitTop}, ${C.slitBottom})`,
+      boxShadow: CSS.slit,
+    }}
   />
 );
 
@@ -89,13 +96,15 @@ const BossBanner = ({
   readonly glyph: Parameters<typeof GlyphIcon>[0]["glyph"];
 }) => (
   <span
-    className="absolute top-[21%] flex h-[46%] w-[9%] -translate-x-1/2 flex-col items-center bg-gradient-to-b from-[#a52a22] to-[#6b1610] pt-[18%] text-[#fff6df] drop-shadow-[0_2px_2px_rgba(42,26,12,0.45)]"
+    className="text-cream absolute top-[21%] flex h-[46%] w-[9%] -translate-x-1/2 flex-col items-center pt-[18%]"
     style={{
       left,
+      backgroundImage: CSS.bannerLit,
+      filter: CSS.bannerDrop,
       clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%)",
     }}
   >
-    <span className="absolute inset-x-0 top-0 h-[7%] bg-[#e7bb6a]" />
+    <span className="bg-bronze-rim absolute inset-x-0 top-0 h-[7%]" />
     <GlyphIcon glyph={glyph} className="w-[70%]" />
   </span>
 );
@@ -112,8 +121,8 @@ const BannerSeal = ({
   readonly glyph: Parameters<typeof GlyphIcon>[0]["glyph"];
 }) => (
   <span
-    className="absolute top-[40%] w-[5.5%] -translate-x-1/2 text-[#fff6df] drop-shadow-[0_2px_2px_rgba(42,26,12,0.55)]"
-    style={{ left }}
+    className="text-cream absolute top-[40%] w-[5.5%] -translate-x-1/2"
+    style={{ left, filter: CSS.sealDrop }}
     aria-hidden
   >
     <GlyphIcon glyph={glyph} className="w-full" />
@@ -152,15 +161,22 @@ const StoneFallback = ({
         </span>
       ) : null}
       <span
-        className="absolute h-[10%] border-b-2 border-[#8a7552]/60 bg-gradient-to-b from-[#fbf3e1] to-[#d8c7a3] shadow-[0_3px_5px_rgba(60,40,20,0.35)]"
-        style={{ top: `${top}%`, left: `${wall - 5}%`, right: `${wall - 5}%` }}
+        className="border-stone-edge/60 absolute h-[10%] border-b-2"
+        style={{
+          top: `${top}%`,
+          left: `${wall - 5}%`,
+          right: `${wall - 5}%`,
+          backgroundImage: CSS.cornice,
+          boxShadow: CSS.stoneDrop,
+        }}
       />
       <span
-        className="absolute h-[5%] bg-gradient-to-b from-[#cdb991] to-[#b29d76]"
+        className="absolute h-[5%]"
         style={{
           top: `${top + 10}%`,
           left: `${wall + 1}%`,
           right: `${wall + 1}%`,
+          backgroundImage: CSS.corbelFace,
           mask: CORBELS,
           WebkitMask: CORBELS,
         }}
@@ -178,16 +194,7 @@ const StoneFallback = ({
 };
 
 /** The face of the door in the paint of the Floor state. */
-const DOOR_FACE: Readonly<Record<FloorState, string>> = {
-  // The Current Floor: the door is open and full of warm light.
-  current:
-    "bg-[radial-gradient(ellipse_at_50%_38%,#fff6d0_0%,#ffe08a_42%,#e2a93b_100%)] text-[#2a1a05]",
-  // A won Floor: a closed door of Tavern Wood.
-  won: "bg-[linear-gradient(90deg,transparent_0_32%,rgba(0,0,0,0.14)_32%_33.5%,transparent_33.5%_66%,rgba(0,0,0,0.14)_66%_67.5%,transparent_67.5%),linear-gradient(180deg,#6b4423,#4a2d16)] text-[#fff6df]",
-  // A locked Floor: a door of dark oak with iron bands.
-  locked:
-    "bg-[linear-gradient(180deg,transparent_0_34%,rgba(141,146,151,0.45)_34%_37%,transparent_37%_74%,rgba(141,146,151,0.45)_74%_77%,transparent_77%),linear-gradient(180deg,#3b3631,#26221e)] text-[#e8d9bb]",
-};
+const DOOR_FACE = HEYNSPIRE_DOOR;
 
 /**
  * The door of a storey: the stone frame with its keystone, and the door in
@@ -213,6 +220,10 @@ const Door = ({
   const { tr } = useGameText();
   const box = STOREY_DOOR[stop.boss ? "bossStorey" : "storey"];
   const current = stop.state === "current";
+  const shell: CSSProperties = cssVars({ "--door-focus": CSS.doorFocus });
+  if (framed) {
+    shell.backgroundImage = `linear-gradient(to bottom, ${C.frameLit}, ${C.frameDeep})`;
+  }
   return (
     <span
       className="absolute"
@@ -225,13 +236,14 @@ const Door = ({
     >
       {current ? (
         <span
-          className="pointer-events-none absolute top-[42%] left-1/2 aspect-square w-[230%] -translate-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,215,90,0.9),rgba(255,215,90,0))] opacity-60 motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]"
+          className="pointer-events-none absolute top-[42%] left-1/2 aspect-square w-[230%] -translate-1/2 rounded-full opacity-60 motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]"
+          style={{ backgroundImage: CSS.doorGlow }}
           aria-hidden
         />
       ) : null}
       {awaken ? (
         <span
-          className="pointer-events-none absolute top-[42%] left-1/2 aspect-square w-[260%] -translate-1/2 rounded-full border-4 border-[#fff2a8] opacity-0 motion-safe:animate-[campaign-awaken-ring_1100ms_ease-out_600ms_both]"
+          className="border-focus-cream pointer-events-none absolute top-[42%] left-1/2 aspect-square w-[260%] -translate-1/2 rounded-full border-4 opacity-0 motion-safe:animate-[campaign-awaken-ring_1100ms_ease-out_600ms_both]"
           aria-hidden
         />
       ) : null}
@@ -239,20 +251,24 @@ const Door = ({
       <span
         className={cn(
           "absolute inset-0 rounded-t-full transition-[filter,box-shadow,translate] duration-150 ease-out motion-reduce:transition-none",
-          framed &&
-            "border-2 border-[#8a7552]/70 bg-gradient-to-b from-[#f7efdc] to-[#cbb893] p-[9%] pb-0",
-          selected && "drop-shadow-[0_0_14px_rgba(255,224,138,0.95)]",
+          framed && "border-stone-edge/70 border-2 p-[9%] pb-0",
+          selected && "drop-shadow-building",
           hovered && !selected && "brightness-105",
-          focusVisible && "shadow-[0_0_0_3px_#1c140e,0_0_0_7px_#fff2a8]",
+          focusVisible && "shadow-(--door-focus)",
           awaken &&
             "motion-safe:animate-[campaign-awaken_900ms_cubic-bezier(0.2,0.8,0.2,1)_600ms_both]"
         )}
+        style={shell}
       >
         <span
           className={cn(
-            "flex size-full flex-col items-center justify-center gap-[4%] rounded-t-full pt-[18%] shadow-[inset_0_3px_6px_rgba(0,0,0,0.35)]",
-            DOOR_FACE[stop.state]
+            "flex size-full flex-col items-center justify-center gap-[4%] rounded-t-full pt-[18%]",
+            DOOR_FACE[stop.state].tone
           )}
+          style={{
+            boxShadow: CSS.doorInset,
+            ...DOOR_FACE[stop.state].style,
+          }}
         >
           <span className="text-[length:max(10px,calc(var(--tower-w)*0.046))] leading-none font-bold tracking-[0.06em] uppercase [@media(max-height:500px)]:hidden">
             {tr("heynspire.storey.floor")}
@@ -262,9 +278,9 @@ const Door = ({
               "font-display leading-none font-black tabular-nums",
               stop.boss
                 ? "text-[length:max(15px,calc(var(--tower-w)*0.13))]"
-                : "text-[length:max(14px,calc(var(--tower-w)*0.12))]",
-              !current && "drop-shadow-[0_1px_0_rgba(0,0,0,0.55)]"
+                : "text-[length:max(14px,calc(var(--tower-w)*0.12))]"
             )}
+            style={current ? undefined : { filter: CSS.textDrop }}
           >
             {stop.number}
           </span>
@@ -273,12 +289,18 @@ const Door = ({
       {/* The keystone at the top of the arch. */}
       {framed ? (
         <span
-          className="absolute -top-[5%] left-1/2 h-[12%] w-[22%] -translate-x-1/2 bg-gradient-to-b from-[#fbf3e1] to-[#c7b28a]"
-          style={{ clipPath: "polygon(0 0, 100% 0, 80% 100%, 20% 100%)" }}
+          className="absolute -top-[5%] left-1/2 h-[12%] w-[22%] -translate-x-1/2"
+          style={{
+            backgroundImage: CSS.keystone,
+            clipPath: "polygon(0 0, 100% 0, 80% 100%, 20% 100%)",
+          }}
         />
       ) : null}
       {stop.boss ? (
-        <BossCrown className="absolute -top-[30%] left-1/2 h-[24%] w-[56%] -translate-x-1/2 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)]" />
+        <BossCrown
+          className="absolute -top-[30%] left-1/2 h-[24%] w-[56%] -translate-x-1/2"
+          style={{ filter: CSS.iconDrop }}
+        />
       ) : null}
     </span>
   );
@@ -288,16 +310,12 @@ const Door = ({
 const RIBBON: Readonly<
   Record<
     FloorState,
-    { fill: string; text: string; glyph: "check" | "crossedSwords" | "lock" }
+    { fill: string; tone: string; glyph: "check" | "crossedSwords" | "lock" }
   >
 > = {
-  won: { fill: "rgba(28,20,14,0.9)", text: "text-[#fff6df]", glyph: "check" },
-  current: { fill: "gold", text: "text-[#2a1a05]", glyph: "crossedSwords" },
-  locked: {
-    fill: "rgba(28,20,14,0.78)",
-    text: "text-[#e8d9bb]",
-    glyph: "lock",
-  },
+  won: { ...HEYNSPIRE_RIBBON.won, glyph: "check" },
+  current: { ...HEYNSPIRE_RIBBON.current, glyph: "crossedSwords" },
+  locked: { ...HEYNSPIRE_RIBBON.locked, glyph: "lock" },
 };
 
 /** The outline of a ribbon on the right of the tower: its outer end has a swallowtail. The left one is its mirror. */
@@ -342,13 +360,13 @@ const Ribbon = ({
           : "flex-row-reverse pr-3 pl-[9%] text-right",
         // A Boss ribbon also carries the name of the Boss.
         stop.boss ? "w-[calc(var(--ribbon-w)*1.3)]" : "w-[var(--ribbon-w)]",
-        selected && "drop-shadow-[0_0_10px_rgba(255,224,138,0.85)]",
-        paint.text
+        paint.tone
       )}
       style={
         {
           [side === "right" ? "left" : "right"]: `calc(${100 - wall}% - 3px)`,
           translate: selected || hovered ? `${out * 6}px 0` : undefined,
+          filter: selected ? CSS.ribbonGlow : undefined,
         } satisfies CSSProperties
       }
       data-testid={`floor-ribbon-${stop.number}`}
@@ -356,19 +374,22 @@ const Ribbon = ({
       <svg
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
-        className="absolute inset-0 size-full overflow-visible drop-shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+        className="absolute inset-0 size-full overflow-visible"
+        style={{ filter: CSS.ribbonDrop }}
       >
         <defs>
           <linearGradient id={`${id}-gold`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#ffe08a" />
-            <stop offset="1" stopColor="#e2a93b" />
+            <stop offset="0" stopColor={C.goldLight} />
+            <stop offset="1" stopColor={C.gold} />
           </linearGradient>
         </defs>
         <path
           d={RIBBON_PATH[side]}
           fill={paint.fill === "gold" ? `url(#${id}-gold)` : paint.fill}
           stroke={
-            stop.state === "current" ? "#7a5310" : "rgba(233,196,106,0.7)"
+            stop.state === "current"
+              ? "var(--color-gold-deep)"
+              : CSS.ribbonStroke
           }
           strokeWidth={2}
           vectorEffect="non-scaling-stroke"
@@ -385,7 +406,7 @@ const Ribbon = ({
           <span
             className={cn(
               "font-display flex max-w-full items-center gap-1 text-sm leading-tight font-bold [@media(max-height:500px)]:font-sans [@media(max-height:500px)]:text-[11px]",
-              stop.state === "current" ? "text-[#2a1a05]" : "text-[#ffd75a]",
+              stop.state === "current" ? "text-ink-on-gold" : "text-ready-gold",
               side === "left" && "flex-row-reverse"
             )}
           >
@@ -403,8 +424,8 @@ const Ribbon = ({
             glyph={paint.glyph}
             className={cn(
               "size-4 shrink-0 [@media(max-height:500px)]:size-3.5",
-              stop.state === "won" && "text-[#ffd75a]",
-              stop.state === "locked" && "text-[#e9c46a]",
+              stop.state === "won" && "text-ready-gold",
+              stop.state === "locked" && "text-gold-trim",
               stamped &&
                 "motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_250ms_both]"
             )}

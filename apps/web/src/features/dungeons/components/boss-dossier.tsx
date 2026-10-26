@@ -16,6 +16,11 @@ import {
 } from "@/features/campaign/components/reward-peek";
 import type { Peek } from "@/features/deck/components/use-card-peek";
 import { classText } from "@/features/deck/deck";
+import {
+  cssVars,
+  DUNGEON_COLORS,
+  DUNGEON_CSS,
+} from "@/features/dungeons/tokens";
 
 type Translate = ReturnType<typeof useGameText>["tr"];
 type BossRule = DungeonBoss["bossRules"][number];
@@ -35,9 +40,13 @@ const BossPin = ({
 }) => (
   <span
     className={cn(
-      "bg-enemy-deep grid shrink-0 place-items-center rounded-full border-2 border-[#4a0f0b] leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.4)]",
+      "bg-enemy-deep text-cream grid shrink-0 place-items-center rounded-full border-2 leading-none font-black tabular-nums",
       className
     )}
+    style={{
+      borderColor: DUNGEON_COLORS.pinEdge,
+      boxShadow: DUNGEON_CSS.pinDrop,
+    }}
     aria-hidden
     data-testid="boss-pin"
   >
@@ -105,12 +114,15 @@ const LaneCells = ({ front }: { readonly front: readonly number[] }) => (
       return (
         <span
           key={lane}
-          className={cn(
-            "flex-1 rounded-t-full",
+          className={cn("flex-1 rounded-t-full", held && "bg-enemy-red")}
+          style={
             held
-              ? "bg-[#d9463b] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
-              : "bg-[#d8c49c] ring-1 ring-[#8a6a44]/40 ring-inset"
-          )}
+              ? { boxShadow: DUNGEON_CSS.laneHeld }
+              : {
+                  backgroundColor: DUNGEON_COLORS.laneEmpty,
+                  boxShadow: DUNGEON_CSS.laneEmpty,
+                }
+          }
           data-held={held || undefined}
         />
       );
@@ -127,19 +139,31 @@ const HpBar = ({ boss }: { readonly boss: DungeonBoss }) => {
   const { tr } = useGameText();
   return (
     <div className="flex items-center gap-2">
-      <span className="flex items-center gap-1 text-sm leading-none font-black text-[#2a1d12] tabular-nums">
-        <GlyphIcon glyph="heart" className="size-3.5 text-[#c2362f]" />
+      <span
+        className="text-ink flex items-center gap-1 text-sm leading-none font-black tabular-nums"
+        style={cssVars({ "--heart": DUNGEON_COLORS.heart })}
+      >
+        <GlyphIcon glyph="heart" className="size-3.5 text-(--heart)" />
         {boss.heroHp}
       </span>
       <span className="relative h-2 min-w-10 flex-1" aria-hidden>
-        <span className="absolute inset-0 overflow-hidden rounded-full bg-[#3a2a1c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.6)]">
-          <span className="block h-full w-full rounded-full bg-gradient-to-b from-[#7ee6a0] to-[#2f9e5b]" />
+        <span
+          className="bg-plate-socket absolute inset-0 overflow-hidden rounded-full"
+          style={{ boxShadow: DUNGEON_CSS.grooveInset }}
+        >
+          <span
+            className="block h-full w-full rounded-full"
+            style={{ backgroundImage: DUNGEON_CSS.hp }}
+          />
         </span>
         {boss.bossRules.map((rule) => (
           <span
             key={`${rule.threshold}:${rule.effect.type}`}
-            className="absolute top-[-3px] bottom-[-3px] w-[3px] -translate-x-1/2 rounded-[1px] bg-[#fff6df] shadow-[0_0_0_1px_rgba(28,20,14,0.9)]"
-            style={{ left: `${rule.threshold}%` }}
+            className="bg-cream absolute top-[-3px] bottom-[-3px] w-[3px] -translate-x-1/2 rounded-[1px]"
+            style={{
+              left: `${rule.threshold}%`,
+              boxShadow: DUNGEON_CSS.notch,
+            }}
             title={tr("battle.bossPlate.notch", { threshold: rule.threshold })}
             data-testid="dossier-notch"
           />
@@ -164,12 +188,16 @@ export const ClaimedStamp = ({
   return (
     <span
       className={cn(
-        "pointer-events-none inline-flex items-center gap-1 rounded-[4px] border-2 border-[#5c1010] bg-[#8e1f1f] px-1.5 py-0.5 leading-none font-bold tracking-[0.04em] whitespace-nowrap text-white uppercase shadow-[0_2px_0_rgba(0,0,0,0.35)]",
+        "bg-blood-banner pointer-events-none inline-flex items-center gap-1 rounded-[4px] border-2 border-(--claimed-edge) px-1.5 py-0.5 leading-none font-bold tracking-[0.04em] whitespace-nowrap text-white uppercase",
         stamped &&
           "motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]",
         className
       )}
-      style={style}
+      style={{
+        boxShadow: DUNGEON_CSS.plate2Faint,
+        ...cssVars({ "--claimed-edge": DUNGEON_COLORS.claimedEdge }),
+        ...style,
+      }}
       data-testid="boss-claimed"
     >
       <GlyphIcon glyph="check" className="size-[1.1em] shrink-0" />
@@ -212,12 +240,12 @@ const StartUnit = ({
         aria-label={tr("dungeons.dossier.startUnitLabel", words)}
         className={cn(
           PEEK_BUTTON,
-          "-mx-1 flex items-center gap-1.5 rounded-md px-1 py-0.5 text-left text-xs leading-snug font-bold text-[#2a1d12] data-[hovered]:bg-[#2a1d12]/8"
+          "text-ink data-[hovered]:bg-ink/8 -mx-1 flex items-center gap-1.5 rounded-md px-1 py-0.5 text-left text-xs leading-snug font-bold"
         )}
         data-testid="dossier-start-unit"
       >
         <span
-          className="size-2.5 shrink-0 rounded-full border border-[#6b1610] bg-[#d9463b]"
+          className="border-enemy-deep bg-enemy-red size-2.5 shrink-0 rounded-full border"
           aria-hidden
         />
         {tr("dungeons.dossier.startUnit", words)}
@@ -268,9 +296,10 @@ export const BossDossier = ({
       aria-describedby={`${nameId}-facts`}
       className={cn(
         "-mx-2 rounded-lg px-2 py-2 transition-[background-color,box-shadow] duration-150 outline-none",
-        "focus-visible:ring-4 focus-visible:ring-[#fff2a8]",
-        active && "bg-[#fff3d1] shadow-[0_0_0_2px_rgba(226,169,59,0.6)]"
+        "focus-visible:ring-focus-cream focus-visible:ring-4",
+        active && "bg-parchment-lit"
       )}
+      style={active ? { boxShadow: DUNGEON_CSS.dossierActive } : undefined}
       data-testid={`dossier-${index}`}
       data-active={active || undefined}
       data-lanes={boss.front.map((lane) => lane + 1).join(",")}
@@ -278,7 +307,11 @@ export const BossDossier = ({
       <div className="flex items-start gap-2.5">
         <span className="relative mt-0.5 shrink-0">
           <span
-            className="grid size-9 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#fff3d1,#e3cfa6_70%)] text-[#2a1d12] shadow-[0_2px_0_rgba(0,0,0,0.3)] [@media(max-height:500px)]:size-7"
+            className="border-bronze-rim text-ink grid size-9 place-items-center rounded-full border-2 [@media(max-height:500px)]:size-7"
+            style={{
+              backgroundImage: DUNGEON_CSS.sealBone,
+              boxShadow: DUNGEON_CSS.plate2Soft,
+            }}
             aria-hidden
           >
             <GlyphIcon
@@ -298,9 +331,9 @@ export const BossDossier = ({
           >
             {tr(`dungeons.${dungeonId}.bosses.${boss.id}`)}
           </h3>
-          <p className="text-xs font-semibold text-[#5b4632]">
+          <p className="text-ink-soft text-xs font-semibold">
             {text(classText(boss.classId))}
-            <span className="font-normal text-[#6b5238] italic [@media(max-height:500px)]:hidden">
+            <span className="text-ink-faded font-normal italic [@media(max-height:500px)]:hidden">
               {" · "}
               {tr(`dungeons.${dungeonId}.wanted.${boss.id}`)}
             </span>
@@ -324,14 +357,15 @@ export const BossDossier = ({
             >
               <GlyphIcon
                 glyph="crown"
-                className="mt-px size-3.5 shrink-0 text-[#a8741a]"
+                className="mt-px size-3.5 shrink-0 text-(--boss-glyph)"
               />
               <span>{ruleText(rule)}</span>
             </li>
           ))}
         </ul>
         <p
-          className="flex items-center gap-2 text-xs font-bold text-[#5b4632]"
+          className="text-ink-soft flex items-center gap-2 text-xs font-bold"
+          style={cssVars({ "--boss-glyph": DUNGEON_COLORS.bossGlyph })}
           data-testid="dossier-lanes"
         >
           <LaneCells front={boss.front} />
@@ -339,7 +373,7 @@ export const BossDossier = ({
         </p>
         {boss.startUnits.length > 0 ? (
           <div className="flex flex-wrap items-baseline gap-x-2 text-xs">
-            <p className="font-bold text-[#5b4632]">
+            <p className="text-ink-soft font-bold">
               {tr("dungeons.dossier.atStart")}
             </p>
             <ul className="flex flex-col">

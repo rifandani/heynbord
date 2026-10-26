@@ -6,6 +6,7 @@ import { useGameText } from "@/features/battle/use-game-text";
 import type { LookFamily } from "@/features/bazaar/bazaar";
 import { BoardSkinShelfLook } from "@/features/bazaar/components/board-skin-look";
 import { GearLookShelfLook } from "@/features/bazaar/components/gear-look-icons";
+import { BAZAAR_COLORS, BAZAAR_CSS, cssVars } from "@/features/bazaar/tokens";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 
 /** The look of the family on the shelf, at the size of the section. */
@@ -64,7 +65,11 @@ export const CosmeticShelf = ({
   return (
     <section
       aria-label={tr(`bazaar.shelf.${family}`)}
-      className="flex items-center gap-4 rounded-xl border-2 border-[#e9c46a]/50 bg-[#1c140e]/85 px-3.5 py-2.5 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+      className="border-gold-trim/50 bg-night-plate/85 text-cream flex items-center gap-4 rounded-xl border-2 px-3.5 py-2.5"
+      style={{
+        boxShadow: BAZAAR_CSS.plate3,
+        ...cssVars({ "--bazaar-dim": BAZAAR_COLORS.dim }),
+      }}
       data-testid="cosmetic-shelf"
       data-family={family}
       data-look={look ?? "standard"}
@@ -76,7 +81,8 @@ export const CosmeticShelf = ({
       <div className="min-w-0 flex-1">
         {inUse ? (
           <span
-            className="mb-1 inline-flex items-center gap-1 rounded-full border border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-2 py-0.5 text-xs leading-none font-black text-[#2a1a05] shadow-[0_1px_0_rgba(0,0,0,0.4)]"
+            className="border-gold-deep from-gold-light to-gold text-ink-on-gold mb-1 inline-flex items-center gap-1 rounded-full border bg-gradient-to-b px-2 py-0.5 text-xs leading-none font-black shadow-(--bazaar-chip)"
+            style={cssVars({ "--bazaar-chip": BAZAAR_CSS.chip })}
             data-testid="cosmetic-shelf-in-use"
           >
             <GlyphIcon glyph="check" className="size-3" />
@@ -84,13 +90,13 @@ export const CosmeticShelf = ({
           </span>
         ) : null}
         <p
-          className="font-display truncate text-lg leading-tight font-bold text-[#ffe08a]"
+          className="font-display text-gold-light truncate text-lg leading-tight font-bold"
           data-testid="cosmetic-shelf-name"
         >
           {name}
         </p>
         <p
-          className="text-xs text-[#cbbfa5]"
+          className="text-xs text-(--bazaar-dim)"
           data-testid="cosmetic-shelf-status"
         >
           {status}

@@ -39,7 +39,7 @@ export const ShareReplay = ({
       <Button
         onPress={onPress}
         className={cn(
-          "data-[focus-visible]:ring-focus-cream inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-bold text-[#5b4632] transition-colors duration-100 outline-none data-[focus-visible]:ring-4 data-[hovered]:bg-[#ead9b4] data-[hovered]:text-[#2a1d12] data-[pressed]:translate-y-px",
+          "data-[focus-visible]:ring-focus-cream text-ink-soft data-[hovered]:bg-parchment-deep data-[hovered]:text-ink inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-bold transition-colors duration-100 outline-none data-[focus-visible]:ring-4 data-[pressed]:translate-y-px",
           className
         )}
         data-testid="share-replay"

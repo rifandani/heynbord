@@ -30,6 +30,11 @@ import {
   floorEnemyKey,
   floorRewardPreview,
 } from "@/features/heynspire/heynspire";
+import {
+  cssVars,
+  HEYNSPIRE_CSS,
+  HEYNSPIRE_LOCK_CHIP,
+} from "@/features/heynspire/tokens";
 import { useNumberFormat } from "@/features/i18n/use-number-format";
 import {
   battlePlayerAtom,
@@ -51,7 +56,7 @@ const EnemyRow = ({ floor }: { readonly floor: number }) => {
     <Row label={tr("campaign.panel.enemy")}>
       <p className="flex items-center gap-2 font-bold">
         <span
-          className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#6b1610] text-[#fff6df] [@media(max-height:500px)]:size-6"
+          className="bg-enemy-deep text-cream grid size-7 shrink-0 place-items-center rounded-lg [@media(max-height:500px)]:size-6"
           aria-hidden
         >
           <GlyphIcon glyph={classGlyph(enemy.classId)} className="size-4" />
@@ -66,7 +71,7 @@ const EnemyRow = ({ floor }: { readonly floor: number }) => {
           })}
         </span>
       </p>
-      <p className="mt-1 text-xs text-[#5b4632]">
+      <p className="text-ink-soft mt-1 text-xs">
         {tr("campaign.panel.heroHp", { hp: enemy.heroHp })}
       </p>
     </Row>
@@ -114,10 +119,10 @@ const RewardRow = ({
     <Row label={tr("campaign.panel.reward")}>
       {won ? (
         <p
-          className="mb-1.5 flex items-center gap-1 text-xs font-bold text-[#6b5238]"
+          className="text-ink-faded mb-1.5 flex items-center gap-1 text-xs font-bold"
           data-testid="floor-reward-received"
         >
-          <GlyphIcon glyph="check" className="size-3.5 text-[#7a5310]" />
+          <GlyphIcon glyph="check" className="text-gold-deep size-3.5" />
           {tr("heynspire.panel.received")}
         </p>
       ) : null}
@@ -136,7 +141,7 @@ const RewardRow = ({
           </span>
         </p>
         <p
-          className={cn(PLATE, "text-[#9fe7f5]")}
+          className={cn(PLATE, "text-harbour-sky")}
           data-testid="floor-reward-xp"
         >
           {tr("battle.xpEarned", { amount: win.xp })}
@@ -159,7 +164,7 @@ const RewardRow = ({
         <p className={PLATE}>
           <GlyphIcon
             glyph="campaignTicket"
-            className="size-4 -rotate-8 text-[#ffd75a]"
+            className="text-ready-gold size-4 -rotate-8"
           />
           {tr("sweep.campaign.earned", { count: win.campaignSweepTickets })}
         </p>
@@ -183,18 +188,18 @@ const StateChip = ({ state }: { readonly state: FloorState }) => {
       className={cn(
         CHIP,
         state === "current" &&
-          "bg-[#ffd75a]/45 text-[#2a1a05] shadow-[inset_0_0_0_1px_#7a5310]",
+          "bg-ready-gold/45 text-ink-on-gold ring-gold-deep ring-1 ring-inset",
         state === "won" &&
-          "bg-[#7a5310] text-[#fff6df] shadow-[inset_0_0_0_1px_#e7bb6a]",
-        state === "locked" &&
-          "bg-[#5d6166] text-[#fff6df] shadow-[inset_0_0_0_1px_#a9aeb3]"
+          "bg-gold-deep text-cream ring-bronze-rim ring-1 ring-inset",
+        state === "locked" && "text-cream"
       )}
+      style={state === "locked" ? HEYNSPIRE_LOCK_CHIP : undefined}
       data-testid="floor-panel-state"
       data-state={state}
     >
       <GlyphIcon
         glyph={STATE_GLYPH[state]}
-        className={cn("size-3", state === "won" && "text-[#ffd75a]")}
+        className={cn("size-3", state === "won" && "text-ready-gold")}
       />
       {tr(`heynspire.panel.${state}`)}
     </span>
@@ -210,14 +215,19 @@ const Note = ({
   readonly children: ReactNode;
 }) => (
   <p
-    className="flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-[#c9b48c] bg-[#ead9b4] px-3 py-2 text-center text-sm font-bold text-[#5b4632] [@media(max-height:500px)]:min-h-10 [@media(max-height:500px)]:text-xs"
+    className="border-parchment-rule bg-parchment-deep text-ink-soft flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 px-3 py-2 text-center text-sm font-bold [@media(max-height:500px)]:min-h-10 [@media(max-height:500px)]:text-xs"
+    style={
+      glyph === "lock"
+        ? cssVars({ "--note-icon": HEYNSPIRE_LOCK_CHIP.backgroundColor ?? "" })
+        : undefined
+    }
     data-testid="floor-panel-note"
   >
     <GlyphIcon
       glyph={glyph}
       className={cn(
         "size-4 shrink-0",
-        glyph === "lock" ? "text-[#5d6166]" : "text-[#7a5310]"
+        glyph === "lock" ? "text-(--note-icon)" : "text-gold-deep"
       )}
     />
     {children}
@@ -260,9 +270,10 @@ export const FloorPanel = ({
     <aside
       aria-labelledby={titleId}
       className={cn(
-        "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+4.25rem)] right-[max(1rem,env(safe-area-inset-right))] bottom-[calc(var(--town-bar)+8px)] flex w-[min(440px,38vw)] flex-col overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.45)]",
+        "border-frame-wood bg-parchment text-ink absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+4.25rem)] right-[max(1rem,env(safe-area-inset-right))] bottom-[calc(var(--town-bar)+8px)] flex w-[min(440px,38vw)] flex-col overflow-hidden rounded-2xl border-4",
         "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:right-[max(0.5rem,env(safe-area-inset-right))] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+4px)] [@media(max-height:500px)]:w-[min(460px,54vw)] [@media(max-height:500px)]:rounded-xl [@media(max-height:500px)]:border-[3px]"
       )}
+      style={{ boxShadow: HEYNSPIRE_CSS.panelLift }}
       data-testid="floor-panel"
       data-floor={floor}
     >
@@ -270,14 +281,14 @@ export const FloorPanel = ({
         key={floor}
         className="flex min-h-0 flex-1 flex-col motion-safe:animate-[stage-panel-ink_220ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
       >
-        <header className="border-b-2 border-[#c9b48c] px-5 pt-4 pb-3 [@media(max-height:500px)]:flex [@media(max-height:500px)]:items-center [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1.5">
+        <header className="border-parchment-rule border-b-2 px-5 pt-4 pb-3 [@media(max-height:500px)]:flex [@media(max-height:500px)]:items-center [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1.5">
           <h2
             id={titleId}
             className="font-display flex items-center gap-2 text-[1.875rem] leading-tight font-black tracking-[0.025em] [@media(max-height:500px)]:text-xl"
           >
             {tr("heynspire.floor", { number: floor })}
             {definition.boss ? (
-              <span className="rounded-[4px] bg-[#8e1f1f] px-1.5 py-0.5 font-sans text-[10px] font-bold tracking-[0.04em] text-white uppercase">
+              <span className="bg-blood-banner rounded-[4px] px-1.5 py-0.5 font-sans text-[10px] font-bold tracking-[0.04em] text-white uppercase">
                 {tr("battle.boss")}
               </span>
             ) : null}
@@ -286,16 +297,16 @@ export const FloorPanel = ({
             <StateChip state={state} />
           </p>
         </header>
-        <div className="min-h-0 flex-1 divide-y divide-[#c9b48c]/70 overflow-y-auto overscroll-contain px-5 [@media(max-height:500px)]:px-3.5">
+        <div className="divide-parchment-rule/70 min-h-0 flex-1 divide-y overflow-y-auto overscroll-contain px-5 [@media(max-height:500px)]:px-3.5">
           <EnemyRow floor={floor} />
           <RewardRow floor={floor} won={state === "won"} />
           {state === "current" ? (
             <DeckRow choice={choice} onEdit={() => setEditing(true)} />
           ) : null}
         </div>
-        <footer className="flex flex-col gap-2 border-t-2 border-[#c9b48c] bg-[#ead9b4]/60 px-5 pt-3 pb-4 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-2">
+        <footer className="border-parchment-rule bg-parchment-deep/60 flex flex-col gap-2 border-t-2 px-5 pt-3 pb-4 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-2">
           <p
-            className="text-center text-xs font-semibold text-[#5b4632] tabular-nums"
+            className="text-ink-soft text-center text-xs font-semibold tabular-nums"
             data-testid="floor-level"
           >
             {tr("campaign.panel.level", {
@@ -304,7 +315,7 @@ export const FloorPanel = ({
             {" · "}
             <span
               className={cn(
-                level < definition.recommendedLevel && "text-[#8e1f1f]"
+                level < definition.recommendedLevel && "text-blood-banner"
               )}
             >
               {tr("heynspire.panel.yourLevel", { level })}

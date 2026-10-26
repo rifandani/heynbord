@@ -4,16 +4,14 @@ import {
   HEYNSPIRE_ART_FILE,
   heynspireArt,
 } from "@/features/heynspire/heynspire-art";
+import { HEYNSPIRE_CSS } from "@/features/heynspire/tokens";
 
 /**
  * The light over the sky, so that the tower column, the ribbons and the Floor
  * Panel stay easy to read: a soft sky haze at the left behind the tower, and
  * a darker band at the bottom above the Town Bar.
  */
-const SHADE = [
-  "linear-gradient(90deg, rgba(225,238,248,0.38) 0%, rgba(225,238,248,0.12) 48%, transparent 62%)",
-  "linear-gradient(180deg, transparent 72%, rgba(18,12,8,0.42) 100%)",
-].join(", ");
+const SHADE = [HEYNSPIRE_CSS.scene, HEYNSPIRE_CSS.sceneFoot].join(", ");
 
 /**
  * The sky behind the Heynspire tower (11 — Town Concepts 14): floating
@@ -26,7 +24,7 @@ export const TowerScene = () => {
   const sky = heynspireArt("sky");
   return (
     <div
-      className="absolute inset-0 overflow-hidden bg-[#9fcbe8]"
+      className="bg-region-sky absolute inset-0 overflow-hidden"
       aria-hidden
       data-testid="tower-scene"
     >

@@ -25,6 +25,7 @@ import { useHandbook } from "@/features/handbook/use-handbook";
 import type { HintId, HintPlace, HintTarget } from "@/features/hint/hint";
 import { HINT_MS, HINT_PLACE, HINT_TARGET } from "@/features/hint/hint";
 import { shownHintAtom } from "@/features/hint/hint.atoms";
+import { HINT_CSS } from "@/features/hint/tokens";
 import { paintedIcon } from "@/features/town/town";
 
 /** The close mark of the Hint: a plain X in the current color. */
@@ -349,7 +350,7 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
       return (
         <GlyphIcon
           glyph="skillCard"
-          className={cn(SUBJECT_ICON, "-rotate-8 text-[#ffd75a]")}
+          className={cn(SUBJECT_ICON, "text-ready-gold -rotate-8")}
         />
       );
     }
@@ -367,7 +368,7 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
       return (
         <GlyphIcon
           glyph={hint === "sweep" ? "campaignTicket" : "dungeonTicket"}
-          className={cn(SUBJECT_ICON, "-rotate-8 text-[#ffd75a]")}
+          className={cn(SUBJECT_ICON, "text-ready-gold -rotate-8")}
         />
       );
     }
@@ -410,7 +411,11 @@ const SubjectIcon = ({ hint }: { readonly hint: HintId }): ReactElement => {
 const SubjectSeal = ({ hint }: { readonly hint: HintId }) => (
   <span
     aria-hidden
-    className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-[#fff6df] shadow-[0_2px_0_rgba(0,0,0,0.45)] motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.2,0.8,0.2,1)_120ms_both] [@media(max-height:500px)]:size-8"
+    className="border-bronze-rim text-cream grid size-10 shrink-0 place-items-center rounded-full border-2 motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.2,0.8,0.2,1)_120ms_both] [@media(max-height:500px)]:size-8"
+    style={{
+      backgroundImage: HINT_CSS.seal,
+      boxShadow: HINT_CSS.sealDrop,
+    }}
     data-testid="hint-seal"
   >
     <SubjectIcon hint={hint} />
@@ -426,7 +431,7 @@ const TimeLine = ({ held }: { readonly held: boolean }) => (
   <span
     aria-hidden
     className={cn(
-      "absolute inset-x-2.5 bottom-[3px] h-[2px] origin-left rounded-full bg-[#0e6f86]/45 motion-reduce:hidden",
+      "bg-tutorial-teal/45 absolute inset-x-2.5 bottom-[3px] h-[2px] origin-left rounded-full motion-reduce:hidden",
       !held && "animate-[hint-time_linear_both]"
     )}
     style={{ animationDuration: `${HINT_MS}ms` }}
@@ -487,7 +492,7 @@ const Banner = ({
       inert={leaving}
       aria-labelledby="hint-label"
       className={cn(
-        "group pointer-events-auto absolute flex w-max max-w-[min(420px,calc(100vw-1rem))] items-center gap-2.5 rounded-lg border-2 border-[#5b3a1e] bg-[#f6ead0] py-2 pr-1.5 pl-2 text-[#2a1d12] shadow-xl data-[leaving]:pointer-events-none [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:py-1.5",
+        "group border-frame-wood bg-parchment text-ink pointer-events-auto absolute flex w-max max-w-[min(420px,calc(100vw-1rem))] items-center gap-2.5 rounded-lg border-2 py-2 pr-1.5 pl-2 shadow-xl data-[leaving]:pointer-events-none [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:py-1.5",
         HINT_MOTION,
         // In a dialog on a short screen, the Hint fits next to the dialog parts.
         IN_DIALOG.has(HINT_PLACE[hint]) &&
@@ -502,7 +507,7 @@ const Banner = ({
       <span
         aria-hidden
         className={cn(
-          "absolute hidden size-3 rotate-45 border-[#5b3a1e] bg-[#f6ead0] group-data-[side]:block",
+          "border-frame-wood bg-parchment absolute hidden size-3 rotate-45 group-data-[side]:block",
           "group-data-[side=above]:-bottom-[7px] group-data-[side=above]:left-[calc(var(--pointer)-6px)] group-data-[side=above]:border-r-2 group-data-[side=above]:border-b-2",
           "group-data-[side=below]:-top-[7px] group-data-[side=below]:left-[calc(var(--pointer)-6px)] group-data-[side=below]:border-t-2 group-data-[side=below]:border-l-2",
           "group-data-[side=left]:top-[calc(var(--pointer)-6px)] group-data-[side=left]:-right-[7px] group-data-[side=left]:border-t-2 group-data-[side=left]:border-r-2"
@@ -512,7 +517,7 @@ const Banner = ({
       <p className="text-sm leading-snug [@media(max-height:500px)]:text-xs">
         <span
           id="hint-label"
-          className="mr-1.5 text-xs font-bold tracking-wide text-[#0e6f86] uppercase"
+          className="text-tutorial-teal mr-1.5 text-xs font-bold tracking-wide uppercase"
         >
           {tr("hints.label")}
         </span>
@@ -525,7 +530,7 @@ const Banner = ({
             close();
             readMore(target);
           }}
-          className="cursor-pointer rounded-sm font-semibold whitespace-nowrap text-[#0e6f86] underline decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid"
+          className="text-tutorial-teal data-[focus-visible]:ring-focus-cream cursor-pointer rounded-sm font-semibold whitespace-nowrap underline decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[hovered]:decoration-solid"
           data-testid="hint-read-more"
         >
           {/* The glyph of what "Read more" opens: the Handbook or the Key Guide. */}
@@ -539,7 +544,7 @@ const Banner = ({
       <Button
         onPress={close}
         aria-label={tr("hints.close")}
-        className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-md text-[#5b4632] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#5b3a1e]/10"
+        className="text-ink-soft data-[focus-visible]:ring-focus-cream data-[hovered]:bg-frame-wood/10 grid size-8 shrink-0 cursor-pointer place-items-center rounded-md outline-none data-[focus-visible]:ring-4"
         data-testid="hint-close"
       >
         <CloseMark />

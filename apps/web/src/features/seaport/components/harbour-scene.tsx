@@ -1,3 +1,4 @@
+import { SEAPORT_COLORS, SEAPORT_CSS } from "@/features/seaport/tokens";
 import { FittedPainting } from "@/features/town/components/fitted-painting";
 
 /** The painting of the Seaport (11 — Town Concepts 17): 1536 × 1024. */
@@ -9,10 +10,7 @@ const SEAPORT_IMAGE = "/town/seaport-inside.webp";
  * read; the ships and the quay at the right stay bright. The top and the
  * bottom edges are darker under the Balance Plate and over the Town Bar.
  */
-const SHADE = [
-  "linear-gradient(90deg, rgba(8,18,32,0.42) 0%, rgba(8,18,32,0.3) 30%, transparent 46%)",
-  "linear-gradient(180deg, rgba(8,18,32,0.36) 0%, transparent 16%, transparent 80%, rgba(8,18,32,0.5) 100%)",
-].join(", ");
+const SHADE = SEAPORT_CSS.shade;
 
 /**
  * The harbour of the Seaport quay, seen from the water, in full above the
@@ -21,7 +19,8 @@ const SHADE = [
  */
 export const HarbourScene = () => (
   <div
-    className="absolute inset-0 overflow-hidden bg-[#1d4f86]"
+    className="absolute inset-0 overflow-hidden"
+    style={{ backgroundColor: SEAPORT_COLORS.harbourDeep }}
     aria-hidden
     data-testid="harbour-scene"
   >

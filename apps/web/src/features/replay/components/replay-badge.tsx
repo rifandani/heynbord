@@ -8,7 +8,7 @@ export const ReplayBadge = ({ className }: { readonly className?: string }) => {
   return (
     <span
       className={cn(
-        "shrink-0 rounded border border-[#2a1d12] bg-[#2a1d12] px-1.5 py-0.5 font-sans text-xs leading-none font-bold tracking-wide text-[#ffd75a] uppercase",
+        "border-ink bg-ink text-ready-gold shrink-0 rounded border px-1.5 py-0.5 font-sans text-xs leading-none font-bold tracking-wide uppercase",
         className
       )}
       data-testid="replay-badge"
