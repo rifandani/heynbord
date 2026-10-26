@@ -30,7 +30,7 @@ const Toolbar = ({ orientation = "horizontal", isCircle, className, ...props }: 
         {...props}
         className={composeRenderProps(className, (className, { orientation }) =>
           cn(
-            "group scrollbar-none inset-ring inset-ring-border inline-flex flex-row gap-1.5 bg-overlay p-1.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
+            "paper-surface group scrollbar-none inset-ring inset-ring-border inline-flex flex-row gap-1.5 bg-overlay p-1.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
             isCircle ? "rounded-full" : "rounded-lg",
             orientation === "horizontal"
               ? "scrollbar-none flex-row items-center [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"

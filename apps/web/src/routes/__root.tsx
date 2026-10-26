@@ -21,10 +21,6 @@ import { RouterProvider as RACRouterProvider } from "react-aria-components";
 
 import { ReloadPromptSw } from "@/core/providers/reload-prompt-sw";
 import { buildSeoMeta } from "@/core/utils/seo";
-import {
-  ColorModeScript,
-  ColorModeSync,
-} from "@/features/color-mode/components/color-mode";
 import { AppI18nProvider } from "@/features/i18n/components/i18n-provider";
 import { DEFAULT_LOCALE } from "@/features/i18n/locale";
 import { requestLocale } from "@/features/i18n/locale.functions";
@@ -59,22 +55,11 @@ const RootDocument = ({ children }: { children: ReactNode }) => {
   // Undefined only when the root loader itself failed.
   const loaderData: { locale: string } | undefined = Route.useLoaderData();
   return (
-    // The color-mode script sets `<html class>` before React hydrates.
-    <html lang={loaderData?.locale ?? DEFAULT_LOCALE} suppressHydrationWarning>
+    <html lang={loaderData?.locale ?? DEFAULT_LOCALE}>
       <head>
         <HeadContent />
-        {/* Two tags share one `name`, so they bypass `head()` de-duplication. */}
-        <meta
-          name="theme-color"
-          media="(prefers-color-scheme: light)"
-          content="#ffffff"
-        />
-        <meta
-          name="theme-color"
-          media="(prefers-color-scheme: dark)"
-          content="#020203"
-        />
-        <ColorModeScript />
+        {/* The one canvas color of the game (night-plate). */}
+        <meta name="theme-color" content="#1c140e" />
         {/* The Town Bar is stowed before the first paint, so a saved rail
             never flashes the full shelf. The live transition starts after the
             first frame (see the ready attribute in TownBar). */}
@@ -97,7 +82,6 @@ const RootRoute = () => {
   const router = useRouter();
   return (
     <AppI18nProvider locale={locale}>
-      <ColorModeSync />
       <AppToaster />
       {/*
        * RAC such as Link, Menu, Tabs, Table, and many others support rendering elements as links that perform navigation when the user interacts with them.
@@ -145,8 +129,8 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1, viewport-fit=cover",
         name: "viewport",
       },
-      { content: "light dark", name: "color-scheme" },
-      { content: "#ffffff", name: "msapplication-TileColor" },
+      { content: "dark", name: "color-scheme" },
+      { content: "#1c140e", name: "msapplication-TileColor" },
       { content: "Heynbord", name: "application-name" },
       { content: "Tri Rizeki Rifandani", name: "author" },
       { content: "TanStack Start", name: "generator" },

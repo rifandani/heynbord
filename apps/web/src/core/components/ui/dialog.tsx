@@ -63,7 +63,10 @@ const DialogTitle = ({ className, ref, ...props }: DialogTitleProps) => (
   <Heading
     slot="title"
     ref={ref}
-    className={cn("text-balance font-semibold text-fg text-lg/6 sm:text-base/6", className)}
+    className={cn(
+      "text-balance font-semibold text-overlay-fg text-lg/6 sm:text-base/6",
+      className
+    )}
     {...props}
   />
 )

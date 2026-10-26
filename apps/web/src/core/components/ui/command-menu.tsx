@@ -101,7 +101,7 @@ const CommandMenu = ({
         >
           <Modal
             className={cx(
-              "row-start-2 bg-overlay text-start text-overlay-fg shadow-lg outline-none ring ring-muted-fg/15 md:row-start-1 dark:ring-border",
+              "paper-surface row-start-2 bg-overlay text-start text-overlay-fg shadow-lg outline-none ring ring-muted-fg/15 md:row-start-1 dark:ring-border",
               "max-h-[calc(var(--visual-viewport-height)*0.8)] w-full sm:fixed sm:top-[10%] sm:left-1/2 sm:-translate-x-1/2",
               "rounded-t-2xl md:rounded-xl",
               sizes[size],
@@ -148,7 +148,7 @@ const CommandMenuSearch = ({ className, placeholder, ...props }: CommandMenuSear
       )}
       <Input
         placeholder={placeholder ?? "Search..."}
-        className="w-full min-w-0 bg-transparent px-2.5 py-2 text-base text-fg placeholder-muted-fg outline-hidden focus:outline-hidden sm:px-2 sm:py-1.5 sm:text-sm [&::-ms-reveal]:hidden [&::-webkit-search-cancel-button]:hidden"
+        className="w-full min-w-0 bg-transparent px-2.5 py-2 text-base text-overlay-fg placeholder-muted-fg outline-hidden focus:outline-hidden sm:px-2 sm:py-1.5 sm:text-sm [&::-ms-reveal]:hidden [&::-webkit-search-cancel-button]:hidden"
       />
       {escapeButton && (
         <Button

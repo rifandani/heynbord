@@ -34,9 +34,18 @@ describe("the Component Catalog", () => {
     }
   });
 
-  it("describes every Game entry", () => {
+  it("has one Design Foundation entry", () => {
+    const foundation = categories.find(
+      (category) => category.id === "foundation"
+    );
+    expect(foundation?.entries.map((entry) => entry.id)).toStrictEqual([
+      "design-foundation",
+    ]);
+  });
+
+  it("describes every Game Pieces entry", () => {
     const game = categories.find((category) => category.id === "game");
-    expect(game).toBeDefined();
+    expect(game?.name).toBe("Game Pieces");
     for (const entry of game?.entries ?? []) {
       expect((entry.description ?? "").trim().length, entry.id).toBeGreaterThan(
         0
@@ -44,11 +53,10 @@ describe("the Component Catalog", () => {
     }
   });
 
-  it("shows every entry from issues #116 to #120 in the Game section", () => {
+  it("shows every entry from issues #116 to #120 in the Game Pieces section", () => {
     const game = categories.find((category) => category.id === "game");
     expect(game).toBeDefined();
     expect(game?.entries.map((entry) => entry.id)).toStrictEqual([
-      "game-foundation",
       "game-screen",
       "game-plates",
       "game-buttons",

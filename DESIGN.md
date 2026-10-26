@@ -229,14 +229,14 @@ The material is a frame, not a surface for text. Wood, bronze and leather carry 
 
 The system is light and readable first (product pillar 5). The HUD sits at the edges of the screen and lets pointer events through to the Board. Effects and panels never hide the Board or the stats. Motion is short and physical, and reduced motion stops all of it.
 
-The base component library theme in `apps/web/src/core/styles/globals.css` (a blue primary, zinc greys, light and dark modes) is not part of this system. It is the un-themed default that only the development Component Catalog at `/master-design` uses. The game world that this file describes is normative.
+There is one theme. The base component library in `apps/web/src/core/styles/globals.css` reads semantic names (`bg`, `fg`, `primary`, `danger`), and every one of those names is an alias of a Heynbord material token. The Component Catalog, the landing page and the game screens resolve to the same palette. The game world that this file describes is normative.
 
 ### Where the system lives
 
-- **Tokens:** the `@theme` block in `apps/web/src/core/styles/globals.css`. A component uses a token utility (`bg-night-plate`, `shadow-piece`, `text-headline`); it never writes a hex value, a gradient or a shadow of its own.
+- **Tokens:** the `@theme` block and the `:root` aliases in `apps/web/src/core/styles/globals.css`. The `@theme` block holds the materials; `:root` points the semantic names at them. A component uses a token utility (`bg-night-plate`, `bg-primary`, `shadow-piece`); it never writes a hex value, a gradient or a shadow of its own.
 - **Pieces:** `apps/web/src/core/components/game/`. This is the Heynbord layer: `GameButton`, `GameScreen`, `NightPlate`, `ParchmentPanel`, `GameDialog`, `GameTooltip`, `ResourcePlate`, `RankGems`, `ResourceIcon`, `CountToken` and the material recipes in `surfaces.ts`.
 - **Game data colors:** `apps/web/src/core/components/game/tokens.ts` holds the raw strings that the 3D scene and the feature components need.
-- **Catalog:** `/master-design#game-foundation` and the other `Game` entries show every token, piece and state. To add one: put the piece in `core/components/game/`, add a `master-design/showcases/game-<slug>.tsx` that uses `Variant`/`VariantGrid` with real tokens, and register it in `master-design/registry.ts` under `Game` with a one-line when-to-use. `master-design/catalog.unit.test.ts` guards the ids, the descriptions and the layer rules.
+- **Catalog:** `/master-design#design-foundation` has the one Design Foundation: the materials, the semantic aliases, the elevation and the type ramp. The `Game Pieces` Category shows the composed pieces and states. To add a piece: put it in `core/components/game/`, add a `master-design/showcases/game-<slug>.tsx` that uses `Variant`/`VariantGrid` with real tokens, and register it in `master-design/registry.ts` under `Game Pieces` with a one-line when-to-use. `master-design/catalog.unit.test.ts` guards the ids, the descriptions and the layer rules.
 - **Import rule:** `core/components/game` never imports `features/*`. A page outside `/play` imports only `@/core/components/game`.
 
 The direction is `features/* → core/components/game → core/styles/globals.css`. A page outside `/play` imports only `@/core/components/game`, so the game data, the atoms and the 3D scene stay out of its bundle.
@@ -254,6 +254,63 @@ The direction is `features/* → core/components/game → core/styles/globals.cs
 ## Colors
 
 The palette is warm workshop material (gold, bronze, wood, parchment, ink) on bright painted scenes, with fixed game colors for Races, Ranks and Damage Types.
+
+### Semantic Aliases
+
+The base component library reads these semantic names. Each one points at a material token, so `core/components/ui` and `core/components/game` share one palette. A page outside `/play` may use either name. The material token is the source.
+
+| Alias                | Material                              |
+| -------------------- | ------------------------------------- |
+| `bg`                 | `night-plate`                         |
+| `fg`                 | `cream`                               |
+| `card`               | `plate-socket`                        |
+| `card-fg`            | `cream`                               |
+| `muted`              | `night-plate` 65% + `plate-ember` 35% |
+| `muted-fg`           | `cream-dim`                           |
+| `overlay`            | `parchment`                           |
+| `overlay-fg`         | `ink`                                 |
+| `primary`            | `gold`                                |
+| `primary-fg`         | `ink-on-gold`                         |
+| `primary-subtle`     | `gold` at 18%                         |
+| `primary-subtle-fg`  | `gold-light`                          |
+| `secondary`          | `wood`                                |
+| `secondary-fg`       | `cream`                               |
+| `accent`             | `plate-ember`                         |
+| `accent-fg`          | `cream`                               |
+| `success`            | `hp-full`                             |
+| `success-fg`         | `ink-on-gold`                         |
+| `success-subtle`     | `hp-full` at 18%                      |
+| `success-subtle-fg`  | `hp-full`                             |
+| `danger`             | `enemy-deep`                          |
+| `danger-fg`          | `cream`                               |
+| `danger-subtle`      | `enemy-red` at 18%                    |
+| `danger-subtle-fg`   | `heart-red`                           |
+| `warning`            | `victory-amber`                       |
+| `warning-fg`         | `cream`                               |
+| `warning-subtle`     | `victory-amber` at 22%                |
+| `warning-subtle-fg`  | `ready-gold`                          |
+| `info-subtle`        | `tutorial-teal` at 22%                |
+| `info-subtle-fg`     | `tutorial-glow`                       |
+| `border`             | `plate-ember`                         |
+| `input`              | `wood-light`                          |
+| `ring`               | `focus-cream`                         |
+| `navbar`             | `night-plate`                         |
+| `navbar-fg`          | `cream`                               |
+| `sidebar`            | `night-plate`                         |
+| `sidebar-fg`         | `cream`                               |
+| `sidebar-primary`    | `gold`                                |
+| `sidebar-primary-fg` | `ink-on-gold`                         |
+| `sidebar-accent`     | `plate-ember`                         |
+| `sidebar-accent-fg`  | `cream`                               |
+| `sidebar-border`     | `plate-ember`                         |
+| `sidebar-ring`       | `focus-cream`                         |
+| `chart-1`            | `gold`                                |
+| `chart-2`            | `tutorial-teal`                       |
+| `chart-3`            | `rank-rare`                           |
+| `chart-4`            | `rank-epic`                           |
+| `chart-5`            | `hp-full`                             |
+
+**The Alias Contrast Rule.** A bright material does not always carry white text. `danger` uses `enemy-deep` with `cream` (11.16:1), not `enemy-red` with white (4.23:1). `success` uses `hp-full` with `ink-on-gold` (9.65:1). A new alias takes the darker or the lighter material that passes WCAG 2.2 AA.
 
 ### Primary
 
@@ -309,7 +366,7 @@ These come from art direction 4. `apps/web/src/core/components/game/tokens.ts` h
 
 **The Never Color Alone Rule.** A Rank always has its gems (1 for Common to 5 for Legendary). A Damage Type always has its icon. A side always has its position (player left, enemy right) as well as its color.
 
-**The Base Theme Stays Out Rule.** The blue primary and zinc greys of the base component theme never appear on a game screen. A base component that goes into the game gets the Heynbord colors first.
+**The One Theme Rule.** The application has one theme: the Heynbord material palette. There is no light mode and no dark mode. `core/components/ui` reads the semantic aliases, and every alias points at a material token. A second palette does not exist.
 
 ## Typography
 
