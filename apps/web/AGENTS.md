@@ -1,5 +1,6 @@
 # `web` app
 
+- [Design tokens](docs/design.md) — one theme, material tokens, the token guard
 - [Effect](docs/effect.md) — folder structure, runtimes, atoms, server functions, tests
 - [Observability](docs/observability.md)
 - [Rendering](docs/rendering.md) — SSR modes, server functions, streaming, deployment

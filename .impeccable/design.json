@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-25T07:44:20Z",
+  "generatedAt": "2026-10-26T13:17:37Z",
   "title": "Design System: Heynbord",
   "extensions": {
     "colorMeta": {
@@ -543,6 +543,21 @@
           "oklch(72% 0.077 219.6)",
           "oklch(84% 0.071 219.6)",
           "oklch(95% 0.066 219.6)"
+        ]
+      },
+      "xp-ink": {
+        "role": "tertiary",
+        "displayName": "XP Ink",
+        "canonical": "oklch(43.0% 0.075 219.7)",
+        "tonalRamp": [
+          "oklch(15% 0.043 219.7)",
+          "oklch(26% 0.054 219.7)",
+          "oklch(37% 0.066 219.7)",
+          "oklch(48% 0.075 219.7)",
+          "oklch(60% 0.075 219.7)",
+          "oklch(72% 0.071 219.7)",
+          "oklch(84% 0.060 219.7)",
+          "oklch(95% 0.032 219.7)"
         ]
       },
       "tutorial-glow": {

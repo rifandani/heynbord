@@ -19,6 +19,7 @@ import type { ReactNode } from "react";
 import { lazy, Suspense } from "react";
 import { RouterProvider as RACRouterProvider } from "react-aria-components";
 
+import { CANVAS_COLOR } from "@/core/components/game/tokens";
 import { ReloadPromptSw } from "@/core/providers/reload-prompt-sw";
 import { buildSeoMeta } from "@/core/utils/seo";
 import { AppI18nProvider } from "@/features/i18n/components/i18n-provider";
@@ -59,7 +60,7 @@ const RootDocument = ({ children }: { children: ReactNode }) => {
       <head>
         <HeadContent />
         {/* The one canvas color of the game (night-plate). */}
-        <meta name="theme-color" content="#1c140e" />
+        <meta name="theme-color" content={CANVAS_COLOR} />
         {/* The Town Bar is stowed before the first paint, so a saved rail
             never flashes the full shelf. The live transition starts after the
             first frame (see the ready attribute in TownBar). */}
@@ -130,7 +131,7 @@ export const Route = createRootRouteWithContext<{
         name: "viewport",
       },
       { content: "dark", name: "color-scheme" },
-      { content: "#1c140e", name: "msapplication-TileColor" },
+      { content: CANVAS_COLOR, name: "msapplication-TileColor" },
       { content: "Heynbord", name: "application-name" },
       { content: "Tri Rizeki Rifandani", name: "author" },
       { content: "TanStack Start", name: "generator" },

@@ -14,7 +14,7 @@ import { Variant, VariantGrid } from "../variant";
 /** A static phone in landscape, so the catalog shows the sheet without a resize. */
 const SheetPreview = () => (
   <div className="bg-battle-meadow relative aspect-video w-full max-w-xl overflow-hidden rounded-2xl border-2 border-black/20 shadow-xl">
-    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,206,130,0.25),transparent_60%)]" />
+    <div className="from-gold-light/25 absolute inset-0 bg-radial-[at_30%_20%] to-transparent to-60%" />
     <div className={cn("absolute inset-0", GAME_SCRIM_TINT)} />
     <div
       className={cn(

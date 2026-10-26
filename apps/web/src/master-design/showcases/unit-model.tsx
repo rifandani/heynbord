@@ -105,7 +105,7 @@ export const UnitModelShowcase = () => {
         label="Unit Model (left) and Cut-out Figure (right)"
         className="w-full"
       >
-        <div className="relative aspect-video w-full max-w-3xl overflow-hidden rounded-lg bg-[radial-gradient(ellipse_80%_70%_at_50%_48%,#86bd55_0%,#679f40_42%,#44772c_72%,#24451b_100%)]">
+        <div className="from-elf-green via-battle-meadow to-crypt relative aspect-video w-full max-w-3xl overflow-hidden rounded-lg bg-radial-[at_50%_48%] from-0% via-42% to-100%">
           {mounted ? (
             <Suspense fallback={null}>
               <UnitModelStage

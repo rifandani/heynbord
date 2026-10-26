@@ -8,7 +8,7 @@ import { Variant, VariantGrid } from "../variant";
 /** A painted scene behind an overlay, drawn with the game tokens. */
 const Scene = () => (
   <div className="bg-battle-meadow absolute inset-0">
-    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,206,130,0.3),transparent_60%)]" />
+    <div className="from-gold-light/30 absolute inset-0 bg-radial-[at_30%_20%] to-transparent to-60%" />
     <div className="bg-wood/50 absolute inset-x-0 bottom-0 h-1/3" />
     <div className="bg-night-plate/70 border-gold-trim/40 absolute top-4 left-4 rounded-xl border-2 px-3 py-2">
       <span className="text-cream text-xs font-bold">Your Turn</span>

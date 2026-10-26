@@ -113,6 +113,12 @@ jobs:
       - name: Lint and typecheck
         run: bun lint-typecheck
 
+      # Issue 146, rollout step 1: report the raw-color debt while the feature
+      # conversion runs. Remove `--warn` in the final step, after the last
+      # feature PR, so that the check blocks CI.
+      - name: Check design tokens
+        run: bun check:tokens --warn
+
   # GDD 13: each Stage and each Matchup must be on its win-rate target.
   # The seeds are fixed, so the result changes only when content or rules change.
   # Each mode is its own job: a mode is CPU-bound, and a separate job gives it

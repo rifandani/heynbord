@@ -1,14 +1,15 @@
+import { RANK_COLORS } from "@/core/components/game/tokens";
 import { ColorSwatch } from "@/core/components/ui/color-swatch";
 
 import { Variant, VariantGrid } from "../variant";
 
 export const ColorSwatchShowcase = () => (
   <VariantGrid>
-    <Variant label="#0d6efd">
-      <ColorSwatch color="#0d6efd" />
+    <Variant label={RANK_COLORS.rare}>
+      <ColorSwatch color={RANK_COLORS.rare} />
     </Variant>
-    <Variant label="#198754">
-      <ColorSwatch color="#198754" />
+    <Variant label={RANK_COLORS.uncommon}>
+      <ColorSwatch color={RANK_COLORS.uncommon} />
     </Variant>
   </VariantGrid>
 );

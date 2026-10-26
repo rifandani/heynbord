@@ -348,7 +348,7 @@ These come from art direction 4. `apps/web/src/core/components/game/tokens.ts` h
 - **Effect and stat colors:** `HEAL_COLOR` is the green of a heal, `BLOCKED_HIT` the grey of a hit that the Block took, and the `STAT_DELTA` colors mark an Attack or HP number that is equal (white), lower (red) or higher (green) than its summon value. The 3D scene reads them from `tokens.ts`; they are effect colors, not UI surfaces.
 - **Coin:** each denomination has its own coin and its own metal, and the short letter of a Coin price takes it: `#ffd75a` Gold, `#d9dee6` Silver and `#f8c49c` Copper on a dark surface (wood, a Night Plate), and the darker `#7a5310`, `#3f454f` and `#7a3a17` on a light one (a gold button, parchment), so the letter keeps both its metal and its contrast (WCAG 2.2 AA). A Coin amount always shows the coin icon too, so the letter is never the only cue. `apps/web/src/features/town/components/balance-icon.tsx` holds them.
 
-**Known token gap.** `tokens.ts` holds all 6 Races and all 5 Damage Types, but the `@theme` block in `globals.css` mirrors only the first 4 of each. Goblin, Feral and Lightning have no Tailwind utility yet, so a component outside the Battle reads the raw string from `tokens.ts`; add `--color-goblin-brass`, `--color-feral-violet` and `--color-damage-lightning` to `@theme` before a new screen uses a utility. `pewter`, `stone` and `grain` are material constants in the Campaign icons and the wood bars, not `@theme` tokens.
+**The complete token set.** The `@theme` block holds all 6 Races and all 5 Damage Types, so `goblin-brass`, `feral-violet` and `damage-lightning` have a Tailwind utility too. `pewter`, `stone` and `grain` are tokens as well, for the Campaign Lock Plate and the wood bars. `xp-ink` is the ink of the XP number on parchment. `.impeccable/design.json` holds a `colorMeta` entry for each one, and `bun check:tokens` keeps the three records equal.
 
 ### Neutral
 
@@ -367,6 +367,8 @@ These come from art direction 4. `apps/web/src/core/components/game/tokens.ts` h
 **The Never Color Alone Rule.** A Rank always has its gems (1 for Common to 5 for Legendary). A Damage Type always has its icon. A side always has its position (player left, enemy right) as well as its color.
 
 **The One Theme Rule.** The application has one theme: the Heynbord material palette. There is no light mode and no dark mode. `core/components/ui` reads the semantic aliases, and every alias points at a material token. A second palette does not exist.
+
+**The Token Guard Rule.** A raw color lives only in a token file: `core/styles/globals.css` (the definitions), `core/components/game/tokens.ts` (game data for the 3D scene), and `features/<name>/tokens.ts` (a feature palette for the 3D scene). Every other file uses a token utility (`bg-night-plate`, `text-gold`) or a semantic alias. A new color adds a `--color-*` token to the `@theme` block, a `colorMeta` entry in `.impeccable/design.json`, and a line here. `bun check:tokens` finds a hex value, an arbitrary color class, or a record that does not agree with the `@theme` block.
 
 ## Typography
 
