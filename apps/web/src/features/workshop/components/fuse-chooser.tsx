@@ -10,7 +10,6 @@ import {
 } from "react-aria-components";
 
 import { RankGems } from "@/core/components/game/rank-gems";
-import { RANK_COLORS } from "@/core/components/game/tokens";
 import { useGameText } from "@/features/battle/use-game-text";
 
 /** A card with copies in more than one Rank that can go into a Fuse. */
@@ -97,9 +96,7 @@ export const FuseChooser = ({
                 <span className="w-[5.6em] text-[10px]" aria-hidden>
                   <RankGems rank={rank} />
                 </span>
-                <span style={{ color: RANK_COLORS[rank] }}>
-                  {tr(`ranks.${rank}`)}
-                </span>
+                <span className="text-cream">{tr(`ranks.${rank}`)}</span>
                 <span
                   className="ml-auto font-black text-[#fff6df] tabular-nums"
                   aria-hidden

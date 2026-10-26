@@ -29,6 +29,12 @@ export default {
   notFound: "Not Found",
   gone: "Sorry, we can't find the page you're looking for",
   welcome: "Welcome Back",
+  errorPage: {
+    code: "4xx",
+    title: "Oops!",
+    text: "Something went wrong",
+    retry: "Try again",
+  },
   // #endregion COMMON
   // #region HOME
   title: "Home",
@@ -40,6 +46,7 @@ export default {
   },
   battle: {
     title: "Battle",
+    boardLabel: "Battle Board",
     chooseStage: "Choose a Stage",
     chooseDeck: "Choose a Deck",
     editDecks: "Edit Decks",
@@ -98,8 +105,6 @@ export default {
     victory: "Victory",
     defeat: "Defeat",
     turnLimit: "The Turn limit is reached. The defender wins.",
-    routedWin: "The enemy is Routed: it has no Units and no cards.",
-    routedLoss: "Your Side is Routed: it has no Units and no cards.",
     starsLabel: "{count} of 3 Stars",
     coinEarned: "Coin earned: {amount}",
     xpEarned: "+{amount} XP",
@@ -472,6 +477,11 @@ export default {
     sound: "Sound",
     volume: "Sound volume",
     soundOn: "Sound on",
+    effectsVolume: "Effects volume",
+    musicOn: "Music on",
+    musicVolume: "Music volume",
+    battleSpeed: "Battle speed",
+    reducedMotion: "Reduced motion",
     profile: {
       label: "Progress",
       export: "Export",

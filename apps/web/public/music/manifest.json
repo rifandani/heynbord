@@ -1,0 +1,190 @@
+{
+  "provider": "OpenGameArt.org",
+  "license": "CC0 1.0 except where a track lists another license",
+  "prompt": null,
+  "promptNote": "These are existing composer-authored tracks, not generated tracks. No prompt applies.",
+  "tracks": [
+    {
+      "id": "town",
+      "file": "town.ogg",
+      "title": "Mystical RPG Maker Town Theme",
+      "artist": "symphony",
+      "sourcePage": "https://opengameart.org/content/mystical-rpg-maker-town-theme",
+      "sourceFile": "https://opengameart.org/sites/default/files/symphony%20-%20mystical%20town%2001_1.ogg",
+      "sourceFormat": "ogg",
+      "loop": true
+    },
+    {
+      "id": "region-1",
+      "file": "region-1.ogg",
+      "title": "Jungle Battle Loop",
+      "artist": "omfgdude",
+      "sourcePage": "https://opengameart.org/content/jungle-battle-loop",
+      "sourceFile": "https://opengameart.org/sites/default/files/BattleLoop2_0.ogg",
+      "sourceFormat": "ogg",
+      "loop": true
+    },
+    {
+      "id": "region-2",
+      "file": "region-2.ogg",
+      "title": "Heartfelt Battle (Loopable, fantasy, strings/piano/horn)",
+      "artist": "request",
+      "sourcePage": "https://opengameart.org/content/heartfelt-battle-loopable-fantasy-stringspianohorn",
+      "sourceFile": "https://opengameart.org/sites/default/files/heartfelt-battle_loop.ogg",
+      "sourceFormat": "ogg",
+      "loop": true
+    },
+    {
+      "id": "region-3",
+      "file": "region-3.ogg",
+      "title": "Hope (Orchestral battle music)",
+      "artist": "MintoDog",
+      "sourcePage": "https://opengameart.org/content/hopeorchestral-battle-music",
+      "sourceFile": "https://opengameart.org/sites/default/files/hope_orchestral_battle_music_bpm165_0.ogg",
+      "sourceFormat": "ogg",
+      "loop": true
+    },
+    {
+      "id": "region-4",
+      "file": "region-4.mp3",
+      "title": "Celtic Loop",
+      "artist": "stereoscopic",
+      "sourcePage": "https://opengameart.org/content/celtic-loop",
+      "sourceFile": "https://opengameart.org/sites/default/files/celtic_0.mp3",
+      "sourceFormat": "mp3",
+      "loop": true
+    },
+    {
+      "id": "region-5",
+      "file": "region-5.mp3",
+      "title": "Once Upon a Time (loop)",
+      "artist": "TAD",
+      "sourcePage": "https://opengameart.org/content/once-upon-a-time-loop",
+      "sourceFile": "https://opengameart.org/sites/default/files/once_upon_a_time_loop_0.mp3",
+      "sourceFormat": "mp3",
+      "loop": true
+    },
+    {
+      "id": "boss",
+      "file": "boss.ogg",
+      "title": "Boss Battle Theme",
+      "artist": "CleytonKauffman",
+      "sourcePage": "https://opengameart.org/content/boss-battle-theme",
+      "sourceFile": "https://opengameart.org/sites/default/files/CleytonRX%20-%20Battle%20RPG%20Theme%20Var_0.ogg",
+      "sourceFormat": "ogg",
+      "loop": true
+    },
+    {
+      "id": "heynspire",
+      "file": "heynspire.ogg",
+      "title": "Fairy Adventure",
+      "artist": "MintoDog",
+      "sourcePage": "https://opengameart.org/content/fairy-adventure",
+      "sourceFile": "https://opengameart.org/sites/default/files/fairy_adventure_bpm140_0.ogg",
+      "sourceFormat": "ogg",
+      "loop": true
+    },
+    {
+      "id": "dungeons",
+      "file": "dungeons.ogg",
+      "title": "Great Labyrinth (Orchestral dungeon music)",
+      "artist": "MintoDog",
+      "sourcePage": "https://opengameart.org/node/155823",
+      "sourceFile": "https://opengameart.org/sites/default/files/great_labyrinth_bpm160_0.ogg",
+      "sourceFormat": "ogg",
+      "license": "CC0 1.0",
+      "loop": true
+    },
+    {
+      "id": "workshop",
+      "file": "workshop.mp3",
+      "title": "At Work (Loop)",
+      "artist": "HorrorPen",
+      "sourcePage": "https://opengameart.org/content/at-work-loop",
+      "sourceFile": "https://opengameart.org/sites/default/files/at_work.mp3",
+      "sourceFormat": "mp3",
+      "license": "CC-BY 3.0",
+      "licenseLink": "https://creativecommons.org/licenses/by/3.0/",
+      "attribution": "At Work (Loop) by HorrorPen, licensed under CC-BY 3.0. Source: https://opengameart.org/content/at-work-loop",
+      "loop": true
+    },
+    {
+      "id": "packs",
+      "file": "packs.ogg",
+      "title": "Quantum Stone",
+      "artist": "zesona",
+      "sourcePage": "https://opengameart.org/content/quantum-stone",
+      "sourceFile": "https://opengameart.org/sites/default/files/quantum-stone.ogg",
+      "sourceFormat": "ogg",
+      "license": "CC0 1.0",
+      "loop": true
+    },
+    {
+      "id": "bazaar",
+      "file": "bazaar.mp3",
+      "title": "Medieval: Market Day (Loop)",
+      "artist": "RandomMind",
+      "sourcePage": "https://opengameart.org/content/medieval-market-day",
+      "sourceFile": "https://opengameart.org/sites/default/files/Loop_Market_Day_0.mp3",
+      "sourceFormat": "mp3",
+      "license": "CC0 1.0",
+      "loop": true
+    },
+    {
+      "id": "seaport",
+      "file": "seaport.ogg",
+      "title": "Through Sea (Loop)",
+      "artist": "KiluaBoy",
+      "sourcePage": "https://opengameart.org/content/through-fire-through-sea-violin-flute-loop",
+      "sourceFile": "https://opengameart.org/sites/default/files/ThroughSea.ogg",
+      "sourceFormat": "ogg",
+      "license": "CC0 1.0",
+      "loop": true
+    },
+    {
+      "id": "hero",
+      "file": "hero.mp3",
+      "title": "Heroes Theme",
+      "artist": "Alexandr Zhelanov",
+      "sourcePage": "https://opengameart.org/content/heroes-theme",
+      "sourceFile": "https://opengameart.org/sites/default/files/Heroes%20Theme.mp3",
+      "sourceFormat": "mp3",
+      "license": "CC-BY 3.0",
+      "licenseLink": "https://creativecommons.org/licenses/by/3.0/",
+      "attribution": "Heroes Theme by Alexandr Zhelanov, licensed under CC-BY 3.0. Source: https://opengameart.org/content/heroes-theme",
+      "loop": true
+    },
+    {
+      "id": "achievements",
+      "file": "achievements.mp3",
+      "title": "Medieval: Rejoicing (Loop)",
+      "artist": "RandomMind",
+      "sourcePage": "https://opengameart.org/content/medieval-rejoicing",
+      "sourceFile": "https://opengameart.org/sites/default/files/Loop_Rejoicing.wav",
+      "sourceFormat": "wav",
+      "localFormat": "mp3",
+      "license": "CC0 1.0",
+      "loop": true
+    },
+    {
+      "id": "victory",
+      "file": "victory.ogg",
+      "title": "Victory Fanfare",
+      "artist": "ARoachIFoundOnMyPillow",
+      "sourcePage": "https://opengameart.org/content/victory-fanfare",
+      "sourceFile": "https://opengameart.org/sites/default/files/fanfare1_0.ogg",
+      "sourceFormat": "ogg",
+      "loop": false
+    },
+    {
+      "id": "defeat",
+      "file": "defeat.ogg",
+      "title": "Lose Game Short Music Clip",
+      "artist": "Robin Lamb",
+      "sourcePage": "https://opengameart.org/content/lose-game-short-music-clip",
+      "sourceFile": "https://opengameart.org/sites/default/files/losegamemusic.ogg",
+      "sourceFormat": "ogg",
+      "loop": false
+    }
+  ]
+}

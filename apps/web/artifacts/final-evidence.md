@@ -48,8 +48,6 @@ Budgets (technical design 6): draw calls < 150 — pass. Device pixel ratio max 
 | Main shared chunk | 227 KB | — |
 | Home page JS on the wire (brotli, measured) | 284 KB | < 250 KB — **over, existing**: the template's main chunk (224 KB) and the language/theme menus (49 KB). This change adds about 5 KB (game text in 2 catalogs). |
 
-Battle start after "Start Battle": 1.4 s on the local preview (NFR-03 target < 5 s). No image, model or audio files load: all art is procedural, all sounds are Web Audio.
-
 ## Captures
 
 - Desktop: [active play](pass-1/desktop-active-play.png), [targeting](pass-1/desktop-targeting.png), [Resolution Phase](pass-1/desktop-resolution.png), [Victory](pass-1/desktop-victory.png), [Defeat](pass-1/desktop-defeat.png). The Victory and Defeat captures caught the dialog in its 300 ms fade-in; the dialog now has no animation with reduced motion.

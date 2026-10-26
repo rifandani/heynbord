@@ -35,7 +35,7 @@ const BossPin = ({
 }) => (
   <span
     className={cn(
-      "grid shrink-0 place-items-center rounded-full border-2 border-[#4a0f0b] bg-[radial-gradient(circle_at_35%_30%,#f07a6f,#b8322a_70%)] leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.4)]",
+      "bg-enemy-deep grid shrink-0 place-items-center rounded-full border-2 border-[#4a0f0b] leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.4)]",
       className
     )}
     aria-hidden

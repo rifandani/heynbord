@@ -1,6 +1,5 @@
 import { Schema } from "effect";
 import type { ReactNode } from "react";
-import { HiGlobeAlt } from "react-icons/hi2";
 
 import { Button } from "@/core/components/ui/button";
 import {
@@ -21,6 +20,22 @@ export const LOCALE_LABELS = {
 
 const isLocale = Schema.is(Locale);
 
+/** The globe of the language button, drawn here so no icon library loads. */
+const GlobeMark = () => (
+  <svg
+    viewBox="0 0 24 24"
+    className="size-6"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.75}
+    strokeLinecap="round"
+    aria-hidden
+  >
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3Z" />
+  </svg>
+);
+
 /**
  * The language menu. `trigger` draws the button that opens it, with the name
  * of the current Locale; a game screen uses it to draw a game button.
@@ -38,7 +53,7 @@ export const LanguageToggle = ({
         trigger(label)
       ) : (
         <Button intent="plain">
-          <HiGlobeAlt className="size-6" />
+          <GlobeMark />
           {label}
         </Button>
       )}

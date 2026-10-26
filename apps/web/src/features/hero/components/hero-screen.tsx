@@ -188,7 +188,7 @@ const ForgeStoneTray = ({
               key={tier}
               className={cn(
                 "flex min-w-0 flex-col items-center gap-0.5 px-1 py-1.5 [@media(max-height:500px)]:py-0.5",
-                count === 0 && "opacity-60"
+                count === 0 && "grayscale"
               )}
               data-testid={`hero-forge-stone-${tier}`}
               data-count={count}

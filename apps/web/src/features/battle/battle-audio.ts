@@ -45,16 +45,42 @@ export type SoundName =
 
 let context: AudioContext | null = null;
 let master: GainNode | null = null;
+/** The channel of the effects, under the master gain. */
+let effects: GainNode | null = null;
+/** The channel of the music, under the master gain. */
+let music: GainNode | null = null;
 let enabled = true;
-/** The volume as a part of 1. */
+/** The master volume as a part of 1. */
 let volume = 1;
+/** The effects volume as a part of 1. */
+let effectsVolume = 1;
+/** The music volume as a part of 1. */
+let musicVolume = 1;
+let musicEnabled = true;
+const unlockListeners = new Set<() => void>();
 const lastPlayed = new Map<SoundName, number>();
 
 /** The master gain at volume 100. */
 const FULL_GAIN = 0.35;
 
+/** A volume change to a part of 1, from 0 to 100. */
+const partOf = (percent: number): number =>
+  Math.min(Math.max(percent, 0), 100) / 100;
+
 /** The ear hears loudness on a curve, so the gain follows the square of the volume. */
-const masterGain = () => FULL_GAIN * volume ** 2;
+const gainOf = (value: number): number => value ** 2;
+
+/** The master gain, with the Sound volume. */
+const masterGain = (): number => FULL_GAIN * gainOf(volume);
+
+/**
+ * Sets a channel gain. A change applies to the sounds that play now too.
+ */
+const setChannel = (channel: GainNode | null, target: number): void => {
+  if (context && channel) {
+    channel.gain.setTargetAtTime(target, context.currentTime, 0.02);
+  }
+};
 
 /** Creates or resumes the audio context. Call it from a user gesture. */
 export const unlockAudio = (): void => {
@@ -64,25 +90,73 @@ export const unlockAudio = (): void => {
   if (!context) {
     context = new AudioContext();
     master = context.createGain();
-    master.gain.value = masterGain();
+    effects = context.createGain();
+    music = context.createGain();
+    master.gain.value = enabled ? masterGain() : 0;
+    effects.gain.value = gainOf(effectsVolume);
+    music.gain.value = musicEnabled ? gainOf(musicVolume) : 0;
+    effects.connect(master);
+    music.connect(master);
     master.connect(context.destination);
   }
   if (context.state === "suspended") {
-    void context.resume();
+    const audio = context;
+    const resumeAndNotify = async (): Promise<void> => {
+      await audio.resume();
+      for (const listener of unlockListeners) {
+        listener();
+      }
+    };
+    void resumeAndNotify();
+  } else {
+    for (const listener of unlockListeners) {
+      listener();
+    }
   }
+};
+
+/** Registers music work that must start after the Player unlocks audio. */
+export const onAudioUnlocked = (listener: () => void): (() => void) => {
+  unlockListeners.add(listener);
+  return () => unlockListeners.delete(listener);
 };
 
 export const setSoundEnabled = (on: boolean): void => {
   enabled = on;
+  setChannel(master, enabled ? masterGain() : 0);
 };
 
-/** Sets the volume, 0 to 100. A change applies to the sounds that play now too. */
+/** Sets the master volume, 0 to 100. A change applies to the sounds that play now too. */
 export const setSoundVolume = (percent: number): void => {
-  volume = Math.min(Math.max(percent, 0), 100) / 100;
-  if (context && master) {
-    master.gain.setTargetAtTime(masterGain(), context.currentTime, 0.02);
-  }
+  volume = partOf(percent);
+  setChannel(master, masterGain());
 };
+
+/** Sets the effects volume, 0 to 100. The master Sound switch stays apart from it. */
+export const setEffectsVolume = (percent: number): void => {
+  effectsVolume = partOf(percent);
+  setChannel(effects, gainOf(effectsVolume));
+};
+
+/**
+ * Sets the music volume, 0 to 100.
+ */
+export const setMusicVolume = (percent: number): void => {
+  musicVolume = partOf(percent);
+  setChannel(music, musicEnabled ? gainOf(musicVolume) : 0);
+};
+
+/** Sets the separate music switch. */
+export const setMusicEnabled = (on: boolean): void => {
+  musicEnabled = on;
+  setChannel(music, musicEnabled ? gainOf(musicVolume) : 0);
+};
+
+/** The shared Web Audio context and the music channel, or null before unlock. */
+export const musicOutput = (): {
+  readonly context: AudioContext;
+  readonly destination: GainNode;
+} | null => (context && music ? { context, destination: music } : null);
 
 const tone = (
   frequency: number,
@@ -94,7 +168,7 @@ const tone = (
     readonly delay?: number;
   } = {}
 ): void => {
-  if (!context || !master) {
+  if (!context || !effects) {
     return;
   }
   const start = context.currentTime + (options.delay ?? 0);
@@ -111,13 +185,13 @@ const tone = (
   gain.gain.setValueAtTime(0.0001, start);
   gain.gain.exponentialRampToValueAtTime(options.gain ?? 0.4, start + 0.01);
   gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-  oscillator.connect(gain).connect(master);
+  oscillator.connect(gain).connect(effects);
   oscillator.start(start);
   oscillator.stop(start + duration + 0.02);
 };
 
 const noise = (duration: number, frequency: number, gain = 0.35): void => {
-  if (!context || !master) {
+  if (!context || !effects) {
     return;
   }
   const length = Math.floor(context.sampleRate * duration);
@@ -133,7 +207,7 @@ const noise = (duration: number, frequency: number, gain = 0.35): void => {
   filter.frequency.value = frequency;
   const level = context.createGain();
   level.gain.value = gain;
-  source.connect(filter).connect(level).connect(master);
+  source.connect(filter).connect(level).connect(effects);
   source.start();
 };
 
@@ -272,7 +346,13 @@ const SOUNDS: Readonly<Record<SoundName, () => void>> = {
 
 /** Plays a sound. The same sound plays at most once in `minGap` ms, so speed ×2 stays clear (art direction 7.3). */
 export const playSound = (name: SoundName, minGap = 50): void => {
-  if (!enabled || volume === 0 || !context || context.state !== "running") {
+  if (
+    !enabled ||
+    volume === 0 ||
+    effectsVolume === 0 ||
+    !context ||
+    context.state !== "running"
+  ) {
     return;
   }
   const now = context.currentTime * 1000;

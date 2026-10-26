@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { Label, Meter } from "react-aria-components";
 
 import { RankGems } from "@/core/components/game/rank-gems";
-import { RANK_COLORS } from "@/core/components/game/tokens";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { useGameText } from "@/features/battle/use-game-text";
 import { RANK_LIGHT, RankBurst } from "@/features/packs/components/pack-reveal";
@@ -302,8 +301,7 @@ export const PanelHeader = ({
           {tr(`cards.${cardId}.name`)}
         </h2>
         <p
-          className="flex items-center gap-1.5 text-xs font-bold [@media(max-height:500px)]:text-[10px]"
-          style={{ color: RANK_COLORS[rank] }}
+          className="text-cream flex items-center gap-1.5 text-xs font-bold [@media(max-height:500px)]:text-[10px]"
           data-testid="workshop-shown-rank"
         >
           {/* oxlint-disable-next-line react-doctor/no-tiny-text -- the font size sets the gem size (em); the gems have no text */}

@@ -1,6 +1,5 @@
 "use client"
 
-import { HiCheck } from "react-icons/hi2"
 import { Collection } from "react-aria-components/Collection"
 import { composeRenderProps } from "react-aria-components/composeRenderProps"
 import { Header } from "react-aria-components/Header"
@@ -117,7 +116,7 @@ const DropdownItem = ({ className, children, intent, ...props }: DropdownItemPro
       {composeRenderProps(children, (children, { isSelected }) => (
         <>
           {isSelected && (
-            <HiCheck
+            <CheckMark
               className={twJoin(
                 "-ms-0.5 me-1.5 h-lh w-4 shrink-0",
                 "group-has-[svg:not([data-slot='check-indicator'])]:absolute group-has-[svg:not([data-slot='check-indicator'])]:inset-e-0.5 group-has-[svg:not([data-slot='check-indicator'])]:top-1/2 group-has-[svg:not([data-slot='check-indicator'])]:-translate-y-1/2",
@@ -132,6 +131,22 @@ const DropdownItem = ({ className, children, intent, ...props }: DropdownItemPro
     </ListBoxItemPrimitive>
   )
 }
+
+/** The selected mark of a dropdown item, drawn here so no icon library loads. */
+const CheckMark = (props: React.ComponentProps<"svg">) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={3}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+    {...props}
+  >
+    <path d="M5 13l4 4L19 7" />
+  </svg>
+)
 
 const DropdownLabel = ({ className, ...props }: TextProps) => (
   <Text slot="label" className={cn("col-start-2 [&:has(+svg)]:pe-6", className)} {...props} />

@@ -54,7 +54,7 @@ const CountChip = ({
         selected
           ? "border-[#7a5310] bg-[#2a1a05]/85 text-[#ffe08a]"
           : "border-[#e9c46a]/40 bg-[#3a2a1c] text-[#fff6df]",
-        !selected && count === 0 && lock === null && "text-[#e8d9bb]/60"
+        !selected && count === 0 && lock === null && "text-cream-dim"
       )}
       aria-hidden
     >

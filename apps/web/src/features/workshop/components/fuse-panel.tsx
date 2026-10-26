@@ -13,7 +13,7 @@ import { Button, Label, Meter, Popover } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { RankGems } from "@/core/components/game/rank-gems";
-import { RACE_COLORS, RANK_COLORS } from "@/core/components/game/tokens";
+import { RACE_COLORS } from "@/core/components/game/tokens";
 import { cardIllustration, hasCardArt } from "@/features/battle/card-art";
 import {
   CardBack,
@@ -125,7 +125,7 @@ const FusePreview = ({
         <CardBack
           className={cn(
             "transition-[filter,opacity] duration-300",
-            dim && "opacity-70 saturate-50"
+            dim && "saturate-50"
           )}
         />
       </div>
@@ -497,7 +497,7 @@ const ChanceRow = ({
                 percent,
               })
         }
-        className={cn("flex flex-col gap-1", empty && "opacity-60")}
+        className={cn("flex flex-col gap-1", empty && "grayscale")}
       >
         {({ percentage }) => (
           <>
@@ -806,8 +806,7 @@ const FuseHeader = ({
       </h2>
       {rank !== null && line !== null ? (
         <p
-          className="flex items-center gap-1.5 text-xs font-bold [@media(max-height:500px)]:text-[10px]"
-          style={{ color: RANK_COLORS[rank] }}
+          className="text-cream flex items-center gap-1.5 text-xs font-bold [@media(max-height:500px)]:text-[10px]"
           data-testid="workshop-fuse-recipe"
         >
           {/* oxlint-disable-next-line react-doctor/no-tiny-text -- the font size sets the gem size (em); the gems have no text */}

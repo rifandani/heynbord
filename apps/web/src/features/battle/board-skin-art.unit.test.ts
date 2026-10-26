@@ -90,7 +90,7 @@ describe("Board skin art (Board Skin Concepts 2)", () => {
         .filter((art): art is string => art !== null)
         .map((art) => art.replace("/board-skins/", ""))
     );
-    // A `.webp.json` file is the licence record of its WebP (art direction 5.5).
+    // Keep sidecar files beside the board-skin art that uses them.
     const unused = readdirSync(BOARD_SKINS).filter(
       (file) => !(used.has(file) || used.has(file.replace(/\.json$/u, "")))
     );

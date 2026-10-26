@@ -20,7 +20,7 @@ import {
   heroX,
 } from "@/features/battle/scene/layout";
 import { playback } from "@/features/battle/scene/playback";
-import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import {
   blobShadowTexture,
   heroFigureTexture,
@@ -138,7 +138,7 @@ const HeroFigure = ({ side, hero }: HeroRef) => {
   const figure = useRef<MeshBasicMaterial>(null);
   const ring = useRef<MeshBasicMaterial>(null);
   const shadow = useRef<MeshBasicMaterial>(null);
-  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const reducedMotion = useReducedMotion();
   const x = heroX(side);
 
   useFrame(({ camera }) => {
@@ -266,7 +266,7 @@ const FrontBracket = ({ side, hero }: HeroRef) => {
     () => bracketMaterial(SIDE_COLORS[side].main),
     [side]
   );
-  const reducedMotion = useMemo(() => prefersReducedMotion(), []);
+  const reducedMotion = useReducedMotion();
 
   useFrame(() => {
     const shown = playback.session;

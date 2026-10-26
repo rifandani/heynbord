@@ -60,6 +60,21 @@ html[data-town-bar="collapsed"] {
   }
 }
 
+/* The reduced motion choice of the Player follows the same rule as
+   the system preference, for every CSS transition and animation. */
+html[data-reduced-motion="true"] *,
+html[data-reduced-motion="true"] *::before,
+html[data-reduced-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+}
+
+html[data-reduced-motion="true"] {
+  scroll-behavior: auto !important;
+}
+
 @theme inline {
   --font-sans:
     "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
@@ -184,9 +199,10 @@ html[data-town-bar="collapsed"] {
   --color-enemy-red: #d9463b;
   --color-enemy-deep: #6b1610;
   --color-blood-banner: #8e1f1f;
-  --color-keyword-rust: #b4521a;
+  --color-keyword-rust: #984012;
   --color-victory-amber: #8a5a12;
   --color-tutorial-teal: #0e6f86;
+  --color-xp-ink: #09596c;
   --color-tutorial-glow: #7fe3ff;
   --color-hp-full: #4ade80;
   --color-hp-low: #ef4444;
@@ -1967,4 +1983,12 @@ body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
   body:has([data-testid="battle-stage"]) [data-sonner-toaster] {
     bottom: 168px !important;
   }
+}
+
+/* The cream ring needs a dark edge on parchment and bright artwork. Together
+   the two colors remain distinct on both light and dark surfaces (issue 133). */
+body:has([data-testid="town-bar"], [data-testid="battle-stage"])
+  :is([data-focus-visible], :focus-visible) {
+  outline: 2px solid var(--color-night-plate);
+  outline-offset: 4px;
 }

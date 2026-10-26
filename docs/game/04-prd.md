@@ -19,10 +19,8 @@ Heynbord v1 is a single-player web game. It is a fantasy collectible card game w
 | ID | Goal | Measure |
 | --- | --- | --- |
 | G1 | Give a complete single-player experience | A player can finish the Campaign in 8 to 15 hours. |
-| G2 | Make battles easy to read | 8 of 10 playtesters can explain why they won or lost. |
-| G3 | Be fair | No playtester names "pay-to-win" or "grind" as their main problem. |
-| G4 | Run well on the web | 60 fps on a normal laptop. 30 fps or more on a mid-range phone in landscape. |
-| G5 | Be ready for online play | The server in v2 can use the rules package with no change to the rules. |
+| G2 | Run well on the web | 60 fps on a normal laptop. 30 fps or more on a mid-range phone in landscape. |
+| G3 | Be ready for online play | The server in v2 can use the rules package with no change to the rules. |
 
 ## 4. Non-goals for v1
 
@@ -32,6 +30,7 @@ Heynbord v1 is a single-player web game. It is a fantasy collectible card game w
 - Native mobile apps
 - Portrait layout on phones
 - More than 6 Races, more than 5 Ranks
+- Story scenes at the start and end of each Region (MOD-07, moved to v2)
 
 ## 5. Users
 
@@ -74,7 +73,6 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | CRD-04 | The Deck builder must check all Deck rules in GDD section 6 and show the reason when a Deck is not valid. | M |
 | CRD-05 | A new player must have 3 Deck slots. The player must be able to buy more with Coin, up to 10, with the prices in the Economy document. | M |
 | CRD-06 | The Deck builder must have Auto-fill. | S |
-| CRD-07 | The Deck builder must show the Countdown curve. | S |
 | CRD-08 | Card text must come from Keyword and effect templates with values, not from free text. | M |
 
 ### 6.3 Progression (PRG)
@@ -103,7 +101,6 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | MOD-06 | The game must have about 40 Achievements and about 30 Cosmetics. | S |
 | MOD-08 | The Bazaar must sell Cosmetics for Heynstones, with the prices in the Economy document. Earn-only Cosmetics must not be in the Bazaar. | S |
 | MOD-09 | Heynstones must come only from the one-time sources in the Economy document. | S |
-| MOD-07 | The story must have short scenes at the start and end of each Region. | S |
 | MOD-10 | The game must have 3 Dungeons that unlock at player level 10, 20 and 30. Each Dungeon must be one Battle against 2 or 3 Bosses, with the rules in GDD section 8.4. | S |
 
 ### 6.5 User interface (UI)
@@ -115,7 +112,6 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | UI-03 | On a phone in portrait, the game must ask the player to turn the phone to landscape. | M |
 | UI-04 | The Battle screen must show the Attack and HP of each Unit at all times. | M |
 | UI-05 | Hover or long press must show the full card details. | M |
-| UI-06 | Settings must include text size, reduced motion, high-contrast Board, audio volume and language. | S |
 | UI-07 | The game must have a Handbook that explains each rule, term and icon that the Player meets, with search, in each language. It opens from the Town Bar and from the Battle, and its rule text is the same as the text on the cards (GDD section 11.1). | S |
 
 ### 6.6 Save data (SAV)
@@ -133,8 +129,7 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | ID | Requirement | Priority |
 | --- | --- | --- |
 | LOC-01 | All text must be available in `en-us` and `id-id`. | M |
-| LOC-02 | All text must use Translation Keys in the Message Catalogs. No text is written directly in components. | M |
-| LOC-03 | The player must be able to change the language in Settings and on the Title screen. | M |
+| LOC-03 | The player must be able to change the language in Settings. | M |
 
 ### 6.8 Art and audio (ART)
 
@@ -143,32 +138,24 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | ART-01 | All card art must follow the [Art Direction](./05-art-direction.md) style guide. | M |
 | ART-02 | Each Unit must have idle, move, attack, hit and death feedback. | M |
 | ART-03 | The game must have sound effects for all Battle actions and UI actions. | M |
-| ART-04 | The game must have music for the menus, the Battle and the Boss Stages. | S |
-| ART-05 | All AI art and audio must have a record of the tool, the licence and the prompt. | M |
 
 ### 6.9 Non-functional requirements (NFR)
 
 | ID | Requirement | Priority |
 | --- | --- | --- |
 | NFR-01 | Frame rate: 60 fps on a 2022 laptop with integrated graphics. 30 fps or more on a 2022 mid-range Android phone. | M |
-| NFR-02 | First load: the Title screen is interactive in less than 3 seconds on a 4G connection. | M |
-| NFR-03 | Battle assets load only when needed. The first Battle must start in less than 5 seconds after the player selects it. | M |
-| NFR-04 | Browsers: the last 2 versions of Chrome, Edge, Firefox and Safari (desktop and mobile). | M |
-| NFR-05 | Graphics: WebGL 2. The game must show a clear message if WebGL 2 is not available. | M |
-| NFR-06 | UI contrast must meet WCAG 2.2 AA. | M |
-| NFR-07 | The rules package must have unit tests for each rule in GDD section 4. | M |
-| NFR-08 | The game must work offline after the first load (PWA). | S |
-| NFR-09 | The game must not send any player data to a server in v1. | M |
+| NFR-02 | First load: the Town is interactive in less than 3 seconds on a 4G connection. | M |
+| NFR-03 | Browsers: the last 2 versions of Chrome, Edge, Firefox and Safari (desktop and mobile). | M |
+| NFR-04 | Graphics: WebGL 2. The game must show a clear message if WebGL 2 is not available. | M |
+| NFR-06 | The rules package must have unit tests for each rule in GDD section 4. | M |
+| NFR-07 | The game must work offline after the first load (PWA). | S |
+| NFR-08 | The game must not send any player data to a server in v1. | M |
 
 ## 7. Release criteria for v1.0
 
 1. All **M** requirements are done.
-2. A playtest group of 5 to 10 people finishes the Campaign without a blocking bug.
-3. Goals G2, G3 and G4 pass in the playtest.
-4. Balance simulations show archetype win rates of 45% to 55%.
-5. All text is complete in `en-us` and `id-id`.
-6. A trademark check of the name "Heynbord", the draft names and the invented proper names is done (see the [README](./README.md#status-of-names)).
-7. The art and audio licence record is complete.
+2. Balance simulations show archetype win rates of 45% to 55%.
+3. All text is complete in `en-us` and `id-id`.
 
 ## 8. Assumptions
 
@@ -186,7 +173,6 @@ Priority: **M** = Must (v1.0 cannot release without it), **S** = Should (do it i
 | Balance is hard with 136 Cards | Some Decks are too strong | Use headless simulations from the start. |
 | 3D performance on phones | Low frame rate | Use performance budgets (see Technical Design). Test on a real phone from Milestone 1. |
 | Legal claims about similarity to the original games | Forced changes | Use new names, art, text and numbers. Do not copy assets or card text. |
-| AI tool licence changes | Art cannot be used | Keep the licence record. Use tools whose terms permit commercial use. |
 | Loss of local save | Players stop | Export and import. Remind the player to export a backup after long sessions. |
 
 ## 10. Open questions

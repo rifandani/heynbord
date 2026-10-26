@@ -122,7 +122,6 @@ Use one ChatGPT conversation for each Gear look: attach `set-reference.png`, sen
 7. Put the 4 files in `apps/web/public/gear-looks/<folder>/`.
 8. When all 4 icons are in place, remove the item key from `UNPAINTED_GEAR_LOOK_ART` in `apps/web/src/features/hero/gear-look-art.ts`. A unit test then checks the 4 files and their size.
 9. Look at the icons on the Hero screen and on the Bazaar shelf, at 1366 × 768 and on a short screen.
-10. Write the licence record (art direction 5.5).
 
 ## 7. Review checklist
 

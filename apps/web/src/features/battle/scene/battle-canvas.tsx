@@ -20,6 +20,7 @@ import { TargetMarkers } from "@/features/battle/scene/target-markers";
 import { TutorialMarks } from "@/features/battle/scene/tutorial-marks";
 import { UnitInspector } from "@/features/battle/scene/unit-inspector";
 import { FallenMarks, Units } from "@/features/battle/scene/units";
+import { useGameText } from "@/features/battle/use-game-text";
 
 const NO_LANES: readonly number[] = [];
 
@@ -36,6 +37,7 @@ const BattleCanvas = ({
 }: {
   readonly onPick: (target: Target) => void;
 }) => {
+  const { tr } = useGameText();
   const session = useAtomValue(shownSessionAtom);
   const lanes = session?.view.lanes ?? 1;
   const closedLanes = session?.view.closedLanes ?? NO_LANES;
@@ -49,6 +51,8 @@ const BattleCanvas = ({
       data-battle-canvas
       className="absolute inset-0 touch-none select-none [-webkit-touch-callout:none]"
     >
+      {/* The Board is one graphic for a screen reader, named in the current
+          Locale (LOC-02). The Hand Bar and the Top Bar hold its controls. */}
       <Canvas
         dpr={dpr}
         // Transparent: the Battle Painting shows behind the scene (web ADR-0006).
@@ -59,7 +63,9 @@ const BattleCanvas = ({
           stencil: false,
         }}
         camera={{ fov: 30, near: 0.5, far: 160, position: [0, 12, 16] }}
-        aria-label="Battle Board"
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- a Canvas is not an `img`; the role gives the Board one name for a screen reader.
+        role="img"
+        aria-label={tr("battle.boardLabel")}
       >
         <PerformanceMonitor
           onDecline={() => setDpr(1)}

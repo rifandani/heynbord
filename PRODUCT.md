@@ -23,9 +23,7 @@ v1 is single player (PvE) with a local save: a Campaign of 3 Regions (30 Stages,
 
 Success for v1.0:
 
-- A Player can finish the Campaign in 8 to 15 hours, and playtesters want to continue in Heynspire.
-- 8 of 10 playtesters can explain why they won or lost a Battle.
-- No playtester names "pay-to-win" or "too much grind" as their main problem.
+- A Player can finish the Campaign in 8 to 15 hours.
 - 60 fps on a normal laptop. 30 fps or more on a mid-range phone in landscape.
 
 ## Positioning
@@ -51,17 +49,17 @@ _A collectible card game crossed with lane tower defense, where timing replaces 
 - Terminology: use the glossary in [`packages/rules/GLOSSARY.md`](packages/rules/GLOSSARY.md) (for example **Rank**, not rarity; **Countdown**, not mana; **Stars** only for Stage results). The web glossary is [`apps/web/GLOSSARY.md`](apps/web/GLOSSARY.md).
 - Languages: `en-us` and `id-id` from v1. All text comes from Message Catalogs. Fonts must support Indonesian characters.
 - Save: local only (IndexedDB), with export and import. v1 sends no player data to a server.
-- Performance: Title screen interactive in less than 3 seconds on 4G. Battle assets load only when needed. WebGL 2 is necessary, with a clear message when it is not available. PWA with offline play.
+- Performance: Town screen interactive in less than 3 seconds on 4G. Battle assets load only when needed. WebGL 2 is necessary, with a clear message when it is not available. PWA with offline play.
 - Business model: free-to-play with Cosmetics only. v1 has no shop, payments or ads.
 - Not in v1: online play, accounts, PvP, guilds, chat, trading, native apps, portrait phone layout.
-- Team: one developer. AI tools make the art and music. Each asset needs a licence record.
-- Undecided: final names for currency, Regions and Heynspire (marked **(draft)** in the docs); the audio sources; the domain and hosting.
+- Team: one developer. AI tools make the art.
+- Undecided: final names for currency, Regions and Heynspire (marked **(draft)** in the docs); the domain and hosting.
 
 Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-requirements).
 
 ## Brand Commitments
 
-- **Name:** Heynbord. It is also the name of the world. A trademark check must occur before release.
+- **Name:** Heynbord. It is also the name of the world.
 - **Logo:** the gold H-shaped mark with a four-point star in [`apps/web/public/logo.png`](apps/web/public/logo.png). It is final. Keep it.
 - **World and tone:** bright high fantasy with some humor, like a classic adventure story. Colorful and heroic. No gore. Not dark, realistic, noisy or neon.
 - **Art direction:** [05 — Art and Audio Direction](docs/game/05-art-direction.md) is binding for all visual and audio work.
@@ -78,10 +76,10 @@ Requirements with IDs and priorities: [04 — PRD](docs/game/04-prd.md#6-require
 - Card art: 22 final card illustrations in `apps/web/public/creature/{race}/` (Creature Cards) and `apps/web/public/skills/{class}/` (Skill Cards), made with GPT Image (one 3:4 portrait for each card, with its background). Ten of them are the golden references ([art direction 5.1](docs/game/05-art-direction.md)).
 - Town art: the first master painting (`apps/web/public/town/town.webp`, 1672 × 941) A 3200 × 1800 export is still to make. The 11 Town Bar icons (10 shortcuts and Settings): the 1254 × 1254 JPG sources on black in `apps/web/art/town/bar/`, and the 128 × 128 WebP cut-outs that the game uses in `apps/web/public/town/bar/`. The brief is [11 — Town Concepts](docs/game/11-town-concepts.md).
 - Pack art: the Peddler, Merchant and Royal Packs, made with GPT Image. The 1024 × 1536 WebP sources are in `apps/web/art/packs/`, and the 512 × 768 WebP files that the game uses are in `apps/web/public/packs/`. The brief is [11 — Town Concepts, 8](docs/game/11-town-concepts.md#8-pack-art). The Merchant Pack is the `packs` Town Bar icon, upright.
-- Sound: the Battle sounds are made with Web Audio in code (`apps/web/src/features/battle/battle-audio.ts`). No audio files and no music exist yet.
+- Sound: Battle sounds use Web Audio in code (`apps/web/src/features/battle/battle-audio.ts`).
 - Campaign art: the Hearthvale Region Map (`apps/web/public/battle/hearthvale-region.webp`, 1672 × 941). The Campaign screen measures its clearings and road in `apps/web/src/features/campaign/region-map.ts`. The brief is [12 — Region Concepts](docs/game/12-region-concepts.md).
 - No Battle Painting exists yet. Until the Hearthvale painting exists, the Battle shows a meadow gradient. The brief is [13 — Battlefield Concepts](docs/game/13-battlefield-concepts.md).
-- No playtests, players, reviews, testimonials or press exist yet. Do not invent them.
+- No players, reviews, testimonials or press exist yet. Do not invent them.
 
 ## Product Principles
 
@@ -95,8 +93,7 @@ The pillars have an order. When two pillars disagree, the lower number wins. Ful
 
 ## Accessibility & Inclusion
 
-- UI text contrast meets WCAG 2.2 AA.
 - The Player can play a full Battle with the keyboard only, and with touch only.
 - Never use color alone: Rank uses color and pips. Damage Type uses color and an icon.
-- Settings: text size, reduced motion (no camera movement or shake), high-contrast Board, Battle speed, separate audio volumes, language.
+- Settings: reduced motion (no camera movement or shake), Battle speed, separate audio volumes, language.
 - The Battle shows the Attack and HP of each Unit at all times. Hover or long press shows the full card details.

@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import { Button } from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
 
 import { keyGuideAtom } from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
@@ -27,6 +26,21 @@ import type { HintId, HintPlace, HintTarget } from "@/features/hint/hint";
 import { HINT_MS, HINT_PLACE, HINT_TARGET } from "@/features/hint/hint";
 import { shownHintAtom } from "@/features/hint/hint.atoms";
 import { paintedIcon } from "@/features/town/town";
+
+/** The close mark of the Hint: a plain X in the current color. */
+const CloseMark = () => (
+  <svg
+    viewBox="0 0 24 24"
+    className="size-4"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    aria-hidden
+  >
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
 
 /** The element that each Hint shows next to. */
 const HINT_ANCHOR: Readonly<Record<HintPlace, string>> = {
@@ -528,7 +542,7 @@ const Banner = ({
         className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-md text-[#5b4632] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#5b3a1e]/10"
         data-testid="hint-close"
       >
-        <HiXMark className="size-4" aria-hidden />
+        <CloseMark />
       </Button>
       <TimeLine held={held} />
     </section>

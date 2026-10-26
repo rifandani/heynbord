@@ -221,7 +221,7 @@ const GuaranteeTrack = ({
         <span className="ml-1 flex shrink-0 flex-col items-center gap-0.5">
           <span
             className={cn(
-              "grid size-7 place-items-center rounded-full border-2 border-[#8a6a3c] bg-[radial-gradient(circle_at_35%_30%,#4a3a2a,#1f150d)] shadow-[0_2px_3px_rgba(40,20,5,0.45)] motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.16,1,0.3,1)_both]",
+              "bg-night-plate grid size-7 place-items-center rounded-full border-2 border-[#8a6a3c] shadow-[0_2px_3px_rgba(40,20,5,0.45)] motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.16,1,0.3,1)_both]",
               left === 1 && "ring-2 ring-[#e2a93b] ring-offset-1"
             )}
             style={{
@@ -243,7 +243,10 @@ const GuaranteeTrack = ({
         className="flex items-center gap-1.5 text-[0.8125rem] leading-snug font-bold text-[#2a1a0c]"
         data-testid="handbook-pack-guarantee-now"
       >
-        <span className="shrink-0" style={{ color: RANK_COLORS[rank] }}>
+        <span
+          className="bg-night-plate grid size-5 shrink-0 place-items-center rounded-full"
+          style={{ color: RANK_COLORS[rank] }}
+        >
           <GlyphIcon glyph="shield" className="size-3.5" />
         </span>
         {tr("handbook.packGuide.guaranteeNow", { guarantee: now })}

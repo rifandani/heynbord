@@ -71,6 +71,10 @@ const markerPoints = (node: Group | null, camera: Camera) => {
 const setOpacity = (marker: Object3D, opacity: number) => {
   if (marker instanceof Mesh && marker.material instanceof MeshBasicMaterial) {
     marker.material.opacity = opacity;
+    const edge = marker.getObjectByName("target-contrast-edge");
+    if (edge) {
+      edge.visible = opacity > 0;
+    }
   }
 };
 
@@ -244,6 +248,21 @@ export const TargetMarkers = ({
                 setHovered((current) => (current === index ? null : current));
               }}
             >
+              {/* The opaque edge keeps the pulsing target distinct on every
+                  painting and Board skin. It is outside the picking mesh. */}
+              <mesh
+                name="target-contrast-edge"
+                position-z={-0.002}
+                renderOrder={5}
+              >
+                <planeGeometry args={[spot.width + 0.14, spot.depth + 0.14]} />
+                <meshBasicMaterial
+                  color="#1c140e"
+                  transparent
+                  depthWrite={false}
+                  toneMapped={false}
+                />
+              </mesh>
               <planeGeometry args={[spot.width, spot.depth]} />
               <meshBasicMaterial
                 color={index === focused ? "#fff2a8" : "#ffd24a"}

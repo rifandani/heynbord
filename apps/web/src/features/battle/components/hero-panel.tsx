@@ -74,7 +74,7 @@ export const HeroPanel = ({
         <span
           className="flex size-10 shrink-0 items-center justify-center rounded-lg text-[#fff6df] [@media(max-height:500px)]:size-8"
           style={{
-            background: `linear-gradient(180deg, ${SIDE_COLORS[side].light}, ${SIDE_COLORS[side].dark})`,
+            background: SIDE_COLORS[side].dark,
           }}
           aria-hidden
         >

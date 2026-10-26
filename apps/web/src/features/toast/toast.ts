@@ -14,22 +14,26 @@ const toasterDefaults = {
   // SAFETY: sonner forwards `style` to the DOM, so the custom properties below
   // are valid CSS - React's `CSSProperties` just does not model them.
   style: {
-    "--error-bg": "var(--color-danger-subtle)",
+    "--error-bg":
+      "color-mix(in oklab, var(--color-danger-subtle-fg) 8%, var(--color-overlay) 92%)",
     "--error-border":
       "color-mix(in oklab, var(--danger-subtle-fg) 20%, transparent)",
     "--error-text": "var(--color-danger-subtle-fg)",
-    "--info-bg": "var(--color-info-subtle)",
+    "--info-bg":
+      "color-mix(in oklab, var(--color-info-subtle-fg) 8%, var(--color-overlay) 92%)",
     "--info-border":
       "color-mix(in oklab, var(--info-subtle-fg) 20%, transparent)",
     "--info-text": "var(--color-info-subtle-fg)",
     "--normal-bg": "var(--color-overlay)",
     "--normal-border": "var(--color-border)",
     "--normal-text": "var(--color-overlay-fg)",
-    "--success-bg": "var(--color-success-subtle)",
+    "--success-bg":
+      "color-mix(in oklab, var(--color-success-subtle-fg) 8%, var(--color-overlay) 92%)",
     "--success-border":
       "color-mix(in oklab, var(--success-subtle-fg) 20%, transparent)",
     "--success-text": "var(--color-success-subtle-fg)",
-    "--warning-bg": "var(--color-warning-subtle)",
+    "--warning-bg":
+      "color-mix(in oklab, var(--color-warning-subtle-fg) 8%, var(--color-overlay) 92%)",
     "--warning-border":
       "color-mix(in oklab, var(--warning-subtle-fg) 20%, transparent)",
     "--warning-text": "var(--color-warning-subtle-fg)",

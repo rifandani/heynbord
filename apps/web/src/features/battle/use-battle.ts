@@ -3,7 +3,7 @@ import type { Target } from "@workspace/rules";
 import { isTutorial } from "@workspace/rules";
 import { Result } from "effect";
 import type { ContextType } from "react";
-import { useContext, useLayoutEffect } from "react";
+import { useContext, useEffect, useLayoutEffect } from "react";
 
 import { newlyCompleted } from "@/features/achievements/achievements";
 import { newAchievementsAtom } from "@/features/achievements/achievements.atoms";
@@ -194,6 +194,20 @@ export const useBattle = () => {
       recordResult(registry, liveSession);
     }
   }, [registry, liveSession]);
+
+  // The Settings dialog changes the stored speed: apply it to the Battle on
+  // the screen, and to its Battle Log. A Replay keeps its own speed.
+  useEffect(() => {
+    const current = registry.get(battleSessionAtom);
+    if (!current || current.watching || current.speed === storedSpeed) {
+      return;
+    }
+    registry.set(battleSessionAtom, setSpeed(current, storedSpeed));
+    const shownLog = registry.get(battleLogAtom);
+    if (shownLog) {
+      registry.set(battleLogAtom, setBattleLogSpeed(shownLog, storedSpeed));
+    }
+  }, [registry, storedSpeed]);
 
   const logOpen = () => registry.get(battleLogAtom) !== null;
 

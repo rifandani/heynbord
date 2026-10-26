@@ -33,13 +33,14 @@ One person (the solo developer) has all the roles. The roles show which point of
 ## Related files
 
 - [`packages/rules/GLOSSARY.md`](../../packages/rules/GLOSSARY.md): the game glossary. All documents use its terms.
+- [Performance records](./performance.md): the dated First Load and bundle measurements.
 - [ADR-0006](../adr/0006-game-rules-are-a-deterministic-package.md): why the game rules are a separate deterministic package.
 - [ADR-0008](../adr/0008-heynstones-buy-only-cosmetics-and-conveniences.md): why Heynstones buy only Cosmetics and Conveniences.
 - [ADR-0013](../adr/0013-v1-has-90-creature-cards.md): why v1 has 15 Creature Cards for each Race.
 
 ## Status of names
 
-A name marked **(draft)** is a proposal. You can change it without a new design review. Before release, do a trademark check on the game name, all draft names and all invented proper names (for example Heynstones, and named characters on cards and in Stages). Usual words, for example Bazaar or Militia Recruit, do not need the check.
+A name marked **(draft)** is a proposal. You can change it without a new design review. Usual words, for example Bazaar or Militia Recruit, are not names that need a design review.
 
 Documents 01 to 04, 06 and 07 are a baseline. A change to a rule needs a design review or an ADR. Documents 05, 08 and 10 to 17 change with the content.
 

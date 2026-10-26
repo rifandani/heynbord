@@ -15,7 +15,7 @@ const TONE: Readonly<
   Record<CoinTone, { readonly text: string; readonly xp: string }>
 > = {
   dark: { text: "text-[#fff6df]", xp: "text-[#9fe7f5]" },
-  light: { text: "text-[#2a1d12]", xp: "text-[#0e6f86]" },
+  light: { text: "text-[#2a1d12]", xp: "text-xp-ink" },
 };
 
 /**

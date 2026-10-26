@@ -81,7 +81,7 @@ The game adds motion on separate layers over the painting. The painting must giv
 
 ## 2. Buildings
 
-Each screen of GDD 11.1 except Title and Settings has a Building. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. The other Buildings are decoration in the plate until their screens exist.
+Each screen of GDD 11.1 except the Town and Settings has a Building. The Town Gate, the Card shop, the Workshop, the Barracks, the Dungeons cave, the Heynspire tower and the Hall of banners can be selected. The other Buildings are decoration in the plate until their screens exist.
 
 ### 2.1 Town Gate
 
@@ -240,7 +240,6 @@ The painting message is a short form of the briefs in sections 1 and 2. It is in
 4. Scale the image so that the Town Gate fills its box in 1.2. Crop to 2.1:1 and export at 3800 × 1800.
 5. Compress the file (Technical Design, section 6). Put it in `apps/web/public/town/`, and change `PAINTING_IMAGE` in `town.ts`. If the Buildings move, change their boxes in `SELECTABLE_BUILDINGS`.
 6. Check the chimney points and the sea area (1.3). Change the ambient constants if necessary.
-7. Write the licence record (art direction 5.5) for the master painting.
 
 ## 5. Review checklist
 
@@ -315,7 +314,6 @@ In the order of `TOWN_SHORTCUTS`, then the Settings button. The `seaport` shortc
 2. Select each icon with the checklist in 7.5.
 3. Fix problems by hand or with inpainting (text-like marks, extra parts, a broken outline).
 4. Export each icon as WebP with transparency at 128 × 128 (2× the largest shortcut size). Compress the files (Technical Design, section 6). Put them in `apps/web/public/town/bar/`, with the shortcut ID as the file name (for example `campaign.webp`, and `settings.webp` for the Settings button). Keep the full-size sources in `apps/web/art/town/bar/`, not in `public/`: the server sends each file in `public/` to the browser.
-5. Write the licence record (art direction 5.5) for each icon.
 
 ### 7.5 Review checklist
 
@@ -377,7 +375,6 @@ Each Pack prompt has the rules of 8.1 and the subject line of the Pack in `scrip
 5. Export each Pack as WebP with transparency at 512 × 768: `cwebp -q 80 -resize 512 768 <id>-pack.webp -o <id>.webp`. Put the files in `apps/web/public/packs/` (`peddler.webp`, `merchant.webp`, `royal.webp`). Keep the full-size sources in `apps/web/art/packs/`, not in `public/`.
 6. Add a unit test in the same commit as the art. The test reads `apps/web/public/packs/` and checks that it has exactly `peddler.webp`, `merchant.webp` and `royal.webp`, and that each one is a 512 × 768 WebP with alpha (as the card art test of #30).
 
-The licence record (art direction 5.5) of the Pack art is part of the release item in the [roadmap](./09-roadmap.md), not a step of this section.
 
 ### 8.5 Review checklist
 
@@ -454,7 +451,6 @@ The painting message is a short form of 9.1 to 9.3. It is in `scripts/town-art/p
 4. Put a screenshot of the Packs screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the Packs.
 5. Export as WebP with no alpha: `cwebp -q 80 card-shop-inside.png -o card-shop-inside.webp`. If the source is already a smaller WebP, use the source. Put the file in `apps/web/public/town/` as `card-shop-inside.webp`, and keep the full-size source in `apps/web/art/town/`. `packs-screen.tsx` shows it (cover, centered), with darker edges over it.
 
-The licence record (art direction 5.5) of the shop art is part of the release item in the [roadmap](./09-roadmap.md), not a step of this section.
 
 ### 9.6 Review checklist
 
@@ -528,7 +524,6 @@ The painting message is a short form of 10.1 to 10.3. It is in `scripts/town-art
 4. Put a screenshot of the Workshop screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the card grid and the Station Panel. If the Workshop screen does not exist yet, use the boxes of 10.2.
 5. Export as WebP with no alpha: `cwebp -q 80 workshop-inside.png -o workshop-inside.webp`. If the source is already a smaller WebP, use the source. Put the file in `apps/web/public/town/` as `workshop-inside.webp`, and keep the full-size source in `apps/web/art/town/`. The Workshop screen shows it (cover, centered), with darker edges over it, as the Packs screen does.
 
-The licence record (art direction 5.5) of the Workshop art is part of the release item in the [roadmap](./09-roadmap.md), not a step of this section.
 
 ### 10.6 Review checklist
 
@@ -687,7 +682,7 @@ The brief asks for the boxes above; the paintings put them a little to the side.
 2. Select one image of each part, and check it with 13.5.
 3. Export the lift and the locked lift as WebP with alpha, and the stops with no alpha: `cwebp -q 80 -alpha_q 90 lift.png -o lift.webp`, and `cwebp -q 80 stop-1.png -o stop-1.webp`. Put the files in `apps/web/public/dungeons/`, and keep the full-size sources in `apps/web/art/town/dungeons/`.
 4. Measure the floor line of each stop, the cage of the lift, and the center and the height of each Boss (13.2). Write them in `apps/web/src/features/dungeons/dungeon-art.ts`.
-5. Remove the ID of each new part from `UNPAINTED_DUNGEON_ART`: a unit test checks the list and the files. Write the licence record (art direction 5.5) of each image in a `.webp.json` file next to it.
+5. Remove the ID of each new part from `UNPAINTED_DUNGEON_ART`: a unit test checks the list and the files.
 
 ### 13.5 Review checklist
 
@@ -742,7 +737,7 @@ The table gives the brief for a new image. The last column gives the boxes of th
 2. Select one image of each part, and check it with 14.5.
 3. Trim the storey, the Boss storey and the summit to their stone: remove the empty rows at the top and the bottom (and the empty columns at the sides of the summit), so that the parts stack with no gap. Export the cut-outs as WebP with alpha, and the sky with no alpha: `cwebp -q 80 -alpha_q 90 storey.png -o storey.webp`, and `cwebp -q 80 sky.png -o sky.webp`. If ChatGPT gives a WebP and the part needs no trim, use it as-is. Put the files in `apps/web/public/heynspire/`, and keep the full-size sources in `apps/web/art/town/heynspire/`. Write the size of each file in `HEYNSPIRE_ART_SIZE` (`heynspire-art.ts`).
 4. Measure the doorway of the storey and of the Boss storey, the walls, and the banners of the Boss storey. If they are not at the boxes of 14.2, change `STOREY_DOOR` and `PAINTED_PART_WIDTH` in `heynspire-art.ts`, and the wall and the seal positions in `tower-storey.tsx`, so that the door light, the Floor number and the seals fit the painted storey and the walls align.
-5. Remove the ID of each new part from `UNPAINTED_HEYNSPIRE_ART`: a unit test checks the list and the files. Write the licence record (art direction 5.5) of each image in a `.webp.json` file next to it.
+5. Remove the ID of each new part from `UNPAINTED_HEYNSPIRE_ART`: a unit test checks the list and the files.
 
 ### 14.5 Review checklist
 
@@ -806,7 +801,6 @@ Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/hall/` (se
 3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting.
 4. Put a screenshot of the Achievements screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the flags and the roll.
 5. Export as WebP with no alpha: `cwebp -q 80 hall-inside.png -o hall-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`. Then remove `hallInside` from `UNPAINTED_ACHIEVEMENTS_ART` in `apps/web/src/features/achievements/achievements-art.ts`: a unit test checks the list and the files.
-6. Write the licence record (art direction 5.5) for the image.
 
 ### 15.6 Review checklist
 
@@ -870,7 +864,6 @@ Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/bazaar/` (
 3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting (the fixes in `prompts.md`).
 4. Put a screenshot of the Bazaar screen over the image at 1366 × 768 and at 1920 × 1080, and check that the center is calm behind the list of Cosmetics.
 5. Export as WebP with no alpha: `cwebp -q 80 bazaar-inside.png -o bazaar-inside.webp`. Put the file in `apps/web/public/town/` as `bazaar-inside.webp`, and keep the full-size source in `apps/web/art/town/`. `bazaar-screen.tsx` shows it (cover, centered) in the place of `MarketScene`, with darker edges over it, as the Packs screen does.
-6. Write the licence record (art direction 5.5) for the image.
 
 ### 16.6 Review checklist
 
@@ -937,7 +930,6 @@ Run `bun town:prompts` to write the prompts to `apps/web/art/town/raw/seaport/` 
 3. Fix problems with the edit tool of ChatGPT, by hand or with inpainting (the fixes in `prompts.md`).
 4. When the Seaport screen exists, put a screenshot of it over the image at 1366 × 768 and at 1920 × 1080, and check that the left third is calm behind the plaques.
 5. Export as WebP with no alpha: `cwebp -q 80 seaport-inside.png -o seaport-inside.webp`. Put the file in `apps/web/public/town/`, and keep the full-size source in `apps/web/art/town/`.
-6. Write the licence record (art direction 5.5) for the image.
 
 ### 17.6 Review checklist
 

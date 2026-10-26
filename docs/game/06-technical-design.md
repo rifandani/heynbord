@@ -15,7 +15,7 @@ Heynbord runs in the existing Bun monorepo. There are two main parts:
 ┌──────────────────────────── apps/web ────────────────────────────┐
 │                                                                  │
 │  React UI (React Aria, TanStack Router)                          │
-│  Title · Town · Deck builder · Workshop · Settings               │
+│  Town · Deck builder · Workshop · Settings                       │
 │                                                                  │
 │  Battle view                                                     │
 │  ┌──────────────┐  Commands   ┌────────────────────────────────┐ │
@@ -119,7 +119,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 
 - Storage: IndexedDB, through a small wrapper.
 - The **Profile** model is in the rules package. It has: player level and XP, Coin (as a number of Copper), Heynstones, Essence, owned card copies, Decks, unlocked Deck slots, Gear levels, Stage results, Dungeon results, claimed Star chests, Unopened Packs, the Pack state, a reward random state, Heynspire progress, Achievements, Cosmetics and seen Hints.
-- Settings are not in the Profile. Language, sound, reduced motion, text size and color mode are about the device and the person, so they stay in `localStorage` on the device. An import does not change them.
+- Settings are not in the Profile. Language, sound and reduced motion are about the device and the person, so they stay in `localStorage` on the device. An import does not change them.
 - There is one Profile in each browser. An import replaces it after a confirmation. A Battle that is not finished is not saved: after a page load it gives no result.
 - Each save has a `schemaVersion`. Migrations are pure functions in the rules package: `migrate(v1) → v2 → v3`.
 - The app saves after each Battle and after each Workshop, Pack, Gear or Bazaar action.
@@ -130,7 +130,7 @@ It uses only information that the active side can see (`visibleTo`): the Hand of
 
 | Item | Budget |
 | --- | --- |
-| First JavaScript bundle (Title screen) | Less than 250 KB gzip |
+| First JavaScript bundle (Town screen) | Less than 500 KB gzip |
 | Battle chunk (Three.js and scene code) | Less than 400 KB gzip |
 | Assets for one Battle | Less than 8 MB |
 | Draw calls in a Battle | Less than 150 |

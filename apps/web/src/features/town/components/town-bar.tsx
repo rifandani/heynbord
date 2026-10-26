@@ -1,16 +1,23 @@
 import { useAtom, useAtomValue } from "@effect/atom-react";
 import { cn } from "cn";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type { FocusEvent, RefObject } from "react";
 import type { PressEvent } from "react-aria-components";
 import { Button, DialogTrigger, TooltipTrigger } from "react-aria-components";
 
 import { GameTooltip } from "@/core/components/game/game-tooltip";
+import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { claimableCountAtom } from "@/features/achievements/achievements-screen.atoms";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
-import { DeckDialog } from "@/features/deck/components/deck-dialog";
 import { HandbookIcon } from "@/features/handbook/components/handbook-icon";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import type { HintId } from "@/features/hint/hint";
@@ -33,6 +40,12 @@ import {
 } from "@/features/town/town.atoms";
 
 const LONG_PRESS_MS = 450;
+
+/** The Deck builder loads in its own chunk at the first open (issue #139). */
+const DeckDialog = lazy(async () => {
+  const module = await import("@/features/deck/components/deck-dialog");
+  return { default: module.DeckDialog };
+});
 
 const pageCurrent = (current: boolean) => (current ? "page" : undefined);
 
@@ -73,7 +86,7 @@ const labelClass = (locked: boolean, current: boolean, lifted: boolean) =>
     current
       ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.45)]"
       : "border-transparent",
-    !current && locked && "font-semibold text-[#d9c7a3]/70",
+    !current && locked && "text-cream-dim font-semibold",
     !current &&
       !locked &&
       "text-[#fff6df] group-data-[hovered]:text-[#ffe08a] group-data-[pressed]:translate-y-px",
@@ -391,6 +404,9 @@ const Shortcut = ({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  // The dialog stays in the page after its first open, so it can close on its
+  // spine. `dialogOpen` alone would remove it before the exit animation.
+  const deckShown = useEverOpened(dialogOpen);
   const handbook = useHandbook();
   const name = tr(`town.shortcuts.${shortcut.id}`);
   const { screen, dialog } = shortcut;
@@ -498,8 +514,10 @@ const Shortcut = ({
           )}
         </GameTooltip>
       </TooltipTrigger>
-      {dialog === "deck" ? (
-        <DeckDialog isOpen={dialogOpen} onOpenChange={setDialogOpen} />
+      {dialog === "deck" && deckShown ? (
+        <Suspense fallback={null}>
+          <DeckDialog isOpen={dialogOpen} onOpenChange={setDialogOpen} />
+        </Suspense>
       ) : null}
     </li>
   );

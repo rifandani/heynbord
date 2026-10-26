@@ -90,7 +90,7 @@ export const HeynspireGuide = () => {
             />
           </Amount>
           <Amount icon={null}>
-            <span className="text-[#0e6f86]">
+            <span className="text-xp-ink">
               {tr("handbook.heynspireTable.xp", {
                 first: first.xp,
                 last: last.xp,

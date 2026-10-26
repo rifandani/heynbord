@@ -1,7 +1,7 @@
 import { useAtom } from "@effect/atom-react";
 import { cn } from "cn";
 import { Schema } from "effect";
-import type { RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import {
   Dialog,
   Heading,
@@ -15,27 +15,40 @@ import {
   SliderOutput,
   SliderThumb,
   SliderTrack,
+  Switch,
   ToggleButton,
 } from "react-aria-components";
-import { HiXMark } from "react-icons/hi2";
 
 import {
   GameButton,
   gameButtonStyles,
 } from "@/core/components/game/game-button";
-import { GAME_SCRIM } from "@/core/components/game/game-dialog";
+import { GAME_SCRIM } from "@/core/components/game/game-scrim";
 import {
   playSound,
+  setEffectsVolume,
+  setMusicEnabled,
+  setMusicVolume,
   setSoundEnabled,
   setSoundVolume,
   unlockAudio,
 } from "@/features/battle/battle-audio";
-import { soundOnAtom, soundVolumeAtom } from "@/features/battle/battle.atoms";
+import {
+  battleSpeedAtom,
+  soundOnAtom,
+  soundVolumeAtom,
+} from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { LOCALE_LABELS } from "@/features/i18n/components/language-toggle";
 import { Locale } from "@/features/i18n/locale";
 import { ProfileRow } from "@/features/profile/components/profile-row";
+import {
+  effectsVolumeAtom,
+  musicOnAtom,
+  musicVolumeAtom,
+  reducedMotionAtom,
+} from "@/features/settings/settings.atoms";
 import {
   placeSheetOrigin,
   SHEET_INK_MOTION,
@@ -53,6 +66,9 @@ const VOLUME_AFTER_ZERO = 50;
 /** The notches under the groove of the volume slider. */
 const NOTCHES = [0, 25, 50, 75, 100];
 
+/** The Battle speeds of the Settings dialog. */
+const SPEEDS = [1, 2] as const;
+
 /** One row of the dialog: the label at the left, the control at the right. */
 const ROW =
   "grid grid-cols-[5.5rem_1fr] items-center gap-x-4 py-4 [@media(max-height:500px)]:py-2";
@@ -65,9 +81,40 @@ const languageOption = ({ isSelected }: { readonly isSelected: boolean }) =>
     "group flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-xl border-2 px-3 py-2 text-sm font-bold text-[#2a1d12] transition-[transform,box-shadow] outline-none",
     "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:-translate-y-0.5 motion-reduce:data-[hovered]:translate-y-0",
     isSelected
-      ? "border-[#e2a93b] bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
-      : "border-[#c9b48c] bg-[#f6ead0]"
+      ? "border-gold-deep bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
+      : "border-ink-faded bg-[#f6ead0]"
   );
+
+/**
+ * The close mark of the dialog: a plain X in the current color. It stays a
+ * local SVG, so the Settings dialog does not load an icon library.
+ */
+const CloseIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    className="size-5"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    aria-hidden
+  >
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
+
+/** The radio mark: the selected option shows it full, not only in gold. */
+const ChoiceMark = () => (
+  <span
+    className={cn(
+      "border-ink-faded grid size-[18px] shrink-0 place-items-center rounded-full border-2 bg-[#fff6df]",
+      "group-data-[selected]:border-[#7a5310] group-data-[selected]:bg-gradient-to-b group-data-[selected]:from-[#ffe08a] group-data-[selected]:to-[#e2a93b]"
+    )}
+    aria-hidden
+  >
+    <span className="size-1.5 rounded-full bg-[#2a1a05] opacity-0 group-data-[selected]:opacity-100" />
+  </span>
+);
 
 /** The language of the game: one option card for each Locale (LOC-03). */
 const LanguageRow = () => {
@@ -94,16 +141,7 @@ const LanguageRow = () => {
             className={languageOption}
           >
             {name}
-            {/* The radio mark: the selected option shows it full, not only in gold. */}
-            <span
-              className={cn(
-                "grid size-[18px] shrink-0 place-items-center rounded-full border-2 border-[#c9b48c] bg-[#fff6df]",
-                "group-data-[selected]:border-[#7a5310] group-data-[selected]:bg-gradient-to-b group-data-[selected]:from-[#ffe08a] group-data-[selected]:to-[#e2a93b]"
-              )}
-              aria-hidden
-            >
-              <span className="size-1.5 rounded-full bg-[#2a1a05] opacity-0 group-data-[selected]:opacity-100" />
-            </span>
+            <ChoiceMark />
           </Radio>
         ))}
       </div>
@@ -123,8 +161,88 @@ const previewVolume = (value: number) => {
   playSound("select", 0);
 };
 
+/** A volume row: a Label, a groove, a knob and the value. */
+const VolumeRow = ({
+  label,
+  value,
+  onChange,
+  onChangeEnd,
+  testId,
+  valueTestId,
+  leading,
+  muted,
+  thumbLabel,
+}: {
+  readonly label: string;
+  readonly value: number;
+  readonly onChange: (value: number) => void;
+  readonly onChangeEnd?: (value: number) => void;
+  readonly testId: string;
+  readonly valueTestId: string;
+  readonly leading?: ReactNode;
+  readonly muted: boolean;
+  readonly thumbLabel: string;
+}) => (
+  <Slider
+    value={value}
+    onChange={onChange}
+    onChangeEnd={onChangeEnd}
+    minValue={0}
+    maxValue={100}
+    step={1}
+    className={ROW}
+    data-muted={muted || undefined}
+    data-testid={testId}
+  >
+    <Label className={ROW_LABEL}>{label}</Label>
+    <div className="flex items-center gap-4 [@media(max-height:500px)]:gap-3">
+      {leading}
+      <SliderTrack className="group/track relative mx-1.5 h-11 min-w-0 flex-1 cursor-pointer [@media(max-height:500px)]:h-9">
+        {/* The groove is cut into the parchment: dark inside, with a light lower lip. */}
+        <div className="absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 rounded-full bg-[#5b3a1e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.7)]">
+          <SliderFill
+            className={cn(
+              "rounded-full bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-1px_0_rgba(122,83,16,0.6)] transition-[filter,opacity] duration-200",
+              muted && "grayscale"
+            )}
+          />
+        </div>
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-1.5 [@media(max-height:500px)]:hidden"
+          aria-hidden
+        >
+          {NOTCHES.map((notch) => (
+            <span
+              key={notch}
+              className="absolute top-0 h-1.5 w-px -translate-x-1/2 bg-[#6b5238]/60"
+              style={{ left: `${notch}%` }}
+            />
+          ))}
+        </div>
+        <SliderThumb
+          aria-label={thumbLabel}
+          className="group/thumb top-1/2 grid size-11 cursor-grab place-items-center rounded-full outline-none data-[dragging]:cursor-grabbing data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] [@media(max-height:500px)]:size-9"
+        >
+          {/* A bronze knob, in the card metal, with a hard drop. */}
+          <span
+            className={cn(
+              "size-7 rounded-full border-2 border-[#7a5310] bg-[radial-gradient(circle_at_35%_30%,#fff3c4_0%,#f7dc9c_22%,#c99a4e_62%,#8a5a20_100%)] shadow-[0_3px_0_rgba(0,0,0,0.45)] transition-[transform,box-shadow,filter] duration-100",
+              "group-data-[dragging]/thumb:translate-y-px group-data-[dragging]/thumb:shadow-[0_1px_0_rgba(0,0,0,0.45)] group-data-[hovered]/thumb:brightness-110",
+              "[@media(max-height:500px)]:size-6"
+            )}
+          />
+        </SliderThumb>
+      </SliderTrack>
+      <SliderOutput
+        className="w-9 shrink-0 text-right text-lg leading-none font-black text-[#2a1d12] tabular-nums"
+        data-testid={valueTestId}
+      />
+    </div>
+  </Slider>
+);
+
 /**
- * The sound volume, 0 to 100 (UI-06), with the same sound switch as the
+ * The sound volume, 0 to 100, with the same sound switch as the
  * Battle. A change applies at once, and a short tone plays at the new volume
  * when the slider stops. A volume change turns the sound on.
  */
@@ -148,19 +266,16 @@ const SoundRow = () => {
   };
 
   return (
-    <Slider
+    <VolumeRow
+      label={tr("settings.sound")}
       value={volume}
       onChange={onChange}
       onChangeEnd={previewVolume}
-      minValue={0}
-      maxValue={100}
-      step={1}
-      className={ROW}
-      data-muted={!audible || undefined}
-      data-testid="settings-volume"
-    >
-      <Label className={ROW_LABEL}>{tr("settings.sound")}</Label>
-      <div className="flex items-center gap-4 [@media(max-height:500px)]:gap-3">
+      testId="settings-volume"
+      valueTestId="settings-volume-value"
+      thumbLabel={tr("settings.volume")}
+      muted={!audible}
+      leading={
         <ToggleButton
           isSelected={audible}
           onChange={onSwitch}
@@ -174,51 +289,163 @@ const SoundRow = () => {
         >
           <GlyphIcon glyph={audible ? "sound" : "mute"} className="size-5" />
         </ToggleButton>
-        <SliderTrack className="group/track relative mx-1.5 h-11 min-w-0 flex-1 cursor-pointer [@media(max-height:500px)]:h-9">
-          {/* The groove is cut into the parchment: dark inside, with a light lower lip. */}
-          <div className="absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 rounded-full bg-[#5b3a1e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.7)]">
-            <SliderFill
-              className={cn(
-                "rounded-full bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-1px_0_rgba(122,83,16,0.6)] transition-[filter,opacity] duration-200",
-                !audible && "opacity-60 grayscale"
-              )}
-            />
-          </div>
-          <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-1.5 [@media(max-height:500px)]:hidden"
-            aria-hidden
-          >
-            {NOTCHES.map((notch) => (
-              <span
-                key={notch}
-                className="absolute top-0 h-1.5 w-px -translate-x-1/2 bg-[#6b5238]/60"
-                style={{ left: `${notch}%` }}
-              />
-            ))}
-          </div>
-          <SliderThumb
-            aria-label={tr("settings.volume")}
-            className="group/thumb top-1/2 grid size-11 cursor-grab place-items-center rounded-full outline-none data-[dragging]:cursor-grabbing data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] [@media(max-height:500px)]:size-9"
-          >
-            {/* A bronze knob, in the card metal, with a hard drop. */}
-            <span
-              className={cn(
-                "size-7 rounded-full border-2 border-[#7a5310] bg-[radial-gradient(circle_at_35%_30%,#fff3c4_0%,#f7dc9c_22%,#c99a4e_62%,#8a5a20_100%)] shadow-[0_3px_0_rgba(0,0,0,0.45)] transition-[transform,box-shadow,filter] duration-100",
-                "group-data-[dragging]/thumb:translate-y-px group-data-[dragging]/thumb:shadow-[0_1px_0_rgba(0,0,0,0.45)] group-data-[hovered]/thumb:brightness-110",
-                "[@media(max-height:500px)]:size-6"
-              )}
-            />
-          </SliderThumb>
-        </SliderTrack>
-        <SliderOutput
-          className={cn(
-            "w-9 shrink-0 text-right text-lg leading-none font-black text-[#2a1d12] tabular-nums transition-opacity",
-            !audible && "opacity-60"
-          )}
-          data-testid="settings-volume-value"
-        />
+      }
+    />
+  );
+};
+
+/** The effects volume: the sounds of the Battle, under the master Sound. */
+const EffectsRow = () => {
+  const { tr } = useGameText();
+  const [soundOn] = useAtom(soundOnAtom);
+  const [soundVolume] = useAtom(soundVolumeAtom);
+  const [volume, setVolume] = useAtom(effectsVolumeAtom);
+  const muted = !soundOn || soundVolume === 0 || volume === 0;
+
+  const onPreview = (value: number) => {
+    setEffectsVolume(value);
+    if (!muted) {
+      unlockAudio();
+      playSound("select", 0);
+    }
+  };
+
+  return (
+    <VolumeRow
+      label={tr("settings.effectsVolume")}
+      value={volume}
+      onChange={setVolume}
+      onChangeEnd={onPreview}
+      testId="settings-effects-volume"
+      valueTestId="settings-effects-volume-value"
+      thumbLabel={tr("settings.effectsVolume")}
+      muted={muted}
+    />
+  );
+};
+
+/** The music switch and volume are independent from sound effects. */
+const MusicRow = () => {
+  const { tr } = useGameText();
+  const [soundOn] = useAtom(soundOnAtom);
+  const [soundVolume] = useAtom(soundVolumeAtom);
+  const [musicOn, setMusicOn] = useAtom(musicOnAtom);
+  const [volume, setVolume] = useAtom(musicVolumeAtom);
+  const audible = soundOn && soundVolume > 0 && musicOn && volume > 0;
+  const onSwitch = (on: boolean) => {
+    setMusicOn(on);
+    setMusicEnabled(on);
+    if (on) {
+      unlockAudio();
+    }
+  };
+  return (
+    <VolumeRow
+      label={tr("settings.musicVolume")}
+      value={volume}
+      onChange={(value) => {
+        setVolume(value);
+        setMusicVolume(value);
+      }}
+      onChangeEnd={(value) => {
+        setMusicVolume(value);
+        if (musicOn) {
+          unlockAudio();
+        }
+      }}
+      testId="settings-music-volume"
+      valueTestId="settings-music-volume-value"
+      thumbLabel={tr("settings.musicVolume")}
+      muted={!audible}
+      leading={
+        <ToggleButton
+          isSelected={musicOn}
+          onChange={onSwitch}
+          aria-label={tr("settings.musicOn")}
+          className={gameButtonStyles({
+            intent: "wood",
+            size: "icon",
+            className: "shrink-0 [@media(max-height:500px)]:size-9",
+          })}
+          data-testid="settings-music-switch"
+        >
+          <GlyphIcon glyph={musicOn ? "sound" : "mute"} className="size-5" />
+        </ToggleButton>
+      }
+    />
+  );
+};
+
+/** Battle speed ×1 or ×2. A change applies to the Battle on the screen. */
+const SpeedRow = () => {
+  const { tr } = useGameText();
+  const [speed, setSpeed] = useAtom(battleSpeedAtom);
+  return (
+    <RadioGroup
+      value={String(speed)}
+      onChange={(value) => setSpeed(value === "2" ? 2 : 1)}
+      className={ROW}
+      data-testid="settings-battle-speed"
+    >
+      <Label className={ROW_LABEL}>{tr("settings.battleSpeed")}</Label>
+      <div className="grid grid-cols-2 gap-2">
+        {SPEEDS.map((value) => (
+          <Radio key={value} value={String(value)} className={languageOption}>
+            {tr("battle.speedValue", { value })}
+            <ChoiceMark />
+          </Radio>
+        ))}
       </div>
-    </Slider>
+    </RadioGroup>
+  );
+};
+
+/** One switch row, for a choice that is on or off. */
+const SwitchRow = ({
+  label,
+  isSelected,
+  onChange,
+  testId,
+}: {
+  readonly label: string;
+  readonly isSelected: boolean;
+  readonly onChange: (isSelected: boolean) => void;
+  readonly testId: string;
+}) => (
+  <Switch
+    isSelected={isSelected}
+    onChange={onChange}
+    className={cn(ROW, "group")}
+    data-testid={testId}
+  >
+    <Label elementType="span" className={ROW_LABEL}>
+      {label}
+    </Label>
+    <div className="flex justify-end">
+      <span
+        className={cn(
+          "relative block h-9 w-16 rounded-full border-2 border-[#7a5310] bg-[#5b3a1e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.6)] transition-colors",
+          "group-data-[selected]:bg-gradient-to-b group-data-[selected]:from-[#ffe08a] group-data-[selected]:to-[#e2a93b]",
+          "group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
+        )}
+      >
+        <span className="absolute top-1/2 left-1 size-7 -translate-y-1/2 rounded-full border-2 border-[#7a5310] bg-[radial-gradient(circle_at_35%_30%,#fff3c4_0%,#f7dc9c_22%,#c99a4e_62%,#8a5a20_100%)] shadow-[0_3px_0_rgba(0,0,0,0.45)] transition-[left] group-data-[selected]:left-7" />
+      </span>
+    </div>
+  </Switch>
+);
+
+/** Reduced motion: the Player choice, together with the system one. */
+const ReducedMotionRow = () => {
+  const { tr } = useGameText();
+  const [reduced, setReduced] = useAtom(reducedMotionAtom);
+  return (
+    <SwitchRow
+      label={tr("settings.reducedMotion")}
+      isSelected={reduced}
+      onChange={setReduced}
+      testId="settings-reduced-motion"
+    />
   );
 };
 
@@ -246,18 +473,21 @@ export const SettingsDialog = ({
       className={cn(GAME_SCRIM, "z-50", SHEET_SCRIM_MOTION)}
     >
       <Modal
-        className={cn("group/sheet w-[min(480px,94vw)]", SHEET_PATH_MOTION)}
+        className={cn(
+          "group/sheet max-h-[calc(100dvh-2rem)] w-[min(480px,94vw)]",
+          SHEET_PATH_MOTION
+        )}
       >
         <Dialog
           className={cn(
-            "rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-2 text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1",
+            "flex max-h-[calc(100dvh-2rem)] flex-col rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-2 text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1",
             SHEET_MOTION
           )}
           data-testid="settings-dialog"
         >
           {({ close }) => (
-            <div className={SHEET_INK_MOTION}>
-              <header className="flex items-center gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2">
+            <div className={cn(SHEET_INK_MOTION, "flex min-h-0 flex-col")}>
+              <header className="flex shrink-0 items-center gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2">
                 <img
                   src={shortcutImage("settings")}
                   alt=""
@@ -280,12 +510,16 @@ export const SettingsDialog = ({
                   className="ml-auto [@media(max-height:500px)]:size-9"
                   data-testid="settings-close"
                 >
-                  <HiXMark className="size-5" aria-hidden />
+                  <CloseIcon />
                 </GameButton>
               </header>
-              <div className="divide-y divide-[#c9b48c]/70">
+              <div className="min-h-0 flex-1 divide-y divide-[#c9b48c]/70 overflow-y-auto overscroll-contain">
                 <LanguageRow />
+                <SpeedRow />
                 <SoundRow />
+                <EffectsRow />
+                <MusicRow />
+                <ReducedMotionRow />
                 {progress ? (
                   <ProfileRow
                     className={ROW}

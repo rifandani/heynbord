@@ -5,7 +5,6 @@ import { useLayoutEffect, useRef } from "react";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { RankGems } from "@/core/components/game/rank-gems";
-import { RANK_COLORS } from "@/core/components/game/tokens";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CoinPrice } from "@/features/packs/components/pack-art";
@@ -142,8 +141,7 @@ const RankRow = ({
         <RankGems rank={row.rank} />
       </span>
       <span
-        className="shrink-0 text-sm font-bold [@media(max-height:500px)]:text-[11px]"
-        style={{ color: RANK_COLORS[row.rank] }}
+        className="text-cream shrink-0 text-sm font-bold [@media(max-height:500px)]:text-[11px]"
         aria-hidden
       >
         {name}
@@ -153,7 +151,7 @@ const RankRow = ({
         key={row.copies}
         className={cn(
           "ml-auto text-sm font-black tabular-nums [@media(max-height:500px)]:text-[11px]",
-          row.copies > 0 ? "text-[#fff6df]" : "text-[#e8d9bb]/55",
+          row.copies > 0 ? "text-[#fff6df]" : "text-cream-dim",
           "motion-safe:animate-[workshop-count_320ms_cubic-bezier(0.2,0.8,0.2,1)]"
         )}
         aria-hidden

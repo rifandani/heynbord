@@ -29,6 +29,12 @@ export default {
   notFound: "Tidak Ditemukan",
   gone: "Maaf, kami tidak bisa menemukan halaman yang anda cari",
   welcome: "Selamat Datang Kembali",
+  errorPage: {
+    code: "4xx",
+    title: "Ups!",
+    text: "Terjadi kesalahan",
+    retry: "Coba lagi",
+  },
   // #endregion COMMON
   // #region HOME
   title: "Beranda",
@@ -40,6 +46,7 @@ export default {
   },
   battle: {
     title: "Pertempuran",
+    boardLabel: "Papan Pertempuran",
     chooseStage: "Pilih Tahap",
     chooseDeck: "Pilih Dek",
     editDecks: "Ubah Dek",
@@ -98,8 +105,6 @@ export default {
     victory: "Menang",
     defeat: "Kalah",
     turnLimit: "Batas giliran tercapai. Pihak bertahan menang.",
-    routedWin: "Musuh Tercerai-berai: ia tidak punya Unit dan kartu.",
-    routedLoss: "Pihakmu Tercerai-berai: kamu tidak punya Unit dan kartu.",
     starsLabel: "{count} dari 3 Bintang",
     coinEarned: "Koin didapat: {amount}",
     xpEarned: "+{amount} XP",
@@ -473,6 +478,11 @@ export default {
     sound: "Suara",
     volume: "Volume suara",
     soundOn: "Suara aktif",
+    effectsVolume: "Volume efek",
+    musicOn: "Musik aktif",
+    musicVolume: "Volume musik",
+    battleSpeed: "Kecepatan pertempuran",
+    reducedMotion: "Gerakan berkurang",
     profile: {
       label: "Progres",
       export: "Ekspor",

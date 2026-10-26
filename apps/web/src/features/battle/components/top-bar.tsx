@@ -43,7 +43,9 @@ const TurnBadge = ({
       <span
         className={cn(
           "rounded px-1.5 py-0.5 text-xs font-semibold",
-          yourTurn ? "bg-[#ffd75a] text-[#2a1a05]" : "bg-[#d9463b] text-white"
+          yourTurn
+            ? "bg-[#ffd75a] text-[#2a1a05]"
+            : "bg-blood-banner text-white"
         )}
       >
         {yourTurn ? tr("battle.yourTurn") : tr("battle.enemyTurn")}

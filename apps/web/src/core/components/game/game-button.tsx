@@ -20,7 +20,7 @@ export const gameButtonStyles = tv({
     piece,
     focusRing,
     "data-[hovered]:brightness-110",
-    "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-45 data-[disabled]:grayscale",
+    "data-[disabled]:cursor-not-allowed data-[disabled]:border-dashed data-[disabled]:grayscale",
   ],
   variants: {
     intent: {

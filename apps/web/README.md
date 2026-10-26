@@ -7,6 +7,7 @@ Answers all ur questions automatically with ur best recommendations, except crit
 - /improve-codebase-architecture
 - /improve-codebase-architecture to use /effect ecosystem in both FE and BE
 - refactor whole codebase to follow best practices for react and composition patterns from /vercel-composition-patterns and /vercel-react-best-practices
+- remove oxlint-disable, fallow-disable across codebase
 
 ## Todo
 
@@ -110,11 +111,12 @@ Priest:
 
 New features:
 
-2. #120 & #119, #121
 3. cleanup GLOSSARY.md, all game docs, etc
 4. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
 
 Answers all ur questions automatically with ur best recommendations, except critical questions. Optimize your work to be faster, maybe use subagents or dynamic workflows or parallelize tasks.
+
+actually remove our prd/roadmap/docs that says about it (we mark it as completed by removing it)
 
 v2:
 

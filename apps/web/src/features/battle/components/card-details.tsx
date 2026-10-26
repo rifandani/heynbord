@@ -76,7 +76,7 @@ const TermName = ({
     <Button
       onPress={() => onEntry(entry)}
       className={cn(
-        "pointer-events-auto cursor-pointer rounded-sm text-left underline decoration-[#b4521a]/50 decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid",
+        "decoration-keyword-rust/50 pointer-events-auto cursor-pointer rounded-sm text-left underline decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid",
         className
       )}
       data-entry={entry}
@@ -177,7 +177,7 @@ const StatusLine = ({
       )}
     </span>
     <span>
-      <TermName entry={entry} className="font-bold text-[#b4521a]">
+      <TermName entry={entry} className="text-keyword-rust font-bold">
         {name}
       </TermName>
       {children ? <> {children}</> : null}
@@ -268,7 +268,7 @@ const KeywordRules = ({ content }: { readonly content: CreatureCardText }) => {
           <li key={keyword.name.key}>
             <TermName
               entry={keywordEntryId(keyword.keyword)}
-              className="font-bold text-[#b4521a]"
+              className="text-keyword-rust font-bold"
             >
               {text(keyword.name)}
             </TermName>{" "}

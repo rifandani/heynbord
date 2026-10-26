@@ -86,7 +86,8 @@ export const markerOpacity = (
   if (index === focused) {
     return ringed ? 0 : 0.95;
   }
-  return 0.45 + Math.sin(time * 6) * 0.2;
+  // Keep at least 45% gold over the opaque dark marker plate (contrast >= 3:1).
+  return 0.65 + Math.sin(time * 6) * 0.2;
 };
 
 interface Point {

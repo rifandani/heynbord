@@ -32,7 +32,6 @@ import { randomSeed } from "@/features/battle/use-battle";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { StarIcon } from "@/features/campaign/components/campaign-icons";
-import { useHandbook } from "@/features/handbook/use-handbook";
 import type { FloorResultAction } from "@/features/heynspire/heynspire";
 import { floorResultActions } from "@/features/heynspire/heynspire";
 import { floorPanelAtom } from "@/features/heynspire/heynspire.atoms";
@@ -54,7 +53,7 @@ const TurnBannerText = ({ side }: { readonly side: Side }) => {
         "fade-in zoom-in-95 animate-in font-display rounded-xl border-2 px-6 py-2 text-2xl font-black tracking-wide shadow-xl duration-200 motion-reduce:animate-none [@media(max-height:500px)]:text-lg",
         side === "player"
           ? "border-[#7a5310] bg-[#ffd75a]/95 text-[#2a1a05]"
-          : "border-[#6b1610] bg-[#d9463b]/95 text-white"
+          : "bg-blood-banner border-[#6b1610] text-white"
       )}
     >
       {side === "player" ? tr("battle.yourTurn") : tr("battle.enemyTurn")}
@@ -149,29 +148,13 @@ const ResultStars = ({ stars }: { readonly stars: number }) => {
   );
 };
 
-/** The line that explains a result that is not a Hero at 0 HP. Routed links to its Handbook Entry (ADR-0012). */
+/** The line that explains a result that is not a Hero at 0 HP. */
 const ResultReason = ({ result }: { readonly result: BattleResult }) => {
   const { tr } = useGameText();
-  const handbook = useHandbook();
   if (result.reason === "turnLimit") {
     return (
       <p className="mt-2 text-sm text-balance text-[#2a1d12]">
         {tr("battle.turnLimit")}
-      </p>
-    );
-  }
-  if (result.reason === "routed") {
-    return (
-      <p className="mt-2 text-sm">
-        <Button
-          onPress={() => handbook.openAt("routed")}
-          className="cursor-pointer rounded-sm underline decoration-[#b4521a]/50 decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#b4521a]/40 data-[hovered]:decoration-solid"
-          data-testid="result-routed"
-        >
-          {result.winner === "player"
-            ? tr("battle.routedWin")
-            : tr("battle.routedLoss")}
-        </Button>
       </p>
     );
   }
@@ -358,7 +341,7 @@ const ResultDialog = ({
             <div className="col-span-2 mt-1 flex flex-wrap justify-center gap-1 border-t border-[#c9b48c] pt-2 [@media(max-height:500px)]:col-span-1 [@media(max-height:500px)]:mt-0 [@media(max-height:500px)]:flex-nowrap [@media(max-height:500px)]:border-0 [@media(max-height:500px)]:pt-0">
               <Button
                 onPress={() => battle.openLog()}
-                className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-bold text-[#5b4632] transition-colors duration-100 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#b4521a]/40 data-[hovered]:bg-[#ead9b4] data-[hovered]:text-[#2a1d12] data-[pressed]:translate-y-px"
+                className="data-[focus-visible]:ring-focus-cream inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-bold text-[#5b4632] transition-colors duration-100 outline-none data-[focus-visible]:ring-4 data-[hovered]:bg-[#ead9b4] data-[hovered]:text-[#2a1d12] data-[pressed]:translate-y-px"
                 data-testid="result-battle-log"
               >
                 <GlyphIcon glyph="scroll" className="size-4" />
@@ -458,20 +441,5 @@ export const ResultOverlay = ({
       session={session}
       result={session.view.result}
     />
-  );
-};
-
-/** UI-03: on a phone in portrait, ask the player to turn the phone. */
-export const PortraitGuard = () => {
-  const { tr } = useGameText();
-  return (
-    <div className="pointer-events-auto fixed inset-0 z-[60] hidden items-center justify-center bg-[#1c140e] p-8 text-center text-[#fff6df] [@media(orientation:portrait)_and_(pointer:coarse)]:flex">
-      <p className="font-display max-w-xs text-xl">
-        <span className="mb-4 block text-5xl" aria-hidden>
-          ⟳
-        </span>
-        {tr("battle.rotate")}
-      </p>
-    </div>
   );
 };

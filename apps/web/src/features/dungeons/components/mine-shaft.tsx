@@ -5,6 +5,7 @@ import { Fragment, useState } from "react";
 import { ListBox, ListBoxItem } from "react-aria-components";
 
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import { ClaimedStamp } from "@/features/dungeons/components/boss-dossier";
 import type { BossMark } from "@/features/dungeons/dungeon-art";
@@ -211,7 +212,7 @@ export const MineShaft = ({
   const { tr } = useGameText();
   const label = useStopLabel();
   const short = useMediaQuery(SHORT_SCREEN, false);
-  const still = useMediaQuery("(prefers-reduced-motion: reduce)", false);
+  const still = useReducedMotion();
   const index = Math.max(
     0,
     slots.findIndex((slot) => slot.number === selected)
@@ -412,7 +413,7 @@ export const MineShaft = ({
                     slot.state === "later" && "cursor-default",
                     cleared
                       ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] data-[hovered]:brightness-110"
-                      : "border-[#e9c46a]/70 bg-[#1c140e] text-[#fff6df] data-[disabled]:opacity-60 data-[hovered]:border-[#ffe08a]",
+                      : "border-[#e9c46a]/70 bg-[#1c140e] text-[#fff6df] data-[disabled]:border-dashed data-[hovered]:border-[#ffe08a]",
                     current && "ring-2 ring-[#fff2a8]"
                   )}
                   data-dungeon={slot.number}

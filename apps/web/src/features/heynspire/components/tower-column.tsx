@@ -7,6 +7,7 @@ import { Button, ListBox, ListBoxItem } from "react-aria-components";
 
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
+import { useReducedMotion } from "@/features/battle/scene/reduced-motion";
 import { useGameText } from "@/features/battle/use-game-text";
 import { BossCrown } from "@/features/campaign/components/campaign-icons";
 import { TowerStorey } from "@/features/heynspire/components/tower-storey";
@@ -289,7 +290,7 @@ const Spine = ({
                   <BossCrown
                     className={cn(
                       "size-4 [@media(max-height:500px)]:size-3.5",
-                      stop.state === "locked" && "opacity-70 grayscale"
+                      stop.state === "locked" && "grayscale"
                     )}
                   />
                 </Button>,
@@ -329,7 +330,7 @@ export const TowerColumn = ({
   const { tr } = useGameText();
   const label = useStopLabel();
   const short = useMediaQuery(SHORT_SCREEN, false);
-  const still = useMediaQuery("(prefers-reduced-motion: reduce)", false);
+  const still = useReducedMotion();
   const column = useRef<HTMLDivElement>(null);
   // Floor 50 at the top: the list order is the order on the screen.
   const stops = climb.flights.flatMap((flight) => flight.floors).toReversed();

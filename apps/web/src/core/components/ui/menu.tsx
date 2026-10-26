@@ -1,6 +1,5 @@
 "use client"
 
-import { HiCheck, HiChevronRight } from "react-icons/hi2"
 import { Button, type ButtonProps } from "react-aria-components/Button"
 import { Collection } from "react-aria-components/Collection"
 import { composeRenderProps } from "react-aria-components/composeRenderProps"
@@ -30,6 +29,38 @@ import {
   DropdownSeparator,
 } from "./dropdown"
 import { PopoverContent, type PopoverContentProps } from "./popover"
+
+/** The selected mark of a menu item, drawn here so no icon library loads. */
+const CheckMark = () => (
+  <svg
+    viewBox="0 0 24 24"
+    className="size-4"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={3}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <path d="M5 13l4 4L19 7" />
+  </svg>
+)
+
+/** The submenu mark of a menu item. */
+const ChevronMark = (props: React.ComponentProps<"svg">) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+    {...props}
+  >
+    <path d="M9 6l6 6-6 6" />
+  </svg>
+)
 
 const Menu = (props: MenuTriggerPrimitiveProps) => <MenuTriggerPrimitive {...props} />
 
@@ -130,13 +161,13 @@ const MenuItem = ({ className, intent, children, ...props }: MenuItemProps) => {
       {(values) => (
         <>
           {values.isSelected && ["single", "multiple"].includes(values.selectionMode) && (
-            <HiCheck />
+            <CheckMark />
           )}
 
           {typeof children === "function" ? children(values) : children}
 
           {values.hasSubmenu && (
-            <HiChevronRight
+            <ChevronMark
               data-slot="chevron"
               className="absolute end-0 size-4 -translate-y-1/2"
               style={{

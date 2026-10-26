@@ -908,7 +908,7 @@ export const chapterEntries = (
 };
 
 /** The Entry that the Handbook opens the first time: Chapter Battle, Entry Board. */
-export const FIRST_ENTRY: EntryId = "board";
+export { FIRST_ENTRY } from "@/features/handbook/first-entry";
 
 /** The Entries that players can also find by words from other games. */
 export const ALIASED_ENTRIES: ReadonlySet<EntryId> = new Set<EntryId>([

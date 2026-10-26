@@ -128,7 +128,7 @@ export const ManifestPlate = ({
       <div
         className={cn(
           "flex items-center gap-2.5",
-          lock !== null && "opacity-60"
+          lock !== null && "grayscale"
         )}
       >
         {stones === null ? (

@@ -410,7 +410,7 @@ const BossPlate = ({
           active && !defeated
             ? "shadow-[0_0_14px_2px_rgba(255,215,90,0.6)]"
             : "shadow-[0_3px_0_rgba(0,0,0,0.45)]",
-          defeated && "opacity-70 saturate-[0.35]",
+          defeated && "saturate-[0.35]",
           target &&
             "cursor-pointer ring-2 ring-[#ffd24a] motion-safe:animate-[boss-target_1.2s_ease-in-out_infinite]",
           focused && "ring-4 ring-[#fff2a8]",
@@ -433,7 +433,7 @@ const BossPlate = ({
         <span
           className="flex size-10 shrink-0 items-center justify-center self-start rounded-lg text-[#fff6df] [@media(max-height:500px)]:size-7"
           style={{
-            background: `linear-gradient(180deg, ${ENEMY.light}, ${ENEMY.dark})`,
+            background: ENEMY.dark,
           }}
           aria-hidden
         >

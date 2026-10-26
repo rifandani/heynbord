@@ -47,15 +47,18 @@ export const PendingRoute = () => (
   </div>
 );
 export const ErrorRoute = ({ reset, error, info }: ErrorComponentProps) => {
+  const { t } = useTranslation();
   reportError("[ErrorRoute]: Error", { error, errorInfo: info });
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="max-w-md space-y-8 text-center">
         {/* Hero Section */}
         <div className="space-y-4">
-          <h1 className="text-primary text-8xl font-bold">4xx</h1>
-          <h2 className="text-2xl font-semibold">Oops!</h2>
-          <p className="text-muted-fg">Something went wrong</p>
+          <h1 className="text-primary text-8xl font-bold">
+            {t("errorPage.code")}
+          </h1>
+          <h2 className="text-2xl font-semibold">{t("errorPage.title")}</h2>
+          <p className="text-muted-fg">{t("errorPage.text")}</p>
         </div>
 
         {/* Quick Actions */}
@@ -68,7 +71,7 @@ export const ErrorRoute = ({ reset, error, info }: ErrorComponentProps) => {
               () => reset()
             }
           >
-            Try again
+            {t("errorPage.retry")}
           </Button>
         </div>
       </div>
@@ -91,7 +94,7 @@ export const NotFoundRoute = () => {
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <Link href="/" className="flex items-center">
             {t("backTo", {
-              target: "Home",
+              target: t("title"),
             })}
           </Link>
         </div>

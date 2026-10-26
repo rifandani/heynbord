@@ -121,8 +121,7 @@ v1 does not include:
 
 | Level | Success means |
 | --- | --- |
-| v1.0 | A player can finish the campaign in 8 to 15 hours. Playtesters want to continue in Heynspire. |
-| Quality | Battles are easy to read. In playtests, 8 of 10 players can explain why they won or lost. |
-| Fairness | No playtester says "pay-to-win" or "too much grind" as their main problem. |
+| v1.0 | A player can finish the campaign in 8 to 15 hours. |
+| Quality | Battles are easy to read. |
 | Technical | The game runs at 60 fps on a normal laptop and at 30 fps or more on a mid-range phone. |
 | Personal | The developer finishes and releases v1.0, and the architecture is ready for v2 online play. |

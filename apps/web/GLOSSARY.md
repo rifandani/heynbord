@@ -18,6 +18,12 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Error Envelope**: The `{ message }` body the API returns on a failed request. Present on most failures, absent on some — a caller may never assume it parsed. _Avoid_: error response, error body, error payload
 
+### Performance
+
+**First Load**: A visit to a screen with an empty browser cache and no active Service Worker. _Avoid_: cold start, cold load, fresh load
+
+**Warm Load**: A visit to a screen with the Service Worker active and the browser cache ready. _Avoid_: second load, hot load, cached load
+
 ### Card presentation
 
 **Facing**: The advance direction of a Creature Card painting. The painting advances to the right of the image, and an enemy Unit on the Board is a horizontal mirror of that painting. _Avoid_: flip, orientation

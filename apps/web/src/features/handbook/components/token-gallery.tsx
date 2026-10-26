@@ -60,7 +60,7 @@ type ShowDetails = (target: Peek, name: Anchor, row: Anchor) => ReactNode;
 
 /** A link to an Entry in the text of a Token, as the "See also" links. */
 const TERM_LINK =
-  "cursor-pointer rounded-sm font-bold text-[#b4521a] underline decoration-[#b4521a]/45 underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-[#b4521a]";
+  "cursor-pointer rounded-sm font-bold text-keyword-rust underline decoration-keyword-rust/45 underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-keyword-rust";
 
 /**
  * A Rank segment. The selected one is gold, as the filters of the Deck
@@ -181,7 +181,7 @@ const Summoner = ({
       <Button
         ref={trigger}
         {...bind(target)}
-        className="cursor-default rounded-sm font-semibold text-[#2a1d12] underline decoration-[#b4521a]/50 decoration-dotted underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid"
+        className="decoration-keyword-rust/50 cursor-default rounded-sm font-semibold text-[#2a1d12] underline decoration-dotted underline-offset-[3px] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid"
         data-testid="token-summoner"
         data-card={card.id}
       >
@@ -282,7 +282,7 @@ const TokenRow = ({
         rank={rank}
         className={cn(
           "mt-1 shrink-0 text-[10px] transition-[filter,opacity] duration-300 [@media(max-height:500px)]:text-[8px]",
-          absent && "opacity-55 grayscale-[0.85]"
+          absent && "grayscale-[0.85]"
         )}
       />
       <div className="min-w-0 flex-1 space-y-1.5 text-sm leading-snug [@media(max-height:500px)]:space-y-1 [@media(max-height:500px)]:text-xs">
