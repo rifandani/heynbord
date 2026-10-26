@@ -1,0 +1,189 @@
+{
+  "requirement": {
+    "id": "NFR-03",
+    "issue": 132,
+    "url": "https://github.com/rifandani/heynbord/issues/132",
+    "date": "2026-10-26",
+    "result": "pass",
+    "scope": "automated browser matrix",
+    "removedFromPrd": "2026-10-26"
+  },
+  "method": {
+    "playwright": "1.63.0",
+    "host": "MacBook Pro (Mac14,7), Apple M2, 16 GB",
+    "os": "macOS 26.5.1 (25F80)",
+    "gitCommit": "dd81072401",
+    "unrelatedUncommittedChangesPresent": true,
+    "build": "production build with VITE_E2E=true and VITE_APP_URL=http://localhost:4100",
+    "servedBy": "Nitro server on port 4100, from a copied .output",
+    "command": "PW_PORT=4100 bun web test:matrix",
+    "testTimeoutMs": 120000,
+    "battleTimeoutMs": 180000,
+    "actionTimeoutMs": 20000,
+    "navigationTimeoutMs": 60000,
+    "totalDurationMinutes": 1.1,
+    "workers": "default"
+  },
+  "flows": [
+    "first load",
+    "Town",
+    "Campaign",
+    "Deck builder",
+    "Battle",
+    "Workshop",
+    "Packs",
+    "save export/import"
+  ],
+  "matrix": [
+    {
+      "browser": "Chrome",
+      "version": "155.0.8059.85",
+      "display": "desktop",
+      "device": "MacBook Pro (Mac14,7)",
+      "os": "macOS 26.5.1 (25F80)",
+      "tool": "Playwright chrome channel",
+      "emulated": false,
+      "date": "2026-10-26",
+      "result": "pass"
+    },
+    {
+      "browser": "Edge",
+      "version": "156.0.4314.42",
+      "display": "desktop",
+      "device": "MacBook Pro (Mac14,7)",
+      "os": "macOS 26.5.1 (25F80)",
+      "tool": "Playwright msedge channel",
+      "emulated": false,
+      "date": "2026-10-26",
+      "result": "pass"
+    },
+    {
+      "browser": "Firefox",
+      "version": "155.0",
+      "display": "desktop",
+      "device": "MacBook Pro (Mac14,7)",
+      "os": "macOS 26.5.1 (25F80)",
+      "tool": "Playwright Firefox",
+      "emulated": false,
+      "date": "2026-10-26",
+      "result": "pass"
+    },
+    {
+      "browser": "Safari",
+      "version": "WebKit 26.6",
+      "display": "desktop",
+      "device": "MacBook Pro (Mac14,7)",
+      "os": "macOS 26.5.1 (25F80)",
+      "tool": "Playwright WebKit (Safari engine, not Safari.app)",
+      "emulated": false,
+      "date": "2026-10-26",
+      "result": "pass"
+    },
+    {
+      "browser": "Chrome on Android",
+      "version": "Chromium 153.0.8010.12, Pixel 7 user agent",
+      "display": "mobile",
+      "device": "Pixel 7 emulation, 844 x 390",
+      "os": "macOS 26.5.1 (25F80)",
+      "tool": "Playwright Chromium",
+      "emulated": true,
+      "date": "2026-10-26",
+      "result": "pass"
+    },
+    {
+      "browser": "Edge on Android",
+      "version": "156.0.4314.42",
+      "display": "mobile",
+      "device": "Pixel 7 emulation, 844 x 390",
+      "os": "macOS 26.5.1 (25F80)",
+      "tool": "Playwright msedge channel",
+      "emulated": true,
+      "date": "2026-10-26",
+      "result": "pass"
+    },
+    {
+      "browser": "Safari on iOS",
+      "version": "WebKit 26.6, iPhone 15 user agent",
+      "display": "mobile",
+      "device": "iPhone 15 emulation, 844 x 390",
+      "os": "macOS 26.5.1 (25F80)",
+      "tool": "Playwright WebKit",
+      "emulated": true,
+      "date": "2026-10-26",
+      "result": "pass"
+    },
+    {
+      "browser": "Edge on iOS",
+      "version": null,
+      "display": "mobile",
+      "device": null,
+      "os": null,
+      "tool": null,
+      "emulated": null,
+      "date": "2026-10-26",
+      "result": "not-run",
+      "reason": "No iOS device or cloud device service"
+    },
+    {
+      "browser": "Firefox on Android",
+      "version": null,
+      "display": "mobile",
+      "device": null,
+      "os": null,
+      "tool": null,
+      "emulated": null,
+      "date": "2026-10-26",
+      "result": "not-run",
+      "reason": "Playwright cannot emulate mobile Firefox, and no Android device was available"
+    },
+    {
+      "browser": "Firefox on iOS",
+      "version": null,
+      "display": "mobile",
+      "device": null,
+      "os": null,
+      "tool": null,
+      "emulated": null,
+      "date": "2026-10-26",
+      "result": "not-run",
+      "reason": "No iOS device or cloud device service"
+    },
+    {
+      "browser": "Safari on Android",
+      "version": null,
+      "display": "mobile",
+      "device": null,
+      "os": null,
+      "tool": null,
+      "emulated": null,
+      "date": "2026-10-26",
+      "result": "not-applicable",
+      "reason": "Safari does not exist on Android"
+    }
+  ],
+  "totals": {
+    "rows": 11,
+    "rowsPassed": 7,
+    "rowsNotRun": 3,
+    "rowsNotApplicable": 1,
+    "testsPerRow": 7,
+    "testsPassed": 49,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "retries": 0
+  },
+  "versionScope": {
+    "tested": "current stable version of each engine",
+    "previousVersionTested": false,
+    "reason": "Playwright supplies one bundled Firefox and WebKit build. The chrome and msedge channels use the installed stable browser. No cloud device service or second install was available."
+  },
+  "notCovered": {
+    "note": "These cases are outside this automated record. They do not block it.",
+    "cases": [
+      "Edge on iOS on a real iOS device.",
+      "Firefox on Android on a real Android device.",
+      "Firefox on iOS on a real iOS device.",
+      "The previous stable version of Chrome, Edge, Firefox and Safari."
+    ]
+  }
+}

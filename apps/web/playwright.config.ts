@@ -4,6 +4,26 @@ import { defineConfig, devices } from "@playwright/test";
 const port = Number(process.env.PW_PORT ?? 4000);
 const baseURL = `http://localhost:${port}`;
 /**
+ * The browser matrix runs only the tests that carry this tag. The
+ * full suite stays on the default `chromium` project, so the full suite does
+ * not run on six engines.
+ */
+const BROWSER_MATRIX_TAG = /@browser-matrix/u;
+/** The game asks for landscape on a phone, so its mobile rows use this viewport. */
+const phone = { width: 844, height: 390 };
+/** A Pixel 7 profile with the landscape viewport that the game asks for. */
+const pixel7Landscape = {
+  ...devices["Pixel 7"],
+  viewport: phone,
+  screen: phone,
+};
+/** An iPhone 15 profile with the landscape viewport that the game asks for. */
+const iphone15Landscape = {
+  ...devices["iPhone 15"],
+  viewport: phone,
+  screen: phone,
+};
+/**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
@@ -37,18 +57,79 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      // The full suite. The matrix has its own projects below.
       name: "chromium",
+      grepInvert: BROWSER_MATRIX_TAG,
       use: {
         ...devices["Desktop Chrome"],
       },
     },
-    // when we add more projects, make sure we also change `test:install` script
-    // {
-    //   name: 'firefox',
-    //   use: {
-    //     ...devices['Desktop Firefox'],
-    //   },
-    // },
+    {
+      // The branded Chrome channel, not Playwright Chromium.
+      name: "chrome",
+      grep: BROWSER_MATRIX_TAG,
+      metadata: { browser: "Chrome", display: "desktop", emulated: false },
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: "chrome",
+      },
+    },
+    {
+      // The branded Edge channel, not Playwright Chromium.
+      name: "edge",
+      grep: BROWSER_MATRIX_TAG,
+      metadata: { browser: "Edge", display: "desktop", emulated: false },
+      use: {
+        ...devices["Desktop Edge"],
+        channel: "msedge",
+      },
+    },
+    {
+      name: "firefox",
+      grep: BROWSER_MATRIX_TAG,
+      metadata: { browser: "Firefox", display: "desktop", emulated: false },
+      use: {
+        ...devices["Desktop Firefox"],
+      },
+    },
+    {
+      // Playwright WebKit is the Safari engine. It is not Safari itself.
+      name: "webkit",
+      grep: BROWSER_MATRIX_TAG,
+      metadata: { browser: "Safari", display: "desktop", emulated: false },
+      use: {
+        ...devices["Desktop Safari"],
+      },
+    },
+    {
+      // Chrome on Android, emulated with the Chromium engine.
+      name: "chrome-android",
+      grep: BROWSER_MATRIX_TAG,
+      metadata: {
+        browser: "Chrome Android",
+        display: "mobile",
+        emulated: true,
+      },
+      use: pixel7Landscape,
+    },
+    {
+      // Edge on Android, emulated with the branded Edge binary.
+      name: "edge-android",
+      grep: BROWSER_MATRIX_TAG,
+      metadata: { browser: "Edge Android", display: "mobile", emulated: true },
+      use: {
+        ...pixel7Landscape,
+        channel: "msedge",
+      },
+    },
+    {
+      // Safari on iOS, emulated with the WebKit engine. It is not Safari on
+      // an iOS device.
+      name: "safari-ios",
+      grep: BROWSER_MATRIX_TAG,
+      metadata: { browser: "Safari iOS", display: "mobile", emulated: true },
+      use: iphone15Landscape,
+    },
   ],
   /* Run your local dev server before starting the tests */
   webServer: {

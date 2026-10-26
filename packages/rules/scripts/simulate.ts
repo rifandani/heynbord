@@ -1,12 +1,18 @@
 /**
  * Headless Battle simulation (GDD 13). The AI plays both Sides.
  *
- * Usage: `bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]`.
+ * Usage: `bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check] [--shard i/n] [--parallel]`.
  * With no mode, it runs `stage`, `dungeon`, `floor`, `matchup` and `packs`, and
  * with `--check` also `economy`. `battles` is 200 by default. With `--check`,
  * it exits with code 1 when a win rate is not on its GDD 13 target or a Pacing
  * target is not on its Economy 4 target (CI uses it). The seeds are fixed, so
  * the same content gives the same result.
+ *
+ * `--shard i/n` plays only the i-th of n contiguous slices of each work list
+ * (the Stages, Dungeons, Floors, Archetypes, Packs or Play Styles). Shards are
+ * independent, so CI runs them on parallel cores. `--parallel` starts one
+ * child per shard, up to the available CPUs, and prints their output in shard
+ * order. It is the same simulation, only faster.
  *
  * - `stage`: each Stage with each starter Deck, at the Recommended level of the
  *   Stage and with no Gear (docs/game/14-campaign-stages.md). A Stage with
@@ -69,6 +75,10 @@
  *   Creature Card minus its budget. Like `economy`, it runs only on request,
  *   and `--check` does not check it.
  */
+import { spawn } from "node:child_process";
+import { once } from "node:events";
+import { writeSync } from "node:fs";
+
 import { ARCHETYPES, MATCHUP_LEVEL } from "../src/content/archetypes";
 import { skillBudgetCheck } from "../src/content/balance";
 import { CARDS, getCard } from "../src/content/cards";
@@ -138,7 +148,7 @@ import type {
 import { SWAP_LIMIT, simulateSkillSwap } from "../src/simulation/skill-swap";
 
 const USAGE =
-  "Usage: bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check]";
+  "Usage: bun run sim [stage | dungeon | floor | matchup | packs | economy | skill-swap] [battles] [--level N] [--gear N] [--packs N] [--check] [--shard i/n] [--parallel]";
 
 const MODES = [
   "stage",
@@ -179,6 +189,126 @@ const chosenModes = (modes: Mode[], check: boolean): Mode[] =>
         (mode) => mode !== "skill-swap" && (check || mode !== "economy")
       );
 
+/**
+ * One contiguous slice of a work list. `index` is 0-based, and `index` 0 with
+ * `count` 1 is the whole list.
+ */
+interface Shard {
+  readonly index: number;
+  readonly count: number;
+}
+
+const NO_SHARD: Shard = { index: 0, count: 1 };
+
+/** Parses "i/n", with 1 <= i <= n, into a 0-based Shard. */
+const parseShard = (value: string | undefined): Shard => {
+  const [indexText, countText, ...extra] = (value ?? "").split("/");
+  const index = Number(indexText);
+  const count = Number(countText);
+  if (
+    extra.length > 0 ||
+    !Number.isInteger(index) ||
+    !Number.isInteger(count) ||
+    count < 1 ||
+    index < 1 ||
+    index > count
+  ) {
+    return fail(`--shard must be i/n with 1 <= i <= n: ${value}`);
+  }
+  return { index: index - 1, count };
+};
+
+/**
+ * The items of one shard, as contiguous slices. The slices need not have
+ * exactly the same size, and together they are the whole list.
+ */
+const shardItems = <T>(items: readonly T[], shard: Shard): readonly T[] =>
+  shard.count === 1
+    ? items
+    : items.slice(
+        Math.floor((items.length * shard.index) / shard.count),
+        Math.floor((items.length * (shard.index + 1)) / shard.count)
+      );
+
+/** The number of Shards to start: the CPUs, capped by the longest work list. */
+const shardCountFor = (modes: readonly Mode[]): number => {
+  let units = 1;
+  if (modes.includes("stage")) {
+    units = Math.max(units, STAGES.length);
+  }
+  if (modes.includes("dungeon")) {
+    units = Math.max(units, DUNGEONS.length);
+  }
+  if (modes.includes("floor")) {
+    units = Math.max(units, FLOORS.length);
+  }
+  if (modes.includes("matchup")) {
+    units = Math.max(units, ARCHETYPES.length);
+  }
+  if (modes.includes("packs")) {
+    units = Math.max(units, PACKS.length);
+  }
+  if (modes.includes("economy")) {
+    units = Math.max(units, PLAY_STYLES.length);
+  }
+  if (modes.includes("skill-swap")) {
+    units = Math.max(
+      units,
+      CARDS.filter((card) => card.kind === "skill").length
+    );
+  }
+  const requested = Number(process.env.SIM_SHARDS);
+  // SAFETY: Node has `availableParallelism`; Bun may not, so it is optional.
+  const available = (process as { availableParallelism?: () => number })
+    .availableParallelism;
+  // SAFETY: `navigator.hardwareConcurrency` is the standard fallback in Bun.
+  const hardware = (
+    globalThis as { navigator?: { hardwareConcurrency?: number } }
+  ).navigator?.hardwareConcurrency;
+  const detected = available === undefined ? (hardware ?? 1) : available();
+  const cpus =
+    Number.isInteger(requested) && requested > 0 ? requested : detected;
+  return Math.max(1, Math.min(cpus, units, 8));
+};
+
+/**
+ * Runs one child per Shard and prints their output in Shard order, so the
+ * report is stable. A failed child fails the parent with its exit code.
+ */
+const runShards = async (
+  args: readonly string[],
+  count: number
+): Promise<never> => {
+  const base = args.filter((arg) => arg !== "--parallel");
+  // SAFETY: Bun sets argv[1] to this script, and each child runs the same file.
+  const script = process.argv[1] as string;
+  const results = await Promise.all(
+    Array.from({ length: count }, async (_, index) => {
+      const child = spawn(
+        process.execPath,
+        [script, ...base, "--shard", `${index + 1}/${count}`],
+        { stdio: ["ignore", "pipe", "pipe"] }
+      );
+      const stdout: Buffer[] = [];
+      const stderr: Buffer[] = [];
+      child.stdout.on("data", (chunk: Buffer) => stdout.push(chunk));
+      child.stderr.on("data", (chunk: Buffer) => stderr.push(chunk));
+      // SAFETY: `close` passes the exit code as its only argument.
+      const [code] = (await once(child, "close")) as [number | null];
+      return { stdout, stderr, code };
+    })
+  );
+  // A sync write flushes before `process.exit`, so no output is lost.
+  for (const result of results) {
+    writeSync(1, Buffer.concat(result.stdout));
+  }
+  for (const result of results) {
+    writeSync(2, Buffer.concat(result.stderr));
+  }
+  const failed = results.find((result) => result.code !== 0);
+  process.exit(failed === undefined ? 0 : (failed.code ?? 1));
+};
+
 /** The flags of the command line. `level` and `gear` are `undefined` when they are not given. */
 interface Flags {
   battles: number;
@@ -186,6 +316,8 @@ interface Flags {
   gear: number | undefined;
   packs: number;
   check: boolean;
+  shard: Shard;
+  parallel: boolean;
 }
 
 const readFlag = (arg: string, rest: string[], parsed: Flags): boolean => {
@@ -201,8 +333,16 @@ const readFlag = (arg: string, rest: string[], parsed: Flags): boolean => {
     parsed.packs = integer(rest.shift(), "--packs", 1);
     return true;
   }
+  if (arg === "--shard") {
+    parsed.shard = parseShard(rest.shift());
+    return true;
+  }
   if (arg === "--check") {
     parsed.check = true;
+    return true;
+  }
+  if (arg === "--parallel") {
+    parsed.parallel = true;
     return true;
   }
   return false;
@@ -216,6 +356,8 @@ const parseArgs = (args: readonly string[]) => {
     gear: undefined,
     packs: 10_000,
     check: false,
+    shard: NO_SHARD,
+    parallel: false,
   };
   const rest = [...args];
   for (let arg = rest.shift(); arg !== undefined; arg = rest.shift()) {
@@ -235,15 +377,25 @@ const parseArgs = (args: readonly string[]) => {
     gear: parsed.gear,
     packs: parsed.packs,
     check: parsed.check,
+    shard: parsed.shard,
+    parallel: parsed.parallel,
   };
 };
 
 const percent = (rate: number, digits = 0) =>
   `${(rate * 100).toFixed(digits)}%`;
 
-const { modes, battles, level, gear, packs, check } = parseArgs(
-  process.argv.slice(2)
-);
+const { modes, battles, level, gear, packs, check, shard, parallel } =
+  parseArgs(process.argv.slice(2));
+
+// `--parallel` is only the launcher. A child gets `--shard`, so it does not
+// start more children.
+if (parallel && shard.count === 1) {
+  const count = shardCountFor(modes);
+  if (count > 1) {
+    await runShards(process.argv.slice(2), count);
+  }
+}
 
 /** The win rates, 3-Star shares and Pacing targets that are not on target. */
 const misses: string[] = [];
@@ -345,7 +497,7 @@ if (modes.includes("stage")) {
     `Stages: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear (ADR-0033)"}`
   );
   console.table(
-    STAGES.flatMap((stage) => {
+    shardItems(STAGES, shard).flatMap((stage) => {
       const stageGear = expected?.get(stage.id) ?? NO_GEAR;
       const rows: { gear: GearLevels; expected: boolean }[] = [
         { gear: gearOf(gear), expected: false },
@@ -407,7 +559,7 @@ if (modes.includes("dungeon")) {
     `Dungeons: ${battles} Battles each, unlock level + ${levelsAbove}, Gear ${gear ?? 0}${expected ? ", then the Expected Gear at the unlock level (ADR-0033)" : ""}`
   );
   console.table(
-    DUNGEONS.flatMap((dungeon) => {
+    shardItems(DUNGEONS, shard).flatMap((dungeon) => {
       const dungeonGear = expected
         ? expectedGearAtLevel(dungeon.unlockLevel)
         : NO_GEAR;
@@ -452,7 +604,7 @@ if (modes.includes("floor")) {
     `Floors: ${battles} Battles each, Recommended level + ${levelsAbove}, Gear ${gear ?? 0}${expected === null ? "" : ", then the Expected Gear (ADR-0033)"}`
   );
   console.table(
-    FLOORS.flatMap((floor) => {
+    shardItems(FLOORS, shard).flatMap((floor) => {
       const floorGear = expected?.[floor.number - 1] ?? NO_GEAR;
       const rows: { gear: GearLevels; expected: boolean }[] = [
         { gear: gearOf(gear), expected: false },
@@ -494,7 +646,7 @@ if (modes.includes("matchup")) {
     `Matchups: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear ?? 0}`
   );
   console.table(
-    ARCHETYPES.flatMap((archetype) =>
+    shardItems(ARCHETYPES, shard).flatMap((archetype) =>
       ARCHETYPES.map((opponent) => {
         const report = simulateMatchup(archetype, opponent, options);
         return {
@@ -549,7 +701,7 @@ if (modes.includes("packs")) {
     { kind: "race", race: "human" },
     ...classPools,
   ];
-  const reports = PACKS.flatMap((pack) =>
+  const reports = shardItems(PACKS, shard).flatMap((pack) =>
     pools.map((pool) =>
       simulatePack(pack.id, { packs, players: 100, pool, classId: "warrior" })
     )
@@ -771,7 +923,7 @@ if (modes.includes("economy")) {
   console.log(
     `Economy: ${battles} Players for each Play Style, to level 30 and the Floor 50 win, or ${MAX_BATTLES} Battles. Cells: median (10th–90th percentile) → target`
   );
-  for (const playStyle of PLAY_STYLES) {
+  for (const playStyle of shardItems(PLAY_STYLES, shard)) {
     const report = simulateEconomy(playStyle, { seeds: battles });
     const verdicts = judgePacing(report);
     for (const verdict of verdicts) {
@@ -941,7 +1093,10 @@ if (modes.includes("skill-swap")) {
     `Skill swap: ${battles * 2} Battles each, level ${matchupLevel}, Gear ${gear ?? 0}. Pass: each change is ±${(SWAP_LIMIT * 100).toFixed(1)} points or less`
   );
   const cache = new Map<string, MatchupReport>();
-  const reports = CARDS.flatMap((card) =>
+  const reports = shardItems(
+    CARDS.filter((card) => card.kind === "skill"),
+    shard
+  ).flatMap((card) =>
     card.kind === "skill" ? [simulateSkillSwap(card, options, cache)] : []
   );
   console.table(

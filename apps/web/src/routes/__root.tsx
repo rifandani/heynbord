@@ -140,6 +140,8 @@ export const Route = createRootRouteWithContext<{
       { content: "Personal Blog or Website", name: "category" },
       { content: "telephone=no", name: "format-detection" },
       { content: "yes", name: "mobile-web-app-capable" },
+      // iOS needs the Apple-prefixed tag to show the startup images below.
+      { content: "yes", name: "apple-mobile-web-app-capable" },
       { content: "default", name: "apple-mobile-web-app-status-bar-style" },
       { content: "Heynbord", property: "og:site_name" },
       {

@@ -25,6 +25,7 @@
     "check:health": "bun test:unit:cov && fallow health --css --top 10 --quiet",
     "check:dead-code": "fallow dead-code --quiet --fail-on-issues",
     "check:dupes": "fallow dupes --mode semantic --quiet --fail-on-issues",
+    "check:pwa": "bun scripts/check-pwa.ts",
     "check:security": "fallow security --surface  --quiet",
     "check:security:survivors": "fallow security --format json --quiet -o node_modules/.cache/fallow-security.json && fallow security survivors --candidates node_modules/.cache/fallow-security.json --verdicts .fallow/security-verdicts.json --require-verdict-for-each-candidate",
     "audit:sca": "node scripts/security/sca-gate.ts",
@@ -67,6 +68,7 @@
   "devDependencies": {
     "@changesets/cli": "3.0.3",
     "@chenglou/freerange": "0.0.5",
+    "@pwa-today/pwa-check": "0.1.10",
     "@stryker-mutator/core": "10.0.0",
     "@stryker-mutator/vitest-runner": "10.0.0",
     "@vitest/coverage-v8": "5.0.3",
