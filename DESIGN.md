@@ -292,7 +292,7 @@ The base component library reads these semantic names. Each one points at a mate
 | `info-subtle`        | `tutorial-teal` at 22%                |
 | `info-subtle-fg`     | `tutorial-glow`                       |
 | `border`             | `plate-ember`                         |
-| `input`              | `wood-light`                          |
+| `input`              | `bronze`                              |
 | `ring`               | `focus-cream`                         |
 | `navbar`             | `night-plate`                         |
 | `navbar-fg`          | `cream`                               |
