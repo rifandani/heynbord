@@ -23,17 +23,17 @@ const HpBar = ({
         <div
           className={cn(
             "h-full rounded-full transition-[width] duration-300",
-            percent <= 30 ? "bg-[#ef4444]" : "bg-[#4ade80]"
+            percent <= 30 ? "bg-hp-low" : "bg-hp-full"
           )}
           style={{ width: `${percent}%` }}
         />
       </div>
       <span
-        className="text-sm font-black text-[#fff6df] tabular-nums"
+        className="text-cream text-sm font-black tabular-nums"
         data-testid={`hero-${side}-hp`}
       >
         {hero.hp}
-        <span className="text-xs font-medium text-[#e8d9bb]">
+        <span className="text-cream-dim text-xs font-medium">
           /{hero.maxHp}
         </span>
       </span>
@@ -58,9 +58,9 @@ export const HeroPanel = ({
     <section
       aria-label={`${name}: ${tr("battle.hp")} ${hero.hp} / ${hero.maxHp}`}
       className={cn(
-        "flex min-w-0 items-center gap-2 rounded-xl border-2 bg-[#1c140e]/85 p-1.5 pr-3 backdrop-blur-sm transition-shadow",
+        "bg-night-plate/85 flex min-w-0 items-center gap-2 rounded-xl border-2 p-1.5 pr-3 backdrop-blur-sm transition-shadow",
         side === "enemy" && "flex-row-reverse pr-1.5 pl-3",
-        active ? "shadow-[0_0_14px_2px_rgba(255,215,90,0.6)]" : "shadow-md"
+        active ? "shadow-active" : "shadow-md"
       )}
       style={{ borderColor: SIDE_COLORS[side].main }}
       data-testid={`hero-${side}`}
@@ -72,7 +72,7 @@ export const HeroPanel = ({
         />
       ) : (
         <span
-          className="flex size-10 shrink-0 items-center justify-center rounded-lg text-[#fff6df] [@media(max-height:500px)]:size-8"
+          className="text-cream flex size-10 shrink-0 items-center justify-center rounded-lg [@media(max-height:500px)]:size-8"
           style={{
             background: SIDE_COLORS[side].dark,
           }}
@@ -85,9 +85,9 @@ export const HeroPanel = ({
         </span>
       )}
       <div className={cn("min-w-0 flex-1", side === "enemy" && "text-right")}>
-        <p className="truncate text-sm leading-tight font-semibold text-[#fff6df] [@media(max-height:500px)]:text-xs">
+        <p className="text-cream truncate text-sm leading-tight font-semibold [@media(max-height:500px)]:text-xs">
           {name}{" "}
-          <span className="font-normal text-[#e8d9bb]">
+          <span className="text-cream-dim font-normal">
             · {tr(`classes.${hero.classId}`)}
           </span>
         </p>

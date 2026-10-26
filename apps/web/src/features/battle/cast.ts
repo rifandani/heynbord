@@ -14,6 +14,7 @@ import {
   DAMAGE_COLORS,
   FX_ANCHORS,
 } from "@/core/components/game/tokens";
+import { BULWARK_COLOR, RALLY_TINT } from "@/features/battle/tokens";
 
 /**
  * The 3 beats of a Skill Card cast on the screen. `reveal` is its CardPlayed
@@ -141,13 +142,13 @@ export const effectColor = (effect: SkillEffect): string => {
       return DAMAGE_COLORS.holy;
     }
     case "laneBulwark": {
-      return "#9cc8ff";
+      return BULWARK_COLOR;
     }
     // The Warrior war gold of the Rally bonus.
     case "laneAttack":
     case "laneExtraAction":
     case "unitAttackRange": {
-      return "#ffd75a";
+      return RALLY_TINT;
     }
     case "exposeUnit": {
       return FX_ANCHORS.iconExposed;

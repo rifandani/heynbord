@@ -10,6 +10,7 @@ import type {
 } from "@/features/battle/scene/fx-presets";
 import { DUST_PRESETS, FX_PRESETS } from "@/features/battle/scene/fx-presets";
 import type { Status } from "@/features/battle/scene/status-visuals";
+import { SCENE_WHITE } from "@/features/battle/tokens";
 
 /** The particles in the pool. When it is full, the loops get fewer particles. */
 export const PARTICLE_POOL = 200;
@@ -653,7 +654,7 @@ export const hash = (a: number, b: number, c: number): number => {
   return value - Math.floor(value);
 };
 
-const WHITE = "#ffffff";
+const WHITE = SCENE_WHITE;
 
 /** One quad with the image of `slot`. A `fixed` slot keeps its painted color. */
 export const slotParticle = (

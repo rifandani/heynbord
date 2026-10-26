@@ -15,11 +15,11 @@ const handCardClassName = (
     // The font size sets the size of the Card Frame: 90 × 126 px, and 63 × 88 px on a short screen.
     // The Hand Bar can make it smaller with `--hand-card-size`, so that the bar fits the screen.
     "group relative block shrink-0 touch-none rounded-[0.85em] text-left text-[length:var(--hand-card-size,10px)] transition-transform duration-150 outline-none select-none [@media(max-height:500px)]:text-[length:var(--hand-card-size,7px)]",
-    "focus-visible:ring-4 focus-visible:ring-[#fff2a8]",
+    "focus-visible:ring-focus-cream focus-visible:ring-4",
     ready
-      ? "cursor-grab shadow-[0_0_18px_4px_rgba(255,210,90,0.75)] hover:-translate-y-2"
+      ? "shadow-ready cursor-grab hover:-translate-y-2"
       : "cursor-help brightness-[0.82] saturate-[0.7]",
-    selected && "-translate-y-3 ring-4 ring-[#fff2a8]",
+    selected && "ring-focus-cream -translate-y-3 ring-4",
     className
   );
 

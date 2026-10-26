@@ -25,6 +25,13 @@ import {
 import { CRIT_SCALE, FX_PRESETS } from "@/features/battle/scene/fx-presets";
 import { heroX, laneZ, squareX, worldOf } from "@/features/battle/scene/layout";
 import { BURST_DURATION } from "@/features/battle/scene/particles";
+import {
+  CLEANSE_RING,
+  RALLY_TINT,
+  REBORN_TINT,
+  SCENE_WHITE,
+  SUMMON_RING,
+} from "@/features/battle/tokens";
 import { NEW_PLAYER } from "@/features/profile/profile";
 
 const { view } = startSession({
@@ -124,7 +131,10 @@ describe("fxForEvent", () => {
       0,
       1
     );
-    expect(summon[0]).toMatchObject({ kind: "ring", color: "#ffd56b" });
+    expect(summon[0]).toMatchObject({
+      kind: "ring",
+      color: SUMMON_RING.player,
+    });
   });
 });
 
@@ -173,7 +183,7 @@ describe("fxForEvent edge cases", () => {
     const snapshot = { ...(unit as object), owner: "enemy" } as never;
     expect(
       fxForEvent({ _tag: "UnitSummoned", unit: snapshot }, view, view, 0, 1)[0]
-    ).toMatchObject({ color: "#ff7a6b" });
+    ).toMatchObject({ color: SUMMON_RING.enemy });
   });
 });
 
@@ -805,7 +815,7 @@ describe("fxForEvent for movement (dust)", () => {
 
 const ring = (start: number): Fx => ({
   kind: "ring",
-  color: "#fff",
+  color: SCENE_WHITE,
   x: 0,
   z: 0,
   start,
@@ -1023,7 +1033,7 @@ describe("fxForEvent for a Unit that holds or comes back", () => {
     expect(
       fxForEvent({ _tag: "DebuffsRemoved", unitId }, view, view, 1, 1)
     ).toEqual([
-      { kind: "ring", color: "#fff6df", x: at?.x, z: at?.z, start: 1 },
+      { kind: "ring", color: CLEANSE_RING, x: at?.x, z: at?.z, start: 1 },
     ]);
     expect(
       fxForEvent(
@@ -1034,7 +1044,7 @@ describe("fxForEvent for a Unit that holds or comes back", () => {
         1
       )
     ).toEqual([
-      { kind: "ring", color: "#ffd75a", x: at?.x, z: at?.z, start: 1 },
+      { kind: "ring", color: RALLY_TINT, x: at?.x, z: at?.z, start: 1 },
     ]);
   });
 
@@ -1042,7 +1052,7 @@ describe("fxForEvent for a Unit that holds or comes back", () => {
     const event = { _tag: "UnitReborn", unitId, hp: 1 } as const;
     const half = eventDuration(event, 1, view) / 1000 / 2;
     expect(fxForEvent(event, view, view, 3, 1)).toEqual([
-      { kind: "ring", color: "#c4fbef", x: at?.x, z: at?.z, start: 3 },
+      { kind: "ring", color: REBORN_TINT, x: at?.x, z: at?.z, start: 3 },
       expect.objectContaining({
         kind: "particles",
         burst: "heal",
@@ -1053,7 +1063,7 @@ describe("fxForEvent for a Unit that holds or comes back", () => {
 
   it("shows a gold ring when a Unit gets a bonus Attack or Heroic", () => {
     const goldRing = [
-      { kind: "ring", color: "#ffd75a", x: at?.x, z: at?.z, start: 4 },
+      { kind: "ring", color: RALLY_TINT, x: at?.x, z: at?.z, start: 4 },
     ];
     expect(
       fxForEvent(

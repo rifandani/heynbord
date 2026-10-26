@@ -6,6 +6,7 @@ import type { BattleView } from "@/features/battle/battle-view";
 import { hasManyHeroes } from "@/features/battle/battle-view";
 import { effectColor } from "@/features/battle/cast";
 import { frontZ, HERO_FIGURE_Y, heroX } from "@/features/battle/scene/layout";
+import { RALLY_TINT } from "@/features/battle/tokens";
 
 export interface HeroPose {
   readonly x: number;
@@ -26,7 +27,7 @@ export interface HeroPose {
 }
 
 /** A Boss Rule flashes the Boss in Ready Gold (DESIGN.md). */
-const BOSS_RULE_COLOR = "#ffd75a";
+const BOSS_RULE_COLOR = RALLY_TINT;
 
 /** The angle of a Defeated Hero at the end of its fall. */
 const FALL_ANGLE = 1.25;

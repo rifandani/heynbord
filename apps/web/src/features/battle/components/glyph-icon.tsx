@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import type { Glyph } from "@/features/battle/glyphs";
 import { FILLED_GLYPHS, GLYPHS } from "@/features/battle/glyphs";
 
@@ -15,14 +17,17 @@ export const GlyphIcon = ({
   glyph,
   className,
   label,
+  style,
 }: {
   readonly glyph: Glyph;
   readonly className?: string;
   readonly label?: string;
+  readonly style?: CSSProperties;
 }) => (
   <svg
     viewBox="-54 -54 108 108"
     className={className}
+    style={style}
     role={glyphRole(label)}
     aria-label={label}
     aria-hidden={glyphHidden(label)}

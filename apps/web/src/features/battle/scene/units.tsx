@@ -79,6 +79,12 @@ import {
 } from "@/features/battle/scene/unit-pose";
 import { buildRig } from "@/features/battle/scene/unit-rig";
 import { shownAttack, summonAttack } from "@/features/battle/scene/unit-stats";
+import {
+  FALLEN_RING as FALLEN_RING_COLOR,
+  FOCUS_RING as FOCUS_RING_COLOR,
+  LOG_RING as LOG_RING_COLOR,
+  SCENE_WHITE,
+} from "@/features/battle/tokens";
 
 // Shared geometry for all Units: fewer GPU uploads.
 const FIGURE = new PlaneGeometry(0.82, 1.03);
@@ -96,7 +102,7 @@ const FOCUS_RING_HALO = new RingGeometry(0.56, 0.61, 40);
 const LOG_RING = new RingGeometry(0.54, 0.66, 48);
 const LOG_RING_EDGE = new RingGeometry(0.66, 0.71, 48);
 
-const WHITE = new Color("#ffffff");
+const WHITE = new Color(SCENE_WHITE);
 
 /** Billboard on the vertical axis (art direction 2), then lean and fall. */
 const placeFigure = (
@@ -304,7 +310,7 @@ const FocusRing = ({ owner }: { readonly owner: UnitView["owner"] }) => (
   <group rotation-x={-Math.PI / 2} position-y={0.12}>
     <mesh geometry={FOCUS_RING_HALO} renderOrder={3}>
       <meshBasicMaterial
-        color="#fff2a8"
+        color={FOCUS_RING_COLOR.halo}
         transparent
         depthWrite={false}
         toneMapped={false}
@@ -312,7 +318,7 @@ const FocusRing = ({ owner }: { readonly owner: UnitView["owner"] }) => (
     </mesh>
     <mesh geometry={FOCUS_RING_EDGE} renderOrder={3}>
       <meshBasicMaterial
-        color="#1c140e"
+        color={FOCUS_RING_COLOR.edge}
         transparent
         depthWrite={false}
         toneMapped={false}
@@ -337,7 +343,7 @@ const LogRing = () => (
   <group rotation-x={-Math.PI / 2} position-y={0.11}>
     <mesh geometry={LOG_RING} renderOrder={2}>
       <meshBasicMaterial
-        color="#fff3d1"
+        color={LOG_RING_COLOR.halo}
         transparent
         depthWrite={false}
         toneMapped={false}
@@ -345,7 +351,7 @@ const LogRing = () => (
     </mesh>
     <mesh geometry={LOG_RING_EDGE} renderOrder={2}>
       <meshBasicMaterial
-        color="#2a1d12"
+        color={LOG_RING_COLOR.edge}
         transparent
         depthWrite={false}
         toneMapped={false}
@@ -568,7 +574,7 @@ export const FallenMarks = () => {
         >
           <mesh geometry={FALLEN_RING_EDGE} renderOrder={2}>
             <meshBasicMaterial
-              color="#fff2a8"
+              color={FALLEN_RING_COLOR.halo}
               transparent
               depthWrite={false}
               toneMapped={false}
@@ -576,7 +582,7 @@ export const FallenMarks = () => {
           </mesh>
           <mesh geometry={FALLEN_RING} renderOrder={2}>
             <meshBasicMaterial
-              color="#2a1d12"
+              color={FALLEN_RING_COLOR.edge}
               transparent
               depthWrite={false}
               toneMapped={false}
@@ -586,7 +592,7 @@ export const FallenMarks = () => {
             <group key={angle} rotation-z={angle}>
               <mesh geometry={FALLEN_BAR_EDGE} renderOrder={2}>
                 <meshBasicMaterial
-                  color="#fff2a8"
+                  color={FALLEN_RING_COLOR.halo}
                   transparent
                   depthWrite={false}
                   toneMapped={false}
@@ -594,7 +600,7 @@ export const FallenMarks = () => {
               </mesh>
               <mesh geometry={FALLEN_BAR} renderOrder={2}>
                 <meshBasicMaterial
-                  color="#2a1d12"
+                  color={FALLEN_RING_COLOR.edge}
                   transparent
                   depthWrite={false}
                   toneMapped={false}

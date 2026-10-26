@@ -3,11 +3,17 @@ import { BattleEvent as Event, LANE_LENGTH } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
 import {
+  CAST_COLOR,
+  DAMAGE_COLORS,
+  FX_ANCHORS,
+} from "@/core/components/game/tokens";
+import {
   castSquares,
   currentCast,
   effectColor,
   targetPreview,
 } from "@/features/battle/cast";
+import { BULWARK_COLOR, RALLY_TINT } from "@/features/battle/tokens";
 
 const SQUARE: Target = { _tag: "Square", lane: 1, position: 4 };
 
@@ -202,7 +208,7 @@ describe("targetPreview", () => {
         { lane: 2, position: 3 },
         { lane: 2, position: 4 },
       ],
-      color: "#ff6a33",
+      color: DAMAGE_COLORS.fire,
     });
     expect(targetPreview("mage.arcLightning", corner, 3)?.squares).toHaveLength(
       3
@@ -216,19 +222,21 @@ describe("effectColor", () => {
   it("uses the Damage Type color, Bulwark blue, or the neutral cast color", () => {
     expect(
       effectColor({ type: "damageUnit", amount: 2, damageType: "frost" })
-    ).toBe("#8fd8ff");
+    ).toBe(DAMAGE_COLORS.frost);
     expect(effectColor({ type: "laneBulwark", bulwark: 1, turns: 2 })).toBe(
-      "#9cc8ff"
+      BULWARK_COLOR
     );
     expect(effectColor({ type: "lowerCountdown", cards: 2, amount: 1 })).toBe(
-      "#fff6df"
+      CAST_COLOR
     );
   });
 
   it("uses the war gold for a Warrior bonus and the extra action, and rose for Exposed", () => {
-    expect(effectColor({ type: "laneAttack", attack: 3 })).toBe("#ffd75a");
-    expect(effectColor({ type: "laneExtraAction" })).toBe("#ffd75a");
-    expect(effectColor({ type: "exposeUnit", exposed: 2 })).toBe("#ff6fa0");
+    expect(effectColor({ type: "laneAttack", attack: 3 })).toBe(RALLY_TINT);
+    expect(effectColor({ type: "laneExtraAction" })).toBe(RALLY_TINT);
+    expect(effectColor({ type: "exposeUnit", exposed: 2 })).toBe(
+      FX_ANCHORS.iconExposed
+    );
   });
 
   it("gives the second-part damage cards the color of their Damage Type", () => {
@@ -250,7 +258,7 @@ describe("effectColor", () => {
         heroAmount: 4,
         damageType: "frost",
       })
-    ).toBe("#8fd8ff");
+    ).toBe(DAMAGE_COLORS.frost);
     expect(
       effectColor({
         type: "damagePoison",
@@ -273,17 +281,19 @@ describe("effectColor", () => {
   });
 
   it("gives the Priest cards the Holy gold", () => {
-    expect(effectColor({ type: "healUnit", heal: 6 })).toBe("#ffd75a");
-    expect(effectColor({ type: "healLane", heal: 8 })).toBe("#ffd75a");
+    expect(effectColor({ type: "healUnit", heal: 6 })).toBe(DAMAGE_COLORS.holy);
+    expect(effectColor({ type: "healLane", heal: 8 })).toBe(DAMAGE_COLORS.holy);
     expect(effectColor({ type: "damageByAttack", damageType: "holy" })).toBe(
-      "#ffd75a"
+      DAMAGE_COLORS.holy
     );
-    expect(effectColor({ type: "wardUnit", ward: 5 })).toBe("#ffd75a");
-    expect(effectColor({ type: "wardLane", ward: 6 })).toBe("#ffd75a");
-    expect(effectColor({ type: "steadfastUnit" })).toBe("#ffd75a");
-    expect(effectColor({ type: "cleanseUnit", heal: 6 })).toBe("#ffd75a");
+    expect(effectColor({ type: "wardUnit", ward: 5 })).toBe(DAMAGE_COLORS.holy);
+    expect(effectColor({ type: "wardLane", ward: 6 })).toBe(DAMAGE_COLORS.holy);
+    expect(effectColor({ type: "steadfastUnit" })).toBe(DAMAGE_COLORS.holy);
+    expect(effectColor({ type: "cleanseUnit", heal: 6 })).toBe(
+      DAMAGE_COLORS.holy
+    );
     expect(
       effectColor({ type: "damageUnit", amount: 3, damageType: "holy" })
-    ).toBe("#ffd75a");
+    ).toBe(DAMAGE_COLORS.holy);
   });
 });

@@ -40,10 +40,10 @@ const SettleChip = ({ recalled }: { readonly recalled: boolean }) => {
   return (
     <span
       className={cn(
-        "absolute inset-x-0 bottom-[2.4em] mx-auto w-max max-w-[11rem] animate-[cast-chip_160ms_ease-out_both] rounded border-2 px-1.5 py-0.5 text-center text-xs leading-tight font-bold shadow-[0_3px_0_rgba(0,0,0,0.45)] motion-reduce:animate-none",
+        "shadow-piece absolute inset-x-0 bottom-[2.4em] mx-auto w-max max-w-[11rem] animate-[cast-chip_160ms_ease-out_both] rounded border-2 px-1.5 py-0.5 text-center text-xs leading-tight font-bold motion-reduce:animate-none",
         recalled
-          ? "border-[#7a5310] bg-[#ffd75a] text-[#2a1a05]"
-          : "border-[#e8d9bb]/40 bg-[#1c140e] text-[#fff6df]"
+          ? "border-gold-deep bg-ready-gold text-ink-on-gold"
+          : "border-cream-dim/40 bg-night-plate text-cream"
       )}
     >
       {recalled ? tr("battle.cast.recalled") : tr("battle.graveyard")}
@@ -136,7 +136,7 @@ const CastPiece = ({
       </div>
       <p
         className={cn(
-          "font-display mt-2 max-w-[11rem] rounded-lg border-2 bg-[#1c140e]/90 px-2.5 py-1 text-center text-sm leading-tight font-bold text-balance text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:py-0.5",
+          "font-display bg-night-plate/90 text-cream shadow-piece mt-2 max-w-[11rem] rounded-lg border-2 px-2.5 py-1 text-center text-sm leading-tight font-bold text-balance [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:py-0.5",
           revealMs > 0 &&
             "animate-[cast-plate_var(--reveal-ms)_ease-out_both] motion-reduce:animate-[cast-fade-in_var(--reveal-ms)_linear_both]"
         )}

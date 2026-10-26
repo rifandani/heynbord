@@ -262,7 +262,7 @@ const BoardLayer = ({
     <Suspense
       fallback={
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="font-display rounded-xl bg-[#1c140e]/85 px-6 py-3 text-xl">
+          <p className="font-display bg-night-plate/85 rounded-xl px-6 py-3 text-xl">
             {tr("battle.loading")}
           </p>
         </div>
@@ -291,7 +291,7 @@ export const BattleStage = ({ battle }: { readonly battle: Battle }) => {
   useBattleHints(battle.liveSession);
   return (
     <div
-      className="fixed inset-0 overflow-hidden overscroll-none text-[#fff6df]"
+      className="text-cream fixed inset-0 overflow-hidden overscroll-none"
       data-testid="battle-stage"
     >
       {/*
@@ -313,7 +313,7 @@ export const BattleStage = ({ battle }: { readonly battle: Battle }) => {
       {webgl2 ? null : (
         <div
           role="alert"
-          className="absolute inset-0 flex items-center justify-center bg-[#1c140e] p-8 text-center text-lg"
+          className="bg-night-plate absolute inset-0 flex items-center justify-center p-8 text-center text-lg"
         >
           {tr("battle.noWebgl")}
         </div>

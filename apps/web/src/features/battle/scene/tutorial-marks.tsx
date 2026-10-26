@@ -18,12 +18,8 @@ import {
   tutorialSpots,
 } from "@/features/battle/scene/tutorial-spots";
 import { unitPicker } from "@/features/battle/scene/unit-picker";
+import { BLOCK_COLOR, TUTORIAL_COLOR } from "@/features/battle/tokens";
 import { boxAround } from "@/features/battle/tutorial-placement";
-
-/** The Tutorial color: it is not a side color, and not the gold of the target markers. */
-const TUTORIAL_COLOR = "#7fe3ff";
-/** Step 4 tells the Player about an enemy Unit, so its highlight is red. */
-const BLOCK_COLOR = "#ff5a3c";
 
 /**
  * Tutorial arrows and highlights on the Board (GDD 8.3): the Step 2 arrow and

@@ -39,6 +39,44 @@ import {
 import type { FxCell, FxSlotName } from "@/features/battle/scene/fx-atlas";
 import type { StatusBadge } from "@/features/battle/scene/status-visuals";
 import { statTone } from "@/features/battle/scene/unit-stats";
+import {
+  FX_FLAME_END,
+  FX_FLAME_TOP,
+  FX_FROST_WHITE,
+  FX_SHIELD_STEEL,
+  FX_WHITE,
+  TEXTURE_BAND,
+  TEXTURE_BAND_END,
+  TEXTURE_CREAM,
+  TEXTURE_CREAM_DIM,
+  TEXTURE_DROP,
+  TEXTURE_DROP_END,
+  TEXTURE_FIRE_ASH,
+  TEXTURE_GLOW,
+  TEXTURE_GLOW_END,
+  TEXTURE_GLOW_SOFT,
+  TEXTURE_HIGHLIGHT,
+  TEXTURE_HIGHLIGHT_STRONG,
+  TEXTURE_HOLY_FILL,
+  TEXTURE_HOLY_FILL_EDGE,
+  TEXTURE_INK,
+  TEXTURE_INK_DEEP,
+  TEXTURE_INK_DEEPER,
+  TEXTURE_INK_FILL,
+  TEXTURE_INK_LIGHT,
+  TEXTURE_INK_SHADE,
+  TEXTURE_INK_SHADOW,
+  TEXTURE_INK_SOFT,
+  TEXTURE_LIGHT,
+  TEXTURE_LIGHT_END,
+  TEXTURE_MASK,
+  TEXTURE_PALE,
+  TEXTURE_PLATE,
+  TEXTURE_PLATE_SHADE,
+  TEXTURE_RIM,
+  TEXTURE_SNOW,
+  textureGlow,
+} from "@/features/battle/tokens";
 import { heroPortraitArt } from "@/features/hero/hero-portrait-art";
 
 /**
@@ -77,7 +115,7 @@ const FONT = "Inter, ui-sans-serif, system-ui, sans-serif";
 const drawGlyph = (context: CanvasRenderingContext2D, glyph: Glyph): void => {
   const path = new Path2D(GLYPHS[glyph]);
   if (FILLED_GLYPHS.has(glyph)) {
-    context.fillStyle = "#fff6df";
+    context.fillStyle = TEXTURE_CREAM;
     // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
     context.fill(path, "evenodd");
     return;
@@ -85,13 +123,13 @@ const drawGlyph = (context: CanvasRenderingContext2D, glyph: Glyph): void => {
   context.lineJoin = "round";
   context.lineCap = "round";
   context.lineWidth = 14;
-  context.strokeStyle = "rgba(20, 14, 10, 0.85)";
+  context.strokeStyle = TEXTURE_INK;
   context.stroke(path);
-  context.fillStyle = "#fff6df";
+  context.fillStyle = TEXTURE_CREAM;
   // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
   context.fill(path, "evenodd");
   context.lineWidth = 6;
-  context.strokeStyle = "#fff6df";
+  context.strokeStyle = TEXTURE_CREAM;
   context.stroke(path);
 };
 
@@ -135,7 +173,7 @@ const drawPips = (
     context.fillStyle = RANK_COLORS[rank];
     context.fill();
     context.lineWidth = 3;
-    context.strokeStyle = "rgba(20, 14, 10, 0.8)";
+    context.strokeStyle = TEXTURE_INK_SOFT;
     context.stroke();
   }
 };
@@ -179,15 +217,15 @@ export const unitFigureTexture = (
     context.fill(standee);
     // Soft light from the upper left (art direction 5.4).
     const light = context.createRadialGradient(70, 60, 10, 70, 60, 200);
-    light.addColorStop(0, "rgba(255, 250, 230, 0.45)");
-    light.addColorStop(1, "rgba(255, 250, 230, 0)");
+    light.addColorStop(0, TEXTURE_LIGHT);
+    light.addColorStop(1, TEXTURE_LIGHT_END);
     context.fillStyle = light;
     context.fill(standee);
     context.lineWidth = 14;
     context.strokeStyle = colors.second;
     context.stroke(standee);
     context.lineWidth = 4;
-    context.strokeStyle = "rgba(20, 14, 10, 0.7)";
+    context.strokeStyle = TEXTURE_INK_LIGHT;
     context.stroke(standeePath(256, 320, 3));
     context.save();
     context.translate(128, 132);
@@ -272,7 +310,7 @@ export const heroFigureTexture = (
     context.fillStyle = gradient;
     context.fill(standee);
     context.lineWidth = 18;
-    context.strokeStyle = "#e9c46a";
+    context.strokeStyle = TEXTURE_RIM;
     context.stroke(standee);
     context.save();
     context.translate(160, 190);
@@ -324,10 +362,10 @@ const loadHeroPortrait = async (
     );
     context.restore();
     context.lineWidth = 18;
-    context.strokeStyle = "#e9c46a";
+    context.strokeStyle = TEXTURE_RIM;
     context.stroke(standee);
     context.lineWidth = 4;
-    context.strokeStyle = "rgba(20, 14, 10, 0.7)";
+    context.strokeStyle = TEXTURE_INK_LIGHT;
     context.stroke(standeePath(320, 448, 3));
   });
 };
@@ -365,7 +403,7 @@ const drawStatPart = (
   width: number
 ) => {
   const center = x + width / 2;
-  context.strokeStyle = "rgba(15, 10, 8, 0.92)";
+  context.strokeStyle = TEXTURE_INK_DEEP;
   context.strokeText(text, center, STAT_HEIGHT / 2);
   context.fillStyle = color;
   context.fillText(text, center, STAT_HEIGHT / 2);
@@ -434,7 +472,7 @@ export const numberTexture = (options: {
         options.damageType === "heal"
           ? HEAL_COLOR
           : options.damageType === "block"
-            ? "#d7dde5"
+            ? FX_SHIELD_STEEL
             : options.damageType === "ward"
               ? WARD_COLOR
               : DAMAGE_COLORS[options.damageType];
@@ -443,7 +481,7 @@ export const numberTexture = (options: {
       context.textBaseline = "middle";
       context.lineWidth = 12;
       context.lineJoin = "round";
-      context.strokeStyle = "rgba(15, 10, 8, 0.9)";
+      context.strokeStyle = TEXTURE_INK_DEEPER;
       context.strokeText(options.text, 96, 50);
       context.fillStyle = color;
       context.fillText(options.text, 96, 50);
@@ -454,8 +492,8 @@ export const numberTexture = (options: {
 export const blobShadowTexture = (): CanvasTexture =>
   cached("shadow", 128, 128, (context) => {
     const gradient = context.createRadialGradient(64, 64, 4, 64, 64, 62);
-    gradient.addColorStop(0, "rgba(0, 0, 0, 0.55)");
-    gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+    gradient.addColorStop(0, TEXTURE_DROP);
+    gradient.addColorStop(1, TEXTURE_DROP_END);
     context.fillStyle = gradient;
     context.fillRect(0, 0, 128, 128);
   });
@@ -469,21 +507,21 @@ export const castTileTexture = (): CanvasTexture =>
   cached("cast-tile", 128, 128, (context) => {
     // The Unit on the Square hides the middle, so the light is at the edges.
     const inner = context.createRadialGradient(64, 64, 10, 64, 64, 70);
-    inner.addColorStop(0, "rgba(255, 255, 255, 0.35)");
-    inner.addColorStop(1, "rgba(255, 255, 255, 0.75)");
+    inner.addColorStop(0, TEXTURE_HIGHLIGHT);
+    inner.addColorStop(1, TEXTURE_HIGHLIGHT_STRONG);
     context.fillStyle = inner;
     context.beginPath();
     context.roundRect(10, 10, 108, 108, 18);
     context.fill();
-    context.shadowColor = "rgba(255, 255, 255, 1)";
+    context.shadowColor = TEXTURE_GLOW;
     context.shadowBlur = 10;
     context.lineWidth = 7;
-    context.strokeStyle = "rgba(255, 255, 255, 1)";
+    context.strokeStyle = TEXTURE_GLOW;
     context.stroke();
     // A fine inner line, as a rune border.
     context.shadowBlur = 0;
     context.lineWidth = 2;
-    context.strokeStyle = "rgba(255, 255, 255, 0.8)";
+    context.strokeStyle = TEXTURE_GLOW_SOFT;
     context.beginPath();
     context.roundRect(24, 24, 80, 80, 10);
     context.stroke();
@@ -496,17 +534,17 @@ export const castTileTexture = (): CanvasTexture =>
 export const closedLaneTexture = (): CanvasTexture =>
   cached("closed-lane", 256, 64, (context) => {
     const along = context.createLinearGradient(0, 0, 256, 0);
-    along.addColorStop(0, "rgba(28, 20, 14, 0)");
-    along.addColorStop(0.08, "rgba(28, 20, 14, 0.38)");
-    along.addColorStop(0.92, "rgba(28, 20, 14, 0.38)");
-    along.addColorStop(1, "rgba(28, 20, 14, 0)");
+    along.addColorStop(0, TEXTURE_BAND_END);
+    along.addColorStop(0.08, TEXTURE_BAND);
+    along.addColorStop(0.92, TEXTURE_BAND);
+    along.addColorStop(1, TEXTURE_BAND_END);
     context.fillStyle = along;
     context.fillRect(0, 0, 256, 64);
     const across = context.createLinearGradient(0, 0, 0, 64);
-    across.addColorStop(0, "rgba(0, 0, 0, 0)");
-    across.addColorStop(0.25, "rgba(0, 0, 0, 1)");
-    across.addColorStop(0.75, "rgba(0, 0, 0, 1)");
-    across.addColorStop(1, "rgba(0, 0, 0, 0)");
+    across.addColorStop(0, TEXTURE_DROP_END);
+    across.addColorStop(0.25, TEXTURE_MASK);
+    across.addColorStop(0.75, TEXTURE_MASK);
+    across.addColorStop(1, TEXTURE_DROP_END);
     context.globalCompositeOperation = "destination-in";
     context.fillStyle = across;
     context.fillRect(0, 0, 256, 64);
@@ -557,10 +595,10 @@ const featherMask = (
   length: number
 ) => {
   const edge = RUNNER_FEATHER_PX / length;
-  gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-  gradient.addColorStop(edge, "rgba(0, 0, 0, 1)");
-  gradient.addColorStop(1 - edge, "rgba(0, 0, 0, 1)");
-  gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+  gradient.addColorStop(0, TEXTURE_DROP_END);
+  gradient.addColorStop(edge, TEXTURE_MASK);
+  gradient.addColorStop(1 - edge, TEXTURE_MASK);
+  gradient.addColorStop(1, TEXTURE_DROP_END);
   context.globalCompositeOperation = "destination-in";
   context.fillStyle = gradient;
   context.fillRect(0, 0, context.canvas.width, context.canvas.height);
@@ -616,10 +654,10 @@ const drawLaneRunner = (
   );
   // The contact shade: the runner lies on the ground of the Battle Painting.
   context.save();
-  context.shadowColor = "rgba(18, 12, 6, 0.55)";
+  context.shadowColor = TEXTURE_INK_SHADOW;
   context.shadowBlur = 10;
   context.shadowOffsetY = 3;
-  context.fillStyle = "rgba(18, 12, 6, 0.35)";
+  context.fillStyle = TEXTURE_INK_SHADE;
   context.fillRect(
     RUNNER_MARGIN_PX + RUNNER_FEATHER_PX,
     RUNNER_MARGIN_PX + RUNNER_FEATHER_PX,
@@ -665,7 +703,7 @@ type FxDraw = (
 ) => void;
 
 /** An outline for the `alpha` images. The `additive` images are light only. */
-const OUTLINE = "rgba(20, 14, 10, 0.85)";
+const OUTLINE = TEXTURE_INK;
 
 const softDot =
   (color: string, core = 0.15): FxDraw =>
@@ -680,7 +718,7 @@ const softDot =
       radius
     );
     gradient.addColorStop(0, color);
-    gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+    gradient.addColorStop(1, TEXTURE_DROP_END);
     context.fillStyle = gradient;
     context.fillRect(0, 0, width, height);
   };
@@ -787,7 +825,7 @@ const drawSlash: FxDraw = (context, width) => {
     [width / 18, 1],
   ] as const) {
     context.lineWidth = line;
-    context.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+    context.strokeStyle = textureGlow(alpha);
     context.beginPath();
     context.arc(width / 2, width / 2, width * 0.34, -2.4, 0.4);
     context.stroke();
@@ -796,8 +834,8 @@ const drawSlash: FxDraw = (context, width) => {
 
 const drawRuneRing: FxDraw = (context, width) => {
   const center = width / 2;
-  context.strokeStyle = "#ffffff";
-  context.shadowColor = "#ffffff";
+  context.strokeStyle = FX_WHITE;
+  context.shadowColor = FX_WHITE;
   context.shadowBlur = width / 32;
   for (const radius of [0.4, 0.3]) {
     context.lineWidth = width / 64;
@@ -826,9 +864,9 @@ const drawRuneRing: FxDraw = (context, width) => {
 const drawFlame: FxDraw = (context, width, height) => {
   const path = dropPath(width, height);
   const gradient = context.createLinearGradient(0, height, 0, 0);
-  gradient.addColorStop(0, "#fff1b0");
+  gradient.addColorStop(0, FX_FLAME_TOP);
   gradient.addColorStop(0.45, FX_ANCHORS.fire);
-  gradient.addColorStop(1, "rgba(255, 70, 20, 0)");
+  gradient.addColorStop(1, FX_FLAME_END);
   context.shadowColor = FX_ANCHORS.fire;
   context.shadowBlur = width / 16;
   context.fillStyle = gradient;
@@ -928,7 +966,7 @@ const drawBubble: FxDraw = (context, width) => {
   const path = new Path2D();
   path.arc(width / 2, width / 2, width * 0.3, 0, Math.PI * 2);
   outlined(context, path, FX_ANCHORS.poison, width / 24);
-  context.fillStyle = "rgba(255, 255, 240, 0.8)";
+  context.fillStyle = TEXTURE_PALE;
   context.beginPath();
   context.arc(width * 0.42, width * 0.4, width * 0.07, 0, Math.PI * 2);
   context.fill();
@@ -939,9 +977,9 @@ const drawDrip: FxDraw = (context, width, height) => {
 };
 
 const drawHeal: FxDraw = (context, width) => {
-  context.shadowColor = "#ffffff";
+  context.shadowColor = FX_WHITE;
   context.shadowBlur = width / 10;
-  context.fillStyle = "#ffffff";
+  context.fillStyle = FX_WHITE;
   const arm = width * 0.12;
   context.fillRect(width / 2 - arm, width * 0.2, arm * 2, width * 0.6);
   context.fillRect(width * 0.2, width / 2 - arm, width * 0.6, arm * 2);
@@ -961,8 +999,8 @@ const drawDome: FxDraw = (context, width) => {
     base,
     radius
   );
-  fill.addColorStop(0, "rgba(255, 215, 90, 0.08)");
-  fill.addColorStop(1, "rgba(255, 215, 90, 0.45)");
+  fill.addColorStop(0, TEXTURE_HOLY_FILL);
+  fill.addColorStop(1, TEXTURE_HOLY_FILL_EDGE);
   context.fillStyle = fill;
   context.beginPath();
   context.arc(width / 2, base, radius, Math.PI, 0);
@@ -1026,7 +1064,7 @@ const groundPatch =
     );
     patch.addColorStop(0, ground);
     patch.addColorStop(0.7, ground);
-    patch.addColorStop(1, "rgba(0, 0, 0, 0)");
+    patch.addColorStop(1, TEXTURE_DROP_END);
     context.fillStyle = patch;
     context.fillRect(0, 0, width, width);
     context.fillStyle = color;
@@ -1047,8 +1085,8 @@ const groundPatch =
 
 /** A jagged lightning bolt from the top to the bottom, with one fork. */
 const drawBolt: FxDraw = (context, width) => {
-  context.strokeStyle = "#ffffff";
-  context.shadowColor = "#ffffff";
+  context.strokeStyle = FX_WHITE;
+  context.shadowColor = FX_WHITE;
   context.shadowBlur = width / 14;
   context.lineCap = "round";
   context.lineJoin = "round";
@@ -1084,8 +1122,8 @@ const drawTrail: FxDraw = (context, width, height) => {
     width * (15 / 16),
     0
   );
-  along.addColorStop(0, "rgba(255, 255, 255, 0)");
-  along.addColorStop(1, "rgba(255, 255, 255, 1)");
+  along.addColorStop(0, TEXTURE_GLOW_END);
+  along.addColorStop(1, TEXTURE_GLOW);
   context.fillStyle = along;
   context.beginPath();
   context.ellipse(
@@ -1112,7 +1150,7 @@ const drawBleedIcon: FxDraw = (context, width) => {
   context.lineTo(width * 0.78, width * 0.5);
   context.stroke();
   context.lineWidth = width / 18;
-  context.strokeStyle = "#e9eef2";
+  context.strokeStyle = FX_FROST_WHITE;
   context.stroke();
   context.translate(width * 0.2, width * 0.12);
   outlined(
@@ -1124,8 +1162,8 @@ const drawBleedIcon: FxDraw = (context, width) => {
 };
 
 const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
-  glow: softDot("rgba(255, 255, 255, 1)", 0),
-  burst: glowStar("#ffffff", 10, 0.35),
+  glow: softDot(TEXTURE_GLOW, 0),
+  burst: glowStar(FX_WHITE, 10, 0.35),
   slash: drawSlash,
   flare: glowStar(FX_ANCHORS.holy, 8, 0.2),
   "rune-ring": drawRuneRing,
@@ -1133,7 +1171,7 @@ const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
   vine: drawVine,
   chain: drawChain,
   shield: drawShield,
-  spark: glowStar("#ffffff", 4, 0.25),
+  spark: glowStar(FX_WHITE, 4, 0.25),
   ember: softDot(FX_ANCHORS.fire, 0.2),
   "frost-shard": drawShard,
   "frost-mote": drawMote,
@@ -1155,8 +1193,8 @@ const FX_PLACEHOLDERS: Readonly<Record<FxSlotName, FxDraw>> = {
   "icon-grounded": glyphIcon("grounded", FX_ANCHORS.iconGrounded),
   ward: drawDome,
   steadfast: drawSeal,
-  "field-fire": groundPatch("rgba(40, 22, 14, 0.85)", FX_ANCHORS.fire),
-  "field-snow": groundPatch("rgba(240, 248, 255, 0.9)", FX_ANCHORS.frost),
+  "field-fire": groundPatch(TEXTURE_FIRE_ASH, FX_ANCHORS.fire),
+  "field-snow": groundPatch(TEXTURE_SNOW, FX_ANCHORS.frost),
   bolt: drawBolt,
 };
 
@@ -1208,7 +1246,7 @@ const drawBadgeText = (
   text: string,
   x: number
 ) => {
-  context.strokeStyle = "rgba(15, 10, 8, 0.92)";
+  context.strokeStyle = TEXTURE_INK_DEEP;
   context.strokeText(text, x, BADGE_HEIGHT / 2 + 4);
   context.fillStyle = STAT_PIPE;
   context.fillText(text, x, BADGE_HEIGHT / 2 + 4);
@@ -1253,7 +1291,7 @@ export const statusBadgeTexture = (options: {
       let x = (BADGE_WIDTH - total) / 2;
       for (const [index, badge] of options.badges.entries()) {
         const center = x + PLATE_RADIUS;
-        context.fillStyle = "rgba(20, 14, 10, 0.82)";
+        context.fillStyle = TEXTURE_INK_FILL;
         context.beginPath();
         context.arc(center, BADGE_HEIGHT / 2, PLATE_RADIUS, 0, Math.PI * 2);
         context.fill();
@@ -1262,7 +1300,7 @@ export const statusBadgeTexture = (options: {
           context.strokeStyle = WARD_COLOR;
         } else {
           context.lineWidth = 4;
-          context.strokeStyle = "rgba(255, 246, 223, 0.35)";
+          context.strokeStyle = TEXTURE_CREAM_DIM;
         }
         context.stroke();
         context.lineWidth = 12;
@@ -1346,11 +1384,11 @@ export const keywordPlateTexture = (options: {
       // The hard shadow of the Night Plate chips of the HUD.
       context.save();
       context.translate(0, 5);
-      context.fillStyle = "rgba(0, 0, 0, 0.45)";
+      context.fillStyle = TEXTURE_PLATE_SHADE;
       // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
       context.fill(plate);
       context.restore();
-      context.fillStyle = "rgba(28, 20, 14, 0.92)";
+      context.fillStyle = TEXTURE_PLATE;
       // oxlint-disable-next-line unicorn/no-array-fill-with-reference-type -- this is `CanvasRenderingContext2D#fill` with a `Path2D`, not `Array#fill`
       context.fill(plate);
       context.lineWidth = KEYWORD_PLATE_BORDER;
@@ -1358,7 +1396,7 @@ export const keywordPlateTexture = (options: {
       context.stroke(plate);
       context.textAlign = "center";
       context.textBaseline = "middle";
-      context.fillStyle = "#fff6df";
+      context.fillStyle = TEXTURE_CREAM;
       context.fillText(
         options.label,
         KEYWORD_PLATE_WIDTH / 2,

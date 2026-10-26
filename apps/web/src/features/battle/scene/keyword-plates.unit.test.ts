@@ -22,6 +22,7 @@ import {
 import { laneZ, squareX } from "@/features/battle/scene/layout";
 import { keptFx, startedEvents } from "@/features/battle/scene/started-events";
 import { badgeHeight } from "@/features/battle/scene/unit-models";
+import { SCENE_WHITE } from "@/features/battle/tokens";
 import { NEW_PLAYER } from "@/features/profile/profile";
 
 const session = startSession({
@@ -257,7 +258,7 @@ describe("no plates in Skip and in the Battle Log", () => {
   it("removes the plates from the effects of the Battle Log Play", () => {
     const number: Fx = {
       kind: "ring",
-      color: "#fff",
+      color: SCENE_WHITE,
       x: 0,
       z: 0,
       start: 0,

@@ -29,6 +29,7 @@ import type { UnitClipName } from "@/features/battle/scene/unit-clips";
 import type { Pose } from "@/features/battle/scene/unit-pose";
 import { emptyPose } from "@/features/battle/scene/unit-pose";
 import { buildRig } from "@/features/battle/scene/unit-rig";
+import { HEAL_TINT, HIT_TINT, SCENE_INK } from "@/features/battle/tokens";
 
 /** The time of a full blend from one clip to the next, in seconds. */
 const BLEND_SECONDS = 0.15;
@@ -61,15 +62,15 @@ const model = () => {
   bone.name = "bone";
   const body = new SkinnedMesh(
     geometry,
-    new MeshStandardMaterial({ color: "#336699" })
+    new MeshStandardMaterial({ color: SCENE_INK })
   );
   body.name = "body";
   const scene = new Group();
   scene.add(bone, body);
   body.bind(new Skeleton([bone]));
   const prop = new Mesh(new BoxGeometry(0.5, 0.5, 0.5), [
-    new MeshBasicMaterial({ color: "#ff0000" }),
-    new MeshStandardMaterial({ color: "#00ff00" }),
+    new MeshBasicMaterial({ color: HIT_TINT }),
+    new MeshStandardMaterial({ color: HEAL_TINT }),
   ]);
   prop.name = "prop";
   prop.position.x = 1;
@@ -172,14 +173,14 @@ describe("buildRig", () => {
       throw new Error("The rig has no body or prop");
     }
     expect(body.material).toBeInstanceOf(MeshToonMaterial);
-    expect(body.material.color.getHexString()).toBe("336699");
+    expect(body.material.color.getHexString()).toBe(SCENE_INK.slice(1));
     expect(body.frustumCulled).toBe(false);
     // A material with no color of its own gets white.
     expect(
       prop.material.map((material: MeshToonMaterial) =>
         material.color.getHexString()
       )
-    ).toEqual(["ffffff", "00ff00"]);
+    ).toEqual(["ffffff", HEAL_TINT.slice(1)]);
     const ramp = body.material.gradientMap;
     expect(ramp).toBeInstanceOf(DataTexture);
     expect(ramp.format).toBe(RedFormat);
@@ -202,7 +203,7 @@ describe("buildRig", () => {
     const { outline, material } = outlineOf(rig.root);
     const body = skinned.find((mesh) => mesh !== outline);
     expect(material.side).toBe(BackSide);
-    expect(material.color.getHexString()).toBe("24170f");
+    expect(material.color.getHexString()).toBe(SCENE_INK.slice(1));
     expect(outline.geometry).toBe(body?.geometry);
     expect(outline.skeleton).toBe(body?.skeleton);
     expect(outline.frustumCulled).toBe(false);

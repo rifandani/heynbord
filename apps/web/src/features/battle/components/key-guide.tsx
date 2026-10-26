@@ -63,7 +63,7 @@ export const KeyGuide = () => {
       <GameTooltip
         placement="bottom"
         offset={8}
-        className="rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-3 py-2 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+        className="border-gold-trim/70 bg-night-plate/95 text-cream shadow-piece rounded-xl border-2 px-3 py-2"
         data-testid="key-guide"
       >
         <p className="font-display mb-1 text-sm font-bold">
@@ -76,7 +76,7 @@ export const KeyGuide = () => {
               className={cn(
                 "col-span-2 -mx-1 grid grid-cols-subgrid items-center rounded-md px-1",
                 guide?.line === action &&
-                  "bg-[#e9c46a]/25 ring-2 ring-[#e9c46a]"
+                  "bg-gold-trim/25 ring-gold-trim ring-2"
               )}
               data-testid={`key-guide-${action}`}
               data-marked={guide?.line === action || undefined}
@@ -85,7 +85,7 @@ export const KeyGuide = () => {
                 {keys.map((key) => (
                   <kbd
                     key={key}
-                    className="min-w-6 rounded border border-[#e8d9bb]/50 bg-[#3a2a1c] px-1 text-center font-sans font-semibold"
+                    className="border-cream-dim/50 bg-plate-socket min-w-6 rounded border px-1 text-center font-sans font-semibold"
                   >
                     {key}
                   </kbd>

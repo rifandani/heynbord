@@ -131,7 +131,7 @@ const StepText = ({
       ref={panel}
       aria-labelledby="tutorial-title"
       className={cn(
-        "group fade-in zoom-in-95 animate-in pointer-events-auto absolute flex w-[min(320px,38vw)] flex-col gap-2 rounded-xl border-4 border-[#5b3a1e] bg-[#f6ead0] p-3 text-[#2a1d12] shadow-2xl duration-200 motion-reduce:animate-none [@media(max-height:500px)]:w-[min(300px,40vw)] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:p-2",
+        "group fade-in zoom-in-95 animate-in border-frame-wood bg-parchment text-ink pointer-events-auto absolute flex w-[min(320px,38vw)] flex-col gap-2 rounded-xl border-4 p-3 shadow-2xl duration-200 motion-reduce:animate-none [@media(max-height:500px)]:w-[min(300px,40vw)] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:p-2",
         // With no anchor yet, the panel waits at the right of the screen.
         "top-1/2 right-[max(0.5rem,env(safe-area-inset-right))] -translate-y-1/2 data-[side]:right-auto data-[side]:translate-y-0"
       )}
@@ -141,14 +141,14 @@ const StepText = ({
       <span
         aria-hidden
         className={cn(
-          "absolute hidden size-4 rotate-45 border-[#5b3a1e] bg-[#f6ead0] group-data-[side]:block",
+          "border-frame-wood bg-parchment absolute hidden size-4 rotate-45 group-data-[side]:block",
           "group-data-[side=above]:-bottom-3 group-data-[side=above]:left-[calc(var(--pointer)-12px)] group-data-[side=above]:border-r-4 group-data-[side=above]:border-b-4",
           "group-data-[side=below]:-top-3 group-data-[side=below]:left-[calc(var(--pointer)-12px)] group-data-[side=below]:border-t-4 group-data-[side=below]:border-l-4",
           "group-data-[side=right]:top-[calc(var(--pointer)-12px)] group-data-[side=right]:-left-3 group-data-[side=right]:border-b-4 group-data-[side=right]:border-l-4",
           "group-data-[side=left]:top-[calc(var(--pointer)-12px)] group-data-[side=left]:-right-3 group-data-[side=left]:border-t-4 group-data-[side=left]:border-r-4"
         )}
       />
-      <p className="text-xs font-bold tracking-wide text-[#0e6f86] uppercase">
+      <p className="text-tutorial-teal text-xs font-bold tracking-wide uppercase">
         {tr("tutorial.label")}
       </p>
       <h2

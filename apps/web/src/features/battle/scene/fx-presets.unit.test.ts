@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
 
+import {
+  BLOCKED_HIT,
+  CAST_COLOR,
+  HEAL_COLOR,
+} from "@/core/components/game/tokens";
 import { FX_SLOTS } from "@/features/battle/scene/fx-atlas";
 import { FX_PRESETS, presetSlots } from "@/features/battle/scene/fx-presets";
 
@@ -56,17 +61,17 @@ describe("the attack and hit presets (web ADR-0008)", () => {
 
   it("shows a Blocked hit in grey, with no burst", () => {
     const blocked = FX_PRESETS["hit:blocked"];
-    expect(blocked.color).toBe("#a3a8ae");
+    expect(blocked.color).toBe(BLOCKED_HIT);
     expect(presetSlots(blocked)).not.toContain("burst");
   });
 
   it("gives the wind-up a rune ring and particles in the neutral cast color", () => {
     expect(FX_PRESETS.windup.main).toBe("rune-ring");
     expect(FX_PRESETS.windup.spray?.count).toBeGreaterThan(0);
-    expect(FX_PRESETS.windup.color).toBe("#fff6df");
+    expect(FX_PRESETS.windup.color).toBe(CAST_COLOR);
   });
 
   it("tints a heal green", () => {
-    expect(FX_PRESETS.heal.color).toBe("#7ef29a");
+    expect(FX_PRESETS.heal.color).toBe(HEAL_COLOR);
   });
 });

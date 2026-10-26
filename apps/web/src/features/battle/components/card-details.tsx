@@ -19,6 +19,7 @@ import type { ReactNode } from "react";
 import { createContext, use } from "react";
 import { Button } from "react-aria-components";
 
+import { SIDE_COLORS } from "@/core/components/game/tokens";
 import type { UnitView } from "@/features/battle/battle-view";
 import {
   cardText,
@@ -39,6 +40,11 @@ import type { Glyph } from "@/features/battle/glyphs";
 import { classGlyph, DAMAGE_GLYPH, raceGlyph } from "@/features/battle/glyphs";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { STATUS_ORDER } from "@/features/battle/scene/status-visuals";
+import {
+  DAMAGE_GLYPH_INK,
+  DROP_LIFT,
+  PARCHMENT_RULE_WARM,
+} from "@/features/battle/tokens";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { EntryId } from "@/features/handbook/handbook";
 import {
@@ -56,7 +62,7 @@ type OnEntry = ((entry: EntryId) => void) | undefined;
 
 const EntryLinks = createContext<OnEntry>(undefined);
 
-const INK_MUTED = "text-[#6b5238]";
+const INK_MUTED = "text-ink-faded";
 
 /**
  * A rules term in the Details Panel: plain text, or a link to its Handbook
@@ -76,7 +82,7 @@ const TermName = ({
     <Button
       onPress={() => onEntry(entry)}
       className={cn(
-        "decoration-keyword-rust/50 pointer-events-auto cursor-pointer rounded-sm text-left underline decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid",
+        "decoration-keyword-rust/50 data-[focus-visible]:ring-focus-cream pointer-events-auto cursor-pointer rounded-sm text-left underline decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[hovered]:decoration-solid",
         className
       )}
       data-entry={entry}
@@ -99,14 +105,21 @@ const Stat = ({
 }) => (
   <li className="flex items-center gap-1 font-semibold whitespace-nowrap">
     {glyph ? (
-      <GlyphIcon glyph={glyph} className="size-3.5 text-[#7a4c1a]" />
+      <GlyphIcon
+        glyph={glyph}
+        className="size-3.5"
+        style={{ color: DAMAGE_GLYPH_INK }}
+      />
     ) : null}
     {children}
   </li>
 );
 
 const Divider = () => (
-  <hr className="my-2 border-0 border-t border-[#c9a46a] [@media(max-height:500px)]:my-1.5" />
+  <hr
+    className="my-2 border-0 border-t [@media(max-height:500px)]:my-1.5"
+    style={{ borderColor: PARCHMENT_RULE_WARM }}
+  />
 );
 
 /**
@@ -120,9 +133,14 @@ const SideChip = ({ owner }: { readonly owner: UnitView["owner"] }) => {
       className={cn(
         "ml-auto shrink-0 rounded border-2 px-1.5 py-px text-[0.6875rem] leading-tight font-bold whitespace-nowrap",
         owner === "enemy"
-          ? "border-[#d9463b] bg-[#6b1610] text-[#fff6df]"
-          : "border-[#7a5310] bg-[#f2c14e] text-[#2a1a05]"
+          ? "border-enemy-red bg-enemy-deep text-cream"
+          : "border-gold-deep text-ink-on-gold"
       )}
+      style={
+        owner === "enemy"
+          ? undefined
+          : { backgroundColor: SIDE_COLORS.player.main }
+      }
       data-testid="unit-details-side"
     >
       {tr(owner === "enemy" ? "battle.enemy" : "battle.yours")}
@@ -173,7 +191,9 @@ const StatusLine = ({
       {isStatus(icon) ? (
         <StatusIcon status={icon} className="size-4" />
       ) : (
-        <GlyphIcon glyph={icon} className="size-3.5 text-[#7a4c1a]" />
+        <span style={{ color: DAMAGE_GLYPH_INK }}>
+          <GlyphIcon glyph={icon} className="size-3.5" />
+        </span>
       )}
     </span>
     <span>
@@ -501,14 +521,11 @@ const PanelBody = ({
  * right edge of the screen.
  */
 const rowClass = (left: boolean) =>
-  cn(
-    "pointer-events-none flex items-stretch drop-shadow-[0_10px_24px_rgba(0,0,0,0.55)]",
-    left && "flex-row-reverse"
-  );
+  cn("pointer-events-none flex items-stretch", left && "flex-row-reverse");
 
 const panelClass = (left: boolean) =>
   cn(
-    "flex w-[min(300px,53vw)] flex-col border-[3px] border-[#b47f36] bg-[#f6ead0] py-3 text-sm leading-snug text-[#2a1d12] [@media(max-height:500px)]:w-[min(276px,48vw)] [@media(max-height:500px)]:py-1.5 [@media(max-height:500px)]:text-xs [@media(max-height:500px)]:leading-tight",
+    "border-bronze bg-parchment text-ink flex w-[min(300px,53vw)] flex-col border-[3px] py-3 text-sm leading-snug [@media(max-height:500px)]:w-[min(276px,48vw)] [@media(max-height:500px)]:py-1.5 [@media(max-height:500px)]:text-xs [@media(max-height:500px)]:leading-tight",
     left
       ? "-mr-2 rounded-l-xl border-r-0 pr-5 pl-3"
       : "-ml-2 rounded-r-xl border-l-0 pr-3 pl-5"
@@ -547,7 +564,7 @@ const BlockedLine = ({
   const { tr } = useGameText();
   return blocked ? (
     <p
-      className="mb-1.5 text-xs font-semibold text-[#5b4632] italic"
+      className="text-ink-soft mb-1.5 text-xs font-semibold italic"
       data-testid="card-details-blocked"
     >
       {tr("battle.uniqueBlocked", { name })}
@@ -583,7 +600,11 @@ const DetailsRow = ({
 }) => {
   const left = panelSide === "left";
   return (
-    <section aria-live="polite" className={rowClass(left)}>
+    <section
+      aria-live="polite"
+      className={rowClass(left)}
+      style={{ filter: DROP_LIFT }}
+    >
       {/* The font size sets the size of the card: 180 × 252 px, and 108 × 151 px on a short screen. */}
       {frame}
       <div className={panelClass(left)}>
