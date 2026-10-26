@@ -61,6 +61,7 @@
         "oxlint.config.ts",
         "stryker.config.mjs",
         "scripts/security/**",
+        "apps/web/scripts/**",
         "vitest.msw-setup.ts"
       ],
       "rules": {
@@ -91,6 +92,7 @@
       "apps/web/src/**/components/**",
       "apps/web/src/features/battle/scene/**",
       "scripts/**",
+      "apps/web/scripts/**",
       "packages/*/scripts/**",
       "packages/*/src/testing/**"
     ],
