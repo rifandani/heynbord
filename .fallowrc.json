@@ -81,6 +81,7 @@
     "ignore": [
       "oxlint.config.ts",
       "**/pwa-assets.config.ts",
+      "apps/web/vite.config.ts",
       "**/routeTree.gen.ts",
       "**/*.gen.ts",
       "**/components/ui/**",
