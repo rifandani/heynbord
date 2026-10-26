@@ -1,5 +1,7 @@
 # UI contrast audit — 2026-10-25
 
+> **2026-10-26:** The application has one theme now: the Heynbord material palette. The light and dark rows below describe the scope at the audit date. The current alias pairs are in `DESIGN.md`, "Semantic Aliases", with their ratios.
+
 Requirement: [issue 133, NFR-06](https://github.com/rifandani/heynbord/issues/133).
 Criteria: [WCAG 2.2, 1.4.3](https://www.w3.org/TR/WCAG22/#contrast-minimum)
 and [1.4.11](https://www.w3.org/TR/WCAG22/#non-text-contrast).

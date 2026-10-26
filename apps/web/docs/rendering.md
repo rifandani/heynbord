@@ -14,7 +14,7 @@
 - Put server-only code in `*.server.ts`. The build fails if client code imports a `*.server.ts` file.
 - Export server functions from `*.functions.ts`. Give each one that takes input a `.validator(Schema.toStandardSchemaV1(...))`. Its handler runs an Effect with `runServerFn(contract, effect)`, and the client calls it with `contract.call(...)`. See [Effect](effect.md#server-functions) and `src/features/i18n/locale.functions.ts`.
 - Validate search params with `Schema.toStandardSchemaV1(...)` in `validateSearch`. See `src/routes/master-design.tsx`.
-- An atom that a server render reads must not need the browser. Give it a server value with `Atom.withServerValue(...)`. See `src/features/color-mode/color-mode.atoms.ts`.
+- An atom that a server render reads must not need the browser. Give it a server value with `Atom.withServerValue(...)`. See `src/features/settings/settings.atoms.ts`.
 - In a loader, use `await` only for data that the first paint must have. Return other promises without `await`, so they stream.
 - Keep the CSRF middleware in `src/start.ts` if you add more request middleware.
 

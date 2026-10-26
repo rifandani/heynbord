@@ -68,7 +68,7 @@ export default defineConfig({
         // scored 100% statements/branches/lines with no test file in existence.
         // Mutation testing is what exposed it (9.09%, ADR-0003). Excluded so the
         // coverage figure means something. Modules that mix schemas with functions
-        // (`api-error.ts`, `locale.ts`, `color-mode.ts`) stay in — their functions are tested.
+        // (`api-error.ts`, `locale.ts`) stay in — their functions are tested.
         "apps/web/src/core/libs/i18n/locales/**",
         // Framework seams (the Logic Seam convention, ADR-0001): `createServerFn`
         // transports, the server runtime that reads TanStack's request, the
