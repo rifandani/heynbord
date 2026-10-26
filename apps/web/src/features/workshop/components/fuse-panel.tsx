@@ -30,17 +30,20 @@ import {
   isSamePeek,
   useCardPeek,
 } from "@/features/deck/components/use-card-peek";
-import {
-  NewBadge,
-  RANK_LIGHT,
-  RankBurst,
-} from "@/features/packs/components/pack-reveal";
+import { NewBadge, RankBurst } from "@/features/packs/components/pack-reveal";
+import { RANK_LIGHT } from "@/features/packs/tokens";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import {
   Essence,
   panelClassName,
   rowsClassName,
 } from "@/features/workshop/components/panel-parts";
+import {
+  WORKSHOP_SLOT_DROP,
+  WORKSHOP_THUMB_BACK,
+  WORKSHOP_THUMB_DROP,
+  WORKSHOP_WELL_DROP,
+} from "@/features/workshop/tokens";
 import type { FuseState } from "@/features/workshop/workshop";
 import { ESSENCE_FLY_MS, fuseTimeline } from "@/features/workshop/workshop";
 
@@ -233,7 +236,7 @@ const FilledSlot = ({
       aria-label={tr("workshop.fusePanel.slotLabel", args)}
       className={cn(
         "group relative block cursor-pointer rounded-[0.85em] outline-none select-none",
-        "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+        "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
         "motion-safe:animate-[fuse-slot-in_260ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
       )}
       data-testid="workshop-fuse-slot"
@@ -249,7 +252,10 @@ const FilledSlot = ({
       {/* The remove mark: always there on touch, larger on hover. It stays
           inside the gap, so the next slot never covers it. */}
       <span
-        className="absolute -top-[1.1em] -right-[0.6em] z-10 flex size-[3.6em] items-center justify-center rounded-full border-[0.4em] border-[#2a1a0c] bg-[#5b3a1e] text-[#fff6df] shadow-[0_0.3em_0_rgba(0,0,0,0.45)] transition-[scale,background-color] duration-150 group-data-[hovered]:scale-110 group-data-[hovered]:bg-[#8e1f1f]"
+        className={cn(
+          "border-wood-edge bg-frame-wood text-cream group-data-[hovered]:bg-blood-banner absolute -top-[1.1em] -right-[0.6em] z-10 flex size-[3.6em] items-center justify-center rounded-full border-[0.4em] transition-[scale,background-color] duration-150 group-data-[hovered]:scale-110",
+          WORKSHOP_SLOT_DROP
+        )}
         aria-hidden
       >
         <svg viewBox="-10 -10 20 20" className="size-[1.6em]">
@@ -370,12 +376,16 @@ const PoolCard = ({
         ref={trigger}
         {...bind(target)}
         aria-label={name}
-        className="flex w-full min-w-0 cursor-default items-center gap-1.5 rounded-md p-0.5 text-left outline-none data-[focus-visible]:ring-2 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#fff6df]/8 [@media(max-height:500px)]:w-auto [@media(max-height:500px)]:p-0"
+        className="data-[focus-visible]:ring-focus-cream data-[hovered]:bg-cream/8 flex w-full min-w-0 cursor-default items-center gap-1.5 rounded-md p-0.5 text-left outline-none data-[focus-visible]:ring-2 [@media(max-height:500px)]:w-auto [@media(max-height:500px)]:p-0"
         data-testid="workshop-fuse-pool-card"
         data-card={cardId}
       >
         <span
-          className="relative h-9 w-[27px] shrink-0 overflow-hidden rounded-[4px] border-[1.5px] border-[#b47f36] bg-[#1f140b] shadow-[0_1px_0_rgba(0,0,0,0.5)] [@media(max-height:500px)]:h-7 [@media(max-height:500px)]:w-[21px]"
+          className={cn(
+            "border-bronze relative h-9 w-[27px] shrink-0 overflow-hidden rounded-[4px] border-[1.5px] [@media(max-height:500px)]:h-7 [@media(max-height:500px)]:w-[21px]",
+            WORKSHOP_THUMB_DROP
+          )}
+          style={{ backgroundColor: WORKSHOP_THUMB_BACK }}
           aria-hidden
         >
           {hasCardArt(cardId) ? (
@@ -388,7 +398,7 @@ const PoolCard = ({
               className="size-full object-cover"
             />
           ) : (
-            <span className="grid size-full place-items-center text-[#fff6df]/70">
+            <span className="text-cream/70 grid size-full place-items-center">
               <GlyphIcon
                 glyph={
                   card.kind === "creature"
@@ -401,7 +411,7 @@ const PoolCard = ({
           )}
         </span>
         <span
-          className="line-clamp-2 min-w-0 text-[11px] leading-tight font-semibold text-[#fff6df] [@media(max-height:500px)]:sr-only"
+          className="text-cream line-clamp-2 min-w-0 text-[11px] leading-tight font-semibold [@media(max-height:500px)]:sr-only"
           aria-hidden
         >
           {name}
@@ -432,11 +442,14 @@ const PoolCard = ({
 /** The emblem of a Race or a Class: its glyph on the Race color, or on bronze for a Class. */
 const GroupEmblem = ({ group }: { readonly group: FuseGroup }) => (
   <span
-    className="flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-[#e7bb6a] text-[#fff6df] shadow-[0_1px_0_rgba(0,0,0,0.5)] [@media(max-height:500px)]:size-4 [@media(max-height:500px)]:border"
+    className={cn(
+      "border-bronze-rim text-cream flex size-6 shrink-0 items-center justify-center rounded-full border-2 [@media(max-height:500px)]:size-4 [@media(max-height:500px)]:border",
+      WORKSHOP_THUMB_DROP
+    )}
     style={{
       background: isRace(group)
         ? `radial-gradient(circle at 50% 35%, ${RACE_COLORS[group].light}, ${RACE_COLORS[group].dark})`
-        : "radial-gradient(circle at 50% 35%, #7a5233, #2a1a0c)",
+        : "radial-gradient(circle at 50% 35%, var(--color-wood-light), var(--color-wood-edge))",
     }}
     aria-hidden
   >
@@ -474,7 +487,7 @@ const ChanceRow = ({
     chance.total === 0 ? 0 : Math.round((chance.shares * 100) / chance.total);
   return (
     <li
-      className="flex flex-col gap-1.5 border-t border-[#e9c46a]/20 pt-2 first:border-t-0 first:pt-0 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:pt-1"
+      className="border-gold-trim/20 flex flex-col gap-1.5 border-t pt-2 first:border-t-0 first:pt-0 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:pt-1"
       data-testid="workshop-fuse-chance"
       data-group={chance.group}
       data-shares={chance.shares}
@@ -505,14 +518,14 @@ const ChanceRow = ({
               <GroupEmblem group={chance.group} />
               <Label
                 className={cn(
-                  "font-display text-sm font-bold text-[#fff6df] [@media(max-height:500px)]:text-[11px]",
+                  "font-display text-cream text-sm font-bold [@media(max-height:500px)]:text-[11px]",
                   empty && "line-through decoration-2"
                 )}
               >
                 {group}
               </Label>
               <span
-                className="ml-auto text-xs font-black whitespace-nowrap text-[#ffe08a] tabular-nums [@media(max-height:500px)]:text-[10px]"
+                className="text-gold-light ml-auto text-xs font-black whitespace-nowrap tabular-nums [@media(max-height:500px)]:text-[10px]"
                 aria-hidden
               >
                 {empty
@@ -525,9 +538,14 @@ const ChanceRow = ({
               </span>
             </span>
             {empty ? null : (
-              <span className="relative h-2 w-full overflow-hidden rounded-full bg-[#3a2a1c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.75),0_1px_0_rgba(255,226,170,0.18)] [@media(max-height:500px)]:h-1">
+              <span
+                className={cn(
+                  "bg-plate-socket relative h-2 w-full overflow-hidden rounded-full [@media(max-height:500px)]:h-1",
+                  WORKSHOP_WELL_DROP
+                )}
+              >
                 <span
-                  className="absolute inset-0 origin-left rounded-full bg-gradient-to-r from-[#ffe08a] to-[#e2a93b] motion-safe:transition-[scale] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+                  className="from-gold-light to-gold absolute inset-0 origin-left rounded-full bg-gradient-to-r motion-safe:transition-[scale] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
                   style={{ scale: `${percentage / 100} 1` }}
                 />
               </span>
@@ -624,10 +642,10 @@ const FuseAction = ({
   if (state.kind === "locked") {
     return (
       <span
-        className="flex items-center justify-center gap-1.5 rounded-lg border-2 border-[#e9c46a]/50 bg-[#1c140e] px-3 py-2 text-sm font-bold text-[#e8d9bb] [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[11px]"
+        className="border-gold-trim/50 bg-night-plate text-cream-dim flex items-center justify-center gap-1.5 rounded-lg border-2 px-3 py-2 text-sm font-bold [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[11px]"
         data-testid="workshop-fuse-locked"
       >
-        <GlyphIcon glyph="lock" className="size-4 text-[#e9c46a]" />
+        <GlyphIcon glyph="lock" className="text-gold-trim size-4" />
         {tr("town.opensAtLevel", { level: state.level })}
       </span>
     );
@@ -659,9 +677,7 @@ const FuseAction = ({
         <p
           className={cn(
             "text-xs leading-snug font-semibold tabular-nums [@media(max-height:500px)]:text-[10px]",
-            state.kind === "pool"
-              ? "font-bold text-[#fff6df]"
-              : "text-[#e8d9bb]"
+            state.kind === "pool" ? "text-cream font-bold" : "text-cream-dim"
           )}
           data-testid="workshop-fuse-status"
           data-state={state.kind}
@@ -748,7 +764,7 @@ const FuseSlots = ({
                     mark={
                       <GlyphIcon
                         glyph="crucible"
-                        className="w-[3.4em] text-[#e9c46a] opacity-25"
+                        className="text-gold-trim w-[3.4em] opacity-25"
                       />
                     }
                   />
@@ -797,7 +813,7 @@ const FuseHeader = ({
     <div className="flex min-w-0 flex-col gap-1 self-start [grid-area:head] [@media(max-height:500px)]:gap-0.5">
       <h2
         id="workshop-fuse-title"
-        className="font-display text-lg leading-tight font-bold text-[#ffe08a] [@media(max-height:500px)]:text-sm"
+        className="font-display text-gold-light text-lg leading-tight font-bold [@media(max-height:500px)]:text-sm"
         data-testid="workshop-fuse-title"
       >
         {shown
@@ -816,7 +832,7 @@ const FuseHeader = ({
           {line}
         </p>
       ) : (
-        <p className="text-xs font-semibold whitespace-pre-line text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]">
+        <p className="text-cream-dim text-xs font-semibold whitespace-pre-line [@media(max-height:500px)]:text-[10px]">
           {tr("workshop.fusePanel.slotsGuide")}
         </p>
       )}
@@ -841,7 +857,7 @@ const FuseResultLine = ({ cardId }: { readonly cardId: string }) => {
   const card = getCard(cardId);
   return (
     <p
-      className="flex items-center gap-2 rounded-lg border-2 border-[#e9c46a]/45 bg-[#3a2a1c]/80 px-3 py-2 text-sm leading-snug font-semibold text-pretty text-[#fff6df] motion-safe:animate-[pack-name_320ms_ease-out_both] [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[10px]"
+      className="border-gold-trim/45 bg-plate-socket/80 text-cream flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm leading-snug font-semibold text-pretty motion-safe:animate-[pack-name_320ms_ease-out_both] [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[10px]"
       data-testid="workshop-fuse-discovered"
     >
       <GroupEmblem group={fuseGroup(card)} />
@@ -880,7 +896,7 @@ const FuseBody = ({
   if (chances.length === 0) {
     return (
       <p
-        className="rounded-lg border-2 border-dashed border-[#e9c46a]/30 px-3 py-2.5 text-sm leading-snug font-semibold text-pretty text-[#e8d9bb] [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[10px]"
+        className="border-gold-trim/30 text-cream-dim rounded-lg border-2 border-dashed px-3 py-2.5 text-sm leading-snug font-semibold text-pretty [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-1 [@media(max-height:500px)]:text-[10px]"
         data-testid="workshop-fuse-empty"
       >
         {tr("workshop.fusePanel.empty")}

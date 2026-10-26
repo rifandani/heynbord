@@ -1,5 +1,6 @@
 import type { Collection, DeckEntry, RankId } from "@workspace/rules";
 import { ownedCopies } from "@workspace/rules";
+import { cn } from "cn";
 import type { RefObject } from "react";
 import {
   Dialog,
@@ -11,6 +12,7 @@ import {
 
 import { RankGems } from "@/core/components/game/rank-gems";
 import { useGameText } from "@/features/battle/use-game-text";
+import { WORKSHOP_CHOOSER_DROP } from "@/features/workshop/tokens";
 
 /** A card with copies in more than one Rank that can go into a Fuse. */
 export interface FuseChoice {
@@ -55,7 +57,10 @@ export const FuseChooser = ({
       }}
       placement="bottom"
       offset={8}
-      className="fade-in zoom-in-95 animate-in min-w-[200px] rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 p-1.5 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45),0_12px_28px_rgba(0,0,0,0.5)] duration-150 motion-reduce:animate-none"
+      className={cn(
+        "fade-in zoom-in-95 animate-in border-gold-trim/70 bg-night-plate/95 text-cream min-w-[200px] rounded-xl border-2 p-1.5 duration-150 motion-reduce:animate-none",
+        WORKSHOP_CHOOSER_DROP
+      )}
       data-testid="workshop-fuse-chooser"
     >
       {choice ? (
@@ -66,7 +71,7 @@ export const FuseChooser = ({
           <Heading
             id="workshop-fuse-chooser-title"
             slot="title"
-            className="font-display px-2 pt-1 pb-1.5 text-sm font-bold text-[#ffe08a]"
+            className="font-display text-gold-light px-2 pt-1 pb-1.5 text-sm font-bold"
           >
             {tr("workshop.chooser.title")}
           </Heading>
@@ -89,7 +94,7 @@ export const FuseChooser = ({
                   rank: tr(`ranks.${rank}`),
                   name: tr(`cards.${choice.cardId}.name`),
                 })}
-                className="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-bold outline-none select-none data-[focus-visible]:ring-2 data-[focus-visible]:ring-[#fff2a8] data-[focused]:bg-[#fff6df]/10 data-[hovered]:bg-[#fff6df]/10"
+                className="data-[focus-visible]:ring-focus-cream data-[focused]:bg-cream/10 data-[hovered]:bg-cream/10 flex min-h-10 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-bold outline-none select-none data-[focus-visible]:ring-2"
                 data-testid={`workshop-fuse-choice-${rank}`}
               >
                 {/* oxlint-disable-next-line react-doctor/no-tiny-text -- the font size sets the gem size (em); the gems have no text */}
@@ -98,7 +103,7 @@ export const FuseChooser = ({
                 </span>
                 <span className="text-cream">{tr(`ranks.${rank}`)}</span>
                 <span
-                  className="ml-auto font-black text-[#fff6df] tabular-nums"
+                  className="text-cream ml-auto font-black tabular-nums"
                   aria-hidden
                 >
                   {tr("workshop.copies", {

@@ -1,5 +1,8 @@
+import { cn } from "cn";
+
 import { useGameText } from "@/features/battle/use-game-text";
 import { BossCrown } from "@/features/campaign/components/campaign-icons";
+import { TOWN_CROWN_DROP } from "@/features/town/tokens";
 import type { TownLock } from "@/features/town/town";
 
 /**
@@ -40,7 +43,7 @@ export const LockPlateText = ({ lock }: { readonly lock: TownLock }) => {
   }
   return (
     <span className="flex items-center gap-1 tabular-nums">
-      <BossCrown className="size-[1.15em] drop-shadow-[0_1px_0_rgba(0,0,0,0.5)]" />
+      <BossCrown className={cn("size-[1.15em]", TOWN_CROWN_DROP)} />
       {lock.stageId}
     </span>
   );

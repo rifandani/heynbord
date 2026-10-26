@@ -22,7 +22,6 @@ import {
 } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
-import { RANK_COLORS } from "@/core/components/game/tokens";
 import { useTimeouts } from "@/core/hooks/use-timeouts";
 import type { SoundName } from "@/features/battle/battle-audio";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
@@ -45,6 +44,14 @@ import {
   tenPackGrid,
   tenPackHighlights,
 } from "@/features/packs/packs";
+import {
+  BACK_GLOW,
+  PACK_BADGE_SHADOW,
+  PACK_LAMP,
+  PACK_REVEAL_BACKDROP,
+  PACK_TITLE_SHADOW,
+  RANK_LIGHT,
+} from "@/features/packs/tokens";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 
 /** The Pack lifts and shakes (`pack-shake`), then it tears open (`pack-tear-*`). */
@@ -61,25 +68,6 @@ const FAN_STEP_MS = 90;
  * Rank burst and the Rank chime start here.
  */
 const FACE_MS = 200;
-
-/** The light of each Rank. Legendary is a warm gold, so it reads as treasure. */
-export const RANK_LIGHT: Readonly<Record<RankId, string>> = {
-  common: "#ffe6b0",
-  uncommon: RANK_COLORS.uncommon,
-  rare: RANK_COLORS.rare,
-  epic: RANK_COLORS.epic,
-  legendary: "#ffc94a",
-};
-
-/**
- * The glow on the back of a card before its flip: Rare blue, Epic purple and
- * Legendary gold. Common and Uncommon have no glow.
- */
-const BACK_GLOW: Readonly<Partial<Record<RankId, string>>> = {
-  rare: RANK_LIGHT.rare,
-  epic: RANK_LIGHT.epic,
-  legendary: RANK_LIGHT.legendary,
-};
 
 /** The chime of a revealed card. Common and Uncommon have only the turn. */
 const RANK_CHIME: Readonly<Partial<Record<RankId, SoundName>>> = {
@@ -182,7 +170,8 @@ export const NewBadge = ({ stamp }: { readonly stamp?: number }) => {
   return (
     <span
       className={cn(
-        "absolute -top-[0.7em] left-1/2 z-20 -translate-x-1/2 rounded-[4px] border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1.5 py-px text-[max(10px,0.85em)] leading-tight font-black tracking-wide text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.45)]",
+        "border-gold-deep from-gold-light to-gold text-ink-on-gold absolute -top-[0.7em] left-1/2 z-20 -translate-x-1/2 rounded-[4px] border-2 bg-gradient-to-b px-1.5 py-px text-[max(10px,0.85em)] leading-tight font-black tracking-wide",
+        PACK_BADGE_SHADOW,
         stamp !== undefined &&
           "motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
       )}
@@ -365,7 +354,7 @@ const FlipCard = ({
         {...(flipped ? peek.bind(target) : { onPress: onFlip })}
         aria-label={label}
         className={cn(
-          "group relative isolate block h-[12.6em] w-[9em] rounded-[0.85em] outline-none [perspective:60em] data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+          "group data-[focus-visible]:ring-focus-cream relative isolate block h-[12.6em] w-[9em] rounded-[0.85em] outline-none [perspective:60em] data-[focus-visible]:ring-4",
           flipped ? "cursor-default" : "cursor-pointer",
           flipped &&
             !instant &&
@@ -437,7 +426,7 @@ const CardName = ({
       style={{ animationDelay: `${delay + 350}ms` }}
       aria-hidden
     >
-      <span className="font-display text-[max(12px,1.05em)] font-bold text-[#fff6df]">
+      <span className="font-display text-cream text-[max(12px,1.05em)] font-bold">
         {tr(`cards.${card.cardId}.name`)}
       </span>
       <span className="text-cream text-[max(10px,0.85em)] font-bold">
@@ -455,7 +444,7 @@ const GuaranteeNote = ({ pack }: { readonly pack: RevealedPack }) => {
   }
   return (
     <p
-      className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-3 py-1 text-xs font-bold text-[#fff6df]"
+      className="border-gold-trim/70 bg-night-plate/90 text-cream rounded-lg border-2 px-3 py-1 text-xs font-bold"
       data-testid="guarantee-note"
     >
       {tr(
@@ -718,7 +707,7 @@ const Highlight = ({
   return (
     <>
       <p
-        className="text-sm font-bold text-[#e8d9bb]"
+        className="text-cream-dim text-sm font-bold"
         data-testid="highlight-count"
       >
         {tr(
@@ -800,7 +789,7 @@ const GridPlace = ({
         ref={trigger}
         {...peek.bind(target)}
         aria-label={words(card, card.copies)}
-        className="relative block cursor-default rounded-[0.85em] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+        className="data-[focus-visible]:ring-focus-cream relative block cursor-default rounded-[0.85em] outline-none data-[focus-visible]:ring-4"
       >
         <CardFrame
           cardId={card.cardId}
@@ -809,7 +798,12 @@ const GridPlace = ({
         />
         {card.isNew ? <NewBadge /> : null}
         {card.copies > 1 ? (
-          <span className="absolute -right-[0.4em] -bottom-[0.4em] z-20 flex h-[2em] min-w-[2.4em] items-center justify-center rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e] px-[0.4em] text-[max(10px,1.1em)] leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.45)]">
+          <span
+            className={cn(
+              "border-gold-trim/70 bg-night-plate text-cream absolute -right-[0.4em] -bottom-[0.4em] z-20 flex h-[2em] min-w-[2.4em] items-center justify-center rounded-lg border-2 px-[0.4em] text-[max(10px,1.1em)] leading-none font-black tabular-nums",
+              PACK_BADGE_SHADOW
+            )}
+          >
             {tr("packs.reveal.copies", { count: card.copies })}
           </span>
         ) : null}
@@ -839,7 +833,7 @@ const Grid = ({
   const cards = packs.flatMap((pack) => pack.cards);
   return (
     <>
-      <p className="text-sm font-bold text-[#e8d9bb]">
+      <p className="text-cream-dim text-sm font-bold">
         {tr("packs.reveal.summary", {
           cards: cards.length,
           fresh: newCardCount(packs),
@@ -972,21 +966,26 @@ export const PackReveal = ({
           onClose();
         }
       }}
-      className="motion-safe:animate-in motion-safe:fade-in fixed inset-0 z-[60] bg-[radial-gradient(ellipse_70%_60%_at_50%_42%,rgba(36,22,14,0.8),rgba(20,12,8,0.9)_60%,rgba(12,8,5,0.96))] backdrop-blur-[6px] motion-safe:duration-300"
+      className="motion-safe:animate-in motion-safe:fade-in fixed inset-0 z-[60] backdrop-blur-[6px] motion-safe:duration-300"
+      style={{ background: PACK_REVEAL_BACKDROP }}
     >
       <Modal className="relative size-full">
         {/* The light of the lamp over the counter. */}
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-[85%] bg-[radial-gradient(ellipse_34%_100%_at_50%_0%,rgba(255,206,140,0.2),rgba(255,190,110,0.06)_55%,transparent_80%)] opacity-85 motion-safe:animate-[shop-lamp_5.5s_ease-in-out_infinite]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[85%] opacity-85 motion-safe:animate-[shop-lamp_5.5s_ease-in-out_infinite]"
+          style={{ background: PACK_LAMP }}
           aria-hidden
         />
         <Dialog
           aria-label={tr("packs.reveal.label", { pack: name })}
-          className="relative flex size-full flex-col items-center justify-center gap-4 p-4 text-[#fff6df] outline-none [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:p-2"
+          className="text-cream relative flex size-full flex-col items-center justify-center gap-4 p-4 outline-none [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:p-2"
           data-testid="pack-reveal"
           data-phase={phase.kind}
         >
-          <h2 className="font-display text-2xl font-black text-[#ffe08a] [text-shadow:0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:text-lg">
+          <h2
+            className="font-display text-gold-light text-2xl font-black [@media(max-height:500px)]:text-lg"
+            style={{ textShadow: PACK_TITLE_SHADOW }}
+          >
             {ten
               ? tr("packs.reveal.tenTitle", { pack: name, count: packs.length })
               : name}

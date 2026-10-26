@@ -56,6 +56,14 @@ import {
   SHEET_PATH_MOTION,
   SHEET_SCRIM_MOTION,
 } from "@/features/town/sheet-motion";
+import {
+  TOWN_DIALOG_DROP,
+  TOWN_DIALOG_ICON_DROP,
+  TOWN_GROOVE_WELL,
+  TOWN_KNOB,
+  TOWN_SLIDER_FILL,
+  TOWN_SWITCH_WELL,
+} from "@/features/town/tokens";
 import { shortcutImage } from "@/features/town/town";
 
 const isLocale = Schema.is(Locale);
@@ -74,15 +82,15 @@ const ROW =
   "grid grid-cols-[5.5rem_1fr] items-center gap-x-4 py-4 [@media(max-height:500px)]:py-2";
 
 const ROW_LABEL =
-  "font-display text-base font-bold text-[#2a1d12] [@media(max-height:500px)]:text-sm";
+  "font-display text-base font-bold text-ink [@media(max-height:500px)]:text-sm";
 
 const languageOption = ({ isSelected }: { readonly isSelected: boolean }) =>
   cn(
-    "group flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-xl border-2 px-3 py-2 text-sm font-bold text-[#2a1d12] transition-[transform,box-shadow] outline-none",
-    "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:-translate-y-0.5 motion-reduce:data-[hovered]:translate-y-0",
+    "group text-ink flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-xl border-2 px-3 py-2 text-sm font-bold transition-[transform,box-shadow] outline-none",
+    "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4 data-[hovered]:-translate-y-0.5 motion-reduce:data-[hovered]:translate-y-0",
     isSelected
-      ? "border-gold-deep bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
-      : "border-ink-faded bg-[#f6ead0]"
+      ? "border-gold-deep bg-parchment-lit shadow-selected"
+      : "border-ink-faded bg-parchment"
   );
 
 /**
@@ -107,12 +115,12 @@ const CloseIcon = () => (
 const ChoiceMark = () => (
   <span
     className={cn(
-      "border-ink-faded grid size-[18px] shrink-0 place-items-center rounded-full border-2 bg-[#fff6df]",
-      "group-data-[selected]:border-[#7a5310] group-data-[selected]:bg-gradient-to-b group-data-[selected]:from-[#ffe08a] group-data-[selected]:to-[#e2a93b]"
+      "border-ink-faded bg-cream grid size-[18px] shrink-0 place-items-center rounded-full border-2",
+      "group-data-[selected]:border-gold-deep group-data-[selected]:from-gold-light group-data-[selected]:to-gold group-data-[selected]:bg-gradient-to-b"
     )}
     aria-hidden
   >
-    <span className="size-1.5 rounded-full bg-[#2a1a05] opacity-0 group-data-[selected]:opacity-100" />
+    <span className="bg-ink-on-gold size-1.5 rounded-full opacity-0 group-data-[selected]:opacity-100" />
   </span>
 );
 
@@ -199,12 +207,16 @@ const VolumeRow = ({
       {leading}
       <SliderTrack className="group/track relative mx-1.5 h-11 min-w-0 flex-1 cursor-pointer [@media(max-height:500px)]:h-9">
         {/* The groove is cut into the parchment: dark inside, with a light lower lip. */}
-        <div className="absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 rounded-full bg-[#5b3a1e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.7)]">
+        <div
+          className="bg-frame-wood absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 rounded-full"
+          style={{ boxShadow: TOWN_GROOVE_WELL }}
+        >
           <SliderFill
             className={cn(
-              "rounded-full bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.6),inset_0_-1px_0_rgba(122,83,16,0.6)] transition-[filter,opacity] duration-200",
+              "from-gold-light to-gold rounded-full bg-gradient-to-b transition-[filter,opacity] duration-200",
               muted && "grayscale"
             )}
+            style={{ boxShadow: TOWN_SLIDER_FILL }}
           />
         </div>
         <div
@@ -214,27 +226,28 @@ const VolumeRow = ({
           {NOTCHES.map((notch) => (
             <span
               key={notch}
-              className="absolute top-0 h-1.5 w-px -translate-x-1/2 bg-[#6b5238]/60"
+              className="bg-ink-faded/60 absolute top-0 h-1.5 w-px -translate-x-1/2"
               style={{ left: `${notch}%` }}
             />
           ))}
         </div>
         <SliderThumb
           aria-label={thumbLabel}
-          className="group/thumb top-1/2 grid size-11 cursor-grab place-items-center rounded-full outline-none data-[dragging]:cursor-grabbing data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] [@media(max-height:500px)]:size-9"
+          className="group/thumb data-[focus-visible]:ring-focus-cream top-1/2 grid size-11 cursor-grab place-items-center rounded-full outline-none data-[dragging]:cursor-grabbing data-[focus-visible]:ring-4 [@media(max-height:500px)]:size-9"
         >
           {/* A bronze knob, in the card metal, with a hard drop. */}
           <span
             className={cn(
-              "size-7 rounded-full border-2 border-[#7a5310] bg-[radial-gradient(circle_at_35%_30%,#fff3c4_0%,#f7dc9c_22%,#c99a4e_62%,#8a5a20_100%)] shadow-[0_3px_0_rgba(0,0,0,0.45)] transition-[transform,box-shadow,filter] duration-100",
-              "group-data-[dragging]/thumb:translate-y-px group-data-[dragging]/thumb:shadow-[0_1px_0_rgba(0,0,0,0.45)] group-data-[hovered]/thumb:brightness-110",
+              "border-gold-deep shadow-piece size-7 rounded-full border-2 transition-[transform,box-shadow,filter] duration-100",
+              "group-data-[dragging]/thumb:shadow-piece-press group-data-[dragging]/thumb:translate-y-px group-data-[hovered]/thumb:brightness-110",
               "[@media(max-height:500px)]:size-6"
             )}
+            style={{ background: TOWN_KNOB }}
           />
         </SliderThumb>
       </SliderTrack>
       <SliderOutput
-        className="w-9 shrink-0 text-right text-lg leading-none font-black text-[#2a1d12] tabular-nums"
+        className="text-ink w-9 shrink-0 text-right text-lg leading-none font-black tabular-nums"
         data-testid={valueTestId}
       />
     </div>
@@ -424,12 +437,16 @@ const SwitchRow = ({
     <div className="flex justify-end">
       <span
         className={cn(
-          "relative block h-9 w-16 rounded-full border-2 border-[#7a5310] bg-[#5b3a1e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.6)] transition-colors",
-          "group-data-[selected]:bg-gradient-to-b group-data-[selected]:from-[#ffe08a] group-data-[selected]:to-[#e2a93b]",
-          "group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
+          "border-gold-deep bg-frame-wood relative block h-9 w-16 rounded-full border-2 transition-colors",
+          "group-data-[selected]:from-gold-light group-data-[selected]:to-gold group-data-[selected]:bg-gradient-to-b",
+          "group-data-[focus-visible]:ring-focus-cream group-data-[focus-visible]:ring-4"
         )}
+        style={{ boxShadow: TOWN_SWITCH_WELL }}
       >
-        <span className="absolute top-1/2 left-1 size-7 -translate-y-1/2 rounded-full border-2 border-[#7a5310] bg-[radial-gradient(circle_at_35%_30%,#fff3c4_0%,#f7dc9c_22%,#c99a4e_62%,#8a5a20_100%)] shadow-[0_3px_0_rgba(0,0,0,0.45)] transition-[left] group-data-[selected]:left-7" />
+        <span
+          className="border-gold-deep shadow-piece absolute top-1/2 left-1 size-7 -translate-y-1/2 rounded-full border-2 transition-[left] group-data-[selected]:left-7"
+          style={{ background: TOWN_KNOB }}
+        />
       </span>
     </div>
   </Switch>
@@ -480,21 +497,23 @@ export const SettingsDialog = ({
       >
         <Dialog
           className={cn(
-            "flex max-h-[calc(100dvh-2rem)] flex-col rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-5 pt-4 pb-2 text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.55)] outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1",
+            "border-frame-wood bg-parchment text-ink flex max-h-[calc(100dvh-2rem)] flex-col rounded-2xl border-4 px-5 pt-4 pb-2 outline-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1",
+            TOWN_DIALOG_DROP,
             SHEET_MOTION
           )}
           data-testid="settings-dialog"
         >
           {({ close }) => (
             <div className={cn(SHEET_INK_MOTION, "flex min-h-0 flex-col")}>
-              <header className="flex shrink-0 items-center gap-3 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:pb-2">
+              <header className="border-parchment-rule flex shrink-0 items-center gap-3 border-b-2 pb-3 [@media(max-height:500px)]:pb-2">
                 <img
                   src={shortcutImage("settings")}
                   alt=""
                   width={128}
                   height={128}
                   draggable={false}
-                  className="-my-1 size-11 drop-shadow-[0_2px_0_rgba(0,0,0,0.3)] select-none [@media(max-height:500px)]:size-8"
+                  className="-my-1 size-11 select-none [@media(max-height:500px)]:size-8"
+                  style={{ filter: TOWN_DIALOG_ICON_DROP }}
                 />
                 <Heading
                   slot="title"
@@ -513,7 +532,7 @@ export const SettingsDialog = ({
                   <CloseIcon />
                 </GameButton>
               </header>
-              <div className="min-h-0 flex-1 divide-y divide-[#c9b48c]/70 overflow-y-auto overscroll-contain">
+              <div className="divide-parchment-rule/70 min-h-0 flex-1 divide-y overflow-y-auto overscroll-contain">
                 <LanguageRow />
                 <SpeedRow />
                 <SoundRow />

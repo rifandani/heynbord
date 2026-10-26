@@ -16,6 +16,11 @@ import {
   LockPlateText,
   useTownLockText,
 } from "@/features/town/components/town-lock";
+import {
+  TOWN_GATE_GLOW,
+  TOWN_NAME_TEXT_SHADOW,
+  TOWN_SMOKE,
+} from "@/features/town/tokens";
 import type {
   GameScreen,
   Rect,
@@ -73,10 +78,11 @@ const TownAmbient = () => (
     {SMOKE.map((puff) => (
       <div
         key={`${puff.x}-${puff.delay}`}
-        className="absolute aspect-square w-[1.35%] rounded-full bg-[#f1ece4]/80 opacity-0 blur-[1px] motion-safe:animate-[town-smoke_3.2s_ease-out_infinite]"
+        className="absolute aspect-square w-[1.35%] rounded-full opacity-0 blur-[1px] motion-safe:animate-[town-smoke_3.2s_ease-out_infinite]"
         style={{
           left: percentX(puff.x),
           top: percentY(puff.y),
+          backgroundColor: TOWN_SMOKE,
           animationDelay: `${puff.delay}s`,
         }}
       />
@@ -102,15 +108,14 @@ const NameLabel = ({
 }) => (
   <span
     className={cn(
-      "font-display z-10 flex items-center rounded-full px-[0.9cqw] text-[max(16px,2cqw)] leading-none font-black text-[#ffd75a]",
-      "[text-shadow:0_2px_0_#3b1d08,2px_0_0_#3b1d08,-2px_0_0_#3b1d08,0_-2px_0_#3b1d08,0_4px_6px_rgba(0,0,0,0.5)]",
+      "font-display text-ready-gold z-10 flex items-center rounded-full px-[0.9cqw] text-[max(16px,2cqw)] leading-none font-black",
       // Under the pointer or the focus, the label lifts onto a HUD plate.
       "border-gold-trim/70 bg-night-plate/90 border-2 transition-[translate,background-color,border-color,box-shadow] duration-150",
-      "group-data-[hovered]:-translate-y-1 group-data-[hovered]:border-[#e9c46a]/70 group-data-[hovered]:bg-[#1c140e]/75 group-data-[hovered]:shadow-[0_3px_0_rgba(0,0,0,0.45)]",
-      "group-data-[focus-visible]:-translate-y-1 group-data-[focus-visible]:bg-[#1c140e]/75 group-data-[focus-visible]:shadow-[0_3px_0_rgba(0,0,0,0.45)] group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]",
-      "group-data-[pressed]:translate-y-0 group-data-[pressed]:shadow-[0_1px_0_rgba(0,0,0,0.45)]"
+      "group-data-[hovered]:border-gold-trim/70 group-data-[hovered]:bg-night-plate/75 group-data-[hovered]:shadow-piece group-data-[hovered]:-translate-y-1",
+      "group-data-[focus-visible]:bg-night-plate/75 group-data-[focus-visible]:shadow-piece group-data-[focus-visible]:ring-focus-cream group-data-[focus-visible]:-translate-y-1 group-data-[focus-visible]:ring-4",
+      "group-data-[pressed]:shadow-piece-press group-data-[pressed]:translate-y-0"
     )}
-    style={{ height }}
+    style={{ height, textShadow: TOWN_NAME_TEXT_SHADOW }}
     data-building-label
   >
     {name}
@@ -132,14 +137,14 @@ const LockPlate = ({
   <span className="z-10 flex items-center" style={{ height }}>
     <span
       className={cn(
-        "flex items-center gap-1.5 rounded-full border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 py-0.5 pr-2.5 pl-1 text-[max(12px,1.1cqw)] leading-none font-bold whitespace-nowrap text-[#e8d9bb] shadow-[0_3px_0_rgba(0,0,0,0.45)]",
-        "group-data-[focus-visible]:ring-4 group-data-[focus-visible]:ring-[#fff2a8]"
+        "border-gold-trim/70 bg-night-plate/90 text-cream-dim shadow-piece flex items-center gap-1.5 rounded-full border-2 py-0.5 pr-2.5 pl-1 text-[max(12px,1.1cqw)] leading-none font-bold whitespace-nowrap",
+        "group-data-[focus-visible]:ring-focus-cream group-data-[focus-visible]:ring-4"
       )}
       data-testid="building-lock-plate"
       data-building-label
     >
-      <span className="grid size-[1.6em] place-items-center rounded-full border border-[#e9c46a]/70 bg-[#1c140e]">
-        <GlyphIcon glyph="lock" className="size-[0.9em] text-[#e9c46a]" />
+      <span className="border-gold-trim/70 bg-night-plate grid size-[1.6em] place-items-center rounded-full border">
+        <GlyphIcon glyph="lock" className="text-gold-trim size-[0.9em]" />
       </span>
       <LockPlateText lock={lock} />
     </span>
@@ -221,13 +226,13 @@ const BuildingButton = ({
           // A soft light on the painted Building: the screen blend makes it
           // brighter and does not cover it. It does not take the pointer:
           // the light can go past the Building box.
-          "pointer-events-none absolute rounded-full bg-[radial-gradient(closest-side,rgba(255,224,138,0.9),transparent)] opacity-0 mix-blend-screen transition-opacity duration-150",
+          "pointer-events-none absolute rounded-full opacity-0 mix-blend-screen transition-opacity duration-150",
           pulse &&
             "opacity-40 motion-safe:animate-[town-gate-pulse_2.4s_ease-in-out_infinite]",
           !locked &&
             "group-data-[focus-visible]:opacity-50 group-data-[hovered]:opacity-50"
         )}
-        style={glowPlace}
+        style={{ ...glowPlace, background: TOWN_GATE_GLOW }}
         aria-hidden
       />
     </Button>
@@ -246,11 +251,11 @@ const BuildingButton = ({
       <GameTooltip
         placement="top"
         offset={8}
-        className="rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1 text-center text-xs font-semibold text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+        className="border-gold-trim/70 bg-night-plate/95 text-cream shadow-piece rounded-lg border-2 px-2.5 py-1 text-center text-xs font-semibold"
         data-testid={`building-tooltip-${building.id}`}
       >
         {name}
-        <span className="block font-normal text-[#e9c46a]">
+        <span className="text-gold-trim block font-normal">
           {lockText.reason(lock)}
         </span>
       </GameTooltip>
@@ -335,7 +340,7 @@ export const TownScreen = ({
   return (
     <main
       aria-label={tr("town.label")}
-      className="fade-in animate-in fixed inset-0 overflow-hidden bg-[#8fd0f5] duration-300 motion-reduce:animate-none"
+      className="fade-in animate-in bg-town-sky fixed inset-0 overflow-hidden duration-300 motion-reduce:animate-none"
       data-testid="town"
     >
       <FittedPainting

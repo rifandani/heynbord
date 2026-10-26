@@ -7,6 +7,7 @@ import { useGameText } from "@/features/battle/use-game-text";
 import { defaultSlotName } from "@/features/deck/deck";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
+import { WORKSHOP_WARNING } from "@/features/workshop/tokens";
 
 /** The copy that the Player wants to Extract, and the saved Decks that use it. */
 export interface ExtractRequest {
@@ -103,7 +104,8 @@ export const ExtractDialog = ({
           ) : null}
           {request.rank === "epic" || request.rank === "legendary" ? (
             <p
-              className="mt-3 text-sm font-bold text-[#8f2a1e] [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs"
+              className="mt-3 text-sm font-bold [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:text-xs"
+              style={{ color: WORKSHOP_WARNING }}
               data-testid="extract-dialog-rank"
             >
               {tr("workshop.extractDialog.rank", {

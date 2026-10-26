@@ -3,6 +3,7 @@ import { Label, Meter } from "react-aria-components";
 
 import { useGameText } from "@/features/battle/use-game-text";
 import type { PoolProgress } from "@/features/packs/packs";
+import { PACK_WELL_SHADOW } from "@/features/packs/tokens";
 
 /**
  * "Cards found": how much of a Pack pool the Player has Discovered, as a gold
@@ -38,16 +39,21 @@ export const FoundMeter = ({
     >
       {({ percentage }) => (
         <>
-          <Label className="text-xs font-bold whitespace-nowrap text-[#e8d9bb] [@media(max-height:500px)]:sr-only">
+          <Label className="text-cream-dim text-xs font-bold whitespace-nowrap [@media(max-height:500px)]:sr-only">
             {tr("packs.progress.label")}
           </Label>
-          <span className="relative h-2 w-28 shrink-0 overflow-hidden rounded-full bg-[#3a2a1c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.75),0_1px_0_rgba(255,226,170,0.18)] [@media(max-height:500px)]:w-16">
+          <span
+            className={cn(
+              "bg-plate-socket relative h-2 w-28 shrink-0 overflow-hidden rounded-full [@media(max-height:500px)]:w-16",
+              PACK_WELL_SHADOW
+            )}
+          >
             <span
-              className="absolute inset-0 origin-left rounded-full bg-gradient-to-r from-[#ffe08a] to-[#e2a93b] motion-safe:transition-[scale] motion-safe:duration-700 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+              className="from-gold-light to-gold absolute inset-0 origin-left rounded-full bg-gradient-to-r motion-safe:transition-[scale] motion-safe:duration-700 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
               style={{ scale: `${percentage / 100} 1` }}
             />
           </span>
-          <span className="text-sm leading-none font-black whitespace-nowrap text-[#fff6df] tabular-nums">
+          <span className="text-cream text-sm leading-none font-black whitespace-nowrap tabular-nums">
             {value}
           </span>
         </>

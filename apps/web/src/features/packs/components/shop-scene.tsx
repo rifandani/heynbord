@@ -4,6 +4,13 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { Button } from "react-aria-components";
 
 import { useGameText } from "@/features/battle/use-game-text";
+import {
+  SHOP_BUBBLE_FILTER,
+  SHOP_EDGES,
+  SHOP_LAMP,
+  SHOP_MOTE,
+  SHOP_MOTE_SHADOW,
+} from "@/features/packs/tokens";
 import { FittedPainting } from "@/features/town/components/fitted-painting";
 
 /** The painting of the Card shop inside (Town Concepts, section 9): 1536 × 1024. */
@@ -56,11 +63,12 @@ export const ShopScene = ({ children }: { readonly children?: ReactNode }) => (
       {LAMPS.map((lamp) => (
         <span
           key={`${lamp.x}:${lamp.y}`}
-          className="pointer-events-none absolute aspect-square -translate-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,206,130,0.32),rgba(255,180,90,0.12)_55%,transparent)] opacity-85 motion-safe:animate-[shop-lamp_5.5s_ease-in-out_infinite]"
+          className="pointer-events-none absolute aspect-square -translate-1/2 rounded-full opacity-85 motion-safe:animate-[shop-lamp_5.5s_ease-in-out_infinite]"
           style={{
             left: `${lamp.x}%`,
             top: `${lamp.y}%`,
             width: `${lamp.size}%`,
+            background: SHOP_LAMP,
             animationDelay: `${lamp.delay}s`,
           }}
           aria-hidden
@@ -69,7 +77,7 @@ export const ShopScene = ({ children }: { readonly children?: ReactNode }) => (
       {MOTES.map((mote) => (
         <span
           key={`${mote.x}:${mote.y}`}
-          className="pointer-events-none absolute rounded-full bg-[#fff0c8] opacity-0 shadow-[0_0_6px_1px_rgba(255,226,160,0.7)] motion-safe:animate-[shop-mote_var(--mote-duration)_ease-in-out_infinite] motion-reduce:hidden"
+          className="pointer-events-none absolute rounded-full opacity-0 motion-safe:animate-[shop-mote_var(--mote-duration)_ease-in-out_infinite] motion-reduce:hidden"
           // SAFETY: CSS custom properties for the keyframes. React's
           // `CSSProperties` does not model custom properties.
           style={
@@ -78,6 +86,8 @@ export const ShopScene = ({ children }: { readonly children?: ReactNode }) => (
               top: `${mote.y}%`,
               width: mote.size,
               height: mote.size,
+              backgroundColor: SHOP_MOTE,
+              boxShadow: SHOP_MOTE_SHADOW,
               animationDelay: `${mote.delay}s`,
               "--mote-duration": `${mote.duration}s`,
               "--mote-x": `${mote.drift}px`,
@@ -89,12 +99,7 @@ export const ShopScene = ({ children }: { readonly children?: ReactNode }) => (
       {/* Darker edges, so the plates and the Town Bar stay easy to read. */}
       <div
         className="absolute inset-0"
-        style={{
-          background: [
-            "radial-gradient(ellipse 60% 55% at 50% 55%, rgba(20,10,18,0.35), transparent 75%)",
-            "linear-gradient(180deg, rgba(20,10,18,0.45) 0%, transparent 18%, transparent 78%, rgba(20,10,18,0.55) 100%)",
-          ].join(", "),
-        }}
+        style={{ background: SHOP_EDGES }}
         aria-hidden
       />
       {children}
@@ -246,7 +251,7 @@ export const ShopkeeperBubble = ({
       <Button
         onPress={onTalk}
         aria-label={tr("packs.shopkeeper.talk")}
-        className="absolute top-[28%] left-[80%] h-[24%] w-[17%] cursor-pointer rounded-[40%] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+        className="data-[focus-visible]:ring-focus-cream absolute top-[28%] left-[80%] h-[24%] w-[17%] cursor-pointer rounded-[40%] outline-none data-[focus-visible]:ring-4"
         data-testid="shopkeeper"
       />
       {/* The measured place of the bubble, before a move. It has the border of
@@ -281,7 +286,8 @@ export const ShopkeeperBubble = ({
       >
         <output
           key={serial}
-          className="relative block origin-bottom rounded-xl border-2 border-[#5b3a1e] bg-[#f6ead0] px-3.5 py-2.5 text-sm leading-snug font-semibold text-[#2a1d12] [filter:drop-shadow(0_3px_0_rgba(0,0,0,0.35))_drop-shadow(0_10px_24px_rgba(0,0,0,0.35))] motion-safe:animate-[shopkeeper-say_340ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+          className="border-frame-wood bg-parchment text-ink relative block origin-bottom rounded-xl border-2 px-3.5 py-2.5 text-sm leading-snug font-semibold motion-safe:animate-[shopkeeper-say_340ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+          style={{ filter: SHOP_BUBBLE_FILTER }}
           data-testid="shopkeeper-line"
         >
           <span className="sr-only">{tr("packs.shopkeeper.label")}: </span>
@@ -291,7 +297,7 @@ export const ShopkeeperBubble = ({
               outer edge of the bottom border, and its top half covers that
               border, so the two outlines join. */}
           <span
-            className="absolute top-[calc(100%+2px)] size-[13px] -translate-x-1/2 -translate-y-1/2 rotate-45 border-r-2 border-b-2 border-[#5b3a1e] bg-[#f6ead0]"
+            className="border-frame-wood bg-parchment absolute top-[calc(100%+2px)] size-[13px] -translate-x-1/2 -translate-y-1/2 rotate-45 border-r-2 border-b-2"
             style={{ left: `max(22px, calc(70% - ${fit.shift}px))` }}
             aria-hidden
           />

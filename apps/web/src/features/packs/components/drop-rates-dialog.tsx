@@ -11,6 +11,7 @@ import { RankGems } from "@/core/components/game/rank-gems";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CoinPrice } from "@/features/packs/components/pack-art";
+import { PACKS_RATE_CHECK } from "@/features/packs/tokens";
 import { useGuaranteeText } from "@/features/packs/use-guarantee-text";
 
 /** The Pack rules of Economy 3.1, in the order that a Pack uses them. */
@@ -49,7 +50,7 @@ const row = (
   cell: (pack: PackDefinition) => ReactNode,
   testId?: string
 ) => (
-  <tr className="border-t border-[#c9b48c]/70" data-testid={testId}>
+  <tr className="border-parchment-rule/70 border-t" data-testid={testId}>
     <th scope="row" className={cn(CELL, "text-left font-bold")}>
       {label}
     </th>
@@ -77,7 +78,7 @@ const DropRatesTable = () => {
         <tr>
           <th
             scope="col"
-            className={cn(CELL, "text-left text-xs font-bold text-[#5b4632]")}
+            className={cn(CELL, "text-ink-soft text-left text-xs font-bold")}
           >
             {tr("packs.rates.rank")}
           </th>
@@ -94,7 +95,7 @@ const DropRatesTable = () => {
       </thead>
       <tbody>
         {RANKS.map((rank) => (
-          <tr key={rank} className="border-t border-[#c9b48c]/70">
+          <tr key={rank} className="border-parchment-rule/70 border-t">
             <th scope="row" className={cn(CELL, "text-left font-bold")}>
               <span className="flex items-center gap-2">
                 <span className="w-[4.6em] text-xs" aria-hidden>
@@ -118,11 +119,13 @@ const DropRatesTable = () => {
           tr("packs.rates.newCardFirst"),
           (pack) =>
             pack.newCardFirst ? (
-              <GlyphIcon
-                glyph="check"
-                className="ml-auto size-4 text-[#2f7a3a]"
-                label={tr("packs.rates.yes")}
-              />
+              <span style={{ color: PACKS_RATE_CHECK }}>
+                <GlyphIcon
+                  glyph="check"
+                  className="ml-auto size-4"
+                  label={tr("packs.rates.yes")}
+                />
+              </span>
             ) : (
               <>
                 <span aria-hidden>—</span>
@@ -185,7 +188,7 @@ export const DropRatesDialog = ({
       >
         <div className="mt-3 [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-[1.1fr_1fr] [@media(max-height:500px)]:gap-4">
           <div>
-            <p className="mb-1 text-xs text-[#5b4632]">
+            <p className="text-ink-soft mb-1 text-xs">
               {tr("packs.rates.each")}
             </p>
             <DropRatesTable />

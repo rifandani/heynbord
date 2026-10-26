@@ -17,6 +17,7 @@ import {
 import type { PoolFilter } from "@/features/deck/deck";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
+import { WORKSHOP_TILE_SELECTED } from "@/features/workshop/tokens";
 import type {
   Station,
   StationContext,
@@ -29,7 +30,7 @@ import { craftState, isTileReady } from "@/features/workshop/workshop";
  * under the frame, so that it never covers the Attack, the HP or the art.
  */
 const markClassName =
-  "flex h-[1.75em] items-center gap-[0.3em] rounded-full border-[0.14em] border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-[0.6em] text-[1.05em] leading-none font-black whitespace-nowrap text-[#2a1a05] tabular-nums shadow-[0_0.12em_0.25em_rgba(0,0,0,0.6)]";
+  "flex h-[1.75em] items-center gap-[0.3em] rounded-full border-[0.14em] border-gold-deep bg-gradient-to-b from-gold-light to-gold px-[0.6em] text-[1.05em] leading-none font-black whitespace-nowrap text-ink-on-gold tabular-nums shadow-badge";
 
 /** A pair below Legendary: the Combine station can act. */
 const PairMark = () => {
@@ -214,7 +215,7 @@ const EmptyGrid = ({
       className="flex flex-col items-center gap-3 px-6 py-12 text-center [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:py-4"
       data-testid="workshop-empty"
     >
-      <p className="max-w-[32ch] text-sm font-semibold text-balance text-[#fff6df] [@media(max-height:500px)]:text-xs">
+      <p className="text-cream max-w-[32ch] text-sm font-semibold text-balance [@media(max-height:500px)]:text-xs">
         {text}
       </p>
       <GameButton intent="wood" size="sm" onPress={onShowAll}>
@@ -276,14 +277,17 @@ const Tile = ({
             }
           : undefined
       }
-      className="group flex cursor-pointer flex-col items-center gap-1 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+      className="group data-[focus-visible]:ring-focus-cream flex cursor-pointer flex-col items-center gap-1 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4"
       data-testid={`workshop-tile-${tile.cardId}`}
       data-rank={rank}
       data-ready={ready || undefined}
     >
       <span
         ref={frame}
-        className="relative rounded-[0.85em] transition-[translate,box-shadow] duration-150 ease-out group-data-[hovered]:-translate-y-1 group-data-[selected]:shadow-[0_0_0_0.25em_#ffd75a,0_0_1.4em_0.35em_rgba(255,215,90,0.55)] motion-reduce:group-data-[hovered]:translate-y-0"
+        className={cn(
+          "relative rounded-[0.85em] transition-[translate,box-shadow] duration-150 ease-out group-data-[hovered]:-translate-y-1 motion-reduce:group-data-[hovered]:translate-y-0",
+          WORKSHOP_TILE_SELECTED
+        )}
       >
         <CardFrame
           cardId={tile.cardId}
@@ -396,7 +400,7 @@ export const WorkshopGrid = ({
       )}
       className={cn(
         "-mx-2 grid min-h-0 flex-1 auto-rows-max grid-cols-[repeat(auto-fill,minmax(10.4em,1fr))] gap-x-1 gap-y-2.5 overflow-y-auto overscroll-contain px-2 pt-2 pb-4 text-[11px] outline-none",
-        "[scrollbar-width:thin] [scrollbar-color:#7a5233_transparent]",
+        "[scrollbar-width:thin] [scrollbar-color:var(--color-wood-light)_transparent]",
         "max-[1100px]:text-[10px] [@media(max-height:500px)]:gap-y-1.5 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-2 [@media(max-height:500px)]:text-[7px]",
         "data-[empty]:flex data-[empty]:justify-center"
       )}
