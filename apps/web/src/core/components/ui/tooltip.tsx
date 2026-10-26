@@ -14,12 +14,12 @@ import { tv } from "tailwind-variants"
 
 const tooltipStyles = tv({
   base: [
-    "group max-w-sm origin-(--trigger-anchor-point) rounded-lg border border-(--tooltip-border) px-2.5 py-1.5 text-sm/6 will-change-transform [--tooltip-border:var(--color-muted-fg)]/30 *:[strong]:font-medium",
+    "group max-w-sm origin-(--trigger-anchor-point) rounded-lg border-2 border-gold-trim/70 bg-night-plate/95 px-2.5 py-1.5 text-sm/6 text-cream shadow-piece will-change-transform *:[strong]:font-medium",
   ],
   variants: {
     inverse: {
-      true: ["border-transparent bg-fg text-bg", "**:[.text-muted-fg]:text-bg/60"],
-      false: "paper-surface bg-overlay text-overlay-fg",
+      true: ["border-gold-deep bg-cream text-ink", "**:[.text-muted-fg]:text-ink-soft"],
+      false: "",
     },
     isEntering: {
       true: [
@@ -75,7 +75,7 @@ const TooltipContent = ({
             viewBox="0 0 12 12"
             className={twJoin(
               "block group-placement-bottom:rotate-180 group-placement-left:-rotate-90 group-placement-right:rotate-90 forced-colors:fill-[Canvas] forced-colors:stroke-[ButtonBorder]",
-              inverse ? "fill-fg stroke-transparent" : "fill-overlay stroke-(--tooltip-border)"
+              inverse ? "fill-cream stroke-gold-deep" : "fill-night-plate stroke-gold-trim/70"
             )}
           >
             <path d="M0 0 L6 6 L12 0" />

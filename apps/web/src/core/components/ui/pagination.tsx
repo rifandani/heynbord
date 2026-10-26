@@ -3,6 +3,7 @@
 import { cn } from "cn"
 import { type ButtonProps, buttonStyles } from "@/core/components/ui/button"
 import { Link, type LinkProps } from "@/core/components/ui/link"
+import { gameText } from "@/core/components/game/surfaces"
 import { Text } from "@/core/components/ui/text"
 
 const Pagination = ({ className, ref, ...props }: React.ComponentProps<"nav">) => (
@@ -60,8 +61,8 @@ const PaginationItem = ({
         className={buttonStyles({
           size: size,
           isCircle: isCircle,
-          intent: isCurrent ? "outline" : "plain",
-          className: cn("touch-target min-w-9 shrink-0", className),
+          intent: isCurrent ? "primary" : "plain",
+          className: cn("touch-target min-w-9 shrink-0 no-underline", className),
         })}
         {...props}
       />
@@ -180,7 +181,8 @@ const PaginationGap = ({
     <li
       data-slot="pagination-gap"
       className={cn(
-        "w-9 select-none text-center font-semibold text-fg text-sm/6 outline-hidden",
+        gameText({ role: "small", tone: "inherit" }),
+        "w-9 select-none text-center font-semibold text-muted-fg outline-hidden",
         className
       )}
       {...props}
@@ -196,7 +198,8 @@ const PaginationLabel = ({ className, ...props }: React.ComponentPropsWithoutRef
     <li
       data-slot="pagination-label"
       className={cn(
-        "min-w-4 self-center text-fg *:[strong]:font-medium *:[strong]:text-fg",
+        gameText({ role: "small", tone: "inherit" }),
+        "min-w-4 self-center text-muted-fg *:[strong]:font-medium *:[strong]:text-fg",
         className
       )}
       {...props}

@@ -1,13 +1,14 @@
 'use client'
 
 import { cn } from "cn"
+import { gameText } from "@/core/components/game/surfaces"
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "group/card flex flex-col gap-(--gutter) rounded-lg bg-card text-card-fg border py-(--gutter) shadow-xs [--gutter:--spacing(6)] has-[table]:overflow-hidden has-[table]:not-has-data-[slot=card-footer]:pb-0 **:data-[slot=table-header]:bg-muted/50 has-[table]:**:data-[slot=card-footer]:pt-0 **:[table]:overflow-hidden",
+        "paper-surface group/card flex flex-col gap-(--gutter) rounded-2xl border-4 border-frame-wood bg-overlay py-(--gutter) text-overlay-fg shadow-piece [--gutter:--spacing(6)] has-[table]:overflow-hidden has-[table]:not-has-data-[slot=card-footer]:pb-0 **:data-[slot=table-header]:bg-parchment-deep/60 has-[table]:**:data-[slot=card-footer]:pt-0 **:[table]:overflow-hidden",
         className
       )}
       {...props}
@@ -41,7 +42,11 @@ export function CardTitle({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       data-slot="card-title"
-      className={cn("text-balance font-display font-semibold text-base/6", className)}
+      className={cn(
+        gameText({ role: "title", tone: "inherit" }),
+        "text-balance",
+        className
+      )}
       {...props}
     />
   )
@@ -52,7 +57,11 @@ export function CardDescription({ className, ...props }: React.HTMLAttributes<HT
     <div
       {...props}
       data-slot="card-description"
-      className={cn("row-start-2 text-pretty text-muted-fg text-sm/6", className)}
+      className={cn(
+        gameText({ role: "body", tone: "inherit" }),
+        "row-start-2 text-pretty text-muted-fg",
+        className
+      )}
       {...props}
     />
   )
@@ -72,7 +81,7 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
   return (
     <div
       data-slot="card-content"
-      className={cn("px-(--gutter) has-[table]:border-t", className)}
+      className={cn("px-(--gutter) has-[table]:border-t-2 has-[table]:border-parchment-rule", className)}
       {...props}
     />
   )

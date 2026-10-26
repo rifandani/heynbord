@@ -6,6 +6,7 @@ import { Dialog as PrimitiveDialog } from "react-aria-components/Dialog"
 import { Heading, type HeadingProps } from "react-aria-components/Heading"
 import type { TextProps } from "react-aria-components/Text"
 import { cn } from "cn"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 import { Button, type ButtonProps } from "./button"
 
@@ -41,7 +42,7 @@ const DialogHeader = ({ className, ...props }: DialogHeaderProps) => {
     <div
       data-slot="dialog-header"
       className={cn(
-        "relative space-y-1 p-(--gutter) pb-[calc(var(--gutter)---spacing(3))]",
+        "border-parchment-rule relative space-y-1 border-b-2 p-(--gutter) pb-[calc(var(--gutter)---spacing(3))]",
         className
       )}
     >
@@ -64,7 +65,8 @@ const DialogTitle = ({ className, ref, ...props }: DialogTitleProps) => (
     slot="title"
     ref={ref}
     className={cn(
-      "text-balance font-semibold text-overlay-fg text-lg/6 sm:text-base/6",
+      gameText({ role: "title", tone: "inherit" }),
+      "text-balance text-overlay-fg",
       className
     )}
     {...props}
@@ -78,7 +80,8 @@ const DialogDescription = ({ className, ref, ...props }: DialogDescriptionProps)
   <p
     data-slot="description"
     className={cn(
-      "text-pretty text-base/6 text-muted-fg group-disabled:opacity-50 sm:text-sm/6",
+      gameText({ role: "body", tone: "inherit" }),
+      "text-pretty text-muted-fg group-disabled:opacity-50",
       className
     )}
     ref={ref}
@@ -113,7 +116,7 @@ const DialogFooter = ({ className, ...props }: DialogFooterProps) => {
   )
 }
 
-const DialogClose = ({ intent = "plain", ref, ...props }: ButtonProps) => {
+const DialogClose = ({ intent = "secondary", ref, ...props }: ButtonProps) => {
   return <Button slot="close" ref={ref} intent={intent} {...props} />
 }
 
@@ -127,7 +130,7 @@ const DialogCloseIcon = ({ className, ...props }: CloseButtonIndicatorProps) => 
     <PrimitiveButton
       slot="close"
       className={cx(
-        "close absolute end-1 top-1 z-50 grid size-8 place-content-center rounded-xl hover:bg-secondary focus:bg-secondary focus:outline-hidden focus-visible:ring-1 focus-visible:ring-primary sm:end-2 sm:top-2 sm:size-7 sm:rounded-md",
+        "close absolute end-2 top-2 z-50 grid size-10 place-content-center rounded-lg border-2 border-wood-edge bg-wood text-cream shadow-piece outline-none hover:brightness-110 focus-visible:ring-4 focus-visible:ring-(--ring) data-[pressed]:translate-y-px data-[pressed]:shadow-piece-press sm:size-9",
         className
       )}
     >

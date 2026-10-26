@@ -7,6 +7,7 @@ import {
   type ProgressBarRenderProps,
 } from "react-aria-components/ProgressBar"
 import { cn } from "cn"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 
 const ProgressBarContext = createContext<ProgressBarRenderProps | null>(null)
@@ -55,7 +56,11 @@ export function ProgressBarValue({
   return (
     <span
       data-slot="progress-bar-value"
-      className={cn("text-base/6 sm:text-sm/6", className)}
+      className={cn(
+        gameText({ role: "number", tone: "inherit" }),
+        "text-sm",
+        className
+      )}
       {...props}
     >
       {valueText}
@@ -78,21 +83,20 @@ export function ProgressBarTrack({ className, ref, ...props }: React.ComponentPr
         <div
           data-slot="progress-container"
           className={cn(
-            "[--progress-content-bg:var(--color-primary)]",
-            "relative h-1.5 w-full min-w-52 overflow-hidden rounded-full bg-(--progress-container-bg,var(--color-secondary)) outline-1 outline-transparent -outline-offset-1 will-change-transform",
+            "relative h-3 w-full min-w-52 overflow-hidden rounded-full border-2 border-input bg-(--control-bg) shadow-well outline-hidden will-change-transform",
             className
           )}
         >
           {!isIndeterminate ? (
             <div
               data-slot="progress-content"
-              className="absolute start-0 top-0 h-full rounded-full bg-(--progress-content-bg) transition-[width] duration-200 ease-linear will-change-[width] motion-reduce:transition-none forced-colors:bg-[Highlight]"
+              className="from-gold-light to-gold absolute start-0 top-0 h-full rounded-full bg-gradient-to-r transition-[width] duration-200 ease-linear will-change-[width] motion-reduce:transition-none forced-colors:bg-[Highlight]"
               style={{ width: `${percentage}%` }}
             />
           ) : (
             <div
               data-slot="progress-content"
-              className="absolute top-0 h-full animate-[progress-slide_2000ms_ease-in-out_infinite] rounded-full bg-primary forced-colors:bg-[Highlight]"
+              className="from-gold-light to-gold absolute top-0 h-full animate-[progress-slide_2000ms_ease-in-out_infinite] rounded-full bg-gradient-to-r forced-colors:bg-[Highlight]"
               style={{ width: "40%" }}
             />
           )}

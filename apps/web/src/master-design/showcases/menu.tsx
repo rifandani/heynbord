@@ -1,4 +1,4 @@
-import { Button } from "@/core/components/ui/button";
+import { buttonStyles } from "@/core/components/ui/button";
 import {
   Menu,
   MenuContent,
@@ -12,8 +12,8 @@ export const MenuShowcase = () => (
   <VariantGrid>
     <Variant label="default">
       <Menu>
-        <MenuTrigger>
-          <Button intent="outline">Open</Button>
+        <MenuTrigger className={buttonStyles({ intent: "outline" })}>
+          Open
         </MenuTrigger>
         <MenuContent aria-label="Actions">
           <MenuItem id="a">Edit</MenuItem>

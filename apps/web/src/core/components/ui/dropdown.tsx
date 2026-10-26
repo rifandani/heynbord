@@ -9,13 +9,18 @@ import { Separator, type SeparatorProps } from "react-aria-components/Separator"
 import { Text, type TextProps } from "react-aria-components/Text"
 import { twJoin, cn } from "cn"
 import { tv } from "tailwind-variants"
+import { gameText } from "@/core/components/game/surfaces"
 import { Keyboard } from "./keyboard"
 
 const dropdownSectionStyles = tv({
   slots: {
     section: "col-span-full grid grid-cols-[auto_1fr]",
-    header:
-      "col-span-full px-3 py-2 font-medium text-muted-fg text-sm/6 sm:px-2.5 sm:py-1.5 sm:text-xs/3",
+    header: gameText({
+      role: "label",
+      tone: "inherit",
+      className:
+        "col-span-full px-3 py-2 text-muted-fg sm:px-2.5 sm:py-1.5",
+    }),
   },
 })
 
@@ -43,9 +48,9 @@ const dropdownItemStyles = tv({
     "min-w-0 [--me-icon:--spacing(2.5)] sm:[--me-icon:--spacing(2)]",
     "col-span-full grid grid-cols-[auto_1fr_1.5rem_0.5rem_auto] px-3 py-2 supports-[grid-template-columns:subgrid]:grid-cols-subgrid sm:px-2.5 sm:py-1.5",
     "not-has-[[slot=description]]:items-center",
-    "group relative cursor-default select-none rounded-[calc(var(--radius-lg)-(--spacing(1)))] outline-0",
+    "group relative cursor-default select-none rounded-sm outline-0 inset-ring-2 inset-ring-transparent",
     // text
-    "text-base/6 text-overlay-fg sm:text-sm/6 forced-colors:text-[CanvasText]",
+    "text-base/6 text-fg sm:text-sm/6 forced-colors:text-[CanvasText]",
     // avatar
     "*:data-[slot=avatar]:*:me-(--me-icon) *:data-[slot=avatar]:me-(--me-icon) has-[[slot=description]]:*:data-[slot=avatar]:row-span-2 *:data-[slot=avatar]:[--avatar-size:--spacing(5)] sm:*:data-[slot=avatar]:[--avatar-size:--spacing(4)]",
     // icon
@@ -80,20 +85,20 @@ const dropdownItemStyles = tv({
       true: "opacity-50 forced-colors:text-[GrayText]",
     },
     isSelected: {
-      true: "[&_svg:not([class*='text-'])]:text-accent-fg",
+      true: "bg-primary-subtle font-semibold text-primary-subtle-fg [&_svg:not([class*='text-'])]:text-primary-subtle-fg",
     },
     isFocused: {
       true: [
-        "*:data-[slot=keyboard]:text-accent-fg [&_svg:not([class*='text-'])]:text-accent-fg",
-        "bg-accent text-accent-fg forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
-        "[&_.text-muted-fg]:text-accent-fg/80 *:[[slot=description]]:text-accent-fg *:[[slot=label]]:text-accent-fg",
+        "*:data-[slot=keyboard]:text-primary-subtle-fg [&_svg:not([class*='text-'])]:text-primary-subtle-fg",
+        "bg-primary-subtle inset-ring-gold/40 text-fg forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+        "[&_.text-muted-fg]:text-muted-fg *:[[slot=description]]:text-muted-fg *:[[slot=label]]:text-fg",
       ],
     },
     isHovered: {
       true: [
-        "*:data-[slot=keyboard]:text-accent-fg [&_svg:not([class*='text-'])]:text-accent-fg",
-        "bg-accent text-accent-fg forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
-        "[&_.text-muted-fg]:text-accent-fg/80 *:[[slot=description]]:text-accent-fg *:[[slot=label]]:text-accent-fg",
+        "*:data-[slot=keyboard]:text-primary-subtle-fg [&_svg:not([class*='text-'])]:text-primary-subtle-fg",
+        "bg-primary-subtle text-fg forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+        "[&_.text-muted-fg]:text-muted-fg *:[[slot=description]]:text-muted-fg *:[[slot=label]]:text-fg",
       ],
     },
   },
@@ -163,7 +168,7 @@ const DropdownDescription = ({ className, ...props }: TextProps) => (
 const DropdownSeparator = ({ className, ...props }: Omit<SeparatorProps, "orientation">) => (
   <Separator
     orientation="horizontal"
-    className={cn("col-span-full -mx-1 h-px bg-fg/10", className)}
+    className={cn("bg-parchment-rule col-span-full -mx-1 h-px", className)}
     {...props}
   />
 )

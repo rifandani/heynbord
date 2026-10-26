@@ -28,6 +28,7 @@ import { twJoin, cn } from "cn"
 import { SheetContent } from "@/core/components/ui/sheet"
 import { TreeIndicator } from "@/core/components/ui/tree"
 import { useIsMobile } from "@/core/hooks/use-mobile"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 import { Button } from "./button"
 import { Link } from "./link"
@@ -255,7 +256,7 @@ const Sidebar = ({
       <div
         data-slot="sidebar-container"
         className={cn(
-          "fixed inset-y-0 z-10 hidden w-(--sidebar-width) bg-sidebar not-has-data-[slot=sidebar-footer]:pb-2 md:flex",
+          "border-gold-trim/40 fixed inset-y-0 z-10 hidden w-(--sidebar-width) bg-sidebar not-has-data-[slot=sidebar-footer]:pb-2 md:flex",
           "transition-[left,right,width] duration-200 ease-linear",
           side === "left" && "left-0 group-data-[collapsible=hidden]:-left-(--sidebar-width)",
           side === "right" && "right-0 group-data-[collapsible=hidden]:-right-(--sidebar-width)",
@@ -265,7 +266,7 @@ const Sidebar = ({
             "group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+(--spacing(2))+2px)]",
           intent === "default" && [
             "group-data-[collapsible=dock]:w-(--sidebar-width-dock)",
-            "border-sidebar-border group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            "group-data-[side=left]:border-r-2 group-data-[side=right]:border-l-2",
           ],
           className
         )}
@@ -276,7 +277,7 @@ const Sidebar = ({
           data-slot="sidebar-inner"
           className={twJoin(
             "flex size-full flex-col text-sidebar-fg",
-            "group-data-[intent=float]:rounded-lg group-data-[intent=float]:border group-data-[intent=float]:border-sidebar-border group-data-[intent=float]:bg-sidebar group-data-[intent=float]:shadow-xs"
+            "group-data-[intent=float]:rounded-xl group-data-[intent=float]:border-2 group-data-[intent=float]:border-gold-trim/70 group-data-[intent=float]:bg-night-plate/85 group-data-[intent=float]:shadow-piece"
           )}
         >
           {children}
@@ -392,7 +393,12 @@ const SidebarSection = ({ className, ...props }: SidebarSectionProps) => {
       {...props}
     >
       {state !== "collapsed" && "label" in props && (
-        <Header className="mb-1 flex shrink-0 items-center rounded-md px-2 text-sidebar-fg/70 text-xs/6 outline-none ring-sidebar-ring transition-[margin,opa] duration-200 ease-linear group-data-[collapsible=dock]:-mt-8 group-data-[collapsible=dock]:opacity-0 *:[svg]:size-4 *:[svg]:shrink-0">
+        <Header
+          className={cn(
+            gameText({ role: "label", tone: "inherit" }),
+            "text-gold-trim mb-1 flex shrink-0 items-center rounded-md px-2 outline-none ring-sidebar-ring transition-[margin,opa] duration-200 ease-linear group-data-[collapsible=dock]:-mt-8 group-data-[collapsible=dock]:opacity-0 *:[svg]:size-4 *:[svg]:shrink-0"
+          )}
+        >
           {props.label}
         </Header>
       )}
@@ -435,7 +441,7 @@ const SidebarItem = ({
         className,
         (className, { isFocusVisible, isPressed, isHovered, isDisabled }) =>
           cn(
-            "w-full min-w-0 items-center rounded-lg p-2 text-start font-medium text-base/6 text-sidebar-fg has-[a]:p-0",
+            "w-full min-w-0 items-center rounded-lg border-2 border-transparent p-2 text-start font-medium text-base/6 text-sidebar-fg has-[a]:p-0 hover:no-underline",
             "group/sidebar-item relative col-span-full overflow-hidden focus-visible:outline-hidden",
             "grid grid-cols-[auto_1fr_1.5rem_0.5rem_auto] supports-[grid-template-columns:subgrid]:grid-cols-subgrid sm:text-sm/5 **:last:[svg]:ms-auto",
             // icon
@@ -448,13 +454,13 @@ const SidebarItem = ({
             "[&:has([data-slot=avatar]+[data-slot=sidebar-label])_[data-slot=avatar]:has(+[data-slot=sidebar-label])]:me-2",
             "[--sidebar-current-bg:var(--color-sidebar-primary)] [--sidebar-current-fg:var(--color-sidebar-primary-fg)]",
             isCurrent &&
-              "font-medium text-(--sidebar-current-fg) hover:bg-(--sidebar-current-bg) hover:text-(--sidebar-current-fg) [&_.text-muted-fg]:text-fg/80 [&_svg:not([class*='text-'])]:text-(--sidebar-current-fg) hover:[&_svg:not([class*='text-'])]:text-(--sidebar-current-fg)",
-            isFocusVisible && "inset-ring inset-ring-sidebar-ring outline-hidden",
+              "border-gold-deep from-gold-light to-gold bg-gradient-to-b font-semibold text-ink-on-gold shadow-piece hover:brightness-110 [&_.text-muted-fg]:text-ink/80 [&_svg:not([class*='text-'])]:text-ink-on-gold",
+            isFocusVisible && "outline-none ring-4 ring-(--ring)",
             isPressed &&
               "bg-sidebar-accent text-sidebar-accent-fg [&_svg:not([class*='text-'])]:text-sidebar-accent-fg",
             isHovered &&
               "bg-sidebar-accent text-sidebar-accent-fg [&_svg:not([class*='text-'])]:text-sidebar-accent-fg",
-            isDisabled && "opacity-50",
+            isDisabled && "border-dashed opacity-70 grayscale",
             className
           )
       )}
@@ -503,7 +509,7 @@ function SidebarBadge({ className, ...props }: React.ComponentProps<"span">) {
     <span
       data-slot="sidebar-badge"
       className={cn(
-        "absolute inset-ring-1 inset-ring-sidebar-border inset-y-1/2 end-1.5 h-5.5 w-auto -translate-y-1/2 rounded-full bg-fg/5 px-2 text-[10px]/5.5 group-hover/sidebar-item:inset-ring-muted-fg/30 group-current:inset-ring-transparent",
+        "border-gold-deep bg-gold text-ink-on-gold shadow-piece absolute inset-y-1/2 end-1.5 h-5.5 w-auto -translate-y-1/2 rounded-sm border-2 px-2 font-bold text-[10px]/5.5",
         className
       )}
       {...props}
@@ -520,7 +526,7 @@ const SidebarLink = ({ className, ref, ...props }: SidebarLinkProps) => {
     <Link
       ref={ref}
       className={cx(
-        "col-span-full min-w-0 shrink-0 items-center p-2 focus:outline-hidden",
+        "col-span-full min-w-0 shrink-0 items-center p-2 hover:no-underline focus:outline-hidden",
         "grid grid-cols-[auto_1fr_1.5rem_0.5rem_auto] supports-[grid-template-columns:subgrid]:grid-cols-subgrid",
         className
       )}
@@ -609,7 +615,7 @@ const SidebarDisclosureTrigger = ({ className, ref, ...props }: SidebarDisclosur
               isFocusVisible && "inset-ring inset-ring-ring/70",
               (isPressed || isHovered) &&
                 "bg-sidebar-accent text-sidebar-accent-fg **:data-[slot=chevron]:text-sidebar-accent-fg **:[svg]:text-sidebar-accent-fg **:last:[svg]:text-sidebar-accent-fg",
-              isDisabled && "opacity-50",
+              isDisabled && "opacity-70",
               className
             )
         )}
@@ -834,7 +840,7 @@ function SidebarTreeContent({ className, isCurrent, children }: SidebarTreeConte
           />
           <div
             className={cn(
-              "group/tree-item flex min-w-0 flex-1 items-center gap-x-2 rounded-lg p-2 font-medium text-base/6 text-sidebar-fg sm:text-sm/5",
+              "group/tree-item flex min-w-0 flex-1 items-center gap-x-2 rounded-lg border-2 border-transparent p-2 font-medium text-base/6 text-sidebar-fg sm:text-sm/5",
               "[&_svg:not([class*='size-'])]:size-5 sm:[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-fg **:[svg]:-mx-0.5 **:[svg]:shrink-0",
               "hover:bg-sidebar-accent hover:text-sidebar-accent-fg hover:[&_svg:not([class*='text-'])]:text-sidebar-accent-fg",
               "[--sidebar-current-bg:var(--color-sidebar-primary)] [--sidebar-current-fg:var(--color-sidebar-primary-fg)]",
@@ -842,10 +848,10 @@ function SidebarTreeContent({ className, isCurrent, children }: SidebarTreeConte
               values.isPressed &&
                 "bg-sidebar-accent text-sidebar-accent-fg [&_svg:not([class*='text-'])]:text-sidebar-accent-fg",
               (values.isCurrent || isCurrent) &&
-                "font-medium text-(--sidebar-current-fg) hover:bg-(--sidebar-current-bg) hover:text-(--sidebar-current-fg) [&_.text-muted-fg]:text-fg/80 [&_svg:not([class*='text-'])]:text-(--sidebar-current-fg) hover:[&_svg:not([class*='text-'])]:text-(--sidebar-current-fg)",
+                "border-gold-deep from-gold-light to-gold bg-gradient-to-b font-semibold text-ink-on-gold shadow-piece hover:brightness-110 [&_.text-muted-fg]:text-ink/80 [&_svg:not([class*='text-'])]:text-ink-on-gold",
               values.isCurrentAncestor &&
                 "text-sidebar-accent-fg [&_svg:not([class*='text-'])]:text-sidebar-accent-fg",
-              values.isDisabled && "opacity-50",
+              values.isDisabled && "border-dashed opacity-70 grayscale",
               className
             )}
           >
@@ -872,7 +878,7 @@ function SidebarTreeLink({ className, ...props }: SidebarTreeLinkProps) {
     <Link
       data-slot="sidebar-tree-link"
       className={cx(
-        "flex min-w-0 flex-1 items-center gap-x-2 outline-hidden focus-visible:outline-hidden",
+        "flex min-w-0 flex-1 items-center gap-x-2 hover:no-underline outline-hidden focus-visible:outline-hidden",
         className
       )}
       {...props}
