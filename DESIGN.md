@@ -10,6 +10,10 @@ colors:
   gold-trim: "#e9c46a"
   bronze-rim: "#e7bb6a"
   bronze: "#b47f36"
+  bronze-light: "#f7dc9c"
+  bronze-mid: "#c99442"
+  bronze-sheen: "#e9c27a"
+  bronze-deep: "#8a5a20"
   pewter: "#8d9297"
   stone: "#757a80"
   wood-light: "#7a5233"
@@ -23,6 +27,7 @@ colors:
   parchment-deep: "#ead9b4"
   parchment-lit: "#fff3d1"
   parchment-rule: "#c9b48c"
+  parchment-well: "#f1e2c2"
   ink: "#2a1d12"
   ink-soft: "#5b4632"
   ink-faded: "#6b5238"
@@ -44,6 +49,7 @@ colors:
   hp-low: "#ef4444"
   heart-red: "#ff6b6b"
   town-sky: "#8fd0f5"
+  harbour-sky: "#9fe7f5"
   battle-meadow: "#44772c"
   region-sky: "#9fcbe8"
   crypt: "#241d18"
@@ -323,7 +329,7 @@ The base component library reads these semantic names. Each one points at a mate
 
 - **Tavern Wood** (`wood-light` to `wood`, with `wood-edge` as its border): the default button. The Hand Bar runs from `tray-light` through `tray` to `wood-edge`, with a faint `grain`. The Town Bar uses the same wood family, with the same grain.
 - **Frame Wood** (`frame-wood`): the thick 4px border of parchment dialogs and panels, and the plate behind a Deck class icon.
-- **Warm Bronze** (`bronze`, with `bronze-rim` for badge rims): the shared card metal (a 5-stop gradient from `#f7dc9c` to `#8a5a20`), the rim of every round badge, the top edge of the Hand Bar, and the border of the Details Panel.
+- **Warm Bronze** (`bronze`, with `bronze-rim` for badge rims): the shared card metal (a 5-stop gradient in `bronze-light`, `bronze-mid`, `bronze-deep`, `bronze` and `bronze-sheen`), the rim of every round badge, the top edge of the Hand Bar, and the border of the Details Panel.
 - **Cold Pewter and Stone** (`pewter` for the rim, a gradient from `#e6e8ea` to `#62676c`; `stone` for the face, a gradient from `#a9aeb3` to `#5d6166`): only the Locked Stage Marker. These cold greys are not warm material, so a Locked Stage reads as "not yet" next to the gold and wood shields.
 
 ### Tertiary
@@ -352,11 +358,11 @@ These come from art direction 4. `apps/web/src/core/components/game/tokens.ts` h
 
 ### Neutral
 
-- **Parchment** (`parchment`): dialogs, the Details Panel, the Tutorial panel and option cards. `parchment-deep` is the larger panel under option cards, `parchment-lit` is a selected option, and `parchment-rule` is the border of an option that is not selected.
+- **Parchment** (`parchment`): dialogs, the Details Panel, the Tutorial panel and option cards. `parchment-deep` is the larger panel under option cards, `parchment-lit` is a selected option, `parchment-rule` is the border of an option that is not selected, and `parchment-well` is a sunken well cut into a page.
 - **Ink** (`ink`): all text on parchment. `ink-soft` is secondary text (a Stage subtitle, a Deck description), `ink-faded` is reminder and flavor text, and `ink-on-gold` is the text on a gold button or chip.
 - **Night Plate** (`night-plate`): the dark HUD surface, at 70% to 95% opacity: the Turn badge, the Hero panels, tooltips, ghost buttons, the portrait guard. `plate-ember` is the bright center of a round badge, and `plate-socket` is a key cap or an enemy Countdown.
 - **Cream** (`cream`): all text on a dark plate or on wood. `cream-dim` is secondary text on a dark plate.
-- **Sky and meadow** (`town-sky`, `battle-meadow`): the back color of the Town and the Battle while their paintings load. In the Battle, `battle-meadow` is the base of a gradient forest clearing, which also shows while a Region has no Battle Painting. `region-sky` is the back color of the Campaign while its Region Map loads. `crypt` is the back color of the Dungeons mine, and `shop` is the back color of the Packs screen, while their paintings load.
+- **Sky and meadow** (`town-sky`, `battle-meadow`): the back color of the Town and the Battle while their paintings load. `harbour-sky` is the pale sky and water of the Seaport and the Heynspire. In the Battle, `battle-meadow` is the base of a gradient forest clearing, which also shows while a Region has no Battle Painting. `region-sky` is the back color of the Campaign while its Region Map loads. `crypt` is the back color of the Dungeons mine, and `shop` is the back color of the Packs screen, while their paintings load.
 
 ### Named Rules
 

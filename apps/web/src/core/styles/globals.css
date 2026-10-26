@@ -169,6 +169,10 @@ html[data-reduced-motion="true"] {
   --color-gold-trim: #e9c46a;
   --color-bronze: #b47f36;
   --color-bronze-rim: #e7bb6a;
+  --color-bronze-light: #f7dc9c;
+  --color-bronze-mid: #c99442;
+  --color-bronze-sheen: #e9c27a;
+  --color-bronze-deep: #8a5a20;
   --color-pewter: #8d9297;
   --color-stone: #757a80;
   --color-wood: #563720;
@@ -184,6 +188,7 @@ html[data-reduced-motion="true"] {
   --color-parchment-deep: #ead9b4;
   --color-parchment-lit: #fff3d1;
   --color-parchment-rule: #c9b48c;
+  --color-parchment-well: #f1e2c2;
   --color-ink: #2a1d12;
   --color-ink-soft: #5b4632;
   --color-ink-faded: #6b5238;
@@ -211,6 +216,7 @@ html[data-reduced-motion="true"] {
 
   /* Scenes behind a painting that is still loading. */
   --color-town-sky: #8fd0f5;
+  --color-harbour-sky: #9fe7f5;
   --color-battle-meadow: #44772c;
   --color-region-sky: #9fcbe8;
   --color-crypt: #241d18;
