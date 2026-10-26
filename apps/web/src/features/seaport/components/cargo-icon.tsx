@@ -1,6 +1,7 @@
 import type { ExpeditionCargo, ForgeStoneTier } from "@workspace/rules";
 
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
+import { SEAPORT_COLORS } from "@/features/seaport/tokens";
 import { BalanceIcon } from "@/features/town/components/balance-icon";
 
 /**
@@ -13,8 +14,8 @@ const XpSeal = ({ className }: { readonly className?: string }) => (
       cx="12"
       cy="12"
       r="10"
-      fill="#9fe7f5"
-      stroke="#0e6f86"
+      fill="var(--color-harbour-sky)"
+      stroke="var(--color-tutorial-teal)"
       strokeWidth="2"
     />
     <circle
@@ -22,14 +23,14 @@ const XpSeal = ({ className }: { readonly className?: string }) => (
       cy="12"
       r="6.6"
       fill="none"
-      stroke="#0e6f86"
+      stroke="var(--color-tutorial-teal)"
       strokeOpacity="0.45"
       strokeWidth="1.2"
     />
     <path
       d="M7.4 14.2 12 9.6l4.6 4.6"
       fill="none"
-      stroke="#0b4f61"
+      stroke={SEAPORT_COLORS.xpSealDeep}
       strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -37,7 +38,7 @@ const XpSeal = ({ className }: { readonly className?: string }) => (
     <path
       d="M5.6 10.4A6.6 6.6 0 0 1 10.4 5.6"
       fill="none"
-      stroke="#ffffff"
+      stroke={SEAPORT_COLORS.white}
       strokeOpacity="0.8"
       strokeWidth="1.5"
       strokeLinecap="round"

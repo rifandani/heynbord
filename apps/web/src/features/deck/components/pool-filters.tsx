@@ -20,6 +20,7 @@ import {
   classText,
   RACES_WITH_CARDS,
 } from "@/features/deck/deck";
+import { DECK_CSS } from "@/features/deck/tokens";
 
 const OWNERSHIP: readonly OwnershipFilter[] = ["all", "owned", "notOwned"];
 const KINDS: readonly KindFilter[] = ["all", "creature", "skill"];
@@ -35,18 +36,18 @@ const segment =
   ({ isSelected }: { readonly isSelected: boolean }) =>
     cn(
       "relative isolate flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-xs font-bold whitespace-nowrap transition-colors duration-200 outline-none select-none",
-      "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+      "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
       "[@media(max-height:500px)]:h-6 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:text-[11px]",
-      isSelected && "text-[#2a1a05]",
+      isSelected && "text-ink-on-gold",
       !isSelected &&
         (tone === "parchment"
-          ? "text-[#5b4632] data-[hovered]:bg-[#f6ead0] data-[hovered]:text-[#2a1d12]"
-          : "text-[#fff6df]/85 data-[hovered]:bg-[#fff6df]/10 data-[hovered]:text-[#fff6df]")
+          ? "text-ink-soft data-[hovered]:bg-parchment data-[hovered]:text-ink"
+          : "text-cream/85 data-[hovered]:bg-cream/10 data-[hovered]:text-cream")
     );
 
 const STRIP: Readonly<Record<FilterTone, string>> = {
-  parchment: "border-[#c9b48c] bg-[#ead9b4]",
-  night: "border-[#e9c46a]/45 bg-[#1c140e]/70",
+  parchment: "border-parchment-rule bg-parchment-deep",
+  night: "border-gold-trim/45 bg-night-plate/70",
 };
 
 /**
@@ -54,9 +55,12 @@ const STRIP: Readonly<Record<FilterTone, string>> = {
  * selection changes, it slides along the strip to the new segment.
  */
 const segmentPlate = cn(
-  "absolute top-0 left-0 -z-10 size-full rounded-md bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[0_1px_2px_rgba(60,30,5,0.45)]",
+  "from-gold-light to-gold absolute top-0 left-0 -z-10 size-full rounded-md bg-gradient-to-b",
   "motion-safe:transition-[translate,width,height] motion-safe:duration-[220ms] motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)]"
 );
+
+/** The drop of the gold plate of the selected segment. */
+const SEGMENT_PLATE_STYLE = { boxShadow: DECK_CSS.segmentPlate };
 
 /**
  * One filter of the pool: a row of segments on a strip. The selected segment
@@ -109,6 +113,7 @@ const Segments = <Value extends string>({
             <SelectionIndicator
               isSelected={isSelected}
               className={segmentPlate}
+              style={SEGMENT_PLATE_STYLE}
             />
           </>
         )}

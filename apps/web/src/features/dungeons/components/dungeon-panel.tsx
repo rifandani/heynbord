@@ -34,6 +34,12 @@ import type {
   StoneCount,
 } from "@/features/dungeons/dungeons";
 import { dungeonRewardPreview } from "@/features/dungeons/dungeons";
+import {
+  cssVars,
+  DUNGEON_CSS,
+  DUNGEON_LOCK_CHIP,
+  DUNGEON_PROBLEM_MARK,
+} from "@/features/dungeons/tokens";
 import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { useDungeonsHints } from "@/features/hint/use-hints";
 import { useNumberFormat } from "@/features/i18n/use-number-format";
@@ -79,7 +85,7 @@ const XpPlate = ({ balances }: { readonly balances: Balances }) => {
   }
   return (
     <p
-      className={cn(PLATE, "text-[#9fe7f5]")}
+      className={cn(PLATE, "text-harbour-sky")}
       data-testid="dungeon-reward-xp"
       data-xp={balances.xp}
     >
@@ -134,7 +140,7 @@ const Chance = ({
       >
         <Button
           onPress={onPress}
-          className="-mx-1 flex cursor-default items-center gap-1 rounded-md px-1 py-0.5 text-xs leading-none font-bold text-[#2a1d12] tabular-nums outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:bg-[#2a1d12]/8"
+          className="text-ink data-[focus-visible]:ring-focus-cream data-[hovered]:bg-ink/8 -mx-1 flex cursor-default items-center gap-1 rounded-md px-1 py-0.5 text-xs leading-none font-bold tabular-nums outline-none data-[focus-visible]:ring-4"
         >
           <span className="sr-only">{words}</span>
           <span aria-hidden className="grid size-4 shrink-0 place-items-center">
@@ -145,7 +151,7 @@ const Chance = ({
         <GameTooltip
           placement="top"
           offset={6}
-          className="max-w-56 rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-2.5 py-1.5 text-xs text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+          className="border-gold-trim/70 bg-night-plate/95 text-cream shadow-piece max-w-56 rounded-lg border-2 px-2.5 py-1.5 text-xs"
         >
           {words}
         </GameTooltip>
@@ -206,11 +212,11 @@ const FirstWinCard = ({
           >
             {tr(`cards.${cardId}.name`)}
           </span>
-          <span className="text-xs font-bold text-[#6b5238]">
+          <span className="text-ink-faded text-xs font-bold">
             {tr(`ranks.${rank}`)}
           </span>
         </p>
-        <p className="mt-0.5 text-xs leading-snug font-bold text-[#5b4632]">
+        <p className="text-ink-soft mt-0.5 text-xs leading-snug font-bold">
           {claimed
             ? `${tr("dungeons.rewards.claimed")} · ${tr("dungeons.rewards.eachWin")}`
             : tr("dungeons.rewards.firstWin")}
@@ -249,7 +255,7 @@ const RewardRow = ({ slot }: { readonly slot: DungeonSlot }) => {
               <XpPlate balances={win} />
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 [@media(max-height:500px)]:mt-1">
-              <p className="text-xs font-bold text-[#5b4632]">
+              <p className="text-ink-soft text-xs font-bold">
                 {tr("dungeons.rewards.maybe")}
               </p>
               <ul className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
@@ -276,7 +282,7 @@ const RewardRow = ({ slot }: { readonly slot: DungeonSlot }) => {
                   icon={
                     <GlyphIcon
                       glyph="cards"
-                      className="size-3.5 text-[#7a5310]"
+                      className="text-gold-deep size-3.5"
                     />
                   }
                   label={tr("dungeons.rewards.cardChanceShort", {
@@ -348,9 +354,13 @@ const PanelHeader = ({
   const { tr } = useGameText();
   const { dungeon } = slot;
   return (
-    <header className="flex items-start gap-3 border-b-2 border-[#c9b48c] px-5 pt-4 pb-3 [@media(max-height:500px)]:items-center [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1.5">
+    <header className="border-parchment-rule flex items-start gap-3 border-b-2 px-5 pt-4 pb-3 [@media(max-height:500px)]:items-center [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-2 [@media(max-height:500px)]:pb-1.5">
       <span
-        className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-[#fff6df] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-8"
+        className="border-bronze-rim text-cream grid size-11 shrink-0 place-items-center rounded-full border-2 [@media(max-height:500px)]:size-8"
+        style={{
+          backgroundImage: DUNGEON_CSS.seal,
+          boxShadow: DUNGEON_CSS.plate2,
+        }}
         aria-hidden
       >
         <GlyphIcon
@@ -367,7 +377,7 @@ const PanelHeader = ({
             ? tr(`dungeons.${dungeon.id}.name`)
             : tr("battle.dungeonName", { number: slot.number })}
         </h2>
-        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-[#5b4632] [@media(max-height:500px)]:mt-0.5">
+        <p className="text-ink-soft mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold [@media(max-height:500px)]:mt-0.5">
           <span>
             {tr("battle.dungeonName", { number: slot.number })} ·{" "}
             {tr("campaign.panel.level", { level: slot.unlockLevel })}
@@ -376,12 +386,12 @@ const PanelHeader = ({
             <span
               className={cn(
                 CHIP,
-                "bg-[#7a5310] text-[#fff6df] tabular-nums shadow-[inset_0_0_0_1px_#e7bb6a]"
+                "bg-gold-deep text-cream ring-bronze-rim tabular-nums ring-1 ring-inset"
               )}
               data-testid="dungeon-wins"
               data-wins={slot.wins}
             >
-              <GlyphIcon glyph="check" className="size-3 text-[#ffd75a]" />
+              <GlyphIcon glyph="check" className="text-ready-gold size-3" />
               {tr("dungeons.wins", { count: slot.wins })}
             </span>
           ) : null}
@@ -389,7 +399,7 @@ const PanelHeader = ({
             <span
               className={cn(
                 CHIP,
-                "bg-[#ffd75a]/45 text-[#2a1a05] shadow-[inset_0_0_0_1px_#7a5310]"
+                "bg-ready-gold/45 text-ink-on-gold ring-gold-deep ring-1 ring-inset"
               )}
               data-testid="dungeon-state"
             >
@@ -399,10 +409,8 @@ const PanelHeader = ({
           ) : null}
           {slot.state === "open" ? null : (
             <span
-              className={cn(
-                CHIP,
-                "bg-[#5d6166] text-[#fff6df] shadow-[inset_0_0_0_1px_#a9aeb3]"
-              )}
+              className={cn(CHIP, "text-cream")}
+              style={DUNGEON_LOCK_CHIP}
               data-testid="dungeon-state"
             >
               <GlyphIcon glyph="lock" className="size-3" />
@@ -520,6 +528,17 @@ const PanelActions = ({
   );
 };
 
+/** The icon of a Dungeon that the Player level has not opened: the neutral of the lock. */
+const noteLook = (state: DungeonSlot["state"]) =>
+  state === "locked"
+    ? {
+        icon: "text-(--note-icon)",
+        style: cssVars({
+          "--note-icon": DUNGEON_LOCK_CHIP.backgroundColor ?? "",
+        }),
+      }
+    : { icon: "text-gold-deep", style: undefined };
+
 /**
  * The Dungeon Panel (GDD 8.4, 11.1): a parchment sheet docked at the right of
  * the Dungeons screen, open at all times, as the Floor Panel. It shows the
@@ -554,6 +573,7 @@ export const DungeonPanel = ({
   const open = dungeon !== null && slot.state === "open";
   const sweep = useSweep("dungeon", open ? dungeon.id : null, open);
   const sweepable = open && isDungeonSweepable(slot.wins);
+  const note = noteLook(slot.state);
   useDungeonsHints(open && sweep.result === null ? slot.wins : null);
   const sweepNow = (tickets: number) => {
     if (chosen) {
@@ -564,9 +584,10 @@ export const DungeonPanel = ({
     <aside
       aria-labelledby={titleId}
       className={cn(
-        "absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+4.25rem)] right-[max(1rem,env(safe-area-inset-right))] bottom-[calc(var(--town-bar)+8px)] flex w-[min(440px,38vw)] flex-col overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] shadow-[0_24px_48px_rgba(0,0,0,0.45)]",
+        "border-frame-wood bg-parchment text-ink absolute top-[calc(max(0.5rem,env(safe-area-inset-top))+4.25rem)] right-[max(1rem,env(safe-area-inset-right))] bottom-[calc(var(--town-bar)+8px)] flex w-[min(440px,38vw)] flex-col overflow-hidden rounded-2xl border-4",
         "[@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+2.75rem)] [@media(max-height:500px)]:right-[max(0.5rem,env(safe-area-inset-right))] [@media(max-height:500px)]:bottom-[calc(var(--town-bar)+4px)] [@media(max-height:500px)]:w-[min(460px,54vw)] [@media(max-height:500px)]:rounded-xl [@media(max-height:500px)]:border-[3px]"
       )}
+      style={{ boxShadow: DUNGEON_CSS.panelLift }}
       data-testid="dungeon-panel"
       data-dungeon={slot.number}
     >
@@ -587,7 +608,7 @@ export const DungeonPanel = ({
               onClose={sweep.handleResultClose}
             />
           ) : (
-            <div className="divide-y divide-[#c9b48c]/70">
+            <div className="divide-parchment-rule/70 divide-y">
               <BossesRow slot={slot} active={active} onActive={onActive} />
               <RewardRow slot={slot} />
               {open ? (
@@ -604,7 +625,7 @@ export const DungeonPanel = ({
           )}
         </div>
         <footer
-          className="flex flex-col gap-2 border-t-2 border-[#c9b48c] bg-[#ead9b4]/60 px-5 pt-3 pb-4 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-2"
+          className="border-parchment-rule bg-parchment-deep/60 flex flex-col gap-2 border-t-2 px-5 pt-3 pb-4 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-3.5 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-2"
           data-testid="dungeon-panel-footer"
         >
           {open && dungeon ? (
@@ -621,11 +642,15 @@ export const DungeonPanel = ({
               <>
                 {problem && chosen ? (
                   <p
-                    className="flex items-start justify-center gap-2 text-center text-xs leading-snug font-semibold text-[#5b2a0c]"
+                    className="flex items-start justify-center gap-2 text-center text-xs leading-snug font-semibold text-(--problem-text)"
+                    style={cssVars({
+                      "--problem-text": DUNGEON_PROBLEM_MARK.borderColor ?? "",
+                    })}
                     data-testid="dungeon-fight-problem"
                   >
                     <span
-                      className="mt-[0.4em] size-2 shrink-0 rotate-45 border border-[#5b2a0c] bg-[#b4521a]"
+                      className="mt-[0.4em] size-2 shrink-0 rotate-45 border"
+                      style={DUNGEON_PROBLEM_MARK}
                       aria-hidden
                     />
                     {text(problemText(problem))}
@@ -652,12 +677,13 @@ export const DungeonPanel = ({
             )
           ) : (
             <p
-              className="flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-[#c9b48c] bg-[#ead9b4] px-3 py-2 text-center text-sm font-bold text-[#5b4632] [@media(max-height:500px)]:min-h-10 [@media(max-height:500px)]:text-xs"
+              className="border-parchment-rule bg-parchment-deep text-ink-soft flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 px-3 py-2 text-center text-sm font-bold [@media(max-height:500px)]:min-h-10 [@media(max-height:500px)]:text-xs"
+              style={note.style}
               data-testid="dungeon-locked"
             >
               <GlyphIcon
                 glyph="lock"
-                className="size-4 shrink-0 text-[#5d6166]"
+                className={cn("size-4 shrink-0", note.icon)}
               />
               {slot.state === "locked"
                 ? tr("town.opensAtLevel", { level: slot.unlockLevel })

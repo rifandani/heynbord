@@ -19,6 +19,10 @@ import {
   heynspireArt,
   PAINTED_PART_WIDTH,
 } from "@/features/heynspire/heynspire-art";
+import {
+  HEYNSPIRE_COLORS as C,
+  HEYNSPIRE_CSS as CSS,
+} from "@/features/heynspire/tokens";
 
 /** The phone in landscape (DESIGN.md, The Short Screen Rule). */
 const SHORT_SCREEN = "(max-height: 500px)";
@@ -47,12 +51,13 @@ const useStopLabel = () => {
 const SummitFlag = ({ climbed }: { readonly climbed: boolean }) => (
   <svg
     viewBox="0 0 100 40"
-    className="absolute top-[1.5%] left-1/2 w-[34%] overflow-visible drop-shadow-[0_2px_1px_rgba(42,26,12,0.35)]"
+    className="absolute top-[1.5%] left-1/2 w-[34%] overflow-visible"
+    style={{ filter: CSS.flagDrop }}
   >
     <path
       d="M1 0 C30 4 60 -2 98 10 C64 14 34 22 1 30 Z"
-      fill={climbed ? "#ffd75a" : "#8d9297"}
-      stroke="#2a1a0c"
+      fill={climbed ? C.flagGold : C.flagGrey}
+      stroke={C.outline}
       strokeWidth={2}
       strokeLinejoin="round"
     />
@@ -100,26 +105,26 @@ const Summit = ({ climbed }: { readonly climbed: boolean }) => {
         <svg viewBox="0 0 120 132" className="block w-full overflow-visible">
           <defs>
             <linearGradient id="summit-roof-lit" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#5f80cf" />
-              <stop offset="1" stopColor="#36569f" />
+              <stop offset="0" stopColor={C.roofLit} />
+              <stop offset="1" stopColor={C.roofShade} />
             </linearGradient>
             <linearGradient id="summit-stone" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stopColor="#fbf3e1" />
-              <stop offset="0.6" stopColor="#e3d4b3" />
-              <stop offset="1" stopColor="#b9a47c" />
+              <stop offset="0" stopColor={C.stoneLight} />
+              <stop offset="0.6" stopColor={C.stoneMid} />
+              <stop offset="1" stopColor={C.stoneDark} />
             </linearGradient>
           </defs>
           {/* The flag on the top of the roof. */}
-          <path d="M60 30 V2" stroke="#2a1a0c" strokeWidth={3.2} />
+          <path d="M60 30 V2" stroke={C.outline} strokeWidth={3.2} />
           <path
             d="M60 30 V2"
-            stroke={climbed ? "#e7bb6a" : "#b8bcc0"}
+            stroke={climbed ? C.goldTrim : C.pole}
             strokeWidth={1.6}
           />
           <path
             d="M61 3 L84 8 L61 15 Z"
-            fill={climbed ? "#ffd75a" : "#8d9297"}
-            stroke="#2a1a0c"
+            fill={climbed ? C.flagGold : C.flagGrey}
+            stroke={C.outline}
             strokeWidth={1.4}
             strokeLinejoin="round"
           />
@@ -128,7 +133,7 @@ const Summit = ({ climbed }: { readonly climbed: boolean }) => {
             d="M60 24 L16 98 Q38 104 60 104 Z"
             fill="url(#summit-roof-lit)"
           />
-          <path d="M60 24 L104 98 Q82 104 60 104 Z" fill="#2a4590" />
+          <path d="M60 24 L104 98 Q82 104 60 104 Z" fill={C.roofShade} />
           {[44, 60, 76, 92].map((y) => {
             const half = ((y - 24) / 74) * 44;
             return (
@@ -136,7 +141,7 @@ const Summit = ({ climbed }: { readonly climbed: boolean }) => {
                 key={y}
                 d={`M${60 - half} ${y} Q60 ${y + 6} ${60 + half} ${y}`}
                 fill="none"
-                stroke="#1c2f66"
+                stroke={C.roofLine}
                 strokeOpacity={0.45}
                 strokeWidth={1.2}
               />
@@ -144,7 +149,7 @@ const Summit = ({ climbed }: { readonly climbed: boolean }) => {
           })}
           <path
             d="M58 28 L22 92"
-            stroke="#a9c1f2"
+            stroke={C.roofHighlight}
             strokeOpacity={0.55}
             strokeWidth={2}
             strokeLinecap="round"
@@ -152,26 +157,32 @@ const Summit = ({ climbed }: { readonly climbed: boolean }) => {
           <path
             d="M60 24 L16 98 Q60 108 104 98 Z"
             fill="none"
-            stroke="#1c2f66"
+            stroke={C.roofLine}
             strokeWidth={1.8}
             strokeLinejoin="round"
           />
           <path
             d="M18 97 Q60 107 102 97"
             fill="none"
-            stroke="#e7bb6a"
+            stroke={C.goldTrim}
             strokeWidth={2.4}
           />
-          <circle cx={60} cy={25} r={3.4} fill="#e7bb6a" stroke="#2a1a0c" />
+          <circle
+            cx={60}
+            cy={25}
+            r={3.4}
+            fill={C.goldTrim}
+            stroke={C.outline}
+          />
           {/* The ring of merlons under the roof. */}
           <path
             d="M12 104 H24 V98 H34 V104 H46 V98 H56 V104 H64 V98 H74 V104 H86 V98 H96 V104 H108 V132 H12 Z"
             fill="url(#summit-stone)"
-            stroke="#8a7552"
+            stroke={C.stoneEdge}
             strokeWidth={1.2}
             strokeLinejoin="round"
           />
-          <path d="M12 113 H108" stroke="#8a7552" strokeOpacity={0.5} />
+          <path d="M12 113 H108" stroke={C.stoneEdge} strokeOpacity={0.5} />
         </svg>
       )}
     </div>
@@ -226,12 +237,24 @@ const Base = () => {
         />
       ) : (
         <div className="relative h-[calc(var(--storey-h)*0.7)]">
-          <span className="absolute inset-x-[7%] top-0 h-[22%] rounded-[3px] bg-[url(/heynspire/tower-stone.webp)] bg-cover shadow-[0_3px_5px_rgba(60,40,20,0.35)]" />
+          <span
+            className="absolute inset-x-[7%] top-0 h-[22%] rounded-[3px] bg-[url(/heynspire/tower-stone.webp)] bg-cover"
+            style={{ boxShadow: CSS.stoneDrop }}
+          />
           <span className="absolute inset-x-0 top-[22%] h-[30%] rounded-[3px] bg-[url(/heynspire/tower-stone.webp)] bg-cover bg-bottom" />
-          <span className="absolute inset-x-[7%] top-0 h-[22%] rounded-[3px] bg-[linear-gradient(90deg,rgba(255,250,235,0.3),transparent_45%,rgba(60,40,22,0.35))]" />
-          <span className="absolute inset-x-0 top-[22%] h-[30%] rounded-[3px] bg-[linear-gradient(90deg,rgba(255,250,235,0.3),transparent_45%,rgba(60,40,22,0.35))]" />
+          <span
+            className="absolute inset-x-[7%] top-0 h-[22%] rounded-[3px]"
+            style={{ backgroundImage: CSS.baseStone }}
+          />
+          <span
+            className="absolute inset-x-0 top-[22%] h-[30%] rounded-[3px]"
+            style={{ backgroundImage: CSS.baseStone }}
+          />
           {/* The clouds that the tower stands in. */}
-          <span className="absolute -inset-x-[30%] top-[30%] bottom-0 bg-[radial-gradient(ellipse_50%_70%_at_50%_100%,#ffffff_0%,rgba(255,255,255,0.92)_45%,rgba(255,255,255,0)_100%)]" />
+          <span
+            className="absolute -inset-x-[30%] top-[30%] bottom-0"
+            style={{ backgroundImage: CSS.cloud }}
+          />
         </div>
       )}
     </div>
@@ -263,16 +286,22 @@ const Spine = ({
       className="absolute top-1/2 left-[max(1rem,env(safe-area-inset-left))] flex h-[min(64%,440px)] w-[var(--spine-w)] -translate-y-1/2 flex-col items-center [@media(max-height:500px)]:left-[max(0.5rem,env(safe-area-inset-left))] [@media(max-height:500px)]:h-[78%]"
       data-testid="heynspire-spine"
     >
-      <div className="relative w-2 flex-1 rounded-full border-2 border-[#2a1a0c]/80 bg-[#1c140e]/75 shadow-[inset_0_1px_3px_rgba(0,0,0,0.6)]">
+      <div
+        className="border-wood-edge/80 bg-night-plate/75 relative w-2 flex-1 rounded-full border-2"
+        style={{ boxShadow: CSS.railInset }}
+      >
         <span
-          className="absolute inset-x-0 bottom-0 rounded-full bg-gradient-to-r from-[#f0d08c] to-[#a3722f]"
-          style={{ height: `${(won / floors.length) * 100}%` }}
+          className="absolute inset-x-0 bottom-0 rounded-full"
+          style={{
+            height: `${(won / floors.length) * 100}%`,
+            backgroundImage: CSS.spineLit,
+          }}
           aria-hidden
         />
         {climb.current === null ? null : (
           <span
-            className="absolute left-1/2 size-3 -translate-x-1/2 translate-y-1/2 rotate-45 rounded-[2px] border-2 border-[#7a5310] bg-[#ffd75a] shadow-[0_0_8px_rgba(255,215,90,0.9)]"
-            style={{ bottom: at(climb.current) }}
+            className="border-gold-deep bg-ready-gold absolute left-1/2 size-3 -translate-x-1/2 translate-y-1/2 rotate-45 rounded-[2px] border-2"
+            style={{ bottom: at(climb.current), boxShadow: CSS.markGlow }}
             aria-hidden
           />
         )}
@@ -283,8 +312,11 @@ const Spine = ({
                   key={stop.number}
                   aria-label={label(stop)}
                   onPress={() => onJump(stop.number)}
-                  className="group absolute left-1/2 grid size-7 -translate-x-1/2 translate-y-1/2 cursor-pointer place-items-center rounded-full border-2 border-[#e9c46a]/70 bg-[#1c140e] shadow-[0_2px_0_rgba(0,0,0,0.45)] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:border-[#ffe08a] data-[pressed]:translate-y-[calc(50%+1px)] [@media(max-height:500px)]:size-6"
-                  style={{ bottom: at(stop.number) }}
+                  className="group border-gold-trim/70 bg-night-plate data-[focus-visible]:ring-focus-cream data-[hovered]:border-gold-light absolute left-1/2 grid size-7 -translate-x-1/2 translate-y-1/2 cursor-pointer place-items-center rounded-full border-2 outline-none data-[focus-visible]:ring-4 data-[pressed]:translate-y-[calc(50%+1px)] [@media(max-height:500px)]:size-6"
+                  style={{
+                    bottom: at(stop.number),
+                    boxShadow: CSS.plateDrop,
+                  }}
                   data-testid={`spine-boss-${stop.number}`}
                 >
                   <BossCrown
@@ -410,10 +442,11 @@ export const TowerColumn = ({
     >
       <div
         ref={column}
-        className={cn(
-          "absolute inset-0 [scrollbar-width:none] overflow-x-hidden overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden",
-          "[mask-image:linear-gradient(180deg,transparent_0,#000_7%,#000_93%,transparent_100%)]"
-        )}
+        className="absolute inset-0 [scrollbar-width:none] overflow-x-hidden overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden"
+        style={{
+          maskImage: CSS.climbFade,
+          WebkitMaskImage: CSS.climbFade,
+        }}
         onKeyDownCapture={onKeyDownCapture}
       >
         <div
@@ -487,7 +520,7 @@ export const TowerColumn = ({
           onPress={() => current !== null && jump(current)}
           aria-label={tr("heynspire.toCurrent", { number: climb.current })}
           className={cn(
-            "absolute left-1/2 flex min-h-9 -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-lg border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-3 text-xs font-bold whitespace-nowrap text-[#2a1a05] shadow-[0_3px_0_rgba(0,0,0,0.45)] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[pressed]:translate-y-px data-[pressed]:shadow-[0_1px_0_rgba(0,0,0,0.45)]",
+            "border-gold-deep from-gold-light to-gold text-ink-on-gold shadow-piece data-[focus-visible]:ring-focus-cream data-[pressed]:shadow-piece-press absolute left-1/2 flex min-h-9 -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-lg border-2 bg-gradient-to-b px-3 text-xs font-bold whitespace-nowrap outline-none data-[focus-visible]:ring-4 data-[pressed]:translate-y-px",
             "motion-safe:animate-[stage-panel-ink_220ms_cubic-bezier(0.2,0.8,0.2,1)_both]",
             away === "up" ? "top-3" : "bottom-3",
             short && "left-[calc(var(--spine-w)+0.75rem+var(--tower-w)/2)]"

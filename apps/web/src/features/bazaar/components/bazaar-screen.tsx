@@ -34,6 +34,12 @@ import { BazaarScene } from "@/features/bazaar/components/bazaar-scene";
 import { BoardSkinThumb } from "@/features/bazaar/components/board-skin-look";
 import { CosmeticShelf } from "@/features/bazaar/components/cosmetic-shelf";
 import { GearLookThumb } from "@/features/bazaar/components/gear-look-icons";
+import {
+  BAZAAR_ACTIVE,
+  BAZAAR_COLORS,
+  BAZAAR_CSS,
+  cssVars,
+} from "@/features/bazaar/tokens";
 import { useBazaar } from "@/features/bazaar/use-bazaar";
 import { HeroPortrait } from "@/features/hero/components/hero-portrait";
 import { BalancePlate } from "@/features/town/components/balance-plate";
@@ -117,7 +123,7 @@ const LookThumb = ({
       onPointerEnter={onPreview}
       onFocus={onPreview}
       onPress={onPreview}
-      className="shrink-0 rounded-lg outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+      className="data-[focus-visible]:ring-focus-cream shrink-0 rounded-lg outline-none data-[focus-visible]:ring-4"
       data-testid="bazaar-preview"
     >
       <PlateLook family={family} look={look} classId={classId} />
@@ -155,12 +161,17 @@ const ItemPlate = ({
     <li
       className={cn(
         "flex items-center gap-3 rounded-xl p-2.5",
-        "border-2 border-[#e9c46a]/50 bg-[#1c140e]/85 text-[#fff6df]",
-        "shadow-[0_3px_0_rgba(0,0,0,0.45)]",
-        active &&
-          "border-[#ffd75a] shadow-[0_0_0_1px_#ffd75a,0_3px_0_rgba(0,0,0,0.45)]",
+        "border-gold-trim/50 bg-night-plate/85 text-cream border-2",
+        active && "border-ready-gold",
         !affordable && !owned && "border-dashed"
       )}
+      style={{
+        ...cssVars({
+          "--bazaar-dim": BAZAAR_COLORS.dim,
+          "--bazaar-owned": BAZAAR_COLORS.ownedGreen,
+        }),
+        ...(active ? BAZAAR_ACTIVE : { boxShadow: BAZAAR_CSS.plate3 }),
+      }}
       data-testid="bazaar-item"
       data-cosmetic-id={item.id}
       data-owned={owned}
@@ -169,7 +180,7 @@ const ItemPlate = ({
       {thumb}
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{name}</p>
-        <p className="text-xs text-[#cbbfa5]">
+        <p className="text-xs text-(--bazaar-dim)">
           {active || owned
             ? tr("bazaar.owned")
             : tr("bazaar.price", { amount: price })}
@@ -179,13 +190,13 @@ const ItemPlate = ({
         <GlyphIcon
           glyph="check"
           label={tr("bazaar.inUse")}
-          className="size-6 shrink-0 text-[#ffd75a]"
+          className="text-ready-gold size-6 shrink-0"
         />
       ) : owned && onUse === undefined ? (
         <GlyphIcon
           glyph="check"
           label={tr("bazaar.ownedLabel")}
-          className="size-6 shrink-0 text-[#8fd08f]"
+          className="size-6 shrink-0 text-(--bazaar-owned)"
         />
       ) : owned ? (
         <GameButton
@@ -236,11 +247,16 @@ const StandardPlate = ({
     <li
       className={cn(
         "flex items-center gap-3 rounded-xl p-2.5",
-        "border-2 border-[#e9c46a]/50 bg-[#1c140e]/85 text-[#fff6df]",
-        "shadow-[0_3px_0_rgba(0,0,0,0.45)]",
-        active &&
-          "border-[#ffd75a] shadow-[0_0_0_1px_#ffd75a,0_3px_0_rgba(0,0,0,0.45)]"
+        "border-gold-trim/50 bg-night-plate/85 text-cream border-2",
+        active && "border-ready-gold"
       )}
+      style={{
+        ...cssVars({
+          "--bazaar-dim": BAZAAR_COLORS.dim,
+          "--bazaar-owned": BAZAAR_COLORS.ownedGreen,
+        }),
+        ...(active ? BAZAAR_ACTIVE : { boxShadow: BAZAAR_CSS.plate3 }),
+      }}
       data-testid="cosmetic-standard"
       data-family={family}
       data-active={active || undefined}
@@ -250,14 +266,14 @@ const StandardPlate = ({
         onPointerEnter={onPreview}
         onFocus={onPreview}
         onPress={onPreview}
-        className="shrink-0 rounded-lg outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+        className="data-[focus-visible]:ring-focus-cream shrink-0 rounded-lg outline-none data-[focus-visible]:ring-4"
         data-testid="bazaar-preview"
       >
         <PlateLook family={family} look={null} classId={classId} />
       </Button>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{name}</p>
-        <p className="text-xs text-[#cbbfa5]">
+        <p className="text-xs text-(--bazaar-dim)">
           {active ? tr("bazaar.owned") : tr("bazaar.alwaysYours")}
         </p>
       </div>
@@ -265,7 +281,7 @@ const StandardPlate = ({
         <GlyphIcon
           glyph="check"
           label={tr("bazaar.inUse")}
-          className="size-6 shrink-0 text-[#ffd75a]"
+          className="text-ready-gold size-6 shrink-0"
         />
       ) : (
         <GameButton
@@ -424,7 +440,7 @@ export const BazaarScreen = () => {
                         lookFamily === null ? (
                           <GlyphIcon
                             glyph={FAMILY_GLYPH[family]}
-                            className="size-9 shrink-0 text-[#e9c46a]"
+                            className="text-gold-trim size-9 shrink-0"
                             label={tr(`bazaar.families.${family}`)}
                           />
                         ) : (

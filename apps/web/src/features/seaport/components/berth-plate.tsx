@@ -28,6 +28,12 @@ import {
   voyageShare,
 } from "@/features/seaport/seaport";
 import { seaportAtom } from "@/features/seaport/seaport.atoms";
+import {
+  cssVars,
+  SEAPORT_COLORS,
+  SEAPORT_CSS,
+  SEAPORT_GROOVE,
+} from "@/features/seaport/tokens";
 import { useNow, useSeaport } from "@/features/seaport/use-seaport";
 import { useVoyageName } from "@/features/seaport/use-voyage-name";
 import { CoinAmount } from "@/features/town/components/balance-plate";
@@ -36,14 +42,14 @@ import { useCountTo } from "@/features/workshop/use-count-to";
 
 /** A small label in Inter 700, as the labels of the Dungeon Panel. */
 const LABEL =
-  "text-[0.6875rem] font-bold tracking-[0.04em] text-[#5b4632] uppercase";
+  "text-[0.6875rem] font-bold tracking-[0.04em] text-ink-soft uppercase";
 
 /** The Collect of the last voyage, which the plate shows at the berth. */
 export type LastCollect = ExpeditionCollect<Profile>;
 
 /** The parchment of the berth plate, with its frame-wood border. */
 const PARCHMENT =
-  "flex min-h-0 shrink-0 flex-col gap-2.5 overflow-y-auto overscroll-contain rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-4 py-3 text-[#2a1d12] shadow-[0_3px_0_rgba(0,0,0,0.45),0_14px_30px_rgba(0,0,0,0.4)] [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:self-start [@media(max-height:500px)]:rounded-xl [@media(max-height:500px)]:border-[3px] [@media(max-height:500px)]:p-2.5";
+  "flex min-h-0 shrink-0 flex-col gap-2.5 overflow-y-auto overscroll-contain rounded-2xl border-4 border-frame-wood bg-parchment px-4 py-3 text-ink [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:self-start [@media(max-height:500px)]:rounded-xl [@media(max-height:500px)]:border-[3px] [@media(max-height:500px)]:p-2.5";
 
 /** The big number of the plate, as the one of the Manifest (The Big Number Rule). */
 const BIG =
@@ -56,11 +62,7 @@ const stoneGroove = (tier: ForgeStoneTier) =>
 /** The groove of the clock fills in the color of the Cargo at sea. */
 const GROOVE: Readonly<
   Record<Exclude<ExpeditionCargo, "forgeStones">, string>
-> = {
-  coin: "linear-gradient(to bottom, #ffe08a, #c98f22)",
-  xp: "linear-gradient(to bottom, #9fe7f5, #0e6f86)",
-  essence: "linear-gradient(to bottom, #ffc2d8, #c2477a)",
-};
+> = SEAPORT_GROOVE;
 
 /** The Forge Stone tier of a voyage, or `null` for the other Cargoes. */
 const voyageStones = (expedition: Expedition) =>
@@ -100,7 +102,8 @@ const VoyageClock = ({
       </p>
       <span
         aria-hidden
-        className="relative h-2.5 overflow-hidden rounded-full bg-[#3a2a1c] shadow-[inset_0_1px_2px_rgba(0,0,0,0.6)]"
+        className="bg-plate-socket relative h-2.5 overflow-hidden rounded-full"
+        style={{ boxShadow: SEAPORT_CSS.clockInset }}
       >
         <span
           className="absolute inset-y-0 left-0 rounded-full motion-safe:transition-[width] motion-safe:duration-1000 motion-safe:ease-linear"
@@ -171,7 +174,7 @@ const CargoHaul = ({
         data-tier={stones.tier}
       >
         <span>{stones.count}</span>
-        <Unit className="text-[#5b4632]">
+        <Unit className="text-ink-soft">
           {tr("seaport.manifest.stones", {
             tier: tr(`forgeStones.tiers.${stones.tier}`),
           })}
@@ -203,6 +206,9 @@ const CargoHaul = ({
     value = (
       <span
         className={cn(BIG, "flex items-baseline gap-1.5")}
+        style={cssVars({
+          "--seaport-essence-ink": SEAPORT_COLORS.essenceInk,
+        })}
         data-testid={`reward-${cargo}`}
         {...(cargo === "xp"
           ? { "data-xp": reward.xp }
@@ -210,7 +216,11 @@ const CargoHaul = ({
       >
         <span aria-hidden>{format(shown)}</span>
         <span className="sr-only">{format(amount)}</span>
-        <Unit className={cargo === "xp" ? "text-xp-ink" : "text-[#8f2a55]"}>
+        <Unit
+          className={
+            cargo === "xp" ? "text-xp-ink" : "text-(--seaport-essence-ink)"
+          }
+        >
           {tr(`seaport.units.${cargo}`)}
         </Unit>
       </span>
@@ -228,11 +238,12 @@ const CargoHaul = ({
           countIn &&
             "motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
         )}
+        style={{ filter: SEAPORT_CSS.iconDrop }}
       >
         <CargoIcon
           cargo={cargo}
           tier={stones?.tier}
-          className="size-9 drop-shadow-[0_2px_0_rgba(0,0,0,0.3)] [@media(max-height:500px)]:size-6"
+          className="size-9 [@media(max-height:500px)]:size-6"
         />
       </span>
       {value}
@@ -252,7 +263,8 @@ const Receipt = ({ last }: { readonly last: LastCollect }) => {
       <CargoHaul reward={last.reward} />
       {levelUp ? (
         <p
-          className="rounded-lg border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-3 py-1 text-sm font-black text-[#2a1a05] shadow-[0_3px_0_rgba(0,0,0,0.35)] motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_200ms_both] [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-0.5 [@media(max-height:500px)]:text-xs"
+          className="border-gold-deep from-gold-light to-gold text-ink-on-gold rounded-lg border-2 bg-gradient-to-b px-3 py-1 text-sm font-black motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_200ms_both] [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:py-0.5 [@media(max-height:500px)]:text-xs"
+          style={{ boxShadow: SEAPORT_CSS.plate2Faint }}
           data-testid="berth-level-up"
         >
           {tr("battle.levelUp", { level: last.levelAfter })}
@@ -268,7 +280,7 @@ const VoyageChip = ({ expedition }: { readonly expedition: Expedition }) => {
   return (
     <p
       id="berth-voyage"
-      className="mt-1 flex w-fit items-center gap-1 rounded-md bg-[#ead9b4] py-0.5 pr-2 pl-1 text-xs leading-tight font-bold text-[#2a1d12] [@media(max-height:500px)]:mt-0.5 [@media(max-height:500px)]:text-[11px]"
+      className="bg-parchment-deep text-ink mt-1 flex w-fit items-center gap-1 rounded-md py-0.5 pr-2 pl-1 text-xs leading-tight font-bold [@media(max-height:500px)]:mt-0.5 [@media(max-height:500px)]:text-[11px]"
       data-testid="berth-voyage"
     >
       <CargoIcon
@@ -307,7 +319,8 @@ const AtSea = ({
       {confirming ? (
         <p
           role="alert"
-          className="text-xs leading-snug font-semibold text-[#8f2a2a]"
+          className="text-xs leading-snug font-semibold"
+          style={{ color: SEAPORT_COLORS.warning }}
           data-testid="berth-call-back"
         >
           {tr("seaport.berth.callBackWarning")}
@@ -315,7 +328,8 @@ const AtSea = ({
       ) : null}
       {berth.canCollect ? null : (
         <p
-          className="text-xs leading-snug text-[#8f2a2a]"
+          className="text-xs leading-snug"
+          style={{ color: SEAPORT_COLORS.warning }}
           data-testid="berth-clock-back"
         >
           {tr("seaport.berth.clockBack")}
@@ -410,13 +424,18 @@ export const BerthPlate = ({
         voyage === null ? "berth-title" : "berth-title berth-voyage"
       }
       className={PARCHMENT}
+      style={{ boxShadow: SEAPORT_CSS.parchmentLift }}
       data-testid="berth-plate"
       data-state={berth.kind}
     >
-      <header className="flex items-center gap-2.5 border-b-2 border-[#c9b48c] pb-2.5 [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-1.5">
+      <header className="border-parchment-rule flex items-center gap-2.5 border-b-2 pb-2.5 [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-1.5">
         <span
           aria-hidden
-          className="grid size-9 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-[#fff6df] shadow-[0_2px_0_rgba(0,0,0,0.35)] [@media(max-height:500px)]:size-6"
+          className="border-bronze-rim text-cream grid size-9 shrink-0 place-items-center rounded-full border-2 [@media(max-height:500px)]:size-6"
+          style={{
+            backgroundImage: SEAPORT_CSS.seal,
+            boxShadow: SEAPORT_CSS.plate2Faint,
+          }}
         >
           <GlyphIcon
             glyph="anchor"
@@ -435,7 +454,7 @@ export const BerthPlate = ({
         </div>
       </header>
       {berth.kind === "atBerth" && last === null ? (
-        <p className="text-sm leading-snug text-[#5b4632] [@media(max-height:500px)]:text-xs">
+        <p className="text-ink-soft text-sm leading-snug [@media(max-height:500px)]:text-xs">
           {tr("seaport.berth.atBerthHint")}
         </p>
       ) : null}

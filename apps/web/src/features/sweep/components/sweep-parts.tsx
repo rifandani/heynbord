@@ -43,6 +43,7 @@ import {
   stepTickets,
   TICKET_GLYPH,
 } from "@/features/sweep/sweep";
+import { SWEEP_CSS } from "@/features/sweep/tokens";
 
 /** The Sweep Tickets of `kind` that each win gives (ADR-0039). */
 const TICKETS_PER_WIN: Readonly<Record<SweepKind, number>> = {
@@ -59,7 +60,7 @@ const PEEK_FROM: Readonly<Record<SweepKind, Peek["from"]>> = {
 /** A Sweep Ticket of `kind` in Ready Gold on a small Frame Wood tile, as the Class icon of a Deck. */
 const TicketTile = ({ kind }: { readonly kind: SweepKind }) => (
   <span
-    className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#5b3a1e] text-[#ffd75a] [@media(max-height:500px)]:size-6"
+    className="bg-frame-wood text-ready-gold grid size-7 shrink-0 place-items-center rounded-lg [@media(max-height:500px)]:size-6"
     aria-hidden
   >
     <GlyphIcon glyph={TICKET_GLYPH[kind]} className="size-5 -rotate-8" />
@@ -121,7 +122,8 @@ const TicketControl = ({
         aria-valuenow={value}
         aria-valuetext={count(value)}
         onKeyDown={onKeyDown}
-        className="grid h-10 min-w-12 cursor-default place-items-center rounded-lg border-2 border-[#c9b48c] bg-[#fff3d1] px-2 text-2xl leading-none font-black text-[#2a1d12] tabular-nums shadow-[inset_0_2px_3px_rgba(42,29,18,0.18)] outline-none focus-visible:ring-4 focus-visible:ring-[#fff2a8] [@media(max-height:500px)]:h-8 [@media(max-height:500px)]:min-w-10 [@media(max-height:500px)]:text-xl"
+        className="border-parchment-rule bg-parchment-lit text-ink focus-visible:ring-focus-cream grid h-10 min-w-12 cursor-default place-items-center rounded-lg border-2 px-2 text-2xl leading-none font-black tabular-nums outline-none focus-visible:ring-4 [@media(max-height:500px)]:h-8 [@media(max-height:500px)]:min-w-10 [@media(max-height:500px)]:text-xl"
+        style={{ boxShadow: SWEEP_CSS.numberInset }}
         data-testid="sweep-tickets"
       >
         {count(value)}
@@ -200,7 +202,7 @@ export const SweepTickets = ({
       </div>
       {owned > 0 ? null : (
         <p
-          className="mt-1.5 text-xs leading-snug text-[#5b4632]"
+          className="text-ink-soft mt-1.5 text-xs leading-snug"
           data-testid="sweep-no-tickets"
         >
           {tr(`sweep.${kind}.noTickets`, { count: TICKETS_PER_WIN[kind] })}
@@ -310,7 +312,10 @@ const SweepCard = ({
         />
         {place.copies > 1 ? (
           // The `×N` plate of the Open ×10 grid.
-          <span className="absolute -right-[0.4em] -bottom-[0.4em] z-20 flex h-[2em] min-w-[2.4em] items-center justify-center rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e] px-[0.4em] text-[max(10px,1.1em)] leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.45)]">
+          <span
+            className="border-gold-trim/70 bg-night-plate text-cream absolute -right-[0.4em] -bottom-[0.4em] z-20 flex h-[2em] min-w-[2.4em] items-center justify-center rounded-lg border-2 px-[0.4em] text-[max(10px,1.1em)] leading-none font-black tabular-nums"
+            style={{ boxShadow: SWEEP_CSS.copiesPlate }}
+          >
             {tr("packs.reveal.copies", { count: place.copies })}
           </span>
         ) : null}
@@ -325,7 +330,7 @@ const SweepCard = ({
       {peek.details(target, trigger)}
       {named ? (
         <span
-          className="mt-1.5 max-w-full truncate text-xs font-bold text-[#2a1d12]"
+          className="text-ink mt-1.5 max-w-full truncate text-xs font-bold"
           aria-hidden
         >
           {name}
@@ -351,7 +356,7 @@ const SweepCards = ({ shown }: { readonly shown: ShownSweep }) => {
     return (
       <p
         className={cn(
-          "py-3 text-center text-sm text-[#6b5238] italic [@media(max-height:500px)]:py-1",
+          "text-ink-faded py-3 text-center text-sm italic [@media(max-height:500px)]:py-1",
           resultInk(1)
         )}
         data-testid="sweep-no-card"
@@ -470,13 +475,14 @@ export const SweepResult = ({
         <h3
           id="sweep-result-title"
           className={cn(
-            "font-display flex items-center gap-3 text-4xl font-black text-[#8a5a12] [@media(max-height:500px)]:text-2xl",
+            "font-display text-victory-amber flex items-center gap-3 text-4xl font-black [@media(max-height:500px)]:text-2xl",
             resultInk(0)
           )}
         >
           {tr("battle.victory")}
           <span
-            className="flex -rotate-6 items-center gap-1 rounded-[4px] border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-2 py-1 font-sans text-lg leading-none font-black text-[#2a1a05] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.35)] motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_200ms_both] [@media(max-height:500px)]:text-base"
+            className="border-gold-deep from-gold-light to-gold text-ink-on-gold flex -rotate-6 items-center gap-1 rounded-[4px] border-2 bg-gradient-to-b px-2 py-1 font-sans text-lg leading-none font-black tabular-nums motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_200ms_both] [@media(max-height:500px)]:text-base"
+            style={{ boxShadow: SWEEP_CSS.stamp }}
             aria-hidden
             data-testid="sweep-stamp"
           >
@@ -492,7 +498,7 @@ export const SweepResult = ({
       <div className="flex min-w-0 flex-col gap-3 [@media(max-height:500px)]:justify-center [@media(max-height:500px)]:gap-2">
         <div
           className={cn(
-            "flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-[#c9b48c]/70 pt-3",
+            "border-parchment-rule/70 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t pt-3",
             !stacked &&
               "[@media(max-height:500px)]:border-t-0 [@media(max-height:500px)]:pt-0",
             resultInk(2)
@@ -505,13 +511,13 @@ export const SweepResult = ({
               <ResultForgeStones stones={shown.rewards.forgeStones} />
             </div>
             <p
-              className="flex items-center gap-1.5 text-xs font-bold text-[#5b4632]"
+              className="text-ink-soft flex items-center gap-1.5 text-xs font-bold"
               data-testid="sweep-tickets-left"
               data-tickets={shown.rewards.ticketsLeft}
             >
               <GlyphIcon
                 glyph={TICKET_GLYPH[shown.kind]}
-                className="size-4 text-[#7a5310]"
+                className="text-gold-deep size-4"
               />
               {tr(`sweep.${shown.kind}.ticketsLeft`, {
                 count: count(shown.rewards.ticketsLeft),
