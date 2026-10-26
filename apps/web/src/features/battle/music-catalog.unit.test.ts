@@ -16,7 +16,13 @@ describe("musicTrackFor", () => {
     expect(musicTrackFor(null, true)).toBe("boss");
   });
 
+  it("uses the track of the open Feature screen", () => {
+    expect(musicTrackFor(null, false, "packs")).toBe("packs");
+    expect(musicTrackFor({ region: 1, boss: true }, true, "hero")).toBe("hero");
+  });
+
   it("keeps the Region track within the available five themes", () => {
+    expect(musicTrackFor({ region: 0, boss: false }, true)).toBe("region-1");
     expect(musicTrackFor({ region: 8, boss: false }, true)).toBe("region-5");
   });
 });
