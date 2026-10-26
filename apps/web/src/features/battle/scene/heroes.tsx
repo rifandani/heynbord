@@ -27,10 +27,11 @@ import {
   heroPortraitTexture,
   loadedHeroPortrait,
 } from "@/features/battle/scene/textures";
+import { HIT_TINT, SCENE_WHITE } from "@/features/battle/tokens";
 import { activeHeroPortraitAtom } from "@/features/profile/profile.atoms";
 
-const WHITE = new Color("#ffffff");
-const HIT = new Color("#ff5a4a");
+const WHITE = new Color(SCENE_WHITE);
+const HIT = new Color(HIT_TINT);
 const CAST = new Color();
 
 /** The opacity of the Hero ring in full view. */

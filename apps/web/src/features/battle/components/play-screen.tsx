@@ -63,7 +63,7 @@ import { gameScreenAtom, townProgressAtom } from "@/features/town/town.atoms";
 
 /*
  * Every screen except the Town loads in its own chunk on first open. The Town,
- * the Town Bar and the Settings dialog stay in the first bundle (issue #139).
+ * the Town Bar and the Settings dialog stay in the first bundle (issue 139).
  */
 const AchievementsScreen = lazy(async () => {
   const module =
@@ -127,7 +127,7 @@ const SCREEN_MUSIC: Partial<Record<GameScreen, MusicFeature>> = {
 const ScreenLoading = () => (
   <div
     aria-hidden
-    className="fixed inset-0 bg-[#1c140e]"
+    className="bg-night-plate fixed inset-0"
     data-testid="screen-loading"
   />
 );
@@ -136,7 +136,7 @@ const ScreenLoading = () => (
 const BattleLoading = () => {
   const { tr } = useGameText();
   return (
-    <div className="fixed inset-0 grid place-items-center bg-[#1c140e] text-[#fff6df]">
+    <div className="bg-night-plate text-cream fixed inset-0 grid place-items-center">
       <p className="font-display text-xl">{tr("battle.loading")}</p>
     </div>
   );

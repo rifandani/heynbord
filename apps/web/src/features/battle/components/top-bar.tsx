@@ -18,6 +18,7 @@ import { countdownLabel } from "@/features/battle/components/hand-card";
 import { HeroPanel } from "@/features/battle/components/hero-panel";
 import { KeyGuide } from "@/features/battle/components/key-guide";
 import { LeaveBattle } from "@/features/battle/components/leave-battle";
+import { BOSS_CHIP_READY } from "@/features/battle/tokens";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useHandbook } from "@/features/handbook/use-handbook";
@@ -33,7 +34,7 @@ const TurnBadge = ({
 }) => {
   const { tr } = useGameText();
   return (
-    <div className="flex items-center gap-2 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 px-3 py-1 text-[#fff6df]">
+    <div className="border-gold-trim/70 bg-night-plate/85 text-cream flex items-center gap-2 rounded-xl border-2 px-3 py-1">
       <span
         className="font-display text-sm font-bold tabular-nums"
         data-testid="turn-number"
@@ -44,7 +45,7 @@ const TurnBadge = ({
         className={cn(
           "rounded px-1.5 py-0.5 text-xs font-semibold",
           yourTurn
-            ? "bg-[#ffd75a] text-[#2a1a05]"
+            ? "bg-ready-gold text-ink-on-gold"
             : "bg-blood-banner text-white"
         )}
       >
@@ -163,9 +164,14 @@ const EnemyHand = ({ hand }: { readonly hand: readonly HandCardView[] }) => {
           className={cn(
             "flex h-7 w-5 items-center justify-center rounded border text-[11px] font-bold",
             card.countdown === 0
-              ? "border-[#ffd75a] bg-[#5b1f1a] text-[#ffd75a]"
-              : "border-[#e8d9bb]/40 bg-[#3a2a1c] text-[#fff6df]"
+              ? "border-ready-gold text-ready-gold"
+              : "border-cream-dim/40 bg-plate-socket text-cream"
           )}
+          style={
+            card.countdown === 0
+              ? { backgroundColor: BOSS_CHIP_READY }
+              : undefined
+          }
           aria-label={countdownLabel(tr, card.countdown)}
         >
           {card.countdown}

@@ -40,6 +40,14 @@ import {
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { cardGlyph, DAMAGE_GLYPH } from "@/features/battle/glyphs";
+import {
+  DAMAGE_GLYPH_INK,
+  DARK_PLATE,
+  LOG_DAMAGE_INK,
+  SHADOW_LOG_BANNER,
+  SHADOW_LOG_ENTRY,
+  SHADOW_LOG_PANEL,
+} from "@/features/battle/tokens";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import type { EntryId } from "@/features/handbook/handbook";
@@ -91,10 +99,10 @@ const useHeroName = (options: BattleOptions | undefined): HeroName => {
 };
 
 const LINK =
-  "pointer-events-auto cursor-pointer rounded-sm font-semibold text-[#2a1d12] underline decoration-[#5b3a1e]/45 underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-[#5b3a1e]";
+  "pointer-events-auto cursor-pointer rounded-sm font-semibold text-ink underline decoration-frame-wood/45 underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-focus-cream data-[hovered]:decoration-frame-wood";
 
 const TERM =
-  "pointer-events-auto cursor-pointer rounded-sm font-bold text-keyword-rust underline decoration-keyword-rust/50 decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:decoration-solid";
+  "pointer-events-auto cursor-pointer rounded-sm font-bold text-keyword-rust underline decoration-keyword-rust/50 decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-focus-cream data-[hovered]:decoration-solid";
 
 /** One value of a line, as text or as a link. */
 const ArgNode = ({
@@ -191,14 +199,15 @@ const ArgNode = ({
         <span className="inline-flex items-baseline gap-0.5">
           <GlyphIcon
             glyph={DAMAGE_GLYPH[arg.damageType]}
-            className="size-3.5 self-center text-[#7a4c1a]"
+            className="size-3.5 self-center"
+            style={{ color: DAMAGE_GLYPH_INK }}
           />
           {name}
         </span>
       );
       return links ? (
         <Button
-          className={cn(TERM, "text-[#2a1d12] decoration-[#5b3a1e]/45")}
+          className={cn(TERM, "text-ink decoration-frame-wood/45")}
           onPress={() => links.openEntry(entry)}
           data-entry={entry}
           data-testid="log-entry-link"
@@ -216,10 +225,10 @@ const ArgNode = ({
 };
 
 const FLAG_STYLE: Readonly<Record<LogFlag["_tag"], string>> = {
-  Crit: "border-[#7a5310] bg-[#ffd75a] text-[#2a1a05]",
-  Block: "border-[#c9b48c] bg-[#ead9b4] text-[#2a1d12]",
-  Ward: "border-[#c9b48c] bg-[#ead9b4] text-[#2a1d12]",
-  TrueDamage: "border-[#2a1d12] bg-[#2a1d12] text-[#fff6df]",
+  Crit: "border-gold-deep bg-ready-gold text-ink-on-gold",
+  Block: "border-parchment-rule bg-parchment-deep text-ink",
+  Ward: "border-parchment-rule bg-parchment-deep text-ink",
+  TrueDamage: "border-ink bg-ink text-cream",
 };
 
 /** A roll result or a defense of one hit: Crit, Block, Ward, True Damage. */
@@ -347,13 +356,17 @@ const EntryTotals = ({ text }: { readonly text: LogEntryText }) => {
     return null;
   }
   return (
-    <span className="flex shrink-0 items-center gap-1.5 pt-px text-xs font-black text-[#2a1d12] tabular-nums">
+    <span className="text-ink flex shrink-0 items-center gap-1.5 pt-px text-xs font-black tabular-nums">
       {text.damage > 0 ? (
         <span
           className="inline-flex items-center gap-0.5"
           title={tr("battleLog.damage", { amount: text.damage })}
         >
-          <GlyphIcon glyph="heart" className="size-3 text-[#c2302a]" />
+          <GlyphIcon
+            glyph="heart"
+            className="size-3"
+            style={{ color: LOG_DAMAGE_INK }}
+          />
           <span className="sr-only">
             {tr("battleLog.damage", { amount: text.damage })}
           </span>
@@ -365,7 +378,7 @@ const EntryTotals = ({ text }: { readonly text: LogEntryText }) => {
           className="inline-flex items-center gap-0.5"
           title={tr("battleLog.deaths", { count: text.deaths })}
         >
-          <GlyphIcon glyph="skull" className="size-3 text-[#5b4632]" />
+          <GlyphIcon glyph="skull" className="text-ink-soft size-3" />
           <span className="sr-only">
             {tr("battleLog.deaths", { count: text.deaths })}
           </span>
@@ -425,10 +438,9 @@ const EntryRow = ({
       className={cn(
         // The sticky Turn header must not cover the selected entry.
         "scroll-mt-16 scroll-mb-2 rounded-xl border-2 transition-colors duration-150",
-        selected
-          ? "border-[#e2a93b] bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.25)]"
-          : "border-transparent"
+        selected ? "border-gold bg-parchment-lit" : "border-transparent"
       )}
+      style={selected ? { boxShadow: SHADOW_LOG_ENTRY } : undefined}
       data-testid="log-entry"
       data-entry={entry.index}
       data-kind={entry.kind}
@@ -441,24 +453,27 @@ const EntryRow = ({
         aria-current={selected || undefined}
         // Only the selected entry takes the focus, so its brown border is the
         // focus ring.
-        className="group flex w-full items-start gap-2 rounded-[10px] px-2 py-1.5 text-left outline-none data-[hovered]:bg-[#fff3d1]/70"
+        className="group data-[hovered]:bg-parchment-lit/70 flex w-full items-start gap-2 rounded-[10px] px-2 py-1.5 text-left outline-none"
         data-testid="log-entry-button"
       >
         <span
-          className="mt-px flex size-6 shrink-0 items-center justify-center rounded-full border-2 bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-[#fff6df]"
-          style={{ borderColor: SIDE_COLORS[side].main }}
+          className="text-cream mt-px flex size-6 shrink-0 items-center justify-center rounded-full border-2"
+          style={{
+            borderColor: SIDE_COLORS[side].main,
+            background: DARK_PLATE,
+          }}
           aria-hidden
         >
           <GlyphIcon glyph={entryGlyph(book, entry)} className="size-3.5" />
         </span>
-        <span className="min-w-0 flex-1 text-[13px] leading-snug text-[#2a1d12]">
+        <span className="text-ink min-w-0 flex-1 text-[13px] leading-snug">
           <RichLine line={text.summary} links={null} heroName={heroName} />
         </span>
         <EntryTotals text={text} />
       </Button>
       {selected && text.lines.length > 0 ? (
         <ul
-          className="mr-2 mb-2 ml-[2.4rem] space-y-1 border-t border-[#c9b48c] pt-1.5 text-xs leading-snug text-[#2a1d12] motion-safe:animate-[log-lines_180ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+          className="border-parchment-rule text-ink mr-2 mb-2 ml-[2.4rem] space-y-1 border-t pt-1.5 text-xs leading-snug motion-safe:animate-[log-lines_180ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
           data-testid="log-entry-lines"
         >
           {lineKeys(text.lines).map(({ line, key }) => (
@@ -480,7 +495,7 @@ const SideChip = ({ side }: { readonly side: Side }) => {
       className={cn(
         "rounded px-1.5 py-0.5 font-sans text-xs leading-none font-semibold",
         side === "player"
-          ? "bg-[#ffd75a] text-[#2a1a05]"
+          ? "bg-ready-gold text-ink-on-gold"
           : "bg-blood-banner text-white"
       )}
     >
@@ -500,10 +515,10 @@ const TurnHeader = ({
   const { tr } = useGameText();
   return (
     <div
-      className="sticky top-0 z-10 -mx-1 mb-1 border-b border-[#c9b48c] bg-[#ead9b4] px-3 pt-2 pb-1.5"
+      className="border-parchment-rule bg-parchment-deep sticky top-0 z-10 -mx-1 mb-1 border-b px-3 pt-2 pb-1.5"
       data-testid="log-turn"
     >
-      <h3 className="font-display flex items-center gap-2 text-sm leading-tight font-bold text-[#2a1d12]">
+      <h3 className="font-display text-ink flex items-center gap-2 text-sm leading-tight font-bold">
         {tr("battleLog.turn", {
           number: turn.turnNumber,
           side:
@@ -513,7 +528,7 @@ const TurnHeader = ({
           .at(0)}
         <SideChip side={turn.side} />
       </h3>
-      <p className="mt-0.5 text-xs leading-tight text-[#5b4632] tabular-nums">
+      <p className="text-ink-soft mt-0.5 text-xs leading-tight tabular-nums">
         {[
           ...turn.hp.player.map((hp) => tr("battleLog.yourHp", { hp })),
           ...turn.hp.enemy.map((hp, hero) =>
@@ -602,7 +617,7 @@ const BackToLive = ({
     >
       {battle.watching ? tr("replay.leave") : tr("battleLog.backToLive")}
       {compact ? null : (
-        <kbd className="rounded border border-[#7a5310]/60 bg-[#fff3d1]/60 px-1 font-sans text-xs leading-4 font-bold">
+        <kbd className="border-gold-deep/60 bg-parchment-lit/60 rounded border px-1 font-sans text-xs leading-4 font-bold">
           Esc
         </kbd>
       )}
@@ -751,8 +766,8 @@ const EntryList = ({
   if (book.entries.length === 0 || reached < 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-8 text-center">
-        <GlyphIcon glyph="scroll" className="size-8 text-[#5b3a1e]/60" />
-        <p className="max-w-[28ch] text-sm text-[#5b4632]">
+        <GlyphIcon glyph="scroll" className="text-frame-wood/60 size-8" />
+        <p className="text-ink-soft max-w-[28ch] text-sm">
           {tr("battleLog.empty")}
         </p>
       </div>
@@ -761,7 +776,7 @@ const EntryList = ({
   return (
     <div
       ref={list}
-      className="min-h-0 flex-1 [scrollbar-width:thin] [scrollbar-color:#b47f36_transparent] overflow-y-auto overscroll-contain px-1 pb-2"
+      className="min-h-0 flex-1 [scrollbar-width:thin] [scrollbar-color:var(--color-bronze)_transparent] overflow-y-auto overscroll-contain px-1 pb-2"
       data-testid="log-entries"
     >
       {book.turns.map((turn) =>
@@ -819,7 +834,7 @@ const SelectedAnnouncement = ({ log }: { readonly log: BattleLogState }) => {
 };
 
 const PANEL =
-  "pointer-events-auto flex flex-col overflow-hidden rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] text-[#2a1d12] shadow-[0_3px_0_rgba(0,0,0,0.35),0_14px_32px_rgba(0,0,0,0.45)] selection:bg-[#ffe08a] motion-safe:animate-[log-panel_260ms_cubic-bezier(0.2,0.8,0.2,1)_both]";
+  "pointer-events-auto flex flex-col overflow-hidden rounded-2xl border-4 border-frame-wood bg-parchment text-ink selection:bg-gold-light motion-safe:animate-[log-panel_260ms_cubic-bezier(0.2,0.8,0.2,1)_both]";
 
 /** The open Battle Log. Each opening starts with the Board folded away and no Card Details. */
 const OpenBattleLog = ({
@@ -876,14 +891,15 @@ const OpenBattleLog = ({
         ref={panel}
         aria-label={tr("battleLog.title")}
         className={cn(PANEL, !sheet && "h-full")}
+        style={{ boxShadow: SHADOW_LOG_PANEL }}
         data-testid="battle-log"
         data-form={sheet ? "sheet" : "side"}
         data-folded={folded || undefined}
       >
-        <header className="flex shrink-0 items-center gap-2 border-b-2 border-[#c9b48c] px-3 py-2 [@media(max-height:500px)]:py-1.5">
+        <header className="border-parchment-rule flex shrink-0 items-center gap-2 border-b-2 px-3 py-2 [@media(max-height:500px)]:py-1.5">
           <GlyphIcon
             glyph="scroll"
-            className="size-5 shrink-0 text-[#5b3a1e]"
+            className="text-frame-wood size-5 shrink-0"
           />
           {battle.watching ? (
             <h2 className="font-display flex min-w-0 flex-1 items-center gap-2 text-lg leading-tight font-bold [@media(max-height:500px)]:text-base">
@@ -903,7 +919,7 @@ const OpenBattleLog = ({
               <ToggleButton
                 isSelected={boardShown}
                 onChange={setBoardShown}
-                className="min-h-8 rounded-lg border-2 border-[#2a1a0c] bg-gradient-to-b from-[#7a5233] to-[#563720] px-2 text-xs font-semibold whitespace-nowrap text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[pressed]:translate-y-px"
+                className="border-wood-edge from-wood-light to-wood text-cream shadow-piece data-[focus-visible]:ring-focus-cream min-h-8 rounded-lg border-2 bg-gradient-to-b px-2 text-xs font-semibold whitespace-nowrap outline-none data-[focus-visible]:ring-4 data-[pressed]:translate-y-px"
                 data-testid="log-show-board"
               >
                 {boardShown
@@ -926,7 +942,7 @@ const OpenBattleLog = ({
           </div>
         )}
         {sheet ? null : (
-          <footer className="flex shrink-0 flex-col gap-1.5 border-t-2 border-[#c9b48c] bg-[#ead9b4] p-2">
+          <footer className="border-parchment-rule bg-parchment-deep flex shrink-0 flex-col gap-1.5 border-t-2 p-2">
             {/* After the result, the Battle Log can share the Battle. */}
             <ShareReplay session={battle.liveSession} look="wood" />
             <BackToLive battle={battle} compact={false} />
@@ -979,10 +995,13 @@ export const BattleLogBanner = ({ battle }: { readonly battle: Battle }) => {
       className="pointer-events-none absolute inset-x-0 top-[calc(max(0.5rem,env(safe-area-inset-top))+5.25rem)] z-20 flex justify-center [@media(max-height:500px)]:top-[calc(max(0.5rem,env(safe-area-inset-top))+4.5rem)]"
       data-testid="battle-log-banner"
     >
-      <p className="font-display flex items-center gap-2 rounded-lg border-2 border-[#5b3a1e] bg-[#f6ead0] px-3 py-1 text-sm leading-tight font-bold text-[#2a1d12] shadow-[0_3px_0_rgba(0,0,0,0.35)] motion-safe:animate-[log-banner_320ms_cubic-bezier(0.2,0.8,0.2,1)_both] [@media(max-height:500px)]:text-xs">
+      <p
+        className="font-display border-frame-wood bg-parchment text-ink flex items-center gap-2 rounded-lg border-2 px-3 py-1 text-sm leading-tight font-bold motion-safe:animate-[log-banner_320ms_cubic-bezier(0.2,0.8,0.2,1)_both] [@media(max-height:500px)]:text-xs"
+        style={{ boxShadow: SHADOW_LOG_BANNER }}
+      >
         <GlyphIcon
           glyph={log.playing ? "play" : "scroll"}
-          className="size-3.5 text-[#5b3a1e]"
+          className="text-frame-wood size-3.5"
         />
         {tr(battle.watching ? "replay.banner" : "battleLog.banner", {
           number,

@@ -8,7 +8,7 @@ import { useGameText } from "@/features/battle/use-game-text";
 export const PortraitGuard = () => {
   const { tr } = useGameText();
   return (
-    <div className="pointer-events-auto fixed inset-0 z-[60] hidden items-center justify-center bg-[#1c140e] p-8 text-center text-[#fff6df] [@media(orientation:portrait)_and_(pointer:coarse)]:flex">
+    <div className="bg-night-plate text-cream pointer-events-auto fixed inset-0 z-[60] hidden items-center justify-center p-8 text-center [@media(orientation:portrait)_and_(pointer:coarse)]:flex">
       <p className="font-display max-w-xs text-xl">
         <span className="mb-4 block text-5xl" aria-hidden>
           ⟳

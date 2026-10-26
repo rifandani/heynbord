@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { DAMAGE_COLORS } from "@/core/components/game/tokens";
 import type { BurstName, Emitter } from "@/features/battle/scene/particles";
 import {
   billboardParticle,
@@ -11,6 +12,7 @@ import {
 } from "@/features/battle/scene/particles";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { STATUS_ORDER } from "@/features/battle/scene/status-visuals";
+import { HIT_TINT, SCENE_WHITE } from "@/features/battle/tokens";
 
 const loop = (seed: number, status: Status = "burn"): Emitter => ({
   kind: "loop",
@@ -257,7 +259,7 @@ describe("heal and Bulwark bursts", () => {
 describe("billboardParticle", () => {
   const slash = {
     slot: "slash",
-    color: "#ff6a33",
+    color: DAMAGE_COLORS.fire,
     size: 1,
     mirror: false,
     x: 3,
@@ -271,7 +273,7 @@ describe("billboardParticle", () => {
     expect(billboardParticle(slash, 1.9)).toBeNull();
     expect(billboardParticle(slash, 2.1)).toMatchObject({
       slot: "slash",
-      color: "#ff6a33",
+      color: DAMAGE_COLORS.fire,
       x: 3,
     });
     expect(billboardParticle(slash, 2.5)).toBeNull();
@@ -342,15 +344,15 @@ describe("slotParticle", () => {
   };
 
   it("colors a code slot with the given color, or white with no color", () => {
-    expect(slotParticle("glow", { ...place, color: "#ff0000" }).color).toBe(
-      "#ff0000"
+    expect(slotParticle("glow", { ...place, color: HIT_TINT }).color).toBe(
+      HIT_TINT
     );
-    expect(slotParticle("glow", place).color).toBe("#ffffff");
+    expect(slotParticle("glow", place).color).toBe(SCENE_WHITE);
   });
 
   it("keeps the painted color of a fixed slot", () => {
-    expect(slotParticle("flame", { ...place, color: "#ff0000" }).color).toBe(
-      "#ffffff"
+    expect(slotParticle("flame", { ...place, color: HIT_TINT }).color).toBe(
+      SCENE_WHITE
     );
   });
 

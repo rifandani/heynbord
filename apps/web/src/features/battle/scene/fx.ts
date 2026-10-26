@@ -39,6 +39,12 @@ import {
   BURST_DURATION,
   slotParticle,
 } from "@/features/battle/scene/particles";
+import {
+  CLEANSE_RING,
+  RALLY_TINT,
+  REBORN_TINT,
+  SUMMON_RING,
+} from "@/features/battle/tokens";
 
 /** A short visual effect. `start` is in scene seconds. */
 export type Fx =
@@ -82,13 +88,10 @@ export type Fx =
   | KeywordPlate;
 
 /** The ring of a Rebirth: the pale Undead spirit light. */
-const REBORN_RING = "#c4fbef";
+const REBORN_RING = REBORN_TINT;
 
 /** The ring of a bonus Attack (AttackGained, HeroicGained): the war gold of Rally. */
-const RALLY_RING = "#ffd75a";
-
-/** The ring of a Cleanse (DebuffsRemoved): a clean white light. */
-const CLEANSE_RING = "#fff6df";
+const RALLY_RING = RALLY_TINT;
 
 /** Active effects. The playback driver adds them. The effects layer removes them when they end. */
 export const fxList: Fx[] = [];
@@ -480,7 +483,10 @@ export const fxForEvent = (
       return [
         {
           kind: "ring",
-          color: event.unit.owner === "player" ? "#ffd56b" : "#ff7a6b",
+          color:
+            event.unit.owner === "player"
+              ? SUMMON_RING.player
+              : SUMMON_RING.enemy,
           x: squareX(event.unit.position),
           z: laneZ(event.unit.lane, after.lanes),
           start: time,

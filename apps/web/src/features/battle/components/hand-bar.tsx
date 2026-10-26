@@ -40,6 +40,18 @@ import {
   startDrag,
 } from "@/features/battle/components/hand-input";
 import { scenePicker } from "@/features/battle/scene/scene-picker";
+import {
+  DARK_PLATE,
+  DROP_ICON_1_SOFT,
+  HAND_BAR_GRAIN,
+  HAND_BAR_RULE,
+  HAND_BAR_SHADOW,
+  HAND_BAR_TRAY,
+  SHADOW_PILE,
+  TRAY_EDGE,
+  TRAY_GLYPH,
+  TUTORIAL_HALO,
+} from "@/features/battle/tokens";
 import { LONG_PRESS_MS } from "@/features/battle/unit-inspect";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -125,9 +137,10 @@ const PileBadge = ({
 }) => (
   <span
     className={cn(
-      "absolute top-1/2 z-10 flex size-[2.6em] -translate-y-1/2 items-center justify-center rounded-full border-[0.18em] border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] text-[#fff6df] shadow-[0_0.12em_0.3em_rgba(0,0,0,0.7)]",
+      "border-bronze-rim text-cream absolute top-1/2 z-10 flex size-[2.6em] -translate-y-1/2 items-center justify-center rounded-full border-[0.18em]",
       side === "right" ? "-right-[1.3em]" : "-left-[1.3em]"
     )}
+    style={{ background: DARK_PLATE, boxShadow: SHADOW_PILE }}
     aria-hidden
   >
     <span className="text-[1.3em] leading-none font-black tabular-nums">
@@ -205,7 +218,9 @@ const GraveyardPile = ({
         <span className="sr-only">{label}</span>
         <EmptyCardPlace
           mark={
-            <GraveyardIcon className="w-[3.6em] text-[#e3b55a] opacity-[0.16] grayscale" />
+            <span style={{ color: TRAY_GLYPH }}>
+              <GraveyardIcon className="w-[3.6em] opacity-[0.16] grayscale" />
+            </span>
           }
         />
         <PileBadge count={0} side="left" />
@@ -229,7 +244,7 @@ const GraveyardPile = ({
         aria-label={label}
         title={label}
         aria-expanded={inspected}
-        className="relative block cursor-help rounded-[0.85em] outline-none focus-visible:ring-4 focus-visible:ring-[#fff2a8]"
+        className="focus-visible:ring-focus-cream relative block cursor-help rounded-[0.85em] outline-none focus-visible:ring-4"
         data-testid="graveyard-pile"
         data-count={cards.length}
         data-top-card={top.cardId}
@@ -299,7 +314,7 @@ const HandHint = ({
   const hint = handHint(card, targetCount);
   return (
     <p
-      className="pointer-events-none rounded bg-[#1c140e]/80 px-2 py-0.5 text-xs text-[#fff6df] empty:hidden"
+      className="bg-night-plate/80 text-cream pointer-events-none rounded px-2 py-0.5 text-xs empty:hidden"
       aria-live="polite"
     >
       {hint ? tr(hint) : null}
@@ -439,7 +454,8 @@ const SettingsButton = () => {
           width={128}
           height={128}
           draggable={false}
-          className="size-6 drop-shadow-[0_1px_0_rgba(0,0,0,0.4)] select-none"
+          className="size-6 select-none"
+          style={{ filter: DROP_ICON_1_SOFT }}
         />
       </Button>
       <SettingsDialog from={button} progress={false} />
@@ -507,8 +523,11 @@ const DragGhost = ({
 /** A bronze line between a pile and the Hand Slots. */
 const PileDivider = () => (
   <span
-    className="w-[0.16em] shrink-0 self-stretch rounded-full bg-[linear-gradient(180deg,transparent,rgba(231,187,106,0.55)_20%,rgba(231,187,106,0.55)_80%,transparent)]"
-    style={{ marginInline: `${(PILE_GAP_EM - 0.16) / 2}em` }}
+    className="w-[0.16em] shrink-0 self-stretch rounded-full"
+    style={{
+      marginInline: `${(PILE_GAP_EM - 0.16) / 2}em`,
+      background: HAND_BAR_RULE,
+    }}
     aria-hidden
   />
 );
@@ -534,8 +553,7 @@ const cardAt = (
 const selectedCard = (hand: readonly HandCardView[], index: number | null) =>
   index === null ? undefined : hand[index];
 
-const HAND_GLOW =
-  "shadow-[0_0_24px_rgba(127,227,255,0.75)] ring-4 ring-[#7fe3ff]";
+const HAND_GLOW = "shadow-(--tutorial-halo) ring-4 ring-tutorial-glow";
 
 const handGlow = (on: boolean) => on && HAND_GLOW;
 
@@ -590,17 +608,17 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
       <div className="min-w-0 flex-1" aria-hidden />
       <div
         className={cn(
-          "pointer-events-auto relative flex shrink-0 items-stretch rounded-[1.3em] border-[0.2em] border-[#2a170a] border-t-[#b47f36] p-[0.7em] text-[length:var(--hand-card-size)] shadow-[inset_0_0.15em_0_rgba(255,214,150,0.3),inset_0_-0.3em_0.6em_rgba(0,0,0,0.45),0_0.6em_1.6em_rgba(0,0,0,0.55)] [@media(max-height:500px)]:p-[0.5em]",
+          "pointer-events-auto relative flex shrink-0 items-stretch rounded-[1.3em] border-[0.2em] p-[0.7em] text-[length:var(--hand-card-size)] [@media(max-height:500px)]:p-[0.5em]",
           // The card size: 10px (7px on a short screen), or less so that the
           // bar (about 101em) and the screen padding fit the screen width.
           "[--hand-card-size:min(10px,calc((100vw_-_40px)/101))] [@media(max-height:500px)]:[--hand-card-size:min(7px,calc((100vw_-_40px)/101))]"
         )}
         style={{
           // Dark wood that matches the Board rim, with a faint grain.
-          background: [
-            "repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0 0.15em, transparent 0.15em 1.1em)",
-            "linear-gradient(180deg, #6b4423 0%, #4a2d16 45%, #2f1c0d 100%)",
-          ].join(", "),
+          background: [HAND_BAR_GRAIN, HAND_BAR_TRAY].join(", "),
+          borderColor: TRAY_EDGE,
+          borderTopColor: "var(--color-bronze)",
+          boxShadow: HAND_BAR_SHADOW,
         }}
         data-testid="hand-bar"
       >
@@ -624,6 +642,12 @@ export const HandBar = ({ battle }: { readonly battle: Battle }) => {
             )}
             data-testid="hand"
             data-tutorial-highlight={tutorialFlag(marks.hand)}
+            // SAFETY: `CSSProperties` does not model a custom property.
+            style={
+              marks.hand
+                ? ({ "--tutorial-halo": TUTORIAL_HALO } as CSSProperties)
+                : undefined
+            }
           >
             {hand.map((card, index) => (
               <HandSlot

@@ -30,21 +30,46 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { HeynbordEmblem } from "@/features/battle/components/heynbord-emblem";
 import type { Glyph } from "@/features/battle/glyphs";
 import { cardGlyph, classGlyph, raceGlyph } from "@/features/battle/glyphs";
+import {
+  CARD_ART_WELL,
+  CARD_EMBLEM,
+  CARD_METAL,
+  CARD_METAL_RAMP,
+  COUNTDOWN_CAP_LIGHT,
+  COUNTDOWN_BODY,
+  COUNTDOWN_DEPTH,
+  COUNTDOWN_INK,
+  COUNTDOWN_LIGHT,
+  COUNTDOWN_READY_LIGHT,
+  COUNTDOWN_RIVET,
+  COUNTDOWN_SAND,
+  COUNTDOWN_SHEEN,
+  DARK_PLATE,
+  DROP_ART_GLYPH,
+  DROP_COUNTDOWN,
+  DROP_HEART,
+  HEART_BODY,
+  HEART_DEPTH,
+  HEART_EDGE,
+  HEART_GLOSS,
+  HEART_OUTLINE,
+  HEART_SHEEN,
+  SHADOW_ART_WELL,
+  SKILL_CARD_BACKDROP,
+} from "@/features/battle/tokens";
 
 /** The frame metal. It is the same for all cards, and for the Card Back. */
-export const BRONZE =
-  "linear-gradient(155deg, #f7dc9c 0%, #c99442 22%, #8a5a20 55%, #b47f36 80%, #e9c27a 100%)";
+export const BRONZE = CARD_METAL;
 
 /** The emblem color of a Skill Card: one parchment for all Classes. */
-export const PARCHMENT = { main: "#f3e6c4", ink: "#3a2612" } as const;
-
-const CREAM = "#fff6df";
+export const PARCHMENT = CARD_EMBLEM;
 
 /** A badge with a thick bronze rim. */
 const badgeClassName =
-  "absolute z-10 flex items-center justify-center rounded-full border-[0.16em] border-[#e7bb6a] shadow-[0_0.12em_0.25em_rgba(0,0,0,0.6)]";
+  "absolute z-10 flex items-center justify-center rounded-full border-[0.16em] border-bronze-rim shadow-badge";
 
-const darkPlate = "bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)]";
+/** The cream of a plate number: the token, as an SVG value needs a string. */
+const CREAM = "var(--color-cream)";
 
 /**
  * The glass of the Countdown hourglass: a wide top bulb, a narrow waist and a
@@ -54,14 +79,7 @@ const COUNTDOWN_GLASS =
   "M20 12H60C60 25 53 34 44 39C43.6 39.4 43.6 40 44 40.4C53 45.6 60 54 60 67.5H20C20 54 27 45.6 36 40.4C36.4 40 36.4 39.4 36 39C27 34 20 25 20 12Z";
 
 /** The metal of the hourglass caps, the same ramp as the card metal. */
-const CAP_METAL = [
-  ["0%", "#fff0c2"],
-  ["18%", "#e9c27a"],
-  ["45%", "#c99442"],
-  ["70%", "#8a5a20"],
-  ["88%", "#b47f36"],
-  ["100%", "#f2d595"],
-] as const;
+const CAP_METAL = CARD_METAL_RAMP;
 
 /**
  * The Countdown at the top left, as a blue glass hourglass in the card metal.
@@ -87,50 +105,39 @@ const CountdownBadge = ({
     <svg
       viewBox="8 0 64 80"
       aria-hidden
-      className="absolute -top-[0.37em] -left-[0.12em] z-10 h-auto w-[1.85em] drop-shadow-[0_0.12em_0.26em_rgba(0,0,0,0.62)]"
+      className="absolute -top-[0.37em] -left-[0.12em] z-10 h-auto w-[1.85em]"
+      style={{ filter: DROP_COUNTDOWN }}
     >
       <defs>
         <linearGradient id={`${id}-body`} x1="0.18" x2="0.82" y1="0" y2="1">
-          {ready ? (
-            <>
-              <stop offset="0" stopColor="#fff7cd" />
-              <stop offset="0.22" stopColor="#ffe287" />
-              <stop offset="0.5" stopColor="#f2b93a" />
-              <stop offset="0.78" stopColor="#b8750f" />
-              <stop offset="1" stopColor="#8a5a20" />
-            </>
-          ) : (
-            <>
-              <stop offset="0" stopColor="#b6f0ff" />
-              <stop offset="0.2" stopColor="#5fbdf2" />
-              <stop offset="0.48" stopColor="#2a74cc" />
-              <stop offset="0.74" stopColor="#16428f" />
-              <stop offset="0.9" stopColor="#1d5cb8" />
-              <stop offset="1" stopColor="#63c7f2" />
-            </>
+          {(ready ? COUNTDOWN_BODY.ready : COUNTDOWN_BODY.glass).map(
+            ([offset, stop]) => (
+              <stop key={offset} offset={offset} stopColor={stop} />
+            )
           )}
         </linearGradient>
         <radialGradient id={`${id}-sheen`} cx="0.34" cy="0.18" r="0.58">
-          <stop offset="0" stopColor="#ffffff" stopOpacity="0.72" />
-          <stop offset="0.5" stopColor="#dff7ff" stopOpacity="0.2" />
-          <stop offset="1" stopColor="#dff7ff" stopOpacity="0" />
+          <stop
+            offset="0"
+            stopColor={COUNTDOWN_SHEEN.light}
+            stopOpacity="0.72"
+          />
+          <stop
+            offset="0.5"
+            stopColor={COUNTDOWN_SHEEN.tint}
+            stopOpacity="0.2"
+          />
+          <stop offset="1" stopColor={COUNTDOWN_SHEEN.tint} stopOpacity="0" />
         </radialGradient>
         <linearGradient id={`${id}-depth`} x1="0" x2="0" y1="0.35" y2="1">
-          <stop offset="0" stopColor="#04122e" stopOpacity="0" />
-          <stop offset="1" stopColor="#04122e" stopOpacity="0.62" />
+          <stop offset="0" stopColor={COUNTDOWN_DEPTH} stopOpacity="0" />
+          <stop offset="1" stopColor={COUNTDOWN_DEPTH} stopOpacity="0.62" />
         </linearGradient>
         <linearGradient id={`${id}-sand`} x1="0" x2="0" y1="0" y2="1">
-          {ready ? (
-            <>
-              <stop offset="0" stopColor="#ffe9a8" />
-              <stop offset="1" stopColor="#d99a1c" />
-            </>
-          ) : (
-            <>
-              <stop offset="0" stopColor="#fff3c4" />
-              <stop offset="0.55" stopColor="#ffd75a" />
-              <stop offset="1" stopColor="#d99a1c" />
-            </>
+          {(ready ? COUNTDOWN_SAND.ready : COUNTDOWN_SAND.glass).map(
+            ([offset, stop]) => (
+              <stop key={offset} offset={offset} stopColor={stop} />
+            )
           )}
         </linearGradient>
         <linearGradient id={`${id}-metal`} x1="0" x2="0.25" y1="0" y2="1">
@@ -139,8 +146,9 @@ const CountdownBadge = ({
           ))}
         </linearGradient>
         <linearGradient id={`${id}-sand-top`} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#ffeeb0" />
-          <stop offset="1" stopColor="#efb648" />
+          {COUNTDOWN_SAND.top.map(([offset, stop]) => (
+            <stop key={offset} offset={offset} stopColor={stop} />
+          ))}
         </linearGradient>
         <clipPath id={`${id}-clip`}>
           <path d={COUNTDOWN_GLASS} />
@@ -151,14 +159,14 @@ const CountdownBadge = ({
       <path
         d={COUNTDOWN_GLASS}
         fill="none"
-        stroke="#e7bb6a"
+        stroke="var(--color-bronze-rim)"
         strokeLinejoin="round"
         strokeWidth="6"
       />
       <path
         d={COUNTDOWN_GLASS}
         fill="none"
-        stroke="#2a1a08"
+        stroke="var(--color-rank-edge)"
         strokeLinejoin="round"
         strokeWidth="4.2"
       />
@@ -196,7 +204,7 @@ const CountdownBadge = ({
           <path
             d="M25 65C28 60 33 58 40 58"
             fill="none"
-            stroke="#ffffff"
+            stroke={COUNTDOWN_SHEEN.light}
             strokeLinecap="round"
             strokeOpacity="0.6"
             strokeWidth="1.2"
@@ -205,7 +213,7 @@ const CountdownBadge = ({
         {ready ? null : (
           <path
             d="M40 41V57"
-            stroke="#ffe9a8"
+            stroke={COUNTDOWN_READY_LIGHT}
             strokeLinecap="round"
             strokeOpacity="0.9"
             strokeWidth="1.4"
@@ -216,7 +224,7 @@ const CountdownBadge = ({
         <path
           d="M23 15.5C23.2 20.4 25 25.2 28.8 29.8"
           fill="none"
-          stroke="#ffffff"
+          stroke={COUNTDOWN_SHEEN.light}
           strokeLinecap="round"
           strokeOpacity="0.5"
           strokeWidth="1.5"
@@ -224,7 +232,7 @@ const CountdownBadge = ({
         <path
           d="M57 15.5C56.8 19.4 55.4 23.2 52.8 26.6"
           fill="none"
-          stroke="#cdefff"
+          stroke={COUNTDOWN_LIGHT}
           strokeLinecap="round"
           strokeOpacity="0.32"
           strokeWidth="1.2"
@@ -232,7 +240,7 @@ const CountdownBadge = ({
         <path
           d="M23.4 64C24 56.6 28 51 33.4 46.8"
           fill="none"
-          stroke="#ffffff"
+          stroke={COUNTDOWN_SHEEN.light}
           strokeLinecap="round"
           strokeOpacity="0.24"
           strokeWidth="1.2"
@@ -240,14 +248,14 @@ const CountdownBadge = ({
         <path
           d="M56.6 64C56 57 52.4 51.6 47 47.4"
           fill="none"
-          stroke="#cdefff"
+          stroke={COUNTDOWN_LIGHT}
           strokeLinecap="round"
           strokeOpacity="0.2"
           strokeWidth="1.1"
         />
         <path
           d="M36.4 40.4H43.6"
-          stroke="#081a3f"
+          stroke={COUNTDOWN_INK}
           strokeOpacity="0.3"
           strokeWidth="1"
         />
@@ -263,19 +271,19 @@ const CountdownBadge = ({
             height="8.5"
             rx="3.2"
             fill={`url(#${id}-metal)`}
-            stroke="#2a1a08"
+            stroke="var(--color-rank-edge)"
             strokeLinejoin="round"
             strokeWidth="2.2"
           />
           <path
             d={`M15 ${y + 2.8}H65`}
-            stroke="#fff4d2"
+            stroke={COUNTDOWN_CAP_LIGHT}
             strokeLinecap="round"
             strokeOpacity="0.55"
             strokeWidth="1.2"
           />
-          <circle cx="16.5" cy={y + 4.2} fill="#5b3d16" r="1.4" />
-          <circle cx="63.5" cy={y + 4.2} fill="#5b3d16" r="1.4" />
+          <circle cx="16.5" cy={y + 4.2} fill={COUNTDOWN_RIVET} r="1.4" />
+          <circle cx="63.5" cy={y + 4.2} fill={COUNTDOWN_RIVET} r="1.4" />
         </g>
       ))}
 
@@ -289,8 +297,8 @@ const CountdownBadge = ({
           fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
           fontSize="38"
           fontWeight="900"
-          fill="#2a1a08"
-          stroke="#ffe9a8"
+          fill="var(--color-rank-edge)"
+          stroke={COUNTDOWN_READY_LIGHT}
           strokeLinejoin="round"
           strokeWidth="3.2"
           paintOrder="stroke"
@@ -309,7 +317,7 @@ const CountdownBadge = ({
             fontSize="38"
             fontWeight="900"
             fill="none"
-            stroke="#e7bb6a"
+            stroke="var(--color-bronze-rim)"
             strokeLinejoin="round"
             strokeWidth="8"
             style={{ fontVariantNumeric: "tabular-nums" }}
@@ -325,7 +333,7 @@ const CountdownBadge = ({
             fontSize="38"
             fontWeight="900"
             fill="none"
-            stroke="#2a1a08"
+            stroke="var(--color-rank-edge)"
             strokeLinejoin="round"
             strokeWidth="6"
             style={{ fontVariantNumeric: "tabular-nums" }}
@@ -340,7 +348,7 @@ const CountdownBadge = ({
             fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
             fontSize="38"
             fontWeight="900"
-            fill="#fff6df"
+            fill="var(--color-cream)"
             style={{ fontVariantNumeric: "tabular-nums" }}
           >
             {number}
@@ -383,29 +391,34 @@ const HealthPlate = ({ value }: { readonly value: number }) => {
   const uid = useId().replaceAll(/[^a-zA-Z0-9_-]/gu, "");
   const id = `hp-heart-${uid}`;
   return (
-    <span className="absolute -right-[0.36em] -bottom-[0.32em] z-10 w-[2.43em] drop-shadow-[0_0.1em_0.14em_rgba(0,0,0,0.55)]">
+    <span
+      className="absolute -right-[0.36em] -bottom-[0.32em] z-10 w-[2.43em]"
+      style={{ filter: DROP_HEART }}
+    >
       <svg viewBox="0 0 88 80" className="block h-auto w-full overflow-visible">
         <defs>
           <linearGradient id={`${id}-body`} x1="0.18" x2="0.82" y1="0" y2="1">
-            <stop offset="0" stopColor="#ff8a6e" />
-            <stop offset="0.24" stopColor="#f04d38" />
-            <stop offset="0.55" stopColor="#cf2a20" />
-            <stop offset="0.82" stopColor="#a31514" />
-            <stop offset="1" stopColor="#7c0e10" />
+            {HEART_BODY.map(([offset, stop]) => (
+              <stop key={offset} offset={offset} stopColor={stop} />
+            ))}
           </linearGradient>
           <radialGradient id={`${id}-sheen`} cx="0.34" cy="0.2" r="0.52">
-            <stop offset="0" stopColor="#ffe3cf" stopOpacity="0.75" />
-            <stop offset="0.55" stopColor="#ffb391" stopOpacity="0.16" />
-            <stop offset="1" stopColor="#ff8f6e" stopOpacity="0" />
+            <stop offset="0" stopColor={HEART_SHEEN.light} stopOpacity="0.75" />
+            <stop
+              offset="0.55"
+              stopColor={HEART_SHEEN.tint}
+              stopOpacity="0.16"
+            />
+            <stop offset="1" stopColor={HEART_SHEEN.edge} stopOpacity="0" />
           </radialGradient>
           <linearGradient id={`${id}-depth`} x1="0" x2="0" y1="0.45" y2="1">
-            <stop offset="0" stopColor="#3d0505" stopOpacity="0" />
-            <stop offset="1" stopColor="#3d0505" stopOpacity="0.55" />
+            <stop offset="0" stopColor={HEART_DEPTH} stopOpacity="0" />
+            <stop offset="1" stopColor={HEART_DEPTH} stopOpacity="0.55" />
           </linearGradient>
           <linearGradient id={`${id}-edge`} x1="0" x2="0.7" y1="0" y2="0.7">
-            <stop offset="0" stopColor="#ffe6c8" stopOpacity="0.65" />
-            <stop offset="0.5" stopColor="#ffc7a2" stopOpacity="0.18" />
-            <stop offset="1" stopColor="#ffb28c" stopOpacity="0" />
+            <stop offset="0" stopColor={HEART_EDGE.light} stopOpacity="0.65" />
+            <stop offset="0.5" stopColor={HEART_EDGE.tint} stopOpacity="0.18" />
+            <stop offset="1" stopColor={HEART_EDGE.edge} stopOpacity="0" />
           </linearGradient>
           <clipPath id={`${id}-clip`}>
             <path d={HEART_PATH} />
@@ -414,14 +427,14 @@ const HealthPlate = ({ value }: { readonly value: number }) => {
         <path
           d={HEART_PATH}
           fill="none"
-          stroke="#e7bb6a"
+          stroke="var(--color-bronze-rim)"
           strokeLinejoin="round"
           strokeWidth="7.4"
         />
         <path
           d={HEART_PATH}
           fill="none"
-          stroke="#3a0a08"
+          stroke={HEART_OUTLINE}
           strokeLinejoin="round"
           strokeWidth="5.2"
         />
@@ -447,7 +460,7 @@ const HealthPlate = ({ value }: { readonly value: number }) => {
         <ellipse
           cx="26"
           cy="17.5"
-          fill="#ffd9c2"
+          fill={HEART_GLOSS}
           opacity="0.28"
           rx="9"
           ry="4.6"
@@ -460,7 +473,7 @@ const HealthPlate = ({ value }: { readonly value: number }) => {
           fontSize={value > 99 ? 30 : 40}
           fontWeight={900}
           paintOrder="stroke"
-          stroke="#3a0a08"
+          stroke={HEART_OUTLINE}
           strokeLinejoin="round"
           strokeWidth="3.8"
           style={{ fontVariantNumeric: "tabular-nums" }}
@@ -510,10 +523,9 @@ const SkillPlate = ({ card }: { readonly card: SkillCardDefinition }) => (
   <span
     className={cn(
       badgeClassName,
-      darkPlate,
       "-bottom-[0.4em] left-1/2 size-[2.3em] -translate-x-1/2"
     )}
-    style={{ color: effectColor(card) }}
+    style={{ color: effectColor(card), background: DARK_PLATE }}
   >
     <GlyphIcon glyph={cardGlyph(card)} className="size-[1.25em]" />
   </span>
@@ -543,7 +555,10 @@ const loadedArt = new Set<string>();
  * empty Hand Slot with the faded Heynbord emblem, which pulses slowly.
  */
 const ArtPlaceholder = () => (
-  <span className="absolute inset-0 grid place-items-center bg-[#1f140b] shadow-[inset_0_0.35em_0.8em_rgba(0,0,0,0.7)]">
+  <span
+    className="absolute inset-0 grid place-items-center"
+    style={{ backgroundColor: CARD_ART_WELL, boxShadow: SHADOW_ART_WELL }}
+  >
     <HeynbordEmblem className="w-[3.6em] opacity-[0.16] grayscale motion-safe:animate-pulse" />
   </span>
 );
@@ -571,7 +586,8 @@ const CardArt = ({ face }: { readonly face: FrameFace }) => {
       >
         <GlyphIcon
           glyph={face.emblem.glyph}
-          className="size-[4.4em] opacity-70 drop-shadow-[0_0.12em_0.2em_rgba(0,0,0,0.45)]"
+          className="size-[4.4em] opacity-70"
+          style={{ filter: DROP_ART_GLYPH }}
         />
       </span>
     );
@@ -671,7 +687,11 @@ const cardFace = (card: CardDefinition, rank: RankId): FrameFace => {
         background: PARCHMENT.main,
         ink: PARCHMENT.ink,
       },
-      backdrop: { light: "#7a5a3a", dark: "#2a1d12", ink: PARCHMENT.main },
+      backdrop: {
+        light: SKILL_CARD_BACKDROP.light,
+        dark: SKILL_CARD_BACKDROP.dark,
+        ink: PARCHMENT.main,
+      },
       plates: { kind: "skill", card },
     };
   }
@@ -712,14 +732,14 @@ const FrameShell = ({
 }) => (
   <span
     className={cn(
-      "relative block h-[12.6em] w-[9em] rounded-[0.85em] p-[0.36em] shadow-[inset_0_0.1em_0_rgba(255,243,210,0.85),inset_0_-0.12em_0_rgba(60,30,5,0.75),0_0.3em_0.7em_rgba(0,0,0,0.55)]",
+      "shadow-bevel relative block h-[12.6em] w-[9em] rounded-[0.85em] p-[0.36em]",
       className
     )}
     style={{ background: BRONZE }}
     aria-hidden
   >
     <span
-      className="relative block size-full overflow-hidden bg-[#2a1d12]"
+      className="bg-ink relative block size-full overflow-hidden"
       style={artWindowStyle(rank)}
     >
       <CardArt key={face.id} face={face} />

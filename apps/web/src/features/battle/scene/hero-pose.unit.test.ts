@@ -1,6 +1,7 @@
 import { BattleEvent } from "@workspace/rules";
 import { describe, expect, it } from "vitest";
 
+import { DAMAGE_COLORS } from "@/core/components/game/tokens";
 import type { PlayingEvent } from "@/features/battle/battle-session";
 import type { BattleView, HeroView } from "@/features/battle/battle-view";
 import { applyEvent } from "@/features/battle/battle-view";
@@ -11,6 +12,7 @@ import {
   heroX,
   laneZ,
 } from "@/features/battle/scene/layout";
+import { RALLY_TINT } from "@/features/battle/tokens";
 
 const hero = (front: readonly number[], hp = 20): HeroView => ({
   hp,
@@ -123,7 +125,7 @@ describe("heroPose", () => {
     const enemy = heroPose(ENEMY, fireball, STAGE, 0.3, 0);
     expect(enemy.y).toBeGreaterThan(HERO_FIGURE_Y + 0.25);
     expect(enemy.x).toBeLessThan(heroX("enemy"));
-    expect(enemy.cast?.color).toBe("#ff6a33");
+    expect(enemy.cast?.color).toBe(DAMAGE_COLORS.fire);
     expect(heroPose(PLAYER, fireball, STAGE, 0.3, 0).cast).toBeNull();
     expect(
       heroPose(
@@ -144,7 +146,7 @@ describe("heroPose", () => {
     expect(heroPose(ENEMY, second, DUNGEON, 0.3, 0).cast).toBeNull();
     expect(
       heroPose({ side: "enemy", hero: 1 }, second, DUNGEON, 0.3, 0).cast?.color
-    ).toBe("#ff6a33");
+    ).toBe(DAMAGE_COLORS.fire);
   });
 
   it("stands each Boss at the middle of its Front", () => {
@@ -161,7 +163,7 @@ describe("heroPose", () => {
       BattleEvent.BossRuleActivated({ hero: ENEMY, rule: 0, threshold: 50 }),
       DUNGEON
     );
-    expect(heroPose(ENEMY, rule, DUNGEON, 0.3, 0).cast?.color).toBe("#ffd75a");
+    expect(heroPose(ENEMY, rule, DUNGEON, 0.3, 0).cast?.color).toBe(RALLY_TINT);
     expect(
       heroPose({ side: "enemy", hero: 1 }, rule, DUNGEON, 0.3, 0).cast
     ).toBeNull();

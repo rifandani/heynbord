@@ -11,6 +11,7 @@ import {
 } from "@/features/battle/scene/fx-slots";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { STATUS_ICON } from "@/features/battle/scene/status-visuals";
+import { DROP_STATUS_EDGE } from "@/features/battle/tokens";
 
 /**
  * The glyph and the color of the placeholder of each Status icon that the
@@ -49,11 +50,8 @@ export const StatusIcon = ({
     return (
       <span
         aria-hidden
-        className={cn(
-          "inline-grid place-items-center drop-shadow-[0_0_1px_#2a1d12]",
-          className
-        )}
-        style={{ color: placeholder.color }}
+        className={cn("inline-grid place-items-center", className)}
+        style={{ color: placeholder.color, filter: DROP_STATUS_EDGE }}
       >
         <GlyphIcon glyph={placeholder.glyph} className="size-[80%]" />
       </span>

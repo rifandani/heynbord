@@ -12,6 +12,13 @@ import { Button } from "react-aria-components";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { REWARD_PLATE } from "@/features/battle/components/reward-plate";
+import {
+  DROP_ICON_1,
+  SHADOW_STAMP,
+  SHADOW_STAMP_SOFT,
+  SHADOW_XP_TRACK,
+  XP_BAR_FILL,
+} from "@/features/battle/tokens";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
   PEEK_BUTTON,
@@ -81,7 +88,7 @@ export const ResultTickets = ({
       <span aria-hidden className="flex items-center gap-1.5">
         <GlyphIcon
           glyph={TICKET_GLYPH[kind]}
-          className="size-4.5 -rotate-8 text-[#ffd75a]"
+          className="text-ready-gold size-4.5 -rotate-8"
         />
         {tr(`sweep.${kind}.earned`, { count: tickets })}
       </span>
@@ -180,7 +187,7 @@ export const ResultAchievements = ({
           >
             <GlyphIcon
               glyph="banner"
-              className="size-5 shrink-0 text-[#ffd75a]"
+              className="text-ready-gold size-5 shrink-0"
             />
             <span className="sr-only">
               {tr("achievements.notice.one", { name })}
@@ -189,7 +196,7 @@ export const ResultAchievements = ({
               aria-hidden
               className="flex min-w-0 flex-col items-start gap-0.5 text-left"
             >
-              <span className="text-[10px] tracking-wide text-[#e9c46a] uppercase">
+              <span className="text-gold-trim text-[10px] tracking-wide uppercase">
                 {tr("achievements.result.completed")}
               </span>
               <span className="truncate">{name}</span>
@@ -219,10 +226,9 @@ const ForgeStonePlate = ({ stones }: { readonly stones: ForgeStoneReward }) => {
         {tr("battle.forgeStonesEarnedLabel", { count: stones.count, tier })}
       </span>
       <span aria-hidden className="flex items-center gap-1.5">
-        <ForgeStoneIcon
-          tier={stones.tier}
-          className="size-4.5 drop-shadow-[0_1px_0_rgba(0,0,0,0.5)]"
-        />
+        <span className="inline-flex" style={{ filter: DROP_ICON_1 }}>
+          <ForgeStoneIcon tier={stones.tier} className="size-4.5" />
+        </span>
         {tr("battle.forgeStonesEarned", { count: stones.count, tier })}
       </span>
     </p>
@@ -308,7 +314,7 @@ export const ResultXp = ({
         })}
       </p>
       <div
-        className="flex items-baseline justify-between gap-2 text-xs font-bold text-[#5b4632]"
+        className="text-ink-soft flex items-baseline justify-between gap-2 text-xs font-bold"
         aria-hidden
       >
         <span>{tr("battle.levelShort", { level: rewards.levelAfter })}</span>
@@ -317,18 +323,20 @@ export const ResultXp = ({
         </span>
       </div>
       <span
-        className="mt-1 block h-2.5 overflow-hidden rounded-full border border-[#5b3a1e]/60 bg-[#3a2a1c] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6)] [@media(max-height:500px)]:h-2"
+        className="border-frame-wood/60 bg-plate-socket mt-1 block h-2.5 overflow-hidden rounded-full border [@media(max-height:500px)]:h-2"
+        style={{ boxShadow: SHADOW_XP_TRACK }}
         aria-hidden
       >
         <span
-          className="block h-full origin-left rounded-full bg-gradient-to-b from-[#7fe0f0] to-[#0e8aa6] motion-safe:animate-[result-xp-fill_900ms_cubic-bezier(0.2,0.8,0.2,1)_350ms_both]"
-          style={xpFill(shown)}
+          className="block h-full origin-left rounded-full motion-safe:animate-[result-xp-fill_900ms_cubic-bezier(0.2,0.8,0.2,1)_350ms_both]"
+          style={{ ...xpFill(shown), backgroundImage: XP_BAR_FILL }}
           data-testid="result-xp-fill"
         />
       </span>
       {levelUp ? (
         <p
-          className="font-display mt-1.5 w-fit rounded-[4px] border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-2 py-0.5 text-sm leading-tight font-black text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.35)] motion-safe:animate-[result-level-up_420ms_cubic-bezier(0.2,0.8,0.2,1)_1250ms_both] [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:text-xs"
+          className="font-display border-gold-deep from-gold-light to-gold text-ink-on-gold mt-1.5 w-fit rounded-[4px] border-2 bg-gradient-to-b px-2 py-0.5 text-sm leading-tight font-black motion-safe:animate-[result-level-up_420ms_cubic-bezier(0.2,0.8,0.2,1)_1250ms_both] [@media(max-height:500px)]:mt-1 [@media(max-height:500px)]:text-xs"
+          style={{ boxShadow: SHADOW_STAMP_SOFT }}
           data-testid="result-level-up"
         >
           {tr("battle.levelUp", { level: rewards.levelAfter })}
@@ -350,9 +358,9 @@ export const NewChip = ({
   const { tr } = useGameText();
   return (
     <span
-      style={style}
+      style={{ ...style, boxShadow: SHADOW_STAMP }}
       className={cn(
-        "absolute -top-2 left-1/2 z-20 -translate-x-1/2 rounded-[4px] border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1.5 py-px text-[10px] leading-tight font-black tracking-wide text-[#2a1a05] shadow-[0_2px_0_rgba(0,0,0,0.45)] motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_740ms_both]",
+        "border-gold-deep from-gold-light to-gold text-ink-on-gold absolute -top-2 left-1/2 z-20 -translate-x-1/2 rounded-[4px] border-2 bg-gradient-to-b px-1.5 py-px text-[10px] leading-tight font-black tracking-wide motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_740ms_both]",
         className
       )}
       data-testid="result-card-new"
@@ -409,7 +417,7 @@ export const ResultCard = ({ card }: { readonly card: StageRewardCard }) => {
       </Button>
       {details(target, trigger)}
       <span
-        className="mt-1 max-w-24 truncate text-xs font-bold text-[#2a1d12]"
+        className="text-ink mt-1 max-w-24 truncate text-xs font-bold"
         aria-hidden
       >
         {name}

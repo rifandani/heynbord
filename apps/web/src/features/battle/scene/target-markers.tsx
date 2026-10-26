@@ -26,6 +26,7 @@ import {
 import { playback } from "@/features/battle/scene/playback";
 import { scenePicker } from "@/features/battle/scene/scene-picker";
 import { unitUnder } from "@/features/battle/scene/unit-inspector";
+import { FOCUS_RING, TARGET_MARKER } from "@/features/battle/tokens";
 import {
   LONG_PRESS_MS,
   targetIndexOfUnit,
@@ -257,7 +258,7 @@ export const TargetMarkers = ({
               >
                 <planeGeometry args={[spot.width + 0.14, spot.depth + 0.14]} />
                 <meshBasicMaterial
-                  color="#1c140e"
+                  color={FOCUS_RING.edge}
                   transparent
                   depthWrite={false}
                   toneMapped={false}
@@ -265,7 +266,7 @@ export const TargetMarkers = ({
               </mesh>
               <planeGeometry args={[spot.width, spot.depth]} />
               <meshBasicMaterial
-                color={index === focused ? "#fff2a8" : "#ffd24a"}
+                color={index === focused ? FOCUS_RING.halo : TARGET_MARKER}
                 transparent
                 depthWrite={false}
                 toneMapped={false}

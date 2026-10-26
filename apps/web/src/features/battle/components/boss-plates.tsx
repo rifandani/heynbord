@@ -20,6 +20,12 @@ import { cardText } from "@/features/battle/card-text";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { countdownLabel } from "@/features/battle/components/hand-card";
 import { classGlyph } from "@/features/battle/glyphs";
+import {
+  BOSS_CHIP_READY,
+  SHADOW_LANE_HELD,
+  SHADOW_NOTCH,
+  TARGET_MARKER,
+} from "@/features/battle/tokens";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 
@@ -120,9 +126,10 @@ const LaneStrip = ({
           className={cn(
             "min-h-1 flex-1 rounded-[2px] transition-colors duration-300",
             held
-              ? "bg-[#d9463b] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
-              : "bg-[#3a2a1c] ring-1 ring-[#e8d9bb]/25 ring-inset"
+              ? "bg-enemy-red"
+              : "bg-plate-socket ring-cream-dim/25 ring-1 ring-inset"
           )}
+          style={held ? { boxShadow: SHADOW_LANE_HELD } : undefined}
           data-held={held || undefined}
         />
       );
@@ -143,13 +150,14 @@ const Notch = ({
     <span
       className={cn(
         "absolute top-[-3px] bottom-[-3px] w-[3px] -translate-x-1/2 rounded-[1px]",
-        rule.activated
-          ? "bg-[#e8d9bb]/40"
-          : "bg-[#fff6df] shadow-[0_0_0_1px_rgba(28,20,14,0.85)]",
+        rule.activated ? "bg-cream-dim/40" : "bg-cream",
         breaking &&
           "animate-[boss-notch_var(--event-ms)_ease-out_both] motion-reduce:animate-none"
       )}
-      style={{ left: `${rule.threshold}%` }}
+      style={{
+        left: `${rule.threshold}%`,
+        boxShadow: rule.activated ? undefined : SHADOW_NOTCH,
+      }}
       title={tr("battle.bossPlate.notch", { threshold: rule.threshold })}
       data-testid="boss-notch"
       data-used={rule.activated || undefined}
@@ -173,7 +181,7 @@ const BossHp = ({
           <div
             className={cn(
               "h-full rounded-full transition-[width] duration-300",
-              percent <= 30 ? "bg-[#ef4444]" : "bg-[#4ade80]"
+              percent <= 30 ? "bg-hp-low" : "bg-hp-full"
             )}
             style={{ width: `${percent}%` }}
           />
@@ -187,9 +195,9 @@ const BossHp = ({
           />
         ))}
       </div>
-      <span className="text-sm leading-none font-black whitespace-nowrap text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xs">
+      <span className="text-cream text-sm leading-none font-black whitespace-nowrap tabular-nums [@media(max-height:500px)]:text-xs">
         {hero.hp}
-        <span className="text-xs font-medium text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]">
+        <span className="text-cream-dim text-xs font-medium [@media(max-height:500px)]:text-[10px]">
           /{hero.maxHp}
         </span>
       </span>
@@ -212,9 +220,14 @@ const BossHand = ({ hand }: { readonly hand: readonly HandCardView[] }) => {
           className={cn(
             "flex h-6 w-[18px] items-center justify-center rounded-[3px] border text-[11px] leading-none font-bold tabular-nums [@media(max-height:500px)]:h-5 [@media(max-height:500px)]:w-4 [@media(max-height:500px)]:text-[10px]",
             card.countdown === 0
-              ? "border-[#ffd75a] bg-[#5b1f1a] text-[#ffd75a]"
-              : "border-[#e8d9bb]/40 bg-[#3a2a1c] text-[#fff6df]"
+              ? "border-ready-gold text-ready-gold"
+              : "border-cream-dim/40 bg-plate-socket text-cream"
           )}
+          style={
+            card.countdown === 0
+              ? { backgroundColor: BOSS_CHIP_READY }
+              : undefined
+          }
           aria-label={countdownLabel(tr, card.countdown)}
         >
           {card.countdown}
@@ -228,7 +241,7 @@ const BossHand = ({ hand }: { readonly hand: readonly HandCardView[] }) => {
 const DefeatedSeal = () => {
   const { tr } = useGameText();
   return (
-    <span className="inline-flex items-center gap-1 self-end rounded-[4px] bg-[#8e1f1f] px-1.5 py-0.5 text-[10px] leading-none font-bold tracking-[0.04em] text-white uppercase">
+    <span className="bg-blood-banner inline-flex items-center gap-1 self-end rounded-[4px] px-1.5 py-0.5 text-[10px] leading-none font-bold tracking-[0.04em] text-white uppercase">
       <GlyphIcon glyph="skull" className="size-3" />
       {tr("battle.bossPlate.defeated")}
     </span>
@@ -251,18 +264,18 @@ const RuleLabel = ({
   const cardName = useCardName();
   return (
     <span
-      className="pointer-events-none absolute top-full right-1 z-10 mt-2 flex animate-[boss-rule-label_var(--event-ms)_cubic-bezier(0.2,0.8,0.2,1)_both] items-center gap-1.5 rounded-lg border-2 border-[#e9c46a] bg-[#1c140e]/95 py-1 pr-2.5 pl-1.5 text-xs leading-tight font-bold whitespace-nowrap text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] motion-reduce:animate-[cast-fade-in_var(--event-ms)_linear_both]"
+      className="border-gold-trim bg-night-plate/95 text-cream shadow-piece pointer-events-none absolute top-full right-1 z-10 mt-2 flex animate-[boss-rule-label_var(--event-ms)_cubic-bezier(0.2,0.8,0.2,1)_both] items-center gap-1.5 rounded-lg border-2 py-1 pr-2.5 pl-1.5 text-xs leading-tight font-bold whitespace-nowrap motion-reduce:animate-[cast-fade-in_var(--event-ms)_linear_both]"
       aria-hidden
       data-testid="boss-rule-label"
     >
-      <span className="flex size-5 items-center justify-center rounded-full bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05]">
+      <span className="from-gold-light to-gold text-ink-on-gold flex size-5 items-center justify-center rounded-full bg-gradient-to-b">
         <GlyphIcon glyph="crown" className="size-3" />
       </span>
       <span>
         <span className="sr-only">{name}: </span>
         {effectShort(rule.effect, tr, cardName)}
       </span>
-      <span className="font-medium text-[#e8d9bb] tabular-nums">
+      <span className="text-cream-dim font-medium tabular-nums">
         {rule.threshold}%
       </span>
     </span>
@@ -282,17 +295,17 @@ const BossDetails = ({
   return (
     <>
       <p className="font-display text-sm leading-tight font-bold">{name}</p>
-      <p className="mt-0.5 text-xs text-[#e8d9bb]">
+      <p className="text-cream-dim mt-0.5 text-xs">
         {tr(`classes.${hero.classId}`)} ·{" "}
         {isDefeated(hero)
           ? tr("battle.bossPlate.defeated")
           : holdsText(tr, hero.front)}
       </p>
-      <p className="mt-2 text-[11px] font-bold tracking-[0.04em] text-[#e9c46a] uppercase">
+      <p className="text-gold-trim mt-2 text-[11px] font-bold tracking-[0.04em] uppercase">
         {tr("battle.bossPlate.rules")}
       </p>
       {hero.bossRules.length === 0 ? (
-        <p className="text-xs text-[#e8d9bb]">
+        <p className="text-cream-dim text-xs">
           {tr("battle.bossPlate.noRules")}
         </p>
       ) : (
@@ -303,7 +316,7 @@ const BossDetails = ({
               key={index}
               className={cn(
                 "flex items-baseline gap-2",
-                rule.activated && "text-[#e8d9bb]/70"
+                rule.activated && "text-cream-dim/70"
               )}
             >
               <span className="w-[4.5rem] shrink-0 font-bold tabular-nums">
@@ -313,7 +326,7 @@ const BossDetails = ({
                 {effectDetail(rule.effect, tr, cardName)}
               </span>
               {rule.activated ? (
-                <span className="ml-auto inline-flex items-center gap-0.5 font-semibold text-[#e9c46a] no-underline">
+                <span className="text-gold-trim ml-auto inline-flex items-center gap-0.5 font-semibold no-underline">
                   <GlyphIcon glyph="check" className="size-3" />
                   {tr("battle.bossPlate.ruleUsed")}
                 </span>
@@ -405,18 +418,22 @@ const BossPlate = ({
           }
         }}
         className={cn(
-          "group/boss relative flex w-full min-w-0 items-stretch gap-1.5 rounded-xl border-2 bg-[#1c140e]/85 p-1.5 text-left backdrop-blur-sm transition-[box-shadow,opacity,filter] duration-300 outline-none [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:p-1",
-          "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
-          active && !defeated
-            ? "shadow-[0_0_14px_2px_rgba(255,215,90,0.6)]"
-            : "shadow-[0_3px_0_rgba(0,0,0,0.45)]",
+          "group/boss bg-night-plate/85 relative flex w-full min-w-0 items-stretch gap-1.5 rounded-xl border-2 p-1.5 text-left backdrop-blur-sm transition-[box-shadow,opacity,filter] duration-300 outline-none [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:p-1",
+          "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
+          active && !defeated ? "shadow-active" : "shadow-piece",
           defeated && "saturate-[0.35]",
           target &&
-            "cursor-pointer ring-2 ring-[#ffd24a] motion-safe:animate-[boss-target_1.2s_ease-in-out_infinite]",
-          focused && "ring-4 ring-[#fff2a8]",
+            "cursor-pointer ring-2 ring-(--target-marker) motion-safe:animate-[boss-target_1.2s_ease-in-out_infinite]",
+          focused && "ring-focus-cream ring-4",
           rule && "animate-[boss-rule-flash_var(--event-ms)_ease-out_both]"
         )}
-        style={{ borderColor: ENEMY.main }}
+        // SAFETY: `CSSProperties` does not model a custom property.
+        style={
+          {
+            borderColor: ENEMY.main,
+            "--target-marker": TARGET_MARKER,
+          } as CSSProperties
+        }
         data-testid={`boss-${index}`}
         data-defeated={defeated || undefined}
         data-targetable={target ? true : undefined}
@@ -424,14 +441,14 @@ const BossPlate = ({
       >
         <LaneStrip front={defeated ? [] : hero.front} lanes={lanes} />
         <span className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-          <span className="truncate text-right text-sm leading-tight font-semibold text-[#fff6df] [@media(max-height:500px)]:text-xs">
+          <span className="text-cream truncate text-right text-sm leading-tight font-semibold [@media(max-height:500px)]:text-xs">
             {name}
           </span>
           {defeated ? null : <BossHp hero={hero} breaking={breaking} />}
           {defeated ? <DefeatedSeal /> : <BossHand hand={hero.hand} />}
         </span>
         <span
-          className="flex size-10 shrink-0 items-center justify-center self-start rounded-lg text-[#fff6df] [@media(max-height:500px)]:size-7"
+          className="text-cream flex size-10 shrink-0 items-center justify-center self-start rounded-lg [@media(max-height:500px)]:size-7"
           style={{
             background: ENEMY.dark,
           }}
@@ -447,7 +464,7 @@ const BossPlate = ({
       <GameTooltip
         placement="left"
         offset={8}
-        className="w-[min(18rem,80vw)] rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/95 px-3 py-2 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+        className="border-gold-trim/70 bg-night-plate/95 text-cream shadow-piece w-[min(18rem,80vw)] rounded-xl border-2 px-3 py-2"
         data-testid="boss-details"
       >
         <BossDetails hero={hero} name={name} />

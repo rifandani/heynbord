@@ -27,6 +27,7 @@ import { UNIT_CLIP_NAMES } from "@/features/battle/scene/unit-clips";
 import type { UnitClip } from "@/features/battle/scene/unit-models";
 import { fallbackClip } from "@/features/battle/scene/unit-models";
 import type { Pose } from "@/features/battle/scene/unit-pose";
+import { SCENE_INK } from "@/features/battle/tokens";
 
 /** The feet of a Unit sit just above the ground. */
 const FOOT_Y = 0.02;
@@ -47,7 +48,7 @@ const isClipName = (name: string): name is UnitClipName =>
 const OUTLINE_WIDTH = 0.008;
 
 /** The ink of the outline: the dark brown of the card art lines. */
-const OUTLINE_COLOR = "#24170f";
+const OUTLINE_COLOR = SCENE_INK;
 
 /**
  * The light bands of the toon shading: shade, half light and full light. A

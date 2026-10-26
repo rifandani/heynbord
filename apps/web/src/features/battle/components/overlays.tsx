@@ -28,6 +28,7 @@ import {
   ResultTickets,
   ResultXp,
 } from "@/features/battle/components/result-rewards";
+import { DROP_SEAL, SHADOW_RESULT_WELL } from "@/features/battle/tokens";
 import { randomSeed } from "@/features/battle/use-battle";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
@@ -52,8 +53,8 @@ const TurnBannerText = ({ side }: { readonly side: Side }) => {
       className={cn(
         "fade-in zoom-in-95 animate-in font-display rounded-xl border-2 px-6 py-2 text-2xl font-black tracking-wide shadow-xl duration-200 motion-reduce:animate-none [@media(max-height:500px)]:text-lg",
         side === "player"
-          ? "border-[#7a5310] bg-[#ffd75a]/95 text-[#2a1a05]"
-          : "bg-blood-banner border-[#6b1610] text-white"
+          ? "border-gold-deep bg-ready-gold/95 text-ink-on-gold"
+          : "bg-blood-banner border-enemy-deep text-white"
       )}
     >
       {side === "player" ? tr("battle.yourTurn") : tr("battle.enemyTurn")}
@@ -99,15 +100,15 @@ const ResultTitle = ({
         id="battle-result-title"
         className={cn(
           "font-display text-4xl leading-tight font-black [@media(max-height:500px)]:text-2xl",
-          won ? "text-[#8a5a12]" : "text-[#8e1f1f]"
+          won ? "text-victory-amber" : "text-blood-banner"
         )}
       >
         {won ? tr("battle.victory") : tr("battle.defeat")}
       </h2>
-      <p className="mt-1 flex items-center gap-3 text-sm text-[#5b4632]">
-        <span aria-hidden className="h-px flex-1 bg-[#c9b48c]" />
+      <p className="text-ink-soft mt-1 flex items-center gap-3 text-sm">
+        <span aria-hidden className="bg-parchment-rule h-px flex-1" />
         <span className="max-w-[75%] truncate">{name}</span>
-        <span aria-hidden className="h-px flex-1 bg-[#c9b48c]" />
+        <span aria-hidden className="bg-parchment-rule h-px flex-1" />
       </p>
     </header>
   );
@@ -130,9 +131,12 @@ const ResultStars = ({ stars }: { readonly stars: number }) => {
           className={cn(
             "block",
             star <= stars &&
-              "drop-shadow-[0_2px_0_rgba(122,83,16,0.6)] motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
+              "motion-safe:animate-[hint-seal_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
           )}
-          style={{ animationDelay: `${200 + star * 140}ms` }}
+          style={{
+            animationDelay: `${200 + star * 140}ms`,
+            filter: star <= stars ? DROP_SEAL : undefined,
+          }}
         >
           <StarIcon
             earned={star <= stars}
@@ -153,7 +157,7 @@ const ResultReason = ({ result }: { readonly result: BattleResult }) => {
   const { tr } = useGameText();
   if (result.reason === "turnLimit") {
     return (
-      <p className="mt-2 text-sm text-balance text-[#2a1d12]">
+      <p className="text-ink mt-2 text-sm text-balance">
         {tr("battle.turnLimit")}
       </p>
     );
@@ -172,7 +176,8 @@ const ResultRewards = ({ shown }: { readonly shown: ShownRewards }) => {
   const { rewards } = shown;
   return (
     <div
-      className="mt-4 flex items-center gap-4 rounded-xl border-2 border-[#c9b48c] bg-[#ead9b4] px-4 py-3 shadow-[inset_0_2px_6px_rgba(60,30,5,0.2),0_1px_0_rgba(255,243,209,0.8)] [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-2"
+      className="border-parchment-rule bg-parchment-deep mt-4 flex items-center gap-4 rounded-xl border-2 px-4 py-3 [@media(max-height:500px)]:mt-2 [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-2"
+      style={{ boxShadow: SHADOW_RESULT_WELL }}
       data-testid="result-rewards"
     >
       {"card" in rewards && rewards.card ? (
@@ -292,7 +297,7 @@ const ResultDialog = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="battle-result-title"
-        className="fade-in zoom-in-95 animate-in max-h-full w-[min(460px,94vw)] overflow-y-auto rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-6 pt-5 pb-3 text-center text-[#2a1d12] shadow-2xl duration-300 motion-reduce:animate-none [@media(max-height:500px)]:w-[min(560px,94vw)] [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-3 [@media(max-height:500px)]:pb-2"
+        className="fade-in zoom-in-95 animate-in border-frame-wood bg-parchment text-ink max-h-full w-[min(460px,94vw)] overflow-y-auto rounded-2xl border-4 px-6 pt-5 pb-3 text-center shadow-2xl duration-300 motion-reduce:animate-none [@media(max-height:500px)]:w-[min(560px,94vw)] [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-3 [@media(max-height:500px)]:pb-2"
         data-testid="battle-result"
       >
         <ResultTitle won={won} name={text(battleNameRef(session.options))} />
@@ -338,10 +343,10 @@ const ResultDialog = ({
           )}
           {/* On a short screen, the Battle Log and Share Replay join the row of the two buttons. */}
           {battle.hasBattleLog ? (
-            <div className="col-span-2 mt-1 flex flex-wrap justify-center gap-1 border-t border-[#c9b48c] pt-2 [@media(max-height:500px)]:col-span-1 [@media(max-height:500px)]:mt-0 [@media(max-height:500px)]:flex-nowrap [@media(max-height:500px)]:border-0 [@media(max-height:500px)]:pt-0">
+            <div className="border-parchment-rule col-span-2 mt-1 flex flex-wrap justify-center gap-1 border-t pt-2 [@media(max-height:500px)]:col-span-1 [@media(max-height:500px)]:mt-0 [@media(max-height:500px)]:flex-nowrap [@media(max-height:500px)]:border-0 [@media(max-height:500px)]:pt-0">
               <Button
                 onPress={() => battle.openLog()}
-                className="data-[focus-visible]:ring-focus-cream inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-bold text-[#5b4632] transition-colors duration-100 outline-none data-[focus-visible]:ring-4 data-[hovered]:bg-[#ead9b4] data-[hovered]:text-[#2a1d12] data-[pressed]:translate-y-px"
+                className="data-[focus-visible]:ring-focus-cream text-ink-soft data-[hovered]:bg-parchment-deep data-[hovered]:text-ink inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm font-bold transition-colors duration-100 outline-none data-[focus-visible]:ring-4 data-[pressed]:translate-y-px"
                 data-testid="result-battle-log"
               >
                 <GlyphIcon glyph="scroll" className="size-4" />
@@ -377,7 +382,7 @@ const ReplayResultDialog = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="battle-result-title"
-        className="fade-in zoom-in-95 animate-in max-h-full w-[min(460px,94vw)] overflow-y-auto rounded-2xl border-4 border-[#5b3a1e] bg-[#f6ead0] px-6 pt-5 pb-4 text-center text-[#2a1d12] shadow-2xl duration-300 motion-reduce:animate-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-3 [@media(max-height:500px)]:pb-3"
+        className="fade-in zoom-in-95 animate-in border-frame-wood bg-parchment text-ink max-h-full w-[min(460px,94vw)] overflow-y-auto rounded-2xl border-4 px-6 pt-5 pb-4 text-center shadow-2xl duration-300 motion-reduce:animate-none [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:pt-3 [@media(max-height:500px)]:pb-3"
         data-testid="battle-result"
         data-replay
       >

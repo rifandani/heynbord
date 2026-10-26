@@ -8,34 +8,29 @@ import { fliesNow } from "@/features/battle/battle-view";
 import { laneZ, squareX } from "@/features/battle/scene/layout";
 import type { Status } from "@/features/battle/scene/status-visuals";
 import { loopStatuses } from "@/features/battle/scene/status-visuals";
+import {
+  HEAL_TINT,
+  HIT_TINT,
+  RALLY_TINT,
+  REBORN_TINT,
+  STATUS_TINT,
+} from "@/features/battle/tokens";
 
 /**
  * The tint of each Status. Frozen and Burning always tint the Unit. With
  * reduced motion, each loop Status gives a static tint in place of its
  * particles.
  */
-const STATUS_TINT: Readonly<Record<Status, string>> = {
-  freeze: "#a9dcff",
-  paralyze: "#b5fbf3",
-  burn: "#ffb070",
-  poison: "#b6e05a",
-  entangle: "#7fcf6a",
-  bleed: "#e0605a",
-  hobble: "#b8bec6",
-  ward: "#ffe7a3",
-  steadfast: "#f7cf86",
-  exposed: "#ffa3c2",
-  grounded: "#e8bd8c",
-};
+const STATUS_COLOR: Readonly<Record<Status, string>> = STATUS_TINT;
 
-const HIT = new Color("#ff5a4a");
-const FROZEN = new Color(STATUS_TINT.freeze);
-const BURNING = new Color(STATUS_TINT.burn);
-const HEALED = new Color("#9dffb4");
+const HIT = new Color(HIT_TINT);
+const FROZEN = new Color(STATUS_COLOR.freeze);
+const BURNING = new Color(STATUS_COLOR.burn);
+const HEALED = new Color(HEAL_TINT);
 /** The pale spirit light of a Rebirth: the Undead teal, near white. */
-const REBORN = new Color("#c4fbef");
+const REBORN = new Color(REBORN_TINT);
 /** The light of a Rally Unit when it gives its bonus: `ready-gold`. */
-const RALLY = new Color("#ffd75a");
+const RALLY = new Color(RALLY_TINT);
 
 /** The tint amount of a Status with reduced motion. It does not pulse. */
 const STILL_TINT_AMOUNT = 0.35;
@@ -70,8 +65,8 @@ const stillTint = (unit: UnitView): Color | null => {
   }
   const tint = new Color(
     second
-      ? mixHex(STATUS_TINT[first], STATUS_TINT[second])
-      : STATUS_TINT[first]
+      ? mixHex(STATUS_COLOR[first], STATUS_COLOR[second])
+      : STATUS_COLOR[first]
   );
   stillTints.set(key, tint);
   return tint;
