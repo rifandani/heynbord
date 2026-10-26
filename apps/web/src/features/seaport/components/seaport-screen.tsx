@@ -44,6 +44,11 @@ import {
   lastVoyageAtom,
   seaportAtom,
 } from "@/features/seaport/seaport.atoms";
+import {
+  cssVars,
+  SEAPORT_COLORS,
+  SEAPORT_CSS,
+} from "@/features/seaport/tokens";
 import { useSeaport } from "@/features/seaport/use-seaport";
 import { useVoyageName } from "@/features/seaport/use-voyage-name";
 import { BalancePlate } from "@/features/town/components/balance-plate";
@@ -58,8 +63,8 @@ const ChooserLabel = ({
   readonly glyph: Glyph;
   readonly children: string;
 }) => (
-  <Label className="font-display flex w-fit items-center gap-2 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 px-3 py-0.5 text-[15px] font-black shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:800px)]:sr-only">
-    <GlyphIcon glyph={glyph} className="size-4 text-[#e9c46a]" />
+  <Label className="font-display border-gold-trim/70 bg-night-plate/85 shadow-piece flex w-fit items-center gap-2 rounded-xl border-2 px-3 py-0.5 text-[15px] font-black [@media(max-height:800px)]:sr-only">
+    <GlyphIcon glyph={glyph} className="text-gold-trim size-4" />
     {children}
   </Label>
 );
@@ -92,26 +97,30 @@ const NextVoyage = ({
         <Button
           slot="trigger"
           className={cn(
-            "flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 px-3 text-left text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)] outline-none",
-            "transition-[background-color,translate,box-shadow] duration-100 data-[hovered]:bg-[#2a1e15]/90 data-[pressed]:translate-y-px data-[pressed]:shadow-[0_2px_0_rgba(0,0,0,0.45)]",
-            "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+            "border-gold-trim/70 bg-night-plate/85 text-cream shadow-piece flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-xl border-2 px-3 text-left outline-none",
+            "transition-[background-color,translate,box-shadow] duration-100 data-[hovered]:bg-(--voyage-hover) data-[pressed]:translate-y-px data-[pressed]:shadow-(--voyage-press)",
+            "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4",
             "[@media(max-height:500px)]:min-h-10 [@media(max-height:500px)]:px-2.5"
           )}
+          style={cssVars({
+            "--voyage-hover": SEAPORT_COLORS.plateHoverVeil,
+            "--voyage-press": SEAPORT_CSS.plate2,
+          })}
           data-testid="next-voyage-trigger"
         >
           <GlyphIcon
             glyph="hourglass"
-            className="size-4 shrink-0 text-[#e9c46a]"
+            className="text-gold-trim size-4 shrink-0"
           />
           <span className="font-display text-[15px] font-black [@media(max-height:500px)]:text-sm">
             {tr("seaport.nextVoyage")}
           </span>
-          <span className="ml-auto truncate text-xs font-bold text-[#e8d9bb] tabular-nums">
+          <span className="text-cream-dim ml-auto truncate text-xs font-bold tabular-nums">
             {name}
           </span>
           <GlyphIcon
             glyph="chevron"
-            className="size-3.5 shrink-0 text-[#e9c46a] group-data-[expanded]:rotate-180 motion-safe:transition-transform motion-safe:duration-200"
+            className="text-gold-trim size-3.5 shrink-0 group-data-[expanded]:rotate-180 motion-safe:transition-transform motion-safe:duration-200"
           />
         </Button>
       </Heading>
@@ -234,7 +243,10 @@ export const SeaportScreen = () => {
         className="flex flex-col gap-1.5"
       >
         <ChooserLabel glyph="hourglass">{tr("seaport.duration")}</ChooserLabel>
-        <div className="flex gap-1 rounded-xl border-2 border-[#e9c46a]/45 bg-[#1c140e]/85 p-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5),0_3px_0_rgba(0,0,0,0.45)]">
+        <div
+          className="border-gold-trim/45 bg-night-plate/85 flex gap-1 rounded-xl border-2 p-1"
+          style={{ boxShadow: SEAPORT_CSS.durationStrip }}
+        >
           {durationOptions(level).map((option) => (
             <DurationChip key={option.duration.hours} option={option} />
           ))}
@@ -257,10 +269,10 @@ export const SeaportScreen = () => {
         >
           {choices}
           <p
-            className="flex w-fit items-center gap-1.5 rounded-lg bg-[#1c140e]/80 px-2.5 py-1 text-xs font-semibold text-[#e8d9bb]"
+            className="bg-night-plate/80 text-cream-dim flex w-fit items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold"
             data-testid="seaport-sail-note"
           >
-            <GlyphIcon glyph="anchor" className="size-3 text-[#e9c46a]" />
+            <GlyphIcon glyph="anchor" className="text-gold-trim size-3" />
             {tr("seaport.sailNote")}
           </p>
         </NextVoyage>

@@ -12,7 +12,7 @@ import {
   getCard,
 } from "@workspace/rules";
 import { cn } from "cn";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   Button,
@@ -39,6 +39,12 @@ import {
   deckRows,
   problemText,
 } from "@/features/deck/deck";
+import {
+  cssVars,
+  DECK_CSS,
+  DECK_METER_FILL,
+  DECK_PROBLEM_MARK,
+} from "@/features/deck/tokens";
 import { useCountTo } from "@/features/workshop/use-count-to";
 
 type PeekBind = (target: Peek) => object;
@@ -48,12 +54,12 @@ type PeekAt = (target: Peek) => ReactNode;
 
 const classOption = ({ isSelected }: { readonly isSelected: boolean }) =>
   cn(
-    "flex h-9 cursor-pointer items-center gap-2 rounded-lg border-2 pr-3 pl-1 text-sm font-bold text-[#2a1d12] transition-[transform,box-shadow] duration-100 outline-none select-none",
-    "data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[hovered]:-translate-y-px motion-reduce:data-[hovered]:translate-y-0",
+    "text-ink flex h-9 cursor-pointer items-center gap-2 rounded-lg border-2 pr-3 pl-1 text-sm font-bold transition-[transform,box-shadow] duration-100 outline-none select-none",
+    "data-[focus-visible]:ring-focus-cream data-[focus-visible]:ring-4 data-[hovered]:-translate-y-px motion-reduce:data-[hovered]:translate-y-0",
     "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:pr-2 [@media(max-height:500px)]:text-xs",
     isSelected
-      ? "border-gold-deep bg-[#fff3d1] shadow-[0_0_0_3px_rgba(226,169,59,0.45)]"
-      : "border-ink-faded bg-[#f6ead0]"
+      ? "border-gold-deep bg-parchment-lit shadow-selected"
+      : "border-ink-faded bg-parchment"
   );
 
 /** The name of the Deck: it reads as the page title, and the Player can change it. */
@@ -79,8 +85,8 @@ const DeckName = ({
         placeholder={fallback}
         spellCheck={false}
         className={cn(
-          "font-display w-full truncate rounded-md border-b border-dashed border-transparent bg-transparent px-1 py-0.5 text-2xl font-black text-[#2a1d12] outline-none placeholder:text-[#2a1d12]",
-          "data-[focused]:border-solid data-[focused]:border-[#e2a93b] data-[focused]:bg-[#fff3d1] data-[hovered]:border-[#c9b48c]",
+          "font-display text-ink placeholder:text-ink w-full truncate rounded-md border-b border-dashed border-transparent bg-transparent px-1 py-0.5 text-2xl font-black outline-none",
+          "data-[focused]:border-gold data-[focused]:bg-parchment-lit data-[hovered]:border-parchment-rule data-[focused]:border-solid",
           "[@media(max-height:500px)]:text-base"
         )}
         data-testid="deck-name"
@@ -113,7 +119,7 @@ const ClassChoice = ({
       orientation="horizontal"
       className="flex items-center gap-2"
     >
-      <Label className="mr-1 text-xs font-bold text-[#5b4632] [@media(max-height:500px)]:sr-only">
+      <Label className="text-ink-soft mr-1 text-xs font-bold [@media(max-height:500px)]:sr-only">
         {tr("deckBuilder.heroClass")}
       </Label>
       {CLASSES_WITH_CARDS.map((id) => (
@@ -124,7 +130,7 @@ const ClassChoice = ({
           data-testid={`deck-class-${id}`}
         >
           <span
-            className="grid size-7 place-items-center rounded-md bg-[#5b3a1e] text-[#fff6df] [@media(max-height:500px)]:size-5"
+            className="bg-frame-wood text-cream grid size-7 place-items-center rounded-md [@media(max-height:500px)]:size-5"
             aria-hidden
           >
             <GlyphIcon
@@ -154,10 +160,10 @@ const REMOVE_MS = 160;
  * two controls.
  */
 const copiesPlate = cn(
-  "relative flex h-6 max-w-full min-w-[3.75rem] items-center justify-center rounded-lg border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-2 text-xs leading-none font-black text-[#fff6df] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.35)]",
+  "border-gold-trim/70 bg-night-plate/90 text-cream relative flex h-6 max-w-full min-w-[3.75rem] items-center justify-center rounded-lg border-2 px-2 text-xs leading-none font-black tabular-nums shadow-(--copy-plate)",
   "transition-[border-color,background-color] duration-100",
-  "group-data-[hovered]:border-[#2a1a0c] group-data-[hovered]:bg-gradient-to-b group-data-[hovered]:from-[#7a5233] group-data-[hovered]:to-[#563720] group-data-[hovered]:shadow-[0_2px_0_rgba(0,0,0,0.45)]",
-  "group-data-[focus-visible]:border-[#2a1a0c] group-data-[focus-visible]:bg-gradient-to-b group-data-[focus-visible]:from-[#7a5233] group-data-[focus-visible]:to-[#563720] group-data-[focus-visible]:shadow-[0_2px_0_rgba(0,0,0,0.45)]",
+  "group-data-[hovered]:border-wood-edge group-data-[hovered]:from-wood-light group-data-[hovered]:to-wood group-data-[hovered]:bg-gradient-to-b group-data-[hovered]:shadow-(--copy-plate-lift)",
+  "group-data-[focus-visible]:border-wood-edge group-data-[focus-visible]:from-wood-light group-data-[focus-visible]:to-wood group-data-[focus-visible]:bg-gradient-to-b group-data-[focus-visible]:shadow-(--copy-plate-lift)",
   "[@media(max-height:500px)]:h-5 [@media(max-height:500px)]:px-1.5 [@media(max-height:500px)]:text-[10px]"
 );
 
@@ -231,7 +237,7 @@ const DeckCard = ({
           count: row.count,
         })}
         className={cn(
-          "group flex w-full cursor-pointer flex-col items-center gap-1.5 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]",
+          "group data-[focus-visible]:ring-focus-cream flex w-full cursor-pointer flex-col items-center gap-1.5 rounded-xl p-1 outline-none select-none data-[focus-visible]:ring-4",
           landDelay !== undefined &&
             !leaving &&
             "motion-safe:animate-[deck-card-land_360ms_cubic-bezier(0.2,0.8,0.2,1)_both]",
@@ -251,7 +257,14 @@ const DeckCard = ({
           countdown={card.countdown}
           className="transition-transform duration-150 ease-out group-data-[hovered]:-translate-y-1.5 group-data-[pressed]:translate-y-0 motion-reduce:transition-none"
         />
-        <span className={copiesPlate} aria-hidden>
+        <span
+          className={copiesPlate}
+          style={cssVars({
+            "--copy-plate": DECK_CSS.copyPlate,
+            "--copy-plate-lift": DECK_CSS.copyPlateLift,
+          })}
+          aria-hidden
+        >
           <span className="block overflow-hidden">
             <span
               key={row.count}
@@ -281,7 +294,7 @@ const EmptyDeck = () => {
   const { tr } = useGameText();
   return (
     <div className="flex min-h-0 flex-1 items-center justify-center">
-      <p className="max-w-[32ch] rounded-xl border-2 border-dashed border-[#c9b48c] px-4 py-3 text-center text-sm text-balance text-[#5b4632] [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-2 [@media(max-height:500px)]:text-xs">
+      <p className="border-parchment-rule text-ink-soft max-w-[32ch] rounded-xl border-2 border-dashed px-4 py-3 text-center text-sm text-balance [@media(max-height:500px)]:px-3 [@media(max-height:500px)]:py-2 [@media(max-height:500px)]:text-xs">
         {tr("deckBuilder.empty")}
       </p>
     </div>
@@ -289,13 +302,12 @@ const EmptyDeck = () => {
 };
 
 const meterValue =
-  "text-base font-black whitespace-nowrap text-[#2a1d12] tabular-nums [@media(max-height:500px)]:text-xs";
+  "text-base font-black whitespace-nowrap text-ink tabular-nums [@media(max-height:500px)]:text-xs";
 
 /** The time of a meter: the number counts and the groove fills in step. */
 const METER_MS = 260;
 
-const GOLD_FILL =
-  "bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]";
+const GOLD_FILL = DECK_METER_FILL.gold;
 
 /** The groove of a meter, filled to `share` (0 to 1). */
 const MeterGroove = ({
@@ -304,19 +316,17 @@ const MeterGroove = ({
   children,
 }: {
   readonly share: number;
-  readonly fill: string;
+  readonly fill: CSSProperties;
   readonly children?: ReactNode;
 }) => (
   <span
-    className="relative h-2.5 min-w-0 flex-1 rounded-full bg-[#5b3a1e] shadow-[inset_0_2px_3px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.7)] [@media(max-height:500px)]:h-2"
+    className="bg-frame-wood relative h-2.5 min-w-0 flex-1 rounded-full [@media(max-height:500px)]:h-2"
+    style={{ boxShadow: DECK_CSS.meterGroove }}
     aria-hidden
   >
     <span
-      className={cn(
-        "absolute inset-y-0 left-0 rounded-full transition-[width] duration-[260ms] ease-out motion-reduce:transition-none",
-        fill
-      )}
-      style={{ width: `${Math.min(share, 1) * 100}%` }}
+      className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-[260ms] ease-out motion-reduce:transition-none"
+      style={{ ...fill, width: `${Math.min(share, 1) * 100}%` }}
     />
     {children}
   </span>
@@ -343,7 +353,7 @@ const CountdownMeter = ({ input }: { readonly input: DeckInput }) => {
       </span>
       <MeterGroove
         share={sum / limit}
-        fill={over ? "bg-[#c0392b]" : GOLD_FILL}
+        fill={over ? DECK_METER_FILL.over : GOLD_FILL}
       />
     </div>
   );
@@ -363,10 +373,10 @@ const SizeMeter = ({ input }: { readonly input: DeckInput }) => {
       </span>
       <MeterGroove
         share={count / max}
-        fill={enough ? GOLD_FILL : "bg-[#c9a46a]"}
+        fill={enough ? GOLD_FILL : DECK_METER_FILL.under}
       >
         <span
-          className="absolute -inset-y-1 w-0.5 -translate-x-1/2 rounded-full bg-[#2a1d12]"
+          className="bg-ink absolute -inset-y-1 w-0.5 -translate-x-1/2 rounded-full"
           style={{ left: `${(min / max) * 100}%` }}
         />
       </MeterGroove>
@@ -398,10 +408,11 @@ const Problems = ({
           return (
             <li
               key={text(reason)}
-              className="flex items-start gap-2 text-sm leading-snug text-[#2a1d12] [@media(max-height:500px)]:text-xs"
+              className="text-ink flex items-start gap-2 text-sm leading-snug [@media(max-height:500px)]:text-xs"
             >
               <span
-                className="mt-[0.4em] size-2 shrink-0 rotate-45 border border-[#5b2a0c] bg-[#b4521a]"
+                className="mt-[0.4em] size-2 shrink-0 rotate-45 border"
+                style={DECK_PROBLEM_MARK}
                 aria-hidden
               />
               {text(reason)}
@@ -411,7 +422,7 @@ const Problems = ({
       </ul>
       {hidden > 0 && (
         <p
-          className="mt-1 pl-4 text-sm leading-snug text-[#5b4632] italic [@media(max-height:500px)]:text-xs"
+          className="text-ink-soft mt-1 pl-4 text-sm leading-snug italic [@media(max-height:500px)]:text-xs"
           data-testid="deck-problems-more"
         >
           {tr("deckBuilder.moreProblems", { count: hidden })}
@@ -470,7 +481,7 @@ export const DeckPage = ({
       aria-label={slot.name || fallbackName}
       className="flex min-h-0 flex-col gap-3 py-4 pr-5 pl-9 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:py-2 [@media(max-height:500px)]:pr-3 [@media(max-height:500px)]:pl-6"
     >
-      <header className="flex flex-col gap-2 border-b-2 border-[#c9b48c] pb-3 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:items-center [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-1.5">
+      <header className="border-parchment-rule flex flex-col gap-2 border-b-2 pb-3 [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:items-center [@media(max-height:500px)]:gap-2 [@media(max-height:500px)]:pb-1.5">
         <DeckName slot={slot} fallback={fallbackName} onRename={onRename} />
         <ClassChoice classId={slot.classId} onChange={onClass} />
       </header>
@@ -483,7 +494,8 @@ export const DeckPage = ({
           <ul
             ref={grid}
             aria-label={tr("deckBuilder.thisDeck")}
-            className="-mx-2 grid min-h-0 flex-1 [scrollbar-width:thin] [scrollbar-color:#b9a175_transparent] auto-rows-max grid-cols-[repeat(auto-fill,minmax(10em,1fr))] items-start gap-x-1 gap-y-3 overflow-y-auto overscroll-contain px-2 pt-2 pb-4 text-[11px] max-[1100px]:text-[10px] [@media(max-height:500px)]:gap-y-1.5 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:text-[7px]"
+            className="-mx-2 grid min-h-0 flex-1 [scrollbar-width:thin] auto-rows-max grid-cols-[repeat(auto-fill,minmax(10em,1fr))] items-start gap-x-1 gap-y-3 overflow-y-auto overscroll-contain px-2 pt-2 pb-4 text-[11px] max-[1100px]:text-[10px] [@media(max-height:500px)]:gap-y-1.5 [@media(max-height:500px)]:pt-1 [@media(max-height:500px)]:text-[7px]"
+            style={{ scrollbarColor: DECK_CSS.scrollbar }}
             data-testid="deck-grid"
           >
             {rows.map((row) => (
@@ -501,7 +513,7 @@ export const DeckPage = ({
         )}
       </div>
 
-      <footer className="flex flex-col gap-2.5 border-t-2 border-[#c9b48c] pt-3 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:pt-1.5">
+      <footer className="border-parchment-rule flex flex-col gap-2.5 border-t-2 pt-3 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:pt-1.5">
         <CountdownMeter input={input} />
         <SizeMeter input={input} />
         <Problems problems={problems} />
@@ -537,7 +549,7 @@ export const DeckPage = ({
           <span className="flex-1" />
           {active ? (
             <span
-              className="font-display border-gold-deep inline-flex min-h-11 items-center gap-2 rounded-lg border-2 bg-[#fff3d1] px-3 font-bold text-[#7a5310] [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-sm"
+              className="font-display border-gold-deep bg-parchment-lit text-gold-deep inline-flex min-h-11 items-center gap-2 rounded-lg border-2 px-3 font-bold [@media(max-height:500px)]:min-h-8 [@media(max-height:500px)]:text-sm"
               data-testid="deck-active"
             >
               <GlyphIcon glyph="check" className="size-4" />

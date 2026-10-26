@@ -9,6 +9,7 @@ import {
   SQUARE_SHEET,
   sheetTile,
 } from "@/features/battle/board-skin-art";
+import { BAZAAR_COLORS, BAZAAR_CSS, cssVars } from "@/features/bazaar/tokens";
 
 /** The shelf shows 3 Lanes, as a Stage, and the player half of each Lane. */
 const SHELF_LANES = 3;
@@ -20,9 +21,9 @@ const PREVIEW_GROUND = battlePaintingFor(1);
 /** The ground of the preview: a crop of the open meadow of the Battle Painting. */
 const groundStyle: CSSProperties =
   PREVIEW_GROUND === null
-    ? { backgroundColor: "#679f40" }
+    ? { backgroundColor: BAZAAR_COLORS.meadow }
     : {
-        backgroundColor: "#679f40",
+        backgroundColor: BAZAAR_COLORS.meadow,
         backgroundImage: `url("${PREVIEW_GROUND}")`,
         backgroundPosition: "center",
         backgroundSize: "cover",
@@ -56,11 +57,11 @@ export const BoardSkinThumb = ({
     <span
       aria-hidden
       className={cn(
-        "block aspect-square overflow-hidden rounded-md border-2 border-[#e9c46a]/70 shadow-[0_2px_0_rgba(0,0,0,0.45)]",
+        "border-gold-trim/70 block aspect-square overflow-hidden rounded-md border-2 shadow-(--skin-drop)",
         className
       )}
-      style={
-        sheet === null
+      style={{
+        ...(sheet === null
           ? groundStyle
           : {
               backgroundImage: `url("${sheet}")`,
@@ -68,8 +69,9 @@ export const BoardSkinThumb = ({
                 (SQUARE_SHEET.rows / 2) * 100
               }%`,
               backgroundPosition: "0 0",
-            }
-      }
+            }),
+        ...cssVars({ "--skin-drop": BAZAAR_CSS.plate2 }),
+      }}
       data-testid="board-skin-thumb"
       data-look={skin ?? "standard"}
     />
@@ -90,7 +92,7 @@ export const BoardSkinShelfLook = ({
   return (
     <span
       aria-hidden
-      className="relative block h-[112px] w-[168px] overflow-hidden rounded-lg border-2 border-[#e9c46a]/70 [perspective:320px] [@media(max-height:500px)]:h-[78px] [@media(max-height:500px)]:w-[116px]"
+      className="border-gold-trim/70 relative block h-[112px] w-[168px] overflow-hidden rounded-lg border-2 [perspective:320px] [@media(max-height:500px)]:h-[78px] [@media(max-height:500px)]:w-[116px]"
       style={groundStyle}
       data-testid="board-skin-shelf-look"
       data-look={skin ?? "standard"}
@@ -100,7 +102,8 @@ export const BoardSkinShelfLook = ({
           {Array.from({ length: SHELF_LANES }, (_, lane) => (
             <span
               key={lane}
-              className="flex h-[28%] shadow-[0_2px_4px_rgba(18,12,6,0.55)]"
+              className="flex h-[28%]"
+              style={{ boxShadow: BAZAAR_CSS.lane }}
             >
               {laneRunnerTiles(lane)
                 .slice(0, SHELF_SQUARES)

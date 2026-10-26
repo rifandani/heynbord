@@ -3,6 +3,7 @@ import { GEAR_SLOTS } from "@workspace/rules";
 import { cn } from "cn";
 
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
+import { BAZAAR_COLORS, BAZAAR_CSS, cssVars } from "@/features/bazaar/tokens";
 import { gearIconArt } from "@/features/hero/gear-look-art";
 import { GEAR_GLYPH, GEAR_GLYPH_TURN } from "@/features/hero/hero-art";
 
@@ -18,10 +19,13 @@ const GearLookIcon = ({
 }) => {
   const art = gearIconArt(look, slot);
   return art === null ? (
-    <span className={cn("grid place-items-center", className)}>
+    <span
+      className={cn("grid place-items-center", className)}
+      style={cssVars({ "--gear-glyph": BAZAAR_COLORS.gearGlyph })}
+    >
       <GlyphIcon
         glyph={GEAR_GLYPH[slot]}
-        className={cn("size-[60%] text-[#f3e6c4]", GEAR_GLYPH_TURN[slot])}
+        className={cn("size-[60%] text-(--gear-glyph)", GEAR_GLYPH_TURN[slot])}
       />
     </span>
   ) : (
@@ -31,10 +35,8 @@ const GearLookIcon = ({
       width={256}
       height={256}
       draggable={false}
-      className={cn(
-        "object-contain drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] select-none",
-        className
-      )}
+      className={cn("object-contain select-none", className)}
+      style={{ filter: BAZAAR_CSS.iconDrop }}
     />
   );
 };
@@ -53,9 +55,13 @@ export const GearLookThumb = ({
   <span
     aria-hidden
     className={cn(
-      "block aspect-square rounded-md border-2 border-[#e9c46a]/70 bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] p-0.5 shadow-[0_2px_0_rgba(0,0,0,0.45)]",
+      "border-gold-trim/70 block aspect-square rounded-md border-2 p-0.5",
       className
     )}
+    style={{
+      backgroundImage: BAZAAR_CSS.seal,
+      boxShadow: BAZAAR_CSS.plate2,
+    }}
     data-testid="gear-look-thumb"
     data-look={look ?? "standard"}
   >

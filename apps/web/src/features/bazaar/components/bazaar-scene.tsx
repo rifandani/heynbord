@@ -1,3 +1,4 @@
+import { BAZAAR_COLORS, BAZAAR_CSS } from "@/features/bazaar/tokens";
 import { FittedPainting } from "@/features/town/components/fitted-painting";
 
 /** The painting of the Bazaar inside (11 — Town Concepts 16): 1536 × 1024. */
@@ -7,13 +8,7 @@ const BAZAAR_IMAGE = "/town/bazaar-inside.webp";
  * The darker edges and the dim center over the scene, so that the item plates,
  * the Heynstone prices and the Town Bar stay easy to read (as the Hall inside).
  */
-const SHADE = [
-  // The far side of the square behind the list: dim and soft, so the item
-  // plates and their prices stay easy to read. The sides stay bright.
-  "linear-gradient(90deg, transparent 10%, rgba(18,12,8,0.34) 32%, rgba(18,12,8,0.34) 68%, transparent 90%)",
-  "radial-gradient(ellipse 54% 50% at 50% 52%, rgba(18,12,8,0.4), transparent 78%)",
-  "linear-gradient(180deg, rgba(18,12,8,0.44) 0%, transparent 18%, transparent 78%, rgba(18,12,8,0.55) 100%)",
-].join(", ");
+const SHADE = BAZAAR_CSS.shade;
 
 /**
  * The lanterns under the awning, in painting percent: the two at the left and
@@ -38,7 +33,8 @@ const LANTERNS: readonly {
  */
 export const BazaarScene = () => (
   <div
-    className="absolute inset-0 overflow-hidden bg-[#2a1c12]"
+    className="absolute inset-0 overflow-hidden"
+    style={{ backgroundColor: BAZAAR_COLORS.scene }}
     aria-hidden
     data-testid="bazaar-scene"
   >
@@ -46,8 +42,9 @@ export const BazaarScene = () => (
       {LANTERNS.map((lantern) => (
         <span
           key={`${lantern.x}:${lantern.y}`}
-          className="pointer-events-none absolute aspect-square -translate-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,206,130,0.3),rgba(255,180,90,0.1)_55%,transparent)] opacity-85 motion-safe:animate-[shop-lamp_5.5s_ease-in-out_infinite]"
+          className="pointer-events-none absolute aspect-square -translate-1/2 rounded-full opacity-85 motion-safe:animate-[shop-lamp_5.5s_ease-in-out_infinite]"
           style={{
+            backgroundImage: BAZAAR_CSS.lantern,
             left: `${lantern.x}%`,
             top: `${lantern.y}%`,
             width: `${lantern.size}%`,

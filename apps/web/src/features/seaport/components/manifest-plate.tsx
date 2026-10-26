@@ -11,6 +11,11 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { useNumberFormat } from "@/features/i18n/use-number-format";
 import { CargoIcon } from "@/features/seaport/components/cargo-icon";
+import {
+  cssVars,
+  SEAPORT_COLORS,
+  SEAPORT_CSS,
+} from "@/features/seaport/tokens";
 import { useNow } from "@/features/seaport/use-seaport";
 import { CoinAmount } from "@/features/town/components/balance-plate";
 import { coinWords } from "@/features/town/town";
@@ -18,7 +23,7 @@ import { useCountTo } from "@/features/workshop/use-count-to";
 
 /** The big number of the Manifest (The Big Number Rule). */
 const BIG =
-  "text-[1.75rem] leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xl";
+  "text-[1.75rem] leading-none font-black text-cream tabular-nums [@media(max-height:500px)]:text-xl";
 
 /**
  * The amount of a Coin, XP or Essence voyage. It counts to the new value
@@ -59,8 +64,13 @@ const Amount = ({
       <span
         className={cn(
           "text-base font-bold [@media(max-height:500px)]:text-sm",
-          voyage.cargo === "xp" ? "text-[#9fe7f5]" : "text-[#ffb8d2]"
+          voyage.cargo === "xp"
+            ? "text-harbour-sky"
+            : "text-(--seaport-essence-light)"
         )}
+        style={cssVars({
+          "--seaport-essence-light": SEAPORT_COLORS.essenceLight,
+        })}
       >
         {tr(`seaport.units.${voyage.cargo}`)}
       </span>
@@ -114,14 +124,18 @@ export const ManifestPlate = ({
     <section
       aria-labelledby="manifest-label"
       aria-live="polite"
-      className="flex shrink-0 flex-col gap-1.5 rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-3 py-2 shadow-[0_3px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:py-1.5"
+      className="border-gold-trim/70 bg-night-plate/90 flex shrink-0 flex-col gap-1.5 rounded-xl border-2 px-3 py-2 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2.5 [@media(max-height:500px)]:py-1.5"
+      style={{
+        boxShadow: SEAPORT_CSS.plate3,
+        ...cssVars({ "--icon-drop": SEAPORT_CSS.iconDrop }),
+      }}
       data-testid="manifest"
       data-cargo={voyage.cargo}
       data-hours={voyage.hours}
     >
       <p
         id="manifest-label"
-        className="text-[0.6875rem] font-bold tracking-[0.04em] text-[#e8d9bb] uppercase [@media(max-height:500px)]:sr-only"
+        className="text-cream-dim text-[0.6875rem] font-bold tracking-[0.04em] uppercase [@media(max-height:500px)]:sr-only"
       >
         {tr("seaport.manifest.label")}
       </p>
@@ -135,7 +149,7 @@ export const ManifestPlate = ({
           <>
             <CargoIcon
               cargo={voyage.cargo}
-              className="size-8 shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-6"
+              className="size-8 shrink-0 [filter:var(--icon-drop)] [@media(max-height:500px)]:size-6"
             />
             <Amount
               key={voyage.cargo}
@@ -158,7 +172,7 @@ export const ManifestPlate = ({
               <CargoIcon
                 cargo="forgeStones"
                 tier={stones.tier}
-                className="size-8 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-6"
+                className="size-8 [filter:var(--icon-drop)] [@media(max-height:500px)]:size-6"
               />
             </span>
             <span className={cn(BIG, "flex items-baseline gap-1.5")}>
@@ -174,13 +188,13 @@ export const ManifestPlate = ({
       </div>
       {/* The row keeps the height of the bonus pill, also when there is no
           pill (Forge Stones, 6 h), so that the Manifest does not change height. */}
-      <p className="flex min-h-4.5 flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-[#e8d9bb] tabular-nums">
+      <p className="text-cream-dim flex min-h-4.5 flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold tabular-nums">
         {lock === null ? (
           <span
             className="flex items-center gap-1"
             data-testid="manifest-return"
           >
-            <GlyphIcon glyph="hourglass" className="size-3 text-[#e9c46a]" />
+            <GlyphIcon glyph="hourglass" className="text-gold-trim size-3" />
             {away
               ? tr("seaport.hoursLabel", { hours: voyage.hours })
               : tr("seaport.manifest.back", {
@@ -193,17 +207,17 @@ export const ManifestPlate = ({
             className="flex items-center gap-1 font-bold"
             data-testid="dispatch-note"
           >
-            <GlyphIcon glyph="lock" className="size-3 text-[#e9c46a]" />
+            <GlyphIcon glyph="lock" className="text-gold-trim size-3" />
             {tr("town.opensAtLevel", { level: lock })}
           </span>
         )}
         {bonusPercent > 0 && stones === null ? (
-          <span className="rounded-full bg-[#ead9b4] px-1.5 py-px text-xs font-bold text-[#2a1d12]">
+          <span className="bg-parchment-deep text-ink rounded-full px-1.5 py-px text-xs font-bold">
             {tr("seaport.manifest.bonus", { percent: bonusPercent })}
           </span>
         ) : null}
         {stones === null ? null : (
-          <span className="text-[#e8d9bb]/85">
+          <span className="text-cream-dim/85">
             {tr("seaport.manifest.stonesFull")}
           </span>
         )}

@@ -1,6 +1,6 @@
 import { useMediaQuery } from "@reactuses/core";
 import { cn } from "cn";
-import type { CSSProperties, KeyboardEvent } from "react";
+import type { KeyboardEvent } from "react";
 import { Fragment, useState } from "react";
 import { ListBox, ListBoxItem } from "react-aria-components";
 
@@ -20,6 +20,11 @@ import {
   stopBosses,
 } from "@/features/dungeons/dungeon-art";
 import type { DungeonNews, DungeonSlot } from "@/features/dungeons/dungeons";
+import {
+  cssVars,
+  DUNGEON_COLORS,
+  DUNGEON_CSS,
+} from "@/features/dungeons/tokens";
 
 /** The phone in landscape (DESIGN.md, The Short Screen Rule). */
 const SHORT_SCREEN = "(max-height: 500px)";
@@ -71,12 +76,13 @@ const BossLight = ({
   const width = (height * 0.78) / 1.5;
   return (
     <span
-      className="pointer-events-none absolute rounded-full bg-[radial-gradient(closest-side,rgba(255,226,168,0.85),rgba(255,176,74,0.4)_52%,transparent_78%)] mix-blend-screen motion-safe:animate-[stage-panel-ink_200ms_ease-out_both]"
+      className="pointer-events-none absolute rounded-full mix-blend-screen motion-safe:animate-[stage-panel-ink_200ms_ease-out_both]"
       style={{
         left: `${mark.x - width / 2}%`,
         top: `${mark.top - 6}%`,
         width: `${width}%`,
         height: `${height + 12}%`,
+        backgroundImage: DUNGEON_CSS.bossLight,
       }}
       data-testid={`boss-light-${index}`}
       aria-hidden
@@ -319,7 +325,8 @@ export const MineShaft = ({
       ) : null}
       {/* The shade that ties the foot of the painting into the Town Bar. */}
       <span
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[12%] bg-[linear-gradient(180deg,transparent,rgba(14,10,8,0.5))]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[12%]"
+        style={{ backgroundImage: DUNGEON_CSS.footShade }}
         aria-hidden
       />
       {/* The Depth Gauge: the rope of the shaft at the left, with one marker
@@ -331,14 +338,25 @@ export const MineShaft = ({
         onKeyDownCapture={onKeyDownCapture}
       >
         <span
-          className="grid size-5 shrink-0 place-items-center rounded-full border-2 border-[#1c140e] bg-[#55504a] shadow-[0_2px_0_rgba(0,0,0,0.45)]"
+          className="border-night-plate grid size-5 shrink-0 place-items-center rounded-full border-2"
+          style={{
+            backgroundColor: DUNGEON_COLORS.capStone,
+            boxShadow: DUNGEON_CSS.plate2,
+          }}
           aria-hidden
         >
-          <span className="size-1.5 rounded-full bg-[#9aa0a6]" />
+          <span
+            className="size-1.5 rounded-full"
+            style={{ backgroundColor: DUNGEON_COLORS.capDot }}
+          />
         </span>
         <div className="relative w-1.5 flex-1">
           <span
-            className="absolute inset-0 rounded-full bg-[repeating-linear-gradient(160deg,#c49a5e_0_3px,#8a6638_3px_6px)] shadow-[0_0_0_1px_rgba(28,20,14,0.7)]"
+            className="absolute inset-0 rounded-full"
+            style={{
+              backgroundImage: DUNGEON_CSS.rope,
+              boxShadow: DUNGEON_CSS.ropeInset,
+            }}
             aria-hidden
           />
           {index === -1 ? null : (
@@ -350,24 +368,25 @@ export const MineShaft = ({
             >
               <svg
                 viewBox="0 0 40 44"
-                className="size-full overflow-visible drop-shadow-[0_3px_0_rgba(0,0,0,0.45)]"
+                className="size-full overflow-visible"
+                style={{ filter: DUNGEON_CSS.cageDrop }}
               >
                 <path
                   d="M4 6 H36 V42 H4 Z"
-                  fill="rgba(28,20,14,0.35)"
-                  stroke="#1c140e"
+                  fill={DUNGEON_CSS.cageFill}
+                  stroke="var(--color-night-plate)"
                   strokeWidth={4}
                 />
                 <path
                   d="M4 6 H36 V42 H4 Z M12 6 V42 M28 6 V42"
                   fill="none"
-                  stroke="#8d9297"
+                  stroke="var(--color-pewter)"
                   strokeWidth={2}
                 />
                 <path
                   d="M14 6 L20 1 L26 6"
                   fill="none"
-                  stroke="#8d9297"
+                  stroke="var(--color-pewter)"
                   strokeWidth={2}
                 />
               </svg>
@@ -407,15 +426,18 @@ export const MineShaft = ({
                   id={slot.number}
                   textValue={label(slot)}
                   aria-label={label(slot)}
-                  style={{ top: at(place) } satisfies CSSProperties}
                   className={cn(
-                    "absolute left-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full border-2 text-xs font-black tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.45)] outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8] data-[pressed]:translate-y-[calc(-50%+1px)] [@media(max-height:500px)]:size-6",
+                    "data-[focus-visible]:ring-focus-cream absolute left-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full border-2 text-xs font-black tabular-nums shadow-(--gauge-drop) outline-none data-[focus-visible]:ring-4 data-[pressed]:translate-y-[calc(-50%+1px)] [@media(max-height:500px)]:size-6",
                     slot.state === "later" && "cursor-default",
                     cleared
-                      ? "border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] text-[#2a1a05] data-[hovered]:brightness-110"
-                      : "border-[#e9c46a]/70 bg-[#1c140e] text-[#fff6df] data-[disabled]:border-dashed data-[hovered]:border-[#ffe08a]",
-                    current && "ring-2 ring-[#fff2a8]"
+                      ? "border-gold-deep from-gold-light to-gold text-ink-on-gold bg-gradient-to-b data-[hovered]:brightness-110"
+                      : "border-gold-trim/70 bg-night-plate text-cream data-[hovered]:border-gold-light data-[disabled]:border-dashed",
+                    current && "ring-focus-cream ring-2"
                   )}
+                  style={{
+                    top: at(place),
+                    ...cssVars({ "--gauge-drop": DUNGEON_CSS.plate2 }),
+                  }}
                   data-dungeon={slot.number}
                   data-state={slot.state}
                   data-cleared={cleared || undefined}
@@ -426,7 +448,7 @@ export const MineShaft = ({
                   ) : (
                     <GlyphIcon
                       glyph="lock"
-                      className="size-3.5 text-[#e9c46a]"
+                      className="text-gold-trim size-3.5"
                     />
                   )}
                 </ListBoxItem>

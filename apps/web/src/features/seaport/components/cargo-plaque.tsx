@@ -6,6 +6,11 @@ import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { CargoIcon } from "@/features/seaport/components/cargo-icon";
 import type { CargoOption } from "@/features/seaport/seaport";
+import {
+  cssVars,
+  SEAPORT_AT_SEA,
+  SEAPORT_CSS,
+} from "@/features/seaport/tokens";
 
 /**
  * One plaque of the Cargo list (Economy 2.8): a React Aria radio, so the
@@ -33,16 +38,21 @@ export const CargoPlaque = ({
       value={cargo.id}
       className={({ isSelected, isFocusVisible, isHovered }) =>
         cn(
-          "relative flex min-w-0 cursor-pointer items-center gap-2 rounded-xl border-2 px-2.5 py-2 text-[#fff6df] outline-none",
-          "bg-[#1c140e]/85 shadow-[0_3px_0_rgba(0,0,0,0.45)] transition-[border-color,background-color,translate] duration-150 motion-reduce:transition-none",
+          "text-cream relative flex min-w-0 cursor-pointer items-center gap-2 rounded-xl border-2 px-2.5 py-2 outline-none",
+          "bg-night-plate/85 shadow-(--plaque-drop) transition-[border-color,background-color,translate] duration-150 data-[selected]:shadow-(--plaque-lift) motion-reduce:transition-none",
           "[@media(max-height:500px)]:justify-center [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:py-1",
           isSelected
-            ? "-translate-y-px border-[#ffd75a] bg-[#2a1d12]/90 shadow-[0_4px_0_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,215,90,0.35)]"
-            : "border-[#e9c46a]/45",
-          isHovered && !isSelected && "border-[#e9c46a]/80",
-          isFocusVisible && "ring-4 ring-[#fff2a8]"
+            ? "border-ready-gold bg-ink/90 -translate-y-px"
+            : "border-gold-trim/45",
+          isHovered && !isSelected && "border-gold-trim/80",
+          isFocusVisible && "ring-focus-cream ring-4"
         )
       }
+      style={cssVars({
+        "--plaque-drop": SEAPORT_CSS.plate3,
+        "--plaque-lift": SEAPORT_CSS.plateSelected,
+        "--icon-drop": SEAPORT_CSS.iconDrop,
+      })}
       data-testid={`cargo-${cargo.id}`}
       data-open={open}
       data-at-sea={atSea || undefined}
@@ -51,24 +61,25 @@ export const CargoPlaque = ({
         cargo={cargo.id}
         tier={tier}
         className={cn(
-          "size-7 shrink-0 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-6",
+          "size-7 shrink-0 [filter:var(--icon-drop)] [@media(max-height:500px)]:size-6",
           !open && "grayscale-[0.6]"
         )}
       />
       <span
         className={cn(
           "font-display min-w-0 flex-1 truncate text-[15px] leading-tight font-bold [@media(max-height:500px)]:sr-only",
-          !open && "text-[#e8d9bb]/80"
+          !open && "text-cream-dim/80"
         )}
       >
         {name}
       </span>
       {open ? null : (
         <span
-          className="flex shrink-0 items-center gap-1 rounded-full border-2 border-[#e9c46a]/70 bg-[#1c140e]/90 px-1.5 py-px text-[11px] font-bold text-[#e8d9bb] tabular-nums shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:absolute [@media(max-height:500px)]:-top-1.5 [@media(max-height:500px)]:-right-1.5 [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:text-[10px]"
+          className="border-gold-trim/70 bg-night-plate/90 text-cream-dim flex shrink-0 items-center gap-1 rounded-full border-2 px-1.5 py-px text-[11px] font-bold tabular-nums [@media(max-height:500px)]:absolute [@media(max-height:500px)]:-top-1.5 [@media(max-height:500px)]:-right-1.5 [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:text-[10px]"
+          style={{ boxShadow: SEAPORT_CSS.plate2 }}
           data-testid="cargo-lock"
         >
-          <GlyphIcon glyph="lock" className="size-2.5 text-[#e9c46a]" />
+          <GlyphIcon glyph="lock" className="text-gold-trim size-2.5" />
           <span aria-hidden>
             {tr("seaport.levelShort", { level: cargo.unlockLevel })}
           </span>
@@ -79,7 +90,8 @@ export const CargoPlaque = ({
       )}
       {atSea ? (
         <span
-          className="absolute -top-2 left-2 flex items-center gap-1 rounded-full border border-[#9fe7f5]/60 bg-[#0e3b4d] px-1.5 py-px text-[10px] font-bold text-[#cff6ff] [@media(max-height:500px)]:left-0.5"
+          className="border-harbour-sky/60 absolute -top-2 left-2 flex items-center gap-1 rounded-full border px-1.5 py-px text-[10px] font-bold [@media(max-height:500px)]:left-0.5"
+          style={SEAPORT_AT_SEA}
           data-testid="cargo-at-sea"
         >
           <GlyphIcon glyph="anchor" className="size-2.5" />

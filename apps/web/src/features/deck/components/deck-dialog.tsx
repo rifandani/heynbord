@@ -47,6 +47,7 @@ import {
   collectionAtom,
   deckSlotsAtom,
 } from "@/features/deck/deck.atoms";
+import { DECK_COLORS, DECK_CSS, DECK_DROP } from "@/features/deck/tokens";
 import { useHandbook } from "@/features/handbook/use-handbook";
 import { playerLevelAtom } from "@/features/profile/profile.atoms";
 import { shortcutImage } from "@/features/town/town";
@@ -55,7 +56,7 @@ import { shortcutImage } from "@/features/town/town";
 const Corner = ({ className }: { readonly className: string }) => (
   <span
     className={cn(
-      "pointer-events-none absolute size-6 border-[#7a5310] [@media(max-height:500px)]:size-4",
+      "border-gold-deep pointer-events-none absolute size-6 [@media(max-height:500px)]:size-4",
       className
     )}
     style={{ background: BRONZE }}
@@ -81,7 +82,7 @@ const Ribbon = ({
     <Tab
       id={slot.id}
       aria-label={active ? `${name}, ${tr("deckBuilder.active")}` : name}
-      className="group relative flex h-full w-44 min-w-0 shrink cursor-pointer items-end rounded-t-md outline-none data-[focus-visible]:ring-4 data-[focus-visible]:ring-[#fff2a8]"
+      className="group data-[focus-visible]:ring-focus-cream relative flex h-full w-44 min-w-0 shrink cursor-pointer items-end rounded-t-md outline-none data-[focus-visible]:ring-4"
       data-testid={`deck-slot-${slot.id}`}
     >
       <span
@@ -90,8 +91,8 @@ const Ribbon = ({
           // The swallowtail end of the ribbon.
           "[clip-path:polygon(0_0,50%_7px,100%_0,100%_100%,0_100%)]",
           "[@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-2 [@media(max-height:500px)]:pt-1.5 [@media(max-height:500px)]:pb-1",
-          "group-data-[selected]:h-12 group-data-[selected]:bg-gradient-to-b group-data-[selected]:from-[#ffe08a] group-data-[selected]:to-[#e2a93b] group-data-[selected]:text-[#2a1a05]",
-          "h-10 bg-gradient-to-b from-[#7a5233] to-[#563720] text-[#fff6df] group-data-[hovered]:brightness-110",
+          "group-data-[selected]:from-gold-light group-data-[selected]:to-gold group-data-[selected]:text-ink-on-gold group-data-[selected]:h-12 group-data-[selected]:bg-gradient-to-b",
+          "from-wood-light to-wood text-cream h-10 bg-gradient-to-b group-data-[hovered]:brightness-110",
           "[@media(max-height:500px)]:h-7 [@media(max-height:500px)]:group-data-[selected]:h-8"
         )}
       >
@@ -109,7 +110,7 @@ const Ribbon = ({
         </span>
         {active ? (
           <span
-            className="ml-auto grid size-[18px] shrink-0 place-items-center rounded-full border border-[#e9c46a]/80 bg-[#1c140e]/90 text-[#ffd75a] [@media(max-height:500px)]:size-3.5"
+            className="border-gold-trim/80 bg-night-plate/90 text-ready-gold ml-auto grid size-[18px] shrink-0 place-items-center rounded-full border [@media(max-height:500px)]:size-3.5"
             aria-hidden
           >
             <GlyphIcon
@@ -318,11 +319,12 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
             width={128}
             height={128}
             draggable={false}
-            className="-my-2 size-12 drop-shadow-[0_2px_0_rgba(0,0,0,0.45)] select-none [@media(max-height:500px)]:size-8"
+            className="-my-2 size-12 select-none [@media(max-height:500px)]:size-8"
+            style={{ filter: DECK_DROP }}
           />
           <Heading
             slot="title"
-            className="font-display text-2xl font-black text-[#fff6df] [@media(max-height:500px)]:text-base"
+            className="font-display text-cream text-2xl font-black [@media(max-height:500px)]:text-base"
           >
             {tr("deckBuilder.title")}
           </Heading>
@@ -360,14 +362,14 @@ const DeckBook = ({ close }: { readonly close: () => void }) => {
           key={slot.id}
           id={slot.id}
           className={cn(
-            "relative grid min-h-0 flex-1 grid-cols-2 rounded-[10px] bg-[#f6ead0] text-[#2a1d12] outline-none",
-            // The edges of the pages under the top page, then the drop of the book.
-            "shadow-[0_2px_0_#e6d6b0,0_4px_0_#cfba8f,0_5px_0_#8a6a40]"
+            "bg-parchment text-ink relative grid min-h-0 flex-1 grid-cols-2 rounded-[10px] outline-none"
           )}
+          style={{ boxShadow: DECK_CSS.pageStack }}
         >
           {/* The spine: the pages curve down into it. */}
           <span
-            className="pointer-events-none absolute inset-y-0 left-1/2 w-20 -translate-x-1/2 bg-[linear-gradient(90deg,rgba(91,58,30,0)_0%,rgba(91,58,30,0.1)_35%,rgba(91,58,30,0.34)_50%,rgba(91,58,30,0.1)_65%,rgba(91,58,30,0)_100%)] [@media(max-height:500px)]:w-12"
+            className="pointer-events-none absolute inset-y-0 left-1/2 w-20 -translate-x-1/2 [@media(max-height:500px)]:w-12"
+            style={{ backgroundImage: DECK_CSS.spine }}
             aria-hidden
           />
           <DeckSpread slot={slot} index={index} poolFilter={poolFilter} />
@@ -391,30 +393,58 @@ const Cover = () => {
       aria-hidden
     >
       {/* The outside of the cover. */}
-      <div className="absolute inset-0 grid place-items-center overflow-hidden rounded-l-[4px] rounded-r-[18px] border-2 border-l-0 border-[#2a1408] bg-[#55301a] [backface-visibility:hidden] motion-safe:group-data-[entering]/book:animate-[deck-cover-front_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-cover-front_500ms_linear_reverse_both] [@media(max-height:500px)]:rounded-r-xl">
-        <span className="absolute inset-1 left-0 rounded-r-[14px] border border-l-0 border-[#e7bb6a]/30 [@media(max-height:500px)]:rounded-r-lg" />
+      <div
+        className="absolute inset-0 grid place-items-center overflow-hidden rounded-l-[4px] rounded-r-[18px] border-2 border-l-0 [backface-visibility:hidden] motion-safe:group-data-[entering]/book:animate-[deck-cover-front_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-cover-front_500ms_linear_reverse_both] [@media(max-height:500px)]:rounded-r-xl"
+        style={{
+          borderColor: DECK_COLORS.leatherEdge,
+          backgroundColor: DECK_COLORS.leather,
+        }}
+      >
+        <span className="border-bronze-rim/30 absolute inset-1 left-0 rounded-r-[14px] border border-l-0 [@media(max-height:500px)]:rounded-r-lg" />
         {/* The hinge groove next to the spine. */}
-        <span className="absolute inset-y-0 left-3 w-[3px] bg-[#2a1408]/70 shadow-[1px_0_0_rgba(255,226,170,0.12)] [@media(max-height:500px)]:left-2" />
+        <span
+          className="absolute inset-y-0 left-3 w-[3px] [@media(max-height:500px)]:left-2"
+          style={{
+            backgroundColor: DECK_COLORS.leatherEdgeVeil,
+            boxShadow: DECK_CSS.hinge,
+          }}
+        />
         <Corner className="-top-px -right-px rounded-tr-[18px] rounded-bl-lg border-b-2 border-l-2" />
         <Corner className="-right-px -bottom-px rounded-tl-lg rounded-br-[18px] border-t-2 border-l-2" />
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-[#e7bb6a]/40 px-8 py-6 shadow-[inset_0_2px_6px_rgba(0,0,0,0.35)] [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:py-3">
+        <div
+          className="border-bronze-rim/40 flex flex-col items-center gap-3 rounded-xl border px-8 py-6 [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:px-4 [@media(max-height:500px)]:py-3"
+          style={{ boxShadow: DECK_CSS.coverInset }}
+        >
           <img
             src={shortcutImage("deck")}
             alt=""
             width={128}
             height={128}
             draggable={false}
-            className="size-32 drop-shadow-[0_3px_0_rgba(0,0,0,0.45)] select-none [@media(max-height:500px)]:size-16"
+            className="size-32 select-none [@media(max-height:500px)]:size-16"
+            style={{ filter: DECK_DROP }}
           />
-          <span className="font-display text-3xl font-black tracking-wide text-[#fff6df] [@media(max-height:500px)]:text-lg">
+          <span className="font-display text-cream text-3xl font-black tracking-wide [@media(max-height:500px)]:text-lg">
             {tr("deckBuilder.title")}
           </span>
         </div>
       </div>
       {/* The inside of the cover: the left half of the open book, with a blank page. */}
-      <div className="absolute inset-0 [transform:rotateY(180deg)] overflow-hidden rounded-l-[18px] rounded-r-[4px] border-2 border-r-0 border-[#2a1408] bg-[#55301a] [backface-visibility:hidden] motion-safe:group-data-[entering]/book:animate-[deck-cover-back_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-cover-back_500ms_linear_reverse_both] [@media(max-height:500px)]:rounded-l-xl">
-        <span className="absolute inset-1 right-0 rounded-l-[14px] border border-r-0 border-[#e7bb6a]/30 [@media(max-height:500px)]:rounded-l-lg" />
-        <span className="absolute top-14 right-0 bottom-2.5 left-2.5 rounded-l-[10px] bg-[#f6ead0] bg-[linear-gradient(90deg,rgba(91,58,30,0)_calc(100%-40px),rgba(91,58,30,0.1)_calc(100%-26px),rgba(91,58,30,0.34)_100%)] shadow-[0_2px_0_#e6d6b0,0_4px_0_#cfba8f,0_5px_0_#8a6a40] [@media(max-height:500px)]:top-9 [@media(max-height:500px)]:bottom-1.5 [@media(max-height:500px)]:left-1.5" />
+      <div
+        className="absolute inset-0 [transform:rotateY(180deg)] overflow-hidden rounded-l-[18px] rounded-r-[4px] border-2 border-r-0 [backface-visibility:hidden] motion-safe:group-data-[entering]/book:animate-[deck-cover-back_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-cover-back_500ms_linear_reverse_both] [@media(max-height:500px)]:rounded-l-xl"
+        style={{
+          borderColor: DECK_COLORS.leatherEdge,
+          backgroundColor: DECK_COLORS.leather,
+        }}
+      >
+        <span className="border-bronze-rim/30 absolute inset-1 right-0 rounded-l-[14px] border border-r-0 [@media(max-height:500px)]:rounded-l-lg" />
+        <span
+          className="bg-parchment absolute top-14 right-0 bottom-2.5 left-2.5 rounded-l-[10px] [@media(max-height:500px)]:top-9 [@media(max-height:500px)]:bottom-1.5 [@media(max-height:500px)]:left-1.5"
+          style={{
+            backgroundImage: DECK_CSS.coverPage,
+            boxShadow: DECK_CSS.pageStack,
+          }}
+        />
       </div>
     </div>
   );
@@ -448,14 +478,19 @@ export const DeckDialog = ({
       <div
         className={cn(
           // The leather cover of the book: flat, so the title on it stays sharp.
-          "absolute inset-0 rounded-[18px] border-2 border-[#2a1408] bg-[#55301a] p-2.5 pt-0 shadow-[0_24px_48px_rgba(0,0,0,0.55)]",
+          "absolute inset-0 rounded-[18px] border-2 p-2.5 pt-0",
           "motion-safe:group-data-[entering]/book:animate-[deck-book-body_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-book-body_500ms_linear_reverse_both]",
           "[@media(max-height:500px)]:rounded-xl [@media(max-height:500px)]:p-1.5 [@media(max-height:500px)]:pt-0"
         )}
+        style={{
+          borderColor: DECK_COLORS.leatherEdge,
+          backgroundColor: DECK_COLORS.leather,
+          boxShadow: DECK_CSS.coverLift,
+        }}
       >
         {/* A tooled line on the leather, and the gold corners. */}
         <span
-          className="pointer-events-none absolute inset-1 rounded-[14px] border border-[#e7bb6a]/30 [@media(max-height:500px)]:rounded-lg"
+          className="border-bronze-rim/30 pointer-events-none absolute inset-1 rounded-[14px] border [@media(max-height:500px)]:rounded-lg"
           aria-hidden
         />
         <Corner className="-top-px -left-px rounded-tl-[18px] rounded-br-lg border-r-2 border-b-2" />
@@ -471,7 +506,8 @@ export const DeckDialog = ({
       </div>
       {/* The shadow of the cover on the right page while the cover moves. */}
       <span
-        className="pointer-events-none absolute inset-y-0 right-0 left-1/2 z-10 rounded-r-[18px] bg-[linear-gradient(90deg,rgba(24,12,4,0.7),rgba(24,12,4,0.35)_55%,rgba(24,12,4,0.15))] opacity-0 motion-safe:group-data-[entering]/book:animate-[deck-page-shadow_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-page-shadow_500ms_linear_reverse_both]"
+        className="pointer-events-none absolute inset-y-0 right-0 left-1/2 z-10 rounded-r-[18px] opacity-0 motion-safe:group-data-[entering]/book:animate-[deck-page-shadow_720ms_linear_both] motion-safe:group-data-[exiting]/book:animate-[deck-page-shadow_500ms_linear_reverse_both]"
+        style={{ backgroundImage: DECK_CSS.coverShadow }}
         aria-hidden
       />
       <Cover />
