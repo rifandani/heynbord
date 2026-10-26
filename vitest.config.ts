@@ -92,6 +92,10 @@ export default defineConfig({
         // Declaration-only modules: no function and no branch, so an import
         // gives them a free 100% (the 2026-10-24 amendment of ADR-0001): Tailwind
         // class strings, an empty registry, and atoms that only hold a value.
+        // A feature palette (`features/<name>/tokens.ts`, docs/design.md) is a
+        // declaration too: the token guard and the E2E screenshots cover it,
+        // while a unit test would only import the file.
+        "apps/web/src/features/**/tokens.ts",
         "apps/web/src/features/battle/components/reward-plate.ts",
         "apps/web/src/features/battle/scene/unit-anchors.ts",
         "apps/web/src/features/dungeons/dungeons.atoms.ts",
