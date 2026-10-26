@@ -30,6 +30,7 @@ import {
 } from "react-aria-components/Table"
 import { twJoin, cn } from "cn"
 import { CardDescription, CardTitle } from "@/core/components/ui/card"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 import { Checkbox, CheckboxField } from "./checkbox"
 
@@ -51,7 +52,7 @@ const useTableContext = () => use(TableContext)
 const Root = (props: TableProps) => {
   return (
     <TablePrimitive
-      className="w-full min-w-full caption-bottom text-sm/6 outline-hidden [--table-selected-bg:var(--color-secondary)]/50"
+      className="w-full min-w-full caption-bottom text-sm/6 outline-hidden"
       {...props}
     />
   )
@@ -68,7 +69,7 @@ const Table = ({
 }: TableProps) => {
   return (
     <TableContext value={{ allowResize, bleed, grid, striped }}>
-      <div className="flow-root">
+      <div className="paper-surface border-frame-wood bg-overlay text-overlay-fg shadow-piece flow-root overflow-hidden rounded-2xl border-4">
         <div
           className={cn(
             "relative -mx-(--gutter) overflow-x-auto whitespace-nowrap [--gutter-y:--spacing(2)] has-data-[slot=table-resizable-container]:overflow-auto",
@@ -100,7 +101,7 @@ const ColumnResizer = ({ className, ...props }: ColumnResizerProps) => (
       className
     )}
   >
-    <div className="h-full w-px bg-border py-(--gutter-y)" />
+    <div className="bg-parchment-rule h-full w-px py-(--gutter-y)" />
   </ColumnResizerPrimitive>
 )
 
@@ -115,7 +116,7 @@ const TableBody = <T extends object>({ renderEmptyState, ...props }: TableBodyPr
           <div aria-hidden className="relative flex h-72 items-center justify-center md:h-100">
             <div
               aria-hidden
-              className="absolute top-1/2 m-auto grid size-15 -translate-y-1/2 place-content-center rounded-full border border-border/50 md:size-20"
+              className="border-parchment-rule/60 absolute top-1/2 m-auto grid size-15 -translate-y-1/2 place-content-center rounded-full border-2 md:size-20"
             >
               <svg
                 aria-hidden
@@ -297,8 +298,8 @@ const TableColumn = ({ isResizable = false, className, ...props }: TableColumnPr
       {...props}
       className={cx(
         [
-          "text-start font-medium text-muted-fg",
-          "relative allows-sorting:cursor-default dragging:cursor-grabbing outline-hidden",
+          gameText({ role: "label", tone: "inherit" }),
+          "relative text-start text-muted-fg allows-sorting:cursor-default dragging:cursor-grabbing outline-hidden",
           "px-4 py-(--gutter-y)",
           "first:ps-(--gutter,--spacing(2)) last:pe-(--gutter,--spacing(2))",
           !bleed && "sm:last:pe-1 sm:first:ps-1",
@@ -318,8 +319,8 @@ const TableColumn = ({ isResizable = false, className, ...props }: TableColumnPr
           {values.allowsSorting && (
             <span
               className={twJoin(
-                "touch-target grid size-[1.15rem] flex-none shrink-0 place-content-center rounded bg-secondary text-fg *:[svg]:size-3.5 *:[svg]:shrink-0 *:[svg]:transition-transform *:[svg]:duration-200",
-                values.isHovered ? "bg-secondary-fg/10" : ""
+                "border-parchment-rule bg-parchment-deep text-ink touch-target grid size-[1.15rem] flex-none shrink-0 place-content-center rounded-sm border-2 *:[svg]:size-3.5 *:[svg]:shrink-0 *:[svg]:transition-transform *:[svg]:duration-200",
+                values.isHovered ? "bg-parchment-lit" : ""
               )}
             >
               <HiChevronDown
@@ -351,7 +352,7 @@ const TableHeader = <T extends object>({
     <TableHeaderPrimitive
       ref={ref}
       data-slot="table-header"
-      className={cx("border-b", className)}
+      className={cx("border-frame-wood bg-parchment-deep/60 border-b-2", className)}
       {...props}
     >
       {allowsDragging && (
@@ -416,16 +417,16 @@ const TableRow = <T extends object>({
           cn(
             "group relative cursor-default outline outline-transparent",
             isFocusVisible &&
-              "bg-primary/5 outline-primary ring-3 ring-ring/20 hover:bg-primary/10",
-            isDragging && "cursor-grabbing bg-primary/10 text-fg outline-primary",
-            isSelected && "bg-(--table-selected-bg) text-fg hover:bg-(--table-selected-bg)/50",
-            striped && "even:bg-muted",
+              "bg-primary-subtle outline-gold ring-4 ring-(--ring)/40 hover:bg-primary-subtle",
+            isDragging && "bg-primary-subtle cursor-grabbing text-ink outline-gold",
+            isSelected && "bg-primary-subtle text-ink hover:bg-primary-subtle/70",
+            striped && "even:bg-parchment-deep/30",
             (props.href || props.onAction || selectionMode === "multiple") &&
-              "hover:bg-(--table-selected-bg) hover:text-fg",
+              "hover:bg-primary-subtle hover:text-ink",
             (props.href || props.onAction || selectionMode === "multiple") &&
               isFocusVisibleWithin &&
-              "bg-(--table-selected-bg)/50 selected:bg-(--table-selected-bg)/50 text-fg",
-            isDisabled && "opacity-50",
+              "bg-primary-subtle/70 selected:bg-primary-subtle/70 text-ink",
+            isDisabled && "opacity-60",
             className
           )
       )}
@@ -434,7 +435,7 @@ const TableRow = <T extends object>({
         <TableCell className="px-0">
           <Button
             slot="drag"
-            className="grid place-content-center rounded-xs px-[calc(var(--gutter)/2)] outline-hidden focus-visible:ring focus-visible:ring-ring"
+            className="border-parchment-rule bg-parchment-deep text-ink shadow-piece grid place-content-center rounded-sm border-2 px-[calc(var(--gutter)/2)] outline-none focus-visible:ring-4 focus-visible:ring-(--ring)"
           >
             <svg
               aria-hidden
@@ -482,7 +483,7 @@ const TableCell = ({ className, ref, ...props }: TableCellProps) => {
       {...props}
       className={cx(
         twJoin(
-          "group px-4 py-(--gutter-y) align-middle outline-hidden first:ps-(--gutter,--spacing(2)) last:pe-(--gutter,--spacing(2)) group-has-data-focus-visible-within:text-fg",
+          "group border-parchment-rule/70 px-4 py-(--gutter-y) align-middle text-ink outline-hidden first:ps-(--gutter,--spacing(2)) last:pe-(--gutter,--spacing(2)) group-has-data-focus-visible-within:text-ink",
           !striped && "border-b",
           grid && "border-l first:border-l-0",
           !bleed && "sm:last:pe-1 sm:first:ps-1",
@@ -505,7 +506,7 @@ const TableCell = ({ className, ref, ...props }: TableCellProps) => {
                 slot="chevron"
                 className={twJoin(
                   isDisabled && "opacity-50",
-                  "mr-2 grid size-[1.15rem] flex-none shrink-0 place-content-center rounded text-fg hover:bg-secondary"
+                  "border-parchment-rule bg-parchment-deep text-ink mr-2 grid size-[1.15rem] flex-none shrink-0 place-content-center rounded-sm border-2 hover:bg-parchment-lit"
                 )}
               >
                 <HiChevronRight

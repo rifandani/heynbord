@@ -31,12 +31,12 @@ interface SheetContentProps
 }
 
 const sideVariants: Record<string, string> = {
-  top: "entering:slide-in-from-top exiting:slide-out-to-top inset-x-0 top-0 rounded-b-2xl border-b data-[float=true]:inset-x-2 data-[float=true]:top-2 data-[float=true]:border-b-0",
+  top: "entering:slide-in-from-top exiting:slide-out-to-top inset-x-0 top-0 rounded-b-2xl data-[float=true]:inset-x-2 data-[float=true]:top-2",
   bottom:
-    "entering:slide-in-from-bottom exiting:slide-out-to-bottom inset-x-0 bottom-0 rounded-t-2xl border-t data-[float=true]:inset-x-2 data-[float=true]:bottom-2 data-[float=true]:border-t-0",
-  left: "entering:slide-in-from-left exiting:slide-out-to-left-80 inset-y-0 left-0 h-auto w-3/4 overflow-y-auto border-r sm:max-w-80 data-[float=true]:inset-y-2 data-[float=true]:left-2 data-[float=true]:border-r-0",
+    "entering:slide-in-from-bottom exiting:slide-out-to-bottom inset-x-0 bottom-0 rounded-t-2xl data-[float=true]:inset-x-2 data-[float=true]:bottom-2",
+  left: "entering:slide-in-from-left exiting:slide-out-to-left-80 inset-y-0 left-0 h-auto w-3/4 overflow-y-auto sm:max-w-80 data-[float=true]:inset-y-2 data-[float=true]:left-2 data-[float=true]:rounded-2xl",
   right:
-    "entering:slide-in-from-right exiting:slide-out-to-right-80 inset-y-0 right-0 h-auto w-3/4 overflow-y-auto border-l sm:max-w-80 data-[float=true]:inset-y-2 data-[float=true]:right-2 data-[float=true]:border-l-0",
+    "entering:slide-in-from-right exiting:slide-out-to-right-80 inset-y-0 right-0 h-auto w-3/4 overflow-y-auto sm:max-w-80 data-[float=true]:inset-y-2 data-[float=true]:right-2 data-[float=true]:rounded-2xl",
 }
 
 const SheetContent = ({
@@ -55,7 +55,7 @@ const SheetContent = ({
     <ModalOverlay
       isDismissable={isDismissable}
       className={cx(
-        "entering:fade-in exiting:fade-out fixed start-0 top-0 z-50 size-full entering:animate-in exiting:animate-out overflow-hidden bg-black/15 entering:duration-500 exiting:duration-300",
+        "entering:fade-in exiting:fade-out fixed start-0 top-0 z-50 size-full entering:animate-in exiting:animate-out overflow-hidden bg-night-plate/55 backdrop-blur-[2px] entering:duration-500 exiting:duration-300",
         overlay?.className
       )}
       {...props}
@@ -63,10 +63,9 @@ const SheetContent = ({
       <Modal
         data-float={isFloat}
         className={cx(
-          "paper-surface fixed z-50 grid gap-4 border-muted-fg/20 bg-overlay text-overlay-fg shadow-lg",
+          "paper-surface fixed z-50 grid gap-4 border-4 border-frame-wood bg-overlay text-overlay-fg shadow-lift",
           "transform-gpu transition ease-in-out will-change-transform [--visual-viewport-vertical-padding:16px]",
-          "data-[float=true]:rounded-lg data-[float=true]:ring data-[float=true]:ring-fg/5",
-          "border-fg/20",
+          "data-[float=true]:rounded-2xl",
           "entering:fade-in entering:animate-in entering:duration-500",
           "exiting:fade-in exiting:animate-out exiting:duration-300",
           sideVariants[side],

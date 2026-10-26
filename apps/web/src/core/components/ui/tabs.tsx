@@ -20,6 +20,7 @@ import {
   TabsContext,
 } from "react-aria-components/Tabs"
 import { cn } from "cn"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 
 interface TabsProps extends TabsPrimitiveProps {
@@ -71,12 +72,11 @@ const TabList = <T extends object>({
         {...props}
         className={composeRenderProps(className, (className, { orientation }) =>
           cn([
-            "[--tab-list-gutter:--spacing(1)]",
             "relative flex forced-color-adjust-none",
-            orientation === "horizontal" &&
-              "flex-row gap-x-(--tab-list-gutter) rounded-(--tab-list-rounded) border-b py-(--tab-list-gutter)",
+            "rounded-lg border-2 border-wood-edge bg-wood/60 p-1 shadow-well",
+            orientation === "horizontal" && "flex-row gap-x-1",
             orientation === "vertical" &&
-              "min-w-56 shrink-0 flex-col items-start gap-y-(--tab-list-gutter) border-l px-(--tab-list-gutter) [--tab-list-gutter:--spacing(2)]",
+              "min-w-56 shrink-0 flex-col items-start gap-y-1",
             className,
           ])
         )}
@@ -111,15 +111,16 @@ const Tab = ({ className, ref, ...props }: TabProps) => {
       data-slot="tab"
       ref={ref}
       className={cx(
-        "group/tab rounded-lg [--tab-gutter:var(--tab-gutter-x)]",
+        gameText({ role: "body", tone: "inherit" }),
+        "group/tab relative flex cursor-default items-center rounded-md border-2 border-transparent font-semibold whitespace-nowrap outline-none transition [-webkit-tap-highlight-color:transparent]",
         orientation === "horizontal"
-          ? "[--tab-gutter-x:--spacing(2.5)] [--tab-gutter-y:--spacing(1)] first:-ms-(--tab-gutter) last:-me-(--tab-gutter)"
-          : "w-full justify-start [--tab-gutter-x:--spacing(4)] [--tab-gutter-y:--spacing(1.5)]",
-        "relative flex cursor-default items-center whitespace-nowrap font-medium text-sm/6 outline-hidden transition [-webkit-tap-highlight-color:transparent]",
-        "px-(--tab-gutter-x) py-(--tab-gutter-y)",
-        "*:[svg]:-ms-0.5 *:[svg]:me-2 *:[svg]:size-4 *:[svg]:shrink-0 *:[svg]:self-center *:[svg]:text-muted-fg selected:*:[svg]:text-primary-subtle-fg",
-        "selected:text-primary-subtle-fg text-muted-fg hover:bg-secondary selected:hover:bg-primary-subtle hover:text-fg selected:hover:text-primary-subtle-fg focus:ring-0",
-        "disabled:opacity-50",
+          ? "px-3 py-1.5"
+          : "w-full justify-start px-4 py-1.5",
+        "*:[svg]:-ms-0.5 *:[svg]:me-2 *:[svg]:size-4 *:[svg]:shrink-0 *:[svg]:self-center *:[svg]:text-cream-dim selected:*:[svg]:text-ink-on-gold",
+        "text-cream-dim hover:bg-wood-light/70 hover:text-cream",
+        "selected:border-gold-deep selected:bg-gradient-to-b selected:from-gold-light selected:to-gold selected:text-ink-on-gold selected:shadow-piece selected:hover:brightness-110",
+        "focus-visible:ring-4 focus-visible:ring-(--ring)",
+        "disabled:border-dashed disabled:opacity-70 disabled:grayscale",
         "href" in props ? "cursor-pointer" : "cursor-default",
         className
       )}
@@ -131,10 +132,10 @@ const Tab = ({ className, ref, ...props }: TabProps) => {
             <SelectionIndicator
               data-slot="selected-indicator"
               className={cn(
-                "absolute bg-primary-subtle-fg duration-200 will-change-transform",
+                "absolute bg-focus-cream duration-200 will-change-transform",
                 orientation === "horizontal"
-                  ? "inset-e-(--tab-gutter-x) start-(--tab-gutter-x) -bottom-[calc(var(--tab-gutter-y)+1px)] h-0.5 motion-safe:transition-[translate,width]"
-                  : "-inset-s-[calc(var(--tab-gutter-x)-var(--tab-list-gutter)+1px)] top-(--tab-gutter-y) bottom-(--tab-gutter-y) w-0.5 motion-safe:transition-[translate,height]"
+                  ? "inset-e-3 start-3 bottom-0.5 h-0.5 motion-safe:transition-[translate,width]"
+                  : "inset-s-0.5 top-2 bottom-2 w-0.5 motion-safe:transition-[translate,height]"
               )}
             />
           )}

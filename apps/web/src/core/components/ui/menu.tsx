@@ -19,6 +19,7 @@ import {
 } from "react-aria-components/Menu"
 import { cn } from "cn"
 import { tv, type VariantProps } from "tailwind-variants"
+import { gameText } from "@/core/components/game/surfaces"
 import { cx } from "@/core/utils/primitive"
 import {
   DropdownDescription,
@@ -79,7 +80,7 @@ const MenuTrigger = ({ className, ref, ...props }: MenuTriggerProps) => (
     ref={ref}
     data-slot="menu-trigger"
     className={cx(
-      "relative inline text-start outline-hidden focus-visible:ring-1 focus-visible:ring-primary",
+      "relative inline text-start outline-none focus-visible:ring-4 focus-visible:ring-(--ring)",
       "*:data-[slot=chevron]:size-5 sm:*:data-[slot=chevron]:size-4",
       className
     )}
@@ -188,8 +189,9 @@ export interface MenuHeaderProps extends React.ComponentProps<typeof Header> {
 const MenuHeader = ({ className, separator = false, ...props }: MenuHeaderProps) => (
   <Header
     className={cn(
-      "col-span-full px-2.5 py-2 font-medium text-base sm:text-sm",
-      separator && "-mx-1 border-b sm:px-3 sm:pb-2.5",
+      gameText({ role: "label", tone: "inherit" }),
+      "text-muted-fg col-span-full px-2.5 py-2",
+      separator && "border-parchment-rule -mx-1 border-b sm:px-3 sm:pb-2.5",
       className
     )}
     {...props}
