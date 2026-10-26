@@ -3,8 +3,9 @@ import type { DamageType, RaceId, RankId, Side } from "@workspace/rules";
 /**
  * The Heynbord Design System game palette (DESIGN.md, Game colors).
  *
- * This module is the source of truth for the colors that come from game data:
- * Race, Rank, Damage Type, Side, Status and stat deltas. The Tailwind names in
+ * This module is the source of truth for the colors that come from game data
+ * (Race, Rank, Damage Type, Side, Status and stat deltas) and for the one
+ * canvas color that a browser tag needs. The Tailwind names in
  * `globals.css` mirror the fixed ones, so a component outside the Battle can
  * use `text-rank-rare` or `bg-damage-fire` without importing this file. The
  * 3D scene needs the raw strings, so it reads them here.
@@ -187,3 +188,9 @@ export const DENOMINATION_TEXT: Readonly<
   dark: { gold: "#ffd75a", silver: "#d9dee6", copper: "#f8c49c" },
   light: { gold: "#7a5310", silver: "#3f454f", copper: "#7a3a17" },
 };
+
+/**
+ * The application canvas (`night-plate`). The HTML meta tags of the document
+ * need a literal color, so they read it here.
+ */
+export const CANVAS_COLOR = "#1c140e";

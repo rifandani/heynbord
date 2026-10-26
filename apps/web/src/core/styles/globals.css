@@ -176,12 +176,15 @@ html[data-reduced-motion="true"] {
   --color-gold-trim: #e9c46a;
   --color-bronze: #b47f36;
   --color-bronze-rim: #e7bb6a;
+  --color-pewter: #8d9297;
+  --color-stone: #757a80;
   --color-wood: #563720;
   --color-wood-light: #7a5233;
   --color-wood-edge: #2a1a0c;
   --color-frame-wood: #5b3a1e;
   --color-tray: #4a2d16;
   --color-tray-light: #6b4423;
+  --color-grain: rgb(0 0 0 / 6%);
 
   /* Paper and ink. */
   --color-parchment: #f6ead0;
@@ -232,6 +235,7 @@ html[data-reduced-motion="true"] {
   --color-damage-fire: #ff6a33;
   --color-damage-frost: #8fd8ff;
   --color-damage-holy: #ffd75a;
+  --color-damage-lightning: #3ff2e0;
   --color-rank-edge: #2a1a08;
 
   /* Races. */
@@ -239,6 +243,8 @@ html[data-reduced-motion="true"] {
   --color-elf-green: #4c9a3b;
   --color-undead-teal: #5fb3a8;
   --color-orc-orange: #d9661f;
+  --color-goblin-brass: #b8893a;
+  --color-feral-violet: #6b5e93;
 
   /* Elevation: a piece sits on the table, it does not float. */
   --shadow-piece: 0 3px 0 rgb(0 0 0 / 45%);

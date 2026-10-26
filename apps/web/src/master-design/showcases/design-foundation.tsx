@@ -34,12 +34,15 @@ const MATERIALS: readonly TokenGroup[] = [
       { name: "gold-trim", bg: "bg-gold-trim" },
       { name: "bronze", bg: "bg-bronze" },
       { name: "bronze-rim", bg: "bg-bronze-rim" },
+      { name: "pewter", bg: "bg-pewter" },
+      { name: "stone", bg: "bg-stone" },
       { name: "wood", bg: "bg-wood" },
       { name: "wood-light", bg: "bg-wood-light" },
       { name: "wood-edge", bg: "bg-wood-edge" },
       { name: "frame-wood", bg: "bg-frame-wood" },
       { name: "tray", bg: "bg-tray" },
       { name: "tray-light", bg: "bg-tray-light" },
+      { name: "grain", bg: "bg-grain" },
     ],
   },
   {
@@ -53,6 +56,7 @@ const MATERIALS: readonly TokenGroup[] = [
       { name: "ink-soft", bg: "bg-ink-soft" },
       { name: "ink-faded", bg: "bg-ink-faded" },
       { name: "ink-on-gold", bg: "bg-ink-on-gold" },
+      { name: "xp-ink", bg: "bg-xp-ink" },
     ],
   },
   {
@@ -98,6 +102,7 @@ const MATERIALS: readonly TokenGroup[] = [
       { name: "damage-fire", bg: "bg-damage-fire" },
       { name: "damage-frost", bg: "bg-damage-frost" },
       { name: "damage-holy", bg: "bg-damage-holy" },
+      { name: "damage-lightning", bg: "bg-damage-lightning" },
     ],
   },
   {
@@ -107,6 +112,8 @@ const MATERIALS: readonly TokenGroup[] = [
       { name: "elf-green", bg: "bg-elf-green" },
       { name: "undead-teal", bg: "bg-undead-teal" },
       { name: "orc-orange", bg: "bg-orc-orange" },
+      { name: "goblin-brass", bg: "bg-goblin-brass" },
+      { name: "feral-violet", bg: "bg-feral-violet" },
     ],
   },
 ];
@@ -310,18 +317,19 @@ const toLinearChannel = (c: number): number => {
   return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
 };
 
-const contrastInk = ({ r, g, b }: Rgba): string => {
+/** A light swatch gets the dark ink, and a dark swatch gets the cream. */
+const prefersDarkInk = ({ r, g, b }: Rgba): boolean => {
   const luminance =
     0.2126 * toLinearChannel(r) +
     0.7152 * toLinearChannel(g) +
     0.0722 * toLinearChannel(b);
-  return luminance > 0.4 ? "#111111" : "#FFFFFF";
+  return luminance > 0.4;
 };
 
 const SwatchTile = ({ bg }: { bg: string }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [hex, setHex] = useState("");
-  const [ink, setInk] = useState("#FFFFFF");
+  const [darkInk, setDarkInk] = useState(false);
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -334,7 +342,7 @@ const SwatchTile = ({ bg }: { bg: string }) => {
       return;
     }
     setHex(formatHex(rgba.r, rgba.g, rgba.b, rgba.a));
-    setInk(contrastInk(rgba));
+    setDarkInk(prefersDarkInk(rgba));
   }, []);
 
   return (
@@ -342,10 +350,10 @@ const SwatchTile = ({ bg }: { bg: string }) => {
       className={cn(
         "flex h-16 min-w-28 items-center justify-center rounded-lg border px-1.5 font-mono text-[10px]",
         bg,
-        ink === "#111111" ? "border-black/25" : "border-cream/20"
+        darkInk ? "border-ink/25" : "border-cream/20"
       )}
       ref={ref}
-      style={{ color: ink }}
+      style={{ color: darkInk ? "var(--color-ink)" : "var(--color-cream)" }}
     >
       {hex || "…"}
     </div>
