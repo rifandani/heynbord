@@ -1774,7 +1774,6 @@ html[data-reduced-motion="true"] {
   --ring: var(--color-focus-cream);
   --control-bg: var(--color-plate-socket);
   --link: var(--color-gold-light);
-  --link-hover: var(--color-gold-trim);
 
   --navbar: var(--color-night-plate);
   --navbar-fg: var(--color-cream);
@@ -1808,7 +1807,6 @@ html[data-reduced-motion="true"] {
   --input: var(--color-parchment-rule);
   --control-bg: var(--color-parchment-lit);
   --link: var(--color-gold-deep);
-  --link-hover: var(--color-victory-amber);
   --primary-subtle-fg: var(--color-gold-deep);
   --accent: var(--color-parchment-deep);
   --accent-fg: var(--color-ink);
