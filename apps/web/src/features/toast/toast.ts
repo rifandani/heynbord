@@ -2,11 +2,10 @@ import { twJoin } from "cn";
 import type { ComponentProps, CSSProperties } from "react";
 import type { Toaster } from "sonner";
 
-import type { ColorMode } from "@/features/color-mode/color-mode";
-
 type ToasterProps = ComponentProps<typeof Toaster>;
 
-const toasterDefaults = {
+/** The app has one theme, so the toaster never follows the system preference. */
+export const toasterProps = {
   className: "toaster group",
   duration: 3000,
   position: "bottom-right",
@@ -38,6 +37,7 @@ const toasterDefaults = {
       "color-mix(in oklab, var(--warning-subtle-fg) 20%, transparent)",
     "--warning-text": "var(--color-warning-subtle-fg)",
   } as CSSProperties,
+  theme: "dark",
   toastOptions: {
     className: twJoin(
       "will-change-transform not-has-data-[slot=note]:backdrop-blur-3xl *:data-icon:mt-0.5 *:data-icon:self-start has-data-description:*:data-icon:mt-1 *:data-[slot=note]:relative *:data-[slot=note]:z-50",
@@ -45,9 +45,3 @@ const toasterDefaults = {
     ),
   },
 } satisfies ToasterProps;
-
-/** Props of the app's one `Toaster`. In `auto` mode, the system picks the toast theme. */
-export const toasterProps = (colorMode: ColorMode): ToasterProps => ({
-  ...toasterDefaults,
-  theme: colorMode === "auto" ? "system" : colorMode,
-});

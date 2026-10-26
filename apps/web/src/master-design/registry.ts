@@ -14,7 +14,6 @@ import { CheckboxShowcase } from "./showcases/checkbox";
 import { ChoiceBoxShowcase } from "./showcases/choice-box";
 import { ColorAreaShowcase } from "./showcases/color-area";
 import { ColorFieldShowcase } from "./showcases/color-field";
-import { ColorPaletteShowcase } from "./showcases/color-palette";
 import { ColorPickerShowcase } from "./showcases/color-picker";
 import { ColorSliderShowcase } from "./showcases/color-slider";
 import { ColorSwatchShowcase } from "./showcases/color-swatch";
@@ -29,6 +28,7 @@ import { DateFieldShowcase } from "./showcases/date-field";
 import { DatePickerShowcase } from "./showcases/date-picker";
 import { DateRangePickerShowcase } from "./showcases/date-range-picker";
 import { DescriptionListShowcase } from "./showcases/description-list";
+import { DesignFoundationShowcase } from "./showcases/design-foundation";
 import { DialogShowcase } from "./showcases/dialog";
 import { DisclosureGroupShowcase } from "./showcases/disclosure-group";
 import { DrawerShowcase } from "./showcases/drawer";
@@ -39,7 +39,6 @@ import { FileTriggerShowcase } from "./showcases/file-trigger";
 import { GameBadgesShowcase } from "./showcases/game-badges";
 import { GameButtonsShowcase } from "./showcases/game-buttons";
 import { GameDialogShowcase } from "./showcases/game-dialog";
-import { GameFoundationShowcase } from "./showcases/game-foundation";
 import { GamePlatesShowcase } from "./showcases/game-plates";
 import { GameRankGemsShowcase } from "./showcases/game-rank-gems";
 import { GameResourcePlateShowcase } from "./showcases/game-resource-plate";
@@ -110,9 +109,11 @@ export const categories: Category[] = [
     name: "Foundation",
     entries: [
       {
-        id: "color-palette",
-        name: "Color Palette",
-        Showcase: ColorPaletteShowcase,
+        id: "design-foundation",
+        name: "Design Foundation",
+        description:
+          "The materials are the source. The semantic aliases point to them, and a component names one of the two. It never writes a hex value.",
+        Showcase: DesignFoundationShowcase,
       },
     ],
   },
@@ -339,15 +340,8 @@ export const categories: Category[] = [
   },
   {
     id: "game",
-    name: "Game",
+    name: "Game Pieces",
     entries: [
-      {
-        id: "game-foundation",
-        name: "Game Foundation",
-        description:
-          "Use these tokens for every Heynbord surface. A component names a token; it never writes a hex value.",
-        Showcase: GameFoundationShowcase,
-      },
       {
         id: "game-screen",
         name: "Game Screen",

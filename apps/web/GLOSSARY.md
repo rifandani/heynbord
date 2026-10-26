@@ -238,6 +238,14 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Berth plate**: The parchment plate under the Dispatch that shows the ship: at the berth, away with the time left and the reward that a Collect gives now, or back with the full reward. Collect is on it. _Avoid_: ship panel, timer panel, status box
 
+### Design System
+
+**Design Foundation**: The one Component Entry that shows the Heynbord materials and the semantic aliases that point to them. It is the first entry in the `Foundation` Category. _Avoid_: Game Foundation, Color Palette, style guide, theme page
+
+**Material Token**: A named color, shadow, type size or radius that holds a value directly, for example `gold` or `parchment`. It is the source of truth for a visual material. _Avoid_: primitive, base token, raw value
+
+**Semantic Alias**: A name that the base components read (`bg`, `primary`, `danger`) and that points at a Material Token. A component may use the alias or the material token. _Avoid_: brand token, mapped token
+
 ### Component Catalog
 
 **Component Catalog**: The single page at `/master-design` that displays every core UI component for visual inspection by developers and designers. It is available in development. A production build answers 404. _Avoid_: master design, styleguide, storybook, docs site

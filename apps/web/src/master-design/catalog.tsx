@@ -2,7 +2,6 @@ import { useMount } from "@reactuses/core";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { SearchField, SearchInput } from "@/core/components/ui/search-field";
-import { ThemeToggle } from "@/features/color-mode/components/theme-toggle";
 
 import { CatalogNav } from "./catalog-nav";
 import { categories, entryIds } from "./registry";
@@ -46,7 +45,9 @@ export const MasterDesignCatalog = () => {
       <main className="min-w-0 flex-1">
         <header className="bg-bg/80 sticky top-0 z-20 flex items-center gap-4 border-b px-6 py-3 backdrop-blur">
           <div>
-            <h1 className="text-lg font-semibold">Component Catalog</h1>
+            <h1 className="font-display text-lg font-semibold">
+              Component Catalog
+            </h1>
             <p className="text-muted-fg text-xs">
               {entryIds.length} components · dev only
             </p>
@@ -60,7 +61,6 @@ export const MasterDesignCatalog = () => {
             >
               <SearchInput placeholder="Filter components…" />
             </SearchField>
-            <ThemeToggle />
           </div>
         </header>
 
@@ -79,7 +79,9 @@ export const MasterDesignCatalog = () => {
                     key={entry.id}
                   >
                     <div className="mb-4">
-                      <h3 className="text-xl font-semibold">{entry.name}</h3>
+                      <h3 className="font-display text-xl font-semibold">
+                        {entry.name}
+                      </h3>
                       {entry.description ? (
                         <p className="text-muted-fg mt-1 text-sm">
                           {entry.description}

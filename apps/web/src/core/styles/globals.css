@@ -7,6 +7,11 @@
 @import "tw-animate-css";
 @plugin "tailwindcss-react-aria-components";
 
+/*
+ * Dark mode is retired (DESIGN.md, "One Theme Rule"). This variant stays so
+ * that the old `dark:` utilities in `core/components/ui` cannot follow the
+ * operating system preference. They never match, and Part 2 removes them.
+ */
 @variant dark (&:is(.dark *));
 
 /*
@@ -1704,142 +1709,104 @@ html[data-reduced-motion="true"] {
   }
 }
 
+/*
+ * One theme. Every semantic name below is an alias of a material token from
+ * the Heynbord `@theme` block above. The material token holds the color; a
+ * component uses the semantic name. See DESIGN.md, "Semantic Aliases".
+ */
 :root {
-  --bg: oklch(1 0 0);
-  --fg: oklch(0.21 0.006 285.885);
+  color-scheme: dark;
 
-  --card: oklch(1 0 0);
-  --card-fg: oklch(0.21 0.006 285.885);
+  --bg: var(--color-night-plate);
+  --fg: var(--color-cream);
 
-  --primary: oklch(0.546 0.245 262.881);
-  --primary-fg: oklch(1 0 0);
+  --card: var(--color-plate-socket);
+  --card-fg: var(--color-cream);
 
-  --primary-subtle: oklch(0.623 0.214 259.815 / 0.15);
-  --primary-subtle-fg: oklch(0.488 0.243 264.376);
+  --overlay: var(--color-parchment);
+  --overlay-fg: var(--color-ink);
 
-  --secondary: oklch(0.92 0.004 286.32);
-  --secondary-fg: oklch(0.141 0.005 285.823);
+  --muted: color-mix(
+    in srgb,
+    var(--color-night-plate) 65%,
+    var(--color-plate-ember)
+  );
+  --muted-fg: var(--color-cream-dim);
 
-  --overlay: oklch(1 0 0);
-  --overlay-fg: oklch(0.141 0.005 285.823);
+  --primary: var(--color-gold);
+  --primary-fg: var(--color-ink-on-gold);
+  --primary-subtle: color-mix(in srgb, var(--color-gold) 18%, transparent);
+  --primary-subtle-fg: var(--color-gold-light);
 
-  --accent: oklch(0.92 0.004 286.32);
-  --accent-fg: oklch(0.141 0.005 285.823);
+  --secondary: var(--color-wood);
+  --secondary-fg: var(--color-cream);
 
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-fg: oklch(0.552 0.016 285.938);
+  --accent: var(--color-plate-ember);
+  --accent-fg: var(--color-cream);
 
-  --success: oklch(0.596 0.145 163.225);
-  --success-fg: oklch(1 0 0);
+  --success: var(--color-hp-full);
+  --success-fg: var(--color-ink-on-gold);
+  --success-subtle: color-mix(in srgb, var(--color-hp-full) 18%, transparent);
+  --success-subtle-fg: var(--color-hp-full);
 
-  --success-subtle: oklch(0.696 0.17 162.48 / 0.15);
-  --success-subtle-fg: oklch(0.508 0.118 165.612);
+  --danger: var(--color-enemy-deep);
+  --danger-fg: var(--color-cream);
+  --danger-subtle: color-mix(in srgb, var(--color-enemy-red) 18%, transparent);
+  --danger-subtle-fg: var(--color-heart-red);
 
-  --info-subtle: oklch(0.685 0.169 237.323 / 0.15);
-  --info-subtle-fg: oklch(0.5 0.134 242.749);
+  --warning: var(--color-victory-amber);
+  --warning-fg: var(--color-cream);
+  --warning-subtle: color-mix(
+    in srgb,
+    var(--color-victory-amber) 22%,
+    transparent
+  );
+  --warning-subtle-fg: var(--color-ready-gold);
 
-  --warning: oklch(0.828 0.189 84.429);
-  --warning-fg: oklch(0.279 0.077 45.635);
+  --info-subtle: color-mix(
+    in srgb,
+    var(--color-tutorial-teal) 22%,
+    transparent
+  );
+  --info-subtle-fg: var(--color-tutorial-glow);
 
-  --warning-subtle: oklch(0.828 0.189 84.429 / 0.2);
-  --warning-subtle-fg: oklch(0.555 0.163 48.998);
+  --border: var(--color-plate-ember);
+  --input: var(--color-bronze);
+  --ring: var(--color-focus-cream);
 
-  --danger: oklch(0.577 0.245 27.325);
-  --danger-fg: oklch(0.971 0.013 17.38);
+  --navbar: var(--color-night-plate);
+  --navbar-fg: var(--color-cream);
 
-  --danger-subtle: oklch(0.637 0.237 25.331 / 0.15);
-  --danger-subtle-fg: oklch(0.505 0.213 27.518);
+  --sidebar: var(--color-night-plate);
+  --sidebar-fg: var(--color-cream);
+  --sidebar-primary: var(--color-gold);
+  --sidebar-primary-fg: var(--color-ink-on-gold);
+  --sidebar-accent: var(--color-plate-ember);
+  --sidebar-accent-fg: var(--color-cream);
+  --sidebar-border: var(--color-plate-ember);
+  --sidebar-ring: var(--color-focus-cream);
 
-  --border: oklch(0.911 0.006 286.286);
-  --input: oklch(0.871 0.006 286.286);
-  --ring: oklch(0.546 0.245 262.881);
-
-  --navbar: oklch(0.995 0 0);
-  --navbar-fg: oklch(0.141 0.005 285.823);
-
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-fg: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.546 0.245 262.881);
-  --sidebar-primary-fg: oklch(1 0 0);
-  --sidebar-accent: oklch(0.92 0.004 286.32);
-  --sidebar-accent-fg: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.901 0.006 286.286);
-  --sidebar-ring: oklch(0.546 0.245 262.881);
-
-  --chart-1: oklch(0.546 0.245 262.881);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.707 0.165 254.624);
-  --chart-4: oklch(0.809 0.105 251.813);
-  --chart-5: oklch(0.882 0.059 254.128);
+  --chart-1: var(--color-gold);
+  --chart-2: var(--color-tutorial-teal);
+  --chart-3: var(--color-rank-rare);
+  --chart-4: var(--color-rank-epic);
+  --chart-5: var(--color-hp-full);
 }
 
-.dark {
-  --bg: oklch(0.181 0.005 285.823);
-  --fg: oklch(0.985 0 0);
-
-  --card: oklch(0.181 0.005 285.823);
-  --card-fg: oklch(0.985 0 0);
-
-  --primary: oklch(0.546 0.245 262.881);
-  --primary-fg: oklch(1 0 0);
-
-  --primary-subtle: oklch(0.623 0.214 259.815 / 0.1);
-  --primary-subtle-fg: oklch(0.707 0.165 254.624);
-
-  --secondary: oklch(0.244 0.006 286.033);
-  --secondary-fg: oklch(0.985 0 0);
-
-  --overlay: oklch(0.21 0.006 285.885);
-  --overlay-fg: oklch(0.985 0 0);
-
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-fg: oklch(0.985 0 0);
-
-  --muted: oklch(0.21 0.006 285.885);
-  --muted-fg: oklch(0.705 0.015 286.067);
-
-  --success: oklch(0.596 0.145 163.225);
-  --success-fg: oklch(1 0 0);
-
-  --success-subtle: oklch(0.696 0.17 162.48 / 0.1);
-  --success-subtle-fg: oklch(0.765 0.177 163.223);
-
-  --info-subtle: oklch(0.685 0.169 237.323 / 0.1);
-  --info-subtle-fg: oklch(0.828 0.111 230.318);
-
-  --warning: oklch(0.828 0.189 84.429);
-  --warning-fg: oklch(0.279 0.077 45.635);
-
-  --warning-subtle: oklch(0.828 0.189 84.429 / 0.1);
-  --warning-subtle-fg: oklch(0.828 0.189 84.429);
-
-  --danger: oklch(0.577 0.245 27.325);
-  --danger-fg: oklch(0.971 0.013 17.38);
-
-  --danger-subtle: oklch(0.637 0.237 25.331 / 0.1);
-  --danger-subtle-fg: oklch(0.704 0.191 22.216);
-
-  --border: oklch(0.27 0.013 285.805);
-  --input: oklch(0.32 0.013 285.805);
-  --ring: oklch(0.546 0.245 262.881);
-
-  --navbar: oklch(0.19 0.006 285.885);
-  --navbar-fg: oklch(0.985 0 0);
-
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-fg: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.546 0.245 262.881);
-  --sidebar-primary-fg: oklch(1 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-fg: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.546 0.245 262.881);
-
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.707 0.165 254.624);
-  --chart-4: oklch(0.809 0.105 251.813);
-  --chart-5: oklch(0.882 0.059 254.128);
+/*
+ * A parchment surface flips the semantic names to the paper side of the
+ * palette. A component inside it reads `text-fg`, `text-muted-fg` and
+ * `border-border` as ink and parchment-rule, not cream and plate-ember.
+ */
+@utility paper-surface {
+  --bg: var(--color-parchment);
+  --fg: var(--color-ink);
+  --muted-fg: var(--color-ink-soft);
+  --border: var(--color-parchment-rule);
+  --input: var(--color-parchment-rule);
+  --accent: var(--color-parchment-deep);
+  --accent-fg: var(--color-ink);
+  --ring: var(--color-gold-deep);
 }
 
 @utility touch-target {

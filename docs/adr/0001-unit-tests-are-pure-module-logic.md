@@ -48,7 +48,7 @@ Neither clause is reversed here. **Pre-merge UI coverage is accepted as zero**, 
 **2026-10-03 — Effect replaces Zod and Zustand-style stores ([ADR-0007](./0007-effect-is-the-application-runtime.md)).** The scope rule does not change. Only the names of the things in scope change:
 
 - "Zustand stores via `.getState()`" are now atoms, tested through `AtomRegistry.make()` (`get`, `set`, `mount`, `getResult`). Atoms are module logic: they run in Node with no React.
-- "plain Zod shapes" are now pure `Schema` modules. They stay out of the `include` allowlist by the 2026-08-03 rule (`features/color-mode/color-mode.ts` is the first one).
+- "plain Zod shapes" are now pure `Schema` modules. They stay out of the `include` allowlist by the 2026-08-03 rule (`features/i18n/locale.ts` is a current example; the first one was the removed `features/color-mode/color-mode.ts`).
 - Effects and services are tested with `@effect/vitest` (`it.effect`, `it.live`) and test layers or `Effect.provideService` fakes.
 
 The allowlist adds the new logic folders (`config`, `http`, `runtime`, and `features/**/*.ts`). It excludes the new framework seams by the Logic Seam convention: `*.functions.ts` (`createServerFn` transports), `*.server.ts` (the runtime that reads TanStack's request), `core/config/env.ts` (the startup binding of `import.meta.env`) and `use-*.ts` hooks. Each one delegates to a tested sibling.

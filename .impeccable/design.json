@@ -1323,7 +1323,7 @@
   ],
   "narrative": {
     "northStar": "The Painted Tabletop",
-    "overview": "Heynbord is a painted fantasy card game. The Battle is a painted battlefield (web ADR-0006), the Units are figures on it, and every 2D control is a real game piece at the edge of that painting: a wooden tray for the Hand, bronze frames for the cards, a leather Card Back, gold tokens for the actions, and parchment sheets for the rules. The world is bright, warm, clear, handmade and a little funny, like a classic adventure story. The UI never tries to be a web app around a game. It is part of the game box.\n\nThe material is a frame, not a surface for text. Wood, bronze and leather carry gradients, bevels and grain, but all text sits on a flat area with high contrast: cream on a dark plate, or dark ink on parchment. Pieces are chunky and tactile. They have thick borders, a hard drop under each button, and a small physical press. The density is that of a board game: a few large pieces, each easy to read on a phone in landscape.\n\nThe system is light and readable first (product pillar 5). The HUD sits at the edges of the screen and lets pointer events through to the Board. Effects and panels never hide the Board or the stats. Motion is short and physical, and reduced motion stops all of it.\n\nThe base component library theme in `apps/web/src/core/styles/globals.css` (a blue primary, zinc greys, light and dark modes) is not part of this system. It is the un-themed default that only the development Component Catalog at `/master-design` uses. The game world that this file describes is normative.",
+    "overview": "Heynbord is a painted fantasy card game. The Battle is a painted battlefield (web ADR-0006), the Units are figures on it, and every 2D control is a real game piece at the edge of that painting: a wooden tray for the Hand, bronze frames for the cards, a leather Card Back, gold tokens for the actions, and parchment sheets for the rules. The world is bright, warm, clear, handmade and a little funny, like a classic adventure story. The UI never tries to be a web app around a game. It is part of the game box.\n\nThe material is a frame, not a surface for text. Wood, bronze and leather carry gradients, bevels and grain, but all text sits on a flat area with high contrast: cream on a dark plate, or dark ink on parchment. Pieces are chunky and tactile. They have thick borders, a hard drop under each button, and a small physical press. The density is that of a board game: a few large pieces, each easy to read on a phone in landscape.\n\nThe system is light and readable first (product pillar 5). The HUD sits at the edges of the screen and lets pointer events through to the Board. Effects and panels never hide the Board or the stats. Motion is short and physical, and reduced motion stops all of it.\n\nThere is one theme. The base component library in `apps/web/src/core/styles/globals.css` reads semantic names (`bg`, `fg`, `primary`, `danger`), and every one of those names is an alias of a Heynbord material token. The Component Catalog, the landing page and the game screens resolve to the same palette. The game world that this file describes is normative.",
     "keyCharacteristics": [
       "Real materials as frames: dark wood, warm bronze, gold, tooled leather, parchment.",
       "Text on flat, high-contrast areas only: cream on a night plate, or ink on parchment.",
@@ -1350,8 +1350,13 @@
         "section": "colors"
       },
       {
-        "name": "The Base Theme Stays Out Rule",
-        "body": "The blue primary and zinc greys of the base component theme never appear on a game screen. A base component that goes into the game gets the Heynbord colors first.",
+        "name": "The Alias Contrast Rule",
+        "body": "A bright material does not always carry white text. `danger` uses `enemy-deep` with `cream` (11.16:1), not `enemy-red` with white (4.23:1). `success` uses `hp-full` with `ink-on-gold` (9.65:1). A new alias takes the darker or the lighter material that passes WCAG 2.2 AA.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Theme Rule",
+        "body": "The application has one theme: the Heynbord material palette. There is no light mode and no dark mode. `core/components/ui` reads the semantic aliases, and every alias points at a material token. A second palette does not exist.",
         "section": "colors"
       },
       {
