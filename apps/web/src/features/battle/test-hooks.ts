@@ -48,8 +48,8 @@ import {
 import { playback } from "@/features/battle/scene/playback";
 import type { StageResults } from "@/features/campaign/region-map";
 import { NEW_PLAYER } from "@/features/profile/profile";
+import { profileSaved } from "@/features/profile/profile-store.atoms";
 import { profileAtom } from "@/features/profile/profile.atoms";
-import { profileSaved } from "@/features/profile/use-profile-store";
 import type { SweepKind } from "@/features/sweep/sweep";
 import { gameScreenAtom } from "@/features/town/town.atoms";
 
@@ -476,7 +476,7 @@ export const installTestHooks = (
       publishBattle(registry, finishedFrom(live.options, winner));
     },
     /** Resolves when the Profile is in IndexedDB, so that a test can reload. */
-    profileSaved,
+    profileSaved: () => profileSaved(registry),
     setState: (name: string) => {
       const known = QA_STATES.find((candidate) => candidate === name);
       if (!known) {

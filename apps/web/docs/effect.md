@@ -22,7 +22,7 @@ A service id has this form: `@heynbord/web/Audio`.
 ## Atoms
 
 - Shared, persisted, or server-derived state is an atom. State of one component is React `useState`.
-- Build an effectful atom with `appRuntime.atom` or `appRuntime.fn` (`src/core/runtime/client.ts`).
+- Build an effectful atom with `appRuntime.atom` or `appRuntime.fn` (`src/core/runtime/client.ts`). An effect atom that needs a browser service (IndexedDB, the Profile store) uses `browserRuntime` (`src/core/runtime/browser.ts`). The route that mounts it must not render on the server.
 - An `Atom.kvs` atom uses `storageRuntime` and `Atom.withServerValue`. The server has no `localStorage`.
 - `Atom.withServerValue` covers the atom a component reads. An atom that reads a browser-only atom needs its own server value.
 - An atom that a component seeds (for example `localeAtom`) is `Atom.keepAlive`.
