@@ -19,6 +19,7 @@ import { HeroScene } from "@/features/hero/components/hero-scene";
 import type { ForgeStoneCount, HeroHpParts } from "@/features/hero/hero";
 import { upgradeFocusAfter } from "@/features/hero/hero";
 import { GEAR_GLYPH } from "@/features/hero/hero-art";
+import { HERO_GROOVE } from "@/features/hero/tokens";
 import { useHero } from "@/features/hero/use-hero";
 import { useStatFormat } from "@/features/hero/use-stat-format";
 import { BalancePlate } from "@/features/town/components/balance-plate";
@@ -26,14 +27,14 @@ import { useCountTo } from "@/features/workshop/use-count-to";
 
 /** The HUD plate (DESIGN.md, HUD plate). */
 const PLATE =
-  "flex rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+  "flex rounded-xl border-2 border-gold-trim/70 bg-night-plate/85 text-cream shadow-[0_3px_0_rgba(0,0,0,0.45)]";
 
 /** The chime of a Gear item at level 25 comes this long after the strike. */
 const MAX_CHIME_MS = 180;
 
 /** A label of the Status Bar: Inter 700, small capitals, `cream-dim`. */
 const BAR_LABEL =
-  "text-[11px] leading-none font-bold tracking-[0.06em] text-[#e8d9bb] uppercase [@media(max-height:500px)]:text-[9px]";
+  "text-[11px] leading-none font-bold tracking-[0.06em] text-cream-dim uppercase [@media(max-height:500px)]:text-[9px]";
 
 /**
  * One part of the Hero HP: its label above its number. The Armor part has the
@@ -55,13 +56,13 @@ const HpPart = ({
       {armor ? (
         <GlyphIcon
           glyph={GEAR_GLYPH.armor}
-          className="size-3 text-[#e9c46a] [@media(max-height:500px)]:size-2.5"
+          className="text-gold-trim size-3 [@media(max-height:500px)]:size-2.5"
         />
       ) : null}
       {label}
     </dt>
     <dd
-      className="text-lg leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-[13px]"
+      className="text-cream text-lg leading-none font-black tabular-nums [@media(max-height:500px)]:text-[13px]"
       data-testid={testId}
     >
       {value}
@@ -71,7 +72,7 @@ const HpPart = ({
 
 /** The "+" between two parts of the Hero HP, on the line of the numbers. */
 const Plus = () => (
-  <span className="self-end pb-px text-sm leading-none font-bold text-[#e9c46a]/80 [@media(max-height:500px)]:text-[11px]">
+  <span className="text-gold-trim/80 self-end pb-px text-sm leading-none font-bold [@media(max-height:500px)]:text-[11px]">
     +
   </span>
 );
@@ -101,23 +102,23 @@ const HeroHp = ({ hp }: { readonly hp: HeroHpParts }) => {
       </span>
       <div className="flex min-w-0 flex-1 items-center gap-3 [@media(max-height:500px)]:gap-2">
         <span
-          className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-7"
+          className="border-bronze-rim grid size-10 shrink-0 place-items-center rounded-full border-2 bg-[radial-gradient(circle_at_35%_30%,var(--color-plate-ember),var(--color-night-plate)_70%)] shadow-[0_2px_0_rgba(0,0,0,0.45)] [@media(max-height:500px)]:size-7"
           aria-hidden
         >
           <GlyphIcon
             glyph="heart"
-            className="size-5 text-[#ff6b6b] [@media(max-height:500px)]:size-3.5"
+            className="text-heart-red size-5 [@media(max-height:500px)]:size-3.5"
           />
         </span>
         <span
-          className="shrink-0 text-[32px] leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-lg"
+          className="text-cream shrink-0 text-[32px] leading-none font-black tabular-nums [@media(max-height:500px)]:text-lg"
           aria-hidden
         >
           {total}
         </span>
         {/* The parts stand after a dotted rule, as the terms of a sum. */}
         <dl
-          className="ml-1 flex min-w-0 items-stretch gap-2.5 border-l-2 border-dotted border-[#e7bb6a]/45 pl-4 [@media(max-height:500px)]:ml-0 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:pl-2.5"
+          className="border-bronze-rim/45 ml-1 flex min-w-0 items-stretch gap-2.5 border-l-2 border-dotted pl-4 [@media(max-height:500px)]:ml-0 [@media(max-height:500px)]:gap-1.5 [@media(max-height:500px)]:pl-2.5"
           aria-hidden
           data-testid="hero-hp-parts"
         >
@@ -180,7 +181,7 @@ const ForgeStoneTray = ({
       >
         {tr("hero.forgeStones")}
       </h2>
-      <ul className="grid min-w-0 flex-1 grid-cols-5 divide-x divide-[#e9c46a]/15 rounded-lg border-2 border-[#e9c46a]/35 bg-[#3a2a1c] shadow-[inset_0_2px_4px_rgba(0,0,0,0.55)] [@media(max-height:500px)]:rounded-md">
+      <ul className="divide-gold-trim/15 border-gold-trim/35 bg-plate-socket grid min-w-0 flex-1 grid-cols-5 divide-x rounded-lg border-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.55)] [@media(max-height:500px)]:rounded-md">
         {counts.map(({ tier, count }) => {
           const name = tr(`forgeStones.tiers.${tier}`);
           return (
@@ -205,7 +206,7 @@ const ForgeStoneTray = ({
                 <span
                   key={spent[tier] ?? 0}
                   className={cn(
-                    "inline-block text-base leading-none font-black text-[#fff6df] tabular-nums [@media(max-height:500px)]:text-xs",
+                    "text-cream inline-block text-base leading-none font-black tabular-nums [@media(max-height:500px)]:text-xs",
                     spent[tier] !== undefined &&
                       "motion-safe:animate-[workshop-count_420ms_cubic-bezier(0.2,0.8,0.2,1)]"
                   )}
@@ -215,7 +216,7 @@ const ForgeStoneTray = ({
               </span>
               <span
                 aria-hidden
-                className="max-w-full truncate text-[11px] leading-tight font-semibold text-[#e8d9bb] [@media(max-height:500px)]:text-[9px]"
+                className="text-cream-dim max-w-full truncate text-[11px] leading-tight font-semibold [@media(max-height:500px)]:text-[9px]"
               >
                 {name}
               </span>
@@ -258,7 +259,8 @@ const StatusBar = ({
           "relative col-span-2 min-w-0 @max-[44rem]:col-span-1",
           // The groove over the tray when it goes under the Hero HP: a dark cut
           // with a lit edge.
-          "@max-[44rem]:pt-2.5 @max-[44rem]:before:absolute @max-[44rem]:before:inset-x-0 @max-[44rem]:before:top-0 @max-[44rem]:before:h-0.5 @max-[44rem]:before:rounded-full @max-[44rem]:before:bg-[#0c0805]/70 @max-[44rem]:before:shadow-[0_1px_0_rgba(231,187,106,0.3)]",
+          "@max-[44rem]:pt-2.5 @max-[44rem]:before:absolute @max-[44rem]:before:inset-x-0 @max-[44rem]:before:top-0 @max-[44rem]:before:h-0.5 @max-[44rem]:before:rounded-full",
+          HERO_GROOVE,
           "[@media(max-height:500px)]:@max-[44rem]:pt-2"
         )}
       >

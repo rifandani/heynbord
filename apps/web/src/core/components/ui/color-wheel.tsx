@@ -21,7 +21,7 @@ export function ColorWheel(props: ColorWheelProps) {
           ...defaultStyle,
           background: isDisabled
             ? undefined
-            : `${defaultStyle.background}, repeating-conic-gradient(#CCC 0% 25%, white 0% 50%) 50% / 16px 16px`,
+            : `${defaultStyle.background}, repeating-conic-gradient(var(--color-parchment-rule) 0% 25%, var(--color-parchment-lit) 0% 50%) 50% / 16px 16px`,
         })}
       />
       <ColorThumb />

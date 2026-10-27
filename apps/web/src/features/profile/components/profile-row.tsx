@@ -118,7 +118,7 @@ export const ProfileRow = ({
         {refused ? (
           <p
             role="alert"
-            className="rounded-lg border-2 border-[#9b2c1f]/40 bg-[#fbe3d8] px-2.5 py-1.5 text-xs leading-snug font-semibold text-[#7a1f14]"
+            className="border-danger/40 bg-danger-subtle text-danger-subtle-fg rounded-lg border-2 px-2.5 py-1.5 text-xs leading-snug font-semibold"
             data-testid="settings-import-error"
             data-reason={refused._tag}
           >

@@ -2,6 +2,7 @@ import type { ForgeStoneTier } from "@workspace/rules";
 import type { CSSProperties, Ref } from "react";
 
 import { RANK_COLORS } from "@/core/components/game/tokens";
+import { FORGE_STONE_FACETS } from "@/features/hero/tokens";
 
 /**
  * A Forge Stone (ADR-0036): a cut stone with 3 lit faces, in the Card Rank
@@ -30,12 +31,12 @@ export const ForgeStoneIcon = ({
     <path
       d="M12 2 20 7v10l-8 5-8-5V7z"
       fill={RANK_COLORS[tier]}
-      stroke="#1c140e"
+      stroke={FORGE_STONE_FACETS.rim}
       strokeWidth="1.6"
       strokeLinejoin="round"
     />
-    <path d="M12 2 20 7l-8 5-8-5z" fill="#fff" opacity="0.42" />
-    <path d="M20 7v10l-8 5V12z" fill="#000" opacity="0.28" />
-    <path d="M12 12v10l-8-5V7z" fill="#000" opacity="0.08" />
+    <path d="M12 2 20 7l-8 5-8-5z" fill={FORGE_STONE_FACETS.light} />
+    <path d="M20 7v10l-8 5V12z" fill={FORGE_STONE_FACETS.shade} />
+    <path d="M12 12v10l-8-5V7z" fill={FORGE_STONE_FACETS.deep} />
   </svg>
 );
