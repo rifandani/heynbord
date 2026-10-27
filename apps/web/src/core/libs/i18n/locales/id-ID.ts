@@ -133,9 +133,11 @@ export default {
     noWebgl:
       "Game ini memerlukan WebGL 2. Peramban atau perangkatmu tidak mendukungnya.",
     loading: "Memuat Papan…",
-    keyGuide: {
-      label: "Panduan Tombol",
-      title: "Tombol",
+    controlsGuide: {
+      label: "Panduan Kontrol",
+      title: "Panduan Kontrol",
+      controller: "Kontroler",
+      controlsGuide: "Buka Panduan Kontrol",
       moveSelection: "Pilih kartu",
       focusTarget: "Pilih target",
       play: "Mainkan kartu",
@@ -143,7 +145,7 @@ export default {
       skip: "Lewati animasi",
       inspect: "Lihat Detail Kartu dari Unit",
       handbook: "Buka Buku Panduan",
-      battleLog: "Buka atau tutup Catatan Pertempuran",
+      battleLog: "Buka Catatan Pertempuran",
       logEntry: "Catatan Pertempuran: satu Entri Catatan mundur atau maju",
       logTurn: "Catatan Pertempuran: satu Giliran mundur atau maju",
       cancel: "Batal, atau Kembali ke Saat Ini",

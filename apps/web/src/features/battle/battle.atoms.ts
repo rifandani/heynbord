@@ -10,7 +10,7 @@ import type { BattleSession } from "@/features/battle/battle-session";
 import { canAct } from "@/features/battle/battle-session";
 import type { UnitView } from "@/features/battle/battle-view";
 import { heroOf } from "@/features/battle/battle-view";
-import type { KeyGuideLine } from "@/features/battle/components/battle-keys";
+import type { ControlsGuideLine } from "@/features/battle/components/battle-keys";
 import { PLAYER_HERO } from "@/features/battle/player-hero";
 import type { TutorialMarks } from "@/features/battle/tutorial";
 import { tutorialMarks } from "@/features/battle/tutorial";
@@ -31,13 +31,17 @@ export const battleLogAtom = Atom.make<BattleLogState | null>(null).pipe(
 );
 
 /**
- * The open Key Guide (UI-02), or `null`. `line` is the line that the Key
- * Guide marks, or `null`: "Read more" on a Hint for a screen control opens the
- * Key Guide at the line of its key (GDD 8.3). It closes when the Battle goes.
+ * The open Controls Guide (UI-02), or `null`. `line` is the line that the
+ * Controls Guide marks, or `null`: "Read more" on a Hint for a screen control
+ * opens the Controls Guide at the line of its input (GDD 8.3). It closes when
+ * the Battle goes.
  */
-export const keyGuideAtom = Atom.make<{
-  readonly line: KeyGuideLine | null;
+export const controlsGuideAtom = Atom.make<{
+  readonly line: ControlsGuideLine | null;
 } | null>(null);
+
+/** The connected Battle pad; the guide must not name buttons after it goes. */
+export const padIdAtom = Atom.make<string | null>(null).pipe(Atom.keepAlive);
 
 /**
  * The session that the scene and the HUD show: the selected moment of the

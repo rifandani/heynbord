@@ -11,7 +11,7 @@ import {
 } from "react";
 import { Button } from "react-aria-components";
 
-import { keyGuideAtom } from "@/features/battle/battle.atoms";
+import { controlsGuideAtom } from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import type { Glyph } from "@/features/battle/glyphs";
 import { prefersReducedMotion } from "@/features/battle/scene/reduced-motion";
@@ -439,20 +439,20 @@ const TimeLine = ({ held }: { readonly held: boolean }) => (
 );
 
 /**
- * Opens what "Read more" points to: the Handbook at an Entry, or the Key
- * Guide at the line of a key.
+ * Opens what "Read more" points to: the Handbook at an Entry, or the
+ * Controls Guide at the line of an input.
  */
 const useReadMore = () => {
   const handbook = useHandbook();
-  const setKeyGuide = useAtomSet(keyGuideAtom);
+  const setControlsGuide = useAtomSet(controlsGuideAtom);
   return (target: HintTarget) => {
     switch (target._tag) {
       case "Entry": {
         handbook.openAt(target.entry);
         return;
       }
-      case "KeyGuide": {
-        setKeyGuide({ line: target.line });
+      case "ControlsGuide": {
+        setControlsGuide({ line: target.line });
         return;
       }
       default: {
@@ -533,7 +533,7 @@ const Banner = ({
           className="text-tutorial-teal data-[focus-visible]:ring-focus-cream cursor-pointer rounded-sm font-semibold whitespace-nowrap underline decoration-dotted underline-offset-2 outline-none data-[focus-visible]:ring-4 data-[hovered]:decoration-solid"
           data-testid="hint-read-more"
         >
-          {/* The glyph of what "Read more" opens: the Handbook or the Key Guide. */}
+          {/* The glyph of what "Read more" opens: the Handbook or the Controls Guide. */}
           <GlyphIcon
             glyph={target._tag === "Entry" ? "book" : "info"}
             className="mr-1 mb-px inline-block size-[1.1em] align-middle"
@@ -558,7 +558,8 @@ const Banner = ({
  * The Hint on the screen (GDD 8.3): a small banner near its subject, with no
  * arrow. It does not stop the game. It closes on a tap of its close button,
  * or by itself after some seconds. "Read more" opens the Handbook at the
- * Entry of its subject, or the Key Guide at the line of its key. It is in a live region, so a screen reader reads it.
+ * Entry of its subject, or the Controls Guide at the line of its input. It is
+ * in a live region, so a screen reader reads it.
  * A closed Hint stays on the screen until its close motion ends.
  */
 export const HintBanner = () => {

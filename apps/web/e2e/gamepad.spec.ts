@@ -10,6 +10,7 @@ import "./_diagnostics";
 
 interface PadWindow extends Window {
   __padPress?: (index: number, pressed: boolean) => void;
+  __padConnect?: (id: string | null) => void;
 }
 
 /** The standard-mapping index of each control that the test presses. */
@@ -23,14 +24,14 @@ const PAD = {
 } as const;
 
 /** Installs a pad that the test can press, before the app loads. */
-const installPad = (page: Page) =>
-  page.addInitScript(() => {
+const installPad = (page: Page, id = "Xbox Wireless Controller") =>
+  page.addInitScript((padId) => {
     const buttons = Array.from({ length: 17 }, () => ({
       pressed: false,
       value: 0,
     }));
     const pad = {
-      id: "Xbox Wireless Controller",
+      id: padId,
       index: 0,
       mapping: "standard",
       connected: true,
@@ -40,13 +41,20 @@ const installPad = (page: Page) =>
     };
     Object.defineProperty(navigator, "getGamepads", {
       configurable: true,
-      value: () => [pad],
+      value: () => (pad.connected ? [pad] : []),
     });
     // SAFETY: this test hook is the only writer of the fake pad.
     (window as PadWindow).__padPress = (index, pressed) => {
       buttons[index] = { pressed, value: pressed ? 1 : 0 };
     };
-  });
+    // SAFETY: this hook changes only the fake pad read by `getGamepads`.
+    (window as PadWindow).__padConnect = (nextId) => {
+      pad.connected = nextId !== null;
+      if (nextId !== null) {
+        pad.id = nextId;
+      }
+    };
+  }, id);
 
 /** Presses a control for longer than one animation frame, then releases it. */
 const padPress = async (page: Page, index: number) => {
@@ -102,7 +110,36 @@ test.describe("Controller", () => {
     await expect(page.getByTestId("battle-log-dock")).toBeHidden();
     // Start opens the Controls Guide.
     await padPress(page, PAD.start);
-    await expect(page.getByTestId("key-guide")).toBeVisible();
+    const guide = page.getByTestId("controls-guide");
+    await expect(guide).toBeVisible();
+    const controller = page.getByTestId("controls-guide-controller");
+    await Promise.all(
+      ["A", "B", "X", "Y", "LB", "RB", "LT", "RT", "Menu", "View"].map(
+        (label) =>
+          expect(controller.getByText(label, { exact: true })).toBeVisible()
+      )
+    );
+    await expect(
+      page.getByTestId("controls-guide-play").locator("kbd")
+    ).toHaveText("Enter");
+    await expect(page.getByTestId("controls-guide-play")).toContainText("A");
+    await expect(
+      page.getByTestId("controls-guide-controlsGuide")
+    ).toContainText("Menu");
+    await Promise.all(
+      ["moveSelection", "focusTarget", "logEntry"].map((action) =>
+        expect(page.getByTestId(`controls-guide-${action}`)).toContainText(
+          "D-pad / Left stick"
+        )
+      )
+    );
+    await expect(page.getByTestId("controls-guide-logTurn")).toContainText(
+      "LB / RB"
+    );
+    await test.info().attach("xbox-controls-guide", {
+      body: await guide.screenshot(),
+      contentType: "image/png",
+    });
     // A text field takes the pad input: right does not select a card.
     await page.evaluate(() => {
       const field = document.createElement("input");
@@ -114,5 +151,81 @@ test.describe("Controller", () => {
     await expect(
       page.locator("[data-testid^='hand-card-'][data-selected]")
     ).toHaveCount(0);
+  });
+
+  test("shows the DualSense labels and returns to the keyboard list when it disconnects", async ({
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    await installPad(
+      page,
+      "DualSense Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)"
+    );
+    await page.goto("/play?state=active-play&seed=7");
+    await expect(page.getByText("Controller connected")).toBeVisible({
+      timeout: 30_000,
+    });
+    await padPress(page, PAD.start);
+    const guide = page.getByTestId("controls-guide");
+    await expect(guide).toBeVisible();
+    const controller = page.getByTestId("controls-guide-controller");
+    await Promise.all(
+      ["×", "○", "□", "△", "L1", "R1", "L2", "R2", "Options", "Create"].map(
+        (label) =>
+          expect(controller.getByText(label, { exact: true })).toBeVisible()
+      )
+    );
+    await expect(page.getByTestId("controls-guide-play")).toContainText("×");
+    await expect(page.getByTestId("controls-guide-cancel")).toContainText("○");
+    await expect(page.getByTestId("controls-guide-inspect")).toContainText("□");
+    await expect(page.getByTestId("controls-guide-handbook")).toContainText(
+      "△"
+    );
+    await expect(
+      page.getByTestId("controls-guide-controlsGuide")
+    ).toContainText("Options");
+    await test.info().attach("dualsense-controls-guide", {
+      body: await guide.screenshot(),
+      contentType: "image/png",
+    });
+
+    await page.setViewportSize({ width: 844, height: 390 });
+    await expect
+      .poll(async () => {
+        const box = await guide.boundingBox();
+        return (
+          box !== null &&
+          box.y >= 0 &&
+          box.y + box.height <= 390 &&
+          box.x >= 0 &&
+          box.x + box.width <= 844
+        );
+      })
+      .toBe(true);
+    await test.info().attach("dualsense-controls-guide-landscape", {
+      body: await page.screenshot(),
+      contentType: "image/png",
+    });
+
+    await page.evaluate(() => {
+      // SAFETY: `installPad` sets this hook before the app loads.
+      (window as PadWindow).__padConnect?.(null);
+    });
+    await expect(controller).toBeHidden();
+    await expect(page.getByTestId("controls-guide-controlsGuide")).toBeHidden();
+    await expect(page.getByTestId("controls-guide-play")).toHaveText(
+      "EnterPlay the card"
+    );
+    await expect(guide).not.toContainText("Options");
+    await expect(guide).not.toContainText("Create");
+
+    await page.evaluate(() => {
+      // SAFETY: `installPad` sets this hook before the app loads.
+      (window as PadWindow).__padConnect?.("Xbox Wireless Controller");
+    });
+    await expect(controller.getByText("Menu", { exact: true })).toBeVisible();
+    await expect(controller.getByText("View", { exact: true })).toBeVisible();
+    await expect(guide).not.toContainText("Options");
+    await expect(guide).not.toContainText("Create");
   });
 });

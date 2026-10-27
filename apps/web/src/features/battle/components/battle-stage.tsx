@@ -7,7 +7,7 @@ import type { PadPress } from "@/core/input/gamepad";
 import { useGamepad } from "@/core/input/use-gamepad";
 import { battlePainting } from "@/features/battle/battle-painting";
 import { heroOf } from "@/features/battle/battle-view";
-import { keyGuideAtom } from "@/features/battle/battle.atoms";
+import { controlsGuideAtom, padIdAtom } from "@/features/battle/battle.atoms";
 import {
   dialogOpen,
   inDialog,
@@ -319,6 +319,8 @@ const useBattlePad = (
   openControlsGuide: () => void
 ) => {
   const { tr } = useGameText();
+  const setPadId = useAtomSet(padIdAtom);
+  useEffect(() => () => setPadId(null), [setPadId]);
   useGamepad({
     onPress: (press) => {
       const command = padCommandFor(press);
@@ -326,7 +328,11 @@ const useBattlePad = (
         runKey({ battle, openHandbook, openControlsGuide }, padInput(command));
       }
     },
-    onConnect: () => toast(tr("battle.padConnected"), { id: "pad-connect" }),
+    onConnect: (pad) => {
+      setPadId(pad.id);
+      toast(tr("battle.padConnected"), { id: "pad-connect" });
+    },
+    onDisconnect: () => setPadId(null),
   });
 };
 
@@ -371,7 +377,7 @@ export const BattleStage = ({ battle }: { readonly battle: Battle }) => {
     [options]
   );
   const handbook = useHandbook();
-  const setGuide = useAtomSet(keyGuideAtom);
+  const setGuide = useAtomSet(controlsGuideAtom);
   const openControlsGuide = useCallback(
     () => setGuide({ line: null }),
     [setGuide]
