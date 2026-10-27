@@ -1,15 +1,17 @@
-import { RegistryContext } from "@effect/atom-react";
-import { newProfile } from "@workspace/rules";
-import { Result } from "effect";
-import { useContext, useEffect } from "react";
+import { RegistryContext, useAtomValue } from "@effect/atom-react";
+import { Effect, Stream } from "effect";
+import type { KeyValueStore } from "effect/persistence";
+import { useContext, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { profileStoreRuntime } from "@/core/runtime/client";
-import { randomSeed } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
-import { makeSaveQueue, OLD_PROGRESS_KEYS } from "@/features/profile/profile";
-import { loadProfile, saveProfile } from "@/features/profile/profile-store";
-import { profileStateAtom } from "@/features/profile/profile.atoms";
+import { OLD_PROGRESS_KEYS } from "@/features/profile/profile";
+import type { ProfileStoreFailure } from "@/features/profile/profile-store.atoms";
+import { profileStoreErrorAtom } from "@/features/profile/profile-store.atoms";
+import { attachProfileStore } from "@/features/profile/profile-store.attach";
+import type { ProfileStoreRunner } from "@/features/profile/profile-store.attach";
+import { ProfileStore } from "@/features/profile/profile-store.service";
 
 /** Removes the progress keys from before the Profile. Their data does not move. */
 const removeOldProgress = () => {
@@ -22,87 +24,82 @@ const removeOldProgress = () => {
   }
 };
 
-/** The error toasts, in the current Locale. */
-const toasts = {
-  loadFailed: (): void => undefined,
-  saveFailed: (): void => undefined,
+/** The Effect side of the Profile store, on the one IndexedDB runtime. */
+const runner: ProfileStoreRunner = {
+  errors: (onError) => {
+    const report = (error: KeyValueStore.KeyValueStoreError) =>
+      Effect.sync(() => onError(error));
+    const fiber = profileStoreRuntime.runFork(
+      Effect.gen(function* () {
+        const store = yield* ProfileStore;
+        yield* store.errors.pipe(Stream.runForEach(report));
+      })
+    );
+    return () => fiber.interruptUnsafe();
+  },
+  load: () =>
+    profileStoreRuntime.runPromise(
+      Effect.gen(function* () {
+        const store = yield* ProfileStore;
+        return yield* store.load();
+      })
+    ),
+  save: (profile) => {
+    profileStoreRuntime.runFork(
+      Effect.gen(function* () {
+        const store = yield* ProfileStore;
+        yield* store.save(profile);
+      })
+    );
+  },
 };
 
-/** One queue for the app: the writes go to IndexedDB one at a time, in order. */
-const saveQueue = makeSaveQueue(
-  (profile) => profileStoreRuntime.runPromise(saveProfile(profile)),
-  () => toasts.saveFailed()
-);
-
 /** Resolves when no Profile write waits or runs. For the test hooks. */
-export const profileSaved = (): Promise<void> => saveQueue.idle();
+export const profileSaved = (): Promise<void> => {
+  // A unit test has no IndexedDB: it mounts no Profile store, so no write waits.
+  if (typeof window === "undefined" || !("indexedDB" in window)) {
+    return Promise.resolve();
+  }
+  return profileStoreRuntime.runPromise(
+    Effect.gen(function* () {
+      const store = yield* ProfileStore;
+      yield* store.saved();
+    })
+  );
+};
 
 /**
- * Loads the Profile once and saves each change after it (technical design
- * 5). With no record, a new Player starts. A record that does not load stays
- * as it is: a new Player starts in memory, an error toast shows, and the
- * record changes only after the Player changes the Profile. A Profile that
- * is already in memory does not load again.
+ * Loads the Profile once and saves each change after it (technical design 5).
+ * The load, the ordered writes and the failures are in the Profile store;
+ * this hook mounts the adapter and shows the failure toast.
  */
 export const useProfileStore = () => {
   const registry = useContext(RegistryContext);
   const { tr } = useGameText();
+  const failure = useAtomValue(profileStoreErrorAtom);
+  const shownError = useRef<ProfileStoreFailure | null>(null);
 
   useEffect(() => {
-    toasts.loadFailed = () =>
-      toast.error(tr("profile.loadFailed"), { id: "profile-load" });
-    toasts.saveFailed = () =>
-      toast.error(tr("profile.saveFailed"), { id: "profile-save" });
-  }, [tr]);
-
-  useEffect(() => {
-    let cancelled = false;
-    let saved = registry.get(profileStateAtom);
-    const unsubscribe = registry.subscribe(profileStateAtom, (state) => {
-      const before = saved;
-      saved = state;
-      if (
-        state.status === "ready" &&
-        before.status === "ready" &&
-        state.profile !== before.profile
-      ) {
-        saveQueue.save(state.profile);
-      }
+    const attached = attachProfileStore(registry, runner, {
+      removeLegacyKeys: removeOldProgress,
     });
-
-    if (saved.status === "loading") {
-      removeOldProgress();
-      const start = (profile = newProfile(randomSeed())) => {
-        if (cancelled) {
-          return;
-        }
-        registry.set(profileStateAtom, { status: "ready", profile });
-        // The load recorded the Achievements that the Profile already met
-        // (Achievements 1.2): save them, so a reload shows no second notice.
-        const state = registry.get(profileStateAtom);
-        if (state.status === "ready" && state.profile !== profile) {
-          saveQueue.save(state.profile);
-        }
-      };
-      const load = async () => {
-        try {
-          const loaded = await profileStoreRuntime.runPromise(loadProfile);
-          if (Result.isSuccess(loaded)) {
-            start(loaded.success ?? undefined);
-            return;
-          }
-        } catch {
-          // IndexedDB is not there or is blocked: as a record that does not load.
-        }
-        start();
-        toasts.loadFailed();
-      };
-      void load();
-    }
-
-    return () => {
-      cancelled = true;
-      unsubscribe();
-    };
+    return attached.dispose;
   }, [registry]);
+
+  useEffect(() => {
+    if (!failure || shownError.current === failure) {
+      return;
+    }
+    shownError.current = failure;
+    toast.error(
+      tr(
+        failure.operation === "load"
+          ? "profile.loadFailed"
+          : "profile.saveFailed"
+      ),
+      {
+        id: failure.operation === "load" ? "profile-load" : "profile-save",
+      }
+    );
+  }, [failure, tr]);
 };

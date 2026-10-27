@@ -6,6 +6,7 @@ import { Button } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { GAME_SCRIM } from "@/core/components/game/game-dialog";
+import { randomSeed } from "@/core/utils/random";
 import { battleNameRef } from "@/features/battle/battle-content";
 import type { BattleLogState } from "@/features/battle/battle-log-session";
 import { atLastEntry } from "@/features/battle/battle-log-session";
@@ -29,7 +30,6 @@ import {
   ResultXp,
 } from "@/features/battle/components/result-rewards";
 import { DROP_SEAL, SHADOW_RESULT_WELL } from "@/features/battle/tokens";
-import { randomSeed } from "@/features/battle/use-battle";
 import type { useBattle } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { StarIcon } from "@/features/campaign/components/campaign-icons";

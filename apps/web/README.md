@@ -1,13 +1,11 @@
 # @workspace/web
 
-Answers all ur questions automatically with ur best recommendations, except critical questions.
-
 ## Maintenance
 
 - /improve-codebase-architecture
 - /improve-codebase-architecture to use /effect ecosystem in both FE and BE
 - refactor whole codebase to follow best practices for react and composition patterns from /vercel-composition-patterns and /vercel-react-best-practices
-- remove oxlint-disable, fallow-disable across codebase
+- remove oxlint-disable, fallow-disable across codebase and actually fix it
 
 ## Todo
 
@@ -111,8 +109,11 @@ Priest:
 
 New features:
 
-4. cleanup GLOSSARY.md, all game docs, etc
-5. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
+1. /grill-with-docs work on new feature called "XXX" (recommend me better name, similar to what we already have). Split it into 3 Stage pattern: shape, engine, then UI. Orchestrate it with gh issues
+2. cleanup all redundant game docs, etc
+3. check if we already finish all "v1" related features from docs, check whats not done in game design and PRD, check all still (draft) things, check roadmap
+
+you are a orchestrator of subagents implement issue A, B, C parallel with subagents (use deepseek v4.1 flash MAX only) coordinate it so that theres no conflicts
 
 Answers all ur questions automatically with ur best recommendations, except critical questions. Optimize your work to be faster, maybe use subagents or dynamic workflows or parallelize tasks.
 
