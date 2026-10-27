@@ -8,8 +8,9 @@ import { Effect, Stream } from "effect";
 import { useEffect } from "react";
 
 import { useLatest } from "@/core/hooks/use-latest";
-import type { PadPress, PadSnapshot } from "@/core/input/gamepad";
+import type { PadPress, PadSnapshot, PadState } from "@/core/input/gamepad";
 import { INITIAL_PAD_STATE, stepPad } from "@/core/input/gamepad";
+import type { PadFrame } from "@/core/input/gamepad-source";
 import { padFrames } from "@/core/input/gamepad-source";
 
 export interface GamepadHandlers {
@@ -20,6 +21,75 @@ export interface GamepadHandlers {
   /** No pad in standard mapping is on anymore. */
   readonly onDisconnect?: () => void;
 }
+
+/** The mutable state of the pad while the component is mounted. */
+interface PadSession {
+  state: PadState;
+  connected: number | null;
+  /** False while the window is blurred or the tab is hidden. */
+  active: boolean;
+}
+
+const resetPad = (session: PadSession) => {
+  session.state = INITIAL_PAD_STATE;
+};
+
+/** Forget the pad and its held controls. */
+const disconnectPad = (
+  session: PadSession,
+  onDisconnect: (() => void) | undefined
+) => {
+  if (session.connected === null) {
+    return;
+  }
+  session.connected = null;
+  onDisconnect?.();
+  resetPad(session);
+};
+
+/** Tell the screen about a new pad, with no held control from before. */
+const connectPad = (
+  session: PadSession,
+  pad: PadSnapshot,
+  onConnect: (pad: PadSnapshot) => void
+) => {
+  session.connected = pad.index;
+  resetPad(session);
+  onConnect(pad);
+};
+
+/** The presses of one frame, from the state of the previous frame. */
+const applyFrame = (
+  session: PadSession,
+  snapshot: PadSnapshot,
+  now: number,
+  onPress: (press: PadPress) => void
+) => {
+  const step = stepPad(session.state, snapshot, now);
+  session.state = step.state;
+  for (const press of step.presses) {
+    onPress(press);
+  }
+};
+
+/** One frame, after the guards for a blurred window and a new pad. */
+const handleFrame = (
+  session: PadSession,
+  frame: PadFrame,
+  handlers: GamepadHandlers
+) => {
+  if (!session.active) {
+    return;
+  }
+  if (!frame.snapshot) {
+    disconnectPad(session, handlers.onDisconnect);
+    return;
+  }
+  if (frame.snapshot.index !== session.connected) {
+    connectPad(session, frame.snapshot, handlers.onConnect);
+  }
+  applyFrame(session, frame.snapshot, frame.now, handlers.onPress);
+};
 
 /**
  * Subscribes to the pad presses while the component is mounted. A held
@@ -35,23 +105,22 @@ export const useGamepad = ({
   const disconnect = useLatest(onDisconnect);
 
   useEffect(() => {
-    let state = INITIAL_PAD_STATE;
-    let connected: number | null = null;
-    let active = true;
-    const reset = () => {
-      state = INITIAL_PAD_STATE;
+    const session: PadSession = {
+      state: INITIAL_PAD_STATE,
+      connected: null,
+      active: true,
     };
     const onBlur = () => {
-      active = false;
-      reset();
+      session.active = false;
+      resetPad(session);
     };
     const onFocus = () => {
-      active = true;
+      session.active = true;
     };
     const onVisibility = () => {
-      active = !document.hidden;
+      session.active = !document.hidden;
       if (document.hidden) {
-        reset();
+        resetPad(session);
       }
     };
     window.addEventListener("blur", onBlur);
@@ -61,32 +130,14 @@ export const useGamepad = ({
       padFrames().pipe(
         Stream.runForEach((frame) =>
           Effect.sync(() => {
-            // A blurred window or a hidden tab takes no input until it is back.
-            if (!active) {
-              return;
-            }
-            if (!frame.snapshot) {
-              if (connected !== null) {
-                connected = null;
-                const { current } = disconnect;
-                current?.();
-              }
-              reset();
-              return;
-            }
-            if (frame.snapshot.index !== connected) {
-              connected = frame.snapshot.index;
-              reset();
-              const { current } = connect;
-              current(frame.snapshot);
-            }
-            const step = stepPad(state, frame.snapshot, frame.now);
-            const { state: nextState } = step;
-            state = nextState;
             const { current: emit } = press;
-            for (const item of step.presses) {
-              emit(item);
-            }
+            const { current: reader } = connect;
+            const { current: gone } = disconnect;
+            handleFrame(session, frame, {
+              onPress: emit,
+              onConnect: reader,
+              onDisconnect: gone,
+            });
           })
         )
       )
