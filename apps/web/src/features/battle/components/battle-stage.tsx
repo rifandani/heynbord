@@ -1,9 +1,18 @@
+import { useAtomSet } from "@effect/atom-react";
 import { cn } from "cn";
-import { lazy, Suspense, useEffect, useMemo } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 
+import type { PadPress } from "@/core/input/gamepad";
+import { useGamepad } from "@/core/input/use-gamepad";
 import { battlePainting } from "@/features/battle/battle-painting";
 import { heroOf } from "@/features/battle/battle-view";
-import { inDialog, isTyping } from "@/features/battle/components/battle-input";
+import { keyGuideAtom } from "@/features/battle/battle.atoms";
+import {
+  dialogOpen,
+  inDialog,
+  isTyping,
+} from "@/features/battle/components/battle-input";
 import type {
   BattleKeyAction,
   BattleKeyCommand,
@@ -25,6 +34,7 @@ import {
   ResultOverlay,
   TurnBanner,
 } from "@/features/battle/components/overlays";
+import { padBattleCommand } from "@/features/battle/components/pad-battle";
 import { TopBar } from "@/features/battle/components/top-bar";
 import { TutorialPanel } from "@/features/battle/components/tutorial-panel";
 import { UnitDetails } from "@/features/battle/components/unit-details";
@@ -48,32 +58,57 @@ const hasWebgl2 = (): boolean => {
   }
 };
 
-/** What a Battle key can act on: the Battle, and the Handbook over it. */
+/** What a Battle key can act on: the Battle, and the panels over it. */
 interface KeyContext {
   readonly battle: Battle;
   readonly openHandbook: () => void;
+  readonly openControlsGuide: () => void;
 }
 
+/**
+ * One Battle input, from a key or from a pad. The command carries its source,
+ * and a pad has no DOM event to stop.
+ */
+interface BattleInput {
+  readonly command: BattleKeyCommand;
+  readonly shiftKey: boolean;
+  readonly target: EventTarget | null;
+  readonly preventDefault?: () => void;
+}
+
+/** The input of a pad command, which has no DOM event. */
+const padInput = (command: BattleKeyCommand): BattleInput => ({
+  command,
+  shiftKey: false,
+  target: null,
+});
+
 /** ArrowLeft and ArrowRight move the selection over the Ready cards. */
-const moveSelection = (battle: Battle, event: KeyboardEvent, step: 1 | -1) => {
+const moveSelection = (battle: Battle, input: BattleInput, step: 1 | -1) => {
   const hand = battle.session ? heroOf(battle.session.view, "player").hand : [];
   const next = nextReadyCard(hand, battle.selected, step);
   if (next === null) {
     return;
   }
-  event.preventDefault();
+  input.preventDefault?.();
   battle.select(next);
   document
     .querySelector<HTMLButtonElement>(`[data-testid="hand-card-${next}"]`)
     ?.focus();
 };
 
-/** Enter plays the selected card on the focused target, but not on a focused button. */
-const playFocusedTarget = (battle: Battle, event: KeyboardEvent) => {
-  const onButton = event.target instanceof HTMLButtonElement;
+/**
+ * Enter plays the selected card on the focused target, but not on a focused
+ * button. The guard is for the keyboard only: a pad press can play while a
+ * button has the focus.
+ */
+const playFocusedTarget = (battle: Battle, input: BattleInput) => {
+  const onButton =
+    input.command.source === "keyboard" &&
+    input.target instanceof HTMLButtonElement;
   const target = battle.targets[battle.focused];
   if (!onButton && target) {
-    event.preventDefault();
+    input.preventDefault?.();
     battle.play(target);
   }
 };
@@ -81,42 +116,46 @@ const playFocusedTarget = (battle: Battle, event: KeyboardEvent) => {
 const KEY_HANDLERS: Readonly<
   Record<
     BattleKeyAction,
-    (keys: KeyContext, event: KeyboardEvent, step: 1 | -1) => void
+    (keys: KeyContext, input: BattleInput, step: 1 | -1) => void
   >
 > = {
-  moveSelection: ({ battle }, event, step) =>
-    moveSelection(battle, event, step),
-  focusTarget: ({ battle }, event, step) => {
-    event.preventDefault();
+  moveSelection: ({ battle }, input, step) =>
+    moveSelection(battle, input, step),
+  focusTarget: ({ battle }, input, step) => {
+    input.preventDefault?.();
     battle.focusTarget(step);
   },
-  play: ({ battle }, event) => playFocusedTarget(battle, event),
+  play: ({ battle }, input) => playFocusedTarget(battle, input),
   endTurn: ({ battle }) => battle.endTurn(),
   skip: ({ battle }) => battle.skip(),
-  inspect: ({ battle }, event) => {
-    event.preventDefault();
+  inspect: ({ battle }, input) => {
+    input.preventDefault?.();
     battle.toggleInspect();
   },
   // The Battle does not pause: the Handbook opens at one side of the Board.
-  handbook: ({ openHandbook }, event) => {
-    event.preventDefault();
+  handbook: ({ openHandbook }, input) => {
+    input.preventDefault?.();
     openHandbook();
   },
   // Live pauses while the Battle Log is open (GDD 11.2).
-  battleLog: ({ battle }, event) => {
-    event.preventDefault();
+  battleLog: ({ battle }, input) => {
+    input.preventDefault?.();
     battle.openLog();
+  },
+  controlsGuide: ({ openControlsGuide }, input) => {
+    input.preventDefault?.();
+    openControlsGuide();
   },
   cancel: ({ battle }) => battle.select(null),
 };
 
 /**
- * The keyboard Inspect mode takes the arrow keys and Esc. Returns true when it
- * used the key.
+ * The keyboard Inspect mode takes the direction presses and Esc. Returns true
+ * when it used the press.
  */
 const inspectKey = (
   battle: Battle,
-  event: KeyboardEvent,
+  input: BattleInput,
   command: BattleKeyCommand
 ): boolean => {
   if (!battle.inspecting) {
@@ -124,12 +163,12 @@ const inspectKey = (
   }
   const direction = inspectDirection(command);
   if (direction) {
-    event.preventDefault();
+    input.preventDefault?.();
     battle.inspectNext(direction);
     return true;
   }
   if (command.action === "cancel") {
-    event.preventDefault();
+    input.preventDefault?.();
     battle.stopInspect();
     return true;
   }
@@ -155,29 +194,30 @@ const commandFromKey = (event: KeyboardEvent) => {
 };
 
 /**
- * The keys of the open Battle Log: ←/→ one Log Entry, Shift+←/→ one Turn, L
- * and Esc Back to Live (in a Replay, Esc leaves). Inspect and the Handbook
- * work as in Live, and the other Live keys do nothing.
+ * The keys of the open Battle Log: ←/→ one Log Entry, Shift+←/→ one Turn,
+ * L1 and R1 on a pad one Turn, L and Esc Back to Live (in a Replay, Esc
+ * leaves). Inspect and the Handbook work as in Live, and the other Live
+ * commands do nothing.
  */
-const runLogKey = (
-  keys: KeyContext,
-  event: KeyboardEvent,
-  command: BattleKeyCommand
-) => {
-  const action = logKeyAction(command, event.shiftKey, keys.battle.watching);
+const runLogKey = (keys: KeyContext, input: BattleInput) => {
+  const action = logKeyAction(
+    input.command,
+    input.shiftKey,
+    keys.battle.watching
+  );
   switch (action._tag) {
     case "step": {
-      event.preventDefault();
+      input.preventDefault?.();
       keys.battle.stepLog(action.step, action.byTurn);
       return;
     }
     case "close": {
-      event.preventDefault();
+      input.preventDefault?.();
       keys.battle.closeLog();
       return;
     }
     case "live": {
-      KEY_HANDLERS[command.action](keys, event, command.step);
+      KEY_HANDLERS[input.command.action](keys, input, input.command.step);
       break;
     }
     case "off": {
@@ -190,19 +230,15 @@ const runLogKey = (
   }
 };
 
-const runKey = (
-  keys: KeyContext,
-  event: KeyboardEvent,
-  command: BattleKeyCommand
-) => {
-  if (inspectKey(keys.battle, event, command)) {
+const runKey = (keys: KeyContext, input: BattleInput) => {
+  if (inspectKey(keys.battle, input, input.command)) {
     return;
   }
   if (keys.battle.log) {
-    runLogKey(keys, event, command);
+    runLogKey(keys, input);
     return;
   }
-  KEY_HANDLERS[command.action](keys, event, command.step);
+  KEY_HANDLERS[input.command.action](keys, input, input.command.step);
 };
 
 const DETAILS = '[data-testid="unit-details"]';
@@ -230,7 +266,11 @@ const tabIntoDetails = (battle: Battle, event: KeyboardEvent): boolean => {
 };
 
 /** UI-02: a full Battle with only a keyboard. */
-const useBattleKeys = (battle: Battle, openHandbook: () => void) => {
+const useBattleKeys = (
+  battle: Battle,
+  openHandbook: () => void,
+  openControlsGuide: () => void
+) => {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (tabIntoDetails(battle, event)) {
@@ -238,12 +278,56 @@ const useBattleKeys = (battle: Battle, openHandbook: () => void) => {
       }
       const command = commandFromKey(event);
       if (command) {
-        runKey({ battle, openHandbook }, event, command);
+        runKey(
+          { battle, openHandbook, openControlsGuide },
+          {
+            command,
+            shiftKey: event.shiftKey,
+            target: event.target,
+            preventDefault: () => event.preventDefault(),
+          }
+        );
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [battle, openHandbook]);
+  }, [battle, openControlsGuide, openHandbook]);
+};
+
+/**
+ * A pad command, after the guards that the keyboard applies to a key event:
+ * a text field takes the input, and an open dialog takes all but L1 in the
+ * result.
+ */
+const padCommandFor = (press: PadPress): BattleKeyCommand | null => {
+  if (isTyping(document.activeElement)) {
+    return null;
+  }
+  const command = padBattleCommand(press);
+  if (!dialogOpen()) {
+    return command;
+  }
+  return command?.action === "battleLog" && inResult(document.activeElement)
+    ? command
+    : null;
+};
+
+/** UI-02: a full Battle with only a controller. The pad shares the key path. */
+const useBattlePad = (
+  battle: Battle,
+  openHandbook: () => void,
+  openControlsGuide: () => void
+) => {
+  const { tr } = useGameText();
+  useGamepad({
+    onPress: (press) => {
+      const command = padCommandFor(press);
+      if (command) {
+        runKey({ battle, openHandbook, openControlsGuide }, padInput(command));
+      }
+    },
+    onConnect: () => toast(tr("battle.padConnected"), { id: "pad-connect" }),
+  });
 };
 
 /** The 3D Board, which loads in its own chunk. */
@@ -287,7 +371,13 @@ export const BattleStage = ({ battle }: { readonly battle: Battle }) => {
     [options]
   );
   const handbook = useHandbook();
-  useBattleKeys(battle, handbook.open);
+  const setGuide = useAtomSet(keyGuideAtom);
+  const openControlsGuide = useCallback(
+    () => setGuide({ line: null }),
+    [setGuide]
+  );
+  useBattleKeys(battle, handbook.open, openControlsGuide);
+  useBattlePad(battle, handbook.open, openControlsGuide);
   useBattleHints(battle.liveSession);
   return (
     <div

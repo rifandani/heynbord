@@ -148,6 +148,7 @@ export default {
       logTurn: "Battle Log: one Turn back or forward",
       cancel: "Cancel, or go Back to Live",
     },
+    padConnected: "Controller connected",
     attack: "Attack",
     hp: "HP",
     speedStat: "Speed",

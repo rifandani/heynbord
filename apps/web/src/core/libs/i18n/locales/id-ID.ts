@@ -148,6 +148,7 @@ export default {
       logTurn: "Catatan Pertempuran: satu Giliran mundur atau maju",
       cancel: "Batal, atau Kembali ke Saat Ini",
     },
+    padConnected: "Kontroler terhubung",
     attack: "Serangan",
     hp: "HP",
     speedStat: "Kecepatan",

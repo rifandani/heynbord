@@ -1,6 +1,6 @@
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 
-/** What a key does in a Battle (UI-02: a full Battle with only a keyboard). */
+/** What a key or a controller button does in a Battle (UI-02). */
 export type BattleKeyAction =
   | "moveSelection"
   | "focusTarget"
@@ -10,32 +10,39 @@ export type BattleKeyAction =
   | "inspect"
   | "handbook"
   | "battleLog"
+  | "controlsGuide"
   | "cancel";
+
+/** The input that made the command. A keyboard-only guard reads this. */
+export type BattleCommandSource = "keyboard" | "pad";
 
 export interface BattleKeyCommand {
   readonly action: BattleKeyAction;
   /** The direction for `moveSelection` and `focusTarget`: 1 is right or down. */
   readonly step: 1 | -1;
+  readonly source: BattleCommandSource;
 }
 
-const COMMANDS: ReadonlyMap<string, BattleKeyCommand> = new Map([
-  ["ArrowLeft", { action: "moveSelection", step: -1 }],
-  ["ArrowRight", { action: "moveSelection", step: 1 }],
-  ["ArrowUp", { action: "focusTarget", step: -1 }],
-  ["ArrowDown", { action: "focusTarget", step: 1 }],
-  ["Enter", { action: "play", step: 1 }],
-  ["e", { action: "endTurn", step: 1 }],
-  ["E", { action: "endTurn", step: 1 }],
-  ["s", { action: "skip", step: 1 }],
-  ["S", { action: "skip", step: 1 }],
-  ["i", { action: "inspect", step: 1 }],
-  ["I", { action: "inspect", step: 1 }],
-  ["h", { action: "handbook", step: 1 }],
-  ["H", { action: "handbook", step: 1 }],
-  ["l", { action: "battleLog", step: 1 }],
-  ["L", { action: "battleLog", step: 1 }],
-  ["Escape", { action: "cancel", step: 1 }],
-]);
+const COMMANDS: ReadonlyMap<string, Omit<BattleKeyCommand, "source">> = new Map(
+  [
+    ["ArrowLeft", { action: "moveSelection", step: -1 }],
+    ["ArrowRight", { action: "moveSelection", step: 1 }],
+    ["ArrowUp", { action: "focusTarget", step: -1 }],
+    ["ArrowDown", { action: "focusTarget", step: 1 }],
+    ["Enter", { action: "play", step: 1 }],
+    ["e", { action: "endTurn", step: 1 }],
+    ["E", { action: "endTurn", step: 1 }],
+    ["s", { action: "skip", step: 1 }],
+    ["S", { action: "skip", step: 1 }],
+    ["i", { action: "inspect", step: 1 }],
+    ["I", { action: "inspect", step: 1 }],
+    ["h", { action: "handbook", step: 1 }],
+    ["H", { action: "handbook", step: 1 }],
+    ["l", { action: "battleLog", step: 1 }],
+    ["L", { action: "battleLog", step: 1 }],
+    ["Escape", { action: "cancel", step: 1 }],
+  ]
+);
 
 /**
  * One line of the Key Guide: a Battle key action, or a key of the open Battle
@@ -72,8 +79,9 @@ export type LogKeyAction =
 
 /**
  * The action of a key in the open Battle Log (GDD 11.2): ←/→ one Log Entry,
- * Shift+←/→ one Turn, L and Esc Back to Live. A Replay has no Live: only Esc
- * closes it, and the Player goes to the Town (web ADR-0011).
+ * Shift+←/→ one Turn, L and Esc Back to Live. On a pad, L1 and R1 go one Turn
+ * back and forward, and East (cancel) goes Back to Live. A Replay has no Live:
+ * only Esc closes it, and the Player goes to the Town (web ADR-0011).
  */
 export const logKeyAction = (
   command: BattleKeyCommand,
@@ -85,13 +93,17 @@ export const logKeyAction = (
       return { _tag: "step", step: command.step, byTurn: shiftKey };
     }
     case "battleLog": {
+      if (command.source === "pad" && !watching) {
+        return { _tag: "step", step: command.step, byTurn: true };
+      }
       return watching ? { _tag: "off" } : { _tag: "close" };
     }
     case "cancel": {
       return { _tag: "close" };
     }
     case "inspect":
-    case "handbook": {
+    case "handbook":
+    case "controlsGuide": {
       return { _tag: "live" };
     }
     default: {
@@ -110,7 +122,8 @@ export const keyCommand = (key: {
   if (key.metaKey || key.ctrlKey || key.altKey) {
     return null;
   }
-  return COMMANDS.get(key.key) ?? null;
+  const command = COMMANDS.get(key.key);
+  return command ? { ...command, source: "keyboard" } : null;
 };
 
 /**
