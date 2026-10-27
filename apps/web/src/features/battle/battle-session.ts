@@ -19,7 +19,7 @@ import {
   getStage,
   step,
 } from "@workspace/rules";
-import { Result } from "effect";
+import { Data, Result } from "effect";
 
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import { eventDuration } from "@/features/battle/battle-timeline";
@@ -439,3 +439,99 @@ export const progressOf = (session: BattleSession): number =>
   session.current && session.current.duration > 0
     ? Math.min(1, session.elapsed / session.current.duration)
     : 1;
+
+/**
+ * Why a command did not change the Battle. The screen chooses its feedback
+ * from the tag; `RuleViolation` keeps the reason that the rules gave.
+ */
+export type BattleRefusal = Data.TaggedEnum<{
+  NoSession: Record<never, never>;
+  LogOpen: Record<never, never>;
+  NoSelection: Record<never, never>;
+  NotReady: Record<never, never>;
+  RuleViolation: { readonly violation: RuleViolation };
+}>;
+const BattleRefusal = Data.taggedEnum<BattleRefusal>();
+
+/** The result that the screen shows now, or `null`: it names the Battle that it recorded. */
+export type RecordedResult = { readonly options: BattleOptions } | null;
+
+/**
+ * The player plays the selected card. It refuses when the Battle Log is open,
+ * no card is selected, the screen is busy, or the rules refuse the play.
+ */
+export const playBattle = (
+  session: BattleSession | null,
+  logOpen: boolean,
+  handIndex: number | null,
+  target: Target
+): Result.Result<BattleSession, BattleRefusal> => {
+  if (logOpen) {
+    return Result.fail(BattleRefusal.LogOpen());
+  }
+  if (!session) {
+    return Result.fail(BattleRefusal.NoSession());
+  }
+  if (handIndex === null) {
+    return Result.fail(BattleRefusal.NoSelection());
+  }
+  if (!canAct(session)) {
+    return Result.fail(BattleRefusal.NotReady());
+  }
+  return Result.mapError(playCard(session, handIndex, target), (violation) =>
+    BattleRefusal.RuleViolation({ violation })
+  );
+};
+
+/**
+ * The player ends the Turn. It refuses while the Battle Log is open, when
+ * there is no Battle, or when the player cannot end the Turn now.
+ */
+export const endTurnBattle = (
+  session: BattleSession | null,
+  logOpen: boolean
+): Result.Result<BattleSession, BattleRefusal> => {
+  if (logOpen) {
+    return Result.fail(BattleRefusal.LogOpen());
+  }
+  if (!session) {
+    return Result.fail(BattleRefusal.NoSession());
+  }
+  if (!canEndTurn(session)) {
+    return Result.fail(BattleRefusal.NotReady());
+  }
+  return Result.mapError(endTurn(session), (violation) =>
+    BattleRefusal.RuleViolation({ violation })
+  );
+};
+
+/** The player applies all queued events at once. It refuses while the Battle Log is open. */
+export const skipBattle = (
+  session: BattleSession | null,
+  logOpen: boolean
+): Result.Result<BattleSession, BattleRefusal> => {
+  if (logOpen) {
+    return Result.fail(BattleRefusal.LogOpen());
+  }
+  if (!session) {
+    return Result.fail(BattleRefusal.NoSession());
+  }
+  return Result.succeed(skip(session));
+};
+
+/**
+ * True when the result shows and the Profile does not have it yet. It is the
+ * one record-once rule: the result is on the screen, the animation stopped,
+ * the Battle is the Player's (not a Replay), and no earlier write has this
+ * Battle's options.
+ */
+export const shouldRecordResult = (
+  session: BattleSession | null,
+  recorded: RecordedResult
+): boolean =>
+  session !== null &&
+  !session.watching &&
+  session.rules.result !== null &&
+  session.view.result !== null &&
+  isIdle(session) &&
+  recorded?.options !== session.options;

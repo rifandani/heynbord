@@ -2,11 +2,8 @@ import { RegistryContext, useAtomSet, useAtomValue } from "@effect/atom-react";
 import type { Target } from "@workspace/rules";
 import { isTutorial } from "@workspace/rules";
 import { Result } from "effect";
-import type { ContextType } from "react";
 import { useContext, useEffect, useLayoutEffect } from "react";
 
-import { newlyCompleted } from "@/features/achievements/achievements";
-import { newAchievementsAtom } from "@/features/achievements/achievements.atoms";
 import { playSound, unlockAudio } from "@/features/battle/battle-audio";
 import {
   canPlayLog,
@@ -19,7 +16,7 @@ import {
   watchBattleLog,
 } from "@/features/battle/battle-log-session";
 import type { BattleLogState } from "@/features/battle/battle-log-session";
-import { recordBattleResult } from "@/features/battle/battle-rewards";
+import { recordBattle } from "@/features/battle/battle-result";
 import type {
   BattleOptions,
   BattleSession,
@@ -28,13 +25,13 @@ import {
   canAct,
   canEndTurn,
   changeTutorial,
-  endTurn,
+  endTurnBattle,
   isHeld,
-  isIdle,
   newestSession,
-  playIfAble,
+  playBattle,
   setSpeed,
-  skip,
+  shouldRecordResult,
+  skipBattle,
   startSession,
 } from "@/features/battle/battle-session";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
@@ -60,10 +57,6 @@ import type { Tutorial } from "@/features/battle/tutorial";
 import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
 import { nextInspectedUnit } from "@/features/battle/unit-inspect";
-import {
-  profileAtom,
-  profileStateAtom,
-} from "@/features/profile/profile.atoms";
 import type { ReplayRun } from "@/features/replay/replay";
 import { watchingSession } from "@/features/replay/replay";
 import { gameScreenAtom } from "@/features/town/town.atoms";
@@ -103,41 +96,6 @@ const noteSelect = (
       selectCard(tutorial, heroOf(current.view, "player").hand[handIndex])
     );
   }
-};
-
-type Registry = ContextType<typeof RegistryContext>;
-
-/** The IDs of the Completed Achievements in the saved Profile. */
-const savedCompleted = (registry: Registry): readonly string[] => {
-  const state = registry.get(profileStateAtom);
-  return state.status === "ready" ? state.profile.completedAchievements : [];
-};
-
-/**
- * Saves the result of a finished Battle into the Profile (GDD 11.4): the
- * rewards of a win or a loss (Economy 2.1), one time for each Battle. A reload on the
- * result keeps them. An Abandon and a Battle that is not finished save
- * nothing. The result shows the Achievements that its Profile write
- * completed, so they get no toast.
- */
-const recordResult = (registry: Registry, finished: BattleSession) => {
-  const recorded = recordBattleResult(
-    registry.get(profileAtom),
-    finished,
-    registry.get(battleRewardsAtom)
-  );
-  if (!recorded) {
-    return;
-  }
-  const before = savedCompleted(registry);
-  registry.set(profileAtom, recorded.profile);
-  const achievements = newlyCompleted(before, savedCompleted(registry));
-  registry.set(battleRewardsAtom, { ...recorded.shown, achievements });
-  const shown = new Set(achievements);
-  registry.set(
-    newAchievementsAtom,
-    registry.get(newAchievementsAtom).filter((id) => !shown.has(id))
-  );
 };
 
 /** The Battle Log is in each Solo Battle, but not in the Tutorial (GDD 4.12). */
@@ -186,8 +144,11 @@ export const useBattle = () => {
   // shows with its rewards. The stored session, not the scene clock: after a
   // Skip, the clock is one frame behind it.
   useLayoutEffect(() => {
-    if (liveSession?.view.result && isIdle(liveSession)) {
-      recordResult(registry, liveSession);
+    if (
+      liveSession !== null &&
+      shouldRecordResult(liveSession, registry.get(battleRewardsAtom))
+    ) {
+      recordBattle(registry, liveSession);
     }
   }, [registry, liveSession]);
 
@@ -250,13 +211,13 @@ export const useBattle = () => {
       handIndexArg === undefined
         ? registry.get(selectedCardAtom)
         : handIndexArg;
-    const next = logOpen() ? null : playIfAble(live(), handIndex, target);
-    if (!next) {
+    const result = playBattle(live(), logOpen(), handIndex, target);
+    if (Result.isFailure(result)) {
       return false;
     }
     unlockAudio();
     select(null);
-    commit(next);
+    commit(result.success);
     return true;
   };
 
@@ -410,20 +371,24 @@ export const useBattle = () => {
     canEndTurn: log === null && whenSession(liveSession, canEndTurn, false),
     endTurn: () => {
       const current = live();
-      if (logOpen() || !current || !canEndTurn(current)) {
+      if (!current) {
         return;
       }
-      unlockAudio();
-      select(null);
-      const result = endTurn(current);
+      const result = endTurnBattle(current, logOpen());
       if (Result.isSuccess(result)) {
+        unlockAudio();
+        select(null);
         commit(result.success);
       }
     },
     skip: () => {
       const current = live();
-      if (current && !logOpen()) {
-        commit(skip(current));
+      if (!current) {
+        return;
+      }
+      const result = skipBattle(current, logOpen());
+      if (Result.isSuccess(result)) {
+        commit(result.success);
       }
     },
     setSpeed: (value: BattleSpeed) => {

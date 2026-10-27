@@ -2,19 +2,27 @@ import { Target, getStarterDeck } from "@workspace/rules";
 import { Result } from "effect";
 import { describe, expect, it } from "vitest";
 
+import type {
+  BattleRefusal,
+  BattleSession,
+} from "@/features/battle/battle-session";
 import {
   autoPlayTurn,
   canAct,
   canEndTurn,
   devHitHero,
   endTurn,
+  endTurnBattle,
   isIdle,
   newestSession,
+  playBattle,
   playCard,
   playIfAble,
   progressOf,
   setSpeed,
+  shouldRecordResult,
   skip,
+  skipBattle,
   startSession,
   tick,
 } from "@/features/battle/battle-session";
@@ -45,6 +53,16 @@ const start = () =>
     player: NEW_PLAYER,
     seed: SEED ?? 1,
   });
+
+/** The tag of a refusal, or `null` when the command succeeded. */
+const refusalOf = (
+  result: Result.Result<BattleSession, BattleRefusal>
+): BattleRefusal["_tag"] | null =>
+  Result.isFailure(result) ? result.failure._tag : null;
+
+/** A won Battle with its result on the screen. */
+const finished = () =>
+  skip(devHitHero(start(), { side: "enemy", hero: 0 }, 9999));
 
 describe("startSession", () => {
   it("starts in the player's Play Phase with nothing to animate", () => {
@@ -244,5 +262,97 @@ describe("devHitHero", () => {
   it("gives the same session when the Battle is finished", () => {
     const won = skip(devHitHero(start(), { side: "enemy", hero: 0 }, 9999));
     expect(devHitHero(won, { side: "enemy", hero: 0 }, 5)).toBe(won);
+  });
+});
+
+describe("playBattle", () => {
+  const square = Target.Square({ lane: 1, position: 0 });
+
+  it("refuses with no session, an open Battle Log, no selection, or a busy screen", () => {
+    const session = start();
+    const index = readyIndex(session);
+    expect(refusalOf(playBattle(null, false, index, square))).toBe("NoSession");
+    expect(refusalOf(playBattle(session, true, index, square))).toBe("LogOpen");
+    expect(refusalOf(playBattle(session, false, null, square))).toBe(
+      "NoSelection"
+    );
+    const busy = Result.getOrThrow(playCard(session, index, square));
+    expect(refusalOf(playBattle(busy, false, index, square))).toBe("NotReady");
+  });
+
+  it("keeps the rule's reason for an illegal play", () => {
+    const result = playBattle(start(), false, 99, square);
+    expect(refusalOf(result)).toBe("RuleViolation");
+    if (Result.isFailure(result) && result.failure._tag === "RuleViolation") {
+      expect(result.failure.violation._tag).toBe("InvalidHandIndex");
+    }
+  });
+
+  it("plays a Ready card when the player can act", () => {
+    const session = start();
+    const played = Result.getOrThrow(
+      playBattle(session, false, readyIndex(session), square)
+    );
+    expect(played.queue.map((event) => event._tag)).toEqual([
+      "CardPlayed",
+      "UnitSummoned",
+    ]);
+  });
+});
+
+describe("endTurnBattle", () => {
+  it("refuses with no session, an open Battle Log, or a Turn that cannot end", () => {
+    const session = start();
+    expect(refusalOf(endTurnBattle(null, false))).toBe("NoSession");
+    expect(refusalOf(endTurnBattle(session, true))).toBe("LogOpen");
+    const enemyTurn: BattleSession = {
+      ...session,
+      rules: { ...session.rules, activeSide: "enemy" },
+      view: { ...session.view, activeSide: "enemy" },
+    };
+    expect(refusalOf(endTurnBattle(enemyTurn, false))).toBe("NotReady");
+  });
+
+  it("ends the Turn and runs the enemy's Turn", () => {
+    const ended = Result.getOrThrow(endTurnBattle(start(), false));
+    expect(ended.rules.activeSide).toBe("player");
+    expect(ended.rules.turnNumber).toBe(2);
+    expect(ended.commands.at(-1)?._tag).toBe("EndTurn");
+  });
+});
+
+describe("skipBattle", () => {
+  it("refuses with no session or an open Battle Log", () => {
+    expect(refusalOf(skipBattle(null, false))).toBe("NoSession");
+    expect(refusalOf(skipBattle(start(), true))).toBe("LogOpen");
+  });
+
+  it("applies the queued events at once", () => {
+    const session = start();
+    const played = Result.getOrThrow(
+      playBattle(
+        session,
+        false,
+        readyIndex(session),
+        Target.Square({ lane: 1, position: 0 })
+      )
+    );
+    const skipped = Result.getOrThrow(skipBattle(played, false));
+    expect(isIdle(skipped)).toBe(true);
+    expect(skipped.log.length).toBeGreaterThan(0);
+  });
+});
+
+describe("shouldRecordResult", () => {
+  it("records a finished, idle Battle one time", () => {
+    const won = finished();
+    expect(shouldRecordResult(null, null)).toBe(false);
+    expect(shouldRecordResult(start(), null)).toBe(false);
+    expect(shouldRecordResult({ ...won, watching: true }, null)).toBe(false);
+    expect(shouldRecordResult({ ...won, queue: won.log.slice(-1) }, null)).toBe(
+      false
+    );
+    expect(shouldRecordResult(won, { options: won.options })).toBe(false);
+    expect(shouldRecordResult(won, null)).toBe(true);
   });
 });
