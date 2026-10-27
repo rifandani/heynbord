@@ -153,19 +153,3 @@ export const battleSpeedAtom = Atom.kvs({
   runtime: storageRuntime,
   schema: BattleSpeed,
 }).pipe(Atom.withServerValue(() => 1 as const));
-
-/** Sound on or off. */
-export const soundOnAtom = Atom.kvs({
-  defaultValue: () => true,
-  key: "heynbord.sound-on",
-  runtime: storageRuntime,
-  schema: Schema.Boolean,
-}).pipe(Atom.withServerValue(() => true));
-
-/** The sound volume, 0 to 100, from the Settings dialog. The sound switch stays apart from it. */
-export const soundVolumeAtom = Atom.kvs({
-  defaultValue: () => 100,
-  key: "heynbord.sound-volume",
-  runtime: storageRuntime,
-  schema: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
-}).pipe(Atom.withServerValue(() => 100));

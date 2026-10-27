@@ -24,20 +24,8 @@ import {
   gameButtonStyles,
 } from "@/core/components/game/game-button";
 import { GAME_SCRIM } from "@/core/components/game/game-scrim";
-import {
-  playSound,
-  setEffectsVolume,
-  setMusicEnabled,
-  setMusicVolume,
-  setSoundEnabled,
-  setSoundVolume,
-  unlockAudio,
-} from "@/features/battle/battle-audio";
-import {
-  battleSpeedAtom,
-  soundOnAtom,
-  soundVolumeAtom,
-} from "@/features/battle/battle.atoms";
+import { playSound, unlockAudio } from "@/features/battle/battle-audio";
+import { battleSpeedAtom } from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { useGameText } from "@/features/battle/use-game-text";
 import { LOCALE_LABELS } from "@/features/i18n/components/language-toggle";
@@ -48,6 +36,8 @@ import {
   musicOnAtom,
   musicVolumeAtom,
   reducedMotionAtom,
+  soundOnAtom,
+  soundVolumeAtom,
 } from "@/features/settings/settings.atoms";
 import {
   placeSheetOrigin,
@@ -158,13 +148,10 @@ const LanguageRow = () => {
 };
 
 /**
- * A short tone at the new volume when the slider stops. The effects of the
- * play screen run after this event, so the audio gets the new values here
- * first. A volume change turns the sound on.
+ * A short tone at the new volume when the slider stops. The Settings binding
+ * applies the Mix on the atom write, so the tone reads the new values.
  */
-const previewVolume = (value: number) => {
-  setSoundEnabled(true);
-  setSoundVolume(value);
+const previewVolume = () => {
   unlockAudio();
   playSound("select", 0);
 };
@@ -315,8 +302,7 @@ const EffectsRow = () => {
   const [volume, setVolume] = useAtom(effectsVolumeAtom);
   const muted = !soundOn || soundVolume === 0 || volume === 0;
 
-  const onPreview = (value: number) => {
-    setEffectsVolume(value);
+  const onPreview = () => {
     if (!muted) {
       unlockAudio();
       playSound("select", 0);
@@ -347,7 +333,6 @@ const MusicRow = () => {
   const audible = soundOn && soundVolume > 0 && musicOn && volume > 0;
   const onSwitch = (on: boolean) => {
     setMusicOn(on);
-    setMusicEnabled(on);
     if (on) {
       unlockAudio();
     }
@@ -358,10 +343,8 @@ const MusicRow = () => {
       value={volume}
       onChange={(value) => {
         setVolume(value);
-        setMusicVolume(value);
       }}
-      onChangeEnd={(value) => {
-        setMusicVolume(value);
+      onChangeEnd={() => {
         if (musicOn) {
           unlockAudio();
         }

@@ -17,7 +17,7 @@ Keep `src/routes/` thin. `src/core/` holds shared infrastructure. A feature live
 | `components/` | UI |
 | `*.unit.test.ts` | Tests |
 
-A service id has this form: `@heynbord/web/CdnClient`.
+A service id has this form: `@heynbord/web/Audio`.
 
 ## Atoms
 
@@ -50,7 +50,7 @@ A server function is a thin transport. Copy `src/features/i18n/locale.functions.
 ## Errors
 
 - Define an error with `Schema.TaggedError`. Fail with `return yield* new MyError({...})`.
-- A service defines a `Schema.TaggedError` for each failure of its domain. A service that only sends HTTP requests (for example `CdnClient`) can fail with `ApiError | HttpClientError`. These errors are tagged, and `toErrorMessage` reads them.
+- A service defines a `Schema.TaggedError` for each failure of its domain. A module that sends HTTP requests (for example the `Audio` layer, when it loads a music file) can fail with `ApiError | HttpClientError`. These errors are tagged, and `toErrorMessage` reads them.
 - A non-2xx HTTP response is `ApiError { status, envelope, text }`. `envelope` is an `Option`.
 - Show a person the text from `toErrorMessage` in `@/core/utils/error`.
 
@@ -59,4 +59,4 @@ A server function is a thin transport. Copy `src/features/i18n/locale.functions.
 - Test an Effect with `it.effect` from `@effect/vitest`. Use `it.live` when the test needs real time or the real scheduler, for example an atom that runs an Effect.
 - Test an atom with `AtomRegistry.make()`: `get`, `set`, `mount`, and `AtomRegistry.getResult` for an `AsyncResult`.
 - Give a service its dependencies with `Effect.provide(layer)` or `Effect.provideService(Tag, fake)`. MSW is the network boundary ([ADR-0002](../../../docs/adr/0002-network-boundary-mocking-with-msw.md)).
-- Put logic in a tested sibling of a framework seam. Coverage omits `*.functions.ts`, `*.server.ts`, `core/config/env.ts`, `core/runtime/client.ts`, and `use-*.ts` (`vitest.config.ts`).
+- Put logic in a tested sibling of a framework seam. Coverage omits `*.functions.ts`, `*.server.ts`, `core/config/env.ts`, `core/runtime/client.ts`, `core/audio/audio.ts` (the plain bridge to the runtime), `core/audio/testing.ts` (the fake Web Audio context), and `use-*.ts` (`vitest.config.ts`).

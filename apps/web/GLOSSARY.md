@@ -242,6 +242,12 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Berth plate**: The parchment plate under the Dispatch that shows the ship: at the berth, away with the time left and the reward that a Collect gives now, or back with the full reward. Collect is on it. _Avoid_: ship panel, timer panel, status box
 
+### Settings
+
+**Mix**: The three volumes and the two switches of the Player setting for sound: Sound, effects and music. _Avoid_: audio config, volume state
+
+**Player setting**: A preference that the Player chooses and that is stored on the device, not in the Profile: Sound, effects, music, motion, Battle speed and the Town Bar. _Avoid_: option, config, preference
+
 ### Design System
 
 **Design Foundation**: The one Component Entry that shows the Heynbord materials and the semantic aliases that point to them. It is the first entry in the `Foundation` Category. _Avoid_: Game Foundation, Color Palette, style guide, theme page

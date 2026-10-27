@@ -45,7 +45,7 @@ export default defineConfig({
       // This allowlist is the definition of business logic: layers whose modules are pure enough to unit test.
       // Untested files only appear in the report when matched here, so a new logic-bearing folder must be added.
       include: [
-        "apps/web/src/**/{actions,apis,config,constants,http,input,libs,middlewares,observability,runtime,services,utils}/**/*.{ts,tsx}",
+        "apps/web/src/**/{actions,apis,audio,config,constants,http,input,libs,middlewares,observability,runtime,services,utils}/**/*.{ts,tsx}",
         "apps/web/src/**/*-store.{ts,tsx}",
         // Feature modules: pure domain functions, Effect services and atoms.
         // Components (`.tsx`) are E2E territory.
@@ -80,6 +80,11 @@ export default defineConfig({
         "**/*.server.ts",
         "apps/web/src/core/config/env.ts",
         "apps/web/src/core/runtime/client.ts",
+        // Audio seams: `audio.ts` is the plain bridge from React and the
+        // scene to the runtime, and `testing.ts` is the fake Web Audio context
+        // for the service tests. The service is the tested sibling.
+        "apps/web/src/core/audio/audio.ts",
+        "apps/web/src/core/audio/testing.ts",
         "apps/web/src/features/**/use-*.ts",
         // Rendering seams: they draw the procedural art on a 2D canvas, or load
         // the painted effects atlas into a texture. The canvas inspector

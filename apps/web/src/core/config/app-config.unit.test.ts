@@ -20,9 +20,22 @@ describe("loadAppConfig", () => {
       });
 
       expect(config).toEqual({
+        assetBaseUrl: "/",
         title: "Heynbord",
         url: "https://heynbord.com",
       });
+    })
+  );
+
+  it.effect("reads the Vite base path for the music files", () =>
+    Effect.gen(function* () {
+      const config = yield* load({
+        BASE_URL: "/game/",
+        VITE_APP_TITLE: "Heynbord",
+        VITE_APP_URL: "https://heynbord.com",
+      });
+
+      expect(config.assetBaseUrl).toBe("/game/");
     })
   );
 

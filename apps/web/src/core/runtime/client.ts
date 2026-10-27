@@ -3,8 +3,9 @@ import { Layer, ManagedRuntime } from "effect";
 import { FetchHttpClient } from "effect/http";
 import { Atom } from "effect/reactivity";
 
+import { Audio } from "@/core/audio/audio.service";
+import { AppConfigLayer } from "@/core/config/env";
 import { LoggerLayer } from "@/core/observability/logger";
-import { CdnClient } from "@/features/cdn/cdn.service";
 import { PROFILE_DATABASE } from "@/features/profile/profile";
 import { ProfileStore } from "@/features/profile/profile-store.service";
 
@@ -12,11 +13,7 @@ import { ProfileStore } from "@/features/profile/profile-store.service";
  * Services for effectful atoms. It also builds during SSR when a server render
  * reads one of its atoms, so it holds nothing that needs the browser.
  */
-export const appRuntime = Atom.runtime(
-  Layer.mergeAll(CdnClient.layer, LoggerLayer).pipe(
-    Layer.provide(FetchHttpClient.layer)
-  )
-);
+export const appRuntime = Atom.runtime(LoggerLayer);
 
 /**
  * `localStorage`, for `Atom.kvs` atoms. It is a separate runtime because the
@@ -38,5 +35,17 @@ export const profileStoreRuntime = ManagedRuntime.make(
       BrowserKeyValueStore.layerIndexedDb({ database: PROFILE_DATABASE })
     ),
     Layer.provide(IndexedDb.layerWindow)
+  )
+);
+
+/**
+ * The Player's audio. It needs the browser's Web Audio, so it is a managed
+ * runtime that builds at the first sound, not during a server render.
+ */
+export const audioRuntime = ManagedRuntime.make(
+  Audio.layer.pipe(
+    Layer.provide(
+      Layer.mergeAll(AppConfigLayer, FetchHttpClient.layer, LoggerLayer)
+    )
   )
 );

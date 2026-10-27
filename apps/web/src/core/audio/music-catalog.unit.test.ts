@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { musicTrackFor } from "@/features/battle/music-catalog";
+import { musicTrackFor } from "@/core/audio/music-catalog";
 
 describe("musicTrackFor", () => {
   it("uses the Town track outside a Battle", () => {

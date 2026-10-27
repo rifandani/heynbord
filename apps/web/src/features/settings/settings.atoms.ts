@@ -6,6 +6,10 @@ import { storageRuntime } from "@/core/runtime/client";
 /** The storage key of the reduced motion choice. */
 const REDUCED_MOTION_STORAGE_KEY = "heynbord.reduced-motion";
 
+/** The storage key of the sound switch and volume. */
+const SOUND_ON_STORAGE_KEY = "heynbord.sound-on";
+const SOUND_VOLUME_STORAGE_KEY = "heynbord.sound-volume";
+
 /** The storage key of the effects volume. */
 const EFFECTS_VOLUME_STORAGE_KEY = "heynbord.effects-volume";
 
@@ -15,6 +19,22 @@ const MUSIC_ON_STORAGE_KEY = "heynbord.music-on";
 
 /** A volume from 0 to 100. */
 const Volume = Schema.Int.check(Schema.isBetween({ maximum: 100, minimum: 0 }));
+
+/** Sound on or off. */
+export const soundOnAtom = Atom.kvs({
+  defaultValue: () => true,
+  key: SOUND_ON_STORAGE_KEY,
+  runtime: storageRuntime,
+  schema: Schema.Boolean,
+}).pipe(Atom.withServerValue(() => true));
+
+/** The sound volume, 0 to 100, from the Settings dialog. The sound switch stays apart from it. */
+export const soundVolumeAtom = Atom.kvs({
+  defaultValue: () => 100,
+  key: SOUND_VOLUME_STORAGE_KEY,
+  runtime: storageRuntime,
+  schema: Volume,
+}).pipe(Atom.withServerValue(() => 100));
 
 /**
  * The effects volume, 0 to 100, from the Settings dialog. The master Sound

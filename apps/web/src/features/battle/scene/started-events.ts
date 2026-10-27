@@ -1,6 +1,6 @@
-import type { SoundName } from "@/features/battle/battle-audio";
-import { eventSound } from "@/features/battle/battle-audio";
+import type { SoundName } from "@/core/audio/audio-sounds";
 import type { BattleSession } from "@/features/battle/battle-session";
+import { eventSound } from "@/features/battle/battle-sound";
 import { applyEvent } from "@/features/battle/battle-view";
 import type { Fx } from "@/features/battle/scene/fx";
 import { fxForEvent } from "@/features/battle/scene/fx";

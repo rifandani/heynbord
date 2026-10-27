@@ -8,6 +8,8 @@ const AbsoluteUrl = Schema.String.check(
 );
 
 interface AppSettings {
+  /** Vite's base path, for the music files. */
+  readonly assetBaseUrl: string;
   /** Product title, from `VITE_APP_TITLE`. */
   readonly title: string;
   /** Origin the app is served from: portless's worktree URL, else `VITE_APP_URL`. */
@@ -20,6 +22,9 @@ interface AppSettings {
  * at startup instead of rendering wrong links.
  */
 export const loadAppConfig = Effect.gen(function* () {
+  const assetBaseUrl = yield* Config.String("BASE_URL").pipe(
+    Config.withDefault("/")
+  );
   const title = yield* Config.NonEmptyString("VITE_APP_TITLE");
   const portlessUrl = yield* Config.option(
     Config.schema(AbsoluteUrl, "PORTLESS_URL")
@@ -27,7 +32,7 @@ export const loadAppConfig = Effect.gen(function* () {
   const url = Option.isSome(portlessUrl)
     ? portlessUrl.value
     : yield* Config.schema(AbsoluteUrl, "VITE_APP_URL");
-  return { title, url } satisfies AppSettings;
+  return { assetBaseUrl, title, url } satisfies AppSettings;
 });
 
 /**
