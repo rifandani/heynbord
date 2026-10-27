@@ -45,7 +45,7 @@ export default defineConfig({
       // This allowlist is the definition of business logic: layers whose modules are pure enough to unit test.
       // Untested files only appear in the report when matched here, so a new logic-bearing folder must be added.
       include: [
-        "apps/web/src/**/{actions,apis,config,constants,http,libs,middlewares,observability,runtime,services,utils}/**/*.{ts,tsx}",
+        "apps/web/src/**/{actions,apis,config,constants,http,input,libs,middlewares,observability,runtime,services,utils}/**/*.{ts,tsx}",
         "apps/web/src/**/*-store.{ts,tsx}",
         // Feature modules: pure domain functions, Effect services and atoms.
         // Components (`.tsx`) are E2E territory.
