@@ -89,6 +89,11 @@ export default defineConfig({
         "apps/web/src/features/battle/scene/fx-atlas.ts",
         // Browser seam: it only reads `window.matchMedia`.
         "apps/web/src/features/battle/scene/reduced-motion.ts",
+        // Controller seams: the source polls `navigator.getGamepads()` on
+        // `requestAnimationFrame`, and the hook subscribes a component to it.
+        // The e2e smoke test stubs the pad; `gamepad.ts` holds the feel rules.
+        "apps/web/src/core/input/gamepad-source.ts",
+        "apps/web/src/core/input/use-gamepad.ts",
         // Declaration-only modules: no function and no branch, so an import
         // gives them a free 100% (the 2026-10-24 amendment of ADR-0001): Tailwind
         // class strings, an empty registry, and atoms that only hold a value.

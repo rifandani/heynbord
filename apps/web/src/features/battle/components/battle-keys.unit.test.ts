@@ -22,10 +22,26 @@ const press = (
 
 describe("keyCommand", () => {
   it("maps the Battle keys", () => {
-    expect(press("ArrowLeft")).toEqual({ action: "moveSelection", step: -1 });
-    expect(press("ArrowRight")).toEqual({ action: "moveSelection", step: 1 });
-    expect(press("ArrowUp")).toEqual({ action: "focusTarget", step: -1 });
-    expect(press("ArrowDown")).toEqual({ action: "focusTarget", step: 1 });
+    expect(press("ArrowLeft")).toEqual({
+      action: "moveSelection",
+      step: -1,
+      source: "keyboard",
+    });
+    expect(press("ArrowRight")).toEqual({
+      action: "moveSelection",
+      step: 1,
+      source: "keyboard",
+    });
+    expect(press("ArrowUp")).toEqual({
+      action: "focusTarget",
+      step: -1,
+      source: "keyboard",
+    });
+    expect(press("ArrowDown")).toEqual({
+      action: "focusTarget",
+      step: 1,
+      source: "keyboard",
+    });
     expect(press("Enter")?.action).toBe("play");
     expect(press("e")?.action).toBe("endTurn");
     expect(press("E")?.action).toBe("endTurn");
@@ -64,6 +80,9 @@ const logCommand = (key: string) => {
   return found;
 };
 
+const padCommand = (action: "battleLog" | "controlsGuide", step: 1 | -1 = 1) =>
+  ({ action, step, source: "pad" }) as const;
+
 describe("logKeyAction", () => {
   it("goes one Log Entry with ←/→ and one Turn with Shift+←/→", () => {
     expect(logKeyAction(logCommand("ArrowLeft"), false)).toEqual({
@@ -84,6 +103,22 @@ describe("logKeyAction", () => {
     expect(logKeyAction(logCommand("Escape"), false)._tag).toBe("close");
   });
 
+  it("goes one Turn with L1 and R1 on a pad", () => {
+    expect(logKeyAction(padCommand("battleLog", -1), false)).toEqual({
+      _tag: "step",
+      step: -1,
+      byTurn: true,
+    });
+    expect(logKeyAction(padCommand("battleLog", 1), false)).toEqual({
+      _tag: "step",
+      step: 1,
+      byTurn: true,
+    });
+    expect(logKeyAction(padCommand("battleLog", 1), false, true)._tag).toBe(
+      "off"
+    );
+  });
+
   it("leaves a Replay only with Esc: L does nothing, because a Replay has no Live", () => {
     expect(logKeyAction(logCommand("l"), false, true)._tag).toBe("off");
     expect(logKeyAction(logCommand("Escape"), false, true)._tag).toBe("close");
@@ -95,6 +130,7 @@ describe("logKeyAction", () => {
   it("keeps Inspect and the Handbook, and turns off all Live input", () => {
     expect(logKeyAction(logCommand("i"), false)._tag).toBe("live");
     expect(logKeyAction(logCommand("h"), false)._tag).toBe("live");
+    expect(logKeyAction(padCommand("controlsGuide"), false)._tag).toBe("live");
     for (const key of ["Enter", "e", "s", "ArrowUp", "ArrowDown"]) {
       expect(logKeyAction(logCommand(key), false)._tag).toBe("off");
     }
