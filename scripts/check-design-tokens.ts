@@ -12,11 +12,10 @@
  *
  * Usage:
  *   bun check:tokens             fail on a raw color and on a record mismatch
- *   bun check:tokens --warn      report raw colors but pass (CI, rollout step 1)
  *   bun check:tokens --verbose   print every raw color, not only the first 40
  *
- * The CI job uses `--warn` while the feature conversion runs. Remove `--warn`
- * after the last feature PR (rollout step 2): the command is then strict.
+ * The command is strict: a raw color in the app fails it. Issue 146 added the
+ * guard as a warning while the feature conversion ran, then made it an error.
  */
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
@@ -28,7 +27,6 @@ const DESIGN_JSON = path.join(REPO_ROOT, ".impeccable", "design.json");
 const DESIGN_MD = path.join(REPO_ROOT, "DESIGN.md");
 
 const ARGS = new Set(process.argv.slice(2));
-const WARN = ARGS.has("--warn");
 const VERBOSE = ARGS.has("--verbose");
 
 /** The only files that may hold a raw color. */
@@ -118,12 +116,18 @@ const collectFiles = (dir: string): string[] => {
   return files;
 };
 
+/** A comment line is prose: a color there is not painted. */
+const COMMENT_LINE = /^\s*(?:\/\/|\/\*|\*)/u;
+
 const scanFile = (full: string): Violation[] => {
   const relative = path.relative(WEB_SRC, full).split(path.sep).join("/");
   const violations: Violation[] = [];
   const lines = readFileSync(full, "utf-8").split("\n");
 
   for (const [index, line] of lines.entries()) {
+    if (COMMENT_LINE.test(line)) {
+      continue;
+    }
     // Find arbitrary color classes and properties first, then blank them so
     // that a hex inside `bg-[#123456]` is reported once, as the class.
     const spans: [number, number][] = [];
@@ -375,17 +379,11 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-if (violations.length > 0 && !WARN) {
+if (violations.length > 0) {
   console.error(
     `\ncheck:tokens failed: ${violations.length} raw ${
       violations.length === 1 ? "color" : "colors"
     }.`
   );
   process.exit(1);
-}
-
-if (violations.length > 0) {
-  console.log(
-    "\ncheck:tokens: warning mode. The raw colors above do not fail this run (rollout step 1)."
-  );
 }

@@ -374,7 +374,7 @@ These come from art direction 4. `apps/web/src/core/components/game/tokens.ts` h
 
 **The One Theme Rule.** The application has one theme: the Heynbord material palette. There is no light mode and no dark mode. `core/components/ui` reads the semantic aliases, and every alias points at a material token. A second palette does not exist.
 
-**The Token Guard Rule.** A raw color lives only in a token file: `core/styles/globals.css` (the definitions), `core/components/game/tokens.ts` (game data for the 3D scene), and `features/<name>/tokens.ts` (a feature palette for the 3D scene). Every other file uses a token utility (`bg-night-plate`, `text-gold`) or a semantic alias. A new color adds a `--color-*` token to the `@theme` block, a `colorMeta` entry in `.impeccable/design.json`, and a line here. `bun check:tokens` finds a hex value, an arbitrary color class, or a record that does not agree with the `@theme` block.
+**The Token Guard Rule.** A raw color lives only in a token file: `core/styles/globals.css` (the definitions), `core/components/game/tokens.ts` (game data for the 3D scene), and `features/<name>/tokens.ts` (a feature paint: the art of one screen that no material token covers). Every other file uses a token utility (`bg-night-plate`, `text-gold`) or a semantic alias. A new color adds a `--color-*` token to the `@theme` block, a `colorMeta` entry in `.impeccable/design.json`, and a line here. `bun check:tokens` finds a hex value, an arbitrary color class, or a record that does not agree with the `@theme` block.
 
 ## Typography
 
