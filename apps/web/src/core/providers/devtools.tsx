@@ -19,7 +19,7 @@ export const Devtools = () => {
         {
           id: "game-dev-panel",
           name: "Game Dev Panel",
-          render: (_el, { theme }) => <GameDevPanel theme={theme} />,
+          render: () => <GameDevPanel />,
         },
         {
           name: "TanStack Router",

@@ -53,7 +53,7 @@ describe("the Component Catalog", () => {
     }
   });
 
-  it("shows every entry from issues #116 to #120 in the Game Pieces section", () => {
+  it("shows every entry from issues 116 to 120 in the Game Pieces section", () => {
     const game = categories.find((category) => category.id === "game");
     expect(game).toBeDefined();
     expect(game?.entries.map((entry) => entry.id)).toStrictEqual([

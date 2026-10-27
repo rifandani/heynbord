@@ -14,6 +14,13 @@ import { ForgeStoneIcon } from "@/features/hero/components/forge-stone-icon";
 import { gearIconArt } from "@/features/hero/gear-look-art";
 import type { GearItem, GearUpgrade } from "@/features/hero/hero";
 import { GEAR_GLYPH, GEAR_GLYPH_TURN } from "@/features/hero/hero-art";
+import {
+  HERO_GEAR_GLYPH,
+  HERO_MISSING,
+  HERO_SHEEN,
+  HERO_UPGRADE_OFF,
+  HERO_UPGRADE_OFF_PAINT,
+} from "@/features/hero/tokens";
 import { useStatFormat } from "@/features/hero/use-stat-format";
 import { CoinPrice } from "@/features/packs/components/pack-art";
 import { useCoinFormat } from "@/features/packs/use-coin-format";
@@ -21,11 +28,11 @@ import { activeGearLookAtom } from "@/features/profile/profile.atoms";
 
 /** The HUD plate (DESIGN.md, HUD plate). */
 const PLATE =
-  "rounded-xl border-2 border-[#e9c46a]/70 bg-[#1c140e]/85 text-[#fff6df] shadow-[0_3px_0_rgba(0,0,0,0.45)]";
+  "rounded-xl border-2 border-gold-trim/70 bg-night-plate/85 text-cream shadow-[0_3px_0_rgba(0,0,0,0.45)]";
 
 /** A small label on a dark plate. */
 const SMALL_LABEL =
-  "text-xs font-bold text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]";
+  "text-xs font-bold text-cream-dim [@media(max-height:500px)]:text-[10px]";
 
 /**
  * The time that the Forge Stone of an upgrade takes to leap from the upgrade
@@ -98,7 +105,7 @@ const StrikeSparks = ({ tier }: { readonly tier: ForgeStoneTier }) => {
               {
                 ...ON_STRIKE,
                 "--spark-reach": `${reach}cqw`,
-                background: `linear-gradient(90deg, transparent, ${color} 45%, #fff6df)`,
+                background: `linear-gradient(90deg, transparent, ${color} 45%, var(--color-cream))`,
               } as CSSProperties
             }
           />
@@ -130,7 +137,8 @@ const GearSheen = ({
   >
     <span
       className={cn(
-        "absolute inset-y-0 left-0 w-1/2 translate-x-[-130%] bg-[linear-gradient(105deg,transparent_15%,rgba(255,246,220,0.6)_50%,transparent_85%)]",
+        "absolute inset-y-0 left-0 w-1/2 translate-x-[-130%]",
+        HERO_SHEEN,
         maxed
           ? "motion-safe:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)_520ms]"
           : "motion-safe:group-has-[[data-gear-upgrade][data-focus-visible]]/gear:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-has-[[data-gear-upgrade][data-hovered]]/gear:animate-[shop-sheen_900ms_cubic-bezier(0.2,0.8,0.2,1)]"
@@ -194,13 +202,14 @@ const GearIcon = ({
             <GearSheen painted={painted} maxed={maxed && strike !== null} />
           </>
         ) : (
-          <span className="grid size-[84%] place-items-center rounded-full border-[3px] border-[#e7bb6a] bg-[radial-gradient(circle_at_35%_30%,#4a3524,#1c140e_70%)] shadow-[0_3px_0_rgba(0,0,0,0.45),inset_0_2px_0_rgba(255,226,170,0.18)] [@media(max-height:500px)]:border-2">
+          <span className="border-bronze-rim grid size-[84%] place-items-center rounded-full border-[3px] bg-[radial-gradient(circle_at_35%_30%,var(--color-plate-ember),var(--color-night-plate)_70%)] shadow-[0_3px_0_rgba(0,0,0,0.45),inset_0_2px_0_rgba(255,226,170,0.18)] [@media(max-height:500px)]:border-2">
             <GlyphIcon
               glyph={GEAR_GLYPH[item.slot]}
               className={cn(
-                "size-[54%] text-[#f3e6c4] drop-shadow-[0_2px_0_rgba(0,0,0,0.5)]",
+                "size-[54%] drop-shadow-[0_2px_0_rgba(0,0,0,0.5)]",
                 GEAR_GLYPH_TURN[item.slot]
               )}
+              style={{ color: HERO_GEAR_GLYPH }}
             />
           </span>
         )}
@@ -211,7 +220,7 @@ const GearIcon = ({
       {maxed ? (
         <span
           className={cn(
-            "absolute -right-1 -bottom-1 grid place-items-center rounded-full border-2 border-[#7a5310] bg-gradient-to-b from-[#ffe08a] to-[#e2a93b] px-1.5 py-0.5 text-[11px] leading-none font-black tracking-[0.04em] text-[#2a1a05] uppercase shadow-[0_2px_0_rgba(0,0,0,0.45)]",
+            "border-gold-deep from-gold-light to-gold text-ink-on-gold absolute -right-1 -bottom-1 grid place-items-center rounded-full border-2 bg-gradient-to-b px-1.5 py-0.5 text-[11px] leading-none font-black tracking-[0.04em] uppercase shadow-[0_2px_0_rgba(0,0,0,0.45)]",
             "[@media(max-height:500px)]:-right-2 [@media(max-height:500px)]:px-1 [@media(max-height:500px)]:text-[9px]",
             strike !== null &&
               "motion-safe:animate-[pack-stamp_380ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
@@ -253,7 +262,7 @@ const GearLevel = ({
           <span
             key={flash}
             className={cn(
-              "inline-block text-xl text-[#fff6df] [@media(max-height:500px)]:text-sm",
+              "text-cream inline-block text-xl [@media(max-height:500px)]:text-sm",
               flash > 0 &&
                 "motion-safe:animate-[workshop-count_420ms_cubic-bezier(0.2,0.8,0.2,1)]"
             )}
@@ -262,7 +271,7 @@ const GearLevel = ({
           >
             {level}
           </span>
-          <span className="text-sm text-[#e8d9bb] [@media(max-height:500px)]:text-[10px]">
+          <span className="text-cream-dim text-sm [@media(max-height:500px)]:text-[10px]">
             {" / "}
             {MAX_GEAR_LEVEL}
           </span>
@@ -273,7 +282,7 @@ const GearLevel = ({
 };
 
 /** A requirement of the upgrade that is missing: a warm red. */
-const MISSING = "text-[#ff9b85]";
+const MISSING = { color: HERO_MISSING } as const;
 
 /**
  * All that the next level needs, in the upgrade: its Coin, and 1 Forge Stone
@@ -302,17 +311,17 @@ const UpgradeCost = ({
   const tone = short ? (upgrade.missingCoin > 0 ? null : "dark") : "light";
   return (
     <>
-      <CoinPrice
-        parts={coinDenominations(upgrade.coin)}
-        format={format}
-        tone={tone}
-        className={cn("font-bold", short && upgrade.missingCoin > 0 && MISSING)}
-      />
+      <span style={short && upgrade.missingCoin > 0 ? MISSING : undefined}>
+        <CoinPrice
+          parts={coinDenominations(upgrade.coin)}
+          format={format}
+          tone={tone}
+          className="font-bold"
+        />
+      </span>
       <span
-        className={cn(
-          "inline-flex items-center gap-0.5 font-bold tabular-nums",
-          short && !upgrade.hasStone && MISSING
-        )}
+        className="inline-flex items-center gap-0.5 font-bold tabular-nums"
+        style={short && !upgrade.hasStone ? MISSING : undefined}
         aria-hidden
         data-testid="gear-upgrade-stone"
         data-tier={upgrade.tier}
@@ -476,7 +485,7 @@ export const GearPlate = ({
         <GearIcon ref={icon} item={item} strike={strike} />
         <h3
           id={titleId}
-          className="font-display text-lg leading-tight font-bold text-[#ffe08a] [@media(max-height:500px)]:text-sm"
+          className="font-display text-gold-light text-lg leading-tight font-bold [@media(max-height:500px)]:text-sm"
         >
           {name}
         </h3>
@@ -496,7 +505,7 @@ export const GearPlate = ({
             <span
               key={flash}
               className={cn(
-                "inline-block text-base text-[#fff6df] [@media(max-height:500px)]:text-xs",
+                "text-cream inline-block text-base [@media(max-height:500px)]:text-xs",
                 flash > 0 &&
                   "motion-safe:animate-[gear-roll_320ms_cubic-bezier(0.2,0.8,0.2,1)_both]"
               )}
@@ -507,19 +516,19 @@ export const GearPlate = ({
             {item.next === null ? null : (
               <>
                 <span
-                  className="text-xs text-[#e9c46a]/80 [@media(max-height:500px)]:text-[10px]"
+                  className="text-gold-trim/80 text-xs [@media(max-height:500px)]:text-[10px]"
                   aria-hidden
                 >
                   →
                 </span>
-                <span className="text-base text-[#ffe08a] [@media(max-height:500px)]:text-xs">
+                <span className="text-gold-light text-base [@media(max-height:500px)]:text-xs">
                   {stat(item.stat, item.next)}
                 </span>
               </>
             )}
           </span>
         </span>
-        <p className="text-left text-xs leading-snug text-[#e8d9bb] [@media(max-height:500px)]:sr-only">
+        <p className="text-cream-dim text-left text-xs leading-snug [@media(max-height:500px)]:sr-only">
           {tr(`hero.statHelp.${item.stat}`)}
         </p>
       </div>
@@ -537,10 +546,11 @@ export const GearPlate = ({
             // the gold "Max level", else the requirements, with the missing
             // ones in a warm red.
             upgrade.kind !== "ready" &&
-              "border-[#e9c46a]/50 bg-[#120c08]/70 shadow-[inset_0_1px_3px_rgba(0,0,0,0.75)] data-[disabled]:cursor-default data-[disabled]:opacity-100 data-[disabled]:grayscale-0",
-            upgrade.kind === "max" && "text-[#ffe08a]",
-            upgrade.kind === "short" && "text-[#e8d9bb]"
+              `${HERO_UPGRADE_OFF} data-[disabled]:cursor-default data-[disabled]:opacity-100 data-[disabled]:grayscale-0`,
+            upgrade.kind === "max" && "text-gold-light",
+            upgrade.kind === "short" && "text-cream-dim"
           )}
+          style={upgrade.kind === "ready" ? undefined : HERO_UPGRADE_OFF_PAINT}
           data-testid={`gear-upgrade-${item.slot}`}
           data-gear-upgrade={item.slot}
           data-state={upgrade.kind}

@@ -44,7 +44,7 @@ export const HeroPortrait = ({
       data-hero-portrait={shown ?? "standard"}
       aria-hidden
     >
-      <span className="relative block size-full overflow-hidden rounded-[9%] border border-[#e7bb6a]/80 bg-[#1c140e]">
+      <span className="border-bronze-rim/80 bg-night-plate relative block size-full overflow-hidden rounded-[9%] border">
         {art === null ? (
           <span className="absolute inset-0" style={{ background: STANDARD }} />
         ) : (
@@ -57,11 +57,11 @@ export const HeroPortrait = ({
           />
         )}
         {/* The inner tooled line of the plate. */}
-        <span className="absolute inset-[7%] rounded-[7%] border border-[#e7bb6a]/35" />
+        <span className="border-bronze-rim/35 absolute inset-[7%] rounded-[7%] border" />
         {art === null ? (
           <GlyphIcon
             glyph={classGlyph(classId)}
-            className="absolute top-1/2 left-1/2 size-[40%] -translate-x-1/2 -translate-y-1/2 text-[#fff6df] drop-shadow-[0_1px_2px_rgba(0,0,0,0.75)]"
+            className="text-cream absolute top-1/2 left-1/2 size-[40%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_1px_2px_rgba(0,0,0,0.75)]"
           />
         ) : null}
       </span>

@@ -113,11 +113,10 @@ jobs:
       - name: Lint and typecheck
         run: bun lint-typecheck
 
-      # Issue 146, rollout step 1: report the raw-color debt while the feature
-      # conversion runs. Remove `--warn` in the final step, after the last
-      # feature PR, so that the check blocks CI.
+      # Issue 146: the design-token guard fails on a raw color and on a design
+      # record that does not agree with the @theme block.
       - name: Check design tokens
-        run: bun check:tokens --warn
+        run: bun check:tokens
 
   # GDD 13: each Stage and each Matchup must be on its win-rate target.
   # The seeds are fixed, so the result changes only when content or rules change.

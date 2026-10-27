@@ -8,7 +8,7 @@ import { useGameText } from "@/features/battle/use-game-text";
  * The replace confirmation of an import: a small parchment dialog over the
  * Settings dialog. Cancel keeps the progress. It loads in its own chunk, so
  * that the Settings dialog, which is in the first bundle, does not carry the
- * parchment dialog (issue #139).
+ * parchment dialog (issue 139).
  */
 export const ReplaceProfileDialog = ({
   profile,
