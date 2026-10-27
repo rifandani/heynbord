@@ -513,6 +513,7 @@ const Shortcut = ({
           onPress={onPress}
           className={shortcutButtonClass(locked)}
           data-testid={`town-shortcut-${shortcut.id}`}
+          data-pad-shortcut
           data-locked={lockedAttr(locked)}
         >
           <ShortcutFace
@@ -570,6 +571,7 @@ const SettingsButton = () => {
           aria-label={name}
           className={shortcutButtonClass(false)}
           data-testid="town-settings"
+          data-pad-shortcut
         >
           <ShortcutFace
             image={shortcutImage("settings")}
@@ -708,6 +710,7 @@ export const TownBar = ({
       aria-label={tr("town.bar")}
       className="fixed inset-x-0 bottom-0 z-30 h-[var(--town-bar)]"
       data-testid="town-bar"
+      data-pad-town-bar
       data-collapsed={effectiveCollapsed || undefined}
     >
       {/* The shelf of wood. It slides down and out of the screen when the bar

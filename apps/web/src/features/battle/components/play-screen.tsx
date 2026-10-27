@@ -60,6 +60,7 @@ import {
 } from "@/features/town/components/town-screen";
 import type { GameScreen } from "@/features/town/town";
 import { gameScreenAtom, townProgressAtom } from "@/features/town/town.atoms";
+import { useTownPad } from "@/features/town/use-town-pad";
 
 /*
  * Every screen except the Town loads in its own chunk on first open. The Town,
@@ -286,6 +287,7 @@ export const PlayScreen = () => {
   // A Replay Link opens Watching a Replay in place of the screen (web ADR-0011).
   useReplayLink({ show: battle.watch, leave: battle.leave });
   useEscToTown(screen !== "town" && !battle.session, () => setScreen("town"));
+  useTownPad({ active: ready && !battle.session, screen, onOpen: setScreen });
   // Heynspire opens with the first win of the last Boss Stage. When it is
   // not open (for example after a change in the dev panel), its screen goes
   // back to the Town.
