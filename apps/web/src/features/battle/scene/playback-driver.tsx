@@ -8,9 +8,11 @@ import { advanceBattleLog } from "@/features/battle/battle-log-session";
 import type { BattleSession } from "@/features/battle/battle-session";
 import { progressOf, tick } from "@/features/battle/battle-session";
 import {
-  battleLogAtom,
-  battleSessionAtom,
-} from "@/features/battle/battle.atoms";
+  publishBattle,
+  readBattle,
+  stageBattle,
+} from "@/features/battle/battle-store";
+import { battleLogAtom } from "@/features/battle/battle.atoms";
 import type { Fx } from "@/features/battle/scene/fx";
 import { fxList } from "@/features/battle/scene/fx";
 import { withoutPlates } from "@/features/battle/scene/keyword-plates";
@@ -65,17 +67,17 @@ export const PlaybackDriver = () => {
 
   /** The HUD changed the session (a play, End Turn, Skip or speed). */
   const adoptStored = () => {
-    const stored = registry.get(battleSessionAtom);
+    const stored = readBattle(registry);
     if (stored !== published.current) {
       keepFx(keptFx(fxList, playback.session, stored));
-      playback.session = stored;
+      stageBattle(stored);
       published.current = stored;
     }
   };
 
   const advance = (before: BattleSession, step: number) => {
     const next = tick(before, step * 1000);
-    playback.session = next;
+    stageBattle(next);
     playback.progress = progressOf(next);
     if (next === before) {
       return;
@@ -83,7 +85,7 @@ export const PlaybackDriver = () => {
     playStarted(before, next, true);
     if (shouldPublish(before, next)) {
       published.current = next;
-      registry.set(battleSessionAtom, next);
+      publishBattle(registry, next);
     }
   };
 
@@ -92,7 +94,7 @@ export const PlaybackDriver = () => {
     // The Battle Log shows no plates, and Live shows no old plates after it.
     keepFx(withoutPlates(fxList));
     if (log.shown !== published.current) {
-      playback.session = log.shown;
+      stageBattle(log.shown);
       playback.progress = progressOf(log.shown);
       published.current = log.shown;
     }
@@ -101,7 +103,7 @@ export const PlaybackDriver = () => {
       return;
     }
     const next = tick(before, step * 1000);
-    playback.session = next;
+    stageBattle(next);
     playback.progress = progressOf(next);
     if (next !== before) {
       playStarted(before, next, false);
@@ -109,7 +111,7 @@ export const PlaybackDriver = () => {
     if (shouldPublish(before, next)) {
       const advanced = advanceBattleLog(log, next);
       published.current = advanced.shown;
-      playback.session = advanced.shown;
+      stageBattle(advanced.shown);
       registry.set(battleLogAtom, advanced);
     }
   };

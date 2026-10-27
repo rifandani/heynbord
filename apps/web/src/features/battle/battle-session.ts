@@ -441,6 +441,32 @@ export const progressOf = (session: BattleSession): number =>
     : 1;
 
 /**
+ * What the HUD reads from a Battle session. The rules state, the event log and
+ * the replay fields stay in the full session, for the Battle Log and Replay.
+ */
+export interface BattleRead {
+  readonly view: BattleView;
+  readonly options: BattleOptions;
+  readonly tutorial: Tutorial | null;
+  readonly watching: boolean;
+  readonly current: PlayingEvent | null;
+}
+
+/** The narrow read model of a Battle session, or `null` when no Battle shows. */
+export const battleReadOf = (
+  session: BattleSession | null
+): BattleRead | null =>
+  session === null
+    ? null
+    : {
+        current: session.current,
+        options: session.options,
+        tutorial: session.tutorial,
+        view: session.view,
+        watching: session.watching,
+      };
+
+/**
  * Why a command did not change the Battle. The screen chooses its feedback
  * from the tag; `RuleViolation` keeps the reason that the rules gave.
  */

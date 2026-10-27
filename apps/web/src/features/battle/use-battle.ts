@@ -22,6 +22,7 @@ import type {
   BattleSession,
 } from "@/features/battle/battle-session";
 import {
+  battleReadOf,
   canAct,
   canEndTurn,
   changeTutorial,
@@ -34,6 +35,11 @@ import {
   skipBattle,
   startSession,
 } from "@/features/battle/battle-session";
+import {
+  publishBattle,
+  stageBattle,
+  stagedBattle,
+} from "@/features/battle/battle-store";
 import type { BattleSpeed } from "@/features/battle/battle-timeline";
 import type { UnitView } from "@/features/battle/battle-view";
 import { heroOf } from "@/features/battle/battle-view";
@@ -52,7 +58,6 @@ import {
   targetFocusByKeyAtom,
   tutorialStageWonAtom,
 } from "@/features/battle/battle.atoms";
-import { playback } from "@/features/battle/scene/playback";
 import type { Tutorial } from "@/features/battle/tutorial";
 import { closeText, selectCard, skipText } from "@/features/battle/tutorial";
 import type { InspectDirection } from "@/features/battle/unit-inspect";
@@ -103,24 +108,29 @@ const hasBattleLog = (session: BattleSession | null): boolean =>
   session !== null && session.tutorial === null;
 
 /** The atom values of the Battle view and the Player's selection. */
-const useBattleState = () => ({
-  liveSession: useAtomValue(battleSessionAtom),
-  session: useAtomValue(shownSessionAtom),
-  log: useAtomValue(battleLogAtom),
-  selected: useAtomValue(selectedCardAtom),
-  targets: useAtomValue(legalTargetsAtom),
-  focused: useAtomValue(focusedTargetAtom),
-  inspected: useAtomValue(inspectedUnitAtom),
-  detailsUnit: useAtomValue(detailsUnitAtom),
-});
+const useBattleState = () => {
+  const liveSession = useAtomValue(battleSessionAtom);
+  const shown = useAtomValue(shownSessionAtom);
+  return {
+    liveSession,
+    session: battleReadOf(shown),
+    log: useAtomValue(battleLogAtom),
+    selected: useAtomValue(selectedCardAtom),
+    targets: useAtomValue(legalTargetsAtom),
+    focused: useAtomValue(focusedTargetAtom),
+    inspected: useAtomValue(inspectedUnitAtom),
+    detailsUnit: useAtomValue(detailsUnitAtom),
+  };
+};
 
 /**
- * The Battle state and the player's actions, for the HUD. `session` is what
- * the screen shows: the selected moment of the open Battle Log, else Live.
- * `liveSession` is Live. Each Command goes to Live, and none goes while the
- * Battle Log is open. While the Player watches a Replay (web ADR-0011),
- * `liveSession` holds the full Replay and the Battle Log is always open: there
- * is no Live.
+ * The Battle state and the player's actions, for the HUD. `session` is the
+ * narrow read model of what the screen shows: the selected moment of the open
+ * Battle Log, else Live. `liveSession` is the full Live session, for the
+ * Battle Log, the Replay and the result. Each Command goes to Live, and none
+ * goes while the Battle Log is open. While the Player watches a Replay (web
+ * ADR-0011), `liveSession` holds the full Replay and the Battle Log is always
+ * open: there is no Live.
  */
 export const useBattle = () => {
   const registry = useContext(RegistryContext);
@@ -159,7 +169,7 @@ export const useBattle = () => {
     if (!current || current.watching || current.speed === storedSpeed) {
       return;
     }
-    registry.set(battleSessionAtom, setSpeed(current, storedSpeed));
+    publishBattle(registry, setSpeed(current, storedSpeed));
     const shownLog = registry.get(battleLogAtom);
     if (shownLog) {
       registry.set(battleLogAtom, setBattleLogSpeed(shownLog, storedSpeed));
@@ -176,10 +186,10 @@ export const useBattle = () => {
   const live = (): BattleSession | null =>
     logOpen()
       ? registry.get(battleSessionAtom)
-      : newestSession(registry.get(battleSessionAtom), playback.session);
+      : newestSession(registry.get(battleSessionAtom), stagedBattle());
 
   const commit = (next: BattleSession | null) => {
-    registry.set(battleSessionAtom, next);
+    publishBattle(registry, next);
   };
 
   const select = (handIndex: number | null) => {
@@ -235,7 +245,7 @@ export const useBattle = () => {
     registry.set(inspectedUnitAtom, null);
     // The Battle Log is not saved: it goes away with the Battle.
     registry.set(battleLogAtom, null);
-    playback.session = null;
+    stageBattle(null);
     commit(null);
     if (wasWatching) {
       registry.set(gameScreenAtom, "town");
@@ -279,7 +289,7 @@ export const useBattle = () => {
       const replay = watchingSession(run);
       select(null);
       registry.set(inspectedUnitAtom, null);
-      playback.session = null;
+      stageBattle(null);
       commit(replay);
       registry.set(battleLogAtom, watchBattleLog(replay));
     },
@@ -336,7 +346,7 @@ export const useBattle = () => {
       select(null);
       registry.set(inspectedUnitAtom, null);
       registry.set(battleLogAtom, null);
-      playback.session = null;
+      stageBattle(null);
       const tutorial = isTutorial(
         options.stageId,
         registry.get(tutorialStageWonAtom)

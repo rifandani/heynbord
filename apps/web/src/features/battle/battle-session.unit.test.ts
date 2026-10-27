@@ -8,6 +8,7 @@ import type {
 } from "@/features/battle/battle-session";
 import {
   autoPlayTurn,
+  battleReadOf,
   canAct,
   canEndTurn,
   devHitHero,
@@ -340,6 +341,20 @@ describe("skipBattle", () => {
     const skipped = Result.getOrThrow(skipBattle(played, false));
     expect(isIdle(skipped)).toBe(true);
     expect(skipped.log.length).toBeGreaterThan(0);
+  });
+});
+
+describe("battleReadOf", () => {
+  it("gives the HUD only the fields that it reads", () => {
+    const session = start();
+    expect(battleReadOf(session)).toEqual({
+      current: session.current,
+      options: session.options,
+      tutorial: session.tutorial,
+      view: session.view,
+      watching: session.watching,
+    });
+    expect(battleReadOf(null)).toBeNull();
   });
 });
 

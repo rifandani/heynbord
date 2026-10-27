@@ -23,9 +23,13 @@ import {
   skip,
   startSession,
 } from "@/features/battle/battle-session";
+import {
+  publishBattle,
+  readBattle,
+  stageBattle,
+} from "@/features/battle/battle-store";
 import { applyEvent, heroOf } from "@/features/battle/battle-view";
 import {
-  battleSessionAtom,
   focusedTargetAtom,
   inspectedUnitAtom,
   legalTargetsAtom,
@@ -450,10 +454,10 @@ export const installTestHooks = (
      * both sides, as the `victory` state does for Stage 1-1.
      */
     winStage: (stageId: string) => {
-      playback.session = null;
+      stageBattle(null);
       registry.set(selectedCardAtom, null);
       registry.set(inspectedUnitAtom, null);
-      registry.set(battleSessionAtom, finishedBattle(seed, "player", stageId));
+      publishBattle(registry, finishedBattle(seed, "player", stageId));
       registry.set(gameScreenAtom, "campaign");
     },
     /**
@@ -462,14 +466,14 @@ export const installTestHooks = (
      * started (for example a Dungeon) in a short time. The screen stays.
      */
     finishBattle: (winner: "player" | "enemy") => {
-      const live = registry.get(battleSessionAtom);
+      const live = readBattle(registry);
       if (!live) {
         throw new Error("No Battle to finish");
       }
-      playback.session = null;
+      stageBattle(null);
       registry.set(selectedCardAtom, null);
       registry.set(inspectedUnitAtom, null);
-      registry.set(battleSessionAtom, finishedFrom(live.options, winner));
+      publishBattle(registry, finishedFrom(live.options, winner));
     },
     /** Resolves when the Profile is in IndexedDB, so that a test can reload. */
     profileSaved,
@@ -485,15 +489,15 @@ export const installTestHooks = (
           stageResults: QA_STAGE_RESULTS,
         });
       }
-      playback.session = null;
+      stageBattle(null);
       registry.set(selectedCardAtom, null);
       registry.set(inspectedUnitAtom, null);
-      registry.set(battleSessionAtom, session);
+      publishBattle(registry, session);
       // A Battle and its result go back to the Campaign (GDD 11.4).
       registry.set(gameScreenAtom, known === "town" ? "town" : "campaign");
       if (PLAYING_STATES.has(known) && session) {
         // Start the first queued events, so the capture shows Units in action.
-        playback.session = session;
+        stageBattle(session);
       }
       if (known === "targeting" && session) {
         const ready = heroOf(session.view, "player").hand.findIndex(

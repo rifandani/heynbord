@@ -2,7 +2,7 @@ import { useAtomValue } from "@effect/atom-react";
 import type { Side } from "@workspace/rules";
 import { cn } from "cn";
 
-import type { BattleSession } from "@/features/battle/battle-session";
+import type { BattleRead } from "@/features/battle/battle-session";
 import { detailsUnitAtom } from "@/features/battle/battle.atoms";
 import {
   CardDetails,
@@ -23,7 +23,7 @@ type Battle = ReturnType<typeof useBattle>;
  * The card is at the edge of the screen and the panel faces the Board. The
  * open Tutorial text has the right side, so then they go left.
  */
-const tutorialIsOpen = (session: BattleSession | null) =>
+const tutorialIsOpen = (session: BattleRead | null) =>
   openText(session?.tutorial ?? null) !== null;
 
 const dockSide = (owner: Side, tutorialOpen: boolean): ScreenSide =>

@@ -2,6 +2,7 @@ import { newProfile } from "@workspace/rules";
 import { AtomRegistry } from "effect/reactivity";
 import { describe, expect, it } from "vitest";
 
+import { newAchievementsAtom } from "@/features/achievements/achievements.atoms";
 import { recordBattle } from "@/features/battle/battle-result";
 import { battleRewardsAtom } from "@/features/battle/battle.atoms";
 import { buildQaState } from "@/features/battle/test-hooks";
@@ -27,6 +28,7 @@ const readyRegistry = (profile = newProfile(7)) => {
 describe("recordBattle", () => {
   it("writes the result to the Profile one time", () => {
     const registry = readyRegistry();
+    registry.set(newAchievementsAtom, ["feat.old"]);
     const before = registry.get(profileAtom);
     const won = finished();
 
@@ -37,6 +39,14 @@ describe("recordBattle", () => {
 
     expect(recordBattle(registry, won)).toBe(false);
     expect(registry.get(profileAtom)).toEqual(after);
+  });
+
+  it("does not write the Profile before it loads", () => {
+    const registry = AtomRegistry.make();
+    const won = finished();
+
+    expect(recordBattle(registry, won)).toBe(true);
+    expect(registry.get(profileStateAtom)).toEqual({ status: "loading" });
   });
 
   it("writes nothing for a Replay", () => {
