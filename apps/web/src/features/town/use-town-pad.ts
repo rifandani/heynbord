@@ -1,17 +1,17 @@
 import { useEffect, useRef } from "react";
 
 import { focusables, nextFocusable } from "@/core/input/focus";
-import type { PadDirection } from "@/core/input/gamepad";
-import { nextFocusId } from "@/core/input/town-focus";
+import type { PadControl, PadDirection } from "@/core/input/gamepad";
 import { useGamepad } from "@/core/input/use-gamepad";
 import { isTyping } from "@/features/battle/components/battle-input";
 import type { GameScreen } from "@/features/town/town";
 import { SELECTABLE_BUILDINGS } from "@/features/town/town";
-
-const BUILDING_RECTS = SELECTABLE_BUILDINGS.map(({ id, rect }) => ({
-  id,
-  ...rect,
-}));
+import type {
+  TownPadBuilding,
+  TownPadCurrent,
+  TownPadTarget,
+} from "@/features/town/town-pad";
+import { townPadTarget } from "@/features/town/town-pad";
 
 const INPUT_CONTROL =
   'input[type="checkbox"], input[type="radio"], input[type="range"], input[type="button"], input[type="submit"], input[type="reset"]';
@@ -23,129 +23,213 @@ const CLOSE_CONTROL =
 interface PadFocus {
   pad: boolean;
   marked: readonly HTMLElement[];
-  lastBuilding: string;
 }
 
-const clearMark = (focus: PadFocus) => {
-  for (const element of focus.marked) {
+interface PadContext {
+  readonly current: HTMLElement | null;
+  readonly dialog: HTMLElement | undefined;
+  readonly screen: GameScreen;
+  readonly onOpen: (screen: GameScreen) => void;
+}
+
+/** The Buildings and the Town Bar of the screen, with the elements to focus. */
+interface TownPadView {
+  readonly layout: {
+    readonly buildings: readonly TownPadBuilding[];
+    readonly bar: readonly number[];
+    readonly current: TownPadCurrent | null;
+  };
+  readonly buildings: readonly HTMLElement[];
+  readonly bar: readonly HTMLElement[];
+}
+
+const clearMark = (state: PadFocus) => {
+  for (const element of state.marked) {
     delete element.dataset.padFocus;
   }
-  focus.marked = [];
+  state.marked = [];
 };
 
-const markFocus = (focus: PadFocus, element: HTMLElement) => {
-  clearMark(focus);
-  // React Aria puts radio, switch and slider inputs in a small hidden box.
-  // Their visible label or thumb needs the ring too.
-  const surface = element.matches(INPUT_CONTROL)
+/** React Aria puts radio, switch and slider inputs in a small hidden box. */
+const ringSurface = (element: HTMLElement): HTMLElement | null =>
+  element.matches(INPUT_CONTROL)
     ? element.closest<HTMLElement>("label, [data-rac]")
     : null;
-  focus.marked =
+
+const markFocus = (state: PadFocus, element: HTMLElement) => {
+  clearMark(state);
+  const surface = ringSurface(element);
+  state.marked =
     surface && surface !== element ? [element, surface] : [element];
-  for (const marked of focus.marked) {
+  for (const marked of state.marked) {
     marked.dataset.padFocus = "";
   }
 };
 
-const focusWithPad = (focus: PadFocus, element: HTMLElement | null) => {
+const focusWithPad = (state: PadFocus, element: HTMLElement | null) => {
   if (!element) {
     return;
   }
-  focus.pad = true;
+  state.pad = true;
   element.focus();
   if (document.activeElement === element) {
-    markFocus(focus, element);
+    markFocus(state, element);
   }
 };
 
-const horizontalCenter = (element: HTMLElement): number => {
+const screenCenter = (element: HTMLElement): number => {
   const rect = element.getBoundingClientRect();
   return rect.left + rect.width / 2;
 };
 
-/** Use screen coordinates at the boundary between the painting and the shelf. */
-const nearestHorizontal = (
-  elements: readonly HTMLElement[],
-  from: HTMLElement | null
-): HTMLElement | null => {
-  if (!from || from.getClientRects().length === 0) {
-    return null;
-  }
-  const x = horizontalCenter(from);
-  let best: HTMLElement | null = null;
-  let distance = Number.POSITIVE_INFINITY;
-  for (const element of elements) {
-    const next = Math.abs(horizontalCenter(element) - x);
-    if (next < distance) {
-      best = element;
-      distance = next;
-    }
-  }
-  return best;
-};
-
-const focusTown = (
-  focus: PadFocus,
-  current: HTMLElement | null,
-  direction: PadDirection
-) => {
+const buildingElements = (): readonly HTMLElement[] => {
   const town = document.querySelector("[data-pad-town]");
-  const bar = document.querySelector("[data-pad-town-bar]");
-  const buildings = town
+  return town
     ? focusables(town).filter(
         (element) => element.dataset.buildingId !== undefined
       )
     : [];
-  if (bar && current && bar.contains(current)) {
-    if (direction === "up") {
-      focusWithPad(
-        focus,
-        nearestHorizontal(buildings, current) ??
-          buildings.find(
-            (element) => element.dataset.buildingId === focus.lastBuilding
-          ) ??
-          buildings[0] ??
-          null
-      );
-    } else if (direction === "left" || direction === "right") {
-      focusWithPad(
-        focus,
-        nextFocusable(bar, current, direction === "left" ? -1 : 1)
-      );
-    }
+};
+
+const barElements = (): readonly HTMLElement[] => {
+  const bar = document.querySelector("[data-pad-town-bar]");
+  return bar
+    ? focusables(bar).filter((element) =>
+        Object.hasOwn(element.dataset, "padShortcut")
+      )
+    : [];
+};
+
+const buildingLayout = (
+  elements: readonly HTMLElement[]
+): readonly TownPadBuilding[] =>
+  SELECTABLE_BUILDINGS.flatMap(({ id, rect }) => {
+    const element = elements.find((item) => item.dataset.buildingId === id);
+    return element
+      ? [{ rect: { id, ...rect }, centerX: screenCenter(element) }]
+      : [];
+  });
+
+const townPadCurrent = (bar: readonly HTMLElement[]): TownPadCurrent | null => {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement)) {
+    return null;
+  }
+  if (active.dataset.buildingId) {
+    return { zone: "building", id: active.dataset.buildingId };
+  }
+  const index = bar.indexOf(active);
+  return index === -1 ? null : { zone: "bar", index };
+};
+
+const readTownPad = (): TownPadView | null => {
+  const buildings = buildingElements();
+  if (buildings.length === 0) {
+    return null;
+  }
+  const bar = barElements();
+  return {
+    layout: {
+      buildings: buildingLayout(buildings),
+      bar: bar.map(screenCenter),
+      current: townPadCurrent(bar),
+    },
+    buildings,
+    bar,
+  };
+};
+
+const focusBuilding = (state: PadFocus, view: TownPadView, id: string) => {
+  focusWithPad(
+    state,
+    view.buildings.find((element) => element.dataset.buildingId === id) ?? null
+  );
+};
+
+const focusBar = (state: PadFocus, view: TownPadView, index: number) => {
+  focusWithPad(state, view.bar[index] ?? null);
+};
+
+const focusTarget = (
+  state: PadFocus,
+  view: TownPadView,
+  target: TownPadTarget | null
+) => {
+  if (!target) {
     return;
   }
-  const rects = BUILDING_RECTS.filter((rect) =>
-    buildings.some((element) => element.dataset.buildingId === rect.id)
-  );
-  const next = nextFocusId(
-    rects,
-    current?.dataset.buildingId ?? null,
-    direction
-  );
-  if (next) {
-    focusWithPad(
-      focus,
-      buildings.find((element) => element.dataset.buildingId === next) ?? null
-    );
-  } else if (direction === "down" && bar) {
-    const controls = focusables(bar);
-    const shortcuts = controls.filter((element) =>
-      Object.hasOwn(element.dataset, "padShortcut")
-    );
-    focusWithPad(
-      focus,
-      nearestHorizontal(shortcuts, current) ?? controls[0] ?? null
-    );
+  if (target.zone === "bar") {
+    focusBar(state, view, target.index);
+    return;
+  }
+  focusBuilding(state, view, target.id);
+};
+
+const handleTownDirection = (state: PadFocus, direction: PadDirection) => {
+  const view = readTownPad();
+  if (view) {
+    focusTarget(state, view, townPadTarget(view.layout, direction));
   }
 };
 
-const closeDialog = (dialog: HTMLElement, focus: PadFocus) => {
-  const close = focusables(dialog).find((element) =>
-    element.matches(CLOSE_CONTROL)
+const activeDialog = (): HTMLElement | undefined =>
+  [...document.querySelectorAll<HTMLElement>('[role="dialog"]')].findLast(
+    (element) => !element.closest('[aria-hidden="true"], [inert], [hidden]')
   );
+
+const stepFocus = (
+  scope: Document | HTMLElement,
+  current: HTMLElement | null,
+  direction: PadDirection
+): HTMLElement | null =>
+  nextFocusable(
+    scope,
+    current,
+    direction === "up" || direction === "left" ? -1 : 1
+  );
+
+const handleDialogDirection = (
+  state: PadFocus,
+  context: PadContext,
+  direction: PadDirection
+) => {
+  if (!context.dialog) {
+    return;
+  }
+  focusWithPad(state, stepFocus(context.dialog, context.current, direction));
+};
+
+const handleScreenDirection = (
+  state: PadFocus,
+  context: PadContext,
+  direction: PadDirection
+) => {
+  if (context.screen === "town") {
+    handleTownDirection(state, direction);
+    return;
+  }
+  focusWithPad(state, stepFocus(document, context.current, direction));
+};
+
+const handleDirection = (
+  state: PadFocus,
+  context: PadContext,
+  direction: PadDirection
+) => {
+  if (context.dialog) {
+    handleDialogDirection(state, context, direction);
+    return;
+  }
+  handleScreenDirection(state, context, direction);
+};
+
+const closeControl = (dialog: HTMLElement): HTMLElement | undefined =>
+  focusables(dialog).find((element) => element.matches(CLOSE_CONTROL));
+
+const closeDialog = (dialog: HTMLElement, state: PadFocus) => {
+  const close = closeControl(dialog);
   if (close) {
-    focusWithPad(focus, close);
+    focusWithPad(state, close);
     close.click();
     return;
   }
@@ -163,24 +247,81 @@ const closeDialog = (dialog: HTMLElement, focus: PadFocus) => {
   );
 };
 
-const clickFocused = (
-  focus: PadFocus,
-  current: HTMLElement | null,
-  dialog: HTMLElement | undefined
-) => {
-  if (dialog && !dialog.contains(current)) {
-    focusWithPad(focus, nextFocusable(dialog, null, 1));
+const isClickable = (element: HTMLElement | null): element is HTMLElement =>
+  element !== null &&
+  element.matches(`${CLICKABLE}, ${INPUT_CONTROL}`) &&
+  !element.matches(':disabled, [aria-disabled="true"]') &&
+  !element.closest('[inert], [aria-hidden="true"]');
+
+const firstFocusable = (scope: HTMLElement): HTMLElement | null =>
+  focusables(scope)[0] ?? null;
+
+const outsideDialog = (
+  context: PadContext
+): context is PadContext & { readonly dialog: HTMLElement } =>
+  context.dialog !== undefined && !context.dialog.contains(context.current);
+
+const clickFocused = (state: PadFocus, context: PadContext) => {
+  if (outsideDialog(context)) {
+    focusWithPad(state, firstFocusable(context.dialog));
     return;
   }
-  if (
-    current?.matches(`${CLICKABLE}, ${INPUT_CONTROL}`) &&
-    !current.matches(':disabled, [aria-disabled="true"]') &&
-    !current.closest('[inert], [aria-hidden="true"]')
-  ) {
-    focusWithPad(focus, current);
-    current.click();
+  if (!isClickable(context.current)) {
+    return;
+  }
+  focusWithPad(state, context.current);
+  context.current.click();
+};
+
+const handleEast = (state: PadFocus, context: PadContext) => {
+  if (context.dialog) {
+    closeDialog(context.dialog, state);
+    return;
+  }
+  if (context.screen !== "town") {
+    context.onOpen("town");
   }
 };
+
+const direction =
+  (value: PadDirection) => (state: PadFocus, context: PadContext) =>
+    handleDirection(state, context, value);
+
+const noop = () => {
+  // The other controls belong to the Battle and do nothing on a screen.
+};
+
+/** The handler of each pad control outside the Battle. */
+const HANDLERS: Readonly<
+  Record<PadControl, (state: PadFocus, context: PadContext) => void>
+> = {
+  up: direction("up"),
+  down: direction("down"),
+  left: direction("left"),
+  right: direction("right"),
+  south: clickFocused,
+  east: handleEast,
+  west: noop,
+  north: noop,
+  l1: noop,
+  r1: noop,
+  l2: noop,
+  r2: noop,
+  start: noop,
+  select: noop,
+};
+
+const handlePadPress = (
+  state: PadFocus,
+  control: PadControl,
+  context: PadContext
+) => {
+  HANDLERS[control](state, context);
+};
+
+/** The Battle guard treats every input as typing. A native control does not take text. */
+const canHandle = (current: HTMLElement | null): boolean =>
+  !(isTyping(current) && !current?.matches(INPUT_CONTROL));
 
 /** DOM focus outside the Battle. The Battle keeps its own pad command path. */
 export const useTownPad = ({
@@ -192,11 +333,7 @@ export const useTownPad = ({
   readonly screen: GameScreen;
   readonly onOpen: (screen: GameScreen) => void;
 }) => {
-  const focus = useRef<PadFocus>({
-    pad: false,
-    marked: [],
-    lastBuilding: "townGate",
-  });
+  const focus = useRef<PadFocus>({ pad: false, marked: [] });
 
   useEffect(() => {
     if (!active) {
@@ -210,15 +347,8 @@ export const useTownPad = ({
       }
     };
     const onFocus = () => {
-      const current = document.activeElement;
-      if (!(current instanceof HTMLElement)) {
-        return;
-      }
-      if (current.dataset.buildingId) {
-        state.lastBuilding = current.dataset.buildingId;
-      }
-      if (state.pad) {
-        markFocus(state, current);
+      if (state.pad && document.activeElement instanceof HTMLElement) {
+        markFocus(state, document.activeElement);
       }
     };
     const onBlur = () => clearMark(state);
@@ -237,9 +367,7 @@ export const useTownPad = ({
   }, [active]);
 
   useGamepad({
-    onConnect: () => {
-      // Only the Battle announces a connected controller.
-    },
+    onConnect: noop,
     onPress: ({ control }) => {
       if (!active) {
         return;
@@ -248,59 +376,15 @@ export const useTownPad = ({
         document.activeElement instanceof HTMLElement
           ? document.activeElement
           : null;
-      // The Battle guard treats every input as typing. These native inputs
-      // are controls in Settings; they do not take text.
-      if (isTyping(current) && !current?.matches(INPUT_CONTROL)) {
+      if (!canHandle(current)) {
         return;
       }
-      const state = focus.current;
-      const dialog = [
-        ...document.querySelectorAll<HTMLElement>('[role="dialog"]'),
-      ].findLast(
-        (element) => !element.closest('[aria-hidden="true"], [inert], [hidden]')
-      );
-      if (control === "east") {
-        state.pad = true;
-        if (dialog) {
-          closeDialog(dialog, state);
-        } else if (screen !== "town") {
-          onOpen("town");
-        }
-        return;
-      }
-      if (control === "south") {
-        clickFocused(state, current, dialog);
-        return;
-      }
-      if (
-        control !== "up" &&
-        control !== "down" &&
-        control !== "left" &&
-        control !== "right"
-      ) {
-        return;
-      }
-      if (dialog) {
-        focusWithPad(
-          state,
-          nextFocusable(
-            dialog,
-            current,
-            control === "up" || control === "left" ? -1 : 1
-          )
-        );
-      } else if (screen === "town") {
-        focusTown(state, current, control);
-      } else {
-        focusWithPad(
-          state,
-          nextFocusable(
-            document,
-            current,
-            control === "up" || control === "left" ? -1 : 1
-          )
-        );
-      }
+      handlePadPress(focus.current, control, {
+        current,
+        dialog: activeDialog(),
+        screen,
+        onOpen,
+      });
     },
   });
 };
