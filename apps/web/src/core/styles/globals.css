@@ -1972,3 +1972,9 @@ body:has([data-testid="town-bar"], [data-testid="battle-stage"])
   outline: 2px solid var(--color-night-plate);
   outline-offset: 4px;
 }
+
+[data-pad-focus] {
+  box-shadow: 0 0 0 4px var(--color-focus-cream);
+  outline: 2px solid var(--color-night-plate);
+  outline-offset: 4px;
+}

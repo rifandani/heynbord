@@ -212,6 +212,7 @@ const BuildingButton = ({
       )}
       style={{ ...percentBox(box), clipPath: building.clip }}
       data-testid={`building-${building.id}`}
+      data-building-id={building.id}
       data-locked={locked || undefined}
     >
       <span className="z-10 flex justify-center self-start" style={labelPlace}>
@@ -342,6 +343,7 @@ export const TownScreen = ({
       aria-label={tr("town.label")}
       className="fade-in animate-in bg-town-sky fixed inset-0 overflow-hidden duration-300 motion-reduce:animate-none"
       data-testid="town"
+      data-pad-town
     >
       <FittedPainting
         src={PAINTING_IMAGE}
