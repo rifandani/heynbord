@@ -191,19 +191,21 @@ const dominantAxis = (
   return Math.abs(rawX) >= Math.abs(rawY) ? { x, y: 0 } : { x: 0, y };
 };
 
-/**
- * The directions of one frame. The D-pad wins over the stick on its axis. A
- * pair of opposite D-pad buttons gives no direction on that axis.
- */
-const readDirections = (
-  snapshot: PadSnapshot,
-  heldBefore: ReadonlySet<PadControl>
-): ReadonlySet<PadDirection> => {
+/** The D-pad directions, and whether the D-pad uses each axis at all. */
+interface DpadRead {
+  readonly directions: Set<PadDirection>;
+  /** True when a horizontal D-pad button is down, also when both are down. */
+  readonly horizontal: boolean;
+  /** True when a vertical D-pad button is down, also when both are down. */
+  readonly vertical: boolean;
+}
+
+/** The directions of the D-pad. A pair of opposite buttons gives no direction on that axis. */
+const readDpad = (snapshot: PadSnapshot): DpadRead => {
   const up = buttonDown(snapshot, DPAD.up);
   const down = buttonDown(snapshot, DPAD.down);
   const left = buttonDown(snapshot, DPAD.left);
   const right = buttonDown(snapshot, DPAD.right);
-
   const directions = new Set<PadDirection>();
   if (up !== down) {
     directions.add(up ? "up" : "down");
@@ -211,31 +213,53 @@ const readDirections = (
   if (left !== right) {
     directions.add(left ? "left" : "right");
   }
+  return { directions, horizontal: left || right, vertical: up || down };
+};
 
+/** The direction of the left stick, on one axis. */
+const readStick = (
+  snapshot: PadSnapshot,
+  heldBefore: ReadonlySet<PadControl>
+): StickAxes => {
   const rawX = snapshot.axes[0] ?? 0;
   const rawY = snapshot.axes[1] ?? 0;
-  const stick = dominantAxis(
+  return dominantAxis(
     stickAxis(rawX, axisSign("left", "right", heldBefore)),
     stickAxis(rawY, axisSign("up", "down", heldBefore)),
     rawX,
     rawY
   );
+};
 
-  if (!(left || right)) {
-    if (stick.x === -1) {
-      directions.add("left");
-    }
-    if (stick.x === 1) {
-      directions.add("right");
-    }
+/** Add the stick direction of one axis to the set. */
+const addStick = (
+  directions: Set<PadDirection>,
+  sign: -1 | 0 | 1,
+  negative: PadDirection,
+  positive: PadDirection
+) => {
+  if (sign === -1) {
+    directions.add(negative);
   }
-  if (!(up || down)) {
-    if (stick.y === -1) {
-      directions.add("up");
-    }
-    if (stick.y === 1) {
-      directions.add("down");
-    }
+  if (sign === 1) {
+    directions.add(positive);
+  }
+};
+
+/**
+ * The directions of one frame. The D-pad wins over the stick on its axis.
+ */
+const readDirections = (
+  snapshot: PadSnapshot,
+  heldBefore: ReadonlySet<PadControl>
+): ReadonlySet<PadDirection> => {
+  const { directions, horizontal, vertical } = readDpad(snapshot);
+  const stick = readStick(snapshot, heldBefore);
+  if (!horizontal) {
+    addStick(directions, stick.x, "left", "right");
+  }
+  if (!vertical) {
+    addStick(directions, stick.y, "up", "down");
   }
   return directions;
 };

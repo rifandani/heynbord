@@ -71,6 +71,17 @@ const snapshot = ({
 const step = (state: PadState, options: SnapshotOptions, now: number) =>
   stepPad(state, snapshot(options), now);
 
+const rawSnapshot = (
+  buttons: readonly { readonly pressed: boolean; readonly value: number }[],
+  axes: readonly number[] = []
+): PadSnapshot => ({
+  id: "Test Pad",
+  index: 0,
+  mapping: "standard",
+  buttons,
+  axes,
+});
+
 describe("stepPad", () => {
   it("gives no press without a pad", () => {
     const result = stepPad(INITIAL_PAD_STATE, null, 0);
@@ -177,6 +188,26 @@ describe("stepPad", () => {
     expect(result.presses).toEqual([]);
   });
 
+  it("gives no vertical direction for two opposite D-pad buttons", () => {
+    const result = step(INITIAL_PAD_STATE, { directions: ["up", "down"] }, 0);
+
+    expect(result.presses).toEqual([]);
+  });
+
+  it("moves down on the D-pad and on the stick", () => {
+    const dpad = step(INITIAL_PAD_STATE, { directions: ["down"] }, 0);
+    expect(dpad.presses).toEqual([{ control: "down", repeat: false }]);
+
+    const stick = step(INITIAL_PAD_STATE, { axes: [0, 0.9, 0, 0] }, 0);
+    expect(stick.presses).toEqual([{ control: "down", repeat: false }]);
+  });
+
+  it("moves left on the stick", () => {
+    const result = step(INITIAL_PAD_STATE, { axes: [-0.9, 0, 0, 0] }, 0);
+
+    expect(result.presses).toEqual([{ control: "left", repeat: false }]);
+  });
+
   it("reads a trigger at half of its travel", () => {
     const soft = step(
       INITIAL_PAD_STATE,
@@ -191,6 +222,36 @@ describe("stepPad", () => {
       0
     );
     expect(hard.presses).toEqual([{ control: "l2", repeat: false }]);
+  });
+
+  it("reads the right trigger", () => {
+    const result = step(INITIAL_PAD_STATE, { buttons: ["r2"] }, 0);
+
+    expect(result.presses).toEqual([{ control: "r2", repeat: false }]);
+  });
+
+  it("reads a button without the pressed flag", () => {
+    const result = stepPad(
+      INITIAL_PAD_STATE,
+      rawSnapshot([{ pressed: false, value: 0.6 }]),
+      0
+    );
+
+    expect(result.presses).toEqual([{ control: "south", repeat: false }]);
+  });
+
+  it("reads a pad with no buttons or axes", () => {
+    const result = stepPad(INITIAL_PAD_STATE, rawSnapshot([]), 0);
+
+    expect(result.presses).toEqual([]);
+  });
+
+  it("keeps the delay for a held direction without a repeat time", () => {
+    const state: PadState = { index: 0, held: ["right"], repeatAt: {} };
+    const stepped = stepPad(state, snapshot({ directions: ["right"] }), 100);
+
+    expect(stepped.presses).toEqual([]);
+    expect(stepped.state.repeatAt.right).toBe(100 + REPEAT_DELAY_MS);
   });
 
   it("resets on a pad that is not in standard mapping", () => {
