@@ -9,7 +9,6 @@ import {
   exportFileName,
   levelProgress,
   levelStartXp,
-  makeSaveQueue,
   NEW_PLAYER,
   playerLevel,
   profileRecord,
@@ -130,58 +129,5 @@ describe("exportFileName", () => {
     expect(exportFileName(new Date(2027, 0, 5))).toBe(
       "heynbord-profile-2027-01-05.json"
     );
-  });
-});
-
-const profileWithCoin = (coin: number): Profile => ({ ...saved, coin });
-
-describe("makeSaveQueue", () => {
-  it("writes one Profile at a time, and the newest Profile last", async () => {
-    const written: number[] = [];
-    let open = 0;
-    const queue = makeSaveQueue(
-      async (profile) => {
-        open += 1;
-        expect(open).toBe(1);
-        await Promise.resolve();
-        written.push(profile.coin);
-        open -= 1;
-      },
-      () => {}
-    );
-    queue.save(profileWithCoin(1));
-    queue.save(profileWithCoin(2));
-    queue.save(profileWithCoin(3));
-    await queue.idle();
-    // The first write was running; the second waited and the third took its place.
-    expect(written).toEqual([1, 3]);
-    queue.save(profileWithCoin(4));
-    await queue.idle();
-    expect(written).toEqual([1, 3, 4]);
-    // Nothing waits now.
-    await expect(queue.idle()).resolves.toBeUndefined();
-  });
-
-  it("reports a failed write and goes on", async () => {
-    let failures = 0;
-    const written: number[] = [];
-    const queue = makeSaveQueue(
-      (profile) => {
-        if (profile.coin === 1) {
-          return Promise.reject(new Error("quota"));
-        }
-        written.push(profile.coin);
-        return Promise.resolve();
-      },
-      () => {
-        failures += 1;
-      }
-    );
-    queue.save(profileWithCoin(1));
-    await queue.idle();
-    queue.save(profileWithCoin(2));
-    await queue.idle();
-    expect(failures).toBe(1);
-    expect(written).toEqual([2]);
   });
 });

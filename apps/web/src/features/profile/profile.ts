@@ -155,39 +155,3 @@ export const exportFileName = (date: Date): string => {
   const day = String(date.getDate()).padStart(2, "0");
   return `heynbord-profile-${date.getFullYear()}-${month}-${day}.json`;
 };
-
-/**
- * Saves one Profile at a time, in order (technical design 5). A Profile that
- * comes during a write waits, and a newer one takes its place: the last
- * Profile is always the last write. `onError` runs for each failed write.
- */
-export const makeSaveQueue = (
-  write: (profile: Profile) => Promise<void>,
-  onError: () => void
-) => {
-  let waiting: Profile | null = null;
-  let running: Promise<void> | null = null;
-
-  const run = async () => {
-    while (waiting !== null) {
-      const profile = waiting;
-      waiting = null;
-      try {
-        // oxlint-disable-next-line eslint/no-await-in-loop -- one write at a time, in order
-        await write(profile);
-      } catch {
-        onError();
-      }
-    }
-    running = null;
-  };
-
-  return {
-    save: (profile: Profile) => {
-      waiting = profile;
-      running ??= run();
-    },
-    /** Resolves when no write is waiting or running. */
-    idle: (): Promise<void> => running ?? Promise.resolve(),
-  };
-};

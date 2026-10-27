@@ -8,12 +8,12 @@ import { Button, TooltipTrigger } from "react-aria-components";
 
 import { GameButton } from "@/core/components/game/game-button";
 import { GameTooltip } from "@/core/components/game/game-tooltip";
+import { randomSeed } from "@/core/utils/random";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { REWARD_PLATE_COMPACT as PLATE } from "@/features/battle/components/reward-plate";
 import { qaSeed } from "@/features/battle/qa";
-import { randomSeed } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { PanelRow as Row } from "@/features/campaign/components/panel-row";
 import {

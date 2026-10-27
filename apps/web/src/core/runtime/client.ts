@@ -6,6 +6,7 @@ import { Atom } from "effect/reactivity";
 import { LoggerLayer } from "@/core/observability/logger";
 import { CdnClient } from "@/features/cdn/cdn.service";
 import { PROFILE_DATABASE } from "@/features/profile/profile";
+import { ProfileStore } from "@/features/profile/profile-store.service";
 
 /**
  * Services for effectful atoms. It also builds during SSR when a server render
@@ -32,7 +33,10 @@ export const storageRuntime = Atom.runtime(
  * builds at the first read, so only in the browser.
  */
 export const profileStoreRuntime = ManagedRuntime.make(
-  BrowserKeyValueStore.layerIndexedDb({ database: PROFILE_DATABASE }).pipe(
+  ProfileStore.layer.pipe(
+    Layer.provide(
+      BrowserKeyValueStore.layerIndexedDb({ database: PROFILE_DATABASE })
+    ),
     Layer.provide(IndexedDb.layerWindow)
   )
 );

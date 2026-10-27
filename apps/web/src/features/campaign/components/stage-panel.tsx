@@ -17,12 +17,12 @@ import {
 import { GameButton } from "@/core/components/game/game-button";
 import { GAME_SCRIM } from "@/core/components/game/game-dialog";
 import { CloseIcon } from "@/core/components/game/icons";
+import { randomSeed } from "@/core/utils/random";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { CardFrame } from "@/features/battle/components/card-frame";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { classGlyph } from "@/features/battle/glyphs";
 import { qaSeed } from "@/features/battle/qa";
-import { randomSeed } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import {
   StageShield,

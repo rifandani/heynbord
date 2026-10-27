@@ -9,6 +9,7 @@ import { GameButton } from "@/core/components/game/game-button";
 import { useEverOpened } from "@/core/hooks/use-ever-opened";
 import { useGameText } from "@/features/battle/use-game-text";
 import { exportFileName } from "@/features/profile/profile";
+import { replaceProfileAtom } from "@/features/profile/profile-store.atoms";
 import { profileStateAtom } from "@/features/profile/profile.atoms";
 import { gameScreenAtom } from "@/features/town/town.atoms";
 
@@ -74,7 +75,7 @@ export const ProfileRow = ({
 
   const replace = (profile: Profile) => {
     setPending(null);
-    registry.set(profileStateAtom, { status: "ready", profile });
+    registry.set(replaceProfileAtom, profile);
     registry.set(gameScreenAtom, "town");
     onReplaced();
   };

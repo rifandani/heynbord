@@ -33,11 +33,15 @@ import {
 import type { BattleSession } from "@/features/battle/battle-session";
 import { devHitHero, newestSession } from "@/features/battle/battle-session";
 import {
+  publishBattle,
+  readBattle,
+  stagedBattle,
+} from "@/features/battle/battle-store";
+import {
   battleLogAtom,
   battleSessionAtom,
 } from "@/features/battle/battle.atoms";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
-import { playback } from "@/features/battle/scene/playback";
 import { useGameText } from "@/features/battle/use-game-text";
 import { stageResultsAtom } from "@/features/campaign/campaign.atoms";
 import type { StageResults } from "@/features/campaign/region-map";
@@ -384,16 +388,13 @@ const BattleBlock = () => {
 
   const hit = (ref: HeroRef) => {
     // The scene clock can be ahead of the atom inside one event.
-    const live = newestSession(
-      registry.get(battleSessionAtom),
-      playback.session
-    );
+    const live = newestSession(readBattle(registry), stagedBattle());
     if (live === null || registry.get(battleLogAtom) !== null) {
       return;
     }
     const next = devHitHero(live, ref, amount);
     if (next !== live) {
-      registry.set(battleSessionAtom, next);
+      publishBattle(registry, next);
     }
   };
 

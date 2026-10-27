@@ -94,6 +94,8 @@ React app on TanStack Start. The server renders and streams each page.
 
 **Live**: The current moment of the Battle, as opposed to a Log Entry. "Back to Live" closes the Battle Log. _Avoid_: present, now, current turn
 
+**Battle session**: The current Battle on the screen, from the first Turn to the result, with the Tutorial that plays in it. It is Live, not the Battle Log, and it is not saved. _Avoid_: battle state, game state, session object
+
 ### Cosmetics
 
 **Hero portrait**: A painting of the face of the Player's Hero, and a Cosmetic of the `heroPortrait` family. It does not change with the Class of the Active Deck: the Player's Hero keeps one face for all Classes, and the Class stays on its own name and glyph. It shows in the player panel of the Top Bar and on the banner of the Player's Hero on the Board. The enemy Side never shows it. _Avoid_: avatar, hero skin, portrait card, face

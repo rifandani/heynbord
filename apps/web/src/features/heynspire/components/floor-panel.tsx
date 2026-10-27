@@ -10,12 +10,12 @@ import type { ReactNode } from "react";
 import { useId, useState } from "react";
 
 import { GameButton } from "@/core/components/game/game-button";
+import { randomSeed } from "@/core/utils/random";
 import type { BattleOptions } from "@/features/battle/battle-session";
 import { GlyphIcon } from "@/features/battle/components/glyph-icon";
 import { REWARD_PLATE_COMPACT as PLATE } from "@/features/battle/components/reward-plate";
 import { classGlyph } from "@/features/battle/glyphs";
 import { qaSeed } from "@/features/battle/qa";
-import { randomSeed } from "@/features/battle/use-battle";
 import { useGameText } from "@/features/battle/use-game-text";
 import { PanelRow as Row } from "@/features/campaign/components/panel-row";
 import {
